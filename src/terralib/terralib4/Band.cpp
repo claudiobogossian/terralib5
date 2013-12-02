@@ -47,8 +47,8 @@ terralib4::Band::Impl::Impl(Raster* parent, TeRaster* iraster)
 {
 }
 
-terralib4::Band::Band(Raster* parent, TeRaster* iraster, std::size_t idx)
-  : te::rst::Band(0, idx), m_pImpl(0)
+terralib4::Band::Band(Raster* parent, TeRaster* iraster, te::rst::BandProperty* bp, std::size_t idx)
+  : te::rst::Band(bp, idx), m_pImpl(0)
 {
   m_pImpl = new Impl(parent, iraster);
 }
@@ -73,9 +73,9 @@ void terralib4::Band::setValue(unsigned int /*c*/, unsigned int /*r*/, const dou
   throw Exception(TR_TERRALIB4("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Band::getIValue(unsigned int c, unsigned int r, double& value) const
+void terralib4::Band::getIValue(unsigned int /*c*/, unsigned int /*r*/, double& value) const
 {
-  throw;
+  value = 0.0;
 }
 
 void terralib4::Band::setIValue(unsigned int /*c*/, unsigned int /*r*/, const double /*value*/)

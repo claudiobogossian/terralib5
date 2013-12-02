@@ -29,6 +29,7 @@
 #include "../dataaccess/dataset/PrimaryKey.h"
 #include "../dataaccess/query/Select.h"
 #include "../geometry/Envelope.h"
+#include "../geometry/GeometryProperty.h"
 #include "../memory/DataSet.h"
 #include "BatchExecutor.h"
 #include "DataSource.h"
@@ -185,16 +186,21 @@ te::sqlite::DataSourceTransactor::getDataSet(const std::string& name,
   if(propertyName.empty())
     throw te::common::Exception(TR_COMMON("The property is missing!"));
 
+  const te::gm::Envelope* e = g->getMBR();
+
 // TODO: we need to check if table has an spatial index before using this code!
   std::string sql ("SELECT * FROM ");
               sql += name;
               sql += " WHERE ";
               sql += GetBindableSpatialRelation(propertyName, r);
-              sql += " AND ROWID IN (SELECT pkid FROM ";
-              sql += "idx_" + name + "_" + propertyName;
-              sql += " WHERE pkid MATCH ";
-              sql += GetRtreeFilter(g->getMBR(), r);
-              sql += ")";
+              sql += " AND ROWID IN (SELECT rowid FROM SpatialIndex WHERE f_table_name = '";
+              sql += boost::to_lower_copy(name) + "' AND f_geometry_column = '";
+              sql += boost::to_lower_copy(propertyName) + "' AND ";
+              sql += "search_frame = BuildMbr(" + boost::lexical_cast<std::string>(e->m_llx);
+              sql += ", " + boost::lexical_cast<std::string>(e->m_lly);
+              sql += ", " + boost::lexical_cast<std::string>(e->m_urx);
+              sql += ", " + boost::lexical_cast<std::string>(e->m_ury);
+              sql += "))";
 
   sqlite3_stmt* stmt = m_pImpl->queryLite(sql);
 
@@ -408,7 +414,45 @@ bool te::sqlite::DataSourceTransactor::propertyExists(const std::string& dataset
 
 void te::sqlite::DataSourceTransactor::addProperty(const std::string& datasetName, te::dt::Property* p)
 {
-  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
+  std::string sql;
+
+  if(p->getType() == te::dt::GEOMETRY_TYPE)
+  {
+    te::gm::GeometryProperty* gp = static_cast<te::gm::GeometryProperty*>(p);
+
+    std::string gtype;
+    std::string cdim;
+
+    Convert2SpatiaLiteGeom(gp->getGeometryType(), gtype, cdim);
+
+    sql  = "SELECT AddGeometryColumn('";
+
+    sql += boost::to_lower_copy(datasetName);
+    sql += "', '";
+    sql += boost::to_lower_copy(p->getName());
+    sql += "', ";
+    sql += boost::lexical_cast<std::string>(gp->getSRID());
+    sql += ", '";
+    sql += gtype;
+    sql += "', '";
+    sql += cdim;
+
+    if(gp->isRequired())
+      sql += "', 1)";
+    else
+      sql += "')";
+  }
+  else
+  {
+    sql = "ALTER TABLE ";
+    sql += boost::to_lower_copy(datasetName);
+    sql += " ADD COLUMN ";
+    sql += boost::to_lower_copy(p->getName());
+    sql += " ";
+    sql += GetSQLType(p);
+  }
+
+  execute(sql);
 }
 
 void te::sqlite::DataSourceTransactor::dropProperty(const std::string& datasetName, const std::string& name)
@@ -434,11 +478,26 @@ std::auto_ptr<te::da::PrimaryKey> te::sqlite::DataSourceTransactor::getPrimaryKe
 
 bool te::sqlite::DataSourceTransactor::primaryKeyExists(const std::string& datasetName, const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
+  std::string sql  =  "PRAGMA table_info(";
+              sql += datasetName;
+              sql += ")";
+
+  std::auto_ptr<te::da::DataSet> attributes(query(sql));
+
+  while(attributes->moveNext())
+  {
+    bool isPK = attributes->getInt32(5) != 0;
+
+    if(isPK)
+      return true;
+  }
+
+  return false;
 }
 
 void te::sqlite::DataSourceTransactor::addPrimaryKey(const std::string& datasetName, te::da::PrimaryKey* pk)
 {
+  // TO BE CONFIRMED: SQLite doesn't support to alter a table to add a primary key. This must be done during table creation!
   throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
@@ -449,17 +508,84 @@ void te::sqlite::DataSourceTransactor::dropPrimaryKey(const std::string& dataset
 
 std::auto_ptr<te::da::ForeignKey> te::sqlite::DataSourceTransactor::getForeignKey(const std::string& datasetName, const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
+  std::string sql("PRAGMA foreign_key_list(");
+              sql += datasetName;
+              sql += ")";
+
+  std::auto_ptr<te::da::DataSet> result(query(sql));
+
+  int id = boost::lexical_cast<int>(name);
+
+  std::auto_ptr<te::da::ForeignKey> fk(new te::da::ForeignKey(name, id));
+
+  while(result->moveNext())
+  {
+    if(id != result->getInt32(0))
+      continue;
+
+    std::string onUpdate = result->getString(5);
+    std::string onDeletion = result->getString(6);
+
+    fk->setOnUpdateAction(GetAction(onUpdate));
+    fk->setOnDeleteAction(GetAction(onDeletion));
+
+    //std::string from = result->getString(3);
+    //std::string to = result->getString(4);
+
+    //te::dt::Property* fromP = dt->getProperty(from);
+    //te::dt::Property* toP = dt->getProperty(to);
+
+    //fk->add(fromP);
+    //fk->addRefProperty(toP);
+  }
+
+  return fk;
 }
 
 std::vector<std::string> te::sqlite::DataSourceTransactor::getForeignKeyNames(const std::string& datasetName)
 {
-  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
+  std::string sql("PRAGMA foreign_key_list(");
+              sql += datasetName;
+              sql += ")";
+
+  std::auto_ptr<te::da::DataSet> result(query(sql));
+
+  int id = -1;
+
+  std::vector<std::string> fkNames;
+
+  while(result->moveNext())
+  {
+    int fkid = result->getInt32(0);
+
+    if(fkid != id)
+    {
+      std::string fkname = boost::lexical_cast<std::string>(result->getInt32(0));
+
+      fkNames.push_back(fkname);
+
+      id = fkid;
+    }
+  }
+
+  return fkNames;
 }
 
 bool te::sqlite::DataSourceTransactor::foreignKeyExists(const std::string& datasetName, const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
+  std::string sql("PRAGMA foreign_key_list(");
+              sql += datasetName;
+              sql += ")";
+
+  std::auto_ptr<te::da::DataSet> result(query(sql));
+
+  while(result->moveNext())
+  {
+    if(name == boost::lexical_cast<std::string>(result->getInt32(0)))
+      return true;
+  }
+
+  return false;
 }
 
 void te::sqlite::DataSourceTransactor::addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk)

@@ -159,6 +159,8 @@ class te::qt::widgets::LayerTreeView::Impl
         std::map<std::string, std::vector<QAction*> > actionsByLayerType;
 
         // Determine the layer types
+        std::string layerType;
+
         std::list<AbstractTreeItem*>::const_iterator it;
         for(it = selectedItems.begin(); it != selectedItems.end(); ++it)
         {
@@ -166,7 +168,12 @@ class te::qt::widgets::LayerTreeView::Impl
           if(!layer)
             return;
 
-          actionsByLayerType[layer->getType()] = std::vector<QAction*>();
+          if(layer->getSchema().get() && layer->getSchema()->hasRaster())
+            layerType = "RASTER_LAYER_ITEM";
+          else
+            layerType = (*it)->getItemType();
+
+          actionsByLayerType[layerType] = std::vector<QAction*>();
         }
 
         // add actions to each group
@@ -179,7 +186,7 @@ class te::qt::widgets::LayerTreeView::Impl
           if(menuSelectionType != te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED)
             continue;
 
-          std::string layerType = alayerType;
+          layerType = alayerType;
 
           if(layerType.empty())
           {

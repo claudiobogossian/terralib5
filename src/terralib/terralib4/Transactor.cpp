@@ -300,6 +300,7 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
   TeTable table = tables[0];
 
   std::auto_ptr<te::da::DataSetType> dst(terralib4::Convert2T5(table));
+  dst->setTitle(layer->name());
 
   TeRepresPointerVector vec = layer->vectRepres();
 
