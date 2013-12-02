@@ -46,9 +46,9 @@ int main(int /*argc*/, char** /*argv*/)
     //Load Modules and Plugins
     LoadModules();
 
-    //CoverageSeriesExamples();
+    CoverageSeriesExamples();
 
-    TrajectoryExamplesFromKML();
+    //TrajectoryExamplesFromKML();
      
     te::plugin::PluginManager::getInstance().unloadAll();
 

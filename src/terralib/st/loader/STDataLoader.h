@@ -598,6 +598,9 @@ namespace te
         
         /*! \brief Virtual destructor. */
         virtual ~STDataLoader();
+      
+      public:
+        static bool sm_STDataLoaderInitialized;     //!< Indictes if the st data loader support was initialized
 
       protected:
 

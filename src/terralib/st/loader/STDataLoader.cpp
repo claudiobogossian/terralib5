@@ -48,6 +48,8 @@
 #include "../Exception.h"
 #include "../Globals.h"
 
+bool te::st::STDataLoader::sm_STDataLoaderInitialized(false);
+
 te::st::STDataLoader::STDataLoader()
 {
 }
@@ -311,7 +313,10 @@ te::st::STDataLoader::getSpatialExtent(const te::st::TrajectoryDataSetInfo& info
 
 void te::st::STDataLoader::initialize()
 {
+  if(te::st::STDataLoader::sm_STDataLoaderInitialized == true)
+    return;
   te::da::DataSourceManager::getInstance().make(te::st::Globals::sm_STMemoryDataSourceId, "STMEMORY");
+  te::st::STDataLoader::sm_STDataLoaderInitialized == true;
 }
 
 void te::st::STDataLoader::finalize()

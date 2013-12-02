@@ -20,7 +20,7 @@
 /*!
   \file Config.h
 
-  \brief Configuration flags for the st (spatiotemporal) module of TerraLib.
+  \brief Teste git! Configuration flags for the st (spatiotemporal) module of TerraLib.
 */
 
 #ifndef __TERRALIB_ST_INTERNAL_CONFIG_H
