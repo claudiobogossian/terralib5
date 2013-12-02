@@ -90,9 +90,11 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
                                           const te::gm::Envelope& bbox,
                                           int srid)
 {
+  if(!bbox.isValid())
+    throw Exception(TR_MAP("The requested box is invalid!"));
+
   assert(layer);
   assert(canvas);
-  assert(bbox.isValid());
 
   // Check if layer extent intersects the drawing area and so compute bounding box intersection
   te::gm::Envelope reprojectedBBOX(bbox);
@@ -100,6 +102,9 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
   if((layer->getSRID() != TE_UNKNOWN_SRS) && (srid != TE_UNKNOWN_SRS))
   {
     reprojectedBBOX.transform(srid, layer->getSRID());
+
+    if(!reprojectedBBOX.isValid())
+      throw Exception(TR_MAP("The reprojected box is invalid!"));
   }
   else if(layer->getSRID() != srid)
   {
