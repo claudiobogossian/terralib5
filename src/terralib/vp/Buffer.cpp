@@ -333,7 +333,17 @@ bool BufferMemory(const std::string& inDataSetName,
 
             if(outGeom.get() && outGeom->isValid())
             {
-              dataSetItem->setGeometry(3, outGeom.release());
+              if(outGeom->getGeomTypeId() == te::gm::MultiPolygonType)
+              {
+                dataSetItem->setGeometry(3, outGeom.release());
+              }
+              else
+              {
+                std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, outGeom->getSRID()));
+                mPolygon->add(outGeom.release());
+                dataSetItem->setGeometry(3, mPolygon.release());
+              }
+
               outputDataSet->add(dataSetItem);
               ++pk;
             }
