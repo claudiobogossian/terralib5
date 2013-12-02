@@ -46,6 +46,7 @@
 #include "../widgets/exchanger/DirectExchangerDialog.h"
 #include "../widgets/externalTable/DataPropertiesDialog.h"
 #include "../widgets/help/HelpManager.h"
+#include "../widgets/layer/explorer/ColorMapItem.h"
 #include "../widgets/layer/explorer/ChartItem.h"
 #include "../widgets/layer/explorer/GroupingItem.h"
 #include "../widgets/layer/explorer/LayerExplorer.h"
@@ -1125,6 +1126,12 @@ void te::qt::af::BaseApplication::onLayerGroupingTriggered()
     if(groupingItem)
       m_explorer->getExplorer()->remove(groupingItem);
 
+    // Check if the selected layer item has a color map item; in positive case, remove it from the layer item.
+    te::qt::widgets::ColorMapItem* cmi = selectedLayerItem->findChild<te::qt::widgets::ColorMapItem*>();
+
+    if(cmi)
+      m_explorer->getExplorer()->remove(cmi);
+
     // Collapse the selected layer item to allow the new grouping item to be generated
     // in the next time the selected layer item is expanded.
     m_explorer->getExplorer()->collapse(selectedLayerItem);
@@ -1137,6 +1144,10 @@ void te::qt::af::BaseApplication::onLayerGroupingTriggered()
       groupingItem = selectedLayerItem->findChild<te::qt::widgets::GroupingItem*>();
       if(groupingItem)
         m_explorer->getExplorer()->expand(groupingItem);
+
+      cmi = selectedLayerItem->findChild<te::qt::widgets::ColorMapItem*>();
+      if(cmi)
+        m_explorer->getExplorer()->expand(cmi);
 
       m_display->getDisplay()->refresh();
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,36 +18,35 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/explorer/DataSetLayerItem.h
+  \file terralib/qt/widgets/layer/explorer/ColorMapItem.h
 
-  \brief The class that represents a dataset layer item in a LayerTreeModel.
+  \brief A class that represents a color map of rastersymbolizer of a layer in a LayerTreeModel.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETLAYERITEM_H
-#define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETLAYERITEM_H
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_COLORMAPITEM_H
+#define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_COLORMAPITEM_H
 
 // TerraLib
-#include "../../../../maptools/DataSetLayer.h"
 #include "AbstractTreeItem.h"
-
-// Qt
-#include <QtCore/QString>
 
 namespace te
 {
+// Forward declaration
+  namespace se { class ColorMap; }
+
   namespace qt
   {
     namespace widgets
     {
-      class TEQTWIDGETSEXPORT DataSetLayerItem : public AbstractTreeItem
+      class TEQTWIDGETSEXPORT ColorMapItem : public AbstractTreeItem
       {
         Q_OBJECT
 
         public:
 
-          DataSetLayerItem(const te::map::AbstractLayerPtr& l, QObject* parent = 0);
+          ColorMapItem(te::se::ColorMap* cm, QObject* parent = 0);
 
-          ~DataSetLayerItem();
+          ~ColorMapItem();
 
           int columnCount() const;
 
@@ -68,28 +67,25 @@ namespace te
           te::map::AbstractLayerPtr getLayer() const;
 
         /*!
-          \brief It returns the item type: "DATASET_LAYER_ITEM".
+          \brief It returns the item type: "COLORMAP_ITEM".
 
-          \return The item type: "DATASET_LAYER_ITEM".
+          \return The item type: "COLORMAP_ITEM".
         */
           const std::string getItemType() const;
 
-          QString buildToolTip() const;
+          void setCheckable(bool checkable);
+
+          bool getCheckable();
 
         private:
 
-          bool hasGroupingItem() const;
+          te::se::ColorMap* m_colorMap;
+          bool m_isCheckable;
+          bool m_isChecked;
 
-          bool hasChartItem() const;
-
-          bool hasColorMapItem() const;
-
-        private:
-
-          te::map::DataSetLayerPtr m_layer;
       }; 
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETLAYERITEM_H
+#endif  // __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_COLORMAPITEM_H

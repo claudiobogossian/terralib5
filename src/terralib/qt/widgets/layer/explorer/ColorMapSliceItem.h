@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,20 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/explorer/DataSetLayerItem.h
+  \file terralib/qt/widgets/layer/explorer/ColorMapSliceItem.h
 
-  \brief The class that represents a dataset layer item in a LayerTreeModel.
+  \brief A class that represents a grouping item of a color map in a LayerTreeModel.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETLAYERITEM_H
-#define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETLAYERITEM_H
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_COLORMAPSLICEITEM_H
+#define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_COLORMAPSLICEITEM_H
 
 // TerraLib
-#include "../../../../maptools/DataSetLayer.h"
+#include "../../../../color/RGBAColor.h"
 #include "AbstractTreeItem.h"
-
-// Qt
-#include <QtCore/QString>
 
 namespace te
 {
@@ -39,15 +36,17 @@ namespace te
   {
     namespace widgets
     {
-      class TEQTWIDGETSEXPORT DataSetLayerItem : public AbstractTreeItem
+      class TEQTWIDGETSEXPORT ColorMapSliceItem : public AbstractTreeItem
       {
         Q_OBJECT
 
         public:
 
-          DataSetLayerItem(const te::map::AbstractLayerPtr& l, QObject* parent = 0);
+          ColorMapSliceItem(double min, double max, te::color::RGBAColor c, QObject* parent = 0);
 
-          ~DataSetLayerItem();
+          ColorMapSliceItem(double min, double max, te::color::RGBAColor cBegin, te::color::RGBAColor cEnd, QObject* parent = 0);
+
+          ~ColorMapSliceItem();
 
           int columnCount() const;
 
@@ -68,28 +67,34 @@ namespace te
           te::map::AbstractLayerPtr getLayer() const;
 
         /*!
-          \brief It returns the item type: "DATASET_LAYER_ITEM".
+          \brief It returns the item type: "COLORMAP_SLICE_ITEM".
 
-          \return The item type: "DATASET_LAYER_ITEM".
+          \return The item type: "COLORMAP_SLICE_ITEM".
         */
           const std::string getItemType() const;
 
-          QString buildToolTip() const;
+          void setCheckable(bool checkable);
+
+          bool getCheckable();
 
         private:
 
-          bool hasGroupingItem() const;
+          double m_min;
+          double m_max;
 
-          bool hasChartItem() const;
+          te::color::RGBAColor m_rgbaColor;
+          te::color::RGBAColor m_rgbaColorBegin;
+          te::color::RGBAColor m_rgbaColorEnd;
 
-          bool hasColorMapItem() const;
+          bool m_categorize;
+          bool m_interpolate;
 
-        private:
+          bool m_isCheckable;
+          bool m_isChecked;
 
-          te::map::DataSetLayerPtr m_layer;
       }; 
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETLAYERITEM_H
+#endif  // __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_COLORMAPSLICEITEM_H

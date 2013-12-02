@@ -18,6 +18,9 @@
  */
 
 // TerraLib
+#include "../../../se/ColorMap.h"
+#include "../../../se/RasterSymbolizer.h"
+#include "../../../se/Utils.h"
 #include "../../widgets/layer/explorer/AbstractTreeItem.h"
 #include "../../widgets/layer/explorer/LayerExplorer.h"
 #include "../../widgets/layer/explorer/LayerTreeModel.h"
@@ -130,6 +133,15 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
       {
         // If the item is a chart item, remove the chart from the layer associated to the parent of this chart item.
         parentLayer->setGrouping(0);
+      }
+      else if(item->getItemType() == "COLORMAP_ITEM")
+      {
+        // If the item is a color map item, remove the all style from the layer associated to the parent of this color map item.
+        //parentLayer->setStyle(0);
+
+        te::se::RasterSymbolizer* rs = te::se::GetRasterSymbolizer(parentLayer->getStyle());
+
+        rs->setColorMap(0);
       }
 
       // Remove the item from the layer explorer
