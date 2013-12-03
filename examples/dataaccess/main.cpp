@@ -131,13 +131,13 @@ int main(int /*argc*/, char** /*argv*/)
 //
 //===========Juan end of example ======================
 
-    //PostGISExample();  //ok
+    PostGISExample();  //ok
 
-    //GDALExample();  //ok
+    GDALExample();  //ok
 
-    //ObjectId3(); //ok mas cai no ultimo...
+    ObjectId3(); //ok mas cai no ultimo...
 
-    //QueryExample_2(); //ok
+    QueryExample_2(); //ok
 
     MemoryExample(); //Ok-cai no add (chamando o copy)
 
