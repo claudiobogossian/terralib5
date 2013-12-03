@@ -177,23 +177,23 @@ namespace te
         double mappedX = 0;
         double mappedY = 0;        
           
-        transformationPtr->directMap( 0, 0, mappedX, mappedY );
+        transformationPtr->directMap( -0.5, -0.5, mappedX, mappedY );
         lowerLeftX = std::min( lowerLeftX, mappedX );
         lowerLeftY = std::min( lowerLeftY, mappedY );
         upperRightX = std::max( upperRightX, mappedX );
         upperRightY = std::max( upperRightY, mappedY );        
         
         transformationPtr->directMap( 
-          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfColumns()) - 1.0, 
-          0, mappedX, mappedY );
+          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfColumns()) - 0.5, 
+          -0.5, mappedX, mappedY );
         lowerLeftX = std::min( lowerLeftX, mappedX );
         lowerLeftY = std::min( lowerLeftY, mappedY );
         upperRightX = std::max( upperRightX, mappedX );
         upperRightY = std::max( upperRightY, mappedY );
         
         transformationPtr->directMap( 
-          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfColumns()) - 1.0, 
-          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfRows()) - 1.0, 
+          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfColumns()) - 0.5, 
+          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfRows()) - 0.5, 
           mappedX, mappedY );
         lowerLeftX = std::min( lowerLeftX, mappedX );
         lowerLeftY = std::min( lowerLeftY, mappedY );
@@ -201,8 +201,8 @@ namespace te
         upperRightY = std::max( upperRightY, mappedY );
         
         transformationPtr->directMap( 
-          0, 
-          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfRows()) - 1.0, 
+          -0.5, 
+          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfRows()) - 0.5, 
           mappedX, mappedY );
         lowerLeftX = std::min( lowerLeftX, mappedX );
         lowerLeftY = std::min( lowerLeftY, mappedY );

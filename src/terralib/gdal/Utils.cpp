@@ -128,8 +128,9 @@ te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds)
     gtp[ 5 ] = -1.0;
   }
   
-  te::rst::Grid* grid = new te::rst::Grid(gds->GetRasterXSize(),gds->GetRasterYSize());
-  grid->setGeoreference(gtp,srid);
+  te::rst::Grid* grid = new te::rst::Grid(gtp, gds->GetRasterXSize(),
+    gds->GetRasterYSize(), srid);
+
   return grid;
 }
 

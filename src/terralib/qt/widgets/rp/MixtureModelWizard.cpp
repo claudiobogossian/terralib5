@@ -134,6 +134,12 @@ void te::qt::widgets::MixtureModelWizard::addPages()
 
 bool te::qt::widgets::MixtureModelWizard::execute()
 {
+  if(m_rasterInfoPage->getWidget()->fileExists())
+  {
+    QMessageBox::warning(this, tr("Mixture Model"), tr("File already exists."));
+    return false;
+  }
+
   //get layer
   te::map::AbstractLayerPtr l = m_mixtureModelPage->get();
   std::auto_ptr<te::da::DataSet> ds(l->getData());
