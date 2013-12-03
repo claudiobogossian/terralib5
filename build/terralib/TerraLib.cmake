@@ -47,8 +47,6 @@ option (BUILD_GDAL "Build GDAL module?" ON)
 option (BUILD_GEOMETRY "Build Geometry module?" ON)
 option (BUILD_GML "Build GML module?" ON)
 option (BUILD_GRAPH "Build Graph module?" OFF)
-option (BUILD_IDL "Build IDL module?" OFF)
-option (BUILD_LAYOUT "Build Layout module?" OFF)
 option (BUILD_MAPTOOLS "Build Map Tools module?" ON)
 option (BUILD_MEMORY "Build Memory module?" ON)
 option (BUILD_METADATA "Build Metadata module?" OFF)
@@ -84,10 +82,6 @@ option (TE_LOGGER_DO_STATIC_INITIALIZATION "Initialize logger while static initi
 option (TE_TRANSLATOR_ENABLED "Enable translate support on TerraLib?" ON)
 option (TE_CHARENCODING_ENABLED "Enable character encoding support on TerraLib?" ON)
 option (TE_DOXBUILD_ENABLED "Enable the doxygen documentation building?" OFF)
-
-if(UNIX)
-  option (BUILD_GRIB "Build GRIB module?" ON)
-endif()
 
 if(WIN32)
   option (BUILD_ADO "Build ADO module?" ON)
@@ -135,14 +129,6 @@ endif()
 
 IF(BUILD_GRAPH)
 	add_subdirectory(terralib/terralib_graph)
-endif()
-
-IF(BUILD_IDL)
-  add_subdirectory(terralib/terralib_idl)
-endif()
-
-IF(BUILD_LAYOUT)
-	add_subdirectory(terralib/terralib_layout)
 endif()
 
 IF(BUILD_MAPTOOLS)
@@ -247,10 +233,6 @@ endif()
 
 IF(BUILD_XSD)
 	add_subdirectory(terralib/terralib_xsd)
-endif()
-
-IF(BUILD_GRIB)
-  add_subdirectory(terralib/terralib_grib)
 endif()
 
 IF(BUILD_ADO)
