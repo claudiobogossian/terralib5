@@ -44,15 +44,23 @@ te::rst::Grid::Grid(unsigned int nCols,
 {
   if(m_extent)
   {
-    m_geoT[0] = m_extent->m_llx;
-    m_geoT[1] = m_extent->getWidth() / (static_cast<double>(nCols) - 0.5);
-    m_geoT[2] = 0.0;
-    m_geoT[3] = m_extent->m_ury;
+    // Resolution X and Y
+    m_geoT[1] = m_extent->getWidth() / static_cast<double>(nCols);
+    m_geoT[5] = -1.0 * m_extent->getHeight() / static_cast<double>(nRows);
+    
+    // Pixell 0,0 upper-left coods
+    m_geoT[0] = m_extent->m_llx + ( m_geoT[1] / 2.0 );
+    m_geoT[3] = m_extent->m_ury + ( m_geoT[5] / 2.0 );
+    
+    m_geoT[2] = 0.0;    
     m_geoT[4] = 0.0;
-    m_geoT[5] = -1.0 * m_extent->getHeight() / (static_cast<double>(nRows) - 0.5);
+    
   }
   else
-    setGeoreference(te::gm::Coord2D(0, static_cast<double>(nRows - 1)), srid, 1.0, 1.0);
+  {
+    setGeoreference(te::gm::Coord2D(0, 0), srid, 1.0, 1.0);
+    computeExtent();
+  }
 }
 
 te::rst::Grid::Grid(unsigned int nCols, unsigned int nRows,
@@ -66,7 +74,8 @@ te::rst::Grid::Grid(unsigned int nCols, unsigned int nRows,
   if(ulc)
     setGeoreference(*ulc, srid, resX, resY);
   else
-    setGeoreference(te::gm::Coord2D(0, static_cast<double>(nRows - 1)), srid, resX, resY);
+    setGeoreference(te::gm::Coord2D(0, 0), srid, resX, resY);
+  computeExtent();
 }
 
 te::rst::Grid::Grid(unsigned int nCols, unsigned int nRows,
@@ -79,15 +88,22 @@ te::rst::Grid::Grid(unsigned int nCols, unsigned int nRows,
 {
   if(m_extent)
   {
-    m_geoT[0] = m_extent->m_llx;
-    m_geoT[1] = resX;
-    m_geoT[2] = 0.0;
-    m_geoT[3] = m_extent->m_ury;
-    m_geoT[4] = 0.0;
-    m_geoT[5] = -1.0 * resY;
+    // Resolution X and Y
+    m_geoT[1] = m_extent->getWidth() / static_cast<double>(nCols);
+    m_geoT[5] = -1.0 * m_extent->getHeight() / static_cast<double>(nRows);
+    
+    // Pixell 0,0 upper-left coods
+    m_geoT[0] = m_extent->m_llx + ( m_geoT[1] / 2.0 );
+    m_geoT[3] = m_extent->m_ury + ( m_geoT[5] / 2.0 );
+    
+    m_geoT[2] = 0.0;    
+    m_geoT[4] = 0.0;    
   }
   else
+  {
     setGeoreference(te::gm::Coord2D(0, static_cast<double>(nRows - 1)), srid, resX, resY);
+    computeExtent();
+  }
 }
 
 te::rst::Grid::Grid(double resX,
@@ -104,15 +120,34 @@ te::rst::Grid::Grid(double resX,
 
   if(mbr)
   {
-    m_geoT[0] = m_extent->m_llx;
-    m_geoT[1] = resX;
-    m_geoT[2] = 0.0;
-    m_geoT[3] = m_extent->m_ury;
+    // Resolution X and Y
+    m_geoT[1] = m_extent->getWidth() / static_cast<double>(m_nCols);
+    m_geoT[5] = -1.0 * m_extent->getHeight() / static_cast<double>(m_nRows);
+    
+    // Pixell 0,0 upper-left coods
+    m_geoT[0] = m_extent->m_llx + ( m_geoT[1] / 2.0 );
+    m_geoT[3] = m_extent->m_ury + ( m_geoT[5] / 2.0 );    
+    
+    m_geoT[2] = 0.0;    
     m_geoT[4] = 0.0;
-    m_geoT[5] = -resY;
+    
   }
   else
-    setGeoreference(te::gm::Coord2D(0, static_cast<double>(m_nRows - 1)), srid, 1.0, 1.0);
+  {
+    setGeoreference(te::gm::Coord2D(0, 0), srid, 1.0, 1.0);
+    computeExtent();
+  }
+}
+
+te::rst::Grid::Grid( const double geoTrans[], unsigned int nCols, unsigned int nRows,
+                     int srid)
+  : m_extent(0),
+    m_nCols(nCols),
+    m_nRows(nRows),
+    m_srid(srid)
+{
+  setGeoreference(geoTrans, srid);
+  computeExtent();
 }
 
 te::rst::Grid::Grid(const Grid& rhs)
@@ -121,8 +156,16 @@ te::rst::Grid::Grid(const Grid& rhs)
     m_nRows(rhs.m_nRows),
     m_srid(rhs.m_srid)
 {
-  m_extent = rhs.m_extent ? new te::gm::Envelope(*rhs.m_extent) : 0;
   memcpy(m_geoT, rhs.m_geoT, sizeof(double) * 6);
+  
+  if( rhs.m_extent )
+  {
+    m_extent = new te::gm::Envelope(*rhs.m_extent);
+  }
+  else
+  {
+    computeExtent();
+  }
 }
 
 te::rst::Grid::~Grid()
@@ -130,7 +173,6 @@ te::rst::Grid::~Grid()
   if (m_extent)
   {
     delete m_extent;
-    m_extent = 0;
   }
 }
 
@@ -138,11 +180,6 @@ te::rst::Grid& te::rst::Grid::operator=(const Grid& rhs)
 {
   if(this != &rhs)
   {
-    if (m_extent)
-      delete m_extent;
-
-    m_extent = rhs.m_extent ? new te::gm::Envelope(*rhs.m_extent) : 0;
-
     m_nCols = rhs.m_nCols;
 
     m_nRows = rhs.m_nRows;
@@ -150,6 +187,20 @@ te::rst::Grid& te::rst::Grid::operator=(const Grid& rhs)
     m_srid = rhs.m_srid;
 
     memcpy(m_geoT, rhs.m_geoT, sizeof(double) * 6);
+    
+    if (m_extent)
+    {
+      delete m_extent;
+      m_extent = 0;
+    }
+    if( rhs.m_extent )
+    {
+      m_extent = new te::gm::Envelope(*rhs.m_extent);
+    }
+    else
+    {
+      computeExtent();
+    }    
   }
 
   return *this;
@@ -158,12 +209,6 @@ te::rst::Grid& te::rst::Grid::operator=(const Grid& rhs)
 void te::rst::Grid::setNumberOfColumns(unsigned int nCols)
 {
   m_nCols = nCols;
-
-  if(m_extent)
-  {
-    delete m_extent;
-    m_extent = 0;
-  }
 }
 
 unsigned int te::rst::Grid::getNumberOfColumns() const
@@ -174,12 +219,6 @@ unsigned int te::rst::Grid::getNumberOfColumns() const
 void te::rst::Grid::setNumberOfRows(unsigned int nRows)
 {
   m_nRows = nRows;
-
-  if(m_extent)
-  {
-    delete m_extent;
-    m_extent = 0;
-  }
 }
 
 unsigned int te::rst::Grid::getNumberOfRows() const
@@ -190,18 +229,19 @@ unsigned int te::rst::Grid::getNumberOfRows() const
 void te::rst::Grid::setGeoreference(const te::gm::Coord2D& ulLocation, int srid, double resX, double resY)
 {
   m_srid = srid;
-  m_geoT[0] = ulLocation.x;
+  
+  // Resolution X and Y
   m_geoT[1] = resX;
-  m_geoT[2] = 0.0;
-  m_geoT[3] = ulLocation.y;
-  m_geoT[4] = 0.0;
   m_geoT[5] = -1.0 * resY;
-
-  if(m_extent)
-  {
-    delete m_extent;
-    m_extent = 0;
-  }
+  
+  // Pixell 0,0 upper-left coods
+  m_geoT[0] = ulLocation.x + ( m_geoT[1] / 2.0 );
+  m_geoT[3] = ulLocation.y + ( m_geoT[5] / 2.0 );
+  
+  m_geoT[2] = 0.0;
+  m_geoT[4] = 0.0;
+  
+  computeExtent();
 }
 
 void te::rst::Grid::setGeoreference(const double geoTrans[], int srid)
@@ -213,12 +253,8 @@ void te::rst::Grid::setGeoreference(const double geoTrans[], int srid)
   m_geoT[3] = geoTrans[3];
   m_geoT[4] = geoTrans[4];
   m_geoT[5] = geoTrans[5];
-
-  if (m_extent)
-  {
-    delete m_extent;
-    m_extent = 0;
-  }
+  
+  computeExtent();
 }
 
 const double* te::rst::Grid::getGeoreference() const
@@ -248,26 +284,20 @@ void te::rst::Grid::setSRID(int srid)
 
 te::gm::Envelope* te::rst::Grid::getExtent()
 {
-  if(!m_extent)
-    computeExtent();
-
   return m_extent;
 }
 
 const te::gm::Envelope* te::rst::Grid::getExtent() const
 {
-  if(!m_extent)
-    computeExtent();
-
   return m_extent;
 }
 
 void te::rst::Grid::computeExtent() const
 {
-  te::gm::Coord2D ll = gridToGeo(0, m_nRows - 1);
-  te::gm::Coord2D lr = gridToGeo(m_nCols - 1, m_nRows - 1);
-  te::gm::Coord2D ur = gridToGeo(m_nCols - 1, 0);
-  te::gm::Coord2D ul = gridToGeo(0, 0);
+  te::gm::Coord2D ll = gridToGeo( -0.5, ((double)m_nRows) - 0.5 );
+  te::gm::Coord2D lr = gridToGeo( ((double)m_nCols) - 0.5, ((double)m_nRows) - 0.5 );
+  te::gm::Coord2D ur = gridToGeo( ((double)m_nCols) - 0.5, -0.5 );
+  te::gm::Coord2D ul = gridToGeo( -0.5, -0.5 );
 
   if(!m_extent)
     m_extent = new te::gm::Envelope;
@@ -276,8 +306,6 @@ void te::rst::Grid::computeExtent() const
                  std::min(ll.y, lr.y),
                  std::max(ur.x, lr.x),
                  std::max(ul.y, ur.y));
-
-  return;
 }
 
 void te::rst::Grid::gridToGeo(const double& col, const double& row, double& x, double& y) const
