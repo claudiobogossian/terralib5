@@ -376,6 +376,9 @@ void te::qt::widgets::MixtureModelWizardPage::listBands()
         
         QCheckBox* bandCheckBox = new QCheckBox(bName, this);
 
+        if(inputRst->getNumberOfBands() == 1)
+            bandCheckBox->setChecked(true);
+
         QComboBox* sensorDescriptionComboBox = new QComboBox(this);
         sensorDescriptionComboBox->addItems(sensorsDescriptions);
 

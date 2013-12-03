@@ -166,6 +166,11 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
   if(layer->getVisibility() != te::map::VISIBLE)
     return;
 
+  std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
+
+  if(!dsType->hasGeom())
+    return;
+
   te::gm::Envelope reprojectedEnvelope(e);
 
   if((layer->getSRID() != TE_UNKNOWN_SRS) && (m_display->getSRID() != TE_UNKNOWN_SRS) && (layer->getSRID() != m_display->getSRID()))

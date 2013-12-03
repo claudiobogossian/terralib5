@@ -138,6 +138,27 @@ bool te::qt::widgets::RasterInfoWidget::overight() const
   return m_ui->m_overightRadioButton->isChecked();
 }
 
+bool te::qt::widgets::RasterInfoWidget::fileExists() const
+{
+  if(m_ui->m_fileRadioButton->isChecked())
+  {
+    std::string name = "";
+
+    if(m_ui->m_nameLineEdit->text().isEmpty() == false)
+    {
+      name = m_ui->m_nameLineEdit->text().toStdString();
+    }
+
+    std::string fileName = m_dir + "/" + name + ".tif";
+
+    QFile file(fileName.c_str());
+
+    return file.exists();
+  }
+
+  return false;
+}
+
 void te::qt::widgets::RasterInfoWidget::onOpenFileDlgToolButtonClicked()
 {
   QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
