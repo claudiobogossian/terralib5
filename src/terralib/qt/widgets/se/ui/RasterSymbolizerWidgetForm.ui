@@ -444,7 +444,7 @@
                </size>
               </property>
               <property name="maximum">
-               <number>200</number>
+               <number>400</number>
               </property>
               <property name="singleStep">
                <number>10</number>
@@ -494,7 +494,7 @@
                </size>
               </property>
               <property name="maximum">
-               <number>200</number>
+               <number>400</number>
               </property>
               <property name="singleStep">
                <number>10</number>
@@ -544,7 +544,7 @@
                </size>
               </property>
               <property name="maximum">
-               <number>200</number>
+               <number>400</number>
               </property>
               <property name="singleStep">
                <number>10</number>
@@ -594,7 +594,7 @@
                </size>
               </property>
               <property name="maximum">
-               <number>200</number>
+               <number>400</number>
               </property>
               <property name="singleStep">
                <number>10</number>
@@ -648,5 +648,6 @@
    </item>
   </layout>
  </widget>
+ <resources/>
  <connections/>
 </ui>
