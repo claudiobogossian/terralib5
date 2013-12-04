@@ -31,7 +31,7 @@ void MemoryExample()
     te::da::DataSet* datas = CreatingDataSetInMemoryGivingDt(dt1);
     PrintDataSet(named, datas);
 
-    //Adds to a datasource fo MEMORY type
+    //Adding dataset to dsMem datasource of MEMORY type
     dsMem->add(named,datas,options);    
     std::auto_ptr<te::da::DataSet> ds_ret = dsMem->getDataSet(named);
     PrintDataSet(named, ds_ret.get());
