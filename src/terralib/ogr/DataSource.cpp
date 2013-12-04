@@ -64,6 +64,10 @@ void GetQueryCapabilities(te::da::DataSourceCapabilities& caps)
   qy_caps.addComparsionOperator("<=");
   qy_caps.addComparsionOperator(">=");
 
+  qy_caps.addLogicalOperator("and");
+  qy_caps.addLogicalOperator("not");
+  qy_caps.addLogicalOperator("or");
+
   caps.setQueryCapabilities(qy_caps);
 }
 
