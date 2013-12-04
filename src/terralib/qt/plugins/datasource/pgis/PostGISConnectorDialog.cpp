@@ -353,7 +353,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::setConnectionInfo(const std:
   it = connInfo.find("PG_MAX_POOL_SIZE");
 
   if(it != itend)
-    m_ui->m_minPoolSizeSpinBox->setValue(boost::lexical_cast<int>(it->second.c_str()));
+    m_ui->m_maxPoolSizeSpinBox->setValue(boost::lexical_cast<int>(it->second.c_str()));
 
   it = connInfo.find("PG_OPTIONS");
 
