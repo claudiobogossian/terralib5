@@ -30,6 +30,7 @@
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWidget.h"
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
 #include "../../../../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../../../../qt/widgets/rp/Utils.h"
 #include "../../../../qt/af/ApplicationController.h"
 #include "../../../../qt/af/Project.h"
 #include "../../../../qt/af/events/LayerEvents.h"
@@ -271,6 +272,8 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::rasterFolderSelectionPageNe
 
   std::vector<std::string> dsNames = m_layerSelectionPage->getChecked();
 
+  m_finalPage->setDataSets(dsNames);
+
   for(std::size_t i = 0; i < dsNames.size(); ++i)
   {
     std::auto_ptr<te::da::DataSetType> dst = m_tl4Database->getDataSetType(dsNames[i]);
@@ -285,35 +288,47 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::rasterFolderSelectionPageNe
     }
   }
 
+
+
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 {
-  te::da::DataSourcePtr outDataSource = te::da::DataSourceManager::getInstance().find(m_targetDataSource->getId());
-
-  te::qt::widgets::DataSet2Layer converter(m_targetDataSource->getId());
-
   std::vector<std::string> selected = m_finalPage->getSelected();
-
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
-
-  if(!prj)
-    return;
 
   for(std::size_t i = 0; i < selected.size(); ++i)
   {
-    std::auto_ptr<te::da::DataSetType> dsType = outDataSource->getDataSetType(selected[i]);
-    te::da::DataSetTypePtr dt(dsType.release());
-    te::map::AbstractLayerPtr lay = converter(dt);
+    te::map::AbstractLayerPtr lay = 0;
+    std::auto_ptr<te::da::DataSetType> dt = m_tl4Database->getDataSetType(selected[i]);
 
-    if(lay)
+    if(dt->hasRaster())
     {
-      prj->add(lay);
+      std::map<std::string, std::string> connInfo;
+      connInfo["URI"] = m_rasterFolderPath + "/" + selected[i] + ".tif";
 
-      te::qt::af::evt::LayerAdded evt(lay);
-
-      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+      lay = te::qt::widgets::createLayer("GDAL", connInfo);
     }
+    else
+    {
+      te::da::DataSourcePtr outDataSource = te::da::DataSourceManager::getInstance().find(m_targetDataSource->getId());
+
+      te::qt::widgets::DataSet2Layer converter(m_targetDataSource->getId());
+
+      std::auto_ptr<te::da::DataSetType> dsType = outDataSource->getDataSetType(selected[i]);
+      te::da::DataSetTypePtr dt(dsType.release());
+      lay = converter(dt);
+    }
+
+    te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
+
+    if(!prj)
+      continue;
+
+    prj->add(lay);
+
+    te::qt::af::evt::LayerAdded evt(lay);
+
+    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
   }
 }
 
