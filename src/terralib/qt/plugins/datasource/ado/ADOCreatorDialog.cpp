@@ -95,8 +95,9 @@ void te::qt::plugins::ado::ADOCreatorDialog::applyPushButtonPressed()
     // Connect
     std::map<std::string, std::string> connInfo;
     connInfo["DB_NAME"] = dsInfo["DB_NAME"];
-    connInfo["PASSWORD"] = dsInfo["PASSWORD"];
     connInfo["PROVIDER"] = dsInfo["PROVIDER"];
+    if(!dsInfo["PASSWORD"].empty())
+      connInfo["PASSWORD"] = dsInfo["PASSWORD"];
 
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("ADO");
     ds->setConnectionInfo(connInfo);

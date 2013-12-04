@@ -12,9 +12,8 @@ endif()
 
 if(WIN32)
   find_package(ADOTL4 REQUIRED)
-  if(ADO_FOUND)
-    set (TE_DEP_LIBS ${TE_DEP_LIBS} ${ADO_LIBRARIES})
-    set (TE_DEP_INCLUDES ${TE_DEP_INCLUDES} ${ADO_INCLUDE_DIR})
+  if(ADOTL4_FOUND)
+    set (TE_DEP_INCLUDES ${TE_DEP_INCLUDES} ${ADOTL4_INCLUDE_DIR})
   endif()
 endif()
 
