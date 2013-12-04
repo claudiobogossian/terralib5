@@ -149,7 +149,8 @@ const te::da::SQLDialect* te::mem::DataSource::getDialect() const
 }
 
 std::auto_ptr<te::da::DataSet> te::mem::DataSource::getDataSet(const std::string& name,
-                                                               te::common::TraverseType /*travType*/)
+                                                               te::common::TraverseType /*travType*/,
+                                                               const te::common::AccessPolicy /*accessPolicy*/ )
 {
   if(!dataSetExists(name))
     throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % name).str());
