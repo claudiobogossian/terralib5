@@ -176,17 +176,16 @@ void DataSetManagement::addIndexPushButtonClicked()
   index = addIndexDialog->getIndex();
 
   // Add the index to the data set type
-  te::da::DataSourceTransactor* t = m_ds->getTransactor();
-  te::da::DataSetTypePersistence* persistence = t->getDataSetTypePersistence();
+  std::auto_ptr<te::da::DataSourceTransactor> t = m_ds->getTransactor();
 
   try
   {
-    persistence->add(dataSetType, index);
+    std::map<std::string, std::string> options;
+    t->addIndex(dataSetType->getName(), index,options);
   }
   catch(te::common::Exception& e)
   {
     QMessageBox::critical(this, tr("Operation of Adding an Index Failed"), e.what());
-    delete t;
     delete addIndexDialog;
     return;
   }
@@ -195,7 +194,6 @@ void DataSetManagement::addIndexPushButtonClicked()
     tr("The index \"%1\" was added successfully to the data set \"%2\"!")
       .arg(index->getName().c_str()).arg(dataSetType->getName().c_str()));
 
-  delete t;
 
   delete addIndexDialog;
 }

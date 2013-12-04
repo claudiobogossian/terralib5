@@ -136,6 +136,12 @@ void te::qt::widgets::SegmenterWizard::addPages()
 
 bool te::qt::widgets::SegmenterWizard::execute()
 {
+  if(m_rasterInfoPage->getWidget()->fileExists())
+  {
+    QMessageBox::warning(this, tr("Segmenter"), tr("File already exists."));
+    return false;
+  }
+
   //get layer
   te::map::AbstractLayerPtr l = m_segmenterPage->get();
   std::auto_ptr<te::da::DataSet> ds(l->getData());
