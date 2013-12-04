@@ -224,7 +224,7 @@ void te::map::DataSetAdapterLayer::setConverter(std::auto_ptr<te::da::DataSetTyp
 
   std::auto_ptr<te::da::DataSetType> dsType = ds->getDataSetType(m_datasetName);
 
-  if(!dsType->hasGeom())
+  if(!dsType->hasGeom() && m_converter->getResult()->hasGeom())
   {
      m_rtree.clear();
 

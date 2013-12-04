@@ -92,7 +92,8 @@ namespace te
         const te::da::SQLDialect* getDialect() const;
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name, 
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
         std::vector<std::string> getDataSetNames();
 

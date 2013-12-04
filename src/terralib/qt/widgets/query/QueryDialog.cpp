@@ -274,7 +274,7 @@ void te::qt::widgets::QueryDialog::onApplyPushButtonClicked()
 
     setCursor(Qt::ArrowCursor);
 
-    QMessageBox::information(this, tr("Query"), tr("Query executed with successfully."));
+    //QMessageBox::information(this, tr("Query"), tr("Query executed with successfully."));
   }
   catch(std::exception& e)
   {

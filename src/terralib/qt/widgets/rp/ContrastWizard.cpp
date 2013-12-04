@@ -131,6 +131,12 @@ void te::qt::widgets::ContrastWizard::addPages()
 
 bool te::qt::widgets::ContrastWizard::execute()
 {
+  if(m_rasterInfoPage->getWidget()->fileExists())
+  {
+    QMessageBox::warning(this, tr("Contrast"), tr("File already exists."));
+    return false;
+  }
+
   //get layer
   te::map::AbstractLayerPtr l = m_contrastPage->get();
   std::auto_ptr<te::da::DataSet> ds = l->getData();

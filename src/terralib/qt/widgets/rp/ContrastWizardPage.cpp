@@ -257,6 +257,9 @@ void te::qt::widgets::ContrastWizardPage::listBands()
         
           QCheckBox* bandCheckBox = new QCheckBox(bName, this);
 
+          if(inputRst->getNumberOfBands() == 1)
+            bandCheckBox->setChecked(true);
+
           m_ui->m_bandTableWidget->setCellWidget(newrow, 0, bandCheckBox);
         }
       }

@@ -156,6 +156,12 @@ void te::qt::widgets::RegisterWizard::addPages()
 
 bool te::qt::widgets::RegisterWizard::execute()
 {
+  if(m_rasterInfoPage->getWidget()->fileExists())
+  {
+    QMessageBox::warning(this, tr("Register"), tr("File already exists."));
+    return false;
+  }
+
   //get raster
   std::auto_ptr<te::da::DataSet> ds(m_adjLayer->getData());
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);

@@ -112,6 +112,19 @@ namespace te
         */
         Grid(double resX, double resY,
              te::gm::Envelope* mbr, int srid = TE_UNKNOWN_SRS);
+             
+        /*!
+          \brief Constructor.
+
+          \param nCols  The number of columns.
+          \param nRows  The number of rows.
+          \param geoTrans[]  A list of 6 coefficients describing an affine transformation to georeference a grid.
+          \param srid   The SRS associated to the grid.
+
+          \note If extent is not specified, no georeferencing is assumed.
+        */
+        Grid(const double geoTrans[], unsigned int nCols, unsigned int nRows,
+             int srid = TE_UNKNOWN_SRS);             
 
         /*!
           \brief Copy constructor.
@@ -274,7 +287,7 @@ namespace te
         unsigned int m_nCols;               //!< Number of columns.
         unsigned int m_nRows;               //!< Number of rows.
         int m_srid;                         //!< The associated SRS.
-        double m_geoT[6];                   //!< A list of 6 coefficients describing an affine transformation to georeference a grid.
+        double m_geoT[6];                   //!< A list of 6 coefficients describing an affine transformation to georeference a grid. In a north up image, m_geoT[1] is the pixel width, and m_geoT[5] is the pixel height. The upper left corner of the upper left pixel is at position (m_geoT[0],m_geoT[3]).
     };
 
     typedef boost::shared_ptr<Grid> GridPtr;

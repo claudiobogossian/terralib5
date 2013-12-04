@@ -76,6 +76,8 @@ namespace te
 
           bool overight() const;
 
+          bool fileExists() const;
+
         protected slots:
 
           void onOpenFileDlgToolButtonClicked();
