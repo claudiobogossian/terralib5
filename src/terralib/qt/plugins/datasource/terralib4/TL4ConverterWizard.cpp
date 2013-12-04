@@ -319,13 +319,6 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
       lay = converter(dt);
     }
 
-    te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
-
-    if(!prj)
-      continue;
-
-    prj->add(lay);
-
     te::qt::af::evt::LayerAdded evt(lay);
 
     te::qt::af::ApplicationController::getInstance().broadcast(&evt);
