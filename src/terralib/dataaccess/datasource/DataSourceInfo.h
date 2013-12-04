@@ -51,6 +51,8 @@ namespace te
         For example, at application level one can have a data source named File that uses
         diferent drivers to access data. It will depend on user preferences and dialogs used to create
         the data source.
+
+        \ingroup dataaccess
       */
       class TEDATAACCESSEXPORT DataSourceInfo
       {

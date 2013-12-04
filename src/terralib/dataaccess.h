@@ -36,21 +36,41 @@
 #include "dataaccess/query_h.h"
 #include "dataaccess/utils/Utils.h"
 
+/*!
+  \defgroup dataaccess Data Access
+
+  \brief This module provides a basic framework for accessing data.
+
+  It is designed towards data interoperability. You can
+  write your own driver for accessing a different data source.
+  Of course, we provide some basic data sources drivers.
+
+  The Data Access module provides the fundamental layer for applications
+  that handle spatial data from different sources, ranging from traditional DBMSs to OGC Web Services.
+
+  This module is composed by some base abstract classes that must be extended to allow the creation
+  of Data Access Drivers which actually implement all the details needed to access
+  data in a specific format or system.
+
+  This module provides the base foundation for an application discover what is stored 
+  in a data source and how the data is organized in it. Keep in mind that this organization is the
+  low-level organization of the data. For instance, in a DBMS, you can find out the tables stored 
+  in a database and the relationships between them or detailed informations about 
+  their columns (data type, name and constraints).
+
+  It is not the role of this module to provide higher-level metadata about the data stored in a data source.
+
+  The namespace associated to the Data Access module is te::da. To know more about it, see the te::da namespace documentation.
+*/
+
 namespace te
 {
   /*!
     \brief Namespace for the DataAccess API of TerraLib.
-
-    TerraLib provides a basic framework for accessing data.
-    It is designed towards data interoperability. You can
-    write your own driver for accessing a different data source.
-    Of course, we provide some basic data sources: PostGIS, Oracle Spatial,
-    Shapefiles, WFS, WMS and WCS.
-   */
+  */
   namespace da
   {
-  }	// end namespace da
+  } // end namespace da
 }   // end namespace te
 
 #endif  // __TERRALIB_INTERNAL_DATAACCESS_H
-

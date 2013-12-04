@@ -41,6 +41,8 @@ namespace te
 
       The visitor interface can be implemented by data access drivers
       in order to translate a Query object to its dialect (SELECT, INSERT, UPDATE, DELETE, DROP, CREATE, ALTER).
+
+      \ingroup dataaccess
     */
     class TEDATAACCESSEXPORT QueryVisitor
     {

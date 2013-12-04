@@ -97,6 +97,8 @@ namespace te
       connection given by the data source, and it continues to live after the connection has been
       released to the data source.
 
+      \ingroup dataaccess
+
       \sa DataSource, DataSourceTransactor, DataSetType
 
       \todo We can generalize the dataset API so that a dataset may contain other datasets;

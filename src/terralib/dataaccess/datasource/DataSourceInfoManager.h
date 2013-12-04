@@ -43,6 +43,8 @@ namespace te
         \class DataSourceInfoManager
 
         \brief A singleton to keep all the registered data sources.
+
+        \ingroup dataaccess
       */
       class TEDATAACCESSEXPORT DataSourceInfoManager : public te::common::Singleton<DataSourceInfoManager>
       {
