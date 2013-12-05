@@ -79,8 +79,10 @@ void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::sta
   ss.m_count = values.size();
   ss.m_validCount = values.size();
   
-  int init = 0;
-  ss.m_sum = std::accumulate(values.begin(), values.end(), init);
+  for(std::size_t i = 0; i < values.size(); ++i)
+  {
+    ss.m_sum += values[i];
+  }
   
   ss.m_mean = ss.m_sum/ss.m_count;
   

@@ -72,8 +72,6 @@ void te::qt::plugins::vp::BufferAction::onActionActivated(bool checked)
 
   if(prj && reply == QMessageBox::Yes)
   {
-    prj->add(layer);
-
     te::qt::af::evt::LayerAdded evt(layer);
 
     te::qt::af::ApplicationController::getInstance().broadcast(&evt);
