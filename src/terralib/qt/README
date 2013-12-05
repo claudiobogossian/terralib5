@@ -1,4 +1,24 @@
-TO BE DONE: add a note about this module (dependencies and where to find more info)
+			  TerraLib 5 - QT
+          ========================
+
+This folder constains all the source code of the qt dependent modules.
+
+We have organized the code by modules. Each folder contains one or more modules.
+
+The following modules are found in each folder:
+
+- Application Framework:
+- Designer.............:
+- Plug-ins.............:
+- Widgets..............:
+
+More Information:
+-----------------
+
+The TerraLib 5 wiki contains a complete explanation about
+the internals of each module and the codebase organization:
+http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation
+
 ---------------------------------------------
 
                            @-TerraLib Team-@

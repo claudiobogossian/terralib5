@@ -46,6 +46,8 @@ namespace te
       the data type boost::gregorian::date. For more information see the date
       representation defined in ISO 8601:2004 specification.
 
+      \ingroup datatype
+
       \sa DateTime, DateDuration, DatePeriod, TimeDuration, TimeInstant, TimeInstantTZ, TimePeriod, TimePeriodTZ
     */
     class TEDATATYPEEXPORT Date : public DateTimeInstant

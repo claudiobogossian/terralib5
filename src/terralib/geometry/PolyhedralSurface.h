@@ -45,6 +45,8 @@ namespace te
       
       \brief PolyhedralSurface is a contiguous collection of polygons, which share common boundary segments.
 
+      \ingroup geometry
+
       \sa Geometry,
           Point,
           Curve, LineString, LinearRing,

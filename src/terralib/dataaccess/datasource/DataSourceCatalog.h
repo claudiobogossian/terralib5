@@ -62,6 +62,8 @@ namespace te
       \brief It represents the system catalog of a DataSource.
 
       \sa DataSource, Property, DataSetType, Sequence
+
+      \ingroup dataaccess
     */
     class TEDATAACCESSEXPORT DataSourceCatalog : public boost::noncopyable
     {

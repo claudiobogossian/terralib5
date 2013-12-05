@@ -1,8 +1,42 @@
-TO BE DONE: add a note about this module (dependencies and where to find more info)
----------------------------------------------
+        TerraLib 5 - Map Tools Module
+       ===================================
+          
+This folder contains the source code of the
+Map Tools module of TerraLib.
 
-                           @-TerraLib Team-@
+Module Dependencies:
+--------------------
+
+This module requires the following modules in order to be built:
+1. Common Runtime
+2. Color
+3. Data Access
+4. Data Type
+5. Filter
+6. Geometry
+7. GML
+8. Memory
+9. Raster
+10. SRS
+11. Symbology Encoding
+12. Xlink
+
+The third-party software needed:
+1. Boost
+2. Gdal
+
+The third-party dependencies may be turned off.
+
+More Information:
+-----------------
+
+The TerraLib 5 wiki contains a complete explanation about
+the internals of this module:
+http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:maptools
+
+
+      ---------------------------------------------------------
+             TerraLib Team <terralib-team@dpi.inpe.br>
             National Institute For Space Research - INPE
       P. BOX 515 - Sao Jose dos Campos - SP - Brazil, 12201-970
-                            11/18/2008
-							
+                            11/18/2008 

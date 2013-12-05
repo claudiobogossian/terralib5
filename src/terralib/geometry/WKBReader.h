@@ -56,6 +56,8 @@ namespace te
       
       \brief A class that deserializes a geometry from a valid WKB.
 
+      \ingroup geometry
+
       \sa WKBWriter
     */
     class TEGEOMEXPORT WKBReader : public te::common::Static

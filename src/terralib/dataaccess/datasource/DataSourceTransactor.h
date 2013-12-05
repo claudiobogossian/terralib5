@@ -79,6 +79,8 @@ namespace te
       the same transactor between threads because its methods are not thread-safe. Instead,
       use one transactor per thread.
 
+      \ingroup dataaccess
+
       \sa DataSource, DataSet, Query, PreparedQuery, BatchExecutor
   */
     class TEDATAACCESSEXPORT DataSourceTransactor : public boost::noncopyable 

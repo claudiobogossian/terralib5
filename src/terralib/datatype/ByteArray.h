@@ -44,6 +44,8 @@ namespace te
 
       A byte array can be used as a container for binary data.
 
+      \ingroup datatype
+
       \sa AbstractData, DataType, DateTime, SimpleData, CompositeData
     */
     class TEDATATYPEEXPORT ByteArray : public AbstractData

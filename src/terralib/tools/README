@@ -1,4 +1,24 @@
-TO BE DONE: add a note about this module (dependencies and where to find more info)
+			  TerraLib 5 - Tools
+          ========================
+
+This folder constains all the source code of the utility applications that can be run in command line
+ interface (CLI) or graphical enviroments (GUI):.
+
+We have organized the code by modules.
+
+The following modules are found in each folder:
+
+- DSCopy.......:
+- DSInfo.......:
+- RasterManager:
+
+More Information:
+-----------------
+
+The TerraLib 5 wiki contains a complete explanation about
+the internals of each module and the codebase organization:
+http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:tools
+
 ---------------------------------------------
 
                            @-TerraLib Team-@

@@ -44,6 +44,8 @@ namespace te
 
       \brief A base class for a compound property (non-atomic properties).
 
+      \ingroup datatype
+
       \sa  Property, SimpleProperty, NumericProperty, StringProperty, ArrayProperty, DateTimeProperty
     */
     class TEDATATYPEEXPORT CompositeProperty : public Property

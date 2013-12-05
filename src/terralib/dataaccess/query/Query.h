@@ -39,6 +39,8 @@ namespace te
       
       \brief A Query is independent from the data source language/dialect.
 
+      \ingroup dataaccess
+
       \sa Select, Insert, Update, Delete, CreateDataSet, DropDataSet, AlterDataSet, CreateIndex, DropIndex
     */
     class TEDATAACCESSEXPORT Query : public te::common::BaseVisitable<QueryVisitor>

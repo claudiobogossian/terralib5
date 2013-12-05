@@ -39,6 +39,8 @@ namespace te
 
       \brief A point with z-coordinate value.
 
+      \ingroup geometry
+
       \sa Geometry,
           AbstractPoint, Point, PointM, PointZM, PointKd,
           Curve, LineString, LinearRing,

@@ -47,6 +47,8 @@ namespace te
       
       \brief A class that serializes a geometry to the WKT format.
 
+      \ingroup geometry
+
       \sa WKTReader
     */
     class TEGEOMEXPORT WKTWriter : public Visitor, public boost::noncopyable

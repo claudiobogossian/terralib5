@@ -41,6 +41,7 @@ namespace te
 
       \brief CompoundCurve is a curve that may have circular and linear segments.
 
+      \ingroup geometry
 
       \sa Geometry,
           AbstractPoint, Point, PointM, PointZ, PointZM, PointKd,

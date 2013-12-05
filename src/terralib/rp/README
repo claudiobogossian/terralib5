@@ -1,8 +1,38 @@
-TO BE DONE: add a note about this module (dependencies and where to find more info)
----------------------------------------------
+       TerraLib 5 - Raster Processing Module
+       ===================================
+          
+This folder contains the source code of the
+Raster Processing module of TerraLib.
 
-                           @-TerraLib Team-@
+Module Dependencies:
+--------------------
+
+This module requires the following modules in order to be built:
+1. Common Runtime
+2. Classification
+3. Data Access
+4. Data Type
+5. Memory
+6. Geometry
+7. Raster
+8. SRS
+9. Statiscs
+
+The third-party software needed:
+1. Boost
+
+The third-party dependencies may be turned off.
+
+More Information:
+-----------------
+
+The TerraLib 5 wiki contains a complete explanation about
+the internals of this module:
+http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:rp
+
+
+      ---------------------------------------------------------
+             TerraLib Team <terralib-team@dpi.inpe.br>
             National Institute For Space Research - INPE
       P. BOX 515 - Sao Jose dos Campos - SP - Brazil, 12201-970
                             11/18/2008
-							

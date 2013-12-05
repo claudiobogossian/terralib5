@@ -39,6 +39,8 @@ namespace te
 
       \brief A point with an associated measure.
 
+      \ingroup geometry
+
       \sa Geometry,
           AbstractPoint, Point, PointZ, PointZM, PointKd,
           Curve, LineString, LinearRing,

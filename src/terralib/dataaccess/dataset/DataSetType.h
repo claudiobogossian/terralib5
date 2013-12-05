@@ -65,6 +65,8 @@ namespace te
  
       \note This class sometimes are referred to as dataset schemas.
 
+      \ingroup dataaccess
+
       \sa DataSet, te::dt::Property, te::dt::CompositeProperty, DataSourceCatalog
     */
     class TEDATAACCESSEXPORT DataSetType : public te::dt::CompositeProperty

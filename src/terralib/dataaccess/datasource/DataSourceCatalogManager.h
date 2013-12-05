@@ -46,6 +46,8 @@ namespace te
 
       \brief This is a singleton for managing all the data source catalog instances available in the system.
 
+      \ingroup dataaccess
+
       \sa DataSource, DataSourceCatalog, te::common::Singleton
     */
     class TEDATAACCESSEXPORT DataSourceCatalogManager : public te::common::ObjectLevelLockable<DataSourceCatalogManager,

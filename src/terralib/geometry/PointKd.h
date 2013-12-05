@@ -41,6 +41,8 @@ namespace te
 
       \brief A k-dimensional point.
 
+      \ingroup geometry
+
       \sa Geometry,
           AbstractPoint, Point, PointM, PointZ, PointZM,
           Curve, LineString, LinearRing, Line, CircularString, CompoundCurve,
