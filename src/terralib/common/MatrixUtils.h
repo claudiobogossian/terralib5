@@ -21,6 +21,8 @@
   \file terralib/common/MatrixUtils.h
 
   \brief Matrix manipulation utils.
+
+  \ingroup common
 */
 
 #ifndef __TERRALIB_COMMON_INTERNAL_MATRIXUTILS_H

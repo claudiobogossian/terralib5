@@ -65,7 +65,7 @@
 
   \brief The data type module implements the type system supported
          by TerraLib for dealing with data that comes from
-         different data sources.
+         different data sources. The main classes/concepts in this module are listed here.
 
     It has an important role in TerraLib
     context since each data source has its own set of data types

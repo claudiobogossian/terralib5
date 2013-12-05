@@ -50,6 +50,8 @@ namespace te
             like an observer of known libraries.
 
       \note This class is based on pimpl idiom.
+
+      \ingroup common
     */
     class TECOMMONEXPORT LibraryManager : public Singleton<LibraryManager>
     {

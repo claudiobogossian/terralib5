@@ -48,13 +48,13 @@ namespace te
       A color scheme catalog contains several
       color scheme groups that can be choosed by the user
       in order to color a given map.
-      
+
+      \ingroup color
+
       \sa ColorScheme, ColorSchemeGroup, ColorSchemeCatalogManager
 
-       Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
-
       \note Any doubts, please, send us an e-mail to help improve the documentation quality!
-     */
+    */
     class TECOLOREXPORT ColorSchemeCatalog
     {
       public:

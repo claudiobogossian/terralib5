@@ -42,6 +42,8 @@ namespace te
     /*!
       \class RGBAColor
 
+      \brief A helper class for 32-bit RGBA (Red-Green-Blue-Alpha channel) color.
+
       Internally the color is represented by an integer of 32-bits as the following:
       <ul>
       <li>bits 0-7: blue</li>
@@ -50,8 +52,8 @@ namespace te
       <li>bits 24-31: alpha. See the macro TE_OPAQUE and TE_TRANSPARENT for the values of totally transparent and totally opaque.</li>
       </ul>
 
-      \brief A helper class for 32-bit RGBA (Red-Green-Blue-Alpha channel) color.
-     */
+      \ingroup color
+    */
     class RGBAColor
     {
       public:

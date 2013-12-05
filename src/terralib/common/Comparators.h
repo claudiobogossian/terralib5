@@ -21,6 +21,8 @@
   \file terralib/common/Comparators.h
 
   \brief Several functor types for comparing objects.
+
+  \ingroup common
  */
 
 #ifndef __TERRALIB_COMMON_INTERNAL_COMPARATORS_H

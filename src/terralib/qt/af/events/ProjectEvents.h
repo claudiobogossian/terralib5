@@ -43,8 +43,6 @@ namespace te
           \struct ProjectAdded
 
           \brief It indicates that a new project was created.
-
-          \ingroup afevents
         */
         struct ProjectAdded : public Event
         {

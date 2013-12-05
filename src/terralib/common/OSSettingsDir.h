@@ -51,6 +51,8 @@ namespace te
       \todo This class must be revisited! On Windows it uses some routines that we must pay
             a special attention, they can retrieve wrong places depending on the policies
             installed on the machine.
+
+      \ingroup common
     */
     class TECOMMONEXPORT OSSettingsDir : public Singleton<OSSettingsDir>
     {

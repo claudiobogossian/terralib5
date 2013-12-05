@@ -50,6 +50,8 @@ namespace te
       <li>if not found, it checks for in the user data dir (plataform dependent!)</li>
       <li>and finally it uses a location defined by an environment variable TERRALIB_DIR_ENVVAR and a sub-dir defined by the macro TERRALIB_CONFIG_DIR</li>
       </ul>
+
+      \ingroup common
     */
     class TECOMMONEXPORT UserApplicationSettings
       : public ApplicationSettings,

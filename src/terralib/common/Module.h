@@ -44,6 +44,8 @@ namespace te
       <li>start the logger configuration if TerraLib is configured to have it initialized automatically.</li>
       <li>registering the Common Runtime multilingual support.</li>
       </ul>
+
+      \ingroup common
     */
     class Module : public te::common::Singleton<Module>
     {

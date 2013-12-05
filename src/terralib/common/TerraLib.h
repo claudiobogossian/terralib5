@@ -64,6 +64,8 @@
 
   Notice the calling to the finalize function at the end of the example program,
   it is necessary in order to close/release any pending resource initialized by the modules.
+
+  \ingroup common
 */
 class TECOMMONEXPORT TerraLib : public te::common::Singleton<TerraLib>
 {

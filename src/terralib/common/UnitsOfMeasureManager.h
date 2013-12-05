@@ -46,9 +46,11 @@ namespace te
      \brief A singleton class for dealing with units of measure in the TerraLib environment.
      
      This class manages a unique catalogue of known units of measure within the TerraLib environment.
+
+     \ingroup common
      
      \sa UnitOfMeasure
-     */
+    */
     class TECOMMONEXPORT UnitsOfMeasureManager : public te::common::Singleton<UnitsOfMeasureManager>
     {
       friend class te::common::Singleton<UnitsOfMeasureManager>;
