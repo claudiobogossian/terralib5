@@ -147,15 +147,15 @@ bool te::vp::Aggregation(const std::string& inDataset,
   te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outputDataSetType.get(), outDatasource->getCapabilities());
   te::da::DataSetType* dsTypeResult = converter->getResult();
   std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(memDataset.get(), converter));
-  
+
   std::map<std::string, std::string> options;
   // create the dataset
   outDatasource->createDataSet(dsTypeResult, options);
-  
+
   // copy from memory to output datasource
   memDataset->moveBeforeFirst();
   outDatasource->add(dsTypeResult->getName(),memDataset.get(), options);
-  
+
   // create the primary key if it is possible
   if (outDatasource->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
   {
@@ -323,6 +323,7 @@ bool AggregationMemory(const std::string& inDataset,
   task.useTimer(true);
   
   std::auto_ptr<te::mem::DataSetItem> dataSetItem(new te::mem::DataSetItem(inputDataSet.get()));
+  int i=0;
   while(itGroupValues != groupValues.end())
   {
     std::string value = itGroupValues->first.c_str();
@@ -332,42 +333,45 @@ bool AggregationMemory(const std::string& inDataset,
     std::map<std::string, double> functionResultDoubleMap = CalculateDoubleGroupingFunctions(statisticalSummary, itGroupValues->second);
     
     te::gm::Geometry* geometry = te::vp::GetGeometryUnion(itGroupValues->second, geomIdx, outGeoType);
-    
-    te::mem::DataSetItem* outputDataSetItem = new te::mem::DataSetItem(outputDataSet);
-    
-    outputDataSetItem->setString(0, value);
-    outputDataSetItem->setInt32(1, aggregationCount);
-    
-    if(!functionResultStringMap.empty())
+
+    if(geometry)
     {
-      std::map<std::string, std::string>::iterator itFuncResultString = functionResultStringMap.begin();
-      
-      while(itFuncResultString != functionResultStringMap.end())
+      te::mem::DataSetItem* outputDataSetItem = new te::mem::DataSetItem(outputDataSet);
+    
+      outputDataSetItem->setString(0, value);
+      outputDataSetItem->setInt32(1, aggregationCount);
+    
+      if(!functionResultStringMap.empty())
       {
-        if(te::da::GetPropertyPos(outputDataSet, itFuncResultString->first.c_str()) < outputDataSet->getNumProperties())
-          outputDataSetItem->setString(itFuncResultString->first.c_str(), itFuncResultString->second.c_str());
-        
-        ++itFuncResultString;
-      }
-    }
-    
-    if(!functionResultDoubleMap.empty())
-    {
-      std::map<std::string, double>::iterator itFuncResultDouble = functionResultDoubleMap.begin();
+        std::map<std::string, std::string>::iterator itFuncResultString = functionResultStringMap.begin();
       
-      while(itFuncResultDouble != functionResultDoubleMap.end())
-      {
-        if(te::da::GetPropertyPos(outputDataSet, itFuncResultDouble->first.c_str()) < outputDataSet->getNumProperties())
-          outputDataSetItem->setDouble(itFuncResultDouble->first.c_str(), itFuncResultDouble->second);
+        while(itFuncResultString != functionResultStringMap.end())
+        {
+          if(te::da::GetPropertyPos(outputDataSet, itFuncResultString->first.c_str()) < outputDataSet->getNumProperties())
+            outputDataSetItem->setString(itFuncResultString->first.c_str(), itFuncResultString->second.c_str());
         
-        ++itFuncResultDouble;
+          ++itFuncResultString;
+        }
       }
+    
+      if(!functionResultDoubleMap.empty())
+      {
+        std::map<std::string, double>::iterator itFuncResultDouble = functionResultDoubleMap.begin();
+      
+        while(itFuncResultDouble != functionResultDoubleMap.end())
+        {
+          if(te::da::GetPropertyPos(outputDataSet, itFuncResultDouble->first.c_str()) < outputDataSet->getNumProperties())
+            outputDataSetItem->setDouble(itFuncResultDouble->first.c_str(), itFuncResultDouble->second);
+        
+          ++itFuncResultDouble;
+        }
+      }
+    
+      outputDataSetItem->setGeometry("geom", geometry);
+    
+      outputDataSet->add(outputDataSetItem);
     }
-    
-    outputDataSetItem->setGeometry("geom", geometry);
-    
-    outputDataSet->add(outputDataSetItem);
-    
+
     ++itGroupValues;
     
     if(task.isActive() == false)
