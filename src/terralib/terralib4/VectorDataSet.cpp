@@ -312,7 +312,23 @@ std::auto_ptr<te::dt::Array> terralib4::VectorDataSet::getArray(std::size_t i) c
   return std::auto_ptr<te::dt::Array>(0);
 }
 
-bool terralib4::VectorDataSet::isNull(std::size_t /*i*/) const
+bool terralib4::VectorDataSet::isNull(std::size_t i) const
 {
+  std::string val;
+  int ii = static_cast<int>(i);
+
+  m_instance.getPropertyValue(val, ii);
+
+  if(val.empty())
+  {
+    std::vector<TeGeometry*> geoms;
+    m_instance.getGeometry(geoms);
+
+    if(geoms.empty())
+      return true;
+    else
+      return false;
+  }
+
   return false;
 }
