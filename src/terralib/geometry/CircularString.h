@@ -46,6 +46,8 @@ namespace te
 
       \note A circular string must have an odd number of points greated than 1.
 
+      \ingroup geometry
+
       \sa Geometry,
           AbstractPoint, Point, PointM, PointZ, PointZM, PointKd,
           Curve, Line, LineString, LinearRing, CompoundCurve,

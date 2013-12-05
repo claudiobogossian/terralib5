@@ -39,7 +39,7 @@
 /*!
   \defgroup dataaccess Data Access
 
-  \brief This module provides a basic framework for accessing data.
+  \brief The data access module provides a basic framework for accessing data.
 
   It is designed towards data interoperability. You can
   write your own driver for accessing a different data source.

@@ -48,6 +48,8 @@ namespace te
       Some of the data type codes are reserved for the built-in data
       types of TerraLib (they can be seen in defines).
 
+      \ingroup datatype
+
       \sa DataTypeManager, AbstractData
     */
     class TEDATATYPEEXPORT DataType

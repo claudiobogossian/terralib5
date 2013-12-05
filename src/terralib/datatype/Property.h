@@ -50,6 +50,8 @@ namespace te
       <li>Any restrictions on the values of the property;</li>
       </ul>
 
+      \ingroup datatype
+
       \sa SimpleProperty, CompositeProperty, NumericProperty, StringProperty, DateTimeProperty
 
       \todo We must worry about write methods. To make classes safer we need to define pure abstract classes and implement them in the drivers.

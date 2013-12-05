@@ -60,17 +60,25 @@
 #include "datatype/TimePeriodTZ.h"
 #include "datatype/Utils.h"
 
+/*!
+  \defgroup datatype Data Type
+
+  \brief The data type module implements the type system supported
+         by TerraLib for dealing with data that comes from
+         different data sources.
+
+    It has an important role in TerraLib
+    context since each data source has its own set of data types
+    used for representing and storing data. This module works
+    integrated with the dataaccess module.
+
+    The namespace associated to the Data Type module is te::dt. To know more about it, see the te::dt namespace documentation.
+*/
+
 namespace te
 {
   /*!
     \brief Namespace for the Data Type module of TerraLib.
-
-    The data type module implements the type system supported
-    by TerraLib for dealing with data that comes from
-    different data sources. It has an important role in TerraLib
-    context since each data source has its own set of data types
-    used for representing and storing data. This module works
-    integrated with the data access module.
   */
   namespace dt
   {

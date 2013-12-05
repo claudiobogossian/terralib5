@@ -34,6 +34,8 @@ namespace te
       \struct Coord2D
 
       \brief An utility struct for representing 2D coordinates.
+
+      \ingroup geometry
     */
     struct Coord2D
     {

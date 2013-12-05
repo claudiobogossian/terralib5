@@ -41,6 +41,8 @@ namespace te
 
       \brief It is a collection of other geometric objects.
 
+      \ingroup geometry
+
       \sa Geometry,
           Point,
           Curve, LineString, LinearRing,

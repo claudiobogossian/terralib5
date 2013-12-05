@@ -58,6 +58,8 @@ namespace te
       Specification - SFS (Simple Feature Access - Part 1: Common Architecture)
       and ISO SQL/MM Spatial.
 
+      \ingroup geometry
+
       \sa AbstractPoint, Point, PointM, PointZ, PointZM, PointKd,
           Curve, LineString, LinearRing, Line, CircularString, CompoundCurve,
           Surface, CurvePolygon, Polygon, Triangle, PolyhedralSurface, TIN,

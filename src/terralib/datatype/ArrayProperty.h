@@ -38,6 +38,8 @@ namespace te
 
       \brief The type for variable-length multidimensional arrays.
 
+      \ingroup datatype
+
       \sa Property, SimpleProperty, NumericProperty, StringProperty, DateTimeProperty, CompositeProperty
     */
     class TEDATATYPEEXPORT ArrayProperty : public SimpleProperty

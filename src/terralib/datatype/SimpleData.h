@@ -51,6 +51,8 @@ namespace te
       <li> T must be used with output streams via operator <<.</li>
       </ul>
 
+      \ingroup datatype
+
       \sa AbstractData, CompositeData, DataType, DateTime, ByteArray
     */
     template<class T, int typeCode = te::dt::UNKNOWN_TYPE> class SimpleData : public AbstractData

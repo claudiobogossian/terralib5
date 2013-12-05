@@ -36,6 +36,9 @@ namespace te
 // Forward declarations
     class AbstractData;
 
+    /*!
+      \brief The definition of the data type converter.
+    */
     typedef boost::function1<AbstractData*, AbstractData*> DataTypeConverter;
 
   } // end namespace dt

@@ -39,6 +39,8 @@ namespace te
 
       \brief The type for date and time types: date, date period, date duration, time duration, time instant, time period, time instant with time zone or time period with time zone.
 
+      \ingroup datatype
+
       \sa SimpleProperty, Property, NumericProperty, ArrayProperty, StringProperty, CompositeProperty
     */
     class TEDATATYPEEXPORT DateTimeProperty : public SimpleProperty

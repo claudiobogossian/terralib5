@@ -38,6 +38,8 @@ namespace te
       
       \brief MultiLineString is a MultiCurve whose elements are LineStrings.
 
+      \ingroup geometry
+
       \sa Geometry,
           AbstractPoint, Point, PointM, PointZ, PointZM, PointKd,
           Curve, LineString, LinearRing, Line, CircularString, CompoundCurve, 

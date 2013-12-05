@@ -45,6 +45,8 @@ namespace te
       \class Envelope
 
       \brief An Envelope defines a 2D rectangular region.
+
+      \ingroup geometry
      */
     class TEGEOMEXPORT Envelope
     {
