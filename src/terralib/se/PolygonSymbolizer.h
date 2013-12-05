@@ -53,6 +53,8 @@ namespace te
       on top of the fill.
       A missing Stroke element means that the geometry will not be stroked.
 
+      \ingroup se
+
       \sa Symbolizer, Fill, Stroke, te::fe::PropertyName, Displacement, ParameterValue, ImageOutline
     */
     class TESEEXPORT PolygonSymbolizer : public Symbolizer

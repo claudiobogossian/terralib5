@@ -64,6 +64,8 @@ namespace te
       one or more attribute values.
 
       This interface should be implemented by drivers that provide the real access to raster data.
+
+      \ingroup rst
     */
     class TERASTEREXPORT Raster: public te::dt::AbstractData
     {

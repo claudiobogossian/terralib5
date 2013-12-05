@@ -58,6 +58,8 @@ namespace te
       is following the "painters model" with the first item in a list
       being the first item plotted and hence being on the "bottom".
 
+      \ingroup se
+
       \sa FeatureTypeStyle, CoverageStyle, Description, Rule
     */
     class TESEEXPORT Style : public te::common::BaseVisitable<Visitor>, public boost::noncopyable

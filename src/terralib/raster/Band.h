@@ -56,6 +56,8 @@ namespace te
       This implementation defines a set of information commonly used to describe any
       raster.
 
+      \ingroup rst
+
       \sa Raster, BandProperty
     */
     class TERASTEREXPORT Band
