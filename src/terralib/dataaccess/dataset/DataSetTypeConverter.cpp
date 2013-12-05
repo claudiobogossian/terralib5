@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../common/Translator.h"
+#include "../../dataaccess/dataset/PrimaryKey.h"
 #include "../datasource/DataSourceCapabilities.h"
 #include "../Exception.h"
 #include "AttributeConverterManager.h"
@@ -84,6 +85,19 @@ te::da::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type, const Data
         //add(propertyName, hintDataType, i); TODO: Utility method that returns a te::dt::Property* given a name and a data type.
       }
     }
+  }
+
+  te::da::PrimaryKey* pk = type->getPrimaryKey();
+  if(pk)
+  {
+    te::da::PrimaryKey* outPk = new te::da::PrimaryKey(pk->getName(), m_outDataSetType);
+
+    std::vector<te::dt::Property*> pkProps = pk->getProperties();
+    std::vector<te::dt::Property*> outPkProps;
+    for(std::size_t i = 0; i < pkProps.size(); ++i)
+      outPkProps.push_back(m_outDataSetType->getProperty(pkProps[i]->getName()));
+
+    outPk->setProperties(outPkProps);
   }
 }
 
