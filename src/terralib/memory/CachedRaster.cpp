@@ -28,6 +28,7 @@
 #include "CachedBand.h"
 #include "CachedRaster.h"
 #include "Exception.h"
+#include "../raster/Grid.h"
 
 te::mem::CachedRaster::CachedRaster()
 {
@@ -41,7 +42,7 @@ te::mem::CachedRaster::CachedRaster( te::rst::Grid* grid, te::common::AccessPoli
 te::mem::CachedRaster::CachedRaster( const te::rst::Raster& rhs, 
   const unsigned char maxMemPercentUsed, 
   const unsigned int dataPrefetchThreshold )
-: te::rst::Raster( rhs )
+: te::rst::Raster( new te::rst::Grid( *rhs.getGrid() ), rhs.getAccessPolicy() )
 {
   if( ! m_blocksManager.initialize( rhs, maxMemPercentUsed, dataPrefetchThreshold) )
     throw Exception(TR_MEMORY("Cannot initialize the blocks menager") );
@@ -54,7 +55,7 @@ te::mem::CachedRaster::CachedRaster( const te::rst::Raster& rhs,
 te::mem::CachedRaster::CachedRaster( const unsigned int maxNumberOfCacheBlocks,
   const te::rst::Raster& rhs, 
   const unsigned int dataPrefetchThreshold )
-: te::rst::Raster( rhs )
+: te::rst::Raster( new te::rst::Grid( *rhs.getGrid() ), rhs.getAccessPolicy() )
 {
   if( ! m_blocksManager.initialize( maxNumberOfCacheBlocks, rhs, 
     dataPrefetchThreshold) )
