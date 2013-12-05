@@ -37,6 +37,8 @@ namespace te
       \class LoggedException
 
       \brief A class that automatically logs the exception message.
+
+      \ingroup common
      */
     class TECOMMONEXPORT LoggedException : public virtual Exception
     {

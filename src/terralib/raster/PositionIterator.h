@@ -50,6 +50,8 @@ namespace te
 
       \brief This class is the base for implementing ways to navigate over the band with spatial restriction,
              e.g. through a line, inside a bounding box or polygon, etc.
+
+      \ingroup rst
     */
     template<class T> class AbstractPositionIterator
     {
@@ -135,6 +137,8 @@ namespace te
 
       \brief This class implements the strategy to iterate with spatial restriction,
              the iteration occurs inside a polygon.
+
+      \ingroup rst
     */
     template<class T> class PolygonIterator: public AbstractPositionIterator<T>
     {
@@ -217,6 +221,8 @@ namespace te
 
       \brief This class implements the strategy to iterate with spatial restriction,
              the iteration occurs inside a line.
+
+      \ingroup rst
     */
     template<class T> class LineIterator: public AbstractPositionIterator<T>
     {
@@ -278,6 +284,8 @@ namespace te
 
       \brief This class implements the strategy to iterate with spatial restriction,
              the iteration occurs inside a vector of points.
+
+      \ingroup rst
     */
     template<class T> class PointSetIterator: public AbstractPositionIterator<T>
     {

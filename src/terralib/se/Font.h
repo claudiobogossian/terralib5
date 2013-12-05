@@ -56,6 +56,8 @@ namespace te
       <li>font-size</li>
       </ul>
 
+      \ingroup se
+
       \sa TextSymbolizer
     */
     class TESEEXPORT Font : public boost::noncopyable

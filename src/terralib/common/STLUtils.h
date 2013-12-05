@@ -21,6 +21,8 @@
   \file terralib/common/STLUtils.h
 
   \brief This file contains several utility functions for dealing with STL containers.
+
+  \ingroup common
 */
 
 #ifndef __TERRALIB_COMMON_INTERNAL_STLUTILS_H

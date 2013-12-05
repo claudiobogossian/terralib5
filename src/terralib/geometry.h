@@ -72,7 +72,7 @@
 /*!
   \defgroup geometry Geometry
 
-  \brief This module implements the vector geometry support of TerraLib.
+  \brief This module implements the vector geometry support of TerraLib. The main classes/concepts in this module are listed here.
 
   The vector geometry module of TerraLib is OGC compliant.
   So, the majority documentation of this module was extracted from

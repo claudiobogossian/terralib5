@@ -66,8 +66,6 @@ namespace te
 
         It is used to listen events sent by the application framework.
         It is a proxy for the te::qt::widgets::LayerExplorer.
-
-        \ingroup afconnector
       */
       class TEQTAFEXPORT LayerExplorer : public QObject
       {

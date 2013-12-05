@@ -59,6 +59,8 @@ namespace te
       If you need to initialize the objects created by the factories try to use
       a derived class from ParameterizedAbstractFactory instead.
 
+      \ingroup common
+
       \sa ParameterizedAbstractFactory, FactoryDictionary
 
       \note This class is not thread-safe for multiple writers.

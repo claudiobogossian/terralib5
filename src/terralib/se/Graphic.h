@@ -59,6 +59,8 @@ namespace te
       outline, with a size of 6 pixels, unless an
       explicit Size is specified.
 
+      \ingroup se
+
       \sa Rule, PointSymbolizer, Stroke, GraphicStroke, Mark, ExternalGraphic, Displacement, ParameterValue, AnchorPoint
     */
     class TESEEXPORT Graphic : public boost::noncopyable

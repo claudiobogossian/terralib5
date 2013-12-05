@@ -54,6 +54,8 @@ namespace te
       of this class refers to a particular dimension. This implementation defines
       a set of information commonly used to describe any raster.
 
+      \ingroup rst
+
       \sa RasterProperty, Raster, Band
     */
     class TERASTEREXPORT BandProperty

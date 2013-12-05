@@ -21,6 +21,8 @@
   \file terralib/common/WinUtils.h
 
   \brief This file contains several utility functions when dealing with Microsoft Windows specific API.
+
+  \ingroup common
 */
 
 #ifndef __TERRALIB_COMMON_INTERNAL_WINUTILS_H

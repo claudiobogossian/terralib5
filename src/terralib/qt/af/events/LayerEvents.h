@@ -57,8 +57,6 @@ namespace te
           \struct LayerAdded
 
           \brief This event signals that a new layer was created.
-
-          \ingroup afevents
          */
         struct LayerAdded : public Event
         {
@@ -83,8 +81,6 @@ namespace te
           \struct ItemOfLayerRemoved
 
           \brief This event signals that a item belonging to a layer will be removed from the layer explorer.
-
-          \ingroup afevents
          */
         struct ItemOfLayerRemoved : public Event
         {
@@ -106,8 +102,6 @@ namespace te
           \struct LayerRemoved
 
           \brief This event signals that a layer is to be removed from the layer explorer.
-
-          \ingroup afevents
          */
         struct LayerRemoved : public Event
         {
@@ -129,8 +123,6 @@ namespace te
           \struct LayerVisibilityChanged
 
           \brief This event signals that the layer visibility has changed.
-
-          \ingroup afevents
         */
         struct LayerVisibilityChanged : public Event
         {
@@ -156,8 +148,6 @@ namespace te
           \struct LayerSelected
 
           \brief This event indicates that the layer has been selected.
-        
-          \ingroup afevents
         */
         struct LayerSelected : public Event
         {
@@ -227,8 +217,6 @@ namespace te
           \struct LayerStyleSelected
 
           \brief This event indicates that the layer style was selected on the layer explorer.
-        
-          \ingroup afevents
         */
         struct LayerStyleSelected : public Event
         {
@@ -250,8 +238,6 @@ namespace te
           \struct LayerPopUpAddAction
 
           \brief This event is used to add a action in a layer tree pop up
-        
-          \ingroup afevents
         */
         struct LayerPopUpAddAction : public Event
         {
@@ -279,8 +265,6 @@ namespace te
           \struct LayerPopUpRemoveAction
 
           \brief This event is used to remove a action in a layer tree pop up
-        
-          \ingroup afevents
         */
         struct LayerPopUpRemoveAction : public Event
         {
@@ -302,8 +286,6 @@ namespace te
           \struct GetLayerSelected
 
           \brief This event is used to get a single layer selected in layer tree
-        
-          \ingroup afevents
         */
         struct GetLayerSelected : public Event
         {

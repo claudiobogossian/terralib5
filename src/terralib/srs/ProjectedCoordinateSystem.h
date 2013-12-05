@@ -37,13 +37,19 @@
 
 namespace te
 {
-	namespace srs
-	{
+  namespace srs
+  {
     class GeographicCoordinateSystem;
+
     /*!
-     \class ProjectedCoordinateSystem
-     \brief A Projected Coordinate System (PROJCS).
-     A coordinate reference system that is based on a geographic CRS and then uses a map projection to convert the coordinates to a plane.
+    
+      \class ProjectedCoordinateSystem
+
+      \brief A Projected Coordinate System (PROJCS).
+
+      A coordinate reference system that is based on a geographic CRS and then uses a map projection to convert the coordinates to a plane.
+
+      \ingroup srs
      */
     class TESRSEXPORT ProjectedCoordinateSystem : public SpatialReferenceSystem
     {

@@ -57,6 +57,8 @@ namespace te
       Normalize, Histogram, or GammaValue are selected in a ContrastEnhancement,
       then no enhancement is performed.
 
+      \ingroup se
+
       \sa SelectedChannel, RasterSymbolizer
     */
     class TESEEXPORT ContrastEnhancement : public boost::noncopyable

@@ -60,6 +60,8 @@ namespace te
       If neither a GraphicFill nor GraphicStroke element
       is given, then the line Symbolizer will render a solid color.
 
+      \ingroup se
+
       \sa LineSymbolizer, Graphic, GraphicStroke, Mark
     */
     class TESEEXPORT Stroke : public boost::noncopyable

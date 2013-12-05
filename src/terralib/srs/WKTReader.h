@@ -45,6 +45,8 @@ namespace te
       \class WKTReader
       
       \brief A class that deserializes a SRS from a valid WKT.
+
+      \ingroup srs
     */
     class TESRSEXPORT WKTReader : public te::common::Static
     {

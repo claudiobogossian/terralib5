@@ -43,8 +43,6 @@ namespace te
           \struct TableAlternatingColorsChanged
 
           \brief This event signals that table has alternating row colors.
-
-          \ingroup afevents
          */
         struct TableAlternatingColorsChanged : public Event
         {

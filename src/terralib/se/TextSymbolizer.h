@@ -53,6 +53,8 @@ namespace te
       use the centroid of the geometry, or any similar
       representative point.
 
+      \ingroup se
+
       \sa Symbolizer, ParameterValue, Font, LabelPlacement, Halo, Fill, te::fe::PropertyName
 
       \note If a Label element is not provided in a TextSymbolizer, then no text shall be rendered.

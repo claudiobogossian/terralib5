@@ -50,7 +50,8 @@ namespace te
       query to a database or to a search engine. This class is 
       based on the MIT code uripp http://uripp.sourceforge.net/ .
 
-     */
+      \ingroup common
+    */
     class TECOMMONEXPORT URL
     {
       public:

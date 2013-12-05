@@ -77,6 +77,8 @@ namespace te
       is included at the bottom of the list of sources for
       every Graphic.
 
+      \ingroup se
+
       \sa Graphic, Fill, Stroke, InlineContent
     */
     class TESEEXPORT Mark : public boost::noncopyable

@@ -41,6 +41,8 @@ namespace te
       \struct BandSummary
 
       \brief A summary of a raster band (most statistics).
+
+      \ingroup rst
     */
     struct TERASTEREXPORT BandSummary
     {
