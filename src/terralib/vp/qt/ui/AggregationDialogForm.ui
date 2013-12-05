@@ -10,12 +10,6 @@
     <height>556</height>
    </rect>
   </property>
-  <property name="minimumSize">
-   <size>
-    <width>584</width>
-    <height>556</height>
-   </size>
-  </property>
   <property name="windowTitle">
    <string>Aggregation Operation</string>
   </property>

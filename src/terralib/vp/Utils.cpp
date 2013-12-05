@@ -52,19 +52,18 @@ te::gm::Geometry* te::vp::GetGeometryUnion(const std::vector<te::mem::DataSetIte
   te::gm::Geometry* resultGeometry(0); 
 
   std::auto_ptr<te::gm::Geometry> seedGeometry = items[0]->getGeometry(geomIdx);
-  
+
   if(items.size() < 2)
-  {
-      resultGeometry = seedGeometry.get();
-  }
+    resultGeometry = seedGeometry.release();
+
   if(items.size() == 2)
   {
     std::auto_ptr<te::gm::Geometry> teGeom = items[1]->getGeometry(geomIdx);
 
     if(teGeom->isValid())
-      resultGeometry = seedGeometry->Union(teGeom.get());
+      resultGeometry = seedGeometry->Union(teGeom.release());
     else
-      resultGeometry = seedGeometry.get();
+      resultGeometry = seedGeometry.release();
   }
   if(items.size() > 2)
   {
@@ -72,11 +71,14 @@ te::gm::Geometry* te::vp::GetGeometryUnion(const std::vector<te::mem::DataSetIte
 
     for(std::size_t i = 1; i < items.size(); ++i)
     {
-      if(items[i]->getGeometry(geomIdx)->isValid())
-        teGeomColl->add(items[i]->getGeometry(geomIdx).release());
+      std::auto_ptr<te::gm::Geometry> currentGeom = items[i]->getGeometry(geomIdx);
+
+      if(currentGeom->isValid())
+        teGeomColl->add(currentGeom.release());
     }
 
     resultGeometry = seedGeometry->Union(teGeomColl);
+
   }
 
   if (resultGeometry->getGeomTypeId() != outGeoType)
@@ -87,7 +89,11 @@ te::gm::Geometry* te::vp::GetGeometryUnion(const std::vector<te::mem::DataSetIte
       std::vector<te::gm::Geometry*> geomVec = ((te::gm::GeometryCollection*)resultGeometry)->getGeometries();
       for(std::size_t i = 0; i < geomVec.size(); ++i)
       {
-        gc->add(geomVec[i]);
+        te::gm::GeometryCollection* gcIn = dynamic_cast<te::gm::GeometryCollection*>(geomVec[i]);
+        if(gcIn == 0)
+          gc->add(geomVec[i]);
+        else
+          SplitGeometryCollection(gcIn, gc);
       }
       return gc;
     }
@@ -100,6 +106,19 @@ te::gm::Geometry* te::vp::GetGeometryUnion(const std::vector<te::mem::DataSetIte
   }
   else
     return resultGeometry;
+}
+
+void te::vp::SplitGeometryCollection(te::gm::GeometryCollection* gcIn, te::gm::GeometryCollection* gcOut)
+{
+  std::vector<te::gm::Geometry*> geomVec = ((te::gm::GeometryCollection*)gcIn)->getGeometries();
+  for(std::size_t i = 0; i < geomVec.size(); ++i)
+  {
+    te::gm::GeometryCollection* gc = dynamic_cast<te::gm::GeometryCollection*>(geomVec[i]);
+    if(gc == 0)
+      gcOut->add(geomVec[i]);
+    else
+      SplitGeometryCollection(gc, gcOut);
+  }
 }
 
 std::string te::vp::GetSimpleTableName(std::string fullName)
