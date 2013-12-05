@@ -22,41 +22,37 @@
 #
 # ----------------------------------------------------------------------------
 # The following variables are set if ADO is found:
-#  ADO_FOUND         - Set to true when ADO is found.
-#  ADO_INCLUDE_DIR  - Include directories for ADO
-#  ADO_LIBRARIES     - The ADO libraries.
+#  ADOTL4_FOUND         - Set to true when ADO is found.
+#  ADOTL4_INCLUDE_DIR  - Include directories for ADO
 #
 
 cmake_minimum_required(VERSION 2.8)
 
 # Find path - tries to find *.h in paths hard-coded by the script
-FIND_PATH(ADO_INCLUDE_DIR 
-   NAMES msado26.tlb
-   PATHS $ENV{T4_DEPS_DIR}/bin/win32-vs2010 "c:/windows/system" "C:/Program Files/Common Files/System/ado" "C:/Arquivos de Programas/Arquivos Comuns/System/ado"
+FIND_PATH (ADOTL4_MSADO26_INCLUDE 
+		   NAMES msado26.tlb
+		   PATHS "C:/Program Files (x86)/Common Files/System/ado" "C:/Program Files/Common Files/System/ado" "C:/Arquivos de Programas (x86)/Arquivos Comuns/System/ado" "C:/Arquivos de Programas/Arquivos Comuns/System/ado"
 )
 
-FIND_PATH(OLE_INCLUDE_DIR 
-   NAMES oledb32.dll
-   PATHS $ENV{T4_DEPS_DIR}/bin/win32-vs2010 "c:/windows/system" "C:/Program Files/Common Files/System/Ole DB" "C:/Arquivos de Programas/Arquivos Comuns/System/Ole DB"
+FIND_PATH (ADOTL4_OLE_INCLUDE 
+           NAMES oledb32.dll
+           PATHS "C:/Program Files (x86)/Common Files/System/Ole DB" "C:/Program Files/Common Files/System/Ole DB" "C:/Arquivos de Programas (x86)/Arquivos Comuns/System/Ole DB" "C:/Arquivos de Programas/Arquivos Comuns/System/Ole DB"
 )
 
-# Find library - - tries to find *.a,*.so,*.dylib in paths hard-coded by the script
-
-FIND_FILE ( 
-  ADO_LIBRARY
-  NAMES msadox.dll
-  PATHS $ENV{T4_DEPS_DIR}/bin/win32-vs2010 "c:/windows/system" "C:/Program Files/Common Files/System/ado" "C:/Arquivos de Programas/Arquivos Comuns/System/ado"
+FIND_PATH (ADOTL4_MSADOX_INCLUDE
+		   NAMES msadox.dll
+           PATHS "C:/Program Files (x86)/Common Files/System/ado" "C:/Program Files/Common Files/System/ado" "C:/Arquivos de Programas (x86)/Arquivos Comuns/System/ado" "C:/Arquivos de Programas/Arquivos Comuns/System/ado"
 )
 
 # Export include and library path for linking with other libraries
 
-list (APPEND ADO_INC_DIRS ${ADO_INCLUDE_DIR} ${OLE_INCLUDE_DIR} )
+list (APPEND ADOTL4_INCLUDE_DIR ${ADOTL4_MSADO26_INCLUDE} ${ADOTL4_OLE_INCLUDE} ${ADOTL4_MSADOX_INCLUDE})
 
-IF ( ADO_INCLUDE_DIR  AND ADO_LIBRARY AND OLE_INCLUDE_DIR )
-	SET(ADO_FOUND TRUE)
-ELSE ( ADO_INCLUDE_DIR AND ADO_LIBRARY AND OLE_INCLUDE_DIR )
-	MESSAGE("Could NOT find ADO library")
-	SET( ADO_FOUND FALSE )
-ENDIF ( ADO_INCLUDE_DIR AND ADO_LIBRARY AND OLE_INCLUDE_DIR)
+IF ( ADOTL4_INCLUDE_DIR  AND ADOTL4_MSADO26_INCLUDE AND ADOTL4_OLE_INCLUDE AND ADOTL4_MSADOX_INCLUDE )
+	SET(ADOTL4_FOUND TRUE)
+ELSE ( ADOTL4_INCLUDE_DIR  AND ADOTL4_MSADO26_INCLUDE AND ADOTL4_OLE_INCLUDE AND ADOTL4_MSADOX_INCLUDE )
+	MESSAGE("Could NOT find ADOTL4 library")
+	SET( ADOTL4_FOUND FALSE )
+ENDIF ( ADOTL4_INCLUDE_DIR  AND ADOTL4_MSADO26_INCLUDE AND ADOTL4_OLE_INCLUDE AND ADOTL4_MSADOX_INCLUDE )
 
-MARK_AS_ADVANCED( ADO_LIBRARY ADO_INCLUDE_DIR OLE_INCLUDE_DIR )
+MARK_AS_ADVANCED( ADOTL4_MSADO26_INCLUDE ADOTL4_OLE_INCLUDE ADOTL4_MSADOX_INCLUDE )

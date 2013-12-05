@@ -206,7 +206,12 @@ const std::vector<te::color::RGBAColor>& te::color::ColorBar::getLowerMeanSlices
 
   int i, j;
   RGBAColor c;
-  double d = ((double)(m_barSize-1) / (double)(n-1)) / 2.;
+  double d;
+
+  if(n == 1)
+    d = 1;
+  else
+    d = ((double)(m_barSize-1) / (double)(n-1)) / 2.;
 
   m_colorSliceVec.clear();
 
