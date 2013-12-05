@@ -24,19 +24,15 @@
 */
 
 //TerraLib
-#include "../../../geometry/Geometry.h"
 #include "../../../geometry/Polygon.h"
 #include "../../../geometry/Point.h"
 #include "../../../geometry/Utils.h"
 #include "../../../datatype/DateTime.h"
-#include "../../../datatype/DateTimePeriod.h"
 #include "../../../datatype/DateTimeInstant.h"
 
 //ST
 #include "CoverageSeries.h"
-#include "Coverage.h"
 #include "CoverageSeriesObservation.h"
-#include "../timeseries/TimeSeries.h"
 #include "../interpolator/AbstractCoverageSeriesInterp.h"
 #include "../interpolator/NearestCoverageAtTimeInterp.h"
 

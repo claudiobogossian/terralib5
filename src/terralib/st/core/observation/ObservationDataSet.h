@@ -32,6 +32,7 @@
 
 //TerraLib
 #include "../../../geometry/Envelope.h"
+#include "../../../datatype/DateTimePeriod.h"
 
 // Boost
 #include <boost/noncopyable.hpp>

@@ -26,9 +26,15 @@
 #ifndef __TERRALIB_ST_INTERNAL_COVERAGESERIES_H
 #define __TERRALIB_ST_INTERNAL_COVERAGESERIES_H
 
+//TerraLib
+#include "../../../datatype/DateTimePeriod.h"
+#include "../../../geometry/Geometry.h"
+
 //ST
 #include "../../Config.h"
 #include "../../Enums.h"
+#include "../timeseries/TimeSeries.h"
+#include "Coverage.h"
 #include "CoverageSeriesIterator.h"
 
 //STL
@@ -40,9 +46,9 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 
 // Forward declarations
-namespace te { namespace dt { class DateTimePeriod; class DateTime; } }
+namespace te { namespace dt { class DateTime; } }
 
-namespace te { namespace gm { class Geometry; class Point; } }
+namespace te { namespace gm { class Point; } }
 
 namespace te
 {

@@ -32,6 +32,7 @@
 #include "loader/STDataLoaderFromMemDSFactory.h"
 #include "Config.h"
 #include "Module.h"
+#include "Globals.h"
 
 const te::st::Module& sm_module = te::st::Module::getInstance();
 
