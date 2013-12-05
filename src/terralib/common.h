@@ -58,7 +58,7 @@
 /*!
   \defgroup common Common
 
-  \brief The common module contains the foundation classes and functions for all TerraLib modules. The main classes/concepts in this module are listed here.
+  \brief The common module contains the foundation classes and functions for all TerraLib modules.
 
   The TerraLib Common Module contains the foundation classes and functions that makes the basic support for other TerraLib modules.
   It provides portable and cross platform code not focus exclusively in the geo-spatial domain.
@@ -71,7 +71,8 @@
   
   Besides the classes you will find useful routines for: byte swap, hex-encoding/decoding, platform specific routines, auxiliary functions for STL containers.
 
-  The namespace associated to the Common module is te::common. To know more about it, see the te::common namespace documentation.
+  The main classes/concepts in this module are listed here. The namespace associated to the Common module is te::common.
+  To know more about it, see the te::common namespace documentation.
 */
 
 namespace te

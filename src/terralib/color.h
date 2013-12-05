@@ -43,7 +43,8 @@
 
   By default you can use this module to generate nice colors and manage color catalogs that are suited for your users.
 
-  The namespace associated to the Color module is te::color. To know more about it, see the te::color namespace documentation.
+  The main classes/concepts in this module are listed here. The namespace associated to the Color module is te::color.
+  To know more about it, see the te::color namespace documentation.
 */
 
 namespace te

@@ -40,7 +40,6 @@
   \defgroup rst Raster
 
   \brief This module can be used to manage geographical data with raster representation.
-         The main classes/concepts in this module are listed here.
 
     The TerraLib Raster module provides the base classes foundation for handling geographical data such as remote sensing imagery data.
     The raster data structure can be viewed as a matrix of cells or pixels associated with spatial locations forming a regular grid.
@@ -50,7 +49,8 @@
     We call these implementations: raster drivers. TerraLib provides raster drivers on top of other libraries (e.g. GDAL), DBMS (e.g. PostGIS Raster)
     and an In-Memory implementation.
 
-    The namespace associated to the Raster module is te::rst. To know more about it, see the te::rst namespace documentation.
+    The main classes/concepts in this module are listed here. The namespace associated to the Raster module is te::rst.
+    To know more about it, see the te::rst namespace documentation.
 */
 
 namespace te

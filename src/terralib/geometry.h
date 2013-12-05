@@ -72,7 +72,7 @@
 /*!
   \defgroup geometry Geometry
 
-  \brief This module implements the vector geometry support of TerraLib. The main classes/concepts in this module are listed here.
+  \brief This module implements the vector geometry support of TerraLib.
 
   The vector geometry module of TerraLib is OGC compliant.
   So, the majority documentation of this module was extracted from
@@ -94,7 +94,8 @@
     <li>Serialization routines for common data formats: WKB, WKT, ...</li>
   </ul>
 
-  The namespace associated to the Geometry module is te::gm. To know more about it, see the te::gm namespace documentation.
+  The main classes/concepts in this module are listed here. The namespace associated to the Geometry module is te::gm.
+  To know more about it, see the te::gm namespace documentation.
 */
 
 namespace te

@@ -39,11 +39,12 @@
 /*!
   \defgroup srs Spatial Reference System
 
-  \brief This module implements the concept of spatial reference systems. The main classes/concepts in this module are listed here.
+  \brief This module implements the concept of spatial reference systems.
 
   Basically, the module deals with the representation of Spatial Reference Systems and with the transformation of coordinates between two different systems.
 
-  The namespace associated to the Spatial Reference System module is te::srs. To know more about it, see the te::srs namespace documentation.
+  The main classes/concepts in this module are listed here. The namespace associated to the Spatial Reference System module is te::srs.
+  To know more about it, see the te::srs namespace documentation.
 */
 
 namespace te

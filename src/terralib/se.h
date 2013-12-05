@@ -81,14 +81,14 @@
 /*!
   \defgroup se Symbology Encoding
 
-  \brief This symbology encoding module can be used for styling information that can be applied to Features and Coverages.
-         The main classes/concepts in this module are listed here.
+  \brief The symbology encoding module can be used for styling information that can be applied to Features and Coverages.
 
     It implements the OGC Symbology Encoding Implementation Specification.
     Most of the documentation used in Symbology classes were extracted
     from the specificaton available at: http://www.opengeospatial.org/standards/symbol.
 
-    The namespace associated to the Symbolig Encoding module is te::se. To know more about it, see the te::se namespace documentation.
+    The main classes/concepts in this module are listed here. The namespace associated to the Symbolig Encoding module is te::se.
+    To know more about it, see the te::se namespace documentation.
 */
 
 namespace te

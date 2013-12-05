@@ -38,7 +38,6 @@
   \defgroup plugin Plugin
 
   \brief The plugin module provides support for the startup and shutdown of modules loaded at run time.
-         The main classes/concepts in this module are listed here.
 
     A plugin (also called plug-in, addin, add-in, addon, add-on, snap-in, extension or suplement) is a computer program
     that interacts with a host application adding new capabilities/functionalities to it.
@@ -65,7 +64,8 @@
       <li>It provides a nice way to control the existence of debug/release versions of the plugins.</li>
     </ul>
 
-    The namespace associated to the Plugin module is te::plugin. To know more about it, see the te::plugin namespace documentation.
+    The main classes/concepts in this module are listed here. The namespace associated to the Plugin module is te::plugin.
+    To know more about it, see the te::plugin namespace documentation.
 */
 
 namespace te

@@ -38,6 +38,8 @@ namespace te
 
       \brief A layer that can be used as a container for other kind of layers.
 
+      \ingroup map
+
       \sa AbstractLayer, QueryLayer, DataSetLayer, RasterLayer
     */
     class TEMAPEXPORT FolderLayer : public AbstractLayer

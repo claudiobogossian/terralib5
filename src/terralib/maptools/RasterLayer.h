@@ -45,6 +45,8 @@ namespace te
 
       \brief A layer with reference to a raster.
 
+      \ingroup map
+
       \sa AbstractLayer, DataSetLayer, QueryLayer, FolderLayer
     */
     class TEMAPEXPORT RasterLayer : public AbstractLayer
