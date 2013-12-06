@@ -323,7 +323,7 @@ bool AggregationMemory(const std::string& inDataset,
   task.useTimer(true);
   
   std::auto_ptr<te::mem::DataSetItem> dataSetItem(new te::mem::DataSetItem(inputDataSet.get()));
-  int i=0;
+
   while(itGroupValues != groupValues.end())
   {
     std::string value = itGroupValues->first.c_str();
@@ -681,8 +681,12 @@ std::map<std::string, double> CalculateDoubleGroupingFunctions( const std::map<t
       for(std::size_t i = 0; i < items.size(); ++i)
       {
         std::size_t index = te::da::GetPropertyPos(items[i]->getParent(), propertyName);
+        std::size_t type = items[i]->getParent()->getPropertyDataType(index);
 
-        values.push_back(items[i]->getDouble(index));
+        if(type == te::dt::INT32_TYPE)
+          values.push_back(items[i]->getInt32(index));
+        else
+          values.push_back(items[i]->getDouble(index));
       }
 
       te::stat::NumericStatisticalSummary ss;
@@ -701,7 +705,7 @@ std::map<std::string, double> CalculateDoubleGroupingFunctions( const std::map<t
       result.insert( std::map<std::string, double>::value_type( propertyName + "_AMPLITUDE", ss.m_amplitude ) );
       result.insert( std::map<std::string, double>::value_type( propertyName + "_MEDIAN", ss.m_median ) );
       result.insert( std::map<std::string, double>::value_type( propertyName + "_VAR_COEFF", ss.m_varCoeff ) );
-      result.insert( std::map<std::string, double>::value_type( propertyName + "_MODE", ss.m_mode ) );
+//      result.insert( std::map<std::string, double>::value_type( propertyName + "_MODE", ss.m_mode ) );
 
     }
     ++it;

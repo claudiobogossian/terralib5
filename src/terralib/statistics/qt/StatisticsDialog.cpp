@@ -198,7 +198,17 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
 
       m_ui->m_statTableWidget->insertRow(13);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::MODE).c_str()));
-      itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(ss.m_mode).c_str()));
+      if(ss.m_mode.size() == 0)
+        itemValue = new QTableWidgetItem(QString("AMODAL"));
+      else
+      {
+        std::string value;
+        for(std::size_t i = 0; i < ss.m_mode.size(); ++i)
+          value += ", "+ boost::lexical_cast<std::string>(ss.m_mode[i]);
+
+        value.erase(0,2);
+        itemValue = new QTableWidgetItem(QString(value.c_str()));
+      }
       m_ui->m_statTableWidget->setItem(13, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(13, 1, itemValue);
 
