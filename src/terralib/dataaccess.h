@@ -39,7 +39,7 @@
 /*!
   \defgroup dataaccess Data Access
 
-  \brief This module provides a basic framework for accessing data.
+  \brief The data access module provides a basic framework for accessing data.
 
   It is designed towards data interoperability. You can
   write your own driver for accessing a different data source.
@@ -60,7 +60,8 @@
 
   It is not the role of this module to provide higher-level metadata about the data stored in a data source.
 
-  The namespace associated to the Data Access module is te::da. To know more about it, see the te::da namespace documentation.
+  The main classes/concepts in this module are listed here. The namespace associated to the Data Access module is te::da.
+  To know more about it, see the te::da namespace documentation.
 */
 
 namespace te

@@ -52,6 +52,8 @@ namespace te
       Here, the SvgParameter names are "fill" instead of "stroke"
       and "fill-opacity" instead of "stroke-opacity".
 
+      \ingroup se
+
       \sa PolygonSymbolizer, Graphic, FillBasicColor, Mark, TextSymbolizer, Halo
     */
     class TESEEXPORT Fill : public boost::noncopyable

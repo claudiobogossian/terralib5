@@ -53,6 +53,8 @@ namespace te
       <li>make use of a canvas to draw the objects</li>
       </ul>
 
+      \ingroup map
+
       \sa AbstractLayer, Canvas, RendererFactory, FeatureTypeStyleRenderer,
           CoverageStyleRenderer, DataSetLayerRenderer, QueryLayerRenderer
      */

@@ -50,7 +50,7 @@ namespace te
       public:
          
         /*! \brief Default constructor. */
-        DateTimePeriod() {}
+        DateTimePeriod();
 
         /*!
           \brief It gets the initial date time instant. 
@@ -71,7 +71,7 @@ namespace te
         virtual DateTimeInstant* getFinalInstant() const = 0;  
         
         /*! \brief Virtual destructor. */
-        virtual ~DateTimePeriod() { }     
+        virtual ~DateTimePeriod();    
     };    
 
   } // end namespace dt

@@ -57,6 +57,8 @@ namespace te
       If you do not need to initialize the objects created by the factories, try to use
       a derived class from AbstractFactory instead.
 
+      \ingroup common
+
       \sa AbstractFactory, FactoryDictionary
      */
     template<class TPRODUCT, class TFACTORYKEY, class TPARAM, class TKEYCOMPARE=std::less<TFACTORYKEY> >

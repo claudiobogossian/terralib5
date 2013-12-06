@@ -60,6 +60,12 @@ namespace te
 
             std::vector<std::string> getChecked();
 
+          protected slots:
+
+            void onSelectAllPushButtonClicked();
+
+            void onDeselectAllPushButtonClicked();
+
           private:
 
             std::auto_ptr<Ui::TL4LayerSelectionWizardPageForm> m_ui;

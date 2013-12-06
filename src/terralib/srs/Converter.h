@@ -45,6 +45,8 @@ namespace te
      
      A Converter is responsible for the conversion of coordinates between two  different Coordinate Systems (CS) or a Spatial Reference System (SRS).
      A CS can be uniquely identified by a numeric code (SRID).  This implementation is based on the PROJ4 cartographic library and only works if it has been enabled.
+
+     \ingroup srs
      
      \todo Methods to convert 3D coordinates.
      */

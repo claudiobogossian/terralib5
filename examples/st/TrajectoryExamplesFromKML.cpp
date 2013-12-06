@@ -4,11 +4,6 @@
 #include <terralib/st.h>
 #include <terralib/datatype.h>
 
-// Boost
-#include <boost/uuid/random_generator.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <boost/filesystem.hpp>
-
 // Examples
 #include "STExamples.h"
 
@@ -27,21 +22,12 @@ void TrajectoryExamplesFromKML()
     dsinfo.setConnInfo(connInfo);
     dsinfo.setType("OGR");
 
-    //Generates a randon id to the data source
-    boost::uuids::basic_random_generator<boost::mt19937> gen;
-    boost::uuids::uuid u = gen();
-    std::string id = boost::uuids::to_string(u);
-    dsinfo.setId(id);
+    //It creates a new Data Source and put it into the manager
+    CreateDataSourceAndUpdateManager(dsinfo);
 
-    //Create the data source and put it into the manager
-    te::da::DataSourceManager::getInstance().open(dsinfo.getId(), dsinfo.getType(), dsinfo.getConnInfo());
-    
     //Indicates how the trajectories are stored in the data source -> This structure is fixed for OGR driver
     int phTimeIdx = 3;  /* property name: timestamp */
     int geomIdx = 12;    /* property name: geom */
-
-    //It initializes the st data loader support
-    te::st::STDataLoader::initialize();
 
     //Use the STDataLoader to create a TrajectoryDataSet with all observations
     te::st::TrajectoryDataSetInfo tjinfo40(dsinfo, "40: locations", phTimeIdx, geomIdx, -1, "40");
@@ -66,9 +52,7 @@ void TrajectoryExamplesFromKML()
     //Print the spatial and temporal extent as well as the observations of the loaded trajectories
     PrintTrajectoryDataSet(tjDS40period.get());
     PrintTrajectoryDataSet(tjDS41period.get());   
-
-    //It finalizes the st data loader support
-    te::st::STDataLoader::finalize();
+     
   }
   catch(const std::exception& e)
   {

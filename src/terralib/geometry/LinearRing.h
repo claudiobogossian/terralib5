@@ -41,6 +41,8 @@ namespace te
       Note that the boundary of a linear ring is empty. This class is
       the basic building block of class Polygon.
 
+      \ingroup geometry
+
       \sa Geometry,
           AbstractPoint, Point, PointM, PointZ, PointZM,
           Curve, LineString, Line, CircularString, CompoundCurve,

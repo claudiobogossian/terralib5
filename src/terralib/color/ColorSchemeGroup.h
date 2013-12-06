@@ -47,9 +47,11 @@ namespace te
       \brief This class represents a group of color schemes.
       
       It is used to group color schemes.
+
+      \ingroup color
       
       \sa ColorScheme, ColorSchemeCatalog, ColorSchemeCatalogManager
-     */
+    */
     class TECOLOREXPORT ColorSchemeGroup
     {
       public:

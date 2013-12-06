@@ -38,6 +38,8 @@ namespace te
 
       \brief This struct can be used to describe a given plugin provider.
 
+      \ingroup plugin
+
       \sa Plugin
     */
     struct Provider

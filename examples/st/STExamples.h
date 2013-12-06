@@ -42,6 +42,9 @@
 /*! \brief It loads the TerraLib modules. */
 void LoadModules();
 
+/*! \brief It creates a new DataSource and put it into the DataSource manager, using a random id. */
+void CreateDataSourceAndUpdateManager(te::da::DataSourceInfo& dsinfo);
+
 /*! 
   \brief It contains examples about coverage
 */

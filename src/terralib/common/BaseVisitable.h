@@ -46,6 +46,8 @@ namespace te
       <li>R: the return type for the accept method.</li>
       </ul>
 
+      \ingroup common
+
       \sa BaseVisitor, Visitor
     */
     template<class T, class R = void> class BaseVisitable

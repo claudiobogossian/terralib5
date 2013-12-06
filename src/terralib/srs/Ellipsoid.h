@@ -34,14 +34,19 @@
 
 namespace te
 {
-	namespace srs
-	{
+  namespace srs
+  {
     /*!
-     \class Ellipsoid
-     \brief A reference ellipsoid is an approximation of the Earth's surface as a squashed sphere.
-     \note The terms "spheroid" and "ellipsoid" are synonymous.
-     \todo Verify if it is necessary to keep an <Id,Authority> to this object.
-     */
+       \class Ellipsoid
+
+       \brief A reference ellipsoid is an approximation of the Earth's surface as a squashed sphere.
+
+       \note The terms "spheroid" and "ellipsoid" are synonymous.
+
+       \ingroup srs
+
+       \todo Verify if it is necessary to keep an <Id,Authority> to this object.
+    */
     class TESRSEXPORT Ellipsoid
     {
       

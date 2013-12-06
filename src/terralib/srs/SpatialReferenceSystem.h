@@ -38,11 +38,14 @@ namespace te
   namespace srs
   {
     /*!
-     \class SpatialReferenceSystem
-     \brief A Spatial Reference System, also known as a Coordinate System.
-     A spatial reference system (SRS) or coordinate reference system (CRS) is a coordinate-based local,
-     regional or global system used to locate geographical entities.
-     */
+      \class SpatialReferenceSystem
+      \brief A Spatial Reference System, also known as a Coordinate System.
+
+      A spatial reference system (SRS) or coordinate reference system (CRS) is a coordinate-based local,
+      regional or global system used to locate geographical entities.
+
+      \ingroup srs
+    */
     class TESRSEXPORT SpatialReferenceSystem
     {
       

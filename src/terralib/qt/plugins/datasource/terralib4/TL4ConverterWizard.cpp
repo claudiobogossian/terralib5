@@ -24,8 +24,8 @@
 */
 
 // TerraLib
+#include "../../../../common/Exception.h"
 #include "../../../../common/Translator.h"
-#include "../../../../common/progress/TaskProgress.h"
 #include "../../../../dataaccess.h"
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWidget.h"
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
@@ -132,8 +132,6 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::next()
       rasterFolderSelectionPageNext();
       break;
   }
-
-//  QWizard::next();
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::help()
@@ -235,14 +233,14 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::datasourceSelectionPageNext
 
   std::vector<std::string> dsNames = m_layerSelectionPage->getChecked();
 
-  m_finalPage->setDataSets(dsNames);
-
-  te::common::TaskProgress task(TR_COMMON("Converting..."));
-  task.setTotalSteps(dsNames.size());
+  std::vector<std::string> finalDataSetsNames;
 
   Qt::CursorShape shp = this->cursor().shape();
   this->setCursor(Qt::WaitCursor);
 
+  std::vector<std::pair<std::string, std::string> > dsNameWithDetailedErrorVector;
+  std::string errors = "";
+  std::string errorWhat = "";
   for(std::size_t i = 0; i < dsNames.size(); ++i)
   {
     std::auto_ptr<te::da::DataSetType> dst = m_tl4Database->getDataSetType(dsNames[i]);
@@ -250,20 +248,54 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::datasourceSelectionPageNext
     if(dst->hasRaster())
       continue;
 
-    std::auto_ptr<te::da::DataSetTypeConverter> dt_adapter(new te::da::DataSetTypeConverter(dst.get(), tl5Database->getCapabilities()));
+    try
+    {
+      std::auto_ptr<te::da::DataSetTypeConverter> dt_adapter(new te::da::DataSetTypeConverter(dst.get(), tl5Database->getCapabilities()));
 
-    std::auto_ptr<te::da::DataSet> ds(m_tl4Database->getDataSet(dsNames[i]));
+      std::auto_ptr<te::da::DataSet> ds(m_tl4Database->getDataSet(dsNames[i]));
 
-    std::auto_ptr<te::da::DataSetAdapter> ds_adapter(te::da::CreateAdapter(ds.get(), dt_adapter.get()));
+      std::auto_ptr<te::da::DataSetAdapter> ds_adapter(te::da::CreateAdapter(ds.get(), dt_adapter.get()));
 
-    std::map<std::string, std::string> op;
+      std::map<std::string, std::string> op;
 
-    te::da::Create(tl5Database.get(), dt_adapter->getResult(), ds_adapter.get(), op);
+      te::da::Create(tl5Database.get(), dt_adapter->getResult(), ds_adapter.get(), op);
 
-    task.pulse();
+      finalDataSetsNames.push_back(dsNames[i]);
+    }
+    catch(te::common::Exception e)
+    {
+      std::pair<std::string, std::string> error;
+      error.first = dsNames[i];
+      error.second = e.what();
+      dsNameWithDetailedErrorVector.push_back(error);
+    }
   }
 
+  m_finalPage->setDataSets(finalDataSetsNames);
+
+  if(!dsNameWithDetailedErrorVector.empty())
+  {
+    QString err(tr("Some TerraLib 4.x Layers could not be converter:\n\n"));
+    QString details;
+
+    for(std::size_t i = 0; i < dsNameWithDetailedErrorVector.size(); ++i)
+    {
+      err.append(QString(" - ")+dsNameWithDetailedErrorVector[i].first.c_str()+QString("\n"));
+      details.append(dsNameWithDetailedErrorVector[i].first.c_str() + QString(":\n"));
+      details.append(dsNameWithDetailedErrorVector[i].second.c_str()+QString("\n\n"));
+    }
+
+    QMessageBox mes(QMessageBox::Warning, tr("TerraLib 4.x Converter"), err, QMessageBox::Ok, this);
+    mes.setDetailedText(details);
+
+    mes.exec();
+  }
+
+  
+
   this->setCursor(shp);
+  
+  QWizard::next();
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::rasterFolderSelectionPageNext()

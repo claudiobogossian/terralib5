@@ -52,6 +52,8 @@ namespace te
             of positions, where each dimension in the vector corresponds to the 
             respective dimension in the array.
 
+      \ingroup datatype
+
       \sa ArrayProperty, AbstractData
     */
     class TEDATATYPEEXPORT Array : public AbstractData

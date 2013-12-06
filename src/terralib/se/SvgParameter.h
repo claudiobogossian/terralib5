@@ -33,14 +33,17 @@ namespace te
 {
   namespace se
   {
-    /*! \class SvgParameter
-      
-        \brief A SvgParameter refers to an SVG/CSS graphical-formatting parameter.
+    /*!
+      \class SvgParameter
 
-        The parameter is identified using the "name" attribute
-        and the content of the element gives the SVG/CSS-coded value.
+      \brief A SvgParameter refers to an SVG/CSS graphical-formatting parameter.
 
-        \sa ParameterValue
+      The parameter is identified using the "name" attribute
+      and the content of the element gives the SVG/CSS-coded value.
+
+      \ingroup se
+
+      \sa ParameterValue
     */
     class TESEEXPORT SvgParameter : public ParameterValue
     {

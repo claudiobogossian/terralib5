@@ -38,6 +38,8 @@ namespace te
 
       \brief The type for arbitrary precison numbers, like numeric(p, q).
 
+      \ingroup datatype
+
       \sa SimpleProperty, Property, StringProperty, ArrayProperty, DateTimeProperty, CompositeProperty
     */
     class TEDATATYPEEXPORT NumericProperty : public SimpleProperty

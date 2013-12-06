@@ -38,6 +38,8 @@ namespace te
 
       \brief This is the concrete factory for renderers of a AbstractLayer. i.e. builds a generic renderer.
 
+      \ingroup map
+
       \sa AbstractRenderer, AbstractLayerRenderer
     */
     class AbstractLayerRendererFactory : public RendererFactory

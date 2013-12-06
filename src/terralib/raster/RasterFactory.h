@@ -43,6 +43,8 @@ namespace te
 
       \brief This is the abstract factory for Rasters.
 
+      \ingroup rst
+
       \sa Raster
     */
     class TERASTEREXPORT RasterFactory : public te::common::AbstractFactory<Raster, std::string>

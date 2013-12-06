@@ -42,6 +42,8 @@ namespace te
 
       \brief MultiSurface is a class that represents a 2-dimensional GeometryCollection whose elements are surfaces.
 
+      \ingroup geometry
+
       \sa Geometry,
           Point,
           Curve, LineString, LinearRing,

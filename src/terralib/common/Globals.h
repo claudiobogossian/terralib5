@@ -21,6 +21,8 @@
   \file terralib/common/Globals.h
 
   \brief An static class with global definitions.
+
+  \ingroup common
 */
 
 #ifndef __TERRALIB_COMMON_INTERNAL_GLOBALS_H

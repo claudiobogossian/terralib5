@@ -37,6 +37,8 @@ namespace te
       \struct Holder
 
       \brief An auxiliary data structure for helping to control the garbage collection of C++ objects.
+
+      \ingroup common
     */
     template<class T> struct Holder : public boost::noncopyable
     {

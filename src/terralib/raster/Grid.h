@@ -48,6 +48,8 @@ namespace te
       
       \note The upper left corner of the upper left pixel is considered the grid extent top-left reference.
 
+      \ingroup rst
+
       \sa Raster
     */
     class TERASTEREXPORT Grid

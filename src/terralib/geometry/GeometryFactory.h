@@ -52,6 +52,8 @@ namespace te
 
       \brief This is the Geometry factory for TerraLib geometries.
 
+      \ingroup geometry
+
       \sa Geometry,
           Point, PointM, PointZ, PointZM,
           Curve, LineString, LinearRing,

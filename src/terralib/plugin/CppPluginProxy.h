@@ -45,6 +45,8 @@ namespace te
       
       \brief A proxy class for C++ plugins.
 
+      \ingroup plugin
+
       \sa AbstractPlugin, Plugin, CppPlugin
      */
     class TEPLUGINEXPORT CppPluginProxy : public AbstractPlugin

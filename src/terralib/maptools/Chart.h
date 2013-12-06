@@ -44,6 +44,8 @@ namespace te
 
       \brief This class represents the informations needed to build map charts.
 
+      \ingroup map
+
       \sa AbstractLayer
     */
     class TEMAPEXPORT Chart

@@ -49,6 +49,8 @@ namespace te
       metadata in catalogue systems. More metadata
       fields may be added to this element in the future.
 
+      \ingroup se
+
       \sa Symbolizer, CoverageStyle, Rule, FeatureTypeStyle, CoverageStyle
     */
     class TESEEXPORT Description : public boost::noncopyable

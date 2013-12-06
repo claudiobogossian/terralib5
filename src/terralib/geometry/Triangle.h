@@ -38,6 +38,8 @@ namespace te
       
       \brief Triangle is a polygon with 3 distinct, non-collinear vertices and no interior boundary.
 
+      \ingroup geometry
+
       \sa Geometry,
           AbstractPoint, Point, PointM, PointZ, PointZM, PointKd,
           Curve, LineString, LinearRing, Line, CircularString, CompoundCurve,

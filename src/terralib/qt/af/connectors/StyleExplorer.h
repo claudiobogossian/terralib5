@@ -57,8 +57,6 @@ namespace te
         \brief A connector for the te::qt::widgets::StyleDockWidget class to the Application Framework.
 
         It is used to listen events sent by the application framework.
-
-        \ingroup afconnector
       */
       class TEQTAFEXPORT StyleExplorer : public QObject
       {

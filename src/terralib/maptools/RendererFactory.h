@@ -40,6 +40,8 @@ namespace te
 
       \brief This is the abstract factory for layer renderers.
 
+      \ingroup map
+
       \sa AbstractRenderer, DataSetLayerRendererFactory, FeatureTypeStyleRendererFactory, CoverageStyleRendererFactory
     */
     class TEMAPEXPORT RendererFactory : public te::common::AbstractFactory<AbstractRenderer, std::string>

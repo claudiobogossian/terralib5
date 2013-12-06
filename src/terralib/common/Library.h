@@ -52,6 +52,8 @@ namespace te
             must be in a folder where the system can search for these dependencies.
 
       \note This class is based on pimpl idiom.
+
+      \ingroup common
     */
     class TECOMMONEXPORT Library : public boost::noncopyable
     {
