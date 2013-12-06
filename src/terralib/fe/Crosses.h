@@ -39,6 +39,8 @@ namespace te
       
       \brief Binary spatial operator: Crosses.
 
+      \ingroup fe
+
       \sa BinarySpatialOp
      */
     class TEFEEXPORT Crosses : public BinarySpatialOp

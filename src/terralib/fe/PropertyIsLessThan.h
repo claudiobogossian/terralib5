@@ -39,6 +39,8 @@ namespace te
       
       \brief It models the inequality operator less than (<).
 
+      \ingroup fe
+
       \sa BinaryComparisonOp
      */
     class TEFEEXPORT PropertyIsLessThan : public BinaryComparisonOp

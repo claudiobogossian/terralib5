@@ -39,6 +39,8 @@ namespace te
       
       \brief Binary spatial operator: Disjoint.
 
+      \ingroup fe
+
       \sa BinarySpatialOp
      */
     class TEFEEXPORT Disjoint : public BinarySpatialOp

@@ -236,6 +236,7 @@ int te::ado::Convert2Terralib(ADOX::DataTypeEnum adoType)
       break;
 
     case ADOX::adDouble:
+    case ADOX::adDecimal:
       return te::dt::DOUBLE_TYPE;
       break;
 
@@ -323,6 +324,7 @@ int te::ado::Convert2Terralib(::DataTypeEnum adoType)
       break;
 
     case ::adDouble:
+    case ::adDecimal:
       return te::dt::DOUBLE_TYPE;
       break;
 
@@ -411,6 +413,7 @@ te::dt::Property* te::ado::Convert2Terralib(ADOX::_ColumnPtr column)
       break;
 
     case ADOX::adDouble:
+    case ADOX::adDecimal:
       prop = new te::dt::SimpleProperty(std::string(cName), Convert2Terralib(cType));
       break;
 

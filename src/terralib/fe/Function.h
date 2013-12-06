@@ -45,6 +45,8 @@ namespace te
       A function may accept zero or more arguments
       as input and generates a single result.
 
+      \ingroup fe
+
       \sa Expression
 
       \todo Remover o uso do atributo nome de forma que as funcoes sejam registradas e de forma que se possa manter um pool das funcoes com os argumentos previamente alocados para cada tipo de funcao.

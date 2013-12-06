@@ -43,6 +43,8 @@ namespace te
         or more symbols that evaluate to single boolean
         value of true or false.
 
+        \ingroup fe
+
         \sa BinaryOperator, PropertyName, Function, Literal, BinaryComparisonOp, PropertyIsBetween
      */
     class TEFEEXPORT Expression : public te::common::BaseVisitable<Visitor>

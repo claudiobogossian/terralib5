@@ -44,6 +44,8 @@ namespace te
       A NULL is equivalent to no value present. The value 0 is
       a valid value and is not considered NULL.
 
+      \ingroup fe
+
       \sa ComparisonOp, PropertyName
      */
     class TEFEEXPORT PropertyIsNull : public ComparisonOp
