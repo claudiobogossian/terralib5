@@ -50,6 +50,19 @@
 #include <vector>
 #include <memory>
 
+void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss, const std::string& nulValue)
+{
+  std::vector<std::string> validValues;
+  for (size_t i=0; i<values.size(); ++i)
+  {
+    if (values[i] != nulValue)
+      validValues.push_back(values[i]);
+  }
+  GetStringStatisticalSummary(validValues, ss);
+  ss.m_count = values.size();
+  ss.m_validCount = validValues.size();
+}
+
 void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss)
 {
   std::sort(values.begin(), values.end());
@@ -68,6 +81,19 @@ void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te:
   }
   
   ss.m_mode = Mode(values);
+}
+
+void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss, double nulValue)
+{
+  std::vector<double> validValues;
+  for (size_t i=0; i<values.size(); ++i)
+  {
+    if (values[i] != nulValue)
+      validValues.push_back(values[i]);
+  }
+  GetNumericStatisticalSummary(validValues, ss);
+  ss.m_count = values.size();
+  ss.m_validCount = validValues.size();
 }
 
 void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss)

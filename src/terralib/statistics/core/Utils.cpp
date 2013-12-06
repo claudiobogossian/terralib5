@@ -133,34 +133,20 @@ std::string te::stat::GetStatSummaryFullName(const int& e)
   }
 }
 
-int te::stat::GetPropertyIndex(te::da::DataSet* dataSet, const std::string propName)
-{
-  int index = 0;
-
-  for(std::size_t i = 0; i < dataSet->getNumProperties(); ++i)
-  {
-    if(propName == dataSet->getPropertyName(i))
-    {
-      index = i;
-      return index;
-    }
-  }
-  return -1;
-}
-
 std::vector<std::string> te::stat::GetStringData(te::da::DataSet* dataSet, const std::string propName)
 {
   std::vector<std::string> result;
   std::string value="";
-  bool flag;
 
   dataSet->moveFirst();
 
   do
   {
-    value = dataSet->getString(propName);
-    result.push_back(value);
-
+    if (!dataSet->isNull(propName))
+    {
+      value = dataSet->getString(propName);
+      result.push_back(value);
+    }
   }while(dataSet->moveNext());
 
   return result;
@@ -173,7 +159,8 @@ std::vector<double> te::stat::GetNumericData(te::da::DataSet* dataSet, const std
 
   do
   {
-    result.push_back(dataSet->getDouble(propName));
+    if (!dataSet->isNull(propName))
+      result.push_back(dataSet->getDouble(propName));
   }while(dataSet->moveNext());
 
   return result;
