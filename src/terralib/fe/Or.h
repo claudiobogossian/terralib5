@@ -39,6 +39,8 @@ namespace te
       
       \brief Boolean logic operator: OR.
 
+      \ingroup fe
+
       \sa BinaryLogicOp
      */
     class TEFEEXPORT Or : public BinaryLogicOp

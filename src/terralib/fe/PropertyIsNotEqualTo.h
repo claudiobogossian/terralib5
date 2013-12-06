@@ -39,6 +39,8 @@ namespace te
       
       \brief It tells if two values are not equal.
 
+      \ingroup fe
+
       \sa BinaryComparisonOp
      */
     class TEFEEXPORT PropertyIsNotEqualTo : public BinaryComparisonOp

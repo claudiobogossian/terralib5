@@ -61,18 +61,25 @@
 #include "fe/SpatialOperators.h"
 #include "fe/UnaryLogicOp.h"
 
-namespace te
-{
-  /*!
-	  \brief This is the namespace for the Filter Encoding module.
+/*!
+  \defgroup fe Filter Encoding
+
+  \brief This module implements the OGC Filter Encoding specification.
 
     A Filter is any valid predicate expression that can
     be formed using the elements defined in the OGC Filter Encoding specification.
     Most of the documentation used in Filter classes were extracted
     from the specificaton available at: http://www.opengeospatial.org/standards/filter.
-  
-    \note See the te namespace comments for any detail on using namespaces.
-   */
+
+    The main classes/concepts in this module are listed here. The namespace associated to the Filter Encoding module is te::fe.
+    To know more about it, see the te::fe namespace documentation.
+*/
+
+namespace te
+{
+  /*!
+    \brief Namespace for the Filter Encoding module of TerraLib.
+  */
   namespace fe
   {
   } // end namespace fe

@@ -47,6 +47,8 @@ namespace te
       specified, rather than as a variable or other element.
       The Literal is used to encode literal scalar and geometric values.
 
+      \ingroup fe
+
       \sa Expression, PropertyIsLike
 
       \todo In the XML schema it is marked as mixed, so this put another requirement to this class!

@@ -42,6 +42,8 @@ namespace te
       relationship is satisfied. Otherwise the operator
       evaluates to false.
 
+      \ingroup fe
+
       \sa AbstractOp, BinarySpatialOp, BBOXOp, DistanceBuffer
      */
     class TEFEEXPORT SpatialOp : public AbstractOp

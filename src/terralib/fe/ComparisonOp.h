@@ -42,6 +42,8 @@ namespace te
       then the expression evaluates to true.
       Otherwise the expression evaluates to false.
 
+      \ingroup fe
+
       \sa AbstractOp, BinaryComparisonOp, PropertyIsLike, PropertyIsNull, PropertyIsBetween
      */
     class TEFEEXPORT ComparisonOp : public AbstractOp

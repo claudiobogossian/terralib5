@@ -39,6 +39,8 @@ namespace te
       
       \brief Binary spatial operator: Contains.
 
+      \ingroup fe
+
       \sa BinarySpatialOp
      */
     class TEFEEXPORT Contains : public BinarySpatialOp
