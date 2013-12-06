@@ -72,6 +72,9 @@ te::qt::widgets::QueryDialog::QueryDialog(QWidget* parent, Qt::WindowFlags f)
   // Signals¨& slots
   connect(m_ui->m_inputLayerComboBox, SIGNAL(activated(QString)), this, SLOT(onInputLayerActivated(QString)));
   connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyPushButtonClicked()));
+
+  //
+  m_ui->m_helpPushButton->setPageReference("widgets/query/query_dialog.html");
 }
 
 te::qt::widgets::QueryDialog::~QueryDialog()
