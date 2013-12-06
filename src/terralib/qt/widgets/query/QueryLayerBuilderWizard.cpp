@@ -81,7 +81,7 @@ te::qt::widgets::QueryLayerBuilderWizard::QueryLayerBuilderWizard(QWidget* paren
 
   this->setButton(QWizard::HelpButton, helpButton);
 
-  helpButton->setPageReference("widgets/query/QueryLayerBuilder.html");
+  helpButton->setPageReference("widgets/query/query_layer.html");
 
   addPages();
 }

@@ -104,6 +104,19 @@ void te::qt::af::DataSetTableDockWidget::onApplicationTriggered(te::qt::af::evt:
       }
     }
     break;
+
+
+    case te::qt::af::evt::LAYER_REMOVED:
+      {
+        te::qt::af::evt::LayerRemoved* ev = static_cast<te::qt::af::evt::LayerRemoved*>(evt);
+
+        if(ev->m_layer->getId() == m_layer->getId())
+        {
+          this->close();
+        }
+      }
+      break;
+
   }
 }
 

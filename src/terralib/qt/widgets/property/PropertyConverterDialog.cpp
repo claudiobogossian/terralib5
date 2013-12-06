@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../dataaccess/dataset/AttributeConverterManager.h"
 #include "../../../dataaccess/dataset/DataSetAdapter.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/DataSetTypeConverter.h"
@@ -58,6 +59,17 @@ te::qt::widgets::PropertyConverterDialog::PropertyConverterDialog(QWidget* paren
 
   //connects
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
+
+  //get converters types
+  std::vector<std::string> converters;
+  te::da::AttributeConverterManager::getInstance().getConverters(converters);
+
+  for(std::size_t t = 0; t < converters.size(); ++t)
+  {
+    m_ui->m_comboBox->addItem(converters[t].c_str());
+  }
+
+  m_ui->m_helpPushButton->setPageReference("widgets/property/property_converter.html");
 }
 
 te::qt::widgets::PropertyConverterDialog::~PropertyConverterDialog()
