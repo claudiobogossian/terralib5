@@ -1174,6 +1174,14 @@ void te::ado::Transactor::add(const std::string& datasetName,
         std::string pname = d->getPropertyName(i);
         int pType = d->getPropertyDataType(i);
 
+        if(d->isNull(i))
+        {
+          _variant_t var;
+          var.ChangeType(VT_NULL, NULL);
+          recset->GetFields()->GetItem(pname.c_str())->PutValue(var);
+        }
+        
+
         switch(pType)
         {
           case te::dt::CHAR_TYPE:
@@ -1464,8 +1472,13 @@ void te::ado::Transactor::getProperties(te::da::DataSetType* dt)
     switch(colType)
     {
       case ::adBoolean:
+      {
         p = new te::dt::SimpleProperty(colName, Convert2Terralib(colType));
+        te::dt::SimpleProperty* sp = (te::dt::SimpleProperty*)p;
+
+        sp->setRequired(isRequiredMap[i]);
         break;
+      }
 
       case ::adVarWChar:
       case ::adWChar:
@@ -1474,8 +1487,15 @@ void te::ado::Transactor::getProperties(te::da::DataSetType* dt)
       case ::adLongVarWChar:
       case ::adBSTR:
       case ::adChar:
+      {
         p = new te::dt::StringProperty(colName, (te::dt::StringType)Convert2Terralib(colType), charLengthMap[i]);
+        te::dt::StringProperty* sp = (te::dt::StringProperty*)p;
+        
+        sp->setRequired(isRequiredMap[i]);
+        sp->setSize(charLengthMap[i]);
+
         break;
+      }
 
       case ADOX::adTinyInt:
       case ADOX::adSmallInt:
@@ -1483,12 +1503,18 @@ void te::ado::Transactor::getProperties(te::da::DataSetType* dt)
       case ADOX::adBigInt:
       case ADOX::adSingle:
       case ADOX::adDouble:
+      case ADOX::adDecimal:
       case ::adUnsignedBigInt:
       case ::adUnsignedInt:
       case ::adUnsignedSmallInt:
       case ::adUnsignedTinyInt:
+      {
         p = new te::dt::SimpleProperty(colName, Convert2Terralib(colType));
+        te::dt::SimpleProperty* sp = (te::dt::SimpleProperty*)p;
+        
+        sp->setRequired(isRequiredMap[i]);
         break;
+      }
 
       case ADOX::adBinary:
       case ADOX::adLongVarBinary:
