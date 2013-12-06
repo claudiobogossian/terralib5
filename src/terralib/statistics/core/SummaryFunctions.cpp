@@ -50,6 +50,19 @@
 #include <vector>
 #include <memory>
 
+void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss, const std::string& nulValue)
+{
+  std::vector<std::string> validValues;
+  for (size_t i=0; i<values.size(); ++i)
+  {
+    if (values[i] != nulValue)
+      validValues.push_back(values[i]);
+  }
+  GetStringStatisticalSummary(validValues, ss);
+  ss.m_count = values.size();
+  ss.m_validCount = validValues.size();
+}
+
 void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss)
 {
   std::sort(values.begin(), values.end());
@@ -68,6 +81,19 @@ void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te:
   }
   
   ss.m_mode = Mode(values);
+}
+
+void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss, double nulValue)
+{
+  std::vector<double> validValues;
+  for (size_t i=0; i<values.size(); ++i)
+  {
+    if (values[i] != nulValue)
+      validValues.push_back(values[i]);
+  }
+  GetNumericStatisticalSummary(validValues, ss);
+  ss.m_count = values.size();
+  ss.m_validCount = validValues.size();
 }
 
 void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss)
@@ -109,7 +135,65 @@ void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::sta
   else
     ss.m_median = values[(ss.m_count-1)/2];
   
-  ss.m_mode = Mode(values);
+  ss.m_mode = NewMode(values);
+}
+
+std::vector<double> te::stat::NewMode(const std::vector<double>& values)
+{
+  bool found;
+  std::vector<double> mode;
+  std::map<double, int> mapMode;
+  
+  for(std::size_t i = 0; i < values.size(); ++i)
+  {
+    found = false;
+    
+    if(!mapMode.empty())
+    {
+      std::map<double, int>::iterator itMode = mapMode.begin();
+      
+      while(itMode != mapMode.end())
+      {
+        if(itMode->first == values[i])
+        {
+          ++itMode->second;
+          found = true;
+        }
+        
+        ++itMode;
+      }
+      if(found == false)
+      {
+        mapMode.insert( std::map<double, int>::value_type( values[i] , 1 ) );
+      }
+    }
+    else
+      mapMode.insert( std::map<double, int>::value_type( values[i] , 1 ) );
+  }
+  
+  std::map<double, int>::iterator itMode = mapMode.begin();
+  int repeat = 0;
+  
+  while(itMode != mapMode.end())
+  {
+    if(itMode->second > 1)
+    {
+      if(repeat < itMode->second)
+      {
+        repeat = itMode->second;
+        mode.clear();
+        mode.push_back(itMode->first);
+      }
+      else if(repeat == itMode->second)
+      {
+        mode.push_back(itMode->first);
+      }
+    }
+
+    ++itMode;
+  }
+  
+  return mode;
 }
 
 double te::stat::Mode(const std::vector<double>& values)

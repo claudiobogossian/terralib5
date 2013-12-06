@@ -860,3 +860,18 @@ std::auto_ptr<te::da::Select> te::da::BuildSelect(const std::string& dsname,
 
   return select;
 }
+
+int te::da::GetPropertyIndex(te::da::DataSet* dataSet, const std::string propName)
+{
+  int index = 0;
+  
+  for(std::size_t i = 0; i < dataSet->getNumProperties(); ++i)
+  {
+    if(propName == dataSet->getPropertyName(i))
+    {
+      index = i;
+      return index;
+    }
+  }
+  return -1;
+}

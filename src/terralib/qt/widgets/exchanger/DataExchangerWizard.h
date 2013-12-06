@@ -75,8 +75,6 @@ namespace te
 
           void commit();
 
-          void help();
-
         private:
 
           enum
