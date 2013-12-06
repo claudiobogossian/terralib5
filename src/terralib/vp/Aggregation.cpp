@@ -316,6 +316,7 @@ bool AggregationMemory(const std::string& inDataset,
   }
   
   std::map<std::string, std::vector<te::mem::DataSetItem*> > groupValues = GetGroups(inputDataSet.get(), groupingProperties);
+  
   std::map<std::string, std::vector<te::mem::DataSetItem*> >::const_iterator itGroupValues = groupValues.begin();
   
   te::common::TaskProgress task("Processing aggregation...");
@@ -323,7 +324,6 @@ bool AggregationMemory(const std::string& inDataset,
   task.useTimer(true);
   
   std::auto_ptr<te::mem::DataSetItem> dataSetItem(new te::mem::DataSetItem(inputDataSet.get()));
-
   while(itGroupValues != groupValues.end())
   {
     std::string value = itGroupValues->first.c_str();
@@ -587,7 +587,11 @@ std::map<std::string, std::vector<te::mem::DataSetItem*> > GetGroups( te::da::Da
     
     for(std::size_t i = 0; i < inputDataSet->getNumProperties(); ++i)
     {
-      dataSetItem->setValue(i, inputDataSet->getValue(i).release());
+      if (!inputDataSet->isNull(i))
+      {
+        std::auto_ptr<te::dt::AbstractData> val = inputDataSet->getValue(i);
+        dataSetItem->setValue(i,val.release());
+      }
     }
 
     std::size_t propertyIndex = 0;
@@ -616,6 +620,7 @@ std::map<std::string, std::vector<te::mem::DataSetItem*> > GetGroups( te::da::Da
       {
         it->second.push_back(dataSetItem);
         found = true;
+        break;
       }
     }
 
@@ -640,23 +645,23 @@ std::map<std::string, std::string> CalculateStringGroupingFunctions(const std::m
   {
     if(it->first->getType() == te::dt::STRING_TYPE)
     {
-      std::string propertyName = it->first->getName();
       std::vector<std::string> values;
-
+      std::string propertyName = it->first->getName();
+      std::size_t index = te::da::GetPropertyPos(items[0]->getParent(),propertyName);
+      
       for(std::size_t i = 0; i < items.size(); ++i)
       {
-        std::size_t index = te::da::GetPropertyPos(items[i]->getParent(), propertyName);
-
-        values.push_back(items[i]->getString(index));
+        if (!items[i]->isNull(index))
+          values.push_back(items[i]->getString(index));
       }
 
       te::stat::StringStatisticalSummary ss; 
       te::stat::GetStringStatisticalSummary(values, ss);
 
-      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_MIN_VALUE", ss.m_minVal ) );
-      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_MAX_VALUE", ss.m_maxVal ) );
-      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_COUNT", boost::lexical_cast<std::string>(ss.m_count) ) );
-      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_VALID_COUNT", boost::lexical_cast<std::string>(ss.m_validCount) ) );
+      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_MIN_VALUE", ss.m_minVal ));
+      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_MAX_VALUE", ss.m_maxVal ));
+      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_COUNT", boost::lexical_cast<std::string>(items.size())));
+      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_VALID_COUNT", boost::lexical_cast<std::string>(values.size())));
     }
     ++it;
   }
@@ -676,17 +681,27 @@ std::map<std::string, double> CalculateDoubleGroupingFunctions( const std::map<t
     if(it->first->getType() != te::dt::STRING_TYPE)
     {
       std::string propertyName = it->first->getName();
+      std::size_t index = te::da::GetPropertyPos(items[0]->getParent(), propertyName);
+      std::size_t type = items[0]->getParent()->getPropertyDataType(index);
+      
       std::vector<double> values;
-
       for(std::size_t i = 0; i < items.size(); ++i)
       {
-        std::size_t index = te::da::GetPropertyPos(items[i]->getParent(), propertyName);
-        std::size_t type = items[i]->getParent()->getPropertyDataType(index);
-
-        if(type == te::dt::INT32_TYPE)
-          values.push_back(items[i]->getInt32(index));
-        else
-          values.push_back(items[i]->getDouble(index));
+        if (!items[i]->isNull(index))
+        {
+          double numval;
+          if (type == te::dt::INT16_TYPE)
+            numval = items[i]->getInt32(index);
+          else if (type == te::dt::INT32_TYPE)
+            numval = items[i]->getInt16(index);
+          else if (type == te::dt::INT64_TYPE)
+            numval = items[i]->getInt64(index);
+          else if (type == te::dt::FLOAT_TYPE)
+            numval = items[i]->getFloat(index);
+          else if (type == te::dt::DOUBLE_TYPE)
+            numval = items[i]->getDouble(index);
+          values.push_back(numval);
+        }
       }
 
       te::stat::NumericStatisticalSummary ss;
@@ -694,8 +709,8 @@ std::map<std::string, double> CalculateDoubleGroupingFunctions( const std::map<t
 
       result.insert( std::map<std::string, double>::value_type( propertyName + "_MIN_VALUE", ss.m_minVal ) );
       result.insert( std::map<std::string, double>::value_type( propertyName + "_MAX_VALUE", ss.m_maxVal ) );
-      result.insert( std::map<std::string, double>::value_type( propertyName + "_COUNT", ss.m_count ) );
-      result.insert( std::map<std::string, double>::value_type( propertyName + "_VALID_COUNT", ss.m_validCount ) );
+      result.insert( std::map<std::string, double>::value_type( propertyName + "_COUNT", items.size()) );
+      result.insert( std::map<std::string, double>::value_type( propertyName + "_VALID_COUNT", values.size()) );
       result.insert( std::map<std::string, double>::value_type( propertyName + "_MEAN", ss.m_mean ) );
       result.insert( std::map<std::string, double>::value_type( propertyName + "_SUM", ss.m_sum ) );
       result.insert( std::map<std::string, double>::value_type( propertyName + "_STANDARD_DEVIATION", ss.m_stdDeviation ) );
@@ -705,7 +720,7 @@ std::map<std::string, double> CalculateDoubleGroupingFunctions( const std::map<t
       result.insert( std::map<std::string, double>::value_type( propertyName + "_AMPLITUDE", ss.m_amplitude ) );
       result.insert( std::map<std::string, double>::value_type( propertyName + "_MEDIAN", ss.m_median ) );
       result.insert( std::map<std::string, double>::value_type( propertyName + "_VAR_COEFF", ss.m_varCoeff ) );
-//      result.insert( std::map<std::string, double>::value_type( propertyName + "_MODE", ss.m_mode ) );
+      //result.insert( std::map<std::string, double>::value_type( propertyName + "_MODE", ss.m_mode ) );
 
     }
     ++it;
