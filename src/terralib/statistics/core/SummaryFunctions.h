@@ -51,13 +51,29 @@ namespace te
      */
     TESTATEXPORT void GetStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss);
     
+    /*! Fills the summary statistics structure from a set of categorical values.
+     
+     \param values a vector of categorical values. Do not pass empty.
+     \param ss     to return the statistical summary.
+     \param nullVal a value to be considered as non-value or invalid value.
+     */
+    TESTATEXPORT void GetStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss, const std::string& nullValue);
     
     /*! Fills the summary statistics structure from a set of numerical values.
      
-     \param values a vector of numerical values. Do not pass empty.
-     \param ss     to return the statistical summary.
+     \param values  a vector of numerical values. Do not pass empty.
+     \param ss      to return the statistical summary.
+     \param nullVal a value to be considered as non-value or invalid value.
+     */
+    TESTATEXPORT void GetNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss, double nullVal);
+    
+    /*! Fills the summary statistics structure from a set of numerical values.
+     
+     \param values  a vector of numerical values. Do not pass empty.
+     \param ss      to return the statistical summary.
      */
     TESTATEXPORT void GetNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss);
+    
     
     /*! Returns the mode of set of numerical values.
      

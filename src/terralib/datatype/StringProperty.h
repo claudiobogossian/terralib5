@@ -39,6 +39,8 @@ namespace te
 
       \brief The type for string types: FIXED_STRING, VAR_STRING or STRING.
 
+      \ingroup datatype
+
       \sa SimpleProperty, Property, NumericProperty, ArrayProperty, DateTimeProperty, CompositeProperty
     */
     class TEDATATYPEEXPORT StringProperty : public SimpleProperty

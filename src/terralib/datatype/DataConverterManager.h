@@ -44,6 +44,8 @@ namespace te
 
       \brief A singleton for managing the data type converter available in the system.
 
+      \ingroup datatype
+
       \sa DataTypeConverter
     */
     class TEDATATYPEEXPORT DataConverterManager : public te::common::Singleton<DataConverterManager>

@@ -313,6 +313,24 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
     dst->add(geomProp);
   }
 
+  std::vector<std::string> pkey;
+  table.primaryKeys(pkey);
+
+  te::da::PrimaryKey* pk = 0;
+  if(!pkey.empty())
+  {
+    pk = new te::da::PrimaryKey(table.name()+"_pk", dst.get());
+
+    std::vector<te::dt::Property*> pkProps;
+    for(std::size_t i = 0; i < pkey.size(); ++i)
+    {
+      te::dt::Property* p = dst->getProperty(pkey[i]);
+      pkProps.push_back(p);
+    }
+
+    pk->setProperties(pkProps);
+  }
+
   return dst;
 }
 

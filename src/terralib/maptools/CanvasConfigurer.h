@@ -65,6 +65,8 @@ namespace te
              cc.config(symbolizer);
              </code>
 
+      \ingroup map
+
       \sa te::se::Visitor
     */
     class TEMAPEXPORT CanvasConfigurer : public te::se::Visitor, public boost::noncopyable

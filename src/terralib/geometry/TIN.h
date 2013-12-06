@@ -38,6 +38,8 @@ namespace te
       
       \brief TIN (triangulated irregular network) is a PolyhedralSurface consisting only of Triangle patches.
 
+      \ingroup geometry
+
       \sa Geometry,
           Point,
           Curve, LineString, LinearRing,

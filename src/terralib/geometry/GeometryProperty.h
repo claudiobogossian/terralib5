@@ -44,6 +44,8 @@ namespace te
 
       \brief Geometric property.
 
+      \ingroup geometry
+
       \sa SimpleProperty
      */
     class TEGEOMEXPORT GeometryProperty : public te::dt::SimpleProperty

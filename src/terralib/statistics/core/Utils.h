@@ -41,28 +41,45 @@ namespace te
   namespace stat
   {
     /*!
-      \brief Get the StatisticalSummary short name filtered by enum;
+      \brief Get the statistical parameter short name from its enumerator.
 
       \param e   The enumerator.
 
-      \return The short name of enum.
+      \return The short name for the statistical parameter.
     */
     TESTATEXPORT std::string GetStatSummaryShortName(const int& e);
 
     /*!
-      \brief Get the StatisticalSummary full name filtered by enum;
+      \brief Get the statistical parameter full name ffrom its enumerator.
 
       \param e   The enumerator.
 
-      \return The full name of enum.
+      \return The statistical parameter full name of enum.
     */
     TESTATEXPORT std::string GetStatSummaryFullName(const int& e);
 
-
-    TESTATEXPORT int GetPropertyIndex(te::da::DataSet* dataSet, const std::string propName);
-
+    /*!
+     \brief Returns the values of a string type property in a vector of values.
+     
+     It returns only the non-empty values.
+     
+     \param dataSet   A pointer to the dataset. Do not pass null.
+     \param propName  The propoerty name. Do not pass empty.
+     
+     \return The vector of string values.
+     */
     TESTATEXPORT std::vector<std::string> GetStringData(te::da::DataSet* dataSet, const std::string propName);
-
+    
+    /*!
+     \brief Returns the values of a numeric type property in a vector of values.
+     
+     It returns only the non-empty values.
+     
+     \param dataSet   A pointer to the dataset. Do not pass null.
+     \param propName  The propoerty name. Do not pass empty.
+     
+     \return The vector of numeric values (double).
+     */
     TESTATEXPORT std::vector<double> GetNumericData(te::da::DataSet* dataSet, const std::string propName);
 
   } // end namespace vp

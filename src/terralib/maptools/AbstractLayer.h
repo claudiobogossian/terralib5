@@ -69,6 +69,8 @@ namespace te
 
       \brief This is the base class for layers.
 
+      \ingroup map
+
       \sa TreeItem, DataSetLayer, QueryLayer, FolderLayer, RasterLayer
     */
     class TEMAPEXPORT AbstractLayer : public te::common::TreeItem

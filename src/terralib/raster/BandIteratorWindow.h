@@ -47,6 +47,8 @@ namespace te
              optimized by a window structure (e.g. 3x3, 5x5, etc). Examples
              include filters, moving windows, morphology, etc.
 
+      \ingroup rst
+
       \sa te::rst::Band
     */
     template<class T> class BandIteratorWindow

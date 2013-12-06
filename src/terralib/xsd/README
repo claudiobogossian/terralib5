@@ -1,4 +1,26 @@
-TO BE DONE: add a note about this module (dependencies and where to find more info)
+				TerraLib 5 - XSD Module
+          ==================================
+		  
+This folder contains the source code of the XSD module
+of TerraLib.
+
+Module Dependencies:
+--------------------
+
+This module requires the following modules in order to be built:
+1. Common Runtime
+2. XML
+
+The third-party software needed:
+1. Boost
+
+More Information:
+-----------------
+
+The TerraLib 5 wiki contains a complete explanation about
+the internals of this module:
+http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:xsd
+
 ---------------------------------------------
 
                            @-TerraLib Team-@

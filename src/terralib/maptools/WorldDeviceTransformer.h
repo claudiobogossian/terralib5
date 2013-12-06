@@ -34,6 +34,10 @@ namespace te
       \class WorldDeviceTransformer
 
       \brief This class implements the logic for transforming from device coordinate to world coordinate and vice-versa.
+
+      \ingroup map
+
+      \sa Canvas
     */
     class WorldDeviceTransformer
     {

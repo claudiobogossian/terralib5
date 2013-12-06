@@ -21,6 +21,8 @@
   \file terralib/maptools/Utils.h
 
   \brief Utility functions for MapTools module.
+
+  \ingroup map
 */
 
 #ifndef __TERRALIB_MAPTOOLS_INTERNAL_UTILS_H

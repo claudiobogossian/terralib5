@@ -61,8 +61,10 @@ namespace te
      - An OGC's WKT description;
      - A PROJ4 text: to support coordinate conversion.
      
-     Refer to the <a href="http://www.spatialreference.org">Spatial Reference website</a> for more information about EPSG codes for SRS.
-     */
+      Refer to the <a href="http://www.spatialreference.org">Spatial Reference website</a> for more information about EPSG codes for SRS.
+
+      \ingroup srs
+    */
     class TESRSEXPORT SpatialReferenceSystemManager : public te::common::Singleton<SpatialReferenceSystemManager>
     {
       friend class te::common::Singleton<SpatialReferenceSystemManager>;

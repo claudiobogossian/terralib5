@@ -38,6 +38,8 @@ namespace te
 
       \brief Property for byte array types.
 
+      \ingroup datatype
+
       \sa SimpleProperty, Property, NumericProperty, ArrayProperty, DateTimeProperty, CompositeProperty, StringProperty, BitProperty
     */
     class TEDATATYPEEXPORT ByteArrayProperty : public SimpleProperty

@@ -37,6 +37,8 @@ namespace te
       \class DataSetTypeCapabilities
 
       \brief A class that informs what kind of constraint and index is supported by a given data source.
+
+      \ingroup dataaccess
     */
     class TEDATAACCESSEXPORT DataSetTypeCapabilities
     {

@@ -38,6 +38,8 @@ namespace te
       
       \brief The CoverageStyle defines the styling that is to be applied to a subset of Coverage data.
 
+      \ingroup se
+
       \sa Style, FeatureTypeStyle
     */
     class TESEEXPORT CoverageStyle : public Style

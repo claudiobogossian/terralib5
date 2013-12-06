@@ -293,6 +293,9 @@ namespace te
     TEDATAACCESSEXPORT std::auto_ptr<Select> BuildSelect(const std::string& dsname,
                                                          const std::vector<std::string>& properties,
                                                          const ObjectIdSet* oids);
+    
+    
+    TEDATAACCESSEXPORT int GetPropertyIndex(te::da::DataSet* dataSet, const std::string propName);
 
   } // end namespace da
 }   // end namespace te

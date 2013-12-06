@@ -44,6 +44,8 @@ namespace te
       
       \brief A LineSymbolizer is used to style a stroke along a linear geometry type, such as a string of line segments.
 
+      \ingroup se
+
       \sa Symbolizer, Stroke, ParameterValue, te::fe::PropertyName, ImageOutline
     */
     class TESEEXPORT LineSymbolizer : public Symbolizer

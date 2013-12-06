@@ -67,6 +67,8 @@ namespace te
 
        where Y is the measure in the derived unit and X is measure in base unit.
 
+      \ingroup common
+
       \sa UnitsOfMeasureManager
     */
     class TECOMMONEXPORT UnitOfMeasure

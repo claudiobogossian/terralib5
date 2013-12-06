@@ -37,6 +37,8 @@ namespace te
       \class Counted
 
       \brief A counted class keeps track of how many abstract instances are pointing to it.
+
+      \ingroup common
     */
     class Counted : public boost::noncopyable
     {

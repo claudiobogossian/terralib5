@@ -1,87 +1,29 @@
-	Building Procedures for TerraLib 5
+  ======================================	
+				  BUILD
   ======================================
-  ======================================
-		  (!!UNDER DEVELOPMENT!!)
-		  
-		  
-  The Terralib library uses Cmake to generate the compilation environment, 
-  Cmake is a cross-platform family of tools designed to build, test and package software.
-  For informations on Cmake, please refer to http://www.cmake.org/ for details.
-  
-  This section will explain the steps required to generate the compilation envirnment using cmake. 
-  
-  Cmake - General User Interface
-  ==============================
-  
-  1. Execute the cmake-gui system, found in the CMake binary folder.
-  
-  2. In the “Where is the source code”, put the path where is the CMakeLists main file. Example: <terralib_root>/build
-  
-  3. In the “Where to build the binaries”, put the path where you want the CMake generate the files. It can be the same path where the source code is, however, try to avoid this.
-	
-  (Optional) Set up the TE_DEPENDENCIES_DIR. Press the Add Entry button and adjust the path to the dependencies directory, for example:
-  
-             Name: TE_DEPENDENCIES_DIR
-             Type: PATH
-             Value: <unpack-dir>\terralib_3rdparty_win32
-			 
-  4. Click "Configure" and select the generator for the project.
-  
-  5. Review the "BUILD" group and check which module you want to build.
-  
-  6. Review the options related to third-party libraries (e.g. "Boost" or "Gdal") and make sure that
-	 CMake found the needed library file(s) and include directoriy.
-     If any of the dependencies is not found you must manually enter the path to it. Just click on the line of the dependency and type the path.
- 
-  7. Click "Generate"
 
-  8. Go to the selected building directory  in step 3 and run the appropriate building tool according
-	 to the generator you selected in step 4. (e.g. for Unix Makefiles just run "make").
-
-  Cmake - Command Line
-  ==============================
-  
-  1. Create a directory where the compilation files will be generated and navigate to it.
-  
-  2. Invoke the cmake command adjusting any options you may want to, This is done with a -DVARIABLE:TYPE=VALUE syntax on the command line.
-	 such as:
-  
-	a. Build type (debug or release). Ex: -DCMAKE_BUILD_TYPE=Release
-	b. Weather or not to build certain Terralib modules (QT_Widgets, TerraView, etc.) Ex: -DBUILD_TERRAVIEW=false
-
-	The Generator must be specified as: -G <generator-name>
-	
-	A few examples of how to call cmake to build terralib:
-
-	  Specifying Visual Studio 10 as the generator, using source code located at C:\Dev\Terralib\build and setting the option to generate a NSIS installer as true:
-	  cmake -G “Visual Studio 10” C:\Dev\Terralib\build -DTE_DEPENDENCIES_DIR=C:/Libs/terralib_3rdparty_win32 -DCPACK_BINARY_NSIS=True
-
-	  Specifying Unix Makefiles as a generator, compiling in Release and adjusting the QWT references to the path of a locally compiled version:
-	  cmake -G “Unix Makefiles” -DCMAKE_BUILD_TYPE=Release -DQWT_INCLUDE_DIR=/usr/local/qwt-6.1.0/ include -DQWT_LIBRARY=/usr/local/qwt-6.1.0/lib/libqwt.so.6.1.0
-   
-   3. Go to the building directory selected in step 1 and run the appropriate building tool according
-      to the generator you selected in step 2. (e.g. for Unix Makefiles just run "make").
 	  
-	  
+		  
+Refer to build/README for details on how to set a compilation environment for the Terralib 5 library.
   
-  Installation Procedures for TerraLib 5
+  ======================================  
+				INSTALL
   ======================================
-  ======================================
-		  (!!UNDER DEVELOPMENT!!)
+
 
 This section will guide you through the process of installation of TerraLib in your plataform.
 
 Note that there are specific notes depending on the Operational System.
 
-
+-------------------------------------
 Notes for Windows 7
-======================================
+-------------------------------------
 
-
+-------------------------------------
 Notes for Linux
-======================================
+-------------------------------------
 
-
+-------------------------------------
 Notes for Mac
-======================================
+-------------------------------------
 

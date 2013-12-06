@@ -42,6 +42,8 @@ namespace te
       
       \brief Surface is an abstract class that represents a 2-dimensional geometric objects.
 
+      \ingroup geometry
+
       \sa Geometry,
           AbstractPoint, Point, PointM, PointZ, PointZM, PointKd,
           Curve, LineString, LinearRing, Line, CircularString, CompoundCurve,

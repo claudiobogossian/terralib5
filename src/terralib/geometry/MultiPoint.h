@@ -38,6 +38,8 @@ namespace te
       
       \brief MultiPoint is a GeometryCollection whose elements are restricted to points.
 
+      \ingroup geometry
+
       \sa Geometry,
           AbstractPoint, Point, PointM, PointZ, PointZM, PointKd,
           Curve, LineString, LinearRing,

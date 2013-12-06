@@ -38,6 +38,8 @@ namespace te
       
       \brief The FeatureTypeStyle defines the styling that is to be applied to a dataset that can be viewed as a feature type.
 
+      \ingroup se
+
       \sa Style, CoverageStyle
     */
     class TESEEXPORT FeatureTypeStyle : public Style

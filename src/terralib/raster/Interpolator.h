@@ -45,6 +45,8 @@ namespace te
 
       \brief It interpolates one pixel based on a selected algorithm.
              Methods currently available are Nearest Neighbor, Bilinear, and Bicubic.
+
+      \ingroup rst
     */
     class TERASTEREXPORT Interpolator
     {

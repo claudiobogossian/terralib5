@@ -55,6 +55,8 @@ namespace te
       by a system and data-dependent character identifier.
       Commonly, channels will be labelled as "1", "2", etc.
 
+      \ingroup se
+
       \sa RasterSymbolizer, SelectedChannel
     */
     class TESEEXPORT ChannelSelection : public boost::noncopyable

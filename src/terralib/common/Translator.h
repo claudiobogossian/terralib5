@@ -110,6 +110,8 @@ namespace te
       \todo O todo acima deve ser considerado e todo codigo deve ser visto para poder colocar caracteres curinga dentro da mensagem que sejam substituidas, como o printf e cia!
 
       \todo Investigar o uso de mensagens no plural: http://www.gnu.org/software/hello/manual/gettext/Plural-forms.html#Plural-forms.
+
+      \ingroup common
      */
     class TECOMMONEXPORT Translator : public Singleton<Translator>
     {

@@ -50,6 +50,8 @@ namespace te
       There is a default finder named DefaultFinder that
       seraches for plugins in some common places.
 
+      \ingroup plugin
+
       \sa PluginManager, PluginInfo, DefaultFinder
     */
     class TEPLUGINEXPORT AbstractFinder : public boost::noncopyable

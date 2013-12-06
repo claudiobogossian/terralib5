@@ -45,6 +45,8 @@ namespace te
 
       \brief It defines the concept of a map display responsible for controlling how a set of layers are displayed.
 
+      \ingroup map
+
       \sa AbstractLayer, MapDisplay
     */
     class TEMAPEXPORT AbstractMapDisplay : public boost::noncopyable

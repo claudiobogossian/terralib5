@@ -44,6 +44,8 @@ namespace te
       The OGC SFS specification defines only one subclass of
       Curve which uses linear interpolation between Points: LineString, Line, LinearRing.
       The ISO SQL/MM additionaly specifies CircularString and CompoundCurve.
+
+      \ingroup geometry
       
       \sa Geometry,
           AbstractPoint, Point, PointM, PointZ, PointZM, PointKd,

@@ -36,14 +36,22 @@
 #include "srs/ProjectedCoordinateSystem.h"
 #include "srs/SpatialReferenceSystemManager.h"
 
+/*!
+  \defgroup srs Spatial Reference System
+
+  \brief This module implements the concept of spatial reference systems.
+
+  Basically, the module deals with the representation of Spatial Reference Systems and with the transformation of coordinates between two different systems.
+
+  The main classes/concepts in this module are listed here. The namespace associated to the Spatial Reference System module is te::srs.
+  To know more about it, see the te::srs namespace documentation.
+*/
+
 namespace te
 {
   /*!
-    \brief This is the namespace for the Spatial Reference System module module.
-
-    This module can be used to manage the concept of spatial reference systems.
-  
-   */
+    \brief Namespace for the Spatial Reference System module of TerraLib.
+  */
   namespace srs
   {
   } // end namespace srs

@@ -38,6 +38,8 @@ namespace te
 
       \brief A point with x and y coordinate values.
 
+      \ingroup geometry
+
       \sa Geometry,
           AbstractPoint, PointM, PointZ, PointZM, PointKd,
           Curve, LineString, LinearRing, Line, CircularString, CompoundCurve,

@@ -109,6 +109,8 @@ namespace te
       Besides the descriptive information about the underlying data repository,
       each data source also provides information about their capabilities.
 
+      \ingroup dataaccess
+
       \sa DataSourceManager, DataSourceFactory, DataSet, DataSetType
     */
     class TEDATAACCESSEXPORT DataSource : public boost::noncopyable

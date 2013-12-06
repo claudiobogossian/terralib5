@@ -42,13 +42,15 @@ namespace te
 
       \brief LineString is a curve with linear interpolation between points.
 
-      In a linestring each consecutive pair of points defines a line segment.      
-      Internally, we store an array of coordinates and separate arrays for points with z and m.      
+      In a linestring each consecutive pair of points defines a line segment.
+      Internally, we store an array of coordinates and separate arrays for points with z and m.
       All OGC interface is supported based on points through the method getPointN.
       But the extended methods, for coordinates, will be faster than the same versions of OGC
       methods because they work with less complex structures (coordinates) than points.
 
       \note A LineString must have at least two coordinates, otherwise, its methods must not be called.
+
+      \ingroup geometry
 
       \sa Geometry,
           AbstractPoint, Point, PointM, PointZ, PointZM, PointKd,

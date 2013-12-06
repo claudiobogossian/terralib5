@@ -41,7 +41,7 @@ te::qt::plugins::terralib4::TL4ConnectorWizardPage::TL4ConnectorWizardPage(QWidg
   m_ui->setupUi(this);
 
   m_ui->m_databaseTypeComboBox->addItem("Access");
-  m_ui->m_databaseTypeComboBox->addItem("SQL Server");
+  /*m_ui->m_databaseTypeComboBox->addItem("SQL Server");
   m_ui->m_databaseTypeComboBox->addItem("SQL Server Spatial");
   m_ui->m_databaseTypeComboBox->addItem("Oracle");
   m_ui->m_databaseTypeComboBox->addItem("Oracle OCI");
@@ -49,7 +49,7 @@ te::qt::plugins::terralib4::TL4ConnectorWizardPage::TL4ConnectorWizardPage(QWidg
   m_ui->m_databaseTypeComboBox->addItem("MySQL");
   m_ui->m_databaseTypeComboBox->addItem("PostgreSQL");
   m_ui->m_databaseTypeComboBox->addItem("PostGIS");
-  m_ui->m_databaseTypeComboBox->addItem("Firebird");
+  m_ui->m_databaseTypeComboBox->addItem("Firebird");*/
 
   onDatabaseTypeComboBoxActivated(0);
 

@@ -56,6 +56,8 @@ namespace te
       
       \brief A Select models a query to be used when retrieving data from a DataSource.
 
+      \ingroup dataaccess
+
       \sa Query, Fields, From, Expression, GroupBy, Expression, OrderBy, Distinct
 
       \todo Ainda falta incluir a possibilidade de construir consultas com operacoes de INTERSECT/UNION/EXCEPT e etc...

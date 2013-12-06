@@ -50,6 +50,8 @@ namespace te
       \class GeometricTransformation
 
       \brief 2D Geometric transformation base class.
+
+      \ingroup geometry
     */
     class TEGEOMEXPORT GeometricTransformation : public boost::noncopyable
     {

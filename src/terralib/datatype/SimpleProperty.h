@@ -40,6 +40,8 @@ namespace te
 
       \sa Property, CompositeProperty, NumericProperty, StringProperty, ArrayProperty, DateTimeProperty
 
+      \ingroup datatype
+
       \todo The default value must be changed to an AbstractData.
     */
     class TEDATATYPEEXPORT SimpleProperty : public Property

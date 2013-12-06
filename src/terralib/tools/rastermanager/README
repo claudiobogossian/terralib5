@@ -1,0 +1,30 @@
+            TerraLib 5 - Raster ManagerTool
+            ===============================
+          
+This folder contains the source code of the Raster Manager Tool
+of TerraLib.
+
+Tool Dependencies:
+--------------------
+
+The third-party software needed:
+1. Gdal
+2. Boost.ProgramOptions
+3. Boost.FileSystem
+4. Boost.System
+5. Qt4 (Gui tool only)
+
+More Information:
+-----------------
+
+The TerraLib 5 wiki contains a complete explanation about
+the internals of this tool:
+http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:tools:dsinfo
+
+
+      ---------------------------------------------------------
+             TerraLib Team <terralib-team@dpi.inpe.br>
+            National Institute For Space Research - INPE
+      P. BOX 515 - Sao Jose dos Campos - SP - Brazil, 12201-970
+                            11/18/2008
+  

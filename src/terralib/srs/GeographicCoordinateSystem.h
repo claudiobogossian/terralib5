@@ -35,14 +35,19 @@
 
 namespace te
 {
-	namespace srs
-	{
+  namespace srs
+  {
     class Datum;
+
     /*!
-     \class GeographicCoordinateSystem
-     \brief A Geographic Coordinate System (GEOGCS).
-     A Geographic Coordinate System is a coordinate system based on latitude and longitude.
-     */
+      \class GeographicCoordinateSystem
+
+      \brief A Geographic Coordinate System (GEOGCS).
+
+      A Geographic Coordinate System is a coordinate system based on latitude and longitude.
+
+      \ingroup srs
+    */
     class TESRSEXPORT GeographicCoordinateSystem: public SpatialReferenceSystem
     {
     public:

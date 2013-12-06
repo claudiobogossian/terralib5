@@ -71,8 +71,6 @@ namespace te
 
         It is used to listen events sent by the application framework.
         It is a proxy for the te::qt::widgets::MapDisplay.
-
-        \ingroup afconnector
       */
       class TEQTAFEXPORT MapDisplay : public QObject
       {

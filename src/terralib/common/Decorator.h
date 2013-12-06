@@ -36,6 +36,8 @@ namespace te
       Decorators are classes that can change object behavioral in run-time.
       For more informations about decorator pattern, see:
       <A HREF="http://en.wikipedia.org/wiki/Decorator_pattern">Decorator pattern on Wikipedia.</A>
+
+      \ingroup common
     */
     template<class T> class Decorator : public T 
     {

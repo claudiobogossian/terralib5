@@ -47,6 +47,8 @@ namespace te
       an specific engine capable of loading and preparing the
       plugin before the startup method is called.
 
+      \ingroup plugin,
+
       \sa Plugin, PluginInfo, PluginEngineFactory, CppPluginEngine
      */
     class AbstractPluginEngine : public boost::noncopyable
