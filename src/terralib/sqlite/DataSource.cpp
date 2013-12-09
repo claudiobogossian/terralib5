@@ -64,11 +64,11 @@ class te::sqlite::DataSource::Impl
     sqlite3* m_db;
 
     static te::da::SQLDialect* sm_dialect;
-    static te::da::DataSourceCapabilities sm_capabilities;
+    static te::da::DataSourceCapabilities* sm_capabilities;
 };
 
 te::da::SQLDialect* te::sqlite::DataSource::Impl::sm_dialect(0);
-te::da::DataSourceCapabilities te::sqlite::DataSource::Impl::sm_capabilities;
+te::da::DataSourceCapabilities* te::sqlite::DataSource::Impl::sm_capabilities(0);
 
 te::sqlite::DataSource::DataSource()
   : m_pImpl(0)
@@ -194,12 +194,24 @@ bool te::sqlite::DataSource::isValid() const
 
 const te::da::DataSourceCapabilities& te::sqlite::DataSource::getCapabilities() const
 {
-  return Impl::sm_capabilities;
+  return *Impl::sm_capabilities;
 }
 
 const te::da::SQLDialect* te::sqlite::DataSource::getDialect() const
 {
   return Impl::sm_dialect;
+}
+
+void te::sqlite::DataSource::set(te::da::DataSourceCapabilities* capabilities)
+{
+  delete Impl::sm_capabilities;
+  Impl::sm_capabilities = capabilities;
+}
+
+void te::sqlite::DataSource::set(te::da::SQLDialect* dialect)
+{
+  delete Impl::sm_dialect;
+  Impl::sm_dialect = dialect;
 }
 
 void te::sqlite::DataSource::create(const std::map<std::string, std::string>& dsInfo)
