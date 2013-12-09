@@ -155,12 +155,31 @@ std::vector<std::string> te::stat::GetStringData(te::da::DataSet* dataSet, const
 std::vector<double> te::stat::GetNumericData(te::da::DataSet* dataSet, const std::string propName)
 {
   std::vector<double> result;
-  dataSet->moveFirst();
+  double numval;
 
+  size_t index=0;
+  for (index=0; index<dataSet->getNumProperties(); ++index)
+    if (dataSet->getPropertyName(index) == propName)
+      break;
+  
+  std::size_t type = dataSet->getPropertyDataType(index);
+  dataSet->moveFirst();
   do
   {
     if (!dataSet->isNull(propName))
-      result.push_back(dataSet->getDouble(propName));
+    {
+      if (type == te::dt::INT16_TYPE)
+        numval = dataSet->getInt16(index);
+      else if (type == te::dt::INT32_TYPE)
+        numval = dataSet->getInt32(index);
+      else if (type == te::dt::INT64_TYPE)
+        numval = dataSet->getInt64(index);
+      else if (type == te::dt::FLOAT_TYPE)
+        numval = dataSet->getFloat(index);
+      else if (type == te::dt::DOUBLE_TYPE)
+        numval = dataSet->getDouble(index);
+      result.push_back(numval);
+    }
   }while(dataSet->moveNext());
 
   return result;
