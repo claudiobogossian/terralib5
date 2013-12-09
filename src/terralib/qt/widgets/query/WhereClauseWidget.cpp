@@ -40,6 +40,7 @@
 #include "../../../dataaccess/query/LiteralInt16.h"
 #include "../../../dataaccess/query/LiteralInt32.h"
 #include "../../../dataaccess/query/LiteralString.h"
+#include "../../../dataaccess/query/OrderByItem.h"
 #include "../../../dataaccess/query/PropertyName.h"
 #include "../../../dataaccess/query/Select.h"
 #include "../../../dataaccess/utils/Utils.h"
@@ -463,16 +464,21 @@ void te::qt::widgets::WhereClauseWidget::onValuePropertyRadioButtonClicked()
 
   for(size_t t = 0; t < m_fromItems.size(); ++t)
   {
-    te::da::FromItem* fi = new te::da::DataSetName(m_fromItems[t].first, m_fromItems[t].second);
+    te::da::FromItem* fi = new te::da::DataSetName(m_fromItems[t].first/*, m_fromItems[t].second*/);
 
     from->push_back(fi);
   }
+
+  te::da::OrderBy* order = new te::da::OrderBy;
+  te::da::OrderByItem* o = new te::da::OrderByItem(propertyName, te::da::ASC);
+  order->push_back(o);
 
   te::da::Select* select = new te::da::Select();
 
   select->setFields(fields);
   select->setDistinct(dist);
   select->setFrom(from);
+  select->setOrderBy(order);
 
   std::auto_ptr<te::da::DataSet> dataset;
 
