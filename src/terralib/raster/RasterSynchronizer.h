@@ -34,6 +34,7 @@
 // Boost
 #include <boost/noncopyable.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/thread/condition_variable.hpp>
 
 // STL
 #include <vector>
@@ -42,6 +43,10 @@ namespace te
 {
   namespace rst
   {
+    class SynchronizedBandBlocksManager;
+    class SynchronizedBand;
+    class SynchronizedRaster;
+    
     /*!
       \class RasterSynchronizer
 
@@ -49,6 +54,10 @@ namespace te
     */
     class TERASTEREXPORT RasterSynchronizer: public boost::noncopyable
     {
+      friend class SynchronizedBandBlocksManager;
+      friend class SynchronizedBand;
+      friend class SynchronizedRaster;
+      
       public:
 
         /*!
@@ -60,64 +69,7 @@ namespace te
         
         ~RasterSynchronizer();
         
-        /*!
-          \brief Return the internal raster acces policy.
-          \return Return the internal raster acces policy.
-        */        
-        inline te::common::AccessPolicy getPolicy() const
-        {
-          return m_policy; 
-        }
-        
-        /*!
-          \brief Return the internal raster reference.
-          \return Return the internal raster reference.
-        */        
-        inline Raster& getRaster()
-        {
-          return m_raster; 
-        }        
-
-        /*!
-          \brief Return the internal mutex reference.
-          \return Return the internal mutex reference.
-        */        
-        inline boost::mutex& getMutex()
-        {
-          return m_mutex; 
-        }        
-
-        /*!
-          \brief Increment a block use counter.
-          \param bandIdx Block band index.
-          \param blockXIndex Block X index.
-          \param blockYIndex Block Y index.
-          \return true if OK, false if the increment could not be done.
-        */            
-        bool incrementBlockUseCounter( const unsigned int bandIdx,
-          const unsigned int blockXIndex, const unsigned int blockYIndex );
-
-        /*!
-          \brief Decrement a block use counter.
-          \param bandIdx Block band index.
-          \param blockXIndex Block X index.
-          \param blockYIndex Block Y index.
-        */            
-        void decrementBlockUseCounter( const unsigned int bandIdx,
-          const unsigned int blockXIndex, const unsigned int blockYIndex );
-          
-        /*!
-          \brief Return the current block use counter.
-          \param bandIdx Block band index.
-          \param blockXIndex Block X index.
-          \param blockYIndex Block Y index.
-          \param useCounter The current block use counter.
-        */            
-        void getBlockUseCounter( const unsigned int bandIdx,
-          const unsigned int blockXIndex, const unsigned int blockYIndex,
-          unsigned int& useCounter );
-
-      protected:
+      protected :
         
         /*! 
           \brief Blocks use counter type definition. 
@@ -131,7 +83,37 @@ namespace te
         
         boost::mutex m_mutex; //!< General sync mutex;
         
-        BlocksUseCounterT m_blocksUseCounters; //!< blocks use counter.
+        boost::condition_variable_any m_condVar; //!< Block use request sync variable.
+        
+        BlocksUseCounterT m_blocksUseCounters; //!< blocks use counter.        
+        
+        /*!
+          \brief Acquire a raster data block.
+          \param bandIdx Block band index.
+          \param blockXIndex Block X index.
+          \param blockYIndex Block Y index.
+          \param blkDataPtr A pointer to a pre-allocated area where the block data will be written.
+          \return true if OK, false if the increment could not be done.
+          \note The block data will be read from the internal raster and the block use counter will be incremented.
+        */            
+        bool acquireBlock( const unsigned int bandIdx,
+          const unsigned int blockXIndex, const unsigned int blockYIndex,
+          void* blkDataPtr );
+          
+        /*!
+          \brief Release a raster data block.
+          \param bandIdx Block band index.
+          \param blockXIndex Block X index.
+          \param blockYIndex Block Y index.
+          \param blkDataPtr A pointer where the block data will be read.
+          \note The block data will be writed to the internal raster and the block use counter will be decremented.
+          \return true if OK, false if the increment could not be done.
+        */            
+        bool releaseBlock( const unsigned int bandIdx,
+          const unsigned int blockXIndex, const unsigned int blockYIndex,
+          void* blkDataPtr );          
+
+       
 
     };
 

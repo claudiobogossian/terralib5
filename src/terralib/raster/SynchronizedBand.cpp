@@ -38,7 +38,7 @@ te::rst::SynchronizedBand::SynchronizedBand( SynchronizedBandBlocksManager& bloc
   : te::rst::Band( new te::rst::BandProperty( 0, 0 ), idx ),
   m_blocksManager( blocksManager )
 {
-  blocksManager.getSynchronizer()->getMutex().lock();
+  blocksManager.getSynchronizer()->m_mutex.lock();
   
   m_syncRasterPtr = &raster;
 
@@ -52,7 +52,7 @@ te::rst::SynchronizedBand::SynchronizedBand( SynchronizedBandBlocksManager& bloc
   te::rst::SetBlockFunctions( &m_getBuff, &m_getBuffI, &m_setBuff, &m_setBuffI, 
     blocksManager.getRaster()->getBand( idx )->getProperty()->getType());
     
-  blocksManager.getSynchronizer()->getMutex().unlock();
+  blocksManager.getSynchronizer()->m_mutex.unlock();
 }
 
 te::rst::SynchronizedBand::SynchronizedBand()

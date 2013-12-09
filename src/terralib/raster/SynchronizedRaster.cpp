@@ -47,14 +47,14 @@ te::rst::SynchronizedRaster::SynchronizedRaster( RasterSynchronizer& sync,
   const unsigned char maxMemPercentUsed )
 : te::rst::Raster()
 {
-  sync.getMutex().lock();
-  m_grid = new te::rst::Grid( *sync.getRaster().getGrid() );
-  sync.getMutex().unlock();
+  sync.m_mutex.lock();
+  m_grid = new te::rst::Grid( *sync.m_raster.getGrid() );
+  sync.m_mutex.unlock();
   
   if( ! m_blocksManager.initialize( sync, maxMemPercentUsed ) )
     throw Exception(TR_RASTER("Cannot initialize the blocks menager") );
   
-  for( unsigned int bandsIdx = 0 ; bandsIdx < sync.getRaster().getNumberOfBands() ; 
+  for( unsigned int bandsIdx = 0 ; bandsIdx < sync.m_raster.getNumberOfBands() ; 
     ++bandsIdx )
     m_bands.push_back( new te::rst::SynchronizedBand( m_blocksManager, *this,
       bandsIdx ) );
@@ -64,14 +64,14 @@ te::rst::SynchronizedRaster::SynchronizedRaster( const unsigned int maxNumberOfC
   RasterSynchronizer& sync )
 : te::rst::Raster()
 {
-  sync.getMutex().lock();
-  m_grid = new te::rst::Grid( *sync.getRaster().getGrid() );
-  sync.getMutex().unlock();
+  sync.m_mutex.lock();
+  m_grid = new te::rst::Grid( *sync.m_raster.getGrid() );
+  sync.m_mutex.unlock();
   
   if( ! m_blocksManager.initialize( maxNumberOfCacheBlocks, sync ) )
     throw Exception(TR_RASTER("Cannot initialize the blocks menager") );
   
-  for( unsigned int bandsIdx = 0 ; bandsIdx < sync.getRaster().getNumberOfBands() ; 
+  for( unsigned int bandsIdx = 0 ; bandsIdx < sync.m_raster.getNumberOfBands() ; 
     ++bandsIdx )
     m_bands.push_back( new te::rst::SynchronizedBand( m_blocksManager, *this,
       bandsIdx ) );
@@ -86,10 +86,10 @@ std::map<std::string, std::string> te::rst::SynchronizedRaster::getInfo() const
 {
   std::map<std::string, std::string> info;
   
-  m_blocksManager.getSynchronizer()->getMutex().lock();
+  m_blocksManager.getSynchronizer()->m_mutex.lock();
   assert( m_blocksManager.getRaster() );
   info = m_blocksManager.getRaster()->getInfo();
-  m_blocksManager.getSynchronizer()->getMutex().unlock();
+  m_blocksManager.getSynchronizer()->m_mutex.unlock();
   
   return info;
 }
@@ -98,10 +98,10 @@ int te::rst::SynchronizedRaster::getBandDataType(std::size_t i) const
 {
   int returnValue = 0;
   
-  m_blocksManager.getSynchronizer()->getMutex().lock();
+  m_blocksManager.getSynchronizer()->m_mutex.lock();
   assert( m_blocksManager.getRaster() );
   returnValue = m_blocksManager.getRaster()->getBandDataType( i );
-  m_blocksManager.getSynchronizer()->getMutex().unlock();
+  m_blocksManager.getSynchronizer()->m_mutex.unlock();
   
   return returnValue;
 };

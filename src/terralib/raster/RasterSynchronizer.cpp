@@ -54,8 +54,9 @@ te::rst::RasterSynchronizer::~RasterSynchronizer()
 {
 }
         
-bool te::rst::RasterSynchronizer::incrementBlockUseCounter( const unsigned int bandIdx,
-  const unsigned int blockXIndex, const unsigned int blockYIndex )
+bool te::rst::RasterSynchronizer::acquireBlock( const unsigned int bandIdx,
+  const unsigned int blockXIndex, const unsigned int blockYIndex,
+  void* blkDataPtr )
 {
   m_mutex.lock();
   
@@ -77,28 +78,38 @@ bool te::rst::RasterSynchronizer::incrementBlockUseCounter( const unsigned int b
   
   if( m_policy & te::common::WAccess )
   {
-    if( m_blocksUseCounters[ bandIdx ][ blockYIndex ][ blockXIndex ] )
+    // Wait the block to be avaliable 
+        
+    while( m_blocksUseCounters[ bandIdx ][ blockYIndex ][ blockXIndex ] )
     {
-      m_mutex.unlock();
-      return false;
+      m_condVar.wait( m_mutex );
     }
-    else
-    {
-      m_blocksUseCounters[ bandIdx ][ blockYIndex ][ blockXIndex ] = 1;
-      m_mutex.unlock();
-      return true;
-    }
+    
+    assert( m_blocksUseCounters[ bandIdx ][ blockYIndex ][ blockXIndex ] == 0 );
+    
+    m_blocksUseCounters[ bandIdx ][ blockYIndex ][ blockXIndex ] = 1;
+    
+    m_raster.getBand( bandIdx )->read( blockXIndex, blockYIndex, blkDataPtr );
+    
+    m_mutex.unlock();  
+    
+    return true;
   }
   else
   {
     ++( m_blocksUseCounters[ bandIdx ][ blockYIndex ][ blockXIndex ] );
-    m_mutex.unlock();
+    
+    m_raster.getBand( bandIdx )->read( blockXIndex, blockYIndex, blkDataPtr );
+    
+    m_mutex.unlock();    
+    
     return true;
   }
 }
-  
-void te::rst::RasterSynchronizer::decrementBlockUseCounter( const unsigned int bandIdx,
-  const unsigned int blockXIndex, const unsigned int blockYIndex )
+
+bool te::rst::RasterSynchronizer::releaseBlock( const unsigned int bandIdx,
+  const unsigned int blockXIndex, const unsigned int blockYIndex,
+  void* blkDataPtr )
 {
   m_mutex.lock();
   
@@ -120,38 +131,19 @@ void te::rst::RasterSynchronizer::decrementBlockUseCounter( const unsigned int b
   
   if( m_blocksUseCounters[ bandIdx ][ blockYIndex ][ blockXIndex ] )
   {
+    if( ( m_policy & te::common::WAccess ) &&
+      ( m_raster.getAccessPolicy() & te::common::WAccess ) )
+    {
+      m_raster.getBand( bandIdx )->write( blockXIndex, blockYIndex, blkDataPtr );
+    }
+    
     --( m_blocksUseCounters[ bandIdx ][ blockYIndex ][ blockXIndex ] );
   }
   
-  m_mutex.unlock();
-}
+  m_mutex.unlock();  
   
-void te::rst::RasterSynchronizer::getBlockUseCounter( const unsigned int bandIdx,
-  const unsigned int blockXIndex, const unsigned int blockYIndex,
-  unsigned int& useCounter )
-{
-  useCounter = 0;
+  m_condVar.notify_all();
   
-  m_mutex.lock();
-  
-  if( bandIdx >= m_blocksUseCounters.size() )
-  {
-    m_mutex.unlock();
-    throw Exception(TR_RASTER("Inalid band index") );
-  }
-  if( blockYIndex >= m_blocksUseCounters[ bandIdx ].size() )
-  {
-    m_mutex.unlock();
-    throw Exception(TR_RASTER("Inalid block Y index") );
-  }
-  if( blockXIndex >= m_blocksUseCounters[ bandIdx ][ blockYIndex ].size() )
-  {
-    m_mutex.unlock();
-    throw Exception(TR_RASTER("Inalid block X index") );
-  }  
-  
-  useCounter = m_blocksUseCounters[ bandIdx ][ blockYIndex ][ blockXIndex ];
-  
-  m_mutex.unlock();
+  return true;
 }
 

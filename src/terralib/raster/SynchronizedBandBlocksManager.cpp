@@ -24,10 +24,13 @@
 */
 
 // TerraLib
-#include "../common/PlatformUtils.h"
+
 #include "../raster/Band.h"
 #include "../raster/BandProperty.h"
 #include "SynchronizedBandBlocksManager.h"
+#include "Exception.h"
+#include "../common/PlatformUtils.h"
+#include "../common/Translator.h"
 
 // STL
 #include <algorithm>
@@ -64,16 +67,16 @@ bool te::rst::SynchronizedBandBlocksManager::initialize(
   unsigned int maxBlockSizeBytes = 0;
   unsigned int maxNumberOfCacheBlocks = 1;
   
-  if( !( sync.getPolicy() & te::common::WAccess ) )
+  if( !( sync.m_policy & te::common::WAccess ) )
   {
-    sync.getMutex().lock();
-    for( unsigned int bandIdx = 0 ; bandIdx < m_syncPtr->getRaster().getNumberOfBands() ;
+    sync.m_mutex.lock();
+    for( unsigned int bandIdx = 0 ; bandIdx < m_syncPtr->m_raster.getNumberOfBands() ;
       ++bandIdx )
     {
-      if( maxBlockSizeBytes < (unsigned int)m_syncPtr->getRaster().getBand( bandIdx )->getBlockSize() )
-        maxBlockSizeBytes = (unsigned int)m_syncPtr->getRaster().getBand( bandIdx )->getBlockSize();
+      if( maxBlockSizeBytes < (unsigned int)m_syncPtr->m_raster.getBand( bandIdx )->getBlockSize() )
+        maxBlockSizeBytes = (unsigned int)m_syncPtr->m_raster.getBand( bandIdx )->getBlockSize();
     }
-    sync.getMutex().unlock();
+    sync.m_mutex.unlock();
     
     const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
     const double usedVMem = (double)te::common::GetUsedVirtualMemory();
@@ -94,7 +97,7 @@ bool te::rst::SynchronizedBandBlocksManager::initialize(
 {
   free();
   
-  sync.getMutex().lock();
+  sync.m_mutex.lock();
   
   m_syncPtr = &sync;
   
@@ -102,26 +105,26 @@ bool te::rst::SynchronizedBandBlocksManager::initialize(
   
   unsigned int numberOfRasterBlocks = 0;
   
-  for( unsigned int bandIdx = 0 ; bandIdx < m_syncPtr->getRaster().getNumberOfBands() ;
+  for( unsigned int bandIdx = 0 ; bandIdx < m_syncPtr->m_raster.getNumberOfBands() ;
     ++bandIdx )
   {
-    if( m_globalBlocksNumberX < (unsigned int)m_syncPtr->getRaster().getBand( bandIdx )->getProperty()->m_nblocksx )
-      m_globalBlocksNumberX = (unsigned int)m_syncPtr->getRaster().getBand( bandIdx )->getProperty()->m_nblocksx;
+    if( m_globalBlocksNumberX < (unsigned int)m_syncPtr->m_raster.getBand( bandIdx )->getProperty()->m_nblocksx )
+      m_globalBlocksNumberX = (unsigned int)m_syncPtr->m_raster.getBand( bandIdx )->getProperty()->m_nblocksx;
       
-    if( m_globalBlocksNumberY < (unsigned int)m_syncPtr->getRaster().getBand( bandIdx )->getProperty()->m_nblocksy )
-      m_globalBlocksNumberY = (unsigned int)m_syncPtr->getRaster().getBand( bandIdx )->getProperty()->m_nblocksy;
+    if( m_globalBlocksNumberY < (unsigned int)m_syncPtr->m_raster.getBand( bandIdx )->getProperty()->m_nblocksy )
+      m_globalBlocksNumberY = (unsigned int)m_syncPtr->m_raster.getBand( bandIdx )->getProperty()->m_nblocksy;
       
-    if( m_globalBlockSizeBytes < (unsigned int)m_syncPtr->getRaster().getBand( bandIdx )->getBlockSize() )
-      m_globalBlockSizeBytes = (unsigned int)m_syncPtr->getRaster().getBand( bandIdx )->getBlockSize();
+    if( m_globalBlockSizeBytes < (unsigned int)m_syncPtr->m_raster.getBand( bandIdx )->getBlockSize() )
+      m_globalBlockSizeBytes = (unsigned int)m_syncPtr->m_raster.getBand( bandIdx )->getBlockSize();
     
     numberOfRasterBlocks +=
-      ( m_syncPtr->getRaster().getBand( bandIdx )->getProperty()->m_nblocksx *
-      m_syncPtr->getRaster().getBand( bandIdx )->getProperty()->m_nblocksy );    
+      ( m_syncPtr->m_raster.getBand( bandIdx )->getProperty()->m_nblocksx *
+      m_syncPtr->m_raster.getBand( bandIdx )->getProperty()->m_nblocksy );    
   }
     
   // Allocating the internal structures
   
-  if( sync.getPolicy() & te::common::WAccess )
+  if( sync.m_policy & te::common::WAccess )
   {
     m_maxNumberOfCacheBlocks = std::min( numberOfRasterBlocks, 1u );
   }
@@ -132,7 +135,7 @@ bool te::rst::SynchronizedBandBlocksManager::initialize(
   }
   
   unsigned int blockBIdx = 0;  
-  m_blocksPointers.resize( m_syncPtr->getRaster().getNumberOfBands() );
+  m_blocksPointers.resize( m_syncPtr->m_raster.getNumberOfBands() );
   
   for( blockBIdx = 0 ; blockBIdx < m_blocksPointers.size() ;  ++blockBIdx )
   {
@@ -145,47 +148,42 @@ bool te::rst::SynchronizedBandBlocksManager::initialize(
     }
   }
   
-  sync.getMutex().unlock();
+  sync.m_mutex.unlock();
   
   return true;
 }
 
 void te::rst::SynchronizedBandBlocksManager::free()
 {
-  // flushing the ram data, if necessary
+  // flushing the ram data
   
-  if( ( m_syncPtr != 0 ) && ( m_syncPtr->getPolicy() & te::common::WAccess ) )
+  if( ( m_syncPtr != 0 ) && ( m_syncPtr->m_policy & te::common::WAccess ) )
   {
-    m_syncPtr->getMutex().lock();
+    unsigned int blockBIdx = 0;
+    unsigned int blockYIdx = 0;
+    unsigned int blockXIdx = 0;
+    void* blockPtr = 0;
     
-    if( m_syncPtr->getRaster().getAccessPolicy() & te::common::WAccess )
+    for( blockBIdx = 0 ; blockBIdx < m_blocksPointers.size() ;  ++blockBIdx )
     {
-      unsigned int blockBIdx = 0;
-      unsigned int blockYIdx = 0;
-      unsigned int blockXIdx = 0;
-      void* blockPtr = 0;
-      
-      for( blockBIdx = 0 ; blockBIdx < m_blocksPointers.size() ;  ++blockBIdx )
+      for( blockYIdx = 0 ; blockYIdx < m_globalBlocksNumberY ;
+        ++blockYIdx )
       {
-        for( blockYIdx = 0 ; blockYIdx < m_globalBlocksNumberY ;
-          ++blockYIdx )
+        for( blockXIdx = 0 ; blockXIdx < m_globalBlocksNumberX ;
+          ++blockXIdx )
         {
-          for( blockXIdx = 0 ; blockXIdx < m_globalBlocksNumberX ;
-            ++blockXIdx )
+          blockPtr = m_blocksPointers[ blockBIdx ][ blockYIdx ][ blockXIdx ];
+          
+          if( blockPtr )
           {
-            blockPtr = m_blocksPointers[ blockBIdx ][ blockYIdx ][ blockXIdx ];
-            
-            if( blockPtr )
+            if( !m_syncPtr->releaseBlock( blockBIdx, blockXIdx, blockYIdx, blockPtr ) )
             {
-              m_syncPtr->getRaster().getBand( blockBIdx )->write( blockXIdx, blockYIdx,
-                blockPtr );
+              throw Exception(TR_RASTER("Block release error") );
             }
           }
         }
       }
     }
-    
-    m_syncPtr->getMutex().unlock();
   }
   
   m_blocksPointers.clear();
@@ -211,11 +209,11 @@ void* te::rst::SynchronizedBandBlocksManager::getBlockPointer(unsigned int band,
   unsigned int x, unsigned int y )
 {
   assert( m_syncPtr );
-  assert( band < m_syncPtr->getRaster().getNumberOfBands() );
+  assert( band < m_syncPtr->m_raster.getNumberOfBands() );
   assert( x < m_globalBlocksNumberX );
   assert( y < m_globalBlocksNumberY );
-  assert( x < (unsigned int)m_syncPtr->getRaster().getBand( band )->getProperty()->m_nblocksx );
-  assert( y < (unsigned int)m_syncPtr->getRaster().getBand( band )->getProperty()->m_nblocksy );
+  assert( x < (unsigned int)m_syncPtr->m_raster.getBand( band )->getProperty()->m_nblocksx );
+  assert( y < (unsigned int)m_syncPtr->m_raster.getBand( band )->getProperty()->m_nblocksy );
   
   m_getBlockPointer_BlkPtr = m_blocksPointers[ band ][ y ][ x ];
   
@@ -246,12 +244,12 @@ void* te::rst::SynchronizedBandBlocksManager::getBlockPointer(unsigned int band,
         choosedSwapBlockIndex.m_y ][ choosedSwapBlockIndex.m_x ] = 0;
         
       // writing the block choosed for swap, if necessary
-      if( m_syncPtr->getRaster().getAccessPolicy() & te::common::WAccess )
+
+      if( !m_syncPtr->releaseBlock( choosedSwapBlockIndex.m_b, 
+        choosedSwapBlockIndex.m_x, choosedSwapBlockIndex.m_y, m_getBlockPointer_BlkPtr ) )
       {
-        m_syncPtr->getRaster().getBand( choosedSwapBlockIndex.m_b )->write( 
-          choosedSwapBlockIndex.m_x, choosedSwapBlockIndex.m_y,
-          m_getBlockPointer_BlkPtr );
-      }
+        throw Exception(TR_RASTER("Block release error") );
+      }        
       
       // advances the next swap block fifo index
       choosedSwapBlockIndex.m_b = band;
@@ -262,8 +260,12 @@ void* te::rst::SynchronizedBandBlocksManager::getBlockPointer(unsigned int band,
     }
     
     // reading the required block
+    
+    if( !m_syncPtr->acquireBlock( band, x, y, m_getBlockPointer_BlkPtr ) )
+    {
+      throw Exception(TR_RASTER("Block release error") );
+    }      
 
-    m_syncPtr->getRaster().getBand( band )->read( x, y, m_getBlockPointer_BlkPtr );
     m_blocksPointers[ band ][ y ][ x ] = m_getBlockPointer_BlkPtr;
       
   }
@@ -275,7 +277,7 @@ te::rst::Raster* te::rst::SynchronizedBandBlocksManager::getRaster() const
 {
   if( m_syncPtr )
   {
-    return &(m_syncPtr->getRaster());
+    return &(m_syncPtr->m_raster);
   }
   else
   {

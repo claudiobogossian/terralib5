@@ -26,6 +26,7 @@ set(
   terralib_dataaccess
   terralib_plugin
   terralib_raster
+  terralib_memory
   ${CPPUNIT_LIBRARY}
   ${Boost_LIBRARIES}
   )
