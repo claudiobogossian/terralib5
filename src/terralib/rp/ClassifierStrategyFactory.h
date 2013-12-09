@@ -42,6 +42,8 @@ namespace te
       \class ClassifierStrategyFactory
 
       \brief Raster classifier strategy factory base class.
+
+      \ingroup rp
     */
     class TERPEXPORT ClassifierStrategyFactory : public te::common::AbstractFactory<te::rp::ClassifierStrategy, std::string, std::less<std::string> >
     {

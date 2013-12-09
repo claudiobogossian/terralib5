@@ -51,6 +51,7 @@ namespace te
       \class Contrast
       \brief Contrast enhancement.
       \details Apply contrast enhencement on the selected bands.
+      \ingroup rp
      */
     class TERPEXPORT Contrast : public Algorithm
     {
