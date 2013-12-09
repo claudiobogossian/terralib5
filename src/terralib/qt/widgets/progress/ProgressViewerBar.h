@@ -67,6 +67,8 @@ namespace te
         at the right side of the bar. The button clicked can be accessed getting 
         clicked() signal.
 
+        \ingroup widgets
+
         \sa AbstractProgressViewer, QtProgressBar
 
         \note In this viewer, tasks can NOT be deleted.

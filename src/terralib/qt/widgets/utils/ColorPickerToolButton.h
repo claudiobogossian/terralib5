@@ -218,6 +218,8 @@ namespace te
         \class ColorPickerToolButton
 
         \brief Custom tool button used to pick a color.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT ColorPickerToolButton : public QToolButton
       {

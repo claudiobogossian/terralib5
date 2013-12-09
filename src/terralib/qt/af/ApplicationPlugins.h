@@ -55,6 +55,8 @@ namespace te
         <li>if not found looks in the user folder</li>
         <li>and finally it uses a location defined by an environment variable TERRALIB_DIR_ENVVAR under TERRALIB_CONFIG_DIR</li>
         </ul>
+
+        \ingroup af
       */
       class TEQTAFEXPORT ApplicationPlugins
         : public QObject,

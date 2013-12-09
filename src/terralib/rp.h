@@ -34,12 +34,36 @@
 #include "rp/Module.h"
 #include "rp/RasterHandler.h"
 
+/*!
+  \defgroup rp Raster Processing
+
+  \brief This module provides classes and functions with raster processing capabilities.
+
+    Basically, the TerraLib Raster Processing module contains several processing operations applied to an image and it is organized as follows:
+
+    <ul>
+      <li>Classifier: detects patterns in image regions using different methods;</li>
+      <li>Contrast: basic image contrast enhancement following the supplied parameters;</li>
+      <li>Filtering: filters include pixel-based techniques like masks, convolution, low-pass and high-pass filtering to smooth or sharpen images;</li>
+      <li>Fusion: fusion includes techniques to combine pixel information from different sensors to obtain better spatial resolution;</li>
+      <li>Mixture Model: raster decomposition using mixture model;</li>
+      <li>Mosaic: merges two or more rasters into a single raster;</li>
+      <li>Register: image registration;</li>
+      <li>Segmenter: image segmentation covers techniques for splitting one image into its components as homogeneous regions.</li>
+    </ul>
+
+    The main classes/concepts in this module are listed here. The namespace associated to the Raster Processing module is te::rp.
+    To know more about it, see the te::rp namespace documentation.
+*/
+
 namespace te
 {
-  /*! \brief Namespace for the TerraLib Raster Processing module. */
+  /*!
+    \brief Namespace for Raster Processing module of TerraLib.
+  */
   namespace rp
   {
-  }	// end namespace xsd
+  } // end namespace rp
 }   // end namespace te
 
 #endif  // __TERRALIB_INTERNAL_RP_H

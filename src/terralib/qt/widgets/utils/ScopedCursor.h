@@ -42,6 +42,8 @@ namespace te
         \class ScopedCursor
 
         \brief An object that when created shows a cursor during its scope.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT ScopedCursor
       {

@@ -43,6 +43,13 @@ namespace te
   {
     namespace widgets
     {
+      /*!
+        \class DataSourceType
+
+        \brief A base class for the suppported types of data source.
+
+        \ingroup widgets
+      */
       class TEQTWIDGETSEXPORT DataSourceType
       {
         public:

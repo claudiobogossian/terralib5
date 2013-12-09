@@ -53,6 +53,8 @@ namespace te
           use to notify changes in the application state.
 
           One must specialize this class in order to notify specific events.
+
+          \ingroup af
         */
         struct Event
         {

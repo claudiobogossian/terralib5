@@ -57,6 +57,8 @@ namespace te
         \class ChartDisplay
 
         \brief A class to represent a chart display
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT ChartDisplay : public QwtPlot
       {

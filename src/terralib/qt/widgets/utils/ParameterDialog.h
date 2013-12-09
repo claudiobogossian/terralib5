@@ -48,6 +48,8 @@ namespace te
         \class ParameterDialog
 
         \brief A dialog to be used as input of key/value pairs.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT ParameterDialog : public QDialog
       {

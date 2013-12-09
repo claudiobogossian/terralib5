@@ -40,6 +40,8 @@ namespace te
         \class DataSetLayerSelector
 
         \brief A simple widget that allows the selection of datasets from a given data source.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT DataSetLayerSelector : public AbstractLayerSelector
       {

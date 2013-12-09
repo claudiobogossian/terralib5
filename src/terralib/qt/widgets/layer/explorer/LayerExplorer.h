@@ -52,6 +52,8 @@ namespace te
 
         \brief A widget designed to explore the layers of an application.
 
+        \ingroup widgets
+
         \sa LayerTreeView, LayerTreeModel
       */
       class TEQTWIDGETSEXPORT LayerExplorer : public QDockWidget
