@@ -462,24 +462,6 @@ std::vector<te::dt::Property*> te::ado::Convert2Terralib(ADOX::ColumnsPtr column
   return properties;
 }
 
-void te::ado::GetFieldsInfo(_ConnectionPtr adoConn,
-                            std::string tableName,
-                            FieldsPtr fields,
-                            std::vector<int>& types,
-                            std::vector<std::string>& names)
-{
-  for(long i = 0; i < fields->GetCount(); ++i)
-  {
-    if(te::ado::IsGeomProperty(adoConn, tableName, std::string(fields->GetItem(i)->GetName())))
-    {
-      types.push_back(te::dt::GEOMETRY_TYPE);
-    }
-    else
-      types.push_back(Convert2Terralib(fields->GetItem(i)->GetType()));
-    names.push_back(std::string(fields->GetItem(i)->GetName()));
-  }
-}
-
 te::da::Constraint* te::ado::Convert2Terralib(ADOX::_KeyPtr key)
 {
 

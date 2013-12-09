@@ -56,10 +56,11 @@ inline void TESTHR( HRESULT hr )
 }
 
 te::ado::DataSet::DataSet(_RecordsetPtr result,
-                          Connection* conn)
+                          Connection* conn, std::map<std::string, std::string>& geomColumns)
   : m_i(-1),
     m_result(result),
-    m_conn(conn)
+    m_conn(conn),
+    m_geomColumns(geomColumns)
 {
   m_size = m_result->GetRecordCount();
   m_ncols = m_result->GetFields()->GetCount();
@@ -100,8 +101,16 @@ int te::ado::DataSet::getPropertyDataType(std::size_t i) const
   {
     std::string tableName = (LPCSTR)(_bstr_t)field->GetProperties()->GetItem("BASETABLENAME")->GetValue();
     std::string columnName = field->GetName();
-    if(te::ado::IsGeomProperty(m_conn->getConn(), tableName, columnName))
-      return te::dt::GEOMETRY_TYPE;
+
+    std::map<std::string, std::string>::const_iterator it = m_geomColumns.find(tableName);
+    if(it != m_geomColumns.end())
+    {
+      if(it->second == columnName)
+        return te::dt::GEOMETRY_TYPE;
+    }
+
+    /*if(te::ado::IsGeomProperty(m_conn->getConn(), tableName, columnName))
+      return te::dt::GEOMETRY_TYPE;*/
   }
   return type;
 }
@@ -501,7 +510,7 @@ bool te::ado::DataSet::isNull(std::size_t i) const
 
   try
   {
-    value = m_result->GetFields()->GetItem(propertyName.c_str())->GetValue();
+    value = m_result->GetFields()->GetItem(static_cast<long>(i))->GetValue();
   }
 
   catch(_com_error& e)
