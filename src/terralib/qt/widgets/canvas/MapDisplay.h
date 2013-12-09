@@ -57,6 +57,10 @@ namespace te
         \class MapDisplay
 
         \brief A widget to control the display of a set of layers.
+
+        \ingroup widgets
+
+        \sa te::map::AbstractMapDisplay, te::map::MapDisplay
       */
       class TEQTWIDGETSEXPORT MapDisplay : public QWidget, public te::map::MapDisplay
       {

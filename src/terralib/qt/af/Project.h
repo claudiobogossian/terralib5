@@ -44,6 +44,8 @@ namespace te
         \class Project
 
         \brief This class models the concept of a project for the TerraLib Application Framework.
+
+        \ingroup af
       */
       class TEQTAFEXPORT Project
       {

@@ -50,6 +50,8 @@ namespace te
         \class LayerSearchWidget
 
         \brief A widget used to search layers over list of layers.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT LayerSearchWidget : public QWidget
       {

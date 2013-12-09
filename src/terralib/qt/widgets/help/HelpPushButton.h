@@ -44,6 +44,8 @@ namespace te
         \brief Push button that uses te::qt::widgets::HelpManager on its mouse pressed implementation.
 
         The client must set the page reference, as described in te::qt::widgets::HelpManagerImpl API documentation, before using it or nothing will happen.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT HelpPushButton : public QPushButton
       {

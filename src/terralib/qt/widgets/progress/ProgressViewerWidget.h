@@ -60,6 +60,8 @@ namespace te
 
         The proportional value is informed by each task.
 
+        \ingroup widgets
+
         \sa AbstractProgressViewer, QtProgressBar
 
         \note In this viewer, tasks can be deleted.

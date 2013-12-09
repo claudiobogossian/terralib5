@@ -43,6 +43,8 @@ namespace te
         \class Pan
 
         \brief This class implements a concrete tool to geographic pan operation.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT Pan : public AbstractTool
       {

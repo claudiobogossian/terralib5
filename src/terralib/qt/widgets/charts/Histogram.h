@@ -50,6 +50,8 @@ namespace te
         \class Histogram
 
         \brief A class to represent a Histogram.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT Histogram 
       {
