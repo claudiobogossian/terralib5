@@ -168,8 +168,14 @@ void te::qt::widgets::DataSetWidget::onDataSetComboBoxActivated(const QString& v
   if(value.isEmpty() == false)
   {
     std::string dataSetName = value.toStdString();
+    std::string aliasName = value.toStdString();
+
     int pos = dataSetName.find(".");
-    std::string aliasName = dataSetName.substr(pos + 1, dataSetName.size() - 1);
+    if(pos != std::string::npos)
+    {
+      aliasName = dataSetName.substr(pos + 1, dataSetName.size() - 1);
+    }
+
     m_ui->m_dataSetAliasLineEdit->setText(aliasName.c_str());
   }
 }
