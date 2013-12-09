@@ -63,6 +63,8 @@ namespace te
       options of avoiding the exceptions by calling
       the DescribeFeatureType operation to get a description
       of the feature type.
+      
+      \ingroup fe
 
       \sa SpatialOp, PropertyName      
      */

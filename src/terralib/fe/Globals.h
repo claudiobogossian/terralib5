@@ -21,6 +21,8 @@
   \file terralib/fe/Globals.h
    
   \brief An static class with global definitions.
+
+  \ingroup fe
  */
 
 #ifndef __TERRALIB_FE_INTERNAL_GLOBAL_H

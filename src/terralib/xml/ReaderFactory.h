@@ -54,6 +54,8 @@ namespace te
       Reader* reader = ReaderFactory::make();
       \endcode
 
+      \ingroup xml
+
       \sa Reader
      */
     class TEXMLEXPORT ReaderFactory : public te::common::AbstractFactory<te::xml::Reader, std::string>

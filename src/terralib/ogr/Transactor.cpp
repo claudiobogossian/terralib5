@@ -1041,7 +1041,7 @@ void te::ogr::Transactor::remove(const std::string& datasetName, const te::da::O
     throw Exception(TR_OGR("Could not retrieve the DataSet from data source."));
 
   if(!l->TestCapability(OLCDeleteFeature))
-    throw Exception(TR_OGR("Driver does not support remotion of features."));
+    throw Exception(TR_OGR("Driver does not support removal of features."));
 
   std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it = oids->begin();
 
