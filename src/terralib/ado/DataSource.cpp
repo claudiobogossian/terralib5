@@ -100,11 +100,7 @@ void te::ado::DataSource::setConnectionInfo(const std::map<std::string, std::str
 
 std::auto_ptr<te::da::DataSourceTransactor> te::ado::DataSource::getTransactor()
 {
-  std::string connInfo = MakeConnectionStr(m_connInfo);
-
-  Connection* conn = new te::ado::Connection(connInfo);
-
-  return std::auto_ptr<te::da::DataSourceTransactor>(new te::ado::Transactor(this, conn));
+  return std::auto_ptr<te::da::DataSourceTransactor>(new te::ado::Transactor(this, m_connInfo));
 }
 
 void te::ado::DataSource::open()
@@ -116,10 +112,29 @@ void te::ado::DataSource::open()
 
   m_conn = new te::ado::Connection(connInfo);
 
+  std::string sql = "SELECT * FROM geometry_columns";
+
+  std::auto_ptr<te::da::DataSet> res = query(sql);
+
+  res->moveBeforeFirst();
+
+  while(res->moveNext())
+  {
+    std::string table = res->getString("f_table_name");
+    std::string column = res->getString("f_geometry_column");
+    m_geomColumns[table] = column;
+  }
+
+
   m_isOpened = true;
 
   // Get the dataset names of the data source
   getDataSetNames();
+}
+
+std::map<std::string, std::string> te::ado::DataSource::getGeomColumns()
+{
+  return m_geomColumns;
 }
 
 void te::ado::DataSource::close()

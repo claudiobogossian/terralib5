@@ -82,15 +82,19 @@ inline void TESTHR(HRESULT hr)
     _com_issue_error(hr);
 }
 
-te::ado::Transactor::Transactor(DataSource* ds, Connection* conn)
+te::ado::Transactor::Transactor(DataSource* ds, const std::map<std::string, std::string>& connInfo)
   : m_ds(ds),
-    m_conn(conn),
+    m_conn(0),
     m_isInTransaction(false)
 {
+  std::string connInfoAux = MakeConnectionStr(connInfo);
+
+  m_conn = new te::ado::Connection(connInfoAux);
 }
 
 te::ado::Transactor::~Transactor()
 {
+  delete m_conn;
 }
 
 te::da::DataSource* te::ado::Transactor::getDataSource() const
@@ -145,14 +149,12 @@ bool te::ado::Transactor::isInTransaction() const
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& name,
                                                                 te::common::TraverseType travType,
                                                                 bool connected,
-                                                                const te::common::AccessPolicy)
+                                                                const te::common::AccessPolicy accessPolicy)
 {
   std::auto_ptr<std::string> sql(new std::string("SELECT * FROM "));
   *sql += name;
 
-  _RecordsetPtr result = m_conn->query(*sql, connected);
-
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn));
+  return query(*sql, travType, connected, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& name,
@@ -171,16 +173,14 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
   std::string lowerY = "lower_y";
   std::string upperY = "upper_y";
 
-  std::auto_ptr<std::string> query(new std::string("SELECT * FROM " + name + " WHERE "));
+  std::auto_ptr<std::string> q(new std::string("SELECT * FROM " + name + " WHERE "));
 
-  *query += "NOT("+ lowerX +" > " + boost::lexical_cast<std::string>(e->m_urx) + " OR ";
-  *query += upperX +" < " + boost::lexical_cast<std::string>(e->m_llx) + " OR ";
-  *query += lowerY +" > " + boost::lexical_cast<std::string>(e->m_ury) + " OR ";
-  *query += upperY +" < " + boost::lexical_cast<std::string>(e->m_lly) + ")";
+  *q += "NOT("+ lowerX +" > " + boost::lexical_cast<std::string>(e->m_urx) + " OR ";
+  *q += upperX +" < " + boost::lexical_cast<std::string>(e->m_llx) + " OR ";
+  *q += lowerY +" > " + boost::lexical_cast<std::string>(e->m_ury) + " OR ";
+  *q += upperY +" < " + boost::lexical_cast<std::string>(e->m_lly) + ")";
 
-  _RecordsetPtr result = m_conn->query(*query, connected);
-
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn));
+  return query(*q, travType, connected, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& name,
@@ -225,30 +225,18 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const std::string& que
 {
   _RecordsetPtr result = m_conn->query(query, connected);
 
-  FieldsPtr fields = result->GetFields();
+  std::auto_ptr<te::da::DataSet> dset(new DataSet(result, m_conn, m_ds->getGeomColumns()));
 
-  std::vector<int> types;
-  std::vector<std::string> names;
-
-  for(long i = 0; i < fields->GetCount(); ++i)
+  if(connected)
   {
-    if(Convert2Terralib(fields->GetItem(i)->GetType()) == te::dt::BYTE_ARRAY_TYPE)
-    {
-      PropertyPtr p = fields->GetItem(i)->GetProperties()->GetItem("BASETABLENAME");
-
-      std::string tableName = (LPCSTR)(_bstr_t)p->GetValue();
-      std::string columnName = fields->GetItem(i)->GetName();
-
-      if(te::ado::IsGeomProperty(m_conn->getConn(), tableName, columnName))
-        types.push_back(te::dt::GEOMETRY_TYPE);
-    }
-    else
-      types.push_back(Convert2Terralib(fields->GetItem(i)->GetType()));
-
-    names.push_back(std::string(fields->GetItem(i)->GetName()));
+    return dset;
   }
+  else
+  {
+    std::auto_ptr<te::da::DataSet> mdset(new te::mem::DataSet(*dset));
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn));
+    return mdset;
+  }
 }
 
 void te::ado::Transactor::execute(const te::da::Query& command)
@@ -1519,8 +1507,13 @@ void te::ado::Transactor::getProperties(te::da::DataSetType* dt)
       case ADOX::adBinary:
       case ADOX::adLongVarBinary:
       {
-        if(te::ado::IsGeomProperty(conn, dsName, colName))
-          p = new te::gm::GeometryProperty(colName, te::ado::GetSRID(conn, dsName, colName), te::ado::GetType(conn, dsName, colName));
+        
+        std::map<std::string, std::string> geomColumns = m_ds->getGeomColumns();
+        std::map<std::string, std::string>::iterator it = geomColumns.find(dsName);
+
+        if(it != geomColumns.end())
+          if(it->second == colName)
+            p = new te::gm::GeometryProperty(colName, te::ado::GetSRID(conn, dsName, colName), te::ado::GetType(conn, dsName, colName));
         else
           p = new te::dt::SimpleProperty(colName, Convert2Terralib(colType));
 

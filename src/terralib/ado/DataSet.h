@@ -67,7 +67,7 @@ namespace te
           \param sql        The sql command that generated the dataset.
         */
         DataSet(_RecordsetPtr result,
-                Connection* conn);
+                Connection* conn, std::map<std::string, std::string>& geomColumns);
 
         /*! \brief The destructor will clear the internal ADO _RecordsetPtr. */
         ~DataSet();
@@ -152,6 +152,7 @@ namespace te
         _RecordsetPtr m_result;             //!< The internal buffer with the result query.
         Connection* m_conn;                 //!< The ADO connection associated to this dataset.
         std::string* m_sql;                 //!< The sql command that generated the dataset.
+        std::map<std::string, std::string> m_geomColumns;
     };
 
   } // end namespace ado
