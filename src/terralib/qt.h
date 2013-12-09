@@ -30,18 +30,30 @@
 #include "qt/postgis.h"
 #include "qt/widgets.h"
 
+/*!
+  \defgroup qt Qt
+
+  \brief This module provides some geospatial components and a framework based on Qt.
+
+    The module is organized as follow:
+
+    <ul>
+      <li>Widgets: GUI components for dealing with geospatial concepts;</li>
+      <li>Designer: a set of components that can be used inside Qt Designer for rapid development of new forms;</li>
+      <li>Plugins: a set of TerraLib Qt plugins;</li>
+      <li>Application Framework: a framework to help customizing an application built on top of TerraLib's Qt Components. Notice that components can be used without this framework.</li>
+    </ul>
+
+    The namespace associated to the Qt module is te::qt. To know more about it, see the te::qt namespace documentation.
+*/
 namespace te
 {
   /*!
-    \brief Namespace for the Qt support in TerraLib.
-
-    TerraLib provides several Qt components for dealing with
-    Geographic concepts. All the Qt stuff is in this namespace.
-   */
+    \brief Namespace for the Qt module of TerraLib.
+  */
   namespace qt
   {
-  }	// end namespace qt
+  } // end namespace qt
 }   // end namespace te
 
 #endif  // __TERRALIB_INTERNAL_QT_H
-

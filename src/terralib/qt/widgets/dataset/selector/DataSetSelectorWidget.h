@@ -53,6 +53,13 @@ namespace te
       class DataSetTableView;
       class DataSetTreeView;
 
+      /*!
+        \class DataSetSelectorWidget
+
+        \brief A wizard for selecting datasets from a data source.
+
+        \ingroup widgets
+      */
       class TEQTWIDGETSEXPORT DataSetSelectorWidget : public QWidget
       {
         Q_OBJECT

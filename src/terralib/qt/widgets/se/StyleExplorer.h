@@ -54,6 +54,8 @@ namespace te
         \class StyleExplorer
 
         \brief A widget used to explore a style.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT StyleExplorer : public QTreeWidget
       {

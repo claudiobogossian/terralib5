@@ -60,6 +60,8 @@ namespace te
         \class Measure
 
         \brief This class implements a concrete tool to measure operation (distance, area, and angle).
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT Measure : public AbstractTool
       {

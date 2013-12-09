@@ -56,6 +56,8 @@ namespace te
         \class DataSetTableModel
 
         \brief A table model representing a te::da::DataSet.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT DataSetTableModel : public QAbstractTableModel
       {

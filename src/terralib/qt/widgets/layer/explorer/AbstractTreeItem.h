@@ -48,6 +48,13 @@ namespace te
   {
     namespace widgets
     {
+      /*!
+        \class AbstractTreeItem
+
+        \brief The class that represents an item in a LayerTreeModel.
+
+        \ingroup widgets
+      */
       class TEQTWIDGETSEXPORT AbstractTreeItem : public QObject
       {
         Q_OBJECT

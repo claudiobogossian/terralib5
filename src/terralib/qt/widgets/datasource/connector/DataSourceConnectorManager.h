@@ -46,6 +46,8 @@ namespace te
         \class DataSourceConnectorManager
 
         \brief A widget that groups datasource identificatin and connection information.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT DataSourceConnectorManager : public QWidget
       {

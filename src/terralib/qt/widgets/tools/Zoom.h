@@ -43,6 +43,8 @@ namespace te
         \class Zoom
 
         \brief This is a utility class to geographic zoom operation.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT Zoom : public AbstractTool
       {

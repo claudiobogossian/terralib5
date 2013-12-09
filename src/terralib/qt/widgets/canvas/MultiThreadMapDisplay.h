@@ -50,6 +50,10 @@ namespace te
         \class MultiThreadMapDisplay
 
         \brief A multi thread Qt4 widget to control the display of a set of layers.
+
+        \ingroup widgets
+
+        \sa MapDisplay, te::map::AbstractMapDisplay, te::map::MapDisplay
       */
       class TEQTWIDGETSEXPORT MultiThreadMapDisplay : public MapDisplay
       {

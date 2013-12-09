@@ -54,6 +54,8 @@ namespace te
 
         \brief A tree view for datasets of a data source.
 
+        \ingroup widgets
+
         \sa DataSetTreeViewModel, DataSetExplorer
       */
       class TEQTWIDGETSEXPORT DataSetTreeView : public QTreeView

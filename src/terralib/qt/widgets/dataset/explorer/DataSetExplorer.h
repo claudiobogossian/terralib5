@@ -49,6 +49,8 @@ namespace te
 
         \brief A widget designed to explore the datasets of a data source.
 
+        \ingroup widgets
+
         \sa DataSetExplorerTreeView, DataSetExplorerTreeModel
       */
       class TEQTWIDGETSEXPORT DataSetExplorer : public QDockWidget
