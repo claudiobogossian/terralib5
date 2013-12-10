@@ -50,6 +50,8 @@ namespace te
 
         \brief A singleton to keep all the registered data source types.
 
+        \ingroup widgets
+
         \todo Derivar DataSourceTypeManager e DataSourceType a partir de QObject e emitir sinais!
       */
       class TEQTWIDGETSEXPORT DataSourceTypeManager : public te::common::Singleton<DataSourceTypeManager>

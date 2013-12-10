@@ -49,6 +49,13 @@ namespace te
     {
       class AbstractTreeItem;
 
+      /*!
+        \class AbstractTreeItemFactory
+
+        \brief A class for building layer items. 
+
+        \ingroup widgets
+      */
       class TEQTWIDGETSEXPORT AbstractTreeItemFactory : public te::common::Static
       {
         public:

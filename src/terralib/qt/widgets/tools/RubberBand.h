@@ -46,6 +46,8 @@ namespace te
         \class RubberBand
 
         \brief This class provides a rectangle that can indicate a boundary.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT RubberBand : public AbstractTool
       {

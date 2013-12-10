@@ -37,6 +37,7 @@ namespace te
     /*!
       \class Algorithm
       \brief Raster Processing algorithm base interface.
+      \ingroup rp
      */
     class TERPEXPORT Algorithm
     {

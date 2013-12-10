@@ -49,6 +49,8 @@ namespace te
         \class ChartProperties
 
         \brief A dialog used to customize a graphic's parameters.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT ChartProperties : public QDialog
       {

@@ -47,6 +47,8 @@ namespace te
         \class AbstractLayerSelector
 
         \brief An abstract class for layer selection widgets.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT AbstractLayerSelector : public QWidget
       {

@@ -67,6 +67,8 @@ namespace te
         \class Info
 
         \brief This class implements a concrete tool to get informations about a specified feature using pointing operation.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT Info : public AbstractTool
       {

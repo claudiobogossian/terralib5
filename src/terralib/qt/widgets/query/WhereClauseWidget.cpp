@@ -40,6 +40,7 @@
 #include "../../../dataaccess/query/LiteralInt16.h"
 #include "../../../dataaccess/query/LiteralInt32.h"
 #include "../../../dataaccess/query/LiteralString.h"
+#include "../../../dataaccess/query/OrderByItem.h"
 #include "../../../dataaccess/query/PropertyName.h"
 #include "../../../dataaccess/query/Select.h"
 #include "../../../dataaccess/utils/Utils.h"
@@ -463,16 +464,21 @@ void te::qt::widgets::WhereClauseWidget::onValuePropertyRadioButtonClicked()
 
   for(size_t t = 0; t < m_fromItems.size(); ++t)
   {
-    te::da::FromItem* fi = new te::da::DataSetName(m_fromItems[t].first, m_fromItems[t].second);
+    te::da::FromItem* fi = new te::da::DataSetName(m_fromItems[t].first/*, m_fromItems[t].second*/);
 
     from->push_back(fi);
   }
+
+  te::da::OrderBy* order = new te::da::OrderBy;
+  te::da::OrderByItem* o = new te::da::OrderByItem(propertyName, te::da::ASC);
+  order->push_back(o);
 
   te::da::Select* select = new te::da::Select();
 
   select->setFields(fields);
   select->setDistinct(dist);
   select->setFrom(from);
+  select->setOrderBy(order);
 
   std::auto_ptr<te::da::DataSet> dataset;
 
@@ -498,13 +504,24 @@ void te::qt::widgets::WhereClauseWidget::onValuePropertyRadioButtonClicked()
     return;
   }
 
+  std::size_t pos = propertyName.find(".");
+  if(pos != std::string::npos)
+  {
+    std::string dataSetAliasName = propertyName.substr(0, pos);
+    propertyName = propertyName.substr(pos + 1, propertyName.size() - 1);
+  }
+
   if(dataset.get())
   {
     while(dataset->moveNext())
     {
-      std::string value = dataset->getAsString(propertyName);
+      if(!dataset->isNull(propertyName))
+      {
+        std::string value = dataset->getAsString(propertyName);
 
-      m_ui->m_valueValueComboBox->addItem(value.c_str());
+
+        m_ui->m_valueValueComboBox->addItem(value.c_str());
+      }
     }
   }
 }
@@ -518,7 +535,15 @@ void te::qt::widgets::WhereClauseWidget::onClearAllPushButtonClicked()
 te::da::Expression* te::qt::widgets::WhereClauseWidget::getExpression(const QString& value, const std::string& propName)
 {
   std::string dataSetName;
+  std::string dataSetAliasName;
   std::string propertyName = propName;
+
+  std::size_t pos = propName.find(".");
+  if(pos != std::string::npos)
+  {
+    dataSetAliasName = propName.substr(0, pos);
+    propertyName = propName.substr(pos + 1, propName.size() - 1);
+  }
 
   //get the dataset name
   if(m_fromItems.size() == 1)
@@ -527,11 +552,6 @@ te::da::Expression* te::qt::widgets::WhereClauseWidget::getExpression(const QStr
   }
   else
   {
-    std::size_t pos = propName.find(".");
-    assert(pos != std::string::npos);
-    std::string dataSetAliasName = propName.substr(0, pos);
-    propertyName = propName.substr(pos + 1, propName.size() - 1);
-
     for(size_t t = 0; t < m_fromItems.size(); ++t)
     {
       if(m_fromItems[t].second == dataSetAliasName)

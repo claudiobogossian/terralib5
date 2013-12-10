@@ -52,6 +52,8 @@ namespace te
       \note The created output image will be written to the raster instance
       pointed by m_outRasterPtr (in this case the output band must also be
       passed by m_outRasterBand).
+
+      \ingroup rp
     */
 
     class TERPEXPORT MixtureModel : public Algorithm

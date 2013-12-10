@@ -127,58 +127,43 @@ std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > te::vp::
   std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > outputStatisticalSummary;
 
   QList<QListWidgetItem*> itemList = m_ui->m_outputListWidget->selectedItems();
-
-  std::string propertyName = "";
-  std::string aux = "";
-  te::dt::Property* currentToken;
-  te::dt::Property* auxProperty;
-  te::stat::StatisticalSummary enumStatisticalSummary;
-  std::vector<te::stat::StatisticalSummary> vectorStatisticalSummary;
   
-  for(int i = 0; i < itemList.size(); ++i)
+  te::stat::StatisticalSummary enumStatisticalSummary;
+  std::map<std::string, std::vector<te::stat::StatisticalSummary> >  propname_stat;
+  std::map<std::string, std::vector<te::stat::StatisticalSummary> >::iterator it;
+  
+  for(size_t i = 0; i < itemList.size(); ++i)
   {
     std::vector<std::string> tokens;
+    std::string pname;
     std::string auxItem = itemList[i]->text().toStdString();
-
-    boost::split(tokens, auxItem, boost::is_any_of(":"));
     
-    if(tokens[0] == "")
+    boost::split(tokens, auxItem, boost::is_any_of(":"));
+    if(tokens[0] != "")
     {
-      propertyName = "";
-      currentToken = getSelectedPropertyByName(propertyName);
+      pname = tokens[0];
+      pname.erase(pname.end() - 1);
+      enumStatisticalSummary = (te::stat::StatisticalSummary)itemList[i]->data(Qt::UserRole).toInt();
+      it = propname_stat.find(pname);
+      if (it != propname_stat.end())
+        it->second.push_back(enumStatisticalSummary);
+      else
+      {
+        std::vector<te::stat::StatisticalSummary> nvec;
+        nvec.push_back(enumStatisticalSummary);
+        propname_stat.insert(std::make_pair(pname, nvec));
+      }
     }
-    else
-    {
-      propertyName = tokens[0];
-      propertyName.erase(propertyName.end() - 1);
-      currentToken = getSelectedPropertyByName(propertyName);
-    }
-
-    enumStatisticalSummary = (te::stat::StatisticalSummary)itemList[i]->data(Qt::UserRole).toInt();
-
-    if(propertyName != aux && aux != "")
-    {
-      outputStatisticalSummary[auxProperty] = vectorStatisticalSummary;
-      vectorStatisticalSummary.clear();
-      
-      if(!propertyName.empty())
-        vectorStatisticalSummary.push_back(enumStatisticalSummary);
-    }
-    else
-    {
-      vectorStatisticalSummary.push_back(enumStatisticalSummary);
-    }
-
-    if(i == itemList.size() - 1 && propertyName != "")
-    {
-        auxProperty = currentToken;
-        outputStatisticalSummary[auxProperty] = vectorStatisticalSummary;
-    }
-
-    aux = propertyName;
-    auxProperty = currentToken;
   }
-
+  
+  it = propname_stat.begin();
+  while (it != propname_stat.end())
+  {
+    te::dt::Property* prop = getSelectedPropertyByName(it->first);
+    outputStatisticalSummary.insert(std::make_pair(prop,it->second));
+    ++it;
+  }
+  
   return outputStatisticalSummary;
 }
 

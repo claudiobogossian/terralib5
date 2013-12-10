@@ -39,6 +39,8 @@ namespace te
       
       \brief DistanceBuffer operator: DWithin.
 
+      \ingroup fe
+
       \sa BinarySpatialOp
      */
     class TEFEEXPORT DWithin : public DistanceBuffer

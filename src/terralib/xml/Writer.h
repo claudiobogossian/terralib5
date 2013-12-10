@@ -46,6 +46,8 @@ namespace te
       \class Writer
 
       \brief This class models a XML writer object.
+
+      \ingroup xml
     */
     class TEXMLEXPORT Writer : public boost::noncopyable
     {

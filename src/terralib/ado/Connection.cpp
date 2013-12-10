@@ -41,10 +41,8 @@ inline void TESTHR(HRESULT hr)
     _com_issue_error(hr);
 }
 
-te::ado::Connection::Connection(const std::string& conninfo, bool inuse)
-  : m_conn(0),
-    m_inuse(inuse),
-    m_lastuse(boost::posix_time::second_clock::local_time())
+te::ado::Connection::Connection(const std::string& conninfo)
+  : m_conn(0)
 {
   if(conninfo.empty())
     return;
@@ -91,9 +89,9 @@ _RecordsetPtr te::ado::Connection::query(const std::string& query, bool connecte
   
   try
   {
-    if(connected)
-      recordset->Open(query.c_str(), _variant_t((IDispatch *)m_conn), adOpenDynamic, adLockReadOnly, adCmdText);
-    else
+    //if(connected)
+      //recordset->Open(query.c_str(), _variant_t((IDispatch *)m_conn), adOpenDynamic, adLockReadOnly, adCmdText);
+    //else
       recordset->Open(query.c_str(), _variant_t((IDispatch *)m_conn), adOpenStatic, adLockReadOnly, adCmdText);
   }
   catch(_com_error& e)

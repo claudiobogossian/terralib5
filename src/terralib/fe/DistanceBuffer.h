@@ -52,6 +52,8 @@ namespace te
       <li>Beyond</li>
       </ul>
 
+      \ingroup fe
+
       \sa SpatialOp, PropertyName, Distance      
      */
     class TEFEEXPORT DistanceBuffer : public SpatialOp

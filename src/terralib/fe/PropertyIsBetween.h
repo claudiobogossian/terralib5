@@ -40,6 +40,8 @@ namespace te
 
       The lower and upper boundary values are inclusive.
 
+      \ingroup fe
+
       \sa ComparisonOp, Expression
      */
     class TEFEEXPORT PropertyIsBetween : public ComparisonOp

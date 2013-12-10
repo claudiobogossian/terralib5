@@ -39,6 +39,8 @@ namespace te
       
       \brief Binary spatial operator: Touches.
 
+      \ingroup fe
+
       \sa BinarySpatialOp
      */
     class TEFEEXPORT Touches : public BinarySpatialOp

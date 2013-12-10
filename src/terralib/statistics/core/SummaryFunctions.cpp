@@ -52,6 +52,9 @@
 
 void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss, const std::string& nulValue)
 {
+  if (values.empty())
+    return;
+  
   std::vector<std::string> validValues;
   for (size_t i=0; i<values.size(); ++i)
   {
@@ -65,6 +68,9 @@ void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te:
 
 void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss)
 {
+  if (values.empty())
+    return;
+  
   std::sort(values.begin(), values.end());
   
   ss.m_minVal = *values.begin();
@@ -85,6 +91,9 @@ void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te:
 
 void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss, double nulValue)
 {
+  if (values.empty())
+    return;
+  
   std::vector<double> validValues;
   for (size_t i=0; i<values.size(); ++i)
   {
@@ -98,6 +107,9 @@ void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::sta
 
 void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss)
 {
+  if (values.empty())
+    return;
+  
   std::sort(values.begin(), values.end());
   
   ss.m_minVal = *values.begin();
@@ -140,8 +152,11 @@ void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::sta
 
 std::vector<double> te::stat::NewMode(const std::vector<double>& values)
 {
-  bool found;
   std::vector<double> mode;
+  if (values.empty())
+    return mode;
+  
+  bool found;
   std::map<double, int> mapMode;
   
   for(std::size_t i = 0; i < values.size(); ++i)
@@ -198,6 +213,9 @@ std::vector<double> te::stat::NewMode(const std::vector<double>& values)
 
 double te::stat::Mode(const std::vector<double>& values)
 {
+  if (values.empty())
+    return;
+  
   bool found;
   double mode = 0.0;
   std::map<double, int> mapMode;
@@ -248,6 +266,9 @@ double te::stat::Mode(const std::vector<double>& values)
 
 std::string te::stat::Mode(const std::vector<std::string>& values)
 {
+  if (values.empty())
+    return "";
+  
   bool found;
   std::string mode = "";
   std::map<std::string, int> mapMode;

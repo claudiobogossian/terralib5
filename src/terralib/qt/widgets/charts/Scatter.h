@@ -45,6 +45,8 @@ namespace te
         \class Scatter
 
         \brief A class to represent a scatter.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT Scatter 
       {

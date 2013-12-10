@@ -49,6 +49,8 @@ namespace te
 
         \brief Custom widget used to represent a single task.
 
+        \ingroup widgets
+
         \sa ProgressViewerWidget
       */
       class TEQTWIDGETSEXPORT ProgressWidgetItem : public QWidget

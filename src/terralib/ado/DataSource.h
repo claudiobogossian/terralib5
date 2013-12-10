@@ -95,6 +95,8 @@ namespace te
 
         static std::vector<std::string> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
 
+        std::map<std::string, std::string> getGeomColumns();
+
       protected:
 
         void create(const std::map<std::string, std::string>& dsInfo);
@@ -115,6 +117,7 @@ namespace te
 
         te::da::DataSourceCatalog* m_catalog;             //!< The main system catalog.
         std::map<std::string, std::string> m_connInfo;    //!< Connection information.
+        std::map<std::string, std::string> m_geomColumns;
         Connection* m_conn;                               //!< The Connection.
         std::string m_currentSchema;                      //!< The default schema used when no one is provided.
         bool m_isInTransaction;                           //!< It indicates if there is a transaction in progress.

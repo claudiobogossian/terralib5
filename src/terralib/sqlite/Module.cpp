@@ -24,8 +24,12 @@
 */
 
 // TerraLib
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
+#include "../dataaccess/query/SQLDialect.h"
+#include "../dataaccess/serialization/xml/Serializer.h"
+#include "DataSource.h"
 #include "DataSourceFactory.h"
 #include "Module.h"
 
@@ -62,6 +66,18 @@ void te::sqlite::Module::startup()
 #ifdef TE_ENABLE_SPATIALITE
   spatialite_init(0);
 #endif
+
+  boost::filesystem::path driverpath(m_pluginInfo.m_folder);
+
+  boost::filesystem::path capabilitiesFile = driverpath / "spatialite-capabilities.xml";
+
+  std::auto_ptr<te::da::DataSourceCapabilities> capa(new te::da::DataSourceCapabilities());
+  std::auto_ptr<te::da::SQLDialect> dialect(new te::da::SQLDialect());
+
+  te::serialize::xml::Read(capabilitiesFile.string(), *capa, *dialect);
+
+  DataSource::set(capa.release());
+  DataSource::set(dialect.release());
 
   te::da::DataSourceFactory::add("SQLITE", Build);
 
