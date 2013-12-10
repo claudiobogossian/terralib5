@@ -63,12 +63,15 @@ namespace te
       // Forward declarations
         struct Event;
       }
-             /*!
+
+      /*!
         \class ApplicationController
 
         \brief The base API for TerraLib applications.
 
         \note Temporally this class is a singleton!
+
+        \ingroup af
       */
       class TEQTAFEXPORT ApplicationController : public QObject, public boost::noncopyable
       {

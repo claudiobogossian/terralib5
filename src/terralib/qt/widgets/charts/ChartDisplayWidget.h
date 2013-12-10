@@ -56,6 +56,8 @@ namespace te
         \class ChartDisplayWidget
 
         \brief A wdiget used to display a chart
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT ChartDisplayWidget : public QWidget
       {

@@ -54,6 +54,10 @@ namespace te
         \brief This class defines an interface for objects that can receive application events and respond to
                them, according to specific tool behavior. Tools, in general, receives map display interaction events, like
                MouseClick, MouseMove, etc. Tools are created to do some GIS operation using the user interactions.
+
+        \ingroup widgets
+
+        \sa CoordTracking, Info, Measure, Pan, RubberBand, Selection, Zoom, ZoomArea, ZoomClick, ZoomKeyboard, ZoomWheel
       */
       class TEQTWIDGETSEXPORT AbstractTool : public QObject, public boost::noncopyable
       {

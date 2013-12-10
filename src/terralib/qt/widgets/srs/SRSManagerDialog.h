@@ -53,7 +53,9 @@ namespace te
        \class SRSManagerDialog
        
        \brief A dialog used to build a SRSManagerDialog element.
-       */
+
+       \ingroup widgets
+      */
       class TEQTWIDGETSEXPORT SRSManagerDialog : public QDialog
       {
         Q_OBJECT

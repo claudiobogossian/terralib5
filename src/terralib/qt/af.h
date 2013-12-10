@@ -18,42 +18,35 @@
  */
 
 /*!
-  \file widgets.h
+  \file af.h
 
-  \brief This file contains include headers for the TerraLib Qt widgets.
+  \brief This file contains include headers for the TerraLib Qt Application Framework.
  */
 
-#ifndef __TERRALIB_QT_INTERNAL_WIDGETS_H
-#define __TERRALIB_QT_INTERNAL_WIDGETS_H
-
-// TerraLib
-#include "widgets/Config.h"
-#include "widgets/canvas/Canvas.h"
-#include "widgets/canvas/MapDisplay.h"
-#include "widgets/layer/explorer/AbstractTreeItem.h"
-#include "widgets/layer/explorer/LayerExplorer.h"
+#ifndef __TERRALIB_QT_INTERNAL_AF_H
+#define __TERRALIB_QT_INTERNAL_AF_H
 
 /*!
-  \defgroup widgets Widgets
+  \defgroup af Application Framework
 
   \ingroup qt
 
-  \brief This module provides the GUI components for dealing with geospatial concepts.
+  \brief This module provides a framework to help customizing an application built on top of TerraLib's Qt Components
 
-    The namespace associated to the Qt Widgets module is te::qt::widgets. To know more about it, see the te::qt::widgets namespace documentation.
+    The namespace associated to the Qt Application Framework module is te::qt::af. To know more about it, see the te::qt::af namespace documentation.
 */
 namespace te
 {
   namespace qt
   {
     /*!
-      \brief Namespace for the Qt Widgets module of TerraLib.
+      \brief Namespace for the Qt Application Framework module of TerraLib.
     */
-    namespace widgets
+    namespace af
     {
     }
   } // end namespace qt
 }   // end namespace te
 
-#endif  // __TERRALIB_QT_INTERNAL_WIDGETS_H
+#endif  // __TERRALIB_QT_INTERNAL_AF_H
 

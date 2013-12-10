@@ -50,6 +50,8 @@ namespace te
         \class DataSetSelectorDialog
 
         \brief ....
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT DataSetSelectorDialog : public QDialog
       {

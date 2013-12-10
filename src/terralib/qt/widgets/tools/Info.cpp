@@ -32,6 +32,7 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../geometry/Geometry.h"
 #include "../../../geometry/GeometryProperty.h"
+#include "../../../geometry/Point.h"
 #include "../../../geometry/Utils.h"
 #include "../../../maptools/MarkRendererManager.h"
 #include "../../../raster/Raster.h"
@@ -206,8 +207,9 @@ void te::qt::widgets::Info::getInfo(const te::map::AbstractLayerPtr& layer, cons
 
 void te::qt::widgets::Info::getGeometryInfo(QTreeWidgetItem* layerItem, te::da::DataSet* dataset, const te::gm::Envelope& e, int srid, bool needRemap)
 {
-  // Generates a geometry from the given extent
-  std::auto_ptr<te::gm::Geometry> geometryFromEnvelope(te::gm::GetGeomFromEnvelope(&e, srid));
+  // The restriction point
+  te::gm::Coord2D center = e.getCenter();
+  te::gm::Point point(center.x, center.y, srid);
 
   // For while, using the first geometry property
   std::size_t gpos = te::da::GetFirstPropertyPos(dataset, te::dt::GEOMETRY_TYPE);
@@ -216,7 +218,7 @@ void te::qt::widgets::Info::getGeometryInfo(QTreeWidgetItem* layerItem, te::da::
   {
     std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gpos));
 
-    if(!g->intersects(geometryFromEnvelope.get()))
+    if(!g->contains(&point))
       continue;
 
     // Feature found! Building the list of property values...

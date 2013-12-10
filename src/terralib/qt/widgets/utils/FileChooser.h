@@ -54,6 +54,8 @@ namespace te
         This class is used for choosing a file. Its also possible to inform the file extensions to be searched. This way the
         client can change the filter for the files to be listed when searching. The component is composed of a line edit containing the
         complete path of the file selected and a tool button used to open de choose file dialog.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT FileChooser : public QWidget
       {

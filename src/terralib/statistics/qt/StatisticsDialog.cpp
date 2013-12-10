@@ -199,7 +199,7 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
       m_ui->m_statTableWidget->insertRow(13);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::MODE).c_str()));
       if(ss.m_mode.size() == 0)
-        itemValue = new QTableWidgetItem(QString("AMODAL"));
+        itemValue = new QTableWidgetItem(QString(""));
       else
       {
         std::string value;
@@ -216,6 +216,7 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
     else
       QMessageBox::information(this, "Warning", "The input vector of values is empty.");
   }
+  m_ui->m_statTableWidget->resizeColumnToContents(0);
 }
 
 void te::stat::StatisticsDialog::onHelpPushButtonClicked()

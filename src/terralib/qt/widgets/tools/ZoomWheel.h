@@ -43,6 +43,8 @@ namespace te
         \class ZoomWheel
 
         \brief This class implements a concrete tool to geographic zoom operation using the mouse wheel.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT ZoomWheel : public Zoom
       {

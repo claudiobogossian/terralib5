@@ -56,13 +56,14 @@ namespace te
       namespace colorbar
       {
         /*!
-        \class ColorBar
+          \class ColorBar
 
-        \brief It QWidget implementation of color bar.
-      
-        It is used to construct color bar.
+          \brief It QWidget implementation of color bar.
+
+            It is used to construct color bar.
+
+          \ingroup widgets
         */
-
         class TEQTWIDGETSEXPORT ColorBar: public QwtScaleWidget
         {
         

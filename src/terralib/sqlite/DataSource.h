@@ -61,6 +61,10 @@ namespace te
 
         const te::da::SQLDialect* getDialect() const;
 
+        static void set(te::da::DataSourceCapabilities* capabilities);
+
+        static void set(te::da::SQLDialect* dialect);
+
       protected:
 
         void create(const std::map<std::string, std::string>& dsInfo);
