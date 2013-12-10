@@ -29,8 +29,10 @@
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../geometry/Coord2D.h"
 #include "../../../geometry/Geometry.h"
 #include "../../../geometry/GeometryProperty.h"
+#include "../../../geometry/Point.h"
 #include "../../../geometry/Utils.h"
 #include "../../../srs/Config.h"
 #include "../canvas/MapDisplay.h"
@@ -201,26 +203,39 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
 
     // Let's generate the oids
     te::da::ObjectIdSet* oids = 0;
+    te::da::GetEmptyOIDSet(schema.get(), oids);
+    assert(oids);
+
+    std::vector<std::string> pnames;
+    te::da::GetOIDPropertyNames(schema.get(), pnames);
 
     if(m_selectionByPointing == false)
     {
-      oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
-    }
-    else
-    {
-      std::vector<std::string> pnames;
-      te::da::GetOIDPropertyNames(schema.get(), pnames);
-
-      te::da::GetEmptyOIDSet(schema.get(), oids);
-      assert(oids);
-
       // Generates a geometry from the given extent
       std::auto_ptr<te::gm::Geometry> geometryFromEnvelope(te::gm::GetGeomFromEnvelope(&reprojectedEnvelope, layer->getSRID()));
 
       while(dataset->moveNext())
       {
         std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
+
         if(!g->intersects(geometryFromEnvelope.get()))
+          continue;
+
+        // Feature found!
+        oids->add(te::da::GenerateOID(dataset.get(), pnames));
+      }
+    }
+    else
+    {
+      // The restriction point
+      te::gm::Coord2D center = reprojectedEnvelope.getCenter();
+      te::gm::Point point(center.x, center.y, layer->getSRID());
+
+      while(dataset->moveNext())
+      {
+        std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
+
+        if(!g->contains(&point))
           continue;
 
         // Feature found!
