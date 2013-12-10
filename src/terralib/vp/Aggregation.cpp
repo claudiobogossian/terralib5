@@ -89,14 +89,15 @@ void SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupingProper
                            te::da::DataSet* dsQuery,
                            te::mem::DataSet* outputDataSet, te::gm::GeomType outGeoType);
 
-std::map<std::string, std::vector<te::mem::DataSetItem*> > GetGroups( te::da::DataSet* inputDataSet,
+std::map<std::string, std::vector<te::mem::DataSetItem*> > GetGroups(te::da::DataSet* inputDataSet,
                                                                      const std::vector<te::dt::Property*>& groupingProperties);
 
-std::map<std::string, std::string> CalculateStringGroupingFunctions( const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
+std::map<std::string, std::string> CalculateStringGroupingFunctions(const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                                                                     const std::vector<te::mem::DataSetItem*>& items);
 
 std::map<std::string, double> CalculateDoubleGroupingFunctions(const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                                                                const std::vector<te::mem::DataSetItem*>& items);
+
 // ---
 
 bool te::vp::Aggregation(const std::string& inDataset,
@@ -331,6 +332,7 @@ bool AggregationMemory(const std::string& inDataset,
     
     std::map<std::string, std::string> functionResultStringMap = CalculateStringGroupingFunctions(statisticalSummary, itGroupValues->second);
     std::map<std::string, double> functionResultDoubleMap = CalculateDoubleGroupingFunctions(statisticalSummary, itGroupValues->second);
+
     
     te::gm::Geometry* geometry = te::vp::GetGeometryUnion(itGroupValues->second, geomIdx, outGeoType);
 
@@ -357,12 +359,57 @@ bool AggregationMemory(const std::string& inDataset,
       if(!functionResultDoubleMap.empty())
       {
         std::map<std::string, double>::iterator itFuncResultDouble = functionResultDoubleMap.begin();
-      
+
+        std::string propMode;
+        std::string auxPropMode;
+        std::string modeValue;
+        std::string auxValue;
+        bool mode = false;
+
         while(itFuncResultDouble != functionResultDoubleMap.end())
         {
+          propMode = itFuncResultDouble->first.c_str();
+          
+          unsigned pos = propMode.find("_");
+          propMode = propMode.substr(pos+1);
+          pos = propMode.find("_");
+          propMode = propMode.substr(pos+1);
+
+          std::string shortMode = "";
+
+          if(propMode.length() > 3)
+            shortMode = propMode.substr(propMode.length()-4, 4);
+
+          if(propMode == auxPropMode || auxPropMode == "")
+          {
+            if(shortMode == "MODE")
+            {
+              modeValue += ", "+boost::lexical_cast<std::string>(itFuncResultDouble->second);
+              auxPropMode = propMode;
+              mode = true;
+            }
+          }
+          else
+          {
+            if(mode)
+            {
+              modeValue.erase(0,2);
+              outputDataSetItem->setString(auxPropMode, modeValue);
+              mode = false;
+
+              if(shortMode == "MODE")
+              {
+                modeValue = "";
+                modeValue += ", "+boost::lexical_cast<std::string>(itFuncResultDouble->second);
+                auxPropMode = propMode;
+                mode = true;
+              }
+            }
+          }
+
           if(te::da::GetPropertyPos(outputDataSet, itFuncResultDouble->first.c_str()) < outputDataSet->getNumProperties())
-            outputDataSetItem->setDouble(itFuncResultDouble->first.c_str(), itFuncResultDouble->second);
-        
+              outputDataSetItem->setDouble(itFuncResultDouble->first.c_str(), itFuncResultDouble->second);
+
           ++itFuncResultDouble;
         }
       }
@@ -422,7 +469,7 @@ te::da::DataSetType* BuildOutputDataSetType(const std::string& name,
       functionResult = propertyResult;
       functionResult += te::stat::GetStatSummaryShortName(vectorResult[i]);
       
-      if(it->first->getType() == te::dt::STRING_TYPE)
+      if(it->first->getType() == te::dt::STRING_TYPE || vectorResult[i] == te::stat::MODE)
       {
         te::dt::StringProperty* functrionProperty = new te::dt::StringProperty(functionResult);
         dataSetType->add(functrionProperty);
@@ -670,10 +717,10 @@ std::map<std::string, std::string> CalculateStringGroupingFunctions(const std::m
 }
 
 std::map<std::string, double> CalculateDoubleGroupingFunctions( const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
-                                                                        const std::vector<te::mem::DataSetItem*>& items)
+                                                      const std::vector<te::mem::DataSetItem*>& items)
 {
   std::map<std::string, double> result;
-
+  int idProp = 0;
   std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >::const_iterator it = statisticalSummary.begin();
 
   while(it != statisticalSummary.end())
@@ -720,13 +767,16 @@ std::map<std::string, double> CalculateDoubleGroupingFunctions( const std::map<t
       result.insert( std::map<std::string, double>::value_type( propertyName + "_AMPLITUDE", ss.m_amplitude ) );
       result.insert( std::map<std::string, double>::value_type( propertyName + "_MEDIAN", ss.m_median ) );
       result.insert( std::map<std::string, double>::value_type( propertyName + "_VAR_COEFF", ss.m_varCoeff ) );
-      //result.insert( std::map<std::string, double>::value_type( propertyName + "_MODE", ss.m_mode ) );
-
+      
+      for(std::size_t i = 0; i < ss.m_mode.size(); ++i)
+        result.insert( std::map<std::string, double>::value_type( boost::lexical_cast<std::string>(idProp) + "_" + 
+                                                                  boost::lexical_cast<std::string>(i) + "_" + 
+                                                                  propertyName + "_MODE", ss.m_mode[i] ) );
     }
     ++it;
+    ++idProp;
   }
 
   return result;
 }
-
 
