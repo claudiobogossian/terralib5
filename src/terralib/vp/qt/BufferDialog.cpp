@@ -403,8 +403,6 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
 
     return;
   }
-
-  this->setCursor(Qt::WaitCursor);
   
   //progress
   te::qt::widgets::ProgressViewerDialog v(this);
@@ -450,6 +448,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
         return;
       }
 
+      this->setCursor(Qt::WaitCursor);
       res = te::vp::Buffer( dsLayer->getDataSetName(),
                             inDataSource.get(),
                             bufferPolygonRule, 
@@ -489,6 +488,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
     else
     {
       te::da::DataSourcePtr aux = te::da::DataSourceManager::getInstance().find(m_outputDatasource->getId());
+      this->setCursor(Qt::WaitCursor);
       res = te::vp::Buffer( dsLayer->getDataSetName(),
                             inDataSource.get(),
                             bufferPolygonRule, 
@@ -501,6 +501,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
                             propDistance);
       if(!res)
       {
+        this->setCursor(Qt::ArrowCursor);
         QMessageBox::information(this, "Buffer", "Error: could not generate the buffer.");
         reject();
       }
@@ -516,9 +517,9 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
   }
   catch(const std::exception& e)
   {
+    this->setCursor(Qt::ArrowCursor);
     QMessageBox::information(this, "Buffer", e.what());
     te::common::ProgressManager::getInstance().removeViewer(id);
-    this->setCursor(Qt::ArrowCursor);
     return;
   }
 

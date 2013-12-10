@@ -635,8 +635,6 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
     return;
   }
 
-  this->setCursor(Qt::WaitCursor);
-
   //progress
   te::qt::widgets::ProgressViewerDialog v(this);
   int id = te::common::ProgressManager::getInstance().addViewer(&v);
@@ -679,10 +677,12 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
         return;
       }
       
+      this->setCursor(Qt::WaitCursor);
       res = te::vp::Aggregation(dsLayer->getDataSetName(),inDataSource.get(), selProperties, outputStatisticalSummary, outputdataset, dsOGR.get());
       
       if (!res)
       {
+        this->setCursor(Qt::ArrowCursor);
         dsOGR->close();
         QMessageBox::information(this, "Aggregation", "Error: could not generate the aggregation.");
         reject();
@@ -710,9 +710,11 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
     else
     {
       te::da::DataSourcePtr aux = te::da::DataSourceManager::getInstance().find(m_outputDatasource->getId());
+      this->setCursor(Qt::WaitCursor);
       res = te::vp::Aggregation(dsLayer->getDataSetName(),inDataSource.get(), selProperties, outputStatisticalSummary, outputdataset, aux.get());
       if (!res)
       {
+        this->setCursor(Qt::ArrowCursor);
         QMessageBox::information(this, "Aggregation", "Error: could not generate the aggregation.");
         reject();
       }
@@ -728,9 +730,9 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
   }
   catch(const std::exception& e)
   {
+    this->setCursor(Qt::ArrowCursor);
     QMessageBox::information(this, "Aggregation", e.what());
     te::common::ProgressManager::getInstance().removeViewer(id);
-    this->setCursor(Qt::ArrowCursor);
     return;
   }
 
