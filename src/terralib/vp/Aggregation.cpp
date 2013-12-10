@@ -758,9 +758,9 @@ std::map<std::string, double> CalculateDoubleGroupingFunctions( const std::map<t
         {
           double numval;
           if (type == te::dt::INT16_TYPE)
-            numval = items[i]->getInt32(index);
+           numval = items[i]->getInt16(index); 
           else if (type == te::dt::INT32_TYPE)
-            numval = items[i]->getInt16(index);
+            numval = items[i]->getInt32(index);
           else if (type == te::dt::INT64_TYPE)
             numval = items[i]->getInt64(index);
           else if (type == te::dt::FLOAT_TYPE)

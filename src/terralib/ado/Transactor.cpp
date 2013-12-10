@@ -225,7 +225,9 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const std::string& que
 {
   _RecordsetPtr result = m_conn->query(query, connected);
 
-  std::auto_ptr<te::da::DataSet> dset(new DataSet(result, m_conn, m_ds->getGeomColumns()));
+  long i = result->GetRecordCount();
+
+  std::auto_ptr<te::da::DataSet> dset(new DataSet(result, m_ds->getGeomColumns()));
 
   if(connected)
   {
@@ -406,14 +408,50 @@ std::size_t te::ado::Transactor::getNumberOfProperties(const std::string& datase
 
 bool te::ado::Transactor::propertyExists(const std::string& datasetName, const std::string& name)
 {
-  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
+  std::vector<std::string> datasets;
 
-  std::vector<std::string> pNames = getPropertyNames(datasetName);
+  ADOX::_CatalogPtr pCatalog = 0;
 
-  if(std::find(pNames.begin(), pNames.end(), name) != pNames.end())
-    return true;
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
-  return false;
+  try
+  {
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
+
+    ADOX::TablesPtr tables = pCatalog->GetTables();
+    
+    ADOX::_TablePtr table;
+    for(long i = 0; i < tables->GetCount(); ++i)
+    {
+      table = 0;
+      table = tables->GetItem(i);
+      std::string tableName = table->GetName();
+
+      if(tableName == datasetName)
+      {
+        break;
+      }
+    }
+
+    if(table)
+    {
+      ADOX::ColumnsPtr cols = table->GetColumns();
+
+      for(std::size_t i = 0; i < cols->Count; ++i)
+      {
+        ADOX::_ColumnPtr col = cols->GetItem((long)i);
+        if(((LPCSTR)(_bstr_t)col->GetName()) == name)
+          return true;
+      }
+    }
+
+    return false;
+
+  }
+  catch(_com_error &e)
+  {
+    throw Exception(TR_ADO(e.ErrorMessage()));
+  }
 }
 
 void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Property* p)
@@ -452,7 +490,6 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
       case te::dt::DOUBLE_TYPE:
       case te::dt::BOOLEAN_TYPE:
       case te::dt::BYTE_ARRAY_TYPE:
-      case te::dt::GEOMETRY_TYPE:
       case te::dt::ARRAY_TYPE:
       case te::dt::DATETIME_TYPE:
       case te::dt::NUMERIC_TYPE:
@@ -460,6 +497,18 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
         const te::dt::SimpleProperty* simple = static_cast<const te::dt::SimpleProperty*>(p);
 
         if(!simple->isRequired())
+          newColumn->Attributes = ADOX::adColNullable;
+
+        pTable->Columns->Append(newColumn->Name, newColumn->Type, newColumn->DefinedSize);
+
+        break;
+      }
+
+      case te::dt::GEOMETRY_TYPE:
+      {
+        const te::gm::GeometryProperty* gp = static_cast<te::gm::GeometryProperty*>(p);
+
+        if(!gp->isRequired())
           newColumn->Attributes = ADOX::adColNullable;
 
         pTable->Columns->Append(newColumn->Name, newColumn->Type, newColumn->DefinedSize);
@@ -1078,18 +1127,15 @@ void te::ado::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<
 
   if(dt->hasGeom())
   {
-    if(!propertyExists(dt->getName(), "lower_x"))
-    {
-      te::dt::SimpleProperty* lowerX = new te::dt::SimpleProperty("lower_x", te::dt::DOUBLE_TYPE);
-      te::dt::SimpleProperty* lowerY = new te::dt::SimpleProperty("lower_y", te::dt::DOUBLE_TYPE);
-      te::dt::SimpleProperty* upperX = new te::dt::SimpleProperty("upper_x", te::dt::DOUBLE_TYPE);
-      te::dt::SimpleProperty* upperY = new te::dt::SimpleProperty("upper_y", te::dt::DOUBLE_TYPE);
+    te::dt::SimpleProperty* lowerX = new te::dt::SimpleProperty("lower_x", te::dt::DOUBLE_TYPE);
+    te::dt::SimpleProperty* lowerY = new te::dt::SimpleProperty("lower_y", te::dt::DOUBLE_TYPE);
+    te::dt::SimpleProperty* upperX = new te::dt::SimpleProperty("upper_x", te::dt::DOUBLE_TYPE);
+    te::dt::SimpleProperty* upperY = new te::dt::SimpleProperty("upper_y", te::dt::DOUBLE_TYPE);
 
-      addProperty(dt->getName(), lowerX);
-      addProperty(dt->getName(), lowerY);
-      addProperty(dt->getName(), upperX);
-      addProperty(dt->getName(), upperY);
-    }
+    addProperty(dt->getName(), lowerX);
+    addProperty(dt->getName(), lowerY);
+    addProperty(dt->getName(), upperX);
+    addProperty(dt->getName(), upperY);
 
     geomProp = te::da::GetFirstGeomProperty(dt);
   }
