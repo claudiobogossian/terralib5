@@ -45,6 +45,8 @@ namespace te
       \class SynchronizedBand
 
       \brief Syncrhonized raster band.
+      
+      \note More efficient access can be achieved by following the bands internal blocking scheme.
     */
     class TERASTEREXPORT SynchronizedBand : public te::rst::Band, public boost::noncopyable
     {

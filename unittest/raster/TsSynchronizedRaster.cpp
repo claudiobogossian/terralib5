@@ -31,6 +31,8 @@
 #include <terralib/raster/BandProperty.h>
 #include <terralib/raster/Grid.h>
 
+#include <boost/thread.hpp>
+
 #include <memory>
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsSynchronizedRaster );
@@ -63,6 +65,34 @@ void TsSynchronizedRaster::CreateTestRaster( unsigned int nBands, unsigned int n
       }
 }
 
+void TsSynchronizedRaster::threadEntry(te::rst::RasterSynchronizer* syncPtr)
+{
+  std::auto_ptr< te::rst::SynchronizedRaster > syncRasterPtr( 
+    new te::rst::SynchronizedRaster( 2, *syncPtr ) );
+  
+  const unsigned int nBands = syncRasterPtr->getNumberOfBands();
+  const unsigned int nLines = syncRasterPtr->getNumberOfRows();
+  const unsigned int nCols = syncRasterPtr->getNumberOfColumns();
+  unsigned int band = 0;
+  unsigned int line = 0;
+  unsigned int col = 0;  
+  double pixelValue = 0;
+  
+  for( band = 0 ; band < nBands ; ++band )
+  {
+    boost::this_thread::sleep( boost::posix_time::milliseconds(100) );
+    
+    for( line = 0 ; line < nLines ; ++line )
+    {
+      for( col = 0 ; col < nCols ; ++col )
+      {
+        syncRasterPtr->getValue( col, line, pixelValue, band );
+        syncRasterPtr->setValue( col, line, pixelValue + 10.0, band );
+      }
+    }
+  }   
+}
+
 void TsSynchronizedRaster::singleThread()
 {
   // create the input test raster
@@ -74,7 +104,7 @@ void TsSynchronizedRaster::singleThread()
   boost::shared_ptr< te::rst::Raster > inputRasterPointer;
   CreateTestRaster( nBands, nLines, nCols, inputRasterPointer );
   
-  // using the cached raster adaptor.
+  // using the synchronized raster adaptor.
   {
     std::auto_ptr< te::rst::RasterSynchronizer > syncPtr( 
       new te::rst::RasterSynchronizer( *inputRasterPointer, te::common::RWAccess ) );
@@ -124,4 +154,49 @@ void TsSynchronizedRaster::singleThread()
 
 void TsSynchronizedRaster::multiThread()
 {
+  // create the input test raster
+  
+  const unsigned int nBands = 10;
+  const unsigned int nLines = 100;
+  const unsigned int nCols = 100;
+
+  boost::shared_ptr< te::rst::Raster > inputRasterPointer;
+  CreateTestRaster( nBands, nLines, nCols, inputRasterPointer );
+  
+  // using the synchronized raster adaptor.
+  {
+    std::auto_ptr< te::rst::RasterSynchronizer > syncPtr( 
+      new te::rst::RasterSynchronizer( *inputRasterPointer, te::common::RWAccess ) );
+
+    boost::thread_group threads;
+    
+    for( unsigned int threadIdx = 0 ; threadIdx < nBands ;
+      ++threadIdx )
+    {
+      threads.add_thread( new boost::thread( threadEntry, syncPtr.get() ) );
+    };    
+    
+    threads.join_all();
+     
+    syncPtr.reset();
+  }
+  
+  // Verifying the values
+  
+  {
+    unsigned int band = 0;
+    unsigned int line = 0;
+    unsigned int col = 0;
+    double pixelValue = 0;
+    double readPixelValue = 0;
+    
+    for( band = 0 ; band < nBands ; ++band )
+      for( line = 0 ; line < nLines ; ++line )
+        for( col = 0 ; col < nCols ; ++col )
+        {
+          inputRasterPointer->getValue( col, line, readPixelValue, band );
+          CPPUNIT_ASSERT_DOUBLES_EQUAL( pixelValue + 100.0, readPixelValue, 0.0000001 );
+          ++pixelValue;
+        }
+  }  
 }

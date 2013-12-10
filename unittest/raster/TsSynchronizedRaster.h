@@ -27,6 +27,8 @@
 #define __TERRALIB_UNITTEST_RASTER_INTERNAL_SYNCHRONIZEDRASTER_H
 
 #include <terralib/raster.h>
+#include <terralib/raster/RasterSynchronizer.h>
+
 #include <boost/shared_ptr.hpp>
 
 // cppUnit
@@ -58,6 +60,8 @@ class TsSynchronizedRaster : public CPPUNIT_NS::TestFixture
     
     void CreateTestRaster( unsigned int nBands, unsigned int nLines, 
       unsigned int nCols, boost::shared_ptr< te::rst::Raster >& rasterPointer );    
+      
+    static void threadEntry(te::rst::RasterSynchronizer* syncPtr);      
     
     void singleThread();
     
