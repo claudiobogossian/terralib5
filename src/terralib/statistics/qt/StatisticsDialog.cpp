@@ -216,6 +216,7 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
     else
       QMessageBox::information(this, "Warning", "The input vector of values is empty.");
   }
+  m_ui->m_statTableWidget->resizeColumnToContents(0);
 }
 
 void te::stat::StatisticsDialog::onHelpPushButtonClicked()

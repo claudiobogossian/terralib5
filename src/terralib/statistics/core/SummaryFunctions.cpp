@@ -213,12 +213,12 @@ std::vector<double> te::stat::NewMode(const std::vector<double>& values)
 
 double te::stat::Mode(const std::vector<double>& values)
 {
-  if (values.empty())
-    return;
-  
   bool found;
   double mode = 0.0;
   std::map<double, int> mapMode;
+
+  if (values.empty())
+    return mode;
   
   for(std::size_t i = 0; i < values.size(); ++i)
   {
