@@ -199,6 +199,7 @@ bool AggregationQuery(const std::string& inDataset,
     if(propType == te::dt::STRING_TYPE)
     {
       te::da::PropertyName* p_name = new te::da::PropertyName(itStatSummary->first->getName());
+      te::da::PropertyName* p_count = new te::da::PropertyName("*");
       
       te::da::Expression* e_min = new te::da::Min(p_name);
       te::da::Field* f_min = new te::da::Field(*e_min, p_name->getName() + "_MIN_VALUE");
@@ -206,7 +207,7 @@ bool AggregationQuery(const std::string& inDataset,
       te::da::Expression* e_max = new te::da::Max(p_name);
       te::da::Field* f_max = new te::da::Field(*e_max,  p_name->getName() + "_MAX_VALUE");
       
-      te::da::Expression* e_count = new te::da::Count(p_name);
+      te::da::Expression* e_count = new te::da::Count(p_count);
       te::da::Field* f_count = new te::da::Field(*e_count,  p_name->getName() + "_COUNT");
       
       te::da::Expression* e_validcount = new te::da::Count(p_name);
@@ -220,6 +221,7 @@ bool AggregationQuery(const std::string& inDataset,
     else
     {
       te::da::PropertyName* p_name = new te::da::PropertyName(itStatSummary->first->getName());
+      te::da::PropertyName* p_count = new te::da::PropertyName("*");
       
       te::da::Expression* e_min = new te::da::Min(p_name);
       te::da::Field* f_min = new te::da::Field(*e_min, p_name->getName() + "_MIN_VALUE");
@@ -227,7 +229,7 @@ bool AggregationQuery(const std::string& inDataset,
       te::da::Expression* e_max = new te::da::Max(p_name);
       te::da::Field* f_max = new te::da::Field(*e_max, p_name->getName() + "_MAX_VALUE");
       
-      te::da::Expression* e_count = new te::da::Count(p_name);
+      te::da::Expression* e_count = new te::da::Count(p_count);
       te::da::Field* f_count = new te::da::Field(*e_count, p_name->getName() + "_COUNT");
       
       te::da::Expression* e_validcount = new te::da::Count(p_name);
@@ -551,7 +553,8 @@ void SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupingProper
             if(index < outputDataSetItem->getNumProperties())
             {
               std::string value = dsQuery->getAsString(i);
-              outputDataSetItem->setString(index, value);
+              if(!value.empty())
+                outputDataSetItem->setString(index, value);
             }
           }
           if(dsPropType == te::dt::NUMERIC_TYPE)
@@ -561,8 +564,12 @@ void SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupingProper
             
             if(index < outputDataSetItem->getNumProperties())
             {
-              double value = boost::lexical_cast<double>(dsQuery->getNumeric(i));
-              outputDataSetItem->setDouble(index, value);
+              std::string queryValue = dsQuery->getNumeric(i);
+              if(!queryValue.empty())
+              {
+                double value = boost::lexical_cast<double>(queryValue);
+                outputDataSetItem->setDouble(index, value);
+              }
             }
           }
           if(dsPropType == te::dt::DOUBLE_TYPE)
@@ -586,13 +593,18 @@ void SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupingProper
               int type = outputDataSetItem->getPropertyDataType(index);
               if(type == te::dt::DOUBLE_TYPE)
               {
-                double value = boost::lexical_cast<double>(dsQuery->getAsString(i));
-                outputDataSetItem->setDouble(index, value);
+                std::string queryValue = dsQuery->getAsString(i);
+                if(!queryValue.empty())
+                {
+                  double value = boost::lexical_cast<double>(queryValue);
+                  outputDataSetItem->setDouble(index, value);
+                }
               }
               if(type == te::dt::STRING_TYPE)
               {
                 std::string value = dsQuery->getAsString(i);
-                outputDataSetItem->setString(index, value);
+                if(!value.empty())
+                  outputDataSetItem->setString(index, value);
               }
             }
           }
@@ -606,13 +618,18 @@ void SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupingProper
               int type = outputDataSetItem->getPropertyDataType(index);
               if(type == te::dt::DOUBLE_TYPE)
               {
-                double value = boost::lexical_cast<double>(dsQuery->getAsString(i));
-                outputDataSetItem->setDouble(index, value);
+                std::string queryValue = dsQuery->getAsString(i);
+                if(!queryValue.empty())
+                {
+                  double value = boost::lexical_cast<double>(queryValue);
+                  outputDataSetItem->setDouble(index, value);
+                }
               }
               if(type == te::dt::STRING_TYPE)
               {
                 std::string value = dsQuery->getAsString(i);
-                outputDataSetItem->setString(index, value);
+                if(!value.empty())
+                  outputDataSetItem->setString(index, value);
               }
             }
           }
