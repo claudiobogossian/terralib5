@@ -199,9 +199,20 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
   try
   {
     te::map::DataSetLayer* firstDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_firstSelectedLayer.get());
+    if(!firstDataSetLayer)
+    {
+      QMessageBox::information(this, "Intersection", "Error: Can not perform on the first layer.");
+      return;
+    }
     te::da::DataSourcePtr firstDataSource = te::da::GetDataSource(firstDataSetLayer->getDataSourceId(), true);
 
     te::map::DataSetLayer* secondDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_secondSelectedLayer.get());
+    if(!secondDataSetLayer)
+    {
+      QMessageBox::information(this, "Intersection", "Error: Can not perform on the second layer.");
+      return;
+    }
+
     te::da::DataSourcePtr secondDataSource = te::da::GetDataSource(secondDataSetLayer->getDataSourceId(), true);
 
     if (!firstDataSource.get() || !secondDataSource)

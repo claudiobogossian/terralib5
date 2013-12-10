@@ -394,7 +394,10 @@ bool AggregationMemory(const std::string& inDataset,
             if(mode)
             {
               modeValue.erase(0,2);
-              outputDataSetItem->setString(auxPropMode, modeValue);
+
+              if(te::da::GetPropertyPos(outputDataSet, auxPropMode) < outputDataSet->getNumProperties())
+                outputDataSetItem->setString(auxPropMode, modeValue);
+
               mode = false;
 
               if(shortMode == "MODE")

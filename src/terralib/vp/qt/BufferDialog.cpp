@@ -411,6 +411,12 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
   try
   {
     te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
+    if(!dsLayer)
+    {
+      QMessageBox::information(this, "Buffer", "Error: Can not perform on this layer.");
+      return;
+    }
+
     te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
 
     if (!inDataSource.get())
