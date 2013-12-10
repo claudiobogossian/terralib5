@@ -230,6 +230,8 @@ namespace te
 
     std::string GetFormattedDateTime(te::dt::DateTime* dateTime);
 
+    void GetGeometryColumnsInfo(_ConnectionPtr adoConn, std::map<std::string, std::string>& geomColumnsInfo);
+
   } // end namespace ado
 }   // end namespace te
 
