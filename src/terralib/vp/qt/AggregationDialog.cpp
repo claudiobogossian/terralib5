@@ -132,7 +132,7 @@ std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > te::vp::
   std::map<std::string, std::vector<te::stat::StatisticalSummary> >  propname_stat;
   std::map<std::string, std::vector<te::stat::StatisticalSummary> >::iterator it;
   
-  for(size_t i = 0; i < itemList.size(); ++i)
+  for(int i = 0; i < itemList.size(); ++i)
   {
     std::vector<std::string> tokens;
     std::string pname;

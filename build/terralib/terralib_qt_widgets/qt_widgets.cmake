@@ -22,19 +22,22 @@ endif()
 
 #Definitions for Windows compiling
 if(WIN32)
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEQTWIDGETSDLL -DBOOST_ALL_NO_LIB
-		              -DUNICODE
-		              -DQT_LARGEFILE_SUPPORT
-		              -DQT_DLL
-		              -DQT_GUI_LIB
-		              -DQT_CORE_LIB
-		              -DQT_HAVE_MMX
-		              -DQT_HAVE_3DNOW
-		              -DQT_HAVE_SSE
-		              -DQT_HAVE_MMXEXT
-		              -DQT_HAVE_SSE2
-		              -DQT_THREAD_SUPPORT
-                  )
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS
+	                -D_SCL_SECURE_NO_WARNINGS
+                	-DTEQTWIDGETSDLL
+					-DBOOST_ALL_NO_LIB
+		            -DUNICODE
+		            -DQT_LARGEFILE_SUPPORT
+		            -DQT_DLL
+		            -DQT_GUI_LIB
+		            -DQT_CORE_LIB
+		            -DQT_HAVE_MMX
+		            -DQT_HAVE_3DNOW
+		            -DQT_HAVE_SSE
+		            -DQT_HAVE_MMXEXT
+		            -DQT_HAVE_SSE2
+		            -DQT_THREAD_SUPPORT
+                    )
 endif()
 
 list (APPEND TE_DEP_LIBS

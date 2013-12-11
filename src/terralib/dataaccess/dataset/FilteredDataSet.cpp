@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../geometry/Envelope.h"
 #include "FilteredDataSet.h"
 
 // STL

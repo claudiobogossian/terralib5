@@ -105,7 +105,7 @@ std::vector<te::map::AbstractLayer*> te::map::AbstractLayer::getDescendants()
   std::vector<AbstractLayer*> layers;
   std::vector<AbstractLayer*> childrenLayers;
 
-  int numChildren = getChildrenCount();
+  std::size_t numChildren = getChildrenCount();
   for(std::size_t i = 0; i < numChildren; ++i)
   {
     AbstractLayer* childLayer = static_cast<AbstractLayer*>(getChild(i).get());

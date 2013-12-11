@@ -493,7 +493,6 @@
     </layout>
    </item>
   </layout>
-  <zorder></zorder>
  </widget>
  <tabstops>
   <tabstop>m_recomposeActionToolButton</tabstop>

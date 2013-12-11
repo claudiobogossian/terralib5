@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -28,13 +28,13 @@
 #include "../common/progress/TaskProgress.h"
 #include "../dataaccess/dataset/PrimaryKey.h"
 #include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceInfo.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"
 #include "../dataaccess/dataset/DataSetTypeConverter.h"
-
 #include "../dataaccess/query_h.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
