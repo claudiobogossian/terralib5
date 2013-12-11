@@ -170,6 +170,7 @@ namespace te
           QwtPlotPanner*  m_panner;      //!< The display's panner.
           QwtPlotPicker*  m_leftPicker;  //!< The display's left button picker.
           QwtPlotPicker*  m_ctrlPicker;  //!< The display's control button picker.
+          QwtPlotPicker*  m_shiftPicker;  //!< The display's control button picker.
       };
     } // end namespace widgets
   }   // end namespace qt
