@@ -27,6 +27,8 @@
 #include "../../../../common/Config.h"
 #include "../../../../common/Translator.h"
 #include "../../../../common/Logger.h"
+#include "../../../../srs/Config.h"
+#include "../../../../srs/SpatialReferenceSystemManager.h"
 #include "../../../../dataaccess/dataset/DataSetType.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
@@ -280,6 +282,20 @@ void te::qt::plugins::ogr::Plugin::showWindow()
   std::list<te::map::AbstractLayerPtr>::iterator it;
   for(it = layers.begin(); it != layers.end(); ++it)
   {
+    if ((*it)->getSRID() != TE_UNKNOWN_SRS)
+    {
+      if (!te::srs::SpatialReferenceSystemManager::getInstance().recognizes((*it)->getSRID()))
+      {
+        QString msgErr(tr("Layer %1 has SRID %2 that is not recognized by TerraLib. Setting it to unknown."));
+        msgErr = msgErr.arg((*it)->getTitle().c_str());
+        msgErr = msgErr.arg((*it)->getSRID());
+        
+        QMessageBox::warning(te::qt::af::ApplicationController::getInstance().getMainWindow(),
+                              tr("Layer SRS check"), msgErr);
+        (*it)->setSRID(TE_UNKNOWN_SRS);
+      }
+    }
+    
     te::qt::af::evt::LayerAdded evt(*it, parentLayer);
     te::qt::af::ApplicationController::getInstance().broadcast(&evt);
   }

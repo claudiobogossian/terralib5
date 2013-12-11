@@ -632,7 +632,13 @@ bool terralib4::Transactor::hasDataSets()
 
 bool terralib4::Transactor::dataSetExists(const std::string& name)
 {
-  throw Exception(TR_TERRALIB4("This method is not supported by TerraLib 4.x driver!"));
+  std::vector<std::string> names = getDataSetNames();
+
+  for(std::size_t i = 0; i < names.size(); ++i)
+    if(names[i] == name)
+      return true;
+
+  return false;
 }
 
 void terralib4::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& options)
