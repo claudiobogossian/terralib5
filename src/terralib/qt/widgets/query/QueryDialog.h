@@ -80,6 +80,8 @@ namespace te
           */
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
 
+          void setCurrentLayer(te::map::AbstractLayerPtr layer);
+
           te::da::Where* getWhere();
 
 

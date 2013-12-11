@@ -29,14 +29,17 @@
 // TerraLib
 #include "../Config.h"
 #include "../../../dataaccess/datasource/DataSource.h"
+#include "../../../dataaccess/query/Expression.h"
 #include "../../../dataaccess/query/Where.h"
 #include "../../../maptools/AbstractLayer.h"
 
 // STL
 #include <memory>
 #include <map>
+#include <set>
 
 // Qt
+#include <QtGui/QComboBox>
 #include <QtGui/QWidget>
 
 
@@ -44,12 +47,48 @@ namespace Ui { class WhereClauseWidgetForm; }
 
 namespace te
 {
-  namespace da { class Expression; }
-
   namespace qt
   {
     namespace widgets
     {
+      struct ExpressionProperty
+      {
+        /*! \brief Default constructor. */
+        ExpressionProperty()
+        {
+          m_isAttributeCriteria = false;
+          m_isSpatialCriteria = false;
+          m_isPropertyValue = false;
+          m_isValueValue = false;
+
+          m_property = "";
+          m_operator = "";
+          m_value = "";
+
+          m_expression = 0;
+          m_valuesComboBox = 0;
+        }
+
+        ~ExpressionProperty()
+        {
+          delete m_expression;
+        }
+
+        bool m_isAttributeCriteria;
+        bool m_isSpatialCriteria;
+
+        bool m_isPropertyValue;
+        bool m_isValueValue;
+
+        std::string m_property;
+        std::string m_operator;
+        std::string m_value;
+
+        te::da::Expression* m_expression;
+
+        QComboBox* m_valuesComboBox;
+      };
+
       /*!
         \class WhereClauseWidget
 
@@ -68,6 +107,8 @@ namespace te
           Ui::WhereClauseWidgetForm* getForm() const;
 
           te::da::Where* getWhere();
+
+          std::string getWhereString();
 
 
         public:
@@ -101,9 +142,17 @@ namespace te
 
           void onClearAllPushButtonClicked();
 
+          void onRestrictValueComboBoxActivated(QString value);
+
+          void onComboBoxActivated(QString value);
+
         protected:
 
           te::da::Expression* getExpression(const QString& value, const std::string& propName);
+
+          void copyCombo(QComboBox* input, QComboBox* output, std::string curValue = "");
+
+          QStringList getPropertyValues(std::string propertyName);
 
 
         private:
@@ -114,7 +163,11 @@ namespace te
 
           std::vector<std::pair<std::string, std::string> > m_fromItems;
 
-          std::map<int, te::da::Expression*> m_mapExp;
+          std::map<int, ExpressionProperty*> m_mapExp;
+
+          std::map< QComboBox*, std::pair<int, int> > m_comboMap;
+
+          QStringList m_connectorsList;
 
           int m_count;
           int m_srid;

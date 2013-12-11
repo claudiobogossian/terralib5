@@ -101,7 +101,7 @@ te::rst::Grid::Grid(unsigned int nCols, unsigned int nRows,
   }
   else
   {
-    setGeoreference(te::gm::Coord2D(0, static_cast<double>(nRows - 1)), srid, resX, resY);
+    setGeoreference(te::gm::Coord2D(0, 0), srid, resX, resY);
     computeExtent();
   }
 }
@@ -134,7 +134,7 @@ te::rst::Grid::Grid(double resX,
   }
   else
   {
-    setGeoreference(te::gm::Coord2D(0, 0), srid, 1.0, 1.0);
+    setGeoreference(te::gm::Coord2D(0, 0), srid, resX, resY);
     computeExtent();
   }
 }

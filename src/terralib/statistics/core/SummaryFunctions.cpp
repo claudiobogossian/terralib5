@@ -147,10 +147,10 @@ void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::sta
   else
     ss.m_median = values[(ss.m_count-1)/2];
   
-  ss.m_mode = NewMode(values);
+  ss.m_mode = Mode(values);
 }
 
-std::vector<double> te::stat::NewMode(const std::vector<double>& values)
+std::vector<double> te::stat::Mode(const std::vector<double>& values)
 {
   std::vector<double> mode;
   if (values.empty())
@@ -205,59 +205,6 @@ std::vector<double> te::stat::NewMode(const std::vector<double>& values)
       }
     }
 
-    ++itMode;
-  }
-  
-  return mode;
-}
-
-double te::stat::Mode(const std::vector<double>& values)
-{
-  bool found;
-  double mode = 0.0;
-  std::map<double, int> mapMode;
-
-  if (values.empty())
-    return mode;
-  
-  for(std::size_t i = 0; i < values.size(); ++i)
-  {
-    found = false;
-    
-    if(!mapMode.empty())
-    {
-      std::map<double, int>::iterator itMode = mapMode.begin();
-      
-      while(itMode != mapMode.end())
-      {
-        if(itMode->first == values[i])
-        {
-          ++itMode->second;
-          found = true;
-        }
-        
-        ++itMode;
-      }
-      if(found == false)
-      {
-        mapMode.insert( std::map<double, int>::value_type( values[i] , 1 ) );
-      }
-    }
-    else
-      mapMode.insert( std::map<double, int>::value_type( values[i] , 1 ) );
-  }
-  
-  std::map<double, int>::iterator itMode = mapMode.begin();
-  int repeat = 0;
-  
-  while(itMode != mapMode.end())
-  {
-    if(repeat < itMode->second)
-    {
-      repeat = itMode->second;
-      mode = itMode->first;
-    }
-    
     ++itMode;
   }
   
