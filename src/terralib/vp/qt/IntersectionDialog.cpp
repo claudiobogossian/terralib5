@@ -191,8 +191,6 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
     return;
   }
-  
-  this->setCursor(Qt::WaitCursor);
 
   //progress
   te::qt::widgets::ProgressViewerDialog v(this);
@@ -201,9 +199,20 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
   try
   {
     te::map::DataSetLayer* firstDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_firstSelectedLayer.get());
+    if(!firstDataSetLayer)
+    {
+      QMessageBox::information(this, "Intersection", "Error: Can not perform on the first layer.");
+      return;
+    }
     te::da::DataSourcePtr firstDataSource = te::da::GetDataSource(firstDataSetLayer->getDataSourceId(), true);
 
     te::map::DataSetLayer* secondDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_secondSelectedLayer.get());
+    if(!secondDataSetLayer)
+    {
+      QMessageBox::information(this, "Intersection", "Error: Can not perform on the second layer.");
+      return;
+    }
+
     te::da::DataSourcePtr secondDataSource = te::da::GetDataSource(secondDataSetLayer->getDataSourceId(), true);
 
     if (!firstDataSource.get() || !secondDataSource)
@@ -239,7 +248,8 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
         QMessageBox::information(this, "Intersection", "Error: there is already a dataset with the requested output name.");
         return;
       }
-
+      
+      this->setCursor(Qt::WaitCursor);
       res = te::vp::Intersection( firstDataSetLayer->getDataSetName(),
                                   firstDataSource.get(),
                                   secondDataSetLayer->getDataSetName(),
@@ -276,6 +286,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     }
     else
     {
+      this->setCursor(Qt::WaitCursor);
       te::da::DataSourcePtr aux = te::da::DataSourceManager::getInstance().find(m_outputDatasource->getId());
       res = te::vp::Intersection(firstDataSetLayer->getDataSetName(),
                                 firstDataSource.get(),
@@ -286,6 +297,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
                                 aux.get());
       if(!res)
       {
+        this->setCursor(Qt::ArrowCursor);
         QMessageBox::information(this, "Intersection", "Error: could not generate the intersection.");
         reject();
       }
@@ -301,9 +313,9 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
   }
   catch(const std::exception& e)
   {
+    this->setCursor(Qt::ArrowCursor);
     QMessageBox::warning(this, TR_VP("Intersection"), e.what());
     te::common::ProgressManager::getInstance().removeViewer(id);
-    this->setCursor(Qt::ArrowCursor);
     return;
   }
 

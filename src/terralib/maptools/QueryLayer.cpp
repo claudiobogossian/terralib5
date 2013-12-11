@@ -226,6 +226,25 @@ std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const te::da::Object
 
 bool te::map::QueryLayer::isValid() const
 {
+  if(m_query == 0)
+    return false;
+
+  if(m_datasourceId.empty())
+    return false;
+
+  te::da::DataSourcePtr ds;
+  try
+  {
+    ds = te::da::GetDataSource(m_datasourceId, true);
+  }
+  catch(...)
+  {
+    return false;
+  }
+
+  if(ds.get() == 0 || !ds->isValid() || !ds->isOpened())
+    return false;
+
   return true;
 }
 

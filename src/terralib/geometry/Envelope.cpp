@@ -92,9 +92,16 @@ void te::gm::Envelope::transform(int oldsrid, int newsrid)
     return;
 
   std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
-
-  converter->setSourceSRID(oldsrid);
-  converter->setTargetSRID(newsrid);
+  
+  try
+  {
+    converter->setSourceSRID(oldsrid);
+    converter->setTargetSRID(newsrid);
+  }
+  catch (te::common::Exception& ex)
+  {
+    return;
+  }
   
   double x1, x2, x3, x4;
   double y1, y2, y3, y4;

@@ -89,14 +89,15 @@ void SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupingProper
                            te::da::DataSet* dsQuery,
                            te::mem::DataSet* outputDataSet, te::gm::GeomType outGeoType);
 
-std::map<std::string, std::vector<te::mem::DataSetItem*> > GetGroups( te::da::DataSet* inputDataSet,
+std::map<std::string, std::vector<te::mem::DataSetItem*> > GetGroups(te::da::DataSet* inputDataSet,
                                                                      const std::vector<te::dt::Property*>& groupingProperties);
 
-std::map<std::string, std::string> CalculateStringGroupingFunctions( const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
+std::map<std::string, std::string> CalculateStringGroupingFunctions(const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                                                                     const std::vector<te::mem::DataSetItem*>& items);
 
 std::map<std::string, double> CalculateDoubleGroupingFunctions(const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                                                                const std::vector<te::mem::DataSetItem*>& items);
+
 // ---
 
 bool te::vp::Aggregation(const std::string& inDataset,
@@ -198,6 +199,7 @@ bool AggregationQuery(const std::string& inDataset,
     if(propType == te::dt::STRING_TYPE)
     {
       te::da::PropertyName* p_name = new te::da::PropertyName(itStatSummary->first->getName());
+      te::da::PropertyName* p_count = new te::da::PropertyName("*");
       
       te::da::Expression* e_min = new te::da::Min(p_name);
       te::da::Field* f_min = new te::da::Field(*e_min, p_name->getName() + "_MIN_VALUE");
@@ -205,7 +207,7 @@ bool AggregationQuery(const std::string& inDataset,
       te::da::Expression* e_max = new te::da::Max(p_name);
       te::da::Field* f_max = new te::da::Field(*e_max,  p_name->getName() + "_MAX_VALUE");
       
-      te::da::Expression* e_count = new te::da::Count(p_name);
+      te::da::Expression* e_count = new te::da::Count(p_count);
       te::da::Field* f_count = new te::da::Field(*e_count,  p_name->getName() + "_COUNT");
       
       te::da::Expression* e_validcount = new te::da::Count(p_name);
@@ -219,6 +221,7 @@ bool AggregationQuery(const std::string& inDataset,
     else
     {
       te::da::PropertyName* p_name = new te::da::PropertyName(itStatSummary->first->getName());
+      te::da::PropertyName* p_count = new te::da::PropertyName("*");
       
       te::da::Expression* e_min = new te::da::Min(p_name);
       te::da::Field* f_min = new te::da::Field(*e_min, p_name->getName() + "_MIN_VALUE");
@@ -226,7 +229,7 @@ bool AggregationQuery(const std::string& inDataset,
       te::da::Expression* e_max = new te::da::Max(p_name);
       te::da::Field* f_max = new te::da::Field(*e_max, p_name->getName() + "_MAX_VALUE");
       
-      te::da::Expression* e_count = new te::da::Count(p_name);
+      te::da::Expression* e_count = new te::da::Count(p_count);
       te::da::Field* f_count = new te::da::Field(*e_count, p_name->getName() + "_COUNT");
       
       te::da::Expression* e_validcount = new te::da::Count(p_name);
@@ -331,6 +334,7 @@ bool AggregationMemory(const std::string& inDataset,
     
     std::map<std::string, std::string> functionResultStringMap = CalculateStringGroupingFunctions(statisticalSummary, itGroupValues->second);
     std::map<std::string, double> functionResultDoubleMap = CalculateDoubleGroupingFunctions(statisticalSummary, itGroupValues->second);
+
     
     te::gm::Geometry* geometry = te::vp::GetGeometryUnion(itGroupValues->second, geomIdx, outGeoType);
 
@@ -357,12 +361,60 @@ bool AggregationMemory(const std::string& inDataset,
       if(!functionResultDoubleMap.empty())
       {
         std::map<std::string, double>::iterator itFuncResultDouble = functionResultDoubleMap.begin();
-      
+
+        std::string propMode;
+        std::string auxPropMode;
+        std::string modeValue;
+        std::string auxValue;
+        bool mode = false;
+
         while(itFuncResultDouble != functionResultDoubleMap.end())
         {
+          propMode = itFuncResultDouble->first.c_str();
+          
+          unsigned pos = propMode.find("_");
+          propMode = propMode.substr(pos+1);
+          pos = propMode.find("_");
+          propMode = propMode.substr(pos+1);
+
+          std::string shortMode = "";
+
+          if(propMode.length() > 3)
+            shortMode = propMode.substr(propMode.length()-4, 4);
+
+          if(propMode == auxPropMode || auxPropMode == "")
+          {
+            if(shortMode == "MODE")
+            {
+              modeValue += ", "+boost::lexical_cast<std::string>(itFuncResultDouble->second);
+              auxPropMode = propMode;
+              mode = true;
+            }
+          }
+          else
+          {
+            if(mode)
+            {
+              modeValue.erase(0,2);
+
+              if(te::da::GetPropertyPos(outputDataSet, auxPropMode) < outputDataSet->getNumProperties())
+                outputDataSetItem->setString(auxPropMode, modeValue);
+
+              mode = false;
+
+              if(shortMode == "MODE")
+              {
+                modeValue = "";
+                modeValue += ", "+boost::lexical_cast<std::string>(itFuncResultDouble->second);
+                auxPropMode = propMode;
+                mode = true;
+              }
+            }
+          }
+
           if(te::da::GetPropertyPos(outputDataSet, itFuncResultDouble->first.c_str()) < outputDataSet->getNumProperties())
-            outputDataSetItem->setDouble(itFuncResultDouble->first.c_str(), itFuncResultDouble->second);
-        
+              outputDataSetItem->setDouble(itFuncResultDouble->first.c_str(), itFuncResultDouble->second);
+
           ++itFuncResultDouble;
         }
       }
@@ -422,7 +474,7 @@ te::da::DataSetType* BuildOutputDataSetType(const std::string& name,
       functionResult = propertyResult;
       functionResult += te::stat::GetStatSummaryShortName(vectorResult[i]);
       
-      if(it->first->getType() == te::dt::STRING_TYPE)
+      if(it->first->getType() == te::dt::STRING_TYPE || vectorResult[i] == te::stat::MODE)
       {
         te::dt::StringProperty* functrionProperty = new te::dt::StringProperty(functionResult);
         dataSetType->add(functrionProperty);
@@ -501,7 +553,8 @@ void SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupingProper
             if(index < outputDataSetItem->getNumProperties())
             {
               std::string value = dsQuery->getAsString(i);
-              outputDataSetItem->setString(index, value);
+              if(!value.empty())
+                outputDataSetItem->setString(index, value);
             }
           }
           if(dsPropType == te::dt::NUMERIC_TYPE)
@@ -511,8 +564,12 @@ void SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupingProper
             
             if(index < outputDataSetItem->getNumProperties())
             {
-              double value = boost::lexical_cast<double>(dsQuery->getNumeric(i));
-              outputDataSetItem->setDouble(index, value);
+              std::string queryValue = dsQuery->getNumeric(i);
+              if(!queryValue.empty())
+              {
+                double value = boost::lexical_cast<double>(queryValue);
+                outputDataSetItem->setDouble(index, value);
+              }
             }
           }
           if(dsPropType == te::dt::DOUBLE_TYPE)
@@ -536,13 +593,18 @@ void SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupingProper
               int type = outputDataSetItem->getPropertyDataType(index);
               if(type == te::dt::DOUBLE_TYPE)
               {
-                double value = boost::lexical_cast<double>(dsQuery->getAsString(i));
-                outputDataSetItem->setDouble(index, value);
+                std::string queryValue = dsQuery->getAsString(i);
+                if(!queryValue.empty())
+                {
+                  double value = boost::lexical_cast<double>(queryValue);
+                  outputDataSetItem->setDouble(index, value);
+                }
               }
               if(type == te::dt::STRING_TYPE)
               {
                 std::string value = dsQuery->getAsString(i);
-                outputDataSetItem->setString(index, value);
+                if(!value.empty())
+                  outputDataSetItem->setString(index, value);
               }
             }
           }
@@ -556,13 +618,18 @@ void SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupingProper
               int type = outputDataSetItem->getPropertyDataType(index);
               if(type == te::dt::DOUBLE_TYPE)
               {
-                double value = boost::lexical_cast<double>(dsQuery->getAsString(i));
-                outputDataSetItem->setDouble(index, value);
+                std::string queryValue = dsQuery->getAsString(i);
+                if(!queryValue.empty())
+                {
+                  double value = boost::lexical_cast<double>(queryValue);
+                  outputDataSetItem->setDouble(index, value);
+                }
               }
               if(type == te::dt::STRING_TYPE)
               {
                 std::string value = dsQuery->getAsString(i);
-                outputDataSetItem->setString(index, value);
+                if(!value.empty())
+                  outputDataSetItem->setString(index, value);
               }
             }
           }
@@ -670,10 +737,10 @@ std::map<std::string, std::string> CalculateStringGroupingFunctions(const std::m
 }
 
 std::map<std::string, double> CalculateDoubleGroupingFunctions( const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
-                                                                        const std::vector<te::mem::DataSetItem*>& items)
+                                                      const std::vector<te::mem::DataSetItem*>& items)
 {
   std::map<std::string, double> result;
-
+  int idProp = 0;
   std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >::const_iterator it = statisticalSummary.begin();
 
   while(it != statisticalSummary.end())
@@ -691,9 +758,9 @@ std::map<std::string, double> CalculateDoubleGroupingFunctions( const std::map<t
         {
           double numval;
           if (type == te::dt::INT16_TYPE)
-            numval = items[i]->getInt32(index);
+           numval = items[i]->getInt16(index); 
           else if (type == te::dt::INT32_TYPE)
-            numval = items[i]->getInt16(index);
+            numval = items[i]->getInt32(index);
           else if (type == te::dt::INT64_TYPE)
             numval = items[i]->getInt64(index);
           else if (type == te::dt::FLOAT_TYPE)
@@ -720,13 +787,16 @@ std::map<std::string, double> CalculateDoubleGroupingFunctions( const std::map<t
       result.insert( std::map<std::string, double>::value_type( propertyName + "_AMPLITUDE", ss.m_amplitude ) );
       result.insert( std::map<std::string, double>::value_type( propertyName + "_MEDIAN", ss.m_median ) );
       result.insert( std::map<std::string, double>::value_type( propertyName + "_VAR_COEFF", ss.m_varCoeff ) );
-      //result.insert( std::map<std::string, double>::value_type( propertyName + "_MODE", ss.m_mode ) );
-
+      
+      for(std::size_t i = 0; i < ss.m_mode.size(); ++i)
+        result.insert( std::map<std::string, double>::value_type( boost::lexical_cast<std::string>(idProp) + "_" + 
+                                                                  boost::lexical_cast<std::string>(i) + "_" + 
+                                                                  propertyName + "_MODE", ss.m_mode[i] ) );
     }
     ++it;
+    ++idProp;
   }
 
   return result;
 }
-
 

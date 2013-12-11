@@ -1385,7 +1385,7 @@ void te::qt::af::BaseApplication::onInfoToggled(bool checked)
     return;
 
   QPixmap pxmap = QIcon::fromTheme("pointer-info").pixmap(m_mapCursorSize);
-  QCursor infoCursor(pxmap, 5, 5);
+  QCursor infoCursor(pxmap, 0, 0);
 
   te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), infoCursor, m_explorer->getExplorer()->getSelectedSingleLayers());
   m_display->setCurrentTool(info);

@@ -79,14 +79,7 @@ namespace te
      \param values  a reference to a set of numerical values. Do not pass empty.
      \return The mode (most frequent value).
      */
-    TESTATEXPORT std::vector<double> NewMode(const std::vector<double>& values);
-
-    /*! Returns the mode of set of numerical values.
-     
-     \param values  a reference to a set of numerical values. Do not pass empty.
-     \return The mode (most frequent value).
-     */
-    TESTATEXPORT double Mode(const std::vector<double>& values);
+    TESTATEXPORT std::vector<double> Mode(const std::vector<double>& values);
     
     /*! Returns the mode of set of categorical values.
      

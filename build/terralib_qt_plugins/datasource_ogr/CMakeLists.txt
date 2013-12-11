@@ -53,6 +53,7 @@ list (APPEND
   terralib_common
   terralib_dataaccess
   terralib_plugin
+  terralib_srs
   terralib_qt_widgets
   terralib_qt_af
 )

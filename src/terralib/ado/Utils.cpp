@@ -1344,3 +1344,31 @@ std::string te::ado::GetFormattedDateTime(te::dt::DateTime* dateTime)
 
   return result;
 }
+
+void te::ado::GetGeometryColumnsInfo(_ConnectionPtr adoConn, std::map<std::string, std::string>& geomColumnsInfo)
+{
+  geomColumnsInfo.clear();
+
+  _RecordsetPtr recordset;
+
+  TESTHR(recordset.CreateInstance(__uuidof(Recordset)));
+  
+  std::string query = "SELECT * FROM geometry_columns";
+
+  try
+  {
+    recordset->Open(query.c_str(), _variant_t((IDispatch *)adoConn), adOpenDynamic, adLockReadOnly, adCmdText);
+
+    while(!recordset->EndOfFile)
+    {
+      std::string tablename = (LPCSTR)(_bstr_t)recordset->GetFields()->GetItem("f_table_name")->GetValue();
+      std::string columnName = (LPCSTR)(_bstr_t)recordset->GetFields()->GetItem("f_geometry_column")->GetValue();
+      geomColumnsInfo[tablename] = columnName;
+      recordset->MoveNext();
+    }
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+}
