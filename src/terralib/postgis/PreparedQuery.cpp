@@ -331,11 +331,11 @@ void te::pgis::PreparedQuery::bindNumeric(int i, const std::string& value)
 {
   delete [] (m_paramValues[i]);
 
-  m_paramValues[i] = new char[value.length()];
+  m_paramValues[i] = new char[value.length() + 1];
 
-  memcpy(m_paramValues[i], value.c_str(), value.length());
+  memcpy(m_paramValues[i], value.c_str(), value.length() + 1);
 
-  m_paramLengths[i] = static_cast<int>(value.length());
+  //m_paramLengths[i] = static_cast<int>(value.length()); // we don't need to inform the length
   m_paramFormats[i] = 0;
 }
 
