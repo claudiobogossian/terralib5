@@ -33,15 +33,21 @@
 #include "widgets/layer/explorer/AbstractTreeItem.h"
 #include "widgets/layer/explorer/LayerExplorer.h"
 
+/*!
+  \defgroup widgets Widgets
+
+  \ingroup qt
+
+  \brief This module provides the GUI components for dealing with geospatial concepts.
+
+    The namespace associated to the Qt Widgets module is te::qt::widgets. To know more about it, see the te::qt::widgets namespace documentation.
+*/
 namespace te
 {
   namespace qt
   {
     /*!
-      \brief Namespace for the TerraLib customized Qt Widgets.
-
-      In this namespace you will find just Qt components. Some of them
-      have a dialog window others are just cusmozied controls (like lists, buttons and menus).
+      \brief Namespace for the Qt Widgets module of TerraLib.
     */
     namespace widgets
     {

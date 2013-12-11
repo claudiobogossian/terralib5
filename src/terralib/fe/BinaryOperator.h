@@ -57,6 +57,8 @@ namespace te
       </ul>
       Of course, you can extend the list of supported binary operators.
 
+      \ingroup fe
+
       \sa Expression
 
       \todo Mostrar como a pessoa pode estender a lista de operadores binarios!

@@ -18,10 +18,6 @@
  */
 
 /*!
-  \defgroup afevents Application Framework Events
-
-  \ingroup appframework
-
   \brief Default events used with application framework.
 
   \details These are default event classes that can be sent by the application framework.
@@ -53,12 +49,12 @@ namespace te
 
         \brief A base class for application events.
 
-        This is the type of event that components and plugins may
-        use to notify changes in the application state.
+          This is the type of event that components and plugins may
+          use to notify changes in the application state.
 
-        One must specialize this class in order to notify specific events.
+          One must specialize this class in order to notify specific events.
 
-          \ingroup afevents
+          \ingroup af
         */
         struct Event
         {

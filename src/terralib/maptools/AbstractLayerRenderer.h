@@ -70,6 +70,8 @@ namespace te
 
       \brief It renders the objects associated to an abstract layer. i.e. a generic renderer.
 
+      \ingroup map
+
       \sa AbstractLayer, AbstractRenderer
     */
     class TEMAPEXPORT AbstractLayerRenderer : public AbstractRenderer

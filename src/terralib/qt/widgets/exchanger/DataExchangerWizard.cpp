@@ -36,6 +36,7 @@
 #include "../../../qt/widgets/dataset/selector/DataSetSelectorWizardPage.h"
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWidget.h"
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
+#include "../../../qt/widgets/help/HelpPushButton.h"
 #include "../../../qt/widgets/utils/ScopedCursor.h"
 #include "DataExchangerWizard.h"
 #include "DataExchangeStatus.h"
@@ -108,8 +109,13 @@ te::qt::widgets::DataExchangerWizard::DataExchangerWizard(QWidget* parent, Qt::W
   connect(this->button(QWizard::NextButton), SIGNAL(pressed()), this, SLOT(next()));
   connect(this->button(QWizard::BackButton), SIGNAL(pressed()), this, SLOT(back()));
   connect(this->button(QWizard::CommitButton), SIGNAL(pressed()), this, SLOT(commit()));
-  connect(this->button(QWizard::HelpButton), SIGNAL(pressed()), this, SLOT(help()));
   //connect(this->button(QWizard::FinishButton), SIGNAL(pressed()), this, SLOT(finish()));
+
+  te::qt::widgets::HelpPushButton* helpButton = new te::qt::widgets::HelpPushButton(this);
+
+  this->setButton(QWizard::HelpButton, helpButton);
+
+  helpButton->setPageReference("widgets/exchanger_all/exchanger_all.html");
 }
 
 te::qt::widgets::DataExchangerWizard::~DataExchangerWizard()
@@ -266,13 +272,6 @@ void te::qt::widgets::DataExchangerWizard::commit()
   m_summaryPage->set(result);
 
   next();
-}
-
-void te::qt::widgets::DataExchangerWizard::help()
-{
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("This option is not implemented yet!\nWe will provide it soon!"));
 }
 
 

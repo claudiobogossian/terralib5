@@ -40,6 +40,8 @@ namespace te
 
       A DataSetLayer is a reference to a dataset with/without geometric attributes.
 
+      \ingroup map
+
       \sa AbstractLayer, QueryLayer, RasterLayer, FolderLayer
     */
     class TEMAPEXPORT DataSetLayer : public AbstractLayer

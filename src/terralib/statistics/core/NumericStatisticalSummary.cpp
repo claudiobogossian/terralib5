@@ -40,8 +40,7 @@ te::stat::NumericStatisticalSummary::NumericStatisticalSummary()
     m_kurtosis(0),
     m_amplitude(0),
     m_median(0),
-    m_varCoeff(0),
-    m_mode(0)
+    m_varCoeff(0)
 {
 }
 
@@ -59,8 +58,7 @@ te::stat::NumericStatisticalSummary::NumericStatisticalSummary(const NumericStat
     m_kurtosis(0),
     m_amplitude(0),
     m_median(0),
-    m_varCoeff(0),
-    m_mode(0)
+    m_varCoeff(0)
 {
   m_minVal = rhs.m_minVal;
   m_maxVal = rhs.m_maxVal;
@@ -76,7 +74,7 @@ te::stat::NumericStatisticalSummary::NumericStatisticalSummary(const NumericStat
   m_amplitude = rhs.m_amplitude;
   m_median = rhs.m_median;
   m_varCoeff = rhs.m_varCoeff;
-  m_mode = rhs.m_mode;
+  std::copy(rhs.m_mode.begin(), rhs.m_mode.end(), m_mode.begin());
 }
 
 te::stat::NumericStatisticalSummary::~NumericStatisticalSummary()
@@ -104,7 +102,7 @@ te::stat::NumericStatisticalSummary& te::stat::NumericStatisticalSummary::operat
     m_amplitude = rhs.m_amplitude;
     m_median = rhs.m_median;
     m_varCoeff = rhs.m_varCoeff;
-    m_mode = rhs.m_mode;
+    std::copy(rhs.m_mode.begin(), rhs.m_mode.end(), m_mode.begin());
   }
 
   return *this;
@@ -126,6 +124,6 @@ void te::stat::NumericStatisticalSummary::clear()
   m_amplitude = 0;
   m_median = 0;
   m_varCoeff = 0;
-  m_mode = 0;
+  m_mode.clear();
 }
 

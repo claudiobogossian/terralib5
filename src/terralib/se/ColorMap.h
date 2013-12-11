@@ -52,7 +52,9 @@ namespace te
       For example, a DEM raster giving elevations in meters above
       sea level can be translated to a colored image with a ColorMap
       using a Categorize function.
-        
+
+      \ingroup se
+
       \sa RasterSymbolizer, Categorize, Interpolate
     */
     class TESEEXPORT ColorMap : public boost::noncopyable

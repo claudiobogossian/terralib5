@@ -46,6 +46,8 @@ namespace te
         \class CoordTracking
 
         \brief This class implements a concrete tool to geographic coordinate tracking on mouse move operation.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT CoordTracking : public AbstractTool
       {

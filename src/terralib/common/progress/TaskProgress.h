@@ -44,6 +44,8 @@ namespace te
 
       \brief This class can be used to inform the progress of a task.
 
+      \ingroup common
+
       \sa ProgressTimer, ProgressManager
 
       \todo ProgressTimer is NOT working if TaskProgress is in multithread mode.

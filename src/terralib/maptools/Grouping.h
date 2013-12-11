@@ -52,7 +52,9 @@ namespace te
 
       \brief This class contains the parameters needed for grouping the values of a Property.
 
-      \sa Layer
+      \ingroup map
+
+      \sa GroupingItem, Layer
     */
     class TEMAPEXPORT Grouping
     {

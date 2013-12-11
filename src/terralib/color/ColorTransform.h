@@ -43,16 +43,10 @@ namespace te
     /*!
       \class ColorTransform
 
-      Internally the color is represented by an integer of 32-bits as the following:
-      <ul>
-      <li>bits 0-7: blue</li>
-      <li>bits 8-15: green</li>
-      <li>bits 16-23: red</li>
-      <li>bits 24-31: alpha. See the macro TE_OPAQUE and TE_TRANSPARENT for the values of totally transparent and totally opaque.</li>
-      </ul>
-
       \brief A class to transform RGBA color to HSV, HSL and CMYK.
-     */
+
+      \ingroup color
+    */
     class TECOLOREXPORT ColorTransform
     {
       public:

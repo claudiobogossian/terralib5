@@ -40,6 +40,8 @@ namespace te
       
       \brief An abstract interface for operators.
 
+      \ingroup fe
+
       \sa Filter, SpatialOp, ComparisonOp, LogicOp      
      */
     class TEFEEXPORT AbstractOp : public te::common::BaseVisitable<Visitor> 

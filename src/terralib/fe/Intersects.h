@@ -39,6 +39,8 @@ namespace te
       
       \brief Binary spatial operator: Intersects.
 
+      \ingroup fe
+
       \sa BinarySpatialOp
      */
     class TEFEEXPORT Intersects : public BinarySpatialOp

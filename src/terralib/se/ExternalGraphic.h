@@ -79,6 +79,8 @@ namespace te
       LookUpValue is in this case set to ExternalGraphic,
       both Data and Value elements are set to color values.
 
+      \ingroup se
+
       \sa Graphic, InlineContent, Recode
     */
     class TESEEXPORT ExternalGraphic : public boost::noncopyable

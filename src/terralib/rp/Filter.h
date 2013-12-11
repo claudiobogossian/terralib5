@@ -42,6 +42,7 @@ namespace te
     /*!
       \class Filter
       \brief A series of well-known filtering algorithms for images, linear and non-linear..
+      \ingroup rp
      */
     class TERPEXPORT Filter : public Algorithm
     {
@@ -62,7 +63,7 @@ namespace te
               SobelFilterT = 1,       //!< Sobel filter type.
               RobertsFilterT = 2,     //!< Roberts filter type.
               MeanFilterT = 3,        //!< The resultant pixel will be the mean of pixels in the convolution window.
-              ModeFilterT = 4,        //!< The resultant pixel will be the mode of pixels in the convolution window.
+              ModeFilterT = 4,        //!< The resultant pixel will be the mode of pixels in the convolution window. When the window is multimodal, the first mode will be assumed.
               MedianFilterT = 5,      //!< The resultant pixel will be the median of pixels in the convolution window.
               DilationFilterT = 6,    //!< The resultant pixel will be the highest pixel value in the convolution window.
               ErosionFilterT = 7,     //!< The resultant pixel will be the lowest pixel value in the convolution window.

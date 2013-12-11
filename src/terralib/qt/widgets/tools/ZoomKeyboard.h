@@ -43,6 +43,8 @@ namespace te
         \class ZoomKeyboard
 
         \brief This class implements a concrete tool to geographic zoom operation using the keyboard.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT ZoomKeyboard : public Zoom
       {

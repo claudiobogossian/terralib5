@@ -28,9 +28,11 @@ installer   Scripts for creating TerraLib installers.
 			
 licenses    Copyright notices of third-party libraries used by terralib.
 
+log			Templates of log configuration files
+
 resources   Fonts, images, .xml files among other resources of general use.
 
-schemas		XML Schema (.xsd) files of general use.
+schemas		XML Schema (.xsd) and OGC specifications.
                
 src         Contains the source code of TerraLib.
             In the root of each subdir there is a file called

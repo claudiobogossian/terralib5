@@ -48,8 +48,6 @@ namespace te
           \struct ToolChanged
 
           \brief This event signals that the tool being used, on current map display, changed.
-
-          \ingroup afevents
         */
         struct ToolChanged : public Event
         {
@@ -76,8 +74,6 @@ namespace te
           \struct CoordinateTracked
 
           \brief Signals a mouse moved over the current display.
-
-          \ingroup afevents
         */
         struct CoordinateTracked : public Event
         {

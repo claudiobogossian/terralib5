@@ -24,10 +24,14 @@ namespace te
      \class Datum.
      
      \brief A geodetic datum defines a reference to measure Earth's surface.
+
      Planimetric datum parameters are used for defining geodetic coordinates,
      which are necessary to establish a map projection system.
+
+     \ingroup srs
+
      \todo Verify if it is necessary to keep an <Id,Authority> information to this object.
-     */
+    */
     class TESRSEXPORT Datum
     {
       

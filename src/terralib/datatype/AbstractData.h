@@ -48,6 +48,8 @@ namespace te
       data access module. Through implementing this abstract class you can add
       new data types to the system and then you can register it in the data source driver.
 
+      \ingroup datatype
+
       \sa DataType, ByteArray, DateTime, SimpleData, CompositeData
 
       \todo Add a serialize/deserialize API

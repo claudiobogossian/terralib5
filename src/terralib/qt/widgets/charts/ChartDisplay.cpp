@@ -78,22 +78,28 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title, Char
   m_panner->setMouseButton(Qt::MidButton);
 
   // Selection based on a point
-  m_picker = new QwtPlotPicker(this->canvas());
-  m_picker->setStateMachine(new QwtPickerClickPointMachine );
-  
+  m_leftPicker = new QwtPlotPicker(this->canvas());
+  m_leftPicker->setStateMachine(new QwtPickerClickPointMachine );
+
+  m_ctrlPicker = new QwtPlotPicker(this->canvas());
+  m_ctrlPicker->setStateMachine(new QwtPickerClickPointMachine );
+  m_ctrlPicker->setMousePattern(QwtEventPattern::MouseSelect1, Qt::LeftButton, Qt::ControlModifier);
+
   //The default shape of the cursor is a stander arrow, may vary depending on the type of chart being drawn.
   //Can be updated using the set PickerStyle function.
   canvas()->setCursor( Qt::ArrowCursor);
 
-  connect(m_picker, SIGNAL(selected(const QPointF&)), SLOT(onPointPicked(const QPointF&)));
+  connect(m_ctrlPicker, SIGNAL(selected(const QPointF&)), SLOT(onPointPicked(const QPointF&)));
+  connect(m_leftPicker, SIGNAL(selected(const QPointF&)), SLOT(onPointPicked(const QPointF&)));
 }
 
 te::qt::widgets::ChartDisplay::~ChartDisplay()
 {
   delete m_chartStyle;
-  delete m_panner;
-  delete m_picker;
+  delete m_ctrlPicker;
   delete m_grid;
+  delete m_leftPicker;
+  delete m_panner;
 }
 
 void te::qt::widgets::ChartDisplay::setPickerStyle(int chartType)
@@ -101,19 +107,36 @@ void te::qt::widgets::ChartDisplay::setPickerStyle(int chartType)
   switch(chartType)
   {
     case(te::qt::widgets::SCATTER_CHART):
-      delete m_picker;
-      m_picker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::RectRubberBand, QwtPicker::AlwaysOff, this->canvas());
-      m_picker->setStateMachine(new QwtPickerDragRectMachine );
-      connect(m_picker, SIGNAL(selected(const QRectF&)), SLOT(onRectPicked(const QRectF&)));
+
+      delete m_ctrlPicker;
+      delete m_leftPicker;
+
+      m_leftPicker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::RectRubberBand, QwtPicker::AlwaysOff, this->canvas());
+      m_leftPicker->setStateMachine(new QwtPickerDragRectMachine );
+
+      m_ctrlPicker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::RectRubberBand, QwtPicker::AlwaysOff, this->canvas());
+      m_ctrlPicker->setStateMachine(new QwtPickerDragRectMachine );
+      m_ctrlPicker->setMousePattern(QwtEventPattern::MouseSelect1, Qt::LeftButton, Qt::ControlModifier);
+
+      connect(m_leftPicker, SIGNAL(selected(const QRectF&)), SLOT(onRectPicked(const QRectF&)));
+      connect(m_ctrlPicker, SIGNAL(selected(const QRectF&)), SLOT(onRectPicked(const QRectF&)));
+
       canvas()->setCursor(Qt::CrossCursor);
       break;
 
     default:
-      delete m_picker;
-      m_picker = new QwtPlotPicker(this->canvas());
-      m_picker->setStateMachine(new QwtPickerClickPointMachine );
-      canvas()->setCursor( Qt::ArrowCursor);
-      connect(m_picker, SIGNAL(selected(const QPointF&)), SLOT(onPointPicked(const QPointF&)));
+      delete m_ctrlPicker;
+      delete m_leftPicker;
+
+      m_leftPicker = new QwtPlotPicker(this->canvas());
+      m_leftPicker->setStateMachine(new QwtPickerClickPointMachine );
+
+      m_ctrlPicker = new QwtPlotPicker(this->canvas());
+      m_ctrlPicker->setStateMachine(new QwtPickerClickPointMachine );
+      m_ctrlPicker->setMousePattern(QwtEventPattern::MouseSelect1, Qt::LeftButton, Qt::ControlModifier);
+
+      connect(m_leftPicker, SIGNAL(selected(const QPointF&)), SLOT(onPointPicked(const QPointF&)));
+      connect(m_ctrlPicker, SIGNAL(selected(const QPointF&)), SLOT(onPointPicked(const QPointF&)));
       break;
   }
 }
@@ -209,12 +232,18 @@ void te::qt::widgets::ChartDisplay::onPointPicked(const QPointF &pos)
   {
     if ( ( *it )->rtti() == te::qt::widgets::SCATTER_CHART)
     {
-      emit selected(static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( pos), false);
+      if (QObject::sender() == m_ctrlPicker)
+        emit selected(static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( pos), true);
+      else
+        emit selected(static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( pos), false);
       break;
     }
     else if( ( *it )->rtti() == te::qt::widgets::HISTOGRAM_CHART )
     {
-      emit selected(static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight( pos), false);
+      if (QObject::sender() == m_ctrlPicker)
+        emit selected(static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight( pos), true);
+      else
+        emit selected(static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight( pos), false);
       break;
     }
   }
@@ -230,7 +259,10 @@ void te::qt::widgets::ChartDisplay::onRectPicked(const QRectF &rect)
   {
   if ( ( *it )->rtti() == te::qt::widgets::SCATTER_CHART)
     {
-      emit selected(static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( rect), false);
+      if (QObject::sender() == m_ctrlPicker)
+        emit selected(static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( rect), true);
+      else
+        emit selected(static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( rect), false);
     }
     break;
   }

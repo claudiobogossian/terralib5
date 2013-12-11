@@ -31,17 +31,22 @@
 #include "xml/Reader.h"
 #include "xml/ReaderFactory.h"
 
+/*!
+  \defgroup xml XML
+
+  \brief The XML module implements the main framework for reading and writing XML documents in TerraLib.
+
+  The namespace associated to the XML module is te::xml. To know more about it, see the te::xml namespace documentation.
+*/
+
 namespace te
 {
   /*!
-    \brief Namespace for TerraLib XML module.
-
-    This is the namespace of the main framework for reading and writing
-    XML documents in TerraLib.
-   */
+    \brief Namespace for the XML module of TerraLib.
+  */
   namespace xml
   {
-  }	// end namespace xml
+  } // end namespace xml
 }   // end namespace te
 
 #endif  // __TERRALIB_INTERNAL_XML_H

@@ -236,6 +236,7 @@ int te::ado::Convert2Terralib(ADOX::DataTypeEnum adoType)
       break;
 
     case ADOX::adDouble:
+    case ADOX::adDecimal:
       return te::dt::DOUBLE_TYPE;
       break;
 
@@ -323,6 +324,7 @@ int te::ado::Convert2Terralib(::DataTypeEnum adoType)
       break;
 
     case ::adDouble:
+    case ::adDecimal:
       return te::dt::DOUBLE_TYPE;
       break;
 
@@ -411,6 +413,7 @@ te::dt::Property* te::ado::Convert2Terralib(ADOX::_ColumnPtr column)
       break;
 
     case ADOX::adDouble:
+    case ADOX::adDecimal:
       prop = new te::dt::SimpleProperty(std::string(cName), Convert2Terralib(cType));
       break;
 
@@ -457,24 +460,6 @@ std::vector<te::dt::Property*> te::ado::Convert2Terralib(ADOX::ColumnsPtr column
     properties.push_back(Convert2Terralib(columns->GetItem(i)));
 
   return properties;
-}
-
-void te::ado::GetFieldsInfo(_ConnectionPtr adoConn,
-                            std::string tableName,
-                            FieldsPtr fields,
-                            std::vector<int>& types,
-                            std::vector<std::string>& names)
-{
-  for(long i = 0; i < fields->GetCount(); ++i)
-  {
-    if(te::ado::IsGeomProperty(adoConn, tableName, std::string(fields->GetItem(i)->GetName())))
-    {
-      types.push_back(te::dt::GEOMETRY_TYPE);
-    }
-    else
-      types.push_back(Convert2Terralib(fields->GetItem(i)->GetType()));
-    names.push_back(std::string(fields->GetItem(i)->GetName()));
-  }
 }
 
 te::da::Constraint* te::ado::Convert2Terralib(ADOX::_KeyPtr key)
@@ -1358,4 +1343,32 @@ std::string te::ado::GetFormattedDateTime(te::dt::DateTime* dateTime)
   }
 
   return result;
+}
+
+void te::ado::GetGeometryColumnsInfo(_ConnectionPtr adoConn, std::map<std::string, std::string>& geomColumnsInfo)
+{
+  geomColumnsInfo.clear();
+
+  _RecordsetPtr recordset;
+
+  TESTHR(recordset.CreateInstance(__uuidof(Recordset)));
+  
+  std::string query = "SELECT * FROM geometry_columns";
+
+  try
+  {
+    recordset->Open(query.c_str(), _variant_t((IDispatch *)adoConn), adOpenDynamic, adLockReadOnly, adCmdText);
+
+    while(!recordset->EndOfFile)
+    {
+      std::string tablename = (LPCSTR)(_bstr_t)recordset->GetFields()->GetItem("f_table_name")->GetValue();
+      std::string columnName = (LPCSTR)(_bstr_t)recordset->GetFields()->GetItem("f_geometry_column")->GetValue();
+      geomColumnsInfo[tablename] = columnName;
+      recordset->MoveNext();
+    }
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }

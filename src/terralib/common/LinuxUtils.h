@@ -21,6 +21,8 @@
   \file terralib/common/LinuxUtils.h
 
   \brief This file contains several utility functions when dealing with Linux specific API.
+
+  \ingroup common
 */
 
 #ifndef __TERRALIB_COMMON_INTERNAL_LINUXUTILS_H

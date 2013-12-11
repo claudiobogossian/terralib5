@@ -49,6 +49,8 @@ namespace te
       This API is intend to simplify the task of reading XML files. We have
       tried to model it close to the Libxml2 API (see http://xmlsoft.org/xmlreader.html for more information)
       but keeping all Xerces-C++ support capabilities: schema validation and grammar cache.
+
+      \ingroup xml
     */
     class TEXMLEXPORT Reader : public boost::noncopyable
     {

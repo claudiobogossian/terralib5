@@ -54,7 +54,9 @@ namespace te
       and then when the window gets closed, you clear the catalogs to save memory.
 
       \note You can save memory not loading all catalogs and keeping then opened during the entire life of your application.
-      
+
+      \ingroup color
+
       \sa Singleton, ColorScheme, ColorSchemeGroup, ColorSchemeCatalog
 
       \todo Em breve, seria melhor transformar as classes ColorScheme, ColorSchemeCatalog
@@ -69,7 +71,7 @@ namespace te
             estilo de ponto padrao, estilo de linha padrao, estilo de poligono padrao,
             local de salvar o projeto, local de exportar dados,
             local de importar dados.... e varias outras preferencias do usuario
-     */
+    */
     class TECOLOREXPORT ColorSchemeCatalogManager : public te::common::Singleton<ColorSchemeCatalogManager>
     {
       friend class te::common::Singleton<ColorSchemeCatalogManager>;

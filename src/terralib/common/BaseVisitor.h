@@ -35,6 +35,8 @@ namespace te
 
       \brief A general root class for a visitor hierarchy.
 
+      \ingroup common
+
       \sa Visitor, BaseVisitable
     */
     class BaseVisitor

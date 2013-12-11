@@ -43,7 +43,9 @@ namespace te
       \brief It models the concept of color bar.
       
       It is used to construct color bar.
-     */
+
+      \ingroup color
+    */
     class TECOLOREXPORT ColorBar
     {
       public:

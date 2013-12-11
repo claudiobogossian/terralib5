@@ -43,6 +43,8 @@ namespace te
 
       A QueryLayer is a reference to a dataset that will result from a query to a data source.
 
+      \ingroup map
+
       \sa AbstractLayer, DataSetLayer, RasterLayer, FolderLayer
     */
     class TEMAPEXPORT QueryLayer : public AbstractLayer

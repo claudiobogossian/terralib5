@@ -21,6 +21,8 @@
   \file terralib/se/Utils.h
 
   \brief Utility functions for Symbology Enconding module.
+
+  \ingroup se
 */
 
 #ifndef __TERRALIB_SE_INTERNAL_UTILS_H

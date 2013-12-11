@@ -64,7 +64,9 @@ namespace te
 
         \brief A customized table view for te::map::AbstractLayer objects. Uses a te::qt::widgets::DataSetModel as its model.
 
-        \note We assume that the layer can return ALWAYS return a te::da::DataSet object with random access of it's values. 
+        \note We assume that the layer can return ALWAYS return a te::da::DataSet object with random access of it's values.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT DataSetTableView : public QTableView
       {

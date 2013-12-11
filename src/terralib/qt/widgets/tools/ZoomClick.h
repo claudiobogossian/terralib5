@@ -43,6 +43,8 @@ namespace te
         \class ZoomClick
 
         \brief This class implements a concrete tool to geographic zoom operation using the mouse click.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT ZoomClick : public Zoom
       {

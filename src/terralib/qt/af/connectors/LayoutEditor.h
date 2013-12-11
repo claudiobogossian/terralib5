@@ -60,8 +60,6 @@ namespace te
 
         It is used to listen events sent by the application framework.
         It is a proxy for the te::qt::widgets::MultiThreadMapDisplay used in te::qt::widgets::DataFrame.
-
-        \ingroup afconnector
       */
       class TEQTAFEXPORT LayoutEditor : public QObject
       {

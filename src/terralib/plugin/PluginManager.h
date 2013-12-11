@@ -54,6 +54,8 @@ namespace te
 
       \brief A singleton for managing plugins.
 
+      \ingroup plugin
+
       \sa AbstractPlugin, PluginInfo, AbstractFinder, PluginEngine, PluginEngineFactory
     */
     class TEPLUGINEXPORT PluginManager : public te::common::Singleton<PluginManager>

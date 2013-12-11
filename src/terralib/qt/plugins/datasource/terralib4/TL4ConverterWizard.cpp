@@ -24,12 +24,14 @@
 */
 
 // TerraLib
+#include "../../../../common/Exception.h"
 #include "../../../../common/Translator.h"
-#include "../../../../common/progress/TaskProgress.h"
 #include "../../../../dataaccess.h"
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWidget.h"
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
 #include "../../../../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../../../../qt/widgets/help/HelpPushButton.h"
+#include "../../../../qt/widgets/rp/Utils.h"
 #include "../../../../qt/af/ApplicationController.h"
 #include "../../../../qt/af/Project.h"
 #include "../../../../qt/af/events/LayerEvents.h"
@@ -96,6 +98,11 @@ te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* pare
   connect(this->button(QWizard::HelpButton), SIGNAL(pressed()), this, SLOT(help()));
   connect(this->button(QWizard::FinishButton), SIGNAL(pressed()), this, SLOT(finish()));
 
+  te::qt::widgets::HelpPushButton* helpButton = new te::qt::widgets::HelpPushButton(this);
+
+  this->setButton(QWizard::HelpButton, helpButton);
+
+  helpButton->setPageReference("plugins/terralib4/Terralib4Converter.html");
 }
 
 te::qt::plugins::terralib4::TL4ConverterWizard::~TL4ConverterWizard()
@@ -131,8 +138,6 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::next()
       rasterFolderSelectionPageNext();
       break;
   }
-
-//  QWizard::next();
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::help()
@@ -234,14 +239,14 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::datasourceSelectionPageNext
 
   std::vector<std::string> dsNames = m_layerSelectionPage->getChecked();
 
-  m_finalPage->setDataSets(dsNames);
-
-  te::common::TaskProgress task(TR_COMMON("Converting..."));
-  task.setTotalSteps(dsNames.size());
+  std::vector<std::string> finalDataSetsNames;
 
   Qt::CursorShape shp = this->cursor().shape();
   this->setCursor(Qt::WaitCursor);
 
+  std::vector<std::pair<std::string, std::string> > dsNameWithDetailedErrorVector;
+  std::string errors = "";
+  std::string errorWhat = "";
   for(std::size_t i = 0; i < dsNames.size(); ++i)
   {
     std::auto_ptr<te::da::DataSetType> dst = m_tl4Database->getDataSetType(dsNames[i]);
@@ -249,20 +254,52 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::datasourceSelectionPageNext
     if(dst->hasRaster())
       continue;
 
-    std::auto_ptr<te::da::DataSetTypeConverter> dt_adapter(new te::da::DataSetTypeConverter(dst.get(), tl5Database->getCapabilities()));
+    try
+    {
+      std::auto_ptr<te::da::DataSetTypeConverter> dt_adapter(new te::da::DataSetTypeConverter(dst.get(), tl5Database->getCapabilities()));
 
-    std::auto_ptr<te::da::DataSet> ds(m_tl4Database->getDataSet(dsNames[i]));
+      std::auto_ptr<te::da::DataSet> ds(m_tl4Database->getDataSet(dsNames[i]));
 
-    std::auto_ptr<te::da::DataSetAdapter> ds_adapter(te::da::CreateAdapter(ds.get(), dt_adapter.get()));
+      std::auto_ptr<te::da::DataSetAdapter> ds_adapter(te::da::CreateAdapter(ds.get(), dt_adapter.get()));
 
-    std::map<std::string, std::string> op;
+      std::map<std::string, std::string> op;
 
-    te::da::Create(tl5Database.get(), dt_adapter->getResult(), ds_adapter.get(), op);
+      te::da::Create(tl5Database.get(), dt_adapter->getResult(), ds_adapter.get(), op);
 
-    task.pulse();
+      finalDataSetsNames.push_back(dsNames[i]);
+    }
+    catch(te::common::Exception e)
+    {
+      std::pair<std::string, std::string> error;
+      error.first = dsNames[i];
+      error.second = e.what();
+      dsNameWithDetailedErrorVector.push_back(error);
+    }
+  }
+
+  m_finalPage->setDataSets(finalDataSetsNames);
+
+  if(!dsNameWithDetailedErrorVector.empty())
+  {
+    QString err(tr("Some TerraLib 4.x Layers could not be converter:\n\n"));
+    QString details;
+
+    for(std::size_t i = 0; i < dsNameWithDetailedErrorVector.size(); ++i)
+    {
+      err.append(QString(" - ")+dsNameWithDetailedErrorVector[i].first.c_str()+QString("\n"));
+      details.append(dsNameWithDetailedErrorVector[i].first.c_str() + QString(":\n"));
+      details.append(dsNameWithDetailedErrorVector[i].second.c_str()+QString("\n\n"));
+    }
+
+    QMessageBox mes(QMessageBox::Warning, tr("TerraLib 4.x Converter"), err, QMessageBox::Ok, this);
+    mes.setDetailedText(details);
+
+    mes.exec();
   }
 
   this->setCursor(shp);
+  
+  QWizard::next();
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::rasterFolderSelectionPageNext()
@@ -270,6 +307,8 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::rasterFolderSelectionPageNe
   m_rasterFolderPath = m_rasterFolderSelectionPage->getPath();
 
   std::vector<std::string> dsNames = m_layerSelectionPage->getChecked();
+
+  m_finalPage->setDataSets(dsNames);
 
   for(std::size_t i = 0; i < dsNames.size(); ++i)
   {
@@ -284,36 +323,38 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::rasterFolderSelectionPageNe
       te::rst::CreateCopy(*raster.release(), m_rasterFolderPath + "/" + dsNames[i] + ".tif");
     }
   }
-
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 {
-  te::da::DataSourcePtr outDataSource = te::da::DataSourceManager::getInstance().find(m_targetDataSource->getId());
-
-  te::qt::widgets::DataSet2Layer converter(m_targetDataSource->getId());
-
   std::vector<std::string> selected = m_finalPage->getSelected();
-
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
-
-  if(!prj)
-    return;
 
   for(std::size_t i = 0; i < selected.size(); ++i)
   {
-    std::auto_ptr<te::da::DataSetType> dsType = outDataSource->getDataSetType(selected[i]);
-    te::da::DataSetTypePtr dt(dsType.release());
-    te::map::AbstractLayerPtr lay = converter(dt);
+    te::map::AbstractLayerPtr lay = 0;
+    std::auto_ptr<te::da::DataSetType> dt = m_tl4Database->getDataSetType(selected[i]);
 
-    if(lay)
+    if(dt->hasRaster())
     {
-      prj->add(lay);
+      std::map<std::string, std::string> connInfo;
+      connInfo["URI"] = m_rasterFolderPath + "/" + selected[i] + ".tif";
 
-      te::qt::af::evt::LayerAdded evt(lay);
-
-      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+      lay = te::qt::widgets::createLayer("GDAL", connInfo);
     }
+    else
+    {
+      te::da::DataSourcePtr outDataSource = te::da::DataSourceManager::getInstance().find(m_targetDataSource->getId());
+
+      te::qt::widgets::DataSet2Layer converter(m_targetDataSource->getId());
+
+      std::auto_ptr<te::da::DataSetType> dsType = outDataSource->getDataSetType(selected[i]);
+      te::da::DataSetTypePtr dt(dsType.release());
+      lay = converter(dt);
+    }
+
+    te::qt::af::evt::LayerAdded evt(lay);
+
+    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
   }
 }
 

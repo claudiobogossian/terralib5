@@ -37,6 +37,8 @@ namespace te
       \class Polygon
 
       \brief Polygon is a subclass of CurvePolygon whose rings are defined by linear rings.
+
+      \ingroup geometry
       
       \sa Geometry,
           AbstractPoint, Point, PointM, PointZ, PointZM, PointKd,

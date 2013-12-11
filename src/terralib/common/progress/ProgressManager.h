@@ -52,6 +52,8 @@ namespace te
       progress viewers. If one or more viewers is attached,
       all instances will be used to display the tasks progresses.
 
+      \ingroup common
+
       \sa AbstractProgressViewer, TaskProgress
     */
     class TECOMMONEXPORT ProgressManager : public te::common::ObjectLevelLockable<ProgressManager,

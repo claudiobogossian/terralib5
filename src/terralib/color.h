@@ -36,18 +36,25 @@
 #include "color/Config.h"
 #include "color/RGBAColor.h"
 
+/*!
+  \defgroup color Color
+
+  \brief The color module provides a basic set of classes for dealing with color systems and color schemes.
+
+  By default you can use this module to generate nice colors and manage color catalogs that are suited for your users.
+
+  The main classes/concepts in this module are listed here. The namespace associated to the Color module is te::color.
+  To know more about it, see the te::color namespace documentation.
+*/
+
 namespace te
 {
   /*!
     \brief Namespace for the Color Model of TerraLib.
-
-    TerraLib provides a basic set of classes for dealing with color systems and color schemes.
-    By default you can use this framework to generate nice colors
-    and manage color catalogs that are suited for your users.
-   */
+  */
   namespace color
   {
-  }	// end namespace color
+  } // end namespace color
 }   // end namespace te
 
 #endif  // __TERRALIB_INTERNAL_COLOR_H

@@ -354,6 +354,7 @@ void te::qt::widgets::DirectExchangerDialog::onDataSourceTypeActivated(int index
   
     m_ui->m_outputDataSourceComboBox->setEnabled(true);
     m_ui->m_dsToolButton->setEnabled(true);
+    m_ui->m_dataSetLineEdit->clear();
     m_ui->m_dataSetLineEdit->setEnabled(true);
     m_ui->m_dirToolButton->setEnabled(false);
     m_ui->m_spatialIndexCheckBox->setEnabled(true);
@@ -367,6 +368,7 @@ void te::qt::widgets::DirectExchangerDialog::onDataSourceTypeActivated(int index
 
     m_ui->m_outputDataSourceComboBox->setEnabled(true);
     m_ui->m_dsToolButton->setEnabled(true);
+    m_ui->m_dataSetLineEdit->clear();
     m_ui->m_dataSetLineEdit->setEnabled(true);
     m_ui->m_dirToolButton->setEnabled(false);
     m_ui->m_spatialIndexCheckBox->setEnabled(false);

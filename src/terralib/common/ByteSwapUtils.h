@@ -21,6 +21,8 @@
   \file terralib/common/ByteSwapUtils.h
 
   \brief Utility functions to swap bytes: double, int and unsigned int.
+
+  \ingroup common
  */
 
 #ifndef __TERRALIB_COMMON_INTERNAL_BYTESWAPUTILS_H

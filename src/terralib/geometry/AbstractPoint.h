@@ -38,6 +38,8 @@ namespace te
 
       \brief A base abstract class for 0-dimensional geometric objects that represents a single location in coordinate space.
 
+      \ingroup geometry
+
       \sa Geometry,
           Point, PointM, PointZ, PointZM, PointKd,
           Curve, LineString, LinearRing, Line, CircularString, CompoundCurve,

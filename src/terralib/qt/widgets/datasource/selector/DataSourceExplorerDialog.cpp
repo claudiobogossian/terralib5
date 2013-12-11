@@ -52,7 +52,7 @@ te::qt::widgets::DataSourceExplorerDialog::DataSourceExplorerDialog(QWidget* par
   connect(m_ui->m_okPushButton, SIGNAL(pressed()), this, SLOT(okPushButtonPressed()));
   connect(m_selectorWidget->getForm()->m_datasourceListWidget, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(okPushButtonPressed()));
 
-  m_ui->m_helpPushButton->setPageReference("widgets/datasource_selector/datasource_selector.html");
+  m_ui->m_helpPushButton->setPageReference("widgets/datasource_explorer/datasource_explorer.html");
 }
 
 te::qt::widgets::DataSourceExplorerDialog::~DataSourceExplorerDialog()

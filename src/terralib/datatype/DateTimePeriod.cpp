@@ -26,3 +26,10 @@
 // TerraLib
 #include "DateTimePeriod.h"
 
+te::dt::DateTimePeriod::DateTimePeriod() 
+{ 
+} 
+
+te::dt::DateTimePeriod::~DateTimePeriod() 
+{ 
+} 

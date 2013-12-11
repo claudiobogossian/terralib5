@@ -57,6 +57,8 @@ namespace te
         \class ChartDisplay
 
         \brief A class to represent a chart display
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT ChartDisplay : public QwtPlot
       {
@@ -165,8 +167,9 @@ namespace te
 
           ChartStyle*     m_chartStyle;  //!< The display's style.
           QwtPlotGrid*    m_grid;        //!< The display's grid
-          QwtPlotPanner*  m_panner;       //!< The display's panner.
-          QwtPlotPicker*  m_picker;      //!< The display's picker.
+          QwtPlotPanner*  m_panner;      //!< The display's panner.
+          QwtPlotPicker*  m_leftPicker;  //!< The display's left button picker.
+          QwtPlotPicker*  m_ctrlPicker;  //!< The display's control button picker.
       };
     } // end namespace widgets
   }   // end namespace qt

@@ -33,6 +33,9 @@ te::qt::plugins::terralib4::TL4FinalPageWizardPage::TL4FinalPageWizardPage(QWidg
 {
 // setup controls
   m_ui->setupUi(this);
+
+  connect(m_ui->m_selectAllPushButton, SIGNAL(clicked()), this, SLOT(onSelectAllPushButtonClicked()));
+  connect(m_ui->m_deselectAllPushButton, SIGNAL(clicked()), this, SLOT(onDeselectAllPushButtonClicked()));
 }
 
 te::qt::plugins::terralib4::TL4FinalPageWizardPage::~TL4FinalPageWizardPage()
@@ -61,4 +64,24 @@ std::vector<std::string> te::qt::plugins::terralib4::TL4FinalPageWizardPage::get
   }
 
   return checked;
+}
+
+void te::qt::plugins::terralib4::TL4FinalPageWizardPage::onSelectAllPushButtonClicked()
+{
+  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  {
+    Qt::CheckState state = m_ui->m_layersListWidget->item(i)->checkState();
+    if(state != Qt::Checked)
+      m_ui->m_layersListWidget->item(i)->setCheckState(Qt::Checked);
+  }
+}
+
+void te::qt::plugins::terralib4::TL4FinalPageWizardPage::onDeselectAllPushButtonClicked()
+{
+  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  {
+    Qt::CheckState state = m_ui->m_layersListWidget->item(i)->checkState();
+    if(state == Qt::Checked)
+      m_ui->m_layersListWidget->item(i)->setCheckState(Qt::Unchecked);
+  }
 }

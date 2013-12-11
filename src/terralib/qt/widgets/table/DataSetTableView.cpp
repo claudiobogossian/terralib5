@@ -160,7 +160,7 @@ std::auto_ptr<te::da::DataSet> GetDataSet(const te::map::AbstractLayer* layer, c
     if(dsc.get() == 0)
       throw std::string("Fail to get data source.");
 
-    return dsc->getTransactor()->query(query.get());
+    return dsc->getTransactor()->query(query.get(), te::common::RANDOM);
   }
   catch(...)
   {
@@ -491,7 +491,7 @@ void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* l
   ScopedCursor cursor(Qt::WaitCursor);
 
   m_layer = layer;
-  setDataSet(m_layer->getData().release());
+  setDataSet(m_layer->getData(te::common::RANDOM).release());
   setLayerSchema(m_layer->getSchema().get());
 
   m_popupFilter->setDataSourceCapabilities(GetCapabilities(m_layer));

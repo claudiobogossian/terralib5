@@ -94,6 +94,8 @@ namespace te
           ...
       };
       \endcode
+
+      \ingroup common
      */
     template<class T> class Singleton : public boost::noncopyable
     {

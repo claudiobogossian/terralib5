@@ -67,7 +67,7 @@ namespace te
           \param conninfo A coonection string as undertood by ADO.
           \param inuse    A marker that tells if the connection is in use or not.
         */
-        Connection(const std::string& conninfo, bool inuse = false);
+        Connection(const std::string& conninfo);
 
         /*! \brief Destructor. */
         ~Connection();
@@ -107,8 +107,6 @@ namespace te
       public:
 
         _ConnectionPtr m_conn;                //!< The ADO real connection handle.
-        bool m_inuse;                         //!< Tells if the connection is in use or not.
-        boost::posix_time::ptime m_lastuse;   //!< It marks the last time this connection was used.
 
       friend class ConnectionPool;
     };

@@ -44,6 +44,8 @@ namespace te
         \class ChartWidgetFactory
 
         \brief  A factory to build widget objects.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT ChartWidgetFactory : public te::common::AbstractFactory<te::qt::widgets::ChartWidget, std::string>
       {

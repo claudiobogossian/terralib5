@@ -21,6 +21,8 @@
   \file terralib/common/ThreadingPolicies.h
 
   \brief Threading policies that can be applied to TerraLib classes that need some synchronization schema.
+
+  \ingroup common
 */
 
 #ifndef __TERRALIB_COMMON_INTERNAL_THREADINGPOLICIES_H

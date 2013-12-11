@@ -43,6 +43,8 @@ namespace te
         \class ZoomArea
 
         \brief This class implements a concrete tool to geographic zoom in operation using a boundary rectangle.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT ZoomArea : public RubberBand
       {

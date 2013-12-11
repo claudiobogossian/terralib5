@@ -51,6 +51,8 @@ namespace te
       character matches zero or more characters. The singleChar
       character matches exactly one character. 
 
+      \ingroup fe
+
       \sa ComparisonOp, PropertyName, Literal
      */
     class TEFEEXPORT PropertyIsLike : public ComparisonOp

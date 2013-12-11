@@ -45,6 +45,8 @@ namespace te
       \brief This class implements and iterator to "navigate" over a raster,
              with a predefined number of bands.
 
+      \ingroup rst
+
       \sa te::rst::Raster
     */
     template<class T> class RasterIterator

@@ -40,8 +40,10 @@
 #include "../../../dataaccess/query/LiteralInt16.h"
 #include "../../../dataaccess/query/LiteralInt32.h"
 #include "../../../dataaccess/query/LiteralString.h"
+#include "../../../dataaccess/query/OrderByItem.h"
 #include "../../../dataaccess/query/PropertyName.h"
 #include "../../../dataaccess/query/Select.h"
+#include "../../../dataaccess/query/SQLVisitor.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/Geometry.h"
 #include "../../../geometry/GeometryCollection.h"
@@ -52,6 +54,7 @@
 // Qt
 #include <QtGui/QIcon>
 #include <QtGui/QMessageBox>
+#include <QtGui/QToolButton>
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
@@ -66,15 +69,13 @@ te::qt::widgets::WhereClauseWidget::WhereClauseWidget(QWidget* parent, Qt::Windo
 
   // set icons
   m_ui->m_addWhereClausePushButton->setIcon(QIcon::fromTheme("list-add"));
-  m_ui->m_removeWhereClausePushButton->setIcon(QIcon::fromTheme("list-remove"));
   m_ui->m_clearAllPushButton->setIcon(QIcon::fromTheme("edit-clear"));
 
   //connects
   connect(m_ui->m_addWhereClausePushButton, SIGNAL(clicked()), this, SLOT(onAddWhereClausePushButtonClicked()));
-  connect(m_ui->m_removeWhereClausePushButton, SIGNAL(clicked()), this, SLOT(onRemoveWhereClausePushButtonClicked()));
   connect(m_ui->m_clearAllPushButton, SIGNAL(clicked()), this, SLOT(onClearAllPushButtonClicked()));
   connect(m_ui->m_valueValueRadioButton, SIGNAL(clicked()), this, SLOT(onValuePropertyRadioButtonClicked()));
-  
+  connect(m_ui->m_restrictValueComboBox, SIGNAL(activated(QString)), this, SLOT(onRestrictValueComboBoxActivated(QString)));
 
   m_count = 0;
   m_srid = 0;
@@ -103,18 +104,49 @@ te::da::Where* te::qt::widgets::WhereClauseWidget::getWhere()
   for(int i = 0; i < row; ++i)
   {
     //create binary function
-    QTableWidgetItem* itemPropName = m_ui->m_whereClauseTableWidget->item(i, 0);
-    std::string propName = itemPropName->text().toStdString();
+    std::string propName = "";
+    QTableWidgetItem* itemPropName = m_ui->m_whereClauseTableWidget->item(i, 1);
+    if(itemPropName)
+      propName = itemPropName->text().toStdString();
+    else
+    {
+      QWidget* w = m_ui->m_whereClauseTableWidget->cellWidget(i, 1);
+      QComboBox* cmbBox = dynamic_cast<QComboBox*>(w);
+      if(cmbBox)
+        propName = cmbBox->currentText().toStdString();
+    }
 
-    QTableWidgetItem* itemFuncName = m_ui->m_whereClauseTableWidget->item(i, 1);
-    std::string funcName = itemFuncName->text().toStdString();
+    std::string funcName = "";
+    QTableWidgetItem* itemFuncName = m_ui->m_whereClauseTableWidget->item(i, 2);
+    if(itemFuncName)
+      funcName = itemFuncName->text().toStdString();
+    else
+    {
+      QWidget* w = m_ui->m_whereClauseTableWidget->cellWidget(i, 2);
+      QComboBox* cmbBox = dynamic_cast<QComboBox*>(w);
+      if(cmbBox)
+        funcName = cmbBox->currentText().toStdString();
+    }
 
-    QTableWidgetItem* itemValue = m_ui->m_whereClauseTableWidget->item(i, 2);
-    int expIdx = itemValue->data(Qt::UserRole).toInt();
-    QString value = itemValue->text();
+    int expIdx = -1;
+    QTableWidgetItem* itemValue = m_ui->m_whereClauseTableWidget->item(i, 3);
+    if(itemValue)
+    {
+      expIdx = itemValue->data(Qt::UserRole).toInt();
+    }
+    else
+    {
+      QWidget* w = m_ui->m_whereClauseTableWidget->cellWidget(i, 3);
+      QComboBox* cmbBox = dynamic_cast<QComboBox*>(w);
+      if(cmbBox)
+        expIdx = m_comboMap[cmbBox].first;
+      else
+        return 0;
+    }
+
 
     te::da::Expression* exp1 = new te::da::PropertyName(propName);
-    te::da::Expression* exp2 = m_mapExp[expIdx];
+    te::da::Expression* exp2 = m_mapExp[expIdx]->m_expression->clone();
 
     te::da::BinaryFunction* func = new te::da::BinaryFunction(funcName, exp1, exp2);
 
@@ -130,20 +162,53 @@ te::da::Where* te::qt::widgets::WhereClauseWidget::getWhere()
     }
 
     //check connector
-    QTableWidgetItem* itemConnectorName = m_ui->m_whereClauseTableWidget->item(i, 3);
-    if(itemPropName->text().isEmpty() == false)
+    QTableWidgetItem* itemConnectorName = m_ui->m_whereClauseTableWidget->item(i, 4);
+    if(itemConnectorName)
     {
-      lastConnectorName = itemConnectorName->text().toStdString();
+      if(itemPropName->text().isEmpty() == false)
+        lastConnectorName = itemConnectorName->text().toStdString();
+      else
+        lastConnectorName = "";
     }
     else
     {
-      lastConnectorName = "";
+      QWidget* w = m_ui->m_whereClauseTableWidget->cellWidget(i, 4);
+      QComboBox* cmbBox = dynamic_cast<QComboBox*>(w);
+      if(cmbBox)
+        lastConnectorName = cmbBox->currentText().toStdString();
     }
   }
 
   te::da::Where* w = new te::da::Where(leftSide);
 
   return w;
+}
+
+std::string te::qt::widgets::WhereClauseWidget::getWhereString()
+{
+  std::string sql = "";
+
+  te::da::Where* w = getWhere();
+
+  if(w)
+  {
+    te::da::SQLVisitor visitor(*m_ds->getDialect(), sql);
+    te::da::Expression* exp = w->getExp();
+
+    try
+    {
+      exp->accept(visitor);
+    }
+    catch(...)
+    {
+      delete w;
+      return "";
+    }
+  }
+
+  delete w;
+
+  return sql;
 }
 
 void te::qt::widgets::WhereClauseWidget::setDataSource(const te::da::DataSourcePtr& ds)
@@ -218,17 +283,23 @@ void te::qt::widgets::WhereClauseWidget::setSpatialOperatorsList(const std::vect
 
 void te::qt::widgets::WhereClauseWidget::setConnectorsList(const std::vector<std::string>& vec)
 {
-  m_ui->m_connectorComboBox->clear();
+  m_connectorsList.clear();
+
+  m_connectorsList.append("");
 
   for(size_t t = 0; t <vec.size(); ++t)
   {
-    m_ui->m_connectorComboBox->addItem(vec[t].c_str());
+    m_connectorsList.append(vec[t].c_str());
   }
 }
 
 void te::qt::widgets::WhereClauseWidget::clear()
 {
+  te::common::FreeContents(m_mapExp);
+
   m_mapExp.clear();
+
+  m_comboMap.clear();
 
   m_ui->m_whereClauseTableWidget->setRowCount(0);
 
@@ -279,13 +350,22 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
     }
     operatorStr = m_ui->m_OperatorComboBox->currentText().toStdString();
 
+    ExpressionProperty* ep = new ExpressionProperty();
+    ep->m_isAttributeCriteria = true;
+    ep->m_property = restrictValue;
+    ep->m_operator = operatorStr;
+
     if(m_ui->m_valuePropertyRadioButton->isChecked())
     {
       valueStr = m_ui->m_valuePropertyComboBox->currentText().toStdString();
 
       te::da::Expression* exp = new te::da::PropertyName(valueStr);
 
-      m_mapExp.insert(std::map<int, te::da::Expression*>::value_type(expId, exp));
+      ep->m_isPropertyValue = true;
+      ep->m_value = valueStr;
+      ep->m_expression = exp;
+
+      m_mapExp.insert(std::map<int, ExpressionProperty*>::value_type(expId, ep));
     }
     else if(m_ui->m_valueValueRadioButton->isChecked())
     {
@@ -293,35 +373,63 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
 
       te::da::Expression* exp = getExpression(m_ui->m_valueValueComboBox->currentText(), restrictValue);
 
-      m_mapExp.insert(std::map<int, te::da::Expression*>::value_type(expId, exp));
-    }
+      ep->m_isValueValue = true;
+      ep->m_value = valueStr;
+      ep->m_expression = exp;
 
-    //set connector
-    std::string connector = "";
-    if(m_ui->m_connectorCheckBox->isChecked())
-      connector = m_ui->m_connectorComboBox->currentText().toStdString();
+      m_mapExp.insert(std::map<int, ExpressionProperty*>::value_type(expId, ep));
+    }
 
     //new entry
     int newrow = m_ui->m_whereClauseTableWidget->rowCount();
 
     m_ui->m_whereClauseTableWidget->insertRow(newrow);
 
-    QTableWidgetItem* itemProperty = new QTableWidgetItem(QString::fromStdString(restrictValue));
-    itemProperty->setFlags(Qt::ItemIsEnabled);
-    m_ui->m_whereClauseTableWidget->setItem(newrow, 0, itemProperty);
+    //remove button
+    QToolButton* removeBtn = new QToolButton(m_ui->m_whereClauseTableWidget);
+    removeBtn->setIcon(QIcon::fromTheme("list-remove"));
+    connect(removeBtn, SIGNAL(clicked()), this, SLOT(onRemoveWhereClausePushButtonClicked()));
+    m_ui->m_whereClauseTableWidget->setCellWidget(newrow, 0, removeBtn);
 
-    QTableWidgetItem* itemOperator = new QTableWidgetItem(QString::fromStdString(operatorStr));
-    itemOperator->setFlags(Qt::ItemIsEnabled);
-    m_ui->m_whereClauseTableWidget->setItem(newrow, 1, itemOperator);
+    //property combo
+    QComboBox* cmbProperty = new QComboBox(m_ui->m_whereClauseTableWidget);
+    connect(cmbProperty, SIGNAL(activated(QString)), this, SLOT(onComboBoxActivated(QString)));
+    std::pair<int, int> pairProperty(expId, 1);
+    m_comboMap.insert(std::map< QComboBox*, std::pair<int, int> >::value_type(cmbProperty, pairProperty));
+    copyCombo(m_ui->m_restrictValueComboBox, cmbProperty, restrictValue);
+    m_ui->m_whereClauseTableWidget->setCellWidget(newrow, 1, cmbProperty);
 
-    QTableWidgetItem* itemValue = new QTableWidgetItem(QString::fromStdString(valueStr));
-    itemValue->setFlags(Qt::ItemIsEnabled);
-    itemValue->setData(Qt::UserRole, QVariant(expId));
-    m_ui->m_whereClauseTableWidget->setItem(newrow, 2, itemValue);
+    //operator combo
+    QComboBox* cmbOperator = new QComboBox(m_ui->m_whereClauseTableWidget);
+    connect(cmbOperator, SIGNAL(activated(QString)), this, SLOT(onComboBoxActivated(QString)));
+    std::pair<int, int> pairOperator(expId, 2);
+    m_comboMap.insert(std::map< QComboBox*, std::pair<int, int> >::value_type(cmbOperator, pairOperator));
+    copyCombo(m_ui->m_OperatorComboBox, cmbOperator, operatorStr);
+    m_ui->m_whereClauseTableWidget->setCellWidget(newrow, 2, cmbOperator);
 
-    QTableWidgetItem* itemConnector = new QTableWidgetItem(QString::fromStdString(connector));
-    itemConnector->setFlags(Qt::ItemIsEnabled);
-    m_ui->m_whereClauseTableWidget->setItem(newrow, 3, itemConnector);
+    //value combo
+    QComboBox* cmbValue = new QComboBox(m_ui->m_whereClauseTableWidget);
+    connect(cmbValue, SIGNAL(activated(QString)), this, SLOT(onComboBoxActivated(QString)));
+    connect(cmbValue, SIGNAL(editTextChanged(QString)), this, SLOT(onComboBoxActivated(QString)));
+    std::pair<int, int> pairValue(expId, 3);
+    m_comboMap.insert(std::map< QComboBox*, std::pair<int, int> >::value_type(cmbValue, pairValue));
+    if(m_ui->m_valuePropertyRadioButton->isChecked())
+      copyCombo(m_ui->m_valuePropertyComboBox, cmbValue, valueStr);
+    else
+    {
+      cmbValue->setEditable(true);
+      copyCombo(m_ui->m_valueValueComboBox, cmbValue, valueStr);
+    }
+    m_ui->m_whereClauseTableWidget->setCellWidget(newrow, 3, cmbValue);
+    ep->m_valuesComboBox = cmbValue;
+
+    //connector information
+    QComboBox* connectorCmbBox = new QComboBox(m_ui->m_whereClauseTableWidget);
+    connect(connectorCmbBox, SIGNAL(activated(QString)), this, SLOT(onComboBoxActivated(QString)));
+    std::pair<int, int> pairConnector(expId, 4);
+    m_comboMap.insert(std::map< QComboBox*, std::pair<int, int> >::value_type(connectorCmbBox, pairConnector));
+    connectorCmbBox->addItems(m_connectorsList);
+    m_ui->m_whereClauseTableWidget->setCellWidget(newrow, 4, connectorCmbBox);
   }
   else // criteria by spatial restriction
   {
@@ -395,7 +503,14 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
       //create expression
       te::da::LiteralGeom* lGeom = new te::da::LiteralGeom(geom);
 
-      m_mapExp.insert(std::map<int, te::da::Expression*>::value_type(expId, lGeom));
+      ExpressionProperty* ep = new ExpressionProperty();
+      ep->m_isSpatialCriteria = true;
+      ep->m_property = restrictValue;
+      ep->m_operator = operatorStr;
+      ep->m_value = valueStr;
+      ep->m_expression = lGeom;
+
+      m_mapExp.insert(std::map<int, ExpressionProperty*>::value_type(expId, ep));
 
       //set connector
       std::string connector = "";
@@ -410,103 +525,96 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
 
       m_ui->m_whereClauseTableWidget->insertRow(newrow);
 
-      QTableWidgetItem* itemProperty = new QTableWidgetItem(QString::fromStdString(restrictValue));
-      itemProperty->setFlags(Qt::ItemIsEnabled);
-      m_ui->m_whereClauseTableWidget->setItem(newrow, 0, itemProperty);
+      //remove button
+      QToolButton* removeBtn = new QToolButton(m_ui->m_whereClauseTableWidget);
+      removeBtn->setIcon(QIcon::fromTheme("list-remove"));
+      connect(removeBtn, SIGNAL(clicked()), this, SLOT(onRemoveWhereClausePushButtonClicked()));
+      m_ui->m_whereClauseTableWidget->setCellWidget(newrow, 0, removeBtn);
 
-      QTableWidgetItem* itemOperator = new QTableWidgetItem(QString::fromStdString(operatorStr));
-      itemOperator->setFlags(Qt::ItemIsEnabled);
-      m_ui->m_whereClauseTableWidget->setItem(newrow, 1, itemOperator);
+      //property combo
+      QComboBox* cmbProperty = new QComboBox(m_ui->m_whereClauseTableWidget);
+      connect(cmbProperty, SIGNAL(activated(QString)), this, SLOT(onComboBoxActivated(QString)));
+      std::pair<int, int> pairProperty(expId, 1);
+      m_comboMap.insert(std::map< QComboBox*, std::pair<int, int> >::value_type(cmbProperty, pairProperty));
+      copyCombo(m_ui->m_geomAttrComboBox, cmbProperty, restrictValue);
+      m_ui->m_whereClauseTableWidget->setCellWidget(newrow, 1, cmbProperty);
 
-      QTableWidgetItem* itemValue = new QTableWidgetItem(QString::fromStdString(valueStr));
-      itemValue->setFlags(Qt::ItemIsEnabled);
+       //operator combo
+      QComboBox* cmbOperator = new QComboBox(m_ui->m_whereClauseTableWidget);
+      connect(cmbOperator, SIGNAL(activated(QString)), this, SLOT(onComboBoxActivated(QString)));
+      std::pair<int, int> pairOperator(expId, 2);
+      m_comboMap.insert(std::map< QComboBox*, std::pair<int, int> >::value_type(cmbOperator, pairOperator));
+      copyCombo(m_ui->m_SpatialOperatorComboBox, cmbOperator, operatorStr);
+      m_ui->m_whereClauseTableWidget->setCellWidget(newrow, 2, cmbOperator);
+
+      //value combo
+      QTableWidgetItem* itemValue = new QTableWidgetItem(valueStr.c_str());
       itemValue->setData(Qt::UserRole, QVariant(expId));
-      m_ui->m_whereClauseTableWidget->setItem(newrow, 2, itemValue);
+      m_ui->m_whereClauseTableWidget->setItem(newrow, 3, itemValue);
 
-      QTableWidgetItem* itemConnector = new QTableWidgetItem(QString::fromStdString(connector));
-      itemConnector->setFlags(Qt::ItemIsEnabled);
-      m_ui->m_whereClauseTableWidget->setItem(newrow, 3, itemConnector);
+      //connector information
+      QComboBox* connectorCmbBox = new QComboBox(m_ui->m_whereClauseTableWidget);
+      connect(connectorCmbBox, SIGNAL(activated(QString)), this, SLOT(onComboBoxActivated(QString)));
+      std::pair<int, int> pairConnector(expId, 4);
+      m_comboMap.insert(std::map< QComboBox*, std::pair<int, int> >::value_type(connectorCmbBox, pairConnector));
+      connectorCmbBox->addItems(m_connectorsList);
+      m_ui->m_whereClauseTableWidget->setCellWidget(newrow, 4, connectorCmbBox);
+      
+      for(int i = 0; i < connectorCmbBox->count(); ++i)
+      {
+        if(connectorCmbBox->itemText(i).toStdString() == connector)
+        {
+          connectorCmbBox->setCurrentIndex(i);
+          break;
+        }
+      }
     }
   }
 
   m_ui->m_whereClauseTableWidget->resizeColumnsToContents();
+
+  //get string sql
+  std::string sql = getWhereString();
+
+  m_ui->m_sqlTextEdit->setText(sql.c_str());
 }
 
 void te::qt::widgets::WhereClauseWidget::onRemoveWhereClausePushButtonClicked()
 {
-  int row = m_ui->m_whereClauseTableWidget->currentRow();
+  QToolButton* button = dynamic_cast<QToolButton*>(sender());
+  if(button) 
+  { 
+    int row = -1;
 
-  if(row >= 0)
-    m_ui->m_whereClauseTableWidget->removeRow(row);
+    for(int i = 0; i < m_ui->m_whereClauseTableWidget->rowCount(); ++i)
+    {
+      QWidget* w = m_ui->m_whereClauseTableWidget->cellWidget(i, 0);
+      QToolButton* btn = dynamic_cast<QToolButton*>(w);
+      if(button == w)
+      {
+        row = i;
+        break;
+      }
+    }
 
-  m_ui->m_whereClauseTableWidget->resizeColumnsToContents();
+    if(row >= 0)
+      m_ui->m_whereClauseTableWidget->removeRow(row);
+
+    m_ui->m_whereClauseTableWidget->resizeColumnsToContents();
+  }
+
+  //get string sql
+  std::string sql = getWhereString();
+
+  m_ui->m_sqlTextEdit->setText(sql.c_str());
 }
 
 void te::qt::widgets::WhereClauseWidget::onValuePropertyRadioButtonClicked()
 {
-  if(m_ds.get() == 0)
-    return;
-
-  m_ui->m_valueValueComboBox->clear();
-
   std::string propertyName = m_ui->m_restrictValueComboBox->currentText().toStdString();
 
-  te::da::Fields* fields = new te::da::Fields;
-  te::da::Field* f = new te::da::Field(new te::da::PropertyName(propertyName));
-  fields->push_back(f);
-
-  te::da::PropertyName* name = new te::da::PropertyName(propertyName);
-  te::da::Distinct* dist = new te::da::Distinct();
-  dist->push_back(name);
-
-  te::da::From* from = new te::da::From;
-
-  for(size_t t = 0; t < m_fromItems.size(); ++t)
-  {
-    te::da::FromItem* fi = new te::da::DataSetName(m_fromItems[t].first, m_fromItems[t].second);
-
-    from->push_back(fi);
-  }
-
-  te::da::Select* select = new te::da::Select();
-
-  select->setFields(fields);
-  select->setDistinct(dist);
-  select->setFrom(from);
-
-  std::auto_ptr<te::da::DataSet> dataset;
-
-  try
-  {
-    dataset = m_ds->query(*select);
-  }
-  catch(const std::exception& e)
-  {
-    std::string msg =  "An exception has occuried: ";
-                msg += e.what();
-
-    QMessageBox::warning(0, "Query Example", msg.c_str());
-
-    return;
-  }
-  catch(...)
-  {
-    std::string msg =  "An unexpected exception has occuried!";
-
-    QMessageBox::warning(0, "Query Example", msg.c_str());
-
-    return;
-  }
-
-  if(dataset.get())
-  {
-    while(dataset->moveNext())
-    {
-      std::string value = dataset->getAsString(propertyName);
-
-      m_ui->m_valueValueComboBox->addItem(value.c_str());
-    }
-  }
+  m_ui->m_valueValueComboBox->clear();
+  m_ui->m_valueValueComboBox->addItems(getPropertyValues(propertyName));
 }
 
 void te::qt::widgets::WhereClauseWidget::onClearAllPushButtonClicked()
@@ -515,10 +623,87 @@ void te::qt::widgets::WhereClauseWidget::onClearAllPushButtonClicked()
   m_ui->m_whereClauseTableWidget->resizeColumnsToContents();
 }
 
+void te::qt::widgets::WhereClauseWidget::onRestrictValueComboBoxActivated(QString value)
+{
+  if(value.isEmpty() || !m_ui->m_valueValueRadioButton->isChecked())
+    return;
+
+  onValuePropertyRadioButtonClicked();
+}
+
+void te::qt::widgets::WhereClauseWidget::onComboBoxActivated(QString value)
+{
+  QComboBox* cmbBox = dynamic_cast<QComboBox*>(sender());
+  if(!cmbBox) 
+    return;
+
+  int expId = m_comboMap[cmbBox].first;
+  int column = m_comboMap[cmbBox].second;
+
+  ExpressionProperty* ep = m_mapExp[expId];
+
+  if(!ep)
+    return;
+
+  if(ep->m_isAttributeCriteria)
+  {
+    //update expression property
+    if(column == 1) //property
+    {
+      ep->m_property = value.toStdString();
+
+      if(ep->m_isValueValue)
+      {
+        ep->m_valuesComboBox->clear();
+        ep->m_valuesComboBox->addItems(getPropertyValues(ep->m_property));
+        ep->m_value = ep->m_valuesComboBox->currentText().toStdString();
+      }
+    }
+    else if(column == 2) //operator
+    {
+      ep->m_operator = value.toStdString();
+    }
+    else if(column == 3) //value
+    {
+      ep->m_value = value.toStdString();
+    }
+
+    //re-create expression
+    te::da::Expression* exp = 0;
+
+    if(ep->m_isValueValue)
+    {
+      exp = getExpression(ep->m_value.c_str(), ep->m_property);
+    }
+
+    if(ep->m_isPropertyValue)
+    {
+      exp = new te::da::PropertyName(ep->m_property);
+    }
+
+    delete ep->m_expression;
+
+    ep->m_expression = exp;
+  }
+
+  //get string sql
+  std::string sql = getWhereString();
+
+  m_ui->m_sqlTextEdit->setText(sql.c_str());
+}
+
 te::da::Expression* te::qt::widgets::WhereClauseWidget::getExpression(const QString& value, const std::string& propName)
 {
   std::string dataSetName;
+  std::string dataSetAliasName;
   std::string propertyName = propName;
+
+  std::size_t pos = propName.find(".");
+  if(pos != std::string::npos)
+  {
+    dataSetAliasName = propName.substr(0, pos);
+    propertyName = propName.substr(pos + 1, propName.size() - 1);
+  }
 
   //get the dataset name
   if(m_fromItems.size() == 1)
@@ -527,11 +712,6 @@ te::da::Expression* te::qt::widgets::WhereClauseWidget::getExpression(const QStr
   }
   else
   {
-    std::size_t pos = propName.find(".");
-    assert(pos != std::string::npos);
-    std::string dataSetAliasName = propName.substr(0, pos);
-    propertyName = propName.substr(pos + 1, propName.size() - 1);
-
     for(size_t t = 0; t < m_fromItems.size(); ++t)
     {
       if(m_fromItems[t].second == dataSetAliasName)
@@ -578,4 +758,107 @@ te::da::Expression* te::qt::widgets::WhereClauseWidget::getExpression(const QStr
   }
 
   return 0;
+}
+
+void te::qt::widgets::WhereClauseWidget::copyCombo(QComboBox* input, QComboBox* output, std::string curValue)
+{
+  int idx = 0;
+  
+  for(int i = 0; i < input->count(); ++i)
+  {
+    output->addItem(input->itemText(i));
+
+    if(!curValue.empty() && input->itemText(i).toStdString() == curValue)
+      idx = i;
+  }
+
+  output->setCurrentIndex(idx);
+}
+
+QStringList te::qt::widgets::WhereClauseWidget::getPropertyValues(std::string propertyName)
+{
+  QStringList list;
+
+  if(m_ds.get() == 0)
+    return list;
+
+  te::da::Fields* fields = new te::da::Fields;
+  te::da::Field* f = new te::da::Field(new te::da::PropertyName(propertyName));
+  fields->push_back(f);
+
+  te::da::PropertyName* name = new te::da::PropertyName(propertyName);
+
+  te::da::From* from = new te::da::From;
+
+  for(size_t t = 0; t < m_fromItems.size(); ++t)
+  {
+    te::da::FromItem* fi = new te::da::DataSetName(m_fromItems[t].first/*, m_fromItems[t].second*/);
+
+    from->push_back(fi);
+  }
+
+  te::da::Select* select = new te::da::Select();
+
+  select->setFields(fields);
+  select->setFrom(from);
+
+  std::auto_ptr<te::da::DataSet> dataset;
+
+  try
+  {
+    dataset = m_ds->query(*select);
+  }
+  catch(const std::exception& e)
+  {
+    std::string msg =  "An exception has occuried: ";
+                msg += e.what();
+
+    QMessageBox::warning(0, "Query Error: ", msg.c_str());
+
+    return list;
+  }
+  catch(...)
+  {
+    std::string msg =  "An unexpected exception has occuried!";
+
+    QMessageBox::warning(0, "Query Error: ", msg.c_str());
+
+    return list;
+  }
+
+  std::size_t pos = propertyName.find(".");
+  if(pos != std::string::npos)
+  {
+    std::string dataSetAliasName = propertyName.substr(0, pos);
+    propertyName = propertyName.substr(pos + 1, propertyName.size() - 1);
+  }
+
+  std::set<std::string> values;
+
+  if(dataset.get())
+  {
+    while(dataset->moveNext())
+    {
+      if(!dataset->isNull(propertyName))
+      {
+        std::string value = dataset->getAsString(propertyName);
+
+        std::set<std::string>::iterator it = values.find(value);
+
+        if(it == values.end())
+          values.insert(value);
+      }
+    }
+  }
+
+  std::set<std::string>::iterator it = values.begin();
+
+  while(it != values.end())
+  {
+    list.append((*it).c_str());
+
+    ++it;
+  }
+
+  return list;
 }

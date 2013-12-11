@@ -65,6 +65,8 @@ namespace te
 
         The progress message is defined by the task message, if it has more than
         on task the message will be "MULTI TASKS".
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT ProgressViewerDialog : public QObject,  public te::common::AbstractProgressViewer
       {

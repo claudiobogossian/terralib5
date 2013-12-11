@@ -49,6 +49,8 @@ namespace te
       We provide an efficient method to obtain all values in a raster, without regard
       to their locations. The implementation navigates through the blocks of the image.
 
+      \ingroup rst
+
       \sa te::rst::Band
     */
     template<class T> class AbstractBandIterator
@@ -139,6 +141,8 @@ namespace te
       We provide an efficient method to obtain all values in a raster, without regard
       to their locations. The implementation navigates through the blocks of the image.
 
+      \ingroup rst
+
       \sa te::rst::Band
     */
     template<class T> class BandIterator : public te::rst::AbstractBandIterator<T>
@@ -200,6 +204,8 @@ namespace te
       We provide an efficient method to obtain all values in a raster, without regard
       to their locations. The implementation navigates through the blocks of the image.
 
+      \ingroup rst
+
       \sa te::rst::Band
     */
     template<class T> class ConstBandIterator : public te::rst::AbstractBandIterator<T>
@@ -258,6 +264,8 @@ namespace te
       to their locations. The implementation navigates through the blocks of the image.
       The mask is a 1bit raster where the pixels with value 0 are not returned by the
       iterator, and pixels with value 1 are returned.
+
+      \ingroup rst
 
       \sa te::rst::Band
     */

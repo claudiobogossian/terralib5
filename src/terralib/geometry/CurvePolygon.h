@@ -44,6 +44,8 @@ namespace te
       \class CurvePolygon
 
       \brief CurvePolygon is a planar surface defined by 1 exterior boundary and 0 or more interior boundaries.
+
+      \ingroup geometry
       
       \sa Geometry,
           AbstractPoint, Point, PointM, PointZ, PointZM, PointKd,

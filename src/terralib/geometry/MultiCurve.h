@@ -38,6 +38,8 @@ namespace te
       
       \brief MultiCurve is a class that represents a 1-dimensional GeometryCollection whose elements are curves.
 
+      \ingroup geometry
+
       \sa Geometry,
           AbstractPoint, Point, PointM, PointZ, PointZM, PointKd,
           Curve, LineString, Line, LinearRing, CircularString, CompoundCurve,

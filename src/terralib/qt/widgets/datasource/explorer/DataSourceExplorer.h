@@ -45,6 +45,8 @@ namespace te
 
         \brief A widget designed to explore the data sources of an application.
 
+        \ingroup widgets
+
         \sa DataSourceToolBox, DataSourceExplorerTreeView, DataSourceExplorerTreeModel
       */
       class TEQTWIDGETSEXPORT DataSourceExplorer : public QDockWidget

@@ -313,6 +313,24 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
     dst->add(geomProp);
   }
 
+  std::vector<std::string> pkey;
+  table.primaryKeys(pkey);
+
+  te::da::PrimaryKey* pk = 0;
+  if(!pkey.empty())
+  {
+    pk = new te::da::PrimaryKey(table.name()+"_pk", dst.get());
+
+    std::vector<te::dt::Property*> pkProps;
+    for(std::size_t i = 0; i < pkey.size(); ++i)
+    {
+      te::dt::Property* p = dst->getProperty(pkey[i]);
+      pkProps.push_back(p);
+    }
+
+    pk->setProperties(pkProps);
+  }
+
   return dst;
 }
 
@@ -614,7 +632,13 @@ bool terralib4::Transactor::hasDataSets()
 
 bool terralib4::Transactor::dataSetExists(const std::string& name)
 {
-  throw Exception(TR_TERRALIB4("This method is not supported by TerraLib 4.x driver!"));
+  std::vector<std::string> names = getDataSetNames();
+
+  for(std::size_t i = 0; i < names.size(); ++i)
+    if(names[i] == name)
+      return true;
+
+  return false;
 }
 
 void terralib4::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& options)

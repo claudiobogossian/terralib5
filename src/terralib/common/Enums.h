@@ -21,6 +21,8 @@
   \file terralib/common/Enums.h
 
   \brief General enumerations.
+
+  \ingroup common
  */
 
 #ifndef __TERRALIB_COMMON_INTERNAL_ENUMS_H

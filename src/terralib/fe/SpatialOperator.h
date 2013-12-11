@@ -60,6 +60,8 @@ namespace te
       <li>DWithin</li>
       </ul>
 
+      \ingroup fe
+
       \sa SpatialOperators, GeometryOperands
      */
     class TEFEEXPORT SpatialOperator

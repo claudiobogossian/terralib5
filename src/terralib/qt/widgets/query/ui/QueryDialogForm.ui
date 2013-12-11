@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>359</width>
+    <width>307</width>
     <height>192</height>
    </rect>
   </property>
@@ -41,22 +41,12 @@
      <item row="2" column="0">
       <widget class="QGroupBox" name="m_optionsGroupBox">
        <property name="title">
-        <string>Options</string>
+        <string>Layer Selection</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_5">
-        <item row="0" column="0">
+        <item row="0" column="4">
          <layout class="QGridLayout" name="gridLayout_3">
           <item row="0" column="0">
-           <widget class="QCheckBox" name="m_addResult2LayerSelectionCheckBox">
-            <property name="text">
-             <string>Add the query results to layer selection</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
            <spacer name="horizontalSpacer_2">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -69,7 +59,7 @@
             </property>
            </spacer>
           </item>
-          <item row="0" column="2">
+          <item row="0" column="1">
            <layout class="QGridLayout" name="gridLayout">
             <item row="0" column="0">
              <widget class="QLabel" name="m_highlightLabel">
@@ -80,6 +70,12 @@
             </item>
             <item row="0" column="1">
              <widget class="QFrame" name="m_colorPickerFrame">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="frameShape">
                <enum>QFrame::StyledPanel</enum>
               </property>
@@ -91,6 +87,33 @@
            </layout>
           </item>
          </layout>
+        </item>
+        <item row="0" column="3">
+         <widget class="QRadioButton" name="m_noneSelRadioButton">
+          <property name="text">
+           <string>None</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QRadioButton" name="m_newSelRadioButton">
+          <property name="text">
+           <string>New</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QRadioButton" name="m_addSelRadioButton">
+          <property name="text">
+           <string>Add</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -107,7 +130,7 @@
        <item row="1" column="0">
         <layout class="QGridLayout" name="gridLayout_2">
          <item row="0" column="0">
-          <widget class="QPushButton" name="m_helpPushButton">
+          <widget class="te::qt::widgets::HelpPushButton" name="m_helpPushButton">
            <property name="text">
             <string>Help</string>
            </property>
@@ -148,6 +171,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>te::qt::widgets::HelpPushButton</class>
+   <extends>QPushButton</extends>
+   <header>terralib/qt/widgets/help/HelpPushButton.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>m_inputLayerComboBox</tabstop>
   <tabstop>m_applyPushButton</tabstop>

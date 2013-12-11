@@ -10,12 +10,6 @@
     <height>564</height>
    </rect>
   </property>
-  <property name="minimumSize">
-   <size>
-    <width>468</width>
-    <height>564</height>
-   </size>
-  </property>
   <property name="windowTitle">
    <string>Buffer</string>
   </property>

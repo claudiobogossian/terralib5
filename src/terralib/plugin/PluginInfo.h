@@ -47,6 +47,8 @@ namespace te
       
       \brief The basic information about a plugin.
 
+      \ingroup plugin
+
       \sa Plugin
 
       \note There are some special plugins categories:

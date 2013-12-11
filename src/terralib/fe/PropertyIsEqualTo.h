@@ -39,6 +39,8 @@ namespace te
       
       \brief It tells if two values are identical.
 
+      \ingroup fe
+
       \sa BinaryComparisonOp
      */
     class TEFEEXPORT PropertyIsEqualTo : public BinaryComparisonOp

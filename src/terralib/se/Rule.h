@@ -71,6 +71,8 @@ namespace te
       together all of the other filter conditions and take the
       global "not" of that condition.
 
+      \ingroup se
+
       \sa FeatureTypeStyle, CoverageStyle, Description, Graphic, Symbolizer, te::fe::Filter
     */
     class TESEEXPORT Rule : public boost::noncopyable

@@ -47,8 +47,10 @@ namespace te
 
         \brief A canvas built on top of Qt.
 
+        \ingroup widgets
+
         \sa te::map::Canvas
-       */
+      */
       class TEQTWIDGETSEXPORT Canvas : public te::map::Canvas
       {
         public:

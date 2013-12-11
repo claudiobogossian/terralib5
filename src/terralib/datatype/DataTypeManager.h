@@ -53,6 +53,8 @@ namespace te
       <li>Data type names must be in capital letters although it can contains numbers and other symbols</li>
       </ul>
 
+      \ingroup datatype
+
       \sa DataType
 
       \todo Remove the static data member and use the type code!

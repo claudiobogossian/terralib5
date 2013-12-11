@@ -56,6 +56,8 @@ namespace te
 
         \brief A tree view for the layers of an application.
 
+        \ingroup widgets
+
         \sa LayerExplorer, LayerTreeModel
       */
       class TEQTWIDGETSEXPORT LayerTreeView : public QTreeView, public boost::noncopyable

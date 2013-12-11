@@ -50,6 +50,8 @@ namespace te
       to use in a map. A color scheme has a name
       and a set of list colors. Each list can have a
       certain number of colors.
+
+      \ingroup color
       
       \sa ColorSchemeGroup, ColorSchemeCatalog, ColorSchemeCatalogManager
      */

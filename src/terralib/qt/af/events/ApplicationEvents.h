@@ -53,8 +53,6 @@ namespace te
           \struct AppClosed
 
           \brief This event signals that the application is about to close.
-        
-          \ingroup afevents
         */
         struct AppClosed : public Event
         {
@@ -71,8 +69,6 @@ namespace te
           \struct DisplayResized
 
           \brief This event signals that a display was resized.
-
-          \ingroup afevents
         */
         struct DisplayResized : public Event
         {
@@ -102,8 +98,6 @@ namespace te
           \struct ToolBarAdded
 
           \brief This event signals that a new toolbar was added.
-
-          \ingroup afevents
         */
 
         struct ToolBarAdded : public Event
@@ -126,8 +120,6 @@ namespace te
           \struct Draw Button Clicked
 
           \brief This event signals that the draw button clicked
-
-          \ingroup afevents
         */
 
         struct DrawButtonClicked : public Event
@@ -145,8 +137,6 @@ namespace te
           \struct Zoom In Button Toggled
 
           \brief This event signals that the zoom in button toggled
-
-          \ingroup afevents
         */
 
         struct ZoomInButtonToggled : public Event
@@ -164,8 +154,6 @@ namespace te
           \struct Zoom Out Button Toggled
 
           \brief This event signals that the zoom out button toggled
-
-          \ingroup afevents
         */
 
         struct ZoomOutButtonToggled : public Event
@@ -183,8 +171,6 @@ namespace te
           \struct Pan Button Toggled
 
           \brief This event signals that the pan button toggled
-
-          \ingroup afevents
         */
 
         struct PanButtonToggled : public Event
@@ -202,8 +188,6 @@ namespace te
           \struct Selection Button Toggled
 
           \brief This event signals that the selection button toggled
-
-          \ingroup afevents
         */
 
         struct SelectionButtonToggled : public Event

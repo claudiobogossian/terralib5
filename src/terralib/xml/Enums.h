@@ -21,6 +21,8 @@
   \file terralib/xml/Enums.h
 
   \brief Enumerations of XML module.
+
+  \ingroup xml
 */
 
 #ifndef __TERRALIB_XML_INTERNAL_ENUMS_H
