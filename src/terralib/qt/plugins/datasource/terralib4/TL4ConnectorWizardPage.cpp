@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/plugins/terralib4/TL4ConnectorWizardPage.cpp
 
-  \brief A Qt dialog for ....
+  \brief A wizard page that provides the capability of connecting to a TerraLib 4.x database.
 */
 
 // TerraLib
@@ -40,9 +40,15 @@ te::qt::plugins::terralib4::TL4ConnectorWizardPage::TL4ConnectorWizardPage(QWidg
 // setup controls
   m_ui->setupUi(this);
 
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
   m_ui->m_databaseTypeComboBox->addItem("Access");
-  /*m_ui->m_databaseTypeComboBox->addItem("SQL Server");
-  m_ui->m_databaseTypeComboBox->addItem("SQL Server Spatial");
+
+  m_ui->m_databaseTypeComboBox->addItem("SQL Server");
+
+  //m_ui->m_databaseTypeComboBox->addItem("SQL Server Spatial");
+#endif
+
+  /*
   m_ui->m_databaseTypeComboBox->addItem("Oracle");
   m_ui->m_databaseTypeComboBox->addItem("Oracle OCI");
   m_ui->m_databaseTypeComboBox->addItem("Oracle Spatial");
@@ -51,10 +57,19 @@ te::qt::plugins::terralib4::TL4ConnectorWizardPage::TL4ConnectorWizardPage(QWidg
   m_ui->m_databaseTypeComboBox->addItem("PostGIS");
   m_ui->m_databaseTypeComboBox->addItem("Firebird");*/
 
-  onDatabaseTypeComboBoxActivated(0);
+  connect(m_ui->m_databaseTypeComboBox,
+          SIGNAL(currentIndexChanged(const QString&)),
+          SLOT(onDatabaseTypeComboBoxActivated(const QString&)));
 
-  connect(m_ui->m_databaseTypeComboBox, SIGNAL(activated(int)), SLOT(onDatabaseTypeComboBoxActivated(int)));
-  connect(m_ui->m_directoryPushButton, SIGNAL(clicked()), SLOT(onDirectoryPushButtonClicked()));
+  connect(m_ui->m_directoryPushButton,
+          SIGNAL(clicked()),
+          SLOT(onDirectoryPushButtonClicked()));
+
+  if(m_ui->m_databaseTypeComboBox->count() > 0)
+  {
+    m_ui->m_databaseTypeComboBox->setCurrentIndex(0);
+    onDatabaseTypeComboBoxActivated(m_ui->m_databaseTypeComboBox->currentText());
+  }
 }
 
 te::qt::plugins::terralib4::TL4ConnectorWizardPage::~TL4ConnectorWizardPage()
@@ -64,7 +79,7 @@ te::qt::plugins::terralib4::TL4ConnectorWizardPage::~TL4ConnectorWizardPage()
 void te::qt::plugins::terralib4::TL4ConnectorWizardPage::onDirectoryPushButtonClicked()
 {
   m_ui->m_dbComboBox->clear();
-  
+
   QString fileName = QFileDialog::getOpenFileName(this, tr("Open Database"), QString(""), tr("Database files (*.accdb *.mdb);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
 
   if(fileName.isEmpty())
@@ -73,101 +88,99 @@ void te::qt::plugins::terralib4::TL4ConnectorWizardPage::onDirectoryPushButtonCl
   m_ui->m_dbComboBox->addItem(fileName);
 
   boost::filesystem::path p(fileName.toStdString());
+
   p = p.filename();
 
   m_ui->m_databaseNameLineEdit->setText(p.string().c_str());
 }
 
-void te::qt::plugins::terralib4::TL4ConnectorWizardPage::onDatabaseTypeComboBoxActivated(int i)
+void te::qt::plugins::terralib4::TL4ConnectorWizardPage::onDatabaseTypeComboBoxActivated(const QString& text)
 {
-  switch(i)
+  if(text == QString("Access"))
   {
-    // Access
-    case 0:
-    {
-      m_ui->m_hostTextLabel->setText(tr("Host:"));
-      m_ui->m_hostLineEdit->setEnabled(false);
-      m_ui->m_portLineEdit->setEnabled(false);
-      m_ui->m_userLineEdit->setEnabled(false);
-      m_ui->m_passwordLineEdit->setEnabled(false);
-      m_ui->m_directoryPushButton->setEnabled(true);
-      m_ui->m_dbComboBox->setEnabled(false);
-      m_ui->m_databaseNameLineEdit->setEnabled(false);
-      m_ui->m_encodingComboBox->setEnabled(false);
-      
-      break;
-    }
+    m_ui->m_hostTextLabel->setText(tr("Host:"));
+    m_ui->m_hostLineEdit->setEnabled(false);
+    m_ui->m_portLineEdit->setEnabled(false);
+    m_ui->m_userLineEdit->setEnabled(false);
+    m_ui->m_passwordLineEdit->setEnabled(false);
+    m_ui->m_directoryPushButton->setEnabled(true);
+    m_ui->m_dbComboBox->setEnabled(false);
+    m_ui->m_databaseNameLineEdit->setEnabled(false);
+    m_ui->m_encodingComboBox->setEnabled(false);
 
-    // SQL Server, SQL Server Spatial
-    case 1:
-    case 2:
-    {
-      m_ui->m_hostTextLabel->setText(tr("Host:"));
-      m_ui->m_hostLineEdit->setEnabled(true);
-      m_ui->m_portLineEdit->setEnabled(true);
-      m_ui->m_userLineEdit->setEnabled(true);
-      m_ui->m_passwordLineEdit->setEnabled(true);
-      m_ui->m_directoryPushButton->setEnabled(false);
-      m_ui->m_dbComboBox->setEnabled(false);
-      m_ui->m_databaseNameLineEdit->setEnabled(true);
-      m_ui->m_encodingComboBox->setEnabled(true);
-      break;
-    }
-
-    // Oracle, Oracle OCI, Oracle Spatial
-    case 3:
-    case 4:
-    case 5:
-    {
-      m_ui->m_hostTextLabel->setText(tr("Service Name:"));
-      m_ui->m_hostLineEdit->setEnabled(true);
-      m_ui->m_portLineEdit->setEnabled(false);
-      m_ui->m_userLineEdit->setEnabled(true);
-      m_ui->m_passwordLineEdit->setEnabled(true);
-      m_ui->m_directoryPushButton->setEnabled(false);
-      m_ui->m_dbComboBox->setEnabled(false);
-      m_ui->m_databaseNameLineEdit->setEnabled(false);
-      m_ui->m_encodingComboBox->setEnabled(false);
-      break;
-    }
-
-    // MySQL, PostgreSQL, PostGIS
-    case 6:
-    case 7:
-    case 8:
-    {
-      m_ui->m_hostTextLabel->setText(tr("Host:"));
-      m_ui->m_hostLineEdit->setEnabled(true);
-      m_ui->m_portLineEdit->setEnabled(true);
-      m_ui->m_userLineEdit->setEnabled(true);
-      m_ui->m_passwordLineEdit->setEnabled(true);
-      m_ui->m_directoryPushButton->setEnabled(true);
-      m_ui->m_dbComboBox->setEnabled(true);
-      m_ui->m_databaseNameLineEdit->setEnabled(false);
-      m_ui->m_encodingComboBox->setEnabled(false);
-      break;
-    }
-
-    // Firebird
-    case 9:
-    {
-      m_ui->m_hostTextLabel->setText(tr("Host:"));
-      m_ui->m_hostLineEdit->setEnabled(true);
-      m_ui->m_portLineEdit->setEnabled(true);
-      m_ui->m_userLineEdit->setEnabled(true);
-      m_ui->m_passwordLineEdit->setEnabled(true);
-      m_ui->m_directoryPushButton->setEnabled(true);
-      m_ui->m_dbComboBox->setEnabled(false);
-      m_ui->m_databaseNameLineEdit->setEnabled(false);
-      m_ui->m_encodingComboBox->setEnabled(false);
-      break;
-    }
-
-    default:
-    {
-      break;
-    }
+    return;
   }
+
+  if(text == QString("SQL Server") ||
+    text == QString("SQL Server Spatial"))
+  {
+    m_ui->m_hostTextLabel->setText(tr("Host:"));
+    m_ui->m_hostLineEdit->setEnabled(true);
+    m_ui->m_portLineEdit->setEnabled(true);
+    m_ui->m_userLineEdit->setEnabled(true);
+    m_ui->m_passwordLineEdit->setEnabled(true);
+    m_ui->m_directoryPushButton->setEnabled(false);
+    m_ui->m_dbComboBox->setEnabled(false);
+    m_ui->m_databaseNameLineEdit->setEnabled(true);
+    m_ui->m_encodingComboBox->setEnabled(true);
+
+    return;
+  }
+
+  //  // Oracle, Oracle OCI, Oracle Spatial
+  //  case 3:
+  //  case 4:
+  //  case 5:
+  //  {
+  //    m_ui->m_hostTextLabel->setText(tr("Service Name:"));
+  //    m_ui->m_hostLineEdit->setEnabled(true);
+  //    m_ui->m_portLineEdit->setEnabled(false);
+  //    m_ui->m_userLineEdit->setEnabled(true);
+  //    m_ui->m_passwordLineEdit->setEnabled(true);
+  //    m_ui->m_directoryPushButton->setEnabled(false);
+  //    m_ui->m_dbComboBox->setEnabled(false);
+  //    m_ui->m_databaseNameLineEdit->setEnabled(false);
+  //    m_ui->m_encodingComboBox->setEnabled(false);
+  //    break;
+  //  }
+
+  //  // MySQL, PostgreSQL, PostGIS
+  //  case 6:
+  //  case 7:
+  //  case 8:
+  //  {
+  //    m_ui->m_hostTextLabel->setText(tr("Host:"));
+  //    m_ui->m_hostLineEdit->setEnabled(true);
+  //    m_ui->m_portLineEdit->setEnabled(true);
+  //    m_ui->m_userLineEdit->setEnabled(true);
+  //    m_ui->m_passwordLineEdit->setEnabled(true);
+  //    m_ui->m_directoryPushButton->setEnabled(true);
+  //    m_ui->m_dbComboBox->setEnabled(true);
+  //    m_ui->m_databaseNameLineEdit->setEnabled(false);
+  //    m_ui->m_encodingComboBox->setEnabled(false);
+  //    break;
+  //  }
+
+  //  // Firebird
+  //  case 9:
+  //  {
+  //    m_ui->m_hostTextLabel->setText(tr("Host:"));
+  //    m_ui->m_hostLineEdit->setEnabled(true);
+  //    m_ui->m_portLineEdit->setEnabled(true);
+  //    m_ui->m_userLineEdit->setEnabled(true);
+  //    m_ui->m_passwordLineEdit->setEnabled(true);
+  //    m_ui->m_directoryPushButton->setEnabled(true);
+  //    m_ui->m_dbComboBox->setEnabled(false);
+  //    m_ui->m_databaseNameLineEdit->setEnabled(false);
+  //    m_ui->m_encodingComboBox->setEnabled(false);
+  //    break;
+  //  }
+
+  //  default:
+  //  {
+  //    break;
+  //  }
+  //}
 }
 
 std::map<std::string, std::string> te::qt::plugins::terralib4::TL4ConnectorWizardPage::getConnInfo()
@@ -184,7 +197,7 @@ std::map<std::string, std::string> te::qt::plugins::terralib4::TL4ConnectorWizar
   return connInfo;
 }
 
-std::string te::qt::plugins::terralib4::TL4ConnectorWizardPage::getDriverName(std::string displayName)
+std::string te::qt::plugins::terralib4::TL4ConnectorWizardPage::getDriverName(const std::string& displayName)
 {
   if("Access")
     return "Ado";

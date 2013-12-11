@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/plugins/TL4RasterFolderSelectionWizardPage.h
 
-  \brief ????
+  \brief A wizard page for selecting converted datasets to layers in TerraLib 5.
 */
 
 #ifndef __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4FINALPAGEWIZARDPAGE_H
@@ -46,7 +46,7 @@ namespace te
     {
       namespace terralib4
       {
-        class TEQTPLUGINTERRALIB4EXPORT TL4FinalPageWizardPage : public QWizardPage
+        class TL4FinalPageWizardPage : public QWizardPage
         {
           Q_OBJECT
 
@@ -56,7 +56,7 @@ namespace te
 
             ~TL4FinalPageWizardPage();
 
-            void setDataSets(std::vector<std::string> datasets);
+            void setDataSets(const std::vector<std::string>& datasets);
 
             std::vector<std::string> getSelected();
 

@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/plugins/TL4LayerSelectionWizardPage.h
 
-  \brief ????
+  \brief A wizard page for selecting the TerraLib 4.x.
 */
 
 #ifndef __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4LAYERSELECTIONWIZARDPAGE_H
@@ -46,7 +46,7 @@ namespace te
     {
       namespace terralib4
       {
-        class TEQTPLUGINTERRALIB4EXPORT TL4LayerSelectionWizardPage : public QWizardPage
+        class TL4LayerSelectionWizardPage : public QWizardPage
         {
           Q_OBJECT
 

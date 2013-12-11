@@ -35,16 +35,34 @@
 #include <QtGui/QMessageBox>
 
 // STL
+#include <cassert>
 #include <memory>
 
 te::qt::plugins::terralib4::TL4ConverterAction::TL4ConverterAction(QMenu* menu)
-  : te::qt::plugins::terralib4::AbstractAction(menu)
+  : m_menu(menu), m_action(0)
 {
   createAction(tr("TerraLib4 Converter...").toStdString());
 }
 
 te::qt::plugins::terralib4::TL4ConverterAction::~TL4ConverterAction()
 {
+}
+
+void te::qt::plugins::terralib4::TL4ConverterAction::createAction(const std::string& name,
+                                                                  const std::string& pixmap)
+{
+  assert(m_menu);
+
+  m_action = new QAction(m_menu);
+
+  m_action->setText(name.c_str());
+
+  if(!pixmap.empty())
+    m_action->setIcon(QIcon::fromTheme(pixmap.c_str()));
+
+  connect(m_action, SIGNAL(triggered(bool)), this, SLOT(onActionActivated(bool)));
+
+  m_menu->addAction(m_action);
 }
 
 void te::qt::plugins::terralib4::TL4ConverterAction::onActionActivated(bool checked)

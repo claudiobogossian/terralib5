@@ -308,12 +308,14 @@ te::da::DataSetType* CreateDataSetType(std::string newName,
                                       std::vector<te::dt::Property*> secondProps)
 {
   te::da::DataSetType* outputDt = new te::da::DataSetType(newName);
+  
+  
 
-  te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(newName + "_pk", te::dt::INT32_TYPE);
+  te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(newName + "_id", te::dt::INT32_TYPE);
   pkProperty->setAutoNumber(true);
   outputDt->add(pkProperty);
-
-  te::da::PrimaryKey* pk = new te::da::PrimaryKey("id_pk", outputDt);
+  
+  te::da::PrimaryKey* pk = new te::da::PrimaryKey(newName + "_pk", outputDt);
   pk->add(pkProperty);
   outputDt->setPrimaryKey(pk);
 
@@ -463,8 +465,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::stri
       }
       else
       {
-        //Emitir uma msg para o usuário dizendo que há geometrias invalidas, se ele deseja continuar mesmo assim!
-        std::cout << "GEOMETRIA INVALIDA!\n";
+        continue;
       }
 
       for(size_t j = 0; j < firstMember.props.size(); ++j)
@@ -490,7 +491,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::stri
         item->setValue(name, ad);
       }
 
-      item->setInt32(newName + "_pk", pk);
+      item->setInt32(newName + "_id", pk);
       ++pk;
 
       outputDs->moveNext();
@@ -557,7 +558,7 @@ te::da::DataSet* UpdateGeometryType(te::da::DataSetType* dsType, te::da::DataSet
 
       if(type != te::dt::GEOMETRY_TYPE)
       {
-        if(propName == dsType->getName() + "_pk")
+        if(propName == dsType->getName() + "_id")
         {
           dsItem->setInt32(i, pk);
         }
