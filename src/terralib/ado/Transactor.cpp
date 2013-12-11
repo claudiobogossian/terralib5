@@ -1404,7 +1404,6 @@ void te::ado::Transactor::getProperties(te::da::DataSetType* dt)
 {
   std::string dsName = dt->getName();
   int numCols = 0;
-  te::dt::Property* p = 0;
 
   ADOX::DataTypeEnum colType;
   std::map<int, std::string> colNamesMap;
@@ -1500,6 +1499,7 @@ void te::ado::Transactor::getProperties(te::da::DataSetType* dt)
   // Create the dataset properties
   for(int i = 0; i < numCols; ++i)
   {
+    te::dt::Property* p = 0;
     ADOX::DataTypeEnum colType = colTypesMap[i];
     std::string colName = colNamesMap[i];
 
@@ -1558,10 +1558,16 @@ void te::ado::Transactor::getProperties(te::da::DataSetType* dt)
         std::map<std::string, std::string>::iterator it = geomColumns.find(dsName);
 
         if(it != geomColumns.end())
+        {
           if(it->second == colName)
+          {
             p = new te::gm::GeometryProperty(colName, te::ado::GetSRID(conn, dsName, colName), te::ado::GetType(conn, dsName, colName));
+          }
+        }
         else
+        {
           p = new te::dt::SimpleProperty(colName, Convert2Terralib(colType));
+        }
 
         break;
       }
