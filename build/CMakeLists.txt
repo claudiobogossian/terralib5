@@ -85,6 +85,12 @@ install (
 )
 
 install ( 
+  FILES ${CMAKE_BINARY_DIR}/toInstall/postgis-capabilities.xml
+  DESTINATION lib
+  COMPONENT BINARIES
+)
+
+install ( 
   FILES ${head_config}
   DESTINATION terralib
   COMPONENT HEADERS
