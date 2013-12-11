@@ -108,13 +108,10 @@ void QueryExample_2()
       }
 
       bool trans_connected = transactor->isInTransaction(); 
-      //delete dataset;
     }
  
 // At the end, let's release the transactor and data source instances
-    //delete transactor;
     ds->close();
-    //delete ds;
   }
   catch(const std::exception& e)
   {

@@ -15,8 +15,6 @@ void PrintDataSets(te::da::DataSource* ds)
 // get a transactor to interact to the data source
   te::da::DataSourceTransactor* transactor = (ds->getTransactor()).release();
   //assert(transactor.get());
-// from transactor, take a catalog loader to find out the datasets stored in the data source
-  //te::da::DataSourceCatalogLoader* cloader = transactor->getCatalogLoader();
 
 // now retrieve the name of the datasets
   std::vector<std::string> datasets = ds->getDataSetNames();
@@ -25,9 +23,7 @@ void PrintDataSets(te::da::DataSource* ds)
   std::cout << "Printing all the data in datasets... number of datasets: " << datasets.size() << std::endl;
 
   for(unsigned int i=0; i<datasets.size(); ++i)
-  //for(unsigned int i=0; i<1; ++i)
   {
-
 // retrieve the dataset by its name
     te::da::DataSet* dataset = (ds->getDataSet(datasets[i])).release();
 
@@ -37,10 +33,6 @@ void PrintDataSets(te::da::DataSource* ds)
 // release the dataset: you are the owner
     delete dataset;
   }
-
-// release the catalog loader: you are the owner
-  //delete cloader;
-
 // release the transactor: you are the owner
   delete transactor;
 }

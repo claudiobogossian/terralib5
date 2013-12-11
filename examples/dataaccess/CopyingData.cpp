@@ -37,6 +37,8 @@ void CopyingData()
   pgisInfo["PG_PASSWORD"] = "postgres";
   pgisInfo["PG_DB_NAME"] = "terralib4";
   pgisInfo["PG_CONNECT_TIMEOUT"] = "4";
+  pgisInfo["PG_CONNECT_TIMEOUT"] = "4";
+  pgisInfo["PG_CLIENT_ENCODING"] = "WIN1252";
 
   std::auto_ptr<te::da::DataSource> dsDestination = te::da::DataSourceFactory::make("POSTGIS");
   dsDestination->setConnectionInfo(pgisInfo);

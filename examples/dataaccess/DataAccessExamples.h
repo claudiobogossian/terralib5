@@ -258,7 +258,7 @@ void DataSetAdapter();
 /*! \brief ObjectId example. */
 void ObjectId();
 
-void ObjectId2();
+void ObjectId_query();
 
 void ObjectId3();
 

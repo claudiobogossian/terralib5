@@ -9,7 +9,6 @@ void RetrieveUsingSpatialFilter(te::da::DataSource* ds)
 
   std::auto_ptr<te::da::DataSourceTransactor> transactor = ds->getTransactor();
   {
-    //std::auto_ptr<te::da::DataSourceTransactor> transactor = ds->getTransactor();
     std::auto_ptr<te::da::DataSet> dataset = ds->getDataSet("public.br_munic_2001");
 
     std::size_t pos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
@@ -28,17 +27,14 @@ void RetrieveUsingSpatialFilter(te::da::DataSource* ds)
 
       te::gm::Geometry* g = (dataset->getGeometry(pos)).release();
 
-      //std::cout << dType->getProperty(pos)->getName() << ": " << g->asText() << std::endl;
-      //std::cout << dType->getProperty(pos)->getName() << ": " ; //<< g->asText() << std::endl;
       std::cout << dataset->getPropertyName(pos) << ": " << g->asText() << std::endl;
 
       delete g;
     }
 
-    //delete dataset; //is auto_ptr
-
     std::cout << std::endl;
   }
+
   // Defining 2 variables used in other examples...
   te::gm::Geometry* geomMunic;
   int srid;
@@ -50,7 +46,6 @@ void RetrieveUsingSpatialFilter(te::da::DataSource* ds)
     std::auto_ptr<te::da::DataSet> dataset = transactor->getDataSet("public.br_munic_2001", "geom", &pt, te::gm::INTERSECTS);
 
     std::size_t pos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
-    //int pos = static_cast<int>(dType->getDefaultGeomPropertyPos());
 
     int row = 0;
 
@@ -69,9 +64,8 @@ void RetrieveUsingSpatialFilter(te::da::DataSource* ds)
 
       geomMunic =  static_cast<te::gm::Geometry*>(dataset->getGeometry(pos)->clone());
 
-      std::cout << dataset->getPropertyName(pos) << ": " << geomMunic->asText() << std::endl;  //CAI aqui aao chamar void te::gm::WKTWriter::write(const Geometry* geom)
+      std::cout << dataset->getPropertyName(pos) << ": " << geomMunic->asText() << std::endl;
 
-      //delete g;
     }
     std::cout << std::endl;
   }
@@ -124,7 +118,6 @@ void RetrieveUsingSpatialFilter(te::da::DataSource* ds)
 
     std::auto_ptr<te::da::DataSet> dataset = transactor->getDataSet("public.br_munic_2001", "geom", pol, te::gm::INTERSECTS);
 
-     //int pos = static_cast<int>(dType->getDefaultGeomPropertyPos());
     std::size_t pos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
 
     int row = 0;
@@ -139,9 +132,7 @@ void RetrieveUsingSpatialFilter(te::da::DataSource* ds)
       std::cout << std::endl << "ROW: " << row++ << "\t"; 
 
       te::gm::Geometry* g = static_cast<te::gm::Geometry*>(dataset->getGeometry(pos)->clone());
-      //te::gm::Geometry* g = (dataset->getGeometry(pos)).get();
 
-      //std::cout << dType->getProperty(pos)->getName() << ": " << g->asText() << std::endl;
       std::cout << dataset->getPropertyName(pos) << ": " << g->asText() << std::endl;
 
       delete g;
@@ -155,7 +146,6 @@ void RetrieveUsingSpatialFilter(te::da::DataSource* ds)
 
     std::auto_ptr<te::da::DataSet> dataset = transactor->getDataSet("public.br_munic_2001", "geom", &box, te::gm::INTERSECTS);
 
-    //int pos = static_cast<int>(dType->getDefaultGeomPropertyPos());
     std::size_t pos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
 
     int row = 0;
@@ -170,9 +160,7 @@ void RetrieveUsingSpatialFilter(te::da::DataSource* ds)
       std::cout << std::endl << "ROW: " << row++ << "\t";
 
       te::gm::Geometry* g = static_cast<te::gm::Geometry*>(dataset->getGeometry(pos)->clone());
-      //te::gm::Geometry* g = (dataset->getGeometry(pos)).get();
-
-      //std::cout << dType->getProperty(pos)->getName() << ": " << g->asText() << std::endl;
+ 
       std::cout << dataset->getPropertyName(pos) << ": " << g->asText() << std::endl;
 
       delete g;

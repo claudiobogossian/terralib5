@@ -12,12 +12,6 @@ void DroppingDataSetType(const std::string& datasetname, te::da::DataSourceTrans
 {
   try
   {  
-    //te::da::DataSetTypePersistence* dtPersistence = trans->getDataSetTypePersistence();
-    
-    //dtPersistence->drop(dt);
-
-    //delete dtPersistence;
-
     trans->dropDataSet(datasetname);
     return;      
   }

@@ -40,9 +40,6 @@ void DataSetGetExtent(te::da::DataSourceTransactor* transactor)
               << extent->m_lly << ", "
               << extent->m_urx << ", "
               << extent->m_ury << std::endl;
-
-    //delete dataset; //it is auto_ptr
-    //delete extent;  //it is auto_ptr
   }
 
 // now we will retrieve all cities that contains a given point and then retrieves its extent
@@ -70,10 +67,11 @@ void DataSetGetExtent(te::da::DataSourceTransactor* transactor)
 //////
 //////    te::gm::Point pt(-43.6107606714293, -20.3913548070123, 4291, 0 );
 //////
-//////    te::da::DataSet* dataset = layer->getData(pt, te::gm::INTERSECTS);
+//////    //te::da::DataSet* dataset = layer->getData(pt, te::gm::INTERSECTS);
+//////    std::auto_ptr<te::da::DataSet> dataset = layer->getData("geom",&pt, te::gm::INTERSECTS);
 //////
 //////    //dataset->setFilter(&pt, te::gm::INTERSECTS);
-//////    std::size_t pos = te::da::GetFirstPropertyPos(dataset, te::dt::GEOMETRY_TYPE);
+//////    std::size_t pos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
 //////    std::auto_ptr<te::gm::Envelope>  extent = dataset->getExtent(pos);
 //////
 //////    std::cout << std::endl
@@ -82,11 +80,8 @@ void DataSetGetExtent(te::da::DataSourceTransactor* transactor)
 //////              << extent->m_lly << ", "
 //////              << extent->m_urx << ", "
 //////              << extent->m_ury << std::endl;
+//////  }
 //////
-//////    //delete dataset;
-//////
-//////    //delete extent;
-//////  }   
 //////
 //////// now we will retrieve all cities that intersects a given box
 //////  {
