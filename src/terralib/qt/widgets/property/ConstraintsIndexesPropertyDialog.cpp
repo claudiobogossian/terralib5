@@ -51,6 +51,8 @@ te::qt::widgets::ConstraintsIndexesPropertyDialog::ConstraintsIndexesPropertyDia
   connect(m_ui->m_ukRadioButton, SIGNAL(toggled(bool)), this, SLOT(onukRadioButtonToggled(bool)));
   connect(m_ui->m_idxRadioButton, SIGNAL(toggled(bool)), this, SLOT(onidxRadioButtonToggled(bool)));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onokPushButtonClicked()));
+
+  m_ui->m_helpPushButton->setPageReference("widgets/property/constraints_indexes.html");
 }
 
 te::qt::widgets::ConstraintsIndexesPropertyDialog::~ConstraintsIndexesPropertyDialog()

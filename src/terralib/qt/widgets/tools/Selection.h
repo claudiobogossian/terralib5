@@ -57,6 +57,8 @@ namespace te
         \class Selection
 
         \brief This class implements a concrete tool to select layer features using an extent.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT Selection : public RubberBand
       {

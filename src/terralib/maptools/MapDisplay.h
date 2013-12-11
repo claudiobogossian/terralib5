@@ -38,6 +38,8 @@ namespace te
 
       \brief This class controls how a set of layers are displayed.
 
+      \ingroup map
+
       \sa AbstractMapDisplay, AbstractLayer
      */
     class TEMAPEXPORT MapDisplay : public AbstractMapDisplay

@@ -51,6 +51,8 @@ namespace te
       <li>Or</li>
       </ul>
 
+      \ingroup fe
+
       \sa LogicOp, UnaryLogicOp      
      */
     class TEFEEXPORT BinaryLogicOp : public LogicOp

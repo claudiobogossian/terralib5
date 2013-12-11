@@ -73,6 +73,8 @@ namespace te
       </ol>
       Concrete Symbolizer types are derived from this base type.
 
+      \ingroup se
+
       \sa Rule, LineSymbolizer, PointSymbolizer, PolygonSymbolizer, TextSymbolizer, RasterSymbolizer, Description
     */
     class TESEEXPORT Symbolizer : public te::common::BaseVisitable<Visitor>, public boost::noncopyable

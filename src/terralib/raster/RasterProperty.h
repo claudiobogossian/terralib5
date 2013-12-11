@@ -51,6 +51,8 @@ namespace te
       It contains a pointer to its grid
       support and a list of bands description.
 
+      \ingroup rst
+
       \sa te::dt::SimpleProperty
     */
     class TERASTEREXPORT RasterProperty : public te::dt::SimpleProperty

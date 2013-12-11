@@ -49,6 +49,8 @@ namespace te
              It stores an internal map of raster references and their
              respective summaries.
 
+      \ingroup rst
+
       \sa RasterSummary, BandSummary.
     */
     class TERASTEREXPORT RasterSummaryManager : public te::common::Singleton<RasterSummaryManager>

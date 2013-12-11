@@ -41,6 +41,8 @@ namespace te
 
       \brief A class that defines the interface of an abstract progress viewer.
 
+      \ingroup common
+
       \sa TaskProgress, ProgressManager
     */
     class AbstractProgressViewer

@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/Enums.h"
 #include "../../datatype/Property.h"
 #include "../core/Config.h"
@@ -64,21 +65,20 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
 {
   m_dset = dataSet;
   m_prop = prop;
-  int index = te::stat::GetPropertyIndex(m_dset, m_prop);
+  int index = te::da::GetPropertyIndex(m_dset, m_prop);
   int propType = m_dset->getPropertyDataType(index);
 
   m_ui->m_datasourceTypeTitleLabel->setText("Statistics: " + QString(prop.c_str()));
 
   if(propType == te::dt::STRING_TYPE)
   {
-    std::vector<std::string> statResult;
-    statResult = te::stat::GetStringData(m_dset, m_prop);
+    std::vector<std::string> values = te::stat::GetStringData(m_dset, m_prop);
 
     te::stat::StringStatisticalSummary ss;
 
-    if(!statResult.empty())
+    if(!values.empty())
     {
-      te::stat::GetStringStatisticalSummary(statResult, ss);
+      te::stat::GetStringStatisticalSummary(values, ss);
       m_ui->m_statTableWidget->setRowCount(0);
       
       m_ui->m_statTableWidget->insertRow(0);
@@ -95,13 +95,13 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
 
       m_ui->m_statTableWidget->insertRow(2);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()));
-      itemValue = new QTableWidgetItem(QString(QString(boost::lexical_cast<std::string>(ss.m_count).c_str())));
+      itemValue = new QTableWidgetItem(QString(QString(boost::lexical_cast<std::string>(m_dset->size()).c_str())));
       m_ui->m_statTableWidget->setItem(2, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(2, 1, itemValue);
 
       m_ui->m_statTableWidget->insertRow(3);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT).c_str()));
-      itemValue = new QTableWidgetItem(QString(QString(boost::lexical_cast<std::string>(ss.m_validCount).c_str())));
+      itemValue = new QTableWidgetItem(QString(QString(boost::lexical_cast<std::string>(values.size()).c_str())));
       m_ui->m_statTableWidget->setItem(3, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(3, 1, itemValue);
     }
@@ -110,14 +110,13 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
   }
   else
   {
-    std::vector<double> statResult;
-    statResult = te::stat::GetNumericData(m_dset, m_prop);
+    std::vector<double> values = te::stat::GetNumericData(m_dset, m_prop);
 
     te::stat::NumericStatisticalSummary ss;
     
-    if(!statResult.empty())
+    if(!values.empty())
     {
-      te::stat::GetNumericStatisticalSummary(statResult, ss);
+      te::stat::GetNumericStatisticalSummary(values, ss);
 
       m_ui->m_statTableWidget->insertRow(0);
       QTableWidgetItem* itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()));
@@ -133,13 +132,13 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
 
       m_ui->m_statTableWidget->insertRow(2);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()));
-      itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(ss.m_count).c_str()));
+      itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(m_dset->size()).c_str()));
       m_ui->m_statTableWidget->setItem(2, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(2, 1, itemValue);
 
       m_ui->m_statTableWidget->insertRow(3);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT).c_str()));
-      itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(ss.m_validCount).c_str()));
+      itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(values.size()).c_str()));
       m_ui->m_statTableWidget->setItem(3, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(3, 1, itemValue);
 
@@ -199,7 +198,17 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
 
       m_ui->m_statTableWidget->insertRow(13);
       itemParameter = new QTableWidgetItem(QString(te::stat::GetStatSummaryFullName(te::stat::MODE).c_str()));
-      itemValue = new QTableWidgetItem(QString(boost::lexical_cast<std::string>(ss.m_mode).c_str()));
+      if(ss.m_mode.size() == 0)
+        itemValue = new QTableWidgetItem(QString(""));
+      else
+      {
+        std::string value;
+        for(std::size_t i = 0; i < ss.m_mode.size(); ++i)
+          value += ", "+ boost::lexical_cast<std::string>(ss.m_mode[i]);
+
+        value.erase(0,2);
+        itemValue = new QTableWidgetItem(QString(value.c_str()));
+      }
       m_ui->m_statTableWidget->setItem(13, 0, itemParameter);
       m_ui->m_statTableWidget->setItem(13, 1, itemValue);
 
@@ -207,6 +216,7 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
     else
       QMessageBox::information(this, "Warning", "The input vector of values is empty.");
   }
+  m_ui->m_statTableWidget->resizeColumnToContents(0);
 }
 
 void te::stat::StatisticsDialog::onHelpPushButtonClicked()

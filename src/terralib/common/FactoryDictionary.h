@@ -59,6 +59,8 @@ namespace te
 
       You should not use this class in your code. It is for internal use only.
 
+      \ingroup common
+
       \sa AbstractFactory, ParameterizedAbstractFactory
      */
     template<class TFACTORY, class TFACTORYKEY, class TKEYCOMPARE = std::less<TFACTORYKEY> >

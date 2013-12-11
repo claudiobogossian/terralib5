@@ -69,16 +69,39 @@
 #include "geometry/WKTReader.h"
 #include "geometry/WKTWriter.h"
 
+/*!
+  \defgroup geometry Geometry
+
+  \brief This module implements the vector geometry support of TerraLib.
+
+  The vector geometry module of TerraLib is OGC compliant.
+  So, the majority documentation of this module was extracted from
+  the Open Geospatial Consortium specification called
+  Simple Feature Specification - Part 1: Common Architecture.
+  This specification can be accessed at: http://www.opengeospatial.org/standards/sfa.
+
+  It is important to notice that this module refers to a geometry model to be used in main memory
+  and it doesn't assume any kind of persistence or data storage management.
+
+  Basically, the geometry module is responsible for providing:
+
+  <ul>
+    <li>The primitive geometric objects like points, lines and polygons;</li>
+    <li>Homogeneous and heterogeneous collections of geometries;</li>
+    <li>Curved geometries;</li>
+    <li>Polyhedral surfaces and Triangular Irregular Networks (TIN);</li>
+    <li>Spatial operations: topological relationship tests, metric, set operations;</li>
+    <li>Serialization routines for common data formats: WKB, WKT, ...</li>
+  </ul>
+
+  The main classes/concepts in this module are listed here. The namespace associated to the Geometry module is te::gm.
+  To know more about it, see the te::gm namespace documentation.
+*/
+
 namespace te
 {
   /*!
     \brief Namespace for the Vector Geometry module of TerraLib.
-
-    The Vector Geometry module of TerraLib is OGC compliant.
-    So, the majority documentation of this module was extracted from
-    the Open Geospatial Consortium specification called
-    Simple Feature Specification - Part 1: Common Architecture.
-    This specification can be accessed at: http://www.opengeospatial.org/standards/sfa.
   */
   namespace gm
   {

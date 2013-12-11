@@ -27,16 +27,19 @@
 #include "../common/StringUtils.h"
 #include "../dataaccess/dataset/ObjectIdSet.h"
 #include "../dataaccess/datasource/DataSource.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/query/And.h"
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Expression.h"
 #include "../dataaccess/query/Field.h"
 #include "../dataaccess/query/Function.h"
+#include "../dataaccess/query/FunctionNames.h"
 #include "../dataaccess/query/FromItem.h"
 #include "../dataaccess/query/LiteralEnvelope.h"
 #include "../dataaccess/query/PropertyName.h"
 #include "../dataaccess/query/Select.h"
 #include "../dataaccess/query/ST_Intersects.h"
+#include "../dataaccess/query/ST_EnvelopeIntersects.h"
 #include "../dataaccess/query/Where.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
@@ -128,8 +131,13 @@ std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const std::string& p
 
   te::da::PropertyName* pname = new te::da::PropertyName(propertyName);
 
-  // TODO: switch that verifies the given te::gm::SpatialRelation and build the query object (ST_Intersects. ST_Touches, etc).
-  te::da::ST_Intersects* intersects = new te::da::ST_Intersects(pname, lenv);
+  te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
+
+  const te::da::DataSourceCapabilities dsCap = ds->getCapabilities();
+
+  const te::da::QueryCapabilities queryCap = dsCap.getQueryCapabilities();
+
+  std::set<std::string> spatialTopOp = queryCap.getSpatialTopologicOperators();
 
   // The final select
   std::auto_ptr<te::da::Select> select(static_cast<te::da::Select*>(m_query->clone()));
@@ -140,9 +148,29 @@ std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const std::string& p
   // Original restriction expression
   te::da::Expression* exp = wh->getExp()->clone();
 
-  // The final restriction: original restriction expression + extent restriction
-  te::da::And* andop = new te::da::And(exp, intersects);
-  wh->setExp(andop);
+
+  if(spatialTopOp.find(te::da::FunctionNames::sm_ST_EnvelopeIntersects) != spatialTopOp.end())
+  {
+    // TODO: switch that verifies the given te::gm::SpatialRelation and build the query object (ST_Intersects. ST_Touches, etc).
+    te::da::ST_EnvelopeIntersects* intersects = new te::da::ST_EnvelopeIntersects(pname, lenv);
+
+
+    // The final restriction: original restriction expression + extent restriction
+    te::da::And* andop = new te::da::And(exp, intersects);
+
+    wh->setExp(andop);
+  }
+  else if(spatialTopOp.find(te::da::FunctionNames::sm_ST_Intersects) != spatialTopOp.end())
+  {
+    // TODO: switch that verifies the given te::gm::SpatialRelation and build the query object (ST_Intersects. ST_Touches, etc).
+    te::da::ST_Intersects* intersects = new te::da::ST_Intersects(pname, lenv);
+
+
+    // The final restriction: original restriction expression + extent restriction
+    te::da::And* andop = new te::da::And(exp, intersects);
+
+    wh->setExp(andop);
+  }
 
   return getData(select.get(), travType, accessPolicy);
 }
@@ -198,6 +226,25 @@ std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const te::da::Object
 
 bool te::map::QueryLayer::isValid() const
 {
+  if(m_query == 0)
+    return false;
+
+  if(m_datasourceId.empty())
+    return false;
+
+  te::da::DataSourcePtr ds;
+  try
+  {
+    ds = te::da::GetDataSource(m_datasourceId, true);
+  }
+  catch(...)
+  {
+    return false;
+  }
+
+  if(ds.get() == 0 || !ds->isValid() || !ds->isOpened())
+    return false;
+
   return true;
 }
 

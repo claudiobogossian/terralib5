@@ -387,7 +387,7 @@ te::rst::RasterProperty* terralib4::Convert2T5(TeRasterParams& rparams)
   rproperty->set(grid.release());
 
   std::vector<te::rst::BandProperty::ColorEntry> palette;
-  if(rparams.photometric_[0] == TeRasterParams::TeRasterPhotometricInterpretation::TePallete)
+  if(rparams.photometric_[0] == TeRasterParams::TePallete)
   {
     std::size_t size = rparams.lutr_.size();
 

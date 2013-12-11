@@ -42,6 +42,8 @@ namespace te
 
       \brief A base class for composite data values.
 
+      \ingroup datatype
+
       \sa AbstractData, DataType, ByteArray, DateTime, SimpleData
     */
     class TEDATATYPEEXPORT CompositeData : public AbstractData

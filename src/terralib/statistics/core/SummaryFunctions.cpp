@@ -50,8 +50,27 @@
 #include <vector>
 #include <memory>
 
+void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss, const std::string& nulValue)
+{
+  if (values.empty())
+    return;
+  
+  std::vector<std::string> validValues;
+  for (size_t i=0; i<values.size(); ++i)
+  {
+    if (values[i] != nulValue)
+      validValues.push_back(values[i]);
+  }
+  GetStringStatisticalSummary(validValues, ss);
+  ss.m_count = values.size();
+  ss.m_validCount = validValues.size();
+}
+
 void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss)
 {
+  if (values.empty())
+    return;
+  
   std::sort(values.begin(), values.end());
   
   ss.m_minVal = *values.begin();
@@ -70,8 +89,27 @@ void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te:
   ss.m_mode = Mode(values);
 }
 
+void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss, double nulValue)
+{
+  if (values.empty())
+    return;
+  
+  std::vector<double> validValues;
+  for (size_t i=0; i<values.size(); ++i)
+  {
+    if (values[i] != nulValue)
+      validValues.push_back(values[i]);
+  }
+  GetNumericStatisticalSummary(validValues, ss);
+  ss.m_count = values.size();
+  ss.m_validCount = validValues.size();
+}
+
 void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss)
 {
+  if (values.empty())
+    return;
+  
   std::sort(values.begin(), values.end());
   
   ss.m_minVal = *values.begin();
@@ -79,8 +117,10 @@ void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::sta
   ss.m_count = values.size();
   ss.m_validCount = values.size();
   
-  int init = 0;
-  ss.m_sum = std::accumulate(values.begin(), values.end(), init);
+  for(std::size_t i = 0; i < values.size(); ++i)
+  {
+    ss.m_sum += values[i];
+  }
   
   ss.m_mean = ss.m_sum/ss.m_count;
   
@@ -110,10 +150,13 @@ void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::sta
   ss.m_mode = Mode(values);
 }
 
-double te::stat::Mode(const std::vector<double>& values)
+std::vector<double> te::stat::Mode(const std::vector<double>& values)
 {
+  std::vector<double> mode;
+  if (values.empty())
+    return mode;
+  
   bool found;
-  double mode = 0.0;
   std::map<double, int> mapMode;
   
   for(std::size_t i = 0; i < values.size(); ++i)
@@ -148,12 +191,20 @@ double te::stat::Mode(const std::vector<double>& values)
   
   while(itMode != mapMode.end())
   {
-    if(repeat < itMode->second)
+    if(itMode->second > 1)
     {
-      repeat = itMode->second;
-      mode = itMode->first;
+      if(repeat < itMode->second)
+      {
+        repeat = itMode->second;
+        mode.clear();
+        mode.push_back(itMode->first);
+      }
+      else if(repeat == itMode->second)
+      {
+        mode.push_back(itMode->first);
+      }
     }
-    
+
     ++itMode;
   }
   
@@ -162,6 +213,9 @@ double te::stat::Mode(const std::vector<double>& values)
 
 std::string te::stat::Mode(const std::vector<std::string>& values)
 {
+  if (values.empty())
+    return "";
+  
   bool found;
   std::string mode = "";
   std::map<std::string, int> mapMode;

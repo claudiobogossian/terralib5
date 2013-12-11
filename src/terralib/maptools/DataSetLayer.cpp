@@ -153,6 +153,22 @@ std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(const te::da::Obje
 
 bool te::map::DataSetLayer::isValid() const
 {
+  if(m_datasourceId.empty() || m_datasetName.empty())
+    return false;
+
+  te::da::DataSourcePtr ds;
+  try
+  {
+    ds = te::da::GetDataSource(m_datasourceId, true);
+  }
+  catch(...)
+  {
+    return false;
+  }
+
+  if(ds.get() == 0 || !ds->isValid() || !ds->isOpened())
+    return false;
+
   return true;
 }
 

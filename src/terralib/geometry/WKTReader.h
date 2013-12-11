@@ -41,9 +41,11 @@ namespace te
     class Geometry;
 
     /*!
-      \class Reader
+      \class WKTReader
       
       \brief A class that deserializes a Geometry from a valid WKT.
+
+      \ingroup geometry
 
       \sa WKTWriter
     */

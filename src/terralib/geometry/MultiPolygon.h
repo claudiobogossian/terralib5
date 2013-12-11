@@ -38,6 +38,8 @@ namespace te
       
       \brief MultiPolygon is a MultiSurface whose elements are Polygons.
 
+      \ingroup geometry
+
       \sa Geometry,
           Point,
           Curve, LineString, LinearRing,

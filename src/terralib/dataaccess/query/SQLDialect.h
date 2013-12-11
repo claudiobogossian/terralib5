@@ -49,6 +49,8 @@ namespace te
       \brief It represents the SQL query dialect accepted by a given data source.
 
       This class is target for the portability of TerraLib...
+
+      \ingroup dataaccess
     */
     class TEDATAACCESSEXPORT SQLDialect : public boost::noncopyable
     {

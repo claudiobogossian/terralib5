@@ -45,6 +45,8 @@ namespace te
       use the centroid of the geometry, or any similar
       representative point.
 
+      \ingroup se
+
       \sa Symbolizer, Graphic, te::fe::PropertyName
      */
     class TESEEXPORT PointSymbolizer : public Symbolizer

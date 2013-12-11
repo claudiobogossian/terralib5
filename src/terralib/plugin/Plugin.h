@@ -43,6 +43,8 @@ namespace te
       This class already provides a default implementation
       for all plugin methods and some attributes.
 
+      \ingroup plugin
+
       \sa AbstractPlugin, PluginManager, PluginInfo, PluginEngine
     */
     class TEPLUGINEXPORT Plugin : public AbstractPlugin

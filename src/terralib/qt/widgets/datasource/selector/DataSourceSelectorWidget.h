@@ -52,6 +52,8 @@ namespace te
         \class DataSourceSelectorWidget
 
         \brief A dialog for selecting a data source.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT DataSourceSelectorWidget : public QWidget
       {

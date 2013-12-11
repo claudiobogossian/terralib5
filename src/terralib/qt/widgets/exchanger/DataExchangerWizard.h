@@ -51,6 +51,13 @@ namespace te
       class DataSetSelectorWizardPage;
       class DataSourceSelectorWizardPage;
 
+      /*!
+        \class DataExchangerWizard
+
+        \brief  Qt dialog for ....
+
+        \ingroup widgets
+      */
       class TEQTWIDGETSEXPORT DataExchangerWizard : public QWizard
       {
         Q_OBJECT
@@ -74,8 +81,6 @@ namespace te
           void next();
 
           void commit();
-
-          void help();
 
         private:
 

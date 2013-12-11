@@ -48,8 +48,6 @@ namespace te
           \struct MapSRIDChanged
 
           \brief This event signals that the srid of the map display changed.
-
-          \ingroup afevents
          */
         struct MapSRIDChanged : public Event
         {
@@ -71,9 +69,7 @@ namespace te
           \struct MapColorChanged
 
           \brief This event signals that the color of the map display changed.
-
-          \ingroup afevents
-         */
+        */
         struct MapColorChanged : public Event
         {
           /*!

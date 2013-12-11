@@ -37,6 +37,8 @@ namespace te
       
       Private default constructor and destructor ensure classes derived from
       class Static cannot have objects.
+
+      \ingroup common
      */
     class Static
     {

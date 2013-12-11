@@ -55,6 +55,8 @@ namespace te
 
       This implementation is based in the counted pattern, allowing to share the ownership of the items.
 
+      \ingroup common
+
       \sa AbstractLayer
     */
     class TECOMMONEXPORT TreeItem : public Counted

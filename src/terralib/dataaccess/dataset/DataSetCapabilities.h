@@ -37,6 +37,8 @@ namespace te
       \class DataSetCapabilities
 
       \brief A class that informs what the dataset implementation of a given data source can perform.
+
+      \ingroup dataaccess
     */
     class TEDATAACCESSEXPORT DataSetCapabilities
     {

@@ -21,6 +21,8 @@
   \file terralib/common/HexUtils.h
 
   \brief This file contains several utilities functions for dealing with HEX strings.
+
+  \ingroup common
 */
 
 #ifndef __TERRALIB_COMMON_INTERNAL_HEXUTILS_H

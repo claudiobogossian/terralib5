@@ -45,6 +45,8 @@ namespace te
       expressions to represent the value of that property
       for a particular instance of an object.
 
+      \ingroup fe
+
       \sa Expression, SortProperty, DistanceBuffer, BBOXOp, BinarySpatialOp, PropertyIsLike, PropertyIsNull
 
       \todo In the XML schema it is marked as mixed, so this put another requirement to this class!

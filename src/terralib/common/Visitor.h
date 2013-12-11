@@ -45,6 +45,8 @@ namespace te
       <li>R: the return type for the visit method.</li>
       </ul>
 
+      \ingroup common
+
       \sa BaseVisitor, BaseVisitable
     */
     template<class T, class R = void> class Visitor //: public BaseVisitor

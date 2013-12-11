@@ -26,8 +26,8 @@
 // TerraLib
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
+#include <terralib/st.h>
 #include <terralib/plugin.h>
-
 
 // STL
 #include <cassert>
@@ -46,10 +46,23 @@ int main(int /*argc*/, char** /*argv*/)
     //Load Modules and Plugins
     LoadModules();
 
+<<<<<<< HEAD
     CoverageSeriesExamples();
 
     //TrajectoryExamplesFromKML();
      
+=======
+    //Initialize STDataLoader support
+    te::st::STDataLoader::initialize();
+    
+    //CoverageSeriesExamples();
+
+    TrajectoryExamplesFromKML();
+
+    //Finalize STDataLoader support
+    te::st::STDataLoader::finalize();
+
+>>>>>>> 5.0.0-alpha
     te::plugin::PluginManager::getInstance().unloadAll();
 
     TerraLib::getInstance().finalize();

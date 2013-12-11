@@ -45,6 +45,8 @@ namespace te
       The NOT operator reverses the logical value of
       an expression.
 
+      \ingroup fe
+
       \sa AbstractOp, BinaryLogicOp, UnaryLogicOp
      */
     class TEFEEXPORT LogicOp : public AbstractOp

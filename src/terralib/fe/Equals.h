@@ -39,6 +39,8 @@ namespace te
       
       \brief Binary spatial operator: Equals.
 
+      \ingroup fe
+
       \sa BinarySpatialOp
      */
     class TEFEEXPORT Equals : public BinarySpatialOp

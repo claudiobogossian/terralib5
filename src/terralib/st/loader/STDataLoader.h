@@ -74,8 +74,9 @@ namespace te
       \brief  A class that contains a set of static methods to load spatiotemporal 
               data from data sources.
                 
+      \note Before using the methods of this class, certify that the Data Source exists in the DataSourceManager  
       \note The methods of this class can throw an Exception when internal errors occur.
-
+      
       \sa ObservationDataSet ObservationDataSetInfo 
       \sa TrajectoryDataSet TrajectoryDataSetInfo 
       \sa CoverageSeriesDataSet CoverageSeriesDataSetInfo
@@ -96,6 +97,8 @@ namespace te
           
           \return A pointer to a new ObservationDataSet. 
 
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note It can throw an Exception when internal errors occur.
         */
@@ -114,6 +117,8 @@ namespace te
           
           \return A pointer to a new ObservationDataSet. 
 
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note It can throw an Exception when internal errors occur.
         */
@@ -135,6 +140,8 @@ namespace te
           
           \return A pointer to a new ObservationDataSet. 
 
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note It can throw an Exception when internal errors occur.
         */
@@ -157,6 +164,8 @@ namespace te
           
           \return A pointer to a new ObservationDataSet. 
 
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note When the temporal relation is DURING, dt must be a time period.
           \note It can throw an Exception when internal errors occur.
@@ -183,6 +192,8 @@ namespace te
           
           \return A pointer to a new ObservationDataSet. 
 
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note It will NOT take the ownership of the given pointers.
           \note When the temporal relation is DURING, dt must be a time period.
@@ -210,6 +221,8 @@ namespace te
           \param input    The information about the DataSource and DataSet that contains trajectories
           \param output   The information about each trajectory (its correct id).
           
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note It can throw an Exception when internal errors occur.
         */
         static void getInfo( const TrajectoryDataSetInfo& input, 
@@ -228,6 +241,8 @@ namespace te
           \param rwRole   The read and write permission associated to the returned datasets.
           \return The returned TrajectoryDataSet.
           
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note It can throw an Exception when internal errors occur.
         */
@@ -252,6 +267,8 @@ namespace te
 
           \return The returned trajectoy data set.
 
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note It can throw an Exception when internal errors occur.
         */
@@ -275,6 +292,8 @@ namespace te
 
           \return The returned trajectoy data set.
           
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note It can throw an Exception when internal errors occur.
         */
@@ -301,6 +320,8 @@ namespace te
           
           \return A pointer to a new TrajectoryDataSet. 
 
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note When the temporal relation is DURING, dt must be a time period.
           \note It can throw an Exception when internal errors occur.
@@ -331,6 +352,8 @@ namespace te
 
           \return The returned trajectoy data set.
           
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note It will NOT take the ownership of the given pointers.
           \note When the temporal relation is DURING, dt must be a time period.
@@ -358,6 +381,8 @@ namespace te
           \param input    The information about the DataSource and DataSet that contains time series
           \param output   The information about each time series (its correct id).
           
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note It can throw an Exception when internal errors occur.
         */
         static void getInfo( const TimeSeriesDataSetInfo& input, 
@@ -376,6 +401,8 @@ namespace te
 
           \return The returned TrajectoryDataSet.
           
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note It can throw an Exception when internal errors occur.
         */
@@ -401,6 +428,8 @@ namespace te
           
           \return A pointer to a new TimeSeriesDataSet. 
 
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note When the temporal relation is DURING, dt must be a time period.
           \note It can throw an Exception when internal errors occur.
@@ -425,6 +454,8 @@ namespace te
 
           \return The returned CoverageSeries.
           
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note It can throw an Exception when internal errors occur.
         */
@@ -439,6 +470,8 @@ namespace te
 
           \return The returned CoverageSeries.
           
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note It can throw an Exception when internal errors occur.
         */
@@ -452,6 +485,8 @@ namespace te
 
           \return The returned RasterCoverage.
           
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note It can throw an Exception when internal errors occur.
         */
@@ -466,6 +501,8 @@ namespace te
 
           \return The returned PointCoverage.
           
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note It will take the ownership of the given pointers.
           \note It can throw an Exception when internal errors occur.
@@ -506,6 +543,8 @@ namespace te
 
           \return The temporal extent of the observations.
 
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note It will NOT take the ownership of the given pointer "info".
           \note It can throw an Exception when internal errors occur.
@@ -517,6 +556,8 @@ namespace te
 
           \return The temporal extent of the observations of a trajectory.
 
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note It will NOT take the ownership of the given pointer "info".
           \note It can throw an Exception when internal errors occur.
@@ -528,6 +569,8 @@ namespace te
 
           \return The temporal extent of the observations of a time series.
 
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note It will NOT take the ownership of the given pointer "info".
           \note It can throw an Exception when internal errors occur.
@@ -539,6 +582,8 @@ namespace te
 
           \return The temporal extent of the observations of a coverage series.
 
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer.
           \note It will NOT take the ownership of the given pointer "info".
           \note It can throw an Exception when internal errors occur.
@@ -550,6 +595,8 @@ namespace te
 
           \return The spatial extent of the observations.
 
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer. 
           \note It can throw an Exception when internal errors occur.
         */
@@ -560,6 +607,8 @@ namespace te
 
           \return The spatial extent of the observations of a trajectory.
 
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer. 
           \note It can throw an Exception when internal errors occur.
         */
@@ -570,12 +619,14 @@ namespace te
 
           \return The spatial extent of the observations of a coverage series.
 
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
           \note The caller will take the ownership of the returned pointer. 
           \note It can throw an Exception when internal errors occur.
         */
         //static te::gm::Envelope getSpatialExtent(const CoverageSeriesDataSetInfo& info);
         //@}
-
+        
         /*!
           \brief It initialize the STDataLoader
 
@@ -595,7 +646,7 @@ namespace te
           \note It can throw an Exception when internal errors occur.
         */
         static void finalize();
-        
+                        
         /*! \brief Virtual destructor. */
         virtual ~STDataLoader();
       

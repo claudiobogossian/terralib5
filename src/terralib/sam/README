@@ -1,7 +1,25 @@
-TO BE DONE: add a note about this module (dependencies and where to find more info)
----------------------------------------------
+       TerraLib 5 - Sam Module
+       ===================================
+          
+This folder contains the source code of the
+Sam module of TerraLib.
 
-                           @-TerraLib Team-@
+Module Dependencies:
+--------------------
+
+This module requires the following modules in order to be built:
+1. Common Runtime
+
+More Information:
+-----------------
+
+The TerraLib 5 wiki contains a complete explanation about
+the internals of this module:
+http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation
+
+
+      ---------------------------------------------------------
+             TerraLib Team <terralib-team@dpi.inpe.br>
             National Institute For Space Research - INPE
       P. BOX 515 - Sao Jose dos Campos - SP - Brazil, 12201-970
                             11/18/2008

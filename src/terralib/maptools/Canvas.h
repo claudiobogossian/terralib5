@@ -84,6 +84,8 @@ namespace te
       The Canvas can be viewed as one of the rendering surface
       used by an application to show a map.
 
+      \ingroup map
+
       \sa te::qt::widgets::Canvas, te::agg::Canvas, te::gd::Canvas
     */
     class Canvas : public boost::noncopyable

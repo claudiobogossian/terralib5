@@ -58,6 +58,8 @@ namespace te
       Note that in TerraLib any plugin may have access to all other system parts. You can put no restrictions
       on it, so you can easily use all TerraLib/TerraView API without worry about doing trickies!
 
+      \ingroup plugin
+
       \sa Plugin, PluginManager, PluginInfo, PluginEngine
     */
     class TEPLUGINEXPORT AbstractPlugin : public boost::noncopyable

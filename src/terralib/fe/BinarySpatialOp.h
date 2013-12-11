@@ -61,6 +61,8 @@ namespace te
       <li>Contains</li>
       </ul>
 
+      \ingroup fe
+
       \sa SpatialOp, PropertyName      
      */
     class TEFEEXPORT BinarySpatialOp : public SpatialOp

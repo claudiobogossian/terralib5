@@ -100,11 +100,7 @@ void te::ado::DataSource::setConnectionInfo(const std::map<std::string, std::str
 
 std::auto_ptr<te::da::DataSourceTransactor> te::ado::DataSource::getTransactor()
 {
-  std::string connInfo = MakeConnectionStr(m_connInfo);
-
-  Connection* conn = new te::ado::Connection(connInfo);
-
-  return std::auto_ptr<te::da::DataSourceTransactor>(new te::ado::Transactor(this, conn));
+  return std::auto_ptr<te::da::DataSourceTransactor>(new te::ado::Transactor(this, m_connInfo));
 }
 
 void te::ado::DataSource::open()
@@ -116,10 +112,17 @@ void te::ado::DataSource::open()
 
   m_conn = new te::ado::Connection(connInfo);
 
-  m_isOpened = true;
+  te::ado::GetGeometryColumnsInfo(m_conn->getConn(), m_geomColumns);
 
-  // Get the dataset names of the data source
-  getDataSetNames();
+  m_isOpened = true;
+}
+
+std::map<std::string, std::string> te::ado::DataSource::getGeomColumns()
+{
+  if(m_geomColumns.size() == 0)
+    te::ado::GetGeometryColumnsInfo(m_conn->getConn(), m_geomColumns);
+
+  return m_geomColumns;
 }
 
 void te::ado::DataSource::close()
@@ -197,6 +200,8 @@ void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInf
     std::map<std::string, std::string> op;
     createDataSet(geomColsDt, op);
   }
+
+  close();
 }
 
 void te::ado::DataSource::drop(const std::map<std::string, std::string>& dsInfo)

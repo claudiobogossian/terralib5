@@ -45,6 +45,8 @@ namespace te
       A Filter contains a expression which is created
       by combining other expressions.
 
+      \ingroup fe
+
       \sa AbstractOp, ObjectId
      */
     class TEFEEXPORT Filter

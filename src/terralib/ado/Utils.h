@@ -155,19 +155,6 @@ namespace te
     std::vector<te::dt::Property*> Convert2Terralib(ADOX::ColumnsPtr columns);
 
     /*!
-      \param adoConn   ADO Connection.
-      \param tableName Name of the table.
-      \param fields    Fields.
-      \param types     Vector of data type.
-      \param names ADO Vector of names.
-    */
-    void GetFieldsInfo(_ConnectionPtr adoConn,
-                       std::string tableName,
-                       FieldsPtr fields,
-                       std::vector<int>& types,
-                       std::vector<std::string>& names);
-
-    /*!
       \brief It returns the geometry OGC names.
 
       \param t The TerraLib geometry type.
@@ -242,6 +229,8 @@ namespace te
     int GetMonth(const std::string& month);
 
     std::string GetFormattedDateTime(te::dt::DateTime* dateTime);
+
+    void GetGeometryColumnsInfo(_ConnectionPtr adoConn, std::map<std::string, std::string>& geomColumnsInfo);
 
   } // end namespace ado
 }   // end namespace te

@@ -59,6 +59,8 @@ namespace te
       numbers, or an underscore, they must not start with a number
       and cannot have white spaces.
 
+      \ingroup common
+
       \todo Make some methods that accept arrays (get and set)!!!
     */
     class ApplicationSettings

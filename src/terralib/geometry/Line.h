@@ -38,6 +38,8 @@ namespace te
 
       \brief A Line is LineString with 2 points.
 
+      \ingroup geometry
+
       \sa Geometry,
           AbstractPoint, Point, PointM, PointZ, PointZM, PointKd,
           Curve, LineString, LinearRing, CircularString, CompoundCurve,

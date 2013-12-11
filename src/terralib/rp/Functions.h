@@ -20,6 +20,7 @@
 /*!
   \file terralib/rp/Functions.h
   \brief Raster Processing functions.
+  \ingroup rp
  */
 
 #ifndef __TERRALIB_RP_INTERNAL_FUNCTIONS_H

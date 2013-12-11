@@ -21,6 +21,8 @@
   \file terralib/common/StringUtils.h
 
   \brief Utility functions for dealing with strings.
+
+  \ingroup common
 */
 
 #ifndef __TERRALIB_COMMON_INTERNAL_STRINGUTILS_H

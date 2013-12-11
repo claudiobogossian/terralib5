@@ -42,6 +42,8 @@ namespace te
       \class QueryCapabilities
 
       \brief A class that informs the query support of a given data source.
+
+      \ingroup dataaccess
     */
     class TEDATAACCESSEXPORT QueryCapabilities
     {

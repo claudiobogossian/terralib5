@@ -21,6 +21,8 @@
   \file terralib/common/BoostUtils.h
 
   \brief This file contains several utility functions for dealing with Boost containers and algorithms.
+
+  \ingroup common
 */
 
 #ifndef __TERRALIB_COMMON_INTERNAL_BOOSTUTILS_H

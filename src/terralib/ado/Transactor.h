@@ -58,7 +58,7 @@ namespace te
     {
       public:
 
-        Transactor(DataSource* ds, Connection* conn);
+        Transactor(DataSource* ds, const std::map<std::string, std::string>& connInfo);
 
         ~Transactor();
 

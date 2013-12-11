@@ -47,6 +47,8 @@ namespace te
       A "mixed" element-content
       model is used with textual substitution for values.
 
+      \ingroup se
+
       \sa SvgParameter, LineSymbolizer, GraphicStroke, Halo, MapItem, Interpolate, InterpolationPoint
     */
     class TESEEXPORT ParameterValue

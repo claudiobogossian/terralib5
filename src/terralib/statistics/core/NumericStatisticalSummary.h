@@ -32,6 +32,7 @@
 // STL
 #include <complex>
 #include <map>
+#include <vector>
 
 namespace te
 {
@@ -87,7 +88,7 @@ namespace te
         double m_amplitude;
         double m_median;
         double m_varCoeff;
-        double m_mode;
+        std::vector<double> m_mode;
 
     };
 

@@ -62,6 +62,8 @@ namespace te
       <li>PropertyIsPropertyIsGreaterThanOrEqualTo</li>
       </ul>
 
+      \ingroup fe
+
       \sa ComparisonOp, Expression      
      */
     class TEFEEXPORT BinaryComparisonOp : public ComparisonOp

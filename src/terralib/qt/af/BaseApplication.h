@@ -66,6 +66,13 @@ namespace te
         struct Event;
       }
 
+      /*!
+        \class BaseApplication
+
+        \brief A QMainWindow to be used as the basis for TerraLib applications.
+
+        \ingroup af
+      */
       class TEQTAFEXPORT BaseApplication : public QMainWindow, public boost::noncopyable
       {
         Q_OBJECT

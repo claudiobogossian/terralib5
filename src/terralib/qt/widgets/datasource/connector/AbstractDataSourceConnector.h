@@ -46,6 +46,8 @@ namespace te
         \class AbstractDataSourceConnector
 
         \brief A base class for widgets that allows application to create, edit or remove data sources.
+
+        \ingroup widgets
       */
       class TEQTWIDGETSEXPORT AbstractDataSourceConnector : public QWidget
       {

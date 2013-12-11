@@ -66,7 +66,9 @@ namespace te
       the executable, see TE_LOGGER_ENABLED.
 
       \note The methods provided by this class must be used only after all static data has been initialized.
-     */
+
+      \ingroup common
+    */
     class TECOMMONEXPORT Logger : public Static
     {
       public:

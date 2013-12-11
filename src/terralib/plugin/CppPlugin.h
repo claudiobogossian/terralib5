@@ -41,6 +41,8 @@ namespace te
       Remember to implement the startup and shutdown methods from the base
       class: Plugin.
 
+      \ingroup plugin
+
       \sa Plugin, PluginManager
      */
     class TEPLUGINEXPORT CppPlugin : public Plugin

@@ -50,6 +50,8 @@ namespace te
 
       \brief A factory for data sources.
 
+      \ingroup dataaccess
+
       \sa DataSource
     */
     class TEDATAACCESSEXPORT DataSourceFactory : public te::common::Static

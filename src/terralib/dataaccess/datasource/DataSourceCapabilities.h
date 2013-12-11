@@ -49,6 +49,8 @@ namespace te
              i.e. this class informs all information about what the data source can perform.
              Here you will find if the data source implementation supports primary keys,
              foreign keys, if it can be used in a thread environment and much more information.
+
+      \ingroup dataaccess
     */
     class TEDATAACCESSEXPORT DataSourceCapabilities
     {

@@ -54,6 +54,8 @@ namespace te
       Geometry-type transformations are also system-dependent and
       it is assumed that this capability will be little used.
 
+      \ingroup se
+
       \sa Symbolizer, te::fe::PropertyName, ParameterValue, ChannelSelection, ColorMap, ContrastEnhancement, ShadedRelief, ImageOutline
     */
     class TESEEXPORT RasterSymbolizer : public Symbolizer
