@@ -160,7 +160,7 @@ bool te::vp::Aggregation(const std::string& inDataset,
   // create the primary key if it is possible
   if (outDatasource->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
   {
-    std::string pk_name = dsTypeResult->getName() + "_pk";
+    std::string pk_name = dsTypeResult->getName() + "_pkey";
     te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
     pk->add(dsTypeResult->getProperty(0));
     outDatasource->addPrimaryKey(outDataset,pk);
@@ -454,7 +454,7 @@ te::da::DataSetType* BuildOutputDataSetType(const std::string& name,
   dataSetType->add(stringProperty);
 
   // the number of objects aggregated
-  te::dt::SimpleProperty* aggregationProperty = new te::dt::SimpleProperty("Aggregation_Count", te::dt::INT32_TYPE);
+  te::dt::SimpleProperty* aggregationProperty = new te::dt::SimpleProperty("NUM_OBJ", te::dt::INT32_TYPE);
   dataSetType->add(aggregationProperty);
   
   // properties that reference the statistics requested
@@ -524,7 +524,7 @@ void SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupingProper
       {
         std::string propName = dsQuery->getPropertyName(i);
 
-        if(boost::iequals(propName, "aggregation_count"))
+        if(boost::iequals(propName, "NUM_OBJ"))
         {
           int aggregValue = boost::lexical_cast<int>(dsQuery->getAsString(i));
           outputDataSetItem->setInt32(1, aggregValue);
