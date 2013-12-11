@@ -71,9 +71,7 @@ namespace te
 
       protected slots:
 
-        void onHelpPushButtonClicked();
-
-        void onOkPushButtonClicked();
+        void onSavePushButtonClicked();
 
         void onCancelPushButtonClicked();
 
