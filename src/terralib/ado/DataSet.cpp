@@ -55,11 +55,11 @@ inline void TESTHR( HRESULT hr )
   if( FAILED(hr) ) _com_issue_error( hr );
 }
 
-te::ado::DataSet::DataSet(_RecordsetPtr result,
-                          Connection* conn, std::map<std::string, std::string>& geomColumns)
+te::ado::DataSet::DataSet(_RecordsetPtr result, std::map<std::string, std::string>& geomColumns)
   : m_i(-1),
+    m_size(-1),
+    m_ncols(-1),
     m_result(result),
-    m_conn(conn),
     m_geomColumns(geomColumns)
 {
   m_size = m_result->GetRecordCount();
@@ -149,6 +149,7 @@ bool te::ado::DataSet::moveNext()
     TESTHR(m_result->MoveNext());
 
   ++m_i;
+  bool teste = (m_i < m_size);
   return (m_i < m_size);
 }
 
@@ -163,6 +164,9 @@ bool te::ado::DataSet::movePrevious()
 
 bool te::ado::DataSet::moveBeforeFirst()
 {
+  if((bool)m_result->BOF)
+    return true;
+  
   TESTHR(m_result->MoveFirst());
   m_i = -1;
   return m_size != 0;

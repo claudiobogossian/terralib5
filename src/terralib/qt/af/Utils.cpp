@@ -50,11 +50,13 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/algorithm/string/replace.hpp>
 
-//Qt
+// Qt
 #include <QtCore/QSettings>
+#include <QtCore/QString>
 #include <QtGui/QApplication>
 #include <QtGui/QAction>
 #include <QtGui/QMainWindow>
+#include <QtGui/QMessageBox>
 #include <QtGui/QToolBar>
 
 te::qt::af::Project* te::qt::af::ReadProject(const std::string& uri)
@@ -123,15 +125,20 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
 
   const te::serialize::Layer& lserial = te::serialize::Layer::getInstance();
 
+  // Read the layers
+  std::vector<std::string> invalidLayers;
+
   while((reader.getNodeType() != te::xml::END_ELEMENT) &&
         (reader.getElementLocalName() != "LayerList"))
   {
     te::map::AbstractLayerPtr layer(lserial.read(reader));
 
-    if(layer.get() == 0)
-      break;
+    assert(layer.get());
 
-    project->add(layer);
+    if(layer->isValid())
+      project->add(layer);
+    else
+      invalidLayers.push_back(layer->getTitle());
   }
 
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
@@ -142,6 +149,22 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
   assert(reader.getElementLocalName() == "Project");
 
   project->setProjectAsChanged(false);
+
+  if(!invalidLayers.empty())
+  {
+    QString message(QObject::tr("The following layers are invalid and will not be added to TerraView"));
+
+    message += "<ul>";
+    for(std::size_t i = 0; i <invalidLayers.size(); ++i)
+    {
+      message += "<li>";
+      message += invalidLayers[i].c_str();
+      message += "</li>";
+    }
+     message += "</ul>";
+
+    QMessageBox::information(te::qt::af::ApplicationController::getInstance().getMainWindow(), te::qt::af::ApplicationController::getInstance().getAppTitle(), message);
+  }
 
   return project.release();
 }

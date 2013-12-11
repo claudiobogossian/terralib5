@@ -77,8 +77,9 @@ te::ado::Connection::Connection(const std::string& conninfo)
 
 te::ado::Connection::~Connection()
 {
-  if(m_conn)
-    m_conn->Close();
+  if (m_conn)
+    if (m_conn->GetState() == ::adStateOpen)
+      m_conn->Close();
 }
 
 _RecordsetPtr te::ado::Connection::query(const std::string& query, bool connected)

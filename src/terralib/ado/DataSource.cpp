@@ -112,28 +112,16 @@ void te::ado::DataSource::open()
 
   m_conn = new te::ado::Connection(connInfo);
 
-  std::string sql = "SELECT * FROM geometry_columns";
-
-  std::auto_ptr<te::da::DataSet> res = query(sql);
-
-  res->moveBeforeFirst();
-
-  while(res->moveNext())
-  {
-    std::string table = res->getString("f_table_name");
-    std::string column = res->getString("f_geometry_column");
-    m_geomColumns[table] = column;
-  }
-
+  te::ado::GetGeometryColumnsInfo(m_conn->getConn(), m_geomColumns);
 
   m_isOpened = true;
-
-  // Get the dataset names of the data source
-  getDataSetNames();
 }
 
 std::map<std::string, std::string> te::ado::DataSource::getGeomColumns()
 {
+  if(m_geomColumns.size() == 0)
+    te::ado::GetGeometryColumnsInfo(m_conn->getConn(), m_geomColumns);
+
   return m_geomColumns;
 }
 
@@ -212,6 +200,8 @@ void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInf
     std::map<std::string, std::string> op;
     createDataSet(geomColsDt, op);
   }
+
+  close();
 }
 
 void te::ado::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
