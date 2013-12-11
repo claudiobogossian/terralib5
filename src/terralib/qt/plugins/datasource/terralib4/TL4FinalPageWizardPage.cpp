@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/plugins/terralib4/TL4FinalPageWizardPage.cpp
 
-  \brief A Qt dialog for ....
+  \brief A wizard page for selecting converted datasets to layers in TerraLib 5.
 */
 
 // TerraLib
@@ -42,14 +42,16 @@ te::qt::plugins::terralib4::TL4FinalPageWizardPage::~TL4FinalPageWizardPage()
 {
 }
 
-void te::qt::plugins::terralib4::TL4FinalPageWizardPage::setDataSets(std::vector<std::string> datasets)
+void te::qt::plugins::terralib4::TL4FinalPageWizardPage::setDataSets(const std::vector<std::string>& datasets)
 {
   m_ui->m_layersListWidget->clear();
 
   for(std::size_t i = 0; i < datasets.size(); ++i)
   {
     QListWidgetItem* item = new QListWidgetItem(datasets[i].c_str(), m_ui->m_layersListWidget);
+
     item->setCheckState(Qt::Checked);
+
     m_ui->m_layersListWidget->addItem(item);
   }
 }
@@ -57,7 +59,8 @@ void te::qt::plugins::terralib4::TL4FinalPageWizardPage::setDataSets(std::vector
 std::vector<std::string> te::qt::plugins::terralib4::TL4FinalPageWizardPage::getSelected()
 {
   std::vector<std::string> checked;
-  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+
+  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
   {
     if(m_ui->m_layersListWidget->item(i)->checkState() == Qt::Checked)
       checked.push_back(m_ui->m_layersListWidget->item(i)->text().toStdString());
@@ -68,9 +71,10 @@ std::vector<std::string> te::qt::plugins::terralib4::TL4FinalPageWizardPage::get
 
 void te::qt::plugins::terralib4::TL4FinalPageWizardPage::onSelectAllPushButtonClicked()
 {
-  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
   {
     Qt::CheckState state = m_ui->m_layersListWidget->item(i)->checkState();
+
     if(state != Qt::Checked)
       m_ui->m_layersListWidget->item(i)->setCheckState(Qt::Checked);
   }
@@ -78,9 +82,10 @@ void te::qt::plugins::terralib4::TL4FinalPageWizardPage::onSelectAllPushButtonCl
 
 void te::qt::plugins::terralib4::TL4FinalPageWizardPage::onDeselectAllPushButtonClicked()
 {
-  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
   {
     Qt::CheckState state = m_ui->m_layersListWidget->item(i)->checkState();
+
     if(state == Qt::Checked)
       m_ui->m_layersListWidget->item(i)->setCheckState(Qt::Unchecked);
   }

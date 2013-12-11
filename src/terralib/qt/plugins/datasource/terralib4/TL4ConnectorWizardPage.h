@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/qt/plugins/terralib4/RL4ConnectorWizardPage.h
+  \file terralib/qt/plugins/terralib4/TL4ConnectorWizardPage.h
 
-  \brief ????
+  \brief A wizard page that provides the capability of connecting to a TerraLib 4.x database.
 */
 
 #ifndef __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4CONNECTORWIZARDPAGE_H
@@ -32,6 +32,7 @@
 // STL
 #include <map>
 #include <memory>
+#include <string>
 
 // Qt
 #include <QtGui/QWizardPage>
@@ -47,7 +48,12 @@ namespace te
     {
       namespace terralib4
       {
-        class TEQTPLUGINTERRALIB4EXPORT TL4ConnectorWizardPage : public QWizardPage
+        /*!
+          \class TL4ConnectorWizardPage
+
+          \brief A wizard page that provides the capability of connecting to a TerraLib 4.x database.
+        */
+        class TL4ConnectorWizardPage : public QWizardPage
         {
           Q_OBJECT
 
@@ -61,17 +67,19 @@ namespace te
 
           private:
 
-            std::string getDriverName(std::string displayName);
+            std::string getDriverName(const std::string& displayName);
 
           protected slots:
 
-            void onDatabaseTypeComboBoxActivated(int i);
+            void onDatabaseTypeComboBoxActivated(const QString& text);
+
             void onDirectoryPushButtonClicked();
 
           private:
 
             std::auto_ptr<Ui::TL4ConnectorWizardPageForm> m_ui;
         };
+
       } // end namespace terralib4
     } // end namespace plugins
   }   // end namespace qt
