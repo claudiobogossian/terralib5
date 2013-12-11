@@ -231,16 +231,16 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
         m_dataset->move(row);
       }
 
-      return (m_dataset->isNull(index.column())) ? 
-        tr("Null") : 
-        m_dataset->getAsString(index.column(), 6).c_str();
+      if(!m_dataset->isNull(index.column())) 
+        return m_dataset->getAsString(index.column(), 6).c_str();
 
     break;
 
     default:
-      return QVariant();
     break;
   }
+
+  return QVariant();
 }
 
 QVariant te::qt::widgets::DataSetTableModel::headerData(int section, Qt::Orientation orientation, int role) const
