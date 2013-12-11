@@ -584,7 +584,7 @@ void te::qt::widgets::DataSetTableView::resetColumnsOrder()
 
 void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const bool& add)
 {
-  removeSelection(row, row);
+//  removeSelection(row, row);
 
   te::da::ObjectIdSet* oids = m_model->getObjectIdSet(row, row);
 
@@ -597,6 +597,8 @@ void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const bool&
       emit deselectOIds(oids);
 
       delete oids;
+
+      m_delegate->setObjectIdSet(m_layer->getSelected());
 
       viewport()->repaint();
 
@@ -623,7 +625,7 @@ void te::qt::widgets::DataSetTableView::highlightRows(const int& initRow, const 
     final = initRow;
   }
 
-  removeSelection(ini, final);
+//  removeSelection(ini, final);
 
   te::da::ObjectIdSet* oids = m_model->getObjectIdSet(ini, final);
 
@@ -791,13 +793,14 @@ void te::qt::widgets::DataSetTableView::setAutoScrollEnabled(const bool& enable)
 void te::qt::widgets::DataSetTableView::removeSelection(const int& initRow, const int& finalRow)
 {
   QItemSelection toRemove;
-  QModelIndexList idxs = selectionModel()->selection().indexes();
 
-  QModelIndexList::iterator it;
+  for(int i=initRow; i<=finalRow; i++)
+  {
+    QModelIndexList idx = selectionModel()->selectedColumns(i);
 
-  for(it=idxs.begin(); it!=idxs.end(); ++it)
-    if((*it).row()>=initRow && (*it).row()<=finalRow)
-      toRemove.select(*it, *it);
+    if(!idx.empty())
+      toRemove.select(idx.first(), idx.last());
+  }
 
   selectionModel()->select(toRemove, QItemSelectionModel::Deselect);
 }

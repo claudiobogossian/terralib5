@@ -69,7 +69,11 @@ void te::qt::af::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* layer)
   if(m_layer->getSelected() != 0)
     m_view->highlightOIds(m_layer->getSelected());
 
-  setWindowTitle(m_layer->getTitle().c_str());
+  const char* lName = m_layer->getTitle().c_str();
+
+  setWindowTitle(lName);
+
+  setObjectName(QString("TableView_") + lName);
 }
 
 te::map::AbstractLayer* te::qt::af::DataSetTableDockWidget::getLayer() const
