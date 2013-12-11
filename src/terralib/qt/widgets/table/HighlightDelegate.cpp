@@ -136,6 +136,12 @@ void te::qt::widgets::HighlightDelegate::setObjectIdSet(const te::da::ObjectIdSe
   if(m_objs != 0)
     delete m_objs;
 
+  if(objs == 0)
+  {
+    m_objs = 0;
+    return;
+  }
+
   m_objs = objs->clone();
 
   m_oids = GetOidsAsString(objs);
