@@ -404,6 +404,8 @@ void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, int srid, con
 
   te::gm::GeomType currentGeomType = te::gm::UnknownGeometryType;
 
+  dataset->moveBeforeFirst();
+
   while(dataset->moveNext())
   {
     std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gpos));
