@@ -21,6 +21,11 @@ endif()
 
 find_package(Qt4 ${_Qt4_VERSION} REQUIRED COMPONENTS QtCore QtGui)
 
+#Definitions for windows compiling
+if(WIN32)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif(WIN32)
+
 if(QT4_FOUND)
   include (${QT_USE_FILE})
   add_definitions (${QT_DEFINITIONS})
