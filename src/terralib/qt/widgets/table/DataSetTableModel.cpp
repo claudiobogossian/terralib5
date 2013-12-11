@@ -292,7 +292,7 @@ Qt::ItemFlags te::qt::widgets::DataSetTableModel::flags(const QModelIndex & inde
 
   Qt::ItemFlags flags = QAbstractItemModel::flags(index);
 
-  flags |= Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
+  flags |= Qt::ItemIsEnabled | Qt::ItemIsSelectable /*| Qt::ItemIsEditable*/;
 
   return flags;
 }
