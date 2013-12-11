@@ -30,6 +30,7 @@
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWidget.h"
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
 #include "../../../../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../../../../qt/widgets/help/HelpPushButton.h"
 #include "../../../../qt/widgets/rp/Utils.h"
 #include "../../../../qt/af/ApplicationController.h"
 #include "../../../../qt/af/Project.h"
@@ -97,6 +98,11 @@ te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* pare
   connect(this->button(QWizard::HelpButton), SIGNAL(pressed()), this, SLOT(help()));
   connect(this->button(QWizard::FinishButton), SIGNAL(pressed()), this, SLOT(finish()));
 
+  te::qt::widgets::HelpPushButton* helpButton = new te::qt::widgets::HelpPushButton(this);
+
+  this->setButton(QWizard::HelpButton, helpButton);
+
+  helpButton->setPageReference("plugins/terralib4/Terralib4Converter.html");
 }
 
 te::qt::plugins::terralib4::TL4ConverterWizard::~TL4ConverterWizard()
@@ -291,8 +297,6 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::datasourceSelectionPageNext
     mes.exec();
   }
 
-  
-
   this->setCursor(shp);
   
   QWizard::next();
@@ -319,9 +323,6 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::rasterFolderSelectionPageNe
       te::rst::CreateCopy(*raster.release(), m_rasterFolderPath + "/" + dsNames[i] + ".tif");
     }
   }
-
-
-
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::finish()

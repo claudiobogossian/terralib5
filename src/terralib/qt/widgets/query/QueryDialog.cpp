@@ -114,6 +114,28 @@ void te::qt::widgets::QueryDialog::setList(std::list<te::map::AbstractLayerPtr>&
   }
 }
 
+void te::qt::widgets::QueryDialog::setCurrentLayer(te::map::AbstractLayerPtr layer)
+{
+  for(int i = 0; i < m_ui->m_inputLayerComboBox->count(); ++i)
+  {
+    QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(i, Qt::UserRole);
+    te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
+
+    if(layer == l)
+    {
+      m_ui->m_inputLayerComboBox->setCurrentIndex(i);
+      break;
+    }
+  }
+
+  if(m_ui->m_inputLayerComboBox->count() > 0)
+  {
+    QString s = m_ui->m_inputLayerComboBox->currentText();
+
+    onInputLayerActivated(s);
+  }
+}
+
 te::da::Where* te::qt::widgets::QueryDialog::getWhere()
 {
   return m_whereClauseWidget->getWhere();
@@ -263,17 +285,29 @@ void te::qt::widgets::QueryDialog::onApplyPushButtonClicked()
     std::auto_ptr<te::da::DataSet> dataset = layer->getData(e);
     assert(dataset.get());
 
-    emit highlightLayerObjects(layer, dataset.get(), m_colorPicker->getColor());
+    if(m_ui->m_newSelRadioButton->isChecked())
+    {
+      // Generates the oids
+      dataset->moveBeforeFirst();
+      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
 
-    if(m_ui->m_addResult2LayerSelectionCheckBox->isChecked())
+      layer->clearSelected();
+      layer->select(oids);
+
+      emit layerSelectedObjectsChanged(layer);
+    }
+    else if(m_ui->m_addSelRadioButton->isChecked())
     {
       // Generates the oids
       dataset->moveBeforeFirst();
       te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
 
       layer->select(oids);
+
       emit layerSelectedObjectsChanged(layer);
     }
+
+    emit highlightLayerObjects(layer, dataset.get(), m_colorPicker->getColor());
 
     setCursor(Qt::ArrowCursor);
 

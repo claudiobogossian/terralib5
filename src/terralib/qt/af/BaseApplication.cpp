@@ -1300,11 +1300,21 @@ void te::qt::af::BaseApplication::onQueryLayerTriggered()
   if(m_project)
     dlg->setList(m_project->getTopLayers());
 
+  std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedSingleLayerItems();
+
+  if(!selectedLayerItems.empty())
+  {
+    te::qt::widgets::AbstractTreeItem* selectedLayerItem = *(selectedLayerItems.begin());
+    te::map::AbstractLayerPtr selectedLayer = selectedLayerItem->getLayer();
+
+    dlg->setCurrentLayer(selectedLayer);
+  }
+
   connect(dlg, SIGNAL(highlightLayerObjects(const te::map::AbstractLayerPtr&, te::da::DataSet*, const QColor&)),
                SLOT(onHighlightLayerObjects(const te::map::AbstractLayerPtr&, te::da::DataSet*, const QColor&)));
 
-  /*connect(dlg, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)),
-                 SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));*/
+  connect(dlg, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)),
+                 SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
 
   dlg->show();
 }
