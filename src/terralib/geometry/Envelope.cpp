@@ -98,7 +98,7 @@ void te::gm::Envelope::transform(int oldsrid, int newsrid)
     converter->setSourceSRID(oldsrid);
     converter->setTargetSRID(newsrid);
   }
-  catch (te::common::Exception& ex)
+  catch (te::common::Exception& /* ex */)
   {
     return;
   }

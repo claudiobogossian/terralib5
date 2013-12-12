@@ -437,7 +437,7 @@ bool te::ado::Transactor::propertyExists(const std::string& datasetName, const s
     {
       ADOX::ColumnsPtr cols = table->GetColumns();
 
-      for(std::size_t i = 0; i < cols->Count; ++i)
+      for(int i = 0; i < cols->Count; ++i)
       {
         ADOX::_ColumnPtr col = cols->GetItem((long)i);
         if(((LPCSTR)(_bstr_t)col->GetName()) == name)

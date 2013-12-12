@@ -34,10 +34,10 @@
 #include "../datatype/DateTimeProperty.h"
 #include "../datatype/SimpleData.h"
 #include "../datatype/TimeInstant.h"
+#include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
 #include "../geometry/WKBReader.h"
 #include "Connection.h"
-//#include "CatalogLoader.h"
 #include "DataSet.h"
 #include "DataSource.h"
 #include "Exception.h"
@@ -120,7 +120,7 @@ std::string te::ado::DataSet::getPropertyName(std::size_t i) const
   FieldsPtr fields = m_result->GetFields();
   FieldPtr field = fields->GetItem((long)i);
 
-  return field->GetName();
+  return (LPCSTR)field->GetName();
 }
 
 std::string te::ado::DataSet::getDatasetNameOfProperty(std::size_t i) const
@@ -164,11 +164,12 @@ bool te::ado::DataSet::movePrevious()
 
 bool te::ado::DataSet::moveBeforeFirst()
 {
-  if((bool)m_result->BOF)
+  if(m_result->BOF != 0)
     return true;
   
   TESTHR(m_result->MoveFirst());
   m_i = -1;
+
   return m_size != 0;
 }
 
@@ -413,7 +414,7 @@ std::auto_ptr<te::dt::ByteArray> te::ado::DataSet::getByteArray(std::size_t i) c
       m_result->MoveNext();
     else
     {
-      _RecordsetPtr copy = m_result->Clone(LockTypeEnum::adLockReadOnly);
+      _RecordsetPtr copy = m_result->Clone(adLockReadOnly);
 
       field = copy->GetFields()->GetItem(vtIndex);
     }
