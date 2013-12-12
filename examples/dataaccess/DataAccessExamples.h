@@ -218,7 +218,7 @@ void PersistenceExample();
   \param dsName  the data source name 
   \param dsInfo  the data source info   
 */
-void CopyingDataSetToDataSource(te::da::DataSet* dataSet, const std::string& dsName, const std::string& dsInfo); 
+void CopyingDataSetToDataSource(te::da::DataSet* dataSet, const std::string& dsName, std::map<std::string, std::string>& dsInfo); 
 
 /*! 
   \brief It adds a new data set property and its values.
