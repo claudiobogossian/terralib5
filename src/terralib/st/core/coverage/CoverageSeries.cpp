@@ -29,6 +29,7 @@
 #include "../../../geometry/Utils.h"
 #include "../../../datatype/DateTime.h"
 #include "../../../datatype/DateTimeInstant.h"
+#include "../../../datatype/DateTimeUtils.h"
 
 //ST
 #include "CoverageSeries.h"
@@ -40,18 +41,15 @@ te::st::CoverageSeries::CoverageSeries() :
   m_observations(), 
   m_interpolator(&NearestCoverageAtTimeInterp::getInstance()),
   m_cvtype(te::st::UNKNOWN),
-  m_textent(0), 
   m_sextent(0)
 {
 }
 
 te::st::CoverageSeries::CoverageSeries(const CoverageSeriesObservationSet& obs, 
-                        AbstractCoverageSeriesInterp* interp, 
-                        te::gm::Geometry* se, te::dt::DateTimePeriod* te, CoverageType t) :
+                        AbstractCoverageSeriesInterp* interp, te::gm::Geometry* se, CoverageType t) :
   m_observations(obs), 
   m_interpolator(interp),
   m_cvtype(t),
-  m_textent(te), 
   m_sextent(se)
 {
 }
@@ -71,9 +69,12 @@ te::gm::Geometry* te::st::CoverageSeries::getSpatialExtent() const
   return m_sextent.get();
 }
 
-te::dt::DateTimePeriod* te::st::CoverageSeries::getTemporalExtent() const
+std::auto_ptr<te::dt::DateTimePeriod> te::st::CoverageSeries::getTemporalExtent() const
 {
-  return m_textent.get();
+  te::dt::DateTime* bt = m_observations.begin()->first.get();
+  te::dt::DateTime* et = m_observations.rbegin()->first.get();
+  //This function does not take the ownership of the given times
+  return std::auto_ptr<te::dt::DateTimePeriod>(te::dt::GetTemporalExtent(bt, et)); 
 }
 
 void te::st::CoverageSeries::add(te::dt::DateTime* time, te::st::Coverage* cv)

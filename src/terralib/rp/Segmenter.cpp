@@ -321,7 +321,7 @@ namespace te
           ( ( totalVMem <= usedVMem ) ? 0.0 : ( totalVMem - usedVMem ) ) );
         const double pixelRequiredRam = stratMemUsageEstimation
           / ((double)totalRasterPixels);
-        const double maxSimultaneousMemoryPixels = MIN( 
+        const double maxSimultaneousMemoryPixels = 0.7 * MIN( 
           ((double)totalRasterPixels), 
           freeVMem / pixelRequiredRam );         
         
@@ -374,30 +374,21 @@ namespace te
           
           if( m_inputParameters.m_enableBlockMerging )
           {
-            const double rasterRCFactor = 
-              ((double)m_inputParameters.m_inputRasterPtr->getNumberOfRows()) /
-              ((double)m_inputParameters.m_inputRasterPtr->getNumberOfColumns());
-            const unsigned int tempMaxExpandedBlockHeight = (unsigned int)
-              ceil( sqrt( rasterRCFactor * ( (double)maxBlockPixels ) ) );
-            const unsigned int tempMaxExpandedBlockWidth = (unsigned int)ceil(
-              ((double)tempMaxExpandedBlockHeight) / rasterRCFactor );
-            blocksHOverlapSize = MIN( stratBlocksOverlapSize,
-              tempMaxExpandedBlockHeight / 4 );
-            blocksVOverlapSize = MIN( stratBlocksOverlapSize,
-              tempMaxExpandedBlockWidth / 4 );   
-            
             // Adjusting the block sizes
             
             TERP_TRUE_OR_RETURN_FALSE( calcBestBlockSize( 
               m_inputParameters.m_inputRasterPtr->getNumberOfRows(),
               m_inputParameters.m_inputRasterPtr->getNumberOfColumns(), 
-              2 * std::max( blocksHOverlapSize, blocksVOverlapSize ),
-              maxBlockPixels, blocksHOverlapSize, blocksVOverlapSize,
-              maxNonExpandedBlockWidth, maxNonExpandedBlockHeight ), 
+              std::max( blocksHOverlapSize, blocksVOverlapSize ) *
+                std::max( blocksHOverlapSize, blocksVOverlapSize ),
+              maxBlockPixels, 
+              0.4, 
+              0.4,
+              maxNonExpandedBlockWidth, 
+              maxNonExpandedBlockHeight,
+              blocksHOverlapSize,
+              blocksVOverlapSize ), 
               "Error calculating best block size" );   
-              
-            blocksHOverlapSize = maxNonExpandedBlockWidth / 4;
-            blocksVOverlapSize = maxNonExpandedBlockHeight / 4;
             
             maxExpandedBlockWidth = maxNonExpandedBlockWidth + 
               blocksHOverlapSize + blocksHOverlapSize;
@@ -408,12 +399,20 @@ namespace te
           {
             // Adjusting the block sizes
             
+            unsigned int blocksHOverlapSize = 0;
+            unsigned int blocksVOverlapSize = 0;       
+            
             TERP_TRUE_OR_RETURN_FALSE( calcBestBlockSize( 
               m_inputParameters.m_inputRasterPtr->getNumberOfRows(),
               m_inputParameters.m_inputRasterPtr->getNumberOfColumns(), 
-              2 * stratBlocksOverlapSize,
-              maxBlockPixels, 0, 0,
-              maxNonExpandedBlockWidth, maxNonExpandedBlockHeight ), 
+              stratBlocksOverlapSize * stratBlocksOverlapSize,
+              maxBlockPixels, 
+              0.0, 
+              0.0,
+              maxNonExpandedBlockWidth, 
+              maxNonExpandedBlockHeight,
+              blocksHOverlapSize,
+              blocksVOverlapSize ), 
               "Error calculating best block size" );  
               
             maxExpandedBlockWidth = maxNonExpandedBlockWidth;
@@ -741,11 +740,16 @@ namespace te
     }    
     
     bool Segmenter::calcBestBlockSize( 
-      const unsigned int totalImageLines, const unsigned totalImageCols, 
-      const unsigned int minBlockPixels, const unsigned int maxBlockPixels, 
-      const unsigned int blocksHOverlapSize, 
-      const unsigned int blocksVOverlapSize,
-      unsigned int& blockWidth, unsigned int& blockHeight ) const
+      const unsigned int totalImageLines, 
+      const unsigned int totalImageCols, 
+      const unsigned int minBlockPixels,
+      const unsigned int maxBlockPixels, 
+      const double blocksHOverlapSizePercent,
+      const double blocksVOverlapSizePectent, 
+      unsigned int& blockWidth,
+      unsigned int& blockHeight,
+      unsigned int& blocksHOverlapSize,
+      unsigned int& blocksVOverlapSize ) const
     {
       if( minBlockPixels > maxBlockPixels ) return false;
         
@@ -758,31 +762,22 @@ namespace te
       const double maxScaleFactor = ((double)totalImageLines) / 
         minRasterLinesNmb;
         
-      double rescaledBlockLinesNumber = 0;
-      double rescaledBlockColsNumber = 0;
-      double rescaledAndExtendedBlockPixelsNmb = 0;
+      unsigned int rescaledAndExtendedBlockPixelsNmb = 0;
         
       for( double scaleFactor = 1.0 ; scaleFactor <= maxScaleFactor ;
         scaleFactor += 1.0 )
       {
-        rescaledBlockLinesNumber = ((double)totalImageLines) / scaleFactor;
-        rescaledBlockColsNumber = ((double)totalImageCols) / scaleFactor;
+        blockHeight = (unsigned int)std::ceil( ((double)totalImageLines) / scaleFactor );
+        blockWidth = (unsigned int)std::ceil( ((double)totalImageCols) / scaleFactor );
         
-        rescaledAndExtendedBlockPixelsNmb = rescaledBlockLinesNumber *
-          rescaledBlockColsNumber;
+        blocksHOverlapSize = (unsigned int)( blocksHOverlapSizePercent * ((double)blockWidth) );
+        blocksVOverlapSize = (unsigned int)( blocksVOverlapSizePectent * ((double)blockHeight) );
         
-        rescaledAndExtendedBlockPixelsNmb += 2.0 * (
-          ((double)blocksHOverlapSize) * ( ((double)blocksVOverlapSize) + 
-          ((double)blocksVOverlapSize) + rescaledBlockLinesNumber ) );
-        
-        rescaledAndExtendedBlockPixelsNmb += 2.0 * (
-          ((double)blocksVOverlapSize) * rescaledBlockColsNumber );
+        rescaledAndExtendedBlockPixelsNmb = ( blockHeight + blocksVOverlapSize +
+          blocksVOverlapSize ) * ( blockWidth + blocksHOverlapSize + blocksHOverlapSize );
           
-        if( rescaledAndExtendedBlockPixelsNmb <= ((double)maxBlockPixels) )
+        if( rescaledAndExtendedBlockPixelsNmb <= maxBlockPixels )
         {
-          blockWidth = (unsigned int)ceil( rescaledBlockColsNumber );
-          blockHeight = (unsigned int)ceil( rescaledBlockLinesNumber );
-          
           return true;
         }
       }

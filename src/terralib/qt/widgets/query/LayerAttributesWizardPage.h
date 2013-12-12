@@ -66,6 +66,10 @@ namespace te
 
           std::string getLayerName();
 
+        public slots:
+
+          void layerNameChanged(QString);
+
 
         private:
 

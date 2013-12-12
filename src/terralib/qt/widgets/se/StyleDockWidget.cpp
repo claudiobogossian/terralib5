@@ -108,20 +108,8 @@ QWidget* te::qt::widgets::StyleDockWidget::buildUi()
   connect(m_pointWidget, SIGNAL(symbolizerChanged()), this, SLOT(onPointSymbolizerChanged()));
 
   // RasterSymbolizer Property Widget
-  QWidget* dummyW = new QWidget(m_tabWidget);
-  m_tabWidget->addTab(dummyW, tr("Raster"));
-
-  QGridLayout* ldummy = new QGridLayout(dummyW);
-
-  QScrollArea* sa = new QScrollArea(dummyW);
-
-  ldummy->addWidget(sa);
-
-  m_rasterWidget = new te::qt::widgets::RasterSymbolizerWidget(sa);
-  m_rasterWidget->setVerticalLayout();
-
-  sa->setWidget(m_rasterWidget);
-
+  m_rasterWidget = new te::qt::widgets::RasterSymbolizerWidget(m_tabWidget);
+  m_tabWidget->addTab(m_rasterWidget, tr("Raster"));
   connect(m_rasterWidget, SIGNAL(symbolizerChanged()), this, SLOT(onRasterSymbolizerChanged()));
 
   setTabStatus(false);

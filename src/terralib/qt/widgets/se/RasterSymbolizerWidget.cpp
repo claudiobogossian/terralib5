@@ -68,6 +68,7 @@ te::qt::widgets::RasterSymbolizerWidget::RasterSymbolizerWidget(QWidget* parent,
   layout->setAlignment(Qt::AlignTop);
   layout->addWidget(m_sliderWidget);
 
+
   //connect slots
   connect(m_sliderWidget, SIGNAL(sliderValueChanged(int)), this, SLOT(onOpacityChanged(int)));
   connect(m_sliderWidget, SIGNAL(sliderReleased()), this, SLOT(onSymbolizerChanged()));
@@ -223,25 +224,6 @@ void te::qt::widgets::RasterSymbolizerWidget::setBandProperty(std::vector<te::rs
 
   m_ui->m_composeBComboBox->clear();
   m_ui->m_composeBComboBox->addItems(bandNames);
-}
-
-void te::qt::widgets::RasterSymbolizerWidget::setVerticalLayout()
-{
-  m_ui->m_mainGridLayout->removeItem(m_ui->m_internalGridLayout);
-  delete m_ui->m_internalGridLayout;
-
-  QGridLayout* verticalLayout = new QGridLayout();
-  verticalLayout->setObjectName(QString::fromUtf8("verticalWidget"));
-  verticalLayout->setContentsMargins(0, 0, 0, 0);
-
-  verticalLayout->addWidget(m_ui->m_opacityWidget, 0, 0);
-  verticalLayout->addWidget(m_ui->m_enhancementGroupBox, 1, 0);
-  verticalLayout->addWidget(m_ui->m_compositionGroupBox, 2, 0);
-  verticalLayout->addWidget(m_ui->m_contrastGroupBox, 3, 0);
-
-  m_ui->m_mainGridLayout->addLayout(verticalLayout, 0, 0);
-
-  m_ui->m_mainGridLayout->setSizeConstraint(QLayout::SetFixedSize);
 }
 
 void te::qt::widgets::RasterSymbolizerWidget::initialize()

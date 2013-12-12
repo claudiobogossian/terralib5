@@ -96,8 +96,6 @@ namespace te
 
           void setBandProperty(std::vector<te::rst::BandProperty*> bp);
 
-          void setVerticalLayout();
-
         protected:
 
           /*! \brief Internal method to initialize the widget (e.g.: color, combos, icons, etc.) */

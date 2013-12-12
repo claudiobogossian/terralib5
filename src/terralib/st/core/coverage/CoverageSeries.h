@@ -85,14 +85,12 @@ namespace te
           \param obs      The coverage series observations
           \param interp   The interpolator associated to the coverage series.
           \param se       The coverage series spatial extent.
-          \param te       The coverage series temporal extent.
           \param t        The type of the coverages that are in the observation set. 
 
           \note It will take the ownership of the given pointers.
         */
         CoverageSeries( const CoverageSeriesObservationSet& obs, 
-                        AbstractCoverageSeriesInterp* interp, 
-                        te::gm::Geometry* se, te::dt::DateTimePeriod* te, CoverageType t);  
+                        AbstractCoverageSeriesInterp* interp, te::gm::Geometry* se, CoverageType t);  
         
         /*!
           \brief It returns the coverage series observations.
@@ -124,9 +122,9 @@ namespace te
           
           \return Returns the coverage series temporal extent.
 
-          \note The caller will NOT take the ownership of the returned geometry.
+          \note The caller will take the ownership of the returned geometry.
         */
-        te::dt::DateTimePeriod* getTemporalExtent() const;
+        std::auto_ptr<te::dt::DateTimePeriod> getTemporalExtent() const;
 
         /*! 
           \brief It adds an observation (time and coverage) into the coverage series. 
@@ -453,7 +451,7 @@ namespace te
           \note The retorned coverage series will NOT share the internal coverage pointers.
         */
         std::auto_ptr<CoverageSeries> getPatch(const te::gm::Envelope& e, te::gm::SpatialRelation sr, 
-                                              const te::dt::DateTime& dt, te::dt::TemporalRelation r = te::dt::DURING) const;
+                                               const te::dt::DateTime& dt, te::dt::TemporalRelation r = te::dt::DURING) const;
 
         /*!
           \brief It returns a subset or patch of the coverage series considering a given spatial and temporal restriction.
@@ -478,7 +476,6 @@ namespace te
         CoverageSeriesObservationSet            m_observations; //! The coverage series observations
         AbstractCoverageSeriesInterp*           m_interpolator;    //!< The interpolator used to estimate non-observed times.
         CoverageType                            m_cvtype;
-        std::auto_ptr<te::dt::DateTimePeriod>   m_textent;
         std::auto_ptr<te::gm::Geometry>         m_sextent;
      };
   } // end namespace st
