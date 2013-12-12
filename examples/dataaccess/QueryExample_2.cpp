@@ -17,7 +17,8 @@ void QueryExample_2()
   connInfo["PG_PASSWORD"] = "postgres";
   connInfo["PG_DB_NAME"] = "terralib4";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-
+  connInfo["PG_CLIENT_ENCODING"] = "WIN1252";     // "LATIN1";
+ 
   try
   {
 // if you are not using the data source manager, create one instance of the data source called ds an other dsOGR!
@@ -107,10 +108,24 @@ void QueryExample_2()
         ++i;
       }
 
+// quering a table called public.br_munic_2001 using native interface and returning all neighbours of 'Ouro Preto'
+      {
+        std::string sql("SELECT * , st_intersects(g1.geom, g2.geom) " 
+                        "FROM br_munic_2001 AS g1, br_munic_2001 AS g2 "
+                        "WHERE g1.nome = 'Ouro Preto' "
+                        "AND st_intersects(g1.geom, g2.geom) "
+                         ) ;
+
+        std::auto_ptr<te::da::DataSet> dataset = transactor->query(sql);
+        PrintDataSet("All neighbours of Ouro Preto", dataset.get());
+     
+      }
+
       bool trans_connected = transactor->isInTransaction(); 
     }
- 
-// At the end, let's release the transactor and data source instances
+
+// At the end, let's release transactor and close data source
+    delete transactor.release();
     ds->close();
   }
   catch(const std::exception& e)

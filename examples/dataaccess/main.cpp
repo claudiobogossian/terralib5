@@ -70,65 +70,63 @@ int main(int /*argc*/, char** /*argv*/)
 
     LoadModules();
 
-////============Juan initial example==============
-//    std::map<std::string, std::string> connInfo;
-//
-//    connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;
-//    //connInfo["PG_HOST"] = "localhost" ;
-//    connInfo["PG_PORT"] = "5433" ;
-//    connInfo["PG_USER"] = "postgres";
-////    connInfo["PG_PASSWORD"] = "postgres";
-//    connInfo["PG_DB_NAME"] = "terralib4";
-//    //connInfo["PG_DB_NAME"] = "Northwind";
-//    connInfo["PG_CONNECT_TIMEOUT"] = "4";
-//
-//    std::string dsType = "POSTGIS";
-//
-//    PrintDataSourceNames(dsType, connInfo);
-//
-//    // Creation of a data source
-//    connInfo["PG_NEWDB_NAME"] = "new_db";
-//
-//    std::auto_ptr<te::da::DataSource> newds = CreateDataSource(dsType, connInfo);
-//
-//    delete newds.release();
-//
-//    // Drop a data source
-//    connInfo["PG_DB_TO_DROP"] = "new_db";
-//    DropDataSource(dsType, connInfo);
-//
-//    // Check the data source existence
-//    connInfo["PG_CHECK_DB_EXISTENCE"] = "terralib4";
-//    bool dsExists = CheckDataSourceExistence(dsType, connInfo);
-//
-//    if(dsExists)
-//      std::cout << "\nThe data source \"terralib4\" exists!\n";
-//    else
-//      std::cout << "\nThe data source \"terralib4\" doesn't exist!\n";
-//
-//    PrintDataSourceEncodings(dsType, connInfo);
-//
-//    // Connection to a data source
-//    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
-//
-//    // Open the data source using the connection info above
-//    ds->setConnectionInfo(connInfo);
-//    ds->open();
-//
-//    PrintDataSetNames(ds.get());
-//
-//    std::string datasetName = "public.br_munic_2001";
-//
-//    PrintDataSetPropertyNames(ds.get(), datasetName);
-//
-//    PrintDataSetConstraints(ds.get(), datasetName);
-//    PrintDataSourceCapabilities(ds.get());
-//
-//    ds->close();
-//
-//    delete ds.release();
-//
-//===========Juan end of example ======================
+//=== Initial example about datasource: create, drop, check exist, dataset names, encodings, capabilities =====
+    std::map<std::string, std::string> connInfo;
+
+    connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;
+    connInfo["PG_PORT"] = "5433" ;
+    connInfo["PG_USER"] = "postgres";
+    connInfo["PG_DB_NAME"] = "terralib4";
+    connInfo["PG_CONNECT_TIMEOUT"] = "4";
+    connInfo["PG_CLIENT_ENCODING"] = "WIN1252";
+ 
+    std::string dsType = "POSTGIS";
+
+    PrintDataSourceNames(dsType, connInfo);
+
+    // Creation of a data source
+    connInfo["PG_NEWDB_NAME"] = "new_db";
+
+    std::auto_ptr<te::da::DataSource> newds = CreateDataSource(dsType, connInfo);
+
+    delete newds.release();
+
+    // Drop a data source
+    connInfo["PG_DB_TO_DROP"] = "new_db";
+    DropDataSource(dsType, connInfo);
+
+    // Check the data source existence
+    connInfo["PG_CHECK_DB_EXISTENCE"] = "terralib4";
+    bool dsExists = CheckDataSourceExistence(dsType, connInfo);
+
+    if(dsExists)
+      std::cout << "\nThe data source \"terralib4\" exists!\n";
+    else
+      std::cout << "\nThe data source \"terralib4\" doesn't exist!\n";
+
+    PrintDataSourceEncodings(dsType, connInfo);
+
+    // Connection to a data source
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
+
+    // Open the data source using the connection info above
+    ds->setConnectionInfo(connInfo);
+    ds->open();
+
+    PrintDataSetNames(ds.get());
+
+    std::string datasetName = "public.br_munic_2001";
+
+    PrintDataSetPropertyNames(ds.get(), datasetName);
+
+    PrintDataSetConstraints(ds.get(), datasetName);
+    PrintDataSourceCapabilities(ds.get());
+
+    ds->close();
+
+    delete ds.release();
+
+//=========== end of Initial example ===========
 
     PostGISExample();  //ok
 
@@ -150,9 +148,7 @@ int main(int /*argc*/, char** /*argv*/)
 
     CopyingData(); //ok
 
-    //////QueryExample(); //??? tem codigo comentado - cai...
-
-    ////////PersistenceExample();
+    ///////QueryExample(); //its almost all inside QueryExample_2()
 
     ////////DataSetAdapter();
 
@@ -267,116 +263,3 @@ void UnloadModules()
 
   TerraLib::getInstance().finalize();
 }
-
-
-//int main(int /*argc*/, char** /*argv*/)
-//{
-//  try
-//  {
-//    // Initialize the Terralib support
-//    TerraLib::getInstance().initialize();
-//
-//    LoadModules();
-//
-//    std::map<std::string, std::string> connInfo;
-//
-//    connInfo["PG_HOST"] = "localhost" ;
-//    connInfo["PG_PORT"] = "5433" ;
-//    connInfo["PG_USER"] = "postgres";
-//    connInfo["PG_PASSWORD"] = "sitim110";
-//    //connInfo["PG_DB_NAME"] = "Northwind";
-//    //connInfo["PG_DB_NAME"] = "nyc";
-//    connInfo["PG_DB_NAME"] = "testepgis";
-//    connInfo["PG_CONNECT_TIMEOUT"] = "4";
-//
-//    // Create a data source
-//    //te::da::DataSource* ds = new te::pgis::DataSource;
-//
-//    te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");
-//
-//    // As we are going to use the data source, let's open it using the connection info above!
-//    ds->setConnectionInfo(connInfo);
-//    ds->open();
-//
-//    // Get the data source names available
-//    PrintDataSourceNames(ds, connInfo);
-//
-//    // Get the dataset names of the data source nyc
-//    PrintDataSetNames(ds);
-//
-//    //std::string datasetName = "public.categorias";
-//    //std::string datasetName = "public.nyc_census_blocks";
-//    std::string datasetName = "public.func";
-//    //std::string datasetName = "public.detalhesdopedido";
-//    //std::string datasetName = "public.testcc";
-//    const te::da::DataSetTypePtr& dt = PrintSchema(ds, datasetName);
-//
-//    //te::da::CheckConstraint* cc = ds->getCheckConstraint(datasetName, "testcc_check");
-//
-//    te::da::CheckConstraint* newCC = new te::da::CheckConstraint("newCheck1");
-//    newCC->setExpression("CHECK a > b");
-//    ds->addCheckConstraint(datasetName, newCC);
-//
-//    ds->dropCheckConstraint(datasetName, "newCheck1");
-//
-//    std::cout << "===== Names of the sequences available: \n";
-//    std::vector<std::string> seqNames = ds->getSequenceNames();
-//    for(std::size_t i = 0; i < seqNames.size(); ++i)
-//      std::cout << seqNames[i] << std::endl;
-//
-//    te::da::PreparedQuery* pq = new te::pgis::PreparedQuery(ds,  "testepq");
-//    //std::auto_ptr<te::pgis::PreparedQuery> pq(new te::pgis::PreparedQuery(ds, "testepq"));
-//
-//    delete pq;
-//
-//    //te::dt::Property* p = new te::dt::SimpleProperty("idade", te::dt::INT16_TYPE);
-//    //ds->addProperty(datasetName, p);
-//
-//    te::da::PrimaryKey* pk = new te::da::PrimaryKey("func_id2");
-//
-//    std::vector<te::dt::Property*> pVec;
-//    pVec.push_back(ds->getProperty("public.func2", 0));
-//    pk->setProperties(pVec);
-//
-//    ds->addPrimaryKey("public.func2", pk);
-//
-//    ds->close();
-//
-//    delete ds;
-//
-//    TerraLib::getInstance().finalize();
-//
-//    return 0;
-//  }
-//  catch(const std::exception& e)
-//  {
-//    std::cout << std::endl << "An exception has occurried: " << e.what() << std::endl;
-//  }
-//  catch(...)
-//  {
-//    std::cout << std::endl << "An unexpected exception has occurried!" << std::endl;
-//  }
-//}
-//
-
-    ////////////////////////////////// Memory operation /////////////////////////////
-    //te::da::DataSource* memds = te::da::DataSourceFactory::make("MEM");
-    //std::auto_ptr<te::da::DataSource> memds = te::da::DataSourceFactory::make("MEM");
-
-    ////te::da::DataSource* memds = new te::mem::DataSource();
-
-    //std::map<std::string, std::string> memInfo;
-
-    //memInfo["OPERATION_MODE"] = "NON_SHARED";
-    //memds->setConnectionInfo(memInfo);
-
-    //memds->open();
-
-    //std::map<std::string, std::string> options;
-
-    //memds->add(datasetName, ds->getDataSet(datasetName).get(), options);
-
-    //memds->close();
-
-    //delete memds;
-    ////////////////////////////// End of memory operation///////////////////////

@@ -24,7 +24,6 @@ te::da::DataSet* create_ds_memory(const std::string& datasetName, te::da::DataSe
 void openFile(const std::string& filename, const std::string dstype);
 void openDirectory(const std::string& filename, const std::string dstype);
 void saveUsingOGR(const std::string& filename, const std::string drivername);
-void testeGDAL();
 void ExportingOGR()
 {
     std::cout << std::endl << "1 - ";
@@ -133,41 +132,6 @@ void saveUsingOGR(const std::string& filename, const std::string drivername)
   dsOGR->close();
   dsOGR.release();
   connInfo.clear();
-}
-
-
-void testeGDAL()
-{  
-  ////definir uma imagem 50 x 50, 30x30 de resolucao, com canto superior esquerdo em -45,-23, 1 banda
-  //te::gm::Coord2D* ulc = new te::gm::Coord2D(-45,-23);
-  //te::rst::Grid* grid = new te::rst::Grid(50,50,30,30,ulc,4628);
-  //te::rst::BandProperty* bprop = new te::rst::BandProperty(0,te::dt::UCHAR_TYPE);
-  //te::rst::RasterProperty* rprop = new te::rst::RasterProperty("raster");
-  //rprop->set(grid);
-  //rprop->add(bprop);
-  //
-  //std::auto_ptr<te::da::DataSetType> datasettype(new te::da::DataSetType("testeIM.tif"));
-  //datasettype->add(rprop);
-  //
-  //std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
-  //
-  //std::map<std::string, std::string> connInfo;
-  //connInfo["SOURCE"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters2";
-  //
-  //std::auto_ptr<te::da::DataSource> dsGDAL = ds->create("GDAL", connInfo);
-  //dsGDAL->open();
-  //
-  //std::map<std::string,std::string> options;
-  //dsGDAL->createDataSet(datasettype.get(), options);
-  //
-  //std::auto_ptr<te::da::DataSet> dataset = dsGDAL->getDataSet("testeIM.tif");
-  //std::auto_ptr<te::rst::Raster> rst = dataset->getRaster(0);
-  //
-  //for (unsigned int l=0; l<50; ++l)
-  //  for (unsigned int c=0; c<50; ++c)
-  //    rst->setValue(c, l, 3*l);
-  //
-  //dsGDAL->close();
 }
 
 te::da::DataSet* create_ds_memory(const std::string& datasetName, te::da::DataSetType* datasettype)
