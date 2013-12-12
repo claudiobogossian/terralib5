@@ -64,6 +64,8 @@ namespace te
 
           ~ContrastWizardPage();
 
+          bool isComplete() const;
+
         public:
 
           /*!

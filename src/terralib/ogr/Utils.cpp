@@ -492,7 +492,7 @@ std::vector<std::string> te::ogr::GetOGRDrivers(bool filterCreate
   
   int ndrivers = OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
   
-  for (unsigned int i=0; i<ndrivers; ++i)
+  for (int i = 0; i < ndrivers; ++i)
   {
     OGRSFDriver* driver = OGRSFDriverRegistrar::GetRegistrar()->GetDriver(i);
     if (filterCreate && !driver->TestCapability(ODrCCreateDataSource))

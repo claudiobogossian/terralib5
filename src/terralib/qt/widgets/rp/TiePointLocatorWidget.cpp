@@ -380,6 +380,22 @@ void te::qt::widgets::TiePointLocatorWidget::setReferenceTiePointMarkLegend(QPix
   m_ui->m_refTiePointLabel->setPixmap(p);
 }
 
+void te::qt::widgets::TiePointLocatorWidget::createSelection(int initialId)
+{
+  m_ui->m_tiePointsTableWidget->clearSelection();
+
+  for(int i = 0; i < m_ui->m_tiePointsTableWidget->rowCount(); ++i)
+  {
+    QTableWidgetItem* item = m_ui->m_tiePointsTableWidget->item(i, 0);
+
+    int curId = item->text().toInt();
+
+    
+    if(curId >= initialId)
+      m_ui->m_tiePointsTableWidget->selectRow(i);
+  }
+}
+
 void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonClicked()
 {
   // creating the algorithm parameters
@@ -457,6 +473,9 @@ void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonCli
   }
 
   // Executing the algorithm
+
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   try
   {
     te::rp::TiePointsLocator algorithmInstance;
@@ -472,6 +491,8 @@ void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonCli
           TiePointData auxTpData;
           auxTpData.m_acqType = TiePointData::AutomaticAcquisitionT;
 
+          int initialId = m_tiePointIdCounter + 1;
+
           for(unsigned int tpIdx = 0; tpIdx < tpsNmb; ++tpIdx)
           {
             ++m_tiePointIdCounter;
@@ -480,14 +501,24 @@ void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonCli
           }
 
           tiePointsTableUpdate();
+
+          createSelection(initialId);
+        }
+        else
+        {
+          QMessageBox::warning(this, tr("Warning"), tr("None tie points was located."));
         }
       }
     }
   }
   catch(...)
   {
+    QApplication::restoreOverrideCursor();
+
     QMessageBox::warning(this, tr("Warning"), tr("Error locating tie points."));
   }
+
+  QApplication::restoreOverrideCursor();
 }
 
 void te::qt::widgets::TiePointLocatorWidget::onSelectAllToolButtonClicked()

@@ -49,11 +49,13 @@
 #include "../raster/RasterSummary.h"
 #include "../raster/RasterSummaryManager.h"
 #include "../raster/Utils.h"
+#include "../se/ChannelSelection.h"
 #include "../se/CoverageStyle.h"
 #include "../se/FeatureTypeStyle.h"
 #include "../se/Fill.h"
 #include "../se/ImageOutline.h"
 #include "../se/ParameterValue.h"
+#include "../se/SelectedChannel.h"
 #include "../se/Stroke.h"
 #include "../se/SvgParameter.h"
 #include "../se/RasterSymbolizer.h"
@@ -717,16 +719,11 @@ void te::map::DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::
 }
 
 te::rst::Raster* te::map::GetExtentRaster(te::rst::Raster* raster, int w, int h, const te::gm::Envelope& bbox, int bboxSRID,
-                         const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style)
+                         const te::gm::Envelope& visibleArea, int srid)
 {
   assert(raster);
   assert(bbox.isValid());
   assert(visibleArea.isValid());
-  assert(style);
-
-// build the grid canvas. i.e. a grid with canvas dimensions and requested mbr
-  te::gm::Envelope* gmbr = new te::gm::Envelope(visibleArea);
-  te::rst::Grid* gridCanvas = new te::rst::Grid(static_cast<unsigned int>(w), static_cast<unsigned int>(h), gmbr, srid);
 
   std::vector<te::rst::BandProperty*> bprops;
 
@@ -739,48 +736,12 @@ te::rst::Raster* te::map::GetExtentRaster(te::rst::Raster* raster, int w, int h,
     bprops.push_back(bp);
   }
 
+// build the grid canvas. i.e. a grid with canvas dimensions and requested mbr
+  te::gm::Envelope* gmbr = new te::gm::Envelope(visibleArea);
+  te::rst::Grid* gridCanvas = new te::rst::Grid(static_cast<unsigned int>(w), static_cast<unsigned int>(h), gmbr, srid);
+
 //build output raster
   te::rst::Raster* rasterOut = te::rst::RasterFactory::make("MEM", gridCanvas, bprops, std::map<std::string, std::string>());
-
-// create a raster transform
-  te::map::RasterTransform rasterTransform(raster, rasterOut);
-
-//check band data type
-  if(raster->getBandDataType(0) != te::dt::UCHAR_TYPE)
-  {
-    // raster min / max values
-    const te::rst::RasterSummary* rsMin = te::rst::RasterSummaryManager::getInstance().get(raster, te::rst::SUMMARY_MIN);
-    const te::rst::RasterSummary* rsMax = te::rst::RasterSummaryManager::getInstance().get(raster, te::rst::SUMMARY_MAX);
-    const std::complex<double>* cmin = rsMin->at(0).m_minVal;
-    const std::complex<double>* cmax = rsMax->at(0).m_maxVal;
-    double min = cmin->real();
-    double max = cmax->real();
-
-    // *** aqui temos a questão da variável global que diz se é para normalizar ou não os valores do raster ***
-    rasterTransform.setLinearTransfParameters(min, max, 0, 255);
-  }
-  else
-  {
-    rasterTransform.setLinearTransfParameters(0, 255, 0, 255);
-  }
-
-// get the raster symbolizer
-  std::size_t nRules = style->getRules().size();
-  assert(nRules >= 1);
-
-// for while, consider one rule
-  const te::se::Rule* rule = style->getRule(0);
-
-  const std::vector<te::se::Symbolizer*>& symbolizers = rule->getSymbolizers();
-  assert(!symbolizers.empty());
-
-// for while, consider one raster symbolizer
-  te::se::RasterSymbolizer* rasterSymbolizer = dynamic_cast<te::se::RasterSymbolizer*>(symbolizers[0]);
-  assert(rasterSymbolizer);
-
-// configure the raster transformation based on the raster symbolizer
-  te::map::RasterTransformConfigurer rtc(rasterSymbolizer, &rasterTransform);
-  rtc.configure();
 
 // verify if is necessary convert the raster to the given srid
   bool needRemap = false;
@@ -814,7 +775,11 @@ te::rst::Raster* te::map::GetExtentRaster(te::rst::Raster* raster, int w, int h,
 
       if((x >= 0 && x < (int)(raster->getNumberOfColumns())) &&
          (y >= 0 && y < (int)(raster->getNumberOfRows())))
-           rasterTransform.apply(x, y, c, r);
+      {
+        std::vector<double> values;
+        raster->getValues(x, y, values);
+        rasterOut->setValues(c, r, values);
+      }
     }
   }
 

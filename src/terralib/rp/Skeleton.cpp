@@ -918,7 +918,7 @@ namespace te
       const unsigned int threadsNumber = m_inputParameters.m_enableMultiThread ?
         te::common::GetPhysProcNumber() : 0;
       const unsigned int rowsPerThread = m_inputParameters.m_enableMultiThread ?
-        std::ceil( ((double)(nRows - 8 )) / ((double)threadsNumber) ) : nRows;
+        (const unsigned int)(std::ceil( ((double)(nRows - 8 )) / ((double)threadsNumber))) : nRows;
 
       unsigned int iteration = 0;
             
