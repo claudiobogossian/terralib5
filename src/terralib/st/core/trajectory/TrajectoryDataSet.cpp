@@ -37,7 +37,7 @@
 #include "Trajectory.h"
 #include "../observation/ObservationDataSet.h"
 #include "../observation/ObservationDataSetType.h"
-
+#include "../interpolator/NearestGeometryAtTimeInterp.h"
 
 te::st::TrajectoryDataSet::TrajectoryDataSet(te::da::DataSet* ds, int tPropIdx, int gPropIdx, 
                                              int idPropIdx, const std::string& id)
@@ -198,6 +198,11 @@ std::auto_ptr<te::st::Trajectory> te::st::TrajectoryDataSet::getTrajectory(te::s
     result->add(time.release(), geom.release());
   }
   return std::auto_ptr<te::st::Trajectory>(result);
+}
+
+std::auto_ptr<te::st::Trajectory> te::st::TrajectoryDataSet::getTrajectory()
+{
+  return getTrajectory(&NearestGeometryAtTimeInterp::getInstance()); 
 }
 
 te::st::TrajectoryDataSet::~TrajectoryDataSet()

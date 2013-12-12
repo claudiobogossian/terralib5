@@ -25,8 +25,10 @@ void PostGISExample()
     
 // create a data source using the data source factory
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
+
 // as we are going to use the data source, let´s set the connection info
     ds->setConnectionInfo(connInfo);
+
 // let's open it with the connection info above!
     ds->open();
 
@@ -40,10 +42,10 @@ void PostGISExample()
     std::auto_ptr<te::da::DataSourceTransactor> transactor = ds->getTransactor();
 
 // shows how to use a spatial filter
-    //RetrieveUsingSpatialFilter(ds.get());
+    RetrieveUsingSpatialFilter(ds.get());
 
 // shows several examples on how to retrieve the dataset extent
-    //DataSetGetExtent(transactor.get());
+    DataSetGetExtent(transactor.get());
 
 // it creates a DataSetType called 'our_country' using the schema 'public' in the given data source
     std::string dt_name = "public.our_country2";
@@ -78,12 +80,12 @@ void PostGISExample()
 // Now, let's  remove things from the data source using transactor
     // first, drop the recently added property
     std::cout << std::endl << "Droping Property population of " << dt_name <<" using transactor or ds"<< std::endl;
-    //(transactor.get())->dropProperty(datasetType->getName(), "population");
+    //(transactor.get())->dropProperty(datasetType->getName(), "population"); //not implemented yet
     DroppingDataSetTypeProperty(dt_name, "population",transactor.get()); 
     //or using ds
     //ds->dropProperty(dt_name, "population");
 
-    // finally, drop the dataset we have created above
+    // finally, drop the dataset we have created above via ds or via transactor
     std::cout << std::endl << "Droping dataSet " << dt_name << std::endl;
     //ds->dropDataSet(dt_name);
     //(transactor.get())->dropDataSet( datasetType->getName()); /Not implemented Yet

@@ -207,7 +207,10 @@ void te::qt::widgets::Info::getInfo(const te::map::AbstractLayerPtr& layer, cons
 
 void te::qt::widgets::Info::getGeometryInfo(QTreeWidgetItem* layerItem, te::da::DataSet* dataset, const te::gm::Envelope& e, int srid, bool needRemap)
 {
-  // The restriction point
+  // Generates a geometry from the given extent. It will be used to refine the results
+  std::auto_ptr<te::gm::Geometry> geometryFromEnvelope(te::gm::GetGeomFromEnvelope(&e, srid));
+
+  // The restriction point. It will be used to refine the results
   te::gm::Coord2D center = e.getCenter();
   te::gm::Point point(center.x, center.y, srid);
 
@@ -218,36 +221,36 @@ void te::qt::widgets::Info::getGeometryInfo(QTreeWidgetItem* layerItem, te::da::
   {
     std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gpos));
 
-    if(!g->contains(&point))
-      continue;
-
-    // Feature found! Building the list of property values...
-    for(std::size_t i = 0; i < dataset->getNumProperties(); ++i)
+    if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()))
     {
-      if(dataset->getPropertyDataType(i) == te::dt::RASTER_TYPE)
-        continue;
+      // Feature found! Building the list of property values...
+      for(std::size_t i = 0; i < dataset->getNumProperties(); ++i)
+      {
+        if(dataset->getPropertyDataType(i) == te::dt::RASTER_TYPE)
+          continue;
 
-      QTreeWidgetItem* propertyItem = new QTreeWidgetItem(layerItem);
-      propertyItem->setText(0, dataset->getPropertyName(i).c_str());
+        QTreeWidgetItem* propertyItem = new QTreeWidgetItem(layerItem);
+        propertyItem->setText(0, dataset->getPropertyName(i).c_str());
 
-      if(dataset->getPropertyDataType(i) == te::dt::GEOMETRY_TYPE)
-        propertyItem->setIcon(0, QIcon::fromTheme("geometry"));
+        if(dataset->getPropertyDataType(i) == te::dt::GEOMETRY_TYPE)
+          propertyItem->setIcon(0, QIcon::fromTheme("geometry"));
 
-      if(!dataset->isNull(i))
-        propertyItem->setText(1, dataset->getAsString(i, 3).c_str());
-      else
-        propertyItem->setText(1, "");
+        if(!dataset->isNull(i))
+          propertyItem->setText(1, dataset->getAsString(i, 3).c_str());
+        else
+          propertyItem->setText(1, "");
+      }
+
+      if(needRemap)
+      {
+        g->setSRID(srid);
+        g->transform(m_display->getSRID());
+      }
+
+      drawGeometry(g.get()); // to show feedback!
+
+      break;
     }
-
-    if(needRemap)
-    {
-      g->setSRID(srid);
-      g->transform(m_display->getSRID());
-    }
-
-    drawGeometry(g.get()); // to show feedback!
-
-    break;
   }
 }
 

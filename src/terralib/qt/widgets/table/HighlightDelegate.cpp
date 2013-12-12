@@ -93,6 +93,7 @@ QItemDelegate(parent),
 
 te::qt::widgets::HighlightDelegate::~HighlightDelegate()
 {
+  delete m_objs;
 }
 
 void te::qt::widgets::HighlightDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
@@ -132,7 +133,16 @@ void te::qt::widgets::HighlightDelegate::setDataSet(te::da::DataSet* dset)
 
 void te::qt::widgets::HighlightDelegate::setObjectIdSet(const te::da::ObjectIdSet* objs)
 {
-  m_objs = objs;
+  if(m_objs != 0)
+    delete m_objs;
+
+  if(objs == 0)
+  {
+    m_objs = 0;
+    return;
+  }
+
+  m_objs = objs->clone();
 
   m_oids = GetOidsAsString(objs);
 }

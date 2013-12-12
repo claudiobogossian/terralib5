@@ -85,12 +85,17 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title, Char
   m_ctrlPicker->setStateMachine(new QwtPickerClickPointMachine );
   m_ctrlPicker->setMousePattern(QwtEventPattern::MouseSelect1, Qt::LeftButton, Qt::ControlModifier);
 
+  m_shiftPicker = new QwtPlotPicker(this->canvas());
+  m_shiftPicker->setStateMachine(new QwtPickerClickPointMachine );
+  m_shiftPicker->setMousePattern(QwtEventPattern::MouseSelect1, Qt::LeftButton, Qt::ShiftModifier);
+
   //The default shape of the cursor is a stander arrow, may vary depending on the type of chart being drawn.
   //Can be updated using the set PickerStyle function.
   canvas()->setCursor( Qt::ArrowCursor);
 
   connect(m_ctrlPicker, SIGNAL(selected(const QPointF&)), SLOT(onPointPicked(const QPointF&)));
   connect(m_leftPicker, SIGNAL(selected(const QPointF&)), SLOT(onPointPicked(const QPointF&)));
+  connect(m_shiftPicker, SIGNAL(selected(const QPointF&)), SLOT(onPointPicked(const QPointF&)));
 }
 
 te::qt::widgets::ChartDisplay::~ChartDisplay()
@@ -100,6 +105,7 @@ te::qt::widgets::ChartDisplay::~ChartDisplay()
   delete m_grid;
   delete m_leftPicker;
   delete m_panner;
+  delete m_shiftPicker;
 }
 
 void te::qt::widgets::ChartDisplay::setPickerStyle(int chartType)
@@ -118,8 +124,13 @@ void te::qt::widgets::ChartDisplay::setPickerStyle(int chartType)
       m_ctrlPicker->setStateMachine(new QwtPickerDragRectMachine );
       m_ctrlPicker->setMousePattern(QwtEventPattern::MouseSelect1, Qt::LeftButton, Qt::ControlModifier);
 
+      m_shiftPicker = new QwtPlotPicker(this->canvas());
+      m_shiftPicker->setStateMachine(new QwtPickerClickPointMachine );
+      m_shiftPicker->setMousePattern(QwtEventPattern::MouseSelect1, Qt::LeftButton, Qt::ShiftModifier);
+
       connect(m_leftPicker, SIGNAL(selected(const QRectF&)), SLOT(onRectPicked(const QRectF&)));
       connect(m_ctrlPicker, SIGNAL(selected(const QRectF&)), SLOT(onRectPicked(const QRectF&)));
+      connect(m_shiftPicker, SIGNAL(selected(const QRectF&)), SLOT(onPointPicked(const QRectF&)));
 
       canvas()->setCursor(Qt::CrossCursor);
       break;
@@ -135,8 +146,13 @@ void te::qt::widgets::ChartDisplay::setPickerStyle(int chartType)
       m_ctrlPicker->setStateMachine(new QwtPickerClickPointMachine );
       m_ctrlPicker->setMousePattern(QwtEventPattern::MouseSelect1, Qt::LeftButton, Qt::ControlModifier);
 
+      m_shiftPicker = new QwtPlotPicker(this->canvas());
+      m_shiftPicker->setStateMachine(new QwtPickerClickPointMachine );
+      m_shiftPicker->setMousePattern(QwtEventPattern::MouseSelect1, Qt::LeftButton, Qt::ShiftModifier);
+
       connect(m_leftPicker, SIGNAL(selected(const QPointF&)), SLOT(onPointPicked(const QPointF&)));
       connect(m_ctrlPicker, SIGNAL(selected(const QPointF&)), SLOT(onPointPicked(const QPointF&)));
+      connect(m_shiftPicker, SIGNAL(selected(const QPointF&)), SLOT(onPointPicked(const QPointF&)));
       break;
   }
 }
@@ -236,14 +252,16 @@ void te::qt::widgets::ChartDisplay::onPointPicked(const QPointF &pos)
         emit selected(static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( pos), true);
       else
         emit selected(static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( pos), false);
+
       break;
     }
     else if( ( *it )->rtti() == te::qt::widgets::HISTOGRAM_CHART )
     {
-      if (QObject::sender() == m_ctrlPicker)
+      if (QObject::sender() == m_ctrlPicker || QObject::sender() == m_shiftPicker)
         emit selected(static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight( pos), true);
       else
         emit selected(static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight( pos), false);
+
       break;
     }
   }
@@ -259,12 +277,13 @@ void te::qt::widgets::ChartDisplay::onRectPicked(const QRectF &rect)
   {
   if ( ( *it )->rtti() == te::qt::widgets::SCATTER_CHART)
     {
-      if (QObject::sender() == m_ctrlPicker)
+      if (QObject::sender() == m_ctrlPicker || QObject::sender() == m_shiftPicker)
         emit selected(static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( rect), true);
       else
         emit selected(static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( rect), false);
+
+      break;
     }
-    break;
   }
   QApplication::restoreOverrideCursor();
 }

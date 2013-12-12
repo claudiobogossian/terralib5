@@ -285,14 +285,14 @@ std::auto_ptr<te::dt::ByteArray> terralib4::VectorDataSet::getByteArray(std::siz
 
 std::auto_ptr<te::gm::Geometry> terralib4::VectorDataSet::getGeometry(std::size_t i) const
 {
-  std::string val;
-  int ii = static_cast<int>(i);
-
   std::vector<TeGeometry*> geoms;
   m_instance.getGeometry(geoms);
 
+  std::auto_ptr<te::gm::Geometry> t5g(terralib4::GeomReader::getGeometry(*geoms[0]));
 
-  return terralib4::GeomReader::getGeometry(*geoms[0]);
+  t5g->setSRID(m_layer->projection()->epsgCode());
+
+  return t5g;
 }
 
 std::auto_ptr<te::rst::Raster> terralib4::VectorDataSet::getRaster(std::size_t i) const

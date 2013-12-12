@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/plugins/terralib4/TL4ConverterAction.h
 
-  \brief This file defines the Aggregation class
+  \brief  Manage the menu and action for TerraLib 4.x Converter Plugin.
 */
 
 #ifndef __TE_QT_PLUGINS_TERRALIB4_INTERNAL_TL4CONVERTERACTION_H
@@ -28,7 +28,11 @@
 
 // TerraLib
 #include "Config.h"
-#include "AbstractAction.h"
+
+// Qt
+#include <QtCore/QObject>
+#include <QtGui/QMenu>
+#include <QtGui/QAction>
 
 namespace te
 {
@@ -41,10 +45,10 @@ namespace te
         /*!
           \class TL4ConverterAction
 
-          \brief ????
+          \brief  Manage the menu and action for TerraLib 4.x Converter Plugin.
 
         */
-        class TL4ConverterAction : public te::qt::plugins::terralib4::AbstractAction
+        class TL4ConverterAction : public QObject
         {
           Q_OBJECT
 
@@ -52,11 +56,21 @@ namespace te
 
             TL4ConverterAction(QMenu* menu);
 
-            virtual ~TL4ConverterAction();
+            ~TL4ConverterAction();
+
+          protected:
+
+            void createAction(const std::string& name,
+                              const std::string& pixmap = std::string(""));
 
           protected slots:
 
             virtual void onActionActivated(bool checked);
+
+          protected:
+
+            QMenu* m_menu;        //!< Parent Menu.
+            QAction* m_action;    //!< Action used to call the process.
         };
 
       } // end namespace terralib4

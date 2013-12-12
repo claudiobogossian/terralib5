@@ -209,11 +209,11 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
     std::vector<std::string> pnames;
     te::da::GetOIDPropertyNames(schema.get(), pnames);
 
+    // Generates a geometry from the given extent. It will be used to refine the results
+    std::auto_ptr<te::gm::Geometry> geometryFromEnvelope(te::gm::GetGeomFromEnvelope(&reprojectedEnvelope, layer->getSRID()));
+
     if(m_selectionByPointing == false)
     {
-      // Generates a geometry from the given extent
-      std::auto_ptr<te::gm::Geometry> geometryFromEnvelope(te::gm::GetGeomFromEnvelope(&reprojectedEnvelope, layer->getSRID()));
-
       while(dataset->moveNext())
       {
         std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
@@ -227,7 +227,7 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
     }
     else
     {
-      // The restriction point
+      // The restriction point. It will be used to refine the results
       te::gm::Coord2D center = reprojectedEnvelope.getCenter();
       te::gm::Point point(center.x, center.y, layer->getSRID());
 
@@ -235,13 +235,12 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
       {
         std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
 
-        if(!g->contains(&point))
-          continue;
-
-        // Feature found!
-        oids->add(te::da::GenerateOID(dataset.get(), pnames));
-
-        break;
+        if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()))
+        {
+          // Feature found!
+          oids->add(te::da::GenerateOID(dataset.get(), pnames));
+          break;
+        }
       }
     }
 

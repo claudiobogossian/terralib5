@@ -51,8 +51,7 @@ te::stat::StatisticsDialog::StatisticsDialog(QWidget* parent, Qt::WindowFlags f)
 {
   m_ui->setupUi(this);
 
-  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
-  connect(m_ui->m_savePushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
+  connect(m_ui->m_savePushButton, SIGNAL(clicked()), this, SLOT(onSavePushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 
 }
@@ -219,14 +218,9 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
   m_ui->m_statTableWidget->resizeColumnToContents(0);
 }
 
-void te::stat::StatisticsDialog::onHelpPushButtonClicked()
+void te::stat::StatisticsDialog::onSavePushButtonClicked()
 {
-  QMessageBox::information(this, "Help", "Under development");
-}
-
-void te::stat::StatisticsDialog::onOkPushButtonClicked()
-{
-  QMessageBox::information(this, "Ok", "Under development - It should save the result...");
+  QMessageBox::information(this, "Save", "Under development - It should save the result...");
 }
 
 void te::stat::StatisticsDialog::onCancelPushButtonClicked()

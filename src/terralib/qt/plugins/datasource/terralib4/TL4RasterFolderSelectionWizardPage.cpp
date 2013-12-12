@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/plugins/terralib4/TL4RasterFolderSelectionWizardPage.cpp
 
-  \brief A Qt dialog for ....
+  \brief A wizard for enabling the location to save raster files from an input TerraLib 4.x database.
 */
 
 // TerraLib

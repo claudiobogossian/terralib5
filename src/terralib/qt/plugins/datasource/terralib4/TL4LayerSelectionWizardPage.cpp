@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/plugins/terralib4/TL4LayerSelectionWizardPage.cpp
 
-  \brief A Qt dialog for ....
+  \brief A wizard page for selecting the TerraLib 4.x.
 */
 
 // TerraLib
