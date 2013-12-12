@@ -196,6 +196,8 @@ te::rp::Contrast::InputParameters te::qt::widgets::ContrastWizardPage::getInputP
 
 void te::qt::widgets::ContrastWizardPage::apply()
 {
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   //get preview raster
   te::rst::Raster* inputRst = m_navigator->getExtentRaster();
 
@@ -232,6 +234,8 @@ void te::qt::widgets::ContrastWizardPage::apply()
   {
     QMessageBox::warning(this, tr("Warning"), tr("Constrast error."));
   }
+
+  QApplication::restoreOverrideCursor();
 
   //delete input raster dataset
   delete inputRst;

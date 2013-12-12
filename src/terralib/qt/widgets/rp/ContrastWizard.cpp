@@ -42,6 +42,7 @@
 #include <cassert>
 
 // Qt
+#include <QtGui/QApplication>
 #include <QtGui/QMessageBox>
 
 
@@ -162,6 +163,8 @@ bool te::qt::widgets::ContrastWizard::execute()
   algoOutputParams.m_createdOutRasterInfo = m_rasterInfoPage->getWidget()->getInfo();
   algoOutputParams.m_outRasterBands = algoInputParams.m_inRasterBands;
 
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   if(algorithmInstance.initialize(algoInputParams))
   {
     if(algorithmInstance.execute(algoOutputParams))
@@ -178,6 +181,9 @@ bool te::qt::widgets::ContrastWizard::execute()
     {
       QMessageBox::critical(this, tr("Contrast"), tr("Contrast enhencement execution error.") +
         ( " " + te::rp::Module::getLastLogStr() ).c_str());
+
+      QApplication::restoreOverrideCursor();
+
       return false;
     }
   }
@@ -185,7 +191,13 @@ bool te::qt::widgets::ContrastWizard::execute()
   {
     QMessageBox::critical(this, tr("Contrast"), tr("Contrast enhencement initialization error.") +
       ( " " + te::rp::Module::getLastLogStr() ).c_str() );
+
+    QApplication::restoreOverrideCursor();
+
     return false;
   }
+
+  QApplication::restoreOverrideCursor();
+
   return true;
 }
