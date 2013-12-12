@@ -71,6 +71,7 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
 //build form
   QGridLayout* displayLayout = new QGridLayout(m_ui->m_frame);
   m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(m_ui->m_frame->size(), m_ui->m_frame);
+  m_mapDisplay->setResizePolicy(te::qt::widgets::MapDisplay::Center);
   displayLayout->addWidget(m_mapDisplay);
   displayLayout->setContentsMargins(0,0,0,0);
 
@@ -448,7 +449,7 @@ void te::qt::widgets::RasterNavigatorWidget::onRecomposeClicked()
 
   m_mapDisplay->setExtent(env);
 
-  m_eyeBirdMapDisplay->recompose(env);
+  //m_eyeBirdMapDisplay->recompose(env);
 }
 
 void te::qt::widgets::RasterNavigatorWidget::onRedComboBoxActivated(int index)

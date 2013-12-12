@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>651</width>
-    <height>280</height>
+    <width>697</width>
+    <height>385</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -308,6 +308,12 @@
                   </item>
                   <item row="0" column="1">
                    <widget class="QComboBox" name="m_monoComboBox">
+                    <property name="minimumSize">
+                     <size>
+                      <width>45</width>
+                      <height>0</height>
+                     </size>
+                    </property>
                     <property name="maximumSize">
                      <size>
                       <width>45</width>
@@ -419,6 +425,12 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>500</width>
+             <height>320</height>
+            </size>
            </property>
            <property name="frameShape">
             <enum>QFrame::StyledPanel</enum>

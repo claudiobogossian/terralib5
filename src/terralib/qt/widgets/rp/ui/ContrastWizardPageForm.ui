@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>468</width>
-    <height>358</height>
+    <width>425</width>
+    <height>290</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -52,6 +52,12 @@
          <layout class="QGridLayout" name="gridLayout_24">
           <item row="0" column="0">
            <widget class="QTableWidget" name="m_bandTableWidget">
+            <property name="minimumSize">
+             <size>
+              <width>300</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="alternatingRowColors">
              <bool>false</bool>
             </property>
