@@ -47,13 +47,18 @@ std::auto_ptr<te::dt::AbstractData>
 te::st::NearestValueAtTimeInterp::estimate(const te::st::TimeSeries& ts, te::dt::DateTime* time) const
 {
   TimeSeriesObservationSet::const_iterator itlower, itupper, itbegin, itend;
-  const TimeSeriesObservationSet& cvObs = ts.getObservations();
+  const TimeSeriesObservationSet& tsObs = ts.getObservations();
 
   TimeSeriesObservation item(static_cast<te::dt::DateTime*>(time->clone()),0);
-  itlower = cvObs.lower_bound(item);
-  itupper = cvObs.upper_bound(item);
+  itlower = tsObs.lower_bound(item);
+  itupper = tsObs.upper_bound(item);
+
+  //If both iterator points to the same position (the first element after item), we have to get 
+  //the first element before item
+  if(itlower==itupper && itlower!=tsObs.begin())
+    --itlower;
   
-  if(itlower!=cvObs.end() && itupper!=cvObs.end())
+  if(itlower!=tsObs.end() && itupper!=tsObs.end())
   {
      long distLower = GetDistance(itlower->getTime(),time);
      long distUpper = GetDistance(itupper->getTime(),time);
@@ -63,7 +68,7 @@ te::st::NearestValueAtTimeInterp::estimate(const te::st::TimeSeries& ts, te::dt:
       return std::auto_ptr<te::dt::AbstractData>(itupper->getValue()->clone()); 
   }
   
-  if(itlower!=cvObs.end() && itupper==cvObs.end())
+  if(itlower!=tsObs.end() && itupper==tsObs.end())
     return std::auto_ptr<te::dt::AbstractData>(itlower->getValue()->clone());
   
   return std::auto_ptr<te::dt::AbstractData>(0);

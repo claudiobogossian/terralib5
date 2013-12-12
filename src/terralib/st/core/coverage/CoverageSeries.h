@@ -134,7 +134,7 @@ namespace te
           \param time A pointer to the time.
           \param cv   A coverage.
           
-          \note The caller will take the ownership of the given pointer.    
+          \note The caller will take the ownership of the given pointers.    
         */  
         void add(te::dt::DateTime* time, te::st::Coverage* cv);
 

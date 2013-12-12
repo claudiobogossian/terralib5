@@ -47,9 +47,15 @@ te::st::NearestGeometryAtTimeInterp::estimate( const Trajectory& tj,
 {
   TrajectoryObservationSet::const_iterator itlower, itupper, itbegin, itend;
   const TrajectoryObservationSet& tjObs = tj.getObservations();
-  te::dt::DateTimeShrPtr dtshr(time);
+  
+  te::dt::DateTimeShrPtr dtshr(static_cast<te::dt::DateTime*>(time->clone()));
   itlower = tjObs.lower_bound(dtshr);
   itupper = tjObs.upper_bound(dtshr);
+
+  //If both iterator points to the same position (the first element after dtshr), we have to get 
+  //the first element before dtshr
+  if(itlower==itupper && itlower!=tjObs.begin())
+    --itlower;
   
   if(itlower!=tjObs.end() && itupper!=tjObs.end())
   {

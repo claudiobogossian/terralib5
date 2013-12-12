@@ -76,6 +76,7 @@ namespace te
     class TrajectoryDataSetInfo;
     class TrajectoryDataSetType;
     class TrajectoryIterator;
+    struct TrajectoryPatch;
 
     //Loader
     class STDataLoader;
