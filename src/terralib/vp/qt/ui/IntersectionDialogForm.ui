@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>509</width>
-    <height>411</height>
+    <height>502</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,7 +44,7 @@
            </font>
           </property>
           <property name="text">
-           <string>The intersection operation can be applied to two or more layers</string>
+           <string>Computes a geometric intersection of the objects in two distinct layers</string>
           </property>
          </widget>
         </item>

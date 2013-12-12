@@ -354,28 +354,38 @@ void te::vp::BufferDialog::onHelpPushButtonClicked()
 
 void te::vp::BufferDialog::onOkPushButtonClicked()
 {
-  if(m_ui->m_layersComboBox->count() == 0)
+  if(m_ui->m_layersComboBox->currentText().isEmpty())
   {
-    QMessageBox::information(this, "Buffer", "Please, you must select a layer.");
-
+    QMessageBox::information(this, "Buffer", "Select an input layer.");
     return;
   }
-
+  
+  // Checking consistency of the input layer where the buffer will executed
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
-  std::auto_ptr<te::map::LayerSchema> dsType = dsLayer->getSchema();
-
-  if(!dsType->hasGeom())
+  if(!dsLayer)
   {
-    QMessageBox::information(this, "Buffer", "The selected layer do not have a geometry column!");
+    QMessageBox::information(this, "Buffer", "Can not execute this operation on this type of layer.");
     return;
   }
-
+  
+  te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
+  if (!inDataSource.get())
+  {
+    QMessageBox::information(this, "Buffer", "The selected input data source can not be accessed.");
+    return;
+  }
+  
+  // Check consistency of buffer parameters
   double fixedDistance;
-  std::string propDistance;
+  std::string propDistance = "";
   if(m_ui->m_fixedRadioButton->isChecked())
   {
     fixedDistance = m_ui->m_fixedDistanceLineEdit->text().toDouble();
-    propDistance = "";
+    if (fixedDistance <= 0)
+    {
+      QMessageBox::information(this, "Buffer", "Fixed distance value should be greater than 0.");
+      return;
+    }
   }
   else
   {
@@ -383,26 +393,26 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
     int i = m_ui->m_fromAttDistanceComboBox->currentIndex();
     propDistance = m_ui->m_fromAttDistanceComboBox->itemText(i).toStdString();
   }
+  
+  // Checking consistency of output paramenters
+  if(m_ui->m_repositoryLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, "Buffer", "Select a repository for the resulting layer.");
+    
+    return;
+  }
+  
+  if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, "Buffer", "Define a name for the resulting layer.");
+    return;
+  }
 
   int bufferPolygonRule = getPolygonRule();
   int bufferBoundariesRule = getBoundariesRule();
   bool copyInputColumns = m_ui->m_copyColumnsCheckBox->isChecked();
   int levels = m_ui->m_levelsNumComboBox->currentText().toInt();
   std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
-
-  if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
-  {
-    QMessageBox::information(this, "Buffer", "Set a name for the new Layer.");
-
-    return;
-  }
-
-  if(m_ui->m_repositoryLineEdit->text().isEmpty())
-  {
-    QMessageBox::information(this, "Buffer", "Set a repository for the new Layer.");
-
-    return;
-  }
   
   //progress
   te::qt::widgets::ProgressViewerDialog v(this);
@@ -410,21 +420,6 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
 
   try
   {
-    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
-    if(!dsLayer)
-    {
-      QMessageBox::information(this, "Buffer", "Error: Can not perform on this layer.");
-      return;
-    }
-
-    te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
-
-    if (!inDataSource.get())
-    {
-      QMessageBox::information(this, "Buffer", "Error: can not find the input datasource.");
-      return;
-    }
-
     bool res;
 
     if(m_toFile)
@@ -433,7 +428,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
 
       if(boost::filesystem::exists(uri))
       {
-        QMessageBox::information(this, "Buffer", "Output file already exists. Remove it and try again. ");
+        QMessageBox::information(this, "Buffer", "Output file already exists. Remove it or select a new name and try again.");
         return;
       }
 
@@ -450,7 +445,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
 
       if(dsOGR->dataSetExists(outputdataset))
       {
-        QMessageBox::information(this, "Buffer", "Error: there is already a dataset with the requested output name.");
+        QMessageBox::information(this, "Buffer", "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.");
         return;
       }
 
@@ -493,7 +488,17 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
     }
     else
     {
-      te::da::DataSourcePtr aux = te::da::DataSourceManager::getInstance().find(m_outputDatasource->getId());
+      te::da::DataSourcePtr aux = te::da::GetDataSource(m_outputDatasource->getId());
+      if (!aux)
+      {
+        QMessageBox::information(this, "Buffer", "The selected output datasource can not be accessed.");
+        return;
+      }
+      if (aux->dataSetExists(outputdataset))
+      {
+        QMessageBox::information(this, "Buffer", "Dataset already exists. Remove it or select a new name and try again. ");
+        return;
+      }
       this->setCursor(Qt::WaitCursor);
       res = te::vp::Buffer( dsLayer->getDataSetName(),
                             inDataSource.get(),
@@ -514,7 +519,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
     }
 
     // creating a layer for the result
-    te::da::DataSourcePtr outDataSource = te::da::DataSourceManager::getInstance().find(m_outputDatasource->getId());
+    te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
     
     te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
       
