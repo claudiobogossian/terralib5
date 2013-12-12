@@ -46,6 +46,7 @@
 #include <memory>
 
 // Qt
+#include <QtGui/QApplication>
 #include <QtGui/QMessageBox>
 
 
@@ -196,6 +197,8 @@ bool te::qt::widgets::RegisterWizard::execute()
   algoOutputParams.m_rType = m_rasterInfoPage->getWidget()->getType();
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();
 
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   try
   {
     te::rp::Register algorithmInstance;
@@ -204,6 +207,9 @@ bool te::qt::widgets::RegisterWizard::execute()
     {
       QMessageBox::warning(this, tr("Register"), tr("Algorithm initialization error.") +
         ( " " + te::rp::Module::getLastLogStr() ).c_str());
+
+      QApplication::restoreOverrideCursor();
+
       return false;
     }
     
@@ -211,6 +217,9 @@ bool te::qt::widgets::RegisterWizard::execute()
     {
       QMessageBox::warning(this, tr("Register"), tr("Register Error.") +
         ( " " + te::rp::Module::getLastLogStr() ).c_str());
+
+      QApplication::restoreOverrideCursor();
+
       return false;
     }
     else
@@ -227,13 +236,21 @@ bool te::qt::widgets::RegisterWizard::execute()
   catch(const std::exception& e)
   {
     QMessageBox::warning(this, tr("Register"), e.what());
+
+    QApplication::restoreOverrideCursor();
+
     return false;
   }
   catch(...)
   {
     QMessageBox::warning(this, tr("Register"), tr("An exception has occuried!"));
+
+    QApplication::restoreOverrideCursor();
+
     return false;
   }
+
+  QApplication::restoreOverrideCursor();
 
   return true;
 }

@@ -456,9 +456,10 @@ bool te::ado::Transactor::propertyExists(const std::string& datasetName, const s
 
 void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Property* p)
 {
-  std::string name = p->getName();
-  if(propertyExists(datasetName, name))
-    throw Exception((boost::format(TR_ADO("The dataset already \"%1%\" has a property with this name \"%2%\"!")) % datasetName % name).str());
+  const std::string& propertyName = p->getName();
+
+  if(propertyExists(datasetName, propertyName))
+    throw Exception((boost::format(TR_ADO("The dataset already \"%1%\" has a property with this name \"%2%\"!")) % datasetName % propertyName).str());
 
   ADOX::_CatalogPtr pCatalog = 0;
   ADOX::_TablePtr pTable = 0;
@@ -471,15 +472,15 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
 
     pTable = pCatalog->Tables->GetItem(datasetName.c_str());
 
-    int pType = p->getType();
-
     ADOX::_ColumnPtr newColumn = 0;
     TESTHR(newColumn.CreateInstance(__uuidof(ADOX::Column)));
 
-    newColumn->Name = name.c_str();
-    newColumn->Type = te::ado::Convert2Ado(pType);
+    newColumn->PutName(propertyName.c_str());
+    newColumn->PutType(te::ado::Convert2Ado(p->getType()));
 
-    switch(pType)
+    ADOX::DataTypeEnum ado_type = te::ado::Convert2Ado(p->getType());
+
+    switch(p->getType())
     {
       case te::dt::CHAR_TYPE:
       case te::dt::UCHAR_TYPE:
@@ -493,40 +494,32 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
       case te::dt::ARRAY_TYPE:
       case te::dt::DATETIME_TYPE:
       case te::dt::NUMERIC_TYPE:
+      case te::dt::GEOMETRY_TYPE:
       {
         const te::dt::SimpleProperty* simple = static_cast<const te::dt::SimpleProperty*>(p);
 
         if(!simple->isRequired())
-          newColumn->Attributes = ADOX::adColNullable;
+          newColumn->PutAttributes(ADOX::adColNullable);
 
-        pTable->Columns->Append(newColumn->Name, newColumn->Type, newColumn->DefinedSize);
-
-        break;
-      }
-
-      case te::dt::GEOMETRY_TYPE:
-      {
-        const te::gm::GeometryProperty* gp = static_cast<te::gm::GeometryProperty*>(p);
-
-        if(!gp->isRequired())
-          newColumn->Attributes = ADOX::adColNullable;
-
-        pTable->Columns->Append(newColumn->Name, newColumn->Type, newColumn->DefinedSize);
+        pTable->Columns->Append(_variant_t ((IDispatch*)newColumn), ado_type, 0);
 
         break;
       }
-
       case te::dt::STRING_TYPE:
       {
         const te::dt::StringProperty* sp = static_cast<const te::dt::StringProperty*>(p);
 
+        long ssize = 0;
+
         if(sp->size() != 0)
-          newColumn->DefinedSize = (long)sp->size();
+          ssize = sp->size();
+
+        newColumn->DefinedSize = ssize;
 
         if(!sp->isRequired())
-          newColumn->Attributes = ADOX::adColNullable;
+          newColumn->PutAttributes(ADOX::adColNullable);
 
-        pTable->Columns->Append(newColumn->Name, newColumn->Type, newColumn->DefinedSize);
+        pTable->Columns->Append(_variant_t ((IDispatch*)newColumn), ado_type, ssize);
 
         break;
       }
@@ -1209,11 +1202,12 @@ void te::ado::Transactor::add(const std::string& datasetName,
         int pType = d->getPropertyDataType(i);
 
         if(d->isNull(i))
-        {
-          _variant_t var;
-          var.ChangeType(VT_NULL, NULL);
-          recset->GetFields()->GetItem(pname.c_str())->PutValue(var);
-        }
+          continue;
+        //{
+        //  _variant_t var;
+        //  var.ChangeType(VT_NULL, NULL);
+        //  recset->GetFields()->GetItem(pname.c_str())->PutValue(var);
+        //}
         
 
         switch(pType)

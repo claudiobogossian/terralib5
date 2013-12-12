@@ -232,6 +232,8 @@ void te::qt::widgets::SegmenterWizardPage::onStrategyTypeComboBoxActivated(int i
 
 void te::qt::widgets::SegmenterWizardPage::apply()
 {
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
 //get preview raster
   te::rst::Raster* inputRst = m_navigator->getExtentRaster();
 
@@ -239,6 +241,8 @@ void te::qt::widgets::SegmenterWizardPage::apply()
   te::rp::Segmenter::InputParameters algoInputParams = getInputParams();
 
   algoInputParams.m_inputRasterPtr = inputRst;
+  algoInputParams.m_enableBlockProcessing = false;
+  algoInputParams.m_enableBlockMerging = false;
 
   te::rp::Segmenter::OutputParameters algoOutputParams;
 
@@ -270,6 +274,8 @@ void te::qt::widgets::SegmenterWizardPage::apply()
   {
     QMessageBox::warning(this, tr("Warning"), tr("Constrast error."));
   }
+
+  QApplication::restoreOverrideCursor();
 
   //delete input raster dataset
   delete inputRst;

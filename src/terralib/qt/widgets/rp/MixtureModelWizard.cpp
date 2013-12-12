@@ -42,6 +42,7 @@
 #include <cassert>
 
 // Qt
+#include <QtGui/QApplication>
 #include <QtGui/QMessageBox>
 
 //STL
@@ -163,6 +164,8 @@ bool te::qt::widgets::MixtureModelWizard::execute()
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();
   algoOutputParams.m_rType = m_rasterInfoPage->getWidget()->getType();
 
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   if(algorithmInstance.initialize(algoInputParams))
   {
     if(algorithmInstance.execute(algoOutputParams))
@@ -178,6 +181,9 @@ bool te::qt::widgets::MixtureModelWizard::execute()
     {
       QMessageBox::critical(this, tr("Mixture Model"), tr("Mixture Model execution error.") +
         ( " " + te::rp::Module::getLastLogStr() ).c_str() );
+
+      QApplication::restoreOverrideCursor();
+
       return false;
     }
   }
@@ -185,8 +191,13 @@ bool te::qt::widgets::MixtureModelWizard::execute()
   {
     QMessageBox::critical(this, tr("Mixture Model"), tr( "Mixture Model initialization error." ) +
       ( " " + te::rp::Module::getLastLogStr() ).c_str() );
+
+    QApplication::restoreOverrideCursor();
+
     return false;
   }
+
+  QApplication::restoreOverrideCursor();
 
   return true;
 }

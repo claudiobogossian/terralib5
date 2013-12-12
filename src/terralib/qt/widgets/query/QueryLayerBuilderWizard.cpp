@@ -141,7 +141,12 @@ bool te::qt::widgets::QueryLayerBuilderWizard::validateCurrentPage()
   }
   else if(currentPage() ==  m_layerAttrPage.get())
   {
-    return m_layerAttrPage->isComplete();
+    bool res = m_layerAttrPage->isComplete();
+
+    if(!res)
+      QMessageBox::warning(this, tr("Warning"), tr("Layer name not defined."));
+
+    return res;
   }
 
   return false;
