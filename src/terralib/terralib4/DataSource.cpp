@@ -83,7 +83,10 @@ void terralib4::DataSource::open()
                                                           password, portNumber);
 
   if(!m_db->isConnected())
-     m_db->connect(hostName, userName, password, auxDbName, portNumber);
+  {
+    if(!m_db->connect(hostName, userName, password, auxDbName, portNumber))
+      throw te::da::Exception(TR_TERRALIB4("Could not connect to informed database!"));
+  }
 
   string DBver;
   if(needUpdateDB(m_db, DBver))

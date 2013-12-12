@@ -70,6 +70,17 @@ std::vector<std::string> te::qt::plugins::terralib4::TL4LayerSelectionWizardPage
   return checked;
 }
 
+bool te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::hasChecked() const
+{
+  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  {
+    if(m_ui->m_layersListWidget->item(i)->checkState() == Qt::Checked)
+      return true;
+  }
+
+  return false;
+}
+
 void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::onSelectAllPushButtonClicked()
 {
   for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
