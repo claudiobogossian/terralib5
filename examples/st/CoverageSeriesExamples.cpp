@@ -15,40 +15,40 @@ void CoverageSeriesExamples()
 {
   try
   {  
-    //Indicates the data source
-    te::da::DataSourceInfo dsinfo;
+    //Load coverage series from a set of geotif files
+    std::auto_ptr<te::st::CoverageSeries> cvs = LoadCoverageSeriesFromGeotif();
+
+    //Print coverage series info
+    PrintCoverageSeriesInfo(cvs.get());
+
+    //Extract time series from coverage series 
+    
+    //Load the centroide of the Angra city -> from a shapefile with the Angra city
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/geotif/geotif" ; 
-    dsinfo.setConnInfo(connInfo);
-    dsinfo.setType("GDAL");
+    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/st/coverage/angra_city.shp" ; 
+    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR"));
+    ds->setConnectionInfo(connInfo); 
+    ds->open();
     
-    //Indicates the raster file names and their associated times
-	  te::st::RasterCoverageSeriesDataSetInfo cvsinfo;
-	
-    te::dt::TimeInstant* time1 = new te::dt::TimeInstant(te::dt::Date(2009,12,31), te::dt::TimeDuration(0,0,0));
-    te::st::RasterCoverageDataSetInfo infoRaster1(dsinfo, "hidro_3_20091231000000.tif", 0, time1);
-    cvsinfo.push_back(infoRaster1);
-
-    te::dt::TimeInstant* time2 = new te::dt::TimeInstant(te::dt::Date(2009,12,31), te::dt::TimeDuration(1,0,0));
-    te::st::RasterCoverageDataSetInfo infoRaster2(dsinfo, "hidro_3_20091231010000.tif", 0, time2);
-    cvsinfo.push_back(infoRaster2);
-
-    te::dt::TimeInstant* time3 = new te::dt::TimeInstant(te::dt::Date(2009,12,31), te::dt::TimeDuration(2,0,0));
-    te::st::RasterCoverageDataSetInfo infoRaster3(dsinfo, "hidro_3_20091231020000.tif", 0, time3);
-    cvsinfo.push_back(infoRaster3);
-	
-	  //Use the STDataLoader to create a CoverageSeries
-    std::auto_ptr<te::st::CoverageSeries> cvs = te::st::STDataLoader::getCoverageSeries(cvsinfo);
+    std::auto_ptr<te::da::DataSet> dSet = ds->getDataSet("angra_city"); 
+    std::auto_ptr<te::gm::Geometry> geom; 
     
-    //Generate a time series
-    double sedeAngraLat = -23.007; 
-    double sedeAngraLong = -44.318;
-    te::gm::Point sedeAngra(sedeAngraLong, sedeAngraLat);
+    if(dSet->moveNext())
+    {
+      std::size_t geomPos = te::da::GetFirstPropertyPos(dSet.get(), te::dt::GEOMETRY_TYPE);
+      geom = dSet->getGeometry(geomPos);
+      
+      //Centroid operation is not implemented! 
+      //We will use the center point of the MBR of the Angra geometry  
+      const te::gm::Envelope* env = geom->getMBR(); 
+      te::gm::Coord2D coord = env->getCenter();
+      te::gm::Point point(coord.x, coord.y);
 
-    std::auto_ptr<te::st::TimeSeries> ts = cvs->getTimeSeries(sedeAngra);
+      std::auto_ptr<te::st::TimeSeries> result = cvs->getTimeSeries(point);
 
-    //Print the result time series
-    PrintTimeSeries(ts.get());
+      //Print the result time series
+      PrintTimeSeries(result.get());
+    }
   }
   catch(const std::exception& e)
   {
