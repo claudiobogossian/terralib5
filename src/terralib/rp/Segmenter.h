@@ -249,19 +249,27 @@ namespace te
           process.
           \param totalImageLines The total original full image lines.
           \param totalImageCols The total original full image columns.
-          \param minBlockPixels The minimun allowed pixels number for each block.
-          \param maxBlockPixels The maximum allowed pixels number for each block.
-          \param blocksHOverlapSize The blocks horizontal overlap size.
-          \param blocksVOverlapSize The blocks vertical overlap size.
-          \param blockWidth The calculated block width.
-          \param blockHeight The calculated block height.
+          \param minBlockPixels The minimun allowed pixels number for each block (expanded block).
+          \param maxBlockPixels The maximum allowed pixels number for each block (expanded block).
+          \param blocksHOverlapSizePercent The blocks horizontal overlap size percentual related to the non-expanded block horizontal size - valid range[0,1].
+          \param blocksVOverlapSizePectent The blocks vertical overlap size percentual related to the non-expanded block vertial size - valid range[0,1].
+          \param blockWidth The calculated block width (non-expanded block).
+          \param blockHeight The calculated block height (non-expanded block).
+          \param blocksHOverlapSize The calculated block horizontal overlap size.
+          \param blocksVOverlapSize The calculated block vertical overlap size.
           \return true if OK, false on errors.
         */                
-        bool calcBestBlockSize( const unsigned int totalImageLines, 
-          const unsigned int totalImageCols, const unsigned int minBlockPixels,
-          const unsigned int maxBlockPixels, const unsigned int blocksHOverlapSize,
-          const unsigned int blocksVOverlapSize, unsigned int& blockWidth,
-          unsigned int& blockHeight ) const;        
+        bool calcBestBlockSize( 
+          const unsigned int totalImageLines, 
+          const unsigned int totalImageCols, 
+          const unsigned int minBlockPixels,
+          const unsigned int maxBlockPixels, 
+          const double blocksHOverlapSizePercent,
+          const double blocksVOverlapSizePectent, 
+          unsigned int& blockWidth,
+          unsigned int& blockHeight,
+          unsigned int& blocksHOverlapSize,
+          unsigned int& blocksVOverlapSize ) const;        
           
         /*! 
           \brief Segmenter thread entry.

@@ -1077,9 +1077,9 @@ namespace te
     {
       TERP_TRUE_OR_THROW( m_isInitialized, "Instance not initialized" );
       
-      // Test case: 1505000 pixels image
-      // case1: one band
-      // case2: ten bands      
+      // Test case: 6768 x 67923 = 45968256 pixels image
+      // case1: 1 band
+      // case2: 3 bands      
       
       double minM = 0;
       double maxM = 0;
@@ -1088,14 +1088,14 @@ namespace te
       {
         case Parameters::MeanFeaturesType :
         {
-          minM = 556.7;
-          maxM = 648.6;
+          minM = 17009.0; // MB
+          maxM = 17711.0; // MB
           break;
         }
         case Parameters::BaatzFeaturesType :
         {
-          minM = 763.4;
-          maxM = 1039.0;
+          minM = 23629.4; // MB
+          maxM = 24597.0; // MB
           break;
         }
         default :
@@ -1105,21 +1105,21 @@ namespace te
         }
       } 
       
-      if( bandsToProcess == 10 )
+      if( bandsToProcess == 3 )
       {
         return maxM;
       }
       else
       {
         double dM = ( maxM - minM );
-        double slope = dM / ( 10.0 - ((double)bandsToProcess) );
+        double slope = dM / ( 3.0 - ((double)bandsToProcess) );
         
         return (
                  ( ((double)bandsToProcess) * slope ) + minM
                )
                *
                (
-                 ((double)pixelsNumber) / 1505000.0 
+                 ((double)pixelsNumber) / 45968256.0 
                )
                *
                (
