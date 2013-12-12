@@ -1,9 +1,21 @@
-          TerraLib 5 - TerraLib 4.X Data Access Driver
-          ============================================
+     TerraLib 5 - TerraLib 4.X Data Access Driver
+     ============================================
 
 This folder contains an implementation of the new TerraLib 5
-Data Access classes for the old TerraLib 4.X. It can acccess
-spatial data in a TerraLib 4.X database format.
+Data Access classes for the TerraLib 4.x series. It can acccess
+spatial data in a TerraLib 4.x database format.
+
+General Warnings:
+-----------------
+
+1. The vector dataset of this driver relies on 
+   TerraLib 4.x TeQuerier API.
+
+2. Missing values (or NULL) for string are not converted
+   properly. It turns to a blank string on TerraLib 5.
+
+3. Raster layers are converted to TIFF files
+   in the file system.
 
 Driver Dependencies:
 --------------------

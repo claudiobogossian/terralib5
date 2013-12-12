@@ -109,7 +109,6 @@ int main(int /*argc*/, char** /*argv*/)
 //    PrintDataSourceEncodings(dsType, connInfo);
 //
 //    // Connection to a data source
-//    //te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");
 //    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
 //
 //    // Open the data source using the connection info above
@@ -135,21 +134,23 @@ int main(int /*argc*/, char** /*argv*/)
 
     GDALExample();  //ok
 
-    ObjectId3(); //ok mas cai no ultimo...
+    ObjectId(); //ok
+
+    ObjectId_query(); //using builselector and query
 
     QueryExample_2(); //ok
 
-    MemoryExample(); //Ok-cai no add (chamando o copy)
+    MemoryExample(); //Ok
 
-    //ExportingOGR();  //ok
+    ExportingOGR();  //ok
 
-    //OGRExampleRead(); //ok
+    OGRExampleRead(); //ok
 
-    //ORGExampleWrite();
+    ORGExampleWrite(); //ok
+
+    CopyingData(); //ok
 
     //////QueryExample(); //??? tem codigo comentado - cai...
-
-    //CopyingData();
 
     ////////PersistenceExample();
 

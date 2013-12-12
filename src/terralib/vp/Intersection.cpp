@@ -1,5 +1,4 @@
-
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,12 +28,12 @@
 #include "../common/progress/TaskProgress.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceInfo.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/dataset/DataSetTypeConverter.h"
-
 #include "../dataaccess/query_h.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
@@ -309,12 +308,14 @@ te::da::DataSetType* CreateDataSetType(std::string newName,
                                       std::vector<te::dt::Property*> secondProps)
 {
   te::da::DataSetType* outputDt = new te::da::DataSetType(newName);
+  
+  
 
-  te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(newName + "_pk", te::dt::INT32_TYPE);
+  te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(newName + "_id", te::dt::INT32_TYPE);
   pkProperty->setAutoNumber(true);
   outputDt->add(pkProperty);
-
-  te::da::PrimaryKey* pk = new te::da::PrimaryKey("id_pk", outputDt);
+  
+  te::da::PrimaryKey* pk = new te::da::PrimaryKey(newName + "_pk", outputDt);
   pk->add(pkProperty);
   outputDt->setPrimaryKey(pk);
 
@@ -464,8 +465,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::stri
       }
       else
       {
-        //Emitir uma msg para o usuário dizendo que há geometrias invalidas, se ele deseja continuar mesmo assim!
-        std::cout << "GEOMETRIA INVALIDA!\n";
+        continue;
       }
 
       for(size_t j = 0; j < firstMember.props.size(); ++j)
@@ -491,7 +491,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::stri
         item->setValue(name, ad);
       }
 
-      item->setInt32(newName + "_pk", pk);
+      item->setInt32(newName + "_id", pk);
       ++pk;
 
       outputDs->moveNext();
@@ -551,14 +551,14 @@ te::da::DataSet* UpdateGeometryType(te::da::DataSetType* dsType, te::da::DataSet
     std::string propName;
     te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(dsMem);
 
-    for(int i=0; i<props.size(); ++i)
+    for(std::size_t i = 0; i < props.size(); ++i)
     {
       type = props[i]->getType();
       propName = props[i]->getName();
 
       if(type != te::dt::GEOMETRY_TYPE)
       {
-        if(propName == dsType->getName() + "_pk")
+        if(propName == dsType->getName() + "_id")
         {
           dsItem->setInt32(i, pk);
         }

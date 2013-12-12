@@ -299,8 +299,47 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
 
   TeTable table = tables[0];
 
-  std::auto_ptr<te::da::DataSetType> dst(terralib4::Convert2T5(table));
-  dst->setTitle(layer->name());
+  std::auto_ptr<te::da::DataSetType> mainDst(terralib4::Convert2T5(table));
+  mainDst->setTitle(layer->name());
+
+  std::vector<std::string> pkey;
+  table.primaryKeys(pkey);
+
+  te::da::PrimaryKey* pk = 0;
+
+  if(!pkey.empty())
+  {
+    pk = new te::da::PrimaryKey(table.name() + "_pk", mainDst.get());
+
+    std::vector<te::dt::Property*> pkProps;
+    for(std::size_t i = 0; i < pkey.size(); ++i)
+    {
+      te::dt::Property* p = mainDst->getProperty(pkey[i]);
+      pkProps.push_back(p);
+    }
+
+    pk->setProperties(pkProps);
+  }
+
+  if(tables.size() > 1)
+  {
+    for(std::size_t i = 1; i < tables.size(); ++i)
+    {
+      TeTable table = tables[i];
+
+      std::auto_ptr<te::da::DataSetType> dst(terralib4::Convert2T5(table));
+
+      std::vector<te::dt::Property*> props = dst->getProperties();
+
+      for(std::size_t j = 0; j < props.size(); ++j)
+      {
+        te::dt::Property* prop = props[j]->clone();
+        prop->setName(dst->getName() + "_" + prop->getName());
+
+        mainDst->add(prop);
+      }
+    }
+  }
 
   TeRepresPointerVector vec = layer->vectRepres();
 
@@ -310,28 +349,10 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
 
     te::gm::GeometryProperty* geomProp = new te::gm::GeometryProperty("spatial_data", 
       layer->projection()->epsgCode(), terralib4::Convert2T5GeomType(geomRep));
-    dst->add(geomProp);
+    mainDst->add(geomProp);
   }
 
-  std::vector<std::string> pkey;
-  table.primaryKeys(pkey);
-
-  te::da::PrimaryKey* pk = 0;
-  if(!pkey.empty())
-  {
-    pk = new te::da::PrimaryKey(table.name()+"_pk", dst.get());
-
-    std::vector<te::dt::Property*> pkProps;
-    for(std::size_t i = 0; i < pkey.size(); ++i)
-    {
-      te::dt::Property* p = dst->getProperty(pkey[i]);
-      pkProps.push_back(p);
-    }
-
-    pk->setProperties(pkProps);
-  }
-
-  return dst;
+  return mainDst;
 }
 
 boost::ptr_vector<te::dt::Property> terralib4::Transactor::getProperties(const std::string& datasetName)

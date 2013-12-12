@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/plugins/terralib4/TL4LayerSelectionWizardPage.cpp
 
-  \brief A Qt dialog for ....
+  \brief A wizard page for selecting the TerraLib 4.x.
 */
 
 // TerraLib
@@ -61,7 +61,7 @@ void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setDatasets(std::v
 std::vector<std::string> te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::getChecked()
 {
   std::vector<std::string> checked;
-  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
   {
     if(m_ui->m_layersListWidget->item(i)->checkState() == Qt::Checked)
       checked.push_back(m_ui->m_layersListWidget->item(i)->text().toStdString());
@@ -72,7 +72,7 @@ std::vector<std::string> te::qt::plugins::terralib4::TL4LayerSelectionWizardPage
 
 void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::onSelectAllPushButtonClicked()
 {
-  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
   {
     Qt::CheckState state = m_ui->m_layersListWidget->item(i)->checkState();
     if(state != Qt::Checked)
@@ -82,7 +82,7 @@ void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::onSelectAllPushBut
 
 void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::onDeselectAllPushButtonClicked()
 {
-  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
   {
     Qt::CheckState state = m_ui->m_layersListWidget->item(i)->checkState();
     if(state == Qt::Checked)

@@ -48,7 +48,11 @@ class TsGrid : public CPPUNIT_NS::TestFixture
   
   CPPUNIT_TEST(tcGridConstructor1 );
   
+  CPPUNIT_TEST(tcGridConstructor1NoEnv );
+  
   CPPUNIT_TEST(tcGridConstructor2 );
+  
+  CPPUNIT_TEST(tcGridConstructor2NoUlc );
 
   CPPUNIT_TEST(tcGridConstructor3 );
 
@@ -59,8 +63,12 @@ class TsGrid : public CPPUNIT_NS::TestFixture
   protected :
     
     void tcGridConstructor1();
+    
+    void tcGridConstructor1NoEnv();
 
     void tcGridConstructor2();
+    
+    void tcGridConstructor2NoUlc();
     
     void tcGridConstructor3();
 

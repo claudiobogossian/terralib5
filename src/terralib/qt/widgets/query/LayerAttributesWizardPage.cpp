@@ -36,6 +36,8 @@ te::qt::widgets::LayerAttributesWizardPage::LayerAttributesWizardPage(QWidget* p
   //configure page
   this->setTitle(tr("Layer Attributes"));
   this->setSubTitle(tr("Used to define all layer attributes."));
+
+  connect(m_ui->m_layerNameLineEdit, SIGNAL(textChanged(QString)), SLOT(layerNameChanged(QString)));
 }
 
 te::qt::widgets::LayerAttributesWizardPage::~LayerAttributesWizardPage()
@@ -44,6 +46,9 @@ te::qt::widgets::LayerAttributesWizardPage::~LayerAttributesWizardPage()
 
 bool te::qt::widgets::LayerAttributesWizardPage::isComplete() const
 {
+  if(m_ui->m_layerNameLineEdit->text().isEmpty())
+    return false;
+
   return true;
 }
 
@@ -57,4 +62,9 @@ std::string te::qt::widgets::LayerAttributesWizardPage::getLayerName()
   }
 
   return name;
+}
+
+void te::qt::widgets::LayerAttributesWizardPage::layerNameChanged(QString)
+{
+  emit completeChanged();
 }

@@ -12,11 +12,6 @@ void DroppingDataSetTypeProperty(const std::string& datasetname, const std::stri
 {
   try
   {  
-    //te::da::DataSetTypePersistence* dtPersistence = trans->getDataSetTypePersistence();
-
-    //dtPersistence->drop(prop);
-
-    //delete dtPersistence;
     trans->dropProperty(datasetname, propname);
     return;
   }

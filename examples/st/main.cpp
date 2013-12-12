@@ -55,9 +55,11 @@ int main(int /*argc*/, char** /*argv*/)
     //Initialize STDataLoader support
     te::st::STDataLoader::initialize();
     
-    //CoverageSeriesExamples();
-
-    TrajectoryExamplesFromKML();
+    //Examples of trajectories
+	  //TrajectoryExamples();
+		
+    //Examples of coverage series
+	  CoverageSeriesExamples();
 
     //Finalize STDataLoader support
     te::st::STDataLoader::finalize();

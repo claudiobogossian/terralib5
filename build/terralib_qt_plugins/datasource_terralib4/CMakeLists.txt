@@ -30,7 +30,6 @@ endif()
 # Select the header files for moc'ing
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/AbstractAction.h
   ${SRCDIR}/TL4ConverterAction.h
   ${SRCDIR}/TL4ConnectorWizardPage.h
   ${SRCDIR}/TL4ConverterWizard.h

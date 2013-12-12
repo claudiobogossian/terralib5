@@ -140,11 +140,13 @@ namespace terralib4
 
     protected:
 
+      te::da::DataSetType* m_dt;
       TeQuerier* m_querier;
       mutable TeSTInstance m_instance;
       int m_i;
       int m_size;
       int m_nCols;
+      int m_geomCol;
       bool m_hasGeometry;
       TeLayer* m_layer;
   };

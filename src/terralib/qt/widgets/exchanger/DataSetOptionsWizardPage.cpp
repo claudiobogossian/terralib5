@@ -125,9 +125,16 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
     QListWidgetItem* item = new QListWidgetItem(title);
 
     m_ui->m_selectedDatasetListWidget->addItem(item);
+
+    if(datasets.size() == 1)
+    {
+      item->setSelected(true);
+      datasetPressed(item);
+    }
   }
 
-  setControlsEnabled(false);
+  if(datasets.size() != 1)
+    setControlsEnabled(false);
 }
 
 const std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>& te::qt::widgets::DataSetOptionsWizardPage::getDatasets() const

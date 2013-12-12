@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/plugins/terralib5/TL4ConverterWizard.h
 
-  \brief ????
+  \brief A wizard for guiding the conversion of a TerraLib 4.x database to a OGC SFS compliant format or any other format known by OGR and GDAL.
 */
 
 #ifndef __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4CONVERTERWIZARD_H
@@ -31,7 +31,9 @@
 #include "Config.h"
 
 // STL
+#include <map>
 #include <memory>
+#include <string>
 
 // Qt
 #include <QtGui/QWizard>
@@ -99,6 +101,9 @@ namespace te
               PAGE_FINALPAGE
             };
 
+            std::map<std::string, std::string> m_datasetFinalNames;
+            std::vector<std::string> successfulVectorDatasets;
+            std::vector<std::string> successfulRasterDatasets;
             std::string m_rasterFolderPath;
             std::auto_ptr<te::da::DataSource> m_tl4Database;
             te::da::DataSourceInfoPtr m_targetDataSource;

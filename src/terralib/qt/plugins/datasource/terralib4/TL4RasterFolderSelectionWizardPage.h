@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/plugins/TL4RasterFolderSelectionWizardPage.h
 
-  \brief ????
+  \brief A wizard for enabling the location to save raster files from an input TerraLib 4.x database.
 */
 
 #ifndef __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4RASTERFOLDERSELECTIONWIZARDPAGE_H
@@ -48,7 +48,7 @@ namespace te
     {
       namespace terralib4
       {
-        class TEQTPLUGINTERRALIB4EXPORT TL4RasterFolderSelectionWizardPage : public QWizardPage
+        class TL4RasterFolderSelectionWizardPage : public QWizardPage
         {
           Q_OBJECT
 

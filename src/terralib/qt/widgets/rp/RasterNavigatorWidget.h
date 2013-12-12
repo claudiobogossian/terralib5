@@ -96,9 +96,11 @@ namespace te
 
           te::rst::Raster* getExtentRaster();
 
-          void drawRaster(te::rst::Raster* rst);
+          void drawRaster(te::rst::Raster* rst, te::se::Style* style = 0);
 
           void showAsPreview(bool asPreview);
+
+          void hideColorCompositionTool(bool hide);
 
           void hideEditionTools(bool hide);
 
@@ -141,6 +143,18 @@ namespace te
           void onGreenComboBoxActivated(int index);
 
           void onBlueComboBoxActivated(int index);
+
+          void onMonoComboBoxActivated(int index);
+
+          void onMonoToolClicked(bool flag);
+
+          void onRedToolClicked(bool flag);
+
+          void onGreenToolClicked(bool flag);
+
+          void onBlueToolClicked(bool flag);
+
+          void onCompositionToolClicked(bool flag);
 
           void onPreviewClicked();
 

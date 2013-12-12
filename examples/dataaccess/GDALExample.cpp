@@ -1,8 +1,5 @@
 #include "DataAccessExamples.h"
 
-//#include <terralib/dataaccess/datasource/DataSourceFactory.h>
-//#include <terralib/dataaccess.h>
-
 #include <iostream>
 
 // This example shows how to instantiate a single raster data file as a GDAL data source.
@@ -22,8 +19,6 @@ void OpenFile()
     res = dsGDAL->isValid();   // expect true
 
     PrintDataSets(dsGDAL.get());
-
-    //delete dsGDAL;
   }
   catch(const std::exception& e)
   {
@@ -81,8 +76,6 @@ void DataSourceTransactor()
     ds->open();
 
     std::auto_ptr<te::da::DataSourceTransactor> tr = ds->getTransactor();  // caller gets the pointer ownership, delete it later
-    //te::da::DataSourceCatalogLoader* cl = tr->getC  getCatalogLoader(); // caller gets the pointer ownership, delete it later
-    //cl->loadCatalog();
 
     if (tr->dataSetExists("cbers2b_rgb342_crop.tif"))
     {

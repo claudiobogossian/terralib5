@@ -79,7 +79,7 @@ namespace te
     */
     struct TESTEXPORT CompareShrDateTime
     {
-      bool operator()(const boost::shared_ptr<te::dt::DateTime>& t1, const boost::shared_ptr<te::dt::DateTime>& t2)
+      bool operator()(const te::dt::DateTimeShrPtr& t1, const te::dt::DateTimeShrPtr& t2) const 
       {
         return t1->operator<(*t2);
       }
