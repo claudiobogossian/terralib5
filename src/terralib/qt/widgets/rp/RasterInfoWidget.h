@@ -78,6 +78,10 @@ namespace te
 
           bool fileExists() const;
 
+        protected:
+
+          std::string getBaseName() const;
+
         protected slots:
 
           void onOpenFileDlgToolButtonClicked();
