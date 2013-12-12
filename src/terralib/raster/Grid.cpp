@@ -118,25 +118,16 @@ te::rst::Grid::Grid(double resX,
   m_nCols = static_cast<unsigned int> (mbr->getWidth() / resX + 0.5);
   m_nRows = static_cast<unsigned int> (mbr->getHeight() / resY + 0.5);
 
-  if(mbr)
-  {
-    // Resolution X and Y
-    m_geoT[1] = m_extent->getWidth() / static_cast<double>(m_nCols);
-    m_geoT[5] = -1.0 * m_extent->getHeight() / static_cast<double>(m_nRows);
-    
-    // Pixell 0,0 upper-left coods
-    m_geoT[0] = m_extent->m_llx + ( m_geoT[1] / 2.0 );
-    m_geoT[3] = m_extent->m_ury + ( m_geoT[5] / 2.0 );    
-    
-    m_geoT[2] = 0.0;    
-    m_geoT[4] = 0.0;
-    
-  }
-  else
-  {
-    setGeoreference(te::gm::Coord2D(0, 0), srid, resX, resY);
-    computeExtent();
-  }
+  // Resolution X and Y
+  m_geoT[1] = m_extent->getWidth() / static_cast<double>(m_nCols);
+  m_geoT[5] = -1.0 * m_extent->getHeight() / static_cast<double>(m_nRows);
+  
+  // Pixell 0,0 upper-left coods
+  m_geoT[0] = m_extent->m_llx + ( m_geoT[1] / 2.0 );
+  m_geoT[3] = m_extent->m_ury + ( m_geoT[5] / 2.0 );    
+  
+  m_geoT[2] = 0.0;    
+  m_geoT[4] = 0.0;
 }
 
 te::rst::Grid::Grid( const double geoTrans[], unsigned int nCols, unsigned int nRows,
