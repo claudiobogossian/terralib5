@@ -117,6 +117,23 @@ bool te::qt::widgets::MixtureModelWizardPage::isComplete() const
   if(m_ui->m_tableWidget->rowCount() == 0)
     return false;
 
+  int nBands = m_ui->m_bandTableWidget->rowCount();
+
+  bool isChecked = false;
+  for(int i = 0; i < nBands; ++i)
+  {
+    QCheckBox* checkBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget(i, 0);
+    
+    if(checkBox->isChecked())
+    {
+      isChecked = true;
+      break;
+    }
+  }
+
+  if(!isChecked)
+    return false;
+
   return true;
 }
 
@@ -376,7 +393,7 @@ void te::qt::widgets::MixtureModelWizardPage::listBands()
         
         QCheckBox* bandCheckBox = new QCheckBox(bName, this);
 
-        if(inputRst->getNumberOfBands() == 1)
+        //if(inputRst->getNumberOfBands() == 1)
             bandCheckBox->setChecked(true);
 
         QComboBox* sensorDescriptionComboBox = new QComboBox(this);

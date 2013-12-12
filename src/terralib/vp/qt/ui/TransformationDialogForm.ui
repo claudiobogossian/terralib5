@@ -345,8 +345,26 @@
     </layout>
    </item>
   </layout>
-  <zorder></zorder>
  </widget>
+ <tabstops>
+  <tabstop>m_multToSimpleRadioButton</tabstop>
+  <tabstop>m_simpleToMultRadioButton</tabstop>
+  <tabstop>m_layersComboBox</tabstop>
+  <tabstop>m_propertieslistWidget</tabstop>
+  <tabstop>m_onlySelectedCheckBox</tabstop>
+  <tabstop>m_filterLineEdit</tabstop>
+  <tabstop>m_advancedOptionsGroupBox</tabstop>
+  <tabstop>m_wholeMemRadioButton</tabstop>
+  <tabstop>m_partiallyMemRadioButton</tabstop>
+  <tabstop>m_lowMemRadioButton</tabstop>
+  <tabstop>m_newLayerNameLineEdit</tabstop>
+  <tabstop>m_targetFileToolButton</tabstop>
+  <tabstop>m_targetDatasourceToolButton</tabstop>
+  <tabstop>m_repositoryLineEdit</tabstop>
+  <tabstop>m_helpPushButton</tabstop>
+  <tabstop>m_okPushButton</tabstop>
+  <tabstop>m_cancelPushButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

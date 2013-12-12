@@ -37,6 +37,7 @@
 // Qt
 #include <QGridLayout>
 #include <QtGui/QCheckBox>
+#include <QtGui/QIntValidator>
 #include <QtGui/QMessageBox>
 
 // STL
@@ -57,15 +58,23 @@ te::qt::widgets::SegmenterWizardPage::SegmenterWizardPage(QWidget* parent)
   QGridLayout* displayLayout = new QGridLayout(m_ui->m_frame);
   m_navigator.reset( new te::qt::widgets::RasterNavigatorWidget(m_ui->m_frame));
   m_navigator->showAsPreview(true);
+  m_navigator->hideColorCompositionTool(true);
   displayLayout->addWidget(m_navigator.get());
   displayLayout->setContentsMargins(0,0,0,0);
 
 //configure page
   this->setTitle(tr("Segmenter"));
   this->setSubTitle(tr("Select the type of segmenter and set their specific parameters."));
+
+  QIntValidator* intValRG = new QIntValidator(this);
+  intValRG->setBottom(0);
+  m_ui->m_minimumSegmentSizeRGLineEdit->setValidator(intValRG);
+
+  QIntValidator* intValB = new QIntValidator(this);
+  intValB->setBottom(0);
+  m_ui->m_minimumSegmentSizeRGLineEdit_2->setValidator(intValB);
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters regGrowStrategyParameters;
-  m_ui->m_minimumSegmentSizeRGLineEdit->setText( QString::number( regGrowStrategyParameters.m_minSegmentSize ) );
   m_ui->m_thresholdRGDoubleSpinBox->setValue( regGrowStrategyParameters.m_segmentsSimilarityThreshold );
   m_ui->m_colorWeightBaatzDoubleSpinBox->setValue( regGrowStrategyParameters.m_colorWeight );
   m_ui->m_compactnessWeightBaatzDoubleSpinBox->setValue( regGrowStrategyParameters.m_compactnessWeight );
@@ -77,6 +86,23 @@ te::qt::widgets::SegmenterWizardPage::SegmenterWizardPage(QWidget* parent)
 
 te::qt::widgets::SegmenterWizardPage::~SegmenterWizardPage()
 {
+}
+
+bool te::qt::widgets::SegmenterWizardPage::isComplete() const
+{
+  int nBands = m_ui->m_bandTableWidget->rowCount();
+
+  for(int i = 0; i < nBands; ++i)
+  {
+    QCheckBox* checkBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget(i, 0);
+    
+    if(checkBox->isChecked())
+    {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void te::qt::widgets::SegmenterWizardPage::set(te::map::AbstractLayerPtr layer)
@@ -206,6 +232,8 @@ void te::qt::widgets::SegmenterWizardPage::onStrategyTypeComboBoxActivated(int i
 
 void te::qt::widgets::SegmenterWizardPage::apply()
 {
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
 //get preview raster
   te::rst::Raster* inputRst = m_navigator->getExtentRaster();
 
@@ -213,6 +241,8 @@ void te::qt::widgets::SegmenterWizardPage::apply()
   te::rp::Segmenter::InputParameters algoInputParams = getInputParams();
 
   algoInputParams.m_inputRasterPtr = inputRst;
+  algoInputParams.m_enableBlockProcessing = false;
+  algoInputParams.m_enableBlockMerging = false;
 
   te::rp::Segmenter::OutputParameters algoOutputParams;
 
@@ -244,6 +274,8 @@ void te::qt::widgets::SegmenterWizardPage::apply()
   {
     QMessageBox::warning(this, tr("Warning"), tr("Constrast error."));
   }
+
+  QApplication::restoreOverrideCursor();
 
   //delete input raster dataset
   delete inputRst;

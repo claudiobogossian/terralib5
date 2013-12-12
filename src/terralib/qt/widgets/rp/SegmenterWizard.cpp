@@ -90,7 +90,12 @@ bool te::qt::widgets::SegmenterWizard::validateCurrentPage()
   }
   else if(currentPage() ==  m_segmenterPage.get())
   {
-    return m_segmenterPage->isComplete();
+    bool res = m_segmenterPage->isComplete();
+    
+    if(!res)
+      QMessageBox::warning(this, tr("Warning"), tr("Select at least one band."));
+
+    return res;
   }
   else if(currentPage() ==  m_rasterInfoPage.get())
   {
@@ -162,6 +167,8 @@ bool te::qt::widgets::SegmenterWizard::execute()
   algoOutputParams.m_rType = m_rasterInfoPage->getWidget()->getType();
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();
 
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   try
   {
     if(algorithmInstance.initialize(algoInputParams))
@@ -179,6 +186,9 @@ bool te::qt::widgets::SegmenterWizard::execute()
       else
       {
         QMessageBox::critical(this, tr("Segmenter"), tr("Segmenter execution error"));
+
+        QApplication::restoreOverrideCursor();
+
         return false;
       }
     }
@@ -186,19 +196,30 @@ bool te::qt::widgets::SegmenterWizard::execute()
     {
       QMessageBox::critical(this, tr("Segmenter"), tr("Segmenter initialization error") +
         ( " " + te::rp::Module::getLastLogStr() ).c_str());
+
+      QApplication::restoreOverrideCursor();
+
       return false;
     }
   }
   catch(const std::exception& e)
   {
     QMessageBox::warning(this, tr("Register"), e.what());
+
+    QApplication::restoreOverrideCursor();
+
     return false;
   }
   catch(...)
   {
     QMessageBox::warning(this, tr("Register"), tr("An exception has occuried!"));
+
+    QApplication::restoreOverrideCursor();
+
     return false;
   }
+
+  QApplication::restoreOverrideCursor();
 
   return true;
 }

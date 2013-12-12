@@ -36,6 +36,7 @@
 #include "../datatype/TimeInstant.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
+#include "../geometry/GeometryProperty.h"
 #include "../geometry/WKBReader.h"
 #include "VectorDataSet.h"
 #include "DataSource.h"
@@ -51,6 +52,7 @@
 #include <terralib/kernel/TeQuerierParams.h>
 
 // STL
+#include <cassert>
 #include <memory>
 
 // Boost
@@ -58,10 +60,12 @@
 #include <boost/lexical_cast.hpp>
 
 terralib4::VectorDataSet::VectorDataSet(TeLayer* layer)
-  : m_querier(0),
+  : m_dt(0),
+    m_querier(0),
     m_i(-1),
     m_size(-1),
     m_nCols(-1),
+    m_geomCol(-1),
     m_hasGeometry(false),
     m_layer(layer)
 {
@@ -74,11 +78,36 @@ terralib4::VectorDataSet::VectorDataSet(TeLayer* layer)
 
   m_nCols = m_querier->getAttrList().size();
 
+  m_dt = new te::da::DataSetType(layer->name());
+
+  for(int i = 0; i != m_nCols; ++i)
+  {
+    std::auto_ptr<te::dt::Property> p(terralib4::Convert2T5(m_querier->getAttrList()[i].rep_));
+
+    m_dt->add(p.release());
+  }
+
+  if((m_layer->hasGeometry(TePOLYGONS) || 
+      m_layer->hasGeometry(TeLINES) ||
+      m_layer->hasGeometry(TePOINTS) ||
+      m_layer->hasGeometry(TeNODES) ||
+      m_layer->hasGeometry(TeCELLS)))
+  {
+    te::gm::GeometryProperty* gp = new te::gm::GeometryProperty("spatial_data");
+
+    m_dt->add(gp);
+
+    m_geomCol = m_nCols;
+
+    ++m_nCols;
+  }
+
 }
 
 terralib4::VectorDataSet::~VectorDataSet()
 {
   delete m_querier;
+  delete m_dt;
 }
 
 te::common::TraverseType terralib4::VectorDataSet::getTraverseType() const
@@ -103,17 +132,7 @@ std::size_t terralib4::VectorDataSet::getNumProperties() const
 
 int terralib4::VectorDataSet::getPropertyDataType(std::size_t i) const
 {
-  if((i >= static_cast<std::size_t>(m_nCols)) &&
-     (m_layer->hasGeometry(TePOLYGONS) || 
-      m_layer->hasGeometry(TeLINES) ||
-      m_layer->hasGeometry(TePOINTS) ||
-      m_layer->hasGeometry(TeNODES) ||
-      m_layer->hasGeometry(TeCELLS)))
-  {
-    return te::dt::GEOMETRY_TYPE;
-  }
-
-  return terralib4::Convert2T5(m_querier->getAttrList()[i].rep_.type_);
+  return m_dt->getProperty(i)->getType();
 }
 
 std::string terralib4::VectorDataSet::getPropertyName(std::size_t i) const
@@ -195,12 +214,12 @@ bool terralib4::VectorDataSet::isAfterEnd() const
 
 char terralib4::VectorDataSet::getChar(std::size_t i) const
 {
-  return '\0';
+  throw;
 }
 
 unsigned char terralib4::VectorDataSet::getUChar(std::size_t i) const
 {
-  return '\0';
+  throw;
 }
 
 boost::int16_t terralib4::VectorDataSet::getInt16(std::size_t i) const
@@ -285,6 +304,8 @@ std::auto_ptr<te::dt::ByteArray> terralib4::VectorDataSet::getByteArray(std::siz
 
 std::auto_ptr<te::gm::Geometry> terralib4::VectorDataSet::getGeometry(std::size_t i) const
 {
+  assert(i == m_geomCol);
+
   std::vector<TeGeometry*> geoms;
   m_instance.getGeometry(geoms);
 
@@ -314,21 +335,20 @@ std::auto_ptr<te::dt::Array> terralib4::VectorDataSet::getArray(std::size_t i) c
 
 bool terralib4::VectorDataSet::isNull(std::size_t i) const
 {
+  if(i == m_geomCol) 
+    return false;
+
+  if(getPropertyDataType(i) == te::dt::STRING_TYPE)
+    return false;
+
   std::string val;
+
   int ii = static_cast<int>(i);
 
   m_instance.getPropertyValue(val, ii);
 
   if(val.empty())
-  {
-    std::vector<TeGeometry*> geoms;
-    m_instance.getGeometry(geoms);
-
-    if(geoms.empty())
-      return true;
-    else
-      return false;
-  }
+    return true;
 
   return false;
 }

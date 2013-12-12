@@ -83,12 +83,7 @@ std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo() 
 {
   std::map<std::string, std::string> rinfo;
 
-  std::string name = "";
-
-  if(m_ui->m_nameLineEdit->text().isEmpty() == false)
-  {
-    name = m_ui->m_nameLineEdit->text().toStdString();
-  }
+  std::string name = getBaseName();
 
   if(m_ui->m_fileRadioButton->isChecked())
   {
@@ -118,12 +113,7 @@ std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo() 
 
 std::string te::qt::widgets::RasterInfoWidget::getName() const
 {
-  std::string name = "";
-
-  if(m_ui->m_nameLineEdit->text().isEmpty() == false)
-  {
-    name = m_ui->m_nameLineEdit->text().toStdString();
-  }
+  std::string name = getBaseName();
 
   if(m_ui->m_fileRadioButton->isChecked())
   {
@@ -142,12 +132,7 @@ bool te::qt::widgets::RasterInfoWidget::fileExists() const
 {
   if(m_ui->m_fileRadioButton->isChecked())
   {
-    std::string name = "";
-
-    if(m_ui->m_nameLineEdit->text().isEmpty() == false)
-    {
-      name = m_ui->m_nameLineEdit->text().toStdString();
-    }
+    std::string name = getBaseName();
 
     std::string fileName = m_dir + "/" + name + ".tif";
 
@@ -157,6 +142,22 @@ bool te::qt::widgets::RasterInfoWidget::fileExists() const
   }
 
   return false;
+}
+
+std::string te::qt::widgets::RasterInfoWidget::getBaseName() const
+{
+  std::string name = "";
+
+  if(m_ui->m_nameLineEdit->text().isEmpty() == false)
+  {
+    name = m_ui->m_nameLineEdit->text().toStdString();
+
+    QFileInfo file(name.c_str());
+
+    name = file.baseName().toStdString();
+  }
+
+  return name;
 }
 
 void te::qt::widgets::RasterInfoWidget::onOpenFileDlgToolButtonClicked()

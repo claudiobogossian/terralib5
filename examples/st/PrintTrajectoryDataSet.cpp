@@ -10,18 +10,29 @@
 // STL
 #include <iostream>
 
+void PrintTrajectoryDataSet(boost::ptr_vector<te::st::TrajectoryDataSet>& output)
+{
+  for(std::size_t i=0; i<output.size(); ++i)
+  {
+	  std::cout << "Printing observations of the trajectory data set" << i << " :" << std::endl;
+    PrintTrajectoryDataSet(&output[i]);
+  }
+}
+
 void PrintTrajectoryDataSet(te::st::TrajectoryDataSet* output)
 {
-  std::cout << "Printing information about trajectory: " << output->getId() << std::endl;
-  std::cout << "============================================================" << std::endl;
+  if(output == 0)
+  {
+    std::cout << "Trajectory Data Set is NULL!" << std::endl;
+    return;
+  }
   
-  te::dt::DateTimePeriod* textent = output->getTemporalExtent();
-  std::cout << "Temporal Extent: " << textent->toString() << std::endl;
-
-  const te::gm::Envelope sextent = output->getSpatialExtent();
-  //std::cout << "Spatial Extent: " << sextent.toString() << std::endl;
+  PrintTrajectoryDataSetInfo(output);
   
-  std::cout << "Observations: " << std::endl;
+  std::cout << "Trajectory observations: " <<  std::endl;
+  
+  output->moveBeforeFirst();
+  
   while(output->moveNext())
   {
     std::auto_ptr<te::dt::DateTime> time = output->getTime();
@@ -30,5 +41,23 @@ void PrintTrajectoryDataSet(te::st::TrajectoryDataSet* output)
     std::cout << "Date and Time: " <<  time->toString() << std::endl;
     std::cout << "Geometry: " <<  geom->toString()  << std::endl << std::endl;
   }
+}
+
+void PrintTrajectoryDataSetInfo(boost::ptr_vector<te::st::TrajectoryDataSet>& output)
+{
+  for(std::size_t i=0; i<output.size(); ++i)
+  {
+	  std::cout << "Printing information about the trajectory data set " << i << " :" << std::endl;
+    PrintTrajectoryDataSetInfo(&output[i]);
+  }
+}
+
+void PrintTrajectoryDataSetInfo(te::st::TrajectoryDataSet* output)
+{
+  te::dt::DateTimePeriod* textent = output->getTemporalExtent();
+  std::cout << "Temporal Extent: " << textent->toString() << std::endl;
+
+  const te::gm::Envelope sextent = output->getSpatialExtent();
+  std::cout << "Spatial Extent: " << sextent.getLowerLeftX() << std::endl;
 }
 

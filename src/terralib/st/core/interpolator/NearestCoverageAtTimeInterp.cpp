@@ -47,9 +47,14 @@ te::st::NearestCoverageAtTimeInterp::estimate(const CoverageSeries& cvs, te::dt:
   CoverageSeriesObservationSet::const_iterator itlower, itupper, itbegin, itend;
   const CoverageSeriesObservationSet& cvObs = cvs.getObservations();
 
-  te::dt::DateTimeShrPtr dtshr(time);
+  te::dt::DateTimeShrPtr dtshr(static_cast<te::dt::DateTime*>(time->clone()));
   itlower = cvObs.lower_bound(dtshr);
   itupper = cvObs.upper_bound(dtshr);
+
+  //If both iterator points to the same position (the first element after dtshr), we have to get 
+  //the first element before dtshr
+  if(itlower==itupper && itlower!=cvObs.begin())
+    --itlower;
   
   if(itlower!=cvObs.end() && itupper!=cvObs.end())
   {

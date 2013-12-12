@@ -52,11 +52,11 @@ te::qt::widgets::ZoomInMapDisplayWidget::ZoomInMapDisplayWidget(te::qt::widgets:
 //build form
   QGridLayout* displayLayout = new QGridLayout(this);
 
-  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(this->size(), this);
+  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(parent->size(), this);
+  m_mapDisplay->setResizePolicy(te::qt::widgets::MapDisplay::Center);
 
   displayLayout->addWidget(m_mapDisplay, 0,0);
-
-
+  
   m_sliderZoomFactor = new QSlider(Qt::Horizontal, this);
   m_sliderZoomFactor->setRange(1, 100);
   m_sliderZoomFactor->setValue(50);

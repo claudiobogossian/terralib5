@@ -54,7 +54,7 @@ file(GLOB SRCS ${SRCDIR}/*.cpp)
 file(GLOB HDRS ${INCLDIR}/*.h)
 
 if(WIN32)
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS)
 endif(WIN32)
 
 add_definitions(-DTEQTPLUGINPGISDLL)

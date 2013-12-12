@@ -38,6 +38,9 @@
 #include "../interpolator/AbstractTrajectoryInterp.h"
 #include "../interpolator/NearestGeometryAtTimeInterp.h"
 
+//STL
+#include <algorithm>
+
 te::st::Trajectory::Trajectory()
   : m_observations(),
     m_interpolator(&NearestGeometryAtTimeInterp::getInstance()),
@@ -200,17 +203,15 @@ te::st::TrajectoryIterator te::st::Trajectory::end() const
 
 te::st::TrajectoryIterator te::st::Trajectory::at(te::dt::DateTime* t) const
 {
-  boost::shared_ptr<te::dt::DateTime> aux(t);
-  TrajectoryIterator ti(m_observations.find(aux)); //there is aux.release()???
-  aux.reset();
+  te::dt::DateTimeShrPtr aux(static_cast<te::dt::DateTime*>(t->clone()));
+  TrajectoryIterator ti(m_observations.find(aux)); 
   return ti;
 }
 
 std::auto_ptr<te::gm::Geometry> te::st::Trajectory::getGeometry(te::dt::DateTime* t) const
 {
-  boost::shared_ptr<te::dt::DateTime> aux(t);
+  te::dt::DateTimeShrPtr aux(static_cast<te::dt::DateTime*>(t->clone()));
   TrajectoryObservationSet::const_iterator it = m_observations.find(aux);
-  aux.reset();
   if(it!=m_observations.end())
     return std::auto_ptr<te::gm::Geometry>(static_cast<te::gm::Geometry*>(it->second->clone()));
 
@@ -237,7 +238,8 @@ te::st::Trajectory::getPatch(const te::dt::DateTime& dt,
   //Note: the end iterator of a patch points to the position AFTER the last required observation 
   TrajectoryObservationSet::const_iterator itb = m_observations.end();
   TrajectoryObservationSet::const_iterator ite = m_observations.end();
-  boost::shared_ptr<te::dt::DateTime> shrdt(static_cast<te::dt::DateTime*>(dt.clone()));
+
+  te::dt::DateTimeShrPtr shrdt(static_cast<te::dt::DateTime*>(dt.clone()));
 
   if(r==te::dt::AFTER) //2
   {
@@ -267,8 +269,8 @@ te::st::Trajectory::getPatch(const te::dt::DateTime& dt,
   }
   if(r==te::dt::DURING) //4
   {
-    boost::shared_ptr<te::dt::DateTime> t1(static_cast<te::dt::DateTimePeriod*>(shrdt.get())->getInitialInstant());
-    boost::shared_ptr<te::dt::DateTime> t2(static_cast<te::dt::DateTimePeriod*>(shrdt.get())->getFinalInstant());
+    te::dt::DateTimeShrPtr t1(static_cast<te::dt::DateTimePeriod*>(shrdt.get())->getInitialInstant());
+    te::dt::DateTimeShrPtr t2(static_cast<te::dt::DateTimePeriod*>(shrdt.get())->getFinalInstant());
     itb = m_observations.find(t1);
     if(itb==m_observations.end())
       itb = m_observations.upper_bound(t1);
@@ -300,11 +302,12 @@ te::st::Trajectory::getPatches(const te::gm::Envelope& g, te::gm::SpatialRelatio
   //times when the trajectory intersects the envelope
   std::vector<te::dt::DateTime*> report;
   m_rtree->search(g, report);
+  std::sort(report.begin(), report.end(), te::dt::CompareDateTime());
 
   std::vector<te::dt::DateTime*>::const_iterator itResultBegin = report.begin();
   std::vector<te::dt::DateTime*>::const_iterator itResultEnd = report.end();
   
-  boost::shared_ptr<te::dt::DateTime> shrdt(*itResultBegin);
+  te::dt::DateTimeShrPtr shrdt(static_cast<te::dt::DateTime*>((*itResultBegin)->clone())); 
   TrajectoryObservationSet::const_iterator itOriginBegin = m_observations.find(shrdt);
   TrajectoryObservationSet::const_iterator itOriginEnd = m_observations.end();
 
@@ -334,7 +337,7 @@ te::st::Trajectory::getPatches(const te::gm::Envelope& g, te::gm::SpatialRelatio
      //update the origin begin
      if(itResultBegin!=itResultEnd)
      {
-       shrdt.reset(*itResultBegin);
+       shrdt.reset(static_cast<te::dt::DateTime*>((*itResultBegin)->clone()));
        itOriginBegin = m_observations.find(shrdt);
      }
   }
@@ -352,11 +355,13 @@ te::st::Trajectory::getPatches(const te::gm::Geometry& geom, te::gm::SpatialRela
   //times when the trajectory intersects the envelope
   std::vector<te::dt::DateTime*> report;
   m_rtree->search(*geom.getMBR(), report);
+  
+  std::sort(report.begin(), report.end(), te::dt::CompareDateTime());
 
   std::vector<te::dt::DateTime*>::const_iterator itResultBegin = report.begin();
   std::vector<te::dt::DateTime*>::const_iterator itResultEnd = report.end();
 
-  boost::shared_ptr<te::dt::DateTime> shrdt(*itResultBegin);
+  te::dt::DateTimeShrPtr shrdt(static_cast<te::dt::DateTime*>((*itResultBegin)->clone()));
   TrajectoryObservationSet::const_iterator itOriginBegin = m_observations.find(shrdt);
   TrajectoryObservationSet::const_iterator itOriginEnd = m_observations.end();
   
@@ -370,7 +375,7 @@ te::st::Trajectory::getPatches(const te::gm::Geometry& geom, te::gm::SpatialRela
         ++itResultBegin;
         if(itResultBegin!=itResultEnd)
         {
-          shrdt.reset(*itResultBegin);
+          shrdt.reset(static_cast<te::dt::DateTime*>((*itResultBegin)->clone()));
           itOriginBegin = m_observations.find(shrdt);
         }        
      }
@@ -386,7 +391,7 @@ te::st::Trajectory::getPatches(const te::gm::Geometry& geom, te::gm::SpatialRela
             ++itResultBegin;
             if(itResultBegin!=itResultEnd)
             {
-              shrdt.reset(*itResultBegin);
+              shrdt.reset(static_cast<te::dt::DateTime*>((*itResultBegin)->clone()));
               itOriginBegin = m_observations.find(shrdt);
             }
         }
@@ -510,10 +515,11 @@ std::auto_ptr<te::st::TimeSeries> te::st::Trajectory::getDistance(const Trajecto
   {
     te::dt::DateTime* t = it->first.get();
     std::auto_ptr<te::gm::Geometry> otherGeom(other.getGeometry(t));
+
     double dist = it->second->distance(otherGeom.get());
     
     //insert into the new time series!
-    result->add(t,dist);
+    result->add(static_cast<te::dt::DateTime*>(t->clone()),dist);
     ++it;
   }
   return result;

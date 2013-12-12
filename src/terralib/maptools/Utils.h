@@ -312,7 +312,7 @@ namespace te
                                 const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style);
 
     TEMAPEXPORT te::rst::Raster* GetExtentRaster(te::rst::Raster* raster, int w, int h, const te::gm::Envelope& bbox, int bboxSRID,
-                                const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style);
+                                const te::gm::Envelope& visibleArea, int srid);
 
     /*!
       \brief It gets the geometry type of the given layer.
