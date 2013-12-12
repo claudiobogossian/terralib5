@@ -178,8 +178,7 @@ te::st::STDataLoader::getCoverageSeries( const PointCoverageSeriesDataSetInfo& i
   while(it!=info.end())
   {
     std::auto_ptr<PointCoverage> cv(getCoverage(*it, interp));
-    std::auto_ptr<te::dt::DateTime> t(cv->getTime());
-    result->add(t.release(), cv.release());
+    result->add(static_cast<te::dt::DateTime*>(cv->getTime()->clone()), cv.release());
     ++it;
   }
 
@@ -194,8 +193,7 @@ te::st::STDataLoader::getCoverageSeries(const RasterCoverageSeriesDataSetInfo& i
   while(it!=info.end())
   {
     std::auto_ptr<RasterCoverage> cv(getCoverage(*it));
-    std::auto_ptr<te::dt::DateTime> t(cv->getTime());
-    result->add(t.release(), cv.release());
+    result->add(static_cast<te::dt::DateTime*>(cv->getTime()->clone()), cv.release());
     ++it;
   }
   return result;
@@ -213,7 +211,7 @@ te::st::STDataLoader::getCoverage(const RasterCoverageDataSetInfo& info)
   while(dset->moveNext())
   {
     //por enquanto nao estou considerando tempo em duas propriedades, so pego a primeira
-    std::auto_ptr<te::dt::DateTime> dt(info.getTime());
+    std::auto_ptr<te::dt::DateTime> dt = info.getTime();
     if(dt.get()==0)
       dt = dset->getDateTime(info.getTimePropIdxs()[0]);
     std::auto_ptr<te::rst::Raster> raster(dset->getRaster(info.getRasterPropIdx()));
