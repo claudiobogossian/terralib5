@@ -55,6 +55,7 @@ list (APPEND
   DEP_LIBS 
   terralib_common
   terralib_dataaccess
+  terralib_datatype
   terralib_maptools
   terralib_plugin
   terralib_qt_af

@@ -79,6 +79,8 @@ namespace te
             void datasourceSelectionPageNext();
 
             void rasterFolderSelectionPageNext();
+            
+            void convert();
 
           protected slots:
 
@@ -101,9 +103,9 @@ namespace te
               PAGE_FINALPAGE
             };
 
+            bool m_hasVector;
+            bool m_hasRaster;
             std::map<std::string, std::string> m_datasetFinalNames;
-            std::vector<std::string> successfulVectorDatasets;
-            std::vector<std::string> successfulRasterDatasets;
             std::string m_rasterFolderPath;
             std::auto_ptr<te::da::DataSource> m_tl4Database;
             te::da::DataSourceInfoPtr m_targetDataSource;

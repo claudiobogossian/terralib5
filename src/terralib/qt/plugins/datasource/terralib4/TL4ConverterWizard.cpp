@@ -52,6 +52,7 @@
 #include <cassert>
 
 // Boost
+#include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 
 // Qt
@@ -62,6 +63,8 @@
 
 te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f),
+    m_hasVector(false),
+    m_hasRaster(false),
     m_ui(new Ui::TL4ConverterWizardForm)
 {
 // setup controls
@@ -176,8 +179,6 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::terralib4ConnectorPageNext(
   std::vector<std::string> datasets = m_tl4Database->getDataSetNames();
 
   m_layerSelectionPage->setDatasets(datasets);
-
-  QWizard::next();
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::layerSelectionPageNext()
@@ -191,20 +192,17 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::layerSelectionPageNext()
     return;
   }
 
-  bool hasRaster = false;
-  bool hasVector = false;
-
   for(std::size_t i = 0; i < layersNames.size(); ++i)
   {
     std::auto_ptr<te::da::DataSetType> dst(m_tl4Database->getDataSetType(layersNames[i]));
 
     if(dst->hasRaster())
-      hasRaster = true;
+      m_hasRaster = true;
     else
-      hasVector = true;
+      m_hasVector = true;
   }
 
-  if(hasRaster)
+  if(m_hasRaster)
   {
     QWizardPage* rasterPage = 0;
 
@@ -223,7 +221,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::layerSelectionPageNext()
       this->removePage(PAGE_RASTERFOLDER_SELECTOR);
   }
 
-  if(hasVector)
+  if(m_hasVector)
   {
     QWizardPage* datasourcePage = 0;
     datasourcePage = this->page(PAGE_DATASOURCE_SELECTOR);
@@ -237,79 +235,131 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::layerSelectionPageNext()
     if(dsPage)
       this->removePage(PAGE_DATASOURCE_SELECTOR);
   }
-
-  QWizard::next();
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::datasourceSelectionPageNext()
 {
-  std::vector<std::pair<std::string, std::string> > problematicDatasets;
+  m_targetDataSource = *m_datasourceSelectorPage->getSelectorWidget()->getSelecteds().begin();
 
+  if(!m_hasRaster)
+    convert();
+}
+
+void te::qt::plugins::terralib4::TL4ConverterWizard::rasterFolderSelectionPageNext()
+{
+  m_rasterFolderPath = m_rasterFolderSelectionPage->getPath();
+
+  convert();
+}
+
+void te::qt::plugins::terralib4::TL4ConverterWizard::convert()
+{
   try
   {
     te::qt::widgets::ScopedCursor sc(Qt::WaitCursor);
 
-// get target data source
-    m_targetDataSource = *m_datasourceSelectorPage->getSelectorWidget()->getSelecteds().begin();
+    std::vector<std::string> successfulDatasets;
 
-    te::da::DataSourcePtr tl5ds = te::da::DataSourceManager::getInstance().get(m_targetDataSource->getId(), m_targetDataSource->getType(), m_targetDataSource->getConnInfo());
+    std::vector<std::pair<std::string, std::string> > problematicDatasets;
 
-    if(!tl5ds->isOpened())
-      tl5ds->open();
+// get the layers names to convert
+    std::vector<std::string> t4Layers = m_layerSelectionPage->getChecked();
 
-// check if we have name clash with datasets in the target data source and fill final dataset name index
-    std::vector<std::string> dsNames = m_layerSelectionPage->getChecked();
-
-    for(std::size_t i = 0; i != dsNames.size(); ++i)
+    te::da::DataSourcePtr tl5ds;
+    if(m_hasVector)
     {
-      std::string targetDatasetName = dsNames[i];
-      int j = 0;
+      tl5ds = te::da::DataSourceManager::getInstance().get(m_targetDataSource->getId(), m_targetDataSource->getType(), m_targetDataSource->getConnInfo());
 
-      while(tl5ds->dataSetExists(targetDatasetName))
-      {
-        targetDatasetName += "_" + boost::lexical_cast<std::string>(j);
-        ++j;
-      }
-
-      m_datasetFinalNames[dsNames[i] ] = targetDatasetName;
+      if(!tl5ds->isOpened())
+        tl5ds->open();
     }
 
 // iterate over datasets for converting them to new non-proprietary format.
-    for(std::size_t i = 0; i < dsNames.size(); ++i)
+    for(std::size_t i = 0; i < t4Layers.size(); ++i)
     {
-      std::string errors = "";
+      std::string error = "";
 
       std::string errorWhat = "";
 
+      std::string targetDatasetName = t4Layers[i];
+
+      int j = 0;
+
       try
       {
-        std::auto_ptr<te::da::DataSetType> dst = m_tl4Database->getDataSetType(dsNames[i]);
+        std::auto_ptr<te::da::DataSetType> dst = m_tl4Database->getDataSetType(t4Layers[i]);
 
         if(dst->hasRaster())
-          continue;
+        {
+          while(boost::filesystem::exists(m_rasterFolderPath +"/"+ targetDatasetName + ".tif"))
+          {
+            targetDatasetName += "_" + boost::lexical_cast<std::string>(j);
+            ++j;
+          }
 
-        std::auto_ptr<te::da::DataSetTypeConverter> dt_adapter(new te::da::DataSetTypeConverter(dst.get(), tl5ds->getCapabilities()));
+          std::auto_ptr<te::da::DataSet> ds = m_tl4Database->getDataSet(t4Layers[i]);
 
-        std::auto_ptr<te::da::DataSet> ds(m_tl4Database->getDataSet(dsNames[i]));
+          std::auto_ptr<te::rst::Raster> raster = ds->getRaster("Raster");
 
-        std::auto_ptr<te::da::DataSetAdapter> ds_adapter(te::da::CreateAdapter(ds.get(), dt_adapter.get()));
+          std::string newName = m_rasterFolderPath + "/" + targetDatasetName + ".tif";
 
-        std::map<std::string, std::string> op;
+          te::rst::CreateCopy(*raster.release(), newName);
+        }
+        else
+        {
+          while(tl5ds->dataSetExists(targetDatasetName))
+          {
+            targetDatasetName += "_" + boost::lexical_cast<std::string>(j);
+            ++j;
+          }
 
-        te::da::Create(tl5ds.get(), dt_adapter->getResult(), ds_adapter.get(), op);
+          std::auto_ptr<te::da::DataSetTypeConverter> dt_adapter(new te::da::DataSetTypeConverter(dst.get(), tl5ds->getCapabilities()));
 
-        successfulVectorDatasets.push_back(dsNames[i]);
+          std::auto_ptr<te::da::DataSet> ds(m_tl4Database->getDataSet(t4Layers[i]));
+
+          std::auto_ptr<te::da::DataSetAdapter> ds_adapter(te::da::CreateAdapter(ds.get(), dt_adapter.get()));
+
+          std::map<std::string, std::string> op;
+
+          te::da::DataSetType* result = dt_adapter->getResult();
+          if(result->getName() != targetDatasetName)
+            result->setName(targetDatasetName);
+
+          te::da::Create(tl5ds.get(), result, ds_adapter.get(), op);
+        }
+
+        m_datasetFinalNames[t4Layers[i]] = targetDatasetName;
+
+        successfulDatasets.push_back(m_datasetFinalNames[t4Layers[i]]);
       }
       catch(const te::common::Exception& e)
       {
         std::pair<std::string, std::string> error;
-        error.first = dsNames[i];
+        error.first = t4Layers[i];
         error.second = e.what();
         problematicDatasets.push_back(error);
       }
     }
 
-    m_finalPage->setDataSets(successfulVectorDatasets);
+    m_finalPage->setDataSets(successfulDatasets);
+
+    if(!problematicDatasets.empty())
+    {
+      QString err(tr("Some TerraLib 4.x Layers could not be converter:\n\n"));
+      QString details;
+
+      for(std::size_t i = 0; i < problematicDatasets.size(); ++i)
+      {
+        err.append(QString(" - ")+problematicDatasets[i].first.c_str()+QString("\n"));
+        details.append(problematicDatasets[i].first.c_str() + QString(":\n"));
+        details.append(problematicDatasets[i].second.c_str()+QString("\n\n"));
+      }
+
+      QMessageBox mes(QMessageBox::Warning, tr("TerraLib 4.x Converter"), err, QMessageBox::Ok, this);
+      mes.setDetailedText(details);
+
+      mes.exec();
+    }
   }
   catch(const te::common::Exception& e)
   {
@@ -323,85 +373,6 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::datasourceSelectionPageNext
 
     return;
   }
-
-  if(!problematicDatasets.empty())
-  {
-    QString err(tr("Some TerraLib 4.x Layers could not be converter:\n\n"));
-    QString details;
-
-    for(std::size_t i = 0; i < problematicDatasets.size(); ++i)
-    {
-      err.append(QString(" - ")+problematicDatasets[i].first.c_str()+QString("\n"));
-      details.append(problematicDatasets[i].first.c_str() + QString(":\n"));
-      details.append(problematicDatasets[i].second.c_str()+QString("\n\n"));
-    }
-
-    QMessageBox mes(QMessageBox::Warning, tr("TerraLib 4.x Converter"), err, QMessageBox::Ok, this);
-    mes.setDetailedText(details);
-
-    mes.exec();
-  }
-
-  QWizard::next();
-}
-
-void te::qt::plugins::terralib4::TL4ConverterWizard::rasterFolderSelectionPageNext()
-{
-  std::vector<std::pair<std::string, std::string> > problematicDatasets;
-
-  {
-    te::qt::widgets::ScopedCursor sc(Qt::WaitCursor);
-
-    m_rasterFolderPath = m_rasterFolderSelectionPage->getPath();
-
-    std::vector<std::string> dsNames = m_layerSelectionPage->getChecked();
-
-    for(std::size_t i = 0; i < dsNames.size(); ++i)
-    {
-      try
-      {
-        std::auto_ptr<te::da::DataSetType> dst = m_tl4Database->getDataSetType(dsNames[i]);
-
-        if(dst->hasRaster())
-        {
-          std::auto_ptr<te::da::DataSet> ds = m_tl4Database->getDataSet(dsNames[i]);
-
-          std::auto_ptr<te::rst::Raster> raster = ds->getRaster("Raster");
-
-          te::rst::CreateCopy(*raster.release(), m_rasterFolderPath + "/" + dsNames[i] + ".tif");
-
-          successfulRasterDatasets.push_back(dsNames[i]);
-        }
-      }
-      catch(const te::common::Exception& e)
-      {
-        std::pair<std::string, std::string> error;
-        error.first = dsNames[i];
-        error.second = e.what();
-        problematicDatasets.push_back(error);
-      }
-    }
-
-    m_finalPage->setDataSets(successfulRasterDatasets);
-  }
-
-  if(!problematicDatasets.empty())
-  {
-    QString err(tr("Some TerraLib 4.x Layers could not be converter:\n\n"));
-    QString details;
-
-    for(std::size_t i = 0; i < problematicDatasets.size(); ++i)
-    {
-      err.append(QString(" - ")+problematicDatasets[i].first.c_str()+QString("\n"));
-      details.append(problematicDatasets[i].first.c_str() + QString(":\n"));
-      details.append(problematicDatasets[i].second.c_str()+QString("\n\n"));
-    }
-
-    QMessageBox mes(QMessageBox::Warning, tr("TerraLib 4.x Converter"), err, QMessageBox::Ok, this);
-    mes.setDetailedText(details);
-
-    mes.exec();
-  }
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
@@ -411,7 +382,21 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
   for(std::size_t i = 0; i < selected.size(); ++i)
   {
     te::map::AbstractLayerPtr lay = 0;
-    std::auto_ptr<te::da::DataSetType> dt = m_tl4Database->getDataSetType(selected[i]);
+
+    std::string originalName = "";
+    std::map<std::string, std::string>::iterator it = m_datasetFinalNames.begin();
+    while(it != m_datasetFinalNames.end())
+    {
+      if(it->second == selected[i])
+      {
+        originalName = it->first;
+        break;
+      }
+      
+      ++it;
+    }
+
+    std::auto_ptr<te::da::DataSetType> dt = m_tl4Database->getDataSetType(originalName);
 
     if(dt->hasRaster())
     {
@@ -427,7 +412,9 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
       te::qt::widgets::DataSet2Layer converter(m_targetDataSource->getId());
 
       std::auto_ptr<te::da::DataSetType> dsType = outDataSource->getDataSetType(selected[i]);
+
       te::da::DataSetTypePtr dt(dsType.release());
+
       lay = converter(dt);
     }
 
