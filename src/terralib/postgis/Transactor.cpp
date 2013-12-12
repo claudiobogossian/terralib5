@@ -1566,39 +1566,65 @@ void te::pgis::Transactor::cloneDataSet(const std::string& /*name*/,
   throw Exception(TR_PGIS("Not implemented yet!"));
 }
 
-void te::pgis::Transactor::dropDataSet(const std::string& /*name*/)
+void te::pgis::Transactor::dropDataSet(const std::string& name)
 {
-  throw Exception(TR_PGIS("Not implemented yet!"));
+  std::auto_ptr<te::da::DataSetType> dt = getDataSetType(name);
 
-  //std::string sql;
+  std::string sql;
 
-  //if(dt->hasGeom())
-  //{
-  //  std::string tSchema, tName;
-  //  SplitTableName(dt->getName(), m_t->getPGDataSource()->getCurrentSchema(), tSchema, tName);
+  if(dt->hasGeom())
+  {
+    std::string tSchema, tName;
+    SplitTableName(dt->getName(), &(m_ds->getCurrentSchema()), tSchema, tName);
 
-  //  sql = "SELECT DropGeometryTable('";
-  //  sql += te::common::Convert2LCase(tSchema);
-  //  sql += "', '";
-  //  sql += te::common::Convert2LCase(tName);
-  //  sql += "')";
-  //}
-  //else
-  //{
-  //  sql += "DROP TABLE ";
-  //  sql += dt->getName();
-  //}
+    sql = "SELECT DropGeometryTable('";
+    sql += te::common::Convert2LCase(tSchema);
+    sql += "', '";
+    sql += te::common::Convert2LCase(tName);
+    sql += "')";
+  }
+  else
+  {
+    sql += "DROP TABLE ";
+    sql += dt->getName();
+  }
 
-  //m_t->execute(sql);
- 
-  //if(dt->getCatalog())
-  //{
-  //  te::da::DataSourceCatalog* catalog = dt->getCatalog();
-  //  catalog->remove(dt, true);
-  //}
-  //else
-  //  delete dt;
+  execute(sql);
 }
+
+//void te::pgis::Transactor::dropDataSet(const std::string& /*name*/)
+//{
+//  throw Exception(TR_PGIS("Not implemented yet!"));
+//
+//  //std::string sql;
+//
+//  //if(dt->hasGeom())
+//  //{
+//  //  std::string tSchema, tName;
+//  //  SplitTableName(dt->getName(), m_t->getPGDataSource()->getCurrentSchema(), tSchema, tName);
+//
+//  //  sql = "SELECT DropGeometryTable('";
+//  //  sql += te::common::Convert2LCase(tSchema);
+//  //  sql += "', '";
+//  //  sql += te::common::Convert2LCase(tName);
+//  //  sql += "')";
+//  //}
+//  //else
+//  //{
+//  //  sql += "DROP TABLE ";
+//  //  sql += dt->getName();
+//  //}
+//
+//  //m_t->execute(sql);
+// 
+//  //if(dt->getCatalog())
+//  //{
+//  //  te::da::DataSourceCatalog* catalog = dt->getCatalog();
+//  //  catalog->remove(dt, true);
+//  //}
+//  //else
+//  //  delete dt;
+//}
 
 void te::pgis::Transactor::renameDataSet(const std::string& name, const std::string& newName)
 {
