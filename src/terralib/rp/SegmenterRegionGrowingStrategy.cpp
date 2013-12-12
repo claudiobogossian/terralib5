@@ -81,7 +81,7 @@ namespace te
     void SegmenterRegionGrowingStrategy::Parameters::reset() 
     throw( te::rp::Exception )
     {
-      m_minSegmentSize = 4;
+      m_minSegmentSize = 100;
       m_segmentsSimilarityThreshold = 0.1;
       m_segmentFeatures = InvalidFeaturesType;      
       m_bandsWeights.clear();
