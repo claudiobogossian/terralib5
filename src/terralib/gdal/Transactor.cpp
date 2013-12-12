@@ -300,15 +300,15 @@ std::auto_ptr<te::da::DataSet> te::gdal::Transactor::getDataSet(const std::strin
   return std::auto_ptr<te::da::DataSet>(new DataSet(dsty,accessPolicy, uri)); 
 }
 
-std::auto_ptr<te::da::DataSet>  te::gdal::Transactor::getDataSet(const std::string& name,
+std::auto_ptr<te::da::DataSet> te::gdal::Transactor::getDataSet(const std::string& name,
                                           const std::string& /*propertyName*/,
                                           const te::gm::Envelope* /*e*/,
                                           te::gm::SpatialRelation /*r*/,
                                           te::common::TraverseType travType, 
-                                          bool /*connected*/,
+                                          bool connected,
                                           const te::common::AccessPolicy accessPolicy)
 {
-  return getDataSet(name,travType,accessPolicy);
+  return getDataSet(name, travType, connected, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::gdal::Transactor::getDataSet(const std::string& name,
@@ -316,19 +316,19 @@ std::auto_ptr<te::da::DataSet> te::gdal::Transactor::getDataSet(const std::strin
                                                                 const te::gm::Geometry* /*g*/,
                                                                 te::gm::SpatialRelation /*r*/,
                                                                 te::common::TraverseType travType, 
-                                                                bool /*connected*/,
+                                                                bool connected,
                                                                 const te::common::AccessPolicy accessPolicy)
 {
-  return getDataSet(name,travType,accessPolicy);
+  return getDataSet(name, travType, connected, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::gdal::Transactor::getDataSet(const std::string& name,
                                                                 const te::da::ObjectIdSet* /*oids*/, 
                                                                 te::common::TraverseType travType, 
-                                                                bool /*connected*/,
+                                                                bool connected,
                                                                 const te::common::AccessPolicy accessPolicy)
 {
-  return getDataSet(name,travType,accessPolicy);
+  return getDataSet(name, travType, connected, accessPolicy);
 }
 
 

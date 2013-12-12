@@ -1,5 +1,4 @@
-
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,12 +28,12 @@
 #include "../common/progress/TaskProgress.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceInfo.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/dataset/DataSetTypeConverter.h"
-
 #include "../dataaccess/query_h.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
@@ -552,7 +551,7 @@ te::da::DataSet* UpdateGeometryType(te::da::DataSetType* dsType, te::da::DataSet
     std::string propName;
     te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(dsMem);
 
-    for(int i=0; i<props.size(); ++i)
+    for(std::size_t i = 0; i < props.size(); ++i)
     {
       type = props[i]->getType();
       propName = props[i]->getName();

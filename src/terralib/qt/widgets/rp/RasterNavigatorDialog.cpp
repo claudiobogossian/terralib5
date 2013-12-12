@@ -39,7 +39,7 @@ te::qt::widgets::RasterNavigatorDialog::RasterNavigatorDialog(QWidget* parent, Q
   m_navigator.reset( new te::qt::widgets::RasterNavigatorWidget(this));
   layout->addWidget(m_navigator.get(), 0, 0);
   layout->setContentsMargins(0,0,0,0);
-
+  layout->setSizeConstraint(QLayout::SetMinimumSize);
 }
 
 te::qt::widgets::RasterNavigatorDialog::~RasterNavigatorDialog()

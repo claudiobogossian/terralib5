@@ -41,7 +41,10 @@ te::qt::widgets::EyeBirdMapDisplayWidget::EyeBirdMapDisplayWidget(te::qt::widget
 {
 //build form
   QGridLayout* displayLayout = new QGridLayout(this);
-  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(this->size(), this);
+  
+  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(parent->size(), this);
+  m_mapDisplay->setResizePolicy(te::qt::widgets::MapDisplay::Center);
+
   displayLayout->addWidget(m_mapDisplay);
   displayLayout->setContentsMargins(0,0,0,0);
 

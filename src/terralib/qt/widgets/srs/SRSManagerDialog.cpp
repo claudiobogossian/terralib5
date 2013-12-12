@@ -234,7 +234,7 @@ void te::qt::widgets::SRSManagerDialog::onOkPushButtonClicked()
   {
     QStringList aux;
     aux << QString::number(m_selSrsId.first);    
-    for (size_t i=0; (i<=3 && i<m_recentSRS.size()); ++i)
+    for (int i=0; (i<=3 && i<m_recentSRS.size()); ++i)
       if (QString::number(m_selSrsId.first) != m_recentSRS[i])
         aux << m_recentSRS[i];
     

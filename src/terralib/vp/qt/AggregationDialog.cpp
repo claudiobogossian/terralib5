@@ -132,7 +132,7 @@ std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > te::vp::
   std::map<std::string, std::vector<te::stat::StatisticalSummary> >  propname_stat;
   std::map<std::string, std::vector<te::stat::StatisticalSummary> >::iterator it;
   
-  for(size_t i = 0; i < itemList.size(); ++i)
+  for(int i = 0; i < itemList.size(); ++i)
   {
     std::vector<std::string> tokens;
     std::string pname;
@@ -603,35 +603,42 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 {
   if(m_ui->m_layersComboBox->count() == 0)
   {
-    QMessageBox::information(this, "Aggregation", "Please, you must select a layer.");
-
+    QMessageBox::information(this, "Aggregation", "Select an input layer.");
+    return;
+  }
+  
+  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
+  if(!dsLayer)
+  {
+    QMessageBox::information(this, "Aggregation", "Can not execute this operation on this type of layer.");
+    return;
+  }
+  
+  te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
+  if (!inDataSource.get())
+  {
+    QMessageBox::information(this, "Aggregation", "The selected input data source can not be accessed.");
     return;
   }
   
   std::vector<te::dt::Property*> selProperties = getSelectedProperties();
-
   if(selProperties.empty())
   {
-    QMessageBox::information(this, "Aggregation", "Please, select at least one property.");
-
+    QMessageBox::information(this, "Aggregation", "Select at least one grouping attribute.");
     return;
   }
   
-  std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > outputStatisticalSummary = getStatisticalSummary();
-      
-  if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
-  {
-    QMessageBox::information(this, "Aggregation", "Set a name for the new Layer.");
-
-    return;
-  }
-
   std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
-
+  
   if(m_ui->m_repositoryLineEdit->text().isEmpty())
   {
-    QMessageBox::information(this, "Aggregation", "Set a repository for the new Layer.");
-
+    QMessageBox::information(this, "Aggregation", "Define a repository for the result.");
+    return;
+  }
+       
+  if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, "Aggregation", "Define a name for the resulting layer.");
     return;
   }
 
@@ -641,19 +648,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 
   try
   {
-    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
-    if(!dsLayer)
-    {
-      QMessageBox::information(this, "Aggregation", "Error: Can not perform on this layer.");
-      return;
-    }
-
-    te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
-    if (!inDataSource.get())
-    {
-      QMessageBox::information(this, "Aggregation", "Error: can not find the input datasource.");
-      return;
-    }
+    std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > outputStatisticalSummary = getStatisticalSummary();
     
     bool res;
     
@@ -663,7 +658,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       
       if (boost::filesystem::exists(uri))
       {
-        QMessageBox::information(this, "Aggregation", "Output file already exists. Remove it and try again. ");
+        QMessageBox::information(this, "Aggregation", "Output file already exists. Remove it or select a new name and try again.");
         return;
       }
       
@@ -679,7 +674,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       dsOGR->open();
       if (dsOGR->dataSetExists(outputdataset))
       {
-        QMessageBox::information(this, "Aggregation", "Error: there is already a dataset with the requested output name.");
+        QMessageBox::information(this, "Aggregation", "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.");
         return;
       }
       
@@ -715,7 +710,18 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
     }
     else
     {
-      te::da::DataSourcePtr aux = te::da::DataSourceManager::getInstance().find(m_outputDatasource->getId());
+      te::da::DataSourcePtr aux = te::da::GetDataSource(m_outputDatasource->getId());
+      if (!aux)
+      {
+        QMessageBox::information(this, "Aggregation", "The selected output datasource can not be accessed.");
+        return;
+      }
+      
+      if (aux->dataSetExists(outputdataset))
+      {
+        QMessageBox::information(this, "Aggregation", "Dataset already exists. Remove it or select a new name and try again.");
+        return;
+      }
       this->setCursor(Qt::WaitCursor);
       res = te::vp::Aggregation(dsLayer->getDataSetName(),inDataSource.get(), selProperties, outputStatisticalSummary, outputdataset, aux.get());
       if (!res)
@@ -727,7 +733,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
     }
     
     // creating a layer for the result
-    te::da::DataSourcePtr outDataSource = te::da::DataSourceManager::getInstance().find(m_outputDatasource->getId());
+    te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
     
     te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
       

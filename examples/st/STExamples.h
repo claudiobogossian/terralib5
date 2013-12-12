@@ -75,6 +75,11 @@ void TrajectoryIntersection(te::st::Trajectory* tj, te::gm::Geometry* geom);
 void LoadTrajectoryDataSetFromKML(boost::ptr_vector<te::st::TrajectoryDataSet>& output);
 
 /*! 
+  \brief It loads a coverage series from a set of geotif files
+*/
+std::auto_ptr<te::st::CoverageSeries> LoadCoverageSeriesFromGeotif();
+
+/*! 
   \brief It contains examples about coverage
 */
 void CoverageSeriesExamples();
@@ -116,7 +121,10 @@ void PrintTimeSeriesInfo(te::st::TimeSeries* output);
 void PrintTimeSeries(boost::ptr_vector<te::st::TimeSeries>& output);
 void PrintTimeSeries(te::st::TimeSeries* output);
 
-
+/*! 
+  \brief It prints information about a coverage series (PrintCoverageSeries.cpp) 
+*/
+void PrintCoverageSeriesInfo(te::st::CoverageSeries* output);
 
 #endif  // __TERRALIB_EXAMPLES_STEXAMPLES_INTERNAL_STEXAMPLES_H
 

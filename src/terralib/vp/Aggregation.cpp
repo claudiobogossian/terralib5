@@ -1,5 +1,4 @@
-
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -28,13 +27,13 @@
 #include "../common/Translator.h"
 #include "../common/progress/TaskProgress.h"
 #include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceInfo.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"
 #include "../dataaccess/dataset/DataSetTypeConverter.h"
-
 #include "../dataaccess/query_h.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
@@ -762,7 +761,7 @@ std::map<std::string, double> CalculateDoubleGroupingFunctions( const std::map<t
           else if (type == te::dt::INT32_TYPE)
             numval = items[i]->getInt32(index);
           else if (type == te::dt::INT64_TYPE)
-            numval = items[i]->getInt64(index);
+            numval = (double)items[i]->getInt64(index);
           else if (type == te::dt::FLOAT_TYPE)
             numval = items[i]->getFloat(index);
           else if (type == te::dt::DOUBLE_TYPE)
