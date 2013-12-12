@@ -104,7 +104,7 @@ namespace te
 		  if (sizeof(unsigned long int) == sizeof(unsigned int)) return convert(s, (unsigned int&)v);
 		  unsigned long long int i;
 		  if (convert(s, i)) {
-			  v = i;
+			  v = (unsigned long int)i;
 			  return true;
 		  }
 		  return false;

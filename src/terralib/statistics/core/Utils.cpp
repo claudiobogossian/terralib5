@@ -173,7 +173,7 @@ std::vector<double> te::stat::GetNumericData(te::da::DataSet* dataSet, const std
       else if (type == te::dt::INT32_TYPE)
         numval = dataSet->getInt32(index);
       else if (type == te::dt::INT64_TYPE)
-        numval = dataSet->getInt64(index);
+        numval = (double)dataSet->getInt64(index);
       else if (type == te::dt::FLOAT_TYPE)
         numval = dataSet->getFloat(index);
       else if (type == te::dt::DOUBLE_TYPE)

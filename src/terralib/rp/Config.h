@@ -77,6 +77,7 @@
 
   #if TE_COMPILER == TE_COMPILERCODE_VCPLUSPLUS
     #pragma warning( disable : 4251 )
+    #pragma warning( disable : 4275 )
   #endif
 
   #ifdef TERPSTATIC

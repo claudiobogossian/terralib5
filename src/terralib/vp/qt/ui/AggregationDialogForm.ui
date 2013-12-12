@@ -47,7 +47,7 @@
            </font>
           </property>
           <property name="text">
-           <string>The aggregation operation is applied to a single layer</string>
+           <string>Agreggates objects of a layer based on specified attributes</string>
           </property>
          </widget>
         </item>
