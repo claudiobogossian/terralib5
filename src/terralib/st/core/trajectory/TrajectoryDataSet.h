@@ -274,6 +274,20 @@ namespace te
                 the internal cursor will point to the end of the DataSet. 
         */
         std::auto_ptr<Trajectory>  getTrajectory(AbstractTrajectoryInterp* interp);
+
+        /*!
+          \brief  It returns the trajectory from the DataSet.
+
+          This method encapsulates all observations of this DataSet as a
+          Trajectory type associated to a NearestGeometryAtTimeInterp interpolator.
+
+          \return The trajectory associated to a NearestGeometryAtTimeInterp interpolator.
+
+          \note The caller will take the ownership of the returned pointer. 
+          \note It uses the method moveNext() internally. So, after calling this method,
+                the internal cursor will point to the end of the DataSet. 
+        */
+        std::auto_ptr<Trajectory>  getTrajectory();
         
         /*!
           \brief It returns the trajectory geometry property.

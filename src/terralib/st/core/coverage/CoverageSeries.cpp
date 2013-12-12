@@ -82,7 +82,6 @@ void te::st::CoverageSeries::add(te::dt::DateTime* time, te::st::Coverage* cv)
   CoverageShrPtr c(cv);
   CoverageSeriesObservation obs(t,c);
   add(obs);
-  //vai chamar o destrutor de t e c automaticamente!
 }
 
 void te::st::CoverageSeries::add(const te::st::CoverageSeriesObservation& o)
@@ -107,18 +106,16 @@ te::st::CoverageSeriesIterator te::st::CoverageSeries::end() const
 
 te::st::CoverageSeriesIterator te::st::CoverageSeries::at(te::dt::DateTime* t) const
 {
-  boost::shared_ptr<te::dt::DateTime> aux(t);
+  te::dt::DateTimeShrPtr aux(static_cast<te::dt::DateTime*>(t->clone()));
   CoverageSeriesObservationSet::const_iterator itcs = m_observations.find(aux);
   CoverageSeriesIterator it(itcs); 
-  aux.reset();
   return it;
 }
         
 std::auto_ptr<te::st::Coverage> te::st::CoverageSeries::getCoverage(te::dt::DateTime* t) const
 {
-  boost::shared_ptr<te::dt::DateTime> aux(t);
+  te::dt::DateTimeShrPtr aux(static_cast<te::dt::DateTime*>(t->clone()));
   CoverageSeriesObservationSet::const_iterator it = m_observations.find(aux);
-  aux.reset();
   if(it!=m_observations.end())
     return std::auto_ptr<te::st::Coverage>(it->second->clone());
 
@@ -308,7 +305,8 @@ te::st::CoverageSeries::getPatch(const te::dt::DateTime& dt, te::dt::TemporalRel
   //Note: the end iterator of a patch points to the position AFTER the last required observation 
   CoverageSeriesObservationSet::const_iterator itb = m_observations.end();
   CoverageSeriesObservationSet::const_iterator ite = m_observations.end();
-  boost::shared_ptr<te::dt::DateTime> shrdt(static_cast<te::dt::DateTime*>(dt.clone()));
+
+  te::dt::DateTimeShrPtr shrdt(static_cast<te::dt::DateTime*>(dt.clone()));
 
   if(r==te::dt::AFTER) //2
   {
@@ -335,8 +333,8 @@ te::st::CoverageSeries::getPatch(const te::dt::DateTime& dt, te::dt::TemporalRel
   else if(r==te::dt::DURING) //4
   {
     te::dt::DateTimePeriod* auxt = static_cast<te::dt::DateTimePeriod*>(shrdt.get());
-    boost::shared_ptr<te::dt::DateTime> t1(auxt->getInitialInstant());
-    boost::shared_ptr<te::dt::DateTime> t2(auxt->getFinalInstant());
+    te::dt::DateTimeShrPtr t1(auxt->getInitialInstant());
+    te::dt::DateTimeShrPtr t2(auxt->getFinalInstant());
     itb = m_observations.find(t1);
     if(itb==m_observations.end())
       itb = m_observations.upper_bound(t1);
