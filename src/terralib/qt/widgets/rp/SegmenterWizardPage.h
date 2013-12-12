@@ -63,6 +63,8 @@ namespace te
 
           ~SegmenterWizardPage();
 
+          bool isComplete() const;
+
         public:
 
           /*!

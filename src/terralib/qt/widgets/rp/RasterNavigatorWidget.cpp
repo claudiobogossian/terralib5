@@ -31,7 +31,6 @@
 #include "../../../geometry/Geometry.h"
 #include "../../../geometry/Point.h"
 #include "../../../geometry/Utils.h"
-#include "../../../maptools/DataSetLayer.h"
 #include "../../../maptools/Utils.h"
 #include "../../../raster/Grid.h"
 #include "../../../raster/Raster.h"
@@ -90,6 +89,8 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   m_mapDisplay->installEventFilter(coordTracking);
 
 // signals & slots
+  connect(m_ui->m_previewToolButton, SIGNAL(clicked()), this, SLOT(onPreviewClicked()));
+
   connect(m_ui->m_zoomInActionToolButtontoolButton, SIGNAL(toggled(bool)), this, SLOT(onZoomAreaToggled(bool)));
   connect(m_ui->m_zoomOutActionToolButtontoolButton, SIGNAL(toggled(bool)), this, SLOT(onZoomOutToggled(bool)));
   connect(m_ui->m_panActionToolButtontoolButton, SIGNAL(toggled(bool)), this, SLOT(onPanToggled(bool)));
@@ -98,10 +99,16 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   connect(m_ui->m_readPixelActionToolButton, SIGNAL(toggled(bool)), this, SLOT(onReadPixelToggled(bool)));
   connect(m_ui->m_extraDisplaysToolButton, SIGNAL(toggled(bool)), this, SLOT(onExtraDisplaysToggled(bool)));
   connect(m_ui->m_recomposeActionToolButton, SIGNAL(clicked()), this, SLOT(onRecomposeClicked()));
+
   connect(m_ui->m_redComboBox, SIGNAL(activated(int)), this, SLOT(onRedComboBoxActivated(int)));
   connect(m_ui->m_greenComboBox, SIGNAL(activated(int)), this, SLOT(onGreenComboBoxActivated(int)));
   connect(m_ui->m_blueComboBox, SIGNAL(activated(int)), this, SLOT(onBlueComboBoxActivated(int)));
-  connect(m_ui->m_previewToolButton, SIGNAL(clicked()), this, SLOT(onPreviewClicked()));
+  connect(m_ui->m_monoComboBox, SIGNAL(activated(int)), this, SLOT(onMonoComboBoxActivated(int)));
+  connect(m_ui->m_monoToolButton, SIGNAL(clicked(bool)), this, SLOT(onMonoToolClicked(bool)));
+  connect(m_ui->m_compositionToolButton, SIGNAL(clicked(bool)), this, SLOT(onCompositionToolClicked(bool)));
+  connect(m_ui->m_redToolButton, SIGNAL(clicked(bool)), this, SLOT(onRedToolClicked(bool)));
+  connect(m_ui->m_greenToolButton, SIGNAL(clicked(bool)), this, SLOT(onGreenToolClicked(bool)));
+  connect(m_ui->m_blueToolButton, SIGNAL(clicked(bool)), this, SLOT(onBlueToolClicked(bool)));
 
   connect(coordTracking, SIGNAL(coordTracked(QPointF&)), this, SLOT(onCoordTrackedChanged(QPointF&)));
   connect(m_mapDisplay, SIGNAL(extentChanged()), this, SLOT(onMapDisplayExtentChanged()));
@@ -116,9 +123,15 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   m_ui->m_geomActionToolButtontoolButton->setIcon(QIcon::fromTheme("edit-polygon"));
   m_ui->m_readPixelActionToolButton->setIcon(QIcon::fromTheme("color-picker"));
   m_ui->m_extraDisplaysToolButton->setIcon(QIcon::fromTheme("view-map-display-extra"));
+  m_ui->m_monoLabel->setPixmap(QIcon::fromTheme("bullet-black").pixmap(16,16));
   m_ui->m_redLabel->setPixmap(QIcon::fromTheme("bullet-red").pixmap(16,16));
   m_ui->m_greenLabel->setPixmap(QIcon::fromTheme("bullet-green").pixmap(16,16));
   m_ui->m_blueLabel->setPixmap(QIcon::fromTheme("bullet-blue").pixmap(16,16));
+  m_ui->m_monoToolButton->setIcon(QIcon::fromTheme("channel-gray"));
+  m_ui->m_compositionToolButton->setIcon(QIcon::fromTheme("channels"));
+  m_ui->m_redToolButton->setIcon(QIcon::fromTheme("channel-red"));
+  m_ui->m_greenToolButton->setIcon(QIcon::fromTheme("channel-green"));
+  m_ui->m_blueToolButton->setIcon(QIcon::fromTheme("channel-blue"));
 
   m_ui->m_previewToolButton->setVisible(false);
 
@@ -185,14 +198,10 @@ te::rst::Raster* te::qt::widgets::RasterNavigatorWidget::getExtentRaster()
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
-  //get style
-  te::se::Style* style = m_layer->getStyle();
-  te::se::CoverageStyle* cs = dynamic_cast<te::se::CoverageStyle*>(style);
-
-  return te::map::GetExtentRaster(inputRst.get(), m_mapDisplay->getWidth(), m_mapDisplay->getHeight(), reprojectedBBOX, m_mapDisplay->getSRID(), ibbox, m_layer->getSRID(), cs);
+  return te::map::GetExtentRaster(inputRst.get(), m_mapDisplay->getWidth(), m_mapDisplay->getHeight(), reprojectedBBOX, m_mapDisplay->getSRID(), ibbox, m_layer->getSRID());
 }
 
-void te::qt::widgets::RasterNavigatorWidget::drawRaster(te::rst::Raster* rst)
+void te::qt::widgets::RasterNavigatorWidget::drawRaster(te::rst::Raster* rst, te::se::Style* style)
 {
   const te::gm::Envelope& env = m_mapDisplay->getExtent();
   const te::gm::Envelope& envRst = *rst->getExtent();
@@ -205,12 +214,22 @@ void te::qt::widgets::RasterNavigatorWidget::drawRaster(te::rst::Raster* rst)
   canvas.setDevice(draft, false);
   canvas.setWindow(env.m_llx, env.m_lly, env.m_urx, env.m_ury);
 
+  bool hasToDelete = false;
   //style
-  std::auto_ptr<te::se::Style> style(te::se::CreateCoverageStyle(rst->getNumberOfBands()));
-  te::se::CoverageStyle* cs = dynamic_cast<te::se::CoverageStyle*>(style.get());
+  if(!style)
+  {
+    style = te::se::CreateCoverageStyle(rst->getNumberOfBands());
+
+    hasToDelete = true;
+  }
+
+  te::se::CoverageStyle* cs = dynamic_cast<te::se::CoverageStyle*>(style);
 
   // Draw raster
   te::map::DrawRaster(rst, &canvas, env, m_mapDisplay->getSRID(), envRst, rst->getSRID(), cs);
+
+  if(hasToDelete)
+    delete style;
 
   m_mapDisplay->repaint();
 }
@@ -234,6 +253,11 @@ void te::qt::widgets::RasterNavigatorWidget::showAsPreview(bool asPreview)
     m_mapDisplay->installEventFilter(m_panTool);
     m_mapDisplay->installEventFilter(m_zoomTool);
   }
+}
+
+void te::qt::widgets::RasterNavigatorWidget::hideColorCompositionTool(bool hide)
+{
+  m_ui->m_ccFrame->setVisible(!hide);
 }
 
 void te::qt::widgets::RasterNavigatorWidget::hideEditionTools(bool hide)
@@ -454,6 +478,109 @@ void te::qt::widgets::RasterNavigatorWidget::onBlueComboBoxActivated(int index)
   m_mapDisplay->refresh();
 }
 
+void te::qt::widgets::RasterNavigatorWidget::onMonoComboBoxActivated(int index)
+{
+  std::string name = m_ui->m_monoComboBox->itemText(index).toStdString();
+
+  m_symbolizer->getChannelSelection()->getGrayChannel()->setSourceChannelName(name);
+
+  m_mapDisplay->refresh();
+}
+
+void te::qt::widgets::RasterNavigatorWidget::onMonoToolClicked(bool flag)
+{
+  if(m_symbolizer->getChannelSelection()->getGrayChannel() == 0)
+  {
+    te::se::SelectedChannel* scMono = new te::se::SelectedChannel();
+    scMono->setSourceChannelName(m_ui->m_monoComboBox->currentText().toStdString());
+    m_symbolizer->getChannelSelection()->setGrayChannel(scMono);
+  }
+
+  m_symbolizer->getChannelSelection()->setColorCompositionType(te::se::GRAY_COMPOSITION);
+
+  getCompositionInfo();
+
+  m_mapDisplay->refresh();
+}
+
+void te::qt::widgets::RasterNavigatorWidget::onRedToolClicked(bool flag)
+{
+  if(m_symbolizer->getChannelSelection()->getRedChannel() == 0)
+  {
+    te::se::SelectedChannel* scRed = new te::se::SelectedChannel();
+    scRed->setSourceChannelName(m_ui->m_redComboBox->currentText().toStdString());
+    m_symbolizer->getChannelSelection()->setRedChannel(scRed);
+  }
+
+  m_symbolizer->getChannelSelection()->setColorCompositionType(te::se::RED_COMPOSITION);
+
+  getCompositionInfo();
+
+  m_mapDisplay->refresh();
+}
+
+void te::qt::widgets::RasterNavigatorWidget::onGreenToolClicked(bool flag)
+{
+  if(m_symbolizer->getChannelSelection()->getGreenChannel() == 0)
+  {
+    te::se::SelectedChannel* scGreen = new te::se::SelectedChannel();
+    scGreen->setSourceChannelName(m_ui->m_greenComboBox->currentText().toStdString());
+    m_symbolizer->getChannelSelection()->setGreenChannel(scGreen);
+  }
+
+  m_symbolizer->getChannelSelection()->setColorCompositionType(te::se::GREEN_COMPOSITION);
+
+  getCompositionInfo();
+
+  m_mapDisplay->refresh();
+}
+
+void te::qt::widgets::RasterNavigatorWidget::onBlueToolClicked(bool flag)
+{
+  if(m_symbolizer->getChannelSelection()->getBlueChannel() == 0)
+  {
+    te::se::SelectedChannel* scBlue = new te::se::SelectedChannel();
+    scBlue->setSourceChannelName(m_ui->m_blueComboBox->currentText().toStdString());
+    m_symbolizer->getChannelSelection()->setBlueChannel(scBlue);
+  }
+
+  m_symbolizer->getChannelSelection()->setColorCompositionType(te::se::BLUE_COMPOSITION);
+
+  getCompositionInfo();
+
+  m_mapDisplay->refresh();
+}
+
+void te::qt::widgets::RasterNavigatorWidget::onCompositionToolClicked(bool flag)
+{
+  if(m_symbolizer->getChannelSelection()->getRedChannel() == 0)
+  {
+    te::se::SelectedChannel* scRed = new te::se::SelectedChannel();
+    scRed->setSourceChannelName(m_ui->m_redComboBox->currentText().toStdString());
+    m_symbolizer->getChannelSelection()->setRedChannel(scRed);
+  }
+
+  if(m_symbolizer->getChannelSelection()->getGreenChannel() == 0)
+  {
+    te::se::SelectedChannel* scGreen = new te::se::SelectedChannel();
+    scGreen->setSourceChannelName(m_ui->m_greenComboBox->currentText().toStdString());
+    m_symbolizer->getChannelSelection()->setGreenChannel(scGreen);
+  }
+
+  if(m_symbolizer->getChannelSelection()->getBlueChannel() == 0)
+  {
+    te::se::SelectedChannel* scBlue = new te::se::SelectedChannel();
+    scBlue->setSourceChannelName(m_ui->m_blueComboBox->currentText().toStdString());
+    m_symbolizer->getChannelSelection()->setBlueChannel(scBlue);
+  }
+
+  m_symbolizer->getChannelSelection()->setColorCompositionType(te::se::RGB_COMPOSITION);
+
+  getCompositionInfo();
+
+  m_mapDisplay->refresh();
+}
+
 void te::qt::widgets::RasterNavigatorWidget::onPreviewClicked()
 {
   emit previewClicked();
@@ -472,6 +599,7 @@ void te::qt::widgets::RasterNavigatorWidget::listBands()
   m_ui->m_redComboBox->clear();
   m_ui->m_greenComboBox->clear();
   m_ui->m_blueComboBox->clear();
+  m_ui->m_monoComboBox->clear();
 
   std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
 
@@ -488,6 +616,7 @@ void te::qt::widgets::RasterNavigatorWidget::listBands()
         m_ui->m_redComboBox->addItem(QString::number(i));
         m_ui->m_greenComboBox->addItem(QString::number(i));
         m_ui->m_blueComboBox->addItem(QString::number(i));
+        m_ui->m_monoComboBox->addItem(QString::number(i));
       }
     }
   }
@@ -497,13 +626,7 @@ void te::qt::widgets::RasterNavigatorWidget::getCompositionInfo()
 {
   assert(m_layer);
 
-  // get the associated layer style
-  te::map::DataSetLayer* layer = dynamic_cast<te::map::DataSetLayer*>(m_layer.get());
-
-  if(!layer)
-    return;
-
-  te::se::Style* style = layer->getStyle();
+  te::se::Style* style = m_layer->getStyle();
   assert(style);
 
 // should I render this style?
@@ -526,35 +649,65 @@ void te::qt::widgets::RasterNavigatorWidget::getCompositionInfo()
 
   if(m_symbolizer->getChannelSelection())
   {
+    m_ui->m_monoComboBox->setEnabled(false);
+    m_ui->m_redComboBox->setEnabled(false);
+    m_ui->m_greenComboBox->setEnabled(false);
+    m_ui->m_blueComboBox->setEnabled(false);
+
     te::se::ChannelSelection* cs = m_symbolizer->getChannelSelection();
 
-    if(cs->getRedChannel())
+    if(cs->getColorCompositionType() == te::se::RGB_COMPOSITION)
     {
+      m_ui->m_compositionToolButton->setChecked(true);
+
       std::string name = cs->getRedChannel()->getSourceChannelName();
       setComboBoxText(m_ui->m_redComboBox, name);
-    }
-
-    if(cs->getGreenChannel())
-    {
-      std::string name = cs->getGreenChannel()->getSourceChannelName();
+      name = cs->getGreenChannel()->getSourceChannelName();
       setComboBoxText(m_ui->m_greenComboBox, name);
-    }
-
-    if(cs->getBlueChannel())
-    {
-      std::string name = cs->getBlueChannel()->getSourceChannelName();
+      name = cs->getBlueChannel()->getSourceChannelName();
       setComboBoxText(m_ui->m_blueComboBox, name);
-    }
 
-    if(cs->getGrayChannel())
+      m_ui->m_redComboBox->setEnabled(true);
+      m_ui->m_greenComboBox->setEnabled(true);
+      m_ui->m_blueComboBox->setEnabled(true);
+    }
+    else if(cs->getColorCompositionType() == te::se::GRAY_COMPOSITION)
     {
+      m_ui->m_monoToolButton->setChecked(true);
+
       std::string name = cs->getGrayChannel()->getSourceChannelName();
       setComboBoxText(m_ui->m_redComboBox, name);
+
+      m_ui->m_monoComboBox->setEnabled(true);
+    }
+    else if(cs->getColorCompositionType() == te::se::RED_COMPOSITION)
+    {
+      m_ui->m_redToolButton->setChecked(true);
+
+      std::string name = cs->getRedChannel()->getSourceChannelName();
+      setComboBoxText(m_ui->m_redComboBox, name);
+
+      m_ui->m_redComboBox->setEnabled(true);
+    }
+    else if(cs->getColorCompositionType() == te::se::GREEN_COMPOSITION)
+    {
+      m_ui->m_greenToolButton->setChecked(true);
+
+      std::string name = cs->getGreenChannel()->getSourceChannelName();
       setComboBoxText(m_ui->m_greenComboBox, name);
+
+      m_ui->m_greenComboBox->setEnabled(true);
+    }
+    else if(cs->getColorCompositionType() == te::se::BLUE_COMPOSITION)
+    {
+      m_ui->m_blueToolButton->setChecked(true);
+
+      std::string name = cs->getBlueChannel()->getSourceChannelName();
       setComboBoxText(m_ui->m_blueComboBox, name);
+
+      m_ui->m_blueComboBox->setEnabled(true);
     }
   }
-
 }
 
 void te::qt::widgets::RasterNavigatorWidget::setComboBoxText(QComboBox* cb, std::string value)

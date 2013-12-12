@@ -150,45 +150,53 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 {
   if(m_ui->m_firstLayerComboBox->currentText().isEmpty())
   {
-    QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("Choose an input layer."));
+    QMessageBox::warning(this, TR_VP("Intersection"), TR_VP("Select a first input layer."));
     return;
   }
-
-  std::auto_ptr<te::map::LayerSchema> firstSchema = m_firstSelectedLayer->getSchema();
-
-  if(!firstSchema->hasGeom())
+  
+  te::map::DataSetLayer* firstDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_firstSelectedLayer.get());
+  if(!firstDataSetLayer)
   {
-    QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("The input layer do not have a geometry column!"));
+    QMessageBox::information(this, "Intersection", "Can not execute this operation on this type of first layer.");
+    return;
+  }
+  
+  te::da::DataSourcePtr firstDataSource = te::da::GetDataSource(firstDataSetLayer->getDataSourceId(), true);
+  if (!firstDataSource.get())
+  {
+    QMessageBox::information(this, "Intersection", "The selected first input data source can not be accessed.");
     return;
   }
 
   if(m_ui->m_secondLayerComboBox->currentText().isEmpty())
   {
-    QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("Choose an input layer."));
+    QMessageBox::warning(this, TR_VP("Intersection"), TR_VP("Select a second input layer."));
     return;
   }
-
-  std::auto_ptr<te::map::LayerSchema> secondSchema = m_secondSelectedLayer->getSchema();
-
-  if(!secondSchema->hasGeom())
+  
+  te::map::DataSetLayer* secondDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_secondSelectedLayer.get());
+  if(!secondDataSetLayer)
   {
-    QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("The input layer do not have a geometry column!"));
+    QMessageBox::information(this, "Intersection", "Can not execute this operation on this type of second layer.");
     return;
   }
-
-  bool copyInputColumns = m_ui->m_copyColumnsCheckBox->isChecked();
-
-  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
-  if(outputdataset.empty())
+  
+  te::da::DataSourcePtr secondDataSource = te::da::GetDataSource(secondDataSetLayer->getDataSourceId(), true);
+  if (!secondDataSource.get())
   {
-    QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("It is necessary a name for the new layer."));
+    QMessageBox::information(this, "Intersection", "The selected second input data source can not be accessed.");
     return;
   }
-
+  
   if(m_ui->m_repositoryLineEdit->text().isEmpty())
   {
-    QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("Set a repository for the new Layer."));
-
+    QMessageBox::warning(this, TR_VP("Intersection"), TR_VP("Select a repository for the resulting layer."));
+    return;
+  }
+  
+  if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, TR_VP("Intersection"), TR_VP("Define a name for the resulting layer."));
     return;
   }
 
@@ -198,31 +206,10 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
   
   try
   {
-    te::map::DataSetLayer* firstDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_firstSelectedLayer.get());
-    if(!firstDataSetLayer)
-    {
-      QMessageBox::information(this, "Intersection", "Error: Can not perform on the first layer.");
-      return;
-    }
-    te::da::DataSourcePtr firstDataSource = te::da::GetDataSource(firstDataSetLayer->getDataSourceId(), true);
+    bool copyInputColumns = m_ui->m_copyColumnsCheckBox->isChecked();
+    std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
-    te::map::DataSetLayer* secondDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_secondSelectedLayer.get());
-    if(!secondDataSetLayer)
-    {
-      QMessageBox::information(this, "Intersection", "Error: Can not perform on the second layer.");
-      return;
-    }
-
-    te::da::DataSourcePtr secondDataSource = te::da::GetDataSource(secondDataSetLayer->getDataSourceId(), true);
-
-    if (!firstDataSource.get() || !secondDataSource)
-    {
-      QMessageBox::information(this, "Intersection", "Error: can not find the input datasource.");
-      return;
-    }
-
-    bool res;
-
+    bool res;    
     if (m_toFile)
     {
       boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
@@ -245,7 +232,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
       dsOGR->open();
       if(dsOGR->dataSetExists(outputdataset))
       {
-        QMessageBox::information(this, "Intersection", "Error: there is already a dataset with the requested output name.");
+        QMessageBox::information(this, "Intersection", "Output file already exists. Remove it or select a new name and try again.");
         return;
       }
       
@@ -286,8 +273,18 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     }
     else
     {
+      te::da::DataSourcePtr aux = te::da::GetDataSource(m_outputDatasource->getId());
+      if (!aux.get())
+      {
+        QMessageBox::information(this, "Intersection", "The output data source can not be accessed.");
+        return;
+      }
+      if (aux->dataSetExists(outputdataset))
+      {
+        QMessageBox::information(this, "Intersection", "Dataset already exists. Remove it or select a new name and try again. ");
+        return;
+      }
       this->setCursor(Qt::WaitCursor);
-      te::da::DataSourcePtr aux = te::da::DataSourceManager::getInstance().find(m_outputDatasource->getId());
       res = te::vp::Intersection(firstDataSetLayer->getDataSetName(),
                                 firstDataSource.get(),
                                 secondDataSetLayer->getDataSetName(),
@@ -304,7 +301,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     }
 
     // creating a layer for the result
-    te::da::DataSourcePtr outDataSource = te::da::DataSourceManager::getInstance().find(m_outputDatasource->getId());
+    te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
     
     te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
       

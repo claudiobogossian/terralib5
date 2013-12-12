@@ -90,7 +90,12 @@ bool te::qt::widgets::SegmenterWizard::validateCurrentPage()
   }
   else if(currentPage() ==  m_segmenterPage.get())
   {
-    return m_segmenterPage->isComplete();
+    bool res = m_segmenterPage->isComplete();
+    
+    if(!res)
+      QMessageBox::warning(this, tr("Warning"), tr("Select at least one band."));
+
+    return res;
   }
   else if(currentPage() ==  m_rasterInfoPage.get())
   {

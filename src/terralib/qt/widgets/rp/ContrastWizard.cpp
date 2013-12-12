@@ -87,7 +87,12 @@ bool te::qt::widgets::ContrastWizard::validateCurrentPage()
   }
   else if(currentPage() ==  m_contrastPage.get())
   {
-    return m_contrastPage->isComplete();
+     bool res = m_contrastPage->isComplete();
+
+     if(!res)
+       QMessageBox::warning(this, tr("Warning"), tr("Select at least one band."));
+
+    return res;
   }
   else if(currentPage() ==  m_rasterInfoPage.get())
   {

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>468</width>
-    <height>564</height>
+    <width>496</width>
+    <height>650</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -66,7 +66,7 @@
            </font>
           </property>
           <property name="text">
-           <string>The buffer operation is applied to a single layer</string>
+           <string>Creates buffer areas to a specified distance around objects</string>
           </property>
          </widget>
         </item>
@@ -208,7 +208,7 @@
           <rect>
            <x>0</x>
            <y>10</y>
-           <width>317</width>
+           <width>322</width>
            <height>77</height>
           </rect>
          </property>
@@ -297,7 +297,7 @@
            <x>10</x>
            <y>12</y>
            <width>358</width>
-           <height>99</height>
+           <height>103</height>
           </rect>
          </property>
          <layout class="QGridLayout" name="gridLayout_13">
@@ -400,8 +400,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>175</width>
-           <height>31</height>
+           <width>237</width>
+           <height>34</height>
           </rect>
          </property>
          <layout class="QGridLayout" name="gridLayout_9">
