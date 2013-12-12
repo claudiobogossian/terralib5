@@ -58,6 +58,7 @@ te::qt::widgets::ContrastWizardPage::ContrastWizardPage(QWidget* parent)
   QGridLayout* displayLayout = new QGridLayout(m_ui->m_frame);
   m_navigator.reset(new te::qt::widgets::RasterNavigatorWidget(m_ui->m_frame));
   m_navigator->showAsPreview(true);
+  m_navigator->hideColorCompositionTool(true);
   displayLayout->addWidget(m_navigator.get());
   displayLayout->setContentsMargins(0,0,0,0);
 
@@ -75,10 +76,28 @@ te::qt::widgets::ContrastWizardPage::ContrastWizardPage(QWidget* parent)
   onContrastTypeComboBoxActivated(m_ui->m_contrastTypeComboBox->currentIndex());
 
   m_ui->m_histogramPushButton->setEnabled(false);
+  m_ui->m_histogramPushButton->setVisible(false);
 }
 
 te::qt::widgets::ContrastWizardPage::~ContrastWizardPage()
 {
+}
+
+bool te::qt::widgets::ContrastWizardPage::isComplete() const
+{
+  int nBands = m_ui->m_bandTableWidget->rowCount();
+
+  for(int i = 0; i < nBands; ++i)
+  {
+    QCheckBox* checkBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget(i, 0);
+    
+    if(checkBox->isChecked())
+    {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void te::qt::widgets::ContrastWizardPage::set(te::map::AbstractLayerPtr layer)
@@ -257,7 +276,7 @@ void te::qt::widgets::ContrastWizardPage::listBands()
         
           QCheckBox* bandCheckBox = new QCheckBox(bName, this);
 
-          if(inputRst->getNumberOfBands() == 1)
+          //if(inputRst->getNumberOfBands() == 1)
             bandCheckBox->setChecked(true);
 
           m_ui->m_bandTableWidget->setCellWidget(newrow, 0, bandCheckBox);
@@ -319,7 +338,7 @@ void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int in
 
     for(int i = 0; i < nBands; ++i)
     {
-      QTableWidgetItem* itemMax = new QTableWidgetItem("0");
+      QTableWidgetItem* itemMax = new QTableWidgetItem("255");
       itemMax->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
       m_ui->m_bandTableWidget->setItem(i, 1, itemMax);
     }
@@ -338,11 +357,11 @@ void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int in
 
     for(int i = 0; i < nBands; ++i)
     {
-      QTableWidgetItem* itemMean = new QTableWidgetItem("0");
+      QTableWidgetItem* itemMean = new QTableWidgetItem("127");
       itemMean->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
       m_ui->m_bandTableWidget->setItem(i, 1, itemMean);
 
-      QTableWidgetItem* itemStdDev = new QTableWidgetItem("4");
+      QTableWidgetItem* itemStdDev = new QTableWidgetItem("50");
       itemStdDev->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
       m_ui->m_bandTableWidget->setItem(i, 2, itemStdDev);
     }

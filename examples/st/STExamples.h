@@ -36,14 +36,43 @@
 #include <vector>
 #include <string>
 
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/shared_ptr.hpp>
+
+
 //ST examples
 #include "Config.h"
 
-/*! \brief It loads the TerraLib modules. */
+/*! 
+	\brief It loads the TerraLib modules. 
+*/
 void LoadModules();
 
-/*! \brief It creates a new DataSource and put it into the DataSource manager, using a random id. */
+/*! 
+	\brief It creates a new DataSource and put it into the DataSource manager, using a random id. 
+*/
 void CreateDataSourceAndUpdateManager(te::da::DataSourceInfo& dsinfo);
+
+/*! 
+	\brief It groups the examples with trajectories (TrajectoryExamples.cpp). 
+*/
+void TrajectoryExamples();
+
+/*! 
+	\brief It calculates the distance between two trajectories (TrajectoryDistance.cpp). 
+*/
+void TrajectoryDistance(te::st::Trajectory* tj1, te::st::Trajectory* tj2);
+
+/*! 
+	\brief It calculates the intersection between a trajectory and a geometry (TrajectoryInstersection.cpp). 
+*/
+void TrajectoryIntersection(te::st::Trajectory* tj, te::gm::Geometry* geom);
+
+/*! 
+  \brief It loads trajectory data set from KML file
+*/
+void LoadTrajectoryDataSetFromKML(boost::ptr_vector<te::st::TrajectoryDataSet>& output);
 
 /*! 
   \brief It contains examples about coverage
@@ -51,27 +80,43 @@ void CreateDataSourceAndUpdateManager(te::da::DataSourceInfo& dsinfo);
 void CoverageSeriesExamples();
 
 /*! 
-  \brief It contains examples about trajectory from a KML file
+  \brief It prints information about the trajectory data set: its spatial and temporal extent (PrintTrajectoryDataSet.cpp)
 */
-void TrajectoryExamplesFromKML();
+void PrintTrajectoryDataSetInfo(boost::ptr_vector<te::st::TrajectoryDataSet>& output);
+void PrintTrajectoryDataSetInfo(te::st::TrajectoryDataSet* output);
 
 /*! 
-  \brief It contains examples about trajectory from a KML file
+  \brief It prints all observations of the trajectory data set (PrintTrajectoryDataSet.cpp)
 */
-void TrajectoryExamplesFromPostGIS();
-
-/*! 
-  \brief It prints a time series
-*/
-void PrintTimeSeries(te::st::TimeSeries* ts);
-
-/*! 
-  \brief It prints a trajectory data set
-  
-  It prints the spatial and temporal extents as well as the observations of a
-  given TrajectoryDataSet.
-*/
+void PrintTrajectoryDataSet(boost::ptr_vector<te::st::TrajectoryDataSet>& output);
 void PrintTrajectoryDataSet(te::st::TrajectoryDataSet* output);
+
+/*! 
+  \brief It prints information about the trajectory: its spatial and temporal extent (PrintTrajectory.cpp) 
+*/
+void PrintTrajectoryInfo(boost::ptr_vector<te::st::Trajectory>& output);
+void PrintTrajectoryInfo(te::st::Trajectory* output);
+
+/*! 
+  \brief It prints all observations of the trajectory (PrintTrajectory.cpp) 
+*/
+void PrintTrajectory(boost::ptr_vector<te::st::Trajectory>& output);
+void PrintTrajectory(te::st::Trajectory* output);
+void PrintTrajectoryPatch(te::st::TrajectoryPatch& tjPatch);
+
+/*! 
+  \brief It prints information about the time series: its spatial and temporal extent (PrintTimeSeries.cpp) 
+*/
+void PrintTimeSeriesInfo(boost::ptr_vector<te::st::TimeSeries>& output);
+void PrintTimeSeriesInfo(te::st::TimeSeries* output);
+
+/*! 
+  \brief It prints all observations of the time series (PrintTimeSeries.cpp) 
+*/
+void PrintTimeSeries(boost::ptr_vector<te::st::TimeSeries>& output);
+void PrintTimeSeries(te::st::TimeSeries* output);
+
+
 
 #endif  // __TERRALIB_EXAMPLES_STEXAMPLES_INTERNAL_STEXAMPLES_H
 

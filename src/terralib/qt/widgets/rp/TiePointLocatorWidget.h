@@ -161,6 +161,8 @@ namespace te
 
           void setReferenceTiePointMarkLegend(QPixmap p);
 
+          void createSelection(int initialId);
+
         protected slots:
 
           void onAutoAcquireTiePointsToolButtonClicked();
