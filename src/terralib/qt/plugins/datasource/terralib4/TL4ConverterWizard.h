@@ -82,6 +82,8 @@ namespace te
 
             bool validLayerNames();
 
+            std::string getOriginalName(const std::string& targetName);
+
           protected slots:
 
             void back();
@@ -108,6 +110,7 @@ namespace te
 
             bool m_hasNonRaster;
             bool m_hasRaster;
+            bool m_rollback;
 
             std::string m_rasterFolderPath;
 
