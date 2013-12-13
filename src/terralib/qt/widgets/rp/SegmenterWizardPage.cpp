@@ -241,6 +241,7 @@ void te::qt::widgets::SegmenterWizardPage::apply()
   te::rp::Segmenter::InputParameters algoInputParams = getInputParams();
 
   algoInputParams.m_inputRasterPtr = inputRst;
+  algoInputParams.m_enableThreadedProcessing = false;
   algoInputParams.m_enableBlockProcessing = false;
   algoInputParams.m_enableBlockMerging = false;
 
