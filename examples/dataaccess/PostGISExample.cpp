@@ -78,7 +78,7 @@ void PostGISExample()
     std::cout << std::endl << "Adding new Property population to " << dt_name << std::endl;
     te::dt::SimpleProperty* p = AddProperty(datasetType->getName(), transactor.get());
 
-// Now, let's  remove things from the data source using transactor
+// Now, let's  remove things from the data source using transactor or function DroppingDataSetTypeProperty
     // first, drop the recently added property
     std::cout << std::endl << "Droping Property population of " << dt_name <<" using transactor or ds"<< std::endl;
     (transactor.get())->dropProperty(datasetType->getName(), "population");
@@ -89,6 +89,9 @@ void PostGISExample()
     te::dt::SimpleProperty* p1 = AddProperty(datasetType->getName(), transactor.get());
 // Dropping using ds api   
     ds->dropProperty(dt_name, "population");
+
+// Now, let´s drop a geom column
+    ds->dropProperty(dt_name, "spatial_data"); //check the view geometry_columns
 
 // finally, drop the dataset we have created above via ds or via transactor
     std::cout << std::endl << "Droping dataSet " << dt_name << std::endl;
@@ -103,11 +106,9 @@ void PostGISExample()
     {
       std::cout << std::endl << "Transactor in transaction! "<< std::endl;
     }
-    //USE O DELETE transactor ANTES de FECHAR O BANCO. 
-    //TEM QUE SER RELEASE E NAO GET senao ao sair do escopo, 
-    //como é auto_ptr tenta destruir denovo e cai.
+    //release and delete transactor before closing ds, otherwise as it is auto_ptr -tenta destruir denovo e cai.
     delete transactor.release(); 
-    ds->close(); //close nao libera o transactor. USE O delete ACIMA.  
+    ds->close(); 
     int i =1;
   }
   catch(const std::exception& e)
