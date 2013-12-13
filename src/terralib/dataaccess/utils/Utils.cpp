@@ -339,7 +339,9 @@ void te::da::GetOIDPropertyNames(const te::da::DataSetType* type, std::vector<st
   const std::vector<te::dt::Property*>& props = type->getProperties();
   for(std::size_t i = 0; i < props.size(); ++i)
   {
-    if(props[i]->getType() == te::dt::GEOMETRY_TYPE || props[i]->getType() == te::dt::RASTER_TYPE)
+    if(props[i]->getType() == te::dt::GEOMETRY_TYPE || props[i]->getType() == te::dt::RASTER_TYPE ||
+       props[i]->getType() == te::dt::FLOAT_TYPE || props[i]->getType() == te::dt::DOUBLE_TYPE ||
+       props[i]->getType() == te::dt::BYTE_ARRAY_TYPE || props[i]->getType() == te::dt::NUMERIC_TYPE)
       continue;
 
     pnames.push_back(props[i]->getName());
