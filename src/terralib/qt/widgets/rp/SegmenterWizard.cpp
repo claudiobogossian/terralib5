@@ -24,6 +24,7 @@
 */
 
 // TerraLib 
+#include "../../../common/progress/ProgressManager.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
@@ -31,6 +32,7 @@
 #include "../../../rp/SegmenterRegionGrowingStrategy.h"
 #include "../../../rp/Module.h"
 #include "../../widgets/help/HelpPushButton.h"
+#include "../../widgets/progress/ProgressViewerDialog.h"
 #include "SegmenterWizard.h"
 #include "SegmenterAdvancedOptionsWizardPage.h"
 #include "SegmenterWizardPage.h"
@@ -167,6 +169,10 @@ bool te::qt::widgets::SegmenterWizard::execute()
   algoOutputParams.m_rType = m_rasterInfoPage->getWidget()->getType();
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
   QApplication::setOverrideCursor(Qt::WaitCursor);
 
   try
@@ -187,6 +193,8 @@ bool te::qt::widgets::SegmenterWizard::execute()
       {
         QMessageBox::critical(this, tr("Segmenter"), tr("Segmenter execution error"));
 
+        te::common::ProgressManager::getInstance().removeViewer(id);
+
         QApplication::restoreOverrideCursor();
 
         return false;
@@ -197,6 +205,8 @@ bool te::qt::widgets::SegmenterWizard::execute()
       QMessageBox::critical(this, tr("Segmenter"), tr("Segmenter initialization error") +
         ( " " + te::rp::Module::getLastLogStr() ).c_str());
 
+      te::common::ProgressManager::getInstance().removeViewer(id);
+
       QApplication::restoreOverrideCursor();
 
       return false;
@@ -206,6 +216,8 @@ bool te::qt::widgets::SegmenterWizard::execute()
   {
     QMessageBox::warning(this, tr("Register"), e.what());
 
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
     QApplication::restoreOverrideCursor();
 
     return false;
@@ -214,10 +226,14 @@ bool te::qt::widgets::SegmenterWizard::execute()
   {
     QMessageBox::warning(this, tr("Register"), tr("An exception has occuried!"));
 
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
     QApplication::restoreOverrideCursor();
 
     return false;
   }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
 
   QApplication::restoreOverrideCursor();
 
