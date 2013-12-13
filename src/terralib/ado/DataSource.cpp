@@ -119,8 +119,7 @@ void te::ado::DataSource::open()
 
 std::map<std::string, std::string> te::ado::DataSource::getGeomColumns()
 {
-  if(m_geomColumns.size() == 0)
-    te::ado::GetGeometryColumnsInfo(m_conn->getConn(), m_geomColumns);
+  te::ado::GetGeometryColumnsInfo(m_conn->getConn(), m_geomColumns);
 
   return m_geomColumns;
 }
