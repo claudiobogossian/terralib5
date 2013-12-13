@@ -56,8 +56,7 @@
 #include <boost/lexical_cast.hpp>
 
 // Qt
-#include <QtGui/QAbstractButton>
-#include <QtGui/QCursor>
+#include <QtGui/QIcon>
 #include <QtGui/QMessageBox>
 #include <QtGui/QTableWidgetItem>
 #include <QtGui/QVBoxLayout>
@@ -66,6 +65,7 @@ te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* pare
   : QWizard(parent, f),
     m_hasNonRaster(false),
     m_hasRaster(false),
+    m_rollback(false),
     m_ui(new Ui::TL4ConverterWizardForm)
 {
 // setup controls
@@ -95,10 +95,12 @@ te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* pare
   m_resolveNamePage->setSubTitle(tr("Some layer names clashes with target data source names. Please, give a new name for the layers showed below"));
   m_resolveNamePage->setCommitPage(true);
 
+  //QVBoxLayout* layout = new QVBoxLayout(
+
   m_resolveNameTableWidget.reset(new QTableWidget(m_resolveNamePage.get()));
-  m_resolveNameTableWidget->setColumnCount(2);
+  m_resolveNameTableWidget->setColumnCount(3);
   QStringList labels;
-  labels << tr("Source Names") << tr("Target Names");
+  labels << "" << tr("Source Names") << tr("Target Names");
   m_resolveNameTableWidget->setHorizontalHeaderLabels(labels);
 
   m_finalPage.reset(new TL4FinalPageWizardPage(this));
@@ -192,54 +194,85 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
   }
   else if(current_page_id == PAGE_NAME_RESOLVE_SELECTOR)
   {
-    return validLayerNames();
+    return !m_rollback;
   }
 
-  if(nextId() == PAGE_NAME_RESOLVE_SELECTOR)
+  try
   {
-    std::vector<std::string> selectedLayer = m_layerSelectionPage->getChecked();
-
-    m_resolveNameTableWidget->clearContents();
-    m_resolveNameTableWidget->setRowCount(selectedLayer.size());
-    //m_resolveNameTableWidget->setColumnCount(2);
-
-    te::da::DataSourcePtr tl5ds;
-
-    if(m_hasNonRaster)
-      tl5ds = te::da::DataSourceManager::getInstance().get(m_targetDataSource->getId(), m_targetDataSource->getType(), m_targetDataSource->getConnInfo());
-
-    for(std::size_t i = 0; i < selectedLayer.size(); ++i)
+    if(nextId() == PAGE_NAME_RESOLVE_SELECTOR)
     {
-      std::string targetDatasetName = selectedLayer[i];
+      std::vector<std::string> selectedLayer = m_layerSelectionPage->getChecked();
 
-// is it a raster?
-      std::auto_ptr<te::da::DataSetType> input_dataset_type(m_tl4Database->getDataSetType(selectedLayer[i]));
+      m_resolveNameTableWidget->clearContents();
+      m_resolveNameTableWidget->setRowCount(selectedLayer.size());
+      //m_resolveNameTableWidget->setColumnCount(2);
 
-      if(input_dataset_type->hasRaster())
+      te::da::DataSourcePtr tl5ds;
+
+      if(m_hasNonRaster)
+        tl5ds = te::da::DataSourceManager::getInstance().get(m_targetDataSource->getId(), m_targetDataSource->getType(), m_targetDataSource->getConnInfo());
+
+      bool hasConflicts = false;
+
+      for(std::size_t i = 0; i < selectedLayer.size(); ++i)
       {
+        std::string targetDatasetName = selectedLayer[i];
+
+  // is it a raster?
+        std::auto_ptr<te::da::DataSetType> input_dataset_type(m_tl4Database->getDataSetType(selectedLayer[i]));
+
+        if(input_dataset_type->hasRaster())
+        {
+        }
+        else
+        {
+  // non-raster
+          QTableWidgetItem *conflictItem = 0;
+        
+          if(tl5ds->dataSetExists(targetDatasetName))
+          {
+            hasConflicts = true;
+
+            conflictItem = new QTableWidgetItem(QIcon::fromTheme("delete"), "");
+          }
+          else
+          {
+            conflictItem = new QTableWidgetItem(QIcon::fromTheme("check"), "");
+          }
+
+          conflictItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+          m_resolveNameTableWidget->setItem(i, 0, conflictItem);
+        }
+
+        QTableWidgetItem *oldNameItem = new QTableWidgetItem(selectedLayer[i].c_str());
+        oldNameItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+        m_resolveNameTableWidget->setItem(i, 1, oldNameItem);
+
+        QTableWidgetItem *newNameItem = new QTableWidgetItem(targetDatasetName.c_str());
+        m_resolveNameTableWidget->setItem(i, 2, newNameItem);
+      }
+
+      if(hasConflicts)
+      {
+        m_resolveNamePage->setTitle(tr("Resolve Name Conflicts"));
+        m_resolveNamePage->setSubTitle(tr("Some layer names clash with target data source dataset names. Please, give a new name for the layers showed below"));
       }
       else
       {
-// non-raster
-
-// valid dataset name
-        int j = 0;
-
-        while(tl5ds->dataSetExists(targetDatasetName))
-        {
-          targetDatasetName += "_" + boost::lexical_cast<std::string>(j);
-          ++j;
-        }
+        m_resolveNamePage->setTitle(tr("No Name Conflicts"));
+        m_resolveNamePage->setSubTitle(tr("You can change the layer names in the target data source"));
       }
-
-      QTableWidgetItem *oldNameItem = new QTableWidgetItem(selectedLayer[i].c_str());
-      oldNameItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-      m_resolveNameTableWidget->setItem(i, 0, oldNameItem);
-
-      QTableWidgetItem *newNameItem = new QTableWidgetItem(targetDatasetName.c_str());
-
-      m_resolveNameTableWidget->setItem(i, 1, newNameItem);
     }
+  }
+  catch(const te::da::Exception& e)
+  {
+    QMessageBox::warning(this, tr("Warning"), e.what());
+    return false;
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Could not valid this page!"));
+    return false;
   }
 
   return true;
@@ -256,7 +289,7 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validTerraLib4Connection()
     m_tl4Database->setConnectionInfo(connInfo);
     m_tl4Database->open();
   }
-  catch(te::da::Exception e)
+  catch(const te::da::Exception& e)
   {
     QMessageBox::warning(this, tr("Warning"), e.what());
     return false;
@@ -287,14 +320,27 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerSelection()
   m_hasNonRaster = false;
   m_hasRaster = false;
 
-  for(std::size_t i = 0; i < layersNames.size(); ++i)
+  try
   {
-    std::auto_ptr<te::da::DataSetType> dst(m_tl4Database->getDataSetType(layersNames[i]));
+    for(std::size_t i = 0; i < layersNames.size(); ++i)
+    {
+      std::auto_ptr<te::da::DataSetType> dst(m_tl4Database->getDataSetType(layersNames[i]));
 
-    if(dst->hasRaster())
-      m_hasRaster = true;
-    else
-      m_hasNonRaster = true;
+      if(dst->hasRaster())
+        m_hasRaster = true;
+      else
+        m_hasNonRaster = true;
+    }
+  }
+  catch(const te::da::Exception& e)
+  {
+    QMessageBox::warning(this, tr("Warning"), e.what());
+    return false;
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Could not valid layer selection!"));
+    return false;
   }
 
   return true;
@@ -302,18 +348,33 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerSelection()
 
 bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
 {
+  bool hasConflict = false;
+
 // TODO: acrescentar try e catch para evitar problemas
   te::da::DataSourcePtr tl5ds;
 
-  if(m_hasNonRaster)
-    tl5ds = te::da::DataSourceManager::getInstance().get(m_targetDataSource->getId(), m_targetDataSource->getType(), m_targetDataSource->getConnInfo());
+  try
+  {
+    if(m_hasNonRaster)
+      tl5ds = te::da::DataSourceManager::getInstance().get(m_targetDataSource->getId(), m_targetDataSource->getType(), m_targetDataSource->getConnInfo());
+  }
+  catch(const te::da::Exception& e)
+  {
+    QMessageBox::warning(this, tr("Warning"), e.what());
+    return false;
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Could not connect to TerraLib 5 data source!"));
+    return false;
+  }
 
   int nrows = m_resolveNameTableWidget->rowCount();
 
   for(int i = 0; i != nrows; ++i)
   {
 // get original dataset name
-    QTableWidgetItem* item_source = m_resolveNameTableWidget->item(i, 0);
+    QTableWidgetItem* item_source = m_resolveNameTableWidget->item(i, 1);
 
     if(item_source == 0)
       throw te::common::Exception(TE_QT_PLUGIN_TERRALIB4("Invalid source table item!"));
@@ -321,7 +382,7 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
     std::string sourceName = item_source->text().toStdString();
 
 // get target dataset name
-    QTableWidgetItem* item_target = m_resolveNameTableWidget->item(i, 1);
+    QTableWidgetItem* item_target = m_resolveNameTableWidget->item(i, 2);
 
     if(item_target == 0)
       throw te::common::Exception(TE_QT_PLUGIN_TERRALIB4("Invalid target table item!"));
@@ -329,19 +390,48 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
     std::string targetName = item_target->text().toStdString();
 
 // ask if the dataset is a raster
-    std::auto_ptr<te::da::DataSetType> input_dataset_type(m_tl4Database->getDataSetType(sourceName));
+    try
+    {
+      std::auto_ptr<te::da::DataSetType> input_dataset_type(m_tl4Database->getDataSetType(sourceName));
 
-    if(input_dataset_type->hasRaster())
-    {
+      if(input_dataset_type->hasRaster())
+      {
 // yes!
-    }
-    else
-    {
+      }
+      else
+      {
 // no!
-// TODO => avisar o layer que esta com problemas => ja dar o foco para esta linha!!!
-      if(tl5ds->dataSetExists(targetName))
-        return false;
+        if(tl5ds->dataSetExists(targetName))
+        {
+          hasConflict = true;
+        }
+        else
+        {
+          QTableWidgetItem *nonconflictItem = new QTableWidgetItem(QIcon::fromTheme("check"), "");
+
+          m_resolveNameTableWidget->setItem(i, 0, nonconflictItem);
+        }
+      }
     }
+    catch(const te::da::Exception& e)
+    {
+      QMessageBox::warning(this, tr("Warning"), e.what());
+      return false;
+    }
+    catch(...)
+    {
+      QMessageBox::warning(this, tr("Warning"), tr("Could not valid layer names in target data source!"));
+      return false;
+    }
+  }
+
+  if(hasConflict)
+  {
+    QString errMsg(tr("There still have name conflicts. Please, resolve the indicated conflicts before continue!"));
+
+    QMessageBox::warning(this, tr("TerraLib 4.x Converter"), errMsg);
+
+    return false;
   }
 
   return true;
@@ -359,17 +449,180 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::next()
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
 {
-  return;
+  if(!validLayerNames())
+  {
+    m_rollback = true;
+    return;
+  }
+
+// validation successful => convert the source layers!
+  std::vector<std::pair<std::string, std::string> > problematicDatasets;
+  std::vector<std::string> successfulDatasets;
+
+  te::da::DataSourcePtr tl5ds;
+
+  try
+  {
+    if(m_hasNonRaster)
+      tl5ds = te::da::DataSourceManager::getInstance().get(m_targetDataSource->getId(), m_targetDataSource->getType(), m_targetDataSource->getConnInfo());
+  }
+  catch(const te::da::Exception& e)
+  {
+    m_rollback = true;
+    QMessageBox::warning(this, tr("Warning"), e.what());
+    return;
+  }
+  catch(...)
+  {
+    m_rollback = true;
+    QMessageBox::warning(this, tr("Warning"), tr("Could not connect to TerraLib 5 data source!"));
+    return;
+  }
+
+  int nrows = m_resolveNameTableWidget->rowCount();
+
+  for(int i = 0; i != nrows; ++i)
+  {
+// get original dataset name
+    QTableWidgetItem* item_source = m_resolveNameTableWidget->item(i, 1);
+
+    if(item_source == 0)
+      throw te::common::Exception(TE_QT_PLUGIN_TERRALIB4("Invalid source table item!"));
+
+    std::string sourceName = item_source->text().toStdString();
+
+// get target dataset name
+    QTableWidgetItem* item_target = m_resolveNameTableWidget->item(i, 2);
+
+    if(item_target == 0)
+      throw te::common::Exception(TE_QT_PLUGIN_TERRALIB4("Invalid target table item!"));
+
+    std::string targetName = item_target->text().toStdString();
+
+// ask if the dataset is a raster
+    try
+    {
+      std::auto_ptr<te::da::DataSetType> input_dataset_type(m_tl4Database->getDataSetType(sourceName));
+
+      if(input_dataset_type->hasRaster())
+      {
+// yes!
+      }
+      else
+      {
+// no!
+        input_dataset_type->setName(targetName);
+
+        std::auto_ptr<te::da::DataSetTypeConverter> dt_adapter(new te::da::DataSetTypeConverter(input_dataset_type.get(), tl5ds->getCapabilities()));
+
+        std::auto_ptr<te::da::DataSet> ds(m_tl4Database->getDataSet(sourceName));
+
+        std::auto_ptr<te::da::DataSetAdapter> ds_adapter(te::da::CreateAdapter(ds.get(), dt_adapter.get()));
+
+        std::map<std::string, std::string> opt;
+
+        te::da::Create(tl5ds.get(), dt_adapter->getResult(), ds_adapter.get(), opt);
+
+        successfulDatasets.push_back(targetName);
+      }
+    }
+    catch(const te::common::Exception& e)
+    {
+      std::pair<std::string, std::string> dproblem;
+      dproblem.first = sourceName;
+      dproblem.second = e.what();
+      
+      problematicDatasets.push_back(dproblem);
+    }
+    catch(...)
+    {
+      std::pair<std::string, std::string> dproblem;
+      dproblem.first = sourceName;
+      dproblem.second = TE_QT_PLUGIN_TERRALIB4("unknown problem in conversion!");
+      
+      problematicDatasets.push_back(dproblem);
+    }
+  }
+
+// give a warning
+  if(!problematicDatasets.empty())
+  {
+    QString error(tr("Some TerraLib 4.x Layers could not be converted: \n\n"));
+    QString details;
+
+    for(std::size_t i = 0; i < problematicDatasets.size(); ++i)
+    {
+      error.append(QString(" - ") + problematicDatasets[i].first.c_str() + QString(""));
+      details.append(problematicDatasets[i].first.c_str() + QString(":\n"));
+      details.append(problematicDatasets[i].second.c_str() + QString("\n\n"));
+    }
+
+    QMessageBox message(QMessageBox::Warning, tr("TerraLib 4.x Converter"), error, QMessageBox::Ok, this);
+    message.setDetailedText(details);
+
+    message.exec();
+  }
+
+// fill next page!
+  m_finalPage->setDataSets(successfulDatasets);
+
+  m_rollback = false;
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 {
-  return;
-  //std::vector<std::string> selected = m_finalPage->getSelected();
+  std::vector<std::string> selected = m_finalPage->getSelected();
 
-  //for(std::size_t i = 0; i < selected.size(); ++i)
-  //{
-  //  te::map::AbstractLayerPtr lay = 0;
+  te::da::DataSourcePtr outDataSource;
+
+  try
+  {
+    if(m_hasNonRaster)
+      outDataSource = te::da::DataSourceManager::getInstance().find(m_targetDataSource->getId());
+  }
+  catch(const te::da::Exception& e)
+  {
+    m_rollback = true;
+    QMessageBox::warning(this, tr("Warning"), e.what());
+    return;
+  }
+  catch(...)
+  {
+    m_rollback = true;
+    QMessageBox::warning(this, tr("Warning"), tr("Could not connect to TerraLib 5 data source!"));
+    return;
+  }
+
+  try
+  {
+    for(std::size_t i = 0; i < selected.size(); ++i)
+    {
+      te::qt::widgets::DataSet2Layer converter(m_targetDataSource->getId());
+
+      std::auto_ptr<te::da::DataSetType> dsType = outDataSource->getDataSetType(selected[i]);
+
+      te::da::DataSetTypePtr dt(dsType.release());
+
+      te::map::DataSetLayerPtr layer = converter(dt);
+
+      te::qt::af::evt::LayerAdded evt(layer);
+
+      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+    }
+  }
+  catch(const te::da::Exception& e)
+  {
+    m_rollback = true;
+    QMessageBox::warning(this, tr("Warning"), e.what());
+    return;
+  }
+  catch(...)
+  {
+    m_rollback = true;
+    QMessageBox::warning(this, tr("Warning"), tr("Automatic layer creation failed!"));
+    return;
+  }
+
 
   //  std::string originalName = "";
   //  std::map<std::string, std::string>::iterator it = m_datasetFinalNames.begin();
@@ -415,7 +668,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 void te::qt::plugins::terralib4::TL4ConverterWizard::help()
 {
   QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
+                       tr("TerraLib 4.x Converter"),
                        tr("This option is not implemented yet!\nWe will provide it soon!"));
 }
 
