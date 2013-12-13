@@ -23,6 +23,7 @@
 */
 
 #include "SegmenterDummyStrategy.h"
+#include "../common/progress/TaskProgress.h"
 
 namespace
 {
@@ -62,7 +63,7 @@ namespace te
       const std::vector< double >&,                                         
       te::rst::Raster& outputRaster,
       const unsigned int outputRasterBand,
-      const bool )
+      const bool enableProgressInterface )
       throw( te::rp::Exception )
     {
       SegmenterSegmentsBlock::SegmentIdDataType segmentId = 
@@ -70,6 +71,17 @@ namespace te
       
       const unsigned int nLines = outputRaster.getNumberOfRows();
       const unsigned int nCols = outputRaster.getNumberOfColumns();
+      
+      // Progress interface
+      
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      if( enableProgressInterface )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        progressPtr->setTotalSteps( nLines );
+        progressPtr->setMessage( "Segmentation" );
+      }        
+      
       unsigned int col = 0;
       
       for( unsigned int line = 0 ; line < nLines ; ++line )
@@ -77,6 +89,16 @@ namespace te
         for( col = 0 ; col < nCols ; ++col )
         {
           outputRaster.setValue( col, line, segmentId, outputRasterBand );
+        }
+        
+        if( enableProgressInterface )
+        {
+          if( ! progressPtr->isActive() ) 
+          {
+            return false;
+          }   
+          
+          progressPtr->pulse();
         }
       }      
       

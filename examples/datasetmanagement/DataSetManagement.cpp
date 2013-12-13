@@ -28,13 +28,14 @@ DataSetManagement::DataSetManagement(QWidget* parent)
   setupUi(this);
 
   std::map<std::string, std::string> connInfo;
- connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;   // or "localhost";
+  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;   // or "localhost";
   connInfo["PG_PORT"] = "5433" ;
   connInfo["PG_USER"] = "postgres";
   connInfo["PG_PASSWORD"] = "postgres";
   connInfo["PG_DB_NAME"] = "terralib4";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-
+  connInfo["PG_CLIENT_ENCODING"] = "WIN1252";     // "LATIN1";
+ 
   std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
   ds->setConnectionInfo(connInfo);
   ds->open();

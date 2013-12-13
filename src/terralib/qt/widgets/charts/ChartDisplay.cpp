@@ -116,6 +116,7 @@ void te::qt::widgets::ChartDisplay::setPickerStyle(int chartType)
 
       delete m_ctrlPicker;
       delete m_leftPicker;
+      delete m_shiftPicker;
 
       m_leftPicker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::RectRubberBand, QwtPicker::AlwaysOff, this->canvas());
       m_leftPicker->setStateMachine(new QwtPickerDragRectMachine );
@@ -124,20 +125,22 @@ void te::qt::widgets::ChartDisplay::setPickerStyle(int chartType)
       m_ctrlPicker->setStateMachine(new QwtPickerDragRectMachine );
       m_ctrlPicker->setMousePattern(QwtEventPattern::MouseSelect1, Qt::LeftButton, Qt::ControlModifier);
 
-      m_shiftPicker = new QwtPlotPicker(this->canvas());
-      m_shiftPicker->setStateMachine(new QwtPickerClickPointMachine );
+      m_shiftPicker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::RectRubberBand, QwtPicker::AlwaysOff, this->canvas());
+      m_shiftPicker->setStateMachine(new QwtPickerDragRectMachine );
       m_shiftPicker->setMousePattern(QwtEventPattern::MouseSelect1, Qt::LeftButton, Qt::ShiftModifier);
 
       connect(m_leftPicker, SIGNAL(selected(const QRectF&)), SLOT(onRectPicked(const QRectF&)));
       connect(m_ctrlPicker, SIGNAL(selected(const QRectF&)), SLOT(onRectPicked(const QRectF&)));
-      connect(m_shiftPicker, SIGNAL(selected(const QRectF&)), SLOT(onPointPicked(const QRectF&)));
+      connect(m_shiftPicker, SIGNAL(selected(const QRectF&)), SLOT(onRectPicked(const QRectF&)));
 
       canvas()->setCursor(Qt::CrossCursor);
       break;
 
     default:
+
       delete m_ctrlPicker;
       delete m_leftPicker;
+      delete m_shiftPicker;
 
       m_leftPicker = new QwtPlotPicker(this->canvas());
       m_leftPicker->setStateMachine(new QwtPickerClickPointMachine );

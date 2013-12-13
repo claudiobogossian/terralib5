@@ -60,6 +60,8 @@ namespace te
 
             std::vector<std::string> getChecked();
 
+            bool hasChecked() const;
+
           protected slots:
 
             void onSelectAllPushButtonClicked();

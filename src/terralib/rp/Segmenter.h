@@ -32,6 +32,7 @@
 #include "Algorithm.h"
 #include "Matrix.h"
 #include "Config.h"
+#include "../common/progress/TaskProgress.h"
 
 #include <vector>
 #include <string>
@@ -232,8 +233,11 @@ namespace te
             //! Pointer to a vector of input raster bands offset values */
             std::vector< double > const * m_inputRasterOffsetsPtr;
             
-            //! Enable/Disable the segmentation strategy to use the progress interface (default:false). */
+            //! Enable/Disable the segmentation strategy to use its own progress interface (default:false). */
             bool m_enableStrategyProgress;
+            
+            //! A pointer to an active task progress tha should be pulsed for each processed block or a null pointer (default:null). */
+            te::common::TaskProgress* m_progressPtr;
             
             SegmenterThreadEntryParams();
             

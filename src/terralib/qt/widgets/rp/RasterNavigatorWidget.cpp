@@ -149,7 +149,7 @@ te::qt::widgets::RasterNavigatorWidget::~RasterNavigatorWidget()
   delete m_zoomTool;
 }
 
-void te::qt::widgets::RasterNavigatorWidget::set(te::map::AbstractLayerPtr layer)
+void te::qt::widgets::RasterNavigatorWidget::set(te::map::AbstractLayerPtr layer, bool setFullScaleBox)
 {
   m_layer = layer;
 
@@ -165,7 +165,29 @@ void te::qt::widgets::RasterNavigatorWidget::set(te::map::AbstractLayerPtr layer
   m_mapDisplay->setMouseTracking(true);
   m_mapDisplay->setLayerList(list);
   m_mapDisplay->setSRID(m_layer->getSRID(), false);
-  m_mapDisplay->setExtent(e, false);
+  
+  if(!setFullScaleBox)
+    m_mapDisplay->setExtent(e, false);
+  else
+  {
+    //get raster
+    std::auto_ptr<te::da::DataSet> ds(m_layer->getData());
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+    std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
+
+    //calculate extent full scale
+    int w = m_mapDisplay->getWidth();
+    int h = m_mapDisplay->getHeight();
+    double resX = inputRst->getResolutionX();
+    double resY = inputRst->getResolutionY();
+    te::gm::Coord2D cc(inputRst->getExtent()->getCenter().x, inputRst->getExtent()->getCenter().y);
+    te::gm::Coord2D bowerLeftWorld(cc.x - (resX * ( w / 2 )), cc.y - (resY * ( h / 2 )));
+    te::gm::Coord2D bowerUpperWorld(cc.x + (resX * ( w / 2 )), cc.y + (resY * ( h / 2 )));
+
+    te::gm::Envelope env(bowerLeftWorld.x, bowerLeftWorld.y, bowerUpperWorld.x, bowerUpperWorld.y);
+
+    m_mapDisplay->setExtent(env, false);
+  }
 
   m_zoomInMapDisplay->setList(list, m_layer->getSRID());
   m_eyeBirdMapDisplay->setList(list, m_layer->getSRID());
@@ -187,7 +209,7 @@ te::qt::widgets::MapDisplay* te::qt::widgets::RasterNavigatorWidget::getDisplay(
   return m_mapDisplay;
 }
 
-te::rst::Raster* te::qt::widgets::RasterNavigatorWidget::getExtentRaster()
+te::rst::Raster* te::qt::widgets::RasterNavigatorWidget::getExtentRaster(bool fullScale)
 {
   //get box info
   te::gm::Envelope reprojectedBBOX(m_mapDisplay->getExtent());
@@ -199,7 +221,24 @@ te::rst::Raster* te::qt::widgets::RasterNavigatorWidget::getExtentRaster()
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
-  return te::map::GetExtentRaster(inputRst.get(), m_mapDisplay->getWidth(), m_mapDisplay->getHeight(), reprojectedBBOX, m_mapDisplay->getSRID(), ibbox, m_layer->getSRID());
+  te::rst::Raster* raster = 0;
+
+  if(fullScale)
+  {
+    te::gm::Coord2D startGrid = inputRst->getGrid()->geoToGrid(ibbox.getLowerLeftX(), ibbox.getLowerLeftY());
+    te::gm::Coord2D endGrid = inputRst->getGrid()->geoToGrid(ibbox.getUpperRightX(), ibbox.getUpperRightY());
+
+    int w = (int)endGrid.x - (int)startGrid.x;
+    int h = (int)startGrid.y - (int)endGrid.y;
+
+    raster = te::map::GetExtentRaster(inputRst.get(), w, h, reprojectedBBOX, m_mapDisplay->getSRID(), ibbox, m_layer->getSRID());
+  }
+  else
+  {
+    raster = te::map::GetExtentRaster(inputRst.get(), m_mapDisplay->getWidth(), m_mapDisplay->getHeight(), reprojectedBBOX, m_mapDisplay->getSRID(), ibbox, m_layer->getSRID());
+  }
+
+  return raster;
 }
 
 void te::qt::widgets::RasterNavigatorWidget::drawRaster(te::rst::Raster* rst, te::se::Style* style)
