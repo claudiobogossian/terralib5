@@ -30,6 +30,7 @@
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../widgets/Exception.h"
+#include "../../../widgets/Utils.h"
 #include "ui_ADOConnectorDialogForm.h"
 #include "ADOConnectorDialog.h"
 
@@ -212,12 +213,16 @@ void te::qt::plugins::ado::ADOConnectorDialog::helpPushButtonPressed()
 
 void te::qt::plugins::ado::ADOConnectorDialog::searchDatabaseToolButtonPressed()
 {
-  QString fileName = QFileDialog::getOpenFileName(this, tr("Open ADO Database"), QString(""), tr("Database files (*.accdb *.mdb);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
+  QString fileName = QFileDialog::getOpenFileName(this, tr("Open ADO Database"), te::qt::widgets::GetFilePathFromSettings("vector"), tr("Database files (*.accdb *.mdb);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
 
   if(fileName.isEmpty())
     return;
 
   m_ui->m_fileLineEdit->setText(fileName);
+
+  QFileInfo info(fileName);
+
+  te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "vector");
 }
 
 void te::qt::plugins::ado::ADOConnectorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const

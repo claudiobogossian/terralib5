@@ -88,13 +88,13 @@ namespace te
 
             \note This layer MUST HAVE a valid raster object.
           */
-          void set(te::map::AbstractLayerPtr layer);
+          void set(te::map::AbstractLayerPtr layer, bool setFullScaleBox = false);
 
           te::gm::Envelope getCurrentExtent();
 
           te::qt::widgets::MapDisplay* getDisplay();
 
-          te::rst::Raster* getExtentRaster();
+          te::rst::Raster* getExtentRaster(bool fullScale = false);
 
           void drawRaster(te::rst::Raster* rst, te::se::Style* style = 0);
 

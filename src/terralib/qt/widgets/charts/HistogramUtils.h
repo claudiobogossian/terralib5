@@ -95,7 +95,7 @@ namespace te
             IntervalToObjectId,
             boost::multi_index::indexed_by<
 
-              // sort by less<string> on Interval
+              // sort by less<string> or <  on Interval
               boost::multi_index::ordered_non_unique<
                   boost::multi_index::identity<IntervalToObjectId> >,
 

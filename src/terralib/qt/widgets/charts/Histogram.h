@@ -185,6 +185,7 @@ namespace te
 
             \param interval The interval that will be searched.
             \note it can return an empty ObjectIdSet if none ObjectIds were found. (f.e. if the user clicks on an empty area of the chart)
+            \note The caller will take ownership of the returned pointer
           */
           te::da::ObjectIdSet* find(te::dt::AbstractData* interval);
 

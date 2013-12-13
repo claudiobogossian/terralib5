@@ -202,10 +202,7 @@ std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidg
     newGeom = new te::gm::GeometryProperty("Point", true, new std::string());
     newGeom->setGeometryType(te::gm::PointType);
 
-    if(!m_ui->m_sridLineEdit->text().isEmpty())
-      newGeom->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
-
-    m_dsConverter->add(names, newGeom, "XYToPointConverter");//te::da::XYToPointConverter);
+    m_dsConverter->add(names, newGeom, "XYToPointConverter");
 
   }
 
@@ -244,7 +241,6 @@ std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidg
 
    if(gp && !m_ui->m_sridLineEdit->text().isEmpty())
      gp->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
-
 
   te::da::DataSourceManager::getInstance().insert(m_dataSource);
   return m_dsConverter;

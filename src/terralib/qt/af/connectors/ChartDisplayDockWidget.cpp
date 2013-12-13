@@ -112,18 +112,41 @@ void te::qt::af::ChartDisplayDockWidget::onApplicationTriggered(te::qt::af::evt:
 
 void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* oids, const bool& add)
 {
-  if (!add)
-    m_layer->clearSelected();
+    te::da::ObjectIdSet* added = oids->clone();
 
+  if(m_layer->getSelected())
+  {
+    if (add)
+    {
+      te::da::ObjectIdSet* removed = new te::da::ObjectIdSet();
+      //Checking if the objectIds need to be inserted or removed from the current selection
+      std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator itObjSet; 
+      for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
+      {
+        if(m_layer->getSelected()->contains(*itObjSet))
+        {
+          removed->add(*itObjSet);
+          added->remove(*itObjSet);
+        }
+      }
+      m_layer->deselect(removed);
+    }
+    else
+    {
+      m_layer->clearSelected();
+    }
+  }
+  
   std::vector<std::size_t> objIdIdx;
   te::da::GetOIDPropertyPos(m_layer->getSchema().get(), objIdIdx);
 
   std::vector<size_t>::iterator it;
 
   for(it=objIdIdx.begin(); it!=objIdIdx.end(); ++it)
-    oids->addProperty(m_layer->getData()->getPropertyName(*it), *it, m_layer->getData()->getPropertyDataType(*it));
+    added->addProperty(m_layer->getData()->getPropertyName(*it), *it, m_layer->getData()->getPropertyDataType(*it));
 
-  m_layer->select(oids);
+  oids->clear();
+  m_layer->select(added);
   te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer);
   ApplicationController::getInstance().broadcast(&e);
 }

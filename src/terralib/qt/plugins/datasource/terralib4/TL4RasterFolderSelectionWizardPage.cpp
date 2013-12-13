@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../../qt/widgets/utils.h"
 #include "../../../../qt/widgets/utils/FileChooser.h"
 #include "ui_TL4RasterFolderSelectionWizardPageForm.h"
 #include "TL4RasterFolderSelectionWizardPage.h"
@@ -49,13 +50,14 @@ te::qt::plugins::terralib4::TL4RasterFolderSelectionWizardPage::~TL4RasterFolder
 
 std::string te::qt::plugins::terralib4::TL4RasterFolderSelectionWizardPage::getPath()
 {
+  te::qt::widgets::AddFilePathToSettings(m_ui->m_pathLineEdit->text(), "raster");
   return m_ui->m_pathLineEdit->text().toStdString();
 }
 
 void te::qt::plugins::terralib4::TL4RasterFolderSelectionWizardPage::onChooseToolButtonClicked()
 {
   QString dir;
-  dir = QFileDialog::getExistingDirectory(this, tr("Choose directory"));
+  dir = QFileDialog::getExistingDirectory(this, tr("Choose directory"), te::qt::widgets::GetFilePathFromSettings("raster"));
 
   m_ui->m_pathLineEdit->setText(dir);
 }
