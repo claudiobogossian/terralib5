@@ -96,7 +96,10 @@ void te::qt::widgets::DirectExchangerDialog::setLayers(std::list<te::map::Abstra
   {
     te::map::AbstractLayerPtr l = *it;
 
-    m_ui->m_inputLayerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
+     te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
+
+     if(dsLayer)
+       m_ui->m_inputLayerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
 
     ++it;
   }
