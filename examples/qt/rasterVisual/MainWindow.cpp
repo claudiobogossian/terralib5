@@ -44,7 +44,7 @@
 #include <terralib/qt/widgets/tools/ZoomKeyboard.h>
 #include <terralib/qt/widgets/tools/ZoomWheel.h>
 #include <terralib/qt/widgets/se/RasterSymbolizerDialog.h>
-#include <terralib/qt/widgets/se/RasterVisualWidget.h>
+#include <terralib/qt/widgets/se/RasterSymbolizerWidget.h>
 #include <terralib/qt/widgets/utils/FileChooser.h>
 
 // Qt
@@ -182,9 +182,9 @@ void MainWindow::setupDockWindow()
 
     dw->layout()->setAlignment(Qt::AlignTop);
 
-    m_rvW = new te::qt::widgets::RasterVisualWidget(dw);
+    m_rvW = new te::qt::widgets::RasterSymbolizerWidget(dw);
 
-    m_rvW->setVerticalLayout();
+    //m_rvW->setVerticalLayout();
 
     dw->setWidget(m_rvW);
 
