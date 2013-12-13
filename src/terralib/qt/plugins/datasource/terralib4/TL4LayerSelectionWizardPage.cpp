@@ -61,7 +61,7 @@ void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setDatasets(std::v
 std::vector<std::string> te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::getChecked()
 {
   std::vector<std::string> checked;
-  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
   {
     if(m_ui->m_layersListWidget->item(i)->checkState() == Qt::Checked)
       checked.push_back(m_ui->m_layersListWidget->item(i)->text().toStdString());
@@ -70,9 +70,20 @@ std::vector<std::string> te::qt::plugins::terralib4::TL4LayerSelectionWizardPage
   return checked;
 }
 
+bool te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::hasChecked() const
+{
+  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  {
+    if(m_ui->m_layersListWidget->item(i)->checkState() == Qt::Checked)
+      return true;
+  }
+
+  return false;
+}
+
 void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::onSelectAllPushButtonClicked()
 {
-  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
   {
     Qt::CheckState state = m_ui->m_layersListWidget->item(i)->checkState();
     if(state != Qt::Checked)
@@ -82,7 +93,7 @@ void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::onSelectAllPushBut
 
 void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::onDeselectAllPushButtonClicked()
 {
-  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
   {
     Qt::CheckState state = m_ui->m_layersListWidget->item(i)->checkState();
     if(state == Qt::Checked)

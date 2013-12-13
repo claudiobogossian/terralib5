@@ -819,12 +819,12 @@ void te::ogr::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<
   
   if(papszOptions)
     CSLDestroy(papszOptions);
-  
-  dt->setName(newLayer->GetName());
 
   if(newLayer == 0)
     throw Exception(TR_OGR("Error when attempting create the dataset type."));
   
+  dt->setName(newLayer->GetName());
+
 // add the properties
   for(size_t i = 0; i < dt->size(); ++i)
     addProperty(dt->getName(), dt->getProperty(i));

@@ -52,16 +52,20 @@
 #include <cassert>
 
 // Boost
+#include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 
 // Qt
 #include <QtGui/QAbstractButton>
 #include <QtGui/QCursor>
 #include <QtGui/QMessageBox>
+#include <QtGui/QTableWidgetItem>
 #include <QtGui/QVBoxLayout>
 
 te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f),
+    m_hasNonRaster(false),
+    m_hasRaster(false),
     m_ui(new Ui::TL4ConverterWizardForm)
 {
 // setup controls
@@ -86,6 +90,17 @@ te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* pare
   m_rasterFolderSelectionPage->setTitle(tr("Raster Folder"));
   m_rasterFolderSelectionPage->setSubTitle(tr("Select folder to store raster data"));
 
+  m_resolveNamePage.reset(new QWizardPage(this));
+  m_resolveNamePage->setTitle(tr("Resolve Name Conflicts"));
+  m_resolveNamePage->setSubTitle(tr("Some layer names clashes with target data source names. Please, give a new name for the layers showed below"));
+  m_resolveNamePage->setCommitPage(true);
+
+  m_resolveNameTableWidget.reset(new QTableWidget(m_resolveNamePage.get()));
+  m_resolveNameTableWidget->setColumnCount(2);
+  QStringList labels;
+  labels << tr("Source Names") << tr("Target Names");
+  m_resolveNameTableWidget->setHorizontalHeaderLabels(labels);
+
   m_finalPage.reset(new TL4FinalPageWizardPage(this));
   m_finalPage->setTitle(tr("Layer Creation"));
   m_finalPage->setSubTitle(tr("Select the layers that you want to create a Project Layer"));
@@ -95,18 +110,21 @@ te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* pare
   setPage(PAGE_LAYER_SELECTION, m_layerSelectionPage.get());
   setPage(PAGE_DATASOURCE_SELECTOR, m_datasourceSelectorPage.get());
   setPage(PAGE_RASTERFOLDER_SELECTOR, m_rasterFolderSelectionPage.get());
+  setPage(PAGE_NAME_RESOLVE_SELECTOR, m_resolveNamePage.get());
   setPage(PAGE_FINALPAGE, m_finalPage.get());
 
   connect(this->button(QWizard::NextButton), SIGNAL(pressed()), this, SLOT(next()));
   connect(this->button(QWizard::BackButton), SIGNAL(pressed()), this, SLOT(back()));
-  connect(this->button(QWizard::HelpButton), SIGNAL(pressed()), this, SLOT(help()));
   connect(this->button(QWizard::FinishButton), SIGNAL(pressed()), this, SLOT(finish()));
+  connect(this->button(QWizard::CommitButton), SIGNAL(pressed()), this, SLOT(commit()));
 
   te::qt::widgets::HelpPushButton* helpButton = new te::qt::widgets::HelpPushButton(this);
 
   this->setButton(QWizard::HelpButton, helpButton);
 
   helpButton->setPageReference("plugins/terralib4/Terralib4Converter.html");
+
+  //connect(this->button(QWizard::HelpButton), SIGNAL(pressed()), helpButton, SLOT(help()));
 }
 
 te::qt::plugins::terralib4::TL4ConverterWizard::~TL4ConverterWizard()
@@ -115,43 +133,119 @@ te::qt::plugins::terralib4::TL4ConverterWizard::~TL4ConverterWizard()
 
 int te::qt::plugins::terralib4::TL4ConverterWizard::nextId() const
 {
-  return QWizard::nextId();
-}
+  if(currentId() == PAGE_TERRALIB4_CONNECTOR)
+    return PAGE_LAYER_SELECTION;
 
-void te::qt::plugins::terralib4::TL4ConverterWizard::back()
-{
-}
-
-void te::qt::plugins::terralib4::TL4ConverterWizard::next()
-{
-  switch(currentId())
+  if(currentId() == PAGE_LAYER_SELECTION)
   {
-    case PAGE_TERRALIB4_CONNECTOR:
-      terralib4ConnectorPageNext();
-      break;
+    if(m_hasNonRaster)
+      return PAGE_DATASOURCE_SELECTOR;
 
-    case PAGE_LAYER_SELECTION:
-      layerSelectionPageNext();
-      break;
+    if(m_hasRaster)
+      return PAGE_RASTERFOLDER_SELECTOR;
 
-    case PAGE_DATASOURCE_SELECTOR:
-      datasourceSelectionPageNext();
-      break;
-
-    case PAGE_RASTERFOLDER_SELECTOR:
-      rasterFolderSelectionPageNext();
-      break;
+    return PAGE_LAYER_SELECTION;
   }
+
+  if(currentId() == PAGE_DATASOURCE_SELECTOR)
+  {
+    if(m_hasRaster)
+      return PAGE_RASTERFOLDER_SELECTOR;
+
+    return PAGE_NAME_RESOLVE_SELECTOR;
+  }
+
+  if(currentId() == PAGE_RASTERFOLDER_SELECTOR)
+    return PAGE_NAME_RESOLVE_SELECTOR;
+
+  if(currentId() == PAGE_NAME_RESOLVE_SELECTOR)
+    return PAGE_FINALPAGE;
+
+  return -1;
 }
 
-void te::qt::plugins::terralib4::TL4ConverterWizard::help()
+bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
 {
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("This option is not implemented yet!\nWe will provide it soon!"));
+  int current_page_id = currentId();
+
+  if(current_page_id == PAGE_TERRALIB4_CONNECTOR)
+  {
+    if(!validTerraLib4Connection())
+      return false;
+
+    std::vector<std::string> datasets = m_tl4Database->getDataSetNames();
+
+    m_layerSelectionPage->setDatasets(datasets);
+  }
+  else if(current_page_id == PAGE_LAYER_SELECTION)
+  {
+    if(!validLayerSelection())
+      return false;
+  }
+  else if(current_page_id == PAGE_DATASOURCE_SELECTOR)
+  {
+    m_targetDataSource = *m_datasourceSelectorPage->getSelectorWidget()->getSelecteds().begin();
+  }
+  else if(current_page_id == PAGE_RASTERFOLDER_SELECTOR)
+  {
+    m_rasterFolderPath = m_rasterFolderSelectionPage->getPath();
+  }
+  else if(current_page_id == PAGE_NAME_RESOLVE_SELECTOR)
+  {
+    return validLayerNames();
+  }
+
+  if(nextId() == PAGE_NAME_RESOLVE_SELECTOR)
+  {
+    std::vector<std::string> selectedLayer = m_layerSelectionPage->getChecked();
+
+    m_resolveNameTableWidget->clearContents();
+    m_resolveNameTableWidget->setRowCount(selectedLayer.size());
+    //m_resolveNameTableWidget->setColumnCount(2);
+
+    te::da::DataSourcePtr tl5ds;
+
+    if(m_hasNonRaster)
+      tl5ds = te::da::DataSourceManager::getInstance().get(m_targetDataSource->getId(), m_targetDataSource->getType(), m_targetDataSource->getConnInfo());
+
+    for(std::size_t i = 0; i < selectedLayer.size(); ++i)
+    {
+      std::string targetDatasetName = selectedLayer[i];
+
+// is it a raster?
+      std::auto_ptr<te::da::DataSetType> input_dataset_type(m_tl4Database->getDataSetType(selectedLayer[i]));
+
+      if(input_dataset_type->hasRaster())
+      {
+      }
+      else
+      {
+// non-raster
+
+// valid dataset name
+        int j = 0;
+
+        while(tl5ds->dataSetExists(targetDatasetName))
+        {
+          targetDatasetName += "_" + boost::lexical_cast<std::string>(j);
+          ++j;
+        }
+      }
+
+      QTableWidgetItem *oldNameItem = new QTableWidgetItem(selectedLayer[i].c_str());
+      oldNameItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+      m_resolveNameTableWidget->setItem(i, 0, oldNameItem);
+
+      QTableWidgetItem *newNameItem = new QTableWidgetItem(targetDatasetName.c_str());
+
+      m_resolveNameTableWidget->setItem(i, 1, newNameItem);
+    }
+  }
+
+  return true;
 }
 
-void te::qt::plugins::terralib4::TL4ConverterWizard::terralib4ConnectorPageNext()
+bool te::qt::plugins::terralib4::TL4ConverterWizard::validTerraLib4Connection()
 {
   std::map<std::string, std::string> connInfo = m_connectorPage->getConnInfo();
 
@@ -165,275 +259,169 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::terralib4ConnectorPageNext(
   catch(te::da::Exception e)
   {
     QMessageBox::warning(this, tr("Warning"), e.what());
-    return;
+    return false;
   }
   catch(...)
   {
-    QMessageBox::warning(this, tr("Warning"), tr("The Terralib 4.x database connection could not be established."));
-    return;
+    QMessageBox::warning(this, tr("Warning"), tr("A connection to the informed Terralib 4.x database could not be established. Please, verify the informed parameters."));
+    return false;
   }
 
-  std::vector<std::string> datasets = m_tl4Database->getDataSetNames();
-
-  m_layerSelectionPage->setDatasets(datasets);
-
-  QWizard::next();
+  return true;
 }
 
-void te::qt::plugins::terralib4::TL4ConverterWizard::layerSelectionPageNext()
+bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerSelection()
 {
-  std::vector<std::string> layersNames;
-  layersNames = m_layerSelectionPage->getChecked();
-
-  if(layersNames.size() == 0)
+  if(!m_layerSelectionPage->hasChecked())
   {
-    QMessageBox::warning(this, tr("Warning"), tr("No Layer selected!"));
-    return;
+    // TODO: ao inves de dar esta mensagem deve-se desabilitar o botao next quando nenhum item esta selecionado!
+    QMessageBox::warning(this,
+                        tr("Warning"),
+                        tr("Please, select at least one layer for conversion!"));
+    return false;
   }
 
-  bool hasRaster = false;
-  bool hasVector = false;
+  std::vector<std::string> layersNames = m_layerSelectionPage->getChecked();
+
+// do we have vector or raster layers?
+  m_hasNonRaster = false;
+  m_hasRaster = false;
 
   for(std::size_t i = 0; i < layersNames.size(); ++i)
   {
     std::auto_ptr<te::da::DataSetType> dst(m_tl4Database->getDataSetType(layersNames[i]));
 
     if(dst->hasRaster())
-      hasRaster = true;
+      m_hasRaster = true;
     else
-      hasVector = true;
+      m_hasNonRaster = true;
   }
 
-  if(hasRaster)
+  return true;
+}
+
+bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
+{
+// TODO: acrescentar try e catch para evitar problemas
+  te::da::DataSourcePtr tl5ds;
+
+  if(m_hasNonRaster)
+    tl5ds = te::da::DataSourceManager::getInstance().get(m_targetDataSource->getId(), m_targetDataSource->getType(), m_targetDataSource->getConnInfo());
+
+  int nrows = m_resolveNameTableWidget->rowCount();
+
+  for(int i = 0; i != nrows; ++i)
   {
-    QWizardPage* rasterPage = 0;
+// get original dataset name
+    QTableWidgetItem* item_source = m_resolveNameTableWidget->item(i, 0);
 
-    rasterPage = this->page(PAGE_RASTERFOLDER_SELECTOR);
+    if(item_source == 0)
+      throw te::common::Exception(TE_QT_PLUGIN_TERRALIB4("Invalid source table item!"));
 
-    if(!rasterPage)
-      this->setPage(PAGE_RASTERFOLDER_SELECTOR, m_rasterFolderSelectionPage.get());
+    std::string sourceName = item_source->text().toStdString();
+
+// get target dataset name
+    QTableWidgetItem* item_target = m_resolveNameTableWidget->item(i, 1);
+
+    if(item_target == 0)
+      throw te::common::Exception(TE_QT_PLUGIN_TERRALIB4("Invalid target table item!"));
+
+    std::string targetName = item_target->text().toStdString();
+
+// ask if the dataset is a raster
+    std::auto_ptr<te::da::DataSetType> input_dataset_type(m_tl4Database->getDataSetType(sourceName));
+
+    if(input_dataset_type->hasRaster())
+    {
+// yes!
+    }
+    else
+    {
+// no!
+// TODO => avisar o layer que esta com problemas => ja dar o foco para esta linha!!!
+      if(tl5ds->dataSetExists(targetName))
+        return false;
+    }
   }
-  else
-  {
-    QWizardPage* rasterPage = 0;
 
-    rasterPage = this->page(PAGE_RASTERFOLDER_SELECTOR);
+  return true;
+}
 
-    if(rasterPage)
-      this->removePage(PAGE_RASTERFOLDER_SELECTOR);
-  }
+void te::qt::plugins::terralib4::TL4ConverterWizard::back()
+{
+  QWizard::back();
+}
 
-  if(hasVector)
-  {
-    QWizardPage* datasourcePage = 0;
-    datasourcePage = this->page(PAGE_DATASOURCE_SELECTOR);
-    if(!datasourcePage)
-      this->setPage(PAGE_DATASOURCE_SELECTOR, m_datasourceSelectorPage.get());
-  }
-  else
-  {
-    QWizardPage* dsPage = 0;
-    dsPage = this->page(PAGE_DATASOURCE_SELECTOR);
-    if(dsPage)
-      this->removePage(PAGE_DATASOURCE_SELECTOR);
-  }
-
+void te::qt::plugins::terralib4::TL4ConverterWizard::next()
+{
   QWizard::next();
 }
 
-void te::qt::plugins::terralib4::TL4ConverterWizard::datasourceSelectionPageNext()
+void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
 {
-  std::vector<std::pair<std::string, std::string> > problematicDatasets;
-
-  try
-  {
-    te::qt::widgets::ScopedCursor sc(Qt::WaitCursor);
-
-// get target data source
-    m_targetDataSource = *m_datasourceSelectorPage->getSelectorWidget()->getSelecteds().begin();
-
-    te::da::DataSourcePtr tl5ds = te::da::DataSourceManager::getInstance().get(m_targetDataSource->getId(), m_targetDataSource->getType(), m_targetDataSource->getConnInfo());
-
-    if(!tl5ds->isOpened())
-      tl5ds->open();
-
-// check if we have name clash with datasets in the target data source and fill final dataset name index
-    std::vector<std::string> dsNames = m_layerSelectionPage->getChecked();
-
-    for(std::size_t i = 0; i != dsNames.size(); ++i)
-    {
-      std::string targetDatasetName = dsNames[i];
-      int j = 0;
-
-      while(tl5ds->dataSetExists(targetDatasetName))
-      {
-        targetDatasetName += "_" + boost::lexical_cast<std::string>(j);
-        ++j;
-      }
-
-      m_datasetFinalNames[dsNames[i] ] = targetDatasetName;
-    }
-
-// iterate over datasets for converting them to new non-proprietary format.
-    for(std::size_t i = 0; i < dsNames.size(); ++i)
-    {
-      std::string errors = "";
-
-      std::string errorWhat = "";
-
-      try
-      {
-        std::auto_ptr<te::da::DataSetType> dst = m_tl4Database->getDataSetType(dsNames[i]);
-
-        if(dst->hasRaster())
-          continue;
-
-        std::auto_ptr<te::da::DataSetTypeConverter> dt_adapter(new te::da::DataSetTypeConverter(dst.get(), tl5ds->getCapabilities()));
-
-        std::auto_ptr<te::da::DataSet> ds(m_tl4Database->getDataSet(dsNames[i]));
-
-        std::auto_ptr<te::da::DataSetAdapter> ds_adapter(te::da::CreateAdapter(ds.get(), dt_adapter.get()));
-
-        std::map<std::string, std::string> op;
-
-        te::da::Create(tl5ds.get(), dt_adapter->getResult(), ds_adapter.get(), op);
-
-        successfulVectorDatasets.push_back(dsNames[i]);
-      }
-      catch(const te::common::Exception& e)
-      {
-        std::pair<std::string, std::string> error;
-        error.first = dsNames[i];
-        error.second = e.what();
-        problematicDatasets.push_back(error);
-      }
-    }
-
-    m_finalPage->setDataSets(successfulVectorDatasets);
-  }
-  catch(const te::common::Exception& e)
-  {
-    QString errMsg(tr("Unexpected error during data conversion: %1"));
-
-    errMsg = errMsg.arg(e.what());
-
-    QMessageBox mes(QMessageBox::Critical, tr("TerraLib 4.x Converter"), errMsg, QMessageBox::Ok, this);
-
-    mes.exec();
-
-    return;
-  }
-
-  if(!problematicDatasets.empty())
-  {
-    QString err(tr("Some TerraLib 4.x Layers could not be converter:\n\n"));
-    QString details;
-
-    for(std::size_t i = 0; i < problematicDatasets.size(); ++i)
-    {
-      err.append(QString(" - ")+problematicDatasets[i].first.c_str()+QString("\n"));
-      details.append(problematicDatasets[i].first.c_str() + QString(":\n"));
-      details.append(problematicDatasets[i].second.c_str()+QString("\n\n"));
-    }
-
-    QMessageBox mes(QMessageBox::Warning, tr("TerraLib 4.x Converter"), err, QMessageBox::Ok, this);
-    mes.setDetailedText(details);
-
-    mes.exec();
-  }
-
-  QWizard::next();
-}
-
-void te::qt::plugins::terralib4::TL4ConverterWizard::rasterFolderSelectionPageNext()
-{
-  std::vector<std::pair<std::string, std::string> > problematicDatasets;
-
-  {
-    te::qt::widgets::ScopedCursor sc(Qt::WaitCursor);
-
-    m_rasterFolderPath = m_rasterFolderSelectionPage->getPath();
-
-    std::vector<std::string> dsNames = m_layerSelectionPage->getChecked();
-
-    for(std::size_t i = 0; i < dsNames.size(); ++i)
-    {
-      try
-      {
-        std::auto_ptr<te::da::DataSetType> dst = m_tl4Database->getDataSetType(dsNames[i]);
-
-        if(dst->hasRaster())
-        {
-          std::auto_ptr<te::da::DataSet> ds = m_tl4Database->getDataSet(dsNames[i]);
-
-          std::auto_ptr<te::rst::Raster> raster = ds->getRaster("Raster");
-
-          te::rst::CreateCopy(*raster.release(), m_rasterFolderPath + "/" + dsNames[i] + ".tif");
-
-          successfulRasterDatasets.push_back(dsNames[i]);
-        }
-      }
-      catch(const te::common::Exception& e)
-      {
-        std::pair<std::string, std::string> error;
-        error.first = dsNames[i];
-        error.second = e.what();
-        problematicDatasets.push_back(error);
-      }
-    }
-
-    m_finalPage->setDataSets(successfulRasterDatasets);
-  }
-
-  if(!problematicDatasets.empty())
-  {
-    QString err(tr("Some TerraLib 4.x Layers could not be converter:\n\n"));
-    QString details;
-
-    for(std::size_t i = 0; i < problematicDatasets.size(); ++i)
-    {
-      err.append(QString(" - ")+problematicDatasets[i].first.c_str()+QString("\n"));
-      details.append(problematicDatasets[i].first.c_str() + QString(":\n"));
-      details.append(problematicDatasets[i].second.c_str()+QString("\n\n"));
-    }
-
-    QMessageBox mes(QMessageBox::Warning, tr("TerraLib 4.x Converter"), err, QMessageBox::Ok, this);
-    mes.setDetailedText(details);
-
-    mes.exec();
-  }
+  return;
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 {
-  std::vector<std::string> selected = m_finalPage->getSelected();
+  return;
+  //std::vector<std::string> selected = m_finalPage->getSelected();
 
-  for(std::size_t i = 0; i < selected.size(); ++i)
-  {
-    te::map::AbstractLayerPtr lay = 0;
-    std::auto_ptr<te::da::DataSetType> dt = m_tl4Database->getDataSetType(selected[i]);
+  //for(std::size_t i = 0; i < selected.size(); ++i)
+  //{
+  //  te::map::AbstractLayerPtr lay = 0;
 
-    if(dt->hasRaster())
-    {
-      std::map<std::string, std::string> connInfo;
-      connInfo["URI"] = m_rasterFolderPath + "/" + selected[i] + ".tif";
+  //  std::string originalName = "";
+  //  std::map<std::string, std::string>::iterator it = m_datasetFinalNames.begin();
+  //  while(it != m_datasetFinalNames.end())
+  //  {
+  //    if(it->second == selected[i])
+  //    {
+  //      originalName = it->first;
+  //      break;
+  //    }
+  //    
+  //    ++it;
+  //  }
 
-      lay = te::qt::widgets::createLayer("GDAL", connInfo);
-    }
-    else
-    {
-      te::da::DataSourcePtr outDataSource = te::da::DataSourceManager::getInstance().find(m_targetDataSource->getId());
+  //  std::auto_ptr<te::da::DataSetType> dt = m_tl4Database->getDataSetType(originalName);
 
-      te::qt::widgets::DataSet2Layer converter(m_targetDataSource->getId());
+  //  if(dt->hasRaster())
+  //  {
+  //    std::map<std::string, std::string> connInfo;
+  //    connInfo["URI"] = m_rasterFolderPath + "/" + selected[i] + ".tif";
 
-      std::auto_ptr<te::da::DataSetType> dsType = outDataSource->getDataSetType(selected[i]);
-      te::da::DataSetTypePtr dt(dsType.release());
-      lay = converter(dt);
-    }
+  //    lay = te::qt::widgets::createLayer("GDAL", connInfo);
+  //  }
+  //  else
+  //  {
+  //    te::da::DataSourcePtr outDataSource = te::da::DataSourceManager::getInstance().find(m_targetDataSource->getId());
 
-    te::qt::af::evt::LayerAdded evt(lay);
+  //    te::qt::widgets::DataSet2Layer converter(m_targetDataSource->getId());
 
-    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
-  }
+  //    std::auto_ptr<te::da::DataSetType> dsType = outDataSource->getDataSetType(selected[i]);
+
+  //    te::da::DataSetTypePtr dt(dsType.release());
+
+  //    lay = converter(dt);
+  //  }
+
+  //  te::qt::af::evt::LayerAdded evt(lay);
+
+  //  te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+  //}
 }
+
+void te::qt::plugins::terralib4::TL4ConverterWizard::help()
+{
+  QMessageBox::warning(this,
+                       tr("TerraLib Qt Components"),
+                       tr("This option is not implemented yet!\nWe will provide it soon!"));
+}
+
+
+
+
+
+
 

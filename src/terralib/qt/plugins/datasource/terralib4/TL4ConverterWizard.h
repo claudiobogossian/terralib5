@@ -36,7 +36,9 @@
 #include <string>
 
 // Qt
+#include <QtGui/QTableWidget>
 #include <QtGui/QWizard>
+#include <QtGui/QWizardPage>
 
 // Forward declaration
 namespace Ui { class TL4ConverterWizardForm; }
@@ -70,23 +72,25 @@ namespace te
 
             int nextId() const;
 
+            bool validateCurrentPage();
+
           private:
 
-            void terralib4ConnectorPageNext();
+            bool validTerraLib4Connection();
 
-            void layerSelectionPageNext();
+            bool validLayerSelection();
 
-            void datasourceSelectionPageNext();
-
-            void rasterFolderSelectionPageNext();
+            bool validLayerNames();
 
           protected slots:
 
             void back();
 
-            void finish();
-
             void next();
+
+            void commit();
+
+            void finish();
 
             void help();
 
@@ -98,21 +102,28 @@ namespace te
               PAGE_LAYER_SELECTION,
               PAGE_DATASOURCE_SELECTOR,
               PAGE_RASTERFOLDER_SELECTOR,
+              PAGE_NAME_RESOLVE_SELECTOR,
               PAGE_FINALPAGE
             };
 
-            std::map<std::string, std::string> m_datasetFinalNames;
-            std::vector<std::string> successfulVectorDatasets;
-            std::vector<std::string> successfulRasterDatasets;
+            bool m_hasNonRaster;
+            bool m_hasRaster;
+
             std::string m_rasterFolderPath;
+
             std::auto_ptr<te::da::DataSource> m_tl4Database;
+
             te::da::DataSourceInfoPtr m_targetDataSource;
+
             std::auto_ptr<Ui::TL4ConverterWizardForm> m_ui;
             std::auto_ptr<TL4ConnectorWizardPage> m_connectorPage;
             std::auto_ptr<te::qt::widgets::DataSourceSelectorWizardPage>m_datasourceSelectorPage;
             std::auto_ptr<TL4LayerSelectionWizardPage> m_layerSelectionPage;
             std::auto_ptr<TL4RasterFolderSelectionWizardPage> m_rasterFolderSelectionPage;
+            std::auto_ptr<QWizardPage> m_resolveNamePage;
             std::auto_ptr<TL4FinalPageWizardPage> m_finalPage;
+
+            std::auto_ptr<QTableWidget> m_resolveNameTableWidget;
         };
       } // end namespace terralib4
     } // end namespace plugins

@@ -6,645 +6,689 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>481</width>
-    <height>322</height>
+    <width>318</width>
+    <height>505</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Raster Symbolizer</string>
   </property>
-  <layout class="QGridLayout" name="m_mainGridLayout">
+  <layout class="QGridLayout" name="gridLayout_11">
    <item row="0" column="0">
-    <layout class="QGridLayout" name="m_internalGridLayout">
-     <item row="0" column="0">
-      <widget class="QWidget" name="m_opacityWidget" native="true">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QGroupBox" name="m_enhancementGroupBox">
-       <property name="title">
-        <string>Enhancement</string>
-       </property>
-       <property name="flat">
-        <bool>true</bool>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_8">
-        <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_7">
-          <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout_5">
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="minimumSize">
+      <size>
+       <width>300</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAsNeeded</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>298</width>
+        <height>485</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_10">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout_9">
+         <item row="0" column="0">
+          <widget class="QWidget" name="m_opacityWidget" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QGroupBox" name="m_enhancementGroupBox">
+           <property name="title">
+            <string>Enhancement</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_8">
             <item row="0" column="0">
-             <widget class="QLabel" name="m_gainLabel">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Gain</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QPushButton" name="m_gainPlusPushButton">
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>24</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset>
-                <normaloff>:/tvLite/images/plus.png</normaloff>:/tvLite/images/plus.png</iconset>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QPushButton" name="m_gainMinusPushButton">
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>24</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset>
-                <normaloff>:/tvLite/images/minus.png</normaloff>:/tvLite/images/minus.png</iconset>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="3">
-             <widget class="QPushButton" name="m_gainResetPushButton">
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>24</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-             </widget>
+             <layout class="QGridLayout" name="gridLayout_7">
+              <item row="0" column="0">
+               <layout class="QGridLayout" name="gridLayout_5">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="m_gainLabel">
+                  <property name="minimumSize">
+                   <size>
+                    <width>40</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>Gain</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QPushButton" name="m_gainPlusPushButton">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>24</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset>
+                    <normaloff>:/tvLite/images/plus.png</normaloff>:/tvLite/images/plus.png</iconset>
+                  </property>
+                  <property name="flat">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QPushButton" name="m_gainMinusPushButton">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>24</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset>
+                    <normaloff>:/tvLite/images/minus.png</normaloff>:/tvLite/images/minus.png</iconset>
+                  </property>
+                  <property name="flat">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="3">
+                 <widget class="QPushButton" name="m_gainResetPushButton">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>24</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="flat">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="1" column="0">
+               <layout class="QGridLayout" name="gridLayout_6">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="m_offSetLabel">
+                  <property name="minimumSize">
+                   <size>
+                    <width>40</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>Offset</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QPushButton" name="m_offsetPlusPushButton">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>24</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset>
+                    <normaloff>:/tvLite/images/plus.png</normaloff>:/tvLite/images/plus.png</iconset>
+                  </property>
+                  <property name="flat">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QPushButton" name="m_offsetMinusPushButton">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>24</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset>
+                    <normaloff>:/tvLite/images/minus.png</normaloff>:/tvLite/images/minus.png</iconset>
+                  </property>
+                  <property name="flat">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="3">
+                 <widget class="QPushButton" name="m_offsetResetPushButton">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>24</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
             </item>
            </layout>
-          </item>
-          <item row="1" column="0">
-           <layout class="QGridLayout" name="gridLayout_6">
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QGroupBox" name="m_compositionGroupBox">
+           <property name="title">
+            <string>Channel Selection</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_44">
             <item row="0" column="0">
-             <widget class="QLabel" name="m_offSetLabel">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>0</height>
-               </size>
-              </property>
+             <widget class="QRadioButton" name="m_composeMRadioButton">
               <property name="text">
-               <string>Offset</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               <string>Mono</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
-             <widget class="QPushButton" name="m_offsetPlusPushButton">
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>24</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset>
-                <normaloff>:/tvLite/images/plus.png</normaloff>:/tvLite/images/plus.png</iconset>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QPushButton" name="m_offsetMinusPushButton">
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>24</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset>
-                <normaloff>:/tvLite/images/minus.png</normaloff>:/tvLite/images/minus.png</iconset>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="3">
-             <widget class="QPushButton" name="m_offsetResetPushButton">
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>24</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QGroupBox" name="m_compositionGroupBox">
-       <property name="title">
-        <string>Channel Selection</string>
-       </property>
-       <property name="flat">
-        <bool>true</bool>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_44">
-        <item row="0" column="0">
-         <widget class="QRadioButton" name="m_composeMRadioButton">
-          <property name="text">
-           <string>Mono</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1" rowspan="5">
-         <widget class="QFrame" name="rasterCompositionFrame">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_43">
-           <item row="0" column="0">
-            <layout class="QGridLayout" name="gridLayout_27">
-             <item row="4" column="0">
-              <widget class="QLabel" name="m_composeBlueLabel">
-               <property name="maximumSize">
-                <size>
-                 <width>14</width>
-                 <height>14</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="pixmap">
-                <pixmap>:/bullets/images/bullet_blue.png</pixmap>
-               </property>
-               <property name="scaledContents">
-                <bool>true</bool>
-               </property>
-               <property name="buddy">
-                <cstring>m_composeBComboBox</cstring>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="1">
-              <widget class="QComboBox" name="m_composeBComboBox">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="m_composeGreenLabel">
-               <property name="maximumSize">
-                <size>
-                 <width>14</width>
-                 <height>14</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="pixmap">
-                <pixmap>:/bullets/images/bullet_green.png</pixmap>
-               </property>
-               <property name="scaledContents">
-                <bool>true</bool>
-               </property>
-               <property name="buddy">
-                <cstring>m_composeGComboBox</cstring>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QComboBox" name="m_composeGComboBox">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="m_composeRedLabel">
-               <property name="maximumSize">
-                <size>
-                 <width>14</width>
-                 <height>14</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="pixmap">
-                <pixmap>:/bullets/images/bullet_red.png</pixmap>
-               </property>
-               <property name="scaledContents">
-                <bool>true</bool>
-               </property>
-               <property name="buddy">
-                <cstring>m_composeRComboBox</cstring>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QComboBox" name="m_composeRComboBox">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QComboBox" name="m_composeMComboBox">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="m_composeMonoLabel">
-               <property name="maximumSize">
-                <size>
-                 <width>14</width>
-                 <height>14</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="pixmap">
-                <pixmap>:/bullets/images/bullet_gray.png</pixmap>
-               </property>
-               <property name="scaledContents">
-                <bool>true</bool>
-               </property>
-               <property name="buddy">
-                <cstring>m_composeMComboBox</cstring>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QRadioButton" name="m_composeRRadioButton">
-          <property name="text">
-           <string>Red Channel</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QRadioButton" name="m_composeGRadioButton">
-          <property name="text">
-           <string>Green Channel</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QRadioButton" name="m_composeBRadioButton">
-          <property name="text">
-           <string>Blue Channel</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QRadioButton" name="m_composeCRadioButton">
-          <property name="text">
-           <string>Composition</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QGroupBox" name="m_contrastGroupBox">
-       <property name="title">
-        <string>Contrast Enhancement</string>
-       </property>
-       <property name="flat">
-        <bool>true</bool>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_4">
-        <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_3">
-          <item row="1" column="0">
-           <layout class="QGridLayout" name="gridLayout_2">
-            <item row="0" column="0">
-             <widget class="QLabel" name="m_rContrastLabel">
-              <property name="maximumSize">
-               <size>
-                <width>14</width>
-                <height>14</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap>:/bullets/images/bullet_red.png</pixmap>
-              </property>
-              <property name="scaledContents">
+            <item row="0" column="1" rowspan="5">
+             <widget class="QFrame" name="rasterCompositionFrame">
+              <property name="enabled">
                <bool>true</bool>
               </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QSlider" name="m_contrastRHorizontalSlider">
-              <property name="minimumSize">
-               <size>
-                <width>100</width>
-                <height>0</height>
-               </size>
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
               </property>
-              <property name="maximum">
-               <number>400</number>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
               </property>
-              <property name="singleStep">
-               <number>10</number>
-              </property>
-              <property name="sliderPosition">
-               <number>100</number>
-              </property>
-              <property name="tracking">
-               <bool>true</bool>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="tickPosition">
-               <enum>QSlider::TicksAbove</enum>
-              </property>
-              <property name="tickInterval">
-               <number>100</number>
-              </property>
+              <layout class="QGridLayout" name="gridLayout_43">
+               <item row="0" column="0">
+                <layout class="QGridLayout" name="gridLayout_27">
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="m_composeBlueLabel">
+                   <property name="maximumSize">
+                    <size>
+                     <width>14</width>
+                     <height>14</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="pixmap">
+                    <pixmap>:/bullets/images/bullet_blue.png</pixmap>
+                   </property>
+                   <property name="scaledContents">
+                    <bool>true</bool>
+                   </property>
+                   <property name="buddy">
+                    <cstring>m_composeBComboBox</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QComboBox" name="m_composeBComboBox">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="m_composeGreenLabel">
+                   <property name="maximumSize">
+                    <size>
+                     <width>14</width>
+                     <height>14</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="pixmap">
+                    <pixmap>:/bullets/images/bullet_green.png</pixmap>
+                   </property>
+                   <property name="scaledContents">
+                    <bool>true</bool>
+                   </property>
+                   <property name="buddy">
+                    <cstring>m_composeGComboBox</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QComboBox" name="m_composeGComboBox">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="m_composeRedLabel">
+                   <property name="maximumSize">
+                    <size>
+                     <width>14</width>
+                     <height>14</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="pixmap">
+                    <pixmap>:/bullets/images/bullet_red.png</pixmap>
+                   </property>
+                   <property name="scaledContents">
+                    <bool>true</bool>
+                   </property>
+                   <property name="buddy">
+                    <cstring>m_composeRComboBox</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QComboBox" name="m_composeRComboBox">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QComboBox" name="m_composeMComboBox">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="m_composeMonoLabel">
+                   <property name="maximumSize">
+                    <size>
+                     <width>14</width>
+                     <height>14</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="pixmap">
+                    <pixmap>:/bullets/images/bullet_gray.png</pixmap>
+                   </property>
+                   <property name="scaledContents">
+                    <bool>true</bool>
+                   </property>
+                   <property name="buddy">
+                    <cstring>m_composeMComboBox</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="m_gContrastLabel">
-              <property name="maximumSize">
-               <size>
-                <width>14</width>
-                <height>14</height>
-               </size>
-              </property>
+             <widget class="QRadioButton" name="m_composeRRadioButton">
               <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap>:/bullets/images/bullet_green.png</pixmap>
-              </property>
-              <property name="scaledContents">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QSlider" name="m_contrastGHorizontalSlider">
-              <property name="minimumSize">
-               <size>
-                <width>100</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximum">
-               <number>400</number>
-              </property>
-              <property name="singleStep">
-               <number>10</number>
-              </property>
-              <property name="sliderPosition">
-               <number>100</number>
-              </property>
-              <property name="tracking">
-               <bool>true</bool>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="tickPosition">
-               <enum>QSlider::TicksAbove</enum>
-              </property>
-              <property name="tickInterval">
-               <number>100</number>
+               <string>Red Channel</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QLabel" name="m_bContrastLabel">
-              <property name="maximumSize">
-               <size>
-                <width>14</width>
-                <height>14</height>
-               </size>
-              </property>
+             <widget class="QRadioButton" name="m_composeGRadioButton">
               <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap>:/bullets/images/bullet_blue.png</pixmap>
-              </property>
-              <property name="scaledContents">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QSlider" name="m_contrastBHorizontalSlider">
-              <property name="minimumSize">
-               <size>
-                <width>100</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximum">
-               <number>400</number>
-              </property>
-              <property name="singleStep">
-               <number>10</number>
-              </property>
-              <property name="sliderPosition">
-               <number>100</number>
-              </property>
-              <property name="tracking">
-               <bool>true</bool>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="tickPosition">
-               <enum>QSlider::TicksAbove</enum>
-              </property>
-              <property name="tickInterval">
-               <number>100</number>
+               <string>Green Channel</string>
               </property>
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="QLabel" name="m_mContrastLabel">
-              <property name="maximumSize">
-               <size>
-                <width>14</width>
-                <height>14</height>
-               </size>
-              </property>
+             <widget class="QRadioButton" name="m_composeBRadioButton">
               <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap>:/bullets/images/bullet_gray.png</pixmap>
-              </property>
-              <property name="scaledContents">
-               <bool>true</bool>
+               <string>Blue Channel</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="1">
-             <widget class="QSlider" name="m_contrastMHorizontalSlider">
-              <property name="minimumSize">
-               <size>
-                <width>100</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximum">
-               <number>400</number>
-              </property>
-              <property name="singleStep">
-               <number>10</number>
-              </property>
-              <property name="sliderPosition">
-               <number>100</number>
-              </property>
-              <property name="tracking">
-               <bool>true</bool>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="tickPosition">
-               <enum>QSlider::TicksAbove</enum>
-              </property>
-              <property name="tickInterval">
-               <number>100</number>
+            <item row="4" column="0">
+             <widget class="QRadioButton" name="m_composeCRadioButton">
+              <property name="text">
+               <string>Composition</string>
               </property>
              </widget>
             </item>
            </layout>
-          </item>
-          <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout">
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QGroupBox" name="m_contrastGroupBox">
+           <property name="title">
+            <string>Contrast Enhancement</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_4">
             <item row="0" column="0">
-             <widget class="QLabel" name="m_contrastTypeLabel">
-              <property name="text">
-               <string>Type</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QComboBox" name="m_contrastTypeComboBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
+             <layout class="QGridLayout" name="gridLayout_3">
+              <item row="1" column="0">
+               <layout class="QGridLayout" name="gridLayout_2">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="m_rContrastLabel">
+                  <property name="maximumSize">
+                   <size>
+                    <width>14</width>
+                    <height>14</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="pixmap">
+                   <pixmap>:/bullets/images/bullet_red.png</pixmap>
+                  </property>
+                  <property name="scaledContents">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QSlider" name="m_contrastRHorizontalSlider">
+                  <property name="minimumSize">
+                   <size>
+                    <width>100</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximum">
+                   <number>400</number>
+                  </property>
+                  <property name="singleStep">
+                   <number>10</number>
+                  </property>
+                  <property name="sliderPosition">
+                   <number>100</number>
+                  </property>
+                  <property name="tracking">
+                   <bool>true</bool>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="tickPosition">
+                   <enum>QSlider::TicksAbove</enum>
+                  </property>
+                  <property name="tickInterval">
+                   <number>100</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="m_gContrastLabel">
+                  <property name="maximumSize">
+                   <size>
+                    <width>14</width>
+                    <height>14</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="pixmap">
+                   <pixmap>:/bullets/images/bullet_green.png</pixmap>
+                  </property>
+                  <property name="scaledContents">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QSlider" name="m_contrastGHorizontalSlider">
+                  <property name="minimumSize">
+                   <size>
+                    <width>100</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximum">
+                   <number>400</number>
+                  </property>
+                  <property name="singleStep">
+                   <number>10</number>
+                  </property>
+                  <property name="sliderPosition">
+                   <number>100</number>
+                  </property>
+                  <property name="tracking">
+                   <bool>true</bool>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="tickPosition">
+                   <enum>QSlider::TicksAbove</enum>
+                  </property>
+                  <property name="tickInterval">
+                   <number>100</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="m_bContrastLabel">
+                  <property name="maximumSize">
+                   <size>
+                    <width>14</width>
+                    <height>14</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="pixmap">
+                   <pixmap>:/bullets/images/bullet_blue.png</pixmap>
+                  </property>
+                  <property name="scaledContents">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QSlider" name="m_contrastBHorizontalSlider">
+                  <property name="minimumSize">
+                   <size>
+                    <width>100</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximum">
+                   <number>400</number>
+                  </property>
+                  <property name="singleStep">
+                   <number>10</number>
+                  </property>
+                  <property name="sliderPosition">
+                   <number>100</number>
+                  </property>
+                  <property name="tracking">
+                   <bool>true</bool>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="tickPosition">
+                   <enum>QSlider::TicksAbove</enum>
+                  </property>
+                  <property name="tickInterval">
+                   <number>100</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QLabel" name="m_mContrastLabel">
+                  <property name="maximumSize">
+                   <size>
+                    <width>14</width>
+                    <height>14</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="pixmap">
+                   <pixmap>:/bullets/images/bullet_gray.png</pixmap>
+                  </property>
+                  <property name="scaledContents">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1">
+                 <widget class="QSlider" name="m_contrastMHorizontalSlider">
+                  <property name="minimumSize">
+                   <size>
+                    <width>100</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximum">
+                   <number>400</number>
+                  </property>
+                  <property name="singleStep">
+                   <number>10</number>
+                  </property>
+                  <property name="sliderPosition">
+                   <number>100</number>
+                  </property>
+                  <property name="tracking">
+                   <bool>true</bool>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="tickPosition">
+                   <enum>QSlider::TicksAbove</enum>
+                  </property>
+                  <property name="tickInterval">
+                   <number>100</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="0" column="0">
+               <layout class="QGridLayout" name="gridLayout">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="m_contrastTypeLabel">
+                  <property name="text">
+                   <string>Type</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QComboBox" name="m_contrastTypeComboBox">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
             </item>
            </layout>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-    </layout>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
    </item>
   </layout>
  </widget>

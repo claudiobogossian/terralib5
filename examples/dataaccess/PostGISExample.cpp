@@ -22,6 +22,7 @@ void PostGISExample()
     connInfo["PG_PASSWORD"] = "postgres";
     connInfo["PG_DB_NAME"] = "terralib4";
     connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
+    connInfo["PG_CLIENT_ENCODING"] = "WIN1252";     // "LATIN1";
     
 // create a data source using the data source factory
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
@@ -32,8 +33,8 @@ void PostGISExample()
 // let's open it with the connection info above!
     ds->open();
 
-// shows how to print information about datasets stored in the data source
-    //PrintCatalog(ds);
+// retrieve the data source capabilities and print it
+    PrintDataSourceCapabilities(ds.get());
 
 // shows how to retrieve and then print the datasets stored in the data source
 //    PrintDataSets(ds);
@@ -80,16 +81,24 @@ void PostGISExample()
 // Now, let's  remove things from the data source using transactor
     // first, drop the recently added property
     std::cout << std::endl << "Droping Property population of " << dt_name <<" using transactor or ds"<< std::endl;
-    //(transactor.get())->dropProperty(datasetType->getName(), "population"); //not implemented yet
-    DroppingDataSetTypeProperty(dt_name, "population",transactor.get()); 
-    //or using ds
-    //ds->dropProperty(dt_name, "population");
+    (transactor.get())->dropProperty(datasetType->getName(), "population");
+     //DroppingDataSetTypeProperty(dt_name, "population",transactor.get());
 
-    // finally, drop the dataset we have created above via ds or via transactor
+// Now, let´s it add again an integer property called 'population' to the given dataset type and drop it using ds
+    std::cout << std::endl << "Adding new Property population to " << dt_name << std::endl;
+    te::dt::SimpleProperty* p1 = AddProperty(datasetType->getName(), transactor.get());
+// Dropping using ds api   
+    ds->dropProperty(dt_name, "population");
+
+// finally, drop the dataset we have created above via ds or via transactor
     std::cout << std::endl << "Droping dataSet " << dt_name << std::endl;
-    //ds->dropDataSet(dt_name);
-    //(transactor.get())->dropDataSet( datasetType->getName()); /Not implemented Yet
-    DroppingDataSetType(datasetType->getName(),transactor.get()); 
+    ds->dropDataSet(dt_name);
+
+// Create again the dataset and drop it using transactor
+    datasetType = CreateDataSetType(dt_name,dtype,transactor.get());
+    transactor->dropDataSet( datasetType->getName());
+    //DroppingDataSetType(datasetType->getName(),transactor.get()); 
+   
     if (transactor->isInTransaction())
     {
       std::cout << std::endl << "Transactor in transaction! "<< std::endl;

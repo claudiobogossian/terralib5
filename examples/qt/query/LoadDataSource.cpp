@@ -42,7 +42,8 @@ te::da::DataSourcePtr LoadPGISDataSource(const std::string& dsId)
   connInfo["PG_PASSWORD"] = "postgres";
   connInfo["PG_DB_NAME"] = "terralib4";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-
+  connInfo["PG_CLIENT_ENCODING"] = "WIN1252";     // "LATIN1";
+ 
   std::auto_ptr<te::da::DataSource> dsPGIS = te::da::DataSourceFactory::make("POSTGIS");
   dsPGIS->setConnectionInfo(connInfo);
   dsPGIS->open();
