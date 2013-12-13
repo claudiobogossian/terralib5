@@ -261,8 +261,9 @@ void te::vp::BufferDialog::onFilterLineEditTextChanged(const QString& text)
   std::list<te::map::AbstractLayerPtr>::iterator it = filteredLayers.begin();
 
   while(it != filteredLayers.end())
-  {  
-    m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+  {
+    if(it->get()->getSchema()->hasGeom())
+      m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
     ++it;
   }
 }

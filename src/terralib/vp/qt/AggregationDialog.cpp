@@ -505,7 +505,8 @@ void te::vp::AggregationDialog::onFilterLineEditTextChanged(const QString& text)
 
   while(it != filteredLayers.end())
   {  
-    m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+    if(it->get()->getSchema()->hasGeom())
+      m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
     ++it;
   }
 }
