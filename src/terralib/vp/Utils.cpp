@@ -123,15 +123,12 @@ void te::vp::SplitGeometryCollection(te::gm::GeometryCollection* gcIn, te::gm::G
 
 std::string te::vp::GetSimpleTableName(std::string fullName)
 {
-  std::string key (".");
-  std::size_t found = fullName.rfind(key);
+  std::size_t found = fullName.rfind(".");
   
   if(found >= std::string::npos)
     return fullName;
 
-  std::string tableName = fullName.substr(found + 1);
-
-  return tableName;
+  return fullName.substr(found + 1);
 }
 
 te::gm::GeomType te::vp::GeomOpResultType(te::gm::GeomType firstGeom, te::gm::GeomType secondGeom)
