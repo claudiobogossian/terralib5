@@ -5,16 +5,18 @@
 bool AggregPGISToOGR()
 {
   // this refers to a PostGIS connection, use valid ones for your own environment
-  std::map<std::string, std::string> srcInfo;
-  srcInfo["PG_HOST"] = "localhost" ;
-  srcInfo["PG_USER"] = "postgres";
-  srcInfo["PG_PASSWORD"] = "root";
-  srcInfo["PG_DB_NAME"] = "testPostGIS";
-  srcInfo["PG_CONNECT_TIMEOUT"] = "4";
-  srcInfo["PG_PORT"]="5432";
-  
+ 
+  std::map<std::string, std::string> connInfo;
+  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
+  connInfo["PG_PORT"] = "5433" ;
+  connInfo["PG_USER"] = "postgres";
+  connInfo["PG_PASSWORD"] = "postgres";
+  connInfo["PG_DB_NAME"] = "testPostGIS";
+  connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
+  connInfo["PG_CLIENT_ENCODING"] = "WIN1252";  
+
   std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
-  srcDs->setConnectionInfo(srcInfo);
+  srcDs->setConnectionInfo(connInfo);
   srcDs->open();
   
   std::string inDset = "brasil";
@@ -81,16 +83,17 @@ bool AggregOGRToPGIS()
   
   std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > stats;
   
-  std::map<std::string, std::string> tgrInfo;
-  tgrInfo["PG_HOST"] = "localhost" ;
-  tgrInfo["PG_USER"] = "postgres";
-  tgrInfo["PG_PASSWORD"] = "root";
-  tgrInfo["PG_DB_NAME"] = "testPostGIS";
-  tgrInfo["PG_CONNECT_TIMEOUT"] = "4";
-  tgrInfo["PG_PORT"]="5432";
+  std::map<std::string, std::string> connInfo;
+  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
+  connInfo["PG_PORT"] = "5433" ;
+  connInfo["PG_USER"] = "postgres";
+  connInfo["PG_PASSWORD"] = "postgres";
+  connInfo["PG_DB_NAME"] = "testPostGIS";
+  connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
+  connInfo["PG_CLIENT_ENCODING"] = "WIN1252";  
   
   std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("POSTGIS");
-  trgDs->setConnectionInfo(tgrInfo);
+  trgDs->setConnectionInfo(connInfo);
   trgDs->open();
   
   std::string outDS = "regioes";
@@ -156,16 +159,17 @@ bool AggregOGRToOGR()
 
 bool AggregPGISToPGIS()
 {
-  std::map<std::string, std::string> srcInfo;
-  srcInfo["PG_HOST"] = "localhost" ;
-  srcInfo["PG_USER"] = "postgres";
-  srcInfo["PG_PASSWORD"] = "root";
-  srcInfo["PG_DB_NAME"] = "testPostGIS";
-  srcInfo["PG_CONNECT_TIMEOUT"] = "4";
-  srcInfo["PG_PORT"]="5432";
+  std::map<std::string, std::string> connInfo;
+  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
+  connInfo["PG_PORT"] = "5433" ;
+  connInfo["PG_USER"] = "postgres";
+  connInfo["PG_PASSWORD"] = "postgres";
+  connInfo["PG_DB_NAME"] = "testPostGIS";
+  connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
+  connInfo["PG_CLIENT_ENCODING"] = "WIN1252";  
   
   std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
-  srcDs->setConnectionInfo(srcInfo);
+  srcDs->setConnectionInfo(connInfo);
   srcDs->open();
   
   std::string inDset = "cidades_sp";

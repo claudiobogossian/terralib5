@@ -113,7 +113,7 @@ void te::qt::widgets::SegmenterWizardPage::set(te::map::AbstractLayerPtr layer)
 
   list.push_back(m_layer);
 
-  m_navigator->set(m_layer);
+  m_navigator->set(m_layer, true);
 
   listBands();
 }
@@ -235,12 +235,13 @@ void te::qt::widgets::SegmenterWizardPage::apply()
   QApplication::setOverrideCursor(Qt::WaitCursor);
 
 //get preview raster
-  te::rst::Raster* inputRst = m_navigator->getExtentRaster();
+  te::rst::Raster* inputRst = m_navigator->getExtentRaster(true);
 
   //set segmenters parameters
   te::rp::Segmenter::InputParameters algoInputParams = getInputParams();
 
   algoInputParams.m_inputRasterPtr = inputRst;
+  algoInputParams.m_enableThreadedProcessing = false;
   algoInputParams.m_enableBlockProcessing = false;
   algoInputParams.m_enableBlockMerging = false;
 

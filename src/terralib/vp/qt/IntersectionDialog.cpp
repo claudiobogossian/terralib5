@@ -35,6 +35,7 @@
 #include "../../datatype/Property.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
+#include "../../srs/Config.h"
 #include "../Exception.h"
 #include "../Intersection.h"
 #include "../qt/widgets/layer/utils/DataSet2Layer.h"
@@ -198,6 +199,14 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
   {
     QMessageBox::warning(this, TR_VP("Intersection"), TR_VP("Define a name for the resulting layer."));
     return;
+  }
+  
+  if ((firstDataSetLayer->getSRID() == TE_UNKNOWN_SRS && secondDataSetLayer->getSRID() != TE_UNKNOWN_SRS) ||
+      (firstDataSetLayer->getSRID() != TE_UNKNOWN_SRS && secondDataSetLayer->getSRID() == TE_UNKNOWN_SRS))
+  {
+    int ret = QMessageBox::question(this, "Intersection", "The two layers have incompatible SRS. The result might be incorrect. Do you wish to continue?", QMessageBox::No, QMessageBox::Yes);
+    if (ret == QMessageBox::No)
+      return;
   }
 
   //progress

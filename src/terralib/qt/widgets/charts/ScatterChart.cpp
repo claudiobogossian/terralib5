@@ -216,7 +216,7 @@ te::da::ObjectIdSet* te::qt::widgets::ScatterChart::highlight(QRectF rect)
   //Acquiring all the selected points:
   for(size_t i = 0; i < values->size(); ++i)
   {
-    if( rect.contains(values->sample(i)) )
+    if( rect.contains(values->sample(i)))
     {
       selected.push_back(values->sample(i));
     }

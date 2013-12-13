@@ -29,6 +29,8 @@
 #include <terralib/rp/Segmenter.h>
 #include <terralib/rp/SegmenterRegionGrowingStrategy.h>
 #include <terralib/raster/RasterFactory.h>
+#include <terralib/common/progress/ConsoleProgressViewer.h>
+#include <terralib/common/progress/ProgressManager.h>
 
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
 
@@ -38,6 +40,10 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TsSegmenter );
 
 void TsSegmenter::BlockProcessingWithoutMerging()
 {
+  // Progress interface
+  te::common::ConsoleProgressViewer progressViewerInstance;
+  te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
+  
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
@@ -71,6 +77,7 @@ void TsSegmenter::BlockProcessingWithoutMerging()
   algoInputParams.m_maxBlockSize = 100;
   algoInputParams.m_strategyName = "Dummy";
   algoInputParams.setSegStrategyParams( strategyParameters );
+  algoInputParams.m_enableProgress = true;
   
   te::rp::Segmenter::OutputParameters algoOutputParams;
   algoOutputParams.m_rInfo = outputRasterInfo;
@@ -86,6 +93,10 @@ void TsSegmenter::BlockProcessingWithoutMerging()
 
 void TsSegmenter::BlockProcessingWithMerging()
 {
+  // Progress interface
+  te::common::ConsoleProgressViewer progressViewerInstance;
+  te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
+  
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
@@ -118,6 +129,7 @@ void TsSegmenter::BlockProcessingWithMerging()
   algoInputParams.m_maxBlockSize = 100;
   algoInputParams.m_strategyName = "Dummy";
   algoInputParams.setSegStrategyParams( strategyParameters );
+  algoInputParams.m_enableProgress = true;
   
   te::rp::Segmenter::OutputParameters algoOutputParams;
   algoOutputParams.m_rInfo = outputRasterInfo;
@@ -133,6 +145,10 @@ void TsSegmenter::BlockProcessingWithMerging()
 
 void TsSegmenter::ThreadedProcessing()
 {
+  // Progress interface
+  te::common::ConsoleProgressViewer progressViewerInstance;
+  te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
+  
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
@@ -165,6 +181,7 @@ void TsSegmenter::ThreadedProcessing()
   algoInputParams.m_maxBlockSize = 100;
   algoInputParams.m_strategyName = "Dummy";
   algoInputParams.setSegStrategyParams( strategyParameters );
+  algoInputParams.m_enableProgress = true;
   
   te::rp::Segmenter::OutputParameters algoOutputParams;
   algoOutputParams.m_rInfo = outputRasterInfo;
@@ -180,6 +197,10 @@ void TsSegmenter::ThreadedProcessing()
 
 void TsSegmenter::RegionGrowingMeanStrategy()
 {
+  // Progress interface
+  te::common::ConsoleProgressViewer progressViewerInstance;
+  te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
+  
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
@@ -214,6 +235,7 @@ void TsSegmenter::RegionGrowingMeanStrategy()
   algoInputParams.m_maxBlockSize = 0;
   algoInputParams.m_strategyName = "RegionGrowing";
   algoInputParams.setSegStrategyParams( strategyParameters );
+  algoInputParams.m_enableProgress = true;
   
   te::rp::Segmenter::OutputParameters algoOutputParams;
   algoOutputParams.m_rInfo = outputRasterInfo;
@@ -229,6 +251,10 @@ void TsSegmenter::RegionGrowingMeanStrategy()
 
 void TsSegmenter::RegionGrowingBaatzStrategy()
 {
+  // Progress interface
+  te::common::ConsoleProgressViewer progressViewerInstance;
+  te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
+  
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
@@ -268,6 +294,7 @@ void TsSegmenter::RegionGrowingBaatzStrategy()
   algoInputParams.m_maxBlockSize = 0;
   algoInputParams.m_strategyName = "RegionGrowing";
   algoInputParams.setSegStrategyParams( strategyParameters );
+  algoInputParams.m_enableProgress = true;
   
   te::rp::Segmenter::OutputParameters algoOutputParams;
   algoOutputParams.m_rInfo = outputRasterInfo;

@@ -243,7 +243,7 @@ bool IntersectionQuery(const std::string& inFirstDataSetName,
   select->setFrom(from);
 
   std::auto_ptr<te::da::DataSet> dsQuery = inFirstDataSource->query(select);
-  dsQuery->moveFirst();
+  dsQuery->moveBeforeFirst();
 
   outDataSetType = CreateDataSetType(outDataSetName, firstDSType.get(), firstProps, secondDSType.get(), secondProps);
   outDataSet = UpdateGeometryType(outDataSetType, dsQuery.release());
@@ -470,21 +470,22 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::stri
 
       for(size_t j = 0; j < firstMember.props.size(); ++j)
       {
-        std::string name = "";
-
-        name = firstMember.props[j]->getName();
+        std::string name = firstMember.props[j]->getName();
 
         if(!firstMember.dt->getTitle().empty())
-          name = firstMember.dt->getTitle() + "_" + firstMember.props[j]->getName();
+          name = te::vp::GetSimpleTableName(firstMember.dt->getTitle()) + "_" + name;
 
-          te::dt::AbstractData* ad = firstMember.ds->getValue(firstMember.props[j]->getName()).release();
+        te::dt::AbstractData* ad = firstMember.ds->getValue(firstMember.props[j]->getName()).release();
 
-          item->setValue(name, ad);
+        item->setValue(name, ad);
       }
 
       for(size_t j = 0; j < secondMember.props.size(); ++j)
       {
-        std::string name = secondMember.dt->getTitle() + "_" + secondMember.props[j]->getName();
+        std::string name = secondMember.props[j]->getName();
+        
+        if (!secondMember.dt->getTitle().empty())
+          name = te::vp::GetSimpleTableName(secondMember.dt->getTitle()) + "_" + name;
 
         te::dt::AbstractData* ad = secondMember.ds->getValue(secondMember.props[j]->getName()).release();
 
@@ -529,7 +530,7 @@ std::vector<te::dt::Property*> GetTabularProperties(te::da::DataSetType* dsType)
   {
     prop = dsType->getProperty(i);
 
-    if(prop->getType() != te::dt::GEOMETRY_TYPE && prop->getType() != te::dt::NUMERIC_TYPE) //Remover o numeric da condição quando ajustar o driver do PostGis
+    if(prop->getType() != te::dt::GEOMETRY_TYPE && prop->getType() != te::dt::NUMERIC_TYPE) 
     {
       props.push_back(prop);
     }
@@ -541,28 +542,26 @@ std::vector<te::dt::Property*> GetTabularProperties(te::da::DataSetType* dsType)
 te::da::DataSet* UpdateGeometryType(te::da::DataSetType* dsType, te::da::DataSet* ds)
 {
   te::mem::DataSet* dsMem = new te::mem::DataSet(dsType);
-  te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(dsMem);
-  std::size_t pk = 0;
+  
   std::size_t type = 0;
   std::vector<te::dt::Property*> props = dsType->getProperties();
 
+  std::size_t pk = 0;
   while(ds->moveNext())
   {
     std::string propName;
     te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(dsMem);
-
-    for(std::size_t i = 0; i < props.size(); ++i)
+    
+    dsItem->setInt32(0, pk);
+  
+    for(std::size_t i = 1; i < props.size(); ++i)
     {
       type = props[i]->getType();
       propName = props[i]->getName();
 
       if(type != te::dt::GEOMETRY_TYPE)
       {
-        if(propName == dsType->getName() + "_id")
-        {
-          dsItem->setInt32(i, pk);
-        }
-        else
+        if (!ds->isNull(propName))
         {
           std::auto_ptr<te::dt::AbstractData> value = ds->getValue(propName);
           dsItem->setValue(i, value.release());

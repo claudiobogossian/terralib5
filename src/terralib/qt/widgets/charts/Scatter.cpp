@@ -204,8 +204,8 @@ te::da::ObjectIdSet* te::qt::widgets::Scatter::find(std::vector<QPointF> selecte
     double y = selectedPoints.at(i).y();
     PointToObjectId aux(x, y, 0);
     res = m_valuesOids.equal_range(aux);
-	it0 = res.first;
-	it1 = res.second;
+    it0 = res.first;
+    it1 = res.second;
 
     while(it0 != it1) 
     {

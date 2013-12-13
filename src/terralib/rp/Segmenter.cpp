@@ -37,7 +37,6 @@
 #include "../dataaccess/datasource/DataSource.h"
 #include "../common/PlatformUtils.h"
 #include "../common/StringUtils.h"
-#include "../common/progress/TaskProgress.h"
 #include "../geometry/Coord2D.h"
 #include "../datatype/Enums.h"
 
@@ -187,6 +186,8 @@ namespace te
       m_runningThreadsCounterPtr = 0;
       m_inputRasterGainsPtr = 0;
       m_inputRasterOffsetsPtr = 0;
+      m_enableStrategyProgress = false;
+      m_progressPtr = 0;
     }
     
     Segmenter::SegmenterThreadEntryParams::~SegmenterThreadEntryParams()
@@ -612,8 +613,9 @@ namespace te
           &runningThreadsCounter;
         segmenterThreadEntryParams.m_inputRasterGainsPtr = &inputRasterGains;
         segmenterThreadEntryParams.m_inputRasterOffsetsPtr = &inputRasterOffsets;
-        segmenterThreadEntryParams.m_enableStrategyProgress = 
+        segmenterThreadEntryParams.m_enableStrategyProgress =  m_inputParameters.m_enableProgress &&
           ( ( vBlocksNumber * hBlocksNumber ) == 1 );
+        segmenterThreadEntryParams.m_progressPtr = maxSegThreads ? 0 : progressPtr.get();
         
         if( maxSegThreads )
         { // threaded segmentation mode
@@ -1190,12 +1192,38 @@ namespace te
 */              
               paramsPtr->m_generalMutexPtr->unlock();
               
+              // pulsing the progress
+              
+              if( paramsPtr->m_progressPtr )
+              {
+                paramsPtr->m_generalMutexPtr->lock();
+                
+                if( paramsPtr->m_progressPtr->isActive() )
+                {
+                  paramsPtr->m_progressPtr->pulse();
+                  paramsPtr->m_generalMutexPtr->unlock();
+                }
+                else
+                {
+                  --( *(paramsPtr->m_runningThreadsCounterPtr) );
+                  *(paramsPtr->m_abortSegmentationFlagPtr) = true;
+                  
+//                    std::cout << std::endl<< "Thread exit (error)"
+//                      << std::endl;                    
+                  
+                  paramsPtr->m_generalMutexPtr->unlock();
+                  
+                  return;
+                }
+              }              
+              
               // notifying the main thread with the block processed signal
               
               boost::lock_guard<boost::mutex> blockProcessedSignalLockGuard( 
                 *( paramsPtr->m_blockProcessedSignalMutexPtr) );              
               
-              paramsPtr->m_blockProcessedSignalPtr->notify_one();
+              paramsPtr->m_blockProcessedSignalPtr->notify_one();             
+
             }
             else
             {
