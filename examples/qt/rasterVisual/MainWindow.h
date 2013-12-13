@@ -62,7 +62,7 @@ namespace te
     {
       class AbstractTool;
       class MapDisplay;
-      class RasterVisualWidget;
+      class RasterSymbolizerWidget;
     }
   }
 }
@@ -139,7 +139,7 @@ class MainWindow : public QMainWindow
 
     bool m_startTools;
 
-    te::qt::widgets::RasterVisualWidget* m_rvW;
+    te::qt::widgets::RasterSymbolizerWidget* m_rvW;
 
     int m_dlgViewerId;
     te::qt::widgets::ProgressViewerDialog* m_dlgViewer;
