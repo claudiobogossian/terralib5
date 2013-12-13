@@ -25,7 +25,7 @@ find_library(
 
 find_library(
   PROJ4_LIBRARY_DEBUG
-  NAMES proj_i_d proj
+  NAMES proj_i_d proj_d
   PATHS /usr/local/lib /lib /usr/lib
   PATH_SUFFIXES "proj4/lib" "proj/lib"
 )
