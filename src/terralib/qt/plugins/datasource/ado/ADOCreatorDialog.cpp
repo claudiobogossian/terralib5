@@ -30,6 +30,7 @@
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../widgets/Exception.h"
+#include "../../../widgets/Utils.h"
 #include "ui_ADOCreatorDialogForm.h"
 #include "ADOCreatorDialog.h"
 
@@ -163,12 +164,16 @@ void te::qt::plugins::ado::ADOCreatorDialog::helpPushButtonPressed()
 
 void te::qt::plugins::ado::ADOCreatorDialog::searchDatabaseToolButtonPressed()
 {
-  QString fileName = QFileDialog::getSaveFileName(this, tr("Save ADO Database"), QString(""), tr("Database files (*.accdb *.mdb);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save ADO Database"), te::qt::widgets::GetFilePathFromSettings("vector"), tr("Database files (*.accdb *.mdb);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
 
   if(fileName.isEmpty())
     return;
 
   m_ui->m_fileLineEdit->setText(fileName);
+
+  QFileInfo info(fileName);
+
+  te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "vector");
 }
 
 void te::qt::plugins::ado::ADOCreatorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const

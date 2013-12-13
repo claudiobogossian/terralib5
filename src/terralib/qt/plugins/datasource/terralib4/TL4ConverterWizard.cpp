@@ -126,8 +126,6 @@ te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* pare
   this->setButton(QWizard::HelpButton, helpButton);
 
   helpButton->setPageReference("plugins/terralib4/Terralib4Converter.html");
-
-  //connect(this->button(QWizard::HelpButton), SIGNAL(pressed()), helpButton, SLOT(help()));
 }
 
 te::qt::plugins::terralib4::TL4ConverterWizard::~TL4ConverterWizard()

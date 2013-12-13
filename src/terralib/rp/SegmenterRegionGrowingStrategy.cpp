@@ -967,12 +967,22 @@ namespace te
         {
           if( maxMergedSegments )
           {
-              currStep = (int)( 100.0 * ( ( (double)( maxMergedSegments - mergedSegments ) ) / 
-                ((double)maxMergedSegments ) ) / 2.0 );
+            currStep = (int)
+              ( 
+                (
+                  ( 
+                    ( (double)( maxMergedSegments - mergedSegments ) ) 
+                    / 
+                    ((double)maxMergedSegments ) 
+                  )
+                ) 
+                * 
+                50.0
+              );
             
             if( currStep > progressPtr->getCurrentStep() )
             {
-              progressPtr->pulse();
+              progressPtr->setCurrentStep( currStep );
             }
           }
           
@@ -1007,6 +1017,15 @@ namespace te
         }
       }
       
+      if( enableProgressInterface )
+      {      
+        progressPtr->setCurrentStep( 50 );
+        if( ! progressPtr->isActive() ) 
+        {
+          return false;
+        }         
+      }
+      
       if( m_parameters.m_minSegmentSize > 1 )
       {
         maxMergedSegments = 0;
@@ -1022,12 +1041,22 @@ namespace te
           {
             if( maxMergedSegments )
             {
-              currStep = 50 + (int)( 100.0 * ( ( (double)( maxMergedSegments - mergedSegments ) ) / 
-                ((double)maxMergedSegments ) ) / 2.0 );
+              currStep = 50 + (int)
+                ( 
+                  (
+                    ( 
+                      ( (double)( maxMergedSegments - mergedSegments ) ) 
+                      / 
+                      ((double)maxMergedSegments ) 
+                    )
+                  ) 
+                  * 
+                  50.0
+                );                
               
               if( currStep > progressPtr->getCurrentStep() )
               {
-                progressPtr->pulse();
+                progressPtr->setCurrentStep( currStep );
               }
             }
             
@@ -1048,6 +1077,15 @@ namespace te
           }
         }
       }
+      
+      if( enableProgressInterface )
+      {      
+        progressPtr->setCurrentStep( 100 );
+        if( ! progressPtr->isActive() ) 
+        {
+          return false;
+        }         
+      }      
       
       // Flush result to the output raster
       
