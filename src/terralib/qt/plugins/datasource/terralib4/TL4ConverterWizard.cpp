@@ -59,7 +59,7 @@
 #include <QtGui/QIcon>
 #include <QtGui/QMessageBox>
 #include <QtGui/QTableWidgetItem>
-#include <QtGui/QVBoxLayout>
+#include <QtGui/QGridLayout>
 
 te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f),
@@ -95,9 +95,10 @@ te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* pare
   m_resolveNamePage->setSubTitle(tr("Some layer names clashes with target data source names. Please, give a new name for the layers showed below"));
   m_resolveNamePage->setCommitPage(true);
 
-  //QVBoxLayout* layout = new QVBoxLayout(
-
+  QGridLayout* displayLayout = new QGridLayout(m_resolveNamePage.get());
   m_resolveNameTableWidget.reset(new QTableWidget(m_resolveNamePage.get()));
+  displayLayout->addWidget(m_resolveNameTableWidget.get());
+  displayLayout->setContentsMargins(0,0,0,0);
   m_resolveNameTableWidget->setColumnCount(3);
   QStringList labels;
   labels << "" << tr("Source Names") << tr("Target Names");
@@ -201,11 +202,12 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
   {
     if(nextId() == PAGE_NAME_RESOLVE_SELECTOR)
     {
+      te::qt::widgets::ScopedCursor sc(Qt::WaitCursor);
+
       std::vector<std::string> selectedLayer = m_layerSelectionPage->getChecked();
 
       m_resolveNameTableWidget->clearContents();
       m_resolveNameTableWidget->setRowCount(selectedLayer.size());
-      //m_resolveNameTableWidget->setColumnCount(2);
 
       te::da::DataSourcePtr tl5ds;
 
@@ -223,6 +225,21 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
 
         if(input_dataset_type->hasRaster())
         {
+          QTableWidgetItem *conflictItem = 0;
+        
+          if(boost::filesystem::exists(m_rasterFolderPath + "/" + targetDatasetName + ".tif"))
+          {
+            hasConflicts = true;
+
+            conflictItem = new QTableWidgetItem(QIcon::fromTheme("delete"), "");
+          }
+          else
+          {
+            conflictItem = new QTableWidgetItem(QIcon::fromTheme("check"), "");
+          }
+
+          conflictItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+          m_resolveNameTableWidget->setItem(i, 0, conflictItem);
         }
         else
         {
@@ -251,6 +268,9 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
         QTableWidgetItem *newNameItem = new QTableWidgetItem(targetDatasetName.c_str());
         m_resolveNameTableWidget->setItem(i, 2, newNameItem);
       }
+
+      m_resolveNameTableWidget->resizeColumnsToContents();
+      m_resolveNameTableWidget->sortByColumn(1, Qt::AscendingOrder);
 
       if(hasConflicts)
       {
@@ -322,6 +342,8 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerSelection()
 
   try
   {
+    te::qt::widgets::ScopedCursor sc(Qt::WaitCursor);
+
     for(std::size_t i = 0; i < layersNames.size(); ++i)
     {
       std::auto_ptr<te::da::DataSetType> dst(m_tl4Database->getDataSetType(layersNames[i]));
@@ -392,11 +414,23 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
 // ask if the dataset is a raster
     try
     {
+      te::qt::widgets::ScopedCursor sc(Qt::WaitCursor);
+
       std::auto_ptr<te::da::DataSetType> input_dataset_type(m_tl4Database->getDataSetType(sourceName));
 
       if(input_dataset_type->hasRaster())
       {
 // yes!
+        if(boost::filesystem::exists(m_rasterFolderPath + "/" + targetName + ".tif"))
+        {
+          hasConflict = true;
+        }
+        else
+        {
+          QTableWidgetItem *nonconflictItem = new QTableWidgetItem(QIcon::fromTheme("check"), "");
+
+          m_resolveNameTableWidget->setItem(i, 0, nonconflictItem);
+        }
       }
       else
       {
@@ -435,6 +469,22 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
   }
 
   return true;
+}
+
+std::string te::qt::plugins::terralib4::TL4ConverterWizard::getOriginalName(const std::string& targetName)
+{
+  int rowCount = m_resolveNameTableWidget->rowCount();
+
+  for(int i = 0; i < rowCount; ++i)
+  {
+    QString targetNameInTable = m_resolveNameTableWidget->item(i, 2)->text();
+
+    if(targetName.c_str() == targetNameInTable)
+      return m_resolveNameTableWidget->item(i, 1)->text().toStdString();
+
+  }
+
+  return "";
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::back()
@@ -502,11 +552,22 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
 // ask if the dataset is a raster
     try
     {
+      te::qt::widgets::ScopedCursor sc(Qt::WaitCursor);
+
       std::auto_ptr<te::da::DataSetType> input_dataset_type(m_tl4Database->getDataSetType(sourceName));
 
       if(input_dataset_type->hasRaster())
       {
 // yes!
+        std::auto_ptr<te::da::DataSet> ds = m_tl4Database->getDataSet(sourceName);
+
+        std::auto_ptr<te::rst::Raster> raster = ds->getRaster("Raster");
+
+        std::string newName = m_rasterFolderPath + "/" + targetName + ".tif";
+
+        te::rst::CreateCopy(*raster.release(), newName);
+
+        successfulDatasets.push_back(targetName);
       }
       else
       {
@@ -595,15 +656,31 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 
   try
   {
+    te::qt::widgets::ScopedCursor sc(Qt::WaitCursor);
+
     for(std::size_t i = 0; i < selected.size(); ++i)
     {
-      te::qt::widgets::DataSet2Layer converter(m_targetDataSource->getId());
+      te::map::AbstractLayerPtr layer = 0;
 
-      std::auto_ptr<te::da::DataSetType> dsType = outDataSource->getDataSetType(selected[i]);
+      std::auto_ptr<te::da::DataSetType> sourceDt = m_tl4Database->getDataSetType(getOriginalName(selected[i]));
 
-      te::da::DataSetTypePtr dt(dsType.release());
+      if(sourceDt->hasRaster())
+      {
+        std::map<std::string, std::string> connInfo;
+        connInfo["URI"] = m_rasterFolderPath + "/" + selected[i] + ".tif";
 
-      te::map::DataSetLayerPtr layer = converter(dt);
+        layer = te::qt::widgets::createLayer("GDAL", connInfo);
+      }
+      else
+      {
+        te::qt::widgets::DataSet2Layer converter(m_targetDataSource->getId());
+
+        std::auto_ptr<te::da::DataSetType> dsType = outDataSource->getDataSetType(selected[i]);
+
+        te::da::DataSetTypePtr dt(dsType.release());
+
+        layer = converter(dt);
+      }
 
       te::qt::af::evt::LayerAdded evt(layer);
 

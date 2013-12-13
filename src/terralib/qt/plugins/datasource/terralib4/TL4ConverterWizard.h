@@ -82,6 +82,8 @@ namespace te
 
             bool validLayerNames();
 
+            std::string getOriginalName(const std::string& targetName);
+
           protected slots:
 
             void back();
