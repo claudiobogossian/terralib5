@@ -1,8 +1,8 @@
-            TerraLib 5 - ADO Data Access Module
-            =============================
-          
+    TerraLib 5 - ADO Data Access Module
+    ===================================
+
 This folder contains an implementation of the Data Access classes
-for the  Microsoft Office Access DBMS. 
+for the  Microsoft Access database. 
 
 Module Dependencies:
 --------------------
@@ -19,6 +19,17 @@ The third-party software needed:
 1. Boost.Filesystem
 2. Boost.System
 3. ActiveX Data Objects (ADO)
+
+Warnings:
+---------
+
+This driver is an expertimental version, having some shortcomings:
+- Only one geometric column is possible.
+- The blob format used is a WKB with a srs id attached to the end of this byte array.
+
+In the next release we may change some internal
+representation in order t be more compliant woth other
+open source tools and also to improve performance.
 
 More Information:
 -----------------

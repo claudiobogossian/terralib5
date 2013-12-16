@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/ado2/SQLVisitor.h
+  \file terralib/ado/SQLVisitor.h
 
   \brief A visitor for building an SQL statement using ADO dialect.
 */

@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/ado2/DataSet.cpp
+  \file terralib/ado/DataSet.cpp
 
-  \brief Implementation of a dataset for the ADO driver.
+  \brief DataSet class implementation for Microsoft Access driver.
 */
 
 // TerraLib
@@ -41,6 +41,7 @@
 #include "DataSet.h"
 #include "DataSource.h"
 #include "Exception.h"
+#include "Transactor.h"
 #include "Utils.h"
 
 // STL
@@ -55,15 +56,47 @@ inline void TESTHR( HRESULT hr )
   if( FAILED(hr) ) _com_issue_error( hr );
 }
 
-te::ado::DataSet::DataSet(_RecordsetPtr result, std::map<std::string, std::string>& geomColumns)
-  : m_i(-1),
+te::ado::DataSet::DataSet(Transactor* t, _RecordsetPtr result)
+  : m_result(result),
+    m_t(t),
+    m_i(-1),
     m_size(-1),
-    m_ncols(-1),
-    m_result(result),
-    m_geomColumns(geomColumns)
+    m_ncols(-1)
 {
   m_size = m_result->GetRecordCount();
+
   m_ncols = m_result->GetFields()->GetCount();
+
+// convert data types from ADO to TerraLib
+  FieldsPtr fields = m_result->GetFields();
+
+  for(int i = 0; i != m_ncols; ++i)
+  {
+    FieldPtr field = fields->GetItem((long)i);
+
+    std::string columnName = field->GetName();
+
+    m_colNames.push_back(columnName);
+
+    int terralib_data_type = te::ado::Convert2Terralib(field->GetType());
+
+// if it is a byte array it may be a geometric column!
+    if(terralib_data_type == te::dt::BYTE_ARRAY_TYPE)
+    {
+      std::string tableName = (LPCSTR)(_bstr_t)field->GetProperties()->GetItem("BASETABLENAME")->GetValue();
+
+      bool is_geom = m_t->getAdoDataSource()->isGeometryColumn(tableName, columnName);
+
+      if(is_geom)
+        m_datatypes.push_back(te::dt::GEOMETRY_TYPE);
+      else
+        m_datatypes.push_back(terralib_data_type);
+    }
+    else
+    {
+      m_datatypes.push_back(terralib_data_type);
+    }
+  }
 }
 
 te::ado::DataSet::~DataSet()
@@ -81,9 +114,9 @@ te::common::AccessPolicy te::ado::DataSet::getAccessPolicy() const
   return te::common::RAccess;
 }
 
-std::auto_ptr<te::gm::Envelope> te::ado::DataSet::getExtent(std::size_t i)
+std::auto_ptr<te::gm::Envelope> te::ado::DataSet::getExtent(std::size_t /*i*/)
 {
-  return std::auto_ptr<te::gm::Envelope>(0); // TODO
+  throw Exception(TR_ADO("Method getExtent: not implemented yet!"));
 }
 
 std::size_t te::ado::DataSet::getNumProperties() const
@@ -93,39 +126,17 @@ std::size_t te::ado::DataSet::getNumProperties() const
 
 int te::ado::DataSet::getPropertyDataType(std::size_t i) const
 {
-  FieldsPtr fields = m_result->GetFields();
-  FieldPtr field = fields->GetItem((long)i);
-  int type = te::ado::Convert2Terralib(field->GetType());
-  
-  if(type == te::dt::BYTE_ARRAY_TYPE)
-  {
-    std::string tableName = (LPCSTR)(_bstr_t)field->GetProperties()->GetItem("BASETABLENAME")->GetValue();
-    std::string columnName = field->GetName();
-
-    std::map<std::string, std::string>::const_iterator it = m_geomColumns.find(tableName);
-    if(it != m_geomColumns.end())
-    {
-      if(it->second == columnName)
-        return te::dt::GEOMETRY_TYPE;
-    }
-
-    /*if(te::ado::IsGeomProperty(m_conn->getConn(), tableName, columnName))
-      return te::dt::GEOMETRY_TYPE;*/
-  }
-  return type;
+  return m_datatypes[i];
 }
 
 std::string te::ado::DataSet::getPropertyName(std::size_t i) const
 {
-  FieldsPtr fields = m_result->GetFields();
-  FieldPtr field = fields->GetItem((long)i);
-
-  return (LPCSTR)field->GetName();
+  return m_colNames[i];
 }
 
-std::string te::ado::DataSet::getDatasetNameOfProperty(std::size_t i) const
+std::string te::ado::DataSet::getDatasetNameOfProperty(std::size_t /*i*/) const
 {
-  return "";
+  throw Exception(TR_ADO("Method getDatasetNameOfProperty: not implemented yet!"));
 }
 
 bool te::ado::DataSet::isEmpty() const
@@ -135,7 +146,7 @@ bool te::ado::DataSet::isEmpty() const
 
 bool te::ado::DataSet::isConnected() const
 {
-  return true; //TODO
+  return true;
 }
 
 std::size_t te::ado::DataSet::size() const
@@ -368,9 +379,9 @@ double te::ado::DataSet::getDouble(std::size_t i) const
   return value;
 }
 
-std::string te::ado::DataSet::getNumeric(std::size_t i) const
+std::string te::ado::DataSet::getNumeric(std::size_t /*i*/) const
 {
-  return ""; // TODO
+  throw Exception(TR_ADO("Method getNumeric: not implemented yet!"));
 }
 
 std::string te::ado::DataSet::getString(std::size_t i) const
@@ -459,9 +470,9 @@ std::auto_ptr<te::gm::Geometry> te::ado::DataSet::getGeometry(std::size_t i) con
   return geom;
 }
 
-std::auto_ptr<te::rst::Raster> te::ado::DataSet::getRaster(std::size_t i) const
+std::auto_ptr<te::rst::Raster> te::ado::DataSet::getRaster(std::size_t /*i*/) const
 {
-  return std::auto_ptr<te::rst::Raster>(0); // TODO ?
+  throw Exception(TR_ADO("Method getRaster: not implemented yet!"));
 }
 
 std::auto_ptr<te::dt::DateTime> te::ado::DataSet::getDateTime(std::size_t i) const
@@ -502,9 +513,9 @@ std::auto_ptr<te::dt::DateTime> te::ado::DataSet::getDateTime(std::size_t i) con
   return result;
 }
 
-std::auto_ptr<te::dt::Array> te::ado::DataSet::getArray(std::size_t i) const
+std::auto_ptr<te::dt::Array> te::ado::DataSet::getArray(std::size_t /*i*/) const
 {
-  return std::auto_ptr<te::dt::Array>(0); // TODO
+  throw Exception(TR_ADO("Method getArray: not implemented yet!"));
 }
 
 bool te::ado::DataSet::isNull(std::size_t i) const

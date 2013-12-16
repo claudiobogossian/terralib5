@@ -18,34 +18,32 @@
  */
 
 /*!
-  \file terralib/ado2/DataSource.cpp
+  \file terralib/ado/DataSource.cpp
 
-  \brief ????
+  \brief Implementation of the data source class for the ADO driver.
 */
 
 // TerraLib
-//#include "../common/StringUtils.h"
 #include "../common/Translator.h"
-#include "../dataaccess/dataset/CheckConstraint.h"
-#include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/ForeignKey.h"
-#include "../dataaccess/dataset/Index.h"
-#include "../dataaccess/dataset/PrimaryKey.h"
-#include "../dataaccess/dataset/Sequence.h"
-#include "../dataaccess/dataset/UniqueKey.h"
-#include "../dataaccess/datasource/DataSourceCatalog.h"
+//#include "../dataaccess/dataset/CheckConstraint.h"
+//#include "../dataaccess/dataset/DataSet.h"
+//#include "../dataaccess/dataset/ForeignKey.h"
+//#include "../dataaccess/dataset/Index.h"
+//#include "../dataaccess/dataset/PrimaryKey.h"
+//#include "../dataaccess/dataset/Sequence.h"
+//#include "../dataaccess/dataset/UniqueKey.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
-#include "../dataaccess/query/Select.h"
+//#include "../dataaccess/query/Select.h"
 #include "../dataaccess/query/SQLDialect.h"
-#include "../dataaccess/utils/Utils.h"
-#include "../datatype/DateTimeProperty.h"
+//#include "../dataaccess/utils/Utils.h"
+//#include "../datatype/DateTimeProperty.h"
 #include "../datatype/StringProperty.h"
-#include "../geometry/GeometryProperty.h"
-#include "../geometry/Envelope.h"
-#include "../geometry/Geometry.h"
+//#include "../geometry/GeometryProperty.h"
+//#include "../geometry/Envelope.h"
+//#include "../geometry/Geometry.h"
 #include "Connection.h"
 #include "DataSource.h"
-#include "DataSet.h"
+//#include "DataSet.h"
 #include "Exception.h"
 #include "Globals.h"
 #include "Transactor.h"
@@ -53,8 +51,8 @@
 
 // STL
 #include <cassert>
-#include <memory>
 #include <iostream>
+#include <memory>
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -68,18 +66,13 @@ inline void TESTHR(HRESULT hr)
 }
 
 te::ado::DataSource::DataSource()
-  : m_catalog(0),
-    m_conn(0),
-    m_isOpened(0)
+  : m_isOpened(false)
 {
   ::CoInitialize(0);
-  m_catalog = new te::da::DataSourceCatalog;
-  m_catalog->setDataSource(this);
 }
 
 te::ado::DataSource::~DataSource()
 {
-  delete m_catalog;
   ::CoUninitialize();
 }
 
@@ -100,35 +93,25 @@ void te::ado::DataSource::setConnectionInfo(const std::map<std::string, std::str
 
 std::auto_ptr<te::da::DataSourceTransactor> te::ado::DataSource::getTransactor()
 {
-  return std::auto_ptr<te::da::DataSourceTransactor>(new te::ado::Transactor(this, m_connInfo));
+  return std::auto_ptr<te::da::DataSourceTransactor>(new te::ado::Transactor(this));
 }
 
 void te::ado::DataSource::open()
 {
-  // Assure we are in a closed state
+// assure we are in a closed state
   close();
 
   std::string connInfo = MakeConnectionStr(m_connInfo);
 
-  m_conn = new te::ado::Connection(connInfo);
+  std::auto_ptr<Connection> conn(new te::ado::Connection(connInfo));
 
-  te::ado::GetGeometryColumnsInfo(m_conn->getConn(), m_geomColumns);
+  loadGeometryColumnsCache(conn->getConn());
 
   m_isOpened = true;
 }
 
-std::map<std::string, std::string> te::ado::DataSource::getGeomColumns()
-{
-  te::ado::GetGeometryColumnsInfo(m_conn->getConn(), m_geomColumns);
-
-  return m_geomColumns;
-}
-
 void te::ado::DataSource::close()
 {
-  if(m_conn)
-    delete m_conn;
-
   m_isOpened = false;
 }
 
@@ -139,11 +122,12 @@ bool te::ado::DataSource::isOpened() const
 
 bool te::ado::DataSource::isValid() const
 {
-  return m_conn->isValid();
+  return m_isOpened;
 }
 
 const te::da::DataSourceCapabilities& te::ado::DataSource::getCapabilities() const
 {
+  assert(te::ado::Globals::sm_capabilities);
   return *te::ado::Globals::sm_capabilities;
 }
 
@@ -152,23 +136,41 @@ const te::da::SQLDialect* te::ado::DataSource::getDialect() const
   return te::ado::Globals::sm_queryDialect;
 }
 
-static std::vector<std::string> getDataSourceNames(const std::string& dsType, const std::map<std::string, std::string>& info)
+const std::map<std::string, std::string>& te::ado::DataSource::getGeomColumns() const
 {
-  return std::vector<std::string>();
+  return m_geomColumns;
 }
 
-static std::vector<std::string> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info)
+void te::ado::DataSource::registerGeometryColumn(const std::string& datasetName,
+                                                 const std::string& geomColName)
 {
-  return std::vector<std::string>(); //TODO how?
+  boost::lock_guard<boost::mutex> lock(m_mtx);
+
+  m_geomColumns[datasetName] = geomColName;
+}
+
+bool te::ado::DataSource::isGeometryColumn(const std::string& datasetName,
+                                           const std::string& colName) const
+{
+  boost::lock_guard<boost::mutex> lock(m_mtx);
+
+  std::map<std::string, std::string>::const_iterator it = m_geomColumns.find(datasetName);
+
+  if(it != m_geomColumns.end())
+    return it->second == colName;
+
+  return false;
 }
 
 void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
   m_connInfo = dsInfo;
+
   std::string connInfo = te::ado::MakeConnectionStr(dsInfo);
 
   // Create the new database
   ADOX::_CatalogPtr pCatalog = 0;
+
   pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
 
   try
@@ -197,6 +199,7 @@ void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInf
     geomColsDt->add(new te::dt::StringProperty("type", te::dt::VAR_STRING, 30));
 
     std::map<std::string, std::string> op;
+
     createDataSet(geomColsDt, op);
   }
 
@@ -211,6 +214,7 @@ void te::ado::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
   std::map<std::string, std::string> info = dsInfo;
 
   boost::filesystem::path path(info["DB_NAME"]);
+
   if(boost::filesystem::remove(path) == false)
     throw Exception(TR_ADO("The data source could not be dropped!"));
 }
@@ -220,213 +224,50 @@ bool te::ado::DataSource::exists(const std::map<std::string, std::string>& dsInf
   std::map<std::string, std::string> info = dsInfo;
 
   boost::filesystem::path path(info["DB_NAME"]);
+
   return boost::filesystem::exists(path);
 }
 
 std::vector<std::string> te::ado::DataSource::getDataSourceNames(const std::map<std::string, std::string>& dsInfo)
 {
-  return std::vector<std::string>(0); // The DataSource is a File.
+  return std::vector<std::string>(); // The DataSource is a File.
 }
 
 std::vector<std::string> te::ado::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
 {
-  return std::vector<std::string>(0); //TODO how?
+  return std::vector<std::string>(); //TODO how?
 }
 
-void te::ado::DataSource::getIndexes(te::da::DataSetTypePtr& dt)
+void te::ado::DataSource::loadGeometryColumnsCache(_ConnectionPtr& adoConn)
 {
-  ADOX::_CatalogPtr pCatalog = 0;
+  boost::lock_guard<boost::mutex> lock(m_mtx);
 
-  TESTHR((pCatalog.CreateInstance(__uuidof(ADOX::Catalog))));
+  m_geomColumns.clear();
+
+  _RecordsetPtr recordset;
+
+  TESTHR(recordset.CreateInstance(__uuidof(Recordset)));
+  
+  std::string query = "SELECT * FROM geometry_columns";
 
   try
   {
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn));
+    recordset->Open(query.c_str(), _variant_t((IDispatch *)adoConn), adOpenDynamic, adLockReadOnly, adCmdText);
+
+    while(!recordset->EndOfFile)
+    {
+      std::string tablename = (LPCSTR)(_bstr_t)recordset->GetFields()->GetItem("f_table_name")->GetValue();
+
+      std::string columnName = (LPCSTR)(_bstr_t)recordset->GetFields()->GetItem("f_geometry_column")->GetValue();
+
+      m_geomColumns[tablename] = columnName;
+
+      recordset->MoveNext();
+    }
   }
   catch(_com_error& e)
   {
     throw Exception(TR_ADO(e.Description()));
   }
-
-  ADOX::TablesPtr tables = pCatalog->GetTables();
-
-  ADOX::_TablePtr t = tables->GetItem(dt->getName().c_str());
-
-  ADOX::IndexesPtr idxs = t->GetIndexes();
-
-  for(long i = 0; i < idxs->GetCount(); i++)
-  {
-    ADOX::_IndexPtr idx = idxs->GetItem(i);
-
-    te::da::Index* tlIdx = new te::da::Index();
-    tlIdx->setName(std::string(idx->GetName()));
-
-    std::vector<te::dt::Property*> props;
-
-    ADOX::ColumnsPtr cols = idx->GetColumns();
-    for(long i = 0; i < cols->GetCount(); i++)
-      props.push_back(dt->getProperty(std::string(cols->GetItem(i)->GetName())));
-    
-    tlIdx->setProperties(props);
-
-    dt->add(tlIdx);
-  }
 }
 
-void te::ado::DataSource::getProperties(te::da::DataSetTypePtr& dt)
-{
-  std::string dsName = dt->getName();
-  int numCols = 0;
-  te::dt::Property* p = 0;
-
-  ADOX::DataTypeEnum colType;
-  std::map<int, std::string> colNamesMap;
-  std::map<int, ADOX::DataTypeEnum> colTypesMap;
-  std::map<int, int> charLengthMap;
-  std::map<int, bool> isRequiredMap;
-  std::map<int, bool> hasDefaultMap;
-  std::map<int, std::string> defaultValueMap;
-
-  _ConnectionPtr conn = 0;
-
-  try
-  {
-    HRESULT hr = S_OK;
-
-    _RecordsetPtr rs = NULL;
-
-    TESTHR(rs.CreateInstance(__uuidof(Recordset)));
-
-    // Create a safearray which takes three elements,and pass it as 
-    // the second parameter in the OpenSchema method.
-    SAFEARRAY FAR* psa = NULL;
-    SAFEARRAYBOUND rgsabound;
-    _variant_t var[3];
-
-    _variant_t  Array;
-    rgsabound.lLbound = 0;
-    rgsabound.cElements = 3;
-    psa = SafeArrayCreate(VT_VARIANT, 1, &rgsabound);
-
-    var[0].vt = VT_EMPTY;
-    var[1].vt = VT_EMPTY;
-    var[2] = dsName.c_str();
-
-    // Fill the safe array.
-    for(LONG i = 0; i < 3; ++i)
-      hr = SafeArrayPutElement(psa, &i, &var[i]);
-
-    Array.vt = VT_ARRAY | VT_VARIANT;
-    Array.parray = psa;  
-
-    rs = conn->OpenSchema(adSchemaColumns, &Array, vtMissing);
-
-    int pos;
-    while (!(rs->EndOfFile))
-    {
-      // Get the column name
-      _bstr_t columnName = rs->Fields->GetItem("COLUMN_NAME")->Value;
-      pos = rs->Fields->GetItem("ORDINAL_POSITION")->Value;
-      pos = pos - 1;
-      colNamesMap[pos] = (LPCSTR)columnName;
-
-      // Get the data type of the column
-      colType = ADOX::DataTypeEnum(int(rs->Fields->GetItem("DATA_TYPE")->Value));
-      colTypesMap[pos] = colType;
-
-      // Get the length of the column
-      _variant_t length = rs->Fields->GetItem("CHARACTER_MAXIMUM_LENGTH")->Value;
-      int charLength = 0;
-      if(length.vt != VT_NULL)
-        charLength = (int)length.dblVal;
-      charLengthMap[pos] = charLength;
-
-      // Get the columns that accept null values
-      bool nullVal = rs->Fields->GetItem("IS_NULLABLE")->Value;
-      isRequiredMap[pos] = !nullVal;
-
-      // Get the columns that has default values
-      bool hasDefault = rs->Fields->GetItem("COLUMN_HASDEFAULT")->Value;
-      isRequiredMap[pos] = !hasDefault;
-
-      // Get the default value
-      std::string defaultStr;
-      if(hasDefault)
-      {
-        _bstr_t defaultValue = rs->Fields->GetItem("COLUMN_DEFAULT")->Value;
-         defaultStr = (LPSTR)defaultValue;
-      }
-        
-      defaultValueMap[pos] = defaultStr;
-
-      rs->MoveNext();
-      ++numCols;
-    }
-  }
-  catch (_com_error& e)
-  {
-    std::cout << "Error = " << (char*) e.ErrorMessage() << std::endl;
-  }
-
-  // Create the dataset properties
-  for(int i = 0; i < numCols; ++i)
-  {
-    ADOX::DataTypeEnum colType = colTypesMap[i];
-    std::string colName = colNamesMap[i];
-
-    switch(colType)
-    {
-      case ::adBoolean:
-        p = new te::dt::SimpleProperty(colName, Convert2Terralib(colType));
-        break;
-
-      case ::adVarWChar:
-      case ::adWChar:
-      case ::adVarChar:
-      case ::adLongVarChar:
-      case ::adLongVarWChar:
-      case ::adBSTR:
-      case ::adChar:
-        p = new te::dt::StringProperty(colName, (te::dt::StringType)Convert2Terralib(colType), charLengthMap[i]);
-        break;
-
-      case ADOX::adTinyInt:
-      case ADOX::adSmallInt:
-      case ADOX::adInteger:
-      case ADOX::adBigInt:
-      case ADOX::adSingle:
-      case ADOX::adDouble:
-      case ::adUnsignedBigInt:
-      case ::adUnsignedInt:
-      case ::adUnsignedSmallInt:
-      case ::adUnsignedTinyInt:
-      case ADOX::adLongVarBinary:
-      case ADOX::adBinary:
-      {
-        if(te::ado::IsGeomProperty(conn, dsName, colName))
-        {
-          p = new te::gm::GeometryProperty(colName, te::ado::GetSRID(conn, dsName, colName), te::ado::GetType(conn, dsName, colName));
-        }
-        else
-        {
-          p = new te::dt::SimpleProperty(colName, Convert2Terralib(colType));
-        }
-
-        break;
-      }
-
-      case ADOX::adDate:
-      case ADOX::adDBDate:
-      case ADOX::adDBTime:
-      case ADOX::adDBTimeStamp:
-        p = new te::dt::DateTimeProperty(colName, te::dt::TIME_INSTANT);
-        break;
-          
-      default:
-        p = new te::dt::SimpleProperty(colName, te::dt::UNKNOWN_TYPE);
-        break;
-    }
-
-    dt->add(p);
-  }
-}
