@@ -428,12 +428,12 @@ void te::st::TimeSeries::getPatches( const double& v, te::dt::BasicRelation r,
     ++itEnd;
 
     //Get the patch
-    if(itBegin!=m_observations.end())
+    if(itBegin!=itEnd)
     {
       TimeSeriesPatch p(itBegin, itEnd);
       result.push_back(p);
     }
-    
+
     ++it;
   }
   
