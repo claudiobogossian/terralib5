@@ -60,8 +60,8 @@ int main(int /*argc*/, char** /*argv*/)
     ReadXML(""TE_DATA_EXAMPLE_DIR"/data/xml/xerces/note.xml", true, false);
     ReadXML(""TE_DATA_EXAMPLE_DIR"/data/xml/xerces/note.xml", false, false);
     ReadXML(""TE_DATA_EXAMPLE_DIR"/data/xml/xerces/note.xml", false, true);
-    ReadXML(""TE_DATA_EXAMPLE_DIR"/data/xml/xerces/test.xml", false, true);
-    ReadXML(""TE_DATA_EXAMPLE_DIR"/data/xml/xerces/test_contracted.xml", false, true);
+    //ReadXML(""TE_DATA_EXAMPLE_DIR"/data/xml/xerces/test.xml", false, true); //not found 
+    //ReadXML(""TE_DATA_EXAMPLE_DIR"/data/xml/xerces/test_contracted.xml", false, true); //not found
 
     TerraLib::getInstance().finalize();
   }
