@@ -29,6 +29,7 @@ void ArithmeticWithRaster()
     sri["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
     srndvi["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_ndvi.tif";
     srndvin["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_ndvi_normalized.tif";
+    std::string base_path = ""TE_DATA_EXAMPLE_DIR"/data/rasters/";
     srden["URI"] = "ndvi_den.tif"; // temporary raster dataset
 
 // open input raster (band 0 = Red, band 1 = IRed, band 2 = Blue)
@@ -45,7 +46,7 @@ void ArithmeticWithRaster()
 
 // access a raster datasource to create temporary raster
     std::map<std::string, std::string> connInfoRaster;
-    connInfoRaster["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters";
+    connInfoRaster["URI"] = base_path;
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
     ds->setConnectionInfo(connInfoRaster);
     ds->open();
@@ -56,10 +57,10 @@ void ArithmeticWithRaster()
     tr->createDataSet(dstpden, std::map<std::string, std::string> ());
 
 // access the temporary data set
-    std::auto_ptr<te::da::DataSet> dsden = tr->getDataSet(srden["URI"], te::common::FORWARDONLY, te::common::RWAccess);
+    std::auto_ptr<te::da::DataSet> dsden = tr->getDataSet(srden["URI"], te::common::FORWARDONLY, false, te::common::RWAccess);
 
     std::size_t rpos = te::da::GetFirstPropertyPos(dsden.get(), te::dt::RASTER_TYPE);
-    te::gdal::Raster* rden = static_cast<te::gdal::Raster*> (dsden->getRaster(rpos).get());
+    te::gdal::Raster* rden = static_cast<te::gdal::Raster*> (dsden->getRaster(rpos).release());
     //te::gdal::Raster* rden = static_cast<te::gdal::Raster*> (dsden->getRaster());
 
 // create ndvi raster
@@ -118,7 +119,7 @@ void ArithmeticWithRaster()
 
 // remove temporary raster using data set type persistence
     delete rden;
-    tr->dropDataSet(dstpden->getName());
+    tr->dropDataSet(base_path + srden["URI"]);
 
 // clean up
     delete ri;

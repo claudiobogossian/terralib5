@@ -387,12 +387,20 @@ te::rst::Band& te::rst::Band::callOperator(std::complex<double>(*f)(std::complex
 
   std::vector<std::pair<unsigned, unsigned> > rcStPos, rcFPos;
 
+  unsigned last_y;
+  unsigned last_x;
   for (unsigned x = 0; x < (unsigned) getProperty()->m_nblocksx; x++)
   {
     for (unsigned y = 0; y < (unsigned) getProperty()->m_nblocksy; y++)
     {
       rcStPos.push_back(std::pair<unsigned, unsigned> (y * getProperty()->m_blkh, x * getProperty()->m_blkw));
-      rcFPos.push_back(std::pair<unsigned, unsigned> ((y + 1) * getProperty()->m_blkh, (x + 1) * getProperty()->m_blkw));
+      last_y = (y + 1) * getProperty()->m_blkh;
+      last_x = (x + 1) * getProperty()->m_blkw;
+      if (last_y > getRaster()->getNumberOfRows())
+        last_y = getRaster()->getNumberOfRows();
+      if (last_x > getRaster()->getNumberOfColumns())
+        last_x = getRaster()->getNumberOfColumns();
+      rcFPos.push_back(std::pair<unsigned, unsigned> (last_y, last_x));
     }
   }
 
