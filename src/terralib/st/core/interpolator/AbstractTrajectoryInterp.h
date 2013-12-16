@@ -56,6 +56,8 @@ namespace te
       interpolation functions that estimate geometries at non-observaved times
       of a trajectory.
      
+      \ingroup st
+
       \sa Trajectory
     */
     class TESTEXPORT AbstractTrajectoryInterp 

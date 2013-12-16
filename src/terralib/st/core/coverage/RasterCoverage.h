@@ -47,7 +47,12 @@ namespace te
 
       \brief A concrete class to represent a raster coverage.
 
-      \sa Coverage
+      A raster coverage is a coverage composed of an observation
+      that is represented by a raster. 
+
+      \ingroup st
+
+      \sa Coverage Raster Property
     */
     class TESTEXPORT RasterCoverage : public Coverage 
     {

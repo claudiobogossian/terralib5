@@ -55,6 +55,8 @@ namespace te
       interpolation functions that estimate value at non-observaved times
       of a time series.
      
+      \ingroup st
+      
       \sa Time Series
     */
     class TESTEXPORT AbstractTimeSeriesInterp 

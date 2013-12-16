@@ -63,6 +63,8 @@ namespace te
       observed property is a geometry.
       The observations have a fixed object identity and measured geometries at controlled
       times. 
+      
+      \ingroup st
 
       \sa ObservationDataSet ObservationDatasSetType TrajectoryDataSetType
     */
