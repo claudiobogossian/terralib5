@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/ado2/Connection.h
+  \file terralib/ado/Connection.h
 
   \brief A class that implements a connection to a ADO database.  
 */

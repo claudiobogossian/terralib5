@@ -61,8 +61,8 @@ int main(int /*argc*/, char** /*argv*/)
 
     ShowResult(encodedStyle); // Shows the serializaton result.
     
-    SaveResult(encodedStyle, ""TE_DATA_EXAMPLE_DIR"/data/style.xml"); // Saves the enconded style to XML file.
-    te::se::Style* style = DecodeStyle(""TE_DATA_EXAMPLE_DIR"/data/style.xml"); // Decodes the created XML file.
+    SaveResult(encodedStyle, ""TE_DATA_EXAMPLE_DIR"/data/xml/style.xml"); // Saves the enconded style to XML file.
+    te::se::Style* style = DecodeStyle(""TE_DATA_EXAMPLE_DIR"/data/xml/style.xml"); // Decodes the created XML file.
 
     std::string backData = EncodeStyle(style); // Encodes again.
     
@@ -72,7 +72,7 @@ int main(int /*argc*/, char** /*argv*/)
     /* XSD Schema */
 
     std::cout << "Decoding schema..." << std::endl;
-    DecodeSchema(""TE_DATA_EXAMPLE_DIR"/data/plugin_info.xsd");
+    DecodeSchema(""TE_DATA_EXAMPLE_DIR"/data/xml/plugin_info.xsd");
   }
   catch(const std::exception& e)
   {

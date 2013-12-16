@@ -140,7 +140,7 @@ int main(int /*argc*/, char** /*argv*/)
     //pegar um data set
     //std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_DIR"/data/shp");
     std::map<std::string, std::string> connInfo;
-    connInfo["SOURCE"] = ""TE_DATA_EXAMPLE_DIR"/data/shp";
+    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/shp";
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
     ds->setConnectionInfo(connInfo);
     ds->open();

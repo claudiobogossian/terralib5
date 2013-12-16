@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/ado2/DataSource.h
+  \file terralib/ado/DataSource.h
 
-  \brief Implementation of the data source for the ADO driver.
+  \brief Implementation of the data source class for the ADO driver.
 */
 
 #ifndef __TERRALIB_ADO_INTERNAL_DATASOURCE_H
@@ -30,6 +30,10 @@
 #include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "Config.h"
+
+// BOOST
+#include <boost/thread/locks.hpp>
+#include <boost/thread/mutex.hpp>
 
 // ADO
 #import "msado15.dll" \
@@ -58,11 +62,6 @@ namespace te
     {
       public:
 
-        /** @name Initializer Methods
-         *  Methods related to the instantiation and destruction.
-         */
-        //@{
-
         DataSource();
 
         ~DataSource();
@@ -87,15 +86,13 @@ namespace te
 
         const te::da::SQLDialect* getDialect() const;
 
-        void cancel();
+        const std::map<std::string, std::string>& getGeomColumns() const;
 
-        boost::int64_t getLastGeneratedId();
+        void registerGeometryColumn(const std::string& datasetName,
+                                    const std::string& geomColName);
 
-        static std::vector<std::string> getDataSourceNames(const std::string& dsType, const std::map<std::string, std::string>& info);
-
-        static std::vector<std::string> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
-
-        std::map<std::string, std::string> getGeomColumns();
+        bool isGeometryColumn(const std::string& datasetName,
+                              const std::string& colName) const;
 
       protected:
 
@@ -109,23 +106,20 @@ namespace te
 
         std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo);
 
-        void getIndexes(te::da::DataSetTypePtr& dt);
-
-        void getProperties(te::da::DataSetTypePtr& dt);
+        void loadGeometryColumnsCache(_ConnectionPtr& adoConn);
 
       private:
 
-        te::da::DataSourceCatalog* m_catalog;             //!< The main system catalog.
         std::map<std::string, std::string> m_connInfo;    //!< Connection information.
-        std::map<std::string, std::string> m_geomColumns;
-        Connection* m_conn;                               //!< The Connection.
+        std::map<std::string, std::string> m_geomColumns; //!< The list of geometry columns.
         std::string m_currentSchema;                      //!< The default schema used when no one is provided.
-        bool m_isInTransaction;                           //!< It indicates if there is a transaction in progress.
+        mutable boost::mutex m_mtx;
         bool m_isOpened;
 
         static te::da::DataSourceCapabilities sm_capabilities;  //!< ADO capabilities.
         static te::da::SQLDialect* sm_dialect; 
     };
+
 
   } // end namespace pgis
 }   // end namespace te

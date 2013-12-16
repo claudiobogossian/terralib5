@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/ado2/DataSet.h
+  \file terralib/ado/DataSet.h
 
-  \brief ????
+  \brief DataSet class implementation for Microsoft Access driver.
 */
 
 #ifndef __TERRALIB_ADO_INTERNAL_DATASET_H
@@ -40,14 +40,12 @@
 
 namespace te
 {
-// Forward declarations
-  namespace da
-  {
-    class GeometryProperty;
-  }
+  namespace da { class DataSetType; }
 
   namespace ado
   {
+    class Transactor;
+
     /*!
       \class DataSet
 
@@ -62,11 +60,10 @@ namespace te
         /*!
           \brief Constructor.
 
-          \param result     The internal ADO _RecordsetPtr.
           \param transactor The transactor associated to this DataSet.
-          \param sql        The sql command that generated the dataset.
+          \param result     The internal ADO _RecordsetPtr.
         */
-        DataSet(_RecordsetPtr result, std::map<std::string, std::string>& geomColumns);
+        DataSet(Transactor* t, _RecordsetPtr result);
 
         /*! \brief The destructor will clear the internal ADO _RecordsetPtr. */
         ~DataSet();
@@ -145,11 +142,13 @@ namespace te
 
       protected:
 
+        _RecordsetPtr m_result;             //!< The internal buffer with the result query.
+        Transactor* m_t;
+        std::vector<int> m_datatypes;
+        std::vector<std::string> m_colNames;
         int m_i;                            //!< The index of the current row.
         int m_size;                         //!< The number of datasets in the collection.
         int m_ncols;                        //!< The number of properties in the collection.
-        _RecordsetPtr m_result;             //!< The internal buffer with the result query.
-        std::map<std::string, std::string> m_geomColumns;
     };
 
   } // end namespace ado
