@@ -34,6 +34,7 @@
 
 //ST
 #include "TimeSeries.h"
+#include "TimeSeriesObservation.h"
 #include "../interpolator/AbstractTimeSeriesInterp.h"
 #include "../interpolator/NearestValueAtTimeInterp.h"
 
@@ -118,7 +119,8 @@ te::st::TimeSeries* te::st::TimeSeries::clone() const
 {
   TimeSeries* result = new TimeSeries(m_interpolator, m_id, static_cast<te::gm::Geometry*>(m_location->clone()));
   TimeSeriesObservationSet::const_iterator it = m_observations.begin();
-  while(it != m_observations.end())
+  TimeSeriesObservationSet::const_iterator ite = m_observations.end();
+  while(it != ite)
   {
     te::dt::DateTime* t = static_cast<te::dt::DateTime*>(it->getTime()->clone());
     te::dt::AbstractData* v = it->getValue()->clone();
@@ -202,25 +204,29 @@ std::size_t te::st::TimeSeries::size() const
 
 te::st::TimeSeriesIterator te::st::TimeSeries::begin() const
 {
-  return TimeSeriesIterator(m_observations.begin());
+  TimeSeriesObservationSet::const_iterator it = m_observations.begin();
+  return TimeSeriesIterator(it);
 }
 
 te::st::TimeSeriesIterator te::st::TimeSeries::end() const
 {
-  return TimeSeriesIterator(m_observations.end());
+  TimeSeriesObservationSet::const_iterator it = m_observations.end();
+  return TimeSeriesIterator(it);
 }
 
 te::st::TimeSeriesIterator te::st::TimeSeries::at(te::dt::DateTime* t) const
 {
   TimeSeriesObservation item(t,0);
-  return TimeSeriesIterator(m_observations.find(item));
+  TimeSeriesObservationSet::const_iterator it = m_observations.find(item);
+  return TimeSeriesIterator(it);
 }
 
 std::auto_ptr<te::dt::AbstractData> te::st::TimeSeries::getValue(te::dt::DateTime* t) const
 {
   TimeSeriesObservation item(t,0);
   TimeSeriesObservationSet::const_iterator it = m_observations.find(item);
-  if(it!=m_observations.end())
+  TimeSeriesObservationSet::const_iterator ite = m_observations.end();
+  if(it!=ite)
     return std::auto_ptr<te::dt::AbstractData>(it->getValue()->clone());
   return std::auto_ptr<te::dt::AbstractData>(m_interpolator->estimate(*this,t));
 }
@@ -245,8 +251,11 @@ std::string te::st::TimeSeries::getString(te::dt::DateTime* t) const
 
 std::auto_ptr<te::dt::DateTimePeriod> te::st::TimeSeries::getTemporalExtent() const
 {
-  te::dt::DateTime* bt = m_observations.begin()->getTime();
-  te::dt::DateTime* et = m_observations.rbegin()->getTime();
+  TimeSeriesObservationSet::iterator it1 = m_observations.begin();
+  TimeSeriesObservationSet::reverse_iterator it2 = m_observations.rbegin();
+
+  te::dt::DateTime* bt = it1->getTime();
+  te::dt::DateTime* et = it2->getTime();
   //This function does not take the ownership of the given times
   return std::auto_ptr<te::dt::DateTimePeriod> (te::dt::GetTemporalExtent(bt, et)); 
 }
@@ -393,12 +402,15 @@ void te::st::TimeSeries::getPatches( const double& v, te::dt::BasicRelation r,
   ts.getPatches(v,r,patches);
 
   std::vector<TimeSeriesPatch>::const_iterator it = patches.begin();
+  TimeSeriesObservationSet::const_iterator ite = m_observations.end();
+
   while(it!=patches.end())
   {
     TimeSeriesIterator itAuxBegin = (*it).begin();
     TimeSeriesIterator itAuxEnd = (*it).end();
-    TimeSeriesIterator itBegin = m_observations.end();
-    TimeSeriesIterator itEnd = m_observations.end();
+
+    TimeSeriesIterator itBegin(ite);
+    TimeSeriesIterator itEnd(ite); 
 
     //Get the first position
     if(itAuxBegin!=ts.end())

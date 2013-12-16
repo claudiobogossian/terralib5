@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/ado2/DataSourceFactory.h
+  \file terralib/ado/DataSourceFactory.h
 
   \brief This is the factory for ADO data sources.
 */

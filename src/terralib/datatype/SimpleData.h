@@ -35,6 +35,7 @@
 
 // Boost
 #include <boost/cstdint.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace te
 {
@@ -124,9 +125,10 @@ namespace te
         */
         virtual std::string toString() const
         {
-          std::stringstream stream(std::ios_base::in | std::ios_base::out);
-          stream << m_val;
-          return stream.str();
+          //std::stringstream stream(std::ios_base::in | std::ios_base::out);
+          //stream << m_val;
+          //return stream.str();
+          return boost::lexical_cast<std::string>(m_val);
         }
 
         /*!

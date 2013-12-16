@@ -18,13 +18,12 @@
  */
 
 /*!
-  \file terralib/ado2/Transactor.cpp
+  \file terralib/ado/Transactor.cpp
 
-  \brief ????
+  \brief DataSourceTransactor class implementation for Microsoft Access driver.
 */
 
 // TerraLib
-#include "../common/StringUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/CheckConstraint.h"
 #include "../dataaccess/dataset/DataSet.h"
@@ -61,15 +60,12 @@
 
 // STL
 #include <cassert>
-//#include <cstring>
 #include <memory>
 #include <iostream>
 
 // Boost
-//#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
-//#include <boost/thread.hpp>
 
 // ADO
 #import "msado15.dll" \
@@ -82,12 +78,12 @@ inline void TESTHR(HRESULT hr)
     _com_issue_error(hr);
 }
 
-te::ado::Transactor::Transactor(DataSource* ds, const std::map<std::string, std::string>& connInfo)
+te::ado::Transactor::Transactor(DataSource* ds)
   : m_ds(ds),
     m_conn(0),
     m_isInTransaction(false)
 {
-  std::string connInfoAux = MakeConnectionStr(connInfo);
+  std::string connInfoAux = MakeConnectionStr(ds->getConnectionInfo());
 
   m_conn = new te::ado::Connection(connInfoAux);
 }
@@ -151,10 +147,10 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
                                                                 bool connected,
                                                                 const te::common::AccessPolicy accessPolicy)
 {
-  std::auto_ptr<std::string> sql(new std::string("SELECT * FROM "));
-  *sql += name;
+  std::string sql("SELECT * FROM ");
+  sql += name;
 
-  return query(*sql, travType, connected, accessPolicy);
+  return query(sql, travType, connected, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& name,
@@ -173,37 +169,35 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
   std::string lowerY = "lower_y";
   std::string upperY = "upper_y";
 
-  std::auto_ptr<std::string> q(new std::string("SELECT * FROM " + name + " WHERE "));
+  std::string q("SELECT * FROM " + name + " WHERE ");
 
-  *q += "NOT("+ lowerX +" > " + boost::lexical_cast<std::string>(e->m_urx) + " OR ";
-  *q += upperX +" < " + boost::lexical_cast<std::string>(e->m_llx) + " OR ";
-  *q += lowerY +" > " + boost::lexical_cast<std::string>(e->m_ury) + " OR ";
-  *q += upperY +" < " + boost::lexical_cast<std::string>(e->m_lly) + ")";
+  q += "NOT("+ lowerX +" > " + boost::lexical_cast<std::string>(e->m_urx) + " OR ";
+  q += upperX +" < " + boost::lexical_cast<std::string>(e->m_llx) + " OR ";
+  q += lowerY +" > " + boost::lexical_cast<std::string>(e->m_ury) + " OR ";
+  q += upperY +" < " + boost::lexical_cast<std::string>(e->m_lly) + ")";
 
-  return query(*q, travType, connected, accessPolicy);
+  return query(q, travType, connected, accessPolicy);
 }
 
-std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& name,
-                                                               const std::string& propertyName,
-                                                               const te::gm::Geometry* g,
-                                                               te::gm::SpatialRelation r,
-                                                               te::common::TraverseType travType,
-                                                               bool connected,
-                                                               const te::common::AccessPolicy accessPolicy)
+std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& /*name*/,
+                                                               const std::string& /*propertyName*/,
+                                                               const te::gm::Geometry* /*g*/,
+                                                               te::gm::SpatialRelation /*r*/,
+                                                               te::common::TraverseType /*travType*/,
+                                                               bool /*connected*/,
+                                                               const te::common::AccessPolicy /*accessPolicy*/)
 {
-  return std::auto_ptr<te::da::DataSet>(0); // TODO
+  throw Exception(TR_ADO("Method getDataSet by geometry filter: not implemented yet!"));
 }
 
-std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& name,
-                                                               const ObjectIdSet* oids, 
-                                                               te::common::TraverseType travType, 
-                                                               bool connected,
-                                                               const te::common::AccessPolicy accessPolicy)
+std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& /*name*/,
+                                                               const ObjectIdSet* /*oids*/, 
+                                                               te::common::TraverseType /*travType*/, 
+                                                               bool /*connected*/,
+                                                               const te::common::AccessPolicy /*accessPolicy*/)
 {
-  return std::auto_ptr<te::da::DataSet>(0); // TODO
+  throw Exception(TR_ADO("Method getDataSet by oids: not implemented yet!"));
 }
-
-
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const te::da::Select& q,
                                                           te::common::TraverseType travType,
@@ -213,6 +207,7 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const te::da::Select& 
   std::string sql;
 
   SQLVisitor visitor(*(m_ds->getDialect()), sql, m_conn->getConn());
+
   q.accept(visitor);
 
   return query(sql, travType);
@@ -227,7 +222,7 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const std::string& que
 
   long i = result->GetRecordCount();
 
-  std::auto_ptr<te::da::DataSet> dset(new DataSet(result, m_ds->getGeomColumns()));
+  std::auto_ptr<te::da::DataSet> dset(new DataSet(this, result));
 
   if(connected)
   {
@@ -246,6 +241,7 @@ void te::ado::Transactor::execute(const te::da::Query& command)
   std::string sql;
 
   SQLVisitor visitor(*(m_ds->getDialect()), sql, m_conn->getConn());
+
   command.accept(visitor);
 
   execute(sql);
@@ -258,22 +254,21 @@ void te::ado::Transactor::execute(const std::string& command)
 
 std::auto_ptr<te::da::PreparedQuery> te::ado::Transactor::getPrepared(const std::string& qName)
 {
-  return std::auto_ptr<te::da::PreparedQuery>(0); // TODO:
+  throw Exception(TR_ADO("Method getPrepared: not implemented yet!"));
 }
 
 std::auto_ptr<te::da::BatchExecutor> te::ado::Transactor::getBatchExecutor()
 {
-  return std::auto_ptr<te::da::BatchExecutor>(0); // TODO:
+  throw Exception(TR_ADO("Method getBatchExecutor: not implemented yet!"));
 }
 
 void te::ado::Transactor::cancel()
 {
-
 }
 
 boost::int64_t te::ado::Transactor::getLastGeneratedId()
 {
-  return 0; // TODO
+  throw Exception(TR_ADO("Method getLastGeneratedId: not implemented yet!"));
 }
 
 std::string te::ado::Transactor::escape(const std::string& value)
@@ -281,12 +276,12 @@ std::string te::ado::Transactor::escape(const std::string& value)
   return value;
 }
 
-bool te::ado::Transactor::isDataSetNameValid(const std::string& datasetName)
+bool te::ado::Transactor::isDataSetNameValid(const std::string& /*datasetName*/)
 {
   return true;
 }
 
-bool te::ado::Transactor::isPropertyNameValid(const std::string& propertyName)
+bool te::ado::Transactor::isPropertyNameValid(const std::string& /*propertyName*/)
 {
   return true;
 }
@@ -345,8 +340,11 @@ std::auto_ptr<te::da::DataSetType> te::ado::Transactor::getDataSetType(const std
   getProperties(dt.get());
 
   getPrimaryKey(dt.get());
+
   getUniqueKeys(dt.get());
+
   getIndexes(dt.get());
+
   getCheckConstraints(dt.get());
 
   return dt;
@@ -419,8 +417,9 @@ bool te::ado::Transactor::propertyExists(const std::string& datasetName, const s
     pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
 
     ADOX::TablesPtr tables = pCatalog->GetTables();
-    
+
     ADOX::_TablePtr table;
+
     for(long i = 0; i < tables->GetCount(); ++i)
     {
       table = 0;
@@ -440,6 +439,7 @@ bool te::ado::Transactor::propertyExists(const std::string& datasetName, const s
       for(int i = 0; i < cols->Count; ++i)
       {
         ADOX::_ColumnPtr col = cols->GetItem((long)i);
+
         if(((LPCSTR)(_bstr_t)col->GetName()) == name)
           return true;
       }
@@ -462,6 +462,7 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
     throw Exception((boost::format(TR_ADO("The dataset already \"%1%\" has a property with this name \"%2%\"!")) % datasetName % propertyName).str());
 
   ADOX::_CatalogPtr pCatalog = 0;
+
   ADOX::_TablePtr pTable = 0;
 
   TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
@@ -473,9 +474,11 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
     pTable = pCatalog->Tables->GetItem(datasetName.c_str());
 
     ADOX::_ColumnPtr newColumn = 0;
+
     TESTHR(newColumn.CreateInstance(__uuidof(ADOX::Column)));
 
     newColumn->PutName(propertyName.c_str());
+
     newColumn->PutType(te::ado::Convert2Ado(p->getType()));
 
     ADOX::DataTypeEnum ado_type = te::ado::Convert2Ado(p->getType());
@@ -494,7 +497,6 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
       case te::dt::ARRAY_TYPE:
       case te::dt::DATETIME_TYPE:
       case te::dt::NUMERIC_TYPE:
-      case te::dt::GEOMETRY_TYPE:
       {
         const te::dt::SimpleProperty* simple = static_cast<const te::dt::SimpleProperty*>(p);
 
@@ -505,6 +507,7 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
 
         break;
       }
+
       case te::dt::STRING_TYPE:
       {
         const te::dt::StringProperty* sp = static_cast<const te::dt::StringProperty*>(p);
@@ -520,6 +523,31 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
           newColumn->PutAttributes(ADOX::adColNullable);
 
         pTable->Columns->Append(_variant_t ((IDispatch*)newColumn), ado_type, ssize);
+
+        break;
+      }
+
+      case te::dt::GEOMETRY_TYPE:
+      {
+        const te::dt::SimpleProperty* simple = static_cast<const te::dt::SimpleProperty*>(p);
+
+        if(!simple->isRequired())
+          newColumn->PutAttributes(ADOX::adColNullable);
+
+        pTable->Columns->Append(_variant_t ((IDispatch*)newColumn), ado_type, 0);
+
+// update geometry columns and metadata cache
+        std::auto_ptr<te::dt::SimpleProperty> lowerX(new te::dt::SimpleProperty("lower_x", te::dt::DOUBLE_TYPE));
+        std::auto_ptr<te::dt::SimpleProperty> lowerY(new te::dt::SimpleProperty("lower_y", te::dt::DOUBLE_TYPE));
+        std::auto_ptr<te::dt::SimpleProperty> upperX(new te::dt::SimpleProperty("upper_x", te::dt::DOUBLE_TYPE));
+        std::auto_ptr<te::dt::SimpleProperty> upperY(new te::dt::SimpleProperty("upper_y", te::dt::DOUBLE_TYPE));
+
+        addProperty(datasetName, lowerX.get());
+        addProperty(datasetName, lowerY.get());
+        addProperty(datasetName, upperX.get());
+        addProperty(datasetName, upperY.get());
+
+        insertIntoGeometryColumns(datasetName, static_cast<te::gm::GeometryProperty*>(p));
 
         break;
       }
@@ -545,6 +573,7 @@ void te::ado::Transactor::dropProperty(const std::string& datasetName, const std
   te::dt::Property* p = dt->getProperty(name);
 
   ADOX::_CatalogPtr pCatalog = 0;
+
   ADOX::_TablePtr pTable = 0;
 
   TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
@@ -554,11 +583,17 @@ void te::ado::Transactor::dropProperty(const std::string& datasetName, const std
     pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
 
     pTable = pCatalog->Tables->GetItem(p->getParent()->getName().c_str());
+
     TESTHR(pTable->GetColumns()->Delete(p->getName().c_str()));
 
     if(p->getType() == te::dt::GEOMETRY_TYPE)
     {
-      std::string sql = "drop from geometry_columns where f_geometry_column = '"+ p->getName() +"'";
+      std::string sql  = "delete from geometry_columns where f_geometry_column = '";
+                  sql += p->getName();
+                  sql += "' AND f_table_name = '";
+                  sql += datasetName;
+                  sql +="'";
+
       m_conn->execute(sql);
     }
   }
@@ -569,10 +604,11 @@ void te::ado::Transactor::dropProperty(const std::string& datasetName, const std
 }
 
 void te::ado::Transactor::renameProperty(const std::string& datasetName,
-                    const std::string& propertyName,
-                    const std::string& newPropertyName)
+                                         const std::string& propertyName,
+                                         const std::string& newPropertyName)
 {
   ADOX::_CatalogPtr pCatalog = 0;
+
   ADOX::_TablePtr pTable = 0;
 
   TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
@@ -582,6 +618,7 @@ void te::ado::Transactor::renameProperty(const std::string& datasetName,
     pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
 
     pTable = pCatalog->Tables->GetItem(datasetName.c_str());
+
     ADOX::_ColumnPtr col = pTable->GetColumns()->GetItem(propertyName.c_str());
   
     col->PutName(newPropertyName.c_str());
@@ -905,14 +942,14 @@ bool te::ado::Transactor::checkConstraintExists(const std::string& datasetName, 
   return false;
 }
 
-void te::ado::Transactor::addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc)
+void te::ado::Transactor::addCheckConstraint(const std::string& /*datasetName*/, te::da::CheckConstraint* /*cc*/)
 {
-  //TODO: Parece que não existe CheckConstraint no ADO.
+  throw Exception(TR_ADO("Method addCheckConstraint: not implemented yet!"));
 }
 
-void te::ado::Transactor::dropCheckConstraint(const std::string& datasetName, const std::string& name)
+void te::ado::Transactor::dropCheckConstraint(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  //TODO: Parece que não existe CheckConstraint no ADO.
+  throw Exception(TR_ADO("Method dropCheckConstraint: not implemented yet!"));
 }
 
 std::auto_ptr<te::da::Index> te::ado::Transactor::getIndex(const std::string& datasetName, const std::string& name)
@@ -950,7 +987,7 @@ bool te::ado::Transactor::indexExists(const std::string& datasetName, const std:
 }
 
 void te::ado::Transactor::addIndex(const std::string& datasetName, te::da::Index* idx,
-              const std::map<std::string, std::string>& options)
+                                   const std::map<std::string, std::string>& options)
 {
   ADOX::_IndexPtr pIndex = 0;
   ADOX::_TablePtr pTable = 0;
@@ -1004,31 +1041,31 @@ void te::ado::Transactor::dropIndex(const std::string& datasetName, const std::s
 
 std::auto_ptr<te::da::Sequence> te::ado::Transactor::getSequence(const std::string& name)
 {
-  return std::auto_ptr<te::da::Sequence>(0);
+  throw Exception(TR_ADO("Method getSequence: not implemented yet!"));
 }
 
 std::vector<std::string> te::ado::Transactor::getSequenceNames()
 {
-  return std::vector<std::string>();
+  throw Exception(TR_ADO("Method getSequenceNames: not implemented yet!"));
 }
 
-bool te::ado::Transactor::sequenceExists(const std::string& name)
+bool te::ado::Transactor::sequenceExists(const std::string& /*name*/)
 {
-  return false;
+  throw Exception(TR_ADO("Method sequenceExists: not implemented yet!"));
 }
 
-void te::ado::Transactor::addSequence(te::da::Sequence* sequence)
+void te::ado::Transactor::addSequence(te::da::Sequence* /*sequence*/)
 {
-
+  throw Exception(TR_ADO("Method addSequence: not implemented yet!"));
 }
 
-void te::ado::Transactor::dropSequence(const std::string& name)
+void te::ado::Transactor::dropSequence(const std::string& /*name*/)
 {
-
+  throw Exception(TR_ADO("Method dropSequence: not implemented yet!"));
 }
 
 std::auto_ptr<te::gm::Envelope> te::ado::Transactor::getExtent(const std::string& datasetName,
-                                          const std::string& /*propertyName*/)
+                                                               const std::string& /*propertyName*/)
 {
   if(!dataSetExists(datasetName))
     throw Exception(TR_ADO("The Data Set Type does not exist!"));
@@ -1064,6 +1101,7 @@ std::auto_ptr<te::gm::Envelope> te::ado::Transactor::getExtent(const std::string
 std::size_t te::ado::Transactor::getNumberOfItems(const std::string& datasetName)
 {
   std::auto_ptr<te::da::DataSet> result(getDataSet(datasetName));
+
   return result->size();
 }
 
@@ -1110,38 +1148,19 @@ void te::ado::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<
   }
 
   std::size_t ncols = dt->size();
+
   for(std::size_t i = 0; i < ncols; ++i)
     addProperty(dt->getName(), dt->getProperty(i));
 
   if(dt->getPrimaryKey())
     addPrimaryKey(dt->getName(), dt->getPrimaryKey());
-
-  te::gm::GeometryProperty* geomProp = 0;
-
-  if(dt->hasGeom())
-  {
-    te::dt::SimpleProperty* lowerX = new te::dt::SimpleProperty("lower_x", te::dt::DOUBLE_TYPE);
-    te::dt::SimpleProperty* lowerY = new te::dt::SimpleProperty("lower_y", te::dt::DOUBLE_TYPE);
-    te::dt::SimpleProperty* upperX = new te::dt::SimpleProperty("upper_x", te::dt::DOUBLE_TYPE);
-    te::dt::SimpleProperty* upperY = new te::dt::SimpleProperty("upper_y", te::dt::DOUBLE_TYPE);
-
-    addProperty(dt->getName(), lowerX);
-    addProperty(dt->getName(), lowerY);
-    addProperty(dt->getName(), upperX);
-    addProperty(dt->getName(), upperY);
-
-    geomProp = te::da::GetFirstGeomProperty(dt);
-  }
-
-  if(geomProp)
-    te::ado::InsertInGeometryColumns(m_conn->getConn(), dt);
 }
 
-void te::ado::Transactor::cloneDataSet(const std::string& name,
-                  const std::string& cloneName,
-                  const std::map<std::string, std::string>& options)
+void te::ado::Transactor::cloneDataSet(const std::string& /*name*/,
+                                       const std::string& /*cloneName*/,
+                                       const std::map<std::string, std::string>& /*options*/)
 {
-  // TODO
+  throw Exception(TR_ADO("Method cloneDataSet: not implemented yet!"));
 }
 
 void te::ado::Transactor::dropDataSet(const std::string& name)
@@ -1704,3 +1723,42 @@ void te::ado::Transactor::getCheckConstraints(te::da::DataSetType* dt)
   if(rs && rs->State == adStateOpen)
    rs->Close();
 }
+
+void te::ado::Transactor::insertIntoGeometryColumns(const std::string& datasetName,
+                                                    te::gm::GeometryProperty* geomProp)
+{
+  _ConnectionPtr adoConn = m_conn->getConn();
+
+  int coord_dimension = 2;
+
+  if(te::ado::IsZProperty(geomProp->getGeometryType()))
+    coord_dimension = 3;
+
+  _RecordsetPtr recset;
+  TESTHR(recset.CreateInstance(__uuidof(Recordset)));
+
+  try
+  {
+    TESTHR(recset->Open(_bstr_t("geometry_columns"),
+           _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
+
+    TESTHR(recset->AddNew());
+
+    recset->GetFields()->GetItem("f_table_catalog")->Value = (_bstr_t)std::string("''").c_str();
+    recset->GetFields()->GetItem("f_table_schema")->Value = (_bstr_t)std::string("public").c_str();
+    recset->GetFields()->GetItem("f_table_name")->Value = (_bstr_t)datasetName.c_str();
+    recset->GetFields()->GetItem("f_geometry_column")->Value = (_bstr_t)geomProp->getName().c_str();
+    recset->GetFields()->GetItem("coord_dimension")->Value = (_variant_t)coord_dimension;
+    recset->GetFields()->GetItem("srid")->Value = (_variant_t)geomProp->getSRID();
+    recset->GetFields()->GetItem("type")->Value = (_bstr_t)te::ado::GetGeometryName(geomProp->getGeometryType()).c_str();
+
+    recset->Update();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  m_ds->registerGeometryColumn(datasetName, geomProp->getName());
+}
+

@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/ado2/Transactor.h
+  \file terralib/ado/Transactor.h
 
-  \brief ????
+  \brief DataSourceTransactor class implementation for Microsoft Access driver.
 */
 
 #ifndef __TERRALIB_ADO_INTERNAL_DATASOURCETRANSACTOR_H
@@ -30,8 +30,6 @@
 #include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "Config.h"
 #include "DataSource.h"
-//#include "../../common/Enums.h"
-//#include "../../geometry/Enums.h"
 
 // STL
 #include <memory>
@@ -48,8 +46,8 @@ namespace te
   {
     // Forward declarations
     class BatchExecutor;
-    class DataSet;
     class Connection;
+    class DataSet;
     class ObjectIdSet;
     class PreparedQuery;
     class Query;
@@ -58,7 +56,7 @@ namespace te
     {
       public:
 
-        Transactor(DataSource* ds, const std::map<std::string, std::string>& connInfo);
+        Transactor(DataSource* ds);
 
         ~Transactor();
 
@@ -145,10 +143,13 @@ namespace te
 
         bool propertyExists(const std::string& datasetName, const std::string& name);
 
+// TODO: rever o caso colunas geometricas => adicionar automaticamente as colunas do box => atualizar o cache
         void addProperty(const std::string& datasetName, te::dt::Property* p);
 
+// TODO: rever o caso colunas geometricas => remover as colunas do box => atualizar o cache
         void dropProperty(const std::string& datasetName, const std::string& name);
 
+// TODO: rever o caso colunas geometricas => atualizar o cache e a tabela de metadados
         void renameProperty(const std::string& datasetName,
                             const std::string& propertyName,
                             const std::string& newPropertyName);
@@ -250,6 +251,8 @@ namespace te
 
         void optimize(const std::map<std::string, std::string>& opInfo);
 
+        DataSource* getAdoDataSource() const;
+
       protected:
 
         void getPrimaryKey(te::da::DataSetType* dt);
@@ -262,6 +265,9 @@ namespace te
 
         void getCheckConstraints(te::da::DataSetType* dt);
 
+        void insertIntoGeometryColumns(const std::string& datasetName,
+                                       te::gm::GeometryProperty* geomProp);
+
       private:
 
         DataSource* m_ds;       //!< The PostGIS data source associated to this transactor.
@@ -269,6 +275,12 @@ namespace te
         bool m_isInTransaction; //!< Tells if there is a transaction in progress.
 
     };
+
+    inline DataSource* Transactor::getAdoDataSource() const
+    {
+      return m_ds;
+    }
+
   } // end namespace ado
 }   // end namespace te
 

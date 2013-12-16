@@ -423,10 +423,12 @@ std::string te::pgis::DataSet::getNumeric(std::size_t i) const
       te::common::SwapBytes(n);
 #endif
 
-      decVal += te::common::Convert2String(n);
+      std::string newVal = te::common::Convert2String(n);
 
-      while (decVal.length() < 4) //fill with zeros (ex: .0700 was "700")
-        decVal = "0" + decVal;
+      while (newVal.length() < 4) //fill with zeros (ex: .0700 was "700")
+        newVal = "0" + newVal;
+
+      decVal += newVal;
 
       ii += 2;
     }

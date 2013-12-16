@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/ado2/Utils.cpp
+  \file terralib/ado/Utils.cpp
    
-  \brief Utility functions for ADO.  
+  \brief Utility functions for ADO.
 */
 
 // TerraLib
@@ -205,17 +205,17 @@ int te::ado::Convert2Terralib(ADOX::DataTypeEnum adoType)
   {
     case ADOX::adBoolean:
       return te::dt::BOOLEAN_TYPE;
-      break;
+    break;
 
     case ADOX::adEmpty:
       return te::dt::VOID_TYPE;
-      break;
+    break;
 
     case ADOX::adBinary:
     case ADOX::adVarBinary:
     case ADOX::adLongVarBinary:
       return te::dt::BYTE_ARRAY_TYPE;
-      break;
+    break;
 
     case ADOX::adVarWChar:
     case ADOX::adWChar:
@@ -225,20 +225,20 @@ int te::ado::Convert2Terralib(ADOX::DataTypeEnum adoType)
     case ADOX::adBSTR:
     case ADOX::adChar:
       return te::dt::STRING_TYPE;
-      break;
+    break;
 
     case ADOX::adBigInt:
       return te::dt::INT16_TYPE;
-      break;
+    break;
 
     case ADOX::adSingle:
       return te::dt::FLOAT_TYPE;
-      break;
+    break;
 
     case ADOX::adDouble:
     case ADOX::adDecimal:
       return te::dt::DOUBLE_TYPE;
-      break;
+    break;
 
     case ADOX::adInteger:
       return te::dt::INT32_TYPE;
@@ -247,27 +247,27 @@ int te::ado::Convert2Terralib(ADOX::DataTypeEnum adoType)
     case ADOX::adTinyInt:
     case ADOX::adSmallInt:
       return te::dt::INT16_TYPE;
-      break;
+    break;
 
     case ADOX::adUnsignedBigInt:
       return te::dt::UINT64_TYPE;
-      break;
+    break;
 
     case ADOX::adUnsignedInt:
       return te::dt::UINT32_TYPE;
-      break;
+    break;
 
     case ADOX::adUnsignedSmallInt:
     case ADOX::adUnsignedTinyInt:
       return te::dt::UINT16_TYPE;
-      break;
+    break;
 
     case ADOX::adDate:
     case ADOX::adDBDate:
     case ADOX::adDBTime:
     case ADOX::adDBTimeStamp:
       return te::dt::DATETIME_TYPE;
-      break;
+    break;
 
     //case ADOX::adGUID:
     //case ADOX::adError:
@@ -293,17 +293,17 @@ int te::ado::Convert2Terralib(::DataTypeEnum adoType)
   {
     case ::adBoolean:
       return te::dt::BOOLEAN_TYPE;
-      break;
+    break;
 
     case ::adEmpty:
       return te::dt::VOID_TYPE;
-      break;
+    break;
 
     case ::adBinary:
     case ::adVarBinary:
     case ::adLongVarBinary:
       return te::dt::BYTE_ARRAY_TYPE;
-      break;
+    break;
 
     case ::adVarWChar:
     case ::adWChar:
@@ -313,20 +313,20 @@ int te::ado::Convert2Terralib(::DataTypeEnum adoType)
     case ::adBSTR:
     case ::adChar:
       return te::dt::STRING_TYPE;
-      break;
+    break;
 
     case ::adBigInt:
       return te::dt::INT16_TYPE;
-      break;
+    break;
 
     case ::adSingle:
       return te::dt::FLOAT_TYPE;
-      break;
+    break;
 
     case ::adDouble:
     case ::adDecimal:
       return te::dt::DOUBLE_TYPE;
-      break;
+    break;
 
     case ::adInteger:
       return te::dt::INT32_TYPE;
@@ -335,27 +335,27 @@ int te::ado::Convert2Terralib(::DataTypeEnum adoType)
     case ::adTinyInt:
     case ::adSmallInt:
       return te::dt::INT16_TYPE;
-      break;
+    break;
 
     case ::adUnsignedBigInt:
       return te::dt::UINT64_TYPE;
-      break;
+    break;
 
     case ::adUnsignedInt:
       return te::dt::UINT32_TYPE;
-      break;
+    break;
 
     case ::adUnsignedSmallInt:
     case ::adUnsignedTinyInt:
       return te::dt::UINT16_TYPE;
-      break;
+    break;
 
     case ::adDate:
     case ::adDBDate:
     case ::adDBTime:
     case ::adDBTimeStamp:
       return te::dt::DATETIME_TYPE;
-      break;
+    break;
 
     //case ::adGUID:
     //case ::adError:
@@ -380,14 +380,16 @@ te::dt::Property* te::ado::Convert2Terralib(ADOX::_ColumnPtr column)
   te::dt::Property* prop = 0;
 
   _bstr_t cName = column->GetName();
+
   ADOX::DataTypeEnum cType = column->GetType();
+
   long cSize = column->GetDefinedSize();
       
   switch(cType)
   {
     case ::adBoolean:
       prop = new te::dt::SimpleProperty(std::string(cName), Convert2Terralib(cType));
-      break;
+    break;
 
     case ::adVarWChar:
     case ::adWChar:
@@ -397,53 +399,55 @@ te::dt::Property* te::ado::Convert2Terralib(ADOX::_ColumnPtr column)
     case ::adBSTR:
     case ::adChar:
       prop = new te::dt::StringProperty(std::string(cName), (te::dt::StringType)Convert2Terralib(cType), cSize);
-      break;
+    break;
 
     case ADOX::adTinyInt:
     case ADOX::adSmallInt:
       prop = new te::dt::SimpleProperty(std::string(cName), Convert2Terralib(cType));
-      break;
+    break;
 
     case ADOX::adInteger:
       prop = new te::dt::SimpleProperty(std::string(cName), Convert2Terralib(cType));
-      break;
+    break;
 
     case ADOX::adBigInt:
       prop = new te::dt::SimpleProperty(std::string(cName), Convert2Terralib(cType));
-      break;
+    break;
 
     case ADOX::adDouble:
     case ADOX::adDecimal:
       prop = new te::dt::SimpleProperty(std::string(cName), Convert2Terralib(cType));
-      break;
+    break;
 
     case ::adUnsignedBigInt:
       prop = new te::dt::SimpleProperty(std::string(cName), Convert2Terralib(cType));
-      break;
+    break;
 
     case ::adUnsignedInt:
       prop = new te::dt::SimpleProperty(std::string(cName), Convert2Terralib(cType));
-      break;
+    break;
 
     case ::adUnsignedSmallInt:
     case ::adUnsignedTinyInt:
       prop = new te::dt::SimpleProperty(std::string(cName),Convert2Terralib(cType));
-      break;
+    break;
 
     case ADOX::adLongVarBinary:
       prop = new te::dt::ArrayProperty(std::string(cName), new te::dt::SimpleProperty(std::string(cName), Convert2Terralib(cType)));
-      break;
+    break;
 
     case ADOX::adDate:
     case ADOX::adDBDate:
       prop = new te::dt::DateTimeProperty(std::string(cName), te::dt::DATE);
-      break;
+    break;
+
     case ADOX::adDBTime:
       prop = new te::dt::DateTimeProperty(std::string(cName), te::dt::TIME_DURATION);
-      break;
+    break;
+
     case ADOX::adDBTimeStamp:
       prop = new te::dt::DateTimeProperty(std::string(cName), te::dt::TIME_INSTANT);
-      break;
+    break;
           
     default:
       throw te::ado::Exception(TR_ADO("The informed column could not be mapped to TerraLib Data Set Type!"));
@@ -842,41 +846,6 @@ te::gm::GeomType te::ado::GetType(_ConnectionPtr adoConn, std::string tableName,
   std::string type = (LPCSTR)(_bstr_t)recset->GetFields()->GetItem("type")->GetValue();
 
   return GetGeometryType(type);
-}
-
-void te::ado::InsertInGeometryColumns(_ConnectionPtr adoConn, const te::da::DataSetType* dt)
-{
-  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt);
-
-  int coord_dimension = 2;
-
-  if(te::ado::IsZProperty(geomProp->getGeometryType()))
-    coord_dimension = 3;
-
-  _RecordsetPtr recset;
-  TESTHR(recset.CreateInstance(__uuidof(Recordset)));
-
-  try
-  {
-    TESTHR(recset->Open(_bstr_t("geometry_columns"),
-      _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
-
-    TESTHR(recset->AddNew());
-
-    recset->GetFields()->GetItem("f_table_catalog")->Value = (_bstr_t)std::string("''").c_str();
-    recset->GetFields()->GetItem("f_table_schema")->Value = (_bstr_t)std::string("public").c_str();
-    recset->GetFields()->GetItem("f_table_name")->Value = (_bstr_t)dt->getName().c_str();
-    recset->GetFields()->GetItem("f_geometry_column")->Value = (_bstr_t)geomProp->getName().c_str();
-    recset->GetFields()->GetItem("coord_dimension")->Value = (_variant_t)coord_dimension;
-    recset->GetFields()->GetItem("srid")->Value = (_variant_t)geomProp->getSRID();
-    recset->GetFields()->GetItem("type")->Value = (_bstr_t)te::ado::GetGeometryName(geomProp->getGeometryType()).c_str();
-
-    recset->Update();
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
 }
 
 bool te::ado::IsGeomProperty(_ConnectionPtr adoConn, std::string tableName, std::string columnName)
@@ -1345,30 +1314,3 @@ std::string te::ado::GetFormattedDateTime(te::dt::DateTime* dateTime)
   return result;
 }
 
-void te::ado::GetGeometryColumnsInfo(_ConnectionPtr adoConn, std::map<std::string, std::string>& geomColumnsInfo)
-{
-  geomColumnsInfo.clear();
-
-  _RecordsetPtr recordset;
-
-  TESTHR(recordset.CreateInstance(__uuidof(Recordset)));
-  
-  std::string query = "SELECT * FROM geometry_columns";
-
-  try
-  {
-    recordset->Open(query.c_str(), _variant_t((IDispatch *)adoConn), adOpenDynamic, adLockReadOnly, adCmdText);
-
-    while(!recordset->EndOfFile)
-    {
-      std::string tablename = (LPCSTR)(_bstr_t)recordset->GetFields()->GetItem("f_table_name")->GetValue();
-      std::string columnName = (LPCSTR)(_bstr_t)recordset->GetFields()->GetItem("f_geometry_column")->GetValue();
-      geomColumnsInfo[tablename] = columnName;
-      recordset->MoveNext();
-    }
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-}

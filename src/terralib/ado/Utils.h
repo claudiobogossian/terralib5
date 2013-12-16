@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/ado2/Utils.h
+  \file terralib/ado/Utils.h
    
   \brief Utility functions for ADO.  
 */
@@ -195,14 +195,6 @@ namespace te
     te::gm::GeomType GetType(_ConnectionPtr adoConn, std::string tableName, std::string geomPropName);
 
     /*!
-      \brief Insert DataSetType with geometry in the geometryColumns table
-
-      \param adoConn ADO connection
-      \param dt DataSetType to be inserted
-    */
-    void InsertInGeometryColumns(_ConnectionPtr adoConn, const te::da::DataSetType* dt);
-
-    /*!
       \brief Verifies whether is in the geometry_columns table
 
       \param adoConn Ado connection
@@ -229,8 +221,6 @@ namespace te
     int GetMonth(const std::string& month);
 
     std::string GetFormattedDateTime(te::dt::DateTime* dateTime);
-
-    void GetGeometryColumnsInfo(_ConnectionPtr adoConn, std::map<std::string, std::string>& geomColumnsInfo);
 
   } // end namespace ado
 }   // end namespace te
