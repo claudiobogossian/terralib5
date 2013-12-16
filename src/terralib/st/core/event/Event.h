@@ -52,6 +52,8 @@ namespace te
       An event is an individual episode with a definite beginning and end 
       which can involve one or more objects. 
 
+      \ingroup st
+
       \sa Object 
     */
     class TESTEXPORT Event

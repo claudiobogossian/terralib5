@@ -53,7 +53,9 @@ namespace te
               or interpolator that estimate values at non-observaved location within
               a PointCoverage.
 
-       \sa PointCoverage
+      \ingroup st
+
+      \sa PointCoverage
     */
     class TESTEXPORT AbstractPointCoverageInterp 
     {

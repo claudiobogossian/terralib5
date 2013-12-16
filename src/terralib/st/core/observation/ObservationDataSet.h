@@ -64,7 +64,13 @@ namespace te
       of homogeneous observations, that is, 
       every observation has the same number and type of observed values. 
 
-      \\\Nota: Poderíamos ter internamente um ponteiro para o STDataLoader 
+      \ingroup st
+
+      \sa DataSet Observation DataSource
+    */
+
+    /*
+     \\\Nota: Poderíamos ter internamente um ponteiro para o STDataLoader 
       \\\ que o gerou ou para o Info (para obter o STDataLoader)... isso seria útil para: 
       \\\ (1) calcular o temporalExtent.
       \\\ (2) carregar o dado por partes e não tudo de uma vez

@@ -61,6 +61,8 @@ namespace te
 
       A TimeSeriesDataSet can contain one or more properties observed
       over time.
+
+      \ingroup st
            
       \sa ObservationDataSet ObservationDatasSetType TimeSeriesDataSetType
     */
