@@ -93,8 +93,6 @@ namespace te
            */
           //@{
 
-          bool eventFilter(QObject* watched, QEvent* e);
-
           bool mousePressEvent(QMouseEvent* e);
 
           bool mouseMoveEvent(QMouseEvent* e);
