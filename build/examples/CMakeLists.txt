@@ -20,15 +20,17 @@ message ("m: ${TE_MODULE_PATH}")
 include (${TE_MODULE_PATH}/GeneralConfig.cmake)
 
 ############### Get the data used for testing the examples ###############
-set (TE_DATA_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to data folder.")
+#set (TE_DATA_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to data folder.")
 
-if(NOT EXISTS ${TE_DATA_DIR}/data/report.xsl)
-  message (STATUS "-- Installing data for examples.")
-  file(DOWNLOAD "http://www.dpi.inpe.br/terralib5/data.zip" ${TE_DATA_DIR}/data.zip)
-  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${TE_DATA_DIR}/data.zip WORKING_DIRECTORY ${TE_DATA_DIR})
-  file (REMOVE ${TE_DATA_DIR}/data.zip)
-  message (STATUS "-- Data files installed.")
-endif()
+set (TE_DATA_DIR "${DATA_DIR}" CACHE PATH "Path to data folder.")
+
+#if(NOT EXISTS ${TE_DATA_DIR}/data/report.xsl)
+#  message (STATUS "-- Installing data for examples.")
+#  file(DOWNLOAD "http://www.dpi.inpe.br/terralib5/data.zip" ${TE_DATA_DIR}/data.zip)
+#  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${TE_DATA_DIR}/data.zip WORKING_DIRECTORY ${TE_DATA_DIR})
+#  file (REMOVE ${TE_DATA_DIR}/data.zip)
+#  message (STATUS "-- Data files installed.")
+#endif()
 
 set(TE_DATA_EXAMPLE_DIR "${TE_DATA_DIR}")
 
