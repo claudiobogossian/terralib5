@@ -50,7 +50,7 @@ namespace te
     class AbstractTimeSeriesInterp; 
     
     /*!
-      \class Time Series
+      \class TimeSeries
 
       \brief A class to represent time series.
 
