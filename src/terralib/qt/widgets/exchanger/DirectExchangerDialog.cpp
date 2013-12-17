@@ -193,6 +193,8 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
 
     std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), converter));
 
+    dsAdapter->setSRID(layer->getSRID());
+
     if(dataset->moveBeforeFirst())
       dsOGR->add(dsTypeResult->getName(), dsAdapter.get(), dsOGR->getConnectionInfo());
 
@@ -315,6 +317,8 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
     targetDSPtr->createDataSet(dsTypeResult, nopt);
 
     std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), converter));
+
+    dsAdapter->setSRID(layer->getSRID());
 
      if(dataset->moveBeforeFirst())
        targetDSPtr->add(dsTypeResult->getName(), dsAdapter.get(), targetDSPtr->getConnectionInfo());

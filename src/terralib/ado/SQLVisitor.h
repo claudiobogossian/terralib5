@@ -79,7 +79,7 @@ namespace te
 
       private:
 
-        _ConnectionPtr m_conn; //!< The PostGIS connection used to escape string!
+        _ConnectionPtr m_conn; //!< The ADO connection used to escape string!
     };
 
   } // end namespace ado

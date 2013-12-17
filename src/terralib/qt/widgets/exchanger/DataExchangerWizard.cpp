@@ -33,6 +33,7 @@
 #include "../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../geometry/GeometryProperty.h"
 #include "../../../qt/widgets/dataset/selector/DataSetSelectorWizardPage.h"
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWidget.h"
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
@@ -221,6 +222,7 @@ void te::qt::widgets::DataExchangerWizard::commit()
   {
     te::da::DataSetTypePtr idset = it->first;
     te::da::DataSetType* odset = it->second->getResult();
+    te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(odset);
 
     try
     {
@@ -234,6 +236,8 @@ void te::qt::widgets::DataExchangerWizard::commit()
       odatasource->createDataSet(odset, nopt);
 
       std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), it->second));
+      if(geomProp)
+        dsAdapter->setSRID(geomProp->getSRID());
 
       if(dataset->moveBeforeFirst())
         odatasource->add(odset->getName(), dsAdapter.get(), ods->getConnInfo());
