@@ -2,6 +2,9 @@
 #include <terralib/dataaccess.h>
 #include <terralib/vp/Intersection.h>
 
+// STL
+#include <iostream>
+
 bool IntersectionPGISToOGR()
 {
   // this refers to a PostGIS connection, use valid ones for your own environment
