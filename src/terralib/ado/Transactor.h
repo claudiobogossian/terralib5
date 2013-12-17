@@ -52,6 +52,13 @@ namespace te
     class PreparedQuery;
     class Query;
 
+    /*!
+      \class Transactor
+
+      \brief The transactor class for the Microsoft Access driver.
+
+      \sa te::da::DataSourceTransactor, DataSource
+    */
     class TEADOEXPORT Transactor : public te::da::DataSourceTransactor
     {
       public:
@@ -255,22 +262,65 @@ namespace te
 
       protected:
 
+        /*!
+          \brief It update the DataSetType about the Primary Key.
+
+          \param dt The DataSetType that will be updated.
+
+          \exception Exception It throws an exception if the query execution fails.
+        */
         void getPrimaryKey(te::da::DataSetType* dt);
 
+        /*!
+          \brief It update the DataSetType about the Properties.
+
+          \param dt The DataSetType that will be updated.
+
+          \exception Exception It throws an exception if the query execution fails.
+        */
         void getProperties(te::da::DataSetType* dt);
 
+        /*!
+          \brief It update the DataSetType about the Unique Keys.
+
+          \param dt The DataSetType that will be updated.
+
+          \exception Exception It throws an exception if the query execution fails.
+        */
         void getUniqueKeys(te::da::DataSetType* dt);
 
+        /*!
+          \brief It update the DataSetType about the Indexes.
+
+          \param dt The DataSetType that will be updated.
+
+          \exception Exception It throws an exception if the query execution fails.
+        */
         void getIndexes(te::da::DataSetType* dt);
 
+        /*!
+          \brief It update the DataSetType about the Check Constraints.
+
+          \param dt The DataSetType that will be updated.
+
+          \exception Exception It throws an exception if the query execution fails.
+        */
         void getCheckConstraints(te::da::DataSetType* dt);
 
+        /*!
+          \brief It insert a geometry property in the geometry_clumns (SFS Schema).
+
+          \param datasetName The DataSet name.
+          \param geomProp    The geometry property.
+
+          \exception Exception It throws an exception if the query execution fails.
+        */
         void insertIntoGeometryColumns(const std::string& datasetName,
                                        te::gm::GeometryProperty* geomProp);
 
       private:
 
-        DataSource* m_ds;       //!< The PostGIS data source associated to this transactor.
+        DataSource* m_ds;       //!< The ADO data source associated to this transactor.
         Connection* m_conn;     //!< The connection used by this transactor.
         bool m_isInTransaction; //!< Tells if there is a transaction in progress.
 
