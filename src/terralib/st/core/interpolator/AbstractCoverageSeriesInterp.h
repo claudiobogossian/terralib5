@@ -55,7 +55,9 @@ namespace te
       This is an abstract class for every class that implements
       interpolation functions that estimate coverages at non-observaved times
       of a coverage series.
-     
+      
+      \ingroup st
+
       \sa CoverageSeries
     */
     class TESTEXPORT AbstractCoverageSeriesInterp 

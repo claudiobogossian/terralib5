@@ -61,12 +61,13 @@ namespace te
     /*!
       \class CoverageSeries
 
-      \brief An abstract class to represent a coverage series.
+      \brief A class to represent a coverage series.
 
-      A coverage series é a sequence of coverages over time. 
-      (T -> Coverage)
+      A coverage series is a sequence of coverages over time (T -> Coverage)
       
-      \sa Coverage 
+      \ingroup st
+
+      \sa Coverage RasterCoverage PointCoverage TimeSeries
     */
     class TESTEXPORT CoverageSeries 
     {

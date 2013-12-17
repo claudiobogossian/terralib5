@@ -23,12 +23,12 @@ int main()
     RasterizePolygonSet();
     ResampleRaster();
     SplitComplexImage();
-    GribExample();
+    // GribExample();
     ReprojectRasterUsingDriver();
     ReprojectRasterUsingFunction();
     RasterInMemory();
     ExemplifyIterators();
-    GribPolygonExample();
+    // GribPolygonExample();
     Raster1Bit();
 
     te::plugin::PluginManager::getInstance().unloadAll();

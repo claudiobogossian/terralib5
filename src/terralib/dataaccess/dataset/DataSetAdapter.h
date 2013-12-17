@@ -155,6 +155,13 @@ namespace te
 
         bool isNull(std::size_t i) const;
 
+        /*!
+          \brief It sets the Spatial Reference System ID associated to the DataSet.
+
+          \param srid The Spatial Reference System ID to be associated to the DataSet.
+        */
+        void setSRID(int srid);
+
         /** @name DataSet Adapter Extended Methods
          *  Methods that exists only in the DataSet Adapter implementation.
          */
@@ -193,6 +200,7 @@ namespace te
         te::common::Holder<DataSet> m_ds;                         //!< A pointer to the DataSet that will be handled by adapter
         std::vector<std::vector<std::size_t> > m_propertyIndexes; //!< A vector that stores the adapted property indexes.
         std::vector<AttributeConverter> m_converters;             //!< A vector that stores the attribute converters functions.
+        int m_srid;                                               //!< The identifier of the layer spatial reference system.
     };
 
   } // end namespace da

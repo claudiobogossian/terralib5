@@ -117,14 +117,21 @@ namespace te
     void Convert2Ado(const te::gm::Geometry* geo, _variant_t & var);
 
     /*!
+      \brief Bind ADOX Type to TerraLib Type.
+
+      \param adoType ADOX Type.
+
+      \return TerraLib Type
+    */
+    int Convert2Terralib(ADOX::DataTypeEnum adoType);
+
+    /*!
       \brief Bind ADO Type to TerraLib Type.
 
       \param adoType Ado Type.
 
       \return TerraLib Type
     */
-    int Convert2Terralib(ADOX::DataTypeEnum adoType);
-
     int Convert2Terralib(::DataTypeEnum adoType);
 
     /*!
@@ -214,12 +221,46 @@ namespace te
     */
     bool IsZProperty(te::gm::GeomType type);
 
+    /*!
+      \brief It gets the system Date and Time format.
+
+      \param indAM  AM indicator string.
+      \param indPM  PM indicator string.
+      \param sepD   Date separator.
+      \param sepT   Time separator.
+
+      \return The full DateTime format.
+    */
     std::string GetSystemDateTimeFormat(std::string& indAM, std::string& indPM, std::string& sepD, std::string& sepT);
 
+    /*!
+      \brief It gets the DateTime TerraLib 5 from string.
+
+      \param value  String value to be read.
+      \param mask   System DateTime mask;
+      \param sepD   Date separator.
+      \param sepT   Time separator.
+
+      \return The TerraLib 5 DateTime.
+    */
     std::auto_ptr<te::dt::DateTime> GetDateTime(std::string& value, std::string& mask, std::string& sepD, std::string& sepT);
 
+    /*!
+      \brief It gets the index of a month.
+
+      \param month  Month name.
+
+      \return The month index.
+    */
     int GetMonth(const std::string& month);
 
+    /*!
+      \brief It gets a formatted DateTime string for ADO
+
+      \param dateTime TerraLib 5 DateTime.
+
+      \return A formatted DateTime string.
+    */
     std::string GetFormattedDateTime(te::dt::DateTime* dateTime);
 
   } // end namespace ado
