@@ -2,6 +2,9 @@
 #include <terralib/dataaccess.h>
 #include <terralib/vp/Aggregation.h>
 
+// STL
+#include <iostream>
+
 bool AggregPGISToOGR()
 {
   // this refers to a PostGIS connection, use valid ones for your own environment
