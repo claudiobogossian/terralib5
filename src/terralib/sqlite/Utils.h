@@ -47,6 +47,7 @@ namespace te
 {
   namespace da
   {
+    class DataSet;
     class DataSource;
     class DataSetType;
   }
@@ -104,6 +105,10 @@ namespace te
     std::string GetSQLType(const te::dt::Property* p);
 
     te::da::FKActionType GetAction(const std::string& action);
+
+    std::string Convert2SQLCreate(const te::dt::Property* p);
+
+    std::string GetSQLBindValues(const te::da::DataSet* dataset);
 
   } // end namespace sqlite
 }   // end namespace te

@@ -218,7 +218,7 @@ void te::qt::plugins::sqlite::SQLiteConnectorDialog::getConnectionInfo(std::map<
   else
     connInfo["SQLITE_FILE"] = qstr.toUtf8().data();
   
-  connInfo["SQLITE_OPEN_READWRITE"] = m_ui->m_rwAccessCheckBox->isChecked() ? "TRUE" : "FALSE";
+  connInfo["SQLITE_OPEN_READWRITE"] = m_ui->m_rwAccessCheckBox->isChecked() ? "FALSE" : "TRUE";
 
   connInfo["SQLITE_OPEN_CREATE"] = m_ui->m_createdbCheckBox->isChecked() ? "TRUE" : "FALSE";
 
