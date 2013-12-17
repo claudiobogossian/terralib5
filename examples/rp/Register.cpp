@@ -35,37 +35,37 @@ void Register()
     algoInputParams.m_inputRasterBands.push_back( 2 );
     
     te::gm::GTParameters::TiePoint tiePoint1;
-    tiePoint1.first.x = 0;
-    tiePoint1.first.y = 0;
-    tiePoint1.second.x = 528980;
-    tiePoint1.second.x = 7945280;
+    tiePoint1.first.x = 0.0;
+    tiePoint1.first.y = 0.0;
+    tiePoint1.second.x = 528980.0;
+    tiePoint1.second.y = 7945280.0;
     algoInputParams.m_tiePoints.push_back( tiePoint1 );
     
     te::gm::GTParameters::TiePoint tiePoint2;
-    tiePoint2.first.x = 874;
-    tiePoint2.first.y = 0;
-    tiePoint2.second.x = 546460;
-    tiePoint2.second.y = 7945280;
+    tiePoint2.first.x = 874.0;
+    tiePoint2.first.y = 0.0;
+    tiePoint2.second.x = 546460.0;
+    tiePoint2.second.y = 7945280.0;
     algoInputParams.m_tiePoints.push_back( tiePoint2 );
     
     te::gm::GTParameters::TiePoint tiePoint3;
-    tiePoint3.first.x = 874;
-    tiePoint3.first.y = 1008;
-    tiePoint3.second.x = 546460;
-    tiePoint3.second.x = 7925120;
+    tiePoint3.first.x = 874.0;
+    tiePoint3.first.y = 1008.0;
+    tiePoint3.second.x = 546460.0;
+    tiePoint3.second.y = 7925120.0;
     algoInputParams.m_tiePoints.push_back( tiePoint3 );
 
     te::gm::GTParameters::TiePoint tiePoint4;
-    tiePoint4.first.x = 0;
-    tiePoint4.first.y = 1008;
-    tiePoint4.second.x = 528980;
-    tiePoint4.second.x = 7925120;
+    tiePoint4.first.x = 0.0;
+    tiePoint4.first.y = 1008.0;
+    tiePoint4.second.x = 528980.0;
+    tiePoint4.second.y = 7925120.0;
     algoInputParams.m_tiePoints.push_back( tiePoint4 );
     
     algoInputParams.m_outputSRID = 29182;
     
-    algoInputParams.m_outputResolutionX = 20;
-    algoInputParams.m_outputResolutionY = 20;
+    algoInputParams.m_outputResolutionX = 20.0;
+    algoInputParams.m_outputResolutionY = 20.0;
     
     te::rp::Register::OutputParameters algoOutputParams;
     
