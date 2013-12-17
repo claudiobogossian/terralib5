@@ -20,23 +20,37 @@
 /*!
   \file terralib/vp.h
 
-  \brief This file contains forward declarations for the TerraLib Vector Processing module.
+  \brief This file contains include headers for the TerraLib Vector Processing module.
 */
 
-#ifndef __TERRALIB_FW_INTERNAL_VP_H
-#define __TERRALIB_FW_INTERNAL_VP_H
+#ifndef __TERRALIB_INTERNAL_VP_H
+#define __TERRALIB_INTERNAL_VP_H
+
+/*!
+  \defgroup vp Vector Processing
+
+  \brief This module provides classes and functions with vector processing capabilities.
+
+    Basically, the TerraLib Vector Processing module contains several processing operations applied to vectorial data and it is organized as follows:
+
+    <ul>
+      <li>Aggregation Geographical Operation</li>
+      <li>Buffer Geographical Operation</li>
+      <li>Intersection Geographical Operation</li>
+    </ul>
+
+  The main classes/concepts in this module are listed here. The namespace associated to the Vector Processing module is te::vp.
+  To know more about it, see the te::vp namespace documentation.
+*/
 
 namespace te
 {
+  /*!
+    \brief Namespace for Vector Processing module of TerraLib.
+  */
   namespace vp
   {
-    bool Aggregation(const std::string& inDataset,
-                     te::da::DataSource* inDatasource,
-                     const std::vector<te::dt::Property*>& groupingProperties,
-                     const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
-                     const std::string& outDataset,
-                     te::da::DataSource* outDatasource);
-  } 
-}
+  } // end namespace vp
+}   // end namespace te
 
-#endif  // __TERRALIB_FW_INTERNAL_VP_H
+#endif  // __TERRALIB_INTERNAL_VP_H

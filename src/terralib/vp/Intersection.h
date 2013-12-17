@@ -21,6 +21,8 @@
   \file terralib/vp/core/IntersectionDialog.h
 
   \brief Group of functions to intersection operation
+
+  \ingroup vp
 */
 
 #ifndef __TERRALIB_VP_CORE_INTERNAL_INTERSECTION_H
