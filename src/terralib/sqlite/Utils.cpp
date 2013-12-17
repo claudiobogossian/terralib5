@@ -845,3 +845,48 @@ te::da::FKActionType te::sqlite::GetAction(const std::string& action)
   }
 }
 
+std::string te::sqlite::Convert2SQLCreate(const te::dt::Property* p)
+{
+  std::string sql = p->getName();
+
+  sql += " ";
+
+  sql += GetSQLType(p);
+
+  const te::dt::SimpleProperty* sp = static_cast<const te::dt::SimpleProperty*>(p);
+
+  if(sp->isRequired())
+    sql += " NOT NULL";
+
+  if(p->getParent())
+  {
+    const te::da::DataSetType* dt = static_cast<const te::da::DataSetType*>(p->getParent());
+
+    if(dt->getPrimaryKey() && (dt->getPrimaryKey()->getProperties().size() == 1) && dt->getPrimaryKey()->has(p))
+    {
+      sql += " PRIMARY KEY";
+    }
+  }
+
+  return sql;
+}
+
+std::string te::sqlite::GetSQLBindValues(const te::da::DataSet* dataset)
+{
+  std::string valueNames("(");
+
+  const std::size_t np = dataset->getNumProperties();
+
+  for(std::size_t i = 0; i != np; ++i)
+  {
+    if(i != 0)
+      valueNames += ",";
+
+    valueNames += "?";
+  }
+
+  valueNames += ")";
+
+  return valueNames;
+}
+
