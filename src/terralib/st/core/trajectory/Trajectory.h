@@ -68,6 +68,8 @@ namespace te
       The observations have a fixed object identity and measured geometries at controlled
       times. The interpolator is able to estimate spaces at non-observed times.
 
+      \ingroup st
+
       \sa ObservationSet AbstractInterpolator
     */
     class TESTEXPORT Trajectory

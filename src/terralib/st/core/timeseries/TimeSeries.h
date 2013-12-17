@@ -59,6 +59,8 @@ namespace te
       It is composed of a set of observations and of an interpolator able
       to estimate values in non-observed times.
 
+      \ingroup st
+
       \sa ObservationSet AbstractInterpolator
     */
     class TESTEXPORT TimeSeries

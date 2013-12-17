@@ -87,6 +87,21 @@
 #include "st/loader/STDataLoaderImpl.h"
 #include "st/loader/STDataLoaderImplFactory.h"  
 
+/*!
+  \defgroup st Spatiotemporal Module
+
+  \brief The st module provides classes and functions to load and deal with spatiotemporal data.  
+  
+  This module provides data types or classes to represent and process 
+  spatiotemporal information, such as observations, trajectory, time series, 
+  coverage and coverage series.
+  Besides that, it provides a set of functions to load spatiotemporal information
+  from different data sources. 
+  
+  The main classes/concepts in this module are listed here. The namespace associated to the ST module is te::st.
+  To know more about it, see the te::st namespace documentation.
+*/
+
 namespace te
 {
   /*! \brief Namespace for the TerraLib ST module. */

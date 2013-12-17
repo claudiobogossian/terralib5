@@ -193,19 +193,21 @@ std::size_t te::st::Trajectory::size() const
 
 te::st::TrajectoryIterator te::st::Trajectory::begin() const
 {
-  return TrajectoryIterator(m_observations.begin());
+  TrajectoryObservationSet::const_iterator it = m_observations.begin();
+  return TrajectoryIterator(it);
 }
 
 te::st::TrajectoryIterator te::st::Trajectory::end() const
 {
-  return TrajectoryIterator(m_observations.end());
+  TrajectoryObservationSet::const_iterator it = m_observations.end();
+  return TrajectoryIterator(it);
 }
 
 te::st::TrajectoryIterator te::st::Trajectory::at(te::dt::DateTime* t) const
 {
   te::dt::DateTimeShrPtr aux(static_cast<te::dt::DateTime*>(t->clone()));
-  TrajectoryIterator ti(m_observations.find(aux)); 
-  return ti;
+  TrajectoryObservationSet::const_iterator it = m_observations.find(aux);
+  return TrajectoryIterator (it);
 }
 
 std::auto_ptr<te::gm::Geometry> te::st::Trajectory::getGeometry(te::dt::DateTime* t) const
@@ -423,12 +425,16 @@ void te::st::Trajectory::getPatches(const te::gm::Envelope& e, te::gm::SpatialRe
   tj.getPatches(e, sr, res2); //sr: must be INTERSECTS for while
     
   std::vector<TrajectoryPatch>::const_iterator it = res2.begin();
+
+  TrajectoryObservationSet::const_iterator itObsEnd = m_observations.end();
+
   while(it!=res2.end())
   {
     TrajectoryIterator itAuxBegin = (*it).begin();
     TrajectoryIterator itAuxEnd = (*it).end();
-    TrajectoryIterator itBegin = m_observations.end();
-    TrajectoryIterator itEnd = m_observations.end();
+
+    TrajectoryIterator itBegin(itObsEnd);
+    TrajectoryIterator itEnd(itObsEnd);
 
     //Get the first position
     if(itAuxBegin!=tj.end())
@@ -446,7 +452,7 @@ void te::st::Trajectory::getPatches(const te::gm::Envelope& e, te::gm::SpatialRe
     ++itEnd;
 
     //Get the patch
-    if(itBegin!=m_observations.end())
+    if(itBegin!=itEnd)
     {
       TrajectoryPatch p(itBegin, itEnd);
       result.push_back(p);
@@ -471,12 +477,16 @@ void te::st::Trajectory::getPatches(const te::gm::Geometry& geom, te::gm::Spatia
   tj.getPatches(geom, sr, res2); //sr: must be INTERSECTS for while
     
   std::vector<TrajectoryPatch>::const_iterator it = res2.begin();
+
+  TrajectoryObservationSet::const_iterator itObsEnd = m_observations.end();
+
   while(it!=res2.end())
   {
     TrajectoryIterator itAuxBegin = (*it).begin();
     TrajectoryIterator itAuxEnd = (*it).end();
-    TrajectoryIterator itBegin = m_observations.end();
-    TrajectoryIterator itEnd = m_observations.end();
+
+    TrajectoryIterator itBegin(itObsEnd);
+    TrajectoryIterator itEnd(itObsEnd);
 
     //Get the first position
     if(itAuxBegin!=tj.end())
@@ -494,7 +504,7 @@ void te::st::Trajectory::getPatches(const te::gm::Geometry& geom, te::gm::Spatia
     ++itEnd;
 
     //Get the patch
-    if(itBegin!=m_observations.end())
+    if(itBegin!=itEnd)
     {
       TrajectoryPatch p(itBegin, itEnd);
       result.push_back(p);

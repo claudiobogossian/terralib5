@@ -2,6 +2,9 @@
 #include <terralib/dataaccess.h>
 #include <terralib/vp/Aggregation.h>
 
+// STL
+#include <iostream>
+
 bool AggregPGISToOGR()
 {
   // this refers to a PostGIS connection, use valid ones for your own environment
@@ -19,7 +22,7 @@ bool AggregPGISToOGR()
   srcDs->setConnectionInfo(connInfo);
   srcDs->open();
   
-  std::string inDset = "brasil";
+  std::string inDset = "sp_cities";
   
   if (!srcDs->dataSetExists(inDset))
   {
@@ -27,23 +30,23 @@ bool AggregPGISToOGR()
     return false;
   }
   
-  std::string attAgreg = "regiao";
+  std::string attAgreg = "nomemeso";
   std::auto_ptr<te::dt::Property> aggregBy = srcDs->getProperty(inDset, attAgreg);
   
   std::vector<te::dt::Property*> groupingProperties;
   groupingProperties.push_back(aggregBy.release());
   
-  std::string filename(""TE_DATA_EXAMPLE_DIR"/data/vpresult/regioes.gml");
+  std::string filename(""TE_DATA_EXAMPLE_DIR"/data/vpresult/sp_nomemesoPGIStoOGR.shp");
   
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = filename;
-  tgrInfo["DRIVER"] = "GML";
+  tgrInfo["DRIVER"] = "ESRI Shapefile";
   
   std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
   trgDs->setConnectionInfo(tgrInfo);
   trgDs->open();
   
-  std::string outDset = "regioes";
+  std::string outDset = "sp_nomemeso";
   if (trgDs->dataSetExists(outDset))
   {
     std::cout << "A dataset with the same requested output dataset name already exists: " << outDset << std::endl;
@@ -59,7 +62,7 @@ bool AggregPGISToOGR()
 
 bool AggregOGRToPGIS()
 {
-  std::string filename(""TE_DATA_EXAMPLE_DIR"/data/shp/Censo_2000_Municipios_LL_pol.shp");
+  std::string filename(""TE_DATA_EXAMPLE_DIR"/data/shp/SP_cities.shp");
   
   std::map<std::string, std::string> srcInfo;
   srcInfo["URI"] = filename;
@@ -69,14 +72,14 @@ bool AggregOGRToPGIS()
   srcDs->setConnectionInfo(srcInfo);
   srcDs->open();
   
-  std::string inDset = "regioes";
+  std::string inDset = "sp_cities";
   if (!srcDs->dataSetExists(inDset))
   {
     std::cout << "Input dataset not found: " << inDset << std::endl;
     return false;
   }
   
-  std::string attAgreg = "regiao";
+  std::string attAgreg = "nomemeso";
   std::auto_ptr<te::dt::Property> aggregBy = srcDs->getProperty(inDset, attAgreg);
   std::vector<te::dt::Property*> groupingProperties;
   groupingProperties.push_back(aggregBy.release());
@@ -96,7 +99,7 @@ bool AggregOGRToPGIS()
   trgDs->setConnectionInfo(connInfo);
   trgDs->open();
   
-  std::string outDS = "regioes";
+  std::string outDS = "sp_nomemeso";
   
   if (trgDs->dataSetExists(outDS))
   {
@@ -111,7 +114,7 @@ bool AggregOGRToPGIS()
 
 bool AggregOGRToOGR()
 {
-  std::string filename(""TE_DATA_EXAMPLE_DIR"/data/ogr/cidades_sp.shp");
+  std::string filename(""TE_DATA_EXAMPLE_DIR"/data/shp/SP_cities.shp");
   
   std::map<std::string, std::string> srcInfo;
   srcInfo["URI"] = filename;
@@ -121,21 +124,21 @@ bool AggregOGRToOGR()
   srcDs->setConnectionInfo(srcInfo);
   srcDs->open();
   
-  std::string inDset = "cidades_sp";
+  std::string inDset = "SP_cities";
   if (!srcDs->dataSetExists(inDset))
   {
     std::cout << "Input dataset not found: " << inDset << std::endl;
     return false;
   }
   
-  std::string attAgreg = "codmeso";
+  std::string attAgreg = "nomemeso";
   std::auto_ptr<te::dt::Property> aggregBy = srcDs->getProperty(inDset, attAgreg);
   std::vector<te::dt::Property*> groupingProperties;
   groupingProperties.push_back(aggregBy.release());
   
   std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > stats;
   
-  std::string filename2(""TE_DATA_EXAMPLE_DIR"/data/vpresult/regioes_sp.shp");
+  std::string filename2(""TE_DATA_EXAMPLE_DIR"/data/vpresult/sp_nomemesoOGRtoOGR.shp");
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = filename2;
   tgrInfo["DRIVER"] = "ESRI Shapefile";
@@ -144,7 +147,7 @@ bool AggregOGRToOGR()
   trgDs->setConnectionInfo(tgrInfo);
   trgDs->open();
   
-  std::string outDS = "regioes_sp_res";
+  std::string outDS = "sp_nomemeso";
   
   if (trgDs->dataSetExists(outDS))
   {
@@ -172,20 +175,20 @@ bool AggregPGISToPGIS()
   srcDs->setConnectionInfo(connInfo);
   srcDs->open();
   
-  std::string inDset = "cidades_sp";
+  std::string inDset = "sp_cities";
   if (!srcDs->dataSetExists(inDset))
   {
     std::cout << "Input dataset not found: " << inDset << std::endl;
     return false;
   }
   
-  std::string attAgreg = "codmeso";
+  std::string attAgreg = "nomemeso";
   std::auto_ptr<te::dt::Property> aggregBy = srcDs->getProperty(inDset, attAgreg);
   std::vector<te::dt::Property*> groupingProperties;
   groupingProperties.push_back(aggregBy.release());
   
   std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > stats;
-  std::string outDS = "regioes_sp2";
+  std::string outDS = "sp_nomemeso_PGIStoPGIS";
   if (srcDs->dataSetExists(outDS))
   {
     std::cout << "A dataset with the same requested output dataset name already exists: " << outDS << std::endl;

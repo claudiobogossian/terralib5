@@ -25,35 +25,32 @@ void Filter()
     }
     
     // Creating the algorithm parameters
-  
     te::rp::Filter::InputParameters algoInputParams;
-    
+
     algoInputParams.m_filterType = te::rp::Filter::InputParameters::RobertsFilterT;
-    
+
     algoInputParams.m_inRasterPtr = inputRasterPointer;
-    
+
     algoInputParams.m_inRasterBands.push_back( 0 );
     algoInputParams.m_inRasterBands.push_back( 1 );
     algoInputParams.m_inRasterBands.push_back( 2 );
-    
+
     algoInputParams.m_iterationsNumber = 1;
 
     te::rp::Filter::OutputParameters algoOutputParams;
-    
-    algoOutputParams.m_rInfo["URI"] =  
-      TE_DATA_EXAMPLE_DIR "/data/rasters/FilterExample.tif";  
+
+    algoOutputParams.m_rInfo["URI"] =
+      TE_DATA_EXAMPLE_DIR "/data/rasters/FilterExample.tif";
     algoOutputParams.m_rType = "GDAL";
-    
+
     // Executing the algorithm
-    
     te::rp::Filter algorithmInstance;
-    
     if( ! algorithmInstance.initialize( algoInputParams ) )
     {
       std::cout << "Algorithm initialization error." << std::endl;
       return;
     }
-    
+
     if( ! algorithmInstance.execute( algoOutputParams ) )
     {
       std::cout << "Algorithm execution error." << std::endl;
