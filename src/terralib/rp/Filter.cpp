@@ -82,7 +82,9 @@ namespace te
       m_windowH = params.m_windowH;
       m_windowW = params.m_windowW;
       m_enableProgress = params.m_enableProgress;
-      m_window = params.m_window;
+
+      if (m_filterType == InputParameters::UserDefinedWindowT)
+        m_window = params.m_window;
 
       return *this;
     }
@@ -999,7 +1001,7 @@ namespace te
       std::auto_ptr< te::common::TaskProgress > task;
       if( useProgress )
       {
-        task.reset( new te::common::TaskProgress(TR_RP("Dilation Filter"),
+        task.reset( new te::common::TaskProgress(TR_RP("Erosion Filter"),
           te::common::TaskProgress::UNDEFINED, 100 ) );
       }
 
@@ -1075,7 +1077,7 @@ namespace te
       std::auto_ptr< te::common::TaskProgress > task;
       if( useProgress )
       {
-        task.reset( new te::common::TaskProgress(TR_RP("Dilation Filter"),
+        task.reset( new te::common::TaskProgress(TR_RP("User Defined Filter"),
           te::common::TaskProgress::UNDEFINED, 100 ) );
       }
 

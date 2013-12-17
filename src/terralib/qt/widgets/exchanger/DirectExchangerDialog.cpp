@@ -96,10 +96,10 @@ void te::qt::widgets::DirectExchangerDialog::setLayers(std::list<te::map::Abstra
   {
     te::map::AbstractLayerPtr l = *it;
 
-     te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
+      std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
 
-     if(dsLayer)
-       m_ui->m_inputLayerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
+      if(dsType.get() && dsType->hasGeom())
+        m_ui->m_inputLayerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
 
     ++it;
   }
@@ -165,11 +165,6 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
   {
     //create adapter
     std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
-    
-    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
-
-    if(dsType->size() == 0)
-      te::da::LoadProperties(dsType.get(), dsLayer->getDataSourceId());
 
     //create data source
     std::map<std::string, std::string> connInfo;
@@ -265,11 +260,6 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
   {
     //create adapter
     std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
-    
-    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
-
-    if(dsType->size() == 0)
-      te::da::LoadProperties(dsType.get(), dsLayer->getDataSourceId());
 
     te::da::DataSourcePtr targetDSPtr = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo()); 
 

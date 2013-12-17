@@ -51,6 +51,8 @@ namespace te
       An observation is composed of: (1) a phenomenon time, (2) a valid time, 
       (3) a result time, (4) observed values. 
 
+      \ingroup st
+
       \sa ObservationDataSet AbstractData DateTime 
     */
     class TESTEXPORT Observation

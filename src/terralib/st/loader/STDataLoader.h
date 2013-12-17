@@ -74,6 +74,8 @@ namespace te
       \brief  A class that contains a set of static methods to load spatiotemporal 
               data from data sources.
                 
+      \ingroup st
+
       \note Before using the methods of this class, certify that the Data Source exists in the DataSourceManager  
       \note The methods of this class can throw an Exception when internal errors occur.
       

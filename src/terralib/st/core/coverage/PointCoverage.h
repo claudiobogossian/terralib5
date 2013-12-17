@@ -58,11 +58,13 @@ namespace te
 
       \brief A concrete class to represent a point coverage. 
       
-      A point coverage is composed of a set of observations where
+      A point coverage is a coverage composed of a set of observations where
       each one contains a location (point) and a set properties
       associated to it.
 
-      \sa Coverage
+      \ingroup st
+
+      \sa Coverage Point Property
     */
     class TESTEXPORT PointCoverage : public Coverage 
     {

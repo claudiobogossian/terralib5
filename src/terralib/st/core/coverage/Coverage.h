@@ -55,10 +55,10 @@ namespace te
 
       \brief An abstract class to represent a coverage.
 
-      A coverage represents the variation of property values 
-      within a spatial extent { S -> A } in a certain time. 
-      
-      \sa ...
+      A coverage represents the variation of the values of a property  
+      within a spatial extent at a specific time. 
+
+      \ingroup st
     */
     class TESTEXPORT Coverage 
     {
