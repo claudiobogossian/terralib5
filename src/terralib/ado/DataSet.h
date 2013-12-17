@@ -142,13 +142,13 @@ namespace te
 
       protected:
 
-        _RecordsetPtr m_result;             //!< The internal buffer with the result query.
-        Transactor* m_t;
-        std::vector<int> m_datatypes;
-        std::vector<std::string> m_colNames;
-        int m_i;                            //!< The index of the current row.
-        int m_size;                         //!< The number of datasets in the collection.
-        int m_ncols;                        //!< The number of properties in the collection.
+        _RecordsetPtr m_result;               //!< The internal buffer with the result query.
+        Transactor* m_t;                      //!< The DataSet Transactor.
+        std::vector<int> m_datatypes;         //!< A vector of data types.
+        std::vector<std::string> m_colNames;  //!< A vector of columns names.
+        int m_i;                              //!< The index of the current row.
+        int m_size;                           //!< The number of datasets in the collection.
+        int m_ncols;                          //!< The number of properties in the collection.
     };
 
   } // end namespace ado

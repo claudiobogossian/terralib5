@@ -95,7 +95,7 @@
   This module provides data types or classes to represent and process 
   spatiotemporal information, such as observations, trajectory, time series, 
   coverage and coverage series.
-  Besides that, it provides a set of functions to load spatiotemporal 
+  Besides that, it provides a set of functions to load spatiotemporal information
   from different data sources. 
   
   The main classes/concepts in this module are listed here. The namespace associated to the ST module is te::st.
