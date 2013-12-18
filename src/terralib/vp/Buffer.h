@@ -21,6 +21,8 @@
   \file Aggregation.h
    
   \brief Aggregation Vector Processing functions.
+
+  \ingroup vp
 */
 
 #ifndef __TERRALIB_VP_CORE_INTERNAL_AGGREGATION_H
