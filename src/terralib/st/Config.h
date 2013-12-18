@@ -122,7 +122,10 @@
 #ifdef WIN32
 
   #ifdef _MSC_VER 
-    #pragma warning( disable : 4251  4127)
+    #pragma warning( disable : 4127 )
+    #pragma warning( disable : 4251 )
+    #pragma warning( disable : 4275 )
+
   #endif
 
   #ifdef TESTSTATIC

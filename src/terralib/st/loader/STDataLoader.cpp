@@ -314,7 +314,7 @@ void te::st::STDataLoader::initialize()
   if(te::st::STDataLoader::sm_STDataLoaderInitialized == true)
     return;
   te::da::DataSourceManager::getInstance().make(te::st::Globals::sm_STMemoryDataSourceId, "STMEMORY");
-  te::st::STDataLoader::sm_STDataLoaderInitialized == true;
+  te::st::STDataLoader::sm_STDataLoaderInitialized = true;
 }
 
 void te::st::STDataLoader::finalize()
