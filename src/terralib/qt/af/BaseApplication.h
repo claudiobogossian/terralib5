@@ -51,10 +51,16 @@ namespace te
 
   namespace qt
   {
+    namespace widgets
+    {
+      class QueryDialog;
+    }
+
     namespace af
     {
 // Forward declarations
       class ApplicationController;
+      class InterfaceController;
       class LayerExplorer;
       class MapDisplay;
       class Project;
@@ -339,11 +345,15 @@ namespace te
           QToolBar* m_mapToolBar;
 
           // Well known Widgets
+          InterfaceController* m_iController;
           LayerExplorer* m_explorer;  //!< A dockable tree view for the layers in the application project.
           MapDisplay* m_display;
           StyleExplorer* m_styleExplorer;
 
           std::vector<DataSetTableDockWidget*> m_tableDocks;
+
+          //non modal intefaces
+          te::qt::widgets::QueryDialog* m_queryDlg;
 
           // Project
           Project* m_project;
