@@ -22,7 +22,7 @@ void Filter2Query()
   // (2): populacao < '2.000'
   te::fe::PropertyName* pop = new te::fe::PropertyName("population");
   te::fe::Literal* popValue = new te::fe::Literal("2.000");
-  te::fe::BinaryComparisonOp* popLessThan = new te::fe::BinaryComparisonOp(te::fe::Globals::sm_lessThan, pop, popValue);
+  te::fe::BinaryComparisonOp* popLessThan = new te::fe::BinaryComparisonOp(te::fe::Globals::sm_propertyIsLessThan, pop, popValue);
 
   // (3): Joins the expression (1) and (2) using a binary logic operator AND
   te::fe::BinaryLogicOp* andOp = new te::fe::BinaryLogicOp(te::fe::Globals::sm_and, stateEqual, popLessThan);
