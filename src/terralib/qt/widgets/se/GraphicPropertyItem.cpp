@@ -46,7 +46,7 @@ te::qt::widgets::GraphicPropertyItem::GraphicPropertyItem(QtTreePropertyBrowser*
   //size
   m_sizeProperty = te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->addProperty(tr("Size"));
   te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(m_sizeProperty, 16);
-  te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setMinimum(m_sizeProperty, 0);
+  te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setMinimum(m_sizeProperty, 1);
   te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setMaximum(m_sizeProperty, 1024);
   te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setSingleStep(m_sizeProperty, 1);
   te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setDecimals(m_sizeProperty, 2);
