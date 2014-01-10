@@ -59,7 +59,7 @@ int main(int /*argc*/, char** /*argv*/)
     Filter2Query();
 
     // Creates a set of Layers and Styles.
-    DrawStyledLayers();
+    //DrawStyledLayers();
 
     // Creates a set of raster Layers and Styles.
     DrawRasterStyledLayers();
