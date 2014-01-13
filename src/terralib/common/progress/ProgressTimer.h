@@ -50,7 +50,7 @@ namespace te
       public:
 
         /*! \brief It initializes a ProgressTimer. */
-        ProgressTimer(int totalSteps);
+        ProgressTimer(int totalSteps, std::string message);
 
         /*! \brief Destructor. */
         ~ProgressTimer();
@@ -67,6 +67,9 @@ namespace te
 
         /*! \brief Set the total steps. */
         void setTotalSteps(int totalSteps);
+
+        /*! \brief Set the message used by task progress. */
+        void setMessage(std::string message);
 
         /*!
           \brief Function used to get the remaining time to end the process.
@@ -96,6 +99,7 @@ namespace te
         time_t m_startTime;       //!< Initial time.
         double m_remainingTime;   //!< Remaining time in minutes.
         double m_speedTime;       //!< Speed time in seconds.
+        std::string m_message;    //!< Original task message
     };
 
   } // end namespace common
