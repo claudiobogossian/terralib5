@@ -66,7 +66,8 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/connectors/ChartDisplayDockWidget.h
   ${SRCDIR}/connectors/LayoutEditor.h  
-  ${SRCDIR}/connectors/DataSetTableDockWidget.h  
+  ${SRCDIR}/connectors/DataSetTableDockWidget.h
+  ${SRCDIR}/connectors/InterfaceController.h  
   ${SRCDIR}/connectors/LayerExplorer.h
   ${SRCDIR}/connectors/MapDisplay.h  
   ${SRCDIR}/connectors/StyleExplorer.h

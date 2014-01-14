@@ -86,7 +86,7 @@ te::qt::widgets::WhereClauseWidget* te::qt::widgets::QueryDialog::getWidget()
   return m_whereClauseWidget.get();
 }
 
-void te::qt::widgets::QueryDialog::setList(std::list<te::map::AbstractLayerPtr>& layerList)
+void te::qt::widgets::QueryDialog::setLayerList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_whereClauseWidget->setLayerList(layerList);
 
@@ -139,6 +139,63 @@ void te::qt::widgets::QueryDialog::setCurrentLayer(te::map::AbstractLayerPtr lay
 te::da::Where* te::qt::widgets::QueryDialog::getWhere()
 {
   return m_whereClauseWidget->getWhere();
+}
+
+void te::qt::widgets::QueryDialog::layerSelected(te::map::AbstractLayerPtr layer)
+{
+  //setCurrentLayer(layer);
+}
+
+void te::qt::widgets::QueryDialog::layerAdded(te::map::AbstractLayerPtr layer)
+{
+  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
+
+  if(dsLayer)
+    m_ui->m_inputLayerComboBox->addItem(layer->getTitle().c_str(), QVariant::fromValue(layer));
+
+  int curIdx = m_ui->m_inputLayerComboBox->currentIndex();
+
+  QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(curIdx, Qt::UserRole);
+  te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
+
+  if(l == layer)
+  {
+    QString s = m_ui->m_inputLayerComboBox->currentText();
+
+    onInputLayerActivated(s);
+  }
+}
+
+void te::qt::widgets::QueryDialog::layerRemoved(te::map::AbstractLayerPtr layer)
+{
+  int curIdx = m_ui->m_inputLayerComboBox->currentIndex();
+
+  for(int i = 0; i < m_ui->m_inputLayerComboBox->count(); ++i)
+  {
+    QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(i, Qt::UserRole);
+    te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
+
+    if(l == layer)
+    {
+      m_ui->m_inputLayerComboBox->removeItem(i);
+
+      if(i == curIdx)
+      {
+        if(m_ui->m_inputLayerComboBox->count() != 0)
+        {
+          m_ui->m_inputLayerComboBox->setCurrentIndex(0);
+        
+          QString s = m_ui->m_inputLayerComboBox->currentText();
+
+          onInputLayerActivated(s);
+        }
+        else
+        {
+          m_whereClauseWidget->resetInterface();
+        }
+      }
+    }
+  }
 }
 
 void te::qt::widgets::QueryDialog::onInputLayerActivated(QString value)

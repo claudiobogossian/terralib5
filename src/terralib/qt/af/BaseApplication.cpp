@@ -72,6 +72,7 @@
 #include "../widgets/srs/SRSManagerDialog.h"
 #include "connectors/ChartDisplayDockWidget.h"
 #include "connectors/DataSetTableDockWidget.h"
+#include "connectors/InterfaceController.h"
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
 #include "connectors/StyleExplorer.h"
@@ -141,9 +142,11 @@ void CloseAllTables(std::vector<te::qt::af::DataSetTableDockWidget*>& tables)
 te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   : QMainWindow(parent, 0),
     m_mapCursorSize(QSize(20, 20)),
+    m_iController(0),
     m_explorer(0),
     m_display(0),
     m_styleExplorer(0),
+    m_queryDlg(0),
     m_project(0),
     m_progressDockWidget(0),
     m_zoomInDisplaysDockWidget(0),
@@ -193,9 +196,16 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
 
 te::qt::af::BaseApplication::~BaseApplication()
 {
+  if(m_iController)
+  {
+      m_iController->removeInteface(m_queryDlg);
+  }
+
+  delete m_iController;
   delete m_explorer;
   delete m_display;
   delete m_styleExplorer;
+  delete m_queryDlg;
   delete m_project;
   delete m_progressDockWidget;
   delete m_zoomInDisplaysDockWidget;
@@ -1294,11 +1304,22 @@ void te::qt::af::BaseApplication::onLayerPanToSelectedOnMapDisplayTriggered()
 
 void te::qt::af::BaseApplication::onQueryLayerTriggered()
 {
-  te::qt::widgets::QueryDialog* dlg = new te::qt::widgets::QueryDialog(this);
-  dlg->setAttribute(Qt::WA_DeleteOnClose, true);
+  if(!m_queryDlg)
+  {
+    m_queryDlg = new te::qt::widgets::QueryDialog(this);
+
+    connect(m_queryDlg, SIGNAL(highlightLayerObjects(const te::map::AbstractLayerPtr&, te::da::DataSet*, const QColor&)),
+               SLOT(onHighlightLayerObjects(const te::map::AbstractLayerPtr&, te::da::DataSet*, const QColor&)));
+
+    connect(m_queryDlg, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)),
+                 SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
+
+    if(m_iController)
+      m_iController->addInterface(m_queryDlg);
+  }
 
   if(m_project)
-    dlg->setList(m_project->getTopLayers());
+    m_queryDlg->setLayerList(m_project->getTopLayers());
 
   std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedSingleLayerItems();
 
@@ -1307,16 +1328,10 @@ void te::qt::af::BaseApplication::onQueryLayerTriggered()
     te::qt::widgets::AbstractTreeItem* selectedLayerItem = *(selectedLayerItems.begin());
     te::map::AbstractLayerPtr selectedLayer = selectedLayerItem->getLayer();
 
-    dlg->setCurrentLayer(selectedLayer);
+    m_queryDlg->setCurrentLayer(selectedLayer);
   }
 
-  connect(dlg, SIGNAL(highlightLayerObjects(const te::map::AbstractLayerPtr&, te::da::DataSet*, const QColor&)),
-               SLOT(onHighlightLayerObjects(const te::map::AbstractLayerPtr&, te::da::DataSet*, const QColor&)));
-
-  connect(dlg, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)),
-                 SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
-
-  dlg->show();
+  m_queryDlg->show();
 }
 
 void te::qt::af::BaseApplication::onZoomInToggled(bool checked)
@@ -1839,7 +1854,6 @@ void te::qt::af::BaseApplication::makeDialog()
   connect(m_display, SIGNAL(hasNextExtent(bool)), m_mapNextExtent, SLOT(setEnabled(bool)));
 
 // 3. Symbolizer Explorer
-
   te::qt::widgets::StyleDockWidget* stylelDock = new te::qt::widgets::StyleDockWidget(tr("Style Explorer"), this);
   stylelDock->setObjectName("StyleDockWidget");
   QMainWindow::addDockWidget(Qt::RightDockWidgetArea, stylelDock);
@@ -1853,6 +1867,10 @@ void te::qt::af::BaseApplication::makeDialog()
 
   initStatusBar();
 
+// 4. Interface Controller
+  m_iController = new te::qt::af::InterfaceController(this);
+
+
 // 3. Data Table
 //  te::qt::widgets::TabularViewer* view = new te::qt::widgets::TabularViewer(this);
 
@@ -1863,6 +1881,7 @@ void te::qt::af::BaseApplication::makeDialog()
   te::qt::af::ApplicationController::getInstance().addListener(m_explorer);
   te::qt::af::ApplicationController::getInstance().addListener(m_display);
   te::qt::af::ApplicationController::getInstance().addListener(m_styleExplorer);
+  te::qt::af::ApplicationController::getInstance().addListener(m_iController);
   //te::qt::af::ApplicationController::getInstance().addListener(m_viewer);
 
 // initializing connector widgets
