@@ -306,6 +306,22 @@ void te::qt::widgets::WhereClauseWidget::clear()
   m_count = 0;
 }
 
+void te::qt::widgets::WhereClauseWidget::resetInterface()
+{
+  clear();
+
+  m_ds.reset();
+  m_srid = 0;
+
+  m_ui->m_layerComboBox->clear();
+  m_ui->m_restrictValueComboBox->clear();
+  m_ui->m_valuePropertyComboBox->clear();
+  m_ui->m_valueValueComboBox->clear();
+  m_ui->m_geomAttrComboBox->clear();
+  m_ui->m_OperatorComboBox->clear();
+  m_ui->m_SpatialOperatorComboBox->clear();
+}
+
 void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
 {
   std::string restrictValue = "";

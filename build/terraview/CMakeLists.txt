@@ -21,11 +21,6 @@ endif()
 
 find_package(Qt4 ${_Qt4_VERSION} REQUIRED COMPONENTS QtCore QtGui)
 
-#Definitions for windows compiling
-if(WIN32)
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-endif(WIN32)
-
 if(QT4_FOUND)
   include (${QT_USE_FILE})
   add_definitions (${QT_DEFINITIONS})
@@ -77,11 +72,11 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${TE_CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 get_filename_component(TVIEW_OUT_DIR "${TVIEW_CONFIG_FILE}" PATH)
 
-set(TVIEW_TE_LOGO "${ROOT}/resources/images/png/terralib.png" CACHE STRING "Image to be used as TerraLib logo.")
-set(TVIEW_LOGO "${ROOT}/resources/images/png/terraview.png" CACHE STRING "Image to be used as TerraView logo.")
-set(TVIEW_ICO "${ROOT}/resources/images/png/terralib-globe-small.png" CACHE STRING "Image to be used as TerraView Icon.")
-set(TVIEW_LARGE_LOGO "${ROOT}/resources/images/png/terraview-textual.png" CACHE STRING "Image to be used as TerraView large logo.")
-set(TVIEW_SPLASH_SCREEN_PIXMAP "${ROOT}/resources/images/png/terraview-splashscreen.png" CACHE STRING "Image to be used as TerraView Splash Screen")
+set(TVIEW_TE_LOGO "${ROOT}/resources/images/png/terralib.png")
+set(TVIEW_LOGO "${ROOT}/resources/images/png/terraview.png")
+set(TVIEW_ICO "${ROOT}/resources/images/png/terralib-globe-small.png")
+set(TVIEW_LARGE_LOGO "${ROOT}/resources/images/png/terraview-textual.png")
+set(TVIEW_SPLASH_SCREEN_PIXMAP "${ROOT}/resources/images/png/terraview-splashscreen.png")
 
 if(TE_WIN32_GUI)
   set (GUI_TYPE WIN32)
@@ -126,3 +121,16 @@ configure_file (${CMAKE_CURRENT_SOURCE_DIR}/project.xml.in ${CMAKE_BINARY_DIR}/t
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/datasources.xml.in ${CMAKE_BINARY_DIR}/toInstall/datasources.xml)
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/TerraViewConfig.h.in ${CMAKE_BINARY_DIR}/toInstall/TerraViewConfig.h)
   
+file (
+  WRITE
+  ${CMAKE_BINARY_DIR}/qt.conf
+  "[Paths]
+Binaries = .
+Plugins = plugins"
+)
+
+install (
+  FILES ${CMAKE_BINARY_DIR}/qt.conf
+  DESTINATION bin
+  COMPONENT BINARIES
+)

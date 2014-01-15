@@ -28,12 +28,13 @@
 #include "../Translator.h"
 #include "ProgressTimer.h"
 
-te::common::ProgressTimer::ProgressTimer(int totalSteps)
+te::common::ProgressTimer::ProgressTimer(int totalSteps, std::string message)
   : m_totalSteps(totalSteps),
     m_count(0),
     m_startTime(0),
     m_remainingTime(0.0),
-    m_speedTime(0.0)
+    m_speedTime(0.0),
+    m_message(message)
 {
 }
 
@@ -75,6 +76,11 @@ void te::common::ProgressTimer::setTotalSteps(int totalSteps)
   m_totalSteps = totalSteps;
 }
 
+void te::common::ProgressTimer::setMessage(std::string message)
+{
+  m_message = message;
+}
+
 double te::common::ProgressTimer::getRemainingTimeInMin() const
 {
   return m_remainingTime;
@@ -87,15 +93,15 @@ double te::common::ProgressTimer::getSpeedTimeInSec() const
 
 std::string te::common::ProgressTimer::getMessage()
 {
-  std::string strTime = "";
+  std::string strTime = m_message + "\n";
 
   if(m_remainingTime < 1.0)
   {
-    strTime = TR_COMMON("Remaining Time: Less than one minute");
+    strTime += TR_COMMON("Remaining Time: Less than one minute");
   }
   else
   {
-    strTime  = TR_COMMON("Remaining Time: ") + te::common::Convert2String(m_remainingTime, 1);
+    strTime += TR_COMMON("Remaining Time: ") + te::common::Convert2String(m_remainingTime, 1);
     strTime += TR_COMMON(" minute(s) - Speed: ") + te::common::Convert2String(m_speedTime, 2);
     strTime += TR_COMMON(" Steps/Second");
   }

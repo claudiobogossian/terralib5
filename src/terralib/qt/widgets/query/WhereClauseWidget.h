@@ -131,6 +131,8 @@ namespace te
 
           void clear();
 
+          void resetInterface();
+
 
         public slots:
 
