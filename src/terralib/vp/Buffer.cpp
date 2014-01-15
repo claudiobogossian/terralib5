@@ -24,6 +24,7 @@
 */
 
 //Terralib
+#include "../common/Logger.h"
 #include "../common/Translator.h"
 #include "../common/progress/TaskProgress.h"
 #include "../dataaccess/dataset/PrimaryKey.h"
@@ -295,7 +296,9 @@ bool BufferMemory(const std::string& inDataSetName,
 
               if(currentGeom->isValid())
                 outGeom.reset(SetBuffer(currentGeom.get(), bufferPolygonRule, distance, i, auxGeom));
-              
+              else
+                te::common::Logger::logDebug("vp", "Buffer - Invalid geometry found");
+
               if(outGeom.get() && outGeom->isValid())
               {
                 if(outGeom->getGeomTypeId() == te::gm::MultiPolygonType)
@@ -327,6 +330,8 @@ bool BufferMemory(const std::string& inDataSetName,
 
             if(currentGeom->isValid())
               outGeom.reset(SetBuffer(currentGeom.get(), bufferPolygonRule, distance, i, auxGeom));
+            else
+              te::common::Logger::logDebug("vp", "Buffer - Invalid geometry found");
 
             if(outGeom.get() && outGeom->isValid())
             {
