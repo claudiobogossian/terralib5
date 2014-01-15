@@ -7,7 +7,7 @@
   <Organization>INPE</Organization>
   <Name>TerraView</Name>	
   <Title>TerraView</Title>
-  <IconName>${TVIEW_ICON}</IconName>	
+  <IconName>${TVIEW_ICO}</IconName>	
   <UserSettingsFile xlink:href="${TVIEW_OUT_DIR}/user_settings.xml"/>
   <PluginsFile xlink:href="${TVIEW_OUT_DIR}/application_plugins.xml"/>
   <HelpFile xlink:href="${TVIEW_RESOURCE_FILE}"/>
@@ -30,6 +30,6 @@
     <Category>Spatial Operations</Category>
     <Category>Web Services</Category>
   </DefaultPluginsCategory>
-  <AboutDialogLogo xlink:href="${TE_ABOUT_LOGO}"/>
-  <TerraLibLogo xlink:href="${TE_LOGO}"/>
+  <AboutDialogLogo xlink:href="${TVIEW_LARGE_LOGO}"/>
+  <TerraLibLogo xlink:href="${TVIEW_TE_LOGO}"/>
 </Application>

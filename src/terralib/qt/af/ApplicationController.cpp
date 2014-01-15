@@ -282,6 +282,8 @@ void  te::qt::af::ApplicationController::initialize()
   m_appName = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Name"));
   m_appTitle = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Title"));
   m_appIconName = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconName"));
+  m_aboutLogo = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.AboutDialogLogo.<xmlattr>.xlink:href"));
+  m_tLibLogo = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.TerraLibLogo.<xmlattr>.xlink:href"));
 
   qApp->setApplicationName(m_appName);
 
@@ -670,6 +672,16 @@ const QString& te::qt::af::ApplicationController::getAppTitle() const
 const QString& te::qt::af::ApplicationController::getAppIconName() const
 {
   return m_appIconName;
+}
+
+const QString& te::qt::af::ApplicationController::getAboutLogo() const
+{
+  return m_aboutLogo;
+}
+
+const QString& te::qt::af::ApplicationController::getTlibLogo() const
+{
+  return m_tLibLogo;
 }
 
 QString te::qt::af::ApplicationController::getMostRecentProject() const
