@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../common/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
@@ -531,6 +532,8 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
   {
     this->setCursor(Qt::ArrowCursor);
     QMessageBox::information(this, "Buffer", e.what());
+
+    te::common::Logger::logDebug("vp", e.what());
     te::common::ProgressManager::getInstance().removeViewer(id);
     return;
   }

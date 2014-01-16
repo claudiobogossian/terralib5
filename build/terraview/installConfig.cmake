@@ -8,3 +8,6 @@ set (TE_LOGO "${ROOT}/resources/themes/terralib/128x128/terralib_logo_128x128.pn
 set (TE_PLUGINS_DESCRIPTION ${TE_INST_PLUGINS_DESCRIPTION})
 set (TVIEW_SPLASH_SCREEN_PIXMAP "${ROOT}/resources/images/terralib_logo.svg")
 set (TVIEW_CONFIG_FILE "${ROOT}/bin/config.xml")
+set (TVIEW_ICO "${ROOT}/resources/images/png/terralib-globe-small.png")
+set (TVIEW_TE_LOGO "${ROOT}/resources/images/png/terralib.png")
+set (TVIEW_LARGE_LOGO "${ROOT}/resources/images/png/terraview-textual.png")

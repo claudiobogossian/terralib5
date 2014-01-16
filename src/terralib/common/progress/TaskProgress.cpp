@@ -185,7 +185,7 @@ void te::common::TaskProgress::useTimer(bool flag)
     // code restriction, must be fixed
     if(!m_isMultiThread)
     {
-      m_timer = new ProgressTimer(getTotalSteps());
+      m_timer = new ProgressTimer(getTotalSteps(), m_message);
       m_timer->start();
     }
   }

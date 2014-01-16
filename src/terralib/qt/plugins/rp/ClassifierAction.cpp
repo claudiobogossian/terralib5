@@ -37,7 +37,7 @@
 
 te::qt::plugins::rp::ClassifierAction::ClassifierAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
-  createAction(tr("Classifier...").toStdString());
+  createAction(tr("Classifier...").toStdString(), "classifier");
 }
 
 te::qt::plugins::rp::ClassifierAction::~ClassifierAction()
@@ -52,5 +52,9 @@ void te::qt::plugins::rp::ClassifierAction::onActionActivated(bool checked)
 
   dlg.setList( layersList );
 
-  dlg.exec();
+  if(dlg.exec() == QDialog::Accepted)
+  {
+    //add new layer
+    addNewLayer(dlg.getOutputLayer());
+  }
 }

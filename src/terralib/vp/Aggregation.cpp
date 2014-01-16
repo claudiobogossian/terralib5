@@ -24,6 +24,7 @@
 */
 
 //Terralib
+#include "../common/Logger.h"
 #include "../common/Translator.h"
 #include "../common/progress/TaskProgress.h"
 #include "../dataaccess/dataset/DataSet.h"
@@ -188,7 +189,7 @@ bool AggregationQuery(const std::string& inDataset,
   }
   
   te::da::Expression* e_aggCount = new te::da::Count(new te::da::PropertyName(groupingProperties[0]->getName()));
-  te::da::Field* f_aggCount = new te::da::Field(*e_aggCount, "Aggregation_Count");
+  te::da::Field* f_aggCount = new te::da::Field(*e_aggCount, "NUM_OBJ");
   fields->push_back(f_aggCount);
   
   while(itStatSummary != statisticalSummary.end())
@@ -766,6 +767,7 @@ std::map<std::string, double> CalculateDoubleGroupingFunctions( const std::map<t
             numval = items[i]->getFloat(index);
           else if (type == te::dt::DOUBLE_TYPE)
             numval = items[i]->getDouble(index);
+
           values.push_back(numval);
         }
       }

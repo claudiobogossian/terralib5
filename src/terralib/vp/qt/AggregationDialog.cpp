@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../common/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
@@ -170,7 +171,6 @@ std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > te::vp::
 te::dt::Property* te::vp::AggregationDialog::getSelectedPropertyByName(std::string propertyName)
 {
   te::dt::Property* selProperty;
-
   if(propertyName == "")
     return 0;
 
@@ -745,12 +745,15 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
   {
     this->setCursor(Qt::ArrowCursor);
     QMessageBox::information(this, "Aggregation", e.what());
+
+    te::common::Logger::logDebug("vp", e.what());
     te::common::ProgressManager::getInstance().removeViewer(id);
     return;
   }
 
   te::common::ProgressManager::getInstance().removeViewer(id);
   this->setCursor(Qt::ArrowCursor);
+
   accept();
 }
 
@@ -758,3 +761,4 @@ void te::vp::AggregationDialog::onCancelPushButtonClicked()
 {
   reject();
 }
+
