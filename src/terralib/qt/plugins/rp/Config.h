@@ -35,7 +35,7 @@
 
   \brief It defines if the RP Qt Plugin has the classifier operation.
 */
-//#define TE_QT_PLUGIN_RP_HAVE_CLASSIFIER
+#define TE_QT_PLUGIN_RP_HAVE_CLASSIFIER
 
 /*!
   \def TE_QT_PLUGIN_RP_HAVE_CONTRAST

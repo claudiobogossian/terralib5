@@ -49,6 +49,7 @@ namespace te
     namespace widgets
     {
       class MapDisplay;
+      class RasterNavigatorDialog;
 
       /*!
         \class ClassifierWizardPage
@@ -112,9 +113,14 @@ namespace te
 
           void onRemoveToolButtonClicked();
 
+          void showNavigator(bool show);
+
+          void onNavigatorClosed();
+
         private:
 
           std::auto_ptr<Ui::ClassifierWizardPageForm> m_ui;
+          std::auto_ptr<te::qt::widgets::RasterNavigatorDialog> m_navigatorDlg;
 
           std::map<std::string, ClassifierSamples > m_samples;   //!< The map of selected samples
           unsigned int m_countSamples;                           //!< The maximum number of samples inserted.

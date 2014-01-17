@@ -32,6 +32,8 @@
 #include "../../widgets/canvas/Canvas.h"
 #include "../../widgets/canvas/MapDisplay.h"
 #include "ClassifierWizardPage.h"
+#include "RasterNavigatorWidget.h"
+#include "RasterNavigatorDialog.h"
 #include "ui_ClassifierWizardPageForm.h"
 
 // Qt
@@ -60,6 +62,21 @@ te::qt::widgets::ClassifierWizardPage::ClassifierWizardPage(QWidget* parent)
 //connects
   connect(m_ui->m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(onItemChanged(QTableWidgetItem*)));
   connect(m_ui->m_removeToolButton, SIGNAL(clicked()), this, SLOT(onRemoveToolButtonClicked()));
+  connect(m_ui->m_acquireToolButton, SIGNAL(toggled(bool)), this, SLOT(showNavigator(bool)));
+
+  //configure raster navigator
+  m_navigatorDlg.reset(new te::qt::widgets::RasterNavigatorDialog(this, Qt::Tool));
+  m_navigatorDlg->setWindowTitle(tr("Display"));
+  m_navigatorDlg->setMinimumSize(550, 400);
+  //m_navigatorDlg->getWidget()->hideGeomTool(true);
+  m_navigatorDlg->getWidget()->hideInfoTool(true);
+  m_navigatorDlg->getWidget()->hidePickerTool(true);
+
+  //connects
+  connect(m_navigatorDlg.get(), SIGNAL(navigatorClosed()), this, SLOT(onNavigatorClosed()));
+  connect(m_navigatorDlg->getWidget(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(onMapDisplayExtentChanged()));
+  connect(m_navigatorDlg->getWidget(), SIGNAL(geomAquired(te::gm::Polygon*, te::qt::widgets::MapDisplay*)), 
+    this, SLOT(onGeomAquired(te::gm::Polygon*, te::qt::widgets::MapDisplay*)));
 
 
 //configure page
@@ -67,6 +84,7 @@ te::qt::widgets::ClassifierWizardPage::ClassifierWizardPage(QWidget* parent)
   this->setSubTitle(tr("Select the type of classifier and set their specific parameters."));
 
   m_ui->m_removeToolButton->setIcon(QIcon::fromTheme("list-remove"));
+  m_ui->m_acquireToolButton->setIcon(QIcon::fromTheme("wand"));
 }
 
 te::qt::widgets::ClassifierWizardPage::~ClassifierWizardPage()
@@ -86,6 +104,8 @@ te::qt::widgets::ClassifierWizardPage::~ClassifierWizardPage()
 void te::qt::widgets::ClassifierWizardPage::set(te::map::AbstractLayerPtr layer)
 {
   m_layer = layer;
+
+  m_navigatorDlg->set(m_layer);
 
   listBands();
 }
@@ -301,5 +321,18 @@ void te::qt::widgets::ClassifierWizardPage::onRemoveToolButtonClicked()
 
     updateSamples();
   }
+}
+
+void te::qt::widgets::ClassifierWizardPage::showNavigator(bool show)
+{
+  if(show)
+    m_navigatorDlg->show();
+  else
+    m_navigatorDlg->hide();
+}
+
+void te::qt::widgets::ClassifierWizardPage::onNavigatorClosed()
+{
+  m_ui->m_acquireToolButton->setChecked(false);
 }
 
