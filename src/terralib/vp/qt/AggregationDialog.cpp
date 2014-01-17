@@ -609,6 +609,19 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
   }
   
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
+  std::auto_ptr<te::da::DataSet> inDataset;
+
+  if(m_ui->m_onlySelectedCheckBox->isChecked())
+  {
+    std::auto_ptr<const te::da::ObjectIdSet> oidSet(m_selectedLayer->getSelected());
+    if(!oidSet.get())
+    {
+      QMessageBox::information(this, "Aggregation", "Select the layer objects to perform the aggregation operation.");
+      return;
+    }
+    inDataset = dsLayer->getData(oidSet.get());
+  }
+
   if(!dsLayer)
   {
     QMessageBox::information(this, "Aggregation", "Can not execute this operation on this type of layer.");
@@ -680,8 +693,23 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       }
       
       this->setCursor(Qt::WaitCursor);
-      res = te::vp::Aggregation(dsLayer->getDataSetName(),inDataSource.get(), selProperties, outputStatisticalSummary, outputdataset, dsOGR.get());
       
+      if(inDataset.get())
+        res = te::vp::Aggregation(dsLayer->getDataSetName(), 
+                                  inDataSource.get(), 
+                                  selProperties, 
+                                  outputStatisticalSummary, 
+                                  outputdataset, 
+                                  dsOGR.get(),
+                                  inDataset.get());
+      else
+        res = te::vp::Aggregation(dsLayer->getDataSetName(),
+                                  inDataSource.get(), 
+                                  selProperties, 
+                                  outputStatisticalSummary, 
+                                  outputdataset, 
+                                  dsOGR.get());
+
       if (!res)
       {
         this->setCursor(Qt::ArrowCursor);
