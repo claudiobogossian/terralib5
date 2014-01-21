@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<DataSourceList xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
-                xmlns:te_common="http://www.terralib.org/schemas/common"
-                xmlns:te_da="http://www.terralib.org/schemas/dataaccess"
-                xmlns="http://www.terralib.org/schemas/dataaccess"
-                xsd:schemaLocation="http://www.terralib.org/schemas/dataaccess ${TE_SCHEMA_LOCATION}/dataaccess/dataaccess.xsd"
-                version="${TERRALIB_STRING_VERSION}"
-                release="2013-01-01">
-</DataSourceList>

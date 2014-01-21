@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "Exception.h"
-#include "OSSettingsDir.h"
+//#include "OSSettingsDir.h"
 #include "SystemApplicationSettings.h"
 #include "Translator.h"
 #include "UserApplicationSettings.h"
@@ -57,22 +57,22 @@ void te::common::UserApplicationSettings::load()
   }
 
 // second: user data dir
-  const std::string& user_data_dir = OSSettingsDir::getInstance().getUserSettingsPath();
+  //const std::string& user_data_dir = OSSettingsDir::getInstance().getUserSettingsPath();
 
-  if(!user_data_dir.empty())
-  {
-    user_settings_file = user_data_dir;
+  //if(!user_data_dir.empty())
+  //{
+  //  user_settings_file = user_data_dir;
 
-    user_settings_file /= TERRALIB_DIR;
+  //  user_settings_file /= TERRALIB_DIR;
 
-    user_settings_file /= user_conf_file_name;
+  //  user_settings_file /= user_conf_file_name;
 
-    if(boost::filesystem::is_regular_file(user_settings_file))
-    {
-      load(user_settings_file.string());
-      return;
-    }
-  }
+  //  if(boost::filesystem::is_regular_file(user_settings_file))
+  //  {
+  //    load(user_settings_file.string());
+  //    return;
+  //  }
+  //}
 
 // the last chance...
   char* mgis_dir = getenv(TERRALIB_DIR_ENVVAR);
