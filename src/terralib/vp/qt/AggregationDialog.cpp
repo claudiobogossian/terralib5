@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../common/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
@@ -170,7 +171,6 @@ std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > te::vp::
 te::dt::Property* te::vp::AggregationDialog::getSelectedPropertyByName(std::string propertyName)
 {
   te::dt::Property* selProperty;
-
   if(propertyName == "")
     return 0;
 
@@ -609,6 +609,19 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
   }
   
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
+  std::auto_ptr<te::da::DataSet> inDataset;
+
+  if(m_ui->m_onlySelectedCheckBox->isChecked())
+  {
+    std::auto_ptr<const te::da::ObjectIdSet> oidSet(m_selectedLayer->getSelected());
+    if(!oidSet.get())
+    {
+      QMessageBox::information(this, "Aggregation", "Select the layer objects to perform the aggregation operation.");
+      return;
+    }
+    inDataset = dsLayer->getData(oidSet.get());
+  }
+
   if(!dsLayer)
   {
     QMessageBox::information(this, "Aggregation", "Can not execute this operation on this type of layer.");
@@ -680,8 +693,23 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       }
       
       this->setCursor(Qt::WaitCursor);
-      res = te::vp::Aggregation(dsLayer->getDataSetName(),inDataSource.get(), selProperties, outputStatisticalSummary, outputdataset, dsOGR.get());
       
+      if(inDataset.get())
+        res = te::vp::Aggregation(dsLayer->getDataSetName(), 
+                                  inDataSource.get(), 
+                                  selProperties, 
+                                  outputStatisticalSummary, 
+                                  outputdataset, 
+                                  dsOGR.get(),
+                                  inDataset.get());
+      else
+        res = te::vp::Aggregation(dsLayer->getDataSetName(),
+                                  inDataSource.get(), 
+                                  selProperties, 
+                                  outputStatisticalSummary, 
+                                  outputdataset, 
+                                  dsOGR.get());
+
       if (!res)
       {
         this->setCursor(Qt::ArrowCursor);
@@ -745,12 +773,15 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
   {
     this->setCursor(Qt::ArrowCursor);
     QMessageBox::information(this, "Aggregation", e.what());
+
+    te::common::Logger::logDebug("vp", e.what());
     te::common::ProgressManager::getInstance().removeViewer(id);
     return;
   }
 
   te::common::ProgressManager::getInstance().removeViewer(id);
   this->setCursor(Qt::ArrowCursor);
+
   accept();
 }
 
@@ -758,3 +789,4 @@ void te::vp::AggregationDialog::onCancelPushButtonClicked()
 {
   reject();
 }
+

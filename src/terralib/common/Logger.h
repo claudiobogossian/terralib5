@@ -28,6 +28,116 @@
 
 // TerraLib
 #include "Config.h"
+
+
+/*!
+  \def TE_LOG_FATAL
+  
+  \brief Use this tag in order to log a message to a specified logger with the FATAL level.
+
+  \param msg The message to be logged. Example: "Exception raised because of a missing parameter!".
+
+  \note The FATAL level designates very severe error events that will presumably lead the application to abort. 
+*/
+#if (TE_LOGGER_ENABLED && TE_LOGGER_FATAL_ENABLED)
+  #define TE_LOG_FATAL(msg) te::common::Logger::logFatal(TE_LOGGER_DEFAULT_NAME, msg)
+#else
+  #define TE_LOG_FATAL(msg) ((void)0)
+#endif
+
+/*!
+  \def TE_LOG_ASSERT
+  
+  \brief Use this tag in order to log a message to a specified logger with the ASSERT level.
+
+  \param condition An expression (condition). If it is not true, the message will be logged.
+  \param msg       The message to be logged. Example: "Exception raised because of a missing parameter!".
+
+  \note The ASSERT level can be used to check expressions that must be evaluated as true.
+*/
+#if (TE_LOGGER_ENABLED && TE_LOGGER_ASSERT_ENABLED)
+  #define TE_LOG_ASSERT(condition, msg) te::common::Logger::logAssert(TE_LOGGER_DEFAULT_NAME, condition, msg)
+#else
+  #define TE_LOG_ASSERT(condition, msg) ((void)0)
+#endif
+
+/*!
+  \def TE_LOG_ERROR
+  
+  \brief Use this tag in order to log a message to a specified logger with the ERROR level.
+
+  \param msg The message to be logged. Example: "Exception raised because of a missing parameter!".
+
+  \note The ERROR level designates error events that might still allow the application to continue running.
+*/
+#if (TE_LOGGER_ENABLED && TE_LOGGER_ERROR_ENABLED)
+  #define TE_LOG_ERROR(msg) te::common::Logger::logError(TE_LOGGER_DEFAULT_NAME, msg)
+#else
+  #define TE_LOG_ERROR(msg) ((void)0)
+#endif
+
+/*!
+  \def TE_LOG_WARN
+  
+  \brief Use this tag in order to log a message to a specified logger with the WARN level.
+
+  \param msg The message to be logged. Example: "Exception raised because of a missing parameter!".
+
+  \note The WARN level designates potentially harmful situations.
+*/
+#if (TE_LOGGER_ENABLED && TE_LOGGER_WARN_ENABLED)
+  #define TE_LOG_WARN(msg) te::common::Logger::logWarning(TE_LOGGER_DEFAULT_NAME, msg)
+#else
+  #define TE_LOG_WARN(msg) ((void)0)
+#endif
+
+/*!
+  \def TE_LOG_INFO
+  
+  \brief Use this tag in order to log a message to a specified logger with the INFO level.
+
+  \param msg The message to be logged. Example: "Exception raised because of a missing parameter!".
+
+  \note The INFO level designates informational messages that highlight the progress of the application at coarse-grained level.
+*/
+#if (TE_LOGGER_ENABLED && TE_LOGGER_INFO_ENABLED)
+  #define TE_LOG_INFO(msg) te::common::Logger::logInfo(TE_LOGGER_DEFAULT_NAME, msg)
+#else
+  #define TE_LOG_INFO(msg) ((void)0)
+#endif
+
+/*!
+  \def TE_LOG_DEBUG
+  
+  \brief Use this tag in order to log a message to a specified logger with the DEBUG level.
+
+  \param msg  The message to be logged. Example: "Exception raised because of a missing parameter!".
+
+  \note The DEBUG Level designates fine-grained informational events that are most useful to debug an application.
+*/
+#if (TE_LOGGER_ENABLED && TE_LOGGER_DEBUG_ENABLED)
+  #define TE_LOG_DEBUG(msg) te::common::Logger::logDebug(TE_LOGGER_DEFAULT_NAME, msg)
+#else
+  #define TE_LOG_DEBUG(msg) ((void)0)
+#endif
+
+/*!
+  \def TE_LOG_TRACE
+  
+  \brief Use this tag in order to log a message to a specified logger with the TRACE level.
+
+  \param msg The message to be logged. Example: "Exception raised because of a missing parameter!".
+
+  \note The TRACE Level designates finer-grained informational events than the DEBUG.
+*/
+#if (TE_LOGGER_ENABLED && TE_LOGGER_TRACE_ENABLED)
+  #define TE_LOG_TRACE(msg) te::common::Logger::logTrace(TE_LOGGER_DEFAULT_NAME, msg)
+#else
+  #define TE_LOG_TRACE(msg) ((void)0)
+#endif
+
+
+
 #if TE_LOGGER_ENABLED
 
 // TerraLib
