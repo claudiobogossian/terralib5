@@ -24,6 +24,7 @@
 */
 
 // Terralib
+#include "../common/Logger.h"
 #include "../common/Exception.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/Translator.h"
@@ -465,6 +466,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::stri
       }
       else
       {
+        te::common::Logger::logDebug("vp", "Intersection - Invalid geometry found");
         continue;
       }
 

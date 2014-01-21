@@ -27,11 +27,11 @@ set (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS " DeleteRegValue HKLM 'SYSTEM\\\\Curren
 
 list (APPEND CPACK_NSIS_CREATE_ICONS_EXTRA ${CPACK_NSIS_CREATE_ICONS_EXTRA}
 "\nSetOutPath \\\"$INSTDIR\\\\bin\\\""
-"\nCreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\TerraView.lnk\\\" \\\"$INSTDIR\\\\bin\\\\terraview.exe\\\" \\\"\\\" \\\"$INSTDIR\\\\resources\\\\images\\\\ico\\\\terralib-install-icon.ico\\\""
-"\nCreateShortCut \\\"$DESKTOP\\\\TerraView.lnk\\\" \\\"$INSTDIR\\\\bin\\\\terraview.exe\\\" \\\"\\\" \\\"$INSTDIR\\\\resources\\\\images\\\\ico\\\\terralib-install-icon.ico\\\""
+"\nCreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\TerraView-5.0.0-alpha.lnk\\\" \\\"$INSTDIR\\\\bin\\\\terraview.exe\\\" \\\"\\\" \\\"$INSTDIR\\\\resources\\\\images\\\\ico\\\\terralib-globe.ico\\\""
+"\nCreateShortCut \\\"$DESKTOP\\\\TerraView-5.0.0-alpha.lnk\\\" \\\"$INSTDIR\\\\bin\\\\terraview.exe\\\" \\\"\\\" \\\"$INSTDIR\\\\resources\\\\images\\\\ico\\\\terralib-globe.ico\\\""
 )
 
 list (APPEND CPACK_NSIS_DELETE_ICONS_EXTRA ${CPACK_NSIS_DELETE_ICONS_EXTRA}
-"\nDelete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\TerraView.lnk\\\""
-"\nDelete \\\"$DESKTOP\\\\TerraView.lnk\\\""
+"\nDelete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\TerraView-5.0.0-alpha.lnk\\\""
+"\nDelete \\\"$DESKTOP\\\\TerraView-5.0.0-alpha.lnk\\\""
 )

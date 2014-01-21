@@ -25,39 +25,32 @@ bool generatePNG = true;
 
 te::map::DataSetLayer* CreateRasterLayer(const std::string& path)
 {
-  // Connection string to a shape file
+  // Connection string to a raster file
   std::map<std::string, std::string> connInfo;
   connInfo["URI"] = path;
 
   // Creates and connects data source
-  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(G_ID++), "GDAL", connInfo);
+  te::da::DataSourcePtr datasource = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(G_ID++), "GDAL", connInfo);
 
-  // Transactor and catalog
-  std::auto_ptr<te::da::DataSourceTransactor> transactor(dataSource->getTransactor());
-  std::auto_ptr<te::da::DataSourceCatalogLoader> catalogLoader(transactor->getCatalogLoader());
-  catalogLoader->loadCatalog();
-
-  // Gets the number of data set types that belongs to the data source
-  boost::ptr_vector<std::string> datasets;
-  transactor->getCatalogLoader()->getDataSets(datasets);
+  // Get the number of data set types that belongs to the data source
+  std::vector<std::string> datasets = datasource->getDataSetNames();
   assert(!datasets.empty());
 
   // Gets the first dataset
   std::string dataSetName(datasets[0]);
-  std::auto_ptr<te::da::DataSet> ds(transactor->getDataSet(dataSetName));
+  std::auto_ptr<te::da::DataSet> ds(datasource->getDataSet(dataSetName));
 
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> raster(ds->getRaster(rpos));
 
-  // Box
   te::gm::Envelope extent(*raster->getExtent());
 
   // Creates a DataSetLayer
   te::map::DataSetLayer* layer = new te::map::DataSetLayer(te::common::Convert2String(G_ID++), dataSetName);
-  layer->setDataSourceId(dataSource->getId());
+  layer->setDataSourceId(datasource->getId());
   layer->setDataSetName(dataSetName);
   layer->setExtent(extent);
-  layer->setRendererType("DATASET_LAYER_RENDERER");
+  layer->setRendererType("ABSTRACT_LAYER_RENDERER");
 
   return layer;
 }

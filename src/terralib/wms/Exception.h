@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,32 +18,27 @@
  */
 
 /*!
-  \file terralib/rp/SegmenterSegment.h
-  \brief Segmenter segment base class.
- */
+  \file terralib/wms/Exception.h
 
-#ifndef __TERRALIB_RP_INTERNAL_SEGMENTERSEGMENT_H
-#define __TERRALIB_RP_INTERNAL_SEGMENTERSEGMENT_H
+  \brief An exception class for the TerraLib WMS module.
+*/
 
-  #include "Config.h"
-  
-  namespace te
+#ifndef __TERRALIB_WMS_INTERNAL_EXCEPTION_H
+#define __TERRALIB_WMS_INTERNAL_EXCEPTION_H
+
+// TerraLib
+#include "../datatype/Exception.h"
+#include "Config.h"
+
+
+namespace te
+{
+  namespace wms
   {
-    namespace rp
-    {  
-      /*!
-          \class SegmenterSegment
-          \brief Segmenter segment base class.
-      */
-      class TERPEXPORT SegmenterSegment
-      {
-        public :
-          
-          SegmenterSegment();
+    TE_DECLARE_EXCEPTION_CLASS(TEWMSEXPORT, Exception, te::common::Exception)
 
-          virtual ~SegmenterSegment();
-      };
-    } // namespace rp
-  } // namespace te
+  } // end namespace wms
+}   // end namespace te
 
-#endif
+#endif  // __TERRALIB_WMS_INTERNAL_EXCEPTION_H
+

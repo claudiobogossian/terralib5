@@ -268,30 +268,27 @@ te::map::DataSetLayer* CreateDataSetLayer(const std::string& path)
   connInfo["path"] = path;
 
   // Creates and connects data source
-  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(G_ID++), "OGR", connInfo);
+  te::da::DataSourcePtr datasource = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(G_ID++), "OGR", connInfo);
 
-  // Transactor and catalog
-  std::auto_ptr<te::da::DataSourceTransactor> transactor(dataSource->getTransactor());
-  std::auto_ptr<te::da::DataSourceCatalogLoader> catalogLoader(transactor->getCatalogLoader());
-  catalogLoader->loadCatalog();
-
-  // Gets the number of data set types that belongs to the data source
-  boost::ptr_vector<std::string> datasets;
-  transactor->getCatalogLoader()->getDataSets(datasets);
+  // Get the number of data set types that belongs to the data source
+  std::vector<std::string> datasets = datasource->getDataSetNames();
   assert(!datasets.empty());
 
   // Gets the first dataset
-  std::string dataSetName(datasets[0]);
-  std::auto_ptr<te::da::DataSetType> dt(catalogLoader->getDataSetType(dataSetName));
+  std::string datasetName(datasets[0]);
+  std::auto_ptr<te::da::DataSetType> dt(datasource->getDataSetType(datasetName));
   assert(dt->hasGeom());
 
+  te::gm::GeometryProperty* geomProperty = te::da::GetFirstGeomProperty(dt.get());
+  assert(geomProperty);
+
   // Box
-  std::auto_ptr<te::gm::Envelope> extent(catalogLoader->getExtent(te::da::GetFirstGeomProperty(dt.get())));
+  std::auto_ptr<te::gm::Envelope> extent(datasource->getExtent(datasetName, geomProperty->getName()));
 
   // Creates a DataSetLayer
-  te::map::DataSetLayer* layer = new te::map::DataSetLayer(te::common::Convert2String(0), dataSetName);
-  layer->setDataSourceId(dataSource->getId());
-  layer->setDataSetName(dataSetName);
+  te::map::DataSetLayer* layer = new te::map::DataSetLayer(te::common::Convert2String(0), datasetName);
+  layer->setDataSourceId(datasource->getId());
+  layer->setDataSetName(datasetName);
   layer->setExtent(*extent);
   layer->setRendererType("DATASET_LAYER_RENDERER");
 
