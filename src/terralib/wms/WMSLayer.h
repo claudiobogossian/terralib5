@@ -30,6 +30,9 @@
 #include "../maptools/AbstractLayer.h"
 #include "Config.h"
 
+// STL
+#include <memory>
+
 namespace te
 {
   namespace wms
@@ -125,15 +128,17 @@ namespace te
 
       private:
 
-        std::string m_datasetName;         //!< The dataset name where we will retrieve the layer data.
-        std::string m_datasourceId;        //!< The DataSource associated to this layer.
-        std::string m_rendererType;        //!< A pointer to the internal renderer used to paint this layer.
+        std::string m_datasetName;                            //!< The dataset name where we will retrieve the layer data.
+        std::string m_datasourceId;                           //!< The DataSource associated to this layer.
+        std::string m_rendererType;                           //!< A pointer to the internal renderer used to paint this layer.
 
-        std::size_t m_width;               //!< Width that will be requested.
-        std::size_t m_height;              //!< Height that will be requested.
-        std::string m_format;              //!< Format that will be requested.
+        std::size_t m_width;                                  //!< Width that will be requested.
+        std::size_t m_height;                                 //!< Height that will be requested.
+        std::string m_format;                                 //!< Format that will be requested.
 
-        static const std::string sm_type;  //!< A static data member used in the implementation of getType method.
+        mutable std::auto_ptr<te::map::LayerSchema> m_schema; //!< The WMS layer schema.
+
+        static const std::string sm_type;                      //!< A static data member used in the implementation of getType method.
     };
 
     typedef boost::intrusive_ptr<WMSLayer> WMSLayerPtr;
