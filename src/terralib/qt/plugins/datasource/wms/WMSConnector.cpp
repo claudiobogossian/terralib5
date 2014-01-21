@@ -52,7 +52,10 @@ void te::qt::plugins::wms::WMSConnector::connect(std::list<te::da::DataSourceInf
 {
   std::auto_ptr<WMSConnectorDialog> cdialog(new WMSConnectorDialog(static_cast<QWidget*>(parent())));
 
-  cdialog->exec();
+  int retval = cdialog->exec();
+
+  if(retval == QDialog::Rejected)
+    return;
 
   te::da::DataSourceInfoPtr ds = cdialog->getDataSource();
 
@@ -60,27 +63,63 @@ void te::qt::plugins::wms::WMSConnector::connect(std::list<te::da::DataSourceInf
   {
     te::da::DataSourceInfoManager::getInstance().add(ds);
     datasources.push_back(ds);
+
+    te::da::DataSourcePtr driver = cdialog->getDriver();
+    te::da::DataSourceManager::getInstance().insert(driver);
   }
 }
 
 void te::qt::plugins::wms::WMSConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("Not implemented yet!\nWe will provide it soon!"));
+  QMessageBox::information(this,tr("TerraLib Qt Components"), tr("The WMS data access driver not support creation operation."));
 }
 
-void te::qt::plugins::wms::WMSConnector::update(std::list<te::da::DataSourceInfoPtr>& /*datasources*/)
+void te::qt::plugins::wms::WMSConnector::update(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("Not implemented yet!\nWe will provide it soon!"));
+  for(std::list<te::da::DataSourceInfoPtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
+  {
+    if(it->get() == 0)
+      continue;
+
+    std::auto_ptr<WMSConnectorDialog> cdialog(new WMSConnectorDialog(static_cast<QWidget*>(parent())));
+
+    cdialog->set(*it);
+
+    int retval = cdialog->exec();
+
+    if(retval == QDialog::Rejected)
+      continue;
+
+    // Don't forget to replace the driver
+    te::da::DataSourcePtr driver = cdialog->getDriver();
+
+    if(driver.get() != 0)
+    {
+      if(te::da::DataSourceManager::getInstance().find(driver->getId()) != 0)
+        te::da::DataSourceManager::getInstance().detach(driver->getId());
+
+      te::da::DataSourceManager::getInstance().insert(driver);
+    }
+  }
 }
 
-void te::qt::plugins::wms::WMSConnector::remove(std::list<te::da::DataSourceInfoPtr>& /*datasources*/)
+void te::qt::plugins::wms::WMSConnector::remove(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("Not implemented yet!\nWe will provide it soon!"));
-}
+  for(std::list<te::da::DataSourceInfoPtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
+  {
+    if(it->get() == 0)
+      continue;
 
+    // First remove driver
+    te::da::DataSourcePtr rds = te::da::DataSourceManager::getInstance().find((*it)->getId());
+
+    if(rds.get())
+    {
+      te::da::DataSourceManager::getInstance().detach(rds);
+      rds.reset();
+    }
+
+    // Then remove data source
+    te::da::DataSourceInfoManager::getInstance().remove((*it)->getId());
+  }
+}
