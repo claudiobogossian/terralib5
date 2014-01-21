@@ -210,18 +210,18 @@ namespace te
             ( 
               segment1Ptr->m_features[ meansIdx ] 
               * 
-              ((double)segment1Ptr->m_size ) 
+              ((SegmenterRegionGrowingSegment::FeatureType)segment1Ptr->m_size ) 
             ) 
             +
             ( 
               segment2Ptr->m_features[ meansIdx ] 
               *
-              ( (double)segment2Ptr->m_size) 
+              ( (SegmenterRegionGrowingSegment::FeatureType)segment2Ptr->m_size) 
             )
           )
           / 
           (
-            (double)
+            (SegmenterRegionGrowingSegment::FeatureType)
             ( 
               segment1Ptr->m_size 
               + 
@@ -318,12 +318,12 @@ namespace te
         touchingEdgeLength2 );
       
       BAATZ_EL( mergePreviewSegPtr->m_features ) = 
-        BAATZ_EL( segment1Ptr->m_features ) - touchingEdgeLength1 
+        BAATZ_EL( segment1Ptr->m_features ) - ( (SegmenterRegionGrowingSegment::FeatureType)touchingEdgeLength1 )
         +
-        BAATZ_EL( segment2Ptr->m_features ) - touchingEdgeLength2;
+        BAATZ_EL( segment2Ptr->m_features ) - ( (SegmenterRegionGrowingSegment::FeatureType)touchingEdgeLength2 );
       
       BAATZ_CO( mergePreviewSegPtr->m_features ) = (SegmenterRegionGrowingSegment::FeatureType)(
-        ((double)BAATZ_EL( mergePreviewSegPtr->m_features )) /
+        BAATZ_EL( mergePreviewSegPtr->m_features ) /
         std::sqrt( sizeUnionD ) );
         
       BAATZ_SM( mergePreviewSegPtr->m_features ) =
@@ -341,7 +341,7 @@ namespace te
         
       const SegmenterRegionGrowingSegment::FeatureType hCompact = 
         (
-          std::abs(
+          (
             BAATZ_CO( mergePreviewSegPtr->m_features )
             -
             (
@@ -370,7 +370,7 @@ namespace te
       
       const SegmenterRegionGrowingSegment::FeatureType hSmooth =
         (
-          std::abs(
+          (
             BAATZ_SM( mergePreviewSegPtr->m_features )
             -
             (
@@ -462,7 +462,7 @@ namespace te
             *
             (
               (
-                std::abs(
+                (
                   stdDevUnion
                   -
                   (
@@ -492,7 +492,7 @@ namespace te
           );
       }
       
-      return 1.0 - 
+      hColor = 
         (
           ( 
             hColor 
@@ -506,6 +506,21 @@ namespace te
             hForm
           )
         );       
+        
+      return 
+        ( 
+          (SegmenterRegionGrowingSegment::FeatureType)1 
+          - 
+          std::min( 
+            (SegmenterRegionGrowingSegment::FeatureType)1
+            , 
+            std::max( 
+              (SegmenterRegionGrowingSegment::FeatureType)0
+              , 
+              hColor 
+            ) 
+          ) 
+        );
     }
     
     void SegmenterRegionGrowingStrategy::BaatzMerger::mergeFeatures( 
@@ -556,26 +571,42 @@ namespace te
         std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();
       SegmenterRegionGrowingSegment::FeatureType smoothnessMax = -1.0 *
         std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();
+        
+      SegmenterRegionGrowingSegment::FeatureType* featuresPtr = 0;
       
       while( itB != itE )
       {
+        featuresPtr = (*itB)->m_features;
+        
         for( dimIdx = 0; dimIdx < dimsNumber ; ++dimIdx )
         {
-          if( stdDevMin[ dimIdx ] > BAATZ_ST( (*itB)->m_features, m_bandsNumber, dimIdx ) )
-            stdDevMin[ dimIdx ] = BAATZ_ST( (*itB)->m_features, m_bandsNumber, dimIdx );
-          if( stdDevMax[ dimIdx ] < BAATZ_ST( (*itB)->m_features, m_bandsNumber, dimIdx ) )
-            stdDevMax[ dimIdx ] = BAATZ_ST( (*itB)->m_features, m_bandsNumber, dimIdx );          
+          if( stdDevMin[ dimIdx ] > BAATZ_ST( featuresPtr, m_bandsNumber, dimIdx ) )
+          {
+            stdDevMin[ dimIdx ] = BAATZ_ST( featuresPtr, m_bandsNumber, dimIdx );
+          }
+          if( stdDevMax[ dimIdx ] < BAATZ_ST( featuresPtr, m_bandsNumber, dimIdx ) )
+          {
+            stdDevMax[ dimIdx ] = BAATZ_ST( featuresPtr, m_bandsNumber, dimIdx );          
+          }
         }
         
-        if( compactnessMin > BAATZ_CO( (*itB)->m_features ) )
-          compactnessMin = BAATZ_CO( (*itB)->m_features );        
-        if( compactnessMax < BAATZ_CO( (*itB)->m_features ) )
-          compactnessMax = BAATZ_CO( (*itB)->m_features );        
+        if( compactnessMin > BAATZ_CO( featuresPtr ) )
+        {
+          compactnessMin = BAATZ_CO( featuresPtr );        
+        }
+        if( compactnessMax < BAATZ_CO( featuresPtr ) )
+        {
+          compactnessMax = BAATZ_CO( featuresPtr );        
+        }
         
-        if( smoothnessMin > BAATZ_SM( (*itB)->m_features ) )
-          smoothnessMin = BAATZ_SM( (*itB)->m_features );
-        if( smoothnessMax < BAATZ_SM( (*itB)->m_features ) )
-          smoothnessMax = BAATZ_SM( (*itB)->m_features );
+        if( smoothnessMin > BAATZ_SM( featuresPtr ) )
+        {
+          smoothnessMin = BAATZ_SM( featuresPtr );
+        }
+        if( smoothnessMax < BAATZ_SM( featuresPtr ) )
+        {
+          smoothnessMax = BAATZ_SM( featuresPtr );
+        }
         
         ++itB;
       }
