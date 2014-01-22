@@ -28,6 +28,7 @@
 #include "TerraViewConfig.h"
 
 // TerraLib
+#include <terralib/qt/af/Utils.h>
 #include <terralib/qt/af/SplashScreenManager.h>
 
 // STL
@@ -36,6 +37,7 @@
 
 // Qt
 #include <QtCore/QResource>
+#include <QtCore/QFileInfo>
 #include <QtGui/QApplication>
 #include <QtGui/QSplashScreen>
 #include <QtGui/QMessageBox>
@@ -79,9 +81,16 @@ int main(int argc, char** argv)
 
     TerraView tview;
 
-    std::string appPath = qApp->applicationDirPath().toStdString();
+    QString cFile = te::qt::af::GetConfigFileName();
+    QFileInfo info(cFile);
 
-    tview.init(appPath+"/config.xml");
+    if(cFile.isEmpty() || !info.exists())
+    {
+      cFile = te::qt::af::GetDefaultConfigFileOutputDir() + "/config.xml";
+      te::qt::af::WriteConfigFile(cFile, "TerraView", "TerraView");
+    }
+
+    tview.init(cFile.toStdString());
 
     splash->finish(&tview);
 

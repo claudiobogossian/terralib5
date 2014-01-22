@@ -28,7 +28,7 @@
 #include <boost/foreach.hpp>
 
 // TerraLib
-#include "../../common/OSSettingsDir.h"
+//#include "../../common/OSSettingsDir.h"
 #include "../../common/SystemApplicationSettings.h"
 #include "../../common/Translator.h"
 #include "../../common/UserApplicationSettings.h"
