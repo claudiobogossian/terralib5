@@ -82,6 +82,9 @@ namespace te
         */
         void removeROI(std::string label);
 
+        /*! \brief Get the roi set map. */
+        std::map<std::string, te::cl::ROI*>& getROISet();
+
          /*! 
           \brief Export the ROISet to a shapefile
 

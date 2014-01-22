@@ -34,6 +34,7 @@
 #include "ui_ROIManagerWidgetForm.h"
 
 // Qt
+#include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 #include <QtGui/QGridLayout>
 
@@ -43,6 +44,8 @@
 // Boost
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
+
+Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
 #define ROI_TREE_ITEM           0
 #define ROI_POLYGON_TREE_ITEM   1
@@ -80,8 +83,11 @@ te::qt::widgets::ROIManagerWidget::ROIManagerWidget(QWidget* parent, Qt::WindowF
   m_navigator->hidePickerTool(true);
 
   //connects
+  connect(m_ui->m_openLayerROIToolButton, SIGNAL(clicked()), this, SLOT(onOpenLayerROIToolButtonClicked()));
   connect(m_ui->m_addROIToolButton, SIGNAL(clicked()), this, SLOT(onAddROIToolButtonClicked()));
   connect(m_ui->m_removeROIToolButton, SIGNAL(clicked()), this, SLOT(onRemoveROIToolButtonClicked()));
+  connect(m_ui->m_fileDialogToolButton, SIGNAL(clicked()), this, SLOT(onFileDialogToolButtonClicked()));
+  connect(m_ui->m_exportROISetToolButton, SIGNAL(clicked()), this, SLOT(onExportROISetToolButtonClicked()));
   connect(m_navigator.get(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(onMapDisplayExtentChanged()));
   connect(m_navigator.get(), SIGNAL(geomAquired(te::gm::Polygon*)), this, SLOT(onGeomAquired(te::gm::Polygon*)));
 }
@@ -95,8 +101,29 @@ Ui::ROIManagerWidgetForm* te::qt::widgets::ROIManagerWidget::getForm() const
   return m_ui.get();
 }
 
+void te::qt::widgets::ROIManagerWidget::setList(std::list<te::map::AbstractLayerPtr>& layerList)
+{
+  m_ui->m_layerROIComboBox->clear();
+
+  std::list<te::map::AbstractLayerPtr>::iterator it = layerList.begin();
+
+  while(it != layerList.end())
+  {
+    te::map::AbstractLayerPtr l = *it;
+
+    std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
+
+    if(dsType->hasGeom())
+      m_ui->m_layerROIComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
+
+    ++it;
+  }
+}
+
 void te::qt::widgets::ROIManagerWidget::set(te::map::AbstractLayerPtr layer)
 {
+  m_layer = layer;
+
   m_navigator->set(layer);
 }
 
@@ -107,6 +134,9 @@ te::cl::ROISet* te::qt::widgets::ROIManagerWidget::getROISet()
 
 void te::qt::widgets::ROIManagerWidget::drawROISet()
 {
+  if(!m_rs)
+    return;
+
   te::qt::widgets::MapDisplay* mapDisplay = m_navigator->getDisplay();
 
   mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0));
@@ -118,25 +148,99 @@ void te::qt::widgets::ROIManagerWidget::drawROISet()
 
   canvasInstance.setPolygonContourColor(te::color::RGBAColor(0,0,0, TE_OPAQUE));
   canvasInstance.setPolygonContourWidth(1);
-  //canvasInstance.setPolygonFillColor(te::color::RGBAColor(255,0,0, TE_OPAQUE));
 
-  //std::map<std::string, ClassifierSamples>::iterator it = m_samples.begin();
+  std::map<std::string, te::cl::ROI*> roiMap = m_rs->getROISet();
+  std::map<std::string, te::cl::ROI*>::iterator it = roiMap.begin();
 
-  //while(it != m_samples.end())
-  //{
-  //  te::gm::Polygon* poly = it->second.m_poly;
+  while(it != roiMap.end())
+  {
+    te::cl::ROI* roi = it->second;
 
-  //  canvasInstance.draw(poly);
+    std::map<std::string, te::gm::Polygon*> polyMap = roi->getPolygons();
+    std::map<std::string, te::gm::Polygon*>::iterator itPoly = polyMap.begin();
 
-  //  ++it;
-  //}
+    te::color::RGBAColor rgba(roi->getColor());
+
+    canvasInstance.setPolygonFillColor(rgba);
+
+    while(itPoly != polyMap.end())
+    {
+      te::gm::Polygon* poly = itPoly->second;
+
+      canvasInstance.draw(poly);
+
+      ++itPoly;
+    }
+    ++it;
+  }
 
   mapDisplay->repaint();
 }
 
-void te::qt::widgets::ROIManagerWidget::updateSamples()
+void te::qt::widgets::ROIManagerWidget::onOpenLayerROIToolButtonClicked()
 {
+  int idxLayer = m_ui->m_layerROIComboBox->currentIndex();
+  QVariant varLayer = m_ui->m_layerROIComboBox->itemData(idxLayer, Qt::UserRole);
+  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
 
+  std::auto_ptr<te::da::DataSet> ds = layer->getData();
+
+  if(m_rs)
+    delete m_rs;
+
+  m_ui->m_roiSetTreeWidget->clear();
+
+  m_sampleCounter = 0;
+
+  m_rs = te::cl::ROISet::createROISet(ds);
+
+  std::map<std::string, te::cl::ROI*> roiMap = m_rs->getROISet();
+  std::map<std::string, te::cl::ROI*>::iterator it = roiMap.begin();
+
+  while(it != roiMap.end())
+  {
+    te::cl::ROI* roi = it->second;
+
+    std::map<std::string, te::gm::Polygon*> polyMap = roi->getPolygons();
+    std::map<std::string, te::gm::Polygon*>::iterator itPoly = polyMap.begin();
+
+    //update roi set tree
+    QPixmap pix(16,16);
+    pix.fill(QColor(roi->getColor().c_str()));
+    QIcon icon(pix);
+
+    QTreeWidgetItem* item = new QTreeWidgetItem(m_ui->m_roiSetTreeWidget, ROI_TREE_ITEM);
+    item->setText(0, roi->getLabel().c_str());
+    item->setIcon(0, icon);
+
+    m_ui->m_roiSetTreeWidget->addTopLevelItem(item);
+
+    while(itPoly != polyMap.end())
+    {
+      te::gm::Polygon* poly = itPoly->second;
+
+      //update tree
+      m_sampleCounter ++;
+
+      QString sampleCounter;
+      sampleCounter.setNum(m_sampleCounter);
+      QString sampleName(tr("Sample"));
+      QString fullName;
+      fullName.append(sampleName);
+      fullName.append(" - ");
+      fullName.append(sampleCounter);
+
+      QTreeWidgetItem* subItem = new QTreeWidgetItem(item, ROI_POLYGON_TREE_ITEM);
+      subItem->setText(0, fullName);
+      subItem->setData(0, Qt::UserRole, QVariant(itPoly->first.c_str()));
+      subItem->setIcon(0, QIcon::fromTheme("file-vector"));
+      item->addChild(subItem);
+      item->setExpanded(true);
+
+      ++itPoly;
+    }
+    ++it;
+  }
 
   drawROISet();
 }
@@ -209,6 +313,52 @@ void te::qt::widgets::ROIManagerWidget::onRemoveROIToolButtonClicked()
 
     parent->removeChild(item);
   }
+
+  drawROISet();
+}
+
+void te::qt::widgets::ROIManagerWidget::onFileDialogToolButtonClicked()
+{
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save ROI Set to File"), "", tr("Shape Files (*.shp *.SHP)"));
+
+  if (fileName.isEmpty())
+    return;
+
+  QFileInfo file(fileName);
+
+  if(file.suffix().isEmpty())
+    fileName.append(".shp");
+  
+  m_ui->m_roiSetNameLineEdit->setText(fileName);
+}
+
+void te::qt::widgets::ROIManagerWidget::onExportROISetToolButtonClicked()
+{
+  if(m_ui->m_roiSetNameLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("File name not defined."));
+    return;
+  }
+  std::string fileName = m_ui->m_roiSetNameLineEdit->text().toStdString();
+
+  if(m_rs->getROISet().empty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("ROI Set is empty."));
+    return;
+  }
+  int srid = m_layer->getSRID();
+
+  try
+  {
+    m_rs->exportToFile(fileName, srid);
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Error exporting ROI Set."));
+    return;
+  }
+
+  QMessageBox::warning(this, tr("Warning"), tr("ROI Set exported successfully."));
 }
 
 void te::qt::widgets::ROIManagerWidget::onMapDisplayExtentChanged()
@@ -264,6 +414,6 @@ void te::qt::widgets::ROIManagerWidget::onGeomAquired(te::gm::Polygon* poly)
     item->setExpanded(true);
   }
   
-  updateSamples();
+  drawROISet();
 }
 

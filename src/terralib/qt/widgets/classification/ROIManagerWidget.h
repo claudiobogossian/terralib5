@@ -71,6 +71,16 @@ namespace te
 
         public:
 
+          /*!
+            \brief This method is used to set the list of layers
+            
+          */
+          void setList(std::list<te::map::AbstractLayerPtr>& layerList);
+          
+          /*!
+            \brief This method is used to set current layer
+            
+          */
           void set(te::map::AbstractLayerPtr layer);
 
           te::cl::ROISet* getROISet();
@@ -79,13 +89,17 @@ namespace te
           
           void drawROISet();
 
-          void updateSamples();
-
         public slots:
+
+          void onOpenLayerROIToolButtonClicked();
 
           void onAddROIToolButtonClicked();
 
           void onRemoveROIToolButtonClicked();
+
+          void onFileDialogToolButtonClicked();
+
+          void onExportROISetToolButtonClicked();
 
           void onMapDisplayExtentChanged();
 
@@ -98,6 +112,8 @@ namespace te
          std::auto_ptr<te::qt::widgets::RasterNavigatorWidget> m_navigator;
 
          ColorPickerToolButton* m_colorPicker;
+
+         te::map::AbstractLayerPtr m_layer;
 
          te::cl::ROISet* m_rs;
 

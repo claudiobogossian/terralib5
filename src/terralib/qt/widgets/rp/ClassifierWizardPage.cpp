@@ -94,6 +94,8 @@ void te::qt::widgets::ClassifierWizardPage::set(te::map::AbstractLayerPtr layer)
 
 void te::qt::widgets::ClassifierWizardPage::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
+  m_roiMngDlg->setList(layerList);
+
   m_ui->m_isosegLayersComboBox->clear();
 
   std::list<te::map::AbstractLayerPtr>::iterator it = layerList.begin();

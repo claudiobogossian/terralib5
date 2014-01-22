@@ -66,6 +66,16 @@ namespace te
 
           te::qt::widgets::ROIManagerWidget* getWidget();
 
+          /*!
+            \brief This method is used to set the list of layers
+            
+          */
+          void setList(std::list<te::map::AbstractLayerPtr>& layerList);
+          
+          /*!
+            \brief This method is used to set current layer
+            
+          */
           void set(te::map::AbstractLayerPtr layer);
 
         protected:
