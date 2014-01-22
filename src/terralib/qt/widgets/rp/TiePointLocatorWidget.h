@@ -185,9 +185,9 @@ namespace te
 
           void onAdjMapDisplayExtentChanged();
 
-          void onRefPointPicked(double x, double y, te::qt::widgets::MapDisplay* map);
+          void onRefPointPicked(double x, double y);
 
-          void onAdjPointPicked(double x, double y, te::qt::widgets::MapDisplay* map);
+          void onAdjPointPicked(double x, double y);
 
           void onTiePointsUpdated();
 

@@ -93,7 +93,7 @@ void te::wms::WMSLayerRenderer::draw(WMSLayer* layer, te::map::Canvas* canvas, c
   te::gm::Envelope ibbox = reprojectedBBOX.intersection(layer->getExtent());
   assert(ibbox.isValid());
 
-   // Gets the layer schema
+  // Get the layer schema
   std::auto_ptr<te::map::LayerSchema> schema(layer->getSchema());
   assert(schema.get());
 

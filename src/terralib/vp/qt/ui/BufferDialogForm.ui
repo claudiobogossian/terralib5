@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>496</width>
+    <width>549</width>
     <height>650</height>
    </rect>
   </property>
@@ -89,7 +89,7 @@
             <item row="0" column="0">
              <widget class="QCheckBox" name="m_onlySelectedCheckBox">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="text">
                <string>Only Selected</string>

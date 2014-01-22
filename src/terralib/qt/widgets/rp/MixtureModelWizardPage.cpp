@@ -92,8 +92,7 @@ te::qt::widgets::MixtureModelWizardPage::MixtureModelWizardPage(QWidget* parent)
   //connects
   connect(m_navigatorDlg.get(), SIGNAL(navigatorClosed()), this, SLOT(onNavigatorClosed()));
   connect(m_navigatorDlg->getWidget(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(onMapDisplayExtentChanged()));
-  connect(m_navigatorDlg->getWidget(), SIGNAL(pointPicked(double, double, te::qt::widgets::MapDisplay*)), 
-    this, SLOT(onPointPicked(double, double, te::qt::widgets::MapDisplay*)));
+  connect(m_navigatorDlg->getWidget(), SIGNAL(pointPicked(double, double)), this, SLOT(onPointPicked(double, double)));
 
 // configure page
   this->setTitle(tr("Mixture Model"));
@@ -232,11 +231,9 @@ void te::qt::widgets::MixtureModelWizardPage::onMapDisplayExtentChanged()
     drawMarks();
 }
 
-void te::qt::widgets::MixtureModelWizardPage::onPointPicked(double x, double y, te::qt::widgets::MapDisplay* map)
+void te::qt::widgets::MixtureModelWizardPage::onPointPicked(double x, double y)
 {
   assert(m_layer.get());
-
-  m_display = map;
 
   //get input raster
   std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
@@ -410,13 +407,13 @@ void te::qt::widgets::MixtureModelWizardPage::listBands()
 
 void te::qt::widgets::MixtureModelWizardPage::drawMarks()
 {
-  assert(m_display);
+  te::qt::widgets::MapDisplay* mapDisplay = m_navigatorDlg->getWidget()->getDisplay();
 
-  m_display->getDraftPixmap()->fill(QColor(0, 0, 0, 0));
+  mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0));
 
-  const te::gm::Envelope& mapExt = m_display->getExtent();
+  const te::gm::Envelope& mapExt = mapDisplay->getExtent();
 
-  te::qt::widgets::Canvas canvasInstance(m_display->getDraftPixmap());
+  te::qt::widgets::Canvas canvasInstance(mapDisplay->getDraftPixmap());
   canvasInstance.setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
 
   canvasInstance.setPointPattern(m_rgbaMark, PATTERN_SIZE, PATTERN_SIZE);
@@ -436,7 +433,7 @@ void te::qt::widgets::MixtureModelWizardPage::drawMarks()
     ++it;
   }
 
-  m_display->repaint();
+  mapDisplay->repaint();
 }
 
 void te::qt::widgets::MixtureModelWizardPage::updateComponents()

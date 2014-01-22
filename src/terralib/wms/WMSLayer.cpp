@@ -35,26 +35,25 @@
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 
-// STL
-#include <memory>
-
 const std::string te::wms::WMSLayer::sm_type("WMSLAYER");
 
 te::wms::WMSLayer::WMSLayer(te::map::AbstractLayer* parent)
   : te::map::AbstractLayer(parent),
+    m_rendererType("WMS_LAYER_RENDERER"),
     m_width(boost::lexical_cast<std::size_t>(TE_WMS_DEFAULT_WIDTH)),
     m_height(boost::lexical_cast<std::size_t>(TE_WMS_DEFAULT_HEIGHT)),
     m_format(TE_WMS_DEFAULT_IMAGE_FORMAT),
-    m_rendererType("WMS_LAYER_RENDERER")
+    m_schema(0)
 {
 }
 
 te::wms::WMSLayer::WMSLayer(const std::string& id, te::map::AbstractLayer* parent)
   : te::map::AbstractLayer(id, parent),
+    m_rendererType("WMS_LAYER_RENDERER"),
     m_width(boost::lexical_cast<std::size_t>(TE_WMS_DEFAULT_WIDTH)),
     m_height(boost::lexical_cast<std::size_t>(TE_WMS_DEFAULT_HEIGHT)),
     m_format(TE_WMS_DEFAULT_IMAGE_FORMAT),
-    m_rendererType("WMS_LAYER_RENDERER")
+    m_schema(0)
 {
 }
 
@@ -62,10 +61,11 @@ te::wms::WMSLayer::WMSLayer(const std::string& id,
                             const std::string& title,
                             te::map::AbstractLayer* parent)
   : te::map::AbstractLayer(id, title, parent),
+    m_rendererType("WMS_LAYER_RENDERER"),
     m_width(boost::lexical_cast<std::size_t>(TE_WMS_DEFAULT_WIDTH)),
     m_height(boost::lexical_cast<std::size_t>(TE_WMS_DEFAULT_HEIGHT)),
     m_format(TE_WMS_DEFAULT_IMAGE_FORMAT),
-    m_rendererType("WMS_LAYER_RENDERER")
+    m_schema(0)
 {
 }
 
@@ -75,11 +75,16 @@ te::wms::WMSLayer::~WMSLayer()
 
 std::auto_ptr<te::map::LayerSchema> te::wms::WMSLayer::getSchema() const
 {
+  if(m_schema.get())
+    return std::auto_ptr<te::map::LayerSchema>(static_cast<te::map::LayerSchema*>(m_schema->clone()));
+
   assert(!m_datasetName.empty());
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
-  return ds->getDataSetType(m_datasetName);
+  m_schema = ds->getDataSetType(m_datasetName);
+
+  return std::auto_ptr<te::map::LayerSchema>(static_cast<te::map::LayerSchema*>(m_schema->clone()));
 }
 
 std::auto_ptr<te::da::DataSet> te::wms::WMSLayer::getData(te::common::TraverseType travType,

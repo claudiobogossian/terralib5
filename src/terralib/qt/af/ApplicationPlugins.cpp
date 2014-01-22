@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../common/OSSettingsDir.h"
+//#include "../../common/OSSettingsDir.h"
 #include "../../common/SystemApplicationSettings.h"
 #include "../../common/Translator.h"
 #include "ApplicationPlugins.h"
@@ -55,40 +55,40 @@ void te::qt::af::ApplicationPlugins::load()
   }
 
 // second: system application data dir
-  const std::string& system_settings_path = te::common::OSSettingsDir::getInstance().getSystemSettingsPath();
+  //const std::string& system_settings_path = te::common::OSSettingsDir::getInstance().getSystemSettingsPath();
 
-  if(!system_settings_path.empty())
-  {
-    plugins_conf_file = system_settings_path;
+  //if(!system_settings_path.empty())
+  //{
+  //  plugins_conf_file = system_settings_path;
 
-    plugins_conf_file /= TERRALIB_DIR;
+  //  plugins_conf_file /= TERRALIB_DIR;
 
-    plugins_conf_file /= plugins_conf_file_name;
+  //  plugins_conf_file /= plugins_conf_file_name;
 
-    if(boost::filesystem::is_regular_file(plugins_conf_file))
-    {
-      load(plugins_conf_file.string());
-      return;
-    }
-  }
+  //  if(boost::filesystem::is_regular_file(plugins_conf_file))
+  //  {
+  //    load(plugins_conf_file.string());
+  //    return;
+  //  }
+  //}
 
 // third: user dir
-  const std::string& user_settings_path = te::common::OSSettingsDir::getInstance().getUserSettingsPath();
+  //const std::string& user_settings_path = te::common::OSSettingsDir::getInstance().getUserSettingsPath();
 
-  if(!user_settings_path.empty())
-  {
-    plugins_conf_file = user_settings_path;
+  //if(!user_settings_path.empty())
+  //{
+  //  plugins_conf_file = user_settings_path;
 
-    plugins_conf_file /= TERRALIB_DIR;
+  //  plugins_conf_file /= TERRALIB_DIR;
 
-    plugins_conf_file /= plugins_conf_file_name;
+  //  plugins_conf_file /= plugins_conf_file_name;
 
-    if(boost::filesystem::is_regular_file(plugins_conf_file))
-    {
-      load(plugins_conf_file.string());
-      return;
-    }
-  }
+  //  if(boost::filesystem::is_regular_file(plugins_conf_file))
+  //  {
+  //    load(plugins_conf_file.string());
+  //    return;
+  //  }
+  //}
 
 // the last chance...
   char* mgis_dir = getenv(TERRALIB_DIR_ENVVAR);

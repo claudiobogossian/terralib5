@@ -91,6 +91,8 @@ bool te::qt::widgets::ClassifierWizard::validateCurrentPage()
 void te::qt::widgets::ClassifierWizard::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_layerSearchPage->getSearchWidget()->setList(layerList);
+
+  m_classifierPage->setList(layerList);
 }
 
 te::map::AbstractLayerPtr te::qt::widgets::ClassifierWizard::getOutputLayer()

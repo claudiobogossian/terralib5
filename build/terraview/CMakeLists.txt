@@ -96,11 +96,11 @@ message ("Generating configurations files in directory \"${CMAKE_RUNTIME_OUTPUT_
 set (TE_DEFAULT_PROJECT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/default_project.xml")  
 set (TE_DEFAULT_DATASOURCES_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/datasources.xml") 
  
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/config.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config.xml)
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/user_settings.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/user_settings.xml)
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/application_plugins.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/application_plugins.xml)
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/project.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/default_project.xml)
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/datasources.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/datasources.xml)
+#configure_file (${CMAKE_CURRENT_SOURCE_DIR}/config.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config.xml)
+#configure_file (${CMAKE_CURRENT_SOURCE_DIR}/user_settings.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/user_settings.xml)
+#configure_file (${CMAKE_CURRENT_SOURCE_DIR}/application_plugins.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/application_plugins.xml)
+#configure_file (${CMAKE_CURRENT_SOURCE_DIR}/project.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/default_project.xml)
+#configure_file (${CMAKE_CURRENT_SOURCE_DIR}/datasources.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/datasources.xml)
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/TerraViewConfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/TerraViewConfig.h)
 
 install(
@@ -114,11 +114,11 @@ install(
 include (${CMAKE_CURRENT_SOURCE_DIR}/installConfig.cmake)
 set (TE_DEFAULT_PROJECT "./default_project.xml")  
 set (TE_DEFAULT_DATASOURCES_FILE "./datasources.xml") 
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/config.xml.in ${CMAKE_BINARY_DIR}/toInstall/config.xml)
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/user_settings.xml.in ${CMAKE_BINARY_DIR}/toInstall/user_settings.xml)
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/application_plugins.xml.in ${CMAKE_BINARY_DIR}/toInstall/application_plugins.xml)
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/project.xml.in ${CMAKE_BINARY_DIR}/toInstall/default_project.xml)
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/datasources.xml.in ${CMAKE_BINARY_DIR}/toInstall/datasources.xml)
+#configure_file (${CMAKE_CURRENT_SOURCE_DIR}/config.xml.in ${CMAKE_BINARY_DIR}/toInstall/config.xml)
+#configure_file (${CMAKE_CURRENT_SOURCE_DIR}/user_settings.xml.in ${CMAKE_BINARY_DIR}/toInstall/user_settings.xml)
+#configure_file (${CMAKE_CURRENT_SOURCE_DIR}/application_plugins.xml.in ${CMAKE_BINARY_DIR}/toInstall/application_plugins.xml)
+#configure_file (${CMAKE_CURRENT_SOURCE_DIR}/project.xml.in ${CMAKE_BINARY_DIR}/toInstall/default_project.xml)
+#configure_file (${CMAKE_CURRENT_SOURCE_DIR}/datasources.xml.in ${CMAKE_BINARY_DIR}/toInstall/datasources.xml)
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/TerraViewConfig.h.in ${CMAKE_BINARY_DIR}/toInstall/TerraViewConfig.h)
   
 file (

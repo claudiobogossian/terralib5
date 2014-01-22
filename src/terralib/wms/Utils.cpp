@@ -178,6 +178,16 @@ std::string te::wms::BuildGetMapRequest(const std::string& serverUrl,
     request += "<SizeY>" + height + "</SizeY>";
   request += "</DataWindow>";
 
+  // BlockSize
+  request += "<BlockSizeX>" + width + "</BlockSizeX>";
+  request += "<BlockSizeY>" + height + "</BlockSizeY>";
+
+  // Cache (It is a test!)
+  request += "<Cache>";
+    request += "<Path>./gdalwmscache</Path>";
+    request += "<Depth>2</Depth>";
+  request += "</Cache>";
+
   request += "</GDAL_WMS>";
 
   return request;
