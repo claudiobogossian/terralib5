@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,32 +18,27 @@
  */
 
 /*!
-  \file terralib/rp/SegmenterSegment.h
-  \brief Segmenter segment base class.
- */
+  \file terralib/wms/WMSLayerRendererFactory.cpp
 
-#ifndef __TERRALIB_RP_INTERNAL_SEGMENTERSEGMENT_H
-#define __TERRALIB_RP_INTERNAL_SEGMENTERSEGMENT_H
+  \brief This is the concrete factory for renderers of a WMSLayer.
+*/
 
-  #include "Config.h"
-  
-  namespace te
-  {
-    namespace rp
-    {  
-      /*!
-          \class SegmenterSegment
-          \brief Segmenter segment base class.
-      */
-      class TERPEXPORT SegmenterSegment
-      {
-        public :
-          
-          SegmenterSegment();
+// TerraLib
+#include "WMSLayerRenderer.h"
+#include "WMSLayerRendererFactory.h"
 
-          virtual ~SegmenterSegment();
-      };
-    } // namespace rp
-  } // namespace te
+te::wms::WMSLayerRendererFactory te::wms::WMSLayerRendererFactory::sm_factory;
 
-#endif
+te::wms::WMSLayerRendererFactory::~WMSLayerRendererFactory()
+{
+}
+
+te::map::AbstractRenderer* te::wms::WMSLayerRendererFactory::build()
+{
+  return new WMSLayerRenderer;
+}
+
+te::wms::WMSLayerRendererFactory::WMSLayerRendererFactory()
+  : te::map::RendererFactory("WMS_LAYER_RENDERER")
+{
+}

@@ -27,16 +27,16 @@ if(WIN32)
                 	-DTEQTWIDGETSDLL
 					-DBOOST_ALL_NO_LIB
 		            -DUNICODE
-		            -DQT_LARGEFILE_SUPPORT
-		            -DQT_DLL
-		            -DQT_GUI_LIB
-		            -DQT_CORE_LIB
-		            -DQT_HAVE_MMX
-		            -DQT_HAVE_3DNOW
-		            -DQT_HAVE_SSE
-		            -DQT_HAVE_MMXEXT
-		            -DQT_HAVE_SSE2
-		            -DQT_THREAD_SUPPORT
+#		            -DQT_LARGEFILE_SUPPORT
+#		            -DQT_DLL
+#		            -DQT_GUI_LIB
+#		            -DQT_CORE_LIB
+#		            -DQT_HAVE_MMX
+#		            -DQT_HAVE_3DNOW
+#		            -DQT_HAVE_SSE
+#		            -DQT_HAVE_MMXEXT
+#		            -DQT_HAVE_SSE2
+#		            -DQT_THREAD_SUPPORT
                     )
 endif()
 

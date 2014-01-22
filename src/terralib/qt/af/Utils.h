@@ -247,6 +247,48 @@ namespace te
       */
       TEQTAFEXPORT void AddActionToCustomToolbars(QAction* act);
 
+      /*!
+        \brief Returns the complete path of the configuration file or an empty value if it not exists.
+      */
+      TEQTAFEXPORT QString GetConfigFileName();
+
+      /*!
+        \brief Setts the name of the application configuration file.
+
+        \param fileName Complete path to the application configuration file.
+      */
+      TEQTAFEXPORT void SetConfigFileName(const QString& fileName);
+
+      /*!
+        \brief Returns the default path for output of configuration file.
+      */
+      TEQTAFEXPORT QString GetDefaultConfigFileOutputDir();
+
+      /*!
+        \brief Writes the configuration file. It updates the application settings.
+
+        \param fileName Complete path to the configuration file. 
+
+        \param appName Name of the application.
+
+        \param appTitle Title to be presented on the main window.
+      */
+      TEQTAFEXPORT void WriteConfigFile(const QString& fileName, const QString& appName, const QString& appTitle);
+
+      /*!
+        \brief Writes the user settings file.
+      */
+      TEQTAFEXPORT void WriteUserSettingsFile(const QString& fileName);
+
+      /*!
+        \brief Writes the application plugins file.
+      */
+      TEQTAFEXPORT void WriteAppPluginsFile(const QString& fileName);
+
+      /*!
+        \brief Writes the default project file.
+      */
+      TEQTAFEXPORT void WriteDefaultProjectFile(const QString& fileName);
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te
