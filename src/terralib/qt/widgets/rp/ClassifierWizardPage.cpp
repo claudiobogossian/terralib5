@@ -24,34 +24,31 @@
 */
 
 // TerraLib
-#include "../../../common/StringUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../geometry/GeometryProperty.h"
 #include "../../../raster/Raster.h"
+#include "../../../rp/ClassifierKMeansStrategy.h"
 #include "../../../rp/ClassifierISOSegStrategy.h"
-#include "../../widgets/canvas/Canvas.h"
-#include "../../widgets/canvas/MapDisplay.h"
+#include "../classification/ROIManagerDialog.h"
 #include "ClassifierWizardPage.h"
-#include "RasterNavigatorWidget.h"
-#include "RasterNavigatorDialog.h"
 #include "ui_ClassifierWizardPageForm.h"
 
 // Qt
 #include <QGridLayout>
+#include <QtGui/QDoubleValidator>
+#include <QtGui/QIntValidator>
 #include <QtGui/QMessageBox>
-
-// Boost
-#include <boost/uuid/random_generator.hpp>
-#include <boost/uuid/uuid_io.hpp>
-
 
 // stl
 #include <memory>
 
+Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
+
 te::qt::widgets::ClassifierWizardPage::ClassifierWizardPage(QWidget* parent)
   : QWizardPage(parent),
     m_ui(new Ui::ClassifierWizardPageForm),
-    m_countSamples(0),
     m_layer(0)
 {
 // setup controls
@@ -59,55 +56,59 @@ te::qt::widgets::ClassifierWizardPage::ClassifierWizardPage(QWidget* parent)
 
   fillClassifierTypes();
 
-//connects
-  connect(m_ui->m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(onItemChanged(QTableWidgetItem*)));
-  connect(m_ui->m_removeToolButton, SIGNAL(clicked()), this, SLOT(onRemoveToolButtonClicked()));
-  connect(m_ui->m_acquireToolButton, SIGNAL(toggled(bool)), this, SLOT(showNavigator(bool)));
+  QIntValidator* intMaxPoints = new QIntValidator(this);
+  intMaxPoints->setBottom(0);
+  m_ui->m_kMeansMaxPointsLineEdit->setValidator(intMaxPoints);
 
-  //configure raster navigator
-  m_navigatorDlg.reset(new te::qt::widgets::RasterNavigatorDialog(this, Qt::Tool));
-  m_navigatorDlg->setWindowTitle(tr("Display"));
-  m_navigatorDlg->setMinimumSize(550, 400);
-  //m_navigatorDlg->getWidget()->hideGeomTool(true);
-  m_navigatorDlg->getWidget()->hideInfoTool(true);
-  m_navigatorDlg->getWidget()->hidePickerTool(true);
-
-  //connects
-  connect(m_navigatorDlg.get(), SIGNAL(navigatorClosed()), this, SLOT(onNavigatorClosed()));
-  connect(m_navigatorDlg->getWidget(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(onMapDisplayExtentChanged()));
-  connect(m_navigatorDlg->getWidget(), SIGNAL(geomAquired(te::gm::Polygon*, te::qt::widgets::MapDisplay*)), 
-    this, SLOT(onGeomAquired(te::gm::Polygon*, te::qt::widgets::MapDisplay*)));
-
+  QDoubleValidator* doubleStopCriteria = new QDoubleValidator(this);
+  doubleStopCriteria->setBottom(0.0);
+  m_ui->m_kMeansStopCriteriaLineEdit->setValidator(doubleStopCriteria);
 
 //configure page
   this->setTitle(tr("Classifier"));
   this->setSubTitle(tr("Select the type of classifier and set their specific parameters."));
 
-  m_ui->m_removeToolButton->setIcon(QIcon::fromTheme("list-remove"));
+  //configure roi manager
+  m_roiMngDlg.reset(new te::qt::widgets::ROIManagerDialog(this, Qt::Tool));
+
+  //connects
+  connect(m_ui->m_acquireToolButton, SIGNAL(toggled(bool)), this, SLOT(showROIManager(bool)));
+  connect(m_roiMngDlg.get(), SIGNAL(roiManagerClosed()), this, SLOT(onROIManagerClosed()));
+
   m_ui->m_acquireToolButton->setIcon(QIcon::fromTheme("wand"));
 }
 
 te::qt::widgets::ClassifierWizardPage::~ClassifierWizardPage()
 {
-  std::map<std::string, ClassifierSamples>::iterator it = m_samples.begin();
 
-  while(it != m_samples.end())
-  {
-    delete it->second.m_poly;
-
-    ++it;
-  }
-
-  m_samples.clear();
 }
 
 void te::qt::widgets::ClassifierWizardPage::set(te::map::AbstractLayerPtr layer)
 {
   m_layer = layer;
 
-  m_navigatorDlg->set(m_layer);
+  m_roiMngDlg->set(m_layer);
 
   listBands();
+}
+
+void te::qt::widgets::ClassifierWizardPage::setList(std::list<te::map::AbstractLayerPtr>& layerList)
+{
+  m_ui->m_isosegLayersComboBox->clear();
+
+  std::list<te::map::AbstractLayerPtr>::iterator it = layerList.begin();
+
+  while(it != layerList.end())
+  {
+    te::map::AbstractLayerPtr l = *it;
+
+    std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
+
+    if(dsType->hasGeom())
+      m_ui->m_isosegLayersComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
+
+    ++it;
+  }
 }
 
 te::rp::Classifier::InputParameters te::qt::widgets::ClassifierWizardPage::getInputParams()
@@ -123,6 +124,40 @@ te::rp::Classifier::InputParameters te::qt::widgets::ClassifierWizardPage::getIn
 
     te::rp::ClassifierISOSegStrategy::Parameters classifierparameters;
     classifierparameters.m_acceptanceThreshold = m_ui->m_acceptanceThresholdComboBox->currentText().toDouble();
+
+    //get layer
+    int idxLayer = m_ui->m_isosegLayersComboBox->currentIndex();
+    QVariant varLayer = m_ui->m_isosegLayersComboBox->itemData(idxLayer, Qt::UserRole);
+    te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+
+    //get polygons
+    std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
+    te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dsType.get());
+
+    if(gp && gp->getGeometryType() == te::gm::PolygonType)
+    {
+      std::auto_ptr<te::da::DataSet> ds = layer->getData();
+      ds->moveBeforeFirst();
+
+      while(ds->moveNext())
+      {
+        te::gm::Polygon* poly = (te::gm::Polygon*)ds->getGeometry(gp->getName()).release();
+
+        algoInputParams.m_inputPolygons.push_back(poly);
+      }
+    }
+
+    algoInputParams.setClassifierStrategyParams(classifierparameters);
+  }
+  else  if(type == CLASSIFIER_KMEANS)
+  {
+    algoInputParams.m_strategyName = "kmeans";
+
+    te::rp::ClassifierKMeansStrategy::Parameters classifierparameters;
+    classifierparameters.m_K = m_ui->m_kMeansClusterSpinBox->value();
+    classifierparameters.m_maxIterations = m_ui->m_kMeansIterationsSpinBox->value();
+    classifierparameters.m_maxInputPoints = m_ui->m_kMeansMaxPointsLineEdit->text().toInt();
+    classifierparameters.m_epsilon = m_ui->m_kMeansStopCriteriaLineEdit->text().toDouble();
 
     algoInputParams.setClassifierStrategyParams(classifierparameters);
   }
@@ -140,20 +175,6 @@ te::rp::Classifier::InputParameters te::qt::widgets::ClassifierWizardPage::getIn
     ++it;
   }
 
-  //get polygons
-  std::map<std::string, ClassifierSamples>::iterator itSamples = m_samples.begin();
-
-  std::vector<te::gm::Polygon*> polyVec;
-
-  while(itSamples != m_samples.end())
-  {
-    polyVec.push_back(itSamples->second.m_poly);
-
-    ++itSamples;
-  }
-
-  algoInputParams.m_inputPolygons = polyVec;
-
   return algoInputParams;
 }
 
@@ -169,6 +190,7 @@ void te::qt::widgets::ClassifierWizardPage::fillClassifierTypes()
   m_ui->m_classifierTypeComboBox->clear();
 
   m_ui->m_classifierTypeComboBox->addItem(tr("ISOSeg"), CLASSIFIER_ISOSEG);
+  m_ui->m_classifierTypeComboBox->addItem(tr("KMeans"), CLASSIFIER_KMEANS);
 }
 
 void te::qt::widgets::ClassifierWizardPage::listBands()
@@ -196,142 +218,15 @@ void te::qt::widgets::ClassifierWizardPage::listBands()
   }
 }
 
-void te::qt::widgets::ClassifierWizardPage::drawSamples()
-{
-  assert(m_display);
-
-  m_display->getDraftPixmap()->fill(QColor(0, 0, 0, 0));
-
-  const te::gm::Envelope& mapExt = m_display->getExtent();
-
-  te::qt::widgets::Canvas canvasInstance(m_display->getDraftPixmap());
-  canvasInstance.setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
-
-  canvasInstance.setPolygonContourColor(te::color::RGBAColor(0,0,0, TE_OPAQUE));
-  canvasInstance.setPolygonContourWidth(1);
-  canvasInstance.setPolygonFillColor(te::color::RGBAColor(255,0,0, TE_OPAQUE));
-
-  std::map<std::string, ClassifierSamples>::iterator it = m_samples.begin();
-
-  while(it != m_samples.end())
-  {
-    te::gm::Polygon* poly = it->second.m_poly;
-
-    canvasInstance.draw(poly);
-
-    ++it;
-  }
-
-  m_display->repaint();
-}
-
-void te::qt::widgets::ClassifierWizardPage::updateSamples()
-{
-  m_ui->m_tableWidget->setRowCount(0);
-
-  std::map<std::string, ClassifierSamples>::iterator it = m_samples.begin();
-
-  while(it != m_samples.end())
-  {
-    int newrow = m_ui->m_tableWidget->rowCount();
-    m_ui->m_tableWidget->insertRow(newrow);
-    
-    //name
-    QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromStdString(it->second.m_name));
-    itemName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
-    itemName->setData(Qt::UserRole, QVariant(it->second.m_id.c_str()));
-    m_ui->m_tableWidget->setItem(newrow, 0, itemName);
-
-    ++it;
-  }
-
-  m_ui->m_tableWidget->sortByColumn(0, Qt::AscendingOrder);
-
-  drawSamples();
-}
-
-void te::qt::widgets::ClassifierWizardPage::onMapDisplayExtentChanged()
-{
-  if(m_samples.empty() == false)
-    drawSamples();
-}
-
-void te::qt::widgets::ClassifierWizardPage::onGeomAquired(te::gm::Polygon* poly, te::qt::widgets::MapDisplay* map)
-{
-  assert(m_layer.get());
-
-  m_display = map;
-
-  //component id
-  static boost::uuids::basic_random_generator<boost::mt19937> gen;
-  boost::uuids::uuid u = gen();
-  std::string id = boost::uuids::to_string(u);
-
-  //component name
-  QString className = QString(tr("Sample ") + QString::number(m_countSamples++));
-
-  ClassifierSamples cs;
-  cs.m_id = id;
-  cs.m_name = className.toStdString();
-  cs.m_poly = poly;
-
-  m_samples.insert(std::map<std::string, ClassifierSamples >::value_type(id, cs));
-
-  updateSamples();
-}
-
-void te::qt::widgets::ClassifierWizardPage::onItemChanged(QTableWidgetItem* item)
-{
-  std::string id = item->data(Qt::UserRole).toString().toStdString();
-
-  std::string name = item->text().toStdString();
-
-  std::map<std::string, ClassifierSamples >::iterator it = m_samples.find(id);
-
-  bool update = false;
-
-  if(it != m_samples.end())
-  {
-    if(it->second.m_name != name)
-    {
-      it->second.m_name = name;
-      update = true;
-    }
-  }
-
-  if(update)
-    updateSamples();
-}
-
-void te::qt::widgets::ClassifierWizardPage::onRemoveToolButtonClicked()
-{
-  if(m_ui->m_tableWidget->currentRow() == -1)
-    return;
-
-  std::string id = m_ui->m_tableWidget->item(m_ui->m_tableWidget->currentRow(), 0)->data(Qt::UserRole).toString().toStdString();
-
-  std::map<std::string, ClassifierSamples >::iterator it = m_samples.find(id);
-
-  if(it != m_samples.end())
-  {
-    m_samples.erase(it);
-
-    if(m_samples.empty())
-      m_countSamples = 0;
-
-    updateSamples();
-  }
-}
-
-void te::qt::widgets::ClassifierWizardPage::showNavigator(bool show)
+void te::qt::widgets::ClassifierWizardPage::showROIManager(bool show)
 {
   if(show)
-    m_navigatorDlg->show();
+    m_roiMngDlg->show();
   else
-    m_navigatorDlg->hide();
+    m_roiMngDlg->hide();
 }
 
-void te::qt::widgets::ClassifierWizardPage::onNavigatorClosed()
+void te::qt::widgets::ClassifierWizardPage::onROIManagerClosed()
 {
   m_ui->m_acquireToolButton->setChecked(false);
 }

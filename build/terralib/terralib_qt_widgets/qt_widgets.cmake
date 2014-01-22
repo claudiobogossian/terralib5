@@ -42,6 +42,7 @@ endif()
 
 list (APPEND TE_DEP_LIBS
     terralib_annotationtext
+		terralib_classification
 		terralib_color
 		terralib_common
 		terralib_dataaccess
@@ -69,6 +70,7 @@ set (
   widgets
   widgets/canvas
   widgets/charts
+  widgets/classification
   widgets/colorbar
  # widgets/datagrid
  # widgets/dataview
@@ -128,6 +130,13 @@ set (
   ${SRCDIR}/widgets/canvas/ZoomInMapDisplayWidget.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/canvas" MOC)
+
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/classification/ROIManagerWidget.h
+  ${SRCDIR}/widgets/classification/ROIManagerDialog.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/classification" MOC)
 
 set (
   HDRS_TO_MOC
@@ -505,6 +514,7 @@ file(
   ${SRCDIR}/widgets/*.ui
   ${SRCDIR}/widgets/canvas/ui/*.ui
   ${SRCDIR}/widgets/charts/ui/*.ui
+  ${SRCDIR}/widgets/classification/ui/*.ui
  # ${SRCDIR}/widgets/datagrid/*.ui
   ${SRCDIR}/widgets/dataset/*.ui
   ${SRCDIR}/widgets/dataset/selector/ui/*.ui
