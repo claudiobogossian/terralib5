@@ -237,10 +237,10 @@ namespace te
       const double& colorWeight, const double& compactnessWeight,
       const std::vector< double >& bandsWeights,
       const SegmentsIdsMatrixT& segmentsIds,
-      const SegmenterRegionGrowingStrategy::SegmentsIndexerT& segments)
+      Matrix< SegmenterRegionGrowingSegment >& segmentsMatrix )
       : 
         m_segmentsIds( segmentsIds ),
-        m_segments( segments ),      
+        m_segmentsMatrix( segmentsMatrix ),      
         m_allSegsCompactnessOffset( 0 ),
         m_allSegsCompactnessGain( 1.0 ),
         m_allSegsSmoothnessOffset( 0 ),
@@ -550,10 +550,6 @@ namespace te
     
     void SegmenterRegionGrowingStrategy::BaatzMerger::update()
     {
-      SegmenterRegionGrowingStrategy::SegmentsIndexerT::const_iterator itB =
-        m_segments.begin();
-      const SegmenterRegionGrowingStrategy::SegmentsIndexerT::const_iterator itE =
-        m_segments.end();        
       std::vector< SegmenterRegionGrowingSegment::FeatureType >::size_type dimIdx = 0;
       std::vector< SegmenterRegionGrowingSegment::FeatureType >::size_type dimsNumber = m_bandsNumber;
       
@@ -574,42 +570,53 @@ namespace te
         
       SegmenterRegionGrowingSegment::FeatureType* featuresPtr = 0;
       
-      while( itB != itE )
+      const unsigned int nRows = m_segmentsMatrix.getLinesNumber();
+      const unsigned int nCols = m_segmentsMatrix.getColumnsNumber();      
+      SegmenterRegionGrowingSegment* segsRowPtr = 0;
+      
+      unsigned int col = 0;
+      for( unsigned int row = 0 ; row < nRows ; ++row )
       {
-        featuresPtr = (*itB)->m_features;
+        segsRowPtr = m_segmentsMatrix[ row ];
         
-        for( dimIdx = 0; dimIdx < dimsNumber ; ++dimIdx )
+        for( col = 0 ; col < nCols ; ++col )
         {
-          if( stdDevMin[ dimIdx ] > BAATZ_ST( featuresPtr, m_bandsNumber, dimIdx ) )
+          if( segsRowPtr[ col ].m_status )
           {
-            stdDevMin[ dimIdx ] = BAATZ_ST( featuresPtr, m_bandsNumber, dimIdx );
+            featuresPtr = segsRowPtr[ col ].m_features;
+            
+            for( dimIdx = 0; dimIdx < dimsNumber ; ++dimIdx )
+            {
+              if( stdDevMin[ dimIdx ] > BAATZ_ST( featuresPtr, m_bandsNumber, dimIdx ) )
+              {
+                stdDevMin[ dimIdx ] = BAATZ_ST( featuresPtr, m_bandsNumber, dimIdx );
+              }
+              if( stdDevMax[ dimIdx ] < BAATZ_ST( featuresPtr, m_bandsNumber, dimIdx ) )
+              {
+                stdDevMax[ dimIdx ] = BAATZ_ST( featuresPtr, m_bandsNumber, dimIdx );          
+              }
+            }
+            
+            if( compactnessMin > BAATZ_CO( featuresPtr ) )
+            {
+              compactnessMin = BAATZ_CO( featuresPtr );        
+            }
+            if( compactnessMax < BAATZ_CO( featuresPtr ) )
+            {
+              compactnessMax = BAATZ_CO( featuresPtr );        
+            }
+            
+            if( smoothnessMin > BAATZ_SM( featuresPtr ) )
+            {
+              smoothnessMin = BAATZ_SM( featuresPtr );
+            }
+            if( smoothnessMax < BAATZ_SM( featuresPtr ) )
+            {
+              smoothnessMax = BAATZ_SM( featuresPtr );
+            }
           }
-          if( stdDevMax[ dimIdx ] < BAATZ_ST( featuresPtr, m_bandsNumber, dimIdx ) )
-          {
-            stdDevMax[ dimIdx ] = BAATZ_ST( featuresPtr, m_bandsNumber, dimIdx );          
-          }
         }
-        
-        if( compactnessMin > BAATZ_CO( featuresPtr ) )
-        {
-          compactnessMin = BAATZ_CO( featuresPtr );        
-        }
-        if( compactnessMax < BAATZ_CO( featuresPtr ) )
-        {
-          compactnessMax = BAATZ_CO( featuresPtr );        
-        }
-        
-        if( smoothnessMin > BAATZ_SM( featuresPtr ) )
-        {
-          smoothnessMin = BAATZ_SM( featuresPtr );
-        }
-        if( smoothnessMax < BAATZ_SM( featuresPtr ) )
-        {
-          smoothnessMax = BAATZ_SM( featuresPtr );
-        }
-        
-        ++itB;
-      }
+      }       
       
       for( dimIdx = 0; dimIdx < dimsNumber ; ++dimIdx )
       {
@@ -803,8 +810,11 @@ namespace te
 //       }
         
       SegmenterRegionGrowingSegment* auxSeg1Ptr = m_segmentsPool.getNextSegment();
+      auxSeg1Ptr->m_status = false;
       SegmenterRegionGrowingSegment* auxSeg2Ptr = m_segmentsPool.getNextSegment();
+      auxSeg2Ptr->m_status = false;
       SegmenterRegionGrowingSegment* auxSeg3Ptr = m_segmentsPool.getNextSegment();
+      auxSeg3Ptr->m_status = false;
       
       // Allocating the ids matrix
       
@@ -819,10 +829,9 @@ namespace te
         
       // Initializing segments
         
-      SegmentsIndexerT segmentsIndexer;
       TERP_TRUE_OR_RETURN_FALSE( initializeSegments( segmenterIdsManager,
         inputRaster, inputRasterBands, inputRasterGains,
-        inputRasterOffsets, segmentsIndexer ), 
+        inputRasterOffsets ), 
         "Segments initalization error" );
         
       // Creating the merger instance
@@ -842,7 +851,7 @@ namespace te
         {
           mergerPtr.reset( new BaatzMerger( m_parameters.m_colorWeight,
             m_parameters.m_compactnessWeight, m_parameters.m_bandsWeights,
-            m_segmentsIdsMatrix, segmentsIndexer ) );
+            m_segmentsIdsMatrix, m_segmentsPool.getSegsMatrix() ) );
           enablelocalMutualBestFitting = true;
           break;
         }
@@ -883,7 +892,7 @@ namespace te
       while ( true )
       {
         mergedSegments = mergeSegments( similarityThreshold, segmenterIdsManager, 
-          *mergerPtr, enablelocalMutualBestFitting, segmentsIndexer,
+          *mergerPtr, enablelocalMutualBestFitting,
           auxSeg1Ptr, auxSeg2Ptr, auxSeg3Ptr);
 //         exportSegs2Tif( m_segmentsIdsMatrix, true, "merging" + 
 //           te::common::Convert2String( ++mergetIterations ) + ".tif" );
@@ -953,7 +962,7 @@ namespace te
         while( true )
         {
           mergedSegments = mergeSmallSegments( m_parameters.m_minSegmentSize, 
-            segmenterIdsManager, *mergerPtr, segmentsIndexer, auxSeg1Ptr, auxSeg2Ptr );
+            segmenterIdsManager, *mergerPtr, auxSeg1Ptr, auxSeg2Ptr );
 //        exportSegs2Tif( segmentsIds, true, "mergingSmall" + 
 //          te::common::Convert2String( mergetIterations ) + ".tif" );
 
@@ -1035,55 +1044,77 @@ namespace te
     {
       TERP_TRUE_OR_THROW( m_isInitialized, "Instance not initialized" );
       
-      // Test case: 6768 x 67923 = 45968256 pixels image
-      // case1: 1 band
-      // case2: 3 bands      
-      
-      double minM = 0;
-      double maxM = 0;
-      
+      // The features matrix inside the pool
+      double featuresSizeBytes = 0.0;
       switch( m_parameters.m_segmentFeatures )
       {
         case Parameters::MeanFeaturesType :
         {
-          minM = 17009.0; // MB
-          maxM = 17711.0; // MB
+          featuresSizeBytes = (double)
+            (
+              pixelsNumber
+              *
+              bandsToProcess
+              *
+              sizeof( SegmenterRegionGrowingSegment::FeatureType )
+            );
           break;
         }
         case Parameters::BaatzFeaturesType :
         {
-          minM = 23629.4; // MB
-          maxM = 24597.0; // MB
-          break;
+          featuresSizeBytes = (double)
+            (
+              pixelsNumber
+              *
+              (
+                (
+                  3
+                  *
+                  sizeof( SegmenterRegionGrowingSegment::FeatureType )
+                )
+                +
+                (
+                  3
+                  *
+                  bandsToProcess
+                  *
+                  sizeof( SegmenterRegionGrowingSegment::FeatureType )
+                )              
+              )
+            );
+          break;          
         }
         default :
         {
           TERP_LOG_AND_THROW( "Invalid segment features type" );
           break;
         }
-      } 
+      }       
       
-      if( bandsToProcess == 3 )
-      {
-        return maxM;
-      }
-      else
-      {
-        double dM = ( maxM - minM );
-        double slope = dM / ( 3.0 - ((double)bandsToProcess) );
-        
-        return (
-                 ( ((double)bandsToProcess) * slope ) + minM
-               )
-               *
-               (
-                 ((double)pixelsNumber) / 45968256.0 
-               )
-               *
-               (
-                 1024.0 * 1024.0
-               );
-      }
+      return (double)
+        (
+          featuresSizeBytes
+          +
+          ( // The segments matrix inside the pool
+            pixelsNumber 
+            * 
+            (
+              sizeof( SegmenterRegionGrowingSegment )
+              +
+              ( // An initial vector of pointers to 8 neighbors
+                6
+                *
+                sizeof( SegmenterRegionGrowingSegment* )
+              )
+            )
+          )
+          +
+          ( // The segments IDs matrix inside the strategy
+            pixelsNumber
+            *
+            sizeof( SegmenterSegmentsBlock::SegmentIdDataType )
+          )
+        );
     }
     
     unsigned int SegmenterRegionGrowingStrategy::getOptimalBlocksOverlapSize() const
@@ -1097,11 +1128,8 @@ namespace te
       const te::rst::Raster& inputRaster,
       const std::vector< unsigned int >& inputRasterBands,   
       const std::vector< double >& inputRasterGains,
-      const std::vector< double >& inputRasterOffsets,                                                              
-      SegmentsIndexerT& segsIndexer )
+      const std::vector< double >& inputRasterOffsets )
     {
-      segsIndexer.clear();
-      
       const unsigned int nLines = inputRaster.getNumberOfRows();
       const unsigned int nCols = inputRaster.getNumberOfColumns();
       const unsigned int inputRasterBandsSize = (unsigned int)
@@ -1120,7 +1148,7 @@ namespace te
         }
       }
         
-      // Indexing each segment
+      // Initializing each segment
       
       unsigned int line = 0;
       unsigned int col = 0;      
@@ -1231,6 +1259,7 @@ namespace te
             currLineSegsPtrs->operator[]( col ) = segmentPtr;
             
             segmentPtr->m_id = lineSegmentIds[ col ];
+            segmentPtr->m_status = true;
             segmentPtr->m_size = 1;
             segmentPtr->m_xStart = col;
             segmentPtr->m_xBound = col + 1;
@@ -1238,7 +1267,6 @@ namespace te
             segmentPtr->m_yBound = line + 1;
             
             m_segmentsIdsMatrix( line, col ) = segmentPtr->m_id;
-            segsIndexer.insert( segmentPtr );
               
             // updating the neighboorhood info
             
@@ -1306,7 +1334,6 @@ namespace te
       SegmenterIdsManager& segmenterIdsManager,
       Merger& merger,
       const bool enablelocalMutualBestFitting,
-      SegmentsIndexerT& segsIndexer,
       SegmenterRegionGrowingSegment* auxSeg1Ptr,
       SegmenterRegionGrowingSegment* auxSeg2Ptr,
       SegmenterRegionGrowingSegment* auxSeg3Ptr)
@@ -1327,161 +1354,172 @@ namespace te
       SegmenterSegmentsBlock::SegmentIdDataType currentSegmentId = 0;      
       std::list< SegmenterSegmentsBlock::SegmentIdDataType > freeSegmentIds;
       unsigned int neighborSegIdx = 0;
+      Matrix< SegmenterRegionGrowingSegment >& segmentsMatrix = m_segmentsPool.getSegsMatrix();
+      const unsigned int segmentsMatrixNRows = segmentsMatrix.getLinesNumber();
+      const unsigned int segmentsMatrixNCols = segmentsMatrix.getColumnsNumber();      
+      SegmenterRegionGrowingSegment* segmentsMatrixLinePtr = 0;
+      unsigned int col = 0;      
+      SegmenterRegionGrowingSegment* currSegPtr = 0;
       
       // Updating the merger state
       
       merger.update();
       
       // iterating over each segment
-      
-      SegmentsIndexerT::iterator segsIt = segsIndexer.begin();
-      
-      while( segsIt != segsIndexer.end() )
+
+      for( unsigned int row = 0 ; row < segmentsMatrixNRows ; ++row )
       {
-        // finding the neighbor segment with minimum dissimilary value
-        // related to the current sement
+        segmentsMatrixLinePtr = segmentsMatrix[ row ];
         
-        maxForwardSimilaritySegmentPtr = 0;
-        maxForwardSimilarityValue = -1.0 *
-          std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();
-        
-        for( neighborSegIdx = 0 ; neighborSegIdx < (*segsIt)->m_neighborSegmentsSize ;
-          ++neighborSegIdx )
+        for( col = 0 ; col < segmentsMatrixNCols ; ++col )
         {
-          if( (*segsIt)->m_neighborSegments[ neighborSegIdx ] )
-          {
-            forwardSimilarityValue = merger.getSimilarity( (*segsIt),
-              (*segsIt)->m_neighborSegments[ neighborSegIdx ], auxSeg1Ptr );
-            assert( forwardSimilarityValue >= 0 );
-            assert( forwardSimilarityValue <= 1 );
-              
-            if( ( forwardSimilarityValue > similarityThreshold ) &&
-              ( forwardSimilarityValue > maxForwardSimilarityValue ) )
-            {
-              maxForwardSimilarityValue = forwardSimilarityValue;
-              maxForwardSimilaritySegmentPtr = (*segsIt)->m_neighborSegments[ neighborSegIdx ];
-              auxSeg3Ptr->operator=( *auxSeg1Ptr );
-            }
-          }
-        }
-        
-        // does the neighbor wants to merge back ?
-        
-        if( enablelocalMutualBestFitting && ( maxForwardSimilaritySegmentPtr != 0 ) )
-        {
-          // Calculating all neighbor neighbor segments dissimilarity          
+          currSegPtr = segmentsMatrixLinePtr + col;
           
-          maxBackwardSimilaritySegmentPtr = 0;
-          backwardSimilarityValue = 0;
-          maxBackwardSimilarityValue = -1.0 *
-            std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();          
-          
-          for( neighborSegIdx = 0 ; neighborSegIdx < maxForwardSimilaritySegmentPtr->m_neighborSegmentsSize ;
-            ++neighborSegIdx )
+          if( currSegPtr->m_status )
           {
-            if( maxForwardSimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ] )
-            {
-              backwardSimilarityValue = 
-                merger.getSimilarity( maxForwardSimilaritySegmentPtr, 
-                maxForwardSimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ], auxSeg2Ptr );
-              assert( backwardSimilarityValue >= 0 );
-              assert( backwardSimilarityValue <= 1 );                
-                
-              if( backwardSimilarityValue > maxBackwardSimilarityValue )
-              {
-                maxBackwardSimilarityValue = backwardSimilarityValue;
-                maxBackwardSimilaritySegmentPtr = 
-                  maxForwardSimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ];
-              }
-            }
-          }
-          
-          if( maxBackwardSimilaritySegmentPtr !=  (*segsIt) )
-          {
+            // finding the neighbor segment with minimum dissimilary value
+            // related to the current sement
+            
             maxForwardSimilaritySegmentPtr = 0;
-          }
-        }
-        
-        // If the maximum similary neighbor was found it will be merged
-        
-        if( maxForwardSimilaritySegmentPtr )
-        {
-          // merging segment data
-          
-          merger.mergeFeatures( (*segsIt), maxForwardSimilaritySegmentPtr,
-            auxSeg3Ptr );
+            maxForwardSimilarityValue = -1.0 *
+              std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();
             
-          (*segsIt)->removeNeighborSegment( maxForwardSimilaritySegmentPtr );
-            
-          // updating the max similarity segment neighborhood segments
-          // with the current segment
-          
-          for( neighborSegIdx = 0 ; neighborSegIdx < maxForwardSimilaritySegmentPtr->m_neighborSegmentsSize ;
-            ++neighborSegIdx )
-          {
-            if( 
-                ( maxForwardSimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ] != 0 )
-                &&
-                ( maxForwardSimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ] != (*segsIt) )
-              )
+            for( neighborSegIdx = 0 ; neighborSegIdx < currSegPtr->m_neighborSegmentsSize ;
+              ++neighborSegIdx )
             {
-              // adding the max similarity neighborhood segments to the 
-              // current one, if it is not already there            
-              
-              (*segsIt)->addNeighborSegment( 
-                maxForwardSimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ] );
-                
-              // adding the current segment into the max similarity 
-              // neighborhood segments list, if it is not already there              
-              
-              maxForwardSimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ]->addNeighborSegment( 
-                (*segsIt) );
-                
-              // removing the merged segment reference from its neighbor
-              // list      
-              
-              maxForwardSimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ]->removeNeighborSegment( 
-                maxForwardSimilaritySegmentPtr );
-            }
-          }          
-          
-          // updating the segments Ids container matrix
-          
-          segmentsLineBound = maxForwardSimilaritySegmentPtr->m_yBound;
-          segmentColStart = maxForwardSimilaritySegmentPtr->m_xStart;
-          segmentColBound = maxForwardSimilaritySegmentPtr->m_xBound;          
-          currentSegmentId = (*segsIt)->m_id;
-            
-          for( segmentsLine = maxForwardSimilaritySegmentPtr->m_yStart ; 
-            segmentsLine < segmentsLineBound ; ++segmentsLine )
-          {
-            segmentsIdsLinePtr = m_segmentsIdsMatrix[ segmentsLine ];
-            
-            for( segmentCol = segmentColStart ; segmentCol < 
-              segmentColBound ; ++segmentCol )
-            {
-              if( segmentsIdsLinePtr[ segmentCol ] ==
-                maxForwardSimilaritySegmentPtr->m_id )
+              if( currSegPtr->m_neighborSegments[ neighborSegIdx ] )
               {
-                segmentsIdsLinePtr[ segmentCol ] = currentSegmentId;
+                forwardSimilarityValue = merger.getSimilarity( currSegPtr,
+                  currSegPtr->m_neighborSegments[ neighborSegIdx ], auxSeg1Ptr );
+                assert( forwardSimilarityValue >= 0 );
+                assert( forwardSimilarityValue <= 1 );
+                  
+                if( ( forwardSimilarityValue >= similarityThreshold ) &&
+                  ( forwardSimilarityValue > maxForwardSimilarityValue ) )
+                {
+                  maxForwardSimilarityValue = forwardSimilarityValue;
+                  maxForwardSimilaritySegmentPtr = currSegPtr->m_neighborSegments[ neighborSegIdx ];
+                  auxSeg3Ptr->operator=( *auxSeg1Ptr );
+                }
               }
             }
-          }
-          
-          // removing the  merged segment from  the global 
-          // segments container
-          // The merged segment id will be given back to ids manager
-          
-          maxForwardSimilaritySegmentPtr->clearNeighborSegments();
             
-          segsIndexer.erase( maxForwardSimilaritySegmentPtr );
-          
-          freeSegmentIds.push_back( maxForwardSimilaritySegmentPtr->m_id );
-          
-          ++mergedSegmentsNumber;
+            // does the neighbor wants to merge back ?
+            
+            if( enablelocalMutualBestFitting && ( maxForwardSimilaritySegmentPtr != 0 ) )
+            {
+              // Calculating all neighbor neighbor segments dissimilarity          
+              
+              maxBackwardSimilaritySegmentPtr = 0;
+              backwardSimilarityValue = 0;
+              maxBackwardSimilarityValue = -1.0 *
+                std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();          
+              
+              for( neighborSegIdx = 0 ; neighborSegIdx < maxForwardSimilaritySegmentPtr->m_neighborSegmentsSize ;
+                ++neighborSegIdx )
+              {
+                if( maxForwardSimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ] )
+                {
+                  backwardSimilarityValue = 
+                    merger.getSimilarity( maxForwardSimilaritySegmentPtr, 
+                    maxForwardSimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ], auxSeg2Ptr );
+                  assert( backwardSimilarityValue >= 0 );
+                  assert( backwardSimilarityValue <= 1 );                
+                    
+                  if( backwardSimilarityValue > maxBackwardSimilarityValue )
+                  {
+                    maxBackwardSimilarityValue = backwardSimilarityValue;
+                    maxBackwardSimilaritySegmentPtr = 
+                      maxForwardSimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ];
+                  }
+                }
+              }
+              
+              if( maxBackwardSimilaritySegmentPtr !=  currSegPtr )
+              {
+                maxForwardSimilaritySegmentPtr = 0;
+              }
+            }
+            
+            // If the maximum similary neighbor was found it will be merged
+            
+            if( maxForwardSimilaritySegmentPtr )
+            {
+              // merging segment data
+              
+              merger.mergeFeatures( currSegPtr, maxForwardSimilaritySegmentPtr,
+                auxSeg3Ptr );
+                
+              currSegPtr->removeNeighborSegment( maxForwardSimilaritySegmentPtr );
+                
+              // updating the max similarity segment neighborhood segments
+              // with the current segment
+              
+              for( neighborSegIdx = 0 ; neighborSegIdx < maxForwardSimilaritySegmentPtr->m_neighborSegmentsSize ;
+                ++neighborSegIdx )
+              {
+                if( 
+                    ( maxForwardSimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ] != 0 )
+                    &&
+                    ( maxForwardSimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ] != currSegPtr )
+                  )
+                {
+                  // adding the max similarity neighborhood segments to the 
+                  // current one, if it is not already there            
+                  
+                  currSegPtr->addNeighborSegment( 
+                    maxForwardSimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ] );
+                    
+                  // adding the current segment into the max similarity 
+                  // neighborhood segments list, if it is not already there              
+                  
+                  maxForwardSimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ]->addNeighborSegment( 
+                    currSegPtr );
+                    
+                  // removing the merged segment reference from its neighbor
+                  // list      
+                  
+                  maxForwardSimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ]->removeNeighborSegment( 
+                    maxForwardSimilaritySegmentPtr );
+                }
+              }          
+              
+              // updating the segments Ids container matrix
+              
+              segmentsLineBound = maxForwardSimilaritySegmentPtr->m_yBound;
+              segmentColStart = maxForwardSimilaritySegmentPtr->m_xStart;
+              segmentColBound = maxForwardSimilaritySegmentPtr->m_xBound;          
+              currentSegmentId = currSegPtr->m_id;
+                
+              for( segmentsLine = maxForwardSimilaritySegmentPtr->m_yStart ; 
+                segmentsLine < segmentsLineBound ; ++segmentsLine )
+              {
+                segmentsIdsLinePtr = m_segmentsIdsMatrix[ segmentsLine ];
+                
+                for( segmentCol = segmentColStart ; segmentCol < 
+                  segmentColBound ; ++segmentCol )
+                {
+                  if( segmentsIdsLinePtr[ segmentCol ] ==
+                    maxForwardSimilaritySegmentPtr->m_id )
+                  {
+                    segmentsIdsLinePtr[ segmentCol ] = currentSegmentId;
+                  }
+                }
+              }
+              
+              // disabling the  merged segment
+              // The merged segment id will be given back to ids manager
+              
+              maxForwardSimilaritySegmentPtr->m_status = false;
+              
+              maxForwardSimilaritySegmentPtr->clearNeighborSegments();
+                
+              freeSegmentIds.push_back( maxForwardSimilaritySegmentPtr->m_id );
+              
+              ++mergedSegmentsNumber;
+            }
+          }
         }
-        
-        ++segsIt;
       }
       
       // give back the free unused sement ids
@@ -1498,7 +1536,6 @@ namespace te
       const unsigned int minSegmentSize,
       SegmenterIdsManager& segmenterIdsManager,
       Merger& merger,
-      SegmentsIndexerT& segsIndexer,
       SegmenterRegionGrowingSegment* auxSeg1Ptr,
       SegmenterRegionGrowingSegment* auxSeg2Ptr )
     {
@@ -1514,7 +1551,13 @@ namespace te
       unsigned int segmentColBound = 0;      
       SegmenterSegmentsBlock::SegmentIdDataType* segmentsIdsLinePtr = 0;
       SegmenterSegmentsBlock::SegmentIdDataType currentSegmentId = 0;
+      std::list< SegmenterSegmentsBlock::SegmentIdDataType > freeSegmentIds;
       unsigned int neighborSegIdx = 0;
+      Matrix< SegmenterRegionGrowingSegment >& segmentsMatrix = m_segmentsPool.getSegsMatrix();
+      const unsigned int segmentsMatrixNRows = segmentsMatrix.getLinesNumber();
+      const unsigned int segmentsMatrixNCols = segmentsMatrix.getColumnsNumber();       
+      SegmenterRegionGrowingSegment* segmentsMatrixLinePtr = 0;
+      unsigned int col = 0;
       
       // Updating the merger state
       
@@ -1522,132 +1565,135 @@ namespace te
       
       // iterating over each segment      
       
-      SegmentsIndexerT::iterator segsIt = segsIndexer.begin();
-      
-      while( segsIt != segsIndexer.end() )
+      for( unsigned int row = 0 ; row < segmentsMatrixNRows ; ++row )
       {
-        currSmallSegPtr = (*segsIt);
+        segmentsMatrixLinePtr = segmentsMatrix[ row ];
         
-        // is this a small segment ?
-        
-        if( currSmallSegPtr->m_size < minSegmentSize )
+        for( col = 0 ; col < segmentsMatrixNCols ; ++col )
         {
-          // Looking for the closest neighboorhood segment
+          currSmallSegPtr = segmentsMatrixLinePtr + col;
           
-          maxForwardSimilaritySegmentPtr = 0;
-          maxForwardSimilarityValue = -1.0 *
-            std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();
-            
-          for( neighborSegIdx = 0 ; neighborSegIdx < currSmallSegPtr->m_neighborSegmentsSize ;
-            ++neighborSegIdx )
+          if( currSmallSegPtr->m_status )
           {
-            if( currSmallSegPtr->m_neighborSegments[ neighborSegIdx ] )
+            // is this a small segment ?
+            
+            if( currSmallSegPtr->m_size < minSegmentSize )
             {
-              forwardSimilarityValue = merger.getSimilarity( currSmallSegPtr,
-                currSmallSegPtr->m_neighborSegments[ neighborSegIdx ], auxSeg1Ptr );
-              assert( forwardSimilarityValue >= 0 );
-              assert( forwardSimilarityValue <= 1 );              
+              // Looking for the closest neighboorhood segment
+              
+              maxForwardSimilaritySegmentPtr = 0;
+              maxForwardSimilarityValue = -1.0 *
+                std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();
                 
-              if( forwardSimilarityValue > maxForwardSimilarityValue )
+              for( neighborSegIdx = 0 ; neighborSegIdx < currSmallSegPtr->m_neighborSegmentsSize ;
+                ++neighborSegIdx )
               {
-                maxForwardSimilarityValue = forwardSimilarityValue;
-                maxForwardSimilaritySegmentPtr = currSmallSegPtr->m_neighborSegments[ neighborSegIdx ];
-                auxSeg2Ptr->operator=( *auxSeg1Ptr );
-              }
-            }
-          }            
-          
-          // If the minimum dissimilary neighbor was found it will be merged
-        
-          if( maxForwardSimilaritySegmentPtr )
-          {          
-            // merging the small segment data into there
-            // closes segment data
-            
-            merger.mergeFeatures( maxForwardSimilaritySegmentPtr,
-              currSmallSegPtr, auxSeg2Ptr );
-              
-            maxForwardSimilaritySegmentPtr->removeNeighborSegment( currSmallSegPtr );
-              
-            // updating the the small segment neighborhood segments
-            // with the current segment
-            
-            for( neighborSegIdx = 0 ; neighborSegIdx < currSmallSegPtr->m_neighborSegmentsSize ;
-              ++neighborSegIdx )
-            {
-              if( 
-                  ( currSmallSegPtr->m_neighborSegments[ neighborSegIdx ] != 0 )
-                  &&
-                  ( currSmallSegPtr->m_neighborSegments[ neighborSegIdx ] != maxForwardSimilaritySegmentPtr )
-                )
-              {
-                // adding the small segment neighborhood segments to the 
-                // closest segment, if it is not already there         
-                
-                maxForwardSimilaritySegmentPtr->addNeighborSegment( 
-                  currSmallSegPtr->m_neighborSegments[ neighborSegIdx ] );
-                  
-                // adding the closest segment into the small segment 
-                // neighborhood segments list, if it is not already there           
-                
-                currSmallSegPtr->m_neighborSegments[ neighborSegIdx ]->addNeighborSegment( 
-                  maxForwardSimilaritySegmentPtr );
-                  
-                // removing the small segment reference from its neighbor
-                // list   
-                
-                currSmallSegPtr->m_neighborSegments[ neighborSegIdx ]->removeNeighborSegment( 
-                  currSmallSegPtr );
-              }
-            }             
-            
-            // updating the segments Ids container matrix
-            
-            segmentsLineBound = currSmallSegPtr->m_yBound;
-            segmentColStart = currSmallSegPtr->m_xStart;
-            segmentColBound = currSmallSegPtr->m_xBound;          
-            currentSegmentId = currSmallSegPtr->m_id;
-              
-            for( segmentsLine = currSmallSegPtr->m_yStart ; 
-              segmentsLine < segmentsLineBound ; ++segmentsLine )
-            {
-              segmentsIdsLinePtr = m_segmentsIdsMatrix[ segmentsLine ];
-              
-              for( segmentCol = segmentColStart ; segmentCol < 
-                segmentColBound ; ++segmentCol )
-              {
-                if( segmentsIdsLinePtr[ segmentCol ] ==
-                  currentSegmentId )
+                if( currSmallSegPtr->m_neighborSegments[ neighborSegIdx ] )
                 {
-                  segmentsIdsLinePtr[ segmentCol ] = 
-                    maxForwardSimilaritySegmentPtr->m_id;
+                  forwardSimilarityValue = merger.getSimilarity( currSmallSegPtr,
+                    currSmallSegPtr->m_neighborSegments[ neighborSegIdx ], auxSeg1Ptr );
+                  assert( forwardSimilarityValue >= 0 );
+                  assert( forwardSimilarityValue <= 1 );              
+                    
+                  if( forwardSimilarityValue > maxForwardSimilarityValue )
+                  {
+                    maxForwardSimilarityValue = forwardSimilarityValue;
+                    maxForwardSimilaritySegmentPtr = currSmallSegPtr->m_neighborSegments[ neighborSegIdx ];
+                    auxSeg2Ptr->operator=( *auxSeg1Ptr );
+                  }
                 }
+              }            
+              
+              // If the minimum dissimilary neighbor was found it will be merged
+            
+              if( maxForwardSimilaritySegmentPtr )
+              {          
+                // merging the small segment data into there
+                // closes segment data
+                
+                merger.mergeFeatures( maxForwardSimilaritySegmentPtr,
+                  currSmallSegPtr, auxSeg2Ptr );
+                  
+                maxForwardSimilaritySegmentPtr->removeNeighborSegment( currSmallSegPtr );
+                  
+                // updating the the small segment neighborhood segments
+                // with the current segment
+                
+                for( neighborSegIdx = 0 ; neighborSegIdx < currSmallSegPtr->m_neighborSegmentsSize ;
+                  ++neighborSegIdx )
+                {
+                  if( 
+                      ( currSmallSegPtr->m_neighborSegments[ neighborSegIdx ] != 0 )
+                      &&
+                      ( currSmallSegPtr->m_neighborSegments[ neighborSegIdx ] != maxForwardSimilaritySegmentPtr )
+                    )
+                  {
+                    // adding the small segment neighborhood segments to the 
+                    // closest segment, if it is not already there         
+                    
+                    maxForwardSimilaritySegmentPtr->addNeighborSegment( 
+                      currSmallSegPtr->m_neighborSegments[ neighborSegIdx ] );
+                      
+                    // adding the closest segment into the small segment 
+                    // neighborhood segments list, if it is not already there           
+                    
+                    currSmallSegPtr->m_neighborSegments[ neighborSegIdx ]->addNeighborSegment( 
+                      maxForwardSimilaritySegmentPtr );
+                      
+                    // removing the small segment reference from its neighbor
+                    // list   
+                    
+                    currSmallSegPtr->m_neighborSegments[ neighborSegIdx ]->removeNeighborSegment( 
+                      currSmallSegPtr );
+                  }
+                }             
+                
+                // updating the segments Ids container matrix
+                
+                segmentsLineBound = currSmallSegPtr->m_yBound;
+                segmentColStart = currSmallSegPtr->m_xStart;
+                segmentColBound = currSmallSegPtr->m_xBound;          
+                currentSegmentId = currSmallSegPtr->m_id;
+                  
+                for( segmentsLine = currSmallSegPtr->m_yStart ; 
+                  segmentsLine < segmentsLineBound ; ++segmentsLine )
+                {
+                  segmentsIdsLinePtr = m_segmentsIdsMatrix[ segmentsLine ];
+                  
+                  for( segmentCol = segmentColStart ; segmentCol < 
+                    segmentColBound ; ++segmentCol )
+                  {
+                    if( segmentsIdsLinePtr[ segmentCol ] ==
+                      currentSegmentId )
+                    {
+                      segmentsIdsLinePtr[ segmentCol ] = 
+                        maxForwardSimilaritySegmentPtr->m_id;
+                    }
+                  }
+                }
+                
+                // disabling the small segment
+                // The merged segment id will be given back to ids manager
+                
+                currSmallSegPtr->clearNeighborSegments();
+
+                currSmallSegPtr->m_status = false;
+                
+                freeSegmentIds.push_back( currentSegmentId );
+                
+                ++mergedSegmentsNumber;
               }
             }
-            
-            // removing the small segment from the  global segments container
-            // The merged segment id will be given back to ids manager
-            
-            currSmallSegPtr->clearNeighborSegments();
-
-            ++segsIt;
-              
-            segsIndexer.erase( currSmallSegPtr );
-            
-            segmenterIdsManager.addFreeID( currentSegmentId );
-            
-            ++mergedSegmentsNumber;
           }
-          else
-          {
-            ++segsIt;
-          }
-        }
-        else
-        {
-          ++segsIt;
         }
       }
+      
+      // give back the free unused sement ids
+      
+      if( ! freeSegmentIds.empty() )
+      {
+        segmenterIdsManager.addFreeIDs( freeSegmentIds );
+      }      
       
       return mergedSegmentsNumber;
     }

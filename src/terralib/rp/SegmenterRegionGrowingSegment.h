@@ -45,7 +45,12 @@
         /*!
           \brief Segment ID.
         */             
-        SegmenterSegmentsBlock::SegmentIdDataType m_id;            
+        SegmenterSegmentsBlock::SegmentIdDataType m_id;   
+
+        /*!
+          \brief Segment status (active=true).
+        */                    
+        bool m_status;
         
         /*!
           \brief Segment area (pixels number).
@@ -110,7 +115,7 @@
         /*!
           \brief Remove all neighbor segments.
         */             
-        void clearNeighborSegments();        
+        void clearNeighborSegments();    
       };
     } // namespace rp
   } // namespace te

@@ -131,12 +131,6 @@ namespace te
          */          
         typedef Matrix< SegmenterSegmentsBlock::SegmentIdDataType >
           SegmentsIdsMatrixT;
-          
-        /*!
-          \brief Internal segments indexer.
-         */        
-         typedef std::set< SegmenterRegionGrowingSegment* > SegmentsIndexerT;
-       
         
         /*!
           \class Merger
@@ -231,14 +225,14 @@ namespace te
               \brief Default constructor.
               \param bandsWeights A reference to an external valid structure where each bands weight are stored.
               \param segmentsIds //!< A reference to an external valid structure where all segments IDs are stored.
-              \param segments //!< A reference to an external valid segments indexer structure.
+              \param segmentsMatrix //!< A reference to an external valid segments matrix.
               \param colorWeight //!< The weight given to the color component, deafult:0.5, valid range: [0,1].
               \param compactnessWeight //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
             */
             BaatzMerger( const double& colorWeight, const double& compactnessWeight,
               const std::vector< double >& bandsWeights,
               const SegmentsIdsMatrixT& segmentsIds,
-              const SegmenterRegionGrowingStrategy::SegmentsIndexerT& segments );
+              Matrix< SegmenterRegionGrowingSegment >& segmentsMatrix );
             
             ~BaatzMerger();
             
@@ -261,7 +255,7 @@ namespace te
 
             const SegmentsIdsMatrixT& m_segmentsIds; //!< A reference to an external valid structure where each all segments IDs are stored.
             
-            const SegmenterRegionGrowingStrategy::SegmentsIndexerT& m_segments; //!< A reference to an external valid structure where each all segments are indexed.
+            Matrix< SegmenterRegionGrowingSegment >& m_segmentsMatrix; //!< A reference to an external valid segments matrix..
             
             unsigned int m_bandsNumber; //!< The number of features (bands).
             
@@ -308,15 +302,13 @@ namespace te
           \param inputRaster The input raster.
           \param inputRasterBands Input raster bands to use.
           \param segmentsIds The output segment ids container.
-          \param segments The output segments indexer.
           \return true if OK, false on errors.
         */        
         bool initializeSegments( SegmenterIdsManager& segmenterIdsManager,
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
           const std::vector< double >& inputRasterGains,
-          const std::vector< double >& inputRasterOffsets,                                 
-          SegmentsIndexerT& segments );
+          const std::vector< double >& inputRasterOffsets );
           
         /*!
           \brief Merge closest segments.
@@ -325,7 +317,6 @@ namespace te
           \param segmenterIdsManager A segments ids manager to acquire unique segments ids.
           \param merger The merger instance to use.
           \param enablelocalMutualBestFitting If enabled, a merge only occurs between two segments if the minimum dissimilarity criteria is best fulfilled mutually.
-          \param segsIndexer Segmenters indexer.
           \param auxSeg1Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param auxSeg2Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param auxSeg3Ptr A pointer to a valid auxiliar segment that will be used by this method.
@@ -336,7 +327,6 @@ namespace te
           SegmenterIdsManager& segmenterIdsManager,
           Merger& merger,
           const bool enablelocalMutualBestFitting,
-          SegmentsIndexerT& segsIndexer,
           SegmenterRegionGrowingSegment* auxSeg1Ptr,
           SegmenterRegionGrowingSegment* auxSeg2Ptr,
           SegmenterRegionGrowingSegment* auxSeg3Ptr);
@@ -349,7 +339,6 @@ namespace te
           \param segmenterIdsManager A segments ids manager to acquire
           unique segments ids.
           \param merger The merger instance to use.
-          \param segsIndexer Segmenters indexer.
           \param auxSeg1Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param auxSeg2Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \return The number of merged segments.
@@ -358,7 +347,6 @@ namespace te
           const unsigned int minSegmentSize,
           SegmenterIdsManager& segmenterIdsManager,
           Merger& merger,
-          SegmentsIndexerT& segsIndexer,
           SegmenterRegionGrowingSegment* auxSeg1Ptr,
           SegmenterRegionGrowingSegment* auxSeg2Ptr);          
           
