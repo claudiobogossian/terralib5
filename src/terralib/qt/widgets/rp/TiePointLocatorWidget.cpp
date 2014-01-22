@@ -607,14 +607,14 @@ void te::qt::widgets::TiePointLocatorWidget::onAdjMapDisplayExtentChanged()
   drawTiePoints();
 }
 
-void te::qt::widgets::TiePointLocatorWidget::onRefPointPicked(double x, double y, te::qt::widgets::MapDisplay* map)
+void te::qt::widgets::TiePointLocatorWidget::onRefPointPicked(double x, double y)
 {
   refCoordPicked(x, y);
 
   drawTiePoints();
 }
 
-void te::qt::widgets::TiePointLocatorWidget::onAdjPointPicked(double x, double y, te::qt::widgets::MapDisplay* map)
+void te::qt::widgets::TiePointLocatorWidget::onAdjPointPicked(double x, double y)
 {
   adjCoordPicked(x, y);
 
@@ -957,8 +957,7 @@ void te::qt::widgets::TiePointLocatorWidget::startUpNavigators()
   layoutRef->setContentsMargins(0,0,0,0);
 
   connect(m_refNavigator, SIGNAL(mapDisplayExtentChanged()), this, SLOT(onRefMapDisplayExtentChanged()));
-  connect(m_refNavigator, SIGNAL(pointPicked(double, double, te::qt::widgets::MapDisplay*)), 
-    this, SLOT(onRefPointPicked(double, double, te::qt::widgets::MapDisplay*)));
+  connect(m_refNavigator, SIGNAL(pointPicked(double, double)), this, SLOT(onRefPointPicked(double, double)));
 
   //adjust
   QGridLayout* layoutAdj = new QGridLayout(m_ui->m_adjWidget);
@@ -973,8 +972,7 @@ void te::qt::widgets::TiePointLocatorWidget::startUpNavigators()
   layoutAdj->setContentsMargins(0,0,0,0);
 
   connect(m_adjNavigator, SIGNAL(mapDisplayExtentChanged()), this, SLOT(onAdjMapDisplayExtentChanged()));
-  connect(m_adjNavigator, SIGNAL(pointPicked(double, double, te::qt::widgets::MapDisplay*)), 
-    this, SLOT(onAdjPointPicked(double, double, te::qt::widgets::MapDisplay*)));
+  connect(m_adjNavigator, SIGNAL(pointPicked(double, double)), this, SLOT(onAdjPointPicked(double, double)));
 }
 
 void te::qt::widgets::TiePointLocatorWidget::drawTiePoints()

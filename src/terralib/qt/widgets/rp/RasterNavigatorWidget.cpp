@@ -399,13 +399,13 @@ void te::qt::widgets::RasterNavigatorWidget::onCoordTrackedChanged(QPointF& coor
 void te::qt::widgets::RasterNavigatorWidget::onGeomAquired(te::gm::Polygon* poly)
 {
   //emit signal
-  geomAquired(poly, m_mapDisplay);
+  emit geomAquired(poly);
 }
 
 void te::qt::widgets::RasterNavigatorWidget::onPointPicked(QPointF& point)
 {
   //emit signal
-  emit pointPicked(point.x(), point.y(), m_mapDisplay);
+  emit pointPicked(point.x(), point.y());
 }
 
 void te::qt::widgets::RasterNavigatorWidget::onMapDisplayExtentChanged()

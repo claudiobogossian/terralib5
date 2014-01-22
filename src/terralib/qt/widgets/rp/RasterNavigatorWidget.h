@@ -164,9 +164,9 @@ namespace te
 
           void mapDisplayExtentChanged();
 
-          void pointPicked(double x, double y, te::qt::widgets::MapDisplay* map);
+          void pointPicked(double x, double y);
 
-          void geomAquired(te::gm::Polygon* poly, te::qt::widgets::MapDisplay* map);
+          void geomAquired(te::gm::Polygon* poly);
 
         protected:
 
