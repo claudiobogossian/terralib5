@@ -34,6 +34,7 @@
 #include <memory>
 
 // Qt
+#include <QtGui/QTreeWidgetItem>
 #include <QtGui/QWidget>
 
 namespace Ui { class ROIManagerWidgetForm; }
@@ -99,11 +100,17 @@ namespace te
 
           void onFileDialogToolButtonClicked();
 
+          void onROITreItemClicked(QTreeWidgetItem* item, int column);
+
           void onExportROISetToolButtonClicked();
+
+          void onVectorLayerToolButtonClicked(bool flag);
 
           void onMapDisplayExtentChanged();
 
           void onGeomAquired(te::gm::Polygon* poly);
+
+          void onPointPicked(double x, double y);
 
         private:
 

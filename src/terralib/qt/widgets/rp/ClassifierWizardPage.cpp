@@ -28,6 +28,7 @@
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/GeometryProperty.h"
+#include "../../../geometry/MultiPolygon.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/ClassifierKMeansStrategy.h"
 #include "../../../rp/ClassifierISOSegStrategy.h"
@@ -136,14 +137,15 @@ te::rp::Classifier::InputParameters te::qt::widgets::ClassifierWizardPage::getIn
     std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
     te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dsType.get());
 
-    if(gp && gp->getGeometryType() == te::gm::PolygonType)
+    if(gp && gp->getGeometryType() == te::gm::MultiPolygonType)
     {
       std::auto_ptr<te::da::DataSet> ds = layer->getData();
       ds->moveBeforeFirst();
 
       while(ds->moveNext())
       {
-        te::gm::Polygon* poly = (te::gm::Polygon*)ds->getGeometry(gp->getName()).release();
+        te::gm::MultiPolygon* mp = (te::gm::MultiPolygon*)ds->getGeometry(gp->getName()).release();
+        te::gm::Polygon* poly = (te::gm::Polygon*)mp->getGeometries()[0];
 
         algoInputParams.m_inputPolygons.push_back(poly);
       }
