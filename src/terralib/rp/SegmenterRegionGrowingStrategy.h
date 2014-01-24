@@ -68,7 +68,7 @@ namespace te
             
             unsigned int m_minSegmentSize; //!< A positive minimum segment size (pixels number - default: 100).
             
-            double m_segmentsSimilarityThreshold; //!< Segments similarity treshold - Use lower values to merge only those segments that are more alike - Higher values tend to merge more segments - valid values range: [ 0, 1 ]; default:0.1.
+            double m_segmentsSimilarityThreshold; //!< Segments similarity treshold - Use lower values to merge only those segments that are more alike - Higher values tend to merge more segments - valid values range: positive values - ; default: 0.9(For use with MeanFeaturesType. Higher values may be required if using BaatzFeaturesType ).
             
             SegmentFeaturesType m_segmentFeatures; //!< What segment features will be used on the segmentation process (default:InvalidFeaturesType).
             
@@ -143,13 +143,13 @@ namespace te
             virtual ~Merger();
             
             /*!
-              \brief Returns a similarity index between this and the other segment (normalized between 0 and 1).
+              \brief Returns a dimilarity index between this and the other segment.
               \param segment1Ptr A pointer to the first segment.
               \param segment2Ptr A pointer to the second segment.
               \param mergePreviewSegPtr A pointer to a valid segment where the merged features values will be stored (when aplicable).
               \return A similarity index between this and the other segment ( normalized between 0 and 1 ).
             */              
-            virtual SegmenterRegionGrowingSegment::FeatureType getSimilarity(
+            virtual SegmenterRegionGrowingSegment::FeatureType getDissimilarity(
               SegmenterRegionGrowingSegment const * const segment1Ptr, 
               SegmenterRegionGrowingSegment const * const segment2Ptr, 
               SegmenterRegionGrowingSegment * const mergePreviewSegPtr ) const = 0;
@@ -194,7 +194,7 @@ namespace te
             ~MeanMerger();
             
             //overload        
-            SegmenterRegionGrowingSegment::FeatureType getSimilarity(
+            SegmenterRegionGrowingSegment::FeatureType getDissimilarity(
               SegmenterRegionGrowingSegment const * const segment1Ptr, 
               SegmenterRegionGrowingSegment const * const segment2Ptr, 
               SegmenterRegionGrowingSegment * const mergePreviewSegPtr ) const;
@@ -237,7 +237,7 @@ namespace te
             ~BaatzMerger();
             
             //overload        
-            SegmenterRegionGrowingSegment::FeatureType getSimilarity(
+            SegmenterRegionGrowingSegment::FeatureType getDissimilarity(
               SegmenterRegionGrowingSegment const * const segment1Ptr, 
               SegmenterRegionGrowingSegment const * const segment2Ptr, 
               SegmenterRegionGrowingSegment * const mergePreviewSegPtr ) const;
@@ -270,10 +270,6 @@ namespace te
             SegmenterRegionGrowingSegment::FeatureType m_colorWeight; //!< The weight given to the color component, deafult:0.5, valid range: [0,1].
             
             SegmenterRegionGrowingSegment::FeatureType m_compactnessWeight; //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
-            
-            std::vector< SegmenterRegionGrowingSegment::FeatureType > m_allSegsStdDevOffsets; //!< The offsets applied to normalize the standard deviation value.
-            
-            std::vector< SegmenterRegionGrowingSegment::FeatureType > m_allSegsStdDevGain; //!< The gains applied to normalize the standard deviation value.            
             
             std::vector< SegmenterRegionGrowingSegment::FeatureType > m_bandsWeights; //!< A vector where each bands weight are stored.
         };          
@@ -312,8 +308,7 @@ namespace te
           
         /*!
           \brief Merge closest segments.
-          \param similarityThreshold The minimum similarity value used
-          when deciding when to merge two segments.
+          \param disimilarityThreshold The maximum similarity value allowed when deciding when to merge two segments.
           \param segmenterIdsManager A segments ids manager to acquire unique segments ids.
           \param merger The merger instance to use.
           \param enablelocalMutualBestFitting If enabled, a merge only occurs between two segments if the minimum dissimilarity criteria is best fulfilled mutually.
@@ -323,7 +318,7 @@ namespace te
           \return The number of merged segments.
         */           
         unsigned int mergeSegments( 
-          const SegmenterRegionGrowingSegment::FeatureType similarityThreshold,
+          const SegmenterRegionGrowingSegment::FeatureType disimilarityThreshold,
           SegmenterIdsManager& segmenterIdsManager,
           Merger& merger,
           const bool enablelocalMutualBestFitting,
