@@ -68,6 +68,7 @@ option (BUILD_STMEMORY "Build Spatial-Temporal Driver In-Memory?" ON)
 option (BUILD_STATISTICS "Build Statistics module?" ON)
 option (BUILD_SYMBOLOGY "Build Symbology module?" ON)
 option (BUILD_VP "Build Vector Processing module?" ON)
+option (BUILD_WMS "Build WMS module?" OFF)
 option (BUILD_XERCES "Build Xerces module?" ON)
 option (BUILD_XLINK "Build XLink module?" ON)
 option (BUILD_XML "Build XML module?" ON)
@@ -212,6 +213,10 @@ endif()
 
 IF(BUILD_VP)
 	add_subdirectory(terralib/terralib_vp)
+endif()
+
+IF(BUILD_WMS)
+	add_subdirectory(terralib/terralib_wms)
 endif()
 
 IF(BUILD_XERCES)
