@@ -24,6 +24,7 @@
 */
 
 // Terralib
+#include "../common/Logger.h"
 #include "../common/Exception.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/Translator.h"
@@ -88,7 +89,9 @@ bool IntersectionMemory(const std::string& inFirstDataSetName,
                         te::da::DataSetType*& outDataSetType,
                         te::da::DataSet*& outDataSet,
                         const bool& copyInputColumns,
-                        size_t outputSRID);
+                        size_t outputSRID,
+                        te::da::DataSet* firstSelectedDS = 0,
+                        te::da::DataSet* secondSelectedDS = 0);
 
 te::da::DataSetType* CreateDataSetType(std::string newName, 
                                         te::da::DataSetType* firstDt,
@@ -114,7 +117,9 @@ bool te::vp::Intersection(const std::string& inFirstDataSetName,
                           te::da::DataSource* inSecondDataSource,
                           const bool& copyInputColumns,
                           const std::string& outDataSetName,
-                          te::da::DataSource* outDataSource)
+                          te::da::DataSource* outDataSource,
+                          te::da::DataSet* firstSelectedDS,
+                          te::da::DataSet* secondSelectedDS)
 {
   assert(inFirstDataSource);
   assert(inSecondDataSource);
@@ -145,15 +150,28 @@ bool te::vp::Intersection(const std::string& inFirstDataSetName,
   }
   else
   {
-    res = IntersectionMemory(inFirstDataSetName,
-                            inFirstDataSource,
-                            inSecondDataSetName,
-                            inSecondDataSource, 
-                            outDataSetName,
-                            outDataSetType,
-                            outDataSet,
-                            copyInputColumns,
-                            outputSRID);
+    if(!firstSelectedDS && !secondSelectedDS)
+      res = IntersectionMemory(inFirstDataSetName,
+                              inFirstDataSource,
+                              inSecondDataSetName,
+                              inSecondDataSource, 
+                              outDataSetName,
+                              outDataSetType,
+                              outDataSet,
+                              copyInputColumns,
+                              outputSRID);
+    else
+      res = IntersectionMemory(inFirstDataSetName,
+                              inFirstDataSource,
+                              inSecondDataSetName,
+                              inSecondDataSource, 
+                              outDataSetName,
+                              outDataSetType,
+                              outDataSet,
+                              copyInputColumns,
+                              outputSRID,
+                              firstSelectedDS,
+                              secondSelectedDS);
   }
 
   if(!res)
@@ -261,7 +279,9 @@ bool IntersectionMemory(const std::string& inFirstDataSetName,
                         te::da::DataSetType*& outDataSetType,
                         te::da::DataSet*& outDataSet,
                         const bool& copyInputColumns,
-                        size_t outputSRID)
+                        size_t outputSRID,
+                        te::da::DataSet* firstSelectedDS,
+                        te::da::DataSet* secondSelectedDS)
 {
   if(outputSRID == 0)
   {
@@ -278,14 +298,22 @@ bool IntersectionMemory(const std::string& inFirstDataSetName,
 
   IntersectionMember firstMember;
   firstMember.dt = firstDSType.release();
-  firstMember.ds =  inFirstDataSource->getDataSet(inFirstDataSetName).release();
+  if(firstSelectedDS)
+    firstMember.ds =  firstSelectedDS;
+  else
+    firstMember.ds =  inFirstDataSource->getDataSet(inFirstDataSetName).release();
+  
   firstMember.props = firstProps;
 
   std::vector<te::dt::Property*> secondProps = GetTabularProperties(secondDSType.get());
 
   IntersectionMember secondMember;
   secondMember.dt = secondDSType.release();
-  secondMember.ds = inSecondDataSource->getDataSet(inSecondDataSetName).release();
+  if(secondSelectedDS)
+    secondMember.ds = secondSelectedDS;
+  else
+    secondMember.ds = inSecondDataSource->getDataSet(inSecondDataSetName).release();
+
   if(copyInputColumns)
     secondMember.props = secondProps;
   
@@ -465,6 +493,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::stri
       }
       else
       {
+        te::common::Logger::logDebug("vp", "Intersection - Invalid geometry found");
         continue;
       }
 

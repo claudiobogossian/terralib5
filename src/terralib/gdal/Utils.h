@@ -30,6 +30,7 @@
 #include "../raster/BandProperty.h"
 #include "../raster/Enums.h"
 #include "../raster/Raster.h"
+#include "Config.h"
 #include "Band.h"
 #include "Raster.h"
 
@@ -172,7 +173,7 @@ namespace te
      \param gds A pointer to a GDAL dataset.
      \return A pointer to the grid definition from a GDAL dataset. Caller takes its ownership.
      */
-    te::rst::Grid* GetGrid(GDALDataset* gds);
+    TEGDALEXPORT te::rst::Grid* GetGrid(GDALDataset* gds);
     
     /*!
      \brief Gets the list of bands definition from a GDAL dataset.
@@ -180,7 +181,7 @@ namespace te
      \param bprops A reference to a vector to be filled with the bands description extracted from a dataset.
      \note The caller of this method must take the ownership of the returned properties.
      */
-    void GetBandProperties(GDALDataset* gds, std::vector<te::rst::BandProperty*>& bprops);
+    TEGDALEXPORT void GetBandProperties(GDALDataset* gds, std::vector<te::rst::BandProperty*>& bprops);
     
     /*!
      \brief Gets the properties of a single band from a GDAL dataset.

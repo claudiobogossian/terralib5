@@ -43,6 +43,8 @@
 TerraView::TerraView(QWidget* parent)
   : te::qt::af::BaseApplication(parent)
 {
+  qApp->setApplicationName("TerraView");
+  qApp->setOrganizationName("INPE");
 }
 
 TerraView::~TerraView()
@@ -59,7 +61,7 @@ void TerraView::init(const std::string& configFile)
   te::qt::af::BaseApplication::init(configFile);
 
   //set application icon
-  std::string tvIcon = TVIEW_LOGO_ICON;
+  std::string tvIcon = te::qt::af::ApplicationController::getInstance().getAppIconName().toStdString();
   QPixmap pix(tvIcon.c_str());
   pix = pix.scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation);
   QIcon icon(pix);

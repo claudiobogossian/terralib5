@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../common/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/Translator.h"
 #include "../../dataaccess/dataset/DataSetType.h"
@@ -161,7 +162,19 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     QMessageBox::information(this, "Intersection", "Can not execute this operation on this type of first layer.");
     return;
   }
-  
+
+  std::auto_ptr<te::da::DataSet> firstSelectedDS;
+  if(m_ui->m_firstCheckBox->isChecked())
+  {
+    std::auto_ptr<const te::da::ObjectIdSet> firstOidSet(m_firstSelectedLayer->getSelected());
+    if(!firstOidSet.get())
+    {
+      QMessageBox::information(this, "Intersection", "Select the layer objects to perform the intersection operation.");
+      return;
+    }
+    firstSelectedDS = firstDataSetLayer->getData(firstOidSet.get());
+  }
+
   te::da::DataSourcePtr firstDataSource = te::da::GetDataSource(firstDataSetLayer->getDataSourceId(), true);
   if (!firstDataSource.get())
   {
@@ -188,7 +201,19 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     QMessageBox::information(this, "Intersection", "The selected second input data source can not be accessed.");
     return;
   }
-  
+
+  std::auto_ptr<te::da::DataSet> secondSelectedDS;
+  if(m_ui->m_secondCheckBox->isChecked())
+  {
+    std::auto_ptr<const te::da::ObjectIdSet> secondOidSet(m_secondSelectedLayer->getSelected());
+    if(!secondOidSet.get())
+    {
+      QMessageBox::information(this, "Intersection", "Select the layer objects to perform the intersection operation.");
+      return;
+    }
+    secondSelectedDS = secondDataSetLayer->getData(secondOidSet.get());
+  }
+
   if(m_ui->m_repositoryLineEdit->text().isEmpty())
   {
     QMessageBox::warning(this, TR_VP("Intersection"), TR_VP("Select a repository for the resulting layer."));
@@ -218,7 +243,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     bool copyInputColumns = m_ui->m_copyColumnsCheckBox->isChecked();
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
-    bool res;    
+    bool res;
     if (m_toFile)
     {
       boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
@@ -246,13 +271,25 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
       }
       
       this->setCursor(Qt::WaitCursor);
-      res = te::vp::Intersection( firstDataSetLayer->getDataSetName(),
-                                  firstDataSource.get(),
-                                  secondDataSetLayer->getDataSetName(),
-                                  secondDataSource.get(),
-                                  copyInputColumns,
-                                  outputdataset, 
-                                  dsOGR.get());
+
+      if(firstSelectedDS.get() || secondSelectedDS.get())
+        res = te::vp::Intersection( firstDataSetLayer->getDataSetName(),
+                                    firstDataSource.get(),
+                                    secondDataSetLayer->getDataSetName(),
+                                    secondDataSource.get(),
+                                    copyInputColumns,
+                                    outputdataset, 
+                                    dsOGR.get(),
+                                    firstSelectedDS.get(),
+                                    secondSelectedDS.get());
+      else
+        res = te::vp::Intersection( firstDataSetLayer->getDataSetName(),
+                                    firstDataSource.get(),
+                                    secondDataSetLayer->getDataSetName(),
+                                    secondDataSource.get(),
+                                    copyInputColumns,
+                                    outputdataset, 
+                                    dsOGR.get());
 
       if(!res)
       {
@@ -294,13 +331,26 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
         return;
       }
       this->setCursor(Qt::WaitCursor);
-      res = te::vp::Intersection(firstDataSetLayer->getDataSetName(),
-                                firstDataSource.get(),
-                                secondDataSetLayer->getDataSetName(),
-                                secondDataSource.get(),
-                                copyInputColumns,
-                                outputdataset, 
-                                aux.get());
+
+      if(firstSelectedDS.get() || secondSelectedDS.get())
+        res = te::vp::Intersection(firstDataSetLayer->getDataSetName(),
+                                  firstDataSource.get(),
+                                  secondDataSetLayer->getDataSetName(),
+                                  secondDataSource.get(),
+                                  copyInputColumns,
+                                  outputdataset, 
+                                  aux.get(),
+                                  firstSelectedDS.get(),
+                                  secondSelectedDS.get());
+      else
+        res = te::vp::Intersection(firstDataSetLayer->getDataSetName(),
+                                  firstDataSource.get(),
+                                  secondDataSetLayer->getDataSetName(),
+                                  secondDataSource.get(),
+                                  copyInputColumns,
+                                  outputdataset, 
+                                  aux.get());
+
       if(!res)
       {
         this->setCursor(Qt::ArrowCursor);
@@ -321,6 +371,8 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
   {
     this->setCursor(Qt::ArrowCursor);
     QMessageBox::warning(this, TR_VP("Intersection"), e.what());
+
+    te::common::Logger::logDebug("vp", e.what());
     te::common::ProgressManager::getInstance().removeViewer(id);
     return;
   }

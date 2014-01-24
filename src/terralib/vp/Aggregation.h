@@ -50,24 +50,27 @@ namespace te
     /*!
      \brief Executes the Aggregation Geographical Operation and persists the result as a dataset in a given output datasource.
      
-     \param inDataset              The name of the  dataset to be used in aggregation operation. It must exists in the input datasource.
+     \param inDatasetName          The name of the  dataset to be used in aggregation operation. It must exists in the input datasource.
      \param inDatasource           Pointer to the datasource that contains the input dataset. Do not pass null.
      \param groupingProperties     Selected properties based on selected layer.
      \param statisticalSummary     Map of selected functions based on input dataset properties.
      \param outDataset             The name for the resulting datasource. It should not exists in the output datasource.
      \param outDatasource          Pointer to the datasource to persist the resulting dataset. Do not pass null.
+     \param inDataset              The dataset with only the objects that were selected in the input layer.
      
      \return                       True if the it succeeds and false otherwise.
      
      This algorithm assums that the input dataset exists in the datasource.
      It generates a new dataset in the ouput datasource, do it can not exists a dataset with the same name prior to the calling of this algorithm.
      */
-    TEVPEXPORT bool Aggregation(const std::string& inDataset,
+    TEVPEXPORT bool Aggregation(const std::string& inDatasetName,
                                 te::da::DataSource* inDatasource,
                                 const std::vector<te::dt::Property*>& groupingProperties,
                                 const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                                 const std::string& outDataset,
-                                te::da::DataSource* outDatasource);
+                                te::da::DataSource* outDatasource,
+                                te::da::DataSet* inDataset = 0);
+
   } // end namespace vp
 }   // end namespace te
 

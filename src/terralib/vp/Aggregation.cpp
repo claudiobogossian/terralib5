@@ -24,6 +24,7 @@
 */
 
 //Terralib
+#include "../common/Logger.h"
 #include "../common/Translator.h"
 #include "../common/progress/TaskProgress.h"
 #include "../dataaccess/dataset/DataSet.h"
@@ -66,19 +67,21 @@
 
 
 // -- auxiliary functions
-bool AggregationQuery(const std::string& inDataset,
+bool AggregationQuery(const std::string& inDatasetName,
                       te::da::DataSource* inDatasource,
                       const std::vector<te::dt::Property*>& groupingProperties,
                       const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                       te::mem::DataSet* outputDataSet,
-                      te::gm::GeomType outGeoType);
+                      te::gm::GeomType outGeoType,
+                      te::da::DataSet* inDataset = 0);
 
-bool AggregationMemory(const std::string& inDataset,
+bool AggregationMemory(const std::string& inDatasetName,
                        te::da::DataSource* inDatasource,
                        const std::vector<te::dt::Property*>& groupingProperties,
                        const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                        te::mem::DataSet* outputDataSet,
-                       te::gm::GeomType outGeoType);
+                       te::gm::GeomType outGeoType,
+                       te::da::DataSet* inDataset = 0);
 
 te::da::DataSetType* BuildOutputDataSetType(const std::string& name,
                                             const std::vector<te::dt::Property*>& properties,
@@ -99,12 +102,13 @@ std::map<std::string, double> CalculateDoubleGroupingFunctions(const std::map<te
 
 // ---
 
-bool te::vp::Aggregation(const std::string& inDataset,
+bool te::vp::Aggregation(const std::string& inDatasetName,
                          te::da::DataSource* inDatasource,
                          const std::vector<te::dt::Property*>& groupingProperties,
                          const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                          const std::string& outDataset,
-                         te::da::DataSource* outDatasource)
+                         te::da::DataSource* outDatasource,
+                         te::da::DataSet* inDataset)
 {
   assert(inDatasource);
   assert(outDatasource);
@@ -113,7 +117,7 @@ bool te::vp::Aggregation(const std::string& inDataset,
   std::auto_ptr<te::da::DataSetType> outputDataSetType(BuildOutputDataSetType(outDataset, groupingProperties, statisticalSummary));
   
   // define the resulting spatial property
-  std::auto_ptr<te::da::DataSetType> inSchema = inDatasource->getDataSetType(inDataset);
+  std::auto_ptr<te::da::DataSetType> inSchema = inDatasource->getDataSetType(inDatasetName);
   te::gm::GeometryProperty* p = static_cast<te::gm::GeometryProperty*>(inSchema->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
   
   // creates the output geometry property
@@ -133,11 +137,17 @@ bool te::vp::Aggregation(const std::string& inDataset,
   bool res;
   if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
   {
-    res = AggregationQuery(inDataset, inDatasource, groupingProperties, statisticalSummary, memDataset.get(),outGeoType);
+    if(!inDataset)
+      res = AggregationQuery(inDatasetName, inDatasource, groupingProperties, statisticalSummary, memDataset.get(),outGeoType);
+    else
+      res = AggregationQuery(inDatasetName, inDatasource, groupingProperties, statisticalSummary, memDataset.get(),outGeoType, inDataset);
   }
   else
   {
-    res = AggregationMemory(inDataset, inDatasource, groupingProperties, statisticalSummary, memDataset.get(),outGeoType);
+    if(!inDataset)
+      res = AggregationMemory(inDatasetName, inDatasource, groupingProperties, statisticalSummary, memDataset.get(),outGeoType);
+    else
+      res = AggregationMemory(inDatasetName, inDatasource, groupingProperties, statisticalSummary, memDataset.get(),outGeoType, inDataset);
   }
   
   if (!res)
@@ -168,16 +178,17 @@ bool te::vp::Aggregation(const std::string& inDataset,
 }
 
 
-bool AggregationQuery(const std::string& inDataset,
+bool AggregationQuery(const std::string& inDatasetName,
                       te::da::DataSource* inDatasource,
                       const std::vector<te::dt::Property*>& groupingProperties,
                       const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                       te::mem::DataSet* outputDataSet,
-                      te::gm::GeomType outGeoType)
+                      te::gm::GeomType outGeoType,
+                      te::da::DataSet* inDataset)
 {
   std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >::const_iterator itStatSummary = statisticalSummary.begin();
   
-  std::auto_ptr<te::da::DataSetType> dsType = inDatasource->getDataSetType(inDataset);
+  std::auto_ptr<te::da::DataSetType> dsType = inDatasource->getDataSetType(inDatasetName);
   
   te::da::Fields* fields = new te::da::Fields;
   
@@ -188,7 +199,7 @@ bool AggregationQuery(const std::string& inDataset,
   }
   
   te::da::Expression* e_aggCount = new te::da::Count(new te::da::PropertyName(groupingProperties[0]->getName()));
-  te::da::Field* f_aggCount = new te::da::Field(*e_aggCount, "Aggregation_Count");
+  te::da::Field* f_aggCount = new te::da::Field(*e_aggCount, "NUM_OBJ");
   fields->push_back(f_aggCount);
   
   while(itStatSummary != statisticalSummary.end())
@@ -278,6 +289,18 @@ bool AggregationQuery(const std::string& inDataset,
   
   te::da::Select select(fields, from);
   
+
+  //if(inDataset)
+  //{
+  //  std::vector<std::string> names;
+  //  te::da::GetOIDPropertyNames(dsType.get(), names);
+
+  //  te::da::In* e_in = new te::da::In(names[0]);
+  //  te::da::Expression* e_where = new te::da::Where(
+
+  //}
+
+
   if(!groupingProperties.empty())
   {
     te::da::GroupBy* groupBy = new te::da::GroupBy();
@@ -297,16 +320,22 @@ bool AggregationQuery(const std::string& inDataset,
   return true;
 }
 
-bool AggregationMemory(const std::string& inDataset,
+bool AggregationMemory(const std::string& inDatasetName,
                        te::da::DataSource* inDatasource,
                        const std::vector<te::dt::Property*>& groupingProperties,
                        const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                        te::mem::DataSet* outputDataSet,
-                       te::gm::GeomType outGeoType)
+                       te::gm::GeomType outGeoType,
+                       te::da::DataSet* inDataset)
 {
-  std::auto_ptr<te::da::DataSet> inputDataSet = inDatasource->getDataSet(inDataset);
-  std::auto_ptr<te::da::DataSetType> dsType = inDatasource->getDataSetType(inDataset);
+  std::auto_ptr<te::da::DataSet> inputDataSet;
+  std::auto_ptr<te::da::DataSetType> dsType = inDatasource->getDataSetType(inDatasetName);
   
+  if(!inDataset)
+    inputDataSet = inDatasource->getDataSet(inDatasetName);
+  else
+    inputDataSet.reset(inDataset);
+
   std::size_t geomIdx;
   std::string geomName = "";
   
@@ -321,6 +350,8 @@ bool AggregationMemory(const std::string& inDataset,
   
   std::map<std::string, std::vector<te::mem::DataSetItem*> >::const_iterator itGroupValues = groupValues.begin();
   
+  inputDataSet.release();
+
   te::common::TaskProgress task("Processing aggregation...");
   task.setTotalSteps(groupValues.size());
   task.useTimer(true);
@@ -766,6 +797,7 @@ std::map<std::string, double> CalculateDoubleGroupingFunctions( const std::map<t
             numval = items[i]->getFloat(index);
           else if (type == te::dt::DOUBLE_TYPE)
             numval = items[i]->getDouble(index);
+
           values.push_back(numval);
         }
       }

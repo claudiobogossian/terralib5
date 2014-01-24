@@ -27,21 +27,22 @@ if(WIN32)
                 	-DTEQTWIDGETSDLL
 					-DBOOST_ALL_NO_LIB
 		            -DUNICODE
-		            -DQT_LARGEFILE_SUPPORT
-		            -DQT_DLL
-		            -DQT_GUI_LIB
-		            -DQT_CORE_LIB
-		            -DQT_HAVE_MMX
-		            -DQT_HAVE_3DNOW
-		            -DQT_HAVE_SSE
-		            -DQT_HAVE_MMXEXT
-		            -DQT_HAVE_SSE2
-		            -DQT_THREAD_SUPPORT
+#		            -DQT_LARGEFILE_SUPPORT
+#		            -DQT_DLL
+#		            -DQT_GUI_LIB
+#		            -DQT_CORE_LIB
+#		            -DQT_HAVE_MMX
+#		            -DQT_HAVE_3DNOW
+#		            -DQT_HAVE_SSE
+#		            -DQT_HAVE_MMXEXT
+#		            -DQT_HAVE_SSE2
+#		            -DQT_THREAD_SUPPORT
                     )
 endif()
 
 list (APPEND TE_DEP_LIBS
     terralib_annotationtext
+		terralib_classification
 		terralib_color
 		terralib_common
 		terralib_dataaccess
@@ -69,6 +70,7 @@ set (
   widgets
   widgets/canvas
   widgets/charts
+  widgets/classification
   widgets/colorbar
  # widgets/datagrid
  # widgets/dataview
@@ -128,6 +130,13 @@ set (
   ${SRCDIR}/widgets/canvas/ZoomInMapDisplayWidget.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/canvas" MOC)
+
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/classification/ROIManagerWidget.h
+  ${SRCDIR}/widgets/classification/ROIManagerDialog.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/classification" MOC)
 
 set (
   HDRS_TO_MOC
@@ -505,6 +514,7 @@ file(
   ${SRCDIR}/widgets/*.ui
   ${SRCDIR}/widgets/canvas/ui/*.ui
   ${SRCDIR}/widgets/charts/ui/*.ui
+  ${SRCDIR}/widgets/classification/ui/*.ui
  # ${SRCDIR}/widgets/datagrid/*.ui
   ${SRCDIR}/widgets/dataset/*.ui
   ${SRCDIR}/widgets/dataset/selector/ui/*.ui

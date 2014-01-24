@@ -79,9 +79,13 @@
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/replace.hpp>
+#include <boost/filesystem.hpp>
 
 void te::serialize::xml::ReadDataSourceInfo(const std::string& datasourcesFileName)
 {
+  if(!boost::filesystem::is_regular_file(datasourcesFileName))
+    return;
+
   std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());
 
   xmlReader->read(datasourcesFileName);

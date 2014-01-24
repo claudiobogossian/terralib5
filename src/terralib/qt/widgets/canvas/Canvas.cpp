@@ -1037,7 +1037,7 @@ te::color::RGBAColor** te::qt::widgets::Canvas::getImage(const int x, const int 
     colors = new te::color::RGBAColor*[h];
     for(int i = 0; i < h; ++i)
     {
-      colors[i] = new te::color::RGBAColor[h];
+      colors[i] = new te::color::RGBAColor[w];
 
       unsigned char* u = img.scanLine(i);
 

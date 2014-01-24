@@ -32,6 +32,10 @@ endif()
 
 list (APPEND TE_DEP_LIBS
 	terralib_common
+	terralib_dataaccess
+	terralib_datatype
+	terralib_geometry
+	terralib_memory
 )
 
 # Files to process.

@@ -49,6 +49,7 @@ namespace te
     namespace widgets
     {
       class MapDisplay;
+      class ROIManagerDialog;
 
       /*!
         \class ClassifierWizardPage
@@ -61,14 +62,8 @@ namespace te
 
            enum ClassifierTypes
           {
-            CLASSIFIER_ISOSEG
-          };
-
-          struct ClassifierSamples
-          {
-            std::string m_id;
-            std::string m_name;
-            te::gm::Polygon* m_poly;
+            CLASSIFIER_ISOSEG,
+            CLASSIFIER_KMEANS
           };
 
         public:
@@ -88,6 +83,8 @@ namespace te
           */
           void set(te::map::AbstractLayerPtr layer);
 
+          void setList(std::list<te::map::AbstractLayerPtr>& layerList);
+
           te::rp::Classifier::InputParameters getInputParams();
 
           te::rp::Classifier::OutputParameters getOutputParams();
@@ -98,29 +95,18 @@ namespace te
 
           void listBands();
 
-          void drawSamples();
-
-          void updateSamples();
-
         public slots:
 
-          void onMapDisplayExtentChanged();
+          void showROIManager(bool show);
 
-          void onGeomAquired(te::gm::Polygon* poly, te::qt::widgets::MapDisplay* map);
-
-          void onItemChanged(QTableWidgetItem* item);
-
-          void onRemoveToolButtonClicked();
+          void onROIManagerClosed();
 
         private:
 
           std::auto_ptr<Ui::ClassifierWizardPageForm> m_ui;
-
-          std::map<std::string, ClassifierSamples > m_samples;   //!< The map of selected samples
-          unsigned int m_countSamples;                           //!< The maximum number of samples inserted.
+          std::auto_ptr<te::qt::widgets::ROIManagerDialog> m_roiMngDlg;
 
           te::map::AbstractLayerPtr m_layer;
-          te::qt::widgets::MapDisplay* m_display;
       };
 
     } // end namespace widgets

@@ -26,11 +26,11 @@
 // TerraView
 #include "AboutDialog.h"
 #include "TerraLibConfig.h"
-#include "TerraViewConfig.h"
+//#include "TerraViewConfig.h"
 #include "ui_AboutDialogForm.h"
-
+#include "terralib/qt/af/ApplicationController.h"
 // TerraLib
-#include <terralib/common/SystemApplicationSettings.h>
+//#include <terralib/common/SystemApplicationSettings.h>
 #include <terralib/common/Version.h>
 
 // Qt
@@ -42,11 +42,12 @@ AboutDialog::AboutDialog(QWidget* parent, Qt::WindowFlags f)
 {
   m_ui->setupUi(this);
 
-  std::string logoTVLargeFileName = TVIEW_LARGE_LOGO_PIXMAP;
+  std::string logoTVLargeFileName = te::qt::af::ApplicationController::getInstance().getAboutLogo().toStdString();
+
   QPixmap pixmapTVLarge(logoTVLargeFileName.c_str());
   m_ui->m_applicationLargeLogo->setPixmap(pixmapTVLarge);
 
-  std::string logoTEFileName = TVIEW_TE_LOGO_PIXMAP;
+  std::string logoTEFileName = te::qt::af::ApplicationController::getInstance().getTlibLogo().toStdString();
   QPixmap pixmapTE(logoTEFileName.c_str());
 
   pixmapTE = pixmapTE.scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation);

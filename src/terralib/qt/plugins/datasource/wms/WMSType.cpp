@@ -39,6 +39,26 @@ te::qt::plugins::wms::WMSType::~WMSType()
 {
 }
 
+bool te::qt::plugins::wms::WMSType::hasDatabaseSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::wms::WMSType::hasFileSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::wms::WMSType::hasRasterSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::wms::WMSType::hasVectorialSupport() const
+{
+  return false;
+}
+
 std::string te::qt::plugins::wms::WMSType::getName() const
 {
   return "WMS";
@@ -62,7 +82,7 @@ QWidget* te::qt::plugins::wms::WMSType::getWidget(int widgetType, QWidget* paren
       return new WMSConnector(parent, f);
 
     //case DataSourceType::WIDGET_LAYER_SELECTOR:
-      //return new DataSetLayerSelector(parent, f);
+      //return new te::qt::widgets::DataSetLayerSelector(parent, f);
 
     default:
       return 0;
@@ -83,5 +103,3 @@ QIcon te::qt::plugins::wms::WMSType::getIcon(int iconType) const
       return QIcon::fromTheme("unknown-icon");
   }
 }
-
-
