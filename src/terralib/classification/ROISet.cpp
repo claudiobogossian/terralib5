@@ -34,6 +34,7 @@
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/StringProperty.h"
 #include "../geometry/GeometryProperty.h"
+#include "../geometry/MultiPolygon.h"
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
 #include "ROISet.h"
@@ -72,6 +73,11 @@ void te::cl::ROISet::removeROI(std::string label)
 
   if(it != m_roiMap.end())
     m_roiMap.erase(it);
+}
+
+std::map<std::string, te::cl::ROI*>& te::cl::ROISet::getROISet()
+{
+  return m_roiMap;
 }
 
 void te::cl::ROISet::exportToFile(std::string fileName, int srid)
@@ -120,11 +126,11 @@ te::cl::ROISet* te::cl::ROISet::createROISet(std::auto_ptr<te::da::DataSet> ds)
 {
   //check the input dataset
   assert(ds.get());
-  assert(ds->getNumProperties() == 4);
-  assert(ds->getPropertyName(0) == TE_CL_ROI_GEOM_ID_NAME);
-  assert(ds->getPropertyName(1) == TE_CL_ROI_LABEL_NAME);
-  assert(ds->getPropertyName(2) == TE_CL_ROI_COLOR_NAME);
-  assert(ds->getPropertyName(3) == TE_CL_ROI_GEOM_NAME);
+  assert(ds->getNumProperties() == 5);
+  assert(ds->getPropertyName(1) == TE_CL_ROI_GEOM_ID_NAME);
+  assert(ds->getPropertyName(2) == TE_CL_ROI_LABEL_NAME);
+  assert(ds->getPropertyName(3) == TE_CL_ROI_COLOR_NAME);
+  //assert(ds->getPropertyName(4) == TE_CL_ROI_GEOM_NAME); //OGR_GEOMETRY
 
   //move the data set to begin
   ds->moveBeforeFirst();
@@ -141,7 +147,8 @@ te::cl::ROISet* te::cl::ROISet::createROISet(std::auto_ptr<te::da::DataSet> ds)
     {
       std::string pId = ds->getString(TE_CL_ROI_GEOM_ID_NAME);
 
-      te::gm::Polygon* p = (te::gm::Polygon*)ds->getGeometry(TE_CL_ROI_GEOM_NAME).release();
+      te::gm::MultiPolygon* mp = (te::gm::MultiPolygon*)ds->getGeometry(4).release();
+      te::gm::Polygon* p = (te::gm::Polygon*)mp->getGeometries()[0];
 
       roi->addPolygon(p, pId);
     }
@@ -150,7 +157,8 @@ te::cl::ROISet* te::cl::ROISet::createROISet(std::auto_ptr<te::da::DataSet> ds)
       std::string color = ds->getString(TE_CL_ROI_COLOR_NAME);
       std::string pId = ds->getString(TE_CL_ROI_GEOM_ID_NAME);
 
-      te::gm::Polygon* p = (te::gm::Polygon*)ds->getGeometry(TE_CL_ROI_GEOM_NAME).release();
+      te::gm::MultiPolygon* mp = (te::gm::MultiPolygon*)ds->getGeometry(4).release();
+      te::gm::Polygon* p = (te::gm::Polygon*)mp->getGeometries()[0];
 
       te::cl::ROI* r = new te::cl::ROI(label);
       r->setColor(color);

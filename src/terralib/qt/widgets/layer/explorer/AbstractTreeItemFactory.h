@@ -64,6 +64,8 @@ namespace te
 
           static AbstractTreeItem* make(const te::map::AbstractLayerPtr& layer, QObject* parent);
 
+          static void reg(const std::string& key, const FactoryFnctType& f);
+
           static void initialize();
 
           static void finalize();

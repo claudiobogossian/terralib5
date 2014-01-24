@@ -28,12 +28,14 @@
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../maptools/Enums.h"
 #include "../Config.h"
 
 // STL
 #include <memory>
 
 // Qt
+#include <QtGui/QTreeWidgetItem>
 #include <QtGui/QWidget>
 
 namespace Ui { class ROIManagerWidgetForm; }
@@ -43,6 +45,11 @@ namespace te
   namespace cl
   {
     class ROISet;
+  }
+
+  namespace se
+  {
+    class Symbolizer;
   }
 
   namespace qt
@@ -71,6 +78,16 @@ namespace te
 
         public:
 
+          /*!
+            \brief This method is used to set the list of layers
+            
+          */
+          void setList(std::list<te::map::AbstractLayerPtr>& layerList);
+          
+          /*!
+            \brief This method is used to set current layer
+            
+          */
           void set(te::map::AbstractLayerPtr layer);
 
           te::cl::ROISet* getROISet();
@@ -79,17 +96,27 @@ namespace te
           
           void drawROISet();
 
-          void updateSamples();
-
         public slots:
+
+          void onOpenLayerROIToolButtonClicked();
 
           void onAddROIToolButtonClicked();
 
           void onRemoveROIToolButtonClicked();
 
+          void onFileDialogToolButtonClicked();
+
+          void onROITreItemClicked(QTreeWidgetItem* item, int column);
+
+          void onExportROISetToolButtonClicked();
+
+          void onVectorLayerToolButtonClicked(bool flag);
+
           void onMapDisplayExtentChanged();
 
           void onGeomAquired(te::gm::Polygon* poly);
+
+          void onPointPicked(double x, double y);
 
         private:
 
@@ -98,6 +125,14 @@ namespace te
          std::auto_ptr<te::qt::widgets::RasterNavigatorWidget> m_navigator;
 
          ColorPickerToolButton* m_colorPicker;
+
+         te::map::AbstractLayerPtr m_layer;
+
+         te::map::AbstractLayerPtr m_vectorLayer;
+
+         te::map::Visibility m_vectorLayerVisibility;
+
+         te::se::Symbolizer* m_symb;
 
          te::cl::ROISet* m_rs;
 

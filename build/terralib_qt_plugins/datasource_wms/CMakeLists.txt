@@ -47,6 +47,7 @@ list (APPEND
   terralib_dataaccess
   terralib_plugin
   terralib_qt_widgets
+  terralib_wms
 )
 
 file(GLOB SRCS ${SRCDIR}/*.cpp)

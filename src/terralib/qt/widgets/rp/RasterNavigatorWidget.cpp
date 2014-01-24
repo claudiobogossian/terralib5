@@ -84,6 +84,8 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   m_zoomInMapDisplay = new te::qt::widgets::ZoomInMapDisplayWidget(m_mapDisplay, m_ui->m_zoomInFrame);
   zoomInDisplayLayout->addWidget(m_zoomInMapDisplay);
   zoomInDisplayLayout->setContentsMargins(0,0,0,0);
+  
+  m_pointCursor = Qt::CrossCursor;
 
 // CoordTracking tool
   te::qt::widgets::CoordTracking* coordTracking = new te::qt::widgets::CoordTracking(m_mapDisplay, m_mapDisplay);
@@ -197,6 +199,33 @@ void te::qt::widgets::RasterNavigatorWidget::set(te::map::AbstractLayerPtr layer
 
 // get band composition information
   getCompositionInfo();
+}
+
+void te::qt::widgets::RasterNavigatorWidget::setVectorial(te::map::AbstractLayerPtr layer)
+{
+  std::list<te::map::AbstractLayerPtr> list;
+  list.push_back(layer);
+  list.push_back(m_layer);
+
+  m_mapDisplay->setLayerList(list);
+  m_zoomInMapDisplay->setList(list, m_layer->getSRID());
+  m_eyeBirdMapDisplay->setList(list, m_layer->getSRID());
+
+  te::gm::Envelope e = m_mapDisplay->getExtent();
+  m_mapDisplay->setExtent(e, true);
+}
+
+void te::qt::widgets::RasterNavigatorWidget::removeVectorial()
+{
+  std::list<te::map::AbstractLayerPtr> list;
+  list.push_back(m_layer);
+
+  m_mapDisplay->setLayerList(list);
+  m_zoomInMapDisplay->setList(list, m_layer->getSRID());
+  m_eyeBirdMapDisplay->setList(list, m_layer->getSRID());
+
+  te::gm::Envelope e = m_mapDisplay->getExtent();
+  m_mapDisplay->setExtent(e, true);
 }
 
 te::gm::Envelope te::qt::widgets::RasterNavigatorWidget::getCurrentExtent()
@@ -331,6 +360,20 @@ void te::qt::widgets::RasterNavigatorWidget::hideExtraDisplaysTool(bool hide)
   m_ui->m_extraDisplaysToolButton->setVisible(!hide);
 }
 
+void te::qt::widgets::RasterNavigatorWidget::setSelectionMode(bool mode)
+{
+  if(mode)
+  {
+    m_ui->m_pointActionToolButtontoolButton->setIcon(QIcon::fromTheme("pointer-selection"));
+    m_pointCursor = Qt::ArrowCursor;
+  }
+  else
+  {
+    m_ui->m_pointActionToolButtontoolButton->setIcon(QIcon::fromTheme("placemark"));
+    m_pointCursor = Qt::CrossCursor;
+  }
+}
+
 void te::qt::widgets::RasterNavigatorWidget::onCoordTrackedChanged(QPointF& coordinate)
 {
   assert(m_layer.get());
@@ -449,7 +492,7 @@ void te::qt::widgets::RasterNavigatorWidget::onPointPickerToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::PointPicker* pp = new te::qt::widgets::PointPicker(m_mapDisplay, Qt::CrossCursor);
+  te::qt::widgets::PointPicker* pp = new te::qt::widgets::PointPicker(m_mapDisplay, m_pointCursor);
   setCurrentTool(pp);
 
   connect(pp, SIGNAL(pointPicked(QPointF&)), this, SLOT(onPointPicked(QPointF&)));

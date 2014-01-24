@@ -112,7 +112,7 @@ void te::qt::widgets::Module::initialize()
 void te::qt::widgets::Module::finalize()
 {
 // It finalizes the layer item factory
-  AbstractTreeItemFactory::initialize();
+  AbstractTreeItemFactory::finalize();
 
 // It finalizes the graphic widgets factories
   te::qt::widgets::WellKnownGraphicWidgetFactory::finalize();

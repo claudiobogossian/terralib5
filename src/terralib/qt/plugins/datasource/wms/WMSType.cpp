@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../../common/Translator.h"
+#include "../../../../wms/qt/WMSLayerSelector.h"
 #include "WMSConnector.h"
 #include "WMSType.h"
 
@@ -81,8 +82,8 @@ QWidget* te::qt::plugins::wms::WMSType::getWidget(int widgetType, QWidget* paren
     case te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new WMSConnector(parent, f);
 
-    //case DataSourceType::WIDGET_LAYER_SELECTOR:
-      //return new te::qt::widgets::DataSetLayerSelector(parent, f);
+    case DataSourceType::WIDGET_LAYER_SELECTOR:
+      return new te::wms::WMSLayerSelector(parent, f);
 
     default:
       return 0;
