@@ -47,6 +47,7 @@ option (BUILD_GDAL "Build GDAL module?" ON)
 option (BUILD_GEOMETRY "Build Geometry module?" ON)
 option (BUILD_GML "Build GML module?" ON)
 option (BUILD_GRAPH "Build Graph module?" OFF)
+option (BUILD_LAYOUT "Build Layout module?" OFF)
 option (BUILD_MAPTOOLS "Build Map Tools module?" ON)
 option (BUILD_MEMORY "Build Memory module?" ON)
 option (BUILD_METADATA "Build Metadata module?" OFF)
@@ -128,6 +129,10 @@ endif()
 
 IF(BUILD_GRAPH)
 	add_subdirectory(terralib/terralib_graph)
+endif()
+
+IF(BUILD_LAYOUT)
+	add_subdirectory(terralib/terralib_layout)
 endif()
 
 IF(BUILD_MAPTOOLS)

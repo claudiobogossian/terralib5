@@ -27,13 +27,13 @@
 #define __TERRALIB_LAYOUT_CORE_INTERNAL_MODULE_H
 
 // TerraLib
-#include "../../common/Singleton.h"
+#include "../../../common/Singleton.h"
 
 namespace te
 {
-  namespace stat
+  namespace layout
   {
-    /*!
+    /*!0
       \class Module
 
       \brief This singleton defines the TerraLib Qt Widgets module entry.
@@ -70,7 +70,7 @@ namespace te
 
         static const Module& sm_module; //!< Just to make a static initialization.
     };
-  }   // end namespace qt
+  }   // end namespace layout
 }     // end namespace te
 
 #endif  // __TERRALIB_LAYOUT_CORE_INTERNAL_MODULE_H

@@ -16,7 +16,7 @@ endif()
 
 #Definitions for Windows compiling
 if(WIN32)
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTESTATDLL -DBOOST_ALL_NO_LIB
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTELAYOUTDLL -DBOOST_ALL_NO_LIB
 		              -DUNICODE
 		              -DQT_LARGEFILE_SUPPORT
 		              -DQT_DLL
@@ -39,6 +39,9 @@ list (APPEND TE_DEP_LIBS
 	terralib_maptools
 	terralib_memory
 	terralib_plugin
+	terralib_qt_widgets
+	terralib_geometry
+	terralib_color
 )
 
 # Files to process.
@@ -46,19 +49,125 @@ list (APPEND TE_DEP_LIBS
 set (
   _DIRS
   .
-  qt
   core
+  include
+  include/core
+  include/core/pattern
+  include/core/pattern/derivativevisitor
+  include/core/pattern/factory
+  include/core/pattern/mvc
+  include/core/pattern/singleton
+  include/item
+  include/outside
+  qt
+  qt/ui
+  qt/include/item
+  qt/include/main
+  qt/include/moc
+  qt/include/outside
+  qt/include/utils
+  qt/src/item
+  qt/src/main
+  qt/src/outside
+  qt/src/utils
+  src
+  src/core
+  src/core/pattern
+  src/core/pattern/derivativevisitor
+  src/core/pattern/factory
+  src/core/pattern/mvc
+  src/core/pattern/singleton
+  src/item
+  src/outside
 )
 
 # Files in build tree
 appPrefix ("${SRCDIR}" "${_DIRS}" QT_INC_DIRS)
 
 # Files in build tree
-appPrefix ("qt" "${_DIRS}" QT_INC_INST_DIRS)
-
-# Files in build tree
 appPrefix ("core" "${_DIRS}" QT_INC_INST_DIRS)
 
+# Files in build tree
+appPrefix ("include" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
+appPrefix ("include/core" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
+appPrefix ("include/pattern/derivativevisitor" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
+appPrefix ("include/pattern/factory" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
+appPrefix ("include/pattern/mvc" "${_DIRS}" QT_INC_INST_DIRS)
+  
+# Files in build tree
+appPrefix ("include/pattern/singleton" "${_DIRS}" QT_INC_INST_DIRS)  
+
+# Files in build tree
+appPrefix ("include/item" "${_DIRS}" QT_INC_INST_DIRS)  
+
+# Files in build tree
+appPrefix ("include/outside" "${_DIRS}" QT_INC_INST_DIRS)  
+
+# Files in build tree
+appPrefix ("qt" "${_DIRS}" QT_INC_INST_DIRS)  
+
+# Files in build tree
+appPrefix ("qt/ui" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
+appPrefix ("qt/include/item" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
+appPrefix ("qt/include/main" "${_DIRS}" QT_INC_INST_DIRS)
+  
+# Files in build tree
+appPrefix ("qt/include/moc" "${_DIRS}" QT_INC_INST_DIRS)
+  
+# Files in build tree
+appPrefix ("qt/include/outside" "${_DIRS}" QT_INC_INST_DIRS)
+  
+# Files in build tree
+appPrefix ("qt/include/utils" "${_DIRS}" QT_INC_INST_DIRS)
+  
+# Files in build tree
+appPrefix ("qt/src/item" "${_DIRS}" QT_INC_INST_DIRS)
+  
+# Files in build tree
+appPrefix ("qt/src/main" "${_DIRS}" QT_INC_INST_DIRS)
+  
+# Files in build tree
+appPrefix ("qt/src/outside" "${_DIRS}" QT_INC_INST_DIRS)
+  
+# Files in build tree
+appPrefix ("qt/src/utils" "${_DIRS}" QT_INC_INST_DIRS)
+  
+# Files in build tree
+appPrefix ("src" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
+appPrefix ("src/core" "${_DIRS}" QT_INC_INST_DIRS)
+  
+# Files in build tree
+appPrefix ("src/pattern/derivativevisitor" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
+appPrefix ("src/pattern/factory" "${_DIRS}" QT_INC_INST_DIRS)
+  
+# Files in build tree
+appPrefix ("src/pattern/mvc" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
+appPrefix ("src/pattern/singleton" "${_DIRS}" QT_INC_INST_DIRS)
+  
+# Files in build tree
+appPrefix ("src/item" "${_DIRS}" QT_INC_INST_DIRS)
+  
+# Files in build tree
+appPrefix ("src/outside " "${_DIRS}" QT_INC_INST_DIRS)
+  
 # Get files by structured by folders.
 getFfiles(${SRCDIR} "${_DIRS}" SRCS "")
 
@@ -67,8 +176,9 @@ set (MOC "")
 # Select the header files for moc'ing
 set (
   HDRS_TO_MOC
+  ${SRCDIR}/qt/include/moc/QLayoutScene.h
 )
-te_moc2("${HDRS_TO_MOC}" "terralib/layout/qt" MOC)
+te_moc2("${HDRS_TO_MOC}" "terralib/layout/qt/include/moc" MOC)
 
 # Select the FORMS widgets
 file(

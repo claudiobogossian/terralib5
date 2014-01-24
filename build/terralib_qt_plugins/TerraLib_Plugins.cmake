@@ -13,6 +13,7 @@ option (BUILD_QT_PLUGIN_DATASOURCE_WCS "Build WCS datasource plugin for Qt." OFF
 option (BUILD_QT_PLUGIN_DATASOURCE_WFS "Build WFS datasource plugin for Qt." OFF)
 option (BUILD_QT_PLUGIN_DATASOURCE_WMS "Build WMS datasource plugin for Qt." OFF)  
 option (BUILD_QT_PLUGIN_LAYOUT "Build LAYOUT plugin for Qt." OFF)
+option (BUILD_QT_PLUGIN_LAYOUT2 "Build LAYOUT2 plugin for Qt." OFF)
 option (BUILD_QT_PLUGIN_RP "Build RP plugin for Qt." ON)
 option (BUILD_QT_PLUGIN_VP "Build VP plugin for Qt." ON) 
 
@@ -73,6 +74,10 @@ endif()
 
 if(BUILD_QT_PLUGIN_LAYOUT)
   add_subdirectory(terralib_qt_plugins/layout)
+endif()
+
+if(BUILD_QT_PLUGIN_LAYOUT2)
+  add_subdirectory(terralib_qt_plugins/layout2)
 endif()
 
 if(BUILD_QT_PLUGIN_RP)

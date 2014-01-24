@@ -24,20 +24,19 @@
 */
 
 // TerraLib
-#include "../../common/Logger.h"
-#include "../../common/TerraLib.h"
-#include "../../common/Translator.h"
-#include "Config.h"
 #include "Module.h"
+#include "../../../common/Logger.h"
+#include "../../../common/TerraLib.h"
+#include "../../../common/Translator.h"
+#include "MainLayout.h"
 
-const te::stat::Module& sm_module = te::stat::Module::getInstance();
+const te::layout::Module& sm_module = te::layout::Module::getInstance();
 
-
-te::stat::Module::Module()
+te::layout::Module::Module()
 {
   TerraLib::Module m = { TE_LAYOUT_MODULE_NAME,
-                         te::stat::Module::initialize,
-                         te::stat::Module::finalize
+                         te::layout::Module::initialize,
+                         te::layout::Module::finalize
                        };
 
 // initialize TerraLib singleton
@@ -47,19 +46,21 @@ te::stat::Module::Module()
   TE_ADD_TEXT_DOMAIN(TE_LAYOUT_TEXT_DOMAIN, TE_LAYOUT_TEXT_DOMAIN, "UTF-8");
 }
 
-te::stat::Module::~Module()
+te::layout::Module::~Module()
 {
   TerraLib::getInstance().remove(TE_LAYOUT_MODULE_NAME);
 }
 
-void te::stat::Module::initialize()
+void te::layout::Module::initialize()
 {
+//#ifdef TE_AUTOMATIC_INITIALIZATION
+//	MainLayout::getInstance().init();
+//#endif
   TE_LOG_TRACE(TR_LAYOUT("TerraLib layout module initialized!"));
 }
 
-void te::stat::Module::finalize()
+void te::layout::Module::finalize()
 {
-
   TE_LOG_TRACE(TR_LAYOUT("TerraLib layout module finalized!"));
 }
 

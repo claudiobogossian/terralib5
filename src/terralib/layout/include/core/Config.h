@@ -23,13 +23,13 @@
   \brief Configuration flags for the Terrralib Layout module.
  */
 
-#ifndef __TERRALIB_LAYOUT_CORE_INTERNAL_CONFIG_H
-#define __TERRALIB_LAYOUT_CORE_INTERNAL_CONFIG_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_CONFIG_H
+#define __TERRALIB_LAYOUT_INTERNAL_CONFIG_H
 
 // TerraLib
-#include "../../Config.h"
+#include "../../../Config.h"
 
-#define TE_LAYOUT_MODULE_NAME "te.stat"
+#define TE_LAYOUT_MODULE_NAME "te.layout"
 
 /** @name Internationalization Defines
  *  Flags for TerraLib code internationalization.
@@ -37,11 +37,11 @@
 //@{
 
 /*!
-  \def TE_STATISTICS_TEXT_DOMAIN
+  \def TE_LAYOUT_TEXT_DOMAIN
 
   \brief It contains the name of the text domain used in the translation of messages in Terrralib Layout module.
  */
-#define TE_LAYOUT_TEXT_DOMAIN "testat"
+#define TE_LAYOUT_TEXT_DOMAIN "telayout"
 
 /*!
   \def TE_LAYOUT_TEXT_DOMAIN_DIR
@@ -72,7 +72,7 @@
 //@{
 
 /*!
-  \def TESTATEXPORT
+  \def TELAYOUTEXPORT
 
   \brief You can use this macro in order to export/import classes and functions from this module.
 
@@ -84,22 +84,22 @@
 
   #ifdef _MSC_VER
     #pragma warning( disable : 4251 )
-    //#pragma warning( disable : 4275 )
+	#pragma warning( disable : 4275 )
+	#pragma warning( disable : 4290 )
   #endif
-
-
-  #ifdef TESTATSTATIC
-    #define TESTATEXPORT                        // Don't need to export/import... it is a static library
-  #elif TESTATDLL
-    #define TESTATEXPORT  __declspec(dllexport)   // export DLL information
+ 
+  #ifdef TELAYOUTSTATIC
+    #define TELAYOUTEXPORT                        // Don't need to export/import... it is a static library
+  #elif TELAYOUTDLL
+    #define TELAYOUTEXPORT  __declspec(dllexport)   // export DLL information
   #else
-    #define TESTATEXPORT  __declspec(dllimport)   // import DLL information
+    #define TELAYOUTEXPORT  __declspec(dllimport)   // import DLL information
   #endif 
 #else
-  #define TESTATEXPORT
+  #define TELAYOUTEXPORT
 #endif
 
 //@}
 
-#endif  // __TERRALIB_LAYOUT_CORE_INTERNAL_CONFIG_H
+#endif  // __TERRALIB_LAYOUT_INTERNAL_CONFIG_H
 
