@@ -28,8 +28,10 @@ list (APPEND TE_DEP_LIBS
 		terralib_datatype
 		terralib_geometry
 		terralib_gdal
+		terralib_maptools
 		terralib_plugin
 		terralib_raster
+		terralib_symbology
     )
 
 # Select the source and header files
