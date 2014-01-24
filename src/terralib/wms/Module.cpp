@@ -29,12 +29,18 @@
 #include "../dataaccess/datasource/DataSourceFactory.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../plugin/PluginInfo.h"
+#include "../qt/widgets/layer/explorer/AbstractTreeItemFactory.h"
+#include "./qt/WMSLayerItem.h"
 #include "Config.h"
 #include "DataSourceFactory.h"
 #include "Module.h"
 
 // GDAL
 #include <gdal_priv.h>
+
+// Boost
+#include <boost/functional/factory.hpp>
+#include <boost/bind.hpp>
 
 te::wms::Module::Module(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo)
@@ -56,6 +62,8 @@ void te::wms::Module::startup()
   te::da::DataSourceFactory::add(TE_WMS_DRIVER_IDENTIFIER, te::wms::Build);
 
   GDALAllRegister();
+
+  te::qt::widgets::AbstractTreeItemFactory::reg("WMSLAYER", boost::bind(boost::factory<WMSLayerItem*>(),_1, _2));
   
   TE_LOG_TRACE(TR_WMS("TerraLib WMS driver startup!"));
 
