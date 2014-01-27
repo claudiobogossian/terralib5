@@ -72,31 +72,18 @@ std::list<te::map::AbstractLayerPtr> te::wms::WMSLayerSelector::getLayers()
     if(!datasource->isOpened())
       datasource->open();
 
-    std::vector<std::string> datasetNames = datasource->getDataSetNames();
+    std::auto_ptr<te::qt::widgets::DataSetSelectorDialog> ldialog(new te::qt::widgets::DataSetSelectorDialog(static_cast<QWidget*>(parent())));
 
-    if(datasetNames.size() == 1) // In this case not show the DataSetSelectorDialog!
-    {
-      te::qt::widgets::DataSet2Layer converter((*it)->getId());
-      std::auto_ptr<te::da::DataSetType> dt = datasource->getDataSetType(datasetNames[0]);
-      te::da::DataSetTypePtr dtpt(dt.release());
-      te::map::DataSetLayerPtr layer = converter(dtpt);
-      layers.push_back(layer);
-    }
-    else
-    {
-      std::auto_ptr<te::qt::widgets::DataSetSelectorDialog> ldialog(new te::qt::widgets::DataSetSelectorDialog(static_cast<QWidget*>(parent())));
+    ldialog->set(*it, true);
 
-      ldialog->set(*it, true);
+    int retval = ldialog->exec();
 
-      int retval = ldialog->exec();
+    if(retval == QDialog::Rejected)
+      continue;
 
-      if(retval == QDialog::Rejected)
-        continue;
+    std::list<te::da::DataSetTypePtr> datasets = ldialog->getCheckedDataSets();
 
-      std::list<te::da::DataSetTypePtr> datasets = ldialog->getCheckedDataSets();
-
-      std::transform(datasets.begin(), datasets.end(), std::back_inserter(layers), WMS2Layer((*it)->getId()));
-    }
+    std::transform(datasets.begin(), datasets.end(), std::back_inserter(layers), WMS2Layer((*it)->getId()));
   }
 
   return layers;
