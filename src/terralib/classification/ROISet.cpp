@@ -147,7 +147,8 @@ te::cl::ROISet* te::cl::ROISet::createROISet(std::auto_ptr<te::da::DataSet> ds)
     {
       std::string pId = ds->getString(TE_CL_ROI_GEOM_ID_NAME);
 
-      te::gm::Polygon* p = (te::gm::Polygon*)ds->getGeometry(TE_CL_ROI_GEOM_NAME).release();
+      te::gm::MultiPolygon* mp = (te::gm::MultiPolygon*)ds->getGeometry(4).release();
+      te::gm::Polygon* p = (te::gm::Polygon*)mp->getGeometries()[0];
 
       roi->addPolygon(p, pId);
     }
