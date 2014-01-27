@@ -55,6 +55,7 @@
             \param featuresNumber The number of features for each created segment.
             \return true if ok, false on errors.
             \note The segments pool will initiate just SegmenterRegionGrowingSegment::m_features vector and take the ownership of it.
+            \note The segments pool will initiate just SegmenterRegionGrowingSegment::m_status to false.
           */            
           bool initialize( const SegmenterSegmentsBlock::SegmentIdDataType segsNumber,
             const unsigned int featuresNumber );            
@@ -79,6 +80,16 @@
             \brief Return the current allocated segments number.
           */          
           SegmenterSegmentsBlock::SegmentIdDataType getSegmentsNumber() const;
+          
+          /*!
+            \brief Return a reference to the internal segments matrix.
+            \return Return a reference to the internal segments matrix.
+            \note The number of matrix elemetns may be greater than the requested number of segments.
+          */          
+          inline Matrix< SegmenterRegionGrowingSegment >& getSegsMatrix()
+          {
+            return m_segments;
+          };
             
         protected :
 
