@@ -184,6 +184,8 @@ std::string te::wms::BuildGetMapRequest(const std::string& serverUrl,
     request += "<SizeY>" + height + "</SizeY>";
   request += "</DataWindow>";
 
+  request += "<BandsCount>4</BandsCount>";
+
   // BlockSize
   request += "<BlockSizeX>" + width + "</BlockSizeX>";
   request += "<BlockSizeY>" + height + "</BlockSizeY>";

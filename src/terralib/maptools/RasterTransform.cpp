@@ -192,6 +192,11 @@ void te::map::RasterTransform::setTransfFunction(RasterTransfFunctions func)
     m_transfFuncPtr = &RasterTransform::setBand2Band;
     m_RGBAFuncPtr = 0;
   }
+  else if (func == EXTRACT2RGBA_TRANSF)
+  {
+    m_transfFuncPtr = &RasterTransform::setExtractRGBA;
+    m_RGBAFuncPtr = &RasterTransform::getExtractRGBA;
+  }
   else
   {
     m_transfFuncPtr = 0;
@@ -292,6 +297,75 @@ te::color::RGBAColor te::map::RasterTransform::getExtractRGB(double icol, double
     te::color::RGBAColor c(static_cast<int>(valR), static_cast<int>(valG), static_cast<int>(valB), static_cast<int>(m_transp));
 
     return c;
+  }
+
+  return te::color::RGBAColor();
+}
+
+void te::map::RasterTransform::setExtractRGBA(double icol, double ilin, double ocol, double olin)
+{
+  double valR, valG, valB, valA;
+
+  m_rasterIn->getValue((int)icol, (int)ilin, valR, m_rgbMap[RED_CHANNEL]);
+  m_rasterIn->getValue((int)icol, (int)ilin, valG, m_rgbMap[GREEN_CHANNEL]);
+  m_rasterIn->getValue((int)icol, (int)ilin, valB, m_rgbMap[BLUE_CHANNEL]);
+  m_rasterIn->getValue((int)icol, (int)ilin, valA, m_rgbMap[ALPHA_CHANNEL]);
+
+  if(checkNoValue(valR, m_rgbMap[RED_CHANNEL]) == false ||
+     checkNoValue(valG, m_rgbMap[GREEN_CHANNEL]) == false ||
+     checkNoValue(valB, m_rgbMap[BLUE_CHANNEL]) == false ||
+     checkNoValue(valA, m_rgbMap[ALPHA_CHANNEL]) == false)
+  {
+    std::vector<double> vecValues;
+
+    valR = (valR * m_gain + m_offset) * m_rContrast;
+    fixValue(valR);
+    vecValues.push_back(valR);
+
+    valG = (valG * m_gain + m_offset) * m_gContrast;
+    fixValue(valG);
+    vecValues.push_back(valG);
+
+    valB = (valB * m_gain + m_offset) * m_bContrast;
+    fixValue(valB);
+    vecValues.push_back(valB);
+
+    fixValue(valA);
+    vecValues.push_back(valB);
+
+    m_rasterOut->setValues((int)ocol, (int)olin, vecValues);
+  }
+}
+
+te::color::RGBAColor te::map::RasterTransform::getExtractRGBA(double icol, double ilin)
+{
+  double valR, valG, valB, valA;
+
+  m_rasterIn->getValue((int)icol, (int)ilin, valR, m_rgbMap[RED_CHANNEL]);
+  m_rasterIn->getValue((int)icol, (int)ilin, valG, m_rgbMap[GREEN_CHANNEL]);
+  m_rasterIn->getValue((int)icol, (int)ilin, valB, m_rgbMap[BLUE_CHANNEL]);
+  m_rasterIn->getValue((int)icol, (int)ilin, valA, m_rgbMap[ALPHA_CHANNEL]);
+
+  if(checkNoValue(valR, m_rgbMap[RED_CHANNEL]) == false ||
+     checkNoValue(valG, m_rgbMap[GREEN_CHANNEL]) == false ||
+     checkNoValue(valB, m_rgbMap[BLUE_CHANNEL]) == false ||
+     checkNoValue(valA, m_rgbMap[ALPHA_CHANNEL]) == false)
+  {
+    valR = (valR * m_gain + m_offset) * m_rContrast;
+    fixValue(valR);
+
+    valG = (valG * m_gain + m_offset) * m_gContrast;
+    fixValue(valG);
+
+    valB = (valB * m_gain + m_offset) * m_bContrast;
+    fixValue(valB);
+
+    fixValue(valA);
+
+    if(valA < m_transp)
+      return te::color::RGBAColor(static_cast<int>(valR), static_cast<int>(valG), static_cast<int>(valB), static_cast<int>(valA));
+    else
+      return te::color::RGBAColor(static_cast<int>(valR), static_cast<int>(valG), static_cast<int>(valB), static_cast<int>(m_transp));
   }
 
   return te::color::RGBAColor();
