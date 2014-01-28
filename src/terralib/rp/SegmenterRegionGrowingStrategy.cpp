@@ -102,10 +102,10 @@ namespace te
     throw( te::rp::Exception )
     {
       m_minSegmentSize = 100;
-      m_segmentsSimilarityThreshold = 0.9;
+      m_segmentsSimilarityThreshold = 0.1;
       m_segmentFeatures = InvalidFeaturesType;      
       m_bandsWeights.clear();
-      m_colorWeight = 0.5;
+      m_colorWeight = 0.75;
       m_compactnessWeight = 0.5;
       m_segmentsSimIncreaseSteps = 10;
     }
@@ -146,20 +146,20 @@ namespace te
       assert( segment2Ptr );
       assert( segment2Ptr->m_features );
       
-      SegmenterRegionGrowingSegment::FeatureType dissValue = 0.0;
-      SegmenterRegionGrowingSegment::FeatureType diffValue = 0.0;
+      m_getDissimilarity_dissValue = 0.0;
         
-      for( unsigned int meansIdx = 0 ; meansIdx < m_featuresNumber ; ++meansIdx )
+      for( m_getDissimilarity_meansIdx = 0 ; m_getDissimilarity_meansIdx < m_featuresNumber ; 
+        ++m_getDissimilarity_meansIdx )
       {
-        diffValue = segment1Ptr->m_features[ meansIdx ] - 
-          segment2Ptr->m_features[ meansIdx ];
+        m_getDissimilarity_diffValue = segment1Ptr->m_features[ m_getDissimilarity_meansIdx ] - 
+          segment2Ptr->m_features[ m_getDissimilarity_meansIdx ];
           
-        dissValue += ( diffValue * diffValue );
+        m_getDissimilarity_dissValue += ( m_getDissimilarity_diffValue * m_getDissimilarity_diffValue );
       }
       
-      dissValue /= ((SegmenterRegionGrowingSegment::FeatureType)m_featuresNumber);
-        
-      return std::sqrt( dissValue );
+      m_getDissimilarity_dissValue = std::sqrt( m_getDissimilarity_dissValue );
+      
+      return m_getDissimilarity_dissValue;
     }
     
     void SegmenterRegionGrowingStrategy::MeanMerger::mergeFeatures( 
@@ -674,18 +674,29 @@ namespace te
           SegmenterRegionGrowingStrategy::Parameters::InvalidFeaturesType,
           "Invalid segmenter strategy parameter m_segmentFeatures" )              
           
-        if( ! m_parameters.m_bandsWeights.empty() )
+        if( m_parameters.m_segmentFeatures == Parameters::BaatzFeaturesType )
         {
-          TERP_TRUE_OR_RETURN_FALSE( paramsPtr->m_bandsWeights.size(),
-            "Invalid segmenter strategy parameter m_bandsWeights" );
+          TERP_TRUE_OR_RETURN_FALSE( !m_parameters.m_bandsWeights.empty(),
+             "Invalid segmenter strategy parameter m_bandsWeights" );
+                                     
           double bandsWeightsSum = 0;
-          for( unsigned int bandsWeightsIdx = 0 ; bandsWeightsIdx < 
-            paramsPtr->m_bandsWeights.size() ; ++bandsWeightsIdx )
+          unsigned int bandsWeightsIdx = 0 ;
+          for( bandsWeightsIdx = 0 ; bandsWeightsIdx < 
+            m_parameters.m_bandsWeights.size() ; ++bandsWeightsIdx )
           {
-            bandsWeightsSum += paramsPtr->m_bandsWeights[ bandsWeightsIdx ];
+            TERP_TRUE_OR_RETURN_FALSE( 
+              m_parameters.m_bandsWeights[ bandsWeightsIdx ] >= 0.0,
+               "Invalid segmenter strategy parameter m_bandsWeights" );            
+            bandsWeightsSum += m_parameters.m_bandsWeights[ bandsWeightsIdx ];
           }
-          TERP_TRUE_OR_RETURN_FALSE( bandsWeightsSum == 1.0,
+          TERP_TRUE_OR_RETURN_FALSE( bandsWeightsSum != 0.0,
             "Invalid segmenter strategy parameter m_bandsWeights" );        
+          for( bandsWeightsIdx = 0 ; bandsWeightsIdx < 
+            m_parameters.m_bandsWeights.size() ; ++bandsWeightsIdx )
+          {
+            m_parameters.m_bandsWeights[ bandsWeightsIdx ] /= bandsWeightsSum;
+          }
+            
         }
         
         m_isInitialized = true;
