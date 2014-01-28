@@ -30,9 +30,11 @@
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../geometry/MultiPolygon.h"
 #include "../../../raster/Raster.h"
+#include "../../../raster/PositionIterator.h"
 #include "../../../rp/ClassifierKMeansStrategy.h"
 #include "../../../rp/ClassifierISOSegStrategy.h"
 #include "../classification/ROIManagerDialog.h"
+#include "../classification/ROIManagerWidget.h"
 #include "ClassifierWizardPage.h"
 #include "ui_ClassifierWizardPageForm.h"
 
@@ -165,6 +167,19 @@ te::rp::Classifier::InputParameters te::qt::widgets::ClassifierWizardPage::getIn
 
     algoInputParams.setClassifierStrategyParams(classifierparameters);
   }
+  else if(type == CLASSIFIER_MAP)
+  {
+    algoInputParams.m_strategyName = "map";
+
+    std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+    std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
+
+    te::rp::ClassifierMAPStrategy::Parameters classifierparameters;
+    classifierparameters.m_trainSamplesPtr = getMAPSamples(m_roiMngDlg->getWidget()->getROISet(), inputRst.get());
+
+    algoInputParams.setClassifierStrategyParams(classifierparameters);
+  }
 
   //get bands
   QList<QListWidgetItem*> selectedBands = m_ui->m_inputRasterBandsListWidget->selectedItems();
@@ -195,6 +210,7 @@ void te::qt::widgets::ClassifierWizardPage::fillClassifierTypes()
 
   m_ui->m_classifierTypeComboBox->addItem(tr("ISOSeg"), CLASSIFIER_ISOSEG);
   m_ui->m_classifierTypeComboBox->addItem(tr("KMeans"), CLASSIFIER_KMEANS);
+  m_ui->m_classifierTypeComboBox->addItem(tr("MAP"), CLASSIFIER_MAP);
 }
 
 void te::qt::widgets::ClassifierWizardPage::listBands()
@@ -220,6 +236,56 @@ void te::qt::widgets::ClassifierWizardPage::listBands()
       }
     }
   }
+}
+
+te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCTPtr te::qt::widgets::ClassifierWizardPage::getMAPSamples(te::cl::ROISet* rs, te::rst::Raster* raster)
+{
+  te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCTPtr mcsctPtr(new te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCT());
+
+  std::map<std::string, te::cl::ROI*> roiSetMap = rs->getROISet();
+  std::map<std::string, te::cl::ROI*>::iterator it = roiSetMap.begin();
+
+  int count = 1;
+
+  //iterate roi set
+  while(it != roiSetMap.end())
+  {
+    std::map<std::string, te::gm::Polygon*> roiMap = it->second->getPolygons();
+    std::map<std::string, te::gm::Polygon*>::iterator itPoly = roiMap.begin();
+
+    te::rp::ClassifierMAPStrategy::Parameters::ClassSamplesContainerT csct;
+
+    //iterate roi
+    while(itPoly != roiMap.end())
+    {
+      te::gm::Polygon* p = itPoly->second;
+
+      te::rst::PolygonIterator<double> itRaster = te::rst::PolygonIterator<double>::begin(raster, p);
+      te::rst::PolygonIterator<double> itRasterEnd = te::rst::PolygonIterator<double>::end(raster, p);
+
+      //iterate polygon
+      while (itRaster != itRasterEnd)
+      {
+        te::rp::ClassifierMAPStrategy::Parameters::ClassSampleT cst;
+
+        raster->getValues(itRaster.getColumn(), itRaster.getRow(), cst);
+
+        csct.push_back(cst);
+
+        ++itRaster;
+      }
+
+      ++itPoly;
+    }
+
+    mcsctPtr->insert(te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCT::value_type(count, csct));
+
+    ++count;
+
+    ++it;
+  }
+
+  return mcsctPtr;
 }
 
 void te::qt::widgets::ClassifierWizardPage::showROIManager(bool show)
