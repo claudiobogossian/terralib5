@@ -214,7 +214,7 @@ bool te::qt::widgets::SegmenterWizard::execute()
   }
   catch(const std::exception& e)
   {
-    QMessageBox::warning(this, tr("Register"), e.what());
+    QMessageBox::warning(this, tr("Segmenter"), e.what());
 
     te::common::ProgressManager::getInstance().removeViewer(id);
 
@@ -224,7 +224,7 @@ bool te::qt::widgets::SegmenterWizard::execute()
   }
   catch(...)
   {
-    QMessageBox::warning(this, tr("Register"), tr("An exception has occuried!"));
+    QMessageBox::warning(this, tr("Segmenter"), tr("An exception has occuried!"));
 
     te::common::ProgressManager::getInstance().removeViewer(id);
 

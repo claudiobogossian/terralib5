@@ -68,13 +68,13 @@ namespace te
             
             unsigned int m_minSegmentSize; //!< A positive minimum segment size (pixels number - default: 100).
             
-            double m_segmentsSimilarityThreshold; //!< Segments similarity treshold - Use lower values to merge only those segments that are more alike - Higher values tend to merge more segments - valid values range: positive values - ; default: 0.9(For use with MeanFeaturesType. Higher values may be required if using BaatzFeaturesType ).
+            double m_segmentsSimilarityThreshold; //!< Segments similarity treshold - Use lower values to merge only those segments that are more similar - Higher values will allow more segments to be merged - valid values range: positive values - default: 0.1 ).
             
             SegmentFeaturesType m_segmentFeatures; //!< What segment features will be used on the segmentation process (default:InvalidFeaturesType).
             
             std::vector< double > m_bandsWeights; //!< The weight given to each band, when applicable (note: the bands weights sum must always be 1) or an empty vector indicating that all bands have the same weight.
             
-            double m_colorWeight; //!< The weight given to the color component, deafult:0.5, valid range: [0,1].
+            double m_colorWeight; //!< The weight given to the color component, deafult:0.75, valid range: [0,1].
             
             double m_compactnessWeight; //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
             
@@ -211,6 +211,11 @@ namespace te
           protected :
             
             unsigned int m_featuresNumber; //!< The number of features (bands).
+            
+            // variables used by the method getDissimilarity
+            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_dissValue;
+            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_diffValue; 
+            mutable unsigned int m_getDissimilarity_meansIdx;
         };        
         
         /*!

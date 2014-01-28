@@ -42,6 +42,7 @@ list (APPEND TE_DEP_LIBS
 		terralib_plugin
 		terralib_qt_widgets
 		terralib_raster
+		terralib_srs
 		terralib_symbology
     )
 

@@ -33,6 +33,17 @@
 
 namespace te
 {
+// Forward declarations
+  namespace rst
+  {
+    class Raster;
+  }
+
+  namespace se
+  {
+    class CoverageStyle;
+  }
+
   namespace wms
   {
 // Forward declaration
@@ -56,6 +67,9 @@ namespace te
       private:
 
         void draw(WMSLayer* layer, te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid);
+
+        void drawRaster(const std::string& layerTitle, te::rst::Raster* raster, te::map::Canvas* canvas, const te::gm::Envelope& bbox, int bboxSRID,
+                        const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style);
     };
 
   } // end namespace wms
