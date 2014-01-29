@@ -31,6 +31,7 @@
 #include "Config.h"
 
 #include <boost/numeric/ublas/matrix.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include <map>
 #include <vector>
@@ -64,8 +65,10 @@ namespace te
             typedef std::vector< ClassSampleT > ClassSamplesContainerT; //!< Class samples container type definition.
             
             typedef std::map< ClassIDT, ClassSamplesContainerT > MClassesSamplesCT; //!< Multi-classes samples container type definition.
+
+            typedef boost::shared_ptr<MClassesSamplesCT> MClassesSamplesCTPtr; //!< A shared pointer to a multi classes samples container type definition.
             
-            MClassesSamplesCT const* m_trainSamplesPtr; //!< A pointer to a always-valid structure where trainning samples are stored.
+            MClassesSamplesCTPtr m_trainSamplesPtr; //!< A shared pointer to a always-valid structure where trainning samples are stored.
 
             std::vector< double > m_prioriProbs; //!< Priori probabilities, one for each class. Values from 0 to 1 (use an empty vector to allow internal calcule of priori probabilities).            
             

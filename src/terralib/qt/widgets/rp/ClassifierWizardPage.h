@@ -27,9 +27,12 @@
 #define __TERRALIB_QT_WIDGETS_RP_INTERNAL_CLASSIFIERWIZARDPAGE_H
 
 // TerraLib
+#include "../../../classification/ROISet.h"
 #include "../../../geometry/Polygon.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../raster/Raster.h"
 #include "../../../rp/Classifier.h"
+#include "../../../rp/ClassifierMAPStrategy.h"
 #include "../Config.h"
 
 // STL
@@ -63,7 +66,9 @@ namespace te
            enum ClassifierTypes
           {
             CLASSIFIER_ISOSEG,
-            CLASSIFIER_KMEANS
+            CLASSIFIER_KMEANS,
+            CLASSIFIER_MAP,
+            CLASSIFIER_EM
           };
 
         public:
@@ -95,11 +100,15 @@ namespace te
 
           void listBands();
 
+          te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCTPtr getMAPSamples(te::cl::ROISet* rs, te::rst::Raster* raster);
+
         public slots:
 
           void showROIManager(bool show);
 
           void onROIManagerClosed();
+
+          void onRoiSetChanged(te::cl::ROISet* rs);
 
         private:
 

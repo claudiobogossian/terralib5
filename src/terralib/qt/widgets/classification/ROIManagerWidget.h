@@ -118,6 +118,10 @@ namespace te
 
           void onPointPicked(double x, double y);
 
+        signals:
+
+          void roiSetChanged(te::cl::ROISet* rs);
+
         private:
 
          std::auto_ptr<Ui::ROIManagerWidgetForm> m_ui;

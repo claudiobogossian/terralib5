@@ -61,7 +61,7 @@ const te::rp::ClassifierMAPStrategy::Parameters& te::rp::ClassifierMAPStrategy::
 
 void te::rp::ClassifierMAPStrategy::Parameters::reset() throw(te::rp::Exception)
 {
-  m_trainSamplesPtr = 0;
+  m_trainSamplesPtr.reset();
   m_prioriProbs.clear();
   m_prioriCalcSampleStep = 2;
 }
