@@ -319,6 +319,8 @@ void te::qt::widgets::ROIManagerWidget::onOpenLayerROIToolButtonClicked()
     ++it;
   }
 
+  emit roiSetChanged(m_rs);
+
   drawROISet();
 }
 
@@ -359,6 +361,8 @@ void te::qt::widgets::ROIManagerWidget::onAddROIToolButtonClicked()
   m_ui->m_roiSetTreeWidget->addTopLevelItem(item);
 
   m_ui->m_labelROILineEdit->clear();
+
+  emit roiSetChanged(m_rs);
 }
 
 void te::qt::widgets::ROIManagerWidget::onRemoveROIToolButtonClicked()
@@ -399,6 +403,8 @@ void te::qt::widgets::ROIManagerWidget::onRemoveROIToolButtonClicked()
   }
 
   drawROISet();
+
+  emit roiSetChanged(m_rs);
 }
 
 void te::qt::widgets::ROIManagerWidget::onFileDialogToolButtonClicked()
@@ -572,6 +578,8 @@ void te::qt::widgets::ROIManagerWidget::onGeomAquired(te::gm::Polygon* poly)
     item->addChild(subItem);
     item->setExpanded(true);
   }
+
+  emit roiSetChanged(m_rs);
   
   drawROISet();
 }

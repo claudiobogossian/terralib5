@@ -303,10 +303,13 @@ void te::qt::widgets::RasterNavigatorWidget::drawRaster(te::rst::Raster* rst, te
   m_mapDisplay->repaint();
 }
 
-void te::qt::widgets::RasterNavigatorWidget::showAsPreview(bool asPreview)
+void te::qt::widgets::RasterNavigatorWidget::showAsPreview(bool asPreview, bool enableZoom)
 {
   delete m_panTool;
   delete m_zoomTool;
+
+  m_panTool = 0;
+  m_zoomTool = 0;
 
   m_ui->m_toolsFrame->setVisible(!asPreview);
   m_ui->m_label->setVisible(!asPreview);
@@ -317,10 +320,13 @@ void te::qt::widgets::RasterNavigatorWidget::showAsPreview(bool asPreview)
   if(asPreview)
   {
     m_panTool = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);
-    m_zoomTool = new te::qt::widgets::ZoomWheel(m_mapDisplay, 1.5);
-
     m_mapDisplay->installEventFilter(m_panTool);
-    m_mapDisplay->installEventFilter(m_zoomTool);
+
+    if(enableZoom)
+    {
+      m_zoomTool = new te::qt::widgets::ZoomWheel(m_mapDisplay, 1.5);
+      m_mapDisplay->installEventFilter(m_zoomTool);
+    }
   }
 }
 

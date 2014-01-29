@@ -57,7 +57,7 @@ te::qt::widgets::SegmenterWizardPage::SegmenterWizardPage(QWidget* parent)
 //build form
   QGridLayout* displayLayout = new QGridLayout(m_ui->m_frame);
   m_navigator.reset( new te::qt::widgets::RasterNavigatorWidget(m_ui->m_frame));
-  m_navigator->showAsPreview(true);
+  m_navigator->showAsPreview(true, false);
   m_navigator->hideColorCompositionTool(true);
   displayLayout->addWidget(m_navigator.get());
   displayLayout->setContentsMargins(0,0,0,0);

@@ -102,7 +102,7 @@ namespace te
 
           void drawRaster(te::rst::Raster* rst, te::se::Style* style = 0);
 
-          void showAsPreview(bool asPreview);
+          void showAsPreview(bool asPreview, bool enableZoom = true);
 
           void hideColorCompositionTool(bool hide);
 

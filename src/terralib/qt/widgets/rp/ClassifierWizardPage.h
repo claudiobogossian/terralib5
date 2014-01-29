@@ -67,7 +67,8 @@ namespace te
           {
             CLASSIFIER_ISOSEG,
             CLASSIFIER_KMEANS,
-            CLASSIFIER_MAP
+            CLASSIFIER_MAP,
+            CLASSIFIER_EM
           };
 
         public:
@@ -106,6 +107,8 @@ namespace te
           void showROIManager(bool show);
 
           void onROIManagerClosed();
+
+          void onRoiSetChanged(te::cl::ROISet* rs);
 
         private:
 
