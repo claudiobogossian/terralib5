@@ -34,6 +34,7 @@
 #include <terralib/raster/Band.h>
 
 #include <boost/lexical_cast.hpp>
+#include <boost/timer.hpp>
 
 #include <memory>
 #include <string>
@@ -111,6 +112,44 @@ void TsFunctions::ihs()
   }
 }
 
+void TsFunctions::getMeanValue()
+{
+  // openning input raster
+  
+  std::map<std::string, std::string> auxRasterInfo;
+  
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_hrc_crop.tif";
+  std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( diskRasterPtr.get() );  
+  
+  double meanValue = 0;
+  
+//  boost::timer timer;
+  CPPUNIT_ASSERT( te::rp::GetMeanValue( *diskRasterPtr->getBand( 0 ), 4, meanValue) );
+//  std::cout << std::endl << "Elapsed:" << timer.elapsed() << std::endl;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 181.340256531345, meanValue, 0.0001 );  
+}
+
+void TsFunctions::getCovarianceValue()
+{
+  // openning input raster
+  
+  std::map<std::string, std::string> auxRasterInfo;
+  
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_hrc_crop.tif";
+  std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( diskRasterPtr.get() );  
+  
+  double covarianceValue = 0;
+  
+//  boost::timer timer;
+  CPPUNIT_ASSERT( te::rp::GetCovarianceValue( *diskRasterPtr->getBand( 0 ), 
+    *diskRasterPtr->getBand( 0 ), 1, 0, 0, covarianceValue) );
+//  std::cout << std::endl << "Elapsed:" << timer.elapsed() << std::endl;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2143.89743610679, covarianceValue, 0.0001 );  
+}
 
 
 

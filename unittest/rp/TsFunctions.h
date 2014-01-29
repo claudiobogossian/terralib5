@@ -38,6 +38,10 @@ class TsFunctions : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( TsFunctions );
   
+  CPPUNIT_TEST( getMeanValue );
+  
+  CPPUNIT_TEST( getCovarianceValue );
+  
   CPPUNIT_TEST( ihs );
 
   CPPUNIT_TEST_SUITE_END();
@@ -45,6 +49,10 @@ class TsFunctions : public CPPUNIT_NS::TestFixture
 protected :
 
   void ihs();
+  
+  void getMeanValue();
+  
+  void getCovarianceValue();
   
 };
 
