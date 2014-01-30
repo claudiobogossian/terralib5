@@ -346,6 +346,7 @@ namespace te
       \param maxThreads The maximum number of threads to use (0-auto, 1-single thread used).
       \param meanValue The calculated mean value.
       \return true if OK, false on errors.
+      \note Optimized for rasters where the used bands have the same blocking scheme.
     */
     TERPEXPORT bool GetMeanValue( 
       const te::rst::Band& band, 
@@ -361,6 +362,7 @@ namespace te
       \param mean2ValuePtr A pointer to a pre-calculated band2 mean value or zero if it does not exist.
       \param covarianceValue The calculated covariance value.
       \return true if OK, false on errors.
+      \note Optimized for rasters where the used bands have the same blocking scheme.
       \ingroup rp_func
     */
     TERPEXPORT bool GetCovarianceValue( 
@@ -376,9 +378,10 @@ namespace te
       \param inputRaster Input raster.
       \param inputRasterBands Input raster bands.
       \param pcaMatrix The matrix generated over the principal components process.
-      \param pcaRaster The pré-initiated output PCA raster.
+      \param pcaRaster The pré-initiated output PCA raster (with the same dimentions of inputRaster).
       \param maxThreads The maximum number of threads to use (0-auto, 1-single thread used).
       \return true if OK, false on errors.
+      \note Optimized for rasters where the used bands have the same blocking scheme.
       \ingroup rp_func
     */
     TERPEXPORT bool GeneratePrincipalComponents( 

@@ -34,6 +34,7 @@
 #include "../raster/RasterProperty.h"
 #include "../raster/RasterIterator.h"
 #include "../geometry/Point.h"
+#include "../common/MatrixUtils.h"
 #include "Exception.h"
 #include "Functions.h"
 #include "Macros.h"
@@ -1391,9 +1392,8 @@ namespace te
       
       // Covariance matrix
       
-      boost::numeric::ublas::matrix< double > covMatrix( inputRasterBands.size(),
-         inputRasterBands.size() );
-         
+      pcaMatrix.resize( inputRasterBands.size(), inputRasterBands.size() );
+      
       for( unsigned int covMatrixIdx1 = 0 ; covMatrixIdx1 < inputRasterBands.size() ;
         ++covMatrixIdx1 )
       {
@@ -1412,13 +1412,153 @@ namespace te
           
           if( ! GetCovarianceValue( *( inputRaster.getBand( inputRasterBands[ covMatrixIdx1 ] ) ),
              *( inputRaster.getBand( inputRasterBands[ covMatrixIdx2 ] ) ),
-             maxThreads, 0,  0, covMatrix( covMatrixIdx1, covMatrixIdx2 ) ) )
+             maxThreads, 0,  0, pcaMatrix( covMatrixIdx1, covMatrixIdx2 ) ) )
           {
             return false;
           }
         }
       }
+      
+      // Eigen stuff
+      
+      boost::numeric::ublas::matrix< double > eigenValues;
+      boost::numeric::ublas::matrix< double > eigenVectors;
+      
+      if( ! te::common::EigenVectors( pcaMatrix, eigenVectors, eigenValues ) )
+      {
+        return false;
+      }
+      
+      // Checking if optmized PCA can be executed
+      
+      bool useOptimizedPCA = false;
+      
+      {
+        for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx <
+          inputRasterBands.size() ; ++inputRasterBandsIdx )
+        {
+          if(
+              ( 
+                inputRaster.getBand( inputRasterBands[ inputRasterBandsIdx ] )->getProperty()->m_blkw 
+                != 
+                inputRaster.getBand( inputRasterBands[ 0 ] )->getProperty()->m_blkw 
+              )
+              ||
+              ( 
+                inputRaster.getBand( inputRasterBands[ inputRasterBandsIdx ] )->getProperty()->m_blkh 
+                != 
+                inputRaster.getBand( inputRasterBands[ 0 ] )->getProperty()->m_blkh
+              )              
+              ||
+              ( 
+                inputRaster.getBand( inputRasterBands[ inputRasterBandsIdx ] )->getProperty()->m_nblocksx 
+                != 
+                inputRaster.getBand( inputRasterBands[ 0 ] )->getProperty()->m_nblocksx 
+              )    
+              ||
+              ( 
+                inputRaster.getBand( inputRasterBands[ inputRasterBandsIdx ] )->getProperty()->m_nblocksy 
+                != 
+                inputRaster.getBand( inputRasterBands[ 0 ] )->getProperty()->m_nblocksy 
+              )  
+              ||
+              ( 
+                pcaRaster.getBand( inputRasterBandsIdx )->getProperty()->m_blkw 
+                != 
+                inputRaster.getBand( inputRasterBands[ 0 ] )->getProperty()->m_blkw 
+              )
+              ||
+              ( 
+                pcaRaster.getBand( inputRasterBandsIdx )->getProperty()->m_blkh 
+                != 
+                inputRaster.getBand( inputRasterBands[ 0 ] )->getProperty()->m_blkh
+              )              
+              ||
+              ( 
+                pcaRaster.getBand( inputRasterBandsIdx )->getProperty()->m_nblocksx 
+                != 
+                inputRaster.getBand( inputRasterBands[ 0 ] )->getProperty()->m_nblocksx 
+              )    
+              ||
+              ( 
+                pcaRaster.getBand( inputRasterBandsIdx )->getProperty()->m_nblocksy 
+                != 
+                inputRaster.getBand( inputRasterBands[ 0 ] )->getProperty()->m_nblocksy 
+              )                                     
+            )
+          {
+            useOptimizedPCA = false;
+            break;
+          }
+        }
+      }
+      
+      // PCA remapping
+      
+      if( false /*useOptimizedPCA*/ )
+      {
         
+      }
+      else
+      {
+        const unsigned int inputRasterBandsSize = inputRasterBands.size();
+        const unsigned int nRows = inputRaster.getNumberOfRows();
+        const unsigned int nCols = inputRaster.getNumberOfColumns();
+        boost::numeric::ublas::matrix< double > pixelValues( inputRasterBands.size(), 1 );
+        boost::numeric::ublas::matrix< double > remappedPixelValues( inputRasterBands.size(), 1 );
+        std::vector< double > inputNoDataValues( inputRasterBandsSize );
+        std::vector< double > outputNoDataValues( inputRasterBandsSize );
+        unsigned int inputRasterBandsIdx = 0;
+        unsigned int row = 0;
+        unsigned int col = 0;
+        bool pixelIsValid = false;
+        
+        for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < inputRasterBandsSize ;
+          ++inputRasterBandsIdx )
+        {
+          inputNoDataValues[ inputRasterBandsIdx ] = inputRaster.getBand( 
+            inputRasterBands[ inputRasterBandsIdx ] )->getProperty()->m_noDataValue;
+          outputNoDataValues[ inputRasterBandsIdx ] = pcaRaster.getBand( 
+            inputRasterBandsIdx )->getProperty()->m_noDataValue;
+        }
+        
+        for( row = 0 ; row < nRows ; ++row )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            pixelIsValid = true;
+            
+            for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < inputRasterBandsSize ;
+              ++inputRasterBandsIdx )
+            {
+              inputRaster.getValue( col, row, pixelValues( inputRasterBandsIdx, 0 ),
+                inputRasterBands[ inputRasterBandsIdx ] );
+              
+              if( pixelValues( inputRasterBandsIdx, 0 ) == inputNoDataValues[ inputRasterBandsIdx ] )
+              {
+                pixelIsValid = false;
+                break;
+              }
+            }
+            
+            if( pixelIsValid )
+            {
+              remappedPixelValues = boost::numeric::ublas::prod( eigenVectors, pixelValues );
+            }
+            else
+            {
+              for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < inputRasterBandsSize ;
+                ++inputRasterBandsIdx )
+              {              
+                pcaRaster.setValue( col, row, outputNoDataValues[ inputRasterBandsIdx ], 
+                  inputRasterBandsIdx );
+              }
+            }
+          }
+        }
+      }
+        
+      return true;
     }
 
   } // end namespace rp
