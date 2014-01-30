@@ -42,7 +42,6 @@ namespace te
     /*!
       \class MixtureModelStrategy
       \brief Raster mixture model strategy base class.
-      \ingroup rp
      */
     class TERPEXPORT MixtureModelStrategy
     {

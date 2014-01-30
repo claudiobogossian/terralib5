@@ -743,7 +743,7 @@ namespace te
       return randomPoints;
     }   
     
-    bool ConvertRBG2IHS( const te::rst::Raster& inputRGBRaster, 
+    bool ConvertRGB2IHS( const te::rst::Raster& inputRGBRaster, 
       const unsigned int redBandIdx, const unsigned int greenBandIdx,
       const unsigned int blueBandIdx, const double rgbRangeMin, 
       const double rgbRangeMax, te::rst::Raster& outputIHSRaster ) 

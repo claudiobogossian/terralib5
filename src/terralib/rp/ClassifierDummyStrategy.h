@@ -38,6 +38,8 @@ namespace te
       \class ClassifierDummyStrategy
 
       \brief Dummy strategy (just for testing purposes).
+      
+      \ingroup rp_class
     */
     class TERPEXPORT ClassifierDummyStrategy : public ClassifierStrategy
     {

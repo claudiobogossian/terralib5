@@ -42,7 +42,6 @@ namespace te
       \class MixtureModelStrategyFactory
 
       \brief Raster Mixture model strategy factory base class.
-      \ingroup rp
     */
     class TERPEXPORT MixtureModelStrategyFactory : public te::common::AbstractFactory<te::rp::MixtureModelStrategy, std::string, std::less<std::string> >
     {
