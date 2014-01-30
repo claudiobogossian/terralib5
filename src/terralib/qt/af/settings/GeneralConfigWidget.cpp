@@ -124,13 +124,14 @@ m_terraIcon(0)
 
   m_resumeText = tr("Changes the general configurations of the application.");
 
-  m_ui->m_aboutLogoFileLineEdit->setLabel(tr("About logo: "));
+  m_ui->m_aboutLogoFileLineEdit->setLabel(tr("About logo file: "));
   m_ui->m_helpFileLineEdit->setLabel(tr("Help file: "));
   m_ui->m_iconThemeFolderLineEdit->setLabel(tr("Icon theme folder: "));
   m_ui->m_pluginsFileLineEdit->setLabel(tr("Plugins file: "));
-  m_ui->m_sysIconNameLineEdit->setLabel(tr("System icon: "));
-  m_ui->m_terralibLogoFileLineEdit->setLabel(tr("Terralib logo: "));
-  m_ui->m_userSettingsFileLineEdit->setLabel(tr("User settings: "));
+  m_ui->m_sysIconNameLineEdit->setLabel(tr("System icon file: "));
+  m_ui->m_terralibLogoFileLineEdit->setLabel(tr("Terralib logo file: "));
+  m_ui->m_userSettingsFileLineEdit->setLabel(tr("User settings file: "));
+  m_ui->m_dsLocationFileFileChooser->setLabel(tr("Data sources file: "));
 
   m_ui->m_addPluginCategoryToolButton->setIcon(QIcon::fromTheme("list-add"));
   m_ui->m_removePluginCategoryToolButton->setIcon(QIcon::fromTheme("list-remove"));
@@ -150,6 +151,7 @@ m_terraIcon(0)
 
   m_ui->m_pluginsFileLineEdit->setFilterPattern(xmlFilters);
   m_ui->m_userSettingsFileLineEdit->setFilterPattern(xmlFilters);
+  m_ui->m_dsLocationFileFileChooser->setFilterPattern(xmlFilters);
 
   // Setting help files filter
   m_ui->m_helpFileLineEdit->setFilterPattern(tr("Help files(*.qhc *.QHC)"));
