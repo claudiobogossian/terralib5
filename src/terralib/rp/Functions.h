@@ -315,7 +315,7 @@ namespace te
       \note IHS data with the following channels ranges: I:[0,1] H:[0,2pi] (radians) S:[0,1].   
       \ingroup rp_func   
     */
-    TERPEXPORT bool ConvertRBG2IHS( const te::rst::Raster& inputRGBRaster, 
+    TERPEXPORT bool ConvertRGB2IHS( const te::rst::Raster& inputRGBRaster, 
       const unsigned int redBandIdx, const unsigned int greenBandIdx,
       const unsigned int blueBandIdx, const double rgbRangeMin, 
       const double rgbRangeMax, te::rst::Raster& outputIHSRaster );  

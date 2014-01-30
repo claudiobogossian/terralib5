@@ -64,7 +64,7 @@ void TsFunctions::ihs()
     "MEM", 0, std::vector<te::rst::BandProperty*>(), auxRasterInfo) );
   CPPUNIT_ASSERT( ihsRasterPtr.get() );
   
-  CPPUNIT_ASSERT( te::rp::ConvertRBG2IHS( *diskRasterPtr, 0, 1, 2, 0, 255, *ihsRasterPtr ) );
+  CPPUNIT_ASSERT( te::rp::ConvertRGB2IHS( *diskRasterPtr, 0, 1, 2, 0, 255, *ihsRasterPtr ) );
   
   auxRasterInfo.clear();
   auxRasterInfo["MEM_RASTER_NROWS"] = boost::lexical_cast< std::string >( 
