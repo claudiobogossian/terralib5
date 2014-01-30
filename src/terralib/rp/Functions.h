@@ -37,9 +37,6 @@
 #include "../raster/BandProperty.h"
 #include "../raster/RasterFactory.h"
 
-// Boost
-#include <boost/numeric/ublas/lu.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
 
 // STL
 #include <memory>
@@ -311,6 +308,36 @@ namespace te
       const unsigned int intensityBandIdx, const unsigned int hueBandIdx,
       const unsigned int saturationBandIdx, const double rgbRangeMin, 
       const double rgbRangeMax, te::rst::Raster& outputRGBRaster );      
+      
+    /*!
+      \brief Get the mean of band pixel values.
+      \param band The input raster band.
+      \param maxThreads The maximum number of threads to use (0-auto, 1-single thread used).
+      \param meanValue The calculated mean value.
+      \return true if OK, false on errors.
+    */
+    TERPEXPORT bool GetMeanValue( 
+      const te::rst::Band& band, 
+      const unsigned int maxThreads, 
+      double& meanValue );    
+      
+    /*!
+      \brief Get the covariance of band pixel values.
+      \param band1 The input band 1.
+      \param band2 The input band 2.
+      \param maxThreads The maximum number of threads to use (0-auto, 1-single thread used).
+      \param mean1ValuePtr A pointer to a pre-calculated band1 mean value or zero if it does not exist.
+      \param mean2ValuePtr A pointer to a pre-calculated band2 mean value or zero if it does not exist.
+      \param covarianceValue The calculated covariance value.
+      \return true if OK, false on errors.
+    */
+    TERPEXPORT bool GetCovarianceValue( 
+      const te::rst::Band& band1, 
+      const te::rst::Band& band2, 
+      const unsigned int maxThreads, 
+      double const * const mean1ValuePtr, 
+      double const * const mean2ValuePtr,  
+      double& covarianceValue );       
     
   } // end namespace rp
 }   // end namespace te

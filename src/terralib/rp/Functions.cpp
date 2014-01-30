@@ -44,9 +44,13 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/scoped_array.hpp>
 #include <boost/random.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/thread.hpp>
+#include <boost/numeric/ublas/lu.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
 
 
 // STL
@@ -64,6 +68,29 @@ namespace te
 {
   namespace rp
   {
+    struct GetMeanValueThreadParams
+    {
+      te::rst::Band const * m_inputBandPtr;
+      Matrix< bool >* m_rasterBlocksStatusPtr;
+      double* m_meanValuePtr;
+      double* m_pixelsNumberValuePtr;
+      bool m_returnStatus;
+      boost::mutex* m_mutexPtr;
+    };    
+    
+    struct GetCovarianceValueThreadParams
+    {
+      te::rst::Band const * m_inputBand1Ptr;
+      te::rst::Band const * m_inputBand2Ptr;
+      Matrix< bool >* m_rasterBlocksStatusPtr;
+      double* m_covarianceValuePtr;
+      double* m_pixelsNumberValuePtr;
+      bool m_returnStatus;
+      double m_mean1Value;
+      double m_mean2Value;
+      boost::mutex* m_mutexPtr;
+    };       
+    
     bool CreateNewRaster( const te::rst::Grid& rasterGrid,
       const std::vector< te::rst::BandProperty* >& bandsProperties,
       const std::string& outDataSetName,
@@ -963,6 +990,376 @@ namespace te
       
       return true;
     }
+    
+    void GetMeanValueThread( GetMeanValueThreadParams* paramsPtr )
+    {
+      paramsPtr->m_mutexPtr->lock();
+      const unsigned int blockElementsNumber = paramsPtr->m_inputBandPtr->getProperty()->m_blkh *
+        paramsPtr->m_inputBandPtr->getProperty()->m_blkw;
+      const int blockDataType = paramsPtr->m_inputBandPtr->getProperty()->getType();
+      const int blockSizeBytes = paramsPtr->m_inputBandPtr->getBlockSize();
+      const double noDataValue = paramsPtr->m_inputBandPtr->getProperty()->m_noDataValue;
+      paramsPtr->m_mutexPtr->unlock();
+
+      boost::scoped_array< unsigned char > blockBuffer( new unsigned char[ blockSizeBytes ] );
+      boost::scoped_array< double > doubleBuffer( new double[ blockElementsNumber ] );
+      unsigned blkX = 0;
+      unsigned int elementIdx = 0;
+      double mean = 0;
+      double meanElementsNumber = 0;
+      
+      for( unsigned blkY = 0 ; blkY < paramsPtr->m_rasterBlocksStatusPtr->getLinesNumber() ;
+        ++blkY )
+      {
+        for( blkX = 0 ; blkX < paramsPtr->m_rasterBlocksStatusPtr->getColumnsNumber() ;
+          ++blkX )
+        {
+          paramsPtr->m_mutexPtr->lock();
+          
+          if( paramsPtr->m_rasterBlocksStatusPtr->operator()( blkY, blkX ) )
+          {
+            paramsPtr->m_mutexPtr->unlock();
+          }
+          else
+          {
+            paramsPtr->m_rasterBlocksStatusPtr->operator()( blkY, blkX ) = true;
+            
+            paramsPtr->m_inputBandPtr->read( blkX, blkY, blockBuffer.get() );
+            
+            paramsPtr->m_mutexPtr->unlock();
+            
+            Convert2DoublesVector( blockBuffer.get(), blockDataType, blockElementsNumber,
+              doubleBuffer.get() );
+              
+            for( elementIdx = 0 ; elementIdx < blockElementsNumber ; ++elementIdx )
+            {
+              if( noDataValue != doubleBuffer[ elementIdx ] )
+              {
+                mean = 
+                  ( 
+                    ( 
+                      mean 
+                      * 
+                      meanElementsNumber 
+                    ) 
+                    + 
+                    doubleBuffer[ elementIdx ] 
+                  ) 
+                  /
+                  ( 
+                    meanElementsNumber 
+                    + 
+                    1.0
+                  );
+                  
+                meanElementsNumber = meanElementsNumber + 1.0;
+              }
+            }
+          }
+        }
+      }
+      
+      paramsPtr->m_mutexPtr->lock();
+      ( *(paramsPtr->m_meanValuePtr) ) = 
+        ( 
+          ( 
+            ( *(paramsPtr->m_meanValuePtr) ) 
+            * 
+            ( *( paramsPtr->m_pixelsNumberValuePtr ) ) 
+          ) 
+          + 
+          ( 
+            mean 
+            * 
+            meanElementsNumber 
+          ) 
+        ) 
+        /
+        ( 
+          ( *( paramsPtr->m_pixelsNumberValuePtr ) ) 
+          + 
+          meanElementsNumber 
+        );
+      ( *( paramsPtr->m_pixelsNumberValuePtr ) ) += meanElementsNumber;
+      paramsPtr->m_mutexPtr->unlock();      
+    }
+    
+    bool GetMeanValue( const te::rst::Band& band, 
+      const unsigned int maxThreads, 
+      double& meanValue )
+    {
+      Matrix< bool > rasterBlocksStatus;
+      if( ! rasterBlocksStatus.reset( band.getProperty()->m_nblocksy,
+        band.getProperty()->m_nblocksx, Matrix< bool >::RAMMemPol ) )
+      {
+        return false;
+      }
+      for( unsigned int row = 0 ; row < rasterBlocksStatus.getLinesNumber() ;
+        ++row )
+      {
+        for( unsigned int col = 0 ; col < rasterBlocksStatus.getColumnsNumber() ;
+          ++col )
+        {
+          rasterBlocksStatus( row, col ) = false;
+        }
+      }
+      
+      meanValue = 0.0;
+      
+      double pixelsNumber = 0.0;
+      
+      boost::mutex mutex;
+      
+      GetMeanValueThreadParams params;
+      params.m_inputBandPtr = &band;
+      params.m_rasterBlocksStatusPtr = &rasterBlocksStatus;
+      params.m_meanValuePtr = &meanValue;
+      params.m_pixelsNumberValuePtr = &pixelsNumber;
+      params.m_returnStatus = true;
+      params.m_mutexPtr = &mutex;
+      
+      if( maxThreads == 1 )
+      {
+        GetMeanValueThread( &params );
+      }
+      else
+      {
+        unsigned int threadsNumber = maxThreads ? maxThreads : te::common::GetPhysProcNumber();
+        
+        boost::thread_group threads;
+          
+        for( unsigned int threadIdx = 0 ; threadIdx < threadsNumber ;
+          ++threadIdx )
+        {
+          threads.add_thread( new boost::thread( GetMeanValueThread, 
+             &params ) );
+        };  
+        
+        threads.join_all();
+      }
+      
+      return params.m_returnStatus;
+    }
+    
+    void GetCovarianceValueThread( GetCovarianceValueThreadParams* paramsPtr )
+    {
+      paramsPtr->m_mutexPtr->lock();
+      const unsigned int blockElementsNumber = paramsPtr->m_inputBand1Ptr->getProperty()->m_blkh *
+        paramsPtr->m_inputBand1Ptr->getProperty()->m_blkw;
+      const int blockDataType1 = paramsPtr->m_inputBand1Ptr->getProperty()->getType();
+      const int blockDataType2 = paramsPtr->m_inputBand2Ptr->getProperty()->getType();
+      const int blockSizeBytes1 = paramsPtr->m_inputBand1Ptr->getBlockSize();
+      const int blockSizeBytes2 = paramsPtr->m_inputBand2Ptr->getBlockSize();
+      const double noDataValue1 = paramsPtr->m_inputBand1Ptr->getProperty()->m_noDataValue;
+      const double noDataValue2 = paramsPtr->m_inputBand2Ptr->getProperty()->m_noDataValue;
+      paramsPtr->m_mutexPtr->unlock();
+
+      boost::scoped_array< unsigned char > blockBuffer1( new unsigned char[ blockSizeBytes1 ] );
+      boost::scoped_array< unsigned char > blockBuffer2( new unsigned char[ blockSizeBytes2 ] );
+      boost::scoped_array< double > doubleBuffer1( new double[ blockElementsNumber ] );
+      boost::scoped_array< double > doubleBuffer2( new double[ blockElementsNumber ] );
+      unsigned blkX = 0;
+      unsigned int elementIdx = 0;
+      double covariance = 0;
+      double elementsNumber = 0;
+      double diff1 = 0;
+      double diff2 = 0;
+      
+      for( unsigned blkY = 0 ; blkY < paramsPtr->m_rasterBlocksStatusPtr->getLinesNumber() ;
+        ++blkY )
+      {
+        for( blkX = 0 ; blkX < paramsPtr->m_rasterBlocksStatusPtr->getColumnsNumber() ;
+          ++blkX )
+        {
+          paramsPtr->m_mutexPtr->lock();
+          
+          if( paramsPtr->m_rasterBlocksStatusPtr->operator()( blkY, blkX ) )
+          {
+            paramsPtr->m_mutexPtr->unlock();
+          }
+          else
+          {
+            paramsPtr->m_rasterBlocksStatusPtr->operator()( blkY, blkX ) = true;
+            
+            paramsPtr->m_inputBand1Ptr->read( blkX, blkY, blockBuffer1.get() );
+            paramsPtr->m_inputBand2Ptr->read( blkX, blkY, blockBuffer2.get() );
+            
+            paramsPtr->m_mutexPtr->unlock();
+            
+            Convert2DoublesVector( blockBuffer1.get(), blockDataType1, blockElementsNumber,
+              doubleBuffer1.get() );
+            Convert2DoublesVector( blockBuffer2.get(), blockDataType2, blockElementsNumber,
+              doubleBuffer2.get() );
+              
+            for( elementIdx = 0 ; elementIdx < blockElementsNumber ; ++elementIdx )
+            {
+              if( ( noDataValue1 != doubleBuffer1[ elementIdx ] ) &&
+                ( noDataValue2 != doubleBuffer2[ elementIdx ] ) )
+              {
+                diff1 = doubleBuffer1[ elementIdx ] - paramsPtr->m_mean1Value;
+                diff2 = doubleBuffer2[ elementIdx ] - paramsPtr->m_mean2Value;
+                
+                covariance += ( diff1 * diff2 );
+                  
+                elementsNumber = elementsNumber + 1.0;
+              }
+            }
+          }
+        }
+      }
+      
+      paramsPtr->m_mutexPtr->lock();
+      ( *(paramsPtr->m_covarianceValuePtr) ) += covariance;
+      ( *( paramsPtr->m_pixelsNumberValuePtr ) ) += elementsNumber;
+      paramsPtr->m_mutexPtr->unlock();      
+    }    
+    
+    bool GetCovarianceValue( const te::rst::Band& band1, 
+      const te::rst::Band& band2, const unsigned int maxThreads, 
+      double const * const mean1ValuePtr, double const * const mean2ValuePtr,  
+      double& covarianceValue )
+    {
+      if( ( band1.getProperty()->m_blkw * band1.getProperty()->m_nblocksx ) !=
+        ( band2.getProperty()->m_blkw * band2.getProperty()->m_nblocksx ) )
+      {
+        return false;
+      }
+      
+      if( ( band1.getProperty()->m_blkh * band1.getProperty()->m_nblocksy ) !=
+        ( band2.getProperty()->m_blkh * band2.getProperty()->m_nblocksy ) )
+      {
+        return false;
+      }      
+      
+      double mean1 = 0;
+      if( mean1ValuePtr )
+      {
+        mean1 = (*mean1ValuePtr);
+      }
+      else
+      {
+        if( ! GetMeanValue( band1, maxThreads, mean1 ) )
+        {
+          return false;
+        }
+      }
+      
+      double mean2 = 0;
+      if( mean2ValuePtr )
+      {
+        mean2 = (*mean2ValuePtr);
+      }
+      else
+      {
+        if( ! GetMeanValue( band2, maxThreads, mean2 ) )
+        {
+          return false;
+        }
+      }      
+     
+      if( ( band1.getProperty()->m_blkw == band2.getProperty()->m_blkw )
+        && ( band1.getProperty()->m_blkh == band2.getProperty()->m_blkh )
+        && ( band1.getProperty()->m_nblocksx == band2.getProperty()->m_nblocksx )
+        && ( band1.getProperty()->m_nblocksy == band2.getProperty()->m_nblocksy ) )
+      {
+        Matrix< bool > rasterBlocksStatus;
+        if( ! rasterBlocksStatus.reset( band1.getProperty()->m_nblocksy,
+          band1.getProperty()->m_nblocksx, Matrix< bool >::RAMMemPol ) )
+        {
+          return false;
+        }
+        for( unsigned int row = 0 ; row < rasterBlocksStatus.getLinesNumber() ;
+          ++row )
+        {
+          for( unsigned int col = 0 ; col < rasterBlocksStatus.getColumnsNumber() ;
+            ++col )
+          {
+            rasterBlocksStatus( row, col ) = false;
+          }
+        }
+              
+        covarianceValue = 0.0;
+        
+        double pixelsNumber = 0.0;
+        
+        boost::mutex mutex;
+        
+        GetCovarianceValueThreadParams params;
+        params.m_inputBand1Ptr = &band1;
+        params.m_inputBand2Ptr = &band2;
+        params.m_rasterBlocksStatusPtr = &rasterBlocksStatus;
+        params.m_covarianceValuePtr = &covarianceValue;
+        params.m_pixelsNumberValuePtr = &pixelsNumber;
+        params.m_returnStatus = true;
+        params.m_mutexPtr = &mutex;
+        params.m_mean1Value = mean1;
+        params.m_mean2Value = mean2;
+        
+        if( maxThreads == 1 )
+        {
+          GetCovarianceValueThread( &params );
+        }
+        else
+        {
+          unsigned int threadsNumber = maxThreads ? maxThreads : te::common::GetPhysProcNumber();
+          
+          boost::thread_group threads;
+            
+          for( unsigned int threadIdx = 0 ; threadIdx < threadsNumber ;
+            ++threadIdx )
+          {
+            threads.add_thread( new boost::thread( GetCovarianceValueThread, 
+               &params ) );
+          };  
+          
+          threads.join_all();
+        }
+        
+        if( pixelsNumber != 0.0 )
+        {
+          covarianceValue /= pixelsNumber;
+        }
+        
+        return params.m_returnStatus;
+      }
+      else
+      {
+        const unsigned int nCols = band1.getProperty()->m_blkw * band1.getProperty()->m_nblocksx;
+        const unsigned int nRows = band1.getProperty()->m_blkh * band1.getProperty()->m_nblocksy;
+        double value1 = 0;
+        double value2 = 0;
+        const double noDataValue1 = band1.getProperty()->m_noDataValue;
+        const double noDataValue2 = band2.getProperty()->m_noDataValue;    
+        unsigned int col = 0;
+        double pixelsNumber = 0.0;
+        
+        covarianceValue = 0;
+        
+        for( unsigned int row = 0 ; row < nRows ; ++row )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            band1.getValue( col, row, value1 );
+            band2.getValue( col, row, value2 );
+            
+            if( ( noDataValue1 != value1 ) &&
+              ( noDataValue2 != value2 ) )
+            {
+              covarianceValue += ( ( value1 - mean1 ) * ( value2 - mean2 ) );
+                
+              pixelsNumber = pixelsNumber + 1.0;
+            }            
+          }
+        }
+        
+        if( pixelsNumber != 0.0 )
+        {
+          covarianceValue /= pixelsNumber;
+        }
+        
+        return true;
+      }
+    }    
 
   } // end namespace rp
 }   // end namespace te

@@ -852,7 +852,7 @@ void te::qt::af::WriteConfigFile(const QString& fileName, const QString& appName
   p.add("Application.DefaultPluginsCategory.Category", "Spatial Analysis");
   p.add("Application.DefaultPluginsCategory.Category", "Spatial Operations");
   p.add("Application.DefaultPluginsCategory.Category", "Web Services");
-  p.add("Application.AboutDialogLogo.<xmlattr>.xlink:href", teDir.toStdString() + "/resources/images/png/terralib.png");
+  p.add("Application.AboutDialogLogo.<xmlattr>.xlink:href", teDir.toStdString() + "/resources/images/png/terraview-textual.png");
   p.add("Application.TerraLibLogo.<xmlattr>.xlink:href", teDir.toStdString() + "/resources/images/png/terralib-globe.png");
 
   QDir dir(info.absoluteDir());

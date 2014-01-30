@@ -62,7 +62,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QLineEdit" name="m_dbPathLineEdit"/>
+    <widget class="QLineEdit" name="m_serverLineEdit"/>
    </item>
    <item>
     <widget class="QLabel" name="label_2">
@@ -82,7 +82,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QTextEdit" name="m_resumeTextEdit">
+    <widget class="QTextEdit" name="m_dataSourceDescriptionTextEdit">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
        <horstretch>0</horstretch>
@@ -159,9 +159,9 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>m_dbPathLineEdit</tabstop>
+  <tabstop>m_serverLineEdit</tabstop>
   <tabstop>m_datasourceTitleLineEdit</tabstop>
-  <tabstop>m_resumeTextEdit</tabstop>
+  <tabstop>m_dataSourceDescriptionTextEdit</tabstop>
   <tabstop>m_openPushButton</tabstop>
   <tabstop>m_closePushButton</tabstop>
   <tabstop>m_testPushButton</tabstop>

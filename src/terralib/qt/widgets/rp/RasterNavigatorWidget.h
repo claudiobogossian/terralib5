@@ -82,13 +82,17 @@ namespace te
         public:
 
           /*!
-            \brief This method is used to set the selected layer for mixture model operation
+            \brief This method is used to set the selected layer
             
             \param layer The layer ptr 
 
             \note This layer MUST HAVE a valid raster object.
           */
           void set(te::map::AbstractLayerPtr layer, bool setFullScaleBox = false);
+
+          void setVectorial(te::map::AbstractLayerPtr layer);
+
+          void removeVectorial();
 
           te::gm::Envelope getCurrentExtent();
 
@@ -98,7 +102,7 @@ namespace te
 
           void drawRaster(te::rst::Raster* rst, te::se::Style* style = 0);
 
-          void showAsPreview(bool asPreview);
+          void showAsPreview(bool asPreview, bool enableZoom = true);
 
           void hideColorCompositionTool(bool hide);
 
@@ -111,6 +115,8 @@ namespace te
           void hideInfoTool(bool hide);
 
           void hideExtraDisplaysTool(bool hide);
+
+          void setSelectionMode(bool mode);
 
         protected slots:
 
@@ -164,9 +170,9 @@ namespace te
 
           void mapDisplayExtentChanged();
 
-          void pointPicked(double x, double y, te::qt::widgets::MapDisplay* map);
+          void pointPicked(double x, double y);
 
-          void geomAquired(te::gm::Polygon* poly, te::qt::widgets::MapDisplay* map);
+          void geomAquired(te::gm::Polygon* poly);
 
         protected:
 
@@ -195,7 +201,10 @@ namespace te
 
           int m_currentColumn;                                       //!< The column position of mouse in map display.
           int m_currentRow;                                          //!< The row position of mouse in map display.
+
           te::map::Visibility m_visibility;
+
+          QCursor m_pointCursor;
       };
 
     } // end namespace widgets

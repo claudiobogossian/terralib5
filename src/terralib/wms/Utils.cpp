@@ -114,6 +114,12 @@ void te::wms::ExtractRequestValues(const std::string& request,
   std::map<std::string, std::string>::const_iterator it = kvp.find("LAYER");
   if(it != kvp.end())
     layer = it->second;
+  else
+  {
+    // Here assumes that is a simple request by name
+    layer = request;
+    return;
+  }
 
   // Width
   it = kvp.find("WIDTH");
@@ -157,7 +163,7 @@ std::string te::wms::BuildGetMapRequest(const std::string& serverUrl,
     request += "<ServerUrl>" + url + "</ServerUrl>";
     request += "<SRS>" + info.m_srs + "</SRS>";
     request += "<ImageFormat>" + format + "</ImageFormat>";
-    request += "<Transparent>FALSE</Transparent>";
+    request += "<Transparent>TRUE</Transparent>";
     request += "<Layers>" + info.m_name + "</Layers>";
   request += "</Service>";
 
@@ -177,6 +183,8 @@ std::string te::wms::BuildGetMapRequest(const std::string& serverUrl,
     request += "<SizeX>" + width + "</SizeX>";
     request += "<SizeY>" + height + "</SizeY>";
   request += "</DataWindow>";
+
+  request += "<BandsCount>4</BandsCount>";
 
   // BlockSize
   request += "<BlockSizeX>" + width + "</BlockSizeX>";

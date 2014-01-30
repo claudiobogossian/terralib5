@@ -57,7 +57,7 @@ te::qt::widgets::SegmenterWizardPage::SegmenterWizardPage(QWidget* parent)
 //build form
   QGridLayout* displayLayout = new QGridLayout(m_ui->m_frame);
   m_navigator.reset( new te::qt::widgets::RasterNavigatorWidget(m_ui->m_frame));
-  m_navigator->showAsPreview(true);
+  m_navigator->showAsPreview(true, false);
   m_navigator->hideColorCompositionTool(true);
   displayLayout->addWidget(m_navigator.get());
   displayLayout->setContentsMargins(0,0,0,0);
@@ -75,7 +75,10 @@ te::qt::widgets::SegmenterWizardPage::SegmenterWizardPage(QWidget* parent)
   m_ui->m_minimumSegmentSizeRGLineEdit_2->setValidator(intValB);
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters regGrowStrategyParameters;
+  m_ui->m_minimumSegmentSizeRGLineEdit->setText( QString::number( regGrowStrategyParameters.m_minSegmentSize ) );
+  m_ui->m_minimumSegmentSizeRGLineEdit_2->setText( QString::number( regGrowStrategyParameters.m_minSegmentSize ) );
   m_ui->m_thresholdRGDoubleSpinBox->setValue( regGrowStrategyParameters.m_segmentsSimilarityThreshold );
+  m_ui->m_thresholdBaatzDoubleSpinBox->setValue( regGrowStrategyParameters.m_segmentsSimilarityThreshold );
   m_ui->m_colorWeightBaatzDoubleSpinBox->setValue( regGrowStrategyParameters.m_colorWeight );
   m_ui->m_compactnessWeightBaatzDoubleSpinBox->setValue( regGrowStrategyParameters.m_compactnessWeight );
 
