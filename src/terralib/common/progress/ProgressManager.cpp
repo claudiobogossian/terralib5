@@ -172,6 +172,12 @@ void te::common::ProgressManager::updateMessage(int taskId)
   }
 }
 
+void te::common::ProgressManager::clearAll()
+{
+  m_viewers.clear();
+  m_tasks.clear();
+}
+
 te::common::ProgressManager::ProgressManager()
   : m_taskCounter(0),
     m_viewerCounter(0)
@@ -180,8 +186,7 @@ te::common::ProgressManager::ProgressManager()
 
 te::common::ProgressManager::~ProgressManager()
 {
-  m_viewers.clear();
-  m_tasks.clear();
+  clearAll();
 }
 
 int te::common::ProgressManager::generateViewerId()

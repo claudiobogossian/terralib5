@@ -84,6 +84,7 @@ set (
   ${SRCDIR}/settings/SettingsDialog.h
   ${SRCDIR}/settings/TableWidget.h
   ${SRCDIR}/settings/ToolbarsWidget.h
+  ${SRCDIR}/settings/GeneralConfigWidget.h
 )
 
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/af/settings" MOC)

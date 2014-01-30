@@ -6,6 +6,7 @@
 #include "ProjectWidgetFactory.h"
 #include "TableWidgetFactory.h"
 #include "ToolbarsWidgetFactory.h"
+#include "GeneralConfigWidgetFactory.h"
 
 // Qt
 #include <QtGui/QScrollArea>
@@ -47,6 +48,7 @@ m_ui(new Ui::SettingsDialogForm)
   TableWidgetFactory::initialize();
   ProjectWidgetFactory::initialize();
   ToolbarsWidgetFactory::initialize();
+  GeneralConfigWidgetFactory::initialize();
 
   QVector<QString> facNames;
   QVector<QString>::Iterator it;
@@ -69,6 +71,7 @@ te::qt::af::SettingsDialog::~SettingsDialog()
   TableWidgetFactory::finalize();
   ProjectWidgetFactory::finalize();
   ToolbarsWidgetFactory::finalize();
+  GeneralConfigWidgetFactory::finalize();
 
   delete m_ui;
 }
