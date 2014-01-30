@@ -146,7 +146,7 @@ void TsFunctions::getCovarianceValue()
   
 //  boost::timer timer;
   CPPUNIT_ASSERT( te::rp::GetCovarianceValue( *diskRasterPtr->getBand( 0 ), 
-    *diskRasterPtr->getBand( 0 ), 1, 0, 0, covarianceValue) );
+    *diskRasterPtr->getBand( 0 ), 4, 0, 0, covarianceValue) );
 //  std::cout << std::endl << "Elapsed:" << timer.elapsed() << std::endl;
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 2143.89743610679, covarianceValue, 0.0001 );  
 }
