@@ -548,6 +548,13 @@ void te::qt::widgets::DataSetTableView::highlightOIds(const te::da::ObjectIdSet*
   viewport()->repaint();
 }
 
+void te::qt::widgets::DataSetTableView::setHighlightColor(const QColor& color)
+{
+  m_delegate->setColor(color);
+
+  repaint();
+}
+
 void te::qt::widgets::DataSetTableView::hideColumn(const int& column)
 {
   horizontalHeader()->hideSection(column);

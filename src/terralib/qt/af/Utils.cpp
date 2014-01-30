@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../common/SystemApplicationSettings.h"
 #include "../../common/UserApplicationSettings.h"
 #include "../../dataaccess/serialization/xml/Serializer.h"
 #include "../../maptools/AbstractLayer.h"
@@ -235,31 +236,30 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
 
 void te::qt::af::UpdateUserSettings(const QStringList& prjFiles, const QStringList& prjTitles, const std::string& userConfigFile)
 {
-  // Recent projects
-  //----------------
-  if(prjFiles.empty())
-    return;
-
   boost::property_tree::ptree& p = te::common::UserApplicationSettings::getInstance().getAllSettings();
 
-  p.get_child("UserSettings.MostRecentProject.<xmlattr>.xlink:href").put_value(prjFiles.at(0).toStdString());
-  p.get_child("UserSettings.MostRecentProject.<xmlattr>.title").put_value(prjTitles.at(0).toStdString());
-
-  if(prjFiles.size() > 1)
+  // Recent projects
+  //----------------
+  if(!prjFiles.empty())
   {
-    boost::property_tree::ptree recPrjs;
+    p.put("UserSettings.MostRecentProject.<xmlattr>.xlink:href", prjFiles.at(0).toStdString());
+    p.put("UserSettings.MostRecentProject.<xmlattr>.title", prjTitles.at(0).toStdString());
 
-    for(int i=1; i<prjFiles.size(); i++)
+    p.get_child("UserSettings.RecentProjects").clear();
+
+    if(prjFiles.size() > 1)
     {
-      boost::property_tree::ptree prj;
+      for(int i=1; i<prjFiles.size(); i++)
+      {
+        boost::property_tree::ptree prj;
 
-      prj.add("<xmlattr>.xlink:href", prjFiles.at(i).toStdString());
-      prj.add("<xmlattr>.title", prjTitles.at(i).toStdString());
+        prj.add("<xmlattr>.xlink:href", prjFiles.at(i).toStdString());
+        prj.add("<xmlattr>.title", prjTitles.at(i).toStdString());
 
-      recPrjs.add_child("Project", prj);
+        p.add_child("UserSettings.RecentProjects.Project", prj);
+      }
+
     }
-
-    p.put_child("UserSettings.RecentProjects", recPrjs);
   }
 
   //Enabled plugins
@@ -268,6 +268,8 @@ void te::qt::af::UpdateUserSettings(const QStringList& prjFiles, const QStringLi
   std::vector<std::string> plugins;
   std::vector<std::string>::iterator it;
   te::plugin::PluginManager::getInstance().getPlugins(plugins);
+
+  p.get_child("UserSettings.EnabledPlugins").clear();
 
   for(it=plugins.begin(); it!=plugins.end(); ++it)
     if(te::plugin::PluginManager::getInstance().isLoaded(*it))
@@ -280,6 +282,7 @@ void te::qt::af::UpdateUserSettings(const QStringList& prjFiles, const QStringLi
   p.put_child("UserSettings.EnabledPlugins", plgs);
 
   te::common::UserApplicationSettings::getInstance().changed();
+  te::common::UserApplicationSettings::getInstance().update();
 }
 
 void te::qt::af::SaveDataSourcesFile()
@@ -704,102 +707,6 @@ QString te::qt::af::GetDefaultConfigFileOutputDir()
   return info.absolutePath();
 }
 
-void te::qt::af::WriteConfigFile(const QString& fileName, const QString& appName, const QString& appTitle)
-{
-  QFileInfo info(fileName);
-
-  boost::property_tree::ptree p;
-
-  QString teDir(getenv("TERRALIB_DIR"));
-
-//  teDir.replace(" ", "%20");
-
-  //Header
-  p.add("Application.<xmlattr>.xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
-  p.add("Application.<xmlattr>.xmlns", "http://www.terralib.org/schemas/af");
-  p.add("Application.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/af " + teDir.toStdString() + "/schemas/terralib/af/af.xsd");
-  p.add("Application.<xmlattr>.version", TERRALIB_STRING_VERSION);
-  p.add("Application.<xmlattr>.release", "2013-01-01");
-
-  //Contents
-  p.add("Application.Organization", "INPE");
-  p.add("Application.Name", appName.toStdString());
-  p.add("Application.Title", appTitle.toStdString());
-  p.add("Application.IconName", teDir.toStdString() + "/resources/images/png/terralib-globe-small.png");
-  p.add("Application.UserSettingsFile.<xmlattr>.xlink:href", info.absolutePath().toStdString() + "/user_settings.xml");
-  p.add("Application.PluginsFile.<xmlattr>.xlink:href", info.absolutePath().toStdString() + "/application_plugins.xml");
-  p.add("Application.HelpFile.<xmlattr>.xlink:href", "/help.qhc");
-  p.add("Application.IconThemeInfo.BaseDirectory.<xmlattr>.xlink:href", teDir.toStdString() + "/resources/themes");
-  p.add("Application.IconThemeInfo.DefaultTheme", "terralib");
-  p.add("Application.ToolBarDefaultIconSize", "24");
-  p.add("Application.DefaultSRID", "0");
-  p.add("Application.DefaultSelectionColor", "#00FF00");
-  p.add("Application.DefaultPluginsCategory.Category", "Cellular Space");
-  p.add("Application.DefaultPluginsCategory.Category", "Data Access");
-  p.add("Application.DefaultPluginsCategory.Category", "Data Management");
-  p.add("Application.DefaultPluginsCategory.Category", "Examples");
-  p.add("Application.DefaultPluginsCategory.Category", "Language Bindings");
-  p.add("Application.DefaultPluginsCategory.Category", "Location Base Services");
-  p.add("Application.DefaultPluginsCategory.Category", "Plugin Management");
-  p.add("Application.DefaultPluginsCategory.Category", "Spatial Analysis");
-  p.add("Application.DefaultPluginsCategory.Category", "Spatial Operations");
-  p.add("Application.DefaultPluginsCategory.Category", "Web Services");
-  p.add("Application.AboutDialogLogo.<xmlattr>.xlink:href", teDir.toStdString() + "/resources/images/png/terralib.png");
-  p.add("Application.TerraLibLogo.<xmlattr>.xlink:href", teDir.toStdString() + "/resources/images/png/terralib-globe.png");
-
-
-  QDir dir(info.absoluteDir());
-  if(!dir.exists())
-    dir.mkdir(dir.absolutePath());
-
-  // Store the file.
-  boost::property_tree::xml_writer_settings<char> settings('\t', 1);
-  boost::property_tree::write_xml(fileName.toStdString(), p, std::locale(), settings);
-
-  SetConfigFileName(fileName);
-
-  QString pth = info.absolutePath();
-
-  WriteUserSettingsFile(pth + "/user_settings.xml");
-  WriteAppPluginsFile(pth + "/application_plugins.xml");
-  WriteDefaultProjectFile(pth + "/default_project.xml");
-  CreateDefaultSettings();
-}
-
-void te::qt::af::WriteUserSettingsFile(const QString& fileName)
-{
-  QFileInfo info(fileName);
-
-  boost::property_tree::ptree p;
-  QString teDir(getenv("TERRALIB_DIR"));
-
-//  teDir.replace(" ", "%20");
-
-  //Header
-  p.add("UserSettings.<xmlattr>.xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
-  p.add("UserSettings.<xmlattr>.xmlns", "http://www.terralib.org/schemas/af");
-  p.add("UserSettings.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/af " + teDir.toStdString() + "/schemas/terralib/af/af.xsd");
-  p.add("UserSettings.<xmlattr>.version", TERRALIB_STRING_VERSION);
-  p.add("UserSettings.<xmlattr>.release", "2013-01-01");
-
-  //Contents
-  p.add("UserSettings.SelectedIconTheme", "terralib");
-  p.add("UserSettings.LastSearchedFolder.<xmlattr>.xlink:href", "");
-  p.add("UserSettings.ToolBarIconSize", "24");
-  p.add("UserSettings.DefaultSRID", "0");
-  p.add("UserSettings.SelectionColor", "#00FF00");
-  p.add("UserSettings.SpecificPlugins", "");
-  p.add("UserSettings.EnabledPlugins", "");
-  p.add("UserSettings.DataSourcesFile", info.absolutePath().toStdString() + "/datasources.xml");
-  p.add("UserSettings.MostRecentProject.<xmlattr>.xlink:href", info.absolutePath().toStdString() + "/default_project.xml");
-  p.add("UserSettings.MostRecentProject.<xmlattr>.title", "Default project");
-  p.add("UserSettings.RecentProjects", "");
-
-  // Store the file.
-  boost::property_tree::xml_writer_settings<char> settings('\t', 1);
-  boost::property_tree::write_xml(fileName.toStdString(), p, std::locale(), settings);
-}
-
 std::vector<std::string> GetPluginsFiles()
 {
   std::vector<std::string> res;
@@ -844,10 +751,178 @@ std::vector<std::string> GetPluginsNames(const std::vector<std::string>& plgFile
   return res;
 }
 
+void te::qt::af::UpdateUserSettingsFile(const QString& fileName, const bool& removeOlder)
+{
+  QFileInfo info(fileName);
+  te::common::UserApplicationSettings& usrSett = te::common::UserApplicationSettings::getInstance();
+  te::common::SystemApplicationSettings& appSett = te::common::SystemApplicationSettings::getInstance();
+
+  if(info.exists())
+    info.dir().remove(info.fileName());
+
+  std::string olderFile = appSett.getValue("Application.UserSettingsFile.<xmlattr>.xlink:href");
+
+  appSett.setValue("Application.UserSettingsFile.<xmlattr>.xlink:href", fileName.toStdString());
+
+  if(removeOlder)
+  {
+    info.setFile(olderFile.c_str());
+    info.dir().remove(info.fileName());
+  }
+
+  info.setFile(fileName);
+
+  if(!info.exists())
+  {
+    boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+    boost::property_tree::write_xml(fileName.toStdString(), usrSett.getAllSettings(), std::locale(), settings);
+  }
+
+  usrSett.load(fileName.toStdString());
+}
+
+void te::qt::af::UpdateAppPluginsFile(const QString& fileName, const bool& removeOlder)
+{
+  QFileInfo info(fileName);
+  te::common::SystemApplicationSettings& appSett = te::common::SystemApplicationSettings::getInstance();
+  ApplicationPlugins& appPlg = ApplicationPlugins::getInstance();
+
+  if(info.exists())
+    info.dir().remove(info.fileName());
+
+  std::string olderFile = appSett.getValue("Application.PluginsFile.<xmlattr>.xlink:href");
+
+  appSett.setValue("Application.PluginsFile.<xmlattr>.xlink:href", fileName.toStdString());
+
+  if(removeOlder)
+  {
+    info.setFile(olderFile.c_str());
+    info.dir().remove(info.fileName());
+  }
+
+  // Updating enabled plugins
+  info.setFile(fileName);
+
+  if(!info.exists())
+  {
+    boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+    boost::property_tree::write_xml(fileName.toStdString(), appPlg.getAllSettings(), std::locale(), settings);
+  }
+
+  appPlg.load(fileName.toStdString());
+}
+
+void te::qt::af::WriteConfigFile(const QString& fileName, const QString& appName, const QString& appTitle, const bool& writeOnlyConfig)
+{
+  QFileInfo info(fileName);
+
+  boost::property_tree::ptree p;
+
+  QString teDir(getenv("TERRALIB_DIR"));
+
+//  teDir.replace(" ", "%20");
+
+  //Header
+  p.add("Application.<xmlattr>.xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
+  p.add("Application.<xmlattr>.xmlns", "http://www.terralib.org/schemas/af");
+  p.add("Application.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/af " + teDir.toStdString() + "/schemas/terralib/af/af.xsd");
+  p.add("Application.<xmlattr>.version", TERRALIB_STRING_VERSION);
+  p.add("Application.<xmlattr>.release", "2013-01-01");
+
+  //Contents
+  p.add("Application.Organization", "INPE");
+  p.add("Application.Name", appName.toStdString());
+  p.add("Application.Title", appTitle.toStdString());
+  p.add("Application.IconName", teDir.toStdString() + "/resources/images/png/terralib-globe-small.png");
+  p.add("Application.UserSettingsFile.<xmlattr>.xlink:href", info.absolutePath().toStdString() + "/user_settings.xml");
+  p.add("Application.PluginsFile.<xmlattr>.xlink:href", info.absolutePath().toStdString() + "/application_plugins.xml");
+  p.add("Application.HelpFile.<xmlattr>.xlink:href", "");
+  p.add("Application.IconThemeInfo.BaseDirectory.<xmlattr>.xlink:href", teDir.toStdString() + "/resources/themes");
+  p.add("Application.IconThemeInfo.DefaultTheme", "terralib");
+  p.add("Application.ToolBarDefaultIconSize", "24");
+  p.add("Application.DefaultSRID", "0");
+  p.add("Application.DefaultSelectionColor", "#00FF00");
+  p.add("Application.DefaultPluginsCategory.Category", "Cellular Space");
+  p.add("Application.DefaultPluginsCategory.Category", "Data Access");
+  p.add("Application.DefaultPluginsCategory.Category", "Data Management");
+  p.add("Application.DefaultPluginsCategory.Category", "Examples");
+  p.add("Application.DefaultPluginsCategory.Category", "Language Bindings");
+  p.add("Application.DefaultPluginsCategory.Category", "Location Base Services");
+  p.add("Application.DefaultPluginsCategory.Category", "Plugin Management");
+  p.add("Application.DefaultPluginsCategory.Category", "Spatial Analysis");
+  p.add("Application.DefaultPluginsCategory.Category", "Spatial Operations");
+  p.add("Application.DefaultPluginsCategory.Category", "Web Services");
+  p.add("Application.AboutDialogLogo.<xmlattr>.xlink:href", teDir.toStdString() + "/resources/images/png/terralib.png");
+  p.add("Application.TerraLibLogo.<xmlattr>.xlink:href", teDir.toStdString() + "/resources/images/png/terralib-globe.png");
+
+  QDir dir(info.absoluteDir());
+  if(!dir.exists())
+    dir.mkdir(dir.absolutePath());
+
+  // Store the file.
+  boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+  boost::property_tree::write_xml(fileName.toStdString(), p, std::locale(), settings);
+
+  SetConfigFileName(fileName);
+
+  QString pth = info.absolutePath();
+
+  if(!writeOnlyConfig)
+  {
+    WriteUserSettingsFile(pth + "/user_settings.xml");
+    WriteAppPluginsFile(pth + "/application_plugins.xml");
+  }
+
+  CreateDefaultSettings();
+}
+
+void te::qt::af::WriteUserSettingsFile(const QString& fileName)
+{
+  QFileInfo info(fileName);
+
+  boost::property_tree::ptree p;
+  QString teDir(getenv("TERRALIB_DIR"));
+
+//  teDir.replace(" ", "%20");
+
+  //Header
+  p.add("UserSettings.<xmlattr>.xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
+  p.add("UserSettings.<xmlattr>.xmlns", "http://www.terralib.org/schemas/af");
+  p.add("UserSettings.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/af " + teDir.toStdString() + "/schemas/terralib/af/af.xsd");
+  p.add("UserSettings.<xmlattr>.version", TERRALIB_STRING_VERSION);
+  p.add("UserSettings.<xmlattr>.release", "2013-01-01");
+
+  //Contents
+  p.add("UserSettings.SelectedIconTheme", "terralib");
+  p.add("UserSettings.LastSearchedFolder.<xmlattr>.xlink:href", "");
+  p.add("UserSettings.ToolBarIconSize", "24");
+  p.add("UserSettings.DefaultSRID", "0");
+  p.add("UserSettings.SelectionColor", "#00FF00");
+  p.add("UserSettings.SpecificPlugins", "");
+  p.add("UserSettings.EnabledPlugins", "");
+  p.add("UserSettings.DataSourcesFile", info.absolutePath().toStdString() + "/datasources.xml");
+  p.add("UserSettings.MostRecentProject.<xmlattr>.xlink:href", ""); 
+  p.add("UserSettings.MostRecentProject.<xmlattr>.title", "");  
+  p.add("UserSettings.RecentProjects", "");
+
+  //Writing the plugins.
+  std::vector<std::string> plgsFiles = GetPluginsFiles();
+  std::vector<std::string> plgNames = GetPluginsNames(plgsFiles);
+  
+  std::vector<std::string>::iterator it;
+
+  for(it=plgNames.begin(); it!=plgNames.end(); ++it)
+    p.add("UserSettings.EnabledPlugins.Plugin", *it);
+
+  boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+  boost::property_tree::write_xml(fileName.toStdString(), p, std::locale(), settings);
+}
+
 void te::qt::af::WriteAppPluginsFile(const QString& fileName)
 {
   boost::property_tree::ptree p;
   QString teDir(getenv("TERRALIB_DIR"));
+  QFileInfo info(fileName);
 
 //  teDir.replace(" ", "%20");
 
@@ -870,20 +945,7 @@ void te::qt::af::WriteAppPluginsFile(const QString& fileName)
     p.add_child("Plugins.Plugin", plg);
   }
 
-  //Updating the enabled plugins
-  QFileInfo info(fileName);
-  boost::property_tree::ptree us;
-  std::string us_file = info.absolutePath().toStdString() + "/user_settings.xml";
-  boost::property_tree::read_xml(us_file, us, boost::property_tree::xml_parser::trim_whitespace);
-  std::vector<std::string>::iterator it;
-
-  for(it=plgNames.begin(); it!=plgNames.end(); ++it)
-    us.add("UserSettings.EnabledPlugins.Plugin", *it);
-
   boost::property_tree::xml_writer_settings<char> settings('\t', 1);
-  boost::property_tree::write_xml(us_file, us, std::locale(), settings);
-
-  // Store the file.
   boost::property_tree::write_xml(fileName.toStdString(), p, std::locale(), settings);
 }
 
