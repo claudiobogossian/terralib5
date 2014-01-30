@@ -1360,6 +1360,66 @@ namespace te
         return true;
       }
     }    
+    
+    bool GeneratePrincipalComponents( 
+      const te::rst::Raster& inputRaster,
+      const std::vector< unsigned int >& inputRasterBands,
+      boost::numeric::ublas::matrix< double >& pcaMatrix,
+      te::rst::Raster& pcaRaster,
+      const unsigned int maxThreads )
+    {
+      if( ( inputRaster.getAccessPolicy() & te::common::RAccess ) == 0 )
+      {
+        return false;
+      }
+      if( ( pcaRaster.getAccessPolicy() & te::common::WAccess ) == 0 )
+      {
+        return false;
+      }   
+      if( inputRaster.getNumberOfBands() != pcaRaster.getNumberOfBands() )
+      {
+        return false;
+      }
+      if( inputRaster.getNumberOfRows() != pcaRaster.getNumberOfRows() )
+      {
+        return false;
+      }
+      if( inputRaster.getNumberOfColumns() != pcaRaster.getNumberOfColumns() )
+      {
+        return false;
+      }    
+      
+      // Covariance matrix
+      
+      boost::numeric::ublas::matrix< double > covMatrix( inputRasterBands.size(),
+         inputRasterBands.size() );
+         
+      for( unsigned int covMatrixIdx1 = 0 ; covMatrixIdx1 < inputRasterBands.size() ;
+        ++covMatrixIdx1 )
+      {
+        if( inputRasterBands[ covMatrixIdx1 ] >= inputRaster.getNumberOfBands() )
+        {
+          return false;
+        }
+        
+        for( unsigned int covMatrixIdx2 = 0 ; covMatrixIdx2 < inputRasterBands.size() ;
+        ++covMatrixIdx2 )
+        {
+          if( inputRasterBands[ covMatrixIdx2 ] >= inputRaster.getNumberOfBands() )
+          {
+            return false;
+          }    
+          
+          if( ! GetCovarianceValue( *( inputRaster.getBand( inputRasterBands[ covMatrixIdx1 ] ) ),
+             *( inputRaster.getBand( inputRasterBands[ covMatrixIdx2 ] ) ),
+             maxThreads, 0,  0, covMatrix( covMatrixIdx1, covMatrixIdx2 ) ) )
+          {
+            return false;
+          }
+        }
+      }
+        
+    }
 
   } // end namespace rp
 }   // end namespace te

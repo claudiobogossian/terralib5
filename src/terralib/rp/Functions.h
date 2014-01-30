@@ -36,13 +36,15 @@
 #include "../raster/BandProperty.h"
 #include "../raster/RasterFactory.h"
 
-
 // STL
 #include <memory>
 #include <map>
 #include <vector>
 #include <string>
 #include <limits>
+
+// Boost
+#include <boost/numeric/ublas/matrix.hpp>
 
 namespace te
 {
@@ -367,7 +369,24 @@ namespace te
       const unsigned int maxThreads, 
       double const * const mean1ValuePtr, 
       double const * const mean2ValuePtr,  
-      double& covarianceValue );       
+      double& covarianceValue );      
+      
+    /*!
+      \brief Generate all principal components from the given input raster.
+      \param inputRaster Input raster.
+      \param inputRasterBands Input raster bands.
+      \param pcaMatrix The matrix generated over the principal components process.
+      \param pcaRaster The pré-initiated output PCA raster.
+      \param maxThreads The maximum number of threads to use (0-auto, 1-single thread used).
+      \return true if OK, false on errors.
+      \ingroup rp_func
+    */
+    TERPEXPORT bool GeneratePrincipalComponents( 
+      const te::rst::Raster& inputRaster,
+      const std::vector< unsigned int >& inputRasterBands,
+      boost::numeric::ublas::matrix< double >& pcaMatrix,
+      te::rst::Raster& pcaRaster,
+      const unsigned int maxThreads );        
     
   } // end namespace rp
 }   // end namespace te

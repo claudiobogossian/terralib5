@@ -135,7 +135,7 @@ bool te::rp::MixtureModelLinearStrategy::execute(const te::rst::Raster& inputRas
 
 // calculate the inverse of A' * A
   boost::numeric::ublas::matrix<double> invertAtA = boost::numeric::ublas::matrix<double>(productAtA.size1(), productAtA.size2());
-  te::common::getInverseMatrix(productAtA, invertAtA);
+  te::common::GetInverseMatrix(productAtA, invertAtA);
 
   boost::numeric::ublas::matrix<double> matrixR = boost::numeric::ublas::matrix<double>(matrixA.size1(), 1);
   boost::numeric::ublas::matrix<double> productAtR = boost::numeric::ublas::matrix<double>(transposeA.size1(), matrixR.size2());
