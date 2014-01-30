@@ -41,7 +41,6 @@ namespace te
     /*!
       \class SegmenterStrategy
       \brief Raster segmenter strategy base class.
-      \ingroup rp
      */
     class TERPEXPORT SegmenterStrategy
     {

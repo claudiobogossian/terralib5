@@ -64,6 +64,8 @@ namespace te
       \note Reference: Image Segmentation Using Gradient Vector Diffusion and Region Merging, Zeyun Yu, Chandrajit Bajaj.
       
       \note Reference: A Segmentation-Free Approach for Skeletonization of Gray-Scale Images via Anisotropic Vector Diffusion, Zeyun Yu and Chandrajit Bajaj.
+      
+      \ingroup rp_gen
      */
     class TERPEXPORT Skeleton : public Algorithm
     {
