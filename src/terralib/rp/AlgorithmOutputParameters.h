@@ -35,7 +35,6 @@ namespace te
     /*!
       \class AlgorithmOutputParameters
       \brief Raster Processing algorithm output parameters base interface.
-      \ingroup rp
     */
     class TERPEXPORT AlgorithmOutputParameters : public te::common::AbstractParameters
     {

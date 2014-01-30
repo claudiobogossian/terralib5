@@ -48,6 +48,8 @@ namespace te
              in Cluster 1, otherwise new Clusters are created. After all regions belong to a cluster, the
              algorithm merges similar clusters. The acceptance threshold is the only parameter given by
              the user, and it indicates the maximum distance between two regions to be clustered togheter.
+             
+       \ingroup rp_class
      */
     class TERPEXPORT ClassifierISOSegStrategy : public ClassifierStrategy
     {

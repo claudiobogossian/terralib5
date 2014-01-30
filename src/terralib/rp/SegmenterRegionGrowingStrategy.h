@@ -45,6 +45,7 @@ namespace te
     /*!
       \class SegmenterRegionGrowingStrategy
       \brief Raster region growing segmenter strategy.
+      \ingroup rp_seg
      */
     class TERPEXPORT SegmenterRegionGrowingStrategy : public SegmenterStrategy
     {

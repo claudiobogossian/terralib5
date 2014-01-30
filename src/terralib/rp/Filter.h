@@ -42,7 +42,7 @@ namespace te
     /*!
       \class Filter
       \brief A series of well-known filtering algorithms for images, linear and non-linear..
-      \ingroup rp
+      \ingroup rp_enh
      */
     class TERPEXPORT Filter : public Algorithm
     {

@@ -119,13 +119,19 @@ namespace te
         */
         void setResourceType(const ResourceType& type);
 
+        /*!
+          \brief Sets the label to be presented.
+          \param label The new label.
+        */
+        void setLabel(const QString& label);
+
       signals:
 
         /*!
           \brief Emit a qt signal to inform that a resource was selected or defined.
           \param s Resource Name.
         */
-        void resourceSelected(QString s);
+        void resourceSelected(const QString&);
 
       protected slots:
         

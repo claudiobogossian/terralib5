@@ -38,7 +38,8 @@ namespace te
         m_ui->setupUi(this);
         m_ui->m_ChooseFileToolButton->setIcon(QIcon::fromTheme("folder"));
 
-        connect(m_ui->m_fileName, SIGNAL(returnPressed()), this, SLOT(onReturnPressed()));
+        connect(m_ui->m_fileName, SIGNAL(returnPressed()), SLOT(onReturnPressed()));
+        connect(m_ui->m_fileName, SIGNAL(textChanged(const QString&)), SIGNAL(resourceSelected(const QString&)));
 
         QCompleter* cmp = new QCompleter(this);
         m_fp_model = new QFileSystemModel(cmp);
@@ -58,8 +59,12 @@ namespace te
 
       void FileChooser::setInitialPath(const QString& path)
       {
+        bool blocked = blockSignals(true);
+
         m_fp_model->setRootPath(path);
         m_ui->m_fileName->setText(path);
+
+        blockSignals(false);
       }
 
       void FileChooser::setFilterPattern(const QString& filter)
@@ -91,18 +96,30 @@ namespace te
         m_fp_model->setFilter(filters);
       }
 
+      void FileChooser::setLabel(const QString& label)
+      {
+        m_ui->label->setText(label);
+      }
+
+
       void FileChooser::onChooseFileToolButtonClicked()
       {
         bool openFile = (m_fp_model->filter() & QDir::Files);
-        QString fName = (openFile) ? 
-          QFileDialog::getOpenFileName(parentWidget(), tr("Choose file"), getSelectedResource(), m_filter) :
-          QFileDialog::getExistingDirectory(parentWidget(), tr("Choose directory"), getSelectedResource());
+
+        QString fName;
+
+        if(openFile)
+        {
+          QFileDialog dlg(parentWidget(), tr("Choose file"), getSelectedResource(), m_filter);
+          dlg.setFileMode(QFileDialog::AnyFile);
+          if(dlg.exec() == QDialog::Accepted)
+            fName = dlg.selectedFiles().first();
+        }
+        else
+          fName = QFileDialog::getExistingDirectory(parentWidget(), tr("Choose directory"), getSelectedResource());
 
         if(!fName.isEmpty())
-        {
           m_ui->m_fileName->setText(fName);
-          emit resourceSelected(fName);
-        }
       }
 
       void FileChooser::onReturnPressed()

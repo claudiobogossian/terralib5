@@ -39,7 +39,6 @@ namespace te
     /*!
       \class SegmenterStrategyFactory
       \brief Raster segmenter strategy factory base class.
-      \ingroup rp
      */
     class TERPEXPORT SegmenterStrategyFactory : public 
       te::common::AbstractFactory< te::rp::SegmenterStrategy, std::string,

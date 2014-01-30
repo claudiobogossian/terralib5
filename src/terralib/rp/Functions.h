@@ -20,7 +20,6 @@
 /*!
   \file terralib/rp/Functions.h
   \brief Raster Processing functions.
-  \ingroup rp
  */
 
 #ifndef __TERRALIB_RP_INTERNAL_FUNCTIONS_H
@@ -37,9 +36,6 @@
 #include "../raster/BandProperty.h"
 #include "../raster/RasterFactory.h"
 
-// Boost
-#include <boost/numeric/ublas/lu.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
 
 // STL
 #include <memory>
@@ -69,6 +65,7 @@ namespace te
       \param outRasterHandler The created raster handler.
       \return true if OK, false on errors.
       \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
+      \ingroup rp_func
      */
     bool TERPEXPORT CreateNewRaster( const te::rst::Grid& rasterGrid,
       const std::vector< te::rst::BandProperty* >& bandsProperties,
@@ -85,6 +82,7 @@ namespace te
       \param outRasterHandler The created raster handler.
       \return true if OK, false on errors.
       \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
+      \ingroup rp_func
      */
     bool TERPEXPORT CreateNewRaster( const te::rst::Grid& rasterGrid,
       const std::vector< te::rst::BandProperty* >& bandsProperties,
@@ -99,6 +97,7 @@ namespace te
       \param outRasterHandler The created raster handler.
       \return true if OK, false on errors.
       \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
+      \ingroup rp_func
      */
     bool TERPEXPORT CreateNewMemRaster( const te::rst::Grid& rasterGrid,
       std::vector< te::rst::BandProperty* > bandsProperties,
@@ -112,6 +111,7 @@ namespace te
       \param outRasterHandler The created raster handler.
       \return true if OK, false on errors.
       \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
+      \ingroup rp_func
      */
     bool TERPEXPORT CreateNewGdalRaster( const te::rst::Grid& rasterGrid,
       std::vector< te::rst::BandProperty* > bandsProperties,
@@ -124,6 +124,7 @@ namespace te
       \param min The minimum value.
       \param max The maximum value.
       \note The types are listed in terralib/datatype/DataTypes.h
+      \ingroup rp_func
     */
     void TERPEXPORT GetDataTypeRange( const int dataType, double& min, double& max );
 
@@ -134,6 +135,7 @@ namespace te
       \param inputVectorSize The numer of input vector elements.
       \param outputVector A pré-allocated output vector.
       \note The types are listed in terralib/datatype/DataTypes.h
+      \ingroup rp_func
     */
     void TERPEXPORT Convert2DoublesVector( void* inputVector, const int inputVectorDataType,
       unsigned int inputVectorSize, double* outputVector );
@@ -145,6 +147,7 @@ namespace te
       \param inputVectorDataType Input vector data type.
       \param outputVector A pré-allocated output vector.
       \note The types are listed in terralib/datatype/DataTypes.h
+      \ingroup rp_func
     */
     void TERPEXPORT ConvertDoublesVector( double* inputVector,
       unsigned int inputVectorSize, const int outputVectorDataType,
@@ -156,6 +159,7 @@ namespace te
       \param normalize Enable/disable pixel normalization (8bit);
       \param tifFileName Tif file name.
       \param return true if OK, false on errors.
+      \ingroup rp_func
     */      
     template< typename MatrixElementT >
     bool CreateRasterFileFromMatrix( const te::rp::Matrix< MatrixElementT >& matrix,
@@ -239,22 +243,40 @@ namespace te
       return true;
     }; 
     
-    /*! \brief Returns a vector os with band's names. */
+    /*! 
+      \brief Returns a vector os with band's names. 
+      \ingroup rp_func
+    */
     TERPEXPORT std::vector<std::string> GetBandNames();
 
-    /*! \brief Returns the maximun and minimum reflectance values of a given sensor/band. */
+    /*! 
+      \brief Returns the maximun and minimum reflectance values of a given sensor/band. 
+      \ingroup rp_func
+    */
     TERPEXPORT std::pair<double, double> GetSpectralBandInfo(std::string bandName);
 
-    /*! \brief Returns the minimum reflectance value of a given sensor/band. */
+    /*! 
+      \brief Returns the minimum reflectance value of a given sensor/band. 
+      \ingroup rp_func
+    */
     TERPEXPORT double GetSpectralBandMin(std::string bandName);
 
-    /*! \brief Returns the maximum reflectance value of a given sensor/band. */
+    /*! 
+      \brief Returns the maximum reflectance value of a given sensor/band. 
+      \ingroup rp_func
+    */
     TERPEXPORT double GetSpectralBandMax(std::string bandName);
 
-    /*! \brief Returns the maximun and minimum digital numbers of a given sensor/band. */
+    /*! 
+      \brief Returns the maximun and minimum digital numbers of a given sensor/band. 
+      \ingroup rp_func
+    */
     TERPEXPORT std::pair<double, double> GetDigitalNumberBandInfo(std::string bandName);
 
-    /*! \brief Returns the maximum digital number of a given sensor/band. */
+    /*! 
+      \brief Returns the maximum digital number of a given sensor/band. 
+      \ingroup rp_func
+    */
     TERPEXPORT double GetDigitalNumberBandMax(std::string bandName);
 
     /*!
@@ -265,6 +287,7 @@ namespace te
       \param nmax            The new maximum value (default = 255.0).
 
       \return true if normalization occurs and false otherwise.
+      \ingroup rp_func
     */
     TERPEXPORT bool NormalizeRaster(te::rst::Raster& inputRaster, double nmin = 0.0, double nmax = 255.0);
 
@@ -275,6 +298,7 @@ namespace te
       \param numberOfPoints  The number of random positions to be created (default = 1000).
 
       \return A vector of random positions (points).
+      \ingroup rp_func
     */
     TERPEXPORT std::vector<te::gm::Point*> GetRandomPointsInRaster(const te::rst::Raster& inputRaster, unsigned int numberOfPoints = 1000);    
     
@@ -288,9 +312,10 @@ namespace te
       \param rgbRangeMax The maximum RGB value.
       \param outputIHSRaster The output IHS raster.
       \return true if OK, false on errors.
-      \note IHS data with the following channels ranges: I:[0,1] H:[0,2pi] (radians) S:[0,1].      
+      \note IHS data with the following channels ranges: I:[0,1] H:[0,2pi] (radians) S:[0,1].   
+      \ingroup rp_func   
     */
-    TERPEXPORT bool ConvertRBG2IHS( const te::rst::Raster& inputRGBRaster, 
+    TERPEXPORT bool ConvertRGB2IHS( const te::rst::Raster& inputRGBRaster, 
       const unsigned int redBandIdx, const unsigned int greenBandIdx,
       const unsigned int blueBandIdx, const double rgbRangeMin, 
       const double rgbRangeMax, te::rst::Raster& outputIHSRaster );  
@@ -306,11 +331,43 @@ namespace te
       \param outputRGBRaster The output RGB raster.
       \return true if OK, false on errors.
       \note IHS data with the following channels ranges: I:[0,1] H:[0,2pi] (radians) S:[0,1].      
+      \ingroup rp_func
     */
     TERPEXPORT bool ConvertIHS2RGB( const te::rst::Raster& inputIHSRaster, 
       const unsigned int intensityBandIdx, const unsigned int hueBandIdx,
       const unsigned int saturationBandIdx, const double rgbRangeMin, 
       const double rgbRangeMax, te::rst::Raster& outputRGBRaster );      
+      
+    /*!
+      \brief Get the mean of band pixel values.
+      \param band The input raster band.
+      \param maxThreads The maximum number of threads to use (0-auto, 1-single thread used).
+      \param meanValue The calculated mean value.
+      \return true if OK, false on errors.
+    */
+    TERPEXPORT bool GetMeanValue( 
+      const te::rst::Band& band, 
+      const unsigned int maxThreads, 
+      double& meanValue );    
+      
+    /*!
+      \brief Get the covariance of band pixel values.
+      \param band1 The input band 1.
+      \param band2 The input band 2.
+      \param maxThreads The maximum number of threads to use (0-auto, 1-single thread used).
+      \param mean1ValuePtr A pointer to a pre-calculated band1 mean value or zero if it does not exist.
+      \param mean2ValuePtr A pointer to a pre-calculated band2 mean value or zero if it does not exist.
+      \param covarianceValue The calculated covariance value.
+      \return true if OK, false on errors.
+      \ingroup rp_func
+    */
+    TERPEXPORT bool GetCovarianceValue( 
+      const te::rst::Band& band1, 
+      const te::rst::Band& band2, 
+      const unsigned int maxThreads, 
+      double const * const mean1ValuePtr, 
+      double const * const mean2ValuePtr,  
+      double& covarianceValue );       
     
   } // end namespace rp
 }   // end namespace te

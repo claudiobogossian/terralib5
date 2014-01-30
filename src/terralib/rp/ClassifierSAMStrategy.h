@@ -47,6 +47,8 @@ namespace te
       Lefkoff, A. B.; Boardman, J. W.; Heidebrecht, K. B.; Shapiro, A. T.; 
       Barloon, P. J.; Goetz, A. F. H. The earth and space science information 
       system (ESSIS). AIP Conference Proceedings, Volume 283, pp. 192-201 (1993).
+      
+      \ingroup rp_class
      */
     class TERPEXPORT ClassifierSAMStrategy : public ClassifierStrategy
     {
