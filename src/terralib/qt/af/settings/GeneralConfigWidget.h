@@ -32,6 +32,9 @@
 // Qt
 #include "AbstractSettingWidget.h"
 
+// STL
+#include <memory>
+
 // Forward declaration
 namespace Ui 
 { 
