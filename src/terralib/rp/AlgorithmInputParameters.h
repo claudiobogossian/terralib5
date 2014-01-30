@@ -35,7 +35,6 @@ namespace te
     /*!
       \class AlgorithmInputParameters
       \brief Raster Processing algorithm input parameters base interface.
-      \ingroup rp
     */
     class TERPEXPORT AlgorithmInputParameters : public te::common::AbstractParameters
     {

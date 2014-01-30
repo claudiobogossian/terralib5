@@ -139,6 +139,11 @@ namespace te
         */
         void updateMessage(int taskId);
 
+        /*!
+          \brief Removes references for Viewers and tasks.
+        */
+        void clearAll();
+
       protected:
 
         /*! \brief Default constructor. */

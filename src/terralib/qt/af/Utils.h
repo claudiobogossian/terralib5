@@ -265,6 +265,24 @@ namespace te
       TEQTAFEXPORT QString GetDefaultConfigFileOutputDir();
 
       /*!
+        \brief Changes the user settings file location.
+
+        \param fileName The new file to be generated.
+
+        \param removeOlder Flag information the remove older settings file. If true remove the older file, otherwise maintain it.
+      */
+      TEQTAFEXPORT void UpdateUserSettingsFile(const QString& fileName, const bool& removeOlder = true);
+
+      /*!
+        \brief Changes the application plugins file location.
+
+        \param fileName The new file to be generated.
+
+        \param removeOlder Flag information the remove older application plugins file. If true remove the older file, otherwise maintain it.
+      */
+      TEQTAFEXPORT void UpdateAppPluginsFile(const QString& fileName, const bool& removeOlder = true);
+      
+      /*!
         \brief Writes the configuration file. It updates the application settings.
 
         \param fileName Complete path to the configuration file. 
@@ -273,7 +291,7 @@ namespace te
 
         \param appTitle Title to be presented on the main window.
       */
-      TEQTAFEXPORT void WriteConfigFile(const QString& fileName, const QString& appName, const QString& appTitle);
+      TEQTAFEXPORT void WriteConfigFile(const QString& fileName, const QString& appName, const QString& appTitle, const bool& writeOnlyConfig = false);
 
       /*!
         \brief Writes the user settings file.

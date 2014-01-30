@@ -34,8 +34,11 @@
 #include <set>
 #include <vector>
 
+// TerraLib
+#include <terralib/common/Singleton.h>
+
 // Boost
-#include <boost/noncopyable.hpp>
+//#include <boost/noncopyable.hpp>
 
 // Qt
 #include <QtCore/QObject>
@@ -73,7 +76,7 @@ namespace te
 
         \ingroup af
       */
-      class TEQTAFEXPORT ApplicationController : public QObject, public boost::noncopyable
+      class TEQTAFEXPORT ApplicationController : public QObject, public te::common::Singleton<ApplicationController>
       {
         Q_OBJECT
 
@@ -98,7 +101,7 @@ namespace te
 
             \pre The application must have been initialized before calling this method.
           */
-          static ApplicationController& getInstance();
+//          static ApplicationController& getInstance();
 
           /*!
             \brief Tells wich configuration file to be used by the controller during its initialization.
@@ -405,6 +408,8 @@ namespace te
           */
           QWidget* getMainWindow() const;
 
+          void setResetTerraLibFlag(const bool& status);
+
         protected:
 
           std::map<QString, QToolBar*> m_toolbars;    //!< Toolbars registered.
@@ -437,8 +442,10 @@ namespace te
 
           QSettings m_appSettings;
 
+          bool m_resetTerralib;
+
 // Singleton instance
-          static ApplicationController* sm_instance;  //!< There can be only one object of class Application.
+//          static ApplicationController* sm_instance;  //!< There can be only one object of class Application.
       };
 
     } // end namespace af

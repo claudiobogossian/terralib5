@@ -44,6 +44,8 @@ namespace te
       \class ClassifierMAPStrategy
 
       \brief Maximum a posteriori probability strategy.
+      
+      \ingroup rp_class
      */
     class TERPEXPORT ClassifierMAPStrategy : public ClassifierStrategy
     {

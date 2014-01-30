@@ -45,7 +45,7 @@ namespace te
       \brief Create mosaics from a sequence of overlapped rasters using an automatic tie-points detection method. 
       \note When the tie-points detection fails, a new mosaic sequence is generated.
       \note Each mosaic sequence takes the first raster (of each sequence) as reference for resolution, SRS and equalization parameters.
-      \ingroup rp
+      \ingroup rp_mos
      */
     class TERPEXPORT SequenceMosaic : public Algorithm
     {

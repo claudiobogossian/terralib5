@@ -49,7 +49,7 @@ namespace te
       
       \reference W.J. Carper, T.M. Lillesand, R.W. Kiefer, The use of intensity-hue-saturation transformations for merging SPOT panchromatic and multispectral image data Photogramm. Eng. Remote Sensing, 56 (1990), pp. 459–467.
 
-      \ingroup rp
+      \ingroup rp_fus
      */
     class TERPEXPORT IHSFusion : public Algorithm
     {

@@ -116,6 +116,13 @@ namespace te
           */
           void highlightOIds(const te::da::ObjectIdSet* oids);
 
+          /*!
+            \brief Update the color to be used.
+
+            \param color The new color;
+          */
+          void setHighlightColor(const QColor& color);
+
         public slots:
           
           /*!

@@ -59,7 +59,6 @@ namespace te
     namespace af
     {
 // Forward declarations
-      class ApplicationController;
       class InterfaceController;
       class LayerExplorer;
       class MapDisplay;
@@ -95,6 +94,8 @@ namespace te
 
           virtual void resetState();
 
+          void resetTerraLib(const bool& status);
+
         protected slots:
 
           void onApplicationTriggered(te::qt::af::evt::Event* evt);
@@ -122,6 +123,8 @@ namespace te
           void onSaveProjectTriggered();
 
           void onSaveProjectAsTriggered();
+
+          void onRestartSystemTriggered();
 
           void onToolsCustomizeTriggered();
 
@@ -300,6 +303,7 @@ namespace te
           QAction* m_fileExit;
           QAction* m_filePrint;
           QAction* m_filePrintPreview;
+          QAction* m_fileRestartSystem;
           QAction* m_mapSRID;
           QAction* m_mapUnknownSRID;
           QAction* m_mapDraw;
@@ -361,8 +365,6 @@ namespace te
           QDockWidget* m_progressDockWidget;       //!< Dock widget used to show progress information
           QDockWidget* m_zoomInDisplaysDockWidget; //!< Dock widget used to show zoom in display
           QDockWidget* m_eyeBirdDisplaysDockWidget; //!< Dock widget used to show eye bird display
-
-          te::qt::af::ApplicationController* m_controller;
       };
     } // end namespace af
   }   // end namespace qt
