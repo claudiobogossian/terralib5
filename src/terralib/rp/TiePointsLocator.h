@@ -50,6 +50,7 @@ namespace te
       \class TiePointsLocator
       \brief Tie points locator.
       \details Designed to find tie-points inside raster areas.
+      \ingroup rp_gen
      */
     class TERPEXPORT TiePointsLocator : public Algorithm
     {

@@ -101,7 +101,7 @@ namespace te
       \return true if ok, false on errors.
     */
     template<class T>
-    bool getInverseMatrix(const boost::numeric::ublas::matrix<T>& inputMatrix,
+    bool GetInverseMatrix(const boost::numeric::ublas::matrix<T>& inputMatrix,
                           boost::numeric::ublas::matrix<T>& outputMatrix)
     {
       assert( inputMatrix.size1() == inputMatrix.size2() );
@@ -149,7 +149,7 @@ namespace te
       \note A* = transp(A) * inv(A * trasnp(A))    (i<j)
     */
     template<class T>
-    bool getPseudoInverseMatrix(const boost::numeric::ublas::matrix<T>& inputMatrix,
+    bool GetPseudoInverseMatrix(const boost::numeric::ublas::matrix<T>& inputMatrix,
                                 boost::numeric::ublas::matrix<T>& outputMatrix)
     {
       if( inputMatrix.size1() > inputMatrix.size2() )
@@ -162,7 +162,7 @@ namespace te
 
         boost::numeric::ublas::matrix<T> aux1Inv;
 
-        if( getInverseMatrix( aux1, aux1Inv ) )
+        if( GetInverseMatrix( aux1, aux1Inv ) )
         {
           outputMatrix = boost::numeric::ublas::prod( aux1Inv, trans );
           return true;
@@ -182,7 +182,7 @@ namespace te
 
         boost::numeric::ublas::matrix<T> aux1Inv;
 
-        if( getInverseMatrix( aux1, aux1Inv ) )
+        if( GetInverseMatrix( aux1, aux1Inv ) )
         {
           outputMatrix = boost::numeric::ublas::prod( trans, aux1Inv );
           return true;
@@ -194,7 +194,7 @@ namespace te
       }
       else
       {
-        return getInverseMatrix( inputMatrix, outputMatrix );
+        return GetInverseMatrix( inputMatrix, outputMatrix );
       }
     }
 

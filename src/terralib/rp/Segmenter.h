@@ -67,7 +67,7 @@ namespace te
       \sa te::rp::Segmenter::Parameters For detailed parameters description.
       \sa te::rp::SegmenterStrategy For detailed parameters description.
 
-      \ingroup rp
+      \ingroup rp_seg
     */
     class TERPEXPORT Segmenter : public Algorithm
     {

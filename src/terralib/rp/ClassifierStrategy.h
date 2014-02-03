@@ -42,7 +42,6 @@ namespace te
     /*!
       \class ClassifierStrategy
       \brief Raster classifier strategy base class.
-      \ingroup rp
      */
     class TERPEXPORT ClassifierStrategy
     {

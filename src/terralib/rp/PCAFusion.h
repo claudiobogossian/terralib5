@@ -18,16 +18,15 @@
  */
 
 /*!
-  \file terralib/rp/GeoMosaic.h
-  \brief Create a mosaic from a set of geo-referenced rasters.
+  \file terralib/rp/PCAFusion.h
+  \brief Creation of skeleton imagems.
  */
 
-#ifndef __TERRALIB_RP_INTERNAL_GEOMOSAIC_H
-#define __TERRALIB_RP_INTERNAL_GEOMOSAIC_H
+#ifndef __TERRALIB_RP_INTERNAL_PCAFUSION_H
+#define __TERRALIB_RP_INTERNAL_PCAFUSION_H
 
 #include "Algorithm.h"
-#include "FeedersRaster.h"
-#include "Blender.h"
+#include "../raster/Raster.h"
 #include "../raster/Interpolator.h"
 
 #include <vector>
@@ -40,38 +39,35 @@ namespace te
   namespace rp
   {
     /*!
-      \class GeoMosaic
-      \brief Create a mosaic from a set of geo-referenced rasters.
-      \note The first raster will always be taken as reference to define the mosaic resolution and SRS.
-      \ingroup rp_mos
+      \class PCAFusion
+      \brief Fusion of a low-resolution multi-band image with a high resolution image using the PCA (Principal components analysis) method.
+      \details The PCA performs image fusion where the first principal component of the multi-spectral image is replaced by the histogram matched panchromatic imagery.
+      \note Reference: Tania Stathaki, "Image Fusion: Algorithms and Applications", Elsevier, First edition 2008.
+      \ingroup rp_fus
      */
-    class TERPEXPORT GeoMosaic : public Algorithm
+    class TERPEXPORT PCAFusion : public Algorithm
     {
       public:
         
         /*!
           \class InputParameters
-          \brief GeoMosaic input parameters
+          \brief PCAFusion input parameters
          */        
         class TERPEXPORT InputParameters : public AlgorithmInputParameters
         {
           public:
             
-            FeederConstRaster* m_feederRasterPtr; //!< Input rasters feeder.
+            te::rst::Raster const* m_lowResRasterPtr; //!< Input low-resolution multi-band raster.
             
-            std::vector< std::vector< unsigned int > > m_inputRastersBands; //!< Bands to process for each input raster.
+            std::vector< unsigned int > m_lowResRasterBands; //!< The low-resolution raster band indexes.
+            
+            te::rst::Raster const* m_highResRasterPtr; //!< Input high-resolution raster.
+            
+            unsigned int m_highResRasterBand; //!< Band to process from the high-resolution raster.
+            
+            bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
             
             te::rst::Interpolator::Method m_interpMethod; //!< The raster interpolator method (default:NearestNeighbor).
-            
-            double m_noDataValue; //!< The pixel value used where no raster data is avaliable (defaul:0).
-            
-            bool m_forceInputNoDataValue; //!< If true, m_noDataValue will be used as the no-data value for input rasters (defalt:false).
-            
-            te::rp::Blender::BlendMethod m_blendMethod; //!< The pixel blending method (default: NoBlendMethod).
-            
-            bool m_autoEqualize; //!< Auto equalization will be performed using the overlaped image areas (default:true).
-            
-            bool m_useRasterCache; //!< Enable(true) or disable the use of raster caching (default:true).
             
             InputParameters();
             
@@ -91,7 +87,7 @@ namespace te
         
         /*!
           \class OutputParameters
-          \brief GeoMosaic output parameters
+          \brief PCAFusion output parameters
          */        
         class TERPEXPORT OutputParameters : public AlgorithmOutputParameters
         {
@@ -101,7 +97,7 @@ namespace te
             
             std::map< std::string, std::string > m_rInfo; //!< The necessary information to create the output rasters (as described in te::raster::RasterFactory). 
             
-            std::auto_ptr< te::rst::Raster > m_outputRasterPtr; //!< The generated output mosaic raster.
+            std::auto_ptr< te::rst::Raster > m_outputRasterPtr; //!< The generated output fused raster.
             
             OutputParameters();
             
@@ -119,9 +115,9 @@ namespace te
             AbstractParameters* clone() const;
         };        
 
-        GeoMosaic();
+        PCAFusion();
         
-        ~GeoMosaic();
+        ~PCAFusion();
        
         //overload
         bool execute( AlgorithmOutputParameters& outputParams ) throw( te::rp::Exception );
@@ -132,36 +128,15 @@ namespace te
         //overload
         bool initialize( const AlgorithmInputParameters& inputParams ) throw( te::rp::Exception );
         
+        //overload
         bool isInitialized() const;
 
       protected:
         
-        GeoMosaic::InputParameters m_inputParameters; //!< Input execution parameters.
+        InputParameters m_inputParameters; //!< Input execution parameters.
         
         bool m_isInitialized; //!< Tells if this instance is initialized.
-        
-        /*!
-          \brief Execute a mosaic of georeferenced images.
-          \param outputParams The algorithm execution parameters.
-          \return true if ok, false on errors.
-        */
-        bool executeGeoMosaic( GeoMosaic::OutputParameters& outputParams );
-          
-          
-        /*!
-          \brief Raster band statistics calcule.
-          \param band Input raster band.
-          \param forceNoDataValue Force the noDataValue to be used as the band no-data value.
-          \param noDataValue The no-data value to use.
-          \param mean Pixels mean.
-          \param variance Pixels variance.
-        */
-        static void calcBandStatistics( const te::rst::Band& band,
-          const bool& forceNoDataValue,
-          const double& noDataValue,
-          double& mean, 
-          double& variance );
-
+       
     };
 
   } // end namespace rp
