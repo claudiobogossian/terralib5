@@ -37,7 +37,6 @@
 #include "LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
-
 #include "Utils.h"
 
 // STL
