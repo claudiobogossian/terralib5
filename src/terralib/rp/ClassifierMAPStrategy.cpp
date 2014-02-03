@@ -249,7 +249,7 @@ bool te::rp::ClassifierMAPStrategy::initialize(
       }
       
       boost::numeric::ublas::matrix< double > classCovarianceInvMatrix;
-      TERP_TRUE_OR_RETURN_FALSE( te::common::getInverseMatrix( classCovarianceMatrix,
+      TERP_TRUE_OR_RETURN_FALSE( te::common::GetInverseMatrix( classCovarianceMatrix,
         classCovarianceInvMatrix ), "Inverse matrix calcule error" );
       m_classesCovarianceInvMatrixes.push_back( classCovarianceInvMatrix );
       

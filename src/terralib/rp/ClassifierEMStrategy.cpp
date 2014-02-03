@@ -233,7 +233,7 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
           Xk_minus_MUj(l, 0) = Xk(k, l) - MUj(j, l);
         Xk_minus_MUj_T = boost::numeric::ublas::trans(Xk_minus_MUj);
 
-        te::common::getInverseMatrix(SIGMAj[j], inverse_SIGMAj);
+        te::common::GetInverseMatrix(SIGMAj[j], inverse_SIGMAj);
 
         product_NETAj = prod(Xk_minus_MUj_T, inverse_SIGMAj);
         product_NETAj = prod(product_NETAj, Xk_minus_MUj);
@@ -255,7 +255,7 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
             Xk_minus_MUj(l, 0) = Xk(k, l) - MUj(j2, l);
           Xk_minus_MUj_T = boost::numeric::ublas::trans(Xk_minus_MUj);
 
-          te::common::getInverseMatrix(SIGMAj[j2], inverse_SIGMAj2);
+          te::common::GetInverseMatrix(SIGMAj[j2], inverse_SIGMAj2);
 
           product_NETAj2 = prod(Xk_minus_MUj_T, inverse_SIGMAj2);
           product_NETAj2 = prod(product_NETAj2, Xk_minus_MUj);
@@ -379,7 +379,7 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
         X_minus_MUj(l, 0) = X(0, l) - MUj(j, l);
       X_minus_MUj_T = boost::numeric::ublas::trans(X_minus_MUj);
 
-      te::common::getInverseMatrix(SIGMAj[j], inverse_SIGMAj);
+      te::common::GetInverseMatrix(SIGMAj[j], inverse_SIGMAj);
 
       product_NETAj = prod(X_minus_MUj_T, inverse_SIGMAj);
       product_NETAj = prod(product_NETAj, X_minus_MUj);
@@ -401,7 +401,7 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
           X_minus_MUj(l, 0) = X(0, l) - MUj(j2, l);
         X_minus_MUj_T = boost::numeric::ublas::trans(X_minus_MUj);
 
-        te::common::getInverseMatrix(SIGMAj[j2], inverse_SIGMAj2);
+        te::common::GetInverseMatrix(SIGMAj[j2], inverse_SIGMAj2);
 
         product_NETAj2 = prod(X_minus_MUj_T, inverse_SIGMAj2);
         product_NETAj2 = prod(product_NETAj2, X_minus_MUj);

@@ -33,7 +33,9 @@
 #include "../raster/RasterFactory.h"
 #include "../raster/RasterProperty.h"
 #include "../raster/RasterIterator.h"
+#include "../raster/Utils.h"
 #include "../geometry/Point.h"
+#include "../common/MatrixUtils.h"
 #include "Exception.h"
 #include "Functions.h"
 #include "Macros.h"
@@ -222,7 +224,8 @@ namespace te
       if( dataSourcePtr.get() == 0 ) return false;
 
       std::map<std::string, std::string> outputRasterInfo;
-      outputRasterInfo["SOURCE"] = pathInfo.parent_path().string();
+      outputRasterInfo["SOURCE"] = pathInfo.parent_path().string().empty() ?
+        "." : pathInfo.parent_path().string();
 
       dataSourcePtr->setConnectionInfo(outputRasterInfo);
       dataSourcePtr->open();
@@ -250,6 +253,56 @@ namespace te
       {
         return false;
       }
+    }
+    
+    bool TERPEXPORT Copy2DiskRaster( const te::rst::Raster& inputRaster,
+      const std::string& fileName )
+    {
+      if( !(inputRaster.getAccessPolicy() & te::common::RAccess ) )
+      {
+        return false;
+      };
+      
+      const unsigned int nBands = inputRaster.getNumberOfBands();
+      const unsigned int nCols = inputRaster.getNumberOfColumns();
+      const unsigned int nRows = inputRaster.getNumberOfRows();
+      unsigned int bandIdx =0;
+      unsigned int col = 0;
+      unsigned int row = 0;
+      
+      std::vector< te::rst::BandProperty* > bandsProperties;
+      for( bandIdx = 0 ; bandIdx < nBands ; ++bandIdx )
+      {
+        bandsProperties.push_back( new te::rst::BandProperty(
+          *( inputRaster.getBand( bandIdx )->getProperty() ) ) );        
+      }
+      
+      RasterHandler outRasterHandler;
+      
+      if( ! CreateNewGdalRaster( *( inputRaster.getGrid() ), bandsProperties,
+        fileName, outRasterHandler ) )
+      {
+        return false;
+      }
+      
+      double value = 0;
+      
+      for( bandIdx = 0 ; bandIdx < nBands ; ++bandIdx )
+      {
+        const te::rst::Band& inBand = *inputRaster.getBand( bandIdx );
+        te::rst::Band& outBand = *outRasterHandler.getRasterPtr()->getBand( bandIdx );
+        
+        for( row = 0 ; row < nRows ; ++row )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            inBand.getValue( col, row, value );
+            outBand.setValue( col, row, value );
+          }
+        }
+      }
+      
+      return true;
     }
 
     void GetDataTypeRange( const int dataType, double& min, double& max )
@@ -1360,6 +1413,304 @@ namespace te
         return true;
       }
     }    
+    
+    bool DirectPrincipalComponents( 
+      const te::rst::Raster& inputRaster,
+      const std::vector< unsigned int >& inputRasterBands,
+      boost::numeric::ublas::matrix< double >& pcaMatrix,
+      te::rst::Raster& pcaRaster,
+      const unsigned int maxThreads )
+    {
+      if( ( inputRaster.getAccessPolicy() & te::common::RAccess ) == 0 )
+      {
+        return false;
+      }
+      if( ( pcaRaster.getAccessPolicy() & te::common::WAccess ) == 0 )
+      {
+        return false;
+      }   
+      if( inputRaster.getNumberOfBands() != pcaRaster.getNumberOfBands() )
+      {
+        return false;
+      }
+      if( pcaRaster.getNumberOfBands() != inputRasterBands.size() )
+      {
+        return false;
+      }
+      if( inputRaster.getNumberOfRows() != pcaRaster.getNumberOfRows() )
+      {
+        return false;
+      }
+      if( inputRaster.getNumberOfColumns() != pcaRaster.getNumberOfColumns() )
+      {
+        return false;
+      }    
+      
+      // Covariance matrix
+      
+      boost::numeric::ublas::matrix< double > covarianceMatrix;
+      
+      covarianceMatrix.resize( inputRasterBands.size(), inputRasterBands.size() );
+      
+      for( unsigned int covMatrixIdx1 = 0 ; covMatrixIdx1 < inputRasterBands.size() ;
+        ++covMatrixIdx1 )
+      {
+        if( inputRasterBands[ covMatrixIdx1 ] >= inputRaster.getNumberOfBands() )
+        {
+          return false;
+        }
+        
+        for( unsigned int covMatrixIdx2 = 0 ; covMatrixIdx2 < inputRasterBands.size() ;
+        ++covMatrixIdx2 )
+        {
+          if( inputRasterBands[ covMatrixIdx2 ] >= inputRaster.getNumberOfBands() )
+          {
+            return false;
+          }    
+          
+          if( ! GetCovarianceValue( *( inputRaster.getBand( inputRasterBands[ covMatrixIdx1 ] ) ),
+             *( inputRaster.getBand( inputRasterBands[ covMatrixIdx2 ] ) ),
+             maxThreads, 0,  0, covarianceMatrix( covMatrixIdx1, covMatrixIdx2 ) ) )
+          {
+            return false;
+          }
+        }
+      }
+      
+      // Eigen stuff
+      
+      boost::numeric::ublas::matrix< double > eigenValues;
+      boost::numeric::ublas::matrix< double > eigenVectors;
+      
+      if( ! te::common::EigenVectors( covarianceMatrix, eigenVectors, eigenValues ) )
+      {
+        return false;
+      }
+      
+      pcaMatrix = boost::numeric::ublas::trans( eigenVectors );
+      
+      return RemapValues( inputRaster, inputRasterBands, pcaMatrix, pcaRaster, maxThreads );
+    }
+    
+    bool InversePrincipalComponents( 
+      const te::rst::Raster& pcaRaster,
+      const boost::numeric::ublas::matrix< double >& pcaMatrix,
+      te::rst::Raster& outputRaster,
+      const unsigned int maxThreads )    
+    {
+      boost::numeric::ublas::matrix< double > transposedPcaMatrix;
+      transposedPcaMatrix = boost::numeric::ublas::trans( pcaMatrix );
+      
+      std::vector< unsigned int > inputRasterBands;
+      
+      for( unsigned int bandIdx = 0 ; bandIdx < pcaRaster.getNumberOfBands() ;
+        ++bandIdx )
+      {
+        inputRasterBands.push_back( bandIdx );
+      }
+      
+      return RemapValues( pcaRaster, inputRasterBands, transposedPcaMatrix, 
+        outputRaster, maxThreads );
+    }
 
+    bool RemapValues( 
+      const te::rst::Raster& inputRaster,
+      const std::vector< unsigned int >& inputRasterBands, 
+      const boost::numeric::ublas::matrix< double >& remapMatrix,
+      te::rst::Raster& outputRaster,
+      const unsigned int maxThreads )
+    {
+      if( ( inputRaster.getAccessPolicy() & te::common::RAccess ) == 0 )
+      {
+        return false;
+      }
+      if( ( outputRaster.getAccessPolicy() & te::common::WAccess ) == 0 )
+      {
+        return false;
+      }   
+      if( remapMatrix.size1() != inputRasterBands.size() )
+      {
+        return false;
+      }
+      if( remapMatrix.size2() != inputRasterBands.size() )
+      {
+        return false;
+      }      
+      if( outputRaster.getNumberOfBands() != inputRasterBands.size() )
+      {
+        return false;
+      }
+      if( inputRaster.getNumberOfRows() != outputRaster.getNumberOfRows() )
+      {
+        return false;
+      }
+      if( inputRaster.getNumberOfColumns() != outputRaster.getNumberOfColumns() )
+      {
+        return false;
+      }    
+      
+      // Checking if optmized PCA can be executed
+      
+      bool useOptimizedRemap = false;
+      
+      {
+        for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx <
+          inputRaster.getNumberOfBands() ; ++inputRasterBandsIdx )
+        {
+          if(
+              ( 
+                inputRaster.getBand( inputRasterBands[ inputRasterBandsIdx ] )->getProperty()->m_blkw 
+                != 
+                inputRaster.getBand( inputRasterBands[ 0 ] )->getProperty()->m_blkw 
+              )
+              ||
+              ( 
+                inputRaster.getBand( inputRasterBands[ inputRasterBandsIdx ] )->getProperty()->m_blkh 
+                != 
+                inputRaster.getBand( inputRasterBands[ 0 ] )->getProperty()->m_blkh
+              )              
+              ||
+              ( 
+                inputRaster.getBand( inputRasterBands[ inputRasterBandsIdx ] )->getProperty()->m_nblocksx 
+                != 
+                inputRaster.getBand( inputRasterBands[ 0 ] )->getProperty()->m_nblocksx 
+              )    
+              ||
+              ( 
+                inputRaster.getBand( inputRasterBands[ inputRasterBandsIdx ] )->getProperty()->m_nblocksy 
+                != 
+                inputRaster.getBand( inputRasterBands[ 0 ] )->getProperty()->m_nblocksy 
+              )  
+              ||
+              ( 
+                outputRaster.getBand( inputRasterBandsIdx )->getProperty()->m_blkw 
+                != 
+                inputRaster.getBand( inputRasterBands[ 0 ] )->getProperty()->m_blkw 
+              )
+              ||
+              ( 
+                outputRaster.getBand( inputRasterBandsIdx )->getProperty()->m_blkh 
+                != 
+                inputRaster.getBand( inputRasterBands[ 0 ] )->getProperty()->m_blkh
+              )              
+              ||
+              ( 
+                outputRaster.getBand( inputRasterBandsIdx )->getProperty()->m_nblocksx 
+                != 
+                inputRaster.getBand( inputRasterBands[ 0 ] )->getProperty()->m_nblocksx 
+              )    
+              ||
+              ( 
+                outputRaster.getBand( inputRasterBandsIdx )->getProperty()->m_nblocksy 
+                != 
+                inputRaster.getBand( inputRasterBands[ 0 ] )->getProperty()->m_nblocksy 
+              )                                     
+            )
+          {
+            useOptimizedRemap = false;
+            break;
+          }
+        }
+      }
+      
+      // remapping
+      
+      if( useOptimizedRemap )
+      {
+        
+      }
+      else
+      {
+        const unsigned int inputRasterBandsSize = inputRasterBands.size();
+        const unsigned int nRows = inputRaster.getNumberOfRows();
+        const unsigned int nCols = inputRaster.getNumberOfColumns();
+        boost::numeric::ublas::matrix< double > pixelValues( inputRasterBands.size(), 1 );
+        boost::numeric::ublas::matrix< double > remappedPixelValues( inputRasterBands.size(), 1 );
+        std::vector< double > inputNoDataValues( inputRasterBandsSize );
+        std::vector< double > outputNoDataValues( inputRasterBandsSize );
+        std::vector< double > outputMinValue( inputRasterBandsSize );
+        std::vector< double > outputMaxValue( inputRasterBandsSize );        
+        unsigned int inputRasterBandsIdx = 0;
+        unsigned int row = 0;
+        unsigned int col = 0;
+        bool pixelIsValid = false;
+        
+        for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < inputRasterBandsSize ;
+          ++inputRasterBandsIdx )
+        {
+          if( inputRasterBands[ inputRasterBandsIdx ] >= inputRaster.getNumberOfBands() )
+          {
+            return false;
+          }
+          
+          inputNoDataValues[ inputRasterBandsIdx ] = inputRaster.getBand( 
+            inputRasterBands[ inputRasterBandsIdx ] )->getProperty()->m_noDataValue;
+            
+          outputNoDataValues[ inputRasterBandsIdx ] = outputRaster.getBand( 
+            inputRasterBandsIdx )->getProperty()->m_noDataValue;
+            
+          te::rst::GetDataTypeRanges( 
+            outputRaster.getBand( inputRasterBandsIdx )->getProperty()->getType(),
+            outputMinValue[ inputRasterBandsIdx ],
+            outputMaxValue[ inputRasterBandsIdx ] );
+        }
+        
+        for( row = 0 ; row < nRows ; ++row )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            pixelIsValid = true;
+            
+            for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < inputRasterBandsSize ;
+              ++inputRasterBandsIdx )
+            {
+              inputRaster.getValue( col, row, pixelValues( inputRasterBandsIdx, 0 ),
+                inputRasterBands[ inputRasterBandsIdx ] );
+              
+              if( pixelValues( inputRasterBandsIdx, 0 ) == inputNoDataValues[ inputRasterBandsIdx ] )
+              {
+                pixelIsValid = false;
+                break;
+              }
+            }
+            
+            if( pixelIsValid )
+            {
+              remappedPixelValues = boost::numeric::ublas::prod( remapMatrix, pixelValues );
+              
+              for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < inputRasterBandsSize ;
+                ++inputRasterBandsIdx )
+              {              
+                outputRaster.setValue( 
+                  col, 
+                  row, 
+                  std::max(
+                    outputMinValue[ inputRasterBandsIdx ]
+                    ,
+                    std::min( 
+                      outputMaxValue[ inputRasterBandsIdx ]
+                      ,
+                      remappedPixelValues( inputRasterBandsIdx, 0 )
+                    )
+                  ),
+                  inputRasterBandsIdx );
+              }              
+            }
+            else
+            {
+              for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < inputRasterBandsSize ;
+                ++inputRasterBandsIdx )
+              {              
+                outputRaster.setValue( col, row, outputNoDataValues[ inputRasterBandsIdx ], 
+                  inputRasterBandsIdx );
+              }
+            }
+          }
+        }
+      }
+        
+      return true;
+    }
+    
   } // end namespace rp
 }   // end namespace te

@@ -45,9 +45,9 @@ namespace te
       
       \details The IHS is one of the widespread image fusion methods in the remote sensing community and has been employed as a standard procedure in many commercial packages; IHS is the intrinsic method when the intensity channel is replaced by the high-resolution Pan image.
       
-      \reference Te-Ming Tu, Shun-Chi Su, Hsuen-Chyun Shyu, Ping S. Huang, A new look at IHS-like image fusion methods, Information Fusion, Volume 2, Issue 3, September 2001, Pages 177-186, ISSN 1566-2535.
+      \note Reference: Te-Ming Tu, Shun-Chi Su, Hsuen-Chyun Shyu, Ping S. Huang, A new look at IHS-like image fusion methods, Information Fusion, Volume 2, Issue 3, September 2001, Pages 177-186, ISSN 1566-2535.
       
-      \reference W.J. Carper, T.M. Lillesand, R.W. Kiefer, The use of intensity-hue-saturation transformations for merging SPOT panchromatic and multispectral image data Photogramm. Eng. Remote Sensing, 56 (1990), pp. 459–467.
+      \note Reference: W.J. Carper, T.M. Lillesand, R.W. Kiefer, The use of intensity-hue-saturation transformations for merging SPOT panchromatic and multispectral image data Photogramm. Eng. Remote Sensing, 56 (1990), pp. 459–467.
 
       \ingroup rp_fus
      */
