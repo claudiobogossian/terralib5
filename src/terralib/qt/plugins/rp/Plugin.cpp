@@ -39,6 +39,10 @@
   #include "ContrastAction.h"
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_FILTER
+  #include "FilterAction.h"
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
   #include "MixtureModelAction.h"
 #endif
@@ -126,6 +130,10 @@ void te::qt::plugins::rp::Plugin::registerActions()
     m_contrast = new te::qt::plugins::rp::ContrastAction(m_rpMenu, m_rpPopupMenu);
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_FILTER
+    m_filter = new te::qt::plugins::rp::FilterAction(m_rpMenu, m_rpPopupMenu);
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
   m_mixtureModel = new te::qt::plugins::rp::MixtureModelAction(m_rpMenu, m_rpPopupMenu);
 #endif
@@ -147,6 +155,10 @@ void  te::qt::plugins::rp::Plugin::unRegisterActions()
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
     delete m_contrast;
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_FILTER
+    delete m_filter;
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST

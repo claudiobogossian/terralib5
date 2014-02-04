@@ -98,9 +98,11 @@ void te::qt::widgets::QueryDialog::setLayerList(std::list<te::map::AbstractLayer
   {
     te::map::AbstractLayerPtr l = *it;
 
+    std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
+
     te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
 
-    if(dsLayer)
+    if(dsLayer && dsType->hasGeom())
       m_ui->m_inputLayerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
 
     ++it;
@@ -200,7 +202,7 @@ void te::qt::widgets::QueryDialog::layerRemoved(te::map::AbstractLayerPtr layer)
 
 void te::qt::widgets::QueryDialog::onInputLayerActivated(QString value)
 {
-  m_whereClauseWidget->clear();
+  m_whereClauseWidget->resetInterface();
 
   // Gets the input layer
   int idxLayer = m_ui->m_inputLayerComboBox->currentIndex();
