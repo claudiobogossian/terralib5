@@ -24,7 +24,7 @@
 */
 
 // Terralib
-#include "../../../qt/widgets/rp/FilterDialog.h"
+#include "../../../qt/widgets/rp/FilterWizard.h"
 #include "../../af/ApplicationController.h"
 #include "FilterAction.h"
 
@@ -46,7 +46,7 @@ te::qt::plugins::rp::FilterAction::~FilterAction()
 
 void te::qt::plugins::rp::FilterAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::FilterDialog dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::qt::widgets::FilterWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
