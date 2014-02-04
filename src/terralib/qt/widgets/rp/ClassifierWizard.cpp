@@ -24,18 +24,19 @@
 */
 
 // TerraLib 
+#include "../../../common/progress/ProgressManager.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/Classifier.h"
 #include "../../../rp/Module.h"
+#include "../../widgets/progress/ProgressViewerDialog.h"
 #include "ClassifierWizard.h"
 #include "ClassifierWizardPage.h"
 #include "LayerSearchWidget.h"
 #include "LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
-
 #include "Utils.h"
 
 // STL
@@ -43,6 +44,7 @@
 
 // Qt
 #include <QtGui/QMessageBox>
+#include <QtGui/QApplication>
 
 
 te::qt::widgets::ClassifierWizard::ClassifierWizard(QWidget* parent)
@@ -91,6 +93,9 @@ bool te::qt::widgets::ClassifierWizard::validateCurrentPage()
 void te::qt::widgets::ClassifierWizard::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_layerSearchPage->getSearchWidget()->setList(layerList);
+  m_layerSearchPage->getSearchWidget()->filterOnlyByRaster();
+
+  m_classifierPage->setList(layerList);
 }
 
 te::map::AbstractLayerPtr te::qt::widgets::ClassifierWizard::getOutputLayer()
@@ -133,6 +138,11 @@ bool te::qt::widgets::ClassifierWizard::execute()
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();
   algoOutputParams.m_rType = m_rasterInfoPage->getWidget()->getType();
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
+  QApplication::setOverrideCursor(Qt::WaitCursor);
 
   if(algorithmInstance.initialize(algoInputParams))
   {
@@ -150,6 +160,11 @@ bool te::qt::widgets::ClassifierWizard::execute()
     {
       QMessageBox::critical(this, tr("Classifier"), tr("Classifier execution error.") +
         ( " " + te::rp::Module::getLastLogStr() ).c_str());
+
+      te::common::ProgressManager::getInstance().removeViewer(id);
+
+      QApplication::restoreOverrideCursor();
+
       return false;
     }
   }
@@ -157,8 +172,17 @@ bool te::qt::widgets::ClassifierWizard::execute()
   {
     QMessageBox::critical(this, tr("Classifier"), tr("Classifier initialization error.") +
       ( " " + te::rp::Module::getLastLogStr() ).c_str() );
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
+    QApplication::restoreOverrideCursor();
+
     return false;
   }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
+
+  QApplication::restoreOverrideCursor();
 
   return true;
 }

@@ -103,7 +103,7 @@ te::rp::ClassifierISOSegStrategy::Pattern::Pattern(int i, double a, std::vector<
 {
   m_covarianceInversion = boost::numeric::ublas::matrix<double>(m_covarianceMatrix.size1(), m_covarianceMatrix.size2());
 
-  te::common::getInverseMatrix(m_covarianceMatrix, m_covarianceInversion);
+  te::common::GetInverseMatrix(m_covarianceMatrix, m_covarianceInversion);
 }
 
 te::rp::ClassifierISOSegStrategy::Pattern::Pattern(Pattern& rhs)

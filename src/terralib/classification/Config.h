@@ -67,6 +67,48 @@
 
 //@}
 
+/** @name ROI Defines
+ *  Flags for ROI export and import funcions
+ */
+//@{
+
+/*!
+  \def TE_CL_ROI_GEOM_ID_NAME
+
+  \brief This mark defines the geom id attribute name
+ */
+#define TE_CL_ROI_GEOM_ID_NAME "geom_id"
+
+/*!
+  \def TE_CL_ROI_LABEL_NAME
+
+  \brief This mark defines the label attribute name
+ */
+#define TE_CL_ROI_LABEL_NAME "label"
+
+/*!
+  \def TE_CL_ROI_COLOR_NAME
+
+  \brief This mark defines the color attribute name
+ */
+#define TE_CL_ROI_COLOR_NAME "color"
+
+/*!
+  \def TE_CL_ROI_GEOM_NAME
+
+  \brief This mark defines the geom attribute name
+ */
+#define TE_CL_ROI_GEOM_NAME "geom"
+
+/*!
+  \def TE_CL_ROI_PK_NAME
+
+  \brief This mark defines the primary key attribute name
+ */
+#define TE_CL_ROI_PK_NAME "pk_roi"
+
+//@}
+
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library
  */

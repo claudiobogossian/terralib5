@@ -289,6 +289,18 @@ bool AggregationQuery(const std::string& inDatasetName,
   
   te::da::Select select(fields, from);
   
+
+  //if(inDataset)
+  //{
+  //  std::vector<std::string> names;
+  //  te::da::GetOIDPropertyNames(dsType.get(), names);
+
+  //  te::da::In* e_in = new te::da::In(names[0]);
+  //  te::da::Expression* e_where = new te::da::Where(
+
+  //}
+
+
   if(!groupingProperties.empty())
   {
     te::da::GroupBy* groupBy = new te::da::GroupBy();

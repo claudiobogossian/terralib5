@@ -58,6 +58,7 @@ namespace te
             {
               for( col = 0 ; col < nCols ; ++col )
               {
+                m_segments[ row ][ col ].m_status = false;
                 m_segments[ row ][ col ].m_neighborSegments = 0;
                 m_segments[ row ][ col ].m_neighborSegmentsSize = 0;
                 m_segments[ row ][ col ].m_features = m_segmentsFeatures[ row ] + ( col * featuresNumber );
@@ -72,6 +73,7 @@ namespace te
             {
               for( col = 0 ; col < nCols ; ++col )
               {
+                m_segments[ row ][ col ].m_status = false;
                 m_segments[ row ][ col ].m_neighborSegments = 0;
                 m_segments[ row ][ col ].m_neighborSegmentsSize = 0;
                 m_segments[ row ][ col ].m_features = 0;
@@ -91,6 +93,7 @@ namespace te
         {
           for( col = 0 ; col < nCols ; ++col )
           {
+            m_segments[ row ][ col ].m_status = false;
             m_segments[ row ][ col ].clearNeighborSegments();
           }
         }

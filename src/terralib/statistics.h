@@ -18,25 +18,27 @@
  */
 
 /*!
-  \file srs.h
-  
+  \file terralib/statistics.h
+
   \brief This file contains include headers for the Statistics module.
  */
 #ifndef __TERRALIB_INTERNAL_STATISTICS_H
 #define __TERRALIB_INTERNAL_STATISTICS_H
 
 // TerraLib
-#include "statistics/Config.h"
+#include "statistics/core/Enums.h"
+#include "statistics/core/Exception.h"
+#include "statistics/core/NumericStatisticalSummary.h"
+#include "statistics/core/StringStatisticalSummary.h"
+#include "statistics/core/SummaryFunctions.h"
+#include "statistics/core/Utils.h"
 
 namespace te
 {
-  /*!
-    \brief This is the namespace for the Statistics module.
-  
-  */
+  /*! \brief This is the namespace for the Statistics module. */
   namespace stat
   {
-  } // end namespace srs
+  } // end namespace stat
 }   // end namespace te
 
 #endif  // __TERRALIB_INTERNAL_STATISTICS_H

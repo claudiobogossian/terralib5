@@ -3,6 +3,7 @@ if(Boost_FOUND)
   set (TE_DEP_LIBS ${Boost_LIBRARIES})
   set (TE_DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 endif()
+
 find_package(GDAL ${_GDAL_VERSION})
 if(GDAL_FOUND)
 	list (APPEND TE_DEP_LIBS ${GDAL_LIBRARY})
@@ -16,10 +17,19 @@ find_path (
   PATH_SUFFIXES gdal/data 
   DOC "Path to where the gdal data directory is located."
   )
+  
+find_package(Qt4 ${_Qt4_VERSION} COMPONENTS QtCore QtGui REQUIRED)
+if(QT4_FOUND)
+  include (${QT_USE_FILE})
+  add_definitions (${QT_DEFINITIONS})
+
+  list (APPEND TE_DEP_LIBS ${QT_LIBRARIES})
+  list (APPEND TE_DEP_INCLUDES ${QT_INCLUDE_DIR})
+endif()
 
 # Definitions for windows compiling
 if(WIN32)
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEWMSDLL -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -DTEWMSDLL -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
 endif(WIN32)
 
 list (APPEND TE_DEP_LIBS 
@@ -28,13 +38,43 @@ list (APPEND TE_DEP_LIBS
 		terralib_datatype
 		terralib_geometry
 		terralib_gdal
+		terralib_maptools
 		terralib_plugin
+		terralib_qt_widgets
 		terralib_raster
+		terralib_srs
+		terralib_symbology
     )
 
-# Select the source and header files
-file(GLOB SRCS ${SRCDIR}/*.cpp)
-file(GLOB HDRS ${SRCDIR}/*.h)
+# Files to process.
+# --------------------------------------------------
+set (
+  _DIRS
+  .
+  qt
+)
+
+# Files in build tree
+appPrefix ("${SRCDIR}" "${_DIRS}" QT_INC_DIRS)
+
+# Files in build tree
+appPrefix ("qt" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Get files by structured by folders.
+getFfiles(${SRCDIR} "${_DIRS}" SRCS "")
+
+set (MOC "")
+
+# Select the header files for moc'ing
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/qt/WMSLayerItem.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/wms/qt" MOC)
+
+source_group("Generated Files" FILES ${MOC} ${MOC2} ${UI})
+
+list (APPEND SRCS "${MOC}" "${MOC2}")
 
 #exporting module information
 exportModuleInformation("wms" "${SRCDIR}" "wms")

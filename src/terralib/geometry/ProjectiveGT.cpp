@@ -227,7 +227,7 @@ bool te::gm::ProjectiveGT::computeParameters( GTParameters& params ) const
   boost::numeric::ublas::matrix< double > N_DM_inv;
   boost::numeric::ublas::matrix< double > N_IM_inv;
   
-  if ( ! te::common::getInverseMatrix( N_DM, N_DM_inv ) ) return false;
+  if ( ! te::common::GetInverseMatrix( N_DM, N_DM_inv ) ) return false;
 
   boost::numeric::ublas::matrix< double > X_DM( 
     boost::numeric::ublas::prod( N_DM_inv, U_DM ) );
@@ -242,7 +242,7 @@ bool te::gm::ProjectiveGT::computeParameters( GTParameters& params ) const
   params.m_directParameters[6] = X_DM(6,0);
   params.m_directParameters[7] = X_DM(7,0);
   
-  if ( ! te::common::getInverseMatrix( N_IM, N_IM_inv ) ) return false;
+  if ( ! te::common::GetInverseMatrix( N_IM, N_IM_inv ) ) return false;
 
   boost::numeric::ublas::matrix< double > X_IM( 
     boost::numeric::ublas::prod( N_IM_inv, U_IM ) );

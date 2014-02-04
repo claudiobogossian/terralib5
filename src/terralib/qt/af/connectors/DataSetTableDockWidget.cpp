@@ -35,6 +35,8 @@ te::qt::af::DataSetTableDockWidget::DataSetTableDockWidget(QWidget* parent)
 {
   m_view = new te::qt::widgets::DataSetTableView(this);
 
+  m_view->setHighlightColor(ApplicationController::getInstance().getSelectionColor());
+
   setWidget(m_view);
 
   setAttribute(Qt::WA_DeleteOnClose, true);

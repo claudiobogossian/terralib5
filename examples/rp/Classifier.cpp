@@ -329,9 +329,9 @@ void MAPClassifier()
     class2Samples.push_back( sampleC2_2 );
     class2Samples.push_back( sampleC2_3 );
 
-    te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCT allClassesSamples;
-    allClassesSamples[ 1 ] = class1Samples;
-    allClassesSamples[ 2 ] = class2Samples;
+    te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCTPtr allClassesSamples(new te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCT());
+    allClassesSamples->insert(te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCT::value_type(1, class1Samples));
+    allClassesSamples->insert(te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCT::value_type(2, class2Samples));
 
 // input parameters
     te::rp::Classifier::InputParameters algoInputParameters;
@@ -342,7 +342,7 @@ void MAPClassifier()
 
 // link specific parameters with chosen implementation
     te::rp::ClassifierMAPStrategy::Parameters classifierparameters;
-    classifierparameters.m_trainSamplesPtr = &allClassesSamples;
+    classifierparameters.m_trainSamplesPtr = allClassesSamples;
 
     algoInputParameters.m_strategyName = "map";
     algoInputParameters.setClassifierStrategyParams(classifierparameters);

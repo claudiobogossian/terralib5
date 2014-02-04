@@ -45,6 +45,7 @@ namespace te
     /*!
       \class SegmenterRegionGrowingStrategy
       \brief Raster region growing segmenter strategy.
+      \ingroup rp_seg
      */
     class TERPEXPORT SegmenterRegionGrowingStrategy : public SegmenterStrategy
     {
@@ -68,13 +69,13 @@ namespace te
             
             unsigned int m_minSegmentSize; //!< A positive minimum segment size (pixels number - default: 100).
             
-            double m_segmentsSimilarityThreshold; //!< Segments similarity treshold - Use lower values to merge only those segments that are more alike - Higher values tend to merge more segments - valid values range: [ 0, 1 ]; default:0.1.
+            double m_segmentsSimilarityThreshold; //!< Segments similarity treshold - Use lower values to merge only those segments that are more similar - Higher values will allow more segments to be merged - valid values range: positive values - default: 0.1 ).
             
             SegmentFeaturesType m_segmentFeatures; //!< What segment features will be used on the segmentation process (default:InvalidFeaturesType).
             
             std::vector< double > m_bandsWeights; //!< The weight given to each band, when applicable (note: the bands weights sum must always be 1) or an empty vector indicating that all bands have the same weight.
             
-            double m_colorWeight; //!< The weight given to the color component, deafult:0.5, valid range: [0,1].
+            double m_colorWeight; //!< The weight given to the color component, deafult:0.75, valid range: [0,1].
             
             double m_compactnessWeight; //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
             
@@ -131,12 +132,6 @@ namespace te
          */          
         typedef Matrix< SegmenterSegmentsBlock::SegmentIdDataType >
           SegmentsIdsMatrixT;
-          
-        /*!
-          \brief Internal segments indexer.
-         */        
-         typedef std::set< SegmenterRegionGrowingSegment* > SegmentsIndexerT;
-       
         
         /*!
           \class Merger
@@ -149,13 +144,13 @@ namespace te
             virtual ~Merger();
             
             /*!
-              \brief Returns a similarity index between this and the other segment (normalized between 0 and 1).
+              \brief Returns a dimilarity index between this and the other segment.
               \param segment1Ptr A pointer to the first segment.
               \param segment2Ptr A pointer to the second segment.
               \param mergePreviewSegPtr A pointer to a valid segment where the merged features values will be stored (when aplicable).
               \return A similarity index between this and the other segment ( normalized between 0 and 1 ).
             */              
-            virtual SegmenterRegionGrowingSegment::FeatureType getSimilarity(
+            virtual SegmenterRegionGrowingSegment::FeatureType getDissimilarity(
               SegmenterRegionGrowingSegment const * const segment1Ptr, 
               SegmenterRegionGrowingSegment const * const segment2Ptr, 
               SegmenterRegionGrowingSegment * const mergePreviewSegPtr ) const = 0;
@@ -200,7 +195,7 @@ namespace te
             ~MeanMerger();
             
             //overload        
-            SegmenterRegionGrowingSegment::FeatureType getSimilarity(
+            SegmenterRegionGrowingSegment::FeatureType getDissimilarity(
               SegmenterRegionGrowingSegment const * const segment1Ptr, 
               SegmenterRegionGrowingSegment const * const segment2Ptr, 
               SegmenterRegionGrowingSegment * const mergePreviewSegPtr ) const;
@@ -217,6 +212,11 @@ namespace te
           protected :
             
             unsigned int m_featuresNumber; //!< The number of features (bands).
+            
+            // variables used by the method getDissimilarity
+            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_dissValue;
+            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_diffValue; 
+            mutable unsigned int m_getDissimilarity_meansIdx;
         };        
         
         /*!
@@ -231,19 +231,19 @@ namespace te
               \brief Default constructor.
               \param bandsWeights A reference to an external valid structure where each bands weight are stored.
               \param segmentsIds //!< A reference to an external valid structure where all segments IDs are stored.
-              \param segments //!< A reference to an external valid segments indexer structure.
+              \param segmentsMatrix //!< A reference to an external valid segments matrix.
               \param colorWeight //!< The weight given to the color component, deafult:0.5, valid range: [0,1].
               \param compactnessWeight //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
             */
             BaatzMerger( const double& colorWeight, const double& compactnessWeight,
               const std::vector< double >& bandsWeights,
               const SegmentsIdsMatrixT& segmentsIds,
-              const SegmenterRegionGrowingStrategy::SegmentsIndexerT& segments );
+              Matrix< SegmenterRegionGrowingSegment >& segmentsMatrix );
             
             ~BaatzMerger();
             
             //overload        
-            SegmenterRegionGrowingSegment::FeatureType getSimilarity(
+            SegmenterRegionGrowingSegment::FeatureType getDissimilarity(
               SegmenterRegionGrowingSegment const * const segment1Ptr, 
               SegmenterRegionGrowingSegment const * const segment2Ptr, 
               SegmenterRegionGrowingSegment * const mergePreviewSegPtr ) const;
@@ -261,7 +261,7 @@ namespace te
 
             const SegmentsIdsMatrixT& m_segmentsIds; //!< A reference to an external valid structure where each all segments IDs are stored.
             
-            const SegmenterRegionGrowingStrategy::SegmentsIndexerT& m_segments; //!< A reference to an external valid structure where each all segments are indexed.
+            Matrix< SegmenterRegionGrowingSegment >& m_segmentsMatrix; //!< A reference to an external valid segments matrix..
             
             unsigned int m_bandsNumber; //!< The number of features (bands).
             
@@ -276,10 +276,6 @@ namespace te
             SegmenterRegionGrowingSegment::FeatureType m_colorWeight; //!< The weight given to the color component, deafult:0.5, valid range: [0,1].
             
             SegmenterRegionGrowingSegment::FeatureType m_compactnessWeight; //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
-            
-            std::vector< SegmenterRegionGrowingSegment::FeatureType > m_allSegsStdDevOffsets; //!< The offsets applied to normalize the standard deviation value.
-            
-            std::vector< SegmenterRegionGrowingSegment::FeatureType > m_allSegsStdDevGain; //!< The gains applied to normalize the standard deviation value.            
             
             std::vector< SegmenterRegionGrowingSegment::FeatureType > m_bandsWeights; //!< A vector where each bands weight are stored.
         };          
@@ -308,35 +304,30 @@ namespace te
           \param inputRaster The input raster.
           \param inputRasterBands Input raster bands to use.
           \param segmentsIds The output segment ids container.
-          \param segments The output segments indexer.
           \return true if OK, false on errors.
         */        
         bool initializeSegments( SegmenterIdsManager& segmenterIdsManager,
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
           const std::vector< double >& inputRasterGains,
-          const std::vector< double >& inputRasterOffsets,                                 
-          SegmentsIndexerT& segments );
+          const std::vector< double >& inputRasterOffsets );
           
         /*!
           \brief Merge closest segments.
-          \param similarityThreshold The minimum similarity value used
-          when deciding when to merge two segments.
+          \param disimilarityThreshold The maximum similarity value allowed when deciding when to merge two segments.
           \param segmenterIdsManager A segments ids manager to acquire unique segments ids.
           \param merger The merger instance to use.
           \param enablelocalMutualBestFitting If enabled, a merge only occurs between two segments if the minimum dissimilarity criteria is best fulfilled mutually.
-          \param segsIndexer Segmenters indexer.
           \param auxSeg1Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param auxSeg2Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param auxSeg3Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \return The number of merged segments.
         */           
         unsigned int mergeSegments( 
-          const SegmenterRegionGrowingSegment::FeatureType similarityThreshold,
+          const SegmenterRegionGrowingSegment::FeatureType disimilarityThreshold,
           SegmenterIdsManager& segmenterIdsManager,
           Merger& merger,
           const bool enablelocalMutualBestFitting,
-          SegmentsIndexerT& segsIndexer,
           SegmenterRegionGrowingSegment* auxSeg1Ptr,
           SegmenterRegionGrowingSegment* auxSeg2Ptr,
           SegmenterRegionGrowingSegment* auxSeg3Ptr);
@@ -349,7 +340,6 @@ namespace te
           \param segmenterIdsManager A segments ids manager to acquire
           unique segments ids.
           \param merger The merger instance to use.
-          \param segsIndexer Segmenters indexer.
           \param auxSeg1Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param auxSeg2Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \return The number of merged segments.
@@ -358,7 +348,6 @@ namespace te
           const unsigned int minSegmentSize,
           SegmenterIdsManager& segmenterIdsManager,
           Merger& merger,
-          SegmentsIndexerT& segsIndexer,
           SegmenterRegionGrowingSegment* auxSeg1Ptr,
           SegmenterRegionGrowingSegment* auxSeg2Ptr);          
           

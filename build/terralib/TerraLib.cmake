@@ -72,6 +72,7 @@ option (BUILD_STMEMORY "Build Spatial-Temporal Driver In-Memory?" ON)
 option (BUILD_STATISTICS "Build Statistics module?" ON)
 option (BUILD_SYMBOLOGY "Build Symbology module?" ON)
 option (BUILD_VP "Build Vector Processing module?" ON)
+option (BUILD_WMS "Build WMS module?" OFF)
 option (BUILD_XERCES "Build Xerces module?" ON)
 option (BUILD_XLINK "Build XLink module?" ON)
 option (BUILD_XML "Build XML module?" ON)
@@ -214,6 +215,10 @@ IF(BUILD_VP)
 	add_subdirectory(terralib/terralib_vp)
 endif()
 
+IF(BUILD_WMS)
+	add_subdirectory(terralib/terralib_wms)
+endif()
+
 IF(BUILD_XERCES)
 	add_subdirectory(terralib/terralib_xerces)
 endif()
@@ -245,7 +250,7 @@ configure_file (terralibConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/terralibConf
 configure_file (terralibConfigVersion.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/terralibConfigVersion.cmake @ONLY)
 #configure_file (teBuildTreeSettings.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/teBuildTreeSettings.cmake @ONLY)
 configure_file (${ROOT}/src/terralib/TerraLibConfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/TerraLibConfig.h)
-configure_file (${ROOT}/log/te-log.conf ${CMAKE_CURRENT_BINARY_DIR}/bin32/conf/te-log.conf COPYONLY)
+configure_file (${ROOT}/log/te-log.conf ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/conf/te-log.conf COPYONLY)
 
 # Installing CMake files
 # Exporting targets.

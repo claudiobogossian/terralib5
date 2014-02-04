@@ -41,7 +41,7 @@ namespace te
     /*!
       \class Register
       \brief Performs raster data registering into a SRS using a set of tie points.
-      \ingroup rp
+      \ingroup rp_gen
     */
     class TERPEXPORT Register : public Algorithm
     {

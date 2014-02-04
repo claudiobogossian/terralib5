@@ -11,6 +11,7 @@ namespace te
       const SegmenterRegionGrowingSegment& other )
     {
       m_id = other.m_id;
+      m_status = other.m_status;
       m_size = other.m_size;
       m_xStart = other.m_xStart;
       m_xBound = other.m_xBound;
@@ -98,7 +99,7 @@ namespace te
       
       unsigned int numberOfNonZeroes = m_neighborSegmentsSize - numberOfZeroes;
       
-      if( ( numberOfZeroes > 3 ) && ( numberOfNonZeroes < numberOfZeroes ) )
+      if( ( m_neighborSegmentsSize > 4 ) && ( numberOfNonZeroes < numberOfZeroes ) )
       {
         SegmenterRegionGrowingSegment** auxVecPtr = (SegmenterRegionGrowingSegment**)
           malloc( numberOfNonZeroes * sizeof( SegmenterRegionGrowingSegment* ) );
@@ -125,6 +126,5 @@ namespace te
       m_neighborSegments = 0;
       m_neighborSegmentsSize = 0;
     }
-    
   } // namespace rp
 } // namespace te

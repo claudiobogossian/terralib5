@@ -44,7 +44,7 @@ namespace te
     /*!
       \class MixtureModelPCAStrategy
 
-      \brief ...
+      \ingroup rp_class
      */
     class TERPEXPORT MixtureModelPCAStrategy : public MixtureModelStrategy
     {

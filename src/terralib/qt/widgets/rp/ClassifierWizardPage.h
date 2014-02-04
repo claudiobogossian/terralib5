@@ -27,9 +27,12 @@
 #define __TERRALIB_QT_WIDGETS_RP_INTERNAL_CLASSIFIERWIZARDPAGE_H
 
 // TerraLib
+#include "../../../classification/ROISet.h"
 #include "../../../geometry/Polygon.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../raster/Raster.h"
 #include "../../../rp/Classifier.h"
+#include "../../../rp/ClassifierMAPStrategy.h"
 #include "../Config.h"
 
 // STL
@@ -49,7 +52,7 @@ namespace te
     namespace widgets
     {
       class MapDisplay;
-      class RasterNavigatorDialog;
+      class ROIManagerDialog;
 
       /*!
         \class ClassifierWizardPage
@@ -62,14 +65,10 @@ namespace te
 
            enum ClassifierTypes
           {
-            CLASSIFIER_ISOSEG
-          };
-
-          struct ClassifierSamples
-          {
-            std::string m_id;
-            std::string m_name;
-            te::gm::Polygon* m_poly;
+            CLASSIFIER_ISOSEG,
+            CLASSIFIER_KMEANS,
+            CLASSIFIER_MAP,
+            CLASSIFIER_EM
           };
 
         public:
@@ -89,6 +88,8 @@ namespace te
           */
           void set(te::map::AbstractLayerPtr layer);
 
+          void setList(std::list<te::map::AbstractLayerPtr>& layerList);
+
           te::rp::Classifier::InputParameters getInputParams();
 
           te::rp::Classifier::OutputParameters getOutputParams();
@@ -99,34 +100,22 @@ namespace te
 
           void listBands();
 
-          void drawSamples();
-
-          void updateSamples();
+          te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCTPtr getMAPSamples(te::cl::ROISet* rs, te::rst::Raster* raster);
 
         public slots:
 
-          void onMapDisplayExtentChanged();
+          void showROIManager(bool show);
 
-          void onGeomAquired(te::gm::Polygon* poly, te::qt::widgets::MapDisplay* map);
+          void onROIManagerClosed();
 
-          void onItemChanged(QTableWidgetItem* item);
-
-          void onRemoveToolButtonClicked();
-
-          void showNavigator(bool show);
-
-          void onNavigatorClosed();
+          void onRoiSetChanged(te::cl::ROISet* rs);
 
         private:
 
           std::auto_ptr<Ui::ClassifierWizardPageForm> m_ui;
-          std::auto_ptr<te::qt::widgets::RasterNavigatorDialog> m_navigatorDlg;
-
-          std::map<std::string, ClassifierSamples > m_samples;   //!< The map of selected samples
-          unsigned int m_countSamples;                           //!< The maximum number of samples inserted.
+          std::auto_ptr<te::qt::widgets::ROIManagerDialog> m_roiMngDlg;
 
           te::map::AbstractLayerPtr m_layer;
-          te::qt::widgets::MapDisplay* m_display;
       };
 
     } // end namespace widgets

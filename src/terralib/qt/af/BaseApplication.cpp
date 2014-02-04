@@ -150,10 +150,10 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
     m_project(0),
     m_progressDockWidget(0),
     m_zoomInDisplaysDockWidget(0),
-    m_eyeBirdDisplaysDockWidget(0),
-    m_controller(0)
+    m_eyeBirdDisplaysDockWidget(0)//,
+//    m_controller(0)
 {
-  m_controller = new ApplicationController;
+//  m_controller = new ApplicationController;
 
   if (objectName().isEmpty())
     setObjectName("BaseApplicationForm");
@@ -196,10 +196,11 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
 
 te::qt::af::BaseApplication::~BaseApplication()
 {
+  checkProjectSave();
+  te::qt::af::SaveState(this);
+
   if(m_iController)
-  {
-      m_iController->removeInteface(m_queryDlg);
-  }
+    m_iController->removeInteface(m_queryDlg);
 
   delete m_iController;
   delete m_explorer;
@@ -214,9 +215,9 @@ te::qt::af::BaseApplication::~BaseApplication()
   while(!m_tableDocks.empty())
     delete *m_tableDocks.begin();
 
-  te::qt::af::ApplicationController::getInstance().finalize();
+  te::common::ProgressManager::getInstance().clearAll();
 
-  delete m_controller;
+  te::qt::af::ApplicationController::getInstance().finalize();
 }
 
 void te::qt::af::BaseApplication::init()
@@ -298,6 +299,11 @@ void te::qt::af::BaseApplication::init(const std::string& configFile)
 void  te::qt::af::BaseApplication::resetState()
 {
   te::qt::af::RestoreState(this);
+}
+
+void te::qt::af::BaseApplication::resetTerraLib(const bool& status)
+{
+  ApplicationController::getInstance().setResetTerraLibFlag(status);
 }
 
 void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event* evt)
@@ -722,6 +728,23 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   te::qt::af::SaveDataSourcesFile();
 }
 
+void te::qt::af::BaseApplication::onRestartSystemTriggered()
+{
+  QMessageBox msgBox(this);
+
+  msgBox.setText(tr("The system will be restarted."));
+  msgBox.setInformativeText(tr("Do you want to continue?"));
+  msgBox.setWindowTitle(tr("Restart system"));
+
+  msgBox.addButton(QMessageBox::No);
+  msgBox.addButton(QMessageBox::Yes);
+
+  msgBox.setDefaultButton(QMessageBox::Yes);
+
+  if(msgBox.exec() == QMessageBox::Yes)
+    qApp->exit(1000);
+}
+
 void te::qt::af::BaseApplication::onToolsCustomizeTriggered()
 {
   try
@@ -956,6 +979,8 @@ void te::qt::af::BaseApplication::onLayerShowTableTriggered()
 
     ApplicationController::getInstance().addListener(doc);
   }
+
+//  doc->get
 
   doc->show();
   doc->raise();
@@ -1927,11 +1952,12 @@ void te::qt::af::BaseApplication::makeDialog()
 
 void te::qt::af::BaseApplication::closeEvent(QCloseEvent* e)
 {
-  checkProjectSave();
+  QMainWindow::closeEvent(e);
+  //checkProjectSave();
 
-  te::qt::af::SaveState(this);
+  //te::qt::af::SaveState(this);
 
-  e->accept();
+  //e->accept();
 }
 
 void te::qt::af::BaseApplication::initAction(QAction*& act, const QString& icon, const QString& name,
@@ -1961,7 +1987,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_viewLayerExplorer, "view-layer-explorer", "View.Layer Explorer", tr("&Layer Explorer"), tr("Show or hide the layer explorer"), true, true, true, m_menubar);
   initAction(m_viewMapDisplay, "view-map-display", "View.Map Display", tr("&Map Display"), tr("Show or hide the map display"), true, true, true, m_menubar);
   initAction(m_viewDataTable, "view-data-table", "View.Data Table", tr("&Data Table"), tr("Show or hide the data table"), true, true, true, m_menubar);
-  initAction(m_viewStyleExplorer, "raster-visual", "View.Style Explorer", tr("&Style Explorer"), tr("Show or hide the style explorer"), true, true, true, m_menubar);
+  initAction(m_viewStyleExplorer, "style", "View.Style Explorer", tr("&Style Explorer"), tr("Show or hide the style explorer"), true, true, true, m_menubar);
   initAction(m_viewFullScreen, "view-fullscreen", "View.Full Screen", tr("F&ull Screen"), tr(""), true, true, true, m_menubar);
   //initAction(m_viewRefresh, "view-refresh", "View.Refresh", tr("&Refresh"), tr(""), true, false, false, m_menubar); TODO
   //initAction(m_viewToolBars, "", "Toolbars", tr("&Toolbars"), tr(""), true, false, false);
@@ -2024,6 +2050,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_fileSaveProject, "document-save", "File.Save Project", tr("&Save Project"), tr(""), true, false, true, m_menubar);
   initAction(m_fileSaveProjectAs, "document-save-as", "File.Save Project As", tr("Save Project &As..."), tr(""), true, false, false, m_menubar);
   initAction(m_fileOpenProject, "document-open", "File.Open Project", tr("&Open Project..."), tr(""), true, false, true, m_menubar);
+  initAction(m_fileRestartSystem, "", "File.Restart System", tr("&Restart System..."), tr("Restart the system."), true, false, true, m_menubar);
   initAction(m_fileExit, "system-log-out", "File.Exit", tr("E&xit"), tr(""), true, false, true, m_menubar);
   initAction(m_filePrintPreview, "document-print-preview", "File.Print Preview", tr("Print Pre&view..."), tr(""), true, false, false, m_menubar);
   initAction(m_filePrint, "document-print", "File.Print", tr("&Print..."), tr(""), true, false, false, m_menubar);
@@ -2070,17 +2097,20 @@ void te::qt::af::BaseApplication::initMenus()
   m_fileMenu->setTitle(tr("&File"));
 
   m_recentProjectsMenu->setObjectName("File.Recent Projects");
-  m_recentProjectsMenu->setTitle(tr("&Recent Projects"));
+  m_recentProjectsMenu->setTitle(tr("Recent &Projects"));
 
   m_fileMenu->addAction(m_fileNewProject);
   m_fileMenu->addAction(m_fileOpenProject);
   m_fileMenu->addAction(m_fileSaveProject);
   m_fileMenu->addAction(m_fileSaveProjectAs);
   m_fileMenu->addSeparator();
-  m_fileMenu->addAction(m_recentProjectsMenu->menuAction());
+  m_fileMenu->addMenu(m_recentProjectsMenu);
+  m_recentProjectsMenu->setEnabled(false);
   m_fileMenu->addSeparator();
   m_fileMenu->addAction(m_filePrintPreview);
   m_fileMenu->addAction(m_filePrint);
+  m_fileMenu->addSeparator();
+  m_fileMenu->addAction(m_fileRestartSystem);
   m_fileMenu->addSeparator();
   m_fileMenu->addAction(m_fileExit);
 
@@ -2338,6 +2368,7 @@ void te::qt::af::BaseApplication::initStatusBar()
 void te::qt::af::BaseApplication::initSlotsConnections()
 {
   connect(m_fileExit, SIGNAL(triggered()), SLOT(close()));
+  connect(m_fileRestartSystem, SIGNAL(triggered()), SLOT(onRestartSystemTriggered()));
   connect(m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayerTriggered()));
   connect(m_projectAddLayerQueryDataSet, SIGNAL(triggered()), SLOT(onAddQueryLayerTriggered()));
   connect(m_projectAddLayerTabularDataSet, SIGNAL(triggered()), SLOT(onAddTabularLayerTriggered()));

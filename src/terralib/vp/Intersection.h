@@ -47,7 +47,9 @@ namespace te
                                 te::da::DataSource* inSecondDataSource,
                                 const bool& copyInputColumns,
                                 const std::string& outDataSetName,
-                                te::da::DataSource* outDataSource);
+                                te::da::DataSource* outDataSource,
+                                te::da::DataSet* firstSelectedDS = 0,
+                                te::da::DataSet* secondSelectedDS = 0);
   }
 }
 

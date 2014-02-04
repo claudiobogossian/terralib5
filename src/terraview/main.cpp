@@ -28,6 +28,7 @@
 #include "TerraViewConfig.h"
 
 // TerraLib
+#include <terralib/qt/af/Utils.h>
 #include <terralib/qt/af/SplashScreenManager.h>
 
 // STL
@@ -36,6 +37,7 @@
 
 // Qt
 #include <QtCore/QResource>
+#include <QtCore/QFileInfo>
 #include <QtGui/QApplication>
 #include <QtGui/QSplashScreen>
 #include <QtGui/QMessageBox>
@@ -52,44 +54,61 @@ int main(int argc, char** argv)
 
   int waitVal = EXIT_FAILURE;
 
+  const int RESTART_CODE = 1000;
+
   try
   {
-    const char* te_env = getenv("TERRALIB_DIR");
-
-    if(te_env == 0)
+    do 
     {
-      QMessageBox::critical(0, QObject::tr("Execution Failure"), QObject::tr("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
-      throw std::exception();
-    }
+      const char* te_env = getenv("TERRALIB_DIR");
 
-    std::string splash_pix(te_env);
-    splash_pix += "/resources/images/png/terraview-splashscreen.png";
+      if(te_env == 0)
+      {
+        QMessageBox::critical(0, QObject::tr("Execution Failure"), QObject::tr("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
+        throw std::exception();
+      }
 
-    QPixmap pixmap(splash_pix.c_str());
+      std::string splash_pix(te_env);
+      splash_pix += "/resources/images/png/terraview-splashscreen.png";
 
-    QSplashScreen* splash(new QSplashScreen(pixmap/*, Qt::WindowStaysOnTopHint*/));
+      QPixmap pixmap(splash_pix.c_str());
 
-    splash->setAttribute(Qt::WA_DeleteOnClose, true);
+      QSplashScreen* splash(new QSplashScreen(pixmap/*, Qt::WindowStaysOnTopHint*/));
 
-    splash->setStyleSheet("QWidget { font-size: 12px; font-weight: bold }");
+      splash->setAttribute(Qt::WA_DeleteOnClose, true);
 
-    te::qt::af::SplashScreenManager::getInstance().set(splash, Qt::AlignBottom | Qt::AlignHCenter, Qt::white);
+      splash->setStyleSheet("QWidget { font-size: 12px; font-weight: bold }");
 
-    splash->show();
+      te::qt::af::SplashScreenManager::getInstance().set(splash, Qt::AlignBottom | Qt::AlignHCenter, Qt::white);
 
-    TerraView tview;
+      splash->show();
 
-    std::string appPath = qApp->applicationDirPath().toStdString();
+      TerraView tview;
 
-    tview.init(appPath+"/config.xml");
+      QString cFile = te::qt::af::GetConfigFileName();
+      QFileInfo info(cFile);
 
-    splash->finish(&tview);
+      if(cFile.isEmpty() || !info.exists())
+      {
+        cFile = te::qt::af::GetDefaultConfigFileOutputDir() + "/config.xml";
+        te::qt::af::WriteConfigFile(cFile, "TerraView", "TerraView");
+      }
 
-    tview.showMaximized();
+      tview.resetTerraLib(waitVal != RESTART_CODE);
 
-    tview.resetState();
+      tview.init(cFile.toStdString());
 
-    waitVal = app.exec();
+      splash->finish(&tview);
+
+      tview.showMaximized();
+
+      tview.resetState();
+
+      waitVal = app.exec();
+
+      tview.resetTerraLib(waitVal != RESTART_CODE);
+
+    } while(waitVal == RESTART_CODE);
   }
   catch(const std::exception& /*e*/)
   {

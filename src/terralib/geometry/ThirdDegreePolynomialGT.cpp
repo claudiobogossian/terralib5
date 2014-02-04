@@ -180,10 +180,10 @@ bool te::gm::ThirdDegreePolynomialGT::computeParameters( GTParameters& params ) 
   // Solving...
 
   boost::numeric::ublas::matrix< double > PinvW;
-  if( ! te::common::getPseudoInverseMatrix( W, PinvW ) ) return false;
+  if( ! te::common::GetPseudoInverseMatrix( W, PinvW ) ) return false;
   
   boost::numeric::ublas::matrix< double > PinvWI;
-  if( ! te::common::getPseudoInverseMatrix( WI, PinvWI ) ) return false;  
+  if( ! te::common::GetPseudoInverseMatrix( WI, PinvWI ) ) return false;  
   
   boost::numeric::ublas::matrix< double > A( boost::numeric::ublas::prod( PinvW, X ) );
     
