@@ -251,8 +251,8 @@ void te::qt::widgets::SegmenterWizardPage::apply()
   te::rp::Segmenter::OutputParameters algoOutputParams;
 
   std::map<std::string, std::string> rinfo;
-  rinfo["MEM_RASTER_NROWS"] = inputRst->getNumberOfRows();
-  rinfo["MEM_RASTER_NCOLS"] = inputRst->getNumberOfColumns();
+  rinfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(inputRst->getNumberOfRows());
+  rinfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(inputRst->getNumberOfColumns());
   rinfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(inputRst->getBandDataType(0));
   rinfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(inputRst->getNumberOfBands());
 
