@@ -31,6 +31,7 @@
 // Qt
 #include <QtGui/QIcon>
 #include <QtGui/QMessageBox>
+#include <QtGui/QToolButton>
 
 
 te::qt::widgets::DataSetWidget::DataSetWidget(QWidget* parent, Qt::WindowFlags f)
@@ -41,12 +42,12 @@ te::qt::widgets::DataSetWidget::DataSetWidget(QWidget* parent, Qt::WindowFlags f
 
   // set icons
   m_ui->m_addDataSetPushButton->setIcon(QIcon::fromTheme("list-add"));
-  m_ui->m_removeDataSetPushButton->setIcon(QIcon::fromTheme("list-remove"));
+  //m_ui->m_removeDataSetPushButton->setIcon(QIcon::fromTheme("list-remove"));
 
   //connects
   connect(m_ui->m_dataSetComboBox, SIGNAL(activated(const QString&)), this, SLOT(onDataSetComboBoxActivated(const QString&)));
   connect(m_ui->m_addDataSetPushButton, SIGNAL(clicked()), this, SLOT(onAddDataSetPushButtonClicked()));
-  connect(m_ui->m_removeDataSetPushButton, SIGNAL(clicked()), this, SLOT(onRemoveDataSetPushButtonClicked()));
+//  connect(m_ui->m_removeDataSetPushButton, SIGNAL(clicked()), this, SLOT(onRemoveDataSetPushButtonClicked()));
 }
 
 te::qt::widgets::DataSetWidget::~DataSetWidget()
@@ -214,11 +215,17 @@ void te::qt::widgets::DataSetWidget::onAddDataSetPushButtonClicked()
   //new entry
   m_ui->m_dataSetTableWidget->insertRow(newrow);
 
+  //remove button
+  QToolButton* removeBtn = new QToolButton(m_ui->m_dataSetTableWidget);
+  removeBtn->setIcon(QIcon::fromTheme("list-remove"));
+  connect(removeBtn, SIGNAL(clicked()), this, SLOT(onRemoveDataSetPushButtonClicked()));
+  m_ui->m_dataSetTableWidget->setCellWidget(newrow, 0, removeBtn);
+
   QTableWidgetItem* itemDataSet = new QTableWidgetItem(QString::fromStdString(dataSetName));
-  m_ui->m_dataSetTableWidget->setItem(newrow, 0, itemDataSet);
+  m_ui->m_dataSetTableWidget->setItem(newrow, 1, itemDataSet);
 
   QTableWidgetItem* itemAlias = new QTableWidgetItem(QString::fromStdString(aliasName));
-  m_ui->m_dataSetTableWidget->setItem(newrow, 1, itemAlias);
+  m_ui->m_dataSetTableWidget->setItem(newrow, 2, itemAlias);
 
   m_ui->m_dataSetTableWidget->resizeColumnToContents(0);
 
@@ -227,12 +234,26 @@ void te::qt::widgets::DataSetWidget::onAddDataSetPushButtonClicked()
 
 void te::qt::widgets::DataSetWidget::onRemoveDataSetPushButtonClicked()
 {
-  int row = m_ui->m_dataSetTableWidget->currentRow();
+  QToolButton* button = dynamic_cast<QToolButton*>(sender());
+  if(button) 
+  { 
+    int row = -1;
 
-  if(row >= 0)
-    m_ui->m_dataSetTableWidget->removeRow(row);
+    for(int i = 0; i < m_ui->m_dataSetTableWidget->rowCount(); ++i)
+    {
+      QWidget* w = m_ui->m_dataSetTableWidget->cellWidget(i, 0);
+      QToolButton* btn = dynamic_cast<QToolButton*>(w);
+      if(button == w)
+      {
+        row = i;
+        break;
+      }
+    }
 
-  m_ui->m_dataSetTableWidget->resizeColumnToContents(0);
+    if(row >= 0)
+      m_ui->m_dataSetTableWidget->removeRow(row);
 
+    m_ui->m_dataSetTableWidget->resizeColumnToContents(0);
+  }
   emit itemChanged();
 }
