@@ -226,7 +226,10 @@ void te::qt::widgets::WhereClauseWidget::setLayerList(std::list<te::map::Abstrac
   {
     te::map::AbstractLayerPtr l = *it;
 
-    m_ui->m_layerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
+    std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
+
+    if(dsType->hasGeom())
+      m_ui->m_layerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
 
     ++it;
   }
@@ -313,13 +316,14 @@ void te::qt::widgets::WhereClauseWidget::resetInterface()
   m_ds.reset();
   m_srid = 0;
 
-  m_ui->m_layerComboBox->clear();
   m_ui->m_restrictValueComboBox->clear();
   m_ui->m_valuePropertyComboBox->clear();
   m_ui->m_valueValueComboBox->clear();
   m_ui->m_geomAttrComboBox->clear();
   m_ui->m_OperatorComboBox->clear();
   m_ui->m_SpatialOperatorComboBox->clear();
+  m_ui->m_sqlTextEdit->clear();
+  m_ui->m_tabWidget->setCurrentIndex(0);
 }
 
 void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()

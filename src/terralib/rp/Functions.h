@@ -35,6 +35,7 @@
 #include "../raster/Grid.h"
 #include "../raster/BandProperty.h"
 #include "../raster/RasterFactory.h"
+#include "../raster/Utils.h"
 
 // STL
 #include <memory>
@@ -142,7 +143,10 @@ namespace te
       \note The types are listed in terralib/datatype/DataTypes.h
       \ingroup rp_func
     */
-    void TERPEXPORT GetDataTypeRange( const int dataType, double& min, double& max );
+    inline void TERPEXPORT GetDataTypeRange( const int dataType, double& min, double& max )
+    {
+      te::rst::GetDataTypeRanges( dataType, min, max );
+    };
 
     /*!
       \brief Convert vector elements.
