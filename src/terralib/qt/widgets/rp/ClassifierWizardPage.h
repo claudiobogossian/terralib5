@@ -33,6 +33,7 @@
 #include "../../../raster/Raster.h"
 #include "../../../rp/Classifier.h"
 #include "../../../rp/ClassifierMAPStrategy.h"
+#include "../../../rp/ClassifierSAMStrategy.h"
 #include "../Config.h"
 
 // STL
@@ -68,7 +69,8 @@ namespace te
             CLASSIFIER_ISOSEG,
             CLASSIFIER_KMEANS,
             CLASSIFIER_MAP,
-            CLASSIFIER_EM
+            CLASSIFIER_EM,
+            CLASSIFIER_SAM
           };
 
         public:
@@ -101,6 +103,8 @@ namespace te
           void listBands();
 
           te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCTPtr getMAPSamples(te::cl::ROISet* rs, te::rst::Raster* raster);
+
+          te::rp::ClassifierSAMStrategy::ClassesSamplesTPtr getSAMSamples(te::cl::ROISet* rs, te::rst::Raster* raster);
 
         public slots:
 

@@ -29,6 +29,8 @@
 #include "ClassifierStrategyFactory.h"
 #include "Config.h"
 
+#include <boost/shared_ptr.hpp>
+
 namespace te
 {
   namespace rp
@@ -61,6 +63,8 @@ namespace te
         typedef std::vector< SampleT > SamplesT; //!< Class samples container type definition.    
         
         typedef std::map< ClassIDT, SamplesT > ClassesSamplesT; //!< Classes samples container type definition.
+
+        typedef boost::shared_ptr<ClassesSamplesT> ClassesSamplesTPtr; //!< A shared pointer to a multi classes samples container type definition.
       
         /*!
           \class Parameters
@@ -71,7 +75,7 @@ namespace te
         {
           public:
             
-            ClassesSamplesT const* m_trainSamplesPtr; //!< A pointer to a always-valid structure where trainning samples are stored.
+            ClassesSamplesTPtr m_trainSamplesPtr; //!< A shared pointer to a always-valid structure where trainning samples are stored.
             
             std::vector< double > m_maxAngularDistances; //!< This is a vector of maximum acceptable angles (radians) between one pixel spectra and the reference spectra for each class (pixels with angular distance higher than this value will not be classifyed as belonging to each class (common used default:0.1 radians).
 
