@@ -38,6 +38,9 @@
 #include "../../../maptools/Utils.h"
 #include "../../../se/Utils.h"
 #include "../colorbar/ColorBar.h"
+#include "../se/LineSymbolizerWidget.h"
+#include "../se/PointSymbolizerWidget.h"
+#include "../se/PolygonSymbolizerWidget.h"
 #include "../se/SymbologyPreview.h"
 #include "GroupingWidget.h"
 #include "ui_GroupingWidgetForm.h"
@@ -46,6 +49,7 @@
 #include <cassert>
 
 // QT
+#include <QtGui/QDialogButtonBox>
 #include <QtGui/QMessageBox>
 
 #define MAX_SLICES 200
@@ -69,6 +73,7 @@ te::qt::widgets::GroupingWidget::GroupingWidget(QWidget* parent, Qt::WindowFlags
   connect(m_ui->m_typeComboBox, SIGNAL(activated(int)), this, SLOT(onTypeComboBoxActivated(int)));
   connect(m_ui->m_attrComboBox, SIGNAL(activated(int)), this, SLOT(onAttrComboBoxActivated(int)));
   connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyPushButtonClicked()));
+  connect(m_ui->m_tableWidget, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(onTableWidgetItemDoubleClicked(QTableWidgetItem*)));
 
   initialize();
 }
@@ -508,6 +513,93 @@ void  te::qt::widgets::GroupingWidget::onTableWidgetItemChanged(QTableWidgetItem
         m_manual = true;
       }
     }
+  }
+}
+
+void te::qt::widgets::GroupingWidget::onTableWidgetItemDoubleClicked(QTableWidgetItem* item)
+{
+  int index = m_ui->m_typeComboBox->currentIndex();
+  int type = m_ui->m_typeComboBox->itemData(index).toInt();
+
+  int curRow = m_ui->m_tableWidget->currentRow();
+  int curCol = m_ui->m_tableWidget->currentColumn();
+
+  if(curCol == 0)
+  {
+    te::map::GroupingItem* gi = m_legend[curRow];
+
+    std::vector<te::se::Symbolizer*> symbVec = gi->getSymbolizers();
+
+    QDialog* dialog = new QDialog(this);
+    QBoxLayout* layout = new QBoxLayout(QBoxLayout::TopToBottom, dialog);
+
+    QDialogButtonBox* bbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dialog);
+
+    QWidget* symbWidget = 0;
+
+    if(symbVec[0]->getType() == "PolygonSymbolizer")
+    {
+      symbWidget = new te::qt::widgets::PolygonSymbolizerWidget(dialog);
+      te::qt::widgets::PolygonSymbolizerWidget* polygonSymbolizerWidget = (te::qt::widgets::PolygonSymbolizerWidget*)symbWidget;
+      polygonSymbolizerWidget->setSymbolizer((te::se::PolygonSymbolizer*)symbVec[0]);
+    }
+    else if(symbVec[0]->getType() == "LineSymbolizer")
+    {
+      symbWidget = new te::qt::widgets::LineSymbolizerWidget(dialog);
+      te::qt::widgets::LineSymbolizerWidget* lineSymbolizerWidget = (te::qt::widgets::LineSymbolizerWidget*)symbWidget;
+      lineSymbolizerWidget->setSymbolizer((te::se::LineSymbolizer*)symbVec[0]);
+    }
+    else if(symbVec[0]->getType() == "PointSymbolizer")
+    {
+      symbWidget = new te::qt::widgets::PointSymbolizerWidget(dialog);
+      te::qt::widgets::PointSymbolizerWidget* pointSymbolizerWidget = (te::qt::widgets::PointSymbolizerWidget*)symbWidget;
+      pointSymbolizerWidget->setSymbolizer((te::se::PointSymbolizer*)symbVec[0]);
+    }
+
+    layout->addWidget(symbWidget);
+    layout->addWidget(bbox);
+
+    connect(bbox, SIGNAL(accepted()), dialog, SLOT(accept()));
+    connect(bbox, SIGNAL(rejected()), dialog, SLOT(reject()));
+
+    if(dialog->exec() == QDialog::Rejected)
+    {
+      delete dialog;
+      return;
+    }
+
+    if(symbVec[0]->getType() == "PolygonSymbolizer")
+    {
+      symbVec.clear();
+      te::qt::widgets::PolygonSymbolizerWidget* polygonSymbolizerWidget = (te::qt::widgets::PolygonSymbolizerWidget*)symbWidget;
+      symbVec.push_back(polygonSymbolizerWidget->getSymbolizer());
+    }
+    else if(symbVec[0]->getType() == "LineSymbolizer")
+    {
+      symbVec.clear();
+      te::qt::widgets::LineSymbolizerWidget* lineSymbolizerWidget = (te::qt::widgets::LineSymbolizerWidget*)symbWidget;
+      symbVec.push_back(lineSymbolizerWidget->getSymbolizer());
+    }
+    else if(symbVec[0]->getType() == "PointSymbolizer")
+    {
+      symbVec.clear();
+      te::qt::widgets::PointSymbolizerWidget* pointSymbolizerWidget = (te::qt::widgets::PointSymbolizerWidget*)symbWidget;
+      symbVec.push_back(pointSymbolizerWidget->getSymbolizer());
+    }
+
+    gi->setSymbolizers(symbVec);
+
+    QPixmap pix = te::qt::widgets::SymbologyPreview::build(symbVec, QSize(24, 24));
+    QIcon icon(pix);
+
+    QTableWidgetItem* newItem = new QTableWidgetItem(icon, "");
+    newItem->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+
+    m_ui->m_tableWidget->setItem(curRow, 0, newItem);
+
+    delete dialog;
+
+    emit applyPushButtonClicked();
   }
 }
 

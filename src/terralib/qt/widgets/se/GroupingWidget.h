@@ -135,6 +135,8 @@ namespace te
 
           void onTableWidgetItemChanged(QTableWidgetItem* item);
 
+          void onTableWidgetItemDoubleClicked(QTableWidgetItem* item);
+
         signals:
 
           void applyPushButtonClicked();
