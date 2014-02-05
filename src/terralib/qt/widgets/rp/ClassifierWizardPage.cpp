@@ -77,6 +77,7 @@ te::qt::widgets::ClassifierWizardPage::ClassifierWizardPage(QWidget* parent)
 
   //connects
   connect(m_ui->m_acquireToolButton, SIGNAL(toggled(bool)), this, SLOT(showROIManager(bool)));
+  connect(m_ui->m_samAcquireToolButton, SIGNAL(toggled(bool)), this, SLOT(showROIManager(bool)));
   connect(m_roiMngDlg.get(), SIGNAL(roiManagerClosed()), this, SLOT(onROIManagerClosed()));
 
   connect(m_roiMngDlg->getWidget(), SIGNAL(roiSetChanged(te::cl::ROISet*)), this, SLOT(onRoiSetChanged(te::cl::ROISet*)));
@@ -196,6 +197,27 @@ te::rp::Classifier::InputParameters te::qt::widgets::ClassifierWizardPage::getIn
 
     algoInputParams.setClassifierStrategyParams(classifierparameters);
   }
+  else if(type == CLASSIFIER_SAM)
+  {
+    algoInputParams.m_strategyName = "sam";
+
+    std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+    std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
+
+    te::rp::ClassifierSAMStrategy::Parameters classifierparameters;
+    classifierparameters.m_trainSamplesPtr = getSAMSamples(m_roiMngDlg->getWidget()->getROISet(), inputRst.get());
+
+    //get angle values
+    for(int i = 0; i < m_ui->m_samTableWidget->rowCount(); ++i)
+    {
+      double val = ((QDoubleSpinBox*)m_ui->m_samTableWidget->cellWidget(i, 3))->value();
+
+      classifierparameters.m_maxAngularDistances.push_back(val);
+    }
+
+    algoInputParams.setClassifierStrategyParams(classifierparameters);
+  }
 
   //get bands
   QList<QListWidgetItem*> selectedBands = m_ui->m_inputRasterBandsListWidget->selectedItems();
@@ -226,8 +248,9 @@ void te::qt::widgets::ClassifierWizardPage::fillClassifierTypes()
 
   m_ui->m_classifierTypeComboBox->addItem(tr("ISOSeg"), CLASSIFIER_ISOSEG);
   m_ui->m_classifierTypeComboBox->addItem(tr("KMeans"), CLASSIFIER_KMEANS);
-  m_ui->m_classifierTypeComboBox->addItem(tr("MAP"), CLASSIFIER_MAP);
+  m_ui->m_classifierTypeComboBox->addItem(tr("MAP - Maximum a Posteriori Probability"), CLASSIFIER_MAP);
   m_ui->m_classifierTypeComboBox->addItem(tr("EM - Expectation Maximization"), CLASSIFIER_EM);
+  m_ui->m_classifierTypeComboBox->addItem(tr("SAM - Spectral Angle Mapper"), CLASSIFIER_SAM);
 }
 
 void te::qt::widgets::ClassifierWizardPage::listBands()
@@ -305,6 +328,56 @@ te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCTPtr te::qt::widgets:
   return mcsctPtr;
 }
 
+te::rp::ClassifierSAMStrategy::ClassesSamplesTPtr te::qt::widgets::ClassifierWizardPage::getSAMSamples(te::cl::ROISet* rs, te::rst::Raster* raster)
+{
+  te::rp::ClassifierSAMStrategy::ClassesSamplesTPtr cstPtr(new te::rp::ClassifierSAMStrategy::ClassesSamplesT());
+
+  std::map<std::string, te::cl::ROI*> roiSetMap = rs->getROISet();
+  std::map<std::string, te::cl::ROI*>::iterator it = roiSetMap.begin();
+
+  int count = 1;
+
+  //iterate roi set
+  while(it != roiSetMap.end())
+  {
+    std::map<std::string, te::gm::Polygon*> roiMap = it->second->getPolygons();
+    std::map<std::string, te::gm::Polygon*>::iterator itPoly = roiMap.begin();
+
+    te::rp::ClassifierSAMStrategy::SamplesT st;
+
+    //iterate roi
+    while(itPoly != roiMap.end())
+    {
+      te::gm::Polygon* p = itPoly->second;
+
+      te::rst::PolygonIterator<double> itRaster = te::rst::PolygonIterator<double>::begin(raster, p);
+      te::rst::PolygonIterator<double> itRasterEnd = te::rst::PolygonIterator<double>::end(raster, p);
+
+      //iterate polygon
+      while (itRaster != itRasterEnd)
+      {
+        te::rp::ClassifierSAMStrategy::SampleT s;
+
+        raster->getValues(itRaster.getColumn(), itRaster.getRow(), s);
+
+        st.push_back(s);
+
+        ++itRaster;
+      }
+
+      ++itPoly;
+    }
+
+    cstPtr->insert(te::rp::ClassifierSAMStrategy::ClassesSamplesT::value_type(count, st));
+
+    ++count;
+
+    ++it;
+  }
+
+  return cstPtr;
+}
+
 void te::qt::widgets::ClassifierWizardPage::showROIManager(bool show)
 {
   if(show)
@@ -316,55 +389,119 @@ void te::qt::widgets::ClassifierWizardPage::showROIManager(bool show)
 void te::qt::widgets::ClassifierWizardPage::onROIManagerClosed()
 {
   m_ui->m_acquireToolButton->setChecked(false);
+  m_ui->m_samAcquireToolButton->setChecked(false);
 }
 
 void te::qt::widgets::ClassifierWizardPage::onRoiSetChanged(te::cl::ROISet* rs)
 {
-  m_ui->m_mapTableWidget->setRowCount(0);
+  int idx = m_ui->m_classifierTypeComboBox->currentIndex();
+  int type = m_ui->m_classifierTypeComboBox->itemData(idx).toInt();
 
-  if(!rs)
-    return;
-
-  std::map<std::string, te::cl::ROI*> roiSetMap = rs->getROISet();
-  std::map<std::string, te::cl::ROI*>::iterator it = roiSetMap.begin();
-
-  //iterate roi set
-  while(it != roiSetMap.end())
+  if(type == CLASSIFIER_MAP)
   {
-    //get roi info
-    te::cl::ROI* r = it->second;
+    m_ui->m_mapTableWidget->setRowCount(0);
 
-    std::string label = r->getLabel();
+    if(!rs)
+      return;
 
-    std::size_t samples = r->getPolygons().size();
-    QString samplesNum;
-    samplesNum.setNum(samples);
+    std::map<std::string, te::cl::ROI*> roiSetMap = rs->getROISet();
+    std::map<std::string, te::cl::ROI*>::iterator it = roiSetMap.begin();
 
-    QColor color(r->getColor().c_str());
+    //iterate roi set
+    while(it != roiSetMap.end())
+    {
+      //get roi info
+      te::cl::ROI* r = it->second;
 
-    //add table entry
-    int newrow = m_ui->m_mapTableWidget->rowCount();
-    m_ui->m_mapTableWidget->insertRow(newrow);
+      std::string label = r->getLabel();
 
-    QPixmap pix(16,16);
-    pix.fill(color);
-    QIcon icon(pix);
+      std::size_t samples = r->getPolygons().size();
+      QString samplesNum;
+      samplesNum.setNum(samples);
 
-    QTableWidgetItem* itemColor = new QTableWidgetItem(icon, "");
-    itemColor->setFlags(Qt::ItemIsEnabled);
-    m_ui->m_mapTableWidget->setItem(newrow, 0, itemColor);
+      QColor color(r->getColor().c_str());
 
-    QTableWidgetItem* itemLabel = new QTableWidgetItem(QString::fromStdString(label));
-    itemLabel->setFlags(Qt::ItemIsEnabled);
-    m_ui->m_mapTableWidget->setItem(newrow, 1, itemLabel);
+      //add table entry
+      int newrow = m_ui->m_mapTableWidget->rowCount();
+      m_ui->m_mapTableWidget->insertRow(newrow);
 
-    QTableWidgetItem* itemSamples = new QTableWidgetItem(samplesNum);
-    itemSamples->setFlags(Qt::ItemIsEnabled);
-    m_ui->m_mapTableWidget->setItem(newrow, 2, itemSamples);
+      QPixmap pix(16,16);
+      pix.fill(color);
+      QIcon icon(pix);
 
-    ++it;
+      QTableWidgetItem* itemColor = new QTableWidgetItem(icon, "");
+      itemColor->setFlags(Qt::ItemIsEnabled);
+      m_ui->m_mapTableWidget->setItem(newrow, 0, itemColor);
+
+      QTableWidgetItem* itemLabel = new QTableWidgetItem(QString::fromStdString(label));
+      itemLabel->setFlags(Qt::ItemIsEnabled);
+      m_ui->m_mapTableWidget->setItem(newrow, 1, itemLabel);
+
+      QTableWidgetItem* itemSamples = new QTableWidgetItem(samplesNum);
+      itemSamples->setFlags(Qt::ItemIsEnabled);
+      m_ui->m_mapTableWidget->setItem(newrow, 2, itemSamples);
+
+      ++it;
+    }
+
+    m_ui->m_mapTableWidget->resizeColumnsToContents();
   }
+  else if(type == CLASSIFIER_SAM)
+  {
+    m_ui->m_samTableWidget->setRowCount(0);
 
-  m_ui->m_mapTableWidget->resizeColumnsToContents();
+    if(!rs)
+      return;
+
+    std::map<std::string, te::cl::ROI*> roiSetMap = rs->getROISet();
+    std::map<std::string, te::cl::ROI*>::iterator it = roiSetMap.begin();
+
+    //iterate roi set
+    while(it != roiSetMap.end())
+    {
+      //get roi info
+      te::cl::ROI* r = it->second;
+
+      std::string label = r->getLabel();
+
+      std::size_t samples = r->getPolygons().size();
+      QString samplesNum;
+      samplesNum.setNum(samples);
+
+      QColor color(r->getColor().c_str());
+
+      //add table entry
+      int newrow = m_ui->m_mapTableWidget->rowCount();
+      m_ui->m_samTableWidget->insertRow(newrow);
+
+      QPixmap pix(16,16);
+      pix.fill(color);
+      QIcon icon(pix);
+
+      QTableWidgetItem* itemColor = new QTableWidgetItem(icon, "");
+      itemColor->setFlags(Qt::ItemIsEnabled);
+      m_ui->m_samTableWidget->setItem(newrow, 0, itemColor);
+
+      QTableWidgetItem* itemLabel = new QTableWidgetItem(QString::fromStdString(label));
+      itemLabel->setFlags(Qt::ItemIsEnabled);
+      m_ui->m_samTableWidget->setItem(newrow, 1, itemLabel);
+
+      QTableWidgetItem* itemSamples = new QTableWidgetItem(samplesNum);
+      itemSamples->setFlags(Qt::ItemIsEnabled);
+      m_ui->m_samTableWidget->setItem(newrow, 2, itemSamples);
+
+      QDoubleSpinBox* dsb = new QDoubleSpinBox(m_ui->m_samTableWidget);
+      dsb->setMinimum(0.0);
+      dsb->setMaximum(1.0);
+      dsb->setSingleStep(0.1);
+      dsb->setValue(0.1);
+
+      m_ui->m_samTableWidget->setCellWidget(newrow, 3, dsb);
+
+      ++it;
+    }
+
+    m_ui->m_samTableWidget->resizeColumnsToContents();
+  }
 }
 

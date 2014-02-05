@@ -133,7 +133,7 @@ void TsFunctions::getMeanValue()
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 181.340256531345, meanValue, 0.0001 );  
 }
 
-void TsFunctions::getMeanValueWithThreads()
+void TsFunctions::getMeanValueOptimized()
 {
   // openning input raster
   
@@ -172,7 +172,7 @@ void TsFunctions::getCovarianceValue()
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 2143.89743610679, covarianceValue, 0.0001 );  
 }
 
-void TsFunctions::getCovarianceValueWithThreads()
+void TsFunctions::getCovarianceValueOptimized()
 {
   // openning input raster
   
@@ -203,17 +203,30 @@ void TsFunctions::PrincipalComponents()
     auxRasterInfo ) );
   CPPUNIT_ASSERT( diskRasterPtr.get() );  
   
-  auxRasterInfo.clear();
-  auxRasterInfo["MEM_RASTER_NROWS"] = boost::lexical_cast< std::string >( 
-    diskRasterPtr->getNumberOfRows() );
-  auxRasterInfo["MEM_RASTER_NCOLS"] = boost::lexical_cast< std::string >( 
-    diskRasterPtr->getNumberOfColumns() );
-  auxRasterInfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast< std::string >((int)te::dt::DOUBLE_TYPE);
-  auxRasterInfo["MEM_RASTER_NBANDS"] = "3";
-   
+  std::vector< te::rst::BandProperty * > bandProps1;
+  bandProps1.push_back( new te::rst::BandProperty( *( diskRasterPtr->getBand( 0 )->getProperty() ) ) );
+  bandProps1[ 0 ]->m_blkh = diskRasterPtr->getNumberOfRows();
+  bandProps1[ 0 ]->m_blkw = diskRasterPtr->getNumberOfColumns();
+  bandProps1[ 0 ]->m_nblocksx = 1;
+  bandProps1[ 0 ]->m_nblocksy = 1;
+  bandProps1[ 0 ]->m_type = te::dt::DOUBLE_TYPE;
+  bandProps1.push_back( new te::rst::BandProperty( *( diskRasterPtr->getBand( 1 )->getProperty() ) ) );
+  bandProps1[ 1 ]->m_blkh = diskRasterPtr->getNumberOfRows();
+  bandProps1[ 1 ]->m_blkw = diskRasterPtr->getNumberOfColumns();
+  bandProps1[ 1 ]->m_nblocksx = 1;
+  bandProps1[ 1 ]->m_nblocksy = 1;  
+  bandProps1[ 1 ]->m_type = te::dt::DOUBLE_TYPE;
+  bandProps1.push_back( new te::rst::BandProperty( *( diskRasterPtr->getBand( 2 )->getProperty() ) ) );
+  bandProps1[ 2 ]->m_blkh = diskRasterPtr->getNumberOfRows();
+  bandProps1[ 2 ]->m_blkw = diskRasterPtr->getNumberOfColumns();
+  bandProps1[ 2 ]->m_nblocksx = 1;
+  bandProps1[ 2 ]->m_nblocksy = 1; 
+  bandProps1[ 2 ]->m_type = te::dt::DOUBLE_TYPE;
+  
   std::auto_ptr< te::rst::Raster > pcaRasterPtr( te::rst::RasterFactory::make(
-    "MEM", 0, std::vector<te::rst::BandProperty*>(), auxRasterInfo) );
-  CPPUNIT_ASSERT( pcaRasterPtr.get() );
+    "MEM", new te::rst::Grid( *( diskRasterPtr->getGrid() ) ), bandProps1, 
+    std::map<std::string, std::string>(), 0, 0 ) );
+  CPPUNIT_ASSERT( pcaRasterPtr.get() );  
   
   std::vector< unsigned int > inputRasterBands;
   inputRasterBands.push_back( 0 );
@@ -231,13 +244,74 @@ void TsFunctions::PrincipalComponents()
     
   CPPUNIT_ASSERT( te::rp::Copy2DiskRaster( *pcaRasterPtr, "terralib_unittest_rp_functions_DirectPrincipalComponents.tif" ) ) ;  
   
+  auxRasterInfo.clear();
+  auxRasterInfo["URI"] = "terralib_unittest_rp_functions_InversePrincipalComponents.tif";
+  
+  std::vector< te::rst::BandProperty * > bandProps2;
+  bandProps2.push_back( new te::rst::BandProperty( *( diskRasterPtr->getBand( 0 )->getProperty() ) ) );
+  bandProps2.push_back( new te::rst::BandProperty( *( diskRasterPtr->getBand( 1 )->getProperty() ) ) );
+  bandProps2.push_back( new te::rst::BandProperty( *( diskRasterPtr->getBand( 2 )->getProperty() ) ) );
+  
+  std::auto_ptr< te::rst::Raster > outDiskRasterPtr( te::rst::RasterFactory::make(
+    "GDAL", new te::rst::Grid( *( diskRasterPtr->getGrid() ) ), bandProps2, 
+    auxRasterInfo, 0, 0 ) );
+  CPPUNIT_ASSERT( outDiskRasterPtr.get() );
+  
+  CPPUNIT_ASSERT( te::rp::InversePrincipalComponents( 
+    *pcaRasterPtr,
+    pcaMatrix,
+    *outDiskRasterPtr,
+    1 ) );  
+}
+
+
+void TsFunctions::PrincipalComponentsOptimized()
+{
+  // openning input raster
+  
+  std::map<std::string, std::string> auxRasterInfo;
+  
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( diskRasterPtr.get() );  
+  
+  std::vector< te::rst::BandProperty * > bandProps1;
+  bandProps1.push_back( new te::rst::BandProperty( *( diskRasterPtr->getBand( 0 )->getProperty() ) ) );
+  bandProps1[ 0 ]->m_type = te::dt::DOUBLE_TYPE;
+  bandProps1.push_back( new te::rst::BandProperty( *( diskRasterPtr->getBand( 1 )->getProperty() ) ) );
+  bandProps1[ 1 ]->m_type = te::dt::DOUBLE_TYPE;
+  bandProps1.push_back( new te::rst::BandProperty( *( diskRasterPtr->getBand( 2 )->getProperty() ) ) );
+  bandProps1[ 2 ]->m_type = te::dt::DOUBLE_TYPE;
+  
+  std::auto_ptr< te::rst::Raster > pcaRasterPtr( te::rst::RasterFactory::make(
+    "MEM", new te::rst::Grid( *( diskRasterPtr->getGrid() ) ), bandProps1, 
+    std::map<std::string, std::string>(), 0, 0 ) );
+  CPPUNIT_ASSERT( pcaRasterPtr.get() );   
+  
+  std::vector< unsigned int > inputRasterBands;
+  inputRasterBands.push_back( 0 );
+  inputRasterBands.push_back( 1 );
+  inputRasterBands.push_back( 2 );
+  
+  boost::numeric::ublas::matrix< double > pcaMatrix;
+  
+  CPPUNIT_ASSERT( te::rp::DirectPrincipalComponents( 
+    *diskRasterPtr, 
+    inputRasterBands,
+    pcaMatrix,
+    *pcaRasterPtr,
+    4 ) );
+    
+  CPPUNIT_ASSERT( te::rp::Copy2DiskRaster( *pcaRasterPtr, "terralib_unittest_rp_functions_DirectPrincipalComponentsOptimized.tif" ) ) ;  
+  
   std::vector< te::rst::BandProperty * > bandProps;
   bandProps.push_back( new te::rst::BandProperty( *( diskRasterPtr->getBand( 0 )->getProperty() ) ) );
   bandProps.push_back( new te::rst::BandProperty( *( diskRasterPtr->getBand( 1 )->getProperty() ) ) );
   bandProps.push_back( new te::rst::BandProperty( *( diskRasterPtr->getBand( 2 )->getProperty() ) ) );
   
   auxRasterInfo.clear();
-  auxRasterInfo["URI"] = "terralib_unittest_rp_functions_InversePrincipalComponents.tif";
+  auxRasterInfo["URI"] = "terralib_unittest_rp_functions_InversePrincipalComponentsOptimized.tif";
   
   std::auto_ptr< te::rst::Raster > outDiskRasterPtr( te::rst::RasterFactory::make(
     "GDAL", new te::rst::Grid( *( diskRasterPtr->getGrid() ) ), bandProps, 
@@ -248,5 +322,5 @@ void TsFunctions::PrincipalComponents()
     *pcaRasterPtr,
     pcaMatrix,
     *outDiskRasterPtr,
-    1 ) );  
+    4 ) );  
 }

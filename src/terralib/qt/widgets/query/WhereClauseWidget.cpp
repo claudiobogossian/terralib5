@@ -400,6 +400,8 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
       m_mapExp.insert(std::map<int, ExpressionProperty*>::value_type(expId, ep));
     }
 
+    std::string connector = tr("and").toStdString();
+
     //new entry
     int newrow = m_ui->m_whereClauseTableWidget->rowCount();
 
@@ -450,6 +452,15 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
     m_comboMap.insert(std::map< QComboBox*, std::pair<int, int> >::value_type(connectorCmbBox, pairConnector));
     connectorCmbBox->addItems(m_connectorsList);
     m_ui->m_whereClauseTableWidget->setCellWidget(newrow, 4, connectorCmbBox);
+
+    for(int i = 0; i < connectorCmbBox->count(); ++i)
+    {
+      if(connectorCmbBox->itemText(i).toStdString() == connector)
+      {
+        connectorCmbBox->setCurrentIndex(i);
+        break;
+      }
+    }
   }
   else // criteria by spatial restriction
   {
