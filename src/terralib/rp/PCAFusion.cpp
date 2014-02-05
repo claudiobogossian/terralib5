@@ -32,6 +32,7 @@
 #include "../raster/Grid.h"
 #include "../geometry/Envelope.h"
 #include "../common/progress/TaskProgress.h"
+#include "../memory/ExpansibleRaster.h"
 
 #include <cmath>
 #include <limits>
@@ -64,6 +65,7 @@ namespace te
       m_highResRasterPtr = 0;
       m_highResRasterBand = 0;
       m_enableProgress = false;
+      m_enableThreadedProcessing = true;
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;
     }
 
@@ -77,6 +79,7 @@ namespace te
       m_highResRasterPtr = params.m_highResRasterPtr;
       m_highResRasterBand = params.m_highResRasterBand;
       m_enableProgress = params.m_enableProgress;
+      m_enableThreadedProcessing = params.m_enableThreadedProcessing;
       m_interpMethod = params.m_interpMethod;
 
       return *this;
@@ -154,9 +157,111 @@ namespace te
         progressPtr->setTotalSteps( 4 );
         
         progressPtr->setMessage( "Fusing images" );
+      }   
+      
+      // Loading ressampled data
+      
+      std::auto_ptr< te::rst::Raster > ressampledRasterPtr;
+      
+      TERP_TRUE_OR_RETURN_FALSE( loadRessampledRaster( ressampledRasterPtr ),
+        "Ressampled raster data loading error" );   
+        
+      te::rp::Copy2DiskRaster( *ressampledRasterPtr, "ressampledRaster.tif" );
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }
+      
+      // Compute PCA space raster
+      
+      std::auto_ptr< te::rst::Raster > pcaRasterPtr;
+      boost::numeric::ublas::matrix< double > pcaMatrix;
+      
+      {
+        te::rst::Grid* gridPtr = new te::rst::Grid( *ressampledRasterPtr->getGrid() );
+        std::vector< te::rst::BandProperty * > bandProperties;
+        std::vector< unsigned int > ressampledRasterBands;
+          
+        for( unsigned int bandIdx = 0 ; bandIdx <
+          ressampledRasterPtr->getNumberOfBands() ; ++bandIdx )
+        {
+          bandProperties.push_back( new te::rst::BandProperty( 
+            *ressampledRasterPtr->getBand( bandIdx )->getProperty() ) );
+          bandProperties[ bandIdx ]->m_type = te::dt::DOUBLE_TYPE;
+          
+          ressampledRasterBands.push_back( bandIdx );
+        } 
+        
+        try
+        {
+          pcaRasterPtr.reset( new te::mem::ExpansibleRaster( 20, gridPtr,
+            bandProperties ) );    
+        }
+        catch( te::common::Exception& e )
+        {
+          TERP_LOG_AND_RETURN_FALSE( e.what() );
+        }    
+        
+        TERP_TRUE_OR_RETURN_FALSE( DirectPrincipalComponents( *ressampledRasterPtr, ressampledRasterBands,
+          pcaMatrix, *pcaRasterPtr, m_inputParameters.m_enableThreadedProcessing ? 0 : 1 ),
+          "Principal components generation error" );
+          
+        te::rp::Copy2DiskRaster( *pcaRasterPtr, "pcaRaster.tif" );
+      }
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
       }        
       
+      // Swapping the first PCA band by the high resolution raster
       
+      TERP_TRUE_OR_RETURN_FALSE( swapBandByHighResRaster( *pcaRasterPtr, 0 ),
+         "Band swap error" );
+         
+      te::rp::Copy2DiskRaster( *pcaRasterPtr, "swappedpcaRaster.tif" );
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }  
+      
+      // Generating the output fused raster
+      
+      {
+        te::rst::Grid* gridPtr = new te::rst::Grid( *pcaRasterPtr->getGrid() );
+        std::vector< te::rst::BandProperty * > bandProperties;
+          
+        for( unsigned int bandIdx = 0 ; bandIdx <
+          pcaRasterPtr->getNumberOfBands() ; ++bandIdx )
+        {
+          bandProperties.push_back( new te::rst::BandProperty( 
+            *pcaRasterPtr->getBand( bandIdx )->getProperty() ) );
+          bandProperties[ bandIdx ]->m_type = 
+            ressampledRasterPtr->getBand( bandIdx )->getProperty()->m_type;
+        } 
+        
+        outParamsPtr->m_outputRasterPtr.reset(
+          te::rst::RasterFactory::make(
+            outParamsPtr->m_rType,
+            gridPtr,
+            bandProperties,
+            outParamsPtr->m_rInfo,
+            0,
+            0 ) );
+        TERP_TRUE_OR_RETURN_FALSE( outParamsPtr->m_outputRasterPtr.get(),
+          "Output raster creation error" );
+          
+        TERP_TRUE_OR_RETURN_FALSE( InversePrincipalComponents( *pcaRasterPtr,
+          pcaMatrix, *outParamsPtr->m_outputRasterPtr,
+          m_inputParameters.m_enableThreadedProcessing ? 0 : 1 ),
+          "Inverse PCA error" );
+      }                  
+
       if( m_inputParameters.m_enableProgress )
       {
         progressPtr->pulse();
@@ -225,7 +330,148 @@ namespace te
       return m_isInitialized;
     }
     
-
+    bool PCAFusion::loadRessampledRaster( std::auto_ptr< te::rst::Raster >& ressampledRasterPtr ) const
+    {
+      // Creating the ressampled raster
+      
+      const unsigned int outNCols = m_inputParameters.m_highResRasterPtr->getNumberOfColumns();
+      const unsigned int outNRows = m_inputParameters.m_highResRasterPtr->getNumberOfRows();
+      unsigned int lowResRasterBandsIdx = 0;
+      unsigned int lowResRasterBandIdx = 0;
+      
+      te::rst::Grid* ressampledGrid = new te::rst::Grid( outNCols, outNRows,
+        new te::gm::Envelope( *m_inputParameters.m_lowResRasterPtr->getGrid()->getExtent() ), 
+        m_inputParameters.m_lowResRasterPtr->getSRID() );
+        
+      std::vector< te::rst::BandProperty * > ressampledBandProperties;
+        
+      for( lowResRasterBandsIdx = 0 ; lowResRasterBandsIdx <
+        m_inputParameters.m_lowResRasterBands.size() ; ++lowResRasterBandsIdx )
+      {
+        lowResRasterBandIdx = m_inputParameters.m_lowResRasterBands[ lowResRasterBandsIdx ];
+        
+        ressampledBandProperties.push_back( new te::rst::BandProperty( 
+          *m_inputParameters.m_lowResRasterPtr->getBand( lowResRasterBandIdx )->getProperty() ) );
+      } 
+      
+      try
+      {
+        ressampledRasterPtr.reset( new te::mem::ExpansibleRaster( 20, ressampledGrid,
+          ressampledBandProperties ) );     
+      }
+      catch( te::common::Exception& e )
+      {
+        TERP_LOG_AND_RETURN_FALSE( e.what() );
+      }
+      
+      const double colsRescaleFactor =
+        ((double)m_inputParameters.m_lowResRasterPtr->getNumberOfColumns()) /
+        ((double)outNCols);
+      const double rowsRescaleFactor =
+        ((double)m_inputParameters.m_lowResRasterPtr->getNumberOfRows()) /
+        ((double)outNRows);
+      unsigned int outRow = 0;
+      unsigned int outCol = 0;
+      double inRow = 0;
+      double inCol = 0;  
+      te::rst::Interpolator interpol( m_inputParameters.m_lowResRasterPtr,
+        m_inputParameters.m_interpMethod );      
+      std::complex< double > value = 0;
+      te::rst::Raster& ressampledRaster = *ressampledRasterPtr;
+        
+      for( lowResRasterBandsIdx = 0 ; lowResRasterBandsIdx <
+        m_inputParameters.m_lowResRasterBands.size() ; ++lowResRasterBandsIdx )
+      {      
+        lowResRasterBandIdx = m_inputParameters.m_lowResRasterBands[ lowResRasterBandsIdx ];
+        
+        for( outRow = 0 ; outRow < outNRows ; ++outRow )
+        {
+          inRow = ((double)outRow) * rowsRescaleFactor;
+          
+          for( outCol = 0 ; outCol < outNCols ; ++outCol )
+          {
+            inCol = ((double)outCol) * colsRescaleFactor;
+            
+            interpol.getValue( inCol, inRow, value, lowResRasterBandIdx );
+            ressampledRaster.setValue( outCol, outRow, value.real(), lowResRasterBandsIdx );
+          }
+        }
+      }
+     
+      return true; 
+    }
+    
+    bool PCAFusion::swapBandByHighResRaster( te::rst::Raster& pcaRaster, const unsigned int pcaRasterBandIdx )
+    {
+      assert( pcaRaster.getNumberOfColumns() == m_inputParameters.m_highResRasterPtr->getNumberOfColumns() );
+      assert( pcaRaster.getNumberOfRows() == m_inputParameters.m_highResRasterPtr->getNumberOfRows() );
+      
+      assert( pcaRasterBandIdx < pcaRaster.getNumberOfBands() );
+      te::rst::Band& pcaBand = (*pcaRaster.getBand( pcaRasterBandIdx ));
+      const te::rst::Band& hrBand = (*m_inputParameters.m_highResRasterPtr->getBand( m_inputParameters.m_highResRasterBand ));
+        
+      double pcaZeroMean = 0.0;
+      if( ! te::rp::GetMeanValue( pcaBand, m_inputParameters.m_enableThreadedProcessing ?
+         0 : 1, pcaZeroMean ) )
+      {
+        return false;
+      }
+      
+      double pcaZeroStdDev = 0.0;
+      if( ! te::rp::GetStdDevValue( pcaBand, m_inputParameters.m_enableThreadedProcessing ?
+         0 : 1, &pcaZeroMean, pcaZeroStdDev ) )
+      {
+        return false;
+      }
+      
+      double hrMean = 0.0;
+      if( ! te::rp::GetMeanValue( hrBand, m_inputParameters.m_enableThreadedProcessing ? 0 : 1, hrMean ) )
+      {
+        return false;
+      }
+      
+      double hrStdDev = 0.0;
+      if( ! te::rp::GetStdDevValue( hrBand, m_inputParameters.m_enableThreadedProcessing ? 0 : 1, &hrMean, hrStdDev ) )
+      {
+        return false;
+      }
+      
+      const double gain = ( ( hrStdDev == 0.0 ) ? 0.0 : ( pcaZeroStdDev / hrStdDev ) );
+      const double offset = ( hrStdDev == 0.0 ) ? 0.0 : ( pcaZeroMean - ( gain * hrMean ) );
+      const double& pcaNoDataValue = pcaBand.getProperty()->m_noDataValue;
+      const double& hdNoDataValue = hrBand.getProperty()->m_noDataValue;
+      const unsigned int nRows = pcaRaster.getNumberOfRows();
+      const unsigned int nCols = pcaRaster.getNumberOfColumns();
+      unsigned int col = 0;
+      unsigned int row = 0;
+      double value = 0;
+      double pcaAllowedMin = 0;
+      double pcaAllowedMax = 0;
+      te::rp::GetDataTypeRange( pcaBand.getProperty()->getType(), pcaAllowedMin,
+        pcaAllowedMax );
+      
+      for( row = 0 ; row < nRows ; ++row )
+      {
+        for( col = 0 ; col < nCols ; ++col )
+        {
+          hrBand.getValue( col, row, value );
+          if( value == hdNoDataValue )
+          {
+            pcaBand.setValue( col, row, pcaNoDataValue );
+          }
+          else
+          {
+            value = ( value * gain ) - offset;
+            value = std::max( pcaAllowedMin, value );
+            value = std::min( pcaAllowedMax, value );
+            
+            pcaBand.setValue( col, row, value );
+          }
+        }
+      }      
+        
+      return true;
+    }
     
   }
 }   // end namespace te
