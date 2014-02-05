@@ -27,6 +27,7 @@
 #define __TERRALIB_RP_INTERNAL_RASTERATTRIBUTES_H
 
 // TerraLib
+#include "../statistics/core/NumericStatisticalSummary.h"
 #include "Algorithm.h"
 #include "Config.h"
 #include "Exception.h"
@@ -80,6 +81,19 @@ namespace te
         void reset() throw(te::rp::Exception);
 
         /*!
+          \brief Returns the pixel values (real and imag) for the band, inside the polygon.
+
+          \param raster      The input raster.
+          \param band        The position of the input band.
+          \param polygon     The input polygon.
+
+          \return The pixel values for the band, inside the polygon.
+
+          \warning Band and polygon must fit.
+        */
+        std::vector<std::complex<double> > getComplexValuesFromBand(const te::rst::Raster& raster, unsigned int band, const te::gm::Polygon& polygon);
+
+        /*!
           \brief Returns the pixel values for the band, inside the polygon.
 
           \param raster      The input raster.
@@ -90,58 +104,54 @@ namespace te
 
           \warning Band and polygon must fit.
         */
-        std::vector<std::complex<double> > getValuesFromBand(const te::rst::Raster& raster, unsigned int band, const te::gm::Polygon& polygon);
+        std::vector<double> getValuesFromBand(const te::rst::Raster& raster, unsigned int band, const te::gm::Polygon& polygon);
 
-          /*!
+        /*!
+          \brief Returns the pixel values (real and imag) for all the bands in raster, inside the polygon.
+
+          \param raster      The input band.
+          \param polygon     The input polygon.
+          \param bands       Bands to be processed from the input raster.
+
+          \return A vector with the pixel values for all the bands in raster, inside the polygon, with values[band][pixel].
+
+          \warning Bands and polygon must fit.
+        */
+        std::vector<std::vector<std::complex<double> > > getComplexValuesFromRaster(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands);
+
+        /*!
           \brief Returns the pixel values for all the bands in raster, inside the polygon.
 
           \param raster      The input band.
           \param polygon     The input polygon.
           \param bands       Bands to be processed from the input raster.
 
-          \return A vector with the pixel values for all the bands in raster, inside the polygon, with values[pixel][band].
+          \return A vector with the pixel values for all the bands in raster, inside the polygon, with values[band][pixel].
 
           \warning Bands and polygon must fit.
         */
-        std::vector<std::vector<std::complex<double> > > getValuesFromRaster(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands);
+        std::vector<std::vector<double> > getValuesFromRaster(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands);
 
         /*!
-          \brief Returns the mean value for the pixels of a band, inside the polygon.
+          \brief Returns several statistics from a set of pixels.
 
-          \param band        The input band.
-          \param polygon     The input polygon.
+          \param pixels      A vector of pixel values.
 
-          \return The mean value for the band, inside the polygon.
-
-          \warning Bands and polygon must fit.
+          \return A series of statistics (\sa te::stat::NumericStatisticalSummary).
         */
-        std::complex<double> getMean(const te::rst::Band& band, const te::gm::Polygon& polygon);
+        te::stat::NumericStatisticalSummary getStatistics(std::vector<double>& pixels);
 
         /*!
-          \brief Returns the mean value for the pixels of a band, inside the polygon.
+          \brief Returns the covariance matrix between vectors of pixel values.
 
-          \param raster      The input raster.
-          \param polygon     The input polygon.
-          \param bands       Bands to be processed from the input raster.
+          \param vpixels     The vector of pixel vectors, with vpixels[band][pixel].
+          \param vmeans      The vector of pixels means, one mean per vector of pixels.
 
-          \return A vector of means from the raster, inside the polygon.
+          \return The covariance matrix between the vectors of pixel values.
 
-          \warning Bands and polygon must fit, the bands to be processed must be available in the input raster.
+          \warning All vectors sizes must fit.
         */
-        std::vector<std::complex<double> > getMeans(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands);
-
-        /*!
-          \brief Returns the covariance matrix between raster bands, inside the polygon.
-
-          \param raster      The input raster.
-          \param polygon     The input polygon.
-          \param bands       Bands to be processed from the input raster.
-
-          \return The covariance matrix between raster bands, inside the polygon.
-
-          \warning Raster bands and polygon must fit.
-        */
-        boost::numeric::ublas::matrix<double> getCovarianceMatrix(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands);
+        boost::numeric::ublas::matrix<double> getCovarianceMatrix(const std::vector<std::vector<double> >& vpixels, const std::vector<double>& vmeans);
     };
 
   } // end namespace rp
