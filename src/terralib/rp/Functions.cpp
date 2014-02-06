@@ -1615,8 +1615,11 @@ namespace te
       te::rst::Raster& outputRaster,
       const unsigned int maxThreads )    
     {
-      boost::numeric::ublas::matrix< double > transposedPcaMatrix;
-      transposedPcaMatrix = boost::numeric::ublas::trans( pcaMatrix );
+      boost::numeric::ublas::matrix< double > inversePcaMatrix;
+      if( ! te::common::GetInverseMatrix( pcaMatrix, inversePcaMatrix ) )
+      {
+        return false;
+      }
       
       std::vector< unsigned int > inputRasterBands;
       
@@ -1626,7 +1629,7 @@ namespace te
         inputRasterBands.push_back( bandIdx );
       }
       
-      return RemapValues( pcaRaster, inputRasterBands, transposedPcaMatrix, 
+      return RemapValues( pcaRaster, inputRasterBands, inversePcaMatrix, 
         outputRaster, maxThreads );
     }
     
