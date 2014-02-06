@@ -80,7 +80,18 @@ namespace te
       double* m_pixelsNumberValuePtr;
       bool m_returnStatus;
       boost::mutex* m_mutexPtr;
-    };    
+    };  
+    
+    struct GetStdDevValueThreadParams
+    {
+      te::rst::Band const * m_inputBandPtr;
+      Matrix< bool >* m_rasterBlocksStatusPtr;
+      double* m_stdDevValuePtr;
+      double* m_pixelsNumberValuePtr;
+      double m_meanValue;
+      bool m_returnStatus;
+      boost::mutex* m_mutexPtr;
+    };     
     
     struct GetCovarianceValueThreadParams
     {
@@ -1149,6 +1160,147 @@ namespace te
       return params.m_returnStatus;
     }
     
+    void GetStdDevValueThread( GetStdDevValueThreadParams* paramsPtr )
+    {
+      paramsPtr->m_mutexPtr->lock();
+      const unsigned int blockElementsNumber = paramsPtr->m_inputBandPtr->getProperty()->m_blkh *
+        paramsPtr->m_inputBandPtr->getProperty()->m_blkw;
+      const int blockDataType = paramsPtr->m_inputBandPtr->getProperty()->getType();
+      const int blockSizeBytes = paramsPtr->m_inputBandPtr->getBlockSize();
+      const double noDataValue = paramsPtr->m_inputBandPtr->getProperty()->m_noDataValue;
+      const double& meanValue = paramsPtr->m_meanValue;
+      paramsPtr->m_mutexPtr->unlock();
+
+      boost::scoped_array< unsigned char > blockBuffer( new unsigned char[ blockSizeBytes ] );
+      boost::scoped_array< double > doubleBuffer( new double[ blockElementsNumber ] );
+      unsigned blkX = 0;
+      unsigned int elementIdx = 0;
+      double diff = 0;
+      double squaresDifsSum = 0;
+      double elementsNumber = 0;
+      
+      
+      for( unsigned blkY = 0 ; blkY < paramsPtr->m_rasterBlocksStatusPtr->getLinesNumber() ;
+        ++blkY )
+      {
+        for( blkX = 0 ; blkX < paramsPtr->m_rasterBlocksStatusPtr->getColumnsNumber() ;
+          ++blkX )
+        {
+          paramsPtr->m_mutexPtr->lock();
+          
+          if( paramsPtr->m_rasterBlocksStatusPtr->operator()( blkY, blkX ) )
+          {
+            paramsPtr->m_mutexPtr->unlock();
+          }
+          else
+          {
+            paramsPtr->m_rasterBlocksStatusPtr->operator()( blkY, blkX ) = true;
+            
+            paramsPtr->m_inputBandPtr->read( blkX, blkY, blockBuffer.get() );
+            
+            paramsPtr->m_mutexPtr->unlock();
+            
+            Convert2DoublesVector( blockBuffer.get(), blockDataType, blockElementsNumber,
+              doubleBuffer.get() );
+              
+            for( elementIdx = 0 ; elementIdx < blockElementsNumber ; ++elementIdx )
+            {
+              if( noDataValue != doubleBuffer[ elementIdx ] )
+              {
+                diff = doubleBuffer[ elementIdx ] - meanValue;
+                diff *= diff;
+                squaresDifsSum += diff;
+                elementsNumber = elementsNumber + 1.0;
+              }
+            }
+          }
+        }
+      }
+      
+      paramsPtr->m_mutexPtr->lock();
+      ( *(paramsPtr->m_stdDevValuePtr) ) = 
+        ( 
+          ( *(paramsPtr->m_stdDevValuePtr) ) 
+          + 
+          squaresDifsSum 
+        );
+      ( *( paramsPtr->m_pixelsNumberValuePtr ) ) += elementsNumber;
+      paramsPtr->m_mutexPtr->unlock();      
+    }
+    
+    bool GetStdDevValue( const te::rst::Band& band, 
+      const unsigned int maxThreads, double const * const meanValuePtr, 
+      double& stdDevValue )
+    {
+      double mean = 0;
+      if( meanValuePtr )
+      {
+        mean = (*meanValuePtr);
+      }
+      else
+      {
+        if( ! GetMeanValue( band, maxThreads, mean ) )
+        {
+          return false;
+        }
+      }
+            
+      Matrix< bool > rasterBlocksStatus;
+      if( ! rasterBlocksStatus.reset( band.getProperty()->m_nblocksy,
+        band.getProperty()->m_nblocksx, Matrix< bool >::RAMMemPol ) )
+      {
+        return false;
+      }
+      for( unsigned int row = 0 ; row < rasterBlocksStatus.getLinesNumber() ;
+        ++row )
+      {
+        for( unsigned int col = 0 ; col < rasterBlocksStatus.getColumnsNumber() ;
+          ++col )
+        {
+          rasterBlocksStatus( row, col ) = false;
+        }
+      }
+      
+      stdDevValue = 0.0;
+      
+      double pixelsNumber = 0.0;
+      
+      boost::mutex mutex;
+      
+      GetStdDevValueThreadParams params;
+      params.m_inputBandPtr = &band;
+      params.m_rasterBlocksStatusPtr = &rasterBlocksStatus;
+      params.m_stdDevValuePtr = &stdDevValue;
+      params.m_pixelsNumberValuePtr = &pixelsNumber;
+      params.m_meanValue = mean;
+      params.m_returnStatus = true;
+      params.m_mutexPtr = &mutex;
+      
+      if( maxThreads == 1 )
+      {
+        GetStdDevValueThread( &params );
+      }
+      else
+      {
+        unsigned int threadsNumber = maxThreads ? maxThreads : te::common::GetPhysProcNumber();
+        
+        boost::thread_group threads;
+          
+        for( unsigned int threadIdx = 0 ; threadIdx < threadsNumber ;
+          ++threadIdx )
+        {
+          threads.add_thread( new boost::thread( GetStdDevValueThread, 
+             &params ) );
+        };  
+        
+        threads.join_all();
+      }
+      
+      stdDevValue = std::sqrt( stdDevValue / pixelsNumber );
+      
+      return params.m_returnStatus;
+    }    
+    
     void GetCovarianceValueThread( GetCovarianceValueThreadParams* paramsPtr )
     {
       paramsPtr->m_mutexPtr->lock();
@@ -1463,8 +1615,11 @@ namespace te
       te::rst::Raster& outputRaster,
       const unsigned int maxThreads )    
     {
-      boost::numeric::ublas::matrix< double > transposedPcaMatrix;
-      transposedPcaMatrix = boost::numeric::ublas::trans( pcaMatrix );
+      boost::numeric::ublas::matrix< double > inversePcaMatrix;
+      if( ! te::common::GetInverseMatrix( pcaMatrix, inversePcaMatrix ) )
+      {
+        return false;
+      }
       
       std::vector< unsigned int > inputRasterBands;
       
@@ -1474,7 +1629,7 @@ namespace te
         inputRasterBands.push_back( bandIdx );
       }
       
-      return RemapValues( pcaRaster, inputRasterBands, transposedPcaMatrix, 
+      return RemapValues( pcaRaster, inputRasterBands, inversePcaMatrix, 
         outputRaster, maxThreads );
     }
     

@@ -43,6 +43,10 @@
   #include "FilterAction.h"
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_FUSION
+  #include "FusionAction.h"
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
   #include "MixtureModelAction.h"
 #endif
@@ -134,6 +138,10 @@ void te::qt::plugins::rp::Plugin::registerActions()
     m_filter = new te::qt::plugins::rp::FilterAction(m_rpMenu, m_rpPopupMenu);
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_FUSION
+    m_fusion = new te::qt::plugins::rp::FusionAction(m_rpMenu, m_rpPopupMenu);
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
   m_mixtureModel = new te::qt::plugins::rp::MixtureModelAction(m_rpMenu, m_rpPopupMenu);
 #endif
@@ -159,6 +167,10 @@ void  te::qt::plugins::rp::Plugin::unRegisterActions()
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_FILTER
     delete m_filter;
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_FUSION
+    delete m_fusion;
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST

@@ -18,65 +18,33 @@
  */
 
 /*!
-  \file TsFunctions.h
+  \file TsPCAFusion.h
  
-  \brief A test suit for raster processing Functions.
+  \brief A test suit for the PCAFusion Class.
  */
 
-#ifndef __TERRALIB_UNITTEST_RP_FUNCTIONS_INTERNAL_H
-#define __TERRALIB_UNITTEST_RP_FUNCTIONS_INTERNAL_H
+#ifndef __TERRALIB_UNITTEST_RP_PCAFUSION_INTERNAL_H
+#define __TERRALIB_UNITTEST_RP_PCAFUSION_INTERNAL_H
 
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>
 
 /*!
-  \class TsFunctions
+  \class TsPCAFusion
 
-  \brief A test suit for the Functions class interface.
+  \brief A test suit for the PCAFusion class interface.
  */
-class TsFunctions : public CPPUNIT_NS::TestFixture 
+class TsPCAFusion : public CPPUNIT_NS::TestFixture 
 {
-  CPPUNIT_TEST_SUITE( TsFunctions );
+  CPPUNIT_TEST_SUITE( TsPCAFusion );
   
-  CPPUNIT_TEST( GetStdDevValue );
-  
-  CPPUNIT_TEST( GetStdDevValueOptimized );
-  
-  CPPUNIT_TEST( PrincipalComponents );
-  
-  CPPUNIT_TEST( PrincipalComponentsOptimized );
-  
-  CPPUNIT_TEST( getMeanValue );
-  
-  CPPUNIT_TEST( getMeanValueOptimized );
-  
-  CPPUNIT_TEST( getCovarianceValue );
-  
-  CPPUNIT_TEST( getCovarianceValueOptimized );
-  
-  CPPUNIT_TEST( ihs );
+  CPPUNIT_TEST( Test001 );
 
   CPPUNIT_TEST_SUITE_END();
 
 protected :
 
-  void ihs();
-  
-  void getMeanValue();
-  
-  void getMeanValueOptimized();
-  
-  void getCovarianceValue();
-  
-  void getCovarianceValueOptimized();
-  
-  void PrincipalComponents();
-  
-  void PrincipalComponentsOptimized();
-  
-  void GetStdDevValue();
-  
-  void GetStdDevValueOptimized();
+  void Test001();
   
 };
 

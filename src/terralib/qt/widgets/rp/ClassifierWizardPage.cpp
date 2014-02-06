@@ -83,6 +83,7 @@ te::qt::widgets::ClassifierWizardPage::ClassifierWizardPage(QWidget* parent)
   connect(m_roiMngDlg->getWidget(), SIGNAL(roiSetChanged(te::cl::ROISet*)), this, SLOT(onRoiSetChanged(te::cl::ROISet*)));
 
   m_ui->m_acquireToolButton->setIcon(QIcon::fromTheme("wand"));
+  m_ui->m_samAcquireToolButton->setIcon(QIcon::fromTheme("wand"));
 }
 
 te::qt::widgets::ClassifierWizardPage::~ClassifierWizardPage()
