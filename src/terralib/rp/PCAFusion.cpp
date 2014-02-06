@@ -166,7 +166,7 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( loadRessampledRaster( ressampledRasterPtr ),
         "Ressampled raster data loading error" );   
         
-      te::rp::Copy2DiskRaster( *ressampledRasterPtr, "ressampledRaster.tif" );
+//      te::rp::Copy2DiskRaster( *ressampledRasterPtr, "ressampledRaster.tif" );
       
       if( m_inputParameters.m_enableProgress )
       {
@@ -208,7 +208,7 @@ namespace te
           pcaMatrix, *pcaRasterPtr, m_inputParameters.m_enableThreadedProcessing ? 0 : 1 ),
           "Principal components generation error" );
           
-        te::rp::Copy2DiskRaster( *pcaRasterPtr, "pcaRaster.tif" );
+//        te::rp::Copy2DiskRaster( *pcaRasterPtr, "pcaRaster.tif" );
       }
       
       if( m_inputParameters.m_enableProgress )
@@ -222,7 +222,7 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( swapBandByHighResRaster( *pcaRasterPtr, 0 ),
          "Band swap error" );
          
-      te::rp::Copy2DiskRaster( *pcaRasterPtr, "swappedpcaRaster.tif" );
+//      te::rp::Copy2DiskRaster( *pcaRasterPtr, "swappedpcaRaster.tif" );
       
       if( m_inputParameters.m_enableProgress )
       {
@@ -378,11 +378,15 @@ namespace te
         m_inputParameters.m_interpMethod );      
       std::complex< double > value = 0;
       te::rst::Raster& ressampledRaster = *ressampledRasterPtr;
+      double inNoDataValue = 0;
+      double outNoDataValue = 0;
         
       for( lowResRasterBandsIdx = 0 ; lowResRasterBandsIdx <
         m_inputParameters.m_lowResRasterBands.size() ; ++lowResRasterBandsIdx )
       {      
         lowResRasterBandIdx = m_inputParameters.m_lowResRasterBands[ lowResRasterBandsIdx ];
+        inNoDataValue = m_inputParameters.m_lowResRasterPtr->getBand( lowResRasterBandIdx )->getProperty()->m_noDataValue;
+        outNoDataValue = ressampledRaster.getBand( lowResRasterBandsIdx )->getProperty()->m_noDataValue;
         
         for( outRow = 0 ; outRow < outNRows ; ++outRow )
         {
@@ -393,7 +397,15 @@ namespace te
             inCol = ((double)outCol) * colsRescaleFactor;
             
             interpol.getValue( inCol, inRow, value, lowResRasterBandIdx );
-            ressampledRaster.setValue( outCol, outRow, value.real(), lowResRasterBandsIdx );
+            
+            if( value.real() == inNoDataValue )
+            {
+              ressampledRaster.setValue( outCol, outRow, outNoDataValue, lowResRasterBandsIdx );
+            }
+            else
+            {
+              ressampledRaster.setValue( outCol, outRow, value.real(), lowResRasterBandsIdx );
+            }
           }
         }
       }
@@ -437,9 +449,9 @@ namespace te
       }
       
       const double gain = ( ( hrStdDev == 0.0 ) ? 0.0 : ( pcaZeroStdDev / hrStdDev ) );
-      const double offset = ( hrStdDev == 0.0 ) ? 0.0 : ( pcaZeroMean - ( gain * hrMean ) );
+      const double offset = ( hrStdDev == 0.0 ) ? 0.0 : ( pcaZeroMean - ( hrMean * gain ) );
       const double& pcaNoDataValue = pcaBand.getProperty()->m_noDataValue;
-      const double& hdNoDataValue = hrBand.getProperty()->m_noDataValue;
+      const double& hrNoDataValue = hrBand.getProperty()->m_noDataValue;
       const unsigned int nRows = pcaRaster.getNumberOfRows();
       const unsigned int nCols = pcaRaster.getNumberOfColumns();
       unsigned int col = 0;
@@ -455,13 +467,13 @@ namespace te
         for( col = 0 ; col < nCols ; ++col )
         {
           hrBand.getValue( col, row, value );
-          if( value == hdNoDataValue )
+          if( value == hrNoDataValue )
           {
             pcaBand.setValue( col, row, pcaNoDataValue );
           }
           else
           {
-            value = ( value * gain ) - offset;
+            value = ( value * gain ) + offset;
             value = std::max( pcaAllowedMin, value );
             value = std::min( pcaAllowedMax, value );
             
