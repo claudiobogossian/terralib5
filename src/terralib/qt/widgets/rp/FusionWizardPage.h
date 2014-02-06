@@ -93,6 +93,8 @@ namespace te
 
           bool isPCAFusion();
 
+          bool cropRasters();
+
           te::rp::IHSFusion::InputParameters getInputIHSParams();
 
           te::rp::IHSFusion::OutputParameters getOutputIHSParams();

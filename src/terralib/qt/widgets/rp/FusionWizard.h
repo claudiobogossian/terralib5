@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../raster/Raster.h"
 #include "../Config.h"
 
 // STL
@@ -77,6 +78,8 @@ namespace te
           bool executeIHS();
 
           bool executePCA();
+
+          void adjustRasters(te::rst::Raster* rInLower, te::rst::Raster* rInHigher, te::rst::Raster*& rOutLower, te::rst::Raster*& rOutHigher);
 
         private:
 

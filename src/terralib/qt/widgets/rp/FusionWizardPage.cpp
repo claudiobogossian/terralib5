@@ -110,6 +110,11 @@ bool te::qt::widgets::FusionWizardPage::isPCAFusion()
   return false;
 }
 
+bool te::qt::widgets::FusionWizardPage::cropRasters()
+{
+  return m_ui->m_cropCheckBox->isChecked();
+}
+
 te::rp::IHSFusion::InputParameters te::qt::widgets::FusionWizardPage::getInputIHSParams()
 {
   int interpolationIdx = m_ui->m_interpolatorComboBox->currentIndex();

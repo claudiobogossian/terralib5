@@ -157,7 +157,7 @@ bool te::qt::widgets::FusionWizard::executeIHS()
 
   std::size_t rpos = te::da::GetFirstPropertyPos(dsLower.get(), te::dt::RASTER_TYPE);
 
-  std::auto_ptr<te::rst::Raster> inputRstLower = dsLower->getRaster(rpos);
+  te::rst::Raster* inputRstLower = dsLower->getRaster(rpos).release();
 
   //get layer higher
   std::list<te::map::AbstractLayerPtr> listHigher = m_layerHigherSearchPage->getSearchWidget()->getSelecteds();
@@ -166,15 +166,19 @@ bool te::qt::widgets::FusionWizard::executeIHS()
 
   rpos = te::da::GetFirstPropertyPos(dsHigher.get(), te::dt::RASTER_TYPE);
 
-  std::auto_ptr<te::rst::Raster> inputRstHigher = dsHigher->getRaster(rpos);
+  te::rst::Raster* inputRstHigher = dsHigher->getRaster(rpos).release();
 
+  te::rst::Raster* rasterLower = 0;
+  te::rst::Raster* rasterHigher = 0;
+
+  adjustRasters(inputRstLower, inputRstHigher, rasterLower, rasterHigher);
 
   //run IHS Fusion
   te::rp::IHSFusion algorithmInstance;
 
   te::rp::IHSFusion::InputParameters algoInputParams = m_fusionPage->getInputIHSParams();
-  algoInputParams.m_lowResRasterPtr = inputRstLower.get();
-  algoInputParams.m_highResRasterPtr = inputRstHigher.get();
+  algoInputParams.m_lowResRasterPtr = rasterLower;
+  algoInputParams.m_highResRasterPtr = rasterHigher;
 
   te::rp::IHSFusion::OutputParameters algoOutputParams = m_fusionPage->getOutputIHSParams();
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();
@@ -209,6 +213,9 @@ bool te::qt::widgets::FusionWizard::executeIHS()
 
         QApplication::restoreOverrideCursor();
 
+        delete rasterLower;
+        delete rasterHigher;
+
         return false;
       }
     }
@@ -221,6 +228,9 @@ bool te::qt::widgets::FusionWizard::executeIHS()
 
       QApplication::restoreOverrideCursor();
 
+      delete rasterLower;
+      delete rasterHigher;
+
       return false;
     }
   }
@@ -232,6 +242,9 @@ bool te::qt::widgets::FusionWizard::executeIHS()
 
     QApplication::restoreOverrideCursor();
 
+    delete rasterLower;
+    delete rasterHigher;
+
     return false;
   }
   catch(...)
@@ -242,12 +255,18 @@ bool te::qt::widgets::FusionWizard::executeIHS()
 
     QApplication::restoreOverrideCursor();
 
+    delete rasterLower;
+    delete rasterHigher;
+
     return false;
   }
 
   te::common::ProgressManager::getInstance().removeViewer(id);
 
   QApplication::restoreOverrideCursor();
+
+  delete rasterLower;
+  delete rasterHigher;
 
   return true;
 }
@@ -261,7 +280,7 @@ bool te::qt::widgets::FusionWizard::executePCA()
 
   std::size_t rpos = te::da::GetFirstPropertyPos(dsLower.get(), te::dt::RASTER_TYPE);
 
-  std::auto_ptr<te::rst::Raster> inputRstLower = dsLower->getRaster(rpos);
+  te::rst::Raster* inputRstLower = dsLower->getRaster(rpos).release();
 
   //get layer higher
   std::list<te::map::AbstractLayerPtr> listHigher = m_layerHigherSearchPage->getSearchWidget()->getSelecteds();
@@ -270,15 +289,20 @@ bool te::qt::widgets::FusionWizard::executePCA()
 
   rpos = te::da::GetFirstPropertyPos(dsHigher.get(), te::dt::RASTER_TYPE);
 
-  std::auto_ptr<te::rst::Raster> inputRstHigher = dsHigher->getRaster(rpos);
+  te::rst::Raster* inputRstHigher = dsHigher->getRaster(rpos).release();
+
+  te::rst::Raster* rasterLower = 0;
+  te::rst::Raster* rasterHigher = 0;
+
+  adjustRasters(inputRstLower, inputRstHigher, rasterLower, rasterHigher);
 
 
   //run PCA Fusion
   te::rp::PCAFusion algorithmInstance;
 
   te::rp::PCAFusion::InputParameters algoInputParams = m_fusionPage->getInputPCAParams();
-  algoInputParams.m_lowResRasterPtr = inputRstLower.get();
-  algoInputParams.m_highResRasterPtr = inputRstHigher.get();
+  algoInputParams.m_lowResRasterPtr = rasterLower;
+  algoInputParams.m_highResRasterPtr = rasterHigher;
 
   te::rp::PCAFusion::OutputParameters algoOutputParams = m_fusionPage->getOutputPCAParams();
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();
@@ -313,6 +337,9 @@ bool te::qt::widgets::FusionWizard::executePCA()
 
         QApplication::restoreOverrideCursor();
 
+        delete rasterLower;
+        delete rasterHigher;
+
         return false;
       }
     }
@@ -325,6 +352,9 @@ bool te::qt::widgets::FusionWizard::executePCA()
 
       QApplication::restoreOverrideCursor();
 
+      delete rasterLower;
+      delete rasterHigher;
+
       return false;
     }
   }
@@ -336,6 +366,9 @@ bool te::qt::widgets::FusionWizard::executePCA()
 
     QApplication::restoreOverrideCursor();
 
+    delete rasterLower;
+    delete rasterHigher;
+
     return false;
   }
   catch(...)
@@ -346,6 +379,9 @@ bool te::qt::widgets::FusionWizard::executePCA()
 
     QApplication::restoreOverrideCursor();
 
+    delete rasterLower;
+    delete rasterHigher;
+
     return false;
   }
 
@@ -353,5 +389,74 @@ bool te::qt::widgets::FusionWizard::executePCA()
 
   QApplication::restoreOverrideCursor();
 
+  delete rasterLower;
+  delete rasterHigher;
+
   return true;
+}
+
+void te::qt::widgets::FusionWizard::adjustRasters(te::rst::Raster* rInLower, te::rst::Raster* rInHigher, te::rst::Raster*& rOutLower, te::rst::Raster*& rOutHigher)
+{
+  assert(rInLower);
+  assert(rInHigher);
+
+  if(!m_fusionPage->cropRasters())
+  {
+    rOutLower = rInLower;
+    rOutHigher = rInHigher;
+
+    return;
+  }
+
+  //get box
+  te::gm::Envelope boxLower = *rInLower->getExtent();
+  te::gm::Envelope boxHigher = *rInHigher->getExtent();
+
+  //check if the box is equal
+  if(boxLower.equals(boxHigher))
+  {
+    rOutLower = rInLower;
+    rOutHigher = rInHigher;
+
+    return;
+  }
+
+  //check if a reprojection is necessary
+  bool reproject = rInLower->getSRID() != rInHigher->getSRID();
+
+  if(reproject)
+    boxHigher.transform(rInHigher->getSRID(), rInLower->getSRID());
+
+  //check the intersection box
+  if(!boxLower.intersects(boxHigher))
+    return;
+
+  te::gm::Envelope interBox = boxLower.intersection(boxHigher);
+
+  //generate lower raster
+  std::map<std::string, std::string> rLowerInfo;
+  rLowerInfo["FORCE_MEM_DRIVER"] = "TRUE";
+  rLowerInfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(interBox.getHeight() / rInLower->getResolutionX());
+  rLowerInfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(interBox.getWidth() / rInLower->getResolutionY());
+  rLowerInfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(rInLower->getBandDataType(0));
+  rLowerInfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(rInLower->getNumberOfBands());
+
+  rOutLower = rInLower->trim(&interBox, rLowerInfo);
+
+  //generate higher raster
+  std::map<std::string, std::string> rHigherInfo;
+  rHigherInfo["FORCE_MEM_DRIVER"] = "TRUE";
+  rHigherInfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(interBox.getHeight() / rInHigher->getResolutionX());
+  rHigherInfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(interBox.getWidth() / rInHigher->getResolutionY());
+  rHigherInfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(rInHigher->getBandDataType(0));
+  rHigherInfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(rInHigher->getNumberOfBands());
+
+  if(reproject)
+  {
+    boxHigher.transform(rInLower->getSRID(), rInHigher->getSRID());
+
+    rOutHigher = rInHigher->transform(rInLower->getSRID(), boxHigher.getLowerLeftX(), boxHigher.getLowerLeftY(), boxHigher.getUpperRightX(), boxHigher.getUpperRightY(), rHigherInfo);
+  }
+  else
+    rOutHigher = rInHigher->trim(&interBox, rHigherInfo);
 }
