@@ -42,12 +42,10 @@ te::qt::widgets::DataSetWidget::DataSetWidget(QWidget* parent, Qt::WindowFlags f
 
   // set icons
   m_ui->m_addDataSetPushButton->setIcon(QIcon::fromTheme("list-add"));
-  //m_ui->m_removeDataSetPushButton->setIcon(QIcon::fromTheme("list-remove"));
 
   //connects
   connect(m_ui->m_dataSetComboBox, SIGNAL(activated(const QString&)), this, SLOT(onDataSetComboBoxActivated(const QString&)));
   connect(m_ui->m_addDataSetPushButton, SIGNAL(clicked()), this, SLOT(onAddDataSetPushButtonClicked()));
-//  connect(m_ui->m_removeDataSetPushButton, SIGNAL(clicked()), this, SLOT(onRemoveDataSetPushButtonClicked()));
 }
 
 te::qt::widgets::DataSetWidget::~DataSetWidget()
@@ -121,7 +119,7 @@ void te::qt::widgets::DataSetWidget::setDataSetNames(std::vector<std::pair<std::
     //check if already exist an alias with this name
     for(int j = 0; j < newrow; ++j)
     {
-      QTableWidgetItem* itemName = m_ui->m_dataSetTableWidget->item(j, 1);
+      QTableWidgetItem* itemName = m_ui->m_dataSetTableWidget->item(j, 2);
 
       if(itemName->text().toStdString() == list[j].second)
       {
@@ -133,11 +131,17 @@ void te::qt::widgets::DataSetWidget::setDataSetNames(std::vector<std::pair<std::
     //new entry
     m_ui->m_dataSetTableWidget->insertRow(newrow);
 
+    //remove button
+    QToolButton* removeBtn = new QToolButton(m_ui->m_dataSetTableWidget);
+    removeBtn->setIcon(QIcon::fromTheme("list-remove"));
+    connect(removeBtn, SIGNAL(clicked()), this, SLOT(onRemoveDataSetPushButtonClicked()));
+    m_ui->m_dataSetTableWidget->setCellWidget(newrow, 0, removeBtn);
+
     QTableWidgetItem* itemDataSet = new QTableWidgetItem(QString::fromStdString(list[i].first));
-    m_ui->m_dataSetTableWidget->setItem(newrow, 0, itemDataSet);
+    m_ui->m_dataSetTableWidget->setItem(newrow, 1, itemDataSet);
 
     QTableWidgetItem* itemAlias = new QTableWidgetItem(QString::fromStdString(list[i].second));
-    m_ui->m_dataSetTableWidget->setItem(newrow, 1, itemAlias);
+    m_ui->m_dataSetTableWidget->setItem(newrow, 2, itemAlias);
 
     m_ui->m_dataSetTableWidget->resizeColumnToContents(0);
 
@@ -153,11 +157,11 @@ void te::qt::widgets::DataSetWidget::getDataSetNames(std::vector<std::pair<std::
   for(int i = 0; i < row; ++i)
   {
     //alias name
-    QTableWidgetItem* itemAlias = m_ui->m_dataSetTableWidget->item(i, 1);
+    QTableWidgetItem* itemAlias = m_ui->m_dataSetTableWidget->item(i, 2);
     std::string alias = itemAlias->text().toStdString();
 
     //data set name
-    QTableWidgetItem* itemDataSet = m_ui->m_dataSetTableWidget->item(i, 0);
+    QTableWidgetItem* itemDataSet = m_ui->m_dataSetTableWidget->item(i, 1);
     std::string dataSetName = itemDataSet->text().toStdString();
 
     list.push_back(std::pair<std::string, std::string> (dataSetName, alias));
@@ -203,7 +207,7 @@ void te::qt::widgets::DataSetWidget::onAddDataSetPushButtonClicked()
   //check if already exist an alias with this name
   for(int i = 0; i < newrow; ++i)
   {
-    QTableWidgetItem* itemName = m_ui->m_dataSetTableWidget->item(i, 1);
+    QTableWidgetItem* itemName = m_ui->m_dataSetTableWidget->item(i, 2);
 
     if(itemName->text().toStdString() == aliasName)
     {

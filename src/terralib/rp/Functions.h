@@ -372,6 +372,21 @@ namespace te
       double& meanValue );    
       
     /*!
+      \brief Get the standard deviation of band pixel values.
+      \param band The input raster band.
+      \param maxThreads The maximum number of threads to use (0-auto, 1-single thread used).
+      \param meanValuePtr A pointer to a pre-calculated band mean value or zero if it does not exist.
+      \param stdDevValue The calculated standard deviation value.
+      \return true if OK, false on errors.
+      \note Optimized for rasters where the used bands have the same blocking scheme.
+    */
+    TERPEXPORT bool GetStdDevValue( 
+      const te::rst::Band& band, 
+      const unsigned int maxThreads, 
+      double const * const meanValuePtr, 
+      double& stdDevValue );         
+      
+    /*!
       \brief Get the covariance of band pixel values.
       \param band1 The input band 1.
       \param band2 The input band 2.

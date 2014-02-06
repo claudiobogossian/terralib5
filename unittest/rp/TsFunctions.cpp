@@ -324,3 +324,42 @@ void TsFunctions::PrincipalComponentsOptimized()
     *outDiskRasterPtr,
     4 ) );  
 }
+
+void TsFunctions::GetStdDevValue()
+{
+  // openning input raster
+  
+  std::map<std::string, std::string> auxRasterInfo;
+  
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_hrc_crop.tif";
+  std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( diskRasterPtr.get() );  
+  
+  double stdDevValue = 0;
+  
+//  boost::timer timer;
+  CPPUNIT_ASSERT( te::rp::GetStdDevValue( *diskRasterPtr->getBand( 0 ), 1, 0, stdDevValue) );
+//  std::cout << std::endl << "Elapsed:" << timer.elapsed() << std::endl;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 46.302240075, stdDevValue, 0.0001 );  
+}
+
+void TsFunctions::GetStdDevValueOptimized()
+{
+  // openning input raster
+  
+  std::map<std::string, std::string> auxRasterInfo;
+  
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_hrc_crop.tif";
+  std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( diskRasterPtr.get() );  
+  
+  double stdDevValue = 0;
+  
+//  boost::timer timer;
+  CPPUNIT_ASSERT( te::rp::GetStdDevValue( *diskRasterPtr->getBand( 0 ), 4, 0, stdDevValue) );
+//  std::cout << std::endl << "Elapsed:" << timer.elapsed() << std::endl;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 46.302240075, stdDevValue, 0.0001 );  
+}
+
