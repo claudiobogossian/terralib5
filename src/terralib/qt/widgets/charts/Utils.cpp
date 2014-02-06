@@ -171,7 +171,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
      unsigned int nLin = raster->getNumberOfRows();
 
     te::common::TaskProgress task;
-    task.setTotalSteps(nCol * nLin);
+    task.setTotalSteps(nCol);
     task.setMessage("Scatter creation");
 
       for (unsigned int c=0; c < nCol; ++c)
@@ -180,6 +180,9 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
         {
           break;
         }
+
+        task.pulse();
+
         for (unsigned int r=0;  r <nLin; ++r)
         {
               double val1, val2;
@@ -189,8 +192,6 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
 
               newScatter->addX(val1);
               newScatter->addY(val2);
-
-              task.pulse();
         }
       }
   }
