@@ -44,6 +44,7 @@ namespace te
       \brief Fusion of a low-resolution multi-band image with a high resolution image using the PCA (Principal components analysis) method.
       \details The PCA performs image fusion where the first principal component of the multi-spectral image is replaced by the histogram matched panchromatic imagery.
       \note Reference: Tania Stathaki, "Image Fusion: Algorithms and Applications", Elsevier, First edition 2008.
+      \note This algorithm expects both images to be aligned over the same geographic region. No reprojection or crop operations are performed.
       \ingroup rp_fus
      */
     class TERPEXPORT PCAFusion : public Algorithm
