@@ -823,7 +823,7 @@ QStringList te::qt::widgets::WhereClauseWidget::getPropertyValues(std::string pr
 
   for(size_t t = 0; t < m_fromItems.size(); ++t)
   {
-    te::da::FromItem* fi = new te::da::DataSetName(m_fromItems[t].first/*, m_fromItems[t].second*/);
+    te::da::FromItem* fi = new te::da::DataSetName(m_fromItems[t].first, m_fromItems[t].second);
 
     from->push_back(fi);
   }
