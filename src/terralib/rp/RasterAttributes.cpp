@@ -30,6 +30,7 @@
 #include "../raster/Grid.h"
 #include "../raster/PositionIterator.h"
 #include "../raster/Raster.h"
+#include "../statistics.h"
 #include "RasterAttributes.h"
 
 te::rp::RasterAttributes::RasterAttributes()
@@ -59,11 +60,22 @@ void te::rp::RasterAttributes::reset() throw(te::rp::Exception)
 {
 }
 
-std::vector<std::complex<double> > te::rp::RasterAttributes::getValuesFromBand(const te::rst::Raster& raster, unsigned int band, const te::gm::Polygon& polygon)
+std::vector<std::complex<double> > te::rp::RasterAttributes::getComplexValuesFromBand(const te::rst::Raster& raster, unsigned int band, const te::gm::Polygon& polygon)
+{
+  std::vector<double> dvalues = getValuesFromBand(raster, band, polygon);
+  std::vector<std::complex<double> > values;
+
+  for (unsigned int i = 0; i < dvalues.size(); i++)
+    values.push_back(dvalues[i]);
+
+  return values;
+}
+
+std::vector<double> te::rp::RasterAttributes::getValuesFromBand(const te::rst::Raster& raster, unsigned int band, const te::gm::Polygon& polygon)
 {
   assert(band < raster.getNumberOfBands());
 
-  std::vector<std::complex<double> > values;
+  std::vector<double> values;
 
 // create iterators for band and polygon
   te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(&raster, &polygon);
@@ -80,31 +92,44 @@ std::vector<std::complex<double> > te::rp::RasterAttributes::getValuesFromBand(c
   return values;
 }
 
-std::vector<std::vector<std::complex<double> > > te::rp::RasterAttributes::getValuesFromRaster(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands)
+std::vector<std::vector<std::complex<double> > > te::rp::RasterAttributes::getComplexValuesFromRaster(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands)
+{
+  std::vector<std::vector<double> > dallvalues = getValuesFromRaster(raster, polygon, bands);
+  std::vector<std::complex<double> > values;
+  std::vector<std::vector<std::complex<double> > > allvalues;
+
+  for (unsigned int i = 0; i < dallvalues.size(); i++)
+  {
+    values.clear();
+    for (unsigned int j = 0; j < dallvalues[i].size(); j++)
+      values.push_back(dallvalues[i][j]);
+    allvalues.push_back(values);
+  }
+
+  return allvalues;
+}
+
+std::vector<std::vector<double> > te::rp::RasterAttributes::getValuesFromRaster(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands)
 {
   assert(bands.size() > 0);
   assert(bands.size() <= raster.getNumberOfBands());
 
-  std::vector<std::vector<std::complex<double> > > allvalues;
-  std::vector<std::complex<double> > values;
-  std::complex<double> value;
+  std::vector<std::vector<double> > allvalues;
+  double value;
 
 // create iterators for band and polygon
   te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(&raster, &polygon);
   te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(&raster, &polygon);
 
+  for (unsigned int i = 0; i < bands.size(); i++)
+    allvalues.push_back(std::vector<double> ());
   while (it != itend)
   {
-    values.clear();
-
     for (unsigned int i = 0; i < bands.size(); i++)
     {
       raster.getValue(it.getColumn(), it.getRow(), value, bands[i]);
-
-      values.push_back(value);
+      allvalues[i].push_back(value);
     }
-
-    allvalues.push_back(values);
 
     ++it;
   }
@@ -112,70 +137,33 @@ std::vector<std::vector<std::complex<double> > > te::rp::RasterAttributes::getVa
   return allvalues;
 }
 
-std::complex<double> te::rp::RasterAttributes::getMean(const te::rst::Band& band, const te::gm::Polygon& polygon)
+te::stat::NumericStatisticalSummary te::rp::RasterAttributes::getStatistics(std::vector<double>& pixels)
 {
-  std::vector<unsigned int> b;
+  assert(pixels.size() > 0);
 
-  b.push_back(band.getProperty()->m_idx);
+  te::stat::NumericStatisticalSummary summary;
+  te::stat::GetNumericStatisticalSummary(pixels, summary);
 
-  return getMeans(*band.getRaster(), polygon, b)[0];
+  return summary;
 }
 
-std::vector<std::complex<double> > te::rp::RasterAttributes::getMeans(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands)
+boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getCovarianceMatrix(const std::vector<std::vector<double> >& vpixels, const std::vector<double>& vmeans)
 {
-  assert(bands.size() > 0);
-  assert(bands.size() <= raster.getNumberOfBands());
-
-  std::vector<std::complex<double> > means;
-
-  for (unsigned int i = 0; i < bands.size(); i++)
-    means.push_back(0.0);
-
-  unsigned int nvalues = 0;
-
-  std::complex<double> value;
-
-  te::rst::PolygonIterator<unsigned> it = te::rst::PolygonIterator<unsigned>::begin(&raster, &polygon);
-  te::rst::PolygonIterator<unsigned> itend = te::rst::PolygonIterator<unsigned>::end(&raster, &polygon);
-
-  while (it != itend)
-  {
-    for (unsigned int i = 0; i < bands.size(); i++)
-    {
-      raster.getValue(it.getColumn(), it.getRow(), value, bands[i]);
-
-      means[i] += value;
-    }
-
-    ++nvalues;
-
-    ++it;
-  }
-
-  for (unsigned int i = 0; i < means.size() && nvalues != 0; i++)
-    means[i] /= nvalues;
-
-  return means;
-}
-
-boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getCovarianceMatrix(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands)
-{
-  assert(bands.size() > 1);
-  assert(bands.size() <= raster.getNumberOfBands());
+  for (unsigned int i = 0; i < vpixels.size(); i++)
+    assert(vpixels[i].size() > 0);
+  for (unsigned int i = 1; i < vpixels.size(); i++)
+    assert(vpixels[0].size() == vpixels[i].size());
+  assert(vpixels.size() == vmeans.size());
 
   unsigned int i;
   unsigned int j;
   unsigned int k;
-  unsigned int nbands = bands.size();
-
-  std::vector<std::vector<std::complex<double> > > valuesperband = getValuesFromRaster(raster, polygon, bands);
-
-  unsigned int nvalues = valuesperband.size();
+  unsigned int nbands = vpixels.size();
+  unsigned int nvalues = vpixels[0].size();
 
   boost::numeric::ublas::matrix<double> covariance(nbands, nbands);
 
-  std::vector<std::complex<double> > meansperband = getMeans(raster, polygon, bands);
-
+// with few values, the covariance is default
   if (nvalues < 2)
   {
     for (i = 0; i < nbands; i++)
@@ -188,15 +176,15 @@ boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getCovarianceMat
     return covariance;
   }
 
+// compute covariance matrix based on values and means
   std::complex<double> sum;
-
   for (i = 0; i < nbands; i++)
     for (j = 0; j < nbands; j++)
     {
       sum = std::complex<double> (0.0, 0.0);
 
       for (k = 0; k < nvalues; k++)
-        sum += (valuesperband[k][i] - meansperband[i]) * (valuesperband[k][j] - meansperband[j]);
+        sum += (vpixels[i][k] - vmeans[i]) * (vpixels[j][k] - vmeans[j]);
 
       covariance(i, j) = sum.real() / (nvalues - 1);
     }
