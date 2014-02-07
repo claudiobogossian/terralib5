@@ -178,6 +178,14 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
 
     te::da::DataSetType* dsTypeResult = converter->getResult();
 
+    te::gm::GeometryProperty* p = te::da::GetFirstGeomProperty(dsTypeResult);
+
+    //check srid
+    if(p && (p->getSRID() != layer->getSRID()))
+    {
+        p->setSRID(layer->getSRID());
+    }
+
     boost::filesystem::path uri(m_ui->m_dataSetLineEdit->text().toStdString());
 
     std::string val = uri.stem().string();
@@ -275,6 +283,12 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
     if(m_ui->m_spatialIndexCheckBox->isChecked())
     {
       te::gm::GeometryProperty* p = te::da::GetFirstGeomProperty(dsTypeResult);
+
+      //check srid
+      if(p && (p->getSRID() != layer->getSRID()))
+      {
+          p->setSRID(layer->getSRID());
+      }
 
       if(p)
       {

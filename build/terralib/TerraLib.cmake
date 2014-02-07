@@ -255,7 +255,7 @@ configure_file (terralibConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/terralibConf
 configure_file (terralibConfigVersion.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/terralibConfigVersion.cmake @ONLY)
 #configure_file (teBuildTreeSettings.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/teBuildTreeSettings.cmake @ONLY)
 configure_file (${ROOT}/src/terralib/TerraLibConfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/TerraLibConfig.h)
-configure_file (${ROOT}/log/te-log.conf ${CMAKE_CURRENT_BINARY_DIR}/bin32/conf/te-log.conf COPYONLY)
+configure_file (${ROOT}/log/te-log.conf ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/conf/te-log.conf COPYONLY)
 
 # Installing CMake files
 # Exporting targets.

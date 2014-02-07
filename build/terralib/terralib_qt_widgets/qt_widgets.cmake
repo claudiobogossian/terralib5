@@ -247,6 +247,7 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/layer/search/LayerSearchWidget.h
   ${SRCDIR}/widgets/layer/search/LayerSearchWizardPage.h
+  ${SRCDIR}/widgets/layer/search/LayerSelectorWidget.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer/search" MOC)
 
@@ -369,8 +370,11 @@ set (
   ${SRCDIR}/widgets/rp/ClassifierWizardPage.h
   ${SRCDIR}/widgets/rp/ContrastDialog.h
   ${SRCDIR}/widgets/rp/ContrastWizardPage.h
+  ${SRCDIR}/widgets/rp/FilterWizardPage.h
+  ${SRCDIR}/widgets/rp/MaskDialog.h
   ${SRCDIR}/widgets/rp/MixtureModelDialog.h
   ${SRCDIR}/widgets/rp/MixtureModelWizardPage.h
+  ${SRCDIR}/widgets/rp/OutputRasterParametersWidget.h
   ${SRCDIR}/widgets/rp/RasterHistogramDialog.h
   ${SRCDIR}/widgets/rp/RasterHistogramWidget.h
   ${SRCDIR}/widgets/rp/RasterInfoWidget.h

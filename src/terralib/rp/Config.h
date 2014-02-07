@@ -26,6 +26,51 @@
 #ifndef __TERRALIB_RP_INTERNAL_CONFIG_H
 #define __TERRALIB_RP_INTERNAL_CONFIG_H
 
+/*!
+  \defgroup rp_class Classification
+  \ingroup rp
+*/
+
+/*!
+  \defgroup rp_aux Auxiliary classes
+  \ingroup rp
+*/
+
+/*!
+  \defgroup rp_func Auxiliary functions
+  \ingroup rp
+*/
+
+/*!
+  \defgroup rp_enh Enhancement
+  \ingroup rp
+*/
+
+/*!
+  \defgroup rp_mos Mosaic
+  \ingroup rp
+*/
+
+/*!
+  \defgroup rp_fus Fusion
+  \ingroup rp
+*/
+
+/*!
+  \defgroup rp_gen General purpose
+  \ingroup rp
+*/
+
+/*!
+  \defgroup rp_seg Segmentation
+  \ingroup rp
+*/
+
+/*!
+  \defgroup rp_match Matching
+  \ingroup rp
+*/
+
 // TerraLib
 #include "../Config.h"
 

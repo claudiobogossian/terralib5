@@ -35,7 +35,7 @@
 void SymbolSelector()
 {
   // Loads the Symbol Library from XML file
-  te::serialize::ReadSymbolLibrary("D:/terralib5/terralib5/schemas/terralib/qt/se/symbol.xml");
+  te::serialize::ReadSymbolLibrary("E:/TerraLib/terralib5_develop/schemas/terralib/qt/se/symbol.xml");
 
   // Selects a symbol
   te::qt::widgets::Symbol* symbol =  te::qt::widgets::SymbolSelectorDialog::getSymbol(0);

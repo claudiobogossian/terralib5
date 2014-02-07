@@ -30,6 +30,7 @@
 #include "../Config.h"
 
 // Qt
+#include <QtGui/QTableWidgetItem>
 #include <QtGui/QWidget>
 
 // STL
@@ -120,6 +121,7 @@ namespace te
 
           void onBandSelected(QString value);
 
+          void onTableWidgetItemDoubleClicked(QTableWidgetItem* item);
 
         signals:
 

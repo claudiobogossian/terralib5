@@ -193,9 +193,9 @@ void TsClassifier::MAP()
   class2Samples.push_back( sampleC2_2 );
   class2Samples.push_back( sampleC2_3 );
 
-  te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCT allClassesSamples;
-  allClassesSamples[ 1 ] = class1Samples;
-  allClassesSamples[ 2 ] = class2Samples;
+  te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCTPtr allClassesSamples(new te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCT());
+  allClassesSamples->insert(te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCT::value_type(1, class1Samples));
+  allClassesSamples->insert(te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCT::value_type(2, class2Samples));
 
 // define classification parameters
 
@@ -208,7 +208,7 @@ void TsClassifier::MAP()
 
 // link specific parameters with chosen implementation
   te::rp::ClassifierMAPStrategy::Parameters classifierparameters;
-  classifierparameters.m_trainSamplesPtr = &allClassesSamples;
+  classifierparameters.m_trainSamplesPtr = allClassesSamples;
 
   algoInputParameters.m_strategyName = "map";
   algoInputParameters.setClassifierStrategyParams(classifierparameters);
@@ -310,10 +310,10 @@ void TsClassifier::SAM()
   te::rp::ClassifierSAMStrategy::SamplesT class3Samples;
   class3Samples.push_back( sampleC3_1 );  
 
-  te::rp::ClassifierSAMStrategy::ClassesSamplesT allClassesSamples;
-  allClassesSamples[ 1 ] = class1Samples;
-  allClassesSamples[ 2 ] = class2Samples;
-  allClassesSamples[ 3 ] = class3Samples;
+  te::rp::ClassifierSAMStrategy::ClassesSamplesTPtr allClassesSamples(new te::rp::ClassifierSAMStrategy::ClassesSamplesT());
+  allClassesSamples->insert(te::rp::ClassifierSAMStrategy::ClassesSamplesT::value_type(1, class1Samples));
+  allClassesSamples->insert(te::rp::ClassifierSAMStrategy::ClassesSamplesT::value_type(2, class2Samples));
+  allClassesSamples->insert(te::rp::ClassifierSAMStrategy::ClassesSamplesT::value_type(3, class3Samples));
 
 // define classification parameters
 
@@ -326,7 +326,7 @@ void TsClassifier::SAM()
 
 // link specific parameters with chosen implementation
   te::rp::ClassifierSAMStrategy::Parameters classifierparameters;
-  classifierparameters.m_trainSamplesPtr = &allClassesSamples;
+  classifierparameters.m_trainSamplesPtr = allClassesSamples;
   classifierparameters.m_maxAngularDistances.push_back( 0.2 );
   classifierparameters.m_maxAngularDistances.push_back( 0.2 );
   classifierparameters.m_maxAngularDistances.push_back( 0.2 );

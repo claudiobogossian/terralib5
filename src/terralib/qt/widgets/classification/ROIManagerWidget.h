@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../maptools/Enums.h"
 #include "../Config.h"
 
 // STL
@@ -44,6 +45,11 @@ namespace te
   namespace cl
   {
     class ROISet;
+  }
+
+  namespace se
+  {
+    class Symbolizer;
   }
 
   namespace qt
@@ -112,6 +118,10 @@ namespace te
 
           void onPointPicked(double x, double y);
 
+        signals:
+
+          void roiSetChanged(te::cl::ROISet* rs);
+
         private:
 
          std::auto_ptr<Ui::ROIManagerWidgetForm> m_ui;
@@ -121,6 +131,12 @@ namespace te
          ColorPickerToolButton* m_colorPicker;
 
          te::map::AbstractLayerPtr m_layer;
+
+         te::map::AbstractLayerPtr m_vectorLayer;
+
+         te::map::Visibility m_vectorLayerVisibility;
+
+         te::se::Symbolizer* m_symb;
 
          te::cl::ROISet* m_rs;
 

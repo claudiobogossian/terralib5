@@ -48,6 +48,8 @@ namespace te
              in Cluster 1, otherwise new Clusters are created. After all regions belong to a cluster, the
              algorithm merges similar clusters. The acceptance threshold is the only parameter given by
              the user, and it indicates the maximum distance between two regions to be clustered togheter.
+
+       \ingroup rp_class
      */
     class TERPEXPORT ClassifierISOSegStrategy : public ClassifierStrategy
     {
@@ -97,7 +99,7 @@ namespace te
               \param mv      The vector of mean values, 1 value per band.
               \param cm      The covariance matrix between bands.
             */
-            Pattern(int i, double a, std::vector<std::complex<double> > mv, boost::numeric::ublas::matrix<double> cm);
+            Pattern(int i, double a, std::vector<double> mv, boost::numeric::ublas::matrix<double> cm);
 
             /*!
               \brief Copy constructor.
@@ -124,7 +126,7 @@ namespace te
             int m_id;                                                     //!< The id of the region of the pattern.
             Pattern* m_myCluster;                                         //!< The associated cluster of this pattern (optional).
             double m_area;                                                //!< The area of all regions inside a pattern.
-            std::vector<std::complex<double> > m_meanVector;              //!< The vector of mean values, 1 value per band;
+            std::vector<double> m_meanVector;                             //!< The vector of mean values, 1 value per band;
             boost::numeric::ublas::matrix<double> m_covarianceMatrix;     //!< The covariance matrix between bands.
             boost::numeric::ublas::matrix<double> m_covarianceInversion;  //!< The inversion of covariance matrix between bands.
         };

@@ -44,6 +44,8 @@ namespace te
       {
         class ClassifierAction;
         class ContrastAction;
+        class FilterAction;
+        class FusionAction;
         class MixtureModelAction;
         class SegmenterAction;
         class RegisterAction;
@@ -82,6 +84,8 @@ namespace te
 
             te::qt::plugins::rp::ClassifierAction* m_classifier;    //!< Classifier Process Action
             te::qt::plugins::rp::ContrastAction* m_contrast;        //!< Contrast Process Action
+            te::qt::plugins::rp::FilterAction* m_filter;            //!< Filter Process Action
+            te::qt::plugins::rp::FusionAction* m_fusion;            //!< Fusion Process Action
             te::qt::plugins::rp::MixtureModelAction* m_mixtureModel;//!< Contrast Process Action
             te::qt::plugins::rp::SegmenterAction* m_segmenter;      //!< Segmenter Process Action
             te::qt::plugins::rp::RegisterAction* m_register;        //!< Register Process Action

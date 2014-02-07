@@ -52,6 +52,8 @@ namespace te
       1. The E-step calculates the conditional expectation of the complete a
       posteriori probability function.
       2. The M-step updates the parameter estimation.
+      
+      \ingroup rp_class
     */
     class TERPEXPORT ClassifierEMStrategy : public ClassifierStrategy
     {

@@ -33,6 +33,12 @@
 #include "../../../geometry/MultiPolygon.h"
 #include "../../../geometry/Point.h"
 #include "../../../geometry/Utils.h"
+#include "../../../se/PolygonSymbolizer.h"
+#include "../../../se/Fill.h"
+#include "../../../se/Rule.h"
+#include "../../../se/Style.h"
+#include "../../../se/Symbolizer.h"
+#include "../../../se/Utils.h"
 #include "../canvas/Canvas.h"
 #include "../canvas/MapDisplay.h"
 #include "../rp/RasterNavigatorWidget.h"
@@ -92,7 +98,6 @@ te::qt::widgets::ROIManagerWidget::ROIManagerWidget(QWidget* parent, Qt::WindowF
   m_navigator->hidePickerTool(true);
   m_navigator->hideInfoTool(true);
 
-
   //connects
   connect(m_ui->m_openLayerROIToolButton, SIGNAL(clicked()), this, SLOT(onOpenLayerROIToolButtonClicked()));
   connect(m_ui->m_addROIToolButton, SIGNAL(clicked()), this, SLOT(onAddROIToolButtonClicked()));
@@ -108,6 +113,15 @@ te::qt::widgets::ROIManagerWidget::ROIManagerWidget(QWidget* parent, Qt::WindowF
 
 te::qt::widgets::ROIManagerWidget::~ROIManagerWidget()
 {
+  if(m_vectorLayer.get())
+  {
+    m_vectorLayer->setVisibility(m_vectorLayerVisibility);
+
+    te::se::Style* s = m_vectorLayer->getStyle();
+    te::se::Rule* r = s->getRule(0);
+
+    r->setSymbolizer(0, m_symb);
+  }
 }
 
 Ui::ROIManagerWidgetForm* te::qt::widgets::ROIManagerWidget::getForm() const
@@ -130,8 +144,19 @@ void te::qt::widgets::ROIManagerWidget::setList(std::list<te::map::AbstractLayer
 
     if(dsType->hasGeom())
     {
-      m_ui->m_layerROIComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
-      m_ui->m_vectorLayerComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
+      te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dsType.get());
+      
+      if(gp && gp->getGeometryType() == te::gm::MultiPolygonType)
+        m_ui->m_vectorLayerComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
+
+
+      if(dsType->getProperties().size() == 5 &&
+         dsType->getProperty(1)->getName() == TE_CL_ROI_GEOM_ID_NAME &&
+         dsType->getProperty(2)->getName() == TE_CL_ROI_LABEL_NAME &&
+         dsType->getProperty(3)->getName() == TE_CL_ROI_COLOR_NAME)
+      {
+        m_ui->m_layerROIComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
+      }
     }
 
     ++it;
@@ -236,7 +261,15 @@ void te::qt::widgets::ROIManagerWidget::onOpenLayerROIToolButtonClicked()
 
   m_sampleCounter = 0;
 
-  m_rs = te::cl::ROISet::createROISet(ds);
+  try
+  {
+    m_rs = te::cl::ROISet::createROISet(ds);
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Error extracting ROISet Information. Invalid layer."));
+    return;
+  }
 
   std::map<std::string, te::cl::ROI*> roiMap = m_rs->getROISet();
   std::map<std::string, te::cl::ROI*>::iterator it = roiMap.begin();
@@ -286,6 +319,8 @@ void te::qt::widgets::ROIManagerWidget::onOpenLayerROIToolButtonClicked()
     ++it;
   }
 
+  emit roiSetChanged(m_rs);
+
   drawROISet();
 }
 
@@ -324,6 +359,10 @@ void te::qt::widgets::ROIManagerWidget::onAddROIToolButtonClicked()
   item->setIcon(0, icon);
 
   m_ui->m_roiSetTreeWidget->addTopLevelItem(item);
+
+  m_ui->m_labelROILineEdit->clear();
+
+  emit roiSetChanged(m_rs);
 }
 
 void te::qt::widgets::ROIManagerWidget::onRemoveROIToolButtonClicked()
@@ -358,7 +397,14 @@ void te::qt::widgets::ROIManagerWidget::onRemoveROIToolButtonClicked()
     parent->removeChild(item);
   }
 
+  if(m_rs && m_rs->getROISet().empty())
+  {
+    m_sampleCounter = 0;
+  }
+
   drawROISet();
+
+  emit roiSetChanged(m_rs);
 }
 
 void te::qt::widgets::ROIManagerWidget::onFileDialogToolButtonClicked()
@@ -448,7 +494,29 @@ void te::qt::widgets::ROIManagerWidget::onVectorLayerToolButtonClicked(bool flag
     QVariant varLayer = m_ui->m_vectorLayerComboBox->itemData(idxLayer, Qt::UserRole);
     te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
 
-    m_navigator->setVectorial(layer);
+    m_vectorLayer = layer;
+    m_vectorLayerVisibility = m_layer->getVisibility();
+    m_vectorLayer->setVisibility(te::map::VISIBLE);
+
+    te::se::Style* s = m_vectorLayer->getStyle();
+    te::se::Rule* r = s->getRule(0);
+    const te::se::Symbolizer* symb = r->getSymbolizer(0);
+    
+    m_symb = symb->clone();
+    
+    if(symb->getType() == "PolygonSymbolizer")
+    {
+      te::se::PolygonSymbolizer* ps = (te::se::PolygonSymbolizer*)(symb)->clone();
+
+      te::se::Fill* fill = ps->getFill()->clone();
+      fill->setOpacity("0.2");
+
+      ps->setFill(fill);
+
+      r->setSymbolizer(0, ps);
+    }
+
+    m_navigator->setVectorial(m_vectorLayer);
     m_navigator->hidePickerTool(false);
   }
   else
@@ -510,6 +578,8 @@ void te::qt::widgets::ROIManagerWidget::onGeomAquired(te::gm::Polygon* poly)
     item->addChild(subItem);
     item->setExpanded(true);
   }
+
+  emit roiSetChanged(m_rs);
   
   drawROISet();
 }

@@ -35,6 +35,7 @@
 #include "../datatype/StringProperty.h"
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/MultiPolygon.h"
+#include "../geometry/Polygon.h"
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
 #include "ROISet.h"
@@ -147,7 +148,8 @@ te::cl::ROISet* te::cl::ROISet::createROISet(std::auto_ptr<te::da::DataSet> ds)
     {
       std::string pId = ds->getString(TE_CL_ROI_GEOM_ID_NAME);
 
-      te::gm::Polygon* p = (te::gm::Polygon*)ds->getGeometry(TE_CL_ROI_GEOM_NAME).release();
+      te::gm::MultiPolygon* mp = (te::gm::MultiPolygon*)ds->getGeometry(4).release();
+      te::gm::Polygon* p = (te::gm::Polygon*)mp->getGeometries()[0];
 
       roi->addPolygon(p, pId);
     }
@@ -219,7 +221,10 @@ std::auto_ptr<te::da::DataSet> te::cl::ROISet::getDataSet()
       dsItem->setString(TE_CL_ROI_GEOM_ID_NAME, itPols->first);
       dsItem->setString(TE_CL_ROI_LABEL_NAME, roi->getLabel());
       dsItem->setString(TE_CL_ROI_COLOR_NAME, roi->getColor());
-      dsItem->setGeometry(TE_CL_ROI_GEOM_NAME, (te::gm::Geometry*)itPols->second);
+
+      te::gm::Polygon* poly = (te::gm::Polygon*)itPols->second->clone();
+
+      dsItem->setGeometry(TE_CL_ROI_GEOM_NAME, (te::gm::Geometry*)poly);
 
       ((te::mem::DataSet*)dsMem)->add(dsItem);
 

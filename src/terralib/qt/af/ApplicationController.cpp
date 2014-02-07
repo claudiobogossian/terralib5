@@ -62,7 +62,7 @@
 // Boost
 #include <boost/filesystem.hpp>
 
-te::qt::af::ApplicationController* te::qt::af::ApplicationController::sm_instance(0);
+//te::qt::af::ApplicationController* te::qt::af::ApplicationController::sm_instance(0);
 
 te::qt::af::ApplicationController::ApplicationController(/*QObject* parent*/)
   : QObject(/*parent*/),
@@ -70,25 +70,26 @@ te::qt::af::ApplicationController::ApplicationController(/*QObject* parent*/)
     m_defaultSRID(TE_UNKNOWN_SRS),
     m_selectionColor(QColor(0, 255, 0)),
     m_initialized(false),
-    m_project(0)
+    m_project(0),
+    m_resetTerralib(true)
 {
-  if(sm_instance)
-    throw Exception(TR_QT_AF("Can not start another instance of the TerraLib Application Controller!"));
+  //if(sm_instance)
+  //  throw Exception(TR_QT_AF("Can not start another instance of the TerraLib Application Controller!"));
 
-  sm_instance = this;
+  //sm_instance = this;
 }
 
 te::qt::af::ApplicationController::~ApplicationController()
 {
   finalize();
 
-  sm_instance = 0;
+//  sm_instance = 0;
 }
 
-te::qt::af::ApplicationController& te::qt::af::ApplicationController::getInstance()
-{
-  return *sm_instance;
-}
+//te::qt::af::ApplicationController& te::qt::af::ApplicationController::getInstance()
+//{
+//  return *sm_instance;
+//}
 
 void te::qt::af::ApplicationController::setConfigFile(const std::string& configFileName)
 {
@@ -265,7 +266,8 @@ void  te::qt::af::ApplicationController::initialize()
 
   SplashScreenManager::getInstance().showMessage(tr("Loading TerraLib Modules..."));
 
-  TerraLib::getInstance().initialize();
+  if(m_resetTerralib)
+    TerraLib::getInstance().initialize();
 
   SplashScreenManager::getInstance().showMessage(tr("TerraLib Modules loaded!"));
 
@@ -321,7 +323,15 @@ void  te::qt::af::ApplicationController::initialize()
   {
     m_appHelpFile = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.HelpFile.<xmlattr>.xlink:href"));
 
-    if(!m_appHelpFile.isEmpty())
+    QFileInfo info(m_appHelpFile);
+
+    //if(!info.exists())
+    //{
+    //  m_appHelpFile = "";
+    //  te::common::SystemApplicationSettings::getInstance().setValue("Application.HelpFile.<xmlattr>.xlink:href", "fodas.txt");
+    //}
+
+    if(!m_appHelpFile.isEmpty() && info.exists())
     {
       SplashScreenManager::getInstance().showMessage(tr("Loading application help system..."));
 
@@ -515,13 +525,8 @@ void te::qt::af::ApplicationController::initializeProjectMenus()
     boost::property_tree::ptree p = te::common::UserApplicationSettings::getInstance().getAllSettings().get_child("UserSettings");
     std::string projPath, projTitle;
 
-    bool hasProjects = p.count("MostRecentProject") > 0;
-
-    if(hasProjects)
-    {
-      projPath = p.get<std::string>("MostRecentProject.<xmlattr>.xlink:href");
-      projTitle = p.get<std::string>("MostRecentProject.<xmlattr>.title");
-    }
+    projPath = p.get<std::string>("MostRecentProject.<xmlattr>.xlink:href");
+    projTitle = p.get<std::string>("MostRecentProject.<xmlattr>.title");
 
     QMenu* mnu = getMenu("File.Recent Projects");
 
@@ -537,7 +542,7 @@ void te::qt::af::ApplicationController::initializeProjectMenus()
       m_recentProjsTitles.append(projTitle.c_str());
     }
 
-    hasProjects = p.count("RecentProjects") > 0;
+    bool hasProjects = p.count("RecentProjects") > 0;
 
     if(hasProjects)
     {
@@ -550,6 +555,8 @@ void te::qt::af::ApplicationController::initializeProjectMenus()
         m_recentProjs.append(pp);
         m_recentProjsTitles.append(pt);
       }
+
+      mnu->setEnabled(true);
     }
 
     SplashScreenManager::getInstance().showMessage("Recent projects loaded!");
@@ -594,9 +601,14 @@ void te::qt::af::ApplicationController::updateRecentProjects(const QString& prjF
       m_recentProjsTitles.move(pos, 0);
     }
 
+    if(m_recentProjs.isEmpty())
+      return;
+
     QMenu* mnu = getMenu("File.Recent Projects");
 
     mnu->clear();
+
+    mnu->setEnabled(true);
 
     QString recPrj = m_recentProjs.at(0);
     QAction* act = mnu->addAction(recPrj);
@@ -634,6 +646,8 @@ void te::qt::af::ApplicationController::finalize()
   if(!m_initialized)
     return;
 
+  te::common::SystemApplicationSettings::getInstance().update();
+
   UpdateApplicationPlugins();
 
   UpdateUserSettings(m_recentProjs, m_recentProjsTitles, m_appUserSettingsFile);
@@ -644,10 +658,59 @@ void te::qt::af::ApplicationController::finalize()
 
   te::plugin::PluginManager::getInstance().unloadAll();
 
-  TerraLib::getInstance().finalize();
+  te::plugin::PluginManager::getInstance().clear();
+
+  if(m_resetTerralib)
+    TerraLib::getInstance().finalize();
 
   m_appConfigFile.clear();
 
+  m_applicationItems.clear();
+
+  m_menuBars.clear();
+
+  m_menus.clear();
+
+  m_toolbars.clear();
+
+  m_aboutLogo.clear();
+
+  m_appDatasourcesFile.clear();
+
+  m_appDefaultIconTheme.clear();
+
+  m_appHelpFile.clear();
+
+  m_appIconName.clear();
+
+  m_appIconThemeDir.clear();
+
+  m_appName.clear();
+
+  m_msgBoxParentWidget = 0;
+
+  m_appOrganization.clear(); 
+
+  m_appTitle.clear();
+
+  m_tLibLogo.clear();
+          
+  m_recentProjs.clear();
+
+  m_recentProjsTitles.clear();
+
+  m_appUserSettingsFile.clear();
+  
+  m_appPluginsFile.clear();
+  
+  m_appToolBarDefaultIconSize.clear();
+  
+  m_defaultSRID = 0;
+  
+  m_selectionColor = QColor();
+
+  m_project = 0;
+  
   m_initialized = false;
 }
 
@@ -702,4 +765,9 @@ QColor te::qt::af::ApplicationController::getSelectionColor() const
 QWidget* te::qt::af::ApplicationController::getMainWindow() const
 {
   return m_msgBoxParentWidget;
+}
+
+void te::qt::af::ApplicationController::setResetTerraLibFlag(const bool& status)
+{
+  m_resetTerralib = status;
 }

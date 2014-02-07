@@ -359,51 +359,51 @@ void te::rst::GetDataTypeRanges( const int& dataType, double& min, double& max )
 
     case te::dt::UINT16_TYPE:
       min = 0;
-      max = 65535;
+      max = (double)std::numeric_limits<unsigned short int>::max();
     break;
 
     case te::dt::INT16_TYPE:
-      min = -32767;
-      max = 32767;
+      min = (double)std::numeric_limits<short int>::min();
+      max = (double)std::numeric_limits<short int>::max();
     break;
 
     case te::dt::UINT32_TYPE:
       min = 0;
-      max = 4294967295;
+      max = (double)std::numeric_limits<unsigned int>::max();
     break;
 
     case te::dt::INT32_TYPE:
-      min = -2147483647;
-      max = 2147483647;
+      min = (double)std::numeric_limits<int>::min();
+      max = (double)std::numeric_limits<int>::max();
     break;
 
     case te::dt::FLOAT_TYPE:
-      min = (double)std::numeric_limits< float >::min();
+      min = -(double)std::numeric_limits< float >::max();
       max = (double)std::numeric_limits< float >::max();
     break;
 
     case te::dt::DOUBLE_TYPE:
-      min = std::numeric_limits< double >::min();
+      min = -std::numeric_limits< double >::max();
       max = std::numeric_limits< double >::max();
     break;
 
     case te::dt::CINT16_TYPE:
-      min = -32767;
-      max = 32767;
+      min = (double)std::numeric_limits<short int>::min();
+      max = (double)std::numeric_limits<short int>::max();
     break;
 
     case te::dt::CINT32_TYPE:
-      min = -2147483647;
-      max = 2147483647;
+      min = (double)std::numeric_limits<int>::min();
+      max = (double)std::numeric_limits<int>::max();
     break;
 
     case te::dt::CFLOAT_TYPE:
-      min = (double)std::numeric_limits< float >::min();
+      min = -(double)std::numeric_limits< float >::max();
       max = (double)std::numeric_limits< float >::max();
     break;
 
     case te::dt::CDOUBLE_TYPE:
-      min = std::numeric_limits< double >::min();
+      min = -std::numeric_limits< double >::max();
       max = std::numeric_limits< double >::max();
     break;
 

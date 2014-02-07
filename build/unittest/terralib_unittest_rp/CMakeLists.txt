@@ -14,5 +14,6 @@ add_subdirectory(terralib_unittest_rp_mosaic)
 add_subdirectory(terralib_unittest_rp_register)
 add_subdirectory(terralib_unittest_rp_skeleton)
 add_subdirectory(terralib_unittest_rp_ihsfusion)
+add_subdirectory(terralib_unittest_rp_pcafusion)
 add_subdirectory(terralib_unittest_rp_filter)
 

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>425</width>
+    <width>429</width>
     <height>290</height>
    </rect>
   </property>
@@ -15,7 +15,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_18">
    <property name="margin">
-    <number>0</number>
+    <number>9</number>
    </property>
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_17">
