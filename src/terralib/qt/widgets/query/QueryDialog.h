@@ -87,6 +87,12 @@ namespace te
           */
           void setCurrentLayer(te::map::AbstractLayerPtr layer);
 
+          /*!
+            \brief This method is used to set the alias name
+            
+          */
+          std::string setAliasName(std::string value);
+
           te::da::Where* getWhere();
 
 

@@ -138,6 +138,24 @@ void te::qt::widgets::QueryDialog::setCurrentLayer(te::map::AbstractLayerPtr lay
   }
 }
 
+std::string te::qt::widgets::QueryDialog::setAliasName(std::string value)
+{
+  if(value.empty() == false)
+  {
+    std::string dataSetName = value;
+    std::string aliasName = value;
+
+    int pos = dataSetName.find(".");
+    if(pos != std::string::npos)
+    {
+      aliasName = dataSetName.substr(pos + 1, dataSetName.size() - 1);
+    }
+
+    return aliasName;
+  }
+  return "";
+}
+
 te::da::Where* te::qt::widgets::QueryDialog::getWhere()
 {
   return m_whereClauseWidget->getWhere();
@@ -285,7 +303,7 @@ void te::qt::widgets::QueryDialog::onInputLayerActivated(QString value)
   std::auto_ptr<te::da::DataSetType> dsType = dsLayer->getSchema();
   
   std::string dsName = dsType->getName();
-  std::string aliasName = dsName;
+  std::string aliasName = setAliasName(dsName);
 
   std::vector<std::pair<std::string, std::string> > list;
   list.push_back(std::pair<std::string, std::string>(dsName, aliasName));
@@ -378,3 +396,5 @@ void te::qt::widgets::QueryDialog::onApplyPushButtonClicked()
     QMessageBox::information(this, tr("Query"), e.what());
   }
 }
+
+
