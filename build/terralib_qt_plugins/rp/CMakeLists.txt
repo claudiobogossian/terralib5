@@ -34,6 +34,7 @@ set (
   ${SRCDIR}/ClassifierAction.h
   ${SRCDIR}/ContrastAction.h
   ${SRCDIR}/FilterAction.h
+  ${SRCDIR}/FusionAction.h
   ${SRCDIR}/MixtureModelAction.h
   ${SRCDIR}/SegmenterAction.h
   ${SRCDIR}/RegisterAction.h

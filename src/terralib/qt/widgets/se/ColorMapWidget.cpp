@@ -44,6 +44,7 @@
 #include "ui_ColorMapWidgetForm.h"
 
 // Qt
+#include <QtGui/QColorDialog>
 #include <QtGui/QPainter>
 #include <QtGui/QValidator>
 
@@ -73,6 +74,7 @@ te::qt::widgets::ColorMapWidget::ColorMapWidget(QWidget* parent, Qt::WindowFlags
   connect(m_cbWidget, SIGNAL(colorBarChanged()), this, SLOT(onApplyPushButtonClicked()));
   connect(m_ui->m_bandComboBox, SIGNAL(activated(QString)), this, SLOT(onBandSelected(QString)));
   connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyPushButtonClicked()));
+  connect(m_ui->m_tableWidget, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(onTableWidgetItemDoubleClicked(QTableWidgetItem*)));
 }
 
 te::qt::widgets::ColorMapWidget::~ColorMapWidget()
@@ -195,7 +197,8 @@ void te::qt::widgets::ColorMapWidget::updateUi()
       //color
       QTableWidgetItem* item = new QTableWidgetItem();
       item->setBackgroundColor(color);
-      item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+      item->setFlags(Qt::ItemIsEnabled);
+      item->setData(Qt::UserRole, QVariant(i));
       m_ui->m_tableWidget->setItem(i - 1, 1, item);
 
       //value
@@ -249,6 +252,7 @@ void te::qt::widgets::ColorMapWidget::updateUi()
       QTableWidgetItem* item = new QTableWidgetItem();
       item->setBackgroundColor(color);
       item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+      item->setData(Qt::UserRole, QVariant(i));
       m_ui->m_tableWidget->setItem(i, 1, item);
 
       //value
@@ -435,3 +439,41 @@ void te::qt::widgets::ColorMapWidget::onBandSelected(QString value)
   m_ui->m_maxValueLineEdit->setText(strMax);
 }
 
+void te::qt::widgets::ColorMapWidget::onTableWidgetItemDoubleClicked(QTableWidgetItem* item)
+{
+  int curCol = m_ui->m_tableWidget->currentColumn();
+  int curRow = m_ui->m_tableWidget->currentRow();
+
+  if(curCol == 1)
+  {
+    int index = item->data(Qt::UserRole).toInt();
+
+    QColor bgColor = item->backgroundColor();
+
+    QColor newBgColor = QColorDialog::getColor(bgColor, m_ui->m_tableWidget);
+
+    if(newBgColor.isValid())
+      bgColor = newBgColor;
+
+    te::se::ParameterValue* value = new te::se::ParameterValue(bgColor.name().toLatin1().data());
+
+    int type = m_ui->m_transformComboBox->itemData(m_ui->m_transformComboBox->currentIndex()).toInt();
+
+    if(type == te::se::CATEGORIZE_TRANSFORMATION)
+    {
+      // TODO
+    }
+    else if(type == te::se::INTERPOLATE_TRANSFORMATION)
+    {
+      std::vector<te::se::InterpolationPoint*> ip = m_cm->getInterpolate()->getInterpolationPoints();
+
+      te::se::InterpolationPoint* ipItem = ip[index];
+
+      ipItem->setValue(value);
+    }
+
+    item->setBackgroundColor(bgColor);
+
+    emit applyPushButtonClicked();
+  }
+}
