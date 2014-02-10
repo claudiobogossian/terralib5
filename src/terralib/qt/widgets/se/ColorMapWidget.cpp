@@ -198,7 +198,7 @@ void te::qt::widgets::ColorMapWidget::updateUi()
       QTableWidgetItem* item = new QTableWidgetItem();
       item->setBackgroundColor(color);
       item->setFlags(Qt::ItemIsEnabled);
-      item->setData(Qt::UserRole, QVariant(i));
+      item->setData(Qt::UserRole, QVariant((int)i));
       m_ui->m_tableWidget->setItem(i - 1, 1, item);
 
       //value
@@ -252,7 +252,7 @@ void te::qt::widgets::ColorMapWidget::updateUi()
       QTableWidgetItem* item = new QTableWidgetItem();
       item->setBackgroundColor(color);
       item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-      item->setData(Qt::UserRole, QVariant(i));
+      item->setData(Qt::UserRole, QVariant((int)i));
       m_ui->m_tableWidget->setItem(i, 1, item);
 
       //value

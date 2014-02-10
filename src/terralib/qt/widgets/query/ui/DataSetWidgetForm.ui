@@ -56,7 +56,14 @@
                <widget class="QComboBox" name="m_dataSetComboBox"/>
               </item>
               <item row="1" column="0">
-               <widget class="QLineEdit" name="m_dataSetAliasLineEdit"/>
+               <widget class="QLineEdit" name="m_dataSetAliasLineEdit">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="readOnly">
+                 <bool>false</bool>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
