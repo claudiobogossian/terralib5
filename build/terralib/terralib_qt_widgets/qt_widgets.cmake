@@ -374,6 +374,7 @@ set (
   ${SRCDIR}/widgets/rp/MaskDialog.h
   ${SRCDIR}/widgets/rp/MixtureModelDialog.h
   ${SRCDIR}/widgets/rp/MixtureModelWizardPage.h
+  ${SRCDIR}/widgets/rp/MosaicWizardPage.h
   ${SRCDIR}/widgets/rp/OutputRasterParametersWidget.h
   ${SRCDIR}/widgets/rp/RasterHistogramDialog.h
   ${SRCDIR}/widgets/rp/RasterHistogramWidget.h
