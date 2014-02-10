@@ -66,6 +66,11 @@
   \ingroup rp
 */
 
+/*!
+  \defgroup rp_match Matching
+  \ingroup rp
+*/
+
 // TerraLib
 #include "../Config.h"
 

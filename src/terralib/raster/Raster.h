@@ -389,6 +389,18 @@ namespace te
         virtual Raster& operator+=(Raster& rhs);
 
         /*!
+          \brief It returns the sum of a constant value to all pixels in the raster.
+
+          \param cvalue The constant value to be added.
+
+          \note The caller is responsible to guarantee that resultant values
+                will not exceed the range of the data type.
+
+          \return The raster sum.
+        */
+        virtual Raster& operator+=(std::complex<double>& cvalue);
+
+        /*!
           \brief It returns the raster subtraction (pixel by pixel).
 
           \param rhs The raster to be subtracted, right-hand side.
@@ -402,6 +414,18 @@ namespace te
           \return The raster subtraction.
         */
         virtual Raster& operator-=(Raster& rhs);
+
+        /*!
+          \brief It returns the difference from all pixels in the raster to a constant value (pixels - constant).
+
+          \param cvalue The constant value to be subtracted.
+
+          \note The caller is responsible to guarantee that resultant values
+                will not exceed the range of the data type.
+
+          \return The raster difference.
+        */
+        virtual Raster& operator-=(std::complex<double>& cvalue);
 
         /*!
           \brief It returns the raster product (pixel by pixel).
@@ -419,6 +443,18 @@ namespace te
         virtual Raster& operator*=(Raster& rhs);
 
         /*!
+          \brief It returns the product of a constant value to all pixels in the raster.
+
+          \param cvalue The constant value to be multiplied.
+
+          \note The caller is responsible to guarantee that resultant values
+                will not exceed the range of the data type.
+
+          \return The raster product.
+        */
+        virtual Raster& operator*=(std::complex<double>& cvalue);
+
+        /*!
           \brief It returns the raster division (pixel by pixel).
 
           \param rhs The raster to be divided, right-hand side.
@@ -432,6 +468,18 @@ namespace te
           \return The raster division.
         */
         virtual Raster& operator/=(Raster& rhs);
+
+        /*!
+          \brief It returns the division of all pixels in the raster by a constant value (pixels / constant).
+
+          \param cvalue The constant value to be divided.
+
+          \note The caller is responsible to guarantee that resultant values
+                will not exceed the range of the data type.
+
+          \return The raster division.
+        */
+        virtual Raster& operator/=(std::complex<double>& cvalue);
 
         /*!
           \brief Assignment operator.
