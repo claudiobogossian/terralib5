@@ -70,6 +70,7 @@ te::qt::af::Project* te::qt::af::ReadProject(const std::string& uri)
     throw Exception((boost::format(TR_QT_AF("Could not read project file: %1%.")) % uri).str());
   
   std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());
+  xmlReader->setValidationScheme(false);
   
   xmlReader->read(uri);
   
