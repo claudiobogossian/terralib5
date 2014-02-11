@@ -17,25 +17,25 @@ find_package(Boost ${_Boost_VERSION} COMPONENTS system REQUIRED)
 
 #Definitions for Windows compiling
 if(WIN32)
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DBOOST_ALL_NO_LIB)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS -DBOOST_ALL_NO_LIB)
 endif()
-	
-set(DEP_LIBS 
+
+set(DEP_LIBS
     terralib_common
-		terralib_dataaccess
-		terralib_datatype
-		terralib_gdal
-		terralib_geometry
-		terralib_memory
-		terralib_ogr
-		terralib_plugin
-		terralib_raster
-		terralib_rp
-		terralib_srs
+    terralib_dataaccess
+    terralib_datatype
+    terralib_gdal
+    terralib_geometry
+    terralib_memory
+    terralib_ogr
+    terralib_plugin
+    terralib_raster
+    terralib_rp
+    terralib_srs
     ${Boost_LIBRARIES}
     ${GDAL_LIBRARY}
     )
-	
+
 # Select the source and header files
 file(GLOB SRCS ${SRCDIR}/*.cpp)
 file(GLOB HDRS ${SRCDIR}/*.h)
@@ -47,7 +47,7 @@ include_directories(
     ${Boost_INCLUDE_DIRS}
     ${GDAL_INCLUDE_DIR}
 )
-                           
+
 add_executable(${PROJ_NAME} ${SRCS} ${HDRS})
 
 set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
