@@ -341,12 +341,28 @@ te::rst::Raster& te::rst::Raster::operator+=(te::rst::Raster& rhs)
   return *this;
 }
 
+te::rst::Raster& te::rst::Raster::operator+=(std::complex<double>& cvalue)
+{
+  for (std::size_t b = 0; b < getNumberOfBands(); b++)
+    this->operator[](b) += cvalue;
+
+  return *this;
+}
+
 te::rst::Raster& te::rst::Raster::operator-=(te::rst::Raster& rhs)
 {
   assert(getNumberOfBands() == rhs.getNumberOfBands());
 
   for (std::size_t b = 0; b < getNumberOfBands(); b++)
     this->operator[](b) -= rhs.operator[](b);
+
+  return *this;
+}
+
+te::rst::Raster& te::rst::Raster::operator-=(std::complex<double>& cvalue)
+{
+  for (std::size_t b = 0; b < getNumberOfBands(); b++)
+    this->operator[](b) -= cvalue;
 
   return *this;
 }
@@ -361,12 +377,28 @@ te::rst::Raster& te::rst::Raster::operator*=(te::rst::Raster& rhs)
   return *this;
 }
 
+te::rst::Raster& te::rst::Raster::operator*=(std::complex<double>& cvalue)
+{
+  for (std::size_t b = 0; b < getNumberOfBands(); b++)
+    this->operator[](b) *= cvalue;
+
+  return *this;
+}
+
 te::rst::Raster& te::rst::Raster::operator/=(te::rst::Raster& rhs)
 {
   assert(getNumberOfBands() == rhs.getNumberOfBands());
 
   for (std::size_t b = 0; b < getNumberOfBands(); b++)
     this->operator[](b) /= rhs.operator[](b);
+
+  return *this;
+}
+
+te::rst::Raster& te::rst::Raster::operator/=(std::complex<double>& cvalue)
+{
+  for (std::size_t b = 0; b < getNumberOfBands(); b++)
+    this->operator[](b) /= cvalue;
 
   return *this;
 }

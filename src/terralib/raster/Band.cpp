@@ -447,6 +447,68 @@ te::rst::Band& te::rst::Band::callOperator(std::complex<double>(*f)(std::complex
   return *this;
 }
 
+te::rst::Band& te::rst::Band::callOperator(std::complex<double>(*f)(std::complex<double>, std::complex<double>), std::complex<double>& cvalue)
+{
+  assert(getRaster()->getAccessPolicy() == te::common::RWAccess || getRaster()->getAccessPolicy() == te::common::WAccess);
+
+  std::complex<double> lhsv;
+
+  std::vector<std::pair<unsigned, unsigned> > rcStPos, rcFPos;
+
+  unsigned last_y;
+  unsigned last_x;
+  for (unsigned x = 0; x < (unsigned) getProperty()->m_nblocksx; x++)
+  {
+    for (unsigned y = 0; y < (unsigned) getProperty()->m_nblocksy; y++)
+    {
+      rcStPos.push_back(std::pair<unsigned, unsigned> (y * getProperty()->m_blkh, x * getProperty()->m_blkw));
+      last_y = (y + 1) * getProperty()->m_blkh;
+      last_x = (x + 1) * getProperty()->m_blkw;
+      if (last_y > getRaster()->getNumberOfRows())
+        last_y = getRaster()->getNumberOfRows();
+      if (last_x > getRaster()->getNumberOfColumns())
+        last_x = getRaster()->getNumberOfColumns();
+      rcFPos.push_back(std::pair<unsigned, unsigned> (last_y, last_x));
+    }
+  }
+
+// rasters without no data values
+  if (getProperty()->m_noDataValue == std::numeric_limits<double>::max())
+  {
+    for (unsigned i = 0; i < rcStPos.size(); i++)
+    {
+      for (unsigned r = rcStPos[i].first; r < rcFPos[i].first; r++)
+        for (unsigned c = rcStPos[i].second; c < rcFPos[i].second; c++)
+        {
+          getValue(c, r, lhsv);
+
+          lhsv = f(lhsv, cvalue);
+          setValue(c, r, lhsv);
+        }
+      }
+  }
+// rasters with no data values
+  else
+  {
+    for (unsigned i = 0; i < rcStPos.size(); i++)
+    {
+      for (unsigned r = rcStPos[i].first; r < rcFPos[i].first; r++)
+        for (unsigned c = rcStPos[i].second; c < rcFPos[i].second; c++)
+        {
+// lhs data
+          getValue(c, r, lhsv);
+          if (lhsv.real() == getProperty()->m_noDataValue)
+            continue;
+
+          lhsv = f(lhsv, cvalue);
+          setValue(c, r, lhsv);
+        }
+    }
+  }
+
+  return *this;
+}
+
 std::complex<double> plus(std::complex<double> lhs, std::complex<double> rhs)
 {
   return lhs + rhs;
@@ -472,9 +534,24 @@ te::rst::Band& te::rst::Band::operator+=(te::rst::Band& rhs)
   return callOperator(plus, rhs);
 }
 
+te::rst::Band& te::rst::Band::operator+=(std::complex<double>& cvalue)
+{
+  return callOperator(plus, cvalue);
+}
+
 te::rst::Band& te::rst::Band::operator-=(te::rst::Band& rhs)
 {
   return callOperator(minus, rhs);
+}
+
+te::rst::Band& te::rst::Band::operator-=(std::complex<double>& cvalue)
+{
+  return callOperator(minus, cvalue);
+}
+
+te::rst::Band& te::rst::Band::operator*=(std::complex<double>& cvalue)
+{
+  return callOperator(times, cvalue);
 }
 
 te::rst::Band& te::rst::Band::operator*=(te::rst::Band& rhs)
@@ -485,6 +562,11 @@ te::rst::Band& te::rst::Band::operator*=(te::rst::Band& rhs)
 te::rst::Band& te::rst::Band::operator/=(te::rst::Band& rhs)
 {
   return callOperator(divide, rhs);
+}
+
+te::rst::Band& te::rst::Band::operator/=(std::complex<double>& cvalue)
+{
+  return callOperator(divide, cvalue);
 }
 
 int te::rst::Band::getBlockSize() const
