@@ -31,6 +31,7 @@
 #include "memory/Config.h"
 #include "memory/DataSet.h"
 #include "memory/DataSetItem.h"
+#include "memory/Raster.h"
 
 namespace te
 {

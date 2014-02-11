@@ -25,9 +25,12 @@
 
 // TerraLib
 #include "../../common/Translator.h"
+#include "../../fe/Expression.h"
+#include "../../maptools/Utils.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
 #include "../../se/LineSymbolizer.h"
+#include "../../se/ParameterValue.h"
 #include "../../se/PointSymbolizer.h"
 #include "../../se/PolygonSymbolizer.h"
 #include "../../se/RasterSymbolizer.h"
@@ -233,20 +236,6 @@ te::se::Symbolizer* RasterSymbolizerReader(te::xml::Reader& reader)
     rs->setOpacity(te::serialize::ReadParameterValue(reader));
   }
 
-  // Gain (TerraLib extension)  TODO: In this case, how deal with xsd?!
-  /*if(reader.getElementLocalName() == "Opacity")
-  {
-    reader.next();
-    rs->setGain(te::serialize::ReadParameterValue(reader));
-  }*/
-
-  // Offset (TerraLib extension) TODO: In this case, how deal with xsd?!
-  /*if(reader.getElementLocalName() == "Offset")
-  {
-    reader.next();
-    rs->setOffset(te::serialize::ReadParameterValue(reader));
-  }*/
-
   // ChannelSelection
   if(reader.getElementLocalName() == "ChannelSelection")
     rs->setChannelSelection(te::serialize::ReadChannelSelection(reader));
@@ -270,6 +259,30 @@ te::se::Symbolizer* RasterSymbolizerReader(te::xml::Reader& reader)
   // ImageOutline
   if(reader.getElementLocalName() == "ImageOutline")
     rs->setImageOutline(te::serialize::ReadImageOutline(reader));
+
+  // Gain (TerraLib extension)
+  if(reader.getElementLocalName() == "Gain")
+  {
+    reader.next();
+    std::string gain = reader.getElementValue();
+    rs->setGain(new te::se::ParameterValue(gain));
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
+  }
+
+  std::string aaaa = reader.getElementLocalName();
+
+  // Offset (TerraLib extension)
+  if(reader.getElementLocalName() == "Offset")
+  {
+    reader.next();
+    std::string offset = reader.getElementValue();
+    rs->setOffset(new te::se::ParameterValue(offset));
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
+  }
 
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
   reader.next();
@@ -404,6 +417,12 @@ void RasterSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Write
   te::serialize::Save(rs->getContrastEnhancement(), writer);
   te::serialize::Save(rs->getShadedRelief(), writer);
   te::serialize::Save(rs->getImageOutline(), writer);
+
+  double gain = te::map::GetDouble(rs->getGain());
+  writer.writeElement("se:Gain", gain);
+
+  double offset = te::map::GetDouble(rs->getOffset());
+  writer.writeElement("se:Offset", offset);
 
   writer.writeEndElement("se:RasterSymbolizer");
 }
