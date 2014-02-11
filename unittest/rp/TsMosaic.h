@@ -46,6 +46,8 @@ class TsMosaic : public CPPUNIT_NS::TestFixture
   
   CPPUNIT_TEST( GeoReferencedImagesMosaicTest );
   
+  CPPUNIT_TEST( GeoReferencedImagesMosaicWithReprojectionTest );
+  
   CPPUNIT_TEST_SUITE_END();
 
 protected :
@@ -53,6 +55,8 @@ protected :
   void SequenceMosaicTest();
 
   void GeoReferencedImagesMosaicTest();
+  
+  void GeoReferencedImagesMosaicWithReprojectionTest();
   
   // All images with the same SRS
   void TiePointsMosaicTest1();

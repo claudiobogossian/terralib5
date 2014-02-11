@@ -25,6 +25,7 @@
 #include "GeoMosaic.h"
 
 #include "Macros.h"
+#include "Functions.h"
 #include "../raster/Interpolator.h"
 #include "../raster/Enums.h"
 #include "../raster/RasterFactory.h"
@@ -511,11 +512,17 @@ namespace te
       while( ( originalInputRasterPtr = m_inputParameters.m_feederRasterPtr->getCurrentObj() ) )
       {
         const unsigned int inputRasterIdx = m_inputParameters.m_feederRasterPtr->getCurrentOffset();
+        
+//         Copy2DiskRaster( outputRaster, boost::lexical_cast< std::string >( inputRasterIdx ) +
+//           "_output_raster_begininng.tif" );
 
         TERP_DEBUG_TRUE_OR_THROW( rastersBBoxes[ inputRasterIdx ].getSRID() == outputRaster.getSRID(),
           "Invalid boxes SRID" );
           
         te::rst::Raster const* inputRasterPtr = originalInputRasterPtr;
+        
+//         Copy2DiskRaster( *inputRasterPtr, boost::lexical_cast< std::string >( inputRasterIdx ) +
+//           "_input_raster.tif" );
 
         // reprojection issues
         
@@ -538,6 +545,9 @@ namespace te
             m_inputParameters.m_interpMethod) );
           inputRasterPtr = reprojectedInputRasterPtr.get();
           TERP_TRUE_OR_RETURN_FALSE( inputRasterPtr, "Reprojection error" );
+          
+//           Copy2DiskRaster( *inputRasterPtr, boost::lexical_cast< std::string >( inputRasterIdx ) +
+//             "reprojected_input_raster.tif" );
         }
         
         // Caching issues
@@ -757,6 +767,10 @@ namespace te
               }
             }
           }
+          
+//           Copy2DiskRaster( outputRaster, boost::lexical_cast< std::string >( inputRasterIdx ) +
+//              "output_raster_after_blending_" + 
+//             boost::lexical_cast< std::string >( mosaicBBoxesUnionIdx ) + ".tif" );
         }
 
         // calculating the non-overlapped image area
@@ -820,7 +834,6 @@ namespace te
             const double inputBandNoDataValue = m_inputParameters.m_forceInputNoDataValue ?
               m_inputParameters.m_noDataValue : inputRasterPtr->getBand(
               inputBandIdx )->getProperty()->m_noDataValue;
-            const double& outputBandNoDataValue = m_inputParameters.m_noDataValue;
 
             for( unsigned int nonOverlappednResultIdx = 0 ; nonOverlappednResultIdx < nonOverlappednResultSize ;
               ++nonOverlappednResultIdx )
@@ -857,11 +870,7 @@ namespace te
 
                 interpInstance.getValue( inputCol, inputRow, pixelCValue, inputBandIdx );
 
-                if( pixelCValue.real() == inputBandNoDataValue )
-                {
-                  outputBand.setValue( outputCol, outputRow, outputBandNoDataValue );
-                }
-                else
+                if( pixelCValue.real() != inputBandNoDataValue )
                 {
                   pixelValue = pixelCValue.real() * currentRasterBandsScales[
                     inputRastersBandsIdx ] + currentRasterBandsOffsets[
@@ -876,6 +885,9 @@ namespace te
               }
             }
           }
+          
+/*          Copy2DiskRaster( outputRaster, boost::lexical_cast< std::string >( inputRasterIdx ) +
+            "output_raster_after_copying_non_overlapped_areas.tif" );   */        
         }
 
         // updating the  gloabal mosaic boxes
