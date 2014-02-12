@@ -35,6 +35,10 @@
   #include "ClassifierAction.h"
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_COLORTRANSFORM
+  #include "ColorTransformAction.h"
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
   #include "ContrastAction.h"
 #endif
@@ -134,6 +138,10 @@ void te::qt::plugins::rp::Plugin::registerActions()
     m_classifier = new te::qt::plugins::rp::ClassifierAction(m_rpMenu, m_rpPopupMenu);
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_COLORTRANSFORM
+    m_colorTrans = new te::qt::plugins::rp::ColorTransformAction(m_rpMenu, m_rpPopupMenu);
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
     m_contrast = new te::qt::plugins::rp::ContrastAction(m_rpMenu, m_rpPopupMenu);
 #endif
@@ -167,6 +175,10 @@ void  te::qt::plugins::rp::Plugin::unRegisterActions()
 {
 #ifdef TE_QT_PLUGIN_RP_HAVE_CLASSIFIER
     delete m_classifier;
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_COLORTRANSFORM
+    delete m_colorTrans;
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
