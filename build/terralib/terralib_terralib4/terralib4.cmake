@@ -26,6 +26,7 @@ list(APPEND TE_DEP_LIBS  terralib_dataaccess
                          terralib_geometry
                          terralib_raster
                          terralib_datatype
+						 terralib_memory
                          terralib_srs
                          terralib_plugin
                          terralib_common)

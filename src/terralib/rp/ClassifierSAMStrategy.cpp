@@ -60,7 +60,7 @@ const te::rp::ClassifierSAMStrategy::Parameters& te::rp::ClassifierSAMStrategy::
 
 void te::rp::ClassifierSAMStrategy::Parameters::reset() throw(te::rp::Exception)
 {
-  m_trainSamplesPtr = 0;
+  m_trainSamplesPtr.reset();
   m_maxAngularDistances.clear();
 }
 

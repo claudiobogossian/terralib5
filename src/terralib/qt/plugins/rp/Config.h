@@ -52,11 +52,25 @@
 #define TE_QT_PLUGIN_RP_HAVE_FILTER
 
 /*!
+  \def TE_QT_PLUGIN_RP_HAVE_FUSION
+
+  \brief It defines if the RP Qt Plugin has the fusion operation.
+*/
+#define TE_QT_PLUGIN_RP_HAVE_FUSION
+
+/*!
   \def TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
 
   \brief It defines if the RP Qt Plugin has the mixture model operation.
 */
 #define TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
+
+/*!
+  \def TE_QT_PLUGIN_RP_HAVE_MOSAIC
+
+  \brief It defines if the RP Qt Plugin has the mosaic operation.
+*/
+#define TE_QT_PLUGIN_RP_HAVE_MOSAIC
 
 /*!
   \def TE_QT_PLUGIN_RP_HAVE_SEGMENTER

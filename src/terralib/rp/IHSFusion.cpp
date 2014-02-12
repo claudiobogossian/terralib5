@@ -584,8 +584,8 @@ namespace te
       }
       
       double gain = ( ( rasterVariance == 0.0 ) ? 0.0 :
-        sqrt( intensityVariance / rasterVariance ) );
-      double offset = intensityMean - ( gain * rasterMean );
+        ( std::sqrt( intensityVariance ) / std::sqrt( rasterVariance ) ) );
+      double offset = ( ( rasterVariance == 0.0 ) ? 0.0 : ( intensityMean - ( gain * rasterMean ) ) );
       float* intensityRow = 0;
       
       for( row = 0 ; row < nRows ; ++row )

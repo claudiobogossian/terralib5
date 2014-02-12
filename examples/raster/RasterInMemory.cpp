@@ -1,6 +1,7 @@
 #include "RasterExamples.h"
 
 // TerraLib
+#include <terralib/memory.h>
 #include <terralib/raster.h>
 #include <terralib/raster/RasterFactory.h>
 #include <terralib/raster/RasterSummaryManager.h>
@@ -16,9 +17,9 @@ void RasterInMemory()
     std::cout << "This test uses the memory driver." << std::endl << std::endl;
 
     std::map<std::string, std::string> rinfo;
-
     rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
 
+    te::mem::Raster r;
     te::rst::Raster* memraster = te::rst::RasterFactory::open(std::string("MEM"), rinfo);
 
     const te::rst::RasterSummary* rs = te::rst::RasterSummaryManager::getInstance().get(memraster, te::rst::SUMMARY_ALL);
@@ -60,6 +61,6 @@ void RasterInMemory()
   {
     std::cout << std::endl << "An unexpected exception has occurried in RasterInMemory()!" << std::endl;
   }
-  
+
 }
 

@@ -18,16 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/widgets/rp/FilterDialog.h
+  \file terralib/qt/widgets/rp/FilterWizardPage.h
 
-  \brief This file has the FilterDialog class.
+  \brief This file has the FilterWizardPage class.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_FILTERDIALOG_H
-#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_FILTERDIALOG_H
+#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_FILTERWIZARDPAGE_H
+#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_FILTERWIZARDPAGE_H
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../rp/Filter.h"
 #include "../Config.h"
 
 // STL
@@ -37,9 +38,9 @@
 #include <boost/numeric/ublas/matrix.hpp>
 
 // Qt
-#include <QtGui/QDialog>
+#include <QtGui/QWizardPage>
 
-namespace Ui { class FilterDialogForm; }
+namespace Ui { class FilterWizardPageForm; }
 
 namespace te
 {
@@ -52,21 +53,32 @@ namespace te
       class OutputRasterParametersWidget;
       class RasterNavigatorWidget;
 
-      class TEQTWIDGETSEXPORT FilterDialog : public QDialog
+      class TEQTWIDGETSEXPORT FilterWizardPage : public QWizardPage
       {
         Q_OBJECT
 
         public:
 
-          FilterDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          FilterWizardPage(QWidget* parent = 0);
 
-          ~FilterDialog();
+          ~FilterWizardPage();
+
+          bool isComplete() const;
 
         public:
 
-          void setList(std::list<te::map::AbstractLayerPtr>& layerList);
+          /*!
+            \brief This method is used to set the selected layer for mixture model operation
+            
+            \param layer The layer ptr 
 
-          te::map::AbstractLayerPtr getOutputLayer();
+            \note This layer MUST HAVE a valid raster object.
+          */
+          void set(te::map::AbstractLayerPtr layer);
+
+          te::rp::Filter::InputParameters getInputParams();
+
+          te::rp::Filter::OutputParameters getOutputParams();
 
         public slots:
 
@@ -76,11 +88,7 @@ namespace te
 
           void onLoadMaskToolButtonClicked();
 
-          void onLayerSelected(te::map::AbstractLayerPtr l);
-
           void apply();
-
-          void onOkPushButtonClicked();
 
         protected:
 
@@ -90,12 +98,9 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::FilterDialogForm> m_ui;
-          std::auto_ptr<LayerSelectorWidget> m_layerSelector;
-          std::auto_ptr<OutputRasterParametersWidget> m_outputRaster;
+          std::auto_ptr<Ui::FilterWizardPageForm> m_ui;
           std::auto_ptr<RasterNavigatorWidget> m_navigator;
 
-          te::map::AbstractLayerPtr m_outputLayer;
           te::map::AbstractLayerPtr m_layer;
 
           boost::numeric::ublas::matrix<double> m_window; //!< User defined convolution window.
@@ -104,4 +109,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_FILTERDIALOG_H
+#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_FILTERWIZARDPAGE_H

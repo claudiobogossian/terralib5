@@ -363,7 +363,7 @@
         <item row="0" column="0">
          <layout class="QGridLayout" name="gridLayout_11">
           <item row="0" column="0">
-           <widget class="QTabWidget" name="tabWidget">
+           <widget class="QTabWidget" name="m_tabWidget">
             <property name="tabPosition">
              <enum>QTabWidget::West</enum>
             </property>

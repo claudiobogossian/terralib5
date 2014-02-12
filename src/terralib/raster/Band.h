@@ -332,13 +332,24 @@ namespace te
         /*!
           \brief It calls a parameter function f to apply in all pixels from two bands, e.g. pixel = f(lhs, rhs);
 
-          \param (*f) a function with the signature complex<double>(*f)(complex<double>, complex<double>), const Band& rhs)
+          \param (*f) a function with the signature complex<double>(*f)(complex<double>, complex<double>)
 
           \param rhs The rhs band to apply the function.
 
           \return The resultant band.
         */
         Band& callOperator(std::complex<double>(*f)(std::complex<double>, std::complex<double>), Band& rhs);
+
+        /*!
+          \brief It calls a parameter function f to apply in all pixels from the band, e.g. pixel = f(lhs, rhs);
+
+          \param (*f) a function with the signature complex<double>(*f)(complex<double>, complex<double>)
+
+          \param cvalue The constant value that will work with the generic function.
+
+          \return The resultant band.
+        */
+        Band& callOperator(std::complex<double>(*f)(std::complex<double>, std::complex<double>), std::complex<double>& cvalue);
 
         /*!
           \brief It returns the band sum (pixel by pixel).
@@ -355,6 +366,18 @@ namespace te
         virtual Band& operator+=(Band& rhs);
 
         /*!
+          \brief It returns the sum of a constant value to all pixels in the band.
+
+          \param cvalue The constant value to be added.
+
+          \note The caller is responsible to guarantee that resultant values
+                will not exceed the range of the data type.
+
+          \return The band sum.
+        */
+        virtual Band& operator+=(std::complex<double>& cvalue);
+
+        /*!
           \brief It returns the band subtraction (pixel by pixel).
 
           \param rhs The band to be subtracted, right-hand side.
@@ -367,6 +390,18 @@ namespace te
           \return The band subtraction.
         */
         virtual Band& operator-=(Band& rhs);
+
+        /*!
+          \brief It returns the difference from all pixels in the band to a constant value (pixel - constant).
+
+          \param cvalue The constant value to be subtracted.
+
+          \note The caller is responsible to guarantee that resultant values
+                will not exceed the range of the data type.
+
+          \return The band difference.
+        */
+        virtual Band& operator-=(std::complex<double>& cvalue);
 
         /*!
           \brief It returns the band product (pixel by pixel).
@@ -383,6 +418,18 @@ namespace te
         virtual Band& operator*=(Band& rhs);
 
         /*!
+          \brief It returns the product of a constant value to all pixels in the band.
+
+          \param cvalue The constant value to be multiplied.
+
+          \note The caller is responsible to guarantee that resultant values
+                will not exceed the range of the data type.
+
+          \return The band product.
+        */
+        virtual Band& operator*=(std::complex<double>& cvalue);
+
+        /*!
           \brief It returns the band division (pixel by pixel).
 
           \param rhs The band to be divided, right-hand side.
@@ -395,6 +442,18 @@ namespace te
           \return The band division.
         */
         virtual Band& operator/=(Band& rhs);
+
+        /*!
+          \brief It returns the division of all pixels in the band by a constant value (pixel / constant).
+
+          \param cvalue The constant value to be divided.
+
+          \note The caller is responsible to guarantee that resultant values
+                will not exceed the range of the data type.
+
+          \return The band division.
+        */
+        virtual Band& operator/=(std::complex<double>& cvalue);
 
         /*! \brief It returns the number of bytes ocuppied by a data block. */
         virtual int getBlockSize() const;

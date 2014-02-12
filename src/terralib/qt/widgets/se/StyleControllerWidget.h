@@ -110,6 +110,8 @@ namespace te
 
           void onDownSymbolizerClicked();
 
+          void onLibraryManagerClicked();
+
           void onMapRefreshClicked();
 
           void changeLegendIconSize(int size);

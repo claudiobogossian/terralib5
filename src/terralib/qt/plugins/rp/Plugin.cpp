@@ -43,8 +43,16 @@
   #include "FilterAction.h"
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_FUSION
+  #include "FusionAction.h"
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
   #include "MixtureModelAction.h"
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_MOSAIC
+  #include "MosaicAction.h"
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER
@@ -134,8 +142,16 @@ void te::qt::plugins::rp::Plugin::registerActions()
     m_filter = new te::qt::plugins::rp::FilterAction(m_rpMenu, m_rpPopupMenu);
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_FUSION
+    m_fusion = new te::qt::plugins::rp::FusionAction(m_rpMenu, m_rpPopupMenu);
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
   m_mixtureModel = new te::qt::plugins::rp::MixtureModelAction(m_rpMenu, m_rpPopupMenu);
+#endif
+
+  #ifdef TE_QT_PLUGIN_RP_HAVE_MOSAIC
+  m_mosaic = new te::qt::plugins::rp::MosaicAction(m_rpMenu, m_rpPopupMenu);
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER
@@ -161,8 +177,16 @@ void  te::qt::plugins::rp::Plugin::unRegisterActions()
     delete m_filter;
 #endif
 
-#ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
+#ifdef TE_QT_PLUGIN_RP_HAVE_FUSION
+    delete m_fusion;
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
     delete m_mixtureModel;
+#endif
+
+    #ifdef TE_QT_PLUGIN_RP_HAVE_MOSAIC
+    delete m_mosaic;
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER

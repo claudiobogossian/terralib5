@@ -38,15 +38,21 @@ class TsFunctions : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( TsFunctions );
   
+  CPPUNIT_TEST( GetStdDevValue );
+  
+  CPPUNIT_TEST( GetStdDevValueOptimized );
+  
   CPPUNIT_TEST( PrincipalComponents );
+  
+  CPPUNIT_TEST( PrincipalComponentsOptimized );
   
   CPPUNIT_TEST( getMeanValue );
   
-  CPPUNIT_TEST( getMeanValueWithThreads );
+  CPPUNIT_TEST( getMeanValueOptimized );
   
   CPPUNIT_TEST( getCovarianceValue );
   
-  CPPUNIT_TEST( getCovarianceValueWithThreads );
+  CPPUNIT_TEST( getCovarianceValueOptimized );
   
   CPPUNIT_TEST( ihs );
 
@@ -58,13 +64,19 @@ protected :
   
   void getMeanValue();
   
-  void getMeanValueWithThreads();
+  void getMeanValueOptimized();
   
   void getCovarianceValue();
   
-  void getCovarianceValueWithThreads();
+  void getCovarianceValueOptimized();
   
   void PrincipalComponents();
+  
+  void PrincipalComponentsOptimized();
+  
+  void GetStdDevValue();
+  
+  void GetStdDevValueOptimized();
   
 };
 
