@@ -43,6 +43,74 @@ void TsMosaic::GeoReferencedImagesMosaicTest()
   
   std::map<std::string, std::string> auxRasterInfo;
   
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/L5219075_07520040503_r3g2b1.tif";
+  boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRaster1Pointer.get() );    
+  
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/L5219076_07620040908_r3g2b1.tif";
+  boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRaster2Pointer.get() );
+  
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/L71218075_07520070614_r3g2b1.tif";
+  boost::shared_ptr< te::rst::Raster > inputRaster3Pointer ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRaster3Pointer.get() );
+  
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/L71218076_07620060814_r3g2b1.tif";
+  boost::shared_ptr< te::rst::Raster > inputRaster4Pointer ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRaster4Pointer.get() );    
+  
+    
+  // Creating the algorithm parameters
+  
+  te::rp::GeoMosaic::InputParameters algoInputParams;
+  
+  std::vector< const te::rst::Raster* > rasters;
+  rasters.push_back( inputRaster1Pointer.get() );
+  rasters.push_back( inputRaster2Pointer.get() );
+  rasters.push_back( inputRaster3Pointer.get() );
+  rasters.push_back( inputRaster4Pointer.get() );
+  te::rp::FeederConstRasterVector feeder( rasters );
+  algoInputParams.m_feederRasterPtr = &feeder;
+  
+  std::vector< unsigned int > bands;
+  bands.push_back( 0 );
+  bands.push_back( 1 );
+  bands.push_back( 2 );
+  algoInputParams.m_inputRastersBands.push_back( bands );
+  algoInputParams.m_inputRastersBands.push_back( bands );
+  algoInputParams.m_inputRastersBands.push_back( bands );
+  algoInputParams.m_inputRastersBands.push_back( bands );
+  
+  algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+  algoInputParams.m_noDataValue = 0;
+  algoInputParams.m_forceInputNoDataValue = true;
+  algoInputParams.m_blendMethod = te::rp::Blender::NoBlendMethod;
+  algoInputParams.m_autoEqualize = true;  
+
+  te::rp::GeoMosaic::OutputParameters algoOutputParams;
+  
+  algoOutputParams.m_rInfo["URI"] =  
+    "terralib_unittest_rp_Mosaic_GeoReferencedImagesMosaic_Test.tif";  
+  algoOutputParams.m_rType = "GDAL";
+  
+  // Executing the algorithm
+  
+  te::rp::GeoMosaic algorithmInstance;
+  
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+}
+
+void TsMosaic::GeoReferencedImagesMosaicWithReprojectionTest()
+{
+  // openning input rasters
+  
+  std::map<std::string, std::string> auxRasterInfo;
+  
   auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
@@ -88,13 +156,14 @@ void TsMosaic::GeoReferencedImagesMosaicTest()
   
   algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
   algoInputParams.m_noDataValue = 0;
+  algoInputParams.m_forceInputNoDataValue = false;
   algoInputParams.m_blendMethod = te::rp::Blender::NoBlendMethod;
   algoInputParams.m_autoEqualize = true;  
 
   te::rp::GeoMosaic::OutputParameters algoOutputParams;
   
   algoOutputParams.m_rInfo["URI"] =  
-    "terralib_unittest_rp_Mosaic_GeoReferencedImagesMosaic_Test.tif";  
+    "terralib_unittest_rp_GeoReferencedImagesMosaicWithReprojectionTest_Test.tif";  
   algoOutputParams.m_rType = "GDAL";
   
   // Executing the algorithm

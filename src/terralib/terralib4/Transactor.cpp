@@ -56,12 +56,14 @@
 #include "Exception.h"
 #include "Globals.h"
 #include "RasterDataSet.h"
+#include "TableDataSet.h"
 #include "Transactor.h"
 #include "Utils.h"
 
 // Terralib 4.x
 #include <terralib/kernel/TeDatabase.h>
 #include <terralib/kernel/TeLayer.h>
+#include <terralib/kernel/TeTable.h>
 
 // STL
 #include <cassert>
@@ -119,28 +121,50 @@ std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::stri
                                                                  bool /*connected*/,
                                                                  const te::common::AccessPolicy /*accessPolicy*/)
 {
-  TeLayerMap map = m_db->layerMap();
-
-  std::map<int, TeLayer*>::iterator it = map.begin();
-
   TeLayer* layer = 0;
 
-  while(it != map.end())
+  if(m_db->layerExist(name))
   {
-    if(it->second->name() == name)
-    {
-      layer = it->second;
-      break;
-    }
-    ++it;
-  }
+    TeLayerMap map = m_db->layerMap();
 
-  if(layer->hasGeometry(TeRASTER))
-  {
-    return std::auto_ptr<te::da::DataSet>(new RasterDataSet(layer->raster()));
+    std::map<int, TeLayer*>::iterator it = map.begin();
+
+    while(it != map.end())
+    {
+      if(it->second->name() == name)
+      {
+        layer = it->second;
+        break;
+      }
+      ++it;
+    }
+
+    if(layer->hasGeometry(TeRASTER))
+    {
+      return std::auto_ptr<te::da::DataSet>(new RasterDataSet(layer->raster()));
+    }
+    else
+      return std::auto_ptr<te::da::DataSet>(new VectorDataSet(layer));
   }
   else
-    return std::auto_ptr<te::da::DataSet>(new VectorDataSet(layer));
+  {
+    TeAttrTableVector tables;
+    m_db->getAttrTables(tables);
+
+    TeTable table;
+
+    for(std::size_t i = 0; i < tables.size(); ++i)
+    {
+      if(tables[i].tableType() == TeAttrExternal && tables[i].name() == name)
+      {
+        table = tables[i];
+        break;
+      }
+    }
+
+
+    return std::auto_ptr<te::da::DataSet>(new TableDataSet(m_db, table));
+  }
 }
 
 std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::string& name,
@@ -244,63 +268,92 @@ std::vector<std::string> terralib4::Transactor::getDataSetNames()
 
   std::map<int, TeLayer*>::iterator it = map.begin();
 
-  std::vector<std::string> layers;
-
-  TeLayer* layer = 0;
+  std::vector<std::string> dataSets;
 
   while(it != map.end())
   {
-    layers.push_back(it->second->name());
+    dataSets.push_back(it->second->name());
 
     ++it;
   }
 
-  return layers;
+  TeAttrTableVector tableVector;
+  m_db->getAttrTables(tableVector);
+
+  for(std::size_t i = 0; i < tableVector.size(); ++i)
+  {
+    if(tableVector[i].tableType() == TeAttrExternal)
+      dataSets.push_back(tableVector[i].name());
+  }
+
+  return dataSets;
 }
 
 std::size_t terralib4::Transactor::getNumberOfDataSets()
 {
-  return m_db->layerMap().size();
+  return getDataSetNames().size();
 }
 
 std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const std::string& name)
 {
-  if(!m_db->layerExist(name))
-    return std::auto_ptr<te::da::DataSetType>(0);
-
-  TeLayerMap map = m_db->layerMap();
-
-  std::map<int, TeLayer*>::iterator it = map.begin();
-
   TeLayer* layer = 0;
 
-  while(it != map.end())
+  if(m_db->layerExist(name))
   {
-    if(it->second->name() == name)
+    TeLayerMap map = m_db->layerMap();
+
+    std::map<int, TeLayer*>::iterator it = map.begin();
+
+    while(it != map.end())
     {
-      layer = it->second;
-      break;
+      if(it->second->name() == name)
+      {
+        layer = it->second;
+        break;
+      }
+      ++it;
     }
-    ++it;
   }
 
-  if(layer->hasGeometry(TeRASTER))
+  TeTable table;
+
+  if(!layer)
   {
-    std::auto_ptr<te::da::DataSetType> dst(new te::da::DataSetType(layer->name(), 0));
+    TeAttrTableVector tables;
+    m_db->getAttrTables(tables);
 
-// TODO: handle rasters with multiple objectid!
-    te::rst::RasterProperty* prop = Convert2T5(layer->raster()->params());
-    dst->add(prop);
-    return dst;
+    for(std::size_t i = 0; i < tables.size(); i++)
+    {
+      if(tables[i].tableType() == TeAttrExternal && name == tables[i].name())
+      {
+        table = tables[i];
+        break;
+      }
+    }
   }
+  else
+  {
 
-  TeAttrTableVector tables;
-  layer->getAttrTables(tables);
+// Is a layer
 
-  TeTable table = tables[0];
+    if(layer->hasGeometry(TeRASTER))
+    {
+      std::auto_ptr<te::da::DataSetType> dst(new te::da::DataSetType(layer->name(), 0));
+
+  // TODO: handle rasters with multiple objectid!
+      te::rst::RasterProperty* prop = Convert2T5(layer->raster()->params());
+      dst->add(prop);
+      return dst;
+    }
+
+    TeAttrTableVector tables;
+    layer->getAttrTables(tables);
+
+    table = tables[0];
+  }
 
   std::auto_ptr<te::da::DataSetType> mainDst(terralib4::Convert2T5(table));
-  mainDst->setTitle(layer->name());
+  mainDst->setTitle(table.name());
 
   std::vector<std::string> pkey;
   table.primaryKeys(pkey);
@@ -321,35 +374,41 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
     pk->setProperties(pkProps);
   }
 
-  if(tables.size() > 1)
+  if(layer)
   {
-    for(std::size_t i = 1; i < tables.size(); ++i)
+    TeAttrTableVector tables;
+    layer->getAttrTables(tables);
+
+    if(tables.size() > 1)
     {
-      TeTable table = tables[i];
-
-      std::auto_ptr<te::da::DataSetType> dst(terralib4::Convert2T5(table));
-
-      std::vector<te::dt::Property*> props = dst->getProperties();
-
-      for(std::size_t j = 0; j < props.size(); ++j)
+      for(std::size_t i = 1; i < tables.size(); ++i)
       {
-        te::dt::Property* prop = props[j]->clone();
-        prop->setName(dst->getName() + "_" + prop->getName());
+        TeTable table = tables[i];
 
-        mainDst->add(prop);
+        std::auto_ptr<te::da::DataSetType> dst(terralib4::Convert2T5(table));
+
+        std::vector<te::dt::Property*> props = dst->getProperties();
+
+        for(std::size_t j = 0; j < props.size(); ++j)
+        {
+          te::dt::Property* prop = props[j]->clone();
+          prop->setName(dst->getName() + "_" + prop->getName());
+
+          mainDst->add(prop);
+        }
       }
     }
-  }
 
-  TeRepresPointerVector vec = layer->vectRepres();
+    TeRepresPointerVector vec = layer->vectRepres();
 
-  if(!vec.empty())
-  {
-    TeGeomRep geomRep = vec[0]->geomRep_;
+    if(!vec.empty())
+    {
+      TeGeomRep geomRep = vec[0]->geomRep_;
 
-    te::gm::GeometryProperty* geomProp = new te::gm::GeometryProperty("spatial_data", 
-      layer->projection()->epsgCode(), terralib4::Convert2T5GeomType(geomRep));
-    mainDst->add(geomProp);
+      te::gm::GeometryProperty* geomProp = new te::gm::GeometryProperty("spatial_data", 
+        layer->projection()->epsgCode(), terralib4::Convert2T5GeomType(geomRep));
+      mainDst->add(geomProp);
+    }
   }
 
   return mainDst;

@@ -330,9 +330,10 @@ namespace te
       \param blueBandIdx The red band index.
       \param rgbRangeMin The minimum RGB value.
       \param rgbRangeMax The maximum RGB value.
-      \param outputIHSRaster The output IHS raster.
+      \param outputIHSRaster An output pré-initiated raster (with the same dimensions of inputRGBRaster) where the IHS data will be written.
       \return true if OK, false on errors.
-      \note IHS data with the following channels ranges: I:[0,1] H:[0,2pi] (radians) S:[0,1].   
+      \note The outputIHSRaster mas have a float or double data type. 
+      \note IHS data with the following channels ranges: I:[0,1] H:[0,2pi] (radians) S:[0,1].
       \ingroup rp_func   
     */
     TERPEXPORT bool ConvertRGB2IHS( const te::rst::Raster& inputRGBRaster, 
@@ -348,7 +349,7 @@ namespace te
       \param saturationBandIdx The saturation band index.
       \param rgbRangeMin The minimum RGB value.
       \param rgbRangeMax The maximum RGB value.      
-      \param outputRGBRaster The output RGB raster.
+      \param outputRGBRaster An output pré-initiated raster (with the same dimensions of inputIHSRaster) where the RGB data will be written.
       \return true if OK, false on errors.
       \note IHS data with the following channels ranges: I:[0,1] H:[0,2pi] (radians) S:[0,1].      
       \ingroup rp_func
