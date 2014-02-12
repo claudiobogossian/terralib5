@@ -125,8 +125,8 @@ void te::qt::widgets::SymbolSelectorDialog::onLoadSymbolLibraryPushButtonPressed
 
   try
   {
-    // te::serialize::ReadSymbolLibrary(path.toStdString());
-    // initialize();
+     /*te::serialize::ReadSymbolLibrary(path.toStdString());
+     initialize();*/
   }
   catch(te::common::Exception& e)
   {
