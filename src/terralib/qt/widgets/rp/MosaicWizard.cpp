@@ -249,6 +249,7 @@ bool te::qt::widgets::MosaicWizard::executeTiePointMosaic()
   te::rp::TiePointsMosaic algorithmInstance;
 
   te::rp::TiePointsMosaic::InputParameters algoInputParams = m_mosaicPage->getInputTPParams();
+  algoInputParams.m_enableProgress = true;
 
   te::rp::TiePointsMosaic::OutputParameters algoOutputParams = m_mosaicPage->getOutputTPParams();
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();

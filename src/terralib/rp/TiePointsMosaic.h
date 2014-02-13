@@ -89,6 +89,8 @@ namespace te
             
             bool m_useRasterCache; //!< Enable(true) or disable the use of raster caching (default:true).
             
+            bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
+            
             InputParameters();
             
             InputParameters( const InputParameters& );
