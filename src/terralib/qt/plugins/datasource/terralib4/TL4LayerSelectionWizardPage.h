@@ -50,13 +50,35 @@ namespace te
         {
           Q_OBJECT
 
+          private:
+
+            /*!
+              \enum NodeType
+
+              \brief Auxiliary internal enumeration to control the StyleExplorer tree nodes.
+            */
+            enum NodeType
+            {
+              LAYER      = 0, /*!< TerraLib4 Layer. */
+              THEME      = 1, /*!< TerraLib4 Theme. */
+              TABLE      = 2  /*!< TerraLib4 Table. */
+            };
+
           public:
 
             TL4LayerSelectionWizardPage(QWidget* parent = 0);
 
             ~TL4LayerSelectionWizardPage();
 
-            void setDatasets(std::vector<std::string> datasets);
+            void setDatasets(std::vector<std::string> layers,
+                             std::vector<std::string> tables,
+                             std::vector<std::string> themes);
+
+            void setTL4Layers(std::vector<std::string> layers);
+
+            void setTL4Tables(std::vector<std::string> tables);
+
+            void setTL4Themes(std::vector<std::string> themes);
 
             std::vector<std::string> getChecked();
 
@@ -71,6 +93,7 @@ namespace te
           private:
 
             std::auto_ptr<Ui::TL4LayerSelectionWizardPageForm> m_ui;
+            std::vector<int> m_types;
         };
       } // end namespace terralib4
     } // end namespace plugins

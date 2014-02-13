@@ -29,12 +29,13 @@
 // TerraLib
 #include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
+#include "Config.h"
 
 class TeDatabase;
 
 namespace terralib4
 {
-  class DataSource : public te::da::DataSource
+  class TETERRALIB4EXPORT DataSource : public te::da::DataSource
   {
     public:
 
@@ -63,6 +64,12 @@ namespace terralib4
       const te::da::SQLDialect* getDialect() const;
 
       TeDatabase* getTerralib4Db();
+
+      std::vector<std::string> getTL4Layers();
+
+      std::vector<std::string> getTL4Tables();
+
+      std::vector<std::string> getTL4Themes();
 
     protected:
 

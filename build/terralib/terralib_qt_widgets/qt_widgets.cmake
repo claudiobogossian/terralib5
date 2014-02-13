@@ -368,6 +368,7 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/rp/ClassifierDialog.h
   ${SRCDIR}/widgets/rp/ClassifierWizardPage.h
+  ${SRCDIR}/widgets/rp/ColorTransformWizardPage.h
   ${SRCDIR}/widgets/rp/ContrastDialog.h
   ${SRCDIR}/widgets/rp/ContrastWizardPage.h
   ${SRCDIR}/widgets/rp/FilterWizardPage.h

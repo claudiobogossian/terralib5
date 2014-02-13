@@ -30,6 +30,26 @@
 // Qt
 #include<QtGui/QListWidgetItem>
 
+#include<QtGui/QIcon>
+
+QIcon getImage(int type)
+{
+  switch(type)
+  {
+    case 0:
+      return QIcon::fromTheme("tl4-layer").pixmap(16,16);
+
+    case 1:
+      return QIcon::fromTheme("tl4-theme").pixmap(16,16);
+
+    case 2:
+      return QIcon::fromTheme("tl4-table").pixmap(16,16);
+
+    default:
+      return QIcon::fromTheme("tl4-layer").pixmap(16,16);
+  }
+}
+
 te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::TL4LayerSelectionWizardPage(QWidget* parent)
   : QWizardPage(parent),
     m_ui(new Ui::TL4LayerSelectionWizardPageForm)
@@ -46,13 +66,42 @@ te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::~TL4LayerSelectionWizar
 {
 }
 
-void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setDatasets(std::vector<std::string> datasets)
+void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setDatasets(std::vector<std::string> layers,
+                                                                          std::vector<std::string> tables,
+                                                                          std::vector<std::string> themes)
 {
   m_ui->m_layersListWidget->clear();
 
-  for(std::size_t i = 0; i < datasets.size(); ++i)
+  setTL4Layers(layers);
+  setTL4Tables(tables);
+  setTL4Themes(themes);
+}
+
+void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setTL4Layers(std::vector<std::string> layers)
+{
+  for(std::size_t i = 0; i < layers.size(); ++i)
   {
-    QListWidgetItem* item = new QListWidgetItem(datasets[i].c_str(), m_ui->m_layersListWidget);
+    QListWidgetItem* item = new QListWidgetItem(getImage(LAYER), layers[i].c_str(), m_ui->m_layersListWidget, LAYER);
+    item->setCheckState(Qt::Checked);
+    m_ui->m_layersListWidget->addItem(item);
+  }
+}
+
+void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setTL4Tables(std::vector<std::string> tables)
+{
+  for(std::size_t i = 0; i < tables.size(); ++i)
+  {
+    QListWidgetItem* item = new QListWidgetItem(getImage(TABLE), tables[i].c_str(), m_ui->m_layersListWidget, TABLE);
+    item->setCheckState(Qt::Checked);
+    m_ui->m_layersListWidget->addItem(item);
+  }
+}
+
+void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setTL4Themes(std::vector<std::string> themes)
+{
+  for(std::size_t i = 0; i < themes.size(); ++i)
+  {
+    QListWidgetItem* item = new QListWidgetItem(getImage(THEME), themes[i].c_str(), m_ui->m_layersListWidget, THEME);
     item->setCheckState(Qt::Checked);
     m_ui->m_layersListWidget->addItem(item);
   }
