@@ -29,6 +29,8 @@
 #include "../../../geometry/GTFactory.h"
 #include "../../../raster/Interpolator.h"
 #include "../../../rp/Blender.h"
+#include "TiePointLocatorDialog.h"
+#include "TiePointLocatorWidget.h"
 #include "MosaicWizardPage.h"
 #include "ui_MosaicWizardPageForm.h"
 
@@ -56,11 +58,16 @@ te::qt::widgets::MosaicWizardPage::MosaicWizardPage(QWidget* parent)
   this->setSubTitle(tr("Select the type of mosaic and set their specific parameters."));
 
   m_ui->m_noDataValueLineEdit->setValidator(new QDoubleValidator(this));
+
+  m_ui->m_tpmAcquireToolButton->setIcon(QIcon::fromTheme("wand"));
+
+  //connects
+  connect(m_ui->m_tpmAcquireToolButton, SIGNAL(clicked()), this, SLOT(onTiePointsAcquiredToolButtonClicked()));
 }
 
 te::qt::widgets::MosaicWizardPage::~MosaicWizardPage()
 {
-
+  m_tiePoints.clear();
 }
 
 bool te::qt::widgets::MosaicWizardPage::isComplete() const
@@ -163,6 +170,27 @@ te::rp::TiePointsMosaic::InputParameters te::qt::widgets::MosaicWizardPage::getI
 {
   te::rp::TiePointsMosaic::InputParameters algoInputParams;
 
+  int interpolationIdx = m_ui->m_interpolatorTypeComboBox->currentIndex();
+  te::rst::Interpolator::Method interpolator = (te::rst::Interpolator::Method)m_ui->m_interpolatorTypeComboBox->itemData(interpolationIdx).toInt();
+
+  int blenderIdx = m_ui->m_blenderTypeComboBox->currentIndex();
+  te::rp::Blender::BlendMethod blender = (te::rp::Blender::BlendMethod)m_ui->m_blenderTypeComboBox->itemData(blenderIdx).toInt();
+
+  int linkerIdx = m_ui->m_tpmLinkTypeComboBox->currentIndex();
+  te::rp::TiePointsMosaic::InputParameters::TiePointsLinkType tpLinkType = (te::rp::TiePointsMosaic::InputParameters::TiePointsLinkType)m_ui->m_tpmLinkTypeComboBox->itemData(linkerIdx).toInt();
+
+  algoInputParams.m_interpMethod = interpolator;
+  algoInputParams.m_blendMethod = blender;
+  algoInputParams.m_noDataValue = m_ui->m_noDataValueLineEdit->text().isEmpty() ? 0 : m_ui->m_noDataValueLineEdit->text().toDouble();
+  algoInputParams.m_forceInputNoDataValue = m_ui->m_noDataValueCheckBox->isChecked();
+  algoInputParams.m_autoEqualize = m_ui->m_autoEqualizeCheckBox->isChecked();
+  algoInputParams.m_useRasterCache = m_ui->m_rasterCacheCheckBox->isChecked();
+
+  algoInputParams.m_geomTransfName = m_ui->m_smGeomTransformComboBox->currentText().toStdString();
+  algoInputParams.m_tiePointsLinkType = tpLinkType;
+  algoInputParams.m_tiePoints = m_tiePoints;
+
+
   return algoInputParams;
 }
 
@@ -177,6 +205,28 @@ te::rp::SequenceMosaic::InputParameters te::qt::widgets::MosaicWizardPage::getIn
 {
   te::rp::SequenceMosaic::InputParameters algoInputParams;
 
+  int interpolationIdx = m_ui->m_interpolatorTypeComboBox->currentIndex();
+  te::rst::Interpolator::Method interpolator = (te::rst::Interpolator::Method)m_ui->m_interpolatorTypeComboBox->itemData(interpolationIdx).toInt();
+
+  int blenderIdx = m_ui->m_blenderTypeComboBox->currentIndex();
+  te::rp::Blender::BlendMethod blender = (te::rp::Blender::BlendMethod)m_ui->m_blenderTypeComboBox->itemData(blenderIdx).toInt();
+
+  algoInputParams.m_interpMethod = interpolator;
+  algoInputParams.m_blendMethod = blender;
+  algoInputParams.m_noDataValue = m_ui->m_noDataValueLineEdit->text().isEmpty() ? 0 : m_ui->m_noDataValueLineEdit->text().toDouble();
+  algoInputParams.m_forceInputNoDataValue = m_ui->m_noDataValueCheckBox->isChecked();
+  algoInputParams.m_autoEqualize = m_ui->m_autoEqualizeCheckBox->isChecked();
+  algoInputParams.m_useRasterCache = m_ui->m_rasterCacheCheckBox->isChecked();
+
+  algoInputParams.m_geomTransfName = m_ui->m_smGeomTransformComboBox->currentText().toStdString();
+  algoInputParams.m_tiePointsLocationBandIndex = m_ui->m_smRefBandComboBox->currentText().toInt();
+  algoInputParams.m_minRequiredTiePointsCoveredAreaPercent = m_ui->m_smMinTiePointsSpinBox->value();
+
+  algoInputParams.m_enableMultiThread = true;
+  algoInputParams.m_enableProgress = true;
+
+  // The parameters used by the tie-points locator when processing each rasters pair was leaved untouched to use the default.
+
   return algoInputParams;
 }
 
@@ -185,6 +235,49 @@ te::rp::SequenceMosaic::OutputParameters te::qt::widgets::MosaicWizardPage::getO
   te::rp::SequenceMosaic::OutputParameters algoOutputParams;
 
   return algoOutputParams;
+}
+
+te::map::AbstractLayerPtr te::qt::widgets::MosaicWizardPage::getTiePointMosaicLayerA()
+{
+  int aIdx = m_ui->m_tpmLayerAComboBox->currentIndex();
+  QVariant aVarLayer = m_ui->m_tpmLayerAComboBox->itemData(aIdx, Qt::UserRole);
+  te::map::AbstractLayerPtr aLayer = aVarLayer.value<te::map::AbstractLayerPtr>();
+
+  return aLayer;
+}
+
+te::map::AbstractLayerPtr te::qt::widgets::MosaicWizardPage::getTiePointMosaicLayerB()
+{
+  int bIdx = m_ui->m_tpmLayerBComboBox->currentIndex();
+  QVariant bVarLayer = m_ui->m_tpmLayerBComboBox->itemData(bIdx, Qt::UserRole);
+  te::map::AbstractLayerPtr bLayer = bVarLayer.value<te::map::AbstractLayerPtr>();
+
+  return bLayer;
+}
+
+void te::qt::widgets::MosaicWizardPage::onTiePointsAcquiredToolButtonClicked()
+{
+  int aIdx = m_ui->m_tpmLayerAComboBox->currentIndex();
+  QVariant aVarLayer = m_ui->m_tpmLayerAComboBox->itemData(aIdx, Qt::UserRole);
+  te::map::AbstractLayerPtr aLayer = aVarLayer.value<te::map::AbstractLayerPtr>();
+
+  int bIdx = m_ui->m_tpmLayerBComboBox->currentIndex();
+  QVariant bVarLayer = m_ui->m_tpmLayerBComboBox->itemData(bIdx, Qt::UserRole);
+  te::map::AbstractLayerPtr bLayer = bVarLayer.value<te::map::AbstractLayerPtr>();
+
+  te::qt::widgets::TiePointLocatorDialog dlg(this);
+
+  dlg.setReferenceLayer(aLayer);
+  dlg.setAdjustLayer(bLayer);
+
+  dlg.exec();
+
+  std::vector<te::gm::GTParameters::TiePoint> tiePoints;
+ 
+  dlg.getWidget()->getTiePointsIdxCoords(tiePoints);
+
+  m_tiePoints.clear();
+  m_tiePoints.push_back(tiePoints);
 }
 
 
@@ -217,6 +310,8 @@ void te::qt::widgets::MosaicWizardPage::fillMosaicTypes()
   m_ui->m_tpmLinkTypeComboBox->addItem(tr("Linking adjacent raster pairs"), te::rp::TiePointsMosaic::InputParameters::AdjacentRastersLinkingTiePointsT);
   m_ui->m_tpmLinkTypeComboBox->addItem(tr("Linking any raster to the first raster"), te::rp::TiePointsMosaic::InputParameters::FirstRasterLinkingTiePointsT);
   m_ui->m_tpmLinkTypeComboBox->addItem(tr("Invalid linking type"), te::rp::TiePointsMosaic::InputParameters::InvalidTiePointsT);
+
+  m_ui->m_tpmLinkTypeComboBox->setEnabled(false);
 
   //geometric transformations
   m_ui->m_tpmGeomTransformComboBox->clear();

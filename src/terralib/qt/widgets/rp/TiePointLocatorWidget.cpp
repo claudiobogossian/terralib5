@@ -181,8 +181,8 @@ void te::qt::widgets::TiePointLocatorWidget::getTiePoints( std::vector< te::gm::
 {
   tiePoints.clear();
 
-   std::auto_ptr<te::da::DataSet> ds(m_refLayer->getData());
-   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+  std::auto_ptr<te::da::DataSet> ds(m_refLayer->getData());
+  std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
   te::qt::widgets::TiePointData::TPContainerT::const_iterator itB = m_tiePoints.begin();
@@ -209,6 +209,30 @@ void te::qt::widgets::TiePointLocatorWidget::getTiePoints( std::vector< te::gm::
     tp.second = c;
 
     tiePoints.push_back(tp);
+    ++itB;
+  }
+}
+
+void te::qt::widgets::TiePointLocatorWidget::getTiePointsIdxCoords( std::vector< te::gm::GTParameters::TiePoint >& tiePoints ) const
+{
+  tiePoints.clear();
+
+  std::auto_ptr<te::da::DataSet> ds(m_refLayer->getData());
+  std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+  std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
+
+  te::qt::widgets::TiePointData::TPContainerT::const_iterator itB = m_tiePoints.begin();
+
+  const te::qt::widgets::TiePointData::TPContainerT::const_iterator itE = m_tiePoints.end();
+
+  tiePoints.reserve( m_tiePoints.size() );
+
+  while( itB != itE )
+  {
+    te::gm::GTParameters::TiePoint tp = itB->second.m_tiePoint;
+
+    tiePoints.push_back(tp);
+
     ++itB;
   }
 }
