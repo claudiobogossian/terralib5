@@ -198,12 +198,12 @@ bool terralib4::TableDataSet::isConnected() const
 
 std::size_t terralib4::TableDataSet::size() const
 {
-  return m_size;//m_portal->numRows();
+  return m_size;
 }
 
 bool terralib4::TableDataSet::moveNext()
 {
-  return m_data->moveNext();//m_portal->fetchRow();
+  return m_data->moveNext();
 }
 
 bool terralib4::TableDataSet::movePrevious()
@@ -263,23 +263,17 @@ unsigned char terralib4::TableDataSet::getUChar(std::size_t i) const
 
 boost::int16_t terralib4::TableDataSet::getInt16(std::size_t i) const
 {
-  int ii = m_portal->getInt(i);
-
-  return m_data->getInt16(i);//boost::lexical_cast<boost::int16_t>(ii);
+  return m_data->getInt16(i);
 }
 
 boost::int32_t terralib4::TableDataSet::getInt32(std::size_t i) const
 {
-  int ii = m_portal->getInt(i);
-
-  return m_data->getInt32(i);//boost::lexical_cast<boost::int32_t>(ii);
+  return m_data->getInt32(i);
 }
 
 boost::int64_t terralib4::TableDataSet::getInt64(std::size_t i) const
 {
-  int ii = m_portal->getInt(i);
-
-  return m_data->getInt64(i);//boost::lexical_cast<boost::int64_t>(ii);
+  return m_data->getInt64(i);
 }
 
 bool terralib4::TableDataSet::getBool(std::size_t i) const
@@ -289,22 +283,22 @@ bool terralib4::TableDataSet::getBool(std::size_t i) const
 
 float terralib4::TableDataSet::getFloat(std::size_t i) const
 {
-  return m_data->getFloat(i);//(float)getDouble(i);
+  return m_data->getFloat(i);
 }
 
 double terralib4::TableDataSet::getDouble(std::size_t i) const
 {
-  return m_data->getDouble(i);//_portal->getDouble(i);
+  return m_data->getDouble(i);
 }
 
 std::string terralib4::TableDataSet::getNumeric(std::size_t i) const
 {
-  return m_data->getNumeric(i);//m_portal->getData(i);
+  return m_data->getNumeric(i);
 }
 
 std::string terralib4::TableDataSet::getString(std::size_t i) const
 {
-  return m_data->getString(i);//m_portal->getData(i);
+  return m_data->getString(i);
 }
 
 std::auto_ptr<te::dt::ByteArray> terralib4::TableDataSet::getByteArray(std::size_t i) const

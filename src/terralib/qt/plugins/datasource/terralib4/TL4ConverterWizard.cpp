@@ -37,6 +37,7 @@
 #include "../../../../qt/af/Project.h"
 #include "../../../../qt/af/events/LayerEvents.h"
 #include "../../../../raster/Utils.h"
+#include "../../../../terralib4/DataSource.h"
 #include "TL4ConverterWizard.h"
 #include "TL4ConnectorWizardPage.h"
 #include "TL4LayerSelectionWizardPage.h"
@@ -60,6 +61,8 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QTableWidgetItem>
 #include <QtGui/QGridLayout>
+
+using namespace terralib4;
 
 te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f),
@@ -174,9 +177,14 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
     if(!validTerraLib4Connection())
       return false;
 
-    std::vector<std::string> datasets = m_tl4Database->getDataSetNames();
+    DataSource* tl4Ds = dynamic_cast<DataSource*>(m_tl4Database.get());
 
-    m_layerSelectionPage->setDatasets(datasets);
+    std::vector<std::string> layers = tl4Ds->getTL4Layers();
+    std::vector<std::string> tables = tl4Ds->getTL4Tables();
+    std::vector<std::string> themes;// = tl4Ds->getTL4Themes();
+
+    m_layerSelectionPage->setDatasets(layers, tables, themes);
+
   }
   else if(current_page_id == PAGE_LAYER_SELECTION)
   {

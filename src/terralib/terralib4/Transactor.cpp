@@ -770,3 +770,49 @@ void terralib4::Transactor::optimize(const std::map<std::string, std::string>& o
 {
   throw Exception(TR_TERRALIB4("This method is not supported by TerraLib 4.x driver!"));
 }
+
+std::vector<std::string> terralib4::Transactor::getTL4Layers()
+{
+  std::vector<std::string> layers;
+
+  m_db->loadLayerSet(false);
+
+  TeLayerMap layerMap = m_db->layerMap();
+
+  std::map<int, TeLayer*>::iterator it = layerMap.begin();
+
+  while(it != layerMap.end())
+  {
+    layers.push_back(it->second->name());
+    ++it;
+  }
+
+  return layers;
+}
+
+std::vector<std::string> terralib4::Transactor::getTL4Tables()
+{
+  std::vector<std::string> tablesVec;
+
+  TeAttrTableVector tables;
+  m_db->getAttrTables(tables, TeAttrExternal);
+
+  for(std::size_t i = 0; i < tables.size(); i++)
+    tablesVec.push_back(tables[i].name());
+
+  return tablesVec;
+}
+
+std::vector<std::string> terralib4::Transactor::getTL4Themes()
+{
+  std::vector<std::string> themes;
+
+  TeDatabasePortal* portal = m_db->getPortal();
+
+  portal->query("SELECT name FROM te_theme;");
+
+  while(portal->fetchRow())
+    themes.push_back(portal->getData(0));
+
+  return themes;
+}
