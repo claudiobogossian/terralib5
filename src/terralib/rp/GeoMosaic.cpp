@@ -41,6 +41,7 @@
 #include "../geometry/LinearRing.h"
 #include "../geometry/MultiPolygon.h"
 #include "../srs/Converter.h"
+#include "../common/progress/TaskProgress.h"
 
 #include <climits>
 #include <cfloat>
@@ -79,6 +80,7 @@ namespace te
       m_blendMethod = te::rp::Blender::NoBlendMethod;
       m_autoEqualize = true;
       m_useRasterCache = true;
+      m_enableProgress = false;
     }
 
     const GeoMosaic::InputParameters& GeoMosaic::InputParameters::operator=(
@@ -94,6 +96,7 @@ namespace te
       m_blendMethod = params.m_blendMethod;
       m_autoEqualize = params.m_autoEqualize;
       m_useRasterCache = params.m_useRasterCache;
+      m_enableProgress = params.m_enableProgress;
 
       return *this;
     }
@@ -162,6 +165,18 @@ namespace te
       TERP_TRUE_OR_THROW( outParamsPtr, "Invalid paramters" );
       
       assert( m_inputParameters.m_feederRasterPtr->getObjsCount() > 1 );
+      
+      // progress
+      
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        
+        progressPtr->setTotalSteps( 2 + m_inputParameters.m_feederRasterPtr->getObjsCount() );
+        
+        progressPtr->setMessage( "Mosaic" );
+      }       
       
       // First pass: getting global mosaic info
 
@@ -296,6 +311,12 @@ namespace te
           m_inputParameters.m_feederRasterPtr->moveNext();
         }
       }
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }        
 
       // creating the output raster
       
@@ -373,6 +394,12 @@ namespace te
           }
         }
       }
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }        
       
       // Copying the first image data to the output mosaic
       // and find the base mosaic mean and offset values
@@ -481,6 +508,12 @@ namespace te
       TERP_DEBUG_TRUE_OR_THROW( rastersBBoxes.size() ==
         m_inputParameters.m_feederRasterPtr->getObjsCount(),
         "Rasters bounding boxes number mismatch" );
+        
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }          
 
       // Initiating the mosaic bounding boxes union
 
@@ -931,6 +964,12 @@ namespace te
         // moving to the next raster
 
         m_inputParameters.m_feederRasterPtr->moveNext();
+        
+        if( m_inputParameters.m_enableProgress )
+        {
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }          
       }
       
       // reseting the output cache

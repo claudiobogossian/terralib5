@@ -155,6 +155,7 @@ bool te::qt::widgets::MosaicWizard::executeGeoMosaic()
 
   te::rp::FeederConstRasterVector feeder(rasters);
   algoInputParams.m_feederRasterPtr = &feeder;
+  algoInputParams.m_enableProgress = true;
 
   te::rp::GeoMosaic::OutputParameters algoOutputParams = m_mosaicPage->getOutputGeoParams();
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();
@@ -248,6 +249,7 @@ bool te::qt::widgets::MosaicWizard::executeTiePointMosaic()
   te::rp::TiePointsMosaic algorithmInstance;
 
   te::rp::TiePointsMosaic::InputParameters algoInputParams = m_mosaicPage->getInputTPParams();
+  algoInputParams.m_enableProgress = true;
 
 //get rasters
   std::list<te::map::AbstractLayerPtr> list;
