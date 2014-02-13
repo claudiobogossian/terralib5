@@ -148,7 +148,7 @@ void te::qt::widgets::RegisterWizard::addPages()
   addPage(m_layerAdjPage.get());
   addPage(m_rasterInfoPage.get());
 
-  //for contrast only one layer can be selected
+  //for register only one layer can be selected
   m_layerRefPage->setSubTitle(tr("Allows selection of layers using filters for selection. Select the layer to be used as REFERENCE."));
   m_layerRefPage->getSearchWidget()->enableMultiSelection(false);
   m_layerAdjPage->setSubTitle(tr("Allows selection of layers using filters for selection. Select the layer to be used as ADJUST."));

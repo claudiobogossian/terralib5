@@ -25,6 +25,7 @@
 #include "GeoMosaic.h"
 
 #include "Macros.h"
+#include "Functions.h"
 #include "../raster/Interpolator.h"
 #include "../raster/Enums.h"
 #include "../raster/RasterFactory.h"
@@ -40,6 +41,7 @@
 #include "../geometry/LinearRing.h"
 #include "../geometry/MultiPolygon.h"
 #include "../srs/Converter.h"
+#include "../common/progress/TaskProgress.h"
 
 #include <climits>
 #include <cfloat>
@@ -78,6 +80,7 @@ namespace te
       m_blendMethod = te::rp::Blender::NoBlendMethod;
       m_autoEqualize = true;
       m_useRasterCache = true;
+      m_enableProgress = false;
     }
 
     const GeoMosaic::InputParameters& GeoMosaic::InputParameters::operator=(
@@ -93,6 +96,7 @@ namespace te
       m_blendMethod = params.m_blendMethod;
       m_autoEqualize = params.m_autoEqualize;
       m_useRasterCache = params.m_useRasterCache;
+      m_enableProgress = params.m_enableProgress;
 
       return *this;
     }
@@ -161,6 +165,18 @@ namespace te
       TERP_TRUE_OR_THROW( outParamsPtr, "Invalid paramters" );
       
       assert( m_inputParameters.m_feederRasterPtr->getObjsCount() > 1 );
+      
+      // progress
+      
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        
+        progressPtr->setTotalSteps( 2 + m_inputParameters.m_feederRasterPtr->getObjsCount() );
+        
+        progressPtr->setMessage( "Mosaic" );
+      }       
       
       // First pass: getting global mosaic info
 
@@ -295,6 +311,12 @@ namespace te
           m_inputParameters.m_feederRasterPtr->moveNext();
         }
       }
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }        
 
       // creating the output raster
       
@@ -372,6 +394,12 @@ namespace te
           }
         }
       }
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }        
       
       // Copying the first image data to the output mosaic
       // and find the base mosaic mean and offset values
@@ -480,6 +508,12 @@ namespace te
       TERP_DEBUG_TRUE_OR_THROW( rastersBBoxes.size() ==
         m_inputParameters.m_feederRasterPtr->getObjsCount(),
         "Rasters bounding boxes number mismatch" );
+        
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }          
 
       // Initiating the mosaic bounding boxes union
 
@@ -511,11 +545,17 @@ namespace te
       while( ( originalInputRasterPtr = m_inputParameters.m_feederRasterPtr->getCurrentObj() ) )
       {
         const unsigned int inputRasterIdx = m_inputParameters.m_feederRasterPtr->getCurrentOffset();
+        
+//         Copy2DiskRaster( outputRaster, boost::lexical_cast< std::string >( inputRasterIdx ) +
+//           "_output_raster_begininng.tif" );
 
         TERP_DEBUG_TRUE_OR_THROW( rastersBBoxes[ inputRasterIdx ].getSRID() == outputRaster.getSRID(),
           "Invalid boxes SRID" );
           
         te::rst::Raster const* inputRasterPtr = originalInputRasterPtr;
+        
+//         Copy2DiskRaster( *inputRasterPtr, boost::lexical_cast< std::string >( inputRasterIdx ) +
+//           "_input_raster.tif" );
 
         // reprojection issues
         
@@ -538,6 +578,9 @@ namespace te
             m_inputParameters.m_interpMethod) );
           inputRasterPtr = reprojectedInputRasterPtr.get();
           TERP_TRUE_OR_RETURN_FALSE( inputRasterPtr, "Reprojection error" );
+          
+//           Copy2DiskRaster( *inputRasterPtr, boost::lexical_cast< std::string >( inputRasterIdx ) +
+//             "reprojected_input_raster.tif" );
         }
         
         // Caching issues
@@ -757,6 +800,10 @@ namespace te
               }
             }
           }
+          
+//           Copy2DiskRaster( outputRaster, boost::lexical_cast< std::string >( inputRasterIdx ) +
+//              "output_raster_after_blending_" + 
+//             boost::lexical_cast< std::string >( mosaicBBoxesUnionIdx ) + ".tif" );
         }
 
         // calculating the non-overlapped image area
@@ -820,7 +867,6 @@ namespace te
             const double inputBandNoDataValue = m_inputParameters.m_forceInputNoDataValue ?
               m_inputParameters.m_noDataValue : inputRasterPtr->getBand(
               inputBandIdx )->getProperty()->m_noDataValue;
-            const double& outputBandNoDataValue = m_inputParameters.m_noDataValue;
 
             for( unsigned int nonOverlappednResultIdx = 0 ; nonOverlappednResultIdx < nonOverlappednResultSize ;
               ++nonOverlappednResultIdx )
@@ -857,11 +903,7 @@ namespace te
 
                 interpInstance.getValue( inputCol, inputRow, pixelCValue, inputBandIdx );
 
-                if( pixelCValue.real() == inputBandNoDataValue )
-                {
-                  outputBand.setValue( outputCol, outputRow, outputBandNoDataValue );
-                }
-                else
+                if( pixelCValue.real() != inputBandNoDataValue )
                 {
                   pixelValue = pixelCValue.real() * currentRasterBandsScales[
                     inputRastersBandsIdx ] + currentRasterBandsOffsets[
@@ -876,6 +918,9 @@ namespace te
               }
             }
           }
+          
+/*          Copy2DiskRaster( outputRaster, boost::lexical_cast< std::string >( inputRasterIdx ) +
+            "output_raster_after_copying_non_overlapped_areas.tif" );   */        
         }
 
         // updating the  gloabal mosaic boxes
@@ -919,6 +964,12 @@ namespace te
         // moving to the next raster
 
         m_inputParameters.m_feederRasterPtr->moveNext();
+        
+        if( m_inputParameters.m_enableProgress )
+        {
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }          
       }
       
       // reseting the output cache

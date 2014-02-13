@@ -38,6 +38,13 @@
 #define TE_QT_PLUGIN_RP_HAVE_CLASSIFIER
 
 /*!
+  \def TE_QT_PLUGIN_RP_HAVE_COLORTRANSFORM
+
+  \brief It defines if the RP Qt Plugin has the color transform operation.
+*/
+#define TE_QT_PLUGIN_RP_HAVE_COLORTRANSFORM
+
+/*!
   \def TE_QT_PLUGIN_RP_HAVE_CONTRAST
 
   \brief It defines if the RP Qt Plugin has the contrast operation.
@@ -45,11 +52,32 @@
 #define TE_QT_PLUGIN_RP_HAVE_CONTRAST
 
 /*!
+  \def TE_QT_PLUGIN_RP_HAVE_FILTER
+
+  \brief It defines if the RP Qt Plugin has the filter operation.
+*/
+#define TE_QT_PLUGIN_RP_HAVE_FILTER
+
+/*!
+  \def TE_QT_PLUGIN_RP_HAVE_FUSION
+
+  \brief It defines if the RP Qt Plugin has the fusion operation.
+*/
+#define TE_QT_PLUGIN_RP_HAVE_FUSION
+
+/*!
   \def TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
 
   \brief It defines if the RP Qt Plugin has the mixture model operation.
 */
 #define TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
+
+/*!
+  \def TE_QT_PLUGIN_RP_HAVE_MOSAIC
+
+  \brief It defines if the RP Qt Plugin has the mosaic operation.
+*/
+#define TE_QT_PLUGIN_RP_HAVE_MOSAIC
 
 /*!
   \def TE_QT_PLUGIN_RP_HAVE_SEGMENTER

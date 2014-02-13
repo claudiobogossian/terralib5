@@ -124,8 +124,19 @@ te::gm::Geometry* SetBuffer(te::gm::Geometry* geom,
                             const int& level,
                             te::gm::Geometry*& auxGeom);
 
+void DissolveMemory(te::mem::DataSet* outputDataSet,
+                    const int& levels);
+
+std::vector<std::vector<te::gm::Geometry*> > DissolveQuery( te::da::DataSet* dsQuery,
+                                                              const int& levels);
+
 void PrepareDataSet(te::da::DataSetType* dataSetType, 
                     te::da::DataSet* dataSetQuery,
+                    te::mem::DataSet* outputDataSet,
+                    const double& distance);
+
+void PrepareDataSet(te::da::DataSetType* dataSetType, 
+                    std::vector<std::vector<te::gm::Geometry*> > mapDissolvedGeom,
                     te::mem::DataSet* outputDataSet,
                     const double& distance);
 //  ---
@@ -251,41 +262,75 @@ bool BufferMemory(const std::string& inDataSetName,
 
   int type;
   int pk = 0;
-
-  te::common::TaskProgress task("Processing buffer...");
-  task.setTotalSteps(inputDataSet->size());
-  task.useTimer(true);
-
-  inputDataSet->moveBeforeFirst();
-  while(inputDataSet->moveNext())
   {
-    te::gm::Geometry* auxGeom = 0;
+    te::common::TaskProgress task("Processing buffer...");
+    task.setTotalSteps(inputDataSet->size());
+    task.useTimer(true);
 
-    for(int i = 1; i <= levels; ++i)
+    inputDataSet->moveBeforeFirst();
+    while(inputDataSet->moveNext())
     {
-      te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outputDataSet);
+      te::gm::Geometry* auxGeom = 0;
 
-      for(std::size_t j = 0; j < inputDataSet->getNumProperties(); ++j)
+      for(int i = 1; i <= levels; ++i)
       {
-        type = inputDataSet->getPropertyDataType(j);
-        if(copyInputColumns)
+        te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outputDataSet);
+
+        for(std::size_t j = 0; j < inputDataSet->getNumProperties(); ++j)
         {
-          switch (type)
+          type = inputDataSet->getPropertyDataType(j);
+          if(copyInputColumns)
           {
-            case te::dt::INT32_TYPE:
-              if(inputDataSet->getPropertyName(j) != "FID")
-                dataSetItem->setInt32(j+2, inputDataSet->getInt32(j));
-              break;
-            case te::dt::INT64_TYPE:
-              dataSetItem->setInt64(j+2, inputDataSet->getInt64(j));
-              break;
-            case te::dt::DOUBLE_TYPE:
-              dataSetItem->setDouble(j+2, inputDataSet->getDouble(j));
-              break;
-            case te::dt::STRING_TYPE:
-              dataSetItem->setString(j+2, inputDataSet->getString(j));
-              break;
-            case te::dt::GEOMETRY_TYPE:
+            switch (type)
+            {
+              case te::dt::INT32_TYPE:
+                if(inputDataSet->getPropertyName(j) != "FID")
+                  dataSetItem->setInt32(j+2, inputDataSet->getInt32(j));
+                break;
+              case te::dt::INT64_TYPE:
+                dataSetItem->setInt64(j+2, inputDataSet->getInt64(j));
+                break;
+              case te::dt::DOUBLE_TYPE:
+                dataSetItem->setDouble(j+2, inputDataSet->getDouble(j));
+                break;
+              case te::dt::STRING_TYPE:
+                dataSetItem->setString(j+2, inputDataSet->getString(j));
+                break;
+              case te::dt::GEOMETRY_TYPE:
+                dataSetItem->setInt32(0, pk); //pk
+                dataSetItem->setInt32(1, i); //level
+                dataSetItem->setDouble(2, distance*(i)); //distance
+
+                std::auto_ptr<te::gm::Geometry> currentGeom = inputDataSet->getGeometry(j);
+                std::auto_ptr<te::gm::Geometry> outGeom;
+
+                if(currentGeom->isValid())
+                  outGeom.reset(SetBuffer(currentGeom.get(), bufferPolygonRule, distance, i, auxGeom));
+                else
+                  te::common::Logger::logDebug("vp", "Buffer - Invalid geometry found");
+
+                if(outGeom.get() && outGeom->isValid())
+                {
+                  if(outGeom->getGeomTypeId() == te::gm::MultiPolygonType)
+                  {
+                    dataSetItem->setGeometry(j+2, outGeom.release());
+                  }
+                  else
+                  {
+                    std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, outGeom->getSRID()));
+                    mPolygon->add(outGeom.release());
+                    dataSetItem->setGeometry(j+2, mPolygon.release());
+                  }
+
+                  outputDataSet->add(dataSetItem);
+                  ++pk;
+                }
+            }
+          }
+          else
+          {
+            if(type == te::dt::GEOMETRY_TYPE)
+            {
               dataSetItem->setInt32(0, pk); //pk
               dataSetItem->setInt32(1, i); //level
               dataSetItem->setDouble(2, distance*(i)); //distance
@@ -302,191 +347,31 @@ bool BufferMemory(const std::string& inDataSetName,
               {
                 if(outGeom->getGeomTypeId() == te::gm::MultiPolygonType)
                 {
-                  dataSetItem->setGeometry(j+2, outGeom.release());
+                  dataSetItem->setGeometry(3, outGeom.release());
                 }
                 else
                 {
                   std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, outGeom->getSRID()));
                   mPolygon->add(outGeom.release());
-                  dataSetItem->setGeometry(j+2, mPolygon.release());
+                  dataSetItem->setGeometry(3, mPolygon.release());
                 }
 
                 outputDataSet->add(dataSetItem);
                 ++pk;
               }
-          }
-        }
-        else
-        {
-          if(type == te::dt::GEOMETRY_TYPE)
-          {
-            dataSetItem->setInt32(0, pk); //pk
-            dataSetItem->setInt32(1, i); //level
-            dataSetItem->setDouble(2, distance*(i)); //distance
-
-            std::auto_ptr<te::gm::Geometry> currentGeom = inputDataSet->getGeometry(j);
-            std::auto_ptr<te::gm::Geometry> outGeom;
-
-            if(currentGeom->isValid())
-              outGeom.reset(SetBuffer(currentGeom.get(), bufferPolygonRule, distance, i, auxGeom));
-            else
-              te::common::Logger::logDebug("vp", "Buffer - Invalid geometry found");
-
-            if(outGeom.get() && outGeom->isValid())
-            {
-              if(outGeom->getGeomTypeId() == te::gm::MultiPolygonType)
-              {
-                dataSetItem->setGeometry(3, outGeom.release());
-              }
-              else
-              {
-                std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, outGeom->getSRID()));
-                mPolygon->add(outGeom.release());
-                dataSetItem->setGeometry(3, mPolygon.release());
-              }
-
-              outputDataSet->add(dataSetItem);
-              ++pk;
             }
           }
         }
       }
-    }
-    delete auxGeom;
+      delete auxGeom;
 
-    task.pulse();
-  }
-    
-  if(bufferBoundariesRule == te::vp::DISSOLVE)
-  {
-    std::map<int, std::vector<te::gm::Geometry*> > mapGeom;
-    std::vector<std::vector<te::gm::Geometry*> > vecGeom;
-    
-    int levelPos = te::da::GetPropertyPos(outputDataSet, "level");
-    int geomPos  = te::da::GetPropertyPos(outputDataSet, "geom");
-    int level;
-
-    task.setMessage("Dissolving boundaries...");
-    task.setTotalSteps(levels*outputDataSet->size());
-    task.setCurrentStep(1);
-    for(int i = 1; i <= levels; ++i)
-    {
-      te::sam::rtree::Index<te::gm::Geometry*, 4> rtree;
-      
-      outputDataSet->moveBeforeFirst();
-      while(outputDataSet->moveNext())
-      {
-        level = outputDataSet->getInt32(levelPos);
-        if(level == i)
-        {
-          te::gm::Geometry* geom = outputDataSet->getGeometry(geomPos).release();
-          
-          std::vector<te::gm::Geometry*> vec;
-          
-          rtree.search(*(geom->getMBR()), vec);
-          
-          if(!vec.empty())
-          {
-            for(std::size_t t = 0; t < vec.size(); ++t)
-            {
-              if(geom->intersects(vec[t]))
-              {
-                geom = geom->Union(vec[t]);
-                rtree.remove(*(vec[t]->getMBR()), vec[t]);
-              }
-            }
-          }
-          rtree.insert(*(geom->getMBR()), geom);
-        }
-        task.pulse();
-      }
-      
-      std::vector<te::gm::Geometry*> geomVec;
-      std::auto_ptr<te::gm::Envelope> e = outputDataSet->getExtent(geomPos);
-      rtree.search(*(e.get()), geomVec);
-      mapGeom.insert(std::pair<int, std::vector<te::gm::Geometry*> >(i, geomVec));
-
-      vecGeom.push_back(geomVec);
-
-      rtree.clear();
-    }
-    
-    outputDataSet->clear();
-    outputDataSet->moveBeforeFirst();
-    
-    task.setTotalSteps(mapGeom.size());
-    task.setCurrentStep(1);
-    int pk = 0;
-    std::size_t vecSize = vecGeom.size();
-
-    if(levels > 1)
-    {
-      for(std::size_t i = vecSize - 1; i > 0; --i)
-      {
-        std::vector<te::gm::Geometry*> currentVec = vecGeom[i];
-        std::size_t c_vecSize = currentVec.size();
-
-        for(std::size_t j = 0; j < i; ++j)
-        {
-          std::vector<te::gm::Geometry*> innerVec = vecGeom[j];
-          std::size_t i_vecSize = innerVec.size();
-
-          for(std::size_t k = 0; k < c_vecSize; ++k)
-          {
-            te::gm::Geometry* k_geom = currentVec[k];
-
-            for(std::size_t l = 0; l < i_vecSize; ++l)
-            {
-              te::gm::Geometry* l_geom = innerVec[l];
-              if(k_geom->intersects(l_geom))
-              {
-                te::gm::Geometry* tGeom = k_geom->difference(l_geom);
-                if(tGeom->isValid())
-                {
-                  delete currentVec[k];
-                  currentVec[k] = tGeom;
-                  vecGeom[i] = currentVec;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-    for(std::size_t i = 0; i < vecSize; ++i)
-    {
-      std::vector<te::gm::Geometry*> currentVec = vecGeom[i];
-      std::size_t c_vecSize = currentVec.size();
-
-      for(std::size_t j = 0; j < c_vecSize; ++j)
-      {
-        te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outputDataSet);
-        dataSetItem->setInt32(0, pk); //pk
-        dataSetItem->setInt32(1, i); //level
-        dataSetItem->setDouble(2, 0/*distance*(i)*/); //distance
-        
-        if(currentVec[j]->getGeomTypeId() == te::gm::MultiPolygonType)
-        {
-          dataSetItem->setGeometry(3, currentVec[j]);
-        }
-        else
-        {
-          std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, currentVec[j]->getSRID()));
-          te::gm::GeometryCollection* gcIn = dynamic_cast<te::gm::GeometryCollection*>(currentVec[j]);
-          if(gcIn == 0)
-            mPolygon->add(currentVec[j]);
-          else
-            te::vp::SplitGeometryCollection(gcIn, mPolygon.get());
-
-          dataSetItem->setGeometry(3, mPolygon.release());
-        }
-        
-        outputDataSet->add(dataSetItem);
-        ++pk;
-      }
       task.pulse();
     }
+  }
+
+  if(bufferBoundariesRule == te::vp::DISSOLVE)
+  {
+    DissolveMemory(outputDataSet, levels);
   }
 
   return true;
@@ -569,39 +454,17 @@ bool BufferQuery(const std::string& inDatasetName,
       f_buffer = new te::da::Field(*e_buffer, "geom"+index);
     }
 
-    if(bufferBoundariesRule == te::vp::DISSOLVE)
+    if(!e_aux)
     {
-      delete f_buffer;
-      te::da::Expression* e_union = new te::da::ST_Union(e_buffer);
-
-      if(!e_aux)
-      {
-        f_buffer = new te::da::Field(*e_union, "geom"+index);
-        fields->push_back(f_buffer);
-        e_aux = e_union;
-      }
-      else
-      {
-        te::da::Expression* e_diff = new te::da::ST_Difference(e_union, e_aux);
-        f_buffer = new te::da::Field(*e_diff, "geom"+index);
-        fields->push_back(f_buffer);
-        e_aux = e_union;
-      }
+      fields->push_back(f_buffer);
+      e_aux = e_buffer;
     }
     else
     {
-      if(!e_aux)
-      {
-        fields->push_back(f_buffer);
-        e_aux = e_buffer;
-      }
-      else
-      {
-        te::da::Expression* e_diff = new te::da::ST_Difference(e_buffer, e_aux);
-        f_buffer = new te::da::Field(*e_diff, "geom"+index);
-        fields->push_back(f_buffer);
-        e_aux = e_buffer;
-      }
+      te::da::Expression* e_diff = new te::da::ST_Difference(e_buffer, e_aux);
+      f_buffer = new te::da::Field(*e_diff, "geom"+index);
+      fields->push_back(f_buffer);
+      e_aux = e_buffer;
     }
   }
 
@@ -612,7 +475,15 @@ bool BufferQuery(const std::string& inDatasetName,
   te::da::Select select(fields, from);
   std::auto_ptr<te::da::DataSet> dsQuery = inDataSource->query(select);
 
-  PrepareDataSet(outputDataSetType, dsQuery.get(), outputDataSet, distance);
+  if(bufferBoundariesRule == te::vp::DISSOLVE)
+  {
+    std::vector<std::vector<te::gm::Geometry*> > vecDissolvedGeom = DissolveQuery(dsQuery.get(), levels);
+    PrepareDataSet(outputDataSetType, vecDissolvedGeom, outputDataSet, distance);
+  }
+  else
+  {
+    PrepareDataSet(outputDataSetType, dsQuery.get(), outputDataSet, distance);
+  }
 
   return true;
 }
@@ -767,6 +638,224 @@ te::gm::Geometry* SetBuffer(te::gm::Geometry* geom,
   return geomResult;
 }
 
+void DissolveMemory(te::mem::DataSet* outputDataSet, 
+                    const int& levels)
+{
+  //std::map<int, std::vector<te::gm::Geometry*> > mapGeom;
+  std::vector<std::vector<te::gm::Geometry*> > vecGeom;
+    
+  int levelPos = te::da::GetPropertyPos(outputDataSet, "level");
+  int geomPos  = te::da::GetPropertyPos(outputDataSet, "geom");
+  int level;
+
+  te::common::TaskProgress task1("Dissolving boundaries...");
+  task1.setTotalSteps(levels*outputDataSet->size());
+  task1.setCurrentStep(1);
+  for(int i = 1; i <= levels; ++i)
+  {
+    te::sam::rtree::Index<te::gm::Geometry*, 4> rtree;
+      
+    outputDataSet->moveBeforeFirst();
+    while(outputDataSet->moveNext())
+    {
+      level = outputDataSet->getInt32(levelPos);
+      if(level == i)
+      {
+        te::gm::Geometry* geom = outputDataSet->getGeometry(geomPos).release();
+          
+        std::vector<te::gm::Geometry*> vec;
+          
+        rtree.search(*(geom->getMBR()), vec);
+          
+        if(!vec.empty())
+        {
+          for(std::size_t t = 0; t < vec.size(); ++t)
+          {
+            if(geom->intersects(vec[t]))
+            {
+              geom = geom->Union(vec[t]);
+              rtree.remove(*(vec[t]->getMBR()), vec[t]);
+            }
+          }
+        }
+        rtree.insert(*(geom->getMBR()), geom);
+      }
+      task1.pulse();
+    }
+      
+    std::vector<te::gm::Geometry*> geomVec;
+    std::auto_ptr<te::gm::Envelope> e = outputDataSet->getExtent(geomPos);
+    rtree.search(*(e.get()), geomVec);
+    //mapGeom.insert(std::pair<int, std::vector<te::gm::Geometry*> >(i, geomVec));
+
+    vecGeom.push_back(geomVec);
+
+    rtree.clear();
+  }
+    
+  outputDataSet->clear();
+  outputDataSet->moveBeforeFirst();
+
+  
+  int pk = 0;
+  std::size_t vecSize = vecGeom.size();
+  
+  task1.setTotalSteps(vecSize);
+  task1.setCurrentStep(1);
+  if(levels > 1)
+  {
+    for(std::size_t i = vecSize - 1; i > 0; --i)
+    {
+      std::vector<te::gm::Geometry*> currentVec = vecGeom[i];
+      std::size_t c_vecSize = currentVec.size();
+
+      for(std::size_t j = 0; j < i; ++j)
+      {
+        std::vector<te::gm::Geometry*> innerVec = vecGeom[j];
+        std::size_t i_vecSize = innerVec.size();
+
+        for(std::size_t k = 0; k < c_vecSize; ++k)
+        {
+          for(std::size_t l = 0; l < i_vecSize; ++l)
+          {
+            te::gm::Geometry* k_geom = currentVec[k];
+            te::gm::Geometry* l_geom = innerVec[l];
+
+            if(k_geom->intersects(l_geom))
+            {
+              te::gm::Geometry* tGeom = k_geom->difference(l_geom);
+              if(tGeom->isValid())
+              {
+                delete currentVec[k];
+                currentVec[k] = tGeom;
+                vecGeom[i] = currentVec;
+              }
+            }
+          }
+        }
+      }
+      task1.pulse();
+    }
+  }
+
+  task1.setTotalSteps(vecSize);
+  task1.setCurrentStep(1);
+  for(std::size_t i = 0; i < vecSize; ++i)
+  {
+    std::vector<te::gm::Geometry*> currentVec = vecGeom[i];
+    std::size_t c_vecSize = currentVec.size();
+
+    for(std::size_t j = 0; j < c_vecSize; ++j)
+    {
+      te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outputDataSet);
+      dataSetItem->setInt32(0, pk); //pk
+      dataSetItem->setInt32(1, i+1); //level
+      dataSetItem->setDouble(2, 0/*distance*(i)*/); //distance
+        
+      if(currentVec[j]->getGeomTypeId() == te::gm::MultiPolygonType)
+      {
+        dataSetItem->setGeometry(3, currentVec[j]);
+      }
+      else
+      {
+        std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, currentVec[j]->getSRID()));
+        te::gm::GeometryCollection* gcIn = dynamic_cast<te::gm::GeometryCollection*>(currentVec[j]);
+        if(gcIn == 0)
+          mPolygon->add(currentVec[j]);
+        else
+          te::vp::SplitGeometryCollection(gcIn, mPolygon.get());
+
+        dataSetItem->setGeometry(3, mPolygon.release());
+      }
+        
+      outputDataSet->add(dataSetItem);
+      ++pk;
+    }
+    task1.pulse();
+  }
+}
+
+std::vector<std::vector<te::gm::Geometry*> > DissolveQuery( te::da::DataSet* dsQuery,
+                                                            const int& levels)
+{
+  std::map<int, std::vector<te::gm::Geometry*> > mapGeom;
+  std::vector<std::vector<te::gm::Geometry*> > vecGeom;
+
+  for(int i = 0; i < levels; ++i)
+  {
+    te::sam::rtree::Index<te::gm::Geometry*, 4> rtree;
+      
+    dsQuery->moveBeforeFirst();
+    while(dsQuery->moveNext())
+    {
+      te::gm::Geometry* geom = dsQuery->getGeometry(i).release();
+          
+      std::vector<te::gm::Geometry*> vec;
+          
+      rtree.search(*(geom->getMBR()), vec);
+          
+      if(!vec.empty())
+      {
+        for(std::size_t t = 0; t < vec.size(); ++t)
+        {
+          if(geom->intersects(vec[t]))
+          {
+            geom = geom->Union(vec[t]);
+            rtree.remove(*(vec[t]->getMBR()), vec[t]);
+          }
+        }
+      }
+      rtree.insert(*(geom->getMBR()), geom);
+    }
+      
+    std::vector<te::gm::Geometry*> geomVec;
+    std::auto_ptr<te::gm::Envelope> e = dsQuery->getExtent(i);
+    rtree.search(*(e.get()), geomVec);
+    vecGeom.push_back(geomVec);
+
+    rtree.clear();
+  }
+
+  std::size_t vecSize = vecGeom.size();
+
+  if(levels > 1)
+  {
+    for(std::size_t i = vecSize - 1; i > 0; --i)
+    {
+      std::vector<te::gm::Geometry*> currentVec = vecGeom[i];
+      std::size_t c_vecSize = currentVec.size();
+
+      for(std::size_t j = 0; j < i; ++j)
+      {
+        std::vector<te::gm::Geometry*> innerVec = vecGeom[j];
+        std::size_t i_vecSize = innerVec.size();
+
+        for(std::size_t k = 0; k < c_vecSize; ++k)
+        {
+          for(std::size_t l = 0; l < i_vecSize; ++l)
+          {
+            te::gm::Geometry* k_geom = currentVec[k];
+            te::gm::Geometry* l_geom = innerVec[l];
+
+            if(k_geom->intersects(l_geom))
+            {
+              te::gm::Geometry* tGeom = k_geom->difference(l_geom);
+              if(tGeom->isValid())
+              {
+                delete currentVec[k];
+                currentVec[k] = tGeom;
+                vecGeom[i] = currentVec;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return vecGeom;
+}
+
 void PrepareDataSet(te::da::DataSetType* dataSetType, 
                     te::da::DataSet* dataSetQuery,
                     te::mem::DataSet* outputDataSet,
@@ -830,6 +919,45 @@ void PrepareDataSet(te::da::DataSetType* dataSetType,
             break;
         }
       }
+    }
+  }
+}
+
+void PrepareDataSet(te::da::DataSetType* dataSetType, 
+                    std::vector<std::vector<te::gm::Geometry*> > vecDissolvedGeom,
+                    te::mem::DataSet* outputDataSet,
+                    const double& distance)
+{
+  int pk = 0;
+  
+  for(std::size_t i = 0; i < vecDissolvedGeom.size(); ++i)
+  {
+    std::vector<te::gm::Geometry*> vecGeom = vecDissolvedGeom[i];
+    std::size_t sizeVecGeom = vecGeom.size();
+
+    for(std::size_t j=0; j < sizeVecGeom; ++j)
+    {
+      te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outputDataSet);
+      dataSetItem->setInt32(0, pk); //pk
+      dataSetItem->setInt32(1, i+1); //level
+      dataSetItem->setDouble(2, distance*(i+1)); //distance
+
+      std::auto_ptr<te::gm::Geometry> geom(vecGeom[j]);
+
+      if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
+      {
+        dataSetItem->setGeometry(3, geom.release());
+      }
+      else
+      {
+        std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, geom->getSRID()));
+        mPolygon->add(geom.release());
+        dataSetItem->setGeometry(3, mPolygon.release());
+      }
+    
+      outputDataSet->add(dataSetItem);
+
+      ++pk;
     }
   }
 }

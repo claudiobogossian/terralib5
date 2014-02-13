@@ -40,6 +40,7 @@
 #include "../geometry/LinearRing.h"
 #include "../geometry/MultiPolygon.h"
 #include "../srs/Converter.h"
+#include "../common/progress/TaskProgress.h"
 
 #include <boost/shared_ptr.hpp>
 
@@ -81,6 +82,7 @@ namespace te
       m_blendMethod = te::rp::Blender::NoBlendMethod;
       m_autoEqualize = true;
       m_useRasterCache = true;
+      m_enableProgress = false;
     }
 
     const TiePointsMosaic::InputParameters& TiePointsMosaic::InputParameters::operator=(
@@ -98,6 +100,7 @@ namespace te
       m_blendMethod = params.m_blendMethod;
       m_autoEqualize = params.m_autoEqualize;
       m_useRasterCache = params.m_useRasterCache;
+      m_enableProgress = params.m_enableProgress;
 
       return *this;
     }
@@ -163,6 +166,18 @@ namespace te
       TiePointsMosaic::OutputParameters* outParamsPtr = dynamic_cast<
         TiePointsMosaic::OutputParameters* >( &outputParams );
       TERP_TRUE_OR_THROW( outParamsPtr, "Invalid paramters" );
+      
+      // progress
+      
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        
+        progressPtr->setTotalSteps( 4 + m_inputParameters.m_feederRasterPtr->getObjsCount() );
+        
+        progressPtr->setMessage( "Mosaic" );
+      }       
       
        // First pass: getting global mosaic info
        
@@ -345,6 +360,12 @@ namespace te
         
 
       }
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
 
       // creating the output raster
       
@@ -395,7 +416,13 @@ namespace te
           *(outParamsPtr->m_outputRasterPtr.get()), 25, 0 ) );   
           
         outputRasterPtr = cachedOutputRasterInstancePtr.get();
-      }      
+      }    
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }        
       
       // Finding the transformation mapping indexed points from each raster to the first raster indexed points.
       // te::gm::GTParameters::TiePoint::first are mosaic reaster indexed points (lines/cols),
@@ -449,6 +476,12 @@ namespace te
           eachRasterPixelToMosaicRasterPixelGeomTransfms.push_back( auxTransPtr );          
         }
       }
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
 
       // fill output with no data values
 
@@ -473,6 +506,12 @@ namespace te
           }
         }
       }
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
       
       // Copying the first image data to the output mosaic
       // and find the base mosaic mean and offset values
@@ -577,6 +616,12 @@ namespace te
           }
         }
       }
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
         
       // Initiating the mosaic bounding boxes union
 
@@ -955,6 +1000,12 @@ namespace te
             }
           }
         }
+        
+        if( m_inputParameters.m_enableProgress )
+        {
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }        
         
         // moving to the next raster
 

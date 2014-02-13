@@ -35,6 +35,7 @@
 #include "../raster/Grid.h"
 #include "../raster/BandProperty.h"
 #include "../raster/RasterFactory.h"
+#include "../raster/Utils.h"
 
 // STL
 #include <memory>
@@ -119,6 +120,20 @@ namespace te
       std::vector< te::rst::BandProperty* > bandsProperties,
       const std::string& fileName,
       RasterHandler& outRasterHandler );
+      
+    /*!
+      \brief Create a new raster into a GDAL datasource.
+      \param rasterGrid The template grid used to create the output raster.
+      \param bandsProperties The template band properties used to create the output raster.
+      \param fileName The output tif file name.
+      \param outRasterHandler The created raster handler.
+      \return true if OK, false on errors.
+      \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
+      \ingroup rp_func
+     */
+    bool TERPEXPORT Copy2DiskRaster( 
+      const te::rst::Raster& inputRaster,
+      const std::string& fileName );      
 
     /*!
       \brief Returns the real data type range (all values that can be represented by the given data type).
@@ -128,7 +143,10 @@ namespace te
       \note The types are listed in terralib/datatype/DataTypes.h
       \ingroup rp_func
     */
-    void TERPEXPORT GetDataTypeRange( const int dataType, double& min, double& max );
+    inline void TERPEXPORT GetDataTypeRange( const int dataType, double& min, double& max )
+    {
+      te::rst::GetDataTypeRanges( dataType, min, max );
+    };
 
     /*!
       \brief Convert vector elements.
@@ -312,9 +330,10 @@ namespace te
       \param blueBandIdx The red band index.
       \param rgbRangeMin The minimum RGB value.
       \param rgbRangeMax The maximum RGB value.
-      \param outputIHSRaster The output IHS raster.
+      \param outputIHSRaster An output pré-initiated raster (with the same dimensions of inputRGBRaster) where the IHS data will be written.
       \return true if OK, false on errors.
-      \note IHS data with the following channels ranges: I:[0,1] H:[0,2pi] (radians) S:[0,1].   
+      \note The outputIHSRaster mas have a float or double data type. 
+      \note IHS data with the following channels ranges: I:[0,1] H:[0,2pi] (radians) S:[0,1].
       \ingroup rp_func   
     */
     TERPEXPORT bool ConvertRGB2IHS( const te::rst::Raster& inputRGBRaster, 
@@ -330,7 +349,7 @@ namespace te
       \param saturationBandIdx The saturation band index.
       \param rgbRangeMin The minimum RGB value.
       \param rgbRangeMax The maximum RGB value.      
-      \param outputRGBRaster The output RGB raster.
+      \param outputRGBRaster An output pré-initiated raster (with the same dimensions of inputIHSRaster) where the RGB data will be written.
       \return true if OK, false on errors.
       \note IHS data with the following channels ranges: I:[0,1] H:[0,2pi] (radians) S:[0,1].      
       \ingroup rp_func
@@ -346,11 +365,27 @@ namespace te
       \param maxThreads The maximum number of threads to use (0-auto, 1-single thread used).
       \param meanValue The calculated mean value.
       \return true if OK, false on errors.
+      \note Optimized for rasters where the used bands have the same blocking scheme.
     */
     TERPEXPORT bool GetMeanValue( 
       const te::rst::Band& band, 
       const unsigned int maxThreads, 
       double& meanValue );    
+      
+    /*!
+      \brief Get the standard deviation of band pixel values.
+      \param band The input raster band.
+      \param maxThreads The maximum number of threads to use (0-auto, 1-single thread used).
+      \param meanValuePtr A pointer to a pre-calculated band mean value or zero if it does not exist.
+      \param stdDevValue The calculated standard deviation value.
+      \return true if OK, false on errors.
+      \note Optimized for rasters where the used bands have the same blocking scheme.
+    */
+    TERPEXPORT bool GetStdDevValue( 
+      const te::rst::Band& band, 
+      const unsigned int maxThreads, 
+      double const * const meanValuePtr, 
+      double& stdDevValue );         
       
     /*!
       \brief Get the covariance of band pixel values.
@@ -361,6 +396,7 @@ namespace te
       \param mean2ValuePtr A pointer to a pre-calculated band2 mean value or zero if it does not exist.
       \param covarianceValue The calculated covariance value.
       \return true if OK, false on errors.
+      \note Optimized for rasters where the used bands have the same blocking scheme.
       \ingroup rp_func
     */
     TERPEXPORT bool GetCovarianceValue( 
@@ -376,17 +412,52 @@ namespace te
       \param inputRaster Input raster.
       \param inputRasterBands Input raster bands.
       \param pcaMatrix The matrix generated over the principal components process.
-      \param pcaRaster The pré-initiated output PCA raster.
+      \param pcaRaster The pré-initiated output PCA raster (with the same dimensions of inputRaster).
       \param maxThreads The maximum number of threads to use (0-auto, 1-single thread used).
       \return true if OK, false on errors.
+      \note Optimized for rasters where the used bands have the same blocking scheme.
       \ingroup rp_func
     */
-    TERPEXPORT bool GeneratePrincipalComponents( 
+    TERPEXPORT bool DirectPrincipalComponents( 
       const te::rst::Raster& inputRaster,
       const std::vector< unsigned int >& inputRasterBands,
       boost::numeric::ublas::matrix< double >& pcaMatrix,
       te::rst::Raster& pcaRaster,
-      const unsigned int maxThreads );        
+      const unsigned int maxThreads );  
+      
+    /*!
+      \brief Regenerate the original raster from its principal components.
+      \param pcaRaster The principal components raster (with the same dimensions of outputRaster).
+      \param pcaMatrix The matrix generated by the direct principal components process.
+      \param outputRaster The regenerated output raster (with the same dimentions.
+      \param maxThreads The maximum number of threads to use (0-auto, 1-single thread used).
+      \return true if OK, false on errors.
+      \note Optimized for rasters where the used bands have the same blocking scheme.
+      \ingroup rp_func
+    */
+    TERPEXPORT bool InversePrincipalComponents( 
+      const te::rst::Raster& pcaRaster,
+      const boost::numeric::ublas::matrix< double >& pcaMatrix,
+      te::rst::Raster& outputRaster,
+      const unsigned int maxThreads );       
+      
+    /*!
+      \brief Remap pixel values using a remap function matrix.
+      \param inputRaster Input raster.
+      \param inputRasterBands Input raster bands.
+      \param remapMatrix The remap function matrix.
+      \param outputRaster The pré-initiated output raster (with the same dimentions of inputRaster).
+      \param maxThreads The maximum number of threads to use (0-auto, 1-single thread used).
+      \return true if OK, false on errors.
+      \note Optimized for rasters where the used bands have the same blocking scheme.
+      \ingroup rp_func
+    */
+    TERPEXPORT bool RemapValues( 
+      const te::rst::Raster& inputRaster,
+      const std::vector< unsigned int >& inputRasterBands,
+      const boost::numeric::ublas::matrix< double >& remapMatrix,
+      te::rst::Raster& outputRaster,
+      const unsigned int maxThreads );      
     
   } // end namespace rp
 }   // end namespace te

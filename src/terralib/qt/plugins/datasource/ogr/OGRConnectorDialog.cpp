@@ -153,7 +153,7 @@ void te::qt::plugins::ogr::OGRConnectorDialog::openPushButtonPressed()
       QString path = m_ui->m_featureRepoLineEdit->text().trimmed();
       if(IsShapeFile(path) && !HasShapeFileSpatialIndex(path))
       {
-        if(QMessageBox::question(this, windowTitle(), tr("Do you want createb spatial index to the selected ESRI ShapeFile?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+        if(QMessageBox::question(this, windowTitle(), tr("Do you want create spatial index to the selected ESRI ShapeFile?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
         {
           std::vector<std::string> datasetNames = m_driver->getDataSetNames();
           assert(!datasetNames.empty());

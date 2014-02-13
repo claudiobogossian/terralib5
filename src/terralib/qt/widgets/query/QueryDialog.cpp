@@ -98,9 +98,11 @@ void te::qt::widgets::QueryDialog::setLayerList(std::list<te::map::AbstractLayer
   {
     te::map::AbstractLayerPtr l = *it;
 
+    std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
+
     te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
 
-    if(dsLayer)
+    if(dsLayer && dsType->hasGeom())
       m_ui->m_inputLayerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
 
     ++it;
@@ -134,6 +136,24 @@ void te::qt::widgets::QueryDialog::setCurrentLayer(te::map::AbstractLayerPtr lay
 
     onInputLayerActivated(s);
   }
+}
+
+std::string te::qt::widgets::QueryDialog::setAliasName(std::string value)
+{
+  if(value.empty() == false)
+  {
+    std::string dataSetName = value;
+    std::string aliasName = value;
+
+    int pos = dataSetName.find(".");
+    if(pos != std::string::npos)
+    {
+      aliasName = dataSetName.substr(pos + 1, dataSetName.size() - 1);
+    }
+
+    return aliasName;
+  }
+  return "";
 }
 
 te::da::Where* te::qt::widgets::QueryDialog::getWhere()
@@ -200,7 +220,7 @@ void te::qt::widgets::QueryDialog::layerRemoved(te::map::AbstractLayerPtr layer)
 
 void te::qt::widgets::QueryDialog::onInputLayerActivated(QString value)
 {
-  m_whereClauseWidget->clear();
+  m_whereClauseWidget->resetInterface();
 
   // Gets the input layer
   int idxLayer = m_ui->m_inputLayerComboBox->currentIndex();
@@ -283,7 +303,7 @@ void te::qt::widgets::QueryDialog::onInputLayerActivated(QString value)
   std::auto_ptr<te::da::DataSetType> dsType = dsLayer->getSchema();
   
   std::string dsName = dsType->getName();
-  std::string aliasName = dsName;
+  std::string aliasName = setAliasName(dsName);
 
   std::vector<std::pair<std::string, std::string> > list;
   list.push_back(std::pair<std::string, std::string>(dsName, aliasName));
@@ -376,3 +396,5 @@ void te::qt::widgets::QueryDialog::onApplyPushButtonClicked()
     QMessageBox::information(this, tr("Query"), e.what());
   }
 }
+
+

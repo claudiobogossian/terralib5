@@ -32,8 +32,12 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/AbstractAction.h
   ${SRCDIR}/ClassifierAction.h
+  ${SRCDIR}/ColorTransformAction.h
   ${SRCDIR}/ContrastAction.h
+  ${SRCDIR}/FilterAction.h
+  ${SRCDIR}/FusionAction.h
   ${SRCDIR}/MixtureModelAction.h
+  ${SRCDIR}/MosaicAction.h
   ${SRCDIR}/SegmenterAction.h
   ${SRCDIR}/RegisterAction.h
 )

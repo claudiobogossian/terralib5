@@ -27,6 +27,7 @@
 
 #include "Algorithm.h"
 #include "../raster/Raster.h"
+#include "../raster/Band.h"
 #include "../raster/Interpolator.h"
 
 #include <vector>
@@ -43,6 +44,7 @@ namespace te
       \brief Fusion of a low-resolution multi-band image with a high resolution image using the PCA (Principal components analysis) method.
       \details The PCA performs image fusion where the first principal component of the multi-spectral image is replaced by the histogram matched panchromatic imagery.
       \note Reference: Tania Stathaki, "Image Fusion: Algorithms and Applications", Elsevier, First edition 2008.
+      \note This algorithm expects both images to be aligned over the same geographic region. No reprojection or crop operations are performed.
       \ingroup rp_fus
      */
     class TERPEXPORT PCAFusion : public Algorithm
@@ -66,6 +68,8 @@ namespace te
             unsigned int m_highResRasterBand; //!< Band to process from the high-resolution raster.
             
             bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
+            
+            bool m_enableThreadedProcessing; //!< If true, threaded processing will be performed (best with  multi-core or multi-processor systems (default:true).
             
             te::rst::Interpolator::Method m_interpMethod; //!< The raster interpolator method (default:NearestNeighbor).
             
@@ -136,6 +140,21 @@ namespace te
         InputParameters m_inputParameters; //!< Input execution parameters.
         
         bool m_isInitialized; //!< Tells if this instance is initialized.
+        
+        /*!
+          \brief Load resampled data from the input image.
+          \param ressampledRasterPtr The loaded and ressampled raster data.
+          \return true if ok, false on errors.
+         */
+        bool loadRessampledRaster( std::auto_ptr< te::rst::Raster >& ressampledRasterPtr ) const;         
+        
+        /*!
+          \brief Swap the band values by the normalized high resolution raster data.
+          \param pcaRaster The PCA raster.
+          \param pcaRasterBandIdx The band index where the values will be swapped.
+          \return true if ok, false on errors.
+         */
+        bool swapBandByHighResRaster( te::rst::Raster& pcaRaster, const unsigned int pcaRasterBandIdx );          
        
     };
 

@@ -800,12 +800,12 @@ namespace te
         if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
             (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
         {
-          double pixel_mode = 0.0;
+          pixel_mode = 0.0;
           pixels_in_window.clear();
           for (int r = -1 * (int) (H / 2); r <= (int) (H / 2); r++)
             for (int c = -1 * (int) (W / 2); c <= (int) (W / 2); c++)
               pixels_in_window.push_back(it.getValue(c, r));
-          std::vector<double>vector_mode = te::stat::Mode(pixels_in_window);
+          std::vector<double> vector_mode = te::stat::Mode(pixels_in_window);
           if (vector_mode.size() == 0)
             pixel_mode = it.getValue();
           else
@@ -864,7 +864,7 @@ namespace te
         dstBandAllowedMax );
 
       std::vector<double> pixels_in_window;
-      double pixel_median = 0;
+      double pixel_median = 0.0;
 
       te::rst::Band const * const band = srcRaster.getBand(srcBandIdx);
       te::rst::BandIteratorWindow<double> it = te::rst::BandIteratorWindow<double>::begin(band, W, H);

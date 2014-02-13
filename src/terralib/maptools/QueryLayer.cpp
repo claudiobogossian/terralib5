@@ -88,6 +88,7 @@ std::auto_ptr<te::map::LayerSchema> te::map::QueryLayer::getSchema() const
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
   const te::da::Fields* fields = m_query->getFields();
+  const te::da::From* from = m_query->getFrom();
 
   for(size_t i = 0; i < fields->size(); ++i)
   {
@@ -101,7 +102,19 @@ std::auto_ptr<te::map::LayerSchema> te::map::QueryLayer::getSchema() const
 
     assert(tokens.size() == 2);
 
-    std::auto_ptr<te::da::DataSetType> dt = ds->getDataSetType(tokens[0]);
+    std::string name;
+
+    for(size_t j = 0; j < from->size(); ++j)
+    {
+      const te::da::FromItem& item = from->at(j);
+      const te::da::DataSetName* dsName = dynamic_cast<const te::da::DataSetName*>(&item);
+      if(dsName->getAlias() == tokens[0])
+        name = dsName->getName();
+    }
+
+    assert(!name.empty());
+
+    std::auto_ptr<te::da::DataSetType> dt = ds->getDataSetType(name);
 
     te::dt::Property* pRef = dt->getProperty(tokens[1]);
     assert(pRef);
@@ -148,12 +161,11 @@ std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const std::string& p
   // Original restriction expression
   te::da::Expression* exp = wh->getExp()->clone();
 
+  // TODO: switch that verifies the given te::gm::SpatialRelation and build the query object (ST_Intersects. ST_Touches, etc).
 
   if(spatialTopOp.find(te::da::FunctionNames::sm_ST_EnvelopeIntersects) != spatialTopOp.end())
   {
-    // TODO: switch that verifies the given te::gm::SpatialRelation and build the query object (ST_Intersects. ST_Touches, etc).
     te::da::ST_EnvelopeIntersects* intersects = new te::da::ST_EnvelopeIntersects(pname, lenv);
-
 
     // The final restriction: original restriction expression + extent restriction
     te::da::And* andop = new te::da::And(exp, intersects);
@@ -162,9 +174,7 @@ std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const std::string& p
   }
   else if(spatialTopOp.find(te::da::FunctionNames::sm_ST_Intersects) != spatialTopOp.end())
   {
-    // TODO: switch that verifies the given te::gm::SpatialRelation and build the query object (ST_Intersects. ST_Touches, etc).
     te::da::ST_Intersects* intersects = new te::da::ST_Intersects(pname, lenv);
-
 
     // The final restriction: original restriction expression + extent restriction
     te::da::And* andop = new te::da::And(exp, intersects);
