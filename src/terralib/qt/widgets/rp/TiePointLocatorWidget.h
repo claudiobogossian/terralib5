@@ -112,6 +112,13 @@ namespace te
           void getTiePoints( std::vector< te::gm::GTParameters::TiePoint >& tiePoints ) const;
 
           /*! 
+            \brief Get the current acquired tie-points. 
+
+            \param tiePoints The current acquired tie-points.
+          */
+          void getTiePointsIdxCoords( std::vector< te::gm::GTParameters::TiePoint >& tiePoints ) const;
+
+          /*! 
             \brief Get tie point data container.
 
             \return  The tie point data container.

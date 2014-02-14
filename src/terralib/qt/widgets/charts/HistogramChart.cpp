@@ -27,6 +27,7 @@
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../qt/widgets/se/Utils.h"
+#include "../../../se/Stroke.h"
 #include "Enums.h"
 #include "Histogram.h"
 #include "HistogramChart.h"
@@ -53,6 +54,20 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
 
   //Vector that will be populated by the histogram's data
   QVector<QwtIntervalSample> samples;
+
+  if(!m_histogramStyle)
+  {
+    m_histogramStyle = new te::qt::widgets::HistogramStyle();
+    QPen barPen;
+    QBrush barBrush;
+
+    te::qt::widgets::Config(barPen, m_histogramStyle->getStroke());
+    te::qt::widgets::Config(barBrush, m_histogramStyle->getFill());
+    barBrush.setStyle(Qt::SolidPattern);
+
+    setPen(barPen);
+    setBrush(barBrush);
+  }
 
   if((histogram->getType() >= te::dt::INT16_TYPE && histogram->getType() <= te::dt::UINT64_TYPE) || 
     histogram->getType() == te::dt::FLOAT_TYPE || histogram->getType() == te::dt::DOUBLE_TYPE || 
@@ -128,7 +143,7 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
     values = histogram->getValues();
     it = values.begin();
     double interval = 0.0;
-  
+
     while (it != values.end())
     {
       QwtInterval qwtInterval(interval, interval+1);
@@ -137,21 +152,10 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
       it++;
     }
 
+    QPen blankPen = QPen(Qt::transparent);
+    setPen(blankPen);
+  
     setData(new QwtIntervalSeriesData(samples));
-  }
-
-  if(!m_histogramStyle)
-  {
-    m_histogramStyle = new te::qt::widgets::HistogramStyle();
-    QPen barPen;
-    QBrush barBrush;
-
-    te::qt::widgets::Config(barPen, m_histogramStyle->getStroke());
-    te::qt::widgets::Config(barBrush, m_histogramStyle->getFill());
-    barBrush.setStyle(Qt::SolidPattern);
-
-    setPen(barPen);
-    setBrush(barBrush);
   }
 
   m_selection = new QwtPlotHistogram();
@@ -356,6 +360,43 @@ te::da::ObjectIdSet* te::qt::widgets::HistogramChart::highlight(QPointF point)
     return m_histogram->find(data.get());
   }
 }
+
+te::da::ObjectIdSet* te::qt::widgets::HistogramChart::highlight(QRectF rect)
+{
+  QwtSeriesData<QwtIntervalSample>* values = data();
+  std::vector<te::dt::AbstractData*> selected;
+
+  if (m_histogram->getType() == te::dt::DATETIME_TYPE || m_histogram->getType() == te::dt::STRING_TYPE)
+  {
+    for(size_t i = 0; i < values->size(); ++i)
+    {
+      //Checking if the interval is within the rectangle, works when a rectangle is drawn around the intervals
+      if(values->sample(i).interval.minValue() > rect.x() && values->sample(i).interval.maxValue() < (rect.x() + rect.width()) &&  values->sample(i).value > rect.y())
+        selected.push_back(new te::dt::String(m_histogramScaleDraw->label(i).text().toStdString()));
+
+      //Checking if the rectangle is within the interval, works when the user simply clicked on an interval
+      else if(values->sample(i).interval.minValue() < rect.x() && values->sample(i).interval.maxValue() > rect.x() &&  values->sample(i).value > rect.y())
+        selected.push_back(new te::dt::String(m_histogramScaleDraw->label(i).text().toStdString()));
+    }
+  }
+
+  else
+  {
+    for(size_t i = 0; i < values->size(); ++i)
+    {
+      //Checking if the interval is within the rectangle, works when a rectangle is drawn around the intervals
+      if(values->sample(i).interval.minValue() > rect.x() && values->sample(i).interval.maxValue() < (rect.x() + rect.width()) &&  values->sample(i).value > rect.y())
+        selected.push_back(new te::dt::Double(values->sample(i).interval.minValue()));
+
+      //Checking if the rectangle is within the interval, works when the user simply clicked on an interval
+      else if(values->sample(i).interval.minValue() < rect.x() && values->sample(i).interval.maxValue() > rect.x() &&  values->sample(i).value > rect.y())
+        selected.push_back(new te::dt::Double(values->sample(i).interval.minValue()));
+    }
+  }
+
+  return m_histogram->find(selected);
+}
+
 
 void te::qt::widgets::HistogramChart::setSelectionColor(QColor selColor)
 {
