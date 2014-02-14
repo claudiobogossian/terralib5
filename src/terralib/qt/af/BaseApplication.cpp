@@ -32,6 +32,7 @@
 #include "../../common/UserApplicationSettings.h"
 #include "../../maptools/Utils.h"
 #include "../../srs/Config.h"
+#include "../../srs/SpatialReferenceSystemManager.h"
 #include "../widgets/canvas/EyeBirdMapDisplayWidget.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
 #include "../widgets/canvas/ZoomInMapDisplayWidget.h"
@@ -150,7 +151,8 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
     m_project(0),
     m_progressDockWidget(0),
     m_zoomInDisplaysDockWidget(0),
-    m_eyeBirdDisplaysDockWidget(0)//,
+    m_eyeBirdDisplaysDockWidget(0),
+    m_restartTerraLib(false)
 //    m_controller(0)
 {
 //  m_controller = new ApplicationController;
@@ -232,6 +234,19 @@ void te::qt::af::BaseApplication::init(const std::string& configFile)
   try
   {
     te::qt::af::ApplicationController::getInstance().initialize();
+
+    // Use the json file in the user directory to load SRS manager.
+    if(!m_restartTerraLib)
+    {
+      QFileInfo info(configFile.c_str());
+      std::string srsFile = info.absolutePath().toStdString();
+#ifdef _DEBUG      
+       srsFile += "/resources/json/srs_incomplete.json";
+#else
+      srsFile += "/resources/json/srs.json";
+#endif
+      te::srs::SpatialReferenceSystemManager::getInstance().init(srsFile);
+    }
   }
   catch(const std::exception& e)
   {
@@ -303,7 +318,8 @@ void  te::qt::af::BaseApplication::resetState()
 
 void te::qt::af::BaseApplication::resetTerraLib(const bool& status)
 {
-  ApplicationController::getInstance().setResetTerraLibFlag(status);
+  m_restartTerraLib = !status;
+  ApplicationController::getInstance().setResetTerraLibFlag(!m_restartTerraLib);
 }
 
 void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event* evt)

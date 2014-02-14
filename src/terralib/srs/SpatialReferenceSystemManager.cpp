@@ -39,6 +39,31 @@
 #include <algorithm>
 #include <cassert>
 
+void LoadSpatialReferenceSystemManager(const std::string fileName, te::srs::SpatialReferenceSystemManager* mger) 
+{
+  std::ifstream f;
+
+  f.open(fileName.c_str());
+
+  if (!f.is_open())
+    return;
+    
+  boost::property_tree::ptree pt;
+  boost::property_tree::json_parser::read_json(f,pt);
+  BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt.get_child("SRSs"))
+  {
+    if (v.second.get<unsigned int>("srid") > 100000)
+      mger->add(v.second.get<std::string>("name"), v.second.get<std::string>("pj4txt"),
+          v.second.get<std::string>("wkt"), v.second.get<unsigned int>("srid"), "USER");
+    else
+      mger->add(v.second.get<std::string>("name"), v.second.get<std::string>("pj4txt"),
+          v.second.get<std::string>("wkt"), v.second.get<unsigned int>("srid"));
+  }
+  f.close();
+
+  return;
+}
+
 te::srs::SpatialReferenceSystemManager::srs_desc::srs_desc(const std::string& name, unsigned int auth_id, const std::string& auth_name, const std::string& p4txt, const std::string& wkt):
   m_name(name),
   m_auth_id(auth_id),
@@ -75,29 +100,18 @@ void te::srs::SpatialReferenceSystemManager::init()
   if(te_env == 0)
     throw Exception(TR_SRS("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
 
+  std::string jsonf(te_env);
+  jsonf += "/resources/json/srs.json";
+
+  init(jsonf);
+}
+
+void te::srs::SpatialReferenceSystemManager::init(const std::string& fileName)
+{
   try
   {
-    std::ifstream f;
-
-    std::string jsonf(te_env);
-    jsonf += "/resources/json/srs.json";
-    
-    f.open(jsonf.c_str());
-    if (!f.is_open())
-      return;
-    
-    boost::property_tree::ptree pt;
-    boost::property_tree::json_parser::read_json(f,pt);
-    BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt.get_child("SRSs"))
-    {
-      if (v.second.get<unsigned int>("srid") > 100000)
-        add(v.second.get<std::string>("name"), v.second.get<std::string>("pj4txt"),
-            v.second.get<std::string>("wkt"), v.second.get<unsigned int>("srid"), "USER");
-      else
-        add(v.second.get<std::string>("name"), v.second.get<std::string>("pj4txt"),
-            v.second.get<std::string>("wkt"), v.second.get<unsigned int>("srid"));
-    }
-    f.close();
+    clear();
+    LoadSpatialReferenceSystemManager(fileName, this);
   }
   catch(boost::property_tree::json_parser::json_parser_error &je)
   {

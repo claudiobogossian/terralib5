@@ -121,6 +121,14 @@ namespace te
        \exception te::srs::Exception if the JSON file is not well formed.
        */
       void init();
+
+      /*!
+       \brief Inializes the manager from a JSON file containing instances of SRSs.
+
+       \param fileName Name of the JSON file.
+       \exception te::srs::Exception if the JSON file is not well formed.
+       */
+      void init(const std::string& fileName);
       
       /*!
        \brief Adds a  <id, authority> to the manager.
