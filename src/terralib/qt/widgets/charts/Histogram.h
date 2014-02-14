@@ -189,6 +189,17 @@ namespace te
           */
           te::da::ObjectIdSet* find(te::dt::AbstractData* interval);
 
+          /*!
+            \brief It returns an ObjectIdSet containing all the object Ids associeted with the given interval list.
+
+            \param intervals  A vector containing all the intervals within the selection box
+
+            \return  An ObjectIdSet containing all the selected object Ids
+ 
+            \note The caller will take ownership of the returned pointer
+          */
+          te::da::ObjectIdSet* find(std::vector<te::dt::AbstractData*> intervals);
+
            /*!
             \brief It returns an AbstractData representing the interval that contains the given ObjectId
 

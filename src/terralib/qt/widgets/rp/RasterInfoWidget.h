@@ -41,6 +41,8 @@ namespace Ui { class RasterInfoWidgetForm; }
 
 namespace te
 {
+  namespace da { class DataSource; }
+
   namespace qt
   {
     namespace widgets
@@ -72,7 +74,13 @@ namespace te
 
           std::map<std::string, std::string> getInfo() const;
 
+          std::auto_ptr<te::da::DataSource> getDataSource() const;
+
           std::string getName() const;
+
+          std::string getShortName() const;
+
+          std::string getExtension() const;
 
           bool overight() const;
 

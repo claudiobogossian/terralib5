@@ -24,6 +24,8 @@
 */
 
 // TerraLib
+#include "../../../dataaccess/datasource/DataSource.h"
+#include "../../../dataaccess/datasource/DataSourceFactory.h"
 #include "ParameterTableWidget.h"
 #include "RasterInfoWidget.h"
 #include "ui_RasterInfoWidgetForm.h"
@@ -111,6 +113,18 @@ std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo() 
   return rinfo;
 }
 
+std::auto_ptr<te::da::DataSource> te::qt::widgets::RasterInfoWidget::getDataSource() const
+{
+  std::map<std::string, std::string> connInfoRaster;
+  connInfoRaster["SOURCE"] = m_dir + "/";
+
+  std::auto_ptr< te::da::DataSource > dsPtr( te::da::DataSourceFactory::make("GDAL") );
+  dsPtr->setConnectionInfo( connInfoRaster );
+  dsPtr->open();
+
+  return dsPtr;
+}
+
 std::string te::qt::widgets::RasterInfoWidget::getName() const
 {
   std::string name = getBaseName();
@@ -121,6 +135,21 @@ std::string te::qt::widgets::RasterInfoWidget::getName() const
   }
 
   return name;
+}
+
+std::string te::qt::widgets::RasterInfoWidget::getShortName() const
+{
+  std::string name = "";
+
+  if(m_ui->m_nameLineEdit->text().isEmpty() == false)
+    name = m_ui->m_nameLineEdit->text().toStdString();
+
+  return name;
+}
+
+std::string te::qt::widgets::RasterInfoWidget::getExtension() const
+{
+  return ".tif";
 }
 
 bool te::qt::widgets::RasterInfoWidget::overight() const

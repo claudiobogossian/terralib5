@@ -27,6 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_RP_INTERNAL_MOSAICWIZARDPAGE_H
 
 // TerraLib
+#include "../../../geometry/GTParameters.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../rp/GeoMosaic.h"
 #include "../../../rp/SequenceMosaic.h"
@@ -56,7 +57,9 @@ namespace te
       */
       class TEQTWIDGETSEXPORT MosaicWizardPage : public QWizardPage
       {
-           enum MosaicTypes
+        Q_OBJECT
+
+          enum MosaicTypes
           {
             MOSAIC_GEO,
             MOSAIC_TIEPOINT,
@@ -93,6 +96,14 @@ namespace te
 
           te::rp::SequenceMosaic::OutputParameters getOutputSeqParams();
 
+          te::map::AbstractLayerPtr getTiePointMosaicLayerA();
+
+          te::map::AbstractLayerPtr getTiePointMosaicLayerB();
+
+        public slots:
+
+          void onTiePointsAcquiredToolButtonClicked();
+
         protected:
 
           void fillMosaicTypes();
@@ -102,6 +113,8 @@ namespace te
           std::auto_ptr<Ui::MosaicWizardPageForm> m_ui;
           
           std::list<te::map::AbstractLayerPtr> m_layerList;
+
+          std::vector< std::vector< te::gm::GTParameters::TiePoint > > m_tiePoints; //!< Tie-points between each adjacent raster pair (te::gm::GTParameters::TiePoint::first are raster (with index i) lines/columns, te::gm::GTParameters::TiePoint::second are raster (with index I+1) lines/columns ,and so on).
 
       };
 
