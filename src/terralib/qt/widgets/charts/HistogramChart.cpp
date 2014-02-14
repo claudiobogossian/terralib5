@@ -370,12 +370,16 @@ te::da::ObjectIdSet* te::qt::widgets::HistogramChart::highlight(QRectF rect)
   {
     for(size_t i = 0; i < values->size(); ++i)
     {
+      int min = values->sample(i).interval.minValue();
+      int max = values->sample(i).interval.maxValue();
+      int frequency = values->sample(i).value;
+
       //Checking if the interval is within the rectangle, works when a rectangle is drawn around the intervals
-      if(values->sample(i).interval.minValue() > rect.x() && values->sample(i).interval.maxValue() < (rect.x() + rect.width()) &&  values->sample(i).value > rect.y())
+      if(min > rect.x() && (max > rect.x() + rect.width())  &&  frequency > rect.y())
         selected.push_back(new te::dt::String(m_histogramScaleDraw->label(i).text().toStdString()));
 
       //Checking if the rectangle is within the interval, works when the user simply clicked on an interval
-      else if(values->sample(i).interval.minValue() < rect.x() && values->sample(i).interval.maxValue() > rect.x() &&  values->sample(i).value > rect.y())
+      else if(min < rect.x() && max > rect.x() &&  frequency > rect.y())
         selected.push_back(new te::dt::String(m_histogramScaleDraw->label(i).text().toStdString()));
     }
   }
@@ -384,12 +388,17 @@ te::da::ObjectIdSet* te::qt::widgets::HistogramChart::highlight(QRectF rect)
   {
     for(size_t i = 0; i < values->size(); ++i)
     {
+
+      int min = values->sample(i).interval.minValue();
+      int max = values->sample(i).interval.maxValue();
+      int frequency = values->sample(i).value;
+
       //Checking if the interval is within the rectangle, works when a rectangle is drawn around the intervals
-      if(values->sample(i).interval.minValue() > rect.x() && values->sample(i).interval.maxValue() < (rect.x() + rect.width()) &&  values->sample(i).value > rect.y())
+      if(min > rect.x() && (max > rect.x() + rect.width()) &&  frequency > rect.y())
         selected.push_back(new te::dt::Double(values->sample(i).interval.minValue()));
 
       //Checking if the rectangle is within the interval, works when the user simply clicked on an interval
-      else if(values->sample(i).interval.minValue() < rect.x() && values->sample(i).interval.maxValue() > rect.x() &&  values->sample(i).value > rect.y())
+      else if(min < rect.x() && max > rect.x() &&  frequency > rect.y())
         selected.push_back(new te::dt::Double(values->sample(i).interval.minValue()));
     }
   }
