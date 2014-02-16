@@ -60,22 +60,22 @@ int main(int argc, char** argv)
     std::cout << std::endl << "PostGIS to OGR: " << std::endl;
     if (AggregPGISToOGR())
       std::cout << "\tOK!" << std::endl;
-    
+
     std::cout << std::endl << "OGR to PostGIS: " << std::endl;
     if (AggregOGRToPGIS())
       std::cout << "\tOK!" << std::endl;
-    
+
     std::cout << std::endl << "OGR to OGR: " << std::endl;
     if (AggregOGRToOGR())
       std::cout << "\tOK!" << std::endl;
-    
+
     std::cout << std::endl << "PostGIS to PostGIS: " << std::endl;
     if (AggregPGISToPGIS())
       std::cout << "\tOK!" << std::endl;
 
-    //std::cout << std::endl << "Intersection PostGIS to OGR: " << std::endl;
-    //if (IntersectionPGISToOGR())
-    //  std::cout << "\tOK!" << std::endl;
+    std::cout << std::endl << "Intersection PostGIS to OGR: " << std::endl;
+    if (IntersectionPGISToOGR())
+      std::cout << "\tOK!" << std::endl;
 
     std::cout << std::endl << "Intersection OGR to PostGIS: " << std::endl;
     if (IntersectionOGRToPGIS())

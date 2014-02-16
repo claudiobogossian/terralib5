@@ -51,7 +51,7 @@ namespace te
 {
   namespace vp
   {
-    TEVPEXPORT class AggregationMemory : public AggregationOp
+    class TEVPEXPORT AggregationMemory : public AggregationOp
     {
     
     public:

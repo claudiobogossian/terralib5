@@ -54,7 +54,7 @@ namespace te
 {
   namespace vp
   {
-    TEVPEXPORT class AggregationOp
+    class TEVPEXPORT AggregationOp
     {
     public:
       
@@ -94,4 +94,4 @@ namespace te
     };
   }
 }
-#endif
+#endif // __TERRALIB_VP_INTERNAL_AGGREGATION_OP_H

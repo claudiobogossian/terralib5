@@ -30,6 +30,8 @@ set(DEP_LIBS
     terralib_plugin
     terralib_vp
     terralib_srs
+	terralib_statistics
+	
     ${Boost_LIBRARIES}
 )
 

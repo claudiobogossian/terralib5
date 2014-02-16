@@ -108,7 +108,7 @@ std::map<std::string,double> te::vp::AggregationMemory::calculateNumStats(const 
   {
     if (it->first->getType() != te::dt::STRING_TYPE)
     {
-      size_t propPos = m_inDsetType->getPropertyPosition(it->first);
+      size_t propPos = m_inDsetType->getPropertyPosition(it->first->getName());
       int propType = it->first->getType();
       
       std::vector<double> values;
