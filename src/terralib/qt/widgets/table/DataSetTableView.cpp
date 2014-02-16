@@ -1,11 +1,15 @@
 #include "AddColumnDialog.h"
-#include "DataSetTableView.h"
 #include "DataSetTableModel.h"
-#include "HighlightDelegate.h"
 #include "DataSetTableVerticalHeader.h"
+#include "DataSetTableView.h"
+#include "HighlightDelegate.h"
 #include "Promoter.h"
+#include "RenameColumnDialog.h"
 
 // TerraLib include files
+#include "../utils/ScopedCursor.h"
+#include "../Config.h"
+#include "../Exception.h"
 #include "../../../common/Exception.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
@@ -22,7 +26,6 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "../../../statistics/qt/StatisticsDialog.h"
-#include "../utils/ScopedCursor.h"
 
 
 // Qt
@@ -201,6 +204,7 @@ class TablePopupFilter : public QObject
       m_view->connect(this, SIGNAL(removeColumn(const int&)), SLOT(removeColumn(const int&)));
       m_view->connect(this, SIGNAL(enableAutoScroll(const bool&)), SLOT(setAutoScrollEnabled(const bool&)));
       m_view->connect(this, SIGNAL(sortData(const bool&)), SLOT(sortByColumns(const bool&)));
+      m_view->connect(this, SIGNAL(renameColumn(const int&)), SLOT(renameColumn(const int&)));
     }
 
     /*!
@@ -297,6 +301,11 @@ class TablePopupFilter : public QObject
 
             act8->setEnabled(updatePermition);
 
+            QAction* act10 = new QAction(m_hMenu);
+            act10->setText(tr("Rename column"));
+            act10->setToolTip(tr("Renames a column of the table."));
+            m_hMenu->addAction(act10);
+
              // Signal / Slot connections
             connect(act, SIGNAL(triggered()), SLOT(hideColumn()));
             connect(hMnu, SIGNAL(triggered(QAction*)), SLOT(showColumn(QAction*)));
@@ -309,6 +318,7 @@ class TablePopupFilter : public QObject
             connect(act6, SIGNAL(triggered()), SLOT(showStatistics()));
             connect (act5, SIGNAL(triggered()), SLOT(sortDataAsc()));
             connect (act9, SIGNAL(triggered()), SLOT(sortDataDesc()));
+            connect (act10, SIGNAL(triggered()), SLOT(renameColumn()));
 
             m_hMenu->popup(pos);
           }
@@ -419,11 +429,18 @@ class TablePopupFilter : public QObject
       emit sortData(false);
     }
 
+    void renameColumn()
+    {
+      emit renameColumn(m_columnPressed);
+    }
+
   signals:
 
     void hideColumn(const int&);
 
     void showColumn(const int&);
+
+    void renameColumn(const int&);
 
     void selectObject(const int&, const bool&);
 
@@ -563,6 +580,30 @@ void te::qt::widgets::DataSetTableView::hideColumn(const int& column)
 void te::qt::widgets::DataSetTableView::showColumn(const int& column)
 {
   horizontalHeader()->showSection(column);
+}
+
+void te::qt::widgets::DataSetTableView::renameColumn(const int& column)
+{
+  RenameColumnDialog dlg(parentWidget());
+
+  dlg.setOldColumnName(QString::fromStdString(m_dset->getPropertyName(column)));
+
+  if(dlg.exec() == QDialog::Accepted)
+  {
+    std::string oldName = dlg.getOldName().toStdString();
+    std::string newName = dlg.getNewName().toStdString();
+    te::da::DataSourcePtr dsrc = GetDataSource(m_layer);
+
+    if(dsrc.get() == 0)
+      throw Exception(tr("Fail to get data source.").toStdString());
+
+    if(!dsrc->isPropertyNameValid(newName))
+      throw Exception(tr("Invalid column name. Choose another.").toStdString());
+
+    dsrc->renameProperty(m_layer->getSchema()->getName(), oldName, newName);
+
+    setLayer(m_layer);
+  }
 }
 
 void te::qt::widgets::DataSetTableView::showAllColumns()

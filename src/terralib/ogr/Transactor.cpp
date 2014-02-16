@@ -550,7 +550,14 @@ void te::ogr::Transactor::renameProperty(const std::string& datasetName,
 
     OGRFieldDefn* df = l->GetLayerDefn()->GetFieldDefn(idx);
 
-    df->SetName(newPropertyName.c_str());
+    OGRFieldDefn* dfn = new OGRFieldDefn(df);
+
+    dfn->SetName(newPropertyName.c_str());
+
+    OGRErr err = l->AlterFieldDefn(idx, dfn, ALTER_NAME_FLAG);
+
+    if(err != OGRERR_NONE)
+      throw Exception(TR_OGR("Fail to rename field."));
   }
 }
 
