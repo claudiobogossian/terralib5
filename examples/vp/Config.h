@@ -20,11 +20,11 @@
 /*!
   \file Config.h
 
-  \brief Global configuration flags for the TerraLib SRS Examples.
+  \brief Global configuration flags for the TerraLib VP Examples.
  */
 
-#ifndef __TERRALIB_EXAMPLES_SRS_INTERNAL_CONFIG_H
-#define __TERRALIB_EXAMPLES_SRS_INTERNAL_CONFIG_H
+#ifndef __TERRALIB_EXAMPLES_VP_INTERNAL_CONFIG_H
+#define __TERRALIB_EXAMPLES_VP_INTERNAL_CONFIG_H
 
 // TerraLib
 #include "../Config.h"
@@ -46,4 +46,4 @@
 #define TE_EXAMPLE_USE_PROJ4 1
 #endif
 
-#endif  // __TERRALIB_EXAMPLES_SRS_INTERNAL_CONFIG_H
+#endif  // __TERRALIB_EXAMPLES_VP_INTERNAL_CONFIG_H

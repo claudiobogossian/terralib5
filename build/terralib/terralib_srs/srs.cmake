@@ -16,13 +16,13 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTESRSDLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
-#add_definitions (-DTE_JSON_FILES_LOCATION=\"${TE_JSON_FILES_LOCATION}\")
-
 list (APPEND TE_DEP_LIBS terralib_common)
 
 # Select the source and header files
 file(GLOB SRCS ${SRCDIR}/*.cpp)
 file(GLOB HDRS ${SRCDIR}/*.h)
+
+list(APPEND TE_DEP_INCLUDES "${CMAKE_CURRENT_BINARY_DIR}")
 
 #exporting module information
 exportModuleInformation("srs" "${SRCDIR}" "srs")

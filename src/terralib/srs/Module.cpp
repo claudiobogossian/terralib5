@@ -54,7 +54,7 @@ te::srs::Module::~Module()
 
 void te::srs::Module::initialize()
 {
-#ifdef TE_AUTOMATIC_INITIALIZATION
+#ifdef TE_SRS_AUTOLOAD_ENABLED
   te::srs::SpatialReferenceSystemManager::getInstance().init();
 #endif
 

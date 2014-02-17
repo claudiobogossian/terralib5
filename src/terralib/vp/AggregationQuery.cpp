@@ -238,7 +238,7 @@ bool te::vp::AggregationQuery::run()
           break;
         case te::dt::INT32_TYPE:
           if (!dsQuery->isNull(i))
-            outDSetItem->setInt32(i,dsQuery->getInt32(i));
+            outDSetItem->setInt32(i, boost::lexical_cast<int>(dsQuery->getAsString(i)));
           break;
         case te::dt::INT64_TYPE:
           if (!dsQuery->isNull(i))
@@ -269,8 +269,8 @@ bool te::vp::AggregationQuery::run()
         default:
           continue;
       }
-      outDSet->add(outDSetItem);
     }
+    outDSet->add(outDSetItem);
   }
   return save(outDSet,outDSetType);
 }
