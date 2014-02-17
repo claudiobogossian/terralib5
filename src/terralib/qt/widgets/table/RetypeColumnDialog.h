@@ -23,8 +23,8 @@
   \brief A Qt dialog for renaming columns into a table.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_RENAMECOLUMNDIALOG_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_RENAMECOLUMNDIALOG_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_RETYPECOLUMNDIALOG_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_RETYPECOLUMNDIALOG_H
 
 #include "../Config.h"
 
@@ -37,37 +37,50 @@
 // Forward declarations
 namespace Ui
 {
-  class RenameColumnDialogForm;
+  class RetypeColumnDialogForm;
 }
 
 namespace te
 {
+  namespace dt
+  {
+    class Property;
+  }
+
   namespace qt
   {
     namespace widgets
     {
-      class TEQTWIDGETSEXPORT RenameColumnDialog : public QDialog
+      class TEQTWIDGETSEXPORT RetypeColumnDialog : public QDialog
       {
         Q_OBJECT
 
         public :
 
-          RenameColumnDialog(QWidget* parent=0);
+          RetypeColumnDialog(QWidget* parent=0);
 
-          ~RenameColumnDialog();
+          ~RetypeColumnDialog();
 
-          QString getOldName();
+          void setTableName(const QString& name);
 
-          QString getNewName();
+          void setType(const int& type);
 
-          void setOldColumnName(const QString& name);
+          void setColumnName(const QString& name);
+
+          void setColummnSize(const int& size);
+
+          int getColumnType() const;
+
+          int getColumnSize() const;
+
+          std::auto_ptr<te::dt::Property> getProperty();
 
         private :
 
-          std::auto_ptr<Ui::RenameColumnDialogForm> m_ui; 
+          std::auto_ptr<Ui::RetypeColumnDialogForm> m_ui; 
       };
     }
   }
 }
 
-#endif //__TERRALIB_QT_WIDGETS_INTERNAL_RENAMECOLUMNDIALOG_H
+#endif //__TERRALIB_QT_WIDGETS_INTERNAL_RETYPECOLUMNDIALOG_H

@@ -5,6 +5,7 @@
 #include "HighlightDelegate.h"
 #include "Promoter.h"
 #include "RenameColumnDialog.h"
+#include "RetypeColumnDialog.h"
 
 // TerraLib include files
 #include "../utils/ScopedCursor.h"
@@ -205,6 +206,7 @@ class TablePopupFilter : public QObject
       m_view->connect(this, SIGNAL(enableAutoScroll(const bool&)), SLOT(setAutoScrollEnabled(const bool&)));
       m_view->connect(this, SIGNAL(sortData(const bool&)), SLOT(sortByColumns(const bool&)));
       m_view->connect(this, SIGNAL(renameColumn(const int&)), SLOT(renameColumn(const int&)));
+      m_view->connect(this, SIGNAL(retypeColumn(const int&)), SLOT(retypeColumn(const int&)));
     }
 
     /*!
@@ -306,6 +308,11 @@ class TablePopupFilter : public QObject
             act10->setToolTip(tr("Renames a column of the table."));
             m_hMenu->addAction(act10);
 
+            QAction* act11 = new QAction(m_hMenu);
+            act11->setText(tr("Change column type"));
+            act11->setToolTip(tr("Changes the type of a column of the table."));
+            m_hMenu->addAction(act11);
+
              // Signal / Slot connections
             connect(act, SIGNAL(triggered()), SLOT(hideColumn()));
             connect(hMnu, SIGNAL(triggered(QAction*)), SLOT(showColumn(QAction*)));
@@ -319,6 +326,7 @@ class TablePopupFilter : public QObject
             connect (act5, SIGNAL(triggered()), SLOT(sortDataAsc()));
             connect (act9, SIGNAL(triggered()), SLOT(sortDataDesc()));
             connect (act10, SIGNAL(triggered()), SLOT(renameColumn()));
+            connect (act11, SIGNAL(triggered()), SLOT(retypeColumn()));
 
             m_hMenu->popup(pos);
           }
@@ -434,6 +442,11 @@ class TablePopupFilter : public QObject
       emit renameColumn(m_columnPressed);
     }
 
+    void retypeColumn()
+    {
+      emit retypeColumn(m_columnPressed);
+    }
+
   signals:
 
     void hideColumn(const int&);
@@ -441,6 +454,8 @@ class TablePopupFilter : public QObject
     void showColumn(const int&);
 
     void renameColumn(const int&);
+
+    void retypeColumn(const int&);
 
     void selectObject(const int&, const bool&);
 
@@ -603,6 +618,42 @@ void te::qt::widgets::DataSetTableView::renameColumn(const int& column)
     dsrc->renameProperty(m_layer->getSchema()->getName(), oldName, newName);
 
     setLayer(m_layer);
+  }
+}
+
+void te::qt::widgets::DataSetTableView::retypeColumn(const int& column)
+{
+  RetypeColumnDialog dlg(parentWidget());
+
+  std::auto_ptr<te::da::DataSetType> schema = m_layer->getSchema();
+  te::dt::Property* prp;
+
+  prp = schema->getProperty(column);
+
+//  schema->set
+
+  if(prp == 0)
+    throw Exception(tr("Fail to get property of the dataset.").toStdString());
+
+  dlg.setTableName(schema->getName().c_str());
+  dlg.setColumnName(prp->getName().c_str());
+  dlg.setType(prp->getType());
+
+  if(dlg.exec() == QDialog::Accepted)
+  {
+    te::da::DataSourcePtr dsrc = GetDataSource(m_layer);
+
+    if(dsrc.get() == 0)
+      throw Exception(tr("Fail to get data source.").toStdString());
+
+    delete prp;
+    prp = dlg.getProperty().release();
+
+    std::vector<size_t> prps(1, column);
+
+    std::map<std::string, std::string> opts;
+
+    dsrc->update(schema->getName(), 0, prps, 0, opts); 
   }
 }
 

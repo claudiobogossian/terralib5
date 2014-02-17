@@ -153,6 +153,12 @@ namespace te
           void renameColumn(const int& column);
 
           /*!
+            \brief Changes teh type of a column in the table.
+            \param column Index of the column to be changed.
+          */
+          void retypeColumn(const int& column);
+
+          /*!
             \brief Shows all hidden columns.
           */
           void showAllColumns();
