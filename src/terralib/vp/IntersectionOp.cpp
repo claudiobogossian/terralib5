@@ -18,7 +18,7 @@
  */
 
 /*!
- \file AggregationOp.cpp
+ \file IntersectionOp.cpp
  */
 
 #include "../dataaccess/dataset/DataSet.h"
@@ -36,36 +36,38 @@
 
 #include "../statistics/core/Utils.h"
 
-#include "AggregationOp.h"
+#include "IntersectionOp.h"
 
-te::vp::AggregationOp::AggregationOp():
-  m_outDset("")
+te::vp::IntersectionOp::IntersectionOp():
+  m_outDsetName("")
 {
 }
 
-void te::vp::AggregationOp::setInput(std::auto_ptr<te::da::DataSource> inDsrc,
-                                     std::auto_ptr<te::da::DataSet> inDset,
-                                     std::auto_ptr<te::da::DataSetType> inDsetType)
+void te::vp::IntersectionOp::setInput(std::auto_ptr<te::da::DataSource> inFirstDsrc,
+                                      std::auto_ptr<te::da::DataSet> inFirstDset,
+                                      std::auto_ptr<te::da::DataSource> inSecondDsrc,
+                                      std::auto_ptr<te::da::DataSet> inSecondDset)
 {
-  m_inDsrc = inDsrc;
-  m_inDset = inDset;
-  m_inDsetType = inDsetType;
+  m_inFirstDsrc = inFirstDsrc;
+  m_inFirstDset = inFirstDset;
+  m_inSecondDsrc = inSecondDsrc;
+  m_inSecondDset = inSecondDset;
 }
 
-void te::vp::AggregationOp::setParams(std::vector<te::dt::Property*>& groupProps,
-                                      std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >&statSum)
+void te::vp::IntersectionOp::setParams( const bool& copyInputColumns,
+                                        std::size_t inSRID)
 {
-  m_groupProps = groupProps;
-  m_statSum = statSum;
+  m_copyInputColumns = copyInputColumns;
+  m_SRID = inSRID;
 }
 
-void te::vp::AggregationOp::setOutput(std::auto_ptr<te::da::DataSource> outDsrc, std::string dsname)
+void te::vp::IntersectionOp::setOutput(std::auto_ptr<te::da::DataSource> outDsrc, std::string dsname)
 {
   m_outDsrc = outDsrc;
-  m_outDset = dsname;
+  m_outDsetName = dsname;
 }
 
-te::gm::GeomType te::vp::AggregationOp::getGeomResultType(te::gm::GeomType geom)
+te::gm::GeomType te::vp::IntersectionOp::getGeomResultType(te::gm::GeomType geom)
 {
   if (geom == te::gm::PolygonType)
     return te::gm::MultiPolygonType;
@@ -79,24 +81,18 @@ te::gm::GeomType te::vp::AggregationOp::getGeomResultType(te::gm::GeomType geom)
   return geom;
 }
 
-bool te::vp::AggregationOp::paramsAreValid()
+bool te::vp::IntersectionOp::paramsAreValid()
 {
-  if (!m_inDset.get() || !m_inDsetType.get())
-    return false;
-  
-  if (!m_inDsetType->hasGeom())
-    return false;
-  
-  if (m_groupProps.empty())
+  if (!m_inFirstDset.get())
     return false;
 
-  if (m_outDset.empty() || !m_outDsrc.get())
+  if (m_outDsetName.empty() || !m_outDsrc.get())
     return false;
   
   return true;
 }
 
-bool  te::vp::AggregationOp::save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType)
+bool  te::vp::IntersectionOp::save(std::auto_ptr<te::da::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType)
 {
   // do any adaptation necessary to persist the output dataset
   te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType.get(), m_outDsrc->getCapabilities());
@@ -117,7 +113,7 @@ bool  te::vp::AggregationOp::save(std::auto_ptr<te::mem::DataSet> result, std::a
     std::string pk_name = dsTypeResult->getName() + "_pkey";
     te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
     pk->add(dsTypeResult->getProperty(0));
-    m_outDsrc->addPrimaryKey(m_outDset,pk);
+    m_outDsrc->addPrimaryKey(m_outDsetName,pk);
   }
   
   return true;
