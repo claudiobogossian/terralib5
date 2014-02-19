@@ -18,15 +18,15 @@
  */
 
 /*!
- \file AggregationOp.h
+ \file IntersectionOp.h
  
- \brief Vecto Aggregation operation.
+ \brief Intersection operation.
  
  \ingroup vp
  */
 
-#ifndef __TERRALIB_VP_INTERNAL_AGGREGATION_OP_H
-#define __TERRALIB_VP_INTERNAL_AGGREGATION_OP_H
+#ifndef __TERRALIB_VP_INTERNAL_INTERSECTION_OP_H
+#define __TERRALIB_VP_INTERNAL_INTERSECTION_OP_H
 
 //Terralib
 
@@ -36,11 +36,11 @@
 
 #include "../datatype/Property.h"
 
+#include "../geometry/Enums.h"
 #include "../memory/DataSet.h"
-#include "../statistics/core/Enums.h"
 
+#include "IntersectionOp.h"
 #include "Config.h"
-#include "Enums.h"
 
 // STL
 #include <map>
@@ -52,44 +52,48 @@ namespace te
 {
   namespace vp
   {
-    class TEVPEXPORT AggregationOp
+    class TEVPEXPORT IntersectionOp
     {
     public:
       
-      AggregationOp();
+      IntersectionOp();
       
-      virtual ~AggregationOp() {}
+      virtual ~IntersectionOp() {}
       
       virtual bool run() = 0;
       
       virtual bool paramsAreValid();
       
-      void setInput(std::auto_ptr<te::da::DataSource> inDsrc,
-                    std::auto_ptr<te::da::DataSet> inDset,
-                    std::auto_ptr<te::da::DataSetType> inDsetType);
-      
-      void setParams(std::vector<te::dt::Property*>& groupProps,
-                     std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >&statSum);
-      
+      void setInput(std::auto_ptr<te::da::DataSource> inFirstDsrc,
+                    std::auto_ptr<te::da::DataSet> inFirstDset,
+                    std::auto_ptr<te::da::DataSource> inSecondDsrc,
+                    std::auto_ptr<te::da::DataSet> inSecondDset
+                    /*std::auto_ptr<te::da::DataSetType> inDsetType*/);
+
+      void setParams(const bool& copyInputColumns, std::size_t inSRID);
+
       void setOutput(std::auto_ptr<te::da::DataSource> outDsrc, std::string dsname);
-      
+
     protected:
-      
-      bool save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType);
+
+      bool save(std::auto_ptr<te::da::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType);
       
       // it defines the type of the result considering the input geometries being aggregated
       te::gm::GeomType getGeomResultType(te::gm::GeomType geom);
       
-      std::auto_ptr<te::da::DataSource> m_inDsrc;
-      std::auto_ptr<te::da::DataSet> m_inDset;
-      std::auto_ptr<te::da::DataSetType> m_inDsetType;
-      
-      std::vector<te::dt::Property*> m_groupProps;
-      std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > m_statSum;
-      
+      std::auto_ptr<te::da::DataSource> m_inFirstDsrc;
+      std::auto_ptr<te::da::DataSet> m_inFirstDset;
+      std::auto_ptr<te::da::DataSetType> m_inFirstDsetType;
+      std::auto_ptr<te::da::DataSource> m_inSecondDsrc;
+      std::auto_ptr<te::da::DataSet> m_inSecondDset;
+      std::auto_ptr<te::da::DataSetType> m_inSecondDsetType;
+
+      bool m_copyInputColumns;
+      std::size_t m_SRID;
+
       std::auto_ptr<te::da::DataSource> m_outDsrc;
-      std::string m_outDset;
+      std::string m_outDsetName;
     };
   }
 }
-#endif // __TERRALIB_VP_INTERNAL_AGGREGATION_OP_H
+#endif // __TERRALIB_VP_INTERNAL_INTERSECTION_OP_H

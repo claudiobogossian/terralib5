@@ -170,8 +170,6 @@ te::da::ObjectIdSet* te::qt::widgets::Histogram::find(std::vector<te::dt::Abstra
     std::pair<itIntervalToObjectIdSet, itIntervalToObjectIdSet> res = m_valuesOids.equal_range(aux);
     itIntervalToObjectIdSet it0 = res.first;
     itIntervalToObjectIdSet it1 = res.second; 
- 
-
 
     while(it0 != it1) 
     {
@@ -185,6 +183,7 @@ te::da::ObjectIdSet* te::qt::widgets::Histogram::find(std::vector<te::dt::Abstra
       oids->add(oid);
       ++it0;
     }
+    delete intervals[i];
   }
 
   return oids;

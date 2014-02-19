@@ -1686,7 +1686,7 @@ namespace te
         FloatsMatrix::RAMMemPol ) )
       {
         paramsPtr->m_rastaDataAccessMutexPtr->lock();
-        paramsPtr->m_returnValuePtr = false;
+        *(paramsPtr->m_returnValuePtr) = false;
         paramsPtr->m_rastaDataAccessMutexPtr->unlock();
         return;
       }
@@ -1715,7 +1715,7 @@ namespace te
           UCharsMatrix::RAMMemPol ) )
         {
           paramsPtr->m_rastaDataAccessMutexPtr->lock();
-          paramsPtr->m_returnValuePtr = false;
+          *(paramsPtr->m_returnValuePtr) = false;
           paramsPtr->m_rastaDataAccessMutexPtr->unlock();
           return;
         }        
@@ -1737,7 +1737,7 @@ namespace te
         FloatsMatrix::RAMMemPol ) )
       {
         paramsPtr->m_rastaDataAccessMutexPtr->lock();
-        paramsPtr->m_returnValuePtr = false;
+        *(paramsPtr->m_returnValuePtr) = false;
         paramsPtr->m_rastaDataAccessMutexPtr->unlock();
         return;
       }
@@ -2092,7 +2092,7 @@ namespace te
           FloatsMatrix::RAMMemPol ) )
         {
           paramsPtr->m_rastaDataAccessMutexPtr->lock();
-          paramsPtr->m_returnValuePtr = false;
+          *(paramsPtr->m_returnValuePtr) = false;
           paramsPtr->m_rastaDataAccessMutexPtr->unlock();
           return;
         }
@@ -2120,7 +2120,7 @@ namespace te
           UCharsMatrix::RAMMemPol ) )
         {
           paramsPtr->m_rastaDataAccessMutexPtr->lock();
-          paramsPtr->m_returnValuePtr = false;
+          *(paramsPtr->m_returnValuePtr) = false;
           paramsPtr->m_rastaDataAccessMutexPtr->unlock();
           return;
         }        
@@ -2148,7 +2148,7 @@ namespace te
           FloatsMatrix::RAMMemPol ) )
         {
           paramsPtr->m_rastaDataAccessMutexPtr->lock();
-          paramsPtr->m_returnValuePtr = false;
+          *(paramsPtr->m_returnValuePtr) = false;
           paramsPtr->m_rastaDataAccessMutexPtr->unlock();
           return;
         }
@@ -2209,7 +2209,7 @@ namespace te
           UCharsMatrix::RAMMemPol ) )
         {
           paramsPtr->m_rastaDataAccessMutexPtr->lock();
-          paramsPtr->m_returnValuePtr = false;
+          *(paramsPtr->m_returnValuePtr) = false;
           paramsPtr->m_rastaDataAccessMutexPtr->unlock();
           return;
         }

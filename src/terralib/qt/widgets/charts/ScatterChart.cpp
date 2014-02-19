@@ -27,9 +27,6 @@
 
 
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
-#include "../../../se/Mark.h"
-#include "../../../se/Graphic.h"
-#include "../../../se/Utils.h"
 #include "Enums.h"
 #include "ScatterChart.h"
 #include "Scatter.h"

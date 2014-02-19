@@ -81,6 +81,8 @@ namespace te
           std::string getShortName() const;
 
           std::string getExtension() const;
+          
+          std::string getPath() const;
 
           bool overight() const;
 

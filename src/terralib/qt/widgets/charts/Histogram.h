@@ -197,6 +197,7 @@ namespace te
             \return  An ObjectIdSet containing all the selected object Ids
  
             \note The caller will take ownership of the returned pointer
+            \note It will take ownership of the given pointers
           */
           te::da::ObjectIdSet* find(std::vector<te::dt::AbstractData*> intervals);
 
