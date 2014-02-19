@@ -459,6 +459,8 @@ set (
   ${SRCDIR}/widgets/table/DataSetTableView.h
   ${SRCDIR}/widgets/table/DataSetTableVerticalHeader.h
   ${SRCDIR}/widgets/table/AddColumnDialog.h
+  ${SRCDIR}/widgets/table/RenameColumnDialog.h
+  ${SRCDIR}/widgets/table/RetypeColumnDialog.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/table" MOC)
 

@@ -50,7 +50,7 @@ namespace te
 {
   namespace vp
   {
-    TEVPEXPORT class AggregationQuery : public AggregationOp
+    class TEVPEXPORT AggregationQuery : public AggregationOp
     {
     
     public:

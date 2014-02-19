@@ -18,28 +18,27 @@
  */
 
 /*!
-  \file AggregationMemory.h
+  \file AggregationQuery.h
    
   \brief 
  
   \ingroup vp
 */
 
-#ifndef __TERRALIB_VP_INTERNAL_AGGREGATION_MEMORY_H
-#define __TERRALIB_VP_INTERNAL_AGGREGATION_MEMORY_H
+#ifndef __TERRALIB_VP_INTERNAL_INTERSECTION_QUERY_H
+#define __TERRALIB_VP_INTERNAL_INTERSECTION_QUERY_H
 
 //Terralib
-#include "../datatype/Property.h"
+#include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
+#include "../datatype/Property.h"
 #include "../geometry/Geometry.h"
 #include "../memory/DataSet.h"
-#include "../statistics/core/Enums.h"
 
-#include "AggregationOp.h"
+#include "IntersectionOp.h"
 #include "Config.h"
 #include "Enums.h"
 #include "Exception.h"
-
 
 // STL
 #include <map>
@@ -51,28 +50,26 @@ namespace te
 {
   namespace vp
   {
-    class TEVPEXPORT AggregationMemory : public AggregationOp
+    class TEVPEXPORT IntersectionQuery : public IntersectionOp
     {
     
     public:
       
-      AggregationMemory();
+      IntersectionQuery();
       
-      ~AggregationMemory();
+      ~IntersectionQuery();
       
       bool run();
-      
-    private:
-      
-      std::map<std::string, std::string> calculateStringStats(const std::vector<te::mem::DataSetItem*>& items);
-      
-      std::map<std::string,double> calculateNumStats(const std::vector<te::mem::DataSetItem*>& items, std::string& modeProp, std::string& modeName);
-      
-      std::auto_ptr<te::da::DataSetType> buildOutDataSetType();
 
+    private:
+      //Colocar no Utils?? esse metodo é usando tanto em query quanto em memória.
+      std::vector<te::dt::Property*> getTabularProps(te::da::DataSetType* dsType);
+
+      te::da::DataSet* updateGeomType(te::da::DataSetType* dsType, te::da::DataSet* ds);
+      
     }; // end class
   } // end namespace vp
 }   // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_AGGREGATION_MEMORY_H
+#endif  // __TERRALIB_VP_INTERNAL_INTERSECTION_QUERY_H
 

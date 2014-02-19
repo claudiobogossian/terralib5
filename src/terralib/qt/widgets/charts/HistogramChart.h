@@ -144,6 +144,13 @@ namespace te
           te::da::ObjectIdSet* highlight(QPointF point);
 
           /*!
+            \brief Highlights the intervals contained by \a rectangle
+
+            \param rect The rectangle containing the intervals to be highlighted.
+          */
+          te::da::ObjectIdSet* highlight(QRectF rect);
+
+          /*!
             \brief color used to hgihlight selected objects on this chart.
 
             \param selColor The color used to hgihlight selected objects on this chart.

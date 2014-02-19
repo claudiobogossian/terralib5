@@ -37,6 +37,7 @@
 
 // Qt
 #include <QtCore/QResource>
+#include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtGui/QApplication>
 #include <QtGui/QSplashScreen>
@@ -92,6 +93,28 @@ int main(int argc, char** argv)
       {
         cFile = te::qt::af::GetDefaultConfigFileOutputDir() + "/config.xml";
         te::qt::af::WriteConfigFile(cFile, "TerraView", "TerraView");
+      }
+
+      // Copying JSON files
+
+      QDir out_dir = QFileInfo(cFile).absoluteDir();
+      info.setFile(out_dir.absolutePath() + "/resources/json/srs.json");
+
+      if(!info.exists())
+      {
+        out_dir.mkpath("resources/json");
+
+        QString origin = te_env + QString("/resources/json");
+
+        QStringList files = QDir(origin).entryList(QDir::Files);
+
+        QFile cf;
+
+        foreach (QString f, files)
+        {
+          cf.setFileName(origin + "/" + f);
+          cf.copy(out_dir.absolutePath() + "/resources/json/" + f);
+        }
       }
 
       tview.resetTerraLib(waitVal != RESTART_CODE);

@@ -180,3 +180,39 @@ TeDatabase* terralib4::DataSource::getTerralib4Db()
 {
   return m_db;
 }
+
+std::vector<std::string> terralib4::DataSource::getTL4Layers()
+{
+  std::vector<std::string> layers;
+
+  std::auto_ptr<te::da::DataSourceTransactor> t = getTransactor();
+  
+  terralib4::Transactor* t4t = dynamic_cast<terralib4::Transactor*>(t.get());
+  layers = t4t->getTL4Layers();
+
+  return layers;
+}
+
+std::vector<std::string> terralib4::DataSource::getTL4Tables()
+{
+  std::vector<std::string> tables;
+
+  std::auto_ptr<te::da::DataSourceTransactor> t = getTransactor();
+  
+  terralib4::Transactor* t4t = dynamic_cast<terralib4::Transactor*>(t.get());
+  tables = t4t->getTL4Tables();
+
+  return tables;
+}
+
+std::vector<std::string> terralib4::DataSource::getTL4Themes()
+{
+  std::vector<std::string> themes;
+
+  std::auto_ptr<te::da::DataSourceTransactor> t = getTransactor();
+  
+  terralib4::Transactor* t4t = dynamic_cast<terralib4::Transactor*>(t.get());
+  themes = t4t->getTL4Themes();
+
+  return themes;
+}
