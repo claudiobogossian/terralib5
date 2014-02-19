@@ -92,7 +92,7 @@ bool te::vp::IntersectionMemory::run()
   secondMember.dt = m_inSecondDsetType.release();
   secondMember.ds = m_inSecondDset.release();
   if(m_copyInputColumns)
-    secondMember.props = this->getTabularProperties(m_inSecondDsetType.get());
+    secondMember.props = this->getTabularProperties(secondMember.dt);
   
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
   resultPair = this->pairwiseIntersection(m_outDsetName, firstMember, secondMember, m_SRID);
