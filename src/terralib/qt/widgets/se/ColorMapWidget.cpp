@@ -40,6 +40,7 @@
 #include "../../../se/InterpolationPoint.h"
 #include "../../../se/ParameterValue.h"
 #include "../../widgets/colorbar/ColorBar.h"
+#include "../../widgets/colorbar/ColorCatalogWidget.h"
 #include "ColorMapWidget.h"
 #include "ui_ColorMapWidgetForm.h"
 
@@ -56,14 +57,15 @@ te::qt::widgets::ColorMapWidget::ColorMapWidget(QWidget* parent, Qt::WindowFlags
   : QWidget(parent, f),
     m_ui(new Ui::ColorMapWidgetForm),
     m_cm(0),
+    m_cb(0),
     m_raster(0)
 {
   m_ui->setupUi(this);
 
   QGridLayout* l = new QGridLayout(m_ui->m_colorBarWidget);
   l->setContentsMargins(0,0,0,0);
-  m_cbWidget = new  te::qt::widgets::colorbar::ColorBar(m_ui->m_colorBarWidget);
-  l->addWidget(m_cbWidget);
+  m_colorBar = new  te::qt::widgets::ColorCatalogWidget(m_ui->m_colorBarWidget);
+  l->addWidget(m_colorBar);
 
   m_ui->m_minValueLineEdit->setValidator(new QDoubleValidator(this));
   m_ui->m_maxValueLineEdit->setValidator(new QDoubleValidator(this));
@@ -71,7 +73,7 @@ te::qt::widgets::ColorMapWidget::ColorMapWidget(QWidget* parent, Qt::WindowFlags
   initialize();
 
   // Signals & slots
-  connect(m_cbWidget, SIGNAL(colorBarChanged()), this, SLOT(onApplyPushButtonClicked()));
+  connect(m_colorBar, SIGNAL(colorBarChanged()), this, SLOT(onApplyPushButtonClicked()));
   connect(m_ui->m_bandComboBox, SIGNAL(activated(QString)), this, SLOT(onBandSelected(QString)));
   connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyPushButtonClicked()));
   connect(m_ui->m_tableWidget, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(onTableWidgetItemDoubleClicked(QTableWidgetItem*)));
@@ -132,11 +134,8 @@ std::string te::qt::widgets::ColorMapWidget::getCurrentBand()
 
 void te::qt::widgets::ColorMapWidget::initialize()
 {
-  m_cb = new te::color::ColorBar(te::color::RGBAColor(255, 0, 0, TE_OPAQUE), te::color::RGBAColor(0, 0, 0, TE_OPAQUE), 256);
-
-  m_cbWidget->setHeight(20);
-  m_cbWidget->setColorBar(m_cb);
-  m_cbWidget->setScaleVisible(false);
+  m_colorBar->getColorBar()->setHeight(20);
+  m_colorBar->getColorBar()->setScaleVisible(false);
 
   m_ui->m_transformComboBox->clear();
 
@@ -275,6 +274,10 @@ void te::qt::widgets::ColorMapWidget::updateUi()
 
 void te::qt::widgets::ColorMapWidget::buildCategorizationMap()
 {
+  delete m_cb;
+
+  m_cb = m_colorBar->getColorBar()->getColorBar();
+
   int sliceValue = m_ui->m_slicesSpinBox->value();
 
   std::vector<te::color::RGBAColor> colorVec = m_cb->getSlices(sliceValue);
@@ -329,6 +332,10 @@ void te::qt::widgets::ColorMapWidget::buildCategorizationMap()
 
 void te::qt::widgets::ColorMapWidget::buildInterpolationMap()
 {
+  delete m_cb;
+
+  m_cb = m_colorBar->getColorBar()->getColorBar();
+
   int sliceValue = m_ui->m_slicesSpinBox->value();
 
   std::vector<te::color::RGBAColor> colorVec = m_cb->getSlices(sliceValue + 1);

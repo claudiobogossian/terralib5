@@ -45,6 +45,7 @@
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/maptools.h>
+#include <terralib/plugin.h>
 #include <terralib/qt/widgets.h>
 
 //Qt
@@ -52,9 +53,29 @@
 
 #include "DataSetManagement.h"
 
+void LoadModules()
+{
+  te::plugin::PluginInfo* info;
+
+  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.pgis.teplg"));
+  te::plugin::PluginManager::getInstance().add(info); 
+ 
+  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg"));
+  te::plugin::PluginManager::getInstance().add(info);
+
+  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.ogr.teplg"));
+  te::plugin::PluginManager::getInstance().add(info); 
+
+  te::plugin::PluginManager::getInstance().loadAll(); 
+
+}
+
 
 int main(int argc, char* argv[])
 {
+  // initialize Terralib support
+  TerraLib::getInstance().initialize();
+  LoadModules();
 
   QApplication app(argc, argv);
 
@@ -62,6 +83,10 @@ int main(int argc, char* argv[])
   mainWindow->show();
 
   app.exec();
+
+  te::plugin::PluginManager::getInstance().unloadAll();
+// shutdown Terralib support
+  TerraLib::getInstance().finalize();
 
   return 0;
 }

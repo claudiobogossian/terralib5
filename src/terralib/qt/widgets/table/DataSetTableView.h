@@ -147,6 +147,18 @@ namespace te
           void showColumn(const int& column);
 
           /*!
+            \brief Rename a column of the table.
+            \param column Index of the column to be renamed.
+          */
+          void renameColumn(const int& column);
+
+          /*!
+            \brief Changes teh type of a column in the table.
+            \param column Index of the column to be changed.
+          */
+          void retypeColumn(const int& column);
+
+          /*!
             \brief Shows all hidden columns.
           */
           void showAllColumns();

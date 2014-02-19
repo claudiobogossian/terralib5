@@ -214,6 +214,21 @@ void te::da::DataSource::renameProperty(const std::string& datasetName,
   return t->renameProperty(datasetName, propertyName, newPropertyName);  
 }
 
+void te::da::DataSource::changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp)
+{
+  std::auto_ptr<DataSourceTransactor> t = getTransactor();
+  return t->changePropertyDefinition(datasetName, propName, newProp);  
+}
+
+void te::da::DataSource::changePropertiesDefinitions(const std::string& datasetName, const std::vector<std::string>& propsNames, const std::vector<te::dt::Property*> newProps)
+{
+  assert(propsNames.size() == newProps.size());
+
+  for(int i=0; i<propsNames.size(); i++)
+    changePropertyDefinition(datasetName, propsNames[i], newProps[i]);
+}
+
+
 std::auto_ptr<te::da::PrimaryKey> te::da::DataSource::getPrimaryKey(const std::string& datasetName)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();

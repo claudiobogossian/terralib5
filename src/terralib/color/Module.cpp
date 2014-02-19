@@ -27,6 +27,7 @@
 #include "../common/Logger.h"
 #include "../common/TerraLib.h"
 #include "../common/Translator.h"
+#include "ColorSchemeCatalogManager.h"
 #include "Config.h"
 #include "Module.h"
 
@@ -53,6 +54,10 @@ te::color::Module::~Module()
 
 void te::color::Module::initialize()
 {
+#ifdef TE_AUTOMATIC_INITIALIZATION
+  te::color::ColorSchemeCatalogManager::getInstance().init();
+#endif
+
   TE_LOG_TRACE(TR_COLOR("TerraLib Color module initialized!"));
 }
 

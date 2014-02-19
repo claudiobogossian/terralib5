@@ -52,6 +52,8 @@ namespace te
     class TEMEMORYEXPORT ExpansibleRaster: public te::rst::Raster
     {
       public:
+        
+        ExpansibleRaster();
 
         /*!
           \brief Constructor.
@@ -196,8 +198,6 @@ namespace te
         void dummyFillBlocks( const std::vector<ExpansibleBandBlocksManager::BlockIndex3D>& blocksCoords );
 
       private :
-
-        ExpansibleRaster();
 
         ExpansibleRaster( const Raster &rhs );
 
