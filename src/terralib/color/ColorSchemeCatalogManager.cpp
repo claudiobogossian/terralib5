@@ -27,11 +27,96 @@
 #include "../common/Exception.h"
 #include "../common/STLUtils.h"
 #include "../common/Translator.h"
+#include "ColorScheme.h"
 #include "ColorSchemeCatalog.h"
+#include "ColorSchemeGroup.h"
 #include "ColorSchemeCatalogManager.h"
+
+// Boost
+#include <boost/foreach.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 // STL
 #include <cassert>
+#include <fstream>
+#include <vector>
+
+void te::color::ColorSchemeCatalogManager::init()
+{
+  te::color::ColorSchemeCatalog* csc = findByName("Default");
+  if(csc)
+    throw te::common::Exception(TR_COLOR("The default color scheme catalog is already initialized!"));
+
+  const char* te_env = getenv("TERRALIB_DIR");
+
+  if(te_env == 0)
+    throw te::common::Exception(TR_COLOR("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
+
+  try
+  {
+    std::ifstream f;
+
+    std::string jsonf(te_env);
+    jsonf += "/resources/json/color_ramps.json";
+    
+    f.open(jsonf.c_str());
+    if (!f.is_open())
+      return;
+
+    //create default color scheme catalog
+    csc = new te::color::ColorSchemeCatalog("Default");
+
+    insert(csc);
+
+    boost::property_tree::ptree pt;
+    boost::property_tree::json_parser::read_json(f,pt);
+    BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt.get_child("ramps"))
+    {
+      std::string name = v.second.get<std::string>("name");
+
+      //create terraview color scheme group
+      te::color::ColorSchemeGroup* csg = new te::color::ColorSchemeGroup(name);
+
+      csc->push_back(csg);
+
+      BOOST_FOREACH(boost::property_tree::ptree::value_type &t, v.second.get_child("schemes"))
+      {
+        std::string name = t.second.get<std::string>("name");
+
+        te::color::ColorScheme* cs = new te::color::ColorScheme(name);
+
+        std::vector<te::color::RGBAColor>* rgbaVec = new std::vector<te::color::RGBAColor>();
+
+        BOOST_FOREACH(boost::property_tree::ptree::value_type &c, t.second.get_child("values"))
+        {
+          unsigned int red = c.second.get<unsigned int>("red");
+          unsigned int green = c.second.get<unsigned int>("green");
+          unsigned int blue = c.second.get<unsigned int>("blue");
+
+          rgbaVec->push_back(te::color::RGBAColor(red, green, blue, 0));
+        }
+
+        cs->push_back(rgbaVec);
+
+        csg->push_back(cs);
+      }
+    }
+
+    f.close();
+  }
+  catch(boost::property_tree::json_parser::json_parser_error &je)
+  {
+    std::string errmsg = "Error parsing: " + je.filename() + ": " + je.message();
+    te::common::Exception ex(TR_COLOR(errmsg));
+    throw(ex);
+  }
+  catch (std::exception const& e)
+  {
+    std::cerr << e.what() << std::endl;
+  }
+  return;
+}
 
 void te::color::ColorSchemeCatalogManager::insert(ColorSchemeCatalog* c)
 {

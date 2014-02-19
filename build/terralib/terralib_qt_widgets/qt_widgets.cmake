@@ -141,6 +141,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/classification" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/colorbar/ColorBar.h
+  ${SRCDIR}/widgets/colorbar/ColorCatalogWidget.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/colorbar" MOC)
 
@@ -521,6 +522,7 @@ file(
   ${SRCDIR}/widgets/canvas/ui/*.ui
   ${SRCDIR}/widgets/charts/ui/*.ui
   ${SRCDIR}/widgets/classification/ui/*.ui
+  ${SRCDIR}/widgets/colorbar/ui/*.ui
  # ${SRCDIR}/widgets/datagrid/*.ui
   ${SRCDIR}/widgets/dataset/*.ui
   ${SRCDIR}/widgets/dataset/selector/ui/*.ui
