@@ -70,7 +70,7 @@ namespace te
             
             bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
             
-            te::rp::TiePointsLocator::InputParameters m_locatorParams; //!< The parameters used by the tie-points locator when processing each rasters pair (leave untouched to use the default).
+            te::rp::TiePointsLocator::InputParameters m_locatorParams; //!< The parameters used by the tie-points locator when matching each raster (feeder) against the input raster (m_RasterPtr),leave untouched to use the default values.
             
             double m_minRequiredTiePointsCoveredAreaPercent; //!< The mininumum required area percent (from the input raster ) covered by tie-points - valid range [0,100] (default:0).
             

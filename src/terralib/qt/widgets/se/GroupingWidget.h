@@ -57,11 +57,8 @@ namespace te
   {
     namespace widgets
     {
-// Forward declarations
-      namespace colorbar
-      {
-        class ColorBar;
-      }
+      // Forward declarations
+      class ColorCatalogWidget;
 
       /*!
         \class GroupingWidget
@@ -148,7 +145,7 @@ namespace te
 
           te::color::ColorBar* m_cb;                                //!< Terralib color bar objetc
           te::map::AbstractLayerPtr m_layer;                        //!< TerraLib layer auto ptr
-          te::qt::widgets::colorbar::ColorBar* m_colorBar;          //!< Widget used to pick a color.
+          te::qt::widgets::ColorCatalogWidget* m_colorBar;         //!< Widget used to pick a color.
           std::vector<te::map::GroupingItem*> m_legend;             //!< Grouping items
 
           bool m_manual;

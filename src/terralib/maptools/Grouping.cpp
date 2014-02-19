@@ -114,6 +114,8 @@ const std::vector<te::map::GroupingItem*>& te::map::Grouping::getGroupingItems()
 void te::map::Grouping::setGroupingItems(std::vector<te::map::GroupingItem*>& items)
 {
   m_items = items;
+
+  m_numSlices = m_items.size();
 }
 
 bool te::map::Grouping::isVisible() const
