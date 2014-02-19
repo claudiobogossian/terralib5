@@ -561,6 +561,41 @@ void te::ogr::Transactor::renameProperty(const std::string& datasetName,
   }
 }
 
+void te::ogr::Transactor::changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp)
+{
+  if (!m_ogrDs->getOGRDataSource())
+    return;
+
+  std::auto_ptr<te::dt::Property> p;
+
+  p.reset(newProp);
+
+  OGRLayer* l = m_ogrDs->getOGRDataSource()->GetLayerByName(datasetName.c_str());
+
+  if(l != 0)
+  {
+    if(!l->TestCapability(OLCAlterFieldDefn))
+      throw Exception(TR_OGR("This data source do not support the operation of alter columns type."));
+
+    int idx = l->GetLayerDefn()->GetFieldIndex(propName.c_str());
+
+    if(idx == -1)
+      throw Exception(TR_OGR("Field to be renamed does not exists."));
+
+    //OGRFieldDefn* newDef = new OGRFieldDefn(l->GetLayerDefn()->GetFieldDefn(idx));
+
+    //newDef->SetPrecision(8);
+    //newDef->SetType(OGRFieldType::OFTReal);
+    OGRFieldDefn* dfn = Convert2OGR(p.get());
+//    dfn->SetPrecision(8);
+
+    OGRErr err = l->AlterFieldDefn(idx, dfn, ALTER_TYPE_FLAG);
+
+    if(err != OGRERR_NONE)
+      throw Exception(TR_OGR("Fail to to change field type."));
+  }
+}
+
 std::auto_ptr<te::da::PrimaryKey> te::ogr::Transactor::getPrimaryKey(const std::string& datasetName)
 {
   if (!m_ogrDs->getOGRDataSource())

@@ -607,6 +607,8 @@ namespace te
                                     const std::string& propertyName,
                                     const std::string& newPropertyName) = 0;
 
+        virtual void changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp);
+
         /*!
           \brief It retrieves the primary key of the dataset.
 

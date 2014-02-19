@@ -541,12 +541,15 @@ void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset)
 {
   m_model->setDataSet(dset);
 
-  std::vector<int> geoCols;
-  std::vector<int>::iterator it;
-  GetGeometryColumnsPositions(dset, geoCols);
+  if(dset != 0)
+  {
+    std::vector<int> geoCols;
+    std::vector<int>::iterator it;
+    GetGeometryColumnsPositions(dset, geoCols);
 
-  for(it = geoCols.begin(); it != geoCols.end(); ++it)
-    hideColumn(*it);
+    for(it = geoCols.begin(); it != geoCols.end(); ++it)
+      hideColumn(*it);
+  }
 
   m_popupFilter->setDataSet(dset);
   m_delegate->setDataSet(dset);
@@ -627,16 +630,18 @@ void te::qt::widgets::DataSetTableView::retypeColumn(const int& column)
 
   std::auto_ptr<te::da::DataSetType> schema = m_layer->getSchema();
   te::dt::Property* prp;
+  std::string dsetName = schema->getName();
+  std::string columnName;
 
   prp = schema->getProperty(column);
-
-//  schema->set
 
   if(prp == 0)
     throw Exception(tr("Fail to get property of the dataset.").toStdString());
 
-  dlg.setTableName(schema->getName().c_str());
-  dlg.setColumnName(prp->getName().c_str());
+  columnName = prp->getName();
+
+  dlg.setTableName(dsetName.c_str());
+  dlg.setColumnName(columnName.c_str());
   dlg.setType(prp->getType());
 
   if(dlg.exec() == QDialog::Accepted)
@@ -646,14 +651,11 @@ void te::qt::widgets::DataSetTableView::retypeColumn(const int& column)
     if(dsrc.get() == 0)
       throw Exception(tr("Fail to get data source.").toStdString());
 
-    delete prp;
-    prp = dlg.getProperty().release();
+    setDataSet(0);
 
-    std::vector<size_t> prps(1, column);
+    dsrc->changePropertyDefinition(dsetName, columnName, dlg.getProperty().release());
 
-    std::map<std::string, std::string> opts;
-
-    dsrc->update(schema->getName(), 0, prps, 0, opts); 
+    setLayer(m_layer);
   }
 }
 
