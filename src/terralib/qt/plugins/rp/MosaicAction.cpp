@@ -55,6 +55,13 @@ void te::qt::plugins::rp::MosaicAction::onActionActivated(bool checked)
   if(dlg.exec() == QDialog::Accepted)
   {
     //add new layer
-    addNewLayer(dlg.getOutputLayer());
+    std::list<te::map::AbstractLayerPtr> layers = dlg.getOutputLayers();
+    std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
+
+    while(it != layers.end())
+    {
+      addNewLayer(*it);
+      ++it;
+    }
   }
 }

@@ -66,7 +66,7 @@ namespace te
 
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
 
-          te::map::AbstractLayerPtr getOutputLayer();
+          std::list<te::map::AbstractLayerPtr> getOutputLayers();
 
         protected:
 
@@ -86,7 +86,7 @@ namespace te
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerSearchPage;
           std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
 
-          te::map::AbstractLayerPtr m_outputLayer;
+          std::list<te::map::AbstractLayerPtr> m_outputLayerList;
       };
     }   // end namespace widgets
   }     // end namespace qt
