@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../Utils.h"
 #include "ParameterTableWidget.h"
 #include "RasterInfoWidget.h"
 #include "ui_RasterInfoWidgetForm.h"
@@ -152,6 +153,11 @@ std::string te::qt::widgets::RasterInfoWidget::getExtension() const
   return ".tif";
 }
 
+std::string te::qt::widgets::RasterInfoWidget::getPath() const
+{
+  return m_dir + "/";
+}
+
 bool te::qt::widgets::RasterInfoWidget::overight() const
 {
   return m_ui->m_overightRadioButton->isChecked();
@@ -191,12 +197,14 @@ std::string te::qt::widgets::RasterInfoWidget::getBaseName() const
 
 void te::qt::widgets::RasterInfoWidget::onOpenFileDlgToolButtonClicked()
 {
-  QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+  QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), te::qt::widgets::GetFilePathFromSettings("rp_raster_info"), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
   if(dir.isEmpty() == false)
   {
     m_dir = dir.replace(QRegExp("\\\\"), "/").toStdString();
 
     m_ui->m_fileNameLineEdit->setText(m_dir.c_str());
+
+    te::qt::widgets::AddFilePathToSettings(m_dir.c_str(), "rp_raster_info");
   }
 }
