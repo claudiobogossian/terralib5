@@ -28,12 +28,24 @@
 #include "../../../maptools/Utils.h"
 #include "../../../se/Stroke.h"
 #include "../../../se/SvgParameter.h"
+#include "../../../xml/Reader.h"
+#include "../../../xml/ReaderFactory.h"
+#include "../Exception.h"
+#include "Symbol.h"
+#include "SymbolLibrary.h"
+#include "SymbolLibraryManager.h"
 #include "Utils.h"
+
+// Boost
+#include <boost/format.hpp>
 
 // Qt
 #include <QtCore/QVector>
 #include <QtGui/QBrush>
 #include <QtGui/QPen>
+
+// STL
+#include <cassert>
 
 void te::qt::widgets::Config(QPen& pen, const te::se::Stroke* stroke)
 {
@@ -109,4 +121,114 @@ void te::qt::widgets::Config(QBrush& brush, const te::se::Fill* fill)
   brush.setColor(qrgba);
 
   /* TODO: Is necessary verify <GraphicFill> element here ?! */
+}
+
+void te::qt::widgets::ReadSymbolLibrary(const std::string& path)
+{
+  std::auto_ptr<te::xml::Reader> reader(te::xml::ReaderFactory::make("XERCES"));
+  reader->read(path);
+
+  if(!reader->next())
+    throw Exception((boost::format(TR_QT_WIDGETS("Could not read symbol library information in file: %1%.")) % path).str());
+
+  if(reader->getNodeType() != te::xml::START_ELEMENT)
+    throw Exception((boost::format(TR_QT_WIDGETS("Error reading the document %1%, the start element wasn't found.")) % path).str());
+
+  if(reader->getElementLocalName() != "SymbolLibrary")
+    throw Exception((boost::format(TR_QT_WIDGETS("The first tag in the document %1% is not 'SymbolLibrary'.")) % path).str());
+
+  std::string name = reader->getAttr("name");
+
+  std::auto_ptr<SymbolLibrary> library(new SymbolLibrary(name));
+
+  reader->next();
+
+  while((reader->getNodeType() == te::xml::START_ELEMENT) &&
+        (reader->getElementLocalName() == "Symbol"))
+  {
+    Symbol* symbol = ReadSymbol(*reader);
+    library->insert(symbol);
+  }
+
+  SymbolLibraryManager::getInstance().insert(library.release());
+
+  assert(reader->getNodeType() == te::xml::END_DOCUMENT);
+}
+
+te::qt::widgets::Symbol* te::qt::widgets::ReadSymbol(te::xml::Reader& reader)
+{
+  std::auto_ptr<te::qt::widgets::Symbol> symbol(new te::qt::widgets::Symbol);
+
+  te::qt::widgets::SymbolInfo info;
+
+  // Symbol Id
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Id");
+  reader.next();
+  info.m_id = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  // Symbol Name
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Name");
+  reader.next();
+  info.m_name = reader.getElementValue();
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
+  // Symbol Author
+  if(reader.getElementLocalName() == "Author")
+  {
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    reader.next();
+    info.m_author = reader.getElementValue();
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
+  }
+
+  // Symbol Tags
+  if(reader.getElementLocalName() == "Tags")
+  {
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    reader.next();
+    info.m_tags = reader.getElementValue();
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
+  }
+
+  // Symbol Description
+  if(reader.getElementLocalName() == "Description")
+  {
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    reader.next();
+    info.m_description = reader.getElementValue();
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
+  }
+
+  symbol->setInfo(info);
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName().find("Symbolizer") != std::string::npos);
+
+  // TODO: *** Need move the OGC Symbology Enconding serialization methods from <te::serialization> module to <te::se> module! ***
+  while((reader.getNodeType() == te::xml::START_ELEMENT) &&
+        (reader.getElementLocalName().find("Symbolizer") != std::string::npos))
+    //symbol->addSymbolizer(te::serialize::Symbolizer::getInstance().read(reader));
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
+  return symbol.release();
 }
