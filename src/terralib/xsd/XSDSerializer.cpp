@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,20 +24,55 @@
 */
 
 // TerraLib
-#include "XSDSerializer.h"
+#include "../common/StringUtils.h"
 #include "../xml/Reader.h"
+#include "../xml/ReaderFactory.h"
 #include "../xml/Writer.h"
 #include "All.h"
+#include "Annotated.h"
 #include "Annotation.h"
 #include "Any.h"
+#include "AnyAttribute.h"
 #include "AppInfo.h"
+#include "Attribute.h"
+#include "AttributeGroup.h"
+#include "Choice.h"
+#include "ComplexContent.h"
+#include "ComplexType.h"
 #include "Documentation.h"
+#include "Element.h"
+#include "Exception.h"
+#include "Extension.h"
+#include "Field.h"
+#include "Group.h"
+#include "Import.h"
+#include "Include.h"
+#include "Key.h"
+#include "KeyRef.h"
+#include "List.h"
+#include "QName.h"
+#include "Redefine.h"
+#include "Restriction4ComplexContent.h"
+#include "Restriction4SimpleContent.h"
+#include "Restriction4SimpleType.h"
+#include "Selector.h"
+#include "SimpleContent.h"
+#include "SimpleType.h"
+#include "Schema.h"
+#include "Sequence.h"
+#include "Union.h"
+#include "Unique.h"
+#include "XSDSerializer.h"
 
 // STL
 #include <cassert>
 #include <memory>
+#include <set>
 
-#ifdef TE_ENABLED_XML
+// Boost
+#include <boost/format.hpp>
+
+//#ifdef TE_ENABLED_XML
 
 te::xsd::All* te::xsd::ReadAll(te::xml::Reader& reader)
 {
@@ -241,7 +276,7 @@ te::xsd::AnyAttribute* te::xsd::ReadAnyAttribute(te::xml::Reader& reader)
   return anyAttribute.release();
 }
 
-void te::serialize::Save(AnyAttribute* anyAttribute, te::xml::Writer& writer)
+void te::xsd::Save(AnyAttribute* anyAttribute, te::xml::Writer& writer)
 {
 }
 
@@ -1383,10 +1418,10 @@ te::xsd::Schema* te::xsd::ReadSchema(const std::string& path)
   reader->read(path);
 
   if(!reader->next())
-    throw Exception((boost::format(TR_SERIALIZATION("Could not read the XSD Schema in file: %1%.")) % path).str());
+    throw Exception((boost::format(TR_XSD("Could not read the XSD Schema in file: %1%.")) % path).str());
 
   if(reader->getNodeType() != te::xml::START_ELEMENT)
-    throw Exception((boost::format(TR_SERIALIZATION("Error reading the document %1%, the start element wasn't found.")) % path).str());
+    throw Exception((boost::format(TR_XSD("Error reading the document %1%, the start element wasn't found.")) % path).str());
 
   return ReadSchema(*reader);
 }
@@ -1857,4 +1892,4 @@ te::xsd::FacetType te::xsd::GetFacetType(const std::string& name)
   return te::xsd::Pattern;
 }
 
-#endif
+//#endif

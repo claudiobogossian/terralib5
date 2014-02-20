@@ -28,8 +28,12 @@
 
 // TerraLib
 #include "Config.h"
+#include "Enums.h"
 
-#ifdef TE_ENABLED_XML
+//STL
+#include <string>
+
+//#ifdef TE_ENABLED_XML
 
 namespace te
 {
@@ -44,6 +48,37 @@ namespace te
     class All;
     class Annotation;
     class Any;
+    class AnyAttribute;
+    class Attribute;
+    class AttributeGroup;
+    class Choice;
+    class ComplexContent;
+    class ComplexType;
+    class Element;
+    class Extension;
+    class Field;
+    class Group;
+    class Import;
+    class Include;
+    class Key;
+    class KeyRef;
+    class List;
+    class Redefine;
+    class Restriction4ComplexContent;
+    class Restriction4SimpleContent;
+    class Restriction4SimpleType;
+    class Schema;
+    class Selector;
+    class Sequence;
+    class SimpleContent;
+    class SimpleType;
+    class Union;
+    class Unique;
+    class Identifiable;
+    class Annotated;
+    class Occurs;
+    class QName;
+
 
     TEXSDEXPORT All* ReadAll(te::xml::Reader& reader);
 
@@ -176,6 +211,6 @@ namespace te
   } // end namespace xsd
 }   // end namespace te
 
-#endif // TE_ENABLED_XML
+//#endif // TE_ENABLED_XML
 
 #endif  // __TERRALIB_XSD_INTERNAL_XSDSERIALIZER_H
