@@ -61,6 +61,41 @@ std::string RemoveSpatialSql(const std::string& sql)
   return newQuery;
 }
 
+OGRFieldType GetOGRType(int te_type)
+{
+  switch (te_type)
+  {
+    case te::dt::CHAR_TYPE:
+    case te::dt::UCHAR_TYPE:
+    case te::dt::STRING_TYPE:
+
+      return OFTString;
+    break;
+
+    case te::dt::INT16_TYPE:
+    case te::dt::UINT16_TYPE:
+    case te::dt::INT32_TYPE:
+    case te::dt::UINT32_TYPE:
+    case te::dt::INT64_TYPE:
+    case te::dt::UINT64_TYPE:
+      return OFTInteger;
+    break;
+
+    case te::dt::FLOAT_TYPE:
+    case te::dt::DOUBLE_TYPE:
+    case te::dt::NUMERIC_TYPE:
+      return OFTReal;
+    break;
+
+    case te::dt::DATETIME_TYPE:
+      return OFTDateTime;
+    break;
+  };
+
+  return OFTInteger;
+}
+
+
 te::ogr::Transactor::Transactor(DataSource* ds)
   : te::da::DataSourceTransactor(),
     m_ogrDs(ds)
@@ -582,12 +617,9 @@ void te::ogr::Transactor::changePropertyDefinition(const std::string& datasetNam
     if(idx == -1)
       throw Exception(TR_OGR("Field to be renamed does not exists."));
 
-    //OGRFieldDefn* newDef = new OGRFieldDefn(l->GetLayerDefn()->GetFieldDefn(idx));
+    OGRFieldDefn* dfn = l->GetLayerDefn()->GetFieldDefn(idx);
 
-    //newDef->SetPrecision(8);
-    //newDef->SetType(OGRFieldType::OFTReal);
-    OGRFieldDefn* dfn = Convert2OGR(p.get());
-//    dfn->SetPrecision(8);
+    dfn->SetType(GetOGRType(newProp->getType()));
 
     OGRErr err = l->AlterFieldDefn(idx, dfn, ALTER_TYPE_FLAG);
 
@@ -1103,39 +1135,6 @@ void te::ogr::Transactor::remove(const std::string& datasetName, const te::da::O
   commit();
 }
 
-OGRFieldType GetOGRType(int te_type)
-{
-  switch (te_type)
-  {
-    case te::dt::CHAR_TYPE:
-    case te::dt::UCHAR_TYPE:
-    case te::dt::STRING_TYPE:
-
-      return OFTString;
-    break;
-
-    case te::dt::INT16_TYPE:
-    case te::dt::UINT16_TYPE:
-    case te::dt::INT32_TYPE:
-    case te::dt::UINT32_TYPE:
-    case te::dt::INT64_TYPE:
-    case te::dt::UINT64_TYPE:
-      return OFTInteger;
-    break;
-
-    case te::dt::FLOAT_TYPE:
-    case te::dt::DOUBLE_TYPE:
-    case te::dt::NUMERIC_TYPE:
-      return OFTReal;
-    break;
-
-    case te::dt::DATETIME_TYPE:
-      return OFTDateTime;
-    break;
-  };
-
-  return OFTInteger;
-}
 
 void te::ogr::Transactor::update(const std::string& datasetName,
                     te::da::DataSet* /*dataset*/,
@@ -1144,27 +1143,6 @@ void te::ogr::Transactor::update(const std::string& datasetName,
                     const std::map<std::string, std::string>& /*options*/,
                     std::size_t /*limit*/)
 {
-  if(!m_ogrDs->getOGRDataSource())
-    return;
-
-  OGRLayer* l = m_ogrDs->getOGRDataSource()->GetLayerByName(datasetName.c_str());
-
-  if(l == 0)
-    throw Exception(TR_OGR("Could not retrieve the DataSet from data source."));
-
-  std::vector<size_t>::const_iterator it;
-
-  for(it = properties.begin(); it != properties.end(); ++it)
-  {
-    te::dt::Property* t_def = m_ogrDs->getDataSetType(datasetName)->getProperty(*it);
-    OGRFieldDefn* o_def = l->GetLayerDefn()->GetFieldDefn(*it);
-
-    OGRFieldDefn* no_def = new OGRFieldDefn(o_def); 
-
-    no_def->SetType(GetOGRType(t_def->getType()));
-
-    l->AlterFieldDefn(*it, no_def, ALTER_TYPE_FLAG);
-  }
 }
 
 void te::ogr::Transactor::optimize(const std::map<std::string, std::string>& /*opInfo*/)

@@ -22,8 +22,8 @@
 #include <ui_RenameColumnDialogForm.h>
 
 // Qt
-#include <QtGui/QDialogButtonBox.h>
-#include <QtGui/QPushButton.h>
+#include <QtGui/QDialogButtonBox>
+#include <QtGui/QPushButton>
 
 te::qt::widgets::RenameColumnDialog::RenameColumnDialog(QWidget* parent) :
 QDialog(parent)

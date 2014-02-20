@@ -41,24 +41,26 @@ if(WIN32)
 endif()
 
 list (APPEND TE_DEP_LIBS
-    terralib_annotationtext
+        terralib_annotationtext
 		terralib_classification
 		terralib_color
 		terralib_common
 		terralib_dataaccess
 		terralib_datatype
 		terralib_filter
-#    terralib_gdal
+        #terralib_gdal
 		terralib_geometry
 		terralib_maptools
 		terralib_memory
 		terralib_raster
+		terralib_serialization
+		terralib_srs
 		terralib_statistics
 		terralib_symbology
-		terralib_srs
 		terralib_rp
-    terralib_plugin
+        terralib_plugin
 		terralib_xlink
+		terralib_xml
 		qtpropertybrowser
     )
 

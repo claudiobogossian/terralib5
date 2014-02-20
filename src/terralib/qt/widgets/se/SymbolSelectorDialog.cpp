@@ -25,7 +25,6 @@
 
 // TerraLib
 #include "../../../common/Exception.h"
-#include "../../../serialization/qt/widgets/Symbol.h"
 #include "Symbol.h"
 #include "SymbolInfoDialog.h"
 #include "SymbolLibrary.h"
@@ -34,6 +33,7 @@
 #include "SymbologyPreview.h"
 #include "SymbolSelectorDialog.h"
 #include "ui_SymbolSelectorDialogForm.h"
+#include "Utils.h"
 
 // Qt
 #include <QtGui/QFileDialog>
@@ -119,14 +119,14 @@ void te::qt::widgets::SymbolSelectorDialog::onShowSymbolInfoPushButtonPressed()
 
 void te::qt::widgets::SymbolSelectorDialog::onLoadSymbolLibraryPushButtonPressed()
 {
-  QString path = QFileDialog::getOpenFileName(this, tr("Select a TerraLib Symbol Library File"), "", "XML (.xml)");
+  QString path = QFileDialog::getOpenFileName(this, tr("Select a TerraLib Symbol Library File"), "", "TerraLib Symbol Library Files (*.xml)");
   if(path.isNull())
     return;
 
   try
   {
-     /*te::serialize::ReadSymbolLibrary(path.toStdString());
-     initialize();*/
+     ReadSymbolLibrary(path.toStdString());
+     initialize();
   }
   catch(te::common::Exception& e)
   {
@@ -147,6 +147,8 @@ void te::qt::widgets::SymbolSelectorDialog::onSearchLineEditTextChanged(const QS
 
 void te::qt::widgets::SymbolSelectorDialog::initialize()
 {
+  m_ui->m_symbolLibraryTreeWidget->clear();
+
   // Gets the loaded libraries
   std::pair<std::map<std::string, SymbolLibrary*>::const_iterator,
             std::map<std::string, SymbolLibrary*>::const_iterator> iteratorsLibrary = SymbolLibraryManager::getInstance().getIterator();
