@@ -263,6 +263,12 @@ bool AggregOGRToOGR()
   
   std::string outDS = "result";
   
+  if (trgDs->dataSetExists(outDS))
+  {
+    std::cout << "A dataset with the same requested output dataset name already exists: " << outDS << std::endl;
+    return false;
+  }
+
   // sera feito por algum tipo de factory
   te::vp::AggregationOp* aggregOp = new te::vp::AggregationMemory();
 
@@ -468,9 +474,9 @@ bool AggregPGISToOGR()
   stat1.push_back(te::stat::MIN_VALUE);
   stats.insert(std::make_pair(prop1.release(), stat1));
 
-  std::string filename2(""TE_DATA_EXAMPLE_DIR"/Nulos/result.shp");
+  std::string uriResult(""TE_DATA_EXAMPLE_DIR"/Nulos/result.shp");
   std::map<std::string, std::string> tgrInfo;
-  tgrInfo["URI"] = filename2;
+  tgrInfo["URI"] = uriResult;
   tgrInfo["DRIVER"] = "ESRI Shapefile";
 
   std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");

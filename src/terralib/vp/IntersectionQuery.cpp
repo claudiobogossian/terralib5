@@ -87,10 +87,10 @@ bool te::vp::IntersectionQuery::run()
   te::da::Fields* fields = new te::da::Fields;
   te::da::Select* select = new te::da::Select;
 
-  std::vector<te::dt::Property*> firstProps = this->getTabularProps(m_inFirstDsetType.get());
+  std::vector<te::dt::Property*> firstProps = getTabularProps(m_inFirstDsetType.get());
   std::vector<te::dt::Property*> secondProps;
   if(m_copyInputColumns)
-    secondProps = this->getTabularProps(m_inSecondDsetType.get());
+    secondProps = getTabularProps(m_inSecondDsetType.get());
 
   te::gm::GeometryProperty* firstGeom;
   te::gm::GeometryProperty* secondGeom;
@@ -174,25 +174,6 @@ bool te::vp::IntersectionQuery::run()
   outDset->moveBeforeFirst();
 
   return save(outDset, outDataSetType);
-}
-
-
-std::vector<te::dt::Property*> te::vp::IntersectionQuery::getTabularProps(te::da::DataSetType* dsType)
-{
-  std::vector<te::dt::Property*> props;
-  te::dt::Property* prop;
-
-  for(std::size_t i = 0; i < dsType->getProperties().size(); ++i)
-  {
-    prop = dsType->getProperty(i);
-
-    if(prop->getType() != te::dt::GEOMETRY_TYPE && prop->getType() != te::dt::NUMERIC_TYPE) 
-    {
-      props.push_back(prop);
-    }
-  }
-
-  return props;
 }
 
 te::da::DataSet* te::vp::IntersectionQuery::updateGeomType(te::da::DataSetType* dsType, te::da::DataSet* ds)

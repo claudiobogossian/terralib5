@@ -28,6 +28,7 @@
 #include "../../../maptools/Utils.h"
 #include "../../../se/Stroke.h"
 #include "../../../se/SvgParameter.h"
+#include "../../../serialization/se/Symbolizer.h"
 #include "../../../xml/Reader.h"
 #include "../../../xml/ReaderFactory.h"
 #include "../Exception.h"
@@ -222,10 +223,12 @@ te::qt::widgets::Symbol* te::qt::widgets::ReadSymbol(te::xml::Reader& reader)
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName().find("Symbolizer") != std::string::npos);
 
-  // TODO: *** Need move the OGC Symbology Enconding serialization methods from <te::serialization> module to <te::se> module! ***
+  /* TODO: *** Need move the OGC Symbology Enconding serialization methods 
+              from <te::serialization> module to <te::se> module to avoid dependency with serialization module! ***/
+
   while((reader.getNodeType() == te::xml::START_ELEMENT) &&
         (reader.getElementLocalName().find("Symbolizer") != std::string::npos))
-    //symbol->addSymbolizer(te::serialize::Symbolizer::getInstance().read(reader));
+    symbol->addSymbolizer(te::serialize::Symbolizer::getInstance().read(reader));
 
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
   reader.next();
