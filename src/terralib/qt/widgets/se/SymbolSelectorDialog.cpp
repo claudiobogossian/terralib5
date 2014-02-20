@@ -25,7 +25,6 @@
 
 // TerraLib
 #include "../../../common/Exception.h"
-#include "../../../serialization/qt/widgets/Symbol.h"
 #include "Symbol.h"
 #include "SymbolInfoDialog.h"
 #include "SymbolLibrary.h"
@@ -125,8 +124,8 @@ void te::qt::widgets::SymbolSelectorDialog::onLoadSymbolLibraryPushButtonPressed
 
   try
   {
-     /*te::serialize::ReadSymbolLibrary(path.toStdString());
-     initialize();*/
+     //ReadSymbolLibrary(path.toStdString());
+     //initialize();
   }
   catch(te::common::Exception& e)
   {
