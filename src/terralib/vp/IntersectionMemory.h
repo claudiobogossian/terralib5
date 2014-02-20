@@ -74,8 +74,6 @@ namespace te
 
       typedef te::sam::rtree::Index<size_t, 8>* DataSetRTree;
 
-      //Colocar no Utils?? esse metodo é usando tanto em query quanto em memória.
-      std::vector<te::dt::Property*> getTabularProperties(te::da::DataSetType* dsType);
 
       std::pair<te::da::DataSetType*, te::da::DataSet*> pairwiseIntersection(std::string newName, 
                                                                             IntersectionMember firstMember, 
