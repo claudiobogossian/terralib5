@@ -68,6 +68,19 @@ namespace te
       }
     }
     
+    bool FeederConstRasterVector::moveTo( const unsigned int index )
+    {
+      if( index >= m_rasters.size() )
+      {
+        return false;
+      }
+      else
+      {
+        m_currentOffset = index;
+        return true;
+      }
+    }
+    
     void FeederConstRasterVector::reset()
     {
       m_currentOffset = 0;
@@ -141,6 +154,31 @@ namespace te
         }
       }
     }
+    
+    bool FeederConstRasterInfo::moveTo( const unsigned int index )
+    {
+      if( index >= m_rInfos.size() )
+      {
+        return false;
+      }
+      else
+      {
+        m_currentOffset = index;
+        
+        m_currentRasterPtr.reset( te::rst::RasterFactory::open( 
+          m_rTypes[ m_currentOffset ], m_rInfos[ m_currentOffset ], 
+          te::common::RAccess ) );          
+          
+        if( m_currentRasterPtr.get() )
+        {
+          return true;
+        }
+        else
+        {
+          return false;
+        }        
+      }
+    }    
     
     void FeederConstRasterInfo::reset()
     {
@@ -308,6 +346,34 @@ namespace te
         }
       }
     }
+    
+    bool FeederConstRasterDirectory::moveTo( const unsigned int index )
+    {
+      if( index >= m_filesNames.size() )
+      {
+        return false;
+      }
+      else
+      {
+        m_currentOffset = index;
+        
+        std::map< std::string, std::string > mInfo;
+        mInfo[ "URI" ] = m_filesNames[ m_currentOffset ];
+        
+        m_currentRasterPtr.reset( te::rst::RasterFactory::open( 
+          m_rType, mInfo, 
+          te::common::RAccess ) );          
+          
+        if( m_currentRasterPtr.get() )
+        {
+          return true;
+        }
+        else
+        {
+          return false;
+        }
+      }
+    }     
     
     void FeederConstRasterDirectory::reset()
     {

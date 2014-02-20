@@ -61,6 +61,13 @@ namespace te
         virtual bool moveNext() = 0;
         
         /*! 
+          \brief Jump to the given object index. 
+          \return true if the jump was completed or false on errors.
+          \note This method can invalidate any pointer returned by getCurrentObj.
+        */
+        virtual bool moveTo( const unsigned int index ) = 0;        
+        
+        /*! 
           \brief Reset the feeder to the first position (subsequent accesses will start from the first sequence obejct).
           \note This method can invalidate any pointer returned by getCurrentObj.
         */        

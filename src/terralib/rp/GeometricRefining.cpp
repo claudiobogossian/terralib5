@@ -58,7 +58,10 @@ namespace te
       m_enableMultiThread = true;
       m_enableProgress = false;
       m_locatorParams.reset();
-      m_minRequiredTiePointsCoveredAreaPercent = 0.0;
+      m_minRasterCoveredAreaPercent = 25.0;
+      m_minrReferenceRasterCoveredAreaPercent = 25.0;
+      m_rasterSubSectorsFactor = 3;
+      m_rasterMaxError = 10;
     }
 
     const GeometricRefining::InputParameters& GeometricRefining::InputParameters::operator=(
@@ -74,7 +77,10 @@ namespace te
       m_enableMultiThread = params.m_enableMultiThread;
       m_enableProgress = params.m_enableProgress;
       m_locatorParams = params.m_locatorParams;
-      m_minRequiredTiePointsCoveredAreaPercent = params.m_minRequiredTiePointsCoveredAreaPercent;
+      m_minRasterCoveredAreaPercent = params.m_minRasterCoveredAreaPercent;
+      m_minrReferenceRasterCoveredAreaPercent = params.m_minrReferenceRasterCoveredAreaPercent;
+      m_rasterSubSectorsFactor = params.m_rasterSubSectorsFactor;
+      m_rasterMaxError = params.m_rasterMaxError;
 
       return *this;
     }
@@ -156,7 +162,9 @@ namespace te
         progressPtr->setMessage( "Mosaicking" );
       }          
       
-      // iterating over all reference rasters
+      // analysing the reference rasters
+      
+      // matching the reference rasters
       
       return true;
     }
@@ -219,9 +227,22 @@ namespace te
       // checking other parameters
         
       TERP_TRUE_OR_RETURN_FALSE( 
-        ( ( m_inputParameters.m_minRequiredTiePointsCoveredAreaPercent >= 0.0 ) &&
-        ( m_inputParameters.m_minRequiredTiePointsCoveredAreaPercent <= 100.0 ) ),
-        "Invalid parameter m_minRequiredTiePointsCoveredAreaPercent" );
+        ( ( m_inputParameters.m_minRasterCoveredAreaPercent >= 0.0 ) &&
+        ( m_inputParameters.m_minRasterCoveredAreaPercent <= 100.0 ) ),
+        "Invalid parameter m_minRasterCoveredAreaPercent" );
+        
+      TERP_TRUE_OR_RETURN_FALSE( 
+        ( ( m_inputParameters.m_minrReferenceRasterCoveredAreaPercent >= 0.0 ) &&
+        ( m_inputParameters.m_minrReferenceRasterCoveredAreaPercent <= 100.0 ) ),
+        "Invalid parameter m_minrReferenceRasterCoveredAreaPercent" );        
+        
+      TERP_TRUE_OR_RETURN_FALSE( 
+        ( m_inputParameters.m_rasterSubSectorsFactor > 0 ),
+        "Invalid parameter m_rasterSubSectorsFactor" );           
+        
+      TERP_TRUE_OR_RETURN_FALSE( 
+        ( m_inputParameters.m_rasterMaxError > 0 ),
+        "Invalid parameter m_rasterMaxError" );           
 
       m_isInitialized = true;
 
@@ -237,9 +258,25 @@ namespace te
       const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
       const bool useTPSecondCoordPair ) const
     {
+      std::auto_ptr< te::gm::Polygon > convexHullPtr;
+      if( !getTPConvexHull( tiePoints, useTPSecondCoordPair, convexHullPtr ) )
+      {
+        return 0.0;
+      }
+      else
+      {
+        return convexHullPtr->getArea();
+      }
+    }
+    
+    bool GeometricRefining::getTPConvexHull( 
+      const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
+      const bool useTPSecondCoordPair,
+      std::auto_ptr< te::gm::Polygon >& convexHullPtr ) const
+    {
       if( tiePoints.size() < 3 )
       {
-        return 0;
+        return false;
       }
       else
       {
@@ -256,15 +293,20 @@ namespace te
               tiePoints[ tiePointsIdx ].first.y ) );
         }
         
-        std::auto_ptr< te::gm::Polygon > convexHullPolPtr( 
-          dynamic_cast< te::gm::Polygon* >( points.convexHull() ) );
-        
-        if( convexHullPolPtr.get() )
-          return convexHullPolPtr->getArea();
+        std::auto_ptr< te::gm::Geometry > geomPtr( points.convexHull() );
+
+        if( dynamic_cast< te::gm::Polygon* >( geomPtr.get() ) )
+        {
+          convexHullPtr.reset( 
+            dynamic_cast< te::gm::Polygon* >( geomPtr.release() ) );
+          return true;
+        }
         else
-          return 0.0;
+        {
+          return false;
+        }
       }
-    }
+    }    
 
   } // end namespace rp
 }   // end namespace te
