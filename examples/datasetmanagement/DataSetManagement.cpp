@@ -39,7 +39,8 @@ DataSetManagement::DataSetManagement(QWidget* parent)
   std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
   ds->setConnectionInfo(connInfo);
   ds->open();
-  m_ds = ds.get();
+
+  m_ds = ds.release();
 
   m_dataSourceName = connInfo["PG_DB_NAME"];
 
@@ -80,7 +81,6 @@ void DataSetManagement::createDataSetPushButtonClicked()
 
   // Create data set
   std::auto_ptr<te::da::DataSourceTransactor> t = m_ds->getTransactor();
-  //std::auto_ptr<te::da::DataSetTypePersistence* persistence = t->getDataSetTypePersistence();
 
   try
   {
@@ -169,8 +169,8 @@ void DataSetManagement::addIndexPushButtonClicked()
     delete addIndexDialog;
     return;
   }
-
-  // Get the data set type
+/*
+// Get the data set type
   dataSetType = addIndexDialog->getDataSetType();
 
   // Get the index
@@ -197,6 +197,7 @@ void DataSetManagement::addIndexPushButtonClicked()
 
 
   delete addIndexDialog;
+*/ 
 }
 
 void DataSetManagement::removeIndexPushButtonClicked()
