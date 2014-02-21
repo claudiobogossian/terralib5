@@ -8,6 +8,7 @@
 #include "RetypeColumnDialog.h"
 
 // TerraLib include files
+#include "../charts/Utils.h"
 #include "../utils/ScopedCursor.h"
 #include "../Config.h"
 #include "../Exception.h"
@@ -27,7 +28,6 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "../../../statistics/qt/StatisticsDialog.h"
-
 
 // Qt
 #include <QtGui/QHeaderView>
@@ -200,6 +200,7 @@ class TablePopupFilter : public QObject
       m_view->verticalHeader()->installEventFilter(this);
       m_view->viewport()->installEventFilter(this);
 
+      m_view->connect(this, SIGNAL(createHistogram(const int&)), SLOT(createHistogram(const int&)));
       m_view->connect(this, SIGNAL(hideColumn(const int&)), SLOT(hideColumn(const int&)));
       m_view->connect(this, SIGNAL(showColumn(const int&)), SLOT(showColumn(const int&)));
       m_view->connect(this, SIGNAL(removeColumn(const int&)), SLOT(removeColumn(const int&)));
@@ -277,7 +278,12 @@ class TablePopupFilter : public QObject
             m_hMenu->addAction(act9);
 
             m_hMenu->addSeparator();
-            
+
+            QAction* act4 = new QAction(m_hMenu);
+            act4->setText(tr("Histogram"));
+            act4->setToolTip(tr("Creates a new histogram based on the data of the selected colunm."));
+            m_hMenu->addAction(act4);
+
             QAction* act6 = new QAction(m_hMenu);
             act6->setText(tr("Statistics"));
             act6->setToolTip(tr("Show the statistics summary of the selected colunm."));
@@ -317,6 +323,7 @@ class TablePopupFilter : public QObject
             connect(act, SIGNAL(triggered()), SLOT(hideColumn()));
             connect(hMnu, SIGNAL(triggered(QAction*)), SLOT(showColumn(QAction*)));
             connect(act8, SIGNAL(triggered()), SLOT(removeColumn()));
+            connect(act4, SIGNAL(triggered()), SLOT(createHistogram()));
 
             m_view->connect(act2, SIGNAL(triggered()), SLOT(showAllColumns()));
             m_view->connect(act3, SIGNAL(triggered()), SLOT(resetColumnsOrder()));
@@ -395,6 +402,11 @@ class TablePopupFilter : public QObject
 
   protected slots:
 
+    void createHistogram()
+    {
+      emit createHistogram(m_columnPressed);
+    }
+
     void hideColumn()
     {
       emit hideColumn(m_columnPressed);
@@ -448,6 +460,8 @@ class TablePopupFilter : public QObject
     }
 
   signals:
+
+    void createHistogram(const int&);
 
     void hideColumn(const int&);
 
@@ -588,6 +602,14 @@ void te::qt::widgets::DataSetTableView::setHighlightColor(const QColor& color)
   m_delegate->setColor(color);
 
   repaint();
+}
+
+void te::qt::widgets::DataSetTableView::createHistogram(const int& column)
+{
+  const te::map::LayerSchema* schema = m_layer->getSchema().release();
+  te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
+  te::qt::widgets::createHistogramDisplay(m_dset, dataType, column);
+  delete schema;
 }
 
 void te::qt::widgets::DataSetTableView::hideColumn(const int& column)
