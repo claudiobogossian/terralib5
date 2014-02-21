@@ -3,36 +3,39 @@
 
 #include <QGraphicsView>
 #include "LayoutView.h"
-#include "LayoutAbstractType.h"
 #include "../../../../geometry/Envelope.h"
+#include <QTabwidget>
+#include <QDockWidget>
 
 class QMouseEvent;
 class QWheelEvent;
 class QKeyEvent;
 class QString;
+class QHideEvent;
+class QCloseEvent;
 
 namespace te
 {
   namespace layout
   {
+    class QPropertiesWindowOutside; 
+    class QObjectInspectorWindowOutside;
+    class QToolbarWindowOutside;
+
     class QLayoutView : public QGraphicsView, public LayoutView
     {
+      Q_OBJECT //for slots/signals
+
       public:
         QLayoutView(QWidget* widget = (QWidget*)0);
         ~QLayoutView();
 
         virtual void setLayoutController(LayoutController* controller);
-        virtual void config();
-        virtual te::gm::Envelope* calculateBoxPaper();
-        virtual te::gm::Envelope* calculateWindow();
+        virtual void config();        
         
-        //PaintDevice
-        virtual QPaintEngine* paintEngine() const;
-
-        QString QLayoutView::fileName() const ;
-        void QLayoutView::fileName(QString val);
-
-        virtual te::gm::Envelope* getWorldBox();
+        virtual void setDockPropertiesParent(QWidget* dockParent);
+        
+        virtual void changeMode();
 
       protected:
         void mousePressEvent(QMouseEvent * event);
@@ -40,21 +43,20 @@ namespace te
         void scaleView(qreal scaleFactor);
         virtual void keyPressEvent(QKeyEvent* keyEvent);
         virtual void resizeEvent(QResizeEvent * event);
+        void hideEvent ( QHideEvent * event );
+        void closeEvent ( QCloseEvent * event );
+
+        virtual void	paintEvent ( QPaintEvent * event );
 
         //PaintDevice
         virtual int	metric ( PaintDeviceMetric metric ) const;
 
       protected:
-        LayoutAbstractPaperType _paperType;
-        double _paperSizeWMM;
-        double _paperSizeHMM;
-        te::gm::Envelope* _boxPaperW;
-        te::gm::Envelope* _boxW;
-        QTransform _matrix;
-        QTransform _matrixinv;
-        QTransform _matrixItem;
         double	   _diagonalScreenInchSize;
-        QString	   _fileName;
+        QPropertiesWindowOutside* _dockProperties;
+        QObjectInspectorWindowOutside* _dockInspector;
+        QToolbarWindowOutside* _dockToolbar;
+        QWidget*      _dockParent;
     };
   }
 }

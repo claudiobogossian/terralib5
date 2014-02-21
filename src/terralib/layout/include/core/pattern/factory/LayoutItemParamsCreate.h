@@ -8,28 +8,28 @@ namespace te
   namespace layout
   {
     class LayoutItemController;
-    class LayoutObservable;
+    class LayoutItemModelObservable;
 
     class LayoutItemParamsCreate : public LayoutParams 
     {
       public:
         LayoutItemParamsCreate();
-        LayoutItemParamsCreate(LayoutItemController* controller, LayoutObservable* model);
+        LayoutItemParamsCreate(LayoutItemController* controller, LayoutItemModelObservable* model);
         virtual ~LayoutItemParamsCreate();
 
         LayoutItemController*	getController();
-        LayoutObservable*		getModel();
+        LayoutItemModelObservable*		getModel();
 
         protected:
         LayoutItemController*	_controller;
-        LayoutObservable*		_model;
+        LayoutItemModelObservable*		_model;
     };
 
     /*
     ** ---------------------------------------------------------------
     ** Inline methods:
     */
-    inline LayoutItemParamsCreate::LayoutItemParamsCreate(LayoutItemController* controller, LayoutObservable* model) :
+    inline LayoutItemParamsCreate::LayoutItemParamsCreate(LayoutItemController* controller, LayoutItemModelObservable* model) :
     _controller(controller),
     _model(model)
     {
@@ -44,7 +44,7 @@ namespace te
       return _controller;
     }
 
-    inline LayoutObservable* LayoutItemParamsCreate::getModel()
+    inline LayoutItemModelObservable* LayoutItemParamsCreate::getModel()
     {
       return _model;
     }

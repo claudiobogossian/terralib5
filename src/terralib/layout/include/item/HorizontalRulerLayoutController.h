@@ -11,7 +11,7 @@ namespace te
     {
       public:
 
-        HorizontalRulerLayoutController( LayoutObservable* o );
+        HorizontalRulerLayoutController( LayoutItemModelObservable* o );
         virtual ~HorizontalRulerLayoutController();
 
         virtual void setPosition(const double& x, const double& y);

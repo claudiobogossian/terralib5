@@ -2,8 +2,7 @@
 #include "LayoutView.h"
 #include "RectangleLayoutModel.h"
 #include "RectangleLayoutController.h"
-#include "LayoutItem.h"
-#include "LayoutObserver.h"
+#include "LayoutItemObserver.h"
 #include "QRectangleLayoutItem.h"
 #include "QLayoutView.h"
 #include <QGraphicsItem>
@@ -24,8 +23,7 @@ void te::layout::LayoutViewController::createNewItem(const double& centerX, cons
 {
   RectangleLayoutModel* model = new RectangleLayoutModel();		
   RectangleLayoutController* controller = new RectangleLayoutController(model);
-  LayoutObserver* o = (LayoutObserver*)controller->getView();
-  LayoutItem* item = dynamic_cast<LayoutItem*>(o);
+  LayoutItemObserver* item = (LayoutItemObserver*)controller->getView();
   item->setItemPosition(centerX,centerY);
   item->redraw();
 }

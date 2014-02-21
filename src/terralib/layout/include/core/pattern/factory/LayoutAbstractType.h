@@ -27,13 +27,16 @@ namespace te
     {
       TPRetangleItem,
       TPMapItem,
+      TPPaperItem,
       TPLegendItem,
       TPPropertiesWindow,
+      TPDisplayWindow,
+      TPObjectInspectorWindow,
       TPToolbar,
       TPHorizontalRuler,
       TPVerticalRuler,
-      TPGroupRuler,
-      TPText
+      TPText,
+      TPItemGroup
     } LayoutAbstractType;
 
     /** 
@@ -50,6 +53,23 @@ namespace te
       TPA4,
       TPA5
     } LayoutAbstractPaperType;
+
+     /** 
+    * Enum TdkAbstractComponentType.
+    * This is the enumeration of the components types
+    * @ingroup factory
+    **/
+    typedef enum
+    {
+      TPTopLeft,
+      TPTopRight,
+      TPLowerLeft,
+      TPLowerRight,
+      TPCenter,
+      TPCenterRight,
+      TPCenterLeft,
+      TPNoneSide
+    } LayoutSides;
   }
 }
 

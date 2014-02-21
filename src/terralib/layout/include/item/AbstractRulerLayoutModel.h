@@ -1,13 +1,13 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACTRULER_LAYOUTMODEL_H
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACTRULER_LAYOUTMODEL_H
 
-#include "LayoutItemModel.h"
+#include "LayoutItemModelObservable.h"
 
 namespace te
 {
   namespace layout
   {
-    class AbstractRulerLayoutModel : public LayoutItemModel
+    class AbstractRulerLayoutModel : public LayoutItemModelObservable
     {
       public:
 

@@ -15,7 +15,7 @@ namespace te
         QLayoutItemFactory();
         virtual ~QLayoutItemFactory();
 
-        virtual LayoutItem* make(LayoutAbstractType type, LayoutItemParamsCreate params = LayoutItemParamsCreate());
+        virtual LayoutItemObserver* make(LayoutAbstractType type, LayoutItemParamsCreate params = LayoutItemParamsCreate());
     };
   }
 }

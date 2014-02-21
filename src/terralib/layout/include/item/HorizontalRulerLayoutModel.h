@@ -28,12 +28,11 @@ namespace te
         virtual void updateObserver(ContextLayoutItem context);
 
         virtual void draw( ContextLayoutItem context );
-        virtual void setPosition(const double& x, const double& y);
         
-        virtual void setPaperBox(te::gm::Envelope*	 box);
-        virtual te::gm::Envelope*	 getPaperBox();
+        virtual void setPaperBox(te::gm::Envelope	 box);
+        virtual te::gm::Envelope	 getPaperBox();
 
-        virtual void setBox(te::gm::Envelope* box);
+        virtual void setBox(te::gm::Envelope box);
                 
         virtual void setVisibleHorizontalRuler(bool visible);
         virtual bool isVisibleHorizontalRuler();
@@ -50,7 +49,7 @@ namespace te
 
       protected:
 
-        te::gm::Envelope*	 _paperBox;
+        te::gm::Envelope	 _paperBox;
         double	  _longLine;
         double	  _mediumLine;
         double    _smallLine;

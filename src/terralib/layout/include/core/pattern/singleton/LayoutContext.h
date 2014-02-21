@@ -4,6 +4,7 @@
 #include "LayoutMode.h"
 #include "LayoutAbstractType.h"
 #include "LayoutUtils.h"
+#include "LayoutAbstractOutsideFactory.h"
 
 #include "../../../../../maptools/Canvas.h"
 #include "../../../../../geometry/Envelope.h"
@@ -47,6 +48,9 @@ namespace te
       
         LayoutAbstractItemFactory* getItemFactory();
         void setItemFactory(LayoutAbstractItemFactory* factory);
+
+        LayoutAbstractOutsideFactory* getOutsideFactory();
+        void setOutsideFactory(LayoutAbstractOutsideFactory* factory);
         
         te::gm::Envelope* getBoxPaper();
         void setBoxPaper(te::gm::Envelope* box);
@@ -67,7 +71,7 @@ namespace te
         te::map::Canvas*	        			_canvas;
         LayoutAbstractItemFactory*		  _itemFactory;
         LayoutAbstractOutsideFactory*	  _outsideFactory;
-        te::gm::Envelope*		            _paperBox;
+        te::gm::Envelope*		            _paperBox; //--->>>>>>>>>>>> Change for just object, no pointer!
         LayoutAbstractPaperType			    _typePaper;
         LayoutUtils*                    _utils;
     };

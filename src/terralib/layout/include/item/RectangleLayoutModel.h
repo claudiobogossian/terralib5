@@ -1,14 +1,14 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_RECTANGLELAYOUTMODEL_H
 #define __TERRALIB_LAYOUT_INTERNAL_RECTANGLELAYOUTMODEL_H
 
-#include "LayoutItemModel.h"
+#include "LayoutItemModelObservable.h"
 #include "ContextLayoutItem.h"
 
 namespace te
 {
   namespace layout
   {
-    class RectangleLayoutModel : public LayoutItemModel
+    class RectangleLayoutModel : public LayoutItemModelObservable
     {
       public:
 
@@ -16,7 +16,6 @@ namespace te
         virtual ~RectangleLayoutModel();
 
         virtual void draw( ContextLayoutItem context );
-        virtual void setPosition(const double& x, const double& y);
     };
   }
 }

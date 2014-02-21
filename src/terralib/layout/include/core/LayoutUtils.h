@@ -17,13 +17,14 @@ namespace te
 
         LayoutUtils();
         virtual ~LayoutUtils();
-        virtual void drawRectW(te::map::Canvas* canvas, te::gm::Envelope* box);
+        virtual void drawRectW(te::map::Canvas* canvas, te::gm::Envelope box);
         virtual void drawLineW(te::map::Canvas* canvas, te::gm::LinearRing* line);
-        virtual te::color::RGBAColor** getImageW(te::map::Canvas* canvas, te::gm::Envelope* box);
+        virtual te::color::RGBAColor** getImageW(te::map::Canvas* canvas, te::gm::Envelope box);
         virtual int mm2pixel(te::map::Canvas* canvas, double mm);
-        virtual void configCanvas(te::map::Canvas* canvas, te::gm::Envelope* box);
-        virtual te::gm::Envelope* viewportBox(te::map::Canvas* canvas, te::gm::Envelope* box);
-        virtual te::gm::LinearRing* createSimpleLine(te::gm::Envelope* box);
+        virtual void configCanvas(te::map::Canvas* canvas, te::gm::Envelope box);
+        virtual te::gm::Envelope viewportBox(te::map::Canvas* canvas, te::gm::Envelope box);
+        virtual te::gm::Envelope viewportBoxFromScene(te::map::Canvas* canvas, te::gm::Envelope box);
+        virtual te::gm::LinearRing* createSimpleLine(te::gm::Envelope box);
 
       protected:
 

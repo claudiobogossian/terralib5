@@ -4,6 +4,7 @@
 #include "LayoutUtils.h"
 #include "../../../../../maptools/Canvas.h"
 #include "../../../../../geometry/Envelope.h"
+#include "LayoutAbstractOutsideFactory.h"
 
 // Global static pointer used to ensure a single instance of the class.
 te::layout::LayoutContext* te::layout::LayoutContext::_instance = NULL;
@@ -60,6 +61,16 @@ te::layout::LayoutAbstractItemFactory* te::layout::LayoutContext::getItemFactory
 void te::layout::LayoutContext::setItemFactory( LayoutAbstractItemFactory* factory )
 {
   _itemFactory = factory;
+}
+
+te::layout::LayoutAbstractOutsideFactory* te::layout::LayoutContext::getOutsideFactory()
+{
+  return _outsideFactory;
+}
+
+void te::layout::LayoutContext::setOutsideFactory( LayoutAbstractOutsideFactory* factory )
+{
+  _outsideFactory = factory;
 }
 
 te::layout::LayoutAbstractPaperType te::layout::LayoutContext::getTypePaper()

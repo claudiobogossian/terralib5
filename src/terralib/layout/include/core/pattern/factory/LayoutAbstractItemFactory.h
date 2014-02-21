@@ -8,13 +8,13 @@ namespace te
 {
   namespace layout
   {
-    class LayoutItem;
+    class LayoutItemObserver;
 
     class LayoutAbstractItemFactory 
     {
       public:
         virtual ~LayoutAbstractItemFactory(void) {}
-        virtual LayoutItem* make(LayoutAbstractType type, LayoutItemParamsCreate params = LayoutItemParamsCreate()) = 0;
+        virtual LayoutItemObserver* make(LayoutAbstractType type, LayoutItemParamsCreate params = LayoutItemParamsCreate()) = 0;
       };
   }
 }

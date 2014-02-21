@@ -2,7 +2,6 @@
 #define RECTANGLELAYOUTCONTROLLER_H
 
 #include "LayoutItemController.h"
-#include "LayoutObservable.h"
 
 namespace te
 {
@@ -12,7 +11,7 @@ namespace te
     {
       public:
 
-        RectangleLayoutController( LayoutObservable* o );
+        RectangleLayoutController( LayoutItemModelObservable* o );
         virtual ~RectangleLayoutController();
 
         virtual void setPosition(const double& x, const double& y);

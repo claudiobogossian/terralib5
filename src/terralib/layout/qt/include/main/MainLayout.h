@@ -30,10 +30,14 @@
 #include "../../../../common/Singleton.h"
 #include "../../../include/core/Config.h"
 
+class QWidget;
+
 namespace te
 {
   namespace layout
   {
+    class QLayoutView;
+    class QDisplayWindowOutside;
     /*!
     \class 
      
@@ -55,13 +59,19 @@ namespace te
         This methods 
         \exception te::layout::Exception if the 
         */
-        virtual void init();
+        virtual void init(QWidget* mainWindow = 0);
       
       protected:
       
         /*! \brief Constructor. */
         MainLayout();
-      
+        void createDockLayoutDisplay(QWidget* mainWindow, QLayoutView* view);
+        void createLayoutContext(int width, int height, QLayoutView* view);
+        void finish();
+
+        QLayoutView* _view;
+        QDisplayWindowOutside*  _dockLayoutDisplay;
+        
       private:
       
         /*!

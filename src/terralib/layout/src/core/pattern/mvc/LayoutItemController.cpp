@@ -1,13 +1,11 @@
 #include "LayoutItemController.h"
-#include "LayoutItem.h"
-#include "LayoutObservable.h"
-#include "LayoutObserver.h"
-#include "LayoutItemModel.h"
+#include "LayoutItemModelObservable.h"
+#include "LayoutItemObserver.h"
 #include "ContextLayoutItem.h"
 #include "../../../../../maptools/Canvas.h"
 #include "LayoutContext.h"
 
-te::layout::LayoutItemController::LayoutItemController( LayoutObservable* o )
+te::layout::LayoutItemController::LayoutItemController( LayoutItemModelObservable* o )
 {
   _model = o;
 }
@@ -15,7 +13,7 @@ te::layout::LayoutItemController::LayoutItemController( LayoutObservable* o )
 te::layout::LayoutItemController::~LayoutItemController()
 {
   if(_model)
-    delete (LayoutItem*)_model;
+    delete _model;
 }
 
 void te::layout::LayoutItemController::redraw( const double& zoomFactor )
@@ -25,18 +23,22 @@ void te::layout::LayoutItemController::redraw( const double& zoomFactor )
 
   te::map::Canvas* canvas = LayoutContext::getInstance()->getCanvas();
   canvas->clear();
-
-  LayoutItemModel* model = dynamic_cast<LayoutItemModel*>(_model);
-  model->draw(context);
+  _model->draw(context);
   canvas->clear();
 }
 
-const te::layout::LayoutObservable* te::layout::LayoutItemController::getModel()
+const te::layout::LayoutItemModelObservable* te::layout::LayoutItemController::getModel()
 {
   return _model;
 }
 
-const te::layout::LayoutObserver* te::layout::LayoutItemController::getView()
+const te::layout::LayoutItemObserver* te::layout::LayoutItemController::getView()
 {
   return _view;
+}
+
+void te::layout::LayoutItemController::setProperties( te::layout::LayoutProperties properties )
+{
+  if(_model)
+    _model->setProperties(properties);
 }

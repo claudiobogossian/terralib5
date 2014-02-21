@@ -1,6 +1,6 @@
 #include "VerticalRulerLayoutModel.h"
 #include "ContextLayoutItem.h"
-#include "LayoutItemModel.h"
+#include "LayoutItemModelObservable.h"
 #include "LayoutContext.h"
 #include "LayoutMode.h"
 #include "LayoutUtils.h"
@@ -27,8 +27,8 @@ _posCount(0),
 _lineMargin(2.),
 _invertedLines(false)
 {
-  _box = new te::gm::Envelope(0., 0., 150., 150.);
-  _paperBox = new te::gm::Envelope(0., 0., 210., 297.); // A4 default
+  _box = te::gm::Envelope(0., 0., 150., 150.);
+  _paperBox = te::gm::Envelope(0., 0., 210., 297.); // A4 default
 
   updateVerticalListText();
 }
@@ -63,22 +63,11 @@ void te::layout::VerticalRulerLayoutModel::draw( ContextLayoutItem context )
   notifyAll(contextNotify);
 }
 
-void te::layout::VerticalRulerLayoutModel::setPosition( const double& x, const double& y )
-{
-  double x1 = x; 
-  double y1 = y;
-  double x2 = x + _box->getWidth();
-  double y2 = y + _box->getHeight();
-
-  _box = new te::gm::Envelope(x1, y1, x2, y2);
-}
-
 void te::layout::VerticalRulerLayoutModel::drawRuler( te::map::Canvas* canvas, LayoutUtils* utils )
 {
-  te::gm::Envelope* envPaper = 0;
-  te::gm::Envelope* envMargin = 0;
-  te::gm::LinearRing* line = new te::gm::LinearRing(3, te::gm::LineStringType);
-
+  te::gm::Envelope envPaper;
+  te::gm::Envelope envMargin;
+  
   if(_visibleVerticalRuler)
   {
     te::color::RGBAColor colorp1(80,80,80, TE_OPAQUE);
@@ -86,8 +75,8 @@ void te::layout::VerticalRulerLayoutModel::drawRuler( te::map::Canvas* canvas, L
     //Cor 80
     utils->drawRectW(canvas, _box);
 
-    envPaper = new te::gm::Envelope(_box->getLowerLeftX(), _paperBox->getLowerLeftY(),
-      _box->getUpperRightX(), _paperBox->getUpperRightY());
+    envPaper = te::gm::Envelope(_box.getLowerLeftX(), _paperBox.getLowerLeftY(),
+      _box.getUpperRightX(), _paperBox.getUpperRightY());
 
     te::color::RGBAColor colorp2(0,255,0, TE_OPAQUE);
     canvas->setPolygonFillColor(colorp2);
@@ -100,35 +89,41 @@ void te::layout::VerticalRulerLayoutModel::drawRuler( te::map::Canvas* canvas, L
     canvas->setLineColor(colorp3);
     //Cor 0
     if(_invertedLines)
-      envMargin = new te::gm::Envelope(_box->getUpperRightX() - _lineMargin, _box->getLowerLeftY(), 
-      _box->getUpperRightX() - _lineMargin, _box->getHeight());
+      envMargin = te::gm::Envelope(_box.getUpperRightX() - _lineMargin, _box.getLowerLeftY(), 
+      _box.getUpperRightX() - _lineMargin, _box.getHeight());
     else
-    envMargin = new te::gm::Envelope(_lineMargin, _box->getLowerLeftY(), _lineMargin, 
-      _box->getHeight());
+    envMargin = te::gm::Envelope(_lineMargin, _box.getLowerLeftY(), _lineMargin, 
+      _box.getHeight());
 
+    te::gm::LinearRing* line = new te::gm::LinearRing(3, te::gm::LineStringType);
     line = utils->createSimpleLine(envMargin);
     utils->drawLineW(canvas, line);
+    if(line) delete line;
   } 
 }
 
 void te::layout::VerticalRulerLayoutModel::drawVerticalRuler(te::map::Canvas* canvas, LayoutUtils* utils)
 {
   te::gm::LinearRing* line = new te::gm::LinearRing(3, te::gm::LineStringType);
-  te::gm::Envelope* box = 0;
-  _posCount = _box->getLowerLeftY();
+  te::gm::Envelope box;
+  _posCount = _box.getLowerLeftY();
+
+  te::color::RGBAColor colorp6(0,0,0, TE_OPAQUE);
+  canvas->setLineColor(colorp6);
   for(int i = 0 ; i < _verticalBlockMarks ; ++i )
   {
     //TypeRulerVertical
     if(_invertedLines)
-      box = new te::gm::Envelope(_box->getUpperRightX(), _posCount, _box->getUpperRightX() - _longLine, _posCount);
+      box = te::gm::Envelope(_box.getUpperRightX(), _posCount, _box.getUpperRightX() - _longLine, _posCount);
     else
-      box = new te::gm::Envelope(_box->getLowerLeftX(), _posCount, _box->getLowerLeftX() + _longLine, _posCount);
+      box = te::gm::Envelope(_box.getLowerLeftX(), _posCount, _box.getLowerLeftX() + _longLine, _posCount);
     line = utils->createSimpleLine(box);
     utils->drawLineW(canvas, line);
+    if(line) delete line;
     if(_invertedLines)
-      canvas->drawText(_box->getUpperRightX() - (_longLine + 1.), _posCount, _verticalTexts[i], -90);
+      canvas->drawText(_box.getUpperRightX() - (_longLine + 1.), _posCount, _verticalTexts[i], -90);
     else
-      canvas->drawText(_box->getLowerLeftX() + (_longLine + 1.), _posCount, _verticalTexts[i], -90);
+      canvas->drawText(_box.getLowerLeftX() + (_longLine + 1.), _posCount, _verticalTexts[i], -90);
     drawMarks(canvas, utils, _blockSize - 1);
     _posCount += 1;
   }	
@@ -137,46 +132,48 @@ void te::layout::VerticalRulerLayoutModel::drawVerticalRuler(te::map::Canvas* ca
 
 void te::layout::VerticalRulerLayoutModel::drawMarks(te::map::Canvas* canvas, LayoutUtils* utils, int marks)
 {
-  te::gm::Envelope* box = 0;
-  te::gm::LinearRing* line = new te::gm::LinearRing(3, te::gm::LineStringType);
+  te::gm::Envelope box;
+  te::gm::LinearRing* line = 0;
   _posCount += 1;
   if(marks == _middleBlockSize)
   {      
       //TypeRulerVertical
       if(_invertedLines)
-        box = new te::gm::Envelope(_box->getUpperRightX(), _posCount, _box->getUpperRightX() - _mediumLine, _posCount);
+        box = te::gm::Envelope(_box.getUpperRightX(), _posCount, _box.getUpperRightX() - _mediumLine, _posCount);
       else
-        box = new te::gm::Envelope(_box->getLowerLeftX(), _posCount, _box->getLowerLeftX()+ _mediumLine, _posCount);
+        box = te::gm::Envelope(_box.getLowerLeftX(), _posCount, _box.getLowerLeftX()+ _mediumLine, _posCount);
       line = utils->createSimpleLine(box);
       utils->drawLineW(canvas, line);    
+      if(line) delete line;
   }
   else
   { 
       //TypeRulerVertical
       if(_invertedLines)
-        box = new te::gm::Envelope(_box->getUpperRightX(), _posCount, _box->getUpperRightX() - _smallLine, _posCount);
+        box = te::gm::Envelope(_box.getUpperRightX(), _posCount, _box.getUpperRightX() - _smallLine, _posCount);
       else
-        box = new te::gm::Envelope(_box->getLowerLeftX(), _posCount, _box->getLowerLeftX() + _smallLine, _posCount);
+        box = te::gm::Envelope(_box.getLowerLeftX(), _posCount, _box.getLowerLeftX() + _smallLine, _posCount);
       line = utils->createSimpleLine(box);
       utils->drawLineW(canvas, line);
+      if(line) delete line;
       drawMarks(canvas, utils, marks - 1);
       _posCount += 1;
       //TypeRulerVertical
-      if(box) delete box;
       if(_invertedLines)
-        box = new te::gm::Envelope(_box->getUpperRightX(), _posCount, _box->getUpperRightX() - _smallLine, _posCount);
+        box = te::gm::Envelope(_box.getUpperRightX(), _posCount, _box.getUpperRightX() - _smallLine, _posCount);
       else
-        box = new te::gm::Envelope(_box->getLowerLeftX(), _posCount, _box->getLowerLeftX() + _smallLine, _posCount);
+        box = te::gm::Envelope(_box.getLowerLeftX(), _posCount, _box.getLowerLeftX() + _smallLine, _posCount);
       line = utils->createSimpleLine(box);
       utils->drawLineW(canvas, line);
+      if(line) delete line;
   }
 }
 
 void te::layout::VerticalRulerLayoutModel::updateVerticalListText()
 {
   _verticalTexts.clear();
-  int y = (int)_box->getLowerLeftY();
-  int totaly = (int)_box->getUpperRightY();
+  int y = (int)_box.getLowerLeftY();
+  int totaly = (int)_box.getUpperRightY();
 
   int lastDigit = std::abs(y % 10);
   int is_dozen = _blockSize - lastDigit;
@@ -202,12 +199,12 @@ void te::layout::VerticalRulerLayoutModel::updateVerticalListText()
   }
 }
 
-void te::layout::VerticalRulerLayoutModel::setBox( te::gm::Envelope* box )
+void te::layout::VerticalRulerLayoutModel::setBox( te::gm::Envelope box )
 {
-  if(box->getWidth() < 3. || box->getHeight() < 15.)
+  if(box.getWidth() < 3. || box.getHeight() < 10.)
     return;
 
-  _verticalBlockMarks = (int)std::abs(std::ceil(box->getHeight() / _blockSize));
+  _verticalBlockMarks = (int)std::abs(std::ceil(box.getHeight() / _blockSize));
   _box = box;
   updateVerticalListText();
 }
@@ -222,12 +219,12 @@ bool te::layout::VerticalRulerLayoutModel::isVisibleVerticalRuler()
   return _visibleVerticalRuler;
 }
 
-void te::layout::VerticalRulerLayoutModel::setPaperBox( te::gm::Envelope* box )
+void te::layout::VerticalRulerLayoutModel::setPaperBox( te::gm::Envelope box )
 {
   _paperBox = box;
 }
 
-te::gm::Envelope* te::layout::VerticalRulerLayoutModel::getPaperBox()
+te::gm::Envelope te::layout::VerticalRulerLayoutModel::getPaperBox()
 {
   return _paperBox;
 }

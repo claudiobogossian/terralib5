@@ -25,11 +25,12 @@
 
 // TerraLib
 #include "MainLayout.h"
-#include "QLayoutView.h"
 #include "QLayoutScene.h"
 #include "QLayoutItemFactory.h"
+#include "QLayoutOutsideFactory.h"
 #include "LayoutContext.h"
 #include "LayoutUtils.h"
+#include "QLayoutView.h"
 
 #include "../../../../qt/widgets/canvas/Canvas.h"
 #include "../../../../color/RGBAColor.h"
@@ -38,52 +39,136 @@
 #include <QGraphicsScene>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QMainWindow>
+#include <QString>
+#include "DisplayWindowLayoutModel.h"
+#include "DisplayWindowLayoutController.h"
+#include "LayoutOutsideObserver.h"
+#include "QDisplayWindowOutside.h"
+#include "LayoutScene.h"
 
-te::layout::MainLayout::MainLayout()
+te::layout::MainLayout::MainLayout() :
+  _view(0),
+  _dockLayoutDisplay(0)
 {
 
 }
 
 te::layout::MainLayout::~MainLayout()
 {
+  finish();  
+}
+
+void te::layout::MainLayout::init(QWidget* mainWindow)
+{
+  _view = new QLayoutView();
+
+  _view->setScene(new QLayoutScene());
+    
+  _view->setGeometry(0,0,1920,1080);
+  _view->setDockPropertiesParent(mainWindow);
+
+  //Resize the dialog and put it in the screen center	
+  const QRect screen = QApplication::desktop()->screenGeometry();
+  _view->move( screen.center() - _view->rect().center() );
+
+  createLayoutContext(1920, 1080, _view);
+  createDockLayoutDisplay(mainWindow, _view);
+
+  //Set a new window size
+  _view->config();
+  _view->show();
 
 }
 
-void te::layout::MainLayout::init()
+void te::layout::MainLayout::createDockLayoutDisplay(QWidget* mainWindow, QLayoutView* view)
 {
-	QLayoutView* w = new QLayoutView();
+  if(mainWindow)
   {
-	  QLayoutScene* scene = new QLayoutScene();
-	  w->setScene((QGraphicsScene*)scene);
-	  w->setGeometry(0,0,1920,1080);
-		
-	  int width = QApplication::desktop()->screenGeometry().width();
-	  int height = QApplication::desktop()->screenGeometry().height();
-    
-    //Resize the dialog and put it in the screen center	
-	  const QRect screen = QApplication::desktop()->screenGeometry();
-    w->move( screen.center() - w->rect().center() );
-		
-	  QLayoutItemFactory* itemFactory = new QLayoutItemFactory;
-    LayoutUtils* utils = new LayoutUtils; 
-    te::gm::Envelope* worldbox = w->getWorldBox();
-
-    //Create Canvas
-    //MUDAR PARA TE::MAP::CANVAS* - Abstração
-    te::qt::widgets::Canvas* canvas = new te::qt::widgets::Canvas(1920, 1080);    
-    //canvas->calcAspectRatio(m_extent.m_llx, m_extent.m_lly, m_extent.m_urx, m_extent.m_ury, m_hAlign, m_vAlign);
-    canvas->setWindow(worldbox->getLowerLeftX(), worldbox->getLowerLeftY(), worldbox->getUpperRightX(), worldbox->getUpperRightY());
-    te::color::RGBAColor color(255,255,255, 255);
-    canvas->setBackgroundColor(color);
-    canvas->clear();
-
-    LayoutContext::getInstance()->setCanvas(canvas);
-	  LayoutContext::getInstance()->setScene((LayoutScene*)scene);
-	  LayoutContext::getInstance()->setItemFactory(itemFactory);
-    LayoutContext::getInstance()->setUtils(utils);
-
-    //Set a new window size
-    w->config();
+    QMainWindow* mw = (QMainWindow*)mainWindow;
+    if(!_dockLayoutDisplay)
+    {
+      //Use the Property Browser Framework for create Property Window
+      DisplayWindowLayoutModel* dockDisplayModel = new DisplayWindowLayoutModel();
+      DisplayWindowLayoutController* dockDisplayController = new DisplayWindowLayoutController(dockDisplayModel);
+      LayoutOutsideObserver* itemDockDisplay = (LayoutOutsideObserver*)dockDisplayController->getView();
+      _dockLayoutDisplay = dynamic_cast<QDisplayWindowOutside*>(itemDockDisplay);    
+    }
+    _dockLayoutDisplay->setPreviousCentralWidget(mw->centralWidget());
+    mw->removeDockWidget((QDockWidget*)mw->centralWidget());
+    _dockLayoutDisplay->setParent(mw);
+    _dockLayoutDisplay->setWidget(view); 
+    mw->setCentralWidget(_dockLayoutDisplay);
+    _dockLayoutDisplay->setVisible(true);      
   }
-  w->show();
+}
+
+void te::layout::MainLayout::createLayoutContext( int width, int height, QLayoutView* view )
+{
+  QLayoutItemFactory* f = dynamic_cast<QLayoutItemFactory*>(LayoutContext::getInstance()->getItemFactory());
+
+  if(!LayoutContext::getInstance()->getItemFactory())
+  {
+    LayoutContext::getInstance()->setItemFactory(new QLayoutItemFactory);
+  }
+
+  if(!LayoutContext::getInstance()->getOutsideFactory())
+  {
+    LayoutContext::getInstance()->setOutsideFactory(new QLayoutOutsideFactory);
+  }
+
+  if(!LayoutContext::getInstance()->getUtils())
+  {
+    LayoutContext::getInstance()->setUtils(new LayoutUtils);
+  } 
+
+  if(!LayoutContext::getInstance()->getCanvas())
+  {
+    QLayoutScene* lScene = dynamic_cast<QLayoutScene*>(_view->scene());
+
+    if(lScene)
+    {
+      te::gm::Envelope worldbox = lScene->getWorldBox();
+      //Create Canvas
+      te::qt::widgets::Canvas* canvas = new te::qt::widgets::Canvas(width, height);    
+      //canvas->calcAspectRatio(m_extent.m_llx, m_extent.m_lly, m_extent.m_urx, m_extent.m_ury, m_hAlign, m_vAlign);
+      canvas->setWindow(worldbox.getLowerLeftX(), worldbox.getLowerLeftY(), worldbox.getUpperRightX(), worldbox.getUpperRightY());
+      te::color::RGBAColor color(255,255,255, 255);
+      canvas->setBackgroundColor(color);
+      canvas->clear();
+      LayoutContext::getInstance()->setCanvas(canvas);
+    }
+  }
+
+  if(!LayoutContext::getInstance()->getScene())
+  {
+    LayoutScene* lScene = dynamic_cast<LayoutScene*>(view->scene());
+    if(lScene)
+      LayoutContext::getInstance()->setScene(lScene);
+  }  
+}
+
+void te::layout::MainLayout::finish()
+{
+  if(_dockLayoutDisplay)
+  {
+    _dockLayoutDisplay->close();
+  }
+
+  /*if(_view)
+  {
+  delete _view;
+  _view = 0;
+  }*/
+
+  if(_dockLayoutDisplay)
+  {
+    delete _dockLayoutDisplay;
+    _dockLayoutDisplay = 0;
+  }
+
+  if(LayoutContext::getInstance())
+  {
+    delete LayoutContext::getInstance();
+  }
 }
