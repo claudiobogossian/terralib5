@@ -42,7 +42,7 @@ namespace te
   {
     /*!
       \class GeometricRefining
-      \brief Geometric (and positioning) correction/refining of a already geo-referenced raster using a set of reference rasters.
+      \brief Geometric (and positioning) correction/refining of a already geo-referenced raster using a set of small reference rasters.
       \ingroup rp_gen
       \note Reference: CASTEJON, E. F. ; FONSECA, L. M. G. ; ARCANJO, J. S. . Melhoria da geometria e posicionamento de imagens orbitais de média resolução - Um experimento com dados CBERS-CCD. In: XVI Simpósio Brasileiro de Sensoriamento Remoto - SBSR, 2013, Foz do Iguaçu, PR - Brasil. Anais do XVI Simpósio Brasileiro de Sensoriamento Remoto - SBSR, 2013. 
      */
@@ -58,7 +58,7 @@ namespace te
         {
           public:
             
-            te::rst::Raster const* m_RasterPtr; //!< Input raster pointer.
+            te::rst::Raster const* m_inRasterPtr; //!< Input raster pointer.
             
             std::vector< unsigned int > m_inRasterBands2Process; //!< Bands to process from the input raster.
             
@@ -74,13 +74,23 @@ namespace te
             
             te::rp::TiePointsLocator::InputParameters m_locatorParams; //!< The parameters used by the tie-points locator when matching each raster (feeder) against the input raster (m_RasterPtr),leave untouched to use the default values.
             
-            double m_minRasterCoveredAreaPercent; //!< The mininumum required area percent (from the input raster ) covered by tie-points - valid range [0,100] (default:25).
+            double m_minInRasterCoveredAreaPercent; //!< The mininumum required area percent (from the input raster ) covered by tie-points - valid range [0,100] (default:25).
             
             double m_minrReferenceRasterCoveredAreaPercent; //!< The mininumum required area percent (from each reference raster ) covered by tie-points - valid range [0,100] (default:25).
             
-            unsigned int m_rasterSubSectorsFactor; //!< A positive factor used to devide the input raster area into sectors ,(efault value: 3 ( 3 x 3 = 9 sub-sectors).
+            unsigned int m_inRasterSubSectorsFactor; //!< A positive factor used to devide the input raster area into sectors ,(efault value: 3 ( 3 x 3 = 9 sub-sectors).
             
-            unsigned int m_rasterMaxError; //!< The maximum expected position error for the given input rasters (pixels units), default value:10.
+            unsigned int m_inRasterRowMaxError; //!< The maximum row position error for the given input raster (pixels units), default value:10.
+            
+            unsigned int m_inRasterColMaxError; //!< The maximum column position error for the given input raster (pixels units), default value:10.
+            
+            int m_inRasterExpectedRowDisplacement; //!< The expected input raster row displacement (pixel units, default:0)
+            
+            int m_inRasterExpectedColDisplacement; //!< The expected input raster row displacement (pixel units, default:0)
+            
+            bool m_processAllReferenceRasters; //!< If true, all reference rasters will be processed, if false the matching can finish when minimum quality criterias are achieved (default:true).
+            
+            bool m_enableRasterCache; //!< If true, a internal raster data cache will be used (defaul:true).
             
             InputParameters();
             
