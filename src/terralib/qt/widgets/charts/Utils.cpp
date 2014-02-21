@@ -38,8 +38,13 @@
 #include "../../../maptools/Utils.h"
 #include "../../../se.h"
 #include "../../../qt/widgets/Utils.h"
+#include "ChartDisplay.h"
+#include "ChartDisplayWidget.h"
+#include "ChartStyle.h"
 #include "Histogram.h"
+#include "HistogramChart.h"
 #include "Scatter.h"
+#include "ScatterChart.h"
 #include "Utils.h"
 
 //Boost
@@ -260,9 +265,30 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
   return newScatter;
 }
 
+void te::qt::widgets::createScatterDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propX, int propY)
+{
+  //Creating the scatter and it's chart with the given dataset
+  te::qt::widgets::ScatterChart* chart = new te::qt::widgets::ScatterChart(te::qt::widgets::createScatter(dataset, dataType, propX, propY));
+
+  //Creating and adjusting the chart Display's style.
+  te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
+  chartStyle->setTitle(QString::fromStdString("Scatter"));
+  chartStyle->setAxisX(QString::fromStdString(dataset->getPropertyName(propX)));
+  chartStyle->setAxisY(QString::fromStdString(dataset->getPropertyName(propY)));
+
+  //Creating and adjusting the chart Display
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Scatter"), chartStyle);
+  chartDisplay->adjustDisplay();
+  chart->attach(chartDisplay);
+
+  //Adjusting the chart widget
+  te::qt::widgets::ChartDisplayWidget* displayWidget = new te::qt::widgets::ChartDisplayWidget(chart, te::qt::widgets::SCATTER_CHART, chartDisplay);
+  displayWidget->show();
+  displayWidget->setWindowTitle("Scatter");
+}
+
 te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int slices)
 {
-
   te::qt::widgets::Histogram* newHistogram = new te::qt::widgets::Histogram();
 
   std::size_t rpos = te::da::GetFirstPropertyPos(dataset, te::dt::RASTER_TYPE);
@@ -479,6 +505,34 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
     }
   }
   return newHistogram;
+}
+
+void te::qt::widgets::createHistogramDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int slices)
+{
+  te::qt::widgets::HistogramChart* chart;
+  int propType = dataset->getPropertyDataType(propId);
+
+  //Creating the histogram and it's chart with the given dataset
+  if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
+    chart =  new te::qt::widgets::HistogramChart(te::qt::widgets::createHistogram(dataset, dataType, propId));
+  else
+    chart =  new te::qt::widgets::HistogramChart(te::qt::widgets::createHistogram(dataset, dataType, propId, slices));
+
+  //Creating and adjusting the chart Display's style.
+  te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
+  chartStyle->setTitle(QString::fromStdString("Histogram"));
+  chartStyle->setAxisX(QString::fromStdString(dataset->getPropertyName(propId)));
+  chartStyle->setAxisY(QString::fromStdString("Frequency"));
+
+  //Creating and adjusting the chart Display
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Histogram"), chartStyle);
+  chartDisplay->adjustDisplay();
+  chart->attach(chartDisplay);
+
+  //Adjusting the chart widget
+  te::qt::widgets::ChartDisplayWidget* displayWidget = new te::qt::widgets::ChartDisplayWidget(chart, te::qt::widgets::HISTOGRAM_CHART, chartDisplay);
+  displayWidget->show();
+  displayWidget->setWindowTitle("Histogram");
 }
 
 QwtText* te::qt::widgets::Terralib2Qwt(const std::string& text)
