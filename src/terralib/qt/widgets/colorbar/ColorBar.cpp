@@ -5,6 +5,7 @@
 #include "../../color/ColorBar.h"
 #include "../../color/ColorTransform.h"
 #include "../widgets/utils/ColorPickerToolButton.h"
+#include "../Utils.h"
 
 // QT
 #include <QtGui/QPainter>
@@ -78,6 +79,7 @@ te::qt::widgets::colorbar::ColorBar::ColorBar(QWidget* parent) : QwtScaleWidget(
 
 te::qt::widgets::colorbar::ColorBar::~ColorBar()
 {
+  delete m_colorBar;
 }
 
 void te::qt::widgets::colorbar::ColorBar::setScaleVisible(bool flag)
@@ -104,6 +106,8 @@ void te::qt::widgets::colorbar::ColorBar::setInterval(double min, double max)
 
 void te::qt::widgets::colorbar::ColorBar::setColorBar(te::color::ColorBar* cb)
 {
+  delete m_colorBar;
+
   m_colorBar = cb;
 
   buildColorBar();
@@ -111,7 +115,7 @@ void te::qt::widgets::colorbar::ColorBar::setColorBar(te::color::ColorBar* cb)
 
 te::color::ColorBar* te::qt::widgets::colorbar::ColorBar::getColorBar()
 {
-  return m_colorBar;
+  return new te::color::ColorBar(*m_colorBar);
 }
 
 void te::qt::widgets::colorbar::ColorBar::setScaleEngine()
@@ -268,8 +272,11 @@ void te::qt::widgets::colorbar::ColorBar::mousePressEvent(QMouseEvent* e)
     if(pinPos != -1)
     {
       m_currentPinPos = pinPos;
-      te::color::RGBAColor rgbaC = m_colorBar->getColorMap().at(m_currentPinPos);          
-      QColor c(rgbaC.getRed(), rgbaC.getGreen(), rgbaC.getBlue(), rgbaC.getAlpha());
+      te::color::RGBAColor rgbaC = m_colorBar->getColorMap().at(m_currentPinPos);
+      int red = rgbaC.getRed();
+      int green = rgbaC.getGreen();
+      int blue = rgbaC.getBlue();
+      QColor c(red, green, blue);
       m_pinPicker->setColor(c);
       m_pinMenu->exec(QCursor::pos());
     }

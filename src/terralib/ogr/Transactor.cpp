@@ -61,6 +61,41 @@ std::string RemoveSpatialSql(const std::string& sql)
   return newQuery;
 }
 
+OGRFieldType GetOGRType(int te_type)
+{
+  switch (te_type)
+  {
+    case te::dt::CHAR_TYPE:
+    case te::dt::UCHAR_TYPE:
+    case te::dt::STRING_TYPE:
+
+      return OFTString;
+    break;
+
+    case te::dt::INT16_TYPE:
+    case te::dt::UINT16_TYPE:
+    case te::dt::INT32_TYPE:
+    case te::dt::UINT32_TYPE:
+    case te::dt::INT64_TYPE:
+    case te::dt::UINT64_TYPE:
+      return OFTInteger;
+    break;
+
+    case te::dt::FLOAT_TYPE:
+    case te::dt::DOUBLE_TYPE:
+    case te::dt::NUMERIC_TYPE:
+      return OFTReal;
+    break;
+
+    case te::dt::DATETIME_TYPE:
+      return OFTDateTime;
+    break;
+  };
+
+  return OFTInteger;
+}
+
+
 te::ogr::Transactor::Transactor(DataSource* ds)
   : te::da::DataSourceTransactor(),
     m_ogrDs(ds)
@@ -550,7 +585,46 @@ void te::ogr::Transactor::renameProperty(const std::string& datasetName,
 
     OGRFieldDefn* df = l->GetLayerDefn()->GetFieldDefn(idx);
 
-    df->SetName(newPropertyName.c_str());
+    OGRFieldDefn* dfn = new OGRFieldDefn(df);
+
+    dfn->SetName(newPropertyName.c_str());
+
+    OGRErr err = l->AlterFieldDefn(idx, dfn, ALTER_NAME_FLAG);
+
+    if(err != OGRERR_NONE)
+      throw Exception(TR_OGR("Fail to rename field."));
+  }
+}
+
+void te::ogr::Transactor::changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp)
+{
+  if (!m_ogrDs->getOGRDataSource())
+    return;
+
+  std::auto_ptr<te::dt::Property> p;
+
+  p.reset(newProp);
+
+  OGRLayer* l = m_ogrDs->getOGRDataSource()->GetLayerByName(datasetName.c_str());
+
+  if(l != 0)
+  {
+    if(!l->TestCapability(OLCAlterFieldDefn))
+      throw Exception(TR_OGR("This data source do not support the operation of alter columns type."));
+
+    int idx = l->GetLayerDefn()->GetFieldIndex(propName.c_str());
+
+    if(idx == -1)
+      throw Exception(TR_OGR("Field to be renamed does not exists."));
+
+    OGRFieldDefn* dfn = l->GetLayerDefn()->GetFieldDefn(idx);
+
+    dfn->SetType(GetOGRType(newProp->getType()));
+
+    OGRErr err = l->AlterFieldDefn(idx, dfn, ALTER_TYPE_FLAG);
+
+    if(err != OGRERR_NONE)
+      throw Exception(TR_OGR("Fail to to change field type."));
   }
 }
 
@@ -1061,9 +1135,10 @@ void te::ogr::Transactor::remove(const std::string& datasetName, const te::da::O
   commit();
 }
 
-void te::ogr::Transactor::update(const std::string& /*datasetName*/,
+
+void te::ogr::Transactor::update(const std::string& datasetName,
                     te::da::DataSet* /*dataset*/,
-                    const std::vector<std::size_t>& /*properties*/,
+                    const std::vector<std::size_t>& properties,
                     const te::da::ObjectIdSet* /*oids*/,
                     const std::map<std::string, std::string>& /*options*/,
                     std::size_t /*limit*/)

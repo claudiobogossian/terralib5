@@ -29,7 +29,9 @@
 #include "ui_StyleControllerWidgetForm.h"
 #include "StyleControllerWidget.h"
 #include "StyleExplorer.h"
+#include "Symbol.h"
 #include "SymbolPreviewWidget.h"
+#include "SymbolSelectorDialog.h"
 
 // Qt
 #include <QtGui/QMessageBox>
@@ -55,6 +57,7 @@ te::qt::widgets::StyleControllerWidget::StyleControllerWidget(QWidget* parent, Q
   connect(m_ui->m_removeSymbToolButton, SIGNAL(clicked()), this, SLOT(onRemoveSymbolizerClicked()));
   connect(m_ui->m_upSymbToolButton, SIGNAL(clicked()), this, SLOT(onUpSymbolizerClicked()));
   connect(m_ui->m_downSymbToolButton, SIGNAL(clicked()), this, SLOT(onDownSymbolizerClicked()));
+  connect(m_ui->m_libManagerToolButton, SIGNAL(clicked()), this, SLOT(onLibraryManagerClicked()));
   connect(m_ui->m_mapRefreshToolButton, SIGNAL(clicked()), this, SLOT(onMapRefreshClicked()));
 
   updateUi();
@@ -80,6 +83,7 @@ void te::qt::widgets::StyleControllerWidget::updateUi()
   m_ui->m_downSymbToolButton->setIcon(QIcon::fromTheme("go-down").pixmap(16,16));
   m_ui->m_addSymbToolButton->setIcon(QIcon::fromTheme("list-add").pixmap(16,16));
   m_ui->m_removeSymbToolButton->setIcon(QIcon::fromTheme("list-remove").pixmap(16,16));
+  m_ui->m_libManagerToolButton->setIcon(QIcon::fromTheme("library").pixmap(16,16));
   m_ui->m_mapRefreshToolButton->setIcon(QIcon::fromTheme("map-draw").pixmap(16,16));
 }
 
@@ -165,6 +169,29 @@ void te::qt::widgets::StyleControllerWidget::onDownSymbolizerClicked()
   }
 
   m_explorer->goDownSymbolizer();
+}
+
+void te::qt::widgets::StyleControllerWidget::onLibraryManagerClicked()
+{
+  te::se::Rule* rule = m_explorer->getCurrentRule();
+
+  if(!rule)
+  {
+    QMessageBox::information(this, tr("Style"), tr("Select a rule first."));
+    return;
+  }
+
+  Symbol* symbol = te::qt::widgets::SymbolSelectorDialog::getSymbol(this, tr("Symbol Selector"));
+  if(symbol == 0)
+    return;
+
+  std::vector<te::se::Symbolizer*> symbolizers;
+  for(std::size_t i = 0; i < symbol->getSymbolizersCount(); ++i)
+    symbolizers.push_back(symbol->getSymbolizer(i)->clone());
+
+  rule->setSymbolizers(symbolizers);
+
+  m_explorer->updateStyleTree();
 }
 
 void te::qt::widgets::StyleControllerWidget::onMapRefreshClicked()

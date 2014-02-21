@@ -17,12 +17,10 @@ list (APPEND TE_DEP_LIBS
 		terralib_filter
 		terralib_geometry
 		terralib_maptools
-		terralib_qt_widgets
 		terralib_raster
 		terralib_symbology
 		terralib_xlink
 		terralib_xml
-		terralib_xsd
     )
 
 # Files to process.
@@ -39,7 +37,6 @@ set (
   raster
   se
   xlink
-  xsd
 )
 
 # Files in build tree

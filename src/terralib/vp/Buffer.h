@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file Aggregation.h
+  \file Buffer.h
    
-  \brief Aggregation Vector Processing functions.
+  \brief Buffer Vector Processing functions.
 
   \ingroup vp
 */
 
-#ifndef __TERRALIB_VP_CORE_INTERNAL_AGGREGATION_H
-#define __TERRALIB_VP_CORE_INTERNAL_AGGREGATION_H
+#ifndef __TERRALIB_VP_CORE_INTERNAL_BUFFER_H
+#define __TERRALIB_VP_CORE_INTERNAL_BUFFER_H
 
 //Terralib
 #include "../dataaccess/datasource/DataSourceInfo.h"
@@ -80,5 +80,5 @@ namespace te
   } // end namespace vp
 }   // end namespace te
 
-#endif  // __TERRALIB_VP_CORE_INTERNAL_AGGREGATION_H
+#endif  // __TERRALIB_VP_CORE_INTERNAL_BUFFER_H
 

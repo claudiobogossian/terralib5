@@ -177,7 +177,7 @@ const std::vector<te::color::RGBAColor>& te::color::ColorBar::getSlices(const in
   }
 
   if(m_colorBarVec.empty())
-  generateColorBar();
+    generateColorBar();
 
   if((int)m_colorSliceVec.size() != n)
   {

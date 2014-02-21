@@ -38,6 +38,7 @@
 #include "../../../maptools/Utils.h"
 #include "../../../se/Utils.h"
 #include "../colorbar/ColorBar.h"
+#include "../colorbar/ColorCatalogWidget.h"
 #include "../se/LineSymbolizerWidget.h"
 #include "../se/PointSymbolizerWidget.h"
 #include "../se/PolygonSymbolizerWidget.h"
@@ -59,13 +60,14 @@
 
 te::qt::widgets::GroupingWidget::GroupingWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
-    m_ui(new Ui::GroupingWidgetForm)
+    m_ui(new Ui::GroupingWidgetForm),
+    m_cb(0)
 {
   m_ui->setupUi(this);
 
   QGridLayout* l = new QGridLayout(m_ui->m_colorBarWidget);
   l->setContentsMargins(0,0,0,0);
-  m_colorBar = new  te::qt::widgets::colorbar::ColorBar(m_ui->m_colorBarWidget);
+  m_colorBar = new  te::qt::widgets::ColorCatalogWidget(m_ui->m_colorBarWidget);
   l->addWidget(m_colorBar);
 
 //connects
@@ -80,6 +82,8 @@ te::qt::widgets::GroupingWidget::GroupingWidget(QWidget* parent, Qt::WindowFlags
 
 te::qt::widgets::GroupingWidget::~GroupingWidget()
 {
+  delete m_cb;
+
   te::common::FreeContents(m_legend);
   m_legend.clear();
 }
@@ -129,11 +133,8 @@ std::auto_ptr<te::map::Grouping> te::qt::widgets::GroupingWidget::getGrouping()
 void te::qt::widgets::GroupingWidget::initialize()
 {
   // create color bar
-  m_cb = new te::color::ColorBar(te::color::RGBAColor(255, 0, 0, TE_OPAQUE), te::color::RGBAColor(0, 0, 0, TE_OPAQUE), 256);
-
-  m_colorBar->setHeight(20);
-  m_colorBar->setColorBar(m_cb);
-  m_colorBar->setScaleVisible(false);
+  m_colorBar->getColorBar()->setHeight(20);
+  m_colorBar->getColorBar()->setScaleVisible(false);
 
   // fill grouping type combo box
   m_ui->m_typeComboBox->addItem(tr("Equal Steps"), te::map::EQUAL_STEPS);
@@ -734,6 +735,10 @@ int te::qt::widgets::GroupingWidget::getGeometryType()
 
 void te::qt::widgets::GroupingWidget::buildSymbolizer(std::string meanTitle)
 {
+  delete m_cb;
+
+  m_cb = m_colorBar->getColorBar()->getColorBar();
+
   int legendSize = m_legend.size();
 
   std::vector<te::color::RGBAColor> colorVec;

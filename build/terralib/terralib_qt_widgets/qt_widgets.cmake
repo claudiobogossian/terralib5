@@ -41,24 +41,26 @@ if(WIN32)
 endif()
 
 list (APPEND TE_DEP_LIBS
-    terralib_annotationtext
+        terralib_annotationtext
 		terralib_classification
 		terralib_color
 		terralib_common
 		terralib_dataaccess
 		terralib_datatype
 		terralib_filter
-#    terralib_gdal
+        #terralib_gdal
 		terralib_geometry
 		terralib_maptools
 		terralib_memory
 		terralib_raster
+		terralib_serialization
+		terralib_srs
 		terralib_statistics
 		terralib_symbology
-		terralib_srs
 		terralib_rp
-    terralib_plugin
+        terralib_plugin
 		terralib_xlink
+		terralib_xml
 		qtpropertybrowser
     )
 
@@ -141,6 +143,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/classification" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/colorbar/ColorBar.h
+  ${SRCDIR}/widgets/colorbar/ColorCatalogWidget.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/colorbar" MOC)
 
@@ -368,12 +371,14 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/rp/ClassifierDialog.h
   ${SRCDIR}/widgets/rp/ClassifierWizardPage.h
+  ${SRCDIR}/widgets/rp/ColorTransformWizardPage.h
   ${SRCDIR}/widgets/rp/ContrastDialog.h
   ${SRCDIR}/widgets/rp/ContrastWizardPage.h
   ${SRCDIR}/widgets/rp/FilterWizardPage.h
   ${SRCDIR}/widgets/rp/MaskDialog.h
   ${SRCDIR}/widgets/rp/MixtureModelDialog.h
   ${SRCDIR}/widgets/rp/MixtureModelWizardPage.h
+  ${SRCDIR}/widgets/rp/MosaicWizardPage.h
   ${SRCDIR}/widgets/rp/OutputRasterParametersWidget.h
   ${SRCDIR}/widgets/rp/RasterHistogramDialog.h
   ${SRCDIR}/widgets/rp/RasterHistogramWidget.h
@@ -456,6 +461,8 @@ set (
   ${SRCDIR}/widgets/table/DataSetTableView.h
   ${SRCDIR}/widgets/table/DataSetTableVerticalHeader.h
   ${SRCDIR}/widgets/table/AddColumnDialog.h
+  ${SRCDIR}/widgets/table/RenameColumnDialog.h
+  ${SRCDIR}/widgets/table/RetypeColumnDialog.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/table" MOC)
 
@@ -519,6 +526,7 @@ file(
   ${SRCDIR}/widgets/canvas/ui/*.ui
   ${SRCDIR}/widgets/charts/ui/*.ui
   ${SRCDIR}/widgets/classification/ui/*.ui
+  ${SRCDIR}/widgets/colorbar/ui/*.ui
  # ${SRCDIR}/widgets/datagrid/*.ui
   ${SRCDIR}/widgets/dataset/*.ui
   ${SRCDIR}/widgets/dataset/selector/ui/*.ui

@@ -56,34 +56,44 @@ int main(int argc, char** argv)
     te::plugin::PluginManager::getInstance().add(info);
     
     te::plugin::PluginManager::getInstance().loadAll();
-    
-    std::cout << std::endl << "PostGIS to OGR: " << std::endl;
-    if (AggregPGISToOGR())
-      std::cout << "\tOK!" << std::endl;
-    
-    std::cout << std::endl << "OGR to PostGIS: " << std::endl;
-    if (AggregOGRToPGIS())
-      std::cout << "\tOK!" << std::endl;
-    
-    std::cout << std::endl << "OGR to OGR: " << std::endl;
-    if (AggregOGRToOGR())
-      std::cout << "\tOK!" << std::endl;
-    
-    std::cout << std::endl << "PostGIS to PostGIS: " << std::endl;
-    if (AggregPGISToPGIS())
-      std::cout << "\tOK!" << std::endl;
+
+
+    //Aggregation examples
+
+    //std::cout << std::endl << "OGR to OGR: " << std::endl;
+    //if (AggregOGRToOGR())
+    //  std::cout << "\tOK!" << std::endl;
+
+    //std::cout << std::endl << "OGR to PostGIS: " << std::endl;
+    //if (AggregOGRToPGIS())
+    //  std::cout << "\tOK!" << std::endl;
+
+    //std::cout << std::endl << "PostGIS to PostGIS: " << std::endl;
+    //if (AggregPGISToPGIS())
+    //  std::cout << "\tOK!" << std::endl;
+
+    //std::cout << std::endl << "PostGIS to OGR: " << std::endl;
+    //if (AggregPGISToOGR())
+    //  std::cout << "\tOK!" << std::endl;
+
+
+    //Intersection examples
+
+    //std::cout << std::endl << "Intersection OGR to OGR: " << std::endl;
+    //if (IntersectionOGRToOGR())
+    //  std::cout << "\tOK!" << std::endl;
+
+    //std::cout << std::endl << "Intersection OGR to PostGIS: " << std::endl;
+    //if (IntersectionOGRToPGIS())
+    //  std::cout << "\tOK!" << std::endl;
+
+    //std::cout << std::endl << "Intersection PostGIS to PostGIS: " << std::endl;
+    //if (IntersectionPGISToPGIS())
+    //  std::cout << "\tOK!" << std::endl;
 
     //std::cout << std::endl << "Intersection PostGIS to OGR: " << std::endl;
     //if (IntersectionPGISToOGR())
     //  std::cout << "\tOK!" << std::endl;
-
-    std::cout << std::endl << "Intersection OGR to PostGIS: " << std::endl;
-    if (IntersectionOGRToPGIS())
-      std::cout << "\tOK!" << std::endl;
-
-    std::cout << std::endl << "Intersection PostGIS to PostGIS: " << std::endl;
-    if (IntersectionPGISToPGIS())
-      std::cout << "\tOK!" << std::endl;
 
     te::plugin::PluginManager::getInstance().unloadAll();
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>265</width>
-    <height>48</height>
+    <width>329</width>
+    <height>60</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,16 +19,6 @@
    </property>
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="0">
-      <widget class="QFrame" name="m_explorerFrame">
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="0">
       <widget class="QFrame" name="frame">
        <property name="sizePolicy">
@@ -47,10 +37,30 @@
         <property name="margin">
          <number>2</number>
         </property>
-        <item row="0" column="2">
-         <widget class="QToolButton" name="m_addSymbToolButton">
+        <item row="0" column="4">
+         <widget class="QToolButton" name="m_upSymbToolButton">
           <property name="toolTip">
-           <string>Add a new symbol to the selected rule</string>
+           <string>Change the current symbol position</string>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="Line" name="line_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QToolButton" name="m_mapRefreshToolButton">
+          <property name="toolTip">
+           <string>Update the MapDisplay</string>
           </property>
           <property name="text">
            <string>...</string>
@@ -73,10 +83,10 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="3">
-         <widget class="QToolButton" name="m_removeSymbToolButton">
+        <item row="0" column="2">
+         <widget class="QToolButton" name="m_addSymbToolButton">
           <property name="toolTip">
-           <string>Remove the selected symbol</string>
+           <string>Add a new symbol to the selected rule</string>
           </property>
           <property name="text">
            <string>...</string>
@@ -86,20 +96,7 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="4">
-         <widget class="QToolButton" name="m_upSymbToolButton">
-          <property name="toolTip">
-           <string>Change the current symbol position</string>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="autoRaise">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="7">
+        <item row="0" column="8">
          <widget class="QSlider" name="m_iconSizeSlider">
           <property name="toolTip">
            <string>Change the preview size</string>
@@ -133,17 +130,17 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="6">
+        <item row="0" column="7">
          <widget class="Line" name="line">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QToolButton" name="m_mapRefreshToolButton">
+        <item row="0" column="3">
+         <widget class="QToolButton" name="m_removeSymbToolButton">
           <property name="toolTip">
-           <string>Update the MapDisplay</string>
+           <string>Remove the selected symbol</string>
           </property>
           <property name="text">
            <string>...</string>
@@ -153,19 +150,49 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
-         <widget class="Line" name="line_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
+        <item row="0" column="6">
+         <widget class="QToolButton" name="m_libManagerToolButton">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="toolTip">
+           <string>Open the library manager</string>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
        </layout>
       </widget>
      </item>
+     <item row="0" column="0">
+      <widget class="QFrame" name="m_explorerFrame">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>16</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_2"/>
+  </widget>
  </widget>
  <resources/>
  <connections/>

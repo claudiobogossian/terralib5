@@ -132,6 +132,14 @@ namespace te
           */
 
           //@{
+
+          /*!
+            \brief Creates a new histogram based on the data at position \a column
+
+            \param column Column that provides the data for the histogram.
+          */
+          void createHistogram(const int& column);
+
           /*!
             \brief Hides the column at position \a column
 
@@ -145,6 +153,18 @@ namespace te
             \param column Column to be presented.
           */
           void showColumn(const int& column);
+
+          /*!
+            \brief Rename a column of the table.
+            \param column Index of the column to be renamed.
+          */
+          void renameColumn(const int& column);
+
+          /*!
+            \brief Changes teh type of a column in the table.
+            \param column Index of the column to be changed.
+          */
+          void retypeColumn(const int& column);
 
           /*!
             \brief Shows all hidden columns.

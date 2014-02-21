@@ -39,6 +39,7 @@ list ( APPEND
   terralib_qt_widgets
   terralib_maptools
   terralib_serialization
+  terralib_srs
   terralib_symbology
   terralib_xerces
   terralib_xml

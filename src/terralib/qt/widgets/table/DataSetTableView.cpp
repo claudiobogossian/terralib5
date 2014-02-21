@@ -1,11 +1,17 @@
 #include "AddColumnDialog.h"
-#include "DataSetTableView.h"
 #include "DataSetTableModel.h"
-#include "HighlightDelegate.h"
 #include "DataSetTableVerticalHeader.h"
+#include "DataSetTableView.h"
+#include "HighlightDelegate.h"
 #include "Promoter.h"
+#include "RenameColumnDialog.h"
+#include "RetypeColumnDialog.h"
 
 // TerraLib include files
+#include "../charts/Utils.h"
+#include "../utils/ScopedCursor.h"
+#include "../Config.h"
+#include "../Exception.h"
 #include "../../../common/Exception.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
@@ -22,8 +28,6 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "../../../statistics/qt/StatisticsDialog.h"
-#include "../utils/ScopedCursor.h"
-
 
 // Qt
 #include <QtGui/QHeaderView>
@@ -196,11 +200,14 @@ class TablePopupFilter : public QObject
       m_view->verticalHeader()->installEventFilter(this);
       m_view->viewport()->installEventFilter(this);
 
+      m_view->connect(this, SIGNAL(createHistogram(const int&)), SLOT(createHistogram(const int&)));
       m_view->connect(this, SIGNAL(hideColumn(const int&)), SLOT(hideColumn(const int&)));
       m_view->connect(this, SIGNAL(showColumn(const int&)), SLOT(showColumn(const int&)));
       m_view->connect(this, SIGNAL(removeColumn(const int&)), SLOT(removeColumn(const int&)));
       m_view->connect(this, SIGNAL(enableAutoScroll(const bool&)), SLOT(setAutoScrollEnabled(const bool&)));
       m_view->connect(this, SIGNAL(sortData(const bool&)), SLOT(sortByColumns(const bool&)));
+      m_view->connect(this, SIGNAL(renameColumn(const int&)), SLOT(renameColumn(const int&)));
+      m_view->connect(this, SIGNAL(retypeColumn(const int&)), SLOT(retypeColumn(const int&)));
     }
 
     /*!
@@ -271,7 +278,12 @@ class TablePopupFilter : public QObject
             m_hMenu->addAction(act9);
 
             m_hMenu->addSeparator();
-            
+
+            QAction* act4 = new QAction(m_hMenu);
+            act4->setText(tr("Histogram"));
+            act4->setToolTip(tr("Creates a new histogram based on the data of the selected colunm."));
+            m_hMenu->addAction(act4);
+
             QAction* act6 = new QAction(m_hMenu);
             act6->setText(tr("Statistics"));
             act6->setToolTip(tr("Show the statistics summary of the selected colunm."));
@@ -297,10 +309,21 @@ class TablePopupFilter : public QObject
 
             act8->setEnabled(updatePermition);
 
+            QAction* act10 = new QAction(m_hMenu);
+            act10->setText(tr("Rename column"));
+            act10->setToolTip(tr("Renames a column of the table."));
+            m_hMenu->addAction(act10);
+
+            QAction* act11 = new QAction(m_hMenu);
+            act11->setText(tr("Change column type"));
+            act11->setToolTip(tr("Changes the type of a column of the table."));
+            m_hMenu->addAction(act11);
+
              // Signal / Slot connections
             connect(act, SIGNAL(triggered()), SLOT(hideColumn()));
             connect(hMnu, SIGNAL(triggered(QAction*)), SLOT(showColumn(QAction*)));
             connect(act8, SIGNAL(triggered()), SLOT(removeColumn()));
+            connect(act4, SIGNAL(triggered()), SLOT(createHistogram()));
 
             m_view->connect(act2, SIGNAL(triggered()), SLOT(showAllColumns()));
             m_view->connect(act3, SIGNAL(triggered()), SLOT(resetColumnsOrder()));
@@ -309,6 +332,8 @@ class TablePopupFilter : public QObject
             connect(act6, SIGNAL(triggered()), SLOT(showStatistics()));
             connect (act5, SIGNAL(triggered()), SLOT(sortDataAsc()));
             connect (act9, SIGNAL(triggered()), SLOT(sortDataDesc()));
+            connect (act10, SIGNAL(triggered()), SLOT(renameColumn()));
+            connect (act11, SIGNAL(triggered()), SLOT(retypeColumn()));
 
             m_hMenu->popup(pos);
           }
@@ -377,6 +402,11 @@ class TablePopupFilter : public QObject
 
   protected slots:
 
+    void createHistogram()
+    {
+      emit createHistogram(m_columnPressed);
+    }
+
     void hideColumn()
     {
       emit hideColumn(m_columnPressed);
@@ -419,11 +449,27 @@ class TablePopupFilter : public QObject
       emit sortData(false);
     }
 
+    void renameColumn()
+    {
+      emit renameColumn(m_columnPressed);
+    }
+
+    void retypeColumn()
+    {
+      emit retypeColumn(m_columnPressed);
+    }
+
   signals:
+
+    void createHistogram(const int&);
 
     void hideColumn(const int&);
 
     void showColumn(const int&);
+
+    void renameColumn(const int&);
+
+    void retypeColumn(const int&);
 
     void selectObject(const int&, const bool&);
 
@@ -509,12 +555,15 @@ void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset)
 {
   m_model->setDataSet(dset);
 
-  std::vector<int> geoCols;
-  std::vector<int>::iterator it;
-  GetGeometryColumnsPositions(dset, geoCols);
+  if(dset != 0)
+  {
+    std::vector<int> geoCols;
+    std::vector<int>::iterator it;
+    GetGeometryColumnsPositions(dset, geoCols);
 
-  for(it = geoCols.begin(); it != geoCols.end(); ++it)
-    hideColumn(*it);
+    for(it = geoCols.begin(); it != geoCols.end(); ++it)
+      hideColumn(*it);
+  }
 
   m_popupFilter->setDataSet(dset);
   m_delegate->setDataSet(dset);
@@ -555,6 +604,14 @@ void te::qt::widgets::DataSetTableView::setHighlightColor(const QColor& color)
   repaint();
 }
 
+void te::qt::widgets::DataSetTableView::createHistogram(const int& column)
+{
+  const te::map::LayerSchema* schema = m_layer->getSchema().release();
+  te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
+  te::qt::widgets::createHistogramDisplay(m_dset, dataType, column);
+  delete schema;
+}
+
 void te::qt::widgets::DataSetTableView::hideColumn(const int& column)
 {
   horizontalHeader()->hideSection(column);
@@ -563,6 +620,65 @@ void te::qt::widgets::DataSetTableView::hideColumn(const int& column)
 void te::qt::widgets::DataSetTableView::showColumn(const int& column)
 {
   horizontalHeader()->showSection(column);
+}
+
+void te::qt::widgets::DataSetTableView::renameColumn(const int& column)
+{
+  RenameColumnDialog dlg(parentWidget());
+
+  dlg.setOldColumnName(QString::fromStdString(m_dset->getPropertyName(column)));
+
+  if(dlg.exec() == QDialog::Accepted)
+  {
+    std::string oldName = dlg.getOldName().toStdString();
+    std::string newName = dlg.getNewName().toStdString();
+    te::da::DataSourcePtr dsrc = GetDataSource(m_layer);
+
+    if(dsrc.get() == 0)
+      throw Exception(tr("Fail to get data source.").toStdString());
+
+    if(!dsrc->isPropertyNameValid(newName))
+      throw Exception(tr("Invalid column name. Choose another.").toStdString());
+
+    dsrc->renameProperty(m_layer->getSchema()->getName(), oldName, newName);
+
+    setLayer(m_layer);
+  }
+}
+
+void te::qt::widgets::DataSetTableView::retypeColumn(const int& column)
+{
+  RetypeColumnDialog dlg(parentWidget());
+
+  std::auto_ptr<te::da::DataSetType> schema = m_layer->getSchema();
+  te::dt::Property* prp;
+  std::string dsetName = schema->getName();
+  std::string columnName;
+
+  prp = schema->getProperty(column);
+
+  if(prp == 0)
+    throw Exception(tr("Fail to get property of the dataset.").toStdString());
+
+  columnName = prp->getName();
+
+  dlg.setTableName(dsetName.c_str());
+  dlg.setColumnName(columnName.c_str());
+  dlg.setType(prp->getType());
+
+  if(dlg.exec() == QDialog::Accepted)
+  {
+    te::da::DataSourcePtr dsrc = GetDataSource(m_layer);
+
+    if(dsrc.get() == 0)
+      throw Exception(tr("Fail to get data source.").toStdString());
+
+    setDataSet(0);
+
+    dsrc->changePropertyDefinition(dsetName, columnName, dlg.getProperty().release());
+
+    setLayer(m_layer);
+  }
 }
 
 void te::qt::widgets::DataSetTableView::showAllColumns()

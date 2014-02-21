@@ -35,6 +35,10 @@
   #include "ClassifierAction.h"
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_COLORTRANSFORM
+  #include "ColorTransformAction.h"
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
   #include "ContrastAction.h"
 #endif
@@ -49,6 +53,10 @@
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
   #include "MixtureModelAction.h"
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_MOSAIC
+  #include "MosaicAction.h"
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER
@@ -130,6 +138,10 @@ void te::qt::plugins::rp::Plugin::registerActions()
     m_classifier = new te::qt::plugins::rp::ClassifierAction(m_rpMenu, m_rpPopupMenu);
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_COLORTRANSFORM
+    m_colorTrans = new te::qt::plugins::rp::ColorTransformAction(m_rpMenu, m_rpPopupMenu);
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
     m_contrast = new te::qt::plugins::rp::ContrastAction(m_rpMenu, m_rpPopupMenu);
 #endif
@@ -144,6 +156,10 @@ void te::qt::plugins::rp::Plugin::registerActions()
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
   m_mixtureModel = new te::qt::plugins::rp::MixtureModelAction(m_rpMenu, m_rpPopupMenu);
+#endif
+
+  #ifdef TE_QT_PLUGIN_RP_HAVE_MOSAIC
+  m_mosaic = new te::qt::plugins::rp::MosaicAction(m_rpMenu, m_rpPopupMenu);
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER
@@ -161,6 +177,10 @@ void  te::qt::plugins::rp::Plugin::unRegisterActions()
     delete m_classifier;
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_COLORTRANSFORM
+    delete m_colorTrans;
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
     delete m_contrast;
 #endif
@@ -173,8 +193,12 @@ void  te::qt::plugins::rp::Plugin::unRegisterActions()
     delete m_fusion;
 #endif
 
-#ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
+#ifdef TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
     delete m_mixtureModel;
+#endif
+
+    #ifdef TE_QT_PLUGIN_RP_HAVE_MOSAIC
+    delete m_mosaic;
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER

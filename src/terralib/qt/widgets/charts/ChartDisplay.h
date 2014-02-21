@@ -85,23 +85,6 @@ namespace te
           ~ChartDisplay();
 
           /*!
-            \brief It sets the QwtPlotPicker's state machine (selection mode)
-
-            \param chartType The type of the chart that the picker will be adjusted to funtion for.
-
-            Although the selection function can work for any chart based on a single point (or click)
-            some charts can benefit from a different behavior, such as a drag & release selection.
-            This function will adjust the picker state machine to better suit the type of chart being displayed.
-
-            The current chart types supported and their respective selection mode are as follow:
- 
-            te::qt::widgets::HISTOGRAM_CHART = Point selection;
-            te::qt::widgets::SCATTER_CHART = Rectangle selection;
-
-          */
-          void setPickerStyle(int chartType);
-
-          /*!
             \brief Returns a pointer to the display's style
 
             \return A ChartStyle type pointer to the display's style.
@@ -143,12 +126,6 @@ namespace te
           void adjustDisplay();
 
         protected slots:
-
-          /*!
-            \brief Called when the user clicks on the canvas area. 
-                   Will highlight the data, if possible, depending on the type of chart being displayed (f.e. histogram, scatter, etc).
-          */
-          void onPointPicked(const QPointF &pos);
 
           /*!
             \brief Called when the user selects an area of the canvas.

@@ -247,6 +247,12 @@ namespace terralib4
 
       void optimize(const std::map<std::string, std::string>& opInfo);
 
+      std::vector<std::string> getTL4Layers();
+
+      std::vector<std::string> getTL4Tables();
+
+      std::vector<std::string> getTL4Themes();
+
     private:
 
       DataSource* m_ds;

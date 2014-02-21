@@ -79,3 +79,7 @@ std::auto_ptr<te::da::DataSet> te::da::DataSourceTransactor::getDataSet(const st
 
   return result;
 }
+
+void te::da::DataSourceTransactor::changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp)
+{
+}

@@ -149,6 +149,12 @@ void te::se::Rule::setSymbolizer(std::size_t i, te::se::Symbolizer* s)
   m_symbolizers[i] = s;
 }
 
+void te::se::Rule::setSymbolizers(const std::vector<Symbolizer*>& symbs)
+{
+  clearSymbolizers();
+  m_symbolizers = symbs;
+}
+
 const std::vector<te::se::Symbolizer*>& te::se::Rule::getSymbolizers() const
 {
   return m_symbolizers;
@@ -167,4 +173,10 @@ void te::se::Rule::removeSymbolizer(std::size_t i)
   delete m_symbolizers[i];
 
   m_symbolizers.erase(m_symbolizers.begin() + i);
+}
+
+void te::se::Rule::clearSymbolizers()
+{
+  te::common::FreeContents(m_symbolizers);
+  m_symbolizers.clear();
 }

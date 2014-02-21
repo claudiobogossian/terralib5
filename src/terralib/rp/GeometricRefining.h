@@ -30,9 +30,11 @@ Mul
 #include "TiePointsLocator.h"
 #include "../raster/Raster.h"
 #include "../geometry/GeometricTransformation.h"
+#include "../geometry/Polygon.h"
 
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace te
 {
@@ -70,9 +72,15 @@ namespace te
             
             bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
             
-            te::rp::TiePointsLocator::InputParameters m_locatorParams; //!< The parameters used by the tie-points locator when processing each rasters pair (leave untouched to use the default).
+            te::rp::TiePointsLocator::InputParameters m_locatorParams; //!< The parameters used by the tie-points locator when matching each raster (feeder) against the input raster (m_RasterPtr),leave untouched to use the default values.
             
-            double m_minRequiredTiePointsCoveredAreaPercent; //!< The mininumum required area percent (from the input raster ) covered by tie-points - valid range [0,100] (default:0).
+            double m_minRasterCoveredAreaPercent; //!< The mininumum required area percent (from the input raster ) covered by tie-points - valid range [0,100] (default:25).
+            
+            double m_minrReferenceRasterCoveredAreaPercent; //!< The mininumum required area percent (from each reference raster ) covered by tie-points - valid range [0,100] (default:25).
+            
+            unsigned int m_rasterSubSectorsFactor; //!< A positive factor used to devide the input raster area into sectors ,(efault value: 3 ( 3 x 3 = 9 sub-sectors).
+            
+            unsigned int m_rasterMaxError; //!< The maximum expected position error for the given input rasters (pixels units), default value:10.
             
             InputParameters();
             
@@ -151,6 +159,20 @@ namespace te
         double getTPConvexHullArea( 
           const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
           const bool useTPSecondCoordPair ) const;        
+          
+        /*!
+          \brief Returns the tie points converx hull.
+          
+          \param tiePoints Input tie-points.
+          
+          \param useTPSecondCoordPair If true the sencond tie-point component (te::gm::GTParameters::TiePoint::second) will be used for the area calcule, otherwize the first component will be used.
+          
+          \return Returns true if ok. false on errors.
+        */          
+        bool getTPConvexHull( 
+          const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
+          const bool useTPSecondCoordPair,
+          std::auto_ptr< te::gm::Polygon >& convexHullPtr ) const;           
     };
 
   } // end namespace rp
