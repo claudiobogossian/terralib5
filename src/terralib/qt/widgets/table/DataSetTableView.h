@@ -159,6 +159,12 @@ namespace te
           void retypeColumn(const int& column);
 
           /*!
+            \brief Shows the change column data dialog.
+            \param column Index of the column to be updated.
+          */
+          void changeColumnData(const int& column);
+
+          /*!
             \brief Shows all hidden columns.
           */
           void showAllColumns();

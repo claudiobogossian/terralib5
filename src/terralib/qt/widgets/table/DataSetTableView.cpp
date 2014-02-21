@@ -6,6 +6,7 @@
 #include "Promoter.h"
 #include "RenameColumnDialog.h"
 #include "RetypeColumnDialog.h"
+#include "AlterDataDialog.h"
 
 // TerraLib include files
 #include "../utils/ScopedCursor.h"
@@ -172,6 +173,22 @@ std::auto_ptr<te::da::DataSet> GetDataSet(const te::map::AbstractLayer* layer, c
   }
 }
 
+std::vector<QString> GetColumnsNames(te::da::DataSet* dset)
+{
+  std::vector<QString> res;
+
+  if(dset != 0)
+  {
+    size_t n = dset->getNumProperties();
+
+    for(size_t i=0; i<n; i++)
+      if(!IsGeometryColumn(dset, i))
+        res.push_back(dset->getPropertyName(i).c_str());
+  }
+
+  return res;
+}
+
 /*!
   \class Filter for popup menus
 */
@@ -207,6 +224,7 @@ class TablePopupFilter : public QObject
       m_view->connect(this, SIGNAL(sortData(const bool&)), SLOT(sortByColumns(const bool&)));
       m_view->connect(this, SIGNAL(renameColumn(const int&)), SLOT(renameColumn(const int&)));
       m_view->connect(this, SIGNAL(retypeColumn(const int&)), SLOT(retypeColumn(const int&)));
+      m_view->connect(this, SIGNAL(changeColumnData(const int&)), SLOT(changeColumnData(const int&)));
     }
 
     /*!
@@ -313,6 +331,11 @@ class TablePopupFilter : public QObject
             act11->setToolTip(tr("Changes the type of a column of the table."));
             m_hMenu->addAction(act11);
 
+            QAction* act12 = new QAction(m_hMenu);
+            act12->setText(tr("Change column data"));
+            act12->setToolTip(tr("Changes the data of a column of the table."));
+            m_hMenu->addAction(act12);
+
              // Signal / Slot connections
             connect(act, SIGNAL(triggered()), SLOT(hideColumn()));
             connect(hMnu, SIGNAL(triggered(QAction*)), SLOT(showColumn(QAction*)));
@@ -327,6 +350,7 @@ class TablePopupFilter : public QObject
             connect (act9, SIGNAL(triggered()), SLOT(sortDataDesc()));
             connect (act10, SIGNAL(triggered()), SLOT(renameColumn()));
             connect (act11, SIGNAL(triggered()), SLOT(retypeColumn()));
+            connect (act12, SIGNAL(triggered()), SLOT(changeColumnData()));
 
             m_hMenu->popup(pos);
           }
@@ -447,6 +471,11 @@ class TablePopupFilter : public QObject
       emit retypeColumn(m_columnPressed);
     }
 
+    void changeColumnData()
+    {
+      emit changeColumnData(m_columnPressed);
+    }
+
   signals:
 
     void hideColumn(const int&);
@@ -456,6 +485,8 @@ class TablePopupFilter : public QObject
     void renameColumn(const int&);
 
     void retypeColumn(const int&);
+
+    void changeColumnData(const int&);
 
     void selectObject(const int&, const bool&);
 
@@ -656,6 +687,43 @@ void te::qt::widgets::DataSetTableView::retypeColumn(const int& column)
     dsrc->changePropertyDefinition(dsetName, columnName, dlg.getProperty().release());
 
     setLayer(m_layer);
+  }
+}
+
+void te::qt::widgets::DataSetTableView::changeColumnData(const int& column)
+{
+  if(m_dset == 0 || m_layer == 0)
+    return;
+
+  std::auto_ptr<te::da::DataSetType> schema = m_layer->getSchema();
+  std::string dsetName = schema->getName();
+  std::string columnName = schema->getProperty(column)->getName();
+  std::vector<QString> cols = GetColumnsNames(m_dset);
+
+  AlterDataDialog dlg(parentWidget());
+  dlg.setSelectedColumn(columnName.c_str());
+  dlg.setDataColumns(cols);
+
+  if(dlg.exec() == QDialog::Accepted)
+  {
+    te::da::DataSourcePtr dsrc = GetDataSource(m_layer);
+
+    if(dsrc.get() == 0)
+      throw Exception(tr("Fail to get data source.").toStdString());
+
+    std::string sql;
+
+    if(dlg.alterAllData())
+      sql = "UPDATE TABLE " + dsetName + " SET \'" + columnName + "\' = (" + dlg.getExpression().toStdString() + ");";
+
+    try
+    {
+      dsrc->execute(sql);
+      setLayer(m_layer);
+    }
+    catch(Exception& e)
+    {
+    }
   }
 }
 
