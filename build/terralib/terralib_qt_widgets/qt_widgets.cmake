@@ -53,7 +53,6 @@ list (APPEND TE_DEP_LIBS
 		terralib_maptools
 		terralib_memory
 		terralib_raster
-		terralib_serialization
 		terralib_srs
 		terralib_statistics
 		terralib_symbology

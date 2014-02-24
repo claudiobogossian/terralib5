@@ -35,9 +35,9 @@
 #include "../../../raster.h"
 #include "../../../maptools/ExternalGraphicRendererManager.h"
 #include "../../../maptools/MarkRendererManager.h"
-#include "../../../maptools/Utils.h"
-#include "../../../se.h"
 #include "../../../qt/widgets/Utils.h"
+#include "../../../se/Utils.h"
+#include "../../../se.h"
 #include "Histogram.h"
 #include "Scatter.h"
 #include "Utils.h"
@@ -509,7 +509,7 @@ QwtSymbol* te::qt::widgets::Terralib2Qwt(te::se::Graphic* graphic)
   //Adjusting the size if the user changed it
   if(graphic->getSize())
   {
-    height = te::map::GetInt(graphic->getSize());
+    height = te::se::GetInt(graphic->getSize());
     width = height;
   }
 

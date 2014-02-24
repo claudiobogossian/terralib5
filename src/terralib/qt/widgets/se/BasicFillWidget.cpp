@@ -24,8 +24,8 @@
 */
 
 // TerraLib
-#include "../../../maptools/Utils.h"
 #include "../../../se/Fill.h"
+#include "../../../se/Utils.h"
 #include "../utils/ColorPickerToolButton.h"
 #include "BasicFillWidget.h"
 #include "ui_BasicFillWidgetForm.h"
@@ -101,7 +101,7 @@ void te::qt::widgets::BasicFillWidget::updateUi()
 {
   // Color
   te::color::RGBAColor rgba(TE_SE_DEFAULT_FILL_BASIC_COLOR, TE_OPAQUE);
-  te::map::GetColor(m_fill, rgba);
+  te::se::GetColor(m_fill, rgba);
   m_color = QColor(rgba.getRgba());
   m_color.setAlpha(rgba.getAlpha());
   updateUiFillColor();
