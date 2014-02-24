@@ -29,7 +29,9 @@
 #include "ui_StyleControllerWidgetForm.h"
 #include "StyleControllerWidget.h"
 #include "StyleExplorer.h"
+#include "Symbol.h"
 #include "SymbolPreviewWidget.h"
+#include "SymbolSelectorDialog.h"
 
 // Qt
 #include <QtGui/QMessageBox>
@@ -179,7 +181,17 @@ void te::qt::widgets::StyleControllerWidget::onLibraryManagerClicked()
     return;
   }
 
-  m_explorer->openLibraryManager();
+  Symbol* symbol = te::qt::widgets::SymbolSelectorDialog::getSymbol(this, tr("Symbol Selector"));
+  if(symbol == 0)
+    return;
+
+  std::vector<te::se::Symbolizer*> symbolizers;
+  for(std::size_t i = 0; i < symbol->getSymbolizersCount(); ++i)
+    symbolizers.push_back(symbol->getSymbolizer(i)->clone());
+
+  rule->setSymbolizers(symbolizers);
+
+  m_explorer->updateStyleTree();
 }
 
 void te::qt::widgets::StyleControllerWidget::onMapRefreshClicked()

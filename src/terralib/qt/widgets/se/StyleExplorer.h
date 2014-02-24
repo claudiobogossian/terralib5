@@ -129,8 +129,6 @@ namespace te
 
           void setLegendIconSize(int size);
 
-          void openLibraryManager();
-
         public slots:
 
           void onSymbolizerChanged(te::se::Symbolizer* symb);
