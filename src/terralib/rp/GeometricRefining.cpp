@@ -78,7 +78,7 @@ namespace te
       m_inRasterExpectedColDisplacement = 0;
       m_processAllReferenceRasters = true;
       m_enableRasterCache = true;
-      m_geomTransfName = "affine";
+      m_geomTransfName = "Affine";
       m_geomTransfMaxTiePointError = 2.0;
       m_outliersRemotionAssurance = 0.1;
       m_outliersRemotionMaxIterations = 0;
@@ -640,19 +640,84 @@ namespace te
     }
 
     void GeometricRefining::convert( 
-          const std::vector< MatchingInfo >& inTiePoints,
-          std::vector< te::gm::GTParameters::TiePoint >& outTiePoints ) const
+      const std::vector< MatchingInfo >& inTiePoints,
+      std::vector< te::gm::GTParameters::TiePoint >& outTiePoints,
+      std::vector< double >& outTiePointsWeights ) const
     {
       outTiePoints.clear();
+      outTiePointsWeights.clear();
       
-      for( unsigned int inTiePointsIdx = 0 ; inTiePointsIdx < inTiePoints.size() ; ++inTiePointsIdx )
+      // Guessing limits
+      
+      unsigned int inTiePointsIdx = 0;
+      unsigned int mInfoTiePointsIdx = 0;
+      unsigned int minTPNumberByRefRaster = std::numeric_limits< unsigned int >::max();
+      unsigned int maxTPNumberByRefRaster = 0;
+      double minConvexHullAreaPercentByRefRaster = std::numeric_limits< double >::max();
+      double maxConvexHullAreaPercentByRefRaster = -1.0 * minConvexHullAreaPercentByRefRaster;
+      
+      for( inTiePointsIdx = 0 ; inTiePointsIdx < inTiePoints.size() ; ++inTiePointsIdx )
       {
         const MatchingInfo& mInfo = inTiePoints[ inTiePointsIdx ];
         
-        for( unsigned int mInfoTiePointsIdx = 0 ; mInfoTiePointsIdx < mInfo.m_tiePoints.size() ; 
+        if( minTPNumberByRefRaster > mInfo.m_tiePoints.size() )
+        {
+          minTPNumberByRefRaster = mInfo.m_tiePoints.size();
+        }
+        
+        if( maxTPNumberByRefRaster < mInfo.m_tiePoints.size() )
+        {
+          maxTPNumberByRefRaster = mInfo.m_tiePoints.size();
+        }    
+        
+        if( minConvexHullAreaPercentByRefRaster > mInfo.m_convexHullAreaPercent )
+        {
+          minConvexHullAreaPercentByRefRaster = mInfo.m_convexHullAreaPercent;
+        }
+        
+        if( maxConvexHullAreaPercentByRefRaster < mInfo.m_convexHullAreaPercent )
+        {
+          maxConvexHullAreaPercentByRefRaster = mInfo.m_convexHullAreaPercent;
+        }
+      }      
+      
+      double weight = 0;
+      const double convexHullAreaPercentGain = ( maxConvexHullAreaPercentByRefRaster == 
+        minConvexHullAreaPercentByRefRaster ) ? 0.0 :
+        1.0 / ( maxConvexHullAreaPercentByRefRaster - minConvexHullAreaPercentByRefRaster );
+      const double convexHullAreaPercentOffset = (convexHullAreaPercentGain == 0.0 ) ? 
+        1.0 : -1.0 * minConvexHullAreaPercentByRefRaster;
+      const double tiePointsNumberGain = ( maxTPNumberByRefRaster == 
+        minTPNumberByRefRaster ) ? 0.0 :
+        1.0 / ( maxTPNumberByRefRaster - minTPNumberByRefRaster );
+      const double tiePointsNumberOffset = ( tiePointsNumberGain == 0.0 ) ? 1.0 : -1.0 * minTPNumberByRefRaster;      
+      
+      for( inTiePointsIdx = 0 ; inTiePointsIdx < inTiePoints.size() ; ++inTiePointsIdx )
+      {
+        const MatchingInfo& mInfo = inTiePoints[ inTiePointsIdx ];
+        weight = 
+          (
+            (
+              ( mInfo.m_convexHullAreaPercent + convexHullAreaPercentOffset )
+              *
+              convexHullAreaPercentGain
+            )
+            +
+            (
+              ( mInfo.m_tiePoints.size() + tiePointsNumberOffset )
+              *
+              tiePointsNumberGain
+            )
+          )
+          /
+          2.0;
+          
+        
+        for( mInfoTiePointsIdx = 0 ; mInfoTiePointsIdx < mInfo.m_tiePoints.size() ; 
           ++mInfoTiePointsIdx )
         {
           outTiePoints.push_back( mInfo.m_tiePoints[ mInfoTiePointsIdx ] );
+          outTiePointsWeights.push_back( weight );
         }
       }
     }
@@ -719,7 +784,8 @@ namespace te
       baseTransAgreementTiePoints.clear();
       
       te::gm::GTParameters geoTransParams;
-      convert( inTiePoints, geoTransParams.m_tiePoints );
+      std::vector< double > tiePointsWeights;
+      convert( inTiePoints, geoTransParams.m_tiePoints, tiePointsWeights );
       
       te::gm::GTFilter filter;
       
@@ -741,7 +807,7 @@ namespace te
             m_inputParameters.m_outliersRemotionMaxIterations,
             m_inputParameters.m_outliersRemotionAssurance,
             m_inputParameters.m_enableMultiThread,
-            std::vector< double >(),
+            tiePointsWeights,
             baseTransAgreementTiePoints,
             geometricTransformPtr
           )
