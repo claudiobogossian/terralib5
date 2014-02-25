@@ -8,7 +8,7 @@ project(${PROJ_NAME})
 #  symbology xerces xlink xml REQUIRED)
   
 find_package (terralib 5.0 COMPONENTS common dataaccess datatype filter gdal 
-  geometry gml memory  ogr plugin postgis qt_widgets  raster srs sam serialization vp rp
+  geometry gml memory  ogr plugin postgis qt_widgets  raster srs sam vp rp
    xerces xlink xml REQUIRED)
  
 if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
