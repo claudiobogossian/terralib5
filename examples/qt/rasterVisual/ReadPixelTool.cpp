@@ -36,9 +36,10 @@
 //#include <terralib/maptools/RasterLayer.h> // * Under revision *
 #include <terralib/maptools/RasterTransform.h>
 #include <terralib/maptools/RasterTransformConfigurer.h>
-#include <terralib/maptools/Utils.h>
 #include <terralib/qt/widgets/canvas/Canvas.h>
 #include <terralib/qt/widgets/canvas/MapDisplay.h>
+#include <terralib/se/Utils.h>
+
 
 // Qt
 #include <QtGui/QMouseEvent>
@@ -170,9 +171,9 @@ bool ReadPixelTool::mouseReleaseEvent(QMouseEvent* e)
       type = "Unknown Composition";
     }
 
-    QString opacity = te::map::GetString(rs->getOpacity()).c_str();
-    QString gain = te::map::GetString(rs->getGain()).c_str();
-    QString offset = te::map::GetString(rs->getOffset()).c_str();
+    QString opacity = te::se::GetString(rs->getOpacity()).c_str();
+    QString gain = te::se::GetString(rs->getGain()).c_str();
+    QString offset = te::se::GetString(rs->getOffset()).c_str();
 
     information += "<li><b>" + QString("Color Composition ") + ":</b> " + type + "</li>";
     information += "<li><b>" + QString("Opacity Value ") + ":</b> " + opacity + "</li>";
