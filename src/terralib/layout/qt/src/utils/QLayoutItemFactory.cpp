@@ -6,6 +6,7 @@
 #include "LayoutItemObserver.h"
 #include "QLayoutItemGroup.h"
 #include "QPaperLayoutItem.h"
+#include "QMapLayoutItem.h"
 
 te::layout::QLayoutItemFactory::QLayoutItemFactory()
 {
@@ -30,10 +31,6 @@ te::layout::LayoutItemObserver* te::layout::QLayoutItemFactory::make( LayoutAbst
       break;
     }
   case TPLegendItem:
-    {
-      break;
-    }
-  case TPMapItem:
     {
       break;
     }
@@ -67,6 +64,13 @@ te::layout::LayoutItemObserver* te::layout::QLayoutItemFactory::make( LayoutAbst
       QPaperLayoutItem* paper = new QPaperLayoutItem(params.getController(), params.getModel());
       LayoutItemObserver* itemPaper = (LayoutItemObserver*)paper;
       return itemPaper;
+      break;
+    }
+  case TPMapItem:
+    {
+      QMapLayoutItem* map = new QMapLayoutItem(params.getController(), params.getModel());
+      LayoutItemObserver* item = (LayoutItemObserver*)map;
+      return item;
       break;
     }
   }

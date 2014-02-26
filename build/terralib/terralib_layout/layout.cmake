@@ -183,6 +183,7 @@ set (
   ${SRCDIR}/qt/include/moc/QObjectInspectorWindowOutside.h
   ${SRCDIR}/qt/include/moc/QToolbarWindowOutside.h
   ${SRCDIR}/qt/include/moc/QLayoutView.h
+  ${SRCDIR}/qt/include/moc/QObjectLayoutItem.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/layout/qt/include/moc" MOC)
 

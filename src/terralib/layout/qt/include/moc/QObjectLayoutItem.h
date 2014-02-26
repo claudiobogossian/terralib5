@@ -1,7 +1,7 @@
-#ifndef QRECT_LAYOUTITEM_H
-#define QRECT_LAYOUTITEM_H
+#ifndef QOBJECT_LAYOUTITEM_H
+#define QOBJECT_LAYOUTITEM_H
 
-#include <QGraphicsItem>
+#include <QGraphicsObject>
 #include <QtGui/QGraphicsRectItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QVariant>
@@ -13,18 +13,24 @@ namespace te
 {
   namespace layout
   {
-    class QRectLayoutItem : public QGraphicsRectItem, public LayoutItemObserver
+    class QObjectLayoutItem : public QGraphicsObject, public LayoutItemObserver
     {
+      Q_OBJECT //for slots/signals
+
       public:
 
-        QRectLayoutItem(LayoutItemController* controller = 0, LayoutItemModelObservable* o = 0);
-        virtual ~QRectLayoutItem();
+        QObjectLayoutItem(LayoutItemController* controller = 0, LayoutItemModelObservable* o = 0);
+        virtual ~QObjectLayoutItem();
 
         virtual void updateObserver(ContextLayoutItem context) = 0;
         virtual te::gm::Coord2D getPosition();
 
         void setPixmap( const QPixmap& pixmap );
+
+        //Mandatory implementation methods
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+        virtual QRectF boundingRect() const;
+        virtual void setRect(QRectF rect);
 
       protected:
 
@@ -34,6 +40,7 @@ namespace te
       protected:
 
         QPixmap _pixmap;
+        QRectF  _rect;//In local coordinate
     };
   }
 }

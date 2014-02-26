@@ -49,6 +49,10 @@
 #include "PaperLayoutModel.h"
 #include "PaperLayoutController.h"
 #include "QPaperLayoutItem.h"
+#include "MapLayoutModel.h"
+#include "MapLayoutController.h"
+#include "QMapLayoutItem.h"
+#include "LayoutOutsideController.h"
 
 #define _psPointInMM 0.352777778 //<! 1 PostScript point in millimeters
 #define _inchInPSPoints 72 //<! 1 Inch in PostScript point
@@ -199,24 +203,37 @@ void te::layout::QLayoutView::setLayoutController( LayoutController* controller 
 
 void te::layout::QLayoutView::keyPressEvent( QKeyEvent* keyEvent )
 {
+  QLayoutScene* sc = dynamic_cast<QLayoutScene*>(scene());
+
   if(keyEvent->key() == Qt::Key_P)
   {
     scaleView(1.);
 
     QPrinter* printer=new QPrinter(QPrinter::HighResolution);
-    printer->setPageSize(QPrinter::A1);
-    printer->setOrientation( QPrinter::Landscape );
+    printer->setPageSize(QPrinter::A4);
+    printer->setOrientation( QPrinter::Portrait );
     printer->pageRect(QPrinter::Millimeter);
     if (QPrintDialog(printer).exec() == QDialog::Accepted) {
       QPainter painter(printer);
       painter.setRenderHint(QPainter::Antialiasing);
       painter.scale(1., 1.);
-      render(&painter);
+      //render(&painter);
+
+      QLayoutScene* sc = dynamic_cast<QLayoutScene*>(scene());
+      te::gm::Envelope paperBox =  sc->getPaperBox();
+
+      QPoint lefttop = mapFromScene(paperBox.getLowerLeftX(), paperBox.getUpperRightY());
+      QPoint rightbottom = mapFromScene(paperBox.getUpperRightX(), paperBox.getLowerLeftY());
+
+      QRectF sourceTargetRect(paperBox.getLowerLeftX(), paperBox.getLowerLeftY(), 
+        paperBox.getWidth(), paperBox.getHeight());
+      QRect sourceRect(paperBox.getLowerLeftX(), paperBox.getUpperRightY(), 
+        paperBox.getWidth(), paperBox.getHeight());
+      scene()->render(&painter, sourceTargetRect, sourceTargetRect); // upside down
     }
   }
   else if(keyEvent->key() == Qt::Key_G)
   {
-    QLayoutScene* sc = dynamic_cast<QLayoutScene*>(scene());
     if(sc)
     {
       QGraphicsItemGroup* group = sc->createItemGroup(scene()->selectedItems());
@@ -224,7 +241,7 @@ void te::layout::QLayoutView::keyPressEvent( QKeyEvent* keyEvent )
       group->setParentItem(lScene->getMasterParentItem());
       
       QLayoutItemGroup* layoutGroup = dynamic_cast<QLayoutItemGroup*>(group);
-
+      
       if(layoutGroup)
         layoutGroup->redraw();
 
@@ -245,7 +262,6 @@ void te::layout::QLayoutView::keyPressEvent( QKeyEvent* keyEvent )
         QGraphicsItemGroup* group = dynamic_cast<QGraphicsItemGroup*>(item);
         if(group)
         {
-          QLayoutScene* sc = dynamic_cast<QLayoutScene*>(scene());
           if(sc)
           {
             sc->destroyItemGroup(group);
@@ -301,7 +317,6 @@ void te::layout::QLayoutView::config()
   LayoutItemObserver* itemRuler = (LayoutItemObserver*)controllerRuler->getView();
   QHorizontalRulerLayoutItem* rectRuler = dynamic_cast<QHorizontalRulerLayoutItem*>(itemRuler);
   rectRuler->setPPI(logicalDpiX());
-  //rectRuler->setParentItem(rectItemBack1);
   rectRuler->setItemPosition(llx + 10, lly);
   rectRuler->redraw();
 
@@ -312,7 +327,6 @@ void te::layout::QLayoutView::config()
   LayoutItemObserver* itemRulerV = (LayoutItemObserver*)controllerRulerV->getView();
   QVerticalRulerLayoutItem* rectRulerV = dynamic_cast<QVerticalRulerLayoutItem*>(itemRulerV);
   rectRulerV->setPPI(logicalDpiX());		
-  //rectRulerV->setParentItem(rectItemBack1);
   rectRulerV->setItemPosition(llx, lly + 10);
   rectRulerV->redraw();
     
@@ -322,7 +336,6 @@ void te::layout::QLayoutView::config()
   RectangleLayoutController* controller = new RectangleLayoutController(model);
   LayoutItemObserver* item = (LayoutItemObserver*)controller->getView();
   QRectangleLayoutItem* rect = dynamic_cast<QRectangleLayoutItem*>(item);
-  //rect->setParentItem(rectItemBack1);
   item->setItemPosition(llx, lly);
   item->redraw();
 	
@@ -332,10 +345,18 @@ void te::layout::QLayoutView::config()
   RectangleLayoutController* controller2 = new RectangleLayoutController(model2);
   LayoutItemObserver* item2 = (LayoutItemObserver*)controller2->getView();
   QRectangleLayoutItem* rect2 = dynamic_cast<QRectangleLayoutItem*>(item2);
-  //rect2->setParentItem(rectItemBack1);
   item2->setItemPosition(llx + 40, lly + 40);
   item2->redraw();
-    
+
+  //-------------------------TESTE MAP---------------------------------------------
+  //Retângulo: utilizando o canvas da Terralib 5
+  MapLayoutModel* modelMap = new MapLayoutModel();		  
+  modelMap->setName("MAPA_01");
+  MapLayoutController* controllerMap = new MapLayoutController(modelMap);
+  LayoutItemObserver* itemMap = (LayoutItemObserver*)controllerMap->getView();
+  QMapLayoutItem* qrectMap = dynamic_cast<QMapLayoutItem*>(itemMap);
+  itemMap->setItemPosition(llx + 60, lly + 60);
+  itemMap->redraw();
   ////-----------------------------------------------------------------------------------------------------
 	
   QFont font;

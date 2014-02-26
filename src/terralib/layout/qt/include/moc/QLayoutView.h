@@ -47,7 +47,7 @@ namespace te
         void closeEvent ( QCloseEvent * event );
 
         virtual void	paintEvent ( QPaintEvent * event );
-
+        
         //PaintDevice
         virtual int	metric ( PaintDeviceMetric metric ) const;
 

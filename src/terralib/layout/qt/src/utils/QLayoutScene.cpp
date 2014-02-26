@@ -217,8 +217,11 @@ void te::layout::QLayoutScene::calculateMatrixSceneItem()
   //Matrix for items ( between scene and items )
   //take translate
   double m_31 = _matrix.inverted().m31();
-  double m_32 = _matrix.inverted().m32();  
+  double m_32 = _matrix.inverted().m32(); 
+  //m11 and m22 : scale
   //Create matrix for items
+  // shearing( m21 and m12, cisalhamento ) : distorção 
+  // m31 and m32 : translate  
   _matrixItem = QTransform(1, 0, 0, 0, -1, 0, m_31, m_32, 1);
 }
 
