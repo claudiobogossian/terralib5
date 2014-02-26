@@ -46,12 +46,12 @@ int main(int /*argc*/, char** /*argv*/)
     //Load Modules and Plugins
     LoadModules();
 
-<<<<<<< HEAD
+
     CoverageSeriesExamples();
 
     //TrajectoryExamplesFromKML();
      
-=======
+
     //Initialize STDataLoader support
     te::st::STDataLoader::initialize();
     
@@ -64,7 +64,6 @@ int main(int /*argc*/, char** /*argv*/)
     //Finalize STDataLoader support
     te::st::STDataLoader::finalize();
 
->>>>>>> 5.0.0-alpha
     te::plugin::PluginManager::getInstance().unloadAll();
 
     TerraLib::getInstance().finalize();
