@@ -161,6 +161,10 @@ namespace te
       {
         return false;
       }
+      else if( index == m_currentOffset )
+      {
+        return true;
+      }
       else
       {
         m_currentOffset = index;
