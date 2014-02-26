@@ -188,10 +188,13 @@ namespace te
           \param inTiePoints Input tie-points.
           
           \param outTiePoints Output tie-points.
+          
+          \param outTiePointsWeights Output tie-points weights.
         */          
         void convert( 
           const std::vector< MatchingInfo >& inTiePoints,
-          std::vector< te::gm::GTParameters::TiePoint >& outTiePoints ) const;         
+          std::vector< te::gm::GTParameters::TiePoint >& outTiePoints,
+          std::vector< double >& outTiePointsWeights ) const;         
         
         /*!
           \brief Returns the tie points converx hull area.
