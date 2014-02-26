@@ -40,7 +40,6 @@ namespace te
 
   namespace map 
   { 
-    class AbstractLayer; 
     class Canvas;
   }
 
@@ -78,6 +77,139 @@ namespace te
 
         /*! \brief Destructor. */
         ~Layer();
+
+        /*!
+          \brief It returns the layer schema.
+
+          \return The Layer schema.
+
+          \note The caller will take the ownership of the returned layer schema.
+        */
+        virtual std::auto_ptr<te::da::DataSetType> getSchema() const;
+
+        /*!
+          \brief It gets the dataset identified by the layer name.
+
+          \param travType The traverse type associated to the returned dataset. 
+          \param accessPolicy Access policy.
+
+          \return The caller of this method will take the ownership of the returned dataset.
+
+          \exception Exception It can throws an exception if:
+                     <ul>
+                     <li>something goes wrong during the data retrieval</li>
+                     <li>if the data source driver doesn't support the traversal type</li>
+                     <li>if the data source driver doesn't support the access policy</li>
+                     </ul>
+
+          \note Not thread-safe!
+        */
+        virtual std::auto_ptr<te::da::DataSet> getData(te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                       const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
+
+        /*!
+          \brief It gets the dataset identified by the layer name using a spatial filter over the specified property.
+
+          \param propertyName  The name of the spatial property used to apply the spatial filter.
+          \param e             A rectangle to be used as a spatial filter when retrieving datasets.
+          \param r             The spatial relation to be used during the filter.
+          \param travType      The traverse type associated to the returned dataset. 
+          \param accessPolicy Access policy.
+
+          \return The caller of this method will take the ownership of the returned DataSet.
+
+          \exception Exception It can throws an exception if:
+                     <ul>
+                     <li>something goes wrong during data retrieval</li>
+                     <li>if the data source driver doesn't support the traversal type</li>
+                     <li>if the data source driver doesn't support the access policy</li>
+                     </ul>
+
+          \note Transactor will not take the ownership of the given envelope.
+
+          \note The envelope coordinates should be in the same coordinate system as the dataset.
+
+          \note Not thread-safe!
+        */
+        virtual std::auto_ptr<te::da::DataSet> getData(const std::string& propertyName,
+                                                       const te::gm::Envelope* e,
+                                                       te::gm::SpatialRelation r = te::gm::INTERSECTS,
+                                                       te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                       const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
+
+        /*!
+          \brief It gets the dataset identified by the layer name using a spatial filter over the given geometric property.
+
+          \param propertyName  The name of the spatial property used to apply the spatial filter.
+          \param g             A geometry to be used as a spatial filter when retrieving datasets.
+          \param r             The spatial relation to be used during the filter.
+          \param travType      The traverse type associated to the returned dataset. 
+          \param accessPolicy Access policy.
+
+          \return The caller of this method will take the ownership of the returned DataSet.
+
+          \exception Exception It can throws an exception if:
+                     <ul>
+                     <li>something goes wrong during data retrieval</li>
+                     <li>if the data source driver doesn't support the traversal type</li>
+                     <li>if the data source driver doesn't support the access policy</li>
+                     </ul>
+
+          \note Transactor will not take the ownership of the given geometry.
+
+          \note The geometry coordinates should be in the same coordinate system as the dataset.
+          
+          \note Not thread-safe!
+        */
+        virtual std::auto_ptr<te::da::DataSet> getData(const std::string& propertyName,
+                                                       const te::gm::Geometry* g,
+                                                       te::gm::SpatialRelation r,
+                                                       te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                       const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
+
+        /*!
+          \brief It gets the dataset identified by the layer name using the given restriction.
+
+          \param restriction The restriction expression that will be used.
+          \param travType    The traverse type associated to the returned dataset. 
+          \param accessPolicy Access policy.
+
+          \return The caller of this method will take the ownership of the returned DataSet.
+
+          \exception Exception It can throws an exception if:
+                      <ul>
+                      <li>something goes wrong during data retrieval</li>
+                      <li>if the data source driver doesn't support the traversal type</li>
+                      <li>if the data source driver doesn't support the access policy</li>
+                      </ul>
+
+          \note Not thread-safe!
+        */
+        virtual std::auto_ptr<te::da::DataSet> getData(te::da::Expression* restriction,
+                                                       te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                       const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
+
+        /*!
+          \brief It gets the dataset from the given set of objects identification.
+
+          \param oids     The set of object ids.
+          \param travType The traverse type associated to the returned dataset.
+          \param accessPolicy Access policy.
+
+          \return The caller of this method will take the ownership of the returned dataset.
+
+          \exception Exception It can throws an exception if:
+                     <ul>
+                     <li>something goes wrong during the data retrieval</li>
+                     <li>if the data source driver doesn't support the traversal type</li>
+                     <li>if the data source driver doesn't support the access policy</li>
+                     </ul>
+
+          \note Not thread-safe!
+        */
+        virtual std::auto_ptr<te::da::DataSet> getData(const te::da::ObjectIdSet* oids,
+                                                       te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                       const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
         /*!
           \brief It returns the layer type.

@@ -48,6 +48,7 @@ option (EXAMPLE_DATAACCESS "Build data access example." ON)
 option (EXAMPLE_DATASETMANAGEMENT "Build data set management example." OFF)  
 option (EXAMPLE_FACTORY "Build factory example." OFF)  
 option (EXAMPLE_GEOMETRY "Build geometry example." ON)  
+option (EXAMPLE_GRAPH "Build graph example." OFF)
 option (EXAMPLE_LAYEREXPLORER "Build layer explorer example." OFF)  
 option (EXAMPLE_LEGEND "Build legend example." OFF)  
 option (EXAMPLE_MAPTOOLS "Build map tools example." OFF)  
@@ -113,6 +114,10 @@ endif()
 
 if(EXAMPLE_GEOMETRY)
   add_subdirectory(terralib_example_geometry)
+endif()
+
+if(EXAMPLE_GRAPH)
+  add_subdirectory(terralib_example_graph)
 endif()
 
 if(EXAMPLE_LAYEREXPLORER)

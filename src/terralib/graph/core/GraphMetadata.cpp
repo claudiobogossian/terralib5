@@ -47,7 +47,8 @@ te::graph::GraphMetadata::GraphMetadata(te::da::DataSource* ds) :
 
 te::graph::GraphMetadata::~GraphMetadata()
 {
-  m_ds->close();
+  if(m_ds)
+    m_ds->close();
 
   delete m_ds;
 

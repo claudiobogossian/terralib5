@@ -24,8 +24,6 @@
     builder classes. Each builder strategy has to implement only
     a public function called build.
 
-    The graph instance created by this class has to be controlled
-    by the user of this class.
 */
 
 #ifndef __TERRALIB_GRAPH_INTERNAL_ABSTRACTGRAPHBUILDER_H
@@ -37,6 +35,9 @@
 // STL Includes
 #include <string>
 #include <vector>
+
+// BOOST Includes
+#include <boost/shared_ptr.hpp>
 
 namespace te
 {
@@ -51,8 +52,6 @@ namespace te
              builder classes. Each builder strategy has to implement only
              a public function called build.
 
-             The graph instance created by this class has to be controlled
-             by the user of this class.
     */
 
     class TEGRAPHEXPORT AbstractGraphBuilder
@@ -74,15 +73,15 @@ namespace te
         std::string getErrorMessage();
        
         /*! \brief Get generated graph. */
-        AbstractGraph* getGraph();
+        boost::shared_ptr<AbstractGraph> getGraph();
 
         //@}
 
       protected:
 
-        AbstractGraph* m_graph;   //!< Graph object
+        boost::shared_ptr<AbstractGraph> m_graph;   //!< Graph object
 
-        std::string m_errorMessage; //!< Error message
+        std::string m_errorMessage;                 //!< Error message
     };
 
   } // end namespace graph

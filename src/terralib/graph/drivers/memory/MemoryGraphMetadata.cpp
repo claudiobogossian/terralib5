@@ -18,34 +18,39 @@
  */
 
 /*!
-  \file AbstractGraphBuilder.cpp
+  \file MemoryGraphMetadata.cpp
 
-  \brief This abstract class provides the common functions for graph
-    builder classes. Each builder strategy has to implement only
-    a public function called build.
-
+  \brief Class used to define the graph metadata informations
+         over a memory source
 */
 
-// TerraLib Includes
-#include "../core/AbstractGraph.h"
-#include "AbstractGraphBuilder.h"
+// Terralib Includes
+#include "../../../common/Translator.h"
+#include "../../Config.h"
+#include "../../Exception.h"
+#include "MemoryGraphMetadata.h"
 
-te::graph::AbstractGraphBuilder::AbstractGraphBuilder()
+
+te::graph::MemoryGraphMetadata::MemoryGraphMetadata() : te::graph::GraphMetadata(0)
 {
-  m_graph.reset();
-  m_errorMessage = "";
+  m_mode = te::graph::Edge_List;
 }
 
-te::graph::AbstractGraphBuilder::~AbstractGraphBuilder()
+te::graph::MemoryGraphMetadata::~MemoryGraphMetadata()
 {
 }
 
-std::string te::graph::AbstractGraphBuilder::getErrorMessage()
+void te::graph::MemoryGraphMetadata::load(int id)
 {
-  return m_errorMessage;
+  throw Exception(TR_GRAPH("Not avaliable for graph memory."));
 }
-       
-boost::shared_ptr<te::graph::AbstractGraph> te::graph::AbstractGraphBuilder::getGraph()
+
+void te::graph::MemoryGraphMetadata::save()
 {
-  return m_graph;
+   throw Exception(TR_GRAPH("Not avaliable for graph memory."));
+}
+
+void te::graph::MemoryGraphMetadata::update()
+{
+  throw Exception(TR_GRAPH("Not avaliable for graph memory."));
 }
