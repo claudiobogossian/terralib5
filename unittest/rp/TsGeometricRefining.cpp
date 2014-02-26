@@ -83,7 +83,7 @@ void TsGeometricRefining::Test001()
   algoInputParams.m_inRasterExpectedColDisplacement = 0;
   algoInputParams.m_processAllReferenceRasters = true;
   algoInputParams.m_enableRasterCache = true;
-  algoInputParams.m_geomTransfName = "RST";
+  algoInputParams.m_geomTransfName = "Affine";
   algoInputParams.m_geomTransfMaxTiePointError = 1.0;
   algoInputParams.m_outliersRemotionAssurance = 0.1;
   algoInputParams.m_outliersRemotionMaxIterations = 0;
