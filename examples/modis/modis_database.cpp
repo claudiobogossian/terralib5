@@ -1,4 +1,4 @@
-#include "MODISDatabase.h"
+#include "modis_database.h"
 
 void MSearch(const boost::filesystem::path& mpath, std::vector<std::string>& fnames)
 {

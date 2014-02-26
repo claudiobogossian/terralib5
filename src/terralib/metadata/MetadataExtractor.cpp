@@ -24,6 +24,7 @@
 // TerraLib
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/utils/utils.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/GeometryProperty.h"
 #include "Config.h"
@@ -42,27 +43,29 @@
 
 te::md::MD_Metadata* te::md::Extract(const te::da::DataSet* d)
 {
-  //assert(d);
+  assert(d);
 
-  //te::md::MD_Metadata* md = new te::md::MD_Metadata();
-  //md->setStandardInfo("iso19115", "2003");
-  //md->setDateStamp(boost::gregorian::day_clock::local_day());
-  //
+  te::md::MD_Metadata* md = new te::md::MD_Metadata();
+  md->setStandardInfo("iso19115", "2003");
+  md->setDateStamp(boost::gregorian::day_clock::local_day());
+  
   //const te::da::DataSetType* dst = d->getType();
   //md->setFileId(boost::lexical_cast<std::string>(dst->getId()));
-  //
+  
   //te::md::CI_Citation* ct = new te::md::CI_Citation(dst->getTitle(),boost::gregorian::day_clock::local_day(),te::md::CI_creation); 
-  //
-  //te::md::MD_DataIdentification* id = new te::md::MD_DataIdentification(ct,"",te::md::MD_completed, "pt; BR");
-  //
-  //if(dst->hasGeom())
-  //{
-  //  te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
-  //  md->setReferenceSystem(gp->getSRID());
-  //  id->addGeographicBBoxExt(const_cast<te::da::DataSet*>(d)->getExtent(gp));
-  //}
-  //return md;
-  return 0;
+  te::md::CI_Citation* ct = new te::md::CI_Citation("dst->getTitle()",boost::gregorian::day_clock::local_day(),te::md::CI_creation); 
+   
+  te::md::MD_DataIdentification* id = new te::md::MD_DataIdentification(ct,"",te::md::MD_completed, "pt; BR");
+  
+  int pos = static_cast<int>(te::da::GetFirstPropertyPos(d, te::dt::GEOMETRY_TYPE));
+
+  std::auto_ptr<te::gm::Geometry> g = d->getGeometry(pos);
+  int srid = g->getSRID();
+  std::auto_ptr<te::gm::Envelope> env = const_cast<te::da::DataSet*>(d)->getExtent(pos); 
+  md->setReferenceSystem(g->getSRID());
+  id->addGeographicBBoxExt(env.get());
+
+  return md;
 }
 
 

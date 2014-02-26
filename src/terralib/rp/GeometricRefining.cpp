@@ -31,6 +31,7 @@
 #include "../geometry/GTFilter.h"
 #include "../memory/CachedRaster.h"
 #include "../raster/Grid.h"
+#include "../common/progress/TaskProgress.h"
 #include "Register.h"
 
 #include <limits>
@@ -64,6 +65,7 @@ namespace te
       m_inRasterBands2Process.clear();
       m_inRasterTPLocationBands.clear();
       m_referenceRastersPtr = 0;
+      m_referenceRastersWeights.clear();
       m_referenceTPLocationBands.clear();
       m_enableMultiThread = true;
       m_enableProgress = false;
@@ -94,6 +96,7 @@ namespace te
       m_inRasterBands2Process = params.m_inRasterBands2Process;
       m_inRasterTPLocationBands = params.m_inRasterTPLocationBands;
       m_referenceRastersPtr = params.m_referenceRastersPtr;
+      m_referenceRastersWeights = params.m_referenceRastersWeights;
       m_referenceTPLocationBands = params.m_referenceTPLocationBands;
       m_enableMultiThread = params.m_enableMultiThread;
       m_enableProgress = params.m_enableProgress;
@@ -190,7 +193,8 @@ namespace te
       {
         progressPtr.reset( new te::common::TaskProgress );
         
-        progressPtr->setTotalSteps( 1 );
+        progressPtr->setTotalSteps( 1 + ( 2  * 
+          m_inputParameters.m_referenceRastersPtr->getObjsCount() ) );
         
         progressPtr->setMessage( "Mosaicking" );
       }          
@@ -217,16 +221,49 @@ namespace te
         m_inputParameters.m_inRasterSubSectorsFactor );
             
       {
+        // reference rasters weights
+        
+        std::vector< double > referenceRastersWeights;
+        if( m_inputParameters.m_referenceRastersWeights.size() )
+        {
+          referenceRastersWeights = m_inputParameters.m_referenceRastersWeights;
+        }
+        else
+        {
+          referenceRastersWeights.resize( m_inputParameters.m_referenceRastersPtr->getObjsCount(),
+            1.0 );
+        }
+        
+        // The search area
+        
+        const double inRasterExpectedXError = ((double)m_inputParameters.m_inRasterExpectedColError)
+          * inputRasterPtr->getResolutionX();
+        const double inRasterExpectedYError = ((double)m_inputParameters.m_inRasterExpectedRowError)
+          * inputRasterPtr->getResolutionY();
+        const double inRasterExpectedXDisplacement = ((double)m_inputParameters.m_inRasterExpectedColDisplacement)
+          * inputRasterPtr->getResolutionX();
+        const double inRasterExpectedYDisplacement = ((double)m_inputParameters.m_inRasterExpectedRowDisplacement)
+          * inputRasterPtr->getResolutionY();
+          
+        const double searchAreaMinX = inputRasterPtr->getGrid()->getExtent()->getLowerLeftX() -
+          inRasterExpectedXError + inRasterExpectedXDisplacement;
+        const double searchAreaMaxX = inputRasterPtr->getGrid()->getExtent()->getUpperRightX() +
+          inRasterExpectedXError + inRasterExpectedXDisplacement;
+
+        const double searchAreaMinY = inputRasterPtr->getGrid()->getExtent()->getLowerLeftY() -
+          inRasterExpectedYError + inRasterExpectedYDisplacement;
+        const double searchAreaMaxY = inputRasterPtr->getGrid()->getExtent()->getUpperRightY() +
+          inRasterExpectedYError + inRasterExpectedYDisplacement;          
+          
+        // Retriving each reference raster bounding boxes
+        
         std::vector< te::gm::Envelope > refRastersBBoxes;
-        double foundMinX = std::numeric_limits< double >::max();
-        double foundMaxX = -1.0 * foundMinX;
-        double foundMinY = std::numeric_limits< double >::max();
-        double foundMaxY = -1.0 * foundMinY;      
         te::rst::Raster const* refRasterPtr = 0;
         
         while( ( refRasterPtr = m_inputParameters.m_referenceRastersPtr->getCurrentObj() ) )
         {
           te::gm::Envelope refRasterEnvelope( *refRasterPtr->getExtent() );
+          
           // Reprojecting the reference raster bounding box, if needed
           
           if( refRasterPtr->getSRID() != inputRasterPtr->getSRID() )
@@ -237,34 +274,27 @@ namespace te
           
           refRastersBBoxes.push_back( refRasterEnvelope );
           
-          if( foundMinX > refRasterEnvelope.getLowerLeftX() )
-            foundMinX = refRasterEnvelope.getLowerLeftX();
-          if( foundMinX > refRasterEnvelope.getUpperRightX() )
-            foundMinX = refRasterEnvelope.getUpperRightX();          
-          
-          if( foundMaxX < refRasterEnvelope.getLowerLeftX() )
-            foundMaxX = refRasterEnvelope.getLowerLeftX();
-          if( foundMaxX < refRasterEnvelope.getUpperRightX() )
-            foundMaxX = refRasterEnvelope.getUpperRightX();
-
-          if( foundMinY > refRasterEnvelope.getLowerLeftY() )
-            foundMinY = refRasterEnvelope.getLowerLeftY();
-          if( foundMinY > refRasterEnvelope.getUpperRightY() )
-            foundMinY = refRasterEnvelope.getUpperRightY();          
-          
-          if( foundMaxY < refRasterEnvelope.getLowerLeftY() )
-            foundMaxY = refRasterEnvelope.getLowerLeftY();
-          if( foundMaxY < refRasterEnvelope.getUpperRightY() )
-            foundMaxY = refRasterEnvelope.getUpperRightY();          
-          
           // Moving to the next reference raster
           
           m_inputParameters.m_referenceRastersPtr->moveNext();
+          
+          // Progress 
+          
+          if( m_inputParameters.m_enableProgress )
+          {
+            progressPtr->pulse();
+            if( ! progressPtr->isActive() ) return false;
+          }             
         }
         
+        // defining sectors
+        
+        double sectoXSize = ( searchAreaMaxX - searchAreaMinX ) / 
+          ((double)m_inputParameters.m_inRasterSubSectorsFactor);
+        double sectoYSize = ( searchAreaMaxY - searchAreaMinY ) / 
+          ((double)m_inputParameters.m_inRasterSubSectorsFactor);        
+        
         te::gm::Coord2D center;
-        double sectoXSize = ( foundMaxX - foundMinX ) / ((double)m_inputParameters.m_inRasterSubSectorsFactor);
-        double sectoYSize = ( foundMaxY - foundMinY ) / ((double)m_inputParameters.m_inRasterSubSectorsFactor);
         unsigned int sectoXOff = 0;
         unsigned int sectoYOff = 0;
         unsigned int refRastersIndexesBySectorIdx = 0;
@@ -273,14 +303,59 @@ namespace te
           ++rasterIdx )
         {
           center = refRastersBBoxes[ rasterIdx ].getCenter();
-          sectoXOff = (unsigned int)std::floor( ( center.x - foundMinX ) / sectoXSize );
-          sectoYOff = (unsigned int)std::floor( ( center.y - foundMinY ) / sectoYSize );
+          sectoXOff = (unsigned int)std::floor( ( center.x - searchAreaMinX ) / sectoXSize );
+          sectoYOff = (unsigned int)std::floor( ( center.y - searchAreaMinY ) / sectoYSize );
           
           refRastersIndexesBySectorIdx = ( sectoYOff * m_inputParameters.m_inRasterSubSectorsFactor ) +
             sectoXOff;
           assert( refRastersIndexesBySectorIdx < refRastersIndexesBySector.size() );
           
           refRastersIndexesBySector[ refRastersIndexesBySectorIdx ].push_back( rasterIdx );
+        }
+        
+        // sorting the rasters inside each sector by the given weights
+        // the first reference raster with higher weight
+        
+        unsigned int sectorRastersIndexesIdx = 0;
+        unsigned int sectorRastersIndexesIdxBound = 0;
+        unsigned int sectorRastersIndexesNextIdx = 0;
+        unsigned int rasterIdx = 0;
+        unsigned int nextRasterIdx = 0;
+        
+        for( refRastersIndexesBySectorIdx = 0 ; refRastersIndexesBySectorIdx <
+          refRastersIndexesBySector.size() ; ++refRastersIndexesBySectorIdx )
+        {
+          std::vector< unsigned int >& sectorRastersIndexes = 
+            refRastersIndexesBySector[ refRastersIndexesBySectorIdx ];
+            
+          if( sectorRastersIndexes.size() > 1 )  
+          {
+            sectorRastersIndexesIdxBound = sectorRastersIndexes.size() - 1;
+            
+            while( sectorRastersIndexesIdxBound != 0 )
+            {
+              for( sectorRastersIndexesIdx = 0 ; sectorRastersIndexesIdx <
+                sectorRastersIndexesIdxBound  ; ++sectorRastersIndexesIdx )
+              {
+                sectorRastersIndexesNextIdx = sectorRastersIndexesIdx + 1;
+                
+                rasterIdx = sectorRastersIndexes[ sectorRastersIndexesIdx ];
+                nextRasterIdx = sectorRastersIndexes[ sectorRastersIndexesNextIdx ];
+                
+                if( 
+                    referenceRastersWeights[ rasterIdx ]  
+                    <
+                    referenceRastersWeights[ nextRasterIdx ]  
+                  )
+                {
+                  sectorRastersIndexes[ sectorRastersIndexesIdx ] = nextRasterIdx;
+                  sectorRastersIndexes[ sectorRastersIndexesNextIdx ] = rasterIdx;
+                }
+              }
+              
+              --sectorRastersIndexesIdxBound;
+            }
+          }
         }
       }
       
@@ -495,6 +570,14 @@ namespace te
               //skip to the next sector
               
               sectorRastersIdx = refRastersIndexesBySector[ sectorIdx ].size();
+              
+              // Progress 
+              
+              if( m_inputParameters.m_enableProgress )
+              {
+                progressPtr->pulse();
+                if( ! progressPtr->isActive() ) return false;
+              }                           
             }
           }
         }
@@ -604,6 +687,14 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE(
         m_inputParameters.m_referenceRastersPtr->getObjsCount() > 0,
         "Invalid number of reference rasters" )
+      
+      // Checking reference rasters weights
+
+      TERP_TRUE_OR_RETURN_FALSE(
+        m_inputParameters.m_referenceRastersWeights.empty() ? true :
+        m_inputParameters.m_referenceRastersWeights.size() ==
+        m_inputParameters.m_referenceRastersPtr->getObjsCount(),
+        "Invalid reference rasters weights" );
 
       // checking other parameters
         
@@ -651,8 +742,8 @@ namespace te
       
       unsigned int inTiePointsIdx = 0;
       unsigned int mInfoTiePointsIdx = 0;
-      unsigned int minTPNumberByRefRaster = std::numeric_limits< unsigned int >::max();
-      unsigned int maxTPNumberByRefRaster = 0;
+      double minTPNumberByRefRaster = std::numeric_limits< double >::max();
+      double maxTPNumberByRefRaster = -1.0 * minTPNumberByRefRaster;
       double minConvexHullAreaPercentByRefRaster = std::numeric_limits< double >::max();
       double maxConvexHullAreaPercentByRefRaster = -1.0 * minConvexHullAreaPercentByRefRaster;
       
@@ -660,14 +751,14 @@ namespace te
       {
         const MatchingInfo& mInfo = inTiePoints[ inTiePointsIdx ];
         
-        if( minTPNumberByRefRaster > mInfo.m_tiePoints.size() )
+        if( minTPNumberByRefRaster > ((double)mInfo.m_tiePoints.size()) )
         {
-          minTPNumberByRefRaster = mInfo.m_tiePoints.size();
+          minTPNumberByRefRaster = ((double)mInfo.m_tiePoints.size());
         }
         
-        if( maxTPNumberByRefRaster < mInfo.m_tiePoints.size() )
+        if( maxTPNumberByRefRaster < ((double)mInfo.m_tiePoints.size()) )
         {
-          maxTPNumberByRefRaster = mInfo.m_tiePoints.size();
+          maxTPNumberByRefRaster = ((double)mInfo.m_tiePoints.size());
         }    
         
         if( minConvexHullAreaPercentByRefRaster > mInfo.m_convexHullAreaPercent )
@@ -704,7 +795,7 @@ namespace te
             )
             +
             (
-              ( mInfo.m_tiePoints.size() + tiePointsNumberOffset )
+              ( ((double)mInfo.m_tiePoints.size()) + tiePointsNumberOffset )
               *
               tiePointsNumberGain
             )

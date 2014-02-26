@@ -13,6 +13,13 @@ set(PROJ_NAME "terralib_example_metadata")
 project(${PROJ_NAME})         # the project name is terralib_example_metadata
 set(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_metadata
 
+find_package(Boost ${_Boost_VERSION} COMPONENTS system REQUIRED)
+
+if(WIN32)
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DBOOST_ALL_NO_LIB)
+endif()
+
+	
 set(DEP_LIBS 
     terralib_common 
     terralib_dataaccess
@@ -20,6 +27,7 @@ set(DEP_LIBS
     terralib_plugin
     terralib_serialization
     terralib_xml
+	${Boost_LIBRARIES}
 )
 	
 # Select the source and header files
