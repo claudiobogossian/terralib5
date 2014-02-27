@@ -193,10 +193,10 @@ namespace te
       {
         progressPtr.reset( new te::common::TaskProgress );
         
-        progressPtr->setTotalSteps( 1 + ( 2  * 
-          m_inputParameters.m_referenceRastersPtr->getObjsCount() ) );
+        progressPtr->setTotalSteps( 
+          m_inputParameters.m_referenceRastersPtr->getObjsCount() );
         
-        progressPtr->setMessage( "Mosaicking" );
+        progressPtr->setMessage( "Analysing reference images" );
       }          
       
       // A global pointer to the Input raster
@@ -219,6 +219,7 @@ namespace te
       std::vector< std::vector< unsigned int > > refRastersIndexesBySector( 
         m_inputParameters.m_inRasterSubSectorsFactor *
         m_inputParameters.m_inRasterSubSectorsFactor );
+      unsigned int validReferenceRastersNumber = 0;
             
       {
         // reference rasters weights
@@ -272,7 +273,16 @@ namespace te
               inputRasterPtr->getSRID() );
           }
           
-          refRastersBBoxes.push_back( refRasterEnvelope );
+          if( 
+              ( refRasterEnvelope.getLowerLeftX() > searchAreaMinX )
+              && ( refRasterEnvelope.getUpperRightX() < searchAreaMaxX )
+              && ( refRasterEnvelope.getLowerLeftY() > searchAreaMinY )
+              && ( refRasterEnvelope.getUpperRightY() < searchAreaMaxY ) 
+            )
+          {
+            refRastersBBoxes.push_back( refRasterEnvelope );
+            ++validReferenceRastersNumber;
+          }
           
           // Moving to the next reference raster
           
@@ -359,7 +369,16 @@ namespace te
         }
       }
       
-      // matching the reference rasters
+      // matching the reference rasters    
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        
+        progressPtr->setTotalSteps( validReferenceRastersNumber );
+        
+        progressPtr->setMessage( "Matching reference images" );
+      }        
       
       std::auto_ptr< te::gm::GeometricTransformation > baseGeometricTransformPtr(
         te::gm::GTFactory::make( m_inputParameters.m_geomTransfName ) );
