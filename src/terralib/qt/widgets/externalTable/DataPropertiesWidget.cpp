@@ -252,7 +252,7 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
 {
   try
   {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Textual File"), te::qt::widgets::GetFilePathFromSettings("tabular"), tr("Comma Separated Value (*.csv *.CSV);; dBASE (*.dbf *.DBF);; Text (*.txt *.TXT)"), 
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Textual File"), te::qt::widgets::GetFilePathFromSettings("tabular"), tr("Comma Separated Value (*.csv *.CSV);; dBASE (*.dbf *.DBF)"), 
       0, QFileDialog::ReadOnly);
 
     if(fileName.isEmpty())
@@ -262,14 +262,12 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
 
     te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "tabular");
 
-    m_ui->m_inputDataLineEdit->setText(fileName);
-
     //Getting the connection info
     std::string ogrInfo("connection_string=" + fileName.toStdString());
     std::map<std::string, std::string> connInfo;
     connInfo["URI"] = fileName.toStdString();
 
-    boost::filesystem::path uri(m_ui->m_inputDataLineEdit->text().toStdString());
+    boost::filesystem::path uri(fileName.toStdString());
     std::string file = uri.stem().string();
 
     //Creating a DataSource
@@ -303,6 +301,8 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
       QMessageBox::critical( this, tr("Error"),tr("The file could not be read!"));
       return;
     }
+
+    m_ui->m_inputDataLineEdit->setText(fileName);
 
     //Creating the DataSetConverter 
     m_dsConverter.reset(new te::da::DataSetTypeConverter(m_dataType.get()));
