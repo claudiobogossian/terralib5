@@ -29,7 +29,6 @@
 #include "../../../common/STLUtils.h"
 #include "../../../datatype.h"
 #include "../../../maptools/GroupingAlgorithms.h"
-#include "../../../maptools/Utils.h"
 #include "../../../raster.h"
 #include "../../../raster/RasterSummary.h"
 #include "../../../raster/RasterSummaryManager.h"
@@ -39,6 +38,7 @@
 #include "../../../se/Interpolate.h"
 #include "../../../se/InterpolationPoint.h"
 #include "../../../se/ParameterValue.h"
+#include "../../../se/Utils.h"
 #include "../../widgets/colorbar/ColorBar.h"
 #include "../../widgets/colorbar/ColorCatalogWidget.h"
 #include "ColorMapWidget.h"
@@ -177,20 +177,20 @@ void te::qt::widgets::ColorMapWidget::updateUi()
       if(i == 0)
       {
         lowerLimit = "...";
-        upperLimit = te::map::GetString(t[i]);
-        color.setNamedColor(te::map::GetString(tV[i]).c_str());
+        upperLimit = te::se::GetString(t[i]);
+        color.setNamedColor(te::se::GetString(tV[i]).c_str());
       }
       else if(i == tV.size() - 1)
       {
-        lowerLimit = te::map::GetString(t[i - 1]);
+        lowerLimit = te::se::GetString(t[i - 1]);
         upperLimit = "...";
-        color.setNamedColor(te::map::GetString(tV[i]).c_str());
+        color.setNamedColor(te::se::GetString(tV[i]).c_str());
       }
       else
       {
-        lowerLimit = te::map::GetString(t[i - 1]);
-        upperLimit = te::map::GetString(t[i]);
-        color.setNamedColor(te::map::GetString(tV[i]).c_str());
+        lowerLimit = te::se::GetString(t[i - 1]);
+        upperLimit = te::se::GetString(t[i]);
+        color.setNamedColor(te::se::GetString(tV[i]).c_str());
       }
 
       //color
@@ -237,7 +237,7 @@ void te::qt::widgets::ColorMapWidget::updateUi()
 
       te::se::InterpolationPoint* ipItem = ip[i];
             
-      color.setNamedColor(te::map::GetString(ipItem->getValue()).c_str());
+      color.setNamedColor(te::se::GetString(ipItem->getValue()).c_str());
 
       valStrBegin.setNum(ipItem->getData());
       valStrEnd.setNum(ip[i+1]->getData());

@@ -143,11 +143,15 @@ namespace te
 
         void setSymbolizer(std::size_t i, Symbolizer* s);
 
+        void setSymbolizers(const std::vector<Symbolizer*>& symbs);
+
         const std::vector<Symbolizer*>& getSymbolizers() const;
 
         const Symbolizer* getSymbolizer(std::size_t i) const;
 
         void removeSymbolizer(std::size_t i);
+
+        void clearSymbolizers();
 
         //@}
 

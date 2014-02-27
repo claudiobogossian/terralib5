@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -23,14 +23,12 @@
   \brief A widget used to define the basic fill se object.
 */
 
-#include "BasicFillPropertyItem.h"
-#include "AbstractPropertyManager.h"
-
-#include "../../../se/Fill.h"
-#include "../../../color.h"
-#include "../../../maptools/Utils.h"
-
 #include "../../../../../third-party/qt/propertybrowser/qtpropertybrowser.h"
+#include "../../../color.h"
+#include "../../../se/Fill.h"
+#include "../../../se/Utils.h"
+#include "AbstractPropertyManager.h"
+#include "BasicFillPropertyItem.h"
 
 // STL
 #include <cassert>
@@ -120,7 +118,7 @@ void te::qt::widgets::BasicFillPropertyItem::updateUi()
 {
   // Color
   te::color::RGBAColor rgba(TE_SE_DEFAULT_FILL_BASIC_COLOR, TE_OPAQUE);
-  te::map::GetColor(m_fill, rgba);
+  te::se::GetColor(m_fill, rgba);
   m_color = QColor(rgba.getRgba());
   m_color.setAlpha(rgba.getAlpha());
 

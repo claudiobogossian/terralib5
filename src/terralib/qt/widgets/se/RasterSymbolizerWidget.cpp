@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,8 +25,8 @@
 
 // TerraLib
 #include "../../../common/STLUtils.h"
-#include "../../../maptools/Utils.h"
 #include "../../../raster.h"
+#include "../../../se/Utils.h"
 #include "HorizontalSliderWidget.h"
 #include "RasterSymbolizerWidget.h"
 #include "ui_RasterSymbolizerWidgetForm.h"
@@ -297,7 +297,7 @@ void te::qt::widgets::RasterSymbolizerWidget::updateUi()
   {
     if(m_symbolizer->getOpacity())
     {
-      double value = te::map::GetDouble(m_symbolizer->getOpacity()) * 100.;
+      double value = te::se::GetDouble(m_symbolizer->getOpacity()) * 100.;
       m_sliderWidget->setCurrentValue((int)value);
     }
     else
@@ -307,7 +307,7 @@ void te::qt::widgets::RasterSymbolizerWidget::updateUi()
 
     if(m_symbolizer->getGain())
     {
-      m_gainValue = te::map::GetDouble(m_symbolizer->getGain());
+      m_gainValue = te::se::GetDouble(m_symbolizer->getGain());
       m_gainOriginalValue = m_gainValue;
     }
     else
@@ -319,7 +319,7 @@ void te::qt::widgets::RasterSymbolizerWidget::updateUi()
 
     if(m_symbolizer->getOffset())
     {
-      m_offsetValue = te::map::GetDouble(m_symbolizer->getOffset());
+      m_offsetValue = te::se::GetDouble(m_symbolizer->getOffset());
       m_offsetOriginalValue = m_offsetValue;
     }
     else

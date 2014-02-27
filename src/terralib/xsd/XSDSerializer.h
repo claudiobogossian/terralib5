@@ -28,8 +28,12 @@
 
 // TerraLib
 #include "Config.h"
+#include "Enums.h"
 
-#ifdef TE_ENABLED_XML
+//STL
+#include <string>
+
+//#ifdef TE_ENABLED_XML
 
 namespace te
 {
@@ -44,138 +48,171 @@ namespace te
     class All;
     class Annotation;
     class Any;
+    class AnyAttribute;
+    class Attribute;
+    class AttributeGroup;
+    class Choice;
+    class ComplexContent;
+    class ComplexType;
+    class Element;
+    class Extension;
+    class Field;
+    class Group;
+    class Import;
+    class Include;
+    class Key;
+    class KeyRef;
+    class List;
+    class Redefine;
+    class Restriction4ComplexContent;
+    class Restriction4SimpleContent;
+    class Restriction4SimpleType;
+    class Schema;
+    class Selector;
+    class Sequence;
+    class SimpleContent;
+    class SimpleType;
+    class Union;
+    class Unique;
+    class Identifiable;
+    class Annotated;
+    class Occurs;
+    class QName;
 
-    TEXSDEXPORT All* ReadAll(te::xml::Reader& reader);
+    namespace serialize
+    {
+      TEXSDEXPORT All* ReadAll(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(All* all, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(All* all, te::xml::Writer& writer);
 
-    TEXSDEXPORT Annotation* ReadAnnotation(te::xml::Reader& reader);
+      TEXSDEXPORT Annotation* ReadAnnotation(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Annotation* annotation, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Annotation* annotation, te::xml::Writer& writer);
 
-    TEXSDEXPORT Any* ReadAny(te::xml::Reader& reader);
+      TEXSDEXPORT Any* ReadAny(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Any* any, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Any* any, te::xml::Writer& writer);
 
-    TEXSDEXPORT AnyAttribute* ReadAnyAttribute(te::xml::Reader& reader);
+      TEXSDEXPORT AnyAttribute* ReadAnyAttribute(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(AnyAttribute* anyAttribute, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(AnyAttribute* anyAttribute, te::xml::Writer& writer);
 
-    TEXSDEXPORT Attribute* ReadAttribute(te::xml::Reader& reader);
+      TEXSDEXPORT Attribute* ReadAttribute(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Attribute* attribute, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Attribute* attribute, te::xml::Writer& writer);
 
-    TEXSDEXPORT AttributeGroup* ReadAttributeGroup(te::xml::Reader& reader);
+      TEXSDEXPORT AttributeGroup* ReadAttributeGroup(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(AttributeGroup* attributeGroup, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(AttributeGroup* attributeGroup, te::xml::Writer& writer);
 
-    TEXSDEXPORT Choice* ReadChoice(te::xml::Reader& reader);
+      TEXSDEXPORT Choice* ReadChoice(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Choice* choice, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Choice* choice, te::xml::Writer& writer);
 
-    TEXSDEXPORT ComplexContent* ReadComplexContent(te::xml::Reader& reader);
+      TEXSDEXPORT ComplexContent* ReadComplexContent(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(ComplexContent* cc, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(ComplexContent* cc, te::xml::Writer& writer);
 
-    TEXSDEXPORT ComplexType* ReadComplexType(te::xml::Reader& reader);
+      TEXSDEXPORT ComplexType* ReadComplexType(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(ComplexType* ct, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(ComplexType* ct, te::xml::Writer& writer);
 
-    TEXSDEXPORT Element* ReadElement(te::xml::Reader& reader);
+      TEXSDEXPORT Element* ReadElement(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Element* element, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Element* element, te::xml::Writer& writer);
 
-    TEXSDEXPORT Extension* ReadExtension(te::xml::Reader& reader);
+      TEXSDEXPORT Extension* ReadExtension(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Extension* extension, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Extension* extension, te::xml::Writer& writer);
 
-    TEXSDEXPORT Field* ReadField(te::xml::Reader& reader);
+      TEXSDEXPORT Field* ReadField(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Field* field, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Field* field, te::xml::Writer& writer);
 
-    TEXSDEXPORT Group* ReadGroup(te::xml::Reader& reader);
+      TEXSDEXPORT Group* ReadGroup(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Group* group, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Group* group, te::xml::Writer& writer);
 
-    TEXSDEXPORT Import* ReadImport(te::xml::Reader& reader);
+      TEXSDEXPORT Import* ReadImport(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Import* import, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Import* import, te::xml::Writer& writer);
 
-    TEXSDEXPORT Include* ReadInclude(te::xml::Reader& reader);
+      TEXSDEXPORT Include* ReadInclude(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Include* include, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Include* include, te::xml::Writer& writer);
 
-    TEXSDEXPORT Key* ReadKey(te::xml::Reader& reader);
+      TEXSDEXPORT Key* ReadKey(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Key* key, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Key* key, te::xml::Writer& writer);
 
-    TEXSDEXPORT KeyRef* ReadKeyRef(te::xml::Reader& reader);
+      TEXSDEXPORT KeyRef* ReadKeyRef(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(KeyRef* keyRef, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(KeyRef* keyRef, te::xml::Writer& writer);
 
-    TEXSDEXPORT List* ReadList(te::xml::Reader& reader);
+      TEXSDEXPORT List* ReadList(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(List* list, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(List* list, te::xml::Writer& writer);
 
-    TEXSDEXPORT Redefine* ReadRedefine(te::xml::Reader& reader);
+      TEXSDEXPORT Redefine* ReadRedefine(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Redefine* redefine, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Redefine* redefine, te::xml::Writer& writer);
 
-    TEXSDEXPORT Restriction4ComplexContent* ReadRestriction4ComplexContent(te::xml::Reader& reader);
+      TEXSDEXPORT Restriction4ComplexContent* ReadRestriction4ComplexContent(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Restriction4ComplexContent* restriction, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Restriction4ComplexContent* restriction, te::xml::Writer& writer);
 
-    TEXSDEXPORT Restriction4SimpleContent* ReadRestriction4SimpleContent(te::xml::Reader& reader);
+      TEXSDEXPORT Restriction4SimpleContent* ReadRestriction4SimpleContent(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Restriction4SimpleContent* restriction, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Restriction4SimpleContent* restriction, te::xml::Writer& writer);
 
-    TEXSDEXPORT Restriction4SimpleType* ReadRestriction4SimpleType(te::xml::Reader& reader);
+      TEXSDEXPORT Restriction4SimpleType* ReadRestriction4SimpleType(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Restriction4SimpleType* restriction, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Restriction4SimpleType* restriction, te::xml::Writer& writer);
 
-    TEXSDEXPORT Schema* ReadSchema(const std::string& path);
+      TEXSDEXPORT Schema* ReadSchema(const std::string& path);
 
-    TEXSDEXPORT Schema* ReadSchema(te::xml::Reader& reader);
+      TEXSDEXPORT Schema* ReadSchema(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Schema* schema, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Schema* schema, te::xml::Writer& writer);
 
-    TEXSDEXPORT Selector* ReadSelector(te::xml::Reader& reader);
+      TEXSDEXPORT Selector* ReadSelector(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Selector* selector, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Selector* selector, te::xml::Writer& writer);
 
-    TEXSDEXPORT Sequence* ReadSequence(te::xml::Reader& reader);
+      TEXSDEXPORT Sequence* ReadSequence(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Sequence* sequence, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Sequence* sequence, te::xml::Writer& writer);
 
-    TEXSDEXPORT SimpleContent* ReadSimpleContent(te::xml::Reader& reader);
+      TEXSDEXPORT SimpleContent* ReadSimpleContent(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(SimpleContent* sc, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(SimpleContent* sc, te::xml::Writer& writer);
 
-    TEXSDEXPORT SimpleType* ReadSimpleType(te::xml::Reader& reader);
+      TEXSDEXPORT SimpleType* ReadSimpleType(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(SimpleType* sc, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(SimpleType* sc, te::xml::Writer& writer);
 
-    TEXSDEXPORT Union* ReadUnion(te::xml::Reader& reader);
+      TEXSDEXPORT Union* ReadUnion(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Union* u, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Union* u, te::xml::Writer& writer);
 
-    TEXSDEXPORT Unique* ReadUnique(te::xml::Reader& reader);
+      TEXSDEXPORT Unique* ReadUnique(te::xml::Reader& reader);
 
-    TEXSDEXPORT void Save(Unique* unique, te::xml::Writer& writer);
+      TEXSDEXPORT void Save(Unique* unique, te::xml::Writer& writer);
 
-    void ReadIdentifiable(Identifiable* identifiable, te::xml::Reader& reader);
+      void ReadIdentifiable(Identifiable* identifiable, te::xml::Reader& reader);
 
-    void ReadAnnotated(Annotated* annotated, te::xml::Reader& reader);
+      void ReadAnnotated(Annotated* annotated, te::xml::Reader& reader);
 
-    void ReadOccurs(Occurs* occurs, te::xml::Reader& reader);
+      void ReadOccurs(Occurs* occurs, te::xml::Reader& reader);
 
-    QName* CreateQName(const std::string& name);
+      QName* CreateQName(const std::string& name);
 
-    FacetType GetFacetType(const std::string& name);
+      FacetType GetFacetType(const std::string& name);
 
-  } // end namespace xsd
-}   // end namespace te
+    }  // end namespace serialize
+  }    // end namespace xsd
+}      // end namespace te
 
-#endif // TE_ENABLED_XML
+//#endif // TE_ENABLED_XML
 
 #endif  // __TERRALIB_XSD_INTERNAL_XSDSERIALIZER_H

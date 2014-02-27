@@ -132,6 +132,14 @@ namespace te
           */
 
           //@{
+
+          /*!
+            \brief Creates a new histogram based on the data at position \a column
+
+            \param column Column that provides the data for the histogram.
+          */
+          void createHistogram(const int& column);
+
           /*!
             \brief Hides the column at position \a column
 

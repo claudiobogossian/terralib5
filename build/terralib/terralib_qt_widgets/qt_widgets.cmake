@@ -53,9 +53,9 @@ list (APPEND TE_DEP_LIBS
 		terralib_maptools
 		terralib_memory
 		terralib_raster
+		terralib_srs
 		terralib_statistics
 		terralib_symbology
-		terralib_srs
 		terralib_rp
         terralib_plugin
 		terralib_xlink

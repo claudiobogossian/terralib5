@@ -78,7 +78,10 @@ namespace te
     protected:
 
       bool save(std::auto_ptr<te::da::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType);
-      
+
+      std::vector<te::dt::Property*> getTabularProps(te::da::DataSetType* dsType);
+
+
       // it defines the type of the result considering the input geometries being aggregated
       te::gm::GeomType getGeomResultType(te::gm::GeomType geom);
       

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -23,9 +23,6 @@
   \brief An example of MapDisplay Tool. The only purpose of this tool is to show how you can implement a new tool. Do not consider it as a final application.
 */
 
-
-
-
 // TerraLib
 #include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
@@ -34,13 +31,13 @@
 #include "../../../maptools/DataSetLayer.h"
 #include "../../../maptools/RasterTransform.h"
 #include "../../../maptools/RasterTransformConfigurer.h"
-#include "../../../maptools/Utils.h"
 #include "../../../qt/widgets/canvas/Canvas.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../raster/Raster.h"
 #include "../../../raster/RasterSummary.h"
 #include "../../../raster/RasterSummaryManager.h"
 #include "../../../raster/Utils.h"
+#include "../../../se/Utils.h"
 #include "../../../se.h"
 #include "ReadPixelTool.h"
 
@@ -202,19 +199,19 @@ bool te::qt::widgets::ReadPixelTool::mouseReleaseEvent(QMouseEvent* e)
 
         if(rs->getOpacity())
         {
-          QString opacity = te::map::GetString(rs->getOpacity()).c_str();
+          QString opacity = te::se::GetString(rs->getOpacity()).c_str();
           information += "<li><b>" + QString("Opacity Value ") + ":</b> " + opacity + "</li>";
         }
 
         if(rs->getGain())
         {
-          QString gain = te::map::GetString(rs->getGain()).c_str();
+          QString gain = te::se::GetString(rs->getGain()).c_str();
           information += "<li><b>" + QString("Gain Value ") + ":</b> " + gain + "</li>";
         }
 
         if(rs->getOffset())
         {
-          QString offset = te::map::GetString(rs->getOffset()).c_str();
+          QString offset = te::se::GetString(rs->getOffset()).c_str();
           information += "<li><b>" + QString("Offset Value ") + ":</b> " + offset + "</li>";
         }
 

@@ -103,11 +103,6 @@ std::auto_ptr<te::da::DataSet> te::map::DataSetAdapterLayer::getData(const std::
 
   std::auto_ptr<te::da::DataSetType> dsType = ds->getDataSetType(m_datasetName);
 
-  if(dsType->hasGeom())
-  {
-    return ds->getDataSet(m_datasetName, propertyName, e, r, travType, accessPolicy);
-  }
-
   // Gets all data
   std::auto_ptr<te::da::DataSet> inputData = ds->getDataSet(m_datasetName, travType, accessPolicy);
   
@@ -243,7 +238,7 @@ void te::map::DataSetAdapterLayer::setConverter(std::auto_ptr<te::da::DataSetTyp
 
   std::auto_ptr<te::da::DataSetType> dsType = ds->getDataSetType(m_datasetName);
 
-  if(!dsType->hasGeom() && m_converter->getResult()->hasGeom())
+  if(m_converter->getResult()->hasGeom())
   {
      m_rtree.clear();
 

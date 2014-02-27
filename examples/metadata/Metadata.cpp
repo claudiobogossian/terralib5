@@ -42,31 +42,28 @@ void
 ExMetadataManager()
 {
   // Open a data source
-  std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_LOCALE"/data/shp");
-  
-  te::da::DataSource* ds = te::da::DataSourceFactory::make("OGR");
-  ds->setConnectionStr(ogrInfo);
+  std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_DIR"/data/shp");
+  std::map<std::string, std::string> connInfo;
+  connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/shp";
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
+  ds->setConnectionInfo(connInfo);
   ds->open();
   
-  te::da::DataSourceTransactor* transactor = ds->getTransactor();
+  std::auto_ptr<te::da::DataSourceTransactor> transactor = ds->getTransactor();
   
-  te::da::DataSourceCatalogLoader* cloader = transactor->getCatalogLoader();
-  
-  boost::ptr_vector<std::string> datasets;
-  
-  cloader->getDataSets(datasets);
+  std::vector<std::string> datasets = transactor->getDataSetNames();
   
   // Create an annotation for each dataset in the datasourc
   for (unsigned int i=0; i<datasets.size(); ++i)
   {
-    te::da::DataSetType* dt = cloader->getDataSetType(datasets[i], true);
+    std::auto_ptr<te::da::DataSetType> dt = transactor->getDataSetType(datasets[i]);
     
     te::md::MetadataAnnotation* anot = new te::md::MetadataAnnotation();
     anot->setElementId(boost::lexical_cast<std::string>(i));
     anot->setElementName(dt->getTitle());
     
     boost::format fname("%1%/%2%.xml");
-    fname = fname % TE_DATA_EXAMPLE_LOCALE"/data/shp" % dt->getTitle();
+    fname = fname % TE_DATA_EXAMPLE_DIR"/data/shp" % dt->getTitle();
     anot->setAnnotationURI(fname.str());    
     te::md::MetadataManager::getInstance().insert(anot); 
   }
@@ -79,10 +76,10 @@ ExMetadataManager()
   std::string aid;
   while (it != mm.end())  
   {
-    std::cout << "Annt id: " << it->second->getAnnotationtId() 
-              << " Elem id: "  << it->second->getElementId() 
-              << " Elem name: " << it->second->getElementName()
-              << " Annt URI: " << it->second->getAnnotationURI() << std::endl;
+    std::cout << "Annt id: " << it->second->getAnnotationtId() << std::endl 
+              << " Elem id: "  << it->second->getElementId() << std::endl 
+              << " Elem name: " << it->second->getElementName() << std::endl 
+              << " Annt URI: " << it->second->getAnnotationURI() << std::endl << std::endl ;
     aid = it->second->getAnnotationtId();
     ++it;
   }
@@ -94,10 +91,7 @@ ExMetadataManager()
   
   te::md::MetadataManager::getInstance().clear();
   
-  delete cloader;
-  delete transactor;
   ds->close();
-  delete ds;
 }
 
 
@@ -116,8 +110,7 @@ ExMetadataISO19115()
   md->setCharset(te::md::MD_utf8);
   md->setStandardInfo("ISO 19115", "2003");  
   md->setDateStamp(boost::gregorian::date(boost::gregorian::from_undelimited_string("20041210")));
-  md->setMetadataURI("/Users/lubia/Desktop/ibge_topo.xml");
-  
+  md->setMetadataURI(""TE_DATA_EXAMPLE_DIR"/data/ibge_topo.xml");
   // now comes the identification section, with information about one or more resources
   
   // resource citation - part of data identification
@@ -170,72 +163,70 @@ ExMetadataISO19115()
 
 void ExMetadataExtractor()
 {
-  std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_LOCALE"/data/shp");
-  
-  te::da::DataSource* ds = te::da::DataSourceFactory::make("OGR");
-  ds->setConnectionStr(ogrInfo);
+  std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_DIR"/data/shp");
+  std::map<std::string, std::string> connInfo;
+  connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/shp";
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
+  ds->setConnectionInfo(connInfo);
   ds->open();
   
-  te::da::DataSourceTransactor* transactor = ds->getTransactor();
+  std::auto_ptr<te::da::DataSourceTransactor> transactor = ds->getTransactor();
   
-  te::da::DataSourceCatalogLoader* cloader = transactor->getCatalogLoader();
-  
-  boost::ptr_vector<std::string> datasets;
-  
-  cloader->getDataSets(datasets);
-  
+  std::vector<std::string> datasets = transactor->getDataSetNames();
+   
   if (datasets.empty())
   {
-    delete cloader;
-    delete transactor;
     ds->close();
-    delete ds;
     throw te::common::Exception("Couldn't find the datasets in the datasource");
   }
   
-  te::da::DataSet* dataset = transactor->getDataSet(datasets[0]);
-  if(!dataset)
+  std::auto_ptr<te::da::DataSet> dataset = transactor->getDataSet(datasets[0]);
+  bool isbb = dataset->isBeforeBegin();
+
+  if (dataset->isBeforeBegin()) dataset->moveFirst();
+
+  if(!dataset.get())
     return;
   
-  te::md::MD_Metadata* md = te::md::Extract(dataset);
+  te::md::MD_Metadata* md = te::md::Extract(dataset.get());
   
   delete md;
-  delete cloader;
-  delete transactor;
   ds->close();
-  delete ds;
 }
 
 void ExMetadataCycle()
 {
   // Open a data source
-  std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_LOCALE"/data/shp");
-  
-  te::da::DataSource* ds = te::da::DataSourceFactory::make("OGR");
-  ds->setConnectionStr(ogrInfo);
+  std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_DIR"/data/shp");
+  std::map<std::string, std::string> connInfo;
+  connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/shp";
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
+  ds->setConnectionInfo(connInfo);
   ds->open();
   
-  te::da::DataSourceTransactor* transactor = ds->getTransactor();
+  std::auto_ptr<te::da::DataSourceTransactor> transactor = ds->getTransactor();
   
-  te::da::DataSourceCatalogLoader* cloader = transactor->getCatalogLoader();
+  std::vector<std::string> datasets = transactor->getDataSetNames();
   
-  boost::ptr_vector<std::string> datasets;
-  
-  cloader->getDataSets(datasets);
   
   // Create an annotation for each dataset in the datasourc
   for (unsigned int i=0; i<datasets.size(); ++i)
   {
-    te::da::DataSet* dataset = transactor->getDataSet(datasets[i]);
-    
-    te::md::MD_Metadata* md = te::md::Extract(dataset);
+    std::auto_ptr<te::da::DataSet> dataset = transactor->getDataSet(datasets[i]);
+    std::auto_ptr<te::da::DataSetType> dt = transactor->getDataSetType(datasets[i]);
+ 
+    if (dataset->isEmpty()) continue; //soilmeasure is empty.
+
+    if (dataset->isBeforeBegin()) dataset->moveFirst(); //otherwise m_currentFeature is invalid in getWKB()
+
+    te::md::MD_Metadata* md = te::md::Extract(dataset.get());
         
     // include manually other metadata elements
     // ...
     boost::format fname("%1%/%2%.xml");
-    fname = fname % TE_DATA_EXAMPLE_LOCALE"/data/shp" % dataset->getType()->getTitle();    
-    md->setMetadataURI(fname.str());
-    
+    fname = fname % TE_DATA_EXAMPLE_DIR"/data/shp" % dt->getTitle();
+    std::string ffname = fname.str();
+    md->setMetadataURI(ffname);
     // serialize it
     std::ofstream ofs(md->getMetadataURI().c_str());
     te::xml::Writer writer(ofs);
@@ -244,12 +235,12 @@ void ExMetadataCycle()
     
     // feed the manager
     te::md::MetadataAnnotation* anot = new te::md::MetadataAnnotation();
-    anot->setElementId(boost::lexical_cast<std::string>(dataset->getType()->getId()));
-    anot->setElementName(dataset->getType()->getTitle());
+    anot->setElementId(boost::lexical_cast<std::string>(i));
+    anot->setElementName(dt->getTitle());
+ 
     anot->setAnnotationURI(md->getMetadataURI());    
     te::md::MetadataManager::getInstance().insert(anot);  
     
-    delete dataset;
     delete md;
   }
   
@@ -259,10 +250,10 @@ void ExMetadataCycle()
   std::string aid;
   while (it != mm.end())  
   {
-    std::cout << "Annt id: " << it->second->getAnnotationtId() 
-    << " Elem id: "  << it->second->getElementId() 
-    << " Elem name: " << it->second->getElementName()
-    << " Annt URI: " << it->second->getAnnotationURI() << std::endl;
+    std::cout << "Annt id: " << it->second->getAnnotationtId()  << std::endl
+    << " Elem id: "  << it->second->getElementId() << std::endl
+    << " Elem name: " << it->second->getElementName() << std::endl
+    << " Annt URI: " << it->second->getAnnotationURI() << std::endl << std::endl;
     aid = it->second->getAnnotationtId();
     ++it;
   }
@@ -271,9 +262,6 @@ void ExMetadataCycle()
   // ...
   // 
   
-  te::md::MetadataManager::getInstance().clear();
-  delete cloader;
-  delete transactor;
+  te::md::MetadataManager::getInstance().clear();  
   ds->close();
-  delete ds;
 }

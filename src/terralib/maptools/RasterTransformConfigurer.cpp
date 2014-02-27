@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -32,6 +32,7 @@
 #include "../se/ChannelSelection.h"
 #include "../se/ContrastEnhancement.h"
 #include "../se/SelectedChannel.h"
+#include "../se/Utils.h"
 #include "../se.h"
 
 #include <limits>
@@ -69,7 +70,7 @@ void te::map::RasterTransformConfigurer::getGeneralProperties()
   //get transparency
   if(m_rstSymbolizer->getOpacity())
   {
-    double transp = (double)TE_OPAQUE * te::map::GetDouble(m_rstSymbolizer->getOpacity());
+    double transp = (double)TE_OPAQUE * te::se::GetDouble(m_rstSymbolizer->getOpacity());
 
     m_rstTransform->setTransparency(transp);
   }
@@ -77,7 +78,7 @@ void te::map::RasterTransformConfigurer::getGeneralProperties()
   //get gain
   if(m_rstSymbolizer->getGain())
   {
-    double gain = te::map::GetDouble(m_rstSymbolizer->getGain());
+    double gain = te::se::GetDouble(m_rstSymbolizer->getGain());
 
     double curGain = m_rstTransform->getGain();
 
@@ -89,7 +90,7 @@ void te::map::RasterTransformConfigurer::getGeneralProperties()
   //get offset
   if(m_rstSymbolizer->getOffset())
   {
-    double offset = te::map::GetDouble(m_rstSymbolizer->getOffset());
+    double offset = te::se::GetDouble(m_rstSymbolizer->getOffset());
 
     double curOffset = m_rstTransform->getOffset();
 
@@ -262,14 +263,14 @@ void te::map::RasterTransformConfigurer::getInterpolatedMap(te::se::Interpolate*
   {
     te::se::InterpolationPoint* ipItemInit = ip[i];
 
-    std::string colorName = te::map::GetString(ipItemInit->getValue());
+    std::string colorName = te::se::GetString(ipItemInit->getValue());
     te::color::RGBAColor colorInit(colorName);
     colorInit.setColor(colorInit.getRed(), colorInit.getGreen(), colorInit.getBlue());
     double lowerLimit = ipItemInit->getData();
 
     te::se::InterpolationPoint* ipItemEnd = ip[i + 1];
 
-    colorName = te::map::GetString(ipItemEnd->getValue());
+    colorName = te::se::GetString(ipItemEnd->getValue());
     te::color::RGBAColor colorEnd(colorName);
     colorEnd.setColor(colorEnd.getRed(), colorEnd.getGreen(), colorEnd.getBlue());
     double upperLimit = ipItemEnd->getData();
@@ -296,20 +297,20 @@ void te::map::RasterTransformConfigurer::getCategorizedMap(te::se::Categorize* c
     if(i == 0)
     {
       lowerLimit = std::numeric_limits<double>::min();
-      upperLimit = te::map::GetDouble(t[i]);
+      upperLimit = te::se::GetDouble(t[i]);
     }
     else if(i == tV.size() - 1)
     {
-      lowerLimit = te::map::GetDouble(t[i - 1]);
+      lowerLimit = te::se::GetDouble(t[i - 1]);
       upperLimit = std::numeric_limits<double>::max();
     }
     else
     {
-      lowerLimit = te::map::GetDouble(t[i - 1]);
-      upperLimit = te::map::GetDouble(t[i]);
+      lowerLimit = te::se::GetDouble(t[i - 1]);
+      upperLimit = te::se::GetDouble(t[i]);
     }
 
-    std::string colorName = te::map::GetString(tV[i]);
+    std::string colorName = te::se::GetString(tV[i]);
     te::color::RGBAColor color(colorName);
     color.setColor(color.getRed(), color.getGreen(), color.getBlue());
 
