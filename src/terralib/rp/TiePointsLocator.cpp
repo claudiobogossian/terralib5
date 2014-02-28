@@ -324,7 +324,7 @@ namespace te
         transfParams.m_tiePoints = outParamsPtr->m_tiePoints;
         
         te::gm::GTFilter filter;
-        TERP_TRUE_OR_RETURN_FALSE( filter.applyRansac( 
+        if( !filter.applyRansac( 
           m_inputParameters.m_geomTransfName, 
           transfParams,
           m_inputParameters.m_geomTransfMaxError,
@@ -334,14 +334,20 @@ namespace te
           m_inputParameters.m_enableMultiThread,
           tiePointsWeights,
           outParamsPtr->m_tiePoints,
-          outParamsPtr->m_transformationPtr  ), "Outliers remotion error" );
+          outParamsPtr->m_transformationPtr  ) )
+        {
+          return false;
+        };
       }
       else
       {
-        outParamsPtr->m_transformationPtr.reset( te::gm::GTFactory::make( m_inputParameters.m_geomTransfName ) );
-        TERP_DEBUG_TRUE_OR_THROW( outParamsPtr->m_transformationPtr.get(), "Invalid transformation" );
+        outParamsPtr->m_transformationPtr.reset( te::gm::GTFactory::make( 
+          m_inputParameters.m_geomTransfName ) );
+        TERP_DEBUG_TRUE_OR_THROW( outParamsPtr->m_transformationPtr.get(), 
+          "Invalid transformation" );
         
         te::gm::GTParameters transfParams;
+        transfParams.m_tiePoints = outParamsPtr->m_tiePoints;
         
         if( ! outParamsPtr->m_transformationPtr->initialize( transfParams ) )
         {
