@@ -54,6 +54,8 @@ namespace te
         static const std::string sm_factoryGraphTypeDirectedGraph;          //!< Directed Graph Factory Name.
         static const std::string sm_factoryGraphTypeUndirectedGraph;        //!< Undirected Graph Factory Name.
 
+        static const std::string sm_factoryGraphTypeMemoryGraph;            //!< Memory Graph Factory Name.
+
         static const std::string sm_factoryCachePolicyTypeFIFO;             //!< FIFO Cache Policy Factory Name.
         static const std::string sm_factoryCachePolicyTypeLFU;              //!< LFU Cache Policy Factory Name.
 

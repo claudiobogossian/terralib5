@@ -18,34 +18,29 @@
  */
 
 /*!
-  \file AbstractGraphBuilder.cpp
+  \file GraphExamples.h
 
-  \brief This abstract class provides the common functions for graph
-    builder classes. Each builder strategy has to implement only
-    a public function called build.
+  \brief These routines show how to use the Graph module.
+ */
 
-*/
+#ifndef __TERRALIB_EXAMPLES_INTERNAL_GRAPH_EXAMPLES_H
+#define __TERRALIB_EXAMPLES_INTERNAL_GRAPH_EXAMPLES_H
 
-// TerraLib Includes
-#include "../core/AbstractGraph.h"
-#include "AbstractGraphBuilder.h"
+//TerraLib
+#include <terralib/raster/Raster.h>
+#include "../Config.h"
 
-te::graph::AbstractGraphBuilder::AbstractGraphBuilder()
-{
-  m_graph.reset();
-  m_errorMessage = "";
-}
+//STL
+#include <memory>
+#include <string>
 
-te::graph::AbstractGraphBuilder::~AbstractGraphBuilder()
-{
-}
+/*! \brief It loads the data source drivers. */
+void LoadModules();
 
-std::string te::graph::AbstractGraphBuilder::getErrorMessage()
-{
-  return m_errorMessage;
-}
-       
-boost::shared_ptr<te::graph::AbstractGraph> te::graph::AbstractGraphBuilder::getGraph()
-{
-  return m_graph;
-}
+/*! \brief Creates a LDD GRAPH. */
+void CreateLDDGraph(bool draw);
+
+/*! \brief Auxiliar functions for load a raster. */
+std::auto_ptr<te::rst::Raster> OpenRaster(const std::string& pathName, const int& srid);
+
+#endif
