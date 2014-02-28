@@ -30,7 +30,7 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../../plugin/PluginManager.h"
 #include "../../plugin/PluginInfo.h"
-#include "../../serialization/maptools/Layer.h"
+#include "../../maptools/serialization/Layer.h"
 #include "../../xml/Reader.h"
 #include "../../xml/ReaderFactory.h"
 #include "../../xml/Writer.h"
@@ -127,7 +127,7 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
 
   reader.next();
 
-  const te::serialize::Layer& lserial = te::serialize::Layer::getInstance();
+  const te::map::serialize::Layer& lserial = te::map::serialize::Layer::getInstance();
 
   // Read the layers
   std::vector<std::string> invalidLayers;
@@ -223,7 +223,7 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
 
   writer.writeStartElement("te_map:LayerList");
 
-  const te::serialize::Layer& lserial = te::serialize::Layer::getInstance();
+  const te::map::serialize::Layer& lserial = te::map::serialize::Layer::getInstance();
 
   for(std::list<te::map::AbstractLayerPtr>::const_iterator it = project.getTopLayers().begin();
       it != project.getTopLayers().end();

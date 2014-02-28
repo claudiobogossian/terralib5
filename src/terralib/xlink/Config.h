@@ -33,6 +33,8 @@
 
 #define TE_XL_MODULE_NAME "te.xlinks"
 
+# define TE_ENABLED_XML 1
+
 /** @name Internationalization Defines
  *  Flags for TerraLib code internationalization.
  */

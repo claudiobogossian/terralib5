@@ -29,6 +29,9 @@
 // TerraLib
 #include "../Config.h"
 
+// STL
+#include <string>
+
 // Forward declarations
 class QBrush;
 class QPen;
@@ -41,11 +44,18 @@ namespace te
     class Fill;
     class Stroke;
   }
-  
+
+  namespace xml
+  {
+    class Reader;
+  }
+
   namespace qt
   {
     namespace widgets
     {
+// Forward declaration
+      class Symbol;
 
       /*!
         \brief It configs the given pen based on Symbology Enconding Stroke element.
@@ -66,6 +76,20 @@ namespace te
         \note Warning: It consider that the parameters of Fill element is enconded using a Literal OGC Filter expression.
       */
       void Config(QBrush& brush, const te::se::Fill* fill);
+
+      /*!
+        \brief It reads a symbol library file and put the result on SymbolLibraryManager.
+
+        \param path  The path of the symbol library file.
+      */
+      void ReadSymbolLibrary(const std::string& path);
+
+      /*!
+        \brief It reads a symbol using the given reader.
+
+        \retrun The symbol read.
+      */
+      Symbol* ReadSymbol(te::xml::Reader& reader);
 
     } // end namespace widgets
   }   // end namespace qt

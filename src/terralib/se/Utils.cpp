@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,6 +26,7 @@
 // TerraLib
 #include "../color/ColorTransform.h"
 #include "../color/RGBAColor.h"
+#include "../fe/Literal.h"
 #include "../raster/BandProperty.h"
 #include "ChannelSelection.h"
 #include "CoverageStyle.h"
@@ -42,6 +43,7 @@
 #include "Rule.h"
 #include "SelectedChannel.h"
 #include "Stroke.h"
+#include "SvgParameter.h"
 #include "TextSymbolizer.h"
 #include "Utils.h"
 
@@ -397,4 +399,72 @@ std::string te::se::GenerateRandomColor()
   te::color::RGBAColor color(t.getRgba());
 
   return color.getColor();
+}
+
+void te::se::GetColor(const te::se::Stroke* stroke, te::color::RGBAColor& color)
+{
+  if(stroke == 0)
+    return;
+
+  te::se::GetColor(stroke->getColor(), stroke->getOpacity(), color);
+}
+
+void te::se::GetColor(const te::se::Fill* fill, te::color::RGBAColor& color)
+{
+  if(fill == 0)
+    return;
+  te::se::GetColor(fill->getColor(), fill->getOpacity(), color);
+}
+
+void  te::se::GetColor(const te::se::ParameterValue* color, const te::se::ParameterValue* opacity, te::color::RGBAColor& rgba)
+{
+  if(color == 0 &&  opacity == 0)
+    return;
+
+  int alpha = TE_OPAQUE;
+  if(opacity)
+  {
+    alpha = (int)(te::se::GetDouble(opacity) * TE_OPAQUE);
+    rgba.setColor(rgba.getRed(), rgba.getGreen(), rgba.getBlue(), alpha);
+  }
+
+  if(color)
+  {
+    te::color::RGBAColor rgb = te::se::GetColor(color);
+    rgba.setColor(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), rgba.getAlpha());
+  }
+}
+
+te::color::RGBAColor te::se::GetColor(const te::se::ParameterValue* param)
+{
+  return te::color::RGBAColor(te::se::GetString(param));
+}
+
+int te::se::GetInt(const te::se::ParameterValue* param)
+{
+  return atoi(te::se::GetString(param).c_str());
+}
+
+double te::se::GetDouble(const te::se::ParameterValue* param)
+{
+  return atof(te::se::GetString(param).c_str());
+}
+
+std::string te::se::GetString(const te::se::ParameterValue* param)
+{
+  assert(param->getNParameters() > 0);
+  
+  const te::se::ParameterValue::Parameter* p = param->getParameter(0);
+  assert(p);
+
+  if(p->m_mixedData)
+  {
+    return *p->m_mixedData;
+  }
+  else //if(p->m_expression)
+  {
+    te::fe::Literal* l = dynamic_cast<te::fe::Literal*>(p->m_expression);
+    assert(l);
+    return l->getValue();
+  }
 }

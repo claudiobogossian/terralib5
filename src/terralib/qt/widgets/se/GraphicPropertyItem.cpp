@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../../maptools/Utils.h"
+#include "../../../se/Utils.h"
 #include "../../../se.h"
 #include "../../../xlink/SimpleLink.h"
 #include "GraphicPropertyItem.h"
@@ -177,17 +177,17 @@ void te::qt::widgets::GraphicPropertyItem::updateUi()
   // Size
   const te::se::ParameterValue* size = m_graphic->getSize();
   if(size)
-    te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(m_sizeProperty, te::map::GetDouble(size));
+    te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(m_sizeProperty, te::se::GetDouble(size));
 
   // Rotation
   const te::se::ParameterValue* rotation = m_graphic->getRotation();
   if(rotation)
-    te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(m_angleProperty, te::map::GetDouble(rotation));
+    te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(m_angleProperty, te::se::GetDouble(rotation));
 
   // Opacity
   const te::se::ParameterValue* opacity = m_graphic->getOpacity();
   if(opacity)
-    te::qt::widgets::AbstractPropertyManager::getInstance().m_intSliderManager->setValue(m_opacityProperty, te::map::GetDouble(opacity) * 100);
+    te::qt::widgets::AbstractPropertyManager::getInstance().m_intSliderManager->setValue(m_opacityProperty, te::se::GetDouble(opacity) * 100);
 
   //// Displacement
   //const te::se::Displacement* disp = m_graphic->getDisplacement();

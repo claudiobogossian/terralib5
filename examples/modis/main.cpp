@@ -16,8 +16,19 @@
 
 // Boost
 #include <boost/timer/timer.hpp>
+#include <boost/regex.hpp>
 
 #define TE_USE_GDAL 1
+
+void LoadModules()
+{
+  te::plugin::PluginInfo* info;
+     
+  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg"));
+  te::plugin::PluginManager::getInstance().add(info); 
+
+  te::plugin::PluginManager::getInstance().loadAll();   
+}
 
 int main(int argc, char *argv[])
 {
@@ -27,18 +38,12 @@ int main(int argc, char *argv[])
     TerraLib::getInstance().initialize();
 
 // Informa a necessidade de carga dinamica do driver GDAL 
-#if TE_USE_GDAL
-    std::auto_ptr<te::plugin::PluginInfo> pinfo(te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg")));
-    te::plugin::PluginManager::getInstance().add(pinfo.release());
-#endif
-
-// Inicializa todos os modulos dinamicos
-    te::plugin::PluginManager::getInstance().loadAll(); 
-
+    LoadModules();
 
 // Prepara os conjuntos de dados do banco de imagens
     std::string product("MOD13Q1");
-    boost::filesystem::path mpath("C:\\spatial-data\\modis\\MOD13");
+    //boost::filesystem::path mpath("C:\\spatial-data\\modis\\MOD13");
+    boost::filesystem::path mpath(""TE_DATA_EXAMPLE_DIR"\\data\\modis\\MOD13");
     ProdHVDate modis_files;
 
     msearch(mpath, product, "", modis_files);

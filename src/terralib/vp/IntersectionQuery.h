@@ -62,8 +62,6 @@ namespace te
       bool run();
 
     private:
-      //Colocar no Utils?? esse metodo é usando tanto em query quanto em memória.
-      std::vector<te::dt::Property*> getTabularProps(te::da::DataSetType* dsType);
 
       te::da::DataSet* updateGeomType(te::da::DataSetType* dsType, te::da::DataSet* ds);
       

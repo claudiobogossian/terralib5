@@ -45,13 +45,17 @@ te::vp::IntersectionOp::IntersectionOp():
 
 void te::vp::IntersectionOp::setInput(std::auto_ptr<te::da::DataSource> inFirstDsrc,
                                       std::auto_ptr<te::da::DataSet> inFirstDset,
+                                      std::auto_ptr<te::da::DataSetType> inFirstDsetType,
                                       std::auto_ptr<te::da::DataSource> inSecondDsrc,
-                                      std::auto_ptr<te::da::DataSet> inSecondDset)
+                                      std::auto_ptr<te::da::DataSet> inSecondDset,
+                                      std::auto_ptr<te::da::DataSetType> inSecondDsetType)
 {
   m_inFirstDsrc = inFirstDsrc;
   m_inFirstDset = inFirstDset;
+  m_inFirstDsetType = inFirstDsetType;
   m_inSecondDsrc = inSecondDsrc;
   m_inSecondDset = inSecondDset;
+  m_inSecondDsetType = inSecondDsetType;
 }
 
 void te::vp::IntersectionOp::setParams( const bool& copyInputColumns,
@@ -117,4 +121,22 @@ bool  te::vp::IntersectionOp::save(std::auto_ptr<te::da::DataSet> result, std::a
   }
   
   return true;
+}
+
+std::vector<te::dt::Property*> te::vp::IntersectionOp::getTabularProps(te::da::DataSetType* dsType)
+{
+  std::vector<te::dt::Property*> props;
+  te::dt::Property* prop;
+
+  for(std::size_t i = 0; i < dsType->getProperties().size(); ++i)
+  {
+    prop = dsType->getProperty(i);
+
+    if(prop->getType() != te::dt::GEOMETRY_TYPE && prop->getType() != te::dt::NUMERIC_TYPE) 
+    {
+      props.push_back(prop);
+    }
+  }
+
+  return props;
 }

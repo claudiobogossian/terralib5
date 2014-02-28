@@ -8,7 +8,7 @@ project(${PROJ_NAME})
 #  symbology xerces xlink xml REQUIRED)
   
 find_package (terralib 5.0 COMPONENTS common dataaccess datatype filter gdal 
-  geometry gml memory  ogr plugin postgis qt_widgets  raster srs sam serialization vp rp
+  geometry gml memory  ogr plugin postgis qt_widgets  raster srs sam vp rp
    xerces xlink xml REQUIRED)
  
 if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
@@ -50,7 +50,6 @@ option (EXAMPLE_FACTORY "Build factory example." OFF)
 option (EXAMPLE_GEOMETRY "Build geometry example." ON)  
 option (EXAMPLE_GRAPH "Build graph example." OFF)
 option (EXAMPLE_LAYEREXPLORER "Build layer explorer example." OFF)  
-option (EXAMPLE_LEGEND "Build legend example." OFF)  
 option (EXAMPLE_MAPTOOLS "Build map tools example." OFF)  
 option (EXAMPLE_METADATA "Build map tools example." OFF)  
 option (EXAMPLE_MODIS "Build MODIS tools example." OFF)  
@@ -63,7 +62,6 @@ option (EXAMPLE_SERIALIZATION "Build serialization example." ON)
 option (EXAMPLE_SRS "Build srs example." ON)  
 option (EXAMPLE_ST "Build st example." ON)  
 option (EXAMPLE_VP "Build vp example." ON)  
-option (EXAMPLE_MYVIEWER "Build my viewer example." OFF)  
 option (EXAMPLE_URL "Build URL example." ON)  
 option (EXAMPLE_XERCES "Build xerces example." ON)  
 option (EXAMPLE_HELP "Build help example." OFF)  
@@ -124,10 +122,6 @@ if(EXAMPLE_LAYEREXPLORER)
   add_subdirectory(terralib_example_layerexplorer)
 endif()
 
-if(EXAMPLE_LEGEND)
-  add_subdirectory(terralib_example_legend)
-endif()
-
 if(EXAMPLE_MAPTOOLS)
   add_subdirectory(terralib_example_maptools)
 endif()
@@ -174,10 +168,6 @@ endif()
 
 if(EXAMPLE_VP)
   add_subdirectory(terralib_example_vp)
-endif()
-
-if(EXAMPLE_MYVIEWER)
-  add_subdirectory(terralib_example_myviewer)
 endif()
 
 if(EXAMPLE_URL)

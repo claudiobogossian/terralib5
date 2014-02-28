@@ -32,11 +32,10 @@ void LoadModules()
 {
   te::plugin::PluginInfo* info;
      
-  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/plugin_ogr_info.xml"));
-  te::plugin::PluginManager::getInstance().add(info);
-  
-  te::plugin::PluginManager::getInstance().loadAll();
-  
+  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.ogr.teplg"));
+  te::plugin::PluginManager::getInstance().add(info); 
+
+  te::plugin::PluginManager::getInstance().loadAll();   
 }
 
 int main(int argc, char** argv)
@@ -49,9 +48,9 @@ int main(int argc, char** argv)
     
     LoadModules();
     
-    //ExMetadataManager();
-    //ExMetadataISO19115();
-    //ExMetadataExtractor();
+    ExMetadataManager();
+    ExMetadataISO19115();
+    ExMetadataExtractor();
     ExMetadataCycle();
     
     te::plugin::PluginManager::getInstance().unloadAll();

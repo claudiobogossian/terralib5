@@ -51,6 +51,7 @@ namespace te
         //overloads
         virtual te::rst::Raster const* getCurrentObj() const = 0;
         virtual bool moveNext() = 0;
+        virtual bool moveTo( const unsigned int index ) = 0;
         virtual void reset() = 0;
         virtual unsigned int getObjsCount() const = 0;
         virtual unsigned int getCurrentOffset() const = 0;
@@ -81,6 +82,7 @@ namespace te
         //overloads
         te::rst::Raster const* getCurrentObj() const;
         bool moveNext();
+        bool moveTo( const unsigned int index );
         void reset();
         unsigned int getObjsCount() const;
         unsigned int getCurrentOffset() const;
@@ -115,6 +117,7 @@ namespace te
         //overloads
         te::rst::Raster const* getCurrentObj() const;
         bool moveNext();
+        bool moveTo( const unsigned int index );
         void reset();
         unsigned int getObjsCount() const;
         unsigned int getCurrentOffset() const;
@@ -157,6 +160,7 @@ namespace te
         //overloads
         te::rst::Raster const* getCurrentObj() const;
         bool moveNext();
+        bool moveTo( const unsigned int index );
         void reset();
         unsigned int getObjsCount() const;
         unsigned int getCurrentOffset() const;

@@ -2,8 +2,8 @@
 #include <terralib/dataaccess.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
 #include <terralib/vp/Aggregation.h>
-#include <terralib/vp/AggregationOp.h>
 #include <terralib/vp/AggregationMemory.h>
+#include <terralib/vp/AggregationOp.h>
 #include <terralib/vp/AggregationQuery.h>
 
 // STL
@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 
+
+#pragma region
 //bool AggregPGISToOGR()
 //{
 //  // this refers to a PostGIS connection, use valid ones for your own environment
@@ -208,9 +210,10 @@
 //  
 //  return res;
 //}
+#pragma endregion Old examples.
 
 
-//Exemplo utilizando a nova estrutura do VP
+//New examples
 
 //OGR to OGR
 bool AggregOGRToOGR()
@@ -260,6 +263,12 @@ bool AggregOGRToOGR()
   
   std::string outDS = "result";
   
+  if (trgDs->dataSetExists(outDS))
+  {
+    std::cout << "A dataset with the same requested output dataset name already exists: " << outDS << std::endl;
+    return false;
+  }
+
   // sera feito por algum tipo de factory
   te::vp::AggregationOp* aggregOp = new te::vp::AggregationMemory();
 
@@ -279,6 +288,7 @@ bool AggregOGRToOGR()
   return result;
 }
 
+//OGR to Postgis
 bool AggregOGRToPGIS()
 {
   //std::string filename(""TE_DATA_EXAMPLE_DIR"/data/shp/SP_cities.shp");
@@ -355,6 +365,7 @@ bool AggregOGRToPGIS()
   return result;
 }
 
+//Postgis to Postgis
 bool AggregPGISToPGIS()
 {
   std::map<std::string, std::string> connInfo;
@@ -424,6 +435,7 @@ bool AggregPGISToPGIS()
   return result;
 }
 
+//Postgis to OGR
 bool AggregPGISToOGR()
 {
   std::map<std::string, std::string> connInfo;
@@ -462,9 +474,9 @@ bool AggregPGISToOGR()
   stat1.push_back(te::stat::MIN_VALUE);
   stats.insert(std::make_pair(prop1.release(), stat1));
 
-  std::string filename2(""TE_DATA_EXAMPLE_DIR"/Nulos/result.shp");
+  std::string uriResult(""TE_DATA_EXAMPLE_DIR"/Nulos/result.shp");
   std::map<std::string, std::string> tgrInfo;
-  tgrInfo["URI"] = filename2;
+  tgrInfo["URI"] = uriResult;
   tgrInfo["DRIVER"] = "ESRI Shapefile";
 
   std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");

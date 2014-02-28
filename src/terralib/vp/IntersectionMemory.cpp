@@ -81,7 +81,7 @@ bool te::vp::IntersectionMemory::run()
     m_SRID = geom->getSRID();
   }
 
-  std::vector<te::dt::Property*> firstProps = this->getTabularProperties(m_inFirstDsetType.get());
+  std::vector<te::dt::Property*> firstProps = getTabularProps(m_inFirstDsetType.get());
 
   IntersectionMember firstMember;
   firstMember.dt = m_inFirstDsetType.release();
@@ -92,7 +92,7 @@ bool te::vp::IntersectionMemory::run()
   secondMember.dt = m_inSecondDsetType.release();
   secondMember.ds = m_inSecondDset.release();
   if(m_copyInputColumns)
-    secondMember.props = this->getTabularProperties(m_inSecondDsetType.get());
+    secondMember.props = getTabularProps(secondMember.dt);
   
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
   resultPair = this->pairwiseIntersection(m_outDsetName, firstMember, secondMember, m_SRID);
@@ -104,25 +104,6 @@ bool te::vp::IntersectionMemory::run()
   std::auto_ptr<te::da::DataSetType> outDataSetType(resultPair.first);
 
   return save(outDataSet, outDataSetType);
-}
-
-
-std::vector<te::dt::Property*> te::vp::IntersectionMemory::getTabularProperties(te::da::DataSetType* dsType)
-{
-  std::vector<te::dt::Property*> props;
-  te::dt::Property* prop;
-
-  for(std::size_t i = 0; i < dsType->getProperties().size(); ++i)
-  {
-    prop = dsType->getProperty(i);
-
-    if(prop->getType() != te::dt::GEOMETRY_TYPE && prop->getType() != te::dt::NUMERIC_TYPE) 
-    {
-      props.push_back(prop);
-    }
-  }
-
-  return props;
 }
 
 std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pairwiseIntersection(std::string newName, 

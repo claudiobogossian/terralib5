@@ -118,6 +118,7 @@ namespace te
 
           void onInputDataToolButtonTriggered();
           void onSridPushButtonCLicked();
+          void onGeomPropertyChecked(int checked);
           void onPropertyTypeChanged(int index);
 
         private:

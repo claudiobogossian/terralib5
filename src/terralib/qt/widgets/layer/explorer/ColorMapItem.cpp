@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,11 +25,11 @@
 
 // TerraLib
 #include "../../../../color/ColorBar.h"
-#include "../../../../maptools/Utils.h"
 #include "../../../../se/Categorize.h"
 #include "../../../../se/ColorMap.h"
 #include "../../../../se/Interpolate.h"
 #include "../../../../se/InterpolationPoint.h"
+#include "../../../../se/Utils.h"
 #include "ColorMapSliceItem.h"
 #include "ColorMapItem.h"
 
@@ -114,20 +114,20 @@ void te::qt::widgets::ColorMapItem::fetchMore()
       if(i == 0)
       {
         lowerLimit = std::numeric_limits<double>::min();
-        upperLimit = te::map::GetDouble(t[i]);
+        upperLimit = te::se::GetDouble(t[i]);
       }
       else if(i == tV.size() - 1)
       {
-        lowerLimit = te::map::GetDouble(t[i - 1]);
+        lowerLimit = te::se::GetDouble(t[i - 1]);
         upperLimit = std::numeric_limits<double>::max();
       }
       else
       {
-        lowerLimit = te::map::GetDouble(t[i - 1]);
-        upperLimit = te::map::GetDouble(t[i]);
+        lowerLimit = te::se::GetDouble(t[i - 1]);
+        upperLimit = te::se::GetDouble(t[i]);
       }
 
-      std::string colorName = te::map::GetString(tV[i]);
+      std::string colorName = te::se::GetString(tV[i]);
       te::color::RGBAColor color(colorName);
       color.setColor(color.getRed(), color.getGreen(), color.getBlue());
 
@@ -142,14 +142,14 @@ void te::qt::widgets::ColorMapItem::fetchMore()
     {
       te::se::InterpolationPoint* ipItemInit = ip[i];
 
-      std::string colorName = te::map::GetString(ipItemInit->getValue());
+      std::string colorName = te::se::GetString(ipItemInit->getValue());
       te::color::RGBAColor colorInit(colorName);
       colorInit.setColor(colorInit.getRed(), colorInit.getGreen(), colorInit.getBlue());
       double lowerLimit = ipItemInit->getData();
 
       te::se::InterpolationPoint* ipItemEnd = ip[i + 1];
 
-      colorName = te::map::GetString(ipItemEnd->getValue());
+      colorName = te::se::GetString(ipItemEnd->getValue());
       te::color::RGBAColor colorEnd(colorName);
       colorEnd.setColor(colorEnd.getRed(), colorEnd.getGreen(), colorEnd.getBlue());
       double upperLimit = ipItemEnd->getData();
