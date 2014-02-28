@@ -87,7 +87,16 @@ te::gm::GeomType te::vp::IntersectionOp::getGeomResultType(te::gm::GeomType geom
 
 bool te::vp::IntersectionOp::paramsAreValid()
 {
-  if (!m_inFirstDset.get())
+  if (!m_inFirstDset.get() || !m_inFirstDsetType.get())
+    return false;
+
+  if (!m_inFirstDsetType->hasGeom())
+    return false;
+
+  if (!m_inSecondDset.get() || !m_inSecondDsetType.get())
+    return false;
+
+  if (!m_inSecondDsetType->hasGeom())
     return false;
 
   if (m_outDsetName.empty() || !m_outDsrc.get())

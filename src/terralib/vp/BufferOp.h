@@ -18,15 +18,15 @@
  */
 
 /*!
- \file AggregationOp.h
+ \file BufferOp.h
  
- \brief Aggregation operation.
+ \brief Buffer operation.
  
  \ingroup vp
  */
 
-#ifndef __TERRALIB_VP_INTERNAL_AGGREGATION_OP_H
-#define __TERRALIB_VP_INTERNAL_AGGREGATION_OP_H
+#ifndef __TERRALIB_VP_INTERNAL_BUFFER_OP_H
+#define __TERRALIB_VP_INTERNAL_BUFFER_OP_H
 
 //Terralib
 
@@ -52,13 +52,13 @@ namespace te
 {
   namespace vp
   {
-    class TEVPEXPORT AggregationOp
+    class TEVPEXPORT BufferOp
     {
     public:
       
-      AggregationOp();
+      BufferOp();
       
-      virtual ~AggregationOp() {}
+      virtual ~BufferOp() {}
       
       virtual bool run() = 0;
       
@@ -67,16 +67,21 @@ namespace te
       void setInput(std::auto_ptr<te::da::DataSource> inDsrc,
                     std::auto_ptr<te::da::DataSet> inDset,
                     std::auto_ptr<te::da::DataSetType> inDsetType);
-      
-      void setParams(std::vector<te::dt::Property*>& groupProps,
-                     std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >&statSum);
-      
+
+      void setParams(const double& distance,
+                    const int& bufferPolygonRule,
+                    const int& bufferBoundariesRule,
+                    const bool& copyInputColumns,
+                    const int& levels);
+
       void setOutput(std::auto_ptr<te::da::DataSource> outDsrc, std::string dsname);
-      
+
     protected:
-      
+
       bool save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType);
       
+      te::da::DataSetType* GetDataSetType();
+
       // it defines the type of the result considering the input geometries being aggregated
       te::gm::GeomType getGeomResultType(te::gm::GeomType geom);
       
@@ -84,12 +89,15 @@ namespace te
       std::auto_ptr<te::da::DataSet> m_inDset;
       std::auto_ptr<te::da::DataSetType> m_inDsetType;
       
-      std::vector<te::dt::Property*> m_groupProps;
-      std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > m_statSum;
+      double m_distance;
+      int m_bufferPolygonRule;
+      int m_bufferBoundariesRule;
+      bool m_copyInputColumns;
+      int m_levels;
       
       std::auto_ptr<te::da::DataSource> m_outDsrc;
-      std::string m_outDset;
+      std::string m_outDsetName;
     };
   }
 }
-#endif // __TERRALIB_VP_INTERNAL_AGGREGATION_OP_H
+#endif // __TERRALIB_VP_INTERNAL_BUFFER_OP_H
