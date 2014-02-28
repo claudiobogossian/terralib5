@@ -88,6 +88,7 @@ te::qt::widgets::MixtureModelWizardPage::MixtureModelWizardPage(QWidget* parent)
   m_navigatorDlg->setMinimumSize(550, 400);
   m_navigatorDlg->getWidget()->hideGeomTool(true);
   m_navigatorDlg->getWidget()->hideInfoTool(true);
+  m_navigatorDlg->getWidget()->hideBoxTool(true);
 
   //connects
   connect(m_navigatorDlg.get(), SIGNAL(navigatorClosed()), this, SLOT(onNavigatorClosed()));

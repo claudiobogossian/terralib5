@@ -369,6 +369,7 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/rp/ClassifierDialog.h
   ${SRCDIR}/widgets/rp/ClassifierWizardPage.h
+  ${SRCDIR}/widgets/rp/ClippingWizardPage.h
   ${SRCDIR}/widgets/rp/ColorTransformWizardPage.h
   ${SRCDIR}/widgets/rp/ContrastDialog.h
   ${SRCDIR}/widgets/rp/ContrastWizardPage.h
@@ -479,6 +480,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/temporal" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/tools/CoordTracking.h
+  ${SRCDIR}/widgets/tools/ExtentAcquire.h
   ${SRCDIR}/widgets/tools/Info.h
   ${SRCDIR}/widgets/tools/Measure.h
   ${SRCDIR}/widgets/tools/PanExtent.h
