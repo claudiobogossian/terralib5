@@ -281,28 +281,32 @@ namespace te
       {
         case InputParameters::MoravecStrategyT :
         {
-          TERP_TRUE_OR_RETURN_FALSE( executeMoravec( 
+          if( !executeMoravec( 
             raster1XRescFact, 
             raster1YRescFact,
             raster2XRescFact,
             raster2YRescFact,
             progressPtr.get(),
             outParamsPtr,
-            tiePointsWeights ),
-            "Moravec execution error" );   
+            tiePointsWeights ) )
+          {
+            return false;
+          }
           break;
         }
         case InputParameters::SurfStrategyT :
         {
-          TERP_TRUE_OR_RETURN_FALSE( executeSurf( 
+          if( !executeSurf( 
             raster1XRescFact, 
             raster1YRescFact,
             raster2XRescFact,
             raster2YRescFact,
             progressPtr.get(),
             outParamsPtr,
-            tiePointsWeights ),
-            "SURF execution error" );   
+            tiePointsWeights ) )
+          {
+            return false;
+          }
           break;
         }        
         default :
@@ -407,7 +411,7 @@ namespace te
         std::vector< boost::shared_ptr< FloatsMatrix > > raster1Data;
         UCharsMatrix maskRaster1Data;
         
-        TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
+        if( !loadRasterData( 
           m_inputParameters.m_inRaster1Ptr,
           m_inputParameters.m_inRaster1Bands,
           m_inputParameters.m_inMaskRaster1Ptr,
@@ -421,8 +425,10 @@ namespace te
           m_inputParameters.m_interpMethod,
           20,
           raster1Data,
-          maskRaster1Data ),
-          "Error loading raster data" );        
+          maskRaster1Data ) )
+        {
+          return false;
+        }
           
         if( progressPtr )
         {
@@ -443,10 +449,11 @@ namespace te
             raster1Data[ 0 ]->getMaxMemPercentUsage() ),
             "Cannot allocate image matrix" );
           
-          TERP_TRUE_OR_RETURN_FALSE( applyMeanFilter( 
-            *(raster1Data[ 0 ]), 
-            *tempMatrix, m_inputParameters.m_moravecGaussianFilterIterations ),
-            "Gaussian filter error" );
+          if( !applyMeanFilter( *(raster1Data[ 0 ]), 
+            *tempMatrix, m_inputParameters.m_moravecGaussianFilterIterations ) )
+          {
+            return false;
+          }  
             
           raster1Data[ 0 ]->reset();
           raster1Data[ 0 ] = tempMatrix;
@@ -462,14 +469,16 @@ namespace te
         
         // locating interest points
         
-        TERP_TRUE_OR_RETURN_FALSE( locateMoravecInterestPoints( 
+        if( !locateMoravecInterestPoints( 
           *(raster1Data[ 0 ]), 
           maskRaster1Data.getLinesNumber() ? (&maskRaster1Data) : 0, 
           m_inputParameters.m_moravecWindowWidth,
           raster1MaxInterestPoints,
           m_inputParameters.m_enableMultiThread,
-          raster1InterestPoints ),
-          "Error locating raster 1 interest points" );
+          raster1InterestPoints ) )
+        {
+          return false;
+        }
           
         if( progressPtr )
         {
@@ -511,7 +520,7 @@ namespace te
         std::vector< boost::shared_ptr< FloatsMatrix > > raster2Data;
         UCharsMatrix maskRaster2Data;
                      
-        TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
+        if( !loadRasterData( 
           m_inputParameters.m_inRaster2Ptr,
           m_inputParameters.m_inRaster2Bands,
           m_inputParameters.m_inMaskRaster2Ptr,
@@ -525,8 +534,10 @@ namespace te
           m_inputParameters.m_interpMethod,
           20,
           raster2Data,
-          maskRaster2Data ),
-          "Error loading raster data" );
+          maskRaster2Data ) )
+        {
+          return false;
+        }
           
         if( progressPtr )
         {
@@ -549,10 +560,11 @@ namespace te
             raster2Data[ 0 ]->getMaxMemPercentUsage() ),
             "Cannot allocate image matrix" );          
           
-          TERP_TRUE_OR_RETURN_FALSE( applyMeanFilter( 
-            *(raster2Data[ 0 ]), 
-            *tempMatrix, m_inputParameters.m_moravecGaussianFilterIterations ),
-            "Gaussian filter error" );
+          if( !applyMeanFilter( *(raster2Data[ 0 ]), 
+            *tempMatrix, m_inputParameters.m_moravecGaussianFilterIterations ) )
+          {
+            return false;
+          }
 
           raster2Data[ 0 ] = tempMatrix;          
           
@@ -567,14 +579,16 @@ namespace te
         
         // locating interest points        
         
-        TERP_TRUE_OR_RETURN_FALSE( locateMoravecInterestPoints( 
+        if( !locateMoravecInterestPoints( 
           *(raster2Data[ 0 ]), 
           maskRaster2Data.getLinesNumber() ? (&maskRaster2Data) : 0, 
           m_inputParameters.m_moravecWindowWidth,
           raster2MaxInterestPoints,
           m_inputParameters.m_enableMultiThread,
-          raster2InterestPoints ),
-          "Error locating raster 2 interest points" );
+          raster2InterestPoints ) )
+        {
+          return false;
+        }
           
         if( progressPtr )
         {
@@ -747,7 +761,7 @@ namespace te
         std::vector< boost::shared_ptr< FloatsMatrix > > rasterData;
         UCharsMatrix maskRasterData;
         
-        TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
+        if( !loadRasterData( 
           m_inputParameters.m_inRaster1Ptr,
           m_inputParameters.m_inRaster1Bands,
           m_inputParameters.m_inMaskRaster1Ptr,
@@ -761,8 +775,10 @@ namespace te
           m_inputParameters.m_interpMethod,
           20,
           rasterData,
-          maskRasterData ),
-          "Error loading raster data" );
+          maskRasterData ) )
+        {
+          return false;
+        }
           
 //        printMatrix( *(rasterData[ 0 ]) );
 //        createTifFromMatrix( *(rasterData[ 0 ]), InterestPointsSetT(), "loadedRaster1");
@@ -834,7 +850,7 @@ namespace te
         std::vector< boost::shared_ptr< FloatsMatrix > > rasterData;
         UCharsMatrix maskRasterData;
         
-        TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
+        if( !loadRasterData( 
           m_inputParameters.m_inRaster2Ptr,
           m_inputParameters.m_inRaster2Bands,
           m_inputParameters.m_inMaskRaster2Ptr,
@@ -848,8 +864,10 @@ namespace te
           m_inputParameters.m_interpMethod,
           20,
           rasterData,
-          maskRasterData ),
-          "Error loading raster data" );
+          maskRasterData ) )
+        {
+          return false;
+        }
           
 //        printMatrix( *(rasterData[ 0 ]) );
 //        createTifFromMatrix( *(rasterData[ 0 ]), InterestPointsSetT(), "loadedRaster2");
@@ -2805,7 +2823,15 @@ namespace te
       }
       else
       {
-        
+        if( inputData.getColumnsNumber() < 3 )
+        {
+          return false;
+        }
+        if( inputData.getLinesNumber() < 3 )
+        {
+          return false;
+        }
+                           
         TERP_TRUE_OR_RETURN_FALSE( outputData.reset( inputData.getLinesNumber(),
           inputData.getColumnsNumber() ), "Cannot allocate image matrix" );
       
