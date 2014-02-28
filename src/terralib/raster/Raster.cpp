@@ -581,7 +581,25 @@ double te::rst::Raster::applyScale(int i, const double& v)
 
 te::rst::Raster* te::rst::Raster::transform(int srid, const std::map<std::string, std::string>& rinfo, int m) const
 {
-  return this->transform(srid, 1, 1, -1, -1, 0, 0, rinfo, m);
+  te::gm::Envelope transformedEnvelope( *getExtent() );
+  transformedEnvelope.transform( getSRID(), srid );
+  
+  double transformedResolutionX = transformedEnvelope.getWidth() /
+    ((double)getNumberOfColumns());
+  double transformedResolutionY = transformedEnvelope.getHeight() /
+    ((double)getNumberOfRows());    
+  
+  return te::rst::Reproject(
+    this,
+    srid, 
+    getExtent()->getLowerLeftX(),
+    getExtent()->getLowerLeftY(),
+    getExtent()->getUpperRightX(),
+    getExtent()->getUpperRightY(),
+    transformedResolutionX,
+    transformedResolutionY,
+    rinfo,
+    m);
 }
 
 te::rst::Raster* te::rst::Raster::transform(int srid, double llx, double lly, double urx, double ury, const std::map<std::string, std::string>& rinfo, int m) const
