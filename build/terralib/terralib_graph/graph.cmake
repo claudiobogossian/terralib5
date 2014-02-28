@@ -32,6 +32,7 @@ set (
   core
   drivers
   drivers/database
+  drivers/memory
   functions
   graphs
   iterator

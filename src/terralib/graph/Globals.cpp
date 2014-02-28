@@ -33,6 +33,8 @@ const std::string te::graph::Globals::sm_factoryGraphTypeBidirectionalGraph(TE_G
 const std::string te::graph::Globals::sm_factoryGraphTypeDirectedGraph(TE_GRAPH_FACTORY_GRAPH_TYPE_DIRECTEDGRAPH);
 const std::string te::graph::Globals::sm_factoryGraphTypeUndirectedGraph(TE_GRAPH_FACTORY_GRAPH_TYPE_UNDIRECTEDGRAPH);
 
+const std::string te::graph::Globals::sm_factoryGraphTypeMemoryGraph(TE_GRAPH_FACTORY_GRAPH_TYPE_MEMORYGRAPH);
+
 const std::string te::graph::Globals::sm_factoryCachePolicyTypeFIFO(TE_GRAPH_FACTORY_CACHEPOLICY_TYPE_FIFO);
 const std::string te::graph::Globals::sm_factoryCachePolicyTypeLFU(TE_GRAPH_FACTORY_CACHEPOLICY_TYPE_LFU);
 

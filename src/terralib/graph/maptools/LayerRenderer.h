@@ -43,7 +43,10 @@ namespace te
   }
 
   namespace graph
-  {    
+  {
+    //forward declaration
+    class AbstractGraph;
+
     /*!
       \class LayerRenderer
 
@@ -91,10 +94,10 @@ namespace te
       protected:
 
         /*! \brief Verify if the graph layer has a geometry to define the vertexs elements. */
-        int checkVertexGeometryProperty(te::graph::Layer* l);
+        int checkVertexGeometryProperty(te::graph::AbstractGraph* g);
 
         /*! \brief Verify if the graph layer has a geometry to define the edges elements. */
-        int checkEdgeGeometryProperty(te::graph::Layer* l);
+        int checkEdgeGeometryProperty(te::graph::AbstractGraph* g);
 
         /*! \brief Configs the canvas with default values for line styles. */
         void configDefaultLine(te::map::Canvas* canvas);
@@ -104,6 +107,10 @@ namespace te
 
         /*! \brief Configs the canvas with default values for point styles. */
         void configLoopPoint(te::map::Canvas* canvas);
+
+        void drawDataSourceGraph(te::graph::AbstractGraph* g, te::map::Canvas* canvas, const te::gm::Envelope& bbox);
+
+        void drawMemoryGraph(te::graph::AbstractGraph* g, te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid);
 
       private:
 

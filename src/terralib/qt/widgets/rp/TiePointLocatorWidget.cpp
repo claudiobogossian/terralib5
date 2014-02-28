@@ -976,6 +976,7 @@ void te::qt::widgets::TiePointLocatorWidget::startUpNavigators()
   m_refNavigator->setMinimumSize(550, 400);
   m_refNavigator->hideGeomTool(true);
   m_refNavigator->hideInfoTool(true);
+  m_refNavigator->hideBoxTool(true);
 
   layoutRef->addWidget(m_refNavigator);
   layoutRef->setContentsMargins(0,0,0,0);
@@ -991,6 +992,7 @@ void te::qt::widgets::TiePointLocatorWidget::startUpNavigators()
   m_adjNavigator->setMinimumSize(550, 400);
   m_adjNavigator->hideGeomTool(true);
   m_adjNavigator->hideInfoTool(true);
+  m_adjNavigator->hideBoxTool(true);
 
   layoutAdj->addWidget(m_adjNavigator);
   layoutAdj->setContentsMargins(0,0,0,0);

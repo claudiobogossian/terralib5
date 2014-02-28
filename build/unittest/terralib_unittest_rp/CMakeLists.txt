@@ -16,4 +16,5 @@ add_subdirectory(terralib_unittest_rp_skeleton)
 add_subdirectory(terralib_unittest_rp_ihsfusion)
 add_subdirectory(terralib_unittest_rp_pcafusion)
 add_subdirectory(terralib_unittest_rp_filter)
+add_subdirectory(terralib_unittest_rp_geometricrefining)
 

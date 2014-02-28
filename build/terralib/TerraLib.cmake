@@ -58,7 +58,6 @@ option (BUILD_QT_WIDGETS "Build Qt Widgets module?" ON)
 option (BUILD_RASTER "Build Raster module?" ON)
 option (BUILD_RP "Build Raster Processing module?" ON)
 option (BUILD_SAM "Build Spatial Access Methods module?" ON)
-option (BUILD_SERIALIZATION "Build Serialization module?" ON)
 #option (BUILD_SQLITE "Build SQLite module?" OFF)
 option (BUILD_SRS "Build Spatial Reference System module?" ON)
 
@@ -177,10 +176,6 @@ endif()
 
 IF(BUILD_SAM)
 	add_subdirectory(terralib/terralib_sam)
-endif()
-
-IF(BUILD_SERIALIZATION)
-	add_subdirectory(terralib/terralib_serialization)
 endif()
 
 #IF(BUILD_SQLITE)

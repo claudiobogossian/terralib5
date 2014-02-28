@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -65,92 +65,12 @@ namespace te
   {
     class CoverageStyle;
     class FeatureTypeStyle;
-    class Fill;
-    class ParameterValue;
-    class RasterSymbolizer;
-    class Stroke;
   }
 
   namespace map
   {
 // Forward declaration
     class DataSetLayer;
-
-    /*!
-      \brief Gets the RGBA color from Stroke element.
-
-      \param stroke The Symbology Enconding Stroke element.
-      \param color  A pre-created color that will be filled with the values extracted from Stroke.
-
-      \note The given color will be altered based on "stroke" and "stroke-opacity" attributes, if availables.
-    */
-    TEMAPEXPORT void GetColor(const te::se::Stroke* stroke, te::color::RGBAColor& color);
-
-    /*!
-      \brief Gets the RGBA color from Fill element.
-
-      \param fill  The Symbology Enconding Fill element.
-      \param color A pre-created color that will be filled with the values extracted from Fill.
-
-      \note The given color will be altered based on "fill" and "fill-opacity" attributes, if availables.
-    */
-    TEMAPEXPORT void GetColor(const te::se::Fill* fill, te::color::RGBAColor& color);
-
-    /*!
-      \brief Gets the RGBA color from parameter values.
-
-      \param color   The Symbology Enconding Parameter Value element that represents the color.
-      \param opacity The Symbology Enconding Parameter Value element that represents the opacity.
-      \param color A pre-created color that will be filled with the values extracted from color and opacity.
-
-      \note The given color will be altered based on "color" and "opacity" parameters, if availables.
-      \note Warning: It consider that the paramater value is enconded using a Literal OGC Filter expression.
-    */
-    TEMAPEXPORT void GetColor(const te::se::ParameterValue* color, const te::se::ParameterValue* opacity, te::color::RGBAColor& rgba);
-
-    /*!
-      \brief Gets the parameter value as RGBA color.
-
-      \param param The Symbology Enconding Parameter Value element.
-
-      \return The RGBA color.
-
-      \note Warning: It consider that the paramater value is enconded using a Literal OGC Filter expression.
-    */
-    TEMAPEXPORT te::color::RGBAColor GetColor(const te::se::ParameterValue* param);
-
-    /*!
-      \brief Gets the parameter value as integer.
-
-      \param param The Symbology Enconding Parameter Value element.
-
-      \return The integer value.
-
-      \note Warning: It consider that the paramater value is enconded using a Literal OGC Filter expression.
-    */
-    TEMAPEXPORT int GetInt(const te::se::ParameterValue* param);
-
-    /*!
-      \brief Gets the parameter value as double.
-
-      \param param The Symbology Enconding Parameter Value element.
-
-      \return The double value.
-
-      \note Warning: It consider that the paramater value is enconded using a Literal OGC Filter expression.
-    */
-    TEMAPEXPORT double GetDouble(const te::se::ParameterValue* param);
-
-    /*!
-      \brief Gets the parameter value as string.
-
-      \param param The Symbology Enconding Parameter Value element.
-
-      \return The string value.
-
-      \note Warning: It consider that the paramater value is enconded using a Literal OGC Filter expression.
-    */
-    TEMAPEXPORT std::string GetString(const te::se::ParameterValue* param);
 
     /*!
       \brief It calculates the extent of selected objects of the given layers in the given SRID.

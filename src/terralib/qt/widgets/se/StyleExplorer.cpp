@@ -29,8 +29,6 @@
 #include "../../../se/Rule.h"
 #include "StyleExplorer.h"
 #include "SymbologyPreview.h"
-#include "SymbolSelectorDialog.h"
-
 
 // STL
 #include <cassert>
@@ -191,12 +189,6 @@ void te::qt::widgets::StyleExplorer::setLegendIconSize(int size)
   setIconSize(QSize(size, size));
 
   updateStyleTree();
-}
-
-void te::qt::widgets::StyleExplorer::openLibraryManager()
-{
-  te::qt::widgets::SymbolSelectorDialog dlg(this);
-  dlg.exec();
 }
 
 void te::qt::widgets::StyleExplorer::onSymbolizerChanged(te::se::Symbolizer* symb)

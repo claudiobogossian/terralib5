@@ -31,10 +31,23 @@ list (APPEND TE_DEP_LIBS
 		terralib_symbology
 		terralib_xlink
     )
+	
+# Files to process.
+# -------------------------------------------------- 
+set (
+  _DIRS 
+  .
+  serialization
+)
 
-# Select the source and header files
-file(GLOB SRCS ${SRCDIR}/*.cpp)	
-file(GLOB HDRS ${SRCDIR}/*.h)
- 
+# Files in build tree
+appPrefix (${SRCDIR} "${_DIRS}" MAPTOOLS_INC_DIRS)
+
+# Files in build tree
+appPrefix ("common" "${_DIRS}" MAPTOOLS_INC_INST_DIRS)
+
+# Get files by structured by folders. 
+getFfiles(${SRCDIR} "${_DIRS}" SRCS "")
+
 #exporting module information
-exportModuleInformation("maptools" "${SRCDIR}" "maptools")
+exportModuleInformation("maptools" "${MAPTOOLS_INC_DIRS}" "${MAPTOOLS_INC_INST_DIRS}")

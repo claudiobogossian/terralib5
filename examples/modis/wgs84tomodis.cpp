@@ -1,3 +1,6 @@
+#include "modis_utils.h"
+#include <converter.h>
+
 void WGS84ToModiSinu(double lon, double lat, double &x, double &y)
 {
   double lon1 = lon;
@@ -16,7 +19,7 @@ void WGS84ToModiSinu(double lon, double lat, double &x, double &y)
 	double y2 = n*cos(lat1)*sin(lon1);
 	double z2 = (n*(1-equad))*sin(lat1);
   
-	equad = 2.*0-pow(0,2);
+	equad = 2.*0-pow(0.,2);
   
   double lat2 = lat1;
   double a;

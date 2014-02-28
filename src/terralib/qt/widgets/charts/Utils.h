@@ -43,8 +43,10 @@ namespace te
   namespace se    { class Font; class Fill; class Stroke; class Mark; class Graphic;}
   namespace da    { class DataSet; class DataSetType; class ObjectId; }
   namespace dt    { class DateTime; }
+
   namespace qt
   {
+
     namespace widgets
     {      
 
@@ -67,6 +69,22 @@ namespace te
         \return a new Scatter
     */
     TEQTWIDGETSEXPORT Scatter* createScatter(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propX, int propY);
+
+    /*!
+        \brief Scatter Creator
+
+        \param dataset The dataset that will be used to populate the scatter's data
+        \param dataType The dataType that will be used to recover the objectIds associated with the given dataset.
+        \param propX The id of the property that contains the data of the x axis.
+        \param propY The id of the property that contains the data of the y axis.
+
+        \note It will traverse the data set, using the moveNext() method
+        \note It will not take the ownership of the "dataset" pointer.
+        \note It will not take the ownership of the "dataType" pointer.
+        \note The caller will take the ownership of the returned scatter pointer.
+
+    */
+    TEQTWIDGETSEXPORT void createScatterDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propX, int propY);
 
     /*!
         \brief Histogram Creator
@@ -101,6 +119,22 @@ namespace te
         \return a new Histogram
     */
     TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId);
+
+    /*!
+        \brief Histogram Creator
+
+        \param dataset The dataset that will be used to populate the histogram's data
+        \param dataType The dataType that will be used to recover the objectIds associated with the given dataset.
+        \param propId The id of the property that contains the data
+        \param slices The desired number of intervals, the default is 10 and this parameter is not used when the preperty is a string
+
+        \note It will traverse the data set, using the moveNext() method
+        \note It will not take the ownership of the "dataset" pointer.
+        \note It will not take the ownership of the "dataType" pointer. 
+        \note The caller will take the ownership of the returned histogram pointer.
+
+    */
+    TEQTWIDGETSEXPORT void createHistogramDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int slices = 10);
 
     /*!
         \function Terralib2Qwt

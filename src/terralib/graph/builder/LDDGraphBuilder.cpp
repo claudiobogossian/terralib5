@@ -67,12 +67,9 @@ bool te::graph::LDDGraphBuilder::build(te::rst::Raster* raster, const std::map<s
   m_raster = raster;
 
   //create output graph
-  m_graph = te::graph::AbstractGraphFactory::make(graphType, dsInfo, gInfo);
+  m_graph.reset(te::graph::AbstractGraphFactory::make(graphType, dsInfo, gInfo));
 
   assert(m_graph);
-
-  m_graph->getMetadata()->m_maxVecCacheSize = 5;
-  m_graph->getMetadata()->m_maxCacheSize = 100000;
 
   //create graph attrs
   te::gm::GeometryProperty* gProp = new te::gm::GeometryProperty("coords");

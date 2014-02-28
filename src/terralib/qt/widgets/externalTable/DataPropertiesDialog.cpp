@@ -90,31 +90,35 @@ void te::qt::widgets::DataPropertiesDialog::onOkPushButtonClicked()
   boost::uuids::uuid u = gen();
   std::string id = boost::uuids::to_string(u);
 
-  std::string title = m_dataPropertiesWidget->getDataSetType()->getTitle().empty() ? m_dataPropertiesWidget->getDataSetType()->getName() : m_dataPropertiesWidget->getDataSetType()->getTitle();
-
-  m_DataSetAdapterLayer = new te::map::DataSetAdapterLayer(id, title);
-  m_DataSetAdapterLayer->setDataSetName(m_dataPropertiesWidget->getDataSetType()->getName());
-  m_DataSetAdapterLayer->setDataSourceId(m_dataPropertiesWidget->getDataSource()->getId());
-  m_DataSetAdapterLayer->setVisibility(te::map::NOT_VISIBLE);
-  m_DataSetAdapterLayer->setRendererType("ABSTRACT_LAYER_RENDERER");
-  m_DataSetAdapterLayer->setConverter(m_dataPropertiesWidget->getConverter());
-
-  if(m_DataSetAdapterLayer->getConverter()->getResult()->hasGeom())
+  if(m_dataPropertiesWidget->getDataSetType())
   {
-    te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(m_DataSetAdapterLayer->getConverter()->getResult());
-    std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(m_DataSetAdapterLayer->getDataSetName(), gp->getName(), m_DataSetAdapterLayer->getDataSourceId()));
+    std::string title = m_dataPropertiesWidget->getDataSetType()->getTitle().empty() ? m_dataPropertiesWidget->getDataSetType()->getName() :  m_dataPropertiesWidget->getDataSetType()->getTitle();
+    m_DataSetAdapterLayer = new te::map::DataSetAdapterLayer(id, title);
+    m_DataSetAdapterLayer->setDataSetName(m_dataPropertiesWidget->getDataSetType()->getName());
+    m_DataSetAdapterLayer->setDataSourceId(m_dataPropertiesWidget->getDataSource()->getId());
+    m_DataSetAdapterLayer->setVisibility(te::map::NOT_VISIBLE);
+    m_DataSetAdapterLayer->setRendererType("ABSTRACT_LAYER_RENDERER");
+    m_DataSetAdapterLayer->setConverter(m_dataPropertiesWidget->getConverter());
 
-    //Checking if it was possible to obtain an envelope
-    if(!mbr.get())
-      m_DataSetAdapterLayer->setExtent(computeDataSetEnvelope(m_DataSetAdapterLayer->getData(), gp->getName()));  //Build an envelope
-    else
-      m_DataSetAdapterLayer->setExtent(*(mbr.release())); // using the envelope obtained by common means
+    if(m_DataSetAdapterLayer->getConverter()->getResult()->hasGeom())
+    {
+      te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(m_DataSetAdapterLayer->getConverter()->getResult());
+      std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(m_DataSetAdapterLayer->getDataSetName(), gp->getName(), m_DataSetAdapterLayer->getDataSourceId()));
 
-    m_DataSetAdapterLayer->setSRID(gp->getSRID());
-    m_DataSetAdapterLayer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));
+      //Checking if it was possible to obtain an envelope
+      if(!mbr.get())
+        m_DataSetAdapterLayer->setExtent(computeDataSetEnvelope(m_DataSetAdapterLayer->getData(), gp->getName()));  //Build an envelope
+      else
+        m_DataSetAdapterLayer->setExtent(*(mbr.release())); // using the envelope obtained by common means
+
+      m_DataSetAdapterLayer->setSRID(gp->getSRID());
+      m_DataSetAdapterLayer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));
+    }
+
+    this->accept();
   }
-
-  this->accept();
+  else
+    this->reject();
 }
 
 te::map::DataSetAdapterLayerPtr te::qt::widgets::DataPropertiesDialog::getDataSetAdapterLayer()

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -52,14 +52,10 @@
 #include "../se/ChannelSelection.h"
 #include "../se/CoverageStyle.h"
 #include "../se/FeatureTypeStyle.h"
-#include "../se/Fill.h"
 #include "../se/ImageOutline.h"
-#include "../se/ParameterValue.h"
-#include "../se/SelectedChannel.h"
-#include "../se/Stroke.h"
-#include "../se/SvgParameter.h"
 #include "../se/RasterSymbolizer.h"
 #include "../se/Rule.h"
+#include "../se/Utils.h"
 #include "../srs/Config.h"
 #include "../srs/Converter.h"
 #include "Canvas.h"
@@ -79,74 +75,6 @@
 #include <cassert>
 #include <cstdlib>
 #include <memory>
-
-void te::map::GetColor(const te::se::Stroke* stroke, te::color::RGBAColor& color)
-{
-  if(stroke == 0)
-    return;
-
-  te::map::GetColor(stroke->getColor(), stroke->getOpacity(), color);
-}
-
-void te::map::GetColor(const te::se::Fill* fill, te::color::RGBAColor& color)
-{
-  if(fill == 0)
-    return;
-  te::map::GetColor(fill->getColor(), fill->getOpacity(), color);
-}
-
-void  te::map::GetColor(const te::se::ParameterValue* color, const te::se::ParameterValue* opacity, te::color::RGBAColor& rgba)
-{
-  if(color == 0 &&  opacity == 0)
-    return;
-
-  int alpha = TE_OPAQUE;
-  if(opacity)
-  {
-    alpha = (int)(te::map::GetDouble(opacity) * TE_OPAQUE);
-    rgba.setColor(rgba.getRed(), rgba.getGreen(), rgba.getBlue(), alpha);
-  }
-
-  if(color)
-  {
-    te::color::RGBAColor rgb = te::map::GetColor(color);
-    rgba.setColor(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), rgba.getAlpha());
-  }
-}
-
-te::color::RGBAColor te::map::GetColor(const te::se::ParameterValue* param)
-{
-  return te::color::RGBAColor(te::map::GetString(param));
-}
-
-int te::map::GetInt(const te::se::ParameterValue* param)
-{
-  return atoi(te::map::GetString(param).c_str());
-}
-
-double te::map::GetDouble(const te::se::ParameterValue* param)
-{
-  return atof(te::map::GetString(param).c_str());
-}
-
-std::string te::map::GetString(const te::se::ParameterValue* param)
-{
-  assert(param->getNParameters() > 0);
-  
-  const te::se::ParameterValue::Parameter* p = param->getParameter(0);
-  assert(p);
-
-  if(p->m_mixedData)
-  {
-    return *p->m_mixedData;
-  }
-  else //if(p->m_expression)
-  {
-    te::fe::Literal* l = dynamic_cast<te::fe::Literal*>(p->m_expression);
-    assert(l);
-    return l->getValue();
-  }
-}
 
 te::gm::Envelope te::map::GetSelectedExtent(const std::list<te::map::AbstractLayerPtr> layers, int srid, bool onlyVisibles)
 {

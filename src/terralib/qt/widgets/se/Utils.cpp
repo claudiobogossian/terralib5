@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-20014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -28,7 +28,8 @@
 #include "../../../maptools/Utils.h"
 #include "../../../se/Stroke.h"
 #include "../../../se/SvgParameter.h"
-#include "../../../serialization/se/Symbolizer.h"
+#include "../../../se/serialization/Symbolizer.h"
+#include "../../../se/Utils.h"
 #include "../../../xml/Reader.h"
 #include "../../../xml/ReaderFactory.h"
 #include "../Exception.h"
@@ -58,7 +59,7 @@ void te::qt::widgets::Config(QPen& pen, const te::se::Stroke* stroke)
 
   // Color
   te::color::RGBAColor rgba(TE_SE_DEFAULT_STROKE_BASIC_COLOR, TE_OPAQUE);
-  te::map::GetColor(stroke, rgba);
+  te::se::GetColor(stroke, rgba);
   QColor qrgba(rgba.getRgba());
   qrgba.setAlpha(rgba.getAlpha());
   pen.setColor(qrgba);
@@ -66,13 +67,13 @@ void te::qt::widgets::Config(QPen& pen, const te::se::Stroke* stroke)
   // Width
   const te::se::SvgParameter* width = stroke->getWidth();
   if(width)
-    pen.setWidth(te::map::GetInt(width));
+    pen.setWidth(te::se::GetInt(width));
 
   // Cap Style
   const te::se::SvgParameter* linecap = stroke->getLineCap();
   if(linecap)
   {
-    std::string capValue = te::map::GetString(linecap);
+    std::string capValue = te::se::GetString(linecap);
 
     Qt::PenCapStyle capStyle = Qt::FlatCap;
     capValue == TE_SE_ROUND_CAP ? capStyle = Qt::RoundCap : capStyle = Qt::SquareCap;
@@ -84,7 +85,7 @@ void te::qt::widgets::Config(QPen& pen, const te::se::Stroke* stroke)
   const te::se::SvgParameter* linejoin = stroke->getLineJoin();
   if(linejoin)
   {
-    std::string joinValue = te::map::GetString(linejoin);
+    std::string joinValue = te::se::GetString(linejoin);
 
     Qt::PenJoinStyle joinStyle = Qt::MiterJoin;
     joinValue == TE_SE_ROUND_JOIN ? joinStyle = Qt::RoundJoin : joinStyle = Qt::BevelJoin;
@@ -96,7 +97,7 @@ void te::qt::widgets::Config(QPen& pen, const te::se::Stroke* stroke)
   const te::se::SvgParameter* dasharray = stroke->getDashArray();
   if(dasharray)
   {
-    std::string value = te::map::GetString(dasharray);
+    std::string value = te::se::GetString(dasharray);
     
     std::vector<double> pattern;
     te::map::GetDashStyle(value, pattern);
@@ -116,7 +117,7 @@ void te::qt::widgets::Config(QBrush& brush, const te::se::Fill* fill)
   }
 
   te::color::RGBAColor rgba(TE_SE_DEFAULT_FILL_BASIC_COLOR, TE_OPAQUE);
-  te::map::GetColor(fill, rgba);
+  te::se::GetColor(fill, rgba);
   QColor qrgba(rgba.getRgba());
   qrgba.setAlpha(rgba.getAlpha());
   brush.setColor(qrgba);
@@ -228,7 +229,7 @@ te::qt::widgets::Symbol* te::qt::widgets::ReadSymbol(te::xml::Reader& reader)
 
   while((reader.getNodeType() == te::xml::START_ELEMENT) &&
         (reader.getElementLocalName().find("Symbolizer") != std::string::npos))
-    symbol->addSymbolizer(te::serialize::Symbolizer::getInstance().read(reader));
+    symbol->addSymbolizer(te::se::serialize::Symbolizer::getInstance().read(reader));
 
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
   reader.next();

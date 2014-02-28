@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,11 +26,11 @@
 // TerraLib
 #include "../../../common/STLUtils.h"
 #include "../../../maptools/MarkRendererManager.h"
-#include "../../../maptools/Utils.h"
 #include "../../../se/AnchorPoint.h"
 #include "../../../se/Displacement.h"
 #include "../../../se/Graphic.h"
 #include "../../../se/Mark.h"
+#include "../../../se/Utils.h"
 #include "../Utils.h"
 #include "WellKnownGraphicWidget.h"
 #include "WellKnownMarkWidget.h"
@@ -149,17 +149,17 @@ void te::qt::widgets::WellKnownGraphicWidget::updateUi()
   // Size
   const te::se::ParameterValue* size = m_graphic->getSize();
   if(size)
-    m_ui->m_graphicSizeDoubleSpinBox->setValue(te::map::GetDouble(size));
+    m_ui->m_graphicSizeDoubleSpinBox->setValue(te::se::GetDouble(size));
 
   // Rotation
   const te::se::ParameterValue* rotation = m_graphic->getRotation();
   if(rotation)
-    m_ui->m_graphicAngleDoubleSpinBox->setValue(te::map::GetDouble(rotation));
+    m_ui->m_graphicAngleDoubleSpinBox->setValue(te::se::GetDouble(rotation));
 
   // Opacity
   const te::se::ParameterValue* opacity = m_graphic->getOpacity();
   if(opacity)
-    m_ui->m_graphicOpacitySlider->setValue(te::map::GetDouble(opacity) * 100);
+    m_ui->m_graphicOpacitySlider->setValue(te::se::GetDouble(opacity) * 100);
 
   // Displacement
   const te::se::Displacement* disp = m_graphic->getDisplacement();
@@ -167,11 +167,11 @@ void te::qt::widgets::WellKnownGraphicWidget::updateUi()
   {
     const te::se::ParameterValue* dispx = disp->getDisplacementX();
     if(dispx)
-      m_ui->m_displacementXDoubleSpinBox->setValue(te::map::GetDouble(dispx));
+      m_ui->m_displacementXDoubleSpinBox->setValue(te::se::GetDouble(dispx));
     
     const te::se::ParameterValue* dispy = disp->getDisplacementY();
     if(dispy)
-      m_ui->m_displacementYDoubleSpinBox->setValue(te::map::GetDouble(dispy));
+      m_ui->m_displacementYDoubleSpinBox->setValue(te::se::GetDouble(dispy));
   }
 
   // Anchor Point
@@ -180,10 +180,10 @@ void te::qt::widgets::WellKnownGraphicWidget::updateUi()
   {
     const te::se::ParameterValue* acx = ac->getAnchorPointX();
     if(acx)
-      m_ui->m_anchorPointXDoubleSpinBox->setValue(te::map::GetDouble(acx));
+      m_ui->m_anchorPointXDoubleSpinBox->setValue(te::se::GetDouble(acx));
 
     const te::se::ParameterValue* acy = ac->getAnchorPointY();
     if(acy)
-      m_ui->m_anchorPointYDoubleSpinBox->setValue(te::map::GetDouble(acy));
+      m_ui->m_anchorPointYDoubleSpinBox->setValue(te::se::GetDouble(acy));
   }
 }

@@ -43,6 +43,7 @@ namespace te
       namespace rp
       {
         class ClassifierAction;
+        class ClippingAction;
         class ColorTransformAction;
         class ContrastAction;
         class FilterAction;
@@ -85,6 +86,7 @@ namespace te
             QAction* m_popupAction;                                 //!< RP pop up action registered.
 
             te::qt::plugins::rp::ClassifierAction* m_classifier;    //!< Classifier Process Action
+            te::qt::plugins::rp::ClippingAction* m_clipping;        //!< Clipping Process Action
             te::qt::plugins::rp::ColorTransformAction* m_colorTrans;//!< Color Transform Process Action
             te::qt::plugins::rp::ContrastAction* m_contrast;        //!< Contrast Process Action
             te::qt::plugins::rp::FilterAction* m_filter;            //!< Filter Process Action

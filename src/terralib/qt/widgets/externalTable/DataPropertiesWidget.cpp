@@ -60,30 +60,19 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-//Utility functions used mianly to pupulate ui elements.
+//Utility functions used mainly to pupulate ui elements.
 void buidTypeMap(std::map<int, std::string>& typeMap)
 {
   typeMap.clear();
 
   typeMap.insert(std::map<int, std::string>::value_type(te::dt::ARRAY_TYPE, QObject::tr("Array").toStdString()));
-  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::BIT_TYPE, QObject::tr("Bit").toStdString()));
-  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::BOOLEAN_TYPE, QObject::tr("Boolean").toStdString()));
   typeMap.insert(std::map<int, std::string>::value_type(te::dt::BYTE_ARRAY_TYPE, QObject::tr("Byte Array").toStdString()));
-  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::CHAR_TYPE, QObject::tr("Char").toStdString()));
-  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::COMPOSITE_TYPE, QObject::tr("Composite").toStdString()));
   typeMap.insert(std::map<int, std::string>::value_type(te::dt::DATETIME_TYPE, QObject::tr("Date and Time").toStdString()));
   typeMap.insert(std::map<int, std::string>::value_type(te::dt::DOUBLE_TYPE, QObject::tr("Double").toStdString()));
-  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::FLOAT_TYPE, QObject::tr("Float").toStdString()));
   typeMap.insert(std::map<int, std::string>::value_type(te::dt::GEOMETRY_TYPE, QObject::tr("Geometry").toStdString()));
-  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT16_TYPE, QObject::tr("Int 16").toStdString()));
   typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT32_TYPE, QObject::tr("Int 32").toStdString()));
-  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT64_TYPE, QObject::tr("Int 64").toStdString()));
   typeMap.insert(std::map<int, std::string>::value_type(te::dt::NUMERIC_TYPE, QObject::tr("Numeric").toStdString()));
   typeMap.insert(std::map<int, std::string>::value_type(te::dt::STRING_TYPE, QObject::tr("String").toStdString()));
-  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::UCHAR_TYPE, QObject::tr("U Char").toStdString()));
-  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT16_TYPE, QObject::tr("U Int 16").toStdString()));
-  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT32_TYPE, QObject::tr("U Int 32").toStdString()));
-  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT64_TYPE, QObject::tr("U Int 64").toStdString()));
 }
 
 te::dt::SimpleProperty* getConvertedproperty(std::string name, int dataType, std::string defaultValue = "", bool isRequired = false, bool isAutoNumber = true)
@@ -191,21 +180,6 @@ te::qt::widgets::DatapPropertiesWidget::~DatapPropertiesWidget()
 
 std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidget::getConverter()
 {
-  //Configuring a new geometry if the user requested it.
-  if(m_ui->m_geometryGroupBox->isCheckable() && m_ui->m_geometryGroupBox->isChecked())
-  {
-    te::gm::GeometryProperty* newGeom;
-
-    std::vector<std::string> names;
-    names.push_back(m_ui->m_xAxisComboBox->currentText().toStdString());
-    names.push_back(m_ui->m_yAxisComboBox->currentText().toStdString());
-    newGeom = new te::gm::GeometryProperty("Point", true, new std::string());
-    newGeom->setGeometryType(te::gm::PointType);
-
-    m_dsConverter->add(names, newGeom, "XYToPointConverter");
-
-  }
-
   //Searching for properties that the user selected to adapt
   te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_dsConverter->getResult());
   te::da::PrimaryKey* pkIn = m_dataType->getPrimaryKey();
@@ -233,14 +207,27 @@ std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidg
           }
         }
       }
-
     }
   }
 
-   te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(m_dsConverter->getResult());
+  //Configuring a new geometry if the user requested it.
+  if(m_ui->m_geometryGroupBox->isCheckable() && m_ui->m_geometryGroupBox->isChecked())
+  {
+    te::gm::GeometryProperty* newGeom;
 
-   if(gp && !m_ui->m_sridLineEdit->text().isEmpty())
-     gp->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
+    std::vector<std::string> names;
+    names.push_back(m_ui->m_xAxisComboBox->currentText().toStdString());
+    names.push_back(m_ui->m_yAxisComboBox->currentText().toStdString());
+    newGeom = new te::gm::GeometryProperty("OGR_POINT", true, new std::string());
+    newGeom->setGeometryType(te::gm::PointType);
+
+    m_dsConverter->add(names, newGeom, "XYToPointConverter");
+  }
+
+  te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(m_dsConverter->getResult());
+
+  if(gp && !m_ui->m_sridLineEdit->text().isEmpty())
+    gp->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
 
   te::da::DataSourceManager::getInstance().insert(m_dataSource);
   return m_dsConverter;
@@ -263,148 +250,163 @@ te::da::DataSource* te::qt::widgets::DatapPropertiesWidget::getDataSource()
 
 void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
 {
-  QString fileName = QFileDialog::getOpenFileName(this, tr("Open Textual File"), te::qt::widgets::GetFilePathFromSettings("tabular"), tr("Comma Separated Value (*.csv *.CSV);; dBASE (*.dbf *.dbf)"), 
-    0, QFileDialog::ReadOnly);
-
-  if(fileName.isEmpty())
-    return;
-
-  QFileInfo info(fileName);
-
-  te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "tabular");
-
-  m_ui->m_inputDataLineEdit->setText(fileName);
-
-  //Getting the connection info
-  std::string ogrInfo("connection_string=" + fileName.toStdString());
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = fileName.toStdString();
-
-  boost::filesystem::path uri(m_ui->m_inputDataLineEdit->text().toStdString());
-  std::string file = uri.stem().string();
-
-  //Creating a DataSource
-  static boost::uuids::basic_random_generator<boost::mt19937> gen;
-  boost::uuids::uuid u = gen();
-
-  te::da::DataSourceInfoPtr dsInfo(new te::da::DataSourceInfo);
-  dsInfo->setConnInfo(connInfo);
-  dsInfo->setId(boost::uuids::to_string(u));
-  dsInfo->setTitle(fileName.toStdString());
-  dsInfo->setDescription("");
-  dsInfo->setAccessDriver("OGR");
-  dsInfo->setType("OGR");
-
-  te::da::DataSourceInfoManager::getInstance().add(dsInfo);
-
-  m_dataSource = te::da::DataSourceFactory::make(dsInfo->getAccessDriver());
-  m_dataSource->setConnectionInfo(dsInfo->getConnInfo());
-
-  m_dataSource->setId(boost::uuids::to_string(u));
-  m_dataSource->open();
-
-  //Creating the DataSet and DataType
-  m_dataSet = m_dataSource->getDataSet(file);
-  std::vector<std::string> datasetNames = m_dataSource->getDataSetNames();
-  m_dataType = m_dataSource->getDataSetType(datasetNames[0]);
-
-  //Creating the DataSetConverter 
-  m_dsConverter.reset(new te::da::DataSetTypeConverter(m_dataType.get()));
-
-  //Filling the data preview table
-  std::vector<std::size_t> properties;
-  for(std::size_t i = 0; i < m_dataSet->getNumProperties(); ++i)
-    properties.push_back(i);
-
-  //The table will display 5 rows of the data for previewing purposes
-  std::auto_ptr<te::mem::DataSet> memFeature((new te::mem::DataSet(*m_dataSet.get(), properties, 5)));
-
-  m_tblView->setDataSet(memFeature.release());
-  m_tblView->resizeColumnsToContents();
-  m_tblView->show();
-
-  m_ui->m_dataPropertiesTableWidget->setRowCount(0);
-
-  //Filling the properties table widget
-  for(size_t t = 0; t < m_dataType->size(); ++t)
+  try
   {
-    int newrow = m_ui->m_dataPropertiesTableWidget->rowCount();
-    m_ui->m_dataPropertiesTableWidget->insertRow(newrow);
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Textual File"), te::qt::widgets::GetFilePathFromSettings("tabular"), tr("Comma Separated Value (*.csv *.CSV);; dBASE (*.dbf *.DBF)"), 
+      0, QFileDialog::ReadOnly);
 
-    //The Property name item
-    std::string propName = m_dataType->getProperty(t)->getName();
+    if(fileName.isEmpty())
+      return;
 
-    //A checkbox used to know if the user wants to import that row's property
-    QCheckBox* impCheck = new QCheckBox();
-    impCheck->setText(QString::fromStdString(propName));
-    impCheck->setCheckState(Qt::Checked);
+    QFileInfo info(fileName);
 
-    m_ui->m_dataPropertiesTableWidget->setCellWidget(newrow, 0, impCheck);
+    te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "tabular");
 
-    //The property type item
-    QComboBox* typeCB = new QComboBox();
-    fillComboBox(m_typeMap, typeCB);
-    typeCB->setCurrentIndex(typeCB->findText(m_typeMap[m_dataType->getProperty(t)->getType()].c_str()));
+    //Getting the connection info
+    std::string ogrInfo("connection_string=" + fileName.toStdString());
+    std::map<std::string, std::string> connInfo;
+    connInfo["URI"] = fileName.toStdString();
 
-    m_mapper->setMapping(typeCB, newrow);
-    connect(typeCB, SIGNAL(currentIndexChanged (int)), m_mapper, SLOT(map()));
+    boost::filesystem::path uri(fileName.toStdString());
+    std::string file = uri.stem().string();
 
-    m_ui->m_dataPropertiesTableWidget->setCellWidget(newrow, 1, typeCB);
+    //Creating a DataSource
+    static boost::uuids::basic_random_generator<boost::mt19937> gen;
+    boost::uuids::uuid u = gen();
 
-    //check geom
-    if(m_dataType->hasGeom())
+    te::da::DataSourceInfoPtr dsInfo(new te::da::DataSourceInfo);
+    dsInfo->setConnInfo(connInfo);
+    dsInfo->setId(boost::uuids::to_string(u));
+    dsInfo->setTitle(fileName.toStdString());
+    dsInfo->setDescription("");
+    dsInfo->setAccessDriver("OGR");
+    dsInfo->setType("OGR");
+
+    te::da::DataSourceInfoManager::getInstance().add(dsInfo);
+
+    m_dataSource = te::da::DataSourceFactory::make(dsInfo->getAccessDriver());
+    m_dataSource->setConnectionInfo(dsInfo->getConnInfo());
+
+    m_dataSource->setId(boost::uuids::to_string(u));
+    m_dataSource->open();
+
+    //Creating the DataSet and DataType
+    m_dataSet = m_dataSource->getDataSet(file);
+    std::vector<std::string> datasetNames = m_dataSource->getDataSetNames();
+
+    if(!datasetNames.empty())
+      m_dataType = m_dataSource->getDataSetType(datasetNames[0]);
+    else
     {
-      te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(m_dataType.get());
-
-      if(gp && gp->getName() == propName)
-      {
-        QString srid;
-        srid.setNum(gp->getSRID());
-        m_ui->m_sridLineEdit->setText(srid);
-
-        impCheck->setEnabled(false);
-        typeCB->setEnabled(false);
-        break;
-      }
+      QMessageBox::critical( this, tr("Error"),tr("The file could not be read!"));
+      return;
     }
 
-    //check pk
-    te::da::PrimaryKey* pk = m_dataType->getPrimaryKey();
+    m_ui->m_inputDataLineEdit->setText(fileName);
 
-    if(pk)
+    //Creating the DataSetConverter 
+    m_dsConverter.reset(new te::da::DataSetTypeConverter(m_dataType.get()));
+
+    //Filling the data preview table
+    std::vector<std::size_t> properties;
+    for(std::size_t i = 0; i < m_dataSet->getNumProperties(); ++i)
+      properties.push_back(i);
+
+    //The table will display 5 rows of the data for previewing purposes
+    std::auto_ptr<te::mem::DataSet> memFeature((new te::mem::DataSet(*m_dataSet.get(), properties, 5)));
+
+    m_tblView->setDataSet(memFeature.release());
+    m_tblView->resizeColumnsToContents();
+    m_tblView->show();
+
+    m_ui->m_dataPropertiesTableWidget->setRowCount(0);
+
+    //Filling the properties table widget
+    for(size_t t = 0; t < m_dataType->size(); ++t)
     {
-      std::vector<te::dt::Property*> props = pk->getProperties();
+      int newrow = m_ui->m_dataPropertiesTableWidget->rowCount();
+      m_ui->m_dataPropertiesTableWidget->insertRow(newrow);
 
-      for(std::size_t t= 0; t < props.size(); ++t)
+      //The Property name item
+      std::string propName = m_dataType->getProperty(t)->getName();
+
+      //A checkbox used to know if the user wants to import that row's property
+      QCheckBox* impCheck = new QCheckBox();
+      impCheck->setText(QString::fromStdString(propName));
+      impCheck->setCheckState(Qt::Checked);
+
+      if(m_dataType->getProperty(t)->getType() == te::dt::GEOMETRY_TYPE)
+        connect(impCheck, SIGNAL(stateChanged (int )), this, SLOT(onGeomPropertyChecked(int)));
+
+      m_ui->m_dataPropertiesTableWidget->setCellWidget(newrow, 0, impCheck);
+
+      //The property type item
+      QComboBox* typeCB = new QComboBox();
+      fillComboBox(m_typeMap, typeCB);
+      typeCB->setCurrentIndex(typeCB->findText(m_typeMap[m_dataType->getProperty(t)->getType()].c_str()));
+
+      m_mapper->setMapping(typeCB, newrow);
+      connect(typeCB, SIGNAL(currentIndexChanged (int)), m_mapper, SLOT(map()));
+
+      m_ui->m_dataPropertiesTableWidget->setCellWidget(newrow, 1, typeCB);
+
+      //check geom
+      if(m_dataType->hasGeom())
       {
-        if(props[t]->getName() == propName)
+        te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(m_dataType.get());
+
+        if(gp && gp->getName() == propName)
         {
+          QString srid;
+          srid.setNum(gp->getSRID());
+          m_ui->m_sridLineEdit->setText(srid);
+
           typeCB->setEnabled(false);
-          impCheck->setEnabled(false);
           break;
         }
       }
+
+      //check pk
+      te::da::PrimaryKey* pk = m_dataType->getPrimaryKey();
+
+      if(pk)
+      {
+        std::vector<te::dt::Property*> props = pk->getProperties();
+
+        for(std::size_t t= 0; t < props.size(); ++t)
+        {
+          if(props[t]->getName() == propName)
+          {
+            typeCB->setEnabled(false);
+            impCheck->setEnabled(false);
+            break;
+          }
+        }
+      }
     }
-  }
 
-  m_ui->m_dataPropertiesTableWidget->resizeColumnsToContents();
-  m_ui->m_dataPropertiesTableWidget->resizeRowsToContents();
-  m_ui->m_dataPropertiesTableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    m_ui->m_dataPropertiesTableWidget->resizeColumnsToContents();
+    m_ui->m_dataPropertiesTableWidget->resizeRowsToContents();
+    m_ui->m_dataPropertiesTableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 
-  //Clearing the Comboxes if they aren't empty
-  m_ui->m_xAxisComboBox->clear();
-  m_ui->m_yAxisComboBox->clear();
+    //Clearing the Comboxes if they aren't empty
+    m_ui->m_xAxisComboBox->clear();
+    m_ui->m_yAxisComboBox->clear();
 
-
-  if(!m_dataType->hasGeom())
-  {
-
-    //m_ui->m_geometryGroupBox->setEnabled(true);
-    m_ui->m_geometryGroupBox->setCheckable(true);
-    m_ui->m_xAxisComboBox->setEnabled(true);
-    m_ui->m_yAxisComboBox->setEnabled(true);
-    m_ui->m_geometryGroupBox->setChecked(false);
-
+    if(m_dataType->hasGeom())
+    {
+      m_ui->m_geometryGroupBox->setCheckable(false);
+      m_ui->m_xAxisComboBox->setEnabled(false);
+      m_ui->m_yAxisComboBox->setEnabled(false);
+      m_ui->m_geometryGroupBox->setChecked(true);
+    }
+    else
+    {
+      m_ui->m_geometryGroupBox->setCheckable(true);
+      m_ui->m_xAxisComboBox->setEnabled(true);
+      m_ui->m_yAxisComboBox->setEnabled(true);
+      m_ui->m_geometryGroupBox->setChecked(false);
+    }
 
     //Filling the ComboBoxes that will be used to configure the resulting geometries
     for(size_t t = 0; t < m_dataType->size(); ++t)
@@ -412,19 +414,16 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
       std::string propName = m_dataType->getProperty(t)->getName();
       int type = m_dataType->getProperty(t)->getType();
       if((type >= te::dt::INT16_TYPE && type <= te::dt::UINT64_TYPE) || 
-               type == te::dt::FLOAT_TYPE || type == te::dt::DOUBLE_TYPE)
+                type == te::dt::FLOAT_TYPE || type == te::dt::DOUBLE_TYPE)
       {
         m_ui->m_xAxisComboBox->addItem(QString::fromStdString(propName));
         m_ui->m_yAxisComboBox->addItem(QString::fromStdString(propName));
       }
     }
   }
-  else
+  catch(const std::exception& e)
   {
-    //m_ui->m_geometryGroupBox->setEnabled(false);
-    m_ui->m_geometryGroupBox->setCheckable(false);
-    m_ui->m_xAxisComboBox->setEnabled(false);
-    m_ui->m_yAxisComboBox->setEnabled(false);
+    QMessageBox::warning(this, tr("Tabular File"), e.what());
   }
 }
 
@@ -437,6 +436,24 @@ void te::qt::widgets::DatapPropertiesWidget::onSridPushButtonCLicked()
   {
     std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
     m_ui->m_sridLineEdit->setText(QString::number(srid.first));
+  }
+}
+
+void te::qt::widgets::DatapPropertiesWidget::onGeomPropertyChecked(int checked)
+{
+  if(checked == Qt::Unchecked)
+  {
+    m_ui->m_geometryGroupBox->setCheckable(true);
+    m_ui->m_xAxisComboBox->setEnabled(true);
+    m_ui->m_yAxisComboBox->setEnabled(true);
+    m_ui->m_geometryGroupBox->setChecked(true);
+  }
+  else
+  {
+    m_ui->m_geometryGroupBox->setCheckable(false);
+    m_ui->m_xAxisComboBox->setEnabled(false);
+    m_ui->m_yAxisComboBox->setEnabled(false);
+    m_ui->m_geometryGroupBox->setChecked(false);
   }
 }
 
