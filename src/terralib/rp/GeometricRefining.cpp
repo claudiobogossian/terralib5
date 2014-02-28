@@ -33,10 +33,13 @@
 #include "../raster/Grid.h"
 #include "../common/progress/TaskProgress.h"
 #include "Register.h"
+#include "Functions.h"
 
 #include <limits>
 #include <memory>
 #include <cmath>
+
+#include <boost/lexical_cast.hpp>
 
 namespace te
 {
@@ -72,7 +75,7 @@ namespace te
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;
       m_locatorParams.reset();
       m_minInRasterCoveredAreaPercent = 25.0;
-      m_minrReferenceRasterCoveredAreaPercent = 25.0;
+      m_minrReferenceRasterCoveredAreaPercent = 10.0;
       m_inRasterSubSectorsFactor = 3;
       m_inRasterExpectedRowError = 10;
       m_inRasterExpectedColError = 10;
@@ -258,8 +261,11 @@ namespace te
           
         // Retriving each reference raster bounding boxes
         
-        std::vector< te::gm::Envelope > refRastersBBoxes;
+        std::vector< te::gm::Envelope > selectedRefRastersBBoxes;
+        std::vector< unsigned int > selectedRefRastersIndexes;
         te::rst::Raster const* refRasterPtr = 0;
+        
+        m_inputParameters.m_referenceRastersPtr->reset();
         
         while( ( refRasterPtr = m_inputParameters.m_referenceRastersPtr->getCurrentObj() ) )
         {
@@ -274,13 +280,19 @@ namespace te
           }
           
           if( 
-              ( refRasterEnvelope.getLowerLeftX() > searchAreaMinX )
-              && ( refRasterEnvelope.getUpperRightX() < searchAreaMaxX )
+                 ( refRasterEnvelope.getLowerLeftX() > searchAreaMinX )
+              && ( refRasterEnvelope.getLowerLeftX() < searchAreaMaxX )   
+              && ( refRasterEnvelope.getUpperRightX() > searchAreaMinX )
+              && ( refRasterEnvelope.getUpperRightX() < searchAreaMaxX )   
               && ( refRasterEnvelope.getLowerLeftY() > searchAreaMinY )
-              && ( refRasterEnvelope.getUpperRightY() < searchAreaMaxY ) 
+              && ( refRasterEnvelope.getLowerLeftY() < searchAreaMaxY )
+              && ( refRasterEnvelope.getUpperRightY() > searchAreaMinY )
+              && ( refRasterEnvelope.getUpperRightY() < searchAreaMaxY )              
             )
           {
-            refRastersBBoxes.push_back( refRasterEnvelope );
+            selectedRefRastersBBoxes.push_back( refRasterEnvelope );
+            selectedRefRastersIndexes.push_back( 
+              m_inputParameters.m_referenceRastersPtr->getCurrentOffset() );
             ++validReferenceRastersNumber;
           }
           
@@ -309,10 +321,10 @@ namespace te
         unsigned int sectoYOff = 0;
         unsigned int refRastersIndexesBySectorIdx = 0;
         
-        for( unsigned int rasterIdx = 0 ; rasterIdx < refRastersBBoxes.size() ;
-          ++rasterIdx )
+        for( unsigned int selectedRefRastersBBoxesIdx = 0 ; selectedRefRastersBBoxesIdx < 
+          selectedRefRastersBBoxes.size() ; ++selectedRefRastersBBoxesIdx )
         {
-          center = refRastersBBoxes[ rasterIdx ].getCenter();
+          center = selectedRefRastersBBoxes[ selectedRefRastersBBoxesIdx ].getCenter();
           sectoXOff = (unsigned int)std::floor( ( center.x - searchAreaMinX ) / sectoXSize );
           sectoYOff = (unsigned int)std::floor( ( center.y - searchAreaMinY ) / sectoYSize );
           
@@ -320,7 +332,8 @@ namespace te
             sectoXOff;
           assert( refRastersIndexesBySectorIdx < refRastersIndexesBySector.size() );
           
-          refRastersIndexesBySector[ refRastersIndexesBySectorIdx ].push_back( rasterIdx );
+          refRastersIndexesBySector[ refRastersIndexesBySectorIdx ].push_back(
+            selectedRefRastersIndexes[ selectedRefRastersBBoxesIdx ] );
         }
         
         // sorting the rasters inside each sector by the given weights
@@ -418,6 +431,9 @@ namespace te
                 
               // Reprojection issues
                 
+/*              te::rp::Copy2DiskRaster( *refRasterPtr, "refRaster_" +
+                boost::lexical_cast< std::string >( refRasterIdx ) + ".tif" );  */              
+                
               std::auto_ptr< te::rst::Raster > reprojectedRefRasterPtr;
               
               if( inputRasterPtr->getSRID() != refRasterPtr->getSRID() )
@@ -428,46 +444,53 @@ namespace te
                 reprojectedRefRasterPtr.reset( refRasterPtr->transform( 
                   inputRasterPtr->getSRID(), rInfo, te::rst::Interpolator::NearestNeighbor ) );
                 
+                TERP_TRUE_OR_RETURN_FALSE( reprojectedRefRasterPtr.get(),
+                  "Raster reprojection error" );
+                
                 refRasterPtr = reprojectedRefRasterPtr.get();
               }              
               
+//               te::rp::Copy2DiskRaster( *refRasterPtr, "refRaster_" +
+//                 boost::lexical_cast< std::string >( refRasterIdx ) + "_reprojected.tif" );
+              
               // The reference image position over the input image
               
-              const double& llx = refRasterPtr->getGrid()->getExtent()->getLowerLeftX();
-              const double& lly = refRasterPtr->getGrid()->getExtent()->getLowerLeftY();
-              const double& urx = refRasterPtr->getGrid()->getExtent()->getUpperRightX();
-              const double& ury = refRasterPtr->getGrid()->getExtent()->getUpperRightY();
+              const double& searchAreaULX = refRasterPtr->getGrid()->getExtent()->getLowerLeftX();
+              const double& searchAreaULY = refRasterPtr->getGrid()->getExtent()->getUpperRightY();
               
               // The search area over the input image
               
-              double llRow = 0;
-              double llCol = 0;
-              inputRasterPtr->getGrid()->geoToGrid( llx, lly, llCol, llRow );
-              llRow += ((double)m_inputParameters.m_inRasterExpectedRowDisplacement);
-              llCol += ((double)m_inputParameters.m_inRasterExpectedColDisplacement);
-              llRow += ((double)m_inputParameters.m_inRasterExpectedRowError);
-              llCol -= ((double)m_inputParameters.m_inRasterExpectedColError);
-              llCol = std::max( 0.0, llCol );
-              llCol = std::min( llCol, (double)( inputRasterPtr->getNumberOfColumns() - 1 ) );
-              llRow = std::max( 0.0, llRow );
-              llRow = std::min( llRow, (double)( inputRasterPtr->getNumberOfRows() - 1 ) );
+              double searchAreaULRow = 0;
+              double searchAreaULCol = 0;
+              inputRasterPtr->getGrid()->geoToGrid( searchAreaULX, searchAreaULY, searchAreaULCol, searchAreaULRow );
               
-              double urRow = 0;
-              double urCol = 0;
-              inputRasterPtr->getGrid()->geoToGrid( urx, ury, urCol, urRow );
-              urRow += ((double)m_inputParameters.m_inRasterExpectedRowDisplacement);
-              urCol += ((double)m_inputParameters.m_inRasterExpectedColDisplacement);              
-              urCol += ((double)m_inputParameters.m_inRasterExpectedColError);
-              urRow -= ((double)m_inputParameters.m_inRasterExpectedRowError);
-              urCol = std::max( 0.0, urCol );
-              urCol = std::min( urCol, (double)( inputRasterPtr->getNumberOfColumns() - 1 ) );
-              urRow = std::max( 0.0, urRow );
-              urRow = std::min( urRow, (double)( inputRasterPtr->getNumberOfRows() - 1 ) );              
+              double searchAreaLRRow = searchAreaULRow - 1.0 + ((double)refRasterPtr->getNumberOfRows());
+              double searchAreaLRCol = searchAreaULCol - 1.0 + ((double)refRasterPtr->getNumberOfColumns());
               
-              const unsigned int searchAreaWidth = (unsigned int)( urCol - llCol + 1.0 );
-              const unsigned int searchAreaHeight = (unsigned int)( llRow - urRow + 1.0 );
+              searchAreaULRow += ((double)m_inputParameters.m_inRasterExpectedRowDisplacement);
+              searchAreaULRow -= ((double)m_inputParameters.m_inRasterExpectedRowError);
+              searchAreaULRow = std::max( 0.0, searchAreaULRow );
+              searchAreaULRow = std::min( searchAreaULRow, (double)( inputRasterPtr->getNumberOfRows() - 1 ) );              
               
-              if( ( searchAreaWidth > 0 ) && ( searchAreaHeight > 0 ) )
+              searchAreaLRRow += ((double)m_inputParameters.m_inRasterExpectedRowDisplacement);
+              searchAreaLRRow += ((double)m_inputParameters.m_inRasterExpectedRowError);
+              searchAreaLRRow = std::max( 0.0, searchAreaLRRow );
+              searchAreaLRRow = std::min( searchAreaLRRow, (double)( inputRasterPtr->getNumberOfRows() - 1 ) );              
+              
+              searchAreaULCol += ((double)m_inputParameters.m_inRasterExpectedColDisplacement);
+              searchAreaULCol -= ((double)m_inputParameters.m_inRasterExpectedColError);
+              searchAreaULCol = std::max( 0.0, searchAreaULCol );
+              searchAreaULCol = std::min( searchAreaULCol, (double)( inputRasterPtr->getNumberOfColumns() - 1 ) );  
+              
+              searchAreaLRCol += ((double)m_inputParameters.m_inRasterExpectedColDisplacement);
+              searchAreaLRCol += ((double)m_inputParameters.m_inRasterExpectedColError);
+              searchAreaLRCol = std::max( 0.0, searchAreaLRCol );
+              searchAreaLRCol = std::min( searchAreaLRCol, (double)( inputRasterPtr->getNumberOfColumns() - 1 ) ); 
+              
+              const unsigned int searchAreaWidth = (unsigned int)( searchAreaLRCol - searchAreaULCol + 1.0 );
+              const unsigned int searchAreaHeight = (unsigned int)( searchAreaLRRow - searchAreaULRow + 1.0 );
+              
+              if( ( searchAreaWidth > 1 ) && ( searchAreaHeight > 1 ) )
               {
                 // Matching the reference image
                 
@@ -476,8 +499,8 @@ namespace te
                 locatorInputParams.m_inRaster1Ptr = inputRasterPtr;
                 locatorInputParams.m_inMaskRaster1Ptr = 0;
                 locatorInputParams.m_inRaster1Bands = m_inputParameters.m_inRasterTPLocationBands;
-                locatorInputParams.m_raster1TargetAreaLineStart = (unsigned int)urRow;
-                locatorInputParams.m_raster1TargetAreaColStart = (unsigned int)llCol;
+                locatorInputParams.m_raster1TargetAreaLineStart = (unsigned int)searchAreaULRow;
+                locatorInputParams.m_raster1TargetAreaColStart = (unsigned int)searchAreaULCol;
                 locatorInputParams.m_raster1TargetAreaWidth = searchAreaWidth;
                 locatorInputParams.m_raster1TargetAreaHeight = searchAreaHeight;
                 locatorInputParams.m_inRaster2Ptr = refRasterPtr;

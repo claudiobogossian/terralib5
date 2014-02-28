@@ -81,7 +81,7 @@ namespace te
             
             double m_minInRasterCoveredAreaPercent; //!< The mininumum required area percent (from the input raster ) covered by tie-points - valid range [0,100] (default:25).
             
-            double m_minrReferenceRasterCoveredAreaPercent; //!< The mininumum required area percent (from each reference raster ) covered by tie-points - valid range [0,100] (default:25).
+            double m_minrReferenceRasterCoveredAreaPercent; //!< The mininumum required area percent (from each reference raster ) covered by tie-points - valid range [0,100] (default:10).
             
             unsigned int m_inRasterSubSectorsFactor; //!< A positive factor used to devide the input raster area into sectors ,(efault value: 3 ( 3 x 3 = 9 sub-sectors).
             
