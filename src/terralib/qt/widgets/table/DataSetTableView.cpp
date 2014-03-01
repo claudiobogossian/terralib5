@@ -736,7 +736,7 @@ void te::qt::widgets::DataSetTableView::changeColumnData(const int& column)
     std::string sql;
 
     if(dlg.alterAllData())
-      sql = "UPDATE TABLE " + dsetName + " SET \'" + columnName + "\' = (" + dlg.getExpression().toStdString() + ");";
+      sql = "UPDATE " + dsetName + " SET " + columnName + " = " + dlg.getExpression().toStdString();
 
     try
     {
