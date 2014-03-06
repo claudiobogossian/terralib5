@@ -228,9 +228,11 @@ void te::qt::widgets::WhereClauseWidget::setLayerList(std::list<te::map::Abstrac
 
     std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
 
-    if(dsType->hasGeom())
-      m_ui->m_layerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
-
+    if(dsType.get())
+    {
+      if(dsType->hasGeom())
+        m_ui->m_layerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
+    }
     ++it;
   }
 }

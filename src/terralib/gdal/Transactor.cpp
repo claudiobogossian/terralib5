@@ -247,7 +247,10 @@ std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getDataSetType(const bo
       
       char** subdatasets = gds->GetMetadata("SUBDATASETS");
       if(subdatasets == 0)
+      {
+        GDALClose(gds);
         return std::auto_ptr<te::da::DataSetType>(); // it has no subdatasets
+      }
       
       for(char** i = subdatasets; *i != 0; i=i+2)
       {

@@ -42,6 +42,7 @@
 #include "../../../se/Utils.h"
 #include "../../widgets/tools/AbstractTool.h"
 #include "../../widgets/tools/CoordTracking.h"
+#include "../../widgets/tools/ExtentAcquire.h"
 #include "../../widgets/tools/Pan.h"
 #include "../../widgets/tools/PolygonAcquire.h"
 #include "../../widgets/tools/PointPicker.h"
@@ -99,6 +100,7 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   connect(m_ui->m_panActionToolButtontoolButton, SIGNAL(toggled(bool)), this, SLOT(onPanToggled(bool)));
   connect(m_ui->m_pointActionToolButtontoolButton, SIGNAL(toggled(bool)), this, SLOT(onPointPickerToggled(bool)));
   connect(m_ui->m_geomActionToolButtontoolButton, SIGNAL(toggled(bool)), this, SLOT(onGeomToggled(bool)));
+  connect(m_ui->m_extentActionToolButtontoolButton, SIGNAL(toggled(bool)), this, SLOT(onBoxToggled(bool)));
   connect(m_ui->m_readPixelActionToolButton, SIGNAL(toggled(bool)), this, SLOT(onReadPixelToggled(bool)));
   connect(m_ui->m_extraDisplaysToolButton, SIGNAL(toggled(bool)), this, SLOT(onExtraDisplaysToggled(bool)));
   connect(m_ui->m_recomposeActionToolButton, SIGNAL(clicked()), this, SLOT(onRecomposeClicked()));
@@ -124,6 +126,7 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   m_ui->m_recomposeActionToolButton->setIcon(QIcon::fromTheme("zoom-extent"));
   m_ui->m_pointActionToolButtontoolButton->setIcon(QIcon::fromTheme("placemark"));
   m_ui->m_geomActionToolButtontoolButton->setIcon(QIcon::fromTheme("edit-polygon"));
+  m_ui->m_extentActionToolButtontoolButton->setIcon(QIcon::fromTheme("edit-box"));
   m_ui->m_readPixelActionToolButton->setIcon(QIcon::fromTheme("color-picker"));
   m_ui->m_extraDisplaysToolButton->setIcon(QIcon::fromTheme("view-map-display-extra"));
   m_ui->m_monoLabel->setPixmap(QIcon::fromTheme("bullet-black").pixmap(16,16));
@@ -340,6 +343,7 @@ void te::qt::widgets::RasterNavigatorWidget::hideEditionTools(bool hide)
   m_ui->m_toolLine->setVisible(!hide);
   hidePickerTool(hide);
   hideGeomTool(hide);
+  hideBoxTool(hide);
   hideInfoTool(hide);
 }
 
@@ -351,6 +355,11 @@ void te::qt::widgets::RasterNavigatorWidget::hidePickerTool(bool hide)
 void te::qt::widgets::RasterNavigatorWidget::hideGeomTool(bool hide)
 {
   m_ui->m_geomActionToolButtontoolButton->setVisible(!hide);
+}
+
+void te::qt::widgets::RasterNavigatorWidget::hideBoxTool(bool hide)
+{
+  m_ui->m_extentActionToolButtontoolButton->setVisible(!hide);
 }
 
 void te::qt::widgets::RasterNavigatorWidget::hideInfoTool(bool hide)
@@ -424,9 +433,9 @@ void te::qt::widgets::RasterNavigatorWidget::onCoordTrackedChanged(QPointF& coor
       m_currentRow = pixelLocation.y;
 
       QString xStr("X: ");
-      xStr.append(QString::number(coordinate.rx()));
+      xStr.append(QString::number(coordinate.rx(), 'f', 5));
       QString yStr("Y: ");
-      yStr.append(QString::number(coordinate.ry()));
+      yStr.append(QString::number(coordinate.ry(), 'f', 5));
       QString cStr(tr("Column: "));
       cStr.append(QString::number(m_currentColumn));
       QString lStr(tr("Line: "));
@@ -443,6 +452,12 @@ void te::qt::widgets::RasterNavigatorWidget::onCoordTrackedChanged(QPointF& coor
       m_ui->m_label->setText(label);
     }
   }
+}
+
+void te::qt::widgets::RasterNavigatorWidget::onEnvelopeAcquired(te::gm::Envelope env)
+{
+  //emit signal
+  emit envelopeAcquired(env);
 }
 
 void te::qt::widgets::RasterNavigatorWidget::onGeomAquired(te::gm::Polygon* poly)
@@ -513,6 +528,17 @@ void te::qt::widgets::RasterNavigatorWidget::onGeomToggled(bool checked)
   setCurrentTool(pa);
 
   connect(pa, SIGNAL(polygonAquired(te::gm::Polygon*)), this, SLOT(onGeomAquired(te::gm::Polygon*)));
+}
+
+void te::qt::widgets::RasterNavigatorWidget::onBoxToggled(bool checked)
+{
+  if(!checked)
+    return;
+
+  te::qt::widgets::ExtentAcquire* ea = new te::qt::widgets::ExtentAcquire(m_mapDisplay, Qt::BlankCursor);
+  setCurrentTool(ea);
+
+  connect(ea, SIGNAL(extentAcquired(te::gm::Envelope)), this, SLOT(onEnvelopeAcquired(te::gm::Envelope)));
 }
 
 void te::qt::widgets::RasterNavigatorWidget::onReadPixelToggled(bool checked)

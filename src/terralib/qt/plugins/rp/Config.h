@@ -38,6 +38,13 @@
 #define TE_QT_PLUGIN_RP_HAVE_CLASSIFIER
 
 /*!
+  \def TE_QT_PLUGIN_RP_HAVE_CLIPPING
+
+  \brief It defines if the RP Qt Plugin has the clipping operation.
+*/
+#define TE_QT_PLUGIN_RP_HAVE_CLIPPING
+
+/*!
   \def TE_QT_PLUGIN_RP_HAVE_COLORTRANSFORM
 
   \brief It defines if the RP Qt Plugin has the color transform operation.

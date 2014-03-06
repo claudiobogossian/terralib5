@@ -449,22 +449,26 @@ void te::graph::DatabaseGraphMetadata::addGraphTableNewEntry()
   //create new item
   te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(dsMem.get());
 
-  dsItem->setString(0, this->getName());
-  dsItem->setInt32(1, (int)this->getStorageMode());
+  dsItem->setString(1, this->getName());
+  dsItem->setInt32(2, (int)this->getStorageMode());
 
   if(this->getStorageMode() == te::graph::Edge_List)
   {
-    dsItem->setString(2, this->getEdgeTableName());
+    dsItem->setString(3, this->getEdgeTableName());
   }
   else if(this->getStorageMode() == te::graph::Vertex_List)
   {
-    dsItem->setString(2, this->getVertexTableName());
+    dsItem->setString(3, this->getVertexTableName());
   }
 
-  dsItem->setString(3, this->getDescription());
+  dsItem->setString(4, this->getDescription());
+
+  dsMem->add(dsItem);
 
   //add item
   std::map<std::string, std::string> options;
+
+  dsMem->moveBeforeFirst();
 
   m_ds->add(Globals::sm_tableGraphName, dsMem.get(), options);
 

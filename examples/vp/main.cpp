@@ -95,6 +95,25 @@ int main(int argc, char** argv)
     //if (IntersectionPGISToOGR())
     //  std::cout << "\tOK!" << std::endl;
 
+
+    //Buffer examples
+
+    /*std::cout << std::endl << "Buffer OGR to OGR: " << std::endl;
+    if (BufferOGRToOGR())
+      std::cout << "\tOK!" << std::endl;*/
+
+    //std::cout << std::endl << "Buffer OGR to PostGIS: " << std::endl;
+    //if (BufferOGRToPGIS())
+    //  std::cout << "\tOK!" << std::endl;
+
+    //std::cout << std::endl << "Buffer PostGIS to PostGIS: " << std::endl;
+    //if (BufferPGISToPGIS())
+    //  std::cout << "\tOK!" << std::endl;
+
+    std::cout << std::endl << "Buffer PostGIS to OGR: " << std::endl;
+    if (BufferPGISToOGR())
+      std::cout << "\tOK!" << std::endl;
+
     te::plugin::PluginManager::getInstance().unloadAll();
 
     TerraLib::getInstance().finalize();

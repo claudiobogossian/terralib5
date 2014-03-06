@@ -60,7 +60,7 @@ te::graph::QueryGraphBuilder::~QueryGraphBuilder()
 bool te::graph::QueryGraphBuilder::build(te::graph::AbstractGraph* g, te::da::Expression* eEdge, te::da::Expression* eVertex, const std::map<std::string, std::string>& dsInfo, const std::string& graphType, const std::map<std::string, std::string>& gInfo)
 {
   //create output graph
-  m_graph = te::graph::AbstractGraphFactory::make(graphType, dsInfo, gInfo);
+  m_graph.reset(te::graph::AbstractGraphFactory::make(graphType, dsInfo, gInfo));
 
   assert(m_graph);
 

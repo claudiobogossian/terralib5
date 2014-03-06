@@ -47,6 +47,59 @@ te::graph::Layer::~Layer()
 { 
 }
 
+std::auto_ptr<te::da::DataSetType> te::graph::Layer::getSchema() const
+{
+  return std::auto_ptr<te::da::DataSetType>();
+}
+
+
+
+std::auto_ptr<te::da::DataSet> te::graph::Layer::getData(te::common::TraverseType travType, 
+                                                const te::common::AccessPolicy accessPolicy) const
+{
+  return std::auto_ptr<te::da::DataSet>();
+}
+
+
+std::auto_ptr<te::da::DataSet> te::graph::Layer::getData(const std::string& propertyName,
+                                                const te::gm::Envelope* e,
+                                                te::gm::SpatialRelation r,
+                                                te::common::TraverseType travType,
+                                                const te::common::AccessPolicy accessPolicy) const
+{
+  return std::auto_ptr<te::da::DataSet>();
+}
+
+
+
+std::auto_ptr<te::da::DataSet> te::graph::Layer::getData(const std::string& propertyName,
+                                                const te::gm::Geometry* g,
+                                                te::gm::SpatialRelation r,
+                                                te::common::TraverseType travType,
+                                                const te::common::AccessPolicy accessPolicy) const
+{
+  return std::auto_ptr<te::da::DataSet>();
+}
+
+
+
+std::auto_ptr<te::da::DataSet> te::graph::Layer::getData(te::da::Expression* restriction,
+                                                te::common::TraverseType travType,
+                                                const te::common::AccessPolicy accessPolicy) const
+{
+  return std::auto_ptr<te::da::DataSet>();
+}
+
+
+
+std::auto_ptr<te::da::DataSet> te::graph::Layer::getData(const te::da::ObjectIdSet* oids,
+                                                te::common::TraverseType travType,
+                                                const te::common::AccessPolicy accessPolicy) const
+{
+  return std::auto_ptr<te::da::DataSet>();
+}
+
+
 const std::string& te::graph::Layer::getType() const
 {
   return sm_type;

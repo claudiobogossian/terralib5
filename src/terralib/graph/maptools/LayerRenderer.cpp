@@ -28,6 +28,7 @@
 #include "../../datatype/Enums.h"
 #include "../../geometry/LineString.h"
 #include "../../geometry/Point.h"
+#include "../../geometry/Utils.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../maptools/Canvas.h"
 #include "../../maptools/CanvasConfigurer.h"
@@ -38,8 +39,10 @@
 #include "../../se/Utils.h"
 #include "../core/AbstractGraph.h"
 #include "../core/Edge.h"
+#include "../core/GraphMetadata.h"
 #include "../core/Vertex.h"
 #include "../iterator/BoxIterator.h"
+#include "../iterator/MemoryIterator.h"
 #include "../iterator/SequenceIterator.h"
 #include "Layer.h"
 #include "LayerRenderer.h"
@@ -56,6 +59,9 @@ void te::graph::LayerRenderer::draw(te::map::AbstractLayer* layer, te::map::Canv
   // Is our business?
   te::graph::Layer* l = dynamic_cast<Layer*>(layer);
   assert(l);
+
+  if(!bbox.isValid())
+    return;
 
   // The canvas configurer
   te::map::CanvasConfigurer cc(canvas);
@@ -87,7 +93,82 @@ void te::graph::LayerRenderer::draw(te::map::AbstractLayer* layer, te::map::Canv
 
   te::graph::AbstractGraph* g = l->getGraph();
 
-  //set iterator
+  if(g->getMetadata()->getDataSource())
+    drawDataSourceGraph(g, canvas, bbox);
+  else
+    drawMemoryGraph(g, canvas, bbox, srid);
+}
+
+int te::graph::LayerRenderer::checkVertexGeometryProperty(te::graph::AbstractGraph* g)
+{
+  int idx = -1;
+
+  for(int i = 0; i < g->getVertexPropertySize(); ++i)
+  {
+    te::dt::Property* p = g->getVertexProperty(i);
+    if(p && p->getType() == te::dt::GEOMETRY_TYPE)
+    {
+      idx = i;
+      break;
+    }
+  }
+
+  return idx;
+}
+
+int te::graph::LayerRenderer::checkEdgeGeometryProperty(te::graph::AbstractGraph* g)
+{
+  int idx = -1;
+
+  for(int i = 0; i < g->getEdgePropertySize(); ++i)
+  {
+    te::dt::Property* p = g->getEdgeProperty(i);
+    if(p && p->getType() == te::dt::GEOMETRY_TYPE)
+    {
+      idx = i;
+      break;
+    }
+  }
+
+  return idx;
+}
+
+void te::graph::LayerRenderer::configDefaultLine(te::map::Canvas* canvas)
+{
+  canvas->setLineColor(te::color::RGBAColor(TE_SE_DEFAULT_STROKE_BASIC_COLOR, TE_OPAQUE));
+  canvas->setLineWidth(TE_SE_DEFAULT_STROKE_BASIC_WIDTH);
+  canvas->setLineDashStyle(te::map::SolidLine);
+  canvas->setLineCapStyle(te::map::ButtCap);
+  canvas->setLineJoinStyle(te::map::MiterJoin);
+}
+
+void te::graph::LayerRenderer::configDefaultPoint(te::map::Canvas* canvas)
+{
+  te::se::Mark* mark = te::se::CreateMark("circle", te::se::CreateStroke("#000000", "2"), te::se::CreateFill("#FFFF00", "1.0"));
+  std::size_t size = 12;
+  te::color::RGBAColor** rgba =  te::map::MarkRendererManager::getInstance().render(mark, size);
+  canvas->setPointColor(te::color::RGBAColor(255, 0, 0, TE_TRANSPARENT));
+  canvas->setPointPattern(rgba, size, size);
+
+  te::common::Free(rgba, size);
+  delete mark;
+}
+
+void te::graph::LayerRenderer::configLoopPoint(te::map::Canvas* canvas)
+{
+  te::se::Mark* mark = te::se::CreateMark("star", te::se::CreateStroke("#000000", "2"), te::se::CreateFill("#FFFF00", "1.0"));
+  std::size_t size = 12;
+  te::color::RGBAColor** rgba =  te::map::MarkRendererManager::getInstance().render(mark, size);
+  canvas->setPointColor(te::color::RGBAColor(255, 0, 0, TE_TRANSPARENT));
+  canvas->setPointPattern(rgba, size, size);
+
+  te::common::Free(rgba, size);
+  delete mark;
+}
+
+void te::graph::LayerRenderer::drawDataSourceGraph(te::graph::AbstractGraph* g, te::map::Canvas* canvas, const te::gm::Envelope& bbox)
+{
+//set iterator
   te::graph::AbstractIterator* oldIt = g->getIterator();
 
   te::gm::Envelope* box = new te::gm::Envelope(bbox);
@@ -98,8 +179,11 @@ void te::graph::LayerRenderer::draw(te::map::AbstractLayer* layer, te::map::Canv
 
   te::graph::Edge* edge = g->getFirstEdge();
 
-  int vertexGeomPropIdx = checkVertexGeometryProperty(l);
-  int edgeGeomPropIdx = checkEdgeGeometryProperty(l);
+  int vertexGeomPropIdx = checkVertexGeometryProperty(g);
+  int edgeGeomPropIdx = checkEdgeGeometryProperty(g);
+
+  if(vertexGeomPropIdx == -1 && edgeGeomPropIdx == -1)
+    return;
   
   while(it->isEdgeIteratorAfterEnd() == false)
   {
@@ -168,73 +252,95 @@ void te::graph::LayerRenderer::draw(te::map::AbstractLayer* layer, te::map::Canv
   delete it;
 }
 
-int te::graph::LayerRenderer::checkVertexGeometryProperty(te::graph::Layer* l)
+void te::graph::LayerRenderer::drawMemoryGraph(te::graph::AbstractGraph* g, te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid)
 {
-  int idx = -1;
+//set iterator
+  te::graph::AbstractIterator* oldIt = g->getIterator();
 
-  te::graph::AbstractGraph* g = l->getGraph();
+  te::graph::MemoryIterator* it = new te::graph::MemoryIterator(g);
 
-  for(int i = 0; i < g->getVertexPropertySize(); ++i)
+  g->setIterator(it);
+
+  te::graph::Edge* edge = g->getFirstEdge();
+
+  int vertexGeomPropIdx = checkVertexGeometryProperty(g);
+  int edgeGeomPropIdx = checkEdgeGeometryProperty(g);
+
+  if(vertexGeomPropIdx == -1 && edgeGeomPropIdx == -1)
+    return;
+
+  te::gm::Geometry* geomBox = te::gm::GetGeomFromEnvelope(&bbox, srid);
+  
+  while(it->isEdgeIteratorAfterEnd() == false)
   {
-    te::dt::Property* p = g->getVertexProperty(i);
-    if(p && p->getType() == te::dt::GEOMETRY_TYPE)
+    if(edge)
     {
-      idx = i;
-      break;
+      //draw vertex from and vertex to
+      te::graph::Vertex* vFrom = g->getVertex(edge->getIdFrom());
+      te::graph::Vertex* vTo = g->getVertex(edge->getIdTo());
+
+      if(vFrom && vTo)
+      {
+        te::gm::Geometry* geomVFrom = (te::gm::Geometry*)vFrom->getAttributes()[vertexGeomPropIdx];
+        te::gm::Geometry* geomVTo = (te::gm::Geometry*)vTo->getAttributes()[vertexGeomPropIdx];
+
+        //if(geomBox->contains(geomVFrom) && geomBox->contains(geomVTo))
+        if(geomVFrom->within(geomBox) && geomVTo->within(geomBox))
+        {
+          //check if exist a geometry associated a edge... if not draw a simple line
+          if(edgeGeomPropIdx != -1)
+          {
+            te::gm::Geometry* geomEdge = (te::gm::Geometry*)edge->getAttributes()[edgeGeomPropIdx];
+
+            canvas->draw(geomEdge);
+
+            if(vFrom->getId() == vTo->getId())
+            {
+              canvas->draw(geomVFrom);
+            }
+            else
+            {
+              canvas->draw(geomVFrom);
+              canvas->draw(geomVTo);
+            }
+          }
+          else 
+          {
+            if(vFrom->getId() == vTo->getId())
+            {
+              canvas->draw(geomVFrom);
+            }
+            else
+            {
+              te::gm::Point* pFrom = dynamic_cast<te::gm::Point*>(geomVFrom);
+              te::gm::Point* pTo = dynamic_cast<te::gm::Point*>(geomVTo);
+
+              if(pFrom && pTo)
+              {
+                  te::gm::LineString* line = new te::gm::LineString(2, te::gm::LineStringType);
+                  line->setPoint(0, pFrom->getX(), pFrom->getY());
+                  line->setPoint(1, pTo->getX(), pTo->getY());
+
+                  canvas->draw(line);
+
+                  delete line;
+          
+              }
+
+              canvas->draw(geomVFrom);
+              canvas->draw(geomVTo);
+            }
+          }
+        }
+      }
     }
+
+    edge = g->getNextEdge();
   }
 
-  return idx;
-}
+  delete geomBox;
 
-int te::graph::LayerRenderer::checkEdgeGeometryProperty(te::graph::Layer* l)
-{
-  int idx = -1;
+  g->setIterator(oldIt);
 
-  te::graph::AbstractGraph* g = l->getGraph();
-
-  for(int i = 0; i < g->getEdgePropertySize(); ++i)
-  {
-    te::dt::Property* p = g->getEdgeProperty(i);
-    if(p && p->getType() == te::dt::GEOMETRY_TYPE)
-    {
-      idx = i;
-      break;
-    }
-  }
-
-  return idx;
-}
-
-void te::graph::LayerRenderer::configDefaultLine(te::map::Canvas* canvas)
-{
-  canvas->setLineColor(te::color::RGBAColor(TE_SE_DEFAULT_STROKE_BASIC_COLOR, TE_OPAQUE));
-  canvas->setLineWidth(TE_SE_DEFAULT_STROKE_BASIC_WIDTH);
-  canvas->setLineDashStyle(te::map::SolidLine);
-  canvas->setLineCapStyle(te::map::ButtCap);
-  canvas->setLineJoinStyle(te::map::MiterJoin);
-}
-
-void te::graph::LayerRenderer::configDefaultPoint(te::map::Canvas* canvas)
-{
-  te::se::Mark* mark = te::se::CreateMark("circle", te::se::CreateStroke("#000000", "2"), te::se::CreateFill("#FFFF00", "1.0"));
-  std::size_t size = 12;
-  te::color::RGBAColor** rgba =  te::map::MarkRendererManager::getInstance().render(mark, size);
-  canvas->setPointColor(te::color::RGBAColor(255, 0, 0, TE_TRANSPARENT));
-  canvas->setPointPattern(rgba, size, size);
-
-  te::common::Free(rgba, size);
-  delete mark;
-}
-
-void te::graph::LayerRenderer::configLoopPoint(te::map::Canvas* canvas)
-{
-  te::se::Mark* mark = te::se::CreateMark("star", te::se::CreateStroke("#000000", "2"), te::se::CreateFill("#FFFF00", "1.0"));
-  std::size_t size = 12;
-  te::color::RGBAColor** rgba =  te::map::MarkRendererManager::getInstance().render(mark, size);
-  canvas->setPointColor(te::color::RGBAColor(255, 0, 0, TE_TRANSPARENT));
-  canvas->setPointPattern(rgba, size, size);
-
-  te::common::Free(rgba, size);
-  delete mark;
+  delete it;
 }
