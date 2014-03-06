@@ -151,6 +151,7 @@ namespace te
       m_rType.clear();
       m_rInfo.clear();
       m_outputRasterPtr.reset();
+      m_matchingResult.clear();
     }
 
     const GeometricRefining::OutputParameters& GeometricRefining::OutputParameters::operator=(
@@ -160,6 +161,7 @@ namespace te
         
       m_rType = params.m_rType;
       m_rInfo = params.m_rInfo;
+      m_matchingResult = params.m_matchingResult;
 
       return *this;
     }
@@ -188,6 +190,21 @@ namespace te
       GeometricRefining::OutputParameters* outParamsPtr = dynamic_cast<
         GeometricRefining::OutputParameters* >( &outputParams );
       TERP_TRUE_OR_THROW( outParamsPtr, "Invalid paramters" );
+      
+      outParamsPtr->m_outputRasterPtr.reset();
+      
+      {
+        outParamsPtr->m_matchingResult.resize( 
+          m_inputParameters.m_referenceRastersPtr->getObjsCount() );
+        for( unsigned int idx = 0 ; idx < outParamsPtr->m_matchingResult.size() ;
+          ++idx )
+        {
+          outParamsPtr->m_matchingResult[ idx ].m_status = 
+            OutputParameters::MatchingResult::NotMatched;
+          outParamsPtr->m_matchingResult[ idx ].m_referenceRasterIndex = idx;
+        }
+      }
+      
       
       // progress
       
@@ -404,7 +421,7 @@ namespace te
       
       std::vector< te::gm::GTParameters::TiePoint > baseTransAgreementTiePoints;
       
-      std::vector< MatchingInfo > refRastersMatchingInfo;    
+      std::vector< InternalMatchingInfo > refRastersMatchingInfo;    
       
       bool continueOnLoop = true;
       
@@ -556,7 +573,7 @@ namespace te
                       if( ( 100.0 * convexHullAreaPercent ) >=
                           m_inputParameters.m_minrReferenceRasterCoveredAreaPercent )
                       {
-                        MatchingInfo matchingInfo;
+                        InternalMatchingInfo matchingInfo;
                         matchingInfo.m_referenceRasterIndex = refRasterIdx;
                         matchingInfo.m_convexHullAreaPercent = convexHullAreaPercent;
                         
@@ -578,10 +595,44 @@ namespace te
                         }
                         
                         refRastersMatchingInfo.push_back( matchingInfo );
+                        
+                        outParamsPtr->m_matchingResult[ refRasterIdx ].m_tiePoints =
+                          locatorOutputParams.m_tiePoints;
+                        outParamsPtr->m_matchingResult[ refRasterIdx ].m_status = 
+                          OutputParameters::MatchingResult::Success;
+                      }
+                      else
+                      {
+                        outParamsPtr->m_matchingResult[ refRasterIdx ].m_tiePoints =
+                          locatorOutputParams.m_tiePoints;
+                        outParamsPtr->m_matchingResult[ refRasterIdx ].m_status = 
+                          OutputParameters::MatchingResult::Fail;    
                       }
                     }
+                    else
+                    {
+                      outParamsPtr->m_matchingResult[ refRasterIdx ].m_tiePoints =
+                        locatorOutputParams.m_tiePoints;
+                      outParamsPtr->m_matchingResult[ refRasterIdx ].m_status = 
+                        OutputParameters::MatchingResult::Fail;                                                
+                    }
+                  }
+                  else
+                  {
+                    outParamsPtr->m_matchingResult[ refRasterIdx ].m_status = 
+                      OutputParameters::MatchingResult::Fail;
                   }
                 }
+                else
+                {
+                  outParamsPtr->m_matchingResult[ refRasterIdx ].m_status = 
+                    OutputParameters::MatchingResult::Fail;
+                }
+              }
+              else
+              {
+                outParamsPtr->m_matchingResult[ refRasterIdx ].m_status = 
+                  OutputParameters::MatchingResult::Fail;
               }
               
               // Finding the tie-points in agreement with the choosen geometric transformation model
@@ -773,7 +824,7 @@ namespace te
     }
 
     void GeometricRefining::convert( 
-      const std::vector< MatchingInfo >& inTiePoints,
+      const std::vector< InternalMatchingInfo >& inTiePoints,
       std::vector< te::gm::GTParameters::TiePoint >& outTiePoints,
       std::vector< double >& outTiePointsWeights ) const
     {
@@ -791,7 +842,7 @@ namespace te
       
       for( inTiePointsIdx = 0 ; inTiePointsIdx < inTiePoints.size() ; ++inTiePointsIdx )
       {
-        const MatchingInfo& mInfo = inTiePoints[ inTiePointsIdx ];
+        const InternalMatchingInfo& mInfo = inTiePoints[ inTiePointsIdx ];
         
         if( minTPNumberByRefRaster > ((double)mInfo.m_tiePoints.size()) )
         {
@@ -827,7 +878,7 @@ namespace te
       
       for( inTiePointsIdx = 0 ; inTiePointsIdx < inTiePoints.size() ; ++inTiePointsIdx )
       {
-        const MatchingInfo& mInfo = inTiePoints[ inTiePointsIdx ];
+        const InternalMatchingInfo& mInfo = inTiePoints[ inTiePointsIdx ];
         weight = 
           (
             (
@@ -909,7 +960,7 @@ namespace te
       }
     }   
     
-    bool GeometricRefining::getTransformation( const std::vector< MatchingInfo >& inTiePoints,
+    bool GeometricRefining::getTransformation( const std::vector< InternalMatchingInfo >& inTiePoints,
       std::auto_ptr< te::gm::GeometricTransformation >& geometricTransformPtr,
       std::vector< te::gm::GTParameters::TiePoint >& baseTransAgreementTiePoints ) const
     {
