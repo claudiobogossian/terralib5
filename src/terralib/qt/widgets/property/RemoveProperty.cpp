@@ -77,12 +77,15 @@ void te::qt::widgets::RemoveProperty::okPushButtonClicked()
 {
   // Get the property selected
   int propertyPos = propertiesComboBox->currentIndex();
-
-  m_property = m_ds->getProperty(dataSetComboBox->currentText().toStdString(), propertyPos).get();
+  std::string ds_name = (dataSetComboBox->currentText()).toStdString();
+ 
+  te::dt::Property* p = (m_ds->getProperty(ds_name, propertyPos)).release();
+   
+  m_property = (m_ds->getProperty(dataSetComboBox->currentText().toStdString(), propertyPos)).release();
 
   QMessageBox::StandardButton reply;
   reply = QMessageBox::question(this, tr("Remove Property"),
-              tr("Do you really want to remove the property \"%1\"?").arg(m_property->getName().c_str()),
+              tr("Do you really want to remove the property \"%1\"?").arg(p->getName().c_str()),
               QMessageBox::Yes | QMessageBox::Cancel);
 
   if (reply == QMessageBox::Yes)
