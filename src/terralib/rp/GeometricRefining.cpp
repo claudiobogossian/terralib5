@@ -509,6 +509,15 @@ namespace te
               
               if( ( searchAreaWidth > 1 ) && ( searchAreaHeight > 1 ) )
               {
+                outParamsPtr->m_matchingResult[ refRasterIdx ].m_searchAreaRowStart =
+                  searchAreaULRow;
+                outParamsPtr->m_matchingResult[ refRasterIdx ].m_searchAreaColStart =
+                  searchAreaULCol;   
+                outParamsPtr->m_matchingResult[ refRasterIdx ].m_searchAreaWidth =
+                  searchAreaWidth;   
+                outParamsPtr->m_matchingResult[ refRasterIdx ].m_searchAreaHeigh =
+                  searchAreaHeight;                  
+                  
                 // Matching the reference image
                 
                 te::rp::TiePointsLocator::InputParameters locatorInputParams =
