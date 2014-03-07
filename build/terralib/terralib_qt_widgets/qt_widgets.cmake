@@ -56,6 +56,7 @@ list (APPEND TE_DEP_LIBS
 		terralib_srs
 		terralib_statistics
 		terralib_symbology
+		terralib_st
 		terralib_rp
         terralib_plugin
 		terralib_xlink
@@ -97,7 +98,7 @@ set (
   widgets/propertybrowser/qt
   widgets/rp
   widgets/se
-  widgets/slider
+  widgets/st
   widgets/srs
   widgets/table
   widgets/temporal
@@ -445,11 +446,14 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/se" MOC)
 
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/widgets/slider/TimePropertiesDialog.h
-  ${SRCDIR}/widgets/slider/TimeSliderWidget.h
+  ${SRCDIR}/widgets/st/TimeSliderWidget.h
+  ${SRCDIR}/widgets/st/Animation.h
+  ${SRCDIR}/widgets/st/AnimationItem.h
+  ${SRCDIR}/widgets/st/AnimationScene.h
+  ${SRCDIR}/widgets/st/PixmapItem.h
+  ${SRCDIR}/widgets/st/TrajectoryItem.h
 )
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/slider" MOC)
-
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/st" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/srs/SRSManagerDialog.h
@@ -540,7 +544,7 @@ file(
   ${SRCDIR}/widgets/utils/ui/*.ui
   ${SRCDIR}/widgets/rp/ui/*.ui
   ${SRCDIR}/widgets/se/ui/*.ui
-  ${SRCDIR}/widgets/slider/ui/*.ui
+  ${SRCDIR}/widgets/st/ui/*.ui
   ${SRCDIR}/widgets/srs/ui/*.ui
   ${SRCDIR}/widgets/table/ui/*.ui
   ${SRCDIR}/widgets/temporal/ui/*.ui
