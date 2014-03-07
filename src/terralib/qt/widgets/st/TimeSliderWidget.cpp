@@ -163,37 +163,15 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
   m_ui->m_initialAnimationDateTimeEdit->setDisplayFormat("dd/MMM/yyyy hh:mm:ss");
   m_ui->m_finalAnimationDateTimeEdit->setDisplayFormat("dd/MMM/yyyy hh:mm:ss");
 
-  /////////////////////////////////////////////////////////////////////
-  //openKml("C:/lixo/kml/t_40_41.kml");
-  //setAutomaticPan("helicoptero");
+  //onAddHidroPushButtonClicked(true);
 
-  // Note: The drawing order is contrary to the order of insertion.
-  // In order below: The dog is the last to be displayed. 
-  // The fastfood  is the first to be displayed
-  //addTemporalImages("C:/lixo/TemporalImages/cao.png");
-  //addTemporalImages("C:/lixo/TemporalImages/caogordo.png");
-  //addTemporalImages("C:/lixo/TemporalImages/gatinho.png");
-  //addTemporalImages("C:/lixo/TemporalImages/dalmata.png");
-  //addTemporalImages("C:/lixo/TemporalImages/golfinho.png");
-  //addTemporalImages("C:/lixo/TemporalImages/tom.png");
-  //addTemporalImages("C:/lixo/TemporalImages/Terra.png");
-  //addTemporalImages("C:/lixo/TemporalImages/planetas.png");
-  //addTemporalImages("C:/lixo/TemporalImages/gotas.png");
-  //addTemporalImages("C:/lixo/TemporalImages/malvado.png");
-  //addTemporalImages("C:/lixo/TemporalImages/fastfood.png");
-  //addTemporalImages("C:/lixo/TemporalImages/segredo/segredo .jpg");
-  //m_ui->m_opacityComboBox->addItem("segredo");
-  //addTemporalImages("C:/lixo/TemporalImages/NoDoubt/NoDoubt .jpg");
-
-  onAddHidroPushButtonClicked(true);
-
-  calculateSpatialExtent();
-  calculateTemporalExtent();
-  createAnimations();
-  setDuration(m_duration);
-  setDirection(m_direction);
-  updateSliderPos();
-  onStopToolButtonnClicked();
+  //calculateSpatialExtent();
+  //calculateTemporalExtent();
+  //createAnimations();
+  //setDuration(m_duration);
+  //setDirection(m_direction);
+  //updateSliderPos();
+  //onStopToolButtonnClicked();
 
   if(m_animationScene->items().isEmpty())
   {
@@ -233,7 +211,6 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
       m_display->setSRID(srid);
     }
   }
-  /////////////////////////////////////////////////////////////////////
 }
 
 te::qt::widgets::TimeSliderWidget::~TimeSliderWidget()
@@ -590,12 +567,15 @@ void te::qt::widgets::TimeSliderWidget::addTemporalImages(const QString& filePat
   animation->m_spatialExtent = m_display->getExtent();
 
   te::dt::TimeInstant iTime;
+  te::dt::TimeInstant fTime(boost::posix_time::time_from_string("2010-12-31 23:59:59"));
   if(imageFile == "segredo ")
     iTime = te::dt::TimeInstant(boost::posix_time::time_from_string("2008-01-01 00:00:00"));
   else if(imageFile == "NoDoubt ")
+  {
     iTime = te::dt::TimeInstant(boost::posix_time::time_from_string("2008-04-01 00:00:00"));
+    fTime = te::dt::TimeInstant(boost::posix_time::time_from_string("2009-01-03 09:00:00"));
+  }
 
-  te::dt::TimeInstant fTime(boost::posix_time::time_from_string("2010-12-31 23:59:59"));
   animation->m_temporalExtent = te::dt::TimePeriod(iTime, fTime);
 
   char c[20];
@@ -2616,6 +2596,8 @@ te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getGoesTime(const QString
 {
   QString file(fileName);
   int ind = file.indexOf("_");
+  if(file.indexOf("_", ind+1) != -1)
+    ind = file.indexOf("_", ind+1);
   file.remove(0, ind+1);
   QString ano(file), mes(file), dia(file), hour(file), min(file);
   ano.remove(4, ano.length()-4);
