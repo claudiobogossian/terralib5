@@ -57,6 +57,18 @@ te::graph::Graph::Graph() : AbstractGraph(),
 {
 }
 
+te::graph::Graph::Graph(GraphMetadata* metadata): 
+  AbstractGraph(), 
+  m_dataManager(0),
+  m_graphCache(0), 
+  m_metadata(metadata)
+{
+  assert(metadata);
+
+  if(m_metadata->m_memoryGraph)
+    m_graphData = new te::graph::GraphData(0);
+}
+
 te::graph::Graph::Graph(AbstractCachePolicy* cp, AbstractGraphLoaderStrategy* ls): 
   AbstractGraph(), 
   m_graphData(0),
@@ -97,7 +109,7 @@ void te::graph::Graph::add(Vertex*  v)
     m_graphData->setDirty(true);
   }
 
-  if(m_graphData->getVertexMap().size() >= m_metadata->m_maxCacheSize)
+  if(m_graphData->getVertexMap().size() >= m_metadata->m_maxCacheSize && !m_metadata->m_memoryGraph)
   {
     m_graphData = 0;
   }
@@ -118,7 +130,7 @@ void te::graph::Graph::removeVertex(int id)
   {
     m_graphData->getVertexMap().erase(it);
   }
-  else
+  else if(!m_metadata->m_memoryGraph)
   {
     m_graphData = m_graphCache->getGraphDataByVertexId(id);
 
@@ -151,15 +163,18 @@ te::graph::Vertex* te::graph::Graph::getVertex(int id)
     }
   }
 
-  m_graphData = m_graphCache->getGraphDataByVertexId(id);
-
-  if(m_graphData)
+  if(!m_metadata->m_memoryGraph)
   {
-    te::graph::GraphData::VertexMap::iterator it = m_graphData->getVertexMap().find(id);
+    m_graphData = m_graphCache->getGraphDataByVertexId(id);
 
-    if(it != m_graphData->getVertexMap().end())
+    if(m_graphData)
     {
-      return it->second;
+      te::graph::GraphData::VertexMap::iterator it = m_graphData->getVertexMap().find(id);
+
+      if(it != m_graphData->getVertexMap().end())
+      {
+        return it->second;
+      }
     }
   }
 
@@ -216,7 +231,7 @@ void te::graph::Graph::add(Edge* e)
     m_graphData->setDirty(true);
   }
 
-  if(m_graphData->getEdgeMap().size() >= m_metadata->m_maxCacheSize)
+  if(m_graphData->getEdgeMap().size() >= m_metadata->m_maxCacheSize && !m_metadata->m_memoryGraph)
   {
     m_graphData = 0;
   }
@@ -237,7 +252,7 @@ void te::graph::Graph::removeEdge(int id)
   {
     m_graphData->getEdgeMap().erase(it);
   }
-  else
+  else if(!m_metadata->m_memoryGraph)
   {
     m_graphData = m_graphCache->getGraphDataByEdgeId(id);
 
@@ -270,15 +285,18 @@ te::graph::Edge* te::graph::Graph::getEdge(int id)
     }
   }
 
-  m_graphData = m_graphCache->getGraphDataByEdgeId(id);
-
-  if(m_graphData)
+  if(!m_metadata->m_memoryGraph)
   {
-    te::graph::GraphData::EdgeMap::iterator it = m_graphData->getEdgeMap().find(id);
+    m_graphData = m_graphCache->getGraphDataByEdgeId(id);
 
-    if(it != m_graphData->getEdgeMap().end())
+    if(m_graphData)
     {
-      return it->second;
+      te::graph::GraphData::EdgeMap::iterator it = m_graphData->getEdgeMap().find(id);
+
+      if(it != m_graphData->getEdgeMap().end())
+      {
+        return it->second;
+      }
     }
   }
 
@@ -328,7 +346,14 @@ te::graph::GraphMetadata* te::graph::Graph::getMetadata()
 
 void te::graph::Graph::flush()
 {
-  m_graphData = 0;
-
-  m_graphCache->clearCache();
+  if(m_metadata->m_memoryGraph)
+  {
+    delete m_graphData;
+    m_graphData = 0;
+  }
+  else
+  {
+    m_graphData = 0;
+    m_graphCache->clearCache();
+  }
 }

@@ -32,6 +32,7 @@
 #include "Config.h"
 
 class TeDatabase;
+class TeTheme;
 
 namespace terralib4
 {
@@ -69,7 +70,9 @@ namespace terralib4
 
       std::vector<std::string> getTL4Tables();
 
-      std::vector<std::string> getTL4Themes();
+      std::vector<std::pair<std::string, std::string> > getTL4Themes();
+
+      TeTheme* getTL4ThemeFromLayer(const std::string& layerName, const std::string& themeName);
 
     protected:
 

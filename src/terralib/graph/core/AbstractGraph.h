@@ -40,7 +40,6 @@ namespace te
   namespace graph
   {
     //forward declarations
-    class AbstractIterator;
     class GraphMetadata;
     class Edge;
     class Vertex;
@@ -108,33 +107,6 @@ namespace te
           \return A valid vertex point if the element was found and a null pointer in other case.
         */
         virtual te::graph::Vertex* getVertex(int id) = 0;
-
-        /*!
-          \brief It returns a pointer to the first vertex element of a graph
-
-          \note This function is not implemented here, it's just a call to a iterator function.
-
-          \return A valid vertex point if the element was found and a null pointer in other case.
-        */
-        virtual te::graph::Vertex* getFirstVertex();
-
-        /*!
-          \brief It returns a pointer to the next vertex element of a graph
-
-          \note This function is not implemented here, it's just a call to a iterator function.
-
-          \return A valid vertex point if the element was found and a null pointer in other case.
-        */
-        virtual te::graph::Vertex* getNextVertex();
-
-        /*!
-          \brief It returns a pointer to the previous vertex element of a graph
-
-          \note This function is not implemented here, it's just a call to a iterator function.
-
-          \return A valid vertex point if the element was found and a null pointer in other case.
-        */
-        virtual te::graph::Vertex* getPreviousVertex();
 
          /*!
           \brief Add a new property associated to the vertex element
@@ -219,33 +191,6 @@ namespace te
         */
         virtual te::graph::Edge* getEdge(int id) = 0;
 
-        /*!
-          \brief It returns a pointer to the first edge element of a graph
-
-          \note This function is not implemented here, it's just a call to a iterator function.
-
-          \return A valid edge point if the element was found and a null pointer in other case.
-        */
-        te::graph::Edge* getFirstEdge();
-
-        /*!
-          \brief It returns a pointer to the next edge element of a graph
-
-          \note This function is not implemented here, it's just a call to a iterator function.
-
-          \return A valid edge point if the element was found and a null pointer in other case.
-        */
-        te::graph::Edge* getNextEdge();
-
-        /*!
-          \brief It returns a pointer to the previous edge element of a graph
-
-          \note This function is not implemented here, it's just a call to a iterator function.
-
-          \return A valid edge point if the element was found and a null pointer in other case.
-        */
-        te::graph::Edge* getPreviousEdge();
-
          /*!
           \brief Add a new property associated to the edge element
 
@@ -300,26 +245,6 @@ namespace te
 
         */
         virtual void flush() = 0;
-
-        /*!
-          \brief Used to associate a iterator to graph
-
-          \param i Valid pointer to a iterator
-
-        */
-        void setIterator(te::graph::AbstractIterator* i);
-
-        /*!
-          \brief Used to get a iterator associated to graph
-
-          \return Valid pointer to a iterator if exist and null pointer in other case
-
-        */
-        te::graph::AbstractIterator* getIterator();
-
-      protected:
-
-        te::graph::AbstractIterator* m_iterator;  //!< Iterator attribute
     };
 
   } // end namespace graph

@@ -169,15 +169,11 @@ void te::graph::LayerRenderer::configLoopPoint(te::map::Canvas* canvas)
 void te::graph::LayerRenderer::drawDataSourceGraph(te::graph::AbstractGraph* g, te::map::Canvas* canvas, const te::gm::Envelope& bbox)
 {
 //set iterator
-  te::graph::AbstractIterator* oldIt = g->getIterator();
-
   te::gm::Envelope* box = new te::gm::Envelope(bbox);
 
   te::graph::BoxIterator* it = new te::graph::BoxIterator(g, box);
 
-  g->setIterator(it);
-
-  te::graph::Edge* edge = g->getFirstEdge();
+  te::graph::Edge* edge = it->getFirstEdge();
 
   int vertexGeomPropIdx = checkVertexGeometryProperty(g);
   int edgeGeomPropIdx = checkEdgeGeometryProperty(g);
@@ -244,10 +240,8 @@ void te::graph::LayerRenderer::drawDataSourceGraph(te::graph::AbstractGraph* g, 
         }
       }
     }
-    edge = g->getNextEdge();
+    edge = it->getNextEdge();
   }
-
-  g->setIterator(oldIt);
 
   delete it;
 }
@@ -255,13 +249,9 @@ void te::graph::LayerRenderer::drawDataSourceGraph(te::graph::AbstractGraph* g, 
 void te::graph::LayerRenderer::drawMemoryGraph(te::graph::AbstractGraph* g, te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid)
 {
 //set iterator
-  te::graph::AbstractIterator* oldIt = g->getIterator();
-
   te::graph::MemoryIterator* it = new te::graph::MemoryIterator(g);
 
-  g->setIterator(it);
-
-  te::graph::Edge* edge = g->getFirstEdge();
+  te::graph::Edge* edge = it->getFirstEdge();
 
   int vertexGeomPropIdx = checkVertexGeometryProperty(g);
   int edgeGeomPropIdx = checkEdgeGeometryProperty(g);
@@ -335,12 +325,10 @@ void te::graph::LayerRenderer::drawMemoryGraph(te::graph::AbstractGraph* g, te::
       }
     }
 
-    edge = g->getNextEdge();
+    edge = it->getNextEdge();
   }
 
   delete geomBox;
-
-  g->setIterator(oldIt);
 
   delete it;
 }

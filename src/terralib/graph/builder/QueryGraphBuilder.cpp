@@ -82,14 +82,10 @@ bool te::graph::QueryGraphBuilder::build(te::graph::AbstractGraph* g, te::da::Ex
   }
 
   //create iterator
-  te::graph::AbstractIterator* oldIt = g->getIterator();
-
   {
     te::graph::QueryIterator* it = new te::graph::QueryIterator(g, eVertex);
 
-    g->setIterator(it);
-
-    te::graph::Vertex* vertex = g->getFirstVertex();
+    te::graph::Vertex* vertex = it->getFirstVertex();
 
     te::common::TaskProgress t;
 
@@ -108,7 +104,7 @@ bool te::graph::QueryGraphBuilder::build(te::graph::AbstractGraph* g, te::da::Ex
         m_graph->add(vNew);
       }
 
-      vertex = g->getNextVertex();
+      vertex = it->getNextVertex();
 
       t.pulse();
     }
@@ -119,9 +115,7 @@ bool te::graph::QueryGraphBuilder::build(te::graph::AbstractGraph* g, te::da::Ex
   {
     te::graph::QueryIterator* it = new te::graph::QueryIterator(g, eEdge);
 
-    g->setIterator(it);
-
-    te::graph::Edge* edge = g->getFirstEdge();
+    te::graph::Edge* edge = it->getFirstEdge();
 
     te::common::TaskProgress t;
 
@@ -140,7 +134,7 @@ bool te::graph::QueryGraphBuilder::build(te::graph::AbstractGraph* g, te::da::Ex
         m_graph->add(eNew);
       }
 
-      edge = g->getNextEdge();
+      edge = it->getNextEdge();
 
       t.pulse();
     }
@@ -148,8 +142,6 @@ bool te::graph::QueryGraphBuilder::build(te::graph::AbstractGraph* g, te::da::Ex
     delete it;
 
   }
-
-  g->setIterator(oldIt);
 
   return true;
 }
