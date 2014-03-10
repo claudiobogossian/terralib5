@@ -137,7 +137,7 @@ QRect te::qt::widgets::PixmapItem::getRect()
 void te::qt::widgets::PixmapItem::setLUT(const std::vector<std::pair<int, QColor> >& tab)
 {
   size_t i = 0;
-  std::vector<std::pair<int, QColor> >::const_iterator it = tab.cbegin();
+  std::vector<std::pair<int, QColor> >::const_iterator it = tab.begin();
   size_t v = (*it).first;
   QColor c = (*it).second;
   while(i <= 255)
