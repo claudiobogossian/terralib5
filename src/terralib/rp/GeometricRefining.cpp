@@ -472,8 +472,8 @@ namespace te
               
               // The reference image position over the input image
               
-              const double& searchAreaULX = refRasterPtr->getGrid()->getExtent()->getLowerLeftX();
-              const double& searchAreaULY = refRasterPtr->getGrid()->getExtent()->getUpperRightY();
+              const double searchAreaULX = refRasterPtr->getGrid()->getExtent()->getLowerLeftX();
+              const double searchAreaULY = refRasterPtr->getGrid()->getExtent()->getUpperRightY();
               
               // The search area over the input image
               
@@ -604,19 +604,39 @@ namespace te
                         }
                         
                         refRastersMatchingInfo.push_back( matchingInfo );
-                        
-                        outParamsPtr->m_matchingResult[ refRasterIdx ].m_tiePoints =
-                          locatorOutputParams.m_tiePoints;
+
                         outParamsPtr->m_matchingResult[ refRasterIdx ].m_status = 
                           OutputParameters::MatchingResult::Success;
                       }
                       else
                       {
-                        outParamsPtr->m_matchingResult[ refRasterIdx ].m_tiePoints =
-                          locatorOutputParams.m_tiePoints;
                         outParamsPtr->m_matchingResult[ refRasterIdx ].m_status = 
                           OutputParameters::MatchingResult::Fail;    
                       }
+                      
+                      outParamsPtr->m_matchingResult[ refRasterIdx ].m_tiePoints =
+                        locatorOutputParams.m_tiePoints;                      
+                      
+                      double ulCol = 0;
+                      double ulRow = 0;
+                      locatorOutputParams.m_transformationPtr->inverseMap(
+                        0.0, 0.0, ulCol, ulRow );
+                      
+                      double lrCol = 0;
+                      double lrRow = 0;
+                      locatorOutputParams.m_transformationPtr->inverseMap(
+                        (double)( refRasterPtr->getNumberOfColumns() - 1 ), 
+                        (double)( refRasterPtr->getNumberOfRows() - 1 ), lrCol, lrRow );                      
+                      
+                      outParamsPtr->m_matchingResult[ refRasterIdx ].m_matchedPositionRowStart = 
+                        (unsigned int)std::min( ulRow, lrRow );
+                      outParamsPtr->m_matchingResult[ refRasterIdx ].m_matchedPositionColStart = 
+                        (unsigned int)std::min( ulCol, lrCol );                        
+                        
+                      outParamsPtr->m_matchingResult[ refRasterIdx ].m_matchedPositionWidth = 
+                        (unsigned int)std::abs( lrCol - ulCol );
+                      outParamsPtr->m_matchingResult[ refRasterIdx ].m_matchedPositionHeight = 
+                        (unsigned int)std::abs( lrRow - ulRow );                      
                     }
                     else
                     {
@@ -842,6 +862,8 @@ namespace te
       
       // Guessing limits
       
+      double referenceImagesWeightsMin =  std::numeric_limits< double >::max();
+      double referenceImagesWeightsMax = -1.0 * referenceImagesWeightsMin;      
       unsigned int inTiePointsIdx = 0;
       unsigned int mInfoTiePointsIdx = 0;
       double minTPNumberByRefRaster = std::numeric_limits< double >::max();
@@ -872,6 +894,23 @@ namespace te
         {
           maxConvexHullAreaPercentByRefRaster = mInfo.m_convexHullAreaPercent;
         }
+        
+        if( m_inputParameters.m_referenceRastersWeights.size() )
+        {
+          if( referenceImagesWeightsMin > 
+            ((double)m_inputParameters.m_referenceRastersWeights[ mInfo.m_referenceRasterIndex ] ) )
+          {
+            referenceImagesWeightsMin = 
+              ((double)m_inputParameters.m_referenceRastersWeights[ mInfo.m_referenceRasterIndex ] );
+          }
+          
+          if( referenceImagesWeightsMax < 
+            ((double)m_inputParameters.m_referenceRastersWeights[ mInfo.m_referenceRasterIndex ] ) )
+          {
+            referenceImagesWeightsMax = 
+              ((double)m_inputParameters.m_referenceRastersWeights[ mInfo.m_referenceRasterIndex ] );
+          }  
+        }
       }      
       
       double weight = 0;
@@ -885,9 +924,21 @@ namespace te
         1.0 / ( maxTPNumberByRefRaster - minTPNumberByRefRaster );
       const double tiePointsNumberOffset = ( tiePointsNumberGain == 0.0 ) ? 1.0 : -1.0 * minTPNumberByRefRaster;      
       
+      double referenceImagesWeightsGain = 0.0;
+      double referenceImagesWeightsOffset = 0.0;
+      if( m_inputParameters.m_referenceRastersWeights.size() )
+      {
+        referenceImagesWeightsGain = ( referenceImagesWeightsMax == 
+          referenceImagesWeightsMin ) ? 0.0 :
+          1.0 / ( referenceImagesWeightsMax - referenceImagesWeightsMin );
+        referenceImagesWeightsOffset = (referenceImagesWeightsGain == 0.0 ) ? 
+          1.0 : -1.0 * referenceImagesWeightsMin;
+      }
+      
       for( inTiePointsIdx = 0 ; inTiePointsIdx < inTiePoints.size() ; ++inTiePointsIdx )
       {
         const InternalMatchingInfo& mInfo = inTiePoints[ inTiePointsIdx ];
+        
         weight = 
           (
             (
@@ -901,10 +952,27 @@ namespace te
               *
               tiePointsNumberGain
             )
+            +
+            (
+              ( m_inputParameters.m_referenceRastersWeights.empty() )
+              ?
+              (
+                1.0
+              )
+              :
+              (
+                (
+                  ((double)m_inputParameters.m_referenceRastersWeights[ mInfo.m_referenceRasterIndex ] )
+                  +
+                  referenceImagesWeightsOffset
+                )
+                *
+                referenceImagesWeightsGain
+              )
+            )
           )
           /
-          2.0;
-          
+          3.0;          
         
         for( mInfoTiePointsIdx = 0 ; mInfoTiePointsIdx < mInfo.m_tiePoints.size() ; 
           ++mInfoTiePointsIdx )
