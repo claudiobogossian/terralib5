@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../../common/StringUtils.h"
 #include "ui_TL4FinalPageWizardPageForm.h"
 #include "TL4FinalPageWizardPage.h"
 
@@ -48,7 +49,7 @@ void te::qt::plugins::terralib4::TL4FinalPageWizardPage::setDataSets(const std::
 
   for(std::size_t i = 0; i < datasets.size(); ++i)
   {
-    QListWidgetItem* item = new QListWidgetItem(datasets[i].c_str(), m_ui->m_layersListWidget);
+    QListWidgetItem* item = new QListWidgetItem(datasets[i].c_str(), m_ui->m_layersListWidget, 0);
 
     item->setCheckState(Qt::Checked);
 
@@ -60,10 +61,14 @@ std::vector<std::string> te::qt::plugins::terralib4::TL4FinalPageWizardPage::get
 {
   std::vector<std::string> checked;
 
-  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
   {
-    if(m_ui->m_layersListWidget->item(i)->checkState() == Qt::Checked)
-      checked.push_back(m_ui->m_layersListWidget->item(i)->text().toStdString());
+    QListWidgetItem* item = m_ui->m_layersListWidget->item(i);
+
+    if(item->type() != 0 || item->checkState() != Qt::Checked)
+      continue;
+
+    checked.push_back(m_ui->m_layersListWidget->item(i)->text().toStdString());
   }
 
   return checked;
@@ -71,7 +76,7 @@ std::vector<std::string> te::qt::plugins::terralib4::TL4FinalPageWizardPage::get
 
 void te::qt::plugins::terralib4::TL4FinalPageWizardPage::onSelectAllPushButtonClicked()
 {
-  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
   {
     Qt::CheckState state = m_ui->m_layersListWidget->item(i)->checkState();
 
@@ -82,11 +87,66 @@ void te::qt::plugins::terralib4::TL4FinalPageWizardPage::onSelectAllPushButtonCl
 
 void te::qt::plugins::terralib4::TL4FinalPageWizardPage::onDeselectAllPushButtonClicked()
 {
-  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
   {
     Qt::CheckState state = m_ui->m_layersListWidget->item(i)->checkState();
 
     if(state == Qt::Checked)
       m_ui->m_layersListWidget->item(i)->setCheckState(Qt::Unchecked);
   }
+}
+
+bool te::qt::plugins::terralib4::TL4FinalPageWizardPage::parentLayerIsSeleted(std::string layerName)
+{
+  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  {
+    if(m_ui->m_layersListWidget->item(i)->text() == layerName.c_str())
+      return true;
+  }
+
+  return false;
+}
+
+void te::qt::plugins::terralib4::TL4FinalPageWizardPage::setThemes(const std::vector<std::pair<std::string, std::string> >& layers_themes)
+{
+  for(std::size_t i = 0; i < layers_themes.size(); ++i)
+  {
+    if(!parentLayerIsSeleted(layers_themes[i].first))
+      continue;
+
+    std::string names = layers_themes[i].first + " : " + layers_themes[i].first;
+
+    QListWidgetItem* item = new QListWidgetItem(QIcon::fromTheme("tl4-theme"), names.c_str(), m_ui->m_layersListWidget, 1);
+
+    item->setCheckState(Qt::Checked);
+
+    m_ui->m_layersListWidget->addItem(item);
+  }
+}
+
+std::vector<std::pair<std::string, std::string> > te::qt::plugins::terralib4::TL4FinalPageWizardPage::getSelectedThemes()
+{
+  std::vector<std::pair<std::string, std::string> > layers_themes;
+
+  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  {
+    QListWidgetItem* item = m_ui->m_layersListWidget->item(i);
+
+    if(item->type() != 1 || item->checkState() != Qt::Checked)
+      continue;
+
+    std::vector<std::string> tokens;
+    te::common::Tokenize(m_ui->m_layersListWidget->item(i)->text().toStdString(), tokens, " : ");
+
+    if(!tokens.empty())
+    {
+      std::pair<std::string, std::string> layer_theme;
+      layer_theme.first = tokens[0];
+      layer_theme.second = tokens[1];
+
+      layers_themes.push_back(layer_theme);
+    }
+  }
+
+  return layers_themes;
 }

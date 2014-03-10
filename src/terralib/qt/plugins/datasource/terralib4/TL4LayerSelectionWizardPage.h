@@ -38,6 +38,8 @@
 // Forward declaration
 namespace Ui { class TL4LayerSelectionWizardPageForm; }
 
+class QListWidgetItem;
+
 namespace te
 {
   namespace qt
@@ -71,16 +73,15 @@ namespace te
             ~TL4LayerSelectionWizardPage();
 
             void setDatasets(std::vector<std::string> layers,
-                             std::vector<std::string> tables,
-                             std::vector<std::string> themes);
+                             std::vector<std::string> tables);
 
             void setTL4Layers(std::vector<std::string> layers);
 
             void setTL4Tables(std::vector<std::string> tables);
 
-            void setTL4Themes(std::vector<std::string> themes);
-
             std::vector<std::string> getChecked();
+
+            std::vector<QListWidgetItem*> getCheckedItems();
 
             bool hasChecked() const;
 
@@ -93,7 +94,6 @@ namespace te
           private:
 
             std::auto_ptr<Ui::TL4LayerSelectionWizardPageForm> m_ui;
-            std::vector<int> m_types;
         };
       } // end namespace terralib4
     } // end namespace plugins

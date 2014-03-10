@@ -67,14 +67,12 @@ te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::~TL4LayerSelectionWizar
 }
 
 void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setDatasets(std::vector<std::string> layers,
-                                                                          std::vector<std::string> tables,
-                                                                          std::vector<std::string> themes)
+                                                                          std::vector<std::string> tables)
 {
   m_ui->m_layersListWidget->clear();
 
   setTL4Layers(layers);
   setTL4Tables(tables);
-  setTL4Themes(themes);
 }
 
 void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setTL4Layers(std::vector<std::string> layers)
@@ -92,16 +90,6 @@ void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setTL4Tables(std::
   for(std::size_t i = 0; i < tables.size(); ++i)
   {
     QListWidgetItem* item = new QListWidgetItem(getImage(TABLE), tables[i].c_str(), m_ui->m_layersListWidget, TABLE);
-    item->setCheckState(Qt::Checked);
-    m_ui->m_layersListWidget->addItem(item);
-  }
-}
-
-void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setTL4Themes(std::vector<std::string> themes)
-{
-  for(std::size_t i = 0; i < themes.size(); ++i)
-  {
-    QListWidgetItem* item = new QListWidgetItem(getImage(THEME), themes[i].c_str(), m_ui->m_layersListWidget, THEME);
     item->setCheckState(Qt::Checked);
     m_ui->m_layersListWidget->addItem(item);
   }
@@ -148,4 +136,16 @@ void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::onDeselectAllPushB
     if(state == Qt::Checked)
       m_ui->m_layersListWidget->item(i)->setCheckState(Qt::Unchecked);
   }
+}
+
+std::vector<QListWidgetItem*> te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::getCheckedItems()
+{
+  std::vector<QListWidgetItem*> checked;
+  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  {
+    if(m_ui->m_layersListWidget->item(i)->checkState() == Qt::Checked)
+      checked.push_back(m_ui->m_layersListWidget->item(i));
+  }
+
+  return checked;
 }

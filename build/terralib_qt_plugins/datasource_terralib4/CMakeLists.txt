@@ -27,6 +27,12 @@ if(Boost_FOUND)
   add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
 endif()
 
+find_package(Terralib4 REQUIRED)
+if(TERRALIB4_FOUND)
+  set (DEP_LIBS ${DEP_LIBS} ${TERRALIB4_LIBRARY})
+  set (DEP_INCLUDES ${DEP_INCLUDES} ${TERRALIB4_INCLUDE_DIR})
+endif()
+
 # Select the header files for moc'ing
 set (
   HDRS_TO_MOC
@@ -54,14 +60,17 @@ list (APPEND DEP_INCLUDES ${TE_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 list (APPEND 
   DEP_LIBS 
   terralib_common
+  terralib_color
   terralib_dataaccess
   terralib_datatype
+  terralib_geometry
   terralib_maptools
   terralib_plugin
   terralib_qt_af
   terralib_qt_widgets
   terralib_raster
   terralib_terralib4
+  terralib_symbology
 )
 
 file(GLOB SRCS ${SRCDIR}/*.cpp)
