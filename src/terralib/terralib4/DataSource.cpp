@@ -205,14 +205,26 @@ std::vector<std::string> terralib4::DataSource::getTL4Tables()
   return tables;
 }
 
-std::vector<std::string> terralib4::DataSource::getTL4Themes()
+std::vector<std::pair<std::string, std::string> > terralib4::DataSource::getTL4Themes()
 {
-  std::vector<std::string> themes;
+  std::vector<std::pair<std::string, std::string> > layers_themes;
 
   std::auto_ptr<te::da::DataSourceTransactor> t = getTransactor();
   
   terralib4::Transactor* t4t = dynamic_cast<terralib4::Transactor*>(t.get());
-  themes = t4t->getTL4Themes();
+  layers_themes = t4t->getTL4Themes();
 
-  return themes;
+  return layers_themes;
+}
+
+TeTheme* terralib4::DataSource::getTL4ThemeFromLayer(const std::string& layerName, const std::string& themeName)
+{
+  TeTheme* theme = 0;
+
+  std::auto_ptr<te::da::DataSourceTransactor> t = getTransactor();
+  
+  terralib4::Transactor* t4t = dynamic_cast<terralib4::Transactor*>(t.get());
+  theme = t4t->getTL4ThemeFromLayer(layerName, themeName);
+
+  return theme;
 }
