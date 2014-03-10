@@ -31,12 +31,18 @@
 #include "../core/GraphCache.h"
 #include "../core/GraphData.h"
 #include "../core/GraphDataManager.h"
+#include "../core/GraphMetadata.h"
 #include "../core/Vertex.h"
 #include "../graphs/Graph.h"
 #include "UndirectedGraph.h"
 
 
 te::graph::UndirectedGraph::UndirectedGraph() : Graph()
+{
+}
+
+te::graph::UndirectedGraph::UndirectedGraph(GraphMetadata* metadata) :
+  Graph(metadata)
 {
 }
 
@@ -111,7 +117,12 @@ bool te::graph::UndirectedGraph::isIsolateVertex(int id, bool& flag)
 void te::graph::UndirectedGraph::add(Edge* e)
 {
   bool hasVFrom = false;
-  m_graphData = m_graphCache->checkCacheByVertexId(e->getIdFrom());
+
+  if(!m_metadata->m_memoryGraph)
+  {
+    m_graphData =  m_graphCache->checkCacheByVertexId(e->getIdFrom());
+  }
+
   if(m_graphData)
   {
     //set successor information
@@ -124,7 +135,12 @@ void te::graph::UndirectedGraph::add(Edge* e)
   }
 
   bool hasVTo = false;
-  m_graphData = m_graphCache->checkCacheByVertexId(e->getIdTo());
+
+  if(!m_metadata->m_memoryGraph)
+  {
+    m_graphData = m_graphCache->checkCacheByVertexId(e->getIdTo());
+  }
+
   if(m_graphData)
   {
     //set predecessor information

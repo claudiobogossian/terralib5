@@ -70,20 +70,20 @@ namespace te
 
           \exception Exception It throws an exception if graph id equal -1
         */
-        virtual void load(int id) = 0;
+        virtual void load(int id) { };
 
         /*!
           \brief Function used to save the graph information
 
         */
-        virtual void save() = 0;
+        virtual void save() { };
 
         /*!
           \brief Function used to update the graph information on a data source
 
           \exception Exception It throws an exception if graph id equal -1
         */
-        virtual void update() = 0;
+        virtual void update() { };
 
         /*!
           \brief It returns the graph id
@@ -319,6 +319,8 @@ namespace te
         size_t m_maxCacheSize;          //!< Attribute used to set the max cache size
         size_t m_maxVecCacheSize;       //!< Attribute used to set the max vector cache size
         double m_boxPercentSize;        //!< Attribute used to box percent size used in loader strategy
+
+        bool m_memoryGraph;             //!< Flag used to indicate if the graph is a memory graph
     };
 
   } // end namespace graph
