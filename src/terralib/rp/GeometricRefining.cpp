@@ -720,6 +720,13 @@ namespace te
           return false;
         }
       }
+      else
+      {
+        if( baseGeometricTransformPtr.get() == 0 )
+        {
+          return false;
+        }
+      }        
       
       // Generating the refined output raster
       
