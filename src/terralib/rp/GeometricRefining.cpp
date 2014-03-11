@@ -435,11 +435,20 @@ namespace te
           for( unsigned int sectorRastersIdx = 0 ; sectorRastersIdx <
             refRastersIndexesBySector[ sectorIdx ].size() ; ++sectorRastersIdx )
           {          
-            const unsigned int& refRasterIdx = 
+            const unsigned int refRasterIdx = 
               refRastersIndexesBySector[ sectorIdx ][ sectorRastersIdx ];
               
             if( refRasterIdx < m_inputParameters.m_referenceRastersPtr->getObjsCount() )
             {
+              // Mark the reference raster as processed
+              
+              refRastersIndexesBySector[ sectorIdx ][ sectorRastersIdx ] = 
+                std::numeric_limits< unsigned int >::max();       
+                
+              aRefRasterWasProcessed = true; 
+                
+              // open the reference raster
+              
               TERP_TRUE_OR_THROW( m_inputParameters.m_referenceRastersPtr->moveTo( refRasterIdx ),
                 "Rasters feeder mover error" ); 
                 
@@ -664,6 +673,10 @@ namespace te
                   OutputParameters::MatchingResult::Fail;
               }
               
+              //skip to the next sector
+            
+              sectorRastersIdx = refRastersIndexesBySector[ sectorIdx ].size();              
+              
               // Finding the tie-points in agreement with the choosen geometric transformation model
               
               if( !m_inputParameters.m_processAllReferenceRasters )
@@ -671,7 +684,9 @@ namespace te
                 if( getTransformation( refRastersMatchingInfo, baseGeometricTransformPtr,
                   baseTransAgreementTiePoints ) )
                 {
-                  sectorRastersIdx = refRastersIndexesBySector[ sectorIdx ].size();
+                  // No need to precess more reference rasters
+                  // Break the loop
+                  
                   sectorIdx = refRastersIndexesBySector.size();
                   continueOnLoop = false;
                 }
@@ -680,18 +695,7 @@ namespace te
                   baseGeometricTransformPtr.reset();
                   baseTransAgreementTiePoints.clear();
                 }
-              }              
-                
-              // Mark the reference raster as processed
-              
-              refRastersIndexesBySector[ sectorIdx ][ sectorRastersIdx ] = 
-                std::numeric_limits< unsigned int >::max();
-                
-              aRefRasterWasProcessed = true; 
-              
-              //skip to the next sector
-              
-              sectorRastersIdx = refRastersIndexesBySector[ sectorIdx ].size();
+              }
               
               // Progress 
               
