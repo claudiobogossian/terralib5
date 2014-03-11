@@ -29,7 +29,7 @@
 #include "../../common/Translator.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../cache/AbstractCachePolicyFactory.h"
-#include "../drivers/database/DatabaseGraphMetadata.h"
+#include "../drivers/datasource/DataSourceGraphMetadata.h"
 #include "../loader/AbstractGraphLoaderStrategyFactory.h"
 #include "../Config.h"
 #include "../Exception.h"
@@ -130,7 +130,7 @@ te::graph::GraphMetadata* te::graph::AbstractGraphFactory::getMetadata(const std
 
       te::da::DataSource* ds = dsPtr.release();
       
-      metadata = new te::graph::DatabaseGraphMetadata(ds);
+      metadata = new te::graph::DataSourceGraphMetadata(ds);
 
       metadata->m_memoryGraph = false;
     }

@@ -46,7 +46,7 @@ bool IsPkey(const int& column, const std::vector<size_t>& pkeys)
   return false;
 }
 
-QString columnType(const int& type)
+QString ColumnType(const int& type)
 {
 
   switch(type)
@@ -260,7 +260,7 @@ QVariant te::qt::widgets::DataSetTableModel::headerData(int section, Qt::Orienta
       break;
 
       case Qt::ToolTipRole:
-       return m_dataset->getPropertyName(section).c_str() + QString(" : ") + columnType(m_dataset->getPropertyDataType(section));
+       return m_dataset->getPropertyName(section).c_str() + QString(" : ") + ColumnType(m_dataset->getPropertyDataType(section));
       break;
 
       default:

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DatabaseGraphMetadata.cpp
+  \file DataSourceGraphMetadata.cpp
 
   \brief Class used to define the graph metadata informations
          over a SGBD source
@@ -44,19 +44,19 @@
 #include "../../Config.h"
 #include "../../Exception.h"
 #include "../../Globals.h"
-#include "DatabaseGraphMetadata.h"
+#include "DataSourceGraphMetadata.h"
 
 
-te::graph::DatabaseGraphMetadata::DatabaseGraphMetadata(te::da::DataSource* ds) : te::graph::GraphMetadata(ds)
+te::graph::DataSourceGraphMetadata::DataSourceGraphMetadata(te::da::DataSource* ds) : te::graph::GraphMetadata(ds)
 {
   m_mode = te::graph::Edge_List;
 }
 
-te::graph::DatabaseGraphMetadata::~DatabaseGraphMetadata()
+te::graph::DataSourceGraphMetadata::~DataSourceGraphMetadata()
 {
 }
 
-void te::graph::DatabaseGraphMetadata::load(int id)
+void te::graph::DataSourceGraphMetadata::load(int id)
 {
   if(m_ds == 0)
   {
@@ -70,7 +70,7 @@ void te::graph::DatabaseGraphMetadata::load(int id)
   loadGraphAttrInfo(id);
 }
 
-void te::graph::DatabaseGraphMetadata::save()
+void te::graph::DataSourceGraphMetadata::save()
 {
   if(m_ds == 0)
   {
@@ -114,7 +114,7 @@ void te::graph::DatabaseGraphMetadata::save()
   }
 }
 
-void te::graph::DatabaseGraphMetadata::update()
+void te::graph::DataSourceGraphMetadata::update()
 {
   if(m_ds == 0)
   {
@@ -122,7 +122,7 @@ void te::graph::DatabaseGraphMetadata::update()
   }
 }
 
-void te::graph::DatabaseGraphMetadata::addVertexProperty(te::dt::Property* p)
+void te::graph::DataSourceGraphMetadata::addVertexProperty(te::dt::Property* p)
 {
   if(getVertexPropertySize() == 0)
   {
@@ -141,7 +141,7 @@ void te::graph::DatabaseGraphMetadata::addVertexProperty(te::dt::Property* p)
   saveProperty(tableName, p);
 }
 
-void te::graph::DatabaseGraphMetadata::removeVertexProperty(int idx)
+void te::graph::DataSourceGraphMetadata::removeVertexProperty(int idx)
 {
   te::dt::Property* p = te::graph::GraphMetadata::getVertexProperty(idx);
 
@@ -156,7 +156,7 @@ void te::graph::DatabaseGraphMetadata::removeVertexProperty(int idx)
   removeProperty(tableName, propertyName);
 }
 
-void te::graph::DatabaseGraphMetadata::addEdgeProperty(te::dt::Property* p)
+void te::graph::DataSourceGraphMetadata::addEdgeProperty(te::dt::Property* p)
 {
   if(this->getStorageMode() == te::graph::Vertex_List)
   {
@@ -175,7 +175,7 @@ void te::graph::DatabaseGraphMetadata::addEdgeProperty(te::dt::Property* p)
   saveProperty(tableName, p);
 }
 
-void te::graph::DatabaseGraphMetadata::removeEdgeProperty(int idx)
+void te::graph::DataSourceGraphMetadata::removeEdgeProperty(int idx)
 {
   te::dt::Property* p = te::graph::GraphMetadata::getEdgeProperty(idx);
 
@@ -190,7 +190,7 @@ void te::graph::DatabaseGraphMetadata::removeEdgeProperty(int idx)
   removeProperty(tableName, propertyName);
 }
 
-void te::graph::DatabaseGraphMetadata::createGraphMetadataTable()
+void te::graph::DataSourceGraphMetadata::createGraphMetadataTable()
 {
   te::da::DataSetType* dt = new te::da::DataSetType(Globals::sm_tableGraphName);
 
@@ -234,7 +234,7 @@ void te::graph::DatabaseGraphMetadata::createGraphMetadataTable()
   createTable(Globals::sm_tableGraphName, dt);
 }
 
-void te::graph::DatabaseGraphMetadata::createGraphAttributesTable()
+void te::graph::DataSourceGraphMetadata::createGraphAttributesTable()
 {
   te::da::DataSetType* dt = new te::da::DataSetType(Globals::sm_tableAttributeName);
 
@@ -282,12 +282,12 @@ void te::graph::DatabaseGraphMetadata::createGraphAttributesTable()
   createTable(Globals::sm_tableAttributeName, dt);
 }
 
-void te::graph::DatabaseGraphMetadata::createGraphTableVertexModel()
+void te::graph::DataSourceGraphMetadata::createGraphTableVertexModel()
 {
   throw Exception(TR_GRAPH("TO DO."));
 }
 
-void te::graph::DatabaseGraphMetadata::createGraphTableEdgeModel()
+void te::graph::DataSourceGraphMetadata::createGraphTableEdgeModel()
 {
   std::string tableName = this->getName() + Globals::sm_tableEdgeModelSufixName;
 
@@ -360,7 +360,7 @@ void te::graph::DatabaseGraphMetadata::createGraphTableEdgeModel()
   createTable(tableName, dt);
 }
 
-void te::graph::DatabaseGraphMetadata::createVertexAttrTable()
+void te::graph::DataSourceGraphMetadata::createVertexAttrTable()
 {
   std::string tableName = this->getName() + Globals::sm_tableVertexAttributeModelSufixName;
 
@@ -413,12 +413,12 @@ void te::graph::DatabaseGraphMetadata::createVertexAttrTable()
   createTable(tableName, dt);
 }
 
-void te::graph::DatabaseGraphMetadata::createEdgeAttrTable()
+void te::graph::DataSourceGraphMetadata::createEdgeAttrTable()
 {
   throw Exception(TR_GRAPH("TO DO."));
 }
 
-void te::graph::DatabaseGraphMetadata::createTable(std::string tableName, te::da::DataSetType* dt)
+void te::graph::DataSourceGraphMetadata::createTable(std::string tableName, te::da::DataSetType* dt)
 {
   if(m_ds->dataSetExists(tableName))
   {
@@ -431,12 +431,12 @@ void te::graph::DatabaseGraphMetadata::createTable(std::string tableName, te::da
   m_ds->createDataSet(dt, options);
 }
 
-bool te::graph::DatabaseGraphMetadata::isValidGraphName(std::string graphName)
+bool te::graph::DataSourceGraphMetadata::isValidGraphName(std::string graphName)
 {
   return true;
 }
 
-void te::graph::DatabaseGraphMetadata::addGraphTableNewEntry()
+void te::graph::DataSourceGraphMetadata::addGraphTableNewEntry()
 {
   //create the graph metadata table model
   createGraphMetadataTable();
@@ -479,7 +479,7 @@ void te::graph::DatabaseGraphMetadata::addGraphTableNewEntry()
   updateGraphId();
 }
 
-void te::graph::DatabaseGraphMetadata::addGraphAttrTableNewEntry()
+void te::graph::DataSourceGraphMetadata::addGraphAttrTableNewEntry()
 {
   createGraphAttributesTable();
 
@@ -506,7 +506,7 @@ void te::graph::DatabaseGraphMetadata::addGraphAttrTableNewEntry()
   }
 }
 
-void te::graph::DatabaseGraphMetadata::saveGraphAttrTableNewEntry(int graphId, std::string tableName, std::string attrName, std::string linkColumn, te::graph::GraphAttrType type)
+void te::graph::DataSourceGraphMetadata::saveGraphAttrTableNewEntry(int graphId, std::string tableName, std::string attrName, std::string linkColumn, te::graph::GraphAttrType type)
 {
   //get dataset type
   std::auto_ptr<te::da::DataSetType> dsType(m_ds->getDataSetType(Globals::sm_tableAttributeName));
@@ -531,7 +531,7 @@ void te::graph::DatabaseGraphMetadata::saveGraphAttrTableNewEntry(int graphId, s
   dsMem->clear();
 }
 
-void te::graph::DatabaseGraphMetadata::saveProperty(std::string tableName, te::dt::Property* p)
+void te::graph::DataSourceGraphMetadata::saveProperty(std::string tableName, te::dt::Property* p)
 {
   //get dataset type
   std::auto_ptr<te::da::DataSetType> dsType(m_ds->getDataSetType(tableName));
@@ -555,12 +555,12 @@ void te::graph::DatabaseGraphMetadata::saveProperty(std::string tableName, te::d
   }
 }
 
-void te::graph::DatabaseGraphMetadata::removeProperty(std::string tableName, std::string propertyName)
+void te::graph::DataSourceGraphMetadata::removeProperty(std::string tableName, std::string propertyName)
 {
   m_ds->dropProperty(tableName, propertyName);
 }
 
-void te::graph::DatabaseGraphMetadata::loadGraphInfo(int id)
+void te::graph::DataSourceGraphMetadata::loadGraphInfo(int id)
 {
   //load graph info
   te::da::Field* f = new te::da::Field("*");
@@ -600,7 +600,7 @@ void te::graph::DatabaseGraphMetadata::loadGraphInfo(int id)
   }
 }
 
-void te::graph::DatabaseGraphMetadata::loadGraphAttrInfo(int id)
+void te::graph::DataSourceGraphMetadata::loadGraphAttrInfo(int id)
 {
   //load attributes
   te::da::Field* f = new te::da::Field("*");
@@ -640,7 +640,7 @@ void te::graph::DatabaseGraphMetadata::loadGraphAttrInfo(int id)
   }
 }
 
-void te::graph::DatabaseGraphMetadata::loadVertexAttr(std::string tableName, std::string columnName)
+void te::graph::DataSourceGraphMetadata::loadVertexAttr(std::string tableName, std::string columnName)
 {
   //get property
   std::auto_ptr<te::dt::Property> p = m_ds->getProperty(tableName, columnName);
@@ -650,7 +650,7 @@ void te::graph::DatabaseGraphMetadata::loadVertexAttr(std::string tableName, std
   te::graph::GraphMetadata::addVertexProperty(myProp);
 }
 
-void te::graph::DatabaseGraphMetadata::loadEdgeAttr(std::string tableName, std::string columnName)
+void te::graph::DataSourceGraphMetadata::loadEdgeAttr(std::string tableName, std::string columnName)
 {
   //get property
   std::auto_ptr<te::dt::Property> p = m_ds->getProperty(tableName, columnName);
@@ -660,7 +660,7 @@ void te::graph::DatabaseGraphMetadata::loadEdgeAttr(std::string tableName, std::
   te::graph::GraphMetadata::addEdgeProperty(myProp);
 }
 
-void te::graph::DatabaseGraphMetadata::updateGraphId()
+void te::graph::DataSourceGraphMetadata::updateGraphId()
 {
   te::da::Field* f = new te::da::Field(new te::da::PropertyName(Globals::sm_tableGraphAttrId));
   te::da::Fields* fields = new te::da::Fields;
