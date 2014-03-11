@@ -20,7 +20,7 @@
 /*!
  \file AggregationOp.h
  
- \brief Vecto Aggregation operation.
+ \brief Aggregation operation.
  
  \ingroup vp
  */

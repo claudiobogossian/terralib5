@@ -26,86 +26,14 @@
 // Terralib Includes
 #include "../../common/Translator.h"
 #include "../../common/StringUtils.h"
-#include "../iterator/AbstractIterator.h"
 #include "../Config.h"
 #include "../Exception.h"
 #include "AbstractGraph.h"
 
-te::graph::AbstractGraph::AbstractGraph() :
-  m_iterator(0)
+te::graph::AbstractGraph::AbstractGraph() 
 {
 }
 
 te::graph::AbstractGraph::~AbstractGraph()
 {
-}
-
-te::graph::Vertex* te::graph::AbstractGraph::getFirstVertex()
-{
-  if(m_iterator == 0)
-  {
-    throw Exception(TR_GRAPH("Iterator not defined"));
-  }
-
-  return m_iterator->getFirstVertex();
-}
-
-te::graph::Vertex* te::graph::AbstractGraph::getNextVertex()
-{
-  if(m_iterator == 0)
-  {
-    throw Exception(TR_GRAPH("Iterator not defined"));
-  }
-
-  return m_iterator->getNextVertex();
-}
-
-te::graph::Vertex* te::graph::AbstractGraph::getPreviousVertex()
-{
-  if(m_iterator == 0)
-  {
-    throw Exception(TR_GRAPH("Iterator not defined"));
-  }
-
-  return m_iterator->getPreviousVertex();
-}
-
-te::graph::Edge* te::graph::AbstractGraph::getFirstEdge()
-{
-  if(m_iterator == 0)
-  {
-    throw Exception(TR_GRAPH("Iterator not defined"));
-  }
-
-  return m_iterator->getFirstEdge();
-}
-
-te::graph::Edge* te::graph::AbstractGraph::getNextEdge()
-{
-  if(m_iterator == 0)
-  {
-    throw Exception(TR_GRAPH("Iterator not defined"));
-  }
-
-  return m_iterator->getNextEdge();
-}
-
-te::graph::Edge* te::graph::AbstractGraph::getPreviousEdge()
-{
-  if(m_iterator == 0)
-  {
-    throw Exception(TR_GRAPH("Iterator not defined"));
-  }
-
-  return m_iterator->getPreviousEdge();
-}
-
-void te::graph::AbstractGraph::setIterator(te::graph::AbstractIterator* i)
-{
-  m_iterator = i;
-}
-
-te::graph::AbstractIterator* te::graph::AbstractGraph::getIterator()
-{
-  return m_iterator;
 }

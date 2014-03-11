@@ -71,6 +71,7 @@ set (
   ${SRCDIR}/connectors/LayerExplorer.h
   ${SRCDIR}/connectors/MapDisplay.h  
   ${SRCDIR}/connectors/StyleExplorer.h
+  ${SRCDIR}/connectors/TimeSliderWidget.h
 )
 
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/af/connectors" MOC)

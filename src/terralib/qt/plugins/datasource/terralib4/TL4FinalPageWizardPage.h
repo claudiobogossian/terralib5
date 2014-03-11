@@ -58,7 +58,15 @@ namespace te
 
             void setDataSets(const std::vector<std::string>& datasets);
 
+            void setThemes(const std::vector<std::pair<std::string, std::string> >& layers_themes);
+
             std::vector<std::string> getSelected();
+
+            std::vector<std::pair<std::string, std::string> > getSelectedThemes();
+
+          private:
+
+            bool parentLayerIsSeleted(std::string layerName);
 
           protected slots:
 

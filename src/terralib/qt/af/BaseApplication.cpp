@@ -316,6 +316,12 @@ void  te::qt::af::BaseApplication::resetState()
   te::qt::af::RestoreState(this);
 }
 
+te::qt::af::MapDisplay* te::qt::af::BaseApplication::getDisplay()
+{
+  return m_display;
+
+}
+
 void te::qt::af::BaseApplication::resetTerraLib(const bool& status)
 {
   m_restartTerraLib = !status;
@@ -1637,6 +1643,29 @@ void te::qt::af::BaseApplication::onDataSourceExplorerTriggered()
                          tr("DataSetExplorer Error!"));
   }
 }
+
+//void te::qt::af::BaseApplication::onTrajectoryAnimationTriggered() // Lauro
+//{
+//  std::list<te::map::AbstractLayerPtr> layers =  m_explorer->getExplorer()->getSelectedSingleLayers();
+//
+//  if(layers.empty())
+//  {
+//    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected trajectory layer."));
+//    return;
+//  }
+//
+//  std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
+//
+//  while(it != layers.end())
+//  {
+//    te::map::AbstractLayerPtr layer = (*it);
+//    std::string type = layer->getType();
+//    ++it;
+//
+//    //te::qt::af::evt::LayerSelectedObjectsChanged e(layer);
+//    //ApplicationController::getInstance().broadcast(&e);
+//  }
+//}
 
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 {

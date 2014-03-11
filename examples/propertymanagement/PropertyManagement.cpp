@@ -9,10 +9,7 @@
 #include "terralib/dataaccess/dataset/DataSetType.h"
 #include "terralib/dataaccess/datasource/DataSource.h"
 #include "terralib/dataaccess/datasource/DataSourceFactory.h"
-//#include "terralib/dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "terralib/dataaccess/datasource/DataSourceTransactor.h"
-
-//#include "terralib/postgis/DataSetTypePersistence.h"
 
 #include "terralib/qt/widgets/property/AddProperty.h"
 #include "terralib/qt/widgets/property/RenameProperty.h"
@@ -22,8 +19,6 @@
 
 // Application
 #include "PropertyManagement.h"
-
-//PropertyManagement* PropertyManagement::propertyManagementWindow = 0;
 
 PropertyManagement::PropertyManagement(QWidget* parent)
   : QMainWindow(parent)
@@ -41,8 +36,7 @@ PropertyManagement::PropertyManagement(QWidget* parent)
   std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
   ds->setConnectionInfo(connInfo);
   ds->open();
-  m_ds = ds.get();
-
+  m_ds = ds.release();
   m_dataSourceName = connInfo["PG_DB_NAME"];
 
   // Connect signal/slots
@@ -77,32 +71,28 @@ void PropertyManagement::addPropertyPushButtonClicked()
     return;
   }
 
+  std::auto_ptr<te::da::DataSourceTransactor> t = m_ds->getTransactor();
+
   // Add the property to its parent
   p = addPropertyDialog->getProperty();
-  propertyParent = addPropertyDialog->getPropertyParent();
 
-  te::da::DataSourceTransactor* t = m_ds->getTransactor();
-  //te::da::DataSetTypePersistence* persistence = t->getDataSetTypePersistence();
-
+  std::string ds_name = (addPropertyDialog->dataSetComboBox->currentText()).toStdString();
   try
   {
-    t->add(propertyParent, p);
+    t->addProperty(ds_name, p);
   }
   catch(te::common::Exception& e)
   {
     QMessageBox::critical(this, tr("Operation of Adding Property Failed"), e.what());
-    delete t;
     delete addPropertyDialog;
     return;
   }
 
   QString propertyName = p->getName().c_str();
-  QString propertyParentName = propertyParent->getName().c_str();
+  QString propertyDataSetName = ds_name.c_str();
 
   QMessageBox::information(this, tr("Operation of Adding Property"),
-    tr("The property \"%1\" was added to the data set \"%2\" successfully!").arg(propertyName).arg(propertyParentName));
-
-  delete t;
+    tr("The property \"%1\" was added to the data set \"%2\" successfully!").arg(propertyName).arg(propertyDataSetName));
 
   delete addPropertyDialog;
 }
@@ -122,30 +112,25 @@ void PropertyManagement::removePropertyPushButtonClicked()
 
   // Remove the property
   p = removePropertyDialog->getProperty();
-  propertyParent = removePropertyDialog->getPropertyParent();
 
-  te::da::DataSourceTransactor* t = m_ds->getTransactor();
-  te::da::DataSetTypePersistence* persistence = t->getDataSetTypePersistence();
-
+  std::auto_ptr<te::da::DataSourceTransactor> t = m_ds->getTransactor();
+  std::string propertyName1 = (removePropertyDialog->propertiesComboBox->currentText()).toStdString();
   QString propertyName = p->getName().c_str();
-  QString propertyParentName = propertyParent->getName().c_str();
-
+  std::string ds_name = (removePropertyDialog->dataSetComboBox->currentText()).toStdString();
+  QString propertyDataSetName = ds_name.c_str();
   try
   {
-    persistence->drop(p);
+    t->dropProperty(ds_name, propertyName1);
   }
   catch(te::common::Exception& e)
   {
     QMessageBox::critical(this, tr("Operation of Removing Property Failed"), e.what());
-    delete t;
     delete removePropertyDialog;
     return;
   }
 
   QMessageBox::information(this, tr("Operation of Removing Property"),
-    tr("The property \"%1\" was removed from the data set \"%2\" successfully!").arg(propertyName).arg(propertyParentName));
-
-  delete t;
+    tr("The property \"%1\" was removed from the data set \"%2\" successfully!").arg(propertyName).arg(propertyDataSetName));
 
   delete removePropertyDialog;
 }
@@ -164,34 +149,31 @@ void PropertyManagement::renamePropertyPushButtonClicked()
   }
 
   // Change property name
-  p = renamePropertyDialog->getProperty();
-  propertyParent = renamePropertyDialog->getPropertyParent();
+  std::string p_name_old = (renamePropertyDialog->propertiesComboBox->currentText()).toStdString();
+  std::string p_name_new = (renamePropertyDialog->getNewPropertyName());
     
-  te::da::DataSourceTransactor* t = m_ds->getTransactor();
-  te::da::DataSetTypePersistence* persistence = t->getDataSetTypePersistence();
+  std::auto_ptr<te::da::DataSourceTransactor> t = m_ds->getTransactor();
+  std::string ds_name = (renamePropertyDialog->dataSetComboBox->currentText()).toStdString();
 
-  QString oldPropertyName = renamePropertyDialog->getOldPropertyName().c_str();
+  QString oldPropertyName = p_name_old.c_str();
 
   try
   {
-    persistence->rename(p, renamePropertyDialog->getNewPropertyName());
+   t->renameProperty(ds_name, p_name_old, p_name_new);
   }
   catch(te::common::Exception& e)
   {
     QMessageBox::critical(this, tr("Operation of Changing Property Name Failed"), e.what());
-    delete t;
     delete renamePropertyDialog;
     return;
   }
 
-  QString newPropertyName = p->getName().c_str();
-  QString propertyParentName = propertyParent->getName().c_str();
+  QString newPropertyName = p_name_new.c_str();
+  QString propertyDataSetName = ds_name.c_str();
 
   QMessageBox::information(this, tr("Operation of Changing Property Name"),
     tr("The property \"%1\" from the data set \"%2\" was renamed to \"%3\" successfully!")
-      .arg(oldPropertyName).arg(propertyParentName).arg(newPropertyName));
-
-  delete t;
+      .arg(oldPropertyName).arg(propertyDataSetName).arg(newPropertyName));
 
   delete renamePropertyDialog;
 }
@@ -212,28 +194,27 @@ void PropertyManagement::updatePropertyPushButtonClicked()
 
   oldProperty = updatePropertyDialog->getOldProperty();
   updatedProperty = updatePropertyDialog->getUpdatedProperty();
+  std::string ds_name = (updatePropertyDialog->dataSetComboBox->currentText()).toStdString();
 
   // Update property
-  te::da::DataSourceTransactor* t = m_ds->getTransactor();
-  te::da::DataSetTypePersistence* persistence = t->getDataSetTypePersistence();
+  std::auto_ptr<te::da::DataSourceTransactor> t = m_ds->getTransactor();
 
   try
   {
-    persistence->update(oldProperty, updatedProperty);
+    //t->update(oldProperty, updatedProperty);
   }
   catch(te::common::Exception& e)
   {
     QMessageBox::critical(this, tr("Operation of Updating Property Failed"), e.what());
-    delete t;
     delete updatePropertyDialog;
     return;
   }
 
-  QMessageBox::information(this, tr("Operation of Updating Property"),
+  QString oldPropertyName = oldProperty->getName().c_str();
+  QString propertyDataSetName = ds_name.c_str();
+  QMessageBox::information(this, tr("Operation of Updating Property NOT IMPLEMENTED"),
     tr("The property \"%1\" from the data set \"%2\" was updated successfully!")
-      .arg(oldProperty->getName().c_str()).arg(oldProperty->getParent()->getName().c_str()));
-
-  delete t;
+      .arg(oldPropertyName).arg(propertyDataSetName));
 
   delete updatePropertyDialog;
 }

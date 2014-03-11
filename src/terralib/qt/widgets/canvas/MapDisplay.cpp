@@ -211,6 +211,12 @@ double te::qt::widgets::MapDisplay::getHeightMM() const
   return static_cast<double>(heightMM());
 }
 
+void te::qt::widgets::MapDisplay::setSRID(const int& srid, bool doRefresh)
+{
+  te::map::MapDisplay::setSRID(srid, doRefresh);
+  emit displaySridChanged();
+}
+
 QPixmap* te::qt::widgets::MapDisplay::getDisplayPixmap() const
 {
   return m_displayPixmap;
@@ -285,6 +291,9 @@ void te::qt::widgets::MapDisplay::paintEvent(QPaintEvent* e)
 {
   QPainter painter(this);
   painter.drawPixmap(0, 0, *m_displayPixmap);
+
+  emit displayPaintEvent(&painter);
+
   painter.drawPixmap(0, 0, *m_draftPixmap);
 }
 

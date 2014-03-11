@@ -97,6 +97,7 @@ te::qt::widgets::ROIManagerWidget::ROIManagerWidget(QWidget* parent, Qt::WindowF
   m_navigator->setSelectionMode(true);
   m_navigator->hidePickerTool(true);
   m_navigator->hideInfoTool(true);
+  m_navigator->hideBoxTool(true);
 
   //connects
   connect(m_ui->m_openLayerROIToolButton, SIGNAL(clicked()), this, SLOT(onOpenLayerROIToolButtonClicked()));

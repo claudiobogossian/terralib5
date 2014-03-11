@@ -76,12 +76,20 @@ namespace te
         /*! \brief constructor. */
         Graph();
 
-      /*!
-        \brief Constructor
+        /*!
+          \brief Constructor
 
-        \param cp   A pointer to a cache policy implementation
+          \param metadata   A pointer to a graph metadata implementation
 
-        \param ls   A pointer to a loader strategy implementation
+        */
+        Graph(GraphMetadata* metadata);
+
+        /*!
+          \brief Constructor
+
+          \param cp   A pointer to a cache policy implementation
+
+          \param ls   A pointer to a loader strategy implementation
 
         */
         Graph(AbstractCachePolicy* cp, AbstractGraphLoaderStrategy* ls);
@@ -279,13 +287,15 @@ namespace te
 
       protected:
 
-        GraphData* m_graphData;           //!< This class has the graph data and properties
-
         GraphDataManager* m_dataManager;  //!< Used to load and save GraphData information from a DataSource
 
         GraphCache* m_graphCache;         //!< Class used to keep all graph data loaded
 
         GraphMetadata* m_metadata;        //!< Graph Data loader strategy
+
+      public:
+
+        GraphData* m_graphData;           //!< This class has the graph data and properties
     };
 
   } // end namespace graph

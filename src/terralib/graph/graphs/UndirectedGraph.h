@@ -60,12 +60,20 @@ namespace te
         /*! \brief constructor. */
         UndirectedGraph();
 
-      /*!
-        \brief Constructor
+        /*!
+          \brief Constructor
 
-        \param cp   A pointer to a cache policy implementation
+          \param metadata   A pointer to a graph metadata implementation
 
-        \param ls   A pointer to a loader strategy implementation
+        */
+        UndirectedGraph(GraphMetadata* metadata);
+
+        /*!
+          \brief Constructor
+
+          \param cp   A pointer to a cache policy implementation
+
+          \param ls   A pointer to a loader strategy implementation
 
         */
         UndirectedGraph(AbstractCachePolicy* cp, AbstractGraphLoaderStrategy* ls);

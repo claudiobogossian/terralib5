@@ -92,6 +92,8 @@ namespace te
 
           virtual void init(const std::string& configFile);
 
+          MapDisplay* getDisplay();
+
           virtual void resetState();
 
           void resetTerraLib(const bool& status);
@@ -214,6 +216,8 @@ namespace te
 
           void onDataSourceExplorerTriggered();
 
+          //void onTrajectoryAnimationTriggered(); // Lauro
+
         protected:
 
           virtual void openProject(const QString& projectFileName);
@@ -239,6 +243,10 @@ namespace te
           virtual void initStatusBar();
 
           virtual void initSlotsConnections();
+
+        signals:
+          void applicationClose();
+
 
         protected:
 

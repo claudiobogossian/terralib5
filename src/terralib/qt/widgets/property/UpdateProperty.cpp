@@ -223,8 +223,8 @@ void te::qt::widgets::UpdateProperty::dataSetComboBoxChanged(const QString& data
 void te::qt::widgets::UpdateProperty::propertiesComboBoxActivated(const QString& propertyName)
 {
   // Get the old property
-  m_oldProperty = m_ds->getProperty(dataSetComboBox->currentText().toStdString(), propertyName.toStdString()).get();
-
+  m_oldProperty = (m_ds->getProperty(dataSetComboBox->currentText().toStdString(), propertyName.toStdString())).release();
+ 
   // Set in the dataTypeComboBox the initial old property data type
   int oldPropertyType = m_oldProperty->getType();
 
