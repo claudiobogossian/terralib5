@@ -161,6 +161,8 @@ namespace te
                             const std::string& propertyName,
                             const std::string& newPropertyName);
 
+        void changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp);
+
         std::auto_ptr<te::da::PrimaryKey> getPrimaryKey(const std::string& datasetName);
 
         bool primaryKeyExists(const std::string& datasetName, const std::string& name);

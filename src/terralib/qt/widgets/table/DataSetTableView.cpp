@@ -314,9 +314,7 @@ class TablePopupFilter : public QObject
             act7->setToolTip(tr("Adds a column to the table."));
             m_hMenu->addAction(act7);
 
-            bool updatePermition = false;
-            if(m_dset->getAccessPolicy()==te::common::RWAccess)
-              updatePermition = true;
+            bool updatePermition = (m_dset->getAccessPolicy()==te::common::RWAccess);
 
             act7->setEnabled(updatePermition);
 
