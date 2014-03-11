@@ -617,7 +617,7 @@ void te::ogr::Transactor::changePropertyDefinition(const std::string& datasetNam
     if(idx == -1)
       throw Exception(TR_OGR("Field to be renamed does not exists."));
 
-    OGRFieldDefn* dfn = l->GetLayerDefn()->GetFieldDefn(idx);
+    OGRFieldDefn* dfn = new OGRFieldDefn(l->GetLayerDefn()->GetFieldDefn(idx));
 
     dfn->SetType(GetOGRType(newProp->getType()));
 
@@ -625,6 +625,10 @@ void te::ogr::Transactor::changePropertyDefinition(const std::string& datasetNam
 
     if(err != OGRERR_NONE)
       throw Exception(TR_OGR("Fail to to change field type."));
+
+    std::string name = m_ogrDs->getOGRDataSource()->GetName();
+
+    err = l->SyncToDisk();
   }
 }
 

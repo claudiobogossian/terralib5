@@ -465,6 +465,7 @@ set (
   ${SRCDIR}/widgets/table/DataSetTableView.h
   ${SRCDIR}/widgets/table/DataSetTableVerticalHeader.h
   ${SRCDIR}/widgets/table/AddColumnDialog.h
+  ${SRCDIR}/widgets/table/AlterDataDialog.h
   ${SRCDIR}/widgets/table/RenameColumnDialog.h
   ${SRCDIR}/widgets/table/RetypeColumnDialog.h
 )

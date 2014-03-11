@@ -178,6 +178,40 @@ ADOX::DataTypeEnum te::ado::Convert2Ado(int terralib)
   }
 }
 
+std::string te::ado::GetAdoStringType(const int& terralib)
+{
+  ADOX::DataTypeEnum aType = te::ado::Convert2Ado(terralib);
+
+  switch(aType) 
+  {
+    case ADOX::adInteger:
+      return "Integer";
+    break;
+
+    case ADOX::adDate:
+      return "Date/Time";
+    break;
+
+    case ADOX::adDouble:
+      return "Double";
+    break;
+
+    case ADOX::adBoolean:
+      return "Yes/No";
+    break;
+
+    case ADOX::adLongVarBinary:
+      return "Memo";
+    break;
+
+    case ADOX::adLongVarWChar:
+      return "Text";
+    break;
+  }
+
+  return "";
+}
+
 void te::ado::Convert2Ado(const te::gm::Geometry* geo, _variant_t & var)
 {
   long size = geo->getWkbSize();

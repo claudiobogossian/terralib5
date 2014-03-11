@@ -6,8 +6,8 @@
 #include "../canvas/MapDisplay.h"
 
 // Qt
-#include <QtCore/QThread.h>
-#include <QtGui/QGraphicsView.h>
+#include <QtCore/QThread>
+#include <QtGui/QGraphicsView>
 
 te::qt::widgets::AnimationScene::AnimationScene(te::qt::widgets::MapDisplay* display, QObject* parent)
   : QGraphicsScene(parent),
