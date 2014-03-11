@@ -31,7 +31,7 @@ set (
   cache
   core
   drivers
-  drivers/database
+  drivers/datasource
   functions
   graphs
   iterator

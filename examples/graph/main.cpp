@@ -33,10 +33,12 @@ int main()
     //-----------------------------------------------------------------------------------------------------
     bool draw = true;
 
+    //create gpm graph
+    CreateGPMAdjacencyGraph(draw);
+    CreateGPMDistanceGraph(draw);
+
     //create ldd graph
-    CreateLDDGraph(draw);
-
-
+    //CreateLDDGraph(draw);
 
     //-----------------------------------------------------------------------------------------------------
 
