@@ -18,14 +18,14 @@
  */
 
 /*!
-  \file DatabaseGraphMetadata.h
+  \file DataSourceGraphMetadata.h
 
   \brief Class used to define the graph metadata informations
          over a SGBD source
 */
 
-#ifndef __TERRALIB_GRAPH_INTERNAL_DATABASEGRAPHMETADATA_H
-#define __TERRALIB_GRAPH_INTERNAL_DATABASEGRAPHMETADATA_H
+#ifndef __TERRALIB_GRAPH_INTERNAL_DATASOURCEGRAPHMETADATA_H
+#define __TERRALIB_GRAPH_INTERNAL_DATASOURCEGRAPHMETADATA_H
 
 // Terralib Includes
 #include "../../core/GraphMetadata.h"
@@ -51,7 +51,7 @@ namespace te
     class GraphMetadata;
   
     /*!
-      \class DatabaseGraphMetadata
+      \class DataSourceGraphMetadata
 
       \brief Class used to define the graph metadata informations
          over a SGBD source
@@ -59,15 +59,15 @@ namespace te
       \sa GraphMetadata, Enums
     */
 
-    class TEGRAPHEXPORT DatabaseGraphMetadata : public GraphMetadata
+    class TEGRAPHEXPORT DataSourceGraphMetadata : public GraphMetadata
     {
       public:
 
         /*! \brief Default constructor. */
-        DatabaseGraphMetadata(te::da::DataSource* ds);
+        DataSourceGraphMetadata(te::da::DataSource* ds);
 
         /*! \brief Default destructor. */
-        ~DatabaseGraphMetadata();
+        ~DataSourceGraphMetadata();
 
         /*!
           \brief Function used to load the graph information given a graph id
@@ -293,4 +293,4 @@ namespace te
   } // end namespace graph
 } // end namespace te
 
-#endif // __TERRALIB_GRAPH_INTERNAL_DATABASEGRAPHMETADATA_H
+#endif // __TERRALIB_GRAPH_INTERNAL_DATASOURCEGRAPHMETADATA_H
