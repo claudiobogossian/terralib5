@@ -403,6 +403,7 @@ namespace te
       
       if( m_inputParameters.m_enableProgress )
       {
+        progressPtr.reset();
         progressPtr.reset( new te::common::TaskProgress );
         
         progressPtr->setTotalSteps( validReferenceRastersNumber );
@@ -429,21 +430,21 @@ namespace te
       {
         bool aRefRasterWasProcessed = false;
         
-        for( unsigned int sectorIdx = 0 ; sectorIdx <
-          refRastersIndexesBySector.size() ; ++sectorIdx )
+        for( unsigned int refRastersIndexesBySectorIdx = 0 ; refRastersIndexesBySectorIdx <
+          refRastersIndexesBySector.size() ; ++refRastersIndexesBySectorIdx )
         {
-          for( unsigned int sectorRastersIdx = 0 ; sectorRastersIdx <
-            refRastersIndexesBySector[ sectorIdx ].size() ; ++sectorRastersIdx )
+          std::vector< unsigned int >& sector = 
+            refRastersIndexesBySector[ refRastersIndexesBySectorIdx ];
+            
+          for( unsigned int sectorIdx = 0 ; sectorIdx < sector.size() ; ++sectorIdx )
           {          
-            const unsigned int refRasterIdx = 
-              refRastersIndexesBySector[ sectorIdx ][ sectorRastersIdx ];
+            const unsigned int refRasterIdx = sector[ sectorIdx ];
               
             if( refRasterIdx < m_inputParameters.m_referenceRastersPtr->getObjsCount() )
             {
               // Mark the reference raster as processed
               
-              refRastersIndexesBySector[ sectorIdx ][ sectorRastersIdx ] = 
-                std::numeric_limits< unsigned int >::max();       
+              sector[ sectorIdx ] = std::numeric_limits< unsigned int >::max();       
                 
               aRefRasterWasProcessed = true; 
                 
@@ -674,8 +675,8 @@ namespace te
               }
               
               //skip to the next sector
-            
-              sectorRastersIdx = refRastersIndexesBySector[ sectorIdx ].size();              
+
+              sectorIdx = sector.size();                               
               
               // Finding the tie-points in agreement with the choosen geometric transformation model
               
@@ -687,7 +688,7 @@ namespace te
                   // No need to precess more reference rasters
                   // Break the loop
                   
-                  sectorIdx = refRastersIndexesBySector.size();
+                  refRastersIndexesBySectorIdx = refRastersIndexesBySector.size();
                   continueOnLoop = false;
                 }
                 else
