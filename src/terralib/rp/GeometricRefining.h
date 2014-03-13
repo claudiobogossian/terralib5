@@ -185,6 +185,8 @@ namespace te
             
             std::vector< MatchingResult > m_matchingResult; //!< The matching result status for all given reference rasters.
             
+            std::vector< te::gm::GTParameters::TiePoint > m_tiePoints; //!< The tie-points used to generate the output raster (first: input raster lines/cols, second:input raster world coords).
+            
             OutputParameters();
             
             OutputParameters( const OutputParameters& );
