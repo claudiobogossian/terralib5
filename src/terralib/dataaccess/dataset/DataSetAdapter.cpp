@@ -283,7 +283,7 @@ te::dt::AbstractData* te::da::DataSetAdapter::getAdaptedValue(std::size_t i) con
 {
   te::dt::AbstractData* data = m_converters[i](m_ds.get(), m_propertyIndexes[i], m_datatypes[i]);
 
-  if(data->getTypeCode() == te::dt::GEOMETRY_TYPE)
+  if(data && data->getTypeCode() == te::dt::GEOMETRY_TYPE)
   {
     te::gm::Geometry* geom = dynamic_cast<te::gm::Geometry*>(data);
 

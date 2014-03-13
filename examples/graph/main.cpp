@@ -13,7 +13,6 @@
 #include <locale>
 
 
-
 int main()
 {
   setlocale(LC_ALL,"C");
@@ -33,12 +32,18 @@ int main()
     //-----------------------------------------------------------------------------------------------------
     bool draw = true;
 
+    //exchange spatial weights files
+    ExchangeSpatialWeightsFiles(draw);
+
+
     //create gpm graph
     CreateGPMAdjacencyGraph(draw);
+
     CreateGPMDistanceGraph(draw);
 
+
     //create ldd graph
-    //CreateLDDGraph(draw);
+    CreateLDDGraph(draw);
 
     //-----------------------------------------------------------------------------------------------------
 
