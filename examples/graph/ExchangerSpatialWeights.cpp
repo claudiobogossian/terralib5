@@ -6,6 +6,9 @@
 #include "GraphExamples.h"
 #include "DisplayWindow.h"
 
+// STL Includes
+#include <iostream>
+
 // BOOST Includes
 #include <boost/shared_ptr.hpp>
 

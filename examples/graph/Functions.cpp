@@ -6,6 +6,9 @@
 #include <terralib/raster/RasterFactory.h>
 #include "GraphExamples.h"
 
+// STL Includes
+#include <iostream>
+
 
 
 std::auto_ptr<te::rst::Raster> OpenRaster(const std::string& pathName, const int& srid)
