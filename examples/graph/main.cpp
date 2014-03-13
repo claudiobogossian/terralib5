@@ -34,7 +34,7 @@ int main()
     bool draw = true;
 
     //create gpm graph
-    CreateGPMAdjacencyGraph(draw);
+    //CreateGPMAdjacencyGraph(draw);
     CreateGPMDistanceGraph(draw);
 
     //create ldd graph
