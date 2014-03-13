@@ -403,6 +403,7 @@ namespace te
       
       if( m_inputParameters.m_enableProgress )
       {
+        progressPtr.reset();
         progressPtr.reset( new te::common::TaskProgress );
         
         progressPtr->setTotalSteps( validReferenceRastersNumber );
@@ -429,17 +430,26 @@ namespace te
       {
         bool aRefRasterWasProcessed = false;
         
-        for( unsigned int sectorIdx = 0 ; sectorIdx <
-          refRastersIndexesBySector.size() ; ++sectorIdx )
+        for( unsigned int refRastersIndexesBySectorIdx = 0 ; refRastersIndexesBySectorIdx <
+          refRastersIndexesBySector.size() ; ++refRastersIndexesBySectorIdx )
         {
-          for( unsigned int sectorRastersIdx = 0 ; sectorRastersIdx <
-            refRastersIndexesBySector[ sectorIdx ].size() ; ++sectorRastersIdx )
+          std::vector< unsigned int >& sector = 
+            refRastersIndexesBySector[ refRastersIndexesBySectorIdx ];
+            
+          for( unsigned int sectorIdx = 0 ; sectorIdx < sector.size() ; ++sectorIdx )
           {          
-            const unsigned int& refRasterIdx = 
-              refRastersIndexesBySector[ sectorIdx ][ sectorRastersIdx ];
+            const unsigned int refRasterIdx = sector[ sectorIdx ];
               
             if( refRasterIdx < m_inputParameters.m_referenceRastersPtr->getObjsCount() )
             {
+              // Mark the reference raster as processed
+              
+              sector[ sectorIdx ] = std::numeric_limits< unsigned int >::max();       
+                
+              aRefRasterWasProcessed = true; 
+                
+              // open the reference raster
+              
               TERP_TRUE_OR_THROW( m_inputParameters.m_referenceRastersPtr->moveTo( refRasterIdx ),
                 "Rasters feeder mover error" ); 
                 
@@ -587,7 +597,6 @@ namespace te
                         matchingInfo.m_convexHullAreaPercent = convexHullAreaPercent;
                         
                         te::gm::GTParameters::TiePoint tiePoint;
-                        
                         for( unsigned int tpIdx = 0 ; tpIdx < locatorOutputParams.m_tiePoints.size() ;
                           ++tpIdx )
                         {
@@ -600,7 +609,9 @@ namespace te
                              tiePoint.second.x,
                              tiePoint.second.y );
                           
-                          matchingInfo.m_tiePoints.push_back( tiePoint );                          
+                          matchingInfo.m_tiePoints.push_back( tiePoint );
+                          outParamsPtr->m_matchingResult[ refRasterIdx ].m_tiePoints.push_back(
+                            tiePoint );
                         }
                         
                         refRastersMatchingInfo.push_back( matchingInfo );
@@ -610,12 +621,26 @@ namespace te
                       }
                       else
                       {
+                        te::gm::GTParameters::TiePoint tiePoint;
+                        for( unsigned int tpIdx = 0 ; tpIdx < locatorOutputParams.m_tiePoints.size() ;
+                          ++tpIdx )
+                        {
+                          tiePoint.first.x = locatorOutputParams.m_tiePoints[ tpIdx ].first.x;
+                          tiePoint.first.y = locatorOutputParams.m_tiePoints[ tpIdx ].first.y;
+                          
+                          refRasterPtr->getGrid()->gridToGeo( 
+                             locatorOutputParams.m_tiePoints[ tpIdx ].second.x,
+                             locatorOutputParams.m_tiePoints[ tpIdx ].second.y,
+                             tiePoint.second.x,
+                             tiePoint.second.y );
+                          
+                          outParamsPtr->m_matchingResult[ refRasterIdx ].m_tiePoints.push_back(
+                            tiePoint );
+                        }
+                                                
                         outParamsPtr->m_matchingResult[ refRasterIdx ].m_status = 
                           OutputParameters::MatchingResult::Fail;    
                       }
-                      
-                      outParamsPtr->m_matchingResult[ refRasterIdx ].m_tiePoints =
-                        locatorOutputParams.m_tiePoints;                      
                       
                       double ulCol = 0;
                       double ulRow = 0;
@@ -664,6 +689,10 @@ namespace te
                   OutputParameters::MatchingResult::Fail;
               }
               
+              //skip to the next sector
+
+              sectorIdx = sector.size();                               
+              
               // Finding the tie-points in agreement with the choosen geometric transformation model
               
               if( !m_inputParameters.m_processAllReferenceRasters )
@@ -671,8 +700,10 @@ namespace te
                 if( getTransformation( refRastersMatchingInfo, baseGeometricTransformPtr,
                   baseTransAgreementTiePoints ) )
                 {
-                  sectorRastersIdx = refRastersIndexesBySector[ sectorIdx ].size();
-                  sectorIdx = refRastersIndexesBySector.size();
+                  // No need to precess more reference rasters
+                  // Break the loop
+                  
+                  refRastersIndexesBySectorIdx = refRastersIndexesBySector.size();
                   continueOnLoop = false;
                 }
                 else
@@ -680,18 +711,7 @@ namespace te
                   baseGeometricTransformPtr.reset();
                   baseTransAgreementTiePoints.clear();
                 }
-              }              
-                
-              // Mark the reference raster as processed
-              
-              refRastersIndexesBySector[ sectorIdx ][ sectorRastersIdx ] = 
-                std::numeric_limits< unsigned int >::max();
-                
-              aRefRasterWasProcessed = true; 
-              
-              //skip to the next sector
-              
-              sectorRastersIdx = refRastersIndexesBySector[ sectorIdx ].size();
+              }
               
               // Progress 
               
