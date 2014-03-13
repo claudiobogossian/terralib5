@@ -152,6 +152,7 @@ namespace te
       m_rInfo.clear();
       m_outputRasterPtr.reset();
       m_matchingResult.clear();
+      m_tiePoints.clear();
     }
 
     const GeometricRefining::OutputParameters& GeometricRefining::OutputParameters::operator=(
@@ -162,6 +163,7 @@ namespace te
       m_rType = params.m_rType;
       m_rInfo = params.m_rInfo;
       m_matchingResult = params.m_matchingResult;
+      m_tiePoints = params.m_tiePoints;
 
       return *this;
     }
@@ -746,7 +748,9 @@ namespace te
         {
           return false;
         }
-      }        
+      }  
+      
+      outParamsPtr->m_tiePoints = baseTransAgreementTiePoints;
       
       // Generating the refined output raster
       
