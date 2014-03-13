@@ -81,7 +81,7 @@ namespace te
 
 
         /*!
-          \brief Function used to generated the vertex id based on raster coordenate
+          \brief Function used to generated a graph using the RAG strategy
 
           \param shapeFileName  File name wiht vectorial data
           \param linkColumn     Column name from vectorial data used as link column
