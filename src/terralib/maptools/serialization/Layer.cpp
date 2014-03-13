@@ -1367,11 +1367,14 @@ te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader)
 
   te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(result->getConverter()->getResult());
 
-  while(dataset->moveNext())
+  if(gp)
   {
-    te::gm::Geometry* geom = dataset->getGeometry(gp->getName()).release();
-    assert(geom);
-    env->Union(*geom->getMBR());
+    while(dataset->moveNext())
+    {
+      te::gm::Geometry* geom = dataset->getGeometry(gp->getName()).release();
+      assert(geom);
+      env->Union(*geom->getMBR());
+    }
   }
 
   result->setExtent(*env);
