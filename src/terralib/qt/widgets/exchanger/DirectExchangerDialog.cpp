@@ -98,7 +98,7 @@ void te::qt::widgets::DirectExchangerDialog::setLayers(std::list<te::map::Abstra
 
       std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
 
-      if(dsType.get()/* && dsType->hasGeom()*/)
+      if(dsType.get() && !dsType->hasRaster())
         m_ui->m_inputLayerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
 
     ++it;
