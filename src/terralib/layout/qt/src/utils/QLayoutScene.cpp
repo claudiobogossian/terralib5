@@ -4,6 +4,8 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsItem>
 #include <QtGui>
+#include <QPixmap>
+
 #include "LayoutItemObserver.h"
 #include <QWidget>
 #include "LayoutContext.h"
@@ -261,4 +263,79 @@ void te::layout::QLayoutScene::createMasterParentItem()
 QGraphicsItem* te::layout::QLayoutScene::getMasterParentItem()
 {
   return _masterParent;
+}
+
+void te::layout::QLayoutScene::printPaper()
+{
+  //Impressão de parte da Cena
+    //Não é necessário mudar a escala do View
+
+    QPrinter* printer=new QPrinter(QPrinter::HighResolution);
+    printer->setPageSize(QPrinter::A4);
+    printer->setOrientation( QPrinter::Portrait );
+    printer->pageRect(QPrinter::Millimeter);
+
+    if (QPrintDialog(printer).exec() == QDialog::Accepted) 
+    {
+      QPainter painter(printer);
+      painter.setRenderHint(QPainter::Antialiasing);
+      painter.scale(1., 1.);
+      
+      double dpiX = LayoutContext::getInstance()->getDpiX();
+      double dpiY = LayoutContext::getInstance()->getDpiY();
+
+      LayoutContext::getInstance()->setDpiX(printer->logicalDpiX());
+      LayoutContext::getInstance()->setDpiY(printer->logicalDpiY());
+      
+      te::gm::Envelope paperBox =  getPaperBox();
+      
+      //Box da folha na Cena (Fonte)
+      QRectF mmSourceRect(paperBox.getLowerLeftX(), paperBox.getLowerLeftY(), 
+        paperBox.getWidth(), paperBox.getHeight());
+
+      //Tamanho da folha utilizando o dpi da impressora (Alvo)
+      QRect pxTargetRect(0, 0, painter.device()->width(), painter.device()->height());
+
+      //Imprimir folha (Cena para Impressora)
+      //draw items with printer painter
+      /*
+        Idea: Inside the paint object, whether in print mode, 
+        the pixmap before drawing, redrawing the object (model redraw).
+      */
+      render(&painter, pxTargetRect, mmSourceRect); // upside down
+      
+      LayoutContext::getInstance()->setDpiX(dpiX);
+      LayoutContext::getInstance()->setDpiY(dpiY);
+
+    }
+}
+
+void te::layout::QLayoutScene::savePaperAsImage( std::string pathWithFileName)
+{
+  QPixmap pixmap;
+  QPainter painter(&pixmap);
+  painter.setRenderHint(QPainter::Antialiasing);
+  painter.scale(1., 1.);
+
+  te::gm::Envelope paperBox =  getPaperBox();
+  //Box da folha na Cena (Fonte)
+  QRectF mmSourceRect(paperBox.getLowerLeftX(), paperBox.getLowerLeftY(), 
+    paperBox.getWidth(), paperBox.getHeight());
+
+  //Tamanho da folha utilizando o dpi da impressora (Alvo)
+  //1º Converter tamanho do papel para pixel?????????
+  //Utilizar canvas como painter?
+  QRect pxTargetRect(0, 0, painter.device()->width(), painter.device()->height());
+
+  //Imprimir folha (Cena para Impressora)
+  //draw items with printer painter
+  /*
+    Idea: Inside the paint object, whether in print mode, 
+    the pixmap before drawing, redrawing the object (model redraw).
+  */
+  render(&painter, pxTargetRect, mmSourceRect); // upside down
+  render(&painter);
+  painter.end();
+
+  pixmap.save(QString(pathWithFileName.c_str()));
 }

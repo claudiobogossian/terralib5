@@ -25,14 +25,14 @@ void te::layout::ItemGroupLayoutModel::draw( ContextLayoutItem context )
   LayoutUtils* utils = LayoutContext::getInstance()->getUtils();
 
   if(context.isResizeCanvas())
-    utils->configCanvas(canvas, _box);
+    utils->configCanvas(_box);
   
   canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 255, 255));
   
-  utils->drawRectW(canvas, _box);
+  utils->drawRectW(_box);
   
   if(context.isResizeCanvas())
-    pixmap = utils->getImageW(canvas, _box);
+    pixmap = utils->getImageW(_box);
   
   ContextLayoutItem contextNotify;
   contextNotify.setPixmap(pixmap);

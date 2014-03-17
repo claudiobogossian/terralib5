@@ -11,6 +11,13 @@
 
 #include <QToolBar>
 #include <QToolButton>
+#include <QComboBox>
+#include <QGroupBox>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QTextEdit>
+#include <QMenuBar>
+
 #include "LayoutView.h"
 
 te::layout::QToolbarWindowOutside::QToolbarWindowOutside( LayoutOutsideController* controller, LayoutOutsideModelObservable* o ) :
@@ -21,6 +28,7 @@ te::layout::QToolbarWindowOutside::QToolbarWindowOutside( LayoutOutsideControlle
 	setVisible(false);
 	setWindowTitle("Layout - Toolbar");
   setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
+  setMinimumSize(200, 10);
 }
 
 void te::layout::QToolbarWindowOutside::init( LayoutView* view )
@@ -70,27 +78,34 @@ void te::layout::QToolbarWindowOutside::createToolbar()
 {
   _toolbar = new QToolBar;
 
-  QToolButton *button1 = new QToolButton;
-  button1->setText("Pan");
-  button1->setGeometry(0,0,10,10);
-  button1->setCheckable(true);
-  connect(button1, SIGNAL(toggled(bool)), this, SLOT(onClickPanTool(bool)));
-  QToolButton *button2 = new QToolButton;
-  button2->setText("Zoom In");
-  button2->setGeometry(0,0,10,10);
-  button2->setCheckable(true);
-  connect(button2, SIGNAL(toggled(bool)), this, SLOT(onClickZoomInTool(bool)));
-  QToolButton *button3 = new QToolButton;
-  button3->setText("Zoom Out");
-  button3->setGeometry(0,0,10,10);
-  button3->setCheckable(true);
-  connect(button3, SIGNAL(toggled(bool)), this, SLOT(onClickZoomOutTool(bool)));
+  QToolButton *btnPan = new QToolButton;
+  btnPan->setText("Pan");
+  btnPan->setGeometry(0,0,10,10);
+  btnPan->setCheckable(true);
+  connect(btnPan, SIGNAL(toggled(bool)), this, SLOT(onClickPanTool(bool)));
+  QToolButton *btnZoomIn = new QToolButton;
+  btnZoomIn->setText("Zoom In");
+  btnZoomIn->setGeometry(0,0,10,10);
+  btnZoomIn->setCheckable(true);
+  connect(btnZoomIn, SIGNAL(toggled(bool)), this, SLOT(onClickZoomInTool(bool)));
+  QToolButton *btnZoomOut = new QToolButton;
+  btnZoomOut->setText("Zoom Out");
+  btnZoomOut->setGeometry(0,0,10,10);
+  btnZoomOut->setCheckable(true);
+  connect(btnZoomOut, SIGNAL(toggled(bool)), this, SLOT(onClickZoomOutTool(bool)));
 
-  _toolbar->addWidget(button1);
+  QComboBox *cmbUnitsMetrics = new QComboBox;
+  cmbUnitsMetrics->insertItem(TPMillimeter, QIcon(), QString("Millimeter"));
+  cmbUnitsMetrics->insertItem(TPInch, QIcon(), QString("Inch"));
+  connect(cmbUnitsMetrics, SIGNAL(currentIndexChanged(int)), this, SLOT(onIndexChanged(int)));
+
+  _toolbar->addWidget(btnPan);
   _toolbar->addSeparator();
-  _toolbar->addWidget(button2);
+  _toolbar->addWidget(btnZoomIn);
   _toolbar->addSeparator();
-  _toolbar->addWidget(button3);
+  _toolbar->addWidget(btnZoomOut);
+  _toolbar->addSeparator();
+  _toolbar->addWidget(cmbUnitsMetrics);
   _toolbar->addSeparator();
 }
 
@@ -138,3 +153,17 @@ void te::layout::QToolbarWindowOutside::onClickZoomOutTool( bool toggled )
   if(_view)
     _view->changeMode();
 }
+
+void te::layout::QToolbarWindowOutside::onIndexChanged(int index)
+{
+  LayoutContext::getInstance()->setMode(TypeUnitsMetricsChange);
+
+  if(TPInch == index)
+    LayoutContext::getInstance()->setUnitMetric(TPInch);
+  if(TPMillimeter == index)
+    LayoutContext::getInstance()->setUnitMetric(TPMillimeter);
+
+  if(_view)
+    _view->changeMode();
+}
+

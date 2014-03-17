@@ -27,20 +27,20 @@ void te::layout::PaperLayoutModel::draw( ContextLayoutItem context )
   LayoutUtils* utils = LayoutContext::getInstance()->getUtils();
 
   if(context.isResizeCanvas())
-    utils->configCanvas(canvas, _box);
+    utils->configCanvas(_box);
   
   canvas->setPolygonContourColor(_shadowColor);
   canvas->setPolygonFillColor(_shadowColor);
 
-  utils->drawRectW(canvas, _boxShadow);
+  utils->drawRectW(_boxShadow);
 
   canvas->setPolygonContourColor(_borderColor);
   canvas->setPolygonFillColor(_backgroundColor);
 
-  utils->drawRectW(canvas, _boxPaper);
+  utils->drawRectW(_boxPaper);
     
   if(context.isResizeCanvas())
-    pixmap = utils->getImageW(canvas, _box);
+    pixmap = utils->getImageW(_box);
   
   ContextLayoutItem contextNotify;
   contextNotify.setPixmap(pixmap);

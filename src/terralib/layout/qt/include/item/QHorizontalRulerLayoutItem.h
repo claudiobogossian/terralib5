@@ -1,7 +1,7 @@
 #ifndef QHORIZONTALRULER_LAYOUTITEM_H
 #define QHORIZONTALRULER_LAYOUTITEM_H
 
-#include "QRectLayoutItem.h"
+#include "QObjectLayoutItem.h"
 #include <QGraphicsItem>
 #include <QtGui/QGraphicsRectItem>
 #include <QGraphicsSceneMouseEvent>
@@ -11,7 +11,7 @@ namespace te
 {
   namespace layout
   {
-    class QHorizontalRulerLayoutItem : public QRectLayoutItem
+    class QHorizontalRulerLayoutItem : public QObjectLayoutItem
     {
       public:
 

@@ -43,6 +43,7 @@ list (APPEND TE_DEP_LIBS
 	terralib_geometry
 	terralib_color
 	qtpropertybrowser
+	terralib_srs
 )
 
 # Files to process.
@@ -184,6 +185,7 @@ set (
   ${SRCDIR}/qt/include/moc/QToolbarWindowOutside.h
   ${SRCDIR}/qt/include/moc/QLayoutView.h
   ${SRCDIR}/qt/include/moc/QObjectLayoutItem.h
+  ${SRCDIR}/qt/include/moc/QMapLayoutItem.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/layout/qt/include/moc" MOC)
 

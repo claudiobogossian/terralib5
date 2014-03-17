@@ -8,6 +8,7 @@
 class QGraphicsItem;
 class QWidget;
 class QToolBar;
+class QGroupBox;
 
 namespace te
 {
@@ -35,6 +36,7 @@ namespace te
       virtual void onClickPanTool(bool toggled);
       virtual void onClickZoomInTool(bool toggled);
       virtual void onClickZoomOutTool(bool toggled);
+      virtual void onIndexChanged(int index);
 
     protected:
 

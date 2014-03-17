@@ -1,11 +1,20 @@
 #include "QMapLayoutItem.h"
 #include "LayoutContext.h"
 #include "LayoutScene.h"
+
 #include <QCursor>
 #include <QPixmap>
 #include <QMessageBox>
 #include <QWidget>
 #include <QGraphicsProxyWidget>
+#include <QDropEvent>
+#include <QBoxLayout>
+#include <QGroupBox>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QPointer>
+#include <QDebug>
+#include <QApplication>
 
 #include "../../../color/RGBAColor.h"
 #include "../../../../qt/widgets/Utils.h"
@@ -24,36 +33,49 @@
 #include "LayoutItemModelObservable.h"
 #include "LayoutItemObserver.h"
 #include "LayoutItemController.h"
+#include "../../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
+#include "../../../../common/TreeItem.h"
+#include "../../../../srs/Converter.h"
+
+// STL
+#include <vector>
+#include <memory>
 
 te::layout::QMapLayoutItem::QMapLayoutItem( LayoutItemController* controller, LayoutItemModelObservable* o ) :
-  QObjectLayoutItem(controller, o),
-  m_mapDisplay(0)
+  QGraphicsProxyWidget(0),
+  LayoutItemObserver(controller, o),
+  m_mapDisplay(0),
+  grabbedByWidget(false)
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges);
 
-  QGraphicsItem* item = this;
-  LayoutContext::getInstance()->getScene()->insertItem((LayoutItemObserver*)item);
-
-  _proxyWidgetDisplay = new QGraphicsProxyWidget(this);
-
-  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(QSize(30, 20), true);
+  setAcceptDrops(true);
+  
+  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(QSize(_model->getBox().getWidth(), _model->getBox().getHeight()), true);
   m_mapDisplay->setAcceptDrops(true);
   m_mapDisplay->setBackgroundColor(Qt::gray);
   m_mapDisplay->setResizeInterval(0);
   m_mapDisplay->setMouseTracking(true);
   m_mapDisplay->installEventFilter(this);
   
-  _proxyWidgetDisplay->setWidget(m_mapDisplay);
+  setWidget(m_mapDisplay);
+  
+  QGraphicsItem* item = this;
+  LayoutContext::getInstance()->getScene()->insertItem((LayoutItemObserver*)item);
 
   m_mapDisplay->show();
-  connect(m_mapDisplay, SIGNAL(drawLayersFinished(const QMap<QString, QString>&)), this, SLOT(onDrawLayersFinished(const QMap<QString, QString>&)));
 }
 
 te::layout::QMapLayoutItem::~QMapLayoutItem()
 {
-
+  if(m_mapDisplay)
+  {
+    setWidget(0);
+    delete m_mapDisplay;
+    m_mapDisplay = 0;
+  }
 }
 
 void te::layout::QMapLayoutItem::updateObserver( ContextLayoutItem context )
@@ -62,9 +84,8 @@ void te::layout::QMapLayoutItem::updateObserver( ContextLayoutItem context )
 
   LayoutItemModelObservable* model = (LayoutItemModelObservable*)_controller->getModel();
   LayoutUtils* utils = LayoutContext::getInstance()->getUtils();
-  te::map::Canvas* canvas = LayoutContext::getInstance()->getCanvas();
 
-  te::gm::Envelope box = utils->viewportBox(canvas, model->getBox());
+  te::gm::Envelope box = utils->viewportBox(model->getBox());
 
   QPixmap pixmap;
   QImage* img = 0;
@@ -94,81 +115,92 @@ QVariant te::layout::QMapLayoutItem::itemChange( GraphicsItemChange change, cons
   return QGraphicsItem::itemChange(change, value);
 }
 
-void te::layout::QMapLayoutItem::onDrawLayersFinished(const QMap<QString, QString>& /*errors*/)
+void te::layout::QMapLayoutItem::dropEvent( QGraphicsSceneDragDropEvent * event )
 {
-  // Stores the clean pixmap!
-  m_lastDisplayContent = QPixmap(*m_mapDisplay->getDisplayPixmap());
-  drawLayerSelection();
+  //Copy the map from layer tree
+  Qt::DropActions actions = event->dropAction();
+  if(actions != Qt::CopyAction)
+    return;
+
+  QDropEvent dropEvent(QPoint(event->pos().x(), event->pos().y()), event->possibleActions(), event->mimeData(), event->buttons(), event->modifiers());
+  QApplication::sendEvent(m_mapDisplay, &dropEvent);
+  event->setAccepted(dropEvent.isAccepted());
 }
 
-void te::layout::QMapLayoutItem::drawLayerSelection()
+void te::layout::QMapLayoutItem::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
 {
-  std::list<te::map::AbstractLayerPtr>::iterator it;
-  std::list<te::map::AbstractLayerPtr> layers;
-  
-  //layers = te::qt::af::ApplicationController::getInstance().getProject()->getSelectedLayers();
-  
-  for(it = layers.begin(); it != layers.end(); ++it)
-  {
-    te::map::AbstractLayer* layer = (*it).get();
-    {
-      if(layer->getVisibility() != te::map::VISIBLE)
-        continue;
+  //Copy the map from layer tree
+  Qt::DropActions actions = event->dropAction();
+  if(actions != Qt::CopyAction)
+    return;
 
-      const te::da::ObjectIdSet* oids = layer->getSelected();
-      if(oids == 0 || oids->size() == 0)
-      {
-        m_mapDisplay->repaint();
-        return;
-      }
-
-      bool needRemap = false;
-
-      if((layer->getSRID() != TE_UNKNOWN_SRS) && (m_mapDisplay->getSRID() != TE_UNKNOWN_SRS) && (layer->getSRID() != m_mapDisplay->getSRID()))
-        needRemap = true;
-
-      // Try retrieves the layer selection
-      std::auto_ptr<te::da::DataSet> selected;
-      try
-      {
-        selected = layer->getData(oids);
-      }
-      catch(std::exception& e)
-      {
-        QMessageBox::critical(m_mapDisplay, tr("Error"), QString(tr("The layer selection cannot be drawn. Details:") + " %1.").arg(e.what()));
-        return;
-      }
-
-      std::size_t gpos = te::da::GetFirstPropertyPos(selected.get(), te::dt::GEOMETRY_TYPE);
-
-      QPixmap* content = m_mapDisplay->getDisplayPixmap();
-
-      const te::gm::Envelope& displayExtent = m_mapDisplay->getExtent();
-
-      te::qt::widgets::Canvas canvas(content);
-      canvas.setWindow(displayExtent.m_llx, displayExtent.m_lly, displayExtent.m_urx, displayExtent.m_ury);
-
-      te::gm::GeomType currentGeomType = te::gm::UnknownGeometryType;
-
-      while(selected->moveNext())
-      {
-        std::auto_ptr<te::gm::Geometry> g(selected->getGeometry(gpos));
-
-        if(needRemap)
-        {
-          g->setSRID(layer->getSRID());
-          g->transform(m_mapDisplay->getSRID());
-        }
-
-        if(currentGeomType != g->getGeomTypeId())
-        {
-          currentGeomType = g->getGeomTypeId();
-          te::qt::widgets::Config2DrawLayerSelection(&canvas, m_selectionColor, currentGeomType);
-        }
-
-        canvas.draw(g.get());
-      }
-    }
-  }
-  m_mapDisplay->repaint();
+  event->acceptProposedAction();
 }
+
+void te::layout::QMapLayoutItem::dragLeaveEvent( QGraphicsSceneDragDropEvent * event )
+{
+}
+
+void te::layout::QMapLayoutItem::dragMoveEvent( QGraphicsSceneDragDropEvent * event )
+{
+
+}
+
+void te::layout::QMapLayoutItem::setPixmap( const QPixmap& pixmap )
+{
+  _pixmap = pixmap;
+
+  LayoutUtils* utils = LayoutContext::getInstance()->getUtils();
+  QPointF point = pos();
+
+  LayoutItemModelObservable* model = (LayoutItemModelObservable*)_controller->getModel();
+  te::gm::Envelope box = model->getBox();
+
+  //If you modify the boundingRect value, you need to inform Graphics View about it by calling QGraphicsItem::prepareGeometryChange();
+  QGraphicsObject::prepareGeometryChange();
+  setRect(QRectF(0, 0, box.getWidth(), box.getHeight()));
+  update();
+}
+
+void te::layout::QMapLayoutItem::setRect( QRectF rect )
+{
+  if (rect.isEmpty() && !rect.isNull())
+    return;
+
+  _rect = rect;
+  update(rect);
+}
+
+te::gm::Coord2D te::layout::QMapLayoutItem::getPosition()
+{
+  QPointF posF = scenePos();
+  qreal valuex = posF.x();
+  qreal valuey = posF.y();
+
+  te::gm::Coord2D coordinate;
+  coordinate.x = valuex;
+  coordinate.y = valuey;
+
+  return coordinate;
+}
+
+void te::layout::QMapLayoutItem::setPosition( const double& x, const double& y )
+{
+  setPos(x,y);
+}
+
+void te::layout::QMapLayoutItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
+{
+  QGraphicsItem::mouseMoveEvent(event);
+}
+
+void te::layout::QMapLayoutItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
+{
+  QGraphicsItem::mousePressEvent(event);
+}
+
+void te::layout::QMapLayoutItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
+{
+  QGraphicsItem::mouseReleaseEvent(event);
+}
+

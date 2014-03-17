@@ -7,7 +7,7 @@
 te::layout::MapLayoutModel::MapLayoutModel()
 {
   _backgroundColor = te::color::RGBAColor(0, 0, 255, 255);
-  _box = te::gm::Envelope(0., 0., 80, 50.);
+  _box = te::gm::Envelope(0., 0., 100., 70.);
 }
 
 te::layout::MapLayoutModel::~MapLayoutModel()
@@ -23,15 +23,15 @@ void te::layout::MapLayoutModel::draw( ContextLayoutItem context )
   LayoutUtils* utils = LayoutContext::getInstance()->getUtils();
 
   if(context.isResizeCanvas())
-    utils->configCanvas(canvas, _box);
+    utils->configCanvas(_box);
   
   canvas->setPolygonContourColor(_borderColor);
   canvas->setPolygonFillColor(_backgroundColor);
 
-  utils->drawRectW(canvas, _box);
+  utils->drawRectW(_box);
     
   if(context.isResizeCanvas())
-    pixmap = utils->getImageW(canvas, _box);
+    pixmap = utils->getImageW(_box);
   
   ContextLayoutItem contextNotify;
   contextNotify.setPixmap(pixmap);

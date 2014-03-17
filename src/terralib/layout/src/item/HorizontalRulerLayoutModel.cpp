@@ -25,10 +25,13 @@ _smallLine(3.),
 _borderLineSize(0.3),
 _posCount(0),
 _lineMargin(2.),
-_invertedLines(false)
+_invertedLines(false),
+_backEndSpacing(10),
+_backEndMargin(2.)
 {
   _box = te::gm::Envelope(0., 0., 150., 150.);
   _paperBox = te::gm::Envelope(0., 0., 210., 297.); // A4 default
+  _backEndBox = te::gm::Envelope(0., 0., 150., 150.);
 
   updateHorizontalListText();
 }
@@ -49,14 +52,14 @@ void te::layout::HorizontalRulerLayoutModel::draw( ContextLayoutItem context )
 
   te::map::Canvas* canvas = LayoutContext::getInstance()->getCanvas();
   LayoutUtils* utils = LayoutContext::getInstance()->getUtils();
-
+  
   if(context.isResizeCanvas())
-    utils->configCanvas(canvas, _box);  
+    utils->configCanvas(_box);  
   
   drawRuler(canvas, utils);
 
   if(context.isResizeCanvas())
-    pixmap = utils->getImageW(canvas, _box);
+    pixmap = utils->getImageW(_box);
   
   ContextLayoutItem contextNotify;
   contextNotify.setPixmap(pixmap);
@@ -70,17 +73,25 @@ void te::layout::HorizontalRulerLayoutModel::drawRuler( te::map::Canvas* canvas,
   
   if(_visibleHorizontalRuler)
   {
-    te::color::RGBAColor colorp4(80,80,80, TE_OPAQUE);
+    te::color::RGBAColor colorp4(180,180,180, TE_OPAQUE);
     canvas->setPolygonFillColor(colorp4);
+    canvas->setPolygonContourColor(colorp4);
     //Cor 80
-    utils->drawRectW(canvas, _box);
-    
-    envPaper = te::gm::Envelope(_paperBox.getLowerLeftX(), _paperBox.getLowerLeftY(),
-      _paperBox.getUpperRightX(), _box.getUpperRightY());
+    utils->drawRectW(_box);
 
-    te::color::RGBAColor colorp5(0,255,0, TE_OPAQUE);
+    te::color::RGBAColor colorp85(145,145,145, TE_OPAQUE);
+    canvas->setPolygonFillColor(colorp85);
+    canvas->setPolygonContourColor(colorp85);
+    //Cor 80
+    utils->drawRectW(_backEndBox);
+                
+    envPaper = te::gm::Envelope(_paperBox.getLowerLeftX(), _backEndBox.getLowerLeftY(),
+      _paperBox.getUpperRightX(), _backEndBox.getUpperRightY());
+
+    te::color::RGBAColor colorp5(255,255,255, TE_OPAQUE);
     canvas->setPolygonFillColor(colorp5);
-    utils->drawRectW(canvas, envPaper);
+    canvas->setPolygonContourColor(colorp5);
+    utils->drawRectW(envPaper);
 
     drawHorizontalRuler(canvas, utils);
 
@@ -88,15 +99,15 @@ void te::layout::HorizontalRulerLayoutModel::drawRuler( te::map::Canvas* canvas,
     canvas->setLineColor(colorp6);
 
     if(_invertedLines)
-      envMargin = te::gm::Envelope(_box.getLowerLeftX(), _box.getUpperRightY() - _lineMargin, _box.getWidth(), 
-      _box.getUpperRightY() - _lineMargin);
-    else
-      envMargin = te::gm::Envelope(_box.getLowerLeftX(), _lineMargin, _box.getWidth(), 
+      envMargin = te::gm::Envelope(_backEndBox.getLowerLeftX(), _lineMargin, _backEndBox.getWidth(), 
       _lineMargin);
+    else
+      envMargin = te::gm::Envelope(_backEndBox.getLowerLeftX(), _backEndBox.getUpperRightY() - _lineMargin, _backEndBox.getWidth(), 
+      _backEndBox.getUpperRightY() - _lineMargin);
 
     te::gm::LinearRing* line = new te::gm::LinearRing(3, te::gm::LineStringType);
     line = utils->createSimpleLine(envMargin);
-    utils->drawLineW(canvas, line);
+    utils->drawLineW(line);
     if(line) delete line;
   }
 }
@@ -105,7 +116,7 @@ void te::layout::HorizontalRulerLayoutModel::drawHorizontalRuler(te::map::Canvas
 {
   te::gm::LinearRing* line = new te::gm::LinearRing(3, te::gm::LineStringType);
   te::gm::Envelope box;
-  _posCount = _box.getLowerLeftX();
+  _posCount = _backEndBox.getLowerLeftX();
 
   te::color::RGBAColor colorp6(0,0,0, TE_OPAQUE);
   canvas->setLineColor(colorp6);
@@ -114,16 +125,16 @@ void te::layout::HorizontalRulerLayoutModel::drawHorizontalRuler(te::map::Canvas
   {
     //TypeRulerHorizontal
     if(_invertedLines)
-      box = te::gm::Envelope(_posCount, _box.getUpperRightY(), _posCount, _box.getUpperRightY() - _longLine);
+      box = te::gm::Envelope(_posCount, _backEndBox.getLowerLeftY(), _posCount, _backEndBox.getLowerLeftY() + _longLine);
     else
-     box = te::gm::Envelope(_posCount, _box.getLowerLeftY(), _posCount, _box.getLowerLeftY() + _longLine);
+     box = te::gm::Envelope(_posCount, _backEndBox.getUpperRightY(), _posCount, _backEndBox.getUpperRightY() - _longLine);
     line = utils->createSimpleLine(box);
-    utils->drawLineW(canvas, line);
+    utils->drawLineW(line);
     if(line) delete line;
     if(_invertedLines)
-      canvas->drawText(_posCount, _box.getUpperRightY() - (_longLine + 1.), _horizontalTexts[i], 0);
-    else
       canvas->drawText(_posCount, _longLine + 1., _horizontalTexts[i], 0);
+    else      
+      canvas->drawText(_posCount, _backEndBox.getUpperRightY() - (_longLine + 1.), _horizontalTexts[i], 0);
     
     drawMarks(canvas, utils, _blockSize - 1);
     _posCount += 1;
@@ -140,33 +151,33 @@ void te::layout::HorizontalRulerLayoutModel::drawMarks(te::map::Canvas* canvas, 
   {
       //TypeRulerHorizontal
       if(_invertedLines)
-        box = te::gm::Envelope(_posCount, _box.getUpperRightY(), _posCount, _box.getUpperRightY() - _mediumLine);
+        box = te::gm::Envelope(_posCount, _backEndBox.getLowerLeftY(), _posCount, _backEndBox.getLowerLeftY() + _mediumLine);
       else
-        box = te::gm::Envelope(_posCount, _box.getLowerLeftY(), _posCount, _box.getLowerLeftY() + _mediumLine);
+        box = te::gm::Envelope(_posCount, _backEndBox.getUpperRightY(), _posCount, _backEndBox.getUpperRightY() - _mediumLine);
       line = utils->createSimpleLine(box);
-      utils->drawLineW(canvas, line);
+      utils->drawLineW(line);
       if(line) delete line;
   }
   else
   { 
       //TypeRulerHorizontal
       if(_invertedLines)
-        box = te::gm::Envelope(_posCount, _box.getUpperRightY(), _posCount, _box.getUpperRightY() - _smallLine);
+        box = te::gm::Envelope(_posCount, _backEndBox.getLowerLeftY(), _posCount, _backEndBox.getLowerLeftY() + _smallLine);
       else
-        box = te::gm::Envelope(_posCount, _box.getLowerLeftY(), _posCount, _box.getLowerLeftY() + _smallLine);
+        box = te::gm::Envelope(_posCount, _backEndBox.getUpperRightY(), _posCount, _backEndBox.getUpperRightY() - _smallLine);
       line = utils->createSimpleLine(box);
-      utils->drawLineW(canvas, line);
+      utils->drawLineW(line);
       if(line) delete line;
 
       drawMarks(canvas, utils, marks - 1);
       _posCount += 1;
       //TypeRulerHorizontal
       if(_invertedLines)
-        box = te::gm::Envelope(_posCount, _box.getUpperRightY(), _posCount, _box.getUpperRightY() - _smallLine);    
+        box = te::gm::Envelope(_posCount, _backEndBox.getLowerLeftY(), _posCount, _backEndBox.getLowerLeftY() + _smallLine);  
       else
-        box = te::gm::Envelope(_posCount, _box.getLowerLeftY(), _posCount, _box.getLowerLeftY() + _smallLine);
+        box = te::gm::Envelope(_posCount, _backEndBox.getUpperRightY(), _posCount, _backEndBox.getUpperRightY() - _smallLine);  
       line = utils->createSimpleLine(box);
-      utils->drawLineW(canvas, line);
+      utils->drawLineW(line);
       if(line) delete line;
   }
 }
@@ -174,8 +185,8 @@ void te::layout::HorizontalRulerLayoutModel::drawMarks(te::map::Canvas* canvas, 
 void te::layout::HorizontalRulerLayoutModel::updateHorizontalListText()
 {
   _horizontalTexts.clear();
-  int x = (int)_box.getLowerLeftX();
-  int totalx = (int)_box.getUpperRightX();
+  int x = (int)_backEndBox.getLowerLeftX();
+  int totalx = (int)_backEndBox.getUpperRightX();
   
   int lastDigit = std::abs(x % 10);
   int is_dozen = _blockSize - lastDigit;
@@ -206,8 +217,10 @@ void te::layout::HorizontalRulerLayoutModel::setBox( te::gm::Envelope box )
   if(box.getWidth() < 15. || box.getHeight() < 3.)
     return;
 
-  _horizontalBlockMarks = (int)std::abs(std::ceil(box.getWidth() / _blockSize));
   _box = box;
+  _backEndBox = te::gm::Envelope(_box.getLowerLeftX() + _backEndSpacing, _box.getLowerLeftY() + _backEndMargin,
+    _box.getUpperRightX(), _box.getUpperRightY() - _backEndMargin);
+  _horizontalBlockMarks = (int)std::abs(std::ceil(_backEndBox.getWidth() / _blockSize));
   updateHorizontalListText();
 }
 

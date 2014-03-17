@@ -47,6 +47,9 @@ namespace te
 
         virtual QGraphicsItem* getMasterParentItem();
 
+        virtual void printPaper();
+        virtual void savePaperAsImage(std::string pathWithFileName);
+
       protected:
         virtual void mousePressEvent ( QGraphicsSceneMouseEvent* mouseEvent );
 

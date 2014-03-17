@@ -41,6 +41,10 @@
 #include <QDesktopWidget>
 #include <QMainWindow>
 #include <QString>
+#include <QVBoxLayout>
+#include <QStatusBar>
+#include <QGroupBox>
+
 #include "DisplayWindowLayoutModel.h"
 #include "DisplayWindowLayoutController.h"
 #include "LayoutOutsideObserver.h"
@@ -96,8 +100,21 @@ void te::layout::MainLayout::createDockLayoutDisplay(QWidget* mainWindow, QLayou
     }
     _dockLayoutDisplay->setPreviousCentralWidget(mw->centralWidget());
     mw->removeDockWidget((QDockWidget*)mw->centralWidget());
-    _dockLayoutDisplay->setParent(mw);
-    _dockLayoutDisplay->setWidget(view); 
+    _dockLayoutDisplay->setParent(mw);    
+
+    QStatusBar* status = new QStatusBar;
+    status->setMinimumSize(200, 10);
+    status->showMessage("TerraPrint 5.0 - Ready...");
+
+    QVBoxLayout* vLayout = new QVBoxLayout;
+    vLayout->addWidget(view);
+    vLayout->addWidget(status);
+    
+    QGroupBox* groupBox = new QGroupBox;
+    groupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    groupBox->setLayout(vLayout);
+
+    _dockLayoutDisplay->setWidget(groupBox);
     mw->setCentralWidget(_dockLayoutDisplay);
     _dockLayoutDisplay->setVisible(true);      
   }

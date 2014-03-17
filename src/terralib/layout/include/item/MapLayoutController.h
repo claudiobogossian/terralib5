@@ -1,4 +1,4 @@
-#ifndef MAPLAYOUTCONTROLLER_H
+#ifndef MAPTLAYOUTCONTROLLER_H
 #define MAPLAYOUTCONTROLLER_H
 
 #include "LayoutItemController.h"

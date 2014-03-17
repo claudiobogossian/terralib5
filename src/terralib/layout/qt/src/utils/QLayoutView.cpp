@@ -8,7 +8,6 @@
 #include "LayoutMode.h"
 #include "QLayoutScene.h"
 #include "LayoutView.h"
-#include "LayoutController.h"
 #include <time.h>
 #include <QMatrix>
 #include <math.h> 
@@ -16,7 +15,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QPixmap>
-#include "LayoutViewController.h"
+
 #include "HorizontalRulerLayoutModel.h"
 #include "HorizontalRulerLayoutController.h"
 #include "QHorizontalRulerLayoutItem.h"
@@ -28,7 +27,9 @@
 #include "RectangleLayoutModel.h"
 #include "RectangleLayoutController.h"
 
+#include "../../../../color/RGBAColor.h"
 #include "../../../../geometry/Envelope.h"
+
 #include "VerticalRulerLayoutModel.h"
 #include "VerticalRulerLayoutController.h"
 #include "QVerticalRulerLayoutItem.h"
@@ -63,7 +64,10 @@ te::layout::QLayoutView::QLayoutView( QWidget* widget) :
   _diagonalScreenInchSize(0),
   _dockProperties(0),
   _dockInspector(0),
-  _dockParent(0)
+  _dockParent(0),
+  _dockToolbar(0),
+  _dpiX(96),
+  _dpiY(96)
 {
   _layoutController = 0;
 
@@ -79,11 +83,11 @@ te::layout::QLayoutView::~QLayoutView()
 {
   if(scene())
     scene()->clear();
+
+   QMainWindow* win = (QMainWindow*)_dockParent;
   
   if(_dockProperties)
   {
-    QMainWindow* win = (QMainWindow*)_dockParent;
-
     if(win)
     {
       win->removeDockWidget(_dockProperties);
@@ -96,8 +100,6 @@ te::layout::QLayoutView::~QLayoutView()
   
   if(_dockInspector)
   {
-    QMainWindow* win = (QMainWindow*)_dockParent;
-
     if(win)
     {
       win->removeDockWidget(_dockInspector);
@@ -106,6 +108,18 @@ te::layout::QLayoutView::~QLayoutView()
     _dockInspector->close();
     _dockInspector->setParent(0);
     delete _dockInspector;
+  }
+
+  if(_dockToolbar)
+  {
+    if(win)
+    {
+      win->removeDockWidget(_dockToolbar);
+    }
+
+    _dockToolbar->close();
+    _dockToolbar->setParent(0);
+    delete _dockToolbar;
   }
 
   if(LayoutContext::getInstance())
@@ -207,30 +221,7 @@ void te::layout::QLayoutView::keyPressEvent( QKeyEvent* keyEvent )
 
   if(keyEvent->key() == Qt::Key_P)
   {
-    scaleView(1.);
-
-    QPrinter* printer=new QPrinter(QPrinter::HighResolution);
-    printer->setPageSize(QPrinter::A4);
-    printer->setOrientation( QPrinter::Portrait );
-    printer->pageRect(QPrinter::Millimeter);
-    if (QPrintDialog(printer).exec() == QDialog::Accepted) {
-      QPainter painter(printer);
-      painter.setRenderHint(QPainter::Antialiasing);
-      painter.scale(1., 1.);
-      //render(&painter);
-
-      QLayoutScene* sc = dynamic_cast<QLayoutScene*>(scene());
-      te::gm::Envelope paperBox =  sc->getPaperBox();
-
-      QPoint lefttop = mapFromScene(paperBox.getLowerLeftX(), paperBox.getUpperRightY());
-      QPoint rightbottom = mapFromScene(paperBox.getUpperRightX(), paperBox.getLowerLeftY());
-
-      QRectF sourceTargetRect(paperBox.getLowerLeftX(), paperBox.getLowerLeftY(), 
-        paperBox.getWidth(), paperBox.getHeight());
-      QRect sourceRect(paperBox.getLowerLeftX(), paperBox.getUpperRightY(), 
-        paperBox.getWidth(), paperBox.getHeight());
-      scene()->render(&painter, sourceTargetRect, sourceTargetRect); // upside down
-    }
+      sc->printPaper();
   }
   else if(keyEvent->key() == Qt::Key_G)
   {
@@ -276,6 +267,10 @@ void te::layout::QLayoutView::keyPressEvent( QKeyEvent* keyEvent )
 
 void te::layout::QLayoutView::config()
 {	
+  LayoutContext::getInstance()->setDpiX(95.78);
+  LayoutContext::getInstance()->setDpiY(95.78);
+  _dpiX = 95.78;
+  _dpiY = 95.78;
 
   QLayoutScene* lScene = dynamic_cast<QLayoutScene*>(scene());
 
@@ -311,18 +306,18 @@ void te::layout::QLayoutView::config()
 	
   //Régua: utilizando o canvas da Terralib 5
   HorizontalRulerLayoutModel* modelRuler = new HorizontalRulerLayoutModel();		
-  modelRuler->setBox(te::gm::Envelope(llx, lly, urx + 10, lly + 10));
-  modelRuler->invertedLines(true);
+  //modelRuler->setBox(te::gm::Envelope(llx, lly, urx + 10, lly + 10));
+  modelRuler->setBox(te::gm::Envelope(llx, ury - 10, urx + 10, ury));
+  //modelRuler->invertedLines(true);
   HorizontalRulerLayoutController* controllerRuler = new HorizontalRulerLayoutController(modelRuler);
   LayoutItemObserver* itemRuler = (LayoutItemObserver*)controllerRuler->getView();
   QHorizontalRulerLayoutItem* rectRuler = dynamic_cast<QHorizontalRulerLayoutItem*>(itemRuler);
   rectRuler->setPPI(logicalDpiX());
-  rectRuler->setItemPosition(llx + 10, lly);
+  rectRuler->setItemPosition(llx, lly);
   rectRuler->redraw();
 
   VerticalRulerLayoutModel* modelRulerV = new VerticalRulerLayoutModel();		
   modelRulerV->setBox(te::gm::Envelope(llx, lly, llx + 10, ury + 10));
-  modelRulerV->invertedLines(true);
   VerticalRulerLayoutController* controllerRulerV = new VerticalRulerLayoutController(modelRulerV);
   LayoutItemObserver* itemRulerV = (LayoutItemObserver*)controllerRulerV->getView();
   QVerticalRulerLayoutItem* rectRulerV = dynamic_cast<QVerticalRulerLayoutItem*>(itemRulerV);
@@ -357,6 +352,7 @@ void te::layout::QLayoutView::config()
   QMapLayoutItem* qrectMap = dynamic_cast<QMapLayoutItem*>(itemMap);
   itemMap->setItemPosition(llx + 60, lly + 60);
   itemMap->redraw();
+
   ////-----------------------------------------------------------------------------------------------------
 	
   QFont font;
@@ -375,8 +371,30 @@ void te::layout::QLayoutView::config()
   //Sempre começar o desenho pelo ponto 0,0, caso contrário o ponto central(center) fica estranho?!
   QGraphicsTextItem* rectText40 = scene()->addText("ÕÇ_Atexto50,0 ", font);
   //rectText40->setParentItem(rectItemBack1);
+  rectText40->setFlags(QGraphicsItem::ItemIsMovable
+    | QGraphicsItem::ItemIsSelectable
+    | QGraphicsItem::ItemSendsGeometryChanges);
   rectText40->setTransform(lScene->getMatrixViewScene().inverted());
   rectText40->setPos(30, -20); //Coordenada de cena em mm		
+
+  //QString fileName = QFileDialog::getOpenFileName(QApplication::desktop(),"Open Image File",QDir::currentPath());
+  //if(!fileName.isEmpty())
+  //{
+  //  QPixmap pix(fileName);
+  //  if(pix.isNull())
+  //  {
+  //    QMessageBox::information(QApplication::desktop(),"Image Viewer","Error Displaying image");
+  //  }
+  //  else
+  //  {
+  //    QGraphicsPixmapItem* pixItem = scene()->addPixmap(pix);
+  //    pixItem->setFlags(QGraphicsItem::ItemIsMovable
+  //      | QGraphicsItem::ItemIsSelectable
+  //      | QGraphicsItem::ItemSendsGeometryChanges);
+  //    pixItem->setTransform(lScene->getMatrixViewScene().inverted());
+  //    pixItem->setPos(50, -20); //Coordenada de cena em mm		
+  //  }
+  //}
 
   //-------------------------------------------------------------------------------------------------------------------
 
@@ -390,6 +408,7 @@ void te::layout::QLayoutView::config()
     
     _dockProperties->setParent(_dockParent); //The father need be the window of application, in this case, terraview main window!  
     _dockProperties->setVisible(true);
+    ((QMainWindow*)_dockParent)->addDockWidget(Qt::LeftDockWidgetArea, _dockProperties);
 
     //Use the Property Browser Framework for create Object Inspector Window
     ObjectInspectorWindowLayoutModel* dockInspectorModel = new ObjectInspectorWindowLayoutModel();		 
@@ -398,6 +417,7 @@ void te::layout::QLayoutView::config()
     _dockInspector = dynamic_cast<QObjectInspectorWindowOutside*>(itemDockInspector);
     _dockInspector->setParent(_dockParent); //The father need be the window of application, in this case, terraview main window!
     _dockInspector->setVisible(true);
+    ((QMainWindow*)_dockParent)->addDockWidget(Qt::LeftDockWidgetArea, _dockInspector);
 
     //Use the Property Browser Framework for create Object Inspector Window
     ToolbarWindowLayoutModel* dockToolbarModel = new ToolbarWindowLayoutModel();		 
@@ -407,6 +427,7 @@ void te::layout::QLayoutView::config()
     _dockToolbar->init(this);    
     _dockToolbar->setParent(_dockParent); //The father need be the window of application, in this case, terraview main window!
     _dockToolbar->setVisible(true);
+    ((QMainWindow*)_dockParent)->addDockWidget(Qt::TopDockWidgetArea, _dockToolbar);
   }
       
   scene()->setBackgroundBrush(QBrush(QColor(105,105,030)));
@@ -431,7 +452,7 @@ int te::layout::QLayoutView::metric( PaintDeviceMetric metric ) const
     }
     case PdmPhysicalDpiX:
     {
-      return 95.78;
+      return _dpiX;
       //Caso esteja imprimindo, obter o dpi da impressora
       //.
       //.
@@ -439,7 +460,7 @@ int te::layout::QLayoutView::metric( PaintDeviceMetric metric ) const
     }
     case PdmPhysicalDpiY:
     {
-      return 95.78;
+      return _dpiY;
       //Caso esteja imprimindo, obter o dpi da impressora
       //.
       //.
@@ -447,7 +468,7 @@ int te::layout::QLayoutView::metric( PaintDeviceMetric metric ) const
     }
     case PdmDpiX:
     {
-      return 95.78;
+      return _dpiX;
       //Caso esteja imprimindo, obter o dpi da impressora
       //.
       //.
@@ -455,7 +476,7 @@ int te::layout::QLayoutView::metric( PaintDeviceMetric metric ) const
     }
     case PdmDpiY:
     {
-      return 95.78;
+      return _dpiY;
       //Caso esteja imprimindo, obter o dpi da impressora
       //.
       //.
@@ -489,19 +510,34 @@ void te::layout::QLayoutView::closeEvent( QCloseEvent * event )
 
   if(win)
   {
-    win->removeDockWidget(_dockProperties);
-    win->removeDockWidget(_dockInspector);
-
-    _dockProperties->close();
-    _dockProperties->setParent(0);
-
-    _dockInspector->close();
-    _dockInspector->setParent(0);
+    if(_dockProperties)
+    {
+      win->removeDockWidget(_dockProperties);
+      _dockProperties->close();
+      _dockProperties->setParent(0);
+    }
+    if(_dockInspector)
+    {
+      win->removeDockWidget(_dockInspector);
+      _dockInspector->close();
+      _dockInspector->setParent(0);
+    }
+    if(_dockToolbar)
+    {
+      win->removeDockWidget(_dockToolbar);
+      _dockToolbar->close();
+      _dockToolbar->setParent(0);
+    }
   }
 }
 
 void te::layout::QLayoutView::changeMode()
 {
+  if(LayoutContext::getInstance()->getMode() == TypeUnitsMetricsChange)
+  {
+
+  }
+
   if(LayoutContext::getInstance()->getMode() == TypePan)
   {
     //Use ScrollHand Drag Mode to enable Panning

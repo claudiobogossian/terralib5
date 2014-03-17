@@ -31,6 +31,7 @@ namespace te
       TypeZoomIn,
       TypeZoomOut,
       TypeCreate,
+      TypeUnitsMetricsChange,
       TypeNone
     } LayoutMode;
 

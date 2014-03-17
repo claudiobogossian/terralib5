@@ -11,7 +11,7 @@
 #include "../../../../geometry/Envelope.h"
 #include "../../../../common/STLUtils.h"
 #include "QLayoutScene.h"
-
+ 
 te::layout::QRectLayoutItem::QRectLayoutItem( LayoutItemController* controller, LayoutItemModelObservable* o ) :
   QGraphicsRectItem(0, 0),
   LayoutItemObserver(controller, o)

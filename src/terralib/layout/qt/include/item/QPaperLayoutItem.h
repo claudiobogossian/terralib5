@@ -1,7 +1,7 @@
 #ifndef QPAPERLAYOUTITEM_H
 #define QPAPERLAYOUTITEM_H
 
-#include "QRectLayoutItem.h"
+#include "QObjectLayoutItem.h"
 #include <QtGui/QGraphicsPixmapItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QVariant>
@@ -13,7 +13,7 @@ namespace te
   {
     class LayoutItemModelObservable;
 
-    class QPaperLayoutItem : public QRectLayoutItem
+    class QPaperLayoutItem : public QObjectLayoutItem
     {
       public:
 

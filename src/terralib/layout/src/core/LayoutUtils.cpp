@@ -20,8 +20,10 @@ te::layout::LayoutUtils::~LayoutUtils()
 
 }
 
-void te::layout::LayoutUtils::drawRectW( te::map::Canvas* canvas, te::gm::Envelope box )
+void te::layout::LayoutUtils::drawRectW( te::gm::Envelope box )
 {
+  te::map::Canvas* canvas = LayoutContext::getInstance()->getCanvas();
+
   te::gm::Polygon* rect = new te::gm::Polygon(1, te::gm::PolygonType, 0, &box);
   
   te::gm::LinearRing* outRingPtr0 = new te::gm::LinearRing(5, te::gm::LineStringType);
@@ -35,8 +37,10 @@ void te::layout::LayoutUtils::drawRectW( te::map::Canvas* canvas, te::gm::Envelo
   canvas->draw(rect);
 }
 
-void te::layout::LayoutUtils::drawLineW( te::map::Canvas* canvas, te::gm::LinearRing* line )
+void te::layout::LayoutUtils::drawLineW( te::gm::LinearRing* line )
 {
+  te::map::Canvas* canvas = LayoutContext::getInstance()->getCanvas();
+
   canvas->draw(line);
 }
 
@@ -52,19 +56,21 @@ te::gm::LinearRing* te::layout::LayoutUtils::createSimpleLine( te::gm::Envelope 
   return line;
 }
 
-te::color::RGBAColor** te::layout::LayoutUtils::getImageW( te::map::Canvas* canvas, te::gm::Envelope box )
+te::color::RGBAColor** te::layout::LayoutUtils::getImageW( te::gm::Envelope box )
 {
+  te::map::Canvas* canvas = LayoutContext::getInstance()->getCanvas();
   te::color::RGBAColor** pixmap = 0;
 
-  te::gm::Envelope boxViewport = viewportBox(canvas, box);
+  te::gm::Envelope boxViewport = viewportBox(box);
 
   if(boxViewport.isValid())
     pixmap = canvas->getImage(0, 0, boxViewport.getWidth(), boxViewport.getHeight());
   return pixmap;
 }
 
-int te::layout::LayoutUtils::mm2pixel( te::map::Canvas* canvas, double mm )
+int te::layout::LayoutUtils::mm2pixel( double mm )
 {
+  te::map::Canvas* canvas = LayoutContext::getInstance()->getCanvas();
   te::qt::widgets::Canvas* canvascopy = static_cast<te::qt::widgets::Canvas*>(canvas);
 
   int devDpi = canvascopy->getResolution();
@@ -72,18 +78,19 @@ int te::layout::LayoutUtils::mm2pixel( te::map::Canvas* canvas, double mm )
   return px;
 }
 
-void te::layout::LayoutUtils::configCanvas( te::map::Canvas* canvas, te::gm::Envelope box )
+void te::layout::LayoutUtils::configCanvas( te::gm::Envelope box )
 {
-  te::gm::Envelope boxViewport = viewportBox(canvas, box);
+  te::map::Canvas* canvas = LayoutContext::getInstance()->getCanvas();
+  te::gm::Envelope boxViewport = viewportBox(box);
   canvas->resize(boxViewport.getWidth(), boxViewport.getHeight());
   canvas->setWindow(box.getLowerLeftX(), box.getLowerLeftY(), 
     box.getUpperRightX(), box.getUpperRightY());  
 }
 
-te::gm::Envelope te::layout::LayoutUtils::viewportBox( te::map::Canvas* canvas, te::gm::Envelope box )
+te::gm::Envelope te::layout::LayoutUtils::viewportBox( te::gm::Envelope box )
 {
-  int pxwidth = mm2pixel(canvas, box.getWidth());
-  int pxheight = mm2pixel(canvas, box.getHeight());
+  int pxwidth = mm2pixel(box.getWidth());
+  int pxheight = mm2pixel(box.getHeight());
   
   // Adjust internal renderer transformer
   m_transformer.setTransformationParameters(box.getLowerLeftX(), box.getLowerLeftY(), 
@@ -108,7 +115,7 @@ te::gm::Envelope te::layout::LayoutUtils::viewportBox( te::map::Canvas* canvas, 
   return boxViewport;
 }
 
-te::gm::Envelope te::layout::LayoutUtils::viewportBoxFromScene( te::map::Canvas* canvas, te::gm::Envelope box )
+te::gm::Envelope te::layout::LayoutUtils::viewportBoxFromScene( te::gm::Envelope box )
 {
   te::gm::Envelope boxScene = LayoutContext::getInstance()->getScene()->getSceneBox();
 
@@ -132,8 +139,8 @@ te::gm::Envelope te::layout::LayoutUtils::viewportBoxFromScene( te::map::Canvas*
 
   te::gm::Envelope newBoxScene(px1, py1, px2, py2);
 
-  int pxwidth = mm2pixel(canvas, newBoxScene.getWidth());
-  int pxheight = mm2pixel(canvas, newBoxScene.getHeight());
+  int pxwidth = mm2pixel(newBoxScene.getWidth());
+  int pxheight = mm2pixel(newBoxScene.getHeight());
 
   // Adjust internal renderer transformer
   m_transformer.setTransformationParameters(newBoxScene.getLowerLeftX(), newBoxScene.getLowerLeftY(), 

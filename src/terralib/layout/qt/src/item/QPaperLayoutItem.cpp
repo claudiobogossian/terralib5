@@ -12,7 +12,7 @@
 #include "../../../../common/STLUtils.h"
 
 te::layout::QPaperLayoutItem::QPaperLayoutItem( LayoutItemController* controller, LayoutItemModelObservable* o ) :
-  QRectLayoutItem(controller, o)
+  QObjectLayoutItem(controller, o)
 {
   QGraphicsItem* item = this;
   LayoutContext::getInstance()->getScene()->insertItem((LayoutItemObserver*)item);
@@ -32,9 +32,8 @@ void te::layout::QPaperLayoutItem::updateObserver( ContextLayoutItem context )
 
   LayoutItemModelObservable* model = (LayoutItemModelObservable*)_controller->getModel();
   LayoutUtils* utils = LayoutContext::getInstance()->getUtils();
-  te::map::Canvas* canvas = LayoutContext::getInstance()->getCanvas();
 
-  te::gm::Envelope box = utils->viewportBox(canvas, model->getBox());
+  te::gm::Envelope box = utils->viewportBox(model->getBox());
 
   QPixmap pixmap;
   QImage* img = 0;

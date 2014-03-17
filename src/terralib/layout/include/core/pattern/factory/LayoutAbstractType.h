@@ -70,6 +70,17 @@ namespace te
       TPCenterLeft,
       TPNoneSide
     } LayoutSides;
+
+    /** 
+    * Enum TdkAbstractComponentType.
+    * This is the enumeration of the components types
+    * @ingroup factory
+    **/
+    typedef enum
+    {
+      TPMillimeter = 0,
+      TPInch = 1
+    } LayoutUnitsMetrics;
   }
 }
 

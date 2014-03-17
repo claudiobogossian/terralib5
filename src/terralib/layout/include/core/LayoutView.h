@@ -11,7 +11,6 @@ namespace te
     {
       public:
         virtual ~LayoutView(void) {}
-        virtual void setLayoutController(LayoutController* controller) = 0;
         virtual void changeMode() = 0;
 
       protected:

@@ -27,7 +27,9 @@ namespace te
           _zoomFactor(1.),
           _itemFactory(0),
           _outsideFactory(0),
-          _utils(0)
+          _utils(0),
+          _dpiX(96),
+          _dpiY(96)
         {
         };  // Private so that it can  not be called	
         LayoutContext(LayoutContext const&){};             // copy constructor is private	
@@ -39,8 +41,12 @@ namespace te
         static LayoutContext* getInstance();
 
         LayoutMode	 getMode();
-        LayoutScene* getScene();
         void setMode(LayoutMode mode);
+
+        LayoutUnitsMetrics getUnitMetric();
+        void setUnitMetric(LayoutUnitsMetrics unit);
+
+        LayoutScene* getScene();
         void setScene(LayoutScene* scene);
 
         double getZoomFactor();
@@ -64,8 +70,15 @@ namespace te
         LayoutUtils* getUtils();
         void setUtils(LayoutUtils* utils);
 
+        double getDpiX();
+        void setDpiX(double dpiX);
+
+        double getDpiY();
+        void setDpiY(double dpiY);
+
       protected:
         LayoutMode						          _mode;
+        LayoutUnitsMetrics              _unitMetric;
         LayoutScene*					          _scene;
         double							            _zoomFactor;
         te::map::Canvas*	        			_canvas;
@@ -74,6 +87,8 @@ namespace te
         te::gm::Envelope*		            _paperBox; //--->>>>>>>>>>>> Change for just object, no pointer!
         LayoutAbstractPaperType			    _typePaper;
         LayoutUtils*                    _utils;
+        double                          _dpiX;
+        double                          _dpiY;
     };
   }
 }

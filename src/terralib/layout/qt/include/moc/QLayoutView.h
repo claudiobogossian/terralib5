@@ -57,6 +57,8 @@ namespace te
         QObjectInspectorWindowOutside* _dockInspector;
         QToolbarWindowOutside* _dockToolbar;
         QWidget*      _dockParent;
+        double        _dpiX;
+        double        _dpiY;
     };
   }
 }

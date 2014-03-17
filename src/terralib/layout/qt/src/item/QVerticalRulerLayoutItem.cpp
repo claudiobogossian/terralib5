@@ -12,7 +12,7 @@
 #include "../../../../common/STLUtils.h"
 
 te::layout::QVerticalRulerLayoutItem::QVerticalRulerLayoutItem( LayoutItemController* controller, LayoutItemModelObservable* o ) :
-  QRectLayoutItem(controller, o)
+  QObjectLayoutItem(controller, o)
 {
 }
 
@@ -27,9 +27,8 @@ void te::layout::QVerticalRulerLayoutItem::updateObserver( ContextLayoutItem con
 
   LayoutItemModelObservable* model = (LayoutItemModelObservable*)_controller->getModel();
   LayoutUtils* utils = LayoutContext::getInstance()->getUtils();
-  te::map::Canvas* canvas = LayoutContext::getInstance()->getCanvas();
 
-  te::gm::Envelope box = utils->viewportBox(canvas, model->getBox());
+  te::gm::Envelope box = utils->viewportBox(model->getBox());
 
   QPixmap pixmap;
   QImage* img = 0;

@@ -28,15 +28,15 @@ void te::layout::RectangleLayoutModel::draw( ContextLayoutItem context )
   LayoutUtils* utils = LayoutContext::getInstance()->getUtils();
 
   if(context.isResizeCanvas())
-    utils->configCanvas(canvas, _box);
+    utils->configCanvas(_box);
   
   canvas->setPolygonContourColor(_borderColor);
   canvas->setPolygonFillColor(_backgroundColor);
   
-  utils->drawRectW(canvas, _box);
+  utils->drawRectW(_box);
   
   if(context.isResizeCanvas())
-    pixmap = utils->getImageW(canvas, _box);
+    pixmap = utils->getImageW(_box);
   
   ContextLayoutItem contextNotify;
   contextNotify.setPixmap(pixmap);

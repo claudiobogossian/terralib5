@@ -50,6 +50,7 @@ namespace te
       protected:
 
         te::gm::Envelope	 _paperBox;
+        te::gm::Envelope	 _backEndBox;
         double	  _longLine;
         double	  _mediumLine;
         double    _smallLine;
@@ -63,6 +64,8 @@ namespace te
         double	  _posCount;
         std::vector<std::string> _horizontalTexts;
         bool      _invertedLines;
+        double _backEndSpacing;
+        double _backEndMargin;
     };
   }
 }

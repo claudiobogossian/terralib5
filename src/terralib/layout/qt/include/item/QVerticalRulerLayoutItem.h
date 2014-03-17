@@ -1,7 +1,7 @@
 #ifndef QVERTICALRULER_LAYOUTITEM_H
 #define QVERTICALRULER_LAYOUTITEM_H
 
-#include "QRectLayoutItem.h"
+#include "QObjectLayoutItem.h"
 #include <QGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QVariant>
@@ -10,7 +10,7 @@ namespace te
 {
   namespace layout
   {
-    class QVerticalRulerLayoutItem : public QRectLayoutItem
+    class QVerticalRulerLayoutItem : public QObjectLayoutItem
     {
       public:
 

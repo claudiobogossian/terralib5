@@ -113,3 +113,33 @@ void te::layout::LayoutContext::setUtils( LayoutUtils* utils )
   _utils = utils;
 }
 
+te::layout::LayoutUnitsMetrics te::layout::LayoutContext::getUnitMetric()
+{
+  return _unitMetric;
+}
+
+void te::layout::LayoutContext::setUnitMetric( LayoutUnitsMetrics unit )
+{
+  _unitMetric = unit;
+}
+
+double te::layout::LayoutContext::getDpiX()
+{
+  return _dpiX;
+}
+
+void te::layout::LayoutContext::setDpiX( double dpiX )
+{
+  _dpiX = dpiX;
+}
+
+double te::layout::LayoutContext::getDpiY()
+{
+  return _dpiY;
+}
+
+void te::layout::LayoutContext::setDpiY( double dpiY )
+{
+  _dpiY = dpiY;
+}
+

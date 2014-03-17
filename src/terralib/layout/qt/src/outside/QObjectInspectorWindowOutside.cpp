@@ -118,11 +118,16 @@ void te::layout::QObjectInspectorWindowOutside::itemsInspector(QList<QGraphicsIt
         {
           //item->metaObject()->className(); ->>> have to be QObject or QGraphicsObject too. 
 
-          property = _variantInspectorObjectManager->addProperty(QVariant::String, tr(p.getName().c_str()));
+          QGraphicsObject* itemObj = dynamic_cast<QGraphicsObject*>(item);         
+
+          if(!itemObj)
+            break;
+          
+          property = _variantInspectorObjectManager->addProperty(QVariant::String, tr(itemObj->metaObject()->className()));
           property->setValue(p.getLabel().c_str());
           addProperty(property, QLatin1String(p.getName().c_str()));
 
-          property = _variantInspectorObjectManager->addProperty(QVariant::String, tr(p.getName().c_str()));
+          property = _variantInspectorObjectManager->addProperty(QVariant::String, tr(itemObj->objectName().toStdString().c_str()));
           property->setValue(p.getLabel().c_str());
           addProperty(property, QLatin1String(p.getName().c_str()));
         }

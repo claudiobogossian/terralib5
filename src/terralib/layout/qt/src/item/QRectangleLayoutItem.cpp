@@ -257,7 +257,7 @@ te::gm::Envelope te::layout::QRectangleLayoutItem::createNewBoxInCoordScene( con
         {
           dx = posItem.x() - posAtual.x();
           dy = posItem.y() - posAtual.y();
-          
+                    
           QPointF pbxy2 = mapToScene(boundingRect().topRight());
           if(posAtual.x() < pbxy2.x() && posAtual.y() < posItem.y())
           {
