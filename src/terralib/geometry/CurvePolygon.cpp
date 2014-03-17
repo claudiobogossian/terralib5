@@ -26,6 +26,7 @@
 // TerraLib
 #include "../common/STLUtils.h"
 #include "../common/Translator.h"
+#include "Coord2D.h"
 #include "Curve.h"
 #include "CurvePolygon.h"
 #include "Envelope.h"
@@ -34,6 +35,7 @@
 
 #if TE_USE_GEOS
 // GEOS
+#include <geos/algorithm/CentroidArea.h>
 #include <geos/geom/Geometry.h>
 #include <geos/geom/IntersectionMatrix.h>
 #include <geos/operation/buffer/OffsetCurveBuilder.h>
@@ -143,11 +145,42 @@ double te::gm::CurvePolygon::getArea() const
 
 te::gm::Point* te::gm::CurvePolygon::getCentroid() const
 {
+#if TE_USE_GEOS
+  std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
+
+  geos::algorithm::CentroidArea c;
+  
+  c.add(thisGeom.get());
+
+  geos::geom::Coordinate coord;
+
+  if(c.getCentroid(coord))
+  {
+    Point* pt = new Point(coord.x, coord.y, m_srid, 0);
+
+    return pt;
+  }
+
   return 0;
+
+#else
+  throw te::common::Exception(TR_GEOM("buffer routine is supported by GEOS! Please, enable the GEOS support."));
+#endif
 }
 
 te::gm::Coord2D* te::gm::CurvePolygon::getCentroidCoord() const
 {
+  te::gm::Point * p = getCentroid();
+
+  if(p)
+  {
+    te::gm::Coord2D* coord = new te::gm::Coord2D(p->getX(), p->getY());
+
+    delete p;
+
+    return coord;
+  }
+
   return 0;
 }
 

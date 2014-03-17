@@ -631,6 +631,17 @@ void te::ado::Transactor::renameProperty(const std::string& datasetName,
   }
 }
 
+void te::ado::Transactor::changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp) 
+{
+  std::auto_ptr<te::dt::Property> prp(newProp);
+  std::string type = GetAdoStringType(prp->getType());
+
+  std::string sql("ALTER TABLE ");
+  sql += datasetName + " ALTER COLUMN " + propName + " " + type; 
+
+  execute(sql);
+}
+
 std::auto_ptr<te::da::PrimaryKey> te::ado::Transactor::getPrimaryKey(const std::string& datasetName)
 {
   std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));

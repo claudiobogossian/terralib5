@@ -70,13 +70,9 @@ te::graph::AddRasterAttribute::AddRasterAttribute(te::graph::AbstractGraph* grap
   }
 
   //iterator for all vertex objects
-  te::graph::AbstractIterator* oldIt = graph->getIterator();
-
   te::graph::SequenceIterator* it = new te::graph::SequenceIterator(graph);
 
-  graph->setIterator(it);
-
-  te::graph::Vertex* vertex = graph->getFirstVertex();
+  te::graph::Vertex* vertex = it->getFirstVertex();
 
   te::common::TaskProgress task;
   
@@ -115,12 +111,10 @@ te::graph::AddRasterAttribute::AddRasterAttribute(te::graph::AbstractGraph* grap
       }
     }
 
-    vertex = graph->getNextVertex();
+    vertex = it->getNextVertex();
 
     task.pulse();
   }
-
-  graph->setIterator(oldIt);
 
   delete it;
 

@@ -63,6 +63,9 @@ te::qt::widgets::SymbolSelectorDialog::SymbolSelectorDialog(QWidget* parent, Qt:
   connect(m_ui->m_loadSymbolLibraryPushButton, SIGNAL(pressed()), SLOT(onLoadSymbolLibraryPushButtonPressed()));
   connect(m_ui->m_searchLineEdit, SIGNAL(textChanged(const QString&)), SLOT(onSearchLineEditTextChanged(const QString&)));
 
+  // For while, hide symbol edit option
+  m_ui->m_editSymbolPushButton->setVisible(false);
+
   initialize();
 }
 

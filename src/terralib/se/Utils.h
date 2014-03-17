@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,6 +29,7 @@
 #define __TERRALIB_SE_INTERNAL_UTILS_H
 
 // TerraLib
+#include "../color/RGBAColor.h"
 #include "../geometry/Enums.h"
 #include "Config.h"
 #include "Font.h"
@@ -50,6 +51,7 @@ namespace te
     class Graphic;
     class LineSymbolizer;
     class Mark;
+    class ParameterValue;
     class PointSymbolizer;
     class PolygonSymbolizer;
     class Stroke;
@@ -352,6 +354,84 @@ namespace te
       \return A random color encoded using two hexadecimal digits per primary-color component prefixed with a hash (#) sign.
     */
     TESEEXPORT std::string GenerateRandomColor();
+
+
+    /*!
+      \brief It gets the RGBA color from the Stroke element.
+
+      \param stroke The Symbology Enconding Stroke element.
+      \param color  A pre-created color that will be filled with the values extracted from Stroke.
+
+      \note The given color will be altered based on "stroke" and "stroke-opacity" attributes, if availables.
+    */
+    TESEEXPORT void GetColor(const te::se::Stroke* stroke, te::color::RGBAColor& color);
+
+    /*!
+      \brief It gets the RGBA color from the Fill element.
+
+      \param fill  The Symbology Enconding Fill element.
+      \param color A pre-created color that will be filled with the values extracted from Fill.
+
+      \note The given color will be altered based on "fill" and "fill-opacity" attributes, if availables.
+    */
+    TESEEXPORT void GetColor(const te::se::Fill* fill, te::color::RGBAColor& color);
+
+    /*!
+      \brief It gets the RGBA color from the parameter values.
+
+      \param color   The Symbology Enconding Parameter Value element that represents the color.
+      \param opacity The Symbology Enconding Parameter Value element that represents the opacity.
+      \param color A pre-created color that will be filled with the values extracted from color and opacity.
+
+      \note The given color will be altered based on "color" and "opacity" parameters, if availables.
+      \note Warning: It considers that the paramater value is enconded using a Literal OGC Filter expression.
+    */
+    TESEEXPORT void GetColor(const te::se::ParameterValue* color, const te::se::ParameterValue* opacity, te::color::RGBAColor& rgba);
+
+    /*!
+      \brief It gets the parameter value as a RGBA color.
+
+      \param param The Symbology Enconding Parameter Value element.
+
+      \return The RGBA color.
+
+      \note Warning: It considers that the paramater value is enconded using a Literal OGC Filter expression.
+    */
+    TESEEXPORT te::color::RGBAColor GetColor(const te::se::ParameterValue* param);
+
+    /*!
+      \brief It gets the parameter value as an integer.
+
+      \param param The Symbology Enconding Parameter Value element.
+
+      \return The integer value.
+
+      \note Warning: It considers that the paramater value is enconded using a Literal OGC Filter expression.
+    */
+    TESEEXPORT int GetInt(const te::se::ParameterValue* param);
+
+    /*!
+      \brief It gets the parameter value as a double.
+
+      \param param The Symbology Encoding Parameter Value element.
+
+      \return The double value.
+
+      \note Warning: It considers that the paramater value is enconded using a Literal OGC Filter expression.
+    */
+    TESEEXPORT double GetDouble(const te::se::ParameterValue* param);
+
+    /*!
+      \brief It gets the parameter value as a string.
+
+      \param param The Symbology Encoding Parameter Value element.
+
+      \return The string value.
+
+      \note Warning: It considers that the paramater value is encoded using a Literal OGC Filter expression.
+    */
+    TESEEXPORT std::string GetString(const te::se::ParameterValue* param);
+
 
   } // end namespace se
 }   // end namespace te

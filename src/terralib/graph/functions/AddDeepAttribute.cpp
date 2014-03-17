@@ -65,20 +65,14 @@ te::graph::AddDeepAttribute::AddDeepAttribute(te::graph::BidirectionalGraph* gra
   }
 
   //iterator for all vertex objects
-  te::graph::AbstractIterator* oldIt = graph->getIterator();
-
   te::graph::SequenceIterator* it = new te::graph::SequenceIterator(graph);
 
-  graph->setIterator(it);
-
-  te::graph::Vertex* vertex = graph->getFirstVertex();
+  te::graph::Vertex* vertex = it->getFirstVertex();
 
   te::common::TaskProgress task;
-  
+
   task.setTotalSteps(it->getVertexInteratorCount());
   task.setMessage("Add Deep Attribute Operation");
-
-  
 
   while(it->isVertexIteratorAfterEnd() == false)
   {
@@ -99,12 +93,10 @@ te::graph::AddDeepAttribute::AddDeepAttribute(te::graph::BidirectionalGraph* gra
       graph->update(vertex);
     }
 
-    vertex = graph->getNextVertex();
+    vertex = it->getNextVertex();
 
     task.pulse();
   }
-
-  graph->setIterator(oldIt);
 
   delete it;
 

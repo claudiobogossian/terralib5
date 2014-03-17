@@ -28,6 +28,8 @@
 #include <terralib/raster/Grid.h>
 #include <terralib/rp/GeometricRefining.h>
 #include <terralib/raster/RasterFactory.h>
+#include <terralib/common/progress/ConsoleProgressViewer.h>
+#include <terralib/common/progress/ProgressManager.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsGeometricRefining );
 
@@ -41,6 +43,10 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TsGeometricRefining );
 
 void TsGeometricRefining::Test001()
 {
+  // Progress interface
+  te::common::ConsoleProgressViewer progressViewerInstance;
+  int viewerId = te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
+  
   // openning input rasters
   
   std::map<std::string, std::string> inRasterInfo;
@@ -71,7 +77,7 @@ void TsGeometricRefining::Test001()
   algoInputParams.m_referenceRastersPtr = &referenceRastersfeeder;
   algoInputParams.m_referenceTPLocationBands.resize( 5, referenceTPLocationBands );
   algoInputParams.m_enableMultiThread = false;
-  algoInputParams.m_enableProgress = false;
+  algoInputParams.m_enableProgress = true;
   algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
   algoInputParams.m_locatorParams.m_interesPointsLocationStrategy = te::rp::TiePointsLocator::InputParameters::MoravecStrategyT;
   algoInputParams.m_minInRasterCoveredAreaPercent = 25;
@@ -83,7 +89,7 @@ void TsGeometricRefining::Test001()
   algoInputParams.m_inRasterExpectedColDisplacement = 0;
   algoInputParams.m_processAllReferenceRasters = true;
   algoInputParams.m_enableRasterCache = true;
-  algoInputParams.m_geomTransfName = "RST";
+  algoInputParams.m_geomTransfName = "Affine";
   algoInputParams.m_geomTransfMaxTiePointError = 1.0;
   algoInputParams.m_outliersRemotionAssurance = 0.1;
   algoInputParams.m_outliersRemotionMaxIterations = 0;
@@ -113,6 +119,8 @@ void TsGeometricRefining::Test001()
   ASSERTMAXDIST( inRasterPointer->getGrid()->getExtent()->getUpperRight(),
     algoOutputParams.m_outputRasterPtr->getGrid()->getExtent()->getUpperRight(),
     0.000001 );
+  
+  te::common::ProgressManager::getInstance().removeViewer( viewerId );  
   
 }
 

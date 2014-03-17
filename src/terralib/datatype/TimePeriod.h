@@ -76,7 +76,7 @@ namespace te
         /*! 
           \brief Assignment operator.
         */
-        const TimePeriod& operator=(const TimePeriod& rhs);               
+        //const TimePeriod& operator=(const TimePeriod& rhs);               
 
         /*!
           \brief It returns the boost time period type.

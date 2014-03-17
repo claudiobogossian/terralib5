@@ -31,6 +31,7 @@
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../datatype/Array.h"
 #include "../datatype/ByteArray.h"
+#include "../datatype/DateTimeInstant.h"
 #include "../datatype/DateTimeProperty.h"
 #include "../datatype/SimpleData.h"
 #include "../datatype/TimeInstant.h"
@@ -112,12 +113,47 @@ terralib4::TableDataSet::TableDataSet( TeDatabase* db, TeTable table)
           break;
 
         case TeDATETIME:
-          //item->setDateTime(i, portal->getDateAsString(i));
-          break;
+        {
+          TeTime date = portal->getDate(i);
+
+          int y = date.year();
+          int m = date.month();
+          int d = date.day();
+          int h = date.hour();
+          int min = date.minute();
+          int s = date.second();
+
+          te::dt::Property* p = m_dt->getProperty(i);
+          te::dt::DateTimeType subType = static_cast<te::dt::DateTimeProperty*>(p)->getSubType();
+          te::dt::DateTime* dateTime = 0;
+
+          if(subType == te::dt::DATE)
+          {
+            dateTime = new te::dt::Date((unsigned short)y, (unsigned short)m, (unsigned short)d);
+          }
+          else if(subType == te::dt::TIME_DURATION)
+          {
+            dateTime = new te::dt::TimeDuration(h, min, s);
+          }
+          else if(subType == te::dt::TIME_INSTANT)
+          {
+            te::dt::Date dt(y, m, d);
+            te::dt::TimeDuration td(h, min, s);
+            dateTime = new te::dt::TimeInstant(dt, td);
+          }
+
+          item->setDateTime(i, dateTime);
+
+        }
 
         case TeBLOB:
-          //item->setByteArray(i, portal->getBlob);
+        {
+          unsigned char* data;
+          long size;
+          portal->getBlob(m_dt->getProperty(i)->getName(), data, size);
+          item->setByteArray(i, new te::dt::ByteArray((char*)data, (std::size_t)size));
           break;
+        }
 
         case TeCHARACTER:
           item->setChar(i, (char)portal->getData(i));
@@ -146,7 +182,6 @@ terralib4::TableDataSet::TableDataSet( TeDatabase* db, TeTable table)
 
 terralib4::TableDataSet::~TableDataSet()
 {
-  //delete m_portal;
   delete m_dt;
 }
 

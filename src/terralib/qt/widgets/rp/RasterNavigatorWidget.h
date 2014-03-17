@@ -27,6 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_RP_INTERNAL_RASTERNAVIGATORWIDGET_H
 
 // TerraLib
+#include "../../../geometry/Envelope.h"
 #include "../../../geometry/Polygon.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../maptools/Enums.h"
@@ -112,6 +113,8 @@ namespace te
 
           void hideGeomTool(bool hide);
 
+          void hideBoxTool(bool hide);
+
           void hideInfoTool(bool hide);
 
           void hideExtraDisplaysTool(bool hide);
@@ -119,6 +122,8 @@ namespace te
           void setSelectionMode(bool mode);
 
         protected slots:
+
+          void onEnvelopeAcquired(te::gm::Envelope env);
 
           void onGeomAquired(te::gm::Polygon* poly);
 
@@ -137,6 +142,8 @@ namespace te
           void onPointPickerToggled(bool checked);
           
           void onGeomToggled(bool checked);
+
+          void onBoxToggled(bool checked);
 
           void onReadPixelToggled(bool checked);
 
@@ -173,6 +180,8 @@ namespace te
           void pointPicked(double x, double y);
 
           void geomAquired(te::gm::Polygon* poly);
+
+          void envelopeAcquired(te::gm::Envelope env);
 
         protected:
 

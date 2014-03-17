@@ -109,6 +109,15 @@ namespace te
     ADOX::DataTypeEnum Convert2Ado(int terralib);
 
     /*!
+      \brief Bind TerraLib type to an ADO valid fiel type name.
+
+      \terralib TerraLib data type.
+
+      \return Valid ADO field type as string value.
+    */
+    std::string GetAdoStringType(const int& terralib);
+
+    /*!
       \brief Bind TerraLib geometry to ADO variant.
 
       \param geo TerraLib Geometry.

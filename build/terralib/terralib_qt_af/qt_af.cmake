@@ -38,7 +38,6 @@ list ( APPEND
   terralib_memory
   terralib_qt_widgets
   terralib_maptools
-  terralib_serialization
   terralib_srs
   terralib_symbology
   terralib_xerces
@@ -72,6 +71,7 @@ set (
   ${SRCDIR}/connectors/LayerExplorer.h
   ${SRCDIR}/connectors/MapDisplay.h  
   ${SRCDIR}/connectors/StyleExplorer.h
+  ${SRCDIR}/connectors/TimeSliderWidget.h
 )
 
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/af/connectors" MOC)

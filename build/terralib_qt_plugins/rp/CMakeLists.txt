@@ -32,6 +32,7 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/AbstractAction.h
   ${SRCDIR}/ClassifierAction.h
+  ${SRCDIR}/ClippingAction.h
   ${SRCDIR}/ColorTransformAction.h
   ${SRCDIR}/ContrastAction.h
   ${SRCDIR}/FilterAction.h
@@ -116,3 +117,9 @@ else()
 endif()
 
 set (TE_ENABLED_PLUGINS "${TE_ENABLED_PLUGINS}\n    <Plugin>${TE_PLUGIN_NAME}</Plugin>" PARENT_SCOPE)
+
+if("${ENABLED_PLUGINS}" STREQUAL "")
+	set (ENABLED_PLUGINS ${PROJ_NAME} PARENT_SCOPE)
+else()
+	set (ENABLED_PLUGINS "${ENABLED_PLUGINS}" ${PROJ_NAME} PARENT_SCOPE)
+endif()

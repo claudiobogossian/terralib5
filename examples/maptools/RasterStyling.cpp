@@ -51,6 +51,7 @@ te::map::DataSetLayer* CreateRasterLayer(const std::string& path)
   layer->setDataSetName(dataSetName);
   layer->setExtent(extent);
   layer->setRendererType("ABSTRACT_LAYER_RENDERER");
+  layer->setSRID(raster->getSRID());
 
   return layer;
 }
@@ -449,7 +450,7 @@ void DrawRasterStyledLayers()
     te::qt::widgets::Canvas* canvas = CreateCanvas(rasterLayer.get(), extent, srid);
 
     // RGB 012 Style
-    RGB_012_Style(canvas, rasterLayer.get(), extent, srid);
+    //RGB_012_Style(canvas, rasterLayer.get(), extent, srid);
 
     // RGB 012 with transparency Style
     RGB_012_Transp_Style(canvas, rasterLayer.get(), extent, srid);

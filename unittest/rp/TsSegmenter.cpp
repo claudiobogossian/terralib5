@@ -42,7 +42,7 @@ void TsSegmenter::BlockProcessingWithoutMerging()
 {
   // Progress interface
   te::common::ConsoleProgressViewer progressViewerInstance;
-  te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
+  int viewerId = te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
   
   // open input raster
   
@@ -89,13 +89,15 @@ void TsSegmenter::BlockProcessingWithoutMerging()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  
+  te::common::ProgressManager::getInstance().removeViewer( viewerId ); 
 }
 
 void TsSegmenter::BlockProcessingWithMerging()
 {
   // Progress interface
   te::common::ConsoleProgressViewer progressViewerInstance;
-  te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
+  int viewerId = te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
   
   // open input raster
   
@@ -141,13 +143,15 @@ void TsSegmenter::BlockProcessingWithMerging()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  
+  te::common::ProgressManager::getInstance().removeViewer( viewerId ); 
 }
 
 void TsSegmenter::ThreadedProcessing()
 {
   // Progress interface
   te::common::ConsoleProgressViewer progressViewerInstance;
-  te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
+  int viewerId = te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
   
   // open input raster
   
@@ -193,13 +197,15 @@ void TsSegmenter::ThreadedProcessing()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  
+  te::common::ProgressManager::getInstance().removeViewer( viewerId ); 
 }
 
 void TsSegmenter::RegionGrowingMeanStrategy()
 {
   // Progress interface
   te::common::ConsoleProgressViewer progressViewerInstance;
-  te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
+  int viewerId = te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
   
   // open input raster
   
@@ -247,13 +253,15 @@ void TsSegmenter::RegionGrowingMeanStrategy()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  
+  te::common::ProgressManager::getInstance().removeViewer( viewerId ); 
 }
 
 void TsSegmenter::RegionGrowingBaatzStrategy()
 {
   // Progress interface
   te::common::ConsoleProgressViewer progressViewerInstance;
-  te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
+  int viewerId = te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
   
   // open input raster
   
@@ -306,5 +314,7 @@ void TsSegmenter::RegionGrowingBaatzStrategy()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  
+  te::common::ProgressManager::getInstance().removeViewer( viewerId ); 
 }
 

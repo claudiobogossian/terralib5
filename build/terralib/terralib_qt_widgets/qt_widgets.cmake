@@ -53,10 +53,10 @@ list (APPEND TE_DEP_LIBS
 		terralib_maptools
 		terralib_memory
 		terralib_raster
-		terralib_serialization
 		terralib_srs
 		terralib_statistics
 		terralib_symbology
+		terralib_st
 		terralib_rp
         terralib_plugin
 		terralib_xlink
@@ -98,7 +98,7 @@ set (
   widgets/propertybrowser/qt
   widgets/rp
   widgets/se
-  widgets/slider
+  widgets/st
   widgets/srs
   widgets/table
   widgets/temporal
@@ -371,6 +371,7 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/rp/ClassifierDialog.h
   ${SRCDIR}/widgets/rp/ClassifierWizardPage.h
+  ${SRCDIR}/widgets/rp/ClippingWizardPage.h
   ${SRCDIR}/widgets/rp/ColorTransformWizardPage.h
   ${SRCDIR}/widgets/rp/ContrastDialog.h
   ${SRCDIR}/widgets/rp/ContrastWizardPage.h
@@ -445,11 +446,14 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/se" MOC)
 
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/widgets/slider/TimePropertiesDialog.h
-  ${SRCDIR}/widgets/slider/TimeSliderWidget.h
+  ${SRCDIR}/widgets/st/TimeSliderWidget.h
+  ${SRCDIR}/widgets/st/Animation.h
+  ${SRCDIR}/widgets/st/AnimationItem.h
+  ${SRCDIR}/widgets/st/AnimationScene.h
+  ${SRCDIR}/widgets/st/PixmapItem.h
+  ${SRCDIR}/widgets/st/TrajectoryItem.h
 )
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/slider" MOC)
-
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/st" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/srs/SRSManagerDialog.h
@@ -461,6 +465,7 @@ set (
   ${SRCDIR}/widgets/table/DataSetTableView.h
   ${SRCDIR}/widgets/table/DataSetTableVerticalHeader.h
   ${SRCDIR}/widgets/table/AddColumnDialog.h
+  ${SRCDIR}/widgets/table/AlterDataDialog.h
   ${SRCDIR}/widgets/table/RenameColumnDialog.h
   ${SRCDIR}/widgets/table/RetypeColumnDialog.h
 )
@@ -481,6 +486,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/temporal" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/tools/CoordTracking.h
+  ${SRCDIR}/widgets/tools/ExtentAcquire.h
   ${SRCDIR}/widgets/tools/Info.h
   ${SRCDIR}/widgets/tools/Measure.h
   ${SRCDIR}/widgets/tools/PanExtent.h
@@ -539,7 +545,7 @@ file(
   ${SRCDIR}/widgets/utils/ui/*.ui
   ${SRCDIR}/widgets/rp/ui/*.ui
   ${SRCDIR}/widgets/se/ui/*.ui
-  ${SRCDIR}/widgets/slider/ui/*.ui
+  ${SRCDIR}/widgets/st/ui/*.ui
   ${SRCDIR}/widgets/srs/ui/*.ui
   ${SRCDIR}/widgets/table/ui/*.ui
   ${SRCDIR}/widgets/temporal/ui/*.ui

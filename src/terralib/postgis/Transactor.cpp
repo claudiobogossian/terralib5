@@ -596,6 +596,23 @@ void te::pgis::Transactor::renameProperty(const std::string& datasetName,
   }
 }
 
+void te::pgis::Transactor::changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp)
+{
+  std::auto_ptr<te::dt::Property> prp(newProp);
+  std::string type;
+
+  if(prp->getType() == te::dt::DOUBLE_TYPE)
+    type = "NUMERIC USING " + propName+ "::numeric";
+
+  if(type.empty())
+    SetColumnDef(type, prp.get());
+
+  std::string sql("ALTER TABLE ");
+  sql += datasetName + " ALTER COLUMN " + propName + " TYPE " + type; 
+
+  execute(sql);
+}
+
 std::auto_ptr<te::da::PrimaryKey> te::pgis::Transactor::getPrimaryKey(const std::string& datasetName)
 {
   std::string fullDatasetName = getFullName(datasetName);

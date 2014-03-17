@@ -74,7 +74,7 @@
 
 //#ifdef TE_ENABLED_XML
 
-te::xsd::All* te::xsd::ReadAll(te::xml::Reader& reader)
+te::xsd::All* te::xsd::serialize::ReadAll(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "all");
@@ -104,11 +104,11 @@ te::xsd::All* te::xsd::ReadAll(te::xml::Reader& reader)
   return all.release();
 }
 
-void te::xsd::Save(All* all, te::xml::Writer& writer)
+void te::xsd::serialize::Save(All* all, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Annotation* te::xsd::ReadAnnotation(te::xml::Reader& reader)
+te::xsd::Annotation* te::xsd::serialize::ReadAnnotation(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "annotation");
@@ -187,11 +187,11 @@ te::xsd::Annotation* te::xsd::ReadAnnotation(te::xml::Reader& reader)
   return annotation.release();
 }
 
-void te::xsd::Save(Annotation* annotation, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Annotation* annotation, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Any* te::xsd::ReadAny(te::xml::Reader& reader)
+te::xsd::Any* te::xsd::serialize::ReadAny(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "any");
@@ -234,11 +234,11 @@ te::xsd::Any* te::xsd::ReadAny(te::xml::Reader& reader)
   return any.release();
 }
 
-void te::xsd::Save(Any* any, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Any* any, te::xml::Writer& writer)
 {
 }
 
-te::xsd::AnyAttribute* te::xsd::ReadAnyAttribute(te::xml::Reader& reader)
+te::xsd::AnyAttribute* te::xsd::serialize::ReadAnyAttribute(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "anyAttribute");
@@ -276,11 +276,11 @@ te::xsd::AnyAttribute* te::xsd::ReadAnyAttribute(te::xml::Reader& reader)
   return anyAttribute.release();
 }
 
-void te::xsd::Save(AnyAttribute* anyAttribute, te::xml::Writer& writer)
+void te::xsd::serialize::Save(AnyAttribute* anyAttribute, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Attribute* te::xsd::ReadAttribute(te::xml::Reader& reader)
+te::xsd::Attribute* te::xsd::serialize::ReadAttribute(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "attribute");
@@ -347,11 +347,11 @@ te::xsd::Attribute* te::xsd::ReadAttribute(te::xml::Reader& reader)
   return attribute.release();
 }
 
-void te::xsd::Save(Attribute* attribute, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Attribute* attribute, te::xml::Writer& writer)
 {
 }
 
-te::xsd::AttributeGroup* te::xsd::ReadAttributeGroup(te::xml::Reader& reader)
+te::xsd::AttributeGroup* te::xsd::serialize::ReadAttributeGroup(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "attributeGroup");
@@ -406,11 +406,11 @@ te::xsd::AttributeGroup* te::xsd::ReadAttributeGroup(te::xml::Reader& reader)
   return attributeGroup.release();
 }
 
-void te::xsd::Save(AttributeGroup* attributeGroup, te::xml::Writer& writer)
+void te::xsd::serialize::Save(AttributeGroup* attributeGroup, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Choice* te::xsd::ReadChoice(te::xml::Reader& reader)
+te::xsd::Choice* te::xsd::serialize::ReadChoice(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "choice");
@@ -476,11 +476,11 @@ te::xsd::Choice* te::xsd::ReadChoice(te::xml::Reader& reader)
   return choice.release();
 }
 
-void te::xsd::Save(Choice* choice, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Choice* choice, te::xml::Writer& writer)
 {
 }
 
-te::xsd::ComplexContent* te::xsd::ReadComplexContent(te::xml::Reader& reader)
+te::xsd::ComplexContent* te::xsd::serialize::ReadComplexContent(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "complexContent");
@@ -518,11 +518,11 @@ te::xsd::ComplexContent* te::xsd::ReadComplexContent(te::xml::Reader& reader)
   return cc.release();
 }
 
-void te::xsd::Save(ComplexContent* cc, te::xml::Writer& writer)
+void te::xsd::serialize::Save(ComplexContent* cc, te::xml::Writer& writer)
 {
 }
 
-te::xsd::ComplexType* te::xsd::ReadComplexType(te::xml::Reader& reader)
+te::xsd::ComplexType* te::xsd::serialize::ReadComplexType(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "complexType");
@@ -631,11 +631,11 @@ te::xsd::ComplexType* te::xsd::ReadComplexType(te::xml::Reader& reader)
   return ct.release();
 }
 
-void te::xsd::Save(ComplexType* ct, te::xml::Writer& writer)
+void te::xsd::serialize::Save(ComplexType* ct, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Element* te::xsd::ReadElement(te::xml::Reader& reader)
+te::xsd::Element* te::xsd::serialize::ReadElement(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "element");
@@ -733,11 +733,11 @@ te::xsd::Element* te::xsd::ReadElement(te::xml::Reader& reader)
   return element.release();
 }
 
-void te::xsd::Save(Element* element, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Element* element, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Extension* te::xsd::ReadExtension(te::xml::Reader& reader)
+te::xsd::Extension* te::xsd::serialize::ReadExtension(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "extension");
@@ -820,11 +820,11 @@ te::xsd::Extension* te::xsd::ReadExtension(te::xml::Reader& reader)
   return extension.release();
 }
 
-void te::xsd::Save(Extension* extension, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Extension* extension, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Field* te::xsd::ReadField(te::xml::Reader& reader)
+te::xsd::Field* te::xsd::serialize::ReadField(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "field");
@@ -852,11 +852,11 @@ te::xsd::Field* te::xsd::ReadField(te::xml::Reader& reader)
   return field.release();
 }
 
-void te::xsd::Save(Field* field, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Field* field, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Group* te::xsd::ReadGroup(te::xml::Reader& reader)
+te::xsd::Group* te::xsd::serialize::ReadGroup(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "group");
@@ -900,11 +900,11 @@ te::xsd::Group* te::xsd::ReadGroup(te::xml::Reader& reader)
   return group.release();
 }
 
-void te::xsd::Save(Group* group, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Group* group, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Import* te::xsd::ReadImport(te::xml::Reader& reader)
+te::xsd::Import* te::xsd::serialize::ReadImport(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "import");
@@ -935,11 +935,11 @@ te::xsd::Import* te::xsd::ReadImport(te::xml::Reader& reader)
   return import.release();
 }
 
-void te::xsd::Save(Import* import, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Import* import, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Include* te::xsd::ReadInclude(te::xml::Reader& reader)
+te::xsd::Include* te::xsd::serialize::ReadInclude(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "include");
@@ -965,11 +965,11 @@ te::xsd::Include* te::xsd::ReadInclude(te::xml::Reader& reader)
   return include.release();
 }
 
-void te::xsd::Save(Include* include, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Include* include, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Key* te::xsd::ReadKey(te::xml::Reader& reader)
+te::xsd::Key* te::xsd::serialize::ReadKey(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "key");
@@ -1008,11 +1008,11 @@ te::xsd::Key* te::xsd::ReadKey(te::xml::Reader& reader)
   return key.release();
 }
 
-void te::xsd::Save(Key* key, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Key* key, te::xml::Writer& writer)
 {
 }
 
-te::xsd::KeyRef* te::xsd::ReadKeyRef(te::xml::Reader& reader)
+te::xsd::KeyRef* te::xsd::serialize::ReadKeyRef(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "keyref");
@@ -1056,11 +1056,11 @@ te::xsd::KeyRef* te::xsd::ReadKeyRef(te::xml::Reader& reader)
   return keyRef.release();
 }
 
-void te::xsd::Save(KeyRef* keyRef, te::xml::Writer& writer)
+void te::xsd::serialize::Save(KeyRef* keyRef, te::xml::Writer& writer)
 {
 }
 
-te::xsd::List* te::xsd::ReadList(te::xml::Reader& reader)
+te::xsd::List* te::xsd::serialize::ReadList(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "list");
@@ -1092,11 +1092,11 @@ te::xsd::List* te::xsd::ReadList(te::xml::Reader& reader)
   return list.release();
 }
 
-void te::xsd::Save(List* list, te::xml::Writer& writer)
+void te::xsd::serialize::Save(List* list, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Redefine* te::xsd::ReadRedefine(te::xml::Reader& reader)
+te::xsd::Redefine* te::xsd::serialize::ReadRedefine(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "redefine");
@@ -1161,11 +1161,11 @@ te::xsd::Redefine* te::xsd::ReadRedefine(te::xml::Reader& reader)
   return redefine.release();
 }
 
-void te::xsd::Save(Redefine* redefine, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Redefine* redefine, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Restriction4ComplexContent* te::xsd::ReadRestriction4ComplexContent(te::xml::Reader& reader)
+te::xsd::Restriction4ComplexContent* te::xsd::serialize::ReadRestriction4ComplexContent(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "restriction");
@@ -1249,11 +1249,11 @@ te::xsd::Restriction4ComplexContent* te::xsd::ReadRestriction4ComplexContent(te:
   return restriction.release();
 }
 
-void te::xsd::Save(Restriction4ComplexContent* restriction, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Restriction4ComplexContent* restriction, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Restriction4SimpleContent* te::xsd::ReadRestriction4SimpleContent(te::xml::Reader& reader)
+te::xsd::Restriction4SimpleContent* te::xsd::serialize::ReadRestriction4SimpleContent(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "restriction");
@@ -1340,11 +1340,11 @@ te::xsd::Restriction4SimpleContent* te::xsd::ReadRestriction4SimpleContent(te::x
   return restriction.release();
 }
 
-void te::xsd::Save(Restriction4SimpleContent* restriction, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Restriction4SimpleContent* restriction, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Restriction4SimpleType* te::xsd::ReadRestriction4SimpleType(te::xml::Reader& reader)
+te::xsd::Restriction4SimpleType* te::xsd::serialize::ReadRestriction4SimpleType(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "restriction");
@@ -1406,11 +1406,11 @@ te::xsd::Restriction4SimpleType* te::xsd::ReadRestriction4SimpleType(te::xml::Re
   return restriction.release();
 }
 
-void te::xsd::Save(Restriction4SimpleType* restriction, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Restriction4SimpleType* restriction, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Schema* te::xsd::ReadSchema(const std::string& path)
+te::xsd::Schema* te::xsd::serialize::ReadSchema(const std::string& path)
 {
   std::auto_ptr<te::xml::Reader> reader(te::xml::ReaderFactory::make("XERCES"));
   reader->setValidationScheme(false);
@@ -1426,7 +1426,7 @@ te::xsd::Schema* te::xsd::ReadSchema(const std::string& path)
   return ReadSchema(*reader);
 }
 
-te::xsd::Schema* te::xsd::ReadSchema(te::xml::Reader& reader)
+te::xsd::Schema* te::xsd::serialize::ReadSchema(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "schema");
@@ -1555,11 +1555,11 @@ te::xsd::Schema* te::xsd::ReadSchema(te::xml::Reader& reader)
   return schema.release();
 }
 
-void te::xsd::Save(Schema* schema, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Schema* schema, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Selector* te::xsd::ReadSelector(te::xml::Reader& reader)
+te::xsd::Selector* te::xsd::serialize::ReadSelector(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "selector");
@@ -1587,11 +1587,11 @@ te::xsd::Selector* te::xsd::ReadSelector(te::xml::Reader& reader)
   return selector.release();
 }
 
-void te::xsd::Save(Selector* selector, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Selector* selector, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Sequence* te::xsd::ReadSequence(te::xml::Reader& reader)
+te::xsd::Sequence* te::xsd::serialize::ReadSequence(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "sequence");
@@ -1657,11 +1657,11 @@ te::xsd::Sequence* te::xsd::ReadSequence(te::xml::Reader& reader)
   return sequence.release();
 }
 
-void te::xsd::Save(Sequence* sequence, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Sequence* sequence, te::xml::Writer& writer)
 {
 }
 
-te::xsd::SimpleContent* te::xsd::ReadSimpleContent(te::xml::Reader& reader)
+te::xsd::SimpleContent* te::xsd::serialize::ReadSimpleContent(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "simpleContent");
@@ -1690,11 +1690,11 @@ te::xsd::SimpleContent* te::xsd::ReadSimpleContent(te::xml::Reader& reader)
   return sc.release();
 }
 
-void te::xsd::Save(SimpleContent* sc, te::xml::Writer& writer)
+void te::xsd::serialize::Save(SimpleContent* sc, te::xml::Writer& writer)
 {
 }
 
-te::xsd::SimpleType* te::xsd::ReadSimpleType(te::xml::Reader& reader)
+te::xsd::SimpleType* te::xsd::serialize::ReadSimpleType(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "simpleType");
@@ -1730,11 +1730,11 @@ te::xsd::SimpleType* te::xsd::ReadSimpleType(te::xml::Reader& reader)
   return st.release();
 }
 
-void te::xsd::Save(SimpleType* st, te::xml::Writer& writer)
+void te::xsd::serialize::Save(SimpleType* st, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Union* te::xsd::ReadUnion(te::xml::Reader& reader)
+te::xsd::Union* te::xsd::serialize::ReadUnion(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "union");
@@ -1772,11 +1772,11 @@ te::xsd::Union* te::xsd::ReadUnion(te::xml::Reader& reader)
   return u.release();
 }
 
-void te::xsd::Save(Union* u, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Union* u, te::xml::Writer& writer)
 {
 }
 
-te::xsd::Unique* te::xsd::ReadUnique(te::xml::Reader& reader)
+te::xsd::Unique* te::xsd::serialize::ReadUnique(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "unique");
@@ -1815,11 +1815,11 @@ te::xsd::Unique* te::xsd::ReadUnique(te::xml::Reader& reader)
   return unique.release();
 }
 
-void te::xsd::Save(Unique* unique, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Unique* unique, te::xml::Writer& writer)
 {
 }
 
-void te::xsd::ReadIdentifiable(Identifiable* identifiable, te::xml::Reader& reader)
+void te::xsd::serialize::ReadIdentifiable(Identifiable* identifiable, te::xml::Reader& reader)
 {
   assert(identifiable);
 
@@ -1828,7 +1828,7 @@ void te::xsd::ReadIdentifiable(Identifiable* identifiable, te::xml::Reader& read
     identifiable->setId(new std::string(reader.getAttr(pos)));
 }
 
-void te::xsd::ReadAnnotated(Annotated* annotated, te::xml::Reader& reader)
+void te::xsd::serialize::ReadAnnotated(Annotated* annotated, te::xml::Reader& reader)
 {
   assert(annotated);
 
@@ -1840,7 +1840,7 @@ void te::xsd::ReadAnnotated(Annotated* annotated, te::xml::Reader& reader)
   annotated->setAnnotation(annotation);
 }
 
-void te::xsd::ReadOccurs(Occurs* occurs, te::xml::Reader& reader)
+void te::xsd::serialize::ReadOccurs(Occurs* occurs, te::xml::Reader& reader)
 {
   assert(occurs);
 
@@ -1855,7 +1855,7 @@ void te::xsd::ReadOccurs(Occurs* occurs, te::xml::Reader& reader)
     reader.getAttr(pos) == "unbounded" ? occurs->setMaxOccurs(te::xsd::Occurs::unbounded) : occurs->setMaxOccurs(reader.getAttrAsInt32(pos));
 }
 
-te::xsd::QName* te::xsd::CreateQName(const std::string& name)
+te::xsd::QName* te::xsd::serialize::CreateQName(const std::string& name)
 {
   std::vector<std::string> tokens;
   te::common::Tokenize(name, tokens, ":");
@@ -1864,7 +1864,7 @@ te::xsd::QName* te::xsd::CreateQName(const std::string& name)
   return new te::xsd::QName(tokens[0], tokens[1]);
 }
 
-te::xsd::FacetType te::xsd::GetFacetType(const std::string& name)
+te::xsd::FacetType te::xsd::serialize::GetFacetType(const std::string& name)
 {
   if(name == "minExclusive")
     return te::xsd::MinExclusive;
