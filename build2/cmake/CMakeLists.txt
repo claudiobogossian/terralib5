@@ -46,6 +46,8 @@ set(TERRALIB_PKG_VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}.${T
 # variables storing absolute paths
 set(TERRALIB_ABSOLUTE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 
+# variables that controls path
+set(TERRALIB_DIR_VAR_NAME "TERRALIB_HOME")
 
 #
 # global definitions and includes

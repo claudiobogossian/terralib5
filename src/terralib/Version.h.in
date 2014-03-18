@@ -60,7 +60,7 @@
   \brief This flag is used for versioning the TerraLib code. If you have plugins and other tools
          that must check the TerraLib version, you can test against this string.
  */
-#define TERRALIB_VERSION_STRING "@TERRALIB_VERSION_STRING"
+#define TERRALIB_VERSION_STRING "@TERRALIB_VERSION_STRING@"
 
 /*!
   \def TERRALIB_VERSION
