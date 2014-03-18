@@ -158,9 +158,6 @@ configure_file(${terralib_SOURCE_DIR}/terralib-config-version.cmake.in
 configure_file(${terralib_SOURCE_DIR}/terralib-config.cmake.in
                ${terralib_BINARY_DIR}/terralib-config.cmake @ONLY)
 
-configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib.h.in
-               ${CMAKE_BINARY_DIR}/terralib.h @ONLY)
-
 configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Config.h.in
                ${CMAKE_BINARY_DIR}/terralib_config.h @ONLY)
 
@@ -200,6 +197,9 @@ install(FILES ${CMAKE_BINARY_DIR}/terralib_config.h
               ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Defines.h
               ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Version.h
         DESTINATION include/terralib COMPONENT devel)
+
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib.h
+        DESTINATION include COMPONENT devel)
 
 install(FILES ${terralib_BINARY_DIR}/pkg/terralib-config.cmake
               ${terralib_BINARY_DIR}/terralib-config-version.cmake
