@@ -513,3 +513,26 @@ MACRO(getPluginRequirements req_name req_info)
   "\n    <PluginId>${req_name}</PluginId>\n"
   )  
 ENDMACRO(getPluginRequirements)
+
+# Macro today
+#
+# Gets the current date as a formatted string.
+#
+# param RESULT[output] The formatted data.
+MACRO (today RESULT)
+    IF (WIN32)
+        EXECUTE_PROCESS(COMMAND "cmd" " /C date /T" OUTPUT_VARIABLE ${RESULT})
+        EXECUTE_PROCESS(COMMAND "cmd" " /C time /T" OUTPUT_VARIABLE time_)
+        string(REGEX REPLACE "(..)/(..)/..(..).*" "\\1/\\2/\\3" ${RESULT} ${${RESULT}})
+        string(REGEX REPLACE "(..):(..):(..)" "\\1/\\2/\\3" time_ ${time_})
+		
+		set(${RESULT} "${${RESULT}}-${time_}")
+
+    ELSEIF(UNIX)
+        EXECUTE_PROCESS(COMMAND "date" "+%d/%m/%Y" OUTPUT_VARIABLE ${RESULT})
+        string(REGEX REPLACE "(..)/(..)/..(..).*" "\\1/\\2/\\3" ${RESULT} ${${RESULT}})
+    ELSE (WIN32)
+        MESSAGE(SEND_ERROR "date not implemented")
+        SET(${RESULT} 000000)
+    ENDIF (WIN32)
+ENDMACRO (today)
