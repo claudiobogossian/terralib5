@@ -30,6 +30,7 @@
 #include "Config.h"
 
 class TeColor;
+class TeRasterTransform;
 class TeTheme;
 class TeVisual;
 
@@ -66,13 +67,15 @@ namespace te
 
         bool IsHollow(int type);
 
-        te::se::Style* Convert2TerraLib5(int geometryType, TeTheme* theme);
+        te::se::Style* Convert2TerraLib5(int geometryType, TeTheme* theme, bool isRaster = false);
 
         te::se::PolygonSymbolizer* GetPolygonSymbolizer(TeVisual* visual);
 
         te::se::LineSymbolizer* GetLineSymbolizer(TeVisual* visual);
         
         te::se::PointSymbolizer* GetPointSymbolizer(TeVisual* visual);
+
+        te::se::RasterSymbolizer* GetRasterSymbolizer(TeRasterTransform* visual);
 
       } // end namespace terralib4
     } // end namespace plugins

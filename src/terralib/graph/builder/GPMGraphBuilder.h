@@ -94,16 +94,62 @@ namespace te
         */
         bool setGraphInfo(const std::map<std::string, std::string>& dsInfo, const std::string& graphType, const std::map<std::string, std::string>& gInfo);
 
+        /*!
+          \brief Function used to generated a graph using the GPM Adjacency Strategy
+
+          \param ds             File name wiht vectorial data
+          \param dataSetName    Data Set name that contains the geometry information
+          \param columnId       Column id from vectorial data used as link column
+          \param calcDist       Flag used to indicate if has to create the distance attribute
+
+          \return True if the graph was correctly generated and false in other case.
+
+         */
         bool buildAdjacency(std::auto_ptr<te::da::DataSource> ds, std::string dataSetName, std::string columnId, bool calcDist);
 
+        /*!
+          \brief Function used to generated a graph using the GPM Distance Strategy
+
+          \param ds             File name wiht vectorial data
+          \param dataSetName    Data Set name that contains the geometry information
+          \param columnId       Column id from vectorial data used as link column
+          \param dist           Value with distance information.
+
+          \return True if the graph was correctly generated and false in other case.
+
+         */
         bool buildDistance(std::auto_ptr<te::da::DataSource> ds, std::string dataSetName, std::string columnId, double dist);
 
     protected:
 
+        /*!
+          \brief Function used to create all vertex object based on data set
+
+          \param dataSet      Valid pointer to a dataset
+          \param columnId     Column name from vectorial data used as link column
+          \param srid         Vectorial projection id
+
+        */
         void createVertexObjects(te::da::DataSet* dataSet, std::string columnId, int srid);
 
+        /*!
+          \brief Function used to create all edges object based on data set, using the adjacency strategy
+
+          \param dataSet      Valid pointer to a dataset
+          \param columnId     Column name from vectorial data used as link column
+          \param calcDist     Flag used to indicate if has to create the distance attribute
+
+        */
         void createAdjacencyEdges(te::da::DataSet* dataSet, std::string columnId, bool calcDist);
 
+        /*!
+          \brief Function used to create all edges object based on data set, using the distance strategy
+
+          \param dataSet      Valid pointer to a dataset
+          \param columnId     Column name from vectorial data used as link column
+          \param distance     Value with distance information.
+
+        */
         void createDistanceEdges(te::da::DataSet* dataSet, std::string columnId, double distance);
 
         /*!

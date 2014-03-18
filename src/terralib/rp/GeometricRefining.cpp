@@ -152,6 +152,7 @@ namespace te
       m_rInfo.clear();
       m_outputRasterPtr.reset();
       m_matchingResult.clear();
+      m_tiePoints.clear();
     }
 
     const GeometricRefining::OutputParameters& GeometricRefining::OutputParameters::operator=(
@@ -162,6 +163,7 @@ namespace te
       m_rType = params.m_rType;
       m_rInfo = params.m_rInfo;
       m_matchingResult = params.m_matchingResult;
+      m_tiePoints = params.m_tiePoints;
 
       return *this;
     }
@@ -597,7 +599,6 @@ namespace te
                         matchingInfo.m_convexHullAreaPercent = convexHullAreaPercent;
                         
                         te::gm::GTParameters::TiePoint tiePoint;
-                        
                         for( unsigned int tpIdx = 0 ; tpIdx < locatorOutputParams.m_tiePoints.size() ;
                           ++tpIdx )
                         {
@@ -610,7 +611,9 @@ namespace te
                              tiePoint.second.x,
                              tiePoint.second.y );
                           
-                          matchingInfo.m_tiePoints.push_back( tiePoint );                          
+                          matchingInfo.m_tiePoints.push_back( tiePoint );
+                          outParamsPtr->m_matchingResult[ refRasterIdx ].m_tiePoints.push_back(
+                            tiePoint );
                         }
                         
                         refRastersMatchingInfo.push_back( matchingInfo );
@@ -620,12 +623,26 @@ namespace te
                       }
                       else
                       {
+                        te::gm::GTParameters::TiePoint tiePoint;
+                        for( unsigned int tpIdx = 0 ; tpIdx < locatorOutputParams.m_tiePoints.size() ;
+                          ++tpIdx )
+                        {
+                          tiePoint.first.x = locatorOutputParams.m_tiePoints[ tpIdx ].first.x;
+                          tiePoint.first.y = locatorOutputParams.m_tiePoints[ tpIdx ].first.y;
+                          
+                          refRasterPtr->getGrid()->gridToGeo( 
+                             locatorOutputParams.m_tiePoints[ tpIdx ].second.x,
+                             locatorOutputParams.m_tiePoints[ tpIdx ].second.y,
+                             tiePoint.second.x,
+                             tiePoint.second.y );
+                          
+                          outParamsPtr->m_matchingResult[ refRasterIdx ].m_tiePoints.push_back(
+                            tiePoint );
+                        }
+                                                
                         outParamsPtr->m_matchingResult[ refRasterIdx ].m_status = 
                           OutputParameters::MatchingResult::Fail;    
                       }
-                      
-                      outParamsPtr->m_matchingResult[ refRasterIdx ].m_tiePoints =
-                        locatorOutputParams.m_tiePoints;                      
                       
                       double ulCol = 0;
                       double ulRow = 0;
@@ -731,7 +748,9 @@ namespace te
         {
           return false;
         }
-      }        
+      }  
+      
+      outParamsPtr->m_tiePoints = baseTransAgreementTiePoints;
       
       // Generating the refined output raster
       

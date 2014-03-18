@@ -43,11 +43,14 @@ void LoadModules();
 /*! \brief Creates a LDD GRAPH. */
 void CreateLDDGraph(bool draw);
 
-/*! \brief Creates a GPM with adjacency strategy GRAPH. */
+/*! \brief Creates a GRAPH using GPM with adjacency strategy. */
 void CreateGPMAdjacencyGraph(bool draw);
 
-/*! \brief Creates a GPM with distance strategy GRAPH. */
+/*! \brief Creates a GRAPH using GPM with distance strategy . */
 void CreateGPMDistanceGraph(bool draw);
+
+/*! \brief Imports and export graphs from  Spatial Weights Files (GAL and GWT formats). */
+void ExchangeSpatialWeightsFiles(bool draw);
 
 /*! \brief Auxiliar functions for load a raster. */
 std::auto_ptr<te::rst::Raster> OpenRaster(const std::string& pathName, const int& srid);

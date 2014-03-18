@@ -26,12 +26,17 @@
 // TerraLib
 #include "../../../../color/RGBAColor.h"
 #include "../../../../geometry/GeometryProperty.h"
+#include "../../../../se/ChannelSelection.h"
+#include "../../../../se/ContrastEnhancement.h"
 #include "../../../../se/FeatureTypeStyle.h"
 #include "../../../../se/Fill.h"
 #include "../../../../se/LineSymbolizer.h"
+#include "../../../../se/ParameterValue.h"
 #include "../../../../se/PolygonSymbolizer.h"
 #include "../../../../se/PointSymbolizer.h"
+#include "../../../../se/RasterSymbolizer.h"
 #include "../../../../se/Rule.h"
+#include "../../../../se/SelectedChannel.h"
 #include "../../../../se/Style.h"
 #include "../../../../se/Stroke.h"
 #include "../../../../se/Utils.h"
@@ -40,6 +45,8 @@
 // TerraLib 4
 #include <terralib/kernel/TeDataTypes.h>
 #include <terralib/kernel/TeLegendEntry.h>
+#include <terralib/kernel/TeRaster.h>
+#include <terralib/kernel/TeRasterTransform.h>
 #include <terralib/kernel/TeTheme.h>
 #include <terralib/kernel/TeVisual.h>
 
@@ -112,39 +119,56 @@ bool te::qt::plugins::terralib4::IsHollow(int type)
   }
 }
 
-te::se::Style* te::qt::plugins::terralib4::Convert2TerraLib5(int geometryType, TeTheme* theme)
+te::se::Style* te::qt::plugins::terralib4::Convert2TerraLib5(int geometryType, TeTheme* theme, bool isRaster)
 {
-  TeLegendEntry legend = theme->defaultLegend();
-
-  TeGeomRepVisualMap visualMap = legend.getVisualMap();
-
   te::se::Symbolizer* symb = 0;
 
-  TeVisual* visual = 0;
-
-  switch(geometryType)
+  if(isRaster)
   {
-    case te::gm::PolygonType:
+    TeRasterVisual* vis = 0;
+    vis = theme->rasterVisual();
+    if(!vis)
     {
-      visual = visualMap[TePOLYGONS];
-      symb = GetPolygonSymbolizer(visual);
-      break;
+      TeRaster* raster = theme->layer()->raster();
+      theme->createRasterVisual(raster);
+      vis = theme->rasterVisual();
     }
-    case te::gm::LineStringType:
+
+    symb = GetRasterSymbolizer(vis);
+  }
+  else
+  {
+
+    TeLegendEntry legend = theme->defaultLegend();
+
+    TeGeomRepVisualMap visualMap = legend.getVisualMap();
+
+    TeVisual* visual = 0;
+
+    switch(geometryType)
     {
-      visual = visualMap[TeLINES];
-      symb = GetLineSymbolizer(visual);
-      break;
-    }
-    case te::gm::PointType:
-    {
-      visual = visualMap[TePOINTS];
-      symb = GetPointSymbolizer(visual);
-      break;
-    }
-    default:
-    {
-      break;
+      case te::gm::PolygonType:
+      {
+        visual = visualMap[TePOLYGONS];
+        symb = GetPolygonSymbolizer(visual);
+        break;
+      }
+      case te::gm::LineStringType:
+      {
+        visual = visualMap[TeLINES];
+        symb = GetLineSymbolizer(visual);
+        break;
+      }
+      case te::gm::PointType:
+      {
+        visual = visualMap[TePOINTS];
+        symb = GetPointSymbolizer(visual);
+        break;
+      }
+      default:
+      {
+        break;
+      }
     }
   }
 
@@ -227,4 +251,63 @@ te::se::PointSymbolizer* te::qt::plugins::terralib4::GetPointSymbolizer(TeVisual
   te::se::Graphic* gr = te::se::CreateGraphic(mark, size, "0", "1.0");
 
   return te::se::CreatePointSymbolizer(gr);
+}
+
+te::se::RasterSymbolizer* te::qt::plugins::terralib4::GetRasterSymbolizer(TeRasterTransform* visual)
+{
+  te::se::RasterSymbolizer* symb = new te::se::RasterSymbolizer;
+
+  double opacity = ((visual->getTransparency()*100.0)/255)/100.0;
+  double offset = visual->getOffset();
+  double gain = visual->getGain();
+
+  symb->setOpacity(new te::se::ParameterValue(boost::lexical_cast<std::string>(opacity)));
+  symb->setOffset(new te::se::ParameterValue(boost::lexical_cast<std::string>(offset)));
+  symb->setGain(new te::se::ParameterValue(boost::lexical_cast<std::string>(gain)));
+
+  /*
+  te::se::SelectedChannel* scRed = 0;
+  te::se::SelectedChannel* scGreen = 0;
+  te::se::SelectedChannel* scBlue = 0;
+  te::se::SelectedChannel* scMono = 0;
+
+  std::map<TeRasterTransform::TeRGBChannels,short> rgbMap = visual->getRGBMap();
+
+  te::se::ChannelSelection* cs = new te::se::ChannelSelection;
+
+  if(rgbMap.find(TeRasterTransform::TeREDCHANNEL) != rgbMap.end())
+  {
+    scRed = new te::se::SelectedChannel;
+    scRed->setSourceChannelName(boost::lexical_cast<std::string>(rgbMap[TeRasterTransform::TeREDCHANNEL]));
+    te::se::ContrastEnhancement* contrastRed = new te::se::ContrastEnhancement();
+    scRed->setContrastEnhancement(contrastRed);
+    contrastRed->setGammaValue(visual->getContrastR());
+
+    cs->setRedChannel(scRed);
+  }
+
+  if(rgbMap.find(TeRasterTransform::TeGREENCHANNEL) != rgbMap.end())
+  {
+    scGreen = new te::se::SelectedChannel;
+    scGreen->setSourceChannelName(boost::lexical_cast<std::string>(rgbMap[TeRasterTransform::TeGREENCHANNEL]));
+    te::se::ContrastEnhancement* contrastGreen = new te::se::ContrastEnhancement();
+    scGreen->setContrastEnhancement(contrastGreen);
+    contrastGreen->setGammaValue(visual->getContrastG());
+
+    cs->setRedChannel(scGreen);
+  }
+
+  if(rgbMap.find(TeRasterTransform::TeBLUECHANNEL) != rgbMap.end())
+  {
+    scBlue = new te::se::SelectedChannel;
+    scBlue->setSourceChannelName(boost::lexical_cast<std::string>(rgbMap[TeRasterTransform::TeBLUECHANNEL]));
+    te::se::ContrastEnhancement* contrastBlue = new te::se::ContrastEnhancement();
+    scBlue->setContrastEnhancement(contrastBlue);
+    contrastBlue->setGammaValue(visual->getContrastB());
+
+    cs->setRedChannel(scBlue);
+  }
+  */
+
+  return symb;
 }
