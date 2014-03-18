@@ -20,36 +20,99 @@
 /*!
   \file terralib.h
 
-  \brief This file contains include headers for all built TerraLib modules.
+  \brief This file contains include headers for all modules from TerraLib that were built.
  */
 
 #ifndef __TERRALIB_INTERNAL_TERRALIB_H__
 #define __TERRALIB_INTERNAL_TERRALIB_H__
 
-/*!
-  \brief All the TerraLib code is inside this namespace, and each module (or package) will add its own namespace.
 
-  The use of namespace has several benefits, and we try to use it carefully.
-  The rule used in TerraLib is very simple:
-  <ul>
-  <li>Each module has its own namespace;</li>
-  <li>And all namespaces belong to the main namespace called <b>te</b>.</li>
-  </ul>
-  We recommend to avoid the C++ <i>using</i> keyword. For example, if you want to use
-  a class called Exception located in the Common module, you can write a code like this:
-  <br>
-  \code
-  te::common::Exception e("my exception text goes here...");
-  \endcode
+#include "terralib/Config.h"
 
-  and if you want to call a function, like Convert2String:
-  <br>
-  \code
-  std::string mystring = te::common::Convert2String(67);
-  \endcode
- */
-namespace te
-{
-}  // end namespace te
+#include "terralib/common.h"
+
+#ifdef TERRALIB_MOD_ANNOTATIONTEXT_ENABLED
+#include "terralib/annotationtext.h"
+#endif
+
+#ifdef TERRALIB_MOD_COLOR_ENABLED
+#include "terralib/color.h"
+#endif
+
+#ifdef TERRALIB_MOD_DATAACCESS_ENABLED
+#include "terralib/dataaccess.h"
+#endif
+
+#ifdef TERRALIB_MOD_DATATYPE_ENABLED
+#include "terralib/datatype.h"
+#endif
+
+#ifdef TERRALIB_MOD_FILTER_ENCODING_ENABLED
+#include "terralib/fe.h"
+#endif
+
+#ifdef TERRALIB_MOD_GEOMETRY_ENABLED
+#include "terralib/geometry.h"
+#endif
+
+#ifdef TERRALIB_MOD_GML_ENABLED
+#include "terralib/gml.h"
+#endif
+
+#ifdef TERRALIB_MOD_GRAPH_ENABLED
+#include "terralib/graph.h"
+#endif
+
+#ifdef TERRALIB_MOD_MAPTOOLS_ENABLED
+#include "terralib/maptools.h"
+#endif
+
+#ifdef TERRALIB_MOD_MEMORY_ENABLED
+#include "terralib/memory.h"
+#endif
+
+#ifdef TERRALIB_MOD_METADATA_ENABLED
+#include "terralib/metadata.h"
+#endif
+
+#ifdef TERRALIB_MOD_PLUGIN_ENABLED
+#include "terralib/plugin.h"
+#endif
+
+#ifdef TERRALIB_MOD_QT_ENABLED
+#include "terralib/qt.h"
+#endif
+
+#ifdef TERRALIB_MOD_RASTER_ENABLED
+#include "terralib/raster.h"
+#endif
+
+#ifdef TERRALIB_MOD_RP_ENABLED
+#include "terralib/rp.h"
+#endif
+
+#ifdef TERRALIB_MOD_SAM_ENABLED
+#include "terralib/sam.h"
+#endif
+
+#ifdef TERRALIB_MOD_SE_ENABLED
+#include "terralib/se.h"
+#endif
+
+#ifdef TERRALIB_MOD_SRS_ENABLED
+#include "terralib/srs.h"
+#endif
+
+#ifdef TERRALIB_MOD_ST_ENABLED
+#include "terralib/st.h"
+#endif
+
+#ifdef TERRALIB_MOD_STATISTICS_ENABLED
+#include "terralib/statistics.h"
+#endif
+
+#ifdef TERRALIB_MOD_XLINK_ENABLED
+#include "terralib/xlink.h"
+#endif
 
 #endif  // __TERRALIB_INTERNAL_TERRALIB_H__
