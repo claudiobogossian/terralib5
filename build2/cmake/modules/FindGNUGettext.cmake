@@ -20,15 +20,15 @@
 #
 #  Description: Find GNU Gettext - find the GNU Gettext include directory and libraries.
 #
-#  GETTEXT_INCLUDE_DIR - where to find proj_api.h.
-#  GETTEXT_LIBRARY     - where to find proj libraries.
-#  GETTEXT_FOUND       - True if GNU Gettext found.
+#  GETTEXT_INCLUDE_DIR - where to find libintl.h.
+#  GETTEXT_LIBRARY     - where to find the GNU gettext library.
+#  GETTEXT_FOUND       - True if the GNU Gettext is found.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan P. Garrido <juan@dpi.inpe.br>
 #
 
-find_path(GETTEXT_INCLUDE_DIR proj_api.h
+find_path(GETTEXT_INCLUDE_DIR libintl.h
           PATHS /usr
                 /usr/local
           PATH_SUFFIXES include)
@@ -36,18 +36,18 @@ find_path(GETTEXT_INCLUDE_DIR proj_api.h
 if(UNIX)
 
   find_library(GETTEXT_LIBRARY
-               NAMES proj
+               NAMES gettextlib
                PATHS /usr
                      /usr/local
                PATH_SUFFIXES lib)
 elseif(WIN32)
 
   find_library(GETTEXT_LIBRARY_RELEASE
-               NAMES proj_i proj
+               NAMES gettextlib
                PATH_SUFFIXES lib)
 
   find_library(GETTEXT_LIBRARY_DEBUG
-               NAMES proj_i_d proj_d
+               NAMES gettextlib
                PATH_SUFFIXES lib)
 
   if(GETTEXT_LIBRARY_RELEASE AND GETTEXT_LIBRARY_DEBUG)
@@ -62,6 +62,6 @@ endif()
 
 include(FindPackageHandleStandardArgs)
 
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(Gettext DEFAULT_MSG GETTEXT_LIBRARY GETTEXT_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(GETTEXT DEFAULT_MSG GETTEXT_LIBRARY GETTEXT_INCLUDE_DIR)
 
 mark_as_advanced(GETTEXT_INCLUDE_DIR GETTEXT_LIBRARY)

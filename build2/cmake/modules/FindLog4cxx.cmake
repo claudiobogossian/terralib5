@@ -20,15 +20,15 @@
 #
 #  Description: Find Log4cxx - find Log4cxx include directory and library.
 #
-#  LOG4CXX_INCLUDE_DIR - where to find geos.h.
-#  LOG4CXX_LIBRARY     - where to find geos library.
-#  LOG4CXX_FOUND       - True if GEOS found.
+#  LOG4CXX_INCLUDE_DIR - where to find log4cxx/log4cxx.h.
+#  LOG4CXX_LIBRARY     - where to find the log4cxx library.
+#  LOG4CXX_FOUND       - True if Log4cxx is found.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan P. Garrido <juan@dpi.inpe.br>
 #
 
-find_path(LOG4CXX_INCLUDE_DIR NAMES geos.h
+find_path(LOG4CXX_INCLUDE_DIR log4cxx/log4cxx.h 
           PATHS /usr
                 /usr/local
           PATH_SUFFIXES include)
@@ -36,7 +36,7 @@ find_path(LOG4CXX_INCLUDE_DIR NAMES geos.h
 if(UNIX)
 
   find_library(LOG4CXX_LIBRARY
-               NAMES geos
+               NAMES log4cxx
                PATHS /usr
                      /usr/lib
                PATH_SUFFIXES lib)
@@ -44,11 +44,11 @@ if(UNIX)
 elseif(WIN32)
 
   find_library(LOG4CXX_LIBRARY_RELEASE
-               NAMES geos_i geos
+               NAMES log4cxx
                PATH_SUFFIXES lib)
 
   find_library(LOG4CXX_LIBRARY_DEBUG
-               NAMES geos_i_d geos_d geosd
+               NAMES log4cxx_d
                PATH_SUFFIXES lib)
 
   if(LOG4CXX_LIBRARY_RELEASE AND LOG4CXX_LIBRARY_DEBUG)

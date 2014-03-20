@@ -20,15 +20,15 @@
 #
 #  Description: Find GNU IConv - find the GNU IConv include directory and libraries.
 #
-#  ICONV_INCLUDE_DIR - where to find proj_api.h.
-#  ICONV_LIBRARY     - where to find proj libraries.
-#  ICONV_FOUND       - True if GNU IConv found.
+#  ICONV_INCLUDE_DIR - where to find .
+#  ICONV_LIBRARY     - where to find the GNU iconv library.
+#  ICONV_FOUND       - True if GNU iconv is  found.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan P. Garrido <juan@dpi.inpe.br>
 #
 
-find_path(ICONV_INCLUDE_DIR proj_api.h
+find_path(ICONV_INCLUDE_DIR intl.h
           PATHS /usr
                 /usr/local
           PATH_SUFFIXES include)
@@ -36,18 +36,18 @@ find_path(ICONV_INCLUDE_DIR proj_api.h
 if(UNIX)
 
   find_library(ICONV_LIBRARY
-               NAMES proj
+               NAMES iconv
                PATHS /usr
                      /usr/local
                PATH_SUFFIXES lib)
 elseif(WIN32)
 
   find_library(ICONV_LIBRARY_RELEASE
-               NAMES proj_i proj
+               NAMES iconv
                PATH_SUFFIXES lib)
 
   find_library(ICONV_LIBRARY_DEBUG
-               NAMES proj_i_d proj_d
+               NAMES iconv_d
                PATH_SUFFIXES lib)
 
   if(ICONV_LIBRARY_RELEASE AND ICONV_LIBRARY_DEBUG)
@@ -62,6 +62,6 @@ endif()
 
 include(FindPackageHandleStandardArgs)
 
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(IConv DEFAULT_MSG ICONV_LIBRARY ICONV_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(ICONV DEFAULT_MSG ICONV_LIBRARY ICONV_INCLUDE_DIR)
 
 mark_as_advanced(ICONV_INCLUDE_DIR ICONV_LIBRARY)
