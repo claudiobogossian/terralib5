@@ -143,14 +143,16 @@ std::auto_ptr<te::da::DataSet> te::st::TrajectoryDataSetLayer::getData( const te
   std::auto_ptr<te::da::DataSet> result = tds->release();
   return result;
 }
-//
-//std::auto_ptr<te::da::DataSet> te::st::TrajectoryDataSetLayer::getData( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
-//                                                                        const te::gm::Envelope& e, te::gm::SpatialRelation sr = te::gm::INTERSECTS,
-//                                                                        te::common::TraverseType travType = te::common::FORWARDONLY,
-//                                                                        te::common::AccessPolicy rwRole = te::common::RAccess) const
-//{
-//
-//}
+
+std::auto_ptr<te::da::DataSet> te::st::TrajectoryDataSetLayer::getData( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                                                                        const te::gm::Envelope& e, te::gm::SpatialRelation sr,
+                                                                        te::common::TraverseType travType,
+                                                                        te::common::AccessPolicy rwRole) const
+{
+  std::auto_ptr<te::st::TrajectoryDataSet> tds = te::st::TrajectoryDataSetLayer::getTrajectoryDataset(dt, tr, e, sr, travType);
+  std::auto_ptr<te::da::DataSet> result = tds->release();
+  return result;
+}
 
 std::auto_ptr<te::da::DataSet> te::st::TrajectoryDataSetLayer::getData( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
                                                                         const te::gm::Geometry& g, te::gm::SpatialRelation sr ,
@@ -168,11 +170,19 @@ std::auto_ptr<te::st::TrajectoryDataSet> te::st::TrajectoryDataSetLayer::getTraj
  return te::st::STDataLoader::getDataSet(*m_info.get(), dt, r, travType);
 }
 
+std::auto_ptr<te::st::TrajectoryDataSet> 
+te::st::TrajectoryDataSetLayer::getTrajectoryDataset(const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                                                     const te::gm::Envelope& e, te::gm::SpatialRelation sr,
+                                                     te::common::TraverseType travType) const
+{
+ return te::st::STDataLoader::getDataSet(*m_info.get(), dt, tr, e, sr, travType);
+}
+
 std::auto_ptr<te::st::TrajectoryDataSet> te::st::TrajectoryDataSetLayer::getTrajectoryDataset( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
                                                                                                const te::gm::Geometry& g, te::gm::SpatialRelation sr,
                                                                                                te::common::TraverseType travType) const
 {
- return te::st::STDataLoader::getDataSet(*m_info.get(),g, sr,  dt, tr, travType);
+ return te::st::STDataLoader::getDataSet(*m_info.get(), g, sr,  dt, tr, travType);
 }
 
 bool te::st::TrajectoryDataSetLayer::isValid() const
