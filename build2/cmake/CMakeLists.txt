@@ -81,30 +81,42 @@ include(CMakeDependentOption)
 
 find_package(Boost 1.54.0 REQUIRED system date_time chrono timer filesystem thread log log_setup program_options unit_test_framework)
 
-find_package(Qt5 5.1 QUIET COMPONENTS Core Gui Widgets)
+find_package(Doxygen QUIET)
+
+find_package(GDAL)
+
+find_package(GEOS)
+
+find_package(GEOSC)
+
+find_package(Lua51)
+
+find_package(PostgreSQL)
+
+find_package(Proj4)
+
+find_package(Qt5 5.1 COMPONENTS Core Gui Widgets)
 
 if(Qt5_FOUND)
+
   set(CMAKE_AUTOMOC ON)
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 else()
-  #find_package(Qt4 4.6.3 QtCore QtGui)
 
-  #if(QT4_FOUND)
-  #  include(${QT_USE_FILE})
-  #
-  #  include_directories(${QT_INCLUDE_DIR})
-  #
-  #  add_definitions(${QT_DEFINITIONS})
-  #endif()
+  find_package(Qt4 4.6.3 QUIET COMPONENTS QtCore QtGui)
+
+  if(QT4_FOUND)
+
+    include(${QT_USE_FILE})
+
+    include_directories(${QT_INCLUDE_DIR})
+
+    add_definitions(${QT_DEFINITIONS})
+
+  endif()
 
 endif()
-
-find_package(Proj4 QUIET)
-
-find_package(GDAL QUIET)
-
-find_package(Doxygen QUIET)
 
 
 #
@@ -117,6 +129,22 @@ endif()
 
 if(GDAL_FOUND)
   set(TERRALIB_GDAL_ENABLED ON)
+endif()
+
+if(GEOS_FOUND)
+  set(TERRALIB_GEOS_ENABLED ON)
+endif()
+
+if(GEOSC_FOUND)
+  set(TERRALIB_GEOSC_ENABLED ON)
+endif()
+
+if(LUA51_FOUND)
+  set(TERRALIB_LUA_ENABLED ON)
+endif()
+
+if(PostgreSQL_FOUND OR (PostgreSQL_INCLUDE_DIR AND PostgreSQL_LIBRARY_DIR))
+  set(TERRALIB_LIBPQ_ENABLED ON)
 endif()
 
 if(PROJ4_FOUND)
