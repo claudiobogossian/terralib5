@@ -363,6 +363,17 @@ namespace te
         /*! \brief Virtual destructor. */
         virtual ~TimeSeriesDataSet(); 
 
+      protected:
+
+        /*!
+          \brief It releases all internal pointers, returning its internal DataSet and invalidating itself
+          \return A pointer to the internal DataSet that contains the observations. 
+
+           \note This method is used when the user is interested only in its internal DataSet 
+           \note The caller will take the ownership of the returned pointer.
+        */
+        std::auto_ptr<te::da::DataSet> release();
+
       private:
         std::auto_ptr<ObservationDataSet>     m_obsDs;         //!< The data set that contains the trajectory observations 
         TimeSeriesDataSetType                 m_type;          //!< The trajectory type.

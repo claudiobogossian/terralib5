@@ -285,6 +285,12 @@ void te::st::TimeSeriesDataSet::getTimeSeriesSet(  te::st::AbstractTimeSeriesInt
   return;
 }
 
+std::auto_ptr<te::da::DataSet> te::st::TimeSeriesDataSet::release()
+{
+  std::auto_ptr<te::da::DataSet> result(m_obsDs->release());
+  return result;
+}
+
 te::st::TimeSeriesDataSet::~TimeSeriesDataSet()
 {
 }
