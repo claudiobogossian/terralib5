@@ -754,6 +754,8 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 
       layer->setStyle(style);
 
+      layer->setGrouping(GetGrouping(theme.get()));
+
       te::qt::af::evt::LayerAdded evt(layer);
 
       te::qt::af::ApplicationController::getInstance().broadcast(&evt);

@@ -25,7 +25,11 @@
 
 // TerraLib
 #include "../../../../color/RGBAColor.h"
+#include "../../../../common/StringUtils.h"
 #include "../../../../geometry/GeometryProperty.h"
+#include "../../../../maptools/Enums.h"
+#include "../../../../maptools/Grouping.h"
+#include "../../../../maptools/GroupingItem.h"
 #include "../../../../se/ChannelSelection.h"
 #include "../../../../se/ContrastEnhancement.h"
 #include "../../../../se/FeatureTypeStyle.h"
@@ -40,9 +44,11 @@
 #include "../../../../se/Style.h"
 #include "../../../../se/Stroke.h"
 #include "../../../../se/Utils.h"
+#include "../../../../terralib4/Utils.h"
 #include "Utils.h"
 
 // TerraLib 4
+#include <terralib/kernel/TeAbstractTheme.h>
 #include <terralib/kernel/TeDataTypes.h>
 #include <terralib/kernel/TeLegendEntry.h>
 #include <terralib/kernel/TeRaster.h>
@@ -53,11 +59,35 @@
 // Boost
 #include <boost/lexical_cast.hpp>
 
+using namespace terralib4;
+
 te::color::RGBAColor te::qt::plugins::terralib4::Convert2TerraLib5(TeColor color)
 {
   te::color::RGBAColor tl5Color(color.red_, color.green_, color.blue_, 0);
 
   return tl5Color;
+}
+
+te::map::GroupingType GetGroupingType(TeGroupingMode mode)
+{
+
+  switch(mode)
+  {
+    case TeEqualSteps:
+      return te::map::EQUAL_STEPS;
+
+    case TeQuantil:
+      return te::map::QUANTIL;
+
+    case TeStdDeviation:
+      return te::map::STD_DEVIATION;
+
+    case TeUniqueValue:
+      return te::map::UNIQUE_VALUE;
+
+    default:
+      return te::map::EQUAL_STEPS;
+  }
 }
 
 std::string te::qt::plugins::terralib4::GetLineStyle(int type)
@@ -183,6 +213,24 @@ te::se::Style* te::qt::plugins::terralib4::Convert2TerraLib5(int geometryType, T
   return style;
 }
 
+te::se::Symbolizer* te::qt::plugins::terralib4::GetSymbolizer(int geometryType, TeVisual* visual)
+{
+  switch(geometryType)
+  {
+    case te::gm::PolygonType:
+      return GetPolygonSymbolizer(visual);
+
+    case te::gm::LineStringType:
+      return GetLineSymbolizer(visual);
+
+    case te::gm::PointType:
+      return GetPointSymbolizer(visual);
+
+    default:
+      break;
+  }
+}
+
 te::se::PolygonSymbolizer* te::qt::plugins::terralib4::GetPolygonSymbolizer(TeVisual* visual)
 {
   TeColor tl4Color = visual->color();
@@ -251,6 +299,70 @@ te::se::PointSymbolizer* te::qt::plugins::terralib4::GetPointSymbolizer(TeVisual
   te::se::Graphic* gr = te::se::CreateGraphic(mark, size, "0", "1.0");
 
   return te::se::CreatePointSymbolizer(gr);
+}
+
+te::map::Grouping* te::qt::plugins::terralib4::GetGrouping(TeTheme* theme)
+{
+  TeLegendEntryVector leg = theme->legend();
+  TeGrouping group = theme->grouping();
+
+  TeAttributeRep attr = group.groupAttribute_;
+  std::string propertyName = attr.name_;
+  std::vector<std::string> tokens;
+  te::common::Tokenize(propertyName, tokens, ".");
+  propertyName = tokens[1];
+
+  TeGroupingMode mode = group.groupMode_;
+  int tl5Type = Convert2T5(attr.type_);
+  std::size_t precision = static_cast<std::size_t>(group.groupPrecision_);
+  double stdDeviation = group.groupStdDev_;
+
+  te::map::Grouping* grouping = new te::map::Grouping(propertyName, GetGroupingType(mode), precision);
+  grouping->setPropertyType(tl5Type);
+  grouping->setStdDeviation(stdDeviation);
+
+  std::vector<te::map::GroupingItem*> items;
+
+  for(std::size_t i = 0; i < leg.size(); ++i)
+  {
+    te::map::GroupingItem* item = new te::map::GroupingItem;
+
+    TeLegendEntry le = leg[i];
+    
+    std::string title = le.label();
+
+    item->setTitle(title);
+
+    std::string fromValue = le.from();
+    std::string toValue = le.to();
+
+    if(mode == TeUniqueValue)
+    {
+      item->setValue(toValue);
+    }
+    else
+    {
+      item->setLowerLimit(fromValue);
+      item->setUpperLimit(toValue);
+    }
+
+    std::vector<te::se::Symbolizer*> symbs;
+
+    TeGeomRepVisualMap map = le.getVisualMap();
+
+    TeGeomRep geomRep = map.begin()->first;
+    TeVisual* visual = map.begin()->second;
+
+    symbs.push_back(GetSymbolizer(Convert2T5GeomType(geomRep), visual));
+
+    item->setSymbolizers(symbs);
+
+    items.push_back(item);
+  }
+
+  grouping->setGroupingItems(items);
+
+  return grouping;
 }
 
 te::se::RasterSymbolizer* te::qt::plugins::terralib4::GetRasterSymbolizer(TeRasterTransform* visual)

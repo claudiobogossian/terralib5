@@ -312,6 +312,7 @@ std::vector<std::string> te::ado::Transactor::getDataSetNames()
          table->GetType() == _bstr_t("PASS-THROUGH") ||
          table->GetType() == _bstr_t("SYSTEM TABLE") ||
          table->GetType() == _bstr_t("VIEW") ||
+         table->GetType() == _bstr_t("GLOBAL TEMPORARY") ||
          tableName == "geometry_columns")
          continue;
 
