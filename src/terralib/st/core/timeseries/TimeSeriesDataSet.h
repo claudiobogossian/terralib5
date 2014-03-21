@@ -68,6 +68,8 @@ namespace te
     */
     class TESTEXPORT TimeSeriesDataSet : public boost::noncopyable 
     {
+      friend class TimeSeriesDataSetLayer;
+
       public:
 
         /*! \name Constructor */

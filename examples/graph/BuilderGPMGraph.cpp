@@ -17,7 +17,7 @@
 
 te::se::Style* getGPMGraphStyle();
 
-void CreateGPMAdjacencyGraph(bool draw)
+boost::shared_ptr<te::graph::AbstractGraph> CreateGPMAdjacencyGraph(bool draw)
 {
   std::cout << std::endl << "Create GPM Adjacency Graph..." << std::endl;
 
@@ -25,12 +25,12 @@ void CreateGPMAdjacencyGraph(bool draw)
   std::string graphName = "graphGPMAdjacency";
 
 // open data source
-  std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(TE_DATA_EXAMPLE_DIR "/data/graph/BR_Estados.shp");
-  std::string dataSetName = "BR_Estados";
-  std::string columnId = "FID";
+  std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(TE_DATA_EXAMPLE_DIR "/data/graph/UP_pol.shp");
+  std::string dataSetName = "UP_pol";
+  std::string columnId = "COD_UP";
 
 // graph type
-  std::string graphType = te::graph::Globals::sm_factoryGraphTypeUndirectedGraph;
+  std::string graphType = te::graph::Globals::sm_factoryGraphTypeDirectedGraph;
 
 // connection info
   std::map<std::string, std::string> connInfo;
@@ -89,9 +89,11 @@ void CreateGPMAdjacencyGraph(bool draw)
 
     app.exec();
   }
+
+  return graph;
 }
 
-void CreateGPMDistanceGraph(bool draw)
+boost::shared_ptr<te::graph::AbstractGraph> CreateGPMDistanceGraph(bool draw)
 {
   std::cout << std::endl << "Create GPM Distance Graph..." << std::endl;
 
@@ -99,13 +101,13 @@ void CreateGPMDistanceGraph(bool draw)
   std::string graphName = "graphGPMDistance";
 
 // open data source
-  std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(TE_DATA_EXAMPLE_DIR "/data/graph/BR_Estados.shp");
-  std::string dataSetName = "BR_Estados";
-  std::string columnId = "FID";
-  double distance = 5.;
+  std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(TE_DATA_EXAMPLE_DIR "/data/graph/UP_pol.shp");
+  std::string dataSetName = "UP_pol";
+  std::string columnId = "COD_UP";
+  double distance = 3000;
 
 // graph type
-  std::string graphType = te::graph::Globals::sm_factoryGraphTypeUndirectedGraph;
+  std::string graphType = te::graph::Globals::sm_factoryGraphTypeDirectedGraph;
 
 // connection info
   std::map<std::string, std::string> connInfo;
@@ -164,6 +166,8 @@ void CreateGPMDistanceGraph(bool draw)
 
     app.exec();
   }
+
+  return graph;
 }
 
 te::se::Style* getGPMGraphStyle()

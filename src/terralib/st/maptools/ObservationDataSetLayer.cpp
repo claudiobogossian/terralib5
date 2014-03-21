@@ -98,6 +98,16 @@ std::auto_ptr<te::da::DataSet> te::st::ObservationDataSetLayer::getData(const st
   return result;
 }
 
+std::auto_ptr<te::da::DataSet> te::st::ObservationDataSetLayer::getData( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                                                                        const te::gm::Envelope& e, te::gm::SpatialRelation sr,
+                                                                        te::common::TraverseType travType,
+                                                                        te::common::AccessPolicy rwRole) const
+{
+  std::auto_ptr<te::st::ObservationDataSet> ods = te::st::ObservationDataSetLayer::getObservationDataset(dt, tr, e, sr, travType);
+  std::auto_ptr<te::da::DataSet> result = ods->release();
+  return result;
+}
+
 std::auto_ptr<te::da::DataSet> te::st::ObservationDataSetLayer::getData(const std::string& propertyName,
                                                               const te::gm::Geometry* g,
                                                               te::gm::SpatialRelation r,
@@ -152,6 +162,14 @@ std::auto_ptr<te::st::ObservationDataSet> te::st::ObservationDataSetLayer::getOb
                                                                                                  te::common::TraverseType travType) const
 {
  return te::st::STDataLoader::getDataSet(*m_info.get(), dt, r, travType);
+}
+
+std::auto_ptr<te::st::ObservationDataSet> 
+te::st::ObservationDataSetLayer::getObservationDataset(const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                                                       const te::gm::Envelope& e, te::gm::SpatialRelation sr,
+                                                       te::common::TraverseType travType) const
+{
+ return te::st::STDataLoader::getDataSet(*m_info, dt, tr, e, sr, travType);
 }
 
 std::auto_ptr<te::st::ObservationDataSet> te::st::ObservationDataSetLayer::getObservationDataset( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
