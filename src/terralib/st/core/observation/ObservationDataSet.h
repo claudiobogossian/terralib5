@@ -53,6 +53,8 @@ namespace te
     // Forward declarations
     class ObservationDataSetType;
     class Observation;
+    class TrajectoryDataSet;
+    class TimeSeriesDataSet;
 
     /*!
       \class ObservationDataSet
@@ -79,6 +81,10 @@ namespace te
     */
     class TESTEXPORT ObservationDataSet : public boost::noncopyable 
     {
+      friend class ObservationDataSetLayer;
+      friend class TrajectoryDataSet; 
+      friend class TimeSeriesDataSet;
+
       public:
 
         /*! \name Constructors */
@@ -217,7 +223,7 @@ namespace te
           \note The caller will NOT take the ownership of the returned pointer.
         */
         te::da::DataSet* getData() const;
-        
+
         /*!
           \brief It returns a reference to the ObservationDataSetType.
 
@@ -290,7 +296,7 @@ namespace te
           \note The caller will take the ownership of the output pointer.
         */
         std::auto_ptr<Observation> getObservation() const;
-        
+
         /*! \name Methods to return the properties associated to observations. */
         //@{
         /*!
@@ -350,6 +356,17 @@ namespace te
         
         /*! \brief Virtual destructor. */
         virtual ~ObservationDataSet(); 
+
+      protected:
+
+        /*!
+          \brief It releases all internal pointers, returning its internal DataSet and invalidating itself
+          \return A pointer to the internal DataSet that contains the observations. 
+
+           \note This method is used when the user is interested only in its internal DataSet 
+           \note The caller will take the ownership of the returned pointer.
+        */
+        std::auto_ptr<te::da::DataSet> release();
 
       private:
 
