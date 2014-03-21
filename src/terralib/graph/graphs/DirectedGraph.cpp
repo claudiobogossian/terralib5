@@ -121,7 +121,7 @@ void te::graph::DirectedGraph::add(Edge* e)
 
     if(vFrom)
     {
-      vFrom->getNeighborhood().insert(e->getId());
+      vFrom->getSuccessors().insert(e->getId());
 
       te::graph::Graph::add(e); 
     }
