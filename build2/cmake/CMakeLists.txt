@@ -156,7 +156,7 @@ if(GNUGETTEXT_FOUND)
 else()
 
   if(DEFINED TERRALIB_TRANSLATOR_ENABLED)
-    set(TERRALIB_TRANSLATOR_ENABLED 0 CACHE BOOL "Enable translator support?")
+    set(TERRALIB_TRANSLATOR_ENABLED 0 CACHE BOOL "Enable translator support?" FORCE)
   endif()
   
 endif()
@@ -172,7 +172,7 @@ if(GNUICONV_FOUND)
 else()
 
   if(DEFINED TERRALIB_CHARENCODING_ENABLED)
-    set(TERRALIB_CHARENCODING_ENABLED 0 CACHE BOOL "Enable character encoding support?")
+    set(TERRALIB_CHARENCODING_ENABLED 0 CACHE BOOL "Enable character encoding support?" FORCE)
   endif()
 
 endif()
@@ -188,10 +188,34 @@ if(LOG4CXX_FOUND)
     set(TERRALIB_LOGGER_ENABLED 1 CACHE BOOL "Enable logger?")
   endif()
 
+  if(TERRALIB_LOGGER_ENABLED AND NOT DEFINED TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION)
+
+    set(TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION 1 CACHE BOOL "Automatic initialize logger support?")
+
+  else()
+
+    if(NOT TERRALIB_LOGGER_ENABLED AND DEFINED TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION)
+      set(TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION 0 CACHE BOOL "Automatic initialize logger support?" FORCE)
+    endif()
+
+  endif()
+  
+  if(TERRALIB_LOGGER_ENABLED AND NOT DEFINED TERRALIB_LOGGER_DO_STATIC_INITIALIZATION)
+
+    set(TERRALIB_LOGGER_DO_STATIC_INITIALIZATION 1 CACHE BOOL "Perform logger initialization support during static's initialization?")
+
+  else()
+
+    if(NOT TERRALIB_LOGGER_ENABLED AND DEFINED TERRALIB_LOGGER_DO_STATIC_INITIALIZATION)
+      set(TERRALIB_LOGGER_DO_STATIC_INITIALIZATION 0 CACHE BOOL "Perform logger initialization support during static's initialization?" FORCE)
+    endif()
+
+  endif()
+
 else()
 
   if(DEFINED TERRALIB_LOGGER_ENABLED)
-    set(TERRALIB_LOGGER_ENABLED 0 CACHE BOOL "Enable logger?")
+    set(TERRALIB_LOGGER_ENABLED 0 CACHE BOOL "Enable logger?" FORCE)
   endif()
 
 endif()

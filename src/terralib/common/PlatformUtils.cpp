@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../Defines.h"
 #include "Exception.h"
 #include "PlatformUtils.h"
 #include "StringUtils.h"
