@@ -4,11 +4,11 @@
       <title>TerraView Help</title>
       <startPage>qthelp://dpi.inpe.br.terraview/doc/terraview/index.html</startPage> 
       <currentFilter>help</currentFilter>
-      <applicationIcon>${TE_LOGO}</applicationIcon>
+      <applicationIcon>terralib-globe-small.png</applicationIcon>
       <enableFilterFunctionality>false</enableFilterFunctionality>
       <enableDocumentationManager>false</enableDocumentationManager>
       <enableAddressBar visible="true">false</enableAddressBar>
-      <cacheDirectory base="collection">cache</cacheDirectory>
+      <cacheDirectory>../Roaming/INPE/help/cache</cacheDirectory>
       <aboutMenuText>
          <text>About TerraView... </text>
          <text language="pt">Sobre o TerraView ...</text>
@@ -16,7 +16,7 @@
       <aboutDialog>
          <file>about.txt</file>
          <file language="en">sobre.txt</file>
-         <icon>${TE_LOGO}</icon>
+         <icon>terralib-globe-small.png</icon>
       </aboutDialog>
     </assistant>
     <docFiles>
