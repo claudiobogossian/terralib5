@@ -20,48 +20,48 @@
 #
 #  Description: Find GNU Gettext - find the GNU Gettext include directory and libraries.
 #
-#  GETTEXT_INCLUDE_DIR - where to find libintl.h.
-#  GETTEXT_LIBRARY     - where to find the GNU gettext library.
-#  GETTEXT_FOUND       - True if the GNU Gettext is found.
+#  GNUGETTEXT_INCLUDE_DIR - where to find libintl.h.
+#  GNUGETTEXT_LIBRARY     - where to find the GNU gettext library.
+#  GNUGETTEXT_FOUND       - True if the GNU Gettext is found.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan P. Garrido <juan@dpi.inpe.br>
 #
 
-find_path(GETTEXT_INCLUDE_DIR libintl.h
+find_path(GNUGETTEXT_INCLUDE_DIR libintl.h
           PATHS /usr
                 /usr/local
           PATH_SUFFIXES include)
 
 if(UNIX)
 
-  find_library(GETTEXT_LIBRARY
+  find_library(GNUGETTEXT_LIBRARY
                NAMES gettextlib
                PATHS /usr
                      /usr/local
                PATH_SUFFIXES lib)
 elseif(WIN32)
 
-  find_library(GETTEXT_LIBRARY_RELEASE
+  find_library(GNUGETTEXT_LIBRARY_RELEASE
                NAMES gettextlib
                PATH_SUFFIXES lib)
 
-  find_library(GETTEXT_LIBRARY_DEBUG
-               NAMES gettextlib
+  find_library(GNUGETTEXT_LIBRARY_DEBUG
+               NAMES gettextlib_d gettextlibd
                PATH_SUFFIXES lib)
 
-  if(GETTEXT_LIBRARY_RELEASE AND GETTEXT_LIBRARY_DEBUG)
-    set(GETTEXT_LIBRARY optimized ${GETTEXT_LIBRARY_RELEASE} debug ${GETTEXT_LIBRARY_DEBUG})
-  elseif(GETTEXT_LIBRARY_RELEASE)
-    set(GETTEXT_LIBRARY optimized ${GETTEXT_LIBRARY_RELEASE} debug ${GETTEXT_LIBRARY_RELEASE})
-  elseif(GETTEXT_LIBRARY_DEBUG)
-    set(GETTEXT_LIBRARY optimized ${GETTEXT_LIBRARY_DEBUG} debug ${GETTEXT_LIBRARY_DEBUG})
+  if(GNUGETTEXT_LIBRARY_RELEASE AND GNUGETTEXT_LIBRARY_DEBUG)
+    set(GNUGETTEXT_LIBRARY optimized ${GNUGETTEXT_LIBRARY_RELEASE} debug ${GNUGETTEXT_LIBRARY_DEBUG})
+  elseif(GNUGETTEXT_LIBRARY_RELEASE)
+    set(GNUGETTEXT_LIBRARY optimized ${GNUGETTEXT_LIBRARY_RELEASE} debug ${GNUGETTEXT_LIBRARY_RELEASE})
+  elseif(GNUGETTEXT_LIBRARY_DEBUG)
+    set(GNUGETTEXT_LIBRARY optimized ${GNUGETTEXT_LIBRARY_DEBUG} debug ${GNUGETTEXT_LIBRARY_DEBUG})
   endif()
 
 endif()
 
 include(FindPackageHandleStandardArgs)
 
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(GETTEXT DEFAULT_MSG GETTEXT_LIBRARY GETTEXT_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(GNUGETTEXT DEFAULT_MSG GNUGETTEXT_LIBRARY GNUGETTEXT_INCLUDE_DIR)
 
-mark_as_advanced(GETTEXT_INCLUDE_DIR GETTEXT_LIBRARY)
+mark_as_advanced(GNUGETTEXT_INCLUDE_DIR GNUGETTEXT_LIBRARY)

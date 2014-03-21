@@ -28,7 +28,7 @@
 #          Juan P. Garrido <juan@dpi.inpe.br>
 #
 
-find_path(LOG4CXX_INCLUDE_DIR log4cxx/log4cxx.h 
+find_path(LOG4CXX_INCLUDE_DIR log4cxx/log4cxx.h
           PATHS /usr
                 /usr/local
           PATH_SUFFIXES include)

@@ -89,6 +89,12 @@ find_package(GEOS)
 
 find_package(GEOSC)
 
+find_package(GNUGettext)
+
+find_package(GNUIconv)
+
+find_package(Log4cxx)
+
 find_package(Lua51)
 
 find_package(PostgreSQL)
@@ -139,8 +145,55 @@ if(GEOSC_FOUND)
   set(TERRALIB_GEOSC_ENABLED ON)
 endif()
 
+if(GNUGETTEXT_FOUND)
+
+  set(TERRALIB_GNU_GETTEXT_ENABLED ON)
+
+  if(NOT DEFINED TERRALIB_TRANSLATOR_ENABLED)
+    set(TERRALIB_TRANSLATOR_ENABLED 1 CACHE BOOL "Enable translator support?")
+  endif()
+
+else()
+
+  if(DEFINED TERRALIB_TRANSLATOR_ENABLED)
+    set(TERRALIB_TRANSLATOR_ENABLED 0 CACHE BOOL "Enable translator support?")
+  endif()
+  
+endif()
+
+if(GNUICONV_FOUND)
+
+  set(TERRALIB_GNU_ICONV_ENABLED ON)
+
+  if(NOT DEFINED TERRALIB_CHARENCODING_ENABLED)
+    set(TERRALIB_CHARENCODING_ENABLED 1 CACHE BOOL "Enable character encoding support?")
+  endif()
+
+else()
+
+  if(DEFINED TERRALIB_CHARENCODING_ENABLED)
+    set(TERRALIB_CHARENCODING_ENABLED 0 CACHE BOOL "Enable character encoding support?")
+  endif()
+
+endif()
+
 if(LUA51_FOUND)
   set(TERRALIB_LUA_ENABLED ON)
+endif()
+
+if(LOG4CXX_FOUND)
+  set(TERRALIB_APACHE_LOG4CXX_ENABLED ON)
+
+  if(NOT DEFINED TERRALIB_LOGGER_ENABLED)
+    set(TERRALIB_LOGGER_ENABLED 1 CACHE BOOL "Enable logger?")
+  endif()
+
+else()
+
+  if(DEFINED TERRALIB_LOGGER_ENABLED)
+    set(TERRALIB_LOGGER_ENABLED 0 CACHE BOOL "Enable logger?")
+  endif()
+
 endif()
 
 if(PostgreSQL_FOUND OR (PostgreSQL_INCLUDE_DIR AND PostgreSQL_LIBRARY_DIR))

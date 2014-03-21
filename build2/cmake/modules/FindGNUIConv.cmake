@@ -20,48 +20,48 @@
 #
 #  Description: Find GNU IConv - find the GNU IConv include directory and libraries.
 #
-#  ICONV_INCLUDE_DIR - where to find .
-#  ICONV_LIBRARY     - where to find the GNU iconv library.
-#  ICONV_FOUND       - True if GNU iconv is  found.
+#  GNUICONV_INCLUDE_DIR - where to find iconv.h.
+#  GNUICONV_LIBRARY     - where to find the GNU Iconv library.
+#  GNUICONV_FOUND       - True if GNU Iconv is  found.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan P. Garrido <juan@dpi.inpe.br>
 #
 
-find_path(ICONV_INCLUDE_DIR intl.h
+find_path(GNUICONV_INCLUDE_DIR iconv.h
           PATHS /usr
                 /usr/local
           PATH_SUFFIXES include)
 
 if(UNIX)
 
-  find_library(ICONV_LIBRARY
+  find_library(GNUICONV_LIBRARY
                NAMES iconv
                PATHS /usr
                      /usr/local
                PATH_SUFFIXES lib)
 elseif(WIN32)
 
-  find_library(ICONV_LIBRARY_RELEASE
+  find_library(GNUICONV_LIBRARY_RELEASE
                NAMES iconv
                PATH_SUFFIXES lib)
 
-  find_library(ICONV_LIBRARY_DEBUG
+  find_library(GNUICONV_LIBRARY_DEBUG
                NAMES iconv_d
                PATH_SUFFIXES lib)
 
-  if(ICONV_LIBRARY_RELEASE AND ICONV_LIBRARY_DEBUG)
-    set(ICONV_LIBRARY optimized ${ICONV_LIBRARY_RELEASE} debug ${ICONV_LIBRARY_DEBUG})
-  elseif(ICONV_LIBRARY_RELEASE)
-    set(ICONV_LIBRARY optimized ${ICONV_LIBRARY_RELEASE} debug ${ICONV_LIBRARY_RELEASE})
-  elseif(ICONV_LIBRARY_DEBUG)
-    set(ICONV_LIBRARY optimized ${ICONV_LIBRARY_DEBUG} debug ${ICONV_LIBRARY_DEBUG})
+  if(GNUICONV_LIBRARY_RELEASE AND GNUICONV_LIBRARY_DEBUG)
+    set(GNUICONV_LIBRARY optimized ${GNUICONV_LIBRARY_RELEASE} debug ${GNUICONV_LIBRARY_DEBUG})
+  elseif(GNUICONV_LIBRARY_RELEASE)
+    set(GNUICONV_LIBRARY optimized ${GNUICONV_LIBRARY_RELEASE} debug ${GNUICONV_LIBRARY_RELEASE})
+  elseif(GNUICONV_LIBRARY_DEBUG)
+    set(GNUICONV_LIBRARY optimized ${GNUICONV_LIBRARY_DEBUG} debug ${GNUICONV_LIBRARY_DEBUG})
   endif()
 
 endif()
 
 include(FindPackageHandleStandardArgs)
 
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(ICONV DEFAULT_MSG ICONV_LIBRARY ICONV_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(GNUICONV DEFAULT_MSG GNUICONV_LIBRARY GNUICONV_INCLUDE_DIR)
 
-mark_as_advanced(ICONV_INCLUDE_DIR ICONV_LIBRARY)
+mark_as_advanced(GNUICONV_INCLUDE_DIR GNUICONV_LIBRARY)
