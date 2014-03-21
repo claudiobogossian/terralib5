@@ -38,8 +38,8 @@
 #include "../../maptools/Exception.h"
 #include "../../maptools/RendererFactory.h"
 #include "../core/observation/ObservationDataSet.h"
-#include "../core/TimeSeries/TimeSeriesDataSetInfo.h"
-#include "../core/TimeSeries/TimeSeriesDataSet.h"
+#include "../core/timeseries/TimeSeriesDataSetInfo.h"
+#include "../core/timeseries/TimeSeriesDataSet.h"
 #include "../loader/STDataLoader.h"
 #include "TimeSeriesDataSetLayer.h"
 
