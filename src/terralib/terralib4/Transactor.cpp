@@ -296,6 +296,8 @@ std::size_t terralib4::Transactor::getNumberOfDataSets()
 
 std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const std::string& name)
 {
+  m_db->loadLayerSet(true);
+
   TeLayer* layer = 0;
 
   if(m_db->layerExist(name))

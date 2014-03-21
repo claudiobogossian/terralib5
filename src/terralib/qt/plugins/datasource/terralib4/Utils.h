@@ -30,6 +30,8 @@
 #include "Config.h"
 
 class TeColor;
+class TeGrouping;
+class TeRasterTransform;
 class TeTheme;
 class TeVisual;
 
@@ -38,6 +40,11 @@ namespace te
   namespace color
   {
     class RGBAColor;
+  }
+
+  namespace map
+  {
+    class Grouping;
   }
 
   namespace se
@@ -66,13 +73,19 @@ namespace te
 
         bool IsHollow(int type);
 
-        te::se::Style* Convert2TerraLib5(int geometryType, TeTheme* theme);
+        te::se::Style* Convert2TerraLib5(int geometryType, TeTheme* theme, bool isRaster = false);
+
+        te::map::Grouping* GetGrouping(TeTheme* theme);
+
+        te::se::Symbolizer* GetSymbolizer(int geometryType, TeVisual* visual);
 
         te::se::PolygonSymbolizer* GetPolygonSymbolizer(TeVisual* visual);
 
         te::se::LineSymbolizer* GetLineSymbolizer(TeVisual* visual);
         
         te::se::PointSymbolizer* GetPointSymbolizer(TeVisual* visual);
+
+        te::se::RasterSymbolizer* GetRasterSymbolizer(TeRasterTransform* visual);
 
       } // end namespace terralib4
     } // end namespace plugins

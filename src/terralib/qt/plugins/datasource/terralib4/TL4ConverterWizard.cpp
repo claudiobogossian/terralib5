@@ -74,6 +74,7 @@
 
 // TerraLib 4
 #include <terralib/kernel/TeLegendEntry.h>
+#include <terralib/kernel/TeRasterTransform.h>
 #include <terralib/kernel/TeTheme.h>
 
 using namespace terralib4;
@@ -716,26 +717,44 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
       std::string layerName = themes[i].first;
       std::string themeName = themes[i].second;
 
-      DataSource* tl4Ds = dynamic_cast<DataSource*>(m_tl4Database.get());
-
       te::map::AbstractLayerPtr layer = 0;
 
-      std::auto_ptr<te::da::DataSetType> dst = outDataSource->getDataSetType(layerName);
+      std::auto_ptr<te::da::DataSetType> sourceDt = m_tl4Database->getDataSetType(getOriginalName(layerName));
 
-      te::qt::widgets::DataSet2Layer converter(m_targetDataSource->getId());
+      DataSource* tl4Ds = dynamic_cast<DataSource*>(m_tl4Database.get());
 
-      te::da::DataSetTypePtr dstPtr(dst.release());
+      std::auto_ptr<TeTheme> theme(tl4Ds->getTL4ThemeFromLayer(getOriginalName(layerName), themeName));
 
-      layer = converter(dstPtr);
+      te::se::Style* style = 0;
 
-      std::auto_ptr<TeTheme> theme(tl4Ds->getTL4ThemeFromLayer(layerName, themeName));
+      if(sourceDt->hasRaster())
+      {
+        std::map<std::string, std::string> connInfo;
+        connInfo["URI"] = m_rasterFolderPath + "/" + layerName + ".tif";
 
-      // Get Style
-      te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dstPtr.get());
+        layer = te::qt::widgets::createLayer("GDAL", connInfo);
 
-      te::se::Style* style = Convert2TerraLib5(geomProp->getGeometryType(), theme.get());
+        style = Convert2TerraLib5(0, theme.get(), true);
+      }
+      else
+      {
+        std::auto_ptr<te::da::DataSetType> dst = outDataSource->getDataSetType(layerName);
+
+        te::qt::widgets::DataSet2Layer converter(m_targetDataSource->getId());
+
+        te::da::DataSetTypePtr dstPtr(dst.release());
+
+        layer = converter(dstPtr);
+
+        // Get Style
+        te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dstPtr.get());
+
+        style = Convert2TerraLib5(geomProp->getGeometryType(), theme.get());
+      }
 
       layer->setStyle(style);
+
+      layer->setGrouping(GetGrouping(theme.get()));
 
       te::qt::af::evt::LayerAdded evt(layer);
 
