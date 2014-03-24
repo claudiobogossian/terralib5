@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file terralib/xlink/XLinkSerializer.cpp
+  \file terralib/xlink/serialization/xml/XLinkSerializer.cpp
 
   \brief Data serialization for the XLink module.
 */
 
 // TerraLib
-#include "../xml/Reader.h"
-#include "../xml/Writer.h"
-#include "SimpleLink.h"
+#include "../../../xml/Reader.h"
+#include "../../../xml/Writer.h"
+#include "../../SimpleLink.h"
 #include "XLinkSerializer.h"
 
 
@@ -34,7 +34,7 @@
 #include <cassert>
 #include <memory>
 
-#ifdef TE_ENABLED_XML
+#ifdef TERRALIB_MOD_XML_ENABLED
 
 te::xl::SimpleLink* te::xl::serialize::ReadSimpleLink(te::xml::Reader& reader)
 {
@@ -141,4 +141,4 @@ void te::xl::serialize::Save(const SimpleLink* link, te::xml::Writer& writer)
   }
 }
 
-#endif
+#endif // TERRALIB_MOD_XML_ENABLED

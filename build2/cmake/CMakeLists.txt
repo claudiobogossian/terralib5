@@ -253,6 +253,8 @@ if(PROJ4_FOUND)
   option(TERRALIB_MOD_SRS_ENABLED "Build Spatial Reference System module?" ON)
 endif()
 
+option(TERRALIB_MOD_XLINK_ENABLED "Build XLink module?" ON)
+
 option(TERRALIB_MOD_XML_ENABLED "Build XML module?" ON)
 
 
@@ -301,6 +303,11 @@ endif()
 if(TERRALIB_MOD_SRS_ENABLED)
   add_subdirectory(terralib_mod_srs)
 endif()
+
+if(TERRALIB_MOD_XLINK_ENABLED)
+  add_subdirectory(terralib_mod_xlink)
+endif()
+
 
 if(TERRALIB_MOD_XML_ENABLED)
   add_subdirectory(terralib_mod_xml)

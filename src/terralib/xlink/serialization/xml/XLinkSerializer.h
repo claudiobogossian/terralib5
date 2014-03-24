@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/xlink/SymbologySerializer.h
+  \file terralib/xlink/serialization/xml/XLinkSerializer.h
 
   \brief Data serialization for the XLink module.
 */
@@ -27,9 +27,9 @@
 #define __TERRALIB_XLINK_INTERNAL_XLINKSERIALIZER_H
 
 // TerraLib
-#include "Config.h"
+#include "../../Config.h"
 
-#ifdef TE_ENABLED_XML
+#ifdef TERRALIB_MOD_XML_ENABLED
 
 namespace te
 {
@@ -52,6 +52,6 @@ namespace te
   }    // end namespace xl
 }      // end namespace te
 
-#endif // TE_ENABLED_XML
+#endif // TERRALIB_MOD_XML_ENABLED
 
 #endif  // __TERRALIB_XLINK_INTERNAL_XLINKSERIALIZER_H
