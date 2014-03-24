@@ -245,6 +245,8 @@ if(DOXYGEN_FOUND)
   option(TERRALIB_DOXYGEN_ENABLED  "Enable API documentation build?" ON)
 endif()
 
+option(TERRALIB_MOD_COLOR_ENABLED "Build Color module?" ON)
+
 option(TERRALIB_MOD_DATATYPE_ENABLED "Build Data Type module?" ON)
 
 if(PROJ4_FOUND)
@@ -284,6 +286,11 @@ configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Version.h.in
 #if(TERRALIB_DOXYGEN_ENABLED)
 #  add_subdirectory(terralib_doc_doxygen)
 #endif()
+
+if(TERRALIB_MOD_COLOR_ENABLED)
+  add_subdirectory(terralib_mod_color)
+endif()
+
 
 add_subdirectory(terralib_mod_common)
 
