@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../Defines.h"
 #include "../common/Exception.h"
 #include "../srs/Converter.h"
 #include "AbstractPoint.h"

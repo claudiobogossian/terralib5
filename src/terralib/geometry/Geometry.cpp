@@ -44,7 +44,7 @@
 #include <memory>
 #include <sstream>
 
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
 // GEOS
 #include <geos/geom/Geometry.h>
 #include <geos/geom/IntersectionMatrix.h>
@@ -142,37 +142,37 @@ void te::gm::Geometry::getWkb(char* wkb, te::common::MachineByteOrder byteOrder)
 
 bool te::gm::Geometry::isEmpty() const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> g(GEOSWriter::write(this));
 
   return g->isEmpty();
 
 #else
-  throw Exception(TR_GEOM("isEmpty routine is supported by GEOS! Please, enable the GEOS support."));
+  throw Exception(TE_TR("isEmpty routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 bool te::gm::Geometry::isSimple() const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> g(GEOSWriter::write(this));
 
   return g->isSimple();
 
 #else
-  throw Exception(TR_GEOM("isSimple routine is supported by GEOS! Please, enable the GEOS support."));
+  throw Exception(TE_TR("isSimple routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 bool te::gm::Geometry::isValid() const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> g(GEOSWriter::write(this));
 
   return g->isValid();
 
 #else
-  throw Exception(TR_GEOM("isValid routine is supported by GEOS! Please, enable the GEOS support."));
+  throw Exception(TE_TR("isValid routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
@@ -200,19 +200,19 @@ bool te::gm::Geometry::isMeasured() const throw()
 
 te::gm::Geometry* te::gm::Geometry::getBoundary() const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> g(GEOSWriter::write(this)); 
   std::auto_ptr<geos::geom::Geometry> b(g->getBoundary());
   return GEOSReader::read(b.get());
 
 #else
-  throw te::common::Exception(TR_GEOM("getBoundary routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("getBoundary routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 bool te::gm::Geometry::equals(const Geometry* const rhs, const bool exact) const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -222,13 +222,13 @@ bool te::gm::Geometry::equals(const Geometry* const rhs, const bool exact) const
   else
     return thisGeom->equals(rhsGeom.get());
 #else
-  throw te::common::Exception(TR_GEOM("equals routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("equals routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 bool te::gm::Geometry::disjoint(const Geometry* const rhs) const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -236,13 +236,13 @@ bool te::gm::Geometry::disjoint(const Geometry* const rhs) const throw(std::exce
   return thisGeom->disjoint(rhsGeom.get());
 
 #else
-  throw te::common::Exception(TR_GEOM("disjoint routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("disjoint routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 bool te::gm::Geometry::intersects(const Geometry* const rhs) const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -250,13 +250,13 @@ bool te::gm::Geometry::intersects(const Geometry* const rhs) const throw(std::ex
   return thisGeom->intersects(rhsGeom.get());
 
 #else
-  throw te::common::Exception(TR_GEOM("intersects routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("intersects routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 bool te::gm::Geometry::touches(const Geometry* const rhs) const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -264,13 +264,13 @@ bool te::gm::Geometry::touches(const Geometry* const rhs) const throw(std::excep
   return thisGeom->touches(rhsGeom.get());
 
 #else
-  throw te::common::Exception(TR_GEOM("touches routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("touches routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 bool te::gm::Geometry::crosses(const Geometry* const rhs) const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -278,13 +278,13 @@ bool te::gm::Geometry::crosses(const Geometry* const rhs) const throw(std::excep
   return thisGeom->crosses(rhsGeom.get());
 
 #else
-  throw te::common::Exception(TR_GEOM("crosses routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("crosses routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 bool te::gm::Geometry::within(const Geometry* const rhs) const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -292,13 +292,13 @@ bool te::gm::Geometry::within(const Geometry* const rhs) const throw(std::except
   return thisGeom->within(rhsGeom.get());
 
 #else
-  throw te::common::Exception(TR_GEOM("within routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("within routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 bool te::gm::Geometry::contains(const Geometry* const rhs) const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -306,13 +306,13 @@ bool te::gm::Geometry::contains(const Geometry* const rhs) const throw(std::exce
   return thisGeom->contains(rhsGeom.get());
 
 #else
-  throw te::common::Exception(TR_GEOM("contains routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("contains routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 bool te::gm::Geometry::overlaps(const Geometry* const rhs) const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -320,7 +320,7 @@ bool te::gm::Geometry::overlaps(const Geometry* const rhs) const throw(std::exce
   return thisGeom->overlaps(rhsGeom.get());
 
 #else
-  throw te::common::Exception(TR_GEOM("overlaps routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("overlaps routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
@@ -328,7 +328,7 @@ bool te::gm::Geometry::relate(const Geometry* const rhs, const std::string& matr
 {
   assert(matrix.size() == 9);
 
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -336,13 +336,13 @@ bool te::gm::Geometry::relate(const Geometry* const rhs, const std::string& matr
   return thisGeom->relate(rhsGeom.get(), matrix);
 
 #else
-  throw te::common::Exception(TR_GEOM("relate routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("relate routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 std::string te::gm::Geometry::relate(const Geometry* const rhs) const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -352,13 +352,13 @@ std::string te::gm::Geometry::relate(const Geometry* const rhs) const throw(std:
   return m->toString();
 
 #else
-  throw te::common::Exception(TR_GEOM("relate routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("relate routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 bool te::gm::Geometry::covers(const Geometry* const rhs) const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -366,13 +366,13 @@ bool te::gm::Geometry::covers(const Geometry* const rhs) const throw(std::except
   return thisGeom->covers(rhsGeom.get());
 
 #else
-  throw te::common::Exception(TR_GEOM("covers routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("covers routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 bool te::gm::Geometry::coveredBy(const Geometry* const rhs) const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -380,7 +380,7 @@ bool te::gm::Geometry::coveredBy(const Geometry* const rhs) const throw(std::exc
   return thisGeom->coveredBy(rhsGeom.get());
 
 #else
-  throw te::common::Exception(TR_GEOM("coveredBy routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("coveredBy routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
@@ -391,7 +391,7 @@ te::gm::Geometry* te::gm::Geometry::locateBetween(const double& /*mStart*/, cons
 
 double te::gm::Geometry::distance(const Geometry* const rhs) const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -399,13 +399,13 @@ double te::gm::Geometry::distance(const Geometry* const rhs) const throw(std::ex
   return thisGeom->distance(rhsGeom.get());
 
 #else
-  throw te::common::Exception(TR_GEOM("distance routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("distance routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 te::gm::Geometry* te::gm::Geometry::buffer(const double& distance) const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   return buffer(distance, TE_GEOS_DEFAULT_QUADRANT_SEGMENTS, CapRoundType);
 #else
   return buffer(distance, 16, CapRoundType);
@@ -421,7 +421,7 @@ te::gm::Geometry* te::gm::Geometry::buffer(const double& distance,
                                            int quadrantSegments,
                                            BufferCapStyle endCapStyle) const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> g(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> bg(g->buffer(distance, quadrantSegments, static_cast<int>(endCapStyle)));
@@ -432,13 +432,13 @@ te::gm::Geometry* te::gm::Geometry::buffer(const double& distance,
 
 
 #else
-  throw te::common::Exception(TR_GEOM("buffer routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("buffer routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 te::gm::Geometry* te::gm::Geometry::convexHull() const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> g(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> hull(g->convexHull());
@@ -448,13 +448,13 @@ te::gm::Geometry* te::gm::Geometry::convexHull() const throw(std::exception)
   return GEOSReader::read(hull.get());
 
 #else
-  throw te::common::Exception(TR_GEOM("convexHull routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("convexHull routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 te::gm::Geometry* te::gm::Geometry::intersection(const Geometry* const rhs) const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -466,13 +466,13 @@ te::gm::Geometry* te::gm::Geometry::intersection(const Geometry* const rhs) cons
   return GEOSReader::read(intersectionGeom.get());
 
 #else
-  throw te::common::Exception(TR_GEOM("intersection routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("intersection routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 te::gm::Geometry* te::gm::Geometry::Union(const Geometry* const rhs) const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
 
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
@@ -485,13 +485,13 @@ te::gm::Geometry* te::gm::Geometry::Union(const Geometry* const rhs) const throw
   return GEOSReader::read(unionGeom.get());
 
 #else
-  throw te::common::Exception(TR_GEOM("Union routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("Union routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 te::gm::Geometry* te::gm::Geometry::difference(const Geometry* const rhs) const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -503,13 +503,13 @@ te::gm::Geometry* te::gm::Geometry::difference(const Geometry* const rhs) const 
   return GEOSReader::read(differenceGeom.get());
 
 #else
-  throw te::common::Exception(TR_GEOM("difference routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("difference routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
 te::gm::Geometry* te::gm::Geometry::symDifference(const Geometry* const rhs) const throw(std::exception)
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -520,7 +520,7 @@ te::gm::Geometry* te::gm::Geometry::symDifference(const Geometry* const rhs) con
 
   return GEOSReader::read(symDifferenceGeom.get());
 #else
-  throw te::common::Exception(TR_GEOM("symDifference routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("symDifference routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
@@ -528,7 +528,7 @@ bool te::gm::Geometry::dWithin(const Geometry* const rhs, const double& distance
 {
   assert(distance >= 0.0);
 
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -536,7 +536,7 @@ bool te::gm::Geometry::dWithin(const Geometry* const rhs, const double& distance
   return thisGeom->isWithinDistance(rhsGeom.get(), distance);
 
 #else
-  throw te::common::Exception(TR_GEOM("dWithin routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("dWithin routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 

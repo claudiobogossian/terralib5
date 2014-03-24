@@ -249,6 +249,8 @@ option(TERRALIB_MOD_COLOR_ENABLED "Build Color module?" ON)
 
 option(TERRALIB_MOD_DATATYPE_ENABLED "Build Data Type module?" ON)
 
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_GEOMETRY_ENABLED "Build Geometry module?" ON "TERRALIB_MOD_DATATYPE_ENABLED" OFF)
+
 if(PROJ4_FOUND)
   option(TERRALIB_MOD_SRS_ENABLED "Build Spatial Reference System module?" ON)
 endif()
@@ -293,11 +295,14 @@ if(TERRALIB_MOD_COLOR_ENABLED)
   add_subdirectory(terralib_mod_color)
 endif()
 
-
 add_subdirectory(terralib_mod_common)
 
 if(TERRALIB_MOD_DATATYPE_ENABLED)
   add_subdirectory(terralib_mod_datatype)
+endif()
+
+if(TERRALIB_MOD_GEOMETRY_ENABLED)
+  add_subdirectory(terralib_mod_geometry)
 endif()
 
 if(TERRALIB_MOD_SRS_ENABLED)

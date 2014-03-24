@@ -50,9 +50,6 @@ te::gm::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib Vector Geometry Model
-  TE_ADD_TEXT_DOMAIN(TE_GEOM_TEXT_DOMAIN, TE_GEOM_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::gm::Module::~Module()
@@ -65,7 +62,7 @@ void te::gm::Module::initialize()
 // it loads the geometry type id map
   te::gm::Geometry::loadGeomTypeId();
 
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
 // it initializes the GEOS Geometry Factory
   te::gm::GEOSGeometryFactory::initialize();
 #endif
@@ -82,12 +79,12 @@ void te::gm::Module::initialize()
   te::gm::SecondDegreePolynomialGTFactory::initialize();
   te::gm::ThirdDegreePolynomialGTFactory::initialize();
 
-  TE_LOG_TRACE(TR_GEOM("TerraLib Vector Geometry module Initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Vector Geometry module Initialized!"));
 }
 
 void te::gm::Module::finalize()
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
 // it finalizes the GEOS Geometry Factory
   te::gm::GEOSGeometryFactory::finalize();
 #endif
@@ -98,7 +95,7 @@ void te::gm::Module::finalize()
   te::gm::SecondDegreePolynomialGTFactory::finalize();
   te::gm::ThirdDegreePolynomialGTFactory::finalize();
 
-  TE_LOG_TRACE(TR_GEOM("TerraLib Vector Geometry module Finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Vector Geometry module Finalized!"));
 }
 
 
