@@ -273,7 +273,7 @@ namespace te
         bool getTPConvexHull( 
           const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
           const bool useTPSecondCoordPair,
-          std::auto_ptr< te::gm::Polygon >& convexHullPtr ) const;    
+          std::auto_ptr< te::gm::Surface >& convexHullPtr ) const;    
           
         /*!
           \brief Try to instantiate a valid geometric transformation following the user parameters.

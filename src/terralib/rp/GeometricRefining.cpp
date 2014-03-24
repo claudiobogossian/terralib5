@@ -1018,7 +1018,7 @@ namespace te
       const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
       const bool useTPSecondCoordPair ) const
     {
-      std::auto_ptr< te::gm::Polygon > convexHullPtr;
+      std::auto_ptr< te::gm::Surface > convexHullPtr;
       if( !getTPConvexHull( tiePoints, useTPSecondCoordPair, convexHullPtr ) )
       {
         return 0.0;
@@ -1032,7 +1032,7 @@ namespace te
     bool GeometricRefining::getTPConvexHull( 
       const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
       const bool useTPSecondCoordPair,
-      std::auto_ptr< te::gm::Polygon >& convexHullPtr ) const
+      std::auto_ptr< te::gm::Surface >& convexHullPtr ) const
     {
       if( tiePoints.size() < 3 )
       {
@@ -1055,10 +1055,10 @@ namespace te
         
         std::auto_ptr< te::gm::Geometry > geomPtr( points.convexHull() );
 
-        if( dynamic_cast< te::gm::Polygon* >( geomPtr.get() ) )
+        if( dynamic_cast< te::gm::Surface* >( geomPtr.get() ) )
         {
           convexHullPtr.reset( 
-            dynamic_cast< te::gm::Polygon* >( geomPtr.release() ) );
+            dynamic_cast< te::gm::Surface* >( geomPtr.release() ) );
           return true;
         }
         else

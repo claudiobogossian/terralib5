@@ -665,12 +665,15 @@ double te::gm::GTFilter::getPt1ConvexHullArea(const std::vector< GTParameters::T
         tiePoints[ tiePointsIdx ].first.y ) );
     }
     
-    std::auto_ptr< te::gm::Surface > convexHullPtr( 
-      (te::gm::Surface*)points.convexHull() );
+    std::auto_ptr< te::gm::Geometry > convexHullPtr( points.convexHull() );
     
-    if( convexHullPtr.get() )
-      return convexHullPtr->getArea();
+    if( dynamic_cast< te::gm::Surface* >( convexHullPtr.get() ) )
+    {
+      return dynamic_cast< te::gm::Surface* >( convexHullPtr.get() )->getArea();
+    }
     else
+    {
       return 0;
+    }
   }
 }
