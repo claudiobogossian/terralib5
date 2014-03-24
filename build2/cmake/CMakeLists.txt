@@ -105,8 +105,8 @@ find_package(Qt5 5.1 COMPONENTS Core Gui Widgets)
 
 if(Qt5_FOUND)
 
-  set(CMAKE_AUTOMOC ON)
-  set(CMAKE_INCLUDE_CURRENT_DIR ON)
+  #set(CMAKE_AUTOMOC ON)
+  #set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 else()
 
@@ -114,11 +114,11 @@ else()
 
   if(QT4_FOUND)
 
-    include(${QT_USE_FILE})
+    #include(${QT_USE_FILE})
 
-    include_directories(${QT_INCLUDE_DIR})
+    #include_directories(${QT_INCLUDE_DIR})
 
-    add_definitions(${QT_DEFINITIONS})
+    #add_definitions(${QT_DEFINITIONS})
 
   endif()
 
@@ -241,14 +241,16 @@ endif()
 # build options
 #
 
-if(PROJ4_FOUND)
-  option(TERRALIB_BUILD_MOD_SRS "Build Spatial Reference System module?" ON)
-endif()
+option(TERRALIB_MOD_XML_ENABLED "Build XML module?" ON)
 
-option(TERRALIB_BUILD_MOD_DATATYPE "Build Data Type module?" ON)
+#if(PROJ4_FOUND)
+#  option(TERRALIB_MOD_SRS_ENABLED "Build Spatial Reference System module?" ON)
+#endif()
+
+#option(TERRALIB_MOD_DATATYPE_ENABLED "Build Data Type module?" ON)
 
 if(DOXYGEN_FOUND)
-  option(TERRALIB_BUILD_DOC_DOXYGEN  "Enable API documentation build?" ON)
+  option(TERRALIB_DOXYGEN_ENABLED  "Enable API documentation build?" ON)
 endif()
 
 
@@ -279,6 +281,10 @@ configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Version.h.in
 # build modules
 #
 add_subdirectory(terralib_mod_common)
+
+if(TERRALIB_MOD_XML_ENABLED)
+  add_subdirectory(terralib_mod_xml)
+endif()
 
 #if(TERRALIB_BUILD_MOD_SRS)
 #  add_subdirectory(terralib_mod_srs)

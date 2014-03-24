@@ -86,7 +86,7 @@ void te::common::SystemApplicationSettings::load()
     }
   }
 
-  throw Exception(TR_COMMON("Could not find system application config file!"));
+  throw Exception(TE_TR("Could not find system application config file!"));
 }
 
 void te::common::SystemApplicationSettings::load(const std::string& fileName)

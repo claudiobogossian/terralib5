@@ -83,12 +83,12 @@ void te::common::Logger::initialize(const std::string& loggerName,
     return;
 
   //if(fileName.empty())
-  //  throw Exception(TR_COMMON("You must specify a logger configuration file!"));
+  //  throw Exception(TE_TR("You must specify a logger configuration file!"));
 
   log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger(loggerName));
 
   if(logger == 0)
-    throw Exception(TR_COMMON("It was not possible to initialize the logger!"));
+    throw Exception(TE_TR("It was not possible to initialize the logger!"));
 
   if(t == LOGGER_XML_CONFIG)
   {
@@ -100,7 +100,7 @@ void te::common::Logger::initialize(const std::string& loggerName,
   }
   else
   {
-    throw Exception(TR_COMMON("Invalid logger configuration type!"));
+    throw Exception(TE_TR("Invalid logger configuration type!"));
   }
 #endif
 }
@@ -113,7 +113,7 @@ void te::common::Logger::initialize(const std::string& loggerName)
   log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger(loggerName));
 
   if(logger == 0)
-    throw Exception(TR_COMMON("It was not possible to initialize the the logger!"));
+    throw Exception(TE_TR("It was not possible to initialize the the logger!"));
 #endif
 }
 
@@ -121,7 +121,7 @@ void te::common::Logger::finalize(const std::string& loggerName)
 {
 #ifdef TERRALIB_APACHE_LOG4CXX_ENABLED
   if(loggerName.empty())
-    throw Exception(TR_COMMON("The logger name is empty!"));
+    throw Exception(TE_TR("The logger name is empty!"));
 
   log4cxx::LoggerPtr logger = log4cxx::LogManager::exists(loggerName);
 

@@ -101,12 +101,12 @@ void te::common::Module::initialize()
   UnitsOfMeasureManager::getInstance().init();
 #endif
 
-  TE_LOG_TRACE(TR_COMMON("TerraLib Common Runtime initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Common Runtime initialized!"));
 }
 
 void te::common::Module::finalize()
 {
-  TE_LOG_TRACE(TR_COMMON("TerraLib Common Runtime finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Common Runtime finalized!"));
 
 #if TE_LOGGER_DO_AUTOMATIC_INITIALIZATION && !TE_LOGGER_DO_STATIC_INITIALIZATION
   TE_LOGGER_MAKE_DEFAULT_FINALIZATION();
