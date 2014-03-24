@@ -243,9 +243,9 @@ endif()
 
 option(TERRALIB_MOD_XML_ENABLED "Build XML module?" ON)
 
-#if(PROJ4_FOUND)
-#  option(TERRALIB_MOD_SRS_ENABLED "Build Spatial Reference System module?" ON)
-#endif()
+if(PROJ4_FOUND)
+  option(TERRALIB_MOD_SRS_ENABLED "Build Spatial Reference System module?" ON)
+endif()
 
 #option(TERRALIB_MOD_DATATYPE_ENABLED "Build Data Type module?" ON)
 
@@ -286,15 +286,15 @@ if(TERRALIB_MOD_XML_ENABLED)
   add_subdirectory(terralib_mod_xml)
 endif()
 
-#if(TERRALIB_BUILD_MOD_SRS)
-#  add_subdirectory(terralib_mod_srs)
-#endif()
+if(TERRALIB_MOD_SRS_ENABLED)
+  add_subdirectory(terralib_mod_srs)
+endif()
 
-#if(TERRALIB_BUILD_MOD_DATATYPE)
+#if(TERRALIB_MOD_DATATYPE_ENABLED)
 #  add_subdirectory(terralib_mod_datatype)
 #endif()
 
-#if(TERRALIB_BUILD_DOC_DOXYGEN)
+#if(TERRALIB_DOXYGEN_ENABLED)
 #  add_subdirectory(terralib_doc_doxygen)
 #endif()
 

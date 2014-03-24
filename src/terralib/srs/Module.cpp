@@ -58,13 +58,13 @@ void te::srs::Module::initialize()
   te::srs::SpatialReferenceSystemManager::getInstance().init();
 #endif
 
-  TE_LOG_TRACE(TR_SRS("TerraLib SRS initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib SRS initialized!"));
 }
 
 void te::srs::Module::finalize()
 {
   
-  TE_LOG_TRACE(TR_SRS("TerraLib SRS Finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib SRS Finalized!"));
 }
 
 
