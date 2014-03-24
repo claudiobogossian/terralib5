@@ -241,17 +241,17 @@ endif()
 # build options
 #
 
-option(TERRALIB_MOD_XML_ENABLED "Build XML module?" ON)
+if(DOXYGEN_FOUND)
+  option(TERRALIB_DOXYGEN_ENABLED  "Enable API documentation build?" ON)
+endif()
+
+option(TERRALIB_MOD_DATATYPE_ENABLED "Build Data Type module?" ON)
 
 if(PROJ4_FOUND)
   option(TERRALIB_MOD_SRS_ENABLED "Build Spatial Reference System module?" ON)
 endif()
 
-#option(TERRALIB_MOD_DATATYPE_ENABLED "Build Data Type module?" ON)
-
-if(DOXYGEN_FOUND)
-  option(TERRALIB_DOXYGEN_ENABLED  "Enable API documentation build?" ON)
-endif()
+option(TERRALIB_MOD_XML_ENABLED "Build XML module?" ON)
 
 
 #
@@ -280,23 +280,24 @@ configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Version.h.in
 #
 # build modules
 #
+
+#if(TERRALIB_DOXYGEN_ENABLED)
+#  add_subdirectory(terralib_doc_doxygen)
+#endif()
+
 add_subdirectory(terralib_mod_common)
 
-if(TERRALIB_MOD_XML_ENABLED)
-  add_subdirectory(terralib_mod_xml)
+if(TERRALIB_MOD_DATATYPE_ENABLED)
+  add_subdirectory(terralib_mod_datatype)
 endif()
 
 if(TERRALIB_MOD_SRS_ENABLED)
   add_subdirectory(terralib_mod_srs)
 endif()
 
-#if(TERRALIB_MOD_DATATYPE_ENABLED)
-#  add_subdirectory(terralib_mod_datatype)
-#endif()
-
-#if(TERRALIB_DOXYGEN_ENABLED)
-#  add_subdirectory(terralib_doc_doxygen)
-#endif()
+if(TERRALIB_MOD_XML_ENABLED)
+  add_subdirectory(terralib_mod_xml)
+endif()
 
 
 #

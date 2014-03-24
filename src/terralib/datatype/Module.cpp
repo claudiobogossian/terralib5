@@ -46,9 +46,6 @@ te::dt::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib Data Type support
-  TE_ADD_TEXT_DOMAIN(TE_DATATYPE_TEXT_DOMAIN, TE_DATATYPE_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::dt::Module::~Module()
@@ -117,10 +114,10 @@ void te::dt::Module::initialize()
 
   // TO DO: more converters...
 
-  TE_LOG_TRACE(TR_DATATYPE("TerraLib Data Type module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Data Type module initialized!"));
 }
 
 void te::dt::Module::finalize()
 {
-  TE_LOG_TRACE(TR_DATATYPE("TerraLib Data Type module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Data Type module finalized!"));
 }

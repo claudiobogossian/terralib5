@@ -36,7 +36,7 @@ void te::dt::DataConverterManager::add(int src, int dst, te::dt::DataTypeConvert
 
   std::map<std::pair<int, int>, DataTypeConverter>::iterator it = m_convMap.find(mapping);
   if(it != m_convMap.end())
-    throw Exception((boost::format(TR_DATATYPE("There is already a converter registered for the data type conversion: %1% -> %2%.")) % src % dst).str()); 
+    throw Exception((boost::format(TE_TR("There is already a converter registered for the data type conversion: %1% -> %2%.")) % src % dst).str()); 
 
   m_convMap[mapping] = conv;
 }
@@ -45,7 +45,7 @@ const te::dt::DataTypeConverter& te::dt::DataConverterManager::get(const std::pa
 {
   std::map<std::pair<int, int>, DataTypeConverter>::iterator it = m_convMap.find(typeMap);
   if(it == m_convMap.end())
-    throw Exception((boost::format(TR_DATATYPE("There is not a converter registered for the data type conversion: %1% -> %2%.")) % typeMap.first % typeMap.second).str()); 
+    throw Exception((boost::format(TE_TR("There is not a converter registered for the data type conversion: %1% -> %2%.")) % typeMap.first % typeMap.second).str()); 
 
   return it->second;
 }

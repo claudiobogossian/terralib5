@@ -38,6 +38,7 @@
 // STL
 #include <cassert>
 
+#ifdef TERRALIB_MOD_XML_ENABLED
 std::auto_ptr<te::dt::Property> te::serialize::xml::ReadProperty(te::xml::Reader& /*reader*/)
 {
   //assert(reader.getNodeType() == te::xml::START_ELEMENT);
@@ -77,7 +78,7 @@ std::auto_ptr<te::dt::Property> te::serialize::xml::ReadProperty(te::xml::Reader
   //  break;
 
   //  default:
-  //    throw te::dt::Exception(TR_DATATYPE("Data type not supported!"));
+  //    throw te::dt::Exception(TE_TR("Data type not supported!"));
   //}
 
   //assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of Property Element
@@ -98,3 +99,4 @@ void te::serialize::xml::Save(const te::dt::Property& /*p*/, te::xml::Writer& /*
 
   //writer.writeEndElement("te_dt:Property");
 }
+#endif // TERRALIB_MOD_XML_ENABLED
