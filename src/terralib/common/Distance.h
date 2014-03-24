@@ -56,7 +56,7 @@ namespace te
           \param value   The value associated to the measure.
           \param uomIdx  An index to a valid unit-of-measure. See the Unit-of-measure manager class for more information on it.
          */
-        Distance(const double& value, size_t uomIdx);
+        Distance(const double& value, std::size_t uomIdx);
 
         /*! \brief Destructor. */
         ~Distance();
@@ -72,16 +72,16 @@ namespace te
 
         const double& getDistance() const;
 
-        void setUom(size_t uom);
+        void setUom(std::size_t uom);
 
-        size_t getUom() const;
+        std::size_t getUom() const;
 
         //@}
 
       private:
 
         double m_value;
-        size_t m_uom;
+        std::size_t m_uom;
     };    
 
   } // end namespace common

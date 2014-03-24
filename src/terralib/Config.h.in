@@ -73,6 +73,17 @@
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
 #cmakedefine TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION
 #cmakedefine TERRALIB_LOGGER_DO_STATIC_INITIALIZATION
+/*
+   Note: If future versions need to control these variables during build time
+         add these variables in TerraLib's CMake script.
+ */
+#define TERRALIB_LOGGER_FATAL_ENABLED  1
+#define TERRALIB_LOGGER_ASSERT_ENABLED 1
+#define TERRALIB_LOGGER_ERROR_ENABLED  1
+#define TERRALIB_LOGGER_WARN_ENABLED   1
+#define TERRALIB_LOGGER_INFO_ENABLED   1
+#define TERRALIB_LOGGER_DEBUG_ENABLED  1
+#define TERRALIB_LOGGER_TRACE_ENABLED  1
 #endif
 
 #ifdef TERRALIB_GNU_GETTEXT_ENABLED

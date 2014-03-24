@@ -26,6 +26,7 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${LOG4CXX_INCLUDE_DIR})
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/common/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/common/*.h)
@@ -43,7 +44,8 @@ set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
 add_library(terralib_mod_common SHARED ${TERRALIB_FILES})
 
 target_link_libraries(terralib_mod_common ${Boost_FILESYSTEM_LIBRARY}
-                                          ${Boost_SYSTEM_LIBRARY})
+                                          ${Boost_SYSTEM_LIBRARY}
+                                          ${LOG4CXX_LIBRARY})
 
 set_target_properties(terralib_mod_common
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}

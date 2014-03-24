@@ -26,7 +26,7 @@
 // TerraLib
 #include "Logger.h"
 
-#if TE_LOGGER_ENABLED
+#ifdef TERRALIB_LOGGER_ENABLED
 
 // TerraLib
 #include "Exception.h"
@@ -40,7 +40,7 @@
 #include <boost/filesystem.hpp>
 
 // Apache Log4CXX
-#if TE_USE_APACHE_LOG4CXX
+#ifdef TERRALIB_APACHE_LOG4CXX_ENABLED
 #include <log4cxx/basicconfigurator.h>
 #include <log4cxx/consoleappender.h>
 #include <log4cxx/logger.h>
@@ -53,16 +53,16 @@
 std::string te::common::Logger::getDefaultConfigFile()
 {
 // let's check if there is a file called TE_LOGGER_DEFAULT_CONFIGURATION_FILE in the current application dir
-  if(boost::filesystem::exists(TE_LOGGER_DEFAULT_CONFIGURATION_FILE))
-    return TE_LOGGER_DEFAULT_CONFIGURATION_FILE;
+  if(boost::filesystem::exists(TERRALIB_LOGGER_DEFAULT_CONFIGURATION_FILE))
+    return TERRALIB_LOGGER_DEFAULT_CONFIGURATION_FILE;
 
 // if the default file is not available in the current dir let's try an environment variable defined as TERRALIB_DIR_ENVIRONMENT_VARIABLE
-  char* e = getenv(TE_DIR_ENVIRONMENT_VARIABLE);
+  char* e = getenv(TERRALIB_DIR_VAR_NAME);
 
   if(e != 0)
   {
     boost::filesystem::path p(e);
-    p /= TE_LOGGER_DEFAULT_CONFIGURATION_FILE;
+    p /= TERRALIB_LOGGER_DEFAULT_CONFIGURATION_FILE;
 
     if(boost::filesystem::exists(p))
       return p.string();
@@ -76,7 +76,7 @@ void te::common::Logger::initialize(const std::string& loggerName,
                                     const LoggerConfigurationType t,
                                     const std::string& fileName)
 {
-#if TE_USE_APACHE_LOG4CXX
+#ifdef TERRALIB_APACHE_LOG4CXX_ENABLED
   finalize(loggerName);
 
   if(fileName.empty())
@@ -107,7 +107,7 @@ void te::common::Logger::initialize(const std::string& loggerName,
 
 void te::common::Logger::initialize(const std::string& loggerName)
 {
-#if TE_USE_APACHE_LOG4CXX
+#ifdef TERRALIB_APACHE_LOG4CXX_ENABLED
   finalize(loggerName);
 
   log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger(loggerName));
@@ -119,7 +119,7 @@ void te::common::Logger::initialize(const std::string& loggerName)
 
 void te::common::Logger::finalize(const std::string& loggerName)
 {
-#if TE_USE_APACHE_LOG4CXX
+#ifdef TERRALIB_APACHE_LOG4CXX_ENABLED
   if(loggerName.empty())
     throw Exception(TR_COMMON("The logger name is empty!"));
 
@@ -134,7 +134,7 @@ void te::common::Logger::finalize(const std::string& loggerName)
 
 void te::common::Logger::logFatal(const char* logger, const char* msg)
 {
-#if TE_USE_APACHE_LOG4CXX
+#ifdef TERRALIB_APACHE_LOG4CXX_ENABLED
   log4cxx::LoggerPtr lo(log4cxx::Logger::getLogger(logger));
   LOG4CXX_FATAL(lo, msg); 
 #endif
@@ -147,7 +147,7 @@ void te::common::Logger::logFatal(const std::string& logger, const std::string& 
 
 void te::common::Logger::logAssert(const char* logger, bool condition, const char* msg)
 {
-#if TE_USE_APACHE_LOG4CXX
+#ifdef TERRALIB_APACHE_LOG4CXX_ENABLED
   log4cxx::LoggerPtr lo(log4cxx::Logger::getLogger(logger));
   LOG4CXX_ASSERT(lo, condition, msg);
 #endif
@@ -163,7 +163,7 @@ void te::common::Logger::logError(const char* logger, const char* msg)
 
 void te::common::Logger::logWarning(const char* logger, const char* msg)
 {
-#if TE_USE_APACHE_LOG4CXX
+#ifdef TERRALIB_APACHE_LOG4CXX_ENABLED
   log4cxx::LoggerPtr lo(log4cxx::Logger::getLogger(logger));
   LOG4CXX_WARN(lo, msg);
 #endif
@@ -171,7 +171,7 @@ void te::common::Logger::logWarning(const char* logger, const char* msg)
 
 void te::common::Logger::logInfo(const char* logger, const char* msg)
 {
-#if TE_USE_APACHE_LOG4CXX
+#ifdef TERRALIB_APACHE_LOG4CXX_ENABLED
   log4cxx::LoggerPtr lo(log4cxx::Logger::getLogger(logger));
   LOG4CXX_INFO(lo, msg);
 #endif
@@ -184,7 +184,7 @@ void te::common::Logger::logInfo(const std::string& logger, const std::string& m
 
 void te::common::Logger::logDebug(const char* logger, const char* msg)
 {
-#if TE_USE_APACHE_LOG4CXX
+#ifdef TERRALIB_APACHE_LOG4CXX_ENABLED
   log4cxx::LoggerPtr lo(log4cxx::Logger::getLogger(logger));
   LOG4CXX_DEBUG(lo, msg);
 #endif
@@ -192,7 +192,7 @@ void te::common::Logger::logDebug(const char* logger, const char* msg)
 
 void te::common::Logger::logTrace(const char* logger, const char* msg)
 {
-#if TE_USE_APACHE_LOG4CXX
+#ifdef TERRALIB_APACHE_LOG4CXX_ENABLED
   log4cxx::LoggerPtr lo(log4cxx::Logger::getLogger(logger));
   LOG4CXX_TRACE(lo, msg);
 #endif
@@ -203,5 +203,5 @@ void te::common::Logger::logTrace(const std::string& logger, const std::string& 
   logTrace(logger.c_str(), msg.c_str());
 }
 
-#endif  // TE_LOGGER_ENABLED
+#endif  // TERRALIB_LOGGER_ENABLED
 

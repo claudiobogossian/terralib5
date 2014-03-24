@@ -29,7 +29,7 @@
 // TerraLib
 #include "Config.h"
 
-#if TE_TRANSLATOR_ENABLED
+#ifdef TERRALIB_TRANSLATOR_ENABLED
 #include "Singleton.h"
 
 // STL
@@ -257,7 +257,7 @@ namespace te
   } // end namespace common
 }   // end namespace te
 
-#endif  // TE_TRANSLATOR_ENABLED
+#endif  // TERRALIB_TRANSLATOR_ENABLED
 
 #endif  // __TERRALIB_COMMON_INTERNAL_TRANSLATOR_H
 
