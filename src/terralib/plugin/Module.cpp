@@ -49,9 +49,6 @@ te::plugin::Module::Module()
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
 
-// it initializes the Translator support for the TerraLib Plugin module
-  TE_ADD_TEXT_DOMAIN(TE_PLUGIN_TEXT_DOMAIN, TE_PLUGIN_TEXT_DOMAIN_DIR, "UTF-8");
-
 // just to make our singleton alive!
   PluginManager::getInstance();
 }

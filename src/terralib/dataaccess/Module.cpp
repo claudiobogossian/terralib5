@@ -45,9 +45,6 @@ te::da::Module::Module()
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
 
-// it initializes the Translator support for the TerraLib Data Access support
-  TE_ADD_TEXT_DOMAIN(TE_DATAACCESS_TEXT_DOMAIN, TE_DATAACCESS_TEXT_DOMAIN_DIR, "UTF-8");
-
 // initializes the ConnectionPoolManager singleton
   ConnectionPoolManager::getInstance();
 }

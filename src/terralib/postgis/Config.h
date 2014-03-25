@@ -141,41 +141,6 @@
 
 //@}        
 
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
-  \def TE_PGIS_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib PostGIS driver implementation.
- */
-#define TE_PGIS_TEXT_DOMAIN "tepostgis"
-
-/*!
-  \def TE_PGIS_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
- */
-#define TE_PGIS_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TR_PGIS
-
-  \brief It marks a string in order to get translated. This is a special mark used in the DataAccess module of TerraLib.
- */
-#define TR_PGIS(message) TR(message, TE_PGIS_TEXT_DOMAIN)
-
-/*!
-  \def TR_PLURAL_PGIS
-
-  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the PostGIS module of TerraLib. 
- */
-#define TR_PLURAL_PGIS(message1, message2, n) TR_PLURAL(TE_PGIS_TEXT_DOMAIN, message1, message2, n)
-
-//@}
-
 /** @name PostGIS Compatibility Flags
  *  Flags for constructing compatible WKB format with PostGIS
  */

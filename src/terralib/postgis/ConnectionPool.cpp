@@ -83,7 +83,7 @@ void te::pgis::ConnectionPool::initialize()
   boost::lock_guard<boost::mutex> lock(m_pImpl->m_mtx);
 
   if(isInitialized())
-    throw Exception(TR_PGIS("The connection pool is already initialized!"));
+    throw Exception(TE_TR("The connection pool is already initialized!"));
 
 // check for pool parameters...
   const std::map<std::string, std::string>& connInfo = m_pImpl->m_ds->getConnectionInfo();
@@ -153,7 +153,7 @@ void te::pgis::ConnectionPool::finalize()
   while(it != itend)
   {
     if((*it)->m_inuse)
-      throw Exception(TR_PGIS("There are opened connections. Please, close all connections before finalizing the connection pool."));
+      throw Exception(TE_TR("There are opened connections. Please, close all connections before finalizing the connection pool."));
 
     ++it;
   }
@@ -320,7 +320,7 @@ te::pgis::Connection* te::pgis::ConnectionPool::getConnection()
     return newConn;
   }
 
-  throw Exception(TR_PGIS("The connection pool has reached its maximum size!"), te::common::NO_CONNECTION_AVAILABLE);
+  throw Exception(TE_TR("The connection pool has reached its maximum size!"), te::common::NO_CONNECTION_AVAILABLE);
 }
 
 void te::pgis::ConnectionPool::release(Connection* conn)

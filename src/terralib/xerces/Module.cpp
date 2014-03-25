@@ -51,7 +51,6 @@ void te::xerces::Module::startup()
   if(m_initialized)
     return;
 
-  TE_ADD_TEXT_DOMAIN(TE_XERCES_TEXT_DOMAIN, TE_XERCES_TEXT_DOMAIN_DIR, "UTF-8");
   try
   {
     xercesc::XMLPlatformUtils::Initialize();

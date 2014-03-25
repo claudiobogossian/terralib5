@@ -43,8 +43,8 @@ file(GLOB TERRALIB_UTILS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/da
 file(GLOB TERRALIB_UTILS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/dataaccess/utils/*.h)
 
 if(TERRALIB_MOD_XML_ENABLED)
-  file(GLOB TERRALIB_XML_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/datasource/serialization/xml/*.cpp)
-  file(GLOB TERRALIB_XML_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/datasource/serialization/xml/*.h)
+  file(GLOB TERRALIB_XML_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/dataaccess/serialization/xml/*.cpp)
+  file(GLOB TERRALIB_XML_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/dataaccess/serialization/xml/*.h)
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
                      ${TERRALIB_DATASOURCE_SRC_FILES} ${TERRALIB_DATASOURCE_HDR_FILES}
                      ${TERRALIB_DATASET_SRC_FILES} ${TERRALIB_DATASET_HDR_FILES}

@@ -138,7 +138,7 @@ std::auto_ptr<te::da::DataSet> te::pgis::Transactor::getDataSet(const std::strin
                                                                 const te::common::AccessPolicy)
 {
   if(e == 0)
-    throw Exception(TR_PGIS("The envelope is missing!"));
+    throw Exception(TE_TR("The envelope is missing!"));
 
   std::auto_ptr<te::dt::Property> p = getProperty(name, propertyName);
 
@@ -171,7 +171,7 @@ std::auto_ptr<te::da::DataSet> te::pgis::Transactor::getDataSet(const std::strin
                                                                 const te::common::AccessPolicy)
 {
  if(g == 0)
-    throw Exception(TR_PGIS("The geometry is missing!"));
+    throw Exception(TE_TR("The geometry is missing!"));
 
   std::string rel = GetSpatialRelation(r);
 
@@ -252,7 +252,7 @@ void te::pgis::Transactor::cancel()
 
 boost::int64_t te::pgis::Transactor::getLastGeneratedId()
 {
-  throw Exception(TR_PGIS("Not implemented yet!"));
+  throw Exception(TE_TR("Not implemented yet!"));
 }
 
 std::string te::pgis::Transactor::escape(const std::string& value)
@@ -1250,7 +1250,7 @@ void te::pgis::Transactor::addIndex(const std::string& datasetName, te::da::Inde
   else if(idx->getIndexType() == te::da::B_TREE_TYPE)
     sql += " USING BTREE (";
   else
-    throw Exception(TR_PGIS("The index type is not supported!"));
+    throw Exception(TE_TR("The index type is not supported!"));
 
   std::size_t numProperties = idx->getProperties().size();
 
@@ -1417,7 +1417,7 @@ std::auto_ptr<te::gm::Envelope> te::pgis::Transactor::getExtent(const std::strin
 
   if(PQresultStatus(result) != PGRES_TUPLES_OK)
   {
-    std::string errmsg(TR_PGIS("Could not find the envelope for the given geometry property due to the following error: "));
+    std::string errmsg(TE_TR("Could not find the envelope for the given geometry property due to the following error: "));
     errmsg += PQerrorMessage(m_conn->getConn());
 
     PQclear(result);
@@ -1449,7 +1449,7 @@ std::auto_ptr<te::gm::Envelope> te::pgis::Transactor::getExtent(const std::strin
 
   if(PQresultStatus(result) != PGRES_TUPLES_OK)
   {
-    std::string errmsg(TR_PGIS("Could not find the envelope for the given geometry property due to the following error: "));
+    std::string errmsg(TE_TR("Could not find the envelope for the given geometry property due to the following error: "));
     errmsg += PQerrorMessage(m_conn->getConn());
 
     PQclear(result);
@@ -1580,7 +1580,7 @@ void te::pgis::Transactor::cloneDataSet(const std::string& /*name*/,
                                                   const std::string& /*cloneName*/,
                                                   const std::map<std::string, std::string>& /*options*/)
 {
-  throw Exception(TR_PGIS("Not implemented yet!"));
+  throw Exception(TE_TR("Not implemented yet!"));
 }
 
 void te::pgis::Transactor::dropDataSet(const std::string& name)
@@ -1681,7 +1681,7 @@ void te::pgis::Transactor::add(const std::string& datasetName,
 
 void te::pgis::Transactor::remove(const std::string& /*datasetName*/, const te::da::ObjectIdSet* /*oids*/)
 {
-  throw Exception(TR_PGIS("Not implemented yet!"));
+  throw Exception(TE_TR("Not implemented yet!"));
   //std::string sql("DELETE FROM ");
   //          sql += datasetName);
 
@@ -1699,7 +1699,7 @@ void te::pgis::Transactor::remove(const std::string& /*datasetName*/, const te::
 //  }
 //  else
 //  {
-//    throw Exception(TR_PGIS("Can not remove dataset items because dataset doesn't have a primary key or unique key!")); 
+//    throw Exception(TE_TR("Can not remove dataset items because dataset doesn't have a primary key or unique key!")); 
 //  }
 //
 //// create a prepared statement
@@ -1739,7 +1739,7 @@ void te::pgis::Transactor::remove(const std::string& /*datasetName*/, const te::
 //  }
 //  else
 //  {
-//    throw Exception(TR_PGIS("Can not remove dataset item because dataset type doesn't have a primary key or unique key!")); 
+//    throw Exception(TE_TR("Can not remove dataset item because dataset type doesn't have a primary key or unique key!")); 
 //  }
 //
 //// create a prepared statement
@@ -1766,7 +1766,7 @@ void te::pgis::Transactor::update(const std::string& /*datasetName*/,
                                             const std::map<std::string, std::string>& /*options*/,
                                             std::size_t /*limit*/)
 {
-  throw Exception(TR_PGIS("Not implemented yet!"));
+  throw Exception(TE_TR("Not implemented yet!"));
 
 //  const std::vector<te::dt::Property*>* keyProperties = 0;
 // 
@@ -1780,7 +1780,7 @@ void te::pgis::Transactor::update(const std::string& /*datasetName*/,
 //  }
 //  else
 //  {
-//    throw Exception(TR_PGIS("Can not update dataset item(s) because dataset doesn't have a primary key or unique key!")); 
+//    throw Exception(TE_TR("Can not update dataset item(s) because dataset doesn't have a primary key or unique key!")); 
 //  }
 //
 //// create a prepared statement
@@ -1819,7 +1819,7 @@ void te::pgis::Transactor::update(const std::string& /*datasetName*/,
 
 void te::pgis::Transactor::optimize(const std::map<std::string, std::string>& /*opInfo*/)
 {
-  throw Exception(TR_PGIS("Not implemented yet!"));
+  throw Exception(TE_TR("Not implemented yet!"));
 }
 
 unsigned int te::pgis::Transactor::getGeomTypeId()
@@ -1857,7 +1857,7 @@ void te::pgis::Transactor::getDatabaseInfo(std::string& currentSchema)
   std::auto_ptr<te::da::DataSet> result(query(sql));
 
   if(!result->moveNext())
-    Exception(TR_PGIS("Could not get information about PostgreSQL database backend!"));
+    Exception(TE_TR("Could not get information about PostgreSQL database backend!"));
 
   currentSchema = result->getString(0);
 }
@@ -1968,7 +1968,7 @@ void te::pgis::Transactor::getRasterInfo(const std::string& datasetName, te::rst
       else if(st == "64BF")
         t = te::dt::DOUBLE_TYPE;
       else
-        throw Exception(TR_PGIS("Band data type not supported by PostGIS driver!"));
+        throw Exception(TE_TR("Band data type not supported by PostGIS driver!"));
 
       te::rst::BandProperty* bp = new te::rst::BandProperty(i, t);
 
@@ -1986,7 +1986,7 @@ void te::pgis::Transactor::getRasterInfo(const std::string& datasetName, te::rst
   }
   else
   {
-    //throw Exception(TR_PGIS("We must add support for rasters that don't have constraints!"));
+    //throw Exception(TE_TR("We must add support for rasters that don't have constraints!"));
   }
 }
 
@@ -2021,7 +2021,7 @@ unsigned int te::pgis::Transactor::getDataSetId(const std::string& tableName)
   std::auto_ptr<te::da::DataSet> result(query(sql));
 
   if(result->moveNext() == false)
-    throw Exception(TR_PGIS("Could not find the table oid!"));
+    throw Exception(TE_TR("Could not find the table oid!"));
 
   unsigned int tableid = result->getInt32(0);
 
@@ -2040,7 +2040,7 @@ std::string te::pgis::Transactor::getDataSetName(unsigned int id)
   std::auto_ptr<te::da::DataSet> result(query(sql));
 
   if(result->moveNext() == false)
-    throw Exception(TR_PGIS("Could not find the dataset name!"));
+    throw Exception(TE_TR("Could not find the dataset name!"));
 
   std::string tname  = result->getString(0);
               tname += ".";
@@ -2069,7 +2069,7 @@ std::auto_ptr<te::da::DataSet> te::pgis::Transactor::getPropertiesInfo(const std
 void te::pgis::Transactor::getPropertyId(te::dt::Property* p)
 {
   if((p->getParent()==0) || (p->getParent()->getType() != te::dt::DATASET_TYPE))
-    throw Exception(TR_PGIS("The informed property is not valid!"));
+    throw Exception(TE_TR("The informed property is not valid!"));
 
   std::string sql("SELECT attnum "
                   "FROM pg_attribute WHERE attrelid = ");
@@ -2082,7 +2082,7 @@ void te::pgis::Transactor::getPropertyId(te::dt::Property* p)
   std::auto_ptr<te::da::DataSet> result(query(sql));
 
   if(result->moveNext() == false)
-    throw Exception(TR_PGIS("Could not find the property ID!"));
+    throw Exception(TE_TR("Could not find the property ID!"));
   
   unsigned int id = result->getInt32(0);
   p->setId(id);
@@ -2395,7 +2395,7 @@ std::vector<te::da::Sequence*> te::pgis::Transactor::getSequences()
     std::auto_ptr<te::da::DataSet> result(query(sql));
 
     if(result->moveNext() == false)
-      throw Exception((boost::format(TR_PGIS("There is no information about the sequence \"%1%\"!")) % seqName).str());
+      throw Exception((boost::format(TE_TR("There is no information about the sequence \"%1%\"!")) % seqName).str());
 
     unsigned int seqId = getDataSetId(seqName);
 

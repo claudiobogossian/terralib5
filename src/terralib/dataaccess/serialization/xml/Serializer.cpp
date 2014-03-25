@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../Version.h"
 #include "../../../common/BoostUtils.h"
 #include "../../../datatype/AbstractData.h"
 #include "../../../datatype/Enums.h"
@@ -91,13 +92,13 @@ void te::serialize::xml::ReadDataSourceInfo(const std::string& datasourcesFileNa
   xmlReader->read(datasourcesFileName);
 
   if(!xmlReader->next())
-    throw te::da::Exception((boost::format(TR_DATAACCESS("Could not read data source information in file: %1%.")) % datasourcesFileName).str());
+    throw te::da::Exception((boost::format(TE_TR("Could not read data source information in file: %1%.")) % datasourcesFileName).str());
 
   if(xmlReader->getNodeType() != te::xml::START_ELEMENT)
-    throw te::da::Exception((boost::format(TR_DATAACCESS("Error reading the document %1%, the start element wasn't found.")) % datasourcesFileName).str());
+    throw te::da::Exception((boost::format(TE_TR("Error reading the document %1%, the start element wasn't found.")) % datasourcesFileName).str());
 
   if(xmlReader->getElementLocalName() != "DataSourceList")
-    throw te::da::Exception((boost::format(TR_DATAACCESS("The first tag in the document %1% is not 'DataSourceList'.")) % datasourcesFileName).str());
+    throw te::da::Exception((boost::format(TE_TR("The first tag in the document %1% is not 'DataSourceList'.")) % datasourcesFileName).str());
 
   if(!xmlReader->next())
     return;
@@ -213,7 +214,7 @@ void te::serialize::xml::Save(te::xml::Writer& writer)
   const char* te_env = getenv("TERRALIB_DIR");
 
   if(te_env == 0)
-    throw te::da::Exception(TR_DATAACCESS("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
+    throw te::da::Exception(TE_TR("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
 
   std::string schema_loc(te_env);
   schema_loc += "/schemas/terralib";
@@ -231,7 +232,7 @@ void te::serialize::xml::Save(te::xml::Writer& writer)
   writer.writeAttribute("xmlns:te_da", "http://www.terralib.org/schemas/dataaccess");
   writer.writeAttribute("xmlns", "http://www.terralib.org/schemas/dataaccess");
   writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/dataaccess " + schema_loc + "/dataaccess/dataaccess.xsd");
-  writer.writeAttribute("version", TERRALIB_STRING_VERSION);
+  writer.writeAttribute("version", TERRALIB_VERSION_STRING);
   writer.writeAttribute("release", "2013-01-01");
 
   te::da::DataSourceInfoManager::iterator itBegin = te::da::DataSourceInfoManager::getInstance().begin();
@@ -426,13 +427,13 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
   xmlReader->read(dialectFileName);
 
   if(!xmlReader->next())
-    throw te::da::Exception((boost::format(TR_DATAACCESS("Could not read DataSourceCapabilities information in file: %1%.")) % dialectFileName).str());
+    throw te::da::Exception((boost::format(TE_TR("Could not read DataSourceCapabilities information in file: %1%.")) % dialectFileName).str());
 
   if(xmlReader->getNodeType() != te::xml::START_ELEMENT)
-    throw te::da::Exception((boost::format(TR_DATAACCESS("Error reading the document %1%, the start element wasn't found.")) % dialectFileName).str());
+    throw te::da::Exception((boost::format(TE_TR("Error reading the document %1%, the start element wasn't found.")) % dialectFileName).str());
 
   if(xmlReader->getElementLocalName() != "DataSourceCapabilities")
-    throw te::da::Exception((boost::format(TR_DATAACCESS("The first tag in the document %1% is not 'DataSourceCapabilities'.")) % dialectFileName).str());
+    throw te::da::Exception((boost::format(TE_TR("The first tag in the document %1% is not 'DataSourceCapabilities'.")) % dialectFileName).str());
 
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
@@ -615,7 +616,7 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
     }
     else
     {
-      throw te::da::Exception(TR_DATAACCESS("Unsupported encoder type!"));
+      throw te::da::Exception(TE_TR("Unsupported encoder type!"));
     }
 
     dialect.insert(fname, sfe);
@@ -671,7 +672,7 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
     }
     else
     {
-      throw te::da::Exception(TR_DATAACCESS("Unsupported encoder type!"));
+      throw te::da::Exception(TE_TR("Unsupported encoder type!"));
     }
 
     dialect.insert(fname, sfe);
@@ -727,7 +728,7 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
     }
     else
     {
-      throw te::da::Exception(TR_DATAACCESS("Unsupported encoder type!"));
+      throw te::da::Exception(TE_TR("Unsupported encoder type!"));
     }
 
     dialect.insert(fname, sfe);
@@ -785,7 +786,7 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
     }
     else
     {
-      throw te::da::Exception(TR_DATAACCESS("Unsupported encoder type!"));
+      throw te::da::Exception(TE_TR("Unsupported encoder type!"));
     }
 
     dialect.insert(fname, sfe);   
@@ -841,7 +842,7 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
     }
     else
     {
-      throw te::da::Exception(TR_DATAACCESS("Unsupported encoder type!"));
+      throw te::da::Exception(TE_TR("Unsupported encoder type!"));
     }
 
     dialect.insert(fname, sfe);
@@ -897,7 +898,7 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
     }
     else
     {
-      throw te::da::Exception(TR_DATAACCESS("Unsupported encoder type!"));
+      throw te::da::Exception(TE_TR("Unsupported encoder type!"));
     }
 
     dialect.insert(fname, sfe);
@@ -953,7 +954,7 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
     }
     else
     {
-      throw te::da::Exception(TR_DATAACCESS("Unsupported encoder type!"));
+      throw te::da::Exception(TE_TR("Unsupported encoder type!"));
     }
 
     dialect.insert(fname, sfe);
@@ -1009,7 +1010,7 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
     }
     else
     {
-      throw te::da::Exception(TR_DATAACCESS("Unsupported encoder type!"));
+      throw te::da::Exception(TE_TR("Unsupported encoder type!"));
     }
 
     dialect.insert(fname, sfe);
@@ -1425,13 +1426,13 @@ te::da::SQLDialect* te::serialize::xml::ReadDialect(const std::string& dialectFi
   xmlReader->read(dialectFileName);
 
   if(!xmlReader->next())
-    throw te::da::Exception((boost::format(TR_DATAACCESS("Could not read query dialect information in file: %1%.")) % dialectFileName).str());
+    throw te::da::Exception((boost::format(TE_TR("Could not read query dialect information in file: %1%.")) % dialectFileName).str());
 
   if(xmlReader->getNodeType() != te::xml::START_ELEMENT)
-    throw te::da::Exception((boost::format(TR_DATAACCESS("Error reading the document %1%, the start element wasn't found.")) % dialectFileName).str());
+    throw te::da::Exception((boost::format(TE_TR("Error reading the document %1%, the start element wasn't found.")) % dialectFileName).str());
 
   if(xmlReader->getElementLocalName() != "QueryDialect")
-    throw te::da::Exception((boost::format(TR_DATAACCESS("The first tag in the document %1% is not 'QueryDialect'.")) % dialectFileName).str());
+    throw te::da::Exception((boost::format(TE_TR("The first tag in the document %1% is not 'QueryDialect'.")) % dialectFileName).str());
 
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
@@ -1478,7 +1479,7 @@ te::da::SQLDialect* te::serialize::xml::ReadDialect(const std::string& dialectFi
     }
     else
     {
-      throw te::da::Exception(TR_DATAACCESS("Unsupported encoder type!"));
+      throw te::da::Exception(TE_TR("Unsupported encoder type!"));
     }
 
     xmlReader->next();
@@ -1828,7 +1829,7 @@ te::da::Literal* te::serialize::xml::ReadLiteral(te::xml::Reader& reader)
       break;
     }
     default:
-      throw te::da::Exception(TR_DATAACCESS("Data Type Undefined!"));
+      throw te::da::Exception(TE_TR("Data Type Undefined!"));
 
   }
 
@@ -2060,7 +2061,7 @@ void te::serialize::xml::Save(const te::da::Expression* expression, te::xml::Wri
   else if(lit)
     Save(lit, writer);
   else
-    throw te::da::Exception(TR_DATAACCESS("Error: Expression Type Undefined!"));
+    throw te::da::Exception(TE_TR("Error: Expression Type Undefined!"));
 }
 
 void te::serialize::xml::Save(const te::da::Field* field, te::xml::Writer& writer)

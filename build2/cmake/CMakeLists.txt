@@ -222,7 +222,7 @@ else()
 
 endif()
 
-if(PostgreSQL_FOUND OR (PostgreSQL_INCLUDE_DIR AND PostgreSQL_LIBRARY_DIR))
+if(PostgreSQL_INCLUDE_DIR AND PostgreSQL_LIBRARY_DIR)
   set(TERRALIB_LIBPQ_ENABLED ON)
 endif()
 
@@ -275,6 +275,10 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_PLUGIN_ENABLED "Build Plugin module?" ON "TE
 
 if(XERCES_FOUND)
   CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_XERCES_ENABLED "Build Xerces support?" ON "TERRALIB_MOD_XML_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED" OFF)
+endif()
+
+if(PostgreSQL_INCLUDE_DIR AND PostgreSQL_LIBRARY_DIR)
+  CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_POSTGIS_ENABLED "Build PostGIS support?" ON "TERRALIB_MOD_XML_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_DATATYPE_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED" OFF)
 endif()
 
 
@@ -332,6 +336,10 @@ if(TERRALIB_MOD_PLUGIN_ENABLED)
   add_subdirectory(terralib_mod_plugin)
 endif()
 
+if(TERRALIB_MOD_POSTGIS_ENABLED)
+  add_subdirectory(terralib_mod_postgis)
+endif()
+
 if(TERRALIB_MOD_RASTER_ENABLED)
   add_subdirectory(terralib_mod_raster)
 endif()
@@ -347,7 +355,6 @@ endif()
 if(TERRALIB_MOD_XLINK_ENABLED)
   add_subdirectory(terralib_mod_xlink)
 endif()
-
 
 if(TERRALIB_MOD_XML_ENABLED)
   add_subdirectory(terralib_mod_xml)

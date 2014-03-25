@@ -42,9 +42,6 @@ te::srs::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib SRS module
- TE_ADD_TEXT_DOMAIN(TE_SRS_TEXT_DOMAIN, TE_SRS_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::srs::Module::~Module()

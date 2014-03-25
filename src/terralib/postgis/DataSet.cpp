@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../Defines.h"
 #include "../common/ByteSwapUtils.h"
 #include "../common/Globals.h"
 #include "../common/StringUtils.h"
@@ -169,7 +170,7 @@ std::string te::pgis::DataSet::getPropertyName(std::size_t i) const
 
 std::string te::pgis::DataSet::getDatasetNameOfProperty(std::size_t i) const
 {
-  throw Exception(TR_PGIS("Not implemented yet!"));
+  throw Exception(TE_TR("Not implemented yet!"));
 }
 
 bool te::pgis::DataSet::isEmpty() const
@@ -192,7 +193,7 @@ std::auto_ptr<te::gm::Envelope> te::pgis::DataSet::getExtent(std::size_t i)
   if(!m_mbr)
   {
     if(m_ptypes[i] != te::dt::GEOMETRY_TYPE)
-      throw Exception(TR_PGIS("This driver only supports the getExtent method over a geometry column!"));
+      throw Exception(TE_TR("This driver only supports the getExtent method over a geometry column!"));
 
     m_mbr = new te::gm::Envelope;
 
@@ -562,7 +563,7 @@ std::auto_ptr<te::dt::DateTime> te::pgis::DataSet::getDateTime(std::size_t i) co
       }
 
     default:
-      throw Exception(TR_PGIS("This type is not supported by TerraLib!"));
+      throw Exception(TE_TR("This type is not supported by TerraLib!"));
   }
 }
 
@@ -772,7 +773,7 @@ std::auto_ptr<te::dt::Array> te::pgis::DataSet::getArray(std::size_t i) const
     break;
 
     default:
-      throw Exception(TR_PGIS("The array element type is not supported yet!"));
+      throw Exception(TE_TR("The array element type is not supported yet!"));
   }
 
   //    {

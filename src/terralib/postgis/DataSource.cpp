@@ -208,7 +208,7 @@ void te::pgis::DataSource::create(const std::map<std::string, std::string>& dsIn
   if(it != it_end)
     sql += it->second;
   else
-    throw Exception(TR_PGIS("The database could not be created due the missing parameter: PG_NEWDB_NAME!"));
+    throw Exception(TE_TR("The database could not be created due the missing parameter: PG_NEWDB_NAME!"));
 
   it = dsInfo.find("PG_NEWDB_TEMPLATE");
 
@@ -381,10 +381,10 @@ void te::pgis::DataSource::drop(const std::map<std::string, std::string>& dsInfo
   std::map<std::string, std::string>::const_iterator it = dsInfo.find("PG_DB_TO_DROP");
 
   if(it == dsInfo.end())
-    throw Exception(TR_PGIS("Could not drop the database due the missing parameter: PG_DB_TO_DROP!"));
+    throw Exception(TE_TR("Could not drop the database due the missing parameter: PG_DB_TO_DROP!"));
 
   if((it->second == "postgres") || (it->second == "template_postgis"))
-    throw Exception(TR_PGIS("The database postgres or template_postgis is not allowed to be dropped!"));
+    throw Exception(TE_TR("The database postgres or template_postgis is not allowed to be dropped!"));
 
   sql += it->second;
 
@@ -396,7 +396,7 @@ void te::pgis::DataSource::drop(const std::map<std::string, std::string>& dsInfo
 bool te::pgis::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
 {
   if(dsInfo.count("PG_CHECK_DB_EXISTENCE") == 0)
-    throw Exception(TR_PGIS("Could not check the PostgreSQL database existence due the missing parameter: PG_CHECK_DB_EXISTENCE!"));
+    throw Exception(TE_TR("Could not check the PostgreSQL database existence due the missing parameter: PG_CHECK_DB_EXISTENCE!"));
 
   const std::string& dbName = dsInfo.find("PG_CHECK_DB_EXISTENCE")->second;
 
