@@ -47,10 +47,10 @@ te::da::DataSourceInfoPtr te::da::DataSourceInfoManager::get(const std::string& 
 void te::da::DataSourceInfoManager::add(const DataSourceInfoPtr& ds)
 {
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Can not insert a NULL data source into the manager!"));
+    throw Exception(TE_TR("Can not insert a NULL data source into the manager!"));
 
   if(m_datasources.find(ds->getId()) != m_datasources.end())
-    throw Exception((boost::format(TR_DATAACCESS("There is already a data source with the given id (%1%) in data source manager!")) % ds->getId()).str());
+    throw Exception((boost::format(TE_TR("There is already a data source with the given id (%1%) in data source manager!")) % ds->getId()).str());
 
   m_datasources[ds->getId()] = ds;
 }
@@ -60,7 +60,7 @@ void te::da::DataSourceInfoManager::remove(const std::string& id)
   std::map<std::string, DataSourceInfoPtr>::iterator it = m_datasources.find(id);
 
   if(it == m_datasources.end())
-    throw Exception((boost::format(TR_DATAACCESS("There isn't a data source with the given id (%1%) in data source manager!")) % id).str());
+    throw Exception((boost::format(TE_TR("There isn't a data source with the given id (%1%) in data source manager!")) % id).str());
 
   m_datasources.erase(it);
 }

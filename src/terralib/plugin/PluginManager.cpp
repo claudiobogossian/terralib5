@@ -204,7 +204,7 @@ void te::plugin::PluginManager::load(boost::ptr_vector<PluginInfo>& plugins, con
   }
 
   if(hasException || !m_brokenPlugins.empty())
-    throw Exception(TR_PLUGIN("\n\nPlugins not loaded:" ) + exceptionPlugins);
+    throw Exception(TE_TR("\n\nPlugins not loaded:" ) + exceptionPlugins);
 }
 
 void te::plugin::PluginManager::load(const PluginInfo& pInfo, const bool start)
@@ -266,7 +266,7 @@ void te::plugin::PluginManager::load(const PluginInfo& pInfo, const bool start)
   if(!isLoaded(internalPInfo.m_requiredPlugins))
   {
     moveToBrokenList(internalPInfo);
-    throw Exception(TR_PLUGIN("A required plugin is not loaded!"));
+    throw Exception(TE_TR("A required plugin is not loaded!"));
   }
 
   std::auto_ptr<AbstractPlugin> plugin;
@@ -518,17 +518,17 @@ te::plugin::AbstractPlugin* te::plugin::PluginManager::detach(const std::string&
   std::map<std::string, AbstractPlugin*>::iterator it = m_pluginsMap.find(name);
 
   if(it == m_pluginsMap.end())
-    throw Exception((boost::format(TR_PLUGIN("Could not find the given plugin (%1%) in order to detach it from PluginManager!")) % name).str());
+    throw Exception((boost::format(TE_TR("Could not find the given plugin (%1%) in order to detach it from PluginManager!")) % name).str());
 
   AbstractPlugin* p = it->second;
 
   if(p == 0)
-    throw Exception((boost::format(TR_PLUGIN("Could not detach a NULL plugin (%1%) from PluginManager!")) % name).str());
+    throw Exception((boost::format(TE_TR("Could not detach a NULL plugin (%1%) from PluginManager!")) % name).str());
 
 // check if it doesn't have dependents plugins
   if(hasDependents(name))
     moveDependentsToBrokenList(name);
-//    throw Exception((boost::format(TR_PLUGIN("There are some plugins that depends on %1%!")) % name).str());
+//    throw Exception((boost::format(TE_TR("There are some plugins that depends on %1%!")) % name).str());
 
 // see if we must destroy the plugin category index: in the case the detached plugin being the only plugin in its category
   removeFromCategory(p, p->getInfo().m_category);
@@ -537,7 +537,7 @@ te::plugin::AbstractPlugin* te::plugin::PluginManager::detach(const std::string&
   std::vector<AbstractPlugin*>::iterator itv = std::find(m_plugins.begin(), m_plugins.end(), p);
 
   if(itv == m_plugins.end())
-    throw Exception(TR_PLUGIN("PluginManager has lost the synchronization between its internal indexes!"));
+    throw Exception(TE_TR("PluginManager has lost the synchronization between its internal indexes!"));
 
   m_plugins.erase(itv);
 

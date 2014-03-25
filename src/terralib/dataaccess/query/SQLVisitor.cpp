@@ -88,7 +88,7 @@ void te::da::SQLVisitor::visit(const Function& visited)
   const SQLFunctionEncoder* encoder = m_dialect.find(fname);
 
   if(encoder == 0)
-    throw Exception(TR_DATAACCESS("The informed function is not supported by this driver!"));
+    throw Exception(TE_TR("The informed function is not supported by this driver!"));
 
   encoder->toSQL(visited, m_sql, *this);
 }

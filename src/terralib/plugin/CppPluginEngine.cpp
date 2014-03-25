@@ -60,7 +60,7 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
 
   if(it == internalPluginInfo.m_resources.end())
   {
-    std::string m  = TR_PLUGIN("Shared library name not informed for plugin: ");
+    std::string m  = TE_TR("Shared library name not informed for plugin: ");
                 m += pInfo.m_name;
                 m += "!";
 
@@ -108,7 +108,7 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
   
   if(slib.get() == 0)
   {
-    std::string m  = TR_PLUGIN("Could not find load plugin: ");
+    std::string m  = TE_TR("Could not find load plugin: ");
                 m += internalPluginInfo.m_name;
     throw te::common::Exception(m);
   }  
@@ -121,7 +121,7 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
 
   if(getPluginFptr == NULL)
   {
-    std::string m  = TR_PLUGIN("Could not find CppPluginGetInstance function into the plugin's code: ");
+    std::string m  = TE_TR("Could not find CppPluginGetInstance function into the plugin's code: ");
                 m += internalPluginInfo.m_name;
                 m += "!";
 
@@ -132,7 +132,7 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
 
   if(cppPlugin.get() == 0)
   {
-    std::string m  = TR_PLUGIN("CppPluginGetInstance returned a null plugin instance: ");
+    std::string m  = TE_TR("CppPluginGetInstance returned a null plugin instance: ");
                 m += internalPluginInfo.m_name;
                 m += "!";
 

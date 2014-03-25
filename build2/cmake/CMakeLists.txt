@@ -257,9 +257,13 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_GEOMETRY_ENABLED "Build Geometry module?" ON
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_RASTER_ENABLED "Build Raster module?" ON "TERRALIB_MOD_DATATYPE_ENABLED;TERRALIB_MOD_SRS_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED" OFF)
 
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_DATAACCESS_ENABLED "Build Data Access module?" ON "TERRALIB_MOD_DATATYPE_ENABLED;TERRALIB_MOD_RASTER_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED" OFF)
+
 option(TERRALIB_MOD_XLINK_ENABLED "Build XLink module?" ON)
 
 option(TERRALIB_MOD_XML_ENABLED "Build XML module?" ON)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_PLUGIN_ENABLED "Build Plugin module?" ON "TERRALIB_MOD_XML_ENABLED" OFF)
 
 
 #
@@ -299,12 +303,21 @@ endif()
 
 add_subdirectory(terralib_mod_common)
 
+if(TERRALIB_MOD_DATAACCESS_ENABLED)
+  add_subdirectory(terralib_mod_dataaccess)
+endif()
+
+
 if(TERRALIB_MOD_DATATYPE_ENABLED)
   add_subdirectory(terralib_mod_datatype)
 endif()
 
 if(TERRALIB_MOD_GEOMETRY_ENABLED)
   add_subdirectory(terralib_mod_geometry)
+endif()
+
+if(TERRALIB_MOD_PLUGIN_ENABLED)
+  add_subdirectory(terralib_mod_plugin)
 endif()
 
 if(TERRALIB_MOD_RASTER_ENABLED)

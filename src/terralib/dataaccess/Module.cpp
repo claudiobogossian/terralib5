@@ -75,7 +75,7 @@ void te::da::Module::initialize()
   AttributeConverterManager::getInstance().addConverter("PointToMConverter", te::da::PointToMConverter);
   AttributeConverterManager::getInstance().addConverter("TupleToStringConverter", te::da::TupleToStringConverter);
 
-  TE_LOG_TRACE(TR_DATAACCESS("TerraLib Data Access module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Data Access module initialized!"));
 }
 
 void te::da::Module::finalize()
@@ -84,6 +84,6 @@ void te::da::Module::finalize()
   ConnectionPoolManager::getInstance().stop();
 #endif
 
-  TE_LOG_TRACE(TR_DATAACCESS("TerraLib Data Access module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Data Access module finalized!"));
 }
 

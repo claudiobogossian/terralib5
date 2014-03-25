@@ -493,7 +493,7 @@ std::auto_ptr<te::da::DataSource> te::da::DataSource::create(const std::string& 
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not find the appropriate factory to create a data source instance!"));
+    throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
 
   ds->create(dsInfo);
 
@@ -505,7 +505,7 @@ void te::da::DataSource::drop(const std::string& dsType, const std::map<std::str
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not find the appropriate factory to create a data source instance!"));
+    throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
 
   ds->drop(dsInfo);
 }
@@ -515,7 +515,7 @@ bool te::da::DataSource::exists(const std::string& dsType, const std::map<std::s
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not find the appropriate factory in order to create a data source instance!"));
+    throw Exception(TE_TR("Could not find the appropriate factory in order to create a data source instance!"));
 
   return ds->exists(dsInfo);
 }
@@ -525,7 +525,7 @@ std::vector<std::string> te::da::DataSource::getDataSourceNames(const std::strin
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not find the appropriate factory to create a data source instance!"));
+    throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
 
   return ds->getDataSourceNames(dsInfo);
 }
@@ -535,7 +535,7 @@ std::vector<std::string> te::da::DataSource::getEncodings(const std::string& dsT
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not find the appropriate factory to create a data source instance!"));
+    throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
 
   return ds->getEncodings(dsInfo);
 }
