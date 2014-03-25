@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "Config.h"
-#if 0;//TE_CHARENCODING_ENABLED
+#if 0 //TE_CHARENCODING_ENABLED
 
 // STL
 #include <string>
