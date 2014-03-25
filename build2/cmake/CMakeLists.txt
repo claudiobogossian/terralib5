@@ -124,6 +124,8 @@ else()
 
 endif()
 
+find_package(Xerces)
+
 
 #
 # some variables needed in config file
@@ -236,9 +238,15 @@ if(Qt5_FOUND)
   set(TERRALIB_QT5_ENABLED ON)
 endif()
 
+if(XERCES_FOUND)
+  set(TERRALIB_XERCES_ENABLED ON)
+endif()
+
 
 #
 # build options
+#
+# warning: please, do not change the order below!
 #
 
 if(DOXYGEN_FOUND)
@@ -264,6 +272,10 @@ option(TERRALIB_MOD_XLINK_ENABLED "Build XLink module?" ON)
 option(TERRALIB_MOD_XML_ENABLED "Build XML module?" ON)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_PLUGIN_ENABLED "Build Plugin module?" ON "TERRALIB_MOD_XML_ENABLED" OFF)
+
+if(XERCES_FOUND)
+  CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_XERCES_ENABLED "Build Xerces support?" ON "TERRALIB_MOD_XML_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED" OFF)
+endif()
 
 
 #
@@ -326,6 +338,10 @@ endif()
 
 if(TERRALIB_MOD_SRS_ENABLED)
   add_subdirectory(terralib_mod_srs)
+endif()
+
+if(TERRALIB_MOD_XERCES_ENABLED)
+  add_subdirectory(terralib_mod_xerces)
 endif()
 
 if(TERRALIB_MOD_XLINK_ENABLED)
