@@ -53,11 +53,11 @@ te::rst::Module::~Module()
 
 void te::rst::Module::initialize()
 {
-  TE_LOG_TRACE(TR_RASTER("TerraLib Raster module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Raster module initialized!"));
 }
 
 void te::rst::Module::finalize()
 {
-  TE_LOG_TRACE(TR_RASTER("TerraLib Raster module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Raster module finalized!"));
 }
 

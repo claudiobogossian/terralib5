@@ -251,9 +251,11 @@ option(TERRALIB_MOD_DATATYPE_ENABLED "Build Data Type module?" ON)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_GEOMETRY_ENABLED "Build Geometry module?" ON "TERRALIB_MOD_DATATYPE_ENABLED" OFF)
 
-if(PROJ4_FOUND)
+#if(PROJ4_FOUND) # remove comment if this module requires Proj4
   option(TERRALIB_MOD_SRS_ENABLED "Build Spatial Reference System module?" ON)
-endif()
+#endif()
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_RASTER_ENABLED "Build Raster module?" ON "TERRALIB_MOD_DATATYPE_ENABLED;TERRALIB_MOD_SRS_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED" OFF)
 
 option(TERRALIB_MOD_XLINK_ENABLED "Build XLink module?" ON)
 
@@ -303,6 +305,10 @@ endif()
 
 if(TERRALIB_MOD_GEOMETRY_ENABLED)
   add_subdirectory(terralib_mod_geometry)
+endif()
+
+if(TERRALIB_MOD_RASTER_ENABLED)
+  add_subdirectory(terralib_mod_raster)
 endif()
 
 if(TERRALIB_MOD_SRS_ENABLED)

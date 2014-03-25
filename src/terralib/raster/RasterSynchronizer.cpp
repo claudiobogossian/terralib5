@@ -63,17 +63,17 @@ bool te::rst::RasterSynchronizer::acquireBlock( const unsigned int bandIdx,
   if( bandIdx >= m_blocksUseCounters.size() )
   {
     m_mutex.unlock();
-    throw Exception(TR_RASTER("Inalid band index") );
+    throw Exception(TE_TR("Inalid band index") );
   }
   if( blockYIndex >= m_blocksUseCounters[ bandIdx ].size() )
   {
     m_mutex.unlock();
-    throw Exception(TR_RASTER("Inalid block Y index") );
+    throw Exception(TE_TR("Inalid block Y index") );
   }
   if( blockXIndex >= m_blocksUseCounters[ bandIdx ][ blockYIndex ].size() )
   {
     m_mutex.unlock();
-    throw Exception(TR_RASTER("Inalid block X index") );
+    throw Exception(TE_TR("Inalid block X index") );
   }  
   
   if( m_policy & te::common::WAccess )
@@ -116,17 +116,17 @@ bool te::rst::RasterSynchronizer::releaseBlock( const unsigned int bandIdx,
   if( bandIdx >= m_blocksUseCounters.size() )
   {
     m_mutex.unlock();
-    throw Exception(TR_RASTER("Inalid band index") );
+    throw Exception(TE_TR("Inalid band index") );
   }
   if( blockYIndex >= m_blocksUseCounters[ bandIdx ].size() )
   {
     m_mutex.unlock();
-    throw Exception(TR_RASTER("Inalid block Y index") );
+    throw Exception(TE_TR("Inalid block Y index") );
   }
   if( blockXIndex >= m_blocksUseCounters[ bandIdx ][ blockYIndex ].size() )
   {
     m_mutex.unlock();
-    throw Exception(TR_RASTER("Inalid block X index") );
+    throw Exception(TE_TR("Inalid block X index") );
   }  
   
   if( m_blocksUseCounters[ bandIdx ][ blockYIndex ][ blockXIndex ] )
