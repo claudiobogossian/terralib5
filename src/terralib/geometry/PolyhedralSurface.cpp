@@ -24,9 +24,10 @@
 */
 
 // TerraLib
-#include "../common/Exception.h"
 #include "../common/STLUtils.h"
+#include "../common/Translator.h"
 #include "Envelope.h"
+#include "Exception.h"
 #include "MultiPolygon.h"
 #include "Polygon.h"
 #include "PolyhedralSurface.h"
@@ -120,6 +121,7 @@ void te::gm::PolyhedralSurface::setSRID(int srid) throw()
 
 void te::gm::PolyhedralSurface::transform(int srid) throw(te::common::Exception)
 {
+#ifdef TERRALIB_MOD_SRS_ENABLED
   if (srid == m_srid)
     return;
 
@@ -132,6 +134,9 @@ void te::gm::PolyhedralSurface::transform(int srid) throw(te::common::Exception)
     computeMBR(false);
 
   m_srid = srid;
+#else
+  throw Exception(TE_TR("transform method is not supported!"));
+#endif // TERRALIB_MOD_SRS_ENABLED
 }
 
 void te::gm::PolyhedralSurface::computeMBR(bool cascade) const throw()

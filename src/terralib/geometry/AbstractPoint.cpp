@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../Defines.h"
-#include "../common/Exception.h"
+#include "../common/Translator.h"
 #include "../srs/Converter.h"
 #include "AbstractPoint.h"
 #include "Envelope.h"
@@ -72,6 +72,7 @@ void te::gm::AbstractPoint::setSRID(int srid) throw()
 
 void te::gm::AbstractPoint::transform(int srid) throw(te::common::Exception)
 {
+#ifdef TERRALIB_MOD_SRS_ENABLED
   if(srid == m_srid)
     return;
 
@@ -92,6 +93,9 @@ void te::gm::AbstractPoint::transform(int srid) throw(te::common::Exception)
 
   if(m_mbr)
     computeMBR(false);
+#else
+  throw Exception(TE_TR("transform method is not supported!"));
+#endif // TERRALIB_MOD_SRS_ENABLED
 }
 
 void te::gm::AbstractPoint::computeMBR(bool /*cascade*/) const throw()

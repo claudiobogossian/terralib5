@@ -216,6 +216,7 @@ void te::gm::CurvePolygon::setSRID(int srid) throw()
 
 void te::gm::CurvePolygon::transform(int srid) throw(te::common::Exception)
 {
+#ifdef TERRALIB_MOD_SRS_ENABLED
   if(srid == m_srid)
     return;
 
@@ -228,6 +229,9 @@ void te::gm::CurvePolygon::transform(int srid) throw(te::common::Exception)
     computeMBR(true);  // just update the polygon MBR
 
   m_srid = srid;
+#else
+  throw Exception(TE_TR("transform method is not supported!"));
+#endif // TERRALIB_MOD_SRS_ENABLED
 }
 
 void te::gm::CurvePolygon::computeMBR(bool cascade) const throw()
