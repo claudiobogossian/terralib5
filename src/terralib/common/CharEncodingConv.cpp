@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file CharEncodingConv.cpp
+  \file terralib/common/CharEncodingConv.cpp
 
   \brief A class that deals with character encoding/decoding.
  */
@@ -26,7 +26,8 @@
 // TerraLib
 #include "CharEncodingConv.h"
 
-#if 0 //TE_CHARENCODING_ENABLED
+#if TE_CHARENCODING_ENABLED
+
 // TerraLib
 #include "Exception.h"
 #include "Translator.h"
@@ -36,29 +37,34 @@
 
 // iconv
 #include <errno.h>
-#include <iconv.h>
+//#include <iconv.h>
 
 #define TE_CONVERSION_BUFFERSIZE_SIZE 64
 
-te::common::CharEncodingConv::CharEncodingConv(const std::string& fromCode, const std::string& toCode)
+static const char* iconv_names[]  = {"UTF-8", "CP-1250", "CP-1251", "CP-1252", "CP-1253", "CP-1254", "CP-1257"};
+static const char* charset_desc[] = {"UTF-8", "CP-1250", "CP-1251", "CP-1252", "CP-1253", "CP-1254", "CP-1257"};
+
+te::common::CharEncodingConv::CharEncodingConv(const CharEncoding& fromCode, const CharEncoding& toCode)
   : m_fromCode(fromCode),
     m_toCode(toCode)
 {
-  m_cd = iconv_open(toCode.c_str(), fromCode.c_str());
+  /*m_cd = iconv_open(iconv_names[toCode], iconv_names[fromCode]);
 
   if(m_cd == (iconv_t)(-1))
-    throw Exception(TR_COMMON("Failed to start iconv to start converting charsets: maybe the conversion from fromCode to toCode is not supported!"));
+    throw Exception(TR_COMMON("Failed to start iconv to start converting charsets: maybe the conversion from fromCode to toCode is not supported!"));*/
 }
 
 te::common::CharEncodingConv::~CharEncodingConv()
 {
-  if(iconv_close(m_cd))
-    throw Exception(TR_COMMON("Failed to close iconv! This wasn't supposed to occur! Contact TerraLib Team!"));
+  /*if(iconv_close(m_cd))
+    throw Exception(TR_COMMON("Failed to close iconv! This wasn't supposed to occur! Contact TerraLib Team!"));*/
 }
 
 std::string te::common::CharEncodingConv::conv(const std::string& src)
 {
-  std::ostringstream outstring(std::ios_base::out);
+  return "";
+
+  /*std::ostringstream outstring(std::ios_base::out);
   const char* inbuff = src.c_str();
   std::size_t inbytesleft = src.length();
 
@@ -94,13 +100,15 @@ std::string te::common::CharEncodingConv::conv(const std::string& src)
   if(nbytes == (std::size_t)(-1))
     throw Exception(TR_COMMON("Failed to bring iconv to its initial state!"));
 
-  return outstring.str();
+  return outstring.str();*/
 }
 
 
-std::string te::common::CharEncodingConv::convert(const std::string& src, const std::string& fromCode, const std::string& toCode)
+std::string te::common::CharEncodingConv::convert(const std::string& src, const CharEncoding& fromCode, const CharEncoding& toCode)
 {
-  iconv_t cd = iconv_open(toCode.c_str(), fromCode.c_str());
+  return "";
+
+  /*iconv_t cd = iconv_open(iconv_names[toCode], iconv_names[fromCode]);
 
   if(cd == (iconv_t)(-1))
     throw Exception(TR_COMMON("Failed to start iconv to start converting charsets: maybe the conversion from fromCode to toCode is not supported!"));
@@ -133,8 +141,12 @@ std::string te::common::CharEncodingConv::convert(const std::string& src, const 
   if(iconv_close(cd))
     throw Exception(TR_COMMON("Failed to close iconv!"));
 
-  return outstring.str();
+  return outstring.str();*/
+}
+
+std::string te::common::CharEncodingConv::getDescription(const CharEncoding& code) const
+{
+  return charset_desc[code];
 }
 
 #endif  // TE_CHARENCODING_ENABLED
-
