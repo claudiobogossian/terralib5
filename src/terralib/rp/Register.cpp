@@ -69,6 +69,7 @@ namespace te
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;
       m_noDataValue = 0;
       m_geomTransfName = "Affine";
+      m_geomTransfPtr = 0;
     }
 
     const Register::InputParameters& Register::InputParameters::operator=(
@@ -85,6 +86,7 @@ namespace te
       m_interpMethod = params.m_interpMethod;
       m_noDataValue = params.m_noDataValue;
       m_geomTransfName = params.m_geomTransfName;
+      m_geomTransfPtr = params.m_geomTransfPtr;
 
       return *this;
     }
@@ -155,6 +157,11 @@ namespace te
       
       std::auto_ptr< te::gm::GeometricTransformation > transformationPtr;
       
+      if( m_inputParameters.m_geomTransfPtr )
+      {
+        transformationPtr.reset( m_inputParameters.m_geomTransfPtr->clone() );
+      }
+      else
       {
         te::gm::GTParameters transfParams;
         transfParams.m_tiePoints = m_inputParameters.m_tiePoints;
@@ -339,14 +346,22 @@ namespace te
 
       // checking transformation related parameters
       
-      std::auto_ptr< te::gm::GeometricTransformation > transformationPtr( 
-      te::gm::GTFactory::make( m_inputParameters.m_geomTransfName ) );
-      TERP_TRUE_OR_RETURN_FALSE( transformationPtr.get() != 0,
-        "Geometric transformation instatiation error" );
-        
-      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_tiePoints.size() >=
-        transformationPtr->getMinRequiredTiePoints(),
-        "Invalid tie-points number" )
+      if( m_inputParameters.m_geomTransfPtr )
+      {
+        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_geomTransfPtr->isValid(),
+          "Invalid geometric transformation" );
+      }
+      else
+      {
+        std::auto_ptr< te::gm::GeometricTransformation > transformationPtr( 
+        te::gm::GTFactory::make( m_inputParameters.m_geomTransfName ) );
+        TERP_TRUE_OR_RETURN_FALSE( transformationPtr.get() != 0,
+          "Geometric transformation instatiation error" );
+          
+        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_tiePoints.size() >=
+          transformationPtr->getMinRequiredTiePoints(),
+          "Invalid tie-points number" )
+      }
 
       // checking other parameters
 
@@ -357,8 +372,7 @@ namespace te
         "Invalid m_outputResolutionX" )        
         
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_outputResolutionY > 0.0,
-        "Invalid m_outputResolutionY" )        
-       
+        "Invalid m_outputResolutionY" )  
 
       m_isInitialized = true;
 

@@ -25,6 +25,7 @@ set (
   terralib_common
   terralib_dataaccess
   terralib_plugin
+  terralib_geometry
   terralib_raster
   terralib_rp
   ${CPPUNIT_LIBRARY}
