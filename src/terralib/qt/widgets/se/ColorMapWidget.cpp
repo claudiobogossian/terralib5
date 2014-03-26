@@ -29,6 +29,7 @@
 #include "../../../common/STLUtils.h"
 #include "../../../datatype.h"
 #include "../../../maptools/GroupingAlgorithms.h"
+#include "../../../fe/Literal.h"
 #include "../../../raster.h"
 #include "../../../raster/RasterSummary.h"
 #include "../../../raster/RasterSummaryManager.h"
@@ -468,7 +469,11 @@ void te::qt::widgets::ColorMapWidget::onTableWidgetItemDoubleClicked(QTableWidge
 
     if(type == te::se::CATEGORIZE_TRANSFORMATION)
     {
-      // TODO
+      te::se::Categorize* old = m_cm->getCategorize();
+
+      te::se::ParameterValue* param = old->getThresholdValues()[curRow+1];
+      te::fe::Literal* litExp = (te::fe::Literal*)param->getParameter(0)->m_expression;
+      litExp->setValue(bgColor.name().toStdString());
     }
     else if(type == te::se::INTERPOLATE_TRANSFORMATION)
     {
