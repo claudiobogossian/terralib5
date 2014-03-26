@@ -143,7 +143,7 @@ void te::mem::DataSet::copy(te::da::DataSet& src, const std::vector<std::size_t>
   //src.moveBeforeFirst();
 
   if(!unlimited & (i < limit))
-    throw Exception(TR_MEMORY("The source dataset has few items than requested copy limit!"));
+    throw Exception(TE_TR("The source dataset has few items than requested copy limit!"));
 }
 
 void te::mem::DataSet::add(DataSetItem* item)
@@ -169,7 +169,7 @@ void te::mem::DataSet::remove(DataSetItem* item)
     }
   }
 
-  throw Exception(TR_DATAACCESS("Item not found in the dataset!"));
+  throw Exception(TE_TR("Item not found in the dataset!"));
 }
 
 void te::mem::DataSet::add(const std::string& propertyName, std::size_t propertyType, const te::dt::AbstractData* defaultValue)

@@ -45,7 +45,7 @@ te::mem::CachedRaster::CachedRaster( const te::rst::Raster& rhs,
 : te::rst::Raster( new te::rst::Grid( *rhs.getGrid() ), rhs.getAccessPolicy() )
 {
   if( ! m_blocksManager.initialize( rhs, maxMemPercentUsed, dataPrefetchThreshold) )
-    throw Exception(TR_MEMORY("Cannot initialize the blocks menager") );
+    throw Exception(TE_TR("Cannot initialize the blocks menager") );
   
   for( unsigned int bandsIdx = 0 ; bandsIdx < rhs.getNumberOfBands() ; 
     ++bandsIdx )
@@ -59,7 +59,7 @@ te::mem::CachedRaster::CachedRaster( const unsigned int maxNumberOfCacheBlocks,
 {
   if( ! m_blocksManager.initialize( maxNumberOfCacheBlocks, rhs, 
     dataPrefetchThreshold) )
-    throw Exception(TR_MEMORY("Cannot initialize the blocks menager") );
+    throw Exception(TE_TR("Cannot initialize the blocks menager") );
   
   for( unsigned int bandsIdx = 0 ; bandsIdx < rhs.getNumberOfBands() ; 
     ++bandsIdx )

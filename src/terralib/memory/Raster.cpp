@@ -129,7 +129,7 @@ void te::mem::Raster::open(const std::map<std::string, std::string>& rinfo, te::
       it = rinfo.find("MEM_TILE_HEIGHT");
 
       if(it == itend)
-        throw Exception(TR_MEMORY("You must provide the MEM_TILE_HEIGHT parameter"));
+        throw Exception(TE_TR("You must provide the MEM_TILE_HEIGHT parameter"));
 
       blkh = boost::lexical_cast<int>(it->second);
 
@@ -142,12 +142,12 @@ void te::mem::Raster::open(const std::map<std::string, std::string>& rinfo, te::
 
       if(it != itend)
       {
-        throw Exception(TR_MEMORY("You must provide the MEM_TILE_WIDTH parameter"));
+        throw Exception(TE_TR("You must provide the MEM_TILE_WIDTH parameter"));
       }
       else
       {
         if((iraster->getBand(0) == 0) || (iraster->getBand(0)->getProperty() == 0))
-          throw Exception(TR_MEMORY("It is not possible to determine the in-memory raster tile dimension because the input raster doesn't have enough information!"));
+          throw Exception(TE_TR("It is not possible to determine the in-memory raster tile dimension because the input raster doesn't have enough information!"));
 
         blkw = iraster->getBand(0)->getProperty()->m_blkw;
         blkh = iraster->getBand(0)->getProperty()->m_blkh;
@@ -296,7 +296,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
 
           te::common::FreeContents(bands);
 
-          throw Exception(TR_MEMORY("You must provide a valid input raster in the 'h' parameter"));
+          throw Exception(TE_TR("You must provide a valid input raster in the 'h' parameter"));
         }
 
 // copy raster bands
@@ -355,7 +355,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
 
             te::common::FreeContents(bands);
 
-            throw Exception(TR_MEMORY("You must provide the parameters of block height and width"));
+            throw Exception(TE_TR("You must provide the parameters of block height and width"));
           }
 
           m_bands.push_back(new te::mem::TiledBand(this, bands[b], b));
@@ -391,7 +391,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
       te::rst::Raster* iraster = static_cast<te::rst::Raster*> (h);
 
       if (iraster == 0)
-        throw Exception(TR_MEMORY("You must provide a valid input raster in the 'h' parameter"));
+        throw Exception(TE_TR("You must provide a valid input raster in the 'h' parameter"));
 
 // clone the grid from the input raster
       m_grid = new te::rst::Grid(*iraster->getGrid());
@@ -427,7 +427,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
       it = rinfo.find("MEM_BUFFER_NROWS");
 
       if(it == itend)
-        throw Exception(TR_MEMORY("You must provide the MEM_BUFFER_NROWS parameter"));
+        throw Exception(TE_TR("You must provide the MEM_BUFFER_NROWS parameter"));
 
       unsigned int nrows = boost::lexical_cast<unsigned>(it->second);
 
@@ -435,7 +435,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
       it = rinfo.find("MEM_BUFFER_NCOLS");
 
       if(it == itend)
-        throw Exception(TR_MEMORY("You must provide the MEM_BUFFER_NCOLS parameter"));
+        throw Exception(TE_TR("You must provide the MEM_BUFFER_NCOLS parameter"));
 
       unsigned int ncols = boost::lexical_cast<unsigned>(it->second);
 
@@ -443,7 +443,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
       it = rinfo.find("MEM_BUFFER_DATATYPE");
 
       if(it == itend)
-        throw Exception(TR_MEMORY("You must provide the MEM_BUFFER_DATATYPE parameter"));
+        throw Exception(TE_TR("You must provide the MEM_BUFFER_DATATYPE parameter"));
 
       unsigned int dt = boost::lexical_cast<unsigned>(it->second);
 
@@ -451,7 +451,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
       it = rinfo.find("MEM_BUFFER_NBANDS");
 
       if(it == itend)
-        throw Exception(TR_MEMORY("You must provide the MEM_BUFFER_NBANDS parameter"));
+        throw Exception(TE_TR("You must provide the MEM_BUFFER_NBANDS parameter"));
 
       unsigned int nbands = boost::lexical_cast<unsigned>(it->second);
 
@@ -482,7 +482,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
         it = rinfo.find("MEM_BUFFER_MIN_Y");
 
         if(it == itend)
-          throw Exception(TR_MEMORY("You must provide the MEM_BUFFER_MIN_Y parameter"));
+          throw Exception(TE_TR("You must provide the MEM_BUFFER_MIN_Y parameter"));
 
         miny = boost::lexical_cast<double>(it->second);
 
@@ -490,7 +490,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
         it = rinfo.find("MEM_BUFFER_MAX_X");
 
         if(it == itend)
-          throw Exception(TR_MEMORY("You must provide the MEM_BUFFER_MAX_X parameter"));
+          throw Exception(TE_TR("You must provide the MEM_BUFFER_MAX_X parameter"));
 
         maxx = boost::lexical_cast<double>(it->second);
 
@@ -498,7 +498,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
         it = rinfo.find("MEM_BUFFER_MAX_Y");
 
         if(it == itend)
-          throw Exception(TR_MEMORY("You must provide the MEM_BUFFER_MAX_Y parameter"));
+          throw Exception(TE_TR("You must provide the MEM_BUFFER_MAX_Y parameter"));
 
         maxy = boost::lexical_cast<double>(it->second);
 
@@ -506,7 +506,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
         it = rinfo.find("MEM_BUFFER_RES_X");
 
         if(it == itend)
-          throw Exception(TR_MEMORY("You must provide the MEM_BUFFER_RES_X parameter"));
+          throw Exception(TE_TR("You must provide the MEM_BUFFER_RES_X parameter"));
 
         resx = boost::lexical_cast<double>(it->second);
 
@@ -514,7 +514,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
         it = rinfo.find("MEM_BUFFER_RES_Y");
 
         if(it == itend)
-          throw Exception(TR_MEMORY("You must provide the MEM_BUFFER_RES_Y parameter"));
+          throw Exception(TE_TR("You must provide the MEM_BUFFER_RES_Y parameter"));
 
         resy = boost::lexical_cast<double>(it->second);
       }
@@ -560,7 +560,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
       it = rinfo.find("MEM_RASTER_NCOLS");
 
       if(it == itend)
-        throw Exception(TR_MEMORY("You must provide the MEM_RASTER_NCOLS parameter"));
+        throw Exception(TE_TR("You must provide the MEM_RASTER_NCOLS parameter"));
 
       unsigned int ncols = boost::lexical_cast<unsigned>(it->second);
 
@@ -568,7 +568,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
       it = rinfo.find("MEM_RASTER_DATATYPE");
 
       if(it == itend)
-        throw Exception(TR_MEMORY("You must provide the MEM_RASTER_DATATYPE parameter"));
+        throw Exception(TE_TR("You must provide the MEM_RASTER_DATATYPE parameter"));
 
       int dt  = boost::lexical_cast<int>(it->second);
 
@@ -576,7 +576,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
       it = rinfo.find("MEM_RASTER_NBANDS");
 
       if(it == itend)
-        throw Exception(TR_MEMORY("You must provide the MEM_RASTER_NBANDS parameter"));
+        throw Exception(TE_TR("You must provide the MEM_RASTER_NBANDS parameter"));
 
       unsigned int nbands = boost::lexical_cast<unsigned>(it->second);
 
@@ -609,7 +609,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
         it = rinfo.find("MEM_RASTER_MIN_Y");
 
         if(it == itend)
-          throw Exception(TR_MEMORY("You must provide the MEM_RASTER_MIN_Y parameter"));
+          throw Exception(TE_TR("You must provide the MEM_RASTER_MIN_Y parameter"));
 
         miny = boost::lexical_cast<double>(it->second);
 
@@ -617,7 +617,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
         it = rinfo.find("MEM_RASTER_MAX_X");
 
         if(it == itend)
-          throw Exception(TR_MEMORY("You must provide the MEM_RASTER_MAX_X parameter"));
+          throw Exception(TE_TR("You must provide the MEM_RASTER_MAX_X parameter"));
 
         maxx = boost::lexical_cast<double>(it->second);
 
@@ -625,7 +625,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
         it = rinfo.find("MEM_RASTER_MAX_Y");
 
         if(it == itend)
-          throw Exception(TR_MEMORY("You must provide the MEM_RASTER_MAX_Y parameter"));
+          throw Exception(TE_TR("You must provide the MEM_RASTER_MAX_Y parameter"));
 
         maxy = boost::lexical_cast<double>(it->second);
 
@@ -633,7 +633,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
         it = rinfo.find("MEM_RASTER_RES_X");
 
         if(it == itend)
-          throw Exception(TR_MEMORY("You must provide the MEM_RASTER_RES_X parameter"));
+          throw Exception(TE_TR("You must provide the MEM_RASTER_RES_X parameter"));
 
         resx = boost::lexical_cast<double>(it->second);
 
@@ -641,7 +641,7 @@ void te::mem::Raster::create(te::rst::Grid* g,
         it = rinfo.find("MEM_RASTER_RES_Y");
 
         if(it == itend)
-          throw Exception(TR_MEMORY("You must provide the MEM_RASTER_RES_Y parameter"));
+          throw Exception(TE_TR("You must provide the MEM_RASTER_RES_Y parameter"));
 
         resy = boost::lexical_cast<double>(it->second);
       }
@@ -675,14 +675,14 @@ void te::mem::Raster::create(te::rst::Grid* g,
         it = rinfo.find("MEM_TILE_WIDTH");
 
         if(it == itend)
-          throw Exception(TR_MEMORY("You must provide the MEM_TILE_WIDTH parameter"));
+          throw Exception(TE_TR("You must provide the MEM_TILE_WIDTH parameter"));
 
         blkw = boost::lexical_cast<int>(it->second);
 
         it = rinfo.find("MEM_TILE_HEIGHT");
 
         if(it == itend)
-          throw Exception(TR_MEMORY("You must provide the MEM_TILE_HEIGHT parameter"));
+          throw Exception(TE_TR("You must provide the MEM_TILE_HEIGHT parameter"));
 
         blkh = boost::lexical_cast<int>(it->second);
 
@@ -708,6 +708,6 @@ void te::mem::Raster::create(te::rst::Grid* g,
   }
   else
   {
-    throw Exception(TR_MEMORY("You must provide enough parameters"));
+    throw Exception(TE_TR("You must provide enough parameters"));
   }
 }

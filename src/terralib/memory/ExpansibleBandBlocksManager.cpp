@@ -263,14 +263,14 @@ void* te::mem::ExpansibleBandBlocksManager::getBlockPointer(unsigned int band,
     if( 0 != fseek( inDiskInfo.m_filePtr, 
       (long)( inDiskInfo.m_fileOff ), SEEK_SET ) )
     {
-      throw Exception(TR_MEMORY("File seek error") );
+      throw Exception(TE_TR("File seek error") );
     }
       
     assert( m_currSwapBlockPtr != 0  );
     if( 1 != fread( (void*)m_currSwapBlockPtr, (size_t)( m_maxBlockSizeBytes ), 
       1, inDiskInfo.m_filePtr ) )
     {
-      throw Exception(TR_MEMORY("File read error") );
+      throw Exception(TE_TR("File read error") );
     }
     
     // Flushing the choosed tile to disk
@@ -278,7 +278,7 @@ void* te::mem::ExpansibleBandBlocksManager::getBlockPointer(unsigned int band,
     if( 0 != fseek( inDiskInfo.m_filePtr, 
       (long)( inDiskInfo.m_fileOff ), SEEK_SET ) )
     {
-      throw Exception(TR_MEMORY("File seek error") );
+      throw Exception(TE_TR("File seek error") );
     }
       
     assert( swapIndex.m_dim0Index < m_ramBlocksPointers.size() );
@@ -289,7 +289,7 @@ void* te::mem::ExpansibleBandBlocksManager::getBlockPointer(unsigned int band,
       (size_t)( m_maxBlockSizeBytes ), 1, 
       inDiskInfo.m_filePtr ) )
     {
-      throw Exception(TR_MEMORY("File write error") );
+      throw Exception(TE_TR("File write error") );
     }
     
     // updating the indexing structures

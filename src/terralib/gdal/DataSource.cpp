@@ -78,7 +78,7 @@ void te::gdal::DataSource::open()
     return;
 
   if (m_connectionInfo.empty())
-      throw Exception((boost::format(TR_GDAL("Empty data source connection information"))).str());
+      throw Exception((boost::format(TE_TR("Empty data source connection information"))).str());
   
   std::map<std::string, std::string>::const_iterator it = m_connectionInfo.find("SOURCE");
   if (it != m_connectionInfo.end())
@@ -89,7 +89,7 @@ void te::gdal::DataSource::open()
     if (it != m_connectionInfo.end())
       m_straccess = it->second;
     else
-      throw Exception((boost::format(TR_GDAL("Invalid data source connection information"))).str());
+      throw Exception((boost::format(TE_TR("Invalid data source connection information"))).str());
   }
   m_isOpened = true;
 }
@@ -147,7 +147,7 @@ const te::da::DataSourceCapabilities& te::gdal::DataSource::getCapabilities() co
 std::auto_ptr<te::da::DataSourceTransactor> te::gdal::DataSource::getTransactor()
 {
   if (!m_isOpened)
-    throw Exception((boost::format(TR_GDAL("Data source is not open."))).str());    
+    throw Exception((boost::format(TE_TR("Data source is not open."))).str());    
   
   return std::auto_ptr<te::da::DataSourceTransactor>(new te::gdal::Transactor(m_straccess));
 }
@@ -172,12 +172,12 @@ void te::gdal::DataSource::create(const std::map<std::string, std::string>& dsIn
     } 
     catch(const boost::filesystem::filesystem_error& e) 
     { 
-      throw Exception((boost::format(TR_GDAL("Could not create the data source due to the following error: %1%.")) % e.what()).str());
+      throw Exception((boost::format(TE_TR("Could not create the data source due to the following error: %1%.")) % e.what()).str());
     }
   }
   else 
   {
-    throw Exception((boost::format(TR_GDAL("Data source creation is supported only for directory data sources"))).str());
+    throw Exception((boost::format(TE_TR("Data source creation is supported only for directory data sources"))).str());
   }
 }
 
@@ -240,7 +240,7 @@ std::vector<std::string> te::gdal::DataSource::getDataSourceNames(const std::map
     if (it != dsInfo.end())
       dsnames.push_back(it->second);
     else
-      throw Exception((boost::format(TR_GDAL("Empty ou invalid data source connection information"))).str());
+      throw Exception((boost::format(TE_TR("Empty ou invalid data source connection information"))).str());
   }
   return dsnames;
 }
