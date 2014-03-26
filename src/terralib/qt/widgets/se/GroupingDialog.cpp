@@ -127,10 +127,17 @@ void te::qt::widgets::GroupingDialog::setLayer(te::map::AbstractLayerPtr layer)
   }
 }
 
+void te::qt::widgets::GroupingDialog::setGroupingLayers(std::vector<te::map::AbstractLayerPtr> groupingLayers)
+{
+  m_groupingLayers = groupingLayers;
+}
+
 void te::qt::widgets::GroupingDialog::buildVectorialGroupingInteface()
 {
   // Fill Widget
   m_groupingWidget = new te::qt::widgets::GroupingWidget(m_ui->m_widget);
+
+  m_groupingWidget->setGroupingLayers(m_groupingLayers);
 
   connect(m_groupingWidget, SIGNAL(applyPushButtonClicked()), this, SLOT(onApplyClicked()));
 

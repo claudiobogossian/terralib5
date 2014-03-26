@@ -85,6 +85,8 @@ namespace te
 
           void setLayer(te::map::AbstractLayerPtr layer);
 
+          void setGroupingLayers(std::vector<te::map::AbstractLayerPtr> groupingLayers);
+
         protected:
 
           void buildVectorialGroupingInteface();
@@ -106,6 +108,8 @@ namespace te
           te::map::AbstractLayerPtr m_layer;                  //!< Layer ptr.
           std::auto_ptr<te::rst::Raster> m_raster;
           te::se::RasterSymbolizer* m_rasterSymb;
+
+          std::vector<te::map::AbstractLayerPtr> m_groupingLayers; //!< All Project Layers with Grouping.
       }; 
 
     } // end namespace widgets

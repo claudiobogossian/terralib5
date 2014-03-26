@@ -57,6 +57,7 @@
 #define PRECISION 15
 #define NO_TITLE "No Value"
 
+Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
 te::qt::widgets::GroupingWidget::GroupingWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
@@ -76,7 +77,10 @@ te::qt::widgets::GroupingWidget::GroupingWidget(QWidget* parent, Qt::WindowFlags
   connect(m_ui->m_attrComboBox, SIGNAL(activated(int)), this, SLOT(onAttrComboBoxActivated(int)));
   connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyPushButtonClicked()));
   connect(m_ui->m_tableWidget, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(onTableWidgetItemDoubleClicked(QTableWidgetItem*)));
+  connect(m_ui->m_importPushButton, SIGNAL(clicked()), this, SLOT(onImportPushButtonClicked()));
+  connect(m_ui->m_importGroupBox, SIGNAL(toggled(bool)), this, SLOT(onImportGroupBoxToggled(bool)));
 
+  //m_importGroupingGroupBox
   initialize();
 }
 
@@ -101,6 +105,18 @@ void te::qt::widgets::GroupingWidget::setLayer(te::map::AbstractLayerPtr layer)
 
 std::auto_ptr<te::map::Grouping> te::qt::widgets::GroupingWidget::getGrouping()
 {
+  if(m_ui->m_importGroupBox->isChecked())
+  {
+    QVariant varLayer = m_ui->m_layersComboBox->itemData(m_ui->m_layersComboBox->currentIndex(), Qt::UserRole);
+    te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+
+    te::map::Grouping* ref = layer->getGrouping();
+
+    std::auto_ptr<te::map::Grouping> group(new te::map::Grouping(*ref));
+
+    return group;
+  }
+
   std::string attr = m_ui->m_attrComboBox->currentText().toStdString();
   int attrIdx =  m_ui->m_attrComboBox->currentIndex();
   int attrType = m_ui->m_attrComboBox->itemData(attrIdx).toInt();
@@ -284,7 +300,11 @@ void te::qt::widgets::GroupingWidget::setDataSetType()
 void te::qt::widgets::GroupingWidget::setGrouping()
 {
   te::map::Grouping* grouping = m_layer->getGrouping();
+  setGrouping(grouping);
+}
 
+void te::qt::widgets::GroupingWidget::setGrouping(te::map::Grouping* grouping)
+{
   if(!grouping)
     return;
 
@@ -864,4 +884,70 @@ void te::qt::widgets::GroupingWidget::listAttributes()
     if(idx != -1)
       m_ui->m_attrComboBox->setCurrentIndex(idx);
   }
+}
+
+void te::qt::widgets::GroupingWidget::setGroupingLayers(std::vector<te::map::AbstractLayerPtr> groupingLayer)
+{
+  for(std::size_t i = 0; i < groupingLayer.size(); ++i)
+  {
+    m_ui->m_layersComboBox->addItem(groupingLayer[i]->getTitle().c_str(), QVariant::fromValue(groupingLayer[i]));
+  }
+}
+
+void te::qt::widgets::GroupingWidget::onImportPushButtonClicked()
+{
+  if(m_ui->m_layersComboBox->currentText() == "")
+  {
+    QMessageBox::warning(this, tr("Grouping"), tr("There are no other layers with Grouping!"));
+    return;
+  }
+
+  if(m_manual)
+  {
+    int reply = QMessageBox::question(this, tr("Grouping"), tr("Manual changes will be lost. Continue?"), QMessageBox::Yes | QMessageBox::Cancel);
+
+    if(reply != QMessageBox::Yes)
+      return;
+  }
+
+  QVariant varLayer = m_ui->m_layersComboBox->itemData(m_ui->m_layersComboBox->currentIndex(), Qt::UserRole);
+  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+
+  te::map::Grouping* ref = layer->getGrouping();
+
+  std::auto_ptr<te::da::DataSetType> dt = m_layer->getSchema();
+
+  std::vector<te::dt::Property*> props = dt->getProperties();
+
+  bool isValid = false;
+  for(std::size_t i = 0; i < props.size(); ++i)
+  {
+    te::dt::Property* prop = props[i];
+    if((prop->getName() == ref->getPropertyName()) && (prop->getType() == ref->getPropertyType()))
+    {
+      isValid = true;
+      break;
+    }
+  }
+
+  if(!isValid)
+  {
+    QMessageBox::warning(this, tr("Grouping"), tr("In existing layers, there is no grouping that can be imported!"));
+    return;
+  }
+
+  te::map::Grouping* newGrouping = new te::map::Grouping(*ref);
+
+  setGrouping(newGrouping);
+
+  updateUi();
+
+  m_manual = false;
+
+  emit applyPushButtonClicked();
+}
+
+void te::qt::widgets::GroupingWidget::onImportGroupBoxToggled(bool toggled)
+{
+  m_ui->groupBox->setEnabled(!toggled);
 }
