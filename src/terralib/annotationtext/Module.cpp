@@ -73,12 +73,12 @@ te::at::Module::~Module()
 
 void te::at::Module::initialize()
 {
-  TE_LOG_TRACE(TR_ANNOTATIONTEXT("TerraLib Annotation Text module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Annotation Text module initialized!"));
 }
 
 void te::at::Module::finalize()
 {
-  TE_LOG_TRACE(TR_ANNOTATIONTEXT("TerraLib Annotation Text module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Annotation Text module finalized!"));
 }
 
 //// TerraLib
