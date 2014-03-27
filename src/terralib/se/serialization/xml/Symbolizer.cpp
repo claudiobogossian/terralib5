@@ -18,26 +18,26 @@
  */
 
 /*!
-  \file terralib/se/serialization/Symbolizer.cpp
+  \file terralib/se/serialization/xml/Symbolizer.cpp
    
   \brief Auxiliary classes and functions to serialize symbolizer informations from a XML document.
 */
 
 // TerraLib
-#include "../../common/Translator.h"
-#include "../../fe/Expression.h"
-#include "../../maptools/Utils.h"
-#include "../../xml/Reader.h"
-#include "../../xml/Writer.h"
-#include "../../se/LineSymbolizer.h"
-#include "../../se/ParameterValue.h"
-#include "../../se/PointSymbolizer.h"
-#include "../../se/PolygonSymbolizer.h"
-#include "../../se/RasterSymbolizer.h"
-#include "../../se/TextSymbolizer.h"
-#include "../../xlink/XLinkSerializer.h"
-#include "../Exception.h"
-#include "../Utils.h"
+#include "../../../common/Translator.h"
+#include "../../../fe/Expression.h"
+#include "../../../maptools/Utils.h"
+#include "../../../xml/Reader.h"
+#include "../../../xml/Writer.h"
+#include "../../../se/LineSymbolizer.h"
+#include "../../../se/ParameterValue.h"
+#include "../../../se/PointSymbolizer.h"
+#include "../../../se/PolygonSymbolizer.h"
+#include "../../../se/RasterSymbolizer.h"
+#include "../../../se/TextSymbolizer.h"
+#include "../../../xlink/serialization/xml/XLinkSerializer.h"
+#include "../../Exception.h"
+#include "../../Utils.h"
 #include "Symbolizer.h"
 #include "SymbologySerializer.h"
 #include "Utils.h"
@@ -72,7 +72,7 @@ te::se::Symbolizer* te::se::serialize::Symbolizer::read(te::xml::Reader& reader)
   SymbolizerFnctIdxType::const_iterator it = m_fncts.find(symbolizerType);
 
   if(it == m_fncts.end())
-    throw Exception((boost::format(TR_SE("Could not find a reader for the following symbolizer type: %1%.")) % symbolizerType).str());
+    throw Exception((boost::format(TE_TR("Could not find a reader for the following symbolizer type: %1%.")) % symbolizerType).str());
 
   assert(it->second.second);
 
@@ -86,7 +86,7 @@ void te::se::serialize::Symbolizer::write(const te::se::Symbolizer* symbolizer, 
   SymbolizerFnctIdxType::const_iterator it = m_fncts.find(symbolizer->getType());
 
   if(it == m_fncts.end())
-    throw Exception((boost::format(TR_SE("Could not find a writer for the following symbolizer type: %1%.")) % symbolizer->getType()).str());
+    throw Exception((boost::format(TE_TR("Could not find a writer for the following symbolizer type: %1%.")) % symbolizer->getType()).str());
 
   assert(it->second.second);
 

@@ -18,18 +18,18 @@
  */
 
 /*!
-  \file terralib/se/serialization/Style.cpp
+  \file terralib/se/serialization/xml/Style.cpp
    
   \brief Auxiliary classes and functions to serialize style informations from a XML document.
 */
 
 // TerraLib
-#include "../../common/Translator.h"
-#include "../../xml/Reader.h"
-#include "../../xml/Writer.h"
-#include "../../se/CoverageStyle.h"
-#include "../../se/FeatureTypeStyle.h"
-#include "../Exception.h"
+#include "../../../common/Translator.h"
+#include "../../../xml/Reader.h"
+#include "../../../xml/Writer.h"
+#include "../../../se/CoverageStyle.h"
+#include "../../../se/FeatureTypeStyle.h"
+#include "../../Exception.h"
 //#include "Description.h"
 //#include "Rule.h"
 #include "SymbologySerializer.h"
@@ -60,7 +60,7 @@ te::se::Style* te::se::serialize::Style::read(te::xml::Reader& reader) const
   StyleFnctIdxType::const_iterator it = m_fncts.find(styleType);
 
   if(it == m_fncts.end())
-    throw Exception((boost::format(TR_SE("Could not find a reader for the following style type: %1%.")) % styleType).str());
+    throw Exception((boost::format(TE_TR("Could not find a reader for the following style type: %1%.")) % styleType).str());
 
   assert(it->second.second);
 
@@ -74,7 +74,7 @@ void te::se::serialize::Style::write(const te::se::Style* style, te::xml::Writer
   StyleFnctIdxType::const_iterator it = m_fncts.find(style->getType());
 
   if(it == m_fncts.end())
-    throw Exception((boost::format(TR_SE("Could not find a writer for the following style type: %1%.")) % style->getType()).str());
+    throw Exception((boost::format(TE_TR("Could not find a writer for the following style type: %1%.")) % style->getType()).str());
 
   assert(it->second.second);
 

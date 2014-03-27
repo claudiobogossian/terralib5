@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/se/serialization/SymbologySerializer.h
+  \file terralib/se/serialization/xml/SymbologySerializer.h
 
   \brief Data serialization for the Symbology Encoder module.
 */
 
-#ifndef __TERRALIB_SE_SERIALIZATION_INTERNAL_SYMBOLOGYSERIALIZER_H
-#define __TERRALIB_SE_SERIALIZATION_INTERNAL_SYMBOLOGYSERIALIZER_H
+#ifndef __TERRALIB_SE_SERIALIZATION_XML_INTERNAL_SYMBOLOGYSERIALIZER_H
+#define __TERRALIB_SE_SERIALIZATION_XML_INTERNAL_SYMBOLOGYSERIALIZER_H
 
 // TerraLib
-#include "../Config.h"
-#include "../RasterSymbolizer.h"
+#include "../../Config.h"
+#include "../../RasterSymbolizer.h"
 
 //#ifdef TE_ENABLED_XML
 
@@ -191,4 +191,4 @@ namespace te
 
 //#endif // TE_ENABLED_XML
 
-#endif  // __TERRALIB_SE_SERIALIZATION_INTERNAL_SYMBOLOGYSERIALIZER_H
+#endif  // __TERRALIB_SE_SERIALIZATION_XML_INTERNAL_SYMBOLOGYSERIALIZER_H

@@ -18,22 +18,21 @@
  */
 
 /*!
-  \file terralib/serialization/se/Utils.cpp
+  \file terralib/se/serialization/xml/Utils.cpp
  
   \brief Utility methods for Symbology serialization.
 */
 
 // TerraLib
-#include "../../fe/PropertyName.h"
-#include "../../se/Symbolizer.h"
-#include "../../xml/Reader.h"
-#include "../../xml/Writer.h"
-//#include "../xlink/SimpleLink.h"
-#include "../../xlink/XLinkSerializer.h"
-#include "../../fe/serialization/Expression.h"
-#include "../Description.h"
-#include "../ParameterValue.h"
-#include "../SelectedChannel.h"
+#include "../../../fe/PropertyName.h"
+#include "../../../se/Symbolizer.h"
+#include "../../../xml/Reader.h"
+#include "../../../xml/Writer.h"
+#include "../../../xlink/serialization/xml/XLinkSerializer.h"
+#include "../../../fe/serialization/xml/Expression.h"
+#include "../../Description.h"
+#include "../../ParameterValue.h"
+#include "../../SelectedChannel.h"
 #include "SymbologySerializer.h"
 #include "Utils.h"
 

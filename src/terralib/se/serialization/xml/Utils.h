@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/se/serialization/Utils.h
+  \file terralib/se/serialization/xml/Utils.h
  
   \brief Utility methods for the Symbology serialization.
 */
 
-#ifndef __TERRALIB_SE_SERIALIZATION_INTERNAL_UTILS_H
-#define __TERRALIB_SE_SERIALIZATION_INTERNAL_UTILS_H
+#ifndef __TERRALIB_SE_SERIALIZATION_XML_INTERNAL_UTILS_H
+#define __TERRALIB_SE_SERIALIZATION_XML_INTERNAL_UTILS_H
 
 // STL
 #include <string>
@@ -70,4 +70,5 @@ namespace te
   }    // end namespace se
 }      // end namespace te
 
-#endif  // __TERRALIB_SE_SERIALIZATION_INTERNAL_UTILS_H
+#endif  // __TERRALIB_SE_SERIALIZATION_XML_INTERNAL_UTILS_H
+

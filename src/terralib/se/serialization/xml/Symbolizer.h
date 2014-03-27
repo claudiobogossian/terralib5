@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/se/serialization/Symbolizer.h
+  \file terralib/se/serialization/xml/Symbolizer.h
    
   \brief Auxiliary classes and functions to serialize Symbolizer informations from a XML document.
 */
 
-#ifndef __TERRALIB_SE_SERIALIZATION_INTERNAL_SYMBOLIZER_H
-#define __TERRALIB_SE_SERIALIZATION_INTERNAL_SYMBOLIZER_H
+#ifndef __TERRALIB_SE_SERIALIZATION_INTERNAL_XML_SYMBOLIZER_H
+#define __TERRALIB_SE_SERIALIZATION_INTERNAL_XML_SYMBOLIZER_H
 
 // TerraLib
-#include "../../common/Singleton.h"
-#include "../Config.h"
+#include "../../../common/Singleton.h"
+#include "../../Config.h"
 
 // STL
 #include <map>
@@ -82,4 +82,4 @@ namespace te
   }    // end namespace se
 }      // end namespace te
 
-#endif  // __TERRALIB_SE_SERIALIZATION_INTERNAL_SYMBOLIZER_H
+#endif  // __TERRALIB_SE_SERIALIZATION_INTERNAL_XML_SYMBOLIZER_H

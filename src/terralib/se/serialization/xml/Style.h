@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/se/serialization/Style.h
+  \file terralib/se/serialization/xml/Style.h
    
   \brief Auxiliary classes and functions to serialize style informations from a XML document.
 */
 
-#ifndef __TERRALIB_SE_SERIALIZATION_INTERNAL_STYLE_H
-#define __TERRALIB_SE_SERIALIZATION_INTERNAL_STYLE_H
+#ifndef __TERRALIB_SE_SERIALIZATION_XML_INTERNAL_STYLE_H
+#define __TERRALIB_SE_SERIALIZATION_XML_INTERNAL_STYLE_H
 
 // TerraLib
-#include "../../common/Singleton.h"
-#include "../Config.h"
+#include "../../../common/Singleton.h"
+#include "../../Config.h"
 
 // STL
 #include <map>
@@ -84,4 +84,4 @@ namespace te
   }    // end namespace serialize
 }      // end namespace te
 
-#endif  // __TERRALIB_SE_SERIALIZATION_INTERNAL_STYLE_H
+#endif  // __TERRALIB_SE_SERIALIZATION_XML_INTERNAL_STYLE_H
