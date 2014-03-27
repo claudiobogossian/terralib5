@@ -90,8 +90,9 @@ namespace te
 
           void setLayer(te::map::AbstractLayerPtr layer);
 
-          std::auto_ptr<te::map::Grouping> getGrouping();
+          void setGroupingLayers(std::vector<te::map::AbstractLayerPtr> groupingLayer);
 
+          std::auto_ptr<te::map::Grouping> getGrouping();
 
         protected:
 
@@ -104,6 +105,8 @@ namespace te
           void setDataSetType();
 
           void setGrouping();
+
+          void setGrouping(te::map::Grouping* grouping);
 
           void getDataAsDouble(std::vector<double>& vec, const std::string& attrName, const int& dataType, int& nullValues);
 
@@ -119,8 +122,11 @@ namespace te
 
           void listAttributes();
 
-
         public slots:
+
+          void onImportPushButtonClicked();
+
+          void onImportGroupBoxToggled(bool toggled);
 
           void onApplyPushButtonClicked();
 
