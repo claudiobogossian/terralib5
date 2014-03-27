@@ -23,8 +23,8 @@
   \brief Auxiliary classes and functions to serialize filter expressions from a XML document.
 */
 
-#ifndef __TERRALIB_FE_SERIALIZATION_INTERNAL_EXPRESSION_H
-#define __TERRALIB_FE_SERIALIZATION_INTERNAL_EXPRESSION_H
+#ifndef __TERRALIB_FE_SERIALIZATION_XML_INTERNAL_EXPRESSION_H
+#define __TERRALIB_FE_SERIALIZATION_XML_INTERNAL_EXPRESSION_H
 
 // TerraLib
 #include "../../../common/Singleton.h"
@@ -110,4 +110,4 @@ namespace te
   }   // end namespace fe
 }     // end namespace te
 
-#endif  // __TERRALIB_FE_SERIALIZATION_INTERNAL_EXPRESSION_H
+#endif  // __TERRALIB_FE_SERIALIZATION_XML_INTERNAL_EXPRESSION_H
