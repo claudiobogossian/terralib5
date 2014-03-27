@@ -83,9 +83,6 @@ te::fe::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// initializes the Translator support for the TerraLib Filter Encoding module
-  TE_ADD_TEXT_DOMAIN(TE_FE_TEXT_DOMAIN, TE_FE_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::fe::Module::~Module()
@@ -100,7 +97,7 @@ void te::fe::Module::initialize()
   te::fe::SpatialOperator::loadValidOperatorList();
   te::fe::ComparisonOperators::loadValidOperatorList();
 
-  TE_LOG_TRACE(TR_FE("TerraLib Filter Encoding module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Filter Encoding module initialized!"));
 }
 
 void te::fe::Module::finalize()
@@ -110,7 +107,7 @@ void te::fe::Module::finalize()
   te::fe::SpatialOperator::clearValidOperatorList();
   te::fe::ComparisonOperators::clearValidOperatorList();
 
-  TE_LOG_TRACE(TR_FE("TerraLib Filter Encoding module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Filter Encoding module finalized!"));
 }
 
 //// TerraLib
