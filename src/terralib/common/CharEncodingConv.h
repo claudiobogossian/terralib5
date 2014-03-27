@@ -54,13 +54,13 @@ namespace te
     */
     enum CharEncoding
     {
-      UTF8,   /*!< UTF-8 enconding.   */
-      CP1250, /*!< CP-1250 enconding. */
-      CP1251, /*!< CP-1251 enconding. */
-      CP1252, /*!< CP-1252 enconding. */
-      CP1253, /*!< CP-1253 enconding. */
-      CP1254, /*!< CP-1254 enconding. */
-      CP1257  /*!< CP-1257 enconding. */
+      UTF8,   /*!< UTF-8 encoding.   */
+      CP1250, /*!< CP1250 encoding.  */
+      CP1251, /*!< CP1251 encoding.  */
+      CP1252, /*!< CP1252 encoding.  */
+      CP1253, /*!< CP1253 encoding.  */
+      CP1254, /*!< CP1254 encoding.  */
+      CP1257  /*!< CP1257 encoding.  */
       // continue...
     };
 
@@ -121,7 +121,7 @@ namespace te
 
           \return The description of the given charset.
         */
-        std::string getDescription(const CharEncoding& code) const;
+        static std::string getDescription(const CharEncoding& code);
 
       private:
 
