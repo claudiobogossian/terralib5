@@ -61,9 +61,6 @@ te::at::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib Annotation Text module
-  TE_ADD_TEXT_DOMAIN(TE_ANNOTATIONTEXT_TEXT_DOMAIN, TE_ANNOTATIONTEXT_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::at::Module::~Module()
