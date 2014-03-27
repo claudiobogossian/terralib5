@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/fe/serialization/AbstractOp.h
+  \file terralib/fe/serialization/xml/AbstractOp.h
    
   \brief Auxiliary classes and functions to serialize filter operations from a XML document.
 */
@@ -27,8 +27,8 @@
 #define __TERRALIB_FE_SERIALIZATION_INTERNAL_ABSTRACTOP_H
 
 // TerraLib
-#include "../../common/Singleton.h"
-#include "../Config.h"
+#include "../../../common/Singleton.h"
+#include "../../Config.h"
 
 // STL
 #include <map>

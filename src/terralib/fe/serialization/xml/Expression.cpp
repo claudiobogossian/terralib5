@@ -18,21 +18,21 @@
  */
 
 /*!
-  \file terralib/fe/serialization/Expression.cpp
+  \file terralib/fe/serialization/xml/Expression.cpp
    
   \brief Auxiliary classes and functions to serialize filter expressions from a XML document.
 */
 
 // TerraLib
-#include "../../common/Translator.h"
-#include "../../fe/BinaryOperator.h"
-#include "../../fe/Expression.h"
-#include "../../fe/Globals.h"
-#include "../../fe/Literal.h"
-#include "../../fe/PropertyName.h"
-#include "../../xml/Reader.h"
-#include "../../xml/Writer.h"
-#include "../Exception.h"
+#include "../../../common/Translator.h"
+#include "../../../fe/BinaryOperator.h"
+#include "../../../fe/Expression.h"
+#include "../../../fe/Globals.h"
+#include "../../../fe/Literal.h"
+#include "../../../fe/PropertyName.h"
+#include "../../../xml/Reader.h"
+#include "../../../xml/Writer.h"
+#include "../../Exception.h"
 #include "Expression.h"
 
 // STL
@@ -63,7 +63,7 @@ te::fe::Expression* te::fe::serialize::Expression::read(te::xml::Reader& reader)
   ExpressionFnctIdxType::const_iterator it = m_fncts.find(name);
 
   if(it == m_fncts.end())
-    throw Exception((boost::format(TR_FE("Could not find a reader for the following expression type: %1%.")) % name).str());
+    throw Exception((boost::format(TE_TR("Could not find a reader for the following expression type: %1%.")) % name).str());
 
   assert(it->second);
 

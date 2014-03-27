@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/fe/serialization/Filter.h
+  \file terralib/fe/serialization/xml/Filter.h
  
   \brief Support for the Filter serialization.
 */
@@ -27,7 +27,7 @@
 #define __TERRALIB_FE_SERIALIZATION_INTERNAL_FILTER_H
 
 // TerraLib
-#include "../Config.h"
+#include "../../Config.h"
 
 namespace te
 {

@@ -18,28 +18,28 @@
  */
 
 /*!
-  \file terralib/fe/serialization/AbstractOp.cpp
+  \file terralib/fe/serialization/xml/AbstractOp.cpp
    
   \brief Auxiliary classes and functions to serialize filter operations from a XML document.
 */
 
 // TerraLib
-#include "../../common/Translator.h"
-#include "../../fe/BBOXOp.h"
-#include "../../fe/BinaryComparisonOp.h"
-#include "../../fe/BinaryLogicOp.h"
-#include "../../fe/BinarySpatialOp.h"
-#include "../../fe/DistanceBuffer.h"
-#include "../../fe/Globals.h"
-#include "../../fe/Literal.h"
-#include "../../fe/PropertyIsBetween.h"
-#include "../../fe/PropertyIsLike.h"
-#include "../../fe/PropertyIsNull.h"
-#include "../../fe/PropertyName.h"
-#include "../../fe/UnaryLogicOp.h"
-#include "../../xml/Reader.h"
-#include "../../xml/Writer.h"
-#include "../Exception.h"
+#include "../../../common/Translator.h"
+#include "../../../fe/BBOXOp.h"
+#include "../../../fe/BinaryComparisonOp.h"
+#include "../../../fe/BinaryLogicOp.h"
+#include "../../../fe/BinarySpatialOp.h"
+#include "../../../fe/DistanceBuffer.h"
+#include "../../../fe/Globals.h"
+#include "../../../fe/Literal.h"
+#include "../../../fe/PropertyIsBetween.h"
+#include "../../../fe/PropertyIsLike.h"
+#include "../../../fe/PropertyIsNull.h"
+#include "../../../fe/PropertyName.h"
+#include "../../../fe/UnaryLogicOp.h"
+#include "../../../xml/Reader.h"
+#include "../../../xml/Writer.h"
+#include "../../Exception.h"
 #include "AbstractOp.h"
 #include "Expression.h"
 
@@ -105,7 +105,7 @@ te::fe::AbstractOp* te::fe::serialize::AbstractOp::read(te::xml::Reader& reader)
   AbstractOpFnctIdxType::const_iterator it = m_fncts.find(opName);
 
   if(it == m_fncts.end())
-    throw Exception((boost::format(TR_FE("Could not find a reader for the following operator type: %1%.")) % opName).str());
+    throw Exception((boost::format(TE_TR("Could not find a reader for the following operator type: %1%.")) % opName).str());
 
   assert(it->second.second);
 
@@ -119,7 +119,7 @@ void te::fe::serialize::AbstractOp::write(const te::fe::AbstractOp* op, te::xml:
   AbstractOpFnctIdxType::const_iterator it = m_fncts.find(op->getName());
 
   if(it == m_fncts.end())
-    throw Exception((boost::format(TR_FE("Could not find a writer for the following operator type: %1%.")) % op->getName()).str());
+    throw Exception((boost::format(TE_TR("Could not find a writer for the following operator type: %1%.")) % op->getName()).str());
 
   assert(it->second.second);
 

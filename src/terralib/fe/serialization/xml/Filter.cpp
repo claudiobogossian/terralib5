@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file terralib/fe/serialization/Filter.cpp
+  \file terralib/fe/serialization/xml/Filter.cpp
  
   \brief Support for the Filter serialization.
 */
 
 // TerraLib
-#include "../../fe/Filter.h"
-#include "../../xml/Reader.h"
-#include "../../xml/Writer.h"
+#include "../../../fe/Filter.h"
+#include "../../../xml/Reader.h"
+#include "../../../xml/Writer.h"
 #include "AbstractOp.h"
 #include "Filter.h"
 

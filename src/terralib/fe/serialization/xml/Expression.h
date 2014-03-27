@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/fe/serialization/Expression.h
+  \file terralib/fe/serialization/xml/Expression.h
    
   \brief Auxiliary classes and functions to serialize filter expressions from a XML document.
 */
@@ -27,9 +27,9 @@
 #define __TERRALIB_FE_SERIALIZATION_INTERNAL_EXPRESSION_H
 
 // TerraLib
-#include "../../common/Singleton.h"
-#include "../../fe/Visitor.h"
-#include "../Config.h"
+#include "../../../common/Singleton.h"
+#include "../../../fe/Visitor.h"
+#include "../../Config.h"
 
 // STL
 #include <map>
