@@ -23,8 +23,8 @@
   \brief Support for the Filter serialization.
 */
 
-#ifndef __TERRALIB_FE_SERIALIZATION_INTERNAL_FILTER_H
-#define __TERRALIB_FE_SERIALIZATION_INTERNAL_FILTER_H
+#ifndef __TERRALIB_FE_SERIALIZATION_XML_INTERNAL_FILTER_H
+#define __TERRALIB_FE_SERIALIZATION_XML_INTERNAL_FILTER_H
 
 // TerraLib
 #include "../../Config.h"
@@ -53,4 +53,4 @@ namespace te
   }   // end namespace fe
 }     // end namespace te
 
-#endif  // __TERRALIB_FE_SERIALIZATION_INTERNAL_FILTER_H
+#endif  // __TERRALIB_FE_SERIALIZATION_XML_INTERNAL_FILTER_H
