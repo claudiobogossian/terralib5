@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
  
  This file is part of the TerraLib - a Framework for building GIS enabled applications.
  
@@ -18,21 +18,21 @@
  */
 
 /*!
- \file terralib/metadata/serialization/MD_Metadata.cpp
+ \file terralib/metadata/serialization/xml/MD_Metadata.cpp
  
  \brief Support for MD_Metadata serialization.
  */
 
 // TerraLib
-#include "../../common/Translator.h"
-#include "../../metadata/iso19115/CI_Citation.h"
-#include "../../metadata/iso19115/CI_ResponsibleParty.h"
-#include "../../metadata/iso19115/MD_Format.h"
-#include "../../metadata/iso19115/MD_Metadata.h"
-#include "../../metadata/iso19115/MD_Distribution.h"
-#include "../../srs/Config.h"
-#include "../../xml/Reader.h"
-#include "../../xml/Writer.h"
+#include "../../../common/Translator.h"
+#include "../../../metadata/iso19115/CI_Citation.h"
+#include "../../../metadata/iso19115/CI_ResponsibleParty.h"
+#include "../../../metadata/iso19115/MD_Format.h"
+#include "../../../metadata/iso19115/MD_Metadata.h"
+#include "../../../metadata/iso19115/MD_Distribution.h"
+#include "../../../srs/Config.h"
+#include "../../../xml/Reader.h"
+#include "../../../xml/Writer.h"
 #include "MD_Metadata.h"
 
 // STL

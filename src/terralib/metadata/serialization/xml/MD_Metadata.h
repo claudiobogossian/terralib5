@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/metadata/serialization/MD_Metadata.h
+  \file terralib/metadata/serialization/xml/MD_Metadata.h
    
   \brief Auxiliary classes and functions to serialize metadata to/from a XML document.
 */
 
-#ifndef __TERRALIB_METADADATA_INTERNAL_SERIALIZATION_MD_METADATA_H
-#define __TERRALIB_METADADATA_INTERNAL_SERIALIZATION_MD_METADATA_H
+#ifndef __TERRALIB_METADADATA_SERIALIZATION_XML_INTERNAL_MD_METADATA_H
+#define __TERRALIB_METADADATA_SERIALIZATION_XML_INTERNAL_MD_METADATA_H
 
 // TerraLib
-#include "../Config.h"
+#include "../../Config.h"
 
 // STL
 #include <map>
@@ -61,5 +61,5 @@ namespace te
   } // end namespace md
 }   // end namespace te
 
-#endif  // __TERRALIB_METADADATA_INTERNAL_SERIALIZATION_MD_METADATA_H
+#endif  // __TERRALIB_METADADATA_SERIALIZATION_XML_INTERNAL_MD_METADATA_H
 
