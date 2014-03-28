@@ -48,6 +48,9 @@ te::common::CharEncodingConv::CharEncodingConv(const CharEncoding& fromCode, con
   : m_fromCode(fromCode),
     m_toCode(toCode)
 {
+  if(m_fromCode == UNKNOWN_CHAR_ENCODING || m_toCode == UNKNOWN_CHAR_ENCODING)
+    throw Exception(TR_COMMON("Impossible conversion of unknown char encoding!"));
+
   m_cd = iconv_open(iconv_names[toCode], iconv_names[fromCode]);
 
   if(m_cd == (iconv_t)(-1))
@@ -109,6 +112,9 @@ std::string te::common::CharEncodingConv::conv(const std::string& src)
 
 std::string te::common::CharEncodingConv::convert(const std::string& src, const CharEncoding& fromCode, const CharEncoding& toCode)
 {
+  if(fromCode == UNKNOWN_CHAR_ENCODING || toCode == UNKNOWN_CHAR_ENCODING)
+    throw Exception(TR_COMMON("Impossible conversion of unknown char encoding!"));
+
   iconv_t cd = iconv_open(iconv_names[toCode], iconv_names[fromCode]);
 
   if(cd == (iconv_t)(-1))
