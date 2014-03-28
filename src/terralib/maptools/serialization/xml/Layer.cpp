@@ -685,7 +685,7 @@ te::map::AbstractLayer* te::map::serialize::Layer::read(te::xml::Reader& reader)
   LayerFnctIdxType::const_iterator it = m_fncts.find(layerType);
 
   if(it == m_fncts.end())
-    throw Exception((boost::format(TR_MAP("Could not find a reader for the following layer type: %1%.")) % layerType).str());
+    throw Exception((boost::format(TE_TR("Could not find a reader for the following layer type: %1%.")) % layerType).str());
 
   assert(it->second.second);
 
@@ -699,7 +699,7 @@ void te::map::serialize::Layer::write(const te::map::AbstractLayer* alayer, te::
   LayerFnctIdxType::const_iterator it = m_fncts.find(alayer->getType());
 
   if(it == m_fncts.end())
-    throw Exception((boost::format(TR_MAP("Could not find a writer for the following layer type: %1%.")) % alayer->getType()).str());
+    throw Exception((boost::format(TE_TR("Could not find a writer for the following layer type: %1%.")) % alayer->getType()).str());
 
   assert(it->second.second);
 

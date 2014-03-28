@@ -41,9 +41,16 @@ endif()
 
 add_library(terralib_mod_filter SHARED ${TERRALIB_FILES})
 
-target_link_libraries(terralib_mod_filter terralib_mod_gml
-                                          terralib_mod_geometry
-                                          terralib_mod_common)
+if(TERRALIB_MOD_XML_ENABLED)
+  target_link_libraries(terralib_mod_filter terralib_mod_gml
+                                            terralib_mod_geometry
+                                            terralib_mod_xml
+                                            terralib_mod_common)
+else()
+  target_link_libraries(terralib_mod_filter terralib_mod_gml
+                                            terralib_mod_geometry
+                                            terralib_mod_common)
+endif()
 
 set_target_properties(terralib_mod_filter
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
@@ -57,5 +64,10 @@ install(TARGETS terralib_mod_filter
 
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION include/terralib/fe COMPONENT devel)
+
+if(TERRALIB_MOD_XML_ENABLED)
+  install(FILES ${TERRALIB_XML_HDR_FILES}
+          DESTINATION include/terralib/fe/serialization/xml COMPONENT devel)
+endif()
 
 export(TARGETS terralib_mod_filter APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

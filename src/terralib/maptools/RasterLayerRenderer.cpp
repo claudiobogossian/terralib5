@@ -60,7 +60,7 @@ void te::map::RasterLayerRenderer::draw(AbstractLayer* layer,
   RasterLayer* rlayer = dynamic_cast<RasterLayer*>(layer);
 
   if(rlayer == 0)
-    throw Exception(TR_MAP("Wrong type render type for this layer!"));
+    throw Exception(TE_TR("Wrong type render type for this layer!"));
 
 // check if layer extent intersects the drawing area and so compute bounding box intersection
   te::gm::Envelope reprojectedBBOX(bbox);
@@ -71,7 +71,7 @@ void te::map::RasterLayerRenderer::draw(AbstractLayer* layer,
   }
   else if(rlayer->getSRID() != srid)
   {
-    throw Exception(TR_MAP("The layer or map don't have a valid SRID!"));
+    throw Exception(TE_TR("The layer or map don't have a valid SRID!"));
   }
 
   if(!reprojectedBBOX.intersects(rlayer->getExtent()))
@@ -89,7 +89,7 @@ void te::map::RasterLayerRenderer::draw(AbstractLayer* layer,
     style = te::se::CreateCoverageStyle(raster->getNumberOfBands());
 
     if(style == 0)
-      throw Exception((boost::format(TR_MAP("Could not create a default coverage style to the layer %1%.")) % layer->getTitle()).str());
+      throw Exception((boost::format(TE_TR("Could not create a default coverage style to the layer %1%.")) % layer->getTitle()).str());
 
     rlayer->setStyle(style);
   }
@@ -97,7 +97,7 @@ void te::map::RasterLayerRenderer::draw(AbstractLayer* layer,
 // should I render this style?
   te::se::CoverageStyle* cs = dynamic_cast<te::se::CoverageStyle*>(style);
   if(cs == 0)
-    throw Exception(TR_MAP("The layer style is not a Coverage Style!"));
+    throw Exception(TE_TR("The layer style is not a Coverage Style!"));
 
   DrawRaster(raster.get(), canvas, ibbox, rlayer->getSRID(), bbox, srid, dynamic_cast<te::se::CoverageStyle*>(style));
 }

@@ -163,13 +163,13 @@ void te::map::GetDashStyle(const std::string& dasharray, std::vector<double>& st
 te::rst::RasterProperty* te::map::GetRasterProperty(DataSetLayer* layer)
 {
   if(layer == 0)
-    throw Exception(TR_MAP("The layer is invalid!"));
+    throw Exception(TE_TR("The layer is invalid!"));
 
 // name of referenced data set
   std::string dsname = layer->getDataSetName();
 
   if(dsname.empty())
-    throw Exception(TR_MAP("The data set name referenced by the layer is empty!"));
+    throw Exception(TE_TR("The data set name referenced by the layer is empty!"));
 
 // retrieve the associated data source
   te::da::DataSourcePtr ds = te::da::GetDataSource(layer->getDataSourceId(), true);
@@ -178,13 +178,13 @@ te::rst::RasterProperty* te::map::GetRasterProperty(DataSetLayer* layer)
   std::auto_ptr<te::da::DataSetType> dstype(ds->getDataSetType(dsname));
 
   if(dstype.get() == 0)
-    throw Exception(TR_MAP("Could not get the data set type!"));
+    throw Exception(TE_TR("Could not get the data set type!"));
 
 // gets the raster property
   std::auto_ptr<te::rst::RasterProperty> rasterProperty(dynamic_cast<te::rst::RasterProperty*>(dstype->getProperties()[0]->clone()));
 
   if(rasterProperty.get() == 0)
-     throw Exception(TR_MAP("Could not get the raster property!"));
+     throw Exception(TE_TR("Could not get the raster property!"));
 
   return rasterProperty.release();
 }
@@ -192,13 +192,13 @@ te::rst::RasterProperty* te::map::GetRasterProperty(DataSetLayer* layer)
 te::rst::Raster* te::map::GetRaster(DataSetLayer* layer)
 {
   if(layer == 0)
-    throw Exception(TR_MAP("The layer is invalid!"));
+    throw Exception(TE_TR("The layer is invalid!"));
 
 // name of referenced data set
   std::string dsname = layer->getDataSetName();
 
   if(dsname.empty())
-    throw Exception(TR_MAP("The data set name referenced by the layer is empty!"));
+    throw Exception(TE_TR("The data set name referenced by the layer is empty!"));
 
 // retrieve the associated data source
   te::da::DataSourcePtr ds = te::da::GetDataSource(layer->getDataSourceId(), true);
@@ -207,22 +207,22 @@ te::rst::Raster* te::map::GetRaster(DataSetLayer* layer)
   std::auto_ptr<te::da::DataSetType> dstype(ds->getDataSetType(dsname));
 
   if(dstype.get() == 0)
-    throw Exception(TR_MAP("Could not get the data set type!"));
+    throw Exception(TE_TR("Could not get the data set type!"));
 
   if(!dstype->hasRaster())
-    throw Exception(TR_MAP("The data set referenced by the layer not contains raster data!"));
+    throw Exception(TE_TR("The data set referenced by the layer not contains raster data!"));
 
 // get the referenced data set
   std::auto_ptr<te::da::DataSet> dataset(ds->getDataSet(dsname));
   if(dataset.get() == 0)
-    throw Exception(TR_MAP("Could not get the data set reference by the layer!"));
+    throw Exception(TE_TR("Could not get the data set reference by the layer!"));
 
 // gets the raster
   std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
 
   std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));
   if(raster.get() == 0)
-    throw Exception(TR_MAP("Could not get the raster referenced by the layer!"));
+    throw Exception(TE_TR("Could not get the raster referenced by the layer!"));
 
   return raster.release();
 }
@@ -285,7 +285,7 @@ te::da::DataSet* te::map::DataSet2Memory(te::da::DataSet* dataset)
   assert(dataset);
 
   if(!dataset->moveNext())
-    throw Exception(TR_MAP("Could not copy the data set to memory!"));
+    throw Exception(TE_TR("Could not copy the data set to memory!"));
 
   return new te::mem::DataSet(*dataset);
 }
@@ -338,7 +338,7 @@ void te::map::DrawGeometries(te::da::DataSetType* type, te::da::DataSourcePtr ds
 // convert the Filter expression to a TerraLib Expression!
       te::da::Expression* exp = queryConverter.getExpression(filter);
       if(exp == 0)
-        throw Exception(TR_MAP("Could not convert the OGC Filter expression to TerraLib expression!"));
+        throw Exception(TE_TR("Could not convert the OGC Filter expression to TerraLib expression!"));
 
 /* 1) Creating te::da::Where object with this expression + box restriction */
 
@@ -370,7 +370,7 @@ void te::map::DrawGeometries(te::da::DataSetType* type, te::da::DataSourcePtr ds
     }
 
     if(dataset.get() == 0)
-      throw Exception((boost::format(TR_MAP("Could not retrieve the data set %1%.")) % datasetName).str());
+      throw Exception((boost::format(TE_TR("Could not retrieve the data set %1%.")) % datasetName).str());
 
     if(dataset->moveNext() == false)
       continue;
@@ -380,10 +380,10 @@ void te::map::DrawGeometries(te::da::DataSetType* type, te::da::DataSourcePtr ds
     std::size_t nSymbolizers = symbolizers.size();
 
 // build task message; e.g. ("Drawing the dataset Countries. Rule 1 of 3.")
-    std::string message = TR_MAP("Drawing the dataset");
+    std::string message = TE_TR("Drawing the dataset");
     message += " " + datasetName + ". ";
-    message += TR_MAP("Rule");
-    message += " " + boost::lexical_cast<std::string>(i + 1) + " " + TR_MAP("of") + " ";
+    message += TE_TR("Rule");
+    message += " " + boost::lexical_cast<std::string>(i + 1) + " " + TE_TR("of") + " ";
     message += boost::lexical_cast<std::string>(nRules) + ".";
 
 // create a draw task
@@ -476,13 +476,13 @@ void te::map::DrawRaster(te::da::DataSetType* type, te::da::DataSourcePtr ds, Ca
 // retrieve the data set
   std::auto_ptr<te::da::DataSet> dataset(ds->getDataSet(datasetName, rasterProperty->getName(), &bbox, te::gm::INTERSECTS));
   if(dataset.get() == 0)
-    throw Exception((boost::format(TR_MAP("Could not retrieve the data set %1%.")) % datasetName).str());
+    throw Exception((boost::format(TE_TR("Could not retrieve the data set %1%.")) % datasetName).str());
 
 // retrieve the raster
   std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));
   if(dataset.get() == 0)
-    throw Exception((boost::format(TR_MAP("Could not retrieve the raster from the data set %1%.")) % datasetName).str());
+    throw Exception((boost::format(TE_TR("Could not retrieve the raster from the data set %1%.")) % datasetName).str());
 
   DrawRaster(raster.get(), canvas, bbox, bboxSRID, visibleArea, srid, style);
 }
@@ -546,7 +546,7 @@ void te::map::DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::
     needRemap = true;
 
 // build task message; e.g. ("Drawing the raster cbers_sao_jose_dos_campos.")
-  std::string message = TR_MAP("Drawing raster");
+  std::string message = TE_TR("Drawing raster");
   const std::string& rasterName = raster->getName();
   !rasterName.empty() ? message += " " + raster->getName() + ". " : message += ".";
 
