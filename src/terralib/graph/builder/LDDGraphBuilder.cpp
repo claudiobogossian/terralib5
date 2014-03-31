@@ -82,7 +82,7 @@ bool te::graph::LDDGraphBuilder::build(te::rst::Raster* raster, const std::map<s
   te::common::TaskProgress t;
 
   t.setTotalSteps(m_raster->getNumberOfRows());
-  t.setMessage(TR_GRAPH("LLD Graph Builder..."));
+  t.setMessage(TE_TR("LLD Graph Builder..."));
   t.useTimer(true);
 
   //extract graph
