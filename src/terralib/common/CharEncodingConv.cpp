@@ -71,7 +71,7 @@ te::common::CharEncodingConv::~CharEncodingConv()
 std::string te::common::CharEncodingConv::conv(const std::string& src)
 {
   std::ostringstream outstring(std::ios_base::out);
-  const char* inbuff = src.c_str();
+  char* inbuff = (char*)src.c_str();
   std::size_t inbytesleft = src.length();
 
   char outchar[TE_CONVERSION_BUFFERSIZE_SIZE];
@@ -126,7 +126,7 @@ std::string te::common::CharEncodingConv::convert(const std::string& src, const 
   }
 
   std::ostringstream outstring(std::ios_base::out);
-  const char* inbuff = src.c_str();
+  char* inbuff = (char*)src.c_str();
   std::size_t inbytesleft = src.length();
 
   char outchar[TE_CONVERSION_BUFFERSIZE_SIZE];
