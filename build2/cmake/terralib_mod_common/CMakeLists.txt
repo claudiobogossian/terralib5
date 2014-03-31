@@ -21,7 +21,7 @@
 #  Description: TerraLib Commmon Runtime Module.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
-#          Juan P. Garrido <juan@dpi.inpe.br>
+#          Juan Carlos P. Garrido <juan@dpi.inpe.br>
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
@@ -36,6 +36,13 @@ file(GLOB TERRALIB_URI_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/comm
 
 file(GLOB TERRALIB_PROGRESS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/common/progress/*.cpp)
 file(GLOB TERRALIB_PROGRESS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/common/progress/*.h)
+
+source_group("Source Files"            FILES ${TERRALIB_SRC_FILES})
+source_group("Header Files"            FILES ${TERRALIB_HDR_FILES})
+source_group("Source Files\\URI"       FILES ${TERRALIB_URI_SRC_FILES})
+source_group("Header Files\\URI"       FILES ${TERRALIB_URI_HDR_FILES})
+source_group("Source Files\\progress"  FILES ${TERRALIB_PROGRESS_SRC_FILES})
+source_group("Header Files\\progress"  FILES ${TERRALIB_PROGRESS_HDR_FILES})
 
 set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
                    ${TERRALIB_URI_SRC_FILES} ${TERRALIB_URI_HDR_FILES}
