@@ -88,9 +88,7 @@ namespace te
 
         public:
 
-          void setLayer(te::map::AbstractLayerPtr layer);
-
-          void setGroupingLayers(std::vector<te::map::AbstractLayerPtr> groupingLayer);
+          void setLayers(te::map::AbstractLayerPtr selectedLayer, std::vector<te::map::AbstractLayerPtr> allLayers);
 
           std::auto_ptr<te::map::Grouping> getGrouping();
 
@@ -124,10 +122,6 @@ namespace te
 
         public slots:
 
-          void onImportPushButtonClicked();
-
-          void onImportGroupBoxToggled(bool toggled);
-
           void onApplyPushButtonClicked();
 
           void onTypeComboBoxActivated(int idx);
@@ -139,6 +133,8 @@ namespace te
           void onTableWidgetItemChanged(QTableWidgetItem* item);
 
           void onTableWidgetItemDoubleClicked(QTableWidgetItem* item);
+
+          void onImportPushButtonClicked();
 
         signals:
 
