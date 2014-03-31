@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,15 +18,24 @@
  */
 
 /*!
-  \file Config.h
+  \file CommonExamples.h
 
-  \brief Global configuration flags for the TerraLib common module examples.
- */
+  \brief A set of module common examples.
+*/
 
-#ifndef __TERRALIB_EXAMPLES_COMMON_INTERNAL_CONFIG_H
-#define __TERRALIB_EXAMPLES_COMMON_INTERNAL_CONFIG_H
+#ifndef __TERRALIB_EXAMPLES_COMMON_INTERNAL_COMMONEXAMPLES_H
+#define __TERRALIB_EXAMPLES_COMMON_INTERNAL_COMMONEXAMPLES_H
 
 // TerraLib
-#include "../Config.h"
+#include <terralib/common.h>
 
-#endif  // __TERRALIB_EXAMPLES_COMMON_INTERNAL_CONFIG_H
+/*! \brief This example shows TerraLib handles Units of Measure. */
+void UOMManage();
+
+/*! \brief This example test how to retrieve a SRS unit of measure. */
+void UnitSRS();
+
+/*! \brief This example shows charset conversion. */
+void CharEncodingConv();
+
+#endif  // __TERRALIB_EXAMPLES_COMMON_INTERNAL_COMMONEXAMPLES_H
