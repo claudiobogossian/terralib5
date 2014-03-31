@@ -30,11 +30,11 @@ include_directories(${Boost_INCLUDE_DIR})
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/dataaccess/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/dataaccess/*.h)
 
-file(GLOB TERRALIB_DATASOURCE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/dataaccess/datasource/*.cpp)
-file(GLOB TERRALIB_DATASOURCE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/dataaccess/datasource/*.h)
-
 file(GLOB TERRALIB_DATASET_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/dataaccess/dataset/*.cpp)
 file(GLOB TERRALIB_DATASET_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/dataaccess/dataset/*.h)
+
+file(GLOB TERRALIB_DATASOURCE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/dataaccess/datasource/*.cpp)
+file(GLOB TERRALIB_DATASOURCE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/dataaccess/datasource/*.h)
 
 file(GLOB TERRALIB_QUERY_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/dataaccess/query/*.cpp)
 file(GLOB TERRALIB_QUERY_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/dataaccess/query/*.h)
@@ -42,21 +42,40 @@ file(GLOB TERRALIB_QUERY_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/da
 file(GLOB TERRALIB_UTILS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/dataaccess/utils/*.cpp)
 file(GLOB TERRALIB_UTILS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/dataaccess/utils/*.h)
 
+source_group("Source Files"              FILES ${TERRALIB_SRC_FILES})
+source_group("Header Files"              FILES ${TERRALIB_HDR_FILES})
+source_group("Source Files\\dataset"     FILES ${TERRALIB_DATASET_SRC_FILES})
+source_group("Header Files\\dataset"     FILES ${TERRALIB_DATASET_HDR_FILES})
+source_group("Source Files\\datasource"  FILES ${TERRALIB_DATASOURCE_SRC_FILES})
+source_group("Header Files\\datasource"  FILES ${TERRALIB_DATASOURCE_HDR_FILES})
+source_group("Source Files\\query"       FILES ${TERRALIB_QUERY_SRC_FILES})
+source_group("Header Files\\query"       FILES ${TERRALIB_QUERY_HDR_FILES})
+source_group("Source Files\\utils"       FILES ${TERRALIB_UTILS_SRC_FILES})
+source_group("Header Files\\utils"       FILES ${TERRALIB_UTILS_HDR_FILES})
+
 if(TERRALIB_MOD_XML_ENABLED)
+
   file(GLOB TERRALIB_XML_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/dataaccess/serialization/xml/*.cpp)
   file(GLOB TERRALIB_XML_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/dataaccess/serialization/xml/*.h)
+
+  source_group("Source Files\\serialization\\xml"  FILES ${TERRALIB_XML_SRC_FILES})
+  source_group("Header Files\\serialization\\xml"  FILES ${TERRALIB_XML_HDR_FILES})
+
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
-                     ${TERRALIB_DATASOURCE_SRC_FILES} ${TERRALIB_DATASOURCE_HDR_FILES}
                      ${TERRALIB_DATASET_SRC_FILES} ${TERRALIB_DATASET_HDR_FILES}
+                     ${TERRALIB_DATASOURCE_SRC_FILES} ${TERRALIB_DATASOURCE_HDR_FILES}
                      ${TERRALIB_QUERY_SRC_FILES} ${TERRALIB_QUERY_HDR_FILES}
                      ${TERRALIB_UTILS_SRC_FILES} ${TERRALIB_UTILS_HDR_FILES}
                      ${TERRALIB_XML_SRC_FILES} ${TERRALIB_XML_HDR_FILES})
+
 else()
+
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
-                     ${TERRALIB_DATASOURCE_SRC_FILES} ${TERRALIB_DATASOURCE_HDR_FILES}
                      ${TERRALIB_DATASET_SRC_FILES} ${TERRALIB_DATASET_HDR_FILES}
+                     ${TERRALIB_DATASOURCE_SRC_FILES} ${TERRALIB_DATASOURCE_HDR_FILES}
                      ${TERRALIB_QUERY_SRC_FILES} ${TERRALIB_QUERY_HDR_FILES}
                      ${TERRALIB_UTILS_SRC_FILES} ${TERRALIB_UTILS_HDR_FILES})
+
 endif()
 
 add_library(terralib_mod_dataaccess SHARED ${TERRALIB_FILES})
@@ -89,11 +108,11 @@ install(TARGETS terralib_mod_dataaccess
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION include/terralib/dataaccess COMPONENT devel)
 
-install(FILES ${TERRALIB_DATASOURCE_HDR_FILES}
-        DESTINATION include/terralib/dataaccess/datasource COMPONENT devel)
-
 install(FILES ${TERRALIB_DATASET_HDR_FILES}
         DESTINATION include/terralib/dataaccess/dataset COMPONENT devel)
+
+install(FILES ${TERRALIB_DATASOURCE_HDR_FILES}
+        DESTINATION include/terralib/dataaccess/datasource COMPONENT devel)
 
 install(FILES ${TERRALIB_QUERY_HDR_FILES}
         DESTINATION include/terralib/dataaccess/query COMPONENT devel)
