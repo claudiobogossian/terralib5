@@ -21,7 +21,7 @@
 #  Description: Build configuration for the Datatype Module.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
-#          Juan P. Garrido <juan@dpi.inpe.br>
+#          Juan Carlos P. Garrido <juan@dpi.inpe.br>
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
@@ -30,12 +30,23 @@ include_directories(${Boost_INCLUDE_DIR})
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/datatype/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/datatype/*.h)
 
+source_group("Source Files"  FILES ${TERRALIB_SRC_FILES})
+source_group("Header Files"  FILES ${TERRALIB_HDR_FILES})
+
 if(TERRALIB_MOD_XML_ENABLED)
+
   file(GLOB TERRALIB_XML_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/datatype/serialization/xml/*.cpp)
   file(GLOB TERRALIB_XML_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/datatype/serialization/xml/*.h)
+
+  source_group("Source Files\\serialization\\xml"  FILES ${TERRALIB_XML_SRC_FILES})
+  source_group("Header Files\\serialization\\xml"  FILES ${TERRALIB_XML_HDR_FILES})
+  
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_XML_SRC_FILES} ${TERRALIB_XML_HDR_FILES})
+
 else()
+
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+
 endif()
 
 add_library(terralib_mod_datatype SHARED ${TERRALIB_FILES})
