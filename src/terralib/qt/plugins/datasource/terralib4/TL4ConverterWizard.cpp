@@ -602,6 +602,8 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
 
         std::map<std::string, std::string> opt;
 
+        ds_adapter->moveBeforeFirst();
+
         te::da::Create(tl5ds.get(), dt_adapter->getResult(), ds_adapter.get(), opt);
 
         successfulDatasets.push_back(targetName);
