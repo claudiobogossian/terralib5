@@ -18,7 +18,7 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build configuration for the Symbology Encoding Module.
+#  Description: Build configuration for the Metadata Module.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
@@ -27,25 +27,33 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
-file(GLOB ROOT_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/metadata/*.cpp)
-file(GLOB ROOT_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/metadata/*.h)
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/metadata/*.cpp)
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/metadata/*.h)
 
-file(GLOB ISO_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/metadata/iso19115/*.cpp)
-file(GLOB ISO_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/metadata/iso19115/*.h)
+file(GLOB TERRALIB_ISO_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/metadata/iso19115/*.cpp)
+file(GLOB TERRALIB_ISO_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/metadata/iso19115/*.h)
 
-source_group("Source Files"            FILES ${ROOT_SRC_FILES})
-source_group("Header Files"            FILES ${ROOT_HDR_FILES})
-source_group("Source Files\\iso19115"  FILES ${ISO_SRC_FILES})
-source_group("Header Files\\iso19115"  FILES ${ISO_HDR_FILES})
+source_group("Source Files"            FILES ${TERRALIB_SRC_FILES})
+source_group("Header Files"            FILES ${TERRALIB_HDR_FILES})
+source_group("Source Files\\iso19115"  FILES ${TERRALIB_ISO_SRC_FILES})
+source_group("Header Files\\iso19115"  FILES ${TERRALIB_ISO_HDR_FILES})
 
 if(TERRALIB_MOD_XML_ENABLED)
+
   file(GLOB TERRALIB_XML_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/metadata/serialization/xml/*.cpp)
   file(GLOB TERRALIB_XML_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/metadata/serialization/xml/*.h)
+
   source_group("Source Files\\serialization\\xml"  FILES ${TERRALIB_XML_SRC_FILES})
   source_group("Header Files\\serialization\\xml"  FILES ${TERRALIB_XML_HDR_FILES})
-  set(TERRALIB_FILES ${ROOT_SRC_FILES} ${ROOT_HDR_FILES} ${ISO_SRC_FILES} ${ISO_HDR_FILES} ${TERRALIB_XML_SRC_FILES} ${TERRALIB_XML_HDR_FILES})
+
+  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
+                     ${TERRALIB_ISO_SRC_FILES} ${TERRALIB_ISO_HDR_FILES}
+                     ${TERRALIB_XML_SRC_FILES} ${TERRALIB_XML_HDR_FILES})
+
 else()
-  set(TERRALIB_FILES ${ROOT_SRC_FILES} ${ROOT_HDR_FILES} ${ISO_SRC_FILES} ${ISO_HDR_FILES})
+
+  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_ISO_SRC_FILES} ${TERRALIB_ISO_HDR_FILES})
+
 endif()
 
 add_library(terralib_mod_metadata SHARED ${TERRALIB_FILES})
@@ -73,10 +81,10 @@ install(TARGETS terralib_mod_metadata
         LIBRARY DESTINATION lib COMPONENT runtime
         ARCHIVE DESTINATION lib COMPONENT runtime)
 
-install(FILES ${ROOT_HDR_FILES}
+install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION include/terralib/metadata COMPONENT devel)
 
-install(FILES ${ISO_HDR_FILES}
+install(FILES ${TERRALIB_ISO_HDR_FILES}
         DESTINATION include/terralib/metadata/iso19115 COMPONENT devel)
 
 if(TERRALIB_MOD_XML_ENABLED)
