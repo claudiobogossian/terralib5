@@ -24,9 +24,9 @@
 */
 
 // TerraLib
-#include "../../common/Logger.h"
-#include "../../common/TerraLib.h"
-#include "../../common/Translator.h"
+#include "../common/Logger.h"
+#include "../common/TerraLib.h"
+#include "../common/Translator.h"
 #include "Config.h"
 #include "Module.h"
 

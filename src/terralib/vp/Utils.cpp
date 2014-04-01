@@ -37,9 +37,6 @@
 #include "../memory/DataSet.h"
 #include "Utils.h"
 
-// Qt
-#include <QtGui/QTreeView>
-
 //STL
 #include <vector>
 #include <memory>
