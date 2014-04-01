@@ -25,7 +25,6 @@
 
 // TerraLib
 #include "CharEncodingConv.h"
-#include "PlatformUtils.h"
 
 #if TE_CHARENCODING_ENABLED
 
