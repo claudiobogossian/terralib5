@@ -344,7 +344,7 @@ bool te::vp::AggregationMemory::run()
     ++itg;
   
     if (task.isActive() == false)
-      throw te::vp::Exception(TR_VP("Operation canceled!"));
+      throw te::vp::Exception(TE_TR("Operation canceled!"));
   
     task.pulse();
   }

@@ -51,7 +51,6 @@
 #include "../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../sam/rtree.h"
 #include "Buffer.h"
-#include "BufferDialog.h"
 #include "Config.h"
 #include "Exception.h"
 #include "Utils.h"

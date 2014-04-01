@@ -458,7 +458,7 @@ bool AggregationMemory(const std::string& inDatasetName,
     
     if(task.isActive() == false)
     {
-      throw te::vp::Exception(TR_VP("Operation canceled!"));
+      throw te::vp::Exception(TE_TR("Operation canceled!"));
     }
     
     task.pulse();

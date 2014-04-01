@@ -321,7 +321,7 @@ bool IntersectionMemory(const std::string& inFirstDataSetName,
   resultPair = PairwiseIntersection(outDataSetName, firstMember, secondMember, outputSRID);
 
   if(resultPair.second->size() < 1)
-    throw te::common::Exception(TR_VP("The Layers do not intersect!"));
+    throw te::common::Exception(TE_TR("The Layers do not intersect!"));
 
   outDataSetType = resultPair.first;
   outDataSet = resultPair.second;
@@ -537,7 +537,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::stri
       delete outputDt;
       delete outputDs;
 
-      throw te::common::Exception(TR_VP("Operation canceled!"));
+      throw te::common::Exception(TE_TR("Operation canceled!"));
     }
 
     task.pulse();

@@ -27,9 +27,6 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/qt/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/qt/*.h)
-
 if(Qt5_FOUND)
   set(CMAKE_AUTOMOC ON)
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -46,6 +43,8 @@ else() # QT4_FOUND
 
 endif()
 
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/qt/*.cpp)
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/qt/*.h)
 file(GLOB TERRALIB_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/qt/ui/*.ui)
 
 if(Qt5_FOUND)
@@ -57,9 +56,7 @@ if(Qt5_FOUND)
 
   add_library(terralib_mod_statistics_qt SHARED ${TERRALIB_FILES})
 
-  target_link_libraries(terralib_mod_statistics_qt terralib_mod_statistics_core
-                                                   ${Boost_FILESYSTEM_LIBRARY}
-                                                   ${Boost_SYSTEM_LIBRARY})
+  target_link_libraries(terralib_mod_statistics_qt terralib_mod_statistics_core)
 
   qt5_use_modules(terralib_mod_statistics_qt Widgets)
 
@@ -71,7 +68,6 @@ else()
 # moc'ing
   set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/qt/StatisticsDialog.h)
 
-
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES} ${TERRALIB_GEN_SRC_FILES})
@@ -79,8 +75,6 @@ else()
   add_library(terralib_mod_libname SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_statistics_qt terralib_mod_statistics_core
-                                                   ${Boost_FILESYSTEM_LIBRARY}
-                                                   ${Boost_SYSTEM_LIBRARY})
                                                    ${QT_LIBRARIES})
 
 endif() 

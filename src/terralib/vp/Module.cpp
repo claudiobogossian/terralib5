@@ -54,12 +54,12 @@ te::vp::Module::~Module()
 
 void te::vp::Module::initialize()
 {
-  TE_LOG_TRACE(TR_VP("TerraLib Intersection Operation initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Intersection Operation initialized!"));
 }
 
 void te::vp::Module::finalize()
 {
 
-  TE_LOG_TRACE(TR_VP("TerraLib Intersection Operation finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Intersection Operation finalized!"));
 }
 
