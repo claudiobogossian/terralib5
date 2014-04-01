@@ -519,6 +519,11 @@ std::string te::stmem::DataSet::getPropertyName(std::size_t pos) const
   return m_pnames[pos];
 }
 
+te::common::CharEncoding te::stmem::DataSet::getPropertyCharEncoding(std::size_t i) const
+{
+  return te::common::UNKNOWN_CHAR_ENCODING; // TODO!
+}
+
 std::string te::stmem::DataSet::getDatasetNameOfProperty(std::size_t /*pos*/) const
 {
   return "";

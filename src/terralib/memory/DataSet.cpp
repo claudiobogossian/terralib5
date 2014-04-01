@@ -256,6 +256,11 @@ void te::mem::DataSet::setPropertyName(const std::string& name, std::size_t pos)
   m_pnames[pos] = name;
 }
 
+te::common::CharEncoding te::mem::DataSet::getPropertyCharEncoding(std::size_t i) const
+{
+  return te::common::UNKNOWN_CHAR_ENCODING; // TODO!
+}
+
 std::string te::mem::DataSet::getDatasetNameOfProperty(std::size_t /*pos*/) const
 {
   throw Exception("No implemented yet!");

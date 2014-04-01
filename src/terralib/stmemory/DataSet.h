@@ -389,6 +389,8 @@ namespace te
 
         std::string getPropertyName(std::size_t i) const;
 
+        te::common::CharEncoding getPropertyCharEncoding(std::size_t i) const;
+
         std::string getDatasetNameOfProperty(std::size_t i) const;
 
         bool isEmpty() const;

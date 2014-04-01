@@ -242,6 +242,8 @@ namespace te
 
         void setPropertyName(const std::string& name, std::size_t pos);
 
+        te::common::CharEncoding getPropertyCharEncoding(std::size_t i) const;
+
         std::string getDatasetNameOfProperty(std::size_t pos) const;
 
         DataSetItem* getItem() const;

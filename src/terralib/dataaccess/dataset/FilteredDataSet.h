@@ -88,11 +88,13 @@ namespace te
 
         std::size_t getNumProperties() const;
 
-        int getPropertyDataType(std::size_t pos) const;
+        int getPropertyDataType(std::size_t i) const;
 
-        std::string getPropertyName(std::size_t pos) const;
+        std::string getPropertyName(std::size_t i) const;
 
-        std::string getDatasetNameOfProperty(std::size_t pos) const;
+        te::common::CharEncoding getPropertyCharEncoding(std::size_t i) const;
+
+        std::string getDatasetNameOfProperty(std::size_t i) const;
 
         bool isEmpty() const;
 
