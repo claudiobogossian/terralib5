@@ -43,24 +43,22 @@
 #include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../srs/Config.h"
-#include "../Config.h"
+#include "../Buffer.h"
 #include "../Exception.h"
-#include "../qt/widgets/layer/utils/DataSet2Layer.h"
-#include "Buffer.h"
 #include "BufferDialog.h"
 #include "ui_BufferDialogForm.h"
-#include "VectorProcessingConfig.h"
 #include "Utils.h"
 
 // Qt
-#include <QtCore/QList>
-#include <QtCore/QSize>
-#include <QtGui/QFileDialog>
-#include <QtGui/QListWidget>
-#include <QtGui/QListWidgetItem>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QList>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QMessageBox>
+#include <QSize>
 
 // STL
 #include <map>
@@ -82,7 +80,7 @@ te::vp::BufferDialog::BufferDialog(QWidget* parent, Qt::WindowFlags f)
   m_ui->setupUi(this);
 
 // add icons
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-buffer-hint").pixmap(112,48));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-buffer-hint").pixmap(112,48));
   
   QSize iconSize(96, 48);
 

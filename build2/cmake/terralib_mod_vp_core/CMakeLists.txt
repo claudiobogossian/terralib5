@@ -34,7 +34,7 @@ set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 add_library(terralib_mod_vp_core SHARED ${TERRALIB_FILES})
 
-target_link_libraries(terralib_mod_vp_core terralib_mod_statistics_core,
+target_link_libraries(terralib_mod_vp_core terralib_mod_statistics_core
                                            terralib_mod_memory
                                            terralib_mod_dataaccess
                                            terralib_mod_geometry

@@ -18,7 +18,7 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build configuration for the Statistics Qt Module.
+#  Description: Build configuration for the Vector Processing Qt Module.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
@@ -43,9 +43,9 @@ else() # QT4_FOUND
 
 endif()
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/qt/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/qt/*.h)
-file(GLOB TERRALIB_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/qt/ui/*.ui)
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/*.cpp)
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/*.h)
+file(GLOB TERRALIB_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/ui/*.ui)
 
 if(Qt5_FOUND)
 
@@ -54,11 +54,11 @@ if(Qt5_FOUND)
 
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES})
 
-  add_library(terralib_mod_statistics_qt SHARED ${TERRALIB_FILES})
+  add_library(terralib_mod_vp_qt SHARED ${TERRALIB_FILES})
 
-  target_link_libraries(terralib_mod_statistics_qt terralib_mod_statistics_core)
+  target_link_libraries(terralib_mod_vp_qt terralib_mod_vp_core)
 
-  qt5_use_modules(terralib_mod_statistics_qt Widgets)
+  qt5_use_modules(terralib_mod_vp_qt Widgets)
 
 else()
 
@@ -66,30 +66,41 @@ else()
   QT4_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
 
 # moc'ing
-  set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/qt/StatisticsDialog.h)
+  set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/AggregationDialog.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/BasicGeographicOperationDialog.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/BufferDialog.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/IntersectionDialog.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/LayerItem.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/LayerTreeModel.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/LegendGroupItem.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/PolygonToLineDialog.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/PropertyGroupItem.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/PropertyItem.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/SummarizationDialog.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/TransformationDialog.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES} ${TERRALIB_GEN_SRC_FILES})
 
-  add_library(terralib_mod_statistics_qt SHARED ${TERRALIB_FILES})
+  add_library(terralib_mod_vp_qt SHARED ${TERRALIB_FILES})
 
-  target_link_libraries(terralib_mod_statistics_qt terralib_mod_statistics_core
-                                                   ${QT_LIBRARIES})
+  target_link_libraries(terralib_mod_vp_qt terralib_mod_vp_core
+                                           ${QT_LIBRARIES})
 
 endif() 
 
-set_target_properties(terralib_mod_statistics_qt
+set_target_properties(terralib_mod_vp_qt
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
                                  SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
 
-install(TARGETS terralib_mod_statistics_qt
+install(TARGETS terralib_mod_vp_qt
         EXPORT terralib-targets
         RUNTIME DESTINATION bin COMPONENT runtime
         LIBRARY DESTINATION lib COMPONENT runtime
         ARCHIVE DESTINATION lib COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}
-        DESTINATION include/terralib/statistics/qt COMPONENT devel)
+        DESTINATION include/terralib/vp/qt COMPONENT devel)
 
-export(TARGETS terralib_mod_statistics_qt APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
+export(TARGETS terralib_mod_vp_qt APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

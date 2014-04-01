@@ -29,23 +29,22 @@
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
-#include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../datatype/Enums.h"
 #include "../../datatype/Property.h"
 #include "../../maptools/AbstractLayer.h"
+#include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../Config.h"
 #include "../Exception.h"
 #include "BasicGeographicOperationDialog.h"
 #include "ui_BasicGeographicOperationDialogForm.h"
-#include "VectorProcessingConfig.h"
 
 // Qt
-#include <QtCore/QList>
-#include <QtCore/QSize>
-#include <QtGui/QFileDialog>
-#include <QtGui/QListWidget>
-#include <QtGui/QListWidgetItem>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QList>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QMessageBox>
+#include <QSize>
 
 te::vp::BasicGeographicOperationDialog::BasicGeographicOperationDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -61,22 +60,22 @@ te::vp::BasicGeographicOperationDialog::BasicGeographicOperationDialog(QWidget* 
   QSize iconSize(32, 32);
 
   m_ui->m_convexHullCheckBox->setIconSize(iconSize);
-  m_ui->m_convexHullCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-convex-hull-hint"));
+  m_ui->m_convexHullCheckBox->setIcon(QIcon::fromTheme("vp-convex-hull-hint"));
 
   m_ui->m_centroidCheckBox->setIconSize(iconSize);
-  m_ui->m_centroidCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-centroid-hint"));
+  m_ui->m_centroidCheckBox->setIcon(QIcon::fromTheme("vp-centroid-hint"));
 
   m_ui->m_areaCheckBox->setIconSize(iconSize);
-  m_ui->m_areaCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-area-hint"));
+  m_ui->m_areaCheckBox->setIcon(QIcon::fromTheme("vp-area-hint"));
 
   m_ui->m_lineLengthCheckBox->setIconSize(iconSize);
-  m_ui->m_lineLengthCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-line-length-hint"));
+  m_ui->m_lineLengthCheckBox->setIcon(QIcon::fromTheme("vp-line-length-hint"));
 
   m_ui->m_perimeterPolygonsCheckBox->setIconSize(iconSize);
-  m_ui->m_perimeterPolygonsCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-perimeter-hint"));
+  m_ui->m_perimeterPolygonsCheckBox->setIcon(QIcon::fromTheme("vp-perimeter-hint"));
 
   m_ui->m_mbrCheckBox->setIconSize(iconSize);
-  m_ui->m_mbrCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-mbr-hint"));
+  m_ui->m_mbrCheckBox->setIcon(QIcon::fromTheme("vp-mbr-hint"));
 
 //signals
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));

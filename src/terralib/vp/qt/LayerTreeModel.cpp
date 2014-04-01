@@ -84,7 +84,7 @@ void te::vp::LayerTreeModel::fetchMore(const QModelIndex& parent)
   te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(parent.internalPointer());
 
   if(item == 0)
-    throw Exception(TR_VP("Invalid data associated to the layer model!"));
+    throw Exception(TE_TR("Invalid data associated to the layer model!"));
 
   item->fetchMore();
 }
@@ -97,7 +97,7 @@ Qt::ItemFlags te::vp::LayerTreeModel::flags(const QModelIndex& index) const
   te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(index.internalPointer());
 
   if(item == 0)
-    throw Exception(TR_VP("Invalid data associated to the layer model!"));
+    throw Exception(TE_TR("Invalid data associated to the layer model!"));
 
   return QAbstractItemModel::flags(index) | item->flags();
 }
@@ -110,7 +110,7 @@ bool te::vp::LayerTreeModel::hasChildren(const QModelIndex& parent) const
   te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(parent.internalPointer());
 
   if(item == 0)
-    throw Exception(TR_VP("Invalid data associated to the layer model!"));
+    throw Exception(TE_TR("Invalid data associated to the layer model!"));
 
   return item->hasChildren();
 }
@@ -137,18 +137,18 @@ QModelIndex te::vp::LayerTreeModel::index(int row, int column, const QModelIndex
   }
 
   if(parentItem == 0)
-    throw Exception(TR_VP("Invalid data associated to the layer model!"));
+    throw Exception(TE_TR("Invalid data associated to the layer model!"));
 
   if(parentItem->children().empty())
-    throw Exception(TR_VP("The layer item in the model must have a child item!"));
+    throw Exception(TE_TR("The layer item in the model must have a child item!"));
 
   if(row >= parentItem->children().size())
-    throw Exception(TR_VP("The row for the layer item is out of range!"));
+    throw Exception(TE_TR("The row for the layer item is out of range!"));
 
   te::qt::widgets::AbstractTreeItem* item = dynamic_cast<te::qt::widgets::AbstractTreeItem*>(parentItem->children().at(row));
 
   if(item == 0)
-    throw Exception(TR_VP("The layer item is not an te::qt::widgets::AbstractTreeItem!"));
+    throw Exception(TE_TR("The layer item is not an te::qt::widgets::AbstractTreeItem!"));
 
   return createIndex(row, column, item);
 }
@@ -166,7 +166,7 @@ QModelIndex te::vp::LayerTreeModel::parent(const QModelIndex& index) const
   te::qt::widgets::AbstractTreeItem* parentItem = dynamic_cast<te::qt::widgets::AbstractTreeItem*>(item->parent());
 
   if(parentItem == 0)
-    throw Exception(TR_VP("The layer item is not an AbstractTreeItem!"));
+    throw Exception(TE_TR("The layer item is not an AbstractTreeItem!"));
 
   te::qt::widgets::AbstractTreeItem* grandParentItem = dynamic_cast<te::qt::widgets::AbstractTreeItem*>(parentItem->parent());
 
@@ -193,7 +193,7 @@ QModelIndex te::vp::LayerTreeModel::parent(const QModelIndex& index) const
     }
   }
 
-  throw Exception(TR_VP("Could not determine the layer index in the model!"));
+  throw Exception(TE_TR("Could not determine the layer index in the model!"));
 }
 
 int te::vp::LayerTreeModel::rowCount(const QModelIndex& parent) const
@@ -204,7 +204,7 @@ int te::vp::LayerTreeModel::rowCount(const QModelIndex& parent) const
   te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(parent.internalPointer());
 
   if(item == 0)
-    throw Exception(TR_VP("Error: NULL layer item!"));
+    throw Exception(TE_TR("Error: NULL layer item!"));
 
   return item->children().count();
 }
@@ -270,9 +270,9 @@ QVariant te::vp::LayerTreeModel::headerData(int section, Qt::Orientation orienta
     if(orientation == Qt::Horizontal)
     {
       if(section == 0)
-        return QVariant(TR_VP("Layers"));
+        return QVariant(TE_TR("Layers"));
       else if(section == 1)
-        return QVariant(TR_VP("Only Selected"));
+        return QVariant(TE_TR("Only Selected"));
     }
   }
 
