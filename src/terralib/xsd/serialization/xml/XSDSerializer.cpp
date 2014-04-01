@@ -24,44 +24,44 @@
 */
 
 // TerraLib
-#include "../common/StringUtils.h"
-#include "../xml/Reader.h"
-#include "../xml/ReaderFactory.h"
-#include "../xml/Writer.h"
-#include "All.h"
-#include "Annotated.h"
-#include "Annotation.h"
-#include "Any.h"
-#include "AnyAttribute.h"
-#include "AppInfo.h"
-#include "Attribute.h"
-#include "AttributeGroup.h"
-#include "Choice.h"
-#include "ComplexContent.h"
-#include "ComplexType.h"
-#include "Documentation.h"
-#include "Element.h"
-#include "Exception.h"
-#include "Extension.h"
-#include "Field.h"
-#include "Group.h"
-#include "Import.h"
-#include "Include.h"
-#include "Key.h"
-#include "KeyRef.h"
-#include "List.h"
-#include "QName.h"
-#include "Redefine.h"
-#include "Restriction4ComplexContent.h"
-#include "Restriction4SimpleContent.h"
-#include "Restriction4SimpleType.h"
-#include "Selector.h"
-#include "SimpleContent.h"
-#include "SimpleType.h"
-#include "Schema.h"
-#include "Sequence.h"
-#include "Union.h"
-#include "Unique.h"
+#include "../../../common/StringUtils.h"
+#include "../../../xml/Reader.h"
+#include "../../../xml/ReaderFactory.h"
+#include "../../../xml/Writer.h"
+#include "../../All.h"
+#include "../../Annotated.h"
+#include "../../Annotation.h"
+#include "../../Any.h"
+#include "../../AnyAttribute.h"
+#include "../../AppInfo.h"
+#include "../../Attribute.h"
+#include "../../AttributeGroup.h"
+#include "../../Choice.h"
+#include "../../ComplexContent.h"
+#include "../../ComplexType.h"
+#include "../../Documentation.h"
+#include "../../Element.h"
+#include "../../Exception.h"
+#include "../../Extension.h"
+#include "../../Field.h"
+#include "../../Group.h"
+#include "../../Import.h"
+#include "../../Include.h"
+#include "../../Key.h"
+#include "../../KeyRef.h"
+#include "../../List.h"
+#include "../../QName.h"
+#include "../../Redefine.h"
+#include "../../Restriction4ComplexContent.h"
+#include "../../Restriction4SimpleContent.h"
+#include "../../Restriction4SimpleType.h"
+#include "../../Selector.h"
+#include "../../SimpleContent.h"
+#include "../../SimpleType.h"
+#include "../../Schema.h"
+#include "../../Sequence.h"
+#include "../../Union.h"
+#include "../../Unique.h"
 #include "XSDSerializer.h"
 
 // STL
@@ -1418,10 +1418,10 @@ te::xsd::Schema* te::xsd::serialize::ReadSchema(const std::string& path)
   reader->read(path);
 
   if(!reader->next())
-    throw Exception((boost::format(TR_XSD("Could not read the XSD Schema in file: %1%.")) % path).str());
+    throw Exception((boost::format(TE_TR("Could not read the XSD Schema in file: %1%.")) % path).str());
 
   if(reader->getNodeType() != te::xml::START_ELEMENT)
-    throw Exception((boost::format(TR_XSD("Error reading the document %1%, the start element wasn't found.")) % path).str());
+    throw Exception((boost::format(TE_TR("Error reading the document %1%, the start element wasn't found.")) % path).str());
 
   return ReadSchema(*reader);
 }

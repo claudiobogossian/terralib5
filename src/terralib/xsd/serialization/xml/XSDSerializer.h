@@ -27,8 +27,8 @@
 #define __TERRALIB_XSD_INTERNAL_XSDSERIALIZER_H
 
 // TerraLib
-#include "Config.h"
-#include "Enums.h"
+#include "../../Config.h"
+#include "../../Enums.h"
 
 //STL
 #include <string>
