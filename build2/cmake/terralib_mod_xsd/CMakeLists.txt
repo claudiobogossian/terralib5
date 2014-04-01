@@ -18,7 +18,7 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build configuration for the Memory Module.
+#  Description: Build configuration for the XSD Module.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
@@ -52,7 +52,11 @@ endif()
 
 add_library(terralib_mod_xsd SHARED ${TERRALIB_FILES})
 
-target_link_libraries(terralib_mod_xsd terralib_mod_xml)
+if(TERRALIB_MOD_XML_ENABLED)
+  target_link_libraries(terralib_mod_xsd terralib_mod_xml terralib_mod_common)
+else()
+  target_link_libraries(terralib_mod_xsd terralib_mod_common)
+endif()
 
 set_target_properties(terralib_mod_xsd
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
