@@ -31,6 +31,7 @@
 #include "Config.h"
 
 // STL
+#include <map>
 #include <memory>
 
 // Boost
@@ -375,13 +376,15 @@ namespace te
         void setValue(std::size_t i, te::dt::AbstractData* value);
 
         void setValue(const std::string& name, te::dt::AbstractData* ad);
+
         //@}
-        
+
       protected:
 
         boost::shared_ptr<boost::ptr_vector<DataSetItem> > m_items;   //!< The list of dataset items.
         std::vector<std::string> m_pnames;                            //!< The list of property names.
         std::vector<int> m_ptypes;                                    //!< The list of property types.
+        std::map<int, te::common::CharEncoding> m_encodings;          //!< The list of string properties char-encoding.
         int m_i;                                                      //!< The index of the current item.
     };
 

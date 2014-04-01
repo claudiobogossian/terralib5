@@ -32,6 +32,7 @@
 #include "../datatype/DataType.h"
 #include "../datatype/Property.h"
 #include "../datatype/SimpleData.h"
+#include "../datatype/StringProperty.h"
 #include "../datatype/Utils.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
@@ -48,6 +49,14 @@ te::mem::DataSet::DataSet(const te::da::DataSetType* const dt)
     m_i(-1)
 {
   te::da::GetPropertyInfo(dt, m_pnames, m_ptypes);
+
+  // Fill char-encodings
+  for(std::size_t i = 0; i < dt->size(); ++i)
+  {
+    te::dt::StringProperty* p = dynamic_cast<te::dt::StringProperty*>(dt->getProperty(i));
+    if(p != 0)
+      m_encodings[i] = p->getCharEncoding();
+  }
 }
 
 te::mem::DataSet::DataSet(te::da::DataSet& rhs)
@@ -55,6 +64,11 @@ te::mem::DataSet::DataSet(te::da::DataSet& rhs)
     m_i(-1)
 {
   te::da::GetPropertyInfo(&rhs, m_pnames, m_ptypes);
+
+  // Fill char-encodings
+  for(std::size_t i = 0; i < m_ptypes.size(); ++i)
+    if(m_ptypes[i] == te::dt::STRING_TYPE)
+      m_encodings[i] = rhs.getPropertyCharEncoding(i);
 
   copy(rhs, 0);
 }
@@ -64,6 +78,11 @@ te::mem::DataSet::DataSet(const DataSet& rhs, const bool deepCopy)
     m_i(-1)
 {
   te::da::GetPropertyInfo(&rhs, m_pnames, m_ptypes);
+
+  // Fill char-encodings
+  for(std::size_t i = 0; i < m_ptypes.size(); ++i)
+    if(m_ptypes[i] == te::dt::STRING_TYPE)
+      m_encodings[i] = rhs.getPropertyCharEncoding(i);
 
   if(deepCopy)
     m_items.reset(new boost::ptr_vector<DataSetItem>(*(rhs.m_items)));
@@ -258,7 +277,10 @@ void te::mem::DataSet::setPropertyName(const std::string& name, std::size_t pos)
 
 te::common::CharEncoding te::mem::DataSet::getPropertyCharEncoding(std::size_t i) const
 {
-  return te::common::UNKNOWN_CHAR_ENCODING; // TODO!
+  std::map<int, te::common::CharEncoding>::const_iterator it = m_encodings.find(i);
+  assert(it != m_encodings.end());
+
+  return it->second;
 }
 
 std::string te::mem::DataSet::getDatasetNameOfProperty(std::size_t /*pos*/) const
