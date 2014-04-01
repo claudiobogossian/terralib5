@@ -267,7 +267,7 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
   te::rp::RasterAttributes rattributes;
 
 // fill m_regions, in the beginning, each region is a cluster
-  te::common::TaskProgress task_fx(TR_RP("ISOSeg algorithm - feature extraction"), te::common::TaskProgress::UNDEFINED, inputPolygons.size());
+  te::common::TaskProgress task_fx(TE_TR("ISOSeg algorithm - feature extraction"), te::common::TaskProgress::UNDEFINED, inputPolygons.size());
   for (unsigned i = 0; i < inputPolygons.size(); i++)
   {
     te::gm::Polygon* polygon = inputPolygons[i];
@@ -304,7 +304,7 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
   int oldid;
   std::set<std::pair<unsigned int, unsigned int> > compared;
 
-  te::common::TaskProgress task_clustering(TR_RP("ISOSeg algorithm - detecting clusters"));
+  te::common::TaskProgress task_clustering(TE_TR("ISOSeg algorithm - detecting clusters"));
   double maxDistance = getThreshold(m_parameters.m_acceptanceThreshold, inputRasterBands.size());
   while (!stable)
   {
@@ -373,7 +373,7 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
   unsigned int pattern;
 
 // classify output image
-  te::common::TaskProgress task(TR_RP("ISOSeg algorithm - classifying image"), te::common::TaskProgress::UNDEFINED, m_regions.size());
+  te::common::TaskProgress task(TE_TR("ISOSeg algorithm - classifying image"), te::common::TaskProgress::UNDEFINED, m_regions.size());
   for (rit = m_regions.begin(); rit != m_regions.end(); ++rit)
   {
     te::gm::Polygon* polygon = inputPolygons[rit->second->m_id];

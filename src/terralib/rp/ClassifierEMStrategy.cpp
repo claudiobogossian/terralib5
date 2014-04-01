@@ -105,12 +105,12 @@ bool te::rp::ClassifierEMStrategy::initialize(te::rp::StrategyParameters const* 
 
   m_parameters = *(paramsPtr);
 
-  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_numberOfClusters > 1, TR_RP("The number of clusters must be at least 2."))
-  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_maxIterations > 0, TR_RP("The number of iterations must be at least 1."))
+  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_numberOfClusters > 1, TE_TR("The number of clusters must be at least 2."))
+  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_maxIterations > 0, TE_TR("The number of iterations must be at least 1."))
   if (m_parameters.m_maxInputPoints == 0)
     m_parameters.m_maxInputPoints = 1000;
-  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_maxInputPoints >= m_parameters.m_numberOfClusters, TR_RP("The maximum number of points must be at least higher than the number of clusters."))
-  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_epsilon > 0, TR_RP("The stop criteria must be higher than 0."))
+  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_maxInputPoints >= m_parameters.m_numberOfClusters, TE_TR("The maximum number of points must be at least higher than the number of clusters."))
+  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_epsilon > 0, TE_TR("The stop criteria must be higher than 0."))
 
   m_isInitialized = true;
 
@@ -121,7 +121,7 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
                                            const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
                                            const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception)
 {
-  TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, TR_RP("Instance not initialized"))
+  TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, TE_TR("Instance not initialized"))
 
 // create a vector of points with random positions inside raster to obtain input data
   std::vector<te::gm::Point*> randomPoints = te::rp::GetRandomPointsInRaster(inputRaster, m_parameters.m_maxInputPoints);
@@ -213,7 +213,7 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
   boost::numeric::ublas::matrix<double> product_Xk_minusMUj(S, S);
   boost::numeric::ublas::matrix<double> sum_product_Xk_minusMUj(S, S);
 
-  te::common::TaskProgress task(TR_RP("Expectation Maximization algorithm - estimating clusters"), te::common::TaskProgress::UNDEFINED, m_parameters.m_maxIterations);
+  te::common::TaskProgress task(TE_TR("Expectation Maximization algorithm - estimating clusters"), te::common::TaskProgress::UNDEFINED, m_parameters.m_maxIterations);
   for (unsigned int i = 0; i < m_parameters.m_maxIterations; i++)
   {
 // computing PCj_Xk
@@ -357,7 +357,7 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
   boost::numeric::ublas::matrix<double> X_minus_MUj_T(1, S);
 
   task.setTotalSteps(inputRaster.getNumberOfColumns() * inputRaster.getNumberOfRows());
-  task.setMessage(TR_RP("Expectation Maximization algorithm - classifying image"));
+  task.setMessage(TE_TR("Expectation Maximization algorithm - classifying image"));
   task.setCurrentStep(0);
   while (it != itend)
   {
