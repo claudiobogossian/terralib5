@@ -78,7 +78,6 @@ te::qt::widgets::GroupingWidget::GroupingWidget(QWidget* parent, Qt::WindowFlags
   connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyPushButtonClicked()));
   connect(m_ui->m_tableWidget, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(onTableWidgetItemDoubleClicked(QTableWidgetItem*)));
   connect(m_ui->m_importPushButton, SIGNAL(clicked()), this, SLOT(onImportPushButtonClicked()));
-  connect(m_ui->m_importGroupBox, SIGNAL(toggled(bool)), this, SLOT(onImportGroupBoxToggled(bool)));
 
   //m_importGroupingGroupBox
   initialize();
@@ -90,17 +89,6 @@ te::qt::widgets::GroupingWidget::~GroupingWidget()
 
   te::common::FreeContents(m_legend);
   m_legend.clear();
-}
-
-void te::qt::widgets::GroupingWidget::setLayer(te::map::AbstractLayerPtr layer)
-{
-  m_layer = layer;
-
-  //set data type
-  setDataSetType();
-
-  //set grouping
-  setGrouping();
 }
 
 std::auto_ptr<te::map::Grouping> te::qt::widgets::GroupingWidget::getGrouping()
@@ -886,11 +874,24 @@ void te::qt::widgets::GroupingWidget::listAttributes()
   }
 }
 
-void te::qt::widgets::GroupingWidget::setGroupingLayers(std::vector<te::map::AbstractLayerPtr> groupingLayer)
+void te::qt::widgets::GroupingWidget::setLayers(te::map::AbstractLayerPtr selectedLayer, std::vector<te::map::AbstractLayerPtr> allLayers)
 {
-  for(std::size_t i = 0; i < groupingLayer.size(); ++i)
+  m_layer = selectedLayer;
+
+  //set data type
+  setDataSetType();
+
+  //set grouping
+  setGrouping();
+
+  for(std::size_t i = 0; i < allLayers.size(); ++i)
   {
-    m_ui->m_layersComboBox->addItem(groupingLayer[i]->getTitle().c_str(), QVariant::fromValue(groupingLayer[i]));
+    std::auto_ptr<te::da::DataSetType> dt(allLayers[i]->getSchema());
+
+    if(dt->hasGeom() && allLayers[i]->getGrouping() && allLayers[i]->getId() != selectedLayer->getId())
+    {
+      m_ui->m_layersComboBox->addItem(allLayers[i]->getTitle().c_str(), QVariant::fromValue(allLayers[i]));
+    }
   }
 }
 
@@ -945,9 +946,4 @@ void te::qt::widgets::GroupingWidget::onImportPushButtonClicked()
   m_manual = false;
 
   emit applyPushButtonClicked();
-}
-
-void te::qt::widgets::GroupingWidget::onImportGroupBoxToggled(bool toggled)
-{
-  m_ui->groupBox->setEnabled(!toggled);
 }

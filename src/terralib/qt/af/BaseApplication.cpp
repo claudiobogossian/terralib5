@@ -1175,23 +1175,11 @@ void te::qt::af::BaseApplication::onLayerGroupingTriggered()
     te::map::AbstractLayerPtr selectedLayer = selectedLayerItem->getLayer();
 
     // Get all layer with grouping to dispose to import
-    std::list<te::map::AbstractLayerPtr> allLayers = m_explorer->getExplorer()->getTopLayers();
-    std::list<te::map::AbstractLayerPtr>::iterator it = allLayers.begin();
-
-    std::vector<te::map::AbstractLayerPtr> groupingLayers;
-    while(it != allLayers.end())
-    {
-      te::map::Grouping* g = it->get()->getGrouping();
-      if(g && it->get()->getId() != selectedLayer->getId())
-        groupingLayers.push_back(it->get());
-
-      ++it;
-    }
+    std::list<te::map::AbstractLayerPtr> allLayersList = m_explorer->getExplorer()->getTopLayers();
+    std::vector<te::map::AbstractLayerPtr> allLayers(allLayersList.begin(), allLayersList.end());
 
     te::qt::widgets::GroupingDialog dlg(this);
-    dlg.setGroupingLayers(groupingLayers);
-    dlg.setLayer(selectedLayer);
-
+    dlg.setLayers(selectedLayer, allLayers);
 
     // Check if the selected layer item has a grouping item; in positive case, remove it from the layer item.
     te::qt::widgets::GroupingItem* groupingItem = selectedLayerItem->findChild<te::qt::widgets::GroupingItem*>();

@@ -78,6 +78,8 @@ terralib4::VectorDataSet::VectorDataSet(TeLayer* layer)
 
   m_nCols = m_querier->getAttrList().size();
 
+  m_size = m_querier->numElemInstances();
+
   m_dt = new te::da::DataSetType(layer->name());
 
   for(int i = 0; i != m_nCols; ++i)

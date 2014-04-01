@@ -849,4 +849,6 @@ TeTheme* terralib4::Transactor::getTL4ThemeFromLayer(const std::string& layerNam
 
     ++it;
   }
+
+  return 0;
 }
