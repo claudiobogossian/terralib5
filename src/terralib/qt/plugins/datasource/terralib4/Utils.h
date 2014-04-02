@@ -29,8 +29,8 @@
 // TerraLib
 #include "Config.h"
 
-class TeColor;
-class TeGrouping;
+struct TeColor;
+struct TeGrouping;
 class TeRasterTransform;
 class TeTheme;
 class TeVisual;
@@ -93,4 +93,3 @@ namespace te
 } // end namespace te
 
 #endif  // __TERRALIB_QT_TERRALIB4_INTERNAL_UTILS_H
-
