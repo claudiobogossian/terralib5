@@ -1,26 +1,27 @@
 #include "ColorBar.h"
 
 // TerraLib
-#include "../../color.h"
-#include "../../color/ColorBar.h"
-#include "../../color/ColorTransform.h"
-#include "../widgets/utils/ColorPickerToolButton.h"
+#include "../../../color.h"
+#include "../../../color/ColorBar.h"
+#include "../../../color/ColorTransform.h"
+#include "../utils/ColorPickerToolButton.h"
 #include "../Utils.h"
 
+// STL
+#include <iostream>
+
 // QT
-#include <QtGui/QPainter>
-#include <QtGui/qevent.h>
-#include <QtGui/QColorDialog>
-#include <QtGui/qmenu.h>
-#include <QtGui/qaction.h>
-#include <QtGui/qwidgetaction.h>
+#include <QAction>
+#include <QColorDialog>
+#include <QEvent>
+#include <QMenu>
+#include <QPainter>
+#include <QWidgetAction>
 
 // QWT
 #include <qwt_color_map.h>
 #include <qwt_interval.h>
 #include <qwt_scale_engine.h>
-
-#include <iostream>
 
 using namespace std;
 

@@ -37,8 +37,8 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QWidget>
-#include <QtGui/QComboBox>
+#include <QComboBox>
+#include <QWidget>
 
 namespace Ui { class RasterNavigatorWidgetForm; }
 

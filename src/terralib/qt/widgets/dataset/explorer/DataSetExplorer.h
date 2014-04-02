@@ -34,7 +34,7 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QDockWidget>
+#include <QDockWidget>
 
 namespace te
 {

@@ -27,10 +27,11 @@
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_DATASETTABLEVIEW_H
 #define __TERRALIB_QT_WIDGETS_INTERNAL_DATASETTABLEVIEW_H
 
+// TerraLib
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QTableView>
+#include <QTableView>
 
 // Forward declaration
 class TablePopupFilter;

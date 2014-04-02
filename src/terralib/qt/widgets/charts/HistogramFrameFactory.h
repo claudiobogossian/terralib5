@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMFRAMEFACTORY_H
 
 // QT
-#include <QtGui/QWidget>
+#include <QWidget>
 
 // TerraLib
 #include "../../../common/AbstractFactory.h"

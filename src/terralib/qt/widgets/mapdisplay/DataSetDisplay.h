@@ -36,7 +36,7 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QFrame>
+#include <QFrame>
 
 namespace te
 {
