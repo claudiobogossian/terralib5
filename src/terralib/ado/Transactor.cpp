@@ -312,6 +312,7 @@ std::vector<std::string> te::ado::Transactor::getDataSetNames()
          table->GetType() == _bstr_t("PASS-THROUGH") ||
          table->GetType() == _bstr_t("SYSTEM TABLE") ||
          table->GetType() == _bstr_t("VIEW") ||
+         table->GetType() == _bstr_t("GLOBAL TEMPORARY") ||
          tableName == "geometry_columns")
          continue;
 
@@ -629,6 +630,17 @@ void te::ado::Transactor::renameProperty(const std::string& datasetName,
   {
     throw Exception(TR_ADO(e.Description()));
   }
+}
+
+void te::ado::Transactor::changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp) 
+{
+  std::auto_ptr<te::dt::Property> prp(newProp);
+  std::string type = GetAdoStringType(prp->getType());
+
+  std::string sql("ALTER TABLE ");
+  sql += datasetName + " ALTER COLUMN " + propName + " " + type; 
+
+  execute(sql);
 }
 
 std::auto_ptr<te::da::PrimaryKey> te::ado::Transactor::getPrimaryKey(const std::string& datasetName)

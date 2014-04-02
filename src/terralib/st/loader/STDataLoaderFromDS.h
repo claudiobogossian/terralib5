@@ -66,7 +66,14 @@ namespace te
         std::auto_ptr<ObservationDataSet> getDataSet(const ObservationDataSetInfo& info, 
                                  const te::dt::DateTime& dt, te::dt::TemporalRelation r = te::dt::DURING,
                                  te::common::TraverseType travType = te::common::FORWARDONLY);
-                                               
+
+        std::auto_ptr<ObservationDataSet> getDataSet(const ObservationDataSetInfo& info,
+                                                     const te::dt::DateTime& dt, 
+                                                     te::dt::TemporalRelation tr,
+                                                     const te::gm::Envelope& e, 
+                                                     te::gm::SpatialRelation sr = te::gm::INTERSECTS,
+                                                     te::common::TraverseType travType = te::common::FORWARDONLY);
+
         std::auto_ptr<ObservationDataSet> getDataSet(const ObservationDataSetInfo& info, 
                                  const te::gm::Geometry& geom, te::gm::SpatialRelation sr,
                                  const te::dt::DateTime& dt, te::dt::TemporalRelation tr = te::dt::DURING,
@@ -88,6 +95,13 @@ namespace te
         std::auto_ptr<TrajectoryDataSet> getDataSet(const TrajectoryDataSetInfo& info, 
                                  const te::dt::DateTime& dt, te::dt::TemporalRelation r = te::dt::DURING,
                                  te::common::TraverseType travType = te::common::FORWARDONLY);
+
+        std::auto_ptr<TrajectoryDataSet> getDataSet(const TrajectoryDataSetInfo& info,
+                                                    const te::dt::DateTime& dt, 
+                                                    te::dt::TemporalRelation tr,
+                                                    const te::gm::Envelope& e, 
+                                                    te::gm::SpatialRelation sr = te::gm::INTERSECTS,
+                                                    te::common::TraverseType travType = te::common::FORWARDONLY);
 
         std::auto_ptr<TrajectoryDataSet> getDataSet(const TrajectoryDataSetInfo& info, 
                                  const te::gm::Geometry& geom, te::gm::SpatialRelation sr,

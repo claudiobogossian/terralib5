@@ -30,6 +30,7 @@
 #include "../core/GraphCache.h"
 #include "../core/GraphData.h"
 #include "../core/GraphDataManager.h"
+#include "../core/GraphMetadata.h"
 #include "../core/Edge.h"
 #include "../core/Vertex.h"
 #include "BidirectionalGraph.h"
@@ -40,6 +41,11 @@
 
 
 te::graph::BidirectionalGraph::BidirectionalGraph() :Graph()
+{
+}
+
+te::graph::BidirectionalGraph::BidirectionalGraph(GraphMetadata* metadata) :
+  Graph(metadata)
 {
 }
 
@@ -158,16 +164,30 @@ bool te::graph::BidirectionalGraph::isSinkVertex(int id, bool& flag)
 
 void te::graph::BidirectionalGraph::add(Edge* e)
 {
-  if(m_graphCache->checkCacheByVertexId(e->getIdFrom()))
+  if(!m_metadata->m_memoryGraph)
   {
+    m_graphData =  m_graphCache->checkCacheByVertexId(e->getIdFrom());
+  }
+
+  if(m_graphData)
+  {
+    //set successor information
     te::graph::Vertex* vFrom = getVertex(e->getIdFrom());
+
     if(vFrom)
       vFrom->getSuccessors().insert(e->getId());
   }
 
-  if(m_graphCache->checkCacheByVertexId(e->getIdTo()))
+  if(!m_metadata->m_memoryGraph)
   {
+    m_graphData =  m_graphCache->checkCacheByVertexId(e->getIdTo());
+  }
+
+  if(m_graphData)
+  {
+    //set successor information
     te::graph::Vertex* vTo = getVertex(e->getIdTo());
+
     if(vTo)
       vTo->getPredecessors().insert(e->getId());
   }

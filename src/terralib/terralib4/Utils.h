@@ -36,6 +36,7 @@
 #include "../datatype/Enums.h"
 #include "../datatype/Property.h"
 #include "../geometry/Enums.h"
+#include "Config.h"
 
 // TerraLib 4.x
 #include <terralib/kernel/TeAttribute.h>
@@ -79,7 +80,7 @@ namespace terralib4
 
     \return A TerraLib 5 data type.
   */
-  int Convert2T5(TeAttrDataType type);
+  TETERRALIB4EXPORT int Convert2T5(TeAttrDataType type);
 
   /*!
     \brief It converts a Terralib 4.x data type to Terralib 5 data type.
@@ -88,7 +89,7 @@ namespace terralib4
 
     \return A TerraLib 5 data type.
   */
-  te::gm::GeomType Convert2T5GeomType(TeGeomRep type);
+  TETERRALIB4EXPORT te::gm::GeomType Convert2T5GeomType(TeGeomRep type);
 
   /*!
     \brief It converts a Terralib 5 data type to Terralib 4.x data type.

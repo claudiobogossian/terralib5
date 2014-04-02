@@ -316,6 +316,12 @@ void  te::qt::af::BaseApplication::resetState()
   te::qt::af::RestoreState(this);
 }
 
+te::qt::af::MapDisplay* te::qt::af::BaseApplication::getDisplay()
+{
+  return m_display;
+
+}
+
 void te::qt::af::BaseApplication::resetTerraLib(const bool& status)
 {
   m_restartTerraLib = !status;
@@ -1168,8 +1174,12 @@ void te::qt::af::BaseApplication::onLayerGroupingTriggered()
     te::qt::widgets::AbstractTreeItem* selectedLayerItem = *(selectedLayerItems.begin());
     te::map::AbstractLayerPtr selectedLayer = selectedLayerItem->getLayer();
 
+    // Get all layer with grouping to dispose to import
+    std::list<te::map::AbstractLayerPtr> allLayersList = m_explorer->getExplorer()->getTopLayers();
+    std::vector<te::map::AbstractLayerPtr> allLayers(allLayersList.begin(), allLayersList.end());
+
     te::qt::widgets::GroupingDialog dlg(this);
-    dlg.setLayer(selectedLayer);
+    dlg.setLayers(selectedLayer, allLayers);
 
     // Check if the selected layer item has a grouping item; in positive case, remove it from the layer item.
     te::qt::widgets::GroupingItem* groupingItem = selectedLayerItem->findChild<te::qt::widgets::GroupingItem*>();
@@ -1637,6 +1647,29 @@ void te::qt::af::BaseApplication::onDataSourceExplorerTriggered()
                          tr("DataSetExplorer Error!"));
   }
 }
+
+//void te::qt::af::BaseApplication::onTrajectoryAnimationTriggered() // Lauro
+//{
+//  std::list<te::map::AbstractLayerPtr> layers =  m_explorer->getExplorer()->getSelectedSingleLayers();
+//
+//  if(layers.empty())
+//  {
+//    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected trajectory layer."));
+//    return;
+//  }
+//
+//  std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
+//
+//  while(it != layers.end())
+//  {
+//    te::map::AbstractLayerPtr layer = (*it);
+//    std::string type = layer->getType();
+//    ++it;
+//
+//    //te::qt::af::evt::LayerSelectedObjectsChanged e(layer);
+//    //ApplicationController::getInstance().broadcast(&e);
+//  }
+//}
 
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 {

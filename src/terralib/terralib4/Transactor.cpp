@@ -57,6 +57,7 @@
 #include "Globals.h"
 #include "RasterDataSet.h"
 #include "TableDataSet.h"
+#include "ThemeInfo.h"
 #include "Transactor.h"
 #include "Utils.h"
 
@@ -64,6 +65,7 @@
 #include <terralib/kernel/TeDatabase.h>
 #include <terralib/kernel/TeLayer.h>
 #include <terralib/kernel/TeTable.h>
+#include <terralib/kernel/TeTheme.h>
 
 // STL
 #include <cassert>
@@ -76,6 +78,21 @@
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 //#include <boost/thread.hpp>
+
+int getViewId(const std::string& viewName, TeViewMap viewMap)
+{
+  std::map<int, TeView*>::iterator it = viewMap.begin();
+
+  while(it != viewMap.end())
+  {
+    if(it->second->name() == viewName)
+      return it->second->id();
+
+    ++it;
+  }
+
+  return -1;
+}
 
 terralib4::Transactor::Transactor(DataSource* ds, TeDatabase* db)
   : m_ds(ds),
@@ -296,6 +313,8 @@ std::size_t terralib4::Transactor::getNumberOfDataSets()
 
 std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const std::string& name)
 {
+  m_db->loadLayerSet(true);
+
   TeLayer* layer = 0;
 
   if(m_db->layerExist(name))
@@ -803,16 +822,77 @@ std::vector<std::string> terralib4::Transactor::getTL4Tables()
   return tablesVec;
 }
 
-std::vector<std::string> terralib4::Transactor::getTL4Themes()
+std::vector<::terralib4::ThemeInfo> terralib4::Transactor::getTL4Themes()
 {
-  std::vector<std::string> themes;
+  std::vector<::terralib4::ThemeInfo> themes;
 
-  TeDatabasePortal* portal = m_db->getPortal();
+  m_db->loadViewSet(m_db->user());
 
-  portal->query("SELECT name FROM te_theme;");
+  TeViewMap vMap = m_db->viewMap();
+  TeThemeMap tMap = m_db->themeMap();
+  
+  std::map<int, TeView*>::iterator it = vMap.begin();
 
-  while(portal->fetchRow())
-    themes.push_back(portal->getData(0));
+  while(it != vMap.end())
+  {
+    TeView* view = it->second;
+
+    std::map<int, TeAbstractTheme*>::iterator itT = tMap.begin();
+
+    while(itT != tMap.end())
+    {
+      TeAbstractTheme* abTheme = itT->second;
+
+      if(abTheme->type() == TeTHEME)
+      {
+        TeTheme* theme = dynamic_cast<TeTheme*>(abTheme);
+
+        if(theme->view() == view->id())
+        {
+          ::terralib4::ThemeInfo themeInfo;
+          themeInfo.m_name = theme->name();
+          themeInfo.m_viewName = view->name();
+          themeInfo.m_layerName = theme->layer()->name();
+
+          themes.push_back(themeInfo);
+        }
+      }
+      ++itT;
+    }
+    ++it;
+  }
 
   return themes;
+}
+
+TeTheme* terralib4::Transactor::getTL4Theme(const ::terralib4::ThemeInfo theme)
+{
+  TeViewMap vMap = m_db->viewMap();
+  TeThemeMap tMap = m_db->themeMap();
+
+  std::map<int, TeAbstractTheme*>::iterator it = tMap.begin();
+
+  while(it != tMap.end())
+  {
+    if(it->second->view() == getViewId(theme.m_viewName, vMap))
+    {
+      TeAbstractTheme* abTheme = it->second;
+
+      if(abTheme->type() == TeTHEME)
+      {
+        TeTheme* tl4Theme = dynamic_cast<TeTheme*>(abTheme);
+
+        m_db->loadTheme(tl4Theme, true);
+
+        if(tl4Theme->layer()->name() == theme.m_layerName)
+        {
+          return tl4Theme;
+        }
+      }
+    }
+
+    ++it;
+  }
+
+  return 0;
 }

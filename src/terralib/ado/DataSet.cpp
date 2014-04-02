@@ -134,6 +134,11 @@ std::string te::ado::DataSet::getPropertyName(std::size_t i) const
   return m_colNames[i];
 }
 
+te::common::CharEncoding te::ado::DataSet::getPropertyCharEncoding(std::size_t i) const
+{
+  return te::common::UNKNOWN_CHAR_ENCODING; // TODO
+}
+
 std::string te::ado::DataSet::getDatasetNameOfProperty(std::size_t /*i*/) const
 {
   throw Exception(TR_ADO("Method getDatasetNameOfProperty: not implemented yet!"));

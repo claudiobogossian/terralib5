@@ -40,6 +40,9 @@
 
 te::da::DataSourcePtr te::da::DataSourceManager::make(const std::string& id, const std::string& dsType)
 {
+  if(find(id))
+    return find(id);
+
 // we are optimistic: do the hard job and then see if another thread or the data source already had been inserted in the manager
   DataSourcePtr ds(DataSourceFactory::make(dsType));
 

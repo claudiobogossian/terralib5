@@ -27,6 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_SE_INTERNAL_COLORMAPWIDGET_H
 
 // TerraLib
+#include "../../../maptools/AbstractLayer.h"
 #include "../Config.h"
 
 // Qt
@@ -96,6 +97,8 @@ namespace te
 
           void setColorMap(te::se::ColorMap* cm);
 
+          void setLayers(te::map::AbstractLayerPtr selectedLayer, std::vector<te::map::AbstractLayerPtr> allLayers);
+
           te::se::ColorMap* getColorMap();
 
           std::string getCurrentBand();
@@ -121,6 +124,8 @@ namespace te
           void onBandSelected(QString value);
 
           void onTableWidgetItemDoubleClicked(QTableWidgetItem* item);
+
+          void onImportPushButtonClicked();
 
         signals:
 

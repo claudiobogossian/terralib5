@@ -87,6 +87,11 @@ std::string te::da::DataSetAdapter::getPropertyName(std::size_t pos) const
   return m_pnames[pos];
 }
 
+te::common::CharEncoding te::da::DataSetAdapter::getPropertyCharEncoding(std::size_t i) const
+{
+  return te::common::UNKNOWN_CHAR_ENCODING; // TODO!
+}
+
 std::string te::da::DataSetAdapter::getDatasetNameOfProperty(std::size_t pos) const
 {
   return "";
@@ -283,7 +288,7 @@ te::dt::AbstractData* te::da::DataSetAdapter::getAdaptedValue(std::size_t i) con
 {
   te::dt::AbstractData* data = m_converters[i](m_ds.get(), m_propertyIndexes[i], m_datatypes[i]);
 
-  if(data->getTypeCode() == te::dt::GEOMETRY_TYPE)
+  if(data && data->getTypeCode() == te::dt::GEOMETRY_TYPE)
   {
     te::gm::Geometry* geom = dynamic_cast<te::gm::Geometry*>(data);
 

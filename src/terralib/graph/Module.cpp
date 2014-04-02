@@ -32,7 +32,6 @@
 #include "graphs/BidirectionalGraphFactory.h"
 #include "graphs/DirectedGraphFactory.h"
 #include "graphs/GraphFactory.h"
-#include "graphs/MemoryGraphFactory.h"
 #include "graphs/UndirectedGraphFactory.h"
 #include "loader/BoxLoaderStrategyFactory.h"
 #include "loader/SequenceLoaderStrategyFactory.h"
@@ -75,7 +74,6 @@ void te::graph::Module::initialize()
   BidirectionalGraphFactory::initialize();
   DirectedGraphFactory::initialize();
   UndirectedGraphFactory::initialize();
-  MemoryGraphFactory::initialize();
 
   TE_LOG_TRACE(TR_GRAPH("TerraLib Graph module initialized!"));
 }
@@ -95,7 +93,6 @@ void te::graph::Module::finalize()
   BidirectionalGraphFactory::finalize();
   DirectedGraphFactory::finalize();
   UndirectedGraphFactory::finalize();
-  MemoryGraphFactory::finalize();
 
   TE_LOG_TRACE(TR_GRAPH("TerraLib Graph module finalized!"));
 }

@@ -27,6 +27,7 @@
 #define __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4FINALPAGEWIZARDPAGE_H
 
 // TerraLib
+#include "../../../../terralib4/ThemeInfo.h"
 #include "Config.h"
 
 // STL
@@ -37,6 +38,8 @@
 
 // Forward declaration
 namespace Ui { class TL4FinalPageWizardPageForm; }
+
+struct ThemeInfo;
 
 namespace te
 {
@@ -58,7 +61,15 @@ namespace te
 
             void setDataSets(const std::vector<std::string>& datasets);
 
+            void setThemes(const std::vector<::terralib4::ThemeInfo>& themes);
+
             std::vector<std::string> getSelected();
+
+            std::vector<::terralib4::ThemeInfo> getSelectedThemes();
+
+          private:
+
+            bool parentLayerIsSeleted(std::string layerName);
 
           protected slots:
 

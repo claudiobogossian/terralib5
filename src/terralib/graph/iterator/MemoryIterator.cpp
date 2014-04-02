@@ -27,7 +27,8 @@
 #include "../../common/Translator.h"
 #include "../../common/StringUtils.h"
 #include "../core/AbstractGraph.h"
-#include "../graphs/MemoryGraph.h"
+#include "../core/GraphData.h"
+#include "../graphs/Graph.h"
 #include "../Config.h"
 #include "../Exception.h"
 #include "../Globals.h"
@@ -36,12 +37,12 @@
 te::graph::MemoryIterator::MemoryIterator(te::graph::AbstractGraph* g) : 
   te::graph::AbstractIterator(g)
 {
-  te::graph::MemoryGraph* mg = dynamic_cast<te::graph::MemoryGraph*>(g);
+  te::graph::Graph* graph = dynamic_cast<te::graph::Graph*>(g);
 
-  if(mg)
+  if(g)
   {
-    m_vertexMap = mg->getVertexMap();
-    m_edgeMap = mg->getEdgeMap();
+    m_vertexMap = graph->m_graphData->getVertexMap();
+    m_edgeMap = graph->m_graphData->getEdgeMap();
 
     m_vertexMapIt = m_vertexMap.begin();
     m_edgeMapIt = m_edgeMap.begin();

@@ -1,8 +1,9 @@
-#include "UOM.h"
+#include "CommonExamples.h"
 
-#include <terralib/common.h>
+// TerraLib
 #include <terralib/srs.h>
 
+// STL
 #include <iostream>
 
 void UOMManage()
@@ -64,11 +65,13 @@ void UnitSRS()
   {
     std::cout << "Geographic:" << std::endl;
     te::common::UnitOfMeasurePtr uptr = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(TE_SRS_SAD69);
-    std::cout << "\t Id:" << uptr->getId() << " name: " << uptr->getName() << " symbol: " << uptr->getSymbol() << std::endl;
+    if(uptr)
+      std::cout << "\t Id:" << uptr->getId() << " name: " << uptr->getName() << " symbol: " << uptr->getSymbol() << std::endl;
     
     std::cout << "Projected:" << std::endl;
     uptr = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(TE_SRS_SAD69_UTM_ZONE_23S);
-    std::cout << "\t Id:" << uptr->getId() << " name: " << uptr->getName() << " symbol: " << uptr->getSymbol() << std::endl;
+    if(uptr)
+      std::cout << "\t Id:" << uptr->getId() << " name: " << uptr->getName() << " symbol: " << uptr->getSymbol() << std::endl;
   }
   catch (te::common::Exception& ex)
   {

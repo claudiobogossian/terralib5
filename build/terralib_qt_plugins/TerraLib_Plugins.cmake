@@ -19,6 +19,7 @@ endif()
 #option (BUILD_QT_PLUGIN_DATASOURCE_WMS "Build WMS datasource plugin for Qt." OFF)  
 #option (BUILD_QT_PLUGIN_LAYOUT "Build LAYOUT plugin for Qt." OFF)
 option (BUILD_QT_PLUGIN_RP "Build RP plugin for Qt." ON)
+option (BUILD_QT_PLUGIN_ST "Build ST plugin for Qt." ON)
 option (BUILD_QT_PLUGIN_VP "Build VP plugin for Qt." ON) 
 
 set (
@@ -75,6 +76,10 @@ endif()
 
 if(BUILD_QT_PLUGIN_RP)
   add_subdirectory(terralib_qt_plugins/rp)
+endif()
+
+if(BUILD_QT_PLUGIN_ST)
+  add_subdirectory(terralib_qt_plugins/st)
 endif()
 
 if(BUILD_QT_PLUGIN_VP)

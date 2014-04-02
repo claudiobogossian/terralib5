@@ -260,6 +260,18 @@ namespace te
       TEQTAFEXPORT void SetConfigFileName(const QString& fileName);
 
       /*!
+        \brief 
+      */
+      TEQTAFEXPORT QString GetDateTime();
+
+      /*!
+        \brief 
+        \param 
+      */
+      TEQTAFEXPORT void SetDateTime(const QString& dateTime);
+
+
+      /*!
         \brief Returns the default path for output of configuration file.
       */
       TEQTAFEXPORT QString GetDefaultConfigFileOutputDir();
@@ -307,6 +319,11 @@ namespace te
         \brief Writes the default project file.
       */
       TEQTAFEXPORT void WriteDefaultProjectFile(const QString& fileName);
+
+      /*!
+        \brief Returns the date and time of generated binary.
+      */
+      TEQTAFEXPORT QString GetGenerationDate();
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

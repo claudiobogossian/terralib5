@@ -116,7 +116,14 @@ te::da::DataSet* te::st::ObservationDataSet::getData() const
 {
   return m_ds.get();
 }
-   
+
+std::auto_ptr<te::da::DataSet> te::st::ObservationDataSet::release()
+{
+  delete m_tpExtent.release();
+  std::auto_ptr<te::da::DataSet> result(m_ds.release());
+  return result;
+}
+
 const te::st::ObservationDataSetType& te::st::ObservationDataSet::getType() const
 {
   return m_obst;

@@ -68,6 +68,8 @@ add_library (${PROJ_NAME} SHARED ${HDRS} ${SRCS} ${UI} ${MOC})
 set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
 target_link_libraries(${PROJ_NAME} ${DEP_LIBS})
 
+add_dependencies(${PROJ_NAME} terralib_gdal)
+
 #Exporting plug-in file
 set (TE_PLUGIN_NAME "te.qt.datasource.gdal")
 set (TE_PLUGIN_DISPLAYNAME "GDAL Data Source Qt-Widgets")
@@ -118,3 +120,9 @@ else()
 endif()
 
 set (TE_ENABLED_PLUGINS "${TE_ENABLED_PLUGINS}\n    <Plugin>${TE_PLUGIN_NAME}</Plugin>" PARENT_SCOPE)
+
+if("${ENABLED_PLUGINS}" STREQUAL "")
+	set (ENABLED_PLUGINS ${PROJ_NAME} PARENT_SCOPE)
+else()
+	set (ENABLED_PLUGINS "${ENABLED_PLUGINS}" ${PROJ_NAME} PARENT_SCOPE)
+endif()

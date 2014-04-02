@@ -54,28 +54,22 @@ namespace te
         static const std::string sm_factoryGraphTypeDirectedGraph;          //!< Directed Graph Factory Name.
         static const std::string sm_factoryGraphTypeUndirectedGraph;        //!< Undirected Graph Factory Name.
 
-        static const std::string sm_factoryGraphTypeMemoryGraph;            //!< Memory Graph Factory Name.
-
         static const std::string sm_factoryCachePolicyTypeFIFO;             //!< FIFO Cache Policy Factory Name.
         static const std::string sm_factoryCachePolicyTypeLFU;              //!< LFU Cache Policy Factory Name.
 
         static const std::string sm_factoryLoaderStrategyTypeBox;           //!< Box Loader Strategy Factory Name.
         static const std::string sm_factoryLoaderStrategyTypeSequence;      //!< Sequence Loader Strategy Factory Name.
 
-
         static const std::string sm_graphFactoryDefaultObject;              //!< This definition is used to set the default graph type.
         static const std::string sm_cachePolicyFactoryDefaultObject;        //!< This definition is used to set the default cache policy.
         static const std::string sm_loaderStrategyFactoryDefaultObject;     //!< This definition is used to set the default graph loader strategy.
-
 
         static const int sm_graphCacheDefaultMaxSize;                       //!< This definition is used to set the max graph cache size.
         static const int sm_graphVecCacheDefaultMaxSize;                    //!< This definition is used to set the max graph cache vector size.
         static const int sm_boxLoaderStrategyDefaultSize;                   //!< This definition is used to set the default box strategy loader box size.
 
-
         static const std::string sm_vertexStorageMode;                      //!< This definition is used to set the vertex storage mode.
         static const std::string sm_edgeStorageMode;                        //!< This definition is used to set the edge storage mode.
-
 
         static const std::string sm_tableGraphName;                         //!< Database Model Table Graph Name
         static const std::string sm_tableGraphAttrId;                       //!< Attribute Id

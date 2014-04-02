@@ -32,9 +32,12 @@
 #include "Config.h"
 
 class TeDatabase;
+class TeTheme;
 
 namespace terralib4
 {
+  struct ThemeInfo;
+
   class TETERRALIB4EXPORT DataSource : public te::da::DataSource
   {
     public:
@@ -69,7 +72,9 @@ namespace terralib4
 
       std::vector<std::string> getTL4Tables();
 
-      std::vector<std::string> getTL4Themes();
+      std::vector<::terralib4::ThemeInfo> getTL4Themes();
+
+      TeTheme* getTL4Theme(const ::terralib4::ThemeInfo theme);
 
     protected:
 

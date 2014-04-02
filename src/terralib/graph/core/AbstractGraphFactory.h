@@ -37,8 +37,10 @@ namespace te
   namespace graph
   {
     //forward declarations
+    class AbstractCachePolicy;
     class AbstractGraph;
-	
+    class AbstractGraphLoaderStrategy;
+
     /*!
       \class AbstractGraphFactory
 
@@ -164,6 +166,53 @@ namespace te
           \note The caller will take the ownership of the returned pointer.
         */
         virtual AbstractGraph* create(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo) = 0;
+
+        /*!
+          \brief This method is a auxiliar function used to get the metadata pointer
+
+          \param dsInfo    The necessary information to access the data source.
+          \param gInfo    The necessary information to create the graph.
+         
+          \return The graph metadata pointer.
+
+          \note The caller will take the ownership of the returned pointer.
+        */
+        static te::graph::GraphMetadata* getMetadata(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo);
+
+        /*!
+          \brief This method is a auxiliar function used to get the graph id
+
+          \param gInfo    The necessary information to create the graph.
+         
+          \return The graph id.
+
+        */
+        static int getId(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo);
+
+        /*!
+          \brief This method is a auxiliar function used to get the cache policy pointer
+
+          \param gInfo    The necessary information to create the graph.
+         
+          \return The graph cache policy pointer.
+
+          \note The caller will take the ownership of the returned pointer.
+        */
+        static te::graph::AbstractCachePolicy* getCachePolicy(const std::map<std::string, std::string>& gInfo);
+
+        /*!
+          \brief This method is a auxiliar function used to get the loader strategy pointer
+
+          \param gInfo    The necessary information to create the graph.
+          \param metadata The graph metadata pointer.
+         
+          \return The graph loader strategy pointer.
+
+          \note The caller will take the ownership of the returned pointer.
+        */
+        static te::graph::AbstractGraphLoaderStrategy* getLoaderStrategy(const std::map<std::string, std::string>& gInfo, te::graph::GraphMetadata* metadata);
+
+        static void setMetadataInformation(const std::map<std::string, std::string>& gInfo, te::graph::GraphMetadata* metadata);
     };
 
   } // end namespace graph

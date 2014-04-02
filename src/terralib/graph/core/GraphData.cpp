@@ -52,6 +52,40 @@ int te::graph::GraphData::getId()
   return m_id;
 }
 
+void te::graph::GraphData::addVertex(Vertex* v)
+{
+  m_vertexMap.insert(te::graph::GraphData::VertexMap::value_type(v->getId(), v));
+
+  if(v->isDirty() || v->isNew())
+  {
+    setDirty(true);
+  }
+}
+
+bool te::graph::GraphData::removeVertex(int id)
+{
+  VertexMap::iterator it = m_vertexMap.find(id);
+
+  if(it == m_vertexMap.end())
+    return false;
+
+  m_vertexMap.erase(it);
+
+  return true;
+}
+
+te::graph::Vertex* te::graph::GraphData::getVertex(int id)
+{
+  VertexMap::iterator it = m_vertexMap.find(id);
+
+  if(it != m_vertexMap.end())
+  {
+    return it->second;
+  }
+
+  return 0;
+}
+
 te::graph::GraphData::VertexMap& te::graph::GraphData::getVertexMap()
 {
   return m_vertexMap;
@@ -60,6 +94,40 @@ te::graph::GraphData::VertexMap& te::graph::GraphData::getVertexMap()
 void te::graph::GraphData::setVertexMap(const VertexMap& map)
 {
   m_vertexMap = map;
+}
+
+void te::graph::GraphData::addEdge(Edge* e)
+{
+  m_edgeMap.insert(te::graph::GraphData::EdgeMap::value_type(e->getId(), e));
+
+  if(e->isDirty() || e->isNew())
+  {
+    setDirty(true);
+  }
+}
+
+bool te::graph::GraphData::removeEdge(int id)
+{
+  EdgeMap::iterator it = m_edgeMap.find(id);
+
+  if(it == m_edgeMap.end())
+    return false;
+
+  m_edgeMap.erase(it);
+
+  return true;
+}
+
+te::graph::Edge* te::graph::GraphData::getEdge(int id)
+{
+  EdgeMap::iterator it = m_edgeMap.find(id);
+
+  if(it != m_edgeMap.end())
+  {
+    return it->second;
+  }
+
+  return 0;
 }
 
 te::graph::GraphData::EdgeMap& te::graph::GraphData::getEdgeMap()
