@@ -42,7 +42,7 @@ namespace te
       namespace vp
       {
         class AggregationAction;
-        //class BasicGeographicOperationAction;
+        class BasicGeographicOpAction;
         class BufferAction;
         class IntersectionAction;
         //class PolygonToLineAction;
@@ -80,7 +80,7 @@ namespace te
             QMenu* m_vpMenu;                                    //!< VP Main Menu registered.
 
             te::qt::plugins::vp::AggregationAction* m_aggregation;    //!< Aggregation Operation Action
-            //te::qt::plugins::vp::BasicGeographicOperationAction* m_basicGeographicOperation;    //!< Basic Geographic Operation
+            te::qt::plugins::vp::BasicGeographicOpAction* m_basicGeographicOp;    //!< Basic Geographic Operation
             te::qt::plugins::vp::BufferAction* m_buffer;    //!< Buffer Operation Action
             te::qt::plugins::vp::IntersectionAction* m_intersection;    //!< Intersection Operation Action
             //te::qt::plugins::vp::PolygonToLineAction* m_polygonToLine;    //!< Polygon to Line Operation Action

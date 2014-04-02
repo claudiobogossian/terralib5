@@ -29,7 +29,7 @@
 #include "../../../common/Logger.h"
 #include "../../af/ApplicationController.h"
 #include "AggregationAction.h"
-//#include "BasicGeographicOperationAction.h"
+#include "BasicGeographicOpAction.h"
 #include "BufferAction.h"
 #include "IntersectionAction.h"
 #include "Plugin.h"
@@ -90,7 +90,7 @@ void te::qt::plugins::vp::Plugin::shutdown()
 void te::qt::plugins::vp::Plugin::registerActions()
 {
   m_aggregation = new te::qt::plugins::vp::AggregationAction(m_vpMenu);
-  //m_basicGeographicOperation = new te::qt::plugins::vp::BasicGeographicOperationAction(m_vpMenu);
+  m_basicGeographicOp = new te::qt::plugins::vp::BasicGeographicOpAction(m_vpMenu);
   m_buffer = new te::qt::plugins::vp::BufferAction(m_vpMenu);
   m_intersection = new te::qt::plugins::vp::IntersectionAction(m_vpMenu);
   //m_polygonToLine = new te::qt::plugins::vp::PolygonToLineAction(m_vpMenu);
@@ -101,7 +101,7 @@ void te::qt::plugins::vp::Plugin::registerActions()
 void  te::qt::plugins::vp::Plugin::unRegisterActions()
 {
   delete m_aggregation;
-  //delete m_basicGeographicOperation;
+  delete m_basicGeographicOp;
   delete m_buffer;
   delete m_intersection;
   //delete m_polygonToLine;
