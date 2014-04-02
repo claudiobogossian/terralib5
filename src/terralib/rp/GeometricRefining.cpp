@@ -85,7 +85,7 @@ namespace te
       m_enableRasterCache = true;
       m_geomTransfName = "Affine";
       m_geomTransfMaxTiePointError = 2.0;
-      m_outliersRemotionAssurance = 0.1;
+      m_outliersRemotionAssurance = 0.75;
       m_outliersRemotionMaxIterations = 0;
       m_outputNoDataValue = 0.0;
     }

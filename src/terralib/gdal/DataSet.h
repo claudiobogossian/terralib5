@@ -72,6 +72,8 @@ namespace te
       int getPropertyDataType(std::size_t pos) const;
       
       std::string getPropertyName(std::size_t pos) const;
+
+      te::common::CharEncoding getPropertyCharEncoding(std::size_t i) const { return te::common::UNKNOWN_CHAR_ENCODING; }
       
       std::string getDatasetNameOfProperty(std::size_t pos) const;
       

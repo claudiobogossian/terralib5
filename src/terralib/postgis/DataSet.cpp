@@ -167,6 +167,11 @@ std::string te::pgis::DataSet::getPropertyName(std::size_t i) const
   return PQfname(m_result, i);
 }
 
+te::common::CharEncoding te::pgis::DataSet::getPropertyCharEncoding(std::size_t i) const
+{
+  return te::common::UNKNOWN_CHAR_ENCODING; // TODO!
+}
+
 std::string te::pgis::DataSet::getDatasetNameOfProperty(std::size_t i) const
 {
   throw Exception(TR_PGIS("Not implemented yet!"));

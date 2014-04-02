@@ -83,7 +83,15 @@ std::string te::common::CharEncodingConv::conv(const std::string& src)
     char* outbuff = outchar;
     std::size_t outbytesleft = TE_CONVERSION_BUFFERSIZE_SIZE;
 
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
     nbytes = iconv(m_cd, &inbuff, &inbytesleft, &outbuff, &outbytesleft);
+
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
+    nbytes = iconv(m_cd, (char**)(&inbuff), &inbytesleft, &outbuff, &outbytesleft);
+
+#else
+    #error "Platform not supported! Please contact terralib-team@dpi.inpe.br"
+#endif
 
     if((nbytes == (std::size_t)(-1)) && (errno != E2BIG))
     {
@@ -136,7 +144,15 @@ std::string te::common::CharEncodingConv::convert(const std::string& src, const 
     char* outbuff = outchar;
     std::size_t outbytesleft = TE_CONVERSION_BUFFERSIZE_SIZE;
 
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
     std::size_t nbytes = iconv(cd, &inbuff, &inbytesleft, &outbuff, &outbytesleft);
+
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
+    std::size_t nbytes = iconv(cd, (char**)(&inbuff), &inbytesleft, &outbuff, &outbytesleft);
+
+#else
+    #error "Platform not supported! Please contact terralib-team@dpi.inpe.br"
+#endif
 
     if((nbytes == (std::size_t)(-1)) && (errno != E2BIG))
     {

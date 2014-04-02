@@ -101,7 +101,7 @@ namespace te
             
             double m_geomTransfMaxTiePointError; //!< The maximum allowed tie-point error (pixels unit, default: 2);
             
-            double m_outliersRemotionAssurance; //!< The error-free selection assurance - valid range (0-1) - Use Lower values for good tie-points sets - Higher values may increase the number of iterations. Use 0-zero to let this number be automatically found (default:0.1). 
+            double m_outliersRemotionAssurance; //!< The error-free selection assurance - valid range (0-1) - Use Lower values for good tie-points sets - Higher values may increase the number of iterations. Use 0-zero to let this number be automatically found (default:0.75). 
             
             unsigned int m_outliersRemotionMaxIterations; //!< The maximum number of iterations (Use 0-zero to let this number be automatically found, default:0). 
             
