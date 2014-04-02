@@ -31,10 +31,10 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QColor>
-#include <QtGui/QPainter>
-#include <QtGui/QPolygonF>
-#include <QtGui/QWidget>
+#include <QColor>
+#include <QPainter>
+#include <QPolygonF>
+#include <QWidget>
 
 namespace te
 {

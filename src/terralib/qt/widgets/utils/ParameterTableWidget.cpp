@@ -94,7 +94,7 @@ std::map<std::string, std::string> te::qt::widgets::ParameterTableWidget::getMap
   std::map<std::string, std::string> kvpairs;
 
   if(m_ui->m_paramTableWidget->columnCount() < 2)
-    throw Exception(TR_QT_WIDGETS("Can not get key-value pairs from a table with less than 2 columns!"));
+    throw Exception(TE_TR("Can not get key-value pairs from a table with less than 2 columns!"));
 
   int nrows = m_ui->m_paramTableWidget->rowCount();
 

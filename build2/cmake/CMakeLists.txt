@@ -102,7 +102,7 @@ find_package(PostgreSQL)
 
 find_package(Proj4)
 
-find_package(Qt5 5.1 COMPONENTS Core Gui Widgets)
+find_package(Qt5 5.1 COMPONENTS Core Gui Widgets PrintSupport)
 
 if(Qt5_FOUND)
 
@@ -317,6 +317,8 @@ if(QT4_FOUND OR Qt5_FOUND)
   CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_STATISTICS_QT_ENABLED "Build Qt support for Statistics module?" ON "TERRALIB_MOD_STATISTICS_CORE_ENABLED" OFF)
 
   #CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_VP_QT_ENABLED "Build Vector Processing Qt module?" ON "TERRALIB_MOD_VP_CORE_ENABLED" OFF)
+
+  option(TERRALIB_MOD_QT_WIDGETS_ENABLED "Build Qt Widgets?" ON)
 endif()
 
 option(TERRALIB_MOD_XSD_ENABLED "Build XSD module?" ON)
@@ -365,13 +367,11 @@ if(TERRALIB_MOD_COLOR_ENABLED)
   add_subdirectory(terralib_mod_color)
 endif()
 
-
 add_subdirectory(terralib_mod_common)
 
 if(TERRALIB_MOD_DATAACCESS_ENABLED)
   add_subdirectory(terralib_mod_dataaccess)
 endif()
-
 
 if(TERRALIB_MOD_DATATYPE_ENABLED)
   add_subdirectory(terralib_mod_datatype)
@@ -419,6 +419,10 @@ endif()
 
 if(TERRALIB_MOD_POSTGIS_ENABLED)
   add_subdirectory(terralib_mod_postgis)
+endif()
+
+if(TERRALIB_MOD_QT_WIDGETS_ENABLED)
+  add_subdirectory(terralib_mod_qt_widgets)
 endif()
 
 if(TERRALIB_MOD_RASTER_ENABLED)

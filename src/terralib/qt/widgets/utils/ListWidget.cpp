@@ -29,8 +29,8 @@
 #include "ListWidget.h"
 
 // Qt
-#include <QtGui/QIcon>
-#include <QtGui/QInputDialog>
+#include <QIcon>
+#include <QInputDialog>
 
 
 te::qt::widgets::ListWidget::ListWidget(QWidget* parent, Qt::WindowFlags f)
@@ -91,7 +91,7 @@ void te::qt::widgets::ListWidget::onAddToolButtonPressed()
 {
   bool ok;
 
-  QString text = QInputDialog::getText(this, TR_QT_WIDGETS("Add Value"), TR_QT_WIDGETS("Value:"), QLineEdit::Normal, "", &ok);
+  QString text = QInputDialog::getText(this, TE_TR("Add Value"), TE_TR("Value:"), QLineEdit::Normal, "", &ok);
 
   if(ok && !text.isEmpty())
   {
@@ -117,7 +117,7 @@ void te::qt::widgets::ListWidget::onEditToolButtonPressed()
   {
     bool ok;
 
-    QString text = QInputDialog::getText(this, TR_QT_WIDGETS("Add Value"), TR_QT_WIDGETS("Value:"), QLineEdit::Normal, m_ui->m_listWidget->currentItem()->text(), &ok);
+    QString text = QInputDialog::getText(this, TE_TR("Add Value"), TE_TR("Value:"), QLineEdit::Normal, m_ui->m_listWidget->currentItem()->text(), &ok);
 
     if(ok && !text.isEmpty())
     {

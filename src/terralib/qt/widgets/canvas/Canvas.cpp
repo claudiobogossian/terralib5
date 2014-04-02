@@ -36,13 +36,13 @@
 #include "Canvas.h"
 
 // Qt
-#include <QtCore/QBuffer>
-#include <QtGui/QBitmap>
-#include <QtGui/QImage>
-#include <QtGui/QPaintEngine>
-#include <QtGui/QPixmap>
-#include <QtGui/QPrinter>
-#include <QtGui/QResizeEvent>
+#include <QBitmap>
+#include <QBuffer>
+#include <QImage>
+#include <QPaintEngine>
+#include <QPixmap>
+#include <QPrinter>
+#include <QResizeEvent>
 
 // STL
 #include <cassert>
