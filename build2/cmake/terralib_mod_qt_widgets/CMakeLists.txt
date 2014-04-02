@@ -26,6 +26,7 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${QWT_INCLUDE_DIR})
 
 if(Qt5_FOUND)
   set(CMAKE_AUTOMOC ON)
@@ -46,6 +47,7 @@ endif()
 set(TERRALIB_HDRS_TO_MOC_FILES "")
 
 set(TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_common")
+list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES ${QWT_LIBRARY})
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/*.h)
@@ -53,25 +55,23 @@ file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widge
 source_group("Source Files"  FILES ${TERRALIB_SRC_FILES})
 source_group("Header Files"  FILES ${TERRALIB_HDR_FILES})
 
-# Canvas files
-if(TERRALIB_MOD_MAPTOOLS_ENABLED)
-  file(GLOB TERRALIB_CANVAS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/*.cpp)
-  file(GLOB TERRALIB_CANVAS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/*.h)
-  file(GLOB TERRALIB_CANVAS_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/ui/*.ui)
+# Canvas
+file(GLOB TERRALIB_CANVAS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/*.cpp)
+file(GLOB TERRALIB_CANVAS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/*.h)
+file(GLOB TERRALIB_CANVAS_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/ui/*.ui)
 
-  source_group("Source Files\\canvas"      FILES ${TERRALIB_CANVAS_SRC_FILES})
-  source_group("Header Files\\canvas"      FILES ${TERRALIB_CANVAS_HDR_FILES})
-  source_group("Header Files\\canvas\\ui"  FILES ${TERRALIB_CANVAS_UI_FILES})
+source_group("Source Files\\canvas"      FILES ${TERRALIB_CANVAS_SRC_FILES})
+source_group("Header Files\\canvas"      FILES ${TERRALIB_CANVAS_HDR_FILES})
+source_group("Header Files\\canvas\\ui"  FILES ${TERRALIB_CANVAS_UI_FILES})
 
-  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/DrawLayerThread.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/EyeBirdMapDisplayWidget.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/MapDisplay.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/MultiThreadMapDisplay.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/OverlayWidget.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/ZoomInMapDisplayWidget.h)
-endif()
+list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/DrawLayerThread.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/EyeBirdMapDisplayWidget.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/MapDisplay.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/MultiThreadMapDisplay.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/OverlayWidget.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/ZoomInMapDisplayWidget.h)
 
-# Charts files
+# Charts
 file(GLOB TERRALIB_CHARTS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/*.cpp)
 file(GLOB TERRALIB_CHARTS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/*.h)
 file(GLOB TERRALIB_CHARTS_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ui/*.ui)
@@ -96,7 +96,7 @@ list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terrali
                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ScatterFrame.h
                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ScatterStyleWidget.h)
 
-# Classification Files
+# Classification
 file(GLOB TERRALIB_CLASSIFICATION_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/classification/*.cpp)
 file(GLOB TERRALIB_CLASSIFICATION_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/classification/*.h)
 file(GLOB TERRALIB_CLASSIFICATION_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/classification/ui/*.ui)
@@ -109,7 +109,7 @@ list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terrali
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/classification/ROIManagerWidget.h)
 
 
-# Color Bar Files
+# Color Bar
 file(GLOB TERRALIB_COLORBAR_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/colorbar/*.cpp)
 file(GLOB TERRALIB_COLORBAR_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/colorbar/*.h)
 file(GLOB TERRALIB_COLORBAR_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/colorbar/ui/*.ui)
@@ -121,7 +121,7 @@ source_group("Header Files\\classification\\ui"  FILES ${TERRALIB_COLORBAR_UI_FI
 list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/colorbar/ColorBar.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/colorbar/ColorCatalogWidget.h)
 
-# Dataset files
+# Dataset
 file(GLOB TERRALIB_DATASET_EXPLORER_SRC_FILES    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/*.cpp)
 file(GLOB TERRALIB_DATASET_EXPLORER_HDR_FILES    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/*.h)
 file(GLOB TERRALIB_DATASET_SELECTOR_SRC_FILES    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/*.cpp)
@@ -189,13 +189,28 @@ if(Qt5_FOUND)
 
   list(APPEND TERRALIB_FILES ${TERRALIB_UTILS_SRC_FILES} ${TERRALIB_UTILS_HDR_FILES} ${TERRALIB_UTILS_GEN_HDR_FILES})
 
-  if(TERRALIB_MOD_MAPTOOLS_ENABLED)
-    QT5_WRAP_UI(TERRALIB_CANVAS_GEN_HDR_FILES ${TERRALIB_CANVAS_UI_FILES})
+# Canvas
+  QT5_WRAP_UI(TERRALIB_CANVAS_GEN_HDR_FILES ${TERRALIB_CANVAS_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_CANVAS_SRC_FILES} ${TERRALIB_CANVAS_HDR_FILES} ${TERRALIB_CANVAS_GEN_HDR_FILES})
 
-    list(APPEND TERRALIB_FILES ${TERRALIB_CANVAS_SRC_FILES} ${TERRALIB_CANVAS_HDR_FILES} ${TERRALIB_CANVAS_GEN_HDR_FILES})
+# Charts
+  QT5_WRAP_UI(TERRALIB_CANVAS_GEN_HDR_FILES ${TERRALIB_CHARTS_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_CHARTS_SRC_FILES} ${TERRALIB_CHARTS_HDR_FILES} ${TERRALIB_CHARTS_GEN_HDR_FILES})
 
-    list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_maptools")
-  endif()
+# Classification
+  QT5_WRAP_UI(TERRALIB_CLASSIFICATION_GEN_HDR_FILES ${TERRALIB_CLASSIFICATION_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_CLASSIFICATION_SRC_FILES} ${TERRALIB_CLASSIFICATION_HDR_FILES} ${TERRALIB_CLASSIFICATION_GEN_HDR_FILES})
+
+# Color Bar
+  QT5_WRAP_UI(TERRALIB_COLORBAR_GEN_HDR_FILES ${TERRALIB_COLORBAR_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_COLORBAR_SRC_FILES} ${TERRALIB_COLORBAR_HDR_FILES} ${TERRALIB_COLORBAR_GEN_HDR_FILES})
+
+# Dataset - Explorer
+  list(APPEND TERRALIB_FILES ${TERRALIB_DATASET_EXPLORER_SRC_FILES} ${TERRALIB_DATASET_EXPLORER_HDR_FILES})
+
+# Dataset - Selector
+  QT5_WRAP_UI(TERRALIB_DATASET_SELECTOR_GEN_HDR_FILES ${TERRALIB_DATASET_SELECTOR_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_DATASET_SELECTOR_SRC_FILES} ${TERRALIB_DATASET_SELECTOR_HDR_FILES} ${TERRALIB_DATASET_SELECTOR_GEN_HDR_FILES})
 
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES})
 
@@ -209,14 +224,30 @@ else() # Qt4
   QT4_WRAP_UI(TERRALIB_UTILS_GEN_HDR_FILES ${TERRALIB_UTILS_UI_FILES})
 
   list(APPEND TERRALIB_FILES ${TERRALIB_UTILS_SRC_FILES} ${TERRALIB_UTILS_HDR_FILES} ${TERRALIB_UTILS_GEN_HDR_FILES})
-  
-  if(TERRALIB_MOD_MAPTOOLS_ENABLED)
-    QT4_WRAP_UI(TERRALIB_CANVAS_GEN_HDR_FILES ${TERRALIB_CANVAS_UI_FILES})
 
-    list(APPEND TERRALIB_FILES ${TERRALIB_CANVAS_SRC_FILES} ${TERRALIB_CANVAS_HDR_FILES} ${TERRALIB_CANVAS_GEN_HDR_FILES})
+# Canvas
+  QT4_WRAP_UI(TERRALIB_CANVAS_GEN_HDR_FILES ${TERRALIB_CANVAS_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_CANVAS_SRC_FILES} ${TERRALIB_CANVAS_HDR_FILES} ${TERRALIB_CANVAS_GEN_HDR_FILES})
+  list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_maptools")
 
-    list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_maptools")
-  endif()
+# Charts
+  QT4_WRAP_UI(TERRALIB_CANVAS_GEN_HDR_FILES ${TERRALIB_CHARTS_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_CHARTS_SRC_FILES} ${TERRALIB_CHARTS_HDR_FILES} ${TERRALIB_CHARTS_GEN_HDR_FILES})
+
+# Classification
+  QT4_WRAP_UI(TERRALIB_CLASSIFICATION_GEN_HDR_FILES ${TERRALIB_CLASSIFICATION_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_CLASSIFICATION_SRC_FILES} ${TERRALIB_CLASSIFICATION_HDR_FILES} ${TERRALIB_CLASSIFICATION_GEN_HDR_FILES})
+
+# Color Bar
+  QT4_WRAP_UI(TERRALIB_COLORBAR_GEN_HDR_FILES ${TERRALIB_COLORBAR_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_COLORBAR_SRC_FILES} ${TERRALIB_COLORBAR_HDR_FILES} ${TERRALIB_COLORBAR_GEN_HDR_FILES})
+
+# Dataset - Explorer
+  list(APPEND TERRALIB_FILES ${TERRALIB_DATASET_EXPLORER_SRC_FILES} ${TERRALIB_DATASET_EXPLORER_HDR_FILES})
+
+# Dataset - Selector
+  QT4_WRAP_UI(TERRALIB_DATASET_SELECTOR_GEN_HDR_FILES ${TERRALIB_DATASET_SELECTOR_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_DATASET_SELECTOR_SRC_FILES} ${TERRALIB_DATASET_SELECTOR_HDR_FILES} ${TERRALIB_DATASET_SELECTOR_GEN_HDR_FILES})
 
 # moc'ing
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})

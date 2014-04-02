@@ -125,6 +125,10 @@ else()
 
 endif()
 
+if(Qt5_FOUND OR QT4_FOUND)
+  find_package(Qwt)
+endif()
+
 find_package(Xerces)
 
 
@@ -239,6 +243,10 @@ if(Qt5_FOUND)
   set(TERRALIB_QT5_ENABLED ON)
 endif()
 
+if(QWT_FOUND)
+  set(TERRALIB_QWT_ENABLED ON)
+endif()
+
 if(XERCES_FOUND)
   set(TERRALIB_XERCES_ENABLED ON)
 endif()
@@ -316,7 +324,9 @@ if(QT4_FOUND OR Qt5_FOUND)
 
   CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_STATISTICS_QT_ENABLED "Build Qt support for Statistics module?" ON "TERRALIB_MOD_STATISTICS_CORE_ENABLED" OFF)
 
-  option(TERRALIB_MOD_QT_WIDGETS_ENABLED "Build Qt Widgets?" ON)
+  if(QWT_FOUND)
+    option(TERRALIB_MOD_QT_WIDGETS_ENABLED "Build Qt Widgets?" ON)
+  endif()
 
   CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_VP_QT_ENABLED "Build Vector Processing Qt module?" ON "TERRALIB_MOD_VP_CORE_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 endif()

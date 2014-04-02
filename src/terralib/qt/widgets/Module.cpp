@@ -27,24 +27,15 @@
 #include "../../common/Logger.h"
 #include "../../common/TerraLib.h"
 #include "../../common/Translator.h"
-
-#ifdef TERRALIB_MOD_MAPTOOLS_ENABLED
 #include "../../maptools/ChartRendererManager.h"
 #include "../../maptools/ExternalGraphicRendererManager.h"
 #include "../../maptools/MarkRendererManager.h"
+#include "charts/ChartRenderer.h"
 #include "layer/explorer/AbstractTreeItemFactory.h"
-#endif
-
-#ifdef TERRALIB_MOD_DATAACCESS_ENABLED
 #include "property/DateTimePropertyWidgetFactory.h"
 #include "property/GeometryPropertyWidgetFactory.h"
 #include "property/NumericPropertyWidgetFactory.h"
 #include "property/StringPropertyWidgetFactory.h"
-#endif
-
-//#include "charts/ChartRenderer.h"
-
-#ifdef TERRALIB_MOD_SYMBOLOGY_ENABLED
 #include "se/BasicFillWidgetFactory.h"
 #include "se/ExternalGraphicRenderer.h"
 #include "se/GlyphGraphicWidgetFactory.h"
@@ -53,8 +44,6 @@
 #include "se/LocalGraphicWidgetFactory.h"
 #include "se/WellKnownGraphicWidgetFactory.h"
 #include "se/WellKnownMarkRenderer.h"
-#endif
-
 #include "Config.h"
 #include "Module.h"
 
