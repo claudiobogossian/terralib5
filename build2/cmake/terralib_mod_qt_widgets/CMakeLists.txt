@@ -312,7 +312,20 @@ source_group("Header Files\\mapdisplay"  FILES ${TERRALIB_MAPDISPLAY_HDR_FILES})
 
 list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/mapdisplay/DataSetDisplay.h)
 
-# Plugin files
+# Plugin
+file(GLOB TERRALIB_PLUGIN_BUILDER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/builder/*.cpp)
+file(GLOB TERRALIB_PLUGIN_BUILDER_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/builder/*.h)
+file(GLOB TERRALIB_PLUGIN_MANAGER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/manager/*.cpp)
+file(GLOB TERRALIB_PLUGIN_MANAGER_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/manager/*.h)
+
+source_group("Source Files\\plugin\\builder"  FILES ${TERRALIB_PLUGIN_BUILDER_SRC_FILES})
+source_group("Header Files\\plugin\\builder"  FILES ${TERRALIB_PLUGIN_BUILDER_HDR_FILES})
+source_group("Source Files\\plugin\\manager"  FILES ${TERRALIB_PLUGIN_MANAGER_SRC_FILES})
+source_group("Header Files\\plugin\\manager"  FILES ${TERRALIB_PLUGIN_MANAGER_HDR_FILES})
+
+list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.h)
+
 # Progress files
 # Property files
 # Property Browser files
@@ -421,6 +434,9 @@ if(Qt5_FOUND)
 # MapDisplay
   list(APPEND TERRALIB_FILES ${TERRALIB_MAPDISPLAY_SRC_FILES} ${TERRALIB_MAPDISPLAY_HDR_FILES})
 
+# Plugin
+  list(APPEND TERRALIB_FILES ${TERRALIB_PLUGIN_BUILDER_SRC_FILES} ${TERRALIB_PLUGIN_BUILDER_HDR_FILES} TERRALIB_PLUGIN_MANAGER_SRC_FILES TERRALIB_PLUGIN_MANAGER_HDR_FILES)
+
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_qt_widgets ${TERRALIB_LIBRARIES_DEPENDENCIES})
@@ -475,6 +491,10 @@ list(APPEND TERRALIB_FILES ${TERRALIB_LAYOUT_SRC_FILES} ${TERRALIB_LAYOUT_HDR_FI
 
 # MapDisplay
   list(APPEND TERRALIB_FILES ${TERRALIB_MAPDISPLAY_SRC_FILES} ${TERRALIB_MAPDISPLAY_HDR_FILES})
+
+# Plugin
+  list(APPEND TERRALIB_FILES ${TERRALIB_PLUGIN_BUILDER_SRC_FILES} ${TERRALIB_PLUGIN_BUILDER_HDR_FILES} TERRALIB_PLUGIN_MANAGER_SRC_FILES TERRALIB_PLUGIN_MANAGER_HDR_FILES)
+
 
 # moc'ing
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
