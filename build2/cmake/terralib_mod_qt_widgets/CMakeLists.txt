@@ -507,11 +507,55 @@ list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terrali
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSliderWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryItem.h)
 
-
 # Table files
+file(GLOB TERRALIB_TABLE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/*.cpp)
+file(GLOB TERRALIB_TABLE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/*.h)
+file(GLOB TERRALIB_TABLE_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/ui/*.ui)
+
+source_group("Source Files\\table"  FILES ${TERRALIB_TABLE_SRC_FILES})
+source_group("Header Files\\table"  FILES ${TERRALIB_TABLE_HDR_FILES})
+source_group("UI Files\\table\\ui"  FILES ${TERRALIB_TABLE_UI_FILES})
+
+list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/AddColumnDialog.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/AlterDataDialog.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/DataSetTableVerticalHeader.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/DataSetTableView.cpp
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/DataSetTableView.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/RenameColumnDialog.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/RetypeColumnDialog.h)
 
 # Temporal files
+file(GLOB TERRALIB_TEMPORAL_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/*.cpp)
+file(GLOB TERRALIB_TEMPORAL_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/*.h)
+file(GLOB TERRALIB_TEMPORAL_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/ui/*.ui)
+
+source_group("Source Files\\temporal"  FILES ${TERRALIB_TEMPORAL_SRC_FILES})
+source_group("Header Files\\temporal"  FILES ${TERRALIB_TEMPORAL_HDR_FILES})
+source_group("UI Files\\temporal\\ui"  FILES ${TERRALIB_TEMPORAL_UI_FILES})
+
+list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/ObservationDialog.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TemporalPropertiesWidget.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TimeSeriesDialog.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TimeSeriesPropertiesWidget.cpp
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TrajectoryDialog.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TrajectoryPropertiesWidget.h)
+
 # Tools files
+file(GLOB TERRALIB_TOOLS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/*.cpp)
+file(GLOB TERRALIB_TOOLS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/*.h)
+
+source_group("Source Files\\tools"  FILES ${TERRALIB_TOOLS_SRC_FILES})
+source_group("Header Files\\tools"  FILES ${TERRALIB_TOOLS_HDR_FILES})
+
+list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/CoordTracking.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/ExtentAcquire.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/Info.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/Measure.cpp
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/PanExtent.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/PointPicker.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/PolygonAcquire.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/ReadPixelTool.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/Selection.h)
 
 # Utils files
 file(GLOB TERRALIB_UTILS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/*.cpp)
@@ -641,7 +685,16 @@ if(Qt5_FOUND)
   QT5_WRAP_UI(TERRALIB_ST_GEN_HDR_FILES ${TERRALIB_ST_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_ST_SRC_FILES} ${TERRALIB_ST_HDR_FILES} ${TERRALIB_ST_GEN_HDR_FILES})
 
+# Table
+  QT5_WRAP_UI(TERRALIB_TABLE_GEN_HDR_FILES ${TERRALIB_TABLE_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_TABLE_SRC_FILES} ${TERRALIB_TABLE_HDR_FILES} ${TERRALIB_TABLE_GEN_HDR_FILES})
 
+# Temporal
+  QT5_WRAP_UI(TERRALIB_TEMPORAL_GEN_HDR_FILES ${TERRALIB_TEMPORAL_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_TEMPORAL_SRC_FILES} ${TERRALIB_TEMPORAL_HDR_FILES} ${TERRALIB_TEMPORAL_GEN_HDR_FILES})
+
+# Tools
+  list(APPEND TERRALIB_FILES ${TERRALIB_TOOLS_SRC_FILES} ${TERRALIB_TOOLS_HDR_FILES})
 
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES})
 
@@ -728,6 +781,17 @@ list(APPEND TERRALIB_FILES ${TERRALIB_LAYOUT_SRC_FILES} ${TERRALIB_LAYOUT_HDR_FI
 # Spatial Temporal
   QT4_WRAP_UI(TERRALIB_ST_GEN_HDR_FILES ${TERRALIB_ST_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_ST_SRC_FILES} ${TERRALIB_ST_HDR_FILES} ${TERRALIB_ST_GEN_HDR_FILES})
+
+# Table
+  QT4_WRAP_UI(TERRALIB_TABLE_GEN_HDR_FILES ${TERRALIB_TABLE_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_TABLE_SRC_FILES} ${TERRALIB_TABLE_HDR_FILES} ${TERRALIB_TABLE_GEN_HDR_FILES})
+
+# Temporal
+  QT4_WRAP_UI(TERRALIB_TEMPORAL_GEN_HDR_FILES ${TERRALIB_TEMPORAL_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_TEMPORAL_SRC_FILES} ${TERRALIB_TEMPORAL_HDR_FILES} ${TERRALIB_TEMPORAL_GEN_HDR_FILES})
+
+# Tools
+  list(APPEND TERRALIB_FILES ${TERRALIB_TOOLS_SRC_FILES} ${TERRALIB_TOOLS_HDR_FILES})
 
 # moc'ing
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
