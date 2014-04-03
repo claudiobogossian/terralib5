@@ -327,6 +327,18 @@ list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terrali
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.h)
 
 # Progress files
+file(GLOB TERRALIB_PROGRESS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/*.cpp)
+file(GLOB TERRALIB_PROGRESS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/*.h)
+
+source_group("Source Files\\progress"  FILES ${TERRALIB_PROGRESS_SRC_FILES})
+source_group("Header Files\\progress"  FILES ${TERRALIB_PROGRESS_HDR_FILES})
+
+list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/ProgressViewerBar.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/ProgressViewerDialog.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/ProgressViewerWidget.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/ProgressWidgetItem.h)
+
+
 # Property files
 # Property Browser files
 # Query files
@@ -437,6 +449,10 @@ if(Qt5_FOUND)
 # Plugin
   list(APPEND TERRALIB_FILES ${TERRALIB_PLUGIN_BUILDER_SRC_FILES} ${TERRALIB_PLUGIN_BUILDER_HDR_FILES} TERRALIB_PLUGIN_MANAGER_SRC_FILES TERRALIB_PLUGIN_MANAGER_HDR_FILES)
 
+# Progress
+  list(APPEND TERRALIB_FILES ${TERRALIB_PROGRESS_SRC_FILES} ${TERRALIB_PROGRESS_HDR_FILES})
+
+
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_qt_widgets ${TERRALIB_LIBRARIES_DEPENDENCIES})
@@ -494,6 +510,9 @@ list(APPEND TERRALIB_FILES ${TERRALIB_LAYOUT_SRC_FILES} ${TERRALIB_LAYOUT_HDR_FI
 
 # Plugin
   list(APPEND TERRALIB_FILES ${TERRALIB_PLUGIN_BUILDER_SRC_FILES} ${TERRALIB_PLUGIN_BUILDER_HDR_FILES} TERRALIB_PLUGIN_MANAGER_SRC_FILES TERRALIB_PLUGIN_MANAGER_HDR_FILES)
+
+# Progress
+  list(APPEND TERRALIB_FILES ${TERRALIB_PROGRESS_SRC_FILES} ${TERRALIB_PROGRESS_HDR_FILES})
 
 
 # moc'ing
