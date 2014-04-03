@@ -24,6 +24,7 @@
 */
 
 // TerraLib 
+#include "../Enums.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../dataaccess/dataset/DataSet.h"
 #include "../../dataaccess/dataset/DataSetType.h"
@@ -176,22 +177,22 @@ bool te::vp::BasicGeographicOpWizard::execute()
 
     //Params
     if(m_basicOpOutputPage->hasConvexHull())
-      m_ops.push_back(te::vp::GeographicOperation::CONVEX_HULL);
+      m_ops.push_back(te::vp::CONVEX_HULL);
 
     if(m_basicOpOutputPage->hasCentroid())
-      m_ops.push_back(te::vp::GeographicOperation::CENTROID);
+      m_ops.push_back(te::vp::CENTROID);
 
     if(m_basicOpOutputPage->hasMBR())
-      m_ops.push_back(te::vp::GeographicOperation::MBR);
+      m_ops.push_back(te::vp::MBR);
 
     if(m_basicOpOutputPage->hasArea())
-      m_ops.push_back(te::vp::GeographicOperation::AREA);
+      m_ops.push_back(te::vp::AREA);
 
     if(m_basicOpOutputPage->hasLine())
-      m_ops.push_back(te::vp::GeographicOperation::LINE);
+      m_ops.push_back(te::vp::LINE);
 
     if(m_basicOpOutputPage->hasPerimeter())
-      m_ops.push_back(te::vp::GeographicOperation::PERIMETER);
+      m_ops.push_back(te::vp::PERIMETER);
 
 // get the selected properties of input layer
     std::vector<std::string> geoProps = m_basicGeoOpPage->getSelectedProps();
