@@ -493,10 +493,23 @@ source_group("UI Files\\srs\\ui"  FILES ${TERRALIB_SRS_UI_FILES})
 
 list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/srs/SRSManagerDialog.h)
 
+# Spatial Temporal
+file(GLOB TERRALIB_ST_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/*.cpp)
+file(GLOB TERRALIB_ST_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/*.h)
+file(GLOB TERRALIB_ST_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/ui/*.ui)
+
+source_group("Source Files\\st"  FILES ${TERRALIB_ST_SRC_FILES})
+source_group("Header Files\\st"  FILES ${TERRALIB_ST_HDR_FILES})
+source_group("UI Files\\st\\ui"  FILES ${TERRALIB_ST_UI_FILES})
+
+list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationItem.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/PixmapItem.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSliderWidget.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryItem.h)
 
 
-# Spatial Temporal files
 # Table files
+
 # Temporal files
 # Tools files
 
@@ -624,6 +637,11 @@ if(Qt5_FOUND)
   QT5_WRAP_UI(TERRALIB_SRS_GEN_HDR_FILES ${TERRALIB_SRS_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_SRS_SRC_FILES} ${TERRALIB_SRS_HDR_FILES} ${TERRALIB_SRS_GEN_HDR_FILES})
 
+# Spatial Temporal
+  QT5_WRAP_UI(TERRALIB_ST_GEN_HDR_FILES ${TERRALIB_ST_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_ST_SRC_FILES} ${TERRALIB_ST_HDR_FILES} ${TERRALIB_ST_GEN_HDR_FILES})
+
+
 
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES})
 
@@ -707,7 +725,9 @@ list(APPEND TERRALIB_FILES ${TERRALIB_LAYOUT_SRC_FILES} ${TERRALIB_LAYOUT_HDR_FI
   QT4_WRAP_UI(TERRALIB_SRS_GEN_HDR_FILES ${TERRALIB_SRS_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_SRS_SRC_FILES} ${TERRALIB_SRS_HDR_FILES} ${TERRALIB_SRS_GEN_HDR_FILES})
 
-
+# Spatial Temporal
+  QT4_WRAP_UI(TERRALIB_ST_GEN_HDR_FILES ${TERRALIB_ST_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_ST_SRC_FILES} ${TERRALIB_ST_HDR_FILES} ${TERRALIB_ST_GEN_HDR_FILES})
 
 # moc'ing
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
