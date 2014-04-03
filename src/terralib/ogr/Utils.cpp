@@ -238,10 +238,18 @@ te::dt::Property* te::ogr::Convert2TerraLib(OGRFieldDefn* fieldDef)
     break;
 
     case OFTString:
+    {
+      te::dt::StringProperty* sp = 0;
+
       if(fieldDef->GetWidth() == 0)
-        p = new te::dt::StringProperty(name, te::dt::STRING);
-    else
-        p = new te::dt::StringProperty(name, te::dt::VAR_STRING, fieldDef->GetWidth());
+        sp = new te::dt::StringProperty(name, te::dt::STRING);
+      else
+        sp = new te::dt::StringProperty(name, te::dt::VAR_STRING, fieldDef->GetWidth());
+
+      sp->setCharEncoding(te::common::UTF8); // GDAL/OGR handles strings internally in UTF-8
+
+      p = sp;
+    }
     break;
 
     case OFTStringList:
