@@ -133,13 +133,13 @@ file(GLOB TERRALIB_DATASET_EXPLORER_SRC_FILES    ${TERRALIB_ABSOLUTE_ROOT_DIR}/s
 file(GLOB TERRALIB_DATASET_EXPLORER_HDR_FILES    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/*.h)
 file(GLOB TERRALIB_DATASET_SELECTOR_SRC_FILES    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/*.cpp)
 file(GLOB TERRALIB_DATASET_SELECTOR_HDR_FILES    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/*.h)
-file(GLOB TERRALIB_DATASET_SELECTOR_UI_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/ui/*.ui)
+file(GLOB TERRALIB_DATASET_SELECTOR_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/ui/*.ui)
 
 source_group("Source Files\\dataset\\explorer"  FILES ${TERRALIB_DATASET_EXPLORER_SRC_FILES})
 source_group("Header Files\\dataset\\explorer"  FILES ${TERRALIB_DATASET_EXPLORER_HDR_FILES})
 source_group("Source Files\\dataset\\selector"  FILES ${TERRALIB_DATASET_SELECTOR_SRC_FILES})
 source_group("Header Files\\dataset\\selector"  FILES ${TERRALIB_DATASET_SELECTOR_HDR_FILES})
-source_group("UI Files\\dataset\\selector\\ui"  FILES ${TERRALIB_DATASET_SELECTOR_UI_HDR_FILES})
+source_group("UI Files\\dataset\\selector\\ui"  FILES ${TERRALIB_DATASET_SELECTOR_UI_FILES})
 
 list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/DataSetCategoryModel.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/DataSetExplorer.h
@@ -294,7 +294,15 @@ file(GLOB TERRALIB_LAYER_UTILS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terra
 source_group("Source Files\\layer\\utils"  FILES ${TERRALIB_LAYER_UTILS_SRC_FILES})
 source_group("Header Files\\layer\\utils"  FILES ${TERRALIB_LAYER_UTILS_HDR_FILES})
 
-# Layout files
+# Layout
+file(GLOB TERRALIB_LAYOUT_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layout/*.cpp)
+file(GLOB TERRALIB_LAYOUT_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layout/*.h)
+
+source_group("Source Files\\layout"  FILES ${TERRALIB_LAYOUT_SRC_FILES})
+source_group("Header Files\\layout"  FILES ${TERRALIB_LAYOUT_HDR_FILES})
+
+list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layout/DataFrame.h)
+
 # Map Display files
 # Plugin files
 # Progress files
@@ -398,6 +406,9 @@ if(Qt5_FOUND)
 # Layer - Utils
   list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_UTILS_FILES} ${TERRALIB_LAYER_UTILS_HDR_FILES})
   
+# Layout
+list(APPEND TERRALIB_FILES ${TERRALIB_LAYOUT_SRC_FILES} ${TERRALIB_LAYOUT_HDR_FILES})
+
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_qt_widgets ${TERRALIB_LIBRARIES_DEPENDENCIES})
@@ -446,6 +457,9 @@ else() # Qt4
 # Datasource - Selector
   QT4_WRAP_UI(TERRALIB_DATASOURCE_SELECTOR_GEN_HDR_FILES ${TERRALIB_DATASOURCE_SELECTOR_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_DATASOURCE_SELECTOR_SRC_FILES} ${TERRALIB_DATASOURCE_SELECTOR_HDR_FILES} ${TERRALIB_DATASOURCE_SELECTOR_GEN_HDR_FILES})
+
+# Layout
+list(APPEND TERRALIB_FILES ${TERRALIB_LAYOUT_SRC_FILES} ${TERRALIB_LAYOUT_HDR_FILES})
 
 # moc'ing
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
