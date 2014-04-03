@@ -32,8 +32,8 @@
 
 
 // Qt
-#include <QtGui/QDialog>
-#include <QtGui/QGridLayout>
+#include <QDialog>
+#include <QGridLayout>
 
 namespace Ui { class ConstraintsIndexesPropertyDialogForm; }
 

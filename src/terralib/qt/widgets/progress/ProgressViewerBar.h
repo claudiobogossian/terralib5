@@ -32,9 +32,9 @@
 #include "../Config.h"
 
 //Qt
-#include <QtGui/QGridLayout>
-#include <QtGui/QProgressBar>
-#include <QtGui/QPushButton>
+#include <QGridLayout>
+#include <QProgressBar>
+#include <QPushButton>
 
 // STL
 #include <map>
