@@ -365,7 +365,30 @@ list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terrali
 
 
 # Property Browser files
+
 # Query files
+file(GLOB TERRALIB_QUERY_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/*.cpp)
+file(GLOB TERRALIB_QUERY_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/*.h)
+file(GLOB TERRALIB_QUERY_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/ui/*.ui)
+
+source_group("Source Files\\query"  FILES ${TERRALIB_QUERY_SRC_FILES})
+source_group("Header Files\\query"  FILES ${TERRALIB_QUERY_HDR_FILES})
+source_group("UI Files\\query\\ui"  FILES ${TERRALIB_QUERY_UI_FILES})
+
+list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/DataSetWidget.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/DataSetWizardPage.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/FieldsWizardPage.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/GroupByWizardPage.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/LayerAttributesWizardPage.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/OrderByWidget.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/OrderByWizardPage.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/QueryBuilderWizard.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/QueryDialog.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/WhereClauseWidget.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/WhereClauseWizardPage.h)
+
+
+
 # Raster Processing files
 # Symbology Encoding files
 # Spatial Temporal files
@@ -480,6 +503,11 @@ if(Qt5_FOUND)
   QT5_WRAP_UI(TERRALIB_PROPERTY_GEN_HDR_FILES ${TERRALIB_PROPERTY_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_PROPERTY_SRC_FILES} ${TERRALIB_PROPERTY_HDR_FILES} ${TERRALIB_PROPERTY_GEN_HDR_FILES})
 
+# Query
+  QT5_WRAP_UI(TERRALIB_QUERY_GEN_HDR_FILES ${TERRALIB_QUERY_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_QUERY_SRC_FILES} ${TERRALIB_QUERY_HDR_FILES} ${TERRALIB_QUERY_GEN_HDR_FILES})
+
+
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_qt_widgets ${TERRALIB_LIBRARIES_DEPENDENCIES})
@@ -545,6 +573,9 @@ list(APPEND TERRALIB_FILES ${TERRALIB_LAYOUT_SRC_FILES} ${TERRALIB_LAYOUT_HDR_FI
   QT4_WRAP_UI(TERRALIB_PROPERTY_GEN_HDR_FILES ${TERRALIB_PROPERTY_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_PROPERTY_SRC_FILES} ${TERRALIB_PROPERTY_HDR_FILES} ${TERRALIB_PROPERTY_GEN_HDR_FILES})
 
+# Query
+  QT4_WRAP_UI(TERRALIB_QUERY_GEN_HDR_FILES ${TERRALIB_QUERY_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_QUERY_SRC_FILES} ${TERRALIB_QUERY_HDR_FILES} ${TERRALIB_QUERY_GEN_HDR_FILES})
 
 # moc'ing
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
