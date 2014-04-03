@@ -44,9 +44,9 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QMessageBox>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QMessageBox>
+#include <QWidget>
 
 te::qt::widgets::DataSetCategoryItem::DataSetCategoryItem(const te::da::DataSourceInfoPtr& ds, int category, AbstractDataSourceTreeItem* parent)
   : AbstractDataSourceTreeItem(parent),

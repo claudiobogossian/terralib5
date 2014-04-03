@@ -41,8 +41,8 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QWidget>
 
 te::qt::widgets::DataSetItem::DataSetItem(const te::da::DataSetTypePtr& dt, te::da::DataSource* ds, AbstractDataSourceTreeItem* parent)
   : AbstractDataSourceTreeItem(parent),

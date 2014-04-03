@@ -26,14 +26,14 @@
 // TerraLib
 #include "../../../../common/Translator.h"
 #include "../../Exception.h"
-#include "ui_DataSourceSelectorDialogForm.h"
-#include "ui_DataSourceSelectorWidgetForm.h"
 #include "DataSourceSelectorDialog.h"
 #include "DataSourceSelectorWidget.h"
+#include "ui_DataSourceSelectorDialogForm.h"
+#include "ui_DataSourceSelectorWidgetForm.h"
 
 // Qt
-#include <QtGui/QMessageBox>
-#include <QtGui/QVBoxLayout>
+#include <QMessageBox>
+#include <QVBoxLayout>
 
 te::qt::widgets::DataSourceSelectorDialog::DataSourceSelectorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -82,7 +82,7 @@ void te::qt::widgets::DataSourceSelectorDialog::selectPushButtonPressed()
     m_selecteds = m_selectorWidget->getSelecteds();
 
     if(m_selecteds.empty())
-      throw Exception(TR_QT_WIDGETS("There is no selected data sources!"));
+      throw Exception(TE_TR("There is no selected data sources!"));
 
     accept();
   }

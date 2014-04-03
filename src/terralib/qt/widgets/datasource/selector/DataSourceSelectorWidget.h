@@ -35,8 +35,8 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QAbstractItemView>
-#include <QtGui/QWidget>
+#include <QAbstractItemView>
+#include <QWidget>
 
 namespace Ui { class DataSourceSelectorWidgetForm; }
 

@@ -33,7 +33,7 @@
 #include "ui_DataSetSelectorDialogForm.h"
 
 // Qt
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 
 te::qt::widgets::DataSetSelectorDialog::DataSetSelectorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),

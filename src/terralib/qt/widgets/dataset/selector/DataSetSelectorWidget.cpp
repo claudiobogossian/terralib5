@@ -47,8 +47,8 @@
 #include <vector>
 
 // Qt
-#include <QtGui/QMessageBox>
-#include <QtGui/QVBoxLayout>
+#include <QMessageBox>
+#include <QVBoxLayout>
 
 te::qt::widgets::DataSetSelectorWidget::DataSetSelectorWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
