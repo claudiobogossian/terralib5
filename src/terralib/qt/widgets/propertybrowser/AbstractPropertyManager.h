@@ -28,14 +28,19 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_ABSTRACTPROPERTYMANAGER_H
 
 // TerraLib
-#include "../../common/Singleton.h"
-#include "Config.h"
+#include "../../../common/Singleton.h"
+#include "../Config.h"
 
 // Qt
-#include <QtGui/QWidget>
-#include "../../../../../third-party/qt/propertybrowser/qtpropertymanager.h"
-#include "../../../../../third-party/qt/propertybrowser/qttreepropertybrowser.h"
-#include "../../../../../third-party/qt/propertybrowser/qteditorfactory.h"
+#include <QWidget>
+
+// QtPropertyBrowser
+#include <QtPropertyBrowser/QtCheckBoxFactory>
+#include <QtPropertyBrowser/QtDoubleSpinBoxFactory>
+#include <QtPropertyBrowser/QtGroupPropertyManager>
+#include <QtPropertyBrowser/QtSpinBoxFactory>
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
+#include <QtPropertyBrowser/QtVariantPropertyManager>
 
 namespace te
 {
@@ -87,7 +92,7 @@ namespace te
           QtColorEditorFactory*     m_colorFactory;
           QtFontEditorFactory*      m_fontFactory;
           QtCharEditorFactory*      m_charFactory;
-          QtDlgEditorFactory*       m_dlgFactory;
+          //QtDlgEditorFactory*       m_dlgFactory;
 
       };
 

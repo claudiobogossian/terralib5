@@ -127,6 +127,7 @@ endif()
 
 if(Qt5_FOUND OR QT4_FOUND)
   find_package(Qwt)
+  find_package(QtPropertyBrowser)
 endif()
 
 find_package(Xerces)
@@ -241,6 +242,10 @@ endif()
 
 if(Qt5_FOUND)
   set(TERRALIB_QT5_ENABLED ON)
+endif()
+
+if(QPROPERTYBROWSER_FOUND)
+  set(TERRALIB_QPROPERTYBROWSER_ENABLED ON)
 endif()
 
 if(QWT_FOUND)

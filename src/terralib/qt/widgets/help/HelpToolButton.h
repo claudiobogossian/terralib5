@@ -30,7 +30,7 @@
 #include "../Config.h"
 
 //Qt 
-#include <QtGui/QToolButton>
+#include <QToolButton>
 
 namespace te
 {

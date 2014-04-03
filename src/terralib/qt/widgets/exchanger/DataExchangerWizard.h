@@ -35,7 +35,7 @@
 #include <set>
 
 // Qt
-#include <QtGui/QWizard>
+#include <QWizard>
 
 // Forward declaration
 namespace Ui { class DataExchangerWizardForm; }

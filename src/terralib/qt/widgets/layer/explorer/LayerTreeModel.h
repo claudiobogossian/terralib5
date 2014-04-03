@@ -200,6 +200,10 @@ namespace te
             \return The drop actions supported by this model.
           */
           Qt::DropActions supportedDropActions() const;
+        
+#if (QT_VERSION >= 0x050000)
+          Qt::DropActions supportedDragActions() const;
+#endif
 
           /*!
             \brief It returns an object that contains serialized items of data corresponding to the list of indexes specified.

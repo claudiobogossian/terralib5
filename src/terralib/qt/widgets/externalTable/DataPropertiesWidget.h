@@ -32,7 +32,7 @@
 
 // Qt
 #include <QSignalMapper>
-#include <QtGui/QWidget>
+#include <QWidget>
 
 //STL
 #include <memory>

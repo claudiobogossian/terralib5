@@ -32,9 +32,9 @@
 #include "LegendItem.h"
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QPixmap>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QPixmap>
+#include <QWidget>
 
 te::qt::widgets::LegendItem::LegendItem(const te::se::Rule* rule, QObject* parent)
   : AbstractTreeItem(parent),

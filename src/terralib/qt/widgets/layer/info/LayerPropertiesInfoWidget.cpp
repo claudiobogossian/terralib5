@@ -2,7 +2,7 @@
 #include "LayerPropertiesInfo.h"
 
 // Qt
-#include <QtGui/QGridLayout>
+#include <QGridLayout>
 
 te::qt::widgets::LayerPropertiesInfoWidget::LayerPropertiesInfoWidget(te::map::AbstractLayer* layer, QWidget* parent) :
   QWidget(parent)
