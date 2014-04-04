@@ -334,6 +334,8 @@ if(QT4_FOUND OR Qt5_FOUND)
   endif()
 
   CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_VP_QT_ENABLED "Build Vector Processing Qt module?" ON "TERRALIB_MOD_VP_CORE_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
+
+  CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_APF_ENABLED "Build Qt Appllication Framework?" ON "TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 endif()
 
 option(TERRALIB_MOD_XSD_ENABLED "Build XSD module?" ON)
@@ -434,6 +436,10 @@ endif()
 
 if(TERRALIB_MOD_POSTGIS_ENABLED)
   add_subdirectory(terralib_mod_postgis)
+endif()
+
+if(TERRALIB_MOD_QT_APF_ENABLED)
+  add_subdirectory(terralib_mod_qt_apf)
 endif()
 
 if(TERRALIB_MOD_QT_WIDGETS_ENABLED)

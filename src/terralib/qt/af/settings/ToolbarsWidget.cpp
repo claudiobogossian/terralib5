@@ -8,9 +8,9 @@
 #include "../Utils.h"
 
 // Qt
-#include <QtGui/QInputDialog>
-#include <QtGui/QMessageBox>
-#include <QtGui/QToolBar>
+#include <QInputDialog>
+#include <QMessageBox>
+#include <QToolBar>
 
 void SetToolbars(QComboBox* cmb, std::vector< QList<QAction*> >& acts)
 {

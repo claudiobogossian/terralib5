@@ -30,10 +30,11 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../../plugin/PluginManager.h"
 #include "../../plugin/PluginInfo.h"
-#include "../../maptools/serialization/Layer.h"
+#include "../../maptools/serialization/xml/Layer.h"
 #include "../../xml/Reader.h"
 #include "../../xml/ReaderFactory.h"
 #include "../../xml/Writer.h"
+#include "../../Version.h"
 #include "ApplicationController.h"
 #include "ApplicationPlugins.h"
 #include "Exception.h"
@@ -52,22 +53,22 @@
 #include <boost/algorithm/string/replace.hpp>
 
 // Qt
-#include <QtCore/QDir>
-#include <QtCore/QFileInfo>
-#include <QtCore/QSettings>
-#include <QtCore/QString>
-#include <QtGui/QApplication>
-#include <QtGui/QAction>
-#include <QtGui/QMainWindow>
-#include <QtGui/QMessageBox>
-#include <QtGui/QToolBar>
+#include <QDir>
+#include <QFileInfo>
+#include <QSettings>
+#include <QString>
+#include <QApplication>
+#include <QAction>
+#include <QMainWindow>
+#include <QMessageBox>
+#include <QToolBar>
 
 te::qt::af::Project* te::qt::af::ReadProject(const std::string& uri)
 {
   boost::filesystem::path furi(uri);
   
   if (!boost::filesystem::exists(furi) || !boost::filesystem::is_regular_file(furi))   
-    throw Exception((boost::format(TR_QT_AF("Could not read project file: %1%.")) % uri).str());
+    throw Exception((boost::format(TE_TR("Could not read project file: %1%.")) % uri).str());
   
   std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());
   xmlReader->setValidationScheme(false);
@@ -75,13 +76,13 @@ te::qt::af::Project* te::qt::af::ReadProject(const std::string& uri)
   xmlReader->read(uri);
   
   if(!xmlReader->next())
-    throw Exception((boost::format(TR_QT_AF("Could not read project information in the file: %1%.")) % uri).str());
+    throw Exception((boost::format(TE_TR("Could not read project information in the file: %1%.")) % uri).str());
   
   if(xmlReader->getNodeType() != te::xml::START_ELEMENT)
-    throw Exception((boost::format(TR_QT_AF("Error reading the document %1%, the start element wasn't found.")) % uri).str());
+    throw Exception((boost::format(TE_TR("Error reading the document %1%, the start element wasn't found.")) % uri).str());
   
   if(xmlReader->getElementLocalName() != "Project")
-    throw Exception((boost::format(TR_QT_AF("The first tag in the document %1% is not 'Project'.")) % uri).str());
+    throw Exception((boost::format(TE_TR("The first tag in the document %1% is not 'Project'.")) % uri).str());
   
   Project* proj = ReadProject(*xmlReader);
   
@@ -189,7 +190,7 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
   const char* te_env = getenv("TERRALIB_DIR");
 
   if(te_env == 0)
-    throw Exception(TR_QT_AF("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
+    throw Exception(TE_TR("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
 
   std::string schema_loc(te_env);
   schema_loc += "/schemas/terralib";
@@ -213,7 +214,7 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
 
   writer.writeAttribute("xmlns", "http://www.terralib.org/schemas/qt/af");
   writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + schema_loc + "/qt/af/project.xsd");
-  writer.writeAttribute("version", TERRALIB_STRING_VERSION);
+  writer.writeAttribute("version", TERRALIB_VERSION_STRING);
 
   writer.writeElement("Title", project.getTitle());
   writer.writeElement("Author", project.getAuthor());
@@ -828,7 +829,7 @@ void te::qt::af::WriteConfigFile(const QString& fileName, const QString& appName
   p.add("Application.<xmlattr>.xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
   p.add("Application.<xmlattr>.xmlns", "http://www.terralib.org/schemas/af");
   p.add("Application.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/af " + teDir.toStdString() + "/schemas/terralib/af/af.xsd");
-  p.add("Application.<xmlattr>.version", TERRALIB_STRING_VERSION);
+  p.add("Application.<xmlattr>.version", TERRALIB_VERSION_STRING);
   p.add("Application.<xmlattr>.release", "2013-01-01");
 
   //Contents
@@ -891,7 +892,7 @@ void te::qt::af::WriteUserSettingsFile(const QString& fileName)
   p.add("UserSettings.<xmlattr>.xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
   p.add("UserSettings.<xmlattr>.xmlns", "http://www.terralib.org/schemas/af");
   p.add("UserSettings.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/af " + teDir.toStdString() + "/schemas/terralib/af/af.xsd");
-  p.add("UserSettings.<xmlattr>.version", TERRALIB_STRING_VERSION);
+  p.add("UserSettings.<xmlattr>.version", TERRALIB_VERSION_STRING);
   p.add("UserSettings.<xmlattr>.release", "2013-01-01");
 
   //Contents
@@ -932,7 +933,7 @@ void te::qt::af::WriteAppPluginsFile(const QString& fileName)
   p.add("Plugins.<xmlattr>.xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
   p.add("Plugins.<xmlattr>.xmlns", "http://www.terralib.org/schemas/af");
   p.add("Plugins.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/af " + teDir.toStdString() + "/schemas/terralib/af/af.xsd");
-  p.add("Plugins.<xmlattr>.version", TERRALIB_STRING_VERSION);
+  p.add("Plugins.<xmlattr>.version", TERRALIB_VERSION_STRING);
   p.add("Plugins.<xmlattr>.release", "2013-01-01");
 
   //Writing the plugins.
@@ -964,7 +965,7 @@ void te::qt::af::WriteDefaultProjectFile(const QString& fileName)
   p.add("Project.<xmlattr>.xmlns:te_qt_af", "http://www.terralib.org/schemas/qt/af");
   p.add("Project.<xmlattr>.xmlns", "http://www.terralib.org/schemas/qt/af");
   p.add("Project.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + teDir.toStdString() + "/schemas/terralib/qt/af/project.xsd");
-  p.add("Project.<xmlattr>.version", TERRALIB_STRING_VERSION);
+  p.add("Project.<xmlattr>.version", TERRALIB_VERSION_STRING);
 
   //Contents
   p.add("Project.Title", "Default project");

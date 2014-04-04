@@ -91,7 +91,7 @@ void te::qt::af::ApplicationPlugins::load()
   //}
 
 // the last chance...
-  char* mgis_dir = getenv(TERRALIB_DIR_ENVVAR);
+  char* mgis_dir = getenv(TERRALIB_DIR_VAR_NAME);
 
   if(mgis_dir != 0)
   {
@@ -108,7 +108,7 @@ void te::qt::af::ApplicationPlugins::load()
     }
   }
 
-  throw Exception(TR_QT_AF("Can not find application plugins config file!"));
+  throw Exception(TE_TR("Can not find application plugins config file!"));
 }
 
 void te::qt::af::ApplicationPlugins::load(const std::string& fileName)

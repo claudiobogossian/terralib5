@@ -848,6 +848,7 @@ else() # Qt4
 
 # moc'ing
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_GEN_SRC_FILES})
 
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES})
 

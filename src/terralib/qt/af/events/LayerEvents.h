@@ -33,8 +33,8 @@
 #include "Enums.h"
 
 // Qt
-#include <QtGui/QAction>
-#include <QtGui/QColor>
+#include <QAction>
+#include <QColor>
 
 // STL
 #include <memory>

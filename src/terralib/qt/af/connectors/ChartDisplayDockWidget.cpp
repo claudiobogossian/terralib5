@@ -32,7 +32,7 @@
 #include "../../../maptools/AbstractLayer.h"
 #include "../../widgets/charts/ChartConfigurer.h"
 #include "../../widgets/charts/ChartDisplayWidget.h"
-#include "events/LayerEvents.h"
+#include "../events/LayerEvents.h"
 #include "../ApplicationController.h"
 
 te::qt::af::ChartDisplayDockWidget::ChartDisplayDockWidget(te::qt::widgets::ChartDisplayWidget* displayWidget, QWidget* parent) :

@@ -32,9 +32,9 @@
 #include "../../../datatype.h"
 
 // Qt
-#include <QtGui/QWidget>
-#include <QtCore/QAbstractAnimation>
-#include <QtCore/QDateTime>
+#include <QWidget>
+#include <QAbstractAnimation>
+#include <QDateTime>
 
 //STL
 #include <memory>

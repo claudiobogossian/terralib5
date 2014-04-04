@@ -51,13 +51,13 @@
 #include "Utils.h"
 
 // Qt
-#include <QtCore/QDir>
-#include <QtCore/QResource>
-#include <QtGui/QApplication>
-#include <QtGui/QIcon>
-#include <QtGui/QMessageBox>
-#include <QtGui/QWidget>
-#include <QtGui/QMenu>
+#include <QDir>
+#include <QResource>
+#include <QApplication>
+#include <QIcon>
+#include <QMessageBox>
+#include <QWidget>
+#include <QMenu>
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -74,7 +74,7 @@ te::qt::af::ApplicationController::ApplicationController(/*QObject* parent*/)
     m_resetTerralib(true)
 {
   //if(sm_instance)
-  //  throw Exception(TR_QT_AF("Can not start another instance of the TerraLib Application Controller!"));
+  //  throw Exception(TE_TR("Can not start another instance of the TerraLib Application Controller!"));
 
   //sm_instance = this;
 }
@@ -116,7 +116,7 @@ void te::qt::af::ApplicationController::registerToolBar(const QString& id, QTool
   QToolBar* b = getToolBar(id);
 
   if(b != 0)
-    throw Exception(TR_QT_AF("There is already a tool bar registered with the same name!"));
+    throw Exception(TE_TR("There is already a tool bar registered with the same name!"));
 
   m_toolbars[id] = bar;
 }

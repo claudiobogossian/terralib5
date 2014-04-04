@@ -31,13 +31,13 @@
 #include "../Config.h"
 
 // Qt
-#include <QtCore/QObject>
-#include <QtCore/QPoint>
-#include <QtCore/QString>
-#include <QtCore/QMap>
-#include <QtGui/QColor>
-#include <QtGui/QMenu>
-#include <QtGui/QPixmap>
+#include <QObject>
+#include <QPoint>
+#include <QString>
+#include <QMap>
+#include <QColor>
+#include <QMenu>
+#include <QPixmap>
 
 namespace te
 {

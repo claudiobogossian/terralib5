@@ -26,7 +26,7 @@
 #ifndef __TERRALIB_QT_AF_INTERNAL_PROJECTINFODIALOG_H
 #define __TERRALIB_QT_AF_INTERNAL_PROJECTINFODIALOG_H
 
-#include <QtGui/QDialog>
+#include <QDialog>
 
 #include "Config.h"
 

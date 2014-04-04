@@ -7,12 +7,12 @@
 #include "../Utils.h"
 
 // Qt
-#include <QtCore/QDir>
-#include <QtCore/QFileInfo>
-#include <QtGui/QInputDialog>
-#include <QtGui/QPainter>
-#include <QtGui/QPixmap>
-#include <QtGui/QPushButton>
+#include <QDir>
+#include <QFileInfo>
+#include <QInputDialog>
+#include <QPainter>
+#include <QPixmap>
+#include <QPushButton>
 
 // Boost
 #include <boost/foreach.hpp>

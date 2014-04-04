@@ -93,19 +93,19 @@
 #include "Utils.h"
 
 // Qt
-#include <QtCore/QDir>
-#include <QtGui/QActionGroup>
-#include <QtGui/QApplication>
-#include <QtGui/QCloseEvent>
-#include <QtGui/QDockWidget>
-#include <QtGui/QFileDialog>
-#include <QtGui/QInputDialog>
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
-#include <QtGui/QMessageBox>
-#include <QtGui/QStatusBar>
-#include <QtGui/QToolBar>
-#include <QtGui/QToolButton>
+#include <QDir>
+#include <QActionGroup>
+#include <QApplication>
+#include <QCloseEvent>
+#include <QDockWidget>
+#include <QFileDialog>
+#include <QInputDialog>
+#include <QMenu>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QStatusBar>
+#include <QToolBar>
+#include <QToolButton>
 
 // STL
 #include <list>
@@ -420,12 +420,12 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
     std::auto_ptr<QWidget> lselectorw(dsType->getWidget(te::qt::widgets::DataSourceType::WIDGET_LAYER_SELECTOR, this));
 
     if(lselectorw.get() == 0)
-      throw Exception((boost::format(TR_QT_AF("No layer selector widget found for this type of data source: %1%!")) % dsTypeId).str());
+      throw Exception((boost::format(TE_TR("No layer selector widget found for this type of data source: %1%!")) % dsTypeId).str());
 
     te::qt::widgets::AbstractLayerSelector* lselector = dynamic_cast<te::qt::widgets::AbstractLayerSelector*>(lselectorw.get());
 
     if(lselector == 0)
-      throw Exception(TR_QT_AF("Wrong type of object for layer selection!"));
+      throw Exception(TE_TR("Wrong type of object for layer selection!"));
 
     lselector->set(selectedDatasources);
 
@@ -434,7 +434,7 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
     lselectorw.reset(0);
 
     if(m_project == 0)
-      throw Exception(TR_QT_AF("Error: there is no opened project!"));
+      throw Exception(TE_TR("Error: there is no opened project!"));
 
     std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin();
     std::list<te::map::AbstractLayerPtr>::const_iterator itend = layers.end();
@@ -471,7 +471,7 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
    try
   {
     if(m_project == 0)
-      throw Exception(TR_QT_AF("Error: there is no opened project!"));
+      throw Exception(TE_TR("Error: there is no opened project!"));
 
     // Get the parent layer where the dataset layer(s) will be added.
     te::map::AbstractLayerPtr parentLayer(0);
@@ -520,7 +520,7 @@ void te::qt::af::BaseApplication::onAddTabularLayerTriggered()
   try
   {
     if(m_project == 0)
-      throw Exception(TR_QT_AF("Error: there is no opened project!"));
+      throw Exception(TE_TR("Error: there is no opened project!"));
 
     // Get the parent layer where the tabular layer will be added.
     te::map::AbstractLayerPtr parentLayer(0);
@@ -1281,7 +1281,7 @@ void te::qt::af::BaseApplication::onLayerFitOnMapDisplayTriggered()
     if(display->getSRID() == TE_UNKNOWN_SRS || selectedLayer->getSRID() == TE_UNKNOWN_SRS)
     {
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
-                           TR_QT_AF("The spatial reference system of the map display and the layer are not compatible!"));
+                           TE_TR("The spatial reference system of the map display and the layer are not compatible!"));
       return;
     }
 
@@ -1675,7 +1675,7 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 
     if(!boost::filesystem::exists(projectFileName.toStdString()))
     {
-      QMessageBox::critical(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), (boost::format(TR_QT_AF("This project could not be found: %1%.")) % projectFileName.toStdString()).str().c_str());
+      QMessageBox::critical(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), (boost::format(TE_TR("This project could not be found: %1%.")) % projectFileName.toStdString()).str().c_str());
       return;
     }
 
@@ -1709,7 +1709,7 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
     
     msg = msg.arg(projectFileName);
     
-    throw Exception(TR_QT_AF(msg.toStdString()));
+    throw Exception(TE_TR(msg.toStdString()));
   }
 }
 
