@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of TerraView - A Free and Open Source GIS Application.
 
@@ -18,34 +18,18 @@
  */
 
 /*!
-  \file terraview/AboutDialog.h
+  \file terraview/Config.h
 
-  \brief A Qt dialog showing MGis about window.
+  \brief Proxy configuration file for TerraView (see terraview_config.h).
+
+  \author Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
+  \author Juan C. P. Garrido <juan@dpi.inpe.br>
 */
 
-#ifndef __TERRAVIEW_INTERNAL_ABOUTDIALOG_H
-#define __TERRAVIEW_INTERNAL_ABOUTDIALOG_H
+#ifndef __TERRAVIEW_INTERNAL_CONFIG_H
+#define __TERRAVIEW_INTERNAL_CONFIG_H
 
-// STL
-#include <memory>
+// TerraView
+#include "terraview_config.h"
 
-// Qt
-#include <QDialog>
-
-// Forward declaration
-namespace Ui { class AboutDialogForm; }
-
-class AboutDialog : public QDialog
-{
-  public:
-
-    AboutDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
-
-    ~AboutDialog();
-
-  private:
-
-    std::auto_ptr<Ui::AboutDialogForm> m_ui;
-};
-
-#endif  // __TERRAVIEW_INTERNAL_ABOUTDIALOG_H
+#endif // __TERRAVIEW_INTERNAL_CONFIG_H

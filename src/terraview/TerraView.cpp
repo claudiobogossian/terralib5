@@ -26,7 +26,6 @@
 // TerraView
 #include "AboutDialog.h"
 #include "TerraView.h"
-#include "TerraViewConfig.h"
 
 // TerraLib
 #include <terralib/qt/af/ApplicationController.h>
@@ -36,9 +35,9 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QAction>
-#include <QtGui/QApplication>
-#include <QtGui/QMenu>
+#include <QAction>
+#include <QApplication>
+#include <QMenu>
 
 TerraView::TerraView(QWidget* parent)
   : te::qt::af::BaseApplication(parent)

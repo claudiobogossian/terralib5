@@ -113,12 +113,12 @@ void FillSRSList(QComboBox* list)
 
 te::qt::af::GeneralConfigWidget::GeneralConfigWidget(QWidget* parent) :
 AbstractSettingWidget(parent),
-m_ui(new Ui::GeneralConfigWidgetForm),
 m_needRestart(false),
 m_sysIcon(0),
 m_sizeIcon(0),
 m_aboutIcon(0),
-m_terraIcon(0)
+m_terraIcon(0),
+m_ui(new Ui::GeneralConfigWidgetForm)
 {
   m_ui->setupUi(this);
 

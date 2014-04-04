@@ -62,6 +62,7 @@ void te::qt::af::UserPlugins::load()
     child_exists = p.count("Plugins") > 0;
 
     if(child_exists && (!p.empty()))
+    {
       BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("Plugins"))
       {
         std::string first = v.first.data();
@@ -74,6 +75,7 @@ void te::qt::af::UserPlugins::load()
 
         sPlugins.insert(std::pair<std::string, std::string>(pname, pdir));
       }
+    }
   }
 
 // get specific user plugins
@@ -104,6 +106,7 @@ void te::qt::af::UserPlugins::load()
     child_exists = p.count("EnabledPlugins") > 0;
 
     if(child_exists && (!p.empty()))
+    {
       BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("EnabledPlugins"))
       {
         if(v.second.data().empty())
@@ -111,6 +114,7 @@ void te::qt::af::UserPlugins::load()
 
         uPlugins.insert(v.second.data());
       }
+    }
   }
 
 // retrieve plugin information about each user plugin

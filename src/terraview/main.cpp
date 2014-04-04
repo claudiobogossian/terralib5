@@ -24,8 +24,8 @@
 */
 
 // TerraView
+#include "Config.h"
 #include "TerraView.h"
-#include "TerraViewConfig.h"
 
 // TerraLib
 #include <terralib/qt/af/Utils.h>
@@ -34,16 +34,15 @@
 // STL
 #include <cstdlib>
 #include <exception>
+#include <locale>
 
 // Qt
-#include <QtCore/QResource>
-#include <QtCore/QDir>
-#include <QtCore/QFileInfo>
-#include <QtGui/QApplication>
-#include <QtGui/QSplashScreen>
-#include <QtGui/QMessageBox>
-
-#include <locale>
+#include <QApplication>
+#include <QDir>
+#include <QFileInfo>
+#include <QMessageBox>
+#include <QResource>
+#include <QSplashScreen>
 
 int main(int argc, char** argv)
 {
