@@ -67,12 +67,12 @@ std::string te::qt::plugins::ogr::OGRType::getName() const
 
 std::string te::qt::plugins::ogr::OGRType::getTitle() const
 {
-  return TE_QT_PLUGIN_DATASOURCE_OGR("Vector files");
+  return TE_TR("Vector files");
 }
 
 std::string te::qt::plugins::ogr::OGRType::getDescription() const
 {
-  return TE_QT_PLUGIN_DATASOURCE_OGR("Access to simple feature data through OGR (GDAL/OGR)");
+  return TE_TR("Access to simple feature data through OGR (GDAL/OGR)");
 }
 
 QWidget* te::qt::plugins::ogr::OGRType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
