@@ -527,7 +527,13 @@ te::rst::Raster* te::rst::Raster::resample(int method, unsigned int drow, unsign
   std::vector<te::rst::BandProperty*> bands;
 
   for (std::size_t b = 0; b < getNumberOfBands(); b++)
+  {
     bands.push_back(new te::rst::BandProperty(*(getBand(b)->getProperty())));
+    bands[ b ]->m_blkh = 1;
+    bands[ b ]->m_blkw = newwidth;
+    bands[ b ]->m_nblocksx = 1;
+    bands[ b ]->m_nblocksy = newheight;
+  }
 
   te::rst::Raster* rout = te::rst::RasterFactory::make(grid, bands, rinfo);
 
