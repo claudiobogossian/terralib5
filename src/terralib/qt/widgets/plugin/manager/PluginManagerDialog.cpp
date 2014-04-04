@@ -30,11 +30,11 @@
 #include "../../../../plugin/PluginInfo.h"
 #include "../../../../plugin/PluginManager.h"
 #include "../../../../plugin/Utils.h"
-#include "Exception.h"
+#include "../../help/HelpManager.h"
+#include "../../Exception.h"
 #include "PluginManagerDialog.h"
 #include "PluginsModel.h"
 #include "ui_PluginManagerDialogForm.h"
-#include "../../help/HelpManager.h"
 
 // STL
 #include <algorithm>
@@ -43,8 +43,8 @@
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QUrl>
-#include <QtGui/QMessageBox>
-#include <QtGui/QPixmap>
+#include <QMessageBox>
+#include <QPixmap>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>

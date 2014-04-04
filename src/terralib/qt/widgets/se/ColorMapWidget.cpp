@@ -45,9 +45,9 @@
 #include "ui_ColorMapWidgetForm.h"
 
 // Qt
-#include <QtGui/QColorDialog>
-#include <QtGui/QPainter>
-#include <QtGui/QValidator>
+#include <QColorDialog>
+#include <QPainter>
+#include <QValidator>
 
 // STL
 #include <cassert>

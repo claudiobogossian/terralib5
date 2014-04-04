@@ -35,8 +35,8 @@
 
 // Qt
 #include <QtCore/QObject>
-#include <QtGui/QColor>
-#include <QtGui/QPixmap>
+#include <QColor>
+#include <QPixmap>
 
 // Forward declarations
 class QAction;

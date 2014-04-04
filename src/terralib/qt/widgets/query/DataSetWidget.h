@@ -36,7 +36,7 @@
 #include <string>
 
 // Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 // BOOST
 #include <boost/ptr_container/ptr_vector.hpp>

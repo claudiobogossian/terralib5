@@ -33,7 +33,7 @@
 #include "Promoter.h"
 
 // Qt
-#include <QtGui/QIcon>
+#include <QIcon>
 
 bool IsPkey(const int& column, const std::vector<size_t>& pkeys)
 {

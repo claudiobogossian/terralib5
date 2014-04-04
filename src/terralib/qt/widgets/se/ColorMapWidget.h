@@ -30,8 +30,8 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QTableWidgetItem>
-#include <QtGui/QWidget>
+#include <QTableWidgetItem>
+#include <QWidget>
 
 // STL
 #include <memory>

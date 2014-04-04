@@ -49,7 +49,7 @@ void te::qt::widgets::SymbolLibrary::insert(te::qt::widgets::Symbol* symbol)
 
   std::string id = symbol->getInfo().m_id;
   if(findById(id))
-    throw te::common::Exception(TR_QT_WIDGETS("There is already a symbol with the given id."));
+    throw te::common::Exception(TE_TR("There is already a symbol with the given id."));
 
   m_symbolMap[id] = symbol;
 }
@@ -62,7 +62,7 @@ void te::qt::widgets::SymbolLibrary::remove(te::qt::widgets::Symbol* symbol)
   std::map<std::string, Symbol*>::iterator it = m_symbolMap.find(id);
 
   if(it == m_symbolMap.end())
-    throw te::common::Exception(TR_QT_WIDGETS("Could not find the symbol with the given id."));
+    throw te::common::Exception(TE_TR("Could not find the symbol with the given id."));
 
   m_symbolMap.erase(it);
 }

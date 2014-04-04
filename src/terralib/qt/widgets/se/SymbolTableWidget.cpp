@@ -29,9 +29,9 @@
 #include "SymbolTableWidget.h"
 
 // Qt
-#include <QtGui/QGridLayout>
-#include <QtGui/QHeaderView>
-#include <QtGui/QTableWidget>
+#include <QGridLayout>
+#include <QHeaderView>
+#include <QTableWidget>
 
 // STL
 #include <cassert>
@@ -43,10 +43,18 @@ te::qt::widgets::SymbolTableWidget::SymbolTableWidget(const QSize& size, QWidget
   // Table preview
   m_previewTable = new QTableWidget(this);
   m_previewTable->setColumnCount(1);
+#if (QT_VERSION >= 0x050000)
+  m_previewTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+#else
   m_previewTable->horizontalHeader()->setResizeMode(QHeaderView::Fixed);
+#endif
   m_previewTable->horizontalHeader()->setDefaultSectionSize(m_size.width());
   m_previewTable->horizontalHeader()->hide();
+#if (QT_VERSION >= 0x050000)
+  m_previewTable->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+#else
   m_previewTable->verticalHeader()->setResizeMode(QHeaderView::Fixed);
+#endif
   m_previewTable->verticalHeader()->setDefaultSectionSize(m_size.height());
   m_previewTable->setSelectionMode(QAbstractItemView::SingleSelection);
   m_previewTable->setSelectionBehavior(QAbstractItemView::SelectRows);

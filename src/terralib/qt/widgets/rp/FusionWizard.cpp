@@ -31,11 +31,11 @@
 #include "../../../rp/IHSFusion.h"
 #include "../../../rp/Module.h"
 #include "../../../rp/PCAFusion.h"
-#include "../../widgets/progress/ProgressViewerDialog.h"
+#include "../layer/search/LayerSearchWidget.h"
+#include "../layer/search/LayerSearchWizardPage.h"
+#include "../progress/ProgressViewerDialog.h"
 #include "FusionWizard.h"
 #include "FusionWizardPage.h"
-#include "LayerSearchWidget.h"
-#include "LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "Utils.h"
@@ -44,8 +44,8 @@
 #include <cassert>
 
 // Qt
-#include <QtGui/QMessageBox>
-#include <QtGui/QApplication>
+#include <QMessageBox>
+#include <QApplication>
 
 
 te::qt::widgets::FusionWizard::FusionWizard(QWidget* parent)

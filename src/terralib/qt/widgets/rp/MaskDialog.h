@@ -36,8 +36,8 @@
 #include <boost/numeric/ublas/matrix.hpp>
 
 // Qt
-#include <QtGui/QDialog>
-#include <QtGui/QLineEdit>
+#include <QDialog>
+#include <QLineEdit>
 
 namespace Ui { class MaskDialogForm; }
 

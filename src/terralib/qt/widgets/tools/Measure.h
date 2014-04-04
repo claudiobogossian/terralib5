@@ -32,9 +32,9 @@
 #include "AbstractTool.h"
 
 // Qt
-#include <QtGui/QFont>
-#include <QtGui/QPainterPath>
-#include <QtGui/QPen>
+#include <QFont>
+#include <QPainterPath>
+#include <QPen>
 
 // STL
 #include <vector>

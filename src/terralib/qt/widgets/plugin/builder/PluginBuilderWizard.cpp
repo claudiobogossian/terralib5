@@ -24,26 +24,25 @@
 */
 
 // TerraLib
-#include "PluginBuilderWizard.h"
-
-#include "../../utils/DoubleListWidget.h"
-#include "../../utils/ParameterTableWidget.h"
-#include "PluginCMakeWriter.h"
-#include "PluginSourceWriter.h"
+#include "../../../../common/StringUtils.h"
+#include "../../../../common/Version.h"
 #include "../../../../plugin/PluginManager.h"
 #include "../../../../plugin/PluginInfo.h"
 #include "../../../../plugin/Provider.h"
-#include "ui_PluginBuilderWizardForm.h"
+#include "../../utils/DoubleListWidget.h"
+#include "../../utils/ParameterTableWidget.h"
+#include "PluginBuilderWizard.h"
+#include "PluginCMakeWriter.h"
+#include "PluginSourceWriter.h"
 #include "ui_DoubleListWidgetForm.h"
 #include "ui_ParameterTableWidgetForm.h"
-#include "../../../../common/StringUtils.h"
-#include "../../../../common/Version.h"
+#include "ui_PluginBuilderWizardForm.h"
 
 // Qt
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
-#include <QtCore/QRegExp>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QRegExp>
+#include <QVBoxLayout>
 
 te::qt::widgets::PluginBuilderWizard::PluginBuilderWizard(QWidget* parent)
   : QWizard(parent),

@@ -29,7 +29,7 @@
 #include "ZoomArea.h"
 
 // Qt
-#include <QtGui/QMouseEvent>
+#include <QMouseEvent>
 
 te::qt::widgets::ZoomArea::ZoomArea(te::qt::widgets::MapDisplay* display, const QCursor& cursor, QObject* parent) 
   : RubberBand(display, parent),

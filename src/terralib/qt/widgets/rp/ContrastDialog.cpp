@@ -29,8 +29,8 @@
 #include "../../../rp/Contrast.h"
 #include <ui_ContrastForm.h>
 
-#include <QtGui/QMessageBox>
-#include <QtGui/QListWidgetItem>
+#include <QMessageBox>
+#include <QListWidgetItem>
 
 // TerraLib
 

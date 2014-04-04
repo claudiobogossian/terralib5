@@ -32,9 +32,9 @@
 #include "Frame.h"
 
 // Qt
+#include <QPixmap>
 #include <QRect>
 #include <QRectF>
-#include <QPixmap>
 #include <QWidget>
 
 class QMenu;

@@ -31,12 +31,12 @@
 #include "../../../statistics/qt/StatisticsDialog.h"
 
 // Qt
-#include <QtGui/QHeaderView>
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QMenu>
-#include <QtGui/QCursor>
-#include <QtGui/QPainter>
-#include <QtGui/QMessageBox>
+#include <QHeaderView>
+#include <QContextMenuEvent>
+#include <QMenu>
+#include <QCursor>
+#include <QPainter>
+#include <QMessageBox>
 
 // STL
 #include <vector>
@@ -538,7 +538,11 @@ m_dset(0)
 
   setModel(m_model);
 
+#if QT_VERSION >= 0x050000
+  horizontalHeader()->setSectionsMovable(true);
+#else
   horizontalHeader()->setMovable(true);
+#endif
   setVerticalHeader(new DataSetTableVerticalHeader(this));
 
   setSelectionMode(QAbstractItemView::MultiSelection);
@@ -993,3 +997,5 @@ void te::qt::widgets::DataSetTableView::removeSelection(const int& initRow, cons
 
   selectionModel()->select(toRemove, QItemSelectionModel::Deselect);
 }
+
+#include "DataSetTableView.moc"

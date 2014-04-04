@@ -26,12 +26,12 @@
 // TerraLib
 #include "../../../dataaccess/query/Field.h"
 #include "../../../dataaccess/query/PropertyName.h"
-#include "ui_DoubleListWidgetForm.h"
-#include "DoubleListWidget.h"
+#include "../utils/DoubleListWidget.h"
 #include "FieldsWizardPage.h"
+#include "ui_DoubleListWidgetForm.h"
 
 // Qt
-#include <QtGui/QGridLayout>
+#include <QGridLayout>
 
 
 te::qt::widgets::FieldsWizardPage::FieldsWizardPage(QWidget* parent)

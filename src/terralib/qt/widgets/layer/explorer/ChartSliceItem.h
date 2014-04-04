@@ -31,7 +31,7 @@
 
 // Qt
 #include <QtCore/QString>
-#include <QtGui/QColor>
+#include <QColor>
 
 namespace te
 {

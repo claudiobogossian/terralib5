@@ -38,7 +38,7 @@
 #include <boost/numeric/ublas/matrix.hpp>
 
 // Qt
-#include <QtGui/QWizardPage>
+#include <QWizardPage>
 
 namespace Ui { class FilterWizardPageForm; }
 

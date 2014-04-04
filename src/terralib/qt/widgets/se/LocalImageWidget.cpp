@@ -30,9 +30,9 @@
 #include "ui_LocalImageWidgetForm.h"
 
 // Qt
-#include <QtGui/QFileDialog>
-#include <QtGui/QImageReader>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QImageReader>
+#include <QMessageBox>
 
 // STL
 #include <cassert>

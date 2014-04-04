@@ -34,8 +34,8 @@
 #include <memory>
 
 // QT
-#include <QtGui/QTableWidgetItem>
-#include <QtGui/QWidget>
+#include <QTableWidgetItem>
+#include <QWidget>
 
 // Forward declaraion
 namespace Ui { class GroupingWidgetForm; }

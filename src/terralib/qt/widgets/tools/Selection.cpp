@@ -41,9 +41,9 @@
 
 // Qt
 #include <QtCore/QString>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QMessageBox>
-#include <QtGui/QMouseEvent>
+#include <QKeyEvent>
+#include <QMessageBox>
+#include <QMouseEvent>
 
 // STL
 #include <cassert>
@@ -113,7 +113,11 @@ bool te::qt::widgets::Selection::mouseReleaseEvent(QMouseEvent* e)
   {
     m_selectionByPointing = true;
     QPointF pixelOffset(4.0, 4.0);
+#if QT_VERSION >= 0x050000
+    m_rect = QRectF(e->localPos() - pixelOffset, e->localPos() + pixelOffset);
+#else
     m_rect = QRectF(e->posF() - pixelOffset, e->posF() + pixelOffset);
+#endif
   }
 
   // Converts rect boundary to world coordinates

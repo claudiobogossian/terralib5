@@ -26,14 +26,14 @@
 // TerraLib
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/UniqueKey.h"
-#include "DoubleListWidget.h"
+#include "../utils/DoubleListWidget.h"
 #include "UniquekeyConstraintWidget.h"
 #include "ui_ConstraintWidgetForm.h"
 #include "ui_DoubleListWidgetForm.h"
 
 
 //Qt 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 
 te::qt::widgets::UniqueKeyConstraintWidget::UniqueKeyConstraintWidget(te::da::DataSetType* dsType, QWidget* parent, Qt::WindowFlags f)

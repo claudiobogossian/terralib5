@@ -31,9 +31,12 @@
 #include "LineSymbolizerProperty.h"
 
 // Qt
-#include "../../../../../third-party/qt/propertybrowser/qttreepropertybrowser.h"
-#include <QtGui/QGridLayout>
-#include <QtGui/QToolBox>
+#include <QGridLayout>
+#include <QToolBox>
+
+// QtPropertyBrowser
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
+#include <QtPropertyBrowser/QtVariantPropertyManager>
 
 // STL
 #include <cassert>

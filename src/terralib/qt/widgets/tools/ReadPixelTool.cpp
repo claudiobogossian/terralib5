@@ -42,8 +42,8 @@
 #include "ReadPixelTool.h"
 
 // Qt
-#include <QtGui/QMouseEvent>
-#include <QtGui/QToolTip>
+#include <QMouseEvent>
+#include <QToolTip>
 
 // STL
 #include <cassert>
@@ -65,8 +65,12 @@ bool te::qt::widgets::ReadPixelTool::mouseReleaseEvent(QMouseEvent* e)
     return false;
 
   // Converts clicked point to world coordinates
+#if QT_VERSION >= 0x050000
+  QPointF qpoint = m_display->transform(e->localPos());
+#else
   QPointF qpoint = m_display->transform(e->posF());
-
+#endif
+  
   te::map::DataSetLayer* dsL = dynamic_cast<te::map::DataSetLayer*>(m_layer.get());
 
   if(dsL == 0)

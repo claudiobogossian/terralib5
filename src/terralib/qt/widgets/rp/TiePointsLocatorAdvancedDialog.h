@@ -31,7 +31,7 @@
 #include "../../../rp/TiePointsLocator.h"
 
 // Qt
-#include <QtGui/QDialog>
+#include <QDialog>
 
 
 // Forward user interface declaration

@@ -54,7 +54,7 @@ te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da
   static boost::uuids::basic_random_generator<boost::mt19937> gen;
 
   if(dataset.get() == 0)
-    throw Exception(TR_QT_WIDGETS("Can not convert a NULL dataset to a layer!"));
+    throw Exception(TE_TR("Can not convert a NULL dataset to a layer!"));
 
   boost::uuids::uuid u = gen();
   std::string id = boost::uuids::to_string(u);

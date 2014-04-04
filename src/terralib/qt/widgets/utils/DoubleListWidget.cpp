@@ -28,7 +28,7 @@
 #include "DoubleListWidget.h"
 
 // Qt
-#include <QtGui/QIcon>
+#include <QIcon>
 
 
 te::qt::widgets::DoubleListWidget::DoubleListWidget(QWidget* parent, Qt::WindowFlags f)

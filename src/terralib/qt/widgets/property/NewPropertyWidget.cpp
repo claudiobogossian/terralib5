@@ -37,7 +37,7 @@
 #include "ui_NewPropertyWidgetForm.h"
 
 // Qt
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 
 
 te::qt::widgets::NewPropertyWidget::NewPropertyWidget(QWidget* parent, Qt::WindowFlags f)

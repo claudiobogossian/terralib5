@@ -34,7 +34,7 @@
 
 // Qt
 #include <QtCore/QObject>
-#include <QtGui/QCursor>
+#include <QCursor>
 
 // Forward declarations
 class QMouseEvent;

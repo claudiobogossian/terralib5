@@ -31,8 +31,8 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QWidget>
-#include <QtGui/QComboBox>
+#include <QWidget>
+#include <QComboBox>
 
 // STL
 #include <memory>

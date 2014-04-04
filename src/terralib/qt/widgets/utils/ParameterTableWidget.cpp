@@ -32,7 +32,7 @@
 #include "ui_ParameterTableWidgetForm.h"
 
 // Qt
-#include <QtGui/QIcon>
+#include <QIcon>
 
 te::qt::widgets::ParameterTableWidget::ParameterTableWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),

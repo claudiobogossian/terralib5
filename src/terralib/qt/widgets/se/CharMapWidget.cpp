@@ -27,9 +27,9 @@
 #include "CharMapWidget.h"
 
 // Qt
-#include <QtGui/QMouseEvent>
-#include <QtGui/QPainter>
-#include <QtGui/QToolTip>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QToolTip>
 
 te::qt::widgets::CharMapWidget::CharMapWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
@@ -83,7 +83,11 @@ void te::qt::widgets::CharMapWidget::mousePressEvent(QMouseEvent* e)
   }
 
   m_currentChar = (e->y() / m_squareSize) * m_columns + e->x() / m_squareSize;
+#if (QT_VERSION >= 0x050000)
+  if(QChar(m_currentChar).category() != QChar::Other_NotAssigned)
+#else
   if(QChar(m_currentChar).category() != QChar::NoCategory)
+#endif
     emit charSelected(m_currentChar);
 
   update();

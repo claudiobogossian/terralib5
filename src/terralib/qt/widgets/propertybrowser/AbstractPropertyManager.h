@@ -92,7 +92,7 @@ namespace te
           QtColorEditorFactory*     m_colorFactory;
           QtFontEditorFactory*      m_fontFactory;
           QtCharEditorFactory*      m_charFactory;
-          //QtDlgEditorFactory*       m_dlgFactory;
+          QtDlgEditorFactory*       m_dlgFactory;
 
       };
 

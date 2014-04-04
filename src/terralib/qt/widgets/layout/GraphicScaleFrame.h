@@ -28,7 +28,6 @@
 
 // TerraLib
 #include "../Config.h"
-#include "MultiThreadMapDisplay.h"
 #include "Frame.h"
 
 // Qt

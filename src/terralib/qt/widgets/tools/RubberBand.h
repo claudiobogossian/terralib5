@@ -31,7 +31,7 @@
 #include "AbstractTool.h"
 
 // Qt
-#include <QtGui/QPen>
+#include <QPen>
 
 namespace te
 {
