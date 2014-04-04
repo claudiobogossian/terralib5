@@ -25,12 +25,12 @@
 
 //Terralib
 //#include "TimePropertiesDialog.h"
+#include "../canvas/MapDisplay.h"
 #include "Animation.h"
 #include "AnimationScene.h"
 #include "TrajectoryItem.h"
 #include "PixmapItem.h"
 #include "TimeSliderWidget.h"
-#include "MapDisplay.h"
 #include "ui_TimeSliderWidgetForm.h"
 #include <terralib/dataaccess.h>
 #include <terralib/stmemory.h>
@@ -40,18 +40,18 @@
 
 //QT
 #include <qgraphicseffect.h>
-#include <QtGui/QSlider>
-#include <QtGui/QGraphicsView>
-#include <QtCore/QParallelAnimationGroup>
-#include <QtCore/QPropertyAnimation>
-#include <QtCore/QTimer>
-#include <QtCore/QThread>
-#include <QtCore/QTextStream>
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QMessageBox>
-#include <QtGui/QInputDialog>
-#include <QtGui/QDateTimeEdit>
-#include <QtGui/QColorDialog>
+#include <QSlider>
+#include <QGraphicsView>
+#include <QParallelAnimationGroup>
+#include <QPropertyAnimation>
+#include <QTimer>
+#include <QThread>
+#include <QTextStream>
+#include <QContextMenuEvent>
+#include <QMessageBox>
+#include <QInputDialog>
+#include <QDateTimeEdit>
+#include <QColorDialog>
 
 
 te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay* md, QWidget* parent,  Qt::WindowFlags f)
@@ -59,8 +59,8 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
     m_display(md),
     m_erasePerfectly(false),
     m_maxSliderValue(1000000000),
-    m_finished(false),
-    m_ui(new Ui::TimeSliderWidgetForm)
+    m_ui(new Ui::TimeSliderWidgetForm),
+    m_finished(false)
 {
   te::qt::widgets::ScopedCursor scopedCursor(Qt::WaitCursor);
   m_ui->setupUi(this);

@@ -35,24 +35,24 @@
 #include <terralib/qt/widgets/canvas/Canvas.h>
 
 // Qt
-#include <QtGui/QApplication>
-#include <QtGui/QAction>
-#include <QtGui/QMenu>
-#include <QtGui/QMessageBox>
+#include <QApplication>
+#include <QAction>
+#include <QMenu>
+#include <QMessageBox>
 
-#include <QtGui/QPainter>
-#include <QtGui/QColor>
-#include <QtCore/QRect>
-#include <QtGui/QWidget>
-#include <QtGui/QColorDialog>
-#include <QtGui/QFontDialog>
-#include <QtGui/QInputDialog>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
+#include <QPainter>
+#include <QColor>
+#include <QRect>
+#include <QWidget>
+#include <QColorDialog>
+#include <QFontDialog>
+#include <QInputDialog>
+#include <QMenu>
+#include <QAction>
 #include <QToolTip>
-#include <QtGui/QResizeEvent>
-#include <QtGui/QBoxLayout>
-#include <QtCore/QCoreApplication>
+#include <QResizeEvent>
+#include <QBoxLayout>
+#include <QCoreApplication>
 #include <QtCore/qmath.h>
 
 te::qt::widgets::GraphicScaleFrame::GraphicScaleFrame(te::qt::widgets::DataFrame* df, Qt::WindowFlags f) :

@@ -18,7 +18,7 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build configuration for the Data Access Module.
+#  Description: Build configuration for the ST Module.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
@@ -30,8 +30,14 @@ include_directories(${Boost_INCLUDE_DIR})
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/st/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/st/*.h)
 
+source_group("Source Files"                      FILES ${TERRALIB_SRC_FILES})
+source_group("Header Files"                      FILES ${TERRALIB_HDR_FILES})
+
 file(GLOB TERRALIB_CORE_COVERAGE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/st/core/coverage/*.cpp)
 file(GLOB TERRALIB_CORE_COVERAGE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/st/core/coverage/*.h)
+
+source_group("Source Files\\core\\coverage"      FILES ${TERRALIB_CORE_COVERAGE_SRC_FILES})
+source_group("Header Files\\core\\coverage"      FILES ${TERRALIB_CORE_COVERAGE_HDR_FILES})
 
 file(GLOB TERRALIB_CORE_EVENT_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/st/core/event/*.cpp)
 file(GLOB TERRALIB_CORE_EVENT_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/st/core/event/*.h)
@@ -51,12 +57,8 @@ file(GLOB TERRALIB_CORE_TRAJECTORY_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/t
 file(GLOB TERRALIB_LOADER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib//st/loader/*.cpp)
 file(GLOB TERRALIB_LOADER_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/st/loader/*.h)
 
-source_group("Source Files"                      FILES ${TERRALIB_SRC_FILES})
-source_group("Header Files"                      FILES ${TERRALIB_HDR_FILES})
-source_group("Source Files\\core\\coverage"      FILES ${TERRALIB_CORE_COVERAGE_SRC_FILES})
-source_group("Header Files\\core\\coverage"      FILES ${TERRALIB_CORE_COVERAGE_HDR_FILES})
 source_group("Source Files\\core\\event"         FILES ${TERRALIB_CORE_EVENT_SRC_FILES})
-source_group("Header Files\\core\event"          FILES ${TERRALIB_CORE_EVENT_HDR_FILES})
+source_group("Header Files\\core\\event"         FILES ${TERRALIB_CORE_EVENT_HDR_FILES})
 source_group("Source Files\\core\\interpolator"  FILES ${TERRALIB_CORE_INTERPOLATOR_SRC_FILES})
 source_group("Header Files\\core\\interpolator"  FILES ${TERRALIB_CORE_INTERPOLATOR_HDR_FILES})
 source_group("Source Files\\core\\observation"   FILES ${TERRALIB_CORE_OBSERVATION_SRC_FILES})
@@ -115,14 +117,14 @@ install(FILES ${TERRALIB_CORE_INTERPOLATOR_HDR_FILES}
 
 install(FILES ${TERRALIB_CORE_OBSERVATION_HDR_FILES}
         DESTINATION include/terralib/st/core/observation COMPONENT devel)
-        
+
 install(FILES ${TERRALIB_CORE_TIMESERIES_HDR_FILES}
         DESTINATION include/terralib/st/core/timeseries COMPONENT devel)
-        
+
 install(FILES ${TERRALIB_CORE_TRAJECTORY_HDR_FILES}
-        DESTINATION include/terralib/st/core/trajectory COMPONENT devel)        
-        
+        DESTINATION include/terralib/st/core/trajectory COMPONENT devel)
+
  install(FILES ${TERRALIB_LOADER_HDR_FILES}
-        DESTINATION include/terralib/st/loader COMPONENT devel)               
+        DESTINATION include/terralib/st/loader COMPONENT devel)
 
 export(TARGETS terralib_mod_st APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

@@ -60,7 +60,7 @@ void te::stmem::Module::initialize()
   // register data source factory
   te::da::DataSourceFactory::add(TE_STMEMORY_DRIVER_IDENTIFIER, te::stmem::Build);
   
-  TE_LOG_TRACE(TR_STMEMORY("TerraLib ST memory driver initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib ST memory driver initialized!"));
 }
 
 void te::stmem::Module::finalize()
@@ -68,7 +68,7 @@ void te::stmem::Module::finalize()
   // Unregister the data source factory
   te::da::DataSourceFactory::remove(TE_STMEMORY_DRIVER_IDENTIFIER);
 
-  TE_LOG_TRACE(TR_STMEMORY("TerraLib ST memory driver finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib ST memory driver finalized!"));
 }
 
 

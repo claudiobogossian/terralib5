@@ -34,23 +34,23 @@
 #include <terralib/qt/widgets/canvas/Canvas.h>
 
 // Qt
-#include <QtGui/QApplication>
-#include <QtGui/QAction>
-#include <QtGui/QMenu>
+#include <QApplication>
+#include <QAction>
+#include <QMenu>
 
-#include <QtGui/QPainter>
-#include <QtGui/QColor>
-#include <QtCore/QRect>
-#include <QtGui/QWidget>
-#include <QtGui/QColorDialog>
-#include <QtGui/QFontDialog>
-#include <QtGui/QInputDialog>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
+#include <QPainter>
+#include <QColor>
+#include <QRect>
+#include <QWidget>
+#include <QColorDialog>
+#include <QFontDialog>
+#include <QInputDialog>
+#include <QMenu>
+#include <QAction>
 #include <QToolTip>
-#include <QtGui/QResizeEvent>
-#include <QtGui/QBoxLayout>
-#include <QtCore/QCoreApplication>
+#include <QResizeEvent>
+#include <QBoxLayout>
+#include <QCoreApplication>
 #include <QtCore/qmath.h>
 
 te::qt::widgets::TextFrame::TextFrame(const QPointF& p, const QString& txt, const int& pointSize, te::qt::widgets::LayoutEditor* me, Qt::WindowFlags f) :
