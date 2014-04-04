@@ -240,7 +240,16 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
           if(ce == te::common::UNKNOWN_CHAR_ENCODING)
             return value.c_str();
           else
-            return te::common::CharEncodingConv::convert(value, ce, te::common::CP1252).c_str();
+          {
+            try
+            {
+              return te::common::CharEncodingConv::convert(value, ce, te::common::CP1252).c_str();
+            }
+            catch(...)
+            {
+              return value.c_str();
+            }
+          }
         }
         else
           return m_dataset->getAsString(index.column(), 6).c_str();
