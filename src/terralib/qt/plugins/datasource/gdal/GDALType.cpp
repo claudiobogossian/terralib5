@@ -68,12 +68,12 @@ std::string te::qt::plugins::gdal::GDALType::getName() const
 
 std::string te::qt::plugins::gdal::GDALType::getTitle() const
 {
-  return TR_QT_WIDGETS("Raster files");
+  return TE_TR("Raster files");
 }
 
 std::string te::qt::plugins::gdal::GDALType::getDescription() const
 {
-  return TR_QT_WIDGETS("Access to geospatial data through the Geospatial Data Abstraction Library (GDAL)");
+  return TE_TR("Access to geospatial data through the Geospatial Data Abstraction Library (GDAL)");
 }
 
 QWidget* te::qt::plugins::gdal::GDALType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const

@@ -54,12 +54,12 @@
 #include <boost/filesystem.hpp>
 
 // Qt 
-#include <QtCore/QFileInfo>
-#include <QtGui/QAction>
-#include <QtGui/QApplication>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMenu>
-#include <QtGui/QMessageBox>
+#include <QFileInfo>
+#include <QAction>
+#include <QApplication>
+#include <QFileDialog>
+#include <QMenu>
+#include <QMessageBox>
 
 std::list<te::da::DataSetTypePtr> GetDataSetsInfo(const te::da::DataSourceInfoPtr& info)
 {
@@ -146,10 +146,7 @@ void te::qt::plugins::ogr::Plugin::startup()
 
   te::qt::widgets::DataSourceTypeManager::getInstance().add(new OGRType);
 
-// it initializes the Translator support for the TerraLib PostGIS driver support
-  TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_DATASOURCE_OGR_TEXT_DOMAIN, TE_QT_PLUGIN_DATASOURCE_OGR_TEXT_DOMAIN_DIR, "UTF-8");
-
-  TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_OGR("TerraLib Qt OGR widget startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt OGR widget startup!"));
 
   m_initialized = true;
   
@@ -179,7 +176,7 @@ void te::qt::plugins::ogr::Plugin::shutdown()
   te::da::DataSourceInfoManager::getInstance().removeByType("OGR");
   te::qt::widgets::DataSourceTypeManager::getInstance().remove("OGR");
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_OGR("TerraLib Qt OGR widget shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt OGR widget shutdown!"));
 
   delete m_showWindow;
 
