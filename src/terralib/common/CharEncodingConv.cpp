@@ -41,8 +41,8 @@
 
 #define TE_CONVERSION_BUFFERSIZE_SIZE 64
 
-static const char* iconv_names[]  = {"UTF-8", "CP1250", "CP1251", "CP1252", "CP1253", "CP1254", "CP1257"};
-static const char* charset_desc[] = {"UTF-8", "CP1250", "CP1251", "CP1252", "CP1253", "CP1254", "CP1257"};
+static const char* iconv_names[]  = {"UTF-8", "CP1250", "CP1251", "CP1252", "CP1253", "CP1254", "CP1257", "ISO-8859-1"};
+static const char* charset_desc[] = {"UTF-8", "CP1250", "CP1251", "CP1252", "CP1253", "CP1254", "CP1257", "LATIN1"};
 
 te::common::CharEncodingConv::CharEncodingConv(const CharEncoding& fromCode, const CharEncoding& toCode)
   : m_fromCode(fromCode),
