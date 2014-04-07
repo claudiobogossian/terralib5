@@ -1,0 +1,555 @@
+#
+#  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+#
+#  This file is part of the TerraLib - a Framework for building GIS enabled applications.
+#
+#  TerraLib is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation, either version 3 of the License,
+#  or (at your option) any later version.
+#
+#  TerraLib is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU Lesser General Public License for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with TerraLib. See COPYING. If not, write to
+#  TerraLib Team at <terralib-team@terralib.org>.
+#
+#
+#  Description: Main CMake script for the TerraLib build system.
+#
+#  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
+#          Juan Carlos P. Garrido <juan@dpi.inpe.br>
+#          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
+#
+
+cmake_minimum_required(VERSION 2.8.7)
+
+project(examples)
+
+# variables storing absolute paths
+set(TERRALIB_ABSOLUTE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../..)
+
+# variables that controls path
+set(TERRALIB_DIR_VAR_NAME "TERRALIB_HOME")
+
+#
+# global definitions and includes
+#
+
+add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
+
+include_directories(${CMAKE_BINARY_DIR})
+include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
+include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/examples)
+
+#
+# global configurations
+#
+
+#list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/modules")
+
+if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic")
+endif()
+
+
+#
+# including CMake's auxiliary files
+#
+include(CMakeDependentOption)
+
+
+#
+# first check of libraries
+#
+find_package (terralib 5.0.0 COMPONENTS common dataaccess datatype filter gdal 
+              geometry gml memory  ogr plugin postgis qt_widgets  raster srs sam vp rp
+              xerces xlink xml REQUIRED)
+
+#find_package(Boost 1.54.0 REQUIRED system date_time chrono timer filesystem thread log log_setup program_options unit_test_framework)
+
+#find_package(Doxygen QUIET)
+
+#find_package(GDAL)
+
+#find_package(GEOS)
+
+#find_package(GEOSC)
+
+#find_package(GNUGettext)
+
+#find_package(GNUIconv)
+
+#find_package(Log4cxx)
+
+#find_package(Lua51)
+
+#find_package(PostgreSQL)
+
+#find_package(Proj4)
+
+#find_package(Qt5 5.1 COMPONENTS Core Gui Widgets PrintSupport)
+
+if(Qt5_FOUND)
+
+  #set(CMAKE_AUTOMOC ON)
+  #set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+else()
+
+  find_package(Qt4 4.6.3 QUIET COMPONENTS QtCore QtGui)
+
+  if(QT4_FOUND)
+
+    #include(${QT_USE_FILE})
+
+    #include_directories(${QT_INCLUDE_DIR})
+
+    #add_definitions(${QT_DEFINITIONS})
+
+  endif()
+
+endif()
+
+if(Qt5_FOUND OR QT4_FOUND)
+  find_package(Qwt)
+  find_package(QtPropertyBrowser)
+endif()
+
+find_package(Xerces)
+
+
+#
+# some variables needed in config file
+#
+
+if(Boost_FOUND)
+  set(TERRALIB_BOOST_ENABLED ON)
+endif()
+
+if(GDAL_FOUND)
+  set(TERRALIB_GDAL_ENABLED ON)
+endif()
+
+if(GEOS_FOUND)
+  set(TERRALIB_GEOS_ENABLED ON)
+endif()
+
+if(GEOSC_FOUND)
+  set(TERRALIB_GEOSC_ENABLED ON)
+endif()
+
+if(GNUGETTEXT_FOUND)
+
+  set(TERRALIB_GNU_GETTEXT_ENABLED ON)
+
+  if(NOT DEFINED TERRALIB_TRANSLATOR_ENABLED)
+    set(TERRALIB_TRANSLATOR_ENABLED 1 CACHE BOOL "Enable translator support?")
+  endif()
+
+else()
+
+  if(DEFINED TERRALIB_TRANSLATOR_ENABLED)
+    set(TERRALIB_TRANSLATOR_ENABLED 0 CACHE BOOL "Enable translator support?" FORCE)
+  endif()
+  
+endif()
+
+if(GNUICONV_FOUND)
+
+  set(TERRALIB_GNU_ICONV_ENABLED ON)
+
+  if(NOT DEFINED TERRALIB_CHARENCODING_ENABLED)
+    set(TERRALIB_CHARENCODING_ENABLED 1 CACHE BOOL "Enable character encoding support?")
+  endif()
+
+else()
+
+  if(DEFINED TERRALIB_CHARENCODING_ENABLED)
+    set(TERRALIB_CHARENCODING_ENABLED 0 CACHE BOOL "Enable character encoding support?" FORCE)
+  endif()
+
+endif()
+
+if(LUA51_FOUND)
+  set(TERRALIB_LUA_ENABLED ON)
+endif()
+
+if(LOG4CXX_FOUND)
+  set(TERRALIB_APACHE_LOG4CXX_ENABLED ON)
+
+  if(NOT DEFINED TERRALIB_LOGGER_ENABLED)
+    set(TERRALIB_LOGGER_ENABLED 1 CACHE BOOL "Enable logger?")
+  endif()
+
+  if(TERRALIB_LOGGER_ENABLED AND NOT DEFINED TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION)
+
+    set(TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION 1 CACHE BOOL "Automatic initialize logger support?")
+
+  else()
+
+    if(NOT TERRALIB_LOGGER_ENABLED AND DEFINED TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION)
+      set(TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION 0 CACHE BOOL "Automatic initialize logger support?" FORCE)
+    endif()
+
+  endif()
+  
+  if(TERRALIB_LOGGER_ENABLED AND NOT DEFINED TERRALIB_LOGGER_DO_STATIC_INITIALIZATION)
+
+    set(TERRALIB_LOGGER_DO_STATIC_INITIALIZATION 1 CACHE BOOL "Perform logger initialization support during static's initialization?")
+
+  else()
+
+    if(NOT TERRALIB_LOGGER_ENABLED AND DEFINED TERRALIB_LOGGER_DO_STATIC_INITIALIZATION)
+      set(TERRALIB_LOGGER_DO_STATIC_INITIALIZATION 0 CACHE BOOL "Perform logger initialization support during static's initialization?" FORCE)
+    endif()
+
+  endif()
+
+else()
+
+  if(DEFINED TERRALIB_LOGGER_ENABLED)
+    set(TERRALIB_LOGGER_ENABLED 0 CACHE BOOL "Enable logger?" FORCE)
+  endif()
+
+endif()
+
+if(PostgreSQL_INCLUDE_DIR AND PostgreSQL_LIBRARY_DIR)
+  set(TERRALIB_LIBPQ_ENABLED ON)
+endif()
+
+if(PROJ4_FOUND)
+  set(TERRALIB_PROJ4_ENABLED ON)
+endif()
+
+if(QT4_FOUND)
+  set(TERRALIB_QT4_ENABLED ON)
+endif()
+
+if(Qt5_FOUND)
+  set(TERRALIB_QT5_ENABLED ON)
+endif()
+
+if(QTPROPERTYBROWSER_FOUND)
+  set(TERRALIB_QTPROPERTYBROWSER_ENABLED ON)
+endif()
+
+if(QWT_FOUND)
+  set(TERRALIB_QWT_ENABLED ON)
+endif()
+
+if(XERCES_FOUND)
+  set(TERRALIB_XERCES_ENABLED ON)
+endif()
+
+
+#
+# build options
+#
+# warning: please, do not change the order below!
+#
+
+if(DOXYGEN_FOUND)
+  option(TERRALIB_DOXYGEN_ENABLED  "Enable API documentation build?" ON)
+endif()
+
+option(TERRALIB_MOD_COLOR_ENABLED "Build Color module?" ON)
+
+option(TERRALIB_MOD_DATATYPE_ENABLED "Build Data Type module?" ON)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_GEOMETRY_ENABLED "Build Geometry module?" ON "TERRALIB_MOD_DATATYPE_ENABLED" OFF)
+
+#if(PROJ4_FOUND) # remove comment if this module requires Proj4
+  option(TERRALIB_MOD_SRS_ENABLED "Build Spatial Reference System module?" ON)
+#endif()
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_RASTER_ENABLED "Build Raster module?" ON "TERRALIB_MOD_DATATYPE_ENABLED;TERRALIB_MOD_SRS_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_DATAACCESS_ENABLED "Build Data Access module?" ON "TERRALIB_MOD_DATATYPE_ENABLED;TERRALIB_MOD_RASTER_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED" OFF)
+
+option(TERRALIB_MOD_XLINK_ENABLED "Build XLink module?" ON)
+
+option(TERRALIB_MOD_XML_ENABLED "Build XML module?" ON)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_PLUGIN_ENABLED "Build Plugin module?" ON "TERRALIB_MOD_XML_ENABLED" OFF)
+
+if(XERCES_FOUND)
+  CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_XERCES_ENABLED "Build Xerces support?" ON "TERRALIB_MOD_XML_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED" OFF)
+endif()
+
+if(PostgreSQL_INCLUDE_DIR AND PostgreSQL_LIBRARY_DIR)
+  CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_POSTGIS_ENABLED "Build PostGIS support?" ON "TERRALIB_MOD_XML_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_DATATYPE_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED" OFF)
+endif()
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_MEMORY_ENABLED "Build Memory support?" ON "TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_DATATYPE_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_RASTER_ENABLED" OFF)
+
+if(GDAL_FOUND)
+  CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_OGR_ENABLED "Build OGR support?" ON "TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_DATATYPE_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED" OFF)
+
+  CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_GDAL_ENABLED "Build GDAL support?" ON "TERRALIB_MOD_OGR_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_DATATYPE_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED" OFF)
+endif()
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_ANNOTATIONTEXT_ENABLED "Build AnnotationText module?" ON "TERRALIB_MOD_GEOMETRY_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_GML_ENABLED "Build GML module?" ON "TERRALIB_MOD_GEOMETRY_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_FILTER_ENABLED "Build Filter module?" ON "TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_GML_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_SYMBOLOGY_ENABLED "Build Symbology module?" ON "TERRALIB_MOD_COLOR_ENABLED;TERRALIB_MOD_FILTER_ENABLED;TERRALIB_MOD_XLINK_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_MAPTOOLS_ENABLED "Build MapTools module?" ON "TERRALIB_MOD_ANNOTATIONTEXT_ENABLED;TERRALIB_MOD_COLOR_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_DATATYPE_ENABLED;TERRALIB_MOD_FILTER_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_GML_ENABLED;TERRALIB_MOD_MEMORY_ENABLED;TERRALIB_MOD_RASTER_ENABLED;TERRALIB_MOD_SRS_ENABLED;TERRALIB_MOD_SYMBOLOGY_ENABLED;TERRALIB_MOD_XLINK_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_CLASSIFICATION_ENABLED "Build Classification module?" ON "TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_DATATYPE_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_MEMORY_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_METADATA_ENABLED "Build Metadata module?" ON "TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_DATATYPE_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_GRAPH_ENABLED "Build Graph module?" ON "TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_DATATYPE_ENABLED;TERRALIB_MOD_RASTER_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_MAPTOOLS_ENABLED;TERRALIB_MOD_MEMORY_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_SYMBOLOGY_ENABLED;TERRALIB_MOD_SRS_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_STATISTICS_CORE_ENABLED "Build Statistics Core module?" ON "TERRALIB_MOD_RASTER_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_VP_CORE_ENABLED "Build Vector Processing Core module?" ON "TERRALIB_MOD_STATISTICS_CORE_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_RP_ENABLED "Build Raster Processing module?" ON "TERRALIB_MOD_RASTER_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_STATISTICS_CORE_ENABLED;TERRALIB_MOD_MEMORY_ENABLED;TERRALIB_MOD_SRS_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_STMEMORY_ENABLED "Build ST Memory module?" ON "TERRALIB_MOD_MEMORY_ENABLED;TERRALIB_MOD_RASTER_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_ST_ENABLED "Build ST module?" ON "TERRALIB_MOD_STMEMORY_ENABLED;TERRALIB_MOD_RASTER_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED" OFF)
+
+if(QT4_FOUND OR Qt5_FOUND)
+
+  CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_STATISTICS_QT_ENABLED "Build Qt support for Statistics module?" ON "TERRALIB_MOD_STATISTICS_CORE_ENABLED" OFF)
+
+  if(QWT_FOUND AND QTPROPERTYBROWSER_FOUND)
+    option(TERRALIB_MOD_QT_WIDGETS_ENABLED "Build Qt Widgets?" ON)
+  endif()
+
+  CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_VP_QT_ENABLED "Build Vector Processing Qt module?" ON "TERRALIB_MOD_VP_CORE_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
+
+  CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_APF_ENABLED "Build Qt Appllication Framework?" ON "TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
+endif()
+
+option(TERRALIB_MOD_XSD_ENABLED "Build XSD module?" ON)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_GDAL_ENABLED "Build GDAL Driver Qt plugin?" ON "TERRALIB_MOD_GDAL_ENABLED;TERRALIB_MOD_QT_APF_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_OGR_ENABLED "Build OGR Driver Qt plugin?" ON "TERRALIB_MOD_OGR_ENABLED;TERRALIB_MOD_QT_APF_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_POSTGIS_ENABLED "Build PostGIS Driver Qt plugin?" ON "TERRALIB_MOD_POSTGIS_ENABLED;TERRALIB_MOD_QT_APF_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_TERRAVIEW_ENABLED "Build TerraView?" ON "TERRALIB_MOD_QT_APF_ENABLED" OFF)
+
+#
+# process TERRALIB configuration files
+#
+
+configure_file(${terralib_SOURCE_DIR}/terralib-config-pkg.cmake.in
+               ${terralib_BINARY_DIR}/pkg/terralib-config.cmake @ONLY)
+
+configure_file(${terralib_SOURCE_DIR}/terralib-config-version.cmake.in
+               ${terralib_BINARY_DIR}/terralib-config-version.cmake @ONLY)
+
+configure_file(${terralib_SOURCE_DIR}/terralib-config.cmake.in
+               ${terralib_BINARY_DIR}/terralib-config.cmake @ONLY)
+
+configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Config.h.in
+               ${CMAKE_BINARY_DIR}/terralib_config.h @ONLY)
+
+configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Defines.h.in
+               ${CMAKE_BINARY_DIR}/terralib_defines.h @ONLY)
+
+configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Version.h.in
+               ${CMAKE_BINARY_DIR}/terralib_version.h @ONLY)
+
+
+#
+# build modules
+#
+
+if(TERRALIB_EXAMPLE_URL_ENABLED)
+#  add_subdirectory(terralib_example_URL)
+endif()
+
+if(TERRALIB_EXAMPLE_ADO_ENABLED)
+#  add_subdirectory(terralib_example_ado)
+endif()
+
+if(TERRALIB_EXAMPLE_COLORBAR_ENABLED)
+#  add_subdirectory(terralib_example_colorbar)
+endif()
+
+if(TERRALIB_EXAMPLE_COMMON_ENABLED)
+#  add_subdirectory(terralib_example_common)
+endif()
+
+if(TERRALIB_EXAMPLE_DATAACCESS_ENABLED)
+#  add_subdirectory(terralib_example_dataaccess)
+endif()
+
+if(TERRALIB_EXAMPLE_DATASETMANAGEMENT_ENABLED)
+#  add_subdirectory(terralib_example_datasetmanagement)
+endif()
+
+if(TERRALIB_EXAMPLE_FACTORY_ENABLED)
+#  add_subdirectory(terralib_example_factory)
+endif()
+
+if(TERRALIB_EXAMPLE_GEOMETRY_ENABLED)
+#  add_subdirectory(terralib_example_geometry)
+endif()
+
+if(TERRALIB_EXAMPLE_GRAPH_ENABLED)
+#  add_subdirectory(terralib_example_graph)
+endif()
+
+if(TERRALIB_EXAMPLE_HELP_ENABLED)
+#  add_subdirectory(terralib_example_help)
+endif()
+
+if(TERRALIB_EXAMPLE_LAYEREXPLORER_ENABLED)
+#  add_subdirectory(terralib_example_layerexplorer)
+endif()
+
+if(TERRALIB_EXAMPLE_MAPTOOLS_ENABLED)
+#  add_subdirectory(terralib_example_maptools)
+endif()
+
+if(TERRALIB_EXAMPLE_METADATA_ENABLED)
+#  add_subdirectory(terralib_example_metadata)
+endif()
+
+if(TERRALIB_EXAMPLE_MODIS_ENABLED)
+#  add_subdirectory(terralib_example_modis)
+endif()
+
+if(TERRALIB_EXAMPLE_PROGRESS_ENABLED)
+#  add_subdirectory(terralib_example_progress)
+endif()
+
+if(TERRALIB_EXAMPLE_PROPERTYMANAGEMENT_ENABLED)
+#  add_subdirectory(terralib_example_propertymanagement)
+endif()
+
+if(TERRALIB_EXAMPLE_QT_ENABLED)
+#  add_subdirectory(terralib_example_qt)
+endif()
+
+if(TERRALIB_EXAMPLE_RASTER_ENABLED)
+#  add_subdirectory(terralib_example_raster)
+endif()
+
+if(TERRALIB_EXAMPLE_RP_ENABLED)
+#  add_subdirectory(terralib_example_rp)
+endif()
+
+if(TERRALIB_EXAMPLE_SAM_ENABLED)
+#  add_subdirectory(terralib_example_sam)
+endif()
+
+if(TERRALIB_EXAMPLE_SERIALIZATION_ENABLED)
+#  add_subdirectory(terralib_example_serialization)
+endif()
+
+if(TERRALIB_EXAMPLE_SRS_ENABLED)
+#  add_subdirectory(terralib_example_srs)
+endif()
+
+if(TERRALIB_EXAMPLE_ST_ENABLED)
+#  add_subdirectory(terralib_example_st)
+endif()
+
+if(TERRALIB_EXAMPLE_VP_ENABLED)
+#  add_subdirectory(terralib_example_vp)
+endif()
+
+if(TERRALIB_EXAMPLE_XERCES_ENABLED)
+#  add_subdirectory(terralib_example_xerces)
+endif()
+
+
+#
+# install and targets export
+#
+
+install(FILES ${CMAKE_BINARY_DIR}/terralib_config.h
+              ${CMAKE_BINARY_DIR}/terralib_defines.h
+              ${CMAKE_BINARY_DIR}/terralib_version.h
+              ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Config.h
+              ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Defines.h
+              ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Version.h
+        DESTINATION include/terralib COMPONENT devel)
+
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib.h
+        DESTINATION include COMPONENT devel)
+
+install(FILES ${terralib_BINARY_DIR}/pkg/terralib-config.cmake
+              ${terralib_BINARY_DIR}/terralib-config-version.cmake
+        DESTINATION lib/cmake/terralib-${TERRALIB_PKG_VERSION} COMPONENT devel)
+
+install(EXPORT terralib-targets
+        DESTINATION lib/cmake/terralib-${TERRALIB_PKG_VERSION}
+        FILE terralib-exports.cmake
+        COMPONENT devel)
+
+#install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/resources/icons 
+#        DESTINATION share/terralib COMPONENT runtime)
+
+
+#
+# Track dependencies
+#
+
+if(${TERRALIB_TRACK_DEPENDENCIES})
+
+  #set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP ON)
+
+  include(InstallRequiredSystemLibraries)
+
+  install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+          DESTINATION bin
+          COMPONENT runtime)
+
+  add_subdirectory(fix_bundle)
+endif()
+
+
+#
+# CPack
+#
+set(CPACK_SOURCE_INSTALLED_DIRECTORIES "${TERRALIB_ABSOLUTE_ROOT_DIR};/")
+
+configure_file(${terralib_SOURCE_DIR}/terralib-cpack-options.cmake.in
+               ${terralib_BINARY_DIR}/terralibCPackOptions.cmake @ONLY)
+
+set(CPACK_PROJECT_CONFIG_FILE ${terralib_BINARY_DIR}/terralibCPackOptions.cmake)
+
+include(CPack)
+
+# defining installation types, components and groups
+cpack_add_install_type(full DISPLAY_NAME "Complete")
+cpack_add_install_type(minimalistic DISPLAY_NAME "Minimalistic")
+
+cpack_add_component_group(general_group
+                          DISPLAY_NAME "Applications"
+                          DESCRIPTION "TerraLib ..."
+                          EXPANDED)
+
+cpack_add_component_group(devel_group
+                          DISPLAY_NAME "Development Tools"
+                          DESCRIPTION "Development Tools: header files, libraries and cmake stuffs"
+                          EXPANDED)
+
+cpack_add_component(runtime
+                    DISPLAY_NAME "Runtime Libraries and Executables"
+                    DESCRIPTION "Install only necessary shared libraries (or DLLs) and executables"
+                    GROUP general_group
+                    INSTALL_TYPES full minimalistic)
+
+cpack_add_component(devel
+                    DISPLAY_NAME "Development package"
+                    DESCRIPTION "Install header files, cmake stuffs and additional shared libraries"
+                    GROUP devel_group
+                    INSTALL_TYPES full minimalistic)
+
