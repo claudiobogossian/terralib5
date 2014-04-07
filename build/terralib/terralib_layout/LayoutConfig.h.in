@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2013-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of TerraView - A Free and Open Source GIS Application.
 
@@ -23,10 +23,12 @@
   \brief Contains definitions of the Layout Module.
 */
 
-#ifndef __STAT_INTERNAL_LAYOUTCONFIG_H
-#define __STAT_INTERNAL_LAYOUTCONFIG_H
+#ifndef __LAYOUT_INTERNAL_LAYOUTCONFIG_H
+#define __LAYOUT_INTERNAL_LAYOUTCONFIG_H
 
-//! Path to Vector Processing images
-//#define STAT_IMAGES "${STAT_IMAGES}"
+//! Path to layout images
+#define LAYOUT_IMAGES_PNG "${LAYOUT_IMAGES_PNG}"
+#define LAYOUT_IMAGES_SVG "${LAYOUT_IMAGES_SVG}"
+#define LAYOUT_IMAGES_ICO "${LAYOUT_IMAGES_ICO}"
 
-#endif // __STAT_INTERNAL_LAYOUTCONFIG_HS
+#endif // __LAYOUT_INTERNAL_LAYOUTCONFIG_HS

@@ -1,62 +1,50 @@
-#ifndef QRECTANGLELAYOUTITEM_H
-#define QRECTANGLELAYOUTITEM_H
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
-#include <QGraphicsItem>
-#include <QtGui/QGraphicsPixmapItem>
-#include <QGraphicsSceneMouseEvent>
-#include <QVariant>
-#include "LayoutItemObserver.h"
-#include <QPainter>
-#include "LayoutAbstractType.h"
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-#include "../../../../geometry/Envelope.h"
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file QRectangleLayoutItem.h
+   
+  \brief 
+
+  \ingroup layout
+*/
+
+#ifndef __TERRALIB_LAYOUT_INTERNAL_QRECTANGLE_LAYOUTITEM_H 
+#define __TERRALIB_LAYOUT_INTERNAL_QRECTANGLE_LAYOUTITEM_H
+
+// TerraLib
+#include "QObjectLayoutItem.h"
 
 namespace te
 {
   namespace layout
   {
-    class LayoutItemModelObservable;
+    class LayoutObservable;
 
-    class QRectangleLayoutItem : public QGraphicsPixmapItem, public LayoutItemObserver
+    class QRectangleLayoutItem : public QObjectLayoutItem
     {
       public:
 
-        QRectangleLayoutItem( LayoutItemController* controller, LayoutItemModelObservable* o );
+        QRectangleLayoutItem( LayoutItemController* controller, LayoutObservable* o );
         virtual ~QRectangleLayoutItem();
         
         virtual void updateObserver(ContextLayoutItem context);
-        virtual te::gm::Coord2D getPosition();
-
-        /*World coordinates*/
-        virtual bool contains(const QPointF &point) const;
-        
-    protected:
-
-      virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-      virtual void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
-      virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );
-      virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
-      virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
-      virtual void	hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
-      virtual void	hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
-      virtual void	hoverMoveEvent ( QGraphicsSceneHoverEvent * event );
-            
-      virtual void setPosition(const double& x, const double& y);
-
-      virtual bool checkTouchesCorner(const double& x, const double& y);
-      virtual QPixmap calculateNewPixmap(const double& x, const double& y);
-
-      virtual te::gm::Envelope createNewBoxInCoordScene(const double& x, const double& y);
-
-    protected:
-
-      QPixmap _clonePixmap;
-      bool    _mousePressedCtrl;
-      QPointF _initialCoord;
-      QPointF _finalCoord;
-      bool    _hoverAboveItem;
-      bool    _toResizeItem;
-      LayoutSides _enumSides;
     };
   }
 }

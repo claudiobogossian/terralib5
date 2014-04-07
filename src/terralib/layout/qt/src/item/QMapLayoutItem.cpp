@@ -1,21 +1,37 @@
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file QMapLayoutItem.cpp
+   
+  \brief 
+
+  \ingroup layout
+*/
+
+// TerraLib
 #include "QMapLayoutItem.h"
 #include "LayoutContext.h"
 #include "LayoutScene.h"
-
-#include <QCursor>
-#include <QPixmap>
-#include <QMessageBox>
-#include <QWidget>
-#include <QGraphicsProxyWidget>
-#include <QDropEvent>
-#include <QBoxLayout>
-#include <QGroupBox>
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QPointer>
-#include <QDebug>
-#include <QApplication>
-
+#include "LayoutItemModelObservable.h"
+#include "LayoutItemObserver.h"
+#include "LayoutItemController.h"
 #include "../../../color/RGBAColor.h"
 #include "../../../../qt/widgets/Utils.h"
 #include "../../../../geometry/Envelope.h"
@@ -25,14 +41,11 @@
 #include "../../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../../qt/widgets/canvas/MultiThreadMapDisplay.h"
 #include "../../../../maptools/AbstractLayer.h"
-
+#include "../../../../qt/af/connectors/MapDisplay.h"
 #include "../../../../qt/af/ApplicationController.h"
 #include "../../../../qt/af/Project.h"
 #include "../../../../qt/af/Utils.h"
 #include "../../../../qt/af/events/LayerEvents.h"
-#include "LayoutItemModelObservable.h"
-#include "LayoutItemObserver.h"
-#include "LayoutItemController.h"
 #include "../../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 #include "../../../../common/TreeItem.h"
 #include "../../../../srs/Converter.h"
@@ -41,11 +54,26 @@
 #include <vector>
 #include <memory>
 
-te::layout::QMapLayoutItem::QMapLayoutItem( LayoutItemController* controller, LayoutItemModelObservable* o ) :
+// Qt
+#include <QCursor>
+#include <QPixmap>
+#include <QMessageBox>
+#include <QWidget>
+#include <QDropEvent>
+#include <QBoxLayout>
+#include <QGroupBox>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QPointer>
+#include <QDebug>
+#include <QApplication>
+#include <QGraphicsSceneMouseEvent>
+
+te::layout::QMapLayoutItem::QMapLayoutItem( LayoutItemController* controller, LayoutObservable* o ) :
   QGraphicsProxyWidget(0),
   LayoutItemObserver(controller, o),
   m_mapDisplay(0),
-  grabbedByWidget(false)
+  m_grabbedByWidget(false)
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
@@ -53,13 +81,21 @@ te::layout::QMapLayoutItem::QMapLayoutItem( LayoutItemController* controller, La
 
   setAcceptDrops(true);
   
-  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(QSize(_model->getBox().getWidth(), _model->getBox().getHeight()), true);
+  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(QSize(m_model->getBox().getWidth(), m_model->getBox().getHeight()), true);
+ /* m_mapDisplay->setAcceptDrops(true);
+  m_mapDisplay->setBackgroundColor(Qt::gray);
+  m_mapDisplay->setResizeInterval(0);
+  m_mapDisplay->setMouseTracking(true);*/
+  //m_mapDisplay->installEventFilter(this);
+
+  te::qt::af::MapDisplay* listenerDisplay = new te::qt::af::MapDisplay(m_mapDisplay);
+  te::qt::af::ApplicationController::getInstance().addListener(listenerDisplay);
+  
   m_mapDisplay->setAcceptDrops(true);
   m_mapDisplay->setBackgroundColor(Qt::gray);
   m_mapDisplay->setResizeInterval(0);
   m_mapDisplay->setMouseTracking(true);
-  m_mapDisplay->installEventFilter(this);
-  
+
   setWidget(m_mapDisplay);
   
   QGraphicsItem* item = this;
@@ -82,10 +118,9 @@ void te::layout::QMapLayoutItem::updateObserver( ContextLayoutItem context )
 {
   te::color::RGBAColor** rgba = context.getPixmap();
 
-  LayoutItemModelObservable* model = (LayoutItemModelObservable*)_controller->getModel();
   LayoutUtils* utils = LayoutContext::getInstance()->getUtils();
 
-  te::gm::Envelope box = utils->viewportBox(model->getBox());
+  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
 
   QPixmap pixmap;
   QImage* img = 0;
@@ -102,17 +137,6 @@ void te::layout::QMapLayoutItem::updateObserver( ContextLayoutItem context )
 
   setPixmap(pixmap);
   update();
-}
-
-
-void te::layout::QMapLayoutItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
-{
-  _controller->redraw(1.);
-}
-
-QVariant te::layout::QMapLayoutItem::itemChange( GraphicsItemChange change, const QVariant &value )
-{
-  return QGraphicsItem::itemChange(change, value);
 }
 
 void te::layout::QMapLayoutItem::dropEvent( QGraphicsSceneDragDropEvent * event )
@@ -148,12 +172,12 @@ void te::layout::QMapLayoutItem::dragMoveEvent( QGraphicsSceneDragDropEvent * ev
 
 void te::layout::QMapLayoutItem::setPixmap( const QPixmap& pixmap )
 {
-  _pixmap = pixmap;
+  m_pixmap = pixmap;
 
   LayoutUtils* utils = LayoutContext::getInstance()->getUtils();
   QPointF point = pos();
 
-  LayoutItemModelObservable* model = (LayoutItemModelObservable*)_controller->getModel();
+  LayoutItemModelObservable* model = (LayoutItemModelObservable*)m_controller->getModel();
   te::gm::Envelope box = model->getBox();
 
   //If you modify the boundingRect value, you need to inform Graphics View about it by calling QGraphicsItem::prepareGeometryChange();
@@ -167,7 +191,7 @@ void te::layout::QMapLayoutItem::setRect( QRectF rect )
   if (rect.isEmpty() && !rect.isNull())
     return;
 
-  _rect = rect;
+  m_rect = rect;
   update(rect);
 }
 

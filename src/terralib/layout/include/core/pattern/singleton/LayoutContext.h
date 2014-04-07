@@ -1,11 +1,38 @@
-#ifndef LAYOUTCONTEXT_H
-#define LAYOUTCONTEXT_H
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file LayoutContext.h
+   
+  \brief 
+
+  \ingroup layout
+*/
+
+#ifndef __TERRALIB_LAYOUT_INTERNAL_LAYOUT_CONTEXT_H 
+#define __TERRALIB_LAYOUT_INTERNAL_LAYOUT_CONTEXT_H
+
+// TerraLib
 #include "LayoutMode.h"
 #include "LayoutAbstractType.h"
 #include "LayoutUtils.h"
 #include "LayoutAbstractOutsideFactory.h"
-
 #include "../../../../../maptools/Canvas.h"
 #include "../../../../../geometry/Envelope.h"
 
@@ -16,20 +43,22 @@ namespace te
     class LayoutScene;
     class LayoutAbstractItemFactory;
     class LayoutAbstractOutsideFactory;
+    class LayoutAbstractTemplateFactory;
 
     class LayoutContext 
     {
       private:
         LayoutContext() :
-          _mode(TypeNone),
-          _scene(0),
-          _canvas(0),
-          _zoomFactor(1.),
-          _itemFactory(0),
-          _outsideFactory(0),
-          _utils(0),
-          _dpiX(96),
-          _dpiY(96)
+          m_mode(TypeNone),
+          m_scene(0),
+          m_canvas(0),
+          m_zoomFactor(1.),
+          m_itemFactory(0),
+          m_outsideFactory(0),
+          m_utils(0),
+          m_dpiX(96),
+          m_dpiY(96),
+          m_templateFactory(0)
         {
         };  // Private so that it can  not be called	
         LayoutContext(LayoutContext const&){};             // copy constructor is private	
@@ -57,6 +86,9 @@ namespace te
 
         LayoutAbstractOutsideFactory* getOutsideFactory();
         void setOutsideFactory(LayoutAbstractOutsideFactory* factory);
+
+        LayoutAbstractTemplateFactory* getTemplateFactory();
+        void setTemplateFactory(LayoutAbstractTemplateFactory* factory);
         
         te::gm::Envelope* getBoxPaper();
         void setBoxPaper(te::gm::Envelope* box);
@@ -77,18 +109,19 @@ namespace te
         void setDpiY(double dpiY);
 
       protected:
-        LayoutMode						          _mode;
-        LayoutUnitsMetrics              _unitMetric;
-        LayoutScene*					          _scene;
-        double							            _zoomFactor;
-        te::map::Canvas*	        			_canvas;
-        LayoutAbstractItemFactory*		  _itemFactory;
-        LayoutAbstractOutsideFactory*	  _outsideFactory;
-        te::gm::Envelope*		            _paperBox; //--->>>>>>>>>>>> Change for just object, no pointer!
-        LayoutAbstractPaperType			    _typePaper;
-        LayoutUtils*                    _utils;
-        double                          _dpiX;
-        double                          _dpiY;
+        LayoutMode						          m_mode;
+        LayoutUnitsMetrics              m_unitMetric;
+        LayoutScene*					          m_scene;
+        double							            m_zoomFactor;
+        te::map::Canvas*	        			m_canvas;
+        LayoutAbstractItemFactory*		  m_itemFactory;
+        LayoutAbstractOutsideFactory*	  m_outsideFactory;
+        LayoutAbstractTemplateFactory*  m_templateFactory;
+        te::gm::Envelope*		            m_paperBox; //--->>>>>>>>>>>> Change for just object, no pointer!
+        LayoutAbstractPaperType			    m_typePaper;
+        LayoutUtils*                    m_utils;
+        double                          m_dpiX;
+        double                          m_dpiY;
     };
   }
 }

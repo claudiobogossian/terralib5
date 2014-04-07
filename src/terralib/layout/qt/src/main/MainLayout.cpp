@@ -31,11 +31,18 @@
 #include "LayoutContext.h"
 #include "LayoutUtils.h"
 #include "QLayoutView.h"
-
 #include "../../../../qt/widgets/canvas/Canvas.h"
 #include "../../../../color/RGBAColor.h"
 #include "../../../../geometry/Envelope.h"
+#include "DisplayWindowLayoutModel.h"
+#include "DisplayWindowLayoutController.h"
+#include "LayoutOutsideObserver.h"
+#include "QDisplayWindowOutside.h"
+#include "LayoutScene.h"
+#include "LayoutObserver.h"
+#include "LayoutTemplateFactory.h"
 
+// Qt
 #include <QGraphicsScene>
 #include <QApplication>
 #include <QDesktopWidget>
@@ -45,15 +52,9 @@
 #include <QStatusBar>
 #include <QGroupBox>
 
-#include "DisplayWindowLayoutModel.h"
-#include "DisplayWindowLayoutController.h"
-#include "LayoutOutsideObserver.h"
-#include "QDisplayWindowOutside.h"
-#include "LayoutScene.h"
-
 te::layout::MainLayout::MainLayout() :
-  _view(0),
-  _dockLayoutDisplay(0)
+  m_view(0),
+  m_dockLayoutDisplay(0)
 {
 
 }
@@ -65,23 +66,23 @@ te::layout::MainLayout::~MainLayout()
 
 void te::layout::MainLayout::init(QWidget* mainWindow)
 {
-  _view = new QLayoutView();
+  m_view = new QLayoutView();
 
-  _view->setScene(new QLayoutScene());
+  m_view->setScene(new QLayoutScene());
     
-  _view->setGeometry(0,0,1920,1080);
-  _view->setDockPropertiesParent(mainWindow);
+  m_view->setGeometry(0,0,1920,1080);
+  m_view->setDockPropertiesParent(mainWindow);
 
   //Resize the dialog and put it in the screen center	
   const QRect screen = QApplication::desktop()->screenGeometry();
-  _view->move( screen.center() - _view->rect().center() );
+  m_view->move( screen.center() - m_view->rect().center() );
 
-  createLayoutContext(1920, 1080, _view);
-  createDockLayoutDisplay(mainWindow, _view);
+  createLayoutContext(1920, 1080, m_view);
+  createDockLayoutDisplay(mainWindow, m_view);
 
   //Set a new window size
-  _view->config();
-  _view->show();
+  m_view->config();
+  m_view->show();
 
 }
 
@@ -90,17 +91,17 @@ void te::layout::MainLayout::createDockLayoutDisplay(QWidget* mainWindow, QLayou
   if(mainWindow)
   {
     QMainWindow* mw = (QMainWindow*)mainWindow;
-    if(!_dockLayoutDisplay)
+    if(!m_dockLayoutDisplay)
     {
       //Use the Property Browser Framework for create Property Window
       DisplayWindowLayoutModel* dockDisplayModel = new DisplayWindowLayoutModel();
       DisplayWindowLayoutController* dockDisplayController = new DisplayWindowLayoutController(dockDisplayModel);
-      LayoutOutsideObserver* itemDockDisplay = (LayoutOutsideObserver*)dockDisplayController->getView();
-      _dockLayoutDisplay = dynamic_cast<QDisplayWindowOutside*>(itemDockDisplay);    
+      LayoutObserver* itemDockDisplay = (LayoutObserver*)dockDisplayController->getView();
+      m_dockLayoutDisplay = dynamic_cast<QDisplayWindowOutside*>(itemDockDisplay);    
     }
-    _dockLayoutDisplay->setPreviousCentralWidget(mw->centralWidget());
+    m_dockLayoutDisplay->setPreviousCentralWidget(mw->centralWidget());
     mw->removeDockWidget((QDockWidget*)mw->centralWidget());
-    _dockLayoutDisplay->setParent(mw);    
+    m_dockLayoutDisplay->setParent(mw);    
 
     QStatusBar* status = new QStatusBar;
     status->setMinimumSize(200, 10);
@@ -114,9 +115,9 @@ void te::layout::MainLayout::createDockLayoutDisplay(QWidget* mainWindow, QLayou
     groupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     groupBox->setLayout(vLayout);
 
-    _dockLayoutDisplay->setWidget(groupBox);
-    mw->setCentralWidget(_dockLayoutDisplay);
-    _dockLayoutDisplay->setVisible(true);      
+    m_dockLayoutDisplay->setWidget(groupBox);
+    mw->setCentralWidget(m_dockLayoutDisplay);
+    m_dockLayoutDisplay->setVisible(true);      
   }
 }
 
@@ -134,6 +135,11 @@ void te::layout::MainLayout::createLayoutContext( int width, int height, QLayout
     LayoutContext::getInstance()->setOutsideFactory(new QLayoutOutsideFactory);
   }
 
+  if(!LayoutContext::getInstance()->getTemplateFactory())
+  {
+    LayoutContext::getInstance()->setTemplateFactory(new LayoutTemplateFactory);
+  }
+
   if(!LayoutContext::getInstance()->getUtils())
   {
     LayoutContext::getInstance()->setUtils(new LayoutUtils);
@@ -141,7 +147,7 @@ void te::layout::MainLayout::createLayoutContext( int width, int height, QLayout
 
   if(!LayoutContext::getInstance()->getCanvas())
   {
-    QLayoutScene* lScene = dynamic_cast<QLayoutScene*>(_view->scene());
+    QLayoutScene* lScene = dynamic_cast<QLayoutScene*>(m_view->scene());
 
     if(lScene)
     {
@@ -167,9 +173,9 @@ void te::layout::MainLayout::createLayoutContext( int width, int height, QLayout
 
 void te::layout::MainLayout::finish()
 {
-  if(_dockLayoutDisplay)
+  if(m_dockLayoutDisplay)
   {
-    _dockLayoutDisplay->close();
+    m_dockLayoutDisplay->close();
   }
 
   /*if(_view)
@@ -178,10 +184,10 @@ void te::layout::MainLayout::finish()
   _view = 0;
   }*/
 
-  if(_dockLayoutDisplay)
+  if(m_dockLayoutDisplay)
   {
-    delete _dockLayoutDisplay;
-    _dockLayoutDisplay = 0;
+    delete m_dockLayoutDisplay;
+    m_dockLayoutDisplay = 0;
   }
 
   if(LayoutContext::getInstance())

@@ -1,35 +1,40 @@
-#include <QLayoutView.h>
+/*  Copyright (C) 2013-2014 National Institute For Space Research (INPE) - Brazil.
 
-#include <QGraphicsView>
-#include <QtGui>
-#include <QGraphicsItem>
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file QLayoutView.cpp
+   
+  \brief 
+
+  \ingroup layout
+*/
+
+// TerraLib
+#include "QLayoutView.h"
 #include "LayoutContext.h"
 #include "QRectangleLayoutItem.h"
 #include "LayoutMode.h"
-#include "QLayoutScene.h"
-#include "LayoutView.h"
-#include <time.h>
-#include <QMatrix>
-#include <math.h> 
-#include <QString>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QPixmap>
-
 #include "HorizontalRulerLayoutModel.h"
 #include "HorizontalRulerLayoutController.h"
 #include "QHorizontalRulerLayoutItem.h"
-
-#include <QMouseEvent>
-#include <QWheelEvent>
-#include <QKeyEvent>
-#include <QString>
 #include "RectangleLayoutModel.h"
 #include "RectangleLayoutController.h"
-
-#include "../../../../color/RGBAColor.h"
-#include "../../../../geometry/Envelope.h"
-
 #include "VerticalRulerLayoutModel.h"
 #include "VerticalRulerLayoutController.h"
 #include "QVerticalRulerLayoutItem.h"
@@ -54,6 +59,26 @@
 #include "MapLayoutController.h"
 #include "QMapLayoutItem.h"
 #include "LayoutOutsideController.h"
+#include "../../../../color/RGBAColor.h"
+#include "../../../../geometry/Envelope.h"
+
+// Qt
+#include <QMouseEvent>
+#include <QWheelEvent>
+#include <QKeyEvent>
+#include <QString>
+#include <QGraphicsView>
+#include <QtGui>
+#include <QGraphicsItem>
+#include "QLayoutScene.h"
+#include "LayoutView.h"
+#include <time.h>
+#include <QMatrix>
+#include <math.h> 
+#include <QString>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QPixmap>
 
 #define _psPointInMM 0.352777778 //<! 1 PostScript point in millimeters
 #define _inchInPSPoints 72 //<! 1 Inch in PostScript point
@@ -61,22 +86,17 @@
 
 te::layout::QLayoutView::QLayoutView( QWidget* widget) : 
   QGraphicsView(new QGraphicsScene, widget),
-  _diagonalScreenInchSize(0),
-  _dockProperties(0),
-  _dockInspector(0),
-  _dockParent(0),
-  _dockToolbar(0),
-  _dpiX(96),
-  _dpiY(96)
+  m_diagonalScreenInchSize(0),
+  m_dockProperties(0),
+  m_dockInspector(0),
+  m_dockParent(0),
+  m_dockToolbar(0),
+  m_dpiX(96),
+  m_dpiY(96)
 {
-  _layoutController = 0;
-
   //Use ScrollHand Drag Mode to enable Panning
   //You do need the enable scroll bars for that to work.
   setDragMode(RubberBandDrag);
-
-  /*setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);*/
 }
 
 te::layout::QLayoutView::~QLayoutView()
@@ -84,42 +104,42 @@ te::layout::QLayoutView::~QLayoutView()
   if(scene())
     scene()->clear();
 
-   QMainWindow* win = (QMainWindow*)_dockParent;
+   QMainWindow* win = (QMainWindow*)m_dockParent;
   
-  if(_dockProperties)
+  if(m_dockProperties)
   {
     if(win)
     {
-      win->removeDockWidget(_dockProperties);
+      win->removeDockWidget(m_dockProperties);
     }
 
-    _dockProperties->close();
-    _dockProperties->setParent(0);
-    delete _dockProperties;
+    m_dockProperties->close();
+    m_dockProperties->setParent(0);
+    delete m_dockProperties;
   }
   
-  if(_dockInspector)
+  if(m_dockInspector)
   {
     if(win)
     {
-      win->removeDockWidget(_dockInspector);
+      win->removeDockWidget(m_dockInspector);
     }
 
-    _dockInspector->close();
-    _dockInspector->setParent(0);
-    delete _dockInspector;
+    m_dockInspector->close();
+    m_dockInspector->setParent(0);
+    delete m_dockInspector;
   }
 
-  if(_dockToolbar)
+  if(m_dockToolbar)
   {
     if(win)
     {
-      win->removeDockWidget(_dockToolbar);
+      win->removeDockWidget(m_dockToolbar);
     }
 
-    _dockToolbar->close();
-    _dockToolbar->setParent(0);
-    delete _dockToolbar;
+    m_dockToolbar->close();
+    m_dockToolbar->setParent(0);
+    delete m_dockToolbar;
   }
 
   if(LayoutContext::getInstance())
@@ -154,21 +174,20 @@ te::layout::QLayoutView::~QLayoutView()
 void te::layout::QLayoutView::mousePressEvent( QMouseEvent * event )
 {
   QGraphicsView::mousePressEvent(event);
-
-  //Refresh Property window
-  if(!scene()->selectedItems().isEmpty())
+  
+  if(LayoutContext::getInstance()->getMode() == TypeCreateMap)
   {
-    if(_dockProperties)
-      _dockProperties->itemsSelected(scene()->selectedItems());
-
-    if(_dockInspector)
-      _dockInspector->itemsInspector(scene()->selectedItems());
-  }
-
- /* if(LayoutContext::getInstance()->getMode() == TypeCreate)
+    QPointF scenePos = mapToScene(event->pos());
+    createMap(scenePos);
+  } 
+  else if(LayoutContext::getInstance()->getMode() == TypeCreateMap)
   {
-    _layoutController->createNewItem(event->x(), event->y());
-  }*/
+    //createText();
+  } else  if(LayoutContext::getInstance()->getMode() == TypeCreateRectangle)
+  {
+    QPointF scenePos = mapToScene(event->pos());
+    createRectangle(scenePos);
+  } 
 }
 
 void te::layout::QLayoutView::wheelEvent( QWheelEvent *event )
@@ -210,18 +229,22 @@ void te::layout::QLayoutView::scaleView( qreal scaleFactor )
   }
 }
 
-void te::layout::QLayoutView::setLayoutController( LayoutController* controller )
-{
-  _layoutController = controller;
-}
-
 void te::layout::QLayoutView::keyPressEvent( QKeyEvent* keyEvent )
 {
   QLayoutScene* sc = dynamic_cast<QLayoutScene*>(scene());
 
   if(keyEvent->key() == Qt::Key_P)
   {
-      sc->printPaper();
+    //Apenas redesenhar itens que estão dentro do box do papel.
+    sc->printPreview();
+  }
+  else if(keyEvent->key() == Qt::Key_E)
+  {
+    sc->savePaperAsPDF();
+  }
+  else if(keyEvent->key() == Qt::Key_I)
+  {
+    sc->savePaperAsImage();
   }
   else if(keyEvent->key() == Qt::Key_G)
   {
@@ -261,6 +284,21 @@ void te::layout::QLayoutView::keyPressEvent( QKeyEvent* keyEvent )
       }
     }
   }
+  else if(keyEvent->key() == Qt::Key_Delete)
+  {
+    QList<QGraphicsItem*> graphicsItems = this->scene()->selectedItems();
+    foreach( QGraphicsItem *item, graphicsItems) 
+    {
+      if (item)
+      {
+        sc->removeItem(item);
+        if(item)
+        {
+          delete item;
+        }
+      }
+    }
+  }
 
   QGraphicsView::keyPressEvent(keyEvent);
 }
@@ -269,8 +307,11 @@ void te::layout::QLayoutView::config()
 {	
   LayoutContext::getInstance()->setDpiX(95.78);
   LayoutContext::getInstance()->setDpiY(95.78);
-  _dpiX = 95.78;
-  _dpiY = 95.78;
+  m_dpiX = 95.78;
+  m_dpiY = 95.78;
+
+  connect(scene(), SIGNAL(selectionChanged()), this, SLOT(onSelectionChanged()));
+  connect(scene(), SIGNAL(addItemFinalized()), this, SLOT(onAddItemFinalized()));
 
   QLayoutScene* lScene = dynamic_cast<QLayoutScene*>(scene());
 
@@ -292,9 +333,41 @@ void te::layout::QLayoutView::config()
   setTransformationAnchor(QGraphicsView::NoAnchor);	
   QPointF center0 = mapToScene(0, 0);
   centerOn(center0);
-			
+  
+  if(m_dockParent)
+  {
+    //Use the Property Browser Framework for create Property Window
+    PropertiesWindowLayoutModel* dockPropertyModel = new PropertiesWindowLayoutModel();		 
+    PropertiesWindowLayoutController* dockPropertyController = new PropertiesWindowLayoutController(dockPropertyModel);
+    LayoutOutsideObserver* itemDockProperty = (LayoutOutsideObserver*)dockPropertyController->getView();
+    m_dockProperties = dynamic_cast<QPropertiesWindowOutside*>(itemDockProperty);
+
+    m_dockProperties->setParent(m_dockParent); //The father need be the window of application, in this case, terraview main window!  
+    m_dockProperties->setVisible(true);
+    ((QMainWindow*)m_dockParent)->addDockWidget(Qt::LeftDockWidgetArea, m_dockProperties);
+
+    //Use the Property Browser Framework for create Object Inspector Window
+    ObjectInspectorWindowLayoutModel* dockInspectorModel = new ObjectInspectorWindowLayoutModel();		 
+    ObjectInspectorWindowLayoutController* dockInspectorController = new ObjectInspectorWindowLayoutController(dockInspectorModel);
+    LayoutOutsideObserver* itemDockInspector = (LayoutOutsideObserver*)dockInspectorController->getView();
+    m_dockInspector = dynamic_cast<QObjectInspectorWindowOutside*>(itemDockInspector);
+    m_dockInspector->setParent(m_dockParent); //The father need be the window of application, in this case, terraview main window!
+    m_dockInspector->setVisible(true);
+    ((QMainWindow*)m_dockParent)->addDockWidget(Qt::LeftDockWidgetArea, m_dockInspector);
+
+    //Use the Property Browser Framework for create Object Inspector Window
+    ToolbarWindowLayoutModel* dockToolbarModel = new ToolbarWindowLayoutModel();		 
+    ToolbarWindowLayoutController* dockToolbarController = new ToolbarWindowLayoutController(dockToolbarModel);
+    LayoutOutsideObserver* itemDockToolbar = (LayoutOutsideObserver*)dockToolbarController->getView();
+    m_dockToolbar = dynamic_cast<QToolbarWindowOutside*>(itemDockToolbar); 
+    m_dockToolbar->setParent(m_dockParent); //The father need be the window of application, in this case, terraview main window!
+    m_dockToolbar->setVisible(true);
+    ((QMainWindow*)m_dockParent)->addDockWidget(Qt::TopDockWidgetArea, m_dockToolbar);
+    connect(m_dockToolbar, SIGNAL(changeContext(bool)), this, SLOT(onToolbarChangeContext(bool)));
+  }
+
   //----------------------------------------------------------------------------------------------
-            	
+  
   //Paper
   //Retângulo: utilizando o canvas da Terralib 5
   PaperLayoutModel* modelPaper = new PaperLayoutModel();	
@@ -306,9 +379,7 @@ void te::layout::QLayoutView::config()
 	
   //Régua: utilizando o canvas da Terralib 5
   HorizontalRulerLayoutModel* modelRuler = new HorizontalRulerLayoutModel();		
-  //modelRuler->setBox(te::gm::Envelope(llx, lly, urx + 10, lly + 10));
   modelRuler->setBox(te::gm::Envelope(llx, ury - 10, urx + 10, ury));
-  //modelRuler->invertedLines(true);
   HorizontalRulerLayoutController* controllerRuler = new HorizontalRulerLayoutController(modelRuler);
   LayoutItemObserver* itemRuler = (LayoutItemObserver*)controllerRuler->getView();
   QHorizontalRulerLayoutItem* rectRuler = dynamic_cast<QHorizontalRulerLayoutItem*>(itemRuler);
@@ -327,7 +398,7 @@ void te::layout::QLayoutView::config()
     
   //Retângulo: utilizando o canvas da Terralib 5
   RectangleLayoutModel* model = new RectangleLayoutModel();	
-  model->setName("AZUL");
+  model->setName("RECT_01");
   RectangleLayoutController* controller = new RectangleLayoutController(model);
   LayoutItemObserver* item = (LayoutItemObserver*)controller->getView();
   QRectangleLayoutItem* rect = dynamic_cast<QRectangleLayoutItem*>(item);
@@ -336,7 +407,7 @@ void te::layout::QLayoutView::config()
 	
   //Retângulo: utilizando o canvas da Terralib 5
   RectangleLayoutModel* model2 = new RectangleLayoutModel();		  
-  model2->setName("VERDE");
+  model2->setName("RECT_02");
   RectangleLayoutController* controller2 = new RectangleLayoutController(model2);
   LayoutItemObserver* item2 = (LayoutItemObserver*)controller2->getView();
   QRectangleLayoutItem* rect2 = dynamic_cast<QRectangleLayoutItem*>(item2);
@@ -376,61 +447,10 @@ void te::layout::QLayoutView::config()
     | QGraphicsItem::ItemSendsGeometryChanges);
   rectText40->setTransform(lScene->getMatrixViewScene().inverted());
   rectText40->setPos(30, -20); //Coordenada de cena em mm		
-
-  //QString fileName = QFileDialog::getOpenFileName(QApplication::desktop(),"Open Image File",QDir::currentPath());
-  //if(!fileName.isEmpty())
-  //{
-  //  QPixmap pix(fileName);
-  //  if(pix.isNull())
-  //  {
-  //    QMessageBox::information(QApplication::desktop(),"Image Viewer","Error Displaying image");
-  //  }
-  //  else
-  //  {
-  //    QGraphicsPixmapItem* pixItem = scene()->addPixmap(pix);
-  //    pixItem->setFlags(QGraphicsItem::ItemIsMovable
-  //      | QGraphicsItem::ItemIsSelectable
-  //      | QGraphicsItem::ItemSendsGeometryChanges);
-  //    pixItem->setTransform(lScene->getMatrixViewScene().inverted());
-  //    pixItem->setPos(50, -20); //Coordenada de cena em mm		
-  //  }
-  //}
-
-  //-------------------------------------------------------------------------------------------------------------------
-
-  if(_dockParent)
-  {
-    //Use the Property Browser Framework for create Property Window
-    PropertiesWindowLayoutModel* dockPropertyModel = new PropertiesWindowLayoutModel();		 
-    PropertiesWindowLayoutController* dockPropertyController = new PropertiesWindowLayoutController(dockPropertyModel);
-    LayoutOutsideObserver* itemDockProperty = (LayoutOutsideObserver*)dockPropertyController->getView();
-    _dockProperties = dynamic_cast<QPropertiesWindowOutside*>(itemDockProperty);
-    
-    _dockProperties->setParent(_dockParent); //The father need be the window of application, in this case, terraview main window!  
-    _dockProperties->setVisible(true);
-    ((QMainWindow*)_dockParent)->addDockWidget(Qt::LeftDockWidgetArea, _dockProperties);
-
-    //Use the Property Browser Framework for create Object Inspector Window
-    ObjectInspectorWindowLayoutModel* dockInspectorModel = new ObjectInspectorWindowLayoutModel();		 
-    ObjectInspectorWindowLayoutController* dockInspectorController = new ObjectInspectorWindowLayoutController(dockInspectorModel);
-    LayoutOutsideObserver* itemDockInspector = (LayoutOutsideObserver*)dockInspectorController->getView();
-    _dockInspector = dynamic_cast<QObjectInspectorWindowOutside*>(itemDockInspector);
-    _dockInspector->setParent(_dockParent); //The father need be the window of application, in this case, terraview main window!
-    _dockInspector->setVisible(true);
-    ((QMainWindow*)_dockParent)->addDockWidget(Qt::LeftDockWidgetArea, _dockInspector);
-
-    //Use the Property Browser Framework for create Object Inspector Window
-    ToolbarWindowLayoutModel* dockToolbarModel = new ToolbarWindowLayoutModel();		 
-    ToolbarWindowLayoutController* dockToolbarController = new ToolbarWindowLayoutController(dockToolbarModel);
-    LayoutOutsideObserver* itemDockToolbar = (LayoutOutsideObserver*)dockToolbarController->getView();
-    _dockToolbar = dynamic_cast<QToolbarWindowOutside*>(itemDockToolbar);
-    _dockToolbar->init(this);    
-    _dockToolbar->setParent(_dockParent); //The father need be the window of application, in this case, terraview main window!
-    _dockToolbar->setVisible(true);
-    ((QMainWindow*)_dockParent)->addDockWidget(Qt::TopDockWidgetArea, _dockToolbar);
-  }
-      
+        
   scene()->setBackgroundBrush(QBrush(QColor(105,105,030)));
+  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
 void te::layout::QLayoutView::resizeEvent(QResizeEvent * event)
@@ -448,11 +468,12 @@ int te::layout::QLayoutView::metric( PaintDeviceMetric metric ) const
     }
     case PdmHeightMM:
     {
-      return 286;
+      //return 286;
+      return 297;
     }
     case PdmPhysicalDpiX:
     {
-      return _dpiX;
+      return m_dpiX;
       //Caso esteja imprimindo, obter o dpi da impressora
       //.
       //.
@@ -460,7 +481,7 @@ int te::layout::QLayoutView::metric( PaintDeviceMetric metric ) const
     }
     case PdmPhysicalDpiY:
     {
-      return _dpiY;
+      return m_dpiY;
       //Caso esteja imprimindo, obter o dpi da impressora
       //.
       //.
@@ -468,7 +489,7 @@ int te::layout::QLayoutView::metric( PaintDeviceMetric metric ) const
     }
     case PdmDpiX:
     {
-      return _dpiX;
+      return m_dpiX;
       //Caso esteja imprimindo, obter o dpi da impressora
       //.
       //.
@@ -476,7 +497,7 @@ int te::layout::QLayoutView::metric( PaintDeviceMetric metric ) const
     }
     case PdmDpiY:
     {
-      return _dpiY;
+      return m_dpiY;
       //Caso esteja imprimindo, obter o dpi da impressora
       //.
       //.
@@ -494,7 +515,7 @@ void te::layout::QLayoutView::paintEvent( QPaintEvent * event )
 
 void te::layout::QLayoutView::setDockPropertiesParent( QWidget* dockParent )
 {
-  _dockParent = dockParent;
+  m_dockParent = dockParent;
 }
 
 void te::layout::QLayoutView::hideEvent( QHideEvent * event )
@@ -506,36 +527,115 @@ void te::layout::QLayoutView::closeEvent( QCloseEvent * event )
 {
   QGraphicsView::closeEvent(event);
 
-  QMainWindow* win = (QMainWindow*)_dockParent;
+  QMainWindow* win = (QMainWindow*)m_dockParent;
 
   if(win)
   {
-    if(_dockProperties)
+    if(m_dockProperties)
     {
-      win->removeDockWidget(_dockProperties);
-      _dockProperties->close();
-      _dockProperties->setParent(0);
+      win->removeDockWidget(m_dockProperties);
+      m_dockProperties->close();
+      m_dockProperties->setParent(0);
     }
-    if(_dockInspector)
+    if(m_dockInspector)
     {
-      win->removeDockWidget(_dockInspector);
-      _dockInspector->close();
-      _dockInspector->setParent(0);
+      win->removeDockWidget(m_dockInspector);
+      m_dockInspector->close();
+      m_dockInspector->setParent(0);
     }
-    if(_dockToolbar)
+    if(m_dockToolbar)
     {
-      win->removeDockWidget(_dockToolbar);
-      _dockToolbar->close();
-      _dockToolbar->setParent(0);
+      win->removeDockWidget(m_dockToolbar);
+      m_dockToolbar->close();
+      m_dockToolbar->setParent(0);
     }
   }
 }
 
-void te::layout::QLayoutView::changeMode()
+bool te::layout::QLayoutView::createMap( QPointF point )
 {
+  bool result = true;
+  double x = point.x();
+  double y = point.y();
+
+  MapLayoutModel* modelMap = new MapLayoutModel();		  
+  modelMap->setName("MAPA_01");
+  MapLayoutController* controllerMap = new MapLayoutController(modelMap);
+  LayoutItemObserver* itemMap = (LayoutItemObserver*)controllerMap->getView();
+  QMapLayoutItem* qrectMap = dynamic_cast<QMapLayoutItem*>(itemMap);
+  itemMap->setItemPosition(x, y);
+  itemMap->redraw();
+
+  if(itemMap)
+    result = false;
+
+  return result;
+}
+
+bool te::layout::QLayoutView::createText( QPointF point )
+{
+  bool result = true;
+
+  double x = point.x();
+  double y = point.y();
+
+  QFont font;
+  font.setFamily("Arial"); 
+  font.setPointSize(12);
+
+  QFontMetrics fm(font, this);
+  int fontpx = fm.height();
+
+  font.setPixelSize(fontpx);
+
+  QLayoutScene* lScene = dynamic_cast<QLayoutScene*>(scene());
+  QGraphicsTextItem* objText = scene()->addText("LAYOUT", font);
+  objText->setFlags(QGraphicsItem::ItemIsMovable
+    | QGraphicsItem::ItemIsSelectable
+    | QGraphicsItem::ItemSendsGeometryChanges);
+  objText->setTransform(lScene->getMatrixViewScene().inverted());
+  objText->setPos(x, y); //Coordenada de cena em mm		
+
+  if(!objText)
+    result = false;
+
+  return result;
+}
+
+bool te::layout::QLayoutView::createRectangle( QPointF point )
+{
+  bool result = true;
+
+  double x = point.x();
+  double y = point.y();
+
+  //Retângulo: utilizando o canvas da Terralib 5
+  RectangleLayoutModel* model = new RectangleLayoutModel();	
+  model->setName("AZUL");
+  RectangleLayoutController* controller = new RectangleLayoutController(model);
+  LayoutItemObserver* item = (LayoutItemObserver*)controller->getView();
+  QRectangleLayoutItem* rect = dynamic_cast<QRectangleLayoutItem*>(item);
+  item->setItemPosition(x, y);
+  item->redraw();
+
+  if(!item)
+    result = false;
+
+  return result;
+}
+
+void te::layout::QLayoutView::onToolbarChangeContext( bool change )
+{
+  QLayoutScene* sc = dynamic_cast<QLayoutScene*>(scene());
+
   if(LayoutContext::getInstance()->getMode() == TypeUnitsMetricsChange)
   {
 
+  }
+
+  if(LayoutContext::getInstance()->getMode() == TypeSavePropsJSON)
+  {
+    sc->savePropsAsJSON();
   }
 
   if(LayoutContext::getInstance()->getMode() == TypePan)
@@ -555,5 +655,25 @@ void te::layout::QLayoutView::changeMode()
     //Whole view not interactive while in ScrollHandDrag Mode
     setInteractive(true);
     setCursor(Qt::ArrowCursor);
+  }
+}
+
+void te::layout::QLayoutView::onSelectionChanged()
+{
+  //Refresh Property window 
+  if(!scene()->selectedItems().isEmpty())
+  {
+    if(m_dockProperties)
+      m_dockProperties->itemsSelected(scene()->selectedItems());
+  }
+}
+
+void te::layout::QLayoutView::onAddItemFinalized()
+{
+  //Refresh Inspector Object window
+  if(!scene()->items().isEmpty())
+  {
+    if(m_dockInspector)
+      m_dockInspector->itemsInspector(scene()->items());
   }
 }

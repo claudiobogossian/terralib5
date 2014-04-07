@@ -1,23 +1,49 @@
-#ifndef QMAPLAYOUTITEM_H
-#define QMAPLAYOUTITEM_H
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
-//#include "QObjectLayoutItem.h"
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file QMapLayoutItem.h
+   
+  \brief 
+
+  \ingroup layout
+*/
+
+#ifndef __TERRALIB_LAYOUT_INTERNAL_QMAPLAYOUT_ITEM_H 
+#define __TERRALIB_LAYOUT_INTERNAL_QMAPLAYOUT_ITEM_H
+
+// Qt
 #include <QGraphicsProxyWidget>
+#include <QVariant>
+
+// TerraLib
 #include "LayoutItemObserver.h"
 #include "../../../../qt/widgets/canvas/MultiThreadMapDisplay.h"
-#include <QtGui/QGraphicsPixmapItem>
-#include <QGraphicsSceneMouseEvent>
-#include <QVariant>
 #include "../../../../maptools/AbstractLayer.h"
 
-//class QGraphicsProxyWidget;
 class QGraphicsSceneMouseEvent;
 
 namespace te
 {
   namespace layout
   {
-    class LayoutItemModelObservable;
+    class LayoutObservable;
     class LayoutItemController;
 
     class QMapLayoutItem : public QGraphicsProxyWidget, public LayoutItemObserver
@@ -26,7 +52,7 @@ namespace te
 
       public:
 
-        QMapLayoutItem( LayoutItemController* controller, LayoutItemModelObservable* o );
+        QMapLayoutItem( LayoutItemController* controller, LayoutObservable* o );
         virtual ~QMapLayoutItem();
         
         virtual void updateObserver(ContextLayoutItem context);
@@ -38,8 +64,6 @@ namespace te
                         
     protected:
       
-      virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-      virtual void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
       virtual void	dropEvent ( QGraphicsSceneDragDropEvent * event );
 
       //Override method for using moves, selected, etc., 
@@ -59,11 +83,11 @@ namespace te
 
     protected:
 
-      QPixmap _pixmap;
-      QRectF  _rect;//In local coordinate
+      QPixmap m_pixmap;
+      QRectF  m_rect;//In local coordinate
       
       te::qt::widgets::MultiThreadMapDisplay* m_mapDisplay;
-      bool grabbedByWidget;
+      bool m_grabbedByWidget;
     };
   }
 }

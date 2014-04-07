@@ -1,28 +1,40 @@
-/******************************************************************************
-* Funcate - GIS development team
-*
-* TerraPrint - 
-* Copyright © 2013	INPE/Funcate
-*
-* @file TdkAbstractComponentType.h
-* @brief 
-* @version 1.0
-* @author: Juliana Hohara de Souza Coelho <juliana.coelho@funcate.org.br>
-* @date:  
-******************************************************************************/
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
-#ifndef LAYOUT_MODE_H
-#define LAYOUT_MODE_H
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file LayoutMode.h
+   
+  \brief 
+
+  \ingroup layout
+*/
+
+#ifndef __TERRALIB_LAYOUT_INTERNAL_LAYOUT_H
+#define __TERRALIB_LAYOUT_INTERNAL_LAYOUT_H
 
 namespace te
 {
   namespace layout
   {
-    /** 
-    * Enum LayoutMode.
-    * This is the enumeration of the components types
-    * @ingroup factory
-    **/
+    /*!
+    \brief Enum LayoutMode. This is the enumeration of the components types
+    */
     typedef enum
     {
       TypeSelectByBox,
@@ -31,15 +43,17 @@ namespace te
       TypeZoomIn,
       TypeZoomOut,
       TypeCreate,
+      TypeCreateMap,
+      TypeCreateRectangle,
+      TypeCreateText,
       TypeUnitsMetricsChange,
+      TypeSavePropsJSON,
       TypeNone
     } LayoutMode;
 
-    /** 
-    * Enum LayoutRulerOrientation
-    * This is the enumeration of the ruler orientation types
-    * @ingroup factory
-    **/
+    /*!
+    \brief Enum LayoutRulerOrientation. This is the enumeration of the ruler orientation types
+    */
     typedef enum
     {
       TypeRulerVertical = 0,

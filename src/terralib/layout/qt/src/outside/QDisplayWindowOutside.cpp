@@ -1,3 +1,31 @@
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file QDisplayWindowOutside.cpp
+   
+  \brief 
+
+  \ingroup layout
+*/
+
+// TerraLib
 #include "QDisplayWindowOutside.h"
 #include "LayoutContext.h"
 #include "LayoutScene.h"
@@ -6,16 +34,16 @@
 #include "LayoutItemObserver.h"
 #include "LayoutOutsideObserver.h"
 #include "LayoutOutsideController.h"
+#include "../../../../geometry/Envelope.h"
 
+// Qt
 #include <QGraphicsWidget>
 #include <QMainWindow>
 
-#include "../../../../geometry/Envelope.h"
-
-te::layout::QDisplayWindowOutside::QDisplayWindowOutside( LayoutOutsideController* controller, LayoutOutsideModelObservable* o ) :
+te::layout::QDisplayWindowOutside::QDisplayWindowOutside( LayoutOutsideController* controller, LayoutObservable* o ) :
 	QDockWidget("", 0, 0),
 	LayoutOutsideObserver(controller, o),
-  _previousCentralWidget(0)
+  m_previousCentralWidget(0)
 {  
 	setVisible(false);
 	setWindowTitle("Layout Display");
@@ -65,16 +93,16 @@ void te::layout::QDisplayWindowOutside::closeEvent( QCloseEvent * event )
   if(mw)
   {
     mw->removeDockWidget(this);
-    if(_previousCentralWidget)
+    if(m_previousCentralWidget)
     {
-      QDockWidget* dock = dynamic_cast<QDockWidget*>(_previousCentralWidget);
+      QDockWidget* dock = dynamic_cast<QDockWidget*>(m_previousCentralWidget);
       mw->setCentralWidget(dock);
-      dock->setVisible(_previousCentralWidgetVisibilite);
+      dock->setVisible(m_previousCentralWidgetVisibilite);
     }
   }
 }
 
 void te::layout::QDisplayWindowOutside::setPreviousCentralWidget( QWidget* previous )
 {
-  _previousCentralWidget = previous;
+  m_previousCentralWidget = previous;
 }

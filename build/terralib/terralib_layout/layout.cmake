@@ -40,10 +40,11 @@ list (APPEND TE_DEP_LIBS
 	terralib_memory
 	terralib_plugin
 	terralib_qt_widgets
+	terralib_qt_af
 	terralib_geometry
 	terralib_color
-	qtpropertybrowser
 	terralib_srs
+	qtpropertybrowser
 )
 
 # Files to process.
@@ -59,6 +60,9 @@ set (
   include/core/pattern/factory
   include/core/pattern/mvc
   include/core/pattern/singleton
+  include/core/serialization
+  include/core/property
+  include/core/template
   include/item
   include/outside
   qt
@@ -79,6 +83,9 @@ set (
   src/core/pattern/factory
   src/core/pattern/mvc
   src/core/pattern/singleton
+  src/core/serialization
+  src/core/property
+  src/core/template
   src/item
   src/outside
 )
@@ -105,7 +112,16 @@ appPrefix ("include/pattern/factory" "${_DIRS}" QT_INC_INST_DIRS)
 appPrefix ("include/pattern/mvc" "${_DIRS}" QT_INC_INST_DIRS)
   
 # Files in build tree
-appPrefix ("include/pattern/singleton" "${_DIRS}" QT_INC_INST_DIRS)  
+appPrefix ("include/pattern/singleton" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
+appPrefix ("include/core/serialization" "${_DIRS}" QT_INC_INST_DIRS)  
+
+# Files in build tree
+appPrefix ("include/core/property" "${_DIRS}" QT_INC_INST_DIRS) 
+
+# Files in build tree
+appPrefix ("include/core/template" "${_DIRS}" QT_INC_INST_DIRS)
 
 # Files in build tree
 appPrefix ("include/item" "${_DIRS}" QT_INC_INST_DIRS)  
@@ -163,6 +179,15 @@ appPrefix ("src/pattern/mvc" "${_DIRS}" QT_INC_INST_DIRS)
 
 # Files in build tree
 appPrefix ("src/pattern/singleton" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
+appPrefix ("src/core/serialization" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
+appPrefix ("src/core/property" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
+appPrefix ("src/core/template" "${_DIRS}" QT_INC_INST_DIRS)
   
 # Files in build tree
 appPrefix ("src/item" "${_DIRS}" QT_INC_INST_DIRS)
@@ -186,6 +211,7 @@ set (
   ${SRCDIR}/qt/include/moc/QLayoutView.h
   ${SRCDIR}/qt/include/moc/QObjectLayoutItem.h
   ${SRCDIR}/qt/include/moc/QMapLayoutItem.h
+  ${SRCDIR}/qt/include/moc/QLayoutPropertyBrowser.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/layout/qt/include/moc" MOC)
 
@@ -210,6 +236,11 @@ install (
 source_group("Form Files" FILES ${FORMS})
 source_group("Generated Files" FILES ${MOC} ${MOC2} ${UI})
 
+set(LAYOUT_IMAGES_PNG "${ROOT}/resources/images/png/terralib_layout" CACHE STRING "Path to layout images.")
+
+set(LAYOUT_IMAGES_SVG "${ROOT}/resources/images/svg" CACHE STRING "Path to layout images.")
+
+set(LAYOUT_IMAGES_ICO "${ROOT}/resources/images/ico" CACHE STRING "Path to layout images.")
 
 # Include directory of the image files
 list (APPEND QT_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}")

@@ -1,14 +1,46 @@
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file LayoutItemModelObservable.cpp
+   
+  \brief 
+
+  \ingroup layout
+*/
+
+// TerraLib
 #include "LayoutItemModelObservable.h"
+#include "LayoutObserver.h"
+#include "LayoutProperty.h"
 #include "../../../../../geometry/Envelope.h"
 #include "../../../../../geometry/Coord2D.h"
-#include "LayoutItemObserver.h"
-#include "LayoutProperty.h"
+#include "LayoutProperties.h"
 
 te::layout::LayoutItemModelObservable::LayoutItemModelObservable() :
-  _id(0),
-  _name("Unknow")
+  m_id(0),
+  m_name("unknown"),
+  m_type(TPObjectUnknown)
 {
-  _box = te::gm::Envelope(0,0,0,0);
+  m_box = te::gm::Envelope(0,0,0,0);
+
+  m_properties = new LayoutProperties(m_name);
 }
 
 te::layout::LayoutItemModelObservable::~LayoutItemModelObservable()
@@ -16,9 +48,9 @@ te::layout::LayoutItemModelObservable::~LayoutItemModelObservable()
 
 }
 
-bool te::layout::LayoutItemModelObservable::addObserver( LayoutItemObserver* o )
+bool te::layout::LayoutItemModelObservable::addObserver( LayoutObserver* o )
 {
-  std::pair<std::set<LayoutItemObserver*>::iterator,bool> p = _observers.insert(o);
+  std::pair<std::set<LayoutObserver*>::iterator,bool> p = m_observers.insert(o);
 
   if(p.second == true)
     return true;
@@ -26,9 +58,9 @@ bool te::layout::LayoutItemModelObservable::addObserver( LayoutItemObserver* o )
   return false;
 }
 
-bool te::layout::LayoutItemModelObservable::removeObserver( LayoutItemObserver* o )
+bool te::layout::LayoutItemModelObservable::removeObserver( LayoutObserver* o )
 {
-  int num = _observers.erase(o);
+  int num = m_observers.erase(o);
 
   if(num == 1)
     return true;
@@ -38,78 +70,85 @@ bool te::layout::LayoutItemModelObservable::removeObserver( LayoutItemObserver* 
 
 void te::layout::LayoutItemModelObservable::notifyAll( ContextLayoutItem context )
 {
-  std::set<LayoutItemObserver*>::iterator it;
-  for(it = _observers.begin(); it != _observers.end(); ++it)
+  std::set<LayoutObserver*>::iterator it;
+  for(it = m_observers.begin(); it != m_observers.end(); ++it)
   {
     (*it)->updateObserver(context);
   }
 }
 
-te::layout::LayoutProperties te::layout::LayoutItemModelObservable::toString()
-{
-  LayoutProperties properties;
+te::layout::LayoutProperties* te::layout::LayoutItemModelObservable::getProperties() const
+{  
+  m_properties->clear();
 
   LayoutProperty pro_name;
-  pro_name.setName(_name);
-  LayoutProperty pro_label;
-  pro_label.setLabel("SHOW");
+  pro_name.setName("name");
+  pro_name.setId("unknown");
+  pro_name.setValue(m_name, DataTypeString);
 
-  properties.addProperty(pro_name);
-  properties.addProperty(pro_label);
+  LayoutProperty pro_id;
+  pro_id.setName("id");
+  pro_id.setId("unknown");
+  pro_id.setValue(m_id, DataTypeInt);
 
-  return properties;
+  m_properties->addProperty(pro_name);
+  m_properties->addProperty(pro_id);
+
+  return m_properties;
 }
 
 te::gm::Envelope te::layout::LayoutItemModelObservable::getBox()
 {
-  return _box;
+  return m_box;
 }
 
 void te::layout::LayoutItemModelObservable::setBox(te::gm::Envelope box)
 {
-  _box = box;
+  m_box = box;
 }
 
 te::color::RGBAColor te::layout::LayoutItemModelObservable::getBackgroundColor()
 {
-  return _backgroundColor;
+  return m_backgroundColor;
 }
 
 void te::layout::LayoutItemModelObservable::setBackgroundColor( te::color::RGBAColor color )
 {
-  _backgroundColor = color;
+  m_backgroundColor = color;
 }
 
 void te::layout::LayoutItemModelObservable::setBorderColor( te::color::RGBAColor color )
 {
-  _borderColor = color;
+  m_borderColor = color;
 }
 
 te::color::RGBAColor te::layout::LayoutItemModelObservable::getBorderColor()
 {
-  return _borderColor;
+  return m_borderColor;
 }
 
 void te::layout::LayoutItemModelObservable::setName( std::string name )
 {
-  _name = name;
+  m_name = name;
+  if(m_properties)
+    m_properties->setObjectName(m_name);
 }
 
 std::string te::layout::LayoutItemModelObservable::getName()
 {
-  return _name;
+  return m_name;
 }
 
 void te::layout::LayoutItemModelObservable::setPosition( const double& x, const double& y )
 {
   //Initial point to draw is : x1, y2, that corresponds 0,0 of local coordinate of a item
   double x1 = x; 
-  double y1 = y - _box.getHeight();
+  double y1 = y - m_box.getHeight();
 
-  double x2 = x + _box.getWidth();
+  double x2 = x + m_box.getWidth();
   double y2 = y;
 
-  _box = te::gm::Envelope(x1, y1, x2, y2);
+  m_box = te::gm::Envelope(x1, y1, x2, y2);
 }
 
 bool te::layout::LayoutItemModelObservable::contains( const te::gm::Coord2D &coord ) const
@@ -117,14 +156,33 @@ bool te::layout::LayoutItemModelObservable::contains( const te::gm::Coord2D &coo
   te::gm::Envelope env(coord.x, coord.y, coord.x, coord.y);
 
   if(env.isValid())
-    return _box.contains(env);
+    return m_box.contains(env);
 
   return false;
 }
 
-void te::layout::LayoutItemModelObservable::setProperties( te::layout::LayoutProperties properties )
+void te::layout::LayoutItemModelObservable::updateProperties( te::layout::LayoutProperties* properties )
 {
-  std::vector<LayoutProperty> vProps = properties.getProperties();
+  LayoutProperties* vectorProps = const_cast<LayoutProperties*>(properties);
+
+  std::vector<LayoutProperty> vProps = vectorProps->getProperties();
   LayoutProperty pro_name = vProps[0];
-  _name = pro_name.getName();
+  m_name = pro_name.getName();
 }
+
+te::layout::LayoutAbstractObjectType te::layout::LayoutItemModelObservable::getType()
+{
+  return m_type;
+}
+
+int te::layout::LayoutItemModelObservable::getZValue()
+{
+  return m_zValue;
+}
+
+void te::layout::LayoutItemModelObservable::setZValue( int zValue )
+{
+  m_zValue = zValue;
+}
+
+

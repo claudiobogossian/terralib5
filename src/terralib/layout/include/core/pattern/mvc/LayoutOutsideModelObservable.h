@@ -1,48 +1,86 @@
-#ifndef LAYOUTOUTSIDEMODEL_H
-#define LAYOUTOUTSIDEMODEL_H
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
-#include <set>
-#include "../../../../../geometry/Envelope.h"
-#include "../../../../../geometry/Coord2D.h"
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file LayoutOutsideModelObservable.h
+   
+  \brief 
+
+  \ingroup layout
+*/
+
+#ifndef __TERRALIB_LAYOUT_INTERNAL_LAYOUT_OUTSIDE_MODEL_H 
+#define __TERRALIB_LAYOUT_INTERNAL_LAYOUT_OUTSIDE_MODEL_H
+
+// TerraLib
+#include "LayoutObservable.h"
 #include "LayoutProperties.h"
 #include "ContextLayoutItem.h"
+#include "../../../../../geometry/Envelope.h"
+#include "../../../../../geometry/Coord2D.h"
+
+// STL
+#include <set>
 
 namespace te
 {
   namespace layout
   {
-    class LayoutOutsideObserver;
-    class LayoutItemObserver;
+    class LayoutObserver;
 
-    class LayoutOutsideModelObservable 
+    class LayoutOutsideModelObservable : public LayoutObservable
     {
     public:
 
       LayoutOutsideModelObservable();
       virtual ~LayoutOutsideModelObservable();
 
-      virtual bool addObserver(LayoutOutsideObserver* o);
-      virtual bool removeObserver(LayoutOutsideObserver* o);
-      virtual LayoutProperties toString();
+      virtual bool addObserver(LayoutObserver* o);
+      virtual bool removeObserver(LayoutObserver* o);
       virtual te::gm::Envelope getBox();
       virtual void setBox(te::gm::Envelope box);
       virtual int getColor();
       virtual void setColor(int color);
 
-      virtual void setPosition(const double& x, const double& y) = 0;
+      virtual void setPosition(const double& x, const double& y);
+      virtual LayoutAbstractObjectType getType();
+
+      virtual int getZValue();
+      virtual void setZValue(int zValue);
+
+      virtual void updateProperties(te::layout::LayoutProperties* properties);
 
     protected:
 
       virtual void notifyAll(ContextLayoutItem context);
 
-      bool operator==(const LayoutOutsideModelObservable &other) const;
-      bool operator!=(const LayoutOutsideModelObservable &other) const;
+      virtual LayoutProperties* getProperties() const;
+
 
     protected:
-      std::set<LayoutOutsideObserver*>	_observers;
-      te::gm::Envelope					_box;
-      te::gm::Coord2D 					_centerCoordinate;
-      int							          _color;
+      std::set<LayoutObserver*>	m_observers;
+      te::gm::Envelope					m_box;
+      te::gm::Coord2D 					m_centerCoordinate;
+      int							          m_color;
+      LayoutProperties*         m_properties;
+      LayoutAbstractObjectType  m_type;
+      int                       m_zValue;
     };
   }
 }

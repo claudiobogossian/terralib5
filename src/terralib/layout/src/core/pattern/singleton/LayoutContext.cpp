@@ -1,10 +1,40 @@
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file LayoutContext.cpp
+   
+  \brief 
+
+  \ingroup layout
+*/
+
+// TerraLib
 #include "LayoutContext.h"
-#include <stddef.h>  // defines NULL
 #include "LayoutAbstractItemFactory.h"
 #include "LayoutUtils.h"
+#include "LayoutAbstractOutsideFactory.h"
 #include "../../../../../maptools/Canvas.h"
 #include "../../../../../geometry/Envelope.h"
-#include "LayoutAbstractOutsideFactory.h"
+
+// STL
+#include <stddef.h>  // defines NULL
 
 // Global static pointer used to ensure a single instance of the class.
 te::layout::LayoutContext* te::layout::LayoutContext::_instance = NULL;
@@ -25,121 +55,131 @@ te::layout::LayoutContext* te::layout::LayoutContext::getInstance()
 
 te::layout::LayoutMode te::layout::LayoutContext::getMode()
 {
-  return _mode;
+  return m_mode;
 }
 
 te::layout::LayoutScene* te::layout::LayoutContext::getScene()
 {
-  return _scene;
+  return m_scene;
 }
 
 void te::layout::LayoutContext::setMode( LayoutMode mode )
 {
-  _mode = mode;
+  m_mode = mode;
 }
 
 void te::layout::LayoutContext::setScene( LayoutScene* scene )
 {
-  _scene = scene;
+  m_scene = scene;
 }
 
 double te::layout::LayoutContext::getZoomFactor()
 {
-  return _zoomFactor;
+  return m_zoomFactor;
 }
 
 void te::layout::LayoutContext::setZoomFactor( double zoomFactor )
 {
-  _zoomFactor = zoomFactor;
+  m_zoomFactor = zoomFactor;
 }
 
 te::layout::LayoutAbstractItemFactory* te::layout::LayoutContext::getItemFactory()
 {
-  return _itemFactory;
+  return m_itemFactory;
 }
 
 void te::layout::LayoutContext::setItemFactory( LayoutAbstractItemFactory* factory )
 {
-  _itemFactory = factory;
+  m_itemFactory = factory;
 }
 
 te::layout::LayoutAbstractOutsideFactory* te::layout::LayoutContext::getOutsideFactory()
 {
-  return _outsideFactory;
+  return m_outsideFactory;
 }
 
 void te::layout::LayoutContext::setOutsideFactory( LayoutAbstractOutsideFactory* factory )
 {
-  _outsideFactory = factory;
+  m_outsideFactory = factory;
+}
+
+te::layout::LayoutAbstractTemplateFactory* te::layout::LayoutContext::getTemplateFactory()
+{
+  return m_templateFactory;
+}
+
+void te::layout::LayoutContext::setTemplateFactory( te::layout::LayoutAbstractTemplateFactory* factory )
+{
+  m_templateFactory = factory;
 }
 
 te::layout::LayoutAbstractPaperType te::layout::LayoutContext::getTypePaper()
 {
-  return _typePaper;
+  return m_typePaper;
 }
 
 void te::layout::LayoutContext::setTypePaper( LayoutAbstractPaperType type )
 {
-  _typePaper = type;
+  m_typePaper = type;
 }
 
 te::gm::Envelope* te::layout::LayoutContext::getBoxPaper()
 {
-  return _paperBox;
+  return m_paperBox;
 }
 
 void te::layout::LayoutContext::setBoxPaper( te::gm::Envelope* box )
 {
-  _paperBox = box;
+  m_paperBox = box;
 }
 
 te::map::Canvas* te::layout::LayoutContext::getCanvas()
 {
-  return _canvas;
+  return m_canvas;
 }
 
 void te::layout::LayoutContext::setCanvas( te::map::Canvas* canvas )
 {
-  _canvas = canvas;
+  m_canvas = canvas;
 }
 
 te::layout::LayoutUtils* te::layout::LayoutContext::getUtils()
 {
-  return _utils;
+  return m_utils;
 }
 
 void te::layout::LayoutContext::setUtils( LayoutUtils* utils )
 {
-  _utils = utils;
+  m_utils = utils;
 }
 
 te::layout::LayoutUnitsMetrics te::layout::LayoutContext::getUnitMetric()
 {
-  return _unitMetric;
+  return m_unitMetric;
 }
 
 void te::layout::LayoutContext::setUnitMetric( LayoutUnitsMetrics unit )
 {
-  _unitMetric = unit;
+  m_unitMetric = unit;
 }
 
 double te::layout::LayoutContext::getDpiX()
 {
-  return _dpiX;
+  return m_dpiX;
 }
 
 void te::layout::LayoutContext::setDpiX( double dpiX )
 {
-  _dpiX = dpiX;
+  m_dpiX = dpiX;
 }
 
 double te::layout::LayoutContext::getDpiY()
 {
-  return _dpiY;
+  return m_dpiY;
 }
 
 void te::layout::LayoutContext::setDpiY( double dpiY )
 {
-  _dpiY = dpiY;
+  m_dpiY = dpiY;
 }
 

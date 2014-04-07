@@ -1,17 +1,45 @@
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file QLayoutItemGroup.cpp
+   
+  \brief 
+
+  \ingroup layout
+*/
+
+// TerraLib
 #include <QLayoutItemGroup.h>
+#include "LayoutUtils.h"
+#include "LayoutContext.h"
 #include "LayoutItemModelObservable.h"
 #include "LayoutItemController.h"
-
 #include "../../../color/RGBAColor.h"
 #include "../../../../qt/widgets/Utils.h"
 #include "../../../../geometry/Envelope.h"
 #include "../../../../common/STLUtils.h"
-#include "LayoutUtils.h"
-#include "LayoutContext.h"
 
+// Qt
 #include <QGraphicsSceneMouseEvent>
 
-te::layout::QLayoutItemGroup::QLayoutItemGroup( LayoutItemController* controller, LayoutItemModelObservable* o ) :
+te::layout::QLayoutItemGroup::QLayoutItemGroup( LayoutItemController* controller, LayoutObservable* o ) :
   QGraphicsItemGroup(0, 0),
   LayoutItemObserver(controller, o)
 {
@@ -30,10 +58,8 @@ te::layout::QLayoutItemGroup::~QLayoutItemGroup()
 
 void te::layout::QLayoutItemGroup::updateObserver( ContextLayoutItem context )
 {
-
   te::color::RGBAColor** rgba = context.getPixmap();  
-  LayoutItemModelObservable* model = (LayoutItemModelObservable*)_controller->getModel();
-  te::gm::Envelope box = model->getBox();
+  te::gm::Envelope box = m_model->getBox();
 
   QPixmap pixmp;
   QImage* img = 0;
@@ -77,7 +103,7 @@ void te::layout::QLayoutItemGroup::addToGroup( QGraphicsItem * item )
 
   QRectF chRect = childrenBoundingRect();
 
-  LayoutItemModelObservable* model = (LayoutItemModelObservable*)_controller->getModel();
+  LayoutItemModelObservable* model = (LayoutItemModelObservable*)m_controller->getModel();
   model->setBox(te::gm::Envelope(chRect.x(), chRect.y(), chRect.x() + childrenBoundingRect().width(), 
     chRect.y() + childrenBoundingRect().height()));
 }
@@ -113,7 +139,7 @@ void te::layout::QLayoutItemGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* 
 
 void te::layout::QLayoutItemGroup::setPixmap( const QPixmap& pixmap )
 {
-  _pixmap = pixmap;
+  m_pixmap = pixmap;
 }
 
 void te::layout::QLayoutItemGroup::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
@@ -126,7 +152,7 @@ void te::layout::QLayoutItemGroup::paint( QPainter * painter, const QStyleOption
   }
 
   drawBackground( painter );
-  LayoutItemModelObservable* model = (LayoutItemModelObservable*)_controller->getModel();
+  LayoutItemModelObservable* model = (LayoutItemModelObservable*)m_controller->getModel();
 
   QRectF boundRect;
   boundRect = boundingRect();
@@ -134,7 +160,7 @@ void te::layout::QLayoutItemGroup::paint( QPainter * painter, const QStyleOption
   painter->save();
   painter->translate( model->getBox().getWidth() / 2.0, model->getBox().getHeight() / 2.0 );
   painter->translate( -boundRect.width() / 2.0, -boundRect.height() / 2.0 );
-  painter->drawPixmap(boundRect, _pixmap, QRectF( 0, 0, _pixmap.width(), _pixmap.height() ));
+  painter->drawPixmap(boundRect, m_pixmap, QRectF( 0, 0, m_pixmap.width(), m_pixmap.height() ));
   painter->restore();
 
 }
@@ -143,7 +169,7 @@ void te::layout::QLayoutItemGroup::drawBackground( QPainter * painter )
 {
   if (painter)
   {
-    LayoutItemModelObservable* model = (LayoutItemModelObservable*)_controller->getModel();
+    LayoutItemModelObservable* model = (LayoutItemModelObservable*)m_controller->getModel();
     //painter->setBrush( brush() );//this causes a problem in atlas generation
     painter->setPen( Qt::NoPen );
     painter->setRenderHint( QPainter::Antialiasing, true );
@@ -153,7 +179,7 @@ void te::layout::QLayoutItemGroup::drawBackground( QPainter * painter )
 
 bool te::layout::QLayoutItemGroup::contains( const QPointF &point ) const
 {
-  LayoutItemModelObservable* model = (LayoutItemModelObservable*)_controller->getModel();
+  LayoutItemModelObservable* model = (LayoutItemModelObservable*)m_controller->getModel();
   
   return model->contains(te::gm::Coord2D(point.x(), point.y()));
 }

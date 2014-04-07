@@ -1,3 +1,31 @@
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file QObjectInspectorWindowOutside.cpp
+   
+  \brief 
+
+  \ingroup layout
+*/
+
+// TerraLib
 #include "QObjectInspectorWindowOutside.h"
 #include "LayoutContext.h"
 #include "LayoutScene.h"
@@ -6,34 +34,36 @@
 #include "LayoutItemObserver.h"
 #include "LayoutOutsideObserver.h"
 #include "LayoutOutsideController.h"
-
-#include <QGraphicsWidget>
-
 #include "../../../../geometry/Envelope.h"
 #include "../../../../../../third-party/qt/propertybrowser/qtvariantproperty.h"
 #include "../../../../../../third-party/qt/propertybrowser/qttreepropertybrowser.h"
 
-te::layout::QObjectInspectorWindowOutside::QObjectInspectorWindowOutside( LayoutOutsideController* controller, LayoutOutsideModelObservable* o ) :
+//Qt
+#include <QGraphicsWidget>
+
+te::layout::QObjectInspectorWindowOutside::QObjectInspectorWindowOutside( LayoutOutsideController* controller, LayoutObservable* o ) :
 	QDockWidget("", 0, 0),
 	LayoutOutsideObserver(controller, o)
 {
-	te::gm::Envelope box = _model->getBox();	
-	setFixedSize(box.getWidth(), box.getHeight());
+	te::gm::Envelope box = m_model->getBox();	
+	setBaseSize(box.getWidth(), box.getHeight());
 	setVisible(false);
 	setWindowTitle("Layout - Inspetor de Objetos");
+  setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-  setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+  setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
 
   //
-   _variantInspectorObjectManager = new QtVariantPropertyManager(this);
-  connect(_variantInspectorObjectManager, SIGNAL(valueChanged(QtProperty *, const QVariant &)),
+  m_variantInspectorObjectManager = new QtVariantPropertyManager(this);
+  connect(m_variantInspectorObjectManager, SIGNAL(valueChanged(QtProperty *, const QVariant &)),
   this, SLOT(propertyEditorValueChanged(QtProperty *, const QVariant &)));
 
   QtVariantEditorFactory* variantObjectInspectorFactory = new QtVariantEditorFactory(this);
-  _objectInspector = new QtTreePropertyBrowser(this);
-  _objectInspector->setFactoryForManager(_variantInspectorObjectManager, variantObjectInspectorFactory);
+  m_objectInspector = new QtTreePropertyBrowser(this);
+  m_objectInspector->setFactoryForManager(m_variantInspectorObjectManager, variantObjectInspectorFactory);
+  m_objectInspector->setResizeMode(QtTreePropertyBrowser::ResizeToContents);
 
-  setWidget(_objectInspector);
+  setWidget(m_objectInspector);
 }
 
 te::layout::QObjectInspectorWindowOutside::~QObjectInspectorWindowOutside()
@@ -76,12 +106,12 @@ void te::layout::QObjectInspectorWindowOutside::propertyEditorValueChanged( QtPr
 
 void te::layout::QObjectInspectorWindowOutside::updateExpandState()
 {
-  QList<QtBrowserItem *> list = _objectInspector->topLevelItems();
+  QList<QtBrowserItem *> list = m_objectInspector->topLevelItems();
   QListIterator<QtBrowserItem *> it(list);
   while (it.hasNext()) {
     QtBrowserItem *item = it.next();
     QtProperty *prop = item->property();
-    _idToExpanded[_propertyToId[prop]] = _objectInspector->isExpanded(item);
+    m_idToExpanded[m_propertyToId[prop]] = m_objectInspector->isExpanded(item);
   }
 }
 
@@ -89,15 +119,15 @@ void te::layout::QObjectInspectorWindowOutside::itemsInspector(QList<QGraphicsIt
 {
   updateExpandState();
 
-  QMap<QtProperty *, QString>::ConstIterator itProp = _propertyToId.constBegin();
-  while (itProp != _propertyToId.constEnd()) 
+  QMap<QtProperty *, QString>::ConstIterator itProp = m_propertyToId.constBegin();
+  while (itProp != m_propertyToId.constEnd()) 
   {
     delete itProp.key();
     itProp++;
   }
-  _propertyToId.clear();
-  _idToProperty.clear();
-  _graphicsItems = graphicsItems;
+  m_propertyToId.clear();
+  m_idToProperty.clear();
+  m_graphicsItems = graphicsItems;
     
   QtVariantProperty *property;
   foreach( QGraphicsItem *item, graphicsItems) 
@@ -109,27 +139,34 @@ void te::layout::QObjectInspectorWindowOutside::itemsInspector(QList<QGraphicsIt
       if(outside)
         continue;
 
+      int zValue = 0;
+
+      QGraphicsItem* parentItem = item->parentItem();          
+      zValue = item->zValue();
+
       LayoutItemObserver* lItem = dynamic_cast<LayoutItemObserver*>(item);
       if(lItem)
       {
-        LayoutProperties properties = lItem->toString();
+        LayoutProperties* properties = const_cast<LayoutProperties*>(lItem->getProperties());
 
-        foreach(LayoutProperty p, properties.getProperties())
+        foreach(LayoutProperty p, properties->getProperties())
         {
-          //item->metaObject()->className(); ->>> have to be QObject or QGraphicsObject too. 
-
           QGraphicsObject* itemObj = dynamic_cast<QGraphicsObject*>(item);         
 
           if(!itemObj)
             break;
-          
-          property = _variantInspectorObjectManager->addProperty(QVariant::String, tr(itemObj->metaObject()->className()));
-          property->setValue(p.getLabel().c_str());
-          addProperty(property, QLatin1String(p.getName().c_str()));
 
-          property = _variantInspectorObjectManager->addProperty(QVariant::String, tr(itemObj->objectName().toStdString().c_str()));
+          /*
+            Ex. de Hierarquia:
+              task1->addSubProperty(priority);
+              task1->addSubProperty(reportType)
+          */
+
+          /*property = m_variantInspectorObjectManager->addProperty(QVariant::String, tr(itemObj->metaObject()->className()));
           property->setValue(p.getLabel().c_str());
-          addProperty(property, QLatin1String(p.getName().c_str()));
+          addProperty(property, QLatin1String(itemObj->objectName().toStdString().c_str()));*/
+
+          zValue = itemObj->zValue();
         }
       }
     }
@@ -140,9 +177,9 @@ void te::layout::QObjectInspectorWindowOutside::itemsInspector(QList<QGraphicsIt
 
 void te::layout::QObjectInspectorWindowOutside::addProperty(QtVariantProperty *property, const QString &id)
 {
-  _propertyToId[property] = id;
-  _idToProperty[id] = property;
-  QtBrowserItem *item = _objectInspector->addProperty(property);
-  if (_idToExpanded.contains(id))
-    _objectInspector->setExpanded(item, _idToExpanded[id]);
+  m_propertyToId[property] = id;
+  m_idToProperty[id] = property;
+  QtBrowserItem *item = m_objectInspector->addProperty(property);
+  if (m_idToExpanded.contains(id))
+    m_objectInspector->setExpanded(item, m_idToExpanded[id]);
 }

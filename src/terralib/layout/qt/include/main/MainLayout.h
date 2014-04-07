@@ -69,8 +69,8 @@ namespace te
         void createLayoutContext(int width, int height, QLayoutView* view);
         void finish();
 
-        QLayoutView* _view;
-        QDisplayWindowOutside*  _dockLayoutDisplay;
+        QLayoutView* m_view;
+        QDisplayWindowOutside*  m_dockLayoutDisplay;
         
       private:
       

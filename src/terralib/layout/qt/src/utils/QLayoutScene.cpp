@@ -1,11 +1,32 @@
+/*  Copyright (C) 2013-2014 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file QLayoutScene.cpp
+   
+  \brief 
+
+  \ingroup layout
+*/
+
+// TerraLib
 #include <QLayoutScene.h>
-
-#include <QGraphicsScene.h>
-#include <QGraphicsPixmapItem>
-#include <QGraphicsItem>
-#include <QtGui>
-#include <QPixmap>
-
 #include "LayoutItemObserver.h"
 #include <QWidget>
 #include "LayoutContext.h"
@@ -14,12 +35,30 @@
 #include "ItemGroupLayoutModel.h"
 #include "ItemGroupLayoutController.h"
 #include "LayoutAbstractType.h"
+#include "LayoutObserver.h"
+#include "LayoutTemplateEditor.h"
+#include "LayoutTemplate.h"
+
+// STL
+#include <iostream>
+#include <fstream>
+
+// Qt
+#include <QGraphicsScene.h>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsItem>
+#include <QtGui>
+#include <QPixmap>
+#include <QPainter>
+#include "RectangleLayoutModel.h"
+#include "RectangleLayoutController.h"
+#include "QRectangleLayoutItem.h"
 
 te::layout::QLayoutScene::QLayoutScene( QWidget* widget): 
   QGraphicsScene(widget),
-  _paperType(TPA4),
-  _paperSizeWMM(210.),
-  _paperSizeHMM(297.)
+  m_paperType(TPA4),
+  m_paperSizeWMM(210.),
+  m_paperSizeHMM(297.)
 {
 
 }
@@ -31,14 +70,14 @@ te::layout::QLayoutScene::~QLayoutScene()
 
 void te::layout::QLayoutScene::init( double widthMM, double heightMM, double dpix, double dpiy )
 {
-  _screenWidthMM = widthMM;
-  _screenHeightMM = heightMM;
+  m_screenWidthMM = widthMM;
+  m_screenHeightMM = heightMM;
 
-  _logicalDpiX = dpix;
-  _logicalDpiY = dpiy;
+  m_logicalDpiX = dpix;
+  m_logicalDpiY = dpiy;
 
-  _boxW = calculateWindow();
-  _boxPaperW = calculateBoxPaper();
+  m_boxW = calculateWindow();
+  m_boxPaperW = calculateBoxPaper();
 
   calculateMatrixViewScene();
   calculateMatrixSceneItem();
@@ -49,8 +88,20 @@ void te::layout::QLayoutScene::init( double widthMM, double heightMM, double dpi
 void te::layout::QLayoutScene::insertItem( LayoutItemObserver* item )
 {
   QGraphicsItem* qitem = ((QGraphicsItem*)item);
-  qitem->setParentItem(_masterParent);
-  this->addItem(qitem);
+
+  if(qitem)
+  {
+    int total = m_masterParent->childItems().count();
+
+    if(m_masterParent)
+      qitem->setParentItem(m_masterParent); // have a addItem call inside
+    else
+      this->addItem(qitem);
+    
+    qitem->setZValue(total);
+
+    emit addItemFinalized();
+  }
 }
 
 void te::layout::QLayoutScene::insertOutside( LayoutOutsideObserver* widget )
@@ -124,29 +175,29 @@ te::gm::Envelope te::layout::QLayoutScene::calculateBoxPaper()
   double middleWW = widthW/2.;
   double middleHW = heightW/2.;	
 
-  double ppW = _paperSizeWMM/2.;
-  double ppH = _paperSizeHMM/2.;
+  double ppW = m_paperSizeWMM/2.;
+  double ppH = m_paperSizeHMM/2.;
 
-  if(widthW > _paperSizeWMM)
+  if(widthW > m_paperSizeWMM)
   {
     x1 = 0;
-    x2 = _paperSizeWMM;
+    x2 = m_paperSizeWMM;
   }
   else
   {
     x1 = middleWW - ppW;
-    x2 = x1 + _paperSizeWMM;
+    x2 = x1 + m_paperSizeWMM;
   }
 
-  if(heightW > _paperSizeHMM)
+  if(heightW > m_paperSizeHMM)
   {
     y1 = 0;
-    y2 = _paperSizeHMM;
+    y2 = m_paperSizeHMM;
   }
   else
   {
     y1 = middleHW - ppH;
-    y2 = y1 + _paperSizeHMM;
+    y2 = y1 + m_paperSizeHMM;
   }
 
   te::gm::Envelope box(x1, y1, x2, y2);
@@ -160,16 +211,16 @@ te::gm::Envelope te::layout::QLayoutScene::calculateWindow()
   double x2 = 0;
   double y2 = 0;
 
-  int w = _screenWidthMM;
-  int h = _screenHeightMM;
+  int w = m_screenWidthMM;
+  int h = m_screenHeightMM;
 
-  double paddingW = w - _paperSizeWMM;
+  double paddingW = w - m_paperSizeWMM;
   double margin1 = paddingW / 2.;
 
-  if(w > _paperSizeWMM)
+  if(w > m_paperSizeWMM)
   {
     x1 = - margin1;
-    x2 = (paddingW + _paperSizeWMM) - margin1;
+    x2 = (paddingW + m_paperSizeWMM) - margin1;
   }
   else
   {
@@ -177,13 +228,13 @@ te::gm::Envelope te::layout::QLayoutScene::calculateWindow()
     x2 = w;
   }
 
-  double paddingH = h - _paperSizeHMM;
+  double paddingH = h - m_paperSizeHMM;
   double margin2 = paddingH / 2.;
 
-  if(h > _paperSizeHMM)
+  if(h > m_paperSizeHMM)
   {
     y1 = - margin2;
-    y2 = (paddingW + _paperSizeHMM) - margin2;
+    y2 = (paddingW + m_paperSizeHMM) - margin2;
 
   }
   else
@@ -198,17 +249,17 @@ te::gm::Envelope te::layout::QLayoutScene::calculateWindow()
 
 void te::layout::QLayoutScene::calculateMatrixViewScene()
 {
-  double llx = _boxW.getLowerLeftX();
-  double lly = _boxW.getLowerLeftY();
-  double urx = _boxW.getUpperRightX();
-  double ury = _boxW.getUpperRightY();
+  double llx = m_boxW.getLowerLeftX();
+  double lly = m_boxW.getLowerLeftY();
+  double urx = m_boxW.getUpperRightX();
+  double ury = m_boxW.getUpperRightY();
   
   //Window - Mundo
-  double dpiX = _logicalDpiX;
-  double dpiY = _logicalDpiY;
+  double dpiX = m_logicalDpiX;
+  double dpiY = m_logicalDpiY;
 
   //mm (inversão do y)
-  _matrix = QTransform().scale(dpiX / 25.4, -dpiY / 25.4).translate(-llx, -ury);
+  m_matrix = QTransform().scale(dpiX / 25.4, -dpiY / 25.4).translate(-llx, -ury);
 
   //Coordenadas de mundo - mm
   setSceneRect(QRectF(QPointF(llx, lly), QPointF(urx, ury)));
@@ -218,124 +269,227 @@ void te::layout::QLayoutScene::calculateMatrixSceneItem()
 {
   //Matrix for items ( between scene and items )
   //take translate
-  double m_31 = _matrix.inverted().m31();
-  double m_32 = _matrix.inverted().m32(); 
+  double m_31 = m_matrix.inverted().m31();
+  double m_32 = m_matrix.inverted().m32(); 
   //m11 and m22 : scale
   //Create matrix for items
-  // shearing( m21 and m12, cisalhamento ) : distorção 
+  // shearing( m21 and m12 ) : distortion 
   // m31 and m32 : translate  
-  _matrixItem = QTransform(1, 0, 0, 0, -1, 0, m_31, m_32, 1);
+  m_matrixItem = QTransform(1, 0, 0, 0, -1, 0, m_31, m_32, 1);
 }
 
 te::gm::Envelope te::layout::QLayoutScene::getWorldBox()
 {
- return _boxW; 
+ return m_boxW; 
 }
 
 te::gm::Envelope te::layout::QLayoutScene::getPaperBox()
 {
-  return _boxPaperW;
+  return m_boxPaperW;
 }
 
 QTransform te::layout::QLayoutScene::getMatrixViewScene()
 {
-  return _matrix;
+  return m_matrix;
 }
 
 QTransform te::layout::QLayoutScene::getMatrixSceneItem()
 {
-  return _matrixItem;
+  return m_matrixItem;
 }
 
 void te::layout::QLayoutScene::createMasterParentItem()
 {
-  double llx = _boxW.getLowerLeftX();
-  double lly = _boxW.getLowerLeftY();
+  double llx = m_boxW.getLowerLeftX();
+  double lly = m_boxW.getLowerLeftY();
 
   //Background
   QRectF sceneRectBack = sceneRect();	
-  _masterParent = addRect(sceneRectBack);
-  _masterParent->setTransform(_matrixItem.inverted()); 
-  ((QGraphicsRectItem*)_masterParent)->setBrush((QBrush(QColor(109,109,109))));	
-  _masterParent->setPos(llx, lly);
+  m_masterParent = addRect(sceneRectBack);
+  m_masterParent->setTransform(m_matrixItem.inverted()); 
+  ((QGraphicsRectItem*)m_masterParent)->setBrush((QBrush(QColor(109,109,109))));	
+  m_masterParent->setPos(llx, lly);
 }
 
 QGraphicsItem* te::layout::QLayoutScene::getMasterParentItem()
 {
-  return _masterParent;
+  return m_masterParent;
 }
 
-void te::layout::QLayoutScene::printPaper()
+void te::layout::QLayoutScene::printPreview(bool isPdf)
+{
+    QPrinter* printer = createPrinter();
+
+    QPrintPreviewDialog preview(printer);
+    connect(&preview, SIGNAL(paintRequested(QPrinter*)), SLOT(printPaper(QPrinter*)));
+    preview.exec();
+}
+
+void te::layout::QLayoutScene::printPaper(QPrinter* printer)
 {
   //Impressão de parte da Cena
-    //Não é necessário mudar a escala do View
+  //Não é necessário mudar a escala do View
+  
+  QPainter newPainter(printer);
+  newPainter.setRenderHint(QPainter::Antialiasing);
+  
+  double dpiX = LayoutContext::getInstance()->getDpiX();
+  double dpiY = LayoutContext::getInstance()->getDpiY();
 
-    QPrinter* printer=new QPrinter(QPrinter::HighResolution);
-    printer->setPageSize(QPrinter::A4);
-    printer->setOrientation( QPrinter::Portrait );
-    printer->pageRect(QPrinter::Millimeter);
+  LayoutContext::getInstance()->setDpiX(printer->logicalDpiX());
+  LayoutContext::getInstance()->setDpiY(printer->logicalDpiY());
 
-    if (QPrintDialog(printer).exec() == QDialog::Accepted) 
-    {
-      QPainter painter(printer);
-      painter.setRenderHint(QPainter::Antialiasing);
-      painter.scale(1., 1.);
-      
-      double dpiX = LayoutContext::getInstance()->getDpiX();
-      double dpiY = LayoutContext::getInstance()->getDpiY();
+  renderScene(&newPainter);
 
-      LayoutContext::getInstance()->setDpiX(printer->logicalDpiX());
-      LayoutContext::getInstance()->setDpiY(printer->logicalDpiY());
-      
-      te::gm::Envelope paperBox =  getPaperBox();
-      
-      //Box da folha na Cena (Fonte)
-      QRectF mmSourceRect(paperBox.getLowerLeftX(), paperBox.getLowerLeftY(), 
-        paperBox.getWidth(), paperBox.getHeight());
-
-      //Tamanho da folha utilizando o dpi da impressora (Alvo)
-      QRect pxTargetRect(0, 0, painter.device()->width(), painter.device()->height());
-
-      //Imprimir folha (Cena para Impressora)
-      //draw items with printer painter
-      /*
-        Idea: Inside the paint object, whether in print mode, 
-        the pixmap before drawing, redrawing the object (model redraw).
-      */
-      render(&painter, pxTargetRect, mmSourceRect); // upside down
-      
-      LayoutContext::getInstance()->setDpiX(dpiX);
-      LayoutContext::getInstance()->setDpiY(dpiY);
-
-    }
+  LayoutContext::getInstance()->setDpiX(dpiX);
+  LayoutContext::getInstance()->setDpiY(dpiY);
 }
 
-void te::layout::QLayoutScene::savePaperAsImage( std::string pathWithFileName)
+void te::layout::QLayoutScene::savePaperAsImage()
 {
-  QPixmap pixmap;
-  QPainter painter(&pixmap);
-  painter.setRenderHint(QPainter::Antialiasing);
-  painter.scale(1., 1.);
+  QString fileName = QFileDialog::getSaveFileName(QApplication::desktop(), tr("Save Image File"), QDir::currentPath(), tr("Image Files (*.png *.jpg *.bmp)"));
+  if(!fileName.isEmpty())
+  {
+    QImage image(fileName);
+    QPainter newPainter(&image);
+    newPainter.setRenderHint(QPainter::Antialiasing);
+
+    renderScene(&newPainter);
+
+    image.save(fileName);
+  }
+}
+
+void te::layout::QLayoutScene::savePaperAsPDF()
+{
+  QPrinter* printer= createPrinter();
+  QString fileName = QFileDialog::getSaveFileName(QApplication::desktop(), tr("Save Image File"), QDir::currentPath(), tr("PDF Files (*.pdf)"));
+  if(!fileName.isEmpty())
+  {
+    printer->setOutputFormat(QPrinter::PdfFormat);
+    printer->setOutputFileName(fileName); 
+    printPaper(printer);
+  }
+}
+
+QPrinter* te::layout::QLayoutScene::createPrinter()
+{
+  QPrinter* printer=new QPrinter(QPrinter::HighResolution);
+  printer->setPageSize(QPrinter::A4);
+  printer->setOrientation( QPrinter::Portrait );
+  printer->pageRect(QPrinter::Millimeter);
+
+  return printer;
+}
+
+void te::layout::QLayoutScene::renderScene( QPainter* newPainter )
+{      
+  changePrintVisibility(false);
 
   te::gm::Envelope paperBox =  getPaperBox();
-  //Box da folha na Cena (Fonte)
+      
+  //Box Paper in the Scene (Source)
   QRectF mmSourceRect(paperBox.getLowerLeftX(), paperBox.getLowerLeftY(), 
     paperBox.getWidth(), paperBox.getHeight());
 
-  //Tamanho da folha utilizando o dpi da impressora (Alvo)
-  //1º Converter tamanho do papel para pixel?????????
-  //Utilizar canvas como painter?
-  QRect pxTargetRect(0, 0, painter.device()->width(), painter.device()->height());
+  //Paper size using the printer dpi (Target)
+  QRect pxTargetRect(0, 0, newPainter->device()->width(), newPainter->device()->height());
 
-  //Imprimir folha (Cena para Impressora)
-  //draw items with printer painter
+  /* Print Paper (Scene to Printer)
+  draw items with printer painter */
+
+  LayoutUtils* utils = LayoutContext::getInstance()->getUtils();
+  //Convert world to screen coordinate. Uses dpi printer.
+  te::gm::Envelope paperNewBox = utils->viewportBox(paperBox);
+  
+  //Mirroring Y-Axis
+  newPainter->translate( paperNewBox.getWidth() / 2, paperNewBox.getHeight() / 2 );
+  newPainter->scale( 1, -1 );
+  newPainter->translate( -(paperNewBox.getWidth() / 2), -(paperNewBox.getHeight() / 2) );
+
+  //Without mirroring the scene is drawn upside down, 
+  //since the system that it uses is Cartesian
+  this->render(newPainter, pxTargetRect, mmSourceRect); 
+
+  changePrintVisibility(true);
+}
+
+void te::layout::QLayoutScene::changePrintVisibility( bool change )
+{
+  QList<QGraphicsItem*> graphicsItems = items();
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if (item)
+    {		
+      LayoutItemObserver* lItem = dynamic_cast<LayoutItemObserver*>(item);
+      if(lItem)
+      {
+        if(!lItem->isPrintable())
+        {
+          item->setVisible(change);
+        }
+      }
+    }
+  }
+}
+
+void te::layout::QLayoutScene::savePropsAsJSON()
+{
+  QString fileName = QFileDialog::getSaveFileName(QApplication::desktop(), tr("Save File"), 
+    QDir::currentPath(), tr("JSON Files (*.json)"));
+
+  if(fileName.isEmpty())
+  {
+    return;
+  }
+
+  std::string j_name = fileName.toStdString();
+
+  std::vector<te::layout::LayoutProperties*> props = getItemsProperties();
+  
+  if(props.empty())
+    return;
+
+  LayoutTemplateEditor editor(TPJSONTemplate, j_name);
+
+  LayoutTemplate* jtemplate = editor.getTemplate();
+  
+  if(!jtemplate)
+    return;
+  
+  bool is_export = false;
+
+  is_export = jtemplate->exportTemplate(props);
+
   /*
-    Idea: Inside the paint object, whether in print mode, 
-    the pixmap before drawing, redrawing the object (model redraw).
+    Object Reconstruction:
+      - instance model;
+      - update properties;
+      - create controller;
+      - draw;
   */
-  render(&painter, pxTargetRect, mmSourceRect); // upside down
-  render(&painter);
-  painter.end();
+  std::vector<te::layout::LayoutProperties*> propsImport = jtemplate->importTemplate();
+}
 
-  pixmap.save(QString(pathWithFileName.c_str()));
+std::vector<te::layout::LayoutProperties*> te::layout::QLayoutScene::getItemsProperties()
+{
+  std::vector<te::layout::LayoutProperties*> props;
+
+  QList<QGraphicsItem*> graphicsItems = items();
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if (item)
+    {		
+      LayoutItemObserver* lItem = dynamic_cast<LayoutItemObserver*>(item);
+      if(lItem)
+      {
+        if(!lItem->isPrintable())
+          continue;
+
+        props.push_back(lItem->getProperties());
+      }
+    }
+  }
+
+  return props;
 }

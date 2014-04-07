@@ -1,24 +1,58 @@
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file LayoutOutsideController.cpp
+   
+  \brief 
+
+  \ingroup layout
+*/
+
+// TerraLib
 #include "LayoutOutsideController.h"
 #include "LayoutOutsideObserver.h"
+#include "LayoutOutsideModelObservable.h"
 
-te::layout::LayoutOutsideController::LayoutOutsideController( LayoutOutsideModelObservable* o )
+te::layout::LayoutOutsideController::LayoutOutsideController( LayoutObservable* o )
 {
-	_model = o;
+	m_model = o;
 }
 
 te::layout::LayoutOutsideController::~LayoutOutsideController()
 {
-	if(_model)
-		delete _model;
+  if(m_model)
+  {
+    LayoutOutsideModelObservable* model = dynamic_cast<LayoutOutsideModelObservable*>(m_model);
+    if(model)
+      delete model;
+    m_model = 0;
+  }
 }
 
-const te::layout::LayoutOutsideModelObservable* te::layout::LayoutOutsideController::getModel()
+const te::layout::LayoutObservable* te::layout::LayoutOutsideController::getModel()
 {
-	return _model;
+	return m_model;
 }
 
-const te::layout::LayoutOutsideObserver* te::layout::LayoutOutsideController::getView()
+const te::layout::LayoutObserver* te::layout::LayoutOutsideController::getView()
 {
-	return _view;
+	return m_view;
 }
 

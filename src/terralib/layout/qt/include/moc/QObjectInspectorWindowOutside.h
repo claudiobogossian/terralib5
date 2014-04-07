@@ -1,7 +1,37 @@
-#ifndef QOBJECTINSPECTOR_WINDOWOUTSIDE_H
-#define QOBJECTINSPECTOR_WINDOWOUTSIDE_H
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file QObjectInspectorWindowOutside.h
+   
+  \brief 
+
+  \ingroup layout
+*/
+
+#ifndef __TERRALIB_LAYOUT_INTERNAL_QOBJECTINSPECTOR_WINDOWOUTSIDE_H 
+#define __TERRALIB_LAYOUT_INTERNAL_QOBJECTINSPECTOR_WINDOWOUTSIDE_H
+
+// Qt
 #include <QDockWidget>
+
+// TerraLib
 #include "LayoutOutsideObserver.h"
 #include "../../../../geometry/Envelope.h"
 #include "../../../../../../third-party/qt/propertybrowser/qtpropertybrowser.h"
@@ -9,12 +39,10 @@
 class QGraphicsItem;
 class QWidget;
 class QGraphicsProxyWidget;
-
 class QtTreePropertyBrowser;
 class QtVariantProperty;
 class QtProperty;
 class QtVariantPropertyManager;
-
 class QtBrowserIndex;
 
 namespace te
@@ -27,7 +55,7 @@ namespace te
 
     public:
 
-	    QObjectInspectorWindowOutside(LayoutOutsideController* controller, LayoutOutsideModelObservable* o);
+	    QObjectInspectorWindowOutside(LayoutOutsideController* controller, LayoutObservable* o);
 	    virtual ~QObjectInspectorWindowOutside();
 
 	    virtual void updateObserver(ContextLayoutItem context);
@@ -46,16 +74,16 @@ namespace te
 
     protected:
 
-      QtVariantPropertyManager* _variantInspectorObjectManager;
-      QtTreePropertyBrowser* _objectInspector;
+      QtVariantPropertyManager* m_variantInspectorObjectManager;
+      QtTreePropertyBrowser* m_objectInspector;
       
-      QMap<QtProperty*, QString> _propertyToId;
-      QMap<QString, QtVariantProperty*> _idToProperty;
-      QMap<QString, bool> _idToExpanded;
-      QList<QGraphicsItem*> _graphicsItems;
+      QMap<QtProperty*, QString> m_propertyToId;
+      QMap<QString, QtVariantProperty*> m_idToProperty;
+      QMap<QString, bool> m_idToExpanded;
+      QList<QGraphicsItem*> m_graphicsItems;
     };
   }
 }
 
-
 #endif
+
