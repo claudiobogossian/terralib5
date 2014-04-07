@@ -233,6 +233,7 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
 
       if(!m_dataset->isNull(index.column()))
       {
+#if TE_CHARENCODING_ENABLED
         if(m_dataset->getPropertyDataType(index.column()) == te::dt::STRING_TYPE)
         {
           te::common::CharEncoding ce = m_dataset->getPropertyCharEncoding(index.column());
@@ -253,6 +254,9 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
         }
         else
           return m_dataset->getAsString(index.column(), 6).c_str();
+#else
+        return m_dataset->getAsString(index.column(), 6).c_str();
+#endif
       }
 
     break;
