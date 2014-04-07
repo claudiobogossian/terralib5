@@ -75,7 +75,8 @@ namespace te
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;
       m_locatorParams.reset();
       m_minInRasterCoveredAreaPercent = 25.0;
-      m_minrReferenceRasterCoveredAreaPercent = 10.0;
+      m_minrReferenceRasterCoveredAreaPercent = 50.0;
+      m_minrReferenceRasterRequiredTiePointsFactor = 1.5;
       m_inRasterSubSectorsFactor = 3;
       m_inRasterExpectedRowError = 10;
       m_inRasterExpectedColError = 10;
@@ -85,7 +86,7 @@ namespace te
       m_enableRasterCache = true;
       m_geomTransfName = "Affine";
       m_geomTransfMaxTiePointError = 2.0;
-      m_outliersRemotionAssurance = 0.1;
+      m_outliersRemotionAssurance = 0.75;
       m_outliersRemotionMaxIterations = 0;
       m_outputNoDataValue = 0.0;
     }
@@ -107,6 +108,7 @@ namespace te
       m_locatorParams = params.m_locatorParams;
       m_minInRasterCoveredAreaPercent = params.m_minInRasterCoveredAreaPercent;
       m_minrReferenceRasterCoveredAreaPercent = params.m_minrReferenceRasterCoveredAreaPercent;
+      m_minrReferenceRasterRequiredTiePointsFactor = params.m_minrReferenceRasterRequiredTiePointsFactor;
       m_inRasterSubSectorsFactor = params.m_inRasterSubSectorsFactor;
       m_inRasterExpectedRowError = params.m_inRasterExpectedRowError;
       m_inRasterExpectedColError = params.m_inRasterExpectedColError;
@@ -148,10 +150,12 @@ namespace te
 
     void GeometricRefining::OutputParameters::reset() throw( te::rp::Exception )
     {
+      m_inRasterCoveredAreaPercent = 0.0;
       m_rType.clear();
       m_rInfo.clear();
       m_outputRasterPtr.reset();
       m_matchingResult.clear();
+      m_geomTransPtr.reset();
       m_tiePoints.clear();
     }
 
@@ -160,9 +164,11 @@ namespace te
     {
       reset();
         
+      m_inRasterCoveredAreaPercent = params.m_inRasterCoveredAreaPercent;
       m_rType = params.m_rType;
       m_rInfo = params.m_rInfo;
       m_matchingResult = params.m_matchingResult;
+      m_geomTransPtr.reset( params.m_geomTransPtr->clone() );
       m_tiePoints = params.m_tiePoints;
 
       return *this;
@@ -413,16 +419,19 @@ namespace te
         progressPtr->setMessage( "Matching reference images" );
       }        
       
-      std::auto_ptr< te::gm::GeometricTransformation > baseGeometricTransformPtr(
-        te::gm::GTFactory::make( m_inputParameters.m_geomTransfName ) );
-      if( baseGeometricTransformPtr.get() == 0 )
+      outParamsPtr->m_geomTransPtr.reset( te::gm::GTFactory::make( 
+        m_inputParameters.m_geomTransfName ) );
+      if( outParamsPtr->m_geomTransPtr.get() == 0 )
       {
         return false;
       }
-      const unsigned int minimumRequiredTiePointsNumber = baseGeometricTransformPtr->getMinRequiredTiePoints();
-      baseGeometricTransformPtr.reset();
-      
-      std::vector< te::gm::GTParameters::TiePoint > baseTransAgreementTiePoints;
+      const unsigned int minimumRequiredTiePointsNumber = (unsigned int)
+        (
+          m_inputParameters.m_minrReferenceRasterRequiredTiePointsFactor
+          * 
+          ((double)outParamsPtr->m_geomTransPtr->getMinRequiredTiePoints() )
+        );      
+      outParamsPtr->m_geomTransPtr.reset();
       
       std::vector< InternalMatchingInfo > refRastersMatchingInfo;    
       
@@ -574,7 +583,7 @@ namespace te
                         &&
                         ( 
                           locatorOutputParams.m_tiePoints.size()
-                          >
+                          >=
                           minimumRequiredTiePointsNumber
                         )
                       )
@@ -699,19 +708,14 @@ namespace te
               
               if( !m_inputParameters.m_processAllReferenceRasters )
               {
-                if( getTransformation( refRastersMatchingInfo, baseGeometricTransformPtr,
-                  baseTransAgreementTiePoints ) )
+                if( getTransformation( refRastersMatchingInfo, outParamsPtr->m_geomTransPtr,
+                  outParamsPtr->m_tiePoints, outParamsPtr->m_inRasterCoveredAreaPercent ) )
                 {
                   // No need to precess more reference rasters
                   // Break the loop
                   
                   refRastersIndexesBySectorIdx = refRastersIndexesBySector.size();
                   continueOnLoop = false;
-                }
-                else
-                {
-                  baseGeometricTransformPtr.reset();
-                  baseTransAgreementTiePoints.clear();
                 }
               }
               
@@ -736,34 +740,34 @@ namespace te
       
       if( m_inputParameters.m_processAllReferenceRasters )
       {
-        if( ! getTransformation( refRastersMatchingInfo, baseGeometricTransformPtr,
-          baseTransAgreementTiePoints ) )
+        if( ! getTransformation( refRastersMatchingInfo, outParamsPtr->m_geomTransPtr,
+          outParamsPtr->m_tiePoints, outParamsPtr->m_inRasterCoveredAreaPercent ) )
         {
           return false;
         }
       }
       else
       {
-        if( baseGeometricTransformPtr.get() == 0 )
+        
+        if( outParamsPtr->m_geomTransPtr.get() == 0 )
         {
           return false;
         }
       }  
-      
-      outParamsPtr->m_tiePoints = baseTransAgreementTiePoints;
       
       // Generating the refined output raster
       
       te::rp::Register::InputParameters regInParams;
       regInParams.m_inputRasterPtr = inputRasterPtr;
       regInParams.m_inputRasterBands = m_inputParameters.m_inRasterBands2Process;
-      regInParams.m_tiePoints = baseTransAgreementTiePoints;
+      regInParams.m_tiePoints.clear();
       regInParams.m_outputSRID = inputRasterPtr->getSRID();
       regInParams.m_outputResolutionX = inputRasterPtr->getResolutionX();
       regInParams.m_outputResolutionY = inputRasterPtr->getResolutionY();
       regInParams.m_interpMethod = m_inputParameters.m_interpMethod;
       regInParams.m_noDataValue = m_inputParameters.m_outputNoDataValue;
-      regInParams.m_geomTransfName = m_inputParameters.m_geomTransfName;
+      regInParams.m_geomTransfName.clear();
+      regInParams.m_geomTransfPtr = outParamsPtr->m_geomTransPtr.get();
       
       te::rp::Register::OutputParameters regOutParams;
       regOutParams.m_rType = outParamsPtr->m_rType;
@@ -859,7 +863,11 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( 
         ( ( m_inputParameters.m_minrReferenceRasterCoveredAreaPercent >= 0.0 ) &&
         ( m_inputParameters.m_minrReferenceRasterCoveredAreaPercent <= 100.0 ) ),
-        "Invalid parameter m_minrReferenceRasterCoveredAreaPercent" );        
+        "Invalid parameter m_minrReferenceRasterCoveredAreaPercent" );   
+      
+      TERP_TRUE_OR_RETURN_FALSE( 
+        ( m_inputParameters.m_minrReferenceRasterRequiredTiePointsFactor >= 0.0 ),
+        "Invalid parameter m_minrReferenceRasterRequiredTiePointsFactor" );           
         
       TERP_TRUE_OR_RETURN_FALSE( 
         ( m_inputParameters.m_inRasterSubSectorsFactor > 0 ),
@@ -893,6 +901,17 @@ namespace te
       
       // Guessing limits
       
+      std::auto_ptr< te::gm::GeometricTransformation > baseGeometricTransformPtr(
+        te::gm::GTFactory::make( m_inputParameters.m_geomTransfName ) );
+      TERP_DEBUG_TRUE_OR_THROW( baseGeometricTransformPtr.get(), "Invalid transformation" );
+
+      const unsigned int minimumRequiredTiePointsNumber = (unsigned int)
+        (
+          m_inputParameters.m_minrReferenceRasterRequiredTiePointsFactor
+          * 
+          ((double)baseGeometricTransformPtr->getMinRequiredTiePoints() )
+        );      
+      
       double referenceImagesWeightsMin =  std::numeric_limits< double >::max();
       double referenceImagesWeightsMax = -1.0 * referenceImagesWeightsMin;      
       unsigned int inTiePointsIdx = 0;
@@ -901,19 +920,22 @@ namespace te
       double maxTPNumberByRefRaster = -1.0 * minTPNumberByRefRaster;
       double minConvexHullAreaPercentByRefRaster = std::numeric_limits< double >::max();
       double maxConvexHullAreaPercentByRefRaster = -1.0 * minConvexHullAreaPercentByRefRaster;
+      double realTiePointsNumber = 0;
       
       for( inTiePointsIdx = 0 ; inTiePointsIdx < inTiePoints.size() ; ++inTiePointsIdx )
       {
         const InternalMatchingInfo& mInfo = inTiePoints[ inTiePointsIdx ];
         
-        if( minTPNumberByRefRaster > ((double)mInfo.m_tiePoints.size()) )
+        realTiePointsNumber = (double)( mInfo.m_tiePoints.size() - minimumRequiredTiePointsNumber );
+        
+        if( minTPNumberByRefRaster > realTiePointsNumber )
         {
-          minTPNumberByRefRaster = ((double)mInfo.m_tiePoints.size());
+          minTPNumberByRefRaster = realTiePointsNumber;
         }
         
-        if( maxTPNumberByRefRaster < ((double)mInfo.m_tiePoints.size()) )
+        if( maxTPNumberByRefRaster < realTiePointsNumber )
         {
-          maxTPNumberByRefRaster = ((double)mInfo.m_tiePoints.size());
+          maxTPNumberByRefRaster = realTiePointsNumber;
         }    
         
         if( minConvexHullAreaPercentByRefRaster > mInfo.m_convexHullAreaPercent )
@@ -970,6 +992,8 @@ namespace te
       {
         const InternalMatchingInfo& mInfo = inTiePoints[ inTiePointsIdx ];
         
+        realTiePointsNumber = (double)( mInfo.m_tiePoints.size() - minimumRequiredTiePointsNumber );
+        
         weight = 
           (
             (
@@ -979,7 +1003,7 @@ namespace te
             )
             +
             (
-              ( ((double)mInfo.m_tiePoints.size()) + tiePointsNumberOffset )
+              ( realTiePointsNumber + tiePointsNumberOffset )
               *
               tiePointsNumberGain
             )
@@ -1018,7 +1042,7 @@ namespace te
       const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
       const bool useTPSecondCoordPair ) const
     {
-      std::auto_ptr< te::gm::Polygon > convexHullPtr;
+      std::auto_ptr< te::gm::Surface > convexHullPtr;
       if( !getTPConvexHull( tiePoints, useTPSecondCoordPair, convexHullPtr ) )
       {
         return 0.0;
@@ -1032,7 +1056,7 @@ namespace te
     bool GeometricRefining::getTPConvexHull( 
       const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
       const bool useTPSecondCoordPair,
-      std::auto_ptr< te::gm::Polygon >& convexHullPtr ) const
+      std::auto_ptr< te::gm::Surface >& convexHullPtr ) const
     {
       if( tiePoints.size() < 3 )
       {
@@ -1055,10 +1079,10 @@ namespace te
         
         std::auto_ptr< te::gm::Geometry > geomPtr( points.convexHull() );
 
-        if( dynamic_cast< te::gm::Polygon* >( geomPtr.get() ) )
+        if( dynamic_cast< te::gm::Surface* >( geomPtr.get() ) )
         {
           convexHullPtr.reset( 
-            dynamic_cast< te::gm::Polygon* >( geomPtr.release() ) );
+            dynamic_cast< te::gm::Surface* >( geomPtr.release() ) );
           return true;
         }
         else
@@ -1070,10 +1094,12 @@ namespace te
     
     bool GeometricRefining::getTransformation( const std::vector< InternalMatchingInfo >& inTiePoints,
       std::auto_ptr< te::gm::GeometricTransformation >& geometricTransformPtr,
-      std::vector< te::gm::GTParameters::TiePoint >& baseTransAgreementTiePoints ) const
+      std::vector< te::gm::GTParameters::TiePoint >& baseTransAgreementTiePoints,
+      double& convexHullAreaPercent ) const
     {
       geometricTransformPtr.reset();
       baseTransAgreementTiePoints.clear();
+      convexHullAreaPercent = 0.0;
       
       te::gm::GTParameters geoTransParams;
       std::vector< double > tiePointsWeights;
@@ -1110,7 +1136,7 @@ namespace te
         return false;
       }
       
-      const double convexHullAreaPercent =
+      convexHullAreaPercent =
         (
           100.0
           *

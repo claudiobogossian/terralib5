@@ -2,6 +2,10 @@
 #include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
 #include <terralib/dataaccess/utils/Utils.h>
+#include <terralib/datatype/SimpleProperty.h>
+#include <terralib/graph/core/AbstractGraph.h>
+#include <terralib/graph/core/GraphMetadata.h>
+#include <terralib/graph/core/Vertex.h>
 #include <terralib/raster/Grid.h>
 #include <terralib/raster/RasterFactory.h>
 #include "GraphExamples.h"
@@ -52,4 +56,88 @@ std::auto_ptr<te::gm::Envelope> getDataSetExtent(te::da::DataSource* ds, std::st
   std::size_t geomPos = te::da::GetFirstSpatialPropertyPos(dataSet.get());
 
   return dataSet->getExtent(geomPos);
+}
+
+int AssociateGraphVertexAttribute(te::da::DataSource* ds, std::string dataSetName, int idIdx, int attrIdx, boost::shared_ptr<te::graph::AbstractGraph> graph, int dataType, std::string attrName)
+{
+  assert(ds);
+
+  //add graph attr
+  int attrGraphIdx = AddGraphVertexAttribute(graph, attrName, dataType);
+
+  //get the number of attributes from graph
+  int attrSize = graph->getMetadata()->getVertexPropertySize();
+
+  //dataset iterator
+  std::auto_ptr<te::da::DataSet> dataSet = ds->getDataSet(dataSetName);
+
+  dataSet->moveBeforeFirst();
+
+  while(dataSet->moveNext())
+  {
+    te::dt::AbstractData* ad = dataSet->getValue(attrIdx).release();
+
+    int idx = dataSet->getInt32(idIdx);
+
+    te::graph::Vertex* v = graph->getVertex(idx);
+
+    if(v)
+    {
+      //resize attr vector
+      v->setAttributeVecSize(attrSize);
+
+      //add attribute
+      v->addAttribute(attrGraphIdx, ad);
+    }
+  }
+
+  return attrGraphIdx;
+}
+
+int AddGraphVertexAttribute(boost::shared_ptr<te::graph::AbstractGraph> graph, std::string attrName, int dataType)
+{
+  //add new attribute
+  te::dt::SimpleProperty* p = new te::dt::SimpleProperty(attrName, dataType);
+  p->setParent(0);
+  p->setId(0);
+
+  graph->addVertexProperty(p);
+
+  // verify what the index of the new property
+  int idx = 0;
+
+  for(int i = 0; i < graph->getVertexPropertySize(); ++ i)
+  {
+    if(graph->getVertexProperty(i)->getName() == attrName)
+    {
+      idx = i;
+      break;
+    }
+  }
+
+  return idx;
+}
+
+int AddGraphEdgeAttribute(boost::shared_ptr<te::graph::AbstractGraph> graph, std::string attrName, int dataType)
+{
+  //add new attribute
+  te::dt::SimpleProperty* p = new te::dt::SimpleProperty(attrName, dataType);
+  p->setParent(0);
+  p->setId(0);
+
+  graph->addEdgeProperty(p);
+
+  // verify what the index of the new property
+  int idx = 0;
+
+  for(int i = 0; i < graph->getEdgePropertySize(); ++ i)
+  {
+    if(graph->getEdgeProperty(i)->getName() == attrName)
+    {
+      idx = i;
+      break;
+    }
+  }
+
+  return idx;
 }

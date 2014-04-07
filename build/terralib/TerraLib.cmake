@@ -84,7 +84,7 @@ option (TE_LOGGER_ENABLED "Logger enabled?" ON)
 option (TE_LOGGER_DO_AUTOMATIC_INITIALIZATION "Initialize automatically logger?" ON)
 option (TE_LOGGER_DO_STATIC_INITIALIZATION "Initialize logger while static initialization?" OFF)
 option (TE_TRANSLATOR_ENABLED "Enable translate support on TerraLib?" ON)
-option (TE_CHARENCODING_ENABLED "Enable character encoding support on TerraLib?" ON)
+option (TE_CHARENCODING_ENABLED "Enable character encoding support on TerraLib?" OFF)
 option (TE_DOXBUILD_ENABLED "Enable the doxygen documentation building?" OFF)
 
 if(WIN32)

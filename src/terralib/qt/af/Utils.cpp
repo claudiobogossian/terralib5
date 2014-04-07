@@ -56,6 +56,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QSettings>
 #include <QtCore/QString>
+#include <QtCore/QTextStream>
 #include <QtGui/QApplication>
 #include <QtGui/QAction>
 #include <QtGui/QMainWindow>
@@ -699,6 +700,20 @@ void te::qt::af::SetConfigFileName(const QString& fileName)
   sett.setValue("configuration/file name", fileName);
 }
 
+QString te::qt::af::GetDateTime()
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  return sett.value("configuration/generation").toString();
+}
+
+void te::qt::af::SetDateTime(const QString& dateTime)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  sett.setValue("configuration/generation", dateTime);
+}
+
 QString te::qt::af::GetDefaultConfigFileOutputDir()
 {
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
@@ -820,7 +835,11 @@ void te::qt::af::WriteConfigFile(const QString& fileName, const QString& appName
   boost::property_tree::ptree p;
 
   QString teDir(getenv("TERRALIB_DIR"));
-  QString teDir_help(getenv("TE_BIN_DIR"));
+  QString teDir_help(qApp->applicationDirPath() + "/../help/help.qhc");
+  QFileInfo infoH(teDir_help);
+
+  if(!infoH.exists())
+    teDir_help.clear();
 
 //  teDir.replace(" ", "%20");
 
@@ -838,7 +857,7 @@ void te::qt::af::WriteConfigFile(const QString& fileName, const QString& appName
   p.add("Application.IconName", teDir.toStdString() + "/resources/images/png/terralib-globe-small.png");
   p.add("Application.UserSettingsFile.<xmlattr>.xlink:href", info.absolutePath().toStdString() + "/user_settings.xml");
   p.add("Application.PluginsFile.<xmlattr>.xlink:href", info.absolutePath().toStdString() + "/application_plugins.xml");
-  p.add("Application.HelpFile.<xmlattr>.xlink:href", teDir_help.toStdString() + "/../help/help.qhc");
+  p.add("Application.HelpFile.<xmlattr>.xlink:href", teDir_help.toStdString());
   p.add("Application.IconThemeInfo.BaseDirectory.<xmlattr>.xlink:href", teDir.toStdString() + "/resources/themes");
   p.add("Application.IconThemeInfo.DefaultTheme", "terralib");
   p.add("Application.ToolBarDefaultIconSize", "24");
@@ -975,4 +994,21 @@ void te::qt::af::WriteDefaultProjectFile(const QString& fileName)
   //Store file
   boost::property_tree::xml_writer_settings<char> settings('\t', 1);
   boost::property_tree::write_xml(fileName.toStdString(), p, std::locale(), settings);
+}
+
+
+QString te::qt::af::GetGenerationDate()
+{
+  QString fileName = qApp->applicationDirPath() + "/../.generated";
+
+  QFile f(fileName);
+  if (!f.open(QFile::ReadOnly | QFile::Text))
+    return "";
+
+  QTextStream in(&f);
+  QString s = in.readAll();
+
+  f.close();
+
+  return s;
 }

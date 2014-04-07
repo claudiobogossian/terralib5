@@ -236,8 +236,35 @@ void te::qt::widgets::Info::getGeometryInfo(QTreeWidgetItem* layerItem, te::da::
           propertyItem->setIcon(0, QIcon::fromTheme("geometry"));
 
         if(!dataset->isNull(i))
-          propertyItem->setText(1, dataset->getAsString(i, 3).c_str());
+        {
+          std::string value;
+
+#if TE_CHARENCODING_ENABLED
+        if(dataset->getPropertyDataType(i) == te::dt::STRING_TYPE)
+        {
+          value = dataset->getString(i);
+
+          te::common::CharEncoding ce = dataset->getPropertyCharEncoding(i);
+
+          if(ce != te::common::UNKNOWN_CHAR_ENCODING)
+          {
+            try
+            {
+              value = te::common::CharEncodingConv::convert(value, ce, te::common::LATIN1).c_str();
+            }
+            catch(...)
+            {
+            }
+          }
+        }
         else
+          value = dataset->getAsString(i, 3).c_str();
+#else
+        value = dataset->getAsString(i, 3).c_str();
+#endif
+          propertyItem->setText(1, value.c_str());
+        }
+        else // property null value!
           propertyItem->setText(1, "");
       }
 

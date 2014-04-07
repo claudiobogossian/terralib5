@@ -205,6 +205,12 @@ std::auto_ptr<te::st::Trajectory> te::st::TrajectoryDataSet::getTrajectory()
   return getTrajectory(&NearestGeometryAtTimeInterp::getInstance()); 
 }
 
+std::auto_ptr<te::da::DataSet> te::st::TrajectoryDataSet::release()
+{
+  std::auto_ptr<te::da::DataSet> result(m_obsDs->release());
+  return result;
+}
+
 te::st::TrajectoryDataSet::~TrajectoryDataSet()
 {
 }

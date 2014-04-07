@@ -87,6 +87,18 @@ te::st::STDataLoader::getDataSet(const te::st::ObservationDataSetInfo& info,
   return impl->getDataSet(info, dt, r, travType);
 }
 
+std::auto_ptr<te::st::ObservationDataSet>
+te::st::STDataLoader::getDataSet(const te::st::ObservationDataSetInfo& info,
+                                 const te::dt::DateTime& dt, 
+                                 te::dt::TemporalRelation tr,
+                                 const te::gm::Envelope& e, 
+                                 te::gm::SpatialRelation sr,
+                                 te::common::TraverseType travType)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getDataSet(info, dt, tr, e, sr, travType); 
+}
+
 std::auto_ptr<te::st::ObservationDataSet> 
 te::st::STDataLoader::getDataSet(const te::st::ObservationDataSetInfo& info, 
                                  const te::gm::Geometry& geom, te::gm::SpatialRelation sr,
@@ -128,7 +140,6 @@ te::st::STDataLoader::getDataSet(const TrajectoryDataSetInfo& info, const te::gm
   return impl->getDataSet(info, e, r, travType); 
 }
 
-
 std::auto_ptr<te::st::TrajectoryDataSet> 
 te::st::STDataLoader::getDataSet(const TrajectoryDataSetInfo& info, 
                                  const te::dt::DateTime& dt, te::dt::TemporalRelation r,
@@ -136,6 +147,18 @@ te::st::STDataLoader::getDataSet(const TrajectoryDataSetInfo& info,
 {
   std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
   return impl->getDataSet(info, dt, r, travType); 
+}
+
+std::auto_ptr<te::st::TrajectoryDataSet> 
+te::st::STDataLoader::getDataSet(const TrajectoryDataSetInfo& info,
+                                 const te::dt::DateTime& dt, 
+                                 te::dt::TemporalRelation tr,
+                                 const te::gm::Envelope& e, 
+                                 te::gm::SpatialRelation sr,
+                                 te::common::TraverseType travType)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getDataSet(info, dt, tr, e, sr, travType); 
 }
 
 std::auto_ptr<te::st::TrajectoryDataSet> 

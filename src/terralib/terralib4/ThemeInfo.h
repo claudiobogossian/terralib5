@@ -18,21 +18,29 @@
  */
 
 /*!
-  \file UOM.h
+  \file terralib/terralib4/ThemeInfo.h
 
-  \brief Exemplify Unit Of Measure handling in TerraLib.
- */
+  \brief The basic information about a Terralib 4.x Theme.
+*/
 
-#ifndef __TERRALIB_EXAMPLES_SRS_INTERNAL_UOM_H
-#define __TERRALIB_EXAMPLES_SRS_INTERNAL_UOM_H
+#ifndef __TERRALIB_TERRALIB4_INTERNAL_THEMEINFO_H
+#define __TERRALIB_TERRALIB4_INTERNAL_THEMEINFO_H
 
+// TerraLib
 #include "Config.h"
 
-/*! \brief This example shows TerraLib handles Units of Measure. */
-void UOMManage();
+// STL
+#include <string>
 
-/*! \brief This example test how to retrieve a SRS unit of measure. */
-void UnitSRS();
+namespace terralib4
+{
+  struct TETERRALIB4EXPORT ThemeInfo
+  {
+    std::string m_name;
+    std::string m_viewName;
+    std::string m_layerName;
+  };
+}
 
-#endif  // __TERRALIB_EXAMPLES_SRS_INTERNAL_UOM_H
+#endif  // __TERRALIB_TERRALIB4_INTERNAL_THEMEINFO_H
 

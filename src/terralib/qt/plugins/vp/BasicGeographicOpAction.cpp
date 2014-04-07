@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/qt/plugins/vp/BasicGeographicOperationAction.cpp
+  \file terralib/qt/plugins/vp/BasicGeographicOpAction.cpp
 
-  \brief This file defines the BasicGeographicOperation class
+  \brief This file defines the BasicGeographicOp class
 */
 
 // Terralib
-#include "../../../vp/qt/BasicGeographicOperationDialog.h"
+#include "../../../vp/qt/BasicGeographicOpWizard.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/Project.h"
-#include "BasicGeographicOperationAction.h"
+#include "BasicGeographicOpAction.h"
 
 // Qt
 #include <QtCore/QObject>
@@ -35,27 +35,27 @@
 // STL
 #include <memory>
 
-te::qt::plugins::vp::BasicGeographicOperationAction::BasicGeographicOperationAction(QMenu* menu)
+te::qt::plugins::vp::BasicGeographicOpAction::BasicGeographicOpAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
   createAction(tr("Basic Geographic Operation...").toStdString());
 }
 
-te::qt::plugins::vp::BasicGeographicOperationAction::~BasicGeographicOperationAction()
+te::qt::plugins::vp::BasicGeographicOpAction::~BasicGeographicOpAction()
 {
 }
 
-void te::qt::plugins::vp::BasicGeographicOperationAction::onActionActivated(bool checked)
+void te::qt::plugins::vp::BasicGeographicOpAction::onActionActivated(bool checked)
 {
-  te::vp::BasicGeographicOperationDialog dlg(0);
+  te::vp::BasicGeographicOpWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
-  // get the list of layers from current project
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
+  std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
-  if(prj)
+  dlg.setList( layersList );
+
+  if(dlg.exec() == QDialog::Accepted)
   {
-    dlg.setLayers(prj->getSingleLayers());
+    //add new layer
+    addNewLayer(dlg.getInLayer());
   }
-
-  dlg.exec();
 }

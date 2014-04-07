@@ -23,10 +23,10 @@
   \brief A list of examples for the TerraLib Spatial Reference Systems Module.
  */
 
+#include "CommonExamples.h"
+
 // TerraLib
 #include <terralib/common.h>
-
-#include "UOM.h"
 
 // STL
 #include <cassert>
@@ -41,7 +41,10 @@ int main(int /*argc*/, char** /*argv*/)
     TerraLib::getInstance().initialize();
     
     UOMManage();
+
     UnitSRS();
+
+    CharEncodingConv();
 
     TerraLib::getInstance().finalize();
   }

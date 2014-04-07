@@ -57,6 +57,7 @@
 #include "Globals.h"
 #include "RasterDataSet.h"
 #include "TableDataSet.h"
+#include "ThemeInfo.h"
 #include "Transactor.h"
 #include "Utils.h"
 
@@ -64,6 +65,7 @@
 #include <terralib/kernel/TeDatabase.h>
 #include <terralib/kernel/TeLayer.h>
 #include <terralib/kernel/TeTable.h>
+#include <terralib/kernel/TeTheme.h>
 
 // STL
 #include <cassert>
@@ -76,6 +78,21 @@
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 //#include <boost/thread.hpp>
+
+int getViewId(const std::string& viewName, TeViewMap viewMap)
+{
+  std::map<int, TeView*>::iterator it = viewMap.begin();
+
+  while(it != viewMap.end())
+  {
+    if(it->second->name() == viewName)
+      return it->second->id();
+
+    ++it;
+  }
+
+  return -1;
+}
 
 terralib4::Transactor::Transactor(DataSource* ds, TeDatabase* db)
   : m_ds(ds),
@@ -296,6 +313,8 @@ std::size_t terralib4::Transactor::getNumberOfDataSets()
 
 std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const std::string& name)
 {
+  m_db->loadLayerSet(true);
+
   TeLayer* layer = 0;
 
   if(m_db->layerExist(name))
@@ -803,48 +822,77 @@ std::vector<std::string> terralib4::Transactor::getTL4Tables()
   return tablesVec;
 }
 
-std::vector<std::pair<std::string, std::string> > terralib4::Transactor::getTL4Themes()
+std::vector<::terralib4::ThemeInfo> terralib4::Transactor::getTL4Themes()
 {
-  std::vector<std::pair<std::string, std::string> > layers_themes;
+  std::vector<::terralib4::ThemeInfo> themes;
 
   m_db->loadViewSet(m_db->user());
 
+  TeViewMap vMap = m_db->viewMap();
   TeThemeMap tMap = m_db->themeMap();
+  
+  std::map<int, TeView*>::iterator it = vMap.begin();
 
-  std::map<int, TeAbstractTheme*>::iterator it = tMap.begin();
-
-  while(it != tMap.end())
+  while(it != vMap.end())
   {
-    TeAbstractTheme* abTheme = it->second;
+    TeView* view = it->second;
 
-    if(abTheme->type() == TeTHEME)
+    std::map<int, TeAbstractTheme*>::iterator itT = tMap.begin();
+
+    while(itT != tMap.end())
     {
-      TeTheme* theme = dynamic_cast<TeTheme*>(abTheme);
-      std::pair<std::string, std::string> theme_layer;
-      theme_layer.first = theme->layer()->name();
-      theme_layer.second = theme->name();
+      TeAbstractTheme* abTheme = itT->second;
 
-      layers_themes.push_back(theme_layer);
+      if(abTheme->type() == TeTHEME)
+      {
+        TeTheme* theme = dynamic_cast<TeTheme*>(abTheme);
+
+        if(theme->view() == view->id())
+        {
+          ::terralib4::ThemeInfo themeInfo;
+          themeInfo.m_name = theme->name();
+          themeInfo.m_viewName = view->name();
+          themeInfo.m_layerName = theme->layer()->name();
+
+          themes.push_back(themeInfo);
+        }
+      }
+      ++itT;
     }
     ++it;
   }
 
-  return layers_themes;
+  return themes;
 }
 
-TeTheme* terralib4::Transactor::getTL4ThemeFromLayer(const std::string& layerName, const std::string& themeName)
+TeTheme* terralib4::Transactor::getTL4Theme(const ::terralib4::ThemeInfo theme)
 {
+  TeViewMap vMap = m_db->viewMap();
   TeThemeMap tMap = m_db->themeMap();
 
   std::map<int, TeAbstractTheme*>::iterator it = tMap.begin();
 
   while(it != tMap.end())
   {
-    TeTheme* theme = dynamic_cast<TeTheme*>(it->second->clone());
+    if(it->second->view() == getViewId(theme.m_viewName, vMap))
+    {
+      TeAbstractTheme* abTheme = it->second;
 
-    if(theme->name() == themeName && theme->layer()->name() == layerName)
-      return theme;
+      if(abTheme->type() == TeTHEME)
+      {
+        TeTheme* tl4Theme = dynamic_cast<TeTheme*>(abTheme);
+
+        m_db->loadTheme(tl4Theme, true);
+
+        if(tl4Theme->layer()->name() == theme.m_layerName)
+        {
+          return tl4Theme;
+        }
+      }
+    }
 
     ++it;
   }
+
+  return 0;
 }

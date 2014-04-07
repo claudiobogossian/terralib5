@@ -76,19 +76,24 @@ std::size_t te::da::FilteredDataSet::getNumProperties() const
   return m_ds->getNumProperties();
 }
 
-int te::da::FilteredDataSet::getPropertyDataType(std::size_t pos) const
+int te::da::FilteredDataSet::getPropertyDataType(std::size_t i) const
 {
-  return m_ds->getPropertyDataType(pos);
+  return m_ds->getPropertyDataType(i);
 }
 
-std::string te::da::FilteredDataSet::getPropertyName(std::size_t pos) const
+std::string te::da::FilteredDataSet::getPropertyName(std::size_t i) const
 {
-  return m_ds->getPropertyName(pos);
+  return m_ds->getPropertyName(i);
 }
 
-std::string te::da::FilteredDataSet::getDatasetNameOfProperty(std::size_t pos) const
+te::common::CharEncoding te::da::FilteredDataSet::getPropertyCharEncoding(std::size_t i) const
 {
-  return m_ds->getDatasetNameOfProperty(pos);
+  return m_ds->getPropertyCharEncoding(i);
+}
+
+std::string te::da::FilteredDataSet::getDatasetNameOfProperty(std::size_t i) const
+{
+  return m_ds->getDatasetNameOfProperty(i);
 }
 
 bool te::da::FilteredDataSet::isEmpty() const

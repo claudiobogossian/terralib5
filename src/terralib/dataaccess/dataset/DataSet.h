@@ -27,6 +27,7 @@
 #define __TERRALIB_DATAACCESS_INTERNAL_DATASET_H
 
 // TerraLib
+#include "../../common/CharEncodingConv.h"
 #include "../../common/Enums.h"
 #include "../../datatype/Array.h"
 #include "../../datatype/ByteArray.h"
@@ -161,6 +162,19 @@ namespace te
           \return The property name at position pos.
         */
         virtual std::string getPropertyName(std::size_t i) const = 0;
+
+        /*!
+          \brief It returns the property character encoding at position pos.
+
+          \param i The property the position of interest.
+
+          \return The property character encoding.
+
+          \note The property at position pos must be a textual property.
+
+          \exception Exception It throws an exception if the property at position pos is not a textual property.
+        */
+        virtual te::common::CharEncoding getPropertyCharEncoding(std::size_t i) const = 0;
 
         /*!
           \brief It returns the underlying dataset name of the property at position pos.

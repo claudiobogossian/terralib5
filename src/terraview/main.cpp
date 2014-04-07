@@ -38,12 +38,22 @@
 // Qt
 #include <QtCore/QResource>
 #include <QtCore/QDir>
+#include <QtCore/QDirIterator>
 #include <QtCore/QFileInfo>
 #include <QtGui/QApplication>
 #include <QtGui/QSplashScreen>
 #include <QtGui/QMessageBox>
 
 #include <locale>
+
+
+void RemoveAllEntries(QDir dir)
+{
+  QDirIterator it(dir, QDirIterator::Subdirectories);
+
+  while(it.hasNext())
+    dir.remove(it.next());
+}
 
 int main(int argc, char** argv)
 {
@@ -89,14 +99,25 @@ int main(int argc, char** argv)
       QString cFile = te::qt::af::GetConfigFileName();
       QFileInfo info(cFile);
 
-      if(cFile.isEmpty() || !info.exists())
+      QString configDate = te::qt::af::GetDateTime(),
+        genDate = te::qt::af::GetGenerationDate();
+
+      bool regen = configDate != genDate;
+
+
+      if(cFile.isEmpty() || !info.exists() || regen)
       {
+        if(regen)
+        {
+          RemoveAllEntries(info.absoluteDir());
+          te::qt::af::SetDateTime(genDate); 
+        }
+
         cFile = te::qt::af::GetDefaultConfigFileOutputDir() + "/config.xml";
         te::qt::af::WriteConfigFile(cFile, "TerraView", "TerraView");
       }
 
       // Copying JSON files
-
       QDir out_dir = QFileInfo(cFile).absoluteDir();
       info.setFile(out_dir.absolutePath() + "/resources/json/srs.json");
 

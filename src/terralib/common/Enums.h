@@ -119,12 +119,6 @@ namespace te
       NDR = 1   /*!< Little endian. */
     };
 
-    enum CharacterEncodingType
-    {
-      UTF8,
-      UTF16
-    };
-
     /*! \brief Common TerraLib Exception Codes. */
     enum
     {

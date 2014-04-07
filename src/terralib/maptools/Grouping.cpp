@@ -39,6 +39,25 @@ te::map::Grouping::Grouping(const std::string& propertyName, te::map::GroupingTy
   m_propertyType = te::dt::UNKNOWN_TYPE;
 }
 
+te::map::Grouping::Grouping(const Grouping& rhs)
+  : m_propertyName(rhs.m_propertyName),
+    m_type((te::map::GroupingType)rhs.m_propertyType),
+    m_precision(rhs.m_precision),
+    m_isVisible(true)
+{
+  setNumSlices(rhs.m_numSlices);
+  setStdDeviation(rhs.m_stdDeviation);
+
+  std::vector<te::map::GroupingItem*> items;
+  for(std::size_t i = 0; i < rhs.m_items.size(); ++i)
+  {
+    te::map::GroupingItem* item = new te::map::GroupingItem(*rhs.m_items[i]);
+    items.push_back(item);
+  }
+
+  setGroupingItems(items);
+}
+
 te::map::Grouping::~Grouping()
 {
   te::common::FreeContents(m_items);

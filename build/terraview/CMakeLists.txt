@@ -126,8 +126,26 @@ Binaries = .
 Plugins = plugins"
 )
 
+today(dateTime_)
+
+
+install ( CODE
+	"file (
+	  WRITE
+	  ${CMAKE_BINARY_DIR}/.generated
+	  ${dateTime_})
+	"
+	COMPONENT BINARIES
+)
+
 install (
   FILES ${CMAKE_BINARY_DIR}/qt.conf
   DESTINATION bin
+  COMPONENT BINARIES
+)
+
+install (
+  FILES ${CMAKE_BINARY_DIR}/.generated
+  DESTINATION .
   COMPONENT BINARIES
 )

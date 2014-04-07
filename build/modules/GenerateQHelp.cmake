@@ -3,6 +3,8 @@
 find_package (Qt4)
 if(QT_FOUND)
 
+  set (TVIEW_LOGO_ICON "./terralib-globe-small.png")
+
   file(
     WRITE
     ${CMAKE_BINARY_DIR}/config_qhelp.cmake
@@ -26,13 +28,20 @@ if(QT_FOUND)
     OUTPUT ${CMAKE_BINARY_DIR}/help/help.qhcp
     COMMAND  ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/config_qhelp.cmake
     DEPENDS copy_dir
-    COMMENT "Configuring help collection file..."
+    COMMENT "Copying icon..."
   )
   
   add_custom_command (
+    OUTPUT copy_icon
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/../resources/images/png/terralib-globe-small.png ${CMAKE_BINARY_DIR}/help
+    DEPENDS copy_dir
+    COMMENT "Configuring help collection file..."
+  )
+
+  add_custom_command (
     OUTPUT ${CMAKE_BINARY_DIR}/help/help.qhc
     COMMAND ${QT_QCOLLECTIONGENERATOR_EXECUTABLE} ${CMAKE_BINARY_DIR}/help/help.qhcp -o ${CMAKE_BINARY_DIR}/help/help.qhc
-    DEPENDS ${CMAKE_BINARY_DIR}/help/help.qhcp
+    DEPENDS copy_icon ${CMAKE_BINARY_DIR}/help/help.qhcp
     COMMENT "Building QHelp files ..."
   )
 
@@ -49,6 +58,7 @@ if(QT_FOUND)
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/plugins.qhp
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/apf.qhp
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/help.qhcp
+    COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/terralib-globe-small.png
     DEPENDS ${CMAKE_BINARY_DIR}/help/help.qhc
     COMMENT "Removing copied files"
   )  

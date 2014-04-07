@@ -27,8 +27,14 @@
 
 #include "../../../color/ColorBar.h"
 #include "../../../common/STLUtils.h"
+#include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/dataset/DataSetType.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../datatype.h"
+#include "../../../maptools/DataSetLayer.h"
 #include "../../../maptools/GroupingAlgorithms.h"
+#include "../../../maptools/RasterLayer.h"
+#include "../../../fe/Literal.h"
 #include "../../../raster.h"
 #include "../../../raster/RasterSummary.h"
 #include "../../../raster/RasterSummaryManager.h"
@@ -38,6 +44,7 @@
 #include "../../../se/Interpolate.h"
 #include "../../../se/InterpolationPoint.h"
 #include "../../../se/ParameterValue.h"
+#include "../../../se/RasterSymbolizer.h"
 #include "../../../se/Utils.h"
 #include "../../widgets/colorbar/ColorBar.h"
 #include "../../widgets/colorbar/ColorCatalogWidget.h"
@@ -46,12 +53,14 @@
 
 // Qt
 #include <QtGui/QColorDialog>
+#include <QtGui/QMessageBox>
 #include <QtGui/QPainter>
 #include <QtGui/QValidator>
 
 // STL
 #include <cassert>
 
+Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
 te::qt::widgets::ColorMapWidget::ColorMapWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
@@ -77,6 +86,7 @@ te::qt::widgets::ColorMapWidget::ColorMapWidget(QWidget* parent, Qt::WindowFlags
   connect(m_ui->m_bandComboBox, SIGNAL(activated(QString)), this, SLOT(onBandSelected(QString)));
   connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyPushButtonClicked()));
   connect(m_ui->m_tableWidget, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(onTableWidgetItemDoubleClicked(QTableWidgetItem*)));
+  connect(m_ui->m_importPushButton, SIGNAL(clicked()), this, SLOT(onImportPushButtonClicked()));
 }
 
 te::qt::widgets::ColorMapWidget::~ColorMapWidget()
@@ -468,7 +478,11 @@ void te::qt::widgets::ColorMapWidget::onTableWidgetItemDoubleClicked(QTableWidge
 
     if(type == te::se::CATEGORIZE_TRANSFORMATION)
     {
-      // TODO
+      te::se::Categorize* old = m_cm->getCategorize();
+
+      te::se::ParameterValue* param = old->getThresholdValues()[curRow+1];
+      te::fe::Literal* litExp = (te::fe::Literal*)param->getParameter(0)->m_expression;
+      litExp->setValue(bgColor.name().toStdString());
     }
     else if(type == te::se::INTERPOLATE_TRANSFORMATION)
     {
@@ -483,4 +497,113 @@ void te::qt::widgets::ColorMapWidget::onTableWidgetItemDoubleClicked(QTableWidge
 
     emit applyPushButtonClicked();
   }
+}
+
+te::se::ColorMap* getLayerColorMap(te::map::AbstractLayerPtr layer)
+{
+  te::se::RasterSymbolizer* symb = 0;
+
+  if(layer->getType() == "DATASETLAYER")
+  {
+    te::map::DataSetLayer* l = dynamic_cast<te::map::DataSetLayer*>(layer.get());
+
+    if(l)
+    {
+      symb = te::se::GetRasterSymbolizer(l->getStyle());
+    }
+  }
+  else if(layer->getType() == "RASTERLAYER")
+  {
+    te::map::RasterLayer* l = dynamic_cast<te::map::RasterLayer*>(layer.get());
+
+    if(l)
+    {
+      symb = te::se::GetRasterSymbolizer(l->getStyle());
+    }
+  }
+
+  if(symb)
+  {
+    if(symb->getColorMap())
+    {
+      return symb->getColorMap();
+    }
+  }
+
+  return 0;
+}
+
+te::rst::Raster* getLayerRaster(te::map::AbstractLayerPtr layer)
+{
+  te::rst::Raster* raster = 0;
+
+  if(layer->getType() == "DATASETLAYER")
+  {
+    te::map::DataSetLayer* l = dynamic_cast<te::map::DataSetLayer*>(layer.get());
+
+    if(l)
+    {
+      std::auto_ptr<te::da::DataSet> ds = layer->getData();
+
+      if(ds.get())
+      {
+        std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+        return ds->getRaster(rpos).release();
+      }
+    }
+  }
+  else if(layer->getType() == "RASTERLAYER")
+  {
+    te::map::RasterLayer* l = dynamic_cast<te::map::RasterLayer*>(layer.get());
+
+    if(l)
+    {
+      return l->getRaster();
+    }
+  }
+
+  return 0;
+}
+
+void te::qt::widgets::ColorMapWidget::setLayers(te::map::AbstractLayerPtr selectedLayer, std::vector<te::map::AbstractLayerPtr> allLayers)
+{
+  for(std::size_t i = 0; i < allLayers.size(); ++i)
+  {
+    std::auto_ptr<te::da::DataSetType> dt(allLayers[i]->getSchema());
+
+    if(dt->hasRaster() && getLayerColorMap(allLayers[i]) && allLayers[i]->getId() != selectedLayer->getId())
+    {
+      m_ui->m_layersComboBox->addItem(allLayers[i]->getTitle().c_str(), QVariant::fromValue(allLayers[i]));
+    }
+  }
+}
+
+void te::qt::widgets::ColorMapWidget::onImportPushButtonClicked()
+{
+  if(m_ui->m_layersComboBox->currentText() == "")
+  {
+    QMessageBox::warning(this, tr("Grouping"), tr("There are no other layers with Grouping!"));
+    return;
+  }
+  
+  QVariant varLayer = m_ui->m_layersComboBox->itemData(m_ui->m_layersComboBox->currentIndex(), Qt::UserRole);
+  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+
+  te::se::ColorMap* cm = getLayerColorMap(layer);
+
+  setRaster(getLayerRaster(layer));
+  setColorMap(cm);
+
+  if(cm->getCategorize())
+  {
+    buildCategorizationMap();
+  }
+  else if(cm->getInterpolate())
+  {
+    buildInterpolationMap();
+  }
+
+  emit applyPushButtonClicked();
+
+  updateUi();
 }

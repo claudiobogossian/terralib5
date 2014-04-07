@@ -22,6 +22,7 @@
 #include "Config.h"
 #include "DataSource.h"
 #include "Exception.h"
+#include "ThemeInfo.h"
 #include "Transactor.h"
 #include "Utils.h"
 
@@ -31,6 +32,7 @@
 #include <terralib/kernel/TeDatabaseFactoryParams.h>
 #include <terralib/kernel/TeDBConnectionsPool.h>
 #include <terralib/kernel/TeDefines.h>
+#include <terralib/kernel/TeTheme.h>
 #include <terralib/utils/TeUpdateDBVersion.h>
 
 
@@ -205,26 +207,26 @@ std::vector<std::string> terralib4::DataSource::getTL4Tables()
   return tables;
 }
 
-std::vector<std::pair<std::string, std::string> > terralib4::DataSource::getTL4Themes()
+std::vector<::terralib4::ThemeInfo> terralib4::DataSource::getTL4Themes()
 {
-  std::vector<std::pair<std::string, std::string> > layers_themes;
+  std::vector<::terralib4::ThemeInfo> themes;
 
   std::auto_ptr<te::da::DataSourceTransactor> t = getTransactor();
   
   terralib4::Transactor* t4t = dynamic_cast<terralib4::Transactor*>(t.get());
-  layers_themes = t4t->getTL4Themes();
+  themes = t4t->getTL4Themes();
 
-  return layers_themes;
+  return themes;
 }
 
-TeTheme* terralib4::DataSource::getTL4ThemeFromLayer(const std::string& layerName, const std::string& themeName)
+TeTheme* terralib4::DataSource::getTL4Theme(const ::terralib4::ThemeInfo theme)
 {
-  TeTheme* theme = 0;
+  TeTheme* tl4Theme = 0;
 
   std::auto_ptr<te::da::DataSourceTransactor> t = getTransactor();
   
   terralib4::Transactor* t4t = dynamic_cast<terralib4::Transactor*>(t.get());
-  theme = t4t->getTL4ThemeFromLayer(layerName, themeName);
+  tl4Theme = t4t->getTL4Theme(theme);
 
-  return theme;
+  return tl4Theme;
 }

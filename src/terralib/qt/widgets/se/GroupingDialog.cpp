@@ -60,26 +60,27 @@ te::qt::widgets::GroupingDialog::~GroupingDialog()
 {
 }
 
-void te::qt::widgets::GroupingDialog::setLayer(te::map::AbstractLayerPtr layer)
+void te::qt::widgets::GroupingDialog::setLayers(te::map::AbstractLayerPtr selectedLayer, std::vector<te::map::AbstractLayerPtr> allLayers)
 {
-  m_layer = layer;
+  m_layer = selectedLayer;
+  m_allLayers = allLayers;
 
   //VERIFY LATER
-  std::auto_ptr<te::map::LayerSchema> dsType(layer->getSchema());
+  std::auto_ptr<te::map::LayerSchema> dsType(selectedLayer->getSchema());
 
   if(dsType->hasGeom())
   {
     buildVectorialGroupingInteface();
 
-    m_groupingWidget->setLayer(layer);
+    m_groupingWidget->setLayers(selectedLayer, allLayers);
   }
   else if(dsType->hasRaster())
   {
     buildRasterGroupingInteface();
 
-    if(layer->getType() == "DATASETLAYER")
+    if(selectedLayer->getType() == "DATASETLAYER")
     {
-      te::map::DataSetLayer* l = dynamic_cast<te::map::DataSetLayer*>(layer.get());
+      te::map::DataSetLayer* l = dynamic_cast<te::map::DataSetLayer*>(selectedLayer.get());
 
       if(l)
       {
@@ -94,9 +95,9 @@ void te::qt::widgets::GroupingDialog::setLayer(te::map::AbstractLayerPtr layer)
         }
       }
     }
-    else if(layer->getType() == "RASTERLAYER")
+    else if(selectedLayer->getType() == "RASTERLAYER")
     {
-      te::map::RasterLayer* l = dynamic_cast<te::map::RasterLayer*>(layer.get());
+      te::map::RasterLayer* l = dynamic_cast<te::map::RasterLayer*>(selectedLayer.get());
 
       if(l)
       {
@@ -132,6 +133,8 @@ void te::qt::widgets::GroupingDialog::buildVectorialGroupingInteface()
   // Fill Widget
   m_groupingWidget = new te::qt::widgets::GroupingWidget(m_ui->m_widget);
 
+  m_groupingWidget->setLayers(m_layer, m_allLayers);
+
   connect(m_groupingWidget, SIGNAL(applyPushButtonClicked()), this, SLOT(onApplyClicked()));
 
   // Adjusting...
@@ -144,6 +147,8 @@ void te::qt::widgets::GroupingDialog::buildRasterGroupingInteface()
 {
   // Fill Widget
   m_colorMapWidget = new te::qt::widgets::ColorMapWidget(m_ui->m_widget);
+
+  m_colorMapWidget->setLayers(m_layer, m_allLayers);
 
   connect(m_colorMapWidget, SIGNAL(applyPushButtonClicked()), this, SLOT(onApplyClicked()));
 

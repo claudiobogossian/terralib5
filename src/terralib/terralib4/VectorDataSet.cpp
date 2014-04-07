@@ -78,6 +78,8 @@ terralib4::VectorDataSet::VectorDataSet(TeLayer* layer)
 
   m_nCols = m_querier->getAttrList().size();
 
+  m_size = m_querier->numElemInstances();
+
   m_dt = new te::da::DataSetType(layer->name());
 
   for(int i = 0; i != m_nCols; ++i)
@@ -140,6 +142,11 @@ std::string terralib4::VectorDataSet::getPropertyName(std::size_t i) const
   /*TeAttributeList list = m_querier->getAttrList();
   return list[i].rep_.name_();*/
   throw;
+}
+
+te::common::CharEncoding terralib4::VectorDataSet::getPropertyCharEncoding(std::size_t i) const
+{
+  return te::common::UNKNOWN_CHAR_ENCODING; // TODO
 }
 
 std::string terralib4::VectorDataSet::getDatasetNameOfProperty(std::size_t i) const

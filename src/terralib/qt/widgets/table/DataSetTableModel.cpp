@@ -231,8 +231,35 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
         m_dataset->move(row);
       }
 
-      if(!m_dataset->isNull(index.column())) 
+      if(!m_dataset->isNull(index.column()))
+      {
+#if TE_CHARENCODING_ENABLED
+        if(m_dataset->getPropertyDataType(index.column()) == te::dt::STRING_TYPE)
+        {
+          std::string value = m_dataset->getString(index.column());
+
+          te::common::CharEncoding ce = m_dataset->getPropertyCharEncoding(index.column());
+
+          if(ce == te::common::UNKNOWN_CHAR_ENCODING)
+            return value.c_str();
+          else
+          {
+            try
+            {
+              return te::common::CharEncodingConv::convert(value, ce, te::common::LATIN1).c_str();
+            }
+            catch(...)
+            {
+              return value.c_str();
+            }
+          }
+        }
+        else
+          return m_dataset->getAsString(index.column(), 6).c_str();
+#else
         return m_dataset->getAsString(index.column(), 6).c_str();
+#endif
+      }
 
     break;
 

@@ -1206,13 +1206,16 @@ namespace te
               tiePoints[ tiePointsIdx ].first.y ) );
         }
         
-        std::auto_ptr< te::gm::Polygon > convexHullPolPtr( 
-          dynamic_cast< te::gm::Polygon* >( points.convexHull() ) );
+        std::auto_ptr< te::gm::Geometry > convexHullPolPtr( points.convexHull() );
         
-        if( convexHullPolPtr.get() )
-          return convexHullPolPtr->getArea();
+        if( dynamic_cast< te::gm::Surface* >( convexHullPolPtr.get() ) )
+        {
+          return dynamic_cast< te::gm::Surface* >( convexHullPolPtr.get() )->getArea();
+        }
         else
+        {
           return 0.0;
+        }
       }
     }
 
