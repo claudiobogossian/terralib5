@@ -70,7 +70,7 @@ namespace te
           \param maxDirectMapError      The maximum allowed direct mapping error.
           \param maxInverseMapError     The maximum allowed inverse mapping error.
           \param maxIterations          The maximum number of iterations (Use 0-zero to let this number be automatically found).
-          \param assurance              The error-free selection assurance - valid range (0-1) - Use Lower values for good tie-points sets - Higher values may increase the number of iterations. Use 0-zero to let this number be automatically found.
+          \param assurance              The error-free selection assurance - valid range (0-1) - Use Lower values for good tie-points sets - Higher values may increase the number of iterations.
           \param enableMultiThread      Enable multi-threaded processing (good for multi-processor or multi-core systems).
           \param outTransf              The generated output transformation (with the base mininum required tie-points set).
           \param tiePointsWeights       Optional tie-points weights (only positive values) or an empty vector if no weights must be used.
