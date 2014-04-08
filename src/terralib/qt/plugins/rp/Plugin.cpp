@@ -31,6 +31,10 @@
 #include "../../af/events/LayerEvents.h"
 #include "Plugin.h"
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_ARITHMETICOP
+  #include "ArithmeticOpAction.h"
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_CLASSIFIER
   #include "ClassifierAction.h"
 #endif
@@ -138,6 +142,10 @@ void te::qt::plugins::rp::Plugin::shutdown()
 
 void te::qt::plugins::rp::Plugin::registerActions()
 {
+#ifdef TE_QT_PLUGIN_RP_HAVE_ARITHMETICOP
+  m_arithmeticOp = new te::qt::plugins::rp::ArithmeticOpAction(m_rpMenu, m_rpPopupMenu);
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_CLASSIFIER
     m_classifier = new te::qt::plugins::rp::ClassifierAction(m_rpMenu, m_rpPopupMenu);
 #endif
@@ -181,6 +189,10 @@ void te::qt::plugins::rp::Plugin::registerActions()
 
 void  te::qt::plugins::rp::Plugin::unRegisterActions()
 {
+#ifdef TE_QT_PLUGIN_RP_HAVE_ARITHMETICOP
+    delete m_arithmeticOp;
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_CLASSIFIER
     delete m_classifier;
 #endif

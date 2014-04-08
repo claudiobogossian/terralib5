@@ -31,6 +31,7 @@ endif()
 set (
   HDRS_TO_MOC
   ${SRCDIR}/AbstractAction.h
+  ${SRCDIR}/ArithmeticOpAction.h
   ${SRCDIR}/ClassifierAction.h
   ${SRCDIR}/ClippingAction.h
   ${SRCDIR}/ColorTransformAction.h
