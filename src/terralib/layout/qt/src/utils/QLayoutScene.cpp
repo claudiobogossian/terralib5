@@ -309,6 +309,7 @@ void te::layout::QLayoutScene::createMasterParentItem()
   m_masterParent->setTransform(m_matrixItem.inverted()); 
   ((QGraphicsRectItem*)m_masterParent)->setBrush((QBrush(QColor(109,109,109))));	
   m_masterParent->setPos(llx, lly);
+  //m_masterParent->setPos(0, 0);
 }
 
 QGraphicsItem* te::layout::QLayoutScene::getMasterParentItem()

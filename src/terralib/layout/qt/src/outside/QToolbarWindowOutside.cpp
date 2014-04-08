@@ -145,11 +145,11 @@ void te::layout::QToolbarWindowOutside::createToolbar()
   connect(btnRectangle, SIGNAL(toggled(bool)), this, SLOT(onClickRectangleTool(bool)));
   btnRectangle->setIcon(QIcon::fromTheme(LAYOUT_IMAGES_PNG"/layout-square"));  
 
-  QToolButton* btnSalveProps = new QToolButton;
+  /*QToolButton* btnSalveProps = new QToolButton;
   btnSalveProps->setText("Save Props");
   btnSalveProps->setGeometry(0,0,10,10);
   btnSalveProps->setCheckable(true);
-  connect(btnSalveProps, SIGNAL(toggled(bool)), this, SLOT(onClickSalvePropsTool(bool)));
+  connect(btnSalveProps, SIGNAL(toggled(bool)), this, SLOT(onClickSalvePropsTool(bool)));*/
 
   m_toolbar->addWidget(btnPan);
   m_toolbar->addSeparator();
@@ -163,8 +163,8 @@ void te::layout::QToolbarWindowOutside::createToolbar()
   m_toolbar->addSeparator();
   m_toolbar->addWidget(btnRectangle);
   m_toolbar->addSeparator();
-  m_toolbar->addWidget(btnSalveProps);
-  m_toolbar->addSeparator();
+  /*m_toolbar->addWidget(btnSalveProps);
+  m_toolbar->addSeparator();*/
 }
 
 void te::layout::QToolbarWindowOutside::onClickPanTool(bool toggled)

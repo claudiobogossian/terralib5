@@ -334,6 +334,8 @@ void te::layout::QLayoutView::config()
   QPointF center0 = mapToScene(0, 0);
   centerOn(center0);
   
+  //scale(1., -1.);
+
   if(m_dockParent)
   {
     //Use the Property Browser Framework for create Property Window
