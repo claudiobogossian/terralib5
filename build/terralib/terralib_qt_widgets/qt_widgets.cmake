@@ -369,6 +369,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/utils" MOC)
 
 set (
   HDRS_TO_MOC
+  ${SRCDIR}/widgets/rp/ArithmeticOpWizardPage.h
   ${SRCDIR}/widgets/rp/ClassifierDialog.h
   ${SRCDIR}/widgets/rp/ClassifierWizardPage.h
   ${SRCDIR}/widgets/rp/ClippingWizardPage.h
