@@ -1318,9 +1318,9 @@ namespace te
 
           \exception Exception An exception can be thrown, if the encoding names could not be retrieved.
 
-          \return The encoding names of the data source.
+          \return The encoding types of the data source.
         */
-        static std::vector<std::string> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
+        static std::vector<te::common::CharEncoding> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
         //@}
 
       protected:
@@ -1385,10 +1385,10 @@ namespace te
 
           \exception Exception An exception can be thrown, if the encoding names could not be retrieved.
 
-          \return The encoding names for the data source.
+          \return The encoding types for the data source.
 
         */
-        virtual std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo) = 0;
+        virtual std::vector<te::common::CharEncoding> getEncodings(const std::map<std::string, std::string>& dsInfo) = 0;
         //@}
 
       protected:
