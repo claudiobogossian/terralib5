@@ -36,8 +36,6 @@
 #include <map>
 #include <string>
 
-class TeTheme;
-
 namespace te
 {
   namespace dt { class Property; }
@@ -52,6 +50,7 @@ namespace terralib4
   class ObjectIdSet;
   class PreparedQuery;
   class Query;
+  struct ThemeInfo;
 
   class TETERRALIB4EXPORT Transactor : public te::da::DataSourceTransactor
   {
@@ -253,9 +252,9 @@ namespace terralib4
 
       std::vector<std::string> getTL4Tables();
 
-      std::vector<std::pair<std::string, std::string> > getTL4Themes();
+      std::vector<::terralib4::ThemeInfo> getTL4Themes();
 
-      TeTheme* getTL4ThemeFromLayer(const std::string& layerName, const std::string& themeName);
+      TeTheme* getTL4Theme(const ::terralib4::ThemeInfo theme);
 
     private:
 

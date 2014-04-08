@@ -26,8 +26,9 @@
 // TerraLib
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
-#include "../datatype/DateTimeProperty.h"
 #include "../datatype/ByteArray.h"
+#include "../datatype/DateTimeProperty.h"
+#include "../datatype/StringProperty.h"
 #include "../datatype/TimeInstant.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
@@ -99,6 +100,14 @@ int te::ogr::DataSet::getPropertyDataType(std::size_t pos) const
 std::string te::ogr::DataSet::getPropertyName(std::size_t pos) const
 {
   return m_dt->getProperty(pos)->getName();
+}
+
+te::common::CharEncoding te::ogr::DataSet::getPropertyCharEncoding(std::size_t i) const
+{
+  te::dt::StringProperty* p = dynamic_cast<te::dt::StringProperty*>(m_dt->getProperty(i));
+  assert(p);
+
+  return p->getCharEncoding();
 }
 
 std::string te::ogr::DataSet::getDatasetNameOfProperty(std::size_t pos) const

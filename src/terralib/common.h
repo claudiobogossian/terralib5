@@ -32,6 +32,7 @@
 #include "common/BaseVisitor.h"
 #include "common/BoostUtils.h"
 #include "common/ByteSwapUtils.h"
+#include "common/CharEncodingConv.h"
 #include "common/Comparators.h"
 #include "common/Config.h"
 #include "common/Distance.h"

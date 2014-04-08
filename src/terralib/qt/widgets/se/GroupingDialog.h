@@ -83,9 +83,7 @@ namespace te
 
         public:
 
-          void setLayer(te::map::AbstractLayerPtr layer);
-
-          void setGroupingLayers(std::vector<te::map::AbstractLayerPtr> groupingLayers);
+          void setLayers(te::map::AbstractLayerPtr selectedLayer, std::vector<te::map::AbstractLayerPtr> allLayers);
 
         protected:
 
@@ -109,7 +107,7 @@ namespace te
           std::auto_ptr<te::rst::Raster> m_raster;
           te::se::RasterSymbolizer* m_rasterSymb;
 
-          std::vector<te::map::AbstractLayerPtr> m_groupingLayers; //!< All Project Layers with Grouping.
+          std::vector<te::map::AbstractLayerPtr> m_allLayers; //!< All Project Layers with Grouping.
       }; 
 
     } // end namespace widgets

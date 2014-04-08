@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file srs.h
+  \file layout.h
   
   \brief This file contains include headers for the Layout module.
  */
@@ -34,9 +34,9 @@ namespace te
     \brief This is the namespace for the Layout module.
   
   */
-  namespace stat
+  namespace layout
   {
-  } // end namespace srs
+  } // end namespace layout
 }   // end namespace te
 
 #endif  // __TERRALIB_INTERNAL_LAYOUT_H

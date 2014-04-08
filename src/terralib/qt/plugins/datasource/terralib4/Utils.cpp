@@ -59,8 +59,6 @@
 // Boost
 #include <boost/lexical_cast.hpp>
 
-using namespace terralib4;
-
 te::color::RGBAColor te::qt::plugins::terralib4::Convert2TerraLib5(TeColor color)
 {
   te::color::RGBAColor tl5Color(color.red_, color.green_, color.blue_, 0);
@@ -227,7 +225,7 @@ te::se::Symbolizer* te::qt::plugins::terralib4::GetSymbolizer(int geometryType, 
       return GetPointSymbolizer(visual);
 
     default:
-      break;
+      return 0;
   }
 }
 
@@ -313,8 +311,9 @@ te::map::Grouping* te::qt::plugins::terralib4::GetGrouping(TeTheme* theme)
   propertyName = tokens[1];
 
   TeGroupingMode mode = group.groupMode_;
-  int tl5Type = Convert2T5(attr.type_);
+  int tl5Type = ::terralib4::Convert2T5(attr.type_);
   std::size_t precision = static_cast<std::size_t>(group.groupPrecision_);
+  int slices = group.groupNumSlices_;
   double stdDeviation = group.groupStdDev_;
 
   te::map::Grouping* grouping = new te::map::Grouping(propertyName, GetGroupingType(mode), precision);
@@ -323,7 +322,7 @@ te::map::Grouping* te::qt::plugins::terralib4::GetGrouping(TeTheme* theme)
 
   std::vector<te::map::GroupingItem*> items;
 
-  for(std::size_t i = 0; i < leg.size(); ++i)
+  for(std::size_t i = 0; i < slices; ++i)
   {
     te::map::GroupingItem* item = new te::map::GroupingItem;
 
@@ -338,7 +337,7 @@ te::map::Grouping* te::qt::plugins::terralib4::GetGrouping(TeTheme* theme)
 
     if(mode == TeUniqueValue)
     {
-      item->setValue(toValue);
+      item->setValue(fromValue);
     }
     else
     {
@@ -353,7 +352,7 @@ te::map::Grouping* te::qt::plugins::terralib4::GetGrouping(TeTheme* theme)
     TeGeomRep geomRep = map.begin()->first;
     TeVisual* visual = map.begin()->second;
 
-    symbs.push_back(GetSymbolizer(Convert2T5GeomType(geomRep), visual));
+    symbs.push_back(GetSymbolizer(::terralib4::Convert2T5GeomType(geomRep), visual));
 
     item->setSymbolizers(symbs);
 

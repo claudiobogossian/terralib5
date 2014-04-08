@@ -44,6 +44,7 @@
 #include "Utils.h"
 
 // STL
+#include <cassert>
 #include <memory>
 
 // Boost
@@ -127,12 +128,14 @@ namespace te
 
 te::pgis::DataSet::DataSet(PGresult* result,
                            const std::vector<int>& ptypes,
-                           bool timeIsInteger)
+                           bool timeIsInteger,
+                           const te::common::CharEncoding& ce)
   : m_i(-1),
     m_result(result),
     m_ptypes(ptypes),
     m_mbr(0),
-    m_timeIsInteger(timeIsInteger)
+    m_timeIsInteger(timeIsInteger),
+    m_ce(ce)
 {
   m_size = PQntuples(m_result);
 }
@@ -165,6 +168,14 @@ int te::pgis::DataSet::getPropertyDataType(std::size_t i) const
 std::string te::pgis::DataSet::getPropertyName(std::size_t i) const
 {
   return PQfname(m_result, i);
+}
+
+te::common::CharEncoding te::pgis::DataSet::getPropertyCharEncoding(std::size_t i) const
+{
+  assert(i < m_ptypes.size());
+  assert(m_ptypes[i] == te::dt::STRING_TYPE);
+
+  return m_ce;
 }
 
 std::string te::pgis::DataSet::getDatasetNameOfProperty(std::size_t i) const

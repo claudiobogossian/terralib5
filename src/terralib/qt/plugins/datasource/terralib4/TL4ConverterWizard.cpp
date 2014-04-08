@@ -39,6 +39,7 @@
 #include "../../../../qt/af/events/LayerEvents.h"
 #include "../../../../raster/Utils.h"
 #include "../../../../terralib4/DataSource.h"
+#include "../../../../terralib4/ThemeInfo.h"
 #include "../../../../se/FeatureTypeStyle.h"
 #include "../../../../se/Fill.h"
 #include "../../../../se/PolygonSymbolizer.h"
@@ -76,8 +77,6 @@
 #include <terralib/kernel/TeLegendEntry.h>
 #include <terralib/kernel/TeRasterTransform.h>
 #include <terralib/kernel/TeTheme.h>
-
-using namespace terralib4;
 
 te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f),
@@ -192,7 +191,7 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
     if(!validTerraLib4Connection())
       return false;
 
-    DataSource* tl4Ds = dynamic_cast<DataSource*>(m_tl4Database.get());
+    ::terralib4::DataSource* tl4Ds = dynamic_cast<::terralib4::DataSource*>(m_tl4Database.get());
 
     std::vector<std::string> layers = tl4Ds->getTL4Layers();
     std::vector<std::string> tables = tl4Ds->getTL4Tables();
@@ -602,6 +601,8 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
 
         std::map<std::string, std::string> opt;
 
+        ds_adapter->moveBeforeFirst();
+
         te::da::Create(tl5ds.get(), dt_adapter->getResult(), ds_adapter.get(), opt);
 
         successfulDatasets.push_back(targetName);
@@ -645,7 +646,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
   }
 
 // fill next page!
-  DataSource* tl4Ds = dynamic_cast<DataSource*>(m_tl4Database.get());
+  ::terralib4::DataSource* tl4Ds = dynamic_cast<::terralib4::DataSource*>(m_tl4Database.get());
 
   m_finalPage->setDataSets(successfulDatasets);
   m_finalPage->setThemes(tl4Ds->getTL4Themes());
@@ -710,27 +711,29 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
       te::qt::af::ApplicationController::getInstance().broadcast(&evt);
     }
 
-    std::vector<std::pair<std::string, std::string> > themes = m_finalPage->getSelectedThemes();
+    std::vector<::terralib4::ThemeInfo> themes = m_finalPage->getSelectedThemes();
 
     for(std::size_t i = 0; i < themes.size(); ++i)
     {
-      std::string layerName = themes[i].first;
-      std::string themeName = themes[i].second;
-
       te::map::AbstractLayerPtr layer = 0;
 
-      std::auto_ptr<te::da::DataSetType> sourceDt = m_tl4Database->getDataSetType(getOriginalName(layerName));
+      std::auto_ptr<te::da::DataSetType> sourceDt = m_tl4Database->getDataSetType(getOriginalName(themes[i].m_name));
 
-      DataSource* tl4Ds = dynamic_cast<DataSource*>(m_tl4Database.get());
+      ::terralib4::DataSource* tl4Ds = dynamic_cast<::terralib4::DataSource*>(m_tl4Database.get());
 
-      std::auto_ptr<TeTheme> theme(tl4Ds->getTL4ThemeFromLayer(getOriginalName(layerName), themeName));
+      ::terralib4::ThemeInfo auxTheme;
+      auxTheme.m_layerName = getOriginalName(themes[i].m_layerName);
+      auxTheme.m_viewName = themes[i].m_viewName;
+      auxTheme.m_name = themes[i].m_name;
+
+      std::auto_ptr<TeTheme> theme(tl4Ds->getTL4Theme(auxTheme));
 
       te::se::Style* style = 0;
 
       if(sourceDt->hasRaster())
       {
         std::map<std::string, std::string> connInfo;
-        connInfo["URI"] = m_rasterFolderPath + "/" + layerName + ".tif";
+        connInfo["URI"] = m_rasterFolderPath + "/" + themes[i].m_name + ".tif";
 
         layer = te::qt::widgets::createLayer("GDAL", connInfo);
 
@@ -738,7 +741,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
       }
       else
       {
-        std::auto_ptr<te::da::DataSetType> dst = outDataSource->getDataSetType(layerName);
+        std::auto_ptr<te::da::DataSetType> dst = outDataSource->getDataSetType(themes[i].m_name);
 
         te::qt::widgets::DataSet2Layer converter(m_targetDataSource->getId());
 
@@ -754,7 +757,8 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 
       layer->setStyle(style);
 
-      layer->setGrouping(GetGrouping(theme.get()));
+      if(theme->grouping().groupMode_ != TeNoGrouping)
+        layer->setGrouping(GetGrouping(theme.get()));
 
       te::qt::af::evt::LayerAdded evt(layer);
 

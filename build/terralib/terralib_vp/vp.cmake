@@ -71,7 +71,9 @@ set (MOC "")
 set (
   HDRS_TO_MOC
   ${SRCDIR}/qt/AggregationDialog.h
-  ${SRCDIR}/qt/BasicGeographicOperationDialog.h
+  ${SRCDIR}/qt/BasicGeographicOpWizard.h
+  ${SRCDIR}/qt/BasicGeographicOpWizardPage.h
+  ${SRCDIR}/qt/BasicOpOutputWizardPage.h
   ${SRCDIR}/qt/BufferDialog.h
   ${SRCDIR}/qt/IntersectionDialog.h
   ${SRCDIR}/qt/LayerItem.h
