@@ -74,9 +74,8 @@ namespace te
       virtual void	dragEnterEvent ( QGraphicsSceneDragDropEvent * event );
       virtual void	dragLeaveEvent ( QGraphicsSceneDragDropEvent * event );
       virtual void	dragMoveEvent ( QGraphicsSceneDragDropEvent * event );
+      virtual void resizeEvent ( QGraphicsSceneResizeEvent * event );
       
-      //void drawBackground( QPainter * painter );
-
       virtual te::gm::Coord2D getPosition();
 
       virtual void setPosition( const double& x, const double& y );

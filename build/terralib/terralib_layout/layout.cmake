@@ -40,8 +40,6 @@ list (APPEND TE_DEP_LIBS
 	terralib_memory
 	terralib_plugin
 	terralib_qt_widgets
-	terralib_qt_af
-	terralib_geometry
 	terralib_color
 	terralib_srs
 	qtpropertybrowser

@@ -331,10 +331,7 @@ void te::layout::QLayoutView::config()
   setTransform(lScene->getMatrixViewScene());
   			
   setTransformationAnchor(QGraphicsView::NoAnchor);	
-  QPointF center0 = mapToScene(0, 0);
-  centerOn(center0);
-  
-  //scale(1., -1.);
+  centerOn(QPointF(llx, ury));
 
   if(m_dockParent)
   {
@@ -464,47 +461,47 @@ int te::layout::QLayoutView::metric( PaintDeviceMetric metric ) const
 {
   switch(metric)
   {
-    case PdmWidthMM:
+    /*case PdmWidthMM:
     {
-      return 509;
-    }
+    return 509;
+    }*/
     case PdmHeightMM:
     {
       //return 286;
       return 297;
     }
-    case PdmPhysicalDpiX:
-    {
-      return m_dpiX;
-      //Caso esteja imprimindo, obter o dpi da impressora
-      //.
-      //.
-      //.
-    }
-    case PdmPhysicalDpiY:
-    {
-      return m_dpiY;
-      //Caso esteja imprimindo, obter o dpi da impressora
-      //.
-      //.
-      //.
-    }
-    case PdmDpiX:
-    {
-      return m_dpiX;
-      //Caso esteja imprimindo, obter o dpi da impressora
-      //.
-      //.
-      //.
-    }
-    case PdmDpiY:
-    {
-      return m_dpiY;
-      //Caso esteja imprimindo, obter o dpi da impressora
-      //.
-      //.
-      //.
-    }
+    //case PdmPhysicalDpiX:
+    //{
+    //  return m_dpiX;
+    //  //Caso esteja imprimindo, obter o dpi da impressora
+    //  //.
+    //  //.
+    //  //.
+    //}
+    //case PdmPhysicalDpiY:
+    //{
+    //  return m_dpiY;
+    //  //Caso esteja imprimindo, obter o dpi da impressora
+    //  //.
+    //  //.
+    //  //.
+    //}
+    //case PdmDpiX:
+    //{
+    //  return m_dpiX;
+    //  //Caso esteja imprimindo, obter o dpi da impressora
+    //  //.
+    //  //.
+    //  //.
+    //}
+    //case PdmDpiY:
+    //{
+    //  return m_dpiY;
+    //  //Caso esteja imprimindo, obter o dpi da impressora
+    //  //.
+    //  //.
+    //  //.
+    //}
   }
 	
   return QGraphicsView::metric(metric);

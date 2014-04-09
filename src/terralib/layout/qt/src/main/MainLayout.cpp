@@ -66,20 +66,28 @@ te::layout::MainLayout::~MainLayout()
 
 void te::layout::MainLayout::init(QWidget* mainWindow)
 {
-  m_view = new QLayoutView();
+  QSize size(800, 600);
 
+  if(mainWindow)
+  {
+    QMainWindow* mw = dynamic_cast<QMainWindow*>(mainWindow);
+    size = mw->centralWidget()->size();
+  }
+
+  m_view = new QLayoutView();
+    
   m_view->setScene(new QLayoutScene());
     
-  m_view->setGeometry(0,0,1920,1080);
+  //m_view->setGeometry(0,0,size.width(), size.height());
   m_view->setDockPropertiesParent(mainWindow);
 
   //Resize the dialog and put it in the screen center	
   const QRect screen = QApplication::desktop()->screenGeometry();
   m_view->move( screen.center() - m_view->rect().center() );
 
-  createLayoutContext(1920, 1080, m_view);
+  createLayoutContext(size.width(), size.height(), m_view);
   createDockLayoutDisplay(mainWindow, m_view);
-
+  
   //Set a new window size
   m_view->config();
   m_view->show();
@@ -90,7 +98,7 @@ void te::layout::MainLayout::createDockLayoutDisplay(QWidget* mainWindow, QLayou
 {
   if(mainWindow)
   {
-    QMainWindow* mw = (QMainWindow*)mainWindow;
+    QMainWindow* mw = dynamic_cast<QMainWindow*>(mainWindow);
     if(!m_dockLayoutDisplay)
     {
       //Use the Property Browser Framework for create Property Window

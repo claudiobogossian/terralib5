@@ -41,14 +41,10 @@
 #include "../../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../../qt/widgets/canvas/MultiThreadMapDisplay.h"
 #include "../../../../maptools/AbstractLayer.h"
-#include "../../../../qt/af/connectors/MapDisplay.h"
-#include "../../../../qt/af/ApplicationController.h"
-#include "../../../../qt/af/Project.h"
-#include "../../../../qt/af/Utils.h"
-#include "../../../../qt/af/events/LayerEvents.h"
 #include "../../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 #include "../../../../common/TreeItem.h"
 #include "../../../../srs/Converter.h"
+#include "../../../../qt/widgets/tools/ZoomWheel.h"
 
 // STL
 #include <vector>
@@ -77,25 +73,23 @@ te::layout::QMapLayoutItem::QMapLayoutItem( LayoutItemController* controller, La
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges);
-
+    | QGraphicsItem::ItemSendsGeometryChanges 
+    | QGraphicsItem::ItemIgnoresTransformations);
+  
   setAcceptDrops(true);
   
-  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(QSize(m_model->getBox().getWidth(), m_model->getBox().getHeight()), true);
- /* m_mapDisplay->setAcceptDrops(true);
-  m_mapDisplay->setBackgroundColor(Qt::gray);
-  m_mapDisplay->setResizeInterval(0);
-  m_mapDisplay->setMouseTracking(true);*/
-  //m_mapDisplay->installEventFilter(this);
+  LayoutUtils* utils = LayoutContext::getInstance()->getUtils();
+  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
 
-  te::qt::af::MapDisplay* listenerDisplay = new te::qt::af::MapDisplay(m_mapDisplay);
-  te::qt::af::ApplicationController::getInstance().addListener(listenerDisplay);
-  
+  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(QSize(box.getWidth(), box.getHeight()), true);
   m_mapDisplay->setAcceptDrops(true);
   m_mapDisplay->setBackgroundColor(Qt::gray);
   m_mapDisplay->setResizeInterval(0);
   m_mapDisplay->setMouseTracking(true);
-
+    
+  te::qt::widgets::ZoomWheel* zoom = new te::qt::widgets::ZoomWheel(m_mapDisplay);
+  m_mapDisplay->installEventFilter(zoom);
+  
   setWidget(m_mapDisplay);
   
   QGraphicsItem* item = this;
@@ -226,5 +220,10 @@ void te::layout::QMapLayoutItem::mousePressEvent( QGraphicsSceneMouseEvent * eve
 void te::layout::QMapLayoutItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
 {
   QGraphicsItem::mouseReleaseEvent(event);
+}
+
+void te::layout::QMapLayoutItem::resizeEvent( QGraphicsSceneResizeEvent * event )
+{
+  QGraphicsProxyWidget::resizeEvent(event);
 }
 
