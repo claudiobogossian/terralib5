@@ -86,7 +86,7 @@ namespace terralib4
 
       std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo);
 
-      std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo);
+      std::vector<te::common::CharEncoding> getEncodings(const std::map<std::string, std::string>& dsInfo);
 
     private:
 

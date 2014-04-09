@@ -233,16 +233,7 @@ std::vector<std::string> te::stmem::DataSource::getDataSourceNames(const std::ma
   return std::vector<std::string>();
 }
 
-std::vector<std::string> te::stmem::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
+std::vector<te::common::CharEncoding> te::stmem::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
 {
-  return std::vector<std::string>();
+  return std::vector<te::common::CharEncoding>();
 }
-
-
-
-
-
-
-
-
-
