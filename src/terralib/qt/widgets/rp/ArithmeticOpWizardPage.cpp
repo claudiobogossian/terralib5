@@ -51,12 +51,37 @@ te::qt::widgets::ArithmeticOpWizardPage::ArithmeticOpWizardPage(QWidget* parent)
   this->setTitle(tr("Arithmetic Operations"));
   this->setSubTitle(tr("Select the type of arithmetic operation and set their specific parameters."));
 
+  m_ui->m_valueLineEdit->setValidator(new QDoubleValidator(this));
   m_ui->m_gainLineEdit->setValidator(new QDoubleValidator(this));
   m_ui->m_offsetLineEdit->setValidator(new QDoubleValidator(this));
 
+  m_ui->m_addValueOpToolButton->setIcon(QIcon::fromTheme("list-add"));
+  m_ui->m_addRasterOpToolButton->setIcon(QIcon::fromTheme("list-add"));
+  m_ui->m_undoToolButton->setIcon(QIcon::fromTheme("edit-undo"));
+  m_ui->m_redoToolButton->setIcon(QIcon::fromTheme("edit-redo"));
+  m_ui->m_clearToolButton->setIcon(QIcon::fromTheme("edit-clear"));
+  m_ui->m_validateToolButton->setIcon(QIcon::fromTheme("check"));
+
   //connects
+  connect(m_ui->m_layerComboBox, SIGNAL(activated(int)), this, SLOT(layerComboBoxActivated(int)));
   connect(m_ui->m_layerAComboBox, SIGNAL(activated(int)), this, SLOT(layerAComboBoxActivated(int)));
   connect(m_ui->m_layerBComboBox, SIGNAL(activated(int)), this, SLOT(layerBComboBoxActivated(int)));
+
+  connect(m_ui->m_leftBracketToolButton, SIGNAL(clicked()), this, SLOT(leftBracketToolButtonClicked()));
+  connect(m_ui->m_rightBracketToolButton, SIGNAL(clicked()), this, SLOT(rightBracketToolButtonClicked()));
+  connect(m_ui->m_plusToolButton, SIGNAL(clicked()), this, SLOT(plusToolButtonClicked()));
+  connect(m_ui->m_minusToolButton, SIGNAL(clicked()), this, SLOT(minusToolButtonClicked()));
+  connect(m_ui->m_multiToolButton, SIGNAL(clicked()), this, SLOT(multiToolButtonClicked()));
+  connect(m_ui->m_divToolButton, SIGNAL(clicked()), this, SLOT(divToolButtonClicked()));
+
+  connect(m_ui->m_addValueOpToolButton, SIGNAL(clicked()), this, SLOT(addValueOpToolButtonClicked()));
+  connect(m_ui->m_addRasterOpToolButton, SIGNAL(clicked()), this, SLOT(addRasterOpToolButtonClicked()));
+
+  connect(m_ui->m_undoToolButton, SIGNAL(clicked()), this, SLOT(undoToolButtonClicked()));
+  connect(m_ui->m_redoToolButton, SIGNAL(clicked()), this, SLOT(redoToolButtonClicked()));
+  connect(m_ui->m_clearToolButton, SIGNAL(clicked()), this, SLOT(clearToolButtonClicked()));
+  connect(m_ui->m_validateToolButton, SIGNAL(clicked()), this, SLOT(validateToolButtonClicked()));
+
 }
 
 te::qt::widgets::ArithmeticOpWizardPage::~ArithmeticOpWizardPage()
@@ -75,11 +100,15 @@ void te::qt::widgets::ArithmeticOpWizardPage::setList(std::list<te::map::Abstrac
   m_layerList = layerList;
 
   //fill layer combo
+  m_ui->m_layerComboBox->clear();
   m_ui->m_layerAComboBox->clear();
   m_ui->m_layerBComboBox->clear();
+  m_ui->m_rasterIdComboBox->clear();
 
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layerList.begin();
   std::vector<std::size_t> bands;
+
+  int count = 0;
 
   while(it != m_layerList.end())
   {
@@ -89,13 +118,19 @@ void te::qt::widgets::ArithmeticOpWizardPage::setList(std::list<te::map::Abstrac
 
     if(dst.get() && dst->hasRaster())
     {
+      m_ui->m_layerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
       m_ui->m_layerAComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
       m_ui->m_layerBComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
+
+      m_ui->m_rasterIdComboBox->addItem("R" + QString::number(count));
+
+      ++count;
     }
 
     ++it;
   }
 
+  layerComboBoxActivated(0);
   layerAComboBoxActivated(0);
   layerBComboBoxActivated(0);
 }
@@ -173,6 +208,13 @@ bool te::qt::widgets::ArithmeticOpWizardPage::normalize()
   return m_ui->m_normalizeCheckBox->isChecked();
 }
 
+void te::qt::widgets::ArithmeticOpWizardPage::layerComboBoxActivated(int index)
+{
+  getRasterBands(m_ui->m_layerComboBox, index, m_ui->m_bandComboBox);
+
+  m_ui->m_rasterIdComboBox->setCurrentIndex(index);
+}
+
 void te::qt::widgets::ArithmeticOpWizardPage::layerAComboBoxActivated(int index)
 {
   getRasterBands(m_ui->m_layerAComboBox, index, m_ui->m_bandAComboBox);
@@ -181,6 +223,65 @@ void te::qt::widgets::ArithmeticOpWizardPage::layerAComboBoxActivated(int index)
 void te::qt::widgets::ArithmeticOpWizardPage::layerBComboBoxActivated(int index)
 {
   getRasterBands(m_ui->m_layerBComboBox, index, m_ui->m_bandBComboBox);
+}
+
+void te::qt::widgets::ArithmeticOpWizardPage::leftBracketToolButtonClicked()
+{
+  m_ui->m_expressionLineEdit->insert("( ");
+}
+
+void te::qt::widgets::ArithmeticOpWizardPage::rightBracketToolButtonClicked()
+{
+  m_ui->m_expressionLineEdit->insert(") ");
+}
+
+void te::qt::widgets::ArithmeticOpWizardPage::plusToolButtonClicked()
+{
+  m_ui->m_expressionLineEdit->insert("+ ");
+}
+
+void te::qt::widgets::ArithmeticOpWizardPage::minusToolButtonClicked()
+{
+  m_ui->m_expressionLineEdit->insert("- ");
+}
+
+void te::qt::widgets::ArithmeticOpWizardPage::multiToolButtonClicked()
+{
+  m_ui->m_expressionLineEdit->insert("* ");
+}
+
+void te::qt::widgets::ArithmeticOpWizardPage::divToolButtonClicked()
+{
+  m_ui->m_expressionLineEdit->insert("/ ");
+}
+
+void te::qt::widgets::ArithmeticOpWizardPage::addValueOpToolButtonClicked()
+{
+  m_ui->m_expressionLineEdit->insert(m_ui->m_valueLineEdit->text() + " ");
+}
+
+void te::qt::widgets::ArithmeticOpWizardPage::addRasterOpToolButtonClicked()
+{
+  m_ui->m_expressionLineEdit->insert(m_ui->m_rasterIdComboBox->currentText() + ":" + m_ui->m_bandComboBox->currentText() + " ");
+}
+
+void te::qt::widgets::ArithmeticOpWizardPage::undoToolButtonClicked()
+{
+  m_ui->m_expressionLineEdit->undo();
+}
+
+void te::qt::widgets::ArithmeticOpWizardPage::redoToolButtonClicked()
+{
+  m_ui->m_expressionLineEdit->redo();
+}
+
+void te::qt::widgets::ArithmeticOpWizardPage::clearToolButtonClicked()
+{
+  m_ui->m_expressionLineEdit->clear();
+}
+
+void te::qt::widgets::ArithmeticOpWizardPage::validateToolButtonClicked()
+{
 }
 
 void te::qt::widgets::ArithmeticOpWizardPage::getRasterBands(QComboBox* layer, int index, QComboBox* band)

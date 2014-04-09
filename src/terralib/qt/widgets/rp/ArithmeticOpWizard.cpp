@@ -89,7 +89,7 @@ void te::qt::widgets::ArithmeticOpWizard::setList(std::list<te::map::AbstractLay
 {
   m_layerSearchPage->getSearchWidget()->setList(layerList);
   m_layerSearchPage->getSearchWidget()->filterOnlyByRaster();
-  m_layerSearchPage->getSearchWidget()->enableMultiSelection(false);
+  m_layerSearchPage->getSearchWidget()->enableMultiSelection(true);
 }
 
 te::map::AbstractLayerPtr te::qt::widgets::ArithmeticOpWizard::getOutputLayer()
@@ -222,11 +222,11 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
   std::auto_ptr<te::rst::Raster> rstA = dsA->getRaster(rposA);
 
 //Gain * ( A ) + Offset
-  std::string arithmeticString  = QString::number(gain).toLatin1();
+  std::string arithmeticString  = QString::number(gain).toLatin1().data();
               arithmeticString += " * R0:";
-              arithmeticString += QString::number(bA).toLatin1();
+              arithmeticString += QString::number(bA).toLatin1().data();
               arithmeticString += " + ";
-              arithmeticString += QString::number(offSet).toLatin1();
+              arithmeticString += QString::number(offSet).toLatin1().data();
 
   params.m_arithmeticString = arithmeticString;
   params.m_normalize = normalize;
@@ -262,13 +262,13 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
   std::auto_ptr<te::rst::Raster> rstB = dsB->getRaster(rposB);
 
 //Gain * ( A + B ) + Offset
-  std::string arithmeticString  = QString::number(gain).toLatin1();
+  std::string arithmeticString  = QString::number(gain).toLatin1().data();
               arithmeticString += " * ( R0:";
-              arithmeticString += QString::number(bA).toLatin1();
+              arithmeticString += QString::number(bA).toLatin1().data();
               arithmeticString += " + R1:";
-              arithmeticString += QString::number(bB).toLatin1();
+              arithmeticString += QString::number(bB).toLatin1().data();
               arithmeticString += " ) + ";
-              arithmeticString += QString::number(offSet).toLatin1();
+              arithmeticString += QString::number(offSet).toLatin1().data();
 
   return params;
 }
@@ -298,13 +298,13 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
   std::auto_ptr<te::rst::Raster> rstB = dsB->getRaster(rposB);
 
 //Gain * ( A - B ) + Offset
-  std::string arithmeticString  = QString::number(gain).toLatin1();
+  std::string arithmeticString  = QString::number(gain).toLatin1().data();
               arithmeticString += " * ( R0:";
-              arithmeticString += QString::number(bA).toLatin1();
+              arithmeticString += QString::number(bA).toLatin1().data();
               arithmeticString += " - R1:";
-              arithmeticString += QString::number(bB).toLatin1();
+              arithmeticString += QString::number(bB).toLatin1().data();
               arithmeticString += " ) + ";
-              arithmeticString += QString::number(offSet).toLatin1();
+              arithmeticString += QString::number(offSet).toLatin1().data();
 
   return params;
 }
@@ -334,13 +334,13 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
   std::auto_ptr<te::rst::Raster> rstB = dsB->getRaster(rposB);
 
 //Gain * ( A * B ) + Offset
-  std::string arithmeticString  = QString::number(gain).toLatin1();
+  std::string arithmeticString  = QString::number(gain).toLatin1().data();
               arithmeticString += " * ( R0:";
-              arithmeticString += QString::number(bA).toLatin1();
+              arithmeticString += QString::number(bA).toLatin1().data();
               arithmeticString += " * R1:";
-              arithmeticString += QString::number(bB).toLatin1();
+              arithmeticString += QString::number(bB).toLatin1().data();
               arithmeticString += " ) + ";
-              arithmeticString += QString::number(offSet).toLatin1();
+              arithmeticString += QString::number(offSet).toLatin1().data();
 
   return params;
 }
@@ -370,13 +370,13 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
   std::auto_ptr<te::rst::Raster> rstB = dsB->getRaster(rposB);
 
 //Gain * ( A / B ) + Offset
-  std::string arithmeticString  = QString::number(gain).toLatin1();
+  std::string arithmeticString  = QString::number(gain).toLatin1().data();
               arithmeticString += " * ( R0:";
-              arithmeticString += QString::number(bA).toLatin1();
+              arithmeticString += QString::number(bA).toLatin1().data();
               arithmeticString += " / R1:";
-              arithmeticString += QString::number(bB).toLatin1();
+              arithmeticString += QString::number(bB).toLatin1().data();
               arithmeticString += " ) + ";
-              arithmeticString += QString::number(offSet).toLatin1();
+              arithmeticString += QString::number(offSet).toLatin1().data();
 
   return params;
 }
@@ -407,18 +407,18 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
 
 //( Gain * ( A - B ) / ( A + B ) ) + Offset
   std::string arithmeticString  = "( ";
-              arithmeticString += QString::number(gain).toLatin1();
+              arithmeticString += QString::number(gain).toLatin1().data();
               arithmeticString += " * ( R0:";
-              arithmeticString += QString::number(bA).toLatin1();
+              arithmeticString += QString::number(bA).toLatin1().data();
               arithmeticString += " - R1:";
-              arithmeticString += QString::number(bB).toLatin1();
+              arithmeticString += QString::number(bB).toLatin1().data();
               arithmeticString += " ) / ";
               arithmeticString += "( R0:";
-              arithmeticString += QString::number(bA).toLatin1();
+              arithmeticString += QString::number(bA).toLatin1().data();
               arithmeticString += " + R1:";
-              arithmeticString += QString::number(bB).toLatin1();
+              arithmeticString += QString::number(bB).toLatin1().data();
               arithmeticString += " ) ) + ";
-              arithmeticString += QString::number(offSet).toLatin1();
+              arithmeticString += QString::number(offSet).toLatin1().data();
 
   return params;
 }

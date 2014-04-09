@@ -86,8 +86,24 @@ namespace te
 
         public slots:
 
+          void layerComboBoxActivated(int index);
           void layerAComboBoxActivated(int index);
           void layerBComboBoxActivated(int index);
+
+          void leftBracketToolButtonClicked();
+          void rightBracketToolButtonClicked();
+          void plusToolButtonClicked();
+          void minusToolButtonClicked();
+          void multiToolButtonClicked();
+          void divToolButtonClicked();
+
+          void addValueOpToolButtonClicked();
+          void addRasterOpToolButtonClicked();
+
+          void undoToolButtonClicked();
+          void redoToolButtonClicked();
+          void clearToolButtonClicked();
+          void validateToolButtonClicked();
 
         protected:
 

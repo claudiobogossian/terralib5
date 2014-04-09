@@ -298,42 +298,42 @@
                  <item row="0" column="0">
                   <layout class="QGridLayout" name="gridLayout_16">
                    <item row="0" column="0">
-                    <widget class="QToolButton" name="toolButton">
+                    <widget class="QToolButton" name="m_leftBracketToolButton">
                      <property name="text">
                       <string>(</string>
                      </property>
                     </widget>
                    </item>
                    <item row="0" column="1">
-                    <widget class="QToolButton" name="toolButton_2">
+                    <widget class="QToolButton" name="m_rightBracketToolButton">
                      <property name="text">
                       <string>)</string>
                      </property>
                     </widget>
                    </item>
                    <item row="0" column="2">
-                    <widget class="QToolButton" name="toolButton_5">
+                    <widget class="QToolButton" name="m_plusToolButton">
                      <property name="text">
                       <string>+</string>
                      </property>
                     </widget>
                    </item>
                    <item row="0" column="3">
-                    <widget class="QToolButton" name="toolButton_6">
+                    <widget class="QToolButton" name="m_minusToolButton">
                      <property name="text">
                       <string>-</string>
                      </property>
                     </widget>
                    </item>
                    <item row="0" column="4">
-                    <widget class="QToolButton" name="toolButton_7">
+                    <widget class="QToolButton" name="m_multiToolButton">
                      <property name="text">
                       <string>*</string>
                      </property>
                     </widget>
                    </item>
                    <item row="0" column="5">
-                    <widget class="QToolButton" name="toolButton_8">
+                    <widget class="QToolButton" name="m_divToolButton">
                      <property name="text">
                       <string>/</string>
                      </property>
@@ -356,14 +356,17 @@
                  <item row="0" column="0">
                   <layout class="QGridLayout" name="gridLayout_18">
                    <item row="0" column="0">
-                    <widget class="QLineEdit" name="lineEdit">
+                    <widget class="QLineEdit" name="m_valueLineEdit">
+                     <property name="text">
+                      <string/>
+                     </property>
                      <property name="alignment">
                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                      </property>
                     </widget>
                    </item>
                    <item row="0" column="1">
-                    <widget class="QToolButton" name="toolButton_3">
+                    <widget class="QToolButton" name="m_addValueOpToolButton">
                      <property name="text">
                       <string>...</string>
                      </property>
@@ -388,7 +391,7 @@
                <item row="0" column="0">
                 <layout class="QGridLayout" name="gridLayout_20">
                  <item row="0" column="0">
-                  <widget class="QComboBox" name="m_layerAComboBox_2">
+                  <widget class="QComboBox" name="m_layerComboBox">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                      <horstretch>0</horstretch>
@@ -398,7 +401,7 @@
                   </widget>
                  </item>
                  <item row="0" column="1">
-                  <widget class="QComboBox" name="m_bandAComboBox_2">
+                  <widget class="QComboBox" name="m_bandComboBox">
                    <property name="maximumSize">
                     <size>
                      <width>50</width>
@@ -408,14 +411,14 @@
                   </widget>
                  </item>
                  <item row="0" column="3">
-                  <widget class="QToolButton" name="toolButton_4">
+                  <widget class="QToolButton" name="m_addRasterOpToolButton">
                    <property name="text">
                     <string>...</string>
                    </property>
                   </widget>
                  </item>
                  <item row="0" column="2">
-                  <widget class="QComboBox" name="comboBox">
+                  <widget class="QComboBox" name="m_rasterIdComboBox">
                    <property name="enabled">
                     <bool>false</bool>
                    </property>
@@ -444,7 +447,7 @@
                <item row="0" column="0">
                 <layout class="QGridLayout" name="gridLayout_27">
                  <item row="0" column="0">
-                  <widget class="QLineEdit" name="lineEdit_2">
+                  <widget class="QLineEdit" name="m_expressionLineEdit">
                    <property name="readOnly">
                     <bool>true</bool>
                    </property>
@@ -466,28 +469,28 @@
                     </spacer>
                    </item>
                    <item row="0" column="1">
-                    <widget class="QToolButton" name="toolButton_9">
+                    <widget class="QToolButton" name="m_undoToolButton">
                      <property name="text">
                       <string>...</string>
                      </property>
                     </widget>
                    </item>
                    <item row="0" column="2">
-                    <widget class="QToolButton" name="toolButton_10">
+                    <widget class="QToolButton" name="m_redoToolButton">
                      <property name="text">
                       <string>...</string>
                      </property>
                     </widget>
                    </item>
                    <item row="0" column="3">
-                    <widget class="QToolButton" name="toolButton_11">
+                    <widget class="QToolButton" name="m_clearToolButton">
                      <property name="text">
                       <string>...</string>
                      </property>
                     </widget>
                    </item>
                    <item row="0" column="4">
-                    <widget class="QToolButton" name="toolButton_12">
+                    <widget class="QToolButton" name="m_validateToolButton">
                      <property name="text">
                       <string>...</string>
                      </property>
