@@ -29,6 +29,7 @@
 #include "../../af/Project.h"
 #include "LayoutEditorAction.h"
 #include "../../../layout/qt/include/main/MainLayout.h"
+#include "../../../common/TerraLib.h"
 
 // Qt
 #include <QtCore/QObject>
@@ -47,8 +48,7 @@ te::qt::plugins::layout2::LayoutEditorAction::LayoutEditorAction(QMenu* menu)
 
 te::qt::plugins::layout2::LayoutEditorAction::~LayoutEditorAction()
 {
-  if(m_layout)
-    delete m_layout;
+  TerraLib::getInstance().remove(TE_LAYOUT_MODULE_NAME);
 }
 
 void te::qt::plugins::layout2::LayoutEditorAction::onActionActivated(bool checked)

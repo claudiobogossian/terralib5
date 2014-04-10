@@ -29,15 +29,24 @@
 // TerraLib
 #include "../../../../common/Singleton.h"
 #include "../../../include/core/Config.h"
+#include "../../../../qt/widgets/canvas/Canvas.h"
 
 class QWidget;
+class QGroupBox;
 
 namespace te
 {
   namespace layout
   {
-    class QLayoutView;
-    class QDisplayWindowOutside;
+    class View;
+    class DisplayOutside;
+    class OutsideArea;
+    class ItemFactory;
+    class OutsideFactory;
+    class TemplateFactory;
+    class Utils;
+    class PaperConfig;
+
     /*!
     \class 
      
@@ -65,12 +74,20 @@ namespace te
       
         /*! \brief Constructor. */
         MainLayout();
-        void createDockLayoutDisplay(QWidget* mainWindow, QLayoutView* view);
-        void createLayoutContext(int width, int height, QLayoutView* view);
+        void createDockLayoutDisplay(QWidget* mainWindow, View* view);
+        void createLayoutContext(int width, int height, View* view);
         void finish();
 
-        QLayoutView* m_view;
-        QDisplayWindowOutside*  m_dockLayoutDisplay;
+        View* m_view;
+        DisplayOutside* m_dockLayoutDisplay;
+        OutsideArea*    m_outsideArea;     
+        ItemFactory*    m_itemFactory;
+        OutsideFactory* m_outsideFactory;
+        TemplateFactory* m_templateFactory;
+        Utils* m_utils;
+        PaperConfig* m_paperConfig;
+        te::qt::widgets::Canvas* m_canvas;
+        QGroupBox* m_groupBox;
         
       private:
       
