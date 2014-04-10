@@ -45,6 +45,7 @@
 #include "../../../srs/Config.h"
 #include "../canvas/Canvas.h"
 #include "../canvas/MapDisplay.h"
+#include "../Utils.h"
 #include "Info.h"
 
 // Qt
@@ -237,32 +238,18 @@ void te::qt::widgets::Info::getGeometryInfo(QTreeWidgetItem* layerItem, te::da::
 
         if(!dataset->isNull(i))
         {
-          std::string value;
+          QString qvalue;
 
-#if TE_CHARENCODING_ENABLED
-        if(dataset->getPropertyDataType(i) == te::dt::STRING_TYPE)
-        {
-          value = dataset->getString(i);
-
-          te::common::CharEncoding ce = dataset->getPropertyCharEncoding(i);
-
-          if(ce != te::common::UNKNOWN_CHAR_ENCODING)
+          if(dataset->getPropertyDataType(i) == te::dt::STRING_TYPE)
           {
-            try
-            {
-              value = te::common::CharEncodingConv::convert(value, ce, te::common::LATIN1).c_str();
-            }
-            catch(...)
-            {
-            }
+            std::string value = dataset->getString(i);
+            te::common::CharEncoding encoding = dataset->getPropertyCharEncoding(i);
+            qvalue = Convert2Qt(value, encoding);
           }
-        }
-        else
-          value = dataset->getAsString(i, 3).c_str();
-#else
-        value = dataset->getAsString(i, 3).c_str();
-#endif
-          propertyItem->setText(1, value.c_str());
+          else
+            qvalue = dataset->getAsString(i, 3).c_str();
+
+          propertyItem->setText(1, qvalue);
         }
         else // property null value!
           propertyItem->setText(1, "");
