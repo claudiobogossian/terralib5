@@ -713,7 +713,7 @@ std::vector<std::string> GetPluginsFiles()
 {
   std::vector<std::string> res;
   QStringList filters;
-  filters <<"*.teplg";
+  filters << "*.teplg";
 
   QDir d(qApp->applicationDirPath());
   QFileInfoList files = d.entryInfoList(filters, QDir::Files);

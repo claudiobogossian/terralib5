@@ -47,7 +47,14 @@ set(TERRALIB_PKG_VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}.${T
 set(TERRALIB_ABSOLUTE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 
 # variables that controls path
-set(TERRALIB_DIR_VAR_NAME "TERRALIB_HOME")
+set(TERRALIB_DIR_VAR_NAME "TERRALIB_HOME" CACHE STRING "Name of an environment variable with the base installation path of TerraLib")
+set(TERRALIB_EXAMPLES_DATA_DIR "${CMAKE_BINARY_DIR}/data" CACHE PATH "Path to a directory containing the data used in the examples")
+
+# variables that controls what is built
+set(TERRALIB_BUILD_EXAMPLES 1 CACHE BOOL "If on, shows a list of examples to be built")
+set(TERRALIB_BUILD_UNITTEST 1 CACHE BOOL "If on, shows a list of unit-tests to be built")
+set(TERRALIB_BUILD_AS_BUNDLE 0 CACHE BOOL "If on, tells that the build will generate a bundle")
+
 
 #
 # global definitions and includes
@@ -352,18 +359,61 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_POSTGIS_ENABLED "Build
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_TERRAVIEW_ENABLED "Build TerraView?" ON "TERRALIB_MOD_QT_APF_ENABLED" OFF)
 
+if(TERRALIB_BUILD_EXAMPLES)
+  option(TERRALIB_EXAMPLE_COMMON_ENABLED "Build examples for the Common runtime module?" ON)
+
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_ADO_ENABLED "Build data access examples?" ON "TERRALIB_MOD_DATAACCESS_ENABLED" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_COLORBAR_ENABLED "Build color bar example?" ON "TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_CPPPLUGIN_ENABLED "Build C++ plugins example" ON "TERRALIB_MOD_PLUGINS_ENABLED" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_DATAACCESS_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_DATASETMANAGEMENT_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_DATAVIEW_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_FACTORY_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_GEOMETRY_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_GRAPH_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_HELP_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_LAYEREXPLORER_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_MAPTOOLS_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_PROGRESS_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_PROPERTYMANAGEMENT_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_CANVAS_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_CHARTS_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_DATSOURCE_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_QUERY_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_RASTER_VISUAL_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_RP_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_SE_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_SRS_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_TOOLS_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_UTILS_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_RASTER_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_RP_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_SAM_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_SERIALIZATION_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_SRS_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_ST_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_VP_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_XERCES_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+
+else()
+  if(defined TERRALIB_EXAMPLE_COMMON)
+    set(TERRALIB_EXAMPLE_COMMON 0 CACHE BOOL "Build examples for the Common runtime module?" FORCE)
+  endif()
+endif()
+
+
 #
 # process TERRALIB configuration files
 #
 
-configure_file(${terralib_SOURCE_DIR}/terralib-config-pkg.cmake.in
-               ${terralib_BINARY_DIR}/pkg/terralib-config.cmake @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/terralib-config-pkg.cmake.in
+               ${CMAKE_BINARY_DIR}/pkg/terralib-config.cmake @ONLY)
 
-configure_file(${terralib_SOURCE_DIR}/terralib-config-version.cmake.in
-               ${terralib_BINARY_DIR}/terralib-config-version.cmake @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/terralib-config-version.cmake.in
+               ${CMAKE_BINARY_DIR}/terralib-config-version.cmake @ONLY)
 
-configure_file(${terralib_SOURCE_DIR}/terralib-config.cmake.in
-               ${terralib_BINARY_DIR}/terralib-config.cmake @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/terralib-config.cmake.in
+               ${CMAKE_BINARY_DIR}/terralib-config.cmake @ONLY)
 
 configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Config.h.in
                ${CMAKE_BINARY_DIR}/terralib_config.h @ONLY)
@@ -373,6 +423,9 @@ configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Defines.h.in
 
 configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Version.h.in
                ${CMAKE_BINARY_DIR}/terralib_version.h @ONLY)
+
+configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h.in
+               ${CMAKE_BINARY_DIR}/terralib_examples_config.h @ONLY)
 
 
 #
@@ -529,6 +582,12 @@ if(TERRALIB_TERRAVIEW_ENABLED)
   add_subdirectory(terraview)
 endif()
 
+if(TERRALIB_BUILD_EXAMPLES)
+  if(TERRALIB_EXAMPLE_COMMON_ENABLED)
+    add_subdirectory(terralib_example_common)
+  endif()
+endif()
+
 
 #
 # install and targets export
@@ -544,6 +603,10 @@ install(FILES ${CMAKE_BINARY_DIR}/terralib_config.h
 
 install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib.h
         DESTINATION include COMPONENT devel)
+
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h.in
+              ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h
+        DESTINATION share/terralib/examples COMPONENT devel)
 
 install(FILES ${terralib_BINARY_DIR}/pkg/terralib-config.cmake
               ${terralib_BINARY_DIR}/terralib-config-version.cmake

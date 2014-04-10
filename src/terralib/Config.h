@@ -23,20 +23,21 @@
   \brief Proxy file for the real global configuration file terralib_config.h.
  */
 
-/*! \mainpage Terralib 5 Code Documentation
+/*!
+  \mainpage Terralib 5 Code Documentation
 
-    TerraLib 5.0 is a new version of the Terralib library (www.terralib.org).
-    TerraLib is a C++ software library base to develop Geographical Information Systems (GIS).
-    It is developed by the National Institute for Space Research (INPE), Brazil.
+  TerraLib 5.0 is a new version of the Terralib library (www.terralib.org).
+  TerraLib is a C++ software library base to develop Geographical Information Systems (GIS).
+  It is developed by the National Institute for Space Research (INPE), Brazil.
 
-    TerraLib is free and open source software. You can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License,
-    or (at your option) any later version.
+  TerraLib is free and open source software. You can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation, either version 3 of the License,
+  or (at your option) any later version.
 
-    For more information about download, build and install, see the TerraLib 5.0
-    Wiki Page <www.dpi.inpe.br/terralib5> or contact the Terralib Team at <terralib-team@terralib.org>.
-*/
+  For more information about download, build and install, see the TerraLib 5.0
+  Wiki Page <www.dpi.inpe.br/terralib5> or contact the Terralib Team at <terralib-team@terralib.org>.
+ */
 
 #ifndef __TERRALIB_INTERNAL_CONFIG_H
 #define __TERRALIB_INTERNAL_CONFIG_H
