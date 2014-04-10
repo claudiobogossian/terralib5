@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<PluginInfo xmlns:xlink="http://www.w3.org/1999/xlink"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.terralib.org/schemas/plugin"
+            xsd:schemaLocation="http://www.terralib.org/schemas/plugin C:/mydevel/terralib5/codebase/build/../schemas/terralib/plugin/plugin_info.xsd"
+            version="5.0.0-alpha.1"
+            release="2013-01-01"
+            engine="C++">
+  <Name>te.qt.datasource.pgis</Name>
+  <DisplayName>PostGIS Data Source Qt-Widgets</DisplayName>
+  <Description>This plugin enables widgets to create or open data managed by PostGIS driver.</Description>
+  <TerraLibVersion>5.0.0-alpha.1</TerraLibVersion>
+  <License xlink:href="http://www.gnu.org/licenses/lgpl-3.0-standalone.html">GNU Lesser General Public License v 3.0</License>
+  <Category>Data Access</Category>
+  <Site xlink:href="http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:pgis"></Site>
+  <Provider>
+    <Name>Terralib Team</Name>
+    <Site xlink:href="http://www.terralib.org/"></Site>
+    <Email>terralib-team@terralib.org</Email>
+  </Provider>
+  <RequiredPlugins>
+    <PluginId>te.da.pgis</PluginId>
+  </RequiredPlugins>
+  <Resources>
+    <Resource name="SharedLibraryName" xlink:href="terralib_qt_plugin_datasource_pgis"/>  
+    <Resource name="LangFile" xlink:href="pt.br"/>
+  </Resources>
+</PluginInfo>
