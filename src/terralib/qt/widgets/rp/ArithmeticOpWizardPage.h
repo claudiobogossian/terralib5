@@ -84,6 +84,8 @@ namespace te
 
           bool normalize();
 
+          std::string getUserDefinedExpression();
+
         public slots:
 
           void layerComboBoxActivated(int index);
@@ -109,7 +111,13 @@ namespace te
 
           void getRasterBands(QComboBox* layer, int index, QComboBox* band);
 
+          void updateExpressionHistory();
+
         private:
+
+          std::vector<std::string> m_expressionHistory;
+
+          std::size_t m_expressionHistoryCounter;
 
           std::auto_ptr<Ui::ArithmeticOpWizardPageForm> m_ui;
           

@@ -21,7 +21,10 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_23">
       <item row="0" column="0">
-       <widget class="QTabWidget" name="tabWidget">
+       <widget class="QTabWidget" name="m_tabWidget">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="tabPosition">
          <enum>QTabWidget::West</enum>
         </property>

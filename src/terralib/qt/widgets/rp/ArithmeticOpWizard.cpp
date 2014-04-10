@@ -132,6 +132,8 @@ bool te::qt::widgets::ArithmeticOpWizard::execute()
     algoInputParams = paramsFromOp5();
   else if(type == ARITH_OP_TYPE_6)
     algoInputParams = paramsFromOp6();
+  else if(type == ARITH_OP_TYPE_USER_DEFINED)
+    algoInputParams = paramsFromOpUserdDef();
 
   te::rp::ArithmeticOperations::OutputParameters algoOutputParams;
 
@@ -270,6 +272,15 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
               arithmeticString += " ) + ";
               arithmeticString += QString::number(offSet).toLatin1().data();
 
+  params.m_arithmeticString = arithmeticString;
+  params.m_normalize = normalize;
+
+  boost::shared_ptr<te::rst::Raster> rstAPtr(rstA.release());
+  params.m_rasterVec.push_back(rstAPtr);
+
+  boost::shared_ptr<te::rst::Raster> rstBPtr(rstB.release());
+  params.m_rasterVec.push_back(rstBPtr);
+
   return params;
 }
 
@@ -305,6 +316,15 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
               arithmeticString += QString::number(bB).toLatin1().data();
               arithmeticString += " ) + ";
               arithmeticString += QString::number(offSet).toLatin1().data();
+
+  params.m_arithmeticString = arithmeticString;
+  params.m_normalize = normalize;
+
+  boost::shared_ptr<te::rst::Raster> rstAPtr(rstA.release());
+  params.m_rasterVec.push_back(rstAPtr);
+
+  boost::shared_ptr<te::rst::Raster> rstBPtr(rstB.release());
+  params.m_rasterVec.push_back(rstBPtr);
 
   return params;
 }
@@ -342,6 +362,15 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
               arithmeticString += " ) + ";
               arithmeticString += QString::number(offSet).toLatin1().data();
 
+  params.m_arithmeticString = arithmeticString;
+  params.m_normalize = normalize;
+
+  boost::shared_ptr<te::rst::Raster> rstAPtr(rstA.release());
+  params.m_rasterVec.push_back(rstAPtr);
+
+  boost::shared_ptr<te::rst::Raster> rstBPtr(rstB.release());
+  params.m_rasterVec.push_back(rstBPtr);
+
   return params;
 }
 
@@ -377,6 +406,15 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
               arithmeticString += QString::number(bB).toLatin1().data();
               arithmeticString += " ) + ";
               arithmeticString += QString::number(offSet).toLatin1().data();
+  
+  params.m_arithmeticString = arithmeticString;
+  params.m_normalize = normalize;
+
+  boost::shared_ptr<te::rst::Raster> rstAPtr(rstA.release());
+  params.m_rasterVec.push_back(rstAPtr);
+
+  boost::shared_ptr<te::rst::Raster> rstBPtr(rstB.release());
+  params.m_rasterVec.push_back(rstBPtr);
 
   return params;
 }
@@ -419,6 +457,32 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
               arithmeticString += QString::number(bB).toLatin1().data();
               arithmeticString += " ) ) + ";
               arithmeticString += QString::number(offSet).toLatin1().data();
+
+  params.m_arithmeticString = arithmeticString;
+  params.m_normalize = normalize;
+
+  boost::shared_ptr<te::rst::Raster> rstAPtr(rstA.release());
+  params.m_rasterVec.push_back(rstAPtr);
+
+  boost::shared_ptr<te::rst::Raster> rstBPtr(rstB.release());
+  params.m_rasterVec.push_back(rstBPtr);
+
+  return params;
+}
+
+te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizard::paramsFromOpUserdDef()
+{
+  te::rp::ArithmeticOperations::InputParameters params;
+
+  double gain = m_arithmeticOpPage->getGainValue();
+  double offSet = m_arithmeticOpPage->getOffSetValue();
+  bool normalize = m_arithmeticOpPage->normalize();
+  std::string arithExpStr = m_arithmeticOpPage->getUserDefinedExpression();
+
+  params.m_arithmeticString = arithExpStr;
+  params.m_normalize = normalize;
+
+  //params.m_rasterVec.push_back();
 
   return params;
 }

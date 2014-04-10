@@ -62,6 +62,13 @@ te::qt::widgets::ArithmeticOpWizardPage::ArithmeticOpWizardPage(QWidget* parent)
   m_ui->m_clearToolButton->setIcon(QIcon::fromTheme("edit-clear"));
   m_ui->m_validateToolButton->setIcon(QIcon::fromTheme("check"));
 
+  m_expressionHistoryCounter = -1;
+
+  m_ui->m_undoToolButton->setEnabled(false);
+  m_ui->m_redoToolButton->setEnabled(false);
+
+  m_ui->m_tabWidget->widget(1)->setEnabled(false);
+
   //connects
   connect(m_ui->m_layerComboBox, SIGNAL(activated(int)), this, SLOT(layerComboBoxActivated(int)));
   connect(m_ui->m_layerAComboBox, SIGNAL(activated(int)), this, SLOT(layerAComboBoxActivated(int)));
@@ -86,7 +93,7 @@ te::qt::widgets::ArithmeticOpWizardPage::ArithmeticOpWizardPage(QWidget* parent)
 
 te::qt::widgets::ArithmeticOpWizardPage::~ArithmeticOpWizardPage()
 {
-
+  m_expressionHistory.clear();
 }
 
 bool te::qt::widgets::ArithmeticOpWizardPage::isComplete() const
@@ -139,18 +146,23 @@ int te::qt::widgets::ArithmeticOpWizardPage::getOperationType()
 {
   int type = -1;
 
-  if(m_ui->m_op1RadioButton->isChecked())
+  if(m_ui->m_tabWidget->currentIndex() == 1)
+  {
+    type = te::qt::widgets::ArithmeticOpWizard::ARITH_OP_TYPE_USER_DEFINED;
+  }
+  else if(m_ui->m_op1RadioButton->isChecked())
     type = te::qt::widgets::ArithmeticOpWizard::ARITH_OP_TYPE_1;
-  else if(m_ui->m_op1RadioButton->isChecked())
+  else if(m_ui->m_op2RadioButton->isChecked())
     type = te::qt::widgets::ArithmeticOpWizard::ARITH_OP_TYPE_2;
-  else if(m_ui->m_op1RadioButton->isChecked())
+  else if(m_ui->m_op3RadioButton->isChecked())
     type = te::qt::widgets::ArithmeticOpWizard::ARITH_OP_TYPE_3;
-  else if(m_ui->m_op1RadioButton->isChecked())
+  else if(m_ui->m_op4RadioButton->isChecked())
     type = te::qt::widgets::ArithmeticOpWizard::ARITH_OP_TYPE_4;
-  else if(m_ui->m_op1RadioButton->isChecked())
+  else if(m_ui->m_op5RadioButton->isChecked())
     type = te::qt::widgets::ArithmeticOpWizard::ARITH_OP_TYPE_5;
-  else if(m_ui->m_op1RadioButton->isChecked())
+  else if(m_ui->m_op6RadioButton->isChecked())
     type = te::qt::widgets::ArithmeticOpWizard::ARITH_OP_TYPE_6;
+
 
   return type;
 }
@@ -208,6 +220,11 @@ bool te::qt::widgets::ArithmeticOpWizardPage::normalize()
   return m_ui->m_normalizeCheckBox->isChecked();
 }
 
+std::string te::qt::widgets::ArithmeticOpWizardPage::getUserDefinedExpression()
+{
+  return m_ui->m_expressionLineEdit->text().toLatin1().data();
+}
+
 void te::qt::widgets::ArithmeticOpWizardPage::layerComboBoxActivated(int index)
 {
   getRasterBands(m_ui->m_layerComboBox, index, m_ui->m_bandComboBox);
@@ -228,56 +245,120 @@ void te::qt::widgets::ArithmeticOpWizardPage::layerBComboBoxActivated(int index)
 void te::qt::widgets::ArithmeticOpWizardPage::leftBracketToolButtonClicked()
 {
   m_ui->m_expressionLineEdit->insert("( ");
+
+  updateExpressionHistory();
 }
 
 void te::qt::widgets::ArithmeticOpWizardPage::rightBracketToolButtonClicked()
 {
   m_ui->m_expressionLineEdit->insert(") ");
+
+  updateExpressionHistory();
 }
 
 void te::qt::widgets::ArithmeticOpWizardPage::plusToolButtonClicked()
 {
   m_ui->m_expressionLineEdit->insert("+ ");
+
+  updateExpressionHistory();
 }
 
 void te::qt::widgets::ArithmeticOpWizardPage::minusToolButtonClicked()
 {
   m_ui->m_expressionLineEdit->insert("- ");
+
+  updateExpressionHistory();
 }
 
 void te::qt::widgets::ArithmeticOpWizardPage::multiToolButtonClicked()
 {
   m_ui->m_expressionLineEdit->insert("* ");
+
+  updateExpressionHistory();
 }
 
 void te::qt::widgets::ArithmeticOpWizardPage::divToolButtonClicked()
 {
   m_ui->m_expressionLineEdit->insert("/ ");
+
+  updateExpressionHistory();
 }
 
 void te::qt::widgets::ArithmeticOpWizardPage::addValueOpToolButtonClicked()
 {
   m_ui->m_expressionLineEdit->insert(m_ui->m_valueLineEdit->text() + " ");
+
+  updateExpressionHistory();
 }
 
 void te::qt::widgets::ArithmeticOpWizardPage::addRasterOpToolButtonClicked()
 {
   m_ui->m_expressionLineEdit->insert(m_ui->m_rasterIdComboBox->currentText() + ":" + m_ui->m_bandComboBox->currentText() + " ");
+
+  updateExpressionHistory();
 }
 
 void te::qt::widgets::ArithmeticOpWizardPage::undoToolButtonClicked()
 {
-  m_ui->m_expressionLineEdit->undo();
+  --m_expressionHistoryCounter;
+
+  if(m_expressionHistoryCounter >= m_expressionHistory.size() || m_expressionHistoryCounter < 0)
+  {
+    m_expressionHistoryCounter = 0;
+
+    m_expressionHistory.clear();
+    
+    m_ui->m_expressionLineEdit->clear();
+
+    m_ui->m_undoToolButton->setEnabled(false);
+    m_ui->m_redoToolButton->setEnabled(false);
+
+    return;
+  }
+
+  std::string expression = m_expressionHistory[m_expressionHistoryCounter];
+
+  m_ui->m_expressionLineEdit->setText(expression.c_str());
+
+  if(m_expressionHistoryCounter < 0)
+    m_ui->m_undoToolButton->setEnabled(false);
+
+  m_ui->m_redoToolButton->setEnabled(true);
 }
 
 void te::qt::widgets::ArithmeticOpWizardPage::redoToolButtonClicked()
 {
-  m_ui->m_expressionLineEdit->redo();
+  ++m_expressionHistoryCounter;
+
+  if(m_expressionHistoryCounter >= m_expressionHistory.size() || m_expressionHistoryCounter < 0)
+  {
+    m_expressionHistoryCounter = m_expressionHistory.size() - 1;
+
+    m_ui->m_redoToolButton->setEnabled(false);
+
+    return;
+  }
+
+  std::string expression = m_expressionHistory[m_expressionHistoryCounter];
+
+  m_ui->m_expressionLineEdit->setText(expression.c_str());
+
+  if(m_expressionHistoryCounter >=  m_expressionHistory.size() - 1)
+    m_ui->m_redoToolButton->setEnabled(false);
+
+  m_ui->m_undoToolButton->setEnabled(true);
 }
 
 void te::qt::widgets::ArithmeticOpWizardPage::clearToolButtonClicked()
 {
+  m_expressionHistoryCounter = 0;
+
+  m_expressionHistory.clear();
+    
   m_ui->m_expressionLineEdit->clear();
+
+  m_ui->m_undoToolButton->setEnabled(false);
+  m_ui->m_redoToolButton->setEnabled(false);
 }
 
 void te::qt::widgets::ArithmeticOpWizardPage::validateToolButtonClicked()
@@ -303,4 +384,14 @@ void te::qt::widgets::ArithmeticOpWizardPage::getRasterBands(QComboBox* layer, i
     for(std::size_t t = 0; t < rst->getNumberOfBands(); ++t)
       band->addItem(QString::number(t));
   }
+}
+
+void te::qt::widgets::ArithmeticOpWizardPage::updateExpressionHistory()
+{
+  m_expressionHistory.push_back(m_ui->m_expressionLineEdit->text().toLatin1().data());
+
+  m_ui->m_undoToolButton->setEnabled(true);
+  m_ui->m_redoToolButton->setEnabled(false);
+
+  m_expressionHistoryCounter = m_expressionHistory.size() - 1;
 }
