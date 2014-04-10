@@ -233,9 +233,9 @@ std::vector<std::string> te::ado::DataSource::getDataSourceNames(const std::map<
   return std::vector<std::string>(); // The DataSource is a File.
 }
 
-std::vector<std::string> te::ado::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
+std::vector<te::common::CharEncoding> te::ado::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
 {
-  return std::vector<std::string>(); //TODO how?
+  return std::vector<te::common::CharEncoding>(); //TODO how?
 }
 
 void te::ado::DataSource::loadGeometryColumnsCache(_ConnectionPtr& adoConn)

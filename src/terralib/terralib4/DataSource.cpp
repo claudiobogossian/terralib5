@@ -165,9 +165,9 @@ std::vector<std::string> terralib4::DataSource::getDataSourceNames(const std::ma
   return dbnames;
 }
 
-std::vector<std::string> terralib4::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
+std::vector<te::common::CharEncoding> terralib4::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
 {
-  std::auto_ptr<TeDatabaseFactoryParams> params(terralib4::Convert2T4DatabaseParams(dsInfo));
+  /*std::auto_ptr<TeDatabaseFactoryParams> params(terralib4::Convert2T4DatabaseParams(dsInfo));
 
   std::auto_ptr<TeDatabase> db(TeDatabaseFactory::make(*params.get()));
 
@@ -175,7 +175,9 @@ std::vector<std::string> terralib4::DataSource::getEncodings(const std::map<std:
 
   db->getEncodingList(encodings);
 
-  return encodings;
+  return encodings;*/
+
+  return std::vector<te::common::CharEncoding>();
 }
 
 TeDatabase* terralib4::DataSource::getTerralib4Db()

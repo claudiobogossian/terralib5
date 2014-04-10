@@ -30,6 +30,14 @@
 #include "../../../Config.h"
 
 
+
+/*!
+  \def TE_QT_PLUGIN_RP_HAVE_ARITHMETICOP
+
+  \brief It defines if the RP Qt Plugin has the arithmetic operation.
+*/
+#define TE_QT_PLUGIN_RP_HAVE_ARITHMETICOP
+
 /*!
   \def TE_QT_PLUGIN_RP_HAVE_CLASSIFIER
 

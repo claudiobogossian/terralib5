@@ -224,7 +224,7 @@ void te::da::DataSource::changePropertiesDefinitions(const std::string& datasetN
 {
   assert(propsNames.size() == newProps.size());
 
-  for(int i=0; i<propsNames.size(); i++)
+  for(std::size_t i = 0; i < propsNames.size(); ++i)
     changePropertyDefinition(datasetName, propsNames[i], newProps[i]);
 }
 
@@ -530,7 +530,7 @@ std::vector<std::string> te::da::DataSource::getDataSourceNames(const std::strin
   return ds->getDataSourceNames(dsInfo);
 }
 
-std::vector<std::string> te::da::DataSource::getEncodings(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)
+std::vector<te::common::CharEncoding> te::da::DataSource::getEncodings(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)
 {
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
