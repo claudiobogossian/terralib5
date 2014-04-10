@@ -41,6 +41,7 @@
 #include <QGraphicsSceneHoverEvent>
 #include <QGraphicsSceneMouseEvent>
 #include <QCursor>
+#include <QStyleOptionGraphicsItem>
 
 te::layout::ObjectItem::ObjectItem( ItemController* controller, Observable* o ) :
   QGraphicsObject(0),
@@ -117,6 +118,12 @@ void te::layout::ObjectItem::paint( QPainter * painter, const QStyleOptionGraphi
   painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );
   painter->drawPixmap(boundRect, m_pixmap, QRectF( 0, 0, m_pixmap.width(), m_pixmap.height() ));
   painter->restore();  
+
+  //Draw Selection
+  if (option->state & QStyle::State_Selected)
+  {
+    drawSelection(painter);
+  }
 }
 
 void te::layout::ObjectItem::drawBackground( QPainter * painter )
@@ -128,6 +135,28 @@ void te::layout::ObjectItem::drawBackground( QPainter * painter )
     painter->setRenderHint( QPainter::Antialiasing, true );
     painter->drawRect(QRectF( 0, 0, boundingRect().width(), boundingRect().height()));
   }
+}
+
+void te::layout::ObjectItem::drawSelection( QPainter* painter )
+{
+  if(!painter)
+  {
+    return;
+  }
+
+  qreal penWidth = painter->pen().widthF();
+
+  const qreal adj = penWidth / 2;
+  const QColor fgcolor(255,255,255);
+  const QColor backgroundColor(0,0,0);
+
+  painter->setPen(QPen(backgroundColor, 0, Qt::SolidLine));
+  painter->setBrush(Qt::NoBrush);
+  painter->drawRect(boundingRect().adjusted(adj, adj, -adj, -adj));
+
+  painter->setPen(QPen(fgcolor, 0, Qt::DashLine));
+  painter->setBrush(Qt::NoBrush);
+  painter->drawRect(boundingRect().adjusted(adj, adj, -adj, -adj));
 }
 
 QRectF te::layout::ObjectItem::boundingRect() const

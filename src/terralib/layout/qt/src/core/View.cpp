@@ -153,12 +153,11 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
     if(sc)
     {
       QGraphicsItemGroup* group = sc->createItemGroup(scene()->selectedItems());
-      Scene* lScene = dynamic_cast<Scene*>(scene());
-      group->setParentItem(lScene->getMasterParentItem());
+      group->setParentItem(sc->getMasterParentItem());
       
       ItemGroup* layoutGroup = dynamic_cast<ItemGroup*>(group);
       
-      if(layoutGroup)
+      if(layoutGroup) 
         layoutGroup->redraw();
 
       /*If "enabled=true", QGraphicsItemGroup will handle all the events. For example, 
@@ -318,6 +317,8 @@ void te::layout::View::closeEvent( QCloseEvent * event )
 
 void te::layout::View::showEvent( QShowEvent * event )
 {
+  QGraphicsView::showEvent(event);
+
   if(m_outsideArea)
     m_outsideArea->openAllDocks();
 }

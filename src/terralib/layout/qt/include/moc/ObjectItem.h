@@ -41,6 +41,8 @@
 
 class QGraphicsSceneMouseEvent;
 class QGraphicsSceneHoverEvent;
+class QStyleOptionGraphicsItem;
+class QWidget;
 
 namespace te
 {
@@ -73,7 +75,8 @@ namespace te
       protected:
 
         virtual void setPosition(const double& x, const double& y);
-        void drawBackground( QPainter * painter );
+        virtual void drawBackground( QPainter* painter );
+        virtual void drawSelection(QPainter* painter);
 
         //Resize
         virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );

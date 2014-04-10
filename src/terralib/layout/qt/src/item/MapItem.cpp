@@ -64,6 +64,7 @@
 #include <QDebug>
 #include <QApplication>
 #include <QGraphicsSceneMouseEvent>
+#include <QStyleOptionGraphicsItem>
 
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   QGraphicsProxyWidget(0),
@@ -131,6 +132,40 @@ void te::layout::MapItem::updateObserver( ContextItem context )
 
   setPixmap(pixmap);
   update();
+}
+
+void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+{
+  QGraphicsProxyWidget::paint(painter, option, widget);
+
+  //Draw Selection
+  if (option->state & QStyle::State_Selected)
+  {
+    drawSelection(painter);
+  }
+
+}
+
+void te::layout::MapItem::drawSelection( QPainter* painter)
+{
+  if(!painter)
+  {
+    return;
+  }
+
+  qreal penWidth = painter->pen().widthF();
+
+  const qreal adj = penWidth / 2;
+  const QColor fgcolor(255,255,255);
+  const QColor backgroundColor(0,0,0);
+
+  painter->setPen(QPen(backgroundColor, 0, Qt::SolidLine));
+  painter->setBrush(Qt::NoBrush);
+  painter->drawRect(boundingRect().adjusted(adj, adj, -adj, -adj));
+
+  painter->setPen(QPen(fgcolor, 0, Qt::DashLine));
+  painter->setBrush(Qt::NoBrush);
+  painter->drawRect(boundingRect().adjusted(adj, adj, -adj, -adj));
 }
 
 void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )

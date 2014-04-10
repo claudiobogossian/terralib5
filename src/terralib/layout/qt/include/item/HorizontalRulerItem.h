@@ -31,12 +31,6 @@
 // TerraLib
 #include "ObjectItem.h"
 
-// Qt
-#include <QGraphicsItem>
-#include <QtGui/QGraphicsRectItem>
-#include <QGraphicsSceneMouseEvent>
-#include <QVariant>
-
 namespace te
 {
   namespace layout

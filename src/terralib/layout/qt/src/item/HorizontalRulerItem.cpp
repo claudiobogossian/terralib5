@@ -36,10 +36,6 @@
 #include "../../../../geometry/Envelope.h"
 #include "../../../../common/STLUtils.h"
 
-// Qt
-#include <QtGui/QGraphicsRectItem>
-#include <QPainter>
-
 te::layout::HorizontalRulerItem::HorizontalRulerItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
 {

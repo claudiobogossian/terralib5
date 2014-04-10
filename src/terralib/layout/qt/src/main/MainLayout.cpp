@@ -149,7 +149,6 @@ void te::layout::MainLayout::init(QWidget* mainWindow)
   if(!m_outsideArea)
     m_outsideArea = new OutsideArea(mainWindow);
 
-
   if(create)
   {
     m_view->setOutsideArea(m_outsideArea);

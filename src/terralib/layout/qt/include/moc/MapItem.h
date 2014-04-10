@@ -59,6 +59,8 @@ namespace te
 
         void setPixmap( const QPixmap& pixmap );
 
+        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem* option, QWidget * widget = 0 );
+
         //Mandatory implementation methods
         virtual void setRect(QRectF rect);
                         
@@ -79,6 +81,8 @@ namespace te
       virtual te::gm::Coord2D getPosition();
 
       virtual void setPosition( const double& x, const double& y );
+      
+      virtual void drawSelection( QPainter* painter );
 
     protected:
 
