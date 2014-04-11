@@ -98,4 +98,7 @@ install(TARGETS terralib_mod_qt_plugins_datasource_ogr
 install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}
         DESTINATION include/terralib/qt/plugins/datasource/ogr COMPONENT devel)
 
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.qt.datasource.ogr.teplg
+        DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
+
 export(TARGETS terralib_mod_qt_plugins_datasource_ogr APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
