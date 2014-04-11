@@ -734,13 +734,15 @@ std::vector<std::string> GetPluginsFiles()
 
   if(files.empty())
   {
-    d.setPath(qApp->applicationDirPath() + "../plugins");
+    d.setPath(qApp->applicationDirPath() + "/../plugins");
+
     files = d.entryInfoList(filters, QDir::Files);
 
     if(files.empty())
-      d.setPath(qApp->applicationDirPath() + "../Plugins");
-
-    files = d.entryInfoList(filters, QDir::Files);
+    {
+      d.setPath(qApp->applicationDirPath() + "/../Plugins");
+      files = d.entryInfoList(filters, QDir::Files);
+    }
   }
 
   QFileInfoList::iterator it;

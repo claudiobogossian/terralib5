@@ -228,8 +228,8 @@ MACRO(makePluginProject proj_name root_h_dir root_src_dir)
   else()
     install(
       TARGETS ${PROJ_NAME}
-      LIBRARY DESTINATION "lib" COMPONENT PLUGINS
-      ARCHIVE DESTINATION "lib" COMPONENT PLUGINS
+      LIBRARY DESTINATION plugins COMPONENT PLUGINS
+      ARCHIVE DESTINATION plugins COMPONENT PLUGINS
     )
   endif()
   
@@ -520,19 +520,19 @@ ENDMACRO(getPluginRequirements)
 #
 # param RESULT[output] The formatted data.
 MACRO (today RESULT)
-    IF (WIN32)
-        EXECUTE_PROCESS(COMMAND "cmd" " /C date /T" OUTPUT_VARIABLE ${RESULT})
-        EXECUTE_PROCESS(COMMAND "cmd" " /C time /T" OUTPUT_VARIABLE time_)
+    if (WIN32)
+        execute_process(COMMAND "cmd" " /C date /T" OUTPUT_VARIABLE ${RESULT})
+        execute_process(COMMAND "cmd" " /C time /T" OUTPUT_VARIABLE time_)
         string(REGEX REPLACE "(..)/(..)/..(..).*" "\\1/\\2/\\3" ${RESULT} ${${RESULT}})
         string(REGEX REPLACE "(..):(..):(..)" "\\1/\\2/\\3" time_ ${time_})
 		
-		set(${RESULT} "${${RESULT}}-${time_}")
+        set(${RESULT} "${${RESULT}}-${time_}")
 
-    ELSEIF(UNIX)
-        EXECUTE_PROCESS(COMMAND "date" "+%d/%m/%Y" OUTPUT_VARIABLE ${RESULT})
-        string(REGEX REPLACE "(..)/(..)/..(..).*" "\\1/\\2/\\3" ${RESULT} ${${RESULT}})
-    ELSE (WIN32)
-        MESSAGE(SEND_ERROR "date not implemented")
-        SET(${RESULT} 000000)
-    ENDIF (WIN32)
+    elseif (UNIX)
+      execute_process(COMMAND "date" "+%d/%m/%Y-%R" OUTPUT_VARIABLE _date)
+      set (${RESULT} "${_date}")
+    else ()
+        message(SEND_ERROR "date not implemented")
+        set(${RESULT} 000000)
+    endif ()
 ENDMACRO (today)

@@ -95,10 +95,6 @@ foreach(_plg "${ENABLED_PLUGINS}")
 	add_dependencies(${PROJ_NAME} ${_plg})
 endforeach()
 
-#add_dependencies(${PROJ_NAME} ${_plgs})
-
-message ("Generating configurations files in directory \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\".")
-  
 set (TE_DEFAULT_PROJECT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/default_project.xml")  
 set (TE_DEFAULT_DATASOURCES_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/datasources.xml") 
  
@@ -128,24 +124,56 @@ Plugins = plugins"
 
 today(dateTime_)
 
+file (
+ WRITE
+ ${CMAKE_BINARY_DIR}/.generated
+ ${dateTime_})
 
-install ( CODE
-	"file (
-	  WRITE
-	  ${CMAKE_BINARY_DIR}/.generated
-	  ${dateTime_})
-	"
-	COMPONENT BINARIES
-)
-
-install (
-  FILES ${CMAKE_BINARY_DIR}/qt.conf
-  DESTINATION bin
-  COMPONENT BINARIES
-)
+# Generating qt.conf file
+if(NOT UNIX)
+  install (
+    FILES ${CMAKE_BINARY_DIR}/qt.conf
+    DESTINATION bin
+    COMPONENT BINARIES
+  )
+endif()
 
 install (
   FILES ${CMAKE_BINARY_DIR}/.generated
   DESTINATION .
   COMPONENT BINARIES
 )
+
+# Creating bash script
+if(UNIX AND NOT APPLE)
+  get_filename_component(_qt_lib_path ${QT_QTCORE_LIBRARY} PATH)
+
+  file(
+    WRITE
+    ${CMAKE_BINARY_DIR}/terraview.sh
+    "#!/bin/sh
+
+  TE_DIR=\"$(dirname $0)/..\"
+  EXECDIR=\"$TE_DIR/bin\"
+
+  export \"TERRALIB_DIR=$TE_DIR\"
+
+  export \"LD_LIBRARY_PATH=$TE_DIR/lib:${TE_DEPENDENCIES_DIR}/lib:${_qt_lib_path}:$TE_DIR/plugins\"
+
+  export \"QT_PLUGIN_PATH=${QT_PLUGINS_DIR}\"
+
+  $EXECDIR/tview
+  "
+  )
+
+  install (
+    FILES ${CMAKE_BINARY_DIR}/terraview.sh
+    DESTINATION bin
+    COMPONENT BINARIES
+  )
+
+  install (
+    SCRIPT ${CMAKE_SOURCE_DIR}/modules/ConfigBash.cmake
+    COMPONENT BINARIES
+  )
+endif()
