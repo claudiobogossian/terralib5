@@ -28,7 +28,7 @@
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
-
+#include "../Utils.h"
 #include "DataSetTableModel.h"
 #include "Promoter.h"
 
@@ -223,6 +223,7 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
     break;
 
     case Qt::DisplayRole:
+    {
       if(m_currentRow != index.row())
       {
         m_currentRow = index.row();
@@ -231,13 +232,22 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
         m_dataset->move(row);
       }
 
-      if(!m_dataset->isNull(index.column())) 
-        return m_dataset->getAsString(index.column(), 6).c_str();
-
+      if(!m_dataset->isNull(index.column()))
+      {
+        if(m_dataset->getPropertyDataType(index.column()) == te::dt::STRING_TYPE)
+        {
+          std::string value = m_dataset->getString(index.column());
+          te::common::CharEncoding encoding = m_dataset->getPropertyCharEncoding(index.column());
+          return Convert2Qt(value, encoding);
+        }
+        else
+          return m_dataset->getAsString(index.column(), 6).c_str();
+      }
+    }
     break;
 
     default:
-    break;
+      break;
   }
 
   return QVariant();

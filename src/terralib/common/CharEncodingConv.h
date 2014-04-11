@@ -44,13 +44,14 @@ namespace te
     */
     enum CharEncoding
     {
-      UTF8,                 /*!< UTF-8 encoding.   */
-      CP1250,               /*!< CP1250 encoding.  */
-      CP1251,               /*!< CP1251 encoding.  */
-      CP1252,               /*!< CP1252 encoding.  */
-      CP1253,               /*!< CP1253 encoding.  */
-      CP1254,               /*!< CP1254 encoding.  */
-      CP1257,               /*!< CP1257 encoding.  */
+      UTF8,                 /*!< UTF-8 encoding.               */
+      CP1250,               /*!< CP1250 encoding.              */
+      CP1251,               /*!< CP1251 encoding.              */
+      CP1252,               /*!< CP1252 encoding.              */
+      CP1253,               /*!< CP1253 encoding.              */
+      CP1254,               /*!< CP1254 encoding.              */
+      CP1257,               /*!< CP1257 encoding.              */
+      LATIN1,               /*!< ISO-8859-1 encoding (Latin1). */
       // continue...
       UNKNOWN_CHAR_ENCODING /*!< Unknown encoding. */
     };

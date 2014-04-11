@@ -516,18 +516,24 @@ te::rst::Raster* te::rst::Raster::resample(int method, unsigned int drow, unsign
   assert(drow + height <= getNumberOfRows());
   assert(dcolumn + width <= getNumberOfColumns());
 
-  te::gm::Coord2D ll = getGrid()->gridToGeo(dcolumn, drow + height);
-  te::gm::Coord2D ur = getGrid()->gridToGeo(dcolumn + width, drow);
-
-  te::gm::Envelope* newbox = new te::gm::Envelope(ll.x, ll.y, ur.x, ur.y);
+  te::gm::Coord2D ulc = getGrid()->gridToGeo(((double)dcolumn) - 0.5, ((double)drow) - 0.5);
+  double newResX = m_grid->getExtent()->getWidth() / ((double)newwidth);
+  double newResY = m_grid->getExtent()->getHeight() / ((double)newheight);  
 
 // create output parameters and raster
-  te::rst::Grid* grid = new te::rst::Grid(newwidth, newheight, newbox, getSRID());
+  te::rst::Grid* grid = new te::rst::Grid(newwidth, newheight, newResX,
+    newResY, &ulc, getSRID());
 
   std::vector<te::rst::BandProperty*> bands;
 
   for (std::size_t b = 0; b < getNumberOfBands(); b++)
+  {
     bands.push_back(new te::rst::BandProperty(*(getBand(b)->getProperty())));
+    bands[ b ]->m_blkh = 1;
+    bands[ b ]->m_blkw = newwidth;
+    bands[ b ]->m_nblocksx = 1;
+    bands[ b ]->m_nblocksy = newheight;
+  }
 
   te::rst::Raster* rout = te::rst::RasterFactory::make(grid, bands, rinfo);
 

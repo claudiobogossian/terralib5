@@ -700,6 +700,11 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
 
     if(!fileName.isEmpty())
     {
+      QFileInfo info(fileName);
+
+      if(info.suffix() != "xml")
+        fileName += ".xml";
+
       fName = fileName.toStdString();
       m_project->setFileName(fName);
     }

@@ -172,9 +172,9 @@ std::vector<std::string> te::wms::DataSource::getDataSourceNames(const std::map<
   return std::vector<std::string>();
 }
 
-std::vector<std::string> te::wms::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
+std::vector<te::common::CharEncoding> te::wms::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
 {
-  return std::vector<std::string>();
+  return std::vector<te::common::CharEncoding>();
 }
 
 void te::wms::DataSource::verifyConnectionInfo() const

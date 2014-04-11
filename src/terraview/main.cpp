@@ -46,15 +46,6 @@
 
 #include <locale>
 
-
-void RemoveAllEntries(QDir dir)
-{
-  QDirIterator it(dir, QDirIterator::Subdirectories);
-
-  while(it.hasNext())
-    dir.remove(it.next());
-}
-
 int main(int argc, char** argv)
 {
   QApplication app(argc, argv);
@@ -107,12 +98,7 @@ int main(int argc, char** argv)
 
       if(cFile.isEmpty() || !info.exists() || regen)
       {
-        if(regen)
-        {
-          RemoveAllEntries(info.absoluteDir());
-          te::qt::af::SetDateTime(genDate); 
-        }
-
+        te::qt::af::SetDateTime(genDate);
         cFile = te::qt::af::GetDefaultConfigFileOutputDir() + "/config.xml";
         te::qt::af::WriteConfigFile(cFile, "TerraView", "TerraView");
       }

@@ -64,12 +64,15 @@ namespace te
         /*!
           \brief Constructor.
 
-          \param result       The internal PGresult.
-          \param ds           The data source.
+          \param result        The internal PGresult.
+          \param ds            The data source.
+          \param timeIsInteger A flag that indicates if the postgis stores, internally, the time and timestamp as an integer.
+          \param ce            The connection character encoding.
         */
         DataSet(PGresult* result,
                 const std::vector<int>& ptypes,
-                bool timeIsInteger = true);
+                bool timeIsInteger = true,
+                const te::common::CharEncoding& ce = te::common::UNKNOWN_CHAR_ENCODING);
 
         /*! \brief The destructor will clear the internal PGresult. */
         ~DataSet();
@@ -170,6 +173,7 @@ namespace te
         std::vector<int> m_ptypes;          //!< The list of property types.
         te::gm::Envelope* m_mbr;            //!< The dataset extent.
         bool m_timeIsInteger;               //!< It indicates if the postgis stores, internally, the time and timestamp as an integer. 
+        te::common::CharEncoding m_ce;      //!< The connection character encoding.
     };
 
   } // end namespace pgis
@@ -177,6 +181,3 @@ namespace te
 
 
 #endif  // __TERRALIB_POSTGIS_INTERNAL_DATASET_H
-
-
-

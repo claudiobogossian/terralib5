@@ -268,10 +268,11 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::passwordLineEditEditingFinishe
 
       // Get Encodings
       m_ui->m_encodingComboBox->addItem("");
-      std::vector<std::string> encodings = te::da::DataSource::getEncodings("POSTGIS", dsInfo);
-      if(!encodings.empty())
+      std::vector<te::common::CharEncoding> encodings = te::da::DataSource::getEncodings("POSTGIS", dsInfo);
+      // TODO
+      /*if(!encodings.empty())
         for(std::size_t i = 0; i < encodings.size(); i++)
-          m_ui->m_encodingComboBox->addItem(encodings[i].c_str());
+          m_ui->m_encodingComboBox->addItem(encodings[i].c_str());*/
 
       // Try to go the owners
       m_ui->m_ownerComboBox->clear();

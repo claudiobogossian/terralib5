@@ -31,6 +31,7 @@ endif()
 set (
   HDRS_TO_MOC
   ${SRCDIR}/AbstractAction.h
+  ${SRCDIR}/ArithmeticOpAction.h
   ${SRCDIR}/ClassifierAction.h
   ${SRCDIR}/ClippingAction.h
   ${SRCDIR}/ColorTransformAction.h
@@ -111,8 +112,8 @@ if(WIN32)
 else()
   install(
     TARGETS ${PROJ_NAME}
-    ARCHIVE DESTINATION "lib" COMPONENT PLUGINS
-    LIBRARY DESTINATION "lib" COMPONENT PLUGINS
+    ARCHIVE DESTINATION plugins COMPONENT PLUGINS
+    LIBRARY DESTINATION plugins COMPONENT PLUGINS
   )
 endif()
 

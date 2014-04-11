@@ -45,6 +45,7 @@
 #include "../../../srs/Config.h"
 #include "../canvas/Canvas.h"
 #include "../canvas/MapDisplay.h"
+#include "../Utils.h"
 #include "Info.h"
 
 // Qt
@@ -236,8 +237,21 @@ void te::qt::widgets::Info::getGeometryInfo(QTreeWidgetItem* layerItem, te::da::
           propertyItem->setIcon(0, QIcon::fromTheme("geometry"));
 
         if(!dataset->isNull(i))
-          propertyItem->setText(1, dataset->getAsString(i, 3).c_str());
-        else
+        {
+          QString qvalue;
+
+          if(dataset->getPropertyDataType(i) == te::dt::STRING_TYPE)
+          {
+            std::string value = dataset->getString(i);
+            te::common::CharEncoding encoding = dataset->getPropertyCharEncoding(i);
+            qvalue = Convert2Qt(value, encoding);
+          }
+          else
+            qvalue = dataset->getAsString(i, 3).c_str();
+
+          propertyItem->setText(1, qvalue);
+        }
+        else // property null value!
           propertyItem->setText(1, "");
       }
 

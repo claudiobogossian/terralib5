@@ -20,7 +20,7 @@
 /*!
   \file layout_fw.h
    
-  \brief Forward declarations for the Statistics Module
+  \brief Forward declarations for the Layout Module
  */
 
 #ifndef __TERRALIB_INTERNAL_LAYOUT_FW_H
@@ -29,7 +29,7 @@
 // Forward declarations
 namespace te
 {
-  namespace stat
+  namespace layout
   {
   }
 }
