@@ -233,6 +233,7 @@ set (
   ${SRCDIR}/qt/include/moc/PropertyBrowser.h
   ${SRCDIR}/qt/include/moc/VisualizationArea.h
   ${SRCDIR}/qt/include/moc/OutsideArea.h
+  ${SRCDIR}/qt/include/moc/MapGridItem.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/layout/qt/include/moc" MOC)
 

@@ -34,6 +34,7 @@
 #include "PaperItem.h"
 #include "MapItem.h"
 #include "Observer.h"
+#include "MapGridItem.h"
 
 te::layout::ItemFactory::ItemFactory()
 {
@@ -99,6 +100,13 @@ te::layout::Observer* te::layout::ItemFactory::make( LayoutAbstractObjectType ty
     {
       MapItem* map = new MapItem(params.getController(), params.getModel());
       item = (Observer*)map;
+      return item;
+      break;
+    }
+  case TPMapGridItem:
+    {
+      MapGridItem* mapGrid = new MapGridItem(params.getController(), params.getModel());
+      item = (Observer*)mapGrid;
       return item;
       break;
     }

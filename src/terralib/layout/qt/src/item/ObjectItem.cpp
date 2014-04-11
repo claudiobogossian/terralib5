@@ -85,6 +85,9 @@ void te::layout::ObjectItem::setPixmap( const QPixmap& pixmap )
 {
   m_pixmap = pixmap;
 
+  if(m_pixmap.isNull())
+    return;
+
   Utils* utils = Context::getInstance()->getUtils();
   QPointF point = pos();
 

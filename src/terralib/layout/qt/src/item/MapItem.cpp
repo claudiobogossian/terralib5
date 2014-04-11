@@ -113,6 +113,9 @@ void te::layout::MapItem::updateObserver( ContextItem context )
 {
   te::color::RGBAColor** rgba = context.getPixmap();
 
+  if(!rgba)
+    return;
+
   Utils* utils = Context::getInstance()->getUtils();
 
   te::gm::Envelope box = utils->viewportBox(m_model->getBox());
@@ -137,6 +140,17 @@ void te::layout::MapItem::updateObserver( ContextItem context )
 void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
   QGraphicsProxyWidget::paint(painter, option, widget);
+
+  if(!m_pixmap.isNull())
+  {
+    QRectF boundRect;
+    boundRect = boundingRect();
+
+    painter->save();
+    painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );
+    painter->drawPixmap(boundRect, m_pixmap, QRectF( 0, 0, m_pixmap.width(), m_pixmap.height() ));
+    painter->restore(); 
+  }
 
   //Draw Selection
   if (option->state & QStyle::State_Selected)
@@ -202,6 +216,9 @@ void te::layout::MapItem::dragMoveEvent( QGraphicsSceneDragDropEvent * event )
 void te::layout::MapItem::setPixmap( const QPixmap& pixmap )
 {
   m_pixmap = pixmap;
+
+  if(m_pixmap.isNull())
+    return;
 
   Utils* utils = Context::getInstance()->getUtils();
   QPointF point = pos();

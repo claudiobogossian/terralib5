@@ -109,6 +109,11 @@ void te::layout::Utils::configCanvas( te::gm::Envelope box )
 {
   te::map::Canvas* canvas = Context::getInstance()->getCanvas();
   te::gm::Envelope boxViewport = viewportBox(box);
+
+  //Transparent
+  te::color::RGBAColor color(255,255,255, 0);
+  canvas->setBackgroundColor(color);
+
   canvas->resize(boxViewport.getWidth(), boxViewport.getHeight());
   canvas->setWindow(box.getLowerLeftX(), box.getLowerLeftY(), 
     box.getUpperRightX(), box.getUpperRightY());  
