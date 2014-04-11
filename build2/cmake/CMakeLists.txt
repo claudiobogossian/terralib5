@@ -364,7 +364,7 @@ if(TERRALIB_BUILD_EXAMPLES)
 
   #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_ADO_ENABLED "Build ADO examples?" ON "TERRALIB_MOD_DATAACCESS_ENABLED" OFF)
   CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_COLORBAR_ENABLED "Build color bar example?" ON "TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
-  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_CPPPLUGIN_ENABLED "Build C++ plugins example" ON "TERRALIB_MOD_PLUGINS_ENABLED" OFF)
+  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_CPPPLUGIN_ENABLED "Build C++ plugins example" ON "TERRALIB_MOD_PLUGINS_ENABLED" OFF)
   #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_DATAACCESS_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
   #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_DATASETMANAGEMENT_ENABLED "Build examples for the Dataset  Management support?" ON "TERRALIB_MOD_DATAACCESS" OFF)
   #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_DATAVIEW_ENABLED "Build examples for the Data View support?" ON "TERRALIB_MOD_DATAACCESS" OFF)
@@ -399,11 +399,16 @@ else()
   if(defined TERRALIB_EXAMPLE_COMMON)
     set(TERRALIB_EXAMPLE_COMMON 0 CACHE BOOL "Build examples for the Common runtime module?" FORCE)
   endif()
-  
+
   if(defined TERRALIB_EXAMPLE_COLORBAR)
     set(TERRALIB_EXAMPLE_COLORBAR 0 CACHE BOOL "Build examples for the Color Bar runtime module?" FORCE)
   endif()
-  
+
+  if(defined TERRALIB_EXAMPLE_CPPPLUGIN)
+    set(TERRALIB_EXAMPLE_CPPPLUGIN 0 CACHE BOOL "Build C++ plugins example?" FORCE)
+  endif()
+
+
 endif()
 
 
@@ -591,12 +596,15 @@ if(TERRALIB_BUILD_EXAMPLES)
   if(TERRALIB_EXAMPLE_COMMON_ENABLED)
     add_subdirectory(terralib_example_common)
   endif()
-endif()
-
-if(TERRALIB_BUILD_EXAMPLES)
+  
   if(TERRALIB_EXAMPLE_COLORBAR_ENABLED)
     add_subdirectory(terralib_example_colorbar)
   endif()
+
+  if(TERRALIB_EXAMPLE_CPPPLUGIN_ENABLED)
+    add_subdirectory(terralib_example_cppplugin)
+  endif()
+
 endif()
 
 #
