@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<DataSourceCapabilities xmlns="http://www.terralib.org/schemas/dataaccess"
+                        xmlns:te_dt="http://www.terralib.org/schemas/datatype"
+                        xmlns:te_common="http://www.terralib.org/schemas/common"
+                        xmlns:te_gm="http://www.terralib.org/schemas/geometry"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+                        xsd:schemaLocation="http://www.terralib.org/schemas/dataaccess ../schemas/terralib/dataaccess/capabilities.xsd"
+                        version="5.0.0-alpha.1">
+
+  <DataTypeCapabilities>
+    <DataType>INT16_TYPE</DataType>
+    <DataType>INT32_TYPE</DataType>
+    <DataType>INT64_TYPE</DataType>
+    <DataType>BOOLEAN_TYPE</DataType>
+    <DataType>FLOAT_TYPE</DataType>
+    <DataType>DOUBLE_TYPE</DataType>
+    <DataType>NUMERIC_TYPE</DataType>
+    <DataType>STRING_TYPE</DataType>
+    <DataType>BYTE_ARRAY_TYPE</DataType>
+    <DataType>GEOMETRY_TYPE</DataType>
+    <DataType>DATETIME_TYPE</DataType>
+    <DataType>ARRAY_TYPE</DataType>
+    <DataType>RASTER_TYPE</DataType>
+    <DataType>XML_TYPE</DataType>	
+  </DataTypeCapabilities>
+  <QueryCapabilities>
+    <SQLDialect>true</SQLDialect>
+    <SpatialSQLDialect>true</SpatialSQLDialect>
+    <Insert>true</Insert>
+    <Update>true</Update>
+    <Delete>true</Delete>
+    <Create>true</Create>
+    <Drop>true</Drop>
+    <Alter>true</Alter>
+    <Select>true</Select>
+    <SelectInto>true</SelectInto>
+    <SpatialTopologicOperators>	
+      <Function name="st_contains">
+        <FunctionEncoder alias="st_contains"/>
+      </Function>
+      <Function name="st_covers">
+        <FunctionEncoder alias="st_covers"/>
+      </Function>
+      <Function name="st_coveredby">
+        <FunctionEncoder alias="st_coveredby"/>
+      </Function>
+      <Function name="st_crosses">
+        <FunctionEncoder alias="st_crosses"/>
+      </Function>
+      <Function name="st_disjoint">
+        <FunctionEncoder alias="st_disjoint"/>
+      </Function>
+      <Function name="st_equals">
+        <FunctionEncoder alias="st_equals"/>
+      </Function>
+	  <Function name="st_overlaps">
+        <FunctionEncoder alias="st_overlaps"/>
+      </Function>
+	  <Function name="st_relate">
+        <FunctionEncoder alias="st_relate"/>
+      </Function>
+	  <Function name="st_touches">
+        <FunctionEncoder alias="st_touches"/>
+      </Function>
+	  <Function name="st_intersects">
+        <FunctionEncoder alias="st_intersects"/>
+      </Function>
+	  <Function name="st_within">
+        <FunctionEncoder alias="st_within"/>
+      </Function>	
+    </SpatialTopologicOperators> 
+	<SpatialMetricOperators>    
+	  <Function name="st_area">
+        <FunctionEncoder alias="st_area"/>
+      </Function>
+	  <Function name="st_distance">
+        <FunctionEncoder alias="st_distance"/>
+      </Function>
+	  <Function name="st_length">
+        <FunctionEncoder alias="st_length"/>
+      </Function>
+	  <Function name="st_perimeter">
+        <FunctionEncoder alias="st_perimeter"/>
+      </Function>	
+	</SpatialMetricOperators>	
+	<SpatialNewGeomOperators>
+	  <Function name="st_centroid">
+        <FunctionEncoder alias="st_centroid"/>
+      </Function>
+	  <Function name="st_difference">
+        <FunctionEncoder alias="st_difference"/>
+      </Function>
+	  <Function name="st_buffer">
+        <FunctionEncoder alias="st_buffer"/>
+      </Function>
+	  <Function name="st_convexhull">
+        <FunctionEncoder alias="st_convexhull"/>
+      </Function>
+	  <Function name="st_intersection">
+        <FunctionEncoder alias="st_intersection"/>
+      </Function>
+	  <Function name="st_symdifference">
+        <FunctionEncoder alias="st_symdifference"/>
+      </Function>
+	  <Function name="st_union">
+        <FunctionEncoder alias="st_union"/>
+      </Function>
+    </SpatialNewGeomOperators>	
+	<SpatialOperators>
+	  <Function name="st_boundary">
+        <FunctionEncoder alias="st_boundary"/>
+      </Function>
+	  <Function name="st_coorddim">
+        <FunctionEncoder alias="st_coorddim"/>
+      </Function>
+	  <Function name="st_dimension">
+        <FunctionEncoder alias="st_coorddim"/>
+      </Function>
+	  <Function name="st_endpoint">
+        <FunctionEncoder alias="st_endpoint"/>
+      </Function>	  
+	  <Function name="st_envelope">
+        <FunctionEncoder alias="st_envelope"/>
+      </Function>
+	  <Function name="st_exteriorring">
+        <FunctionEncoder alias="st_exteriorring"/>
+      </Function>
+	  <Function name="st_geometryn">
+        <FunctionEncoder alias="st_geometryn"/>
+      </Function>
+	  <Function name="st_geometrytype">
+        <FunctionEncoder alias="st_geometrytype"/>
+      </Function>
+	  <Function name="st_interiorringn">
+        <FunctionEncoder alias="st_interiorringn"/>
+      </Function>
+	  <Function name="st_isclosed">
+        <FunctionEncoder alias="st_isclosed"/>
+      </Function>
+	  <Function name="st_isempty">
+        <FunctionEncoder alias="st_isempty"/>
+      </Function>
+	  <Function name="st_isring">
+        <FunctionEncoder alias="st_isring"/>
+      </Function>
+	  <Function name="st_issimple">
+        <FunctionEncoder alias="st_issimple"/>
+      </Function>
+	  <Function name="st_isvalid">
+        <FunctionEncoder alias="st_isvalid"/>
+      </Function>	  
+	  <Function name="st_ndims">
+        <FunctionEncoder alias="st_ndims"/>
+      </Function>
+	  <Function name="st_nrings">
+        <FunctionEncoder alias="st_nrings"/>
+      </Function>
+	  <Function name="st_numgeometries">
+        <FunctionEncoder alias="st_numgeometries"/>
+      </Function>
+	  <Function name="st_numinteriorrings">
+        <FunctionEncoder alias="st_numinteriorrings"/>
+      </Function>
+	  <Function name="st_numpoints">
+        <FunctionEncoder alias="st_numinteriorrings"/>
+      </Function>
+	  <Function name="st_pointn">
+        <FunctionEncoder alias="st_pointn"/>
+      </Function>
+	  <Function name="st_srid">
+        <FunctionEncoder alias="st_srid"/>
+      </Function>
+	  <Function name="st_startpoint">
+        <FunctionEncoder alias="st_startpoint"/>
+      </Function>
+	  <Function name="st_x">
+        <FunctionEncoder alias="st_x"/>
+      </Function>
+	  <Function name="st_y">
+        <FunctionEncoder alias="st_y"/>
+      </Function>
+	  <Function name="st_z">
+        <FunctionEncoder alias="st_z"/>
+      </Function>
+	  <Function name="st_m">
+        <FunctionEncoder alias="st_m"/>
+      </Function>
+	  <Function name="st_transform">
+        <FunctionEncoder alias="st_transform"/>
+      </Function>
+	  <Function name="st_dfullywithin">
+        <FunctionEncoder alias="st_dfullywithin"/>
+      </Function>
+	  <Function name="st_dwithin">
+        <FunctionEncoder alias="st_dwithin"/>
+      </Function>
+    </SpatialOperators>
+    <LogicalOperators>
+      <Function name="and">
+        <BinaryOpEncoder alias="and"/>
+      </Function>
+      <Function name="or">
+        <BinaryOpEncoder alias="or"/>
+      </Function>
+      <Function name="not">
+        <BinaryOpEncoder alias="not"/>
+      </Function>
+    </LogicalOperators>
+    <ComparsionOperators>
+      <Function name="=">
+        <BinaryOpEncoder alias="="/>
+      </Function>
+      <Function name="&#60;&#62;">
+        <BinaryOpEncoder alias="&#60;&#62;"/>
+      </Function>
+      <Function name="&#62;">
+        <BinaryOpEncoder alias="&#62;"/>
+      </Function>
+      <Function name="&#60;">
+        <BinaryOpEncoder alias="&#60;"/>
+      </Function>
+      <Function name="&#62;=">
+        <BinaryOpEncoder alias="&#62;="/>
+      </Function>
+      <Function name="&#60;=">
+        <BinaryOpEncoder alias="&#60;="/>
+      </Function>
+    </ComparsionOperators>
+    <ArithmeticOperators>
+      <Function name="+">
+        <BinaryOpEncoder alias="+"/>
+      </Function>
+      <Function name="-">
+        <BinaryOpEncoder alias="-"/>
+      </Function>
+      <Function name="*">
+        <BinaryOpEncoder alias="*"/>
+      </Function>
+      <Function name="/">
+        <BinaryOpEncoder alias="/"/>
+      </Function>
+    </ArithmeticOperators>
+    <Functions>	  
+	  <Function name="upper">
+        <FunctionEncoder alias="upper"/>
+      </Function>
+      <Function name="lower">
+        <FunctionEncoder alias="lower"/>
+      </Function>
+	  <Function name="sum">
+        <FunctionEncoder alias="sum"/>
+      </Function>  
+      <Function name="avg">
+        <FunctionEncoder alias="avg"/>
+      </Function>
+      <Function name="count">
+        <FunctionEncoder alias="count"/>
+      </Function>
+      <Function name="max">
+        <FunctionEncoder alias="max"/>
+      </Function>
+      <Function name="min">
+        <FunctionEncoder alias="min"/>
+      </Function>
+	  <Function name="stddev">
+        <FunctionEncoder alias="stddev_pop"/>
+      </Function>
+	  <Function name="variance">
+        <FunctionEncoder alias="var_pop"/>
+      </Function>
+	  <Function name="substring">
+        <TemplateEncoder alias="substring" template="($1 from $2 for $3)"/>
+      </Function>	  
+	  <Function name="trim">
+        <TemplateEncoder alias="trim" template="($1 from $2 for $3)"/>
+      </Function>	  
+	  <Function name="second">
+        <TemplateEncoder alias="extract" template="(both $1 from $2)"/>
+      </Function>
+	  <Function name="year">
+        <TemplateEncoder alias="extract" template="(year from $1)"/>
+      </Function>
+	  <Function name="str">
+        <TemplateEncoder alias="cast" template="($1 as varchar)"/>
+      </Function>
+    </Functions>	
+    <GeomOperands>	
+    </GeomOperands>
+  </QueryCapabilities>
+  <DataSetTypeCapabilities>
+    <SupportPrimaryKey>true</SupportPrimaryKey>
+    <SupportUniqueKey>true</SupportUniqueKey>
+    <SupportForeignKey>true</SupportForeignKey>
+    <SupportSequence>true</SupportSequence>
+    <SupportCheckConstraints>true</SupportCheckConstraints>
+    <SupportIndex>true</SupportIndex>
+    <SupportRTreeIndex>true</SupportRTreeIndex>
+    <SupportBTreeIndex>true</SupportBTreeIndex>
+    <SupportHashIndex>true</SupportHashIndex>
+    <SupportQuadTreeIndex>false</SupportQuadTreeIndex>
+  </DataSetTypeCapabilities>
+  <DataSetCapabilities>
+    <Bidirectional>true</Bidirectional>
+    <Random>true</Random>
+    <Indexed>true</Indexed>
+    <EfficientMovePrevious>true</EfficientMovePrevious>
+    <EfficientMoveBeforeFirst>true</EfficientMoveBeforeFirst>
+    <EfficientMoveLast>true</EfficientMoveLast>
+    <EfficientMoveAfterLast>true</EfficientMoveAfterLast>
+    <EfficientMove>true</EfficientMove>
+    <EfficientSize>true</EfficientSize>
+  </DataSetCapabilities>
+  <SpecificCapabilities>  
+  </SpecificCapabilities>
+  <AccessPolicyName>RW_ACCESS</AccessPolicyName>
+  <SupportTransactions>true</SupportTransactions>
+  <SupportDataSetPesistenceAPI>true</SupportDataSetPesistenceAPI>
+  <SupportDataSetTypePesistenceAPI>true</SupportDataSetTypePesistenceAPI>
+  <SupportPreparedQueryAPI>true</SupportPreparedQueryAPI>
+  <SupportBatchExecutorAPI>true</SupportBatchExecutorAPI>
+</DataSourceCapabilities>
