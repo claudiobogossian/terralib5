@@ -28,6 +28,7 @@
 #include "TerraView.h"
 
 // TerraLib
+#include <terralib/common/PlatformUtils.h>
 #include <terralib/qt/af/Utils.h>
 #include <terralib/qt/af/SplashScreenManager.h>
 
@@ -41,16 +42,13 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QMessageBox>
-#include <QResource>
 #include <QSplashScreen>
 
 int main(int argc, char** argv)
 {
   QApplication app(argc, argv);
 
-  setlocale(LC_ALL,"C");// This force to use "." as decimal separator.
-
-  //QResource::registerResource(TERRAVIEW_RESOURCE_FILE);
+  setlocale(LC_ALL,"C"); // This force to use "." as decimal separator.
 
   int waitVal = EXIT_FAILURE;
 
@@ -60,16 +58,9 @@ int main(int argc, char** argv)
   {
     do 
     {
-      const char* te_env = getenv("TERRALIB_DIR");
-
-      if(te_env == 0)
-      {
-        QMessageBox::critical(0, QObject::tr("Execution Failure"), QObject::tr("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
-        throw std::exception();
-      }
-
-      std::string splash_pix(te_env);
-      splash_pix += "/resources/images/png/terraview-splashscreen.png";
+      std::string terralib_dir = te::common::GetTerraLibDir();
+      
+      std::string splash_pix = terralib_dir + "/share/terralib/images/png/terraview-splashscreen.png";
 
       QPixmap pixmap(splash_pix.c_str());
 
@@ -86,6 +77,7 @@ int main(int argc, char** argv)
       TerraView tview;
 
       QString cFile = te::qt::af::GetConfigFileName();
+
       QFileInfo info(cFile);
 
       if(cFile.isEmpty() || !info.exists())
@@ -103,7 +95,7 @@ int main(int argc, char** argv)
       {
         out_dir.mkpath("resources/json");
 
-        QString origin = te_env + QString("/resources/json");
+        QString origin = terralib_dir.c_str() + QString("/resources/json");
 
         QStringList files = QDir(origin).entryList(QDir::Files);
 

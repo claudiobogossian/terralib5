@@ -28,6 +28,7 @@
 #include "Exception.h"
 #include "PlatformUtils.h"
 #include "StringUtils.h"
+#include "Translator.h"
 
 // STL
 #include <fstream>
@@ -61,12 +62,11 @@
 #include <cstdio>
 #include <cstdlib>
 
-namespace te
+// Boost
+#include <boost/filesystem.hpp>
+
+unsigned long int te::common::GetFreePhysicalMemory()
 {
-  namespace common
-  {
-    unsigned long int GetFreePhysicalMemory()
-    {
       unsigned long int freemem = 0;
 
 #if TE_PLATFORM == TE_PLATFORMCODE_FREEBSD || TE_PLATFORM == TE_PLATFORMCODE_OPENBSD || TE_PLATFORM == TE_PLATFORMCODE_APPLE
@@ -98,10 +98,10 @@ namespace te
 #endif
 
       return freemem;
-    }
+}
 
-    unsigned long int GetTotalPhysicalMemory()
-    {
+unsigned long int te::common::GetTotalPhysicalMemory()
+{
       unsigned long int totalmem = 0;
 
 #if TE_PLATFORM == TE_PLATFORMCODE_FREEBSD || TE_PLATFORM == TE_PLATFORMCODE_OPENBSD || TE_PLATFORM == TE_PLATFORMCODE_APPLE
@@ -133,10 +133,10 @@ namespace te
 #endif
 
       return totalmem;
-    }
+}
 
-    unsigned long int GetUsedVirtualMemory()
-    {
+unsigned long int te::common::GetUsedVirtualMemory()
+{
       unsigned long int usedmem = 0;
       
 #if TE_PLATFORM == TE_PLATFORMCODE_FREEBSD || TE_PLATFORM == TE_PLATFORMCODE_OPENBSD
@@ -173,11 +173,11 @@ namespace te
 #endif
 
       return usedmem;
-    }
+}
 
 
-    unsigned long int GetTotalVirtualMemory()
-    {
+unsigned long int te::common::GetTotalVirtualMemory()
+{
       unsigned long int totalmem = 0;
 
 #if (TE_PLATFORM == TE_PLATFORMCODE_FREEBSD) || (TE_PLATFORM == TE_PLATFORMCODE_OPENBSD) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE) || (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
@@ -199,10 +199,10 @@ namespace te
 #endif
 
       return totalmem;
-    }
+}
 
-    unsigned int GetPhysProcNumber()
-    {
+unsigned int te::common::GetPhysProcNumber()
+{
       unsigned int procnmb = 0;
       
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
@@ -218,10 +218,10 @@ namespace te
 #endif    
 
       return procnmb;
-    }
+}
     
-    void GetDecompostedPathEnvVar( std::vector< std::string >& paths )
-    {
+void te::common::GetDecompostedPathEnvVar( std::vector< std::string >& paths )
+{
       paths.clear();
       
       char* varValuePtr = getenv("PATH");
@@ -239,10 +239,10 @@ namespace te
       {
         Tokenize( std::string( varValuePtr ), paths, separator );
       }
-    }
+}
     
-    void GetDecompostedLDPathEnvVar( std::vector< std::string >& paths )
-    {
+void te::common::GetDecompostedLDPathEnvVar( std::vector< std::string >& paths )
+{
       paths.clear();
       
       char* varValuePtr = getenv("LD_LIBRARY_PATH");
@@ -260,7 +260,40 @@ namespace te
       {
         Tokenize( std::string( varValuePtr ), paths, separator );
       }
-    }    
+}
+
+std::string te::common::GetTerraLibDir()
+{
+// 1st check: look for an environment variable defined by macro TERRALIB_DIR_VAR_NAME
+  const char* te_env = getenv(TERRALIB_DIR_VAR_NAME);
+  
+  if(te_env != 0)
+  {
+    boost::filesystem::path p(te_env);
     
-  }     // end namespace common
-}       // end namespace te
+    if(!boost::filesystem::exists(p))
+      throw Exception(TE_TR("Environment variable \"" TERRALIB_DIR_VAR_NAME "\" is referring a non-existing directory!"));
+    
+    if(!boost::filesystem::is_directory(p))
+      throw Exception(TE_TR("Environment variable \"" TERRALIB_DIR_VAR_NAME "\" is referring to an invalid directory name!"));
+    
+    return te_env;
+  }
+  
+// 2nd chance:
+  
+  
+// 3nd chance: look into install prefix-path
+//  boost::filesystem::path p(TERRALIB_INSTALL_PREFIX_PATH);
+//  
+//  if(boost::filesystem::exists(p) && boost::filesystem::is_directory(p))
+//    return p.string();
+//  
+//// 4th chance: look into source tree
+//  p = TERRALIB_CODEBASE_PATH;
+//  
+//  if(boost::filesystem::exists(p) && boost::filesystem::is_directory(p))
+//    return p.string();
+  
+  return "";
+}

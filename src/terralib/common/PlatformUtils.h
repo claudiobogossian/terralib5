@@ -41,6 +41,7 @@
   #error "Platform not supported yet! Please contact terralib-team@dpi.inpe.br"
 #endif
 
+// STL
 #include <vector>
 #include <string>
 
@@ -95,7 +96,9 @@ namespace te
 
       \param paths The decomposed PATH.
     */
-    TECOMMONEXPORT void GetDecompostedLDPathEnvVar( std::vector< std::string >& paths );      
+    TECOMMONEXPORT void GetDecompostedLDPathEnvVar( std::vector< std::string >& paths );
+    
+    TECOMMONEXPORT std::string GetTerraLibDir();
 
   }     // end namespace common
 }       // end namespace te

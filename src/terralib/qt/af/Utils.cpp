@@ -690,14 +690,14 @@ QString te::qt::af::GetConfigFileName()
 {
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
-  return sett.value("configuration/file name").toString();
+  return sett.value("configuration/file_name").toString();
 }
 
 void te::qt::af::SetConfigFileName(const QString& fileName)
 {
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
-  sett.setValue("configuration/file name", fileName);
+  sett.setValue("configuration/file_name", fileName);
 }
 
 QString te::qt::af::GetDefaultConfigFileOutputDir()
