@@ -40,8 +40,6 @@ list (APPEND TE_DEP_LIBS
 	terralib_memory
 	terralib_plugin
 	terralib_qt_widgets
-	terralib_qt_af
-	terralib_geometry
 	terralib_color
 	terralib_srs
 	qtpropertybrowser
@@ -55,6 +53,7 @@ set (
   core
   include
   include/core
+  include/core/enum
   include/core/pattern
   include/core/pattern/derivativevisitor
   include/core/pattern/factory
@@ -67,17 +66,22 @@ set (
   include/outside
   qt
   qt/ui
+  qt/include/core
   qt/include/item
   qt/include/main
   qt/include/moc
   qt/include/outside
   qt/include/utils
+  qt/include/core/pattern/factory
+  qt/src/core
   qt/src/item
   qt/src/main
   qt/src/outside
   qt/src/utils
+  qt/src/core/pattern/factory
   src
   src/core
+  src/core/enum
   src/core/pattern
   src/core/pattern/derivativevisitor
   src/core/pattern/factory
@@ -103,16 +107,19 @@ appPrefix ("include" "${_DIRS}" QT_INC_INST_DIRS)
 appPrefix ("include/core" "${_DIRS}" QT_INC_INST_DIRS)
 
 # Files in build tree
-appPrefix ("include/pattern/derivativevisitor" "${_DIRS}" QT_INC_INST_DIRS)
+appPrefix ("include/core/enum" "${_DIRS}" QT_INC_INST_DIRS)
 
 # Files in build tree
-appPrefix ("include/pattern/factory" "${_DIRS}" QT_INC_INST_DIRS)
+appPrefix ("include/core/pattern/derivativevisitor" "${_DIRS}" QT_INC_INST_DIRS)
 
 # Files in build tree
-appPrefix ("include/pattern/mvc" "${_DIRS}" QT_INC_INST_DIRS)
+appPrefix ("include/core/pattern/factory" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
+appPrefix ("include/core/pattern/mvc" "${_DIRS}" QT_INC_INST_DIRS)
   
 # Files in build tree
-appPrefix ("include/pattern/singleton" "${_DIRS}" QT_INC_INST_DIRS)
+appPrefix ("include/core/pattern/singleton" "${_DIRS}" QT_INC_INST_DIRS)
 
 # Files in build tree
 appPrefix ("include/core/serialization" "${_DIRS}" QT_INC_INST_DIRS)  
@@ -136,6 +143,12 @@ appPrefix ("qt" "${_DIRS}" QT_INC_INST_DIRS)
 appPrefix ("qt/ui" "${_DIRS}" QT_INC_INST_DIRS)
 
 # Files in build tree
+appPrefix ("qt/include/core" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
+appPrefix ("qt/include/core/pattern/factory" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
 appPrefix ("qt/include/item" "${_DIRS}" QT_INC_INST_DIRS)
 
 # Files in build tree
@@ -149,6 +162,12 @@ appPrefix ("qt/include/outside" "${_DIRS}" QT_INC_INST_DIRS)
   
 # Files in build tree
 appPrefix ("qt/include/utils" "${_DIRS}" QT_INC_INST_DIRS)
+  
+# Files in build tree
+appPrefix ("qt/src/core" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
+appPrefix ("qt/src/core/pattern/factory" "${_DIRS}" QT_INC_INST_DIRS)
   
 # Files in build tree
 appPrefix ("qt/src/item" "${_DIRS}" QT_INC_INST_DIRS)
@@ -203,15 +222,17 @@ set (MOC "")
 # Select the header files for moc'ing
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/qt/include/moc/QLayoutScene.h
-  ${SRCDIR}/qt/include/moc/QPropertiesWindowOutside.h
-  ${SRCDIR}/qt/include/moc/QDisplayWindowOutside.h
-  ${SRCDIR}/qt/include/moc/QObjectInspectorWindowOutside.h
-  ${SRCDIR}/qt/include/moc/QToolbarWindowOutside.h
-  ${SRCDIR}/qt/include/moc/QLayoutView.h
-  ${SRCDIR}/qt/include/moc/QObjectLayoutItem.h
-  ${SRCDIR}/qt/include/moc/QMapLayoutItem.h
-  ${SRCDIR}/qt/include/moc/QLayoutPropertyBrowser.h
+  ${SRCDIR}/qt/include/moc/Scene.h
+  ${SRCDIR}/qt/include/moc/PropertiesOutside.h
+  ${SRCDIR}/qt/include/moc/DisplayOutside.h
+  ${SRCDIR}/qt/include/moc/ObjectInspectorOutside.h
+  ${SRCDIR}/qt/include/moc/ToolbarOutside.h
+  ${SRCDIR}/qt/include/moc/View.h
+  ${SRCDIR}/qt/include/moc/ObjectItem.h
+  ${SRCDIR}/qt/include/moc/MapItem.h
+  ${SRCDIR}/qt/include/moc/PropertyBrowser.h
+  ${SRCDIR}/qt/include/moc/VisualizationArea.h
+  ${SRCDIR}/qt/include/moc/OutsideArea.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/layout/qt/include/moc" MOC)
 

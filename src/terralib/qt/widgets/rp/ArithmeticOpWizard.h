@@ -63,7 +63,8 @@ namespace te
             ARITH_OP_TYPE_3,  /* GAIN * (A - B ) + OFFSET */
             ARITH_OP_TYPE_4,  /* GAIN * (A * B ) + OFFSET*/
             ARITH_OP_TYPE_5,  /* GAIN * (A / B ) + OFFSET */
-            ARITH_OP_TYPE_6   /* (GAIN * (A - B ) / ( A + B )) + OFFSET */
+            ARITH_OP_TYPE_6,   /* (GAIN * (A - B ) / ( A + B )) + OFFSET */
+            ARITH_OP_TYPE_USER_DEFINED
           };
 
         public:
@@ -97,6 +98,8 @@ namespace te
           te::rp::ArithmeticOperations::InputParameters paramsFromOp5();
 
           te::rp::ArithmeticOperations::InputParameters paramsFromOp6();
+
+          te::rp::ArithmeticOperations::InputParameters paramsFromOpUserdDef();
 
         private:
 
