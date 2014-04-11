@@ -1,5 +1,5 @@
 set (XERCES_DIR "${ROOT}/src/terralib/xerces")
-makeProject("xerces" "${XERCES_DIR}" "${XERCES_DIR}")
+makePluginProject("xerces" "${XERCES_DIR}" "${XERCES_DIR}")
 
 if("${ENABLED_PLUGINS}" STREQUAL "")
 	set (ENABLED_PLUGINS terralib_xerces PARENT_SCOPE)

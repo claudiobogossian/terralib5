@@ -78,15 +78,9 @@ file(
   FILES ${CMAKE_BINARY_DIR}/toInstall/*.teplg
 )
 
-install ( 
+install (
   FILES ${xml_config}
-  DESTINATION bin
-  COMPONENT BINARIES
-)
-
-install ( 
-  FILES ${CMAKE_BINARY_DIR}/toInstall/postgis-capabilities.xml
-  DESTINATION lib
+  DESTINATION plugins
   COMPONENT BINARIES
 )
 
@@ -104,7 +98,7 @@ install (
 
 install ( 
   FILES ${plg_config}
-  DESTINATION "bin"
+  DESTINATION plugins
   COMPONENT PLUGINS
 )
 

@@ -40,7 +40,6 @@ list ( APPEND
   terralib_maptools
   terralib_srs
   terralib_symbology
-  terralib_xerces
   terralib_xml
 )
 
