@@ -65,5 +65,5 @@ else()
 endif()
 
 install(FILES ${TERRALIB_FILES}
-        DESTINATION share/terralib/examples/colorbar COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/colorbar COMPONENT devel)
 

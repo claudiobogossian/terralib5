@@ -38,5 +38,5 @@ add_executable(terralib_example_common ${TERRALIB_FILES})
 target_link_libraries(terralib_example_common terralib_mod_common terralib_mod_srs)
 
 install(FILES ${TERRALIB_FILES}
-        DESTINATION share/terralib/examples/common COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/common COMPONENT devel)
 

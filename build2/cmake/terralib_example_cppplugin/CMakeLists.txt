@@ -38,5 +38,5 @@ add_executable(terralib_example_cppplugin ${TERRALIB_FILES})
 target_link_libraries(terralib_example_common terralib_mod_common terralib_mod_plugin)
 
 install(FILES ${TERRALIB_FILES}
-        DESTINATION share/terralib/examples/cppplugin COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/cppplugin COMPONENT devel)
 

@@ -43,6 +43,10 @@ set(TERRALIB_VERSION_STRING "${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
 set(TERRALIB_VERSION "0x050000")
 set(TERRALIB_PKG_VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}.${TERRALIB_VERSION_PATCH})
 
+# variables that control the install location
+set(TERRALIB_DESTINATION_PLUGINS "share/terralib/plugins")
+set(TERRALIB_DESTINATION_EXAMPLES "share/terralib/examples")
+
 # variables storing absolute paths
 set(TERRALIB_ABSOLUTE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 
@@ -624,7 +628,7 @@ install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib.h
 
 install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h.in
               ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h
-        DESTINATION share/terralib/examples COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_EXAMPLES} COMPONENT devel)
 
 install(FILES ${terralib_BINARY_DIR}/pkg/terralib-config.cmake
               ${terralib_BINARY_DIR}/terralib-config-version.cmake
