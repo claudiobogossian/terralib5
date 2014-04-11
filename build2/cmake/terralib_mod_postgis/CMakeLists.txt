@@ -59,4 +59,8 @@ install(TARGETS terralib_mod_postgis
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION include/terralib/postgis COMPONENT devel)
 
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.da.pgis.teplg
+              ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/postgis-capabilities.xml
+        DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
+
 export(TARGETS terralib_mod_postgis APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
