@@ -2,13 +2,13 @@
 <PluginInfo xmlns:xlink="http://www.w3.org/1999/xlink"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.terralib.org/schemas/plugin"
-            xsd:schemaLocation="http://www.terralib.org/schemas/plugin C:/mydevel/terralib5/codebase/build/../schemas/terralib/plugin/plugin_info.xsd"
+            xsd:schemaLocation="http://www.terralib.org/schemas/plugin ../schemas/terralib/plugin/plugin_info.xsd"
             version="5.0.0-alpha.1"
             release="2013-01-01"
             engine="C++">
   <Name>te.da.ogr</Name>
-  <DisplayName>OGR Data Source Driver</DisplayName>
-  <Description>This plugin enables TerraLib to access data via OGR</Description>
+  <DisplayName>OGR Driver</DisplayName>
+  <Description>This plugin enables TerraLib to access vector data through the OGR library</Description>
   <TerraLibVersion>5.0.0-alpha.1</TerraLibVersion>
   <License xlink:href="http://www.gnu.org/licenses/lgpl-3.0-standalone.html">GNU Lesser General Public License v 3.0</License>
   <Category>Data Access</Category>
@@ -19,6 +19,6 @@
     <Email>terralib-team@terralib.org</Email>
   </Provider>
   <Resources>
-    <Resource name="SharedLibraryName" xlink:href="terralib_ogr"/>
+    <Resource name="SharedLibraryName" xlink:href="terralib_mod_ogr"/>
   </Resources>
 </PluginInfo>

@@ -2,13 +2,13 @@
 <PluginInfo xmlns:xlink="http://www.w3.org/1999/xlink"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.terralib.org/schemas/plugin"
-            xsd:schemaLocation="http://www.terralib.org/schemas/plugin C:/mydevel/terralib5/codebase/build/../schemas/terralib/plugin/plugin_info.xsd"
+            xsd:schemaLocation="http://www.terralib.org/schemas/plugin ../schemas/terralib/plugin/plugin_info.xsd"
             version="5.0.0-alpha.1"
             release="2013-01-01"
             engine="C++">
   <Name>te.qt.vp</Name>
-  <DisplayName>Vector Processing</DisplayName>
-  <Description>This plugin enables the terralib vector processing operations.</Description>
+  <DisplayName>Vector Processing Algorithms</DisplayName>
+  <Description>This plugin adds vector processing operations to TerraLib applications.</Description>
   <TerraLibVersion>5.0.0-alpha.1</TerraLibVersion>
   <License xlink:href="http://www.gnu.org/licenses/lgpl-3.0-standalone.html">GNU Lesser General Public License v 3.0</License>
   <Category>Data Access</Category>
@@ -18,7 +18,7 @@
     <Site xlink:href="http://www.terralib.org/"></Site>
     <Email>terralib-team@terralib.org</Email>
   </Provider>  <Resources>
-    <Resource name="SharedLibraryName" xlink:href="terralib_qt_plugin_vp"/>  
+    <Resource name="SharedLibraryName" xlink:href="terralib_mod_qt_plugins_vp"/>
     <Resource name="LangFile" xlink:href="pt.br"/>
   </Resources>
 </PluginInfo>

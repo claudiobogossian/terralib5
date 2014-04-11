@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <DataSourceCapabilities xmlns="http://www.terralib.org/schemas/dataaccess"
-						xmlns:te_dt="http://www.terralib.org/schemas/datatype"
-						xmlns:te_common="http://www.terralib.org/schemas/common"
-						xmlns:te_gm="http://www.terralib.org/schemas/geometry"
-						xmlns:xlink="http://www.w3.org/1999/xlink"
-						xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
-						xsd:schemaLocation="http://www.terralib.org/schemas/dataaccess C:/mydevel/terralib5/codebase/build/../schemas/terralib/dataaccess/capabilities.xsd"
-						version="5.0.0-alpha.1">
-  
+                        xmlns:te_dt="http://www.terralib.org/schemas/datatype"
+                        xmlns:te_common="http://www.terralib.org/schemas/common"
+                        xmlns:te_gm="http://www.terralib.org/schemas/geometry"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+                        xsd:schemaLocation="http://www.terralib.org/schemas/dataaccess ../schemas/terralib/dataaccess/capabilities.xsd"
+                        version="5.0.0-alpha.1">
+
   <DataTypeCapabilities>
     <DataType>INT16_TYPE</DataType>
     <DataType>INT32_TYPE</DataType>
@@ -26,7 +26,7 @@
   </DataTypeCapabilities>
   <QueryCapabilities>
     <SQLDialect>true</SQLDialect>
-	<SpatialSQLDialect>true</SpatialSQLDialect>
+    <SpatialSQLDialect>true</SpatialSQLDialect>
     <Insert>true</Insert>
     <Update>true</Update>
     <Delete>true</Delete>
@@ -34,24 +34,24 @@
     <Drop>true</Drop>
     <Alter>true</Alter>
     <Select>true</Select>
-    <SelectInto>true</SelectInto>    
-	<SpatialTopologicOperators>	
-	  <Function name="st_contains">
+    <SelectInto>true</SelectInto>
+    <SpatialTopologicOperators>	
+      <Function name="st_contains">
         <FunctionEncoder alias="st_contains"/>
       </Function>
-	  <Function name="st_covers">
+      <Function name="st_covers">
         <FunctionEncoder alias="st_covers"/>
       </Function>
-	  <Function name="st_coveredby">
+      <Function name="st_coveredby">
         <FunctionEncoder alias="st_coveredby"/>
       </Function>
-	  <Function name="st_crosses">
+      <Function name="st_crosses">
         <FunctionEncoder alias="st_crosses"/>
       </Function>
-	  <Function name="st_disjoint">
+      <Function name="st_disjoint">
         <FunctionEncoder alias="st_disjoint"/>
       </Function>
-	  <Function name="st_equals">
+      <Function name="st_equals">
         <FunctionEncoder alias="st_equals"/>
       </Function>
 	  <Function name="st_overlaps">

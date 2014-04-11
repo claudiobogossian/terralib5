@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <DataSourceCapabilities xmlns="http://www.terralib.org/schemas/dataaccess"
-						xmlns:te_dt="http://www.terralib.org/schemas/datatype"
-						xmlns:te_common="http://www.terralib.org/schemas/common"
-						xmlns:te_gm="http://www.terralib.org/schemas/geometry"
-						xmlns:xlink="http://www.w3.org/1999/xlink"
-						xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
-						xsd:schemaLocation="http://www.terralib.org/schemas/dataaccess C:/mydevel/terralib5/codebase/build/../schemas/terralib/dataaccess/capabilities.xsd"
-						version="5.0.0-alpha.1">
-  
+                        xmlns:te_dt="http://www.terralib.org/schemas/datatype"
+                        xmlns:te_common="http://www.terralib.org/schemas/common"
+                        xmlns:te_gm="http://www.terralib.org/schemas/geometry"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+                        xsd:schemaLocation="http://www.terralib.org/schemas/dataaccess ../schemas/terralib/dataaccess/capabilities.xsd"
+                        version="5.0.0-alpha.1">
+
   <DataTypeCapabilities>
     <DataType>INT16_TYPE</DataType>
     <DataType>INT32_TYPE</DataType>
@@ -17,11 +17,11 @@
     <DataType>BYTE_ARRAY_TYPE</DataType>
     <DataType>DATETIME_TYPE</DataType>
     <DataType>NUMERIC_TYPE</DataType>
-	<DataType>GEOMETRY_TYPE</DataType>
+    <DataType>GEOMETRY_TYPE</DataType>
   </DataTypeCapabilities>
   <QueryCapabilities>
     <SQLDialect>true</SQLDialect>
-	<SpatialSQLDialect>false</SpatialSQLDialect>
+    <SpatialSQLDialect>false</SpatialSQLDialect>
     <Insert>true</Insert>
     <Update>true</Update>
     <Delete>true</Delete>
@@ -30,17 +30,15 @@
     <Alter>true</Alter>
     <Select>true</Select>
     <SelectInto>true</SelectInto>	
-	<SpatialTopologicOperators>
-	  <Function name="st_envelopeintersects">
+    <SpatialTopologicOperators>
+      <Function name="st_envelopeintersects">
         <BinaryOpEncoder alias="st_envelopeintersects"/>
       </Function>
-    </SpatialTopologicOperators> 
-	<SpatialMetricOperators>
-    </SpatialMetricOperators> 
-	<SpatialNewGeomOperators>
-    </SpatialNewGeomOperators>	
+    </SpatialTopologicOperators>
+    <SpatialMetricOperators/>
+    <SpatialNewGeomOperators/>
     <SpatialOperators>
-    </SpatialOperators>    
+    </SpatialOperators>
     <LogicalOperators>
       <Function name="and">
         <BinaryOpEncoder alias="AND"/>
@@ -112,8 +110,7 @@
         <FunctionEncoder alias="Min"/>
       </Function>
     </Functions>
-    <GeomOperands>
-    </GeomOperands>
+    <GeomOperands/>
   </QueryCapabilities>
   <DataSetTypeCapabilities>
     <SupportPrimaryKey>true</SupportPrimaryKey>
@@ -138,8 +135,7 @@
     <EfficientMove>false</EfficientMove>
     <EfficientSize>false</EfficientSize>
   </DataSetCapabilities>
-  <SpecificCapabilities>  
-  </SpecificCapabilities>
+  <SpecificCapabilities/>
   <AccessPolicyName>RW_ACCESS</AccessPolicyName>
   <SupportTransactions>true</SupportTransactions>
   <SupportDataSetPesistenceAPI>true</SupportDataSetPesistenceAPI>

@@ -19,6 +19,6 @@
     <Email>terralib-team@terralib.org</Email>
   </Provider>
   <Resources>
-    <Resource name="SharedLibraryName" xlink:href="terralib_postgis"/>
+    <Resource name="SharedLibraryName" xlink:href="terralib_mod_postgis"/>
   </Resources>
 </PluginInfo>
