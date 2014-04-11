@@ -53,10 +53,12 @@ void te::vp::BasicGeoOp::setInput(te::da::DataSourcePtr inDsrc,
 }
 
 void te::vp::BasicGeoOp::setParams(std::vector<std::string> selectedProps, 
-                                  std::vector<te::vp::GeographicOperation> operations)
+                                  std::vector<te::vp::GeographicOperation> operations,
+                                  std::string attribute)
 {
   m_selectedProps = selectedProps;
   m_operations = operations;
+  m_attribute = attribute;
 }
 
 void te::vp::BasicGeoOp::setOutput(std::auto_ptr<te::da::DataSource> outDsrc, std::string dsname)
@@ -112,6 +114,16 @@ bool  te::vp::BasicGeoOp::save(std::auto_ptr<te::mem::DataSet> result, std::auto
 te::da::DataSetType* te::vp::BasicGeoOp::GetDataSetType()
 {
   te::da::DataSetType* dsType = new te::da::DataSetType(m_outDsetName);
+
+// Primary key
+  te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
+  pkProperty->setAutoNumber(true);
+  dsType->add(pkProperty);
+
+  te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_outDsetName + "_pk", dsType);
+  pk->add(pkProperty);
+  dsType->setPrimaryKey(pk);
+
 
   bool convexHull = false;
   bool mbr = false;

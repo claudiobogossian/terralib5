@@ -74,6 +74,10 @@ namespace te
 
         bool hasPerimeter();
 
+        std::string getAttribute();
+
+        void setAttributes(std::vector<std::string> attributes);
+
         std::string getOutDsName();
 
         bool getToFile();
@@ -83,6 +87,12 @@ namespace te
         std::string getPath();
 
       public slots:
+
+        void onSimpleOperationToggled();
+
+        void onAttributeOperationToggled();
+
+        void onAttributeComboBoxChanged(int index);
 
         void onTargetDatasourceToolButtonPressed();
 
@@ -99,6 +109,7 @@ namespace te
         te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
         std::string m_dsName;
         bool m_toFile;
+        std::string m_attribute;
 
     };
 
