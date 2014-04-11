@@ -27,15 +27,15 @@
 // TerraLib        
 #include "ColorBar.h"
 #include "../../src/terralib/color/ColorTransform.h"
-#include <QtGui/QMouseEvent>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QWheelEvent>
-#include <QtGui/QResizeEvent>
-#include <QtGui/QPainter>
-#include <QtGui/QPixmap>
-#include <QtGui/QBrush>
-#include <QtGui/QWSKeyboardHandler>
-#include <QtCore/QRect>
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QWheelEvent>
+#include <QResizeEvent>
+#include <QPainter>
+#include <QPixmap>
+#include <QBrush>
+//#include <QWSKeyboardHandler>
+#include <QRect>
 
 ColorBar::ColorBar(QWidget* parent)
   : QDialog(parent),

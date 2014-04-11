@@ -1,7 +1,7 @@
 
 #include "../../src/terralib/color/ColorBar.h"
-#include <QtGui/QDialog>
-#include <QtGui/QPolygon>
+#include <QDialog>
+#include <QPolygon>
 
 class ColorBar : public QDialog
 {
