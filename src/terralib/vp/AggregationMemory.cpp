@@ -299,7 +299,7 @@ bool te::vp::AggregationMemory::run()
   {
     // calculate the spatial aggregation
     std::string value = itg->first;
-    te::gm::GeomType outGeoType = getGeomResultType(geom->getGeometryType());
+    te::gm::GeomType outGeoType = te::vp::GeomOpResultType(geom->getGeometryType());
     te::gm::Geometry* geometry = te::vp::GetGeometryUnion(itg->second, geomIdx, outGeoType);
     
     // if it returned a valid geometry, include the summarization over non-spatial attributes

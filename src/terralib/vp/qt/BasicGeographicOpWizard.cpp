@@ -73,7 +73,7 @@ te::vp::BasicGeographicOpWizard::BasicGeographicOpWizard(QWidget* parent)
   //configure the wizard
   this->setWizardStyle(QWizard::ModernStyle);
   this->setWindowTitle(tr("Basic Geographic Operation"));
-  this->setFixedSize(640, 510);
+  this->setFixedSize(640, 420);
 
   this->setOption(QWizard::HaveHelpButton, true);
   this->setOption(QWizard::HelpButtonOnRight, false);
@@ -104,6 +104,18 @@ bool te::vp::BasicGeographicOpWizard::validateCurrentPage()
 
       m_basicGeoOpPage->setLayer(l);
       m_inLayer = l;
+
+      std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
+      std::vector<te::dt::Property*> vecProp = dsType->getProperties();
+      std::vector<std::string> vecPropName;
+      
+      for(std::size_t i = 0; i < vecProp.size(); ++i)
+      {
+        if(vecProp[i]->getType() != te::dt::GEOMETRY_TYPE)
+          vecPropName.push_back(vecProp[i]->getName());
+      }
+
+      m_basicOpOutputPage->setAttributes(vecPropName);
     }
 
     return m_layerSearchPage->isComplete();
@@ -198,6 +210,9 @@ bool te::vp::BasicGeographicOpWizard::execute()
 
     std::string outputdataset = m_basicOpOutputPage->getOutDsName();
 
+//get the selected property if the operation is by attribute
+    m_attribute = m_basicOpOutputPage->getAttribute();
+
 // Verify output datasource
     if(m_basicOpOutputPage->getToFile())
     {
@@ -226,13 +241,13 @@ bool te::vp::BasicGeographicOpWizard::execute()
       }
 
       // sera feito por algum tipo de factory
-      //te::vp::BasicGeoOp* basicGeoOp = new te::vp::BasicGeoOpMemory();
+      te::vp::BasicGeoOp* basicGeoOp = new te::vp::BasicGeoOpMemory();
       
-      te::vp::BasicGeoOp* basicGeoOp = new te::vp::BasicGeoOpQuery();
+      //te::vp::BasicGeoOp* basicGeoOp = new te::vp::BasicGeoOpQuery();
 
       basicGeoOp->setInput(inDataSource, dsLayer->getData(), dsLayer->getSchema());
       basicGeoOp->setOutput(dsOGR, outputdataset);
-      basicGeoOp->setParams(geoProps, m_ops);
+      basicGeoOp->setParams(geoProps, m_ops, m_attribute);
 
       if (!basicGeoOp->paramsAreValid())
         result = false;
@@ -244,27 +259,41 @@ bool te::vp::BasicGeographicOpWizard::execute()
     else
     {
       m_outputDatasource = m_basicOpOutputPage->getDsInfoPtr();
-      te::da::DataSourcePtr aux = te::da::GetDataSource(m_outputDatasource->getId());
-      if (!aux)
+      std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make(m_outputDatasource->getType());
+      trgDs->setConnectionInfo(m_outputDatasource->getConnInfo());
+      trgDs->open();
+
+      if (!trgDs.get())
       {
         QMessageBox::information(this, "Basic Geographic Operation", "The selected output datasource can not be accessed.");
         return false;
       }
       
-      if (aux->dataSetExists(outputdataset))
+      if (trgDs->dataSetExists(outputdataset))
       {
         QMessageBox::information(this, "Basic Geographic Operation", "Dataset already exists. Remove it or select a new name and try again.");
         return false;
       }
 
-      //Call Functions
-      bool result;
+      te::vp::BasicGeoOp* basicGeoOp = new te::vp::BasicGeoOpMemory();
+
+      basicGeoOp->setInput(inDataSource, dsLayer->getData(), dsLayer->getSchema());
+      basicGeoOp->setOutput(trgDs, outputdataset);
+      basicGeoOp->setParams(geoProps, m_ops, m_attribute);
+
+      if (!basicGeoOp->paramsAreValid())
+        result = false;
+      else
+        result = basicGeoOp->run();
+
       if (!result)
       {
         this->setCursor(Qt::ArrowCursor);
         QMessageBox::information(this, "Basic Geographic Operation", "Error: could not generate the operation.");
         reject();
       }
+
+      delete basicGeoOp;
     }
 
     // creating a layer for the result

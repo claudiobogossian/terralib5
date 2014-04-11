@@ -87,6 +87,7 @@ namespace te
         te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
         te::map::AbstractLayerPtr m_outLayer;
         std::vector<te::vp::GeographicOperation> m_ops;
+        std::string m_attribute;
 
         int m_layerSearchId;
     };

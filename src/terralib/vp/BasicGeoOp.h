@@ -69,7 +69,8 @@ namespace te
                     std::auto_ptr<te::da::DataSetType> inDsetType);
       
       void setParams(std::vector<std::string> selectedProps, 
-                    std::vector<te::vp::GeographicOperation> operations);
+                    std::vector<te::vp::GeographicOperation> operations,
+                    std::string attribute);
       
       void setOutput(std::auto_ptr<te::da::DataSource> outDsrc, std::string dsname);
       
@@ -85,6 +86,7 @@ namespace te
 
       std::vector<std::string> m_selectedProps;
       std::vector<te::vp::GeographicOperation> m_operations;
+      std::string m_attribute;
       
       std::auto_ptr<te::da::DataSource> m_outDsrc;
       std::string m_outDsetName;

@@ -108,6 +108,42 @@ te::gm::Geometry* te::vp::GetGeometryUnion(const std::vector<te::mem::DataSetIte
     return resultGeometry;
 }
 
+te::gm::Geometry* te::vp::GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx)
+{
+  te::gm::Geometry* resultGeometry(0); 
+
+  std::auto_ptr<te::gm::Geometry> seedGeometry = items[0]->getGeometry(geomIdx);
+
+  if(items.size() < 2)
+    resultGeometry = seedGeometry.release();
+
+  if(items.size() == 2)
+  {
+    std::auto_ptr<te::gm::Geometry> teGeom = items[1]->getGeometry(geomIdx);
+
+    if(teGeom->isValid())
+      resultGeometry = seedGeometry->Union(teGeom.release());
+    else
+      resultGeometry = seedGeometry.release();
+  }
+  if(items.size() > 2)
+  {
+    te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, seedGeometry->getSRID());
+
+    for(std::size_t i = 1; i < items.size(); ++i)
+    {
+      std::auto_ptr<te::gm::Geometry> currentGeom = items[i]->getGeometry(geomIdx);
+
+      if(currentGeom->isValid())
+        teGeomColl->add(currentGeom.release());
+    }
+
+    resultGeometry = seedGeometry->Union(teGeomColl);
+
+  }
+  return resultGeometry;
+}
+
 void te::vp::SplitGeometryCollection(te::gm::GeometryCollection* gcIn, te::gm::GeometryCollection* gcOut)
 {
   std::vector<te::gm::Geometry*> geomVec = ((te::gm::GeometryCollection*)gcIn)->getGeometries();
