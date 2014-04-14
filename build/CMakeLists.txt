@@ -21,7 +21,7 @@ set (ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
 option (BUILD_TERRAVIEW "Build TerraView application?" ON)
 
-set (TE_HELP_DIR "" CACHE STRING "Location of TerraView HELP FILES.")
+set (TE_HELP_DIR "" CACHE PATH "Location of TerraView HELP FILES.")
 
 if(BUILD_TERRAVIEW)
   include (${CMAKE_CURRENT_SOURCE_DIR}/buildTree.cmake)
@@ -78,11 +78,19 @@ file(
   FILES ${CMAKE_BINARY_DIR}/toInstall/*.teplg
 )
 
-install (
-  FILES ${xml_config}
-  DESTINATION plugins
-  COMPONENT BINARIES
-)
+if(WIN32)
+  install (
+    FILES ${xml_config}
+    DESTINATION bin
+    COMPONENT BINARIES
+  )
+else()
+  install (
+    FILES ${xml_config}
+    DESTINATION plugins
+    COMPONENT BINARIES
+  )
+endif()
 
 install ( 
   FILES ${head_config}
@@ -96,11 +104,19 @@ install (
   COMPONENT CMAKE
 )
 
-install ( 
-  FILES ${plg_config}
-  DESTINATION plugins
-  COMPONENT PLUGINS
-)
+if(WIN32)
+  install ( 
+    FILES ${plg_config}
+    DESTINATION bin
+    COMPONENT PLUGINS
+  )
+else()
+  install ( 
+    FILES ${plg_config}
+    DESTINATION plugins
+    COMPONENT PLUGINS
+  )
+endif()
 
 # uninstall target
 if( UNIX )
