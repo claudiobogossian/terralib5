@@ -52,7 +52,7 @@ add_executable(terralib_example_layerexplorer ${TERRALIB_FILES})
 
 if(Qt5_FOUND)
 
-  target_link_libraries(terralib_example_layerexplorer terralib_mod_qt_widgets)
+  target_link_libraries(terralib_example_layerexplorer terralib_mod_common terralib_mod_qt_widgets)
 
   qt5_use_modules(terralib_example_layerexplorer Widgets)
 
