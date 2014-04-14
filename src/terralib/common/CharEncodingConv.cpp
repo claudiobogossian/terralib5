@@ -174,6 +174,9 @@ std::string te::common::CharEncodingConv::convert(const std::string& src, const 
 
 std::string te::common::CharEncodingConv::getDescription(const CharEncoding& code)
 {
+  if(code == UNKNOWN_CHAR_ENCODING)
+    return "";
+
   return charset_desc[code];
 }
 
