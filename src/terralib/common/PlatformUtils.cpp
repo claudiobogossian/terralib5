@@ -280,20 +280,19 @@ std::string te::common::GetTerraLibDir()
     return te_env;
   }
   
-// 2nd chance:
+// 2nd chance: look into install prefix-path
+  boost::filesystem::path p(TERRALIB_INSTALL_PREFIX_PATH);
   
+  if(boost::filesystem::exists(p) && boost::filesystem::is_directory(p))
+    return p.string();
   
-// 3nd chance: look into install prefix-path
-//  boost::filesystem::path p(TERRALIB_INSTALL_PREFIX_PATH);
-//  
-//  if(boost::filesystem::exists(p) && boost::filesystem::is_directory(p))
-//    return p.string();
-//  
-//// 4th chance: look into source tree
-//  p = TERRALIB_CODEBASE_PATH;
-//  
-//  if(boost::filesystem::exists(p) && boost::filesystem::is_directory(p))
-//    return p.string();
+// 3rd chance: look around executable path
+  p = boost::filesystem::current_path();
+  
+  p /= "..";
+  
+  if(boost::filesystem::exists(p) && boost::filesystem::is_directory(p))
+    return p.string();
   
   return "";
 }

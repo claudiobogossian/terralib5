@@ -60,7 +60,7 @@ int main(int argc, char** argv)
     {
       std::string terralib_dir = te::common::GetTerraLibDir();
       
-      std::string splash_pix = terralib_dir + "/share/terralib/images/png/terraview-splashscreen.png";
+      std::string splash_pix = terralib_dir + "/share/terraview/images/png/terraview-splashscreen.png";
 
       QPixmap pixmap(splash_pix.c_str());
 
