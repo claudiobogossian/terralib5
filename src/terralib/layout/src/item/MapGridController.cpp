@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file MapModel.cpp
+  \file MapGridController.cpp
    
   \brief 
 
@@ -26,39 +26,33 @@
 */
 
 // TerraLib
-#include "MapModel.h"
+#include "MapGridController.h"
 #include "ContextItem.h"
+#include "AbstractItemFactory.h"
 #include "Context.h"
-#include "../../../maptools/Canvas.h"
+#include "ItemModelObservable.h"
+#include "ItemParamsCreate.h"
+#include "ItemObserver.h"
 
-te::layout::MapModel::MapModel()
+te::layout::MapGridController::MapGridController( Observable* o ) :
+  ItemController(o)
 {
-  m_backgroundColor = te::color::RGBAColor(0, 0, 255, 255);
-  m_box = te::gm::Envelope(0., 0., 100., 70.);
+  AbstractItemFactory* factory = Context::getInstance()->getItemFactory(); 
+  ItemParamsCreate params(this, m_model);
+  m_view = (Observer*)factory->make(TPMapGridItem, params);
 }
 
-te::layout::MapModel::~MapModel()
+te::layout::MapGridController::~MapGridController()
 {
-
+	
 }
 
-void te::layout::MapModel::draw( ContextItem context )
+void te::layout::MapGridController::setPosition( const double& x, const double& y )
 {
-  te::color::RGBAColor** pixmap = 0;
-  
-  ContextItem contextNotify;
-  contextNotify.setPixmap(pixmap);
-  notifyAll(contextNotify);
+  if(m_model)
+  {
+    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
+    if(model)
+      return model->setPosition(x, y);
+  }
 }
-
-void te::layout::MapModel::setPosition( const double& x, const double& y )
-{
-  double x1 = x; 
-  double y1 = y - m_box.getHeight();
-
-  double x2 = x + m_box.getWidth();
-  double y2 = y;
-
-  m_box = te::gm::Envelope(x1, y1, x2, y2);
-}
-

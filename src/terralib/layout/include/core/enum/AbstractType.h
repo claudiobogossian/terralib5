@@ -39,6 +39,7 @@ namespace te
     {
       TPRetangleItem,
       TPMapItem,
+      TPMapGridItem,
       TPPaperItem,
       TPLegendItem,
       TPPropertiesWindow,

@@ -54,6 +54,9 @@ void te::layout::PaperItem::updateObserver( ContextItem context )
 {
   te::color::RGBAColor** rgba = context.getPixmap();
 
+  if(!rgba)
+    return;
+
   Utils* utils = Context::getInstance()->getUtils();
 
   te::gm::Envelope box = utils->viewportBox(m_model->getBox());

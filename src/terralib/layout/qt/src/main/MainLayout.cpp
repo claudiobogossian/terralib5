@@ -244,8 +244,6 @@ void te::layout::MainLayout::createLayoutContext( int width, int height, View* v
       //Create Canvas
       m_canvas = new te::qt::widgets::Canvas(width, height);    
       m_canvas->setWindow(worldbox->getLowerLeftX(), worldbox->getLowerLeftY(), worldbox->getUpperRightX(), worldbox->getUpperRightY());
-      te::color::RGBAColor color(255,255,255, 255);
-      m_canvas->setBackgroundColor(color);
       m_canvas->clear();
       Context::getInstance()->setCanvas(m_canvas);
     }

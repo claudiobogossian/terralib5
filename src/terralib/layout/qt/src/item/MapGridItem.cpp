@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file MapModel.cpp
+  \file MapGridItem.cpp
    
   \brief 
 
@@ -26,39 +26,24 @@
 */
 
 // TerraLib
-#include "MapModel.h"
-#include "ContextItem.h"
+#include "MapGridItem.h"
 #include "Context.h"
-#include "../../../maptools/Canvas.h"
+#include "ItemModelObservable.h"
+#include "ItemObserver.h"
+#include "ItemController.h"
+#include "../../../color/RGBAColor.h"
+#include "../../../../qt/widgets/Utils.h"
+#include "../../../../geometry/Envelope.h"
+#include "../../../../common/STLUtils.h"
 
-te::layout::MapModel::MapModel()
+te::layout::MapGridItem::MapGridItem( ItemController* controller, Observable* o ) :
+  MapItem(controller, o)
 {
-  m_backgroundColor = te::color::RGBAColor(0, 0, 255, 255);
-  m_box = te::gm::Envelope(0., 0., 100., 70.);
+  m_mapDisplay->setBackgroundColor(Qt::blue);
+  m_mapDisplay->refresh();
 }
 
-te::layout::MapModel::~MapModel()
+te::layout::MapGridItem::~MapGridItem()
 {
 
 }
-
-void te::layout::MapModel::draw( ContextItem context )
-{
-  te::color::RGBAColor** pixmap = 0;
-  
-  ContextItem contextNotify;
-  contextNotify.setPixmap(pixmap);
-  notifyAll(contextNotify);
-}
-
-void te::layout::MapModel::setPosition( const double& x, const double& y )
-{
-  double x1 = x; 
-  double y1 = y - m_box.getHeight();
-
-  double x2 = x + m_box.getWidth();
-  double y2 = y;
-
-  m_box = te::gm::Envelope(x1, y1, x2, y2);
-}
-

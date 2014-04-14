@@ -44,6 +44,9 @@
 #include "MapItem.h"
 #include "ItemObserver.h"
 #include "Context.h"
+#include "MapGridModel.h"
+#include "MapGridController.h"
+#include "MapGridItem.h"
 
 te::layout::VisualizationArea::VisualizationArea(te::gm::Envelope* boxArea)
 {
@@ -124,4 +127,13 @@ void te::layout::VisualizationArea::init()
   MapItem* qrectMap = dynamic_cast<MapItem*>(itemMap);
   itemMap->setItemPosition(llx + 60, lly + 60);
   itemMap->redraw();
+
+  //Map with grid
+  MapGridModel* modelMapGrid = new MapGridModel();		  
+  modelMapGrid->setName("MAPA_GRID_01");
+  MapGridController* controllerMapGrid = new MapGridController(modelMapGrid);
+  ItemObserver* itemMapGrid = (ItemObserver*)controllerMapGrid->getView();
+  MapGridItem* qrectMapGrid = dynamic_cast<MapGridItem*>(itemMapGrid);
+  itemMapGrid->setItemPosition(llx + 100, lly + 100);
+  itemMapGrid->redraw();
 }

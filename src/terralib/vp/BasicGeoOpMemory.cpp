@@ -108,255 +108,97 @@ bool te::vp::BasicGeoOpMemory::run()
     }
   }
 
-  if(opGeom == te::vp::MBR)
+
+// operation by attribute or union of all geometries.
+  std::vector<te::gm::Geometry*> vecGeom;
+  
+  if(m_attribute != "")
   {
-    te::gm::Geometry* resultGeom(0);
-    std::auto_ptr<te::gm::Envelope> env = m_inDset->getExtent(propGeomPos);
-    te::mem::DataSetItem* item = new te::mem::DataSetItem(outDSet.get());
-    item->setInt32(0, 0);
-
-    if(opTab.size() > 0)
+    // move first to take a seed geom.
+    m_inDset->moveFirst();
+    std::auto_ptr<te::gm::Geometry> seedGeom = m_inDset->getGeometry(propGeomName);
+    
+    if(m_inDset->size() > 1)
     {
-      te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, propGeom->getSRID());
-
-// move first to take a seed geom.
-      m_inDset->moveFirst();
-      std::auto_ptr<te::gm::Geometry> seedGeom = m_inDset->getGeometry(propGeomName);
-
-      if(m_inDset->size() > 1)
+      std::map<std::string, std::vector<te::mem::DataSetItem*> > groups;
+      std::map<std::string, std::vector<te::mem::DataSetItem*> >::iterator itg;
+      size_t nprops = m_inDset->getNumProperties();
+  
+      m_inDset->moveBeforeFirst();
+      while(m_inDset->moveNext())
       {
-        while(m_inDset->moveNext())
+        std::string key = m_inDset->getAsString(m_attribute);
+
+        // copy it to a dataset item in memory (TODO: this should be reviewed to avoid the copy)
+        te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(m_inDset.get());
+        for(std::size_t j=0; j<nprops; ++j)
         {
-          std::auto_ptr<te::gm::Geometry> c_geom = m_inDset->getGeometry(propGeomName);
-          if(c_geom->isValid())
-            teGeomColl->add(c_geom.release());
-        }
-        resultGeom = seedGeom->Union(teGeomColl);
-      }
-      else
-      {
-        resultGeom = seedGeom.release();
-      }
-
-      te::gm::GeomType geomType = resultGeom->getGeomTypeId();
-
-      for(int i = 0; i < opTab.size(); ++i)
-      {
-        switch(opTab[i])
-        {
-          case te::vp::AREA:
-            {
-              double area = 0;
-              area = CalculateTabularOp(opTab[i], resultGeom);
-              item->setDouble("area", area);
-            }
-            break;
-          case te::vp::LINE:
-            {
-              double line = 0;
-              line = CalculateTabularOp(opTab[i], resultGeom);
-              item->setDouble("line_length", line);
-            }
-            break;
-          case te::vp::PERIMETER:
-            {
-              double perimeter = 0;
-              perimeter = CalculateTabularOp(opTab[i], resultGeom);
-              item->setDouble("perimeter", perimeter);
-            }
-            break;
-        }
-      }
-    }
-
-    te::gm::Geometry* geom = te::gm::GetGeomFromEnvelope(env.get(), propGeom->getSRID());
-    item->setGeometry("geom", geom);
-    outDSet->add(item);
-
-    delete resultGeom;
-  }
-
-  if(opGeom == te::vp::CONVEX_HULL)
-  {
-    te::gm::Geometry* resultGeom(0);
-    te::mem::DataSetItem* item = new te::mem::DataSetItem(outDSet.get());
-    item->setInt32(0, 0);
-
-    if(opTab.size() > 0)
-    {
-      te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, propGeom->getSRID());
-
-// move first to take a seed geom.
-      m_inDset->moveFirst();
-      std::auto_ptr<te::gm::Geometry> seedGeom = m_inDset->getGeometry(propGeomName);
-
-      if(m_inDset->size() > 1)
-      {
-        while(m_inDset->moveNext())
-        {
-          std::auto_ptr<te::gm::Geometry> c_geom = m_inDset->getGeometry(propGeomName);
-          if(c_geom->isValid())
-            teGeomColl->add(c_geom.release());
-        }
-        resultGeom = seedGeom->Union(teGeomColl);
-      }
-      else
-      {
-        resultGeom = seedGeom.release();
-      }
-
-      te::gm::GeomType geomType = resultGeom->getGeomTypeId();
-
-      for(int i = 0; i < opTab.size(); ++i)
-      {
-        switch(opTab[i])
-        {
-          case te::vp::AREA:
-            {
-              double area = 0;
-              area = CalculateTabularOp(opTab[i], resultGeom);
-              item->setDouble("area", area);
-            }
-            break;
-          case te::vp::LINE:
-            {
-              double line = 0;
-              line = CalculateTabularOp(opTab[i], resultGeom);
-              item->setDouble("line_length", line);
-            }
-            break;
-          case te::vp::PERIMETER:
-            {
-              double perimeter = 0;
-              perimeter = CalculateTabularOp(opTab[i], resultGeom);
-              item->setDouble("perimeter", perimeter);
-            }
-            break;
-        }
-      }
-    }
-
-    te::gm::Geometry* geom = resultGeom->convexHull();
-    item->setGeometry("geom", geom);
-    outDSet->add(item);
-
-    delete resultGeom;
-  }
-
-  if(opGeom == te::vp::CENTROID)
-  {
-    int id = 0;
-
-    m_inDset->moveBeforeFirst();
-    while(m_inDset->moveNext())
-    {
-      te::mem::DataSetItem* item = new te::mem::DataSetItem(outDSet.get());
-      item->setInt32(0, id);
-
-      for(std::size_t i = 0; i < m_selectedProps.size(); ++i)
-      {
-        std::size_t pos = m_inDsetType->getPropertyPosition(m_selectedProps[i]);
-        int type = m_inDset->getPropertyDataType(pos);
-
-        switch(type)
-        {
-          case te::dt::INT16_TYPE:
-            item->setInt16(m_selectedProps[i], m_inDset->getInt16(m_selectedProps[i]));
-            break;
-          case te::dt::INT32_TYPE:
-            item->setInt32(m_selectedProps[i], m_inDset->getInt32(m_selectedProps[i]));
-            break;
-          case te::dt::INT64_TYPE:
-            item->setInt64(m_selectedProps[i], m_inDset->getInt64(m_selectedProps[i]));
-            break;
-          case te::dt::DOUBLE_TYPE:
-            item->setDouble(m_selectedProps[i], m_inDset->getDouble(m_selectedProps[i]));
-            break;
-          case te::dt::STRING_TYPE:
-            item->setString(m_selectedProps[i], m_inDset->getString(m_selectedProps[i]));
-            break;
-        }
-      }
-
-      std::auto_ptr<te::gm::Geometry> c_geom = m_inDset->getGeometry(propGeomName);
-      if(c_geom->isValid())
-      {
-        for(int i = 0; i < opTab.size(); ++i)
-        {
-          switch(opTab[i])
+          if (!m_inDset->isNull(j))
           {
-            case te::vp::AREA:
-              {
-                double area = 0;
-                area = CalculateTabularOp(opTab[i], c_geom.get());
-                item->setDouble("area", area);
-              }
-              break;
-            case te::vp::LINE:
-              {
-                double line = 0;
-                line = CalculateTabularOp(opTab[i], c_geom.get());
-                item->setDouble("line_length", line);
-              }
-              break;
-            case te::vp::PERIMETER:
-              {
-                double perimeter = 0;
-                perimeter = CalculateTabularOp(opTab[i], c_geom.get());
-                item->setDouble("perimeter", perimeter);
-              }
-              break;
+            std::auto_ptr<te::dt::AbstractData> val = m_inDset->getValue(j);
+            dataSetItem->setValue(j,val.release());
           }
         }
-
-        const te::gm::Envelope* env = c_geom->getMBR();
-        te::gm::Coord2D center = env->getCenter();
-        te::gm::Point* point = new te::gm::Point(center.x, center.y, propGeom->getSRID());
-        item->setGeometry("geom", point);
+    
+        itg = groups.find(key);
+        if (itg==groups.end())
+        {
+          std::vector<te::mem::DataSetItem*> dataSetItemVector;
+          dataSetItemVector.push_back(dataSetItem);
+          groups.insert(std::pair<std::string, std::vector<te::mem::DataSetItem*> >(key,dataSetItemVector));
+        }
+        else
+          itg->second.push_back(dataSetItem);
       }
 
-      outDSet->add(item);
-      ++id;
+      itg = groups.begin();
+      while(itg != groups.end())
+      {
+        // calculate the spatial aggregation
+        std::string value = itg->first;
+        te::gm::GeomType outGeoType = te::vp::GeomOpResultType(propGeom->getGeometryType());
+        te::gm::Geometry* geometry = te::vp::GetGeometryUnion(itg->second, propGeomPos, outGeoType);
+
+        if(geometry->isValid())
+          vecGeom.push_back(geometry);
+
+        ++itg;
+      }
     }
   }
-
   else
   {
-    int id = 0;
+    te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, propGeom->getSRID());
 
-    m_inDset->moveBeforeFirst();
-    while(m_inDset->moveNext())
+// move first to take a seed geom.
+    m_inDset->moveFirst();
+    std::auto_ptr<te::gm::Geometry> seedGeom = m_inDset->getGeometry(propGeomName);
+    
+    if(m_inDset->size() > 1)
+    {
+      while(m_inDset->moveNext())
+      {
+        std::auto_ptr<te::gm::Geometry> c_geom = m_inDset->getGeometry(propGeomName);
+        if(c_geom->isValid())
+          teGeomColl->add(c_geom.release());
+      }
+      vecGeom.push_back(seedGeom->Union(teGeomColl));
+    }
+    else
+    {
+      vecGeom.push_back(seedGeom.release());
+    }
+  }
+
+// MBR operation
+  if(opGeom == te::vp::MBR)
+  {
+    for(std::size_t j = 0; j < vecGeom.size(); ++j)
     {
       te::mem::DataSetItem* item = new te::mem::DataSetItem(outDSet.get());
-      item->setInt32(0, id);
+      item->setInt32(0, j);
 
-      for(std::size_t i = 0; i < m_selectedProps.size(); ++i)
-      {
-        std::size_t pos = m_inDsetType->getPropertyPosition(m_selectedProps[i]);
-        int type = m_inDset->getPropertyDataType(pos);
-
-        switch(type)
-        {
-          case te::dt::INT16_TYPE:
-            item->setInt16(m_selectedProps[i], m_inDset->getInt16(m_selectedProps[i]));
-            break;
-          case te::dt::INT32_TYPE:
-            item->setInt32(m_selectedProps[i], m_inDset->getInt32(m_selectedProps[i]));
-            break;
-          case te::dt::INT64_TYPE:
-            item->setInt64(m_selectedProps[i], m_inDset->getInt64(m_selectedProps[i]));
-            break;
-          case te::dt::DOUBLE_TYPE:
-            item->setDouble(m_selectedProps[i], m_inDset->getDouble(m_selectedProps[i]));
-            break;
-          case te::dt::STRING_TYPE:
-            item->setString(m_selectedProps[i], m_inDset->getString(m_selectedProps[i]));
-            break;
-        }
-      }
-
-      std::auto_ptr<te::gm::Geometry> c_geom = m_inDset->getGeometry(propGeomName);
-      if(c_geom->isValid())
+      if(opTab.size() > 0)
       {
         for(int i = 0; i < opTab.size(); ++i)
         {
@@ -365,32 +207,168 @@ bool te::vp::BasicGeoOpMemory::run()
             case te::vp::AREA:
               {
                 double area = 0;
-                area = CalculateTabularOp(opTab[i], c_geom.get());
+                area = CalculateTabularOp(opTab[i], vecGeom[j]);
                 item->setDouble("area", area);
               }
               break;
             case te::vp::LINE:
               {
                 double line = 0;
-                line = CalculateTabularOp(opTab[i], c_geom.get());
+                line = CalculateTabularOp(opTab[i], vecGeom[j]);
                 item->setDouble("line_length", line);
               }
               break;
             case te::vp::PERIMETER:
               {
                 double perimeter = 0;
-                perimeter = CalculateTabularOp(opTab[i], c_geom.get());
+                perimeter = CalculateTabularOp(opTab[i], vecGeom[j]);
                 item->setDouble("perimeter", perimeter);
               }
               break;
           }
         }
+      }
+      te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, propGeom->getSRID());
+      teGeomColl->add(vecGeom[j]->getEnvelope());
+      item->setGeometry("geom", teGeomColl);
+      outDSet->add(item);
+    }
+  }
+// Convex hull operation 
+  if(opGeom == te::vp::CONVEX_HULL)
+  {
+    for(std::size_t j = 0; j < vecGeom.size(); ++j)
+    {
+      te::mem::DataSetItem* item = new te::mem::DataSetItem(outDSet.get());
+      item->setInt32(0, j);
 
-        item->setGeometry("geom", c_geom.release());
+      if(opTab.size() > 0)
+      {
+        for(int i = 0; i < opTab.size(); ++i)
+        {
+          switch(opTab[i])
+          {
+            case te::vp::AREA:
+              {
+                double area = 0;
+                area = CalculateTabularOp(opTab[i], vecGeom[j]);
+                item->setDouble("area", area);
+              }
+              break;
+            case te::vp::LINE:
+              {
+                double line = 0;
+                line = CalculateTabularOp(opTab[i], vecGeom[j]);
+                item->setDouble("line_length", line);
+              }
+              break;
+            case te::vp::PERIMETER:
+              {
+                double perimeter = 0;
+                perimeter = CalculateTabularOp(opTab[i], vecGeom[j]);
+                item->setDouble("perimeter", perimeter);
+              }
+              break;
+          }
+        }
+      }
+      
+      te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, propGeom->getSRID());
+      teGeomColl->add(vecGeom[j]->getEnvelope());
+      item->setGeometry("geom", teGeomColl);
+      outDSet->add(item);
+    }
+  }
+// Centroid operation 
+  if(opGeom == te::vp::CENTROID)
+  {
+    for(std::size_t j = 0; j < vecGeom.size(); ++j)
+    {
+      te::mem::DataSetItem* item = new te::mem::DataSetItem(outDSet.get());
+      item->setInt32(0, j);
+
+      if(opTab.size() > 0)
+      {
+        for(int i = 0; i < opTab.size(); ++i)
+        {
+          switch(opTab[i])
+          {
+            case te::vp::AREA:
+              {
+                double area = 0;
+                area = CalculateTabularOp(opTab[i], vecGeom[j]);
+                item->setDouble("area", area);
+              }
+              break;
+            case te::vp::LINE:
+              {
+                double line = 0;
+                line = CalculateTabularOp(opTab[i], vecGeom[j]);
+                item->setDouble("line_length", line);
+              }
+              break;
+            case te::vp::PERIMETER:
+              {
+                double perimeter = 0;
+                perimeter = CalculateTabularOp(opTab[i], vecGeom[j]);
+                item->setDouble("perimeter", perimeter);
+              }
+              break;
+          }
+        }
       }
 
+      te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(0, te::gm::MultiPointType, propGeom->getSRID());
+
+      const te::gm::Envelope* env = vecGeom[j]->getMBR();
+      te::gm::Coord2D center = env->getCenter();
+      te::gm::Point* point = new te::gm::Point(center.x, center.y, propGeom->getSRID());
+      teGeomColl->add(point);
+      item->setGeometry("geom", teGeomColl);
       outDSet->add(item);
-      ++id;
+    }
+  }
+// Only tabular operation (area, line length and perimeter).
+  if(opGeom == -1)
+  {
+    for(std::size_t j = 0; j < vecGeom.size(); ++j)
+    {
+      te::mem::DataSetItem* item = new te::mem::DataSetItem(outDSet.get());
+      item->setInt32(0, j);
+
+      if(opTab.size() > 0)
+      {
+        for(int i = 0; i < opTab.size(); ++i)
+        {
+          switch(opTab[i])
+          {
+            case te::vp::AREA:
+              {
+                double area = 0;
+                area = CalculateTabularOp(opTab[i], vecGeom[j]);
+                item->setDouble("area", area);
+              }
+              break;
+            case te::vp::LINE:
+              {
+                double line = 0;
+                line = CalculateTabularOp(opTab[i], vecGeom[j]);
+                item->setDouble("line_length", line);
+              }
+              break;
+            case te::vp::PERIMETER:
+              {
+                double perimeter = 0;
+                perimeter = CalculateTabularOp(opTab[i], vecGeom[j]);
+                item->setDouble("perimeter", perimeter);
+              }
+              break;
+          }
+        }
+      }
+
+      item->setGeometry("geom", vecGeom[j]);
+      outDSet->add(item);
     }
   }
 

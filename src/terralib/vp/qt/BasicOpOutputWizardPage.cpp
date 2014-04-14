@@ -81,6 +81,9 @@ te::vp::BasicOpOutputWizardPage::BasicOpOutputWizardPage(QWidget* parent)
 
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
+  connect(m_ui->m_attributesComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onAttributeComboBoxChanged(int)));
+  connect(m_ui->m_simpleRadioButton, SIGNAL(toggled(bool)), this, SLOT(onSimpleOperationToggled()));
+  connect(m_ui->m_byAttributesRadioButton, SIGNAL(toggled(bool)), this, SLOT(onAttributeOperationToggled()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
 
@@ -120,6 +123,21 @@ bool te::vp::BasicOpOutputWizardPage::hasPerimeter()
   return m_ui->m_perimeterCheckBox->isChecked();
 }
 
+std::string te::vp::BasicOpOutputWizardPage::getAttribute()
+{
+  return m_attribute;
+}
+
+void te::vp::BasicOpOutputWizardPage::setAttributes(std::vector<std::string> attributes)
+{
+  m_ui->m_attributesComboBox->clear();
+
+  for(std::size_t i = 0; i < attributes.size(); ++i)
+  {
+    m_ui->m_attributesComboBox->addItem(QString::fromStdString(attributes[i]));
+  }
+}
+
 std::string te::vp::BasicOpOutputWizardPage::getOutDsName()
 {
   return m_ui->m_newLayerNameLineEdit->text().toStdString();
@@ -138,6 +156,25 @@ te::da::DataSourceInfoPtr te::vp::BasicOpOutputWizardPage::getDsInfoPtr()
 std::string te::vp::BasicOpOutputWizardPage::getPath()
 {
   return m_ui->m_repositoryLineEdit->text().toStdString();
+}
+
+void te::vp::BasicOpOutputWizardPage::onAttributeComboBoxChanged(int index)
+{
+  if(m_ui->m_byAttributesRadioButton->isChecked())
+    m_attribute = m_ui->m_attributesComboBox->itemText(index).toStdString();
+  else
+    m_attribute = "";
+}
+
+void te::vp::BasicOpOutputWizardPage::onSimpleOperationToggled()
+{
+  m_ui->m_attributesComboBox->setEnabled(false);
+  onAttributeComboBoxChanged(0);
+}
+
+void te::vp::BasicOpOutputWizardPage::onAttributeOperationToggled()
+{
+  m_ui->m_attributesComboBox->setEnabled(true);
 }
 
 void te::vp::BasicOpOutputWizardPage::onTargetDatasourceToolButtonPressed()
