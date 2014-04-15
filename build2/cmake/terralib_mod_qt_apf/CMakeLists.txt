@@ -78,7 +78,7 @@ list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terrali
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/connectors/TimeSliderWidget.h)
 
 #events
-file(GLOB TERRALIB_CONNECTORS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/events/*.h)
+file(GLOB TERRALIB_EVENTS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/events/*.h)
 
 source_group("Header Files\\events"  FILES ${TERRALIB_EVENTS_HDR_FILES})
 
