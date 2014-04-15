@@ -43,10 +43,8 @@ else() # QT4_FOUND
 
 endif()
 
-set(TERRALIB_HDRS_TO_MOC_FILES "")
-
-set(TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_common")
-set(TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_qt_widgets")
+set(TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_common"
+                                    "terralib_mod_qt_widgets")
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/*.h)
@@ -56,10 +54,10 @@ source_group("Source Files"  FILES ${TERRALIB_SRC_FILES})
 source_group("Header Files"  FILES ${TERRALIB_HDR_FILES})
 source_group("UI Files"  FILES ${TERRALIB_UI_FILES})
 
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/ApplicationController.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/ApplicationPlugins.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/BaseApplication.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/ProjectInfoDialog.h)
+set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/ApplicationController.h
+                               ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/ApplicationPlugins.h
+                               ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/BaseApplication.h
+                               ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/ProjectInfoDialog.h)
 
 #connectors
 file(GLOB TERRALIB_CONNECTORS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/connectors/*.cpp)
@@ -151,5 +149,14 @@ install(TARGETS terralib_mod_qt_apf
 
 install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}
         DESTINATION include/terralib/qt/af COMPONENT devel)
+
+install(FILES ${TERRALIB_CONNECTORS_HDR_FILES}
+        DESTINATION include/terralib/qt/af/connectors COMPONENT devel)
+
+install(FILES ${TERRALIB_EVENTS_HDR_FILES}
+        DESTINATION include/terralib/qt/af/events COMPONENT devel)
+
+install(FILES ${TERRALIB_SETTINGS_HDR_FILES}
+        DESTINATION include/terralib/qt/af/settings COMPONENT devel)
 
 export(TARGETS terralib_mod_qt_apf APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
