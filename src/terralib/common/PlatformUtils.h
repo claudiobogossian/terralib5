@@ -97,8 +97,15 @@ namespace te
       \param paths The decomposed PATH.
     */
     TECOMMONEXPORT void GetDecompostedLDPathEnvVar( std::vector< std::string >& paths );
-    
-    TECOMMONEXPORT std::string GetTerraLibDir();
+
+    /*!
+      \brief Returns the path relative to a directory or file in the context of TerraLib.
+     
+      \param p A path to be searched in the TerraLib context.
+     
+      \return A complete path to the file or directory if it is found, otherwise returns an empty string.
+    */
+    TECOMMONEXPORT std::string FindInTerraLibPath(const std::string& p);
 
   }     // end namespace common
 }       // end namespace te

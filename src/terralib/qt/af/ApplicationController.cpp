@@ -273,9 +273,6 @@ void  te::qt::af::ApplicationController::initialize()
 
   SplashScreenManager::getInstance().showMessage(tr("Loading the application configuration file..."));
 
-  if(m_appConfigFile.empty())
-    m_appConfigFile = TERRALIB_APPLICATION_CONFIG_FILE;
-
   te::common::SystemApplicationSettings::getInstance().load(m_appConfigFile);
 
 // general application info
@@ -446,8 +443,8 @@ void  te::qt::af::ApplicationController::initialize()
 
   QFileInfo info(s.fileName());
 
-  if(!info.exists())
-    CreateDefaultSettings();
+//  if(!info.exists())
+//    CreateDefaultSettings();
 
   m_initialized = true;
 }

@@ -30,7 +30,7 @@
 #define __TERRAVIEW_INTERNAL_TERRAVIEWCONFIG_H
 
 //! Image to be showed on splash screen
-#define TVIEW_SPLASH_SCREEN_PIXMAP "@TVIEW_SPLASH_SCREEN_PIXMAP@"
+#define TVIEW_SPLASH_SCREEN_PIXMAP "share/terraview/images/png/terraview-splashscreen.png"
 
 //! Image to be showed as tv icon
 #define TVIEW_LOGO_ICON "@TVIEW_ICO@"
@@ -43,9 +43,6 @@
 
 //! Image to be showed as terralib logo
 #define TVIEW_TE_LOGO_PIXMAP "@TVIEW_TE_LOGO@"
-
-//! Main configuration file
-#define TVIEW_CONFIG_FILE "@TVIEW_CONFIG_FILE@"
 
 //! TerraView resource file
 #define TVIEW_RESOURCE_FILE "@TVIEW_RESOURCE_FILE@"

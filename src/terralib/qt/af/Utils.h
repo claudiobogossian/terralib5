@@ -238,7 +238,7 @@ namespace te
       /*!
         \brief Creates a default QSettings.
       */
-      TEQTAFEXPORT void CreateDefaultSettings();
+      //TEQTAFEXPORT void CreateDefaultSettings();
 
       /*!
         \brief Check QSettings for existance of \a act and adds it if necessary.
@@ -250,19 +250,23 @@ namespace te
       /*!
         \brief Returns the complete path of the configuration file or an empty value if it not exists.
       */
-      TEQTAFEXPORT QString GetConfigFileName();
+      //TEQTAFEXPORT QString GetConfigFileName();
 
       /*!
         \brief Setts the name of the application configuration file.
 
         \param fileName Complete path to the application configuration file.
       */
-      TEQTAFEXPORT void SetConfigFileName(const QString& fileName);
+      //TEQTAFEXPORT void SetConfigFileName(const QString& fileName);
 
       /*!
         \brief Returns the default path for output of configuration file.
       */
       TEQTAFEXPORT QString GetDefaultConfigFileOutputDir();
+      
+      TEQTAFEXPORT std::vector<std::string> GetPluginsFiles();
+      
+      TEQTAFEXPORT std::vector<std::string> GetPluginsNames(const std::vector<std::string>& plgFiles);
 
       /*!
         \brief Changes the user settings file location.
@@ -291,17 +295,17 @@ namespace te
 
         \param appTitle Title to be presented on the main window.
       */
-      TEQTAFEXPORT void WriteConfigFile(const QString& fileName, const QString& appName, const QString& appTitle, const bool& writeOnlyConfig = false);
+      //TEQTAFEXPORT void WriteConfigFile(const QString& fileName, const QString& appName, const QString& appTitle, const bool& writeOnlyConfig = false);
 
       /*!
         \brief Writes the user settings file.
       */
-      TEQTAFEXPORT void WriteUserSettingsFile(const QString& fileName);
+      //TEQTAFEXPORT void WriteUserSettingsFile(const QString& fileName);
 
       /*!
         \brief Writes the application plugins file.
       */
-      TEQTAFEXPORT void WriteAppPluginsFile(const QString& fileName);
+      //TEQTAFEXPORT void WriteAppPluginsFile(const QString& fileName);
 
       /*!
         \brief Writes the default project file.

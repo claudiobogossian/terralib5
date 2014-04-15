@@ -262,37 +262,51 @@ void te::common::GetDecompostedLDPathEnvVar( std::vector< std::string >& paths )
       }
 }
 
-std::string te::common::GetTerraLibDir()
+std::string te::common::FindInTerraLibPath(const std::string& p)
 {
-// 1st check: look for an environment variable defined by macro TERRALIB_DIR_VAR_NAME
+// 1st: look in the neighborhood of the executable
+  boost::filesystem::path tl_path = boost::filesystem::current_path();
+  
+  boost::filesystem::path eval_path = tl_path / p;
+  
+  if(boost::filesystem::exists(eval_path))
+    return eval_path.string();
+  
+  tl_path /= "..";
+  
+  eval_path = tl_path / p;
+  
+  if(boost::filesystem::exists(eval_path))
+    return eval_path.string();
+
+// 2nd: look into the codebase path
+  tl_path = TERRALIB_CODEBASE_PATH;
+  
+  eval_path = tl_path / p;
+  
+  if(boost::filesystem::exists(eval_path))
+    return eval_path.string();
+  
+// 3rd: look for an environment variable defined by macro TERRALIB_DIR_VAR_NAME
   const char* te_env = getenv(TERRALIB_DIR_VAR_NAME);
   
   if(te_env != 0)
   {
-    boost::filesystem::path p(te_env);
+    tl_path = te_env;
     
-    if(!boost::filesystem::exists(p))
-      throw Exception(TE_TR("Environment variable \"" TERRALIB_DIR_VAR_NAME "\" is referring a non-existing directory!"));
+    eval_path = tl_path / p;
     
-    if(!boost::filesystem::is_directory(p))
-      throw Exception(TE_TR("Environment variable \"" TERRALIB_DIR_VAR_NAME "\" is referring to an invalid directory name!"));
-    
-    return te_env;
+    if(boost::filesystem::exists(eval_path))
+      return eval_path.string();
   }
   
-// 2nd chance: look into install prefix-path
-  boost::filesystem::path p(TERRALIB_INSTALL_PREFIX_PATH);
+// 4th: look into install prefix-path
+  tl_path = TERRALIB_INSTALL_PREFIX_PATH;
   
-  if(boost::filesystem::exists(p) && boost::filesystem::is_directory(p))
-    return p.string();
+  eval_path = tl_path / p;
   
-// 3rd chance: look around executable path
-  p = boost::filesystem::current_path();
-  
-  p /= "..";
-  
-  if(boost::filesystem::exists(p) && boost::filesystem::is_directory(p))
-    return p.string();
-  
+  if(boost::filesystem::exists(eval_path))
+    return eval_path.string();
+
   return "";
 }

@@ -58,9 +58,7 @@ int main(int argc, char** argv)
   {
     do 
     {
-      std::string terralib_dir = te::common::GetTerraLibDir();
-      
-      std::string splash_pix = terralib_dir + "/share/terraview/images/png/terraview-splashscreen.png";
+      std::string splash_pix = te::common::FindInTerraLibPath(TVIEW_SPLASH_SCREEN_PIXMAP);
 
       QPixmap pixmap(splash_pix.c_str());
 
@@ -76,41 +74,9 @@ int main(int argc, char** argv)
 
       TerraView tview;
 
-      QString cFile = te::qt::af::GetConfigFileName();
-
-      QFileInfo info(cFile);
-
-      if(cFile.isEmpty() || !info.exists())
-      {
-        cFile = te::qt::af::GetDefaultConfigFileOutputDir() + "/config.xml";
-        te::qt::af::WriteConfigFile(cFile, "TerraView", "TerraView");
-      }
-
-      // Copying JSON files
-
-      QDir out_dir = QFileInfo(cFile).absoluteDir();
-      info.setFile(out_dir.absolutePath() + "/resources/json/srs.json");
-
-      if(!info.exists())
-      {
-        out_dir.mkpath("resources/json");
-
-        QString origin = terralib_dir.c_str() + QString("/resources/json");
-
-        QStringList files = QDir(origin).entryList(QDir::Files);
-
-        QFile cf;
-
-        foreach (QString f, files)
-        {
-          cf.setFileName(origin + "/" + f);
-          cf.copy(out_dir.absolutePath() + "/resources/json/" + f);
-        }
-      }
-
       tview.resetTerraLib(waitVal != RESTART_CODE);
 
-      tview.init(cFile.toStdString());
+      tview.init();
 
       splash->finish(&tview);
 

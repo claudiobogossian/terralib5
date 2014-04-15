@@ -29,86 +29,28 @@
 #include "../../common/Translator.h"
 #include "ApplicationPlugins.h"
 #include "Exception.h"
+#include "Utils.h"
 
 // Boost
 #include <boost/filesystem.hpp>
 
+
 void te::qt::af::ApplicationPlugins::load()
 {
-// look for the plugins file in order to load it
-  std::string plugins_conf_file_name = te::common::SystemApplicationSettings::getInstance().getValue("Application.PluginsFile.<xmlattr>.xlink:href");
+  m_settings.clear();
 
-  if(plugins_conf_file_name.empty())
-    plugins_conf_file_name = TERRALIB_APPLICATION_PLUGINS_FILE;
+// retrieving the installed plugins.
+  std::vector<std::string> plgFiles = GetPluginsFiles();
+  std::vector<std::string> plgNames = GetPluginsNames(plgFiles);
 
-// first: current application dir
-  boost::filesystem::path plugins_conf_file = boost::filesystem::current_path();
-
-  plugins_conf_file /= TERRALIB_CONFIG_DIR;
-
-  plugins_conf_file /= plugins_conf_file_name;
-
-  if(boost::filesystem::is_regular_file(plugins_conf_file))
+// adding them to the internal ptree
+  for(std::size_t i = 0; i < plgFiles.size(); i++)
   {
-    load(plugins_conf_file.string());
-    return;
+    boost::property_tree::ptree plg;
+    plg.add("Name", plgNames[i]);
+    plg.add("Path.<xmlattr>.xlink:href", plgFiles[i]);
+    m_settings.add_child("Plugins.Plugin", plg);
   }
-
-// second: system application data dir
-  //const std::string& system_settings_path = te::common::OSSettingsDir::getInstance().getSystemSettingsPath();
-
-  //if(!system_settings_path.empty())
-  //{
-  //  plugins_conf_file = system_settings_path;
-
-  //  plugins_conf_file /= TERRALIB_DIR;
-
-  //  plugins_conf_file /= plugins_conf_file_name;
-
-  //  if(boost::filesystem::is_regular_file(plugins_conf_file))
-  //  {
-  //    load(plugins_conf_file.string());
-  //    return;
-  //  }
-  //}
-
-// third: user dir
-  //const std::string& user_settings_path = te::common::OSSettingsDir::getInstance().getUserSettingsPath();
-
-  //if(!user_settings_path.empty())
-  //{
-  //  plugins_conf_file = user_settings_path;
-
-  //  plugins_conf_file /= TERRALIB_DIR;
-
-  //  plugins_conf_file /= plugins_conf_file_name;
-
-  //  if(boost::filesystem::is_regular_file(plugins_conf_file))
-  //  {
-  //    load(plugins_conf_file.string());
-  //    return;
-  //  }
-  //}
-
-// the last chance...
-  char* mgis_dir = getenv(TERRALIB_DIR_VAR_NAME);
-
-  if(mgis_dir != 0)
-  {
-    plugins_conf_file = mgis_dir;
-
-    plugins_conf_file /= TERRALIB_CONFIG_DIR;
-
-    plugins_conf_file /= plugins_conf_file_name;
-
-    if(boost::filesystem::is_regular_file(plugins_conf_file))
-    {
-      load(plugins_conf_file.string());
-      return;
-    }
-  }
-
-  throw Exception(TE_TR("Can not find application plugins config file!"));
 }
 
 void te::qt::af::ApplicationPlugins::load(const std::string& fileName)

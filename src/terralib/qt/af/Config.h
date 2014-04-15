@@ -34,14 +34,7 @@
 
   \brief The file that contains the application plugins.
 */
-#define TERRALIB_APPLICATION_CONFIG_FILE   "config.xml"
-
-/*!
-  \def TERRALIB_APPLICATION_PLUGINS_FILE
-
-  \brief The file that contains the application plugins.
-*/
-#define TERRALIB_APPLICATION_PLUGINS_FILE   "application_plugins.xml"
+#define TERRALIB_APPLICATION_CONFIG_FILE   "share/terraview/config/config.xml"
 
 /*!
   \def TE_QT_AF_MODULE_NAME
