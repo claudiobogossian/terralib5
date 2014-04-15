@@ -66,7 +66,7 @@ void te::plugin::Module::initialize()
   pinfo.m_category = "XML";
   pinfo.m_engine = TE_CPPPLUGINENGINE_CODE;
   //pinfo.m_folder = "."; //the default search directories will be used
-  pinfo.m_resources.push_back(te::plugin::PluginInfo::Resource("SharedLibraryName", "terralib_xerces"));
+  pinfo.m_resources.push_back(te::plugin::PluginInfo::Resource("SharedLibraryName", "terralib_mod_xerces"));
 
   te::plugin::PluginManager::getInstance().load(pinfo, true);
 

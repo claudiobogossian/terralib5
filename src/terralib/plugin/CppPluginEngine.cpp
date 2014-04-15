@@ -155,12 +155,7 @@ void te::plugin::CppPluginEngine::unload(AbstractPlugin* plugin)
 
 std::string te::plugin::CppPluginEngine::getPluginFileName(const std::string& libName)
 {
-#ifdef NDEBUG
-  std::string nativeName = libName;
-#else
-  std::string nativeName = libName + "_d";  // add a suffix _d to the library name in debug mode
-#endif
-  nativeName = te::common::Library::getNativeName(nativeName);
+  std::string nativeName = te::common::Library::getNativeName(libName);
 
   return nativeName;
 }
