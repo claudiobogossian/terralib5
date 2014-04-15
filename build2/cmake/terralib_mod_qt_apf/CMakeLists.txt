@@ -89,7 +89,7 @@ file(GLOB TERRALIB_SETTINGS_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib
 
 source_group("Source Files\\settings"  FILES ${TERRALIB_SETTINGS_SRC_FILES})
 source_group("Header Files\\settings"  FILES ${TERRALIB_SETTINGS_HDR_FILES})
-source_group("UI Files\\settings\\ui"  FILES ${TERRALIB_SETTINGS_UI_FILES})
+source_group("UI Files\\settings"  FILES ${TERRALIB_SETTINGS_UI_FILES})
 
 list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/AbstractSettingWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/DisplayWidget.h
