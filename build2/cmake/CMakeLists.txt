@@ -403,7 +403,7 @@ if(TERRALIB_BUILD_EXAMPLES)
   #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_RP_ENABLED "Build examples for the Raster Processing module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
   #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_SAM_ENABLED "Build examples for the SAM module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
   #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_SERIALIZATION_ENABLED "Build examples for the Serialization support?" ON "TERRALIB_MOD_DATAACCESS" OFF)
-  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_SRS_ENABLED "Build examples for the SRS module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_SRS_ENABLED "Build examples for the SRS module?" ON "TERRALIB_MOD_SRS_ENABLED" OFF)
   #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_ST_ENABLED "Build examples for the Spatial Temporal?" ON "TERRALIB_MOD_DATAACCESS" OFF)
   #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_VP_ENABLED "Build examples for the Vector Processing module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
   #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_XERCES_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
@@ -439,6 +439,10 @@ else()
 
   if(defined TERRALIB_EXAMPLE_MAPTOOLS)
     set(TERRALIB_EXAMPLE_MAPTOOLS 0 CACHE BOOL "Build examples for the the Maptools module?" FORCE)
+  endif()
+
+  if(defined TERRALIB_EXAMPLE_SRS)
+    set(TERRALIB_EXAMPLE_SRS 0 CACHE BOOL "Build examples for the the SRS module?" FORCE)
   endif()
 
 endif()
@@ -655,6 +659,10 @@ if(TERRALIB_BUILD_EXAMPLES)
 
   if(TERRALIB_EXAMPLE_MAPTOOLS_ENABLED)
     add_subdirectory(terralib_example_maptools)
+  endif()
+
+  if(TERRALIB_EXAMPLE_SRS_ENABLED)
+    add_subdirectory(terralib_example_srs)
   endif()
 
 endif()
