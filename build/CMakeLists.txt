@@ -30,7 +30,7 @@ set (ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
 option (BUILD_TERRAVIEW "Build TerraView application?" ON)
 
-set (TE_HELP_DIR "" CACHE STRING "Location of TerraView HELP FILES.")
+set (TE_HELP_DIR "" CACHE PATH "Location of TerraView HELP FILES.")
 
 if(BUILD_TERRAVIEW)
   include (${CMAKE_CURRENT_SOURCE_DIR}/buildTree.cmake)
