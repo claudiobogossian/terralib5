@@ -3308,7 +3308,7 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getEtaMetadata(c
   te::dt::TimeInstant ti = getEtaTime(path + "/" + files.first());
   te::dt::TimeInstant tf = getEtaTime(path + "/" + files.last());
   // the file contains 3 days of data
-  tf = te::dt::TimeInstant(tf.getTimeInstant() + boost::posix_time::seconds(60*60*24*3));
+  tf = te::dt::TimeInstant(tf.getTimeInstant() + boost::posix_time::seconds(60*60*24*3 - 3600));
   animation->m_temporalExtent = te::dt::TimePeriod(ti, tf);
 
   // set data
@@ -3327,7 +3327,7 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getEtaMetadata(c
       tnext = te::dt::TimeInstant(t.getTimeInstant() + boost::posix_time::seconds(60*60*24*3));
 
     size_t n = 1;
-    while((t < tnext || t == tnext) && n < 72)
+    while((t < tnext || t == tnext) && n <= 72)
     {
       pi->m_time.push_back(t);
       t = te::dt::TimeInstant(t.getTimeInstant() + boost::posix_time::seconds(60*60));
