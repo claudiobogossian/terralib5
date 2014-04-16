@@ -444,9 +444,17 @@ std::vector<std::string> te::pgis::DataSource::getDataSourceNames(const std::map
 
 std::vector<te::common::CharEncoding> te::pgis::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
 {
-  //std::vector<std::string> encodings;
+  std::vector<te::common::CharEncoding> encodings;
 
-  //// Get an auxiliary data source
+  encodings.push_back(te::common::UTF8);    // UTF8
+  encodings.push_back(te::common::CP1250);  // WIN1250
+  encodings.push_back(te::common::CP1251);  // WIN1251
+  encodings.push_back(te::common::CP1252);  // WIN1252
+  encodings.push_back(te::common::CP1253);  // WIN1253
+  encodings.push_back(te::common::CP1254);  // WIN1254
+  encodings.push_back(te::common::CP1257);  // WIN1257
+  encodings.push_back(te::common::LATIN1);  // LATIN1
+
   //std::auto_ptr<DataSource> ds(new DataSource());
 
   //ds->setConnectionInfo(dsInfo);
@@ -462,7 +470,5 @@ std::vector<te::common::CharEncoding> te::pgis::DataSource::getEncodings(const s
 
   //ds->close();
 
-  //return encodings;
-
-  return std::vector<te::common::CharEncoding>();
+  return encodings;
 }
