@@ -106,11 +106,26 @@ namespace te
           */
           void openKml(const QString& file);
 
-          void addTemporalImages(const QString& filePath, const bool& center = false);
-          void getGoesData(const QString& path);
+          void addTemporalImages(const QString& filePath);
+
+          te::qt::widgets::PixmapItem* getMetadata(const QString& path);
+
+          te::qt::widgets::PixmapItem* getGoesMetadata(const QString& path);
           te::dt::TimeInstant getGoesTime(const QString& file);
+
+          te::qt::widgets::PixmapItem* getHidroMetadata(const QString& path);
+          te::qt::widgets::PixmapItem* getHidroCtlParameters(const QString& path);
+          void setHidroLUT(te::qt::widgets::PixmapItem* pi);
           te::dt::TimeInstant getHidroTime(const QString& file);
+
+          te::qt::widgets::PixmapItem* getEtaMetadata(const QString& path);
+          te::qt::widgets::PixmapItem* getEtaCtlParameters(const QString& path);
+          void setEtaLUT(te::qt::widgets::PixmapItem* pi);
           te::dt::TimeInstant getEtaTime(const QString& file);
+
+          te::qt::widgets::PixmapItem* getTemporalImageMetadata(const QString& path);
+          te::qt::widgets::PixmapItem* getTemporalImageCtlParameters(const QString& path);
+          te::dt::TimeInstant getTemporalImageTime(const QString& file);
 
 
           /*!
@@ -290,10 +305,6 @@ namespace te
 
         QImage* getImage(te::qt::widgets::PixmapItem* pi);
 
-        te::qt::widgets::PixmapItem* getHidroData(QString path);
-        te::qt::widgets::PixmapItem* getEtaData(QString path);
-
-
         /*!
           \brief
           Draw the trajectory icon.
@@ -338,9 +349,9 @@ namespace te
           */
           void removeComboItem(te::qt::widgets::AnimationItem* ai);
 
-          void getHidroParameters(const QString& path, size_t& nlines, size_t& ncols, size_t& undef, QRectF& rect);
-          void getEtaParameters(const QString& path, size_t& nlines, size_t& ncols, float& undef, QRectF& rect);
+          void dragEnterEvent(QDragEnterEvent*);
 
+          void dropEvent(QDropEvent*);
 
         protected slots:
 

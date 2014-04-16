@@ -77,6 +77,8 @@ namespace te
 
         te::map::Grouping* GetGrouping(TeTheme* theme);
 
+        te::se::ColorMap* GetRasterGrouping(TeTheme* theme);
+
         te::se::Symbolizer* GetSymbolizer(int geometryType, TeVisual* visual);
 
         te::se::PolygonSymbolizer* GetPolygonSymbolizer(TeVisual* visual);

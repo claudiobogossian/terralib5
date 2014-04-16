@@ -216,7 +216,7 @@ te::da::DataSet* te::pgis::PreparedQuery::query(te::common::TraverseType /*travT
   std::vector<int> ptypes;
   Convert2TerraLib(m_result, ds->getGeomTypeId(), ds->getRasterTypeId(), ptypes);
 
-  DataSet* dataset = new DataSet(m_result, std::vector<int>(), ds->isTimeAnInteger());
+  DataSet* dataset = new DataSet(m_result, std::vector<int>(), ds->isTimeAnInteger(), ds->getCharEncoding());
 
   m_result = 0;
 
