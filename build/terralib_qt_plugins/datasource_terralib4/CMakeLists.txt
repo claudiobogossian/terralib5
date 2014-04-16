@@ -63,6 +63,7 @@ list (APPEND
   terralib_color
   terralib_dataaccess
   terralib_datatype
+  terralib_filter
   terralib_geometry
   terralib_maptools
   terralib_plugin

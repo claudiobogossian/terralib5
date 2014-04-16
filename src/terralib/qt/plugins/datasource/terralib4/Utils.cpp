@@ -30,7 +30,9 @@
 #include "../../../../maptools/Enums.h"
 #include "../../../../maptools/Grouping.h"
 #include "../../../../maptools/GroupingItem.h"
+#include "../../../../se/Categorize.h"
 #include "../../../../se/ChannelSelection.h"
+#include "../../../../se/ColorMap.h"
 #include "../../../../se/ContrastEnhancement.h"
 #include "../../../../se/FeatureTypeStyle.h"
 #include "../../../../se/Fill.h"
@@ -58,6 +60,9 @@
 
 // Boost
 #include <boost/lexical_cast.hpp>
+
+// Qt
+#include <QtGui/QColor>
 
 te::color::RGBAColor te::qt::plugins::terralib4::Convert2TerraLib5(TeColor color)
 {
@@ -364,6 +369,61 @@ te::map::Grouping* te::qt::plugins::terralib4::GetGrouping(TeTheme* theme)
   return grouping;
 }
 
+te::se::ColorMap* te::qt::plugins::terralib4::GetRasterGrouping(TeTheme* theme)
+{
+  TeLegendEntryVector leg = theme->legend();
+  TeGrouping group = theme->grouping();
+
+  int slices = group.groupNumSlices_;
+
+  te::se::Categorize* c = new te::se::Categorize();
+
+  c->setFallbackValue("#000000");
+  c->setLookupValue(new te::se::ParameterValue("Rasterdata"));
+
+  QColor cWhite(Qt::white);
+  std::string colorWhiteStr = cWhite.name().toLatin1().data();
+
+  //added dummy color for values < than min values...
+  c->addValue(new te::se::ParameterValue(colorWhiteStr));
+
+  for(std::size_t i = 0; i < slices; ++i)
+  {
+    TeLegendEntry le = leg[i];
+
+    std::string title = le.label();
+
+    TeGeomRepVisualMap map = le.getVisualMap();
+
+    TeGeomRep geomRep = map.begin()->first;
+    TeVisual* visual = map.begin()->second;
+
+    QColor color(visual->color().red_, visual->color().green_, visual->color().blue_, 0);
+
+    std::string rangeStr = le.from();
+    std::string colorStr = color.name().toStdString();
+
+    c->addThreshold(new te::se::ParameterValue(rangeStr));
+    c->addValue(new te::se::ParameterValue(colorStr));
+
+    if(i == slices - 1)
+    {
+      rangeStr = le.to();
+      c->addThreshold(new te::se::ParameterValue(rangeStr));
+    }
+  }
+
+  //added dummy color for values > than max values...
+  c->addValue(new te::se::ParameterValue(colorWhiteStr));
+
+  c->setThresholdsBelongTo(te::se::Categorize::SUCCEEDING);
+
+  te::se::ColorMap* cm = new te::se::ColorMap;
+  cm->setCategorize(c);
+
+  return cm;
+}
+
 te::se::RasterSymbolizer* te::qt::plugins::terralib4::GetRasterSymbolizer(TeRasterTransform* visual)
 {
   te::se::RasterSymbolizer* symb = new te::se::RasterSymbolizer;
@@ -417,8 +477,7 @@ te::se::RasterSymbolizer* te::qt::plugins::terralib4::GetRasterSymbolizer(TeRast
     contrastBlue->setGammaValue(visual->getContrastB());
 
     cs->setRedChannel(scBlue);
-  }
-  */
+  }*/
 
   return symb;
 }
