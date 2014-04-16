@@ -1263,7 +1263,8 @@ te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader)
         reader.getElementLocalName() == "PropertyIndex")
   {
 
-    int outIdx = reader.getAttrAsInt32("OutIdx");
+    int outIdx;
+    outIdx = reader.getAttrAsInt32("OutIdx");
 
     reader.next();
 
