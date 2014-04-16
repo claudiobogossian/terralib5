@@ -46,6 +46,19 @@
 
 #include <locale>
 
+#if TE_PLATFORM == TE_PLATFORMCODE_APPLE
+#include <CoreFoundation/CoreFoundation.h>
+#endif
+
+
+void RemoveAllEntries(QDir dir)
+{
+  QDirIterator it(dir, QDirIterator::Subdirectories);
+
+  while(it.hasNext())
+    dir.remove(it.next());
+}
+
 int main(int argc, char** argv)
 {
   QApplication app(argc, argv);
@@ -57,7 +70,7 @@ int main(int argc, char** argv)
   int waitVal = EXIT_FAILURE;
 
   const int RESTART_CODE = 1000;
-
+    
   try
   {
     do 
@@ -71,8 +84,13 @@ int main(int argc, char** argv)
       }
 
       std::string splash_pix(te_env);
+        
+#if TE_PLATFORM == TE_PLATFORMCODE_APPLE
+      splash_pix += "/Resources/images/png/terraview-splashscreen.png";
+#else
       splash_pix += "/resources/images/png/terraview-splashscreen.png";
-
+#endif
+        
       QPixmap pixmap(splash_pix.c_str());
 
       QSplashScreen* splash(new QSplashScreen(pixmap/*, Qt::WindowStaysOnTopHint*/));
@@ -98,8 +116,19 @@ int main(int argc, char** argv)
 
       if(cFile.isEmpty() || !info.exists() || regen)
       {
-        te::qt::af::SetDateTime(genDate);
-        cFile = te::qt::af::GetDefaultConfigFileOutputDir() + "/config.xml";
+        if(cFile.isEmpty())
+        {
+          cFile = te::qt::af::GetDefaultConfigFileOutputDir() + "/config.xml";
+          info.setFile(cFile);
+        }
+          
+        if(regen)
+        {
+          RemoveAllEntries(info.absoluteDir());
+            
+          te::qt::af::SetDateTime(genDate);
+        }
+          
         te::qt::af::WriteConfigFile(cFile, "TerraView", "TerraView");
       }
 
@@ -125,7 +154,26 @@ int main(int argc, char** argv)
       }
 
       tview.resetTerraLib(waitVal != RESTART_CODE);
-
+        
+#if TE_PLATFORM == TE_PLATFORMCODE_APPLE
+      CFBundleRef mainBundle = CFBundleGetMainBundle();
+      CFURLRef execPath = CFBundleCopyBundleURL(mainBundle);
+        
+      char path[PATH_MAX];
+      
+      if (!CFURLGetFileSystemRepresentation(execPath, TRUE, (UInt8 *)path, PATH_MAX))
+        throw; // error!
+        
+      CFRelease(execPath);
+        
+      QDir dPath(path);
+        
+      if(dPath.dirName() != "MacOS")
+        dPath.cdUp();
+        
+      chdir(dPath.path().toStdString().c_str());
+#endif
+        
       tview.init(cFile.toStdString());
 
       splash->finish(&tview);

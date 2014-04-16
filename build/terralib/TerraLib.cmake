@@ -47,7 +47,6 @@ option (BUILD_GDAL "Build GDAL module?" ON)
 option (BUILD_GEOMETRY "Build Geometry module?" ON)
 option (BUILD_GML "Build GML module?" ON)
 option (BUILD_GRAPH "Build Graph module?" OFF)
-option (BUILD_LAYOUT "Build Layout module?" OFF)
 option (BUILD_MAPTOOLS "Build Map Tools module?" ON)
 option (BUILD_MEMORY "Build Memory module?" ON)
 option (BUILD_METADATA "Build Metadata module?" OFF)
@@ -84,7 +83,7 @@ option (TE_LOGGER_ENABLED "Logger enabled?" ON)
 option (TE_LOGGER_DO_AUTOMATIC_INITIALIZATION "Initialize automatically logger?" ON)
 option (TE_LOGGER_DO_STATIC_INITIALIZATION "Initialize logger while static initialization?" OFF)
 option (TE_TRANSLATOR_ENABLED "Enable translate support on TerraLib?" ON)
-option (TE_CHARENCODING_ENABLED "Enable character encoding support on TerraLib?" OFF)
+option (TE_CHARENCODING_ENABLED "Enable character encoding support on TerraLib?" ON)
 option (TE_DOXBUILD_ENABLED "Enable the doxygen documentation building?" OFF)
 
 if(WIN32)
@@ -133,10 +132,6 @@ endif()
 
 IF(BUILD_GRAPH)
 	add_subdirectory(terralib/terralib_graph)
-endif()
-
-IF(BUILD_LAYOUT)
-	add_subdirectory(terralib/terralib_layout)
 endif()
 
 IF(BUILD_MAPTOOLS)
@@ -279,11 +274,19 @@ install (
   PATTERN "GenerateDox.cmake" EXCLUDE
 )
 
-install ( 
-  DIRECTORY ${ROOT}/log
-  DESTINATION .
-  COMPONENT BINARIES
-)
+if(APPLE AND WITH_BUNDLE)
+  install ( 
+    DIRECTORY ${ROOT}/log
+    DESTINATION ${TE_BUNDLE_APP}
+    COMPONENT BINARIES
+  )
+else()
+  install ( 
+    DIRECTORY ${ROOT}/log
+    DESTINATION .
+    COMPONENT BINARIES
+  )
+endif()
 
 # Installing TerraLib remaining header files
 FILE ( GLOB h_files ${ROOT}/src/*.h )
@@ -302,18 +305,35 @@ install (
   COMPONENT HEADERS
 )
 
-install (
-  DIRECTORY ${ROOT}/schemas
-  DESTINATION .
-  COMPONENT BINARIES
-  FILES_MATCHING PATTERN "*.xsd"
-)
+if(APPLE AND WITH_BUNDLE)
+  install (
+    DIRECTORY ${ROOT}/schemas
+    DESTINATION ${TE_BUNDLE_APP}
+    COMPONENT BINARIES
+    FILES_MATCHING PATTERN "*.xsd"
+  )
+else()
+  install (
+    DIRECTORY ${ROOT}/schemas
+    DESTINATION .
+    COMPONENT BINARIES
+    FILES_MATCHING PATTERN "*.xsd"
+  )
+endif()
 
-install (
-  DIRECTORY ${ROOT}/resources
-  DESTINATION .
-  COMPONENT BINARIES
-)
+if(APPLE AND WITH_BUNDLE)
+  install (
+    DIRECTORY ${ROOT}/resources/
+    DESTINATION ${TE_BUNDLE_APP}/Resources
+    COMPONENT BINARIES
+  )
+else()
+  install (
+    DIRECTORY ${ROOT}/resources
+    DESTINATION .
+    COMPONENT BINARIES
+  )
+endif()
 
 if(TE_DOXBUILD_ENABLED)
   include (${TE_MODULE_PATH}/GenerateDox.cmake)

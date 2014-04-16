@@ -17,6 +17,10 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -DTEGEOMDLL -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
 endif()
 
+if(APPLE)
+  list (APPEND CMAKE_CXX_FLAGS "-ftemplate-depth=1024")
+endif()
+
 list (APPEND TE_DEP_LIBS  terralib_common
                           terralib_datatype
                           terralib_srs

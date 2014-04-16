@@ -16,6 +16,10 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTESRSDLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
+if(APPLE)
+  list (APPEND CMAKE_CXX_FLAGS "-ftemplate-depth=1024")
+endif()
+
 list (APPEND TE_DEP_LIBS terralib_common)
 
 # Select the source and header files

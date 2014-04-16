@@ -81,6 +81,12 @@ set(TVIEW_SPLASH_SCREEN_PIXMAP "${ROOT}/resources/images/png/terraview-splashscr
 if(TE_WIN32_GUI)
   set (GUI_TYPE WIN32)
   list (APPEND _dep_libs ${QT_QTMAIN_LIBRARY})
+elseif(APPLE)
+  set (GUI_TYPE MACOSX_BUNDLE)
+  find_library(COREFOUNDATION_LIBRARY CoreFoundation "/")
+  if(COREFOUNDATION_LIBRARY)
+    list (APPEND _dep_libs ${COREFOUNDATION_LIBRARY})
+  endif()
 else()
   set (GUI_TYPE)
 endif()
@@ -91,10 +97,12 @@ add_executable(${PROJ_NAME} ${GUI_TYPE} ${SRCS} ${HDRS} ${UI} ${MOC})
 set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
 target_link_libraries(${PROJ_NAME} ${_dep_libs})
 
-foreach(_plg "${ENABLED_PLUGINS}")
-	add_dependencies(${PROJ_NAME} ${_plg})
+foreach(_plg ${ENABLED_PLUGINS})
+  add_dependencies(${PROJ_NAME} ${_plg})
 endforeach()
 
+message ("Generating configurations files in directory \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\".")
+  
 set (TE_DEFAULT_PROJECT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/default_project.xml")  
 set (TE_DEFAULT_DATASOURCES_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/datasources.xml") 
  
@@ -105,62 +113,25 @@ install(
   RUNTIME DESTINATION "bin" COMPONENT BINARIES
   LIBRARY DESTINATION "bin" COMPONENT BINARIES
   ARCHIVE DESTINATION "bin" COMPONENT BINARIES
+  BUNDLE DESTINATION . COMPONENT BINARIES
 )
 
-# install tree for config files
-include (${CMAKE_CURRENT_SOURCE_DIR}/installConfig.cmake)
-set (TE_DEFAULT_PROJECT "./default_project.xml")  
-set (TE_DEFAULT_DATASOURCES_FILE "./datasources.xml") 
-
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/TerraViewConfig.h.in ${CMAKE_BINARY_DIR}/toInstall/TerraViewConfig.h)
-  
-file (
-  WRITE
-  ${CMAKE_BINARY_DIR}/qt.conf
-  "[Paths]
-Binaries = .
-Plugins = plugins"
-)
-
-today(dateTime_)
-
-file (
- WRITE
- ${CMAKE_BINARY_DIR}/.generated
- ${dateTime_})
-
-# Generating qt.conf file
-if(NOT UNIX)
-  install (
-    FILES ${CMAKE_BINARY_DIR}/qt.conf
-    DESTINATION bin
-    COMPONENT BINARIES
-  )
-endif()
-
-install (
-  FILES ${CMAKE_BINARY_DIR}/.generated
-  DESTINATION .
-  COMPONENT BINARIES
-)
-
-# Creating bash script
-if(UNIX AND NOT APPLE)
-  get_filename_component(_qt_lib_path ${QT_QTCORE_LIBRARY} PATH)
-
+if(APPLE)
   file(
     WRITE
     ${CMAKE_BINARY_DIR}/terraview.sh
     "#!/bin/sh
 
-  TE_DIR=\"$(dirname $0)/..\"
-  EXECDIR=\"$TE_DIR/bin\"
+  BUNDLE=\"`echo \"$0\" | sed -e 's/\\/Contents\\/MacOS\\/.*//'`\"
+  EXECDIR=\"$BUNDLE/Contents/MacOS\"
 
-  export \"TERRALIB_DIR=$TE_DIR\"
+  export \"TERRALIB_DIR=$EXECDIR/..\"
 
-  export \"LD_LIBRARY_PATH=$TE_DIR/lib:${TE_DEPENDENCIES_DIR}/lib:${_qt_lib_path}:$TE_DIR/plugins\"
+  export \"PATH=$PATH:${BUNDLE}/Contents/Plugins\"
 
-  export \"QT_PLUGIN_PATH=${QT_PLUGINS_DIR}\"
+  export \"QT_PLUGIN_PATH=$BUNDLE/Contents/QtPlugins\"
+
+export DYLD_PRINT_LIBRARIES=1
 
   $EXECDIR/tview
   "
@@ -168,12 +139,101 @@ if(UNIX AND NOT APPLE)
 
   install (
     FILES ${CMAKE_BINARY_DIR}/terraview.sh
-    DESTINATION bin
+    DESTINATION ${TE_BUNDLE_APP}/MacOS
     COMPONENT BINARIES
+  )
+set (MACOSX_BUNDLE TRUE)
+
+  set (MACOSX_BUNDLE_BUNDLE_NAME "terraview")
+  set (MACOSX_BUNDLE_COPYRIGHT "Copyright 2001-2013")
+  set (MACOSX_BUNDLE_SIGNATURE "TerraView")
+  set (MACOSX_BUNDLE_GUI_IDENTIFIER www.terraview.org)
+  set (MACOSX_BUNDLE_EXECUTABLE_NAME "terraview")
+  set (MACOSX_BUNDLE_INFO_STRING "System for manipulating geographical data.")
+  set (MACOSX_BUNDLE_ICON_FILE images/png/terralib-globe.icns)
+  set (MACOSX_BUNDLE_LONG_VERSION_STRING TerraView-${TERRALIB_STRING_VERSION})
+  set (MACOSX_BUNDLE_SHORT_VERSION_STRING TerraView5)
+  set (MACOSX_BUNDLE_BUNDLE_VERSION ${TERRALIB_STRING_VERSION})
+
+  configure_file(${CMAKE_ROOT}/Modules/MacOSXBundleInfo.plist.in ${CMAKE_BINARY_DIR}/Info.plist)
+
+  set (CPACK_PACKAGE_ICON ${CMAKE_CURRENT_SOURCE_DIR}/../resources/images/png/terralib-globe.icns)
+  set (CPACK_BUNDLE_NAME "TerraView")
+  set (CPACK_BUNDLE_ICON ${CPACK_PACKAGE_ICON})
+
+  set (CPACK_DMG_VOLUME_NAME "${PROJECT_NAME}")
+  set (CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${TERRALIB_STRING_VERSION}")
+  set (CPACK_BUNDLE_STARTUP_COMMAND ${CMAKE_BINARY_DIR}/terraview.sh)
+
+  installQtPlugins("qgif;qico;qjpeg;qmng;qtiff;qsvg;qsvgicon;qsqlite")
+
+  install (SCRIPT ${CMAKE_SOURCE_DIR}/modules/FixBundle.cmake COMPONENT PLUGINS)    
+endif()
+
+# install tree for config files
+include (${CMAKE_CURRENT_SOURCE_DIR}/installConfig.cmake)
+set (TE_DEFAULT_PROJECT "./default_project.xml")  
+set (TE_DEFAULT_DATASOURCES_FILE "./datasources.xml") 
+
+configure_file (${CMAKE_CURRENT_SOURCE_DIR}/TerraViewConfig.h.in ${CMAKE_BINARY_DIR}/toInstall/TerraViewConfig.h)
+
+if(APPLE AND WITH_BUNDLE)  
+  file (
+    WRITE
+    ${CMAKE_BINARY_DIR}/qt.conf
+    "[Paths]
+  Binaries = MacOS"
   )
 
   install (
-    SCRIPT ${CMAKE_SOURCE_DIR}/modules/ConfigBash.cmake
+    FILES ${CMAKE_BINARY_DIR}/qt.conf
+    DESTINATION ${TE_BUNDLE_APP}/Resources
+    COMPONENT BINARIES
+  )
+
+  if(NOT "${TE_HELP_DIR}" STREQUAL "")
+    install (
+      DIRECTORY ${QT_PLUGINS_DIR}/../Assistant.app
+      DESTINATION ${TE_BUNDLE_APP}/MacOS
+      COMPONENT BINARIES
+    )
+
+    install (
+      FILES /usr/lib/libQtCLucene.4.8.5.dylib
+      DESTINATION ${TE_BUNDLE_APP}/Lib
+      COMPONENT BINARIES
+    )
+
+    install (SCRIPT ${CMAKE_SOURCE_DIR}/modules/FixAssistant.cmake COMPONENT PLUGINS)  
+  endif()
+else()
+  file (
+    WRITE
+    ${CMAKE_BINARY_DIR}/qt.conf
+    "[Paths]
+  Binaries = .
+  Plugins = plugins"
+  )
+
+  install (
+    FILES ${CMAKE_BINARY_DIR}/qt.conf
+    DESTINATION bin
     COMPONENT BINARIES
   )
 endif()
+
+today(dateTime_)
+
+install ( CODE
+  "file (
+    WRITE
+    ${CMAKE_BINARY_DIR}/.generated
+    ${dateTime_})"
+  COMPONENT BINARIES
+)
+
+install (
+  FILES ${CMAKE_BINARY_DIR}/.generated
+  DESTINATION .
+  COMPONENT BINARIES
+)
