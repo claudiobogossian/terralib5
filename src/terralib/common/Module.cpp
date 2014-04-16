@@ -102,7 +102,7 @@ void te::common::Module::initialize()
   UnitsOfMeasureManager::getInstance().init();
 #endif
 
-#ifdef TE_CHARENCODING_ENABLED
+#if TE_CHARENCODING_ENABLED
   CharEncodingConv::initialize();
 #endif
 
