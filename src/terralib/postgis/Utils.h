@@ -973,9 +973,9 @@ namespace te
 
     std::string GetLoadDataRow(const te::da::DataSetType* dt, te::da::DataSet* d, PGconn *conn);
 
-    const char* GetPGEncoding(te::common::CharEncoding te_encoding);
+    const char* GetPGEncoding(te::common::CharEncoding encoding);
 
-    te::common::CharEncoding GetTeEncoding(const char* const pg_encoding);
+    te::common::CharEncoding GetTeEncoding(const char* const encoding);
 
   } // end namespace pgis
 }   // end namespace te

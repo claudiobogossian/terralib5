@@ -126,7 +126,7 @@ std::auto_ptr<te::da::DataSet> te::pgis::Transactor::getDataSet(const std::strin
   std::vector<int> ptypes;
   Convert2TerraLib(result, m_ds->getGeomTypeId(), m_ds->getRasterTypeId(), ptypes);
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger()));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger(), m_ds->getCharEncoding()));
 }
 
 std::auto_ptr<te::da::DataSet> te::pgis::Transactor::getDataSet(const std::string& name,
@@ -159,7 +159,7 @@ std::auto_ptr<te::da::DataSet> te::pgis::Transactor::getDataSet(const std::strin
   std::vector<int> ptypes;
   Convert2TerraLib(result, m_ds->getGeomTypeId(), m_ds->getRasterTypeId(), ptypes);
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger()));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger(), m_ds->getCharEncoding()));
 }
 
 std::auto_ptr<te::da::DataSet> te::pgis::Transactor::getDataSet(const std::string& name,
@@ -192,7 +192,7 @@ std::auto_ptr<te::da::DataSet> te::pgis::Transactor::getDataSet(const std::strin
   std::vector<int> ptypes;
   Convert2TerraLib(result, m_ds->getGeomTypeId(), m_ds->getRasterTypeId(), ptypes);
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger()));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger(), m_ds->getCharEncoding()));
 }
 
 std::auto_ptr<te::da::DataSet> te::pgis::Transactor::query(const te::da::Select& q,
@@ -218,7 +218,7 @@ std::auto_ptr<te::da::DataSet> te::pgis::Transactor::query(const std::string& qu
   std::vector<int> ptypes;
   Convert2TerraLib(result, m_ds->getGeomTypeId(), m_ds->getRasterTypeId(), ptypes);
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger()));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger(), m_ds->getCharEncoding()));
 }
 
 void te::pgis::Transactor::execute(const te::da::Query& command)
