@@ -7,6 +7,15 @@ set (TE_INCLUDE_DIRS "")
 set (TE_INST_INCLUDE_DIRS "")
 set (TE_MODULES "")
 
+option (WITH_BUNDLE "Create a bundle?" ON)
+
+if(WITH_BUNDLE)
+  set (TE_APP_NAME "terraview" CACHE STRING "Name of the generated application.")
+  if(APPLE)
+    set (TE_BUNDLE_APP "${TE_APP_NAME}.app/Contents")
+  endif()
+endif()
+
 include (terralib/TerraLib.cmake)
 
 set(TE_CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
@@ -78,16 +87,16 @@ file(
   FILES ${CMAKE_BINARY_DIR}/toInstall/*.teplg
 )
 
-if(WIN32)
-  install (
+if(APPLE AND WITH_BUNDLE)
+  install ( 
     FILES ${xml_config}
-    DESTINATION bin
+    DESTINATION ${TE_BUNDLE_APP}/Plugins
     COMPONENT BINARIES
   )
 else()
-  install (
+  install ( 
     FILES ${xml_config}
-    DESTINATION plugins
+    DESTINATION bin
     COMPONENT BINARIES
   )
 endif()
@@ -104,22 +113,16 @@ install (
   COMPONENT CMAKE
 )
 
-if(WIN32)
+if(APPLE AND WITH_BUNDLE)
   install ( 
     FILES ${plg_config}
-    DESTINATION bin
-    COMPONENT PLUGINS
-  )
-else()
-  install ( 
-    FILES ${plg_config}
-    DESTINATION plugins
+    DESTINATION ${TE_BUNDLE_APP}/Plugins
     COMPONENT PLUGINS
   )
 endif()
 
 # uninstall target
-if( UNIX )
+if( UNIX AND NOT APPLE)
   configure_file(
       "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
       "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"

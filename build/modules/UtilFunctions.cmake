@@ -225,11 +225,25 @@ MACRO(makePluginProject proj_name root_h_dir root_src_dir)
       TARGETS ${PROJ_NAME}
       RUNTIME DESTINATION "bin" COMPONENT PLUGINS
     )
-  else()
+  elseif (APPLE)
+
+    set_target_properties(${PROJ_NAME} 
+       PROPERTIES 
+       LINK_FLAGS "-current_version ${TE_VERSION} -compatibility_version ${TE_VERSION}"
+       VERSION ${TE_VERSION} 
+       SOVERSION ${TERRALIB_MAJOR_VERSION} 
+       INSTALL_NAME_DIR "@executable_path/../Plugins"
+    )
+
     install(
       TARGETS ${PROJ_NAME}
-      LIBRARY DESTINATION plugins COMPONENT PLUGINS
-      ARCHIVE DESTINATION plugins COMPONENT PLUGINS
+      LIBRARY DESTINATION ${TE_BUNDLE_APP}/Plugins COMPONENT PLUGINS
+    )
+  else ()
+    install(
+      TARGETS ${PROJ_NAME}
+      LIBRARY DESTINATION "lib" COMPONENT PLUGINS
+      ARCHIVE DESTINATION "lib" COMPONENT PLUGINS
     )
   endif()
   
@@ -253,13 +267,30 @@ ENDMACRO(makePluginProject)
 # note2: The component name is used in binaries installers such as NSIS (Win). This is used only for classify the components
 # you can install. This way, we can create binary installers with optional installation rules.
 MACRO(installTarget proj_name lib_dst_dir lib_cmp_name bin_dst_dir bin_cmp_name)
-  install(
-    TARGETS ${proj_name}
-    EXPORT teDepends
-    RUNTIME DESTINATION "${bin_dst_dir}" COMPONENT ${bin_cmp_name}
-    LIBRARY DESTINATION "${lib_dst_dir}" COMPONENT ${lib_cmp_name}
-    ARCHIVE DESTINATION "${lib_dst_dir}" COMPONENT ${lib_cmp_name}
-  )
+  if(APPLE AND WITH_BUNDLE)
+    set_target_properties ( ${proj_name} 
+      PROPERTIES
+      LINK_FLAGS "-current_version ${TE_VERSION} -compatibility_version ${TE_VERSION}"
+      VERSION ${TE_VERSION} 
+      SOVERSION ${TERRALIB_MAJOR_VERSION} 
+      INSTALL_NAME_DIR @executable_path/../Lib 
+    )    
+
+    install(
+      TARGETS ${proj_name}
+      EXPORT teDepends
+      LIBRARY DESTINATION ${TE_BUNDLE_APP}/Lib COMPONENT ${bin_cmp_name}
+      ARCHIVE DESTINATION ${TE_BUNDLE_APP}/Lib COMPONENT ${bin_cmp_name}
+    )
+  else()
+    install(
+      TARGETS ${proj_name}
+      EXPORT teDepends
+      RUNTIME DESTINATION "${bin_dst_dir}" COMPONENT ${bin_cmp_name}
+      LIBRARY DESTINATION "${lib_dst_dir}" COMPONENT ${lib_cmp_name}
+      ARCHIVE DESTINATION "${lib_dst_dir}" COMPONENT ${lib_cmp_name}
+    )
+  endif()
 ENDMACRO(installTarget)
 
 # Macro installFiles
@@ -520,19 +551,70 @@ ENDMACRO(getPluginRequirements)
 #
 # param RESULT[output] The formatted data.
 MACRO (today RESULT)
-    if (WIN32)
-        execute_process(COMMAND "cmd" " /C date /T" OUTPUT_VARIABLE ${RESULT})
-        execute_process(COMMAND "cmd" " /C time /T" OUTPUT_VARIABLE time_)
+    IF (WIN32)
+        EXECUTE_PROCESS(COMMAND "cmd" " /C date /T" OUTPUT_VARIABLE ${RESULT})
+        EXECUTE_PROCESS(COMMAND "cmd" " /C time /T" OUTPUT_VARIABLE time_)
         string(REGEX REPLACE "(..)/(..)/..(..).*" "\\1/\\2/\\3" ${RESULT} ${${RESULT}})
         string(REGEX REPLACE "(..):(..):(..)" "\\1/\\2/\\3" time_ ${time_})
 		
-        set(${RESULT} "${${RESULT}}-${time_}")
+	 set(${RESULT} "${${RESULT}}-${time_}")
 
-    elseif (UNIX)
-      execute_process(COMMAND "date" "+%d/%m/%Y-%R" OUTPUT_VARIABLE _date)
-      set (${RESULT} "${_date}")
-    else ()
-        message(SEND_ERROR "date not implemented")
-        set(${RESULT} 000000)
-    endif ()
+    ELSEIF(UNIX)
+        EXECUTE_PROCESS(COMMAND "date" "+%d/%M/%Y" OUTPUT_VARIABLE ${RESULT})
+        EXECUTE_PROCESS(COMMAND "date" "+%X" OUTPUT_VARIABLE time_)
+        string(REGEX REPLACE "(..)/(..)/..(..).*" "\\1/\\2/\\3" ${RESULT} ${${RESULT}})
+        string(REGEX REPLACE "(..):(..):(..)" "\\1/\\2/\\3" time_ ${time_})
+		
+	set(${RESULT} "${${RESULT}}-${time_}")
+    ELSE ()
+        MESSAGE(SEND_ERROR "date not implemented")
+        SET(${RESULT} 000000)
+    ENDIF (WIN32)
 ENDMACRO (today)
+
+# Macro installQtPlugins
+#
+# Installs the required Qt plugins.
+#
+# param plugs List of the names of plugins to be installed.
+MACRO(installQtPlugins plgs)
+
+  set (_regex_exp "")
+
+  set( _first TRUE)
+
+  foreach(plg ${plgs})
+    if(NOT _first)
+      set (_regex_exp ${_regex_exp}|${plg})
+    else()
+      set (_regex_exp ${plg})
+      set (_first FALSE)
+    endif()
+  endforeach()
+
+  set (_regex_exp "(${_regex_exp})")
+
+  set (_dest ${TE_BUNDLE_APP}/QtPlugins)
+
+  install (DIRECTORY ${QT_PLUGINS_DIR}/imageformats  
+    DESTINATION ${_dest} 
+    COMPONENT BINARIES
+    FILES_MATCHING
+    REGEX "${_regex_exp}"
+  )
+
+  install (DIRECTORY ${QT_PLUGINS_DIR}/iconengines  
+    DESTINATION ${_dest} 
+    COMPONENT BINARIES
+    FILES_MATCHING
+    REGEX "${_regex_exp}"
+  )
+
+  install (DIRECTORY ${QT_PLUGINS_DIR}/sqldrivers  
+    DESTINATION ${_dest} 
+    COMPONENT BINARIES
+    FILES_MATCHING
+    REGEX "${_regex_exp}"
+  )
+
+ENDMACRO(installQtPlugins)
