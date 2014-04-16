@@ -41,7 +41,7 @@
 #include <terralib/qt/widgets/charts/ChartStyle.h>
 
 // Qt
-#include <QtGui/QApplication>
+#include <QApplication>
 
 // STL
 #include <exception>
