@@ -34,21 +34,15 @@
 // TerraLib
 #include "OutsideObserver.h"
 #include "../../../../geometry/Envelope.h"
-#include "../../../../../../third-party/qt/propertybrowser/qtpropertybrowser.h"
 
 class QGraphicsItem;
-class QWidget;
-class QGraphicsProxyWidget;
-class QtTreePropertyBrowser;
-class QtVariantProperty;
-class QtProperty;
-class QtVariantPropertyManager;
-class QtBrowserIndex;
 
 namespace te
 {
   namespace layout
   {
+    class ObjectInspectorPropertyBrowser;
+
     class ObjectInspectorOutside : public QDockWidget, public OutsideObserver
     {
 	    Q_OBJECT //for slots/signals
@@ -63,23 +57,10 @@ namespace te
 	    virtual te::gm::Coord2D getPosition();
 
       virtual void itemsInspector(QList<QGraphicsItem*> graphicsItems);
-
-      private slots:
-
-        void propertyEditorValueChanged(QtProperty *property, const QVariant &value);
-        
-    protected:
-      virtual void addProperty(QtVariantProperty *property, const QString &id);
-      virtual void updateExpandState();
-
-    protected:
-
-      QtVariantPropertyManager* m_variantInspectorObjectManager;
-      QtTreePropertyBrowser* m_objectInspector;
       
-      QMap<QtProperty*, QString> m_propertyToId;
-      QMap<QString, QtVariantProperty*> m_idToProperty;
-      QMap<QString, bool> m_idToExpanded;
+    protected:
+
+      ObjectInspectorPropertyBrowser* m_layoutPropertyBrowser;
       QList<QGraphicsItem*> m_graphicsItems;
     };
   }

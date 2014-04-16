@@ -46,6 +46,8 @@ namespace te
       TPDisplayWindow,
       TPObjectInspectorWindow,
       TPToolbar,
+      TPGridSettings,
+      TPGrid,
       TPHorizontalRuler,
       TPVerticalRuler,
       TPText,
@@ -129,7 +131,8 @@ namespace te
       DataTypeLong = 3,
       DataTypeFloat = 4,
       DataTypeString = 5,
-      DataTypeNone = 6
+      DataTypeGridSettings = 6,
+      DataTypeNone = 7
     } LayoutPropertyDataType;
 
     /*!

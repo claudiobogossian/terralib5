@@ -18,44 +18,32 @@
  */
 
 /*!
-  \file MapGridModel.h
+  \file ObjectInspectorPropertyBrowser.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_MODEL_H
-
 // TerraLib
-#include "MapModel.h"
+#include "ObjectInspectorPropertyBrowser.h"
 
-namespace te
+// Qt
+#include "../../../../../../third-party/qt/propertybrowser/qtvariantproperty.h"
+#include "../../../../../../third-party/qt/propertybrowser/qteditorfactory.h"
+
+te::layout::ObjectInspectorPropertyBrowser::ObjectInspectorPropertyBrowser(QObject* parent) :
+  PropertyBrowser(parent)
 {
-  namespace layout
-  {
-    class GridModel;
 
-    class MapGridModel : public MapModel
-    {
-      public:
-
-        MapGridModel();
-        virtual ~MapGridModel();
-
-        virtual void draw( ContextItem context );
-
-        virtual te::layout::Properties* getProperties() const;
-        virtual void updateProperties(te::layout::Properties* properties);
-
-      protected:
-
-        GridModel* m_grid;
-        bool       m_gridPlanar;
-        bool       m_gridGeodesic;
-    };
-  }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_MAP_GRID_MODEL_H
+te::layout::ObjectInspectorPropertyBrowser::~ObjectInspectorPropertyBrowser()
+{
+ 
+}
+
+void te::layout::ObjectInspectorPropertyBrowser::onSetDlg(QWidget *parent, QtProperty * prop)
+{
+  
+}
