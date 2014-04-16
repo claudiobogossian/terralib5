@@ -10,7 +10,7 @@
 #include <exception>
 
 // Qt
-#include <QtGui/QApplication>
+#include <QApplication>
 
 void DrawPNG()
 {
