@@ -66,6 +66,11 @@ namespace te
       public:
 
         /*!
+          \brief Empty Constructor.
+        */
+        PixmapItem();
+
+        /*!
           \brief Constructor
           It constructs a Pixmap Item.
           \param title The pixmap item title.
@@ -74,7 +79,7 @@ namespace te
         */
         PixmapItem(const QString& title, const QString& file, te::qt::widgets::MapDisplay* display);
 
-        /*!
+       /*!
           \brief Destructor
           It destructs a Pixmap Item.
         */
@@ -129,6 +134,9 @@ namespace te
 
       public:
         QDir m_dir;                           //!< The image data directory.
+        size_t  m_nlines;                     //!< number of lines.
+        size_t  m_ncols;                      //!< number of colunms.
+        float m_undef;                        //!< undef value.
         QVector<QString> m_files;             //!< The input files.
         QVector<QString> m_animationFiles;    //!< The png files in display projection. It contains only the portions to be animated.
         QString          m_currentImageFile;  //!< Image to be displayed on paint event animation.

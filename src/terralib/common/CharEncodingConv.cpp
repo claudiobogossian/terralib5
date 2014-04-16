@@ -41,8 +41,11 @@
 
 #define TE_CONVERSION_BUFFERSIZE_SIZE 64
 
+// internal iconv names
 static const char* iconv_names[]  = {"UTF-8", "CP1250", "CP1251", "CP1252", "CP1253", "CP1254", "CP1257", "ISO-8859-1"};
-static const char* charset_desc[] = {"UTF-8", "CP1250", "CP1251", "CP1252", "CP1253", "CP1254", "CP1257", "LATIN1"};
+
+// CharEncoding Names
+std::map<te::common::CharEncoding, std::string> te::common::CharEncodingConv::sm_encodingNames;
 
 te::common::CharEncodingConv::CharEncodingConv(const CharEncoding& fromCode, const CharEncoding& toCode)
   : m_fromCode(fromCode),
@@ -172,9 +175,36 @@ std::string te::common::CharEncodingConv::convert(const std::string& src, const 
   return outstring.str();
 }
 
-std::string te::common::CharEncodingConv::getDescription(const CharEncoding& code)
+std::string te::common::CharEncodingConv::getCharEncodingName(const CharEncoding& code)
 {
-  return charset_desc[code];
+  return sm_encodingNames[code];
+}
+
+te::common::CharEncoding te::common::CharEncodingConv::getCharEncodingType(const std::string& name)
+{
+  std::map<CharEncoding, std::string>::const_iterator it;
+  for(it = sm_encodingNames.begin(); it != sm_encodingNames.end(); ++it)
+    if(it->second == name)
+      return it->first;
+
+  return UNKNOWN_CHAR_ENCODING;
+}
+
+void te::common::CharEncodingConv::initialize()
+{
+  if(!sm_encodingNames.empty())
+    return;
+
+  sm_encodingNames[UTF8  ] = "UTF-8";
+  sm_encodingNames[CP1250] = "CP1250";
+  sm_encodingNames[CP1251] = "CP1251";
+  sm_encodingNames[CP1252] = "CP1252";
+  sm_encodingNames[CP1253] = "CP1253";
+  sm_encodingNames[CP1254] = "CP1254";
+  sm_encodingNames[CP1257] = "CP1257";
+  sm_encodingNames[LATIN1] = "Latin1";
+  // continue...
+  sm_encodingNames[UNKNOWN_CHAR_ENCODING] = "Unknown";
 }
 
 #endif  // TE_CHARENCODING_ENABLED

@@ -27,6 +27,7 @@
 #define __TERRALIB_DATAACCESS_INTERNAL_ATTRIBUTECONVERTERS_H
 
 // TerraLib
+#include "../../common/CharEncodingConv.h"
 #include "../Config.h"
 
 // Boost
@@ -80,6 +81,20 @@ namespace te
     TEDATAACCESSEXPORT te::dt::AbstractData* PointToMConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
 
     TEDATAACCESSEXPORT te::dt::AbstractData* TupleToStringConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
+
+    struct TEDATAACCESSEXPORT CharEncodingConverter
+    {
+      CharEncodingConverter(const te::common::CharEncoding& toCode)
+        : m_toCode(toCode)
+      {
+      }
+
+      ~CharEncodingConverter() {}
+
+      te::dt::AbstractData* operator()(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
+
+      te::common::CharEncoding m_toCode;
+    };
 
   } // end namespace da
 }   // end namespace te

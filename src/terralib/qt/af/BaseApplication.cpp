@@ -2007,6 +2007,8 @@ void te::qt::af::BaseApplication::makeDialog()
 
 void te::qt::af::BaseApplication::closeEvent(QCloseEvent* e)
 {
+  emit applicationClose(); // it is used to close the ST animation
+
   QMainWindow::closeEvent(e);
   //checkProjectSave();
 

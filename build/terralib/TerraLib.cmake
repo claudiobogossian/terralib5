@@ -279,11 +279,19 @@ install (
   PATTERN "GenerateDox.cmake" EXCLUDE
 )
 
-install ( 
-  DIRECTORY ${ROOT}/log
-  DESTINATION .
-  COMPONENT BINARIES
-)
+if(APPLE AND WITH_BUNDLE)
+  install ( 
+    DIRECTORY ${ROOT}/log
+    DESTINATION ${TE_BUNDLE_APP}
+    COMPONENT BINARIES
+  )
+else()
+  install ( 
+    DIRECTORY ${ROOT}/log
+    DESTINATION .
+    COMPONENT BINARIES
+  )
+endif()
 
 # Installing TerraLib remaining header files
 FILE ( GLOB h_files ${ROOT}/src/*.h )
@@ -302,18 +310,35 @@ install (
   COMPONENT HEADERS
 )
 
-install (
-  DIRECTORY ${ROOT}/schemas
-  DESTINATION .
-  COMPONENT BINARIES
-  FILES_MATCHING PATTERN "*.xsd"
-)
+if(APPLE AND WITH_BUNDLE)
+  install (
+    DIRECTORY ${ROOT}/schemas
+    DESTINATION ${TE_BUNDLE_APP}
+    COMPONENT BINARIES
+    FILES_MATCHING PATTERN "*.xsd"
+  )
+else()
+  install (
+    DIRECTORY ${ROOT}/schemas
+    DESTINATION .
+    COMPONENT BINARIES
+    FILES_MATCHING PATTERN "*.xsd"
+  )
+endif()
 
-install (
-  DIRECTORY ${ROOT}/resources
-  DESTINATION .
-  COMPONENT BINARIES
-)
+if(APPLE AND WITH_BUNDLE)
+  install (
+    DIRECTORY ${ROOT}/resources/
+    DESTINATION ${TE_BUNDLE_APP}/Resources
+    COMPONENT BINARIES
+  )
+else()
+  install (
+    DIRECTORY ${ROOT}/resources
+    DESTINATION .
+    COMPONENT BINARIES
+  )
+endif()
 
 if(TE_DOXBUILD_ENABLED)
   include (${TE_MODULE_PATH}/GenerateDox.cmake)

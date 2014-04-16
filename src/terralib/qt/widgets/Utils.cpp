@@ -378,6 +378,9 @@ QString te::qt::widgets::Convert2Qt(const std::string& text, const te::common::C
       case te::common::UTF8:
         return QString::fromUtf8(text.c_str());
 
+      case te::common::LATIN1:
+        return QString::fromLatin1(text.c_str());
+
       // continues...
 
       default:

@@ -10,14 +10,19 @@
 #include <QtGui/QPainter>
 #include <QtCore/QVector>
 
+te::qt::widgets::PixmapItem::PixmapItem()
+  : te::qt::widgets::AnimationItem("", 0)
+{
+}
+
 te::qt::widgets::PixmapItem::PixmapItem(const QString& title, const QString& file, te::qt::widgets::MapDisplay* display)
   : te::qt::widgets::AnimationItem(title, display)
 {
   setMatrix();
 
-  QFileInfo fi(file);
-  m_dir.setPath(fi.path());
+  m_dir = QDir(file);
 
+  QFileInfo fi(file);
   m_baseFile = fi.completeBaseName();
   m_suffix = fi.suffix();
 

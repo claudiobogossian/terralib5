@@ -856,7 +856,7 @@ void te::qt::af::WriteConfigFile(const QString& fileName, const QString& appName
   p.add("Application.Organization", "INPE");
   p.add("Application.Name", appName.toStdString());
   p.add("Application.Title", appTitle.toStdString());
-  p.add("Application.IconName", teDir.toStdString() + "/resources/images/png/terralib-globe-small.png");
+  p.add("Application.IconName", teDir.toStdString() + "/resources/images/png/terralib-globe.png");
   p.add("Application.UserSettingsFile.<xmlattr>.xlink:href", info.absolutePath().toStdString() + "/user_settings.xml");
   p.add("Application.PluginsFile.<xmlattr>.xlink:href", info.absolutePath().toStdString() + "/application_plugins.xml");
   p.add("Application.HelpFile.<xmlattr>.xlink:href", teDir_help.toStdString());
