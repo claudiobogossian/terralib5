@@ -33,40 +33,6 @@
 
 #define TE_COMMON_MODULE_NAME "te.common"
 
-/** @name File Defines
- *  Flags for TerraLib special files name and location.
- */
-//@{
-
-/*!
-  \def TERRALIB_CONFIG_DIR
-
-  \brief Folder location with application config files.
-*/
-#ifndef TERRALIB_CONFIG_DIR
-  #define TERRALIB_CONFIG_DIR    "../../conf"
-#endif
-
-/*!
-  \def TERRALIB_CONFIG_DIR
-
-  \brief Main application config file.
-*/
-#ifndef TERRALIB_SYSTEM_SETTINGS_FILE
-  #define TERRALIB_SYSTEM_SETTINGS_FILE       "config.xml"
-#endif
-
-/*!
-  \def TERRALIB_USER_SETTINGS_FILE
-
-  \brief User settings file name
-*/
-#ifndef TERRALIB_USER_SETTINGS_FILE
-  #define TERRALIB_USER_SETTINGS_FILE         "user_settings.xml"
-#endif
-
-//@}
-
 #define TE_PROTOCOL_DEFAULT_PORTS_FILE "protocol/protocolPorts.txt"
 
 /** @name DLL/LIB Module

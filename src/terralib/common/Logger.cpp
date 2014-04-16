@@ -50,28 +50,6 @@
 #include <log4cxx/xml/domconfigurator.h>
 #endif
 
-std::string te::common::Logger::getDefaultConfigFile()
-{
-// let's check if there is a file called TE_LOGGER_DEFAULT_CONFIGURATION_FILE in the current application dir
-  if(boost::filesystem::exists(TERRALIB_LOGGER_DEFAULT_CONFIGURATION_FILE))
-    return TERRALIB_LOGGER_DEFAULT_CONFIGURATION_FILE;
-
-// if the default file is not available in the current dir let's try an environment variable defined as TERRALIB_DIR_ENVIRONMENT_VARIABLE
-  char* e = getenv(TERRALIB_DIR_VAR_NAME);
-
-  if(e != 0)
-  {
-    boost::filesystem::path p(e);
-    p /= TERRALIB_LOGGER_DEFAULT_CONFIGURATION_FILE;
-
-    if(boost::filesystem::exists(p))
-      return p.string();
-  }
-
-// Humm: default config file not found
-  return "";
-}
-
 void te::common::Logger::initialize(const std::string& loggerName,
                                     const LoggerConfigurationType t,
                                     const std::string& fileName)

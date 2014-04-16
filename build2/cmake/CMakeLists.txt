@@ -77,6 +77,10 @@ if(NOT DEFINED TERRALIB_BUILD_AS_BUNDLE)
   set(TERRALIB_BUILD_AS_BUNDLE 0 CACHE BOOL "If on, tells that the build will generate a bundle")
 endif()
 
+if(NOT DEFINED TERRALIB_AUTOMATIC_INITIALIZATION)
+  set(TERRALIB_AUTOMATIC_INITIALIZATION 1 CACHE BOOL "Tells that TerraLib should initialize its resources automatically")
+endif()
+
 
 #
 # global definitions and includes

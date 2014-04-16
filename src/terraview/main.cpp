@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 
       te::qt::af::SplashScreenManager::getInstance().set(splash, Qt::AlignBottom | Qt::AlignHCenter, Qt::white);
 
-      splash->show();
+      //splash->show();
 
       TerraView tview;
 

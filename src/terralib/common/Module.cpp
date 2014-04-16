@@ -28,6 +28,7 @@
 #include "LibraryManager.h"
 #include "Logger.h"
 #include "Module.h"
+#include "PlatformUtils.h"
 #include "TerraLib.h"
 #include "Translator.h"
 #include "UnitsOfMeasureManager.h"
@@ -52,9 +53,6 @@ te::common::Module::Module()
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
 
-//
-  setlocale(LC_ALL, "");
-
 // let's start all singletons in the right order and other stuffs that must be in the static initialization!
 
 // initialize the translator singleton and the common runtime multilanguage support
@@ -63,28 +61,20 @@ te::common::Module::Module()
 // initialize the singleton LibraryManager
   LibraryManager::getInstance();
 
-// initialize the singleton CharSetManager
-//  CharEncodingManager::getInstance();
-
-// initialize the singleton CountryManager
-//  CountryManager::getInstance();
-
-// initialize the singleton LanguageManager
-//  LanguageManager::getInstance();
-
 // initialize the singleton UnitsOfMeasureManager
   UnitsOfMeasureManager::getInstance();
 
 // let's start the logger if the developer wants TerraLib to make it automatically during static initialization
-#if TE_LOGGER_DO_AUTOMATIC_INITIALIZATION && TE_LOGGER_DO_STATIC_INITIALIZATION
-  TE_LOGGER_MAKE_DEFAULT_INITIALIZATION();
+#if defined(TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION) && defined(TERRALIB_LOGGER_DO_STATIC_INITIALIZATION)
+  std::string loggerConfFile = FindInTerraLibPath(TERRALIB_LOGGER_DEFAULT_CONFIGURATION_FILE);
+  te::common::Logger::initialize(TERRALIB_LOGGER_DEFAULT_NAME, TERRALIB_LOGGER_DEFAULT_CONFIG_FILE_TYPE, loggerConfFile);
 #endif
 }
 
 te::common::Module::~Module()
 {
-#if TE_LOGGER_DO_AUTOMATIC_INITIALIZATION && TE_LOGGER_DO_STATIC_INITIALIZATION
-   TE_LOGGER_MAKE_DEFAULT_FINALIZATION();
+#if defined(TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION) && defined(TERRALIB_LOGGER_DO_STATIC_INITIALIZATION)
+  te::common::Logger::finalize(TERRALIB_LOGGER_DEFAULT_NAME);
 #endif
 
   TerraLib::getInstance().remove(TE_COMMON_MODULE_NAME);
@@ -93,11 +83,12 @@ te::common::Module::~Module()
 void te::common::Module::initialize()
 {
 // let's start the logger if developer want TerraLib to make it automatically during static initialization
-#if TE_LOGGER_DO_AUTOMATIC_INITIALIZATION && !TE_LOGGER_DO_STATIC_INITIALIZATION
-  TE_LOGGER_MAKE_DEFAULT_INITIALIZATION();
+#if defined(TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION) && !defined(TERRALIB_LOGGER_DO_STATIC_INITIALIZATION)
+  std::string loggerConfFile = FindInTerraLibPath(TERRALIB_LOGGER_DEFAULT_CONFIGURATION_FILE);
+  te::common::Logger::initialize(TERRALIB_LOGGER_DEFAULT_NAME, TERRALIB_LOGGER_DEFAULT_CONFIG_FILE_TYPE, loggerConfFile);
 #endif
 
-#ifdef TE_AUTOMATIC_INITIALIZATION
+#ifdef TERRALIB_AUTOMATIC_INITIALIZATION
   UnitsOfMeasureManager::getInstance().init();
 #endif
 
@@ -108,8 +99,8 @@ void te::common::Module::finalize()
 {
   TE_LOG_TRACE(TE_TR("TerraLib Common Runtime finalized!"));
 
-#if TE_LOGGER_DO_AUTOMATIC_INITIALIZATION && !TE_LOGGER_DO_STATIC_INITIALIZATION
-  TE_LOGGER_MAKE_DEFAULT_FINALIZATION();
+#if defined(TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION) && !defined(TERRALIB_LOGGER_DO_STATIC_INITIALIZATION)
+  te::common::Logger::finalize(TERRALIB_LOGGER_DEFAULT_NAME);
 #endif
 }
 

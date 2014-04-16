@@ -152,7 +152,7 @@
   
   \brief If logger configuration is file based (text or XML), the file name (with its full path or relative path to TerraLib current directory).
 */
-#define TERRALIB_LOGGER_DEFAULT_CONFIGURATION_FILE "conf/te-log.conf"
+#define TERRALIB_LOGGER_DEFAULT_CONFIGURATION_FILE "share/terralib/config/te-log.conf"
 
 /*!
   \def TERRALIB_LOGGER_DEFAULT_CONFIG_FILE_TYPE
@@ -162,30 +162,6 @@
   \note See LoggerConfigurationType enum for more information about possible values for this macro.
 */
 #define TERRALIB_LOGGER_DEFAULT_CONFIG_FILE_TYPE te::common::LOGGER_TXT_CONFIG
-
-/*!
-  \def TERRALIB_LOGGER_MAKE_DEFAULT_INITIALIZATION
-
-  \brief This macro can be used to make logger default initialization.
-*/
-#ifdef TERRALIB_LOGGER_ENABLED
-  #define TERRALIB_LOGGER_MAKE_DEFAULT_INITIALIZATION() \
-            const std::string loggerConfFile = te::common::Logger::getDefaultConfigFile();  \
-            te::common::Logger::initialize(TERRALIB_LOGGER_DEFAULT_NAME, TERRALIB_LOGGER_DEFAULT_CONFIG_FILE_TYPE, loggerConfFile);
-#else
-  #define TERRALIB_LOGGER_MAKE_DEFAULT_INITIALIZATION() ((void)0)
-#endif
-
-/*!
-  \def TERRALIB_LOGGER_MAKE_DEFAULT_FINALIZATION
-
-  \brief This macro can be used to make logger default finalization.
-*/
-#ifdef TERRALIB_LOGGER_ENABLED
-  #define TERRALIB_LOGGER_MAKE_DEFAULT_FINALIZATION() te::common::Logger::finalize(TERRALIB_LOGGER_DEFAULT_NAME)
-#else
-  #define TERRALIB_LOGGER_MAKE_DEFAULT_FINALIZATION() ((void)0)
-#endif
 
 #ifdef TERRALIB_LOGGER_ENABLED
 
@@ -236,21 +212,6 @@ namespace te
          *  Methods used to configure, initialize and finalize the logger.
          */
         //@{
-
-        /*!
-          \brief It returns the default configuration file name with full path.
-
-          If none is set this method will search for a file defined in the macro TERRALIB_LOGGER_DEFAULT_CONFIGURATION_FILE (conf/te-log.conf):
-          <ul>
-          <li>under application default dir</li>
-          <li>then in the dir specified by the TERRALIB_DIR_ENVIRONMENT_VARIABLE</li>
-          </ul>
-
-          If no file is found they return an empty string.
-
-          \return The default configuration file name with full path or an empty string if none is found.
-         */
-        static std::string getDefaultConfigFile();
 
         /*!
           \brief It initializes a given logger based on its configuration properties.
