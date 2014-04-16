@@ -44,20 +44,38 @@ set(TERRALIB_VERSION "0x050000")
 set(TERRALIB_PKG_VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}.${TERRALIB_VERSION_PATCH})
 
 # variables that control the install location
-set(TERRALIB_DESTINATION_PLUGINS "share/terralib/plugins")
-set(TERRALIB_DESTINATION_EXAMPLES "share/terralib/examples")
+if(NOT DEFINED TERRALIB_DESTINATION_PLUGINS)
+  set(TERRALIB_DESTINATION_PLUGINS "share/terralib/plugins")
+endif()
+
+if(NOT DEFINED TERRALIB_DESTINATION_EXAMPLES)
+  set(TERRALIB_DESTINATION_EXAMPLES "share/terralib/examples")
+endif()
 
 # variables storing absolute paths
 set(TERRALIB_ABSOLUTE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 
 # variables that controls path
-set(TERRALIB_DIR_VAR_NAME "TERRALIB_HOME" CACHE STRING "Name of an environment variable with the base installation path of TerraLib")
-set(TERRALIB_EXAMPLES_DATA_DIR "${CMAKE_BINARY_DIR}/data" CACHE PATH "Path to a directory containing the data used in the examples")
+if(NOT DEFINED TERRALIB_DIR_VAR_NAME)
+  set(TERRALIB_DIR_VAR_NAME "TERRALIB_HOME" CACHE STRING "Name of an environment variable with the base installation path of TerraLib")
+endif()
+
+if(NOT DEFINED TERRALIB_EXAMPLES_DATA_DIR)
+  set(TERRALIB_EXAMPLES_DATA_DIR "${CMAKE_BINARY_DIR}/data" CACHE PATH "Path to a directory containing the data used in the examples")
+endif()
 
 # variables that controls what is built
-set(TERRALIB_BUILD_EXAMPLES 1 CACHE BOOL "If on, shows a list of examples to be built")
-set(TERRALIB_BUILD_UNITTEST 1 CACHE BOOL "If on, shows a list of unit-tests to be built")
-set(TERRALIB_BUILD_AS_BUNDLE 0 CACHE BOOL "If on, tells that the build will generate a bundle")
+if(NOT DEFINED TERRALIB_BUILD_EXAMPLES)
+  set(TERRALIB_BUILD_EXAMPLES 1 CACHE BOOL "If on, shows a list of examples to be built")
+endif()
+
+if(NOT DEFINED TERRALIB_BUILD_UNITTEST)
+  set(TERRALIB_BUILD_UNITTEST 1 CACHE BOOL "If on, shows a list of unit-tests to be built")
+endif()
+
+if(NOT DEFINED TERRALIB_BUILD_AS_BUNDLE)
+  set(TERRALIB_BUILD_AS_BUNDLE 0 CACHE BOOL "If on, tells that the build will generate a bundle")
+endif()
 
 
 #
@@ -73,16 +91,10 @@ include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 #
 # Build will generate files into a single folder
 #
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-
-#foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
-#  string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG)
-#  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR}/bin)
-#  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR}/bin)
-#  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR}/lib)
-#endforeach()
 
 
 #
@@ -99,6 +111,7 @@ endif()
 #
 # including CMake's auxiliary files
 #
+
 include(CMakeDependentOption)
 
 
@@ -130,25 +143,8 @@ find_package(Proj4)
 
 find_package(Qt5 5.1 COMPONENTS Core Gui Widgets PrintSupport)
 
-if(Qt5_FOUND)
-
-  #set(CMAKE_AUTOMOC ON)
-  #set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-else()
-
+if(NOT Qt5_FOUND)
   find_package(Qt4 4.6.3 QUIET COMPONENTS QtCore QtGui)
-
-  if(QT4_FOUND)
-
-    #include(${QT_USE_FILE})
-
-    #include_directories(${QT_INCLUDE_DIR})
-
-    #add_definitions(${QT_DEFINITIONS})
-
-  endif()
-
 endif()
 
 if(Qt5_FOUND OR QT4_FOUND)
@@ -299,9 +295,7 @@ option(TERRALIB_MOD_DATATYPE_ENABLED "Build Data Type module?" ON)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_GEOMETRY_ENABLED "Build Geometry module?" ON "TERRALIB_MOD_DATATYPE_ENABLED" OFF)
 
-#if(PROJ4_FOUND) # remove comment if this module requires Proj4
-  option(TERRALIB_MOD_SRS_ENABLED "Build Spatial Reference System module?" ON)
-#endif()
+option(TERRALIB_MOD_SRS_ENABLED "Build Spatial Reference System module?" ON)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_RASTER_ENABLED "Build Raster module?" ON "TERRALIB_MOD_DATATYPE_ENABLED;TERRALIB_MOD_SRS_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED" OFF)
 
@@ -360,7 +354,7 @@ if(QT4_FOUND OR Qt5_FOUND)
   CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_STATISTICS_QT_ENABLED "Build Qt support for Statistics module?" ON "TERRALIB_MOD_STATISTICS_CORE_ENABLED" OFF)
 
   if(QWT_FOUND AND QTPROPERTYBROWSER_FOUND)
-    option(TERRALIB_MOD_QT_WIDGETS_ENABLED "Build Qt Widgets?" ON)
+    CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_WIDGETS_ENABLED "Build Qt Widgets?" ON "TERRALIB_MOD_MAPTOOLS_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_RP_ENABLED;TERRALIB_MOD_ST_ENABLED" OFF)
   endif()
 
   CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_VP_QT_ENABLED "Build Vector Processing Qt module?" ON "TERRALIB_MOD_VP_CORE_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
@@ -649,6 +643,7 @@ if(TERRALIB_BUILD_EXAMPLES)
 
 endif()
 
+
 #
 # install and targets export
 #
@@ -677,8 +672,8 @@ install(EXPORT terralib-targets
         FILE terralib-exports.cmake
         COMPONENT devel)
 
-#install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/resources/icons 
-#        DESTINATION share/terralib COMPONENT runtime)
+install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share
+        DESTINATION share COMPONENT runtime)
 
 
 #
@@ -702,6 +697,7 @@ endif()
 #
 # CPack
 #
+
 set(CPACK_SOURCE_INSTALLED_DIRECTORIES "${TERRALIB_ABSOLUTE_ROOT_DIR};/")
 
 configure_file(${terralib_SOURCE_DIR}/terralib-cpack-options.cmake.in
