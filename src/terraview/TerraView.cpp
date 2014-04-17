@@ -43,8 +43,6 @@
 TerraView::TerraView(QWidget* parent)
   : te::qt::af::BaseApplication(parent)
 {
-  qApp->setApplicationName("TerraView");
-  qApp->setOrganizationName("INPE");
 }
 
 TerraView::~TerraView()

@@ -321,6 +321,12 @@ void  te::qt::af::ApplicationController::initialize()
 
     QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
   }
+  
+// hold user settings
+  QSettings user_settings(QSettings::IniFormat,
+                          QSettings::UserScope,
+                          QApplication::instance()->organizationName(),
+                          QApplication::instance()->applicationName());
 
 // load icon theme
   try
@@ -341,39 +347,27 @@ void  te::qt::af::ApplicationController::initialize()
     }
 
     m_appDefaultIconTheme = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.DefaultTheme"));
+    
+    QVariant iconTheme = user_settings.value("icon_theme/selected_theme", m_appDefaultIconTheme);
 
-    QString iconTheme = QString::fromStdString(te::common::UserApplicationSettings::getInstance().getValue("UserSettings.SelectedIconTheme"));
+    QIcon::setThemeName(iconTheme.toString());
 
-    if(iconTheme.isEmpty())
-      QIcon::setThemeName(m_appDefaultIconTheme);
-    else
-      QIcon::setThemeName(iconTheme);
+    QVariant iconSize = user_settings.value("toolbars/icon_size", te::common::SystemApplicationSettings::getInstance().getValue("Application.ToolBarDefaultIconSize").c_str());
 
-    std::string iconSize = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.ToolBarIconSize");
-
-    if(iconSize.empty())
-      iconSize = te::common::SystemApplicationSettings::getInstance().getValue("Application.ToolBarDefaultIconSize");
-    if(!iconSize.empty())
     {
-      QString sh = QString("QToolBar { qproperty-iconSize: ") + iconSize.c_str() + "px " + iconSize.c_str() + "px; }";
+      QString sh = QString("QToolBar { qproperty-iconSize: ") + iconSize.toString() + "px " + iconSize.toString() + "px; }";
       qApp->setStyleSheet(sh);
     }
 
-    // Default SRID
-    QString srid = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.DefaultSRID").c_str();
-    if(srid.isEmpty())
-      srid = te::common::SystemApplicationSettings::getInstance().getValue("Application.DefaultSRID").c_str();
+// Default SRID
+    QVariant srid = user_settings.value("srs/default_srid", te::common::SystemApplicationSettings::getInstance().getValue("Application.DefaultSRID").c_str());
+    
+    m_defaultSRID = srid.toInt();
 
-    if(!srid.isEmpty())
-      m_defaultSRID = srid.toInt();
+// Selection Color
+    QVariant selectionColor = user_settings.value("color/selection_color", te::common::SystemApplicationSettings::getInstance().getValue("Application.DefaultSelectionColor").c_str());
 
-    // Selection Color
-    QString selectionColor = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.SelectionColor").c_str();
-    if(selectionColor.isEmpty())
-      selectionColor = te::common::SystemApplicationSettings::getInstance().getValue("Application.DefaultSelectionColor").c_str();
-
-    if(!selectionColor.isEmpty())
-      m_selectionColor = QColor(selectionColor);
+    m_selectionColor = QColor(selectionColor.toString());
 
     SplashScreenManager::getInstance().showMessage(tr("Application icon theme loaded!"));
   }
@@ -391,7 +385,7 @@ void  te::qt::af::ApplicationController::initialize()
 // load registered data sources
   try
   {
-    m_appDatasourcesFile = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.DataSourcesFile");
+    m_appDatasourcesFile = user_settings.value("data_sources/data_file", "").toString().toStdString();
 
     if(!m_appDatasourcesFile.empty())
     {
@@ -413,12 +407,10 @@ void  te::qt::af::ApplicationController::initialize()
     QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
   }
 
-  QSettings s(QSettings::IniFormat, QSettings::UserScope, m_appOrganization, m_appName);
+  QFileInfo info(user_settings.fileName());
 
-  QFileInfo info(s.fileName());
-
-//  if(!info.exists())
-//    CreateDefaultSettings();
+  if(!info.exists())
+    CreateDefaultSettings();
 
   m_initialized = true;
 }

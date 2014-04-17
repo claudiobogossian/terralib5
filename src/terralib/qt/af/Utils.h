@@ -238,7 +238,7 @@ namespace te
       /*!
         \brief Creates a default QSettings.
       */
-      //TEQTAFEXPORT void CreateDefaultSettings();
+      TEQTAFEXPORT void CreateDefaultSettings();
 
       /*!
         \brief Check QSettings for existance of \a act and adds it if necessary.
