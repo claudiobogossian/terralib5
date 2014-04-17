@@ -42,29 +42,29 @@
 #define TE_DATAACCESS_MODULE_NAME "te.dataaccess"
 
 /*!
-  \def TE_USE_CONNECTION_POOL_MANAGER
+  \def TERRALIB_USE_CONNECTION_POOL_MANAGER
   
   \brief Set this macro to 1 if you want to use the TerraLib connection pool manager.
 */
-#define TE_USE_CONNECTION_POOL_MANAGER 1
+#define TERRALIB_USE_CONNECTION_POOL_MANAGER 1
 
 /*!
-  \def TE_INITIALIZE_CONNECTION_POOL_MANAGER
+  \def TERRALIB_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER
   
   \brief Set this macro to 1 if you want TerraLib to automatically initialize a thread for managing all the connection pools registered in the system.
 */
-#if TE_USE_CONNECTION_POOL_MANAGER
-  #define TE_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER 1
+#if TERRALIB_USE_CONNECTION_POOL_MANAGER
+  #define TERRALIB_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER 1
 #else
-  #define TE_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER 0
+  #define TERRALIB_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER 0
 #endif
 
 /*!
-  \def TE_POOL_DEFAULT_MONITORING_TIME
+  \def TERRALIB_POOL_DEFAULT_MONITORING_TIME
   
   \brief This sets the default monitoring time in seconds for the connection pool manager.
 */
-#define TE_POOL_DEFAULT_MONITORING_TIME 60
+#define TERRALIB_POOL_DEFAULT_MONITORING_TIME 60
 
 //@}
 

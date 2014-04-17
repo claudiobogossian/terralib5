@@ -50,6 +50,11 @@ const te::dt::DataTypeConverter& te::dt::DataConverterManager::get(const std::pa
   return it->second;
 }
 
+void te::dt::DataConverterManager::clear()
+{
+  m_convMap.clear();
+}
+
 te::dt::DataConverterManager::DataConverterManager()
 {
 }

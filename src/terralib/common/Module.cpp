@@ -102,6 +102,10 @@ void te::common::Module::finalize()
 #if defined(TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION) && !defined(TERRALIB_LOGGER_DO_STATIC_INITIALIZATION)
   te::common::Logger::finalize(TERRALIB_LOGGER_DEFAULT_NAME);
 #endif
+  
+#ifdef TERRALIB_AUTOMATIC_INITIALIZATION
+  UnitsOfMeasureManager::getInstance().clear();
+#endif
 }
 
 

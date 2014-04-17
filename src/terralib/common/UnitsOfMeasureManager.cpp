@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "Exception.h"
+#include "PlatformUtils.h"
 #include "STLUtils.h"
 #include "StringUtils.h"
 #include "Translator.h"
@@ -177,16 +178,13 @@ void te::common::UnitsOfMeasureManager::init()
 {
   if(!m_uoms.empty())
     throw Exception(TE_TR("The unit of measure manager is already initialized!"));
+  
+  std::string uom_file = FindInTerraLibPath("share/terralib/json/uom.json");
+  
+  if(uom_file.empty())
+    throw Exception(TE_TR("The unit of measure JSON file could not be found!"));
 
   boost::property_tree::ptree pt;
-
-  const char* te_env = getenv("TERRALIB_DIR");
-
-  if(te_env == 0)
-    throw Exception(TE_TR("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
-
-  std::string uom_file(te_env);
-  uom_file += "/resources/json/uom.json";
 
   boost::property_tree::json_parser::read_json(uom_file, pt);
 

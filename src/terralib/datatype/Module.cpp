@@ -119,5 +119,7 @@ void te::dt::Module::initialize()
 
 void te::dt::Module::finalize()
 {
+  DataConverterManager::getInstance().clear();
+
   TE_LOG_TRACE(TE_TR("TerraLib Data Type module finalized!"));
 }

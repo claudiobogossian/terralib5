@@ -23,12 +23,8 @@
  \brief A singleton to manage Coordinate Systems representations.  
 */
 
-// Boost
-#include <boost/foreach.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-
 // TerraLib
+#include "../common/PlatformUtils.h"
 #include "../common/Translator.h"
 #include "../common/UnitsOfMeasureManager.h"
 #include "Exception.h"
@@ -38,6 +34,11 @@
 // STL
 #include <algorithm>
 #include <cassert>
+
+// Boost
+#include <boost/foreach.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 void LoadSpatialReferenceSystemManager(const std::string fileName, te::srs::SpatialReferenceSystemManager* mger) 
 {
@@ -95,13 +96,10 @@ void te::srs::SpatialReferenceSystemManager::init()
   if(!m_set.empty())
     throw Exception(TE_TR("The spatial reference system manager is already initialized!"));
   
-  const char* te_env = getenv("TERRALIB_DIR");
-
-  if(te_env == 0)
-    throw Exception(TE_TR("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
-
-  std::string jsonf(te_env);
-  jsonf += "/resources/json/srs.json";
+  std::string jsonf = te::common::FindInTerraLibPath("share/terralib/json/srs.json");
+  
+  if(jsonf.empty())
+    throw Exception(TE_TR("Could not find srs.json!"));
 
   init(jsonf);
 }

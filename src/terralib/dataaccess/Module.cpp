@@ -56,7 +56,7 @@ te::da::Module::~Module()
 
 void te::da::Module::initialize()
 {
-#if TE_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER
+#if TERRALIB_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER
   ConnectionPoolManager::getInstance().start();
 #endif
 
@@ -77,7 +77,7 @@ void te::da::Module::initialize()
 
 void te::da::Module::finalize()
 {
-#if TE_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER
+#if TERRALIB_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER
   ConnectionPoolManager::getInstance().stop();
 #endif
 

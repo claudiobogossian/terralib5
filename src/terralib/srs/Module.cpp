@@ -51,7 +51,7 @@ te::srs::Module::~Module()
 
 void te::srs::Module::initialize()
 {
-#ifdef TE_SRS_AUTOLOAD_ENABLED
+#ifdef TERRALIB_AUTOMATIC_INITIALIZATION
   te::srs::SpatialReferenceSystemManager::getInstance().init();
 #endif
 
