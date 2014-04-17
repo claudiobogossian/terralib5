@@ -102,9 +102,7 @@ void te::common::Module::initialize()
   UnitsOfMeasureManager::getInstance().init();
 #endif
 
-#if TE_CHARENCODING_ENABLED
   CharEncodingConv::initialize();
-#endif
 
   TE_LOG_TRACE(TR_COMMON("TerraLib Common Runtime initialized!"));
 }
