@@ -26,8 +26,6 @@
 // TerraLib
 #include "CharEncodingConv.h"
 
-#if TE_CHARENCODING_ENABLED
-
 // TerraLib
 #include "Exception.h"
 #include "Translator.h"
@@ -35,14 +33,16 @@
 // STL
 #include <sstream>
 
+#if TE_CHARENCODING_ENABLED
 // iconv
 #include <errno.h>
 #include <iconv.h>
 
-#define TE_CONVERSION_BUFFERSIZE_SIZE 64
-
 // internal iconv names
 static const char* iconv_names[]  = {"UTF-8", "CP1250", "CP1251", "CP1252", "CP1253", "CP1254", "CP1257", "ISO-8859-1"};
+#endif
+
+#define TE_CONVERSION_BUFFERSIZE_SIZE 64
 
 // CharEncoding Names
 std::map<te::common::CharEncoding, std::string> te::common::CharEncodingConv::sm_encodingNames;
@@ -54,6 +54,7 @@ te::common::CharEncodingConv::CharEncodingConv(const CharEncoding& fromCode, con
   if(m_fromCode == UNKNOWN_CHAR_ENCODING || m_toCode == UNKNOWN_CHAR_ENCODING)
     throw Exception(TR_COMMON("Impossible conversion of unknown char encoding!"));
 
+#if TE_CHARENCODING_ENABLED
   m_cd = iconv_open(iconv_names[toCode], iconv_names[fromCode]);
 
   if(m_cd == (iconv_t)(-1))
@@ -63,16 +64,20 @@ te::common::CharEncodingConv::CharEncodingConv(const CharEncoding& fromCode, con
     else
       throw Exception(TR_COMMON("Failed to start iconv to start converting charsets!"));
   }
+#endif
 }
 
 te::common::CharEncodingConv::~CharEncodingConv()
 {
+#if TE_CHARENCODING_ENABLED
   if(iconv_close(m_cd))
     throw Exception(TR_COMMON("Failed to close iconv! This wasn't supposed to occur! Contact TerraLib Team!"));
+#endif
 }
 
 std::string te::common::CharEncodingConv::conv(const std::string& src)
 {
+#if TE_CHARENCODING_ENABLED
   std::ostringstream outstring(std::ios_base::out);
   const char* inbuff = src.c_str();
   std::size_t inbytesleft = src.length();
@@ -118,6 +123,9 @@ std::string te::common::CharEncodingConv::conv(const std::string& src)
     throw Exception(TR_COMMON("Failed to bring iconv to its initial state!"));
 
   return outstring.str();
+#else
+  return src;
+#endif
 }
 
 
@@ -126,6 +134,7 @@ std::string te::common::CharEncodingConv::convert(const std::string& src, const 
   if(fromCode == UNKNOWN_CHAR_ENCODING || toCode == UNKNOWN_CHAR_ENCODING)
     throw Exception(TR_COMMON("Impossible conversion of unknown char encoding!"));
 
+#if TE_CHARENCODING_ENABLED
   iconv_t cd = iconv_open(iconv_names[toCode], iconv_names[fromCode]);
 
   if(cd == (iconv_t)(-1))
@@ -173,6 +182,9 @@ std::string te::common::CharEncodingConv::convert(const std::string& src, const 
     throw Exception(TR_COMMON("Failed to close iconv!"));
 
   return outstring.str();
+#else
+  return src;
+#endif
 }
 
 std::string te::common::CharEncodingConv::getCharEncodingName(const CharEncoding& code)
@@ -206,5 +218,3 @@ void te::common::CharEncodingConv::initialize()
   // continue...
   sm_encodingNames[UNKNOWN_CHAR_ENCODING] = "Unknown";
 }
-
-#endif  // TE_CHARENCODING_ENABLED

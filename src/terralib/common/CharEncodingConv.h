@@ -58,8 +58,6 @@ namespace te
   }
 }
 
-#if TE_CHARENCODING_ENABLED
-
 // STL
 #include <map>
 #include <string>
@@ -164,7 +162,5 @@ namespace te
 
   } // end namespace common
 }   // end namespace te
-
-#endif // TE_CHARENCODING_ENABLED
 
 #endif  // __TERRALIB_COMMON_INTERNAL_CHARENCODINGCONV_H
