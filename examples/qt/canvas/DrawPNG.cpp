@@ -1,6 +1,7 @@
 #include "CanvasExamples.h"
 
 // TerraLib
+#include "../../Config.h"
 #include <terralib/geometry.h>
 #include <terralib/dataaccess.h>
 #include <terralib/qt/widgets/canvas/Canvas.h>
@@ -21,9 +22,12 @@ void DrawPNG()
   try
   {
     std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
-
+    
+    std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+        
     std::map<std::string, std::string> connInfo;    
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/shp/munic_2001.shp";
+    
+    connInfo["URI"] = data_dir + "/shp/munic_2001.shp";
     dsOGR->setConnectionInfo(connInfo);
     dsOGR->open();
 

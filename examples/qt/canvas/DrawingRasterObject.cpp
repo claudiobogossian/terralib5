@@ -1,6 +1,7 @@
 #include "CanvasExamples.h"
 
 // TerraLib
+#include "../../Config.h"
 #include <terralib/raster.h>
 #include <terralib/dataaccess.h>
 #include <terralib/datatype.h>
@@ -8,18 +9,20 @@
 #include <terralib/qt/widgets/canvas/Canvas.h>
 
 // Qt
-#include <QtGui/QApplication>
+#include <QApplication>
 
 void DrawingRasterObject()
 {
   int argc = 1;
   
-  //crate application
+  //create application
   QApplication app(argc, 0);
  
-    // set input raster name
+  // set input raster name
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = data_dir + "/data/rasters/cbers2b_rgb342_crop.tif";
 
   // open input raster
   std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
