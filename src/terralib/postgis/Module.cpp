@@ -19,6 +19,7 @@
 
 // TerraLib
 #include "../common/Logger.h"
+#include "../common/PlatformUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"
@@ -54,18 +55,14 @@ void te::pgis::Module::startup()
 
 // Register the data source factory
   te::da::DataSourceFactory::add("POSTGIS", te::pgis::Build);
-
-  //DataSourceFactory::initialize();
   
 // retrieve the Capabilities
-  boost::filesystem::path driverpath(m_pluginInfo.m_folder);
-
-  boost::filesystem::path capabilitiesFile = driverpath / "postgis-capabilities.xml";
+  std::string capabilitiesFile = te::common::FindInTerraLibPath("share/terralib/plugins/postgis-capabilities.xml");
 
   te::pgis::Globals::sm_capabilities = new te::da::DataSourceCapabilities();
   te::pgis::Globals::sm_queryDialect = new te::da::SQLDialect();
 
-  te::serialize::xml::Read(capabilitiesFile.string(), *te::pgis::Globals::sm_capabilities, *te::pgis::Globals::sm_queryDialect);
+  te::serialize::xml::Read(capabilitiesFile, *te::pgis::Globals::sm_capabilities, *te::pgis::Globals::sm_queryDialect);
 
   TE_LOG_TRACE(TE_TR("TerraLib PostGIS driver support initialized!"));
 
@@ -77,10 +74,10 @@ void te::pgis::Module::shutdown()
   if(!m_initialized)
     return;
 
-  // Unregister the PostGIS factory support.
+// Unregister the PostGIS factory support.
   te::da::DataSourceFactory::remove("POSTGIS");
 
-  // Free the PostGIS registered drivers
+// Free the PostGIS registered drivers
   te::da::DataSourceManager::getInstance().detachAll(PGIS_DRIVER_IDENTIFIER);
  
   TE_LOG_TRACE(TE_TR("TerraLib PostGIS driver shutdown!"));

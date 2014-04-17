@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../common/Exception.h"
+#include "../common/PlatformUtils.h"
 #include "../common/STLUtils.h"
 #include "../common/Translator.h"
 #include "ColorScheme.h"
@@ -32,35 +33,34 @@
 #include "ColorSchemeGroup.h"
 #include "ColorSchemeCatalogManager.h"
 
-// Boost
-#include <boost/foreach.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-
 // STL
 #include <cassert>
 #include <fstream>
 #include <vector>
 
+// Boost
+#include <boost/foreach.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
 void te::color::ColorSchemeCatalogManager::init()
 {
   te::color::ColorSchemeCatalog* csc = findByName("Default");
+
   if(csc)
     throw te::common::Exception(TE_TR("The default color scheme catalog is already initialized!"));
-
-  const char* te_env = getenv("TERRALIB_DIR");
-
-  if(te_env == 0)
-    throw te::common::Exception(TE_TR("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
 
   try
   {
     std::ifstream f;
 
-    std::string jsonf(te_env);
-    jsonf += "/resources/json/color_ramps.json";
+    std::string jsonf = te::common::FindInTerraLibPath("share/terralib/json/color_ramps.json");
+    
+    if(jsonf.empty())
+      throw te::common::Exception(TE_TR("Could not find color_ramps.json file!"));
     
     f.open(jsonf.c_str());
+    
     if (!f.is_open())
       return;
 

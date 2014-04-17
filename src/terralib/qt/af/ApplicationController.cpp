@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../common/Exception.h"
+#include "../../common/PlatformUtils.h"
 #include "../../common/Translator.h"
 #include "../../common/TerraLib.h"
 #include "../../common/SystemApplicationSettings.h"
@@ -290,43 +291,14 @@ void  te::qt::af::ApplicationController::initialize()
 
   qApp->setOrganizationName(m_appOrganization);
 
-// read used config data
-  SplashScreenManager::getInstance().showMessage(tr("Reading user settings..."));
-
-  m_appUserSettingsFile = te::common::SystemApplicationSettings::getInstance().getValue("Application.UserSettingsFile.<xmlattr>.xlink:href");
-
-  te::common::UserApplicationSettings::getInstance().load(m_appUserSettingsFile);
-
-  SplashScreenManager::getInstance().showMessage(tr("User settings read!"));
-
-// read application resources
-  {
-    SplashScreenManager::getInstance().showMessage(tr("Loading application resources..."));
-
-    //boost::property_tree::ptree& p = te::common::SystemApplicationSettings::getInstance().getAllSettings();
-
-    //BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("Application.Resources"))
-    //{
-    //  const std::string& resourceFile = v.second.get<std::string>("<xmlattr>.xlink:href");
-
-    //  QResource::registerResource(resourceFile.c_str());
-    //}
-
-    SplashScreenManager::getInstance().showMessage(tr("Application resources loaded!"));
-  }
-
 // load help system
   try
   {
-    m_appHelpFile = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.HelpFile.<xmlattr>.xlink:href"));
+    std::string help_file = te::common::FindInTerraLibPath(te::common::SystemApplicationSettings::getInstance().getValue("Application.HelpFile.<xmlattr>.xlink:href"));
+
+    m_appHelpFile = QString::fromStdString(help_file);
 
     QFileInfo info(m_appHelpFile);
-
-    //if(!info.exists())
-    //{
-    //  m_appHelpFile = "";
-    //  te::common::SystemApplicationSettings::getInstance().setValue("Application.HelpFile.<xmlattr>.xlink:href", "fodas.txt");
-    //}
 
     if(!m_appHelpFile.isEmpty() && info.exists())
     {
@@ -355,7 +327,9 @@ void  te::qt::af::ApplicationController::initialize()
   {
     SplashScreenManager::getInstance().showMessage(tr("Loading application icon theme..."));
 
-    m_appIconThemeDir = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.BaseDirectory.<xmlattr>.xlink:href"));
+    std::string icon_dir = te::common::FindInTerraLibPath(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.BaseDirectory.<xmlattr>.xlink:href"));
+    
+    m_appIconThemeDir = QString::fromStdString(icon_dir);
 
     if(!m_appIconThemeDir.isEmpty())
     {
