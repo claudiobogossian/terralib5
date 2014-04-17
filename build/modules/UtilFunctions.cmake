@@ -242,8 +242,8 @@ MACRO(makePluginProject proj_name root_h_dir root_src_dir)
   else ()
     install(
       TARGETS ${PROJ_NAME}
-      LIBRARY DESTINATION "lib" COMPONENT PLUGINS
-      ARCHIVE DESTINATION "lib" COMPONENT PLUGINS
+      LIBRARY DESTINATION plugins COMPONENT PLUGINS
+      ARCHIVE DESTINATION plugins COMPONENT PLUGINS
     )
   endif()
   
