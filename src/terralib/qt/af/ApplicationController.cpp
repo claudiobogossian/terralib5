@@ -485,42 +485,45 @@ void te::qt::af::ApplicationController::initializeProjectMenus()
 
   try
   {
-    boost::property_tree::ptree p = te::common::UserApplicationSettings::getInstance().getAllSettings().get_child("UserSettings");
-    std::string projPath, projTitle;
+    QSettings user_settings(QSettings::IniFormat,
+                            QSettings::UserScope,
+                            QApplication::instance()->organizationName(),
+                            QApplication::instance()->applicationName());
 
-    projPath = p.get<std::string>("MostRecentProject.<xmlattr>.xlink:href");
-    projTitle = p.get<std::string>("MostRecentProject.<xmlattr>.title");
+    QVariant projPath = user_settings.value("project/most_recent/path", "");
+    QVariant projTitle = user_settings.value("project/most_recent/title", "");
 
     QMenu* mnu = getMenu("File.Recent Projects");
 
-    if(!projPath.empty())
+    if(!projPath.toString().isEmpty())
     {
-      QString pp = projPath.c_str();
-      QAction* act = mnu->addAction(pp);
-      act->setData(pp);
+      QAction* act = mnu->addAction(projPath.toString());
+      act->setData(projPath);
 
       mnu->addSeparator();
 
-      m_recentProjs.append(pp);
-      m_recentProjsTitles.append(projTitle.c_str());
+      m_recentProjs.append(projPath.toString());
+      m_recentProjsTitles.append(projTitle.toString());
     }
-
-    bool hasProjects = p.count("RecentProjects") > 0;
-
-    if(hasProjects)
+    
+    user_settings.beginGroup("project");
+    
+    int nrc = user_settings.beginReadArray("recents");
+    
+    for(int i = 0; i != nrc; ++i)
     {
-      BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("RecentProjects"))
-      {
-        QString pp = v.second.get<std::string>("<xmlattr>.xlink:href").c_str();
-        QString pt = v.second.get<std::string>("<xmlattr>.title").c_str();
-        QAction* act = mnu->addAction(pp);
-        act->setData(pp);
-        m_recentProjs.append(pp);
-        m_recentProjsTitles.append(pt);
-      }
-
-      mnu->setEnabled(true);
+      user_settings.setArrayIndex(i);
+      QString npath = user_settings.value("project/path").toString();
+      QString ntitle = user_settings.value("project/title").toString();
+      
+      
+      QAction* act = mnu->addAction(npath);
+      act->setData(npath);
+      m_recentProjs.append(npath);
+      m_recentProjsTitles.append(ntitle);
     }
+
+    mnu->setEnabled(true);
 
     SplashScreenManager::getInstance().showMessage("Recent projects loaded!");
   }

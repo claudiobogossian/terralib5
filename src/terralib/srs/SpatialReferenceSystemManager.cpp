@@ -96,8 +96,11 @@ void te::srs::SpatialReferenceSystemManager::init()
   if(!m_set.empty())
     throw Exception(TE_TR("The spatial reference system manager is already initialized!"));
   
+#ifdef NDEBUG
   std::string jsonf = te::common::FindInTerraLibPath("share/terralib/json/srs.json");
-  
+#else
+  std::string jsonf = te::common::FindInTerraLibPath("share/terralib/json/srs_incomplete.json");
+#endif
   if(jsonf.empty())
     throw Exception(TE_TR("Could not find srs.json!"));
 

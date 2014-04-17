@@ -234,19 +234,6 @@ void te::qt::af::BaseApplication::init(const std::string& configFile)
   try
   {
     te::qt::af::ApplicationController::getInstance().initialize();
-
-    // Use the json file in the user directory to load SRS manager.
-    if(!m_restartTerraLib)
-    {
-      QFileInfo info(configFile.c_str());
-      std::string srsFile = info.absolutePath().toStdString();
-#ifdef _DEBUG      
-       srsFile += "/resources/json/srs_incomplete.json";
-#else
-      srsFile += "/resources/json/srs.json";
-#endif
-      te::srs::SpatialReferenceSystemManager::getInstance().init(srsFile);
-    }
   }
   catch(const std::exception& e)
   {
@@ -2328,50 +2315,6 @@ void te::qt::af::BaseApplication::initToolbars()
     m_viewToolBarsMenu->addAction(bar->toggleViewAction());
     ApplicationController::getInstance().registerToolBar(bar->objectName(), bar);
   }
-// File Tool Bar
-  //m_fileToolBar = new QToolBar(this);
-  //m_fileToolBar->setObjectName("File Tool Bar");
-  //addToolBar(Qt::TopToolBarArea, m_fileToolBar);
-  //m_fileToolBar->setWindowTitle(tr("File Tool Bar"));
-  //m_fileToolBar->addAction(m_fileNewProject);
-  //m_fileToolBar->addAction(m_fileOpenProject);
-  //m_fileToolBar->addAction(m_fileSaveProject);
-
-  //m_viewToolBarsMenu->addAction(m_fileToolBar->toggleViewAction());
-
-// Edit Tool Bar
-  //m_editToolBar = new QToolBar(this);
-  //m_editToolBar->setObjectName("EditToolBar");
-  //addToolBar(Qt::TopToolBarArea, m_editToolBar);
-  //m_editToolBar->setWindowTitle(tr("Edit Tool Bar"));
-  //m_editToolBar->addAction(m_editUndo);
-  //m_editToolBar->addAction(m_editRedo);
-  //m_editToolBar->addSeparator();
-  //m_editToolBar->addAction(m_editCut);
-  //m_editToolBar->addAction(m_editCopy);
-  //m_editToolBar->addAction(m_editPaste);
-
-  //m_viewToolBarsMenu->addAction(m_editToolBar->toggleViewAction());
-
-// Map Display Tool Bar
-  //m_mapToolBar = new QToolBar(this);
-  //m_mapToolBar->setObjectName("Map Tool Bar");
-  //addToolBar(Qt::TopToolBarArea, m_mapToolBar);
-  //m_mapToolBar->setWindowTitle(tr("Map Tool Bar"));
-  //m_mapToolBar->addAction(m_mapDraw);
-  //m_mapToolBar->addAction(m_mapZoomIn);
-  //m_mapToolBar->addAction(m_mapZoomOut);
-  //m_mapToolBar->addAction(m_mapPan);
-  //m_mapToolBar->addAction(m_mapZoomExtent);
-  //m_mapToolBar->addAction(m_mapPreviousExtent);
-  //m_mapToolBar->addAction(m_mapNextExtent);
-
-//  m_viewToolBarsMenu->addAction(m_mapToolBar->toggleViewAction());
-
-// registering the toolbars
-  //ApplicationController::getInstance().registerToolBar(m_fileToolBar->objectName(), m_fileToolBar);
-  ////ApplicationController::getInstance().registerToolBar("EditToolBar", m_editToolBar);
-  //ApplicationController::getInstance().registerToolBar(m_mapToolBar->objectName(), m_mapToolBar);
 }
 
 void te::qt::af::BaseApplication::initStatusBar()
