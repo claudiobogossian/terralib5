@@ -24,6 +24,8 @@
  */
 
 // TerraLib
+#include "../../Config.h"
+#include <terralib/common/PlatformUtils.h>
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/plugin.h>
@@ -51,9 +53,11 @@ void LoadOGRModule()
 {
   try
   {
-    te::plugin::PluginInfo* info; 
+    te::plugin::PluginInfo* info;
+  
+    std::string plugin_path = te::common::FindInTerraLibPath("share/terralib/plugins");
 
-    info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.ogr.teplg"));
+    info = te::plugin::GetInstalledPlugin(plugin_path + "/te.da.ogr.teplg");
     te::plugin::PluginManager::getInstance().add(info); 
 
     te::plugin::PluginManager::getInstance().loadAll();
@@ -137,11 +141,14 @@ int main(int /*argc*/, char** /*argv*/)
   {
     LoadOGRModule();
     
-    //pegar um data set
-    //std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_DIR"/data/shp");
+    // Get a dataset
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/shp";
+  
+    std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+    connInfo["URI"] = data_dir + "/shp";
+  
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
+  
     ds->setConnectionInfo(connInfo);
     ds->open();
     
@@ -160,7 +167,8 @@ int main(int /*argc*/, char** /*argv*/)
     generateHistogram(dataset.get(), transactor.get());
     generateScatter(dataset.get(), transactor.get());
 
-    int ret = app.exec();
+    int ret;
+    ret = app.exec();
   }
   catch(const std::exception& e)
   {
