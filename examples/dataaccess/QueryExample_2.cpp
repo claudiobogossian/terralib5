@@ -118,10 +118,10 @@ void QueryExample_2()
 
         std::auto_ptr<te::da::DataSet> dataset = transactor->query(sql);
         PrintDataSet("All neighbours of Ouro Preto", dataset.get());
-     
       }
 
-      bool trans_connected = transactor->isInTransaction(); 
+    bool trans_connected;
+    trans_connected = transactor->isInTransaction();
     }
 
 // At the end, let's release transactor and close data source

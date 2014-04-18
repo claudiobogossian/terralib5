@@ -1,3 +1,5 @@
+
+#include "../Config.h"
 #include "DataAccessExamples.h"
 
 #include <iostream>
@@ -10,11 +12,15 @@ void OpenFile()
     std::auto_ptr<te::da::DataSource> dsGDAL = te::da::DataSourceFactory::make("GDAL");
 
     bool res = dsGDAL->isOpened();  // expect false;
+  
+    std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
 
     std::map<std::string, std::string> connInfo;
-    connInfo["SOURCE"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+    connInfo["SOURCE"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
+  
     dsGDAL->setConnectionInfo(connInfo);
     dsGDAL->open();
+  
     res = dsGDAL->isOpened();  // expect true
     res = dsGDAL->isValid();   // expect true
 
@@ -35,8 +41,11 @@ void OpenDirectory()
 {
   try
   {
+    std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters" ; 
+    connInfo["URI"] = data_dir + "/rasters";
+  
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
     ds->setConnectionInfo(connInfo);
  
@@ -67,8 +76,11 @@ void DataSourceTransactor()
 {
   try
   {
+    std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters";
+    connInfo["URI"] = data_dir + "/rasters";
+  
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
 
     ds->setConnectionInfo(connInfo);
