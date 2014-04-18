@@ -1,3 +1,5 @@
+
+#include "../Config.h"
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/vp/Intersection.h>
@@ -170,7 +172,10 @@
 //ORG to OGR
 bool IntersectionOGRToOGR()
 {
-  std::string filename1(""TE_DATA_EXAMPLE_DIR"/data/shp/Intersection/rodovias.shp");
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  std::string filename1(data_dir + "shp/Intersection/rodovias.shp");
+  
   std::map<std::string, std::string> srcInfo1;
   srcInfo1["URI"] = filename1;
   srcInfo1["DRIVER"] = "ESRI Shapefile";
@@ -190,7 +195,7 @@ bool IntersectionOGRToOGR()
   std::auto_ptr<te::da::DataSetType> inDsetType1 = srcDs1->getDataSetType(inDsetName1);
 
 
-  std::string filename2(""TE_DATA_EXAMPLE_DIR"/data/shp/Intersection/SP_meso.shp");
+  std::string filename2(data_dir + "/shp/Intersection/SP_meso.shp");
   std::map<std::string, std::string> srcInfo2;
   srcInfo2["URI"] = filename2;
   srcInfo2["DRIVER"] = "ESRI Shapefile";
@@ -212,7 +217,7 @@ bool IntersectionOGRToOGR()
   bool copyInputColumns = true;
   std::size_t inSRID = 0;
 
-  std::string filenameResult(""TE_DATA_EXAMPLE_DIR"/data/shp/Intersection/intersectionOGR2OGR.shp");
+  std::string filenameResult(data_dir + "/shp/Intersection/intersectionOGR2OGR.shp");
 
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = filenameResult;
@@ -252,7 +257,10 @@ bool IntersectionOGRToOGR()
 //OGR to Postgis
 bool IntersectionOGRToPGIS()
 {
-  std::string filename1(""TE_DATA_EXAMPLE_DIR"/data/shp/Intersection/rodovias.shp");
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  std::string filename1(data_dir + "/shp/Intersection/rodovias.shp");
+  
   std::map<std::string, std::string> srcInfo1;
   srcInfo1["URI"] = filename1;
   srcInfo1["DRIVER"] = "ESRI Shapefile";
@@ -272,7 +280,7 @@ bool IntersectionOGRToPGIS()
   std::auto_ptr<te::da::DataSetType> inDsetType1 = srcDs1->getDataSetType(inDsetName1);
 
 
-  std::string filename2(""TE_DATA_EXAMPLE_DIR"/data/shp/Intersection/SP_meso.shp");
+  std::string filename2(data_dir + "/shp/Intersection/SP_meso.shp");
   std::map<std::string, std::string> srcInfo2;
   srcInfo2["URI"] = filename2;
   srcInfo2["DRIVER"] = "ESRI Shapefile";
@@ -457,8 +465,11 @@ bool IntersectionPGISToOGR()
 
 
   std::string outDSet = "intersectionPGIS2OGR";
+  
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
 
-  std::string uriResult(""TE_DATA_EXAMPLE_DIR"/data/shp/Intersection/intersectionPGIS2OGR.shp");
+  std::string uriResult(data_dir + "/shp/Intersection/intersectionPGIS2OGR.shp");
+  
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = uriResult;
   tgrInfo["DRIVER"] = "ESRI Shapefile";
