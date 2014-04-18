@@ -62,6 +62,7 @@ void GetPluginsCategories(QComboBox* cbb)
   boost::property_tree::ptree& p = te::common::SystemApplicationSettings::getInstance().getAllSettings().get_child("Application");
 
   if(!p.empty())
+  {
     BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("DefaultPluginsCategory"))
     {
       if(v.second.data().empty())
@@ -69,6 +70,7 @@ void GetPluginsCategories(QComboBox* cbb)
 
       cbb->addItem(v.second.data().c_str());
     }
+  }
 }
 
 void FillSRSList(QComboBox* list)

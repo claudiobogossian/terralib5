@@ -85,6 +85,7 @@ void te::qt::af::UserPlugins::load()
     child_exists = p.count("SpecificPlugins") > 0;
 
     if(child_exists && (!p.empty()))
+    {
       BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("SpecificPlugins"))
       {
         if(v.second.data().empty())
@@ -95,6 +96,7 @@ void te::qt::af::UserPlugins::load()
 
         sPlugins.insert(std::pair<std::string, std::string>(pname, pdir));
       }
+    }
   }
 
 // the plugins enabled by the user
