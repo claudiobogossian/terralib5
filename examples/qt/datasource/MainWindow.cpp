@@ -35,11 +35,11 @@
 #include <terralib/gdal/Utils.h>
 #include <terralib/ogr/Utils.h>
 // Qt
-#include <QtGui/QAction>
-#include <QtGui/QActionGroup>
-#include <QtGui/QStatusBar>
-#include <QtGui/QToolBar>
-#include <QtGui/qmessagebox.h>
+#include <QAction>
+#include <QActionGroup>
+#include <QMessageBox>
+#include <QStatusBar>
+#include <QToolBar>
 
 // STL
 #include <cassert>
