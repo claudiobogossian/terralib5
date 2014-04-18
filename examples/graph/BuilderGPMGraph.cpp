@@ -1,4 +1,5 @@
 //TerraLib
+#include "../Config.h"
 #include <terralib/graph/builder/GPMGraphBuilder.h>
 #include <terralib/graph/core/AbstractGraph.h>
 #include <terralib/graph/Globals.h>
@@ -13,7 +14,7 @@
 #include <boost/shared_ptr.hpp>
 
 // Qt
-#include <QtGui/QApplication>
+#include <QApplication>
 
 te::se::Style* getGPMGraphStyle();
 
@@ -25,7 +26,9 @@ void CreateGPMAdjacencyGraph(bool draw)
   std::string graphName = "graphGPMAdjacency";
 
 // open data source
-  std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(TE_DATA_EXAMPLE_DIR "/data/graph/BR_Estados.shp");
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(data_dir +  "/graph/BR_Estados.shp");
   std::string dataSetName = "BR_Estados";
   std::string columnId = "FID";
 
@@ -62,11 +65,11 @@ void CreateGPMAdjacencyGraph(bool draw)
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in Graph Example - CreateGPMGraph Adjacency: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurried in Graph Example - CreateGPMGraph Adjacency: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in Graph Example - CreateGPMGraph Adjacency!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurried in Graph Example - CreateGPMGraph Adjacency!" << std::endl;
   }
 
   if(draw)
@@ -74,7 +77,7 @@ void CreateGPMAdjacencyGraph(bool draw)
     // set visual
     te::se::Style* style = getGPMGraphStyle();
 
-    std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(TE_DATA_EXAMPLE_DIR "/data/graph/BR_Estados.shp");
+    std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(data_dir + "/graph/BR_Estados.shp");
 
     std::auto_ptr<te::gm::Envelope> ext = getDataSetExtent(ds.get(), dataSetName);
 
@@ -99,7 +102,10 @@ void CreateGPMDistanceGraph(bool draw)
   std::string graphName = "graphGPMDistance";
 
 // open data source
-  std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(TE_DATA_EXAMPLE_DIR "/data/graph/BR_Estados.shp");
+  
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(data_dir + "/graph/BR_Estados.shp");
+  
   std::string dataSetName = "BR_Estados";
   std::string columnId = "FID";
   double distance = 5.;
@@ -148,8 +154,10 @@ void CreateGPMDistanceGraph(bool draw)
   {
     // set visual
     te::se::Style* style = getGPMGraphStyle();
+  
+    std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
 
-    std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(TE_DATA_EXAMPLE_DIR "/data/graph/BR_Estados.shp");
+    std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(data_dir + "/graph/BR_Estados.shp");
 
     std::auto_ptr<te::gm::Envelope> ext = getDataSetExtent(ds.get(), dataSetName);
 
