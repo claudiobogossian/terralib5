@@ -24,6 +24,7 @@
  */
 
 // TerraLib
+#include <terralib/common/PlatformUtils.h>
 #include <terralib/common.h>
 #include <terralib/plugin.h>
 
@@ -45,14 +46,16 @@ int main(int argc, char** argv)
     TerraLib::getInstance().initialize();
     
     te::plugin::PluginInfo* info;
-    
-    info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg"));
+  
+    std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
+  
+    info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.gdal.teplg");
     te::plugin::PluginManager::getInstance().add(info);
     
-    info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.ogr.teplg"));
+    info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.ogr.teplg");
     te::plugin::PluginManager::getInstance().add(info);
     
-    info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.pgis.teplg"));
+    info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.pgis.teplg");
     te::plugin::PluginManager::getInstance().add(info);
     
     te::plugin::PluginManager::getInstance().loadAll();

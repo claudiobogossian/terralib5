@@ -1,3 +1,5 @@
+
+#include "../Config.h"
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
@@ -218,8 +220,12 @@
 //OGR to OGR
 bool AggregOGRToOGR()
 {
-  //std::string filename(""TE_DATA_EXAMPLE_DIR"/data/shp/SP_cities.shp");
-  std::string filename(""TE_DATA_EXAMPLE_DIR"/Nulos/nulos2.shp");
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  //std::string filename(data_dir + '/shp/SP_cities.shp");
+  
+  std::string filename(data_dir + "/Nulos/nulos2.shp");
+  
   std::map<std::string, std::string> srcInfo;
   srcInfo["URI"] = filename;
   srcInfo["DRIVER"] = "ESRI Shapefile";
@@ -252,7 +258,7 @@ bool AggregOGRToOGR()
   stat1.push_back(te::stat::MODE);
   stats.insert(std::make_pair(prop1.release(), stat1));
   
-  std::string filename2(""TE_DATA_EXAMPLE_DIR"/Nulos/result.shp");
+  std::string filename2(data_dir + "/Nulos/result.shp");
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = filename2;
   tgrInfo["DRIVER"] = "ESRI Shapefile";
@@ -291,8 +297,12 @@ bool AggregOGRToOGR()
 //OGR to Postgis
 bool AggregOGRToPGIS()
 {
-  //std::string filename(""TE_DATA_EXAMPLE_DIR"/data/shp/SP_cities.shp");
-  std::string filename(""TE_DATA_EXAMPLE_DIR"/Nulos/nulos2.shp");
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  //std::string filename(data_dir + "/shp/SP_cities.shp");
+  
+  std::string filename(data_dir + "/Nulos/nulos2.shp");
+  
   std::map<std::string, std::string> srcInfo;
   srcInfo["URI"] = filename;
   srcInfo["DRIVER"] = "ESRI Shapefile";
@@ -474,7 +484,10 @@ bool AggregPGISToOGR()
   stat1.push_back(te::stat::MIN_VALUE);
   stats.insert(std::make_pair(prop1.release(), stat1));
 
-  std::string uriResult(""TE_DATA_EXAMPLE_DIR"/Nulos/result.shp");
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  std::string uriResult(data_dir + "/Nulos/result.shp");
+  
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = uriResult;
   tgrInfo["DRIVER"] = "ESRI Shapefile";

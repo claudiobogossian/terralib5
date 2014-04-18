@@ -1,3 +1,5 @@
+
+#include "../Config.h"
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
@@ -18,7 +20,10 @@
 //OGR to OGR
 bool BufferOGRToOGR()
 {
-  std::string filename(""TE_DATA_EXAMPLE_DIR"/data/shp/Buffer/SP_meso.shp");
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  std::string filename = data_dir + "/shp/Buffer/SP_meso.shp";
+  
   std::map<std::string, std::string> srcInfo;
   srcInfo["URI"] = filename;
   srcInfo["DRIVER"] = "ESRI Shapefile";
@@ -51,7 +56,8 @@ bool BufferOGRToOGR()
   bool copyInputColumns = false;
   int levels = 1;
 
-  std::string file_result(""TE_DATA_EXAMPLE_DIR"/data/shp/Buffer/file_result.shp");
+  std::string file_result = data_dir + "/shp/Buffer/file_result.shp";
+
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = file_result;
   tgrInfo["DRIVER"] = "ESRI Shapefile";
@@ -94,7 +100,10 @@ bool BufferOGRToOGR()
 //OGR to Postgis
 bool BufferOGRToPGIS()
 {
-  std::string filename(""TE_DATA_EXAMPLE_DIR"/data/shp/Buffer/SP_meso.shp");
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  std::string filename(data_dir + "/data/shp/Buffer/SP_meso.shp");
+  
   std::map<std::string, std::string> srcInfo;
   srcInfo["URI"] = filename;
   srcInfo["DRIVER"] = "ESRI Shapefile";
@@ -293,8 +302,11 @@ bool BufferPGISToOGR()
 
   bool copyInputColumns = false;
   int levels = 1;
+  
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  std::string uriResult(data_dir + "/data/shp/Buffer/bufferPGISToOGR.shp");
 
-  std::string uriResult(""TE_DATA_EXAMPLE_DIR"/data/shp/Buffer/bufferPGISToOGR.shp");
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = uriResult;
   tgrInfo["DRIVER"] = "ESRI Shapefile";
