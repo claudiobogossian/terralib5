@@ -36,6 +36,7 @@ set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 add_executable(terralib_example_vp ${TERRALIB_FILES})
 
 target_link_libraries(terralib_example_vp terralib_mod_vp_core
+                                          terralib_mod_plugin
                                           ${BOOST_SYSTEM_LIBRARY})
 
 install(FILES ${TERRALIB_FILES}
