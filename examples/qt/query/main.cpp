@@ -24,6 +24,7 @@
  */
 
 // TerraLib
+#include "../../Config.h"
 #include "Config.h"
 #include "LoadModules.h"
 #include "QueryExamples.h"
@@ -37,10 +38,10 @@
 #include <terralib/qt/widgets/query/QueryLayerBuilderWizard.h>
 
 // QT
-#include <QtGui/QApplication>
-#include <QtGui/QGridLayout>
-#include <QtGui/QIcon>
-#include <QtGui/QMessageBox>
+#include <QApplication>
+#include <QGridLayout>
+#include <QIcon>
+#include <QMessageBox>
 
 // STL
 #include <string>
@@ -58,14 +59,14 @@ int main(int argc, char** argv)
     LoadModules();
 
     // Adjusting icons theme
-    QString spaths = std::string(ICON_THEME_PATH).c_str();
-    QStringList paths = spaths.split(";");
-    QIcon::setThemeName(ICON_THEME);
-    QIcon::setThemeSearchPaths(paths);
+    //  QString spaths = std::string(ICON_THEME_PATH).c_str(); juan
+    // juan QStringList paths = spaths.split(";");             juan
+    // juan QIcon::setThemeName(ICON_THEME);                   juan
+    // juan QIcon::setThemeSearchPaths(paths);                 juan
 
     // Load datasource
-    std::string fileName = TE_DATA_EXAMPLE_DIR;
-                fileName+= "/data/shp/munic_2001.shp";
+    std::string fileName = TERRALIB_EXAMPLES_DATA_DIR;
+                fileName+= "/shp/munic_2001.shp";
 
     //LoadShapeDataSource(fileName, "MunicShp2001");
 
@@ -104,7 +105,7 @@ int main(int argc, char** argv)
   }
   catch(const std::exception& e)
   {
-    std::string msg =  "An exception has occuried: ";
+    std::string msg =  "An exception has occurried: ";
                 msg += e.what();
 
     QMessageBox::warning(0, "Query Example", msg.c_str());
@@ -113,7 +114,7 @@ int main(int argc, char** argv)
   }
   catch(...)
   {
-    std::string msg =  "An unexpected exception has occuried!";
+    std::string msg =  "An unexpected exception has occurried!";
 
     QMessageBox::warning(0, "Query Example", msg.c_str());
 
