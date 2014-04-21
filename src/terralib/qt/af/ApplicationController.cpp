@@ -49,6 +49,7 @@
 #include "SplashScreenManager.h"
 #include "UserPlugins.h"
 #include "Utils.h"
+#include "XMLFormatter.h"
 
 // Qt
 #include <QtCore/QDir>
@@ -427,6 +428,8 @@ void  te::qt::af::ApplicationController::initialize()
       SplashScreenManager::getInstance().showMessage(tr("Loading user registered data sources..."));
 
       te::serialize::xml::ReadDataSourceInfo(m_appDatasourcesFile);
+
+      XMLFormatter::formatDataSourceInfos(false);
 
       SplashScreenManager::getInstance().showMessage(tr("Known data sources loaded!"));
     }

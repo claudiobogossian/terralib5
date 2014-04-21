@@ -560,12 +560,7 @@ MACRO (today RESULT)
 	 set(${RESULT} "${${RESULT}}-${time_}")
 
     ELSEIF(UNIX)
-        EXECUTE_PROCESS(COMMAND "date" "+%d/%M/%Y" OUTPUT_VARIABLE ${RESULT})
-        EXECUTE_PROCESS(COMMAND "date" "+%X" OUTPUT_VARIABLE time_)
-        string(REGEX REPLACE "(..)/(..)/..(..).*" "\\1/\\2/\\3" ${RESULT} ${${RESULT}})
-        string(REGEX REPLACE "(..):(..):(..)" "\\1/\\2/\\3" time_ ${time_})
-		
-	set(${RESULT} "${${RESULT}}-${time_}")
+        EXECUTE_PROCESS(COMMAND "date" "+%d/%m/%Y - %R" OUTPUT_VARIABLE ${RESULT})
     ELSE ()
         MESSAGE(SEND_ERROR "date not implemented")
         SET(${RESULT} 000000)
