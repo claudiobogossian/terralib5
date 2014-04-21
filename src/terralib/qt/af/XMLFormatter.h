@@ -17,6 +17,11 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
+/*!
+ * \file terralib/qt/af/XMLFormatter.h
+ *
+ * \brief A class for xml serialization formatting strings.
+ */
 
 #ifndef TE_QT_AF_XMLFORMATTER_H
 #define TE_QT_AF_XMLFORMATTER_H
@@ -36,18 +41,64 @@ namespace te {
       // Forward declaration
       class Project;
       
+      /*!
+         \class XMLFormatter
+
+         \brief A class that formats strings.
+
+         Use this class for changing strings, contained in some TerraLib objects, to XML percentage encode format and/or to human readable format. Use XML formatting before serializing the object to a XML file, for example, and human readable format after read the object from a XML.
+
+         \ingroup af
+       */
       class XMLFormatter
       {
         public:
 
+          /*!
+            \brief Formats the project informations.
+
+            \param p The project.
+
+            \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
+           */
           static void format(Project* p, const bool& encode);
 
+          /*!
+            \brief Formats the layer informations.
+
+            \param l The layer.
+
+            \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
+
+            \note The sublayers will be formatted too, using the \a encode passed.
+           */
           static void format(te::map::AbstractLayer* l, const bool& encode);
 
+          /*!
+            \brief Formats the data source informations.
+
+            \param d The data source info.
+
+            \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
+           */
           static void format(te::da::DataSourceInfo* d, const bool& encode);
 
+          /*!
+            \brief Formats all data source informations registered in the \a te::da::DataSourceInfoManager object.
+
+            \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
+
+            \sa te::da::DataSourceInfoManager
+           */
           static void formatDataSourceInfos(const bool& encode);
 
+          /*!
+            \brief Formats the string.
+
+            \param s The string.
+
+            \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
+           */
           static std::string format (const std::string& s, const bool& encode);
       };
       
