@@ -31,7 +31,7 @@
 #include "terralib/qt/widgets/progress/ProgressViewerDialog.h"
 
 // Qt
-#include <QtGui/QMainWindow>
+#include <QMainWindow>
 
 // STL
 #include <list>

@@ -48,14 +48,14 @@
 #include <terralib/qt/widgets/utils/FileChooser.h>
 
 // Qt
-#include <QtGui/QAction>
-#include <QtGui/QActionGroup>
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QMenu>
-#include <QtGui/QStatusBar>
-#include <QtGui/QToolBar>
-#include <QtGui/QDockWidget>
-#include <QtGui/QLayout> 
+#include <QAction>
+#include <QActionGroup>
+#include <QContextMenuEvent>
+#include <QMenu>
+#include <QStatusBar>
+#include <QToolBar>
+#include <QDockWidget>
+#include <QLayout>
 
 // STL
 #include <cassert>
@@ -418,8 +418,9 @@ void MainWindow::onFileSelected(QString s)
 
   te::common::FreeContents(m_ds);
   m_ds.clear();
-
-  m_display->setExtent(te::gm::Envelope());
+  
+  te::gm::Envelope bb = te::gm::Envelope();
+  m_display->setExtent(bb);
 
   addRasterLayer(s);
 

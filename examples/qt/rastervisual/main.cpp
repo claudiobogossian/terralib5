@@ -27,12 +27,13 @@
 #include "MainWindow.h"
 
 // TerraLib
+#include <terralib/common/PlatformUtils.h>
 #include <terralib/common.h>
 #include <terralib/plugin.h>
 
 // Qt
-#include <QtGui/QApplication>
-#include <QtGui/QMessageBox>
+#include <QApplication>
+#include <QMessageBox>
 
 // STL
 #include <exception>
@@ -56,12 +57,17 @@ void LoadGDALModule()
     info.m_resources.push_back(rsc);
     
     te::plugin::PluginManager::getInstance().load(info);*/
-    te::plugin::PluginInfo* info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg"));
+    
+    std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
+    
+    te::plugin::PluginInfo* info;
+    info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.gdal.teplg");
+    
     te::plugin::PluginManager::getInstance().loadAll();
   }
   catch(...)
   {
-    std::cout << std::endl << "Failed to load data source drivers: unknow exception!" << std::endl;
+    std::cout << std::endl << "Failed to load data source drivers: unknown exception!" << std::endl;
   }
 }
 
@@ -78,10 +84,10 @@ int main(int argc, char** argv)
     QApplication app(argc, argv);
 
     // Adjusting icons theme
-    QString spaths = std::string(ICON_THEME_PATH).c_str();
-    QStringList paths = spaths.split(";");
-    QIcon::setThemeName(ICON_THEME);
-    QIcon::setThemeSearchPaths(paths);
+    //QString spaths = std::string(ICON_THEME_PATH).c_str();  juan
+    //QStringList paths = spaths.split(";");                  juan
+    //QIcon::setThemeName(ICON_THEME);                        juan
+    //QIcon::setThemeSearchPaths(paths);                      juan
 
     // Example MainWindow
     MainWindow window;

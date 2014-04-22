@@ -42,8 +42,8 @@
 
 
 // Qt
-#include <QtGui/QMouseEvent>
-#include <QtGui/QToolTip>
+#include <QMouseEvent>
+#include <QToolTip>
 
 // STL
 #include <cassert>
@@ -67,7 +67,11 @@ bool ReadPixelTool::mouseReleaseEvent(QMouseEvent* e)
     return false;
 
   // Converts clicked point to world coordinates
+#if QT_VERSION >= 0x050000
+  QPointF qpoint = m_display->transform(e->localPos());
+#else
   QPointF qpoint = m_display->transform(e->posF());
+#endif
 
   // * Under revision *
   //te::se::RasterSymbolizer* rs = (te::se::RasterSymbolizer*)m_layer->getRasterSymbolizer()->clone();
