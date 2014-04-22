@@ -2,6 +2,7 @@
 
 #include "Config.h"
 
+#include <terralib/common/PlatformUtils.h>
 #include <terralib/common.h>
 #include <terralib/plugin.h>
 
@@ -9,26 +10,30 @@
 
 void LoadModules()
 {
+  
+  std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
+  
   te::plugin::PluginInfo* info;
   
-#if TE_EXAMPLE_USE_OGR
-  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.ogr.teplg"));
+//#if TE_EXAMPLE_USE_OGR   juan
+  info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.ogr.teplg");
   te::plugin::PluginManager::getInstance().add(info); 
-#endif
+//#endif  juan
   
-#if TE_EXAMPLE_USE_GDAL
-  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg"));
+//#if TE_EXAMPLE_USE_GDAL  juan
+  info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.gdal.teplg");
   te::plugin::PluginManager::getInstance().add(info);
-#endif
+//#endif  juan
   
-#if TE_EXAMPLE_USE_PGIS
-  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.pgis.teplg"));
+//#if TE_EXAMPLE_USE_PGIS  juan
+  info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.pgis.teplg");
   te::plugin::PluginManager::getInstance().add(info);    
-#endif
+//#endif  juan
   
-#if TE_EXAMPLE_USE_GRIB  
-  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/plugin_grib_info.xml"));
+#if TE_EXAMPLE_USE_GRIB
+  info = te::plugin::GetInstalledPlugin(plugins_path + "/plugin_grib_info.xml");
   te::plugin::PluginManager::getInstance().add(info); 
 #endif
+  
   te::plugin::PluginManager::getInstance().loadAll();   
 }
