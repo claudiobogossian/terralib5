@@ -18,51 +18,31 @@
  */
 
 /*!
-  \file DisplayOutside.h
+  \file GridSettingsController.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_DISPLAY_OUTSIDE_H 
-#define __TERRALIB_LAYOUT_INTERNAL_DISPLAY_OUTSIDE_H
-
-// Qt
-#include <QDockWidget>
+#ifndef __TERRALIB_LAYOUT_INTERNAL_GRID_SETTINGS_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_GRID_SETTINGS_CONTROLLER_H
 
 // TerraLib
-#include "OutsideObserver.h"
-#include "../../../../geometry/Envelope.h"
-
-class QGraphicsItem;
-class QCloseEvent;
+#include "OutsideController.h"
 
 namespace te
 {
   namespace layout
   {
-    class DisplayOutside : public QDockWidget, public OutsideObserver
+    class GridSettingsController : public OutsideController
     {
-	    Q_OBJECT //for slots/signals
-
     public:
 
-	    DisplayOutside(OutsideController* controller, Observable* o);
-	    virtual ~DisplayOutside();
+	    GridSettingsController( Observable* o );
+	    virtual ~GridSettingsController();
 
-	    virtual void updateObserver(ContextItem context);
 	    virtual void setPosition(const double& x, const double& y);
-	    virtual te::gm::Coord2D getPosition();
-      void setPreviousCentralWidget(QWidget* previous);
-      
-    protected:
-
-      virtual void	closeEvent ( QCloseEvent * event );
-      virtual void removeDock();
-
-      QWidget* m_previousCentralWidget; /* Previous central display of application */
-      bool     m_previousCentralWidgetVisibilite;
     };
   }
 }

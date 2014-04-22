@@ -93,10 +93,16 @@ if(APPLE AND WITH_BUNDLE)
     DESTINATION ${TE_BUNDLE_APP}/Plugins
     COMPONENT BINARIES
   )
-else()
+elseif(WIN32)
   install ( 
     FILES ${xml_config}
     DESTINATION bin
+    COMPONENT BINARIES
+  )
+else()
+  install ( 
+    FILES ${xml_config}
+    DESTINATION plugins
     COMPONENT BINARIES
   )
 endif()
@@ -117,6 +123,18 @@ if(APPLE AND WITH_BUNDLE)
   install ( 
     FILES ${plg_config}
     DESTINATION ${TE_BUNDLE_APP}/Plugins
+    COMPONENT PLUGINS
+  )
+elseif(WIN32)
+  install ( 
+    FILES ${plg_config}
+    DESTINATION bin
+    COMPONENT PLUGINS
+  )
+else()
+  install ( 
+    FILES ${plg_config}
+    DESTINATION plugins
     COMPONENT PLUGINS
   )
 endif()

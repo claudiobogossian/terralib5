@@ -167,7 +167,37 @@ set (MACOSX_BUNDLE TRUE)
 
   installQtPlugins("qgif;qico;qjpeg;qmng;qtiff;qsvg;qsvgicon;qsqlite")
 
-  install (SCRIPT ${CMAKE_SOURCE_DIR}/modules/FixBundle.cmake COMPONENT PLUGINS)    
+  install (SCRIPT ${CMAKE_SOURCE_DIR}/modules/FixBundle.cmake COMPONENT PLUGINS)
+elseif(UNIX)
+
+  get_filename_component(_qt_lib_path ${QT_QTCORE_LIBRARY} PATH)
+
+  file(
+    WRITE
+    ${CMAKE_BINARY_DIR}/terraview.sh
+    "#!/bin/bash
+TE_DIR=\"$(dirname $0)/..\"
+EXECDIR=\"$TE_DIR/bin\"
+
+export \"TERRALIB_DIR=$TE_DIR\"
+
+export \"LD_LIBRARY_PATH=$TE_DIR/lib:${TE_DEPENDENCIES_DIR}/lib:${_qt_lib_path}:$TE_DIR/plugins\"
+
+export \"QT_PLUGIN_PATH=${QT_PLUGINS_DIR}\"
+$EXECDIR/tview
+"
+  )
+
+  install (
+    FILES ${CMAKE_BINARY_DIR}/terraview.sh
+    DESTINATION bin
+    COMPONENT BINARIES
+  )
+
+  install (
+    SCRIPT ${CMAKE_SOURCE_DIR}/modules/ConfigBash.cmake
+    COMPONENT BINARIES
+  )
 endif()
 
 # install tree for config files
@@ -206,7 +236,7 @@ if(APPLE AND WITH_BUNDLE)
 
     install (SCRIPT ${CMAKE_SOURCE_DIR}/modules/FixAssistant.cmake COMPONENT PLUGINS)  
   endif()
-else()
+elseif(WIN32)
   file (
     WRITE
     ${CMAKE_BINARY_DIR}/qt.conf

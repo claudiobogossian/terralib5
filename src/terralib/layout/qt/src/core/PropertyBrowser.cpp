@@ -27,34 +27,64 @@
 
 // TerraLib
 #include "PropertyBrowser.h"
-#include "../../../../../../third-party/qt/propertybrowser/qtvariantproperty.h"
 
 // Qt
 #include <QRegExpValidator>
 #include <QRegExp>
 #include <QWidget>
+#include "../../../../../../third-party/qt/propertybrowser/qtvariantproperty.h"
+#include "../../../../../../third-party/qt/propertybrowser/qteditorfactory.h"
 
-te::layout::PropertyBrowser::PropertyBrowser(QWidget* parent) 
+te::layout::PropertyBrowser::PropertyBrowser(QObject* parent) :
+  QObject(parent),
+  m_propertyEditor(0),
+  m_variantPropertyEditorManager(0),
+  m_strDlgManager(0)
 {
   createManager();
 }
 
 te::layout::PropertyBrowser::~PropertyBrowser()
 {
+  if(m_propertyEditor)
+  {
+    delete m_propertyEditor;
+    m_propertyEditor = 0;
+  }
 
+  if(m_variantPropertyEditorManager)
+  {
+    delete m_variantPropertyEditorManager;
+    m_variantPropertyEditorManager = 0;
+  }
+
+  if(m_strDlgManager)
+  {
+    delete m_strDlgManager;
+    m_strDlgManager = 0;
+  }
 }
 
 void te::layout::PropertyBrowser::createManager()
 {
-  //Qt - The Property Browser 
+  //Qt - The Property Browser
+  m_propertyEditor = new QtTreePropertyBrowser;
+
   m_variantPropertyEditorManager = new QtVariantPropertyManager;
   connect(m_variantPropertyEditorManager, SIGNAL(valueChanged(QtProperty*, const QVariant &)),
     this, SLOT(propertyEditorValueChanged(QtProperty *, const QVariant &)));
-  
+
+  m_strDlgManager = new QtStringPropertyManager();
+
   QtVariantEditorFactory* variantPropertyEditorFactory = new QtVariantEditorFactory;
-  m_propertyEditor = new QtTreePropertyBrowser;
-  m_propertyEditor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+  QtDlgEditorFactory* dlgFactory = new QtDlgEditorFactory();
+
+  connect(dlgFactory, SIGNAL(internalDlg(QWidget *, QtProperty *)), this, SLOT(onSetDlg(QWidget *, QtProperty *)));
+
+  m_propertyEditor->setFactoryForManager(m_strDlgManager, dlgFactory);
   m_propertyEditor->setFactoryForManager(m_variantPropertyEditorManager, variantPropertyEditorFactory);
+  m_propertyEditor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   m_propertyEditor->setResizeMode(QtTreePropertyBrowser::ResizeToContents);
 }
 
@@ -88,7 +118,7 @@ void te::layout::PropertyBrowser::clearAll()
   m_idToProperty.clear();
 }
 
-void te::layout::PropertyBrowser::addPropertyItem(QtVariantProperty *property, const QString &id)
+void te::layout::PropertyBrowser::addPropertyItem(QtProperty *property, const QString &id)
 {
   m_propertyToId[property] = id;
   m_idToProperty[id] = property; 
@@ -143,19 +173,31 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
 {
   QtVariantProperty* vproperty = 0;
 
-  vproperty = m_variantPropertyEditorManager->addProperty(QVariant::String, tr(property.getName().c_str()));
-
   /* Colocar condicional, para saber qual o tipo, e qual método to... chamar */
   if(property.getType() == DataTypeString)
+  {
+    vproperty = m_variantPropertyEditorManager->addProperty(QVariant::String, tr(property.getName().c_str()));
     vproperty->setValue(property.getValue().toString().c_str());
+  }
 
-  /* Colocar condicional, para saber qual o tipo, e qual método to... chamar */
+  if(property.getType() == DataTypeDouble)
+  {
+    vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Double, tr(property.getName().c_str()));
+    vproperty->setValue(property.getValue().toDouble());
+  }
+
   if(property.getType() == DataTypeInt)
+  {
+    vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Int, tr(property.getName().c_str()));
     vproperty->setValue(property.getValue().toInt());
+  }
 
-  addPropertyItem(vproperty, QLatin1String(property.getName().c_str()));
-
-  return true;
+  if(vproperty)
+  {
+    addPropertyItem(vproperty, QLatin1String(property.getName().c_str()));
+    return true;
+  }
+  return false;
 }
 
 bool te::layout::PropertyBrowser::removeProperty( Property property )

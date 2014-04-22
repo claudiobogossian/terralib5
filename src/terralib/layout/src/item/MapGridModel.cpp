@@ -31,6 +31,12 @@
 #include "Context.h"
 #include "GridModel.h"
 #include "../../../maptools/Canvas.h"
+#include "Property.h"
+#include "Properties.h"
+#include "AbstractType.h"
+
+// STL
+#include <vector>
 
 te::layout::MapGridModel::MapGridModel() :
   MapModel(),
@@ -86,6 +92,38 @@ void te::layout::MapGridModel::draw( ContextItem context )
   ContextItem contextNotify;
   contextNotify.setPixmap(pixmap);
   notifyAll(contextNotify);
+}
+
+te::layout::Properties* te::layout::MapGridModel::getProperties() const
+{
+  MapModel::getProperties();
+
+  if(m_grid)
+  {
+    Properties* propGridModel = const_cast<Properties*>(m_grid->getProperties());
+    std::vector<Property> props = propGridModel->getProperties();
+
+    Property pro_grid;
+    pro_grid.setName("grid");
+    pro_grid.setId("unknown");
+    std::string sValue = "Settings";
+    pro_grid.setValue(sValue, DataTypeGridSettings);
+    
+    for(unsigned int i = 0 ; i < props.size() ; ++i)
+    {
+      Property prop = props[i];
+      pro_grid.addSubProperty(prop);
+    }
+
+    m_properties->addProperty(pro_grid);
+  }
+
+  return m_properties;
+}
+
+void te::layout::MapGridModel::updateProperties( te::layout::Properties* properties )
+{
+
 }
 
 

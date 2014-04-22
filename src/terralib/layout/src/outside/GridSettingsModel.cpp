@@ -18,44 +18,48 @@
  */
 
 /*!
-  \file MapGridModel.h
+  \file GridSettingsModel.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_MODEL_H
-
 // TerraLib
-#include "MapModel.h"
+#include "GridSettingsModel.h"
+#include "Property.h"
+#include "Properties.h"
 
-namespace te
+te::layout::GridSettingsModel::GridSettingsModel() 
 {
-  namespace layout
-  {
-    class GridModel;
-
-    class MapGridModel : public MapModel
-    {
-      public:
-
-        MapGridModel();
-        virtual ~MapGridModel();
-
-        virtual void draw( ContextItem context );
-
-        virtual te::layout::Properties* getProperties() const;
-        virtual void updateProperties(te::layout::Properties* properties);
-
-      protected:
-
-        GridModel* m_grid;
-        bool       m_gridPlanar;
-        bool       m_gridGeodesic;
-    };
-  }
+  m_box = te::gm::Envelope(0., 0., 200., 200.);
+  m_type = TPGridSettings;
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_MAP_GRID_MODEL_H
+te::layout::GridSettingsModel::~GridSettingsModel()
+{
+
+}
+
+te::layout::Properties* te::layout::GridSettingsModel::getProperties() const
+{
+  m_properties->clear();
+
+  Property pro_name;
+  pro_name.setName("GridSettings");
+
+  m_properties->addProperty(pro_name);
+
+  m_properties->setTypeObj(m_type);
+  return m_properties;
+}
+
+void te::layout::GridSettingsModel::updateProperties( te::layout::Properties* properties )
+{
+  Properties* vectorProps = const_cast<Properties*>(properties);
+
+  std::vector<Property> vProps = vectorProps->getProperties();
+  Property pro_name = vProps[0];
+  //m_name = pro_name.getName();
+}
+

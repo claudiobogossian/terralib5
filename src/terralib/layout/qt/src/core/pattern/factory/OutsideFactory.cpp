@@ -33,6 +33,7 @@
 #include "PropertiesOutside.h"
 #include "DisplayOutside.h"
 #include "ObjectInspectorOutside.h"
+#include "GridSettingsOutside.h"
 
 te::layout::OutsideFactory::OutsideFactory()
 {
@@ -76,6 +77,14 @@ te::layout::Observer* te::layout::OutsideFactory::make( LayoutAbstractObjectType
     {
       DisplayOutside* displayWindow = new DisplayOutside(params.getController(), params.getModel());		
       outside = (Observer*)displayWindow;
+      return outside;
+      break;
+    }
+
+  case TPGridSettings:
+    {
+      GridSettingsOutside* gridSettings = new GridSettingsOutside(params.getController(), params.getModel());		
+      outside = (Observer*)gridSettings;
       return outside;
       break;
     }
