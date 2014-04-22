@@ -37,6 +37,7 @@
 #include "../../dataaccess/serialization/xml/Serializer.h"
 #include "../../plugin/PluginManager.h"
 #include "../../plugin/PluginInfo.h"
+#include "../../plugin/Utils.h"
 #include "../../srs/Config.h"
 #include "../widgets/help/AssistantHelpManagerImpl.h"
 #include "../widgets/help/HelpManager.h"
@@ -44,11 +45,9 @@
 #include "../widgets/utils/ScopedCursor.h"
 #include "events/ApplicationEvents.h"
 #include "ApplicationController.h"
-#include "ApplicationPlugins.h"
 #include "Exception.h"
 #include "Project.h"
 #include "SplashScreenManager.h"
-#include "UserPlugins.h"
 #include "Utils.h"
 
 // Qt
@@ -420,15 +419,16 @@ void te::qt::af::ApplicationController::initializePlugins()
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
   bool loadPlugins = true;
+  
+  std::vector<std::string> plgFiles;
 
   try
   {
     SplashScreenManager::getInstance().showMessage(tr("Reading application plugins list..."));
 
-    std::string appPlugins = te::common::SystemApplicationSettings::getInstance().getValue("Application.PluginsFile.<xmlattr>.xlink:href");
-
-    ApplicationPlugins::getInstance().load(appPlugins);
-
+// retrieving the installed plugins.
+    plgFiles = GetPluginsFiles();
+    
     SplashScreenManager::getInstance().showMessage(tr("Plugins list read!"));
   }
   catch(const std::exception& e)
@@ -451,7 +451,18 @@ void te::qt::af::ApplicationController::initializePlugins()
   {
     SplashScreenManager::getInstance().showMessage(tr("Loading plugins..."));
 
-    UserPlugins::getInstance().load();
+// retrieve information for each plugin
+    boost::ptr_vector<te::plugin::PluginInfo> plugins;
+
+    for(std::size_t i = 0; i != plgFiles.size(); ++i)
+    {
+      te::plugin::PluginInfo* pinfo = te::plugin::GetInstalledPlugin(plgFiles[i]);
+      
+      plugins.push_back(pinfo);
+    }
+    
+// load and start each plugin
+    te::plugin::PluginManager::getInstance().load(plugins);
 
     SplashScreenManager::getInstance().showMessage(tr("Plugins loaded successfully!"));
   }
@@ -467,15 +478,6 @@ void te::qt::af::ApplicationController::initializePlugins()
     msgErr = msgErr.arg(e.what());
 
     QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
-
-    //const std::vector<te::plugin::PluginInfo*>& bps = te::plugin::PluginManager::getInstance().getBrokenPlugins();
-
-    //for(int kk = 0; kk < bps.size(); ++kk)
-    //{
-    //  QMessageBox::warning(sm_instance,
-    //                     tr(SystemApplicationSettings::getInstance().getValue("Application.Title").c_str()),
-    //                     tr(bps[kk]->m_name.c_str()));
-    //}
   }
 }
 
