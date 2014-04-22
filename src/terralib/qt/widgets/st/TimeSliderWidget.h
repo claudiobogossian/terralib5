@@ -97,15 +97,6 @@ namespace te
           */
           ~TimeSliderWidget();
 
-          /*!
-            \brief Open Kml and add trajectories.
-
-            \param title The trajectory title.
-            \param pixmapFile The trajectory icon.
-            \param poinstFile The trajectory points.
-          */
-          void openKml(const QString& file);
-
           void addTemporalImages(const QString& filePath);
 
           te::qt::widgets::PixmapItem* getMetadata(const QString& path);
@@ -315,13 +306,9 @@ namespace te
         */
         void drawTrajectoryIcon(const TrajectoryItem* t, const QPoint& pos, QPainter* painter);
 
-        void openTrajectory(const QString& leao); // so para teste
+        void openTrajectory(const QString file, const QString& leao); // so para teste
 
-          ///*!
-          //  \brief It checks whether the time string is iso.
-          //  \param s String to be verified.
-          //*/
-          //bool isValidTime(const QString& s);
+        bool alreadyExists(QPair<QString, QString>& item);
 
           /*!
             \brief It initialize a property animation dialog
@@ -525,8 +512,8 @@ namespace te
           QDateTime                               m_oldFQDateTime;            //!< The old final Qt date time.
           bool                                    m_dateTimeChanged;
           int                                     m_maxSliderValue;           //!< The max slider value.
-          QString                                 m_timeString;
           bool                                    m_finished;
+          QList<QPair<QString, QString> >         m_itemList;                 //!< List of all animation items (URI, DataSetName).
 
           QRectF          m_initialDisplayRect; // so para teste
       };

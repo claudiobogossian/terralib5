@@ -35,7 +35,6 @@
 // TerraLib
 #include "OutsideObserver.h"
 #include "../../../../geometry/Envelope.h"
-#include "PropertyBrowser.h"
 
 class QGraphicsItem;
 class QWidget;
@@ -56,6 +55,8 @@ namespace te
 {
   namespace layout
   {
+    class PropertiesItemPropertyBrowser;
+
     class PropertiesOutside : public QDockWidget, public OutsideObserver
     {
 	    Q_OBJECT //for slots/signals
@@ -76,7 +77,7 @@ namespace te
           
     protected:
 
-      PropertyBrowser* m_layoutPropertyBrowser;
+      PropertiesItemPropertyBrowser* m_layoutPropertyBrowser;
       
       QList<QGraphicsItem*> m_graphicsItems;
       QLabel* m_nameLabel;

@@ -28,26 +28,20 @@
 // TerraLib
 #include "PropertiesOutside.h"
 #include "Context.h"
-#include "Scene.h"
-#include "Scene.h"
-#include "OutsideModelObservable.h"
+#include "Observable.h"
 #include "ItemObserver.h"
 #include "OutsideObserver.h"
 #include "OutsideController.h"
 #include "../../../../geometry/Envelope.h"
-#include "PropertyBrowser.h"
+#include "PropertiesItemPropertyBrowser.h"
 
 // Qt
-#include <QGraphicsWidget>
 #include <QGroupBox>
-#include <QRegExpValidator>
-#include <QRegExp>
-#include "../../../../../../third-party/qt/propertybrowser/qtvariantproperty.h"
-#include "../../../../../../third-party/qt/propertybrowser/qttreepropertybrowser.h"
-
-// Boost
-#include <boost/foreach.hpp>
-#include <boost/property_tree/ptree.hpp>
+#include <QGraphicsItem>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QToolButton>
+#include <QLabel>
 
 te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller, Observable* o ) :
 	QDockWidget("", 0, 0),
@@ -62,7 +56,7 @@ te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller,
 
   setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
-  m_layoutPropertyBrowser = new PropertyBrowser;
+  m_layoutPropertyBrowser = new PropertiesItemPropertyBrowser;
 
   createLayout();
 }
@@ -145,31 +139,15 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
   {
     if (item)
     {			
-      QGraphicsWidget* outside = dynamic_cast<QGraphicsWidget*>(item);
-
-      if(outside)
-        continue;
-
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
       {
-        //boost::property_tree::ptree pjson = lItem->getJSONProperties();
         Properties* props = const_cast<Properties*>(lItem->getProperties());
 
         foreach( Property prop, props->getProperties()) 
         {
           m_layoutPropertyBrowser->addProperty(prop);
         }
-        
-        //if(!pjson.empty())
-        //{
-        //  BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pjson.get_child("array"))
-        //  {           
-        //    /*property = m_variantPropertyEditorManager->addProperty(QVariant::String, tr(v.first.data()));
-        //    property->setValue(QVariant(v.second.get<bool>("flag1")));
-        //    addProperty(property, QLatin1String(v.first.data()));*/
-        //  }
-        //}
       }
     }
   }

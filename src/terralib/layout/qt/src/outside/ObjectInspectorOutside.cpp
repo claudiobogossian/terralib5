@@ -35,8 +35,7 @@
 #include "OutsideObserver.h"
 #include "OutsideController.h"
 #include "../../../../geometry/Envelope.h"
-#include "../../../../../../third-party/qt/propertybrowser/qtvariantproperty.h"
-#include "../../../../../../third-party/qt/propertybrowser/qttreepropertybrowser.h"
+#include "ObjectInspectorPropertyBrowser.h"
 
 //Qt
 #include <QGraphicsWidget>
@@ -53,17 +52,9 @@ te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* c
 
   setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
 
-  //
-  m_variantInspectorObjectManager = new QtVariantPropertyManager(this);
-  connect(m_variantInspectorObjectManager, SIGNAL(valueChanged(QtProperty *, const QVariant &)),
-  this, SLOT(propertyEditorValueChanged(QtProperty *, const QVariant &)));
+  m_layoutPropertyBrowser = new ObjectInspectorPropertyBrowser;
 
-  QtVariantEditorFactory* variantObjectInspectorFactory = new QtVariantEditorFactory(this);
-  m_objectInspector = new QtTreePropertyBrowser(this);
-  m_objectInspector->setFactoryForManager(m_variantInspectorObjectManager, variantObjectInspectorFactory);
-  m_objectInspector->setResizeMode(QtTreePropertyBrowser::ResizeToContents);
-
-  setWidget(m_objectInspector);
+  setWidget(m_layoutPropertyBrowser->getPropertyEditor());
 }
 
 te::layout::ObjectInspectorOutside::~ObjectInspectorOutside()
@@ -99,37 +90,13 @@ te::gm::Coord2D te::layout::ObjectInspectorOutside::getPosition()
   return coordinate;
 }
 
-void te::layout::ObjectInspectorOutside::propertyEditorValueChanged( QtProperty *property, const QVariant &value )
-{
- 
-}
-
-void te::layout::ObjectInspectorOutside::updateExpandState()
-{
-  QList<QtBrowserItem *> list = m_objectInspector->topLevelItems();
-  QListIterator<QtBrowserItem *> it(list);
-  while (it.hasNext()) {
-    QtBrowserItem *item = it.next();
-    QtProperty *prop = item->property();
-    m_idToExpanded[m_propertyToId[prop]] = m_objectInspector->isExpanded(item);
-  }
-}
-
 void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> graphicsItems)
 {
-  updateExpandState();
+  m_layoutPropertyBrowser->clearAll();
 
-  QMap<QtProperty *, QString>::ConstIterator itProp = m_propertyToId.constBegin();
-  while (itProp != m_propertyToId.constEnd()) 
-  {
-    delete itProp.key();
-    itProp++;
-  }
-  m_propertyToId.clear();
-  m_idToProperty.clear();
   m_graphicsItems = graphicsItems;
     
-  QtVariantProperty *property;
+  //QtVariantProperty *property;
   foreach( QGraphicsItem *item, graphicsItems) 
   {
     if (item)
@@ -173,13 +140,4 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
   }
 
   update();
-}
-
-void te::layout::ObjectInspectorOutside::addProperty(QtVariantProperty *property, const QString &id)
-{
-  m_propertyToId[property] = id;
-  m_idToProperty[id] = property;
-  QtBrowserItem *item = m_objectInspector->addProperty(property);
-  if (m_idToExpanded.contains(id))
-    m_objectInspector->setExpanded(item, m_idToExpanded[id]);
 }

@@ -31,6 +31,7 @@
 // TerraLib
 #include "../../../maptools/Canvas.h"
 #include "../../../maptools/Enums.h"
+#include "Properties.h"
 
 namespace te
 {
@@ -38,6 +39,8 @@ namespace te
   {
     class GridModel 
     {
+      class Properties;
+
       public:
 
         GridModel();
@@ -50,7 +53,13 @@ namespace te
         virtual void setGridPlanar(bool planar);
         virtual te::map::LineDashStyle getPlanarLineStyle();
         virtual void setPlanarLineStyle(te::map::LineDashStyle style);
+
+        virtual te::layout::Properties* getProperties() const;
+        virtual void updateProperties(te::layout::Properties* properties);
         
+        virtual std::string getName();
+        virtual void setName(std::string name);
+
        protected:
 
          virtual void drawVerticalLines(te::map::Canvas* canvas, te::gm::Envelope box);
@@ -60,10 +69,13 @@ namespace te
         bool m_gridPlanar;
         te::map::LineDashStyle m_planarLineStyle;
 
-        double m_horizontalSeparationParameter; 
-        double m_verticalSeparationParameter; 
-        double m_initialGridPointX; 
-        double m_initialGridPointY;
+        double                 m_horizontalSeparationParameter; 
+        double                 m_verticalSeparationParameter; 
+        double                 m_initialGridPointX; 
+        double                 m_initialGridPointY;
+
+        te::layout::Properties* m_properties;
+        std::string           m_name;
     };
   }
 }

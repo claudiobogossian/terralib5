@@ -47,10 +47,15 @@ namespace te
         
         LayoutPropertyDataType getType();
 
-	     std::vector<te::layout::Property> getSubProperty();
+	      std::vector<te::layout::Property> getSubProperty();
         
         std::string getId();
         void setId(std::string id);
+
+        /*
+          To use this method, you need to declare a variable with 
+          corresponding type and pass it as the method parameter.
+        */
 
         template <typename ValueType>
         void setValue(typename ValueType value, LayoutPropertyDataType type);

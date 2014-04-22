@@ -18,44 +18,41 @@
  */
 
 /*!
-  \file MapGridModel.h
+  \file GridSettingsController.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_MODEL_H
-
 // TerraLib
-#include "MapModel.h"
+#include "GridSettingsController.h"
+#include "OutsideParamsCreate.h"
+#include "OutsideModelObservable.h"
+#include "AbstractOutsideFactory.h"
+#include "Context.h"
+#include "Observable.h"
 
-namespace te
+te::layout::GridSettingsController::GridSettingsController( Observable* o ) :
+	OutsideController(o)
 {
-  namespace layout
-  {
-    class GridModel;
-
-    class MapGridModel : public MapModel
-    {
-      public:
-
-        MapGridModel();
-        virtual ~MapGridModel();
-
-        virtual void draw( ContextItem context );
-
-        virtual te::layout::Properties* getProperties() const;
-        virtual void updateProperties(te::layout::Properties* properties);
-
-      protected:
-
-        GridModel* m_grid;
-        bool       m_gridPlanar;
-        bool       m_gridGeodesic;
-    };
-  }
+	AbstractOutsideFactory* factory = Context::getInstance()->getOutsideFactory(); 
+	OutsideParamsCreate params(this, m_model);
+  if(factory)
+	  m_view = (Observer*)factory->make(TPGridSettings, params);
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_MAP_GRID_MODEL_H
+te::layout::GridSettingsController::~GridSettingsController()
+{
+
+}
+
+void te::layout::GridSettingsController::setPosition( const double& x, const double& y )
+{
+  if(m_model)
+  {
+    OutsideModelObservable* model = dynamic_cast<OutsideModelObservable*>(m_model);
+    if(model)
+      return model->setPosition(x, y);
+  }
+}

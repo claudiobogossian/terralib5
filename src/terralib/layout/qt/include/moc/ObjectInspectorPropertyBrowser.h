@@ -18,51 +18,44 @@
  */
 
 /*!
-  \file DisplayOutside.h
+  \file ObjectInspectorPropertyBrowser.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_DISPLAY_OUTSIDE_H 
-#define __TERRALIB_LAYOUT_INTERNAL_DISPLAY_OUTSIDE_H
-
-// Qt
-#include <QDockWidget>
+#ifndef __TERRALIB_LAYOUT_INTERNAL_OBJECT_INSPECTOR_PROPERTY_BROWSER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_OBJECT_INSPECTOR_PROPERTY_BROWSER_H
 
 // TerraLib
-#include "OutsideObserver.h"
-#include "../../../../geometry/Envelope.h"
+#include "PropertyBrowser.h"
 
+// Qt
 class QGraphicsItem;
-class QCloseEvent;
+class QWidget;
+
+class QtVariantProperty;
+class QtProperty;
+class QtVariantPropertyManager;
+class QtBrowserIndex;
 
 namespace te
 {
   namespace layout
   {
-    class DisplayOutside : public QDockWidget, public OutsideObserver
+    class ObjectInspectorPropertyBrowser : public PropertyBrowser
     {
 	    Q_OBJECT //for slots/signals
 
     public:
 
-	    DisplayOutside(OutsideController* controller, Observable* o);
-	    virtual ~DisplayOutside();
+	    ObjectInspectorPropertyBrowser(QObject *parent = 0);
+	    virtual ~ObjectInspectorPropertyBrowser();
 
-	    virtual void updateObserver(ContextItem context);
-	    virtual void setPosition(const double& x, const double& y);
-	    virtual te::gm::Coord2D getPosition();
-      void setPreviousCentralWidget(QWidget* previous);
-      
-    protected:
+    private slots:
 
-      virtual void	closeEvent ( QCloseEvent * event );
-      virtual void removeDock();
-
-      QWidget* m_previousCentralWidget; /* Previous central display of application */
-      bool     m_previousCentralWidgetVisibilite;
+      void onSetDlg(QWidget *parent, QtProperty * prop);
     };
   }
 }

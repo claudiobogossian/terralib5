@@ -68,7 +68,7 @@ te::layout::LayoutPropertyDataType te::layout::Variant::getType()
 void te::layout::Variant::convertValue( const void* valueCopy )
 {
   void* value = const_cast<void*>(valueCopy);
-  bool null = false;
+  bool null = true;
 
   //init variables
   std::string* sp = 0;
@@ -82,44 +82,53 @@ void te::layout::Variant::convertValue( const void* valueCopy )
   case DataTypeString:
     // Cast it back to a string pointer.
     sp = static_cast<std::string*>(value);
-    if(!sp)
+    if(sp)
     {
-      null = true;
+      null = false;
+      m_sValue = *sp;
       //return throw_exception("Cast failure! Wrong type.");
     }
-    m_sValue = *sp;
     break;
   case DataTypeDouble:
     dValue = static_cast<double*>(value);
-    if(!dValue)
+    if(dValue)
     {
-      null = true;
+      null = false;
+      m_dValue = *dValue;
     }
-    m_dValue = *dValue;
     break;
   case DataTypeFloat:
     fValue = static_cast<float*>(value);
-    if(!fValue)
+    if(fValue)
     {
-      null = true;
+      null = false;
+      m_fValue = *fValue;
     }
-    m_fValue = *fValue;
     break;
   case DataTypeLong:
     lValue = static_cast<long*>(value);
-    if(!lValue)
+    if(lValue)
     {
-      null = true;
+      null = false;
+      m_lValue = *lValue;
     }
-    m_lValue = *lValue;
     break;
   case DataTypeInt:
     iValue = static_cast<int*>(value);
-    if(!iValue)
+    if(iValue)
     {
-      null = true;
+      null = false;
+      m_iValue = *iValue;
     }
-    m_iValue = *iValue;
+    break;
+  case DataTypeGridSettings:
+    // Cast it back to a string pointer.
+    sp = static_cast<std::string*>(value);
+    if(sp)
+    {
+      null = false;
+      m_sValue = *sp;
+    }
     break;
   case DataTypeNone:
     null = true;

@@ -191,6 +191,8 @@ void te::qt::af::Save(const te::qt::af::Project& project, const std::string& uri
 
   Save(p, w);
 
+  XMLFormatter::format(&p, false);
+
   fout.close();
 }
 
