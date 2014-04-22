@@ -42,14 +42,16 @@ te::qt::widgets::LayerTreeModel::LayerTreeModel(QObject* parent)
   : QAbstractItemModel(parent),
     m_checkable(false)
 {
-  setSupportedDragActions(Qt::MoveAction | Qt::CopyAction);
+  //setSupportedDragActions(Qt::MoveAction | Qt::CopyAction);
+  setSupportedDragActions(Qt::MoveAction | Qt::CopyAction | Qt::LinkAction);
 }
 
 te::qt::widgets::LayerTreeModel::LayerTreeModel(const std::list<te::map::AbstractLayerPtr>& layers, QObject * parent)
   : QAbstractItemModel(parent),
     m_checkable(false)
 {
-  setSupportedDragActions(Qt::MoveAction | Qt::CopyAction);
+  //setSupportedDragActions(Qt::MoveAction | Qt::CopyAction);
+  setSupportedDragActions(Qt::MoveAction | Qt::CopyAction | Qt::LinkAction);
 }
 
 te::qt::widgets::LayerTreeModel::~LayerTreeModel()
@@ -287,7 +289,8 @@ QStringList te::qt::widgets::LayerTreeModel::mimeTypes() const
 
 Qt::DropActions te::qt::widgets::LayerTreeModel::supportedDropActions() const
 { 
-  return Qt::MoveAction | Qt::CopyAction;
+  //return Qt::MoveAction | Qt::CopyAction;
+  return Qt::MoveAction | Qt::CopyAction | Qt::LinkAction;
 }
 
 QMimeData* te::qt::widgets::LayerTreeModel::mimeData(const QModelIndexList& indexes) const
