@@ -42,6 +42,7 @@ set (
   ${SRCDIR}/MosaicAction.h
   ${SRCDIR}/SegmenterAction.h
   ${SRCDIR}/RegisterAction.h
+  ${SRCDIR}/VectorizationAction.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/rp" MOC)
 
