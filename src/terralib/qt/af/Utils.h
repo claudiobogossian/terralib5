@@ -115,11 +115,6 @@ namespace te
       TEQTAFEXPORT QString UnsavedStar(const QString windowTitle, bool isUnsaved);
 
       /*!
-        \brief Update plugins file.
-      */
-      TEQTAFEXPORT void UpdateApplicationPlugins();
-
-      /*!
         \brief Update the existing tool bars
 
         \param bars Set with the existing tool bars.

@@ -239,90 +239,71 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
 
 void te::qt::af::UpdateUserSettings(const QStringList& prjFiles, const QStringList& prjTitles, const std::string& userConfigFile)
 {
-  boost::property_tree::ptree& p = te::common::UserApplicationSettings::getInstance().getAllSettings();
-
-  // Recent projects
-  //----------------
-  if(!prjFiles.empty())
-  {
-    p.put("UserSettings.MostRecentProject.<xmlattr>.xlink:href", prjFiles.at(0).toStdString());
-    p.put("UserSettings.MostRecentProject.<xmlattr>.title", prjTitles.at(0).toStdString());
-
-    p.get_child("UserSettings.RecentProjects").clear();
-
-    if(prjFiles.size() > 1)
-    {
-      for(int i=1; i<prjFiles.size(); i++)
-      {
-        boost::property_tree::ptree prj;
-
-        prj.add("<xmlattr>.xlink:href", prjFiles.at(i).toStdString());
-        prj.add("<xmlattr>.title", prjTitles.at(i).toStdString());
-
-        p.add_child("UserSettings.RecentProjects.Project", prj);
-      }
-
-    }
-  }
-
-  //Enabled plugins
-  //----------------
-  boost::property_tree::ptree plgs;
-  std::vector<std::string> plugins;
-  std::vector<std::string>::iterator it;
-  te::plugin::PluginManager::getInstance().getPlugins(plugins);
-
-  p.get_child("UserSettings.EnabledPlugins").clear();
-
-  for(it=plugins.begin(); it!=plugins.end(); ++it)
-    if(te::plugin::PluginManager::getInstance().isLoaded(*it))
-    {
-      boost::property_tree::ptree plg;
-      plg.put_value(*it);
-      plgs.add_child("Plugin", plg);
-    }
-
-  p.put_child("UserSettings.EnabledPlugins", plgs);
-
-  te::common::UserApplicationSettings::getInstance().changed();
-  te::common::UserApplicationSettings::getInstance().update();
+//  boost::property_tree::ptree& p = te::common::UserApplicationSettings::getInstance().getAllSettings();
+//
+//  // Recent projects
+//  //----------------
+//  if(!prjFiles.empty())
+//  {
+//    p.put("UserSettings.MostRecentProject.<xmlattr>.xlink:href", prjFiles.at(0).toStdString());
+//    p.put("UserSettings.MostRecentProject.<xmlattr>.title", prjTitles.at(0).toStdString());
+//
+//    p.get_child("UserSettings.RecentProjects").clear();
+//
+//    if(prjFiles.size() > 1)
+//    {
+//      for(int i=1; i<prjFiles.size(); i++)
+//      {
+//        boost::property_tree::ptree prj;
+//
+//        prj.add("<xmlattr>.xlink:href", prjFiles.at(i).toStdString());
+//        prj.add("<xmlattr>.title", prjTitles.at(i).toStdString());
+//
+//        p.add_child("UserSettings.RecentProjects.Project", prj);
+//      }
+//
+//    }
+//  }
+//
+//  //Enabled plugins
+//  //----------------
+//  boost::property_tree::ptree plgs;
+//  std::vector<std::string> plugins;
+//  std::vector<std::string>::iterator it;
+//  te::plugin::PluginManager::getInstance().getPlugins(plugins);
+//
+//  p.get_child("UserSettings.EnabledPlugins").clear();
+//
+//  for(it=plugins.begin(); it!=plugins.end(); ++it)
+//    if(te::plugin::PluginManager::getInstance().isLoaded(*it))
+//    {
+//      boost::property_tree::ptree plg;
+//      plg.put_value(*it);
+//      plgs.add_child("Plugin", plg);
+//    }
+//
+//  p.put_child("UserSettings.EnabledPlugins", plgs);
+//
+//  te::common::UserApplicationSettings::getInstance().changed();
+//  te::common::UserApplicationSettings::getInstance().update();
 }
 
 void te::qt::af::SaveDataSourcesFile()
 {
-  std::string fileName = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.DataSourcesFile");
+  QSettings usettings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  
+  QVariant fileName = usettings.value("data_sources/data_file");
 
-  if(fileName.empty())
-    return;
-
-  te::serialize::xml::Save(fileName);
-}
-
-void te::qt::af::UpdateApplicationPlugins()
-{
-  ApplicationPlugins::getInstance().getAllSettings().get_child("Plugins").erase("Plugin");
-  boost::property_tree::ptree& p = ApplicationPlugins::getInstance().getAllSettings();
-
-  std::vector<std::string> plugins;
-  std::vector<std::string>::iterator it;
-  te::plugin::PluginManager::getInstance().getPlugins(plugins);
-
-  for(it=plugins.begin(); it!=plugins.end(); ++it)
+  if(fileName.isNull())
   {
-    const te::plugin::PluginInfo& info = te::plugin::PluginManager::getInstance().getPlugin(*it);
-    boost::property_tree::ptree plg;
-
-    std::string plgFileName = info.m_folder + "/" + info.m_name + ".teplg";
-
-    plg.add("Name", info.m_name);
-    plg.add("Path.<xmlattr>.xlink:href", plgFileName);
-
-    p.add_child("Plugins.Plugin", plg);
+    const QString& udir = ApplicationController::getInstance().getUserDataDir();
+    
+    fileName = udir + "/" + QString(TERRALIB_APPLICATION_DATASOURCE_FILE_NAME);
+    
+    usettings.setValue("data_sources/data_file", fileName);
   }
 
-  // Store the file.
-  boost::property_tree::xml_writer_settings<char> settings('\t', 1);
-  boost::property_tree::write_xml(ApplicationPlugins::getInstance().getFileName(), p, std::locale(), settings);
+  te::serialize::xml::Save(fileName.toString().toStdString());
 }
 
 void AddToolbarAndActions(QToolBar* bar, QSettings& sett)

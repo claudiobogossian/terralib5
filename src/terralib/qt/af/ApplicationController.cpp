@@ -51,13 +51,19 @@
 #include "Utils.h"
 
 // Qt
-#include <QDir>
-#include <QResource>
 #include <QApplication>
+#if QT_VERSION < 0x050000
+#include <QDesktopServices>
+#endif
+#include <QDir>
 #include <QIcon>
-#include <QMessageBox>
-#include <QWidget>
 #include <QMenu>
+#include <QMessageBox>
+#include <QResource>
+#if QT_VERSION >= 0x050000
+#include <QStandardPaths>
+#endif
+#include <QWidget>
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -73,23 +79,12 @@ te::qt::af::ApplicationController::ApplicationController(/*QObject* parent*/)
     m_project(0),
     m_resetTerralib(true)
 {
-  //if(sm_instance)
-  //  throw Exception(TE_TR("Can not start another instance of the TerraLib Application Controller!"));
-
-  //sm_instance = this;
 }
 
 te::qt::af::ApplicationController::~ApplicationController()
 {
-  finalize();
 
-//  sm_instance = 0;
 }
-
-//te::qt::af::ApplicationController& te::qt::af::ApplicationController::getInstance()
-//{
-//  return *sm_instance;
-//}
 
 void te::qt::af::ApplicationController::setConfigFile(const std::string& configFileName)
 {
@@ -261,6 +256,16 @@ void  te::qt::af::ApplicationController::initialize()
 {
   if(m_initialized)
     return;
+  
+// find user data directory
+#if QT_VERSION >= 0x050000
+  m_userDataDir = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+#else
+  m_userDataDir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+#endif
+  
+  if(!boost::filesystem::exists(m_userDataDir.toStdString()))
+    boost::filesystem::create_directories(m_userDataDir.toStdString());
 
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
@@ -614,10 +619,6 @@ void te::qt::af::ApplicationController::finalize()
   if(!m_initialized)
     return;
 
-  te::common::SystemApplicationSettings::getInstance().update();
-
-  UpdateApplicationPlugins();
-
   UpdateUserSettings(m_recentProjs, m_recentProjsTitles, m_appUserSettingsFile);
 
   SaveDataSourcesFile();
@@ -738,4 +739,9 @@ QWidget* te::qt::af::ApplicationController::getMainWindow() const
 void te::qt::af::ApplicationController::setResetTerraLibFlag(const bool& status)
 {
   m_resetTerralib = status;
+}
+
+const QString& te::qt::af::ApplicationController::getUserDataDir() const
+{
+  return m_userDataDir;
 }

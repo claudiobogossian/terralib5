@@ -37,6 +37,14 @@
 #define TERRALIB_APPLICATION_CONFIG_FILE   "share/terraview/config/config.xml"
 
 /*!
+ \def TERRALIB_APPLICATION_DATASOURCE_FILE_NAME
+ 
+ \brief The default name for the application file containing the list of data sources.
+ */
+#define TERRALIB_APPLICATION_DATASOURCE_FILE_NAME   "datasources.xml"
+
+
+/*!
   \def TE_QT_AF_MODULE_NAME
 
   \brief The application framework module name.
