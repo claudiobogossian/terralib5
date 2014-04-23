@@ -188,21 +188,13 @@ void te::qt::af::Save(const te::qt::af::Project& project, const std::string& uri
 
 void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& writer)
 {
-  const char* te_env = getenv("TERRALIB_DIR");
-
-  if(te_env == 0)
-    throw Exception(TE_TR("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
-
-  std::string schema_loc(te_env);
-  schema_loc += "/schemas/terralib";
+  std::string schema_loc = te::common::FindInTerraLibPath("schemas/terralib/qt/af/project.xsd");
 
   writer.writeStartDocument("UTF-8", "no");
 
   writer.writeStartElement("Project");
 
   boost::replace_all(schema_loc, " ", "%20");
-
-  schema_loc = "file:///" + schema_loc;
 
   writer.writeAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
   writer.writeAttribute("xmlns:te_da", "http://www.terralib.org/schemas/dataaccess");
@@ -214,7 +206,7 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
   writer.writeAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
 
   writer.writeAttribute("xmlns", "http://www.terralib.org/schemas/qt/af");
-  writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + schema_loc + "/qt/af/project.xsd");
+  writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + schema_loc);
   writer.writeAttribute("version", TERRALIB_VERSION_STRING);
 
   writer.writeElement("Title", project.getTitle());
@@ -929,16 +921,15 @@ void te::qt::af::UpdateAppPluginsFile(const QString& fileName, const bool& remov
 void te::qt::af::WriteDefaultProjectFile(const QString& fileName)
 {
   boost::property_tree::ptree p;
-  QString teDir(getenv("TERRALIB_DIR"));
 
-  teDir.replace(" ", "%20");
+  std::string schema_location = te::common::FindInTerraLibPath("schemas/terralib/qt/af/project.xsd");
 
   //Header
   p.add("Project.<xmlattr>.xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
   p.add("Project.<xmlattr>.xmlns:te_map", "http://www.terralib.org/schemas/maptools");
   p.add("Project.<xmlattr>.xmlns:te_qt_af", "http://www.terralib.org/schemas/qt/af");
   p.add("Project.<xmlattr>.xmlns", "http://www.terralib.org/schemas/qt/af");
-  p.add("Project.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + teDir.toStdString() + "/schemas/terralib/qt/af/project.xsd");
+  p.add("Project.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + schema_location);
   p.add("Project.<xmlattr>.version", TERRALIB_VERSION_STRING);
 
   //Contents
