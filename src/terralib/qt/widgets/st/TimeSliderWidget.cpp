@@ -2345,20 +2345,20 @@ void te::qt::widgets::TimeSliderWidget::onLoopCheckBoxClicked(bool b)
 {
   m_loop = b;
   //char buf[10];
-  //te::dt::TimeInstant iTime = te::dt::TimeInstant(boost::posix_time::time_from_string("2008-10-01 00:00:00"));
+  //te::dt::TimeInstant iTime = te::dt::TimeInstant(boost::posix_time::time_from_string("2008-05-01 00:00:00"));
   //boost::posix_time::time_duration td = boost::posix_time::seconds(3600);
 
-  //QDir dir("C:/lixo/TemporalImages/NoDoubt");
+  //QDir dir("C:/lixo/TemporalImages/TurmaDaMonicaBruxarias");
   //QStringList nameFilter;
-  //nameFilter.append("NoDoubt*");
+  //nameFilter.append("TurmaDaMonicaBruxarias*");
   //QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
   //QStringList::iterator it;
 
   //for(it = files.begin(); it != files.end(); ++it)
   //{
-  //  QString s("C:/lixo/TemporalImages/NoDoubt/");
+  //  QString s("C:/lixo/TemporalImages/TurmaDaMonicaBruxarias/");
   //  QFile file(s+*it);
-  //  QString nfile = "C:/lixo/TemporalImages/NoDoubt/NoDoubt_";
+  //  QString nfile = s + "TurmaDaMonicaBruxarias_";
 
   //  nfile += s.setNum((short)iTime.getDate().getYear()) + "_";
 
