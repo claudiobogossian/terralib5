@@ -261,7 +261,8 @@ void te::qt::widgets::TimeSliderWidget::dragEnterEvent(QDragEnterEvent* e)
             {
               if(layer->getDataSetName() == "40: locations" || layer->getDataSetName() == "41: locations")
               {
-                e->setDropAction(Qt::CopyAction); // this line is necessary to not move items on the layer explorer
+                e->setDropAction(Qt::LinkAction); // this line is necessary to not move items on the layer explorer
+                //e->setDropAction(Qt::CopyAction); // this line is necessary to not move items on the layer explorer
                 e->setAccepted(true);
               }
             }

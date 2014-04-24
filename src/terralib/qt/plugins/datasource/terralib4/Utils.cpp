@@ -34,7 +34,8 @@
 #include "../../../../se/ChannelSelection.h"
 #include "../../../../se/ColorMap.h"
 #include "../../../../se/ContrastEnhancement.h"
-#include "../../../../se/FeatureTypeStyle.h"
+#include "../../../../se/CoverageStyle.h"
+//#include "../../../../se/FeatureTypeStyle.h"
 #include "../../../../se/Fill.h"
 #include "../../../../se/LineSymbolizer.h"
 #include "../../../../se/ParameterValue.h"
@@ -210,7 +211,7 @@ te::se::Style* te::qt::plugins::terralib4::Convert2TerraLib5(int geometryType, T
   if(symb != 0)
     rule->push_back(symb);
 
-  te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
+  te::se::CoverageStyle* style = new te::se::CoverageStyle;
   style->push_back(rule);
 
   return style;
@@ -436,48 +437,126 @@ te::se::RasterSymbolizer* te::qt::plugins::terralib4::GetRasterSymbolizer(TeRast
   symb->setOffset(new te::se::ParameterValue(boost::lexical_cast<std::string>(offset)));
   symb->setGain(new te::se::ParameterValue(boost::lexical_cast<std::string>(gain)));
 
-  /*
+  TeRasterTransform::TeRasterTransfFunctions func = visual->getTransfFunction();
+
+  te::se::ChannelSelection* cs = new te::se::ChannelSelection;
+
   te::se::SelectedChannel* scRed = 0;
   te::se::SelectedChannel* scGreen = 0;
   te::se::SelectedChannel* scBlue = 0;
   te::se::SelectedChannel* scMono = 0;
 
-  std::map<TeRasterTransform::TeRGBChannels,short> rgbMap = visual->getRGBMap();
-
-  te::se::ChannelSelection* cs = new te::se::ChannelSelection;
-
-  if(rgbMap.find(TeRasterTransform::TeREDCHANNEL) != rgbMap.end())
+  if (func == TeRasterTransform::TeBand2Band)
   {
     scRed = new te::se::SelectedChannel;
-    scRed->setSourceChannelName(boost::lexical_cast<std::string>(rgbMap[TeRasterTransform::TeREDCHANNEL]));
-    te::se::ContrastEnhancement* contrastRed = new te::se::ContrastEnhancement();
-    scRed->setContrastEnhancement(contrastRed);
-    contrastRed->setGammaValue(visual->getContrastR());
+    scRed->setSourceChannelName("0");
 
-    cs->setRedChannel(scRed);
-  }
-
-  if(rgbMap.find(TeRasterTransform::TeGREENCHANNEL) != rgbMap.end())
-  {
     scGreen = new te::se::SelectedChannel;
-    scGreen->setSourceChannelName(boost::lexical_cast<std::string>(rgbMap[TeRasterTransform::TeGREENCHANNEL]));
-    te::se::ContrastEnhancement* contrastGreen = new te::se::ContrastEnhancement();
-    scGreen->setContrastEnhancement(contrastGreen);
-    contrastGreen->setGammaValue(visual->getContrastG());
+    scGreen->setSourceChannelName("1");
 
-    cs->setRedChannel(scGreen);
+    scBlue = new te::se::SelectedChannel;
+    scBlue->setSourceChannelName("2");
+
+    cs->setColorCompositionType(te::se::RGB_COMPOSITION);
+
+  }
+  else if (func == TeRasterTransform::TeExtractBand)
+  {
+
+    short db = visual->getDestBand();
+
+    if (db == TeRasterTransform::TeREDCHANNEL)
+    {
+
+      scRed = new te::se::SelectedChannel;
+      scRed->setSourceChannelName(boost::lexical_cast<std::string>(visual->getSrcBand()));
+
+      cs->setColorCompositionType(te::se::RED_COMPOSITION);
+
+    }
+    else if (db == TeRasterTransform::TeGREENCHANNEL)
+    {
+
+      scGreen = new te::se::SelectedChannel;
+      scGreen->setSourceChannelName(boost::lexical_cast<std::string>(visual->getSrcBand()));
+
+      cs->setColorCompositionType(te::se::GREEN_COMPOSITION);
+
+    }
+    else if (db == TeRasterTransform::TeBLUECHANNEL)
+    {
+
+      scBlue = new te::se::SelectedChannel;
+      scBlue->setSourceChannelName(boost::lexical_cast<std::string>(visual->getSrcBand()));
+
+      cs->setColorCompositionType(te::se::BLUE_COMPOSITION);
+
+    }
+  }
+  else if (func == TeRasterTransform::TeMono2Three)
+  {
+
+    scMono = new te::se::SelectedChannel;
+    scMono->setSourceChannelName(boost::lexical_cast<std::string>(visual->getSrcBand()));
+
+    cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
+
+  }
+  else if (func == TeRasterTransform::TeExtractRGB)
+  {
+    std::map<TeRasterTransform::TeRGBChannels,short>& RGBmap = visual->getRGBMap();
+
+    scRed = new te::se::SelectedChannel;
+    scRed->setSourceChannelName(boost::lexical_cast<std::string>(RGBmap[TeRasterTransform::TeREDCHANNEL]));
+
+    scGreen = new te::se::SelectedChannel;
+    scGreen->setSourceChannelName(boost::lexical_cast<std::string>(RGBmap[TeRasterTransform::TeGREENCHANNEL]));
+
+    scBlue = new te::se::SelectedChannel;
+    scBlue->setSourceChannelName(boost::lexical_cast<std::string>(RGBmap[TeRasterTransform::TeBLUECHANNEL]));
+
+    cs->setColorCompositionType(te::se::RGB_COMPOSITION);
+
+  }
+  else if (func == TeRasterTransform::TeThreeBand2RGB)
+  {
+    scRed = new te::se::SelectedChannel;
+    scRed->setSourceChannelName("0");
+
+    scGreen = new te::se::SelectedChannel;
+    scGreen->setSourceChannelName("1");
+
+    scBlue = new te::se::SelectedChannel;
+    scBlue->setSourceChannelName("2");
+
+    cs->setColorCompositionType(te::se::RGB_COMPOSITION);
   }
 
-  if(rgbMap.find(TeRasterTransform::TeBLUECHANNEL) != rgbMap.end())
+  else if (func == TeRasterTransform::TeExtractBands)
   {
-    scBlue = new te::se::SelectedChannel;
-    scBlue->setSourceChannelName(boost::lexical_cast<std::string>(rgbMap[TeRasterTransform::TeBLUECHANNEL]));
-    te::se::ContrastEnhancement* contrastBlue = new te::se::ContrastEnhancement();
-    scBlue->setContrastEnhancement(contrastBlue);
-    contrastBlue->setGammaValue(visual->getContrastB());
 
-    cs->setRedChannel(scBlue);
-  }*/
+    std::map<TeRasterTransform::TeRGBChannels,short>& RGBmap = visual->getRGBMap();
+
+    if (RGBmap[TeRasterTransform::TeREDCHANNEL] != -1)
+      scRed->setSourceChannelName(boost::lexical_cast<std::string>(RGBmap[TeRasterTransform::TeREDCHANNEL]));
+    if (RGBmap[TeRasterTransform::TeGREENCHANNEL] != -1)
+      scGreen->setSourceChannelName(boost::lexical_cast<std::string>(RGBmap[TeRasterTransform::TeGREENCHANNEL]));
+    if (RGBmap[TeRasterTransform::TeBLUECHANNEL] != -1)
+      scBlue->setSourceChannelName(boost::lexical_cast<std::string>(RGBmap[TeRasterTransform::TeBLUECHANNEL]));
+
+    cs->setColorCompositionType(te::se::RGB_COMPOSITION);
+  }
+
+  if(scRed)
+    cs->setRedChannel(scRed);
+  if(scGreen)
+    cs->setGreenChannel(scGreen);
+  if(scBlue)
+    cs->setBlueChannel(scBlue);
+  if(scMono)
+    cs->setGrayChannel(scMono);
+
+  symb->setChannelSelection(cs);
 
   return symb;
 }
