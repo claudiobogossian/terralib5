@@ -21,7 +21,7 @@
 #  Description: Main CMake script for the TerraLib build system.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
-#          Juan P. Garrido <juan@dpi.inpe.br>
+#          Juan Carlos P. Garrido <juan@dpi.inpe.br>
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
@@ -55,7 +55,7 @@ endif()
 # variables storing absolute paths
 set(TERRALIB_ABSOLUTE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 
-# variables that controls path
+# variables that control paths
 if(NOT DEFINED TERRALIB_DIR_VAR_NAME)
   set(TERRALIB_DIR_VAR_NAME "TERRALIB_HOME" CACHE STRING "Name of an environment variable with the base installation path of TerraLib")
 endif()
