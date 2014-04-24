@@ -56,7 +56,7 @@ void te::qt::plugins::vp::Plugin::startup()
     return;
 
 // it initializes the Translator support for the TerraLib VP Qt Plugin
-  TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_VP_TEXT_DOMAIN, TE_QT_PLUGIN_VP_TEXT_DOMAIN_DIR, "UTF-8");
+  //TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_VP_TEXT_DOMAIN, TE_QT_PLUGIN_VP_TEXT_DOMAIN_DIR, "UTF-8");
 
   TE_LOG_TRACE(TE_TR("TerraLib Qt VP Plugin startup!"));
 

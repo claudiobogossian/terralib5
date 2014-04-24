@@ -90,7 +90,7 @@ void te::qt::plugins::rp::Plugin::startup()
     return;
 
 // it initializes the Translator support for the TerraLib RP Qt Plugin
-  TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_RP_TEXT_DOMAIN, TE_QT_PLUGIN_RP_TEXT_DOMAIN_DIR, "UTF-8");
+  //TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_RP_TEXT_DOMAIN, TE_QT_PLUGIN_RP_TEXT_DOMAIN_DIR, "UTF-8");
 
   TE_LOG_TRACE(TE_TR("TerraLib Qt RP Plugin startup!"));
 
