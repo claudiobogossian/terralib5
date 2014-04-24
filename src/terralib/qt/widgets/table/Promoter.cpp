@@ -190,7 +190,7 @@ void te::qt::widgets::Promoter::cleanPreproccessKeys()
 
 void te::qt::widgets::Promoter::promote(const te::da::ObjectIdSet* oids)
 {
-  if(m_logicalRows.empty() || m_PkeysRows.empty())
+  if(m_logicalRows.empty() || m_PkeysRows.empty() || oids == 0)
     return;
 
   std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
