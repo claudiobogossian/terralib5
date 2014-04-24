@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "OutsideController.h"
+#include "Property.h"
 
 namespace te
 {
@@ -43,6 +44,21 @@ namespace te
 	    virtual ~GridSettingsController();
 
 	    virtual void setPosition(const double& x, const double& y);
+
+      virtual void setProperty(Property property);
+
+      virtual Property getProperty();
+
+      virtual Property updateProperty();
+
+      virtual void addUpdateProperty(Property property);
+
+      virtual void clearUpdate();
+
+    protected:
+
+      Property m_property;
+      Property m_update;
     };
   }
 }

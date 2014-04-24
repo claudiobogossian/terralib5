@@ -34,6 +34,7 @@ te::layout::Variant::Variant() :
   m_iValue(0),
   m_lValue(0),
   m_fValue(0.),
+  m_bValue(0.),
   m_type(DataTypeNone),
   m_null(true)
 {
@@ -76,6 +77,7 @@ void te::layout::Variant::convertValue( const void* valueCopy )
   float* fValue = 0;
   long* lValue = 0;
   int* iValue = 0;
+  bool* bValue = 0;
 
   switch(m_type)
   {
@@ -121,6 +123,14 @@ void te::layout::Variant::convertValue( const void* valueCopy )
       m_iValue = *iValue;
     }
     break;
+  case DataTypeBool:
+    bValue = static_cast<bool*>(value);
+    if(bValue)
+    {
+      null = false;
+      m_bValue = *bValue;
+    }
+    break;
   case DataTypeGridSettings:
     // Cast it back to a string pointer.
     sp = static_cast<std::string*>(value);
@@ -163,7 +173,24 @@ float te::layout::Variant::toFloat()
   return m_fValue;
 }
 
+bool te::layout::Variant::toBool()
+{
+  return m_bValue;
+}
+
 bool te::layout::Variant::isNull()
 {
   return m_null;
+}
+
+void te::layout::Variant::clear()
+{
+  m_sValue = "unknown";
+  m_dValue = 0.;
+  m_iValue = 0;
+  m_lValue = 0;
+  m_fValue = 0.;
+  m_bValue = 0.;
+  m_type = DataTypeNone;
+  m_null = true;
 }

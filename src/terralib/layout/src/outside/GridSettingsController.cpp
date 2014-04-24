@@ -56,3 +56,36 @@ void te::layout::GridSettingsController::setPosition( const double& x, const dou
       return model->setPosition(x, y);
   }
 }
+
+void te::layout::GridSettingsController::setProperty( Property property )
+{
+  m_property = property;
+}
+
+te::layout::Property te::layout::GridSettingsController::getProperty()
+{
+  return m_property;
+}
+
+te::layout::Property te::layout::GridSettingsController::updateProperty()
+{
+  return m_update;
+}
+
+void te::layout::GridSettingsController::clearUpdate()
+{
+  m_update.clear();
+}
+
+void te::layout::GridSettingsController::addUpdateProperty( Property property )
+{
+  if(m_update.isNull())
+  {
+    m_update.setEditable(m_property.isEditable());
+    m_update.setId(m_property.getId());
+    m_update.setName(m_property.getName());
+    m_update.setValue(m_property.getValue(), m_property.getType());
+  }
+  
+  m_update.addSubProperty(property);
+}

@@ -18,39 +18,41 @@
  */
 
 /*!
-  \file MapModel.h
+  \file GridGeodesicModel.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_GRID_GEODESIC_MODEL_H
+#define __TERRALIB_LAYOUT_INTERNAL_GRID_GEODESIC_MODEL_H
 
 // TerraLib
-#include "ItemModelObservable.h"
-#include "ContextItem.h"
+#include "GridModel.h"
 
 namespace te
 {
   namespace layout
   {
-    class MapModel : public ItemModelObservable
+    class GridGeodesicModel: public GridModel 
     {
       public:
 
-        MapModel();
-        virtual ~MapModel();
+        GridGeodesicModel();
+        virtual ~GridGeodesicModel();
 
-        virtual void draw( ContextItem context );
+        virtual void draw(te::map::Canvas* canvas, te::gm::Envelope box);
 
-        virtual void setPosition( const double& x, const double& y );
-
+        virtual te::layout::Properties* getProperties() const;
         virtual void updateProperties(te::layout::Properties* properties);
+        
+       protected:
 
+         virtual void drawVerticalLines(te::map::Canvas* canvas, te::gm::Envelope box);
+         virtual void drawHorizontalLines(te::map::Canvas* canvas, te::gm::Envelope box);    
     };
   }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_MAPLAYOUT_MODEL_H
+#endif 

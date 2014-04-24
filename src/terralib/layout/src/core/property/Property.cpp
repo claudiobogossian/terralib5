@@ -27,7 +27,10 @@
 
 // TerraLib
 #include "Property.h"
+
+// STL
 #include <vector>
+#include <algorithm>
 
 te::layout::Property::Property() :
   m_name("unknown"),
@@ -75,17 +78,24 @@ te::layout::Variant te::layout::Property::getValue()
 
 void te::layout::Property::addOption(Variant variant)
 {
-
+  m_variants.push_back(variant);
 }
 
 void te::layout::Property::removeOption(Variant variant)
 {
-
+  for(std::vector<Variant>::iterator it = m_variants.begin(); it != m_variants.end(); it++)
+  {
+    if((*it) == variant)
+    {
+      m_variants.erase(it);
+      break;
+    }
+  }
 }
 
 void te::layout::Property::setOptionChoice(Variant variant)
 {
-  m_variants.push_back(variant); 
+  m_currentChoice = variant; 
 }
 
 te::layout::Variant te::layout::Property::getOptionByCurrentChoice()
@@ -108,16 +118,6 @@ void te::layout::Property::setEditable( bool editable )
   m_editable = editable;
 }
 
-void te::layout::Property::addDependentProperty( Property property )
-{
-  m_dependentProperty.push_back(property);
-}
-
-void te::layout::Property::removeDependentProperty( Property property )
-{
-
-}
-
 void te::layout::Property::addSubProperty( Property property )
 {
   m_subProperty.push_back(property);
@@ -125,10 +125,63 @@ void te::layout::Property::addSubProperty( Property property )
 
 void te::layout::Property::removeSubProperty( Property property )
 {
-
+  for(std::vector<Property>::iterator it = m_subProperty.begin(); it != m_subProperty.end(); it++)
+  {
+    if((*it) == property)
+    {
+      m_subProperty.erase(it);
+      break;
+    }
+  }
 }
 
 std::vector<te::layout::Property> te::layout::Property::getSubProperty()
 {
   return m_subProperty;
+}
+
+bool te::layout::Property::isNull()
+{
+  return m_value.isNull();
+}
+
+bool te::layout::Property::containsSubProperty( Property subProperty )
+{
+  bool is_present = false;
+
+  if(std::find(m_subProperty.begin(), m_subProperty.end(), subProperty) != m_subProperty.end())
+  {
+    is_present = true;
+  }
+
+  return is_present;
+}
+
+te::layout::Property te::layout::Property::containsSubProperty( std::string name )
+{
+  Property property;
+  property.setName(name);
+
+  if(std::find(m_subProperty.begin(), m_subProperty.end(), property) != m_subProperty.end())
+  {
+    std::vector<Property>::iterator it = std::find(m_subProperty.begin(), m_subProperty.end(), property);
+
+    property = (*it);
+  }
+  else
+    property.setName("");
+
+  return property;
+}
+
+void te::layout::Property::clear()
+{
+  m_name = "unknown";
+  m_id = "unknown";
+  m_editable = true;
+  m_type = DataTypeNone;
+  m_value.clear();
+  m_currentChoice.clear();
+  m_variants.clear();
+  m_subProperty.clear();
 }

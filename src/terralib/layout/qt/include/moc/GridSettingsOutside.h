@@ -55,33 +55,41 @@ namespace te
 
 		    virtual ~GridSettingsOutside();
 
-		    virtual void changeLineColor();
-
-		    virtual void pbPlanarLineColor_clicked();
-
-		    virtual void changeVerticalFontColor();
-
-		    virtual void changeHorizontalFontColor();
-
-		    virtual void okClicked();
-
-		    virtual void helpClicked();
-
-		    virtual void ckDefineScale_clicked();
-
-		    virtual void cmdGridTextPlanarColor_clicked();
-    
-		    virtual void cmdGridTextGeoColor_clicked();
-    
-		    virtual void cmdCornerTextGeoColor_clicked();
-
-		    virtual void lneHorizontalGap_textChanged(const QString& value);
-
         virtual void updateObserver(ContextItem context);
 
         virtual void setPosition(const double& x, const double& y);
 
         virtual te::gm::Coord2D getPosition();
+
+      private slots:
+
+        virtual void changeLineColor();
+
+        virtual void on_pbPlanarLineColor_clicked();
+        
+        virtual void on_pbClose_clicked();
+
+        virtual void on_pbCancel_clicked();
+
+        virtual void on_pbApply_clicked();
+
+        virtual void on_helpPushButton_clicked();
+
+        virtual void on_ckDefineScale_clicked();
+
+        virtual void on_cmdGridTextPlanarColor_clicked();
+
+        virtual void on_cmdGridTextGeoColor_clicked();
+
+        virtual void on_cmdCornerTextGeoColor_clicked();
+        
+        virtual void on_cmbLineType_editTextChange(QString value);
+
+        virtual void on_xGridInitialPoint_geo_textField_textChanged(const QString& text);
+
+      signals:
+
+        void updateProperty();
 
       protected:
 

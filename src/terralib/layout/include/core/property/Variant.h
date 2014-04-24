@@ -60,8 +60,13 @@ namespace te
         int toInt();
         long toLong();
         float toFloat();
+        bool toBool();
 
         bool isNull();
+
+        void clear();
+
+        bool operator ==(const Variant& other); 
 
     protected:
 
@@ -75,6 +80,7 @@ namespace te
       int m_iValue;
       long m_lValue;
       float m_fValue;
+      bool m_bValue;
       LayoutPropertyDataType m_type;
       bool m_null;
     };
@@ -91,6 +97,25 @@ namespace te
       const typename ValueType& value, LayoutPropertyDataType type )
     {
       v = Variant(type, &value);      
+    }
+
+    inline bool te::layout::Variant::operator ==(const Variant& other) 
+    { 
+      Variant& otherProp = const_cast<Variant&>(other);
+
+      if(getType() == otherProp.getType())
+      {
+        if(m_sValue == otherProp.toString() &&
+          m_dValue == otherProp.toDouble() &&
+          m_iValue == toInt() &&
+          m_lValue == toLong() &&
+          m_fValue == toFloat() &&
+          m_bValue == toBool())
+        {
+          return true;
+        }
+      }
+      return false;
     }
   }
 }

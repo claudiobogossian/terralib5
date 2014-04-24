@@ -31,13 +31,12 @@
 #include "Context.h"
 #include "../../../../../geometry/Envelope.h"
 #include "../../../../../geometry/Coord2D.h"
-#include "Properties.h"
 #include "Property.h"
 
 te::layout::GridModel::GridModel() :
-  m_gridPlanar(false),
-  m_horizontalSeparationParameter(10), 
-  m_verticalSeparationParameter(10),
+  m_visible(false),
+  m_lneVrtDisplacement(0), 
+  m_lneHrzDisplacement(0),
   m_initialGridPointX(0),
   m_initialGridPointY(0),
   m_name("GRID_MODEL")
@@ -50,89 +49,6 @@ te::layout::GridModel::~GridModel()
 
 }
 
-void te::layout::GridModel::draw( te::map::Canvas* canvas, te::gm::Envelope box )
-{
-  Utils* utils = Context::getInstance()->getUtils();
-
-  te::color::RGBAColor color = te::color::RGBAColor(0, 0, 0, 255);
-  canvas->setLineColor(color);
-
-  drawVerticalLines(canvas, box);
-  drawHorizontalLines(canvas, box);
-}
-
-void te::layout::GridModel::drawVerticalLines(te::map::Canvas* canvas, te::gm::Envelope box)
-{
-  Utils* utils = Context::getInstance()->getUtils();
-
-  int totallines = (int)std::abs(std::ceil(box.getWidth() / m_verticalSeparationParameter));
-
-  double count = 0;
-  for(int i = 0 ; i < totallines ; i++)
-  {
-    te::gm::Envelope newBox(box.getLowerLeftX() + count, box.getLowerLeftY(), 
-      box.getLowerLeftX() + count, box.getUpperRightY());
-    te::gm::LinearRing* line = new te::gm::LinearRing(3, te::gm::LineStringType);
-
-    line = utils->createSimpleLine(newBox);
-    utils->drawLineW(line);
-
-    if(line)
-    {
-      delete line;
-      line = 0;
-    }
-
-    count+= m_verticalSeparationParameter;
-  }
-}
-
-void te::layout::GridModel::drawHorizontalLines(te::map::Canvas* canvas, te::gm::Envelope box)
-{
-  Utils* utils = Context::getInstance()->getUtils();
-
-  int totallines = (int)std::abs(std::ceil(box.getWidth() / m_horizontalSeparationParameter));
-
-  double count = 0;
-  for(int i = 0 ; i < totallines ; i++)
-  {
-    te::gm::Envelope newBox(box.getLowerLeftX(), box.getLowerLeftY() + count, 
-      box.getUpperRightX(), box.getLowerLeftY() + count);
-    te::gm::LinearRing* line = new te::gm::LinearRing(3, te::gm::LineStringType);
-
-    line = utils->createSimpleLine(newBox);
-    utils->drawLineW(line);
-
-    if(line)
-    {
-      delete line;
-      line = 0;
-    }
-
-    count+= m_horizontalSeparationParameter;
-  }
-}
-
-bool te::layout::GridModel::isGridPlanar()
-{
-  return m_gridPlanar;
-}
-
-void te::layout::GridModel::setGridPlanar( bool planar )
-{
-  m_gridPlanar = planar;
-}
-
-te::map::LineDashStyle te::layout::GridModel::getPlanarLineStyle()
-{
-  return m_planarLineStyle;
-}
-
-void te::layout::GridModel::setPlanarLineStyle( te::map::LineDashStyle style )
-{
-  m_planarLineStyle = style;
-}
-
 te::layout::Properties* te::layout::GridModel::getProperties() const
 {
   m_properties->clear();
@@ -142,7 +58,13 @@ te::layout::Properties* te::layout::GridModel::getProperties() const
   pro_name.setId("unknown");
   pro_name.setValue(m_name, DataTypeString);
 
+  Property pro_visible;
+  pro_visible.setName("grid_visible");
+  pro_visible.setId("unknown");
+  pro_visible.setValue(m_visible, DataTypeBool);  
+
   m_properties->addProperty(pro_name);
+  m_properties->addProperty(pro_visible);
 
   m_properties->setObjectName(m_name);
   m_properties->setTypeObj(TPGrid);
@@ -151,7 +73,19 @@ te::layout::Properties* te::layout::GridModel::getProperties() const
 
 void te::layout::GridModel::updateProperties( te::layout::Properties* properties )
 {
+  Property pro_name = properties->contains(m_name);
 
+  if(!pro_name.isNull())
+  {
+    m_name = pro_name.getValue().toString();
+
+    Property pro_visible = pro_name.containsSubProperty("grid_visible");
+
+    if(!pro_visible.isNull())
+    {
+      m_visible = pro_visible.getValue().toBool();
+    }
+  }
 }
 
 std::string te::layout::GridModel::getName()
@@ -162,6 +96,16 @@ std::string te::layout::GridModel::getName()
 void te::layout::GridModel::setName( std::string name )
 {
   m_name = name;
+}
+
+bool te::layout::GridModel::isVisible()
+{
+  return m_visible;
+}
+
+void te::layout::GridModel::setVisible( bool visible )
+{
+  m_visible = visible;
 }
 
 

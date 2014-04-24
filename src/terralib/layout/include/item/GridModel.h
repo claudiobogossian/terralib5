@@ -29,9 +29,9 @@
 #define __TERRALIB_LAYOUT_INTERNAL_GRID_MODEL_H
 
 // TerraLib
+#include "Properties.h"
 #include "../../../maptools/Canvas.h"
 #include "../../../maptools/Enums.h"
-#include "Properties.h"
 
 namespace te
 {
@@ -39,43 +39,66 @@ namespace te
   {
     class GridModel 
     {
-      class Properties;
-
       public:
 
         GridModel();
         virtual ~GridModel();
 
-        virtual void draw(te::map::Canvas* canvas, te::gm::Envelope box);
-
-        //Planar
-        virtual bool isGridPlanar();
-        virtual void setGridPlanar(bool planar);
-        virtual te::map::LineDashStyle getPlanarLineStyle();
-        virtual void setPlanarLineStyle(te::map::LineDashStyle style);
+        virtual void draw(te::map::Canvas* canvas, te::gm::Envelope box) = 0;
 
         virtual te::layout::Properties* getProperties() const;
         virtual void updateProperties(te::layout::Properties* properties);
-        
+
         virtual std::string getName();
         virtual void setName(std::string name);
 
+        virtual bool isVisible();
+        virtual void setVisible(bool visible);
+
        protected:
 
-         virtual void drawVerticalLines(te::map::Canvas* canvas, te::gm::Envelope box);
-         virtual void drawHorizontalLines(te::map::Canvas* canvas, te::gm::Envelope box);
+         virtual void drawVerticalLines(te::map::Canvas* canvas, te::gm::Envelope box) = 0;
+         virtual void drawHorizontalLines(te::map::Canvas* canvas, te::gm::Envelope box) = 0;
 
-        //Planar
-        bool m_gridPlanar;
-        te::map::LineDashStyle m_planarLineStyle;
+       protected:
 
-        double                 m_horizontalSeparationParameter; 
-        double                 m_verticalSeparationParameter; 
-        double                 m_initialGridPointX; 
-        double                 m_initialGridPointY;
+         te::layout::Properties* m_properties;
+         std::string           m_name;
 
-        te::layout::Properties* m_properties;
-        std::string           m_name;
+         /* Grid */
+         bool   m_visible;
+         double m_lneHrzGap;
+         double m_lneVrtGap;
+         double m_initialGridPointX; 
+         double m_initialGridPointY;
+
+         /* Just one is visible */
+         bool   m_crossStyle;
+         bool   m_continuousStyle;
+
+         /* Line */
+        te::map::LineDashStyle  m_lineStyle;
+        te::color::RGBAColor    m_lineColor;
+        int                     m_lineWidth;
+
+        /*Text: Basic Configuration*/
+        int    m_pointTextSize;
+        std::string m_fontText;
+        te::color::RGBAColor  m_textColor;
+
+        /*Text: Advanced configuration*/
+        bool   m_visibleAllTexts;
+        double m_superscriptText;
+        double m_lneVrtDisplacement;
+        double m_lneHrzDisplacement;
+        bool   m_bottomText;
+        bool   m_leftText;
+        bool   m_rightText;
+        bool   m_topText;
+        bool   m_bottomRotateText;
+        bool   m_leftRotateText;
+        bool   m_rightRotateText;
+        bool   m_topRotateText;       
     };
   }
 }

@@ -42,6 +42,7 @@
 #include <QComboBox>
 #include <QCheckBox> 
 #include <QMessageBox>
+#include "GridSettingsController.h"
 
 te::layout::GridSettingsOutside::GridSettingsOutside( OutsideController* controller, Observable* o ) :
   QDialog(0),
@@ -115,129 +116,149 @@ te::gm::Coord2D te::layout::GridSettingsOutside::getPosition()
 void te::layout::GridSettingsOutside::changeLineColor()
 {
   configColor(m_ui->fraLineColor);
+
+  emit updateProperty();
 }
 
-void te::layout::GridSettingsOutside::pbPlanarLineColor_clicked()
+void te::layout::GridSettingsOutside::on_pbPlanarLineColor_clicked()
 {
   configColor(m_ui->fraPlanarLineColor);
+
+  emit updateProperty();
 }
 
-void te::layout::GridSettingsOutside::changeVerticalFontColor()
-{
-	 
-}  
-
-void te::layout::GridSettingsOutside::cmdGridTextPlanarColor_clicked()
+void te::layout::GridSettingsOutside::on_cmdGridTextPlanarColor_clicked()
 {
   configColor(m_ui->fraGridTextPlanarColor);
 }
 
-void te::layout::GridSettingsOutside::cmdGridTextGeoColor_clicked()
+void te::layout::GridSettingsOutside::on_cmdGridTextGeoColor_clicked()
 {
   configColor(m_ui->fraGridTextGeoColor);
+
+  emit updateProperty();
 }
 
-void te::layout::GridSettingsOutside::cmdCornerTextGeoColor_clicked()
+void te::layout::GridSettingsOutside::on_cmdCornerTextGeoColor_clicked()
 {
   configColor(m_ui->fraCornerTextGeoColor);
+
+  emit updateProperty();
 }
 
- void te::layout::GridSettingsOutside::changeHorizontalFontColor()
- {
-	
- }
+bool te::layout::GridSettingsOutside::checkValidDegreeValue(const QString &value)
+{
+  int									degree = 0, minute = 0;
+  float								second = 0;
+  int									status = 0;
+  std::basic_string <char>::size_type		index;
+  std::string							strDegree = "";
+  double								ret = 0;
 
- bool te::layout::GridSettingsOutside::checkValidDegreeValue(const QString &value)
- {
-	int									degree = 0, minute = 0;
-	float								second = 0;
-	int									status = 0;
-	std::basic_string <char>::size_type		index;
-	std::string							strDegree = "";
-	double								ret = 0;
+  strDegree=value.toLatin1();
+  if((index=strDegree.find("º")) !=std::string::npos)	
+  {
+    strDegree.replace(index,1,"");
+  }
+  if((index=strDegree.find("°")) !=std::string::npos)
+  {
+    strDegree.replace(index,1,"");
+  }
 
-	strDegree=value.toLatin1();
-	if((index=strDegree.find("º")) !=std::string::npos)	
-	{
-		strDegree.replace(index,1,"");
-	}
-	if((index=strDegree.find("°")) !=std::string::npos)
-	{
-		strDegree.replace(index,1,"");
-	}
+  if((index=strDegree.find("'")) !=std::string::npos)	
+  {
+    strDegree.replace(index,1,"");
+  }
+  if((index=strDegree.find("'")) !=std::string::npos)	
+  {
+    strDegree.replace(index,1,"");
+  }
 
-	if((index=strDegree.find("'")) !=std::string::npos)	
-	{
-		strDegree.replace(index,1,"");
-	}
-	if((index=strDegree.find("'")) !=std::string::npos)	
-	{
-		strDegree.replace(index,1,"");
-	}
-	
-	status=sscanf(strDegree.c_str(),"%d %d %f",&degree,&minute,&second);
-	if(status!=3)	return false;
+  status=sscanf(strDegree.c_str(),"%d %d %f",&degree,&minute,&second);
+  if(status!=3)	return false;
 
-	return true;
+  return true;
 
- }
+}
 
- void te::layout::GridSettingsOutside::okClicked()
- {
-	 if(checkValidDegreeValue(m_ui->lneHorizontalGap->text()) == false)
-	 {
-		QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));	
-		m_ui->lneHorizontalGap->setFocus();
-		return;
-	 }
+void te::layout::GridSettingsOutside::on_pbApply_clicked()
+{
+  /*if(checkValidDegreeValue(m_ui->lneHorizontalGap->text()) == false)
+  {
+    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));	
+    m_ui->lneHorizontalGap->setFocus();
+    return;
+  }
 
-	 if(checkValidDegreeValue(m_ui->lneVerticalGap->text()) == false)
-	 {
-		QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));	
-		m_ui->lneVerticalGap->setFocus();
-		return;
-	 }
-	 if(checkValidDegreeValue(m_ui->xGridInitialPoint_geo_textField->text()) == false)
-	 {
-		 QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));	
-		 m_ui->lneVerticalGap->setFocus();
-		 return;
-	 }
-	 if(checkValidDegreeValue(m_ui->yGridInitialPoint_geo_textField->text()) == false)
-	 {
-		 QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));	
-		 m_ui->lneVerticalGap->setFocus();
-		 return;
-	 }
-	 accept();
- }
+  if(checkValidDegreeValue(m_ui->lneVerticalGap->text()) == false)
+  {
+    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));	
+    m_ui->lneVerticalGap->setFocus();
+    return;
+  }
+  if(checkValidDegreeValue(m_ui->xGridInitialPoint_geo_textField->text()) == false)
+  {
+    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));	
+    m_ui->lneVerticalGap->setFocus();
+    return;
+  }
+  if(checkValidDegreeValue(m_ui->yGridInitialPoint_geo_textField->text()) == false)
+  {
+    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));	
+    m_ui->lneVerticalGap->setFocus();
+    return;
+  }*/
 
- void te::layout::GridSettingsOutside::helpClicked()
- {
+  emit updateProperty(); 
 
- }
+  GridSettingsController* controller = dynamic_cast<GridSettingsController*>(m_controller);
+  if(controller)
+  {
+    controller->clearUpdate();
+  }
+}
 
- void te::layout::GridSettingsOutside::ckDefineScale_clicked()
- {
-	 m_ui->cmbScale->setEnabled(m_ui->ckDefineScale->isChecked());
- }
+void te::layout::GridSettingsOutside::on_pbClose_clicked()
+{
+  accept();
+}
 
- void te::layout::GridSettingsOutside::lneHorizontalGap_textChanged(const QString& value)
- {
-	 
- }
+void te::layout::GridSettingsOutside::on_helpPushButton_clicked()
+{
 
- void te::layout::GridSettingsOutside::configColor( QWidget* widget )
- {
-   QPalette ptt(widget->palette());
-   QBrush brush = ptt.brush(widget->backgroundRole());
+}
 
-   QColor color = QColorDialog::getColor(brush.color(),this, "Line Color" );
+void te::layout::GridSettingsOutside::on_pbCancel_clicked()
+{
+  reject();
+}
 
-   if(!color.isValid())	
-     return;
+void te::layout::GridSettingsOutside::on_cmbLineType_editTextChange( QString value )
+{
 
-   QPalette paltt(widget->palette());
-   paltt.setColor(widget->backgroundRole(), color);
-   widget->setPalette(paltt);
- }
+}
+
+void te::layout::GridSettingsOutside::on_xGridInitialPoint_geo_textField_textChanged( const QString& text )
+{
+
+}
+
+void te::layout::GridSettingsOutside::on_ckDefineScale_clicked()
+{
+	m_ui->cmbScale->setEnabled(m_ui->ckDefineScale->isChecked());
+}
+
+void te::layout::GridSettingsOutside::configColor( QWidget* widget )
+{
+  QPalette ptt(widget->palette());
+  QBrush brush = ptt.brush(widget->backgroundRole());
+
+  QColor color = QColorDialog::getColor(brush.color(),this, "Line Color" );
+
+  if(!color.isValid())	
+    return;
+
+  QPalette paltt(widget->palette());
+  paltt.setColor(widget->backgroundRole(), color);
+  widget->setPalette(paltt);
+}

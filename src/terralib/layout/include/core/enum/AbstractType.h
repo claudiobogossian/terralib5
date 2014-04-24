@@ -131,8 +131,9 @@ namespace te
       DataTypeLong = 3,
       DataTypeFloat = 4,
       DataTypeString = 5,
-      DataTypeGridSettings = 6,
-      DataTypeNone = 7
+      DataTypeBool = 6,
+      DataTypeGridSettings = 7,
+      DataTypeNone = 8
     } LayoutPropertyDataType;
 
     /*!

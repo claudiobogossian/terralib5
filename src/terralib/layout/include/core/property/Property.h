@@ -73,14 +73,20 @@ namespace te
         void setOptionChoice(int numberOption);
         Variant getOptionByCurrentChoice();        
         std::vector<Variant> getOptionChoices();  
-
-        //Ex.: For Grid Map
-        void addDependentProperty( Property property );
-        void removeDependentProperty( Property property );
-
+        
         //Ex.: For font information
         void addSubProperty( Property property );
         void removeSubProperty( Property property );
+
+        bool isNull();
+
+        void clear();
+
+        virtual bool containsSubProperty(Property subProperty);
+
+        virtual Property containsSubProperty(std::string name);
+
+        bool operator ==(const Property& other); 
 
     protected:
 
@@ -91,7 +97,6 @@ namespace te
       Variant m_currentChoice;
       bool m_editable;
       std::vector<Variant> m_variants;
-      std::vector<te::layout::Property> m_dependentProperty;
       std::vector<te::layout::Property> m_subProperty;
     };
 
@@ -103,6 +108,18 @@ namespace te
       v.setValue(value, type);
       m_value = v;
       m_type = type;
+    }
+
+    inline bool te::layout::Property::operator ==(const Property& other) 
+    { 
+      Property& otherProp = const_cast<Property&>(other);
+
+      if(getName().compare(otherProp.getName()) == 0)
+      {
+        return true;
+      }
+
+      return false;
     }
   }
 }

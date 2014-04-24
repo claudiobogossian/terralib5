@@ -19,7 +19,7 @@
   <property name="modal">
    <bool>true</bool>
   </property>
-  <layout class="QGridLayout" name="gridLayout_22">
+  <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="verticalLayout_17">
      <item>
@@ -3674,22 +3674,19 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="pbOK">
+        <widget class="QPushButton" name="pbApply">
          <property name="text">
-          <string>&amp;OK</string>
-         </property>
-         <property name="shortcut">
-          <string>Alt+O</string>
+          <string>&amp;Apply</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pbCancelar">
+        <widget class="QPushButton" name="pbClose">
          <property name="text">
-          <string>&amp;Cancelar</string>
+          <string>&amp;Close</string>
          </property>
          <property name="shortcut">
-          <string>Alt+C</string>
+          <string>Alt+O</string>
          </property>
         </widget>
        </item>
@@ -3735,138 +3732,8 @@
   <tabstop>ckbClip</tabstop>
   <tabstop>ckDefineScale</tabstop>
   <tabstop>cmbScale</tabstop>
-  <tabstop>pbOK</tabstop>
-  <tabstop>pbCancelar</tabstop>
+  <tabstop>pbClose</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>pbCancelar</sender>
-   <signal>clicked()</signal>
-   <receiver>GridSettings</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pbLineColor</sender>
-   <signal>clicked()</signal>
-   <receiver>GridSettings</receiver>
-   <slot>changeLineColor()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pbPlanarLineColor</sender>
-   <signal>clicked()</signal>
-   <receiver>GridSettings</receiver>
-   <slot>pbPlanarLineColor_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>cmdGridTextPlanarColor</sender>
-   <signal>clicked()</signal>
-   <receiver>GridSettings</receiver>
-   <slot>cmdGridTextPlanarColor_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pbOK</sender>
-   <signal>clicked()</signal>
-   <receiver>GridSettings</receiver>
-   <slot>okClicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>helpPushButton</sender>
-   <signal>clicked()</signal>
-   <receiver>GridSettings</receiver>
-   <slot>helpClicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>cmdGridTextGeoColor</sender>
-   <signal>clicked()</signal>
-   <receiver>GridSettings</receiver>
-   <slot>cmdGridTextGeoColor_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>cmdCornerTextGeoColor</sender>
-   <signal>clicked()</signal>
-   <receiver>GridSettings</receiver>
-   <slot>cmdCornerTextGeoColor_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
