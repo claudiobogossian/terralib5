@@ -26,6 +26,8 @@
 #ifndef TE_QT_AF_XMLFORMATTER_H
 #define TE_QT_AF_XMLFORMATTER_H
 
+#include "Config.h"
+
 //STL
 #include <string>
 
@@ -50,7 +52,7 @@ namespace te {
 
          \ingroup af
        */
-      class XMLFormatter
+      class TEQTAFEXPORT XMLFormatter
       {
         public:
 

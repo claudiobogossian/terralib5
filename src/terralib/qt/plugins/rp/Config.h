@@ -110,6 +110,14 @@
 
 
 /*!
+  \def TE_QT_PLUGIN_RP_HAVE_VECTORIZATION
+
+  \brief It defines if the RP Qt Plugin has the vectorization operation.
+*/
+#define TE_QT_PLUGIN_RP_HAVE_VECTORIZATION
+
+
+/*!
   \def TE_QT_PLUGIN_RP_PLUGIN_NAME
 
   \brief It contains the plugin name.
