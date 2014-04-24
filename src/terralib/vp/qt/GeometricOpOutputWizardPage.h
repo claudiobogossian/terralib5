@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/vp/qt/BasicGeopraphicOpWizardPage.h
+  \file terralib/vp/qt/BasicGeometricOpWizardPage.h
 
-  \brief This file defines a class for a Basic Geographic Operation Wizard Page.
+  \brief This file defines a class for a Basic Geometric Operation Wizard Page.
 */
 
-#ifndef __TERRALIB_VP_INTERNAL_BASICOPOUTPUTWIZARDPAGE_H
-#define __TERRALIB_VP_INTERNAL_BASICOPOUTPUTWIZARDPAGE_H
+#ifndef __TERRALIB_VP_INTERNAL_GEOMETRICOPOUTPUTWIZARDPAGE_H
+#define __TERRALIB_VP_INTERNAL_GEOMETRICOPOUTPUTWIZARDPAGE_H
 
 // TerraLib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
@@ -39,26 +39,26 @@
 #include <QtGui/QWizardPage>
 
 // Forward declaration
-namespace Ui { class BasicOpOutputWizardPageForm; }
+namespace Ui { class GeometricOpOutputWizardPageForm; }
 
 namespace te
 {
   namespace vp
   {
     /*!
-      \class BasicOpOutputWizardPage
+      \class GeometricOpOutputWizardPage
 
-      \brief This class is GUI used to define the basic geographic operator parameters for the VP operation.
+      \brief This class is GUI used to define the basic geometric operator parameters for the VP operation.
     */
-    class TEVPEXPORT BasicOpOutputWizardPage : public QWizardPage
+    class TEVPEXPORT GeometricOpOutputWizardPage : public QWizardPage
     {
       Q_OBJECT
 
       public:
 
-        BasicOpOutputWizardPage(QWidget* parent = 0);
+        GeometricOpOutputWizardPage(QWidget* parent = 0);
 
-        ~BasicOpOutputWizardPage();
+        ~GeometricOpOutputWizardPage();
 
       public:
 
@@ -78,7 +78,11 @@ namespace te
 
         void setAttributes(std::vector<std::string> attributes);
 
+        te::vp::GeometricOpObjStrategy getObjectStrategy();
+
         std::string getOutDsName();
+
+        bool hasOutputLayer();
 
         bool getToFile();
 
@@ -87,6 +91,8 @@ namespace te
         std::string getPath();
 
       public slots:
+
+        void onAllObjectsToggled();
 
         void onSimpleOperationToggled();
 
@@ -104,7 +110,7 @@ namespace te
 
       private:
 
-        std::auto_ptr<Ui::BasicOpOutputWizardPageForm> m_ui;
+        std::auto_ptr<Ui::GeometricOpOutputWizardPageForm> m_ui;
 
         te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
         std::string m_dsName;
@@ -116,4 +122,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_BASICGEOGRAPHICOPWIZARDPAGE_H
+#endif  // __TERRALIB_VP_INTERNAL_GEOMETRICOPOUTPUTWIZARDPAGE_H

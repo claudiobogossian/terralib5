@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>BasicOpOutputWizardPageForm</class>
- <widget class="QWizardPage" name="BasicOpOutputWizardPageForm">
+ <class>GeometricOpOutputWizardPageForm</class>
+ <widget class="QWizardPage" name="GeometricOpOutputWizardPageForm">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,12 +13,12 @@
   <property name="windowTitle">
    <string>WizardPage</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_7">
+  <layout class="QGridLayout" name="gridLayout_8">
    <item row="0" column="0">
     <widget class="QWidget" name="m_widgetOutput" native="true">
-     <layout class="QGridLayout" name="gridLayout_5">
+     <layout class="QGridLayout" name="gridLayout_7">
       <item row="0" column="0">
-       <layout class="QGridLayout" name="gridLayout_4">
+       <layout class="QGridLayout" name="gridLayout_5">
         <item row="0" column="0">
          <widget class="QGroupBox" name="m_operationGroupBox">
           <property name="minimumSize">
@@ -30,46 +30,34 @@
           <property name="title">
            <string>Operation</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_8">
+          <layout class="QGridLayout" name="gridLayout_4">
            <item row="0" column="0">
-            <widget class="QRadioButton" name="m_convexHullRadioButton">
+            <widget class="QCheckBox" name="m_convexHullCheckBox">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
              <property name="text">
               <string>Convex Hull</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>true</bool>
              </property>
             </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QRadioButton" name="m_centroidRadioButton">
+            <widget class="QCheckBox" name="m_centroidCheckBox">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
              <property name="text">
               <string>Centroid</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>true</bool>
              </property>
             </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QRadioButton" name="m_mbrRadioButton">
+            <widget class="QCheckBox" name="m_mbrCheckBox">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
              <property name="text">
               <string>Minimum Bounding Rectangle (MBR)</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -119,6 +107,9 @@
                <property name="text">
                 <string>All Objects</string>
                </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
              <item row="1" column="0">
@@ -136,13 +127,17 @@
               </widget>
              </item>
              <item row="3" column="0">
-              <widget class="QComboBox" name="m_attributesComboBox"/>
+              <widget class="QComboBox" name="m_attributesComboBox">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QGroupBox" name="groupBox_2">
+           <widget class="QGroupBox" name="m_outputGroupBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>

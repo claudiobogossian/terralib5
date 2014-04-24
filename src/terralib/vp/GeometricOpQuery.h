@@ -35,7 +35,7 @@
 #include "../memory/DataSet.h"
 #include "../statistics/core/Enums.h"
 
-#include "BasicGeoOp.h"
+#include "GeometricOp.h"
 #include "Config.h"
 #include "Enums.h"
 #include "Exception.h"
@@ -51,14 +51,14 @@ namespace te
 {
   namespace vp
   {
-    class TEVPEXPORT BasicGeoOpQuery : public BasicGeoOp
+    class TEVPEXPORT GeometricOpQuery : public GeometricOp
     {
     
     public:
       
-      BasicGeoOpQuery();
+      GeometricOpQuery();
       
-      ~BasicGeoOpQuery();
+      ~GeometricOpQuery();
       
       bool run();
 

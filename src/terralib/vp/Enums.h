@@ -89,7 +89,7 @@ namespace te
     enum BoundariesBetweenBuffers
     {
       DISSOLVE,           //!< The boundaries between buffers will be dissolved.
-      NOT_DISSOLVE,       //!< The boundaries between buffers will not be dissolved.
+      NOT_DISSOLVE       //!< The boundaries between buffers will not be dissolved.
     };
 
     /*!
@@ -97,14 +97,26 @@ namespace te
 
       \brief Define the geographic operation.
     */
-    enum GeographicOperation
+    enum GeometricOperation
     {
-      AREA,           //!< The geographic operation Area.
-      LINE,           //!< The geographic operation Line.
-      PERIMETER,      //!< The geographic operation Perimeter.
       CONVEX_HULL,    //!< The geographic operation Convex Hull.
       CENTROID,       //!< The geographic operation Centroid.
-      MBR,            //!< The geographic operation Minimum Bounding Rectangle.
+      MBR,             //!< The geographic operation Minimum Bounding Rectangle.
+      AREA,           //!< The geographic operation Area.
+      LINE,           //!< The geographic operation Line.
+      PERIMETER      //!< The geographic operation Perimeter.
+    };
+
+    /*!
+      \enum GeometricOpObjStrategy
+
+      \brief Defines the strategy used for the processing of the input geometries.
+    */
+    enum GeometricOpObjStrategy
+    {
+      ALL_OBJ,              //!< All objects individually
+      AGGREG_OBJ,           //!< Aggregate all objects.
+      AGGREG_BY_ATTRIBUTE   //!< Aggregate objects by attribute.
     };
 
   }

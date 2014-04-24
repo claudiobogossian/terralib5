@@ -32,8 +32,8 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/AbstractAction.h
   ${SRCDIR}/AggregationAction.h
-  ${SRCDIR}/BasicGeographicOpAction.h
   ${SRCDIR}/BufferAction.h
+  ${SRCDIR}/GeometricOpAction.h
   ${SRCDIR}/IntersectionAction.h
   ${SRCDIR}/PolygonToLineAction.h
   ${SRCDIR}/SummarizationAction.h

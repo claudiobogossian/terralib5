@@ -45,7 +45,9 @@
 #include "../../statistics/core/Utils.h"
 #include "../Config.h"
 #include "../Exception.h"
-#include "Aggregation.h"
+#include "AggregationMemory.h"
+#include "AggregationOp.h"
+#include "AggregationQuery.h"
 #include "AggregationDialog.h"
 #include "ui_AggregationDialogForm.h"
 #include "VectorProcessingConfig.h"
@@ -684,7 +686,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       std::map<std::string, std::string> dsinfo;
       dsinfo["URI"] = uri.string();
       
-      std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
+      te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
       dsOGR->setConnectionInfo(dsinfo);
       dsOGR->open();
       if (dsOGR->dataSetExists(outputdataset))
@@ -692,24 +694,31 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
         QMessageBox::information(this, "Aggregation", "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.");
         return;
       }
-      
+
       this->setCursor(Qt::WaitCursor);
-      
-      if(inDataset.get())
-        res = te::vp::Aggregation(dsLayer->getDataSetName(), 
-                                  inDataSource.get(), 
-                                  selProperties, 
-                                  outputStatisticalSummary, 
-                                  outputdataset, 
-                                  dsOGR.get(),
-                                  inDataset.get());
+
+      te::vp::AggregationOp* aggregOp = 0;
+
+      // select a strategy based on the capabilities of the input datasource
+      const te::da::DataSourceCapabilities dsCapabilities = inDataSource->getCapabilities();
+
+      if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
+      {
+        aggregOp = new te::vp::AggregationQuery();
+      }
       else
-        res = te::vp::Aggregation(dsLayer->getDataSetName(),
-                                  inDataSource.get(), 
-                                  selProperties, 
-                                  outputStatisticalSummary, 
-                                  outputdataset, 
-                                  dsOGR.get());
+      {
+        aggregOp = new te::vp::AggregationMemory();
+      }
+
+      aggregOp->setInput(inDataSource, dsLayer->getData(), dsLayer->getSchema());
+      aggregOp->setOutput(dsOGR, outputdataset);
+      aggregOp->setParams(selProperties, outputStatisticalSummary);
+
+      if (!aggregOp->paramsAreValid())
+        res = false;
+      else
+        res = aggregOp->run();
 
       if (!res)
       {
@@ -719,6 +728,8 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
         reject();
       }
       dsOGR->close();
+
+      delete aggregOp;
       
       // let's include the new datasource in the managers
       boost::uuids::basic_random_generator<boost::mt19937> gen;
@@ -754,21 +765,30 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       }
       this->setCursor(Qt::WaitCursor);
 
-      if(inDataset.get())
-        res = te::vp::Aggregation(dsLayer->getDataSetName(),
-                                  inDataSource.get(), 
-                                  selProperties, 
-                                  outputStatisticalSummary, 
-                                  outputdataset, 
-                                  aux.get(), 
-                                  inDataset.get());
+      te::vp::AggregationOp* aggregOp = 0;
+
+      // select a strategy based on the capabilities of the input datasource
+      const te::da::DataSourceCapabilities dsCapabilities = inDataSource->getCapabilities();
+
+      if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
+      {
+        aggregOp = new te::vp::AggregationQuery();
+      }
       else
-        res = te::vp::Aggregation(dsLayer->getDataSetName(),
-                                  inDataSource.get(), 
-                                  selProperties, 
-                                  outputStatisticalSummary, 
-                                  outputdataset, 
-                                  aux.get());
+      {
+        aggregOp = new te::vp::AggregationMemory();
+      }
+
+      aggregOp->setInput(inDataSource, dsLayer->getData(), dsLayer->getSchema());
+      aggregOp->setOutput(aux, outputdataset);
+      aggregOp->setParams(selProperties, outputStatisticalSummary);
+
+      if (!aggregOp->paramsAreValid())
+        res = false;
+      else
+        res = aggregOp->run();
+
+      delete aggregOp;
 
       if (!res)
       {
