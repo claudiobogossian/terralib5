@@ -26,7 +26,6 @@
 #include "Macros.h"
 #include "../geometry/GeometricTransformation.h"
 #include "../geometry/GTFactory.h"
-#include "../geometry/Envelope.h"
 #include "../raster/RasterFactory.h"
 #include "../raster/Band.h"
 #include "../raster/BandProperty.h"
@@ -70,6 +69,8 @@ namespace te
       m_noDataValue = 0;
       m_geomTransfName = "Affine";
       m_geomTransfPtr = 0;
+      m_outputBoundingBox.m_llx = m_outputBoundingBox.m_lly =
+        m_outputBoundingBox.m_urx = m_outputBoundingBox.m_ury = 0.0;
     }
 
     const Register::InputParameters& Register::InputParameters::operator=(
@@ -87,6 +88,7 @@ namespace te
       m_noDataValue = params.m_noDataValue;
       m_geomTransfName = params.m_geomTransfName;
       m_geomTransfPtr = params.m_geomTransfPtr;
+      m_outputBoundingBox = params.m_outputBoundingBox;
 
       return *this;
     }
@@ -180,6 +182,22 @@ namespace te
       double upperRightX = -1.0 * DBL_MAX;
       double upperRightY = -1.0 * DBL_MAX;     
       
+      if(
+          ( m_inputParameters.m_outputBoundingBox.m_llx != 0.0 )
+          ||
+          ( m_inputParameters.m_outputBoundingBox.m_lly != 0.0 )
+          ||
+          ( m_inputParameters.m_outputBoundingBox.m_urx != 0.0 )
+          ||
+          ( m_inputParameters.m_outputBoundingBox.m_ury != 0.0 )
+        )
+      {
+        lowerLeftX = m_inputParameters.m_outputBoundingBox.m_llx;
+        lowerLeftY = m_inputParameters.m_outputBoundingBox.m_lly;
+        upperRightX = m_inputParameters.m_outputBoundingBox.m_urx;
+        upperRightY = m_inputParameters.m_outputBoundingBox.m_ury;
+      }
+      else
       {
         double mappedX = 0;
         double mappedY = 0;        
