@@ -381,7 +381,9 @@ void te::qt::widgets::TimeSliderWidget::dropEvent(QDropEvent* e)
             QString uri(it->second.c_str());
             if(dsetname == "40: locations" || dsetname == "41: locations")
             {
-              if(alreadyExists(QPair<QString, QString>(uri, dsetname)))
+              QPair<QString, QString> p(uri, dsetname);
+
+              if(alreadyExists(p))
                 QMessageBox::information(this, dsetname + " alredy exists", "This item is already being animated!");
               else
                 openTrajectory(uri, dsetname);
@@ -395,7 +397,10 @@ void te::qt::widgets::TimeSliderWidget::dropEvent(QDropEvent* e)
   {
     QString path = urls.first().path();
     path.remove(0, 1);
-    if(alreadyExists(QPair<QString, QString>(path, "")))
+
+    QPair<QString, QString> p(path, "");
+
+    if(alreadyExists(p))
       QMessageBox::information(this, "animation alredy exists", "This item is already being animated!");
     else
       addTemporalImages(path);
