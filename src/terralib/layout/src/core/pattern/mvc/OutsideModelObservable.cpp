@@ -117,6 +117,7 @@ te::layout::Properties* te::layout::OutsideModelObservable::getProperties() cons
   m_properties->addProperty(pro_name);
   m_properties->addProperty(pro_label);
 
+  m_properties->setTypeObj(m_type);
   return m_properties;
 }
 

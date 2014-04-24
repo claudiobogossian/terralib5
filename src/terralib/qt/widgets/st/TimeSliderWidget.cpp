@@ -36,7 +36,9 @@
 #include <terralib/stmemory.h>
 #include <terralib/st.h>
 #include <terralib/qt/widgets/utils/ScopedCursor.h>
-#include <terralib/qt/widgets/canvas/Canvas.h>
+#include <terralib/qt/widgets.h>
+#include <terralib/maptools.h>
+#include <terralib/dataaccess.h>
 
 //QT
 #include <qgraphicseffect.h>
@@ -52,6 +54,7 @@
 #include <QtGui/QInputDialog>
 #include <QtGui/QDateTimeEdit>
 #include <QtGui/QColorDialog>
+#include <QtCore/QUrl>
 
 
 te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay* md, QWidget* parent,  Qt::WindowFlags f)
@@ -66,6 +69,7 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
   m_ui->setupUi(this);
   setFocusPolicy(Qt::StrongFocus);
   setMouseTracking(true);
+  setAcceptDrops(true);
 
   showPropertySection(false);
 
@@ -111,8 +115,8 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
   connect(m_ui->m_goAndBackCheckBox, SIGNAL(clicked(bool) ), this, SLOT(onGoAndBackCheckBoxClicked(bool)));
   connect(m_ui->m_applyTimeIntervalPushButton, SIGNAL(clicked(bool) ), this, SLOT(onApplyTimeIntervalPushButtonClicked(bool)));
   connect(m_ui->m_trajectoryColorComboBox, SIGNAL(activated(int) ), this, SLOT(onTrajectoryColorComboBoxActivated(int)));
-  connect(m_ui->m_forwardColorPushButton, SIGNAL(clicked(bool) ), this, SLOT(onForwardColorPushButton(bool)));
-  connect(m_ui->m_backwardColorPushButton, SIGNAL(clicked(bool) ), this, SLOT(onBackwardColorPushButton(bool)));
+  //connect(m_ui->m_forwardColorPushButton, SIGNAL(clicked(bool) ), this, SLOT(onForwardColorPushButton(bool)));
+  //connect(m_ui->m_backwardColorPushButton, SIGNAL(clicked(bool) ), this, SLOT(onBackwardColorPushButton(bool)));
   connect(m_ui->m_opacityComboBox, SIGNAL(activated(int) ), this, SLOT(onOpacityComboBoxActivated(int)));
   connect(m_ui->m_dateTimeEdit, SIGNAL(dateTimeChanged(const QDateTime&) ), this, SLOT(onDateTimeEditChanged(const QDateTime&)));
   connect(m_ui->m_durationSpinBox, SIGNAL(valueChanged(int)), this, SLOT(onDurationValueChanged(int)));
@@ -226,49 +230,196 @@ te::qt::widgets::TimeSliderWidget::~TimeSliderWidget()
     delete m_animationView;
 }
 
-void te::qt::widgets::TimeSliderWidget::openKml(const QString& file)
+void te::qt::widgets::TimeSliderWidget::dragEnterEvent(QDragEnterEvent* e)
 {
-  te::da::DataSourceInfo dsinfo;
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = file.toStdString(); 
-  dsinfo.setConnInfo(connInfo);
-  dsinfo.setType("OGR");
-  dsinfo.setId(file.toStdString());
-
-  if(te::da::DataSourceManager::getInstance().find(file.toStdString()) == 0)
+  const QMimeData* mdata = e->mimeData();
+  QList<QUrl> urls = mdata->urls();
+  if(urls.empty())
   {
-    //Create the data source and put it into the manager
-    te::da::DataSourceManager::getInstance().open(dsinfo.getId(), dsinfo.getType(), dsinfo.getConnInfo());
+    QByteArray ba = mdata->data("application/x-terralib;value=\"DraggedItems\"");
+    if(ba.count() != 0)
+    {
+      QString s(ba);
+      std::vector<te::qt::widgets::AbstractTreeItem*>* ditems = (std::vector<AbstractTreeItem*>*)s.toULongLong();
+      std::vector<te::qt::widgets::AbstractTreeItem*>::iterator it;
+      for(it = ditems->begin(); it != ditems->end(); ++it)
+      {
+        te::qt::widgets::AbstractTreeItem* ati = *it;
+        std::string ltype = ati->getLayer()->getType();
+        if(ltype == "DATASETLAYER")
+        {
+          te::map::AbstractLayerPtr al = ati->getLayer();
+          te::map::DataSetLayer* layer = (te::map::DataSetLayer*)al.get();
+          std::string dsid = layer->getDataSourceId();
+          te::da::DataSourcePtr ds = te::da::GetDataSource(dsid);
+          std::map<std::string, std::string> ci = ds->getConnectionInfo();
+          std::map<std::string, std::string>::iterator it = ci.find("URI");
+          if(it != ci.end())
+          {
+            std::string uri(it->second);
+            if(uri.find("kml") != std::string::npos)
+            {
+              if(layer->getDataSetName() == "40: locations" || layer->getDataSetName() == "41: locations")
+              {
+                e->setDropAction(Qt::LinkAction); // this line is necessary to not move items on the layer explorer
+                //e->setDropAction(Qt::CopyAction); // this line is necessary to not move items on the layer explorer
+                e->setAccepted(true);
+              }
+            }
+          }
+        }
+      }
+    }
+    else
+      e->setAccepted(false);
   }
-    
-  //Indicates how the trajectories are stored in the data source -> This structure is fixed for OGR driver
-  int phTimeIdx = 3;  /* property name: timestamp */
-  int geomIdx = 12;    /* property name: geom */
-
-  //It initializes the st data loader support
-  te::st::STDataLoader::initialize();
-
-  //Use the STDataLoader to create a TrajectoryDataSet with all observations
-
-  te::st::TrajectoryDataSetInfo tjinfo40(dsinfo, "40: locations", phTimeIdx, geomIdx, -1, "40");
-  te::st::TrajectoryDataSet* tjDS40 = te::st::STDataLoader::getDataSet(tjinfo40).release();
-  addTrajectory("helicoptero", "c:/lixo/helicopteroT2.png", tjDS40);
-  delete tjDS40;
-
-  te::st::TrajectoryDataSetInfo tjinfo41(dsinfo, "41: locations", phTimeIdx, geomIdx, -1, "41");
-  te::st::TrajectoryDataSet* tjDS41 = te::st::STDataLoader::getDataSet(tjinfo41).release();
-  addTrajectory("cachorro", "c:/lixo/cachorro_correndo_31.gif", tjDS41);
-  delete tjDS41;
-
-  te::st::STDataLoader::finalize();
+  else
+  {
+    QString path = urls.begin()->path();
+    size_t pos = path.indexOf("/");
+    if(pos == 0)
+      path.remove(0, 1);
+    QDir dir(path);
+    QStringList nameFilter;
+    nameFilter.append("*.ctl");
+    QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
+    if(files.empty() == false)
+    {
+      QString file(path + "/" + files.first());
+      FILE* fp = fopen(file.toStdString().c_str(), "r");
+      char buf[2000];
+      int c = fread(buf, sizeof(char), 2000, fp);
+      fclose(fp);
+      buf[c] = 0;
+      QString s(buf);
+      if(s.contains("undef", Qt::CaseInsensitive))
+        e->setAccepted(true);
+      else
+        e->setAccepted(false);
+    }
+    else
+    {
+      nameFilter.clear();
+      nameFilter.append("S1123*.jpg");
+      QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
+      if(files.empty() == false && files.first().length() == 26)
+        e->setAccepted(true);
+      else
+      {
+        nameFilter.clear();
+        nameFilter.append("S1118*.jpg");
+        QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
+        if(files.empty() == false && files.first().length() == 26)
+          e->setAccepted(true);
+        else
+          e->setAccepted(false);
+      }
+    }
+  }
 }
 
-void te::qt::widgets::TimeSliderWidget::openTrajectory(const QString& leao)
+void te::qt::widgets::TimeSliderWidget::dropEvent(QDropEvent* e)
 {
-  if(leao != "lm40" && leao != "lm41")
-    return;
+  te::qt::widgets::ScopedCursor scopedCursor(Qt::WaitCursor);
+  int state = m_parallelAnimation->state();
+  if(state == QAbstractAnimation::Running)
+    onPlayToolButtonnClicked(); // put to paused state
 
-  QString file = "C:/lixo/kml/t_40_41.kml";
+  const QMimeData* mdata = e->mimeData();
+  QList<QUrl> urls = mdata->urls();
+
+  if(e->keyboardModifiers() == Qt::NoModifier)
+  {
+    onStopToolButtonnClicked();
+    m_itemList.clear();
+    m_ui->m_opacityComboBox->clear();
+    m_ui->m_trajectoryColorComboBox->clear();
+    m_ui->m_TemporalHorizontalSlider->setValue(0);
+    m_parallelAnimation->setCurrentTime(0);
+    m_ui->m_settingsToolButton->setEnabled(false);
+    m_ui->m_playToolButton->setEnabled(false);
+    m_ui->m_stopToolButton->setEnabled(false);
+    m_ui->m_durationSpinBox->setEnabled(false);
+    m_ui->m_dateTimeEdit->setEnabled(false);
+    showPropertySection(false);
+
+    QList<QGraphicsItem*> list = m_animationScene->items();
+    QList<QGraphicsItem*>::iterator it;
+    for(it = list.begin(); it != list.end(); ++it)
+    {
+      te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
+      m_animationScene->removeItem(ai);
+      m_parallelAnimation->removeAnimation(ai->m_animation);
+      delete ai->m_animation;
+      delete ai;
+    }
+    m_display->update();
+  }
+
+  if(urls.empty())
+  {
+    QByteArray ba = mdata->data("application/x-terralib;value=\"DraggedItems\"");
+    if(ba.count() != 0)
+    {
+      QString s(ba);
+      std::vector<te::qt::widgets::AbstractTreeItem*>* ditems = (std::vector<AbstractTreeItem*>*)s.toULongLong();
+      std::vector<te::qt::widgets::AbstractTreeItem*>::iterator it;
+      for(it = ditems->begin(); it != ditems->end(); ++it)
+      {
+        te::qt::widgets::AbstractTreeItem* ati = *it;
+        std::string ltype = ati->getLayer()->getType();
+        if(ltype == "DATASETLAYER")
+        {
+          te::map::AbstractLayerPtr al = ati->getLayer();
+          te::map::DataSetLayer* layer = (te::map::DataSetLayer*)al.get();
+          std::string dsid = layer->getDataSourceId();
+          te::da::DataSourcePtr ds = te::da::GetDataSource(dsid);
+          std::map<std::string, std::string> ci = ds->getConnectionInfo();
+          std::map<std::string, std::string>::iterator it = ci.find("URI");
+          if(it != ci.end())
+          {
+            QString dsetname(layer->getDataSetName().c_str());
+            QString uri(it->second.c_str());
+            if(dsetname == "40: locations" || dsetname == "41: locations")
+            {
+              if(alreadyExists(QPair<QString, QString>(uri, dsetname)))
+                QMessageBox::information(this, dsetname + " alredy exists", "This item is already being animated!");
+              else
+                openTrajectory(uri, dsetname);
+            }
+          }
+        }
+      }
+    }
+  }
+  else
+  {
+    QString path = urls.first().path();
+    path.remove(0, 1);
+    if(alreadyExists(QPair<QString, QString>(path, "")))
+      QMessageBox::information(this, "animation alredy exists", "This item is already being animated!");
+    else
+      addTemporalImages(path);
+  }
+
+  if(state == QAbstractAnimation::Running || e->keyboardModifiers() == Qt::NoModifier)
+    onPlayToolButtonnClicked();
+}
+
+bool te::qt::widgets::TimeSliderWidget::alreadyExists(QPair<QString, QString>& item)
+{
+  QList<QPair<QString, QString> >::iterator it;
+  for(it = m_itemList.begin(); it != m_itemList.end(); ++it)
+  {
+    if(*it == item)
+      return true;
+  }
+  m_itemList.append(item);
+  return false;
+}
+
+void te::qt::widgets::TimeSliderWidget::openTrajectory(const QString file, const QString& leao)
+{
   te::da::DataSourceInfo dsinfo;
   std::map<std::string, std::string> connInfo;
   connInfo["URI"] = file.toStdString(); 
@@ -291,14 +442,14 @@ void te::qt::widgets::TimeSliderWidget::openTrajectory(const QString& leao)
 
   //Use the STDataLoader to create a TrajectoryDataSet with all observations
 
-  if(leao == "lm40")
+  if(leao == "40: locations")
   {
     te::st::TrajectoryDataSetInfo tjinfo40(dsinfo, "40: locations", phTimeIdx, geomIdx, -1, "40");
     te::st::TrajectoryDataSet* tjDS40 = te::st::STDataLoader::getDataSet(tjinfo40).release();
     addTrajectory(leao, "c:/lixo/helicopteroT2.png", tjDS40);
     delete tjDS40;
   }
-  else if(leao == "lm41")
+  else if(leao == "41: locations")
   {
     te::st::TrajectoryDataSetInfo tjinfo41(dsinfo, "41: locations", phTimeIdx, geomIdx, -1, "41");
     te::st::TrajectoryDataSet* tjDS41 = te::st::STDataLoader::getDataSet(tjinfo41).release();
@@ -319,7 +470,7 @@ void te::qt::widgets::TimeSliderWidget::addTrajectory(const QString& title, cons
   int phTimeIdx = 3;  /* property name: timestamp */
   int geomIdx = 12;    /* property name: geom */
 
-  if(title == "lm40") // change default colors
+  if(title == "40: locations") // change default colors
   {
     ti->m_opacity = 120;
     ti->m_forwardColor = Qt::green;
@@ -360,366 +511,112 @@ void te::qt::widgets::TimeSliderWidget::addTrajectory(const QString& title, cons
   }
 
   m_parallelAnimation->addAnimation(animation);
+  calculateSpatialExtent();
+  calculateTemporalExtent();
+  createAnimations();
+  setDuration(m_duration);
+  setDirection(m_direction);
+
+  int state = m_parallelAnimation->state();
+  if(state == QAbstractAnimation::Running)
+  {
+    onPlayToolButtonnClicked();
+    m_parallelAnimation->setCurrentTime(m_currentTime);
+  }
+  if(m_animationScene->items().isEmpty() == false)
+  {
+    m_ui->m_durationSpinBox->setEnabled(true);
+    m_ui->m_settingsToolButton->setEnabled(true);
+    m_ui->m_playToolButton->setEnabled(true);
+    m_ui->m_stopToolButton->setEnabled(true);
+    if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
+      m_ui->m_dateTimeEdit->setEnabled(true);
+    else
+      m_ui->m_dateTimeEdit->setEnabled(false);
+  }
+  initProperty();
 
   m_ui->m_trajectoryColorComboBox->addItem(title);
   int count = m_ui->m_trajectoryColorComboBox->count();
   m_ui->m_trajectoryColorComboBox->setCurrentIndex(count-1);
   onTrajectoryColorComboBoxActivated(count-1);
+
+  m_ui->m_opacityComboBox->addItem(title);
+  count = m_ui->m_opacityComboBox->count();
+  m_ui->m_opacityComboBox->setCurrentIndex(count-1);
+  onOpacityComboBoxActivated(count-1);
 }
-//
-//void te::qt::widgets::TimeSliderWidget::addTemporalImages(const QString& filePath, const bool& center)
-//{
-//  // definam onde as imagens serão posicionadas
-//  te::gm::Envelope env = m_display->getExtent();
-//  QPointF p(env.m_llx + env.getWidth()/2, env.m_lly + env.getHeight()/2);
-//  
-//  QFileInfo fi(filePath);
-//  QDir dir = fi.absoluteDir();
-//  QString imageFile = fi.completeBaseName();
-//  QString suffix = "." + fi.suffix();
-//
-//  if(center == false)
-//  {
-//    //if(imageFile == "golfinho")
-//    //  p = QPointF(-16, -56);
-//    //else if(imageFile == "caogordo")
-//    //  p = QPointF(-64, -37);
-//    //else if(imageFile == "cao")
-//    //  p = QPointF(-100, 38);
-//    //else if(imageFile == "gatinho")
-//    //  p = QPointF(22, 6);
-//    //else if(imageFile == "dalmata")
-//    //  p = QPointF(-60, -24);
-//    //else if(imageFile == "tom")
-//    //  p = QPointF(-64, -55);
-//    //else if(imageFile == "bruxa")
-//    //  p = QPointF(50, 10);
-//    //else if(imageFile == "Terra")
-//    //  p = QPointF(80, 40);
-//    //else if(imageFile == "planetas")
-//    //  p = QPointF(78, -40);
-//    //else if(imageFile == "gotas")
-//    //  p = QPointF(-100, -24);
-//    //else if(imageFile == "malvado")
-//    //  p = QPointF(-100, -55);
-//    //else if(imageFile == "fastfood")
-//    //  p = QPointF(-64, -24);
-//    if(imageFile == "segredo ")
-//      p = QPointF(20, -24);
-//    else if(imageFile == "NoDoubt ")
-//      p = QPointF(20, 40);
-//  }
-//
-//  PixmapItem* pi = new PixmapItem(imageFile, filePath, m_display);
-//  if(imageFile == "segredo ")
-//    pi->m_opacity = m_ui->m_opacitySpinBox->value();
-//
-//  m_animationScene->addItem(pi);
-//  Animation* animation = new Animation(pi, "pos");
-//  animation->setEasingCurve(QEasingCurve::Linear);
-//
-//  // somente para testar: copie o spatial extent e o temporal extent do m_animationItemAux
-//  animation->m_spatialExtent = m_display->getExtent();
-//
-//  te::dt::TimeInstant iTime(boost::posix_time::time_from_string("2008-01-01 00:00:00"));
-//  te::dt::TimeInstant fTime(boost::posix_time::time_from_string("2010-12-31 23:59:59"));
-//  animation->m_temporalExtent = te::dt::TimePeriod(iTime, fTime);
-//
-//  char c[20];
-//
-//  QString file = imageFile;
-//  if(imageFile != "fastfood" && imageFile.contains("fastfood"))
-//    file = "fastfood";
-//
-//  QStringList nameFilter;
-//  nameFilter.append(file + "*");
-//  QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
-//  int max = files.count();
-//
-//  //int conta = 1;
-//  //while(true)
-//  //{
-//  //  sprintf(c, "%06d%s", conta++, suffix.toStdString().c_str());
-//  //  QString f = pi->m_dir.path() + "/" + file;
-//  //  f += c;
-//  //  if(QFile::exists(f) == false)
-//  //  {
-//  //    max = conta - 1;
-//  //    break;
-//  //  }
-//  //}
-//
-//  // para o teste vou colocar 1 dado por dia ou 86400 segundos
-//  size_t tdia = 86400;
-//
-//  if(imageFile == "segredo " || imageFile == "NoDoubt ")
-//    tdia /= 24;
-//
-//  boost::posix_time::time_duration td = boost::posix_time::seconds(tdia);
-//
-//  boost::posix_time::time_duration td1 = boost::posix_time::seconds(tdia*20);
-//  boost::posix_time::ptime time1 = iTime.getTimeInstant() + td1;
-//  te::dt::TimeInstant Time1 = te::dt::TimeInstant(time1);
-//  boost::posix_time::time_duration td2 = boost::posix_time::seconds(tdia*100);
-//  boost::posix_time::ptime time2 = iTime.getTimeInstant() + td2;
-//  te::dt::TimeInstant Time2 = te::dt::TimeInstant(time2);
-//  boost::posix_time::time_duration td3 = boost::posix_time::seconds(tdia*158);
-//  boost::posix_time::ptime time3 = iTime.getTimeInstant() + td3;
-//  te::dt::TimeInstant Time3 = te::dt::TimeInstant(time3);
-//
-//  int r = 1;
-//  int rr = 1;
-//  if(imageFile == "fastfoodfail4")
-//    rr = 10;
-//  else if(imageFile == "fastfoodfail5")
-//    rr = 20;
-//  td = boost::posix_time::seconds(tdia * rr);
-//
-//  while(iTime < fTime)
-//  {
-//    if(imageFile == "fastfoodfail1" && iTime < Time1)
-//    {
-//      iTime = te::dt::TimeInstant(iTime.getTimeInstant() + td);
-//      r += rr;
-//      continue;
-//    }
-//    else if(imageFile == "fastfoodfail2" && iTime > Time2)
-//    {
-//      iTime = te::dt::TimeInstant(iTime.getTimeInstant() + td);
-//      r += rr;
-//      continue;
-//    }
-//    else if(imageFile == "fastfoodfail3" && (iTime > Time1 && iTime < Time2))
-//    {
-//      iTime = te::dt::TimeInstant(iTime.getTimeInstant() + td);
-//      r += rr;
-//      continue;
-//    }
-//
-//    pi->m_time.push_back(iTime);
-//    if(r == max)
-//      r = 1;
-//      
-//    sprintf(c, "%06d%s", r, suffix.toStdString().c_str());
-//
-//    QString f = file + c;
-//    pi->m_files.push_back(f);
-//
-//    iTime = te::dt::TimeInstant(iTime.getTimeInstant() + td);
-//    r += rr;
-//    if(file == "fastfood" && iTime > Time3)
-//      break;
-//  }
-//
-//  pi->m_SRID = 4326;
-//  size_t size =  pi->m_files.size();
-//  pi->m_route = new te::gm::LineString(size, te::gm::LineStringType, pi->m_SRID);
-//
-//  // crie valores não repetitivos e nem muito grandes ou pequenos
-//  QPointF pos(env.m_llx, env.m_lly);
-//  int dd = 1000;
-//  double w = env.getWidth()/(double)dd;
-//  double h = env.getHeight()/(double)dd;
-//  for(size_t i = 0; i < size; ++i)
-//  {
-//    if((i % dd) != 0)
-//      pos += QPointF(w, h);
-//    else
-//      pos = QPointF(env.m_llx, env.m_lly);
-//
-//    pi->m_route->setPoint(i, pos.x(), pos.y());
-//  }
-//
-//  pi->setImagePosition(p, m_initialDisplayRect);
-//  m_parallelAnimation->addAnimation(animation);
-//}
 
-void te::qt::widgets::TimeSliderWidget::addTemporalImages(const QString& filePath, const bool& center)
+void te::qt::widgets::TimeSliderWidget::addTemporalImages(const QString& filePath)
 {
-  // definir onde as imagens serão posicionadas
-  te::gm::Envelope env = m_display->getExtent();
-  QPointF p(env.m_llx + env.getWidth()/2, env.m_lly + env.getHeight()/2);
-  
-  QFileInfo fi(filePath);
-  QDir dir = fi.absoluteDir();
-  QString imageFile = fi.completeBaseName();
-  QString suffix = "." + fi.suffix();
+  if(m_animationScene->items().isEmpty())
+    m_ui->m_durationSpinBox->setValue(m_duration);
 
-  if(center == false)
+  int state = m_parallelAnimation->state();
+  m_currentTime = m_parallelAnimation->currentTime();
+  if(state == QAbstractAnimation::Running)
+    onPlayToolButtonnClicked();
+
+  te::qt::widgets::PixmapItem* pi = getMetadata(filePath);
+  if(pi == 0)
   {
-    if(imageFile == "fastfood")
-      p = QPointF(-64, -24);
-    if(imageFile == "segredo ")
-      p = QPointF(20, -24);
-    else if(imageFile == "NoDoubt ")
-      p = QPointF(20, 40);
+    QMessageBox::information(this, "Error", "Load error");
+    m_itemList.pop_back();
+    return;
   }
 
-  PixmapItem* pi = new PixmapItem(imageFile, filePath, m_display);
-  if(imageFile == "segredo ")
-    pi->m_opacity = m_ui->m_opacitySpinBox->value();
+  calculateSpatialExtent();
+  calculateTemporalExtent();
+  createAnimations();
+  setDuration(m_duration);
+  setDirection(m_direction);
+  if(state == QAbstractAnimation::Running)
+  {
+    onPlayToolButtonnClicked();
+    m_parallelAnimation->setCurrentTime(m_currentTime);
+  }
+  if(m_animationScene->items().isEmpty() == false)
+  {
+    m_ui->m_durationSpinBox->setEnabled(true);
+    m_ui->m_settingsToolButton->setEnabled(true);
+    m_ui->m_playToolButton->setEnabled(true);
+    m_ui->m_stopToolButton->setEnabled(true);
+    if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
+      m_ui->m_dateTimeEdit->setEnabled(true);
+    else
+      m_ui->m_dateTimeEdit->setEnabled(false);
+  }
+  initProperty();
+
+  QDir dir(filePath);
+  m_ui->m_opacityComboBox->addItem(dir.dirName());
+  int count = m_ui->m_opacityComboBox->count();
+  m_ui->m_opacityComboBox->setCurrentIndex(count-1);
+  onOpacityComboBoxActivated(count-1);
+}
+
+te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getGoesMetadata(const QString& path)
+{
+  PixmapItem* pi = getTemporalImageCtlParameters(path);
+  if(pi == 0)
+    return 0;
 
   m_animationScene->addItem(pi);
   Animation* animation = new Animation(pi, "pos");
+  animation->m_spatialExtent = te::gm::Envelope(pi->m_imaRect.x(), pi->m_imaRect.y(), pi->m_imaRect.right(), pi->m_imaRect.bottom());
   animation->setEasingCurve(QEasingCurve::Linear);
+  m_parallelAnimation->addAnimation(animation);
 
-  // somente para testar: copie o spatial extent e o temporal extent do m_animationItemAux
-  animation->m_spatialExtent = m_display->getExtent();
-
-  te::dt::TimeInstant iTime;
-  te::dt::TimeInstant fTime(boost::posix_time::time_from_string("2010-12-31 23:59:59"));
-  if(imageFile == "segredo ")
-    iTime = te::dt::TimeInstant(boost::posix_time::time_from_string("2008-01-01 00:00:00"));
-  else if(imageFile == "NoDoubt ")
-  {
-    iTime = te::dt::TimeInstant(boost::posix_time::time_from_string("2008-04-01 00:00:00"));
-    fTime = te::dt::TimeInstant(boost::posix_time::time_from_string("2009-01-03 09:00:00"));
-  }
-
-  animation->m_temporalExtent = te::dt::TimePeriod(iTime, fTime);
-
-  char c[20];
-
-  QString file = imageFile;
-  if(imageFile != "fastfood" && imageFile.contains("fastfood"))
-    file = "fastfood";
-
+  QString suffix = "." + pi->m_suffix;
   QStringList nameFilter;
-  nameFilter.append(file + "*");
-  QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
-  int max = files.count();
-
-  // para o teste vou colocar 1 dado por dia ou 86400 segundos
-  size_t tdia = 86400;
-
-  if(imageFile == "segredo " || imageFile == "NoDoubt ")
-    tdia /= 24;
-
-  boost::posix_time::time_duration td = boost::posix_time::seconds(tdia);
-
-  boost::posix_time::time_duration td1 = boost::posix_time::seconds(tdia*20);
-  boost::posix_time::ptime time1 = iTime.getTimeInstant() + td1;
-  te::dt::TimeInstant Time1 = te::dt::TimeInstant(time1);
-  boost::posix_time::time_duration td2 = boost::posix_time::seconds(tdia*100);
-  boost::posix_time::ptime time2 = iTime.getTimeInstant() + td2;
-  te::dt::TimeInstant Time2 = te::dt::TimeInstant(time2);
-  boost::posix_time::time_duration td3 = boost::posix_time::seconds(tdia*158);
-  boost::posix_time::ptime time3 = iTime.getTimeInstant() + td3;
-  te::dt::TimeInstant Time3 = te::dt::TimeInstant(time3);
-
-  int r = 1;
-  int rr = 1;
-  if(imageFile == "fastfoodfail4")
-    rr = 10;
-  else if(imageFile == "fastfoodfail5")
-    rr = 20;
-  td = boost::posix_time::seconds(tdia * rr);
-
-  while(iTime < fTime)
-  {
-    if(imageFile == "fastfoodfail1" && iTime < Time1)
-    {
-      iTime = te::dt::TimeInstant(iTime.getTimeInstant() + td);
-      r += rr;
-      continue;
-    }
-    else if(imageFile == "fastfoodfail2" && iTime > Time2)
-    {
-      iTime = te::dt::TimeInstant(iTime.getTimeInstant() + td);
-      r += rr;
-      continue;
-    }
-    else if(imageFile == "fastfoodfail3" && (iTime > Time1 && iTime < Time2))
-    {
-      iTime = te::dt::TimeInstant(iTime.getTimeInstant() + td);
-      r += rr;
-      continue;
-    }
-
-    if(iTime > fTime)
-      break;
-    if(r > max)
-      break;
-
-    pi->m_time.push_back(iTime);
-      
-    sprintf(c, "%06d%s", r, suffix.toStdString().c_str());
-    pi->m_files.push_back(file + c);
-
-    iTime = te::dt::TimeInstant(iTime.getTimeInstant() + td);
-    r += rr;
-    if(file == "fastfood" && iTime > Time3)
-      break;
-  }
-
-  pi->m_SRID = 4326;
-  size_t size =  pi->m_files.size();
-  pi->m_route = new te::gm::LineString(size, te::gm::LineStringType, pi->m_SRID);
-
-  // crie valores não repetitivos e nem muito grandes ou pequenos
-  QPointF pos(animation->m_spatialExtent.m_llx, animation->m_spatialExtent.m_lly);
-  double w = animation->m_spatialExtent.getWidth();
-  double h = animation->m_spatialExtent.getHeight();
-  for(size_t i = 0; i < size; ++i)
-  {
-    if(i & 1)
-      pos -= QPointF(w, h);
-    else
-      pos += QPointF(w, h);
-
-    pi->m_route->setPoint(i, pos.x(), pos.y());
-  }
-
-  pi->setImagePosition(p, m_initialDisplayRect);
-  m_parallelAnimation->addAnimation(animation);
-}
-
-void te::qt::widgets::TimeSliderWidget::getGoesData(const QString& path)
-{
+  nameFilter.append("*" + suffix);
   QDir dir(path);
-  QString dirName = dir.dirName();
-  QString suffix(".jpg");
-
-
-  PixmapItem* pi = new PixmapItem(dirName, path, m_display);
-  // so funciona na projeção WGS84
-  pi->m_SRID = 4326;
-  m_animationScene->addItem(pi);
-  Animation* animation = new Animation(pi, "pos");
-  animation->setEasingCurve(QEasingCurve::Linear);
-
-  m_parallelAnimation->addAnimation(animation);
-
-  // get spatial extent CHUTE!!!!
-  if(dirName.contains("_high"))
-  {
-    if(dirName.contains("Realce_"))
-      animation->m_spatialExtent = te::gm::Envelope(-99.8, -56.92, -25, 14.1);
-    else if(dirName.contains("Realce2_"))
-      animation->m_spatialExtent = te::gm::Envelope(-99.8, -60.59, -25, 14.17);
-    else if(dirName.contains("GMVapor_"))
-      animation->m_spatialExtent = te::gm::Envelope(-142.5, -75, 75.8, 79.8);
-    else
-      animation->m_spatialExtent = te::gm::Envelope(-99.8, -56, -25, 14);
-  }
-  else
-  {
-    if(dirName.contains("Realce_"))
-      animation->m_spatialExtent = te::gm::Envelope(-99.8, -58.6, -25, 15.12);
-    else if(dirName.contains("Realce2_"))
-      animation->m_spatialExtent = te::gm::Envelope(-99.8, -60.70, -25, 14.16);
-    else
-      animation->m_spatialExtent = te::gm::Envelope(-99.8, -56, -25, 15);
-  }
-
-  pi->m_imaRect = QRectF(animation->m_spatialExtent.m_llx, animation->m_spatialExtent.m_lly, animation->m_spatialExtent.getWidth(), animation->m_spatialExtent.getHeight());
-
-  QStringList files = dir.entryList(QDir::Files, QDir::Name);
+  QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
   size_t count = files.count();
 
   // get time extent
-  te::dt::TimeInstant ti = getGoesTime(path + files.first());
-  te::dt::TimeInstant tf = getGoesTime(path + files.last());
+  te::dt::TimeInstant ti = getGoesTime(path + "/" + files.first());
+  te::dt::TimeInstant tf = getGoesTime(path +  "/" + files.last());
   animation->m_temporalExtent = te::dt::TimePeriod(ti, tf);
 
   // set data
@@ -747,6 +644,8 @@ void te::qt::widgets::TimeSliderWidget::getGoesData(const QString& path)
 
     pi->m_route->setPoint(i, pos.x(), pos.y());
   }
+
+  return pi;
 }
 
 void te::qt::widgets::TimeSliderWidget::calculateSpatialExtent()
@@ -1436,225 +1335,219 @@ void te::qt::widgets::TimeSliderWidget::onAddPushButtonClicked(bool b)
 
   te::qt::widgets::ScopedCursor scopedCursor(Qt::WaitCursor);
 
-  if(title == "lm40" || title == "lm41")
-  {
-    if(m_animationScene->items().isEmpty())
-      m_ui->m_durationSpinBox->setValue(m_duration);
-
-    int state = m_parallelAnimation->state();
-    m_currentTime = m_parallelAnimation->currentTime();
-    if(state == QAbstractAnimation::Running)
-      onPlayToolButtonnClicked();
-    openTrajectory(title);
-    calculateSpatialExtent();
-    calculateTemporalExtent();
-    createAnimations();
-    setDuration(m_duration);
-    setDirection(m_direction);
-    if(state == QAbstractAnimation::Running)
-    {
-      onPlayToolButtonnClicked();
-      m_parallelAnimation->setCurrentTime(m_currentTime);
-    }
-    m_ui->m_playToolButton->setEnabled(true);
-  }
+  QString path;
+  if(title == "eta5km"|| title == "hidro")
+    path = "C:/lixo/FORECAST/" + title;
   else
-  {
-    QString path = "C:/lixo/TemporalImages/";
-    QString suffix = ".png";
-    bool meteorological = false;
+    path = "C:/lixo/TemporalImages/" + title;
 
-    if(title == "NoDoubt")
-    {
-      title = "NoDoubt ";
-      path += "NoDoubt/";
-      suffix = ".jpg";
-    }
-    else if(title == "segredo")
-    {
-      title = "segredo ";
-      path += "segredo/";
-      suffix = ".jpg";
-    }
-    else if(title == "IR_high")
-    {
-      //title = "S11232950_";
-      path += "IR_high/";
-      //suffix = ".jpg";
-      meteorological = true;
-    }
-    else if(title == "IR_low")
-    {
-      //title = "S11232949_";
-      path += "IR_low/";
-      //suffix = ".jpg";
-      meteorological = true;
-    }
-    else if(title == "WV_high")
-    {
-      //title = "S11232954_";
-      path += "WV_high/";
-      //suffix = ".jpg";
-      meteorological = true;
-    }
-    else if(title == "WV_low")
-    {
-      //title = "S11232953_";
-      path += "WV_low/";
-      //suffix = ".jpg";
-      meteorological = true;
-    }
-    else if(title == "GOESColorfull_high")
-    {
-      //title = "S11232956_";
-      path += "GOESColorfull_high/";
-      //suffix = ".jpg";
-      meteorological = true;
-    }
-    else if(title == "GOESColorfull_low")
-    {
-      //title = "S11232955_";
-      path += "GOESColorfull_low/";
-      //suffix = ".jpg";
-      meteorological = true;
-    }
-    else if(title == "GOESRealce_high")
-    {
-      //title = "S11232958_";
-      path += "GOESRealce_high/";
-      //suffix = ".jpg";
-      meteorological = true;
-    }
-    else if(title == "GOESRealce_low")
-    {
-      //title = "S11232957_";
-      path += "GOESRealce_low/";
-      //suffix = ".jpg";
-      meteorological = true;
-    }
-    else if(title == "GOESRealce2_high")
-    {
-      //title = "S11235909_";
-      path += "GOESRealce2_high/";
-      //suffix = ".jpg";
-      meteorological = true;
-    }
-    else if(title == "GOESRealce2_low")
-    {
-      //title = "S11235908_";
-      path += "GOESRealce2_low/";
-      //suffix = ".jpg";
-      meteorological = true;
-    }
-    else if(title == "GMVapor_high")
-    {
-      //title = "S11235908_";
-      path += "GMVapor_high/";
-      //suffix = ".jpg";
-      meteorological = true;
-    }
-    else if(title == "GMVapor_low")
-    {
-      //title = "S11235908_";
-      path += "GMVapor_low/";
-      //suffix = ".jpg";
-      meteorological = true;
-    }
-
-    if(meteorological)
-    {
-      if(m_animationScene->items().isEmpty())
-        m_ui->m_durationSpinBox->setValue(m_duration);
-
-      int state = m_parallelAnimation->state();
-      m_currentTime = m_parallelAnimation->currentTime();
-      if(state == QAbstractAnimation::Running)
-        onPlayToolButtonnClicked();
-
-      getGoesData(path);
-      calculateSpatialExtent();
-      calculateTemporalExtent();
-      createAnimations();
-      setDuration(m_duration);
-      setDirection(m_direction);
-      if(state == QAbstractAnimation::Running)
-      {
-        onPlayToolButtonnClicked();
-        m_parallelAnimation->setCurrentTime(m_currentTime);
-      }
-      if(m_animationScene->items().isEmpty() == false)
-      {
-        m_ui->m_durationSpinBox->setEnabled(true);
-        m_ui->m_settingsToolButton->setEnabled(true);
-        m_ui->m_playToolButton->setEnabled(true);
-        m_ui->m_stopToolButton->setEnabled(true);
-        if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
-          m_ui->m_dateTimeEdit->setEnabled(true);
-        else
-          m_ui->m_dateTimeEdit->setEnabled(false);
-      }
-      initProperty();
-
-      m_ui->m_opacityComboBox->addItem(title);
-      int count = m_ui->m_opacityComboBox->count();
-      m_ui->m_opacityComboBox->setCurrentIndex(count-1);
-      onOpacityComboBoxActivated(count-1);
-      return;
-    }
-
-
-    QString file = path + title + "000001" + suffix;
-    if(title.contains("fastfood"))
-      file = path + "fastfood000001.png";
-
-    QFile qfile(file);
-    if(qfile.exists())
-    {
-      if(m_animationScene->items().isEmpty())
-        m_ui->m_durationSpinBox->setValue(m_duration);
-
-      int state = m_parallelAnimation->state();
-      m_currentTime = m_parallelAnimation->currentTime();
-      if(state == QAbstractAnimation::Running)
-        onPlayToolButtonnClicked();
-
-      addTemporalImages(path + title + suffix, true);
-      calculateSpatialExtent();
-      calculateTemporalExtent();
-      createAnimations();
-      setDuration(m_duration);
-      setDirection(m_direction);
-      if(state == QAbstractAnimation::Running)
-      {
-        onPlayToolButtonnClicked();
-        m_parallelAnimation->setCurrentTime(m_currentTime);
-      }
-    }
-    else
-    {
-      QMessageBox::information(this, "Not Added", "Invalid Animation item"); 
-      return;
-    }
-  }
-
-  if(m_animationScene->items().isEmpty() == false)
-  {
-    m_ui->m_durationSpinBox->setEnabled(true);
-    m_ui->m_settingsToolButton->setEnabled(true);
-    m_ui->m_playToolButton->setEnabled(true);
-    m_ui->m_stopToolButton->setEnabled(true);
-    if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
-      m_ui->m_dateTimeEdit->setEnabled(true);
-    else
-      m_ui->m_dateTimeEdit->setEnabled(false);
-  }
-  initProperty();
-
-  m_ui->m_opacityComboBox->addItem(title);
-  int count = m_ui->m_opacityComboBox->count();
-  m_ui->m_opacityComboBox->setCurrentIndex(count-1);
-  onOpacityComboBoxActivated(count-1);
+  addTemporalImages(path);
 }
+
+//void te::qt::widgets::TimeSliderWidget::onAddPushButtonClicked(bool b)
+//{
+//  QString title = QInputDialog::getText(this, "Add Item", "title");
+//
+//  if(title.isEmpty())
+//    return;
+//
+//  te::qt::widgets::ScopedCursor scopedCursor(Qt::WaitCursor);
+//
+//  if(title == "lm40" || title == "lm41")
+//  {
+//    if(m_animationScene->items().isEmpty())
+//      m_ui->m_durationSpinBox->setValue(m_duration);
+//
+//    int state = m_parallelAnimation->state();
+//    m_currentTime = m_parallelAnimation->currentTime();
+//    if(state == QAbstractAnimation::Running)
+//      onPlayToolButtonnClicked();
+//    openTrajectory(title);
+//    calculateSpatialExtent();
+//    calculateTemporalExtent();
+//    createAnimations();
+//    setDuration(m_duration);
+//    setDirection(m_direction);
+//    if(state == QAbstractAnimation::Running)
+//    {
+//      onPlayToolButtonnClicked();
+//      m_parallelAnimation->setCurrentTime(m_currentTime);
+//    }
+//    m_ui->m_playToolButton->setEnabled(true);
+//  }
+//  else
+//  {
+//    QString path = "C:/lixo/TemporalImages/";
+//    QString suffix = ".png";
+//    bool meteorological = false;
+//
+//    if(title == "NoDoubt")
+//    {
+//      title = "NoDoubt ";
+//      path += "NoDoubt/";
+//      suffix = ".jpg";
+//    }
+//    else if(title == "segredo")
+//    {
+//      title = "segredo ";
+//      path += "segredo/";
+//      suffix = ".jpg";
+//    }
+//    else if(title == "IR_high")
+//    {
+//      path += "IR_high/";
+//      meteorological = true;
+//    }
+//    else if(title == "IR_low")
+//    {
+//      path += "IR_low/";
+//      meteorological = true;
+//    }
+//    else if(title == "WV_high")
+//    {
+//      path += "WV_high/";
+//      meteorological = true;
+//    }
+//    else if(title == "WV_low")
+//    {
+//      path += "WV_low/";
+//      meteorological = true;
+//    }
+//    else if(title == "GOESColorfull_high")
+//    {
+//      path += "GOESColorfull_high/";
+//      meteorological = true;
+//    }
+//    else if(title == "GOESColorfull_low")
+//    {
+//      path += "GOESColorfull_low/";
+//      meteorological = true;
+//    }
+//    else if(title == "GOESRealce_high")
+//    {
+//      path += "GOESRealce_high/";
+//      meteorological = true;
+//    }
+//    else if(title == "GOESRealce_low")
+//    {
+//      path += "GOESRealce_low/";
+//      meteorological = true;
+//    }
+//    else if(title == "GOESRealce2_high")
+//    {
+//      path += "GOESRealce2_high/";
+//      meteorological = true;
+//    }
+//    else if(title == "GOESRealce2_low")
+//    {
+//      path += "GOESRealce2_low/";
+//      meteorological = true;
+//    }
+//    else if(title == "GMVapor_high")
+//    {
+//      path += "GMVapor_high/";
+//      meteorological = true;
+//    }
+//    else if(title == "GMVapor_low")
+//    {
+//      path += "GMVapor_low/";
+//      meteorological = true;
+//    }
+//
+//    if(meteorological)
+//    {
+//      if(m_animationScene->items().isEmpty())
+//        m_ui->m_durationSpinBox->setValue(m_duration);
+//
+//      int state = m_parallelAnimation->state();
+//      m_currentTime = m_parallelAnimation->currentTime();
+//      if(state == QAbstractAnimation::Running)
+//        onPlayToolButtonnClicked();
+//
+//      getGoesMetadata(path);
+//      calculateSpatialExtent();
+//      calculateTemporalExtent();
+//      createAnimations();
+//      setDuration(m_duration);
+//      setDirection(m_direction);
+//      if(state == QAbstractAnimation::Running)
+//      {
+//        onPlayToolButtonnClicked();
+//        m_parallelAnimation->setCurrentTime(m_currentTime);
+//      }
+//      if(m_animationScene->items().isEmpty() == false)
+//      {
+//        m_ui->m_durationSpinBox->setEnabled(true);
+//        m_ui->m_settingsToolButton->setEnabled(true);
+//        m_ui->m_playToolButton->setEnabled(true);
+//        m_ui->m_stopToolButton->setEnabled(true);
+//        if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
+//          m_ui->m_dateTimeEdit->setEnabled(true);
+//        else
+//          m_ui->m_dateTimeEdit->setEnabled(false);
+//      }
+//      initProperty();
+//
+//      m_ui->m_opacityComboBox->addItem(title);
+//      int count = m_ui->m_opacityComboBox->count();
+//      m_ui->m_opacityComboBox->setCurrentIndex(count-1);
+//      onOpacityComboBoxActivated(count-1);
+//      return;
+//    }
+//
+//
+//    QString file = path + title + "000001" + suffix;
+//    if(title.contains("fastfood"))
+//      file = path + "fastfood000001.png";
+//
+//    QFile qfile(file);
+//    if(qfile.exists())
+//    {
+//      if(m_animationScene->items().isEmpty())
+//        m_ui->m_durationSpinBox->setValue(m_duration);
+//
+//      int state = m_parallelAnimation->state();
+//      m_currentTime = m_parallelAnimation->currentTime();
+//      if(state == QAbstractAnimation::Running)
+//        onPlayToolButtonnClicked();
+//
+//      addTemporalImages(path + title + suffix, true);
+//      calculateSpatialExtent();
+//      calculateTemporalExtent();
+//      createAnimations();
+//      setDuration(m_duration);
+//      setDirection(m_direction);
+//      if(state == QAbstractAnimation::Running)
+//      {
+//        onPlayToolButtonnClicked();
+//        m_parallelAnimation->setCurrentTime(m_currentTime);
+//      }
+//    }
+//    else
+//    {
+//      QMessageBox::information(this, "Not Added", "Invalid Animation item"); 
+//      return;
+//    }
+//  }
+//
+//  if(m_animationScene->items().isEmpty() == false)
+//  {
+//    m_ui->m_durationSpinBox->setEnabled(true);
+//    m_ui->m_settingsToolButton->setEnabled(true);
+//    m_ui->m_playToolButton->setEnabled(true);
+//    m_ui->m_stopToolButton->setEnabled(true);
+//    if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
+//      m_ui->m_dateTimeEdit->setEnabled(true);
+//    else
+//      m_ui->m_dateTimeEdit->setEnabled(false);
+//  }
+//  initProperty();
+//
+//  m_ui->m_opacityComboBox->addItem(title);
+//  int count = m_ui->m_opacityComboBox->count();
+//  m_ui->m_opacityComboBox->setCurrentIndex(count-1);
+//  onOpacityComboBoxActivated(count-1);
+//}
 
 void te::qt::widgets::TimeSliderWidget::onRemovePushButtonClicked(bool b)
 {
@@ -2451,6 +2344,47 @@ void te::qt::widgets::TimeSliderWidget::onBackwardRadioButtonClicked(bool b)
 void te::qt::widgets::TimeSliderWidget::onLoopCheckBoxClicked(bool b)
 {
   m_loop = b;
+  //char buf[10];
+  //te::dt::TimeInstant iTime = te::dt::TimeInstant(boost::posix_time::time_from_string("2008-10-01 00:00:00"));
+  //boost::posix_time::time_duration td = boost::posix_time::seconds(3600);
+
+  //QDir dir("C:/lixo/TemporalImages/NoDoubt");
+  //QStringList nameFilter;
+  //nameFilter.append("NoDoubt*");
+  //QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
+  //QStringList::iterator it;
+
+  //for(it = files.begin(); it != files.end(); ++it)
+  //{
+  //  QString s("C:/lixo/TemporalImages/NoDoubt/");
+  //  QFile file(s+*it);
+  //  QString nfile = "C:/lixo/TemporalImages/NoDoubt/NoDoubt_";
+
+  //  nfile += s.setNum((short)iTime.getDate().getYear()) + "_";
+
+  //  sprintf(buf, "%02d_", iTime.getDate().getMonth());
+  //  buf[3] = 0;
+  //  nfile += buf;
+
+  //  sprintf(buf, "%02d_", iTime.getDate().getDay());
+  //  buf[3] = 0;
+  //  nfile += buf;
+
+  //  sprintf(buf, "%02d_", iTime.getTime().getHours());
+  //  buf[3] = 0;
+  //  nfile += buf;
+
+  //  sprintf(buf, "%02d_", iTime.getTime().getMinutes());
+  //  buf[3] = 0;
+  //  nfile += buf;
+
+  //  sprintf(buf, "%02d.jpg", iTime.getTime().getSeconds());
+  //  buf[6] = 0;
+  //  nfile += buf;
+
+  //  file.rename(nfile);
+  //  iTime = te::dt::TimeInstant(iTime.getTimeInstant() + td);
+  //}
 }
 
 void te::qt::widgets::TimeSliderWidget::onGoAndBackCheckBoxClicked(bool b)
@@ -2625,7 +2559,267 @@ void te::qt::widgets::TimeSliderWidget::onAddEtaPushButtonClicked(bool)
   if(state == QAbstractAnimation::Running)
     onPlayToolButtonnClicked();
 
-  te::qt::widgets::PixmapItem* pi = getEtaData("C:/lixo/FORECAST/eta5km/");
+  te::qt::widgets::PixmapItem* pi = getEtaMetadata("C:/lixo/FORECAST/eta5km");
+  calculateSpatialExtent();
+  calculateTemporalExtent();
+  createAnimations();
+  setDuration(m_duration);
+  setDirection(m_direction);
+  if(state == QAbstractAnimation::Running)
+  {
+    onPlayToolButtonnClicked();
+    m_parallelAnimation->setCurrentTime(m_currentTime);
+  }
+  if(m_animationScene->items().isEmpty() == false)
+  {
+    m_ui->m_durationSpinBox->setEnabled(true);
+    m_ui->m_settingsToolButton->setEnabled(true);
+    m_ui->m_playToolButton->setEnabled(true);
+    m_ui->m_stopToolButton->setEnabled(true);
+    if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
+      m_ui->m_dateTimeEdit->setEnabled(true);
+    else
+      m_ui->m_dateTimeEdit->setEnabled(false);
+  }
+  initProperty();
+
+  m_ui->m_opacityComboBox->addItem("eta5km");
+  int count = m_ui->m_opacityComboBox->count();
+  m_ui->m_opacityComboBox->setCurrentIndex(count-1);
+  onOpacityComboBoxActivated(count-1);
+}
+
+void te::qt::widgets::TimeSliderWidget::onAddHidroPushButtonClicked(bool)
+{
+  if(m_animationScene->items().isEmpty())
+    m_ui->m_durationSpinBox->setValue(m_duration);
+
+  int state = m_parallelAnimation->state();
+  m_currentTime = m_parallelAnimation->currentTime();
+  if(state == QAbstractAnimation::Running)
+    onPlayToolButtonnClicked();
+
+  te::qt::widgets::PixmapItem* pi = getHidroMetadata("C:/lixo/FORECAST/hidro");
+  calculateSpatialExtent();
+  calculateTemporalExtent();
+  createAnimations();
+  setDuration(m_duration);
+  setDirection(m_direction);
+  if(state == QAbstractAnimation::Running)
+  {
+    onPlayToolButtonnClicked();
+    m_parallelAnimation->setCurrentTime(m_currentTime);
+  }
+  if(m_animationScene->items().isEmpty() == false)
+  {
+    m_ui->m_durationSpinBox->setEnabled(true);
+    m_ui->m_settingsToolButton->setEnabled(true);
+    m_ui->m_playToolButton->setEnabled(true);
+    m_ui->m_stopToolButton->setEnabled(true);
+    if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
+      m_ui->m_dateTimeEdit->setEnabled(true);
+    else
+      m_ui->m_dateTimeEdit->setEnabled(false);
+  }
+  initProperty();
+
+  m_ui->m_opacityComboBox->addItem("hidro");
+  int count = m_ui->m_opacityComboBox->count();
+  m_ui->m_opacityComboBox->setCurrentIndex(count-1);
+  onOpacityComboBoxActivated(count-1);
+
+}
+
+void te::qt::widgets::TimeSliderWidget::onAutoPanCheckBoxClicked(bool)
+{
+  QString title = m_ui->m_trajectoryColorComboBox->currentText();
+  setAutomaticPan(title);
+}
+
+te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getHidroCtlParameters(const QString& path)
+{
+  char buf[2000];
+  QString file(path + "/racc.ctl");
+  FILE* fp = fopen(file.toStdString().c_str(), "r");
+  if(fp == 0)
+    return 0;
+
+  fread(buf, 2000, sizeof(char), fp);
+  fclose(fp);
+  QString ss(QString(buf).simplified());
+
+  // validation
+  if(!(ss.contains("undef ", Qt::CaseInsensitive) && ss.contains("title", Qt::CaseInsensitive) && 
+    ss.contains("xdef", Qt::CaseInsensitive) && ss.contains("ydef", Qt::CaseInsensitive) && 
+    ss.contains("linear", Qt::CaseInsensitive) && ss.contains("zdef", Qt::CaseInsensitive)))
+    return 0;
+
+  QString s;
+  QDir dir(path);
+  te::qt::widgets::PixmapItem* pi = new PixmapItem(dir.dirName(), path, m_display);
+
+  // CHUTE SRID 4326 WGS84
+  pi->m_SRID = 4326;
+
+  // get UNDEF value
+  size_t pos = ss.indexOf("UNDEF ", Qt::CaseInsensitive) + strlen("UNDEF "); 
+  ss.remove(0, pos);
+  pos = ss.indexOf("TITLE", Qt::CaseInsensitive);
+  s = ss.left(pos);
+  pi->m_undef = atoi(s.toStdString().c_str());
+  ss.remove(0, pos);
+
+  // get XDEF ulx and resX values
+  pos = ss.indexOf("XDEF ", Qt::CaseInsensitive) + strlen("XDEF ");
+  ss.remove(0, pos);
+  pos = ss.indexOf(" ");
+  s = ss.left(pos);
+  pi->m_ncols = atoi(s.toStdString().c_str());
+  ss.remove(0, pos);
+
+  pos = ss.indexOf("LINEAR ", Qt::CaseInsensitive) + strlen("LINEAR ");
+  ss.remove(0, pos);
+  pos = ss.indexOf(" ");
+  s = ss.left(pos);
+  double llx = atof(s.toStdString().c_str()) - 360.;
+  ss.remove(0, pos);
+  pos = ss.indexOf("YDEF ", Qt::CaseInsensitive);
+  s = ss.left(pos);
+  double resX = atof(s.toStdString().c_str());
+  ss.remove(0, pos);
+
+  // get YDEF uly and resY values
+  pos = ss.indexOf("YDEF ", Qt::CaseInsensitive) + strlen("YDEF ");
+  ss.remove(0, pos);
+  pos = ss.indexOf(" ");
+  s = ss.left(pos);
+  pi->m_nlines = atoi(s.toStdString().c_str());
+  ss.remove(0, pos);
+
+  pos = ss.indexOf("LINEAR ", Qt::CaseInsensitive) + strlen("LINEAR ");
+  ss.remove(0, pos);
+  pos = ss.indexOf(" ");
+  s = ss.left(pos);
+  double lly = atof(s.toStdString().c_str());
+  ss.remove(0, pos);
+  pos = ss.indexOf("ZDEF ", Qt::CaseInsensitive);
+  s = ss.left(pos);
+  double resY = atof(s.toStdString().c_str());
+  ss.remove(0, pos);
+
+  double w = (double)pi->m_ncols * resX;
+  double h = (double)pi->m_nlines * resY;
+  pi->m_imaRect = QRectF(llx, lly, w, h);
+
+  return pi;
+}
+
+void te::qt::widgets::TimeSliderWidget::setHidroLUT(te::qt::widgets::PixmapItem* pi)
+{
+  std::vector<std::pair<int, QColor> > tab;
+  int i = 0;
+  tab.push_back(std::pair<int, QColor>(i+=3, QColor(2, 1, 201, 255)));
+  tab.push_back(std::pair<int, QColor>(i+=3, QColor(1, 71, 254, 255)));
+  tab.push_back(std::pair<int, QColor>(i+=3, QColor(3, 148, 250, 255)));
+  tab.push_back(std::pair<int, QColor>(i+=3, QColor(5, 200, 251, 255)));
+  tab.push_back(std::pair<int, QColor>(i+=3, QColor(2, 254, 233, 255)));
+  tab.push_back(std::pair<int, QColor>(i+=3, QColor(1, 254, 151, 255)));
+  tab.push_back(std::pair<int, QColor>(i+=3, QColor(2, 254, 4, 255)));
+  tab.push_back(std::pair<int, QColor>(i+=3, QColor(99, 254, 2, 255)));
+  tab.push_back(std::pair<int, QColor>(i+=3, QColor(200, 255, 1, 255)));
+  tab.push_back(std::pair<int, QColor>(i+=3, QColor(237, 255, 0, 255)));
+  tab.push_back(std::pair<int, QColor>(i+=3, QColor(251, 232, 2, 255)));
+  tab.push_back(std::pair<int, QColor>(i+=3, QColor(254, 199, 2, 255)));
+  tab.push_back(std::pair<int, QColor>(i+=3, QColor(252, 179, 2, 255)));
+  tab.push_back(std::pair<int, QColor>(i+=3, QColor(254, 147, 4, 255)));
+  tab.push_back(std::pair<int, QColor>(i+=3, QColor(253, 99, 2, 255)));
+  tab.push_back(std::pair<int, QColor>(i+=3, QColor(254, 1, 2, 255)));
+  tab.push_back(std::pair<int, QColor>(i+=3, QColor(254, 0, 49, 255)));
+  tab.push_back(std::pair<int, QColor>(i+=3, QColor(255, 5, 1, 255)));
+
+  pi->setLUT(tab);
+}
+
+te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getEtaCtlParameters(const QString& path)
+{
+  char buf[2000];
+  QString file(path + "/Prec5km.ctl");
+  FILE* fp = fopen(file.toStdString().c_str(), "r");
+  if(fp == 0)
+    return 0;
+
+  fread(buf, 2000, sizeof(char), fp);
+  fclose(fp);
+  QString ss(QString(buf).simplified());
+
+  // validation
+  if(!(ss.contains("undef ", Qt::CaseInsensitive) && ss.contains("xdef", Qt::CaseInsensitive) 
+    && ss.contains("ydef", Qt::CaseInsensitive) && ss.contains("linear", Qt::CaseInsensitive)
+    && ss.contains("zdef", Qt::CaseInsensitive)))
+    return 0;
+
+  QString s;
+  QDir dir(path);
+  te::qt::widgets::PixmapItem* pi = new PixmapItem(dir.dirName(), path, m_display);
+
+  // CHUTE SRID 4326 WGS84
+  pi->m_SRID = 4326;
+
+  // get UNDEF value
+  size_t pos = ss.indexOf("undef ", Qt::CaseInsensitive) + strlen("undef "); 
+  ss.remove(0, pos);
+  pos = ss.indexOf("xdef", Qt::CaseInsensitive);
+  s = ss.left(pos);
+  pi->m_undef = atof(s.toStdString().c_str());
+  ss.remove(0, pos);
+
+  // get XDEF ulx and resX values
+  pos = ss.indexOf("xdef ", Qt::CaseInsensitive) + strlen("xdef ");
+  ss.remove(0, pos);
+  pos = ss.indexOf(" ");
+  s = ss.left(pos);
+  pi->m_ncols = atoi(s.toStdString().c_str());
+  ss.remove(0, pos);
+
+  pos = ss.indexOf("linear ", Qt::CaseInsensitive) + strlen("linear ");
+  ss.remove(0, pos);
+  pos = ss.indexOf(" ");
+  s = ss.left(pos);
+  double llx = atof(s.toStdString().c_str());
+  ss.remove(0, pos);
+  pos = ss.indexOf("ydef ", Qt::CaseInsensitive);
+  s = ss.left(pos);
+  double resX = atof(s.toStdString().c_str());
+  ss.remove(0, pos);
+
+  // get YDEF uly and resY values
+  pos = ss.indexOf("ydef ", Qt::CaseInsensitive) + strlen("ydef ");
+  ss.remove(0, pos);
+  pos = ss.indexOf(" ");
+  s = ss.left(pos);
+  pi->m_nlines = atoi(s.toStdString().c_str());
+  ss.remove(0, pos);
+
+  pos = ss.indexOf("linear ", Qt::CaseInsensitive) + strlen("linear ");
+  ss.remove(0, pos);
+  pos = ss.indexOf(" ");
+  s = ss.left(pos);
+  double lly = atof(s.toStdString().c_str());
+  ss.remove(0, pos);
+  pos = ss.indexOf("zdef ", Qt::CaseInsensitive);
+  s = ss.left(pos);
+  double resY = atof(s.toStdString().c_str());
+  ss.remove(0, pos);
+
+  double w = (double)pi->m_ncols * resX;
+  double h = (double)pi->m_nlines * resY;
+  pi->m_imaRect = QRectF(llx, lly, w, h);
+
+  return pi;
+}
+
+void te::qt::widgets::TimeSliderWidget::setEtaLUT(te::qt::widgets::PixmapItem* pi)
+{
   std::vector<std::pair<int, QColor> > tab;
   int i = 0;
   tab.push_back(std::pair<int, QColor>(i+=1, QColor(2, 1, 201, 255)));
@@ -2701,226 +2895,6 @@ void te::qt::widgets::TimeSliderWidget::onAddEtaPushButtonClicked(bool)
   tab.push_back(std::pair<int, QColor>(i+=1, QColor(255, 5, 1, 255)));
 
   pi->setLUT(tab);
-  calculateSpatialExtent();
-  calculateTemporalExtent();
-  createAnimations();
-  setDuration(m_duration);
-  setDirection(m_direction);
-  if(state == QAbstractAnimation::Running)
-  {
-    onPlayToolButtonnClicked();
-    m_parallelAnimation->setCurrentTime(m_currentTime);
-  }
-  if(m_animationScene->items().isEmpty() == false)
-  {
-    m_ui->m_durationSpinBox->setEnabled(true);
-    m_ui->m_settingsToolButton->setEnabled(true);
-    m_ui->m_playToolButton->setEnabled(true);
-    m_ui->m_stopToolButton->setEnabled(true);
-    if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
-      m_ui->m_dateTimeEdit->setEnabled(true);
-    else
-      m_ui->m_dateTimeEdit->setEnabled(false);
-  }
-  initProperty();
-
-  m_ui->m_opacityComboBox->addItem("eta5km");
-  int count = m_ui->m_opacityComboBox->count();
-  m_ui->m_opacityComboBox->setCurrentIndex(count-1);
-  onOpacityComboBoxActivated(count-1);
-}
-
-void te::qt::widgets::TimeSliderWidget::onAddHidroPushButtonClicked(bool)
-{
-  if(m_animationScene->items().isEmpty())
-    m_ui->m_durationSpinBox->setValue(m_duration);
-
-  int state = m_parallelAnimation->state();
-  m_currentTime = m_parallelAnimation->currentTime();
-  if(state == QAbstractAnimation::Running)
-    onPlayToolButtonnClicked();
-
-  te::qt::widgets::PixmapItem* pi = getHidroData("C:/lixo/FORECAST/hidro/");
-  std::vector<std::pair<int, QColor> > tab;
-  int i = 0;
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(2, 1, 201, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(1, 71, 254, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(3, 148, 250, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(5, 200, 251, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(2, 254, 233, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(1, 254, 151, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(2, 254, 4, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(99, 254, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(200, 255, 1, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(237, 255, 0, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(251, 232, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(254, 199, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(252, 179, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(254, 147, 4, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(253, 99, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(254, 1, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(254, 0, 49, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(255, 5, 1, 255)));
-
-  pi->setLUT(tab);
-  calculateSpatialExtent();
-  calculateTemporalExtent();
-  createAnimations();
-  setDuration(m_duration);
-  setDirection(m_direction);
-  if(state == QAbstractAnimation::Running)
-  {
-    onPlayToolButtonnClicked();
-    m_parallelAnimation->setCurrentTime(m_currentTime);
-  }
-  if(m_animationScene->items().isEmpty() == false)
-  {
-    m_ui->m_durationSpinBox->setEnabled(true);
-    m_ui->m_settingsToolButton->setEnabled(true);
-    m_ui->m_playToolButton->setEnabled(true);
-    m_ui->m_stopToolButton->setEnabled(true);
-    if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
-      m_ui->m_dateTimeEdit->setEnabled(true);
-    else
-      m_ui->m_dateTimeEdit->setEnabled(false);
-  }
-  initProperty();
-
-  m_ui->m_opacityComboBox->addItem("hidro");
-  int count = m_ui->m_opacityComboBox->count();
-  m_ui->m_opacityComboBox->setCurrentIndex(count-1);
-  onOpacityComboBoxActivated(count-1);
-
-}
-
-void te::qt::widgets::TimeSliderWidget::onAutoPanCheckBoxClicked(bool)
-{
-  QString title = m_ui->m_trajectoryColorComboBox->currentText();
-  setAutomaticPan(title);
-}
-
-void te::qt::widgets::TimeSliderWidget::getHidroParameters(const QString& path, size_t& nlines, size_t& ncols, size_t& undef, QRectF& rect)
-{
-  QString s;
-  char buf[2000];
-  QString file(path + "racc.ctl");
-  FILE* fp = fopen(file.toStdString().c_str(), "r");
-  fread(buf, 2000, sizeof(char), fp);
-
-  // get UNDEF value
-  QString ss(QString(buf).simplified());
-  size_t pos = ss.indexOf("UNDEF ") + strlen("UNDEF "); 
-  ss.remove(0, pos);
-  pos = ss.indexOf("TITLE");
-  s = ss.left(pos);
-  undef = atoi(s.toStdString().c_str());
-  ss.remove(0, pos);
-
-  // get XDEF ulx and resX values
-  pos = ss.indexOf("XDEF ") + strlen("XDEF ");
-  ss.remove(0, pos);
-  pos = ss.indexOf(" ");
-  s = ss.left(pos);
-  ncols = atoi(s.toStdString().c_str());
-  ss.remove(0, pos);
-
-  pos = ss.indexOf("LINEAR ") + strlen("LINEAR ");
-  ss.remove(0, pos);
-  pos = ss.indexOf(" ");
-  s = ss.left(pos);
-  double llx = atof(s.toStdString().c_str()) - 360.;
-  ss.remove(0, pos);
-  pos = ss.indexOf("YDEF ");
-  s = ss.left(pos);
-  double resX = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
-
-  // get YDEF uly and resY values
-  pos = ss.indexOf("YDEF ") + strlen("YDEF ");
-  ss.remove(0, pos);
-  pos = ss.indexOf(" ");
-  s = ss.left(pos);
-  nlines = atoi(s.toStdString().c_str());
-  ss.remove(0, pos);
-
-  pos = ss.indexOf("LINEAR ") + strlen("LINEAR ");
-  ss.remove(0, pos);
-  pos = ss.indexOf(" ");
-  s = ss.left(pos);
-  double lly = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
-  pos = ss.indexOf("ZDEF ");
-  s = ss.left(pos);
-  double resY = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
-
-  double w = (double)ncols * resX;
-  double h = (double)nlines * resY;
-  rect = QRectF(llx, lly, w, h);
-
-  fclose(fp);
-}
-
-void te::qt::widgets::TimeSliderWidget::getEtaParameters(const QString& path, size_t& nlines, size_t& ncols, float& undef, QRectF& rect)
-{
-  QString s;
-  char buf[2000];
-  QString file(path + "Prec5km.ctl");
-  FILE* fp = fopen(file.toStdString().c_str(), "r");
-  fread(buf, 2000, sizeof(char), fp);
-
-  // get UNDEF value
-  QString ss(QString(buf).simplified());
-  size_t pos = ss.indexOf("undef ") + strlen("undef "); 
-  ss.remove(0, pos);
-  pos = ss.indexOf("xdef");
-  s = ss.left(pos);
-  undef = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
-
-  // get XDEF ulx and resX values
-  pos = ss.indexOf("xdef ") + strlen("xdef ");
-  ss.remove(0, pos);
-  pos = ss.indexOf(" ");
-  s = ss.left(pos);
-  ncols = atoi(s.toStdString().c_str());
-  ss.remove(0, pos);
-
-  pos = ss.indexOf("linear ") + strlen("linear ");
-  ss.remove(0, pos);
-  pos = ss.indexOf(" ");
-  s = ss.left(pos);
-  double llx = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
-  pos = ss.indexOf("ydef ");
-  s = ss.left(pos);
-  double resX = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
-
-  // get YDEF uly and resY values
-  pos = ss.indexOf("ydef ") + strlen("ydef ");
-  ss.remove(0, pos);
-  pos = ss.indexOf(" ");
-  s = ss.left(pos);
-  nlines = atoi(s.toStdString().c_str());
-  ss.remove(0, pos);
-
-  pos = ss.indexOf("linear ") + strlen("linear ");
-  ss.remove(0, pos);
-  pos = ss.indexOf(" ");
-  s = ss.left(pos);
-  double lly = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
-  pos = ss.indexOf("zdef ");
-  s = ss.left(pos);
-  double resY = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
-
-  double w = (double)ncols * resX;
-  double h = (double)nlines * resY;
-  rect = QRectF(llx, lly, w, h);
-
-  fclose(fp);
 }
 
 QImage* te::qt::widgets::TimeSliderWidget::getImage(te::qt::widgets::PixmapItem* pi)
@@ -2933,28 +2907,24 @@ QImage* te::qt::widgets::TimeSliderWidget::getImage(te::qt::widgets::PixmapItem*
 
   if(pi->m_suffix == ".bin" && baseName == "racc")
   {
-    QRectF rect;
-    size_t nlines, ncols, undef;
-    getHidroParameters(path, nlines, ncols, undef, rect);
-
-    size_t nchars = ncols * 2;
+    size_t nchars = pi->m_ncols * 2;
     uchar* buf = new uchar[nchars];
     FILE* fp = fopen(file.toStdString().c_str(), "rb");
-    ima = new QImage(ncols, nlines, QImage::Format_ARGB32);
+    ima = new QImage(pi->m_ncols, pi->m_nlines, QImage::Format_ARGB32);
     ima->fill(Qt::transparent);
 
     uchar uc[3];
     uc[2] = 0;
-    for(size_t j = 0; j < nlines; ++j)
+    for(size_t j = 0; j < pi->m_nlines; ++j)
     {
       uchar* u = ima->scanLine(j);
       fread(buf, nchars, sizeof(char), fp);
-      for(size_t i = 0; i < ncols; i++)
+      for(size_t i = 0; i < pi->m_ncols; i++)
       {
         uc[0] = *(buf + (i<<1));
         uc[1] = *(buf + (1+(i<<1)));
         ushort b = *(ushort*)uc;
-        if(b != undef)
+        if(b != pi->m_undef)
         {
           b = (b+5) / 10;
           QRgb* v = (QRgb*)(u + (i << 2));
@@ -2967,45 +2937,40 @@ QImage* te::qt::widgets::TimeSliderWidget::getImage(te::qt::widgets::PixmapItem*
   }
   else if(pi->m_suffix == ".bin" && baseName.contains("Prec5km"))
   {
-    QRectF rect;
-    size_t nlines, ncols;
-    float undef;
-    getEtaParameters(path, nlines, ncols, undef, rect);
-
     QString auxFile(file);
     size_t pos = auxFile.indexOf(baseName);
     auxFile.remove(0, pos);
     pos = auxFile.indexOf("_");
     size_t pp = auxFile.indexOf(".bin");
     int offset = atoi(auxFile.mid(pos+1, pp-pos+1).toStdString().c_str());
-    size_t fileSize = nlines * ncols * 4 + 8; // dado é float e desprepreza 4 bytes iniciais e 4 bytes finais
+    size_t fileSize = pi->m_nlines * pi->m_ncols * 4 + 8; // dado é float e desprepreza 4 bytes iniciais e 4 bytes finais
     offset *= fileSize;
     auxFile.remove(pos, auxFile.length()-pos);
     auxFile = path + auxFile + pi->m_suffix;
 
-    size_t nchars = ncols * 4;
+    size_t nchars = pi->m_ncols * 4;
     uchar* buf = new uchar[nchars];
     FILE* fp = fopen(auxFile.toStdString().c_str(), "rb");
     fseek(fp, offset, SEEK_SET);
     fseek(fp, 4, SEEK_CUR); // despreza 4 bytes da primeira linha
-    ima = new QImage(ncols, nlines, QImage::Format_ARGB32);
+    ima = new QImage(pi->m_ncols, pi->m_nlines, QImage::Format_ARGB32);
     ima->fill(Qt::transparent);
 
     uchar uc[5];
     uc[4] = 0;
-    for(size_t j = 0; j < nlines; ++j)
+    for(size_t j = 0; j < pi->m_nlines; ++j)
     {
-      uchar* u = ima->scanLine(nlines-1-j); // origem bottom left
+      uchar* u = ima->scanLine(pi->m_nlines-1-j); // origem bottom left
       fread(buf, nchars, sizeof(char), fp);
 
-      for(size_t i = 0; i < ncols; i++)
+      for(size_t i = 0; i < pi->m_ncols; i++)
       {
         uc[0] = *(buf + (i<<2));
         uc[1] = *(buf + (1+(i<<2)));
         uc[2] = *(buf + (2+(i<<2)));
         uc[3] = *(buf + (3+(i<<2)));
         float b = *(float*)uc;
-        if(b != undef)
+        if(b != pi->m_undef)
         {
           uchar a = (uchar) (b * 10000. + .5);
           QRgb* v = (QRgb*)(u + (i << 2));
@@ -3022,20 +2987,40 @@ QImage* te::qt::widgets::TimeSliderWidget::getImage(te::qt::widgets::PixmapItem*
   return ima;
 }
 
-te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getHidroData(QString path)
+te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getMetadata(const QString& path)
 {
+  te::qt::widgets::PixmapItem* pi;
   QDir dir(path);
-  size_t nlines, ncols, undef;
-  QRectF rect;
+  QString d = dir.dirName();
+  QStringList nameFilter;
+  nameFilter.append("*.ctl");
+  QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
+  QString ctlFile = files.first();
 
-  QString dirName = dir.dirName();
-  QString suffix(".bin");
+  if(ctlFile == "racc.ctl")
+    pi = getHidroMetadata(path);
+  else if(ctlFile == "Prec5km.ctl")
+    pi = getEtaMetadata(path);
+  else
+  {
+    nameFilter.clear();
+    nameFilter.append("S11*.jpg");
+    QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
+    if(files.empty() == false && files.first().length() == 26)
+      pi = getGoesMetadata(path);
+    else
+      pi = getTemporalImageMetadata(path);
+  }
 
-  PixmapItem* pi = new PixmapItem(dirName, path, m_display);
-  getHidroParameters(path, nlines, ncols, undef, pi->m_imaRect);
+  return pi;
+}
 
-  // CHUTE WGS84
-  pi->m_SRID = 4326;
+te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getHidroMetadata(const QString& path)
+{
+  PixmapItem* pi = getHidroCtlParameters(path);
+  if(pi == 0)
+    return 0;
+
   m_animationScene->addItem(pi);
   Animation* animation = new Animation(pi, "pos");
   animation->m_spatialExtent = te::gm::Envelope(pi->m_imaRect.x(), pi->m_imaRect.y(), pi->m_imaRect.right(), pi->m_imaRect.bottom());
@@ -3044,12 +3029,13 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getHidroData(QSt
 
   QStringList nameFilter;
   nameFilter.append("*.bin");
+  QDir dir(path);
   QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
   size_t count = files.count();
 
   // get time extent
-  te::dt::TimeInstant ti = getHidroTime(path + files.first());
-  te::dt::TimeInstant tf = getHidroTime(path + files.last());
+  te::dt::TimeInstant ti = getHidroTime(path + "/" + files.first());
+  te::dt::TimeInstant tf = getHidroTime(path + "/" + files.last());
   animation->m_temporalExtent = te::dt::TimePeriod(ti, tf);
 
   // set data
@@ -3079,40 +3065,34 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getHidroData(QSt
 
     pi->m_route->setPoint(i, pos.x(), pos.y());
   }
+
+  setHidroLUT(pi);
   return pi;
 }
 
-te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getEtaData(QString path)
+te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getEtaMetadata(const QString& path)
 {
-  QDir dir(path);
-
-  QString suffix = ".bin";
-  QStringList nameFilter;
-  nameFilter.append("*" + suffix);
-  QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
-  if(files.isEmpty())
+  PixmapItem* pi = getEtaCtlParameters(path);
+  if(pi == 0)
     return 0;
 
-  // CHUTE WGS84
-  PixmapItem* pi = new PixmapItem(dir.dirName(), path, m_display);
-  pi->m_SRID = 4326;
   m_animationScene->addItem(pi);
   Animation* animation = new Animation(pi, "pos");
-
-  size_t nlines, ncols;
-  float undef;
-  QRectF rect;
-  getEtaParameters(path, nlines, ncols, undef, pi->m_imaRect);
   animation->m_spatialExtent = te::gm::Envelope(pi->m_imaRect.x(), pi->m_imaRect.y(), pi->m_imaRect.right(), pi->m_imaRect.bottom());
   animation->setEasingCurve(QEasingCurve::Linear);
   m_parallelAnimation->addAnimation(animation);
 
+  QStringList nameFilter;
+  nameFilter.append("*.bin");
+  QDir dir(path);
+  QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
   size_t count = files.count();
 
   // get time extent
-  te::dt::TimeInstant ti = getEtaTime(path + files.first());
-  te::dt::TimeInstant tf = getEtaTime(path + files.last());
-  tf = te::dt::TimeInstant(tf.getTimeInstant() + boost::posix_time::seconds(60*60*24*3));
+  te::dt::TimeInstant ti = getEtaTime(path + "/" + files.first());
+  te::dt::TimeInstant tf = getEtaTime(path + "/" + files.last());
+  // the file contains 3 days of data
+  tf = te::dt::TimeInstant(tf.getTimeInstant() + boost::posix_time::seconds(60*60*24*3 - 3600));
   animation->m_temporalExtent = te::dt::TimePeriod(ti, tf);
 
   // set data
@@ -3121,7 +3101,7 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getEtaData(QStri
   for(size_t i = 0; i < count; ++i)
   {
     QString f = files[i];
-    QFileInfo fi(path + f);
+    QFileInfo fi(path + "/" + f);
     QString baseName = fi.baseName();
     t = getEtaTime(f);
  
@@ -3131,12 +3111,12 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getEtaData(QStri
       tnext = te::dt::TimeInstant(t.getTimeInstant() + boost::posix_time::seconds(60*60*24*3));
 
     size_t n = 1;
-    while((t < tnext || t == tnext) && n < 72)
+    while((t < tnext || t == tnext) && n <= 72)
     {
       pi->m_time.push_back(t);
       t = te::dt::TimeInstant(t.getTimeInstant() + boost::posix_time::seconds(60*60));
       sn.setNum(n++);
-      fname = path + baseName + "_" + sn + suffix;
+      fname = path + "/" + baseName + "_" + sn + "." + fi.suffix();
       pi->m_files.push_back(fname);
     }
   }
@@ -3159,6 +3139,8 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getEtaData(QStri
 
     pi->m_route->setPoint(i, pos.x(), pos.y());
   }
+
+  setEtaLUT(pi);
   return pi;
 }
 
@@ -3190,5 +3172,157 @@ te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getEtaTime(const QString&
 
   te::dt::Date date(ano.toInt(), mes.toInt(), dia.toInt());
   te::dt::TimeDuration dur(hour.toInt() + 1, 0, 0); // tem deslocamento de 1 hora
+  return te::dt::TimeInstant(date, dur);
+}
+
+te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getTemporalImageMetadata(const QString& path)
+{
+  PixmapItem* pi = getTemporalImageCtlParameters(path);
+  if(pi == 0)
+    return 0;
+
+  m_animationScene->addItem(pi);
+  Animation* animation = new Animation(pi, "pos");
+  animation->m_spatialExtent = te::gm::Envelope(pi->m_imaRect.x(), pi->m_imaRect.y(), pi->m_imaRect.right(), pi->m_imaRect.bottom());
+  animation->setEasingCurve(QEasingCurve::Linear);
+  m_parallelAnimation->addAnimation(animation);
+
+  QString suffix = "." + pi->m_suffix;
+  QStringList nameFilter;
+  nameFilter.append("*" + suffix);
+  QDir dir(path);
+  QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
+  size_t count = files.count();
+
+  // get time extent
+  te::dt::TimeInstant ti = getTemporalImageTime(path + "/" + files.first());
+  te::dt::TimeInstant tf = getTemporalImageTime(path + "/" + files.last());
+  animation->m_temporalExtent = te::dt::TimePeriod(ti, tf);
+
+  // set data
+  te::dt::TimeInstant t;
+  for(size_t i = 0; i < count; ++i)
+  {
+    QString f = files[i];
+    pi->m_files.push_back(f);
+    t = getTemporalImageTime(f);
+    pi->m_time.push_back(t);
+  }
+
+  pi->m_route = new te::gm::LineString(count, te::gm::LineStringType, pi->m_SRID);
+
+  // crie valores não repetitivos e nem muito grandes ou pequenos
+  QPointF pos(animation->m_spatialExtent.m_llx, animation->m_spatialExtent.m_lly);
+  double w = animation->m_spatialExtent.getWidth();
+  double h = animation->m_spatialExtent.getHeight();
+  for(size_t i = 0; i < count; ++i)
+  {
+    if(i & 1)
+      pos -= QPointF(w, h);
+    else
+      pos += QPointF(w, h);
+
+    pi->m_route->setPoint(i, pos.x(), pos.y());
+  }
+  return pi;
+}
+
+te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getTemporalImageCtlParameters(const QString& path)
+{
+  char buf[2000];
+  QString file(path + "/image.ctl");
+  FILE* fp = fopen(file.toStdString().c_str(), "r");
+  if(fp == 0)
+    return 0;
+
+  fread(buf, 2000, sizeof(char), fp);
+  fclose(fp);
+  QString ss(QString(buf).simplified());
+
+  // validation
+  if(!(ss.contains("suffix ", Qt::CaseInsensitive) && ss.contains("undef", Qt::CaseInsensitive) && 
+    ss.contains("srid", Qt::CaseInsensitive) && ss.contains("llx", Qt::CaseInsensitive) && 
+    ss.contains("lly", Qt::CaseInsensitive) && ss.contains("urx", Qt::CaseInsensitive) && 
+    ss.contains("ury", Qt::CaseInsensitive)))
+    return 0;
+
+  QString s;
+  QDir dir(path);
+  te::qt::widgets::PixmapItem* pi = new PixmapItem(dir.dirName(), path, m_display);
+
+  // get suffix 
+  size_t pos = ss.indexOf("suffix ", Qt::CaseInsensitive) + strlen("suffix "); 
+  ss.remove(0, pos);
+  pos = ss.indexOf(" undef", Qt::CaseInsensitive);
+  s = ss.left(pos);
+  pi->m_suffix = s;
+  ss.remove(0, pos);
+
+  // get undef
+  pos = ss.indexOf("undef ", Qt::CaseInsensitive) + strlen("undef ");
+  ss.remove(0, pos);
+  pos = ss.indexOf(" srid", Qt::CaseInsensitive);
+  s = ss.left(pos);
+  pi->m_undef = atof(s.toStdString().c_str());
+  ss.remove(0, pos);
+
+  // get srid
+  pos = ss.indexOf("srid ", Qt::CaseInsensitive) + strlen("srid ");
+  ss.remove(0, pos);
+  pos = ss.indexOf(" llx", Qt::CaseInsensitive);
+  s = ss.left(pos);
+  pi->m_SRID = atoi(s.toStdString().c_str());
+  ss.remove(0, pos);
+
+  // get llx
+  pos = ss.indexOf("llx ", Qt::CaseInsensitive) + strlen("llx ");
+  ss.remove(0, pos);
+  pos = ss.indexOf(" lly", Qt::CaseInsensitive);
+  s = ss.left(pos);
+  double llx = atof(s.toStdString().c_str());
+  ss.remove(0, pos);
+
+  // get lly
+  pos = ss.indexOf("lly ", Qt::CaseInsensitive) + strlen("lly ");
+  ss.remove(0, pos);
+  pos = ss.indexOf(" urx", Qt::CaseInsensitive);
+  s = ss.left(pos);
+  double lly = atof(s.toStdString().c_str());
+  ss.remove(0, pos);
+
+  // get urx
+  pos = ss.indexOf("urx ", Qt::CaseInsensitive) + strlen("urx ");
+  ss.remove(0, pos);
+  pos = ss.indexOf(" ury", Qt::CaseInsensitive);
+  s = ss.left(pos);
+  double urx = atof(s.toStdString().c_str());
+  ss.remove(0, pos);
+
+  // get ury
+  pos = ss.indexOf("ury ", Qt::CaseInsensitive) + strlen("ury ");
+  ss.remove(0, pos);
+  double ury = atof(ss.toStdString().c_str());
+
+  double w = urx - llx;
+  double h = ury - lly;
+  pi->m_imaRect = QRectF(llx, lly, w, h);
+
+  return pi;
+}
+
+te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getTemporalImageTime(const QString& fileName)
+{
+  QString file(fileName);
+  int ind = file.indexOf("_") + strlen("_");
+  file.remove(0, ind);
+  QString ano = file.mid(0, 4);
+  QString mes = file.mid(5, 2);
+  QString dia = file.mid(8, 2);
+  QString hour = file.mid(11, 2);
+  QString min = file.mid(14, 2);
+  QString sec = file.mid(17, 2);
+
+  te::dt::Date date(ano.toInt(), mes.toInt(), dia.toInt());
+  te::dt::TimeDuration dur(hour.toInt(), min.toInt(), sec.toInt());
   return te::dt::TimeInstant(date, dur);
 }

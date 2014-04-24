@@ -31,6 +31,7 @@
 #include "../common/StringUtils.h"
 #include "../raster/Raster.h"
 
+#include <cfloat>
 
 namespace te
 {

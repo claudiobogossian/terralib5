@@ -42,6 +42,7 @@ set (
   ${SRCDIR}/MosaicAction.h
   ${SRCDIR}/SegmenterAction.h
   ${SRCDIR}/RegisterAction.h
+  ${SRCDIR}/VectorizationAction.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/rp" MOC)
 
@@ -108,6 +109,12 @@ if(WIN32)
     TARGETS ${PROJ_NAME}
     RUNTIME DESTINATION "bin" 
     COMPONENT PLUGINS
+  )
+elseif(APPLE AND WITH_BUNDLE)
+  install(
+    TARGETS ${PROJ_NAME}
+    ARCHIVE DESTINATION ${TE_BUNDLE_APP}/Plugins COMPONENT PLUGINS
+    LIBRARY DESTINATION ${TE_BUNDLE_APP}/Plugins COMPONENT PLUGINS
   )
 else()
   install(

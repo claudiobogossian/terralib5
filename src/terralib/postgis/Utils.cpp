@@ -647,16 +647,19 @@ std::string te::pgis::GetLoadDataRow(const te::da::DataSetType* dt, te::da::Data
   return values;
 }
 
-static const char* sg_pg_encoding [] = { "UTF8",
-                                         "WIN1250"
-                                       };
+static std::size_t sg_n_encoding = 8;
+static const char* sg_pg_encoding [] = {"UTF8", "WIN1250", "WIN1251", "WIN1252", "WIN1253", "WIN1254", "WIN1257", "LATIN1"};
 
-const char* te::pgis::GetPGEncoding(te::common::CharEncoding te_encoding)
+const char* te::pgis::GetPGEncoding(te::common::CharEncoding encoding)
 {
-  return sg_pg_encoding[te_encoding];
+  return sg_pg_encoding[encoding];
 }
 
-te::common::CharEncoding te::pgis::GetTeEncoding(const char* const pg_encoding)
+te::common::CharEncoding te::pgis::GetTeEncoding(const char* const encoding)
 {
+  for(std::size_t i = 0; i < sg_n_encoding; ++i)
+    if(sg_pg_encoding[i] == encoding)
+      return (te::common::CharEncoding)i;
+
   return te::common::UNKNOWN_CHAR_ENCODING;
 }

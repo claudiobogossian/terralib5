@@ -35,6 +35,7 @@
 #include <QObject>
 #include "../../../../../../third-party/qt/propertybrowser/qttreepropertybrowser.h"
 #include "../../../../../../third-party/qt/propertybrowser/qtpropertybrowser.h"
+#include "../../../../../../third-party/qt/propertybrowser/qtpropertymanager.h"
 #include <QList>
 
 class QGraphicsItem;
@@ -55,7 +56,7 @@ namespace te
 
     public:
 
-	    PropertyBrowser(QWidget *parent = 0);
+	    PropertyBrowser(QObject *parent = 0);
 	    virtual ~PropertyBrowser();
 
       QtTreePropertyBrowser* getPropertyEditor();
@@ -73,6 +74,7 @@ namespace te
 
         void propertyEditorValueChanged(QtProperty *property, const QVariant &value);
         void onChangeFilter(const QString& filter);
+        virtual void onSetDlg(QWidget *parent, QtProperty * prop) = 0;
         
       signals:
 
@@ -80,17 +82,18 @@ namespace te
 
     protected:
       
-      virtual void addPropertyItem(QtVariantProperty *property, const QString &id);
+      virtual void addPropertyItem(QtProperty *property, const QString &id);
       virtual void updateExpandState();
       virtual void createManager();
       virtual void changeVisibility( QList<QtBrowserItem*> items, bool visible );
-
+      
     protected:
 
       QtTreePropertyBrowser* m_propertyEditor;
-      QtVariantPropertyManager* m_variantPropertyEditorManager;      
+      QtVariantPropertyManager* m_variantPropertyEditorManager; 
+      QtStringPropertyManager*  m_strDlgManager;
       QMap<QtProperty*, QString> m_propertyToId;
-      QMap<QString, QtVariantProperty*> m_idToProperty;
+      QMap<QString, QtProperty*> m_idToProperty;
       QMap<QString, bool> m_idToExpanded;
     };
   }

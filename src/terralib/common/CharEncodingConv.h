@@ -58,9 +58,8 @@ namespace te
   }
 }
 
-#if TE_CHARENCODING_ENABLED
-
 // STL
+#include <map>
 #include <string>
 
 // Forward declarations
@@ -124,13 +123,25 @@ namespace te
         static std::string convert(const std::string& src, const CharEncoding& fromCode, const CharEncoding& toCode);
 
          /*!
-          \brief It returns the description of the given charset.
+          \brief It returns the name of the given charset.
 
           \param code The charset code.
 
-          \return The description of the given charset.
+          \return The name of the given charset.
         */
-        static std::string getDescription(const CharEncoding& code);
+        static std::string getCharEncodingName(const CharEncoding& code);
+
+         /*!
+          \brief It returns the charset type of the given charset name.
+
+          \param name The charset name.
+
+          \return The type of the given charset.
+        */
+        static CharEncoding getCharEncodingType(const std::string& name);
+
+        /*! \brief It initializes the CharEncoding Converter. */
+        static void initialize();
 
       private:
 
@@ -142,14 +153,14 @@ namespace te
 
       private:
 
-        const CharEncoding m_fromCode; //!< The origin charset.
-        const CharEncoding m_toCode;   //!< The target charset.
-        iconv_t m_cd;                  //!< The iconv state machine used to convert string from one character to another one.
+        const CharEncoding m_fromCode;                               //!< The origin charset.
+        const CharEncoding m_toCode;                                 //!< The target charset.
+        iconv_t m_cd;                                                //!< The iconv state machine used to convert string from one character to another one.
+
+        static std::map<CharEncoding, std::string> sm_encodingNames; //!< Static map with the encoding names.
     };
 
   } // end namespace common
 }   // end namespace te
-
-#endif // TE_CHARENCODING_ENABLED
 
 #endif  // __TERRALIB_COMMON_INTERNAL_CHARENCODINGCONV_H

@@ -46,6 +46,9 @@ namespace te
 
         virtual void draw( ContextItem context );
 
+        virtual te::layout::Properties* getProperties() const;
+        virtual void updateProperties(te::layout::Properties* properties);
+
       protected:
 
         GridModel* m_grid;

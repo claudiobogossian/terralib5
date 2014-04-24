@@ -39,6 +39,7 @@
 #include "Exception.h"
 #include "Project.h"
 #include "Utils.h"
+#include "XMLFormatter.h"
 
 // STL
 #include <cassert>
@@ -88,6 +89,10 @@ te::qt::af::Project* te::qt::af::ReadProject(const std::string& uri)
   
   proj->setFileName(uri);
   
+  XMLFormatter::format(proj, false);
+
+  proj->setProjectAsChanged(false);
+
   return proj;
 
 }
@@ -180,7 +185,13 @@ void te::qt::af::Save(const te::qt::af::Project& project, const std::string& uri
 
   te::xml::Writer w(fout);
 
-  Save(project, w);
+  Project p(project);
+
+  XMLFormatter::format(&p, true);
+
+  Save(p, w);
+
+  XMLFormatter::format(&p, false);
 
   fout.close();
 }
@@ -294,7 +305,11 @@ void te::qt::af::SaveDataSourcesFile()
   if(fileName.empty())
     return;
 
+  XMLFormatter::formatDataSourceInfos(true);
+
   te::serialize::xml::Save(fileName);
+
+  XMLFormatter::formatDataSourceInfos(false);
 }
 
 void te::qt::af::UpdateApplicationPlugins()
