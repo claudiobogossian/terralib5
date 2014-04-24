@@ -28,6 +28,7 @@
 #include "../../../../common/Translator.h"
 #include "../../../../dataaccess.h"
 #include "../../../../geometry/GeometryProperty.h"
+#include "../../../../maptools/DataSetLayer.h"
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWidget.h"
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
 #include "../../../../qt/widgets/layer/utils/DataSet2Layer.h"
@@ -40,10 +41,14 @@
 #include "../../../../raster/Utils.h"
 #include "../../../../terralib4/DataSource.h"
 #include "../../../../terralib4/ThemeInfo.h"
+#include "../../../../se/ChannelSelection.h"
+#include "../../../../se/ColorMap.h"
 #include "../../../../se/FeatureTypeStyle.h"
 #include "../../../../se/Fill.h"
 #include "../../../../se/PolygonSymbolizer.h"
+#include "../../../../se/RasterSymbolizer.h"
 #include "../../../../se/Rule.h"
+#include "../../../../se/SelectedChannel.h"
 #include "../../../../se/Stroke.h"
 #include "../../../../se/Style.h"
 #include "../../../../se/Symbolizer.h"
@@ -738,10 +743,42 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
         layer = te::qt::widgets::createLayer("GDAL", connInfo);
 
         style = Convert2TerraLib5(0, theme.get(), true);
+
+        te::se::RasterSymbolizer* symb = te::se::GetRasterSymbolizer(style);
+
+        if(theme->grouping().groupMode_ != TeNoGrouping)
+        {
+          te::se::ColorMap* cm = 0;
+
+          cm = GetRasterGrouping(theme.get());
+
+          symb->setColorMap(cm);
+
+          std::string band = "0";
+
+          te::se::ChannelSelection* cs = symb->getChannelSelection();
+
+          if(cs->getGrayChannel())
+          {
+            te::se::SelectedChannel* scGray = cs->getGrayChannel();
+
+            scGray->setSourceChannelName(band);
+          }
+          else
+          {
+            te::se::SelectedChannel* scGray = new te::se::SelectedChannel();
+
+            scGray->setSourceChannelName(band);
+
+            cs->setGrayChannel(scGray);
+          }
+
+          cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
+        }
       }
       else
       {
-        std::auto_ptr<te::da::DataSetType> dst = outDataSource->getDataSetType(themes[i].m_name);
+        std::auto_ptr<te::da::DataSetType> dst = outDataSource->getDataSetType(themes[i].m_layerName);
 
         te::qt::widgets::DataSet2Layer converter(m_targetDataSource->getId());
 
@@ -753,12 +790,12 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
         te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dstPtr.get());
 
         style = Convert2TerraLib5(geomProp->getGeometryType(), theme.get());
+
+        if(theme->grouping().groupMode_ != TeNoGrouping)
+          layer->setGrouping(GetGrouping(theme.get()));
       }
 
       layer->setStyle(style);
-
-      if(theme->grouping().groupMode_ != TeNoGrouping)
-        layer->setGrouping(GetGrouping(theme.get()));
 
       te::qt::af::evt::LayerAdded evt(layer);
 

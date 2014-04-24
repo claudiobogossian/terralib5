@@ -4,7 +4,7 @@
       <title>TerraView Help</title>
       <startPage>qthelp://dpi.inpe.br.terraview/doc/terraview/index.html</startPage> 
       <currentFilter>help</currentFilter>
-      <applicationIcon>terralib-globe-small.png</applicationIcon>
+      <applicationIcon>terralib-globe.png</applicationIcon>
       <enableFilterFunctionality>false</enableFilterFunctionality>
       <enableDocumentationManager>false</enableDocumentationManager>
       <enableAddressBar visible="true">false</enableAddressBar>
@@ -16,7 +16,7 @@
       <aboutDialog>
          <file>about.txt</file>
          <file language="en">sobre.txt</file>
-         <icon>terralib-globe-small.png</icon>
+         <icon>terralib-globe.png</icon>
       </aboutDialog>
     </assistant>
     <docFiles>

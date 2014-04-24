@@ -66,6 +66,8 @@
 #include <terralib/kernel/TeLayer.h>
 #include <terralib/kernel/TeTable.h>
 #include <terralib/kernel/TeTheme.h>
+#include <terralib/kernel/TeRasterTransform.h>
+#include <terralib/kernel/TeVisual.h>
 
 // STL
 #include <cassert>
@@ -79,7 +81,7 @@
 #include <boost/lexical_cast.hpp>
 //#include <boost/thread.hpp>
 
-int getViewId(const std::string& viewName, TeViewMap viewMap)
+int getViewId(const std::string& viewName, TeViewMap& viewMap)
 {
   std::map<int, TeView*>::iterator it = viewMap.begin();
 
@@ -142,7 +144,7 @@ std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::stri
 
   if(m_db->layerExist(name))
   {
-    TeLayerMap map = m_db->layerMap();
+    TeLayerMap& map = m_db->layerMap();
 
     std::map<int, TeLayer*>::iterator it = map.begin();
 
@@ -281,7 +283,7 @@ std::vector<std::string> terralib4::Transactor::getDataSetNames()
 {
   m_db->loadLayerSet(true);
 
-  TeLayerMap map = m_db->layerMap();
+  TeLayerMap& map = m_db->layerMap();
 
   std::map<int, TeLayer*>::iterator it = map.begin();
 
@@ -319,7 +321,7 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
 
   if(m_db->layerExist(name))
   {
-    TeLayerMap map = m_db->layerMap();
+    TeLayerMap& map = m_db->layerMap();
 
     std::map<int, TeLayer*>::iterator it = map.begin();
 
@@ -519,7 +521,7 @@ void terralib4::Transactor::addProperty(const std::string& datasetName, te::dt::
     newProperty.type_ = terralib4::Convert2T4GeomType(geom->getGeomTypeId());
   }
 
-  TeLayerMap map = m_db->layerMap();
+  TeLayerMap& map = m_db->layerMap();
 
   std::map<int, TeLayer*>::iterator it = map.begin();
 
@@ -796,7 +798,7 @@ std::vector<std::string> terralib4::Transactor::getTL4Layers()
 
   m_db->loadLayerSet(false);
 
-  TeLayerMap layerMap = m_db->layerMap();
+  TeLayerMap& layerMap = m_db->layerMap();
 
   std::map<int, TeLayer*>::iterator it = layerMap.begin();
 
@@ -828,8 +830,8 @@ std::vector<::terralib4::ThemeInfo> terralib4::Transactor::getTL4Themes()
 
   m_db->loadViewSet(m_db->user());
 
-  TeViewMap vMap = m_db->viewMap();
-  TeThemeMap tMap = m_db->themeMap();
+  TeViewMap& vMap = m_db->viewMap();
+  TeThemeMap& tMap = m_db->themeMap();
   
   std::map<int, TeView*>::iterator it = vMap.begin();
 
@@ -867,8 +869,8 @@ std::vector<::terralib4::ThemeInfo> terralib4::Transactor::getTL4Themes()
 
 TeTheme* terralib4::Transactor::getTL4Theme(const ::terralib4::ThemeInfo theme)
 {
-  TeViewMap vMap = m_db->viewMap();
-  TeThemeMap tMap = m_db->themeMap();
+  TeViewMap& vMap = m_db->viewMap();
+  TeThemeMap& tMap = m_db->themeMap();
 
   std::map<int, TeAbstractTheme*>::iterator it = tMap.begin();
 

@@ -30,6 +30,7 @@
 
 //Terralib
 #include "Property.h"
+#include "AbstractType.h"
 
 //STL
 #include <vector>
@@ -41,7 +42,7 @@ namespace te
     class Properties
     {
       public:
-        Properties(std:: string objectName);
+        Properties(std:: string objectName, LayoutAbstractObjectType type = TPObjectUnknown);
         virtual ~Properties(void);
 
         virtual bool addProperty(Property property);
@@ -53,14 +54,20 @@ namespace te
 
         virtual void setObjectName(std::string name);
 
+        virtual LayoutAbstractObjectType getTypeObj();
+
+        virtual void setTypeObj(LayoutAbstractObjectType type);
+
       protected:
         std::vector<Property> m_properties;
         std::string m_objName;
+        LayoutAbstractObjectType m_typeObj;
 
     };
 
-    inline Properties::Properties(std:: string objectName) :
-      m_objName(objectName)
+    inline Properties::Properties(std:: string objectName, LayoutAbstractObjectType type) :
+      m_objName(objectName),
+      m_typeObj(type)
     {
     }
 
@@ -103,6 +110,16 @@ namespace te
     inline void Properties::setObjectName( std::string name )
     {
       m_objName = name;
+    }
+
+    inline te::layout::LayoutAbstractObjectType Properties::getTypeObj()
+    {
+      return m_typeObj;
+    }
+
+    inline void Properties::setTypeObj( LayoutAbstractObjectType type )
+    {
+      m_typeObj = type;
     }
 
   }

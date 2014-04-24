@@ -97,20 +97,26 @@ namespace te
           */
           ~TimeSliderWidget();
 
-          /*!
-            \brief Open Kml and add trajectories.
+          void addTemporalImages(const QString& filePath);
 
-            \param title The trajectory title.
-            \param pixmapFile The trajectory icon.
-            \param poinstFile The trajectory points.
-          */
-          void openKml(const QString& file);
+          te::qt::widgets::PixmapItem* getMetadata(const QString& path);
 
-          void addTemporalImages(const QString& filePath, const bool& center = false);
-          void getGoesData(const QString& path);
+          te::qt::widgets::PixmapItem* getGoesMetadata(const QString& path);
           te::dt::TimeInstant getGoesTime(const QString& file);
+
+          te::qt::widgets::PixmapItem* getHidroMetadata(const QString& path);
+          te::qt::widgets::PixmapItem* getHidroCtlParameters(const QString& path);
+          void setHidroLUT(te::qt::widgets::PixmapItem* pi);
           te::dt::TimeInstant getHidroTime(const QString& file);
+
+          te::qt::widgets::PixmapItem* getEtaMetadata(const QString& path);
+          te::qt::widgets::PixmapItem* getEtaCtlParameters(const QString& path);
+          void setEtaLUT(te::qt::widgets::PixmapItem* pi);
           te::dt::TimeInstant getEtaTime(const QString& file);
+
+          te::qt::widgets::PixmapItem* getTemporalImageMetadata(const QString& path);
+          te::qt::widgets::PixmapItem* getTemporalImageCtlParameters(const QString& path);
+          te::dt::TimeInstant getTemporalImageTime(const QString& file);
 
 
           /*!
@@ -290,10 +296,6 @@ namespace te
 
         QImage* getImage(te::qt::widgets::PixmapItem* pi);
 
-        te::qt::widgets::PixmapItem* getHidroData(QString path);
-        te::qt::widgets::PixmapItem* getEtaData(QString path);
-
-
         /*!
           \brief
           Draw the trajectory icon.
@@ -304,13 +306,9 @@ namespace te
         */
         void drawTrajectoryIcon(const TrajectoryItem* t, const QPoint& pos, QPainter* painter);
 
-        void openTrajectory(const QString& leao); // so para teste
+        void openTrajectory(const QString file, const QString& leao); // so para teste
 
-          ///*!
-          //  \brief It checks whether the time string is iso.
-          //  \param s String to be verified.
-          //*/
-          //bool isValidTime(const QString& s);
+        bool alreadyExists(QPair<QString, QString>& item);
 
           /*!
             \brief It initialize a property animation dialog
@@ -338,9 +336,9 @@ namespace te
           */
           void removeComboItem(te::qt::widgets::AnimationItem* ai);
 
-          void getHidroParameters(const QString& path, size_t& nlines, size_t& ncols, size_t& undef, QRectF& rect);
-          void getEtaParameters(const QString& path, size_t& nlines, size_t& ncols, float& undef, QRectF& rect);
+          void dragEnterEvent(QDragEnterEvent*);
 
+          void dropEvent(QDropEvent*);
 
         protected slots:
 
@@ -514,8 +512,8 @@ namespace te
           QDateTime                               m_oldFQDateTime;            //!< The old final Qt date time.
           bool                                    m_dateTimeChanged;
           int                                     m_maxSliderValue;           //!< The max slider value.
-          QString                                 m_timeString;
           bool                                    m_finished;
+          QList<QPair<QString, QString> >         m_itemList;                 //!< List of all animation items (URI, DataSetName).
 
           QRectF          m_initialDisplayRect; // so para teste
       };

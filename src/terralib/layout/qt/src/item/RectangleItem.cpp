@@ -53,6 +53,10 @@ te::layout::RectangleItem::~RectangleItem()
 void te::layout::RectangleItem::updateObserver( ContextItem context )
 {
   te::color::RGBAColor** rgba = context.getPixmap();  
+
+  if(!rgba)
+    return;
+
   te::gm::Envelope box = m_model->getBox();
   
   QPixmap pixmp;

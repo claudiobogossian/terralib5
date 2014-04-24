@@ -33,7 +33,7 @@ if(QT_FOUND)
   
   add_custom_command (
     OUTPUT copy_icon
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/../resources/images/png/terralib-globe-small.png ${CMAKE_BINARY_DIR}/help
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/../resources/images/png/terralib-globe.png ${CMAKE_BINARY_DIR}/help
     DEPENDS copy_dir
     COMMENT "Configuring help collection file..."
   )
@@ -58,7 +58,7 @@ if(QT_FOUND)
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/plugins.qhp
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/apf.qhp
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/help.qhcp
-    COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/terralib-globe-small.png
+    COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/terralib-globe.png
     DEPENDS ${CMAKE_BINARY_DIR}/help/help.qhc
     COMMENT "Removing copied files"
   )  
@@ -70,10 +70,19 @@ if(QT_FOUND)
     VERBATIM
   )
   
-  install(
-    DIRECTORY ${CMAKE_BINARY_DIR}/help
-    DESTINATION . 
-    COMPONENT BINARIES
-  )
+
+  if(APPLE AND WITH_BUNDLE)
+    install(
+      DIRECTORY ${CMAKE_BINARY_DIR}/help
+      DESTINATION ${TE_BUNDLE_APP} 
+      COMPONENT BINARIES
+    )
+  else()
+    install(
+      DIRECTORY ${CMAKE_BINARY_DIR}/help
+      DESTINATION . 
+      COMPONENT BINARIES
+    )
+  endif()
   
 endif()

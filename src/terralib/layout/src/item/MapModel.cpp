@@ -46,20 +46,6 @@ void te::layout::MapModel::draw( ContextItem context )
 {
   te::color::RGBAColor** pixmap = 0;
   
-  te::map::Canvas* canvas = Context::getInstance()->getCanvas();
-  Utils* utils = Context::getInstance()->getUtils();
-
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-  
-  canvas->setPolygonContourColor(m_borderColor);
-  canvas->setPolygonFillColor(m_backgroundColor);
-
-  utils->drawRectW(m_box);
-    
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
-  
   ContextItem contextNotify;
   contextNotify.setPixmap(pixmap);
   notifyAll(contextNotify);

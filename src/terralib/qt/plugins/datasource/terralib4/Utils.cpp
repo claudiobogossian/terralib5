@@ -30,9 +30,12 @@
 #include "../../../../maptools/Enums.h"
 #include "../../../../maptools/Grouping.h"
 #include "../../../../maptools/GroupingItem.h"
+#include "../../../../se/Categorize.h"
 #include "../../../../se/ChannelSelection.h"
+#include "../../../../se/ColorMap.h"
 #include "../../../../se/ContrastEnhancement.h"
-#include "../../../../se/FeatureTypeStyle.h"
+#include "../../../../se/CoverageStyle.h"
+//#include "../../../../se/FeatureTypeStyle.h"
 #include "../../../../se/Fill.h"
 #include "../../../../se/LineSymbolizer.h"
 #include "../../../../se/ParameterValue.h"
@@ -58,6 +61,9 @@
 
 // Boost
 #include <boost/lexical_cast.hpp>
+
+// Qt
+#include <QtGui/QColor>
 
 te::color::RGBAColor te::qt::plugins::terralib4::Convert2TerraLib5(TeColor color)
 {
@@ -205,7 +211,7 @@ te::se::Style* te::qt::plugins::terralib4::Convert2TerraLib5(int geometryType, T
   if(symb != 0)
     rule->push_back(symb);
 
-  te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
+  te::se::CoverageStyle* style = new te::se::CoverageStyle;
   style->push_back(rule);
 
   return style;
@@ -364,6 +370,61 @@ te::map::Grouping* te::qt::plugins::terralib4::GetGrouping(TeTheme* theme)
   return grouping;
 }
 
+te::se::ColorMap* te::qt::plugins::terralib4::GetRasterGrouping(TeTheme* theme)
+{
+  TeLegendEntryVector leg = theme->legend();
+  TeGrouping group = theme->grouping();
+
+  int slices = group.groupNumSlices_;
+
+  te::se::Categorize* c = new te::se::Categorize();
+
+  c->setFallbackValue("#000000");
+  c->setLookupValue(new te::se::ParameterValue("Rasterdata"));
+
+  QColor cWhite(Qt::white);
+  std::string colorWhiteStr = cWhite.name().toLatin1().data();
+
+  //added dummy color for values < than min values...
+  c->addValue(new te::se::ParameterValue(colorWhiteStr));
+
+  for(std::size_t i = 0; i < slices; ++i)
+  {
+    TeLegendEntry le = leg[i];
+
+    std::string title = le.label();
+
+    TeGeomRepVisualMap map = le.getVisualMap();
+
+    TeGeomRep geomRep = map.begin()->first;
+    TeVisual* visual = map.begin()->second;
+
+    QColor color(visual->color().red_, visual->color().green_, visual->color().blue_, 0);
+
+    std::string rangeStr = le.from();
+    std::string colorStr = color.name().toStdString();
+
+    c->addThreshold(new te::se::ParameterValue(rangeStr));
+    c->addValue(new te::se::ParameterValue(colorStr));
+
+    if(i == slices - 1)
+    {
+      rangeStr = le.to();
+      c->addThreshold(new te::se::ParameterValue(rangeStr));
+    }
+  }
+
+  //added dummy color for values > than max values...
+  c->addValue(new te::se::ParameterValue(colorWhiteStr));
+
+  c->setThresholdsBelongTo(te::se::Categorize::SUCCEEDING);
+
+  te::se::ColorMap* cm = new te::se::ColorMap;
+  cm->setCategorize(c);
+
+  return cm;
+}
+
 te::se::RasterSymbolizer* te::qt::plugins::terralib4::GetRasterSymbolizer(TeRasterTransform* visual)
 {
   te::se::RasterSymbolizer* symb = new te::se::RasterSymbolizer;
@@ -376,49 +437,126 @@ te::se::RasterSymbolizer* te::qt::plugins::terralib4::GetRasterSymbolizer(TeRast
   symb->setOffset(new te::se::ParameterValue(boost::lexical_cast<std::string>(offset)));
   symb->setGain(new te::se::ParameterValue(boost::lexical_cast<std::string>(gain)));
 
-  /*
+  TeRasterTransform::TeRasterTransfFunctions func = visual->getTransfFunction();
+
+  te::se::ChannelSelection* cs = new te::se::ChannelSelection;
+
   te::se::SelectedChannel* scRed = 0;
   te::se::SelectedChannel* scGreen = 0;
   te::se::SelectedChannel* scBlue = 0;
   te::se::SelectedChannel* scMono = 0;
 
-  std::map<TeRasterTransform::TeRGBChannels,short> rgbMap = visual->getRGBMap();
-
-  te::se::ChannelSelection* cs = new te::se::ChannelSelection;
-
-  if(rgbMap.find(TeRasterTransform::TeREDCHANNEL) != rgbMap.end())
+  if (func == TeRasterTransform::TeBand2Band)
   {
     scRed = new te::se::SelectedChannel;
-    scRed->setSourceChannelName(boost::lexical_cast<std::string>(rgbMap[TeRasterTransform::TeREDCHANNEL]));
-    te::se::ContrastEnhancement* contrastRed = new te::se::ContrastEnhancement();
-    scRed->setContrastEnhancement(contrastRed);
-    contrastRed->setGammaValue(visual->getContrastR());
+    scRed->setSourceChannelName("0");
 
-    cs->setRedChannel(scRed);
-  }
-
-  if(rgbMap.find(TeRasterTransform::TeGREENCHANNEL) != rgbMap.end())
-  {
     scGreen = new te::se::SelectedChannel;
-    scGreen->setSourceChannelName(boost::lexical_cast<std::string>(rgbMap[TeRasterTransform::TeGREENCHANNEL]));
-    te::se::ContrastEnhancement* contrastGreen = new te::se::ContrastEnhancement();
-    scGreen->setContrastEnhancement(contrastGreen);
-    contrastGreen->setGammaValue(visual->getContrastG());
+    scGreen->setSourceChannelName("1");
 
-    cs->setRedChannel(scGreen);
-  }
-
-  if(rgbMap.find(TeRasterTransform::TeBLUECHANNEL) != rgbMap.end())
-  {
     scBlue = new te::se::SelectedChannel;
-    scBlue->setSourceChannelName(boost::lexical_cast<std::string>(rgbMap[TeRasterTransform::TeBLUECHANNEL]));
-    te::se::ContrastEnhancement* contrastBlue = new te::se::ContrastEnhancement();
-    scBlue->setContrastEnhancement(contrastBlue);
-    contrastBlue->setGammaValue(visual->getContrastB());
+    scBlue->setSourceChannelName("2");
 
-    cs->setRedChannel(scBlue);
+    cs->setColorCompositionType(te::se::RGB_COMPOSITION);
+
   }
-  */
+  else if (func == TeRasterTransform::TeExtractBand)
+  {
+
+    short db = visual->getDestBand();
+
+    if (db == TeRasterTransform::TeREDCHANNEL)
+    {
+
+      scRed = new te::se::SelectedChannel;
+      scRed->setSourceChannelName(boost::lexical_cast<std::string>(visual->getSrcBand()));
+
+      cs->setColorCompositionType(te::se::RED_COMPOSITION);
+
+    }
+    else if (db == TeRasterTransform::TeGREENCHANNEL)
+    {
+
+      scGreen = new te::se::SelectedChannel;
+      scGreen->setSourceChannelName(boost::lexical_cast<std::string>(visual->getSrcBand()));
+
+      cs->setColorCompositionType(te::se::GREEN_COMPOSITION);
+
+    }
+    else if (db == TeRasterTransform::TeBLUECHANNEL)
+    {
+
+      scBlue = new te::se::SelectedChannel;
+      scBlue->setSourceChannelName(boost::lexical_cast<std::string>(visual->getSrcBand()));
+
+      cs->setColorCompositionType(te::se::BLUE_COMPOSITION);
+
+    }
+  }
+  else if (func == TeRasterTransform::TeMono2Three)
+  {
+
+    scMono = new te::se::SelectedChannel;
+    scMono->setSourceChannelName(boost::lexical_cast<std::string>(visual->getSrcBand()));
+
+    cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
+
+  }
+  else if (func == TeRasterTransform::TeExtractRGB)
+  {
+    std::map<TeRasterTransform::TeRGBChannels,short>& RGBmap = visual->getRGBMap();
+
+    scRed = new te::se::SelectedChannel;
+    scRed->setSourceChannelName(boost::lexical_cast<std::string>(RGBmap[TeRasterTransform::TeREDCHANNEL]));
+
+    scGreen = new te::se::SelectedChannel;
+    scGreen->setSourceChannelName(boost::lexical_cast<std::string>(RGBmap[TeRasterTransform::TeGREENCHANNEL]));
+
+    scBlue = new te::se::SelectedChannel;
+    scBlue->setSourceChannelName(boost::lexical_cast<std::string>(RGBmap[TeRasterTransform::TeBLUECHANNEL]));
+
+    cs->setColorCompositionType(te::se::RGB_COMPOSITION);
+
+  }
+  else if (func == TeRasterTransform::TeThreeBand2RGB)
+  {
+    scRed = new te::se::SelectedChannel;
+    scRed->setSourceChannelName("0");
+
+    scGreen = new te::se::SelectedChannel;
+    scGreen->setSourceChannelName("1");
+
+    scBlue = new te::se::SelectedChannel;
+    scBlue->setSourceChannelName("2");
+
+    cs->setColorCompositionType(te::se::RGB_COMPOSITION);
+  }
+
+  else if (func == TeRasterTransform::TeExtractBands)
+  {
+
+    std::map<TeRasterTransform::TeRGBChannels,short>& RGBmap = visual->getRGBMap();
+
+    if (RGBmap[TeRasterTransform::TeREDCHANNEL] != -1)
+      scRed->setSourceChannelName(boost::lexical_cast<std::string>(RGBmap[TeRasterTransform::TeREDCHANNEL]));
+    if (RGBmap[TeRasterTransform::TeGREENCHANNEL] != -1)
+      scGreen->setSourceChannelName(boost::lexical_cast<std::string>(RGBmap[TeRasterTransform::TeGREENCHANNEL]));
+    if (RGBmap[TeRasterTransform::TeBLUECHANNEL] != -1)
+      scBlue->setSourceChannelName(boost::lexical_cast<std::string>(RGBmap[TeRasterTransform::TeBLUECHANNEL]));
+
+    cs->setColorCompositionType(te::se::RGB_COMPOSITION);
+  }
+
+  if(scRed)
+    cs->setRedChannel(scRed);
+  if(scGreen)
+    cs->setGreenChannel(scGreen);
+  if(scBlue)
+    cs->setBlueChannel(scBlue);
+  if(scMono)
+    cs->setGrayChannel(scMono);
+
+  symb->setChannelSelection(cs);
 
   return symb;
 }

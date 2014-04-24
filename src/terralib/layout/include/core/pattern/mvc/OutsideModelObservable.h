@@ -66,12 +66,11 @@ namespace te
 
       virtual void updateProperties(te::layout::Properties* properties);
 
+      virtual Properties* getProperties() const;
+
     protected:
 
       virtual void notifyAll(ContextItem context);
-
-      virtual Properties* getProperties() const;
-
 
     protected:
       std::set<Observer*>	m_observers;

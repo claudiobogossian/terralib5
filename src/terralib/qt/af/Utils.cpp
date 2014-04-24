@@ -39,6 +39,7 @@
 #include "Exception.h"
 #include "Project.h"
 #include "Utils.h"
+#include "XMLFormatter.h"
 
 // STL
 #include <cassert>
@@ -88,6 +89,10 @@ te::qt::af::Project* te::qt::af::ReadProject(const std::string& uri)
   
   proj->setFileName(uri);
   
+  XMLFormatter::format(proj, false);
+
+  proj->setProjectAsChanged(false);
+
   return proj;
 
 }
@@ -180,7 +185,13 @@ void te::qt::af::Save(const te::qt::af::Project& project, const std::string& uri
 
   te::xml::Writer w(fout);
 
-  Save(project, w);
+  Project p(project);
+
+  XMLFormatter::format(&p, true);
+
+  Save(p, w);
+
+  XMLFormatter::format(&p, false);
 
   fout.close();
 }
@@ -294,7 +305,11 @@ void te::qt::af::SaveDataSourcesFile()
   if(fileName.empty())
     return;
 
+  XMLFormatter::formatDataSourceInfos(true);
+
   te::serialize::xml::Save(fileName);
+
+  XMLFormatter::formatDataSourceInfos(false);
 }
 
 void te::qt::af::UpdateApplicationPlugins()
@@ -856,7 +871,7 @@ void te::qt::af::WriteConfigFile(const QString& fileName, const QString& appName
   p.add("Application.Organization", "INPE");
   p.add("Application.Name", appName.toStdString());
   p.add("Application.Title", appTitle.toStdString());
-  p.add("Application.IconName", teDir.toStdString() + "/resources/images/png/terralib-globe-small.png");
+  p.add("Application.IconName", teDir.toStdString() + "/resources/images/png/terralib-globe.png");
   p.add("Application.UserSettingsFile.<xmlattr>.xlink:href", info.absolutePath().toStdString() + "/user_settings.xml");
   p.add("Application.PluginsFile.<xmlattr>.xlink:href", info.absolutePath().toStdString() + "/application_plugins.xml");
   p.add("Application.HelpFile.<xmlattr>.xlink:href", teDir_help.toStdString());

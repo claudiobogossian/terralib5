@@ -132,6 +132,13 @@ void te::pgis::DataSource::open()
   // Assure we are in a closed state
   close();
 
+  // Retrieve the char encoding
+  std::map<std::string, std::string>::const_iterator it = m_connInfo.find("PG_CLIENT_ENCODING");
+  if(it != m_connInfo.end())
+    m_encoding = te::common::CharEncodingConv::getCharEncodingType(it->second);
+  else
+    m_encoding = te::common::UNKNOWN_CHAR_ENCODING;
+
   m_pool->initialize();
 
   std::auto_ptr<te::da::DataSourceTransactor> t = getTransactor();
@@ -188,6 +195,11 @@ const std::string& te::pgis::DataSource::getCurrentSchema() const
 te::pgis::ConnectionPool* te::pgis::DataSource::getConnPool() const
 {
   return m_pool;
+}
+
+te::common::CharEncoding te::pgis::DataSource::getCharEncoding() const
+{
+  return m_encoding;
 }
 
 void te::pgis::DataSource::create(const std::map<std::string, std::string>& dsInfo)
@@ -444,9 +456,17 @@ std::vector<std::string> te::pgis::DataSource::getDataSourceNames(const std::map
 
 std::vector<te::common::CharEncoding> te::pgis::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
 {
-  //std::vector<std::string> encodings;
+  std::vector<te::common::CharEncoding> encodings;
 
-  //// Get an auxiliary data source
+  encodings.push_back(te::common::UTF8);    // UTF8
+  encodings.push_back(te::common::CP1250);  // WIN1250
+  encodings.push_back(te::common::CP1251);  // WIN1251
+  encodings.push_back(te::common::CP1252);  // WIN1252
+  encodings.push_back(te::common::CP1253);  // WIN1253
+  encodings.push_back(te::common::CP1254);  // WIN1254
+  encodings.push_back(te::common::CP1257);  // WIN1257
+  encodings.push_back(te::common::LATIN1);  // LATIN1
+
   //std::auto_ptr<DataSource> ds(new DataSource());
 
   //ds->setConnectionInfo(dsInfo);
@@ -462,7 +482,5 @@ std::vector<te::common::CharEncoding> te::pgis::DataSource::getEncodings(const s
 
   //ds->close();
 
-  //return encodings;
-
-  return std::vector<te::common::CharEncoding>();
+  return encodings;
 }

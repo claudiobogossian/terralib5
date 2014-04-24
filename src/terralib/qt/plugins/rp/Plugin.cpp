@@ -75,6 +75,10 @@
   #include "RegisterAction.h"
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_VECTORIZATION
+  #include "VectorizationAction.h"
+#endif
+
 // QT
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
@@ -185,6 +189,10 @@ void te::qt::plugins::rp::Plugin::registerActions()
 #ifdef TE_QT_PLUGIN_RP_HAVE_REGISTER
   m_register = new te::qt::plugins::rp::RegisterAction(m_rpMenu, m_rpPopupMenu);
 #endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_VECTORIZATION
+  m_vector = new te::qt::plugins::rp::VectorizationAction(m_rpMenu, m_rpPopupMenu);
+#endif
 }
 
 void  te::qt::plugins::rp::Plugin::unRegisterActions()
@@ -231,6 +239,10 @@ void  te::qt::plugins::rp::Plugin::unRegisterActions()
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_REGISTER
   delete m_register;
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_VECTORIZATION
+  delete m_vector;
 #endif
 }
 
