@@ -41,7 +41,7 @@ te::qt::af::DataSetTableDockWidget::DataSetTableDockWidget(QWidget* parent)
 
   setAttribute(Qt::WA_DeleteOnClose, true);
 
-  connect (m_view, SIGNAL(selectOIds(te::da::ObjectIdSet*, const bool&)), SLOT(selectionChanged(te::da::ObjectIdSet*, const bool&)));
+  connect (m_view, SIGNAL(selectOIds(te::da::ObjectIdSet*, const bool&, te::gm::Envelope*)), SLOT(selectionChanged(te::da::ObjectIdSet*, const bool&, te::gm::Envelope*)));
   connect (m_view, SIGNAL(deselectOIds(te::da::ObjectIdSet*)), SLOT(removeSelectedOIds(te::da::ObjectIdSet*)));
 
   // Alternate Colors
@@ -126,14 +126,14 @@ void te::qt::af::DataSetTableDockWidget::onApplicationTriggered(te::qt::af::evt:
   }
 }
 
-void te::qt::af::DataSetTableDockWidget::selectionChanged(te::da::ObjectIdSet* oids, const bool& add)
+void te::qt::af::DataSetTableDockWidget::selectionChanged(te::da::ObjectIdSet* oids, const bool& add, te::gm::Envelope* env)
 {
   if (!add)
     m_layer->clearSelected();
 
   m_layer->select(oids);
 
-  te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer);
+  te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer, env);
   ApplicationController::getInstance().broadcast(&e);
 }
 

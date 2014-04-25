@@ -33,9 +33,14 @@
 
 namespace te
 {
+  // Forward declarations
+  namespace gm
+  {
+    class Envelope;
+  }
+
   namespace map
   {
-    // Forward declarations
     class AbstractLayer;
   }
 
@@ -111,9 +116,11 @@ namespace te
 
             \param add True to add to previous selection, false to discard older selection.
 
+            \param env Bounding box of the last object selected.
+
             \note This function WILL TAKE the ownership of \a oids. It gives the ownership to the layer.
           */
-          void selectionChanged(te::da::ObjectIdSet* oids, const bool& add);
+          void selectionChanged(te::da::ObjectIdSet* oids, const bool& add, te::gm::Envelope* env);
 
           /*!
             \brief Removes the \a oids from the list of selected in the Layer.
