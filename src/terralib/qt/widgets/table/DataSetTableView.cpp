@@ -27,6 +27,7 @@
 #include "../../../dataaccess/query/OrderByItem.h"
 #include "../../../dataaccess/query/Select.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../geometry/Geometry.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "../../../statistics/qt/StatisticsDialog.h"
 
@@ -187,6 +188,29 @@ std::vector<QString> GetColumnsNames(te::da::DataSet* dset)
   }
 
   return res;
+}
+
+std::auto_ptr<te::gm::Envelope> GetExtent(te::da::DataSet* dset, te::qt::widgets::Promoter* p, const int& rowPosition)
+{
+  // Getting last select object bounding rectangle
+  std::vector<int> geoCols;
+
+  GetGeometryColumnsPositions(dset, geoCols);
+
+  if(!geoCols.empty())
+  {
+    int rpos = p->getLogicalRow(rowPosition);
+
+    dset->move(rpos);
+
+    size_t pos = (size_t)geoCols[0];
+
+    std::auto_ptr<te::gm::Geometry> g = dset->getGeometry(pos);
+
+    return std::auto_ptr<te::gm::Envelope> (new te::gm::Envelope(*g->getMBR()));
+  }
+
+  return std::auto_ptr<te::gm::Envelope>();
 }
 
 /*!
@@ -817,7 +841,7 @@ void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const bool&
 
   m_doScroll = false;
 
-  emit selectOIds(oids, add);
+  emit selectOIds(oids, add, GetExtent(m_dset, m_model->getPromoter(), row).get());
 
   if(m_promotionEnabled)
     promote();
@@ -847,7 +871,7 @@ void te::qt::widgets::DataSetTableView::highlightRows(const int& initRow, const 
 
   m_doScroll = false;
 
-  emit selectOIds(oids, true);
+  emit selectOIds(oids, true, GetExtent(m_dset, m_model->getPromoter(), final).get());
 
   if(m_promotionEnabled)
     promote();

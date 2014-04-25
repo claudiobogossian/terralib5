@@ -46,6 +46,11 @@ namespace te
     class DataSourceCapabilities;
   }
 
+  namespace gm
+  {
+    class Envelope;
+  }
+
   namespace map
   {
     class AbstractLayer;
@@ -265,7 +270,7 @@ namespace te
           /*!
             \brief Emmite when objects was selected.
           */
-          void selectOIds(te::da::ObjectIdSet*, const bool&);
+          void selectOIds(te::da::ObjectIdSet*, const bool&, te::gm::Envelope*);
 
           void deselectOIds(te::da::ObjectIdSet*);
 
