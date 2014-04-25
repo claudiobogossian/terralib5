@@ -286,8 +286,19 @@ void  te::qt::af::ApplicationController::initialize()
   m_appName = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Name"));
   m_appTitle = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Title"));
   m_appIconName = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconName"));
+  
+  if(!boost::filesystem::exists(m_appIconName.toStdString()))
+    m_appIconName = te::common::FindInTerraLibPath(m_appIconName.toStdString()).c_str();
+
   m_aboutLogo = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.AboutDialogLogo.<xmlattr>.xlink:href"));
+  
+  if(!boost::filesystem::exists(m_aboutLogo.toStdString()))
+    m_aboutLogo = te::common::FindInTerraLibPath(m_aboutLogo.toStdString()).c_str();
+  
   m_tLibLogo = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.TerraLibLogo.<xmlattr>.xlink:href"));
+  
+  if(!boost::filesystem::exists(m_tLibLogo.toStdString()))
+    m_tLibLogo = te::common::FindInTerraLibPath(m_tLibLogo.toStdString()).c_str();
 
   qApp->setApplicationName(m_appName);
 
