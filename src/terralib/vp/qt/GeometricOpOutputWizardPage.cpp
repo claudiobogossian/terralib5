@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/vp/qt/BasicGeopraphicOpWizardPage.cpp
+  \file terralib/vp/qt/GeometricOpWizardPage.cpp
 
-  \brief This file defines a class for a Basic Geographic Operation Wizard Page.
+  \brief This file defines a class for a Geometric Operation Wizard Page.
 */
 
 // TerraLib
@@ -31,8 +31,8 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/utils/DoubleListWidget.h"
-#include "BasicOpOutputWizardPage.h"
-#include "ui_BasicOpOutputWizardPageForm.h"
+#include "GeometricOpOutputWizardPage.h"
+#include "ui_GeometricOpOutputWizardPageForm.h"
 #include "VectorProcessingConfig.h"
 
 // Qt
@@ -46,9 +46,9 @@
 // STL
 #include <memory>
 
-te::vp::BasicOpOutputWizardPage::BasicOpOutputWizardPage(QWidget* parent)
+te::vp::GeometricOpOutputWizardPage::GeometricOpOutputWizardPage(QWidget* parent)
   : QWizardPage(parent),
-    m_ui(new Ui::BasicOpOutputWizardPageForm),
+    m_ui(new Ui::GeometricOpOutputWizardPageForm),
     m_toFile(false)
 {
 // setup controls
@@ -61,11 +61,14 @@ te::vp::BasicOpOutputWizardPage::BasicOpOutputWizardPage(QWidget* parent)
 // icons
   QSize iconSize(32, 32);
 
-  m_ui->m_convexHullRadioButton->setIconSize(iconSize);
-  m_ui->m_convexHullRadioButton->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-convex-hull-hint"));
+  m_ui->m_convexHullCheckBox->setIconSize(iconSize);
+  m_ui->m_convexHullCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-convex-hull-hint"));
 
-  m_ui->m_centroidRadioButton->setIconSize(iconSize);
-  m_ui->m_centroidRadioButton->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-centroid-hint"));
+  m_ui->m_centroidCheckBox->setIconSize(iconSize);
+  m_ui->m_centroidCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-centroid-hint"));
+
+  m_ui->m_mbrCheckBox->setIconSize(iconSize);
+  m_ui->m_mbrCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-mbr-hint"));
 
   m_ui->m_areaCheckBox->setIconSize(iconSize);
   m_ui->m_areaCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-area-hint"));
@@ -76,12 +79,10 @@ te::vp::BasicOpOutputWizardPage::BasicOpOutputWizardPage(QWidget* parent)
   m_ui->m_perimeterCheckBox->setIconSize(iconSize);
   m_ui->m_perimeterCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-perimeter-hint"));
 
-  m_ui->m_mbrRadioButton->setIconSize(iconSize);
-  m_ui->m_mbrRadioButton->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-mbr-hint"));
-
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
   connect(m_ui->m_attributesComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onAttributeComboBoxChanged(int)));
+  connect(m_ui->m_allObjectsRadioButton, SIGNAL(toggled(bool)), this, SLOT(onAllObjectsToggled()));
   connect(m_ui->m_simpleRadioButton, SIGNAL(toggled(bool)), this, SLOT(onSimpleOperationToggled()));
   connect(m_ui->m_byAttributesRadioButton, SIGNAL(toggled(bool)), this, SLOT(onAttributeOperationToggled()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
@@ -89,46 +90,46 @@ te::vp::BasicOpOutputWizardPage::BasicOpOutputWizardPage(QWidget* parent)
 
 }
 
-te::vp::BasicOpOutputWizardPage::~BasicOpOutputWizardPage()
+te::vp::GeometricOpOutputWizardPage::~GeometricOpOutputWizardPage()
 {
 }
 
-bool te::vp::BasicOpOutputWizardPage::hasConvexHull()
+bool te::vp::GeometricOpOutputWizardPage::hasConvexHull()
 {
-  return m_ui->m_convexHullRadioButton->isChecked();
+  return m_ui->m_convexHullCheckBox->isChecked();
 }
 
-bool te::vp::BasicOpOutputWizardPage::hasCentroid()
+bool te::vp::GeometricOpOutputWizardPage::hasCentroid()
 {
-  return m_ui->m_centroidRadioButton->isChecked();
+  return m_ui->m_centroidCheckBox->isChecked();
 }
 
-bool te::vp::BasicOpOutputWizardPage::hasMBR()
+bool te::vp::GeometricOpOutputWizardPage::hasMBR()
 {
-  return m_ui->m_mbrRadioButton->isChecked();
+  return m_ui->m_mbrCheckBox->isChecked();
 }
 
-bool te::vp::BasicOpOutputWizardPage::hasArea()
+bool te::vp::GeometricOpOutputWizardPage::hasArea()
 {
   return m_ui->m_areaCheckBox->isChecked();
 }
 
-bool te::vp::BasicOpOutputWizardPage::hasLine()
+bool te::vp::GeometricOpOutputWizardPage::hasLine()
 {
   return m_ui->m_lineCheckBox->isChecked();
 }
 
-bool te::vp::BasicOpOutputWizardPage::hasPerimeter()
+bool te::vp::GeometricOpOutputWizardPage::hasPerimeter()
 {
   return m_ui->m_perimeterCheckBox->isChecked();
 }
 
-std::string te::vp::BasicOpOutputWizardPage::getAttribute()
+std::string te::vp::GeometricOpOutputWizardPage::getAttribute()
 {
   return m_attribute;
 }
 
-void te::vp::BasicOpOutputWizardPage::setAttributes(std::vector<std::string> attributes)
+void te::vp::GeometricOpOutputWizardPage::setAttributes(std::vector<std::string> attributes)
 {
   m_ui->m_attributesComboBox->clear();
 
@@ -138,27 +139,44 @@ void te::vp::BasicOpOutputWizardPage::setAttributes(std::vector<std::string> att
   }
 }
 
-std::string te::vp::BasicOpOutputWizardPage::getOutDsName()
+te::vp::GeometricOpObjStrategy te::vp::GeometricOpOutputWizardPage::getObjectStrategy()
+{
+  if(m_ui->m_allObjectsRadioButton->isChecked())
+    return te::vp::ALL_OBJ;
+  if(m_ui->m_simpleRadioButton->isChecked())
+    return te::vp::AGGREG_OBJ;
+  if(m_ui->m_byAttributesRadioButton->isChecked())
+    return te::vp::AGGREG_BY_ATTRIBUTE;
+
+  return te::vp::ALL_OBJ;
+}
+
+bool te::vp::GeometricOpOutputWizardPage::hasOutputLayer()
+{
+  return m_ui->m_outputGroupBox->isChecked();
+}
+
+std::string te::vp::GeometricOpOutputWizardPage::getOutDsName()
 {
   return m_ui->m_newLayerNameLineEdit->text().toStdString();
 }
 
-bool te::vp::BasicOpOutputWizardPage::getToFile()
+bool te::vp::GeometricOpOutputWizardPage::getToFile()
 {
   return m_toFile;
 }
 
-te::da::DataSourceInfoPtr te::vp::BasicOpOutputWizardPage::getDsInfoPtr()
+te::da::DataSourceInfoPtr te::vp::GeometricOpOutputWizardPage::getDsInfoPtr()
 {
   return m_outputDatasource;
 }
 
-std::string te::vp::BasicOpOutputWizardPage::getPath()
+std::string te::vp::GeometricOpOutputWizardPage::getPath()
 {
   return m_ui->m_repositoryLineEdit->text().toStdString();
 }
 
-void te::vp::BasicOpOutputWizardPage::onAttributeComboBoxChanged(int index)
+void te::vp::GeometricOpOutputWizardPage::onAttributeComboBoxChanged(int index)
 {
   if(m_ui->m_byAttributesRadioButton->isChecked())
     m_attribute = m_ui->m_attributesComboBox->itemText(index).toStdString();
@@ -166,18 +184,24 @@ void te::vp::BasicOpOutputWizardPage::onAttributeComboBoxChanged(int index)
     m_attribute = "";
 }
 
-void te::vp::BasicOpOutputWizardPage::onSimpleOperationToggled()
+void te::vp::GeometricOpOutputWizardPage::onAllObjectsToggled()
 {
   m_ui->m_attributesComboBox->setEnabled(false);
   onAttributeComboBoxChanged(0);
 }
 
-void te::vp::BasicOpOutputWizardPage::onAttributeOperationToggled()
+void te::vp::GeometricOpOutputWizardPage::onSimpleOperationToggled()
+{
+  m_ui->m_attributesComboBox->setEnabled(false);
+  onAttributeComboBoxChanged(0);
+}
+
+void te::vp::GeometricOpOutputWizardPage::onAttributeOperationToggled()
 {
   m_ui->m_attributesComboBox->setEnabled(true);
 }
 
-void te::vp::BasicOpOutputWizardPage::onTargetDatasourceToolButtonPressed()
+void te::vp::GeometricOpOutputWizardPage::onTargetDatasourceToolButtonPressed()
 {
   m_ui->m_newLayerNameLineEdit->clear();
   m_ui->m_newLayerNameLineEdit->setEnabled(true);
@@ -198,7 +222,7 @@ void te::vp::BasicOpOutputWizardPage::onTargetDatasourceToolButtonPressed()
   m_toFile = false;
 }
 
-void te::vp::BasicOpOutputWizardPage::onTargetFileToolButtonPressed()
+void te::vp::GeometricOpOutputWizardPage::onTargetFileToolButtonPressed()
 {
   m_ui->m_newLayerNameLineEdit->clear();
   m_ui->m_repositoryLineEdit->clear();

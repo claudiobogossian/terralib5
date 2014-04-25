@@ -68,7 +68,7 @@
 #include "../statistics/core/StringStatisticalSummary.h"
 #include "../statistics/core/NumericStatisticalSummary.h"
 
-#include "BasicGeoOpQuery.h"
+#include "GeometricOpQuery.h"
 #include "Config.h"
 #include "Exception.h"
 #include "Utils.h"
@@ -83,112 +83,111 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
-te::vp::BasicGeoOpQuery::BasicGeoOpQuery()
+te::vp::GeometricOpQuery::GeometricOpQuery()
 {}
 
-te::vp::BasicGeoOpQuery::~BasicGeoOpQuery()
+te::vp::GeometricOpQuery::~GeometricOpQuery()
 {}
 
-bool te::vp::BasicGeoOpQuery::run()
+bool te::vp::GeometricOpQuery::run()
 {
-  std::auto_ptr<te::da::DataSetType> outDSType(GetDataSetType());
-  std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(outDSType.get()));
+  //std::auto_ptr<te::da::DataSetType> outDSType(GetDataSetType());
+  //std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(outDSType.get()));
 
-  te::gm::GeometryProperty* propGeom = static_cast<te::gm::GeometryProperty*>(m_inDsetType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
-  std::string propGeomName = propGeom->getName();
-  std::size_t propGeomPos = m_inDsetType->getPropertyPosition(propGeomName);
+  //te::gm::GeometryProperty* propGeom = static_cast<te::gm::GeometryProperty*>(m_inDsetType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+  //std::string propGeomName = propGeom->getName();
+  //std::size_t propGeomPos = m_inDsetType->getPropertyPosition(propGeomName);
 
-  // get the geometric operation and/or tabular operation 
-  int opGeom = -1;
-  std::vector<int> opTab;
+  //// get the geometric operation and/or tabular operation 
+  //int opGeom = -1;
+  //std::vector<int> opTab;
 
-  for(std::size_t i = 0; i < m_operations.size(); ++i)
-  {
-    switch(m_operations[i])
-    {
-      case te::vp::CENTROID:
-        opGeom = te::vp::CENTROID;
-        break;
-      case te::vp::CONVEX_HULL:
-        opGeom = te::vp::CONVEX_HULL;
-        break;
-      case te::vp::MBR:
-        opGeom = te::vp::MBR;
-        break;
-      case te::vp::AREA:
-        opTab.push_back(te::vp::AREA);
-        break;
-      case te::vp::LINE:
-        opTab.push_back(te::vp::LINE);
-        break;
-      case te::vp::PERIMETER:
-        opTab.push_back(te::vp::PERIMETER);
-        break;
-    }
-  }
+  //for(std::size_t i = 0; i < m_operations.size(); ++i)
+  //{
+  //  switch(m_operations[i])
+  //  {
+  //    case te::vp::CENTROID:
+  //      opGeom = te::vp::CENTROID;
+  //      break;
+  //    case te::vp::CONVEX_HULL:
+  //      opGeom = te::vp::CONVEX_HULL;
+  //      break;
+  //    case te::vp::MBR:
+  //      opGeom = te::vp::MBR;
+  //      break;
+  //    case te::vp::AREA:
+  //      opTab.push_back(te::vp::AREA);
+  //      break;
+  //    case te::vp::LINE:
+  //      opTab.push_back(te::vp::LINE);
+  //      break;
+  //    case te::vp::PERIMETER:
+  //      opTab.push_back(te::vp::PERIMETER);
+  //      break;
+  //  }
+  //}
 
-  te::da::Fields* fields = new te::da::Fields;
-  
-  te::da::FromItem* fromItem = new te::da::DataSetName(m_inDsetType->getName());
-  te::da::From* from = new te::da::From;
-  from->push_back(fromItem);
+  //te::da::Fields* fields = new te::da::Fields;
+  //
+  //te::da::FromItem* fromItem = new te::da::DataSetName(m_inDsetType->getName());
+  //te::da::From* from = new te::da::From;
+  //from->push_back(fromItem);
 
-  if(opGeom == te::vp::MBR)
-  {
-    
-  }
-  if(opGeom == te::vp::CONVEX_HULL)
-  {
+  //if(opGeom == te::vp::MBR)
+  //{
+  //  
+  //}
+  //if(opGeom == te::vp::CONVEX_HULL)
+  //{
 
-  }
-  if(opGeom == te::vp::CENTROID)
-  {
-    for(std::size_t i = 0; i < m_selectedProps.size(); ++i)
-    {
-      te::da::Field* f_selProp = new te::da::Field(m_selectedProps[i]);
-      fields->push_back(f_selProp);
-    }
-  }
-  else
-  {
-    for(std::size_t i = 0; i < m_selectedProps.size(); ++i)
-    {
-      te::da::Field* f_selProp = new te::da::Field(m_selectedProps[i]);
-      fields->push_back(f_selProp);
-    }
+  //}
+  //if(opGeom == te::vp::CENTROID)
+  //{
+  //  for(std::size_t i = 0; i < m_selectedProps.size(); ++i)
+  //  {
+  //    te::da::Field* f_selProp = new te::da::Field(m_selectedProps[i]);
+  //    fields->push_back(f_selProp);
+  //  }
+  //}
+  //else
+  //{
+  //  for(std::size_t i = 0; i < m_selectedProps.size(); ++i)
+  //  {
+  //    te::da::Field* f_selProp = new te::da::Field(m_selectedProps[i]);
+  //    fields->push_back(f_selProp);
+  //  }
 
-    for(std::size_t i = 0; i < opTab.size(); ++i)
-    {
-      switch (opTab[i])
-      {
-      case te::vp::AREA:
-        break;
-      case te::vp::LINE:
-        break;
-      case te::vp::PERIMETER:
-        break;
-      }
-    }
+  //  for(std::size_t i = 0; i < opTab.size(); ++i)
+  //  {
+  //    switch (opTab[i])
+  //    {
+  //    case te::vp::AREA:
+  //      break;
+  //    case te::vp::LINE:
+  //      break;
+  //    case te::vp::PERIMETER:
+  //      break;
+  //    }
+  //  }
 
-    te::da::Field* f_geom = new te::da::Field(propGeomName, " geom");
-    fields->push_back(f_geom);
+  //  te::da::Field* f_geom = new te::da::Field(propGeomName, " geom");
+  //  fields->push_back(f_geom);
 
-    te::da::Select select(fields, from);
-    std::auto_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
+  //  te::da::Select select(fields, from);
+  //  std::auto_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
 
-    if (dsQuery->isEmpty())
-      return false;
+  //  if (dsQuery->isEmpty())
+  //    return false;
 
-    SetOutputDSet(dsQuery, outDSet.get());
+  //  SetOutputDSet(dsQuery, outDSet.get());
 
-    return save(outDSet, outDSType);
-  }
+  //  return save(outDSet, outDSType);
 
-  return true;
+  return false;
 }
 
 
-void te::vp::BasicGeoOpQuery::SetOutputDSet(std::auto_ptr<te::da::DataSet> inDataSet,
+void te::vp::GeometricOpQuery::SetOutputDSet(std::auto_ptr<te::da::DataSet> inDataSet,
                                             te::mem::DataSet* outDataSet)
 {
   std::size_t numProps = inDataSet->getNumProperties();

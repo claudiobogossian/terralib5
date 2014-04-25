@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/vp/qt/BasicGeopraphicOpWizardPage.cpp
+  \file terralib/vp/qt/GeometricOpWizardPage.cpp
 
-  \brief This file defines a class for a Basic Geographic Operation Wizard Page.
+  \brief This file defines a class for a Geometric Operation Wizard Page.
 */
 
 // TerraLib
@@ -30,8 +30,8 @@
 #include "../../dataaccess/utils/Utils.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../qt/widgets/utils/DoubleListWidget.h"
-#include "BasicGeographicOpWizardPage.h"
-#include "ui_BasicGeographicOpWizardPageForm.h"
+#include "GeometricOpWizardPage.h"
+#include "ui_GeometricOpWizardPageForm.h"
 
 // Qt
 #include <QGridLayout>
@@ -43,9 +43,9 @@
 #include <memory>
 
 
-te::vp::BasicGeographicOpWizardPage::BasicGeographicOpWizardPage(QWidget* parent)
+te::vp::GeometricOpWizardPage::GeometricOpWizardPage(QWidget* parent)
   : QWizardPage(parent),
-    m_ui(new Ui::BasicGeographicOpWizardPageForm),
+    m_ui(new Ui::GeometricOpWizardPageForm),
     m_layer(0)
 {
 // setup controls
@@ -65,11 +65,11 @@ te::vp::BasicGeographicOpWizardPage::BasicGeographicOpWizardPage(QWidget* parent
 
 }
 
-te::vp::BasicGeographicOpWizardPage::~BasicGeographicOpWizardPage()
+te::vp::GeometricOpWizardPage::~GeometricOpWizardPage()
 {
 }
 
-void te::vp::BasicGeographicOpWizardPage::setLayer(te::map::AbstractLayerPtr layer)
+void te::vp::GeometricOpWizardPage::setLayer(te::map::AbstractLayerPtr layer)
 {
   m_layer = layer;
 
@@ -77,17 +77,17 @@ void te::vp::BasicGeographicOpWizardPage::setLayer(te::map::AbstractLayerPtr lay
   loadAttributes();
 }
 
-te::map::AbstractLayerPtr te::vp::BasicGeographicOpWizardPage::getLayer()
+te::map::AbstractLayerPtr te::vp::GeometricOpWizardPage::getLayer()
 {
   return m_layer;
 }
 
-std::vector<std::string> te::vp::BasicGeographicOpWizardPage::getSelectedProps()
+std::vector<std::string> te::vp::GeometricOpWizardPage::getSelectedProps()
 {
   return m_widget->getOutputValues();
 }
 
-void te::vp::BasicGeographicOpWizardPage::loadAttributes()
+void te::vp::GeometricOpWizardPage::loadAttributes()
 {
   std::auto_ptr<te::da::DataSetType> dsType = m_layer->getSchema();
   std::vector<te::dt::Property*> vecProps = dsType->getProperties();

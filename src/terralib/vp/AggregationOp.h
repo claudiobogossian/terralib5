@@ -64,14 +64,14 @@ namespace te
       
       virtual bool paramsAreValid();
       
-      void setInput(std::auto_ptr<te::da::DataSource> inDsrc,
+      void setInput(te::da::DataSourcePtr inDsrc,
                     std::auto_ptr<te::da::DataSet> inDset,
                     std::auto_ptr<te::da::DataSetType> inDsetType);
       
       void setParams(std::vector<te::dt::Property*>& groupProps,
                      std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >&statSum);
       
-      void setOutput(std::auto_ptr<te::da::DataSource> outDsrc, std::string dsname);
+      void setOutput(te::da::DataSourcePtr outDsrc, std::string dsname);
       
     protected:
       
@@ -80,14 +80,14 @@ namespace te
       // it defines the type of the result considering the input geometries being aggregated
       te::gm::GeomType getGeomResultType(te::gm::GeomType geom);
       
-      std::auto_ptr<te::da::DataSource> m_inDsrc;
+      te::da::DataSourcePtr m_inDsrc;
       std::auto_ptr<te::da::DataSet> m_inDset;
       std::auto_ptr<te::da::DataSetType> m_inDsetType;
       
       std::vector<te::dt::Property*> m_groupProps;
       std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > m_statSum;
       
-      std::auto_ptr<te::da::DataSource> m_outDsrc;
+      te::da::DataSourcePtr m_outDsrc;
       std::string m_outDset;
     };
   }

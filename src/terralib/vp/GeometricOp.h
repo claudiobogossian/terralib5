@@ -18,15 +18,15 @@
  */
 
 /*!
- \file GeographicOp.h
+ \file GeometricOp.h
  
- \brief Geographic operation.
+ \brief Geometric operation.
  
  \ingroup vp
  */
 
-#ifndef __TERRALIB_VP_INTERNAL_GEOGRAPHIC_OP_H
-#define __TERRALIB_VP_INTERNAL_GEOGRAPHIC_OP_H
+#ifndef __TERRALIB_VP_INTERNAL_GEOMETRIC_OP_H
+#define __TERRALIB_VP_INTERNAL_GEOMETRIC_OP_H
 
 //Terralib
 
@@ -52,13 +52,13 @@ namespace te
 {
   namespace vp
   {
-    class TEVPEXPORT BasicGeoOp
+    class TEVPEXPORT GeometricOp
     {
     public:
       
-      BasicGeoOp();
+      GeometricOp();
       
-      virtual ~BasicGeoOp() {}
+      virtual ~GeometricOp() {}
       
       virtual bool run() = 0;
       
@@ -69,8 +69,10 @@ namespace te
                     std::auto_ptr<te::da::DataSetType> inDsetType);
       
       void setParams(std::vector<std::string> selectedProps, 
-                    std::vector<te::vp::GeographicOperation> operations,
-                    std::string attribute);
+                    std::vector<te::vp::GeometricOperation> operations,
+                    te::vp::GeometricOpObjStrategy objStrategy,
+                    std::string attribute,
+                    bool outputLayer);
       
       void setOutput(std::auto_ptr<te::da::DataSource> outDsrc, std::string dsname);
       
@@ -78,19 +80,23 @@ namespace te
       
       bool save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType);
 
-      te::da::DataSetType* GetDataSetType();
+      te::da::DataSetType* GetDataSetType(te::vp::GeometricOpObjStrategy,
+                                          bool MultiGeomColumns,
+                                          int geomOp = 0);
 
       te::da::DataSourcePtr m_inDsrc;
       std::auto_ptr<te::da::DataSet> m_inDset;
       std::auto_ptr<te::da::DataSetType> m_inDsetType;
 
       std::vector<std::string> m_selectedProps;
-      std::vector<te::vp::GeographicOperation> m_operations;
+      std::vector<te::vp::GeometricOperation> m_operations;
+      te::vp::GeometricOpObjStrategy m_objStrategy;
       std::string m_attribute;
+      bool m_outputLayer;
       
       std::auto_ptr<te::da::DataSource> m_outDsrc;
       std::string m_outDsetName;
     };
   }
 }
-#endif // __TERRALIB_VP_INTERNAL_GEOGRAPHIC_OP_H
+#endif // __TERRALIB_VP_INTERNAL_GEOMETRIC_OP_H

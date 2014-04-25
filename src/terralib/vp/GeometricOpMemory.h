@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file GeographicMemory.h
+  \file GeometricMemory.h
    
   \brief 
  
   \ingroup vp
 */
 
-#ifndef __TERRALIB_VP_INTERNAL_GEOGRAPHIC_OP_MEMORY_H
-#define __TERRALIB_VP_INTERNAL_GEOGRAPHIC_OP_MEMORY_H
+#ifndef __TERRALIB_VP_INTERNAL_GEOMETRIC_OP_MEMORY_H
+#define __TERRALIB_VP_INTERNAL_GEOMETRIC_OP_MEMORY_H
 
 //Terralib
 #include "../datatype/Property.h"
@@ -35,7 +35,7 @@
 #include "../memory/DataSet.h"
 #include "../statistics/core/Enums.h"
 
-#include "BasicGeoOp.h"
+#include "GeometricOp.h"
 #include "Config.h"
 #include "Enums.h"
 #include "Exception.h"
@@ -51,25 +51,26 @@ namespace te
 {
   namespace vp
   {
-    class TEVPEXPORT BasicGeoOpMemory : public BasicGeoOp
+    class TEVPEXPORT GeometricOpMemory : public GeometricOp
     {
     
     public:
       
-      BasicGeoOpMemory();
+      GeometricOpMemory();
       
-      ~BasicGeoOpMemory();
+      ~GeometricOpMemory();
       
       bool run();
 
     protected:
 
-      double CalculateTabularOp(int tabOperation, 
-                                te::gm::Geometry* geom);
+      void SetAllObjects( std::vector<te::da::DataSetType*> dsTypeVec, 
+                          std::vector<int> tabVec, 
+                          std::vector<int> geoVec);
 
     }; // end class
   } // end namespace vp
 }   // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_GEOGRAPHIC_OP_MEMORY_H
+#endif  // __TERRALIB_VP_INTERNAL_GEOMETRIC_OP_MEMORY_H
 
