@@ -28,6 +28,7 @@
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/Translator.h"
 #include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
@@ -38,7 +39,9 @@
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../srs/Config.h"
 #include "../Exception.h"
-#include "../Intersection.h"
+#include "../IntersectionMemory.h"
+#include "../IntersectionOp.h"
+#include "../IntersectionQuery.h"
 #include "../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "IntersectionDialog.h"
 #include "LayerTreeModel.h"
@@ -261,7 +264,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
       std::map<std::string, std::string> dsinfo;
       dsinfo["URI"] = uri.string();
 
-      std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
+      te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
       dsOGR->setConnectionInfo(dsinfo);
       dsOGR->open();
       if(dsOGR->dataSetExists(outputdataset))
@@ -272,24 +275,32 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
       
       this->setCursor(Qt::WaitCursor);
 
-      if(firstSelectedDS.get() || secondSelectedDS.get())
-        res = te::vp::Intersection( firstDataSetLayer->getDataSetName(),
-                                    firstDataSource.get(),
-                                    secondDataSetLayer->getDataSetName(),
-                                    secondDataSource.get(),
-                                    copyInputColumns,
-                                    outputdataset, 
-                                    dsOGR.get(),
-                                    firstSelectedDS.get(),
-                                    secondSelectedDS.get());
+      te::vp::IntersectionOp* intersectionOp = 0;
+
+      // select a strategy based on the capabilities of the input datasource
+      const te::da::DataSourceCapabilities firstDSCapabilities = firstDataSource->getCapabilities();
+      const te::da::DataSourceCapabilities secondDSCapabilities = secondDataSource->getCapabilities();
+
+      if( firstDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
+          secondDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
+          (firstDataSource->getId() == secondDataSource->getId()))
+      {
+        intersectionOp = new te::vp::IntersectionQuery();
+      }
       else
-        res = te::vp::Intersection( firstDataSetLayer->getDataSetName(),
-                                    firstDataSource.get(),
-                                    secondDataSetLayer->getDataSetName(),
-                                    secondDataSource.get(),
-                                    copyInputColumns,
-                                    outputdataset, 
-                                    dsOGR.get());
+      {
+        intersectionOp = new te::vp::IntersectionMemory();
+      }
+
+      intersectionOp->setInput( firstDataSource, firstDataSetLayer->getData(), firstDataSetLayer->getSchema(),
+                                secondDataSource, secondDataSetLayer->getData(), secondDataSetLayer->getSchema());
+      intersectionOp->setOutput(dsOGR, outputdataset);
+      intersectionOp->setParams(copyInputColumns, firstDataSetLayer->getSRID());
+
+      if (!intersectionOp->paramsAreValid())
+        res = false;
+      else
+        res = intersectionOp->run();
 
       if(!res)
       {
@@ -298,6 +309,8 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
         reject();
       }
       dsOGR->close();
+
+      delete intersectionOp;
 
       // let's include the new datasource in the managers
       boost::uuids::basic_random_generator<boost::mt19937> gen;
@@ -332,24 +345,34 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
       }
       this->setCursor(Qt::WaitCursor);
 
-      if(firstSelectedDS.get() || secondSelectedDS.get())
-        res = te::vp::Intersection(firstDataSetLayer->getDataSetName(),
-                                  firstDataSource.get(),
-                                  secondDataSetLayer->getDataSetName(),
-                                  secondDataSource.get(),
-                                  copyInputColumns,
-                                  outputdataset, 
-                                  aux.get(),
-                                  firstSelectedDS.get(),
-                                  secondSelectedDS.get());
+      te::vp::IntersectionOp* intersectionOp = 0;
+
+      // select a strategy based on the capabilities of the input datasource
+      const te::da::DataSourceCapabilities firstDSCapabilities = firstDataSource->getCapabilities();
+      const te::da::DataSourceCapabilities secondDSCapabilities = secondDataSource->getCapabilities();
+
+      if( firstDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
+          secondDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
+          (firstDataSource->getId() == secondDataSource->getId()))
+      {
+        intersectionOp = new te::vp::IntersectionQuery();
+      }
       else
-        res = te::vp::Intersection(firstDataSetLayer->getDataSetName(),
-                                  firstDataSource.get(),
-                                  secondDataSetLayer->getDataSetName(),
-                                  secondDataSource.get(),
-                                  copyInputColumns,
-                                  outputdataset, 
-                                  aux.get());
+      {
+        intersectionOp = new te::vp::IntersectionMemory();
+      }
+
+      intersectionOp->setInput( firstDataSource, firstDataSetLayer->getData(), firstDataSetLayer->getSchema(),
+                                secondDataSource, secondDataSetLayer->getData(), secondDataSetLayer->getSchema());
+      intersectionOp->setOutput(aux, outputdataset);
+      intersectionOp->setParams(copyInputColumns, firstDataSetLayer->getSRID());
+
+      if (!intersectionOp->paramsAreValid())
+        res = false;
+      else
+        res = intersectionOp->run();
+
+      delete intersectionOp;
 
       if(!res)
       {

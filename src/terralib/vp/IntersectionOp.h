@@ -64,16 +64,16 @@ namespace te
       
       virtual bool paramsAreValid();
       
-      void setInput(std::auto_ptr<te::da::DataSource> inFirstDsrc,
+      void setInput(te::da::DataSourcePtr inFirstDsrc,
                     std::auto_ptr<te::da::DataSet> inFirstDset,
                     std::auto_ptr<te::da::DataSetType> inFirstDsetType,
-                    std::auto_ptr<te::da::DataSource> inSecondDsrc,
+                    te::da::DataSourcePtr inSecondDsrc,
                     std::auto_ptr<te::da::DataSet> inSecondDset,
                     std::auto_ptr<te::da::DataSetType> inSecondDsetType);
 
       void setParams(const bool& copyInputColumns, std::size_t inSRID);
 
-      void setOutput(std::auto_ptr<te::da::DataSource> outDsrc, std::string dsname);
+      void setOutput(te::da::DataSourcePtr outDsrc, std::string dsname);
 
     protected:
 
@@ -85,17 +85,17 @@ namespace te
       // it defines the type of the result considering the input geometries being aggregated
       te::gm::GeomType getGeomResultType(te::gm::GeomType geom);
       
-      std::auto_ptr<te::da::DataSource> m_inFirstDsrc;
+      te::da::DataSourcePtr m_inFirstDsrc;
       std::auto_ptr<te::da::DataSet> m_inFirstDset;
       std::auto_ptr<te::da::DataSetType> m_inFirstDsetType;
-      std::auto_ptr<te::da::DataSource> m_inSecondDsrc;
+      te::da::DataSourcePtr m_inSecondDsrc;
       std::auto_ptr<te::da::DataSet> m_inSecondDset;
       std::auto_ptr<te::da::DataSetType> m_inSecondDsetType;
 
       bool m_copyInputColumns;
       std::size_t m_SRID;
 
-      std::auto_ptr<te::da::DataSource> m_outDsrc;
+      te::da::DataSourcePtr m_outDsrc;
       std::string m_outDsetName;
     };
   }

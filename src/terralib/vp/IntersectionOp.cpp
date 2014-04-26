@@ -43,10 +43,10 @@ te::vp::IntersectionOp::IntersectionOp():
 {
 }
 
-void te::vp::IntersectionOp::setInput(std::auto_ptr<te::da::DataSource> inFirstDsrc,
+void te::vp::IntersectionOp::setInput(te::da::DataSourcePtr inFirstDsrc,
                                       std::auto_ptr<te::da::DataSet> inFirstDset,
                                       std::auto_ptr<te::da::DataSetType> inFirstDsetType,
-                                      std::auto_ptr<te::da::DataSource> inSecondDsrc,
+                                      te::da::DataSourcePtr inSecondDsrc,
                                       std::auto_ptr<te::da::DataSet> inSecondDset,
                                       std::auto_ptr<te::da::DataSetType> inSecondDsetType)
 {
@@ -65,7 +65,7 @@ void te::vp::IntersectionOp::setParams( const bool& copyInputColumns,
   m_SRID = inSRID;
 }
 
-void te::vp::IntersectionOp::setOutput(std::auto_ptr<te::da::DataSource> outDsrc, std::string dsname)
+void te::vp::IntersectionOp::setOutput(te::da::DataSourcePtr outDsrc, std::string dsname)
 {
   m_outDsrc = outDsrc;
   m_outDsetName = dsname;
