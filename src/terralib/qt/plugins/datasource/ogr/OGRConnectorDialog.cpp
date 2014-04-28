@@ -135,8 +135,8 @@ void te::qt::plugins::ogr::OGRConnectorDialog::openPushButtonPressed()
 
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
-      m_datasource->setTitle(title.toLatin1().data());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toLatin1().data());
+      m_datasource->setTitle(title.toStdString());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().toStdString());
       m_datasource->setAccessDriver("OGR");
       m_datasource->setType("OGR");
     }

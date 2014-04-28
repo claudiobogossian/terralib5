@@ -134,7 +134,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::openPushButtonPressed()
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
       m_datasource->setTitle(title.toStdString());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().toStdString());
       m_datasource->setAccessDriver("POSTGIS");
       m_datasource->setType("POSTGIS");
     }
@@ -143,7 +143,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::openPushButtonPressed()
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(dsInfo);
       m_datasource->setTitle(title.toStdString());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().toStdString());
     }
   }
   catch(const std::exception& e)
