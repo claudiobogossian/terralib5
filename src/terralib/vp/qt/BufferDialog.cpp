@@ -29,6 +29,7 @@
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
@@ -48,7 +49,9 @@
 #include "../Config.h"
 #include "../Exception.h"
 #include "../qt/widgets/layer/utils/DataSet2Layer.h"
-#include "Buffer.h"
+#include "BufferMemory.h"
+#include "BufferOp.h"
+#include "BufferQuery.h"
 #include "BufferDialog.h"
 #include "ui_BufferDialogForm.h"
 #include "VectorProcessingConfig.h"
@@ -441,7 +444,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
       std::map<std::string, std::string> dsinfo;
       dsinfo["URI"] = uri.string();
 
-      std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
+      te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
       dsOGR->setConnectionInfo(dsinfo);
       dsOGR->open();
 
@@ -452,16 +455,29 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
       }
 
       this->setCursor(Qt::WaitCursor);
-      res = te::vp::Buffer( dsLayer->getDataSetName(),
-                            inDataSource.get(),
-                            bufferPolygonRule, 
-                            bufferBoundariesRule, 
-                            copyInputColumns, 
-                            levels,
-                            outputdataset,
-                            dsOGR.get(),
-                            fixedDistance,
-                            propDistance);
+
+      te::vp::BufferOp* bufferOp = 0;
+
+      // select a strategy based on the capabilities of the input datasource
+      const te::da::DataSourceCapabilities dsCapabilities = inDataSource->getCapabilities();
+
+      if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
+      {
+        bufferOp = new te::vp::BufferQuery();
+      }
+      else
+      {
+        bufferOp = new te::vp::BufferMemory();
+      }
+
+      bufferOp->setInput(inDataSource, dsLayer->getData(), dsLayer->getSchema());
+      bufferOp->setOutput(dsOGR, outputdataset);
+      bufferOp->setParams(fixedDistance, bufferPolygonRule, bufferBoundariesRule, copyInputColumns, levels);
+
+      if (!bufferOp->paramsAreValid())
+        res = false;
+      else
+        res = bufferOp->run();
 
       if(!res)
       {
@@ -469,6 +485,8 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
         QMessageBox::information(this, "Buffer", "Error: could not generate the buffer.");
       }
       dsOGR->close();
+
+      delete bufferOp;
 
       // let's include the new datasource in the managers
       boost::uuids::basic_random_generator<boost::mt19937> gen;
@@ -502,22 +520,37 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
         return;
       }
       this->setCursor(Qt::WaitCursor);
-      res = te::vp::Buffer( dsLayer->getDataSetName(),
-                            inDataSource.get(),
-                            bufferPolygonRule, 
-                            bufferBoundariesRule, 
-                            copyInputColumns, 
-                            levels,
-                            outputdataset,
-                            aux.get(),
-                            fixedDistance,
-                            propDistance);
+      te::vp::BufferOp* bufferOp = 0;
+
+      // select a strategy based on the capabilities of the input datasource
+      const te::da::DataSourceCapabilities dsCapabilities = inDataSource->getCapabilities();
+
+      if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
+      {
+        bufferOp = new te::vp::BufferQuery();
+      }
+      else
+      {
+        bufferOp = new te::vp::BufferMemory();
+      }
+
+      bufferOp->setInput(inDataSource, dsLayer->getData(), dsLayer->getSchema());
+      bufferOp->setOutput(aux, outputdataset);
+      bufferOp->setParams(fixedDistance, bufferPolygonRule, bufferBoundariesRule, copyInputColumns, levels);
+
+      if (!bufferOp->paramsAreValid())
+        res = false;
+      else
+        res = bufferOp->run();
+
       if(!res)
       {
         this->setCursor(Qt::ArrowCursor);
         QMessageBox::information(this, "Buffer", "Error: could not generate the buffer.");
         reject();
       }
+
+      delete bufferOp;
     }
 
     // creating a layer for the result
