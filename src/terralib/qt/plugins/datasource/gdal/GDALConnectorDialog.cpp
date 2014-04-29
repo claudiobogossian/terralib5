@@ -113,7 +113,7 @@ void te::qt::plugins::gdal::GDALConnectorDialog::openPushButtonPressed()
     if(m_driver.get() == 0)
       throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open dataset via GDAL due to an unknown error!"));
 
-    QString title = m_ui->m_datasourceTitleLineEdit->text().trimmed();
+    QString title = m_ui->m_datasourceTitleLineEdit->text();
 
     if(title.isEmpty())
       title = m_ui->m_datasetLineEdit->text();
@@ -131,8 +131,8 @@ void te::qt::plugins::gdal::GDALConnectorDialog::openPushButtonPressed()
 
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
-      m_datasource->setTitle(title.toUtf8().data());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
+      m_datasource->setTitle(title.toStdString());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().toStdString());
       m_datasource->setAccessDriver("GDAL");
       m_datasource->setType("GDAL");
     }
@@ -140,8 +140,8 @@ void te::qt::plugins::gdal::GDALConnectorDialog::openPushButtonPressed()
     {
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(dsInfo);
-      m_datasource->setTitle(title.toUtf8().data());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
+      m_datasource->setTitle(title.toStdString());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().toStdString());
     }
   }
   catch(const std::exception& e)

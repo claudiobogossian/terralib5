@@ -43,7 +43,7 @@ te::vp::AggregationOp::AggregationOp():
 {
 }
 
-void te::vp::AggregationOp::setInput(std::auto_ptr<te::da::DataSource> inDsrc,
+void te::vp::AggregationOp::setInput(te::da::DataSourcePtr inDsrc,
                                      std::auto_ptr<te::da::DataSet> inDset,
                                      std::auto_ptr<te::da::DataSetType> inDsetType)
 {
@@ -59,7 +59,7 @@ void te::vp::AggregationOp::setParams(std::vector<te::dt::Property*>& groupProps
   m_statSum = statSum;
 }
 
-void te::vp::AggregationOp::setOutput(std::auto_ptr<te::da::DataSource> outDsrc, std::string dsname)
+void te::vp::AggregationOp::setOutput(te::da::DataSourcePtr outDsrc, std::string dsname)
 {
   m_outDsrc = outDsrc;
   m_outDset = dsname;

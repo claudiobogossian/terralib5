@@ -18,44 +18,56 @@
  */
 
 /*!
-  \file terralib/qt/plugins/vp/BasicGeographicOpAction.cpp
+  \file terralib/qt/plugins/vp/GeometricOpAction.cpp
 
-  \brief This file defines the BasicGeographicOp class
+  \brief This file defines the GeometricOp class
 */
 
 // Terralib
-#include "../../../vp/qt/BasicGeographicOpWizard.h"
+#include "../../../vp/qt/GeometricOpWizard.h"
 #include "../../af/ApplicationController.h"
+#include "../../af/events/LayerEvents.h"
 #include "../../af/Project.h"
-#include "BasicGeographicOpAction.h"
+#include "GeometricOpAction.h"
 
 // Qt
 #include <QtCore/QObject>
+#include <QtGui/QMessageBox>
 
 // STL
 #include <memory>
 
-te::qt::plugins::vp::BasicGeographicOpAction::BasicGeographicOpAction(QMenu* menu)
+te::qt::plugins::vp::GeometricOpAction::GeometricOpAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
-  createAction(tr("Basic Geographic Operation...").toStdString());
+  createAction(tr("Geometric Operation...").toStdString());
 }
 
-te::qt::plugins::vp::BasicGeographicOpAction::~BasicGeographicOpAction()
+te::qt::plugins::vp::GeometricOpAction::~GeometricOpAction()
 {
 }
 
-void te::qt::plugins::vp::BasicGeographicOpAction::onActionActivated(bool checked)
+void te::qt::plugins::vp::GeometricOpAction::onActionActivated(bool checked)
 {
-  te::vp::BasicGeographicOpWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::vp::GeometricOpWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
   dlg.setList( layersList );
 
-  if(dlg.exec() == QDialog::Accepted)
+  if(dlg.exec() != QDialog::Accepted)
+    return;
+
+  te::map::AbstractLayerPtr layer = dlg.getOutLayer();
+
+  if(!layer)
+    return;
+
+  int reply = QMessageBox::question(0, tr("Geometric Operation"), tr("The operation was concluded successfully. Would you like to add the layer to the project?"), QMessageBox::No, QMessageBox::Yes);
+  
+  if(reply == QMessageBox::Yes)
   {
-    //add new layer
-    addNewLayer(dlg.getInLayer());
+    te::qt::af::evt::LayerAdded evt(layer);
+    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
   }
 }

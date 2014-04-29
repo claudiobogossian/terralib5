@@ -22,7 +22,7 @@
 
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
-#include "../../maptools/AbstractLayer.h"
+#include "../../maptools/DataSetLayer.h"
 
 #include "Project.h"
 
@@ -53,6 +53,13 @@ namespace te {
 
         std::list<te::common::TreeItemPtr> ls = l->getChildren();
         std::list<te::common::TreeItemPtr>::iterator it;
+
+        if(l->getType() == "DATASETLAYER")
+        {
+          te::map::DataSetLayer* dl = static_cast<te::map::DataSetLayer*>(l);
+
+          dl->setDataSetName(format(dl->getDataSetName(), encode));
+        }
 
         for(it = ls.begin(); it != ls.end(); ++it)
           format(dynamic_cast<te::map::AbstractLayer*>((*it).get()), encode);

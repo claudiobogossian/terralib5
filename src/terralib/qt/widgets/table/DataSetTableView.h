@@ -46,6 +46,11 @@ namespace te
     class DataSourceCapabilities;
   }
 
+  namespace gm
+  {
+    class Envelope;
+  }
+
   namespace map
   {
     class AbstractLayer;
@@ -206,8 +211,10 @@ namespace te
             \brief Promotes the highlighted rows.
 
             The rows highlighted are presented in the begining of the table.
+
+            \param If \a true, scrolls to the top of the table.
           */
-          void promote();
+          void promote(const bool& scroll=false);
 
           /*!
             \brief Sort by the selected columns.
@@ -249,12 +256,21 @@ namespace te
           */
           void setAutoScrollEnabled(const bool& enable);
 
+          /*!
+            \brief Enable / disable promotion.
+
+            If enabled all selected rows will be moved to te top of the table.
+
+            \param enable \a True to enable promotion, \a false to disable it
+          */
+          void setPromotionEnabled(const bool& enable);
+
         signals:
 
           /*!
             \brief Emmite when objects was selected.
           */
-          void selectOIds(te::da::ObjectIdSet*, const bool&);
+          void selectOIds(te::da::ObjectIdSet*, const bool&, te::gm::Envelope*);
 
           void deselectOIds(te::da::ObjectIdSet*);
 
@@ -267,8 +283,8 @@ namespace te
           HighlightDelegate* m_delegate;    //!< Delegate used for rendering selected rows.
           const te::map::AbstractLayer* m_layer;  //!< Pointer to the layer being presented.
           bool m_autoScrollEnabled;         //! Auto scroll enabling.
-          bool m_isSorted;                  //! Previously sorted.
-          bool m_isPromoted;                //! Previously promoted.
+          bool m_doScroll;                  //! Flag to force or not scrolling.
+          bool m_promotionEnabled;          //! Promotion enabled.
           te::da::DataSet* m_dset;          //! Data set being used.
       };
     }

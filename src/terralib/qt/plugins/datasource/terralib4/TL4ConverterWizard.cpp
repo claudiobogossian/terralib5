@@ -744,13 +744,13 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 
         style = Convert2TerraLib5(0, theme.get(), true);
 
-        te::se::ColorMap* cm = 0;
+        te::se::RasterSymbolizer* symb = te::se::GetRasterSymbolizer(style);
 
-        cm = GetRasterGrouping(theme.get());
-
-        if(cm != 0)
+        if(theme->grouping().groupMode_ != TeNoGrouping)
         {
-          te::se::RasterSymbolizer* symb = te::se::GetRasterSymbolizer(style);
+          te::se::ColorMap* cm = 0;
+
+          cm = GetRasterGrouping(theme.get());
 
           symb->setColorMap(cm);
 
@@ -775,7 +775,6 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 
           cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
         }
-
       }
       else
       {

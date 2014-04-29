@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/vp/qt/BasicGeographicOpWizard.h
+  \file terralib/vp/qt/GeometricOpWizard.h
 
-  \brief A Qt dialog that allows users to run the basic geographic operations defined by VP module.
+  \brief A Qt dialog that allows users to run the basic geometric operations defined by VP module.
 */
 
-#ifndef __TERRALIB_VP_INTERNAL_BASICGEOGRAPHICOPWIZARD_H
-#define __TERRALIB_VP_INTERNAL_BASICGEOGRAPHICOPWIZARD_H
+#ifndef __TERRALIB_VP_INTERNAL_GEOMETRICOPWIZARD_H
+#define __TERRALIB_VP_INTERNAL_GEOMETRICOPWIZARD_H
 
 // TerraLib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
@@ -43,23 +43,23 @@ namespace te
 {
   namespace vp
   {
-    class BasicGeographicOpWizardPage;
-    class BasicOpOutputWizardPage;
+    class GeometricOpWizardPage;
+    class GeometricOpOutputWizardPage;
 
     /*!
-      \class BasicGeographicOpWizard
+      \class GeometricOpWizard
 
-      \brief This class is GUI used to define the segmenter wizard for the RP constast operation.
+      \brief This class is GUI used to define the wizard for the VP geometric operation.
     */
-    class TEVPEXPORT BasicGeographicOpWizard : public QWizard
+    class TEVPEXPORT GeometricOpWizard : public QWizard
     {
       Q_OBJECT
 
       public:
 
-        BasicGeographicOpWizard(QWidget* parent);
+        GeometricOpWizard(QWidget* parent);
 
-        ~BasicGeographicOpWizard();
+        ~GeometricOpWizard();
 
       public:
 
@@ -71,6 +71,8 @@ namespace te
 
         te::map::AbstractLayerPtr getInLayer();
 
+        te::map::AbstractLayerPtr getOutLayer();
+
       protected:
 
         void addPages();
@@ -79,14 +81,14 @@ namespace te
 
       private:
 
-        std::auto_ptr<te::vp::BasicGeographicOpWizardPage> m_basicGeoOpPage;
-        std::auto_ptr<te::vp::BasicOpOutputWizardPage> m_basicOpOutputPage;
+        std::auto_ptr<te::vp::GeometricOpWizardPage> m_geomOpPage;
+        std::auto_ptr<te::vp::GeometricOpOutputWizardPage> m_geomOpOutputPage;
         std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerSearchPage;
 
         te::map::AbstractLayerPtr m_inLayer;
         te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
         te::map::AbstractLayerPtr m_outLayer;
-        std::vector<te::vp::GeographicOperation> m_ops;
+        std::vector<te::vp::GeometricOperation> m_ops;
         std::string m_attribute;
 
         int m_layerSearchId;
@@ -94,4 +96,4 @@ namespace te
   }     // end namespace vp
 }       // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_BASICGEOGRAPHICOPWIZARD_H
+#endif  // __TERRALIB_VP_INTERNAL_GEOMETRICOPWIZARD_H

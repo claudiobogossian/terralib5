@@ -44,9 +44,9 @@ te::vp::BufferOp::BufferOp():
 {
 }
 
-void te::vp::BufferOp::setInput(std::auto_ptr<te::da::DataSource> inDsrc,
-                                     std::auto_ptr<te::da::DataSet> inDset,
-                                     std::auto_ptr<te::da::DataSetType> inDsetType)
+void te::vp::BufferOp::setInput(te::da::DataSourcePtr inDsrc,
+                                std::auto_ptr<te::da::DataSet> inDset,
+                                std::auto_ptr<te::da::DataSetType> inDsetType)
 {
   m_inDsrc = inDsrc;
   m_inDset = inDset;
@@ -66,7 +66,7 @@ void te::vp::BufferOp::setParams(const double& distance,
   m_levels = levels;
 }
 
-void te::vp::BufferOp::setOutput(std::auto_ptr<te::da::DataSource> outDsrc, std::string dsname)
+void te::vp::BufferOp::setOutput(te::da::DataSourcePtr outDsrc, std::string dsname)
 {
   m_outDsrc = outDsrc;
   m_outDsetName = dsname;

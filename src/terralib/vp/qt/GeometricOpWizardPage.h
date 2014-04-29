@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/vp/qt/BasicGeopraphicOpWizardPage.h
+  \file terralib/vp/qt/GeometricOpWizardPage.h
 
-  \brief This file defines a class for a Basic Geographic Operation Wizard Page.
+  \brief This file defines a class for Basic Geometric Operation Wizard Page.
 */
 
-#ifndef __TERRALIB_VP_INTERNAL_BASICGEOGRAPHICOPWIZARDPAGE_H
-#define __TERRALIB_VP_INTERNAL_BASICGEOGRAPHICOPWIZARDPAGE_H
+#ifndef __TERRALIB_VP_INTERNAL_GEOMETRICOPWIZARDPAGE_H
+#define __TERRALIB_VP_INTERNAL_GEOMETRICOPWIZARDPAGE_H
 
 // TerraLib
 #include "../../maptools/AbstractLayer.h"
@@ -38,7 +38,7 @@
 #include <QtGui/QWizardPage>
 
 // Forward declaration
-namespace Ui { class BasicGeographicOpWizardPageForm; }
+namespace Ui { class GeometricOpWizardPageForm; }
 
 namespace te
 {
@@ -47,19 +47,19 @@ namespace te
     //class RasterNavigatorWidget;
 
     /*!
-      \class BasicGeographicWizardPage
+      \class GeometricWizardPage
 
-      \brief This class is GUI used to define the basic geographic operator parameters for the VP operation.
+      \brief This class is GUI used to define the basic geometric operator parameters for the VP operation.
     */
-    class TEVPEXPORT BasicGeographicOpWizardPage : public QWizardPage
+    class TEVPEXPORT GeometricOpWizardPage : public QWizardPage
     {
       Q_OBJECT
 
       public:
 
-        BasicGeographicOpWizardPage(QWidget* parent = 0);
+        GeometricOpWizardPage(QWidget* parent = 0);
 
-        ~BasicGeographicOpWizardPage();
+        ~GeometricOpWizardPage();
 
       public:
 
@@ -68,7 +68,7 @@ namespace te
             
           \param layer The layer ptr 
 
-          \note This layer MUST HAVE a valid raster object.
+          \note This layer MUST HAVE a valid geometry object.
         */
         void setLayer(te::map::AbstractLayerPtr layer);
 
@@ -86,7 +86,7 @@ namespace te
 
       private:
 
-        std::auto_ptr<Ui::BasicGeographicOpWizardPageForm> m_ui;
+        std::auto_ptr<Ui::GeometricOpWizardPageForm> m_ui;
         std::auto_ptr<te::qt::widgets::DoubleListWidget> m_widget;
         te::map::AbstractLayerPtr m_layer;
         std::vector<std::string> m_props;
@@ -95,4 +95,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_BASICGEOGRAPHICOPWIZARDPAGE_H
+#endif  // __TERRALIB_VP_INTERNAL_GEOMETRICOPWIZARDPAGE_H

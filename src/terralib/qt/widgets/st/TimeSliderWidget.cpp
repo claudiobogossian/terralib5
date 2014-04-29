@@ -382,7 +382,9 @@ void te::qt::widgets::TimeSliderWidget::dropEvent(QDropEvent* e)
             QString uri(it->second.c_str());
             if(dsetname == "40: locations" || dsetname == "41: locations")
             {
-              if(alreadyExists(QPair<QString, QString>(uri, dsetname)))
+              QPair<QString, QString> p(uri, dsetname);
+
+              if(alreadyExists(p))
                 QMessageBox::information(this, dsetname + " alredy exists", "This item is already being animated!");
               else
                 openTrajectory(uri, dsetname);
@@ -396,7 +398,10 @@ void te::qt::widgets::TimeSliderWidget::dropEvent(QDropEvent* e)
   {
     QString path = urls.first().path();
     path.remove(0, 1);
-    if(alreadyExists(QPair<QString, QString>(path, "")))
+
+    QPair<QString, QString> p(path, "");
+
+    if(alreadyExists(p))
       QMessageBox::information(this, "animation alredy exists", "This item is already being animated!");
     else
       addTemporalImages(path);
@@ -2345,20 +2350,20 @@ void te::qt::widgets::TimeSliderWidget::onLoopCheckBoxClicked(bool b)
 {
   m_loop = b;
   //char buf[10];
-  //te::dt::TimeInstant iTime = te::dt::TimeInstant(boost::posix_time::time_from_string("2008-10-01 00:00:00"));
+  //te::dt::TimeInstant iTime = te::dt::TimeInstant(boost::posix_time::time_from_string("2008-05-01 00:00:00"));
   //boost::posix_time::time_duration td = boost::posix_time::seconds(3600);
 
-  //QDir dir("C:/lixo/TemporalImages/NoDoubt");
+  //QDir dir("C:/lixo/TemporalImages/TurmaDaMonicaBruxarias");
   //QStringList nameFilter;
-  //nameFilter.append("NoDoubt*");
+  //nameFilter.append("TurmaDaMonicaBruxarias*");
   //QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
   //QStringList::iterator it;
 
   //for(it = files.begin(); it != files.end(); ++it)
   //{
-  //  QString s("C:/lixo/TemporalImages/NoDoubt/");
+  //  QString s("C:/lixo/TemporalImages/TurmaDaMonicaBruxarias/");
   //  QFile file(s+*it);
-  //  QString nfile = "C:/lixo/TemporalImages/NoDoubt/NoDoubt_";
+  //  QString nfile = s + "TurmaDaMonicaBruxarias_";
 
   //  nfile += s.setNum((short)iTime.getDate().getYear()) + "_";
 

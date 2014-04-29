@@ -40,6 +40,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QDirIterator>
 #include <QtCore/QFileInfo>
+#include <QtCore/QTextCodec>
 #include <QtGui/QApplication>
 #include <QtGui/QSplashScreen>
 #include <QtGui/QMessageBox>
@@ -51,19 +52,13 @@
 #endif
 
 
-void RemoveAllEntries(QDir dir)
-{
-  QDirIterator it(dir, QDirIterator::Subdirectories);
-
-  while(it.hasNext())
-    dir.remove(it.next());
-}
-
 int main(int argc, char** argv)
 {
   QApplication app(argc, argv);
 
   setlocale(LC_ALL,"C");// This force to use "." as decimal separator.
+
+  QTextCodec::setCodecForCStrings(QTextCodec::codecForLocale());
 
   //QResource::registerResource(TERRAVIEW_RESOURCE_FILE);
 
@@ -123,11 +118,7 @@ int main(int argc, char** argv)
         }
           
         if(regen)
-        {
-          RemoveAllEntries(info.absoluteDir());
-            
           te::qt::af::SetDateTime(genDate);
-        }
           
         te::qt::af::WriteConfigFile(cFile, "TerraView", "TerraView");
       }

@@ -64,7 +64,7 @@ te::qt::widgets::DataSourceSelectorWidget::DataSourceSelectorWidget(QWidget* par
 
   while(it != itend)
   {
-    QString dsName = QString::fromUtf8(it->second->getName().c_str());
+    QString dsName = QString::fromStdString(it->second->getName());
     QIcon icon = it->second->getIcon(DataSourceType::ICON_DATASOURCE_SMALL);
     QString title = QString::fromStdString(it->second->getTitle());
     QString description = QString::fromStdString(it->second->getDescription());
