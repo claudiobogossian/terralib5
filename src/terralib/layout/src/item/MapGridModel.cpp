@@ -50,6 +50,8 @@ te::layout::MapGridModel::MapGridModel() :
 
   m_gridPlanar = new GridPlanarModel;
   m_gridGeodesic = new GridPlanarModel;
+
+  m_properties->setHasGridWindows(true);
 }
 
 te::layout::MapGridModel::~MapGridModel()
@@ -141,21 +143,10 @@ void te::layout::MapGridModel::updateProperties( te::layout::Properties* propert
   if(!pro_grid.isNull())
   {
     Properties* props = new Properties(m_gridPlanar->getName());
-    std::vector<Property> propsSub = pro_grid.getSubProperty();
-
-    for(unsigned int i = 0 ; i < propsSub.size() ; ++i)
-    {
-      Property prop = propsSub[i];
-      pro_grid.addSubProperty(prop);
-    }
-    
-    if(props)
-    {
-      props->addProperty(pro_grid);
-      m_gridPlanar->updateProperties(props);
-    }
+    pro_grid.setName(m_gridPlanar->getName());
+    props->addProperty(pro_grid);
+    m_gridPlanar->updateProperties(props);
   }
-
 }
 
 

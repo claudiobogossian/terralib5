@@ -77,6 +77,8 @@ namespace te
         void onChangePropertyValue(Property property);
 
     protected:
+
+      virtual void	closeEvent ( QCloseEvent * event );
       virtual void createLayout();
           
     protected:

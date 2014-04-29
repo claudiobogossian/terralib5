@@ -33,8 +33,10 @@
 
 // TerraLib
 #include "OutsideObserver.h"
+#include "GridSettingsConfigProperties.h"
 #include "../../../include/core/Config.h"
 #include "../../../../geometry/Envelope.h"
+#include "../../../../color/RGBAColor.h"
 
 namespace Ui { class GridSettings; }
 
@@ -44,6 +46,8 @@ namespace te
   {
     class OutsideController;
     class Observable;
+    class PlanarGridSettingsConfigProperties;
+    class GeodesicGridSettingsConfigProperties;
 
     class TELAYOUTEXPORT GridSettingsOutside : public QDialog, public OutsideObserver 
     {
@@ -61,12 +65,15 @@ namespace te
 
         virtual te::gm::Coord2D getPosition();
 
+        virtual void blockComponents();
+
+        virtual void unblockComponents();
+       
+        virtual void load();
+
       private slots:
 
-        virtual void changeLineColor();
-
-        virtual void on_pbPlanarLineColor_clicked();
-        
+        /* Grid */
         virtual void on_pbClose_clicked();
 
         virtual void on_pbCancel_clicked();
@@ -75,17 +82,159 @@ namespace te
 
         virtual void on_helpPushButton_clicked();
 
-        virtual void on_ckDefineScale_clicked();
+        virtual void on_cmbUnit_currentIndexChanged ( const QString & text );
 
-        virtual void on_cmdGridTextPlanarColor_clicked();
+        virtual void on_chkShowPlanar_clicked();
 
-        virtual void on_cmdGridTextGeoColor_clicked();
+        virtual void on_cmbPlanarStyle_currentIndexChanged ( const QString & text );
 
-        virtual void on_cmdCornerTextGeoColor_clicked();
+        virtual void on_cmbGridStyle_currentIndexChanged ( const QString & text );
+
+        virtual void on_chkShowGeodesic_clicked();
+
+        ///* Line */
+
+        virtual void on_lneHrzPlanarGap_editingFinished();
         
-        virtual void on_cmbLineType_editTextChange(QString value);
+        virtual void on_lneVrtPlanarGap_editingFinished();  
 
-        virtual void on_xGridInitialPoint_geo_textField_textChanged(const QString& text);
+        virtual void on_lneHorizontalGap_editingFinished();
+
+        virtual void on_lneVerticalGap_editingFinished();
+        
+        virtual void on_pbPlanarLineColor_clicked();
+
+        virtual void on_cmbPlanarLineType_currentIndexChanged ( const QString & text );
+
+        virtual void on_cmbPlanarLineWidth_currentIndexChanged ( const QString & text );  
+
+        virtual void on_cmbLineType_currentIndexChanged ( const QString & text );
+
+        virtual void on_cmbLineWidth_currentIndexChanged ( const QString & text );
+
+        virtual void on_pbLineColor_clicked();
+
+        ///*Text: Basic Configuration*/
+
+        virtual void on_cmbPlanarTextSize_currentIndexChanged ( const QString & text );
+
+        virtual void on_cmbPlanarFont_currentIndexChanged ( const QString & text );
+
+        virtual void on_pbGridTextPlanarColor_clicked();
+        
+        virtual void on_chkSuperscriptPlanarText_clicked();
+
+        virtual void on_cmbGeoFont_currentIndexChanged ( const QString & text );
+
+        virtual void on_cmbGeoTextSize_currentIndexChanged ( const QString & text );
+
+        virtual void on_pbGridTextGeoColor_clicked();
+        
+        virtual void on_chkSuperscriptGeoText_clicked();
+
+        ///*Text: Advanced configuration*/
+
+        virtual void on_xGridInitialPoint_planar_textField_editingFinished();
+
+        virtual void on_yGridInitialPoint_planar_textField_editingFinished();
+
+        virtual void on_xGridInitialPoint_geo_textField_editingFinished();
+
+        virtual void on_yGridInitialPoint_geo_textField_editingFinished();
+
+        virtual void on_chkBottomPlanarText_clicked();
+
+        virtual void on_chkLeftPlanarText_clicked();
+
+        virtual void on_chkRightPlanarText_clicked();
+
+        virtual void on_chkTopPlanarText_clicked();
+
+        virtual void on_chkBottomGeoText_clicked();
+
+        virtual void on_chkLeftGeoText_clicked();
+
+        virtual void on_chkRightGeoText_clicked();
+
+        virtual void on_chkTopGeoText_clicked();
+
+        virtual void on_chkBottomRotatePlanarText_clicked();
+
+        virtual void on_chkLeftRotatePlanarText_clicked();
+
+        virtual void on_chkRightRotatePlanarText_clicked();
+
+        virtual void on_chkTopRotatePlanarText_clicked();
+
+        virtual void on_chkBottomRotateGeoText_clicked();
+
+        virtual void on_chkLeftRotateGeoText_clicked();
+
+        virtual void on_chkRightRotateGeoText_clicked();
+
+        virtual void on_chkTopRotateGeoText_clicked();
+
+        virtual void on_lneVrtPlanarDisplacement_editingFinished();
+
+        virtual void on_chkVisibleTextsPlanarText_clicked();
+
+        virtual void on_lneHrzPlanarDisplacement_editingFinished();
+
+        virtual void on_lneVrtGeoDisplacement_editingFinished();
+
+        virtual void on_lneHrzGeoDisplacement_editingFinished();
+
+        virtual void on_chkDegreesGeoText_clicked();
+
+        virtual void on_chkMinutesGeoText_clicked();
+
+        virtual void on_chkSecondsGeoText_clicked();
+
+        virtual void on_chkVisibleTextsGeoText_clicked();
+
+        virtual void on_cmbCornerGeoFont_currentIndexChanged ( const QString & text );
+
+        virtual void on_cmbCornerGeoTextSize_currentIndexChanged ( const QString & text );
+
+        virtual void on_pbCornerTextGeoColor_clicked();
+        
+        virtual void on_lneCornerHrzGeoDisplacement_editingFinished();
+
+        virtual void on_lneCornerVrtGeoDisplacement_editingFinished();
+
+        virtual void on_chkLowerRightCornerGeoText_clicked();
+
+        virtual void on_chkUpperRightCornerGeoText_clicked();
+
+        virtual void on_chkLowerLeftCornerGeoText_clicked();
+
+        virtual void on_chkUpperLeftCornerGeoText_clicked();
+
+        virtual void on_chkVisibleCornerTextsGeoText_clicked();
+
+        /*Geodesic: Topographic Map*/
+
+        virtual void on_ckDefineScale_clicked();
+        
+        virtual void on_cmbScale_currentIndexChanged ( const QString & text );
+
+        virtual void on_ckbClip_clicked();
+
+        virtual void on_lneX1_editingFinished();
+
+        virtual void on_lneX2_editingFinished();
+
+        virtual void on_lneY1_editingFinished();
+
+        virtual void on_lneY2_editingFinished();
+
+        virtual void on_lneX3_editingFinished();
+
+        virtual void on_lneX4_editingFinished();
+
+        virtual void on_lneY3_editingFinished();
+
+        virtual void on_lneY4_editingFinished();
 
       signals:
 
@@ -95,9 +244,26 @@ namespace te
 
         virtual bool checkValidDegreeValue(const QString &);
 
-        virtual void configColor(QWidget* widget);
+        virtual te::color::RGBAColor configColor(QWidget* widget);
 
         virtual void init();
+
+        virtual void initString( QWidget* widget, std::string nameComponent );
+
+        virtual void initInt( QWidget* widget, std::string nameComponent );
+
+        virtual void initDouble( QWidget* widget, std::string nameComponent );
+
+        virtual void initBool( QWidget* widget, std::string nameComponent );
+
+        virtual void initColor( QWidget* widget, std::string nameComponent );
+
+        virtual void initCombo(QWidget* widget, std::string nameComponent);
+                
+      protected:
+
+        PlanarGridSettingsConfigProperties* m_planarGridSettings;
+        GeodesicGridSettingsConfigProperties* m_geodesicGridSettings;
 
       private:
 

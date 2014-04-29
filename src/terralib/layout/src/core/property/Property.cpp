@@ -78,16 +78,16 @@ te::layout::Variant te::layout::Property::getValue()
 
 void te::layout::Property::addOption(Variant variant)
 {
-  m_variants.push_back(variant);
+  m_options.push_back(variant);
 }
 
 void te::layout::Property::removeOption(Variant variant)
 {
-  for(std::vector<Variant>::iterator it = m_variants.begin(); it != m_variants.end(); it++)
+  for(std::vector<Variant>::iterator it = m_options.begin(); it != m_options.end(); it++)
   {
     if((*it) == variant)
     {
-      m_variants.erase(it);
+      m_options.erase(it);
       break;
     }
   }
@@ -105,7 +105,7 @@ te::layout::Variant te::layout::Property::getOptionByCurrentChoice()
 
 std::vector<te::layout::Variant> te::layout::Property::getOptionChoices()
 {
-  return m_variants;
+  return m_options;;
 }
 
 bool te::layout::Property::isEditable()
@@ -142,7 +142,21 @@ std::vector<te::layout::Property> te::layout::Property::getSubProperty()
 
 bool te::layout::Property::isNull()
 {
-  return m_value.isNull();
+  bool result = true;
+
+  if(m_value.isNull())
+  {
+    if(!m_options.empty())
+    {
+      result = false;
+    }
+  }
+  else
+  {
+    result = false;
+  }
+
+  return result;
 }
 
 bool te::layout::Property::containsSubProperty( Property subProperty )
@@ -182,6 +196,12 @@ void te::layout::Property::clear()
   m_type = DataTypeNone;
   m_value.clear();
   m_currentChoice.clear();
-  m_variants.clear();
+  m_options.clear();
   m_subProperty.clear();
+}
+
+void te::layout::Property::setValue( Variant variant )
+{
+  m_value = variant;
+  m_type = variant.getType();
 }

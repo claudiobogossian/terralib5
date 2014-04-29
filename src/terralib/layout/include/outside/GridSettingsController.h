@@ -45,19 +45,16 @@ namespace te
 
 	    virtual void setPosition(const double& x, const double& y);
 
-      virtual void setProperty(Property property);
-
-      virtual Property getProperty();
-
       virtual Property updateProperty();
 
-      virtual void addUpdateProperty(Property property);
+      virtual void addUpdateProperty(std::string name, Variant variant);
 
       virtual void clearUpdate();
 
+      virtual Property getProperty(std::string name);
+
     protected:
 
-      Property m_property;
       Property m_update;
     };
   }

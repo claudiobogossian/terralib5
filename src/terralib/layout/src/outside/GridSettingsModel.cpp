@@ -56,10 +56,27 @@ te::layout::Properties* te::layout::GridSettingsModel::getProperties() const
 
 void te::layout::GridSettingsModel::updateProperties( te::layout::Properties* properties )
 {
-  Properties* vectorProps = const_cast<Properties*>(properties);
 
-  std::vector<Property> vProps = vectorProps->getProperties();
-  Property pro_name = vProps[0];
-  //m_name = pro_name.getName();
 }
 
+void te::layout::GridSettingsModel::setOutsideProperty( Property property )
+{
+  m_property.clear();
+  m_property = property;
+}
+
+te::layout::Property te::layout::GridSettingsModel::getOutsideProperty()
+{
+  return m_property;
+}
+
+te::layout::Property te::layout::GridSettingsModel::containsOutsideSubProperty( std::string name )
+{
+  return m_property.containsSubProperty(name);
+}
+
+void te::layout::GridSettingsModel::updateOutsideSubProperty( Property property )
+{
+  m_property.removeSubProperty(property);
+  m_property.addSubProperty(property);
+}

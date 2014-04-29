@@ -59,6 +59,7 @@ te::layout::OutsideArea::~OutsideArea()
     m_dockProperties->close();
     m_dockProperties->setParent(0);
     delete m_dockProperties;
+    m_dockProperties = 0;
   }
 
   if(m_dockInspector)
@@ -67,6 +68,7 @@ te::layout::OutsideArea::~OutsideArea()
     m_dockInspector->close();
     m_dockInspector->setParent(0);
     delete m_dockInspector;
+    m_dockInspector = 0;
   }
 
   if(m_dockToolbar)
@@ -75,6 +77,7 @@ te::layout::OutsideArea::~OutsideArea()
     m_dockToolbar->close();
     m_dockToolbar->setParent(0);
     delete m_dockToolbar;
+    m_dockToolbar = 0;
   }
 }
 

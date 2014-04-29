@@ -57,12 +57,15 @@ namespace te
       virtual bool addProperty(Property property);
 
       virtual void clearAll();
+
+      virtual void closeAllWindows();
            
       private slots:
 
         void onShowGridSettingsDlg();
         void onSetDlg(QWidget *parent, QtProperty * prop);
         void onUpdateGridSettingsProperty();
+        virtual void blockOpenGridWindows(bool block);
 
       signals:
 

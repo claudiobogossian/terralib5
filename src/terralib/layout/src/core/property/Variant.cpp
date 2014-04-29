@@ -30,11 +30,11 @@
 
 te::layout::Variant::Variant() :
   m_sValue("unknown"),
-  m_dValue(0.),
-  m_iValue(0),
-  m_lValue(0),
-  m_fValue(0.),
-  m_bValue(0.),
+  m_dValue(-1000.),
+  m_iValue(-1000),
+  m_lValue(-1000),
+  m_fValue(-1000.),
+  m_bValue(false),
   m_type(DataTypeNone),
   m_null(true)
 {
@@ -43,10 +43,11 @@ te::layout::Variant::Variant() :
 
 te::layout::Variant::Variant(te::layout::LayoutPropertyDataType type, const void* valueCopy) :
   m_sValue("unknown"),
-  m_dValue(0.),
-  m_iValue(0),
-  m_lValue(0),
-  m_fValue(0.),
+  m_dValue(-1000.),
+  m_iValue(-1000),
+  m_lValue(-1000),
+  m_fValue(-1000.),
+  m_bValue(false),
   m_type(type),
   m_null(true)
 {
@@ -78,6 +79,7 @@ void te::layout::Variant::convertValue( const void* valueCopy )
   long* lValue = 0;
   int* iValue = 0;
   bool* bValue = 0;
+  te::color::RGBAColor* colorValue = 0;
 
   switch(m_type)
   {
@@ -140,6 +142,15 @@ void te::layout::Variant::convertValue( const void* valueCopy )
       m_sValue = *sp;
     }
     break;
+  case DataTypeColor:
+    // Cast it back to a string pointer.
+    colorValue = static_cast<te::color::RGBAColor*>(value);
+    if(colorValue)
+    {
+      null = false;
+      m_colorValue = *colorValue;
+    }
+    break;
   case DataTypeNone:
     null = true;
     break;
@@ -178,6 +189,11 @@ bool te::layout::Variant::toBool()
   return m_bValue;
 }
 
+te::color::RGBAColor te::layout::Variant::toColor()
+{
+  return m_colorValue;
+}
+
 bool te::layout::Variant::isNull()
 {
   return m_null;
@@ -186,11 +202,11 @@ bool te::layout::Variant::isNull()
 void te::layout::Variant::clear()
 {
   m_sValue = "unknown";
-  m_dValue = 0.;
-  m_iValue = 0;
-  m_lValue = 0;
-  m_fValue = 0.;
-  m_bValue = 0.;
+  m_dValue = -1000.;
+  m_iValue = -1000;
+  m_lValue = -1000;
+  m_fValue = -1000.;
+  m_bValue = false;
   m_type = DataTypeNone;
   m_null = true;
 }

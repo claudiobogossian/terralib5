@@ -69,7 +69,11 @@ te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller,
 
 te::layout::PropertiesOutside::~PropertiesOutside()
 {
-
+  if(m_layoutPropertyBrowser)
+  {
+    delete m_layoutPropertyBrowser;
+    m_layoutPropertyBrowser = 0;
+  }
 }
 
 void te::layout::PropertiesOutside::createLayout()
@@ -151,6 +155,8 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
       {
         Properties* props = const_cast<Properties*>(lItem->getProperties());
 
+        m_layoutPropertyBrowser->setHasGridWindows(props->hasGridWindows());
+
         foreach( Property prop, props->getProperties()) 
         {
           m_layoutPropertyBrowser->addProperty(prop);
@@ -188,5 +194,10 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
       }
     }
   }
+}
+
+void te::layout::PropertiesOutside::closeEvent( QCloseEvent * event )
+{
+  m_layoutPropertyBrowser->closeAllWindows();
 }
 

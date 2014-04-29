@@ -35,6 +35,7 @@
 #include <QWidget>
 #include "../../../../../../third-party/qt/propertybrowser/qtvariantproperty.h"
 #include "../../../../../../third-party/qt/propertybrowser/qteditorfactory.h"
+#include <QVariant>
 
 // STL
 #include <algorithm>    // std::find
@@ -43,7 +44,8 @@ te::layout::PropertyBrowser::PropertyBrowser(QObject* parent) :
   QObject(parent),
   m_propertyEditor(0),
   m_variantPropertyEditorManager(0),
-  m_strDlgManager(0)
+  m_strDlgManager(0),
+  m_hasGridWindows(false)
 {
   createManager();
 }
@@ -180,6 +182,9 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
 {
   QtVariantProperty* vproperty = 0;
 
+  te::color::RGBAColor color;
+  QColor qcolor;
+
   switch(property.getType())
   {
   case DataTypeString:
@@ -197,6 +202,14 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
   case DataTypeBool:
     vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Bool, tr(property.getName().c_str()));
     vproperty->setValue(property.getValue().toInt());
+    break;
+  case DataTypeColor:
+    vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Color, tr(property.getName().c_str()));
+    color = property.getValue().toColor();
+    qcolor.setRed(color.getRed());
+    qcolor.setGreen(color.getGreen());
+    qcolor.setBlue(color.getBlue());
+    vproperty->setValue(qcolor);
     break;
   default:
    vproperty = 0;    
@@ -223,6 +236,9 @@ te::layout::Property te::layout::PropertyBrowser::getProperty( std::string name 
   QVariant variant = findProperty(name);
   LayoutPropertyDataType type = getLayoutType(variant.type());
   
+  QColor qcolor;
+  te::color::RGBAColor color;
+
   switch(type)
   {
   case DataTypeString:
@@ -240,6 +256,13 @@ te::layout::Property te::layout::PropertyBrowser::getProperty( std::string name 
   case DataTypeGridSettings:
     prop.setValue(variant.toString(), type);
     break;
+  case DataTypeColor:
+    qcolor = variant.value<QColor>();
+    if(qcolor.isValid())
+    {
+      color.setColor(qcolor.red(), qcolor.green(), qcolor.blue(), 255);
+      prop.setValue(color, type);
+    }
   default:
     prop.setValue(0, DataTypeNone);
   }
@@ -320,6 +343,9 @@ te::layout::LayoutPropertyDataType te::layout::PropertyBrowser::getLayoutType( Q
     case QVariant::Bool:
       dataType = DataTypeBool;
       break;
+    case QVariant::Color:
+      dataType = DataTypeColor;
+      break;
     default:
       dataType = DataTypeNone;
   }
@@ -347,6 +373,9 @@ QVariant::Type te::layout::PropertyBrowser::getVariantType( LayoutPropertyDataTy
   case DataTypeGridSettings:
     type = QVariant::String;
     break;
+  case DataTypeColor:
+    type = QVariant::Color;
+    break;
   default:
     type = QVariant::Invalid;
   }
@@ -357,4 +386,15 @@ QVariant::Type te::layout::PropertyBrowser::getVariantType( LayoutPropertyDataTy
 std::string te::layout::PropertyBrowser::getPropGridSettingsName()
 {
   return m_propGridSettingsName;
+}
+
+void te::layout::PropertyBrowser::setHasGridWindows( bool hasWindows )
+{
+  m_hasGridWindows = hasWindows;
+  blockOpenGridWindows(!hasWindows);
+}
+
+void te::layout::PropertyBrowser::blockOpenGridWindows( bool block )
+{
+
 }

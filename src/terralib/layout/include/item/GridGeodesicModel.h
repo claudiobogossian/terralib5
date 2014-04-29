@@ -35,6 +35,8 @@ namespace te
 {
   namespace layout
   {
+    class GeodesicGridSettingsConfigProperties;
+
     class GridGeodesicModel: public GridModel 
     {
       public:
@@ -46,12 +48,46 @@ namespace te
 
         virtual te::layout::Properties* getProperties() const;
         virtual void updateProperties(te::layout::Properties* properties);
-        
+
        protected:
 
          virtual void drawVerticalLines(te::map::Canvas* canvas, te::gm::Envelope box);
          virtual void drawHorizontalLines(te::map::Canvas* canvas, te::gm::Envelope box);    
-    };
+
+       protected:
+
+         GeodesicGridSettingsConfigProperties* m_settingsConfig;
+
+         /*Text: Basic Configuration*/
+         int    m_pointTextSizeCorner;
+         std::string m_fontTextCorner;
+         te::color::RGBAColor  m_textColorCorner;
+
+         bool m_degreesText;
+         bool m_minutesText;
+         bool m_secondsText;
+         double m_lneCornerHrzDisplacement;
+         double m_lneCornerVrtDisplacement;
+         bool m_lowerRightCornerText;
+         bool m_upperRightCornerText;
+         bool m_lowerLeftCornerText;
+         bool m_upperLeftCornerText;
+         bool m_visibleCornerTextsText;
+
+         /* Geodesic: Topographic Map */
+
+         bool m_defineScale;
+         bool m_clip;
+         double m_scale;
+         double m_lneX1;
+         double m_lneX2;
+         double m_lneY1;
+         double m_lneY2;
+         double m_lneX3;
+         double m_lneX4;
+         double m_lneY3;
+         double m_lneY4;
+};
   }
 }
 

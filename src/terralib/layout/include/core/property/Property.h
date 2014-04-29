@@ -60,6 +60,8 @@ namespace te
         template <typename ValueType>
         void setValue(typename ValueType value, LayoutPropertyDataType type);
 
+        void setValue(Variant variant);
+
         Variant getValue();
 
         bool isEditable();
@@ -96,7 +98,7 @@ namespace te
       Variant m_value;
       Variant m_currentChoice;
       bool m_editable;
-      std::vector<Variant> m_variants;
+      std::vector<Variant> m_options;
       std::vector<te::layout::Property> m_subProperty;
     };
 

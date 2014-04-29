@@ -18,49 +18,40 @@
  */
 
 /*!
-  \file GridPlanarModel.h
+  \file GridSettingsConfigProperties.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_GRID_PLANAR_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_GRID_PLANAR_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_PLANAR_GRID_SETTINGS_CONFIG_PROPERTIES_H
+#define __TERRALIB_LAYOUT_INTERNAL_PLANAR_GRID_SETTINGS_CONFIG_PROPERTIES_H
 
 // TerraLib
-#include "GridModel.h"
-#include "AbstractType.h"
+#include "GridSettingsConfigProperties.h"
+
+// STL
+#include <string>
 
 namespace te
 {
   namespace layout
   {
-    class PlanarGridSettingsConfigProperties;
-
-    class GridPlanarModel: public GridModel 
+    class PlanarGridSettingsConfigProperties: public GridSettingsConfigProperties
     {
       public:
+        PlanarGridSettingsConfigProperties();
+        virtual ~PlanarGridSettingsConfigProperties(void);
+      
+        std::string getUnit();
 
-        GridPlanarModel();
-        virtual ~GridPlanarModel();
+      protected:
 
-        virtual void draw(te::map::Canvas* canvas, te::gm::Envelope box);
-
-        virtual te::layout::Properties* getProperties() const;
-        virtual void updateProperties(te::layout::Properties* properties);
-
-       protected:
-
-         virtual void drawVerticalLines(te::map::Canvas* canvas, te::gm::Envelope box);
-         virtual void drawHorizontalLines(te::map::Canvas* canvas, te::gm::Envelope box);
-
-       protected:
-
-         LayoutUnit m_unit;
-         PlanarGridSettingsConfigProperties* m_settingsConfig;
+        /* Grid */
+        std::string m_unit;
     };
   }
 }
 
-#endif 
+#endif

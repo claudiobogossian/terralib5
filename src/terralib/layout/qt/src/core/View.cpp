@@ -61,7 +61,8 @@
 
 te::layout::View::View( QWidget* widget) : 
   QGraphicsView(new QGraphicsScene, widget),
-  m_outsideArea(0)
+  m_outsideArea(0),
+  m_visualizationArea(0)
 {
   //Use ScrollHand Drag Mode to enable Panning
   //You do need the enable scroll bars for that to work.
@@ -70,7 +71,11 @@ te::layout::View::View( QWidget* widget) :
 
 te::layout::View::~View()
 {
-
+  if(m_visualizationArea)
+  {
+    delete m_visualizationArea;
+    m_visualizationArea = 0;
+  }
 }
 
 void te::layout::View::mousePressEvent( QMouseEvent * event )

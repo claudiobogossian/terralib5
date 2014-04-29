@@ -48,6 +48,8 @@ namespace te
       TPToolbar,
       TPGridSettings,
       TPGrid,
+      TPGridPlanar,
+      TPGridGeodesic,
       TPHorizontalRuler,
       TPVerticalRuler,
       TPText,
@@ -132,8 +134,9 @@ namespace te
       DataTypeFloat = 4,
       DataTypeString = 5,
       DataTypeBool = 6,
-      DataTypeGridSettings = 7,
-      DataTypeNone = 8
+      DataTypeColor = 7,
+      DataTypeGridSettings = 8,
+      DataTypeNone = 9
     } LayoutPropertyDataType;
 
     /*!
@@ -143,6 +146,19 @@ namespace te
     {
       TPJSONTemplate = 1
     } LayoutTemplateType;
+
+    typedef enum
+    {
+      StyleNone = 1,
+      StyleContinuous = 2,	//! continuos line grid
+      StyleCross = 3				//! cross grid
+    } LayoutGridStyle;
+
+    typedef enum
+    {
+      StyleMeter=1,
+      StyleKilometer=1000
+    } LayoutUnit;
   }
 }
 

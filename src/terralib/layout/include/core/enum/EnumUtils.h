@@ -18,48 +18,38 @@
  */
 
 /*!
-  \file GridPlanarModel.h
+  \file EnumUtils.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_GRID_PLANAR_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_GRID_PLANAR_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ENUM_UTILS_H 
+#define __TERRALIB_LAYOUT_INTERNAL_ENUM_UTILS_H
 
 // TerraLib
-#include "GridModel.h"
 #include "AbstractType.h"
+#include "../../../../maptools/Enums.h"
+
+// STL
+#include <string>
 
 namespace te
 {
   namespace layout
   {
-    class PlanarGridSettingsConfigProperties;
+    std::string getLayoutGridStyle( int enumVal );
 
-    class GridPlanarModel: public GridModel 
-    {
-      public:
+    te::layout::LayoutGridStyle getLayoutEnumGridStyle( std::string val );
 
-        GridPlanarModel();
-        virtual ~GridPlanarModel();
+    te::layout::LayoutGridStyle getLayoutEnumGridStyle( int enumVal );
 
-        virtual void draw(te::map::Canvas* canvas, te::gm::Envelope box);
+    std::string getLayoutDashStyle( int enumVal );
 
-        virtual te::layout::Properties* getProperties() const;
-        virtual void updateProperties(te::layout::Properties* properties);
+    te::map::LineDashStyle getLayoutEnumDashStyle( std::string val );
 
-       protected:
-
-         virtual void drawVerticalLines(te::map::Canvas* canvas, te::gm::Envelope box);
-         virtual void drawHorizontalLines(te::map::Canvas* canvas, te::gm::Envelope box);
-
-       protected:
-
-         LayoutUnit m_unit;
-         PlanarGridSettingsConfigProperties* m_settingsConfig;
-    };
+    te::map::LineDashStyle getLayoutEnumDashStyle( int enumVal );
   }
 }
 

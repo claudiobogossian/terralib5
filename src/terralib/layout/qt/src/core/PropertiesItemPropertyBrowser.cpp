@@ -44,23 +44,15 @@ te::layout::PropertiesItemPropertyBrowser::PropertiesItemPropertyBrowser(QObject
 
 te::layout::PropertiesItemPropertyBrowser::~PropertiesItemPropertyBrowser()
 {
- if(m_gridSettings)
- {
-   delete m_gridSettings;
-   m_gridSettings = 0;
- }
+  PropertyBrowser::clearAll();
+
+  closeAllWindows();
 }
 
 void te::layout::PropertiesItemPropertyBrowser::clearAll()
 {
   PropertyBrowser::clearAll();
-
-  if(m_gridSettings)
-  {
-    delete m_gridSettings;
-    m_gridSettings = 0;
-  }
-
+  
   m_propGridSettingsName = "";
 }
 
@@ -105,9 +97,9 @@ void te::layout::PropertiesItemPropertyBrowser::onShowGridSettingsDlg()
   if(!m_gridSettings)
   {
     GridSettingsModel* model = new GridSettingsModel;
+    model->setOutsideProperty(m_dlgProperty);
     GridSettingsController* controller = new GridSettingsController(model);
-    controller->setProperty(m_dlgProperty);
-
+    
     Observer* obs = const_cast<Observer*>(controller->getView());
     OutsideObserver* observer = dynamic_cast<OutsideObserver*>(obs);
     m_gridSettings = dynamic_cast<GridSettingsOutside*>(observer);
@@ -116,7 +108,11 @@ void te::layout::PropertiesItemPropertyBrowser::onShowGridSettingsDlg()
   
   if(m_gridSettings)
   {
-    m_gridSettings->exec();
+    if(m_propGridSettingsName.compare("") != 0)
+    {
+      m_gridSettings->load();
+      m_gridSettings->show();
+    }
   }
 }
 
@@ -132,4 +128,31 @@ void te::layout::PropertiesItemPropertyBrowser::onUpdateGridSettingsProperty()
 
      emit updateOutside(prop);
    }
+}
+
+void te::layout::PropertiesItemPropertyBrowser::blockOpenGridWindows( bool block )
+{
+  if(m_gridSettings)
+  {
+    if(block)
+    {
+      m_gridSettings->blockComponents();
+    }
+    else
+    {
+      m_gridSettings->load();
+      m_gridSettings->unblockComponents();
+    }
+  }
+}
+
+void te::layout::PropertiesItemPropertyBrowser::closeAllWindows()
+{
+  if(m_gridSettings)
+  {
+    if(!m_gridSettings->isHidden())
+    {
+      m_gridSettings->close();
+    }
+  }
 }

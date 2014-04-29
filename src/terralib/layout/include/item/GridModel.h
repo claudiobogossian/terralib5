@@ -46,8 +46,8 @@ namespace te
 
         virtual void draw(te::map::Canvas* canvas, te::gm::Envelope box) = 0;
 
-        virtual te::layout::Properties* getProperties() const;
-        virtual void updateProperties(te::layout::Properties* properties);
+        virtual te::layout::Properties* getProperties() const = 0;
+        virtual void updateProperties(te::layout::Properties* properties) = 0;
 
         virtual std::string getName();
         virtual void setName(std::string name);
@@ -73,22 +73,21 @@ namespace te
          double m_initialGridPointY;
 
          /* Just one is visible */
-         bool   m_crossStyle;
-         bool   m_continuousStyle;
+         LayoutGridStyle m_gridStyle;
 
          /* Line */
         te::map::LineDashStyle  m_lineStyle;
         te::color::RGBAColor    m_lineColor;
         int                     m_lineWidth;
 
-        /*Text: Basic Configuration*/
+        /* Text: Basic Configuration */
         int    m_pointTextSize;
         std::string m_fontText;
         te::color::RGBAColor  m_textColor;
 
-        /*Text: Advanced configuration*/
+        /* Text: Advanced configuration */
         bool   m_visibleAllTexts;
-        double m_superscriptText;
+        bool m_superscriptText;
         double m_lneVrtDisplacement;
         double m_lneHrzDisplacement;
         bool   m_bottomText;

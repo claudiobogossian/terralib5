@@ -34,12 +34,31 @@
 #include "Property.h"
 
 te::layout::GridModel::GridModel() :
+  m_name("GRID_MODEL"),
   m_visible(false),
-  m_lneVrtDisplacement(0), 
-  m_lneHrzDisplacement(0),
+  m_lneHrzGap(0),
+  m_lneVrtGap(0),
   m_initialGridPointX(0),
   m_initialGridPointY(0),
-  m_name("GRID_MODEL")
+  m_gridStyle(StyleContinuous),
+  m_lineStyle(),
+  m_lineColor(),
+  m_lineWidth(1),
+  m_pointTextSize(12),
+  m_fontText("Arial"),
+  m_textColor(),
+  m_visibleAllTexts(true),
+  m_superscriptText(false),
+  m_lneVrtDisplacement(10),
+  m_lneHrzDisplacement(10),
+  m_bottomText(true),
+  m_leftText(true),
+  m_rightText(true),
+  m_topText(true),
+  m_bottomRotateText(false),
+  m_leftRotateText(false),
+  m_rightRotateText(false),
+  m_topRotateText(false)     
 {
   m_properties = new te::layout::Properties(m_name, TPGrid);
 }
@@ -47,45 +66,6 @@ te::layout::GridModel::GridModel() :
 te::layout::GridModel::~GridModel()
 {
 
-}
-
-te::layout::Properties* te::layout::GridModel::getProperties() const
-{
-  m_properties->clear();
-
-  Property pro_name;
-  pro_name.setName("name");
-  pro_name.setId("unknown");
-  pro_name.setValue(m_name, DataTypeString);
-
-  Property pro_visible;
-  pro_visible.setName("grid_visible");
-  pro_visible.setId("unknown");
-  pro_visible.setValue(m_visible, DataTypeBool);  
-
-  m_properties->addProperty(pro_name);
-  m_properties->addProperty(pro_visible);
-
-  m_properties->setObjectName(m_name);
-  m_properties->setTypeObj(TPGrid);
-  return m_properties;
-}
-
-void te::layout::GridModel::updateProperties( te::layout::Properties* properties )
-{
-  Property pro_name = properties->contains(m_name);
-
-  if(!pro_name.isNull())
-  {
-    m_name = pro_name.getValue().toString();
-
-    Property pro_visible = pro_name.containsSubProperty("grid_visible");
-
-    if(!pro_visible.isNull())
-    {
-      m_visible = pro_visible.getValue().toBool();
-    }
-  }
 }
 
 std::string te::layout::GridModel::getName()
@@ -107,6 +87,3 @@ void te::layout::GridModel::setVisible( bool visible )
 {
   m_visible = visible;
 }
-
-
-
