@@ -82,7 +82,7 @@ namespace te
 
         virtual std::auto_ptr<ObjectIdSet> getOIDSet(DataSourceTransactor* t, const Select& q);
 
-        virtual ObjectIdSet* getOIDSet(DataSourceTransactor* t, Select& baseSelect,
+        virtual ObjectIdSet* getOIDSet(DataSourceTransactor* t, Select& baseSelect, te::da::Expression* attrRestrictions,
                                        SpatialRestriction* restriction, const DataSetType* type,
                                        const std::vector<te::gm::Geometry*>& geomRestrictions);
 
@@ -92,6 +92,8 @@ namespace te
                                               const std::vector<SpatialRestriction*>& restrictions) const;
 
         std::string getDataSetName(const Select& q) const;
+
+        Expression* getAttrRestrictions(const Select& q) const;
 
       private:
 

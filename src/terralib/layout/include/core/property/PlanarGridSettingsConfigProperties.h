@@ -18,39 +18,40 @@
  */
 
 /*!
-  \file MapModel.h
+  \file GridSettingsConfigProperties.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_PLANAR_GRID_SETTINGS_CONFIG_PROPERTIES_H
+#define __TERRALIB_LAYOUT_INTERNAL_PLANAR_GRID_SETTINGS_CONFIG_PROPERTIES_H
 
 // TerraLib
-#include "ItemModelObservable.h"
-#include "ContextItem.h"
+#include "GridSettingsConfigProperties.h"
+
+// STL
+#include <string>
 
 namespace te
 {
   namespace layout
   {
-    class MapModel : public ItemModelObservable
+    class PlanarGridSettingsConfigProperties: public GridSettingsConfigProperties
     {
       public:
+        PlanarGridSettingsConfigProperties();
+        virtual ~PlanarGridSettingsConfigProperties(void);
+      
+        std::string getUnit();
 
-        MapModel();
-        virtual ~MapModel();
+      protected:
 
-        virtual void draw( ContextItem context );
-
-        virtual void setPosition( const double& x, const double& y );
-
-        virtual void updateProperties(te::layout::Properties* properties);
-
+        /* Grid */
+        std::string m_unit;
     };
   }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_MAPLAYOUT_MODEL_H
+#endif

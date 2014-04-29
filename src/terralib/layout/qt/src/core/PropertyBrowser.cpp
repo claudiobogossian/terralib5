@@ -27,6 +27,7 @@
 
 // TerraLib
 #include "PropertyBrowser.h"
+#include "Properties.h"
 
 // Qt
 #include <QRegExpValidator>
@@ -34,12 +35,17 @@
 #include <QWidget>
 #include "../../../../../../third-party/qt/propertybrowser/qtvariantproperty.h"
 #include "../../../../../../third-party/qt/propertybrowser/qteditorfactory.h"
+#include <QVariant>
+
+// STL
+#include <algorithm>    // std::find
 
 te::layout::PropertyBrowser::PropertyBrowser(QObject* parent) :
   QObject(parent),
   m_propertyEditor(0),
   m_variantPropertyEditorManager(0),
-  m_strDlgManager(0)
+  m_strDlgManager(0),
+  m_hasGridWindows(false)
 {
   createManager();
 }
@@ -92,6 +98,9 @@ void te::layout::PropertyBrowser::propertyEditorValueChanged( QtProperty *proper
 {
   QList<QtBrowserItem *> list = m_propertyEditor->items(property);
   changePropertyValue(property, list);
+
+  Property prop = getProperty(property->propertyName().toStdString());
+  changePropertyValue(prop);
 }
 
 void te::layout::PropertyBrowser::updateExpandState()
@@ -173,23 +182,37 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
 {
   QtVariantProperty* vproperty = 0;
 
-  /* Colocar condicional, para saber qual o tipo, e qual método to... chamar */
-  if(property.getType() == DataTypeString)
+  te::color::RGBAColor color;
+  QColor qcolor;
+
+  switch(property.getType())
   {
+  case DataTypeString:
     vproperty = m_variantPropertyEditorManager->addProperty(QVariant::String, tr(property.getName().c_str()));
     vproperty->setValue(property.getValue().toString().c_str());
-  }
-
-  if(property.getType() == DataTypeDouble)
-  {
+    break;
+  case DataTypeDouble:
     vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Double, tr(property.getName().c_str()));
     vproperty->setValue(property.getValue().toDouble());
-  }
-
-  if(property.getType() == DataTypeInt)
-  {
+    break;
+  case DataTypeInt:
     vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Int, tr(property.getName().c_str()));
     vproperty->setValue(property.getValue().toInt());
+    break;
+  case DataTypeBool:
+    vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Bool, tr(property.getName().c_str()));
+    vproperty->setValue(property.getValue().toInt());
+    break;
+  case DataTypeColor:
+    vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Color, tr(property.getName().c_str()));
+    color = property.getValue().toColor();
+    qcolor.setRed(color.getRed());
+    qcolor.setGreen(color.getGreen());
+    qcolor.setBlue(color.getBlue());
+    vproperty->setValue(qcolor);
+    break;
+  default:
+   vproperty = 0;    
   }
 
   if(vproperty)
@@ -208,11 +231,170 @@ bool te::layout::PropertyBrowser::removeProperty( Property property )
 te::layout::Property te::layout::PropertyBrowser::getProperty( std::string name )
 {
   Property prop;
+  prop.setName(name);
+  
+  QVariant variant = findProperty(name);
+  LayoutPropertyDataType type = getLayoutType(variant.type());
+  
+  QColor qcolor;
+  te::color::RGBAColor color;
+
+  switch(type)
+  {
+  case DataTypeString:
+    prop.setValue(variant.toString(), type);
+    break;
+  case DataTypeDouble:
+    prop.setValue(variant.toDouble(), type);
+    break;
+  case DataTypeInt:
+    prop.setValue(variant.toInt(), type);
+    break;
+  case DataTypeBool:
+    prop.setValue(variant.toBool(), type);
+    break;
+  case DataTypeGridSettings:
+    prop.setValue(variant.toString(), type);
+    break;
+  case DataTypeColor:
+    qcolor = variant.value<QColor>();
+    if(qcolor.isValid())
+    {
+      color.setColor(qcolor.red(), qcolor.green(), qcolor.blue(), 255);
+      prop.setValue(color, type);
+    }
+  default:
+    prop.setValue(0, DataTypeNone);
+  }
+
   return prop;
 }
 
-te::layout::Property te::layout::PropertyBrowser::getPropertyFromPosition( int pos )
+QVariant te::layout::PropertyBrowser::findProperty( std::string name )
 {
-  Property prop;
-  return prop;
+  QVariant variant;
+  QtVariantProperty* vproperty = 0;
+
+  QList<QtProperty*> props = m_propertyEditor->properties();
+  foreach(QtProperty* prop, props)
+  {
+    if(name.compare(prop->propertyName().toStdString()) == 0)
+    {
+      QtVariantProperty* vproperty = dynamic_cast<QtVariantProperty*>(prop);
+
+      if(vproperty)
+      {
+        variant = vproperty->value();
+      }
+      else
+      {
+        variant.setValue(prop->valueText());
+      }
+
+      return variant;
+    }
+  }
+  return variant;
+}
+
+te::layout::Properties* te::layout::PropertyBrowser::getProperties()
+{
+  Properties* properties = new Properties("");
+
+  QList<QtProperty*> props = m_propertyEditor->properties();
+  foreach( QtProperty* prop, props) 
+  {
+    Property property = getProperty(prop->propertyName().toStdString());
+    properties->addProperty(property);
+  }
+
+  return properties;
+}
+
+te::layout::LayoutPropertyDataType te::layout::PropertyBrowser::getLayoutType( QVariant::Type type, std::string name )
+{
+  LayoutPropertyDataType dataType = DataTypeNone;
+  switch(type)
+  {
+    case QVariant::String:
+      {
+        dataType = DataTypeString;
+
+        //Custom types: Dialog Window Type
+        if(name.compare("") != 0)
+        {
+          QVariant variant = m_strDlgManager->property(name.c_str());
+          if(!variant.isNull())
+          {
+            if(name.compare(m_propGridSettingsName) == 0)
+            {
+              dataType = DataTypeGridSettings;
+            }
+          }
+        }
+      }
+      break;
+    case QVariant::Double:
+      dataType = DataTypeDouble;
+      break;
+    case QVariant::Int:
+      dataType = DataTypeInt;
+      break;
+    case QVariant::Bool:
+      dataType = DataTypeBool;
+      break;
+    case QVariant::Color:
+      dataType = DataTypeColor;
+      break;
+    default:
+      dataType = DataTypeNone;
+  }
+
+  return dataType;
+}
+
+QVariant::Type te::layout::PropertyBrowser::getVariantType( LayoutPropertyDataType dataType )
+{
+  QVariant::Type type = QVariant::Invalid;
+  switch(dataType)
+  {
+  case DataTypeString:
+    type = QVariant::String;
+    break;
+  case DataTypeDouble:
+    type = QVariant::Double;
+    break;
+  case DataTypeInt:
+    type = QVariant::Int;
+    break;
+  case DataTypeBool:
+    type = QVariant::Bool;
+    break;
+  case DataTypeGridSettings:
+    type = QVariant::String;
+    break;
+  case DataTypeColor:
+    type = QVariant::Color;
+    break;
+  default:
+    type = QVariant::Invalid;
+  }
+
+  return type;
+}
+
+std::string te::layout::PropertyBrowser::getPropGridSettingsName()
+{
+  return m_propGridSettingsName;
+}
+
+void te::layout::PropertyBrowser::setHasGridWindows( bool hasWindows )
+{
+  m_hasGridWindows = hasWindows;
+  blockOpenGridWindows(!hasWindows);
+}
+
+void te::layout::PropertyBrowser::blockOpenGridWindows( bool block )
+{
+
 }

@@ -62,3 +62,8 @@ void te::layout::MapModel::setPosition( const double& x, const double& y )
   m_box = te::gm::Envelope(x1, y1, x2, y2);
 }
 
+void te::layout::MapModel::updateProperties( te::layout::Properties* properties )
+{
+  ItemModelObservable::updateProperties(properties);
+}
+

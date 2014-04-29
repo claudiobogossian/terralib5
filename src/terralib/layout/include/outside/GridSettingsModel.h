@@ -47,6 +47,18 @@ namespace te
       virtual void updateProperties(te::layout::Properties* properties);
 
       virtual Properties* getProperties() const;
+
+      virtual void setOutsideProperty(Property property);
+
+      virtual Property getOutsideProperty();
+
+      virtual te::layout::Property containsOutsideSubProperty( std::string name );
+      
+      virtual void updateOutsideSubProperty(Property property);
+
+    protected:
+
+      Property m_property;
     };
   }
 }

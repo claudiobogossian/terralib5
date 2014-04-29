@@ -18,39 +18,39 @@
  */
 
 /*!
-  \file MapModel.h
+  \file EnumUtils.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ENUM_UTILS_H 
+#define __TERRALIB_LAYOUT_INTERNAL_ENUM_UTILS_H
 
 // TerraLib
-#include "ItemModelObservable.h"
-#include "ContextItem.h"
+#include "AbstractType.h"
+#include "../../../../maptools/Enums.h"
+
+// STL
+#include <string>
 
 namespace te
 {
   namespace layout
   {
-    class MapModel : public ItemModelObservable
-    {
-      public:
+    std::string getLayoutGridStyle( int enumVal );
 
-        MapModel();
-        virtual ~MapModel();
+    te::layout::LayoutGridStyle getLayoutEnumGridStyle( std::string val );
 
-        virtual void draw( ContextItem context );
+    te::layout::LayoutGridStyle getLayoutEnumGridStyle( int enumVal );
 
-        virtual void setPosition( const double& x, const double& y );
+    std::string getLayoutDashStyle( int enumVal );
 
-        virtual void updateProperties(te::layout::Properties* properties);
+    te::map::LineDashStyle getLayoutEnumDashStyle( std::string val );
 
-    };
+    te::map::LineDashStyle getLayoutEnumDashStyle( int enumVal );
   }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_MAPLAYOUT_MODEL_H
+#endif 

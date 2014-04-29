@@ -72,7 +72,13 @@ namespace te
 
       virtual void itemsSelected(QList<QGraphicsItem*> graphicsItems);
       
+      private slots:
+
+        void onChangePropertyValue(Property property);
+
     protected:
+
+      virtual void	closeEvent ( QCloseEvent * event );
       virtual void createLayout();
           
     protected:
