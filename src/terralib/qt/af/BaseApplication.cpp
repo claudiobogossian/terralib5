@@ -621,10 +621,13 @@ void te::qt::af::BaseApplication::onRenameLayerTriggered()
     return;
   }
 
+  te::qt::widgets::AbstractTreeItem* selectedLayerItem = selectedLayerItems.front();
+  te::map::AbstractLayerPtr layer = selectedLayerItem->getLayer();
+
   bool ok;
   QString text = QInputDialog::getText(this, ApplicationController::getInstance().getAppTitle(),
                                        tr("Rename Layer:"), QLineEdit::Normal,
-                                       tr("Enter the new layer name"), &ok);
+                                       layer->getTitle().c_str(), &ok);
 
   if (!ok)
     return;
@@ -635,8 +638,6 @@ void te::qt::af::BaseApplication::onRenameLayerTriggered()
     return;
   }
 
-  te::qt::widgets::AbstractTreeItem* selectedLayerItem = selectedLayerItems.front();
-  te::map::AbstractLayerPtr layer = selectedLayerItem->getLayer();
   layer->setTitle(text.toStdString());
 
   te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
