@@ -64,9 +64,12 @@ namespace te
 
     protected:
 
-      void SetAllObjects( std::vector<te::da::DataSetType*> dsTypeVec, 
-                          std::vector<int> tabVec, 
-                          std::vector<int> geoVec);
+      te::mem::DataSet* SetAllObjects(te::da::DataSetType* dsTypeVec,
+                                      std::vector<int> tabVec,
+                                      std::vector<int> geoVec);
+
+      double CalculateTabularOp(int tabOperation, 
+                                te::gm::Geometry* geom);
 
     }; // end class
   } // end namespace vp
