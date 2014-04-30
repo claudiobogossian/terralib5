@@ -18,39 +18,49 @@
  */
 
 /*!
-  \file MapModel.h
+  \file GridPlanarModel.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_GRID_PLANAR_MODEL_H
+#define __TERRALIB_LAYOUT_INTERNAL_GRID_PLANAR_MODEL_H
 
 // TerraLib
-#include "ItemModelObservable.h"
-#include "ContextItem.h"
+#include "GridModel.h"
+#include "AbstractType.h"
 
 namespace te
 {
   namespace layout
   {
-    class MapModel : public ItemModelObservable
+    class PlanarGridSettingsConfigProperties;
+
+    class GridPlanarModel: public GridModel 
     {
       public:
 
-        MapModel();
-        virtual ~MapModel();
+        GridPlanarModel();
+        virtual ~GridPlanarModel();
 
-        virtual void draw( ContextItem context );
+        virtual void draw(te::map::Canvas* canvas, te::gm::Envelope box);
 
-        virtual void setPosition( const double& x, const double& y );
-
+        virtual te::layout::Properties* getProperties() const;
         virtual void updateProperties(te::layout::Properties* properties);
 
+       protected:
+
+         virtual void drawVerticalLines(te::map::Canvas* canvas, te::gm::Envelope box);
+         virtual void drawHorizontalLines(te::map::Canvas* canvas, te::gm::Envelope box);
+
+       protected:
+
+         LayoutUnit m_unit;
+         PlanarGridSettingsConfigProperties* m_settingsConfig;
     };
   }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_MAPLAYOUT_MODEL_H
+#endif 

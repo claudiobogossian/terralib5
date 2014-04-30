@@ -44,18 +44,23 @@ te::layout::PropertiesItemPropertyBrowser::PropertiesItemPropertyBrowser(QObject
 
 te::layout::PropertiesItemPropertyBrowser::~PropertiesItemPropertyBrowser()
 {
- if(m_gridSettings)
- {
-   delete m_gridSettings;
-   m_gridSettings = 0;
- }
+  PropertyBrowser::clearAll();
+
+  closeAllWindows();
+}
+
+void te::layout::PropertiesItemPropertyBrowser::clearAll()
+{
+  PropertyBrowser::clearAll();
+  
+  m_propGridSettingsName = "";
 }
 
 bool te::layout::PropertiesItemPropertyBrowser::addProperty( Property property )
 {
   if(PropertyBrowser::addProperty(property))
     return true;
-
+  
   QtProperty* qproperty = 0;  
   QtVariantProperty* vproperty = 0;
 
@@ -64,13 +69,10 @@ bool te::layout::PropertiesItemPropertyBrowser::addProperty( Property property )
     qproperty = m_strDlgManager->addProperty(tr(property.getName().c_str()));
     m_strDlgManager->setValue(qproperty, property.getValue().toString().c_str());
     
-    foreach( Property prop, property.getSubProperty()) 
-    {
-      vproperty = m_variantPropertyEditorManager->addProperty(QVariant::String, tr(property.getName().c_str()));
-      vproperty->setValue(property.getValue().toString().c_str());
-      vproperty->setEnabled(false);
-      qproperty->addSubProperty(vproperty);
-    }
+    /*The sub properties should not appear in this case, 
+    because will be previewed in the dialog window will be opened.*/
+    m_propGridSettingsName = property.getName();
+    m_dlgProperty = property;
   }
   
   if(qproperty)
@@ -84,7 +86,10 @@ bool te::layout::PropertiesItemPropertyBrowser::addProperty( Property property )
 
 void te::layout::PropertiesItemPropertyBrowser::onSetDlg(QWidget *parent, QtProperty * prop)
 {
-  connect(parent, SIGNAL(showDlg()), this, SLOT(onShowGridSettingsDlg()));
+  if(prop->propertyName().toStdString().compare(m_propGridSettingsName) == 0)
+  {
+    connect(parent, SIGNAL(showDlg()), this, SLOT(onShowGridSettingsDlg()));
+  }
 }
 
 void te::layout::PropertiesItemPropertyBrowser::onShowGridSettingsDlg()
@@ -92,12 +97,62 @@ void te::layout::PropertiesItemPropertyBrowser::onShowGridSettingsDlg()
   if(!m_gridSettings)
   {
     GridSettingsModel* model = new GridSettingsModel;
+    model->setOutsideProperty(m_dlgProperty);
     GridSettingsController* controller = new GridSettingsController(model);
+    
     Observer* obs = const_cast<Observer*>(controller->getView());
     OutsideObserver* observer = dynamic_cast<OutsideObserver*>(obs);
     m_gridSettings = dynamic_cast<GridSettingsOutside*>(observer);
+    connect(m_gridSettings, SIGNAL(updateProperty()), this, SLOT(onUpdateGridSettingsProperty()));
   }
   
   if(m_gridSettings)
-    m_gridSettings->exec();
+  {
+    if(m_propGridSettingsName.compare("") != 0)
+    {
+      m_gridSettings->load();
+      m_gridSettings->show();
+    }
+  }
+}
+
+void te::layout::PropertiesItemPropertyBrowser::onUpdateGridSettingsProperty()
+{
+   GridSettingsController* controller = dynamic_cast<GridSettingsController*>(m_gridSettings->getController());
+   if(controller)
+   {
+     Property prop = controller->updateProperty();
+
+     if(prop.isNull())
+       return;
+
+     emit updateOutside(prop);
+   }
+}
+
+void te::layout::PropertiesItemPropertyBrowser::blockOpenGridWindows( bool block )
+{
+  if(m_gridSettings)
+  {
+    if(block)
+    {
+      m_gridSettings->blockComponents();
+    }
+    else
+    {
+      m_gridSettings->load();
+      m_gridSettings->unblockComponents();
+    }
+  }
+}
+
+void te::layout::PropertiesItemPropertyBrowser::closeAllWindows()
+{
+  if(m_gridSettings)
+  {
+    if(!m_gridSettings->isHidden())
+    {
+      m_gridSettings->close();
+    }
+  }
 }

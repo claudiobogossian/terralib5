@@ -51,9 +51,10 @@ namespace te
 
       protected:
 
-        GridModel* m_grid;
-        bool       m_gridPlanar;
-        bool       m_gridGeodesic;
+        GridModel* m_gridPlanar;
+        GridModel* m_gridGeodesic;
+        bool       m_visibleGridPlanar;
+        bool       m_visibleGridGeodesic;
     };
   }
 }

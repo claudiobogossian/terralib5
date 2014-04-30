@@ -34,6 +34,7 @@
 
 //STL
 #include <vector>
+#include <algorithm>
 
 namespace te
 {
@@ -58,16 +59,26 @@ namespace te
 
         virtual void setTypeObj(LayoutAbstractObjectType type);
 
+        virtual void setHasGridWindows(bool windows);
+
+        virtual bool hasGridWindows();
+
+        virtual bool contains(Property property);
+
+        virtual Property contains(std::string name);
+
       protected:
         std::vector<Property> m_properties;
         std::string m_objName;
         LayoutAbstractObjectType m_typeObj;
+        bool m_hasGridWindows;
 
     };
 
     inline Properties::Properties(std:: string objectName, LayoutAbstractObjectType type) :
       m_objName(objectName),
-      m_typeObj(type)
+      m_typeObj(type),
+      m_hasGridWindows(false)
     {
     }
 
@@ -85,9 +96,20 @@ namespace te
       return false;
     }
 
+
     inline bool Properties::removeProperty(std::string name)
     {
-      bool result = true;
+      bool result = false;
+
+      for(std::vector<Property>::iterator it = m_properties.begin(); it != m_properties.end(); it++)
+      {
+        if((*it).getName().compare(name) == 0)
+        {
+          m_properties.erase(it);
+          result = true;
+          break;
+        }
+      }
       return result;
     }
 
@@ -122,6 +144,44 @@ namespace te
       m_typeObj = type;
     }
 
+    inline bool Properties::contains( Property property )
+    {
+      bool is_present = false;
+      
+      if(std::find(m_properties.begin(), m_properties.end(), property) != m_properties.end())
+      {
+        is_present = true;
+      }
+
+      return is_present;
+    }
+
+    inline te::layout::Property Properties::contains( std::string name )
+    {
+      Property property;
+      property.setName(name);
+
+      if(std::find(m_properties.begin(), m_properties.end(), property) != m_properties.end())
+      {
+        std::vector<Property>::iterator it = std::find(m_properties.begin(), m_properties.end(), property);
+
+        property = (*it);
+      }
+      else
+        property.setName("");
+
+      return property;
+    }
+
+    inline void te::layout::Properties::setHasGridWindows( bool windows )
+    {
+	    m_hasGridWindows = windows;
+    }
+
+    inline bool te::layout::Properties::hasGridWindows()
+    {
+	    return m_hasGridWindows;
+    }
   }
 }
 

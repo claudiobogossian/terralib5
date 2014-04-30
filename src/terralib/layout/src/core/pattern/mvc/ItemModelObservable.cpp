@@ -164,10 +164,20 @@ bool te::layout::ItemModelObservable::contains( const te::gm::Coord2D &coord ) c
 void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* properties )
 {
   Properties* vectorProps = const_cast<Properties*>(properties);
+  
+  Property pro_name = vectorProps->contains(m_name);
 
-  std::vector<Property> vProps = vectorProps->getProperties();
-  Property pro_name = vProps[0];
-  m_name = pro_name.getName();
+  if(!pro_name.isNull())
+  {
+    m_name = pro_name.getValue().toString();
+  }
+
+  Property pro_id = vectorProps->contains("id");
+
+  if(!pro_id.isNull())
+  {
+    m_id = pro_id.getValue().toInt();
+  }
 }
 
 te::layout::LayoutAbstractObjectType te::layout::ItemModelObservable::getType()

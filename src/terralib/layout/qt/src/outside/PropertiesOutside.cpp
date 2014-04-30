@@ -58,12 +58,22 @@ te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller,
 
   m_layoutPropertyBrowser = new PropertiesItemPropertyBrowser;
 
+  connect(m_layoutPropertyBrowser, SIGNAL(updateOutside(Property)), 
+    this, SLOT(onChangePropertyValue(Property)));
+
+  connect(m_layoutPropertyBrowser,SIGNAL(changePropertyValue(Property)),
+    this,SLOT(onChangePropertyValue(Property))); 
+
   createLayout();
 }
 
 te::layout::PropertiesOutside::~PropertiesOutside()
 {
-
+  if(m_layoutPropertyBrowser)
+  {
+    delete m_layoutPropertyBrowser;
+    m_layoutPropertyBrowser = 0;
+  }
 }
 
 void te::layout::PropertiesOutside::createLayout()
@@ -83,7 +93,8 @@ void te::layout::PropertiesOutside::createLayout()
   m_propertyFilterEdit->setToolTip(tr("String or regular expression to filter property list with"));
 
   connect(m_propertyFilterEdit,SIGNAL(textChanged(QString)),
-    m_layoutPropertyBrowser,SLOT(onChangeFilter(QString)));
+    m_layoutPropertyBrowser,SLOT(onChangeFilter(QString))); 
+
   filterLayout->addWidget(m_propertyFilterEdit);
   filterLayout->addWidget(m_configurePropertyEditor);
 
@@ -144,6 +155,8 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
       {
         Properties* props = const_cast<Properties*>(lItem->getProperties());
 
+        m_layoutPropertyBrowser->setHasGridWindows(props->hasGridWindows());
+
         foreach( Property prop, props->getProperties()) 
         {
           m_layoutPropertyBrowser->addProperty(prop);
@@ -153,5 +166,38 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
   }
 
   update();
+}
+
+void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
+{
+  if(property.getType() == DataTypeNone)
+    return;
+
+  foreach( QGraphicsItem *item, m_graphicsItems) 
+  {
+    if (item)
+    {			
+      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+      if(lItem)
+      {
+        Properties* props = new Properties("");
+        if(props)
+        {
+          props->setObjectName(lItem->getProperties()->getObjectName());
+          props->setTypeObj(lItem->getProperties()->getTypeObj());
+          props->addProperty(property);
+
+          lItem->updateProperties(props);
+          delete props;
+          props = 0;
+        }       
+      }
+    }
+  }
+}
+
+void te::layout::PropertiesOutside::closeEvent( QCloseEvent * event )
+{
+  m_layoutPropertyBrowser->closeAllWindows();
 }
 

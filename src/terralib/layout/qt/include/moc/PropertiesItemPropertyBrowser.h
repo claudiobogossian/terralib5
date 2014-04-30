@@ -55,15 +55,26 @@ namespace te
 	    virtual ~PropertiesItemPropertyBrowser();
       
       virtual bool addProperty(Property property);
+
+      virtual void clearAll();
+
+      virtual void closeAllWindows();
            
       private slots:
 
         void onShowGridSettingsDlg();
         void onSetDlg(QWidget *parent, QtProperty * prop);
+        void onUpdateGridSettingsProperty();
+        virtual void blockOpenGridWindows(bool block);
+
+      signals:
+
+        void updateOutside(Property property);
       
     protected:
 
       GridSettingsOutside* m_gridSettings;
+      Property             m_dlgProperty;
     };
   }
 }

@@ -50,6 +50,8 @@ namespace te
 {
   namespace layout
   {
+    class Properties;
+
     class PropertyBrowser : public QObject
     {
 	    Q_OBJECT //for slots/signals
@@ -62,14 +64,24 @@ namespace te
       QtTreePropertyBrowser* getPropertyEditor();
       QtVariantPropertyManager* getVariantPropertyManager();
 
-      void clearAll();
+      virtual void clearAll();
 
       virtual bool addProperty(Property property);
+      
       virtual bool removeProperty(Property property);
 
       virtual Property getProperty(std::string name);
-      virtual Property getPropertyFromPosition(int pos);
-      
+
+      virtual Properties* getProperties();
+
+      virtual LayoutPropertyDataType getLayoutType(QVariant::Type type, std::string name = "");
+
+      virtual QVariant::Type getVariantType(LayoutPropertyDataType dataType);
+
+      virtual std::string getPropGridSettingsName();
+
+      virtual void setHasGridWindows(bool hasWindows = false);
+            
       private slots:
 
         void propertyEditorValueChanged(QtProperty *property, const QVariant &value);
@@ -79,6 +91,7 @@ namespace te
       signals:
 
         void changePropertyValue(QtProperty *property, QList<QtBrowserItem*> items);
+        void changePropertyValue(Property property);
 
     protected:
       
@@ -86,6 +99,8 @@ namespace te
       virtual void updateExpandState();
       virtual void createManager();
       virtual void changeVisibility( QList<QtBrowserItem*> items, bool visible );
+      virtual QVariant findProperty(std::string name);
+      virtual void blockOpenGridWindows(bool block);
       
     protected:
 
@@ -95,6 +110,10 @@ namespace te
       QMap<QtProperty*, QString> m_propertyToId;
       QMap<QString, QtProperty*> m_idToProperty;
       QMap<QString, bool> m_idToExpanded;
+
+      /* Custom Types: Dialog Window Type */
+      std::string          m_propGridSettingsName;
+      bool                 m_hasGridWindows;
     };
   }
 }

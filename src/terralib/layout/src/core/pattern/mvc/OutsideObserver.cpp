@@ -55,3 +55,13 @@ te::layout::Properties* te::layout::OutsideObserver::getProperties() const
 {
   return m_model->getProperties();
 }
+
+te::layout::OutsideController* te::layout::OutsideObserver::getController()
+{
+  return m_controller;
+}
+
+te::layout::Observable* te::layout::OutsideObserver::getModel()
+{
+  return m_model;
+}

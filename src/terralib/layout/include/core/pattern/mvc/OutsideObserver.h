@@ -51,6 +51,8 @@ namespace te
       virtual te::gm::Coord2D getPosition() = 0;
       virtual void refresh();
       virtual Properties* getProperties() const;
+      virtual OutsideController* getController();
+      virtual Observable* getModel();
 
     protected:
       OutsideController*	m_controller;

@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "AbstractType.h"
+#include "../../../../color/RGBAColor.h"
 
 // STL
 #include <string>
@@ -60,8 +61,15 @@ namespace te
         int toInt();
         long toLong();
         float toFloat();
+        bool toBool();
+        te::color::RGBAColor toColor();       
 
         bool isNull();
+
+        void clear();
+
+        bool operator ==(const Variant& other); 
+        bool operator !=(const Variant& other); 
 
     protected:
 
@@ -75,6 +83,8 @@ namespace te
       int m_iValue;
       long m_lValue;
       float m_fValue;
+      bool m_bValue;
+      te::color::RGBAColor m_colorValue;
       LayoutPropertyDataType m_type;
       bool m_null;
     };
@@ -91,6 +101,59 @@ namespace te
       const typename ValueType& value, LayoutPropertyDataType type )
     {
       v = Variant(type, &value);      
+    }
+
+    inline bool te::layout::Variant::operator ==(const Variant& other) 
+    { 
+      Variant& otherProp = const_cast<Variant&>(other);
+
+      if(getType() == otherProp.getType())
+      {
+        if(m_sValue == otherProp.toString() &&
+          m_dValue == otherProp.toDouble() &&
+          m_iValue == toInt() &&
+          m_lValue == toLong() &&
+          m_fValue == toFloat() &&
+          m_bValue == toBool())
+        {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    inline bool te::layout::Variant::operator !=(const Variant& other) 
+    { 
+      Variant& otherProp = const_cast<Variant&>(other);
+
+      if(getType() != otherProp.getType())
+      {
+        return true;
+      }
+
+      if(getType() == otherProp.getType())
+      {
+        if(m_sValue != otherProp.toString() ||
+          m_dValue != otherProp.toDouble() ||
+          m_iValue != toInt() ||
+          m_lValue != toLong() ||
+          m_fValue != toFloat())
+        {
+          return true;
+        }
+        else
+        {
+          if(m_bValue != otherProp.toBool())
+          {
+            return true;
+          }
+          else
+          {
+            return false;
+          }
+        }
+      }
+      return true;
     }
   }
 }
