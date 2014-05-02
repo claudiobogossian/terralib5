@@ -238,20 +238,20 @@ void te::qt::af::UpdateUserSettings(const QStringList& prjFiles, const QStringLi
 // save recent projects
   if(!prjFiles.empty() && !prjTitles.empty() && (prjFiles.size() == prjTitles.size()))
   {
-    user_settings.setValue("project/most_recent/path", prjFiles.at(0));
-    user_settings.setValue("project/most_recent/title", prjTitles.at(0));
+    user_settings.setValue("projects/most_recent/path", prjFiles.at(0));
+    user_settings.setValue("projects/most_recent/title", prjTitles.at(0));
     
     if(prjFiles.size() > 1)
     {
-      user_settings.beginGroup("project");
+      user_settings.beginGroup("projects");
       
       user_settings.beginWriteArray("recents");
       
       for(int i = 1; i != prjFiles.size(); ++i)
       {
         user_settings.setArrayIndex(i - 1);
-        user_settings.setValue("project/path", prjFiles.at(i));
-        user_settings.setValue("project/title", prjTitles.at(i));
+        user_settings.setValue("projects/path", prjFiles.at(i));
+        user_settings.setValue("projects/title", prjTitles.at(i));
       }
       
       user_settings.endArray();

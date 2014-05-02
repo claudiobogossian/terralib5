@@ -542,8 +542,8 @@ void te::qt::af::ApplicationController::initializeProjectMenus()
                             QApplication::instance()->organizationName(),
                             QApplication::instance()->applicationName());
 
-    QVariant projPath = user_settings.value("project/most_recent/path", "");
-    QVariant projTitle = user_settings.value("project/most_recent/title", "");
+    QVariant projPath = user_settings.value("projects/most_recent/path", "");
+    QVariant projTitle = user_settings.value("projects/most_recent/title", "");
 
     QMenu* mnu = getMenu("File.Recent Projects");
 
@@ -558,15 +558,15 @@ void te::qt::af::ApplicationController::initializeProjectMenus()
       m_recentProjsTitles.append(projTitle.toString());
     }
     
-    user_settings.beginGroup("project");
+    user_settings.beginGroup("projects");
     
     int nrc = user_settings.beginReadArray("recents");
     
     for(int i = 0; i != nrc; ++i)
     {
       user_settings.setArrayIndex(i);
-      QString npath = user_settings.value("project/path").toString();
-      QString ntitle = user_settings.value("project/title").toString();
+      QString npath = user_settings.value("projects/path").toString();
+      QString ntitle = user_settings.value("projects/title").toString();
       
       
       QAction* act = mnu->addAction(npath);
