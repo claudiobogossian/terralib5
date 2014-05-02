@@ -48,8 +48,11 @@
 #include <boost/format.hpp>
 #include <boost/filesystem.hpp>
 
-void te::plugin::PluginManager::getPlugins(std::vector<std::string>& plugins) const
+std::vector<std::string>
+te::plugin::PluginManager::getPlugins() const
 {
+  std::vector<std::string> plugins;
+  
 // retrieve the list of loaded plugins
   for(std::vector<AbstractPlugin*>::const_iterator it = m_plugins.begin(); it != m_plugins.end(); ++it)
     plugins.push_back((*it)->getInfo().m_name);
@@ -61,6 +64,8 @@ void te::plugin::PluginManager::getPlugins(std::vector<std::string>& plugins) co
 // retrieve the list of broken plugins
   for(boost::ptr_vector<PluginInfo>::const_iterator it = m_brokenPlugins.begin(); it != m_brokenPlugins.end(); ++it)
     plugins.push_back(it->m_name);
+  
+  return plugins;
 }
 
 const te::plugin::PluginInfo& te::plugin::PluginManager::getPlugin(const std::string& name) const

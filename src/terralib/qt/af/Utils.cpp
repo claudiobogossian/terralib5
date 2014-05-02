@@ -37,7 +37,6 @@
 #include "../../xml/Writer.h"
 #include "../../Version.h"
 #include "ApplicationController.h"
-#include "ApplicationPlugins.h"
 #include "Exception.h"
 #include "Project.h"
 #include "Utils.h"
@@ -236,7 +235,8 @@ void te::qt::af::UpdateUserSettings(const QStringList& prjFiles, const QStringLi
                           QApplication::instance()->organizationName(),
                           QApplication::instance()->applicationName());
   
-  if(!prjFiles.empty() && prjTitles.empty() && (prjFiles.size() == prjTitles.size()))
+// save recent projects
+  if(!prjFiles.empty() && !prjTitles.empty() && (prjFiles.size() == prjTitles.size()))
   {
     user_settings.setValue("project/most_recent/path", prjFiles.at(0));
     user_settings.setValue("project/most_recent/title", prjTitles.at(0));
@@ -249,37 +249,41 @@ void te::qt::af::UpdateUserSettings(const QStringList& prjFiles, const QStringLi
       
       for(int i = 1; i != prjFiles.size(); ++i)
       {
+        user_settings.setArrayIndex(i - 1);
         user_settings.setValue("project/path", prjFiles.at(i));
         user_settings.setValue("project/title", prjTitles.at(i));
-        
-        
-        QString npath = user_settings.value("project/path").toString();
-        QString ntitle = user_settings.value("project/title").toString();
       }
+      
+      user_settings.endArray();
+      
+      user_settings.endGroup();
     }
   }
   
-//  //Enabled plugins
-//  //----------------
-//  boost::property_tree::ptree plgs;
-//  std::vector<std::string> plugins;
-//  std::vector<std::string>::iterator it;
-//  te::plugin::PluginManager::getInstance().getPlugins(plugins);
-//
-//  p.get_child("UserSettings.EnabledPlugins").clear();
-//
-//  for(it=plugins.begin(); it!=plugins.end(); ++it)
-//    if(te::plugin::PluginManager::getInstance().isLoaded(*it))
-//    {
-//      boost::property_tree::ptree plg;
-//      plg.put_value(*it);
-//      plgs.add_child("Plugin", plg);
-//    }
-//
-//  p.put_child("UserSettings.EnabledPlugins", plgs);
-//
-//  te::common::UserApplicationSettings::getInstance().changed();
-//  te::common::UserApplicationSettings::getInstance().update();
+// save enabled plugins
+  user_settings.remove("plugins/enabled");
+  
+  user_settings.beginGroup("plugins");
+  
+  user_settings.beginWriteArray("enabled");
+  
+  std::vector<std::string> plugins = te::plugin::PluginManager::getInstance().getPlugins();
+  
+  int aidx = 0;
+  
+  for(std::size_t i = 0; i != plugins.size(); ++i)
+  {
+    if(!te::plugin::PluginManager::getInstance().isLoaded(plugins[i]))
+      continue;
+    
+    user_settings.setArrayIndex(aidx++);
+    
+    user_settings.setValue("name", plugins[i].c_str());
+  }
+  
+  user_settings.endArray();
+  
+  user_settings.endGroup();
 }
 
 void te::qt::af::SaveDataSourcesFile()
@@ -420,8 +424,10 @@ void te::qt::af::SaveState(QMainWindow* mainWindow)
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
   
   sett.beginGroup("mainWindow");
+
   sett.setValue("geometry", mainWindow->saveGeometry());
   sett.setValue("windowState", mainWindow->saveState());
+  
   sett.endGroup();
 }
 
@@ -430,8 +436,10 @@ void te::qt::af::RestoreState(QMainWindow* mainWindow)
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   sett.beginGroup("mainWindow");
+  
   mainWindow->restoreGeometry(sett.value("geometry").toByteArray());
   mainWindow->restoreState(sett.value("windowState").toByteArray());
+  
   sett.endGroup();
 }
 
@@ -440,8 +448,8 @@ void te::qt::af::GetProjectInformationsFromSettings(QString& defaultAuthor, int&
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   sett.beginGroup("projects");
-  defaultAuthor = sett.value("default author").toString();
-  maxSaved = sett.value("maximum saved").toInt();
+  defaultAuthor = sett.value("author_name").toString();
+  maxSaved = sett.value("recents_history_size").toInt();
   sett.endGroup();
 }
 
@@ -450,8 +458,8 @@ void te::qt::af::SaveProjectInformationsOnSettings(const QString& defaultAuthor,
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   sett.beginGroup("projects");
-  sett.setValue("default author", defaultAuthor);
-  sett.setValue("maximum saved", maxSaved);
+  sett.setValue("author_name", defaultAuthor);
+  sett.setValue("recents_history_size", maxSaved);
   sett.endGroup();
 }
 
@@ -726,37 +734,6 @@ void te::qt::af::UpdateUserSettingsFile(const QString& fileName, const bool& rem
   }
 
   usrSett.load(fileName.toStdString());
-}
-
-void te::qt::af::UpdateAppPluginsFile(const QString& fileName, const bool& removeOlder)
-{
-  QFileInfo info(fileName);
-  te::common::SystemApplicationSettings& appSett = te::common::SystemApplicationSettings::getInstance();
-  ApplicationPlugins& appPlg = ApplicationPlugins::getInstance();
-
-  if(info.exists())
-    info.dir().remove(info.fileName());
-
-  std::string olderFile = appSett.getValue("Application.PluginsFile.<xmlattr>.xlink:href");
-
-  appSett.setValue("Application.PluginsFile.<xmlattr>.xlink:href", fileName.toStdString());
-
-  if(removeOlder)
-  {
-    info.setFile(olderFile.c_str());
-    info.dir().remove(info.fileName());
-  }
-
-  // Updating enabled plugins
-  info.setFile(fileName);
-
-  if(!info.exists())
-  {
-    boost::property_tree::xml_writer_settings<char> settings('\t', 1);
-    boost::property_tree::write_xml(fileName.toStdString(), appPlg.getAllSettings(), std::locale(), settings);
-  }
-
-  appPlg.load(fileName.toStdString());
 }
 
 void te::qt::af::WriteDefaultProjectFile(const QString& fileName)

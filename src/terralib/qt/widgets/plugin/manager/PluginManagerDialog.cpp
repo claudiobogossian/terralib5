@@ -509,9 +509,7 @@ void te::qt::widgets::PluginManagerDialog::fillInstalledPlugins()
 {
   const te::plugin::PluginManager& pm = te::plugin::PluginManager::getInstance();
 
-  std::vector<std::string> plugins;
-
-  pm.getPlugins(plugins);
+  std::vector<std::string> plugins = pm.getPlugins();
 
   int nrows = static_cast<int>(plugins.size());
 

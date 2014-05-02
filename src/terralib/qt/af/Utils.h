@@ -271,15 +271,6 @@ namespace te
         \param removeOlder Flag information the remove older settings file. If true remove the older file, otherwise maintain it.
       */
       TEQTAFEXPORT void UpdateUserSettingsFile(const QString& fileName, const bool& removeOlder = true);
-
-      /*!
-        \brief Changes the application plugins file location.
-
-        \param fileName The new file to be generated.
-
-        \param removeOlder Flag information the remove older application plugins file. If true remove the older file, otherwise maintain it.
-      */
-      TEQTAFEXPORT void UpdateAppPluginsFile(const QString& fileName, const bool& removeOlder = true);
       
       /*!
         \brief Writes the configuration file. It updates the application settings.

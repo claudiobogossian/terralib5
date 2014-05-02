@@ -442,10 +442,59 @@ void te::qt::af::ApplicationController::initializePlugins()
   {
     SplashScreenManager::getInstance().showMessage(tr("Reading application plugins list..."));
 
-// retrieving the installed plugins.
     plgFiles = GetPluginsFiles();
     
-    SplashScreenManager::getInstance().showMessage(tr("Plugins list read!"));
+    //SplashScreenManager::getInstance().showMessage(tr("Plugins list read!"));
+    
+    SplashScreenManager::getInstance().showMessage(tr("Checking enabled plugins..."));
+    
+    QSettings user_settings(QSettings::IniFormat,
+                            QSettings::UserScope,
+                            QApplication::instance()->organizationName(),
+                            QApplication::instance()->applicationName());
+    
+    user_settings.beginGroup("plugins");
+    
+    std::set<std::string> user_enabled_plugins;
+    
+    int nitems = user_settings.beginReadArray("enabled");
+    
+    for(int i = 0; i != nitems; ++i)
+    {
+      user_settings.setArrayIndex(i);
+      
+      QString name = user_settings.value("name").toString();
+      
+      user_enabled_plugins.insert(name.toStdString());
+    }
+    
+    user_settings.endArray();
+    
+    user_settings.endGroup();
+    
+    //SplashScreenManager::getInstance().showMessage(tr("Enabled plugin list read!"));
+    
+    SplashScreenManager::getInstance().showMessage(tr("Loading plugins..."));
+    
+// retrieve information for each plugin
+    boost::ptr_vector<te::plugin::PluginInfo> plugins;
+    
+    for(std::size_t i = 0; i != plgFiles.size(); ++i)
+    {
+      te::plugin::PluginInfo* pinfo = te::plugin::GetInstalledPlugin(plgFiles[i]);
+      
+      if(user_enabled_plugins.empty())                        // if there is no list of enabled plugins
+        plugins.push_back(pinfo);                             // try to load all!
+      else if(user_enabled_plugins.count(pinfo->m_name) != 0) // else, if a list is available,
+        plugins.push_back(pinfo);                             // load only enabled plugins
+      else                                                    // otherwise
+        delete pinfo;                                         // release plugin info
+    }
+    
+// load and start each plugin
+    te::plugin::PluginManager::getInstance().load(plugins);
+    
+    SplashScreenManager::getInstance().showMessage(tr("Plugins loaded successfully!"));
   }
   catch(const std::exception& e)
   {
@@ -465,22 +514,7 @@ void te::qt::af::ApplicationController::initializePlugins()
 
   try
   {
-    SplashScreenManager::getInstance().showMessage(tr("Loading plugins..."));
-
-// retrieve information for each plugin
-    boost::ptr_vector<te::plugin::PluginInfo> plugins;
-
-    for(std::size_t i = 0; i != plgFiles.size(); ++i)
-    {
-      te::plugin::PluginInfo* pinfo = te::plugin::GetInstalledPlugin(plgFiles[i]);
-      
-      plugins.push_back(pinfo);
-    }
     
-// load and start each plugin
-    te::plugin::PluginManager::getInstance().load(plugins);
-
-    SplashScreenManager::getInstance().showMessage(tr("Plugins loaded successfully!"));
   }
   catch(const std::exception& e)
   {
@@ -570,7 +604,7 @@ void te::qt::af::ApplicationController::updateRecentProjects(const QString& prjF
   {
     if(pos < 0)
     {
-      if(m_recentProjs.size() >= maxSaved) // TODO: Size of the list must be configurable.
+      if(m_recentProjs.size() > maxSaved) // TODO: Size of the list must be configurable.
       {
         m_recentProjs.removeLast();
         m_recentProjsTitles.removeLast();

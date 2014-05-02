@@ -84,7 +84,6 @@
 #include "events/ToolEvents.h"
 #include "settings/SettingsDialog.h"
 #include "ApplicationController.h"
-#include "ApplicationPlugins.h"
 #include "BaseApplication.h"
 #include "Exception.h"
 #include "Project.h"

@@ -55,7 +55,6 @@ source_group("Header Files"  FILES ${TERRALIB_HDR_FILES})
 source_group("UI Files"  FILES ${TERRALIB_UI_FILES})
 
 set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/ApplicationController.h
-                               ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/ApplicationPlugins.h
                                ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/BaseApplication.h
                                ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/ProjectInfoDialog.h)
 

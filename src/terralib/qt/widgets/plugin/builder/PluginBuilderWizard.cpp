@@ -115,8 +115,7 @@ te::qt::widgets::PluginBuilderWizard::PluginBuilderWizard(QWidget* parent)
   m_pluginDependencies->getForm()->m_rightItemsLabel->setText(tr("Required Plugins"));
   m_ui->m_pluginDependenciesGridLayout->addWidget(m_pluginDependencies.get());
 
-  std::vector<std::string> plugins;
-  te::plugin::PluginManager::getInstance().getPlugins(plugins);
+  std::vector<std::string> plugins = te::plugin::PluginManager::getInstance().getPlugins();
   m_pluginDependencies->setInputValues(plugins);
 
 // category dependencies

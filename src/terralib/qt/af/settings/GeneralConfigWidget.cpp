@@ -237,8 +237,8 @@ void te::qt::af::GeneralConfigWidget::saveChanges()
   if(usrFileChanged)
     UpdateUserSettingsFile(userFile.c_str());
 
-  if(plgFileChanged)
-    UpdateAppPluginsFile(plgFile.c_str());
+  //if(plgFileChanged)
+  //  UpdateAppPluginsFile(plgFile.c_str());
 
   if(appSet.getValue("Application.Organization") != org)
     orgChanged = true;

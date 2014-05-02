@@ -39,9 +39,7 @@
 
 void te::plugin::UnloadAllPluginsFromEngine(const std::string& engine)
 {
-  std::vector<std::string> plugins;
-
-  PluginManager::getInstance().getPlugins(plugins);
+  std::vector<std::string> plugins = PluginManager::getInstance().getPlugins();
 
   std::vector<std::string>::reverse_iterator it = plugins.rbegin();
   std::vector<std::string>::reverse_iterator itend = plugins.rend();
