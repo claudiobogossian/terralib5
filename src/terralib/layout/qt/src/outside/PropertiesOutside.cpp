@@ -145,26 +145,22 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
   m_layoutPropertyBrowser->clearAll();
 
   m_graphicsItems = graphicsItems;
+
+  if(m_graphicsItems.empty())
+    return;
     
-  foreach( QGraphicsItem *item, graphicsItems) 
+  bool gridWindow = false;
+  Properties* props = intersection(graphicsItems, gridWindow);
+  m_layoutPropertyBrowser->setHasGridWindows(gridWindow);
+
+  if(!props)
+    return;
+
+  foreach( Property prop, props->getProperties()) 
   {
-    if (item)
-    {			
-      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
-      if(lItem)
-      {
-        Properties* props = const_cast<Properties*>(lItem->getProperties());
-
-        m_layoutPropertyBrowser->setHasGridWindows(props->hasGridWindows());
-
-        foreach( Property prop, props->getProperties()) 
-        {
-          m_layoutPropertyBrowser->addProperty(prop);
-        }
-      }
-    }
+    m_layoutPropertyBrowser->addProperty(prop);
   }
-
+   
   update();
 }
 
@@ -201,3 +197,116 @@ void te::layout::PropertiesOutside::closeEvent( QCloseEvent * event )
   m_layoutPropertyBrowser->closeAllWindows();
 }
 
+te::layout::Properties* te::layout::PropertiesOutside::intersection( QList<QGraphicsItem*> graphicsItems, bool& gridWindow )
+{
+  Properties* props = 0;
+
+  if(graphicsItems.size() == 1)
+  {
+    QGraphicsItem* item = graphicsItems.first();
+    if (item)
+    {			
+      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+      if(lItem)
+      {
+        props = const_cast<Properties*>(lItem->getProperties());
+        gridWindow = props->hasGridWindows();
+      }
+    }
+  }
+  else
+  {
+    props = sameProperties(graphicsItems, gridWindow);
+  }
+
+  return props;
+}
+
+te::layout::Properties* te::layout::PropertiesOutside::sameProperties( QList<QGraphicsItem*> graphicsItems, bool& gridWindow )
+{
+  Properties* props = 0;
+  std::vector<Properties*> propsVec = getAllProperties(graphicsItems, gridWindow);
+
+  QGraphicsItem* firstItem = graphicsItems.first();
+  ItemObserver* lItem = dynamic_cast<ItemObserver*>(firstItem);
+  
+  if(!lItem)
+  {
+    return props;
+  }
+
+  Properties* firstProps = const_cast<Properties*>(lItem->getProperties());
+  if(!firstProps)
+  {
+    return props;
+  }
+
+  std::vector<Properties*>::iterator it = propsVec.begin();
+  std::vector<Properties*>::iterator itend = propsVec.end();
+  bool result = false;
+  foreach( Property prop, firstProps->getProperties()) 
+  {
+    contains(itend, it, prop.getName(), result);
+    if(result)
+    {
+      if(!props)
+      {
+        props = new Properties("");
+      }
+      props->addProperty(prop);
+    }
+  }  
+
+  return props;
+}
+
+void te::layout::PropertiesOutside::contains( std::vector<Properties*>::iterator itend, 
+  std::vector<Properties*>::iterator it, std::string name, bool& result )
+{
+  Property prop = (*it)->contains(name);
+  if(prop.isNull())
+  {
+    result = false;
+    return;
+  }
+  else
+  {
+    ++it;
+    result = true;
+    if(it != itend)
+    {
+      contains(itend, it, name, result);
+    }
+  }
+}
+
+std::vector<te::layout::Properties*> 
+  te::layout::PropertiesOutside::getAllProperties( QList<QGraphicsItem*> graphicsItems, bool& gridWindow )
+{
+  Properties* props = 0;
+  std::vector<Properties*> propsVec;
+  bool result = true;
+
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if (item)
+    {			
+      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+      if(lItem)
+      {
+        Properties* propsItem = const_cast<Properties*>(lItem->getProperties());
+        if(propsItem)
+        {
+          propsVec.push_back(propsItem);
+          if(result)
+          {
+            result = propsItem->hasGridWindows();
+          }
+        }
+      }
+    }
+  }
+
+  gridWindow = result;
+  return propsVec;
+}

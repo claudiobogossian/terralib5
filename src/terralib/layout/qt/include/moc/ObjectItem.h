@@ -71,10 +71,11 @@ namespace te
         //Override 
         /*World coordinates*/
         virtual bool contains(const QPointF &point) const;
-        
+
+        virtual void setPos(const QPointF &pos);
+
       protected:
 
-        virtual void setPosition(const double& x, const double& y);
         virtual void drawBackground( QPainter* painter );
         virtual void drawSelection(QPainter* painter);
 

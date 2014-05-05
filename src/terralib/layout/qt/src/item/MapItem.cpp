@@ -254,9 +254,11 @@ te::gm::Coord2D te::layout::MapItem::getPosition()
   return coordinate;
 }
 
-void te::layout::MapItem::setPosition( const double& x, const double& y )
+void te::layout::MapItem::setPos( const QPointF &pos )
 {
-  setPos(x,y);
+  QGraphicsItem::setPos(pos);
+
+  refresh();
 }
 
 void te::layout::MapItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
@@ -272,10 +274,11 @@ void te::layout::MapItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
 void te::layout::MapItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
 {
   QGraphicsItem::mouseReleaseEvent(event);
+
+  refresh();
 }
 
 void te::layout::MapItem::resizeEvent( QGraphicsSceneResizeEvent * event )
 {
   QGraphicsProxyWidget::resizeEvent(event);
 }
-

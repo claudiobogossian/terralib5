@@ -44,6 +44,7 @@ namespace te
       TypeZoomOut,
       TypeCreate,
       TypeCreateMap,
+      TypeCreateMapGrid,
       TypeCreateRectangle,
       TypeCreateText,
       TypeUnitsMetricsChange,

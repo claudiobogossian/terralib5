@@ -36,6 +36,9 @@
 #include "OutsideObserver.h"
 #include "../../../../geometry/Envelope.h"
 
+// STL
+#include <vector>
+
 class QGraphicsItem;
 class QWidget;
 class QGraphicsProxyWidget;
@@ -56,6 +59,7 @@ namespace te
   namespace layout
   {
     class PropertiesItemPropertyBrowser;
+    class Properties;
 
     class PropertiesOutside : public QDockWidget, public OutsideObserver
     {
@@ -80,7 +84,12 @@ namespace te
 
       virtual void	closeEvent ( QCloseEvent * event );
       virtual void createLayout();
-          
+      virtual Properties* intersection(QList<QGraphicsItem*> graphicsItems, bool& gridWindow);
+      virtual Properties* sameProperties(QList<QGraphicsItem*> graphicsItems, bool& gridWindow);
+      virtual void contains(std::vector<Properties*>::iterator itend, 
+        std::vector<Properties*>::iterator it, std::string name, bool& result);
+      virtual std::vector<Properties*> getAllProperties(QList<QGraphicsItem*> graphicsItems, bool& gridWindow);
+
     protected:
 
       PropertiesItemPropertyBrowser* m_layoutPropertyBrowser;

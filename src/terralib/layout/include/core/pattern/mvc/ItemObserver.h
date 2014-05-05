@@ -49,10 +49,8 @@ namespace te
       public:
         ItemObserver(ItemController* controller = 0, Observable* o = 0);
         virtual ~ItemObserver();
-        virtual void updateObserver(ContextItem context) = 0;
 
-        virtual void setItemPosition(const double& x, const double& y);
-
+        virtual void updateObserver(ContextItem context) = 0;        
         /*
           return coordinates llx, ury
         */
@@ -61,17 +59,16 @@ namespace te
         virtual te::layout::Properties* getProperties() const;	
         virtual void updateProperties(te::layout::Properties* properties);
         virtual void redraw(const double& scaleFactor = 1.);
-        virtual void refresh();
 
         virtual void setPPI(const double& ppi);
         
         virtual void setPrintable(bool print);
         virtual bool isPrintable();
-
+        
       protected:
-        virtual void setPosition(const double& x, const double& y) = 0;
 
-      protected:
+        virtual void refresh();
+
         te::layout::ItemController*	m_controller;
         te::layout::Observable*		m_model;
         double					m_ppi;

@@ -63,6 +63,8 @@ namespace te
 
         //Mandatory implementation methods
         virtual void setRect(QRectF rect);
+
+        virtual void setPos(const QPointF &pos);
                         
     protected:
       
@@ -79,9 +81,7 @@ namespace te
       virtual void resizeEvent ( QGraphicsSceneResizeEvent * event );
       
       virtual te::gm::Coord2D getPosition();
-
-      virtual void setPosition( const double& x, const double& y );
-      
+            
       virtual void drawSelection( QPainter* painter );
 
     protected:

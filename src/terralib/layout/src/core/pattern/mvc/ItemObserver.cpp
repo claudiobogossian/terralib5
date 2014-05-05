@@ -66,12 +66,6 @@ void te::layout::ItemObserver::refresh()
   m_controller->setPosition(coord.x, coord.y);
 }
 
-void te::layout::ItemObserver::setItemPosition( const double& x, const double& y )
-{
-  setPosition(x, y);
-  refresh();
-}
-
 void te::layout::ItemObserver::setPPI( const double& ppi )
 {
   m_ppi = ppi;

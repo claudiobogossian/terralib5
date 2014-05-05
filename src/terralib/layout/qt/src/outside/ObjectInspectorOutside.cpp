@@ -95,6 +95,9 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
   m_layoutPropertyBrowser->clearAll();
 
   m_graphicsItems = graphicsItems;
+
+  if(m_graphicsItems.empty())
+    return;
     
   //QtVariantProperty *property;
   foreach( QGraphicsItem *item, graphicsItems) 

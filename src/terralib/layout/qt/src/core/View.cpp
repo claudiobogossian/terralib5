@@ -34,10 +34,13 @@
 #include "VisualizationArea.h"
 #include "OutsideArea.h"
 #include "../../../../color/RGBAColor.h"
-#include "../../../../geometry/Envelope.h"
 #include "PropertiesOutside.h"
 #include "ObjectInspectorOutside.h"
 #include "ToolbarOutside.h"
+#include "BuildGraphicsItem.h"
+
+// STL
+#include <math.h>
 
 // Qt
 #include <QMouseEvent>
@@ -48,8 +51,7 @@
 #include <QtGui>
 #include <QGraphicsItem>
 #include <time.h>
-#include <QMatrix>
-#include <math.h> 
+#include <QMatrix> 
 #include <QString>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -62,11 +64,14 @@
 te::layout::View::View( QWidget* widget) : 
   QGraphicsView(new QGraphicsScene, widget),
   m_outsideArea(0),
-  m_visualizationArea(0)
+  m_visualizationArea(0),
+  m_buildItems(0)
 {
   //Use ScrollHand Drag Mode to enable Panning
   //You do need the enable scroll bars for that to work.
   setDragMode(RubberBandDrag);
+
+  m_buildItems = new BuildGraphicsItem;
 }
 
 te::layout::View::~View()
@@ -76,25 +81,22 @@ te::layout::View::~View()
     delete m_visualizationArea;
     m_visualizationArea = 0;
   }
+
+  if(m_buildItems)
+  {
+    delete m_buildItems;
+    m_buildItems = 0;
+  }
 }
 
 void te::layout::View::mousePressEvent( QMouseEvent * event )
 {
   QGraphicsView::mousePressEvent(event);
   
-  if(Context::getInstance()->getMode() == TypeCreateMap)
-  {
-    QPointF scenePos = mapToScene(event->pos());
-    createMap(scenePos);
-  } 
-  else if(Context::getInstance()->getMode() == TypeCreateMap)
-  {
-    //createText();
-  } else  if(Context::getInstance()->getMode() == TypeCreateRectangle)
-  {
-    QPointF scenePos = mapToScene(event->pos());
-    createRectangle(scenePos);
-  } 
+  QPointF scenePos = mapToScene(event->pos());
+  te::gm::Coord2D coord(scenePos.x(), scenePos.y());
+
+  createItem(coord); 
 }
 
 void te::layout::View::wheelEvent( QWheelEvent *event )
@@ -116,30 +118,18 @@ void te::layout::View::scaleView( qreal scaleFactor )
     return;
 
   scale(scaleFactor, scaleFactor);
-
-  Context::getInstance()->setZoomFactor(factor);
-			
-  QList<QGraphicsItem*> graphicsItems = this->scene()->items();
-  foreach( QGraphicsItem *item, graphicsItems) 
+  			
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  if(sc)
   {
-    if (item)
-    {			
-      QGraphicsWidget* outside = dynamic_cast<QGraphicsWidget*>(item);
-
-      if(outside)
-        continue;
-
-      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
-      if(lItem)
-        lItem->redraw(factor);
-    }
+    sc->redrawItems();
   }
 }
 
 void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
 {
   Scene* sc = dynamic_cast<Scene*>(scene());
-
+  
   if(keyEvent->key() == Qt::Key_P)
   {
     //Apenas redesenhar itens que estão dentro do box do papel.
@@ -155,55 +145,15 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
   }
   else if(keyEvent->key() == Qt::Key_G)
   {
-    if(sc)
-    {
-      QGraphicsItemGroup* group = sc->createItemGroup(scene()->selectedItems());
-      group->setParentItem(sc->getMasterParentItem());
-      
-      ItemGroup* layoutGroup = dynamic_cast<ItemGroup*>(group);
-      
-      if(layoutGroup) 
-        layoutGroup->redraw();
-
-      /*If "enabled=true", QGraphicsItemGroup will handle all the events. For example, 
-      the event of mouse click on the child item won't be handled by child item.
-      If "enabled=false", QGraphicsItem Group will not block the child item's event 
-      and let child item handle it own event.*/
-      group->setHandlesChildEvents(true);
-    }
+    createItemGroup();
   }
   else if(keyEvent->key() == Qt::Key_D)
   {
-    QList<QGraphicsItem*> graphicsItems = this->scene()->selectedItems();
-    foreach( QGraphicsItem *item, graphicsItems) 
-    {
-      if (item)
-      {
-        QGraphicsItemGroup* group = dynamic_cast<QGraphicsItemGroup*>(item);
-        if(group)
-        {
-          if(sc)
-          {
-            sc->destroyItemGroup(group);
-          }
-        }
-      }
-    }
+    destroyItemGroup();
   }
   else if(keyEvent->key() == Qt::Key_Delete)
   {
-    QList<QGraphicsItem*> graphicsItems = this->scene()->selectedItems();
-    foreach( QGraphicsItem *item, graphicsItems) 
-    {
-      if (item)
-      {
-        sc->removeItem(item);
-        if(item)
-        {
-          delete item;
-        }
-      }
-    }
+    deleteItems();
   }
 
   QGraphicsView::keyPressEvent(keyEvent);
@@ -232,6 +182,8 @@ void te::layout::View::config()
   setTransformationAnchor(QGraphicsView::NoAnchor);	
   centerOn(QPointF(llx, ury));
   
+  /* Mirror the y coordinate, because the scene is in Cartesian coordinates. */
+  scale(1, -1);    
   //----------------------------------------------------------------------------------------------
   
   connect(m_outsideArea->getToolbarOutside(), SIGNAL(changeContext(bool)), this, SLOT(onToolbarChangeContext(bool)));
@@ -251,49 +203,9 @@ void te::layout::View::resizeEvent(QResizeEvent * event)
 
 int te::layout::View::metric( PaintDeviceMetric metric ) const 
 {
-  switch(metric)
+  if(metric == PdmHeightMM)
   {
-    /*case PdmWidthMM:
-    {
-    return 509;
-    }*/
-    case PdmHeightMM:
-    {
-      //return 286;
-      return 297;
-    }
-    //case PdmPhysicalDpiX:
-    //{
-    //  return m_dpiX;
-    //  //Caso esteja imprimindo, obter o dpi da impressora
-    //  //.
-    //  //.
-    //  //.
-    //}
-    //case PdmPhysicalDpiY:
-    //{
-    //  return m_dpiY;
-    //  //Caso esteja imprimindo, obter o dpi da impressora
-    //  //.
-    //  //.
-    //  //.
-    //}
-    //case PdmDpiX:
-    //{
-    //  return m_dpiX;
-    //  //Caso esteja imprimindo, obter o dpi da impressora
-    //  //.
-    //  //.
-    //  //.
-    //}
-    //case PdmDpiY:
-    //{
-    //  return m_dpiY;
-    //  //Caso esteja imprimindo, obter o dpi da impressora
-    //  //.
-    //  //.
-    //  //.
-    //}
+    return 297;
   }
 	
   return QGraphicsView::metric(metric);
@@ -326,27 +238,6 @@ void te::layout::View::showEvent( QShowEvent * event )
 
   if(m_outsideArea)
     m_outsideArea->openAllDocks();
-}
-
-bool te::layout::View::createMap( QPointF point )
-{
-  bool result = true;
-  
-  return result;
-}
-
-bool te::layout::View::createText( QPointF point )
-{
-  bool result = true;
-
-  return result;
-}
-
-bool te::layout::View::createRectangle( QPointF point )
-{
-  bool result = true;
-  
-  return result;
 }
 
 void te::layout::View::onToolbarChangeContext( bool change )
@@ -385,25 +276,117 @@ void te::layout::View::onToolbarChangeContext( bool change )
 
 void te::layout::View::onSelectionChanged()
 {
-  //Refresh Property window 
-  if(!scene()->selectedItems().isEmpty())
-  {
-    if(m_outsideArea->getPropertiesOutside())
-      m_outsideArea->getPropertiesOutside()->itemsSelected(scene()->selectedItems());
-  }
+  QList<QGraphicsItem*> graphicsItems = scene()->selectedItems();
+  //Refresh Property window   
+  if(m_outsideArea->getPropertiesOutside())
+    m_outsideArea->getPropertiesOutside()->itemsSelected(graphicsItems);
 }
 
 void te::layout::View::onAddItemFinalized()
 {
+  QList<QGraphicsItem*> graphicsItems = scene()->selectedItems();
   //Refresh Inspector Object window
-  if(!scene()->items().isEmpty())
-  {
-    if(m_outsideArea->getObjectInspectorOutside())
-      m_outsideArea->getObjectInspectorOutside()->itemsInspector(scene()->items());
-  }
+  if(m_outsideArea->getObjectInspectorOutside())
+    m_outsideArea->getObjectInspectorOutside()->itemsInspector(graphicsItems);
 }
 
 void te::layout::View::setOutsideArea( OutsideArea* outsideArea )
 {
   m_outsideArea = outsideArea;
+}
+
+void te::layout::View::createItem( const te::gm::Coord2D& coord )
+{
+  if(!m_buildItems)
+    return;
+
+  QGraphicsItem* item = 0;
+
+  LayoutMode mode = Context::getInstance()->getMode();
+
+  switch(mode)
+  {
+  case TypeCreateMap:
+    item = m_buildItems->createMap(coord);
+    break;
+  case TypeCreateMapGrid:
+    item = m_buildItems->createMapGrid(coord);
+    break;
+  case TypeCreateText:
+    item = m_buildItems->createText(coord);
+    break;
+  case TypeCreateRectangle:
+    item = m_buildItems->createRectangle(coord);
+    break;
+  default:
+    item = 0;
+  }
+
+  //If Create item
+  if(item)
+  {
+    Context::getInstance()->setMode(TypeNone);
+  }
+}
+
+void te::layout::View::createItemGroup()
+{
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  QList<QGraphicsItem*> graphicsItems = this->scene()->selectedItems();
+
+  if(sc)
+  {
+    QGraphicsItemGroup* group = sc->createItemGroup(graphicsItems);
+    group->setParentItem(sc->getMasterParentItem());
+      
+    ItemGroup* layoutGroup = dynamic_cast<ItemGroup*>(group);
+      
+    if(layoutGroup) 
+      layoutGroup->redraw();
+
+    /*If "enabled=true", QGraphicsItemGroup will handle all the events. For example, 
+    the event of mouse click on the child item won't be handled by child item.
+    If "enabled=false", QGraphicsItem Group will not block the child item's event 
+    and let child item handle it own event.*/
+    group->setHandlesChildEvents(true);
+  }
+}
+
+void te::layout::View::destroyItemGroup()
+{
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  QList<QGraphicsItem*> graphicsItems = this->scene()->selectedItems();
+
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if (item)
+    {
+      QGraphicsItemGroup* group = dynamic_cast<QGraphicsItemGroup*>(item);
+      if(group)
+      {
+        if(sc)
+        {
+          sc->destroyItemGroup(group);
+        }
+      }
+    }
+  }
+}
+
+void te::layout::View::deleteItems()
+{
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  QList<QGraphicsItem*> graphicsItems = this->scene()->selectedItems();
+
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if (item)
+    {
+      sc->removeItem(item);
+      if(item)
+      {
+        delete item;
+      }
+    }
+  }
 }

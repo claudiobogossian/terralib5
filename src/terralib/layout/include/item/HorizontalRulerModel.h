@@ -71,7 +71,9 @@ namespace te
         virtual void drawMarks(te::map::Canvas* canvas, Utils* utils, int marks);
 
         virtual void updateHorizontalListText();
-
+        virtual void drawLineW(te::gm::Envelope box, Utils* utils);
+        virtual void drawRectW( te::gm::Envelope box, te::color::RGBAColor color, te::map::Canvas* canvas, Utils* utils );
+        
       protected:
 
         te::gm::Envelope	 m_paperBox;

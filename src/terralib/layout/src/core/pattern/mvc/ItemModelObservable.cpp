@@ -141,13 +141,13 @@ std::string te::layout::ItemModelObservable::getName()
 
 void te::layout::ItemModelObservable::setPosition( const double& x, const double& y )
 {
-  //Initial point to draw is : x1, y2, that corresponds 0,0 of local coordinate of a item
+  //Initial point to draw is : x1, y1, that corresponds 0,0 of local coordinate of a item  
   double x1 = x; 
-  double y1 = y - m_box.getHeight();
-
   double x2 = x + m_box.getWidth();
-  double y2 = y;
-
+  
+  double y1 = y;
+  double y2 = y + m_box.getHeight();
+  
   m_box = te::gm::Envelope(x1, y1, x2, y2);
 }
 

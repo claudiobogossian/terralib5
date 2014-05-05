@@ -58,7 +58,8 @@
 te::layout::Scene::Scene( QWidget* widget): 
   QGraphicsScene(widget),
   m_boxW(0),
-  m_boxPaperW(0)
+  m_boxPaperW(0),
+  m_masterParent(0)
 {
 
 }
@@ -87,7 +88,6 @@ void te::layout::Scene::init( double widthMM, double heightMM )
   m_boxPaperW = calculateBoxPaper();
 
   calculateMatrixViewScene();
-  calculateMatrixSceneItem();
 
   createMasterParentItem();
 }
@@ -96,19 +96,22 @@ void te::layout::Scene::insertItem( ItemObserver* item )
 {
   QGraphicsItem* qitem = ((QGraphicsItem*)item);
 
+  int total = 0;
+
   if(qitem)
   {
-    int total = m_masterParent->childItems().count();
-
     if(m_masterParent)
+    {
+      int total = m_masterParent->childItems().count();    
       qitem->setParentItem(m_masterParent); // have a addItem call inside
+    }
     else
       this->addItem(qitem);
     
     qitem->setZValue(total);
-
-    emit addItemFinalized();
   }
+
+  emit addItemFinalized();
 }
 
 void te::layout::Scene::insertOutside( OutsideObserver* widget )
@@ -137,6 +140,24 @@ te::gm::Envelope te::layout::Scene::getSceneBox()
 
   te::gm::Envelope box(ll.x(), ll.y(), ur.x(), ur.y());
   return box;
+}
+
+void te::layout::Scene::redrawItems()
+{
+  double factor = Context::getInstance()->getZoomFactor();
+
+  QList<QGraphicsItem*> graphicsItems = items();
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if (item)
+    {			
+      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+      if(lItem)
+      {
+        lItem->redraw(factor);
+      }
+    }
+  }
 }
 
 QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsItem *> & items )
@@ -285,19 +306,6 @@ void te::layout::Scene::calculateMatrixViewScene()
   setSceneRect(QRectF(QPointF(llx, lly), QPointF(urx, ury)));
 }
 
-void te::layout::Scene::calculateMatrixSceneItem()
-{
-  //Matrix for items ( between scene and items )
-  //take translate
-  double m_31 = m_matrix.inverted().m31();
-  double m_32 = m_matrix.inverted().m32(); 
-  //m11 and m22 : scale
-  //Create matrix for items
-  // shearing( m21 and m12 ) : distortion 
-  // m31 and m32 : translate  
-  m_matrixItem = QTransform(1, 0, 0, 0, -1, 0, m_31, m_32, 1);
-}
-
 te::gm::Envelope* te::layout::Scene::getWorldBox() const
 {
  return m_boxW; 
@@ -313,11 +321,6 @@ QTransform te::layout::Scene::getMatrixViewScene()
   return m_matrix;
 }
 
-QTransform te::layout::Scene::getMatrixSceneItem()
-{
-  return m_matrixItem;
-}
-
 void te::layout::Scene::createMasterParentItem()
 {
   double llx = m_boxW->getLowerLeftX();
@@ -326,10 +329,8 @@ void te::layout::Scene::createMasterParentItem()
   //Background
   QRectF sceneRectBack = sceneRect();	
   m_masterParent = addRect(sceneRectBack);
-  m_masterParent->setTransform(m_matrixItem.inverted()); 
   ((QGraphicsRectItem*)m_masterParent)->setBrush((QBrush(QColor(109,109,109))));	
-  m_masterParent->setPos(llx, lly);
-  //m_masterParent->setPos(0, 0);
+  m_masterParent->setPos(0, 0);
 }
 
 QGraphicsItem* te::layout::Scene::getMasterParentItem()
@@ -423,13 +424,6 @@ void te::layout::Scene::renderScene( QPainter* newPainter )
   //Convert world to screen coordinate. Uses dpi printer.
   te::gm::Envelope paperNewBox = utils->viewportBox(*paperBox);
   
-  //Mirroring Y-Axis
-  newPainter->translate( paperNewBox.getWidth() / 2, paperNewBox.getHeight() / 2 );
-  newPainter->scale( 1, -1 );
-  newPainter->translate( -(paperNewBox.getWidth() / 2), -(paperNewBox.getHeight() / 2) );
-
-  //Without mirroring the scene is drawn upside down, 
-  //since the system that it uses is Cartesian
   this->render(newPainter, pxTargetRect, mmSourceRect); 
 
   changePrintVisibility(true);

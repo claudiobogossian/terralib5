@@ -18,47 +18,39 @@
  */
 
 /*!
-  \file AbstractScene.h
+  \file BuildGraphicsItem.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_SCENE_H
-#define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_SCENE_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_BUILD_GRAPHICS_ITEM_H
+#define __TERRALIB_LAYOUT_INTERNAL_BUILD_GRAPHICS_ITEM_H
 
-// TerraLib
+//TerraLib
 #include "../../../../geometry/Envelope.h"
+#include "../../../../geometry/Coord2D.h"
+
+class QGraphicsItem;
 
 namespace te
 {
   namespace layout
   {
-    class ItemObserver;
-    class OutsideObserver;
-
-    class AbstractScene
+    class BuildGraphicsItem 
     {
       public:
-        virtual ~AbstractScene(void) {};
-        virtual void insertItem(ItemObserver* item) = 0;
-        virtual void insertOutside(OutsideObserver* widget) = 0;
-        virtual te::gm::Envelope getSceneBox() = 0;
-        virtual te::gm::Envelope* getWorldBox() const = 0;
-        virtual te::gm::Envelope* getPaperBox() const = 0;
-        /*
-          params widthMM width of physical screen in millimeters
-          params heightMM height of physical screen in millimeters
-        */
-        virtual void init(double widthMM, double heightMM) = 0;
 
-      protected:
+        BuildGraphicsItem();
+        virtual ~BuildGraphicsItem();
         
-        virtual te::gm::Envelope* calculateBoxPaper() = 0;
-        virtual te::gm::Envelope* calculateWindow() = 0;
-        virtual void calculateMatrixViewScene() = 0;
-        virtual void createMasterParentItem() = 0;        
+        QGraphicsItem* createMap( const te::gm::Coord2D& coordinate );
+        QGraphicsItem* createMapGrid( const te::gm::Coord2D& coordinate );
+        QGraphicsItem* createText( const te::gm::Coord2D& coordinate );
+        QGraphicsItem* createRectangle( const te::gm::Coord2D& coordinate );
+
+
     };
   }
 }
