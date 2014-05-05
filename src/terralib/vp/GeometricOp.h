@@ -82,7 +82,7 @@ namespace te
 
       te::da::DataSetType* GetDataSetType(te::vp::GeometricOpObjStrategy,
                                           bool MultiGeomColumns,
-                                          int geomOp = 0);
+                                          int geomOp = -1);
 
       te::da::DataSourcePtr m_inDsrc;
       std::auto_ptr<te::da::DataSet> m_inDset;

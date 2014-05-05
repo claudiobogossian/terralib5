@@ -187,6 +187,8 @@ bool te::vp::GeometricOpWizard::execute()
   {
     te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inLayer.get());
     te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
+    
+    m_ops.clear();
 
     //Params
     if(m_geomOpOutputPage->hasConvexHull())
@@ -332,11 +334,11 @@ bool te::vp::GeometricOpWizard::execute()
     }
 
 // creating a layer for the result
-    te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
-    te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
+    //te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
+    //te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
 
-    te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
-    m_outLayer = converter(dt);
+    //te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
+    //m_outLayer = converter(dt);
   }
   catch(const std::exception& e)
   {
