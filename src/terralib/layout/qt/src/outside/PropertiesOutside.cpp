@@ -34,6 +34,11 @@
 #include "OutsideController.h"
 #include "../../../../geometry/Envelope.h"
 #include "PropertiesItemPropertyBrowser.h"
+#include "MapItem.h"
+#include "SharedProperties.h"
+#include "ItemModelObservable.h"
+#include "MapModel.h"
+#include "LegendModel.h"
 
 // Qt
 #include <QGroupBox>
@@ -46,7 +51,8 @@
 te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller, Observable* o ) :
 	QDockWidget("", 0, 0),
 	OutsideObserver(controller, o),
-  m_updatingValues(false)
+  m_updatingValues(false),
+  m_sharedProps(0)
 {
 	te::gm::Envelope box = m_model->getBox();	
 	setBaseSize(box.getWidth(), box.getHeight());
@@ -65,6 +71,8 @@ te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller,
     this,SLOT(onChangePropertyValue(Property))); 
 
   createLayout();
+
+  m_sharedProps = new SharedProperties;
 }
 
 te::layout::PropertiesOutside::~PropertiesOutside()
@@ -73,6 +81,12 @@ te::layout::PropertiesOutside::~PropertiesOutside()
   {
     delete m_layoutPropertyBrowser;
     m_layoutPropertyBrowser = 0;
+  }
+
+  if(m_sharedProps)
+  {
+    delete m_sharedProps;
+    m_sharedProps = 0;
   }
 }
 
@@ -138,13 +152,15 @@ te::gm::Coord2D te::layout::PropertiesOutside::getPosition()
   return coordinate;
 }
 
-void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphicsItems)
+void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphicsItems, QList<QGraphicsItem*> allItems)
 {
   m_updatingValues = false;
 
   m_layoutPropertyBrowser->clearAll();
 
   m_graphicsItems = graphicsItems;
+
+  m_allItems = allItems;
 
   if(m_graphicsItems.empty())
     return;
@@ -158,6 +174,7 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
 
   foreach( Property prop, props->getProperties()) 
   {
+    checkDynamicProperty(prop, allItems);
     m_layoutPropertyBrowser->addProperty(prop);
   }
    
@@ -168,6 +185,8 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
 {
   if(property.getType() == DataTypeNone)
     return;
+
+  changeVisitor(property);
 
   foreach( QGraphicsItem *item, m_graphicsItems) 
   {
@@ -310,3 +329,153 @@ std::vector<te::layout::Properties*>
   gridWindow = result;
   return propsVec;
 }
+
+std::vector<te::layout::MapItem*> te::layout::PropertiesOutside::getMapList(QList<QGraphicsItem*> graphicsItems, std::string currentName)
+{
+  std::vector<MapItem*> list;
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if(!item)
+      continue;
+
+    ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+    if(!lItem)
+      continue;
+
+    MapItem* mit = dynamic_cast<MapItem*>(lItem);
+    if(!mit)
+      continue;
+
+    if(currentName.compare(mit->getName()) == 0)
+      continue;
+
+    list.push_back(mit);
+  }
+
+  return list;
+}
+
+void te::layout::PropertiesOutside::addDynamicOptions( Property& property, std::vector<std::string> list )
+{
+  foreach(std::string str, list) 
+  {
+    Variant v;
+    v.setValue(str, DataTypeString);
+    property.addOption(v);
+  }
+}
+
+void te::layout::PropertiesOutside::checkDynamicProperty( Property& property, QList<QGraphicsItem*> graphicsItems )
+{
+  if(property.getName().compare(m_sharedProps->getMapName()) == 0)
+  {
+    mapNameDynamicProperty(property, graphicsItems);
+  }
+}
+
+void te::layout::PropertiesOutside::mapNameDynamicProperty( Property& property, QList<QGraphicsItem*> graphicsItems )
+{
+  std::string currentName = property.getValue().toString();
+
+  if(currentName.compare("") == 0)
+  {
+    currentName = property.getOptionByCurrentChoice().toString();
+  }
+
+  std::vector<MapItem*> list = getMapList(graphicsItems, currentName);
+
+  std::vector<std::string> strList;
+
+  foreach(MapItem* item, list) 
+  {
+    if(!item)
+      continue;
+
+    ItemModelObservable* itModel = dynamic_cast<ItemModelObservable*>(item->getModel());
+
+    if(!itModel)
+      continue;
+
+    std::string name = itModel->getName();
+    strList.push_back(name);
+  }
+
+  addDynamicOptions(property, strList);
+}
+
+void te::layout::PropertiesOutside::changeVisitor( Property property )
+{
+  if(property.getName().compare(m_sharedProps->getMapName()) != 0)
+    return;
+
+  LegendModel* legModel = 0;
+
+  std::string name = property.getValue().toString();
+  if(name.compare("") == 0)
+  {
+    name = property.getOptionByCurrentChoice().toString();
+  }
+
+  if(name.compare("") == 0)
+    return;
+
+  MapModel* mpModel = getMapModel(name);
+
+  if(!mpModel)
+    return;
+
+  foreach( QGraphicsItem *it, m_graphicsItems) 
+  {
+    if(!it)
+      continue;
+
+    ItemObserver* lIt = dynamic_cast<ItemObserver*>(it);
+    if(!lIt)
+      continue;
+
+    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(lIt->getModel());
+    if(!model)
+      continue;
+    
+    switch(model->getType())
+    {
+    case TPLegendItem:
+      legModel = dynamic_cast<LegendModel*>(model);
+      if(legModel)
+        mpModel->acceptVisitor(legModel);
+      break;
+    default:
+      continue;
+    }
+  }
+}
+
+te::layout::MapModel* te::layout::PropertiesOutside::getMapModel( std::string nameMap )
+{
+  MapModel* map = 0;
+
+  foreach( QGraphicsItem *item, m_allItems) 
+  {
+    if(!item)
+      continue;
+
+    ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+    if(!lItem)
+      continue;
+
+    ItemModelObservable* obsMdl = dynamic_cast<ItemModelObservable*>(lItem->getModel());
+    if(!obsMdl)
+      continue;
+
+    if(obsMdl->getName().compare(nameMap) != 0)
+      continue;
+
+    MapModel* mpModel = dynamic_cast<MapModel*>(obsMdl);
+    if(!mpModel)
+      continue;
+
+    map = mpModel;
+  }
+  return map;
+}
+

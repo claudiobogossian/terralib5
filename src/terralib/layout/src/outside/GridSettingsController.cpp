@@ -35,7 +35,7 @@
 #include "GridSettingsModel.h"
 
 te::layout::GridSettingsController::GridSettingsController( Observable* o ) :
-	OutsideController(o)
+	OutsideController(o, TPGridSettings)
 {
 	AbstractOutsideFactory* factory = Context::getInstance()->getOutsideFactory(); 
 	OutsideParamsCreate params(this, m_model);

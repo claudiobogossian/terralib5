@@ -60,6 +60,9 @@ namespace te
 
       virtual void setPosition(const double& x, const double& y);
       virtual LayoutAbstractObjectType getType();
+      virtual void setType(LayoutAbstractObjectType type);
+
+      virtual std::string getName();
 
       virtual int getZValue();
       virtual void setZValue(int zValue);
@@ -80,6 +83,9 @@ namespace te
       Properties*         m_properties;
       LayoutAbstractObjectType  m_type;
       int                       m_zValue;
+
+    private:
+      std::string m_name;
     };
   }
 }

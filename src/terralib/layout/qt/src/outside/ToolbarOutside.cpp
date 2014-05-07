@@ -139,6 +139,14 @@ void te::layout::ToolbarOutside::createToolbar()
   connect(btnRectangle, SIGNAL(toggled(bool)), this, SLOT(onClickRectangleTool(bool)));
   btnRectangle->setIcon(QIcon::fromTheme(LAYOUT_IMAGES_PNG"/layout-square"));  
 
+  QToolButton* btnLegend = new QToolButton;
+  btnLegend->setText("Legend");
+  btnLegend->setGeometry(0,0,10,10);
+  btnLegend->setCheckable(true);
+  btnLegend->setToolTip("Legend Object");
+  connect(btnLegend, SIGNAL(toggled(bool)), this, SLOT(onClickLegendTool(bool)));
+  btnLegend->setIcon(QIcon::fromTheme(LAYOUT_IMAGES_PNG"/layout-default-legend"));  
+
   /*QToolButton* btnSalveProps = new QToolButton;
   btnSalveProps->setText("Save Props");
   btnSalveProps->setGeometry(0,0,10,10);
@@ -164,6 +172,8 @@ void te::layout::ToolbarOutside::createToolbar()
   m_toolbar->addWidget(btnMapGrid);
   m_toolbar->addSeparator();
   m_toolbar->addWidget(btnRectangle);
+  m_toolbar->addSeparator();
+  m_toolbar->addWidget(btnLegend);
   m_toolbar->addSeparator();
   /*m_toolbar->addWidget(btnSalveProps);
   m_toolbar->addSeparator();*/
@@ -340,6 +350,26 @@ void te::layout::ToolbarOutside::onClickSalvePropsTool( bool toggled )
   else
   {
     Context::getInstance()->setMode(TypeSavePropsJSON);
+  }
+
+  if(mode == Context::getInstance()->getMode())
+    result = false;
+
+  emit changeContext(result);
+}
+
+void te::layout::ToolbarOutside::onClickLegendTool( bool toggled )
+{
+  bool result = true;
+  LayoutMode mode = Context::getInstance()->getMode();
+
+  if(toggled == false)
+  {
+    Context::getInstance()->setMode(TypeNone);
+  }
+  else
+  {
+    Context::getInstance()->setMode(TypeCreateLegend);
   }
 
   if(mode == Context::getInstance()->getMode())

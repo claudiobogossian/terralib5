@@ -36,6 +36,8 @@ namespace te
   namespace layout
   {
     class Properties;
+    class ItemController;
+    class Observable;
 
     class Observer
     {

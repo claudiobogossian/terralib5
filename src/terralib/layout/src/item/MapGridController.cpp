@@ -35,7 +35,7 @@
 #include "ItemObserver.h"
 
 te::layout::MapGridController::MapGridController( Observable* o ) :
-  ItemController(o)
+  ItemController(o, TPMapGridItem)
 {
   AbstractItemFactory* factory = Context::getInstance()->getItemFactory(); 
   ItemParamsCreate params(this, m_model);

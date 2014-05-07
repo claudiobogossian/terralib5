@@ -56,6 +56,8 @@ namespace te
         */
         virtual te::gm::Coord2D getPosition() = 0;
 
+        virtual std::string getName();
+
         virtual te::layout::Properties* getProperties() const;	
         virtual void updateProperties(te::layout::Properties* properties);
         virtual void redraw(const double& scaleFactor = 1.);
@@ -64,6 +66,9 @@ namespace te
         
         virtual void setPrintable(bool print);
         virtual bool isPrintable();
+
+        virtual ItemController*	getController();
+        virtual Observable*	getModel();
         
       protected:
 

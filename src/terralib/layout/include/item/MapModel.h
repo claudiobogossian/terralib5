@@ -31,12 +31,14 @@
 // TerraLib
 #include "ItemModelObservable.h"
 #include "ContextItem.h"
+#include "Visitable.h"
+#include "../../../maptools/AbstractLayer.h"
 
 namespace te
 {
   namespace layout
   {
-    class MapModel : public ItemModelObservable
+    class MapModel : public ItemModelObservable, public Visitable
     {
       public:
 
@@ -45,10 +47,15 @@ namespace te
 
         virtual void draw( ContextItem context );
 
-        virtual void setPosition( const double& x, const double& y );
-
         virtual void updateProperties(te::layout::Properties* properties);
 
+        virtual void setLayers(std::list<te::map::AbstractLayerPtr> layers);
+
+        virtual std::list<te::map::AbstractLayerPtr> getLayers();
+
+      protected:
+
+        std::list<te::map::AbstractLayerPtr> m_layers;
     };
   }
 }

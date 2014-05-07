@@ -45,6 +45,7 @@ namespace te
       TypeCreate,
       TypeCreateMap,
       TypeCreateMapGrid,
+      TypeCreateLegend,
       TypeCreateRectangle,
       TypeCreateText,
       TypeUnitsMetricsChange,

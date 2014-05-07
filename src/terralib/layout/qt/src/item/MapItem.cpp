@@ -40,11 +40,10 @@
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../../qt/widgets/canvas/MultiThreadMapDisplay.h"
-#include "../../../../maptools/AbstractLayer.h"
-#include "../../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 #include "../../../../common/TreeItem.h"
 #include "../../../../srs/Converter.h"
 #include "../../../../qt/widgets/tools/ZoomWheel.h"
+#include "../../../../maptools/Utils.h"
 
 // STL
 #include <vector>
@@ -65,12 +64,14 @@
 #include <QApplication>
 #include <QGraphicsSceneMouseEvent>
 #include <QStyleOptionGraphicsItem>
+#include "MapController.h"
 
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   QGraphicsProxyWidget(0),
   ItemObserver(controller, o),
   m_mapDisplay(0),
-  m_grabbedByWidget(false)
+  m_grabbedByWidget(false),
+  m_treeItem(0)
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
@@ -87,6 +88,9 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   m_mapDisplay->setBackgroundColor(Qt::gray);
   m_mapDisplay->setResizeInterval(0);
   m_mapDisplay->setMouseTracking(true);
+
+  connect(m_mapDisplay,SIGNAL(drawLayersFinished(const QMap<QString, QString>&)),
+    this,SLOT(onDrawLayersFinished(const QMap<QString, QString>&)));
     
   te::qt::widgets::ZoomWheel* zoom = new te::qt::widgets::ZoomWheel(m_mapDisplay);
   m_mapDisplay->installEventFilter(zoom);
@@ -189,6 +193,8 @@ void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
   if(actions != Qt::CopyAction)
     return;
 
+  getMimeData(event->mimeData());
+
   QDropEvent dropEvent(QPoint(event->pos().x(), event->pos().y()), event->possibleActions(), event->mimeData(), event->buttons(), event->modifiers());
   QApplication::sendEvent(m_mapDisplay, &dropEvent);
   event->setAccepted(dropEvent.isAccepted());
@@ -281,4 +287,62 @@ void te::layout::MapItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
 void te::layout::MapItem::resizeEvent( QGraphicsSceneResizeEvent * event )
 {
   QGraphicsProxyWidget::resizeEvent(event);
+}
+
+void te::layout::MapItem::getMimeData( const QMimeData* mime )
+{
+  QString s = mime->data("application/x-terralib;value=\"DraggedItems\"").constData();
+  unsigned long v = s.toULongLong();
+  std::vector<te::qt::widgets::AbstractTreeItem*>* draggedItems = reinterpret_cast<std::vector<te::qt::widgets::AbstractTreeItem*>*>(v);
+
+  if(draggedItems->empty())
+    return;
+
+  m_treeItem = draggedItems->operator[](0);  
+}
+
+std::list<te::map::AbstractLayerPtr> te::layout::MapItem::getVisibleLayers()
+{
+  std::list<te::map::AbstractLayerPtr> visibleLayers;
+
+  if(!m_treeItem)
+    return visibleLayers;
+
+  te::map::AbstractLayerPtr al = m_treeItem->getLayer();
+
+  if(al.get() == 0)
+    return visibleLayers;
+
+  std::list<te::map::AbstractLayerPtr> vis;
+  te::map::GetVisibleLayers(al, vis);
+  // remove folders
+  std::list<te::map::AbstractLayerPtr>::iterator vit;
+  for(vit = vis.begin(); vit != vis.end(); ++vit)
+  {
+    if((*vit)->getType() == "DATASETLAYER" || 
+      (*vit)->getType() == "QUERYLAYER" ||
+      (*vit)->getType() == "RASTERLAYER")
+    {
+      visibleLayers.push_front(*vit);
+    }
+  }
+
+  return visibleLayers;
+}
+
+void te::layout::MapItem::onDrawLayersFinished( const QMap<QString, QString>& errors )
+{
+  if(!errors.empty())
+    return;
+
+  std::list<te::map::AbstractLayerPtr> vis = getVisibleLayers();
+
+  if(!m_controller)
+    return;
+
+  MapController* controller = dynamic_cast<MapController*>(m_controller);
+  if(controller)
+  {
+    controller->refreshLayers(vis);
+  }
 }

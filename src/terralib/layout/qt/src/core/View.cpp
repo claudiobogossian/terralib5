@@ -277,9 +277,10 @@ void te::layout::View::onToolbarChangeContext( bool change )
 void te::layout::View::onSelectionChanged()
 {
   QList<QGraphicsItem*> graphicsItems = scene()->selectedItems();
+  QList<QGraphicsItem*> allItems = scene()->items();
   //Refresh Property window   
   if(m_outsideArea->getPropertiesOutside())
-    m_outsideArea->getPropertiesOutside()->itemsSelected(graphicsItems);
+    m_outsideArea->getPropertiesOutside()->itemsSelected(graphicsItems, allItems);
 }
 
 void te::layout::View::onAddItemFinalized()
@@ -317,6 +318,9 @@ void te::layout::View::createItem( const te::gm::Coord2D& coord )
     break;
   case TypeCreateRectangle:
     item = m_buildItems->createRectangle(coord);
+    break;
+  case TypeCreateLegend:
+    item = m_buildItems->createLegend(coord);
     break;
   default:
     item = 0;

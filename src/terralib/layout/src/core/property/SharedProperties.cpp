@@ -18,40 +18,41 @@
  */
 
 /*!
-  \file BuildGraphicsItem.h
+  \file SharedProperties.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_BUILD_GRAPHICS_ITEM_H
-#define __TERRALIB_LAYOUT_INTERNAL_BUILD_GRAPHICS_ITEM_H
+// TerraLib
+#include "SharedProperties.h"
 
-//TerraLib
-#include "../../../../geometry/Envelope.h"
-#include "../../../../geometry/Coord2D.h"
 
-class QGraphicsItem;
-
-namespace te
+te::layout::SharedProperties::SharedProperties() :
+  m_name("name"),
+  m_id("id"),
+  m_mapName("map_name")
 {
-  namespace layout
-  {
-    class BuildGraphicsItem 
-    {
-      public:
 
-        BuildGraphicsItem();
-        virtual ~BuildGraphicsItem();
-        
-        QGraphicsItem* createMap( const te::gm::Coord2D& coordinate );
-        QGraphicsItem* createMapGrid( const te::gm::Coord2D& coordinate );
-        QGraphicsItem* createText( const te::gm::Coord2D& coordinate );
-        QGraphicsItem* createRectangle( const te::gm::Coord2D& coordinate );
-	      QGraphicsItem* createLegend( const te::gm::Coord2D& coordinate );
-    };
-  }
 }
 
-#endif
+te::layout::SharedProperties::~SharedProperties( void )
+{
+
+}
+
+std::string te::layout::SharedProperties::getName()
+{
+  return m_name;
+}
+
+std::string te::layout::SharedProperties::getId()
+{
+  return m_id;
+}
+
+std::string te::layout::SharedProperties::getMapName()
+{
+  return m_mapName;
+}

@@ -18,40 +18,41 @@
  */
 
 /*!
-  \file BuildGraphicsItem.h
+  \file LegendController.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_BUILD_GRAPHICS_ITEM_H
-#define __TERRALIB_LAYOUT_INTERNAL_BUILD_GRAPHICS_ITEM_H
+// TerraLib
+#include "LegendController.h"
+#include "ContextItem.h"
+#include "AbstractItemFactory.h"
+#include "Context.h"
+#include "ItemModelObservable.h"
+#include "ItemParamsCreate.h"
+#include "ItemObserver.h"
 
-//TerraLib
-#include "../../../../geometry/Envelope.h"
-#include "../../../../geometry/Coord2D.h"
-
-class QGraphicsItem;
-
-namespace te
+te::layout::LegendController::LegendController( Observable* o ) :
+  ItemController(o, TPLegendItem)
 {
-  namespace layout
-  {
-    class BuildGraphicsItem 
-    {
-      public:
-
-        BuildGraphicsItem();
-        virtual ~BuildGraphicsItem();
-        
-        QGraphicsItem* createMap( const te::gm::Coord2D& coordinate );
-        QGraphicsItem* createMapGrid( const te::gm::Coord2D& coordinate );
-        QGraphicsItem* createText( const te::gm::Coord2D& coordinate );
-        QGraphicsItem* createRectangle( const te::gm::Coord2D& coordinate );
-	      QGraphicsItem* createLegend( const te::gm::Coord2D& coordinate );
-    };
-  }
+  AbstractItemFactory* factory = Context::getInstance()->getItemFactory(); 
+  ItemParamsCreate params(this, m_model);
+  m_view = (Observer*)factory->make(TPLegendItem, params);
 }
 
-#endif
+te::layout::LegendController::~LegendController()
+{
+	
+}
+
+void te::layout::LegendController::setPosition( const double& x, const double& y )
+{
+  if(m_model)
+  {
+    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
+    if(model)
+      return model->setPosition(x, y);
+  }
+}

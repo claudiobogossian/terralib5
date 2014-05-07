@@ -40,6 +40,9 @@
 
 // Qt
 #include <QGraphicsItem>
+#include "LegendModel.h"
+#include "LegendController.h"
+#include "LegendItem.h"
 
 te::layout::BuildGraphicsItem::BuildGraphicsItem()
 {
@@ -62,11 +65,13 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMap( const te::gm::Coord2D& 
   ItemObserver* itemMap = (ItemObserver*)controllerMap->getView();
 
   MapItem* qrectMap = dynamic_cast<MapItem*>(itemMap);
-  qrectMap->setPos(QPointF(coordinate.x, coordinate.y));
-  itemMap->redraw();
-
+  
   if(qrectMap)
+  {
+    qrectMap->setPos(QPointF(coordinate.x, coordinate.y));
+    itemMap->redraw();
     return qrectMap;
+  }
 
   return item;
 }
@@ -82,11 +87,13 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMapGrid( const te::gm::Coord
   ItemObserver* itemMapGrid = (ItemObserver*)controllerMapGrid->getView();
 
   MapGridItem* qrectMapGrid = dynamic_cast<MapGridItem*>(itemMapGrid);
-  qrectMapGrid->setPos(QPointF(coordinate.x, coordinate.y));
-  itemMapGrid->redraw();
 
   if(qrectMapGrid)
+  {
+    qrectMapGrid->setPos(QPointF(coordinate.x, coordinate.y));
+    itemMapGrid->redraw();
     return qrectMapGrid;
+  }
 
   return item;
 }
@@ -110,11 +117,36 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createRectangle( const te::gm::Coo
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   RectangleItem* rect = dynamic_cast<RectangleItem*>(itemObs); 
-  rect->setPos(QPointF(coordinate.x, coordinate.y));
-  itemObs->redraw();
- 
-  if(rect)
-    return rect;
 
+  if(rect)
+  {
+    rect->setPos(QPointF(coordinate.x, coordinate.y));
+    itemObs->redraw();
+    return rect;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createLegend( const te::gm::Coord2D& coordinate )
+{
+  QGraphicsItem* item = 0;
+
+  //Retângulo: utilizando o canvas da Terralib 5
+  LegendModel* model = new LegendModel();	
+  model->setName("RECT_01");
+
+  LegendController* controller = new LegendController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  LegendItem* legend = dynamic_cast<LegendItem*>(itemObs); 
+
+  if(legend)
+  {
+    legend->setPos(QPointF(coordinate.x, coordinate.y));
+    itemObs->redraw();
+    return legend;
+  }
+  
   return item;
 }

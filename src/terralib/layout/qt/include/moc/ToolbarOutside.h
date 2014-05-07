@@ -67,6 +67,7 @@ namespace te
       virtual void onClickMapGridTool(bool toggled);
       virtual void onClickRectangleTool(bool toggled);
       virtual void onClickSalvePropsTool(bool toggled);
+      virtual void onClickLegendTool(bool toggled);
 
     signals:
 

@@ -18,38 +18,31 @@
  */
 
 /*!
-  \file BuildGraphicsItem.h
+  \file LegendController.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_BUILD_GRAPHICS_ITEM_H
-#define __TERRALIB_LAYOUT_INTERNAL_BUILD_GRAPHICS_ITEM_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_LEGEND_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_LEGEND_CONTROLLER_H
 
-//TerraLib
-#include "../../../../geometry/Envelope.h"
-#include "../../../../geometry/Coord2D.h"
-
-class QGraphicsItem;
+// TerraLib
+#include "ItemController.h"
 
 namespace te
 {
   namespace layout
   {
-    class BuildGraphicsItem 
+    class LegendController : public ItemController
     {
       public:
 
-        BuildGraphicsItem();
-        virtual ~BuildGraphicsItem();
-        
-        QGraphicsItem* createMap( const te::gm::Coord2D& coordinate );
-        QGraphicsItem* createMapGrid( const te::gm::Coord2D& coordinate );
-        QGraphicsItem* createText( const te::gm::Coord2D& coordinate );
-        QGraphicsItem* createRectangle( const te::gm::Coord2D& coordinate );
-	      QGraphicsItem* createLegend( const te::gm::Coord2D& coordinate );
+        LegendController( Observable* o );
+        virtual ~LegendController();
+
+        virtual void setPosition(const double& x, const double& y);
     };
   }
 }

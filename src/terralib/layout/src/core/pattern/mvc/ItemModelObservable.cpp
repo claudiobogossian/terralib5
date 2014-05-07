@@ -32,20 +32,34 @@
 #include "../../../../../geometry/Envelope.h"
 #include "../../../../../geometry/Coord2D.h"
 #include "Properties.h"
+#include "SharedProperties.h"
 
 te::layout::ItemModelObservable::ItemModelObservable() :
   m_id(0),
   m_name("unknown"),
-  m_type(TPObjectUnknown)
+  m_type(TPObjectUnknown),
+  m_sharedProps(0)
 {
   m_box = te::gm::Envelope(0,0,0,0);
 
   m_properties = new Properties(m_name);
+
+  m_sharedProps = new SharedProperties;
 }
 
 te::layout::ItemModelObservable::~ItemModelObservable()
 {
+  if(m_properties)
+  {
+    delete m_properties;
+    m_properties = 0;
+  }
 
+  if(m_sharedProps)
+  {
+    delete m_sharedProps;
+    m_sharedProps = 0;
+  }
 }
 
 bool te::layout::ItemModelObservable::addObserver( Observer* o )
@@ -82,12 +96,12 @@ te::layout::Properties* te::layout::ItemModelObservable::getProperties() const
   m_properties->clear();
 
   Property pro_name;
-  pro_name.setName("name");
+  pro_name.setName(m_sharedProps->getName());
   pro_name.setId("unknown");
   pro_name.setValue(m_name, DataTypeString);
 
   Property pro_id;
-  pro_id.setName("id");
+  pro_id.setName(m_sharedProps->getId());
   pro_id.setId("unknown");
   pro_id.setValue(m_id, DataTypeInt);
 
@@ -185,6 +199,11 @@ te::layout::LayoutAbstractObjectType te::layout::ItemModelObservable::getType()
   return m_type;
 }
 
+void te::layout::ItemModelObservable::setType( LayoutAbstractObjectType type )
+{
+  m_type = type;
+}
+
 int te::layout::ItemModelObservable::getZValue()
 {
   return m_zValue;
@@ -194,5 +213,3 @@ void te::layout::ItemModelObservable::setZValue( int zValue )
 {
   m_zValue = zValue;
 }
-
-
