@@ -64,9 +64,17 @@ namespace te
 
     protected:
 
-      te::mem::DataSet* SetAllObjects(te::da::DataSetType* dsTypeVec,
+      te::mem::DataSet* SetAllObjects(te::da::DataSetType* dsType,
                                       std::vector<int> tabVec,
                                       std::vector<int> geoVec);
+
+      te::mem::DataSet* SetAggregObj( te::da::DataSetType* dsType,
+                                      std::vector<int> tabVec,
+                                      std::vector<int> geoVec);
+
+      te::mem::DataSet* SetAggregByAttribute( te::da::DataSetType* dsType,
+                                              std::vector<int> tabVec,
+                                              std::vector<int> geoVec);
 
       double CalculateTabularOp(int tabOperation, 
                                 te::gm::Geometry* geom);

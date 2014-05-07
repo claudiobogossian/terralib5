@@ -316,10 +316,8 @@ namespace te
           m_inputParameters.m_inputRasterPtr->getNumberOfColumns();
         const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
         const double usedVMem = (double)te::common::GetUsedVirtualMemory();
-        const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() ) / 
-          2.0;
-        const double freeVMem = MIN( totalPhysMem, 
-          ( ( totalVMem <= usedVMem ) ? 0.0 : ( totalVMem - usedVMem ) ) );
+        const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() );
+        const double freeVMem = MIN( totalPhysMem, ( totalVMem - usedVMem ) );
         const double pixelRequiredRam = stratMemUsageEstimation
           / ((double)totalRasterPixels);
         const double maxSimultaneousMemoryPixels = 0.7 * MIN( 
