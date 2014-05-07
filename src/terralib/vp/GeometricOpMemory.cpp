@@ -104,7 +104,7 @@ bool te::vp::GeometricOpMemory::run()
 
   if(m_outputLayer)
   {
-    bool hasMultiGeomColumns = false;
+    bool hasMultiGeomColumns = true;
     bool result = false;
 
     switch(m_objStrategy)
@@ -113,7 +113,7 @@ bool te::vp::GeometricOpMemory::run()
         {
           if(hasMultiGeomColumns) //Condição se o DataSource suporta mais de uma coluna geometrica...
           {
-            dsTypeVec[0] = te::vp::GeometricOp::GetDataSetType(te::vp::ALL_OBJ, true);
+            dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::ALL_OBJ, true));
           }
           else
           {
@@ -143,7 +143,7 @@ bool te::vp::GeometricOpMemory::run()
         {
           if(hasMultiGeomColumns) //Condição se o DataSource suporta mais de uma coluna geometrica...
           {
-            dsTypeVec[0] = te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_OBJ, true);
+            dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_OBJ, true));
           }
           else
           {
@@ -173,7 +173,7 @@ bool te::vp::GeometricOpMemory::run()
         {
           if(hasMultiGeomColumns) //Condição se o DataSource suporta mais de uma coluna geometrica...
           {
-            dsTypeVec[0] = te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_BY_ATTRIBUTE, true);
+            dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_BY_ATTRIBUTE, true));
           }
           else
           {
@@ -713,4 +713,6 @@ double te::vp::GeometricOpMemory::CalculateTabularOp( int tabOperation,
       }
       break;
   }
+
+  return value;
 }
