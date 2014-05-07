@@ -23,8 +23,8 @@
   \brief A wizard page for selecting converted datasets to layers in TerraLib 5.
 */
 
-#ifndef __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4FINALPAGEWIZARDPAGE_H
-#define __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4FINALPAGEWIZARDPAGE_H
+#ifndef __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4THEMESELECTIONWIZARDPAGE_H
+#define __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4THEMESELECTIONWIZARDPAGE_H
 
 // TerraLib
 #include "../../../../terralib4/ThemeInfo.h"
@@ -37,7 +37,7 @@
 #include <QtGui/QWizardPage>
 
 // Forward declaration
-namespace Ui { class TL4FinalPageWizardPageForm; }
+namespace Ui { class TL4ThemeSelectionWizardPageForm; }
 
 struct ThemeInfo;
 
@@ -49,19 +49,23 @@ namespace te
     {
       namespace terralib4
       {
-        class TL4FinalPageWizardPage : public QWizardPage
+        class TL4ThemeSelectionWizardPage : public QWizardPage
         {
           Q_OBJECT
 
           public:
 
-            TL4FinalPageWizardPage(QWidget* parent = 0);
+            TL4ThemeSelectionWizardPage(QWidget* parent = 0);
 
-            ~TL4FinalPageWizardPage();
+            ~TL4ThemeSelectionWizardPage();
 
-            void setDataSets(const std::vector<std::string>& datasets);
+            void setThemes(const std::vector<::terralib4::ThemeInfo>& themes);
 
-            std::vector<std::string> getSelected();
+            std::vector<::terralib4::ThemeInfo> getThemes();
+
+          private:
+
+            std::vector<std::string> getNames(const std::string& names);
 
           protected slots:
 
@@ -71,11 +75,11 @@ namespace te
 
           private:
 
-            std::auto_ptr<Ui::TL4FinalPageWizardPageForm> m_ui;
+            std::auto_ptr<Ui::TL4ThemeSelectionWizardPageForm> m_ui;
         };
       } // end namespace terralib4
     } // end namespace plugins
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4FINALPAGEWIZARDPAGE_H
+#endif  // __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4THEMESELECTIONWIZARDPAGE_H
