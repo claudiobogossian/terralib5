@@ -92,11 +92,10 @@ namespace te
       virtual void contains(std::vector<Properties*>::iterator itend, 
         std::vector<Properties*>::iterator it, std::string name, bool& result);
       virtual std::vector<Properties*> getAllProperties(QList<QGraphicsItem*> graphicsItems, bool& gridWindow);
-      virtual std::vector<MapItem*> getMapList(QList<QGraphicsItem*> graphicsItems, std::string currentName = "");
       virtual void addDynamicOptions(Property& property, std::vector<std::string> list);
       virtual void checkDynamicProperty(Property& property, QList<QGraphicsItem*> graphicsItems);
       virtual void mapNameDynamicProperty(Property& property, QList<QGraphicsItem*> graphicsItems);
-      virtual void changeVisitor(Property property);
+      virtual void changeMapVisitable(Property property);
       virtual MapModel* getMapModel(std::string nameMap);
 
     protected:

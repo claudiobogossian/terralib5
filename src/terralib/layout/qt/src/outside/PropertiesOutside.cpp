@@ -38,7 +38,8 @@
 #include "SharedProperties.h"
 #include "ItemModelObservable.h"
 #include "MapModel.h"
-#include "LegendModel.h"
+#include "ItemUtils.h"
+#include "VisitorUtils.h"
 
 // Qt
 #include <QGroupBox>
@@ -186,8 +187,6 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
   if(property.getType() == DataTypeNone)
     return;
 
-  changeVisitor(property);
-
   foreach( QGraphicsItem *item, m_graphicsItems) 
   {
     if (item)
@@ -209,6 +208,8 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
       }
     }
   }
+
+  changeMapVisitable(property);
 }
 
 void te::layout::PropertiesOutside::closeEvent( QCloseEvent * event )
@@ -330,31 +331,6 @@ std::vector<te::layout::Properties*>
   return propsVec;
 }
 
-std::vector<te::layout::MapItem*> te::layout::PropertiesOutside::getMapList(QList<QGraphicsItem*> graphicsItems, std::string currentName)
-{
-  std::vector<MapItem*> list;
-  foreach( QGraphicsItem *item, graphicsItems) 
-  {
-    if(!item)
-      continue;
-
-    ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
-    if(!lItem)
-      continue;
-
-    MapItem* mit = dynamic_cast<MapItem*>(lItem);
-    if(!mit)
-      continue;
-
-    if(currentName.compare(mit->getName()) == 0)
-      continue;
-
-    list.push_back(mit);
-  }
-
-  return list;
-}
-
 void te::layout::PropertiesOutside::addDynamicOptions( Property& property, std::vector<std::string> list )
 {
   foreach(std::string str, list) 
@@ -382,33 +358,21 @@ void te::layout::PropertiesOutside::mapNameDynamicProperty( Property& property, 
     currentName = property.getOptionByCurrentChoice().toString();
   }
 
-  std::vector<MapItem*> list = getMapList(graphicsItems, currentName);
+  std::vector<std::string> strList = te::layout::mapNameList(m_allItems);
 
-  std::vector<std::string> strList;
-
-  foreach(MapItem* item, list) 
+  if(std::find(strList.begin(), strList.end(), currentName) != strList.end())
   {
-    if(!item)
-      continue;
-
-    ItemModelObservable* itModel = dynamic_cast<ItemModelObservable*>(item->getModel());
-
-    if(!itModel)
-      continue;
-
-    std::string name = itModel->getName();
-    strList.push_back(name);
+    std::vector<std::string>::iterator it = std::find(strList.begin(), strList.end(), currentName);
+    strList.erase(it);
   }
 
   addDynamicOptions(property, strList);
 }
 
-void te::layout::PropertiesOutside::changeVisitor( Property property )
+void te::layout::PropertiesOutside::changeMapVisitable( Property property )
 {
   if(property.getName().compare(m_sharedProps->getMapName()) != 0)
     return;
-
-  LegendModel* legModel = 0;
 
   std::string name = property.getValue().toString();
   if(name.compare("") == 0)
@@ -419,63 +383,37 @@ void te::layout::PropertiesOutside::changeVisitor( Property property )
   if(name.compare("") == 0)
     return;
 
-  MapModel* mpModel = getMapModel(name);
-
-  if(!mpModel)
+  MapItem* item = te::layout::getMapItem(m_allItems, name);
+  if(!item)
     return;
 
-  foreach( QGraphicsItem *it, m_graphicsItems) 
-  {
-    if(!it)
-      continue;
+  ItemModelObservable* obsMdl = dynamic_cast<ItemModelObservable*>(item->getModel());
+  if(!obsMdl)
+    return;
 
-    ItemObserver* lIt = dynamic_cast<ItemObserver*>(it);
-    if(!lIt)
-      continue;
+  MapModel* model = dynamic_cast<MapModel*>(obsMdl);
+ 
+  if(!model)
+    return;
 
-    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(lIt->getModel());
-    if(!model)
-      continue;
-    
-    switch(model->getType())
-    {
-    case TPLegendItem:
-      legModel = dynamic_cast<LegendModel*>(model);
-      if(legModel)
-        mpModel->acceptVisitor(legModel);
-      break;
-    default:
-      continue;
-    }
-  }
+  te::layout::changeMapVisitable(m_graphicsItems, model);
 }
 
 te::layout::MapModel* te::layout::PropertiesOutside::getMapModel( std::string nameMap )
 {
   MapModel* map = 0;
 
-  foreach( QGraphicsItem *item, m_allItems) 
-  {
-    if(!item)
-      continue;
+  MapItem* item = te::layout::getMapItem(m_allItems, nameMap);
+  if(!item)
+    return map;
 
-    ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
-    if(!lItem)
-      continue;
+  ItemModelObservable* obsMdl = dynamic_cast<ItemModelObservable*>(item->getModel());
+  if(!obsMdl)
+    return map;
 
-    ItemModelObservable* obsMdl = dynamic_cast<ItemModelObservable*>(lItem->getModel());
-    if(!obsMdl)
-      continue;
+  MapModel* model = dynamic_cast<MapModel*>(obsMdl);
+  map = model;
 
-    if(obsMdl->getName().compare(nameMap) != 0)
-      continue;
-
-    MapModel* mpModel = dynamic_cast<MapModel*>(obsMdl);
-    if(!mpModel)
-      continue;
-
-    map = mpModel;
-  }
   return map;
 }
 
