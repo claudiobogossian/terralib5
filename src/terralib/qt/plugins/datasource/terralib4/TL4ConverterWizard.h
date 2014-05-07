@@ -59,6 +59,7 @@ namespace te
         class TL4LayerSelectionWizardPage;
         class TL4RasterFolderSelectionWizardPage;
         class TL4FinalPageWizardPage;
+        class TL4ThemeSelectionWizardPage;
 
         class TEQTPLUGINTERRALIB4EXPORT TL4ConverterWizard : public QWizard
         {
@@ -105,7 +106,8 @@ namespace te
               PAGE_DATASOURCE_SELECTOR,
               PAGE_RASTERFOLDER_SELECTOR,
               PAGE_NAME_RESOLVE_SELECTOR,
-              PAGE_FINALPAGE
+              PAGE_FINALPAGE,
+              PAGE_THEME_SELECTION
             };
 
             bool m_hasNonRaster;
@@ -125,6 +127,7 @@ namespace te
             std::auto_ptr<TL4RasterFolderSelectionWizardPage> m_rasterFolderSelectionPage;
             std::auto_ptr<QWizardPage> m_resolveNamePage;
             std::auto_ptr<TL4FinalPageWizardPage> m_finalPage;
+            std::auto_ptr<TL4ThemeSelectionWizardPage> m_themeSelection;
 
             std::auto_ptr<QTableWidget> m_resolveNameTableWidget;
         };

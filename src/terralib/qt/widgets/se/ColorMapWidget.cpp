@@ -124,7 +124,7 @@ void te::qt::widgets::ColorMapWidget::setColorMap(te::se::ColorMap* cm)
 
   m_cm = cm->clone();
 
-  updateUi();
+  updateUi(true);
 }
 
 te::se::ColorMap* te::qt::widgets::ColorMapWidget::getColorMap()
@@ -154,7 +154,7 @@ void te::qt::widgets::ColorMapWidget::initialize()
   //m_ui->m_transformComboBox->addItem(tr("Recode"), te::se::RECODE_TRANSFORMATION);
 }
 
-void te::qt::widgets::ColorMapWidget::updateUi()
+void te::qt::widgets::ColorMapWidget::updateUi(bool loadColorBar)
 {
   m_ui->m_tableWidget->setRowCount(0);
 
@@ -162,6 +162,8 @@ void te::qt::widgets::ColorMapWidget::updateUi()
   {
     return;
   }
+
+  te::color::ColorBar* cb = 0;
 
   if(m_cm->getCategorize())
   {
@@ -177,6 +179,14 @@ void te::qt::widgets::ColorMapWidget::updateUi()
     m_ui->m_slicesSpinBox->setValue(tV.size() - 2);
 
     m_ui->m_tableWidget->setRowCount(tV.size() - 2);
+
+    te::color::RGBAColor initColor(te::se::GetString(tV[1]).c_str());
+    te::color::RGBAColor endColor(te::se::GetString(tV[tV.size() - 2]).c_str());
+
+    if(loadColorBar)
+      cb = new te::color::ColorBar(initColor, endColor, 256);
+
+    int count = 0;
 
     for(size_t i = 1; i < tV.size() - 1; ++i)
     {
@@ -202,6 +212,20 @@ void te::qt::widgets::ColorMapWidget::updateUi()
         upperLimit = te::se::GetString(t[i]);
         color.setNamedColor(te::se::GetString(tV[i]).c_str());
       }
+
+      if(loadColorBar)
+      {
+        if(count != 0 && count != tV.size() - 2)
+        {
+          double pos = (1. / (tV.size() - 2)) * count;
+
+          te::color::RGBAColor color(te::se::GetString(tV[i]).c_str());
+
+          cb->addColor(color, pos);
+        }
+      }
+              
+      ++count;
 
       //color
       QTableWidgetItem* item = new QTableWidgetItem();
@@ -239,6 +263,14 @@ void te::qt::widgets::ColorMapWidget::updateUi()
 
     m_ui->m_tableWidget->setRowCount(ip.size() - 1);
 
+    te::color::RGBAColor initColor(te::se::GetString(ip[0]->getValue()).c_str());
+    te::color::RGBAColor endColor(te::se::GetString(ip[ip.size() - 1]->getValue()).c_str());
+
+    if(loadColorBar)
+      cb = new te::color::ColorBar(initColor, endColor, 256);
+
+    int count = 0;
+
     for(size_t i = 0; i < ip.size() - 1; ++i)
     {
       QColor color;
@@ -256,6 +288,20 @@ void te::qt::widgets::ColorMapWidget::updateUi()
       valStr.append(valStrBegin);
       valStr.append(" - ");
       valStr.append(valStrEnd);
+
+      if(loadColorBar)
+      {
+        if(count != 0 && count != ip.size() - 1)
+        {
+          double pos = (1. / (ip.size() - 1)) * count;
+
+          te::color::RGBAColor color(te::se::GetString(ipItem->getValue()).c_str());
+
+          cb->addColor(color, pos);
+        }
+      }
+
+      ++count;
 
     //color
       QTableWidgetItem* item = new QTableWidgetItem();
@@ -276,6 +322,16 @@ void te::qt::widgets::ColorMapWidget::updateUi()
       itemRangeStr->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
       m_ui->m_tableWidget->setItem(i, 2, itemRangeStr);
     }
+  }
+
+  if(cb)
+  {
+    disconnect(m_colorBar, SIGNAL(colorBarChanged()), this, SLOT(onApplyPushButtonClicked()));
+
+    te::qt::widgets::colorbar::ColorBar* cbW = m_colorBar->getColorBar();
+    cbW->setColorBar(cb);
+
+    connect(m_colorBar, SIGNAL(colorBarChanged()), this, SLOT(onApplyPushButtonClicked()));
   }
 
   m_ui->m_tableWidget->resizeColumnToContents(0);
@@ -605,5 +661,5 @@ void te::qt::widgets::ColorMapWidget::onImportPushButtonClicked()
 
   emit applyPushButtonClicked();
 
-  updateUi();
+  updateUi(true);
 }

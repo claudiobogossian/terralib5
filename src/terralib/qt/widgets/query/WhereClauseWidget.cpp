@@ -866,7 +866,21 @@ QStringList te::qt::widgets::WhereClauseWidget::getPropertyValues(std::string pr
     propertyName = propertyName.substr(pos + 1, propertyName.size() - 1);
   }
 
-  std::set<std::string> values;
+  std::set<std::string> valuesStr;
+  std::set<double> valuesDouble;
+  std::set<int> valuesInt;
+
+  std::size_t propertyPos;
+  for(std::size_t t = 0; t < dataset->getNumProperties(); ++t)
+  {
+    if(dataset->getPropertyName(t) == propertyName)
+    {
+      propertyPos = t;
+      break;
+    }
+  }
+
+  int propertyType = dataset->getPropertyDataType(propertyPos);
 
   if(dataset.get())
   {
@@ -874,23 +888,69 @@ QStringList te::qt::widgets::WhereClauseWidget::getPropertyValues(std::string pr
     {
       if(!dataset->isNull(propertyName))
       {
-        std::string value = dataset->getAsString(propertyName);
+        if(propertyType == te::dt::INT32_TYPE)
+        {
+          int value = dataset->getInt32(propertyName);
 
-        std::set<std::string>::iterator it = values.find(value);
+          std::set<int>::iterator it = valuesInt.find(value);
 
-        if(it == values.end())
-          values.insert(value);
+          if(it == valuesInt.end())
+            valuesInt.insert(value);
+        }
+        else if(propertyType == te::dt::DOUBLE_TYPE || propertyType == te::dt::FLOAT_TYPE)
+        {
+          double value = dataset->getDouble(propertyName);
+
+          std::set<double>::iterator it = valuesDouble.find(value);
+
+          if(it == valuesDouble.end())
+            valuesDouble.insert(value);
+        }
+        else 
+        {
+          std::string value = dataset->getAsString(propertyName);
+
+          std::set<std::string>::iterator it = valuesStr.find(value);
+
+          if(it == valuesStr.end())
+            valuesStr.insert(value);
+        }
       }
     }
   }
 
-  std::set<std::string>::iterator it = values.begin();
-
-  while(it != values.end())
+  if(propertyType == te::dt::INT32_TYPE)
   {
-    list.append((*it).c_str());
+    std::set<int>::iterator it = valuesInt.begin();
 
-    ++it;
+    while(it != valuesInt.end())
+    {
+      list.append(QString::number(*it));
+
+      ++it;
+    }
+  }
+  else if(propertyType == te::dt::DOUBLE_TYPE || propertyType == te::dt::FLOAT_TYPE)
+  {
+    std::set<double>::iterator it = valuesDouble.begin();
+
+    while(it != valuesDouble.end())
+    {
+      list.append(QString::number(*it, 'f', 5));
+
+      ++it;
+    }
+  }
+  else 
+  {
+    std::set<std::string>::iterator it = valuesStr.begin();
+
+    while(it != valuesStr.end())
+    {
+      list.append((*it).c_str());
+
+      ++it;
+    }
   }
 
   return list;
