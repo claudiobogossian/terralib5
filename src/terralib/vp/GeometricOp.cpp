@@ -108,7 +108,7 @@ bool  te::vp::GeometricOp::save(std::auto_ptr<te::mem::DataSet> result, std::aut
     std::string pk_name = dsTypeResult->getName() + "_pkey";
     te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
     pk->add(dsTypeResult->getProperty(0));
-    m_outDsrc->addPrimaryKey(m_outDsetName,pk);
+    m_outDsrc->addPrimaryKey(outDsType->getName(), pk);
   }
   
   return true;

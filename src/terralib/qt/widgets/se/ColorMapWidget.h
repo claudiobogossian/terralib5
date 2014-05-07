@@ -109,7 +109,7 @@ namespace te
           void initialize();
 
           /*! \brief Updates the widget form based on internal fill element. */
-          void updateUi();
+          void updateUi(bool loadColorBar = false);
 
           void buildCategorizationMap();
 
