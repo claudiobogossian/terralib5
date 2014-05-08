@@ -33,7 +33,7 @@
 #include "Context.h"
 
 te::layout::ObjectInspectorController::ObjectInspectorController( Observable* o ) :
-	OutsideController(o)
+	OutsideController(o, TPObjectInspectorWindow)
 {
 	AbstractOutsideFactory* factory = Context::getInstance()->getOutsideFactory(); 
 	OutsideParamsCreate params(this, m_model);

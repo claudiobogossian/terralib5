@@ -58,7 +58,6 @@ namespace te
         virtual te::gm::Envelope* calculateBoxPaper() = 0;
         virtual te::gm::Envelope* calculateWindow() = 0;
         virtual void calculateMatrixViewScene() = 0;
-        virtual void calculateMatrixSceneItem() = 0;
         virtual void createMasterParentItem() = 0;        
     };
   }

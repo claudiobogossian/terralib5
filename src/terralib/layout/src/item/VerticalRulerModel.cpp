@@ -35,7 +35,6 @@
 #include "../../../maptools/Canvas.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../geometry/Point.h"
-#include "../../../color/RGBAColor.h"
 
 // STL
 #include <sstream>
@@ -102,48 +101,32 @@ void te::layout::VerticalRulerModel::drawRuler( te::map::Canvas* canvas, Utils* 
   if(m_visibleVerticalRuler)
   {
     te::color::RGBAColor colorp4(180,180,180, TE_OPAQUE);
-    canvas->setPolygonFillColor(colorp4);
-    canvas->setPolygonContourColor(colorp4);
-    //Cor 80
-    utils->drawRectW(m_box);
+    drawRectW(m_box, colorp4, canvas, utils);
 
     te::color::RGBAColor colorp85(145,145,145, TE_OPAQUE);
-    canvas->setPolygonFillColor(colorp85);
-    canvas->setPolygonContourColor(colorp85);
-    //Cor 80
-    utils->drawRectW(m_backEndBox);
+    drawRectW(m_backEndBox, colorp85, canvas, utils);
 
     envPaper = te::gm::Envelope(m_backEndBox.getLowerLeftX(), m_paperBox.getLowerLeftY(),
-      m_backEndBox.getUpperRightX(), m_paperBox.getUpperRightY());
+      m_backEndBox.getUpperRightX(), m_backEndBox.getUpperRightY());
 
     te::color::RGBAColor colorp2(255,255,255, TE_OPAQUE);
-    canvas->setPolygonFillColor(colorp2);
-    canvas->setPolygonContourColor(colorp2);
-    //Cor 255
-    utils->drawRectW(envPaper);
+    drawRectW(envPaper, colorp2, canvas, utils);
 
     drawVerticalRuler(canvas, utils);
 
     te::color::RGBAColor colorp3(0,0,0, TE_OPAQUE);
     canvas->setLineColor(colorp3);
-    //Cor 0
-    if(m_invertedLines)
-      envMargin = te::gm::Envelope(m_backEndBox.getUpperRightX() - m_lineMargin, m_backEndBox.getLowerLeftY(), 
-      m_backEndBox.getUpperRightX() - m_lineMargin, m_backEndBox.getHeight());
-    else
-    envMargin = te::gm::Envelope(m_lineMargin, m_backEndBox.getLowerLeftY(), m_lineMargin, 
-      m_backEndBox.getHeight());
 
-    te::gm::LinearRing* line = new te::gm::LinearRing(3, te::gm::LineStringType);
-    line = utils->createSimpleLine(envMargin);
-    utils->drawLineW(line);
-    if(line) delete line;
+    //Cor 0
+    envMargin = te::gm::Envelope(m_backEndBox.getLowerLeftX() + m_lineMargin, m_backEndBox.getLowerLeftY(), 
+      m_backEndBox.getLowerLeftX() + m_lineMargin, m_backEndBox.getUpperRightY());
+
+    drawLineW(envMargin, utils);
   } 
 }
 
 void te::layout::VerticalRulerModel::drawVerticalRuler(te::map::Canvas* canvas, Utils* utils)
 {
-  te::gm::LinearRing* line = new te::gm::LinearRing(3, te::gm::LineStringType);
   te::gm::Envelope box;
   m_posCount = m_backEndBox.getLowerLeftY();
 
@@ -152,17 +135,10 @@ void te::layout::VerticalRulerModel::drawVerticalRuler(te::map::Canvas* canvas, 
   for(int i = 0 ; i < m_verticalBlockMarks ; ++i )
   {
     //TypeRulerVertical
-    if(m_invertedLines)
-      box = te::gm::Envelope(m_backEndBox.getUpperRightX(), m_posCount, m_backEndBox.getUpperRightX() - m_longLine, m_posCount);
-    else
-      box = te::gm::Envelope(m_backEndBox.getLowerLeftX(), m_posCount, m_backEndBox.getLowerLeftX() + m_longLine, m_posCount);
-    line = utils->createSimpleLine(box);
-    utils->drawLineW(line);
-    if(line) delete line;
-    if(m_invertedLines)
-      canvas->drawText(m_backEndBox.getUpperRightX() - (m_longLine + 1.), m_posCount, m_verticalTexts[i], -90);
-    else
-      canvas->drawText(m_backEndBox.getLowerLeftX() + (m_longLine + 1.), m_posCount, m_verticalTexts[i], -90);
+    box = te::gm::Envelope(m_backEndBox.getLowerLeftX(), m_posCount, m_backEndBox.getLowerLeftX() + m_longLine, m_posCount);
+    drawLineW(box, utils);
+
+    canvas->drawText(m_backEndBox.getLowerLeftX() + (m_longLine + 1.), m_posCount, m_verticalTexts[i], -90);
     drawMarks(canvas, utils, m_blockSize - 1);
     m_posCount += 1;
   }	
@@ -172,39 +148,25 @@ void te::layout::VerticalRulerModel::drawVerticalRuler(te::map::Canvas* canvas, 
 void te::layout::VerticalRulerModel::drawMarks(te::map::Canvas* canvas, Utils* utils, int marks)
 {
   te::gm::Envelope box;
-  te::gm::LinearRing* line = 0;
   m_posCount += 1;
   if(marks == m_middleBlockSize)
   {      
       //TypeRulerVertical
-      if(m_invertedLines)
-        box = te::gm::Envelope(m_backEndBox.getUpperRightX(), m_posCount, m_backEndBox.getUpperRightX() - m_mediumLine, m_posCount);
-      else
-        box = te::gm::Envelope(m_backEndBox.getLowerLeftX(), m_posCount, m_backEndBox.getLowerLeftX() + m_mediumLine, m_posCount);
-      line = utils->createSimpleLine(box);
-      utils->drawLineW(line);    
-      if(line) delete line;
+      box = te::gm::Envelope(m_backEndBox.getLowerLeftX(), m_posCount, m_backEndBox.getLowerLeftX() + m_mediumLine, m_posCount);
+      drawLineW(box, utils);
   }
   else
   { 
       //TypeRulerVertical
-      if(m_invertedLines)
-        box = te::gm::Envelope(m_backEndBox.getUpperRightX(), m_posCount, m_backEndBox.getUpperRightX() - m_smallLine, m_posCount);
-      else
-        box = te::gm::Envelope(m_backEndBox.getLowerLeftX(), m_posCount, m_backEndBox.getLowerLeftX() + m_smallLine, m_posCount);
-      line = utils->createSimpleLine(box);
-      utils->drawLineW(line);
-      if(line) delete line;
+      box = te::gm::Envelope(m_backEndBox.getLowerLeftX(), m_posCount, m_backEndBox.getLowerLeftX() + m_smallLine, m_posCount);
+      drawLineW(box, utils);
+
       drawMarks(canvas, utils, marks - 1);
       m_posCount += 1;
+
       //TypeRulerVertical
-      if(m_invertedLines)
-        box = te::gm::Envelope(m_backEndBox.getUpperRightX(), m_posCount, m_backEndBox.getUpperRightX() - m_smallLine, m_posCount);
-      else
-        box = te::gm::Envelope(m_backEndBox.getLowerLeftX(), m_posCount, m_backEndBox.getLowerLeftX() + m_smallLine, m_posCount);
-      line = utils->createSimpleLine(box);
-      utils->drawLineW(line);
-      if(line) delete line;
+      box = te::gm::Envelope(m_backEndBox.getLowerLeftX(), m_posCount, m_backEndBox.getLowerLeftX() + m_smallLine, m_posCount);
+      drawLineW(box, utils);
   }
 }
 
@@ -273,4 +235,20 @@ te::gm::Envelope te::layout::VerticalRulerModel::getPaperBox()
 void te::layout::VerticalRulerModel::invertedLines( bool invert )
 {
   m_invertedLines = invert;
+}
+
+void te::layout::VerticalRulerModel::drawLineW( te::gm::Envelope box, Utils* utils )
+{
+  te::gm::LinearRing* line = new te::gm::LinearRing(3, te::gm::LineStringType);
+  line = utils->createSimpleLine(box);
+  utils->drawLineW(line);
+  if(line) delete line;
+}
+
+void te::layout::VerticalRulerModel::drawRectW( te::gm::Envelope box, te::color::RGBAColor color, 
+  te::map::Canvas* canvas, Utils* utils )
+{
+  canvas->setPolygonFillColor(color);
+  canvas->setPolygonContourColor(color);
+  utils->drawRectW(box);
 }

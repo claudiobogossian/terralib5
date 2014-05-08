@@ -92,7 +92,8 @@ namespace te
     template<typename ValueType>
     inline void te::layout::Variant::setValue( typename ValueType value, LayoutPropertyDataType type )
     { 
-      variantSetValue(*this, value, type);
+      typename ValueType v = value;
+      variantSetValue(*this, v, type);
     }
 
     /* Is still necessary to revise this method.*/

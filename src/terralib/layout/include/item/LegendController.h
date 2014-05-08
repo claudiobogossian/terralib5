@@ -18,51 +18,33 @@
  */
 
 /*!
-  \file OutsideController.cpp
+  \file LegendController.h
    
   \brief 
 
   \ingroup layout
 */
 
+#ifndef __TERRALIB_LAYOUT_INTERNAL_LEGEND_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_LEGEND_CONTROLLER_H
+
 // TerraLib
-#include "OutsideController.h"
-#include "OutsideObserver.h"
-#include "OutsideModelObservable.h"
+#include "ItemController.h"
 
-te::layout::OutsideController::OutsideController( Observable* o ) :
-  m_model(o)
+namespace te
 {
-	
-}
-
-te::layout::OutsideController::OutsideController( Observable* o, LayoutAbstractObjectType type ) :
-  m_model(o)
-{
-  if(m_model)
+  namespace layout
   {
-    m_model->setType(type);
+    class LegendController : public ItemController
+    {
+      public:
+
+        LegendController( Observable* o );
+        virtual ~LegendController();
+
+        virtual void setPosition(const double& x, const double& y);
+    };
   }
 }
 
-te::layout::OutsideController::~OutsideController()
-{
-  if(m_model)
-  {
-    OutsideModelObservable* model = dynamic_cast<OutsideModelObservable*>(m_model);
-    if(model)
-      delete model;
-    m_model = 0;
-  }
-}
-
-const te::layout::Observable* te::layout::OutsideController::getModel()
-{
-	return m_model;
-}
-
-const te::layout::Observer* te::layout::OutsideController::getView()
-{
-	return m_view;
-}
-
+#endif

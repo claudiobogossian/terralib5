@@ -18,51 +18,40 @@
  */
 
 /*!
-  \file OutsideController.cpp
+  \file SharedProperties.h
    
   \brief 
 
   \ingroup layout
 */
 
-// TerraLib
-#include "OutsideController.h"
-#include "OutsideObserver.h"
-#include "OutsideModelObservable.h"
+#ifndef __TERRALIB_LAYOUT_INTERNAL_SHARED_PROPERTIES_H
+#define __TERRALIB_LAYOUT_INTERNAL_SHARED_PROPERTIES_H
 
-te::layout::OutsideController::OutsideController( Observable* o ) :
-  m_model(o)
-{
-	
-}
+// STL
+#include <string>
 
-te::layout::OutsideController::OutsideController( Observable* o, LayoutAbstractObjectType type ) :
-  m_model(o)
+namespace te
 {
-  if(m_model)
+  namespace layout
   {
-    m_model->setType(type);
+    class SharedProperties
+    {
+      public:
+        SharedProperties();
+        virtual ~SharedProperties(void);
+      
+        std::string getName();
+        std::string getId();
+        std::string getMapName();
+
+      protected:
+
+        std::string m_name;
+        std::string m_id;
+        std::string m_mapName;
+    };
   }
 }
 
-te::layout::OutsideController::~OutsideController()
-{
-  if(m_model)
-  {
-    OutsideModelObservable* model = dynamic_cast<OutsideModelObservable*>(m_model);
-    if(model)
-      delete model;
-    m_model = 0;
-  }
-}
-
-const te::layout::Observable* te::layout::OutsideController::getModel()
-{
-	return m_model;
-}
-
-const te::layout::Observer* te::layout::OutsideController::getView()
-{
-	return m_view;
-}
-
+#endif

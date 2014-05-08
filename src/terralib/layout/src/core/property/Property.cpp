@@ -78,6 +78,11 @@ te::layout::Variant te::layout::Property::getValue()
 
 void te::layout::Property::addOption(Variant variant)
 {
+  if(m_options.empty())
+  {
+    m_currentChoice = variant;
+  }
+
   m_options.push_back(variant);
 }
 

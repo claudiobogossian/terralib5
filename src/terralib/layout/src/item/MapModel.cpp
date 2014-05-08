@@ -51,19 +51,22 @@ void te::layout::MapModel::draw( ContextItem context )
   notifyAll(contextNotify);
 }
 
-void te::layout::MapModel::setPosition( const double& x, const double& y )
-{
-  double x1 = x; 
-  double y1 = y - m_box.getHeight();
-
-  double x2 = x + m_box.getWidth();
-  double y2 = y;
-
-  m_box = te::gm::Envelope(x1, y1, x2, y2);
-}
-
 void te::layout::MapModel::updateProperties( te::layout::Properties* properties )
 {
   ItemModelObservable::updateProperties(properties);
+
+  updateVisitors();
+}
+
+void te::layout::MapModel::setLayers( std::list<te::map::AbstractLayerPtr> layers )
+{
+  m_layers = layers;
+  
+  updateVisitors();
+}
+
+std::list<te::map::AbstractLayerPtr> te::layout::MapModel::getLayers()
+{
+  return m_layers;
 }
 

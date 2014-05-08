@@ -33,9 +33,10 @@
 #include "ItemModelObservable.h"
 #include "ItemParamsCreate.h"
 #include "ItemObserver.h"
+#include "MapModel.h"
 
 te::layout::MapController::MapController( Observable* o ) :
-  ItemController(o)
+  ItemController(o, TPMapItem)
 {
   AbstractItemFactory* factory = Context::getInstance()->getItemFactory(); 
   ItemParamsCreate params(this, m_model);
@@ -55,4 +56,20 @@ void te::layout::MapController::setPosition( const double& x, const double& y )
     if(model)
       return model->setPosition(x, y);
   }
+}
+
+void te::layout::MapController::refreshLayers( std::list<te::map::AbstractLayerPtr> layers )
+{
+  if(!m_model)
+    return;
+
+  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
+  if(!model)
+    return;
+
+  MapModel* mpModel = dynamic_cast<MapModel*>(model);
+  if(!mpModel)
+    return;
+
+  mpModel->setLayers(layers);
 }
