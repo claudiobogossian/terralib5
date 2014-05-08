@@ -53,8 +53,10 @@ namespace te
         virtual void updateProperties(te::layout::Properties* properties) = 0;
         virtual te::gm::Envelope getBox() = 0;
         virtual LayoutAbstractObjectType getType() = 0;
+        virtual void setType(LayoutAbstractObjectType type) = 0;
         virtual int getZValue() = 0;
         virtual void setZValue(int zValue) = 0;
+        virtual std::string getName() = 0;
 
       protected:
         virtual void notifyAll(ContextItem context) = 0;

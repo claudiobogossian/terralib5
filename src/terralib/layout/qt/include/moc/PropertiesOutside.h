@@ -36,6 +36,9 @@
 #include "OutsideObserver.h"
 #include "../../../../geometry/Envelope.h"
 
+// STL
+#include <vector>
+
 class QGraphicsItem;
 class QWidget;
 class QGraphicsProxyWidget;
@@ -56,6 +59,10 @@ namespace te
   namespace layout
   {
     class PropertiesItemPropertyBrowser;
+    class Properties;
+    class SharedProperties;
+    class MapItem;
+    class MapModel;
 
     class PropertiesOutside : public QDockWidget, public OutsideObserver
     {
@@ -70,8 +77,8 @@ namespace te
 	    virtual void setPosition(const double& x, const double& y);
 	    virtual te::gm::Coord2D getPosition();
 
-      virtual void itemsSelected(QList<QGraphicsItem*> graphicsItems);
-      
+      virtual void itemsSelected(QList<QGraphicsItem*> graphicsItems, QList<QGraphicsItem*> allItems);
+
       private slots:
 
         void onChangePropertyValue(Property property);
@@ -80,16 +87,28 @@ namespace te
 
       virtual void	closeEvent ( QCloseEvent * event );
       virtual void createLayout();
-          
+      virtual Properties* intersection(QList<QGraphicsItem*> graphicsItems, bool& gridWindow);
+      virtual Properties* sameProperties(QList<QGraphicsItem*> graphicsItems, bool& gridWindow);
+      virtual void contains(std::vector<Properties*>::iterator itend, 
+        std::vector<Properties*>::iterator it, std::string name, bool& result);
+      virtual std::vector<Properties*> getAllProperties(QList<QGraphicsItem*> graphicsItems, bool& gridWindow);
+      virtual void addDynamicOptions(Property& property, std::vector<std::string> list);
+      virtual void checkDynamicProperty(Property& property, QList<QGraphicsItem*> graphicsItems);
+      virtual void mapNameDynamicProperty(Property& property, QList<QGraphicsItem*> graphicsItems);
+      virtual void changeMapVisitable(Property property);
+      virtual MapModel* getMapModel(std::string nameMap);
+
     protected:
 
       PropertiesItemPropertyBrowser* m_layoutPropertyBrowser;
       
       QList<QGraphicsItem*> m_graphicsItems;
+      QList<QGraphicsItem*> m_allItems;
       QLabel* m_nameLabel;
       QLineEdit* m_propertyFilterEdit;
       QToolButton* m_configurePropertyEditor;
       bool m_updatingValues;
+      SharedProperties* m_sharedProps;
     };
   }
 }

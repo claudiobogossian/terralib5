@@ -33,9 +33,19 @@
 #include "Context.h"
 #include "../../../../../maptools/Canvas.h"
 
-te::layout::ItemController::ItemController( Observable* o )
+te::layout::ItemController::ItemController( Observable* o ) :
+  m_model(o)
 {
-  m_model = o;
+
+}
+
+te::layout::ItemController::ItemController( Observable* o, LayoutAbstractObjectType type ) :
+  m_model(o)
+{
+  if(m_model)
+  {
+    m_model->setType(type);
+  }
 }
 
 te::layout::ItemController::~ItemController()

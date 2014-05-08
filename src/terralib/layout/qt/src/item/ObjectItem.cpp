@@ -63,11 +63,6 @@ te::layout::ObjectItem::~ObjectItem()
 
 }
 
-void te::layout::ObjectItem::setPosition( const double& x, const double& y )
-{
-  setPos(x,y);
-}
-
 te::gm::Coord2D te::layout::ObjectItem::getPosition()
 {
   QPointF posF = scenePos();
@@ -79,6 +74,13 @@ te::gm::Coord2D te::layout::ObjectItem::getPosition()
   coordinate.y = valuey;
 
   return coordinate;
+}
+
+void te::layout::ObjectItem::setPos( const QPointF &pos )
+{
+  QGraphicsItem::setPos(pos);
+
+  refresh();
 }
 
 void te::layout::ObjectItem::setPixmap( const QPixmap& pixmap )
@@ -207,6 +209,8 @@ void te::layout::ObjectItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event
     redraw(zoomfactor);
     setOpacity(1.);
   }
+
+  refresh();
 }
 
 void te::layout::ObjectItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
@@ -347,7 +351,7 @@ te::gm::Envelope te::layout::ObjectItem::createNewBoxInCoordScene( const double&
           yTranslation = p_ff.y();
 
           //In Parent Coordinates
-          setPos( xTranslation, yTranslation );
+          setPos( QPointF(xTranslation, yTranslation) );
         }
         break;
       }
@@ -369,7 +373,7 @@ te::gm::Envelope te::layout::ObjectItem::createNewBoxInCoordScene( const double&
           yTranslation = p_ff.y();
 
           //In Parent Coordinates
-          setPos( xTranslation, yTranslation );
+          setPos( QPointF(xTranslation, yTranslation) );
         }
         break;
       }
@@ -391,7 +395,7 @@ te::gm::Envelope te::layout::ObjectItem::createNewBoxInCoordScene( const double&
           yTranslation = p_ff.y();
 
           //In Parent Coordinates
-          setPos( xTranslation, yTranslation );
+          setPos( QPointF(xTranslation, yTranslation) );
         }
         break;
       }

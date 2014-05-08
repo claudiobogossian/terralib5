@@ -28,6 +28,9 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_CONTROLLER_H 
 #define __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_CONTROLLER_H
 
+// TerraLib
+#include "AbstractType.h"
+
 namespace te
 {
   namespace layout
@@ -40,6 +43,7 @@ namespace te
     public:
 
       OutsideController(Observable* o);
+      OutsideController(Observable* o, LayoutAbstractObjectType type);
       virtual ~OutsideController();
 
       virtual void setPosition(const double& x, const double& y) = 0;

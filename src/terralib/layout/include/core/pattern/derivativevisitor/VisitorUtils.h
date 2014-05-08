@@ -18,51 +18,30 @@
  */
 
 /*!
-  \file OutsideController.cpp
+  \file VisitorUtils.h
    
   \brief 
 
   \ingroup layout
 */
 
+#ifndef __TERRALIB_LAYOUT_INTERNAL_VISITOR_UTILS_H 
+#define __TERRALIB_LAYOUT_INTERNAL_VISITOR_UTILS_H
+
 // TerraLib
-#include "OutsideController.h"
-#include "OutsideObserver.h"
-#include "OutsideModelObservable.h"
+#include "Config.h"
+#include "Visitable.h"
 
-te::layout::OutsideController::OutsideController( Observable* o ) :
-  m_model(o)
-{
-	
-}
+// Qt
+#include <QGraphicsItem>
+#include <QList>
 
-te::layout::OutsideController::OutsideController( Observable* o, LayoutAbstractObjectType type ) :
-  m_model(o)
+namespace te
 {
-  if(m_model)
+  namespace layout
   {
-    m_model->setType(type);
+    TELAYOUTEXPORT bool changeMapVisitable(QList<QGraphicsItem*> graphicsItems, Visitable* visitable);
   }
 }
 
-te::layout::OutsideController::~OutsideController()
-{
-  if(m_model)
-  {
-    OutsideModelObservable* model = dynamic_cast<OutsideModelObservable*>(m_model);
-    if(model)
-      delete model;
-    m_model = 0;
-  }
-}
-
-const te::layout::Observable* te::layout::OutsideController::getModel()
-{
-	return m_model;
-}
-
-const te::layout::Observer* te::layout::OutsideController::getView()
-{
-	return m_view;
-}
-
+#endif

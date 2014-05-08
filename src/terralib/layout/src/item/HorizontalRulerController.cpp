@@ -34,7 +34,7 @@
 #include "Context.h"
 
 te::layout::HorizontalRulerController::HorizontalRulerController( Observable* o ) :
-  ItemController(o)
+  ItemController(o, TPHorizontalRuler)
 {
   AbstractItemFactory* factory = Context::getInstance()->getItemFactory(); 
   ItemParamsCreate params(this, m_model);

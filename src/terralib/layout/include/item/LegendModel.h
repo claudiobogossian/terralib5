@@ -18,51 +18,45 @@
  */
 
 /*!
-  \file OutsideController.cpp
+  \file LegendModel.h
    
   \brief 
 
   \ingroup layout
 */
 
+#ifndef __TERRALIB_LAYOUT_INTERNAL_LEGEND_MODEL_H
+#define __TERRALIB_LAYOUT_INTERNAL_LEGEND_MODEL_H
+
 // TerraLib
-#include "OutsideController.h"
-#include "OutsideObserver.h"
-#include "OutsideModelObservable.h"
+#include "ItemModelObservable.h"
+#include "ContextItem.h"
+#include "AbstractVisitor.h"
 
-te::layout::OutsideController::OutsideController( Observable* o ) :
-  m_model(o)
+namespace te
 {
-	
-}
-
-te::layout::OutsideController::OutsideController( Observable* o, LayoutAbstractObjectType type ) :
-  m_model(o)
-{
-  if(m_model)
+  namespace layout
   {
-    m_model->setType(type);
+    class LegendModel : public ItemModelObservable, public AbstractVisitor
+    {
+      public:
+
+        LegendModel();
+        virtual ~LegendModel();
+
+        virtual void draw( ContextItem context );
+
+        virtual Properties* getProperties() const;
+        
+        virtual void updateProperties(te::layout::Properties* properties);
+
+        virtual void visitDependent();
+
+       protected:
+
+        std::string m_mapName;
+    };
   }
 }
 
-te::layout::OutsideController::~OutsideController()
-{
-  if(m_model)
-  {
-    OutsideModelObservable* model = dynamic_cast<OutsideModelObservable*>(m_model);
-    if(model)
-      delete model;
-    m_model = 0;
-  }
-}
-
-const te::layout::Observable* te::layout::OutsideController::getModel()
-{
-	return m_model;
-}
-
-const te::layout::Observer* te::layout::OutsideController::getView()
-{
-	return m_view;
-}
-
+#endif //__TERRALIB_LAYOUT_INTERNAL_MAPLAYOUT_MODEL_H

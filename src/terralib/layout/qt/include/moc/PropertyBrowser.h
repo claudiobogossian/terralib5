@@ -99,8 +99,11 @@ namespace te
       virtual void updateExpandState();
       virtual void createManager();
       virtual void changeVisibility( QList<QtBrowserItem*> items, bool visible );
-      virtual QVariant findProperty(std::string name);
+      virtual QVariant findPropertyValue(std::string name);
+      virtual QtProperty* findProperty(std::string name);
       virtual void blockOpenGridWindows(bool block);
+      virtual void addAttribute(QtVariantProperty* vproperty, Property property);
+      virtual QVariant checkComplexType(QtVariantProperty* property);
       
     protected:
 

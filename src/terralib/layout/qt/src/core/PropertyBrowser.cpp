@@ -184,11 +184,18 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
 
   te::color::RGBAColor color;
   QColor qcolor;
-
+  
   switch(property.getType())
   {
   case DataTypeString:
     vproperty = m_variantPropertyEditorManager->addProperty(QVariant::String, tr(property.getName().c_str()));
+    vproperty->setValue(property.getValue().toString().c_str());
+    break;
+  case DataTypeStringList:
+    /* The type of property is enum, and so a combobox appears. 
+    The type of the property value is int, as is the position in which the attribute is in the list of Enum. */
+    vproperty = m_variantPropertyEditorManager->addProperty(QtVariantPropertyManager::enumTypeId(), tr(property.getName().c_str()));
+    addAttribute(vproperty, property);
     vproperty->setValue(property.getValue().toString().c_str());
     break;
   case DataTypeDouble:
@@ -223,6 +230,20 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
   return false;
 }
 
+void te::layout::PropertyBrowser::addAttribute( QtVariantProperty* vproperty, Property property )
+{
+  std::vector<Variant> vrt = property.getOptionChoices();
+  QStringList  strList;
+  foreach( Variant v, vrt) 
+  {
+    strList.push_back(v.toString().c_str());
+  }
+
+  /* "enumNames" is a name used by default in 
+  QtVariantProperty class for properties with lists */
+  vproperty->setAttribute("enumNames", strList);
+}
+
 bool te::layout::PropertyBrowser::removeProperty( Property property )
 {
   return true;
@@ -233,16 +254,46 @@ te::layout::Property te::layout::PropertyBrowser::getProperty( std::string name 
   Property prop;
   prop.setName(name);
   
-  QVariant variant = findProperty(name);
-  LayoutPropertyDataType type = getLayoutType(variant.type());
+  QVariant variant = findPropertyValue(name);
+  QtProperty* property = findProperty(name);
+  LayoutPropertyDataType type = getLayoutType(variant.type(), name);
+  
+  QtVariantProperty* vproperty = 0;
+  if(property)
+  {
+    vproperty = dynamic_cast<QtVariantProperty*>(property);
+  }
   
   QColor qcolor;
   te::color::RGBAColor color;
+  Variant v;
+  QStringList list;
+  std::string value;
 
   switch(type)
   {
   case DataTypeString:
-    prop.setValue(variant.toString(), type);
+    prop.setValue(variant.toString().toStdString(), type);
+    break;
+  case DataTypeStringList:
+
+    prop.setValue(variant.toString().toStdString(), type);
+    if(vproperty)
+    {
+      list = variant.toStringList();
+      value = list.value(vproperty->value().toInt()).toStdString();
+
+      foreach(QString s, list)
+      {
+        v.clear();
+        v.setValue(s.toStdString(), DataTypeString);
+        prop.addOption(v);
+        if(value.compare(s.toStdString()) == 0)
+        {
+          prop.setOptionChoice(v);
+        }
+      }
+    }
     break;
   case DataTypeDouble:
     prop.setValue(variant.toDouble(), type);
@@ -254,7 +305,7 @@ te::layout::Property te::layout::PropertyBrowser::getProperty( std::string name 
     prop.setValue(variant.toBool(), type);
     break;
   case DataTypeGridSettings:
-    prop.setValue(variant.toString(), type);
+    prop.setValue(variant.toString().toStdString(), type);
     break;
   case DataTypeColor:
     qcolor = variant.value<QColor>();
@@ -270,30 +321,51 @@ te::layout::Property te::layout::PropertyBrowser::getProperty( std::string name 
   return prop;
 }
 
-QVariant te::layout::PropertyBrowser::findProperty( std::string name )
+QVariant te::layout::PropertyBrowser::findPropertyValue( std::string name )
 {
   QVariant variant;
   QtVariantProperty* vproperty = 0;
+  QtProperty* prop = m_idToProperty[name.c_str()];
 
-  QList<QtProperty*> props = m_propertyEditor->properties();
-  foreach(QtProperty* prop, props)
+  if(prop)
   {
-    if(name.compare(prop->propertyName().toStdString()) == 0)
+    vproperty = dynamic_cast<QtVariantProperty*>(prop);
+    if(vproperty)
     {
-      QtVariantProperty* vproperty = dynamic_cast<QtVariantProperty*>(prop);
-
-      if(vproperty)
-      {
-        variant = vproperty->value();
-      }
-      else
-      {
-        variant.setValue(prop->valueText());
-      }
-
-      return variant;
+      variant = checkComplexType(vproperty);
+    }
+    else
+    {
+      variant.setValue(prop->valueText());
     }
   }
+
+  return variant;
+}
+
+QtProperty* te::layout::PropertyBrowser::findProperty( std::string name )
+{
+  QtProperty* prop = m_idToProperty[name.c_str()];
+  return prop;
+}
+
+QVariant te::layout::PropertyBrowser::checkComplexType( QtVariantProperty* property )
+{
+  QVariant variant;
+
+  if(!property)
+    return variant;
+
+  variant = property->value();
+  
+  if(QtVariantPropertyManager::enumTypeId() == property->propertyType())
+  {
+    variant = property->attributeValue("enumNames");
+    QStringList list = variant.toStringList();
+    /*QString attr = list.value(property->value().toInt());*/
+    variant = QVariant(list);
+  }
+
   return variant;
 }
 
@@ -314,6 +386,10 @@ te::layout::Properties* te::layout::PropertyBrowser::getProperties()
 te::layout::LayoutPropertyDataType te::layout::PropertyBrowser::getLayoutType( QVariant::Type type, std::string name )
 {
   LayoutPropertyDataType dataType = DataTypeNone;
+  QVariant variant;
+  QtVariantProperty* vproperty = 0;
+  int i = 0;
+
   switch(type)
   {
     case QVariant::String:
@@ -334,11 +410,23 @@ te::layout::LayoutPropertyDataType te::layout::PropertyBrowser::getLayoutType( Q
         }
       }
       break;
+    case QVariant::StringList:
+      vproperty = dynamic_cast<QtVariantProperty*>(m_idToProperty[name.c_str()]);
+      if(vproperty)
+      {
+        if(QtVariantPropertyManager::enumTypeId() == vproperty->propertyType())
+        {
+          dataType = DataTypeStringList;
+        }
+      }
+      break;
     case QVariant::Double:
       dataType = DataTypeDouble;
       break;
     case QVariant::Int:
-      dataType = DataTypeInt;
+      {
+        dataType = DataTypeInt;
+      }
       break;
     case QVariant::Bool:
       dataType = DataTypeBool;
@@ -360,6 +448,9 @@ QVariant::Type te::layout::PropertyBrowser::getVariantType( LayoutPropertyDataTy
   {
   case DataTypeString:
     type = QVariant::String;
+    break;
+  case DataTypeStringList:
+    type = QVariant::Int;
     break;
   case DataTypeDouble:
     type = QVariant::Double;

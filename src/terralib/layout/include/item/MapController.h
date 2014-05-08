@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "ItemController.h"
+#include "../../../maptools/AbstractLayer.h"
 
 namespace te
 {
@@ -43,6 +44,8 @@ namespace te
         virtual ~MapController();
 
         virtual void setPosition(const double& x, const double& y);
+
+        virtual void refreshLayers(std::list<te::map::AbstractLayerPtr> layers);
     };
   }
 }

@@ -66,12 +66,6 @@ void te::layout::ItemObserver::refresh()
   m_controller->setPosition(coord.x, coord.y);
 }
 
-void te::layout::ItemObserver::setItemPosition( const double& x, const double& y )
-{
-  setPosition(x, y);
-  refresh();
-}
-
 void te::layout::ItemObserver::setPPI( const double& ppi )
 {
   m_ppi = ppi;
@@ -91,4 +85,19 @@ void te::layout::ItemObserver::setPrintable( bool print )
 bool te::layout::ItemObserver::isPrintable()
 {
   return m_printable;
+}
+
+te::layout::ItemController* te::layout::ItemObserver::getController()
+{
+  return m_controller;
+}
+
+te::layout::Observable* te::layout::ItemObserver::getModel()
+{
+  return m_model;
+}
+
+std::string te::layout::ItemObserver::getName()
+{
+  return m_model->getName();
 }

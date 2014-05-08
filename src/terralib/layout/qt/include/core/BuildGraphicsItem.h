@@ -18,51 +18,40 @@
  */
 
 /*!
-  \file OutsideController.cpp
+  \file BuildGraphicsItem.h
    
   \brief 
 
   \ingroup layout
 */
 
-// TerraLib
-#include "OutsideController.h"
-#include "OutsideObserver.h"
-#include "OutsideModelObservable.h"
+#ifndef __TERRALIB_LAYOUT_INTERNAL_BUILD_GRAPHICS_ITEM_H
+#define __TERRALIB_LAYOUT_INTERNAL_BUILD_GRAPHICS_ITEM_H
 
-te::layout::OutsideController::OutsideController( Observable* o ) :
-  m_model(o)
-{
-	
-}
+//TerraLib
+#include "../../../../geometry/Envelope.h"
+#include "../../../../geometry/Coord2D.h"
 
-te::layout::OutsideController::OutsideController( Observable* o, LayoutAbstractObjectType type ) :
-  m_model(o)
+class QGraphicsItem;
+
+namespace te
 {
-  if(m_model)
+  namespace layout
   {
-    m_model->setType(type);
+    class BuildGraphicsItem 
+    {
+      public:
+
+        BuildGraphicsItem();
+        virtual ~BuildGraphicsItem();
+        
+        QGraphicsItem* createMap( const te::gm::Coord2D& coordinate );
+        QGraphicsItem* createMapGrid( const te::gm::Coord2D& coordinate );
+        QGraphicsItem* createText( const te::gm::Coord2D& coordinate );
+        QGraphicsItem* createRectangle( const te::gm::Coord2D& coordinate );
+	      QGraphicsItem* createLegend( const te::gm::Coord2D& coordinate );
+    };
   }
 }
 
-te::layout::OutsideController::~OutsideController()
-{
-  if(m_model)
-  {
-    OutsideModelObservable* model = dynamic_cast<OutsideModelObservable*>(m_model);
-    if(model)
-      delete model;
-    m_model = 0;
-  }
-}
-
-const te::layout::Observable* te::layout::OutsideController::getModel()
-{
-	return m_model;
-}
-
-const te::layout::Observer* te::layout::OutsideController::getView()
-{
-	return m_view;
-}
-
+#endif

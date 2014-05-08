@@ -93,6 +93,15 @@ void te::layout::Variant::convertValue( const void* valueCopy )
       //return throw_exception("Cast failure! Wrong type.");
     }
     break;
+  case DataTypeStringList:
+    // Cast it back to a string pointer.
+    sp = static_cast<std::string*>(value);
+    if(sp)
+    {
+      null = false;
+      m_sValue = *sp;
+    }
+    break;
   case DataTypeDouble:
     dValue = static_cast<double*>(value);
     if(dValue)
@@ -151,7 +160,7 @@ void te::layout::Variant::convertValue( const void* valueCopy )
       m_colorValue = *colorValue;
     }
     break;
-  case DataTypeNone:
+  default:
     null = true;
     break;
   }

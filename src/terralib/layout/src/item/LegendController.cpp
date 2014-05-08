@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file OutsideController.cpp
+  \file LegendController.cpp
    
   \brief 
 
@@ -26,43 +26,33 @@
 */
 
 // TerraLib
-#include "OutsideController.h"
-#include "OutsideObserver.h"
-#include "OutsideModelObservable.h"
+#include "LegendController.h"
+#include "ContextItem.h"
+#include "AbstractItemFactory.h"
+#include "Context.h"
+#include "ItemModelObservable.h"
+#include "ItemParamsCreate.h"
+#include "ItemObserver.h"
 
-te::layout::OutsideController::OutsideController( Observable* o ) :
-  m_model(o)
+te::layout::LegendController::LegendController( Observable* o ) :
+  ItemController(o, TPLegendItem)
+{
+  AbstractItemFactory* factory = Context::getInstance()->getItemFactory(); 
+  ItemParamsCreate params(this, m_model);
+  m_view = (Observer*)factory->make(TPLegendItem, params);
+}
+
+te::layout::LegendController::~LegendController()
 {
 	
 }
 
-te::layout::OutsideController::OutsideController( Observable* o, LayoutAbstractObjectType type ) :
-  m_model(o)
+void te::layout::LegendController::setPosition( const double& x, const double& y )
 {
   if(m_model)
   {
-    m_model->setType(type);
-  }
-}
-
-te::layout::OutsideController::~OutsideController()
-{
-  if(m_model)
-  {
-    OutsideModelObservable* model = dynamic_cast<OutsideModelObservable*>(m_model);
+    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
     if(model)
-      delete model;
-    m_model = 0;
+      return model->setPosition(x, y);
   }
 }
-
-const te::layout::Observable* te::layout::OutsideController::getModel()
-{
-	return m_model;
-}
-
-const te::layout::Observer* te::layout::OutsideController::getView()
-{
-	return m_view;
-}
-

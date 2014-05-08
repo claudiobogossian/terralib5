@@ -32,6 +32,7 @@
 #include "../../../../../geometry/Envelope.h"
 #include "../../../../../geometry/Coord2D.h"
 #include "../../../color/RGBAColor.h"
+#include "AbstractType.h"
 
 namespace te
 {
@@ -46,6 +47,7 @@ namespace te
       public:
 
         ItemController(Observable* o);
+        ItemController(Observable* o, LayoutAbstractObjectType type);
         virtual ~ItemController();
 
         virtual void setPosition(const double& x, const double& y) = 0;

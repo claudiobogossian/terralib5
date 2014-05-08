@@ -34,7 +34,7 @@
 #include "Observable.h"
 
 te::layout::DisplayController::DisplayController( Observable* o ) :
-	OutsideController(o)
+	OutsideController(o, TPDisplayWindow)
 {
 	AbstractOutsideFactory* factory = Context::getInstance()->getOutsideFactory(); 
 	OutsideParamsCreate params(this, m_model);
