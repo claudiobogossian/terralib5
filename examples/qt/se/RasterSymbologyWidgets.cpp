@@ -1,6 +1,7 @@
 #include "SymbologyWidgets.h"
 
 // TerraLib
+#include "../../Config.h"
 #include <terralib/qt/widgets/se/RasterSymbolizerDialog.h>
 #include <terralib/raster.h>
 #include <terralib/dataaccess.h>
@@ -8,7 +9,7 @@
 #include <terralib/se.h>
 
 // Qt
-#include <QtGui/QApplication>
+#include <QApplication>
 
 void RasterSymbologyWidgets()
 {
@@ -17,7 +18,15 @@ void RasterSymbologyWidgets()
 
   // set input raster name
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  //std::string filename(data_dir + '/shp/SP_cities.shp");
+  
+  std::string filename(data_dir + "/Nulos/nulos2.shp");
+  
+  //rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
 
 // open input raster
   std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");

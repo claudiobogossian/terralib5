@@ -1,9 +1,10 @@
 #include "SymbologyWidgets.h"
 
 // TerraLib
+#include <terralib/common/PlatformUtils.h>
 #include <terralib/common.h>
 #include <terralib/se.h>
-#include <terralib/serialization/qt/widgets/Symbol.h>
+#include <terralib/qt/widgets/se/Symbol.h>
 #include <terralib/qt/widgets/se/BasicFillDialog.h>
 #include <terralib/qt/widgets/se/BasicStrokeDialog.h>
 #include <terralib/qt/widgets/se/GlyphMarkDialog.h>
@@ -18,15 +19,17 @@
 #include <terralib/qt/widgets/se/SymbolPreviewWidget.h>
 #include <terralib/qt/widgets/se/SymbolTableWidget.h>
 #include <terralib/qt/widgets/se/WellKnownMarkDialog.h>
+#include <terralib/qt/widgets/se/Utils.h>
+
 
 // Qt
-#include <QtGui/QApplication>
-#include <QtGui/QDialog>
-#include <QtGui/QGridLayout>
-#include <QtGui/QGroupBox>
-#include <QtGui/QMdiArea>
-#include <QtGui/QMdiSubWindow>
-#include <QtGui/QToolBox>
+#include <QApplication>
+#include <QDialog>
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QMdiArea>
+#include <QMdiSubWindow>
+#include <QToolBox>
 
 // STL
 #include <cassert>
@@ -35,9 +38,14 @@
 void SymbolSelector()
 {
   // Loads the Symbol Library from XML file
-  te::serialize::ReadSymbolLibrary("E:/TerraLib/terralib5_develop/schemas/terralib/qt/se/symbol.xml");
+ 
+  //te::serialize::ReadSymbolLibrary("E:/TerraLib/terralib5_develop/schemas/terralib/qt/se/symbol.xml");
 
-  // Selects a symbol
+  std::string slib_path= te::common::FindInTerraLibPath("share/terralib/schemas/terralib/qt/se");
+  
+  te::qt::widgets::ReadSymbolLibrary(slib_path + "symbol.xml");
+  
+  // Select a symbol
   te::qt::widgets::Symbol* symbol =  te::qt::widgets::SymbolSelectorDialog::getSymbol(0);
   if(symbol == 0)
     return;
@@ -194,10 +202,10 @@ void BasicWidgets()
   QApplication app(argc, 0);
 
   // Adjusting icons theme
-  QString spaths = std::string(ICON_THEME_PATH).c_str();
-  QStringList paths = spaths.split(";");
-  QIcon::setThemeName(ICON_THEME);
-  QIcon::setThemeSearchPaths(paths);
+//juan  QString spaths = std::string(ICON_THEME_PATH).c_str();
+//juan  QStringList paths = spaths.split(";");
+//juan  QIcon::setThemeName(ICON_THEME);
+//juan  QIcon::setThemeSearchPaths(paths);
 
   SymbolSelector();
 
