@@ -33,6 +33,12 @@
 #include "WFSConnectorDialog.h"
 #include "ui_WFSConnectorDialogForm.h"
 
+// Boost
+#include <boost/algorithm/string/case_conv.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/lexical_cast.hpp>
+
 // Qt
 #include <QtGui/QMessageBox>
 
@@ -58,23 +64,136 @@ const te::da::DataSourceInfoPtr& te::qt::plugins::wfs::WFSConnectorDialog::getDa
   return m_datasource;
 }
 
+const te::da::DataSourcePtr& te::qt::plugins::wfs::WFSConnectorDialog::getDriver() const
+{
+  return m_driver;
+}
+
 void te::qt::plugins::wfs::WFSConnectorDialog::set(const te::da::DataSourceInfoPtr& ds)
 {
   m_datasource = ds;
+
+  if(m_datasource.get() != 0)
+  {
+    const std::map<std::string, std::string>& connInfo = m_datasource->getConnInfo();
+
+    std::map<std::string, std::string>::const_iterator it = connInfo.find("URI");
+    if(it != connInfo.end())
+      m_ui->m_serverLineEdit->setText(QString::fromStdString(it->second));
+
+    m_ui->m_datasourceTitleLineEdit->setText(QString::fromStdString(m_datasource->getTitle()));
+
+    m_ui->m_dataSourceDescriptionTextEdit->setText(QString::fromStdString(m_datasource->getDescription()));
+  }
 }
 
 void te::qt::plugins::wfs::WFSConnectorDialog::openPushButtonPressed()
 {
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("Not implemented yet!\nWe will provide it soon!"));
+  try
+  {
+    // Check if driver is loaded
+    if(te::da::DataSourceFactory::find("WFS") == 0)
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for WFS data sources!"));
+
+    // Get the data source connection info based on form data
+    std::map<std::string, std::string> dsInfo;
+    getConnectionInfo(dsInfo);
+
+    // Perform connection
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WFS");
+    ds->setConnectionInfo(dsInfo);
+    ds->open();
+    m_driver.reset(ds.release());
+
+    if(m_driver.get() == 0)
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open WFS data source due to an unknown error!"));
+
+    QString title = m_ui->m_datasourceTitleLineEdit->text().trimmed();
+
+    if(title.isEmpty())
+      title = m_ui->m_serverLineEdit->text().trimmed();
+
+    if(m_datasource.get() == 0)
+    {
+      // Create a new data source based on the form data
+      m_datasource.reset(new te::da::DataSourceInfo);
+
+      m_datasource->setConnInfo(dsInfo);
+
+      boost::uuids::basic_random_generator<boost::mt19937> gen;
+      boost::uuids::uuid u = gen();
+      std::string dsId = boost::uuids::to_string(u);
+
+      m_datasource->setId(dsId);
+      m_driver->setId(dsId);
+      m_datasource->setTitle(title.toStdString());
+      m_datasource->setDescription(m_ui->m_dataSourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
+      m_datasource->setAccessDriver("WFS");
+      m_datasource->setType("WFS");
+    }
+    else
+    {
+      m_driver->setId(m_datasource->getId());
+      m_datasource->setConnInfo(dsInfo);
+      m_datasource->setTitle(title.toStdString());
+      m_datasource->setDescription(m_ui->m_dataSourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
+    }
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this,
+                         tr("TerraLib Qt Components"),
+                         tr(e.what()));
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this,
+                         tr("TerraLib Qt Components"),
+                         tr("Unknown error while opening WFS data source!"));
+  }
+
+  accept();
 }
 
 void te::qt::plugins::wfs::WFSConnectorDialog::testPushButtonPressed()
 {
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("Not implemented yet!\nWe will provide it soon!"));
+  try
+  {
+    // Check if driver is loaded
+    if(te::da::DataSourceFactory::find("WFS") == 0)
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for WFS data sources!"));
+
+    // Get the data source connection info based on form data
+    std::map<std::string, std::string> dsInfo;
+    getConnectionInfo(dsInfo);
+
+    // Perform connection
+    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("WFS"));
+
+    if(ds.get() == 0)
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open WFS server!"));
+
+    ds->setConnectionInfo(dsInfo);
+    ds->open();
+
+    QMessageBox::information(this,
+                             tr("TerraLib Qt Components"),
+                             tr("Data source is ok!"));
+
+    ds->close();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this,
+                         tr("TerraLib Qt Components"),
+                         tr(e.what()));
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this,
+                         tr("TerraLib Qt Components"),
+                         tr("Unknown error while testing WFS data source!"));
+  }
 }
 
 void te::qt::plugins::wfs::WFSConnectorDialog::helpPushButtonPressed()
@@ -84,3 +203,17 @@ void te::qt::plugins::wfs::WFSConnectorDialog::helpPushButtonPressed()
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
+void te::qt::plugins::wfs::WFSConnectorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const
+{
+  connInfo.clear();
+
+  // Get the server URL
+  QString url = m_ui->m_serverLineEdit->text().trimmed();
+  if(url.isEmpty())
+    throw te::qt::widgets::Exception(TR_QT_WIDGETS("Please define the server address first!"));
+
+  if(!url.startsWith("WFS:"))
+    url.prepend("WFS:");
+
+  connInfo["URI"] = url.toStdString();
+}
