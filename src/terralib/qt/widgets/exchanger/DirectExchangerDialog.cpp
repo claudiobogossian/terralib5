@@ -76,6 +76,7 @@ te::qt::widgets::DirectExchangerDialog::DirectExchangerDialog(QWidget* parent, Q
   //starup interface
   m_outputDataSourceType = "";
   m_exchangeToFile = false;
+  m_lastDsType = "";
 
   setOutputDataSources();
 }
@@ -113,6 +114,11 @@ void te::qt::widgets::DirectExchangerDialog::setLayers(std::list<te::map::Abstra
   
   if(m_ui->m_inputLayerComboBox->count() > 1)
     m_ui->m_inputLayerComboBox->setEnabled(true);
+}
+
+void te::qt::widgets::DirectExchangerDialog::setLastDataSource(std::string dataSource)
+{
+  m_lastDsType = dataSource;
 }
 
 void te::qt::widgets::DirectExchangerDialog::setDataSources()
@@ -424,6 +430,9 @@ void te::qt::widgets::DirectExchangerDialog::onDirToolButtonClicked()
 void te::qt::widgets::DirectExchangerDialog::onDataSoruceToolButtonClicked()
 {
   std::auto_ptr<te::qt::widgets::DataSourceExplorerDialog> dExplorer(new te::qt::widgets::DataSourceExplorerDialog(this));
+
+  if(!m_lastDsType.empty())
+    dExplorer->setDataSourceToUse(m_lastDsType.c_str());
 
   dExplorer->exec();
 
