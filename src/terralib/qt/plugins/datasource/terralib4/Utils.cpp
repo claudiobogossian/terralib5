@@ -35,7 +35,7 @@
 #include "../../../../se/ColorMap.h"
 #include "../../../../se/ContrastEnhancement.h"
 #include "../../../../se/CoverageStyle.h"
-//#include "../../../../se/FeatureTypeStyle.h"
+#include "../../../../se/FeatureTypeStyle.h"
 #include "../../../../se/Fill.h"
 #include "../../../../se/LineSymbolizer.h"
 #include "../../../../se/ParameterValue.h"
@@ -211,7 +211,13 @@ te::se::Style* te::qt::plugins::terralib4::Convert2TerraLib5(int geometryType, T
   if(symb != 0)
     rule->push_back(symb);
 
-  te::se::CoverageStyle* style = new te::se::CoverageStyle;
+  te::se::Style* style = 0;
+
+  if(isRaster)
+    style = new te::se::CoverageStyle;
+  else
+    style = new te::se::FeatureTypeStyle;
+
   style->push_back(rule);
 
   return style;
