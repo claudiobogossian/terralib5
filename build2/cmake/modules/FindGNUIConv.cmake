@@ -28,12 +28,13 @@
 #          Juan P. Garrido <juan@dpi.inpe.br>
 #
 
-find_path(GNUICONV_INCLUDE_DIR iconv.h
-          PATHS /usr
-                /usr/local
-          PATH_SUFFIXES include)
-
 if(UNIX)
+
+  find_path(GNUICONV_INCLUDE_DIR
+            NAMES iconv.h
+            PATHS /usr
+                  /usr/local
+            PATH_SUFFIXES include)
 
   find_library(GNUICONV_LIBRARY
                NAMES iconv
@@ -42,13 +43,13 @@ if(UNIX)
                PATH_SUFFIXES lib)
 elseif(WIN32)
 
-  find_library(GNUICONV_LIBRARY_RELEASE
-               NAMES iconv
-               PATH_SUFFIXES lib)
+  find_path(GNUICONV_INCLUDE_DIR
+            NAMES iconv.h
+			      PATH_SUFFIXES iconv)
 
-  find_library(GNUICONV_LIBRARY_DEBUG
-               NAMES iconv_d
-               PATH_SUFFIXES lib)
+  find_library(GNUICONV_LIBRARY_RELEASE iconv)
+
+  find_library(GNUICONV_LIBRARY_DEBUG iconv_d)
 
   if(GNUICONV_LIBRARY_RELEASE AND GNUICONV_LIBRARY_DEBUG)
     set(GNUICONV_LIBRARY optimized ${GNUICONV_LIBRARY_RELEASE} debug ${GNUICONV_LIBRARY_DEBUG})

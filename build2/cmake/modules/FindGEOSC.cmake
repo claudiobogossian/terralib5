@@ -25,15 +25,16 @@
 #  GEOSC_FOUND        - True if GEOSC found.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
-#          Juan P. Garrido <juan@dpi.inpe.br>
+#          Juan Carlos P. Garrido <juan@dpi.inpe.br>
 #
 
-find_path(GEOSC_INCLUDE_DIR NAMES geos_c.h
-          PATHS /usr
-                /usr/local
-          PATH_SUFFIXES include)
-
 if(UNIX)
+
+  find_path(GEOSC_INCLUDE_DIR
+            NAMES geos_c.h
+            PATHS /usr
+                /usr/local
+            PATH_SUFFIXES include)
 
   find_library(GEOSC_LIBRARY
                NAMES geos_c
@@ -43,14 +44,16 @@ if(UNIX)
 
 elseif(WIN32)
 
+  find_path(GEOSC_INCLUDE_DIR
+            NAMES geos_c.h
+            PATH_SUFFIXES geosc)
+			
   find_library(GEOSC_LIBRARY_RELEASE
-               NAMES geos_c_i geosc_i geos_c geosc
-               PATH_SUFFIXES lib)
+               NAMES geos_c_i geosc_i geos_c geosc)
 
   find_library(GEOSC_LIBRARY_DEBUG
-               NAMES geos_c_i_d geosc_i_d geosc_id geos_c_d geosc_d geoscd
-               PATH_SUFFIXES lib)
-
+               NAMES geos_c_i_d geosc_i_d geosc_id geos_c_d geosc_d geoscd)
+	
   if(GEOSC_LIBRARY_RELEASE AND GEOSC_LIBRARY_DEBUG)
     set(GEOSC_LIBRARY optimized ${GEOSC_LIBRARY_RELEASE} debug ${GEOSC_LIBRARY_DEBUG})
   elseif(GEOSC_LIBRARY_RELEASE)

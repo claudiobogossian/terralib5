@@ -28,12 +28,12 @@
 #          Juan P. Garrido <juan@dpi.inpe.br>
 #
 
-find_path(GNUGETTEXT_INCLUDE_DIR libintl.h
-          PATHS /usr
-                /usr/local
-          PATH_SUFFIXES include)
-
 if(UNIX)
+
+  find_path(GNUGETTEXT_INCLUDE_DIR libintl.h
+            PATHS /usr
+                  /usr/local
+            PATH_SUFFIXES include)
 
   find_library(GNUGETTEXT_LIBRARY
                NAMES gettextlib
@@ -42,13 +42,15 @@ if(UNIX)
                PATH_SUFFIXES lib)
 elseif(WIN32)
 
+  find_path(GNUGETTEXT_INCLUDE_DIR
+            NAMES libintl.h
+            PATH_SUFFIXES gnuWin32)
+
   find_library(GNUGETTEXT_LIBRARY_RELEASE
-               NAMES gettextlib
-               PATH_SUFFIXES lib)
+               NAMES gettextlib gettextpo)
 
   find_library(GNUGETTEXT_LIBRARY_DEBUG
-               NAMES gettextlib_d gettextlibd
-               PATH_SUFFIXES lib)
+               NAMES gettextlib_d gettextlibd gettextpo_d gettextpod gettextpo)
 
   if(GNUGETTEXT_LIBRARY_RELEASE AND GNUGETTEXT_LIBRARY_DEBUG)
     set(GNUGETTEXT_LIBRARY optimized ${GNUGETTEXT_LIBRARY_RELEASE} debug ${GNUGETTEXT_LIBRARY_DEBUG})

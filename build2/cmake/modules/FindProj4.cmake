@@ -25,16 +25,17 @@
 #  PROJ4_FOUND       - True if Proj4 found.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
-#          Juan P. Garrido <juan@dpi.inpe.br>
+#          Juan Carlos P. Garrido <juan@dpi.inpe.br>
 #
-
-find_path(PROJ4_INCLUDE_DIR proj_api.h
-          PATHS /usr
-                /usr/local
-          PATH_SUFFIXES include)
 
 if(UNIX)
 
+  find_path(PROJ4_INCLUDE_DIR 
+            NAMES proj_api.h
+            PATHS /usr
+                  /usr/local
+            PATH_SUFFIXES include)
+		  
   find_library(PROJ4_LIBRARY
                NAMES proj
                PATHS /usr
@@ -42,13 +43,15 @@ if(UNIX)
                PATH_SUFFIXES lib)
 elseif(WIN32)
 
+  find_path(PROJ4_INCLUDE_DIR
+            NAMES proj_api.h
+            PATH_SUFFIXES proj4)
+		  
   find_library(PROJ4_LIBRARY_RELEASE
-               NAMES proj_i proj
-               PATH_SUFFIXES lib)
+               NAMES proj_i proj)
 
   find_library(PROJ4_LIBRARY_DEBUG
-               NAMES proj_i_d proj_d
-               PATH_SUFFIXES lib)
+               NAMES proj_i_d proj_d proj_i)
 
   if(PROJ4_LIBRARY_RELEASE AND PROJ4_LIBRARY_DEBUG)
     set(PROJ4_LIBRARY optimized ${PROJ4_LIBRARY_RELEASE} debug ${PROJ4_LIBRARY_DEBUG})

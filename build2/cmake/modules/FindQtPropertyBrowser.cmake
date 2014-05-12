@@ -25,24 +25,47 @@
 #  QTPROPERTYBROWSER_FOUND       - True if QtPropertyBrowser found.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
-#          Juan P. Garrido <juan@dpi.inpe.br>
+#          Juan Carlos P. Garrido <juan@dpi.inpe.br>
 #
 
-find_path(QTPROPERTYBROWSER_INCLUDE_DIR QtPropertyBrowser/qtpropertybrowser.h
-          PATHS /usr
-                /usr/local
-          PATH_SUFFIXES include)
+if(UNIX)
 
+  find_path(QTPROPERTYBROWSER_INCLUDE_DIR QtPropertyBrowser/qtpropertybrowser.h
+            PATHS /usr
+                  /usr/local
+				          /usr/local/qtpropertybrowser
+            PATH_SUFFIXES include)
+		  
 find_library(QTPROPERTYBROWSER_LIBRARY
              NAMES qt_property_browser
              PATHS /usr
                    /usr/local
+				           /usr/local/qtpropertybrowser
              PATH_SUFFIXES lib)
+			 
+elseif(WIN32)
+
+  find_path(QTPROPERTYBROWSER_INCLUDE_DIR
+            NAMES qtpropertybrowser.h
+            PATH_SUFFIXES qtpropertybrowser)
+		  
+  find_library(QTPROPERTYBROWSER_LIBRARY_RELEASE qt_property_browser)
+
+  find_library(QTPROPERTYBROWSER_LIBRARY_DEBUG qt_property_browserd)
+
+  if(QTPROPERTYBROWSER_LIBRARY_RELEASE AND QTPROPERTYBROWSER_LIBRARY_DEBUG)
+    set(QTPROPERTYBROWSER_LIBRARY optimized ${QTPROPERTYBROWSER_LIBRARY_RELEASE} debug ${QTPROPERTYBROWSER_LIBRARY_DEBUG})
+  elseif(QTPROPERTYBROWSER_LIBRARY_RELEASE)
+    set(QTPROPERTYBROWSER_LIBRARY optimized ${QTPROPERTYBROWSER_LIBRARY_RELEASE} debug ${QTPROPERTYBROWSER_LIBRARY_RELEASE})
+  elseif(PROJ4_LIBRARY_DEBUG)
+    set(QTPROPERTYBROWSER_LIBRARY optimized ${QTPROPERTYBROWSER_LIBRARY_DEBUG} debug ${QTPROPERTYBROWSER_LIBRARY_DEBUG})
+  endif()
+
+endif()
 
 include(FindPackageHandleStandardArgs)
 
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(QtPropertyBrowser DEFAULT_MSG QTPROPERTYBROWSER_INCLUDE_DIR QTPROPERTYBROWSER_LIBRARY)
 
 mark_as_advanced(QTPROPERTYBROWSER_INCLUDE_DIR QTPROPERTYBROWSER_LIBRARY)
-
 

@@ -28,13 +28,14 @@
 #          Juan P. Garrido <juan@dpi.inpe.br>
 #
 
-find_path(LOG4CXX_INCLUDE_DIR log4cxx/log4cxx.h
+if(UNIX)
+
+  find_path(LOG4CXX_INCLUDE_DIR
+          NAMES log4cxx/log4cxx.h
           PATHS /usr
                 /usr/local
           PATH_SUFFIXES include)
-
-if(UNIX)
-
+          
   find_library(LOG4CXX_LIBRARY
                NAMES log4cxx
                PATHS /usr
@@ -43,14 +44,12 @@ if(UNIX)
 
 elseif(WIN32)
 
-  find_library(LOG4CXX_LIBRARY_RELEASE
-               NAMES log4cxx
-               PATH_SUFFIXES lib)
-
-  find_library(LOG4CXX_LIBRARY_DEBUG
-               NAMES log4cxx_d
-               PATH_SUFFIXES lib)
-
+  find_path(LOG4CXX_INCLUDE_DIR log4cxx/log4cxx.h)
+  
+  find_library(LOG4CXX_LIBRARY_RELEASE log4cxx)
+ 
+  find_library(LOG4CXX_LIBRARY_DEBUG log4cxx_d)
+ 
   if(LOG4CXX_LIBRARY_RELEASE AND LOG4CXX_LIBRARY_DEBUG)
     set(LOG4CXX_LIBRARY optimized ${LOG4CXX_LIBRARY_RELEASE} debug ${LOG4CXX_LIBRARY_DEBUG})
   elseif(LOG4CXX_LIBRARY_RELEASE)

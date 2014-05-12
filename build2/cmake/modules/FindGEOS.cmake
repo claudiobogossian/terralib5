@@ -25,31 +25,34 @@
 #  GEOS_FOUND        - True if GEOS found.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
-#          Juan P. Garrido <juan@dpi.inpe.br>
+#          Juan Carlos P. Garrido <juan@dpi.inpe.br>
 #
-
-find_path(GEOS_INCLUDE_DIR NAMES geos.h
-          PATHS /usr
-                /usr/local
-          PATH_SUFFIXES include)
 
 if(UNIX)
 
+  find_path(GEOS_INCLUDE_DIR
+            NAMES geos.h
+			      PATHS /usr
+			            /usr/local
+			      PATH_SUFFIXES include)
+			  
   find_library(GEOS_LIBRARY
                NAMES geos
                PATHS /usr
-                     /usr/lib
+               /usr/lib
                PATH_SUFFIXES lib)
 
 elseif(WIN32)
 
-  find_library(GEOS_LIBRARY_RELEASE
-               NAMES geos_i geos
-               PATH_SUFFIXES lib)
+  find_path(GEOS_INCLUDE_DIR
+            NAMES geos.h
+            PATH_SUFFIXES geos)
+            
+  find_library(GEOS_LIBRARY_RELEASE 
+               NAMES geos_i geos)
 
   find_library(GEOS_LIBRARY_DEBUG
-               NAMES geos_i_d geos_d geosd
-               PATH_SUFFIXES lib)
+               NAMES geos_i_d geos_d geosd)
 
   if(GEOS_LIBRARY_RELEASE AND GEOS_LIBRARY_DEBUG)
     set(GEOS_LIBRARY optimized ${GEOS_LIBRARY_RELEASE} debug ${GEOS_LIBRARY_DEBUG})
