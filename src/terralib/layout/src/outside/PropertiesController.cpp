@@ -34,7 +34,7 @@
 #include "Observer.h"
 
 te::layout::PropertiesController::PropertiesController( Observable* o ) :
-	OutsideController(o)
+	OutsideController(o, TPPropertiesWindow)
 {
 	AbstractOutsideFactory* factory = Context::getInstance()->getOutsideFactory(); 
 	OutsideParamsCreate params(this, m_model);

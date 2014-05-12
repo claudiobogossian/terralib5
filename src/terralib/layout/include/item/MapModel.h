@@ -31,12 +31,15 @@
 // TerraLib
 #include "ItemModelObservable.h"
 #include "ContextItem.h"
+#include "Visitable.h"
+#include "../../../maptools/AbstractLayer.h"
+#include "../../../common/UnitOfMeasure.h"
 
 namespace te
 {
   namespace layout
   {
-    class MapModel : public ItemModelObservable
+    class MapModel : public ItemModelObservable, public Visitable
     {
       public:
 
@@ -45,10 +48,25 @@ namespace te
 
         virtual void draw( ContextItem context );
 
-        virtual void setPosition( const double& x, const double& y );
-
         virtual void updateProperties(te::layout::Properties* properties);
 
+        virtual bool refreshLayer(te::map::AbstractLayerPtr layer);
+
+        virtual te::map::AbstractLayerPtr getLayer();
+
+        virtual double getScale();
+
+        virtual te::gm::Envelope getWorldInMeters();
+
+        virtual te::gm::Envelope getWorldInDegrees();
+
+        virtual te::common::UnitOfMeasurePtr unitMeasureLayer();
+
+      protected:
+
+        std::string proj4DescToPlanar(int zone);
+
+        te::map::AbstractLayerPtr m_layer;
     };
   }
 }

@@ -35,6 +35,7 @@
 #include "MapItem.h"
 #include "Observer.h"
 #include "MapGridItem.h"
+#include "LegendItem.h"
 
 te::layout::ItemFactory::ItemFactory()
 {
@@ -62,6 +63,9 @@ te::layout::Observer* te::layout::ItemFactory::make( LayoutAbstractObjectType ty
     }
   case TPLegendItem:
     {
+      LegendItem* legend = new LegendItem(params.getController(), params.getModel());
+      item = (Observer*)legend;
+      return item;
       break;
     }
   case TPHorizontalRuler:

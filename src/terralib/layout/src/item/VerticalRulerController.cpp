@@ -35,7 +35,7 @@
 #include "Observer.h"
 
 te::layout::VerticalRulerController::VerticalRulerController( Observable* o ) :
-  ItemController(o)
+  ItemController(o, TPVerticalRuler)
 {
   AbstractItemFactory* factory = Context::getInstance()->getItemFactory(); 
   ItemParamsCreate params(this, m_model);

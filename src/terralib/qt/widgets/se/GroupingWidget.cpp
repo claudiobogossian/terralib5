@@ -478,7 +478,7 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
     createStringNullGroupingItem(nullValues);
   }
 
-  updateUi();
+  updateUi(true);
 
   m_manual = false;
 

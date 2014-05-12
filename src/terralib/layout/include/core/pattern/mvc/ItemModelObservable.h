@@ -39,6 +39,7 @@ namespace te
   namespace layout
   {
     class Observer;
+    class SharedProperties;
 
     class ItemModelObservable : public Observable
     {
@@ -51,6 +52,7 @@ namespace te
         virtual Properties* getProperties() const;
 
         virtual LayoutAbstractObjectType getType();
+        virtual void setType(LayoutAbstractObjectType type);
 
         virtual te::gm::Envelope getBox();
         virtual void setBox(te::gm::Envelope box);
@@ -78,15 +80,16 @@ namespace te
         virtual void notifyAll(ContextItem context);
 
       protected:
-        std::set<Observer*>	m_observers;
+        std::set<Observer*>	      m_observers;
         int							          m_id;
         te::gm::Envelope					m_box;
         te::gm::Coord2D			      m_centerCoordinate;
         te::color::RGBAColor			m_backgroundColor;
         te::color::RGBAColor			m_borderColor;
-        Properties*         m_properties;
+        Properties*               m_properties;
         LayoutAbstractObjectType  m_type;
         int                       m_zValue;
+        SharedProperties*         m_sharedProps;
 
       private:
         std::string m_name;

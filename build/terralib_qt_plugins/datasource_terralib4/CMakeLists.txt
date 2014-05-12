@@ -40,6 +40,7 @@ set (
   ${SRCDIR}/TL4ConnectorWizardPage.h
   ${SRCDIR}/TL4ConverterWizard.h
   ${SRCDIR}/TL4LayerSelectionWizardPage.h
+  ${SRCDIR}/TL4ThemeSelectionWizardPage.h
   ${SRCDIR}/TL4RasterFolderSelectionWizardPage.h
   ${SRCDIR}/TL4FinalPageWizardPage.h
   ${INCLDIR}/Plugin.h

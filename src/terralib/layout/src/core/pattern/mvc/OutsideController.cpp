@@ -30,9 +30,19 @@
 #include "OutsideObserver.h"
 #include "OutsideModelObservable.h"
 
-te::layout::OutsideController::OutsideController( Observable* o )
+te::layout::OutsideController::OutsideController( Observable* o ) :
+  m_model(o)
 {
-	m_model = o;
+	
+}
+
+te::layout::OutsideController::OutsideController( Observable* o, LayoutAbstractObjectType type ) :
+  m_model(o)
+{
+  if(m_model)
+  {
+    m_model->setType(type);
+  }
 }
 
 te::layout::OutsideController::~OutsideController()

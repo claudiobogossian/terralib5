@@ -30,6 +30,7 @@
 #include "../../common/STLUtils.h"
 #include "../../common/Translator.h"
 #include "../../common/UserApplicationSettings.h"
+#include "../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../maptools/Utils.h"
 #include "../../srs/Config.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
@@ -106,6 +107,7 @@
 #include <QtGui/QStatusBar>
 #include <QtGui/QToolBar>
 #include <QtGui/QToolButton>
+#include <QtGui/QLabel>
 
 // STL
 #include <list>
@@ -373,6 +375,16 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
         m_mapSRIDLineEdit->setText("Unknown SRS");
         m_coordinateLineEdit->setText("Coordinates");
       }
+    }
+    break;
+
+    case te::qt::af::evt::LAYER_SELECTED_OBJECTS_CHANGED:
+    {
+      te::qt::af::evt::LayerSelectedObjectsChanged* lEvt = static_cast<te::qt::af::evt::LayerSelectedObjectsChanged*>(evt);
+      if(lEvt->m_layer == 0 || lEvt->m_layer->getSelected() == 0)
+        return;
+
+      m_selected->setText(tr("Selected rows: ")+QString::number(lEvt->m_layer->getSelected()->size()));
     }
     break;
 
@@ -807,6 +819,11 @@ void te::qt::af::BaseApplication::onToolsDataExchangerDirectTriggered()
 
     std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers();
     dlg.setLayers(layers);
+
+     QString dsTypeSett = GetLastDatasourceFromSettings();
+
+    if(!dsTypeSett.isNull() && !dsTypeSett.isEmpty())
+      dlg.setLastDataSource(dsTypeSett.toStdString());
 
     dlg.exec();
   }
@@ -1620,7 +1637,7 @@ void te::qt::af::BaseApplication::onDataSourceExplorerTriggered()
   {
     std::auto_ptr<te::qt::widgets::DataSourceExplorerDialog> dExplorer(new te::qt::widgets::DataSourceExplorerDialog(this));
 
-    QString dsTypeSett = GetLastDatasourceFromSettings();
+    QString dsTypeSett =  GetLastDatasourceFromSettings();
 
     if(!dsTypeSett.isNull() && !dsTypeSett.isEmpty())
       dExplorer->setDataSourceToUse(dsTypeSett);
@@ -2388,6 +2405,11 @@ void te::qt::af::BaseApplication::initToolbars()
 
 void te::qt::af::BaseApplication::initStatusBar()
 {
+  // Selected status
+  m_selected = new QLabel(m_statusbar);
+  m_selected->setText(tr("Selected rows: 0"));
+  m_statusbar->addPermanentWidget(m_selected);
+
   // Map SRID reset action
   QToolButton* mapUnknownSRIDToolButton = new QToolButton(m_statusbar);
   mapUnknownSRIDToolButton->setDefaultAction(m_mapUnknownSRID);

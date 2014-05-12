@@ -136,7 +136,8 @@ namespace te
       DataTypeBool = 6,
       DataTypeColor = 7,
       DataTypeGridSettings = 8,
-      DataTypeNone = 9
+      DataTypeStringList = 9,
+      DataTypeNone = 10
     } LayoutPropertyDataType;
 
     /*!

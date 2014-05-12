@@ -177,4 +177,3 @@ void te::layout::Context::setPaperConfig( PaperConfig* config )
 {
   m_paperConfig = config;
 }
-

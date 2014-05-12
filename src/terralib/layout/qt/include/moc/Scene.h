@@ -63,7 +63,10 @@ namespace te
         
         virtual te::gm::Envelope getSceneBox();
 
+        virtual void redrawItems();
+
         QGraphicsItemGroup*	createItemGroup ( const QList<QGraphicsItem *> & items );
+
         void destroyItemGroup(QGraphicsItemGroup *group);
 
         /*
@@ -72,16 +75,20 @@ namespace te
         */
         virtual void init(double widthMM, double heightMM);
 
+        /* World coordinates (mm) */
         virtual te::gm::Envelope* getWorldBox() const;
+
+        /* World coordinates (mm) */
         virtual te::gm::Envelope* getPaperBox() const;
         
         virtual QTransform getMatrixViewScene();
-        virtual QTransform getMatrixSceneItem();
 
         virtual QGraphicsItem* getMasterParentItem();
 
         virtual void printPreview(bool isPdf = false);
+
         virtual void savePaperAsImage();
+
         virtual void savePaperAsPDF();
 
         virtual void savePropsAsJSON();
@@ -100,7 +107,6 @@ namespace te
         virtual te::gm::Envelope* calculateBoxPaper();
         virtual te::gm::Envelope* calculateWindow();
         virtual void calculateMatrixViewScene();
-        virtual void calculateMatrixSceneItem();
         virtual void createMasterParentItem();
 
         virtual QPrinter* createPrinter();
@@ -115,7 +121,6 @@ namespace te
         te::gm::Envelope* m_boxPaperW;
         te::gm::Envelope* m_boxW;
         QTransform m_matrix;
-        QTransform m_matrixItem;
         double m_screenWidthMM;
         double m_screenHeightMM;
         QGraphicsItem* m_masterParent;

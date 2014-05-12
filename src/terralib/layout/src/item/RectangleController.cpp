@@ -37,7 +37,7 @@
 #include "Observer.h"
 
 te::layout::RectangleController::RectangleController( Observable* o ) :
-  ItemController(o)
+  ItemController(o, TPRetangleItem)
 {
   AbstractItemFactory* factory = Context::getInstance()->getItemFactory(); 
   ItemParamsCreate params(this, m_model);

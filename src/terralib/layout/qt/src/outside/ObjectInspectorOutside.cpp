@@ -95,6 +95,9 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
   m_layoutPropertyBrowser->clearAll();
 
   m_graphicsItems = graphicsItems;
+
+  if(m_graphicsItems.empty())
+    return;
     
   //QtVariantProperty *property;
   foreach( QGraphicsItem *item, graphicsItems) 
@@ -122,16 +125,6 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
 
           if(!itemObj)
             break;
-
-          /*
-            Ex. de Hierarquia:
-              task1->addSubProperty(priority);
-              task1->addSubProperty(reportType)
-          */
-
-          /*property = m_variantInspectorObjectManager->addProperty(QVariant::String, tr(itemObj->metaObject()->className()));
-          property->setValue(p.getLabel().c_str());
-          addProperty(property, QLatin1String(itemObj->objectName().toStdString().c_str()));*/
 
           zValue = itemObj->zValue();
         }

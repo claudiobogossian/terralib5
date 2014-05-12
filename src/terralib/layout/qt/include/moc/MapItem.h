@@ -35,9 +35,10 @@
 // TerraLib
 #include "ItemObserver.h"
 #include "../../../../qt/widgets/canvas/MultiThreadMapDisplay.h"
-#include "../../../../maptools/AbstractLayer.h"
+#include "../../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 
 class QGraphicsSceneMouseEvent;
+class QMimeData;
 
 namespace te
 {
@@ -63,7 +64,13 @@ namespace te
 
         //Mandatory implementation methods
         virtual void setRect(QRectF rect);
+
+        virtual void setPos(const QPointF &pos);
                         
+      protected slots:
+
+          void onDrawLayersFinished(const QMap<QString, QString>& errors);
+
     protected:
       
       virtual void	dropEvent ( QGraphicsSceneDragDropEvent * event );
@@ -79,18 +86,24 @@ namespace te
       virtual void resizeEvent ( QGraphicsSceneResizeEvent * event );
       
       virtual te::gm::Coord2D getPosition();
-
-      virtual void setPosition( const double& x, const double& y );
-      
+            
       virtual void drawSelection( QPainter* painter );
+
+      virtual void getMimeData(const QMimeData* mime);
+
+      std::list<te::map::AbstractLayerPtr>  getVisibleLayers();
+
+      te::map::AbstractLayerPtr getLayer();
 
     protected:
 
       QPixmap m_pixmap;
       QRectF  m_rect;//In local coordinate
+      QMimeData* m_mime;
       
       te::qt::widgets::MultiThreadMapDisplay* m_mapDisplay;
       bool m_grabbedByWidget;
+      te::qt::widgets::AbstractTreeItem* m_treeItem;
     };
   }
 }

@@ -29,20 +29,18 @@
 #define __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_CONTROLLER_H
 
 // TerraLib
-#include "ItemController.h"
+#include "MapController.h"
 
 namespace te
 {
   namespace layout
   {
-    class MapGridController : public ItemController
+    class MapGridController : public MapController
     {
       public:
 
         MapGridController( Observable* o );
         virtual ~MapGridController();
-
-        virtual void setPosition(const double& x, const double& y);
     };
   }
 }

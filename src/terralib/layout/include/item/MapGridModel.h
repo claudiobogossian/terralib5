@@ -35,7 +35,9 @@ namespace te
 {
   namespace layout
   {
-    class GridModel;
+    class GridPlanarModel;
+    class GridGeodesicModel;
+    class Utils;
 
     class MapGridModel : public MapModel
     {
@@ -51,10 +53,10 @@ namespace te
 
       protected:
 
-        GridModel* m_gridPlanar;
-        GridModel* m_gridGeodesic;
-        bool       m_visibleGridPlanar;
-        bool       m_visibleGridGeodesic;
+        virtual void drawGrid(te::map::Canvas* canvas, Utils* utils);
+
+        GridPlanarModel*    m_gridPlanar;
+        GridGeodesicModel*  m_gridGeodesic;
     };
   }
 }

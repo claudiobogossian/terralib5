@@ -34,6 +34,7 @@
 #include "EnumMode.h"
 #include "Utils.h"
 #include "../../../qt/widgets/canvas/Canvas.h"
+#include "../../../color/RGBAColor.h"
 
 // STL
 #include <vector>
@@ -73,6 +74,10 @@ namespace te
         virtual void drawMarks(te::map::Canvas* canvas, Utils* utils, int marks);
         
         virtual void updateVerticalListText();
+
+        virtual void drawLineW(te::gm::Envelope box, Utils* utils);
+
+        virtual void drawRectW(te::gm::Envelope box, te::color::RGBAColor color, te::map::Canvas* canvas, Utils* utils);
 
       protected:
 

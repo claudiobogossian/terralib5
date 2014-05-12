@@ -47,12 +47,16 @@ namespace te
         virtual void draw(te::map::Canvas* canvas, te::gm::Envelope box);
 
         virtual te::layout::Properties* getProperties() const;
+
         virtual void updateProperties(te::layout::Properties* properties);
 
        protected:
 
          virtual void drawVerticalLines(te::map::Canvas* canvas, te::gm::Envelope box);
-         virtual void drawHorizontalLines(te::map::Canvas* canvas, te::gm::Envelope box);    
+
+         virtual void drawHorizontalLines(te::map::Canvas* canvas, te::gm::Envelope box);  
+
+         virtual void calculateGaps(te::gm::Envelope box);
 
        protected:
 

@@ -61,15 +61,7 @@ namespace te
 
             void setDataSets(const std::vector<std::string>& datasets);
 
-            void setThemes(const std::vector<::terralib4::ThemeInfo>& themes);
-
             std::vector<std::string> getSelected();
-
-            std::vector<::terralib4::ThemeInfo> getSelectedThemes();
-
-          private:
-
-            bool parentLayerIsSeleted(std::string layerName);
 
           protected slots:
 

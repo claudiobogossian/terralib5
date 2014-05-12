@@ -46,6 +46,14 @@ namespace te
 
             ~WFSType();
 
+            bool hasDatabaseSupport() const;
+
+            bool hasFileSupport() const;
+
+            bool hasRasterSupport() const;
+
+            bool hasVectorialSupport() const;
+
             std::string getName() const;
 
             std::string getTitle() const;

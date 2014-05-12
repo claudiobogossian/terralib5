@@ -45,13 +45,14 @@ namespace te
     class Stroke;
 
     /*!
-      \class ChartConfigurer
+      \class SymbolizerColorFinder
       
-      \brief A Symbology Enconding visitor that configures a given chart based on symbolizers elements.
+      \brief A Symbology Enconding visitor that finds a color given a symbolizer element.
              If you want to use this visitor, use a command like:
              <code>
-             te::qt::widgets::ChartConfigurer cc(chart);
-             cc.config(symbolizer);
+             te::se::SymbolizerColorFinder scf;
+             scf.find(symbolizer);
+             te::color::RGBAColor color = scf.getColor();
              </code>
 
       \sa te::se::Visitor
@@ -73,7 +74,7 @@ namespace te
         //@}
 
         /** @name Find Method
-         *  Method that can be used to configure a chart based on Symbology Enconding symbolizer elements.
+         *  Method that can be used to find a color based on Symbology Enconding symbolizer elements.
          */
         //@{
 

@@ -41,6 +41,8 @@
 #include <QtGui/QLineEdit>
 #include <QtGui/QMainWindow>
 
+class QLabel;
+
 namespace te
 {
 // Forward declaration
@@ -350,6 +352,8 @@ namespace te
           QMenu* m_fileMenu;
           QMenu* m_recentProjectsMenu;
           QMenu* m_mapMenu;
+
+          QLabel* m_selected;
 
           QStatusBar* m_statusbar;
           QToolBar* m_fileToolBar;

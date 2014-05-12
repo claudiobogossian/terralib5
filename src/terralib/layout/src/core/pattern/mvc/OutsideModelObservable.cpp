@@ -33,7 +33,8 @@
 
 te::layout::OutsideModelObservable::OutsideModelObservable() :
 	m_color(0),
-  m_type(TPObjectUnknown)
+  m_type(TPObjectUnknown),
+  m_name("unknown")
 {
   m_properties = new Properties("Unknown");
 }
@@ -126,6 +127,11 @@ te::layout::LayoutAbstractObjectType te::layout::OutsideModelObservable::getType
   return m_type;
 }
 
+void te::layout::OutsideModelObservable::setType( LayoutAbstractObjectType type )
+{
+  m_type = type;
+}
+
 int te::layout::OutsideModelObservable::getZValue()
 {
   return m_zValue;
@@ -143,4 +149,9 @@ void te::layout::OutsideModelObservable::updateProperties( te::layout::Propertie
   std::vector<Property> vProps = vectorProps->getProperties();
   Property pro_name = vProps[0];
   //m_name = pro_name.getName();
+}
+
+std::string te::layout::OutsideModelObservable::getName()
+{
+  return m_name;
 }
