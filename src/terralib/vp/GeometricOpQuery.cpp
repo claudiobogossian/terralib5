@@ -91,104 +91,258 @@ te::vp::GeometricOpQuery::~GeometricOpQuery()
 
 bool te::vp::GeometricOpQuery::run()
 {
-  //std::auto_ptr<te::da::DataSetType> outDSType(GetDataSetType());
-  //std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(outDSType.get()));
+// get the geometric operation and/or tabular operation. 
+  std::vector<int> opGeom;
+  std::vector<int> opTab;
+  std::vector<te::da::DataSetType*> dsTypeVec;
 
-  //te::gm::GeometryProperty* propGeom = static_cast<te::gm::GeometryProperty*>(m_inDsetType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
-  //std::string propGeomName = propGeom->getName();
-  //std::size_t propGeomPos = m_inDsetType->getPropertyPosition(propGeomName);
+  for(std::size_t i = 0; i < m_operations.size(); ++i)
+  {
+    switch(m_operations[i])
+    {
+      case te::vp::CENTROID:
+        opGeom.push_back(te::vp::CENTROID);
+        break;
+      case te::vp::CONVEX_HULL:
+        opGeom.push_back(te::vp::CONVEX_HULL);
+        break;
+      case te::vp::MBR:
+        opGeom.push_back(te::vp::MBR);
+        break;
+      case te::vp::AREA:
+        opTab.push_back(te::vp::AREA);
+        break;
+      case te::vp::LINE:
+        opTab.push_back(te::vp::LINE);
+        break;
+      case te::vp::PERIMETER:
+        opTab.push_back(te::vp::PERIMETER);
+        break;
+    }
+  }
 
-  //// get the geometric operation and/or tabular operation 
-  //int opGeom = -1;
-  //std::vector<int> opTab;
+  if(m_outputLayer)
+  {
+    bool hasMultiGeomColumns = false;
+    bool result = false;
 
-  //for(std::size_t i = 0; i < m_operations.size(); ++i)
-  //{
-  //  switch(m_operations[i])
-  //  {
-  //    case te::vp::CENTROID:
-  //      opGeom = te::vp::CENTROID;
-  //      break;
-  //    case te::vp::CONVEX_HULL:
-  //      opGeom = te::vp::CONVEX_HULL;
-  //      break;
-  //    case te::vp::MBR:
-  //      opGeom = te::vp::MBR;
-  //      break;
-  //    case te::vp::AREA:
-  //      opTab.push_back(te::vp::AREA);
-  //      break;
-  //    case te::vp::LINE:
-  //      opTab.push_back(te::vp::LINE);
-  //      break;
-  //    case te::vp::PERIMETER:
-  //      opTab.push_back(te::vp::PERIMETER);
-  //      break;
-  //  }
-  //}
+    switch(m_objStrategy)
+    {
+      case te::vp::ALL_OBJ:
+        {
+          if(hasMultiGeomColumns) //Condição se o DataSource suporta mais de uma soluna geometrica...
+          {
+            dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::ALL_OBJ, true));
+          }
+          else
+          {
+            if(opGeom.size() > 0)
+            {
+              for(std::size_t i = 0; i < opGeom.size(); ++i)
+                dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::ALL_OBJ, false, opGeom[i]));
+            }
+            else
+            {
+              dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::ALL_OBJ, false));
+            }
+          }
 
-  //te::da::Fields* fields = new te::da::Fields;
-  //
-  //te::da::FromItem* fromItem = new te::da::DataSetName(m_inDsetType->getName());
-  //te::da::From* from = new te::da::From;
-  //from->push_back(fromItem);
+          for(std::size_t dsTypePos = 0; dsTypePos < dsTypeVec.size(); ++dsTypePos)
+          {
+            std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
+            std::auto_ptr<te::mem::DataSet> outDataSet(SetAllObjects(dsTypeVec[dsTypePos], opTab, opGeom));
+            result = save(outDataSet, outDataSetType);
+            if(!result)
+              return result;
+          }
+        }
+        break;
+      case te::vp::AGGREG_OBJ:
+        {
+          if(hasMultiGeomColumns) //Condição se o DataSource suporta mais de uma coluna geometrica...
+          {
+            dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_OBJ, true));
+          }
+          else
+          {
+            if(opGeom.size() > 0)
+            {
+              for(std::size_t i = 0; i < opGeom.size(); ++i)
+                dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_OBJ, false, opGeom[i]));
+            }
+            else
+            {
+              dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_OBJ, false));
+            }
+          }
 
-  //if(opGeom == te::vp::MBR)
-  //{
-  //  
-  //}
-  //if(opGeom == te::vp::CONVEX_HULL)
-  //{
+          for(std::size_t dsTypePos = 0; dsTypePos < dsTypeVec.size(); ++dsTypePos)
+          {
+            std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
+            std::auto_ptr<te::mem::DataSet> outDataSet(SetAggregObj(dsTypeVec[dsTypePos], opTab, opGeom));
+            result = save(outDataSet, outDataSetType);
+            if(!result)
+              return result;
+          }
+        }
+        break;
+      case te::vp::AGGREG_BY_ATTRIBUTE:
+        {
+          if(hasMultiGeomColumns) //Condição se o DataSource suporta mais de uma coluna geometrica...
+          {
+            dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_BY_ATTRIBUTE, true));
+          }
+          else
+          {
+            if(opGeom.size() > 0)
+            {
+              for(std::size_t i = 0; i < opGeom.size(); ++i)
+                dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_BY_ATTRIBUTE, false, opGeom[i]));
+            }
+            else
+            {
+              dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_BY_ATTRIBUTE, false));
+            }
+          }
 
-  //}
-  //if(opGeom == te::vp::CENTROID)
-  //{
-  //  for(std::size_t i = 0; i < m_selectedProps.size(); ++i)
-  //  {
-  //    te::da::Field* f_selProp = new te::da::Field(m_selectedProps[i]);
-  //    fields->push_back(f_selProp);
-  //  }
-  //}
-  //else
-  //{
-  //  for(std::size_t i = 0; i < m_selectedProps.size(); ++i)
-  //  {
-  //    te::da::Field* f_selProp = new te::da::Field(m_selectedProps[i]);
-  //    fields->push_back(f_selProp);
-  //  }
+          for(std::size_t dsTypePos = 0; dsTypePos < dsTypeVec.size(); ++dsTypePos)
+          {
+            std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
+            std::auto_ptr<te::mem::DataSet> outDataSet(SetAggregByAttribute(dsTypeVec[dsTypePos], opTab, opGeom));
+            result = save(outDataSet, outDataSetType);
+            if(!result)
+              return result;
+          }
+        }
+        break;
+    }
 
-  //  for(std::size_t i = 0; i < opTab.size(); ++i)
-  //  {
-  //    switch (opTab[i])
-  //    {
-  //    case te::vp::AREA:
-  //      break;
-  //    case te::vp::LINE:
-  //      break;
-  //    case te::vp::PERIMETER:
-  //      break;
-  //    }
-  //  }
+    return result;
 
-  //  te::da::Field* f_geom = new te::da::Field(propGeomName, " geom");
-  //  fields->push_back(f_geom);
-
-  //  te::da::Select select(fields, from);
-  //  std::auto_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
-
-  //  if (dsQuery->isEmpty())
-  //    return false;
-
-  //  SetOutputDSet(dsQuery, outDSet.get());
-
-  //  return save(outDSet, outDSType);
+  }
+  else
+  {
+    //Descobrir se o DataSource suporta adição de mais de uma coluna geometrica.
+    return false;
+  }
 
   return false;
 }
 
+te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* dsType,
+                                                          std::vector<int> tabVec,
+                                                          std::vector<int> geoVec)
+{
+  std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
+  std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(m_inDset.get());
 
-void te::vp::GeometricOpQuery::SetOutputDSet(std::auto_ptr<te::da::DataSet> inDataSet,
-                                            te::mem::DataSet* outDataSet)
+  te::da::Fields* fields = new te::da::Fields;
+
+  if(m_selectedProps.size() > 0)
+  {
+    for(std::size_t prop_pos = 0; prop_pos < m_selectedProps.size(); ++prop_pos)
+    {
+      te::da::Field* f_prop = new te::da::Field(m_selectedProps[prop_pos]);
+      fields->push_back(f_prop);
+    }
+  }
+
+  if(tabVec.size() > 0)
+  {
+    for(std::size_t tabPos = 0; tabPos < tabVec.size(); ++tabPos)
+    {
+      switch(tabVec[tabPos])
+      {
+        case te::vp::AREA:
+          {
+            
+          }
+          break;
+        case te::vp::LINE:
+          {
+            
+          }
+          break;
+        case te::vp::PERIMETER:
+          {
+            
+          }
+          break;
+      }
+    }
+  }
+
+  if(geoVec.size() > 0)
+  {
+    for(std::size_t geoPos = 0; geoPos < geoVec.size(); ++geoPos)
+    {
+      switch(geoVec[geoPos])
+      {
+        case te::vp::CONVEX_HULL:
+          {
+
+          }
+          break;
+        case te::vp::CENTROID:
+          {
+
+          }
+          break;
+        case te::vp::MBR:
+          {
+
+          }
+          break;
+      }
+    }
+  }
+  else
+  {
+    std::string name = m_inDset->getPropertyName(geom_pos);
+    te::da::Field* f_prop = new te::da::Field(name);
+    fields->push_back(f_prop);
+  }
+
+  te::da::FromItem* fromItem = new te::da::DataSetName(m_inDsetType->getName());
+  te::da::From* from = new te::da::From;
+  from->push_back(fromItem);
+
+  te::da::Select select(fields, from);
+    
+  std::auto_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
+
+  if (dsQuery->isEmpty())
+    return false;
+
+  SetOutputDSet(dsQuery.get(), outDSet.get());
+
+  return outDSet.release();
+}
+
+te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregObj( te::da::DataSetType* dsType,
+                                                          std::vector<int> tabVec,
+                                                          std::vector<int> geoVec)
+{
+  std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
+
+
+
+  return outDSet.release();
+}
+
+te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSetType* dsType,
+                                                                  std::vector<int> tabVec,
+                                                                  std::vector<int> geoVec)
+{
+  std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
+
+
+
+  return outDSet.release();
+}
+
+void te::vp::GeometricOpQuery::SetOutputDSet( te::da::DataSet* inDataSet,
+                                              te::mem::DataSet* outDataSet)
 {
   std::size_t numProps = inDataSet->getNumProperties();
   
