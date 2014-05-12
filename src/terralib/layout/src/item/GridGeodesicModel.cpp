@@ -91,6 +91,9 @@ void te::layout::GridGeodesicModel::draw( te::map::Canvas* canvas, te::gm::Envel
 
 void te::layout::GridGeodesicModel::drawVerticalLines(te::map::Canvas* canvas, te::gm::Envelope box)
 {
+  if(!m_visible)
+    return;
+
   Utils* utils = Context::getInstance()->getUtils();
 
   int totallines = (int)std::abs(std::ceil(box.getWidth() / m_lneVrtDisplacement));
@@ -139,6 +142,11 @@ void te::layout::GridGeodesicModel::drawHorizontalLines(te::map::Canvas* canvas,
 
     count+= m_lneHrzDisplacement;
   }
+}
+
+void te::layout::GridGeodesicModel::calculateGaps( te::gm::Envelope box )
+{
+
 }
 
 te::layout::Properties* te::layout::GridGeodesicModel::getProperties() const

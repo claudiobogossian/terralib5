@@ -45,7 +45,15 @@ namespace te
 
         virtual void setPosition(const double& x, const double& y);
 
-        virtual void refreshLayers(std::list<te::map::AbstractLayerPtr> layers);
+        virtual bool refreshLayer(te::map::AbstractLayerPtr layer);
+
+      protected:
+
+        MapController( Observable* o, LayoutAbstractObjectType type );
+
+      private:
+
+        void create();
     };
   }
 }

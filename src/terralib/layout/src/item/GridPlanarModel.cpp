@@ -56,26 +56,55 @@ te::layout::GridPlanarModel::~GridPlanarModel()
 
 void te::layout::GridPlanarModel::draw( te::map::Canvas* canvas, te::gm::Envelope box )
 {
+  if(!box.isValid())
+    return;
+
+  calculateGaps(box);
+
+  if(!m_visible)
+    return;
+
   Utils* utils = Context::getInstance()->getUtils();
 
   te::color::RGBAColor color = te::color::RGBAColor(0, 0, 0, 255);
   canvas->setLineColor(color);
-
+  
   drawVerticalLines(canvas, box);
   drawHorizontalLines(canvas, box);
 }
 
 void te::layout::GridPlanarModel::drawVerticalLines(te::map::Canvas* canvas, te::gm::Envelope box)
 {
+  // Draw a horizontal line and the y coordinate change(vertical)
+
   Utils* utils = Context::getInstance()->getUtils();
 
-  int totallines = (int)std::abs(std::ceil(box.getWidth() / m_lneVrtDisplacement));
+  double			y1;
+  double			yInit;
 
-  double count = 0;
-  for(int i = 0 ; i < totallines ; i++)
+  yInit = m_initialGridPointY;
+  if(yInit < box.getLowerLeftY())
   {
-    te::gm::Envelope newBox(box.getLowerLeftX() + count, box.getLowerLeftY(), 
-      box.getLowerLeftX() + count, box.getUpperRightY());
+    double dify = box.getLowerLeftY() - yInit;
+    int nParts = (int)(dify/m_lneVrtGap);
+    if(nParts == 0)
+    {
+      yInit = m_initialGridPointY;
+    }
+    else
+    {
+      yInit = yInit + (nParts * m_lneVrtGap);
+    }
+  }
+
+  y1 = yInit;
+  for( ; y1 < box.getUpperRightY() ; y1 += m_lneVrtGap)
+  {
+    if(y1 < box.getLowerLeftY())
+      continue;
+
+    te::gm::Envelope newBox(box.getLowerLeftX(), y1, 
+      box.getUpperRightX(), y1);
     te::gm::LinearRing* line = new te::gm::LinearRing(3, te::gm::LineStringType);
 
     line = utils->createSimpleLine(newBox);
@@ -86,22 +115,42 @@ void te::layout::GridPlanarModel::drawVerticalLines(te::map::Canvas* canvas, te:
       delete line;
       line = 0;
     }
-
-    count+= m_lneVrtDisplacement;
   }
 }
 
 void te::layout::GridPlanarModel::drawHorizontalLines(te::map::Canvas* canvas, te::gm::Envelope box)
 {
+  // Draw a vertical line and the x coordinate change(horizontal)
+
   Utils* utils = Context::getInstance()->getUtils();
-
-  int totallines = (int)std::abs(std::ceil(box.getWidth() / m_lneHrzDisplacement));
-
-  double count = 0;
-  for(int i = 0 ; i < totallines ; i++)
+  
+  double			x1;
+  double			xInit;
+  
+  xInit = m_initialGridPointX;
+  if(xInit < box.getLowerLeftX())
   {
-    te::gm::Envelope newBox(box.getLowerLeftX(), box.getLowerLeftY() + count, 
-      box.getUpperRightX(), box.getLowerLeftY() + count);
+    double difx = box.getLowerLeftX() - xInit;
+    int nParts = (int)(difx/m_lneHrzGap);
+    if(nParts == 0)
+    {
+      xInit = m_initialGridPointX;
+    }
+    else
+    {
+      xInit = xInit + (nParts * m_lneHrzGap);
+    }
+  }
+
+  x1 = xInit;
+
+  for( ; x1 < box.getUpperRightX() ; x1 += m_lneHrzGap)
+  {
+    if(x1 < box.getLowerLeftX())
+      continue;
+
+    te::gm::Envelope newBox(x1, box.getLowerLeftY(), 
+      x1, box.getUpperRightY());
     te::gm::LinearRing* line = new te::gm::LinearRing(3, te::gm::LineStringType);
 
     line = utils->createSimpleLine(newBox);
@@ -112,8 +161,28 @@ void te::layout::GridPlanarModel::drawHorizontalLines(te::map::Canvas* canvas, t
       delete line;
       line = 0;
     }
+  }
+}
 
-    count+= m_lneHrzDisplacement;
+void te::layout::GridPlanarModel::calculateGaps( te::gm::Envelope box )
+{
+  if(m_lneHrzGap <= 0)
+  {
+    m_lneHrzGap = m_mapScale * 0.05;
+  }
+
+  if(m_lneVrtGap <= 0)
+  {
+    m_lneVrtGap = m_lneHrzGap;
+  }
+
+  if(m_initialGridPointX <= 0)
+  {
+    m_initialGridPointX = box.getLowerLeftX();
+  }
+  if(m_initialGridPointY <= 0)
+  {
+    m_initialGridPointY = box.getLowerLeftY();
   }
 }
 

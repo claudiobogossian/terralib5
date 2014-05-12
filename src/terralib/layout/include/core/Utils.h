@@ -47,16 +47,31 @@ namespace te
         virtual ~Utils();
         virtual void drawRectW(te::gm::Envelope box);
         virtual void drawLineW(te::gm::LinearRing* line);
-        virtual te::color::RGBAColor** getImageW(te::gm::Envelope box);
+        virtual te::color::RGBAColor** getImageW(te::gm::Envelope boxmm);
+
         virtual int mm2pixel(double mm);
-        virtual void configCanvas(te::gm::Envelope box);
-        virtual te::gm::Envelope viewportBox(te::gm::Envelope box);
-        virtual te::gm::Envelope viewportBoxFromScene(te::gm::Envelope box);
+
         virtual te::gm::LinearRing* createSimpleLine(te::gm::Envelope box);
 
+        virtual void configCanvas(te::gm::Envelope box, bool resize = true);
+
+        /* The calculation of the viewport is from the box in mm */
+        virtual void configGeoCanvas(te::gm::Envelope boxgeo, te::gm::Envelope boxmm, bool resize = true);
+
+        /* The calculation of the viewport is from the geographical box  */
+        virtual void configGeoCanvasFromGeo(te::gm::Envelope boxgeo, te::gm::Envelope boxmm, bool resize = true);
+        
+        virtual te::gm::Envelope viewportBox(te::gm::Envelope box);
+
+        virtual te::gm::Envelope viewportBoxFromGeo(te::gm::Envelope boxgeo, te::gm::Envelope boxmm);
+        
       protected:
 
-        te::map::WorldDeviceTransformer    m_transformer; // World Device Transformer.
+        virtual void changeCanvas(te::gm::Envelope viewport, te::gm::Envelope world, bool resize = true);
+
+        virtual te::gm::Envelope transformToViewport(te::map::WorldDeviceTransformer transf, te::gm::Envelope box);
+
+        virtual te::gm::Envelope viewportBoxFromMM(te::gm::Envelope box);
     };
   }
 }

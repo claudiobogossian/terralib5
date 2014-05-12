@@ -75,7 +75,10 @@ namespace te
         */
         virtual void init(double widthMM, double heightMM);
 
+        /* World coordinates (mm) */
         virtual te::gm::Envelope* getWorldBox() const;
+
+        /* World coordinates (mm) */
         virtual te::gm::Envelope* getPaperBox() const;
         
         virtual QTransform getMatrixViewScene();

@@ -64,7 +64,7 @@
 #include <QApplication>
 #include <QGraphicsSceneMouseEvent>
 #include <QStyleOptionGraphicsItem>
-#include "MapController.h"
+#include "MapGridController.h"
 
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   QGraphicsProxyWidget(0),
@@ -115,6 +115,9 @@ te::layout::MapItem::~MapItem()
 
 void te::layout::MapItem::updateObserver( ContextItem context )
 {
+  if(!m_model)
+    return;
+
   te::color::RGBAColor** rgba = context.getPixmap();
 
   if(!rgba)
@@ -122,7 +125,13 @@ void te::layout::MapItem::updateObserver( ContextItem context )
 
   Utils* utils = Context::getInstance()->getUtils();
 
+  if(!utils)
+    return;
+
   te::gm::Envelope box = utils->viewportBox(m_model->getBox());
+
+  if(!box.isValid())
+    return;
 
   QPixmap pixmap;
   QImage* img = 0;
@@ -330,19 +339,35 @@ std::list<te::map::AbstractLayerPtr> te::layout::MapItem::getVisibleLayers()
   return visibleLayers;
 }
 
+te::map::AbstractLayerPtr te::layout::MapItem::getLayer()
+{
+  te::map::AbstractLayerPtr layer;
+
+  if(!m_treeItem)
+    return layer;
+
+  layer = m_treeItem->getLayer();
+
+  return layer;
+}
+
 void te::layout::MapItem::onDrawLayersFinished( const QMap<QString, QString>& errors )
 {
   if(!errors.empty())
     return;
 
-  std::list<te::map::AbstractLayerPtr> vis = getVisibleLayers();
+  te::map::AbstractLayerPtr layer = getLayer();
 
   if(!m_controller)
     return;
 
-  MapController* controller = dynamic_cast<MapController*>(m_controller);
+  MapGridController* controller = dynamic_cast<MapGridController*>(m_controller);
   if(controller)
   {
-    controller->refreshLayers(vis);
+    bool result = controller->refreshLayer(layer);
+    if(result)
+    {
+      redraw();
+    }
   }
 }

@@ -1283,7 +1283,7 @@ void te::layout::GridSettingsOutside::initInt( QWidget* widget, std::string name
   if(!controller)
     return;
 
-  ostringstream convert;
+  std::ostringstream convert;
   Property prop = controller->getProperty(nameComponent);
   convert << prop.getValue().toInt();
 
@@ -1300,7 +1300,7 @@ void te::layout::GridSettingsOutside::initDouble( QWidget* widget, std::string n
   if(!controller)
     return;
 
-  ostringstream convert;
+  std::ostringstream convert;
   Property prop = controller->getProperty(nameComponent);
   convert << prop.getValue().toDouble();
   

@@ -69,7 +69,7 @@ namespace te
         virtual void setRect(QRectF rect);
 
         //Override 
-        /*World coordinates*/
+        /*World coordinates(mm)*/
         virtual bool contains(const QPointF &point) const;
 
         virtual void setPos(const QPointF &pos);

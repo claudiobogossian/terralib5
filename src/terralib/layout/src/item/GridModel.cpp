@@ -41,8 +41,7 @@ te::layout::GridModel::GridModel() :
   m_initialGridPointX(0),
   m_initialGridPointY(0),
   m_gridStyle(StyleContinuous),
-  m_lineStyle(),
-  m_lineColor(),
+  m_lineStyle(te::map::SolidLine),
   m_lineWidth(1),
   m_pointTextSize(12),
   m_fontText("Arial"),
@@ -86,4 +85,9 @@ bool te::layout::GridModel::isVisible()
 void te::layout::GridModel::setVisible( bool visible )
 {
   m_visible = visible;
+}
+
+void te::layout::GridModel::setMapScale( double scale )
+{
+  m_mapScale = scale;
 }

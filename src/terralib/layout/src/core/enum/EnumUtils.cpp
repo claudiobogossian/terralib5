@@ -74,6 +74,8 @@ te::layout::LayoutGridStyle te::layout::getLayoutEnumGridStyle( int enumVal )
   default:
     return StyleNone;
   }
+
+  return StyleNone;
 }
 
 std::string te::layout::getLayoutDashStyle( int enumVal )
@@ -110,4 +112,6 @@ te::map::LineDashStyle te::layout::getLayoutEnumDashStyle( int enumVal )
   default:
     return te::map::NoLine;
   }
+
+  return te::map::NoLine;
 }

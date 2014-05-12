@@ -55,14 +55,20 @@ namespace te
         virtual bool isVisible();
         virtual void setVisible(bool visible);
 
+        virtual void setMapScale(double scale);
+
        protected:
 
          virtual void drawVerticalLines(te::map::Canvas* canvas, te::gm::Envelope box) = 0;
+
          virtual void drawHorizontalLines(te::map::Canvas* canvas, te::gm::Envelope box) = 0;
+         
+         virtual void calculateGaps(te::gm::Envelope box) = 0;
 
        protected:
 
          te::layout::Properties* m_properties;
+         double m_mapScale;
          std::string           m_name;
 
          /* Grid */
