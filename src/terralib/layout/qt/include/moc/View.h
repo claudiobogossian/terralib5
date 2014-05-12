@@ -33,10 +33,12 @@
 #include <QTabwidget>
 #include <QDockWidget>
 #include <QPointF>
+#include <QList>
 
 // TerraLib
 #include "AbstractView.h"
 #include "../../../../geometry/Envelope.h"
+#include "../../../../geometry/Coord2D.h"
 
 class QMouseEvent;
 class QWheelEvent;
@@ -44,6 +46,7 @@ class QKeyEvent;
 class QString;
 class QHideEvent;
 class QCloseEvent;
+class QGraphicsItemGroup;
 
 namespace te
 {
@@ -51,6 +54,7 @@ namespace te
   {
     class OutsideArea;
     class VisualizationArea;
+    class BuildGraphicsItem;
 
     class View : public QGraphicsView, public AbstractView
     {
@@ -81,17 +85,22 @@ namespace te
         virtual void	showEvent ( QShowEvent * event );
 
         virtual void	paintEvent ( QPaintEvent * event );
-        
+
         //PaintDevice
         virtual int	metric ( PaintDeviceMetric metric ) const;
 
-        virtual bool createMap(QPointF point);
-        virtual bool createText(QPointF point);
-        virtual bool createRectangle(QPointF point);
+        virtual void createItem(const te::gm::Coord2D& coord );
 
+        virtual void createItemGroup();
+
+        virtual void destroyItemGroup();
+
+        virtual void deleteItems();
+        
       protected:
         OutsideArea*  m_outsideArea;
         VisualizationArea* m_visualizationArea;
+        BuildGraphicsItem* m_buildItems;
     };
   }
 }

@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../../common/Translator.h"
+#include "../../../widgets/layer/selector/DataSetLayerSelector.h"
 #include "WFSConnector.h"
 #include "WFSType.h"
 
@@ -37,6 +38,26 @@ te::qt::plugins::wfs::WFSType::WFSType()
 
 te::qt::plugins::wfs::WFSType::~WFSType()
 {
+}
+
+bool te::qt::plugins::wfs::WFSType::hasDatabaseSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::wfs::WFSType::hasFileSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::wfs::WFSType::hasRasterSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::wfs::WFSType::hasVectorialSupport() const
+{
+  return false;
 }
 
 std::string te::qt::plugins::wfs::WFSType::getName() const
@@ -61,8 +82,8 @@ QWidget* te::qt::plugins::wfs::WFSType::getWidget(int widgetType, QWidget* paren
     case te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new WFSConnector(parent, f);
 
-    //case DataSourceType::WIDGET_LAYER_SELECTOR:
-      //return new DataSetLayerSelector(parent, f);
+    case DataSourceType::WIDGET_LAYER_SELECTOR:
+      return new te::qt::widgets::DataSetLayerSelector(parent, f);
 
     default:
       return 0;
@@ -83,5 +104,3 @@ QIcon te::qt::plugins::wfs::WFSType::getIcon(int iconType) const
       return QIcon::fromTheme("unknown-icon");
   }
 }
-
-

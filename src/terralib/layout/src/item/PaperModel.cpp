@@ -107,8 +107,8 @@ void te::layout::PaperModel::config()
   double width = m_shadowPadding + pw;
   double height = m_shadowPadding + ph;
 
-  m_boxPaper = te::gm::Envelope(0., 0., pw, ph);
-  m_boxShadow = te::gm::Envelope(m_shadowPadding, m_shadowPadding, width, height);
+  m_boxPaper = te::gm::Envelope(0, m_shadowPadding, pw, height);
+  m_boxShadow = te::gm::Envelope(m_shadowPadding, 0, width, ph);
   m_box = te::gm::Envelope(0., 0., width, height);
 }
 

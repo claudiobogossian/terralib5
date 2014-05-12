@@ -820,6 +820,11 @@ void te::qt::af::BaseApplication::onToolsDataExchangerDirectTriggered()
     std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers();
     dlg.setLayers(layers);
 
+     QString dsTypeSett = GetLastDatasourceFromSettings();
+
+    if(!dsTypeSett.isNull() && !dsTypeSett.isEmpty())
+      dlg.setLastDataSource(dsTypeSett.toStdString());
+
     dlg.exec();
   }
   catch(const std::exception& e)
@@ -1632,7 +1637,7 @@ void te::qt::af::BaseApplication::onDataSourceExplorerTriggered()
   {
     std::auto_ptr<te::qt::widgets::DataSourceExplorerDialog> dExplorer(new te::qt::widgets::DataSourceExplorerDialog(this));
 
-    QString dsTypeSett = GetLastDatasourceFromSettings();
+    QString dsTypeSett =  GetLastDatasourceFromSettings();
 
     if(!dsTypeSett.isNull() && !dsTypeSett.isEmpty())
       dExplorer->setDataSourceToUse(dsTypeSett);

@@ -33,7 +33,7 @@
 #include "Context.h"
 
 te::layout::ToolbarController::ToolbarController( Observable* o ) :
-	OutsideController(o)
+	OutsideController(o, TPToolbar)
 {
 	AbstractOutsideFactory* factory = Context::getInstance()->getOutsideFactory(); 
 	OutsideParamsCreate params(this, m_model);

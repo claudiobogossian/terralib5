@@ -192,7 +192,7 @@ namespace te
             if(m_buttonKeyRect.contains(e->posF()))
             {
               // Show original color dialog
-              QColor color = QColorDialog::getColor(Qt::white, this, "", QColorDialog::ShowAlphaChannel);
+              QColor color = QColorDialog::getColor(m_currentColor, this, "", QColorDialog::ShowAlphaChannel);
               if(!color.isValid())
                 return;
 
@@ -202,6 +202,11 @@ namespace te
             }
           }
 
+          void setSelected(QColor color)
+          {
+            m_currentColor = color;
+          }
+
         signals:
 
           void selected(const QColor& color);
@@ -209,6 +214,7 @@ namespace te
         public:
 
           QColor m_hoverColor;
+          QColor m_currentColor;
           QRgb m_stdrgb[48];
           QList<ColorKeyInfo> m_colorInfos;
           QRectF m_buttonKeyRect;

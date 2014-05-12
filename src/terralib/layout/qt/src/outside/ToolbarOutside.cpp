@@ -123,14 +123,8 @@ void te::layout::ToolbarOutside::createToolbar()
   btnZoomOut->setToolTip("Visualization Area: Zoom Out");
   connect(btnZoomOut, SIGNAL(toggled(bool)), this, SLOT(onClickZoomOutTool(bool)));
   btnZoomOut->setIcon(QIcon::fromTheme(LAYOUT_IMAGES_PNG"/layout-paper-zoom-out"));
-
-  QToolButton *btnMap = new QToolButton;
-  btnMap->setText("Map");
-  btnMap->setGeometry(0,0,10,10);
-  btnMap->setCheckable(true);
-  btnMap->setToolTip("Default Map Object");
-  connect(btnMap, SIGNAL(toggled(bool)), this, SLOT(onClickMapTool(bool)));
-  btnMap->setIcon(QIcon::fromTheme(LAYOUT_IMAGES_PNG"/layout-default-map"));
+  
+  createMapToolButton();
 
   /*QComboBox *cmbUnitsMetrics = new QComboBox;
   cmbUnitsMetrics->insertItem(TPMillimeter, QIcon(), QString("Millimeter"));
@@ -145,11 +139,27 @@ void te::layout::ToolbarOutside::createToolbar()
   connect(btnRectangle, SIGNAL(toggled(bool)), this, SLOT(onClickRectangleTool(bool)));
   btnRectangle->setIcon(QIcon::fromTheme(LAYOUT_IMAGES_PNG"/layout-square"));  
 
+  QToolButton* btnLegend = new QToolButton;
+  btnLegend->setText("Legend");
+  btnLegend->setGeometry(0,0,10,10);
+  btnLegend->setCheckable(true);
+  btnLegend->setToolTip("Legend Object");
+  connect(btnLegend, SIGNAL(toggled(bool)), this, SLOT(onClickLegendTool(bool)));
+  btnLegend->setIcon(QIcon::fromTheme(LAYOUT_IMAGES_PNG"/layout-default-legend"));  
+
   /*QToolButton* btnSalveProps = new QToolButton;
   btnSalveProps->setText("Save Props");
   btnSalveProps->setGeometry(0,0,10,10);
   btnSalveProps->setCheckable(true);
   connect(btnSalveProps, SIGNAL(toggled(bool)), this, SLOT(onClickSalvePropsTool(bool)));*/
+
+  QToolButton *btnMapGrid = new QToolButton;
+  btnMapGrid->setText("Map Grid");
+  btnMapGrid->setGeometry(0,0,10,10);
+  btnMapGrid->setCheckable(true);
+  btnMapGrid->setToolTip("Map Grid Object");
+  connect(btnMapGrid, SIGNAL(toggled(bool)), this, SLOT(onClickMapGridTool(bool)));
+  btnMapGrid->setIcon(QIcon::fromTheme(LAYOUT_IMAGES_PNG"/layout-map-grid")); 
 
   m_toolbar->addWidget(btnPan);
   m_toolbar->addSeparator();
@@ -159,12 +169,36 @@ void te::layout::ToolbarOutside::createToolbar()
   m_toolbar->addSeparator();
   /*_toolbar->addWidget(cmbUnitsMetrics);
   _toolbar->addSeparator();*/
-  m_toolbar->addWidget(btnMap);
+  m_toolbar->addWidget(btnMapGrid);
   m_toolbar->addSeparator();
   m_toolbar->addWidget(btnRectangle);
   m_toolbar->addSeparator();
+  m_toolbar->addWidget(btnLegend);
+  m_toolbar->addSeparator();
   /*m_toolbar->addWidget(btnSalveProps);
   m_toolbar->addSeparator();*/
+}
+
+void te::layout::ToolbarOutside::createMapToolButton()
+{
+  QToolButton *btnMap = new QToolButton;
+  btnMap->setText("Map");
+  btnMap->setGeometry(0,0,10,10);
+  btnMap->setCheckable(true);
+  btnMap->setToolTip("Default Map Object");
+  connect(btnMap, SIGNAL(toggled(bool)), this, SLOT(onClickMapTool(bool)));
+  btnMap->setIcon(QIcon::fromTheme(LAYOUT_IMAGES_PNG"/layout-default-map"));
+
+  /*QMenu *menu = new QMenu();
+  QAction *testAction = new QAction("test menu item", this);
+  menu->addAction(testAction);
+
+  QToolButton* maptoolButton = new QToolButton();
+  maptoolButton->setMenu(menu);
+  maptoolButton->setPopupMode(QToolButton::InstantPopup);*/
+
+  m_toolbar->addWidget(btnMap);
+  m_toolbar->addSeparator();
 }
 
 void te::layout::ToolbarOutside::onClickPanTool(bool toggled)
@@ -264,6 +298,26 @@ void te::layout::ToolbarOutside::onClickMapTool( bool toggled )
   emit changeContext(result);
 }
 
+void te::layout::ToolbarOutside::onClickMapGridTool( bool toggled )
+{
+  bool result = true;
+  LayoutMode mode = Context::getInstance()->getMode();
+
+  if(toggled == false)
+  {
+    Context::getInstance()->setMode(TypeNone);
+  }
+  else
+  {
+    Context::getInstance()->setMode(TypeCreateMapGrid);
+  }
+
+  if(mode == Context::getInstance()->getMode())
+    result = false;
+
+  emit changeContext(result);
+}
+
 void te::layout::ToolbarOutside::onClickRectangleTool( bool toggled )
 {
   bool result = true;
@@ -304,5 +358,22 @@ void te::layout::ToolbarOutside::onClickSalvePropsTool( bool toggled )
   emit changeContext(result);
 }
 
+void te::layout::ToolbarOutside::onClickLegendTool( bool toggled )
+{
+  bool result = true;
+  LayoutMode mode = Context::getInstance()->getMode();
 
+  if(toggled == false)
+  {
+    Context::getInstance()->setMode(TypeNone);
+  }
+  else
+  {
+    Context::getInstance()->setMode(TypeCreateLegend);
+  }
 
+  if(mode == Context::getInstance()->getMode())
+    result = false;
+
+  emit changeContext(result);
+}

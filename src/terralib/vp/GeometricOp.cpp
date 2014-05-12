@@ -108,7 +108,7 @@ bool  te::vp::GeometricOp::save(std::auto_ptr<te::mem::DataSet> result, std::aut
     std::string pk_name = dsTypeResult->getName() + "_pkey";
     te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
     pk->add(dsTypeResult->getProperty(0));
-    m_outDsrc->addPrimaryKey(m_outDsetName,pk);
+    m_outDsrc->addPrimaryKey(outDsType->getName(), pk);
   }
   
   return true;
@@ -120,9 +120,18 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
 {
   std::stringstream geomStr;
   geomStr << geomOp;
+  te::da::DataSetType* dsType = 0;
 
-  te::da::DataSetType* dsType = new te::da::DataSetType(m_outDsetName + "_" + geomStr.str());
-
+  if(geomOp != -1)
+  {
+    dsType = new te::da::DataSetType(m_outDsetName + "_" + geomStr.str());
+    dsType->setTitle(m_outDsetName + "_" + geomStr.str());
+  }
+  else
+  {
+    dsType = new te::da::DataSetType(m_outDsetName);
+    dsType->setTitle(m_outDsetName);
+  }
   // Primary key
   te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
   pkProperty->setAutoNumber(true);
@@ -181,7 +190,7 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
         case te::vp::CONVEX_HULL:
           {
             te::gm::GeometryProperty* convGeom = new te::gm::GeometryProperty("convex_hull");
-            convGeom->setGeometryType(te::gm::MultiPolygonType);
+            convGeom->setGeometryType(te::gm::PolygonType);
             convGeom->setSRID(gp->getSRID());
             dsType->add(convGeom);
             flagGeom = true;
@@ -199,7 +208,7 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
         case te::vp::MBR:
           {
             te::gm::GeometryProperty* mbrGeom = new te::gm::GeometryProperty("mbr");
-            mbrGeom->setGeometryType(te::gm::MultiPolygonType);
+            mbrGeom->setGeometryType(te::gm::PolygonType);
             mbrGeom->setSRID(gp->getSRID());
             dsType->add(mbrGeom);
             flagGeom = true;
@@ -211,44 +220,82 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
     if(!flagGeom)
     {
       te::gm::GeometryProperty* geometry = new te::gm::GeometryProperty("geom");
-      geometry->setGeometryType(gp->getGeometryType());
       geometry->setSRID(gp->getSRID());
+
+      switch(gp->getGeometryType())
+      {
+        case te::gm::PointType:
+          geometry->setGeometryType(te::gm::MultiPointType);
+          break;
+        case te::gm::LineStringType:
+          geometry->setGeometryType(te::gm::MultiLineStringType);
+          break;
+        case te::gm::PolygonType:
+          geometry->setGeometryType(te::gm::MultiPolygonType);
+        default:
+          geometry->setGeometryType(gp->getGeometryType());
+      }
+      
       dsType->add(geometry);
     }
 
   }
   else
   {
-    te::gm::GeometryProperty* geometry = new te::gm::GeometryProperty("geom");
-    
     bool flagGeom = false;
     switch(geomOp)
     {
       case te::vp::CONVEX_HULL:
-        geometry->setGeometryType(te::gm::MultiPolygonType);
-        geometry->setSRID(gp->getSRID());
-        dsType->add(geometry);
-        flagGeom = true;
+        {
+          te::gm::GeometryProperty* geometry = new te::gm::GeometryProperty("convex_hull");
+          geometry->setGeometryType(te::gm::PolygonType);
+          geometry->setSRID(gp->getSRID());
+          dsType->add(geometry);
+          flagGeom = true;
+        }
         break;
       case te::vp::CENTROID:
-        geometry->setGeometryType(te::gm::PointType);
-        geometry->setSRID(gp->getSRID());
-        dsType->add(geometry);
-        flagGeom = true;
+        {
+          te::gm::GeometryProperty* geometry = new te::gm::GeometryProperty("centroid");
+          geometry->setGeometryType(te::gm::PointType);
+          geometry->setSRID(gp->getSRID());
+          dsType->add(geometry);
+          flagGeom = true;
+        }
         break;
       case te::vp::MBR:
-        geometry->setGeometryType(te::gm::MultiPolygonType);
-        geometry->setSRID(gp->getSRID());
-        dsType->add(geometry);
-        flagGeom = true;
+        {
+          te::gm::GeometryProperty* geometry = new te::gm::GeometryProperty("mbr");
+          geometry->setGeometryType(te::gm::PolygonType);
+          geometry->setSRID(gp->getSRID());
+          dsType->add(geometry);
+          flagGeom = true;
+        }
         break;
     }
 
     if(!flagGeom)
     {
-      geometry->setGeometryType(gp->getGeometryType());
+      te::gm::GeometryProperty* geometry = new te::gm::GeometryProperty("geom");
       geometry->setSRID(gp->getSRID());
+
+      switch(gp->getGeometryType())
+      {
+        case te::gm::PointType:
+          geometry->setGeometryType(te::gm::MultiPointType);
+          break;
+        case te::gm::LineStringType:
+          geometry->setGeometryType(te::gm::MultiLineStringType);
+          break;
+        case te::gm::PolygonType:
+          geometry->setGeometryType(te::gm::MultiPolygonType);
+        default:
+          geometry->setGeometryType(gp->getGeometryType());
+      }
+      
       dsType->add(geometry);
+
+
     }
   }
 

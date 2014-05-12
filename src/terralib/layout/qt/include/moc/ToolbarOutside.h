@@ -64,8 +64,10 @@ namespace te
       virtual void onClickZoomOutTool(bool toggled);
       virtual void onIndexChanged(int index);
       virtual void onClickMapTool(bool toggled);
+      virtual void onClickMapGridTool(bool toggled);
       virtual void onClickRectangleTool(bool toggled);
       virtual void onClickSalvePropsTool(bool toggled);
+      virtual void onClickLegendTool(bool toggled);
 
     signals:
 
@@ -74,6 +76,8 @@ namespace te
     protected:
 
       virtual void createToolbar();
+
+      virtual void createMapToolButton();
 
       QToolBar*  m_toolbar;
     };

@@ -1345,6 +1345,30 @@ std::string te::ado::GetFormattedDateTime(te::dt::DateTime* dateTime)
     }
   }
 
+  te::dt::TimeInstantTZ* tinstZ = dynamic_cast<te::dt::TimeInstantTZ*>(dateTime);
+  
+  if(tinstZ)
+  {
+    boost::local_time::local_date_time boostTime = tinstZ->getTimeInstantTZ();    
+
+    int hh = boostTime.utc_time().time_of_day().hours();
+    int mm = boostTime.utc_time().time_of_day().minutes();
+    int ss = boostTime.utc_time().time_of_day().seconds();
+
+    if(mask.find("HHsmmsSS") != std::string::npos)
+    {
+      result = boost::lexical_cast<std::string>(hh) + sepT;
+      result += boost::lexical_cast<std::string>(mm) + sepT;
+      result += boost::lexical_cast<std::string>(ss);
+    }
+    else if(mask.find("HsmmsSSsTT") != std::string::npos)
+    {
+      result = boost::lexical_cast<std::string>(hh) + sepT;
+      result += boost::lexical_cast<std::string>(mm) + sepT;
+      result += boost::lexical_cast<std::string>(ss);
+    }
+  }
+
   return result;
 }
 

@@ -186,18 +186,22 @@ void te::vp::GeometricOpOutputWizardPage::onAttributeComboBoxChanged(int index)
 
 void te::vp::GeometricOpOutputWizardPage::onAllObjectsToggled()
 {
+  m_ui->m_outputGroupBox->setCheckable(true);
   m_ui->m_attributesComboBox->setEnabled(false);
   onAttributeComboBoxChanged(0);
 }
 
 void te::vp::GeometricOpOutputWizardPage::onSimpleOperationToggled()
 {
+  //m_ui->m_outputGroupBox->sete;
+  m_ui->m_outputGroupBox->setCheckable(false);
   m_ui->m_attributesComboBox->setEnabled(false);
   onAttributeComboBoxChanged(0);
 }
 
 void te::vp::GeometricOpOutputWizardPage::onAttributeOperationToggled()
 {
+  m_ui->m_outputGroupBox->setCheckable(false);
   m_ui->m_attributesComboBox->setEnabled(true);
 }
 

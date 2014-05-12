@@ -36,6 +36,7 @@
 #include "../../../maptools/GroupingAlgorithms.h"
 #include "../../../maptools/GroupingItem.h"
 #include "../../../maptools/Utils.h"
+#include "../../../se/SymbolizerColorFinder.h"
 #include "../../../se/Utils.h"
 #include "../colorbar/ColorBar.h"
 #include "../colorbar/ColorCatalogWidget.h"
@@ -173,7 +174,7 @@ void te::qt::widgets::GroupingWidget::initialize()
   m_manual = false;
 }
 
-void te::qt::widgets::GroupingWidget::updateUi()
+void te::qt::widgets::GroupingWidget::updateUi(bool loadColorBar)
 {
   disconnect(m_ui->m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(onTableWidgetItemChanged(QTableWidgetItem*)));
 
@@ -206,6 +207,26 @@ void te::qt::widgets::GroupingWidget::updateUi()
     m_ui->m_tableWidget->setHorizontalHeaderLabels(list);
   }
 
+  te::color::ColorBar* cb = 0;
+
+  if(loadColorBar)
+  {
+    if(!m_legend.empty() && !m_legend[0]->getSymbolizers().empty() && !m_legend[m_legend.size() - 1]->getSymbolizers().empty())
+    {
+      te::se::SymbolizerColorFinder scf;
+
+      scf.find(m_legend[0]->getSymbolizers()[0]);
+      te::color::RGBAColor initColor = scf.getColor();
+
+      scf.find(m_legend[m_legend.size() - 1]->getSymbolizers()[0]);
+      te::color::RGBAColor endColor = scf.getColor();
+
+      cb = new te::color::ColorBar(initColor, endColor, 256);
+    }
+  }
+
+  int count = 0;
+
   for(std::size_t t = 0; t < m_legend.size(); ++t)
   {
     te::map::GroupingItem* gi = m_legend[t];
@@ -230,6 +251,27 @@ void te::qt::widgets::GroupingWidget::updateUi()
       m_ui->m_tableWidget->setItem(newrow, 1, item);
     }
 
+    if(loadColorBar)
+    {
+      if(count != 0 && count != m_legend.size() - 1)
+      {
+        double pos = (1. / (m_legend.size() - 1)) * count;
+
+        if(!gi->getSymbolizers().empty())
+        {
+          te::se::SymbolizerColorFinder scf;
+
+          scf.find(gi->getSymbolizers()[0]);
+
+          te::color::RGBAColor color = scf.getColor();
+
+          if(cb)
+            cb->addColor(color, pos);
+        }
+      }
+    }
+
+    ++count;
 
     if(type == te::map::EQUAL_STEPS || type == te::map::QUANTIL || type == te::map::STD_DEVIATION)
     {
@@ -272,6 +314,16 @@ void te::qt::widgets::GroupingWidget::updateUi()
       m_ui->m_tableWidget->setItem(newrow, 3, item);
 
     }
+  }
+
+  if(cb)
+  {
+    disconnect(m_colorBar, SIGNAL(colorBarChanged()), this, SLOT(onColorBarChanged()));
+
+    te::qt::widgets::colorbar::ColorBar* cbW = m_colorBar->getColorBar();
+    cbW->setColorBar(cb);
+
+    connect(m_colorBar, SIGNAL(colorBarChanged()), this, SLOT(onColorBarChanged()));
   }
 
   m_ui->m_tableWidget->resizeColumnsToContents();
@@ -346,7 +398,7 @@ void te::qt::widgets::GroupingWidget::setGrouping(te::map::Grouping* grouping)
     m_legend.push_back(gi);
   }
 
-  updateUi();
+  updateUi(true);
 }
 
 void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
@@ -426,7 +478,7 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
     createStringNullGroupingItem(nullValues);
   }
 
-  updateUi();
+  updateUi(true);
 
   m_manual = false;
 
@@ -941,7 +993,7 @@ void te::qt::widgets::GroupingWidget::onImportPushButtonClicked()
 
   setGrouping(newGrouping);
 
-  updateUi();
+  updateUi(true);
 
   m_manual = false;
 
