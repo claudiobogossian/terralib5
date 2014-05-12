@@ -3,7 +3,7 @@
 #include "DummyWindow.h"
 
 // QT
-#include <QtGui/QApplication>
+#include <QApplication>
 
 
 void QtSleeper(int argc, char *argv[])

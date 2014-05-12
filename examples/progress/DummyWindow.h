@@ -7,12 +7,12 @@
 #include "terralib/qt/widgets/progress/ProgressViewerBar.h"
 
 // QT
-#include <QtGui/QWidget>
-#include <QtGui/QAction>
-#include <QtGui/QGridLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QStatusBar>
-#include <QtGui/QFrame>
+#include <QWidget>
+#include <QAction>
+#include <QGridLayout>
+#include <QPushButton>
+#include <QStatusBar>
+#include <QFrame>
 
 
 class DummyWindow : public QWidget
