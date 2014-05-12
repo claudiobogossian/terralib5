@@ -85,6 +85,8 @@ namespace te
 
             std::string getOriginalName(const std::string& targetName);
 
+            std::string getNewName(const std::string& originalName);
+
           protected slots:
 
             void back();

@@ -585,6 +585,7 @@ te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
   setVerticalHeader(new DataSetTableVerticalHeader(this));
 
   setSelectionMode(QAbstractItemView::MultiSelection);
+  setSelectionBehavior(QAbstractItemView::SelectColumns);
 
   m_popupFilter = new TablePopupFilter(this);
 
@@ -832,6 +833,9 @@ void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const bool&
       delete oids;
 
       m_delegate->setObjectIdSet(m_layer->getSelected());
+
+      if(m_promotionEnabled)
+        promote();
 
       viewport()->repaint();
 
