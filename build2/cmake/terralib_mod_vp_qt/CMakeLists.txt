@@ -27,6 +27,10 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
+if(WIN32)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -DTEVPDLL)
+endif()
+
 if(Qt5_FOUND)
   set(CMAKE_AUTOMOC ON)
   set(CMAKE_INCLUDE_CURRENT_DIR ON)

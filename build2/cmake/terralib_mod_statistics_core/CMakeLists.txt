@@ -27,6 +27,10 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
+if(WIN32)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTESTATDLL)
+endif()
+
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/core/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/core/*.h)
 

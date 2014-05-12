@@ -27,7 +27,11 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/classification/*.cpp)
+if(WIN32)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTECLDLL -DBOOST_ALL_NO_LIB)
+endif()
+  
+  file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/classification/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/classification/*.h)
 
 set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})

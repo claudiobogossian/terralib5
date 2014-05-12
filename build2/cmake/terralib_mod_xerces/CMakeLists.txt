@@ -21,12 +21,16 @@
 #  Description: Build configuration for the Xerces-c Module.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
-#          Juan P. Garrido <juan@dpi.inpe.br>
+#          Juan Carlos P. Garrido <juan@dpi.inpe.br>
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${XERCES_INCLUDE_DIR})
+
+if(WIN32)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEXERCESDLL)
+endif()
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/xerces/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/xerces/*.h)

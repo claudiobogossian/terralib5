@@ -28,6 +28,10 @@
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${GEOS_INCLUDE_DIR})
 
+if(WIN32)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -DTEGEOMDLL -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
+endif()
+
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/geometry/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/geometry/*.h)
 

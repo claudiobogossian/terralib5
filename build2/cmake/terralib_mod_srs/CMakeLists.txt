@@ -28,6 +28,10 @@
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${PROJ4_INCLUDE_DIR})
 
+if(WIN32)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTESRSDLL -DBOOST_ALL_NO_LIB)
+endif()
+
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/srs/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/srs/*.h)
 
@@ -36,7 +40,7 @@ set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 add_library(terralib_mod_srs SHARED ${TERRALIB_FILES})
 
 target_link_libraries(terralib_mod_srs terralib_mod_common
-                                      ${PROJ4_LIBRARY})
+                                       ${PROJ4_LIBRARY})
 
 set_target_properties(terralib_mod_srs
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}

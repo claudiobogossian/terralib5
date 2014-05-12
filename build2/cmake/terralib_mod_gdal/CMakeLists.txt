@@ -21,12 +21,16 @@
 #  Description: Build configuration for the GDAL Module.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
-#          Juan P. Garrido <juan@dpi.inpe.br>
+#          Juan Carlos P. Garrido <juan@dpi.inpe.br>
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${GDAL_INCLUDE_DIR})
+
+if(WIN32)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -DTEGDALDLL)
+endif()
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/gdal/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/gdal/*.h)

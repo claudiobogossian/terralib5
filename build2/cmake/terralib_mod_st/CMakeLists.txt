@@ -27,17 +27,21 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
+if(WIN32)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTESTDLL)
+endif(WIN32)
+
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/st/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/st/*.h)
 
-source_group("Source Files"                      FILES ${TERRALIB_SRC_FILES})
-source_group("Header Files"                      FILES ${TERRALIB_HDR_FILES})
+source_group("Source Files"  FILES ${TERRALIB_SRC_FILES})
+source_group("Header Files"  FILES ${TERRALIB_HDR_FILES})
 
 file(GLOB TERRALIB_CORE_COVERAGE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/st/core/coverage/*.cpp)
 file(GLOB TERRALIB_CORE_COVERAGE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/st/core/coverage/*.h)
 
-source_group("Source Files\\core\\coverage"      FILES ${TERRALIB_CORE_COVERAGE_SRC_FILES})
-source_group("Header Files\\core\\coverage"      FILES ${TERRALIB_CORE_COVERAGE_HDR_FILES})
+source_group("Source Files\\core\\coverage"  FILES ${TERRALIB_CORE_COVERAGE_SRC_FILES})
+source_group("Header Files\\core\\coverage"  FILES ${TERRALIB_CORE_COVERAGE_HDR_FILES})
 
 file(GLOB TERRALIB_CORE_EVENT_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/st/core/event/*.cpp)
 file(GLOB TERRALIB_CORE_EVENT_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/st/core/event/*.h)
