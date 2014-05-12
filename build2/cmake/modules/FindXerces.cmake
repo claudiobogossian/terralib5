@@ -41,17 +41,19 @@ find_path(XERCES_INCLUDE_DIR
                PATHS /usr
                      /usr/local
                PATH_SUFFIXES lib)
+
 elseif(WIN32)
-  
-#find_path(XERCES_INCLUDE_DIR xerces/xercesc/util/XercesVersion.hpp)
+
 find_path(XERCES_INCLUDE_DIR
           NAMES xercesc/util/XercesVersion.hpp
           PATH_SUFFIXES xerces)
 
-  find_library(XERCES_LIBRARY_RELEASE xerces-c)
+  find_library(XERCES_LIBRARY_RELEASE
+               NAMES xerces-c xerces-c_3)
 
-  find_library(XERCES_LIBRARY_DEBUG xerces-c)
- 
+  find_library(XERCES_LIBRARY_DEBUG
+               NAMES xerces-cD xerces-c_3D)
+
   if(XERCES_LIBRARY_RELEASE AND XERCES_LIBRARY_DEBUG)
     set(XERCES_LIBRARY optimized ${XERCES_LIBRARY_RELEASE} debug ${XERCES_LIBRARY_DEBUG})
   elseif(XERCES_LIBRARY_RELEASE)
