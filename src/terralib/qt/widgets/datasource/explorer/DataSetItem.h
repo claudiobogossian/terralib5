@@ -51,7 +51,7 @@ namespace te
             \param ds     If the dataset type is not associated to a data source catalog you can explicitly inform a data source to be used to query more information about the dataset.
             \param parent The parent item in the tree or NULL if it is a root item.
           */
-          DataSetItem(const te::da::DataSetTypePtr& dt, te::da::DataSource* ds = 0, AbstractDataSourceTreeItem* parent = 0);
+          DataSetItem(const te::da::DataSetTypePtr& dt, const std::string& geomPropertyName, te::da::DataSource* ds = 0, AbstractDataSourceTreeItem* parent = 0);
 
           ~DataSetItem();
 
@@ -73,6 +73,8 @@ namespace te
 
           const te::da::DataSetTypePtr& getDataSet() const;
 
+          const std::string& getGeomPropertyName() const;
+
           te::da::DataSource* getDataSource() const;
 
           bool isChecked() const;
@@ -80,6 +82,7 @@ namespace te
         private:
 
           te::da::DataSetTypePtr m_dataset;
+          std::string m_geomPropertyName;
           te::da::DataSource* m_datasource;
           bool m_checked;
       }; 

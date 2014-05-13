@@ -44,9 +44,10 @@
 #include <QtGui/QMenu>
 #include <QtGui/QWidget>
 
-te::qt::widgets::DataSetItem::DataSetItem(const te::da::DataSetTypePtr& dt, te::da::DataSource* ds, AbstractDataSourceTreeItem* parent)
+te::qt::widgets::DataSetItem::DataSetItem(const te::da::DataSetTypePtr& dt, const std::string& geomPropertyName, te::da::DataSource* ds, AbstractDataSourceTreeItem* parent)
   : AbstractDataSourceTreeItem(parent),
     m_dataset(dt),
+    m_geomPropertyName(geomPropertyName),
     m_datasource(ds),
     m_checked(false)
 {
@@ -63,7 +64,7 @@ int te::qt::widgets::DataSetItem::columnCount() const
   return 1;
 }
 
-QVariant te::qt::widgets::DataSetItem::data(int /*column*/, int role) const
+QVariant te::qt::widgets::DataSetItem::data(int column, int role) const
 {
   if(role == Qt::DecorationRole)
   {
@@ -86,9 +87,9 @@ QVariant te::qt::widgets::DataSetItem::data(int /*column*/, int role) const
   if(role == Qt::DisplayRole)
   {
     if(!m_dataset->getTitle().empty())
-      return QVariant(m_dataset->getTitle().c_str());
+      return QVariant((m_dataset->getTitle() + " (" + m_geomPropertyName+ ")").c_str());
     else
-      return QVariant(m_dataset->getName().c_str());
+      return QVariant((m_dataset->getName() + " (" + m_geomPropertyName+ ")").c_str());
   }
 
   if(role == Qt::CheckStateRole)
@@ -174,6 +175,11 @@ bool te::qt::widgets::DataSetItem::setData(const QVariant& value, int role)
 const te::da::DataSetTypePtr& te::qt::widgets::DataSetItem::getDataSet() const
 {
   return m_dataset;
+}
+
+const std::string& te::qt::widgets::DataSetItem::getGeomPropertyName() const
+{
+  return m_geomPropertyName;
 }
 
 te::da::DataSource* te::qt::widgets::DataSetItem::getDataSource() const
