@@ -104,6 +104,10 @@ void te::layout::LegendModel::visitDependent()
 {
   MapModel* map = dynamic_cast<MapModel*>(m_visitable);
 
+  /*te::map::AbstractLayerPtr layer = map->getLayer();
+
+  layer->getGrouping();*/
+
   if(map)
   {
     m_mapName = map->getName();
