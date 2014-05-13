@@ -164,7 +164,11 @@ find_package(Log4cxx)
 
 find_package(Lua51)
 
-find_package(PostgreSQL)
+find_package(LibPQ)
+
+if(NOT LIBPQ_FOUND)
+  find_package(PostgreSQL)
+endif()
 
 find_package(Proj4)
 
