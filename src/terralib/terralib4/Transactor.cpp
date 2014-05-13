@@ -99,7 +99,10 @@ int getViewId(const std::string& viewName, TeViewMap& viewMap)
 terralib4::Transactor::Transactor(DataSource* ds, TeDatabase* db)
   : m_ds(ds),
     m_db(db),
-    m_isInTransaction(false)
+    m_isInTransaction(false),
+    m_layerMap(m_db->layerMap()),
+    m_viewMap(m_db->viewMap()),
+    m_themeMap(m_db->themeMap())
 {
 }
 
@@ -144,11 +147,9 @@ std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::stri
 
   if(m_db->layerExist(name))
   {
-    TeLayerMap& map = m_db->layerMap();
+    std::map<int, TeLayer*>::iterator it = m_layerMap.begin();
 
-    std::map<int, TeLayer*>::iterator it = map.begin();
-
-    while(it != map.end())
+    while(it != m_layerMap.end())
     {
       if(it->second->name() == name)
       {
@@ -281,15 +282,11 @@ bool terralib4::Transactor::isPropertyNameValid(const std::string& /*propertyNam
 
 std::vector<std::string> terralib4::Transactor::getDataSetNames()
 {
-  m_db->loadLayerSet(true);
-
-  TeLayerMap& map = m_db->layerMap();
-
-  std::map<int, TeLayer*>::iterator it = map.begin();
+  std::map<int, TeLayer*>::iterator it = m_layerMap.begin();
 
   std::vector<std::string> dataSets;
 
-  while(it != map.end())
+  while(it != m_layerMap.end())
   {
     dataSets.push_back(it->second->name());
 
@@ -315,17 +312,13 @@ std::size_t terralib4::Transactor::getNumberOfDataSets()
 
 std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const std::string& name)
 {
-  m_db->loadLayerSet(true);
-
   TeLayer* layer = 0;
 
   if(m_db->layerExist(name))
   {
-    TeLayerMap& map = m_db->layerMap();
+    std::map<int, TeLayer*>::iterator it = m_layerMap.begin();
 
-    std::map<int, TeLayer*>::iterator it = map.begin();
-
-    while(it != map.end())
+    while(it != m_layerMap.end())
     {
       if(it->second->name() == name)
       {
@@ -521,13 +514,11 @@ void terralib4::Transactor::addProperty(const std::string& datasetName, te::dt::
     newProperty.type_ = terralib4::Convert2T4GeomType(geom->getGeomTypeId());
   }
 
-  TeLayerMap& map = m_db->layerMap();
-
-  std::map<int, TeLayer*>::iterator it = map.begin();
+  std::map<int, TeLayer*>::iterator it = m_layerMap.begin();
 
   TeLayer* layer = 0;
 
-  while(it != map.end())
+  while(it != m_layerMap.end())
   {
     if(it->second->name() == datasetName)
     {
@@ -796,13 +787,9 @@ std::vector<std::string> terralib4::Transactor::getTL4Layers()
 {
   std::vector<std::string> layers;
 
-  m_db->loadLayerSet(false);
+  std::map<int, TeLayer*>::iterator it = m_layerMap.begin();
 
-  TeLayerMap& layerMap = m_db->layerMap();
-
-  std::map<int, TeLayer*>::iterator it = layerMap.begin();
-
-  while(it != layerMap.end())
+  while(it != m_layerMap.end())
   {
     layers.push_back(it->second->name());
     ++it;
@@ -827,8 +814,6 @@ std::vector<std::string> terralib4::Transactor::getTL4Tables()
 std::vector<::terralib4::ThemeInfo> terralib4::Transactor::getTL4Themes()
 {
   std::vector<::terralib4::ThemeInfo> themes;
-
-  m_db->loadViewSet(m_db->user());
 
   TeViewMap& vMap = m_db->viewMap();
   TeThemeMap& tMap = m_db->themeMap();
@@ -869,22 +854,17 @@ std::vector<::terralib4::ThemeInfo> terralib4::Transactor::getTL4Themes()
 
 TeTheme* terralib4::Transactor::getTL4Theme(const ::terralib4::ThemeInfo theme)
 {
-  TeViewMap& vMap = m_db->viewMap();
-  TeThemeMap& tMap = m_db->themeMap();
+  std::map<int, TeAbstractTheme*>::iterator it = m_themeMap.begin();
 
-  std::map<int, TeAbstractTheme*>::iterator it = tMap.begin();
-
-  while(it != tMap.end())
+  while(it != m_themeMap.end())
   {
-    if(it->second->view() == getViewId(theme.m_viewName, vMap))
+    if(it->second->view() == getViewId(theme.m_viewName, m_viewMap))
     {
       TeAbstractTheme* abTheme = it->second;
 
       if(abTheme->type() == TeTHEME)
       {
         TeTheme* tl4Theme = dynamic_cast<TeTheme*>(abTheme);
-
-        m_db->loadTheme(tl4Theme, true);
 
         if(tl4Theme->layer()->name() == theme.m_layerName)
         {
