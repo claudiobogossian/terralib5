@@ -107,6 +107,8 @@ void terralib4::DataSource::open()
     throw te::da::Exception(TR_TERRALIB4("The database must be converted to the model ") + dbVersion + "! \n");
   }
 
+  m_db->loadLayerSet();
+  m_db->loadViewSet(m_db->user());
 }
 
 void terralib4::DataSource::close()

@@ -167,7 +167,9 @@ std::list<te::da::DataSetTypePtr> te::qt::widgets::DataSetSelectorWidget::getChe
 {
   std::list<te::da::DataSetTypePtr> datasets;
 
-  std::copy(m_checkedDatasets.begin(), m_checkedDatasets.end(), std::back_inserter(datasets));
+  std::map<te::da::DataSetTypePtr, std::string, DataSetComparer>::const_iterator it;
+  for(it = m_checkedDatasets.begin(); it != m_checkedDatasets.end(); ++it)
+    datasets.push_back(it->first);
 
   return datasets;
 }
@@ -175,6 +177,17 @@ std::list<te::da::DataSetTypePtr> te::qt::widgets::DataSetSelectorWidget::getChe
 bool te::qt::widgets::DataSetSelectorWidget::hasCheckedDataSets() const
 {
   return !m_checkedDatasets.empty();
+}
+
+std::list<std::string> te::qt::widgets::DataSetSelectorWidget::getCheckedGeomProperties() const
+{
+  std::list<std::string> gp;
+
+  std::map<te::da::DataSetTypePtr, std::string, DataSetComparer>::const_iterator it;
+  for(it = m_checkedDatasets.begin(); it != m_checkedDatasets.end(); ++it)
+    gp.push_back(it->second);
+
+  return gp;
 }
 
 std::list<te::da::DataSetTypePtr> te::qt::widgets::DataSetSelectorWidget::getSelectedDataSets() const
@@ -202,6 +215,28 @@ std::list<te::da::DataSetTypePtr> te::qt::widgets::DataSetSelectorWidget::getSel
 bool te::qt::widgets::DataSetSelectorWidget::hasSelectedDataSets() const
 {
   return m_datasetTreeView->hasSelectedDataSets();
+}
+
+std::list<std::string> te::qt::widgets::DataSetSelectorWidget::getSelectedGeomProperties() const
+{
+  std::list<std::string> gp;
+
+  std::list<DataSetItem*> items = m_datasetTreeView->getSelectedDataSets();
+
+  for(std::list<DataSetItem*>::iterator it = items.begin(); it != items.end(); ++it)
+  {
+    DataSetItem* ditem = *it;
+
+    if(ditem == 0)
+      continue;
+
+    if(ditem->getDataSet().get() == 0)
+      continue;
+
+    gp.push_back(ditem->getGeomPropertyName());
+  }
+
+  return gp;
 }
 
 te::qt::widgets::DataSetTreeView* te::qt::widgets::DataSetSelectorWidget::getTreeView() const
@@ -263,7 +298,7 @@ void te::qt::widgets::DataSetSelectorWidget::onDataSetToggled(DataSetItem* item)
     return;
 
   if(item->isChecked())
-    m_checkedDatasets.insert(item->getDataSet());
+    m_checkedDatasets.insert(std::make_pair<te::da::DataSetTypePtr, std::string>(item->getDataSet(), item->getGeomPropertyName()));
   else
     m_checkedDatasets.erase(item->getDataSet());
 }

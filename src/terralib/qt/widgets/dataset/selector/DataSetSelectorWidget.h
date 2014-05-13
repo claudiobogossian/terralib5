@@ -86,9 +86,13 @@ namespace te
 
           bool hasCheckedDataSets() const;
 
+          std::list<std::string> getCheckedGeomProperties() const;
+
           std::list<te::da::DataSetTypePtr> getSelectedDataSets() const;
 
           bool hasSelectedDataSets() const;
+
+          std::list<std::string> getSelectedGeomProperties() const;
 
           DataSetTreeView* getTreeView() const;
 
@@ -117,7 +121,7 @@ namespace te
             bool operator()(const te::da::DataSetTypePtr& first, const te::da::DataSetTypePtr& second) const;
           };
 
-          std::set<te::da::DataSetTypePtr, DataSetComparer> m_checkedDatasets;
+          std::map<te::da::DataSetTypePtr, std::string, DataSetComparer> m_checkedDatasets;
           std::auto_ptr<Ui::DataSetSelectorWidgetForm> m_ui;
           std::auto_ptr<te::qt::widgets::DataSetDisplay> m_mapPreview;
           std::auto_ptr<DataSetTableView> m_tblView;

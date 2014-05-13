@@ -307,3 +307,13 @@ void te::map::AbstractLayer::setChart(te::map::Chart* chart)
   delete m_chart;
   m_chart = chart;
 }
+
+const std::string& te::map::AbstractLayer::getGeomPropertyName() const
+{
+  return m_geomPropertyName;
+}
+
+void te::map::AbstractLayer::setGeomPropertytName(const std::string& name)
+{
+  m_geomPropertyName = name;
+}
