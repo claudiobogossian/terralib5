@@ -832,7 +832,9 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
           layer->setGrouping(GetGrouping(theme));
       }
 
-      layer->setStyle(style);
+      layer->setStyle(style->clone());
+
+      delete style;
 
       te::qt::af::evt::LayerAdded evt(layer);
 

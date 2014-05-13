@@ -125,6 +125,9 @@ namespace te
 
         //@}
 
+        /*! \brief It creates a new copy of this object. */
+        virtual Style* clone() const = 0;
+
       protected:
 
         std::string* m_name;                                  //!< It allows the style to be referenced. Names must be unique in the context in which they are defined. (Optional)

@@ -95,6 +95,9 @@ namespace te
 
         //@}
 
+        /*! \brief It creates a new copy of this object. */
+        SimpleLink* clone() const;
+
       private:
 
         std::string m_href;        //!< Locator attribute. (Optional)
