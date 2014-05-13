@@ -74,6 +74,9 @@ namespace te
 
         //@}
 
+        /*! \brief It creates a new copy of this object. */
+        Style* clone() const;
+
       private:
 
         std::string* m_coverageName;       //!< It identifies the specific coverage that the coverage style is for. (Optional)

@@ -155,6 +155,9 @@ namespace te
 
         //@}
 
+        /*! \brief It creates a new copy of this object. */
+        Rule* clone() const;
+
       private:
 
         std::string* m_name;                     //!< It allows the rule to be referenced externally, which is needed in some methods of SE usage. (Optional)
