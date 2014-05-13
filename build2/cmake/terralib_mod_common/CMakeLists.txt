@@ -26,7 +26,10 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR})
-include_directories(${LOG4CXX_INCLUDE_DIR})
+
+if(LOG4CXX_FOUND)
+  include_directories(${LOG4CXX_INCLUDE_DIR})
+endif()
 
 if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTECOMMONDLL -DBOOST_ALL_NO_LIB)
@@ -54,9 +57,14 @@ set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
 
 add_library(terralib_mod_common SHARED ${TERRALIB_FILES})
 
-target_link_libraries(terralib_mod_common ${Boost_FILESYSTEM_LIBRARY}
-                                          ${Boost_SYSTEM_LIBRARY}
-                                          ${LOG4CXX_LIBRARY})
+if(LOG4CXX_FOUND)
+  target_link_libraries(terralib_mod_common ${Boost_FILESYSTEM_LIBRARY}
+                                            ${Boost_SYSTEM_LIBRARY}
+                                            ${LOG4CXX_LIBRARY})
+else()
+  target_link_libraries(terralib_mod_common ${Boost_FILESYSTEM_LIBRARY}
+                                            ${Boost_SYSTEM_LIBRARY})
+endif()
 
 set_target_properties(terralib_mod_common
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}

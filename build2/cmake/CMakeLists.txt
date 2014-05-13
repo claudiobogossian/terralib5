@@ -96,9 +96,10 @@ endif()
 
 add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
 
-#if(WIN32)
-#  cmake_policy(SET CMP0020 NEW)
-#endif()
+# Note: automatically link executables with qtmain.lib on Windows when it has Qt dependency.
+if(WIN32)
+  cmake_policy(SET CMP0020 NEW)
+endif()
 
 include_directories(${CMAKE_BINARY_DIR})
 include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
