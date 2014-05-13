@@ -768,7 +768,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 
       ::terralib4::DataSource* tl4Ds = dynamic_cast<::terralib4::DataSource*>(m_tl4Database.get());
 
-      std::auto_ptr<TeTheme> theme(tl4Ds->getTL4Theme(themes[i]));
+      TeTheme* theme = tl4Ds->getTL4Theme(themes[i]);
 
       te::se::Style* style = 0;
 
@@ -779,7 +779,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 
         layer = te::qt::widgets::createLayer("GDAL", connInfo);
 
-        style = Convert2TerraLib5(0, theme.get(), true);
+        style = Convert2TerraLib5(0, theme, true);
 
         te::se::RasterSymbolizer* symb = te::se::GetRasterSymbolizer(style);
 
@@ -787,7 +787,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
         {
           te::se::ColorMap* cm = 0;
 
-          cm = GetRasterGrouping(theme.get());
+          cm = GetRasterGrouping(theme);
 
           symb->setColorMap(cm);
 
@@ -826,10 +826,10 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
         // Get Style
         te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dstPtr.get());
 
-        style = Convert2TerraLib5(geomProp->getGeometryType(), theme.get());
+        style = Convert2TerraLib5(geomProp->getGeometryType(), theme);
 
         if(theme->grouping().groupMode_ != TeNoGrouping)
-          layer->setGrouping(GetGrouping(theme.get()));
+          layer->setGrouping(GetGrouping(theme));
       }
 
       layer->setStyle(style);

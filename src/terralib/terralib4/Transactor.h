@@ -36,6 +36,10 @@
 #include <map>
 #include <string>
 
+class TeView;
+class TeAbstractTheme;
+class TeLayer;
+
 namespace te
 {
   namespace dt { class Property; }
@@ -261,6 +265,10 @@ namespace terralib4
       DataSource* m_ds;
       TeDatabase* m_db;
       bool m_isInTransaction;
+
+      std::map<int, TeLayer*>& m_layerMap;
+      std::map<int, TeView*>& m_viewMap;
+      std::map<int, TeAbstractTheme*>& m_themeMap;
 
   };
 
