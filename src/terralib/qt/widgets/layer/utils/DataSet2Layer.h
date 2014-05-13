@@ -46,6 +46,8 @@ namespace te
         DataSet2Layer(const std::string& datasourceId);
 
         te::map::DataSetLayerPtr operator()(const te::da::DataSetTypePtr& dataset) const;
+
+        te::map::DataSetLayerPtr operator()(const te::da::DataSetTypePtr& dataset, const std::string& geomPropertyName) const;
       };
 
     } // end namespace widgets
