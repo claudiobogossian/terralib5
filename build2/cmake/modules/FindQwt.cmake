@@ -49,7 +49,8 @@ elseif(WIN32)
 
   find_path(QWT_INCLUDE_DIR
             NAMES qwt.h
-            PATH_SUFFIXES qwt)
+            PATH_SUFFIXES include
+                          include/qwt)
 
   find_library(QWT_LIBRARY_RELEASE
                NAMES qwt
