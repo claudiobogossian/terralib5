@@ -81,14 +81,14 @@ if(NOT DEFINED TERRALIB_AUTOMATIC_INITIALIZATION)
   set(TERRALIB_AUTOMATIC_INITIALIZATION 1 CACHE BOOL "Tells that TerraLib should initialize its resources automatically")
 endif()
 
-if(WIN32)
-
-  if(NOT DEFINED TERRALIB_THIRDPARTY_PATH)
-    set(TERRALIB_THIRDPARTY_PATH "NOT ASSIGNED" CACHE PATH "Path to a directory containing the TerraLib third party libraries")
-    message("\n\nSet the TERRALIB_THIRDPARTY_PATH variable containing the path for the TerraLib third party libraries for compiling in the Windows environment!\n\n")
-  endif()
-  
-endif()
+#if(WIN32)
+#
+#  if(NOT DEFINED TERRALIB_THIRDPARTY_PATH)
+#    set(TERRALIB_THIRDPARTY_PATH "NOT ASSIGNED" CACHE PATH "Path to a directory containing the TerraLib third party libraries")
+#    message("\n\nSet the TERRALIB_THIRDPARTY_PATH variable containing the path for the TerraLib third party libraries for compiling in the Windows environment!\n\n")
+#  endif()
+#
+#endif()
 
 #
 # global definitions and includes
@@ -96,9 +96,9 @@ endif()
 
 add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
 
-if(WIN32)
-  cmake_policy(SET CMP0020 NEW)
-endif()
+#if(WIN32)
+#  cmake_policy(SET CMP0020 NEW)
+#endif()
 
 include_directories(${CMAKE_BINARY_DIR})
 include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
@@ -135,14 +135,14 @@ include(CMakeDependentOption)
 # first check of libraries
 #
 
-if(WIN32)
-
-  set(CMAKE_PREFIX_PATH ${TERRALIB_THIRDPARTY_PATH}
-                        ${TERRALIB_THIRDPARTY_PATH}/gdal
-                        ${TERRALIB_THIRDPARTY_PATH}/gdal/win32
-                        ${TERRALIB_THIRDPARTY_PATH}/include/postgresql)
-                      
-endif()
+#if(WIN32)
+#
+#  set(CMAKE_PREFIX_PATH ${TERRALIB_THIRDPARTY_PATH}
+#                        ${TERRALIB_THIRDPARTY_PATH}/gdal
+#                        ${TERRALIB_THIRDPARTY_PATH}/gdal/win32
+#                        ${TERRALIB_THIRDPARTY_PATH}/include/postgresql)
+#
+#endif()
 
 #find_package(Boost 1.48.0 REQUIRED system date_time chrono timer filesystem thread log log_setup program_options unit_test_framework)
 find_package(Boost 1.48.0 REQUIRED system date_time chrono timer filesystem thread program_options unit_test_framework)
@@ -438,7 +438,7 @@ if(TERRALIB_BUILD_EXAMPLES)
   #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_XERCES_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
 
 else()
-  #if(DEFINED TERRALIB_EXAMPLE_COMMON_ENABLED)
+  #if(defined TERRALIB_EXAMPLE_COMMON_ENABLED)
     set(TERRALIB_EXAMPLE_COMMON_ENABLED 0 CACHE BOOL "Build examples for the Common runtime module?" FORCE)
   #endif()
 

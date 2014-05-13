@@ -30,28 +30,33 @@
 
 if(UNIX)
 
-  find_path(QTPROPERTYBROWSER_INCLUDE_DIR QtPropertyBrowser/qtpropertybrowser.h
+  find_path(QTPROPERTYBROWSER_INCLUDE_DIR
+            NAMES QtPropertyBrowser/qtpropertybrowser.h
             PATHS /usr
                   /usr/local
-				          /usr/local/qtpropertybrowser
+                  /usr/local/qtpropertybrowser
             PATH_SUFFIXES include)
-		  
+
 find_library(QTPROPERTYBROWSER_LIBRARY
              NAMES qt_property_browser
              PATHS /usr
                    /usr/local
-				           /usr/local/qtpropertybrowser
+                   /usr/local/qtpropertybrowser
              PATH_SUFFIXES lib)
-			 
+
 elseif(WIN32)
 
   find_path(QTPROPERTYBROWSER_INCLUDE_DIR
-            NAMES qtpropertybrowser.h
-            PATH_SUFFIXES qtpropertybrowser)
-		  
-  find_library(QTPROPERTYBROWSER_LIBRARY_RELEASE qt_property_browser)
+            NAMES QtPropertyBrowser/qtpropertybrowser.h
+            PATH_SUFFIXES include)
 
-  find_library(QTPROPERTYBROWSER_LIBRARY_DEBUG qt_property_browserd)
+  find_library(QTPROPERTYBROWSER_LIBRARY_RELEASE
+               NAMES qt_property_browser
+               PATH_SUFFIXES lib)
+
+  find_library(QTPROPERTYBROWSER_LIBRARY_DEBUG
+               NAMES qt_property_browserd
+               PATH_SUFFIXES lib)
 
   if(QTPROPERTYBROWSER_LIBRARY_RELEASE AND QTPROPERTYBROWSER_LIBRARY_DEBUG)
     set(QTPROPERTYBROWSER_LIBRARY optimized ${QTPROPERTYBROWSER_LIBRARY_RELEASE} debug ${QTPROPERTYBROWSER_LIBRARY_DEBUG})

@@ -49,10 +49,12 @@ find_path(XERCES_INCLUDE_DIR
           PATH_SUFFIXES xerces)
 
   find_library(XERCES_LIBRARY_RELEASE
-               NAMES xerces-c xerces-c_3)
+               NAMES xerces-c xerces-c_3
+               PATH_SUFFIXES lib)
 
   find_library(XERCES_LIBRARY_DEBUG
-               NAMES xerces-cD xerces-c_3D)
+               NAMES xerces-cD xerces-c_3D
+               PATH_SUFFIXES lib)
 
   if(XERCES_LIBRARY_RELEASE AND XERCES_LIBRARY_DEBUG)
     set(XERCES_LIBRARY optimized ${XERCES_LIBRARY_RELEASE} debug ${XERCES_LIBRARY_DEBUG})

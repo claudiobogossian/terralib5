@@ -36,26 +36,29 @@ if(UNIX)
                   /usr/local/qwt
             PATH_SUFFIXES include
                           lib/qwt.framework/Headers)
-						
+
   find_library(QWT_LIBRARY
                NAMES qwt
                PATHS /usr
                      /usr/local
                      /usr/local/qwt
                PATH_SUFFIXES lib
-			                       lib/qwt.framework)
-							 
+                             lib/qwt.framework)
+
 elseif(WIN32)
 
   find_path(QWT_INCLUDE_DIR
             NAMES qwt.h
             PATH_SUFFIXES qwt)
 
-  find_library(QWT_LIBRARY_RELEASE qwt)
+  find_library(QWT_LIBRARY_RELEASE
+               NAMES qwt
+               PATH_SUFFIXES lib)
  
   find_library(QWT_LIBRARY_DEBUG
-               NAMES qwt_d qwtd)
- 	
+               NAMES qwt_d qwtd
+               PATH_SUFFIXES lib)
+ 
   if(QWT_LIBRARY_RELEASE AND QWT_LIBRARY_DEBUG)
     set(QWT_LIBRARY optimized ${QWT_LIBRARY_RELEASE} debug ${QWT_LIBRARY_DEBUG})
   elseif(QWT_LIBRARY_RELEASE)

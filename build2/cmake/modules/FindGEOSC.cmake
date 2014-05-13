@@ -46,14 +46,17 @@ elseif(WIN32)
 
   find_path(GEOSC_INCLUDE_DIR
             NAMES geos_c.h
-            PATH_SUFFIXES geosc)
-			
+            PATH_SUFFIXES include
+                          include/geos)
+
   find_library(GEOSC_LIBRARY_RELEASE
-               NAMES geos_c_i geosc_i geos_c geosc)
+               NAMES geos_c_i geosc_i geos_c geosc
+               PATH_SUFFIXES lib)
 
   find_library(GEOSC_LIBRARY_DEBUG
-               NAMES geos_c_i_d geosc_i_d geosc_id geos_c_d geosc_d geoscd)
-	
+               NAMES geos_c_i_d geosc_i_d geosc_id geos_cd geosc_d geoscd
+               PATH_SUFFIXES lib)
+
   if(GEOSC_LIBRARY_RELEASE AND GEOSC_LIBRARY_DEBUG)
     set(GEOSC_LIBRARY optimized ${GEOSC_LIBRARY_RELEASE} debug ${GEOSC_LIBRARY_DEBUG})
   elseif(GEOSC_LIBRARY_RELEASE)

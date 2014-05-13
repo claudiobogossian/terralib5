@@ -44,13 +44,15 @@ elseif(WIN32)
 
   find_path(GNUGETTEXT_INCLUDE_DIR
             NAMES libintl.h
-            PATH_SUFFIXES gnuWin32)
+            PATH_SUFFIXES include)
 
   find_library(GNUGETTEXT_LIBRARY_RELEASE
-               NAMES gettextlib gettextpo)
+               NAMES gettextlib gettextpo
+               PATH_SUFFIXES lib)
 
   find_library(GNUGETTEXT_LIBRARY_DEBUG
-               NAMES gettextlib_d gettextlibd gettextpo_d gettextpod gettextpo)
+               NAMES gettextlib_d gettextlibd gettextpo_d gettextpod gettextpo
+               PATH_SUFFIXES lib)
 
   if(GNUGETTEXT_LIBRARY_RELEASE AND GNUGETTEXT_LIBRARY_DEBUG)
     set(GNUGETTEXT_LIBRARY optimized ${GNUGETTEXT_LIBRARY_RELEASE} debug ${GNUGETTEXT_LIBRARY_DEBUG})

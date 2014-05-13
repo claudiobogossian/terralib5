@@ -45,11 +45,15 @@ elseif(WIN32)
 
   find_path(GNUICONV_INCLUDE_DIR
             NAMES iconv.h
-			      PATH_SUFFIXES iconv)
+            PATH_SUFFIXES include)
 
-  find_library(GNUICONV_LIBRARY_RELEASE iconv)
+  find_library(GNUICONV_LIBRARY_RELEASE
+               NAMES iconv
+               PATH_SUFFIXES lib)
 
-  find_library(GNUICONV_LIBRARY_DEBUG iconv_d)
+  find_library(GNUICONV_LIBRARY_DEBUG
+               NAMES iconv_d iconvd
+               PATH_SUFFIXES lib)
 
   if(GNUICONV_LIBRARY_RELEASE AND GNUICONV_LIBRARY_DEBUG)
     set(GNUICONV_LIBRARY optimized ${GNUICONV_LIBRARY_RELEASE} debug ${GNUICONV_LIBRARY_DEBUG})

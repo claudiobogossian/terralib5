@@ -30,12 +30,12 @@
 
 if(UNIX)
 
-  find_path(PROJ4_INCLUDE_DIR 
+  find_path(PROJ4_INCLUDE_DIR
             NAMES proj_api.h
             PATHS /usr
                   /usr/local
             PATH_SUFFIXES include)
-		  
+
   find_library(PROJ4_LIBRARY
                NAMES proj
                PATHS /usr
@@ -45,13 +45,15 @@ elseif(WIN32)
 
   find_path(PROJ4_INCLUDE_DIR
             NAMES proj_api.h
-            PATH_SUFFIXES proj4)
-		  
+            PATH_SUFFIXES include)
+
   find_library(PROJ4_LIBRARY_RELEASE
-               NAMES proj_i proj)
+               NAMES proj_i proj
+               PATH_SUFFIXES lib)
 
   find_library(PROJ4_LIBRARY_DEBUG
-               NAMES proj_i_d proj_d proj_i)
+               NAMES proj_i_d proj_d proj_i
+               PATH_SUFFIXES lib)
 
   if(PROJ4_LIBRARY_RELEASE AND PROJ4_LIBRARY_DEBUG)
     set(PROJ4_LIBRARY optimized ${PROJ4_LIBRARY_RELEASE} debug ${PROJ4_LIBRARY_DEBUG})

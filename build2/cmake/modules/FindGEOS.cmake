@@ -46,14 +46,16 @@ elseif(WIN32)
 
   find_path(GEOS_INCLUDE_DIR
             NAMES geos.h
-            PATH_SUFFIXES geos
-                          geos/include)
-            
+            PATH_SUFFIXES include
+                          include/geos)
+
   find_library(GEOS_LIBRARY_RELEASE 
-               NAMES geos_i geos)
+               NAMES geos_i geos
+               PATH_SUFFIXES lib)
 
   find_library(GEOS_LIBRARY_DEBUG
-               NAMES geos_i_d geos_id geos_d geosd)
+               NAMES geos_i_d geos_id geos_d geosd
+               PATH_SUFFIXES lib)
 
   if(GEOS_LIBRARY_RELEASE AND GEOS_LIBRARY_DEBUG)
     set(GEOS_LIBRARY optimized ${GEOS_LIBRARY_RELEASE} debug ${GEOS_LIBRARY_DEBUG})
