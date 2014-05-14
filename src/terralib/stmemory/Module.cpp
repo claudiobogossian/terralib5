@@ -45,9 +45,6 @@ te::stmem::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib ST support
-  TE_ADD_TEXT_DOMAIN(TE_STMEMORY_TEXT_DOMAIN, TE_STMEMORY_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::stmem::Module::~Module()
