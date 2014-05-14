@@ -36,7 +36,7 @@ if(UNIX)
             PATH_SUFFIXES include)
 
   find_library(GNUGETTEXT_LIBRARY
-               NAMES gettextlib
+               NAMES intl
                PATHS /usr
                      /usr/local
                PATH_SUFFIXES lib)
@@ -47,11 +47,11 @@ elseif(WIN32)
             PATH_SUFFIXES include)
 
   find_library(GNUGETTEXT_LIBRARY_RELEASE
-               NAMES gettextlib gettextpo
+               NAMES intl
                PATH_SUFFIXES lib)
 
   find_library(GNUGETTEXT_LIBRARY_DEBUG
-               NAMES gettextlib_d gettextlibd gettextpo_d gettextpod gettextpo
+               NAMES intld intl_d intl
                PATH_SUFFIXES lib)
 
   if(GNUGETTEXT_LIBRARY_RELEASE AND GNUGETTEXT_LIBRARY_DEBUG)
