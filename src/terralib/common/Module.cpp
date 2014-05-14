@@ -56,7 +56,7 @@ te::common::Module::Module()
 // let's start all singletons in the right order and other stuffs that must be in the static initialization!
 
 // initialize the translator singleton and the common runtime multilanguage support
-  TE_ADD_TEXT_DOMAIN(TE_COMMON_TEXT_DOMAIN, TE_COMMON_TEXT_DOMAIN_DIR, "UTF-8");
+  TE_ADD_TEXT_DOMAIN(TERRALIB_TEXT_DOMAIN, TERRALIB_TEXT_DOMAIN_DIR, "UTF-8");
 
 // initialize the singleton LibraryManager
   LibraryManager::getInstance();
