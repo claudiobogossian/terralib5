@@ -324,7 +324,7 @@ namespace te
  
   \brief Try to translate the message according to the given domain and plural form. See the TE_TR_PLURAL macro for more infomation on how to create a translation mark for your code.
  */
-#if TERRALIB_TRANSLATOR_ENABLED
+#ifdef TERRALIB_TRANSLATOR_ENABLED
   #define TE_GENERAL_TR_PLURAL(domain, message1, message2, n) te::common::Translator::getInstance().getInstance().translate(domain, message1, message2, n)
 #else
   #define TE_GENERAL_TR_PLURAL(domain, message1, message2, n) (n > 1 ? message2 : message1)
