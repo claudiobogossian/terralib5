@@ -21,14 +21,14 @@
 #  Description: TerraLib XML Module.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
-#          Juan P. Garrido <juan@dpi.inpe.br>
+#          Juan Carlos P. Garrido <juan@dpi.inpe.br>
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
 include_directories(${Boost_INCLUDE_DIR})
 
 if(WIN32)
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEXMLDLL -DBOOST_ALL_DYN_LINK -DBOOST_ALL_NO_LIB)
+  add_definitions(-DTEXMLDLL)
 endif()
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/xml/*.cpp)

@@ -28,7 +28,7 @@
 include_directories(${Boost_INCLUDE_DIR})
 
 if(WIN32)
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEPLUGINDLL -DBOOST_ALL_NO_LIB)
+  add_definitions(-DTEPLUGINDLL)
 endif()
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/plugin/*.cpp)

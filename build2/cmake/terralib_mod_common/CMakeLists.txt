@@ -32,7 +32,7 @@ if(LOG4CXX_FOUND)
 endif()
 
 if(WIN32)
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTECOMMONDLL -DBOOST_ALL_NO_LIB)
+  add_definitions(-DTECOMMONDLL)
 endif()
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/common/*.cpp)

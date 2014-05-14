@@ -28,7 +28,7 @@
 include_directories(${Boost_INCLUDE_DIR})
 
 if(WIN32)
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEQTPLUGINVPDLL)
+  add_definitions(-DTEQTPLUGINVPDLL)
 endif()
 
 if(Qt5_FOUND)

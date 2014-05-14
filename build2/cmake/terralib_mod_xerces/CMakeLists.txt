@@ -29,7 +29,7 @@ include_directories(${Boost_INCLUDE_DIR})
 include_directories(${XERCES_INCLUDE_DIR})
 
 if(WIN32)
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEXERCESDLL)
+  add_definitions(-DTEXERCESDLL)
 endif()
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/xerces/*.cpp)

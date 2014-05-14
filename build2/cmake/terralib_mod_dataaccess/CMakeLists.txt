@@ -28,7 +28,7 @@
 include_directories(${Boost_INCLUDE_DIR})
 
 if(WIN32)
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEDATAACCESSDLL -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
+  add_definitions(-DTEDATAACCESSDLL)
 endif()
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/dataaccess/*.cpp)

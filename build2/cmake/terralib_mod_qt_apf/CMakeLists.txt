@@ -28,7 +28,7 @@
 include_directories(${Boost_INCLUDE_DIR})
 
 if(WIN32)
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -DTEQTAFDLL)
+  add_definitions(-D_SCL_SECURE_NO_WARNINGS -DTEQTAFDLL)
 endif()
 
 if(Qt5_FOUND)
