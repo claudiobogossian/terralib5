@@ -353,7 +353,8 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
       if( firstDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
           secondDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
-          (firstDataSource->getId() == secondDataSource->getId()))
+          (firstDataSource->getId() == secondDataSource->getId()) &&
+          (firstDataSetLayer->getSRID() == secondDataSetLayer->getSRID()))
       {
         intersectionOp = new te::vp::IntersectionQuery();
       }
