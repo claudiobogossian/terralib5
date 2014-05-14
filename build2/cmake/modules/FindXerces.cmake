@@ -46,7 +46,8 @@ elseif(WIN32)
 
 find_path(XERCES_INCLUDE_DIR
           NAMES xercesc/util/XercesVersion.hpp
-          PATH_SUFFIXES include)
+          PATH_SUFFIXES include
+                        include/xerces)
 
   find_library(XERCES_LIBRARY_RELEASE
                NAMES xerces-c xerces-c_3

@@ -45,7 +45,8 @@ elseif(WIN32)
 
   find_path(PROJ4_INCLUDE_DIR
             NAMES proj_api.h
-            PATH_SUFFIXES include)
+            PATH_SUFFIXES include
+                          include/proj4)
 
   find_library(PROJ4_LIBRARY_RELEASE
                NAMES proj_i proj
