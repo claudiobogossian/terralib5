@@ -29,7 +29,6 @@ cmake_minimum_required(VERSION 2.8.7)
 
 project(terralib)
 
-
 #
 # main variables for the build script
 #
@@ -96,6 +95,10 @@ endif()
 
 add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
 
+if(WIN32)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
+
 # Note: automatically link executables with qtmain.lib on Windows when it has Qt dependency.
 if(WIN32)
   cmake_policy(SET CMP0020 NEW)
@@ -103,7 +106,6 @@ endif()
 
 include_directories(${CMAKE_BINARY_DIR})
 include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
-
 
 #
 # Build will generate files into a single folder
@@ -145,10 +147,23 @@ include(CMakeDependentOption)
 #
 #endif()
 
-#find_package(Boost 1.48.0 REQUIRED system date_time chrono timer filesystem thread log log_setup program_options unit_test_framework)
+if(WIN32)
+
+  set(CMAKE_PREFIX_PATH ${CMAKE_INCLUDE_PATH}
+                        ${CMAKE_LIBRARY_PATH}/gdal
+                        ${CMAKE_LIBRARY_PATH}/gdal/win32
+                        ${CMAKE_INCLUDE_PATH}/include/postgresql)
+
+endif()
+
+#find_package(Boost 1.54.0 REQUIRED system date_time chrono timer filesystem thread log log_setup program_options unit_test_framework)
 find_package(Boost 1.48.0 REQUIRED system date_time chrono timer filesystem thread program_options unit_test_framework)
 
 find_package(Doxygen QUIET)
+
+if(WIN32)
+  find_package(ADO)
+endif()
 
 find_package(GDAL)
 
@@ -185,10 +200,12 @@ endif()
 
 find_package(Xerces)
 
-
 #
 # some variables needed in config file
 #
+if(WIN32 AND ADO_FOUND)
+  set(TERRALIB_ADO_ENABLED ON)
+endif()
 
 if(Boost_FOUND)
   set(TERRALIB_BOOST_ENABLED ON)
@@ -559,6 +576,11 @@ configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h.in
 #if(TERRALIB_DOXYGEN_ENABLED)
 #  add_subdirectory(terralib_doc_doxygen)
 #endif()
+
+if(WIN32 AND TERRALIB_ADO_ENABLED)
+    add_subdirectory(terralib_mod_ado)
+endif()
+    
 
 if(TERRALIB_MOD_ANNOTATIONTEXT_ENABLED)
   add_subdirectory(terralib_mod_annotationtext)
