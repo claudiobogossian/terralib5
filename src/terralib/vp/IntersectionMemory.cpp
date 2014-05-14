@@ -173,7 +173,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
         continue;
 
       te::mem::DataSetItem* item = new te::mem::DataSetItem(outputDs);
-      std::auto_ptr<te::gm::Geometry> resultGeom; 
+      std::auto_ptr<te::gm::Geometry> resultGeom;
 
       if(currGeom->isValid() && secGeom->isValid())
         resultGeom.reset(currGeom->intersection(secGeom.get()));

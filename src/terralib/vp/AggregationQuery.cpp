@@ -161,7 +161,7 @@ bool te::vp::AggregationQuery::run()
         case SUM:
           sexp = new te::da::Sum(p_name);
           sfield = new te::da::Field(*sexp, p_name->getName() + "_SUM");
-          newProp = new te::dt::SimpleProperty(p_name->getName() + "_MEAN", p_type);
+          newProp = new te::dt::SimpleProperty(p_name->getName() + "_SUM", p_type);
           break;
         case COUNT:
           sexp = new te::da::Count(p_name);
