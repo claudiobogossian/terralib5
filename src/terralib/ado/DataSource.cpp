@@ -179,7 +179,7 @@ void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInf
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
   
   std::map<std::string, std::string>::const_iterator it = dsInfo.find("CREATE_OGC_METADATA_TABLES");
@@ -209,14 +209,14 @@ void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInf
 void te::ado::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
 {
   if(!exists(dsInfo))
-    throw Exception(TR_ADO("The data source doesn't exist!"));
+    throw Exception(TE_TR("The data source doesn't exist!"));
 
   std::map<std::string, std::string> info = dsInfo;
 
   boost::filesystem::path path(info["DB_NAME"]);
 
   if(boost::filesystem::remove(path) == false)
-    throw Exception(TR_ADO("The data source could not be dropped!"));
+    throw Exception(TE_TR("The data source could not be dropped!"));
 }
 
 bool te::ado::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
@@ -267,7 +267,7 @@ void te::ado::DataSource::loadGeometryColumnsCache(_ConnectionPtr& adoConn)
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 

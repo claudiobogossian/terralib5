@@ -75,7 +75,7 @@ void te::ado::Blob2Variant(const char* blob, int size, _variant_t & var)
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 
@@ -121,7 +121,7 @@ void te::ado::Variant2Blob(const _variant_t var, int size, char* & blob)
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 
@@ -173,7 +173,7 @@ ADOX::DataTypeEnum te::ado::Convert2Ado(int terralib)
     break;
 
   default:
-    throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
+    throw te::ado::Exception(TE_TR("The informed type could not be mapped to ADO type system!"));
     break;
   }
 }
@@ -484,7 +484,7 @@ te::dt::Property* te::ado::Convert2Terralib(ADOX::_ColumnPtr column)
     break;
           
     default:
-      throw te::ado::Exception(TR_ADO("The informed column could not be mapped to TerraLib Data Set Type!"));
+      throw te::ado::Exception(TE_TR("The informed column could not be mapped to TerraLib Data Set Type!"));
   }
 
   return prop;
@@ -525,7 +525,7 @@ te::da::Constraint* te::ado::Convert2Terralib(ADOX::_KeyPtr key)
     return con;
   }
   else
-    throw te::ado::Exception(TR_ADO("Unknown type!"));
+    throw te::ado::Exception(TE_TR("Unknown type!"));
 
 }
 
@@ -850,7 +850,7 @@ int te::ado::GetSRID(_ConnectionPtr adoConn, std::string tableName, std::string 
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 
   return (int32_t)recset->GetFields()->GetItem("srid")->GetValue();
@@ -874,7 +874,7 @@ te::gm::GeomType te::ado::GetType(_ConnectionPtr adoConn, std::string tableName,
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 
   std::string type = (LPCSTR)(_bstr_t)recset->GetFields()->GetItem("type")->GetValue();
@@ -915,7 +915,7 @@ bool te::ado::IsGeomProperty(_ConnectionPtr adoConn, std::string tableName, std:
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 
   return false;
@@ -1235,7 +1235,7 @@ std::auto_ptr<te::dt::DateTime> te::ado::GetDateTime(std::string& value, std::st
     }
   }
   else
-    throw Exception((boost::format(TR_ADO("DateTime format not provided or invalid: %1%!")) % mask).str());
+    throw Exception((boost::format(TE_TR("DateTime format not provided or invalid: %1%!")) % mask).str());
 
   te::dt::DateTime* result = 0;
 

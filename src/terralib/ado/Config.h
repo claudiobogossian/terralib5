@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -97,42 +97,8 @@
 */
 #define ADO_PLUGIN_NAME "te.da.ado"
 
-//@}        
-
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
-  \def TE_ADO_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib ADO driver implementation.
- */
-#define TE_ADO_TEXT_DOMAIN "teado"
-
-/*!
-  \def TE_ADO_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
- */
-#define TE_ADO_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TR_ADO
-
-  \brief It marks a string in order to get translated. This is a special mark used in the DataAccess module of TerraLib.
- */
-#define TR_ADO(message) TR(message, TE_ADO_TEXT_DOMAIN)
-
-/*!
-  \def TR_PLURAL_ADO
-
-  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the ADO module of TerraLib. 
- */
-#define TR_PLURAL_ADO(message1, message2, n) TR_PLURAL(TE_ADO_TEXT_DOMAIN, message1, message2, n)
-
 //@}
+
 
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library

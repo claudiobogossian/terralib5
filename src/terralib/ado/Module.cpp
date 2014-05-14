@@ -53,7 +53,7 @@ void te::ado::Module::startup()
     return;
 
 // it initializes the Translator support for the TerraLib PostGIS driver support
-  TE_ADD_TEXT_DOMAIN(TE_ADO_TEXT_DOMAIN, TE_ADO_TEXT_DOMAIN_DIR, "UTF-8");
+//  TE_ADD_TEXT_DOMAIN(TE_ADO_TEXT_DOMAIN, TE_ADO_TEXT_DOMAIN_DIR, "UTF-8");
 
   // Register the data source factory
   te::da::DataSourceFactory::add("ADO", te::ado::Build);
@@ -68,7 +68,7 @@ void te::ado::Module::startup()
 
   te::serialize::xml::Read(capabilitiesFile.string(), *te::ado::Globals::sm_capabilities, *te::ado::Globals::sm_queryDialect);
 
-  TE_LOG_TRACE(TR_ADO("TerraLib ADO driver support initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib ADO driver support initialized!"));
 
   m_initialized = true;
 }
@@ -84,7 +84,7 @@ void te::ado::Module::shutdown()
   // Free the ADO registered drivers
   te::da::DataSourceManager::getInstance().detachAll(ADO_DRIVER_IDENTIFIER);
  
-  TE_LOG_TRACE(TR_ADO("TerraLib ADO driver shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib ADO driver shutdown!"));
 
   m_initialized = false;
 }
