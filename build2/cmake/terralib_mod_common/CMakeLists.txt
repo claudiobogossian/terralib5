@@ -27,10 +27,6 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
-if(LOG4CXX_FOUND)
-  include_directories(${LOG4CXX_INCLUDE_DIR})
-endif()
-
 if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTECOMMONDLL -DBOOST_ALL_NO_LIB)
 endif()
@@ -57,14 +53,24 @@ set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
 
 add_library(terralib_mod_common SHARED ${TERRALIB_FILES})
 
+set(TERRALIB_LIBRARIES_DEPENDENCIES ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+
 if(LOG4CXX_FOUND)
-  target_link_libraries(terralib_mod_common ${Boost_FILESYSTEM_LIBRARY}
-                                            ${Boost_SYSTEM_LIBRARY}
-                                            ${LOG4CXX_LIBRARY})
-else()
-  target_link_libraries(terralib_mod_common ${Boost_FILESYSTEM_LIBRARY}
-                                            ${Boost_SYSTEM_LIBRARY})
+  include_directories(${LOG4CXX_INCLUDE_DIR})
+  list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES ${LOG4CXX_LIBRARY})
 endif()
+
+if(GNUGETTEXT_FOUND)
+  include_directories(${GNUGETTEXT_INCLUDE_DIR})
+  list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES ${GNUGETTEXT_LIBRARY})
+endif()
+
+if(GNUICONV_FOUND)
+  include_directories(${GNUICONV_INCLUDE_DIR})
+  list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES ${GNUICONV_LIBRARY})
+endif()
+
+target_link_libraries(terralib_mod_common ${TERRALIB_LIBRARIES_DEPENDENCIES})
 
 set_target_properties(terralib_mod_common
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
