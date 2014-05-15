@@ -26,7 +26,7 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR})
-include_directories(${PostgreSQL_INCLUDE_DIR})
+include_directories(${PostgreSQL_INCLUDE_DIRS})
 
 if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEPGISDLL)
@@ -45,7 +45,7 @@ target_link_libraries(terralib_mod_postgis terralib_mod_dataaccess
                                            terralib_mod_plugin
                                            terralib_mod_xml
                                            terralib_mod_common
-                                           ${PostgreSQL_LIBRARY}
+                                           ${PostgreSQL_LIBRARIES}
                                            ${Boost_THREAD_LIBRARY}
                                            ${Boost_DATE_TIME_LIBRARY}
                                            ${Boost_SYSTEM_LIBRARY})

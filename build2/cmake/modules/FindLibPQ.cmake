@@ -20,9 +20,9 @@
 #
 #  Description: Find PostgreSQL libpq include directory and library.
 #
-#  PostgreSQL_INCLUDE_DIR - where to find libpq-fe.h.
-#  PostgreSQL_LIBRARY     - where to find pq library.
-#  LIBPQ_FOUND            - True if libpq found.
+#  PostgreSQL_INCLUDE_DIRS - where to find libpq-fe.h.
+#  PostgreSQL_LIBRARIES    - where to find pq library.
+#  LIBPQ_FOUND             - True if libpq found.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
@@ -30,13 +30,13 @@
 
 if(UNIX)
 
-  find_path(PostgreSQL_INCLUDE_DIR
+  find_path(PostgreSQL_INCLUDE_DIRS
             NAMES libpq-fe.h
             PATHS /usr
                   /usr/local
             PATH_SUFFIXES include)
 
-  find_library(PostgreSQL_LIBRARY
+  find_library(PostgreSQL_LIBRARIES
                NAMES pq
                PATHS /usr
                /usr/lib
@@ -44,7 +44,7 @@ if(UNIX)
 
 elseif(WIN32)
 
-  find_path(PostgreSQL_INCLUDE_DIR
+  find_path(PostgreSQL_INCLUDE_DIRS
             NAMES libpq-fe.h
             PATH_SUFFIXES include)
 
@@ -57,17 +57,17 @@ elseif(WIN32)
                PATH_SUFFIXES lib)
 
   if(PostgreSQL_LIBRARY_RELEASE AND PostgreSQL_LIBRARY_DEBUG)
-    set(PostgreSQL_LIBRARY optimized ${PostgreSQL_LIBRARY_RELEASE} debug ${PostgreSQL_LIBRARY_DEBUG})
+    set(PostgreSQL_LIBRARIES optimized ${PostgreSQL_LIBRARY_RELEASE} debug ${PostgreSQL_LIBRARY_DEBUG})
   elseif(PostgreSQL_LIBRARY_RELEASE)
-    set(PostgreSQL_LIBRARY optimized ${PostgreSQL_LIBRARY_RELEASE} debug ${PostgreSQL_LIBRARY_RELEASE})
+    set(PostgreSQL_LIBRARIES optimized ${PostgreSQL_LIBRARY_RELEASE} debug ${PostgreSQL_LIBRARY_RELEASE})
   elseif(PostgreSQL_LIBRARY_DEBUG)
-    set(PostgreSQL_LIBRARY optimized ${PostgreSQL_LIBRARY_DEBUG} debug ${PostgreSQL_LIBRARY_DEBUG})
+    set(PostgreSQL_LIBRARIES optimized ${PostgreSQL_LIBRARY_DEBUG} debug ${PostgreSQL_LIBRARY_DEBUG})
   endif()
 
 endif()
 
 include(FindPackageHandleStandardArgs)
 
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(LIBPQ DEFAULT_MSG PostgreSQL_LIBRARY PostgreSQL_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(LIBPQ DEFAULT_MSG PostgreSQL_LIBRARIES PostgreSQL_INCLUDE_DIRS)
 
-mark_as_advanced(PostgreSQL_INCLUDE_DIR PostgreSQL_LIBRARY)
+mark_as_advanced(PostgreSQL_INCLUDE_DIRS PostgreSQL_LIBRARIES)
