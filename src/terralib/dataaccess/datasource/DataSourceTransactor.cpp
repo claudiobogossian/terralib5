@@ -27,6 +27,7 @@
 #include "../../common/Translator.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../datatype/Property.h"
+#include "../dataset/DataSetTypeCapabilities.h"
 #include "../dataset/ObjectIdSet.h"
 #include "../query/DataSetName.h"
 #include "../query/Field.h"
@@ -78,6 +79,15 @@ std::auto_ptr<te::da::DataSet> te::da::DataSourceTransactor::getDataSet(const st
   std::auto_ptr<te::da::DataSet> result = query(select.get(), travType, connected);
 
   return result;
+}
+
+std::auto_ptr<te::da::DataSetTypeCapabilities> te::da::DataSourceTransactor::getCapabilities(const std::string &name)
+{
+  std::auto_ptr<te::da::DataSetTypeCapabilities> cap(new te::da::DataSetTypeCapabilities);
+
+  cap->setSupportAll();
+
+  return cap;
 }
 
 void te::da::DataSourceTransactor::changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp)

@@ -158,6 +158,12 @@ std::auto_ptr<te::da::DataSetType> te::da::DataSource::getDataSetType(const std:
   return t->getDataSetType(name);
 }
 
+std::auto_ptr<te::da::DataSetTypeCapabilities> te::da::DataSource::getCapabilities(const std::string &name)
+{
+  std::auto_ptr<DataSourceTransactor> t = getTransactor();
+  return t->getCapabilities(name);
+}
+
 boost::ptr_vector<te::dt::Property> te::da::DataSource::getProperties(const std::string& datasetName)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();

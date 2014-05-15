@@ -347,6 +347,22 @@ std::auto_ptr<te::da::DataSetType> te::ogr::Transactor::getDataSetType(const std
   return type;
 }
 
+std::auto_ptr<te::da::DataSetTypeCapabilities> te::ogr::Transactor::getCapabilities(const std::string &name)
+{
+  std::auto_ptr<te::da::DataSetTypeCapabilities> cap(new te::da::DataSetTypeCapabilities);
+
+  OGRLayer* l = m_ogrDs->getOGRDataSource()->GetLayerByName(name.c_str());
+
+  if(l != 0)
+  {
+    cap->setSupportAddColumn(l->TestCapability(OLCCreateField));
+    cap->setSupportRemoveColumn(l->TestCapability(OLCDeleteField));
+    cap->setSupportDataEdition(l->TestCapability(OLCRandomWrite));
+  }
+
+  return cap;
+}
+
 boost::ptr_vector<te::dt::Property> te::ogr::Transactor::getProperties(const std::string& datasetName)
 {
   boost::ptr_vector<te::dt::Property> ps;
