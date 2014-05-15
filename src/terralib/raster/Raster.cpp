@@ -518,7 +518,7 @@ te::rst::Raster* te::rst::Raster::resample(int method, unsigned int drow, unsign
 
   te::gm::Coord2D ulc = getGrid()->gridToGeo(((double)dcolumn) - 0.5, ((double)drow) - 0.5);
   double newResX = m_grid->getExtent()->getWidth() / ((double)newwidth);
-  double newResY = m_grid->getExtent()->getHeight() / ((double)newheight);  
+  double newResY = m_grid->getExtent()->getHeight() / ((double)newheight);
 
 // create output parameters and raster
   te::rst::Grid* grid = new te::rst::Grid(newwidth, newheight, newResX,
@@ -589,15 +589,15 @@ te::rst::Raster* te::rst::Raster::transform(int srid, const std::map<std::string
 {
   te::gm::Envelope transformedEnvelope( *getExtent() );
   transformedEnvelope.transform( getSRID(), srid );
-  
+
   double transformedResolutionX = transformedEnvelope.getWidth() /
     ((double)getNumberOfColumns());
   double transformedResolutionY = transformedEnvelope.getHeight() /
-    ((double)getNumberOfRows());    
-  
+    ((double)getNumberOfRows());
+
   return te::rst::Reproject(
     this,
-    srid, 
+    srid,
     getExtent()->getLowerLeftX(),
     getExtent()->getLowerLeftY(),
     getExtent()->getUpperRightX(),
@@ -616,6 +616,13 @@ te::rst::Raster* te::rst::Raster::transform(int srid, double llx, double lly, do
 te::rst::Raster* te::rst::Raster::transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo, int m) const
 {
   return te::rst::Reproject(this, srid, llx, lly, urx, ury, resx, resy, rinfo, m);
+}
+
+void te::rst::Raster::vectorize(std::vector<te::gm::Geometry*>& g, std::size_t b)
+{
+  assert(b < getNumberOfBands());
+
+  g.clear();
 }
 
 void te::rst::Raster::rasterize(std::vector<te::gm::Geometry*> g, std::vector<double> vp, std::size_t b)
