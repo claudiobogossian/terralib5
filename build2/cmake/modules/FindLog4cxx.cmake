@@ -53,7 +53,7 @@ elseif(WIN32)
                PATH_SUFFIXES lib)
 
   find_library(LOG4CXX_LIBRARY_DEBUG
-               NAMES log4cxx_d
+               NAMES log4cxxd log4cxx_d
                PATH_SUFFIXES lib)
 
   if(LOG4CXX_LIBRARY_RELEASE AND LOG4CXX_LIBRARY_DEBUG)

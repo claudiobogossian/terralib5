@@ -147,17 +147,7 @@ include(CMakeDependentOption)
 #
 #endif()
 
-if(WIN32)
-
-  set(CMAKE_PREFIX_PATH ${CMAKE_INCLUDE_PATH}
-                        ${CMAKE_LIBRARY_PATH}/gdal
-                        ${CMAKE_LIBRARY_PATH}/gdal/win32
-                        ${CMAKE_INCLUDE_PATH}/include/postgresql)
-
-endif()
-
-#find_package(Boost 1.54.0 REQUIRED system date_time chrono timer filesystem thread log log_setup program_options unit_test_framework)
-find_package(Boost 1.48.0 REQUIRED system date_time chrono timer filesystem thread program_options unit_test_framework)
+find_package(Boost 1.54.0 REQUIRED system date_time chrono timer filesystem thread log log_setup program_options unit_test_framework)
 
 find_package(Doxygen QUIET)
 

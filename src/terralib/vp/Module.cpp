@@ -42,9 +42,6 @@ te::vp::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib Intersection Operation support
-  TE_ADD_TEXT_DOMAIN(TE_VP_TEXT_DOMAIN, TE_VP_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::vp::Module::~Module()
