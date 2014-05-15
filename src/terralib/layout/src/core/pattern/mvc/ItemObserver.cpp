@@ -74,7 +74,9 @@ void te::layout::ItemObserver::setPPI( const double& ppi )
 void te::layout::ItemObserver::updateProperties( te::layout::Properties* properties )
 {
   if(m_controller)
+  {
     m_controller->updateProperties(properties);
+  }
 }
 
 void te::layout::ItemObserver::setPrintable( bool print )

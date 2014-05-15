@@ -33,6 +33,7 @@
 #include "ContextItem.h"
 #include "Visitable.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../common/UnitOfMeasure.h"
 
 namespace te
 {
@@ -49,13 +50,23 @@ namespace te
 
         virtual void updateProperties(te::layout::Properties* properties);
 
-        virtual void setLayers(std::list<te::map::AbstractLayerPtr> layers);
+        virtual bool refreshLayer(te::map::AbstractLayerPtr layer);
 
-        virtual std::list<te::map::AbstractLayerPtr> getLayers();
+        virtual te::map::AbstractLayerPtr getLayer();
+
+        virtual double getScale();
+
+        virtual te::gm::Envelope getWorldInMeters();
+
+        virtual te::gm::Envelope getWorldInDegrees();
+
+        virtual te::common::UnitOfMeasurePtr unitMeasureLayer();
 
       protected:
 
-        std::list<te::map::AbstractLayerPtr> m_layers;
+        std::string proj4DescToPlanar(int zone);
+
+        te::map::AbstractLayerPtr m_layer;
     };
   }
 }

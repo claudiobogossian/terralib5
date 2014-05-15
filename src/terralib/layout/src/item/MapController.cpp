@@ -38,14 +38,25 @@
 te::layout::MapController::MapController( Observable* o ) :
   ItemController(o, TPMapItem)
 {
-  AbstractItemFactory* factory = Context::getInstance()->getItemFactory(); 
-  ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPMapItem, params);
+  create();
+}
+
+te::layout::MapController::MapController( Observable* o, LayoutAbstractObjectType type ) :
+  ItemController(o, type)
+{
+
 }
 
 te::layout::MapController::~MapController()
 {
 	
+}
+
+void te::layout::MapController::create()
+{
+  AbstractItemFactory* factory = Context::getInstance()->getItemFactory(); 
+  ItemParamsCreate params(this, m_model);
+  m_view = (Observer*)factory->make(TPMapItem, params);
 }
 
 void te::layout::MapController::setPosition( const double& x, const double& y )
@@ -58,18 +69,18 @@ void te::layout::MapController::setPosition( const double& x, const double& y )
   }
 }
 
-void te::layout::MapController::refreshLayers( std::list<te::map::AbstractLayerPtr> layers )
+bool te::layout::MapController::refreshLayer( te::map::AbstractLayerPtr layer )
 {
   if(!m_model)
-    return;
+    return false;
 
   ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
   if(!model)
-    return;
+    return false;
 
   MapModel* mpModel = dynamic_cast<MapModel*>(model);
   if(!mpModel)
-    return;
+    return false;
 
-  mpModel->setLayers(layers);
+  return mpModel->refreshLayer(layer);
 }

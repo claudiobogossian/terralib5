@@ -93,6 +93,15 @@ bool te::vp::AggregationQuery::run()
 {
   std::auto_ptr<te::da::DataSetType> outDSetType(new te::da::DataSetType(m_outDset));
   
+// Primary key
+  te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDset + "_id", te::dt::INT32_TYPE);
+  pkProperty->setAutoNumber(true);
+  outDSetType->add(pkProperty);
+
+  te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_outDset + "_pk", outDSetType.get());
+  pk->add(pkProperty);
+  outDSetType->setPrimaryKey(pk);
+
   // include the grouping properties in the query
   te::da::Fields* fields = new te::da::Fields;
   for(std::size_t i=0; i<m_groupProps.size(); ++i)
@@ -152,7 +161,7 @@ bool te::vp::AggregationQuery::run()
         case SUM:
           sexp = new te::da::Sum(p_name);
           sfield = new te::da::Field(*sexp, p_name->getName() + "_SUM");
-          newProp = new te::dt::SimpleProperty(p_name->getName() + "_MEAN", p_type);
+          newProp = new te::dt::SimpleProperty(p_name->getName() + "_SUM", p_type);
           break;
         case COUNT:
           sexp = new te::da::Count(p_name);
@@ -224,38 +233,41 @@ bool te::vp::AggregationQuery::run()
   
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(outDSetType.get()));
 
+  int key = 0;
   dsQuery->moveBeforeFirst();
   while (dsQuery->moveNext())
   {
     te::mem::DataSetItem* outDSetItem = new te::mem::DataSetItem(outDSet.get());
-    for (size_t i=0; i<outDSetType->size(); ++i)
+    outDSetItem->setInt32(0, key);
+
+    for (size_t i=1; i<outDSetType->size(); ++i)
     {
       switch (outDSetType->getProperty(i)->getType())
       {
         case te::dt::STRING_TYPE:
-          if (!dsQuery->isNull(i))
-            outDSetItem->setString(i,dsQuery->getAsString(i));
+          if (!dsQuery->isNull(i-1))
+            outDSetItem->setString(i,dsQuery->getAsString(i-1));
           break;
         case te::dt::INT32_TYPE:
-          if (!dsQuery->isNull(i))
-            outDSetItem->setInt32(i, boost::lexical_cast<int>(dsQuery->getAsString(i)));
+          if (!dsQuery->isNull(i-1))
+            outDSetItem->setInt32(i, boost::lexical_cast<int>(dsQuery->getAsString(i-1)));
           break;
         case te::dt::INT64_TYPE:
-          if (!dsQuery->isNull(i))
-            outDSetItem->setInt64(i,dsQuery->getInt64(i));
+          if (!dsQuery->isNull(i-1))
+            outDSetItem->setInt64(i,dsQuery->getInt64(i-1));
           break;
         case te::dt::DOUBLE_TYPE:
-          if (!dsQuery->isNull(i))
-            outDSetItem->setDouble(i,dsQuery->getDouble(i));
+          if (!dsQuery->isNull(i-1))
+            outDSetItem->setDouble(i,dsQuery->getDouble(i-1));
           break;
         case te::dt::NUMERIC_TYPE:
-          if (!dsQuery->isNull(i))
-            outDSetItem->setNumeric(i,dsQuery->getNumeric(i));
+          if (!dsQuery->isNull(i-1))
+            outDSetItem->setNumeric(i,dsQuery->getNumeric(i-1));
           break;
         case te::dt::GEOMETRY_TYPE:
-          if (!dsQuery->isNull(i))
+          if (!dsQuery->isNull(i-1))
           {
-            std::auto_ptr<te::gm::Geometry> agg_geo(dsQuery->getGeometry(i));
+            std::auto_ptr<te::gm::Geometry> agg_geo(dsQuery->getGeometry(i-1));
             if (agg_geo->getGeomTypeId() != geotype)
             {
               te::gm::GeometryCollection* gc = new te::gm::GeometryCollection(1,geotype,agg_geo->getSRID());
@@ -271,6 +283,7 @@ bool te::vp::AggregationQuery::run()
       }
     }
     outDSet->add(outDSetItem);
+    ++key;
   }
   return save(outDSet,outDSetType);
 }

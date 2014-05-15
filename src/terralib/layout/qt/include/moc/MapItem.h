@@ -66,8 +66,6 @@ namespace te
         virtual void setRect(QRectF rect);
 
         virtual void setPos(const QPointF &pos);
-
-        std::list<te::map::AbstractLayerPtr>  getVisibleLayers();
                         
       protected slots:
 
@@ -92,6 +90,10 @@ namespace te
       virtual void drawSelection( QPainter* painter );
 
       virtual void getMimeData(const QMimeData* mime);
+
+      std::list<te::map::AbstractLayerPtr>  getVisibleLayers();
+
+      te::map::AbstractLayerPtr getLayer();
 
     protected:
 

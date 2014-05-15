@@ -64,8 +64,20 @@ namespace te
 
     protected:
 
-      void SetOutputDSet(std::auto_ptr<te::da::DataSet> inDataSet, 
-                        te::mem::DataSet* outDataSet);
+      te::mem::DataSet* SetAllObjects(te::da::DataSetType* dsType,
+                                      std::vector<int> tabVec,
+                                      std::vector<int> geoVec);
+
+      te::mem::DataSet* SetAggregObj( te::da::DataSetType* dsType,
+                                      std::vector<int> tabVec,
+                                      std::vector<int> geoVec);
+
+      te::mem::DataSet* SetAggregByAttribute( te::da::DataSetType* dsType,
+                                              std::vector<int> tabVec,
+                                              std::vector<int> geoVec);
+
+      void SetOutputDSet( te::da::DataSet* inDataSet, 
+                          te::mem::DataSet* outDataSet);
 
       
     }; // end class

@@ -58,12 +58,26 @@ te::layout::ItemGroup::~ItemGroup()
 
 void te::layout::ItemGroup::updateObserver( ContextItem context )
 {
+  if(!m_model)
+    return;
+
   te::color::RGBAColor** rgba = context.getPixmap();
 
   if(!rgba)
     return;
+  
+  Utils* utils = Context::getInstance()->getUtils();
 
-  te::gm::Envelope box = m_model->getBox();
+  if(!utils)
+    return;
+
+  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
+
+  if(!box.isValid())
+    return;
+
+  if(!box.isValid())
+    return;
 
   QPixmap pixmp;
   QImage* img = 0;

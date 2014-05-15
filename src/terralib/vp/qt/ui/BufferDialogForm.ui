@@ -7,15 +7,15 @@
     <x>0</x>
     <y>0</y>
     <width>549</width>
-    <height>650</height>
+    <height>603</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Buffer</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_15">
+  <layout class="QGridLayout" name="gridLayout_19">
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_12">
+    <layout class="QGridLayout" name="gridLayout_16">
      <item row="0" column="0">
       <widget class="QFrame" name="frame_2">
        <property name="styleSheet">
@@ -74,467 +74,475 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QGroupBox" name="m_inputGroupBox">
-       <property name="title">
-        <string>Input Layer</string>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_6">
-        <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_5">
-          <item row="0" column="0">
-           <widget class="QComboBox" name="m_layersComboBox"/>
-          </item>
-          <item row="1" column="0">
-           <layout class="QGridLayout" name="gridLayout_4">
+      <layout class="QGridLayout" name="gridLayout_15">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout_12">
+         <item row="0" column="0">
+          <widget class="QGroupBox" name="m_inputGroupBox">
+           <property name="title">
+            <string>Input Layer</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_6">
             <item row="0" column="0">
-             <widget class="QCheckBox" name="m_onlySelectedCheckBox">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="text">
-               <string>Only Selected</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="m_filterLabel">
-              <property name="text">
-               <string>Filter:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLineEdit" name="m_filterLineEdit"/>
+             <layout class="QGridLayout" name="gridLayout_5">
+              <item row="0" column="0">
+               <widget class="QComboBox" name="m_layersComboBox"/>
+              </item>
+              <item row="1" column="0">
+               <layout class="QGridLayout" name="gridLayout_4">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="m_filterLabel">
+                  <property name="text">
+                   <string>Filter:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLineEdit" name="m_filterLineEdit"/>
+                </item>
+               </layout>
+              </item>
+              <item row="2" column="0">
+               <widget class="QCheckBox" name="m_onlySelectedCheckBox">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="text">
+                 <string>Only Selected</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QGroupBox" name="m_distanceGroupBox">
-       <property name="title">
-        <string>Distance</string>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_18">
-        <item row="0" column="0">
-         <widget class="QRadioButton" name="m_fixedRadioButton">
-          <property name="text">
-           <string>Fixed at</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1" rowspan="2">
-         <layout class="QGridLayout" name="gridLayout_17">
-          <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout_8">
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QGroupBox" name="m_distanceGroupBox">
+           <property name="title">
+            <string>Distance</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_18">
             <item row="0" column="0">
-             <widget class="QLineEdit" name="m_fixedDistanceLineEdit">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="0">
-           <widget class="QComboBox" name="m_fromAttDistanceComboBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="1" column="0">
-         <widget class="QRadioButton" name="m_fromAttRadioButton">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>From an attribute</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QTabWidget" name="tabWidget">
-       <property name="minimumSize">
-        <size>
-         <width>448</width>
-         <height>135</height>
-        </size>
-       </property>
-       <property name="tabPosition">
-        <enum>QTabWidget::North</enum>
-       </property>
-       <property name="tabShape">
-        <enum>QTabWidget::Rounded</enum>
-       </property>
-       <property name="currentIndex">
-        <number>0</number>
-       </property>
-       <property name="elideMode">
-        <enum>Qt::ElideNone</enum>
-       </property>
-       <property name="usesScrollButtons">
-        <bool>true</bool>
-       </property>
-       <property name="documentMode">
-        <bool>false</bool>
-       </property>
-       <property name="tabsClosable">
-        <bool>false</bool>
-       </property>
-       <property name="movable">
-        <bool>false</bool>
-       </property>
-       <widget class="QWidget" name="m_rulePolTab">
-        <attribute name="title">
-         <string>Rule for polygons</string>
-        </attribute>
-        <widget class="QWidget" name="layoutWidget">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>10</y>
-           <width>322</width>
-           <height>77</height>
-          </rect>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_7">
-          <property name="leftMargin">
-           <number>10</number>
-          </property>
-          <property name="topMargin">
-           <number>10</number>
-          </property>
-          <item row="0" column="0">
-           <widget class="QRadioButton" name="m_ruleInOutRadioButton">
-            <property name="text">
-             <string>Inside and Outside</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">buttonGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="0" column="2" rowspan="3">
-           <widget class="QLabel" name="m_ruleImgLabel">
-            <property name="minimumSize">
-             <size>
-              <width>150</width>
-              <height>60</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>48</width>
-              <height>48</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Image for Rule</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QRadioButton" name="m_ruleOnlyOutRadioButton">
-            <property name="text">
-             <string>Only Outside</string>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">buttonGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="1" column="1" rowspan="2">
-           <spacer name="horizontalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="2" column="0">
-           <widget class="QRadioButton" name="m_ruleOnlyInRadioButton">
-            <property name="text">
-             <string>Only Inside</string>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">buttonGroup</string>
-            </attribute>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </widget>
-       <widget class="QWidget" name="m_boundBufferTab">
-        <attribute name="title">
-         <string>Boundaries between buffers</string>
-        </attribute>
-        <widget class="QWidget" name="layoutWidget1">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>12</y>
-           <width>358</width>
-           <height>103</height>
-          </rect>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_13">
-          <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout_10">
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="m_withoutBoundRadioButton">
-              <property name="minimumSize">
-               <size>
-                <width>150</width>
-                <height>50</height>
-               </size>
-              </property>
+             <widget class="QRadioButton" name="m_fixedRadioButton">
               <property name="text">
-               <string/>
+               <string>Fixed at</string>
               </property>
               <property name="checked">
                <bool>true</bool>
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="m_dissolveText">
-              <property name="text">
-               <string>Dissolve</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <spacer name="horizontalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item row="0" column="1">
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="0" column="2">
-           <layout class="QGridLayout" name="gridLayout_11">
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="m_withBoundRadioButton">
-              <property name="minimumSize">
-               <size>
-                <width>150</width>
-                <height>50</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
+            <item row="0" column="1" rowspan="2">
+             <layout class="QGridLayout" name="gridLayout_17">
+              <item row="0" column="0">
+               <layout class="QGridLayout" name="gridLayout_8">
+                <item row="0" column="0">
+                 <widget class="QLineEdit" name="m_fixedDistanceLineEdit">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="1" column="0">
+               <widget class="QComboBox" name="m_fromAttDistanceComboBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="m_notDissolveText">
-              <property name="text">
-               <string>Not Dissolve</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QCheckBox" name="m_copyColumnsCheckBox">
+             <widget class="QRadioButton" name="m_fromAttRadioButton">
               <property name="enabled">
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>Copy input columns</string>
+               <string>From an attribute</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
            </layout>
-          </item>
-         </layout>
-        </widget>
-       </widget>
-       <widget class="QWidget" name="m_multLevelTab">
-        <attribute name="title">
-         <string>Multiple Levels</string>
-        </attribute>
-        <widget class="QWidget" name="layoutWidget2">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>237</width>
-           <height>34</height>
-          </rect>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_9">
-          <property name="leftMargin">
-           <number>10</number>
-          </property>
-          <property name="topMargin">
-           <number>10</number>
-          </property>
-          <item row="0" column="0">
-           <widget class="QLabel" name="m_numberLevelsLabel_2">
-            <property name="text">
-             <string>Number of levels:</string>
-            </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QTabWidget" name="tabWidget">
+           <property name="minimumSize">
+            <size>
+             <width>448</width>
+             <height>135</height>
+            </size>
+           </property>
+           <property name="tabPosition">
+            <enum>QTabWidget::North</enum>
+           </property>
+           <property name="tabShape">
+            <enum>QTabWidget::Rounded</enum>
+           </property>
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <property name="elideMode">
+            <enum>Qt::ElideNone</enum>
+           </property>
+           <property name="usesScrollButtons">
+            <bool>true</bool>
+           </property>
+           <property name="documentMode">
+            <bool>false</bool>
+           </property>
+           <property name="tabsClosable">
+            <bool>false</bool>
+           </property>
+           <property name="movable">
+            <bool>false</bool>
+           </property>
+           <widget class="QWidget" name="m_rulePolTab">
+            <attribute name="title">
+             <string>Rule for polygons</string>
+            </attribute>
+            <widget class="QWidget" name="layoutWidget">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>10</y>
+               <width>322</width>
+               <height>77</height>
+              </rect>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_7">
+              <property name="leftMargin">
+               <number>10</number>
+              </property>
+              <property name="topMargin">
+               <number>10</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QRadioButton" name="m_ruleInOutRadioButton">
+                <property name="text">
+                 <string>Inside and Outside</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">buttonGroup</string>
+                </attribute>
+               </widget>
+              </item>
+              <item row="0" column="2" rowspan="3">
+               <widget class="QLabel" name="m_ruleImgLabel">
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>60</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>48</width>
+                  <height>48</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Image for Rule</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QRadioButton" name="m_ruleOnlyOutRadioButton">
+                <property name="text">
+                 <string>Only Outside</string>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">buttonGroup</string>
+                </attribute>
+               </widget>
+              </item>
+              <item row="1" column="1" rowspan="2">
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="2" column="0">
+               <widget class="QRadioButton" name="m_ruleOnlyInRadioButton">
+                <property name="text">
+                 <string>Only Inside</string>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">buttonGroup</string>
+                </attribute>
+               </widget>
+              </item>
+             </layout>
+            </widget>
            </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="m_levelsNumComboBox"/>
-          </item>
-         </layout>
-        </widget>
-       </widget>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QGroupBox" name="m_outputGroupBox">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="title">
-        <string>Output</string>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="0">
-         <widget class="QLabel" name="m_repositoryLabel">
-          <property name="text">
-           <string>Repository:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLineEdit" name="m_repositoryLineEdit">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QToolButton" name="m_targetFileToolButton">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QToolButton" name="m_targetDatasourceToolButton">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>BD</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="m_layerNameLabel">
-          <property name="text">
-           <string>Layer Name:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLineEdit" name="m_newLayerNameLineEdit"/>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <layout class="QGridLayout" name="gridLayout_14">
-       <item row="0" column="0">
-        <widget class="Line" name="line_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
+           <widget class="QWidget" name="m_boundBufferTab">
+            <attribute name="title">
+             <string>Boundaries between buffers</string>
+            </attribute>
+            <widget class="QWidget" name="layoutWidget1">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>12</y>
+               <width>358</width>
+               <height>103</height>
+              </rect>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_13">
+              <item row="0" column="0">
+               <layout class="QGridLayout" name="gridLayout_10">
+                <item row="0" column="0">
+                 <widget class="QRadioButton" name="m_withoutBoundRadioButton">
+                  <property name="minimumSize">
+                   <size>
+                    <width>150</width>
+                    <height>50</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="m_dissolveText">
+                  <property name="text">
+                   <string>Dissolve</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <spacer name="horizontalSpacer_4">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item row="0" column="1">
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="2">
+               <layout class="QGridLayout" name="gridLayout_11">
+                <item row="0" column="0">
+                 <widget class="QRadioButton" name="m_withBoundRadioButton">
+                  <property name="minimumSize">
+                   <size>
+                    <width>150</width>
+                    <height>50</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="m_notDissolveText">
+                  <property name="text">
+                   <string>Not Dissolve</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QCheckBox" name="m_copyColumnsCheckBox">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="text">
+                   <string>Copy input columns</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+           <widget class="QWidget" name="m_multLevelTab">
+            <attribute name="title">
+             <string>Multiple Levels</string>
+            </attribute>
+            <widget class="QWidget" name="layoutWidget2">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>237</width>
+               <height>34</height>
+              </rect>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_9">
+              <property name="leftMargin">
+               <number>10</number>
+              </property>
+              <property name="topMargin">
+               <number>10</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="m_numberLevelsLabel_2">
+                <property name="text">
+                 <string>Number of levels:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="m_levelsNumComboBox"/>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QGroupBox" name="m_outputGroupBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="title">
+            <string>Output</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="0" column="0">
+             <widget class="QLabel" name="m_repositoryLabel">
+              <property name="text">
+               <string>Repository:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLineEdit" name="m_repositoryLineEdit">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QToolButton" name="m_targetFileToolButton">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="m_layerNameLabel">
+              <property name="text">
+               <string>Layer Name:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLineEdit" name="m_newLayerNameLineEdit"/>
+            </item>
+            <item row="3" column="1">
+             <widget class="QToolButton" name="m_targetDatasourceToolButton">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>BD</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item row="1" column="0">
-        <layout class="QGridLayout" name="gridLayout_2">
-         <item row="0" column="1">
-          <spacer name="horizontalSpacer">
+        <layout class="QGridLayout" name="gridLayout_14">
+         <item row="0" column="0">
+          <widget class="Line" name="line_2">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="0" column="2">
-          <widget class="QPushButton" name="m_okPushButton">
-           <property name="text">
-            <string>&amp;Ok</string>
-           </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="te::qt::widgets::HelpPushButton" name="m_helpPushButton">
-           <property name="text">
-            <string>Help</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="3">
-          <widget class="QPushButton" name="m_cancelPushButton">
-           <property name="text">
-            <string>Cancel</string>
-           </property>
-          </widget>
+         <item row="1" column="0">
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="0" column="1">
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="m_okPushButton">
+             <property name="text">
+              <string>&amp;Ok</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="te::qt::widgets::HelpPushButton" name="m_helpPushButton">
+             <property name="text">
+              <string>Help</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QPushButton" name="m_cancelPushButton">
+             <property name="text">
+              <string>Cancel</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </item>

@@ -305,7 +305,7 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
     case te::qt::af::evt::HIGHLIGHT_LAYER_OBJECTS:
     {
       te::qt::af::evt::HighlightLayerObjects* highlightEvent = static_cast<te::qt::af::evt::HighlightLayerObjects*>(e);
-      drawDataSet(highlightEvent->m_dataset, highlightEvent->m_layer->getSRID(), highlightEvent->m_color);
+      drawDataSet(highlightEvent->m_dataset, highlightEvent->m_layer->getGeomPropertyName(), highlightEvent->m_layer->getSRID(), highlightEvent->m_color);
       m_display->repaint();
     }
     break;
@@ -378,7 +378,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
       // Try to retrieve the layer selection
       std::auto_ptr<te::da::DataSet> selected(layer->getData(oids));
 
-      drawDataSet(selected.get(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
+      drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
 
       return;
     }
@@ -405,7 +405,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
         // Try to retrieve the layer selection batch
         std::auto_ptr<te::da::DataSet> selected(layer->getData(oidsBatch.get()));
 
-        drawDataSet(selected.get(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
+        drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
 
         // Prepares to next batch
         oidsBatch->clear();
@@ -420,7 +420,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
   }
 }
 
-void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, int srid, const QColor& color)
+void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, const std::string& geomPropertyName, int srid, const QColor& color)
 {
   assert(dataset);
   assert(color.isValid());
@@ -433,7 +433,10 @@ void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, int srid, con
   if((srid != TE_UNKNOWN_SRS) && (m_display->getSRID() != TE_UNKNOWN_SRS) && (srid != m_display->getSRID()))
     needRemap = true;
 
-  std::size_t gpos = te::da::GetFirstPropertyPos(dataset, te::dt::GEOMETRY_TYPE);
+  std::size_t gpos = std::string::npos;
+  geomPropertyName.empty() ? gpos = te::da::GetFirstPropertyPos(dataset, te::dt::GEOMETRY_TYPE): gpos = te::da::GetPropertyPos(dataset, geomPropertyName);
+
+  assert(gpos != std::string::npos);
 
   QPixmap* content = m_display->getDisplayPixmap();
 

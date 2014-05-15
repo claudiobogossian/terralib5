@@ -78,7 +78,7 @@ std::map<std::string, std::string> te::vp::AggregationMemory::calculateStringSta
   {
     if(it->first->getType() == te::dt::STRING_TYPE)
     {
-      size_t propPos = m_inDsetType->getPropertyPosition(it->first);
+      size_t propPos = m_inDsetType->getPropertyPosition(it->first->getName());
       std::vector<std::string> values;
       for(std::size_t i = 0; i < items.size(); ++i)
       {
