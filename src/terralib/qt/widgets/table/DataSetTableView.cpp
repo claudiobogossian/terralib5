@@ -1,6 +1,7 @@
 #include "AddColumnDialog.h"
 #include "DataSetTableModel.h"
 #include "DataSetTableVerticalHeader.h"
+#include "DataSetTableHorizontalHeader.h"
 #include "DataSetTableView.h"
 #include "HighlightDelegate.h"
 #include "Promoter.h"
@@ -581,8 +582,9 @@ te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
 
   setModel(m_model);
 
-  horizontalHeader()->setMovable(true);
   setVerticalHeader(new DataSetTableVerticalHeader(this));
+  setHorizontalHeader(new DataSetTableHorizontalHeader(this));
+  horizontalHeader()->setMovable(true);
 
   setSelectionMode(QAbstractItemView::MultiSelection);
   setSelectionBehavior(QAbstractItemView::SelectColumns);
@@ -599,6 +601,8 @@ te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
 
   connect(verticalHeader(), SIGNAL(selectedRow(const int&, const bool&)), SLOT(highlightRow(const int&, const bool&)));
   connect(verticalHeader(), SIGNAL(selectedRows(const int&, const int&)), SLOT(highlightRows(const int&, const int&)));
+
+//  connect(horizontalHeader(), SIGNAL(sectionPressed(int)), SLOT(columnPressed(int)));
 }
 
 te::qt::widgets::DataSetTableView::~DataSetTableView()
@@ -1045,6 +1049,11 @@ void te::qt::widgets::DataSetTableView::setPromotionEnabled(const bool &enable)
     promote();
 
   m_popupFilter->setPromotionEnabled(m_promotionEnabled);
+}
+
+void te::qt::widgets::DataSetTableView::columnPressed(int c)
+{
+
 }
 
 void te::qt::widgets::DataSetTableView::removeSelection(const int& initRow, const int& finalRow)

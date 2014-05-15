@@ -218,11 +218,6 @@ namespace te
 
           /*!
             \brief Sort by the selected columns.
-          */
-//          void sortByColumns();
-
-          /*!
-            \brief Sort by the selected columns.
 
             \param asc True for ascendent order, false for descendent.
           */
@@ -264,6 +259,13 @@ namespace te
             \param enable \a True to enable promotion, \a false to disable it
           */
           void setPromotionEnabled(const bool& enable);
+
+          /*!
+           \brief Used when a column is pressed.
+
+           \param c Column that was pressed.
+          */
+          void columnPressed(int c);
 
         signals:
 

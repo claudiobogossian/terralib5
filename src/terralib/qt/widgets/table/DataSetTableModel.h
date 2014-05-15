@@ -164,7 +164,9 @@ namespace te
 
           bool m_OIdsVisible;                 //!< Oids icon visibility.
 
-          bool m_enabled;
+          bool m_enabled;                     //!< Enabling flag.
+
+          int m_rowCount;                     //!< Number of rows;
       };
     }
   }
