@@ -32,7 +32,12 @@
 te::layout::SharedProperties::SharedProperties() :
   m_name("name"),
   m_id("id"),
-  m_mapName("map_name")
+  m_mapName("map_name"),
+  m_x1("x1"),
+  m_x2("x2"),
+  m_y1("y1"),
+  m_y2("y2"),
+  m_zValue("zValue")
 {
 
 }
@@ -55,4 +60,29 @@ std::string te::layout::SharedProperties::getId()
 std::string te::layout::SharedProperties::getMapName()
 {
   return m_mapName;
+}
+
+std::string te::layout::SharedProperties::getX1()
+{
+  return m_x1;
+}
+
+std::string te::layout::SharedProperties::getX2()
+{
+  return m_x2;
+}
+
+std::string te::layout::SharedProperties::getY1()
+{
+  return m_y1;
+}
+
+std::string te::layout::SharedProperties::getY2()
+{
+  return m_y2;
+}
+
+std::string te::layout::SharedProperties::getZValue()
+{
+  return m_zValue;
 }

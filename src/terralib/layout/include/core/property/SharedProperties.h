@@ -44,12 +44,22 @@ namespace te
         std::string getName();
         std::string getId();
         std::string getMapName();
+        std::string getX1();
+        std::string getX2();
+        std::string getY1();
+        std::string getY2();
+        std::string getZValue();
 
       protected:
 
         std::string m_name;
         std::string m_id;
         std::string m_mapName;
+        std::string m_x1;
+        std::string m_x2;
+        std::string m_y1;
+        std::string m_y2;
+        std::string m_zValue;
     };
   }
 }

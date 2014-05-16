@@ -70,9 +70,13 @@ namespace te
         virtual ItemController*	getController();
         virtual Observable*	getModel();
         
+        virtual void refresh();
+
       protected:
 
-        virtual void refresh();
+        virtual void setZValueItem(int z);
+
+        virtual int getZValueItem() = 0;
 
         te::layout::ItemController*	m_controller;
         te::layout::Observable*		m_model;

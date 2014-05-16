@@ -189,7 +189,7 @@ void te::layout::View::config()
   connect(m_outsideArea->getToolbarOutside(), SIGNAL(changeContext(bool)), this, SLOT(onToolbarChangeContext(bool)));
 
   m_visualizationArea = new VisualizationArea(boxW);
-  m_visualizationArea->create();
+  m_visualizationArea->build();
         
   scene()->setBackgroundBrush(QBrush(QColor(105,105,030)));
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -244,14 +244,26 @@ void te::layout::View::onToolbarChangeContext( bool change )
 {
   Scene* sc = dynamic_cast<Scene*>(scene());
 
+  if(!sc)
+    return;
+
   if(Context::getInstance()->getMode() == TypeUnitsMetricsChange)
   {
 
   }
 
-  if(Context::getInstance()->getMode() == TypeSavePropsJSON)
+  if( Context::getInstance()->getMode() == TypeNewTemplate)
   {
-    sc->savePropsAsJSON();
+    sc->refresh();
+    m_visualizationArea->build();
+  }
+  if(Context::getInstance()->getMode() == TypeExportPropsJSON)
+  {
+    sc->exportPropsAsJSON();
+  }
+  if(Context::getInstance()->getMode() == TypeImportJSONProps)
+  {
+    buildTemplate();
   }
 
   if(Context::getInstance()->getMode() == TypePan)
@@ -305,26 +317,7 @@ void te::layout::View::createItem( const te::gm::Coord2D& coord )
 
   LayoutMode mode = Context::getInstance()->getMode();
 
-  switch(mode)
-  {
-  case TypeCreateMap:
-    item = m_buildItems->createMap(coord);
-    break;
-  case TypeCreateMapGrid:
-    item = m_buildItems->createMapGrid(coord);
-    break;
-  case TypeCreateText:
-    item = m_buildItems->createText(coord);
-    break;
-  case TypeCreateRectangle:
-    item = m_buildItems->createRectangle(coord);
-    break;
-  case TypeCreateLegend:
-    item = m_buildItems->createLegend(coord);
-    break;
-  default:
-    item = 0;
-  }
+  item = m_buildItems->createItem(mode, coord);
 
   //If Create item
   if(item)
@@ -392,5 +385,36 @@ void te::layout::View::deleteItems()
         delete item;
       }
     }
+  }
+}
+
+void te::layout::View::buildTemplate()
+{
+  Scene* sc = dynamic_cast<Scene*>(scene());
+
+  if(!sc)
+    return;
+  
+  std::vector<te::layout::Properties*> props = sc->importJsonAsProps();
+
+  if(props.empty())
+    return;
+
+  sc->refresh();
+
+  std::vector<te::layout::Properties*>::iterator it;
+
+  te::gm::Envelope* boxW = sc->getWorldBox();
+  m_visualizationArea->changeBoxArea(boxW);
+  m_visualizationArea->rebuildWithoutPaper();
+
+  for(it = props.begin() ; it != props.end() ; ++it)
+  {
+    te::layout::Properties* proper = (*it);
+
+    if(!proper)
+      continue;
+
+    m_buildItems->rebuildItem(proper);
   }
 }

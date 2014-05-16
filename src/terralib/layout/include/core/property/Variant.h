@@ -64,10 +64,12 @@ namespace te
         bool toBool();
         te::color::RGBAColor toColor();       
 
+        std::string convertToString();
+
         bool isNull();
 
         void clear();
-
+                
         bool operator ==(const Variant& other); 
         bool operator !=(const Variant& other); 
 
@@ -77,6 +79,18 @@ namespace te
       void variantSetValue(Variant &v, const typename ValueType& value, LayoutPropertyDataType type);
       
       void convertValue(const void* valueCopy);
+
+      /* Check if a value passed, of type DataTypeInt and etc, is a std::string. 
+         Ex.: value returned by a json file (boost). */
+      bool checkNumberAsString(const void* valueCopy);
+      
+      double string2Double(std::string str);
+
+      int string2Int(std::string str);
+
+      float string2Float(std::string str);
+
+      long string2Long(std::string str);
 
       std::string m_sValue;
       double m_dValue;
@@ -103,7 +117,7 @@ namespace te
     {
       v = Variant(type, &value);      
     }
-
+    
     inline bool te::layout::Variant::operator ==(const Variant& other) 
     { 
       Variant& otherProp = const_cast<Variant&>(other);

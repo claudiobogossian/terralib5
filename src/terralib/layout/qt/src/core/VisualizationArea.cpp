@@ -49,12 +49,67 @@ te::layout::VisualizationArea::~VisualizationArea()
 
 }
 
-void te::layout::VisualizationArea::create()
+void te::layout::VisualizationArea::build()
 {
   init();
 }
 
 void te::layout::VisualizationArea::init()
+{
+  createPaper();
+  createHorizontalRuler();
+  createVerticalRuler();
+}
+
+void te::layout::VisualizationArea::rebuildWithoutPaper()
+{
+  createHorizontalRuler();
+  createVerticalRuler();
+}
+
+void te::layout::VisualizationArea::createVerticalRuler()
+{
+  double dpiX = te::layout::Context::getInstance()->getDpiX();
+
+  double llx = m_boxArea->getLowerLeftX();
+  double lly = m_boxArea->getLowerLeftY();
+  double urx = m_boxArea->getUpperRightX();
+  double ury = m_boxArea->getUpperRightY();
+
+  //Régua Vertical
+  VerticalRulerModel* modelRulerV = new VerticalRulerModel();		
+  modelRulerV->setBox(te::gm::Envelope(llx, lly, llx + 10, ury));
+  VerticalRulerController* controllerRulerV = new VerticalRulerController(modelRulerV);
+  ItemObserver* itemRulerV = (ItemObserver*)controllerRulerV->getView();
+  VerticalRulerItem* rectRulerV = dynamic_cast<VerticalRulerItem*>(itemRulerV);
+  rectRulerV->setPPI(dpiX);		
+  rectRulerV->setPos(QPointF(llx, lly));
+  rectRulerV->redraw();
+  rectRulerV->setZValue(10001);
+}
+
+void te::layout::VisualizationArea::createHorizontalRuler()
+{
+  double dpiX = te::layout::Context::getInstance()->getDpiX();
+
+  double llx = m_boxArea->getLowerLeftX();
+  double lly = m_boxArea->getLowerLeftY();
+  double urx = m_boxArea->getUpperRightX();
+  double ury = m_boxArea->getUpperRightY();
+
+  //Régua Horizontal
+  HorizontalRulerModel* modelRuler = new HorizontalRulerModel();		
+  modelRuler->setBox(te::gm::Envelope(llx, lly, urx, lly + 10));
+  HorizontalRulerController* controllerRuler = new HorizontalRulerController(modelRuler);
+  ItemObserver* itemRuler = (ItemObserver*)controllerRuler->getView();
+  HorizontalRulerItem* rectRuler = dynamic_cast<HorizontalRulerItem*>(itemRuler);
+  rectRuler->setPPI(dpiX);
+  rectRuler->setPos(QPointF(llx, lly));
+  rectRuler->redraw();
+  rectRuler->setZValue(10000);
+}
+
+void te::layout::VisualizationArea::createPaper()
 {
   double dpiX = te::layout::Context::getInstance()->getDpiX();
 
@@ -69,27 +124,11 @@ void te::layout::VisualizationArea::init()
   ItemObserver* itemPaper = (ItemObserver*)controllerPaper->getView();
   PaperItem* qPaper = dynamic_cast<PaperItem*>(itemPaper);
   qPaper->setPos(QPointF(0,lly));
+  qPaper->setZValue(1);
   qPaper->redraw();
+}
 
-  //Régua Horizontal
-  HorizontalRulerModel* modelRuler = new HorizontalRulerModel();		
-  modelRuler->setBox(te::gm::Envelope(llx, lly, urx, lly + 10));
-  HorizontalRulerController* controllerRuler = new HorizontalRulerController(modelRuler);
-  ItemObserver* itemRuler = (ItemObserver*)controllerRuler->getView();
-  HorizontalRulerItem* rectRuler = dynamic_cast<HorizontalRulerItem*>(itemRuler);
-  rectRuler->setPPI(dpiX);
-  rectRuler->setPos(QPointF(llx, lly));
-  rectRuler->redraw();
-  rectRuler->setZValue(10000);
-
-  //Régua Vertical
-  VerticalRulerModel* modelRulerV = new VerticalRulerModel();		
-  modelRulerV->setBox(te::gm::Envelope(llx, lly, llx + 10, ury));
-  VerticalRulerController* controllerRulerV = new VerticalRulerController(modelRulerV);
-  ItemObserver* itemRulerV = (ItemObserver*)controllerRulerV->getView();
-  VerticalRulerItem* rectRulerV = dynamic_cast<VerticalRulerItem*>(itemRulerV);
-  rectRulerV->setPPI(dpiX);		
-  rectRulerV->setPos(QPointF(llx, lly));
-  rectRulerV->redraw();
-  rectRulerV->setZValue(10001);
+void te::layout::VisualizationArea::changeBoxArea( te::gm::Envelope* boxArea )
+{
+  m_boxArea = boxArea;
 }

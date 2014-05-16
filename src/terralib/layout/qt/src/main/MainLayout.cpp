@@ -175,7 +175,7 @@ void te::layout::MainLayout::createDockLayoutDisplay(QWidget* mainWindow, View* 
 
       QStatusBar* status = new QStatusBar;
       status->setMinimumSize(200, 10);
-      status->showMessage("TerraPrint 5.0 - Ready...");
+      status->showMessage("TerraPrint. Terralib 5 - Ready...");
 
       QVBoxLayout* vLayout = new QVBoxLayout;
       vLayout->addWidget(view);

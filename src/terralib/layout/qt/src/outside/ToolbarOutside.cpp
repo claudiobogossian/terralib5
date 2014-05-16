@@ -62,6 +62,9 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionViewPan("view_pan"),
   m_optionViewZoomIn("view_zoom_in"),
   m_optionViewZoomOut("view_zoom_out"),
+  m_optionExport("template_export"),
+  m_optionImport("template_import"),
+  m_optionNew("template_new"),
   m_toolbar(0),
   m_btnMap(0)
 {
@@ -122,14 +125,9 @@ void te::layout::ToolbarOutside::createToolbar()
   createGeometryToolButton();
   m_toolbar->addSeparator();
 
-  /*QToolButton* btnSalveProps = new QToolButton;
-  btnSalveProps->setText("Save Props");
-  btnSalveProps->setGeometry(0,0,10,10);
-  btnSalveProps->setCheckable(true);
-  connect(btnSalveProps, SIGNAL(toggled(bool)), this, SLOT(onClickSalvePropsTool(bool)));*/
-
-  /*m_toolbar->addWidget(btnSalveProps);
-  m_toolbar->addSeparator();*/
+  //Test
+  createTemplateToolButton();
+  m_toolbar->addSeparator();
 }
 
 void te::layout::ToolbarOutside::createMapToolButton()
@@ -146,7 +144,7 @@ void te::layout::ToolbarOutside::createMapToolButton()
   QAction* actionLegend = createAction("Default Legend", m_optionLegendDefault, "layout-default-legend");
   menu->addAction(actionMapGrid);
   
-  QToolButton *btnMap = createToolButton("Map", "Default Map Object", "layout-default-map");
+  QToolButton *btnMap = createToolButton("Map", "Map Objects", "layout-default-map");
   btnMap->setMenu(menu);
   btnMap->setPopupMode(QToolButton::InstantPopup);
 
@@ -189,6 +187,27 @@ void te::layout::ToolbarOutside::createViewAreaToolButton()
   m_toolbar->addWidget(btnViewArea);
 }
 
+void te::layout::ToolbarOutside::createTemplateToolButton()
+{
+  QMenu* menu = new QMenu();
+  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onTemplateTriggered(QAction*)));
+
+  QAction* actionNew = createAction("New Template", m_optionNew, "layout-new");
+  menu->addAction(actionNew);
+
+  QAction* actionSave = createAction("Export Template", m_optionExport, "layout-export");
+  menu->addAction(actionSave);
+
+  QAction* actionImport = createAction("Import Template", m_optionImport, "layout-import");
+  menu->addAction(actionImport);
+
+  QToolButton *btnTemplate = createToolButton("Template Options", "Template", "layout-export");
+  btnTemplate->setMenu(menu);
+  btnTemplate->setPopupMode(QToolButton::InstantPopup);
+
+  m_toolbar->addWidget(btnTemplate);
+}
+
 void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
 {
   if(action->objectName().compare(m_optionMapDefault.c_str()) == 0)
@@ -226,6 +245,22 @@ void te::layout::ToolbarOutside::onViewAreaTriggered( QAction* action )
   if(action->objectName().compare(m_optionViewZoomOut.c_str()) == 0)
   {
     changeAction(TypeZoomOut);
+  }
+}
+
+void te::layout::ToolbarOutside::onTemplateTriggered( QAction* action )
+{
+  if(action->objectName().compare(m_optionNew.c_str()) == 0)
+  {
+    changeAction(TypeNewTemplate);
+  }
+  if(action->objectName().compare(m_optionExport.c_str()) == 0)
+  {
+    changeAction(TypeExportPropsJSON);
+  }
+  if(action->objectName().compare(m_optionImport.c_str()) == 0)
+  {
+    changeAction(TypeImportJSONProps);
   }
 }
 

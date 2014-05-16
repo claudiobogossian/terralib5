@@ -28,10 +28,12 @@
 // TerraLib
 #include "JSON.h"
 #include "Property.h"
+#include "Properties.h"
 #include "../../../../common/Exception.h"
 #include "../../../../common/STLUtils.h"
 #include "../../../../common/Translator.h"
 #include "Config.h"
+#include "EnumUtils.h"
 
 // Boost
 #include <boost/property_tree/json_parser.hpp>
@@ -41,6 +43,8 @@
 // STL
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <string>  
 
 te::layout::JSON::JSON() 
 {
@@ -49,16 +53,7 @@ te::layout::JSON::JSON()
 
 te::layout::JSON::~JSON()
 {
-  std::vector<JSON*>::iterator it;
-  for(it = m_jsons.begin(); it != m_jsons.end(); ++it)
-  {
-    JSON* json = (*it);
 
-    if(json)
-    {
-      delete json;
-    }
-  }
 }
 
 bool te::layout::JSON::serialize()
@@ -103,58 +98,106 @@ bool te::layout::JSON::serialize()
 
 boost::property_tree::ptree te::layout::JSON::retrievePTree()
 {
-  std::vector<JSON*>::iterator it;
-  boost::property_tree::ptree array;
-
-  boost::property_tree::ptree copyArray = m_array;
-
-  for(it = m_jsons.begin(); it != m_jsons.end(); ++it)
-  {
-    std::vector<std::string> vecstr = (*it)->getKeys();
-
-    std::vector<std::string>::iterator its;
-    for(its = vecstr.begin(); its != vecstr.end(); ++its)
-    {
-      boost::property_tree::ptree  tree = (*it)->retrievePTree();
-      for (boost::property_tree::ptree::const_iterator itv = tree.begin(); itv != tree.end(); ++itv) 
-      {          
-        array.put_child(itv->first, itv->second);
-      }
-    } 
-  }
-
-  if(!array.empty())
-    copyArray.add_child(m_rootKey, array);
-  
-  return copyArray;
+  return m_array;
 }
 
 std::vector<te::layout::Properties*> te::layout::JSON::retrieve() 
 {
-
-  //>>>>>>>>>>>>>>>>>>>>>>>
-  //>>>>>>>>>>>>>>>>>>
-  //>>>>>>>>>>>>>
-
-
-  std::vector<te::layout::Properties*> props;
-  std::vector<JSON*>::iterator it;
-
-  for(it = m_jsons.begin(); it != m_jsons.end(); ++it)
-  {
-    std::vector<std::string> vecstr = (*it)->getKeys();
+  std::vector<te::layout::Properties*> propsRetrieve;
     
-    te::layout::Properties* properties = new te::layout::Properties((*it)->getRootKey());
+  //v.first //is the name of the child.
+  //v.second //is the child tree.
 
-    std::vector<std::string>::iterator its;
-    for(its = vecstr.begin(); its != vecstr.end(); ++its)
+  boost::property_tree::ptree::assoc_iterator it1 = m_array.find("template");
+  boost::property_tree::ptree::assoc_iterator it_nofound = m_array.not_found();
+
+  if (it1 == it_nofound)
+    return propsRetrieve;
+
+  boost::property_tree::ptree subtree = (*it1).second;  
+
+  int count = 0;
+  while(true)
+  {
+    std::stringstream ss;//create a stringstream
+    ss << count;//add number to the stream
+
+    std::string s_prop = "properties_"+ ss.str();
+
+    boost::property_tree::ptree::assoc_iterator it2 = subtree.find(s_prop); 
+    boost::property_tree::ptree::assoc_iterator it_nofound2 = subtree.not_found();
+
+    if (it2 == it_nofound2)
+      return propsRetrieve;
+
+    boost::property_tree::ptree subtree1 = (*it2).second;
+
+    boost::property_tree::ptree::assoc_iterator itName = subtree1.find("name");
+    boost::property_tree::ptree::assoc_iterator it_nofoundName = subtree1.not_found();
+
+    if (itName == it_nofoundName)
+      return propsRetrieve;
+
+    te::layout::Properties* props = new te::layout::Properties((*itName).second.data());
+
+    std::string valName;
+    boost::property_tree::ptree tree;
+    Property prop;
+    BOOST_FOREACH(const boost::property_tree::ptree::value_type &v, subtree.get_child(s_prop)) 
     {
-      te::layout::Property prop;
-      properties->addProperty(prop);
+      if(v.first.compare("object_type") == 0)
+      {
+        props->setTypeObj(te::layout::getLayoutAbstractObjectType(v.second.data()));
+        continue;
+      }
+
+      if(v.first.compare("type") == 0)
+      {
+        prop.setName(valName);
+        prop.setValue(tree.data(), te::layout::getLayoutPropertyDataType(v.second.data()));
+        props->addProperty(prop); 
+        prop.clear();
+      }
+      else
+      {
+        std::string val = v.first;
+        valName = val;
+        tree = v.second;
+        
+        retrieveSubPTree(tree, prop);
+      }
     }
-    props.push_back(properties);
+
+    propsRetrieve.push_back(props);
+    count+= 1;
   }
-  return props;
+
+  return propsRetrieve;
+}
+
+void te::layout::JSON::retrieveSubPTree( boost::property_tree::ptree subTree, Property& prop )
+{
+  std::string valName;
+  boost::property_tree::ptree tree;
+  BOOST_FOREACH( const boost::property_tree::ptree::value_type &v, subTree.get_child("") ) 
+  {  
+    Property proper;
+    if(v.first.compare("type") == 0)
+    {
+      proper.setName(valName);
+      proper.setValue(tree.data(), te::layout::getLayoutPropertyDataType(v.second.data()));
+      prop.addSubProperty(proper);
+    }
+    else
+    {
+      std::string val = v.first;
+      valName = val;
+      tree = v.second;
+    }
+
+    // recursive go down the hierarchy  
+    retrieveSubPTree(tree, proper);
+  }
 }
 
 bool te::layout::JSON::isEmpty()
@@ -162,16 +205,10 @@ bool te::layout::JSON::isEmpty()
   return m_array.empty();
 }
 
-void te::layout::JSON::addChild( JSON* json )
-{
-  m_jsons.push_back(json);
-}
-
 void te::layout::JSON::loadFromPath( std::string loadPath )
 {
   m_loadPath = loadPath;
 
-  boost::property_tree::ptree jsonTree; 
   std::ifstream inputFile;
 
   try 
@@ -181,19 +218,7 @@ void te::layout::JSON::loadFromPath( std::string loadPath )
     if (!inputFile.is_open())
       return;
 
-    boost::property_tree::json_parser::read_json(inputFile, jsonTree);
-
-    int count = jsonTree.size();
-
-    for (boost::property_tree::ptree::const_iterator itv = jsonTree.begin(); itv != jsonTree.end(); ++itv) 
-    {          
-      JSON* j_child = new JSON;
-      j_child->add(itv->first, itv->second);
-      searchPTree(itv->second, j_child);
-      
-      this->addChild(j_child);
-    }
-
+    boost::property_tree::json_parser::read_json(inputFile, m_array);
     inputFile.close();
   }
   catch(boost::property_tree::json_parser::json_parser_error &je)
@@ -217,18 +242,6 @@ void te::layout::JSON::loadFromPath( std::string loadPath )
   }
 }
 
-void te::layout::JSON::searchPTree( boost::property_tree::ptree tree, JSON* json )
-{
-  for (boost::property_tree::ptree::const_iterator itv = tree.begin(); itv != tree.end(); ++itv) 
-  {          
-    JSON* j_child = new JSON;
-    j_child->add(itv->first, itv->second);
-    searchPTree(itv->second, j_child);
-
-    json->addChild(j_child);
-  }
-}
-
 void te::layout::JSON::loadFromProperties( std::vector<te::layout::Properties*> properties )
 {
   m_properties = properties;
@@ -236,8 +249,12 @@ void te::layout::JSON::loadFromProperties( std::vector<te::layout::Properties*> 
   std::vector<te::layout::Properties*>::iterator it;
   std::vector<te::layout::Property>::iterator ity;
   
-  add("template", m_rootKey);
+  boost::property_tree::ptree rootArray;
+  boost::property_tree::ptree childArray;
 
+  rootArray.push_back(std::make_pair("name", m_rootKey));
+
+  int count = 0;
   for(it = m_properties.begin(); it != m_properties.end(); ++it)
   {		
     Properties* props = (*it);
@@ -248,27 +265,30 @@ void te::layout::JSON::loadFromProperties( std::vector<te::layout::Properties*> 
 
     if(vec.empty())
       continue;
-    
-    /*Falta ainda saber de que tipo é o valor: */
-    JSON* j_child = new JSON;
 
+    childArray.clear();
+    childArray.push_back(std::make_pair("object_type", te::layout::getLayoutAbstractObjectType(props->getTypeObj())));
     for(ity = vec.begin(); ity != vec.end(); ++ity)
     {
       Property prop = (*ity);
-
-      /*Falta ainda saber de que tipo é o valor: */
-      JSON* j_child_prop = new JSON;
-      searchProperty(prop, j_child_prop);
-      j_child_prop->add(prop.getName(), prop.getValue().toString());
-      j_child->addChild(j_child_prop);
+      childArray.push_back(std::make_pair(prop.getName(), prop.getValue().convertToString())); 
+      childArray.push_back(std::make_pair("type", te::layout::getLayoutPropertyDataType(prop.getType()))); 
+      searchProperty(prop, childArray);
     }
-    j_child->setRootKey(props->getObjectName());
-    j_child->add("name", props->getObjectName());
-    addChild(j_child);
+    if(!childArray.empty())
+    {
+      std::stringstream ss;//create a stringstream
+      ss << count;//add number to the stream
+
+      std::string s_prop = "properties_"+ ss.str();
+      rootArray.push_back(std::make_pair(s_prop, childArray));
+    }
+    count+= 1;
   }
+  m_array.push_back(std::make_pair("template", rootArray));
 }
 
-void te::layout::JSON::searchProperty( Property property, JSON* json )
+void te::layout::JSON::searchProperty( Property property, boost::property_tree::ptree array )
 {
   if(!property.getSubProperty().empty())
   {
@@ -280,27 +300,12 @@ void te::layout::JSON::searchProperty( Property property, JSON* json )
     {		
       Property prop = (*it);
 
-      /*Falta ainda saber de que tipo é o valor: */
-      JSON* j_child = new JSON;
-      j_child->add(prop.getName(), prop.getValue().toString());
-      json->addChild(j_child);
+      boost::property_tree::ptree childArray;
+      childArray.push_back(std::make_pair(prop.getName(), prop.getValue().convertToString()));
+      childArray.push_back(std::make_pair("type", te::layout::getLayoutPropertyDataType(prop.getType()))); 
+      array.push_back(std::make_pair("child",childArray));
       
-      searchProperty(prop, j_child);
+      searchProperty(prop, childArray);
     }
   }
-}
-
-int te::layout::JSON::numberchilds()
-{
-  return m_jsons.size();
-}
-
-std::vector<te::layout::JSON*> te::layout::JSON::getChilds() const
-{
-  return m_jsons;
-}
-
-std::vector<std::string> te::layout::JSON::getKeys()
-{
-  return m_keys;
 }
