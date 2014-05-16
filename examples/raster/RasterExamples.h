@@ -73,4 +73,7 @@ void GribPolygonExample();
 /*! \brief This example shows how to create an 1bit Raster in memory, and how to save an 1bit Raster in Tiff format. */
 void Raster1Bit();
 
+/*! \brief This example shows how to use the vectorization method. */
+void VectorizeRaster();
+
 #endif

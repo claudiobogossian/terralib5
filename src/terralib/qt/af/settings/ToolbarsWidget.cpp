@@ -140,7 +140,7 @@ void te::qt::af::ToolbarsWidget::resetState()
 void te::qt::af::ToolbarsWidget::getHelpInformations(QString& ns, QString& helpFile)
 {
   ns = "dpi.inpe.br.apf";
-  helpFile = "/apf/settings/toolbar/ToolbarConfig.html";
+  helpFile = "apf/settings/toolbar/ToolbarConfig.html";
 }
 
 void te::qt::af::ToolbarsWidget::currentToolbarChanged(int idx)
