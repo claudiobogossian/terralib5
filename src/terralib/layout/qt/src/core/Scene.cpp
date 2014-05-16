@@ -54,6 +54,7 @@
 #include <QtGui>
 #include <QPixmap>
 #include <QPainter>
+#include <QMessageBox>
 
 te::layout::Scene::Scene( QWidget* widget): 
   QGraphicsScene(widget),
@@ -102,13 +103,19 @@ void te::layout::Scene::insertItem( ItemObserver* item )
   {
     if(m_masterParent)
     {
-      int total = m_masterParent->childItems().count();    
+      total = m_masterParent->childItems().count();    
       qitem->setParentItem(m_masterParent); // have a addItem call inside
     }
     else
       this->addItem(qitem);
     
     qitem->setZValue(total);
+
+    ItemObserver* obs = dynamic_cast<ItemObserver*>(qitem);
+    if(obs)
+    {
+      obs->refresh();
+    }
   }
 
   emit addItemFinalized();
@@ -448,14 +455,16 @@ void te::layout::Scene::changePrintVisibility( bool change )
   }
 }
 
-void te::layout::Scene::savePropsAsJSON()
+bool te::layout::Scene::exportPropsAsJSON()
 {
+  bool is_export = false;
+
   QString fileName = QFileDialog::getSaveFileName(QApplication::desktop(), tr("Save File"), 
     QDir::currentPath(), tr("JSON Files (*.json)"));
 
   if(fileName.isEmpty())
   {
-    return;
+    return is_export;
   }
 
   std::string j_name = fileName.toStdString();
@@ -463,27 +472,59 @@ void te::layout::Scene::savePropsAsJSON()
   std::vector<te::layout::Properties*> props = getItemsProperties();
   
   if(props.empty())
-    return;
+    return is_export;
 
   TemplateEditor editor(TPJSONTemplate, j_name);
 
   AbstractTemplate* jtemplate = editor.getTemplate();
   
   if(!jtemplate)
-    return;
-  
-  bool is_export = false;
+    return is_export;
 
   is_export = jtemplate->exportTemplate(props);
 
-  /*
-    Object Reconstruction:
-      - instance model;
-      - update properties;
-      - create controller;
-      - draw;
-  */
-  std::vector<te::layout::Properties*> propsImport = jtemplate->importTemplate();
+  QMessageBox msgBox;
+  
+  if(is_export)
+  {
+    msgBox.setIcon(QMessageBox::Information);
+    msgBox.setText("Template exported successfully!");    
+  }
+  else
+  {
+    msgBox.setIcon(QMessageBox::Warning);
+    msgBox.setText("Error exporting template!");
+  }
+
+  msgBox.exec();
+
+  return is_export;
+}
+
+std::vector<te::layout::Properties*> te::layout::Scene::importJsonAsProps()
+{
+  std::vector<te::layout::Properties*> props;
+
+  QString fileName = QFileDialog::getOpenFileName(QApplication::desktop(), tr("Import File"), 
+    QDir::currentPath(), tr("JSON Files (*.json)"));
+
+  if(fileName.isEmpty())
+  {
+    return props;
+  }
+
+  std::string j_name = fileName.toStdString();  
+  
+  TemplateEditor editor(TPJSONTemplate, j_name);
+
+  AbstractTemplate* jtemplate = editor.getTemplate();
+
+  if(!jtemplate)
+    return props;
+
+  props = jtemplate->importTemplate();
+
+  return props;
 }
 
 std::vector<te::layout::Properties*> te::layout::Scene::getItemsProperties()
@@ -507,4 +548,10 @@ std::vector<te::layout::Properties*> te::layout::Scene::getItemsProperties()
   }
 
   return props;
+}
+
+void te::layout::Scene::refresh()
+{
+  clear();
+  createMasterParentItem();
 }

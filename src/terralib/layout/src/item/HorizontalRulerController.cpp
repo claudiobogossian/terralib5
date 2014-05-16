@@ -48,6 +48,10 @@ te::layout::HorizontalRulerController::~HorizontalRulerController()
 
 void te::layout::HorizontalRulerController::setPosition( const double& x, const double& y )
 {
-  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
-  model->setPosition(x, y);
+  if(m_model)
+  {
+    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
+    if(model)
+      return model->setPosition(x, y);
+  }
 }

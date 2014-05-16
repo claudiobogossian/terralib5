@@ -74,6 +74,8 @@ namespace te
 
         virtual void setPos(const QPointF &pos);
 
+        void	setZValue ( qreal z );
+
       protected:
 
         virtual void drawBackground( QPainter* painter );
@@ -91,6 +93,8 @@ namespace te
         virtual QPixmap calculateNewPixmap(const double& x, const double& y);
 
         virtual te::gm::Envelope createNewBoxInCoordScene(const double& x, const double& y);
+        
+        virtual int getZValueItem();
 
       protected:
 

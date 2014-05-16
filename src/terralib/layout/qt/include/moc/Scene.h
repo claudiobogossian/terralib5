@@ -90,8 +90,12 @@ namespace te
         virtual void savePaperAsImage();
 
         virtual void savePaperAsPDF();
+        
+        virtual bool exportPropsAsJSON();
 
-        virtual void savePropsAsJSON();
+        virtual std::vector<te::layout::Properties*> importJsonAsProps();
+
+        virtual void refresh();
 
       protected slots:
 

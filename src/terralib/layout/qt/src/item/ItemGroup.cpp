@@ -201,3 +201,15 @@ bool te::layout::ItemGroup::contains( const QPointF &point ) const
   
   return model->contains(te::gm::Coord2D(point.x(), point.y()));
 }
+
+void te::layout::ItemGroup::setZValue( qreal z )
+{
+  QGraphicsItem::setZValue(z);
+  setZValueItem(z);
+}
+
+int te::layout::ItemGroup::getZValueItem()
+{
+  return QGraphicsItem::zValue();
+}
+

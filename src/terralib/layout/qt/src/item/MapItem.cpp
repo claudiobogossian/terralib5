@@ -371,3 +371,17 @@ void te::layout::MapItem::onDrawLayersFinished( const QMap<QString, QString>& er
     }
   }
 }
+
+void te::layout::MapItem::setZValue( qreal z )
+{
+  QGraphicsItem::setZValue(z);
+  setZValueItem(z);
+
+}
+
+int te::layout::MapItem::getZValueItem()
+{
+  return QGraphicsItem::zValue();
+}
+
+

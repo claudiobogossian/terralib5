@@ -49,7 +49,9 @@ namespace te
       TypeCreateRectangle,
       TypeCreateText,
       TypeUnitsMetricsChange,
-      TypeSavePropsJSON,
+      TypeExportPropsJSON,
+      TypeImportJSONProps,
+      TypeNewTemplate,
       TypeNone
     } LayoutMode;
 

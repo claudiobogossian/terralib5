@@ -420,3 +420,15 @@ QPixmap te::layout::ObjectItem::getPixmap()
 {
   return m_pixmap;
 }
+
+void te::layout::ObjectItem::setZValue( qreal z )
+{
+  QGraphicsItem::setZValue(z);
+  setZValueItem(z);
+}
+
+int te::layout::ObjectItem::getZValueItem()
+{
+  return QGraphicsItem::zValue();
+}
+

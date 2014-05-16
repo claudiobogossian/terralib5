@@ -37,24 +37,24 @@ namespace te
     */
     typedef enum
     {
-      TPRetangleItem,
-      TPMapItem,
-      TPMapGridItem,
-      TPPaperItem,
-      TPLegendItem,
-      TPPropertiesWindow,
-      TPDisplayWindow,
-      TPObjectInspectorWindow,
-      TPToolbar,
-      TPGridSettings,
-      TPGrid,
-      TPGridPlanar,
-      TPGridGeodesic,
-      TPHorizontalRuler,
-      TPVerticalRuler,
-      TPText,
-      TPItemGroup,
-      TPObjectUnknown
+      TPRetangleItem = 1,
+      TPMapItem = 2,
+      TPMapGridItem = 3,
+      TPPaperItem = 4,
+      TPLegendItem = 5,
+      TPPropertiesWindow = 6,
+      TPDisplayWindow = 7,
+      TPObjectInspectorWindow = 8,
+      TPToolbar = 9,
+      TPGridSettings = 10,
+      TPGrid = 11,
+      TPGridPlanar = 12,
+      TPGridGeodesic = 13,
+      TPHorizontalRuler = 14,
+      TPVerticalRuler = 15,
+      TPText = 16,
+      TPItemGroup = 17,
+      TPObjectUnknown = 18
     } LayoutAbstractObjectType;
 
     /*!

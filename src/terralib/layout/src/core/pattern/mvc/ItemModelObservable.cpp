@@ -38,7 +38,8 @@ te::layout::ItemModelObservable::ItemModelObservable() :
   m_id(0),
   m_name("unknown"),
   m_type(TPObjectUnknown),
-  m_sharedProps(0)
+  m_sharedProps(0),
+  m_zValue(0)
 {
   m_box = te::gm::Envelope(0,0,0,0);
 
@@ -99,15 +100,54 @@ te::layout::Properties* te::layout::ItemModelObservable::getProperties() const
   pro_name.setName(m_sharedProps->getName());
   pro_name.setId("unknown");
   pro_name.setValue(m_name, DataTypeString);
+  m_properties->addProperty(pro_name);
 
   Property pro_id;
   pro_id.setName(m_sharedProps->getId());
   pro_id.setId("unknown");
   pro_id.setValue(m_id, DataTypeInt);
-
-  m_properties->addProperty(pro_name);
   m_properties->addProperty(pro_id);
+  
+  /* Box */
 
+  double x1 = m_box.getLowerLeftX();
+  double x2 = m_box.getUpperRightX();
+  double y1 = m_box.getLowerLeftY();
+  double y2 = m_box.getUpperRightY();
+
+  Property pro_x1;
+  pro_x1.setName(m_sharedProps->getX1());
+  pro_x1.setId("unknown");
+  pro_x1.setValue(x1, DataTypeDouble);
+  m_properties->addProperty(pro_x1);
+
+  Property pro_x2;
+  pro_x2.setName(m_sharedProps->getX2());
+  pro_x2.setId("unknown");
+  pro_x2.setValue(x2, DataTypeDouble);
+  m_properties->addProperty(pro_x2);
+
+  Property pro_y1;
+  pro_y1.setName(m_sharedProps->getY1());
+  pro_y1.setId("unknown");
+  pro_y1.setValue(y1, DataTypeDouble);
+  m_properties->addProperty(pro_y1);
+
+  Property pro_y2;
+  pro_y2.setName(m_sharedProps->getY2());
+  pro_y2.setId("unknown");
+  pro_y2.setValue(y2, DataTypeDouble);
+  m_properties->addProperty(pro_y2);
+
+  /* ---------- */
+
+  Property pro_zValue;
+  pro_zValue.setName(m_sharedProps->getZValue());
+  pro_zValue.setId("unknown");
+  pro_zValue.setValue(m_zValue, DataTypeInt);
+  m_properties->addProperty(pro_zValue);
+  
+  m_properties->setTypeObj(m_type);
   return m_properties;
 }
 
@@ -179,18 +219,55 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
 {
   Properties* vectorProps = const_cast<Properties*>(properties);
   
-  Property pro_name = vectorProps->contains(m_name);
+  Property pro_name = vectorProps->contains(m_sharedProps->getName());
 
   if(!pro_name.isNull())
   {
     m_name = pro_name.getValue().toString();
   }
 
-  Property pro_id = vectorProps->contains("id");
+  Property pro_id = vectorProps->contains(m_sharedProps->getId());
 
   if(!pro_id.isNull())
   {
     m_id = pro_id.getValue().toInt();
+  }
+
+  /* Box */
+  
+  Property pro_x1 = vectorProps->contains(m_sharedProps->getX1());
+
+  if(!pro_x1.isNull())
+  {
+    m_box.m_llx = pro_x1.getValue().toDouble();
+  }
+
+  Property pro_x2 = vectorProps->contains(m_sharedProps->getX2());
+
+  if(!pro_x2.isNull())
+  {
+    m_box.m_urx = pro_x2.getValue().toDouble();
+  }
+
+  Property pro_y1 = vectorProps->contains(m_sharedProps->getY1());
+
+  if(!pro_y1.isNull())
+  {
+    m_box.m_lly = pro_y1.getValue().toDouble();
+  }
+
+  Property pro_y2 = vectorProps->contains(m_sharedProps->getY2());
+
+  if(!pro_y2.isNull())
+  {
+    m_box.m_ury = pro_y2.getValue().toDouble();
+  }
+
+  Property pro_zValue = vectorProps->contains(m_sharedProps->getZValue());
+
+  if(!pro_zValue.isNull())
+  {
+    m_zValue = pro_zValue.getValue().toInt();
   }
 }
 

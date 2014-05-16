@@ -47,19 +47,7 @@ namespace te
       public:
         JSON();
         virtual ~JSON();
-
-        template <typename ValueType>
-        void add(std::string key, typename ValueType value);
-
-        void addChild(JSON* json);
-
-        template <typename ValueType>
-        te::layout::JSON* addChild(std::string key, typename ValueType value);
-
-        virtual int numberchilds();
-
-        virtual std::vector<te::layout::JSON*> getChilds() const;
-
+        
         virtual bool serialize();
 
         virtual boost::property_tree::ptree retrievePTree();
@@ -74,33 +62,12 @@ namespace te
 
       protected:
 
+        virtual void searchProperty(Property property, boost::property_tree::ptree array);
+
+        virtual void retrieveSubPTree(boost::property_tree::ptree subTree, Property& prop);
+
         boost::property_tree::ptree m_array;
-        std::vector<JSON*> m_jsons;
-        std::vector<std::string> m_keys;
-
-        virtual void searchProperty(Property property, JSON* json);
-
-        virtual void searchPTree(boost::property_tree::ptree tree, JSON* json);
-
-        virtual std::vector<std::string> getKeys();
     };
-
-    template <typename ValueType>
-    inline void te::layout::JSON::add( std::string key, typename ValueType value )
-    {
-      m_array.push_back(std::make_pair(key, value));  
-      m_keys.push_back(key);         
-    }
-
-    template <typename ValueType>
-    inline te::layout::JSON* addChild(std::string key, typename ValueType value) 
-    {
-      JSON* json = new JSON;
-      json->add(key, value);    
-      m_jsons.push_back(json);
-
-      return json;
-    }
   }
 }
 

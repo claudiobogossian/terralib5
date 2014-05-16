@@ -69,6 +69,8 @@ namespace te
 
       virtual void onViewAreaTriggered(QAction* action);
 
+      virtual void onTemplateTriggered(QAction* action);
+
     signals:
 
       void changeContext(bool change);
@@ -83,12 +85,14 @@ namespace te
 
       virtual void createViewAreaToolButton();
 
+      virtual void createTemplateToolButton();
+
       virtual void changeAction(LayoutMode mode);
 
       virtual QToolButton* createToolButton(std::string text, std::string tooltip, std::string icon);
       
       virtual QAction* createAction(std::string text, std::string objName, std::string icon, std::string tooltip = "");
-      
+
       QToolBar*  m_toolbar;
       QToolButton* m_btnMap;
 
@@ -104,6 +108,11 @@ namespace te
       std::string m_optionViewPan;
       std::string m_optionViewZoomIn;
       std::string m_optionViewZoomOut;
+
+      /* Template Menu */
+      std::string m_optionNew;
+      std::string m_optionExport;
+      std::string m_optionImport;
     };
   }
 }
