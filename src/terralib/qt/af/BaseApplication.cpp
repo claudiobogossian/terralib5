@@ -178,7 +178,8 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   m_projectMenu = new QMenu(m_menubar);
   m_projectAddLayerMenu = new QMenu(m_projectMenu);
   m_menubar->addAction(m_projectMenu->menuAction());
-  m_projectMenu->addAction(m_projectAddLayerMenu->menuAction());
+  //m_projectMenu->addAction(m_projectAddLayerMenu->menuAction());
+  m_projectMenu->addMenu(m_projectAddLayerMenu);
   m_layerMenu = new QMenu(m_menubar);
   m_menubar->addAction(m_layerMenu->menuAction());
   m_mapMenu = new QMenu(m_menubar);
@@ -2218,7 +2219,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_projectMenu->setObjectName("Project");
   m_projectMenu->setTitle(tr("&Project"));
 
-  m_projectMenu->addAction(m_projectAddLayerMenu->menuAction());
+  //m_projectMenu->addAction(m_projectAddLayerMenu->menuAction());
   m_projectAddLayerMenu->setObjectName("Project.Add Layer");
   m_projectAddLayerMenu->setTitle(tr("&Add Layer"));
   m_projectAddLayerMenu->setIcon(QIcon::fromTheme("layer-add"));
