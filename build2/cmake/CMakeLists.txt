@@ -89,8 +89,8 @@ add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
 
 if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-elif(APPLE)
-  add_definition(-ftemplate-depth-1024)
+elseif(APPLE)
+  add_definitions(-ftemplate-depth-1024)
 endif()
 
 # Note: automatically link executables with qtmain.lib on Windows when it has Qt dependency.
