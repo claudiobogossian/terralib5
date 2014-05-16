@@ -40,27 +40,6 @@
 // OGR
 #include <ogrsf_frmts.h>
 
-std::string RemoveSpatialSql(const std::string& sql)
-{
-  // Try find AND
-  std::size_t pos = sql.find("AND Intersection");
-
-  // Try find without AND
-  if(pos == std::string::npos)
-    pos = sql.find("WHERE Intersection");
-
-  if(pos == std::string::npos)
-    return sql;
-
-  std::string newQuery;
-
-  std::size_t pos2 = sql.find("))", pos);
-  newQuery = sql.substr(0, pos);
-  newQuery += sql.substr(pos2 + 2);
-
-  return newQuery;
-}
-
 OGRFieldType GetOGRType(int te_type)
 {
   switch (te_type)
@@ -68,7 +47,6 @@ OGRFieldType GetOGRType(int te_type)
     case te::dt::CHAR_TYPE:
     case te::dt::UCHAR_TYPE:
     case te::dt::STRING_TYPE:
-
       return OFTString;
     break;
 
@@ -94,7 +72,6 @@ OGRFieldType GetOGRType(int te_type)
 
   return OFTInteger;
 }
-
 
 te::ogr::Transactor::Transactor(DataSource* ds)
   : te::da::DataSourceTransactor(),
@@ -368,6 +345,22 @@ std::auto_ptr<te::da::DataSetType> te::ogr::Transactor::getDataSetType(const std
   m_ogrDs->getOGRDataSource()->ReleaseResultSet(l);
 
   return type;
+}
+
+std::auto_ptr<te::da::DataSetTypeCapabilities> te::ogr::Transactor::getCapabilities(const std::string &name)
+{
+  std::auto_ptr<te::da::DataSetTypeCapabilities> cap(new te::da::DataSetTypeCapabilities);
+
+  OGRLayer* l = m_ogrDs->getOGRDataSource()->GetLayerByName(name.c_str());
+
+  if(l != 0)
+  {
+    cap->setSupportAddColumn(l->TestCapability(OLCCreateField));
+    cap->setSupportRemoveColumn(l->TestCapability(OLCDeleteField));
+    cap->setSupportDataEdition(l->TestCapability(OLCRandomWrite));
+  }
+
+  return cap;
 }
 
 boost::ptr_vector<te::dt::Property> te::ogr::Transactor::getProperties(const std::string& datasetName)

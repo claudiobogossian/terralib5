@@ -94,6 +94,18 @@ namespace te
 
         void setSupportAll();
 
+        bool supportsAddColumn() const;
+
+        void setSupportAddColumn(const bool& support);
+
+        bool supportsRemoveColumn() const;
+
+        void setSupportRemoveColumn(const bool& support);
+
+        bool supportsDataEdition() const;
+
+        void setSupportDataEdition(const bool& support);
+
       private:
 
         bool m_supportPrimaryKey;       //!< A flag that indicates if the data source supports primary key constraint.
@@ -106,6 +118,9 @@ namespace te
         bool m_supportBTreeIndex;       //!< A flag that indicates if the data source supports b-tree indexes.
         bool m_supportHashIndex;        //!< A flag that indicates if the data source supports hash indexes.
         bool m_supportQuadTreeIndex;    //!< A flag that indicates if the data source supports quad-tree indexes.
+        bool m_supportAddColumn;        //!< A flag that indicates if the data set supports adding columns.
+        bool m_supportRemoveColumn;     //!< A flag that indicates if the data set supports removing columns.
+        bool m_supportDataEdition;      //!< A flag that indicates if the data set supports data edition.
     };
 
   } // end namespace da

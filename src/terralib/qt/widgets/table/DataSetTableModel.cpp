@@ -141,6 +141,8 @@ void te::qt::widgets::DataSetTableModel::setDataSet(te::da::DataSet* dset)
 
   m_dataset = dset;
 
+  m_rowCount = (m_dataset == 0 || !m_enabled) ? 0 : (int)m_dataset->size();
+
   endResetModel();
 }
 
@@ -198,12 +200,14 @@ void te::qt::widgets::DataSetTableModel::setEnabled(const bool& enabled)
 
   m_enabled = enabled;
 
+  m_rowCount = (m_enabled && m_dataset != 0) ? (int)m_dataset->size() : 0;
+
   endResetModel();
 }
 
 int te::qt::widgets::DataSetTableModel::rowCount(const QModelIndex & parent) const
 {
-  return (m_dataset == 0 || !m_enabled) ? 0 : (int)m_dataset->size();
+  return m_rowCount;
 }
 
 int te::qt::widgets::DataSetTableModel::columnCount(const QModelIndex & parent) const
@@ -238,7 +242,10 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
         {
           std::string value = m_dataset->getString(index.column());
           te::common::CharEncoding encoding = m_dataset->getPropertyCharEncoding(index.column());
-          return Convert2Qt(value, encoding);
+          if (encoding == te::common::UNKNOWN_CHAR_ENCODING)
+            return value.c_str();
+          else
+			      return Convert2Qt(value, encoding);
         }
         else
           return m_dataset->getAsString(index.column(), 6).c_str();

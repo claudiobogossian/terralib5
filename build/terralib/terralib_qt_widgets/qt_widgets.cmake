@@ -465,6 +465,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/srs" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/table/DataSetTableView.h
+  ${SRCDIR}/widgets/table/DataSetTableHorizontalHeader.h
   ${SRCDIR}/widgets/table/DataSetTableVerticalHeader.h
   ${SRCDIR}/widgets/table/AddColumnDialog.h
   ${SRCDIR}/widgets/table/AlterDataDialog.h

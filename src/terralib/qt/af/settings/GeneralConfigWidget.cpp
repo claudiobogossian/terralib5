@@ -330,6 +330,8 @@ void te::qt::af::GeneralConfigWidget::resetState()
           
 void te::qt::af::GeneralConfigWidget::getHelpInformations(QString& ns, QString& helpFile)
 {
+  ns = "dpi.inpe.br.apf";
+  helpFile = "apf/settings/generalconfig/GeneralConfig.html";
 }
 
 bool te::qt::af::GeneralConfigWidget::eventFilter(QObject* watched, QEvent* e)

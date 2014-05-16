@@ -1,6 +1,7 @@
 #include "AddColumnDialog.h"
 #include "DataSetTableModel.h"
 #include "DataSetTableVerticalHeader.h"
+#include "DataSetTableHorizontalHeader.h"
 #include "DataSetTableView.h"
 #include "HighlightDelegate.h"
 #include "Promoter.h"
@@ -17,7 +18,7 @@
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
-#include "../../../dataaccess/datasource/DataSourceCapabilities.h"
+#include "../../../dataaccess/dataset/DataSetTypeCapabilities.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../dataaccess/query/DataSetName.h"
@@ -123,15 +124,31 @@ te::da::DataSourcePtr GetDataSource(const te::map::AbstractLayer* layer)
   return ds;
 }
 
-const te::da::DataSourceCapabilities* GetCapabilities(const te::map::AbstractLayer* layer)
+//const te::da::DataSourceCapabilities* GetCapabilities(const te::map::AbstractLayer* layer)
+//{
+//  // Getting data source capabilities, if it is available
+//  te::da::DataSourcePtr ds = GetDataSource(layer);
+
+//  if(ds.get() != 0)
+//    return (&ds->getCapabilities());
+
+//  return 0;
+//}
+
+te::da::DataSetTypeCapabilities* GetCapabilities(const te::map::AbstractLayer* layer)
 {
-  // Getting data source capabilities, if it is available
-  te::da::DataSourcePtr ds = GetDataSource(layer);
+    // Getting data source capabilities, if it is available
+    te::da::DataSourcePtr ds = GetDataSource(layer);
 
-  if(ds.get() != 0)
-    return (&ds->getCapabilities());
+    if(ds.get() != 0)
+    {
+      const te::map::DataSetLayer* dl = dynamic_cast<const te::map::DataSetLayer*>(layer);
 
-  return 0;
+      if(dl != 0)
+        return ds->getCapabilities(dl->getDataSetName()).release();
+    }
+
+    return 0;
 }
 
 std::auto_ptr<te::da::Select> GetSelectExpression(const std::string& tableName, const te::da::DataSet* set, const std::vector<int>& cols, const bool& asc)
@@ -232,7 +249,6 @@ class TablePopupFilter : public QObject
       m_vMenu(0),
       m_vportMenu(0),
       m_dset(0),
-      m_caps(0),
       m_showOidsColumns(false),
       m_enabled(true),
       m_autoScrollEnabled(false),
@@ -340,16 +356,14 @@ class TablePopupFilter : public QObject
             act7->setToolTip(tr("Adds a column to the table."));
             m_hMenu->addAction(act7);
 
-            bool updatePermition = (m_dset->getAccessPolicy()==te::common::RWAccess);
-
-            act7->setEnabled(updatePermition);
+            act7->setEnabled(m_caps->supportsAddColumn());
 
             QAction* act8 = new QAction(m_hMenu);
             act8->setText(tr("Remove column"));
             act8->setToolTip(tr("Removes a column from the table."));
             m_hMenu->addAction(act8);
 
-            act8->setEnabled(updatePermition);
+            act8->setEnabled(m_caps->supportsRemoveColumn());
 
             QAction* act10 = new QAction(m_hMenu);
             act10->setText(tr("Rename column"));
@@ -447,9 +461,9 @@ class TablePopupFilter : public QObject
       m_enabled = enabled;
     }
 
-    void setDataSourceCapabilities(const te::da::DataSourceCapabilities* caps)
+    void setDataSetTypeCapabilities(te::da::DataSetTypeCapabilities* caps)
     {
-      m_caps = caps;
+      m_caps.reset(caps);
     }
 
     void setPromotionEnabled(const bool& enabled)
@@ -561,7 +575,7 @@ class TablePopupFilter : public QObject
     QMenu* m_vMenu;
     QMenu* m_vportMenu;
     te::da::DataSet* m_dset;
-    const te::da::DataSourceCapabilities* m_caps;
+    std::auto_ptr<te::da::DataSetTypeCapabilities> m_caps;
     bool m_showOidsColumns;
     bool m_enabled;
     int m_columnPressed;
@@ -581,8 +595,9 @@ te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
 
   setModel(m_model);
 
-  horizontalHeader()->setMovable(true);
   setVerticalHeader(new DataSetTableVerticalHeader(this));
+  setHorizontalHeader(new DataSetTableHorizontalHeader(this));
+  horizontalHeader()->setMovable(true);
 
   setSelectionMode(QAbstractItemView::MultiSelection);
   setSelectionBehavior(QAbstractItemView::SelectColumns);
@@ -599,6 +614,8 @@ te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
 
   connect(verticalHeader(), SIGNAL(selectedRow(const int&, const bool&)), SLOT(highlightRow(const int&, const bool&)));
   connect(verticalHeader(), SIGNAL(selectedRows(const int&, const int&)), SLOT(highlightRows(const int&, const int&)));
+
+//  connect(horizontalHeader(), SIGNAL(sectionPressed(int)), SLOT(columnPressed(int)));
 }
 
 te::qt::widgets::DataSetTableView::~DataSetTableView()
@@ -613,7 +630,7 @@ void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* l
   setDataSet(m_layer->getData(te::common::RANDOM).release());
   setLayerSchema(m_layer->getSchema().get());
 
-  m_popupFilter->setDataSourceCapabilities(GetCapabilities(m_layer));
+  m_popupFilter->setDataSetTypeCapabilities(GetCapabilities(m_layer));
 
   te::da::DataSourcePtr dsc = GetDataSource(m_layer);
 
@@ -1045,6 +1062,11 @@ void te::qt::widgets::DataSetTableView::setPromotionEnabled(const bool &enable)
     promote();
 
   m_popupFilter->setPromotionEnabled(m_promotionEnabled);
+}
+
+void te::qt::widgets::DataSetTableView::columnPressed(int c)
+{
+
 }
 
 void te::qt::widgets::DataSetTableView::removeSelection(const int& initRow, const int& finalRow)

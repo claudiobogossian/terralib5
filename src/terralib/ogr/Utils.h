@@ -238,6 +238,8 @@ namespace te
     
     TEOGREXPORT std::string GetOGRConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
+    TEOGREXPORT std::string RemoveSpatialSql(const std::string& sql);
+
   } // end namespace ogr
 }   // end namespace te
 

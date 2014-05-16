@@ -66,6 +66,7 @@ namespace te
 
   namespace da
   {
+    class DataSetTypeCapabilities;
     class DataSourceCapabilities;
     class DataSourceTransactor;
     class ObjectIdSet;
@@ -541,6 +542,15 @@ namespace te
           \note Thread-safe!
         */
         virtual std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name);
+
+        /*!
+         \brief It gets capabilities about a data set.
+
+         \param name Name of the dataset.
+
+         \return The capabilities of the data set.
+        */
+        std::auto_ptr<te::da::DataSetTypeCapabilities> getCapabilities(const std::string& name);
 
         /*!
           \brief It retrieves the properties of the dataset.

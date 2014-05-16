@@ -7,15 +7,15 @@
     <x>0</x>
     <y>0</y>
     <width>584</width>
-    <height>556</height>
+    <height>557</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Aggregation Operation</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_15">
+  <layout class="QGridLayout" name="gridLayout_16">
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_14">
+    <layout class="QGridLayout" name="gridLayout_15">
      <item row="0" column="0">
       <widget class="QFrame" name="frame_2">
        <property name="styleSheet">
@@ -74,33 +74,37 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <layout class="QGridLayout" name="gridLayout_13">
+      <layout class="QGridLayout" name="gridLayout_14">
        <item row="0" column="0">
-        <layout class="QGridLayout" name="gridLayout_9">
+        <layout class="QGridLayout" name="gridLayout_13">
          <item row="0" column="0">
           <widget class="QGroupBox" name="groupBox">
            <property name="title">
             <string>Input layer and the group attribute(s)</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_12">
-            <item row="2" column="0">
-             <layout class="QGridLayout" name="gridLayout_4">
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_6">
-                <property name="text">
-                 <string>Filter:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLineEdit" name="m_filterLineEdit"/>
-              </item>
-             </layout>
-            </item>
             <item row="0" column="0">
-             <layout class="QGridLayout" name="gridLayout_5">
+             <layout class="QGridLayout" name="gridLayout_9">
               <item row="0" column="0">
-               <widget class="QComboBox" name="m_layersComboBox"/>
+               <layout class="QGridLayout" name="gridLayout_4" columnstretch="1,0">
+                <item row="0" column="0">
+                 <widget class="QComboBox" name="m_layersComboBox"/>
+                </item>
+                <item row="0" column="1">
+                 <layout class="QGridLayout" name="gridLayout_5">
+                  <item row="0" column="2">
+                   <widget class="QLineEdit" name="m_filterLineEdit"/>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="label_6">
+                    <property name="text">
+                     <string>Filter:</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
               </item>
               <item row="1" column="0">
                <widget class="QListWidget" name="m_propertieslistWidget">
@@ -109,39 +113,39 @@
                 </property>
                </widget>
               </item>
-             </layout>
-            </item>
-            <item row="1" column="0">
-             <layout class="QGridLayout" name="gridLayout_10" columnstretch="0,0,1">
-              <item row="0" column="2">
-               <spacer name="horizontalSpacer_2">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>41</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="0" column="1">
-               <widget class="QCheckBox" name="m_calcStatCheckBox">
-                <property name="text">
-                 <string>Calculate Statistics</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QCheckBox" name="m_onlySelectedCheckBox">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="text">
-                 <string>Only Selected</string>
-                </property>
-               </widget>
+              <item row="2" column="0">
+               <layout class="QGridLayout" name="gridLayout_10" columnstretch="0,0,1">
+                <item row="0" column="2">
+                 <spacer name="horizontalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>41</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QCheckBox" name="m_calcStatCheckBox">
+                  <property name="text">
+                   <string>Calculate Statistics</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QCheckBox" name="m_onlySelectedCheckBox">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Only Selected</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
              </layout>
             </item>

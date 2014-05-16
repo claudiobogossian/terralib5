@@ -28,46 +28,55 @@
 
 /*!
   \defgroup rp_class Classification
+  \brief Algorithms to detect patterns in raster regions using different methods.
   \ingroup rp
 */
 
 /*!
   \defgroup rp_aux Auxiliary classes
+  \brief Raster processing auxiliary classes.
   \ingroup rp
 */
 
 /*!
-  \defgroup rp_func Auxiliary functions
+  \defgroup rp_func Auxiliary functions.
+  \brief Raster processing auxiliary functions.
   \ingroup rp
 */
 
 /*!
   \defgroup rp_enh Enhancement
+  \brief Raster enhancement algorithms.
   \ingroup rp
 */
 
 /*!
   \defgroup rp_mos Mosaic
+  \brief Algorithms to merge two or more rasters into a single one.
   \ingroup rp
 */
 
 /*!
   \defgroup rp_fus Fusion
+  \brief Algorithms to combine pixel information from different sensors to obtain better spatial or radiometric resolutions.
   \ingroup rp
 */
 
 /*!
   \defgroup rp_gen General purpose
+  \brief General pupose raster processing algorithms.
   \ingroup rp
 */
 
 /*!
   \defgroup rp_seg Segmentation
+  \brief Techniques for splitting one rasters into its components as homogeneous regions.
   \ingroup rp
 */
 
 /*!
   \defgroup rp_match Matching
+  \brief Techniques to create tie-points between rasters by matching and correlating homologous regions.
   \ingroup rp
 */
 

@@ -31,6 +31,7 @@
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryProperty.h"
 #include "../ogr/DataSet.h"
+#include "../ogr/SQLVisitor.h"
 #include "../ogr/Utils.h"
 #include "DataSource.h"
 #include "Exception.h"
@@ -126,29 +127,51 @@ std::auto_ptr<te::da::DataSet> te::wfs::Transactor::getDataSet(const std::string
   return std::auto_ptr<te::da::DataSet>(new te::ogr::DataSet(ds, layer));
 }
 
-std::auto_ptr<te::da::DataSet> te::wfs::Transactor::getDataSet(const std::string& name,
-                                                               const te::da::ObjectIdSet* oids,
-                                                               te::common::TraverseType travType,
-                                                               bool connected,
-                                                               const te::common::AccessPolicy accessPolicy)
-{
-  throw Exception(TR_WFS("WFS driver getDataSet(OIDS): Not implemented yet!"));
-}
-
 std::auto_ptr<te::da::DataSet> te::wfs::Transactor::query(const te::da::Select& q,
-                                                          te::common::TraverseType travType,
-                                                          bool connected,
-                                                          const te::common::AccessPolicy accessPolicy)
+                                                          te::common::TraverseType /*travType*/,
+                                                          bool /*connected*/,
+                                                          const te::common::AccessPolicy /*accessPolicy*/)
 {
-  throw Exception(TR_WFS("WFS driver query(): Not implemented yet!"));
+  assert(m_ds->getOGRDataSource());
+
+  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ds->getOGRDataSource()->GetName());
+
+  std::string sql;
+
+  te::ogr::SQLVisitor visitor(*m_ds->getDialect(), sql);
+
+  q.accept(visitor);
+
+  sql = te::ogr::RemoveSpatialSql(sql);
+
+  OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
+
+  if(layer == 0)
+    throw Exception(TR_OGR("The informed data set could not be found in the data source."));
+
+  te::gm::Envelope* e = visitor.getMBR();
+
+  if(e != 0)
+    layer->SetSpatialFilterRect(e->m_llx, e->m_lly, e->m_urx, e->m_ury);
+
+  return std::auto_ptr<te::da::DataSet>(new te::ogr::DataSet(ds, layer));
 }
 
 std::auto_ptr<te::da::DataSet> te::wfs::Transactor::query(const std::string& query,
-                                                          te::common::TraverseType travType,
-                                                          bool connected,
-                                                          const te::common::AccessPolicy accessPolicy)
+                                                          te::common::TraverseType /*travType*/,
+                                                          bool /*connected*/,
+                                                          const te::common::AccessPolicy /*accessPolicy*/)
 {
-  throw Exception(TR_WFS("WFS driver query(): Not implemented yet!"));
+  assert(m_ds->getOGRDataSource());
+
+  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ds->getOGRDataSource()->GetName());
+
+  OGRLayer* layer = ds->ExecuteSQL(query.c_str(), 0, 0);
+
+  if(layer == 0)
+    throw Exception(TR_OGR("The informed data set could not be found in the data source."));
+
+  return std::auto_ptr<te::da::DataSet>(new te::ogr::DataSet(ds, layer));
 }
 
 std::vector<std::string> te::wfs::Transactor::getDataSetNames()

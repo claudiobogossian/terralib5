@@ -63,6 +63,7 @@ namespace te
   namespace da
   {
     // Forward declarations
+    class DataSetTypeCapabilities;
     class DataSource;
     class ObjectIdSet;
     class Query;
@@ -482,6 +483,17 @@ namespace te
           \note Not thread-safe!
         */
         virtual std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name) = 0;
+
+        /*!
+        \brief It gets capabilities about a data set.
+
+        \param name Name of the dataset.
+
+        \return The capabilities of the data set.
+
+        \note By default it returns a fully support capabilities. If a driver does not support any capabilty, it may reimplement this function.
+       */
+        virtual std::auto_ptr<te::da::DataSetTypeCapabilities> getCapabilities(const std::string& name);
 
         /*!
           \brief It retrieves the properties of the dataset.
