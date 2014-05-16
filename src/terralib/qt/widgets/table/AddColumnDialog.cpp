@@ -25,13 +25,13 @@
 
 te::dt::Property* GetProperty(const QString& propertyType)
 {
-  if(propertyType.compare(QObject::tr("Integer")))
+  if(propertyType.compare(QObject::tr("Integer")) == 0)
     return new te::dt::SimpleProperty("", te::dt::INT32_TYPE);
-  else if(propertyType.compare(QObject::tr("Real")))
+  else if(propertyType.compare(QObject::tr("Real")) == 0)
     return new te::dt::SimpleProperty("", te::dt::DOUBLE_TYPE);
-  if(propertyType.compare(QObject::tr("String")))
+  else if(propertyType.compare(QObject::tr("String")) == 0)
     return new te::dt::SimpleProperty("", te::dt::STRING_TYPE);
-  if(propertyType.compare(QObject::tr("Date")))
+  else if(propertyType.compare(QObject::tr("Date")) == 0)
     return new te::dt::SimpleProperty("", te::dt::DATETIME_TYPE);
 
   return 0;
