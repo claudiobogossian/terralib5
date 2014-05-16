@@ -61,7 +61,7 @@ te::rst::Vectorizer::Vectorizer(Raster* r, unsigned int b, unsigned int mp)
   m_useNoData = (m_noDataValue != std::numeric_limits<double>::max());
 
   m_containerPolygons.clear();
-  m_rTreePolygons = new te::sam::rtree::Index<std::size_t, 8, 4>();
+  m_rTreePolygons = new te::sam::rtree::Index<unsigned int, 8, 4>();
 
 // setting the directions
   m_directions[NORTHWEST] = te::gm::Coord2D(-1, -1);

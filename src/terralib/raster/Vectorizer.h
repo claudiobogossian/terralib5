@@ -144,7 +144,7 @@ namespace te
         long m_nColumns;                    //!< The number of columns.
         unsigned int m_rasterBand;          //!< The raster band to be used.
         unsigned int m_maxPolygons;         //!< The maximum allowed number of polygons to be created.
-        te::sam::rtree::Index<std::size_t, 8, 4>* m_rTreePolygons;   //!< A RTree instance pointer to optimize the searching of points inside already created polygons
+        te::sam::rtree::Index<unsigned int, 8, 4>* m_rTreePolygons;   //!< A RTree instance pointer to optimize the searching of points inside already created polygons
         std::vector<VectorizerPolygonStructure> m_containerPolygons; //!< Vector of all polygons.
     };
   } // end namespace rst
