@@ -80,14 +80,6 @@ if(NOT DEFINED TERRALIB_AUTOMATIC_INITIALIZATION)
   set(TERRALIB_AUTOMATIC_INITIALIZATION 1 CACHE BOOL "Tells that TerraLib should initialize its resources automatically")
 endif()
 
-#if(WIN32)
-#
-#  if(NOT DEFINED TERRALIB_THIRDPARTY_PATH)
-#    set(TERRALIB_THIRDPARTY_PATH "NOT ASSIGNED" CACHE PATH "Path to a directory containing the TerraLib third party libraries")
-#    message("\n\nSet the TERRALIB_THIRDPARTY_PATH variable containing the path for the TerraLib third party libraries for compiling in the Windows environment!\n\n")
-#  endif()
-#
-#endif()
 
 #
 # global definitions and includes
@@ -97,6 +89,8 @@ add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
 
 if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+elif(APPLE)
+  add_definition(-ftemplate-depth-1024)
 endif()
 
 # Note: automatically link executables with qtmain.lib on Windows when it has Qt dependency.
@@ -138,16 +132,11 @@ include(CMakeDependentOption)
 # first check of libraries
 #
 
-#if(WIN32)
-#
-#  set(CMAKE_PREFIX_PATH ${TERRALIB_THIRDPARTY_PATH}
-#                        ${TERRALIB_THIRDPARTY_PATH}/gdal
-#                        ${TERRALIB_THIRDPARTY_PATH}/gdal/win32
-#                        ${TERRALIB_THIRDPARTY_PATH}/include/postgresql)
-#
-#endif()
-
 find_package(Boost 1.54.0 REQUIRED system date_time chrono timer filesystem thread log log_setup program_options unit_test_framework)
+
+if(NOT Boost_FOUND)
+  message(FATAL_ERROR "TerraLib: could not find required Boost libraries!")
+endif()
 
 find_package(Doxygen QUIET)
 
@@ -167,7 +156,7 @@ find_package(GNUIconv)
 
 find_package(Log4cxx)
 
-find_package(Lua51)
+#find_package(Lua51)
 
 find_package(LibPQ)
 
