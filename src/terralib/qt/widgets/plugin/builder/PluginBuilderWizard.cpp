@@ -342,7 +342,7 @@ void te::qt::widgets::PluginBuilderWizard::buildPlugin()
   pi.m_licenseURL = m_ui->m_pluginLicenseSiteLineEdit->text().toStdString();
   pi.m_category = m_ui->m_pluginCategoryComboBox->currentText().toStdString();
   pi.m_site = m_ui->m_pluginSiteLineEdit->text().toStdString();
-  pi.m_folder = m_ui->m_buildLocationLineEdit->text().toStdString();
+  //pi.m_folder = m_ui->m_buildLocationLineEdit->text().toStdString();
 
   pi.m_requiredPlugins = m_pluginDependencies->getOutputValues();
   pi.m_requiredPluginCategories = m_categoryDependencies->getOutputValues();

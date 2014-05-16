@@ -435,7 +435,7 @@ void te::qt::af::ApplicationController::initializePlugins()
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
   bool loadPlugins = true;
-  
+
   std::vector<std::string> plgFiles;
 
   try
@@ -443,39 +443,39 @@ void te::qt::af::ApplicationController::initializePlugins()
     SplashScreenManager::getInstance().showMessage(tr("Reading application plugins list..."));
 
     plgFiles = GetPluginsFiles();
-    
+
     //SplashScreenManager::getInstance().showMessage(tr("Plugins list read!"));
-    
+
     SplashScreenManager::getInstance().showMessage(tr("Checking enabled plugins..."));
     
     QSettings user_settings(QSettings::IniFormat,
                             QSettings::UserScope,
                             QApplication::instance()->organizationName(),
                             QApplication::instance()->applicationName());
-    
+
     user_settings.beginGroup("plugins");
-    
+
     std::set<std::string> user_enabled_plugins;
-    
+
     int nitems = user_settings.beginReadArray("enabled");
-    
+
     for(int i = 0; i != nitems; ++i)
     {
       user_settings.setArrayIndex(i);
-      
+
       QString name = user_settings.value("name").toString();
-      
+
       user_enabled_plugins.insert(name.toStdString());
     }
-    
+
     user_settings.endArray();
-    
+
     user_settings.endGroup();
-    
+
     //SplashScreenManager::getInstance().showMessage(tr("Enabled plugin list read!"));
-    
+
     SplashScreenManager::getInstance().showMessage(tr("Loading plugins..."));
-    
+
 // retrieve information for each plugin
     boost::ptr_vector<te::plugin::PluginInfo> plugins;
     
@@ -493,37 +493,14 @@ void te::qt::af::ApplicationController::initializePlugins()
     
 // load and start each plugin
     te::plugin::PluginManager::getInstance().load(plugins);
-    
+
     SplashScreenManager::getInstance().showMessage(tr("Plugins loaded successfully!"));
   }
   catch(const std::exception& e)
   {
-    loadPlugins = false;
-
     te::qt::widgets::ScopedCursor acursor(Qt::ArrowCursor);
 
     QString msgErr(tr("Error reading application's plugin list: %1"));
-
-    msgErr = msgErr.arg(e.what());
-
-    QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
-  }
-
-  if(!loadPlugins)
-    return;
-
-  try
-  {
-    
-  }
-  catch(const std::exception& e)
-  {
-    te::qt::widgets::ScopedCursor acursor(Qt::ArrowCursor);
-
-    SplashScreenManager::getInstance().close();
-
-    QString msgErr(tr("Some plugins couldn't be loaded. %1\n\n"
-                      "Please, refer to plugin manager to fix the problem."));
 
     msgErr = msgErr.arg(e.what());
 

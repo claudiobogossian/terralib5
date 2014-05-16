@@ -105,9 +105,6 @@ te::plugin::PluginInfo* te::plugin::GetInstalledPlugin(const std::string& plugin
   std::auto_ptr<PluginInfo> pInfo(new PluginInfo);
   *pInfo << *xmlReader;
 
-  pInfo->m_folder = pluginFileName.parent_path().string();
-//  pInfo->m_file_name = pluginFileName.generic_string();
-
   return pInfo.release();
 }
 
