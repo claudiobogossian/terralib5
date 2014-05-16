@@ -1009,7 +1009,8 @@ void te::qt::widgets::DataSetTableView::addColumn()
 
       ds->addProperty(dsName, p.get());
 
-      m_model->insertColumns((int)n_prop-1, 0);
+      if(ds->getType().compare("OGR") == 0)
+        m_model->insertColumns((int)n_prop-1, 0);
 
       setLayer(m_layer);
     }
