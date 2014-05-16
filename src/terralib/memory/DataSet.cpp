@@ -277,6 +277,7 @@ void te::mem::DataSet::setPropertyName(const std::string& name, std::size_t pos)
 
 te::common::CharEncoding te::mem::DataSet::getPropertyCharEncoding(std::size_t i) const
 {
+  if (m_encodings.size()== 0) return te::common::UNKNOWN_CHAR_ENCODING;
   std::map<int, te::common::CharEncoding>::const_iterator it = m_encodings.find(i);
   assert(it != m_encodings.end());
 
