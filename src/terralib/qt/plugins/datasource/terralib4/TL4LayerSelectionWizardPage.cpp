@@ -28,9 +28,8 @@
 #include "TL4LayerSelectionWizardPage.h"
 
 // Qt
-#include<QtGui/QListWidgetItem>
-
-#include<QtGui/QIcon>
+#include<QIcon>
+#include<QListWidgetItem>
 
 QIcon getImage(int type)
 {

@@ -31,7 +31,7 @@
 #include "Config.h"
 
 // Terralib 4.x
-#include <terralib/kernel/TeQuerier.h>
+#include <kernel/TeQuerier.h>
 
 // STL
 #include <memory>
