@@ -150,10 +150,5 @@ void te::layout::MapGridModel::updateProperties( te::layout::Properties* propert
     props->addProperty(pro_grid);
     bool visibility = m_gridPlanar->isVisible();
     m_gridPlanar->updateProperties(props);
-    
-    ParamsCreate params;
-    double zoomFactor = Context::getInstance()->getZoomFactor();
-    ContextItem context(params, zoomFactor);
-    draw(context);
   }
 }

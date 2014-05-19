@@ -44,7 +44,15 @@ namespace te
 	    VisualizationArea(te::gm::Envelope* boxArea);
 	    virtual ~VisualizationArea();
 
-      virtual void create();
+      virtual void build();
+      virtual void rebuildWithoutPaper();
+      virtual void changeBoxArea(te::gm::Envelope* boxArea);
+
+    protected:
+
+      virtual void createVerticalRuler();
+      virtual void createHorizontalRuler();
+      virtual void createPaper();
 
     protected:
 

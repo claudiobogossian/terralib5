@@ -407,7 +407,10 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
         {
           std::string value = m_dataset->getString(index.column());
           te::common::CharEncoding encoding = m_dataset->getPropertyCharEncoding(index.column());
-          return Convert2Qt(value, encoding);
+          if (encoding == te::common::UNKNOWN_CHAR_ENCODING)
+            return value.c_str();
+          else
+			      return Convert2Qt(value, encoding);
         }
         else
           return m_dataset->getAsString(index.column(), 6).c_str();

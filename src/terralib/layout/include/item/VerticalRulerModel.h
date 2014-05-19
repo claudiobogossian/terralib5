@@ -32,9 +32,6 @@
 #include "ContextItem.h"
 #include "AbstractRulerModel.h"
 #include "EnumMode.h"
-#include "Utils.h"
-#include "../../../qt/widgets/canvas/Canvas.h"
-#include "../../../color/RGBAColor.h"
 
 // STL
 #include <vector>
@@ -49,55 +46,18 @@ namespace te
       public:
 
         VerticalRulerModel();
-        ~VerticalRulerModel();
-
-        virtual void updateObserver(ContextItem context);
+        virtual ~VerticalRulerModel();
 
         virtual void draw( ContextItem context );
         
-        virtual void setPaperBox(te::gm::Envelope	 box);
-        virtual te::gm::Envelope	 getPaperBox();
-
         virtual void setBox(te::gm::Envelope box);
-        
-        virtual void setVisibleVerticalRuler(bool visible);
-        virtual bool isVisibleVerticalRuler();
-
-        virtual void invertedLines(bool invert);
 
       protected:
 
         virtual void drawVerticalRuler(te::map::Canvas* canvas, Utils* utils);
  
         virtual void drawRuler(te::map::Canvas* canvas, Utils* utils);
-
-        virtual void drawMarks(te::map::Canvas* canvas, Utils* utils, int marks);
         
-        virtual void updateVerticalListText();
-
-        virtual void drawLineW(te::gm::Envelope box, Utils* utils);
-
-        virtual void drawRectW(te::gm::Envelope box, te::color::RGBAColor color, te::map::Canvas* canvas, Utils* utils);
-
-      protected:
-
-        te::gm::Envelope	 m_paperBox;
-        te::gm::Envelope	 m_backEndBox;
-        double	  m_longLine;
-        double	  m_mediumLine;
-        double    m_smallLine;
-        double    m_spacing;
-        double	  m_lineMargin;
-        int		 m_verticalBlockMarks;
-        int		  m_blockSize;
-        int		  m_middleBlockSize;
-        double	  m_borderLineSize;
-        bool	  m_visibleVerticalRuler;
-        double	  m_posCount;
-        std::vector<std::string> m_verticalTexts;
-        bool      m_invertedLines;
-        double m_backEndSpacing;
-        double m_backEndMargin;
     };
   }
 }

@@ -30,6 +30,7 @@ int main()
     ExemplifyIterators();
     // GribPolygonExample();
     Raster1Bit();
+    // VectorizeRaster();
 
     te::plugin::PluginManager::getInstance().unloadAll();
 

@@ -107,5 +107,5 @@ void te::qt::af::DisplayWidget::onApplyButtonClicked()
 void te::qt::af::DisplayWidget::getHelpInformations(QString& ns, QString& helpFile)
 {
   ns = "dpi.inpe.br.apf";
-  helpFile = "/apf/settings/display/DisplayConfig.html";
+  helpFile = "apf/settings/display/DisplayConfig.html";
 }

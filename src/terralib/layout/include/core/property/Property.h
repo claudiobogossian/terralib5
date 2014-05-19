@@ -87,7 +87,7 @@ namespace te
         virtual bool containsSubProperty(Property subProperty);
 
         virtual Property containsSubProperty(std::string name);
-
+        
         bool operator ==(const Property& other); 
 
     protected:

@@ -73,7 +73,6 @@ void te::layout::HorizontalRulerItem::updateObserver( ContextItem context )
   if(rgba)
   {
     img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
-    pixmap.fill(Qt::transparent);
     pixmap = QPixmap::fromImage(*img);
   }
 

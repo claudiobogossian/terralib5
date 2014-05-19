@@ -96,6 +96,8 @@ namespace te
         virtual void destroyItemGroup();
 
         virtual void deleteItems();
+
+        virtual void buildTemplate();
         
       protected:
         OutsideArea*  m_outsideArea;
