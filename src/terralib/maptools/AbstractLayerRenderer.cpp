@@ -128,12 +128,21 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
   std::auto_ptr<LayerSchema> schema(layer->getSchema());
   assert(schema.get());
 
+  // Gets the name of the referenced spatial property
+  std::string spatialPropertyName = layer->getGeomPropertyName();
+
   if(schema->hasGeom())
   {
-    // For while, first geometry property. TODO: need a visitor to get which spatial properties the layer style references
-    te::gm::GeometryProperty* geometryProperty = te::da::GetFirstGeomProperty(schema.get());
+    te::gm::GeometryProperty* geometryProperty = 0;
 
-    /** For while if the AbstractLayer has a grouping, do not consider the style. Need review! **/
+    if(spatialPropertyName.empty())
+      geometryProperty = te::da::GetFirstGeomProperty(schema.get());
+    else
+      geometryProperty = dynamic_cast<te::gm::GeometryProperty*>(schema->getProperty(spatialPropertyName));
+
+    assert(geometryProperty);
+
+    // If the AbstractLayer has a grouping, do not consider the style.
     Grouping* grouping = layer->getGrouping();
     if(grouping && grouping->isVisible())
     {
@@ -163,8 +172,14 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
   }
   else if(schema->hasRaster())
   {
-    // For while, first raster property. TODO: need a visitor to get which spatial properties the layer style references
-    te::rst::RasterProperty* rasterProperty = te::da::GetFirstRasterProperty(schema.get());
+    te::rst::RasterProperty* rasterProperty = 0;
+
+    if(spatialPropertyName.empty())
+      rasterProperty = te::da::GetFirstRasterProperty(schema.get());
+    else
+      rasterProperty = dynamic_cast<te::rst::RasterProperty*>(schema->getProperty(spatialPropertyName));
+
+    assert(rasterProperty);
 
     // Get the layer style
     te::se::Style* style = layer->getStyle();
@@ -190,7 +205,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
     if(dataset.get() == 0)
       throw Exception((boost::format(TR_MAP("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
 
-    std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
+    std::size_t rpos = te::da::GetPropertyPos(dataset.get(), spatialPropertyName);
 
     // Retrieves the raster
     std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));
@@ -299,7 +314,7 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
     //task.setTotalSteps(symbolizers.size() * dataset->size()); // Removed! The te::da::DataSet size() method would be too costly to compute.
 
     // For while, first geometry property. TODO: get which geometry property the symbolizer references
-    std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
+    std::size_t gpos = te::da::GetPropertyPos(dataset.get(), geomPropertyName);
 
     if(symbolizers.empty())
     {
@@ -447,7 +462,7 @@ void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
     std::size_t nSymbolizers = symbolizers.size();
 
     // For while, first geometry property. TODO: get which geometry property the symbolizer references
-    std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
+    std::size_t gpos = te::da::GetPropertyPos(dataset.get(), geomPropertyName);
 
     for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
     {
@@ -555,7 +570,7 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
     return;
 
   // Gets the first geometry property
-  std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
+  std::size_t gpos = te::da::GetPropertyPos(dataset.get(), geomPropertyName);
 
   // Gets the property position
   std::auto_ptr<te::map::LayerSchema> dt(layer->getSchema());

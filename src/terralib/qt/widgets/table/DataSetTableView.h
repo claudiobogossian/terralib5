@@ -218,11 +218,6 @@ namespace te
 
           /*!
             \brief Sort by the selected columns.
-          */
-//          void sortByColumns();
-
-          /*!
-            \brief Sort by the selected columns.
 
             \param asc True for ascendent order, false for descendent.
           */
@@ -264,6 +259,11 @@ namespace te
             \param enable \a True to enable promotion, \a false to disable it
           */
           void setPromotionEnabled(const bool& enable);
+
+          /*!
+           \brief Saves all editions to the dataset.
+           */
+          void saveEditions();
 
         signals:
 

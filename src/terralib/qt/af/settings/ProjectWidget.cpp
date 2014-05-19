@@ -22,7 +22,7 @@ te::qt::af::ProjectWidget::ProjectWidget(QWidget* parent)
 void te::qt::af::ProjectWidget::getHelpInformations(QString& ns, QString& helpFile)
 {
   ns = "dpi.inpe.br.apf";
-  helpFile = "/apf/settings/project/ProjectConfig.html";
+  helpFile = "apf/settings/project/ProjectConfig.html";
 }
 
 te::qt::af::ProjectWidget::~ProjectWidget()

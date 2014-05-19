@@ -34,11 +34,15 @@
 // TerraLib
 #include "OutsideObserver.h"
 #include "../../../../geometry/Envelope.h"
+#include "EnumMode.h"
 
 class QGraphicsItem;
 class QWidget;
 class QToolBar;
 class QGroupBox;
+class QAction;
+class QToolButton;
+class QMenu;
 
 namespace te
 {
@@ -58,16 +62,14 @@ namespace te
 	    virtual te::gm::Coord2D getPosition();
       
     public slots:
+      
+      virtual void onMapTriggered(QAction* action);
 
-      virtual void onClickPanTool(bool toggled);
-      virtual void onClickZoomInTool(bool toggled);
-      virtual void onClickZoomOutTool(bool toggled);
-      virtual void onIndexChanged(int index);
-      virtual void onClickMapTool(bool toggled);
-      virtual void onClickMapGridTool(bool toggled);
-      virtual void onClickRectangleTool(bool toggled);
-      virtual void onClickSalvePropsTool(bool toggled);
-      virtual void onClickLegendTool(bool toggled);
+      virtual void onGeometryTriggered(QAction* action);
+
+      virtual void onViewAreaTriggered(QAction* action);
+
+      virtual void onTemplateTriggered(QAction* action);
 
     signals:
 
@@ -79,7 +81,38 @@ namespace te
 
       virtual void createMapToolButton();
 
+      virtual void createGeometryToolButton();
+
+      virtual void createViewAreaToolButton();
+
+      virtual void createTemplateToolButton();
+
+      virtual void changeAction(LayoutMode mode);
+
+      virtual QToolButton* createToolButton(std::string text, std::string tooltip, std::string icon);
+      
+      virtual QAction* createAction(std::string text, std::string objName, std::string icon, std::string tooltip = "");
+
       QToolBar*  m_toolbar;
+      QToolButton* m_btnMap;
+
+      /* Map Menu */
+      std::string m_optionMapDefault;
+      std::string m_optionMapGrid;
+      std::string m_optionLegendDefault;
+
+      /* Geometry Menu */
+      std::string m_optionRectangle;
+
+      /* View Area */
+      std::string m_optionViewPan;
+      std::string m_optionViewZoomIn;
+      std::string m_optionViewZoomOut;
+
+      /* Template Menu */
+      std::string m_optionNew;
+      std::string m_optionExport;
+      std::string m_optionImport;
     };
   }
 }

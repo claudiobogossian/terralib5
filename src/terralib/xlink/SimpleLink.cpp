@@ -102,3 +102,16 @@ te::xl::ActuateType te::xl::SimpleLink::getActuate() const
   return m_actuate;
 }
 
+te::xl::SimpleLink* te::xl::SimpleLink::clone() const
+{
+  SimpleLink* sl = new SimpleLink;
+
+  sl->m_href = m_href;
+  sl->m_role = m_role;
+  sl->m_arcrole = m_arcrole;
+  sl->m_title = m_title;
+  sl->m_show = m_show;
+  sl->m_actuate = m_actuate;
+
+  return sl;
+}

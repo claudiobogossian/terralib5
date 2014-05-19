@@ -46,6 +46,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <set>
 
 // Boost
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -63,6 +64,7 @@ namespace te
   namespace da
   {
     // Forward declarations
+    class DataSetTypeCapabilities;
     class DataSource;
     class ObjectIdSet;
     class Query;
@@ -482,6 +484,17 @@ namespace te
           \note Not thread-safe!
         */
         virtual std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name) = 0;
+
+        /*!
+        \brief It gets capabilities about a data set.
+
+        \param name Name of the dataset.
+
+        \return The capabilities of the data set.
+
+        \note By default it returns a fully support capabilities. If a driver does not support any capabilty, it may reimplement this function.
+       */
+        virtual std::auto_ptr<te::da::DataSetTypeCapabilities> getCapabilities(const std::string& name);
 
         /*!
           \brief It retrieves the properties of the dataset.
@@ -1186,6 +1199,23 @@ namespace te
                             const ObjectIdSet* oids,
                             const std::map<std::string, std::string>& options,
                             std::size_t limit = 0) = 0;
+
+        /*!
+         \brief It updates the contents of a dataset.
+
+         All rows are edited. The third parameter tells wich columns are edited for each row.
+
+         \param datasetName Name pf the dataset.
+         \param dataset Dataset with editions.
+         \param properties Columns edited for each row. Note that the size of \a properties must be the same of the \a dataset.
+         \param ids List of positions of the columns that identifies rows.
+
+         \exception te::da::Exception An exception can be thrown, if the dataset could not be updated.
+         */
+        virtual void update(const std::string& datasetName,
+                            DataSet* dataset,
+                            const std::vector< std::set<int> >& properties,
+                            const std::vector<size_t>& ids);
 
         /*!
           \brief For some data access drivers, this method will perform some operations to optimize the data storage.

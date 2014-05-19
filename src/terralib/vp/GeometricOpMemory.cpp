@@ -72,7 +72,7 @@ te::vp::GeometricOpMemory::~GeometricOpMemory()
 
 bool te::vp::GeometricOpMemory::run()
 {
-  // get the geometric operation and/or tabular operation. 
+// get the geometric operation and/or tabular operation. 
   std::vector<int> opGeom;
   std::vector<int> opTab;
   std::vector<te::da::DataSetType*> dsTypeVec;
@@ -104,7 +104,7 @@ bool te::vp::GeometricOpMemory::run()
 
   if(m_outputLayer)
   {
-    bool hasMultiGeomColumns = true;
+    bool hasMultiGeomColumns = false;
     bool result = false;
 
     switch(m_objStrategy)

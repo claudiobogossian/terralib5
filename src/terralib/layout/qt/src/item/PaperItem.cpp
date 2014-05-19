@@ -52,6 +52,9 @@ te::layout::PaperItem::~PaperItem()
 
 void te::layout::PaperItem::updateObserver( ContextItem context )
 {
+  if(!m_model)
+    return;
+
   te::color::RGBAColor** rgba = context.getPixmap();
 
   if(!rgba)
@@ -59,7 +62,13 @@ void te::layout::PaperItem::updateObserver( ContextItem context )
 
   Utils* utils = Context::getInstance()->getUtils();
 
+  if(!utils)
+    return;
+
   te::gm::Envelope box = utils->viewportBox(m_model->getBox());
+
+  if(!box.isValid())
+    return;
 
   QPixmap pixmap;
   QImage* img = 0;

@@ -29,27 +29,26 @@
 #include "MapGridModel.h"
 #include "ContextItem.h"
 #include "Context.h"
-#include "GridModel.h"
 #include "../../../maptools/Canvas.h"
 #include "Property.h"
 #include "Properties.h"
 #include "AbstractType.h"
+#include "GridPlanarModel.h"
+#include "GridGeodesicModel.h"
 
 // STL
 #include <vector>
-#include "GridPlanarModel.h"
+#include <string>
 
 te::layout::MapGridModel::MapGridModel() :
   MapModel(),
   m_gridPlanar(0),
-  m_gridGeodesic(0),
-  m_visibleGridPlanar(true),
-  m_visibleGridGeodesic(false)
+  m_gridGeodesic(0)
 {
   m_backgroundColor = te::color::RGBAColor(0, 255, 255, 200);
 
   m_gridPlanar = new GridPlanarModel;
-  m_gridGeodesic = new GridPlanarModel;
+  m_gridGeodesic = new GridGeodesicModel;
 
   m_properties->setHasGridWindows(true);
 }
@@ -76,33 +75,37 @@ void te::layout::MapGridModel::draw( ContextItem context )
   te::map::Canvas* canvas = Context::getInstance()->getCanvas();
   Utils* utils = Context::getInstance()->getUtils();
 
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-  
-  m_gridPlanar->setVisible(m_visibleGridPlanar);
-  m_gridPlanar->draw(canvas, m_box);
+  utils->configCanvas(m_box);
+
+  drawGrid(canvas, utils);
+
+  utils->configCanvas(m_box, false);
 
   te::color::RGBAColor colorp6(0,0,0, TE_OPAQUE);
   canvas->setLineColor(colorp6);
-
-  te::gm::Envelope newBox(m_box.getLowerLeftX() + 10, m_box.getLowerLeftY(), 
-    m_box.getLowerLeftX() + 10, m_box.getUpperRightY());
-  te::gm::LinearRing* line = new te::gm::LinearRing(3, te::gm::LineStringType);
-
-  line = utils->createSimpleLine(newBox);
-  utils->drawLineW(line);
 
   canvas->setPolygonContourColor(m_borderColor);
   canvas->setPolygonFillColor(m_backgroundColor);
 
   //utils->drawRectW(m_box);
-    
+  
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
-  
+    
   ContextItem contextNotify;
   contextNotify.setPixmap(pixmap);
   notifyAll(contextNotify);
+}
+
+void te::layout::MapGridModel::drawGrid(te::map::Canvas* canvas, Utils* utils)
+{
+  // Planar Grid
+  te::gm::Envelope box = getWorldInMeters();
+  utils->configGeoCanvas(box, m_box, false);
+
+  double scale = getScale();
+  m_gridPlanar->setMapScale(scale);
+  m_gridPlanar->draw(canvas, box);
 }
 
 te::layout::Properties* te::layout::MapGridModel::getProperties() const
@@ -145,8 +148,7 @@ void te::layout::MapGridModel::updateProperties( te::layout::Properties* propert
     Properties* props = new Properties(m_gridPlanar->getName());
     pro_grid.setName(m_gridPlanar->getName());
     props->addProperty(pro_grid);
+    bool visibility = m_gridPlanar->isVisible();
     m_gridPlanar->updateProperties(props);
   }
 }
-
-

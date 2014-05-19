@@ -69,10 +69,12 @@ namespace te
         virtual void setRect(QRectF rect);
 
         //Override 
-        /*World coordinates*/
+        /*World coordinates(mm)*/
         virtual bool contains(const QPointF &point) const;
 
         virtual void setPos(const QPointF &pos);
+
+        void	setZValue ( qreal z );
 
       protected:
 
@@ -91,6 +93,8 @@ namespace te
         virtual QPixmap calculateNewPixmap(const double& x, const double& y);
 
         virtual te::gm::Envelope createNewBoxInCoordScene(const double& x, const double& y);
+        
+        virtual int getZValueItem();
 
       protected:
 

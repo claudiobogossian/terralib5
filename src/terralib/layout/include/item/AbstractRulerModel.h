@@ -30,6 +30,9 @@
 
 // TerraLib
 #include "ItemModelObservable.h"
+#include "Utils.h"
+#include "../../../qt/widgets/canvas/Canvas.h"
+#include "../../../color/RGBAColor.h"
 
 namespace te
 {
@@ -39,7 +42,40 @@ namespace te
     {
       public:
 
-        virtual ~AbstractRulerModel(void) {}
+        AbstractRulerModel();
+        virtual ~AbstractRulerModel(void);
+
+        virtual void setPaperBox(te::gm::Envelope	 box);
+        virtual te::gm::Envelope	 getPaperBox();
+
+        virtual void setVisible(bool visible);
+        virtual bool isVisible();
+
+      protected:
+
+        virtual void drawRuler(te::map::Canvas* canvas, Utils* utils) = 0;
+
+        virtual void drawLineW(te::gm::Envelope box, Utils* utils);
+
+        virtual void drawRectW(te::gm::Envelope box, te::color::RGBAColor color, te::map::Canvas* canvas, Utils* utils);
+
+      protected:
+
+        bool m_visible;
+
+        te::gm::Envelope	 m_paperBox;
+        te::gm::Envelope	 m_backEndBox;
+        double	  m_longLine;
+        double	  m_mediumLine;
+        double    m_smallLine;
+        double    m_spacing;
+        double	  m_lineMargin;
+        int		  m_blockSize;
+        int		  m_middleBlockSize;
+        int     m_smallBlockSize;
+        double	  m_borderLineSize;
+        double m_backEndSpacing;
+        double m_backEndMargin;
     };
   }
 }

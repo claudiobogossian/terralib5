@@ -86,12 +86,6 @@ namespace te
                                                   bool connected = false,
                                                   const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
-        std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-                                                  const te::da::ObjectIdSet* oids,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
-                                                  bool connected = false,
-                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
-
         std::auto_ptr<te::da::DataSet> query(const te::da::Select& q,
                                              te::common::TraverseType travType = te::common::FORWARDONLY,
                                              bool connected = false,

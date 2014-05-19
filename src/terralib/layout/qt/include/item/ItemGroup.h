@@ -62,6 +62,8 @@ namespace te
         virtual void	addToGroup ( QGraphicsItem * item );
         virtual bool contains(const QPointF &point) const;
 
+        void	setZValue ( qreal z );
+
       protected:
 
         virtual void setPosition(const double& x, const double& y);
@@ -70,6 +72,8 @@ namespace te
         virtual void mouseMoveEvent ( QGraphicsSceneMouseEvent* event );
         virtual void mousePressEvent ( QGraphicsSceneMouseEvent* event );
         virtual void mouseReleaseEvent ( QGraphicsSceneMouseEvent* event );
+
+        virtual int getZValueItem();
 
       protected:
 

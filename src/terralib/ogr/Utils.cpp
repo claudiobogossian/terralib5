@@ -525,3 +525,24 @@ std::string te::ogr::GetOGRConnectionInfo(const std::map<std::string, std::strin
 
   throw te::common::Exception(TR_OGR("Invalid data source connection information!."));
 }
+
+std::string te::ogr::RemoveSpatialSql(const std::string& sql)
+{
+  // Try find AND
+  std::size_t pos = sql.find("AND Intersection");
+
+  // Try find without AND
+  if(pos == std::string::npos)
+    pos = sql.find("WHERE Intersection");
+
+  if(pos == std::string::npos)
+    return sql;
+
+  std::string newQuery;
+
+  std::size_t pos2 = sql.find("))", pos);
+  newQuery = sql.substr(0, pos);
+  newQuery += sql.substr(pos2 + 2);
+
+  return newQuery;
+}

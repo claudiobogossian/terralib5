@@ -35,7 +35,7 @@
 #include "ItemObserver.h"
 
 te::layout::MapGridController::MapGridController( Observable* o ) :
-  ItemController(o, TPMapGridItem)
+  MapController(o, TPMapGridItem)
 {
   AbstractItemFactory* factory = Context::getInstance()->getItemFactory(); 
   ItemParamsCreate params(this, m_model);
@@ -45,14 +45,4 @@ te::layout::MapGridController::MapGridController( Observable* o ) :
 te::layout::MapGridController::~MapGridController()
 {
 	
-}
-
-void te::layout::MapGridController::setPosition( const double& x, const double& y )
-{
-  if(m_model)
-  {
-    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
-    if(model)
-      return model->setPosition(x, y);
-  }
 }

@@ -140,5 +140,10 @@ void te::qt::af::DataSetTableDockWidget::selectionChanged(te::da::ObjectIdSet* o
 void te::qt::af::DataSetTableDockWidget::removeSelectedOIds(te::da::ObjectIdSet* oids)
 {
   if(m_layer->getSelected() != 0)
+  {
     m_layer->deselect(oids);
+
+    te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer, 0);
+    ApplicationController::getInstance().broadcast(&e);
+  }
 }

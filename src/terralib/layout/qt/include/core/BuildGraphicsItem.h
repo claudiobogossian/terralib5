@@ -31,6 +31,8 @@
 //TerraLib
 #include "../../../../geometry/Envelope.h"
 #include "../../../../geometry/Coord2D.h"
+#include "EnumMode.h"
+#include "Properties.h"
 
 class QGraphicsItem;
 
@@ -45,11 +47,27 @@ namespace te
         BuildGraphicsItem();
         virtual ~BuildGraphicsItem();
         
-        QGraphicsItem* createMap( const te::gm::Coord2D& coordinate );
-        QGraphicsItem* createMapGrid( const te::gm::Coord2D& coordinate );
-        QGraphicsItem* createText( const te::gm::Coord2D& coordinate );
-        QGraphicsItem* createRectangle( const te::gm::Coord2D& coordinate );
-	      QGraphicsItem* createLegend( const te::gm::Coord2D& coordinate );
+        QGraphicsItem* rebuildItem(te::layout::Properties* props);
+        QGraphicsItem* createItem(te::layout::LayoutMode mode, const te::gm::Coord2D& coordinate);
+
+      protected:
+
+        QGraphicsItem* createPaper();
+        QGraphicsItem* createMap();
+        QGraphicsItem* createMapGrid();
+        QGraphicsItem* createText();
+        QGraphicsItem* createRectangle();
+	      QGraphicsItem* createLegend();
+
+        te::gm::Coord2D findCoordinate(te::layout::Properties* props);
+
+        int findZValue(te::layout::Properties* props);
+
+      protected:
+
+        te::gm::Coord2D m_coord;
+        te::layout::Properties* m_props;
+        int m_zValue;
     };
   }
 }

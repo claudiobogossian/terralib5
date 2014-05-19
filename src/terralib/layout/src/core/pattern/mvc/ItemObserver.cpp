@@ -64,6 +64,7 @@ void te::layout::ItemObserver::refresh()
 {
   te::gm::Coord2D coord = getPosition();
   m_controller->setPosition(coord.x, coord.y);
+  setZValueItem(getZValueItem());
 }
 
 void te::layout::ItemObserver::setPPI( const double& ppi )
@@ -74,7 +75,10 @@ void te::layout::ItemObserver::setPPI( const double& ppi )
 void te::layout::ItemObserver::updateProperties( te::layout::Properties* properties )
 {
   if(m_controller)
+  {
     m_controller->updateProperties(properties);
+    redraw();
+  }
 }
 
 void te::layout::ItemObserver::setPrintable( bool print )
@@ -100,4 +104,9 @@ te::layout::Observable* te::layout::ItemObserver::getModel()
 std::string te::layout::ItemObserver::getName()
 {
   return m_model->getName();
+}
+
+void te::layout::ItemObserver::setZValueItem( int z )
+{
+  m_model->setZValue(z);
 }

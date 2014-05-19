@@ -67,7 +67,7 @@ namespace te
 
         virtual void setPos(const QPointF &pos);
 
-        std::list<te::map::AbstractLayerPtr>  getVisibleLayers();
+        void	setZValue ( qreal z );
                         
       protected slots:
 
@@ -92,6 +92,12 @@ namespace te
       virtual void drawSelection( QPainter* painter );
 
       virtual void getMimeData(const QMimeData* mime);
+
+      std::list<te::map::AbstractLayerPtr>  getVisibleLayers();
+
+      te::map::AbstractLayerPtr getLayer();
+
+      virtual int getZValueItem();
 
     protected:
 

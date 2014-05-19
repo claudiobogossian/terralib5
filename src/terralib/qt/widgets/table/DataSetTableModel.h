@@ -33,7 +33,11 @@
 #include <QtCore/QAbstractTableModel>
 
 // STL
+#include <memory>
 #include <vector>
+#include <set>
+
+class Editor;
 
 namespace te
 {
@@ -43,6 +47,7 @@ namespace te
     class DataSet;
     class ObjectId;
     class ObjectIdSet;
+    class DataSetType;
   }
 
   namespace qt
@@ -129,6 +134,29 @@ namespace te
           void setEnabled(const bool& enabled);
 
           /*!
+           \brief Sets if the model is editable or not.
+
+           \param editable \a True if the model is editable, \a false otherwise.
+          */
+          void setEditable(const bool& editable);
+
+          /*!
+           \brief Returns a memory dataset to be saved.
+
+           \param type DataSetType to construct memory dataset.
+
+           \param[out] ps Positions of the columns edited for each row.
+
+           \return Memory dataset with editions.
+           */
+          std::auto_ptr<te::da::DataSet> getEditions(const te::da::DataSetType* type, std::vector< std::set<int> >& ps);
+
+          /*!
+           \brief Discard editions.
+           */
+          void discardEditions();
+
+          /*!
             \name QAbstractTableModel re-implementation methods.
 
             \brief Re-implementation of QAbstractTableModel methods.
@@ -164,7 +192,13 @@ namespace te
 
           bool m_OIdsVisible;                 //!< Oids icon visibility.
 
-          bool m_enabled;
+          bool m_enabled;                     //!< Enabling flag.
+
+          int m_rowCount;                     //!< Number of rows.
+
+          bool m_isEditable;                  //!< Flag that indicates if the model is editable.
+
+          std::auto_ptr<Editor> m_editor;     //!< Pointer to editor.
       };
     }
   }

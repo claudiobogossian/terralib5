@@ -37,6 +37,7 @@
 
 // STL
 #include <list>
+#include <string>
 
 namespace te
 {
@@ -115,7 +116,7 @@ namespace te
 
           void getInfo(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& e);
 
-          void getGeometryInfo(QTreeWidgetItem* layerItem, te::da::DataSet* dataset, const te::gm::Envelope& e, int srid, bool needRemap);
+          void getGeometryInfo(QTreeWidgetItem* layerItem, te::da::DataSet* dataset, const std::string& geomPropertyName, const te::gm::Envelope& e, int srid, bool needRemap);
 
           void getRasterInfo(QTreeWidgetItem* layerItem, te::rst::Raster* raster, const te::gm::Envelope& e, int srid, bool needRemap);
 

@@ -113,6 +113,8 @@ namespace te
     
         std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name);
 
+        std::auto_ptr<te::da::DataSetTypeCapabilities> getCapabilities(const std::string& name);
+
         boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
 
         std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& name);
@@ -229,6 +231,12 @@ namespace te
                             const te::da::ObjectIdSet* oids,
                             const std::map<std::string, std::string>& options,
                             std::size_t limit = 0);
+
+        virtual void update(const std::string& datasetName,
+                            te::da::DataSet* dataset,
+                            const std::vector< std::set<int> >& properties,
+                            const std::vector<size_t>& ids);
+
 
         void optimize(const std::map<std::string, std::string>& opInfo);
 

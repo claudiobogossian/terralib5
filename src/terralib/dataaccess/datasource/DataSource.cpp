@@ -158,6 +158,12 @@ std::auto_ptr<te::da::DataSetType> te::da::DataSource::getDataSetType(const std:
   return t->getDataSetType(name);
 }
 
+std::auto_ptr<te::da::DataSetTypeCapabilities> te::da::DataSource::getCapabilities(const std::string &name)
+{
+  std::auto_ptr<DataSourceTransactor> t = getTransactor();
+  return t->getCapabilities(name);
+}
+
 boost::ptr_vector<te::dt::Property> te::da::DataSource::getProperties(const std::string& datasetName)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
@@ -486,6 +492,13 @@ void te::da::DataSource::update(const std::string& datasetName,
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
   return t->update(datasetName, dataset, properties, oids, options, limit);
+}
+
+void te::da::DataSource::update(const std::string &datasetName, te::da::DataSet *dataset, const std::vector< std::set<int> >& properties,
+                                const std::vector<size_t>& ids)
+{
+  std::auto_ptr<DataSourceTransactor> t = getTransactor();
+  return t->update(datasetName, dataset, properties, ids);
 }
 
 std::auto_ptr<te::da::DataSource> te::da::DataSource::create(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)

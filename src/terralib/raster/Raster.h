@@ -32,6 +32,7 @@
 #include "../datatype/Enums.h"
 #include "../geometry/Geometry.h"
 #include "Config.h"
+#include "Vectorizer.h"
 
 // STL
 #include <complex>
@@ -609,11 +610,11 @@ namespace te
         /*!
           \brief Vectorizes a given raster band, using GDALPolygonize function.
 
-          \param b           The band index to vectorize.
           \param g           A reference to a vector of geometries.
                              Will be filled with geometries found in band.
+          \param b           The band index to vectorize.
         */
-        virtual void vectorize(std::size_t /*b*/, std::vector<te::gm::Geometry*>& /*g*/) {};
+        virtual void vectorize(std::vector<te::gm::Geometry*>& g, std::size_t b, unsigned int mp = 0);
 
         /*!
           \brief Rasterizes a given vector of geometries.

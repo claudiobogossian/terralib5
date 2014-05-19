@@ -72,6 +72,9 @@ namespace te
 
         const std::string& getType() const;
 
+        /*! \brief It creates a new copy of this object. */
+        Style* clone() const;
+
         //@}
 
       private:

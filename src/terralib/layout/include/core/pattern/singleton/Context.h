@@ -98,7 +98,7 @@ namespace te
 
         LayoutAbstractPaperType getTypePaper();
         void setTypePaper(LayoutAbstractPaperType type);
-
+        
         te::map::Canvas* getCanvas();
         void setCanvas(te::map::Canvas* canvas);
 

@@ -28,12 +28,17 @@
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../datatype/Enums.h"
+#include "../../../datatype/SimpleData.h"
+#include "../../../memory/DataSet.h"
+#include "../../../memory/DataSetItem.h"
 #include "../Utils.h"
 #include "DataSetTableModel.h"
 #include "Promoter.h"
 
 // Qt
 #include <QtGui/QIcon>
+#include <QtGui/QMessageBox>
 
 bool IsPkey(const int& column, const std::vector<size_t>& pkeys)
 {
@@ -117,6 +122,138 @@ QString ColumnType(const int& type)
   }
 }
 
+class Editor
+{
+  public:
+    Editor()
+    {
+
+    }
+
+    void clear()
+    {
+      m_editions.clear();
+    }
+
+    void setValue(const int& row, const int& column, const std::string& value)
+    {
+      std::pair<int, int> key(row, column);
+      m_editions[key] = value;
+    }
+
+    bool isEdited(const int& row, const int& column) const
+    {
+      return m_editions.find(std::pair<int, int>(row, column)) != m_editions.end();
+    }
+
+    std::string getValue(const int& row, const int& column)
+    {
+      return m_editions[std::pair<int, int>(row, column)];
+    }
+
+    void getEditedDataSet(te::da::DataSet* in, te::mem::DataSet* out, std::vector< std::set<int> >& fields)
+    {
+      std::vector<int> rows;
+
+      fields = getEditedLists(rows);
+
+      // Creating the items
+      for(int i = 0; i < (int)rows.size(); ++i)
+      {
+        te::mem::DataSetItem* item = new te::mem::DataSetItem(out);
+        std::set<int> ef = fields[i];
+
+        in->move(rows[i]);
+
+        // For each property
+        for(int j = 0; j < (int) in->getNumProperties(); ++j)
+        {
+          bool edited = ef.find(j) != ef.end();
+
+          if(!edited)
+            item->setValue(j, in->getValue(j).release());
+          else
+          {
+            std::string data = getValue(rows[i], j);
+
+            switch(in->getPropertyDataType(j))
+            {
+              case te::dt::INT16_TYPE:
+                 item->setValue(j, new te::dt::Int16(atoi(data.c_str())));
+              break;
+
+              case te::dt::INT32_TYPE:
+                 item->setValue(j, new te::dt::Int32(atoi(data.c_str())));
+              break;
+
+              case te::dt::INT64_TYPE:
+                 item->setValue(j, new te::dt::Int64(atoi(data.c_str())));
+              break;
+
+              case te::dt::FLOAT_TYPE:
+                 item->setValue(j, new te::dt::Float(atof(data.c_str())));
+              break;
+
+              case te::dt::DOUBLE_TYPE:
+                 item->setValue(j, new te::dt::Double(atof(data.c_str())));
+              break;
+
+              case te::dt::NUMERIC_TYPE:
+                 item->setValue(j, new te::dt::Numeric(data));
+              break;
+
+              case te::dt::STRING_TYPE:
+                 item->setValue(j, new te::dt::String(data));
+              break;
+
+              default:
+                break;
+            }
+          }
+        }
+
+        out->add(item);
+      }
+    }
+
+  protected:
+
+    std::vector< std::set<int> > getEditedLists(std::vector<int>& rows)
+    {
+      std::vector< std::set<int> > res;
+
+      if(!m_editions.empty())
+      {
+        std::set<int> subRes;
+        int current = m_editions.begin()->first.first;
+        rows.push_back(current);
+        std::map< std::pair<int, int>, std::string >::iterator it;
+
+        for(it=m_editions.begin(); it!= m_editions.end(); ++it)
+        {
+          int cR = it->first.first;
+
+          if(cR != current)
+          {
+            rows.push_back(cR);
+            res.push_back(subRes);
+            subRes.clear();
+            current = cR;
+          }
+
+          subRes.insert(it->first.second);
+        }
+
+        if(rows.size() != res.size())
+          res.push_back(subRes);
+      }
+
+      return res;
+    }
+
+    std::map< std::pair<int, int>, std::string > m_editions;
+};
+
 te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent)
   : QAbstractTableModel(parent),
     m_dataset(0),
@@ -125,6 +262,7 @@ te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent)
     m_enabled(true)
 {
   m_promoter = new Promoter;
+  m_editor.reset(new Editor);
 }
 
 te::qt::widgets::DataSetTableModel::~DataSetTableModel()
@@ -140,6 +278,10 @@ void te::qt::widgets::DataSetTableModel::setDataSet(te::da::DataSet* dset)
   delete m_dataset;
 
   m_dataset = dset;
+
+  m_editor->clear();
+
+  m_rowCount = (m_dataset == 0 || !m_enabled) ? 0 : (int)m_dataset->size();
 
   endResetModel();
 }
@@ -183,7 +325,7 @@ te::da::ObjectIdSet* te::qt::widgets::DataSetTableModel::getObjectIdSet (const i
 
   for(int i=initRow; i<=finalRow; i++)
   {
-    row = (m_promoter == 0) ? i : (int)m_promoter->getLogicalRow(i);
+    row = (int)m_promoter->getLogicalRow(i);
     m_dataset->move(row);
 
     oids->add(te::da::GenerateOID(m_dataset, oids->getPropertyNames()));
@@ -198,12 +340,36 @@ void te::qt::widgets::DataSetTableModel::setEnabled(const bool& enabled)
 
   m_enabled = enabled;
 
+  m_rowCount = (m_enabled && m_dataset != 0) ? (int)m_dataset->size() : 0;
+
   endResetModel();
+}
+
+void te::qt::widgets::DataSetTableModel::setEditable(const bool &editable)
+{
+  m_isEditable = editable;
+}
+
+std::auto_ptr<te::da::DataSet> te::qt::widgets::DataSetTableModel::getEditions(const te::da::DataSetType *type, std::vector< std::set<int> > &ps)
+{
+  std::auto_ptr<te::da::DataSet> dset;
+  te::mem::DataSet* md = new te::mem::DataSet(type);
+
+  m_editor->getEditedDataSet(m_dataset, md, ps);
+
+  dset.reset(md);
+
+  return dset;
+}
+
+void te::qt::widgets::DataSetTableModel::discardEditions()
+{
+  m_editor->clear();
 }
 
 int te::qt::widgets::DataSetTableModel::rowCount(const QModelIndex & parent) const
 {
-  return (m_dataset == 0 || !m_enabled) ? 0 : (int)m_dataset->size();
+  return m_rowCount;
 }
 
 int te::qt::widgets::DataSetTableModel::columnCount(const QModelIndex & parent) const
@@ -228,22 +394,38 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
       {
         m_currentRow = index.row();
 
-        int row = (m_promoter == 0) ? m_currentRow : (int)m_promoter->getLogicalRow(m_currentRow);
+        int row = (int)m_promoter->getLogicalRow(m_currentRow);
         m_dataset->move(row);
       }
 
       if(!m_dataset->isNull(index.column()))
       {
+        if(m_editor->isEdited(m_promoter->getLogicalRow(index.row()), index.column()))
+          return m_editor->getValue(m_promoter->getLogicalRow(index.row()), index.column()).c_str();
+
         if(m_dataset->getPropertyDataType(index.column()) == te::dt::STRING_TYPE)
         {
           std::string value = m_dataset->getString(index.column());
           te::common::CharEncoding encoding = m_dataset->getPropertyCharEncoding(index.column());
-          return Convert2Qt(value, encoding);
+          if (encoding == te::common::UNKNOWN_CHAR_ENCODING)
+            return value.c_str();
+          else
+			      return Convert2Qt(value, encoding);
         }
         else
           return m_dataset->getAsString(index.column(), 6).c_str();
       }
     }
+    break;
+
+    case Qt::FontRole:
+      if(m_editor->isEdited(m_promoter->getLogicalRow(index.row()), index.column()))
+      {
+        QFont f;
+        f.setBold(true);
+        f.setItalic(true);
+        return f;
+      }
     break;
 
     default:
@@ -302,13 +484,60 @@ Qt::ItemFlags te::qt::widgets::DataSetTableModel::flags(const QModelIndex & inde
 
   Qt::ItemFlags flags = QAbstractItemModel::flags(index);
 
-  flags |= Qt::ItemIsEnabled | Qt::ItemIsSelectable /*| Qt::ItemIsEditable*/;
+  flags |= Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+
+  if(m_isEditable && !IsPkey(index.column(), m_pkeysColumns))
+    flags |= Qt::ItemIsEditable;
 
   return flags;
 }
 
-bool te::qt::widgets::DataSetTableModel::setData (const QModelIndex & /*index*/, const QVariant & /*value*/, int /*role*/)
+bool te::qt::widgets::DataSetTableModel::setData (const QModelIndex & index, const QVariant & value, int role)
 {
+  if(role == Qt::EditRole)
+  {
+    try
+    {
+      switch(m_dataset->getPropertyDataType(index.column()))
+      {
+        case te::dt::INT16_TYPE:
+        case te::dt::UINT16_TYPE:
+        case te::dt::INT32_TYPE:
+        case te::dt::UINT32_TYPE:
+        case te::dt::INT64_TYPE:
+        case te::dt::UINT64_TYPE:
+        {
+          bool ok;
+          value.toInt(&ok);
+
+          if(!ok)
+            throw te::common::Exception(tr("Invalid int value.").toStdString());
+        }
+        break;
+
+        case te::dt::FLOAT_TYPE:
+        case te::dt::DOUBLE_TYPE:
+        case te::dt::NUMERIC_TYPE:
+        {
+          bool ok;
+          value.toDouble(&ok);
+
+          if(!ok)
+            throw te::common::Exception(tr("Invalid double value.").toStdString());
+        }
+        break;
+      }
+
+      m_editor->setValue(m_promoter->getLogicalRow(index.row()), index.column(), value.toString().toStdString());
+      return true;
+    }
+    catch(te::common::Exception& e)
+    {
+      QMessageBox::warning(0, tr("Edition Failure"), e.what());
+      return false;
+    }
+  }
+
   return true;
 }
 

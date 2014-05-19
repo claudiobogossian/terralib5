@@ -88,9 +88,19 @@ std::list<te::da::DataSetTypePtr> te::qt::widgets::DataSetSelectorDialog::getChe
   return m_selectorW->getCheckedDataSets();
 }
 
+std::list<std::string> te::qt::widgets::DataSetSelectorDialog::getCheckedGeomProperties() const
+{
+  return m_selectorW->getCheckedGeomProperties();
+}
+
 std::list<te::da::DataSetTypePtr> te::qt::widgets::DataSetSelectorDialog::getSelectedDataSets() const
 {
   return m_selectorW->getSelectedDataSets();
+}
+
+std::list<std::string> te::qt::widgets::DataSetSelectorDialog::getSelectedGeomProperties() const
+{
+  return m_selectorW->getSelectedGeomProperties();
 }
 
 void te::qt::widgets::DataSetSelectorDialog::setSelectMode(SelectModeType m)

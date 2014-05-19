@@ -251,7 +251,7 @@ te::se::PolygonSymbolizer* te::qt::plugins::terralib4::GetPolygonSymbolizer(TeVi
 
   te::se::Stroke* stroke = te::se::CreateStroke(color, width, "1.0");
 
-  std::string style = GetLineStyle(visual->style());
+  std::string style = GetLineStyle(visual->contourStyle());
 
   if(!style.empty())
   {
