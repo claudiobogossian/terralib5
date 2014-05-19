@@ -77,7 +77,7 @@ else()
 
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES} ${TERRALIB_GEN_SRC_FILES})
 
-  add_library(terralib_mod_qt_plugins_datasource_ogr SHARED ${TERRALIB_FILES})
+  add_library(terralib_mod_qt_plugins_datasource_ado SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_qt_plugins_datasource_ado terralib_mod_qt_widgets)
 
