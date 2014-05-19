@@ -67,15 +67,15 @@
 #include <boost/lexical_cast.hpp>
 
 // Qt
-#include <QtGui/QIcon>
-#include <QtGui/QMessageBox>
-#include <QtGui/QTableWidgetItem>
-#include <QtGui/QGridLayout>
+#include <QIcon>
+#include <QMessageBox>
+#include <QTableWidgetItem>
+#include <QGridLayout>
 
 // TerraLib 4
-#include <terralib/kernel/TeLegendEntry.h>
-#include <terralib/kernel/TeRasterTransform.h>
-#include <terralib/kernel/TeTheme.h>
+#include <kernel/TeLegendEntry.h>
+#include <kernel/TeRasterTransform.h>
+#include <kernel/TeTheme.h>
 
 using namespace terralib4;
 
@@ -419,7 +419,7 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
     QTableWidgetItem* item_source = m_resolveNameTableWidget->item(i, 1);
 
     if(item_source == 0)
-      throw te::common::Exception(TE_QT_PLUGIN_TERRALIB4("Invalid source table item!"));
+      throw te::common::Exception(TE_TR("Invalid source table item!"));
 
     std::string sourceName = item_source->text().toStdString();
 
@@ -427,7 +427,7 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
     QTableWidgetItem* item_target = m_resolveNameTableWidget->item(i, 2);
 
     if(item_target == 0)
-      throw te::common::Exception(TE_QT_PLUGIN_TERRALIB4("Invalid target table item!"));
+      throw te::common::Exception(TE_TR("Invalid target table item!"));
 
     std::string targetName = item_target->text().toStdString();
 
@@ -557,7 +557,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
     QTableWidgetItem* item_source = m_resolveNameTableWidget->item(i, 1);
 
     if(item_source == 0)
-      throw te::common::Exception(TE_QT_PLUGIN_TERRALIB4("Invalid source table item!"));
+      throw te::common::Exception(TE_TR("Invalid source table item!"));
 
     std::string sourceName = item_source->text().toStdString();
 
@@ -565,7 +565,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
     QTableWidgetItem* item_target = m_resolveNameTableWidget->item(i, 2);
 
     if(item_target == 0)
-      throw te::common::Exception(TE_QT_PLUGIN_TERRALIB4("Invalid target table item!"));
+      throw te::common::Exception(TE_TR("Invalid target table item!"));
 
     std::string targetName = item_target->text().toStdString();
 
@@ -619,7 +619,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
     {
       std::pair<std::string, std::string> dproblem;
       dproblem.first = sourceName;
-      dproblem.second = TE_QT_PLUGIN_TERRALIB4("unknown problem in conversion!");
+      dproblem.second = TE_TR("unknown problem in conversion!");
       
       problematicDatasets.push_back(dproblem);
     }

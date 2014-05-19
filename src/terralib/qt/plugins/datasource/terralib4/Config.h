@@ -37,27 +37,6 @@
 #define TE_QT_PLUGIN_TERRALIB4_PLUGIN_NAME "te.qt.terralib4"
 
 /*!
-  \def TE_QT_PLUGIN_TERRALIB4_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib TERRALIB4 Qt Plugin implementation.
-*/
-#define TE_QT_PLUGIN_TERRALIB4_TEXT_DOMAIN "teqtpluginterralib4"
-
-/*!
-  \def TE_QT_PLUGIN_TERRALIB4_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
-*/
-#define TE_QT_PLUGIN_TERRALIB4_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TE_QT_PLUGIN_TERRALIB4
-
-  \brief It marks a string in order to get translated. This is a special mark used in the TERRALIB4 QtPlugin of TerraLib.
-*/
-#define TE_QT_PLUGIN_TERRALIB4(message) TR(message, TE_QT_PLUGIN_TERRALIB4_TEXT_DOMAIN)
-
-/*!
   \def TEQTPLUGINTERRALIB4EXPORT
 
   \brief You can use this macro in order to export/import classes and functions from all plug-ins files.
