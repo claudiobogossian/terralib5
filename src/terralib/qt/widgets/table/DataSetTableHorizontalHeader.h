@@ -39,7 +39,7 @@ namespace te
         public:
           DataSetTableHorizontalHeader(DataSetTableView* view);
 
-          void mouseReleaseEvent(QMouseEvent* e);
+          void mousePressEvent(QMouseEvent* e);
 
         protected:
           DataSetTableView* m_view;

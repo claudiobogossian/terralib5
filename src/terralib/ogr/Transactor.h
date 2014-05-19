@@ -232,6 +232,12 @@ namespace te
                             const std::map<std::string, std::string>& options,
                             std::size_t limit = 0);
 
+        virtual void update(const std::string& datasetName,
+                            te::da::DataSet* dataset,
+                            const std::vector< std::set<int> >& properties,
+                            const std::vector<size_t>& ids);
+
+
         void optimize(const std::map<std::string, std::string>& opInfo);
 
         protected:

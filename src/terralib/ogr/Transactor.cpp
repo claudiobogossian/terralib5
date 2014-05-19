@@ -1142,6 +1142,60 @@ void te::ogr::Transactor::update(const std::string& datasetName,
 {
 }
 
+void te::ogr::Transactor::update(const std::string &datasetName, te::da::DataSet *dataset, const std::vector< std::set<int> >& properties,
+                                 const std::vector<size_t>& ids)
+{
+  if(m_ogrDs->getOGRDataSource() == 0)
+    throw Exception(TR_OGR("Data source failure"));
+
+  OGRLayer* l = m_ogrDs->getOGRDataSource()->GetLayerByName(datasetName.c_str());
+
+  if(l == 0)
+    throw Exception(TR_OGR("Could not retrieve dataset"));
+
+  dataset->moveFirst();
+  int i = 0;
+
+  do
+  {
+    size_t id_pos = ids[0];
+    int id = dataset->getInt32(id_pos);
+
+    OGRFeature* feat = l->GetFeature(id)->Clone();
+
+    std::set<int> ls = properties[i];
+    std::set<int>::iterator it;
+
+    for(it = ls.begin(); it != ls.end(); ++it)
+    {
+      int fpos = *it;
+      int fpos_o = fpos - 1;
+
+      switch(dataset->getPropertyDataType(fpos))
+      {
+        case te::dt::INT32_TYPE:
+          feat->SetField(fpos_o, dataset->getInt32(fpos));
+        break;
+
+        case te::dt::DOUBLE_TYPE:
+        case te::dt::NUMERIC_TYPE:
+          feat->SetField(fpos_o, dataset->getDouble(fpos));
+        break;
+
+        case te::dt::STRING_TYPE:
+          feat->SetField(fpos_o, dataset->getString(fpos).c_str());
+        break;
+      }
+    }
+
+    l->SetFeature(feat);
+
+    i++;
+  } while (dataset->moveNext());
+
+  l->SyncToDisk();
+}
+
 void te::ogr::Transactor::optimize(const std::map<std::string, std::string>& /*opInfo*/)
 {
 }

@@ -32,7 +32,7 @@ QHeaderView(Qt::Horizontal, view),
 }
 
 
-void te::qt::widgets::DataSetTableHorizontalHeader::mouseReleaseEvent(QMouseEvent *e)
+void te::qt::widgets::DataSetTableHorizontalHeader::mousePressEvent(QMouseEvent *e)
 {
   if(e->button() == Qt::LeftButton)
   {
@@ -53,12 +53,10 @@ void te::qt::widgets::DataSetTableHorizontalHeader::mouseReleaseEvent(QMouseEven
       QItemSelection newSel(tl, br);
 
       sel->select(newSel, selF);
-
-      return;
     }
     else
       sel->clear();
   }
 
-  QHeaderView::mouseReleaseEvent(e);
+  QHeaderView::mousePressEvent(e);
 }

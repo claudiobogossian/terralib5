@@ -93,3 +93,9 @@ std::auto_ptr<te::da::DataSetTypeCapabilities> te::da::DataSourceTransactor::get
 void te::da::DataSourceTransactor::changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp)
 {
 }
+
+void te::da::DataSourceTransactor::update(const std::string &/*datasetName*/, te::da::DataSet */*dataset*/, const std::vector< std::set<int> >& /*properties*/,
+                                          const std::vector<size_t>& /*ids*/)
+{
+  throw te::da::Exception("Operation not implemented for this data source");
+}
