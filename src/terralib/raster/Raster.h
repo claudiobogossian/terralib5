@@ -614,7 +614,7 @@ namespace te
                              Will be filled with geometries found in band.
           \param b           The band index to vectorize.
         */
-        virtual void vectorize(std::vector<te::gm::Geometry*>& g, std::size_t b = 0);
+        virtual void vectorize(std::vector<te::gm::Geometry*>& g, std::size_t b, unsigned int mp = 0);
 
         /*!
           \brief Rasterizes a given vector of geometries.

@@ -20,11 +20,9 @@ void VectorizeRaster()
     rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/pattern1.tif";
     te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
 
-    te::rst::Vectorizer vectorizer(inraster, 0, 100);
+    std::vector<te::gm::Geometry*> polygons;
+    inraster->vectorize(polygons, 0);
 
-    std::vector<te::gm::Polygon*> polygons;
-
-    vectorizer.run(polygons);
     std::cout << "vectorizer created " << polygons.size() << " polygons" << std::endl;
     for (unsigned int i = 0; i < polygons.size(); i++)
       std::cout << "  polygon " << i << ": " << polygons[i]->toString() << std::endl;
