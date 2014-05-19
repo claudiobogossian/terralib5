@@ -25,7 +25,7 @@
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
-include_directories(${ADO_LIBRARY_DIR})
+include_directories(${ADO_LIBRARY_DIRS})
 include_directories(${Boost_INCLUDE_DIR})
 
 add_definitions(-DTEADODLL)
@@ -37,15 +37,11 @@ set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 add_library(terralib_mod_ado SHARED ${TERRALIB_FILES})
 
-target_link_libraries(terralib_mod_ado terralib_mod_common
-                                       terralib_mod_dataaccess
+target_link_libraries(terralib_mod_ado terralib_mod_dataaccess
                                        terralib_mod_datatype
                                        terralib_mod_plugin
                                        terralib_mod_geometry
-                                       terralib_mod_memory
-                                       ${Boost_SYSTEM_LIBRARY}
-                                       ${Boost_FILESYSTEM_LIBRARY}
-                                       )
+                                       terralib_mod_memory)
 
 set_target_properties(terralib_mod_ado
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
