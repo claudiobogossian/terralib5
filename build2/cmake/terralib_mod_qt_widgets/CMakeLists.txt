@@ -240,7 +240,7 @@ source_group("Header Files\\help"  FILES ${TERRALIB_HELP_HDR_FILES})
 
 list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/AssistantHelpManagerImpl.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/HelpPushButton.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/HelpToolButton .h)
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/HelpToolButton.h)
 
 # Layer
 file(GLOB TERRALIB_LAYER_EXPLORER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/*.cpp)
@@ -249,7 +249,7 @@ file(GLOB TERRALIB_LAYER_EXPLORER_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/te
 source_group("Source Files\\layer\\explorer"  FILES ${TERRALIB_LAYER_EXPLORER_SRC_FILES})
 source_group("Header Files\\layer\\explorer"  FILES ${TERRALIB_LAYER_EXPLORER_HDR_FILES})
 
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/AbstractTreeItem..h
+list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/AbstractTreeItem.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/ChartItem.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/ChartSliceItem.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/ColorMapItem.h
@@ -371,7 +371,7 @@ list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terrali
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/NumericPropertyWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/PrimaryKeyConstraintWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/PropertyConverterDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/.StringPropertyWidgeth
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/StringPropertyWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/UniquekeyConstraintWidget.h)
 
 
@@ -539,7 +539,6 @@ source_group("UI Files\\table\\ui"  FILES ${TERRALIB_TABLE_UI_FILES})
 list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/AddColumnDialog.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/AlterDataDialog.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/DataSetTableVerticalHeader.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/DataSetTableView.cpp
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/DataSetTableView.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/RenameColumnDialog.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/RetypeColumnDialog.h)
@@ -556,7 +555,6 @@ source_group("UI Files\\temporal\\ui"  FILES ${TERRALIB_TEMPORAL_UI_FILES})
 list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/ObservationDialog.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TemporalPropertiesWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TimeSeriesDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TimeSeriesPropertiesWidget.cpp
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TrajectoryDialog.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TrajectoryPropertiesWidget.h)
 
@@ -570,7 +568,6 @@ source_group("Header Files\\tools"  FILES ${TERRALIB_TOOLS_HDR_FILES})
 list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/CoordTracking.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/ExtentAcquire.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/Info.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/Measure.cpp
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/PanExtent.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/PointPicker.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/PolygonAcquire.h
