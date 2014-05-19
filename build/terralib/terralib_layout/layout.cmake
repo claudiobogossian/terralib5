@@ -42,6 +42,7 @@ list (APPEND TE_DEP_LIBS
 	terralib_qt_widgets
 	terralib_color
 	terralib_srs
+	terralib_symbology
 	qtpropertybrowser
 )
 

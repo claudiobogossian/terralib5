@@ -142,7 +142,7 @@ void te::layout::ToolbarOutside::createMapToolButton()
   menu->addAction(actionMapGrid);
 
   QAction* actionLegend = createAction("Default Legend", m_optionLegendDefault, "layout-default-legend");
-  menu->addAction(actionMapGrid);
+  menu->addAction(actionLegend);
   
   QToolButton *btnMap = createToolButton("Map", "Map Objects", "layout-default-map");
   btnMap->setMenu(menu);

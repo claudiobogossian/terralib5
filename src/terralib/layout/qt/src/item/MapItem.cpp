@@ -64,7 +64,7 @@
 #include <QApplication>
 #include <QGraphicsSceneMouseEvent>
 #include <QStyleOptionGraphicsItem>
-#include "MapGridController.h"
+#include "MapController.h"
 
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   QGraphicsProxyWidget(0),
@@ -361,7 +361,7 @@ void te::layout::MapItem::onDrawLayersFinished( const QMap<QString, QString>& er
   if(!m_controller)
     return;
 
-  MapGridController* controller = dynamic_cast<MapGridController*>(m_controller);
+  MapController* controller = dynamic_cast<MapController*>(m_controller);
   if(controller)
   {
     bool result = controller->refreshLayer(layer);
