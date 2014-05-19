@@ -31,6 +31,7 @@
 #include "../../../rp/IHSFusion.h"
 #include "../../../rp/Module.h"
 #include "../../../rp/PCAFusion.h"
+#include "../../widgets/help/HelpPushButton.h"
 #include "../../widgets/progress/ProgressViewerDialog.h"
 #include "FusionWizard.h"
 #include "FusionWizardPage.h"
@@ -55,6 +56,15 @@ te::qt::widgets::FusionWizard::FusionWizard(QWidget* parent)
   this->setWizardStyle(QWizard::ModernStyle);
   this->setWindowTitle(tr("Fusion"));
   //this->setFixedSize(640, 480);
+
+  this->setOption(QWizard::HaveHelpButton, true);
+  this->setOption(QWizard::HelpButtonOnRight, false);
+
+  te::qt::widgets::HelpPushButton* helpButton = new te::qt::widgets::HelpPushButton(this);
+
+  this->setButton(QWizard::HelpButton, helpButton);
+
+  helpButton->setPageReference("plugins/rp/rp_fusion.html");
 
   addPages();
 }
