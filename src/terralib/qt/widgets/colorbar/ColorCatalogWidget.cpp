@@ -55,10 +55,11 @@ te::qt::widgets::ColorCatalogWidget::ColorCatalogWidget(QWidget* parent, Qt::Win
   connect(m_ui->m_catalogComboBox, SIGNAL(activated(int)), this, SLOT(onCatalogComboBoxActivated(int)));
   connect(m_ui->m_groupComboBox, SIGNAL(activated(int)), this, SLOT(onGroupComboBoxActivated(int)));
   connect(m_ui->m_schemaComboBox, SIGNAL(activated(int)), this, SLOT(onSchemaComboBoxActivated(int)));
+  connect(m_ui->m_catalogGroupBox, SIGNAL(clicked(bool)), this, SLOT(onUseCatalogGroupBoxClicked(bool)));
+  
   connect(m_colorBar, SIGNAL(colorBarChanged()), this, SIGNAL(colorBarChanged()));
 
-  //start catalog
-  loadDefaultColorCatalog();
+  onUseCatalogGroupBoxClicked(false);
 }
 
 te::qt::widgets::ColorCatalogWidget::~ColorCatalogWidget()
@@ -206,5 +207,16 @@ void te::qt::widgets::ColorCatalogWidget::onSchemaComboBoxActivated(int index)
         }
       }
     }
+  }
+}
+
+void te::qt::widgets::ColorCatalogWidget::onUseCatalogGroupBoxClicked(bool flag)
+{
+  if(flag) //start catalog
+    loadDefaultColorCatalog();
+  else //create default color bar
+  {
+    te::color::ColorBar* cb = new te::color::ColorBar(te::color::RGBAColor(0, 0, 0, 255), te::color::RGBAColor(255, 0, 0, 255), 256);
+    m_colorBar->setColorBar(cb);
   }
 }

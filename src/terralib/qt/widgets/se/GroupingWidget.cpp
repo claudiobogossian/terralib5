@@ -340,7 +340,10 @@ void te::qt::widgets::GroupingWidget::setDataSetType()
 void te::qt::widgets::GroupingWidget::setGrouping()
 {
   te::map::Grouping* grouping = m_layer->getGrouping();
+
   setGrouping(grouping);
+
+  emit applyPushButtonClicked();
 }
 
 void te::qt::widgets::GroupingWidget::setGrouping(te::map::Grouping* grouping)
@@ -356,6 +359,9 @@ void te::qt::widgets::GroupingWidget::setGrouping(te::map::Grouping* grouping)
     if(type == m_ui->m_typeComboBox->itemData(i).toInt())
     {
       m_ui->m_typeComboBox->setCurrentIndex(i);
+
+      onTypeComboBoxActivated(i);
+
       break;
     }
   }
@@ -399,6 +405,8 @@ void te::qt::widgets::GroupingWidget::setGrouping(te::map::Grouping* grouping)
   }
 
   updateUi(true);
+
+  onApplyPushButtonClicked();
 }
 
 void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
@@ -428,6 +436,8 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
   std::string mean = "";
 
   int nullValues = 0;
+
+  bool update = false;
 
   if(type == te::map::EQUAL_STEPS)
   {
@@ -464,6 +474,8 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
     buildSymbolizer(mean);
 
     createDoubleNullGroupingItem(nullValues);
+
+    update = false;
   }
   else if(type == te::map::UNIQUE_VALUE) 
   {
@@ -478,7 +490,7 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
     createStringNullGroupingItem(nullValues);
   }
 
-  updateUi(true);
+  updateUi(update);
 
   m_manual = false;
 
@@ -659,6 +671,8 @@ void te::qt::widgets::GroupingWidget::onTableWidgetItemDoubleClicked(QTableWidge
     m_ui->m_tableWidget->setItem(curRow, 0, newItem);
 
     delete dialog;
+
+    updateUi(true);
 
     emit applyPushButtonClicked();
   }
