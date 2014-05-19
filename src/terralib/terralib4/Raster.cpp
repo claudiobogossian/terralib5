@@ -37,7 +37,7 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 
 // TerraLib 4.x
-#include <terralib/kernel/TeRaster.h>
+#include <kernel/TeRaster.h>
 
 class terralib4::Raster::Impl
 {
@@ -76,7 +76,7 @@ terralib4::Raster::Raster(TeRaster* iraster)
 
 terralib4::Raster::Raster(te::rst::Grid* /*grid*/, te::common::AccessPolicy /*p*/)
 {
-  throw Exception(TR_TERRALIB4("This method is not supported by TerraLib 4.x driver!"));
+  throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
 terralib4::Raster::~Raster()
@@ -87,7 +87,7 @@ terralib4::Raster::~Raster()
 void terralib4::Raster::open(const std::map<std::string, std::string>& /*rinfo*/,
                              te::common::AccessPolicy /*p*/)
 {
-  throw Exception(TR_TERRALIB4("This method is not supported by TerraLib 4.x driver!"));
+  throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
 std::map<std::string, std::string> terralib4::Raster::getInfo() const
@@ -129,5 +129,5 @@ te::rst::Band& terralib4::Raster::operator[](std::size_t i)
 
 te::dt::AbstractData* terralib4::Raster::clone() const
 {
-  throw Exception(TR_TERRALIB4("This method is not supported by TerraLib 4.x driver!"));
+  throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
