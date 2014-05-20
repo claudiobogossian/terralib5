@@ -182,12 +182,12 @@ void te::qt::plugins::rp::Plugin::registerActions()
   m_mosaic = new te::qt::plugins::rp::MosaicAction(m_rpMenu, m_rpPopupMenu);
 #endif
 
-#ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER
-    m_segmenter = new te::qt::plugins::rp::SegmenterAction(m_rpMenu, m_rpPopupMenu);
-#endif
-
 #ifdef TE_QT_PLUGIN_RP_HAVE_REGISTER
   m_register = new te::qt::plugins::rp::RegisterAction(m_rpMenu, m_rpPopupMenu);
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER
+    m_segmenter = new te::qt::plugins::rp::SegmenterAction(m_rpMenu, m_rpPopupMenu);
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_VECTORIZATION
@@ -233,12 +233,12 @@ void  te::qt::plugins::rp::Plugin::unRegisterActions()
     delete m_mosaic;
 #endif
 
-#ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER
-    delete m_segmenter;
-#endif
-
 #ifdef TE_QT_PLUGIN_RP_HAVE_REGISTER
   delete m_register;
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER
+    delete m_segmenter;
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_VECTORIZATION

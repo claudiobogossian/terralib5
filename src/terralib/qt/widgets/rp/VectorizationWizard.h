@@ -31,13 +31,15 @@
 //STL
 #include <memory>
 
-namespace te {
-  namespace qt {
-    namespace widgets {
+namespace te 
+{
+  namespace qt 
+  {
+    namespace widgets 
+    {
       //Forward declarations
       class VectorizationWizardPage;
       class LayerSearchWizardPage;
-      class RasterInfoWizardPage;
 
       class TEQTWIDGETSEXPORT VectorizationWizard : public QWizard
       {
@@ -63,7 +65,6 @@ namespace te {
 
           std::auto_ptr<te::qt::widgets::VectorizationWizardPage> m_vectorPage;
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerSearchPage;
-          std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
 
           te::map::AbstractLayerPtr m_outputLayer;
       };
