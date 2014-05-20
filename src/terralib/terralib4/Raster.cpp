@@ -37,7 +37,7 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 
 // TerraLib 4.x
-#include <kernel/TeRaster.h>
+#include <terralib4/kernel/TeRaster.h>
 
 class terralib4::Raster::Impl
 {

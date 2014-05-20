@@ -31,7 +31,7 @@
 #include "Config.h"
 
 // Terralib 4.x
-#include <kernel/TeDatabase.h>
+#include <terralib4/kernel/TeDatabase.h>
 
 // STL
 #include <memory>

@@ -48,9 +48,9 @@
 #include "Utils.h"
 
 // Terralib 4.x
-#include <kernel/TeAttribute.h>
-#include <kernel/TeDatabase.h>
-#include <kernel/TeLayer.h>
+#include <terralib4/kernel/TeAttribute.h>
+#include <terralib4/kernel/TeDatabase.h>
+#include <terralib4/kernel/TeLayer.h>
 
 // STL
 #include <cassert>

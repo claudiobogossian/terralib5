@@ -31,7 +31,7 @@
 
 #ifdef WIN32
   // Terralib 4.x
-  #include <drivers/ado/TeAdoDB.h>
+  #include <terralib4/drivers/ado/TeAdoDB.h>
 #endif
 
 // Boost

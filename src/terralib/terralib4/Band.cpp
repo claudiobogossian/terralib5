@@ -30,7 +30,7 @@
 #include "Raster.h"
 
 // TerraLib 4.x
-#include <kernel/TeRaster.h>
+#include <terralib4/kernel/TeRaster.h>
 
 class terralib4::Band::Impl
 {

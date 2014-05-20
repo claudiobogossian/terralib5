@@ -39,12 +39,12 @@
 #include "Utils.h"
 
 // TerraLib 4.x
-#include <kernel/TeBox.h>
-#include <kernel/TeDatabaseFactoryParams.h>
-#include <kernel/TeDecoderDatabase.h>
-#include <kernel/TeProjection.h>
-#include <kernel/TeTable.h>
-#include <kernel/TeRasterParams.h>
+#include <terralib4/kernel/TeBox.h>
+#include <terralib4/kernel/TeDatabaseFactoryParams.h>
+#include <terralib4/kernel/TeDecoderDatabase.h>
+#include <terralib4/kernel/TeProjection.h>
+#include <terralib4/kernel/TeTable.h>
+#include <terralib4/kernel/TeRasterParams.h>
 
 // Boost
 #include <boost/lexical_cast.hpp>
