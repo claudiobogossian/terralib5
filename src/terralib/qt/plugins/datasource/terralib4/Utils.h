@@ -29,7 +29,7 @@
 // TerraLib
 #include "Config.h"
 
-class TeColor;
+struct TeColor;
 class TeRasterTransform;
 class TeTheme;
 class TeVisual;
