@@ -73,9 +73,9 @@
 #include <QGridLayout>
 
 // TerraLib 4
-#include <kernel/TeLegendEntry.h>
-#include <kernel/TeRasterTransform.h>
-#include <kernel/TeTheme.h>
+#include <terralib4/kernel/TeLegendEntry.h>
+#include <terralib4/kernel/TeRasterTransform.h>
+#include <terralib4/kernel/TeTheme.h>
 
 using namespace terralib4;
 
