@@ -20,34 +20,17 @@
 #
 #  Description: Find Terralib4 - find Terralib4 include directory and libraries.
 #
-#  TERRALIB4_INCLUDE_DIRS  - where to find teConfig.h.
-#  TERRALIB4_LIBRARIES     - where to find Terralib4 libraries.
-#  TERRALIB4_FOUND         - True, if Terralib4 is found.
+#  TERRALIB4_INCLUDE_DIR  - where to find Terralib4 include files.
+#  TERRALIB4_LIBRARIES    - where to find Terralib4 libraries.
+#  TERRALIB4_FOUND        - True, if Terralib4 is found.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
 #
 
-find_path(TERRALIB4_INCLUDE_CONFIG
-          NAMES terralib4/teConfig.h
-          PATH_SUFFIXES include)
-
-find_path(TERRALIB4_INCLUDE_ADO
+find_path(TERRALIB4_INCLUDE_DIR
           NAMES terralib4/drivers/ado/TeAdoDB.h
           PATHS include)
-
-find_path(TERRALIB4_INCLUDE_KERNEL
-          NAMES terralib4/kernel/TeDatabase.h
-          PATHS include)
-
-find_path(TERRALIB4_INCLUDE_UTILS
-          NAMES terralib4/utils/TeUpdateDBVersion.h
-          PATHS include)
-
-set(TERRALIB4_INCLUDE_DIRS  ${TERRALIB4_INCLUDE_CONFIG}
-                            ${TERRALIB4_INCLUDE_ADO}
-                            ${TERRALIB4_INCLUDE_KERNEL}
-                            ${TERRALIB4_INCLUDE_UTILS})
 
 find_library(TERRALIB4_LIBRARY_RELEASE
              NAMES terralib4
@@ -79,6 +62,6 @@ endif()
 
 include(FindPackageHandleStandardArgs)
 
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(Terralib4 DEFAULT_MSG TERRALIB4_LIBRARIES TERRALIB4_INCLUDE_DIRS)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(Terralib4 DEFAULT_MSG TERRALIB4_LIBRARIES TERRALIB4_INCLUDE_DIR)
 
-mark_as_advanced(TERRALIB4_INCLUDE_DIRS TERRALIB4_LIBRARIES)
+mark_as_advanced(TERRALIB4_INCLUDE_DIR TERRALIB4_LIBRARIES)
