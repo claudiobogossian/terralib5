@@ -26,7 +26,7 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR})
-include_directories(${TERRALIB4_INCLUDE_DIRS})
+include_directories(${TERRALIB4_INCLUDE_DIR})
 
 if(WIN32)
   add_definitions(-DTEQTPLUGINTERRALIB4DLL)
