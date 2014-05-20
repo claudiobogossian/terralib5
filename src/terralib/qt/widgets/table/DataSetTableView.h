@@ -261,11 +261,9 @@ namespace te
           void setPromotionEnabled(const bool& enable);
 
           /*!
-           \brief Used when a column is pressed.
-
-           \param c Column that was pressed.
-          */
-          void columnPressed(int c);
+           \brief Saves all editions to the dataset.
+           */
+          void saveEditions();
 
         signals:
 

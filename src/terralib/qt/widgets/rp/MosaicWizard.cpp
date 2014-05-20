@@ -28,6 +28,7 @@
 #include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../widgets/help/HelpPushButton.h"
 #include "../../widgets/progress/ProgressViewerDialog.h"
 #include "MosaicWizard.h"
 #include "MosaicWizardPage.h"
@@ -52,6 +53,15 @@ te::qt::widgets::MosaicWizard::MosaicWizard(QWidget* parent)
   this->setWizardStyle(QWizard::ModernStyle);
   this->setWindowTitle(tr("Mosaic"));
   //this->setFixedSize(640, 480);
+
+  this->setOption(QWizard::HaveHelpButton, true);
+  this->setOption(QWizard::HelpButtonOnRight, false);
+
+  te::qt::widgets::HelpPushButton* helpButton = new te::qt::widgets::HelpPushButton(this);
+
+  this->setButton(QWizard::HelpButton, helpButton);
+
+  helpButton->setPageReference("plugins/rp/rp_mosaic.html");
 
   addPages();
 }

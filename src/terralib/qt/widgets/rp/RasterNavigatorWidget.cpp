@@ -218,6 +218,11 @@ void te::qt::widgets::RasterNavigatorWidget::setVectorial(te::map::AbstractLayer
   m_mapDisplay->setExtent(e, true);
 }
 
+void te::qt::widgets::RasterNavigatorWidget::setExtent(te::gm::Envelope env)
+{
+  //m_mapDisplay->setExtent(env, true);
+}
+
 void te::qt::widgets::RasterNavigatorWidget::removeVectorial()
 {
   std::list<te::map::AbstractLayerPtr> list;

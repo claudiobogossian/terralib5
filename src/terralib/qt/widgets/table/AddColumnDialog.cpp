@@ -19,6 +19,7 @@
 
 #include "AddColumnDialog.h"
 
+#include "../../../datatype/DateTimeProperty.h"
 #include "../../../datatype/SimpleProperty.h"
 
 #include <ui_AddColumnDialogForm.h>
@@ -32,7 +33,7 @@ te::dt::Property* GetProperty(const QString& propertyType)
   else if(propertyType.compare(QObject::tr("String")) == 0)
     return new te::dt::SimpleProperty("", te::dt::STRING_TYPE);
   else if(propertyType.compare(QObject::tr("Date")) == 0)
-    return new te::dt::SimpleProperty("", te::dt::DATETIME_TYPE);
+    return new te::dt::DateTimeProperty("");
 
   return 0;
 }

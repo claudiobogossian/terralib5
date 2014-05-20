@@ -494,6 +494,13 @@ void te::da::DataSource::update(const std::string& datasetName,
   return t->update(datasetName, dataset, properties, oids, options, limit);
 }
 
+void te::da::DataSource::update(const std::string &datasetName, te::da::DataSet *dataset, const std::vector< std::set<int> >& properties,
+                                const std::vector<size_t>& ids)
+{
+  std::auto_ptr<DataSourceTransactor> t = getTransactor();
+  return t->update(datasetName, dataset, properties, ids);
+}
+
 std::auto_ptr<te::da::DataSource> te::da::DataSource::create(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)
 {
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));

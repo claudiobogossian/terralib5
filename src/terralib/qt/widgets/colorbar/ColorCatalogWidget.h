@@ -81,6 +81,8 @@ namespace te
 
           void onSchemaComboBoxActivated(int index);
 
+          void onUseCatalogGroupBoxClicked(bool flag);
+
         signals:
 
           void colorBarChanged();

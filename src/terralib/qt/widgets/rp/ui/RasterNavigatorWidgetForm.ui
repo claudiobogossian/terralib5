@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>704</width>
+    <width>757</width>
     <height>387</height>
    </rect>
   </property>
@@ -201,6 +201,9 @@
           </item>
           <item row="7" column="0">
            <widget class="QToolButton" name="m_extentActionToolButtontoolButton">
+            <property name="toolTip">
+             <string>Extent Selection</string>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -327,12 +330,6 @@
                   </item>
                   <item row="0" column="1">
                    <widget class="QComboBox" name="m_monoComboBox">
-                    <property name="minimumSize">
-                     <size>
-                      <width>45</width>
-                      <height>0</height>
-                     </size>
-                    </property>
                     <property name="maximumSize">
                      <size>
                       <width>45</width>

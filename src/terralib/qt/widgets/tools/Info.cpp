@@ -206,10 +206,7 @@ void te::qt::widgets::Info::getInfo(const te::map::AbstractLayerPtr& layer, cons
       if(!dataset->moveNext())
         return;
 
-      std::size_t rpos = te::da::GetPropertyPos(dataset.get(), spatialPropertyName);
-      assert(rpos != std::string::npos);
-
-      std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));
+      std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rp->getName()));
       assert(raster.get());
 
       getRasterInfo(layerItem, raster.get(), reprojectedEnvelope, layer->getSRID(), needRemap);

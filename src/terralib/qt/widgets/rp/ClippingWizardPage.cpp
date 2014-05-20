@@ -246,6 +246,8 @@ void te::qt::widgets::ClippingWizardPage::onEnvelopeAcquired(te::gm::Envelope en
     m_ui->m_llyLineEdit->setText(QString::number(env.getLowerLeftY(), 'f', 5));
     m_ui->m_urxLineEdit->setText(QString::number(env.getUpperRightX(), 'f', 5));
     m_ui->m_uryLineEdit->setText(QString::number(env.getUpperRightY(), 'f', 5));
+
+    m_navigator->setExtent(env);
   }
   else if(type == CLIPPING_DIMENSION)
   {
