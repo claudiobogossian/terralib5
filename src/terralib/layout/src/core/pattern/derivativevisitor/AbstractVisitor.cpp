@@ -63,3 +63,8 @@ void te::layout::AbstractVisitor::visit( Visitable* visitable )
     }
   }
 }
+
+void te::layout::AbstractVisitor::disassociate()
+{
+  m_visitable = 0;
+}

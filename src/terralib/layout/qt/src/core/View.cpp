@@ -383,6 +383,7 @@ void te::layout::View::deleteItems()
       if(item)
       {
         delete item;
+        item = 0;
       }
     }
   }

@@ -43,6 +43,8 @@ namespace te
 
         virtual void visit(Visitable* visitable);
 
+        virtual void disassociate();
+
         virtual void visitDependent() = 0;
 
       protected:

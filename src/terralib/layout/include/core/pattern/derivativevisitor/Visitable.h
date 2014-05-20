@@ -46,7 +46,8 @@ namespace te
 
         virtual void acceptVisitor(AbstractVisitor* visitor);
         virtual void unacceptVisitor(AbstractVisitor* visitor);
-        
+        virtual void unacceptAllVisitor();
+
       protected:
         virtual void updateVisitors();
 
