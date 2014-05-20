@@ -58,6 +58,7 @@ namespace te
         QGraphicsItem* createText();
         QGraphicsItem* createRectangle();
 	      QGraphicsItem* createLegend();
+        QGraphicsItem* createScale();
 
         te::gm::Coord2D findCoordinate(te::layout::Properties* props);
 

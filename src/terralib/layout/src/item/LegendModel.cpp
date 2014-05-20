@@ -59,11 +59,7 @@ void te::layout::LegendModel::draw( ContextItem context )
 
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
-
-  canvas->setTextPointSize(12);
-  canvas->setTextColor(te::color::RGBAColor(0, 0, 0, 255));
-  canvas->drawText(m_box.getLowerLeftX() + 10, m_box.getUpperRightY() - 10, "A B C D E F", 0);
-
+  
   canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
   canvas->setPolygonFillColor(m_backgroundColor);
 

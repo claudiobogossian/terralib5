@@ -54,7 +54,8 @@ namespace te
       TPVerticalRuler = 15,
       TPText = 16,
       TPItemGroup = 17,
-      TPObjectUnknown = 18
+      TPScaleItem = 18,
+      TPObjectUnknown = 19
     } LayoutAbstractObjectType;
 
     /*!

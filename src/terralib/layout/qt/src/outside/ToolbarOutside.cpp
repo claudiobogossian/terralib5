@@ -65,6 +65,7 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionExport("template_export"),
   m_optionImport("template_import"),
   m_optionNew("template_new"),
+  m_optionScale("scale_object"),
   m_toolbar(0),
   m_btnMap(0)
 {
@@ -143,6 +144,9 @@ void te::layout::ToolbarOutside::createMapToolButton()
 
   QAction* actionLegend = createAction("Default Legend", m_optionLegendDefault, "layout-default-legend");
   menu->addAction(actionLegend);
+
+  QAction* actionScale = createAction("Scale Object", m_optionScale, "layout-scale");
+  menu->addAction(actionScale);
   
   QToolButton *btnMap = createToolButton("Map", "Map Objects", "layout-default-map");
   btnMap->setMenu(menu);
@@ -221,6 +225,10 @@ void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
   if(action->objectName().compare(m_optionLegendDefault.c_str()) == 0)
   {
     changeAction(TypeCreateLegend);
+  }
+  if(action->objectName().compare(m_optionScale.c_str()) == 0)
+  {
+    changeAction(TypeCreateScale);
   }
 }
 

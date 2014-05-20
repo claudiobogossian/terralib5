@@ -257,6 +257,9 @@ std::string te::layout::getLayoutAbstractObjectType( int enumVal )
   case TPItemGroup:
     s_val = "TPItemGroup";
     break;
+  case TPScaleItem:
+    s_val = "TPScaleItem";
+    break;
   default:
     s_val = "TPObjectUnknown";
   } 
@@ -335,6 +338,10 @@ te::layout::LayoutAbstractObjectType te::layout::getLayoutAbstractObjectType( st
   if(val.compare("TPItemGroup") == 0)
   {
     type = TPItemGroup;
+  }
+  if(val.compare("TPScaleItem") == 0)
+  {
+    type = TPScaleItem;
   }
 
   return type;

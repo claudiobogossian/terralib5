@@ -46,6 +46,9 @@
 #include "Context.h"
 #include "AbstractType.h"
 #include "SharedProperties.h"
+#include "ScaleModel.h"
+#include "ScaleController.h"
+#include "ScaleItem.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -94,6 +97,9 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   case TPPaperItem:
     item = createPaper();
     break;
+  case TPScaleItem:
+    item = createScale();
+    break;
   default:
     item = 0;
   }
@@ -124,6 +130,9 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::LayoutMode
     break;
   case TypeCreateLegend:
     item = createLegend();
+    break;
+  case TypeCreateScale:
+    item = createScale();
     break;
   default:
     item = 0;
@@ -298,7 +307,6 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createRectangle()
 {
   QGraphicsItem* item = 0;
 
-  //Retângulo: utilizando o canvas da Terralib 5
   RectangleModel* model = new RectangleModel();	
   if(m_props)
   {
@@ -332,7 +340,6 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createLegend()
 {
   QGraphicsItem* item = 0;
 
-  //Retângulo: utilizando o canvas da Terralib 5
   LegendModel* model = new LegendModel();	
   if(m_props)
   {
@@ -340,7 +347,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createLegend()
   }
   else
   {
-    model->setName("RECT_01");
+    model->setName("LEGEND_01");
   }
 
   LegendController* controller = new LegendController(model);
@@ -359,5 +366,38 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createLegend()
     return legend;
   }
   
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createScale()
+{
+  QGraphicsItem* item = 0;
+
+  ScaleModel* model = new ScaleModel();	
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setName("SCALE_01");
+  }
+
+  ScaleController* controller = new ScaleController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  ScaleItem* scale = dynamic_cast<ScaleItem*>(itemObs); 
+
+  if(scale)
+  {
+    scale->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_props)
+    {
+      scale->setZValue(m_zValue);
+    }
+    itemObs->redraw();
+    return scale;
+  }
+
   return item;
 }

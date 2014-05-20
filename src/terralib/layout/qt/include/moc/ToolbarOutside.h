@@ -100,6 +100,7 @@ namespace te
       std::string m_optionMapDefault;
       std::string m_optionMapGrid;
       std::string m_optionLegendDefault;
+      std::string m_optionScale;
 
       /* Geometry Menu */
       std::string m_optionRectangle;

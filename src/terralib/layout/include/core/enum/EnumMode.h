@@ -52,6 +52,7 @@ namespace te
       TypeExportPropsJSON,
       TypeImportJSONProps,
       TypeNewTemplate,
+      TypeCreateScale,
       TypeNone
     } LayoutMode;
 
