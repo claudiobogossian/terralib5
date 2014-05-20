@@ -78,9 +78,9 @@ namespace te
 
           \param r      The input raster.
           \param b      The selected band of the raster to be vectorized.
-          \param mp     The maximum allowed number of polygons to be created (default = 0).
+          \param mp     The maximum allowed number of polygons to be created (default = 0, unlimited).
         */
-        Vectorizer(Raster* r, unsigned int b, unsigned int mp);
+        Vectorizer(Raster* r, std::size_t b, unsigned int mp = 0);
 
         /*!
           \brief Copy constructor.
@@ -127,7 +127,7 @@ namespace te
 
           \param polygons    The vector of polygons (will be cleared) to get the result of the vectorization.
         */
-        bool run(std::vector<te::gm::Polygon*>& polygons);
+        bool run(std::vector<te::gm::Geometry*>& polygons);
 
         /*! \brief Clear all internally allocated resources. */
         void clear();

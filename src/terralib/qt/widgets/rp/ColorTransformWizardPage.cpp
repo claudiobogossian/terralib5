@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../raster/Utils.h"
 #include "ColorTransformWizardPage.h"
 #include "ui_ColorTransformWizardPageForm.h"
 
@@ -274,14 +275,14 @@ void te::qt::widgets::ColorTransformWizardPage::getRasterBands(QComboBox* layer,
   }
 
   //check data type range
-  //double min, max;
+  double min, max;
 
-  //te::rp::GetDataTypeRange(rst->getBandDataType(0), min, max);
+  te::rst::GetDataTypeRanges(rst->getBandDataType(0), min, max);
 
-  //m_ui->m_rgbMinLineEdit->setText(QString::number(min));
-  //m_ui->m_ihsMinLineEdit->setText(QString::number(min));
+  m_ui->m_rgbMinLineEdit->setText(QString::number(min));
+  m_ui->m_ihsMinLineEdit->setText(QString::number(min));
 
-  //m_ui->m_rgbMaxLineEdit->setText(QString::number(max));
-  //m_ui->m_ihsMaxLineEdit->setText(QString::number(max));
+  m_ui->m_rgbMaxLineEdit->setText(QString::number(max));
+  m_ui->m_ihsMaxLineEdit->setText(QString::number(max));
 }
 

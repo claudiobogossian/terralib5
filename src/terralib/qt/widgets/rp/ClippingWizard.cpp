@@ -168,6 +168,12 @@ bool te::qt::widgets::ClippingWizard::executeExtentClipping()
 
   m_clippingPage->getExtentClipping(env);
 
+  if(!env.intersects(*inputRst->getExtent()))
+  {
+    QMessageBox::warning(this, tr("Clipping"), tr("Selected area do not intersects the raster extent."));
+    return false;
+  }
+
   std::map<std::string, std::string> info = m_rasterInfoPage->getWidget()->getInfo();
 
   //execute clipping

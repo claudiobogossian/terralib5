@@ -618,11 +618,13 @@ te::rst::Raster* te::rst::Raster::transform(int srid, double llx, double lly, do
   return te::rst::Reproject(this, srid, llx, lly, urx, ury, resx, resy, rinfo, m);
 }
 
-void te::rst::Raster::vectorize(std::vector<te::gm::Geometry*>& g, std::size_t b)
+void te::rst::Raster::vectorize(std::vector<te::gm::Geometry*>& g, std::size_t b, unsigned int mp)
 {
-  assert(b < getNumberOfBands());
-
   g.clear();
+
+  te::rst::Vectorizer vectorizer(this, b, mp);
+
+  vectorizer.run(g);
 }
 
 void te::rst::Raster::rasterize(std::vector<te::gm::Geometry*> g, std::vector<double> vp, std::size_t b)

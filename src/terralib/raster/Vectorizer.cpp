@@ -42,7 +42,7 @@
 // STL
 #include <iostream>
 
-te::rst::Vectorizer::Vectorizer(Raster* r, unsigned int b, unsigned int mp)
+te::rst::Vectorizer::Vectorizer(Raster* r, std::size_t b, unsigned int mp)
   : m_raster(r),
     m_rasterBand(b),
     m_maxPolygons(mp),
@@ -154,7 +154,7 @@ bool te::rst::Vectorizer::CheckParameters(
 }
 */
 
-bool te::rst::Vectorizer::run(std::vector<te::gm::Polygon*>& polygons)
+bool te::rst::Vectorizer::run(std::vector<te::gm::Geometry*>& polygons)
 {
   clear();
 

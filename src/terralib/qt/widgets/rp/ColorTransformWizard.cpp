@@ -30,6 +30,7 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/RasterFactory.h"
 #include "../../../rp/Functions.h"
+#include "../../widgets/help/HelpPushButton.h"
 #include "../../widgets/progress/ProgressViewerDialog.h"
 #include "ColorTransformWizard.h"
 #include "ColorTransformWizardPage.h"
@@ -54,6 +55,15 @@ te::qt::widgets::ColorTransformWizard::ColorTransformWizard(QWidget* parent)
   this->setWizardStyle(QWizard::ModernStyle);
   this->setWindowTitle(tr("Color Transform"));
   //this->setFixedSize(640, 480);
+
+  this->setOption(QWizard::HaveHelpButton, true);
+  this->setOption(QWizard::HelpButtonOnRight, false);
+
+  te::qt::widgets::HelpPushButton* helpButton = new te::qt::widgets::HelpPushButton(this);
+
+  this->setButton(QWizard::HelpButton, helpButton);
+
+  helpButton->setPageReference("plugins/rp/rp_colorTransform.html");
 
   addPages();
 }
@@ -246,6 +256,9 @@ te::rst::Raster* te::qt::widgets::ColorTransformWizard::buildOutputRaster()
     bProp->m_type = dataType;
 
     bands.push_back(bProp);
+
+    if(t >= 2)
+      break;
   }
 
   //get input grid

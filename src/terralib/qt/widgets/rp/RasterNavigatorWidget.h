@@ -93,6 +93,8 @@ namespace te
 
           void setVectorial(te::map::AbstractLayerPtr layer);
 
+          void setExtent(te::gm::Envelope env);
+
           void removeVectorial();
 
           te::gm::Envelope getCurrentExtent();
