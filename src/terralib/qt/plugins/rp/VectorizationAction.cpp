@@ -26,8 +26,8 @@
 te::qt::plugins::rp::VectorizationAction::VectorizationAction(QMenu *menu, QMenu *popupMenu) :
   AbstractAction(menu, popupMenu)
 {
-  createAction(tr("Vectorization...").toStdString(), "");
-  createPopUpAction(tr("Vectorization...").toStdString(), "");
+  createAction(tr("Vectorization...").toStdString(), "vectorization");
+  createPopUpAction(tr("Vectorization...").toStdString(), "vectorization");
 }
 
 te::qt::plugins::rp::VectorizationAction::~VectorizationAction()

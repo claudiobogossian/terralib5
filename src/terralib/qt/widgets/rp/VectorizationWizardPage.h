@@ -21,6 +21,9 @@
 #ifndef TE_QT_WIDGETS_VECTORIZATIONWIZARDPAGE_H
 #define TE_QT_WIDGETS_VECTORIZATIONWIZARDPAGE_H
 
+//Terralib
+#include "../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../../maptools/AbstractLayer.h"
 #include "../Config.h"
 
 //Qt
@@ -35,9 +38,14 @@ namespace Ui
   class VectorizationWizardPageForm;
 }
 
-namespace te {
-  namespace qt {
-    namespace widgets {
+namespace te 
+{
+  namespace rst { class Raster; }
+
+  namespace qt 
+  {
+    namespace widgets 
+    {
       
       class TEQTWIDGETSEXPORT VectorizationWizardPage : public QWizardPage
       {
@@ -46,8 +54,50 @@ namespace te {
         public:
           VectorizationWizardPage(QWidget* parent=0);
 
+          ~VectorizationWizardPage();
+
+          bool isComplete() const;
+
+        public:
+
+          /*!
+            \brief This method is used to set the selected layer for vectorization operation
+            
+            \param layer The layer ptr 
+
+            \note This layer MUST HAVE a valid raster object.
+          */
+          void setLayer(te::map::AbstractLayerPtr layer);
+
+          std::auto_ptr<te::rst::Raster> getRaster();
+
+          unsigned int getBand();
+
+          bool hasMaxGeom(unsigned int& maxGeom);
+
+          bool outputDataSourceToFile();
+
+          te::da::DataSourceInfoPtr getDataSourceInfo();
+
+          std::string getLayerName();
+
+          std::string getRepositoryName();
+
+        protected slots:
+
+          void onTargetDatasourceToolButtonPressed();
+
+          void onTargetFileToolButtonPressed();
+
         private:
+
           std::auto_ptr<Ui::VectorizationWizardPageForm> m_ui;
+
+          te::map::AbstractLayerPtr m_layer;
+
+          te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
+
+          bool m_toFile;
       };
       
     } // namespace widgets
