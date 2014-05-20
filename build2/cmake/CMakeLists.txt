@@ -183,6 +183,7 @@ endif()
 
 find_package(Xerces)
 
+
 #
 # some variables needed in config file
 #
@@ -428,6 +429,7 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_RP_ENABLED "Build Raster Processi
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_ST_ENABLED "Build Spatial Temporal Driver Qt plugin?" ON "TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED;TERRALIB_MOD_QT_APF_ENABLED" OFF)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_TERRAVIEW_ENABLED "Build TerraView?" ON "TERRALIB_MOD_QT_APF_ENABLED" OFF)
+
 
 #
 # build options for the TerraLib examples
