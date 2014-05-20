@@ -39,16 +39,23 @@
 // STL
 #include <vector>
 #include <string>
+#include "GeodesicGridSettingsConfigProperties.h"
+#include "PlanarGridSettingsConfigProperties.h"
 
 te::layout::MapGridModel::MapGridModel() :
   MapModel(),
   m_gridPlanar(0),
-  m_gridGeodesic(0)
+  m_gridGeodesic(0),
+  m_planarGridProperties(0),
+  m_geodesicGridProperties(0)
 {
   m_backgroundColor = te::color::RGBAColor(0, 255, 255, 200);
 
   m_gridPlanar = new GridPlanarModel;
   m_gridGeodesic = new GridGeodesicModel;
+
+  m_geodesicGridProperties = new GeodesicGridSettingsConfigProperties;
+  m_planarGridProperties = new PlanarGridSettingsConfigProperties;
 
   m_properties->setHasGridWindows(true);
 }
@@ -65,6 +72,18 @@ te::layout::MapGridModel::~MapGridModel()
   {
     delete m_gridGeodesic;
     m_gridGeodesic = 0;
+  }
+
+  if(m_planarGridProperties)
+  {
+    delete m_planarGridProperties;
+    m_planarGridProperties = 0;
+  }
+
+  if(m_geodesicGridProperties)
+  {
+    delete m_geodesicGridProperties;
+    m_geodesicGridProperties = 0;
   }
 }
 
@@ -99,38 +118,50 @@ void te::layout::MapGridModel::draw( ContextItem context )
 
 void te::layout::MapGridModel::drawGrid(te::map::Canvas* canvas, Utils* utils)
 {
-  // Planar Grid
-  te::gm::Envelope box = getWorldInMeters();
-  utils->configGeoCanvas(box, m_box, false);
+  if(!m_layer)
+    return;
 
+  int srid = m_layer->getSRID();
   double scale = getScale();
+
+  // Planar Grid
+  te::gm::Envelope planarBox = getWorldInMeters();
+  utils->configGeoCanvas(planarBox, m_box, false);
+
   m_gridPlanar->setMapScale(scale);
-  m_gridPlanar->draw(canvas, box);
+  m_gridPlanar->draw(canvas, planarBox, srid);
+
+  // Geodesic Grid
+  te::gm::Envelope geoBox = getWorldInDegrees();
+  utils->configGeoCanvas(geoBox, m_box, false);
+
+  m_gridGeodesic->setMapScale(scale);
+  m_gridGeodesic->draw(canvas, geoBox, srid);
 }
 
 te::layout::Properties* te::layout::MapGridModel::getProperties() const
 {
   MapModel::getProperties();
 
+  Property pro_grid;
+  pro_grid.setName("grid");
+  pro_grid.setId("unknown");
+  std::string sValuePlanar = "Settings";
+  pro_grid.setValue(sValuePlanar, DataTypeGridSettings);
+
   if(m_gridPlanar)
   {
-    Properties* propGridModel = const_cast<Properties*>(m_gridPlanar->getProperties());
-    std::vector<Property> props = propGridModel->getProperties();
-
-    Property pro_grid;
-    pro_grid.setName("grid");
-    pro_grid.setId("unknown");
-    std::string sValue = "Settings";
-    pro_grid.setValue(sValue, DataTypeGridSettings);
-    
-    for(unsigned int i = 0 ; i < props.size() ; ++i)
-    {
-      Property prop = props[i];
-      pro_grid.addSubProperty(prop);
-    }
-
-    m_properties->addProperty(pro_grid);
+    Property propPlanar = m_gridPlanar->getProperty();
+    pro_grid.addSubProperty(propPlanar);
   }
+
+  if(m_gridGeodesic)
+  {
+    Property propGeodesic = m_gridGeodesic->getProperty();
+    pro_grid.addSubProperty(propGeodesic);
+  }
+
+  m_properties->addProperty(pro_grid);
 
   return m_properties;
 }
@@ -143,12 +174,17 @@ void te::layout::MapGridModel::updateProperties( te::layout::Properties* propert
 
   Property pro_grid = vectorProps->contains("grid");
 
-  if(!pro_grid.isNull())
+  Property pro_grid_planar = pro_grid.containsSubProperty(m_planarGridProperties->getName());
+
+  if(!pro_grid_planar.isNull())
   {
-    Properties* props = new Properties(m_gridPlanar->getName());
-    pro_grid.setName(m_gridPlanar->getName());
-    props->addProperty(pro_grid);
-    bool visibility = m_gridPlanar->isVisible();
-    m_gridPlanar->updateProperties(props);
+    m_gridPlanar->updateProperty(pro_grid_planar);
+  }
+
+  Property pro_grid_geodesic = pro_grid.containsSubProperty(m_geodesicGridProperties->getName());
+
+  if(!pro_grid_geodesic.isNull())
+  {
+    m_gridGeodesic->updateProperty(pro_grid_geodesic);
   }
 }

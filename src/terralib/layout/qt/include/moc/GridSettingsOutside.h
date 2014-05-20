@@ -37,6 +37,7 @@
 #include "../../../include/core/Config.h"
 #include "../../../../geometry/Envelope.h"
 #include "../../../../color/RGBAColor.h"
+#include "EnumMode.h"
 
 namespace Ui { class GridSettings; }
 
@@ -248,17 +249,17 @@ namespace te
 
         virtual void init();
 
-        virtual void initString( QWidget* widget, std::string nameComponent );
+        virtual void initString( QWidget* widget, std::string nameComponent, LayoutGridType gridType );
 
-        virtual void initInt( QWidget* widget, std::string nameComponent );
+        virtual void initInt( QWidget* widget, std::string nameComponent, LayoutGridType gridType );
 
-        virtual void initDouble( QWidget* widget, std::string nameComponent );
+        virtual void initDouble( QWidget* widget, std::string nameComponent, LayoutGridType gridType );
 
-        virtual void initBool( QWidget* widget, std::string nameComponent );
+        virtual void initBool( QWidget* widget, std::string nameComponent, LayoutGridType gridType );
 
-        virtual void initColor( QWidget* widget, std::string nameComponent );
+        virtual void initColor( QWidget* widget, std::string nameComponent, LayoutGridType gridType );
 
-        virtual void initCombo(QWidget* widget, std::string nameComponent);
+        virtual void initCombo(QWidget* widget, std::string nameComponent, LayoutGridType gridType);
                 
       protected:
 

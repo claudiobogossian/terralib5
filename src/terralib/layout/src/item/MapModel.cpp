@@ -209,42 +209,39 @@ te::common::UnitOfMeasurePtr te::layout::MapModel::unitMeasureLayer()
 
 te::gm::Envelope te::layout::MapModel::getWorldInDegrees()
 {
-  te::gm::Envelope box;
+  te::gm::Envelope worldBox;
   
   if(!m_layer)
-    return box;
+    return worldBox;
 
   if(m_layer.get() == 0)
-    return box;
+    return worldBox;
 
   // World box: coordinates in the same SRS as the layer
-  box = m_layer->getExtent();
+  worldBox = m_layer->getExtent();
   int srid = m_layer->getSRID();
-
+  
   //About units names (SI): terralib5\resources\json\uom.json 
   te::common::UnitOfMeasurePtr unitPtr = unitMeasureLayer();
 
   if(!unitPtr)
-    return box;
+    return worldBox;
 
   std::string unitPtrStr = unitPtr->getName(); 
   unitPtrStr = te::common::Convert2UCase(unitPtrStr);
 
   if(unitPtrStr.compare("DEGREE") != 0)
   {
-    /*TeCoord2D ll = _view->projection()->PC2LL(box.lowerLeft());
-    TeCoord2D ur = _view->projection()->PC2LL(box.upperRight());
+    std::string proj4 = proj4DescToGeodesic();
 
-    ll.x_ = ll.x_ * TeCRD;
-    ll.y_ = ll.y_ * TeCRD;
+    // Get the id of the projection of destination 
+    std::pair<std::string, unsigned int> projMeters = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt(proj4); 
 
-    ur.x_ = ur.x_ * TeCRD;
-    ur.y_ = ur.y_ * TeCRD;
-
-    box = TeBox(ll, ur);*/
+    // Remapping 
+    worldBox.transform(srid, projMeters.second);
   }
 
-  return box;
+  return worldBox;
 }
 
 std::string te::layout::MapModel::proj4DescToPlanar( int zone )
@@ -276,5 +273,16 @@ std::string te::layout::MapModel::proj4DescToPlanar( int zone )
   proj4+= " +units=m"; 
   proj4+= " +no_defs ";
   
+  return proj4;
+}
+
+std::string te::layout::MapModel::proj4DescToGeodesic()
+{
+  std::string proj4;
+  proj4 += "+proj=longlat";
+  proj4 += " +ellps=aust_SA";
+  proj4 += " +towgs84=-57,1,-41,0,0,0,0";
+  proj4 += " +no_defs ";
+
   return proj4;
 }

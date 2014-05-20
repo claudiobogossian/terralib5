@@ -60,11 +60,15 @@ void te::layout::LegendModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
 
+  canvas->setTextPointSize(12);
+  canvas->setTextColor(te::color::RGBAColor(0, 0, 0, 255));
+  canvas->drawText(m_box.getLowerLeftX() + 10, m_box.getUpperRightY() - 10, "A B C D E F", 0);
+
   canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
   canvas->setPolygonFillColor(m_backgroundColor);
 
   utils->drawRectW(m_box);
-
+  
   drawLegend(canvas, utils);
 
   if(context.isResizeCanvas())
@@ -91,7 +95,6 @@ void te::layout::LegendModel::drawLegend( te::map::Canvas* canvas, Utils* utils 
 
   canvas->setTextPointSize(12);
   canvas->setTextColor(te::color::RGBAColor(0, 0, 0, 255));
-  /*canvas->drawText(m_box.getLowerLeftX() + 10, m_box.getUpperRightY() - 10, layerName, 0);*/
   canvas->drawText(m_box.getLowerLeftX(), m_box.getLowerLeftY() + 10, layerName, 0);
 
   // Creates a canvas configurer

@@ -38,6 +38,8 @@ namespace te
     class GridPlanarModel;
     class GridGeodesicModel;
     class Utils;
+    class GeodesicGridSettingsConfigProperties;
+    class PlanarGridSettingsConfigProperties;
 
     class MapGridModel : public MapModel
     {
@@ -57,6 +59,8 @@ namespace te
 
         GridPlanarModel*    m_gridPlanar;
         GridGeodesicModel*  m_gridGeodesic;
+        GeodesicGridSettingsConfigProperties* m_geodesicGridProperties;
+        PlanarGridSettingsConfigProperties*   m_planarGridProperties;
     };
   }
 }

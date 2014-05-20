@@ -44,11 +44,11 @@ namespace te
         GridGeodesicModel();
         virtual ~GridGeodesicModel();
 
-        virtual void draw(te::map::Canvas* canvas, te::gm::Envelope box);
+        virtual void draw(te::map::Canvas* canvas, te::gm::Envelope box, int srid);
 
-        virtual te::layout::Properties* getProperties() const;
+        virtual te::layout::Property getProperty();
 
-        virtual void updateProperties(te::layout::Properties* properties);
+        virtual void updateProperty(te::layout::Property property);
 
        protected:
 

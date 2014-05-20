@@ -65,6 +65,8 @@ namespace te
       protected:
 
         std::string proj4DescToPlanar(int zone);
+        
+        std::string proj4DescToGeodesic();
 
         te::map::AbstractLayerPtr m_layer;
     };
