@@ -51,7 +51,7 @@ if(Qt5_FOUND)
 
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
-  add_executable(terralib_example_graph ${TERRALIB_FILES})
+  add_executable(terralib_example_qt_canvas ${TERRALIB_FILES})
 
   target_link_libraries(terralib_example_qt_canvas terralib_mod_qt_widgets
                                                    ${BOOST_SYSTEM_LIBRARY})
@@ -72,4 +72,3 @@ endif()
 
 install(FILES ${TERRALIB_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/qt/canvas COMPONENT devel)
-
