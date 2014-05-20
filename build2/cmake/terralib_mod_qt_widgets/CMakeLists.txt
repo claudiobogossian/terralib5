@@ -555,6 +555,7 @@ source_group("UI Files\\temporal\\ui"  FILES ${TERRALIB_TEMPORAL_UI_FILES})
 list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/ObservationDialog.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TemporalPropertiesWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TimeSeriesDialog.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TimeSeriesPropertiesWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TrajectoryDialog.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TrajectoryPropertiesWidget.h)
 
@@ -568,6 +569,7 @@ source_group("Header Files\\tools"  FILES ${TERRALIB_TOOLS_HDR_FILES})
 list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/CoordTracking.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/ExtentAcquire.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/Info.h
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/Measure.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/PanExtent.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/PointPicker.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/PolygonAcquire.h

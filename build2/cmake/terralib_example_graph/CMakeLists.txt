@@ -71,7 +71,9 @@ else()
 
   add_executable(terralib_example_graph ${TERRALIB_FILES})
 
-  target_link_libraries(terralib_example_graph terralib_mod_qt_graph
+  target_link_libraries(terralib_example_graph terralib_mod_graph
+                                               terralib_mod_plugin
+                                               terralib_mod_qt_widgets
                                                ${BOOST_SYSTEM_LIBRARY}
                                                ${QT_LIBRARIES})
 
