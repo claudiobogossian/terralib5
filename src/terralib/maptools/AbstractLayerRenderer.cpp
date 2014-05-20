@@ -205,10 +205,8 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
     if(dataset.get() == 0)
       throw Exception((boost::format(TR_MAP("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
 
-    std::size_t rpos = te::da::GetPropertyPos(dataset.get(), spatialPropertyName);
-
     // Retrieves the raster
-    std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));
+    std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rasterProperty->getName()));
     if(dataset.get() == 0)
       throw Exception((boost::format(TR_MAP("Could not retrieve the raster from the layer %1%.")) % layer->getTitle()).str());
 
