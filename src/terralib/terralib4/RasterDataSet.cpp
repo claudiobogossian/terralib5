@@ -45,11 +45,11 @@
 #include "Utils.h"
 
 // Terralib 4.x
-#include <terralib/kernel/TeAttribute.h>
-#include <terralib/kernel/TeDatabase.h>
-#include <terralib/kernel/TeLayer.h>
+#include <kernel/TeAttribute.h>
+#include <kernel/TeDatabase.h>
+#include <kernel/TeLayer.h>
 
-#include <terralib/kernel/TeQuerierParams.h>
+#include <kernel/TeQuerierParams.h>
 
 // STL
 #include <memory>
@@ -172,62 +172,62 @@ bool terralib4::RasterDataSet::isAfterEnd() const
 
 char terralib4::RasterDataSet::getChar(std::size_t /*i*/) const
 {
-  throw Exception(TR_TERRALIB4("Not supported by this type of dataset!"));
+  throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
 
 unsigned char terralib4::RasterDataSet::getUChar(std::size_t /*i*/) const
 {
-  throw Exception(TR_TERRALIB4("Not supported by this type of dataset!"));
+  throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
 
 boost::int16_t terralib4::RasterDataSet::getInt16(std::size_t /*i*/) const
 {
-  throw Exception(TR_TERRALIB4("Not supported by this type of dataset!"));
+  throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
 
 boost::int32_t terralib4::RasterDataSet::getInt32(std::size_t i) const
 {
-  throw Exception(TR_TERRALIB4("Not supported by this type of dataset!"));
+  throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
 
 boost::int64_t terralib4::RasterDataSet::getInt64(std::size_t i) const
 {
-  throw Exception(TR_TERRALIB4("Not supported by this type of dataset!"));
+  throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
 
 bool terralib4::RasterDataSet::getBool(std::size_t /*i*/) const
 {
-  throw Exception(TR_TERRALIB4("Not supported by this type of dataset!"));
+  throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
 
 float terralib4::RasterDataSet::getFloat(std::size_t /*i*/) const
 {
-  throw Exception(TR_TERRALIB4("Not supported by this type of dataset!"));
+  throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
 
 double terralib4::RasterDataSet::getDouble(std::size_t /*i*/) const
 {
-  throw Exception(TR_TERRALIB4("Not supported by this type of dataset!"));
+  throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
 
 std::string terralib4::RasterDataSet::getNumeric(std::size_t /*i*/) const
 {
-  throw Exception(TR_TERRALIB4("Not supported by this type of dataset!"));
+  throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
 
 std::string terralib4::RasterDataSet::getString(std::size_t /*i*/) const
 {
-  throw Exception(TR_TERRALIB4("Not supported by this type of dataset!"));
+  throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
 
 std::auto_ptr<te::dt::ByteArray> terralib4::RasterDataSet::getByteArray(std::size_t /*i*/) const
 {
-  throw Exception(TR_TERRALIB4("Not supported by this type of dataset!"));
+  throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
 
 std::auto_ptr<te::gm::Geometry> terralib4::RasterDataSet::getGeometry(std::size_t /*i*/) const
 {
-  throw Exception(TR_TERRALIB4("Not supported by this type of dataset!"));
+  throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
 
 std::auto_ptr<te::rst::Raster> terralib4::RasterDataSet::getRaster(std::size_t i) const
@@ -237,12 +237,12 @@ std::auto_ptr<te::rst::Raster> terralib4::RasterDataSet::getRaster(std::size_t i
 
 std::auto_ptr<te::dt::DateTime> terralib4::RasterDataSet::getDateTime(std::size_t /*i*/) const
 {
-  throw Exception(TR_TERRALIB4("Not supported by this type of dataset!"));
+  throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
 
 std::auto_ptr<te::dt::Array> terralib4::RasterDataSet::getArray(std::size_t i) const
 {
-  throw Exception(TR_TERRALIB4("Not supported by this type of dataset!"));
+  throw Exception(TE_TR("Not supported by this type of dataset!"));
 }
 
 bool terralib4::RasterDataSet::isNull(std::size_t /*i*/) const

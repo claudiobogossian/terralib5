@@ -64,12 +64,12 @@ if(NOT DEFINED TERRALIB_EXAMPLES_DATA_DIR)
 endif()
 
 # variables that controls what is built
-if(NOT DEFINED TERRALIB_BUILD_EXAMPLES)
-  set(TERRALIB_BUILD_EXAMPLES 1 CACHE BOOL "If on, shows a list of examples to be built")
+if(NOT DEFINED TERRALIB_BUILD_EXAMPLES_ENABLED)
+  set(TERRALIB_BUILD_EXAMPLES_ENABLED 1 CACHE BOOL "If on, shows a list of examples to be built")
 endif()
 
-if(NOT DEFINED TERRALIB_BUILD_UNITTEST)
-  set(TERRALIB_BUILD_UNITTEST 1 CACHE BOOL "If on, shows a list of unit-tests to be built")
+if(NOT DEFINED TERRALIB_BUILD_UNITTEST_ENABLED)
+  set(TERRALIB_BUILD_UNITTEST_ENABLED 1 CACHE BOOL "If on, shows a list of unit-tests to be built")
 endif()
 
 if(NOT DEFINED TERRALIB_BUILD_AS_BUNDLE)
@@ -85,7 +85,7 @@ endif()
 # global definitions and includes
 #
 
-add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
+add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3 -DBOOST_UBLAS_TYPE_CHECK=0)
 
 if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -146,7 +146,11 @@ endif()
 find_package(Doxygen QUIET)
 
 if(WIN32)
+
   find_package(ADO)
+
+  find_package(Terralib4)
+
 endif()
 
 find_package(GDAL)
@@ -157,7 +161,7 @@ find_package(GEOSC)
 
 find_package(GNUGettext)
 
-find_package(GNUIconv)
+find_package(GNUIConv)
 
 find_package(Log4cxx)
 
@@ -171,7 +175,7 @@ endif()
 
 find_package(Proj4)
 
-find_package(Qt5 5.1 COMPONENTS Core Gui Widgets PrintSupport)
+find_package(Qt5 5.1 QUIET COMPONENTS Core Gui Widgets PrintSupport)
 
 if(NOT Qt5_FOUND)
   find_package(Qt4 4.6.3 QUIET COMPONENTS QtCore QtGui)
@@ -184,11 +188,16 @@ endif()
 
 find_package(Xerces)
 
+
 #
 # some variables needed in config file
 #
 if(WIN32 AND ADO_FOUND)
   set(TERRALIB_ADO_ENABLED ON)
+endif()
+
+if(WIN32 AND TERRALIB4_FOUND)
+  set(TERRALIB_TERRALIB4_ENABLED ON)
 endif()
 
 if(Boost_FOUND)
@@ -356,7 +365,19 @@ if(GDAL_FOUND)
 endif()
 
 if(ADO_FOUND)
+
   CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_ADO_ENABLED "Build Microsoft Access driver?" ON "TERRALIB_MOD_MEMORY_ENABLED;TERRALIB_MOD_XML_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED" OFF)
+  
+  CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_ADO_ENABLED "Build ADO Driver Qt plugin?" ON "TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
+
+endif()
+
+if(TERRALIB4_FOUND)
+
+  CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_TERRALIB4_ENABLED "Build Terralib4 driver?" ON "TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_DATATYPE_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_MEMORY_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_RASTER_ENABLED;TERRALIB_MOD_TERRALIB4_ENABLED" OFF)
+
+  CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_TERRALIB4_ENABLED "Build TerraLib4 Driver Qt plugin?" ON "TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
+
 endif()
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_ANNOTATIONTEXT_ENABLED "Build AnnotationText module?" ON "TERRALIB_MOD_GEOMETRY_ENABLED" OFF)
@@ -395,7 +416,7 @@ if(QT4_FOUND OR Qt5_FOUND)
 
   CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_VP_QT_ENABLED "Build Vector Processing Qt module?" ON "TERRALIB_MOD_VP_CORE_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 
-  CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_APF_ENABLED "Build Qt Appllication Framework?" ON "TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
+  CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_APF_ENABLED "Build Qt Application Framework?" ON "TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 endif()
 
 option(TERRALIB_MOD_XSD_ENABLED "Build XSD module?" ON)
@@ -414,121 +435,70 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_ST_ENABLED "Build Spatial Tempora
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_TERRAVIEW_ENABLED "Build TerraView?" ON "TERRALIB_MOD_QT_APF_ENABLED" OFF)
 
-if(TERRALIB_BUILD_EXAMPLES)
-  option(TERRALIB_EXAMPLE_COMMON_ENABLED "Build examples for the Common runtime module?" ON)
-  option(TERRALIB_EXAMPLE_FACTORY_ENABLED "Build the TerraLib Factory example?" ON)
 
-  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_ADO_ENABLED "Build ADO examples?" ON "TERRALIB_MOD_DATAACCESS_ENABLED" OFF)
-  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_COLORBAR_ENABLED "Build color bar example?" ON "TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
-  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_CPPPLUGIN_ENABLED "Build C++ plugins example" ON "TERRALIB_MOD_PLUGIN_ENABLED" OFF)
-  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_DATAACCESS_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS_ENABLED" OFF)
-  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_GEOMETRY_ENABLED "Build examples for the Geometry module?" ON "TERRALIB_MOD_GEOMETRY_ENABLED" OFF)
-  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_GRAPH_ENABLED "Build examples for the Graph module?" ON "TERRALIB_MOD_GRAPH_ENABLED" OFF)
-  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_HELP_ENABLED "Build examples for the TerraLib Help support?" ON "TERRALIB_MOD_DATAACCESS" OFF)
-  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_LAYEREXPLORER_ENABLED "Build the Layer Explorer example?" ON "TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
-  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_MAPTOOLS_ENABLED "Build examples for the MapTools module?" ON "TERRALIB_MOD_MAPTOOLS_ENABLED" OFF)
-  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_PROGRESS_ENABLED "Build examples for the TerraLib Progress support?" ON "TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
-  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_CANVAS_ENABLED "Build examples for the Qt Canvas support?" ON "TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
-  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_CHARTS_ENABLED "Build examples for the Qt Charts support" ON "TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
-  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_DATASOURCE_ENABLED "Build examples for the Qt Data Source?" ON "TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
-  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_QUERY_ENABLED "Build examples for the Qt Query support?" ON "TERRALIB_MOD_DATAACCESS_ENABLED" OFF)
-  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_RASTER_VISUAL_ENABLED "Build examples for the Qt Raster Visual support?" ON "TERRALIB_MOD_RASTER_ENABLED" OFF)
-  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_RP_ENABLED "Build the Qt Raster Processing example?" ON "TERRALIB_MOD_RP_ENABLED" OFF)
-  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_SE_ENABLED "Build the Qt Symbology Encoding example?" ON "TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_SYMBOLOGY_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
-  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_SRS_ENABLED "Build the Qt SRS example?" ON "TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
-  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_TOOLS_ENABLED "Build examples for the Qt Tools support?" ON "TERRALIB_MOD_DATAACCESS" OFF)
-  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_UTILS_ENABLED "Build examples for the Qt Utils support?" ON "TERRALIB_MOD_DATAACCESS" OFF)
-  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_RASTER_ENABLED "Build examples for the Raster module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
-  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_RP_ENABLED "Build examples for the Raster Processing module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
-  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_SAM_ENABLED "Build examples for the SAM module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
-  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_SERIALIZATION_ENABLED "Build examples for the Serialization support?" ON "TERRALIB_MOD_DATAACCESS" OFF)
-  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_SRS_ENABLED "Build examples for the SRS module?" ON "TERRALIB_MOD_SRS_ENABLED" OFF)
-  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_ST_ENABLED "Build examples for the Spatial Temporal?" ON "TERRALIB_MOD_DATAACCESS" OFF)
-  CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_VP_ENABLED "Build examples for the Vector Processing module?" ON "TERRALIB_MOD_VP_CORE_ENABLED" OFF)
-  #CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_XERCES_ENABLED "Build examples for the Data Access module?" ON "TERRALIB_MOD_DATAACCESS" OFF)
+#
+# build options for the TerraLib examples
+#
 
-else()
-  #if(defined TERRALIB_EXAMPLE_COMMON_ENABLED)
-    set(TERRALIB_EXAMPLE_COMMON_ENABLED 0 CACHE BOOL "Build examples for the Common runtime module?" FORCE)
-  #endif()
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_COMMON_ENABLED "Build the common module example?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_COLORBAR_ENABLED)
-    set(TERRALIB_EXAMPLE_COLORBAR_ENABLED 0 CACHE BOOL "Build examples for the Color Bar runtime module?" FORCE)
-  #endif()
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_FACTORY_ENABLED "Build the factory example?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_CPPPLUGIN_ENABLED)
-    set(TERRALIB_EXAMPLE_CPPPLUGIN_ENABLED 0 CACHE BOOL "Build C++ plugins example?" FORCE)
-  #endif()
+#CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_ADO_ENABLED "Build the ADO examples?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_DATAACCESS_ENABLED)
-    set(TERRALIB_EXAMPLE_DATAACCESS_ENABLED 0 CACHE BOOL "Build examples for the Data Access module?" FORCE)
-  #endif()
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_COLORBAR_ENABLED "Build the color bar example?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_FACTORY_ENABLED)
-    set(TERRALIB_EXAMPLE_FACTORY_ENABLED 0 CACHE BOOL "Build the TerraLib Factory support example?" FORCE)
-  #endif()
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_CPPPLUGIN_ENABLED "Build the C++ plugins example" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_GEOMETRY_ENABLED)
-    set(TERRALIB_EXAMPLE_GEOMETRY_ENABLED 0 CACHE BOOL "Build examples for the the Geometry module?" FORCE)
-  #endif()
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_DATAACCESS_ENABLED "Build the examples for the Data Access module?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_GRAPH_ENABLED)
-    set(TERRALIB_EXAMPLE_GRAPH_ENABLED 0 CACHE BOOL "Build examples for the the Graph module?" FORCE)
-  #endif()
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_GEOMETRY_ENABLED "Build the examples for the Geometry module?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_LAYEREXPLORER_ENABLED)
-    set(TERRALIB_EXAMPLE_LAYEREXPLORER_ENABLED 0 CACHE BOOL "Build the TerraLib Layer Explorer support example?" FORCE)
-  #endif()
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_GRAPH_ENABLED "Build the examples for the Graph module?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_GRAPH_ENABLED" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_MAPTOOLS_ENABLED)
-    set(TERRALIB_EXAMPLE_MAPTOOLS_ENABLED 0 CACHE BOOL "Build examples for the the Maptools module?" FORCE)
-  #endif()
+#CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_HELP_ENABLED "Build the examples for the TerraLib Help support?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_DATAACCESS" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_PROGRESS_ENABLED)
-    set(TERRALIB_EXAMPLE_PROGRESS_ENABLED 0 CACHE BOOL "Build example for the TerraLib Progress support?" FORCE)
-  #endif()
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_LAYEREXPLORER_ENABLED "Build the Layer Explorer example?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_QT_CANVAS_ENABLED)
-    set(TERRALIB_EXAMPLE_QT_CANVAS_ENABLED 0 CACHE BOOL "Build example for the TerraLib Qt Canvas support?" FORCE)
-  #endif()
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_MAPTOOLS_ENABLED "Build the examples for the MapTools module?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_MAPTOOLS_ENABLED" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_QT_CHARTS_ENABLED)
-    set(TERRALIB_EXAMPLE_QT_CHARTS_ENABLED 0 CACHE BOOL "Build example for the TerraLib Qt Charts support?" FORCE)
-  #endif()
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_PROGRESS_ENABLED "Build the examples for the TerraLib Progress support?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_QT_DATASOURCE_ENABLED)
-    set(TERRALIB_EXAMPLE_QT_DATASOURCE_ENABLED 0 CACHE BOOL "Build example for the Qt Datasource?" FORCE)
-  #endif()
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_CANVAS_ENABLED "Build the examples for the Qt Canvas support?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_QT_QUERY_ENABLED)
-    set(TERRALIB_EXAMPLE_QT_QUERY_ENABLED 0 CACHE BOOL "Build example for the Qt Query?" FORCE)
-  #endif()
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_CHARTS_ENABLED "Build the examples for the Qt Charts support" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_QT_RASTER_VISUAL_ENABLED)
-    set(TERRALIB_EXAMPLE_QT_RASTER_VISUAL_ENABLED 0 CACHE BOOL "Build example for the Qt Raster Visual support?" FORCE)
-  #endif()
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_DATASOURCE_ENABLED "Build the examples for the Qt Data Source?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_QT_RP_ENABLED)
-    set(TERRALIB_EXAMPLE_QT_RP_ENABLED 0 CACHE BOOL "Build the Qt Raster Processing example?" FORCE)
-  #endif()
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_QUERY_ENABLED "Build the examples for the Qt Query support?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_QT_SE_ENABLED)
-    set(TERRALIB_EXAMPLE_QT_SE_ENABLED 0 CACHE BOOL "Build the Qt Symbology Encoding example?" FORCE)
-  #endif()
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_RASTER_VISUAL_ENABLED "Build the examples for the Qt Raster Visual support?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_RASTER_ENABLED" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_QT_SRS_ENABLED)
-    set(TERRALIB_EXAMPLE_QT_SRS_ENABLED 0 CACHE BOOL "Build the Qt SRS example?" FORCE)
-  #endif()
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_RP_ENABLED "Build the Qt Raster Processing example?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_RP_ENABLED" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_SRS_ENABLED)
-    set(TERRALIB_EXAMPLE_SRS_ENABLED 0 CACHE BOOL "Build examples for the the SRS module?" FORCE)
-  #endif()
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_SE_ENABLED "Build the Qt Symbology Encoding example?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_SYMBOLOGY_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 
-  #if(defined TERRALIB_EXAMPLE_VP_ENABLED)
-    set(TERRALIB_EXAMPLE_VP_ENABLED 0 CACHE BOOL "Build examples for the the Vector Processing module?" FORCE)
-  #endif()
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_SRS_ENABLED "Build the Qt SRS example?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 
-endif()
+#CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_TOOLS_ENABLED "Build the examples for the Qt Tools support?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_DATAACCESS" OFF)
+
+#CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_QT_UTILS_ENABLED "Build the examples for the Qt Utils support?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_DATAACCESS" OFF)
+
+#CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_RASTER_ENABLED "Build the examples for the Raster module?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_DATAACCESS" OFF)
+
+#CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_RP_ENABLED "Build the examples for the Raster Processing module?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_DATAACCESS" OFF)
+
+#CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_SAM_ENABLED "Build the examples for the SAM module?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_DATAACCESS" OFF)
+
+#CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_SERIALIZATION_ENABLED "Build the examples for the Serialization support?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_DATAACCESS" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_SRS_ENABLED "Build the examples for the SRS module?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_SRS_ENABLED" OFF)
+
+#CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_ST_ENABLED "Build the examples for the Spatial Temporal?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_DATAACCESS" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_VP_ENABLED "Build the examples for the Vector Processing module?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_VP_CORE_ENABLED" OFF)
+
+#CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_XERCES_ENABLED "Build the examples for the Data Access module?" ON "TERRALIB_BUILD_EXAMPLES_ENABLED;TERRALIB_MOD_DATAACCESS" OFF)
 
 
 #
@@ -567,6 +537,10 @@ configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h.in
 
 if(WIN32 AND TERRALIB_ADO_ENABLED)
   add_subdirectory(terralib_mod_ado)
+endif()
+
+if(WIN32 AND TERRALIB_TERRALIB4_ENABLED)
+  add_subdirectory(terralib_mod_terralib4)
 endif()
 
 if(TERRALIB_MOD_ANNOTATIONTEXT_ENABLED)
@@ -639,8 +613,16 @@ if(TERRALIB_MOD_QT_APF_ENABLED)
   add_subdirectory(terralib_mod_qt_apf)
 endif()
 
+if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_ADO_ENABLED)
+  add_subdirectory(terralib_mod_qt_plugins_datasource_ado)
+endif()
+
 if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_GDAL_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_datasource_gdal)
+endif()
+
+if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_TERRALIB4_ENABLED)
+  add_subdirectory(terralib_mod_qt_plugins_datasource_terralib4)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_OGR_ENABLED)
@@ -727,88 +709,88 @@ if(TERRALIB_TERRAVIEW_ENABLED)
   add_subdirectory(terraview)
 endif()
 
-if(TERRALIB_BUILD_EXAMPLES)
+#
+# build examples
+#
 
-  if(TERRALIB_EXAMPLE_COMMON_ENABLED)
-    add_subdirectory(terralib_example_common)
-  endif()
+if(TERRALIB_EXAMPLE_COMMON_ENABLED)
+  add_subdirectory(terralib_example_common)
+endif()
   
-  if(TERRALIB_EXAMPLE_COLORBAR_ENABLED)
-    add_subdirectory(terralib_example_colorbar)
-  endif()
+if(TERRALIB_EXAMPLE_COLORBAR_ENABLED)
+  add_subdirectory(terralib_example_colorbar)
+endif()
 
-  if(TERRALIB_EXAMPLE_CPPPLUGIN_ENABLED)
-    add_subdirectory(terralib_example_cppplugin)
-  endif()
+if(TERRALIB_EXAMPLE_CPPPLUGIN_ENABLED)
+  add_subdirectory(terralib_example_cppplugin)
+endif()
 
-  if(TERRALIB_EXAMPLE_DATAACCESS_ENABLED)
-    add_subdirectory(terralib_example_dataaccess)
-  endif()
+if(TERRALIB_EXAMPLE_DATAACCESS_ENABLED)
+  add_subdirectory(terralib_example_dataaccess)
+endif()
 
-  if(TERRALIB_EXAMPLE_FACTORY_ENABLED)
-    add_subdirectory(terralib_example_factory)
-  endif()
+if(TERRALIB_EXAMPLE_FACTORY_ENABLED)
+  add_subdirectory(terralib_example_factory)
+endif()
 
-  if(TERRALIB_EXAMPLE_GEOMETRY_ENABLED)
-    add_subdirectory(terralib_example_geometry)
-  endif()
+if(TERRALIB_EXAMPLE_GEOMETRY_ENABLED)
+  add_subdirectory(terralib_example_geometry)
+endif()
 
-  if(TERRALIB_EXAMPLE_GRAPH_ENABLED)
-    add_subdirectory(terralib_example_graph)
-  endif()
+if(TERRALIB_EXAMPLE_GRAPH_ENABLED)
+  add_subdirectory(terralib_example_graph)
+endif()
 
-  if(TERRALIB_EXAMPLE_LAYEREXPLORER_ENABLED)
-    add_subdirectory(terralib_example_layerexplorer)
-  endif()
+if(TERRALIB_EXAMPLE_LAYEREXPLORER_ENABLED)
+  add_subdirectory(terralib_example_layerexplorer)
+endif()
 
-  if(TERRALIB_EXAMPLE_MAPTOOLS_ENABLED)
-    add_subdirectory(terralib_example_maptools)
-  endif()
+if(TERRALIB_EXAMPLE_MAPTOOLS_ENABLED)
+  add_subdirectory(terralib_example_maptools)
+endif()
 
-  if(TERRALIB_EXAMPLE_PROGRESS_ENABLED)
-    add_subdirectory(terralib_example_progress)
-  endif()
+if(TERRALIB_EXAMPLE_PROGRESS_ENABLED)
+  add_subdirectory(terralib_example_progress)
+endif()
 
-  if(TERRALIB_EXAMPLE_QT_CANVAS_ENABLED)
-    add_subdirectory(terralib_example_qt_canvas)
-  endif()
+if(TERRALIB_EXAMPLE_QT_CANVAS_ENABLED)
+  add_subdirectory(terralib_example_qt_canvas)
+endif()
 
-  if(TERRALIB_EXAMPLE_QT_CHARTS_ENABLED)
-    add_subdirectory(terralib_example_qt_charts)
-  endif()
+if(TERRALIB_EXAMPLE_QT_CHARTS_ENABLED)
+  add_subdirectory(terralib_example_qt_charts)
+endif()
 
-  if(TERRALIB_EXAMPLE_QT_DATASOURCE_ENABLED)
-    add_subdirectory(terralib_example_qt_datasource)
-  endif()
+if(TERRALIB_EXAMPLE_QT_DATASOURCE_ENABLED)
+  add_subdirectory(terralib_example_qt_datasource)
+endif()
 
-  if(TERRALIB_EXAMPLE_QT_QUERY_ENABLED)
-    add_subdirectory(terralib_example_qt_query)
-  endif()
+if(TERRALIB_EXAMPLE_QT_QUERY_ENABLED)
+  add_subdirectory(terralib_example_qt_query)
+endif()
 
-  if(TERRALIB_EXAMPLE_QT_RASTER_VISUAL_ENABLED)
-    add_subdirectory(terralib_example_qt_raster_visual)
-  endif()
+if(TERRALIB_EXAMPLE_QT_RASTER_VISUAL_ENABLED)
+  add_subdirectory(terralib_example_qt_raster_visual)
+endif()
 
-  if(TERRALIB_EXAMPLE_QT_RP_ENABLED)
-    add_subdirectory(terralib_example_qt_rp)
-  endif()
+if(TERRALIB_EXAMPLE_QT_RP_ENABLED)
+  add_subdirectory(terralib_example_qt_rp)
+endif()
 
-  if(TERRALIB_EXAMPLE_QT_SE_ENABLED)
-    add_subdirectory(terralib_example_qt_se)
-  endif()
+if(TERRALIB_EXAMPLE_QT_SE_ENABLED)
+  add_subdirectory(terralib_example_qt_se)
+endif()
 
-  if(TERRALIB_EXAMPLE_QT_SRS_ENABLED)
-    add_subdirectory(terralib_example_qt_srs)
-  endif()
+if(TERRALIB_EXAMPLE_QT_SRS_ENABLED)
+  add_subdirectory(terralib_example_qt_srs)
+endif()
 
-  if(TERRALIB_EXAMPLE_SRS_ENABLED)
-    add_subdirectory(terralib_example_srs)
-  endif()
+if(TERRALIB_EXAMPLE_SRS_ENABLED)
+  add_subdirectory(terralib_example_srs)
+endif()
 
-  if(TERRALIB_EXAMPLE_VP_ENABLED)
-    add_subdirectory(terralib_example_vp)
-  endif()
-
+if(TERRALIB_EXAMPLE_VP_ENABLED)
+  add_subdirectory(terralib_example_vp)
 endif()
 
 

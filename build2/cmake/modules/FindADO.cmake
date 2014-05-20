@@ -18,10 +18,10 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Find the Type Library File (msado15.dll).
+#  Description: Find the ADO Type Library Files.
 #
-#  ADO_LIBRARY_DIR - where to find the ADO type library (msado15.dll) directory.
-#  ADO_FOUND       - True if the ADO type library path is found.
+#  ADO_LIBRARY_DIRS - where to find the ADO type library (msado15.dll) directory.
+#  ADO_FOUND     -    True, if the ADO type library path is found.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
@@ -40,13 +40,19 @@ else()
 
 endif()
 
-find_path(ADO_LIBRARY_DIR
-          NAMES msado15.dll
+find_path(ADO_TYPE_LIBRARY_DIR
+          NAMES msado15.dll msado26.tlb msadox.dll
           PATHS ${path_prefix}"/System/ado")
 
 
+find_path(ADO_OLEDB_DIR
+          NAMES oledb32.dll
+          PATHS ${path_prefix}"/System/Ole DB")
+
+set(ADO_LIBRARY_DIRS ${ADO_TYPE_LIBRARY_DIR} ${ADO_OLEDB_DIR})
+
 include(FindPackageHandleStandardArgs)
 
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(ADO DEFAULT_MSG ADO_LIBRARY_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(ADO DEFAULT_MSG ADO_LIBRARY_DIRS)
 
-mark_as_advanced(ADO_LIBRARY_DIR)
+mark_as_advanced(ADO_LIBRARY_DIRS)

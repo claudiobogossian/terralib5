@@ -41,8 +41,8 @@
 #include <boost/uuid/uuid_io.hpp>
 
 // Qt
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QMessageBox>
 
 te::qt::plugins::ado::ADOConnectorDialog::ADOConnectorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -98,7 +98,7 @@ void te::qt::plugins::ado::ADOConnectorDialog::openPushButtonPressed()
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("ADO") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for ADO data sources!"));
+      throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for ADO data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -113,7 +113,7 @@ void te::qt::plugins::ado::ADOConnectorDialog::openPushButtonPressed()
     m_driver.reset(ds.release());
 
     if(m_driver.get() == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open ADO data source due to an unknown error!"));
+      throw te::qt::widgets::Exception(TE_TR("Could not open ADO data source due to an unknown error!"));
 
     QString title = m_ui->m_datasourceTitleLineEdit->text().trimmed();
 
@@ -170,7 +170,7 @@ void te::qt::plugins::ado::ADOConnectorDialog::testPushButtonPressed()
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("ADO") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for ADO data sources!"));
+      throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for ADO data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -184,7 +184,7 @@ void te::qt::plugins::ado::ADOConnectorDialog::testPushButtonPressed()
     ds->open();
 
     if(ds.get() == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open ADO database!"));
+      throw te::qt::widgets::Exception(TE_TR("Could not open ADO database!"));
 
     QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),

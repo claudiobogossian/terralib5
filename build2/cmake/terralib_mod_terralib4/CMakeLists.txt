@@ -18,47 +18,48 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: TerraLib ADO Module.
+#  Description: TerraLib4 Module.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
-include_directories(${ADO_LIBRARY_DIRS})
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${ADO_LIBRARY_DIRS})
+include_directories(${TERRALIB4_INCLUDE_DIRS})
 
-add_definitions(-DTEADODLL)
+add_definitions(-DTETERRALIB4DLL)
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ado/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ado/*.h)
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/terralib4/*.cpp)
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/terralib4/*.h)
 
 set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
-add_library(terralib_mod_ado SHARED ${TERRALIB_FILES})
+add_library(terralib_mod_terralib4 SHARED ${TERRALIB_FILES})
 
-target_link_libraries(terralib_mod_ado terralib_mod_dataaccess
-                                       terralib_mod_datatype
-                                       terralib_mod_plugin
-                                       terralib_mod_geometry
-                                       terralib_mod_memory)
+target_link_libraries(terralib_mod_terralib4 terralib_mod_dataaccess
+                                             terralib_mod_datatype
+                                             terralib_mod_geometry
+                                             terralib_mod_memory
+                                             terralib_mod_plugin
+                                             terralib_mod_raster
+                                             ${TERRALIB4_LIBRARIES})
 
-set_target_properties(terralib_mod_ado
+set_target_properties(terralib_mod_terralib4
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
                                  SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
 
-install(TARGETS terralib_mod_ado
+install(TARGETS terralib_mod_terralib4
         EXPORT terralib-targets
         RUNTIME DESTINATION bin COMPONENT runtime
         LIBRARY DESTINATION lib COMPONENT runtime
         ARCHIVE DESTINATION lib COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION include/terralib/ado COMPONENT devel)
+        DESTINATION include/terralib/terralib4 COMPONENT devel)
 
-install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.da.ado.teplg
-              ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/ado-capabilities.xml
-
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.da.terralib4.teplg
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
 
-export(TARGETS terralib_mod_ado APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
+export(TARGETS terralib_mod_terralib4 APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

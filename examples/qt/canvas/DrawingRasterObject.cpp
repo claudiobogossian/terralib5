@@ -22,7 +22,7 @@ void DrawingRasterObject()
   std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
   
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = data_dir + "/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
 
   // open input raster
   std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
