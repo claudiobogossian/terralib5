@@ -18,7 +18,7 @@ http://www.boost.org
 
 
 2. Qt (Optional)
------------------
+----------------
 
 Make sure you have an installed version of Qt 4.x or Qt 5.x.
 
@@ -36,7 +36,7 @@ Make sure to have at least version 4.6.3 installed.
 -------------------------------
 
 QtPropertyBrowser is a free and open source Qt component available from:
-https://qt.gitorious.org/qt-solutions/qt-solutions.
+https://qt.gitorious.org/qt-solutions/qt-solutions
 
 We have been using a especial port of QtPropertyBrowser that you can get from here:
 http://www.terralib.org/3rdparty/5.0.0/qtpropertybrowser.tar.gz
@@ -58,6 +58,18 @@ Make sure to have at least version 6.1.0 installed.
 
 6. PostgreSQL libpq
 -------------------
+
+
+7. Microsodt Data Access (ADO)
+------------------------------
+
+
+8. SQLite
+---------
+
+
+9. SpatiaLite
+-------------
 
 
 
