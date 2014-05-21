@@ -35,6 +35,7 @@ if(UNIX)
                   /usr/local
                   /usr/local/qwt
             PATH_SUFFIXES include
+                          include/qwt
                           lib/qwt.framework/Headers)
 
   find_library(QWT_LIBRARY
