@@ -367,7 +367,7 @@ endif()
 if(ADO_FOUND)
 
   CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_ADO_ENABLED "Build Microsoft Access driver?" ON "TERRALIB_MOD_MEMORY_ENABLED;TERRALIB_MOD_XML_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED" OFF)
-  
+
   CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_ADO_ENABLED "Build ADO Driver Qt plugin?" ON "TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 
 endif()
@@ -531,9 +531,9 @@ configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h.in
 # build modules
 #
 
-#if(TERRALIB_DOXYGEN_ENABLED)
-#  add_subdirectory(terralib_doc_doxygen)
-#endif()
+if(TERRALIB_DOXYGEN_ENABLED)
+  add_subdirectory(terralib_doxygen)
+endif()
 
 if(WIN32 AND TERRALIB_ADO_ENABLED)
   add_subdirectory(terralib_mod_ado)
