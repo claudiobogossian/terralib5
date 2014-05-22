@@ -26,7 +26,10 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR})
-include_directories(${PROJ4_INCLUDE_DIR})
+
+if(TERRALIB_PROJ4_ENABLED)
+  include_directories(${PROJ4_INCLUDE_DIR})
+endif()
 
 if(WIN32)
   add_definitions(-DTESRSDLL)
@@ -39,8 +42,11 @@ set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 add_library(terralib_mod_srs SHARED ${TERRALIB_FILES})
 
-target_link_libraries(terralib_mod_srs terralib_mod_common
-                                       ${PROJ4_LIBRARY})
+if(TERRALIB_PROJ4_ENABLED)
+  target_link_libraries(terralib_mod_srs terralib_mod_common ${PROJ4_LIBRARY})
+else()
+  target_link_libraries(terralib_mod_srs terralib_mod_common)
+endif()
 
 set_target_properties(terralib_mod_srs
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}

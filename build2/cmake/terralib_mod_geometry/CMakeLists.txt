@@ -26,7 +26,10 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR})
-include_directories(${GEOS_INCLUDE_DIR})
+
+if(TERRALIB_GEOS_ENABLED)
+  include_directories(${GEOS_INCLUDE_DIR})
+endif()
 
 if(WIN32)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS -DTEGEOMDLL)
@@ -45,7 +48,7 @@ if(TERRALIB_MOD_XML_ENABLED)
 
   source_group("Source Files\\serialization\\xml"  FILES ${TERRALIB_XML_SRC_FILES})
   source_group("Header Files\\serialization\\xml"  FILES ${TERRALIB_XML_HDR_FILES})
- 
+
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_XML_SRC_FILES} ${TERRALIB_XML_HDR_FILES})
 
 else()
@@ -68,7 +71,9 @@ if(TERRALIB_MOD_SRS_ENABLED)
   list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_srs")
 endif()
 
-list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES ${GEOS_LIBRARY})
+if(TERRALIB_GEOS_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES ${GEOS_LIBRARY})
+endif()
 
 list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES ${Boost_THREAD_LIBRARY})
 

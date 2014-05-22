@@ -93,4 +93,7 @@ install(FILES ${TERRALIB_HDR_FILES}
               ${CMAKE_BINARY_DIR}/terraview_config.h
         DESTINATION include/terraview COMPONENT devel)
 
+install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terraview
+        DESTINATION share/terraview COMPONENT runtime)
+
 export(TARGETS terraview APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

@@ -715,6 +715,7 @@ if(TERRALIB_TERRAVIEW_ENABLED)
   add_subdirectory(terraview)
 endif()
 
+
 #
 # build examples
 #
@@ -828,8 +829,17 @@ install(EXPORT terralib-targets
         FILE terralib-exports.cmake
         COMPONENT devel)
 
-install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share
-        DESTINATION share COMPONENT runtime)
+install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/config
+        DESTINATION share/terralib/config COMPONENT runtime)
+
+install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/icons
+        DESTINATION share/terralib/icons COMPONENT runtime)
+
+install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/images
+        DESTINATION share/terralib/images COMPONENT runtime)
+
+install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/json
+        DESTINATION share/terralib/json COMPONENT runtime)
 
 
 #
