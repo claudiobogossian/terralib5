@@ -46,6 +46,7 @@ namespace te
     class TemplateFactory;
     class Utils;
     class PaperConfig;
+    class BuildGraphicsItem;
 
     /*!
     \class 
@@ -88,6 +89,7 @@ namespace te
         PaperConfig* m_paperConfig;
         te::qt::widgets::Canvas* m_canvas;
         QGroupBox* m_groupBox;
+        BuildGraphicsItem* m_buildGraphicsItem;
         
       private:
       

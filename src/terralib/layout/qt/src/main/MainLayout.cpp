@@ -52,6 +52,7 @@
 #include <QVBoxLayout>
 #include <QStatusBar>
 #include <QGroupBox>
+#include "BuildGraphicsItem.h"
 
 te::layout::MainLayout::MainLayout() :
   m_view(0),
@@ -62,7 +63,8 @@ te::layout::MainLayout::MainLayout() :
   m_templateFactory(0),
   m_utils(0),
   m_paperConfig(0),
-  m_canvas(0)
+  m_canvas(0),
+  m_buildGraphicsItem(0)
 {
 
 }
@@ -111,6 +113,12 @@ te::layout::MainLayout::~MainLayout()
   {
     delete m_paperConfig;
     m_paperConfig = 0;
+  }
+
+  if(m_buildGraphicsItem)
+  {
+    delete m_buildGraphicsItem;
+    m_buildGraphicsItem = 0;
   }
 
   if(m_canvas)
@@ -255,6 +263,11 @@ void te::layout::MainLayout::createLayoutContext( int width, int height, View* v
     if(lScene)
       Context::getInstance()->setScene(lScene);
   }  
+  if(!Context::getInstance()->getBuildGraphicsItem())
+  {
+    m_buildGraphicsItem = new BuildGraphicsItem;
+    Context::getInstance()->setBuildGraphicsItem(m_buildGraphicsItem);
+  }
 }
 
 void te::layout::MainLayout::finish()

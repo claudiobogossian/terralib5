@@ -177,3 +177,13 @@ void te::layout::Context::setPaperConfig( PaperConfig* config )
 {
   m_paperConfig = config;
 }
+
+te::layout::BuildGraphicsItem* te::layout::Context::getBuildGraphicsItem()
+{
+  return m_buildGraphicsItem;
+}
+
+void te::layout::Context::setBuildGraphicsItem( BuildGraphicsItem* build )
+{
+  m_buildGraphicsItem = build;
+}

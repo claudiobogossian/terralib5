@@ -67,14 +67,17 @@ namespace te
       protected:
 
         virtual void setPosition(const double& x, const double& y);
+
         void drawBackground( QPainter * painter );
+
+        void drawSelection( QPainter* painter );
 
         virtual void mouseMoveEvent ( QGraphicsSceneMouseEvent* event );
         virtual void mousePressEvent ( QGraphicsSceneMouseEvent* event );
         virtual void mouseReleaseEvent ( QGraphicsSceneMouseEvent* event );
 
         virtual int getZValueItem();
-
+        
       protected:
 
         QPixmap m_pixmap;

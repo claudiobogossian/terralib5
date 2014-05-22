@@ -49,7 +49,6 @@ namespace te
     class ItemObserver;
     class Properties;
     class VisualizationArea;
-    class BuildGraphicsItem;
 
     class Scene : public QGraphicsScene, public AbstractScene
     {
@@ -60,7 +59,9 @@ namespace te
         ~Scene();
 
         virtual void insertItem(ItemObserver* item);
+
         virtual void insertOutside(OutsideObserver* widget);
+
         virtual QGraphicsProxyWidget* insertOutsideProxy(OutsideObserver* widget);
         
         virtual te::gm::Envelope getSceneBox();
@@ -101,7 +102,11 @@ namespace te
 
         void setPointIntersectionMouse(QPointF point);
 
-        virtual void buildTemplate(VisualizationArea* vzArea, BuildGraphicsItem* build);
+        virtual void buildTemplate(VisualizationArea* vzArea);
+
+        virtual void createItem(const te::gm::Coord2D& coord );
+        
+        virtual void deleteItems();
 
       protected slots:
 

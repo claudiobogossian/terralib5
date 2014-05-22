@@ -50,6 +50,9 @@
 #include "ScaleItem.h"
 #include "Scene.h"
 #include "ItemUtils.h"
+#include "ItemGroupModel.h"
+#include "ItemGroupController.h"
+#include "ItemGroup.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -62,6 +65,7 @@ te::layout::BuildGraphicsItem::BuildGraphicsItem() :
   m_zValue(0),
   m_id(0),
   m_props(0),
+  m_redraw(true),
   m_name("Unknown"),
   m_sharedProps(0),
   m_paperItem("PAPER_"),
@@ -72,7 +76,8 @@ te::layout::BuildGraphicsItem::BuildGraphicsItem() :
   m_legendItem("LEGEND_"),
   m_scaleItem("SCALE_"),
   m_horizontalRuler("HORIZONTAL_RULER_"),
-  m_verticalRuler("VERTICAL_RULER_")
+  m_verticalRuler("VERTICAL_RULER_"),
+  m_groupItem("ITEM_GROUP_")
 {
 
 }
@@ -86,7 +91,7 @@ te::layout::BuildGraphicsItem::~BuildGraphicsItem()
   }
 }
 
-QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Properties* props )
+QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Properties* props, bool draw )
 {
   QGraphicsItem* item = 0;
 
@@ -98,6 +103,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   m_props = props;  
   m_coord = findCoordinate(props);
   m_zValue = findZValue(props);
+  m_redraw = draw;
 
   te::layout::LayoutAbstractObjectType type = props->getTypeObj();
 
@@ -124,6 +130,9 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   case TPScaleItem:
     item = createScale();
     break;
+  case TPItemGroup:
+    item = createItemGroup();
+    break;
   default:
     item = 0;
   }
@@ -131,12 +140,13 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   return item;
 }
 
-QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::LayoutMode mode, const te::gm::Coord2D& coordinate )
+QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::LayoutMode mode, const te::gm::Coord2D& coordinate, bool draw )
 {
   QGraphicsItem* item = 0;
 
   m_coord = coordinate;
   clear();
+  m_redraw = draw;
 
   switch(mode)
   {
@@ -145,24 +155,28 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::LayoutMode
     item = createMap();
     break;
   case TypeCreateMapGrid:
-    m_name = nameItem(m_mapItem, TPMapGridItem);
+    m_name = nameItem(m_mapGridItem, TPMapGridItem);
     item = createMapGrid();
     break;
   case TypeCreateText:
-    m_name = nameItem(m_mapItem, TPText);
+    m_name = nameItem(m_textItem, TPText);
     item = createText();
     break;
   case TypeCreateRectangle:
-    m_name = nameItem(m_mapItem, TPRetangleItem);
+    m_name = nameItem(m_rectangleItem, TPRetangleItem);
     item = createRectangle();
     break;
   case TypeCreateLegend:
-    m_name = nameItem(m_mapItem, TPLegendItem);
+    m_name = nameItem(m_legendItem, TPLegendItem);
     item = createLegend();
     break;
   case TypeCreateScale:
-    m_name = nameItem(m_mapItem, TPScaleItem);
+    m_name = nameItem(m_scaleItem, TPScaleItem);
     item = createScale();
+    break;
+  case TypeCreateItemGroup:
+    m_name = nameItem(m_groupItem, TPItemGroup);
+    item = createItemGroup();
     break;
   default:
     item = 0;
@@ -246,6 +260,7 @@ void te::layout::BuildGraphicsItem::clear()
   m_name = "Unknown";
   m_zValue = 0;
   m_props = 0;
+  m_redraw = true;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createPaper()
@@ -265,9 +280,9 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createPaper()
   }
 
   PaperController* controllerMap = new PaperController(model);
-  ItemObserver* itemPaper = (ItemObserver*)controllerMap->getView();
+  ItemObserver* itemObs = (ItemObserver*)controllerMap->getView();
 
-  PaperItem* view = dynamic_cast<PaperItem*>(itemPaper);
+  PaperItem* view = dynamic_cast<PaperItem*>(itemObs);
 
   if(view)
   {
@@ -276,7 +291,8 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createPaper()
     {
       view->setZValue(m_zValue);
     }
-    itemPaper->redraw();
+    if(m_redraw)
+      itemObs->redraw();
     return view;
   }
 
@@ -299,9 +315,9 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMap()
   }
 
   MapController* controllerMap = new MapController(model);
-  ItemObserver* itemMap = (ItemObserver*)controllerMap->getView();
+  ItemObserver* itemObs = (ItemObserver*)controllerMap->getView();
 
-  MapItem* qrectMap = dynamic_cast<MapItem*>(itemMap);
+  MapItem* qrectMap = dynamic_cast<MapItem*>(itemObs);
   
   if(qrectMap)
   {
@@ -310,7 +326,8 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMap()
     {
       qrectMap->setZValue(m_zValue);
     }
-    itemMap->redraw();
+    if(m_redraw)
+      itemObs->redraw();
     return qrectMap;
   }
 
@@ -333,9 +350,9 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMapGrid()
   }
 
   MapGridController* controllerMapGrid = new MapGridController(model);
-  ItemObserver* itemMapGrid = (ItemObserver*)controllerMapGrid->getView();
+  ItemObserver* itemObs = (ItemObserver*)controllerMapGrid->getView();
 
-  MapGridItem* qrectMapGrid = dynamic_cast<MapGridItem*>(itemMapGrid);
+  MapGridItem* qrectMapGrid = dynamic_cast<MapGridItem*>(itemObs);
 
   if(qrectMapGrid)
   {
@@ -344,7 +361,8 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMapGrid()
     {
       qrectMapGrid->setZValue(m_zValue);
     }
-    itemMapGrid->redraw();
+    if(m_redraw)
+      itemObs->redraw();
     return qrectMapGrid;
   }
 
@@ -385,7 +403,8 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createRectangle()
     {
       rect->setZValue(m_zValue);
     }
-    itemObs->redraw();
+    if(m_redraw)
+      itemObs->redraw();
     return rect;
   }
 
@@ -419,7 +438,8 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createLegend()
     {
       legend->setZValue(m_zValue);
     }
-    itemObs->redraw();
+    if(m_redraw)
+      itemObs->redraw();
     return legend;
   }
   
@@ -453,8 +473,45 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createScale()
     {
       scale->setZValue(m_zValue);
     }
-    itemObs->redraw();
+    if(m_redraw)
+      itemObs->redraw();
     return scale;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createItemGroup()
+{
+  QGraphicsItem* item = 0;
+
+  ItemGroupModel* model = new ItemGroupModel();	
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  ItemGroupController* controller = new ItemGroupController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  ItemGroup* view = dynamic_cast<ItemGroup*>(itemObs); 
+
+  if(view)
+  {
+    if(m_props)
+    {
+      view->setZValue(m_zValue);
+    }
+    if(m_redraw)
+    {
+      itemObs->redraw();
+    }
+    return view;
   }
 
   return item;

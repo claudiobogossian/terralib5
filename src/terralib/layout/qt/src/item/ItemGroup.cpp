@@ -35,9 +35,12 @@
 #include "../../../../qt/widgets/Utils.h"
 #include "../../../../geometry/Envelope.h"
 #include "../../../../common/STLUtils.h"
+#include "AbstractScene.h"
+#include "ItemObserver.h"
 
 // Qt
 #include <QGraphicsSceneMouseEvent>
+#include <QStyleOptionGraphicsItem>
 
 te::layout::ItemGroup::ItemGroup( ItemController* controller, Observable* o ) :
   QGraphicsItemGroup(0, 0),
@@ -46,6 +49,9 @@ te::layout::ItemGroup::ItemGroup( ItemController* controller, Observable* o ) :
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges);
+
+  QGraphicsItem* item = this;
+  Context::getInstance()->getScene()->insertItem((ItemObserver*)item);
 
   //If enabled is true, this item will accept hover events
   setAcceptHoverEvents(true);
@@ -181,6 +187,12 @@ void te::layout::ItemGroup::paint( QPainter * painter, const QStyleOptionGraphic
   painter->drawPixmap(boundRect, m_pixmap, QRectF( 0, 0, m_pixmap.width(), m_pixmap.height() ));
   painter->restore();
 
+  //Draw Selection
+  if (option->state & QStyle::State_Selected)
+  {
+    drawSelection(painter);
+  }
+
 }
 
 void te::layout::ItemGroup::drawBackground( QPainter * painter )
@@ -193,6 +205,28 @@ void te::layout::ItemGroup::drawBackground( QPainter * painter )
     painter->setRenderHint( QPainter::Antialiasing, true );
     painter->drawRect( QRectF( 0, 0, model->getBox().getWidth(), model->getBox().getHeight() ) );
   }
+}
+
+void te::layout::ItemGroup::drawSelection( QPainter* painter )
+{
+  if(!painter)
+  {
+    return;
+  }
+
+  qreal penWidth = painter->pen().widthF();
+
+  const qreal adj = penWidth / 2;
+  const QColor fgcolor(255,255,255);
+  const QColor backgroundColor(0,0,0);
+
+  painter->setPen(QPen(backgroundColor, 0, Qt::SolidLine));
+  painter->setBrush(Qt::NoBrush);
+  painter->drawRect(boundingRect().adjusted(adj, adj, -adj, -adj));
+
+  painter->setPen(QPen(fgcolor, 0, Qt::DashLine));
+  painter->setBrush(Qt::NoBrush);
+  painter->drawRect(boundingRect().adjusted(adj, adj, -adj, -adj));
 }
 
 bool te::layout::ItemGroup::contains( const QPointF &point ) const

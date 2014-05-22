@@ -104,15 +104,18 @@ void te::layout::Scene::insertItem( ItemObserver* item )
 
   if(qitem)
   {
-    if(m_masterParent)
+    if(qitem->scene() != this) 
     {
-      total = m_masterParent->childItems().count();    
-      qitem->setParentItem(m_masterParent); // have a addItem call inside
+      if(m_masterParent)
+      {
+        total = m_masterParent->childItems().count();    
+        qitem->setParentItem(m_masterParent); // have a addItem call inside
+      }
+      else
+        this->addItem(qitem);
+
+      qitem->setZValue(total);
     }
-    else
-      this->addItem(qitem);
-    
-    qitem->setZValue(total);
 
     ItemObserver* obs = dynamic_cast<ItemObserver*>(qitem);
     if(obs)
@@ -174,19 +177,29 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
 {
   //The scene create a new group with important restriction
   QGraphicsItemGroup* p = QGraphicsScene::createItemGroup(items);
+  
   //Create a new group
-  ItemGroupModel* model = new ItemGroupModel();		  
-  ItemGroupController* controller = new ItemGroupController(model);
-  ItemObserver* item = (ItemObserver*)controller->getView();
+  BuildGraphicsItem* build = Context::getInstance()->getBuildGraphicsItem();
+  te::gm::Coord2D coord(0,0);
+  QGraphicsItem* item = build->createItem(TypeCreateItemGroup, coord, false);
+
   ItemGroup* group = dynamic_cast<ItemGroup*>(item);
 
   if(p)
   {
-    group->setParentItem(p->parentItem());    
-    foreach (QGraphicsItem *item, p->childItems())
-      group->addToGroup(item);
-    
-    delete p;
+    if(group)
+    {   
+      QGraphicsItem* parent = group->parentItem();
+      group->setParentItem(p->parentItem());
+      foreach (QGraphicsItem *item, p->childItems())
+      {
+        group->addToGroup(item);
+      }
+
+      delete p;
+
+      group->setParentItem(parent);
+    }
   }  
 
   return group;
@@ -569,8 +582,13 @@ void te::layout::Scene::setPointIntersectionMouse( QPointF point )
   m_pointIntersection = point;
 }
 
-void te::layout::Scene::buildTemplate(VisualizationArea* vzArea, BuildGraphicsItem* build)
+void te::layout::Scene::buildTemplate(VisualizationArea* vzArea)
 {
+  BuildGraphicsItem* build = Context::getInstance()->getBuildGraphicsItem();
+
+  if(!build)
+    return;
+
   std::vector<te::layout::Properties*> props = importJsonAsProps();
 
   if(props.empty())
@@ -592,5 +610,43 @@ void te::layout::Scene::buildTemplate(VisualizationArea* vzArea, BuildGraphicsIt
       continue;
 
     build->rebuildItem(proper);
+  }
+}
+
+void te::layout::Scene::deleteItems()
+{
+  QList<QGraphicsItem*> graphicsItems = selectedItems();
+
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if (item)
+    {
+      removeItem(item);
+      if(item)
+      {
+        delete item;
+        item = 0;
+      }
+    }
+  }
+}
+
+void te::layout::Scene::createItem( const te::gm::Coord2D& coord )
+{
+  BuildGraphicsItem* build = Context::getInstance()->getBuildGraphicsItem();
+
+  if(!build)
+    return;
+
+  QGraphicsItem* item = 0;
+
+  LayoutMode mode = Context::getInstance()->getMode();
+
+  item = build->createItem(mode, coord);
+
+  //If Create item
+  if(item)
+  {
+    Context::getInstance()->setMode(TypeNone);
   }
 }

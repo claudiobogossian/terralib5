@@ -37,7 +37,6 @@
 #include "PropertiesOutside.h"
 #include "ObjectInspectorOutside.h"
 #include "ToolbarOutside.h"
-#include "BuildGraphicsItem.h"
 
 // STL
 #include <math.h>
@@ -64,14 +63,11 @@
 te::layout::View::View( QWidget* widget) : 
   QGraphicsView(new QGraphicsScene, widget),
   m_outsideArea(0),
-  m_visualizationArea(0),
-  m_buildItems(0)
+  m_visualizationArea(0)
 {
   //Use ScrollHand Drag Mode to enable Panning
   //You do need the enable scroll bars for that to work.
   setDragMode(RubberBandDrag);
-
-  m_buildItems = new BuildGraphicsItem;
 }
 
 te::layout::View::~View()
@@ -80,12 +76,6 @@ te::layout::View::~View()
   {
     delete m_visualizationArea;
     m_visualizationArea = 0;
-  }
-
-  if(m_buildItems)
-  {
-    delete m_buildItems;
-    m_buildItems = 0;
   }
 }
 
@@ -96,7 +86,11 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
   QPointF scenePos = mapToScene(event->pos());
   te::gm::Coord2D coord(scenePos.x(), scenePos.y());
 
-  createItem(coord); 
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  if(!sc)
+    return;
+
+  sc->createItem(coord); 
 }
 
 void te::layout::View::mouseMoveEvent( QMouseEvent * event )
@@ -166,7 +160,7 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
   }
   else if(keyEvent->key() == Qt::Key_Delete)
   {
-    deleteItems();
+    sc->deleteItems();
   }
 
   QGraphicsView::keyPressEvent(keyEvent);
@@ -276,7 +270,7 @@ void te::layout::View::onToolbarChangeContext( bool change )
   }
   if(Context::getInstance()->getMode() == TypeImportJSONProps)
   {
-    sc->buildTemplate(m_visualizationArea, m_buildItems);
+    sc->buildTemplate(m_visualizationArea);
   }
 
   if(Context::getInstance()->getMode() == TypePan)
@@ -321,24 +315,6 @@ void te::layout::View::setOutsideArea( OutsideArea* outsideArea )
   m_outsideArea = outsideArea;
 }
 
-void te::layout::View::createItem( const te::gm::Coord2D& coord )
-{
-  if(!m_buildItems)
-    return;
-
-  QGraphicsItem* item = 0;
-
-  LayoutMode mode = Context::getInstance()->getMode();
-
-  item = m_buildItems->createItem(mode, coord);
-
-  //If Create item
-  if(item)
-  {
-    Context::getInstance()->setMode(TypeNone);
-  }
-}
-
 void te::layout::View::createItemGroup()
 {
   Scene* sc = dynamic_cast<Scene*>(scene());
@@ -347,12 +323,16 @@ void te::layout::View::createItemGroup()
   if(sc)
   {
     QGraphicsItemGroup* group = sc->createItemGroup(graphicsItems);
-    group->setParentItem(sc->getMasterParentItem());
-      
+
+    if(!group)
+      return;
+          
     ItemGroup* layoutGroup = dynamic_cast<ItemGroup*>(group);
       
-    if(layoutGroup) 
-      layoutGroup->redraw();
+    if(!layoutGroup)
+      return;
+
+    layoutGroup->redraw();
 
     /*If "enabled=true", QGraphicsItemGroup will handle all the events. For example, 
     the event of mouse click on the child item won't be handled by child item.
@@ -378,25 +358,6 @@ void te::layout::View::destroyItemGroup()
         {
           sc->destroyItemGroup(group);
         }
-      }
-    }
-  }
-}
-
-void te::layout::View::deleteItems()
-{
-  Scene* sc = dynamic_cast<Scene*>(scene());
-  QList<QGraphicsItem*> graphicsItems = this->scene()->selectedItems();
-
-  foreach( QGraphicsItem *item, graphicsItems) 
-  {
-    if (item)
-    {
-      sc->removeItem(item);
-      if(item)
-      {
-        delete item;
-        item = 0;
       }
     }
   }

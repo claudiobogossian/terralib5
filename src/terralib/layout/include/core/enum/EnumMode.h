@@ -48,6 +48,7 @@ namespace te
       TypeCreateLegend,
       TypeCreateRectangle,
       TypeCreateText,
+      TypeCreateItemGroup,
       TypeUnitsMetricsChange,
       TypeExportPropsJSON,
       TypeImportJSONProps,

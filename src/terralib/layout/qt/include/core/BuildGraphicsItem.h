@@ -50,8 +50,8 @@ namespace te
         BuildGraphicsItem();
         virtual ~BuildGraphicsItem();
         
-        QGraphicsItem* rebuildItem(te::layout::Properties* props);
-        QGraphicsItem* createItem(te::layout::LayoutMode mode, const te::gm::Coord2D& coordinate);
+        QGraphicsItem* rebuildItem(te::layout::Properties* props, bool draw = true);
+        QGraphicsItem* createItem(te::layout::LayoutMode mode, const te::gm::Coord2D& coordinate, bool draw = true);
 
       protected:
 
@@ -62,6 +62,7 @@ namespace te
         QGraphicsItem* createRectangle();
 	      QGraphicsItem* createLegend();
         QGraphicsItem* createScale();
+        QGraphicsItem* createItemGroup();
 
         te::gm::Coord2D findCoordinate(te::layout::Properties* props);
 
@@ -88,6 +89,8 @@ namespace te
         std::string m_scaleItem;
         std::string m_horizontalRuler;
         std::string m_verticalRuler;
+        std::string m_groupItem;
+        bool        m_redraw;
     };
   }
 }

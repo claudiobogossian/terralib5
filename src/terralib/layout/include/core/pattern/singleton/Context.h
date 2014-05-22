@@ -45,6 +45,7 @@ namespace te
     class AbstractOutsideFactory;
     class AbstractTemplateFactory;
     class PaperConfig;
+    class BuildGraphicsItem;
 
     class Context 
     {
@@ -61,7 +62,8 @@ namespace te
           m_dpiY(96),
           m_templateFactory(0),
           m_version("TerraPrintQt4_1.0.0"),
-          m_paperConfig(0)
+          m_paperConfig(0),
+          m_buildGraphicsItem(0)
         {
         };  // Private so that it can  not be called	
         Context(Context const&){};             // copy constructor is private	
@@ -116,6 +118,9 @@ namespace te
         PaperConfig* getPaperConfig() const;
         void setPaperConfig(PaperConfig* config);
 
+        BuildGraphicsItem* getBuildGraphicsItem();
+        void setBuildGraphicsItem(BuildGraphicsItem* build);
+
       protected:
         LayoutMode						    m_mode;
         LayoutUnitsMetrics        m_unitMetric;
@@ -130,6 +135,7 @@ namespace te
         double                    m_dpiY;
         std::string               m_version;
         PaperConfig*              m_paperConfig;
+        BuildGraphicsItem*        m_buildGraphicsItem;
     };
   }
 }

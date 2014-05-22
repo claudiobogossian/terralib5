@@ -54,7 +54,6 @@ namespace te
   {
     class OutsideArea;
     class VisualizationArea;
-    class BuildGraphicsItem;
 
     class View : public QGraphicsView, public AbstractView
     {
@@ -91,18 +90,13 @@ namespace te
         //PaintDevice
         virtual int	metric ( PaintDeviceMetric metric ) const;
 
-        virtual void createItem(const te::gm::Coord2D& coord );
-
         virtual void createItemGroup();
 
         virtual void destroyItemGroup();
-
-        virtual void deleteItems();
-
+        
       protected:
         OutsideArea*  m_outsideArea;
         VisualizationArea* m_visualizationArea;
-        BuildGraphicsItem* m_buildItems;
     };
   }
 }
