@@ -428,6 +428,10 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
       }
     break;
 
+    case Qt::EditRole:
+      return data(index, Qt::DisplayRole);
+    break;
+
     default:
       break;
   }
@@ -528,7 +532,12 @@ bool te::qt::widgets::DataSetTableModel::setData (const QModelIndex & index, con
         break;
       }
 
-      m_editor->setValue(m_promoter->getLogicalRow(index.row()), index.column(), value.toString().toStdString());
+      QString curV = data(index, Qt::DisplayRole).toString();
+      QString newV = value.toString();
+
+      if(curV != newV)
+        m_editor->setValue(m_promoter->getLogicalRow(index.row()), index.column(), value.toString().toStdString());
+
       return true;
     }
     catch(te::common::Exception& e)
