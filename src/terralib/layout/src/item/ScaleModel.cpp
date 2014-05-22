@@ -45,7 +45,6 @@ te::layout::ScaleModel::ScaleModel() :
   m_scaleGapX(20),
   m_scaleGapY(5)
 {
-  m_backgroundColor = te::color::RGBAColor(180, 183, 255, 255);
   m_box = te::gm::Envelope(0., 0., 70., 30.);
 }
 
@@ -60,16 +59,17 @@ void te::layout::ScaleModel::draw( ContextItem context )
 
   te::map::Canvas* canvas = Context::getInstance()->getCanvas();
   Utils* utils = Context::getInstance()->getUtils();
-
+  
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
-  
+
+  drawScale(canvas, utils, m_box);
+
+  canvas->setPolygonContourWidth(2);
   canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
   canvas->setPolygonFillColor(m_backgroundColor);
 
   utils->drawRectW(m_box);
-  
-  drawScale(canvas, utils);
 
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
@@ -79,7 +79,7 @@ void te::layout::ScaleModel::draw( ContextItem context )
   notifyAll(contextNotify);
 }
 
-void te::layout::ScaleModel::drawScale( te::map::Canvas* canvas, Utils* utils )
+void te::layout::ScaleModel::drawScale( te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box )
 {
   double			unit=1000.0;
   std::string strUnit="(Km)";
@@ -101,7 +101,7 @@ void te::layout::ScaleModel::drawScale( te::map::Canvas* canvas, Utils* utils )
   
   double value = 0.;
   double width = 0.;
-  double x1 = m_box.getLowerLeftX();
+  double x1 = box.getLowerLeftX();
   te::color::RGBAColor black(0, 0, 0, 255);
   te::color::RGBAColor white(255, 255, 255, 255);
   te::color::RGBAColor firtRect = black;
@@ -109,30 +109,31 @@ void te::layout::ScaleModel::drawScale( te::map::Canvas* canvas, Utils* utils )
   te::color::RGBAColor changeColor;
   te::gm::Envelope newBoxFirst;
   te::gm::Envelope newBoxSecond;
-  for( ; x1 < m_box.getUpperRightX() ; x1 += width)
+  canvas->setPolygonContourWidth(1);
+  canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
+  canvas->setTextColor(te::color::RGBAColor(0, 0, 0, 255));
+  for( ; x1 < box.getUpperRightX() ; x1 += width)
   {
     //Up rect
     canvas->setPolygonFillColor(firtRect);
-    newBoxFirst = te::gm::Envelope(x1, m_box.getUpperRightY(), x1 + m_scaleGapX, m_box.getUpperRightY() - m_scaleGapY);
+    newBoxFirst = te::gm::Envelope(x1, box.getUpperRightY(), x1 + m_scaleGapX, box.getUpperRightY() - m_scaleGapY);
     utils->drawRectW(newBoxFirst);
 
     //Down rect
     canvas->setPolygonFillColor(secondRect);
-    newBoxSecond = te::gm::Envelope(x1, m_box.getUpperRightY() - (m_scaleGapY*2), x1 + m_scaleGapX, m_box.getUpperRightY() - m_scaleGapY);
+    newBoxSecond = te::gm::Envelope(x1, box.getUpperRightY() - (m_scaleGapY*2), x1 + m_scaleGapX, box.getUpperRightY() - m_scaleGapY);
     utils->drawRectW(newBoxSecond);
 
-    value += (spacing * mmToCm)/unit;
+    if(width == 0)
+      width = m_scaleGapX;
+    else
+      value += (spacing * mmToCm)/unit;
 
     std::stringstream ss_value;
     ss_value << value;
 
     std::string s_value = ss_value.str();
-    canvas->setTextPointSize(10);
-    canvas->setTextColor(te::color::RGBAColor(0, 0, 0, 255));
     canvas->drawText(x1, newBoxSecond.getLowerLeftY() - 5, s_value, 0);
-
-    if(width == 0)
-      width = m_scaleGapX;
 
     changeColor = firtRect;
     firtRect = secondRect;
@@ -152,6 +153,18 @@ te::layout::Properties* te::layout::ScaleModel::getProperties() const
 {
   ItemModelObservable::getProperties();
 
+  Property pro_widthRectGap;
+  pro_widthRectGap.setName("scale_width_rect_gap");
+  pro_widthRectGap.setId("");
+  pro_widthRectGap.setValue(m_scaleGapX, DataTypeDouble);
+  m_properties->addProperty(pro_widthRectGap);
+
+  Property pro_heightRectGap;
+  pro_heightRectGap.setName("scale_height_rect_gap");
+  pro_heightRectGap.setId("");
+  pro_heightRectGap.setValue(m_scaleGapY, DataTypeDouble);
+  m_properties->addProperty(pro_heightRectGap);
+
   Property pro_mapName;
   pro_mapName.setName(m_sharedProps->getMapName());
   pro_mapName.setId("");
@@ -159,7 +172,6 @@ te::layout::Properties* te::layout::ScaleModel::getProperties() const
   Variant v;
   v.setValue(m_mapName, DataTypeString);
   pro_mapName.addOption(v);
-  
   m_properties->addProperty(pro_mapName);
 
   return m_properties;
@@ -176,6 +188,20 @@ void te::layout::ScaleModel::updateProperties( te::layout::Properties* propertie
   if(!pro_mapName.isNull())
   {
     m_mapName = pro_mapName.getOptionByCurrentChoice().toString();
+  }
+
+  Property pro_widthRectGap = vectorProps->contains("scale_width_rect_gap");
+
+  if(!pro_widthRectGap.isNull())
+  {
+    m_scaleGapX = pro_widthRectGap.getValue().toDouble();
+  }
+
+  Property pro_heightRectGap = vectorProps->contains("scale_height_rect_gap");
+
+  if(!pro_heightRectGap.isNull())
+  {
+    m_scaleGapY = pro_heightRectGap.getValue().toDouble();
   }
 }
 
@@ -195,4 +221,24 @@ void te::layout::ScaleModel::visitDependent()
     contextNotify.setWait(true);
     notifyAll(contextNotify);
   }	
+}
+
+void te::layout::ScaleModel::setScaleGapX( double x )
+{
+  m_scaleGapX = x;
+}
+
+double te::layout::ScaleModel::getScaleGapX()
+{
+  return m_scaleGapX;
+}
+
+void te::layout::ScaleModel::setScaleGapY( double y )
+{
+  m_scaleGapY = y;
+}
+
+double te::layout::ScaleModel::getScaleGapY()
+{
+  return m_scaleGapY;
 }

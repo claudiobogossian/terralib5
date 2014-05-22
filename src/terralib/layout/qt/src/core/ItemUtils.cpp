@@ -106,3 +106,61 @@ TELAYOUTEXPORT std::vector<std::string> te::layout::mapNameList( QList<QGraphics
 
   return strList;
 }
+
+TELAYOUTEXPORT int te::layout::countType( QList<QGraphicsItem*> graphicsItems, LayoutAbstractObjectType type )
+{
+  int count = 0;
+
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if(!item)
+      continue;
+
+    ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
+    if(!obs)
+      continue;
+
+    if(obs->getModel()->getType() == type)
+    {
+      count+=1;
+    }
+  }
+
+  return count;
+}
+
+TELAYOUTEXPORT int te::layout::maxTypeId( QList<QGraphicsItem*> graphicsItems, LayoutAbstractObjectType type )
+{
+  int id = -1;
+
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if(!item)
+      continue;
+
+    ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
+    if(!obs)
+      continue;
+
+    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(obs->getModel());
+    if(!model)
+      continue;
+
+    if(obs->getModel()->getType() == type)
+    {
+      if(id == -1)
+      {
+        id = model->getId();
+      }
+      else
+      {
+        if(model->getId() > id)
+        {
+          id = model->getId();
+        }
+      }
+    }
+  }
+
+  return id;
+}

@@ -38,6 +38,7 @@ namespace te
     class SharedProperties
     {
       public:
+
         SharedProperties();
         virtual ~SharedProperties(void);
       
@@ -49,6 +50,7 @@ namespace te
         std::string getY1();
         std::string getY2();
         std::string getZValue();
+        std::string getBorder();
 
       protected:
 
@@ -60,6 +62,7 @@ namespace te
         std::string m_y1;
         std::string m_y2;
         std::string m_zValue;
+        std::string m_border;
     };
   }
 }

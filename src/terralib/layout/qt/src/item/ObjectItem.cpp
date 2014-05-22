@@ -357,13 +357,16 @@ te::gm::Envelope te::layout::ObjectItem::createNewBoxInCoordScene( const double&
       }
     case TPTopRight:
       {
+
+        QRectF bond = boundingRect();
+
         QPointF pbxy2 = mapToScene(boundingRect().topRight());
 
         dx = posAtual.x() - pbxy2.x();
         dy = posAtual.y() - pbxy2.y();
 
         QPointF pbxy1 = mapToScene(boundingRect().bottomLeft());
-        if(posAtual.x() > posItem.x() && posAtual.y() > pbxy1.y())
+        if(posAtual.x() > posItem.x() && posAtual.y() < pbxy1.y())
         {
           boxScene = te::gm::Envelope(posItem.x(), pbxy1.y(), pbxy2.x() + dx, posItem.y() + dy);
 
@@ -373,7 +376,7 @@ te::gm::Envelope te::layout::ObjectItem::createNewBoxInCoordScene( const double&
           yTranslation = p_ff.y();
 
           //In Parent Coordinates
-          setPos( QPointF(xTranslation, yTranslation) );
+          //setPos( QPointF(xTranslation, yTranslation) );
         }
         break;
       }

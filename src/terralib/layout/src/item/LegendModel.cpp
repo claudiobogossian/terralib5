@@ -41,7 +41,6 @@ te::layout::LegendModel::LegendModel() :
   m_mapName(""),
   m_layer(0)
 {
-  m_backgroundColor = te::color::RGBAColor(0, 183, 255, 255);
   m_box = te::gm::Envelope(0., 0., 70., 50.);
 }
 
@@ -60,11 +59,12 @@ void te::layout::LegendModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
   
+  canvas->setPolygonContourWidth(2);
   canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
   canvas->setPolygonFillColor(m_backgroundColor);
 
   utils->drawRectW(m_box);
-  
+
   drawLegend(canvas, utils);
 
   if(context.isResizeCanvas())
@@ -88,10 +88,10 @@ void te::layout::LegendModel::drawLegend( te::map::Canvas* canvas, Utils* utils 
 
   //Header
   std::string layerName = m_layer->getTitle();
-
+  
   canvas->setTextPointSize(12);
   canvas->setTextColor(te::color::RGBAColor(0, 0, 0, 255));
-  canvas->drawText(m_box.getLowerLeftX(), m_box.getLowerLeftY() + 10, layerName, 0);
+  canvas->drawText(m_box.getLowerLeftX(), m_box.getUpperRightY() - 5, layerName, 0);
 
   // Creates a canvas configurer
   te::map::CanvasConfigurer cc(canvas);
@@ -122,12 +122,10 @@ void te::layout::LegendModel::drawLegend( te::map::Canvas* canvas, Utils* utils 
       cc.config(symb);
 
       //Test
-      te::gm::Envelope box(m_box.getLowerLeftX(), m_box.getUpperRightY() - 10, m_box.getLowerLeftX() + 5, m_box.getUpperRightY() - 5);
+      te::gm::Envelope box(m_box.getLowerLeftX(), m_box.getUpperRightY() - 20, m_box.getLowerLeftX() + 10, m_box.getUpperRightY() - 10);
       utils->drawRectW(box);
-
-      canvas->drawText(m_box.getLowerLeftX() + 10, m_box.getUpperRightY() - 10, layerName, 0);
-
-      count+= 10;
+      
+      count+= 20;
 
     } // end for each <Symbolizer>
 

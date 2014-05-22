@@ -47,18 +47,28 @@ namespace te
       public:
 
         virtual ~Observable(void) {}
+
         virtual bool addObserver(Observer* o) = 0;
         virtual bool removeObserver(Observer* o) = 0;
+
         virtual te::layout::Properties* getProperties() const = 0;
         virtual void updateProperties(te::layout::Properties* properties) = 0;
+
         virtual te::gm::Envelope getBox() = 0;
+
         virtual LayoutAbstractObjectType getType() = 0;
         virtual void setType(LayoutAbstractObjectType type) = 0;
+
         virtual int getZValue() = 0;
         virtual void setZValue(int zValue) = 0;
+
         virtual std::string getName() = 0;
 
+        virtual int getId() = 0;
+        virtual void setId(int id) = 0;
+
       protected:
+
         virtual void notifyAll(ContextItem context) = 0;
     };
 

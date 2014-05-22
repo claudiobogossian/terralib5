@@ -96,10 +96,10 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   m_mapDisplay->installEventFilter(zoom);
   
   setWidget(m_mapDisplay);
-  
+    
   QGraphicsItem* item = this;
   Context::getInstance()->getScene()->insertItem((ItemObserver*)item);
-
+    
   m_mapDisplay->show();
 }
 
@@ -153,7 +153,7 @@ void te::layout::MapItem::updateObserver( ContextItem context )
 void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
   QGraphicsProxyWidget::paint(painter, option, widget);
-
+  
   if(!m_pixmap.isNull())
   {
     QRectF boundRect;

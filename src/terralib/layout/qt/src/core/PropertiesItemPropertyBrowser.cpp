@@ -34,6 +34,7 @@
 // Qt
 #include "../../../../../../third-party/qt/propertybrowser/qtvariantproperty.h"
 #include "../../../../../../third-party/qt/propertybrowser/qteditorfactory.h"
+#include "ItemController.h"
 
 te::layout::PropertiesItemPropertyBrowser::PropertiesItemPropertyBrowser(QObject* parent) :
   PropertyBrowser(parent),
@@ -110,6 +111,26 @@ void te::layout::PropertiesItemPropertyBrowser::onShowGridSettingsDlg()
   {
     if(m_propGridSettingsName.compare("") != 0)
     {
+      Observable* obs = dynamic_cast<Observable*>(m_gridSettings->getModel());
+      if(obs)
+      {
+        GridSettingsModel* modelObs = dynamic_cast<GridSettingsModel*>(obs);
+        if(modelObs)
+        {
+          modelObs->setOutsideProperty(m_dlgProperty);
+        }
+
+        ItemController* itCtrl = dynamic_cast<ItemController*>(m_gridSettings->getController());
+        if(itCtrl)
+        {
+          GridSettingsController* gridController = dynamic_cast<GridSettingsController*>(itCtrl);
+          if(gridController)
+          {
+            gridController->clearUpdate();
+          }
+        }
+      }
+
       m_gridSettings->load();
       m_gridSettings->show();
     }

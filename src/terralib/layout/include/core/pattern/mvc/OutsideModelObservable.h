@@ -71,6 +71,10 @@ namespace te
 
       virtual Properties* getProperties() const;
 
+      virtual int getId();
+
+      virtual void setId( int id );
+
     protected:
 
       virtual void notifyAll(ContextItem context);
@@ -83,6 +87,7 @@ namespace te
       Properties*         m_properties;
       LayoutAbstractObjectType  m_type;
       int                       m_zValue;
+      int                     m_id;
 
     private:
       std::string m_name;

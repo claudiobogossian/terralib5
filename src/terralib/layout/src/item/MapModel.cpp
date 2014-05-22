@@ -41,7 +41,6 @@
 
 te::layout::MapModel::MapModel()
 {
-  m_backgroundColor = te::color::RGBAColor(0, 0, 255, 255);
   m_box = te::gm::Envelope(0., 0., 150., 120.);
 }
 

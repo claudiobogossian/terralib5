@@ -39,9 +39,12 @@ te::layout::ItemModelObservable::ItemModelObservable() :
   m_name("unknown"),
   m_type(TPObjectUnknown),
   m_sharedProps(0),
-  m_zValue(0)
+  m_zValue(0),
+  m_border(true)
 {
   m_box = te::gm::Envelope(0,0,0,0);
+
+  m_backgroundColor = te::color::RGBAColor(255,255,255, 0);
 
   m_properties = new Properties(m_name);
 
@@ -147,6 +150,12 @@ te::layout::Properties* te::layout::ItemModelObservable::getProperties() const
   pro_zValue.setValue(m_zValue, DataTypeInt);
   m_properties->addProperty(pro_zValue);
   
+  Property pro_border;
+  pro_border.setName(m_sharedProps->getBorder());
+  pro_border.setId("unknown");
+  pro_border.setValue(m_border, DataTypeBool);
+  m_properties->addProperty(pro_border);
+
   m_properties->setTypeObj(m_type);
   return m_properties;
 }
@@ -220,14 +229,12 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
   Properties* vectorProps = const_cast<Properties*>(properties);
   
   Property pro_name = vectorProps->contains(m_sharedProps->getName());
-
   if(!pro_name.isNull())
   {
     m_name = pro_name.getValue().toString();
   }
 
   Property pro_id = vectorProps->contains(m_sharedProps->getId());
-
   if(!pro_id.isNull())
   {
     m_id = pro_id.getValue().toInt();
@@ -236,38 +243,39 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
   /* Box */
   
   Property pro_x1 = vectorProps->contains(m_sharedProps->getX1());
-
   if(!pro_x1.isNull())
   {
     m_box.m_llx = pro_x1.getValue().toDouble();
   }
 
   Property pro_x2 = vectorProps->contains(m_sharedProps->getX2());
-
   if(!pro_x2.isNull())
   {
     m_box.m_urx = pro_x2.getValue().toDouble();
   }
 
   Property pro_y1 = vectorProps->contains(m_sharedProps->getY1());
-
   if(!pro_y1.isNull())
   {
     m_box.m_lly = pro_y1.getValue().toDouble();
   }
 
   Property pro_y2 = vectorProps->contains(m_sharedProps->getY2());
-
   if(!pro_y2.isNull())
   {
     m_box.m_ury = pro_y2.getValue().toDouble();
   }
 
   Property pro_zValue = vectorProps->contains(m_sharedProps->getZValue());
-
   if(!pro_zValue.isNull())
   {
     m_zValue = pro_zValue.getValue().toInt();
+  }
+
+  Property pro_border = vectorProps->contains(m_sharedProps->getBorder());
+  if(!pro_border.isNull())
+  {
+    m_border = pro_border.getValue().toBool();
   }
 }
 
@@ -289,4 +297,24 @@ int te::layout::ItemModelObservable::getZValue()
 void te::layout::ItemModelObservable::setZValue( int zValue )
 {
   m_zValue = zValue;
+}
+
+bool te::layout::ItemModelObservable::isBorder()
+{
+  return m_border;
+}
+
+void te::layout::ItemModelObservable::setBorder( bool value )
+{
+  m_border = value;
+}
+
+int te::layout::ItemModelObservable::getId()
+{
+  return m_id;
+}
+
+void te::layout::ItemModelObservable::setId( int id )
+{
+  m_id = id;
 }

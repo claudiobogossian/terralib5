@@ -31,6 +31,7 @@
 // TerraLib
 #include "Config.h"
 #include "MapItem.h"
+#include "AbstractType.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -48,6 +49,10 @@ namespace te
     TELAYOUTEXPORT MapItem* getMapItem(QList<QGraphicsItem*> graphicsItems, std::string name);
 
     TELAYOUTEXPORT std::vector<std::string> mapNameList(QList<QGraphicsItem*> graphicsItems);
+
+    TELAYOUTEXPORT int countType(QList<QGraphicsItem*> graphicsItems, te::layout::LayoutAbstractObjectType type);
+
+    TELAYOUTEXPORT int maxTypeId(QList<QGraphicsItem*> graphicsItems, te::layout::LayoutAbstractObjectType type);
   }
 }
 

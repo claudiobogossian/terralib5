@@ -44,24 +44,46 @@
 #include "PaperController.h"
 #include "PaperItem.h"
 #include "Context.h"
-#include "AbstractType.h"
 #include "SharedProperties.h"
 #include "ScaleModel.h"
 #include "ScaleController.h"
 #include "ScaleItem.h"
+#include "Scene.h"
+#include "ItemUtils.h"
 
 // Qt
 #include <QGraphicsItem>
 
+// STL
+#include <sstream>
+#include <string>  
+
 te::layout::BuildGraphicsItem::BuildGraphicsItem() :
-  m_zValue(0)
+  m_zValue(0),
+  m_id(0),
+  m_props(0),
+  m_name("Unknown"),
+  m_sharedProps(0),
+  m_paperItem("PAPER_"),
+  m_mapItem("MAP_"),
+  m_mapGridItem("MAPGRID_"),
+  m_textItem("TEXT_"),
+  m_rectangleItem("RECTANGLE_"),
+  m_legendItem("LEGEND_"),
+  m_scaleItem("SCALE_"),
+  m_horizontalRuler("HORIZONTAL_RULER_"),
+  m_verticalRuler("VERTICAL_RULER_")
 {
 
 }
 
 te::layout::BuildGraphicsItem::~BuildGraphicsItem()
 {
-
+  if(m_sharedProps)
+  {
+    delete m_sharedProps;
+    m_sharedProps = 0;
+  }
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Properties* props )
@@ -70,6 +92,8 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
 
   if(!props)
     return item;
+
+  clear();
 
   m_props = props;  
   m_coord = findCoordinate(props);
@@ -112,26 +136,32 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::LayoutMode
   QGraphicsItem* item = 0;
 
   m_coord = coordinate;
-  m_props = 0;
+  clear();
 
   switch(mode)
   {
   case TypeCreateMap:
+    m_name = nameItem(m_mapItem, TPMapItem);
     item = createMap();
     break;
   case TypeCreateMapGrid:
+    m_name = nameItem(m_mapItem, TPMapGridItem);
     item = createMapGrid();
     break;
   case TypeCreateText:
+    m_name = nameItem(m_mapItem, TPText);
     item = createText();
     break;
   case TypeCreateRectangle:
+    m_name = nameItem(m_mapItem, TPRetangleItem);
     item = createRectangle();
     break;
   case TypeCreateLegend:
+    m_name = nameItem(m_mapItem, TPLegendItem);
     item = createLegend();
     break;
   case TypeCreateScale:
+    m_name = nameItem(m_mapItem, TPScaleItem);
     item = createScale();
     break;
   default:
@@ -147,27 +177,19 @@ te::gm::Coord2D te::layout::BuildGraphicsItem::findCoordinate( te::layout::Prope
 
   double x1 = 0;
   double y1 = 0;
-
-  SharedProperties* sharedProps = new SharedProperties;
-
-  Property pro_x1 = props->contains(sharedProps->getX1());
+  
+  Property pro_x1 = props->contains(m_sharedProps->getX1());
 
   if(!pro_x1.isNull())
   {
     x1 = pro_x1.getValue().toDouble();
   }
 
-  Property pro_y1 = props->contains(sharedProps->getY1());
+  Property pro_y1 = props->contains(m_sharedProps->getY1());
 
   if(!pro_y1.isNull())
   {
     y1 = pro_y1.getValue().toDouble();
-  }
-
-  if(sharedProps)
-  {
-    delete sharedProps;
-    sharedProps = 0;
   }
 
   te::gm::Coord2D coord(x1, y1);
@@ -177,23 +199,53 @@ te::gm::Coord2D te::layout::BuildGraphicsItem::findCoordinate( te::layout::Prope
 int te::layout::BuildGraphicsItem::findZValue( te::layout::Properties* props )
 {
   int zValue = 0;
-
-  SharedProperties* sharedProps = new SharedProperties;
-
-  Property pro_zValue = props->contains(sharedProps->getZValue());
+  
+  Property pro_zValue = props->contains(m_sharedProps->getZValue());
 
   if(!pro_zValue.isNull())
   {
     zValue = pro_zValue.getValue().toInt();
   }
 
-  if(sharedProps)
-  {
-    delete sharedProps;
-    sharedProps = 0;
-  }
-
   return zValue;
+}
+
+std::string te::layout::BuildGraphicsItem::nameItem( std::string name, te::layout::LayoutAbstractObjectType type )
+{
+  AbstractScene* abstScene = Context::getInstance()->getScene();
+
+  QList<QGraphicsItem*> graphicsItems;
+  std::stringstream ss;//create a stringstream
+
+  if(abstScene)
+  {
+    Scene* sc = dynamic_cast<Scene*>(abstScene);
+    if(sc)
+    {
+      graphicsItems = sc->items();
+    }
+  }  
+
+  m_id = te::layout::maxTypeId(graphicsItems, type);
+
+  if(m_id < 0)
+    m_id = 0;
+  else
+    m_id+= 1;
+
+  ss << m_id;
+
+  name+=ss.str();
+
+  return name;
+}
+
+void te::layout::BuildGraphicsItem::clear()
+{
+  m_id = 0;
+  m_name = "Unknown";
+  m_zValue = 0;
+  m_props = 0;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createPaper()
@@ -208,7 +260,8 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createPaper()
   }
   else
   {
-    model->setName("PAPER_01");
+    model->setId(m_id);
+    model->setName(m_name);
   }
 
   PaperController* controllerMap = new PaperController(model);
@@ -234,17 +287,18 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMap()
 {
   QGraphicsItem* item = 0;
 
-  MapModel* modelMap = new MapModel();
+  MapModel* model = new MapModel();
   if(m_props)
   {
-    modelMap->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   else
   {
-    modelMap->setName("MAPA_01");
+    model->setId(m_id);
+    model->setName(m_name);
   }
 
-  MapController* controllerMap = new MapController(modelMap);
+  MapController* controllerMap = new MapController(model);
   ItemObserver* itemMap = (ItemObserver*)controllerMap->getView();
 
   MapItem* qrectMap = dynamic_cast<MapItem*>(itemMap);
@@ -267,17 +321,18 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMapGrid()
 {
   QGraphicsItem* item = 0;
 
-  MapGridModel* modelMapGrid = new MapGridModel();
+  MapGridModel* model = new MapGridModel();
   if(m_props)
   {
-    modelMapGrid->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   else
   {
-    modelMapGrid->setName("MAPA_GRID_01");
+    model->setId(m_id);
+    model->setName(m_name);
   }
 
-  MapGridController* controllerMapGrid = new MapGridController(modelMapGrid);
+  MapGridController* controllerMapGrid = new MapGridController(model);
   ItemObserver* itemMapGrid = (ItemObserver*)controllerMapGrid->getView();
 
   MapGridItem* qrectMapGrid = dynamic_cast<MapGridItem*>(itemMapGrid);
@@ -314,7 +369,8 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createRectangle()
   }
   else
   {
-    model->setName("RECT_01");
+    model->setId(m_id);
+    model->setName(m_name);
   }
 
   RectangleController* controller = new RectangleController(model);
@@ -347,7 +403,8 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createLegend()
   }
   else
   {
-    model->setName("LEGEND_01");
+    model->setId(m_id);
+    model->setName(m_name);
   }
 
   LegendController* controller = new LegendController(model);
@@ -380,7 +437,8 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createScale()
   }
   else
   {
-    model->setName("SCALE_01");
+    model->setId(m_id);
+    model->setName(m_name);
   }
 
   ScaleController* controller = new ScaleController(model);

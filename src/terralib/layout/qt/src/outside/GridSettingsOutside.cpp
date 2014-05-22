@@ -1301,9 +1301,11 @@ void te::layout::GridSettingsOutside::initDouble( QWidget* widget, std::string n
     return;
 
   std::ostringstream convert;
+  convert.precision(15);
   Property prop = controller->getProperty(nameComponent, gridType);
-  convert << prop.getValue().toDouble();
-  
+  double number = prop.getValue().toDouble();
+  convert << number;
+
   QLineEdit* edit = dynamic_cast<QLineEdit*>(widget);
   if(edit)
   {

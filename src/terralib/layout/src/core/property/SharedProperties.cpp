@@ -37,7 +37,8 @@ te::layout::SharedProperties::SharedProperties() :
   m_x2("x2"),
   m_y1("y1"),
   m_y2("y2"),
-  m_zValue("zValue")
+  m_zValue("zValue"),
+  m_border("border")
 {
 
 }
@@ -85,4 +86,9 @@ std::string te::layout::SharedProperties::getY2()
 std::string te::layout::SharedProperties::getZValue()
 {
   return m_zValue;
+}
+
+std::string te::layout::SharedProperties::getBorder()
+{
+  return m_border;
 }

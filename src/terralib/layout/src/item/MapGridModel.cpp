@@ -49,8 +49,6 @@ te::layout::MapGridModel::MapGridModel() :
   m_planarGridProperties(0),
   m_geodesicGridProperties(0)
 {
-  m_backgroundColor = te::color::RGBAColor(0, 255, 255, 200);
-
   m_gridPlanar = new GridPlanarModel;
   m_gridGeodesic = new GridGeodesicModel;
 
@@ -106,7 +104,8 @@ void te::layout::MapGridModel::draw( ContextItem context )
   canvas->setPolygonContourColor(m_borderColor);
   canvas->setPolygonFillColor(m_backgroundColor);
 
-  //utils->drawRectW(m_box);
+  if(m_border)
+    utils->drawRectW(m_box);
   
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);

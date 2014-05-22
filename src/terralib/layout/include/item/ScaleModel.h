@@ -54,9 +54,17 @@ namespace te
 
         virtual void visitDependent();
 
+        virtual void setScaleGapX(double x);
+
+        virtual double getScaleGapX();
+
+        virtual void setScaleGapY(double y);
+
+        virtual double getScaleGapY();
+
        protected:
 
-         virtual void drawScale(te::map::Canvas* canvas, Utils* utils);
+         virtual void drawScale(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
 
         std::string m_mapName;
         double m_mapScale;

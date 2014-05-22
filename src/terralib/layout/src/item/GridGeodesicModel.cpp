@@ -81,15 +81,15 @@ te::layout::GridGeodesicModel::~GridGeodesicModel()
 
 void te::layout::GridGeodesicModel::draw( te::map::Canvas* canvas, te::gm::Envelope box, int srid )
 {
-  if(!m_visible)
-    return;
-
   if(!box.isValid())
     return;
 
-  m_srid = srid;
-
   calculateGaps(box);
+
+  if(!m_visible)
+    return;
+
+  m_srid = srid;
 
   Utils* utils = Context::getInstance()->getUtils();
 

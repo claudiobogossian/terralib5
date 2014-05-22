@@ -34,7 +34,8 @@
 te::layout::OutsideModelObservable::OutsideModelObservable() :
 	m_color(0),
   m_type(TPObjectUnknown),
-  m_name("unknown")
+  m_name("unknown"),
+  m_id(0)
 {
   m_properties = new Properties("Unknown");
 }
@@ -154,4 +155,14 @@ void te::layout::OutsideModelObservable::updateProperties( te::layout::Propertie
 std::string te::layout::OutsideModelObservable::getName()
 {
   return m_name;
+}
+
+int te::layout::OutsideModelObservable::getId()
+{
+  return m_id;
+}
+
+void te::layout::OutsideModelObservable::setId( int id )
+{
+  m_id = id;
 }
