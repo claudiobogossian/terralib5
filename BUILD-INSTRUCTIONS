@@ -41,17 +41,20 @@ Notes:
                   -DCMAKE_PROGRAM_PATH:PATH="/usr/local/bin;/opt/bin"
                   -DBOOST_ROOT:PATH="/opt/boost"
 
-       b) The parameter -lpthread must be informed only if your Boost was not built as a shared library:
+       b) Boost can also be indicated by BOOST_INCLUDEDIR (note: without an '_' separating INCLUDE and DIR):
+          -DBOOST_INCLUDEDIR:PATH="/usr/local/include"
+
+       c) The parameter -lpthread must be informed only if your Boost was not built as a shared library:
           -DCMAKE_CXX_FLAGS:STRING="-lpthread"
 
-       c) If you are using a CMake version before 2.8.11 the above command must be run twice in order to enable the right components.
+       d) If you are using a CMake version before 2.8.11 the above command must be run twice in order to enable the right components.
 
-       d) Some versions of Clang and gcc needs to add -ftemplate-depth-1024 to CMAKE_CXX_FLAGS.
+       e) Some versions of Clang and gcc needs to add -ftemplate-depth-1024 to CMAKE_CXX_FLAGS.
 
-       e) For building with Qt5 you can provide the Qt5_DIR variable as:
+       f) For building with Qt5 you can provide the Qt5_DIR variable as:
           -DQt5_DIR:PATH="/usr/local/lib/cmake/Qt5"
 
-       f) For generating a debug version set CMAKE_BUILD_TYPE as:
+       g) For generating a debug version set CMAKE_BUILD_TYPE as:
           -DCMAKE_BUILD_TYPE:STRING=Debug
 
 1.5 Building:

@@ -49,15 +49,13 @@ if(TERRALIB_MOD_XML_ENABLED)
   source_group("Source Files\\serialization\\xml"  FILES ${TERRALIB_XML_SRC_FILES})
   source_group("Header Files\\serialization\\xml"  FILES ${TERRALIB_XML_HDR_FILES})
 
-  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_XML_SRC_FILES} ${TERRALIB_XML_HDR_FILES})
+  add_library(terralib_mod_geometry SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_XML_SRC_FILES} ${TERRALIB_XML_HDR_FILES})
 
 else()
 
-  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+  add_library(terralib_mod_geometry SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 endif()
-
-add_library(terralib_mod_geometry SHARED ${TERRALIB_FILES})
 
 set(TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_common")
 
@@ -85,16 +83,16 @@ set_target_properties(terralib_mod_geometry
 
 install(TARGETS terralib_mod_geometry
         EXPORT terralib-targets
-        RUNTIME DESTINATION bin COMPONENT runtime
-        LIBRARY DESTINATION lib COMPONENT runtime
-        ARCHIVE DESTINATION lib COMPONENT runtime)
+        RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
+        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION include/terralib/geometry COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/geometry COMPONENT devel)
 
 if(TERRALIB_MOD_XML_ENABLED)
   install(FILES ${TERRALIB_XML_HDR_FILES}
-          DESTINATION include/terralib/geometry/serialization/xml COMPONENT devel)
+          DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/geometry/serialization/xml COMPONENT devel)
 endif()
 
 export(TARGETS terralib_mod_geometry APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
