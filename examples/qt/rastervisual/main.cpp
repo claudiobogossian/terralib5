@@ -45,24 +45,11 @@ void LoadGDALModule()
 {
   try
   {
-    /*te::plugin::PluginInfo info; 
-    info.m_name = "te.da.gdal";
-    info.m_displayName = "GDAL DataSource Driver";
-    info.m_description = "This data source driver supports spatial data managed by GDAL";
-    info.m_engine = "C++";
-    info.m_folder = TE_PLUGINS_PATH;
-    
-    std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_gdal");
-    
-    info.m_resources.push_back(rsc);
-    
-    te::plugin::PluginManager::getInstance().load(info);*/
-    
     std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
-    
+
     te::plugin::PluginInfo* info;
     info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.gdal.teplg");
-    
+
     te::plugin::PluginManager::getInstance().loadAll();
   }
   catch(...)
@@ -84,10 +71,10 @@ int main(int argc, char** argv)
     QApplication app(argc, argv);
 
     // Adjusting icons theme
-    //QString spaths = std::string(ICON_THEME_PATH).c_str();  juan
-    //QStringList paths = spaths.split(";");                  juan
-    //QIcon::setThemeName(ICON_THEME);                        juan
-    //QIcon::setThemeSearchPaths(paths);                      juan
+    QStringList ithemes = QIcon::themeSearchPaths();
+    ithemes.push_back(te::common::FindInTerraLibPath("share/terralib/icons").c_str());
+    QIcon::setThemeName("terralib");
+    QIcon::setThemeSearchPaths(ithemes);
 
     // Example MainWindow
     MainWindow window;

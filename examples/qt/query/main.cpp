@@ -59,14 +59,13 @@ int main(int argc, char** argv)
     LoadModules();
 
     // Adjusting icons theme
-    //  QString spaths = std::string(ICON_THEME_PATH).c_str(); juan
-    // juan QStringList paths = spaths.split(";");             juan
-    // juan QIcon::setThemeName(ICON_THEME);                   juan
-    // juan QIcon::setThemeSearchPaths(paths);                 juan
+    QStringList ithemes = QIcon::themeSearchPaths();
+    ithemes.push_back(te::common::FindInTerraLibPath("share/terralib/icons").c_str());
+    QIcon::setThemeName("terralib");
+    QIcon::setThemeSearchPaths(ithemes);
 
     // Load datasource
-    std::string fileName = TERRALIB_EXAMPLES_DATA_DIR;
-                fileName+= "/shp/munic_2001.shp";
+    std::string fileName = TERRALIB_EXAMPLES_DATA_DIR "/shp/munic_2001.shp";
 
     //LoadShapeDataSource(fileName, "MunicShp2001");
 
