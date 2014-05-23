@@ -152,6 +152,13 @@ namespace te
           std::auto_ptr<te::da::DataSet> getEditions(const te::da::DataSetType* type, std::vector< std::set<int> >& ps);
 
           /*!
+            \brief Returns true if there are unsaved editions.
+
+            \return \a True if there are unsaved editions, \a false otherwise.
+          */ 
+          bool hasEditions() const;
+
+          /*!
            \brief Discard editions.
            */
           void discardEditions();
