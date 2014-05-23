@@ -34,12 +34,9 @@ endif()
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/gml/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/gml/*.h)
 
-set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+add_library(terralib_mod_gml SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
-add_library(terralib_mod_gml SHARED ${TERRALIB_FILES})
-
-target_link_libraries(terralib_mod_gml terralib_mod_geometry
-                                       terralib_mod_common)
+target_link_libraries(terralib_mod_gml terralib_mod_geometry terralib_mod_common)
 
 set_target_properties(terralib_mod_gml
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
@@ -47,11 +44,11 @@ set_target_properties(terralib_mod_gml
 
 install(TARGETS terralib_mod_gml
         EXPORT terralib-targets
-        RUNTIME DESTINATION bin COMPONENT runtime
-        LIBRARY DESTINATION lib COMPONENT runtime
-        ARCHIVE DESTINATION lib COMPONENT runtime)
+        RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
+        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION include/terralib/gml COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/gml COMPONENT devel)
 
 export(TARGETS terralib_mod_gml APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

@@ -78,17 +78,17 @@ set_target_properties(terralib_mod_common
 
 install(TARGETS terralib_mod_common
         EXPORT terralib-targets
-        RUNTIME DESTINATION bin COMPONENT runtime
-        LIBRARY DESTINATION lib COMPONENT runtime
-        ARCHIVE DESTINATION lib COMPONENT runtime)
+        RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
+        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION include/terralib/common COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/common COMPONENT devel)
 
 install(FILES ${TERRALIB_URI_HDR_FILES}
-        DESTINATION include/terralib/common/URI COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/common/URI COMPONENT devel)
 
 install(FILES ${TERRALIB_PROGRESS_HDR_FILES}
-        DESTINATION include/terralib/common/progress COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/common/progress COMPONENT devel)
 
 export(TARGETS terralib_mod_common APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

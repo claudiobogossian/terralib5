@@ -33,9 +33,7 @@ add_definitions(-DTEADODLL)
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ado/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ado/*.h)
 
-set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
-
-add_library(terralib_mod_ado SHARED ${TERRALIB_FILES})
+add_library(terralib_mod_ado SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 target_link_libraries(terralib_mod_ado terralib_mod_dataaccess
                                        terralib_mod_datatype
@@ -49,16 +47,15 @@ set_target_properties(terralib_mod_ado
 
 install(TARGETS terralib_mod_ado
         EXPORT terralib-targets
-        RUNTIME DESTINATION bin COMPONENT runtime
-        LIBRARY DESTINATION lib COMPONENT runtime
-        ARCHIVE DESTINATION lib COMPONENT runtime)
+        RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
+        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION include/terralib/ado COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/ado COMPONENT devel)
 
 install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.da.ado.teplg
               ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/ado-capabilities.xml
-
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
 
 export(TARGETS terralib_mod_ado APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

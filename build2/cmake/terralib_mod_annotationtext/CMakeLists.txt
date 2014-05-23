@@ -34,9 +34,7 @@ endif()
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/annotationtext/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/annotationtext/*.h)
 
-set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
-
-add_library(terralib_mod_annotationtext SHARED ${TERRALIB_FILES})
+add_library(terralib_mod_annotationtext SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 target_link_libraries(terralib_mod_annotationtext terralib_mod_geometry
                                                   terralib_mod_common)
@@ -47,11 +45,11 @@ set_target_properties(terralib_mod_annotationtext
 
 install(TARGETS terralib_mod_annotationtext
         EXPORT terralib-targets
-        RUNTIME DESTINATION bin COMPONENT runtime
-        LIBRARY DESTINATION lib COMPONENT runtime
-        ARCHIVE DESTINATION lib COMPONENT runtime)
+        RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
+        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION include/terralib/annotationtext COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/annotationtext COMPONENT devel)
 
 export(TARGETS terralib_mod_annotationtext APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
