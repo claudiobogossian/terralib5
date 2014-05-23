@@ -37,6 +37,7 @@
   #include <memory>
   
   #include <boost/scoped_array.hpp>
+  #include <boost/filesystem.hpp>
   
   namespace te 
   {
@@ -305,6 +306,8 @@
               
               FILE* m_filePtr; //!< The file pointer.
               
+              std::string m_fullFileName; //!< The full created file name.
+              
               OpenDiskFileHandler();
               
               ~OpenDiskFileHandler();
@@ -405,9 +408,11 @@
           \brief Create a new disk file.
           \param size The file size.
           \param fileptr The file pointer.
+          \param fullFileName The created full file name.
           \return true if OK. false on errors.
           */
-          bool createNewDiskFile( unsigned long int size, FILE** fileptr ) const;      
+          bool createNewDiskFile( unsigned long int size, FILE** fileptr,
+            std::string& fullFileName ) const;      
       };
       
       template< typename TemplateElementType >
@@ -433,6 +438,7 @@
       {
         if( m_filePtr ) 
         {
+          remove( m_fullFileName.c_str() );
           fclose( m_filePtr );
         }
       }
@@ -772,8 +778,9 @@
             // allocating the temporary file
             
             FILE* newFilePtr = 0;
+            std::string newFullFileName;
             
-            if( ! createNewDiskFile( fileSize, &( newFilePtr ) ) )
+            if( ! createNewDiskFile( fileSize, &( newFilePtr ), newFullFileName ) )
             {
               TERP_LOGERR( "Unable to create temporary disk file" );
               return false;           
@@ -782,6 +789,7 @@
             {
               m_openDiskFilesHandler.push_back( OpenDiskFileHandler() );
               m_openDiskFilesHandler.back().m_filePtr = newFilePtr;
+              m_openDiskFilesHandler.back().m_fullFileName = newFullFileName;
               
               for( unsigned int lineIdx = 0; lineIdx < fileLinesNumber ; ++lineIdx )
               {
@@ -881,10 +889,17 @@
       
       template< typename TemplateElementType >
       bool Matrix< TemplateElementType >::createNewDiskFile( unsigned long int size,
-        FILE** fileptr ) const
+        FILE** fileptr, std::string& fullFileName ) const
       {
-        //(*fileptr) = fopen( filename.c_str(), "wb+" );
-        (*fileptr) = tmpfile();
+        fullFileName = boost::filesystem::unique_path( 
+          boost::filesystem::temp_directory_path() /= 
+          boost::filesystem::path( "TerralibRPMatrix_%%%%-%%%%-%%%%-%%%%" ) ).string();
+        if( fullFileName.empty() )
+        {
+          return false;
+        }
+        
+        (*fileptr) = fopen( fullFileName.c_str(), "wb+" );
         TERP_TRUE_OR_RETURN_FALSE( (*fileptr) != 0, "Invalid file pointer" )
         
         long seekoff = (long)( size - 1 );
@@ -892,6 +907,7 @@
         if( 0 != fseek( (*fileptr), seekoff, SEEK_SET ) )
         {
           fclose( (*fileptr) );
+          remove( fullFileName.c_str() );
           TERP_LOGERR( "File seek error" );
           return false;
         }
@@ -900,6 +916,7 @@
         if( 1 != fwrite( &c, 1, 1, (*fileptr) ) )
         {
           fclose( (*fileptr) );
+          remove( fullFileName.c_str() );
           TERP_LOGERR( "File write error" );
           return false;
         }

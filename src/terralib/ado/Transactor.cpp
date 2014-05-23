@@ -1376,6 +1376,74 @@ void te::ado::Transactor::update(const std::string& datasetName,
   //TODO
 }
 
+void te::ado::Transactor::update(const std::string& datasetName,
+            te::da::DataSet* dataset,
+            const std::vector< std::set<int> >& properties,
+            const std::vector<size_t>& ids)
+{
+  dataset->moveFirst();
+
+  int i=0;
+  std::set<int> plst; 
+  std::set<int>::iterator it;
+
+  try
+  {
+    begin();
+
+    do 
+    {
+      std::string sql = "UPDATE " + datasetName + " SET "; 
+      plst = properties[i];
+      std::string pName;
+      std::string id;
+      int k = 0;
+
+      for(it = plst.begin(); it != plst.end(); ++it)
+      {
+        if(k>0)
+          pName += ",";
+
+        pName += dataset->getPropertyName(*it);
+
+        if(dataset->getPropertyDataType(*it) == te::dt::STRING_TYPE)
+          pName += "=\"" + dataset->getAsString(*it) + "\"";
+        else 
+          pName += "=" + dataset->getAsString(*it);
+
+        k++;
+      }
+
+      for(size_t j=0; j<ids.size(); ++j)
+      {
+        if(j>0)
+          id += " AND ";
+
+        id += dataset->getPropertyName(j) += "=";
+
+        if(dataset->getPropertyDataType(j) == te::dt::STRING_TYPE)
+          id += "\"" + dataset->getAsString(j) + "\"";
+        else 
+          id += dataset->getAsString(j);
+      }
+
+      sql += pName + " WHERE " + id;
+
+      execute(sql);
+
+      i++;
+    } while (dataset->moveNext());
+
+    commit();
+  }
+  catch(te::ado::Exception& e)
+  {
+    rollBack();
+
+    throw e;
+  }
+}
+
 void te::ado::Transactor::optimize(const std::map<std::string, std::string>& opInfo)
 {
 

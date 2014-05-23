@@ -151,6 +151,11 @@ class Editor
       return m_editions[std::pair<int, int>(row, column)];
     }
 
+    bool hasEditions() const
+    {
+      return !m_editions.empty();
+    }
+
     void getEditedDataSet(te::da::DataSet* in, te::mem::DataSet* out, std::vector< std::set<int> >& fields)
     {
       std::vector<int> rows;
@@ -362,6 +367,11 @@ std::auto_ptr<te::da::DataSet> te::qt::widgets::DataSetTableModel::getEditions(c
   return dset;
 }
 
+bool te::qt::widgets::DataSetTableModel::hasEditions() const
+{
+  return m_editor->hasEditions();
+}
+
 void te::qt::widgets::DataSetTableModel::discardEditions()
 {
   m_editor->clear();
@@ -426,6 +436,10 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
         f.setItalic(true);
         return f;
       }
+    break;
+
+    case Qt::EditRole:
+      return data(index, Qt::DisplayRole);
     break;
 
     default:
@@ -528,7 +542,12 @@ bool te::qt::widgets::DataSetTableModel::setData (const QModelIndex & index, con
         break;
       }
 
-      m_editor->setValue(m_promoter->getLogicalRow(index.row()), index.column(), value.toString().toStdString());
+      QString curV = data(index, Qt::DisplayRole).toString();
+      QString newV = value.toString();
+
+      if(curV != newV)
+        m_editor->setValue(m_promoter->getLogicalRow(index.row()), index.column(), value.toString().toStdString());
+
       return true;
     }
     catch(te::common::Exception& e)

@@ -140,7 +140,7 @@ te::da::DataSetTypeCapabilities* GetCapabilities(const te::map::AbstractLayer* l
     return 0;
 }
 
-std::auto_ptr<te::da::Select> GetSelectExpression(const std::string& tableName, const te::da::DataSet* set, const std::vector<int>& cols, const bool& asc)
+std::auto_ptr<te::da::Select> GetSelectExpression(const std::string& datasetName, const std::vector<std::string>& colsNames, const bool& asc)
 {
   te::da::Fields fields;
 
@@ -148,19 +148,51 @@ std::auto_ptr<te::da::Select> GetSelectExpression(const std::string& tableName, 
 
   te::da::From from;
 
-  from.push_back(std::auto_ptr<te::da::DataSetName>(new te::da::DataSetName(tableName)));
+  from.push_back(std::auto_ptr<te::da::DataSetName>(new te::da::DataSetName(datasetName)));
 
   te::da::OrderBy order_by;
 
-  for(size_t i=0; i<cols.size(); i++)
-    order_by.push_back(std::auto_ptr<te::da::OrderByItem>(new te::da::OrderByItem(set->getPropertyName(cols[(int)i]), (asc) ? te::da::ASC : te::da::DESC)));
+  for(size_t i=0; i<colsNames.size(); i++)
+    order_by.push_back(std::auto_ptr<te::da::OrderByItem>(new te::da::OrderByItem(colsNames[i], (asc) ? te::da::ASC : te::da::DESC)));
 
   return std::auto_ptr<te::da::Select>(new te::da::Select(fields, from, order_by));
+}
+
+std::auto_ptr<te::da::Select> GetSelectExpression(const std::string& tableName, const te::da::DataSet* set, const std::vector<int>& cols, const bool& asc)
+{
+  std::vector<std::string> colsNames;
+
+  for(size_t i = 0; i < cols.size(); ++i)
+    colsNames.push_back(set->getPropertyName((size_t)cols[i]));
+
+  return GetSelectExpression(tableName, colsNames, asc);
 }
 
 std::auto_ptr<te::da::DataSet> GetDataSet(const te::map::AbstractLayer* layer, const te::da::DataSet* set, const std::vector<int>& cols, const bool& asc)
 {
   std::auto_ptr<te::da::Select> query = GetSelectExpression(layer->getSchema()->getName(), set, cols, asc);
+
+  try
+  {
+    if(query.get() == 0)
+      throw std::string("Fail to generate query.");
+
+    te::da::DataSourcePtr dsc = GetDataSource(layer);
+
+    if(dsc.get() == 0)
+      throw std::string("Fail to get data source.");
+
+    return dsc->getTransactor()->query(query.get(), te::common::RANDOM);
+  }
+  catch(...)
+  {
+    return std::auto_ptr<te::da::DataSet>();
+  }
+}
+
+std::auto_ptr<te::da::DataSet> GetDataSet(const te::map::AbstractLayer* layer, const std::vector<std::string>& colsNames, const bool& asc)
+{
+  std::auto_ptr<te::da::Select> query = GetSelectExpression(layer->getSchema()->getName(), colsNames, asc);
 
   try
   {
@@ -587,7 +619,8 @@ te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
   m_autoScrollEnabled(false),
   m_doScroll(true),
   m_promotionEnabled(false),
-  m_dset(0)
+  m_dset(0),
+  m_orderAsc(true)
 {
   m_model = new DataSetTableModel(this);
 
@@ -616,6 +649,19 @@ te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
 
 te::qt::widgets::DataSetTableView::~DataSetTableView()
 {
+  if (m_model->hasEditions())
+  {
+    QMessageBox msgBox(this);
+    msgBox.setText("There are unsaved changes on table.");
+    msgBox.setInformativeText("Do you want to save your changes?");
+    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard);
+    msgBox.setDefaultButton(QMessageBox::Save);
+    
+    int ret = msgBox.exec();
+    
+    if(ret == QMessageBox::Save)
+      saveEditions();
+  }
 }
 
 void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* layer)
@@ -623,8 +669,19 @@ void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* l
   ScopedCursor cursor(Qt::WaitCursor);
 
   m_layer = layer;
-  setDataSet(m_layer->getData(te::common::RANDOM).release());
-  setLayerSchema(m_layer->getSchema().get());
+  std::auto_ptr<te::map::LayerSchema> sch = m_layer->getSchema();
+
+  if (m_orderby.empty())
+  {
+    std::vector<te::dt::Property*> psps = sch->getPrimaryKey()->getProperties();
+    std::vector<te::dt::Property*>::iterator it;
+
+    for(it = psps.begin(); it != psps.end(); ++it)
+      m_orderby.push_back((*it)->getName());
+  }
+
+  setDataSet(GetDataSet(m_layer, m_orderby, m_orderAsc).release());
+  setLayerSchema(sch.get());
 
   te::da::DataSetTypeCapabilities* caps = GetCapabilities(m_layer);
 
@@ -668,15 +725,20 @@ void te::qt::widgets::DataSetTableView::setLayerSchema(const te::da::DataSetType
 
   te::da::GetEmptyOIDSet(schema, objs);
 
-  m_delegate->setObjectIdSet(objs);
+  std::auto_ptr<te::da::ObjectIdSet> objs_ptr(objs);
 
-  m_model->setPkeysColumns(objs->getPropertyPos());
+  m_delegate->setObjectIdSet(objs_ptr.get());
 
-  m_model->getPromoter()->preProcessKeys(m_dset, objs->getPropertyPos());
+  m_model->setPkeysColumns(objs_ptr->getPropertyPos());
+
+  m_model->getPromoter()->preProcessKeys(m_dset, objs_ptr->getPropertyPos());
 }
 
 void te::qt::widgets::DataSetTableView::highlightOIds(const te::da::ObjectIdSet* oids)
 {
+  if(oids == 0)
+    return;
+  
   m_delegate->setObjectIdSet(oids);
 
   if(m_autoScrollEnabled && oids != 0 && oids->size() > 0)
@@ -807,7 +869,7 @@ void te::qt::widgets::DataSetTableView::changeColumnData(const int& column)
       dsrc->execute(sql);
       setLayer(m_layer);
     }
-    catch(Exception& e)
+    catch(Exception& /*e*/)
     {
     }
   }
@@ -936,16 +998,24 @@ void te::qt::widgets::DataSetTableView::sortByColumns(const bool& asc)
 
     std::vector<int> selCols;
 
+    m_orderby.clear();
+
     int nCols = model()->columnCount();
 
     for(int i=0; i<nCols; i++)
-      if(selectionModel()->isColumnSelected(i, QModelIndex()))
-        selCols.push_back(i);
+    {
+      int logRow = horizontalHeader()->logicalIndex(i);
+      if(selectionModel()->isColumnSelected(logRow, QModelIndex()))
+      {
+        m_orderby.push_back(m_dset->getPropertyName((size_t)logRow));
+        selCols.push_back(logRow);
+      }
+    }
 
     if(selCols.empty())
       return;
 
-    std::auto_ptr<te::da::DataSet> dset = GetDataSet(m_layer, m_dset, selCols, asc);
+    std::auto_ptr<te::da::DataSet> dset = GetDataSet(m_layer, m_orderby, asc);
 
     if(dset.get() == 0)
       throw te::common::Exception(tr("Sort operation not supported by the source of data.").toStdString());

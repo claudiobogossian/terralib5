@@ -94,10 +94,9 @@ te::mem::ExpansibleRaster::ExpansibleRaster( const unsigned char maxMemPercentUs
   
   const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
   const double usedVMem = (double)te::common::GetUsedVirtualMemory();
-  const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() ) / 
-    2.0;
+  const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() );
   const double freeVMem = ( ((double)maxMemPercentUsed) / 100.0 ) *
-    std::min( totalPhysMem, ( ( totalVMem <= usedVMem ) ? 0.0 : ( totalVMem - usedVMem ) ) );  
+    std::min( totalPhysMem, ( totalVMem - usedVMem ) );  
   const unsigned int maxNumberOfBlocks = (unsigned int)
     std::max( 1.0, std::ceil( freeVMem / ((double)maxBlockSizeBytes) ) );    
   

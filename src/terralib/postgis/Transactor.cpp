@@ -39,6 +39,7 @@
 #include "../dataaccess/query/SQLDialect.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Array.h"
+#include "../datatype/Enums.h"
 #include "../datatype/Property.h"
 #include "../datatype/SimpleData.h"
 #include "../geometry/GeometryProperty.h"
@@ -1815,6 +1816,78 @@ void te::pgis::Transactor::update(const std::string& /*datasetName*/,
 //  }while(dataset->moveNext());
 //
 //  st.commit();
+}
+
+void te::pgis::Transactor::update(const std::string& datasetName,
+                                  te::da::DataSet* dataset,
+                                  const std::vector< std::set<int> >& properties,
+                                  const std::vector<size_t>& ids)
+{
+  dataset->moveFirst();
+
+  int i=0;
+  std::set<int> plst; 
+  std::set<int>::iterator it;
+
+  try
+  {
+    begin();
+
+    do 
+    {
+      std::string sql = "UPDATE " + datasetName + " SET "; 
+      plst = properties[i];
+      std::string pName;
+      std::string value;
+      std::string id;
+      int k = 0;
+
+      for(it = plst.begin(); it != plst.end(); ++it)
+      {
+        if(k>0)
+        {
+          pName += ",";
+          value += ",";
+        }
+
+        pName += dataset->getPropertyName(*it);
+
+        if(dataset->getPropertyDataType(*it) == te::dt::STRING_TYPE)
+          value += "\'" + dataset->getAsString(*it) + "\'";
+        else 
+          value += dataset->getAsString(*it);
+
+        k++;
+      }
+
+      for(size_t j=0; j<ids.size(); ++j)
+      {
+        if(j>0)
+          id += " AND ";
+
+        id += dataset->getPropertyName(j) += "=";
+
+        if(dataset->getPropertyDataType(j) == te::dt::STRING_TYPE)
+          id += "\'" + dataset->getAsString(j) + "\'";
+        else 
+          id += dataset->getAsString(j);
+      }
+
+      sql += "(" + pName + ")=(" + value + ") WHERE " + id;
+
+      execute(sql);
+
+      i++;
+    } while (dataset->moveNext());
+
+    commit();
+  }
+  catch(te::pgis::Exception& e)
+  {
+    rollBack();
+
+    throw e;
+  }
 }
 
 void te::pgis::Transactor::optimize(const std::map<std::string, std::string>& /*opInfo*/)

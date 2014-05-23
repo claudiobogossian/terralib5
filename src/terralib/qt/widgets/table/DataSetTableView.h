@@ -282,10 +282,13 @@ namespace te
           TablePopupFilter*  m_popupFilter; //!< The menus popup filter.
           HighlightDelegate* m_delegate;    //!< Delegate used for rendering selected rows.
           const te::map::AbstractLayer* m_layer;  //!< Pointer to the layer being presented.
-          bool m_autoScrollEnabled;         //! Auto scroll enabling.
-          bool m_doScroll;                  //! Flag to force or not scrolling.
-          bool m_promotionEnabled;          //! Promotion enabled.
-          te::da::DataSet* m_dset;          //! Data set being used.
+          bool m_autoScrollEnabled;         //!< Auto scroll enabling.
+          bool m_doScroll;                  //!< Flag to force or not scrolling.
+          bool m_promotionEnabled;          //!< Promotion enabled.
+          te::da::DataSet* m_dset;          //!< Data set being used.
+          std::vector<std::string> m_orderby;          //!< Order by columns.
+          bool m_orderAsc;                       //!< Flag that sinalizes if the it is sorted in ascending sorting.
+          bool m_resetOrder;                //!< Flag that sinalizes if there's is no sort.
       };
     }
   }

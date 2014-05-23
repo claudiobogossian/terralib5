@@ -263,7 +263,6 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
   TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, "Instance not initialized")
   TERP_TRUE_OR_RETURN_FALSE(inputPolygons.size() > 0, "ISOSeg algorithm needs polygons")
 
-  double mean;
   te::rp::RasterAttributes rattributes;
 
 // fill m_regions, in the beginning, each region is a cluster

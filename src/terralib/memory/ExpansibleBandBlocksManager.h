@@ -34,6 +34,7 @@
 #include <cstdio>
 #include <list>
 #include <vector>
+#include <string>
 
 // Boost
 #include <boost/noncopyable.hpp>
@@ -283,6 +284,8 @@ namespace te
           public :
 
             FILE* m_filePtr;
+            
+            std::string m_fullFileName;
 
             OpenDiskFileHandler();
 
@@ -331,9 +334,12 @@ namespace te
           
           \param fileptr The file pointer.
           
+          \param fullFileName The full created file name.
+          
           \return true if OK. false on errors.
         */
-        bool createNewDiskFile( unsigned long int size, FILE** fileptr ) const;         
+        bool createNewDiskFile( unsigned long int size, FILE** fileptr,
+          std::string& fullFileName ) const;         
         
         /*!
           \brief Shift coords given a fixed dimention 0 index.

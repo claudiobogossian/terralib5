@@ -530,9 +530,9 @@ namespace te
               
               if( ( searchAreaWidth > 1 ) && ( searchAreaHeight > 1 ) )
               {
-                outParamsPtr->m_matchingResult[ refRasterIdx ].m_searchAreaRowStart =
+                outParamsPtr->m_matchingResult[ refRasterIdx ].m_searchAreaRowStart = (unsigned int)
                   searchAreaULRow;
-                outParamsPtr->m_matchingResult[ refRasterIdx ].m_searchAreaColStart =
+                outParamsPtr->m_matchingResult[ refRasterIdx ].m_searchAreaColStart = (unsigned int)
                   searchAreaULCol;   
                 outParamsPtr->m_matchingResult[ refRasterIdx ].m_searchAreaWidth =
                   searchAreaWidth;   

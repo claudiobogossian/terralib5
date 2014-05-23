@@ -13,7 +13,7 @@ set(PROJ_NAME "terralib_unittest_rp_matrix")
 project(${PROJ_NAME})           # the project name is terralib_unittest_rp_matrix
 set(LIB_NAME ${PROJ_NAME})      # the library name is terralib_unittest_rp_matrix
 
-find_package(Boost ${_Boost_VERSION} COMPONENTS system REQUIRED)
+find_package(Boost ${_Boost_VERSION} COMPONENTS system filesystem REQUIRED)
 
 #Definitions for windows compiling
 if(WIN32)
