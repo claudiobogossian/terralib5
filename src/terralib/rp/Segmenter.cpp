@@ -767,8 +767,8 @@ namespace te
       const unsigned int totalImageCols, 
       const unsigned int minExapandedBlockPixels,
       const unsigned int maxExapandedBlockPixels, 
-      const double blocksHOverlapSize,
-      const double blocksVOverlapSize, 
+      const unsigned int blocksHOverlapSize,
+      const unsigned int blocksVOverlapSize, 
       unsigned int& nonExpandedBlockWidth,
       unsigned int& nonExpandedBlockHeight ) const
     {

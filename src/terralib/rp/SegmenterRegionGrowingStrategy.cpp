@@ -429,7 +429,7 @@ namespace te
           )
           +
           (
-            ( 1.0 - m_compactnessWeight )
+            ( 1.0f - m_compactnessWeight )
             *
             hSmooth
           )
@@ -522,7 +522,7 @@ namespace te
           ) 
           + 
           (
-            ( 1.0 - m_colorWeight )
+            ( 1.0f - m_colorWeight )
             *
             hForm
           )
@@ -560,12 +560,12 @@ namespace te
     {
       SegmenterRegionGrowingSegment::FeatureType compactnessMin = 
         std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();
-      SegmenterRegionGrowingSegment::FeatureType compactnessMax = -1.0 * 
+      SegmenterRegionGrowingSegment::FeatureType compactnessMax = -1.0f * 
         std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();
 
       SegmenterRegionGrowingSegment::FeatureType smoothnessMin =
         std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();
-      SegmenterRegionGrowingSegment::FeatureType smoothnessMax = -1.0 *
+      SegmenterRegionGrowingSegment::FeatureType smoothnessMax = -1.0f *
         std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();
         
       SegmenterRegionGrowingSegment::FeatureType* featuresPtr = 0;
@@ -613,12 +613,12 @@ namespace te
         if( compactnessMax == 0.0 )
           m_allSegsCompactnessGain = 1.0;
         else
-          m_allSegsCompactnessGain = 1.0 / compactnessMax;
+          m_allSegsCompactnessGain = 1.0f / compactnessMax;
       }
       else
       {
-        m_allSegsCompactnessOffset = -1.0  * compactnessMin;
-        m_allSegsCompactnessGain = 1.0 / ( compactnessMax - compactnessMin );
+        m_allSegsCompactnessOffset = -1.0f  * compactnessMin;
+        m_allSegsCompactnessGain = 1.0f / ( compactnessMax - compactnessMin );
       }
       
       if( smoothnessMax == smoothnessMin )
@@ -628,12 +628,12 @@ namespace te
         if( smoothnessMax == 0.0 )
           m_allSegsSmoothnessGain = 1.0;
         else
-          m_allSegsSmoothnessGain = 1.0 / smoothnessMax;
+          m_allSegsSmoothnessGain = 1.0f / smoothnessMax;
       }
       else
       {
-        m_allSegsSmoothnessOffset = -1.0  * smoothnessMin;
-        m_allSegsSmoothnessGain = 1.0 / ( smoothnessMax - smoothnessMin );      
+        m_allSegsSmoothnessOffset = -1.0f  * smoothnessMin;
+        m_allSegsSmoothnessGain = 1.0f / ( smoothnessMax - smoothnessMin );      
       }
     }
     
