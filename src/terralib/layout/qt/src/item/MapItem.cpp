@@ -64,7 +64,7 @@
 #include <QApplication>
 #include <QGraphicsSceneMouseEvent>
 #include <QStyleOptionGraphicsItem>
-#include "MapGridController.h"
+#include "MapController.h"
 
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   QGraphicsProxyWidget(0),
@@ -96,10 +96,10 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   m_mapDisplay->installEventFilter(zoom);
   
   setWidget(m_mapDisplay);
-  
+    
   QGraphicsItem* item = this;
   Context::getInstance()->getScene()->insertItem((ItemObserver*)item);
-
+    
   m_mapDisplay->show();
 }
 
@@ -153,7 +153,7 @@ void te::layout::MapItem::updateObserver( ContextItem context )
 void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
   QGraphicsProxyWidget::paint(painter, option, widget);
-
+  
   if(!m_pixmap.isNull())
   {
     QRectF boundRect;
@@ -361,7 +361,7 @@ void te::layout::MapItem::onDrawLayersFinished( const QMap<QString, QString>& er
   if(!m_controller)
     return;
 
-  MapGridController* controller = dynamic_cast<MapGridController*>(m_controller);
+  MapController* controller = dynamic_cast<MapController*>(m_controller);
   if(controller)
   {
     bool result = controller->refreshLayer(layer);

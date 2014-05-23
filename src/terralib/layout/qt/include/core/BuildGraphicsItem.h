@@ -33,6 +33,7 @@
 #include "../../../../geometry/Coord2D.h"
 #include "EnumMode.h"
 #include "Properties.h"
+#include "AbstractType.h"
 
 class QGraphicsItem;
 
@@ -40,6 +41,8 @@ namespace te
 {
   namespace layout
   {
+    class SharedProperties;
+
     class BuildGraphicsItem 
     {
       public:
@@ -58,16 +61,33 @@ namespace te
         QGraphicsItem* createText();
         QGraphicsItem* createRectangle();
 	      QGraphicsItem* createLegend();
+        QGraphicsItem* createScale();
 
         te::gm::Coord2D findCoordinate(te::layout::Properties* props);
 
         int findZValue(te::layout::Properties* props);
+
+        std::string nameItem(std::string name, te::layout::LayoutAbstractObjectType type);
+
+        void clear();
 
       protected:
 
         te::gm::Coord2D m_coord;
         te::layout::Properties* m_props;
         int m_zValue;
+        int m_id;
+        std::string m_name;
+        SharedProperties* m_sharedProps;
+        std::string m_paperItem;
+        std::string m_mapItem;
+        std::string m_mapGridItem;
+        std::string m_textItem;
+        std::string m_rectangleItem;
+        std::string m_legendItem;
+        std::string m_scaleItem;
+        std::string m_horizontalRuler;
+        std::string m_verticalRuler;
     };
   }
 }

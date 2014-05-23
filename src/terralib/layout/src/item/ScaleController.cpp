@@ -18,42 +18,41 @@
  */
 
 /*!
-  \file Visitable.h
+  \file ScaleController.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_VISITABLE_H  
-#define __TERRALIB_LAYOUT_INTERNAL_VISITABLE_H
+// TerraLib
+#include "ScaleController.h"
+#include "ContextItem.h"
+#include "AbstractItemFactory.h"
+#include "Context.h"
+#include "ItemModelObservable.h"
+#include "ItemParamsCreate.h"
+#include "ItemObserver.h"
 
-// STL
-#include <set>
-
-namespace te
+te::layout::ScaleController::ScaleController( Observable* o ) :
+  ItemController(o, TPScaleItem)
 {
-  namespace layout
+  AbstractItemFactory* factory = Context::getInstance()->getItemFactory(); 
+  ItemParamsCreate params(this, m_model);
+  m_view = (Observer*)factory->make(TPScaleItem, params);
+}
+
+te::layout::ScaleController::~ScaleController()
+{
+	
+}
+
+void te::layout::ScaleController::setPosition( const double& x, const double& y )
+{
+  if(m_model)
   {
-    class AbstractVisitor;
-
-    class Visitable
-    {
-      public:
-
-        Visitable();
-        ~Visitable(void);
-
-        virtual void acceptVisitor(AbstractVisitor* visitor);
-        virtual void unacceptVisitor(AbstractVisitor* visitor);
-        virtual void unacceptAllVisitor();
-
-      protected:
-        virtual void updateVisitors();
-
-      protected:
-        std::set<AbstractVisitor*>	m_visitors;
-    };
+    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
+    if(model)
+      return model->setPosition(x, y);
   }
 }
-#endif

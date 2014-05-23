@@ -230,3 +230,53 @@ te::gm::Envelope te::layout::Utils::transformToViewport( te::map::WorldDeviceTra
   te::gm::Envelope boxViewport(px1, py1, px2, py2);
   return boxViewport;
 }
+
+te::gm::LinearRing* te::layout::Utils::addCoordsInX( te::gm::Envelope box, double gap )
+{
+  te::gm::LinearRing* line = new te::gm::LinearRing(te::gm::LineStringType);
+  std::map<int, te::gm::Point> coords;
+
+  int count = 1;
+  for(double sub_x = box.getLowerLeftX(); sub_x < box.getUpperRightX(); sub_x +=(gap / 4.))
+  {
+    coords[count] = te::gm::Point(sub_x, box.getLowerLeftY());
+    count+=1;
+  }
+
+  line->setNumCoordinates(count + 1);
+  line->setPointN(0, te::gm::Point(box.getLowerLeftX(), box.getLowerLeftY()));
+
+  for(int i = 1 ; i < count ; ++i)
+  {
+    line->setPointN(i, coords[i]);
+  }
+
+  line->setPointN(count, te::gm::Point(box.getUpperRightX(), box.getLowerLeftY()));
+
+  return line;
+}
+
+te::gm::LinearRing* te::layout::Utils::addCoordsInY( te::gm::Envelope box, double gap )
+{
+  te::gm::LinearRing* line = new te::gm::LinearRing(te::gm::LineStringType);
+  std::map<int, te::gm::Point> coords;
+
+  int count = 1;
+  for(double sub_y = box.getLowerLeftY(); sub_y < box.getUpperRightY(); sub_y +=(gap / 4.))
+  {
+    coords[count] = te::gm::Point(box.getLowerLeftX(), sub_y);
+    count+=1;
+  }
+
+  line->setNumCoordinates(count + 1);
+  line->setPointN(0, te::gm::Point(box.getLowerLeftX(), box.getLowerLeftY()));
+
+  for(int i = 1 ; i < count ; ++i)
+  {
+    line->setPointN(i, coords[i]);
+  }
+
+  line->setPointN(count, te::gm::Point(box.getUpperRightX(), box.getLowerLeftY()));
+
+  return line;
+}

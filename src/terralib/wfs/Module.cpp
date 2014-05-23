@@ -38,6 +38,7 @@
 #include "Module.h"
 
 // OGR
+#include <cpl_conv.h>
 #include <ogr_api.h>
 
 // Boost
@@ -64,6 +65,9 @@ void te::wfs::Module::startup()
   te::da::DataSourceFactory::add(TE_WFS_DRIVER_IDENTIFIER, te::wfs::Build);
 
   #include "WFSDialect.h"
+
+  //CPLSetConfigOption("OGR_WFS_PAGING_ALLOWED", "YES");
+  CPLSetConfigOption("OGR_WFS_USE_STREAMING", "NO");
 
 // registers all format drivers built into OGR.
   OGRRegisterAll();

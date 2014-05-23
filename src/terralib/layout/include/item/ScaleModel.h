@@ -18,51 +18,60 @@
  */
 
 /*!
-  \file MapGridModel.h
+  \file ScaleModel.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_SCALE_MODEL_H
+#define __TERRALIB_LAYOUT_INTERNAL_SCALE_MODEL_H
 
 // TerraLib
-#include "MapModel.h"
+#include "ItemModelObservable.h"
+#include "ContextItem.h"
+#include "AbstractVisitor.h"
+#include "../../../maptools/Canvas.h"
+#include "Utils.h"
 
 namespace te
 {
   namespace layout
   {
-    class GridPlanarModel;
-    class GridGeodesicModel;
-    class Utils;
-    class GeodesicGridSettingsConfigProperties;
-    class PlanarGridSettingsConfigProperties;
-
-    class MapGridModel : public MapModel
+    class ScaleModel : public ItemModelObservable, public AbstractVisitor
     {
       public:
 
-        MapGridModel();
-        virtual ~MapGridModel();
+        ScaleModel();
+        virtual ~ScaleModel();
 
         virtual void draw( ContextItem context );
 
-        virtual te::layout::Properties* getProperties() const;
+        virtual Properties* getProperties() const;
+        
         virtual void updateProperties(te::layout::Properties* properties);
 
-      protected:
+        virtual void visitDependent();
 
-        virtual void drawGrid(te::map::Canvas* canvas, Utils* utils);
+        virtual void setScaleGapX(double x);
 
-        GridPlanarModel*    m_gridPlanar;
-        GridGeodesicModel*  m_gridGeodesic;
-        GeodesicGridSettingsConfigProperties* m_geodesicGridProperties;
-        PlanarGridSettingsConfigProperties*   m_planarGridProperties;
+        virtual double getScaleGapX();
+
+        virtual void setScaleGapY(double y);
+
+        virtual double getScaleGapY();
+
+       protected:
+
+         virtual void drawScale(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
+
+        std::string m_mapName;
+        double m_mapScale;
+        double m_scaleGapX;
+        double m_scaleGapY;
     };
   }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_MAP_GRID_MODEL_H
+#endif 

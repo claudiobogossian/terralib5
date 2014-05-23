@@ -28,16 +28,19 @@
 // TerraLib
 #include "LegendModel.h"
 #include "Context.h"
-#include "../../../maptools/Canvas.h"
 #include "MapModel.h"
 #include "Property.h"
 #include "Properties.h"
 #include "SharedProperties.h"
+#include "../../../maptools/CanvasConfigurer.h"
+#include "../../../se/Symbolizer.h"
+#include "../../../se/Style.h"
+#include "../../../se/Rule.h"
 
 te::layout::LegendModel::LegendModel() :
-  m_mapName("")
+  m_mapName(""),
+  m_layer(0)
 {
-  m_backgroundColor = te::color::RGBAColor(0, 183, 255, 255);
   m_box = te::gm::Envelope(0., 0., 70., 50.);
 }
 
@@ -55,11 +58,14 @@ void te::layout::LegendModel::draw( ContextItem context )
 
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
-
+  
+  canvas->setPolygonContourWidth(2);
   canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
   canvas->setPolygonFillColor(m_backgroundColor);
 
   utils->drawRectW(m_box);
+
+  drawLegend(canvas, utils);
 
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
@@ -67,6 +73,64 @@ void te::layout::LegendModel::draw( ContextItem context )
   ContextItem contextNotify;
   contextNotify.setPixmap(pixmap);
   notifyAll(contextNotify);
+}
+
+void te::layout::LegendModel::drawLegend( te::map::Canvas* canvas, Utils* utils )
+{
+  if(!m_layer)
+    return;
+
+  if(!m_layer->getStyle())
+    return;
+  
+  // Number of rules defined on feature type style
+  std::size_t nRules = m_layer->getStyle()->getRules().size();
+
+  //Header
+  std::string layerName = m_layer->getTitle();
+  
+  canvas->setTextPointSize(12);
+  canvas->setTextColor(te::color::RGBAColor(0, 0, 0, 255));
+  canvas->drawText(m_box.getLowerLeftX(), m_box.getUpperRightY() - 5, layerName, 0);
+
+  // Creates a canvas configurer
+  te::map::CanvasConfigurer cc(canvas);
+
+  for(std::size_t i = 0; i < nRules; ++i) // for each <Rule>
+  {
+    // The current rule
+    te::se::Rule* rule = m_layer->getStyle()->getRule(i);
+    assert(rule);
+        
+    // Gets the set of symbolizers defined on current rule
+    const std::vector<te::se::Symbolizer*>& symbolizers = rule->getSymbolizers();
+    
+    if(symbolizers.empty())
+    {
+      continue;
+    }
+
+    std::size_t nSymbolizers = symbolizers.size();
+
+    int count = 5;
+    for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
+    {
+      // The current symbolizer
+      te::se::Symbolizer* symb = symbolizers[j];
+
+      // Let's config the canvas based on the current symbolizer
+      cc.config(symb);
+
+      //Test
+      te::gm::Envelope box(m_box.getLowerLeftX(), m_box.getUpperRightY() - 20, m_box.getLowerLeftX() + 10, m_box.getUpperRightY() - 10);
+      utils->drawRectW(box);
+      
+      count+= 20;
+
+    } // end for each <Symbolizer>
+
+  }   // end for each <Rule>
+
 }
 
 te::layout::Properties* te::layout::LegendModel::getProperties() const
@@ -104,13 +168,13 @@ void te::layout::LegendModel::visitDependent()
 {
   MapModel* map = dynamic_cast<MapModel*>(m_visitable);
 
-  /*te::map::AbstractLayerPtr layer = map->getLayer();
-
-  layer->getGrouping();*/
-
   if(map)
   {
-    m_mapName = map->getName();
+    m_layer = map->getLayer();
+
+    ContextItem contx;
+
+    draw(contx);
 
     ContextItem contextNotify;
     contextNotify.setWait(true);

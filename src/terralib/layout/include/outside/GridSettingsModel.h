@@ -32,11 +32,15 @@
 #include "OutsideModelObservable.h"
 #include "ContextItem.h"
 #include "Properties.h"
+#include "EnumMode.h"
 
 namespace te
 {
   namespace layout
   {
+    class PlanarGridSettingsConfigProperties;
+    class GeodesicGridSettingsConfigProperties;
+
     class GridSettingsModel : public OutsideModelObservable
     {
     public:
@@ -52,13 +56,17 @@ namespace te
 
       virtual Property getOutsideProperty();
 
-      virtual te::layout::Property containsOutsideSubProperty( std::string name );
+      virtual Property containsGrid(LayoutGridType gridType);
+
+      virtual te::layout::Property containsOutsideSubProperty( std::string name, LayoutGridType gridType );
       
-      virtual void updateOutsideSubProperty(Property property);
+      virtual void updateOutsideSubProperty(Property subProperty, LayoutGridType gridType);
 
     protected:
 
       Property m_property;
+      PlanarGridSettingsConfigProperties* m_planarGridSettings;
+      GeodesicGridSettingsConfigProperties* m_geodesicGridSettings;
     };
   }
 }

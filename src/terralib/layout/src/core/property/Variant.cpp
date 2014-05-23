@@ -347,10 +347,10 @@ bool te::layout::Variant::checkNumberAsString( const void* valueCopy )
   {
     // Cast it back to a string pointer.
     sp = static_cast<std::string*>(value);   
-
+    
     if(sp)
     {
-      std::string res = *sp;
+      std::string res = (std::string)*sp;
       
       /* Verification because the result of static_cast<std::string*> 
         may be garbage, if the value is not a string. */
@@ -368,10 +368,10 @@ bool te::layout::Variant::checkNumberAsString( const void* valueCopy )
       }
     }
   }
-  catch(std::exception const& e)
+  catch(const std::exception& e)
   {
     result = false;
-  }
+  } 
 
   return result;
 }

@@ -822,6 +822,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
         te::da::DataSetTypePtr dstPtr(dst.release());
 
         layer = converter(dstPtr);
+        layer->setTitle(themes[i].m_name);
 
         // Get Style
         te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dstPtr.get());

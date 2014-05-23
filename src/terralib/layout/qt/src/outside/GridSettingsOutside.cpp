@@ -245,157 +245,157 @@ void te::layout::GridSettingsOutside::load()
 {
   /* Grid */
   
-  initCombo(m_ui->cmbUnit, m_planarGridSettings->getUnit());
+  initCombo(m_ui->cmbUnit, m_planarGridSettings->getUnit(), TypePlanar);
   
-  initBool(m_ui->chkShowPlanar, m_planarGridSettings->getVisible());
+  initBool(m_ui->chkShowPlanar, m_planarGridSettings->getVisible(), TypePlanar);
 
-  initCombo(m_ui->cmbPlanarStyle, m_planarGridSettings->getStyle());
+  initCombo(m_ui->cmbPlanarStyle, m_planarGridSettings->getStyle(), TypePlanar);
 
-  initCombo(m_ui->cmbGridStyle, m_geodesicGridSettings->getStyle());
+  initCombo(m_ui->cmbGridStyle, m_geodesicGridSettings->getStyle(), TypeGeodesic);
   
-  initBool(m_ui->chkShowGeodesic, m_geodesicGridSettings->getVisible());
+  initBool(m_ui->chkShowGeodesic, m_geodesicGridSettings->getVisible(), TypeGeodesic);
 
   ///* Line */
   
-  initDouble(m_ui->lneHrzPlanarGap, m_planarGridSettings->getLneHrzGap());
+  initDouble(m_ui->lneHrzPlanarGap, m_planarGridSettings->getLneHrzGap(), TypePlanar);
   
-  initDouble(m_ui->lneVrtPlanarGap, m_planarGridSettings->getLneVrtGap());
+  initDouble(m_ui->lneVrtPlanarGap, m_planarGridSettings->getLneVrtGap(), TypePlanar);
   
-  initDouble(m_ui->lneHorizontalGap, m_geodesicGridSettings->getLneHrzGap());
+  initDouble(m_ui->lneHorizontalGap, m_geodesicGridSettings->getLneHrzGap(), TypeGeodesic);
   
-  initDouble(m_ui->lneVerticalGap, m_geodesicGridSettings->getLneVrtGap());
+  initDouble(m_ui->lneVerticalGap, m_geodesicGridSettings->getLneVrtGap(), TypeGeodesic);
 
-  initColor(m_ui->fraPlanarLineColor, m_planarGridSettings->getLineColor());
+  initColor(m_ui->fraPlanarLineColor, m_planarGridSettings->getLineColor(), TypePlanar);
 
-  initCombo(m_ui->cmbPlanarLineType, m_planarGridSettings->getLineStyle());
+  initCombo(m_ui->cmbPlanarLineType, m_planarGridSettings->getLineStyle(), TypePlanar);
 
-  initCombo(m_ui->cmbPlanarLineWidth, m_planarGridSettings->getLineWidth());
+  initCombo(m_ui->cmbPlanarLineWidth, m_planarGridSettings->getLineWidth(), TypePlanar);
 
-  initCombo(m_ui->cmbLineType, m_geodesicGridSettings->getStyle());
+  initCombo(m_ui->cmbLineType, m_geodesicGridSettings->getStyle(), TypeGeodesic);
 
-  initCombo(m_ui->cmbLineWidth, m_geodesicGridSettings->getLineWidth());
+  initCombo(m_ui->cmbLineWidth, m_geodesicGridSettings->getLineWidth(), TypeGeodesic);
 
-  initColor(m_ui->fraLineColor, m_geodesicGridSettings->getLineColor());
+  initColor(m_ui->fraLineColor, m_geodesicGridSettings->getLineColor(), TypeGeodesic);
 
   ///*Text: Basic Configuration*/
 
-  initCombo(m_ui->cmbPlanarTextSize, m_planarGridSettings->getPointTextSize());
+  initCombo(m_ui->cmbPlanarTextSize, m_planarGridSettings->getPointTextSize(), TypePlanar);
 
-  initCombo(m_ui->cmbPlanarFont, m_planarGridSettings->getFontText());
+  initCombo(m_ui->cmbPlanarFont, m_planarGridSettings->getFontText(), TypePlanar);
 
-  initColor(m_ui->fraGridTextPlanarColor, m_planarGridSettings->getTextColor());
+  initColor(m_ui->fraGridTextPlanarColor, m_planarGridSettings->getTextColor(), TypePlanar);
 
-  initBool(m_ui->chkSuperscriptPlanarText, m_planarGridSettings->getSuperscriptText());
+  initBool(m_ui->chkSuperscriptPlanarText, m_planarGridSettings->getSuperscriptText(), TypePlanar);
 
-  initCombo(m_ui->cmbGeoFont, m_geodesicGridSettings->getFontText());
+  initCombo(m_ui->cmbGeoFont, m_geodesicGridSettings->getFontText(), TypeGeodesic);
 
-  initCombo(m_ui->cmbGeoTextSize, m_geodesicGridSettings->getPointTextSize());
+  initCombo(m_ui->cmbGeoTextSize, m_geodesicGridSettings->getPointTextSize(), TypeGeodesic);
 
-  initColor(m_ui->fraGridTextGeoColor, m_geodesicGridSettings->getTextColor());
+  initColor(m_ui->fraGridTextGeoColor, m_geodesicGridSettings->getTextColor(), TypeGeodesic);
 
-  initBool(m_ui->chkSuperscriptGeoText, m_geodesicGridSettings->getSuperscriptText());
+  initBool(m_ui->chkSuperscriptGeoText, m_geodesicGridSettings->getSuperscriptText(), TypeGeodesic);
 
   ///*Text: Advanced configuration*/
 
-  initDouble(m_ui->xGridInitialPoint_planar_textField, m_planarGridSettings->getInitialGridPointX());
+  initDouble(m_ui->xGridInitialPoint_planar_textField, m_planarGridSettings->getInitialGridPointX(), TypePlanar);
 
-  initDouble(m_ui->yGridInitialPoint_planar_textField, m_planarGridSettings->getInitialGridPointY());
+  initDouble(m_ui->yGridInitialPoint_planar_textField, m_planarGridSettings->getInitialGridPointY(), TypePlanar);
 
-  initDouble(m_ui->xGridInitialPoint_geo_textField, m_geodesicGridSettings->getInitialGridPointX());
+  initDouble(m_ui->xGridInitialPoint_geo_textField, m_geodesicGridSettings->getInitialGridPointX(), TypeGeodesic);
 
-  initDouble(m_ui->yGridInitialPoint_geo_textField, m_geodesicGridSettings->getInitialGridPointY());
+  initDouble(m_ui->yGridInitialPoint_geo_textField, m_geodesicGridSettings->getInitialGridPointY(), TypeGeodesic);
 
-  initBool(m_ui->chkBottomPlanarText, m_planarGridSettings->getBottomText());
+  initBool(m_ui->chkBottomPlanarText, m_planarGridSettings->getBottomText(), TypePlanar);
 
-  initBool(m_ui->chkLeftPlanarText, m_planarGridSettings->getLeftText());
+  initBool(m_ui->chkLeftPlanarText, m_planarGridSettings->getLeftText(), TypePlanar);
 
-  initBool(m_ui->chkRightPlanarText, m_planarGridSettings->getRightText());
+  initBool(m_ui->chkRightPlanarText, m_planarGridSettings->getRightText(), TypePlanar);
 
-  initBool(m_ui->chkTopPlanarText, m_planarGridSettings->getTopText());
+  initBool(m_ui->chkTopPlanarText, m_planarGridSettings->getTopText(), TypePlanar);
 
-  initBool(m_ui->chkBottomGeoText, m_geodesicGridSettings->getBottomText());
+  initBool(m_ui->chkBottomGeoText, m_geodesicGridSettings->getBottomText(), TypeGeodesic);
 
-  initBool(m_ui->chkLeftGeoText, m_geodesicGridSettings->getLeftText());
+  initBool(m_ui->chkLeftGeoText, m_geodesicGridSettings->getLeftText(), TypeGeodesic);
 
-  initBool(m_ui->chkRightGeoText, m_geodesicGridSettings->getRightText());
+  initBool(m_ui->chkRightGeoText, m_geodesicGridSettings->getRightText(), TypeGeodesic);
 
-  initBool(m_ui->chkTopGeoText, m_geodesicGridSettings->getTopText());
+  initBool(m_ui->chkTopGeoText, m_geodesicGridSettings->getTopText(), TypeGeodesic);
 
-  initBool(m_ui->chkBottomRotatePlanarText, m_planarGridSettings->getBottomRotateText());
+  initBool(m_ui->chkBottomRotatePlanarText, m_planarGridSettings->getBottomRotateText(), TypePlanar);
 
-  initBool(m_ui->chkLeftRotatePlanarText, m_planarGridSettings->getLeftRotateText());
+  initBool(m_ui->chkLeftRotatePlanarText, m_planarGridSettings->getLeftRotateText(), TypePlanar);
 
-  initBool(m_ui->chkRightRotatePlanarText, m_planarGridSettings->getRightRotateText());
+  initBool(m_ui->chkRightRotatePlanarText, m_planarGridSettings->getRightRotateText(), TypePlanar);
 
-  initBool(m_ui->chkTopRotatePlanarText, m_planarGridSettings->getTopRotateText());
+  initBool(m_ui->chkTopRotatePlanarText, m_planarGridSettings->getTopRotateText(), TypePlanar);
 
-  initBool(m_ui->chkBottomRotateGeoText, m_geodesicGridSettings->getBottomRotateText());
+  initBool(m_ui->chkBottomRotateGeoText, m_geodesicGridSettings->getBottomRotateText(), TypeGeodesic);
 
-  initBool(m_ui->chkLeftRotateGeoText, m_geodesicGridSettings->getLeftRotateText());
+  initBool(m_ui->chkLeftRotateGeoText, m_geodesicGridSettings->getLeftRotateText(), TypeGeodesic);
 
-  initBool(m_ui->chkRightRotateGeoText, m_geodesicGridSettings->getRightRotateText());
+  initBool(m_ui->chkRightRotateGeoText, m_geodesicGridSettings->getRightRotateText(), TypeGeodesic);
 
-  initBool(m_ui->chkTopRotateGeoText, m_geodesicGridSettings->getTopRotateText());
+  initBool(m_ui->chkTopRotateGeoText, m_geodesicGridSettings->getTopRotateText(), TypeGeodesic);
 
-  initDouble(m_ui->lneVrtPlanarDisplacement, m_planarGridSettings->getLneVrtDisplacement());
+  initDouble(m_ui->lneVrtPlanarDisplacement, m_planarGridSettings->getLneVrtDisplacement(), TypePlanar);
 
-  initBool(m_ui->chkVisibleTextsPlanarText, m_planarGridSettings->getVisibleAllTexts());
+  initBool(m_ui->chkVisibleTextsPlanarText, m_planarGridSettings->getVisibleAllTexts(), TypePlanar);
 
-  initDouble(m_ui->lneHrzPlanarDisplacement, m_planarGridSettings->getLneHrzDisplacement());
+  initDouble(m_ui->lneHrzPlanarDisplacement, m_planarGridSettings->getLneHrzDisplacement(), TypePlanar);
 
-  initDouble(m_ui->lneVrtGeoDisplacement, m_geodesicGridSettings->getLneVrtDisplacement());
+  initDouble(m_ui->lneVrtGeoDisplacement, m_geodesicGridSettings->getLneVrtDisplacement(), TypeGeodesic);
 
-  initDouble(m_ui->lneHrzGeoDisplacement, m_geodesicGridSettings->getLneHrzDisplacement());
+  initDouble(m_ui->lneHrzGeoDisplacement, m_geodesicGridSettings->getLneHrzDisplacement(), TypeGeodesic);
 
-  initBool(m_ui->chkDegreesGeoText, m_geodesicGridSettings->getDegreesText());
+  initBool(m_ui->chkDegreesGeoText, m_geodesicGridSettings->getDegreesText(), TypeGeodesic);
 
-  initBool(m_ui->chkMinutesGeoText, m_geodesicGridSettings->getMinutesText());
+  initBool(m_ui->chkMinutesGeoText, m_geodesicGridSettings->getMinutesText(), TypeGeodesic);
 
-  initBool(m_ui->chkSecondsGeoText, m_geodesicGridSettings->getSecondsText());
+  initBool(m_ui->chkSecondsGeoText, m_geodesicGridSettings->getSecondsText(), TypeGeodesic);
 
-  initBool(m_ui->chkVisibleTextsGeoText, m_geodesicGridSettings->getVisibleAllTexts());
+  initBool(m_ui->chkVisibleTextsGeoText, m_geodesicGridSettings->getVisibleAllTexts(), TypeGeodesic);
 
-  initCombo(m_ui->cmbCornerGeoFont, m_geodesicGridSettings->getFontTextCorner());
+  initCombo(m_ui->cmbCornerGeoFont, m_geodesicGridSettings->getFontTextCorner(), TypeGeodesic);
 
-  initCombo(m_ui->cmbCornerGeoTextSize, m_geodesicGridSettings->getPointTextSize());
+  initCombo(m_ui->cmbCornerGeoTextSize, m_geodesicGridSettings->getPointTextSize(), TypeGeodesic);
   
-  initColor(m_ui->fraCornerTextGeoColor, m_geodesicGridSettings->getTextColorCorner());
+  initColor(m_ui->fraCornerTextGeoColor, m_geodesicGridSettings->getTextColorCorner(), TypeGeodesic);
   
-  initDouble(m_ui->lneCornerHrzGeoDisplacement, m_geodesicGridSettings->getLneCornerHrzDisplacement());
+  initDouble(m_ui->lneCornerHrzGeoDisplacement, m_geodesicGridSettings->getLneCornerHrzDisplacement(), TypeGeodesic);
 
-  initDouble(m_ui->lneCornerVrtGeoDisplacement, m_geodesicGridSettings->getLneCornerVrtDisplacement());
+  initDouble(m_ui->lneCornerVrtGeoDisplacement, m_geodesicGridSettings->getLneCornerVrtDisplacement(), TypeGeodesic);
   
-  initBool(m_ui->chkLowerRightCornerGeoText, m_geodesicGridSettings->getLowerRightCornerText());
+  initBool(m_ui->chkLowerRightCornerGeoText, m_geodesicGridSettings->getLowerRightCornerText(), TypeGeodesic);
 
-  initBool(m_ui->chkUpperRightCornerGeoText, m_geodesicGridSettings->getUpperRightCornerText());
+  initBool(m_ui->chkUpperRightCornerGeoText, m_geodesicGridSettings->getUpperRightCornerText(), TypeGeodesic);
 
-  initBool(m_ui->chkLowerLeftCornerGeoText, m_geodesicGridSettings->getLowerLeftCornerText());
+  initBool(m_ui->chkLowerLeftCornerGeoText, m_geodesicGridSettings->getLowerLeftCornerText(), TypeGeodesic);
 
-  initBool(m_ui->chkUpperLeftCornerGeoText, m_geodesicGridSettings->getUpperLeftCornerText());
+  initBool(m_ui->chkUpperLeftCornerGeoText, m_geodesicGridSettings->getUpperLeftCornerText(), TypeGeodesic);
   
   /*Geodesic: Topographic Map*/
   
-  initBool(m_ui->ckDefineScale, m_geodesicGridSettings->getDefineScale());
+  initBool(m_ui->ckDefineScale, m_geodesicGridSettings->getDefineScale(), TypeGeodesic);
 
-  initCombo(m_ui->cmbScale, m_geodesicGridSettings->getScale());
+  initCombo(m_ui->cmbScale, m_geodesicGridSettings->getScale(), TypeGeodesic);
 
-  initBool(m_ui->ckbClip, m_geodesicGridSettings->getClip());
+  initBool(m_ui->ckbClip, m_geodesicGridSettings->getClip(), TypeGeodesic);
 
-  initDouble(m_ui->lneX1, m_geodesicGridSettings->getLneX1());
+  initDouble(m_ui->lneX1, m_geodesicGridSettings->getLneX1(), TypeGeodesic);
 
-  initDouble(m_ui->lneX2, m_geodesicGridSettings->getLneX2());
+  initDouble(m_ui->lneX2, m_geodesicGridSettings->getLneX2(), TypeGeodesic);
 
-  initDouble(m_ui->lneY1, m_geodesicGridSettings->getLneY1());
+  initDouble(m_ui->lneY1, m_geodesicGridSettings->getLneY1(), TypeGeodesic);
 
-  initDouble(m_ui->lneY2, m_geodesicGridSettings->getLneY2());
+  initDouble(m_ui->lneY2, m_geodesicGridSettings->getLneY2(), TypeGeodesic);
 
-  initDouble(m_ui->lneX3, m_geodesicGridSettings->getLneX3());
+  initDouble(m_ui->lneX3, m_geodesicGridSettings->getLneX3(), TypeGeodesic);
 
-  initDouble(m_ui->lneX4, m_geodesicGridSettings->getLneX4());
+  initDouble(m_ui->lneX4, m_geodesicGridSettings->getLneX4(), TypeGeodesic);
 
-  initDouble(m_ui->lneY3, m_geodesicGridSettings->getLneY3());
+  initDouble(m_ui->lneY3, m_geodesicGridSettings->getLneY3(), TypeGeodesic);
 
-  initDouble(m_ui->lneY4, m_geodesicGridSettings->getLneY4());
+  initDouble(m_ui->lneY4, m_geodesicGridSettings->getLneY4(), TypeGeodesic);
 }
 
 void te::layout::GridSettingsOutside::on_pbApply_clicked()
@@ -431,7 +431,7 @@ void te::layout::GridSettingsOutside::on_cmbUnit_currentIndexChanged( const QStr
   {
     Variant variant;
     variant.setValue(text.toStdString(), DataTypeString);
-    controller->addUpdateProperty(m_planarGridSettings->getUnit(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getUnit(), variant, TypePlanar);
   }
 }
 
@@ -442,7 +442,7 @@ void te::layout::GridSettingsOutside::on_chkShowPlanar_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkShowPlanar->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_planarGridSettings->getVisible(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getVisible(), variant, TypePlanar);
   }
 }
 
@@ -453,7 +453,7 @@ void te::layout::GridSettingsOutside::on_cmbPlanarStyle_currentIndexChanged( con
   {
     Variant variant;
     variant.setValue(text.toStdString(), DataTypeString);
-    controller->addUpdateProperty(m_planarGridSettings->getStyle(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getStyle(), variant, TypePlanar);
   }
 }
 
@@ -464,7 +464,7 @@ void te::layout::GridSettingsOutside::on_cmbGridStyle_currentIndexChanged( const
   {
     Variant variant;
     variant.setValue(text.toStdString(), DataTypeString);
-    controller->addUpdateProperty(m_geodesicGridSettings->getStyle(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getStyle(), variant, TypeGeodesic);
   }
 }
 
@@ -475,7 +475,7 @@ void te::layout::GridSettingsOutside::on_chkShowGeodesic_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkShowGeodesic->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getVisible(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getVisible(), variant, TypeGeodesic);
   }
 }
 
@@ -486,7 +486,7 @@ void te::layout::GridSettingsOutside::on_lneHrzPlanarGap_editingFinished()
   {
     Variant variant;
     variant.setValue(m_ui->lneHrzPlanarGap->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_planarGridSettings->getLneHrzGap(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getLneHrzGap(), variant, TypePlanar);
   }
 }
 
@@ -497,7 +497,7 @@ void te::layout::GridSettingsOutside::on_lneVrtPlanarGap_editingFinished()
   {
     Variant variant;
     variant.setValue(m_ui->lneVrtPlanarGap->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_planarGridSettings->getLneVrtGap(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getLneVrtGap(), variant, TypePlanar);
   }
 }
 
@@ -515,7 +515,7 @@ void te::layout::GridSettingsOutside::on_lneHorizontalGap_editingFinished()
   {
     Variant variant;
     variant.setValue(m_ui->lneHorizontalGap->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLneHrzGap(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLneHrzGap(), variant, TypeGeodesic);
   }
 }
 
@@ -533,7 +533,7 @@ void te::layout::GridSettingsOutside::on_lneVerticalGap_editingFinished()
   {
     Variant variant;
     variant.setValue(m_ui->lneVerticalGap->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLneVrtGap(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLneVrtGap(), variant, TypeGeodesic);
   }
 }
 
@@ -545,7 +545,7 @@ void te::layout::GridSettingsOutside::on_pbPlanarLineColor_clicked()
   {
     Variant variant;
     variant.setValue(color, DataTypeColor);
-    controller->addUpdateProperty(m_planarGridSettings->getLineColor(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getLineColor(), variant, TypePlanar);
   }
 }
 
@@ -556,7 +556,7 @@ void te::layout::GridSettingsOutside::on_cmbPlanarLineType_currentIndexChanged( 
   {
     Variant variant;
     variant.setValue(text.toStdString(), DataTypeString);
-    controller->addUpdateProperty(m_planarGridSettings->getLineStyle(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getLineStyle(), variant, TypePlanar);
   }
 }
 
@@ -567,7 +567,7 @@ void te::layout::GridSettingsOutside::on_cmbPlanarLineWidth_currentIndexChanged(
   {
     Variant variant;
     variant.setValue(text.toInt(), DataTypeInt);
-    controller->addUpdateProperty(m_planarGridSettings->getLineWidth(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getLineWidth(), variant, TypePlanar);
   }
 }
 
@@ -578,7 +578,7 @@ void te::layout::GridSettingsOutside::on_cmbLineType_currentIndexChanged( const 
   {
     Variant variant;
     variant.setValue(text.toStdString(), DataTypeString);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLineStyle(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLineStyle(), variant, TypeGeodesic);
   }
 }
 
@@ -589,7 +589,7 @@ void te::layout::GridSettingsOutside::on_cmbLineWidth_currentIndexChanged( const
   {
     Variant variant;
     variant.setValue(text.toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLineWidth(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLineWidth(), variant, TypeGeodesic);
   }
 }
 
@@ -601,7 +601,7 @@ void te::layout::GridSettingsOutside::on_pbLineColor_clicked()
   {
     Variant variant;
     variant.setValue(color, DataTypeColor);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLineColor(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLineColor(), variant, TypeGeodesic);
   }
 }
 
@@ -612,7 +612,7 @@ void te::layout::GridSettingsOutside::on_cmbPlanarTextSize_currentIndexChanged( 
   {
     Variant variant;
     variant.setValue(text.toInt(), DataTypeInt);
-    controller->addUpdateProperty(m_planarGridSettings->getPointTextSize(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getPointTextSize(), variant, TypePlanar);
   }
 }
 
@@ -623,7 +623,7 @@ void te::layout::GridSettingsOutside::on_cmbPlanarFont_currentIndexChanged( cons
   {
     Variant variant;
     variant.setValue(text.toStdString(), DataTypeString);
-    controller->addUpdateProperty(m_planarGridSettings->getFontText(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getFontText(), variant, TypePlanar);
   }
 }
 
@@ -635,7 +635,7 @@ void te::layout::GridSettingsOutside::on_pbGridTextPlanarColor_clicked()
   {
     Variant variant;
     variant.setValue(color, DataTypeColor);
-    controller->addUpdateProperty(m_planarGridSettings->getTextColor(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getTextColor(), variant, TypePlanar);
   }
 }
 
@@ -646,7 +646,7 @@ void te::layout::GridSettingsOutside::on_chkSuperscriptPlanarText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkSuperscriptPlanarText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_planarGridSettings->getSuperscriptText(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getSuperscriptText(), variant, TypePlanar);
   }
 }
 
@@ -657,7 +657,7 @@ void te::layout::GridSettingsOutside::on_cmbGeoFont_currentIndexChanged( const Q
   {
     Variant variant;
     variant.setValue(text.toStdString(), DataTypeString);
-    controller->addUpdateProperty(m_geodesicGridSettings->getFontText(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getFontText(), variant, TypeGeodesic);
   }
 }
 
@@ -668,7 +668,7 @@ void te::layout::GridSettingsOutside::on_cmbGeoTextSize_currentIndexChanged( con
   {
     Variant variant;
     variant.setValue(text.toInt(), DataTypeInt);
-    controller->addUpdateProperty(m_geodesicGridSettings->getPointTextSize(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getPointTextSize(), variant, TypeGeodesic);
   }
 }
 
@@ -680,7 +680,7 @@ void te::layout::GridSettingsOutside::on_pbGridTextGeoColor_clicked()
   {
     Variant variant;
     variant.setValue(color, DataTypeColor);
-    controller->addUpdateProperty(m_geodesicGridSettings->getTextColor(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getTextColor(), variant, TypeGeodesic);
   }
 }
 
@@ -691,7 +691,7 @@ void te::layout::GridSettingsOutside::on_chkSuperscriptGeoText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkSuperscriptGeoText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getSuperscriptText(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getSuperscriptText(), variant, TypeGeodesic);
   }
 }
 
@@ -702,7 +702,7 @@ void te::layout::GridSettingsOutside::on_xGridInitialPoint_planar_textField_edit
   {
     Variant variant;
     variant.setValue(m_ui->xGridInitialPoint_planar_textField->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_planarGridSettings->getInitialGridPointX(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getInitialGridPointX(), variant, TypePlanar);
   }
 }
 
@@ -721,7 +721,7 @@ void te::layout::GridSettingsOutside::on_yGridInitialPoint_planar_textField_edit
   {
     Variant variant;
     variant.setValue(m_ui->yGridInitialPoint_planar_textField->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_planarGridSettings->getInitialGridPointY(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getInitialGridPointY(), variant, TypePlanar);
   }
 }
 
@@ -739,7 +739,7 @@ void te::layout::GridSettingsOutside::on_xGridInitialPoint_geo_textField_editing
   {
     Variant variant;
     variant.setValue(m_ui->xGridInitialPoint_geo_textField->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_geodesicGridSettings->getInitialGridPointX(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getInitialGridPointX(), variant, TypeGeodesic);
   }
 }
 
@@ -750,7 +750,7 @@ void te::layout::GridSettingsOutside::on_yGridInitialPoint_geo_textField_editing
   {
     Variant variant;
     variant.setValue(m_ui->yGridInitialPoint_geo_textField->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_geodesicGridSettings->getInitialGridPointY(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getInitialGridPointY(), variant, TypeGeodesic);
   }
 }
 
@@ -761,7 +761,7 @@ void te::layout::GridSettingsOutside::on_chkBottomPlanarText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkBottomPlanarText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_planarGridSettings->getBottomText(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getBottomText(), variant, TypePlanar);
   }
 }
 
@@ -772,7 +772,7 @@ void te::layout::GridSettingsOutside::on_chkLeftPlanarText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkLeftPlanarText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_planarGridSettings->getLeftText(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getLeftText(), variant, TypePlanar);
   }
 }
 
@@ -783,7 +783,7 @@ void te::layout::GridSettingsOutside::on_chkRightPlanarText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkRightPlanarText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_planarGridSettings->getRightText(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getRightText(), variant, TypePlanar);
   }
 }
 
@@ -794,7 +794,7 @@ void te::layout::GridSettingsOutside::on_chkTopPlanarText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkTopPlanarText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_planarGridSettings->getTopText(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getTopText(), variant, TypePlanar);
   }
 }
 
@@ -805,7 +805,7 @@ void te::layout::GridSettingsOutside::on_chkBottomGeoText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkBottomGeoText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getBottomText(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getBottomText(), variant, TypeGeodesic);
   }
 }
 
@@ -816,7 +816,7 @@ void te::layout::GridSettingsOutside::on_chkLeftGeoText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkLeftGeoText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLeftText(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLeftText(), variant, TypeGeodesic);
   }
 }
 
@@ -827,7 +827,7 @@ void te::layout::GridSettingsOutside::on_chkRightGeoText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkRightGeoText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getRightText(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getRightText(), variant, TypeGeodesic);
   }
 }
 
@@ -838,7 +838,7 @@ void te::layout::GridSettingsOutside::on_chkTopGeoText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkTopGeoText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getTopText(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getTopText(), variant, TypeGeodesic);
   }
 }
 
@@ -849,7 +849,7 @@ void te::layout::GridSettingsOutside::on_chkBottomRotatePlanarText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkBottomRotatePlanarText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_planarGridSettings->getBottomRotateText(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getBottomRotateText(), variant, TypePlanar);
   }
 }
 
@@ -860,7 +860,7 @@ void te::layout::GridSettingsOutside::on_chkLeftRotatePlanarText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkLeftRotatePlanarText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_planarGridSettings->getLeftRotateText(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getLeftRotateText(), variant, TypePlanar);
   }
 }
 
@@ -871,7 +871,7 @@ void te::layout::GridSettingsOutside::on_chkRightRotatePlanarText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkRightRotatePlanarText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_planarGridSettings->getRightRotateText(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getRightRotateText(), variant, TypePlanar);
   }
 }
 
@@ -882,7 +882,7 @@ void te::layout::GridSettingsOutside::on_chkTopRotatePlanarText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkTopRotatePlanarText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_planarGridSettings->getTopRotateText(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getTopRotateText(), variant, TypePlanar);
   }
 }
 
@@ -893,7 +893,7 @@ void te::layout::GridSettingsOutside::on_chkBottomRotateGeoText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkBottomRotateGeoText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getBottomRotateText(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getBottomRotateText(), variant, TypeGeodesic);
   }
 }
 
@@ -904,7 +904,7 @@ void te::layout::GridSettingsOutside::on_chkLeftRotateGeoText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkLeftRotateGeoText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLeftRotateText(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLeftRotateText(), variant, TypeGeodesic);
   }
 }
 
@@ -915,7 +915,7 @@ void te::layout::GridSettingsOutside::on_chkRightRotateGeoText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkRightRotateGeoText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getRightRotateText(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getRightRotateText(), variant, TypeGeodesic);
   }
 }
 
@@ -926,7 +926,7 @@ void te::layout::GridSettingsOutside::on_chkTopRotateGeoText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkTopRotateGeoText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getTopRotateText(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getTopRotateText(), variant, TypeGeodesic);
   }
 }
 
@@ -937,7 +937,7 @@ void te::layout::GridSettingsOutside::on_lneVrtPlanarDisplacement_editingFinishe
   {
     Variant variant;
     variant.setValue(m_ui->lneVrtPlanarDisplacement->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_planarGridSettings->getLneVrtDisplacement(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getLneVrtDisplacement(), variant, TypePlanar);
   }
 }
 
@@ -948,7 +948,7 @@ void te::layout::GridSettingsOutside::on_chkVisibleTextsPlanarText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkVisibleTextsPlanarText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_planarGridSettings->getVisibleAllTexts(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getVisibleAllTexts(), variant, TypePlanar);
   }
 }
 
@@ -959,7 +959,7 @@ void te::layout::GridSettingsOutside::on_lneHrzPlanarDisplacement_editingFinishe
   {
     Variant variant;
     variant.setValue(m_ui->lneHrzPlanarDisplacement->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_planarGridSettings->getLneHrzDisplacement(), variant);
+    controller->addUpdateProperty(m_planarGridSettings->getLneHrzDisplacement(), variant, TypePlanar);
   }
 }
 
@@ -970,7 +970,7 @@ void te::layout::GridSettingsOutside::on_lneVrtGeoDisplacement_editingFinished()
   {
     Variant variant;
     variant.setValue(m_ui->lneVrtGeoDisplacement->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLneHrzDisplacement(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLneHrzDisplacement(), variant, TypeGeodesic);
   }
 }
 
@@ -981,7 +981,7 @@ void te::layout::GridSettingsOutside::on_lneHrzGeoDisplacement_editingFinished()
   {
     Variant variant;
     variant.setValue(m_ui->lneHrzGeoDisplacement->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLneHrzDisplacement(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLneHrzDisplacement(), variant, TypeGeodesic);
   }
 }
 
@@ -992,7 +992,7 @@ void te::layout::GridSettingsOutside::on_chkDegreesGeoText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkDegreesGeoText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getDegreesText(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getDegreesText(), variant, TypeGeodesic);
   }
 }
 
@@ -1003,7 +1003,7 @@ void te::layout::GridSettingsOutside::on_chkMinutesGeoText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkMinutesGeoText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getMinutesText(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getMinutesText(), variant, TypeGeodesic);
   }
 }
 
@@ -1014,7 +1014,7 @@ void te::layout::GridSettingsOutside::on_chkSecondsGeoText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkSecondsGeoText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getSecondsText(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getSecondsText(), variant, TypeGeodesic);
   }
 }
 
@@ -1025,7 +1025,7 @@ void te::layout::GridSettingsOutside::on_chkVisibleTextsGeoText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkVisibleTextsGeoText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getVisibleAllTexts(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getVisibleAllTexts(), variant, TypeGeodesic);
   }
 }
 
@@ -1036,7 +1036,7 @@ void te::layout::GridSettingsOutside::on_cmbCornerGeoFont_currentIndexChanged( c
   {
     Variant variant;
     variant.setValue(text.toStdString(), DataTypeString);
-    controller->addUpdateProperty(m_geodesicGridSettings->getFontTextCorner(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getFontTextCorner(), variant, TypeGeodesic);
   }
 }
 
@@ -1047,7 +1047,7 @@ void te::layout::GridSettingsOutside::on_cmbCornerGeoTextSize_currentIndexChange
   {
     Variant variant;
     variant.setValue(text.toInt(), DataTypeString);
-    controller->addUpdateProperty(m_geodesicGridSettings->getPointTextSizeCorner(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getPointTextSizeCorner(), variant, TypeGeodesic);
   }
 }
 
@@ -1059,7 +1059,7 @@ void te::layout::GridSettingsOutside::on_pbCornerTextGeoColor_clicked()
   {
     Variant variant;
     variant.setValue(color, DataTypeColor);
-    controller->addUpdateProperty(m_geodesicGridSettings->getTextColorCorner(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getTextColorCorner(), variant, TypeGeodesic);
   }
 }
 
@@ -1070,7 +1070,7 @@ void te::layout::GridSettingsOutside::on_lneCornerHrzGeoDisplacement_editingFini
   {
     Variant variant;
     variant.setValue(m_ui->lneCornerHrzGeoDisplacement->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLneCornerHrzDisplacement(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLneCornerHrzDisplacement(), variant, TypeGeodesic);
   }
 }
 
@@ -1081,7 +1081,7 @@ void te::layout::GridSettingsOutside::on_lneCornerVrtGeoDisplacement_editingFini
   {
     Variant variant;
     variant.setValue(m_ui->lneCornerVrtGeoDisplacement->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLneCornerVrtDisplacement(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLneCornerVrtDisplacement(), variant, TypeGeodesic);
   }
 }
 
@@ -1092,7 +1092,7 @@ void te::layout::GridSettingsOutside::on_chkLowerRightCornerGeoText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkLowerRightCornerGeoText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLowerRightCornerText(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLowerRightCornerText(), variant, TypeGeodesic);
   }
 }
 
@@ -1103,7 +1103,7 @@ void te::layout::GridSettingsOutside::on_chkUpperRightCornerGeoText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkUpperRightCornerGeoText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getUpperRightCornerText(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getUpperRightCornerText(), variant, TypeGeodesic);
   }
 }
 
@@ -1114,7 +1114,7 @@ void te::layout::GridSettingsOutside::on_chkLowerLeftCornerGeoText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkLowerLeftCornerGeoText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLowerLeftCornerText(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLowerLeftCornerText(), variant, TypeGeodesic);
   }
 }
 
@@ -1125,7 +1125,7 @@ void te::layout::GridSettingsOutside::on_chkUpperLeftCornerGeoText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkUpperLeftCornerGeoText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getUpperLeftCornerText(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getUpperLeftCornerText(), variant, TypeGeodesic);
   }
 }
 
@@ -1136,7 +1136,7 @@ void te::layout::GridSettingsOutside::on_chkVisibleCornerTextsGeoText_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->chkVisibleCornerTextsGeoText->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getVisibleCornerTextsText(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getVisibleCornerTextsText(), variant, TypeGeodesic);
   }
 }
 
@@ -1147,7 +1147,7 @@ void te::layout::GridSettingsOutside::on_ckDefineScale_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->ckDefineScale->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getDefineScale(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getDefineScale(), variant, TypeGeodesic);
   }
 }
 
@@ -1158,7 +1158,7 @@ void te::layout::GridSettingsOutside::on_cmbScale_currentIndexChanged( const QSt
   {
     Variant variant;
     variant.setValue(text.toInt(), DataTypeString);
-    controller->addUpdateProperty(m_geodesicGridSettings->getScale(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getScale(), variant, TypeGeodesic);
   }
 }
 
@@ -1169,7 +1169,7 @@ void te::layout::GridSettingsOutside::on_ckbClip_clicked()
   {
     Variant variant;
     variant.setValue(m_ui->ckbClip->isChecked(), DataTypeBool);
-    controller->addUpdateProperty(m_geodesicGridSettings->getClip(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getClip(), variant, TypeGeodesic);
   }
 }
 
@@ -1180,7 +1180,7 @@ void te::layout::GridSettingsOutside::on_lneX1_editingFinished()
   {
     Variant variant;
     variant.setValue(m_ui->lneX1->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLneX1(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLneX1(), variant, TypeGeodesic);
   }
 }
 
@@ -1191,7 +1191,7 @@ void te::layout::GridSettingsOutside::on_lneX2_editingFinished()
   {
     Variant variant;
     variant.setValue(m_ui->lneX2->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLneX2(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLneX2(), variant, TypeGeodesic);
   }
 }
 
@@ -1202,7 +1202,7 @@ void te::layout::GridSettingsOutside::on_lneY1_editingFinished()
   {
     Variant variant;
     variant.setValue(m_ui->lneY1->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLneY1(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLneY1(), variant, TypeGeodesic);
   }
 }
 
@@ -1213,7 +1213,7 @@ void te::layout::GridSettingsOutside::on_lneY2_editingFinished()
   {
     Variant variant;
     variant.setValue(m_ui->lneY2->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLneY2(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLneY2(), variant, TypeGeodesic);
   }
 }
 
@@ -1224,7 +1224,7 @@ void te::layout::GridSettingsOutside::on_lneX3_editingFinished()
   {
     Variant variant;
     variant.setValue(m_ui->lneX3->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLneX3(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLneX3(), variant, TypeGeodesic);
   }
 }
 
@@ -1235,7 +1235,7 @@ void te::layout::GridSettingsOutside::on_lneX4_editingFinished()
   {
     Variant variant;
     variant.setValue(m_ui->lneX4->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLneX4(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLneX4(), variant, TypeGeodesic);
   }
 }
 
@@ -1246,7 +1246,7 @@ void te::layout::GridSettingsOutside::on_lneY3_editingFinished()
   {
     Variant variant;
     variant.setValue(m_ui->lneY3->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLneY3(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLneY3(), variant, TypeGeodesic);
   }
 }
 
@@ -1257,17 +1257,17 @@ void te::layout::GridSettingsOutside::on_lneY4_editingFinished()
   {
     Variant variant;
     variant.setValue(m_ui->lneY4->text().toDouble(), DataTypeDouble);
-    controller->addUpdateProperty(m_geodesicGridSettings->getLneY4(), variant);
+    controller->addUpdateProperty(m_geodesicGridSettings->getLneY4(), variant, TypeGeodesic);
   }
 }
 
-void te::layout::GridSettingsOutside::initString( QWidget* widget, std::string nameComponent )
+void te::layout::GridSettingsOutside::initString( QWidget* widget, std::string nameComponent, LayoutGridType gridType )
 {
   GridSettingsController* controller = dynamic_cast<GridSettingsController*>(m_controller);
   if(!controller)
     return;
 
-  Property prop = controller->getProperty(nameComponent);
+  Property prop = controller->getProperty(nameComponent, gridType);
 
   QLineEdit* edit = dynamic_cast<QLineEdit*>(widget);
   if(edit)
@@ -1277,14 +1277,14 @@ void te::layout::GridSettingsOutside::initString( QWidget* widget, std::string n
   }
 }
 
-void te::layout::GridSettingsOutside::initInt( QWidget* widget, std::string nameComponent )
+void te::layout::GridSettingsOutside::initInt( QWidget* widget, std::string nameComponent, LayoutGridType gridType )
 {
   GridSettingsController* controller = dynamic_cast<GridSettingsController*>(m_controller);
   if(!controller)
     return;
 
   std::ostringstream convert;
-  Property prop = controller->getProperty(nameComponent);
+  Property prop = controller->getProperty(nameComponent, gridType);
   convert << prop.getValue().toInt();
 
   QLineEdit* edit = dynamic_cast<QLineEdit*>(widget);
@@ -1294,16 +1294,18 @@ void te::layout::GridSettingsOutside::initInt( QWidget* widget, std::string name
   }
 }
 
-void te::layout::GridSettingsOutside::initDouble( QWidget* widget, std::string nameComponent )
+void te::layout::GridSettingsOutside::initDouble( QWidget* widget, std::string nameComponent, LayoutGridType gridType )
 {
   GridSettingsController* controller = dynamic_cast<GridSettingsController*>(m_controller);
   if(!controller)
     return;
 
   std::ostringstream convert;
-  Property prop = controller->getProperty(nameComponent);
-  convert << prop.getValue().toDouble();
-  
+  convert.precision(15);
+  Property prop = controller->getProperty(nameComponent, gridType);
+  double number = prop.getValue().toDouble();
+  convert << number;
+
   QLineEdit* edit = dynamic_cast<QLineEdit*>(widget);
   if(edit)
   {
@@ -1311,13 +1313,13 @@ void te::layout::GridSettingsOutside::initDouble( QWidget* widget, std::string n
   }
 }
 
-void te::layout::GridSettingsOutside::initBool( QWidget* widget, std::string nameComponent )
+void te::layout::GridSettingsOutside::initBool( QWidget* widget, std::string nameComponent, LayoutGridType gridType )
 {
   GridSettingsController* controller = dynamic_cast<GridSettingsController*>(m_controller);
   if(!controller)
     return;
 
-  Property prop = controller->getProperty(nameComponent);
+  Property prop = controller->getProperty(nameComponent, gridType);
 
   QCheckBox* chk = dynamic_cast<QCheckBox*>(widget);
   
@@ -1327,13 +1329,13 @@ void te::layout::GridSettingsOutside::initBool( QWidget* widget, std::string nam
   }
 }
 
-void te::layout::GridSettingsOutside::initColor( QWidget* widget, std::string nameComponent )
+void te::layout::GridSettingsOutside::initColor( QWidget* widget, std::string nameComponent, LayoutGridType gridType )
 {
   GridSettingsController* controller = dynamic_cast<GridSettingsController*>(m_controller);
   if(!controller)
     return;
 
-  Property prop = controller->getProperty(nameComponent);
+  Property prop = controller->getProperty(nameComponent, gridType);
     
   te::color::RGBAColor color = prop.getValue().toColor();
   QColor qcolor(color.getRed(), color.getGreen(), color.getBlue());
@@ -1350,13 +1352,13 @@ void te::layout::GridSettingsOutside::initColor( QWidget* widget, std::string na
   widget->setAutoFillBackground(true);
 }
 
-void te::layout::GridSettingsOutside::initCombo( QWidget* widget, std::string nameComponent )
+void te::layout::GridSettingsOutside::initCombo( QWidget* widget, std::string nameComponent, LayoutGridType gridType )
 {
   GridSettingsController* controller = dynamic_cast<GridSettingsController*>(m_controller);
   if(!controller)
     return;
 
-  Property prop = controller->getProperty(nameComponent);
+  Property prop = controller->getProperty(nameComponent, gridType);
 
   QComboBox* combo = dynamic_cast<QComboBox*>(widget);
 

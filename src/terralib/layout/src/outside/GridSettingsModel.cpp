@@ -29,16 +29,31 @@
 #include "GridSettingsModel.h"
 #include "Property.h"
 #include "Properties.h"
+#include "PlanarGridSettingsConfigProperties.h"
+#include "GeodesicGridSettingsConfigProperties.h"
 
 te::layout::GridSettingsModel::GridSettingsModel() 
 {
   m_box = te::gm::Envelope(0., 0., 200., 200.);
   m_type = TPGridSettings;
+
+  m_planarGridSettings = new PlanarGridSettingsConfigProperties;
+  m_geodesicGridSettings = new GeodesicGridSettingsConfigProperties;
 }
 
 te::layout::GridSettingsModel::~GridSettingsModel()
 {
+  if(m_planarGridSettings)
+  {
+    delete m_planarGridSettings;
+    m_planarGridSettings = 0;
+  }
 
+  if(m_geodesicGridSettings)
+  {
+    delete m_geodesicGridSettings;
+    m_geodesicGridSettings = 0;
+  }
 }
 
 te::layout::Properties* te::layout::GridSettingsModel::getProperties() const
@@ -70,13 +85,43 @@ te::layout::Property te::layout::GridSettingsModel::getOutsideProperty()
   return m_property;
 }
 
-te::layout::Property te::layout::GridSettingsModel::containsOutsideSubProperty( std::string name )
+te::layout::Property te::layout::GridSettingsModel::containsOutsideSubProperty( std::string name, LayoutGridType gridType )
 {
-  return m_property.containsSubProperty(name);
+  Property prop = containsGrid(gridType);
+  return prop.containsSubProperty(name);
 }
 
-void te::layout::GridSettingsModel::updateOutsideSubProperty( Property property )
+void te::layout::GridSettingsModel::updateOutsideSubProperty( Property subProperty, LayoutGridType gridType )
 {
-  m_property.removeSubProperty(property);
-  m_property.addSubProperty(property);
+  Property sub;
+
+  sub = containsGrid(gridType);
+
+  if(sub.isNull())
+    return;
+
+  if(sub.containsSubProperty(subProperty))
+  {
+    sub.removeSubProperty(subProperty);
+    sub.addSubProperty(subProperty);
+
+    m_property.removeSubProperty(sub);
+    m_property.addSubProperty(sub);
+  }
+}
+
+te::layout::Property te::layout::GridSettingsModel::containsGrid( LayoutGridType gridType )
+{
+  Property prop;
+
+  if(gridType == TypeGeodesic)
+  {
+    prop = m_property.containsSubProperty(m_geodesicGridSettings->getName());
+  }
+  if(gridType == TypePlanar)
+  {
+    prop = m_property.containsSubProperty(m_planarGridSettings->getName());
+  }
+
+  return prop;
 }

@@ -52,6 +52,7 @@ namespace te
       TypeExportPropsJSON,
       TypeImportJSONProps,
       TypeNewTemplate,
+      TypeCreateScale,
       TypeNone
     } LayoutMode;
 
@@ -63,6 +64,15 @@ namespace te
       TypeRulerVertical = 0,
       TypeRulerHorizontal = 90
     } LayoutRulerOrientation;
+
+    /*!
+    \brief Enum LayoutGridType. This is the enumeration of the grid types
+    */
+    typedef enum
+    {
+      TypePlanar = 0,
+      TypeGeodesic = 90
+    } LayoutGridType;
   }
 }
 #endif //__TERRALIB_LAYOUT_INTERNAL_MODE_H

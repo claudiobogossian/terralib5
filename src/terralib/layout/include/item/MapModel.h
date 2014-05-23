@@ -61,10 +61,12 @@ namespace te
         virtual te::gm::Envelope getWorldInDegrees();
 
         virtual te::common::UnitOfMeasurePtr unitMeasureLayer();
-
+        
       protected:
 
         std::string proj4DescToPlanar(int zone);
+        
+        std::string proj4DescToGeodesic();
 
         te::map::AbstractLayerPtr m_layer;
     };

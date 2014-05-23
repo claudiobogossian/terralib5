@@ -65,6 +65,9 @@ namespace te
         virtual void setName(std::string name);
         virtual std::string getName();
 
+        virtual int getId();
+        virtual void setId(int id);
+
         virtual void setPosition(const double& x, const double& y);
         virtual void draw( ContextItem context ) = 0;
 
@@ -75,6 +78,10 @@ namespace te
         virtual int getZValue();
 
         virtual void setZValue(int zValue);
+
+        virtual bool isBorder();
+
+        virtual void setBorder(bool value);
                 
       protected:
         virtual void notifyAll(ContextItem context);
@@ -90,6 +97,7 @@ namespace te
         LayoutAbstractObjectType  m_type;
         int                       m_zValue;
         SharedProperties*         m_sharedProps;
+        bool                      m_border;
 
       private:
         std::string m_name;

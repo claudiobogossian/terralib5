@@ -37,7 +37,7 @@ te::layout::Visitable::Visitable()
 
 te::layout::Visitable::~Visitable( void )
 {
-
+  unacceptAllVisitor();
 }
 
 void te::layout::Visitable::acceptVisitor( AbstractVisitor* visitor )
@@ -53,12 +53,29 @@ void te::layout::Visitable::updateVisitors()
   std::set<AbstractVisitor*>::iterator it;
   for(it = m_visitors.begin(); it != m_visitors.end(); ++it)
   {
-  (*it)->visit(this);
+    (*it)->visit(this);
   }
 }
 
 void te::layout::Visitable::unacceptVisitor( AbstractVisitor* visitor )
 {
+  if(!visitor)
+    return;
+
+  visitor->disassociate();
   m_visitors.erase(visitor);
+}
+
+void te::layout::Visitable::unacceptAllVisitor()
+{
+  std::set<AbstractVisitor*>::iterator it;
+
+  it = m_visitors.begin();
+  while(it != m_visitors.end())
+  {
+    AbstractVisitor* visitor = *it;
+    ++it;
+    unacceptVisitor(visitor);
+  }
 }
 

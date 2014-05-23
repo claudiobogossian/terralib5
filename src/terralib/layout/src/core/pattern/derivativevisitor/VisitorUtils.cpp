@@ -31,6 +31,7 @@
 #include "LegendModel.h"
 #include "ItemObserver.h"
 #include "MapModel.h"
+#include "ScaleModel.h"
 
 // STL
 #include <stddef.h>  // defines NULL
@@ -46,6 +47,7 @@ TELAYOUTEXPORT bool te::layout::changeMapVisitable( QList<QGraphicsItem*> graphi
     return false;
 
   te::layout::LegendModel* legModel = 0;
+  te::layout::ScaleModel*  scaleModel = 0;
 
   foreach( QGraphicsItem *it, graphicsItems) 
   {
@@ -66,6 +68,11 @@ TELAYOUTEXPORT bool te::layout::changeMapVisitable( QList<QGraphicsItem*> graphi
       legModel = dynamic_cast<te::layout::LegendModel*>(model);
       if(legModel)
         mpModel->acceptVisitor(legModel);
+      break;
+    case TPScaleItem:
+      scaleModel = dynamic_cast<te::layout::ScaleModel*>(model);
+      if(scaleModel)
+        mpModel->acceptVisitor(scaleModel);
       break;
     default:
       continue;

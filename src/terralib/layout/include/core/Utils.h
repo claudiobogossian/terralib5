@@ -53,6 +53,10 @@ namespace te
 
         virtual te::gm::LinearRing* createSimpleLine(te::gm::Envelope box);
 
+        virtual te::gm::LinearRing* addCoordsInX(te::gm::Envelope box, double gap);
+
+        virtual te::gm::LinearRing* addCoordsInY(te::gm::Envelope box, double gap);
+
         virtual void configCanvas(te::gm::Envelope box, bool resize = true);
 
         /* The calculation of the viewport is from the box in mm */

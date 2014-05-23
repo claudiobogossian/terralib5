@@ -56,6 +56,7 @@ void te::layout::RectangleModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
   
+  canvas->setPolygonContourWidth(2);
   canvas->setPolygonContourColor(m_borderColor);
   canvas->setPolygonFillColor(m_backgroundColor);
   

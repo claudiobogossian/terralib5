@@ -99,6 +99,19 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
   createItem(coord); 
 }
 
+void te::layout::View::mouseMoveEvent( QMouseEvent * event )
+{
+  QGraphicsView::mouseMoveEvent(event);
+
+  Scene* sc = dynamic_cast<Scene*>(scene());
+
+  if(!sc)
+    return;
+
+   QPointF scenePos = mapToScene(event->pos());
+   sc->setPointIntersectionMouse(scenePos);
+}
+
 void te::layout::View::wheelEvent( QWheelEvent *event )
 {
   scaleView(pow((double)2, -event->delta() / 240.0));
@@ -263,7 +276,7 @@ void te::layout::View::onToolbarChangeContext( bool change )
   }
   if(Context::getInstance()->getMode() == TypeImportJSONProps)
   {
-    buildTemplate();
+    sc->buildTemplate(m_visualizationArea, m_buildItems);
   }
 
   if(Context::getInstance()->getMode() == TypePan)
@@ -383,38 +396,8 @@ void te::layout::View::deleteItems()
       if(item)
       {
         delete item;
+        item = 0;
       }
     }
-  }
-}
-
-void te::layout::View::buildTemplate()
-{
-  Scene* sc = dynamic_cast<Scene*>(scene());
-
-  if(!sc)
-    return;
-  
-  std::vector<te::layout::Properties*> props = sc->importJsonAsProps();
-
-  if(props.empty())
-    return;
-
-  sc->refresh();
-
-  std::vector<te::layout::Properties*>::iterator it;
-
-  te::gm::Envelope* boxW = sc->getWorldBox();
-  m_visualizationArea->changeBoxArea(boxW);
-  m_visualizationArea->rebuildWithoutPaper();
-
-  for(it = props.begin() ; it != props.end() ; ++it)
-  {
-    te::layout::Properties* proper = (*it);
-
-    if(!proper)
-      continue;
-
-    m_buildItems->rebuildItem(proper);
   }
 }

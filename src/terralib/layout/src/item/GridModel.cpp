@@ -32,6 +32,7 @@
 #include "../../../../../geometry/Envelope.h"
 #include "../../../../../geometry/Coord2D.h"
 #include "Property.h"
+#include "../../../srs/Config.h"
 
 te::layout::GridModel::GridModel() :
   m_name("GRID_MODEL"),
@@ -57,9 +58,10 @@ te::layout::GridModel::GridModel() :
   m_bottomRotateText(false),
   m_leftRotateText(false),
   m_rightRotateText(false),
-  m_topRotateText(false)     
+  m_topRotateText(false),
+  m_srid(TE_UNKNOWN_SRS)
 {
-  m_properties = new te::layout::Properties(m_name, TPGrid);
+ 
 }
 
 te::layout::GridModel::~GridModel()
@@ -91,3 +93,4 @@ void te::layout::GridModel::setMapScale( double scale )
 {
   m_mapScale = scale;
 }
+

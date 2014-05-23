@@ -32,6 +32,9 @@
 #include "ItemModelObservable.h"
 #include "ContextItem.h"
 #include "AbstractVisitor.h"
+#include "../../../maptools/AbstractLayer.h"
+#include "../../../maptools/Canvas.h"
+#include "Utils.h"
 
 namespace te
 {
@@ -54,7 +57,10 @@ namespace te
 
        protected:
 
+         virtual void drawLegend(te::map::Canvas* canvas, Utils* utils);
+
         std::string m_mapName;
+        te::map::AbstractLayerPtr m_layer;
     };
   }
 }

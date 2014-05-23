@@ -31,11 +31,14 @@
 // TerraLib
 #include "OutsideController.h"
 #include "Property.h"
+#include "EnumMode.h"
 
 namespace te
 {
   namespace layout
   {
+    class GridSettingsModel;
+
     class GridSettingsController : public OutsideController
     {
     public:
@@ -47,15 +50,21 @@ namespace te
 
       virtual Property updateProperty();
 
-      virtual void addUpdateProperty(std::string name, Variant variant);
+      virtual void addUpdateProperty(std::string name, Variant variant, LayoutGridType gridType);
+
+      virtual void addUpdateGeodesicProperty(GridSettingsModel* outsideModel, Property subProperty, LayoutGridType gridType);
+
+      virtual void addUpdatePlanarProperty(GridSettingsModel* outsideModel, Property subProperty, LayoutGridType gridType);
 
       virtual void clearUpdate();
 
-      virtual Property getProperty(std::string name);
+      virtual Property getProperty(std::string name, LayoutGridType gridType);
 
     protected:
 
       Property m_update;
+      Property m_gridPlanar;
+      Property m_gridGeodesic;
     };
   }
 }

@@ -36,6 +36,7 @@
 #include "Observer.h"
 #include "MapGridItem.h"
 #include "LegendItem.h"
+#include "ScaleItem.h"
 
 te::layout::ItemFactory::ItemFactory()
 {
@@ -111,6 +112,13 @@ te::layout::Observer* te::layout::ItemFactory::make( LayoutAbstractObjectType ty
     {
       MapGridItem* mapGrid = new MapGridItem(params.getController(), params.getModel());
       item = (Observer*)mapGrid;
+      return item;
+      break;
+    }
+  case TPScaleItem:
+    {
+      ScaleItem* scale = new ScaleItem(params.getController(), params.getModel());
+      item = (Observer*)scale;
       return item;
       break;
     }

@@ -48,6 +48,8 @@ namespace te
   {
     class ItemObserver;
     class Properties;
+    class VisualizationArea;
+    class BuildGraphicsItem;
 
     class Scene : public QGraphicsScene, public AbstractScene
     {
@@ -97,6 +99,10 @@ namespace te
 
         virtual void refresh();
 
+        void setPointIntersectionMouse(QPointF point);
+
+        virtual void buildTemplate(VisualizationArea* vzArea, BuildGraphicsItem* build);
+
       protected slots:
 
         virtual void printPaper(QPrinter* printer);
@@ -120,6 +126,8 @@ namespace te
 
         virtual std::vector<te::layout::Properties*> getItemsProperties();
 
+        virtual void drawForeground(QPainter *painter, const QRectF &rect);
+        
       protected:
 
         te::gm::Envelope* m_boxPaperW;
@@ -128,6 +136,7 @@ namespace te
         double m_screenWidthMM;
         double m_screenHeightMM;
         QGraphicsItem* m_masterParent;
+        QPointF m_pointIntersection;
     };
   }
 }

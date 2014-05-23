@@ -35,7 +35,6 @@
 te::layout::PaperModel::PaperModel() :
   m_paperConfig(0)
 {
-
   setName("PAPER_A4");
 
   m_shadowPadding = 10.;

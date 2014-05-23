@@ -18,42 +18,33 @@
  */
 
 /*!
-  \file Visitable.h
+  \file ScaleController.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_VISITABLE_H  
-#define __TERRALIB_LAYOUT_INTERNAL_VISITABLE_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_SCALE_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_SCALE_CONTROLLER_H
 
-// STL
-#include <set>
+// TerraLib
+#include "ItemController.h"
 
 namespace te
 {
   namespace layout
   {
-    class AbstractVisitor;
-
-    class Visitable
+    class ScaleController : public ItemController
     {
       public:
 
-        Visitable();
-        ~Visitable(void);
+        ScaleController( Observable* o );
+        virtual ~ScaleController();
 
-        virtual void acceptVisitor(AbstractVisitor* visitor);
-        virtual void unacceptVisitor(AbstractVisitor* visitor);
-        virtual void unacceptAllVisitor();
-
-      protected:
-        virtual void updateVisitors();
-
-      protected:
-        std::set<AbstractVisitor*>	m_visitors;
+        virtual void setPosition(const double& x, const double& y);
     };
   }
 }
+
 #endif

@@ -42,6 +42,8 @@
 #include "RectangleController.h"
 #include "RectangleItem.h"
 #include "PaperConfig.h"
+#include "VisualizationArea.h"
+#include "BuildGraphicsItem.h"
 
 // STL
 #include <iostream>
@@ -60,7 +62,8 @@ te::layout::Scene::Scene( QWidget* widget):
   QGraphicsScene(widget),
   m_boxW(0),
   m_boxPaperW(0),
-  m_masterParent(0)
+  m_masterParent(0),
+  m_pointIntersection(0,0)
 {
 
 }
@@ -554,4 +557,40 @@ void te::layout::Scene::refresh()
 {
   clear();
   createMasterParentItem();
+}
+
+void te::layout::Scene::drawForeground( QPainter *painter, const QRectF &rect )
+{
+  QGraphicsScene::drawForeground(painter, rect);
+}
+
+void te::layout::Scene::setPointIntersectionMouse( QPointF point )
+{
+  m_pointIntersection = point;
+}
+
+void te::layout::Scene::buildTemplate(VisualizationArea* vzArea, BuildGraphicsItem* build)
+{
+  std::vector<te::layout::Properties*> props = importJsonAsProps();
+
+  if(props.empty())
+    return;
+
+  refresh();
+
+  std::vector<te::layout::Properties*>::iterator it;
+
+  te::gm::Envelope* boxW = getWorldBox();
+  vzArea->changeBoxArea(boxW);
+  vzArea->rebuildWithoutPaper();
+
+  for(it = props.begin() ; it != props.end() ; ++it)
+  {
+    te::layout::Properties* proper = (*it);
+
+    if(!proper)
+      continue;
+
+    build->rebuildItem(proper);
+  }
 }

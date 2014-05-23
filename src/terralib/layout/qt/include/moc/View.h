@@ -67,7 +67,7 @@ namespace te
         virtual void config();        
         
         void setOutsideArea(OutsideArea* outsideArea);
-        
+                
       public slots:
 
         virtual void onToolbarChangeContext(bool change);
@@ -75,7 +75,9 @@ namespace te
         virtual void onAddItemFinalized();
 
       protected:
-        void mousePressEvent(QMouseEvent * event);
+
+        virtual void mousePressEvent(QMouseEvent * event);
+        virtual void	mouseMoveEvent ( QMouseEvent * event );
         void wheelEvent(QWheelEvent *event);
         void scaleView(qreal scaleFactor);
         virtual void keyPressEvent(QKeyEvent* keyEvent);
@@ -97,8 +99,6 @@ namespace te
 
         virtual void deleteItems();
 
-        virtual void buildTemplate();
-        
       protected:
         OutsideArea*  m_outsideArea;
         VisualizationArea* m_visualizationArea;
