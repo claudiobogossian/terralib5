@@ -649,7 +649,19 @@ te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
 
 te::qt::widgets::DataSetTableView::~DataSetTableView()
 {
-//  if (m_model->)
+  if (m_model->hasEditions())
+  {
+    QMessageBox msgBox(this);
+    msgBox.setText("There are unsaved changes on table.");
+    msgBox.setInformativeText("Do you want to save your changes?");
+    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard);
+    msgBox.setDefaultButton(QMessageBox::Save);
+    
+    int ret = msgBox.exec();
+    
+    if(ret == QMessageBox::Save)
+      saveEditions();
+  }
 }
 
 void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* layer)
@@ -857,7 +869,7 @@ void te::qt::widgets::DataSetTableView::changeColumnData(const int& column)
       dsrc->execute(sql);
       setLayer(m_layer);
     }
-    catch(Exception& e)
+    catch(Exception& /*e*/)
     {
     }
   }
