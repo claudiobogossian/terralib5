@@ -649,6 +649,7 @@ te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
 
 te::qt::widgets::DataSetTableView::~DataSetTableView()
 {
+//  if (m_model->)
 }
 
 void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* layer)

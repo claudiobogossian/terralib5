@@ -151,6 +151,11 @@ class Editor
       return m_editions[std::pair<int, int>(row, column)];
     }
 
+    bool hasEditions() const
+    {
+      return !m_editions.empty();
+    }
+
     void getEditedDataSet(te::da::DataSet* in, te::mem::DataSet* out, std::vector< std::set<int> >& fields)
     {
       std::vector<int> rows;
@@ -360,6 +365,11 @@ std::auto_ptr<te::da::DataSet> te::qt::widgets::DataSetTableModel::getEditions(c
   dset.reset(md);
 
   return dset;
+}
+
+bool te::qt::widgets::DataSetTableModel::hasEditions() const
+{
+  return m_editor->hasEditions();
 }
 
 void te::qt::widgets::DataSetTableModel::discardEditions()
