@@ -31,23 +31,318 @@ include_directories(${QTPROPERTYBROWSER_INCLUDE_DIR})
 
 add_definitions(-D_SCL_SECURE_NO_WARNINGS -DTEQTWIDGETSDLL -DUNICODE -DQWT_DLL)
 
-if(Qt5_FOUND)
-  set(CMAKE_AUTOMOC ON)
-  set(CMAKE_INCLUDE_CURRENT_DIR ON)
+#
+# Set the source and ui files
+#
 
-else() # QT4_FOUND
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/*.cpp)
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/*.h)
 
-  include_directories(${CMAKE_CURRENT_BINARY_DIR})
+# canvas
+file(GLOB TERRALIB_CANVAS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/*.cpp)
+file(GLOB TERRALIB_CANVAS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/*.h)
+file(GLOB TERRALIB_CANVAS_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/ui/*.ui)
 
-  include(${QT_USE_FILE})
+# charts
+file(GLOB TERRALIB_CHARTS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/*.cpp)
+file(GLOB TERRALIB_CHARTS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/*.h)
+file(GLOB TERRALIB_CHARTS_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ui/*.ui)
 
-  include_directories(${QT_INCLUDE_DIR})
+# classification
+file(GLOB TERRALIB_CLASSIFICATION_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/classification/*.cpp)
+file(GLOB TERRALIB_CLASSIFICATION_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/classification/*.h)
+file(GLOB TERRALIB_CLASSIFICATION_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/classification/ui/*.ui)
 
-  add_definitions(${QT_DEFINITIONS})
+# colorbar
+file(GLOB TERRALIB_COLORBAR_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/colorbar/*.cpp)
+file(GLOB TERRALIB_COLORBAR_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/colorbar/*.h)
+file(GLOB TERRALIB_COLORBAR_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/colorbar/ui/*.ui)
 
-endif()
+# dataset
+file(GLOB TERRALIB_DATASET_EXPLORER_SRC_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/*.cpp)
+file(GLOB TERRALIB_DATASET_EXPLORER_HDR_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/*.h)
+file(GLOB TERRALIB_DATASET_SELECTOR_SRC_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/*.cpp)
+file(GLOB TERRALIB_DATASET_SELECTOR_HDR_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/*.h)
+file(GLOB TERRALIB_DATASET_SELECTOR_UI_FILES   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/ui/*.ui)
 
-set(TERRALIB_HDRS_TO_MOC_FILES "")
+# datasource
+file(GLOB TERRALIB_DATASOURCE_CONNECTOR_SRC_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/connector/*.cpp)
+file(GLOB TERRALIB_DATASOURCE_CONNECTOR_HDR_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/connector/*.h)
+file(GLOB TERRALIB_DATASOURCE_CORE_SRC_FILES       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/core/*.cpp)
+file(GLOB TERRALIB_DATASOURCE_CORE_HDR_FILES       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/core/*.h)
+file(GLOB TERRALIB_DATASOURCE_EXPLORER_SRC_FILES   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/*.cpp)
+file(GLOB TERRALIB_DATASOURCE_EXPLORER_HDR_FILES   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/*.h)
+file(GLOB TERRALIB_DATASOURCE_SELECTOR_SRC_FILES   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/selector/*.cpp)
+file(GLOB TERRALIB_DATASOURCE_SELECTOR_HDR_FILES   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/selector/*.h)
+file(GLOB TERRALIB_DATASOURCE_SELECTOR_UI_FILES    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/selector/ui/*.ui)
+
+# exchanger
+file(GLOB TERRALIB_EXCHANGER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/*.cpp)
+file(GLOB TERRALIB_EXCHANGER_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/*.h)
+file(GLOB TERRALIB_EXCHANGER_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/ui/*.ui)
+
+# externaltable
+file(GLOB TERRALIB_EXTERNALTABLE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/*.cpp)
+file(GLOB TERRALIB_EXTERNALTABLE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/*.h)
+file(GLOB TERRALIB_EXTERNALTABLE_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/ui/*.ui)
+
+# help
+file(GLOB TERRALIB_HELP_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/*.cpp)
+file(GLOB TERRALIB_HELP_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/*.h)
+
+# layer
+file(GLOB TERRALIB_LAYER_EXPLORER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/*.cpp)
+file(GLOB TERRALIB_LAYER_EXPLORER_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/*.h)
+
+file(GLOB TERRALIB_LAYER_INFO_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/info/*.cpp)
+file(GLOB TERRALIB_LAYER_INFO_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/info/*.h)
+
+file(GLOB TERRALIB_LAYER_SEARCH_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/search/*.cpp)
+file(GLOB TERRALIB_LAYER_SEARCH_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/search/*.h)
+
+file(GLOB TERRALIB_LAYER_SEARCH_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/search/ui/*.ui)
+
+file(GLOB TERRALIB_LAYER_SELECTOR_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/*.cpp)
+file(GLOB TERRALIB_LAYER_SELECTOR_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/*.h)
+
+file(GLOB TERRALIB_LAYER_UTILS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/utils/*.cpp)
+file(GLOB TERRALIB_LAYER_UTILS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/utils/*.h)
+
+# layout
+file(GLOB TERRALIB_LAYOUT_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layout/*.cpp)
+file(GLOB TERRALIB_LAYOUT_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layout/*.h)
+
+# mapdisplay
+file(GLOB TERRALIB_MAPDISPLAY_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/mapdisplay/*.cpp)
+file(GLOB TERRALIB_MAPDISPLAY_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/mapdisplay/*.h)
+
+# plugin
+file(GLOB TERRALIB_PLUGIN_BUILDER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/builder/*.cpp)
+file(GLOB TERRALIB_PLUGIN_BUILDER_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/builder/*.h)
+
+file(GLOB TERRALIB_PLUGIN_BUILDER_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/builder/ui/*.ui)
+
+file(GLOB TERRALIB_PLUGIN_MANAGER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/manager/*.cpp)
+file(GLOB TERRALIB_PLUGIN_MANAGER_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/manager/*.h)
+
+file(GLOB TERRALIB_PLUGIN_MANAGER_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/manager/ui/*.ui)
+
+# progress
+file(GLOB TERRALIB_PROGRESS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/*.cpp)
+file(GLOB TERRALIB_PROGRESS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/*.h)
+
+# property
+file(GLOB TERRALIB_PROPERTY_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/*.cpp)
+file(GLOB TERRALIB_PROPERTY_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/*.h)
+
+file(GLOB TERRALIB_PROPERTY_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/ui/*.ui)
+
+# propertybrowser
+file(GLOB TERRALIB_PROPERTY_BROWSER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/propertybrowser/*.cpp)
+file(GLOB TERRALIB_PROPERTY_BROWSER_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/propertybrowser/*.h)
+
+# query
+file(GLOB TERRALIB_QUERY_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/*.cpp)
+file(GLOB TERRALIB_QUERY_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/*.h)
+
+file(GLOB TERRALIB_QUERY_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/ui/*.ui)
+
+# rp
+file(GLOB TERRALIB_RP_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/*.cpp)
+file(GLOB TERRALIB_RP_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/*.h)
+
+file(GLOB TERRALIB_RP_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ui/*.ui)
+
+# se
+file(GLOB TERRALIB_SE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/*.cpp)
+file(GLOB TERRALIB_SE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/*.h)
+
+file(GLOB TERRALIB_SE_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/ui/*.ui)
+
+# srs
+file(GLOB TERRALIB_SRS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/srs/*.cpp)
+file(GLOB TERRALIB_SRS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/srs/*.h)
+file(GLOB TERRALIB_SRS_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/srs/ui/*.ui)
+
+# st
+file(GLOB TERRALIB_ST_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/*.cpp)
+file(GLOB TERRALIB_ST_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/*.h)
+
+file(GLOB TERRALIB_ST_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/ui/*.ui)
+
+# table
+file(GLOB TERRALIB_TABLE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/*.cpp)
+file(GLOB TERRALIB_TABLE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/*.h)
+
+file(GLOB TERRALIB_TABLE_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/ui/*.ui)
+
+# temporal
+file(GLOB TERRALIB_TEMPORAL_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/*.cpp)
+file(GLOB TERRALIB_TEMPORAL_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/*.h)
+
+file(GLOB TERRALIB_TEMPORAL_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/ui/*.ui)
+
+# tools
+file(GLOB TERRALIB_TOOLS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/*.cpp)
+file(GLOB TERRALIB_TOOLS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/*.h)
+
+# utils
+file(GLOB TERRALIB_UTILS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/*.cpp)
+file(GLOB TERRALIB_UTILS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/*.h)
+
+file(GLOB TERRALIB_UTILS_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/ui/*.ui)
+
+#
+# Grouping the source  and ui files
+#
+source_group("Source Files"  FILES ${TERRALIB_SRC_FILES})
+source_group("Header Files"  FILES ${TERRALIB_HDR_FILES})
+
+# canvas
+source_group("Source Files\\canvas"  FILES ${TERRALIB_CANVAS_SRC_FILES})
+source_group("Header Files\\canvas"  FILES ${TERRALIB_CANVAS_HDR_FILES})
+source_group("UI Files\\canvas"      FILES ${TERRALIB_CANVAS_UI_FILES})
+
+# charts
+source_group("Source Files\\charts"  FILES ${TERRALIB_CHARTS_SRC_FILES})
+source_group("Header Files\\charts"  FILES ${TERRALIB_CHARTS_HDR_FILES})
+source_group("UI Files\\charts"      FILES ${TERRALIB_CHARTS_UI_FILES})
+
+# classification
+source_group("Source Files\\classification"  FILES ${TERRALIB_CLASSIFICATION_SRC_FILES})
+source_group("Header Files\\classification"  FILES ${TERRALIB_CLASSIFICATION_HDR_FILES})
+source_group("UI Files\\classification"      FILES ${TERRALIB_CLASSIFICATION_UI_FILES})
+
+# colorbar
+source_group("Source Files\\colorbar"  FILES ${TERRALIB_COLORBAR_SRC_FILES})
+source_group("Header Files\\colorbar"  FILES ${TERRALIB_COLORBAR_HDR_FILES})
+source_group("UI Files\\colorbar"      FILES ${TERRALIB_COLORBAR_UI_FILES})
+
+# explorer
+source_group("Source Files\\dataset\\explorer"  FILES ${TERRALIB_DATASET_EXPLORER_SRC_FILES})
+source_group("Header Files\\dataset\\explorer"  FILES ${TERRALIB_DATASET_EXPLORER_HDR_FILES})
+source_group("Source Files\\dataset\\selector"  FILES ${TERRALIB_DATASET_SELECTOR_SRC_FILES})
+source_group("Header Files\\dataset\\selector"  FILES ${TERRALIB_DATASET_SELECTOR_HDR_FILES})
+source_group("UI Files\\dataset\\selector"      FILES ${TERRALIB_DATASET_SELECTOR_UI_FILES})
+
+# datasource
+source_group("Source Files\\datasource\\connector" FILES ${TERRALIB_DATASOURCE_CONNECTOR_SRC_FILES})
+source_group("Header Files\\datasource\\connector" FILES ${TERRALIB_DATASOURCE_CONNECTOR_HDR_FILES})
+source_group("Source Files\\datasource\\core"      FILES ${TERRALIB_DATASOURCE_CORE_SRC_FILES})
+source_group("Header Files\\datasource\\core"      FILES ${TERRALIB_DATASOURCE_CORE_HDR_FILES})
+source_group("Source Files\\datasource\\core"      FILES ${TERRALIB_DATASOURCE_EXPLORER_SRC_FILES})
+source_group("Header Files\\datasource\\core"      FILES ${TERRALIB_DATASOURCE_EXPLORER_HDR_FILES})
+source_group("Source Files\\datasource\\selector"  FILES ${TERRALIB_DATASOURCE_SELECTOR_SRC_FILES})
+source_group("Header Files\\datasource\\selector"  FILES ${TERRALIB_DATASOURCE_SELECTOR_HDR_FILES})
+source_group("UI Files\\datasource\\selector"      FILES ${TERRALIB_DATASOURCE_SELECTOR_UI_FILES})
+
+# exchanger
+source_group("Source Files\\exchanger"  FILES ${TERRALIB_EXCHANGER_SRC_FILES})
+source_group("Header Files\\exchanger"  FILES ${TERRALIB_EXCHANGER_HDR_FILES})
+source_group("UI Files\\exchanger"      FILES ${TERRALIB_EXCHANGER_UI_FILES})
+
+# externaltable
+source_group("Source Files\\externalTable"  FILES ${TERRALIB_EXCHANGER_SRC_FILES})
+source_group("Header Files\\externalTable"  FILES ${TERRALIB_EXCHANGER_HDR_FILES})
+source_group("UI Files\\externalTable"      FILES ${TERRALIB_EXCHANGER_UI_FILES})
+
+# help
+source_group("Source Files\\help"  FILES ${TERRALIB_HELP_SRC_FILES})
+source_group("Header Files\\help"  FILES ${TERRALIB_HELP_HDR_FILES})
+
+# layer
+source_group("Source Files\\layer\\explorer"  FILES ${TERRALIB_LAYER_EXPLORER_SRC_FILES})
+source_group("Header Files\\layer\\explorer"  FILES ${TERRALIB_LAYER_EXPLORER_HDR_FILES})
+
+source_group("Source Files\\layer\\info"  FILES ${TERRALIB_LAYER_INFO_SRC_FILES})
+source_group("Header Files\\layer\\info"  FILES ${TERRALIB_LAYER_INFO_HDR_FILES})
+
+source_group("Source Files\\layer\\search"  FILES ${TERRALIB_LAYER_SEARCH_SRC_FILES})
+source_group("Header Files\\layer\\search"  FILES ${TERRALIB_LAYER_SEARCH_HDR_FILES})
+source_group("UI Files\\layer\\search"      FILES ${TERRALIB_LAYER_SEARCH_UI_FILES})
+
+source_group("Source Files\\layer\\selector"  FILES ${TERRALIB_LAYER_SELECTOR_SRC_FILES})
+source_group("Header Files\\layer\\selector"  FILES ${TERRALIB_LAYER_SELECTOR_HDR_FILES})
+
+source_group("Source Files\\layer\\utils"  FILES ${TERRALIB_LAYER_UTILS_SRC_FILES})
+source_group("Header Files\\layer\\utils"  FILES ${TERRALIB_LAYER_UTILS_HDR_FILES})
+
+# layout
+source_group("Source Files\\layout"  FILES ${TERRALIB_LAYOUT_SRC_FILES})
+source_group("Header Files\\layout"  FILES ${TERRALIB_LAYOUT_HDR_FILES})
+
+# mapdisplay
+source_group("Source Files\\mapdisplay"  FILES ${TERRALIB_MAPDISPLAY_SRC_FILES})
+source_group("Header Files\\mapdisplay"  FILES ${TERRALIB_MAPDISPLAY_HDR_FILES})
+
+# plugin
+source_group("Source Files\\plugin\\builder"  FILES ${TERRALIB_PLUGIN_BUILDER_SRC_FILES})
+source_group("Header Files\\plugin\\builder"  FILES ${TERRALIB_PLUGIN_BUILDER_HDR_FILES})
+source_group("UI Files\\plugin\\builder"      FILES ${TERRALIB_PLUGIN_BUILDER_UI_FILES})
+source_group("Source Files\\plugin\\manager"  FILES ${TERRALIB_PLUGIN_MANAGER_SRC_FILES})
+source_group("Header Files\\plugin\\manager"  FILES ${TERRALIB_PLUGIN_MANAGER_HDR_FILES})
+source_group("UI Files\\plugin\\manager"      FILES ${TERRALIB_PLUGIN_MANAGER_UI_FILES})
+
+# progress
+source_group("Source Files\\progress"  FILES ${TERRALIB_PROGRESS_SRC_FILES})
+source_group("Header Files\\progress"  FILES ${TERRALIB_PROGRESS_HDR_FILES})
+
+# property
+source_group("Source Files\\property"  FILES ${TERRALIB_PROPERTY_SRC_FILES})
+source_group("Header Files\\property"  FILES ${TERRALIB_PROPERTY_HDR_FILES})
+source_group("UI Files\\property"      FILES ${TERRALIB_PROPERTY_UI_FILES})
+
+# propertybrowser
+source_group("Source Files\\propertybrowser"  FILES ${TERRALIB_PROPERTY_BROWSER_SRC_FILES})
+source_group("Header Files\\propertybrowser"  FILES ${TERRALIB_PROPERTY_BROWSER_HDR_FILES})
+
+# query
+source_group("Source Files\\query"  FILES ${TERRALIB_QUERY_SRC_FILES})
+source_group("Header Files\\query"  FILES ${TERRALIB_QUERY_HDR_FILES})
+source_group("UI Files\\query"      FILES ${TERRALIB_QUERY_UI_FILES})
+
+# rp
+source_group("Source Files\\rp"  FILES ${TERRALIB_RP_SRC_FILES})
+source_group("Header Files\\rp"  FILES ${TERRALIB_RP_HDR_FILES})
+source_group("UI Files\\rp"      FILES ${TERRALIB_RP_UI_FILES})
+
+# se
+source_group("Source Files\\se"  FILES ${TERRALIB_SE_SRC_FILES})
+source_group("Header Files\\se"  FILES ${TERRALIB_SE_HDR_FILES})
+source_group("UI Files\\se"      FILES ${TERRALIB_SE_UI_FILES})
+
+# srs
+source_group("Source Files\\srs"  FILES ${TERRALIB_SRS_SRC_FILES})
+source_group("Header Files\\srs"  FILES ${TERRALIB_SRS_HDR_FILES})
+source_group("UI Files\\srs"      FILES ${TERRALIB_SRS_UI_FILES})
+
+# st
+source_group("Source Files\\st"  FILES ${TERRALIB_ST_SRC_FILES})
+source_group("Header Files\\st"  FILES ${TERRALIB_ST_HDR_FILES})
+source_group("UI Files\\st"      FILES ${TERRALIB_ST_UI_FILES})
+
+# table
+source_group("Source Files\\table"  FILES ${TERRALIB_TABLE_SRC_FILES})
+source_group("Header Files\\table"  FILES ${TERRALIB_TABLE_HDR_FILES})
+source_group("UI Files\\table"      FILES ${TERRALIB_TABLE_UI_FILES})
+
+# temporal
+source_group("Source Files\\temporal"  FILES ${TERRALIB_TEMPORAL_SRC_FILES})
+source_group("Header Files\\temporal"  FILES ${TERRALIB_TEMPORAL_HDR_FILES})
+source_group("UI Files\\temporal"      FILES ${TERRALIB_TEMPORAL_UI_FILES})
+
+# tools
+source_group("Source Files\\tools"  FILES ${TERRALIB_TOOLS_SRC_FILES})
+source_group("Header Files\\tools"  FILES ${TERRALIB_TOOLS_HDR_FILES})
+
+# utils
+source_group("Source Files\\utils"  FILES ${TERRALIB_UTILS_SRC_FILES})
+source_group("Header Files\\utils"  FILES ${TERRALIB_UTILS_HDR_FILES})
+source_group("Header Files\\utils"  FILES ${TERRALIB_UTILS_UI_FILES})
+
+#
+# Set the dependency libraries
+#
 
 set(TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_common")
 list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_st")
@@ -65,662 +360,140 @@ list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_plugin")
 list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES ${QWT_LIBRARY})
 list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES ${QTPROPERTYBROWSER_LIBRARY})
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/*.h)
-
-source_group("Source Files"  FILES ${TERRALIB_SRC_FILES})
-source_group("Header Files"  FILES ${TERRALIB_HDR_FILES})
-
-# Canvas
-file(GLOB TERRALIB_CANVAS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/*.cpp)
-file(GLOB TERRALIB_CANVAS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/*.h)
-file(GLOB TERRALIB_CANVAS_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/ui/*.ui)
-
-source_group("Source Files\\canvas"  FILES ${TERRALIB_CANVAS_SRC_FILES})
-source_group("Header Files\\canvas"  FILES ${TERRALIB_CANVAS_HDR_FILES})
-source_group("UI Files\\canvas\\ui"  FILES ${TERRALIB_CANVAS_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/DrawLayerThread.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/EyeBirdMapDisplayWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/MapDisplay.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/MultiThreadMapDisplay.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/OverlayWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/ZoomInMapDisplayWidget.h)
-
-# Charts
-file(GLOB TERRALIB_CHARTS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/*.cpp)
-file(GLOB TERRALIB_CHARTS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/*.h)
-file(GLOB TERRALIB_CHARTS_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ui/*.ui)
-
-source_group("Source Files\\charts"  FILES ${TERRALIB_CHARTS_SRC_FILES})
-source_group("Header Files\\charts"  FILES ${TERRALIB_CHARTS_HDR_FILES})
-source_group("UI Files\\charts\\ui"  FILES ${TERRALIB_CHARTS_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ChartDisplay.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ChartDisplayWidget.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ChartLayerDialog.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ChartLayerWidget.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ChartProperties.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ChartStyleFrame.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ChartStyleWidget.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/HistogramDataWidget.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/HistogramDialog.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/HistogramFrame.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/HistogramStyleWidget.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ScatterDataWidget.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ScatterDialog.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ScatterFrame.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ScatterStyleWidget.h)
-
-# Classification
-file(GLOB TERRALIB_CLASSIFICATION_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/classification/*.cpp)
-file(GLOB TERRALIB_CLASSIFICATION_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/classification/*.h)
-file(GLOB TERRALIB_CLASSIFICATION_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/classification/ui/*.ui)
-
-source_group("Source Files\\classification"  FILES ${TERRALIB_CLASSIFICATION_SRC_FILES})
-source_group("Header Files\\classification"  FILES ${TERRALIB_CLASSIFICATION_HDR_FILES})
-source_group("UI Files\\classification\\ui"  FILES ${TERRALIB_CLASSIFICATION_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/classification/ROIManagerDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/classification/ROIManagerWidget.h)
-
-# Color Bar
-file(GLOB TERRALIB_COLORBAR_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/colorbar/*.cpp)
-file(GLOB TERRALIB_COLORBAR_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/colorbar/*.h)
-file(GLOB TERRALIB_COLORBAR_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/colorbar/ui/*.ui)
-
-source_group("Source Files\\colorbar"  FILES ${TERRALIB_COLORBAR_SRC_FILES})
-source_group("Header Files\\colorbar"  FILES ${TERRALIB_COLORBAR_HDR_FILES})
-source_group("UI Files\\colorbar\\ui"  FILES ${TERRALIB_COLORBAR_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/colorbar/ColorBar.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/colorbar/ColorCatalogWidget.h)
-
-# Dataset
-file(GLOB TERRALIB_DATASET_EXPLORER_SRC_FILES    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/*.cpp)
-file(GLOB TERRALIB_DATASET_EXPLORER_HDR_FILES    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/*.h)
-file(GLOB TERRALIB_DATASET_SELECTOR_SRC_FILES    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/*.cpp)
-file(GLOB TERRALIB_DATASET_SELECTOR_HDR_FILES    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/*.h)
-file(GLOB TERRALIB_DATASET_SELECTOR_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/ui/*.ui)
-
-source_group("Source Files\\dataset\\explorer"  FILES ${TERRALIB_DATASET_EXPLORER_SRC_FILES})
-source_group("Header Files\\dataset\\explorer"  FILES ${TERRALIB_DATASET_EXPLORER_HDR_FILES})
-source_group("Source Files\\dataset\\selector"  FILES ${TERRALIB_DATASET_SELECTOR_SRC_FILES})
-source_group("Header Files\\dataset\\selector"  FILES ${TERRALIB_DATASET_SELECTOR_HDR_FILES})
-source_group("UI Files\\dataset\\selector\\ui"  FILES ${TERRALIB_DATASET_SELECTOR_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/DataSetCategoryModel.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/DataSetExplorer.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/DataSetTreeModel.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/DataSetTreeView.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/DataSetSelectorDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/DataSetSelectorWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/DataSetSelectorWizardPage.h)
-
-# Datasource
-file(GLOB TERRALIB_DATASOURCE_CONNECTOR_SRC_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/connector/*.cpp)
-file(GLOB TERRALIB_DATASOURCE_CONNECTOR_HDR_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/connector/*.h)
-file(GLOB TERRALIB_DATASOURCE_CORE_SRC_FILES       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/core/*.cpp)
-file(GLOB TERRALIB_DATASOURCE_CORE_HDR_FILES       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/core/*.h)
-file(GLOB TERRALIB_DATASOURCE_EXPLORER_SRC_FILES   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/*.cpp)
-file(GLOB TERRALIB_DATASOURCE_EXPLORER_HDR_FILES   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/*.h)
-file(GLOB TERRALIB_DATASOURCE_SELECTOR_SRC_FILES   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/selector/*.cpp)
-file(GLOB TERRALIB_DATASOURCE_SELECTOR_HDR_FILES   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/selector/*.h)
-file(GLOB TERRALIB_DATASOURCE_SELECTOR_UI_FILES    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/selector/ui/*.ui)
-
-source_group("Source Files\\datasource\\connector" FILES ${TERRALIB_DATASOURCE_CONNECTOR_SRC_FILES})
-source_group("Header Files\\datasource\\connector" FILES ${TERRALIB_DATASOURCE_CONNECTOR_HDR_FILES})
-source_group("Source Files\\datasource\\core"      FILES ${TERRALIB_DATASOURCE_CORE_SRC_FILES})
-source_group("Header Files\\datasource\\core"      FILES ${TERRALIB_DATASOURCE_CORE_HDR_FILES})
-source_group("Source Files\\datasource\\core"      FILES ${TERRALIB_DATASOURCE_EXPLORER_SRC_FILES})
-source_group("Header Files\\datasource\\core"      FILES ${TERRALIB_DATASOURCE_EXPLORER_HDR_FILES})
-source_group("Source Files\\datasource\\selector"  FILES ${TERRALIB_DATASOURCE_SELECTOR_SRC_FILES})
-source_group("Header Files\\datasource\\selector"  FILES ${TERRALIB_DATASOURCE_SELECTOR_HDR_FILES})
-source_group("UI Files\\datasource\\selector\\ui"  FILES ${TERRALIB_DATASOURCE_SELECTOR_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/AbstractDataSourceTreeItem.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/CheckConstraintItem.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/ConstraintsItem.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/DataSetCategoryGroupItem.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/DataSetCategoryItem.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/DataSetGroupItem.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/DataSetItem.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/DataSourceExplorer.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/DataSourceItem.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/DataSourceToolBox.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/DataSourceTreeModel.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/DataSourceTreeView.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/ForeignKeyItem.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/IndexGroupItem.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/IndexItem.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/PrimaryKeyItem.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/PropertyGroupItem.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/PropertyItem.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/UniqueKeyItem.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/selector/DataSourceExplorerDialog.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/selector/DataSourceSelectorDialog.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/selector/DataSourceSelectorWidget.h
-                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h)
-
-# Exchanger
-file(GLOB TERRALIB_EXCHANGER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/*.cpp)
-file(GLOB TERRALIB_EXCHANGER_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/*.h)
-file(GLOB TERRALIB_EXCHANGER_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/ui/*.ui)
-
-source_group("Source Files\\exchanger"  FILES ${TERRALIB_EXCHANGER_SRC_FILES})
-source_group("Header Files\\exchanger"  FILES ${TERRALIB_EXCHANGER_HDR_FILES})
-source_group("UI Files\\exchanger\\ui"  FILES ${TERRALIB_EXCHANGER_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/DataExchangerWizard.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/DataExchangeSummaryWizardPage.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/DataSetOptionsWizardPage.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/DirectExchangerDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/PostGIS2SHPDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/SHP2ADODialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/SHP2PostGISDialog.h)
-
-# External Table
-file(GLOB TERRALIB_EXTERNALTABLE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/*.cpp)
-file(GLOB TERRALIB_EXTERNALTABLE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/*.h)
-file(GLOB TERRALIB_EXTERNALTABLE_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/ui/*.ui)
-
-source_group("Source Files\\externalTable"  FILES ${TERRALIB_EXCHANGER_SRC_FILES})
-source_group("Header Files\\externalTable"  FILES ${TERRALIB_EXCHANGER_HDR_FILES})
-source_group("UI Files\\externalTable\\ui"  FILES ${TERRALIB_EXCHANGER_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/DataPropertiesDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/DataPropertiesWidget.h)
-
-# Help
-file(GLOB TERRALIB_HELP_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/*.cpp)
-file(GLOB TERRALIB_HELP_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/*.h)
-
-source_group("Source Files\\help"  FILES ${TERRALIB_HELP_SRC_FILES})
-source_group("Header Files\\help"  FILES ${TERRALIB_HELP_HDR_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/AssistantHelpManagerImpl.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/HelpPushButton.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/HelpToolButton.h)
-
-# Layer
-file(GLOB TERRALIB_LAYER_EXPLORER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/*.cpp)
-file(GLOB TERRALIB_LAYER_EXPLORER_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/*.h)
-
-source_group("Source Files\\layer\\explorer"  FILES ${TERRALIB_LAYER_EXPLORER_SRC_FILES})
-source_group("Header Files\\layer\\explorer"  FILES ${TERRALIB_LAYER_EXPLORER_HDR_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/AbstractTreeItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/ChartItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/ChartSliceItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/ColorMapItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/ColorMapSliceItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/DataSetAdapterLayerItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/DataSetLayerItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/FolderLayerItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/GroupingItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/GroupingSliceItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/LayerExplorer.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/LayerTreeModel.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/LayerTreeView.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/LegendItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/QueryLayerItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/RasterLayerItem.h)
-
-file(GLOB TERRALIB_LAYER_INFO_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/info/*.cpp)
-file(GLOB TERRALIB_LAYER_INFO_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/info/*.h)
-
-source_group("Source Files\\layer\\info"  FILES ${TERRALIB_LAYER_INFO_SRC_FILES})
-source_group("Header Files\\layer\\info"  FILES ${TERRALIB_LAYER_INFO_HDR_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.h)
-
-file(GLOB TERRALIB_LAYER_SEARCH_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/search/*.cpp)
-file(GLOB TERRALIB_LAYER_SEARCH_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/search/*.h)
-file(GLOB TERRALIB_LAYER_SEARCH_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/search/ui/*.ui)
-
-source_group("Source Files\\layer\\search"  FILES ${TERRALIB_LAYER_SEARCH_SRC_FILES})
-source_group("Header Files\\layer\\search"  FILES ${TERRALIB_LAYER_SEARCH_HDR_FILES})
-source_group("UI Files\\layer\\search\\ui"  FILES ${TERRALIB_LAYER_SEARCH_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/search/LayerSearchWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/search/LayerSearchWizardPage.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/search/LayerSelectorWidget.h)
-
-file(GLOB TERRALIB_LAYER_SELECTOR_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/*.cpp)
-file(GLOB TERRALIB_LAYER_SELECTOR_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/*.h)
-
-source_group("Source Files\\layer\\selector"  FILES ${TERRALIB_LAYER_SELECTOR_SRC_FILES})
-source_group("Header Files\\layer\\selector"  FILES ${TERRALIB_LAYER_SELECTOR_HDR_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/AbstractLayerSelector.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/DataSetLayerSelector.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/HiddenDataSetLayerSelector.h)
-
-file(GLOB TERRALIB_LAYER_UTILS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/utils/*.cpp)
-file(GLOB TERRALIB_LAYER_UTILS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/utils/*.h)
-
-source_group("Source Files\\layer\\utils"  FILES ${TERRALIB_LAYER_UTILS_SRC_FILES})
-source_group("Header Files\\layer\\utils"  FILES ${TERRALIB_LAYER_UTILS_HDR_FILES})
-
-# Layout
-file(GLOB TERRALIB_LAYOUT_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layout/*.cpp)
-file(GLOB TERRALIB_LAYOUT_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layout/*.h)
-
-source_group("Source Files\\layout"  FILES ${TERRALIB_LAYOUT_SRC_FILES})
-source_group("Header Files\\layout"  FILES ${TERRALIB_LAYOUT_HDR_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layout/DataFrame.h)
-
-# Map Display
-file(GLOB TERRALIB_MAPDISPLAY_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/mapdisplay/*.cpp)
-file(GLOB TERRALIB_MAPDISPLAY_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/mapdisplay/*.h)
-
-source_group("Source Files\\mapdisplay"  FILES ${TERRALIB_MAPDISPLAY_SRC_FILES})
-source_group("Header Files\\mapdisplay"  FILES ${TERRALIB_MAPDISPLAY_HDR_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/mapdisplay/DataSetDisplay.h)
-
-# Plugin
-file(GLOB TERRALIB_PLUGIN_BUILDER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/builder/*.cpp)
-file(GLOB TERRALIB_PLUGIN_BUILDER_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/builder/*.h)
-file(GLOB TERRALIB_PLUGIN_BUILDER_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/builder/ui/*.ui)
-file(GLOB TERRALIB_PLUGIN_MANAGER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/manager/*.cpp)
-file(GLOB TERRALIB_PLUGIN_MANAGER_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/manager/*.h)
-file(GLOB TERRALIB_PLUGIN_MANAGER_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/manager/ui/*.ui)
-
-source_group("Source Files\\plugin\\builder"  FILES ${TERRALIB_PLUGIN_BUILDER_SRC_FILES})
-source_group("Header Files\\plugin\\builder"  FILES ${TERRALIB_PLUGIN_BUILDER_HDR_FILES})
-source_group("UI Files\\plugin\\builder"      FILES ${TERRALIB_PLUGIN_BUILDER_UI_FILES})
-source_group("Source Files\\plugin\\manager"  FILES ${TERRALIB_PLUGIN_MANAGER_SRC_FILES})
-source_group("Header Files\\plugin\\manager"  FILES ${TERRALIB_PLUGIN_MANAGER_HDR_FILES})
-source_group("UI Files\\plugin\\manager"      FILES ${TERRALIB_PLUGIN_MANAGER_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.h)
-
-# Progress files
-file(GLOB TERRALIB_PROGRESS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/*.cpp)
-file(GLOB TERRALIB_PROGRESS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/*.h)
-
-source_group("Source Files\\progress"  FILES ${TERRALIB_PROGRESS_SRC_FILES})
-source_group("Header Files\\progress"  FILES ${TERRALIB_PROGRESS_HDR_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/ProgressViewerBar.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/ProgressViewerDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/ProgressViewerWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/ProgressWidgetItem.h)
-
-# Property files
-file(GLOB TERRALIB_PROPERTY_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/*.cpp)
-file(GLOB TERRALIB_PROPERTY_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/*.h)
-file(GLOB TERRALIB_PROPERTY_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/ui/*.ui)
-
-source_group("Source Files\\property"  FILES ${TERRALIB_PROPERTY_SRC_FILES})
-source_group("Header Files\\property"  FILES ${TERRALIB_PROPERTY_HDR_FILES})
-source_group("UI Files\\property\\ui"  FILES ${TERRALIB_PROPERTY_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/ConstraintsIndexesListWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/ConstraintsIndexesPropertyDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/ConstraintWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/DataSetAdapterWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/DateTimePropertyWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/GeometryPropertyWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/IndexWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/NewPropertyDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/NewPropertyWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/NumericPropertyWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/PrimaryKeyConstraintWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/PropertyConverterDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/StringPropertyWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/UniquekeyConstraintWidget.h)
-
-
-
-# Property Browser
-file(GLOB TERRALIB_PROPERTY_BROWSER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/propertybrowser/*.cpp)
-file(GLOB TERRALIB_PROPERTY_BROWSER_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/propertybrowser/*.h)
-
-source_group("Source Files\\propertybrowser"  FILES ${TERRALIB_PROPERTY_BROWSER_SRC_FILES})
-source_group("Header Files\\propertybrowser"  FILES ${TERRALIB_PROPERTY_BROWSER_HDR_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/propertybrowser/AbstractPropertyItem.h)
-
-
-# Query files
-file(GLOB TERRALIB_QUERY_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/*.cpp)
-file(GLOB TERRALIB_QUERY_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/*.h)
-file(GLOB TERRALIB_QUERY_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/ui/*.ui)
-
-source_group("Source Files\\query"  FILES ${TERRALIB_QUERY_SRC_FILES})
-source_group("Header Files\\query"  FILES ${TERRALIB_QUERY_HDR_FILES})
-source_group("UI Files\\query\\ui"  FILES ${TERRALIB_QUERY_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/DataSetWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/DataSetWizardPage.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/FieldsWizardPage.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/GroupByWizardPage.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/LayerAttributesWizardPage.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/OrderByWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/OrderByWizardPage.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/QueryBuilderWizard.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/QueryDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/WhereClauseWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/WhereClauseWizardPage.h)
-
-
-
-# Raster Processing
-file(GLOB TERRALIB_RP_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/*.cpp)
-file(GLOB TERRALIB_RP_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/*.h)
-file(GLOB TERRALIB_RP_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ui/*.ui)
-
-source_group("Source Files\\rp"  FILES ${TERRALIB_RP_SRC_FILES})
-source_group("Header Files\\rp"  FILES ${TERRALIB_RP_HDR_FILES})
-source_group("UI Files\\rp\\ui"  FILES ${TERRALIB_RP_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ClassifierDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ClassifierWizardPage.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ClippingWizardPage.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ColorTransformWizardPage.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ContrastDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ContrastWizardPage.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/FilterWizardPage.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/MaskDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/MixtureModelDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/MixtureModelDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/MixtureModelWizardPage.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/MosaicWizardPage.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/OutputRasterParametersWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterHistogramDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterHistogramWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterInfoWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterInfoWizardPage.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterNavigatorDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterNavigatorWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterNavigatorWizardPage.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/SegmenterDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/SegmenterWizardPage.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/TiePointLocatorDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/TiePointLocatorWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/TiePointsLocatorAdvancedDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/TiePointsLocatorDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/TiePointsLocatorDialog.h)
-
-
-
-# Symbology Encoding
-file(GLOB TERRALIB_SE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/*.cpp)
-file(GLOB TERRALIB_SE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/*.h)
-file(GLOB TERRALIB_SE_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/ui/*.ui)
-
-source_group("Source Files\\se"  FILES ${TERRALIB_SE_SRC_FILES})
-source_group("Header Files\\se"  FILES ${TERRALIB_SE_HDR_FILES})
-source_group("UI Files\\se\\ui"  FILES ${TERRALIB_SE_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/AbstractGraphicWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/AbstractGraphicWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/BasicFillPropertyItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/BasicFillWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/BasicStrokePropertyItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/BasicStrokeWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/ChannelSelectionWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/CharMapWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/ColorMapWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/ContrastEnhancementWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/GlyphGraphicWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/GlyphMarkPropertyItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/GlyphMarkWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/GraphicFillWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/GraphicProperty.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/GraphicPropertyItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/GraphicSelectorWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/GroupingDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/GroupingWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/ImageOutlineWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/LineSymbolizerProperty.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/LineSymbolizerWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/LocalGraphicWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/LocalImagePropertyItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/LocalImageWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/OverlapBehaviorWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/PointSymbolizerProperty.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/PointSymbolizerWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/PolygonSymbolizerProperty.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/PolygonSymbolizerWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/RasterSymbolizerDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/RasterSymbolizerWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/SelectedChannelWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/ShadedReliefWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/StyleControllerWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/StyleDockWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/StyleExplorer.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/SymbolEditorWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/SymbolSelectorDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/SymbolTableWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/WellKnownGraphicWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/WellKnownMarkPropertyItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/WellKnownMarkWidget.h)
-
-
-# SRS
-file(GLOB TERRALIB_SRS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/srs/*.cpp)
-file(GLOB TERRALIB_SRS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/srs/*.h)
-file(GLOB TERRALIB_SRS_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/srs/ui/*.ui)
-
-source_group("Source Files\\srs"  FILES ${TERRALIB_SRS_SRC_FILES})
-source_group("Header Files\\srs"  FILES ${TERRALIB_SRS_HDR_FILES})
-source_group("UI Files\\srs\\ui"  FILES ${TERRALIB_SRS_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/srs/SRSManagerDialog.h)
-
-# Spatial Temporal
-file(GLOB TERRALIB_ST_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/*.cpp)
-file(GLOB TERRALIB_ST_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/*.h)
-file(GLOB TERRALIB_ST_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/ui/*.ui)
-
-source_group("Source Files\\st"  FILES ${TERRALIB_ST_SRC_FILES})
-source_group("Header Files\\st"  FILES ${TERRALIB_ST_HDR_FILES})
-source_group("UI Files\\st\\ui"  FILES ${TERRALIB_ST_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/PixmapItem.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSliderWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryItem.h)
-
-# Table files
-file(GLOB TERRALIB_TABLE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/*.cpp)
-file(GLOB TERRALIB_TABLE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/*.h)
-file(GLOB TERRALIB_TABLE_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/ui/*.ui)
-
-source_group("Source Files\\table"  FILES ${TERRALIB_TABLE_SRC_FILES})
-source_group("Header Files\\table"  FILES ${TERRALIB_TABLE_HDR_FILES})
-source_group("UI Files\\table\\ui"  FILES ${TERRALIB_TABLE_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/AddColumnDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/AlterDataDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/DataSetTableVerticalHeader.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/DataSetTableView.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/RenameColumnDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/RetypeColumnDialog.h)
-
-# Temporal files
-file(GLOB TERRALIB_TEMPORAL_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/*.cpp)
-file(GLOB TERRALIB_TEMPORAL_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/*.h)
-file(GLOB TERRALIB_TEMPORAL_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/ui/*.ui)
-
-source_group("Source Files\\temporal"  FILES ${TERRALIB_TEMPORAL_SRC_FILES})
-source_group("Header Files\\temporal"  FILES ${TERRALIB_TEMPORAL_HDR_FILES})
-source_group("UI Files\\temporal\\ui"  FILES ${TERRALIB_TEMPORAL_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/ObservationDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TemporalPropertiesWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TimeSeriesDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TimeSeriesPropertiesWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TrajectoryDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TrajectoryPropertiesWidget.h)
-
-# Tools files
-file(GLOB TERRALIB_TOOLS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/*.cpp)
-file(GLOB TERRALIB_TOOLS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/*.h)
-
-source_group("Source Files\\tools"  FILES ${TERRALIB_TOOLS_SRC_FILES})
-source_group("Header Files\\tools"  FILES ${TERRALIB_TOOLS_HDR_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/CoordTracking.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/ExtentAcquire.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/Info.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/Measure.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/PanExtent.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/PointPicker.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/PolygonAcquire.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/ReadPixelTool.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/Selection.h)
-
-# Utils files
-file(GLOB TERRALIB_UTILS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/*.cpp)
-file(GLOB TERRALIB_UTILS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/*.h)
-file(GLOB TERRALIB_UTILS_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/ui/*.ui)
-
-source_group("Source Files\\utils"      FILES ${TERRALIB_UTILS_SRC_FILES})
-source_group("Header Files\\utils"      FILES ${TERRALIB_UTILS_HDR_FILES})
-source_group("Header Files\\utils\\ui"  FILES ${TERRALIB_UTILS_UI_FILES})
-
-list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/ColorPickerToolButton.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/DoubleListWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/FileChooser.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/HorizontalSliderWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/ListWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/ParameterDialog.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/ParameterTableWidget.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/ResourceChooser.h)
-
-
-set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 if(Qt5_FOUND)
+  set(CMAKE_AUTOMOC ON)
 
-# uic'ing
+  set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-  QT5_WRAP_UI(TERRALIB_UTILS_GEN_HDR_FILES ${TERRALIB_UTILS_UI_FILES})
-  list(APPEND TERRALIB_FILES ${TERRALIB_UTILS_SRC_FILES} ${TERRALIB_UTILS_HDR_FILES} ${TERRALIB_UTILS_GEN_HDR_FILES})
+  #
+  # Qt5 uic'ing
+  #
 
-# Canvas
+  list(APPEND TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+
+  # canvas
   QT5_WRAP_UI(TERRALIB_CANVAS_GEN_HDR_FILES ${TERRALIB_CANVAS_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_CANVAS_SRC_FILES} ${TERRALIB_CANVAS_HDR_FILES} ${TERRALIB_CANVAS_GEN_HDR_FILES})
 
-# Charts
+  # charts
   QT5_WRAP_UI(TERRALIB_CHARTS_GEN_HDR_FILES ${TERRALIB_CHARTS_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_CHARTS_SRC_FILES} ${TERRALIB_CHARTS_HDR_FILES} ${TERRALIB_CHARTS_GEN_HDR_FILES})
 
-# Classification
+  # classification
   QT5_WRAP_UI(TERRALIB_CLASSIFICATION_GEN_HDR_FILES ${TERRALIB_CLASSIFICATION_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_CLASSIFICATION_SRC_FILES} ${TERRALIB_CLASSIFICATION_HDR_FILES} ${TERRALIB_CLASSIFICATION_GEN_HDR_FILES})
 
-# Color Bar
+  # colorbar
   QT5_WRAP_UI(TERRALIB_COLORBAR_GEN_HDR_FILES ${TERRALIB_COLORBAR_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_COLORBAR_SRC_FILES} ${TERRALIB_COLORBAR_HDR_FILES} ${TERRALIB_COLORBAR_GEN_HDR_FILES})
 
-# Dataset - Explorer
+  # dataset - explorer
   list(APPEND TERRALIB_FILES ${TERRALIB_DATASET_EXPLORER_SRC_FILES} ${TERRALIB_DATASET_EXPLORER_HDR_FILES})
 
-# Dataset - Selector
+  # dataset - selector
   QT5_WRAP_UI(TERRALIB_DATASET_SELECTOR_GEN_HDR_FILES ${TERRALIB_DATASET_SELECTOR_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_DATASET_SELECTOR_SRC_FILES} ${TERRALIB_DATASET_SELECTOR_HDR_FILES} ${TERRALIB_DATASET_SELECTOR_GEN_HDR_FILES})
 
-# Datasource - Connector
+  # datasource - connector
   list(APPEND TERRALIB_FILES ${TERRALIB_DATASOURCE_CONNECTOR_SRC_FILES} ${TERRALIB_DATASOURCE_CONNECTOR_HDR_FILES})
 
-# Datasource - Core
+  # datasource - core
   list(APPEND TERRALIB_FILES ${TERRALIB_DATASOURCE_CORE_SRC_FILES} ${TERRALIB_DATASOURCE_CORE_HDR_FILES})
 
-# Datasource - Explorer
+  # datasource - explorer
   list(APPEND TERRALIB_FILES ${TERRALIB_DATASOURCE_EXPLORER_SRC_FILES} ${TERRALIB_DATASOURCE_EXPLORER_HDR_FILES})
 
-# Datasource - Selector
+  # datasource - selector
   QT5_WRAP_UI(TERRALIB_DATASOURCE_SELECTOR_GEN_HDR_FILES ${TERRALIB_DATASOURCE_SELECTOR_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_DATASOURCE_SELECTOR_SRC_FILES} ${TERRALIB_DATASOURCE_SELECTOR_HDR_FILES} ${TERRALIB_DATASOURCE_SELECTOR_GEN_HDR_FILES})
 
-# Exchanger
+  # exchanger
   QT5_WRAP_UI(TERRALIB_EXCHANGER_GEN_HDR_FILES ${TERRALIB_EXCHANGER_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_EXCHANGER_SRC_FILES} ${TERRALIB_EXCHANGER_HDR_FILES} ${TERRALIB_EXCHANGER_GEN_HDR_FILES})
 
-# External Table
+  # externaltable
   QT5_WRAP_UI(TERRALIB_EXTERNALTABLE_GEN_HDR_FILES ${TERRALIB_EXTERNALTABLE_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_EXTERNALTABLE_SRC_FILES} ${TERRALIB_EXTERNALTABLE_HDR_FILES} ${TERRALIB_EXTERNALTABLE_GEN_HDR_FILES})
 
-# Help
+  # help
   list(APPEND TERRALIB_FILES ${TERRALIB_HELP_SRC_FILES} ${TERRALIB_HELP_HDR_FILES})
 
-# Layer - Explorer
+  # layer - explorer
   list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_EXPLORER_SRC_FILES} ${TERRALIB_LAYER_EXPLORER_HDR_FILES})
 
-# Layer - Info
+  # layer - info
   list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_INFO_SRC_FILES} ${TERRALIB_LAYER_INFO_HDR_FILES})
 
-# Layer - Search
+  # layer - search
   QT5_WRAP_UI(TERRALIB_LAYER_SEARCH_GEN_HDR_FILES ${TERRALIB_LAYER_SEARCH_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_SEARCH_SRC_FILES} ${TERRALIB_LAYER_SEARCH_HDR_FILES} ${TERRALIB_LAYER_SEARCH_GEN_HDR_FILES})
 
-# Layer - Selector
+  # layer - selector
   list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_SELECTOR_SRC_FILES} ${TERRALIB_LAYER_SELECTOR_HDR_FILES})
 
-# Layer - Utils
+  # layer - utils
   list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_UTILS_SRC_FILES} ${TERRALIB_LAYER_UTILS_HDR_FILES})
   
-# Layout
+  # layout
   list(APPEND TERRALIB_FILES ${TERRALIB_LAYOUT_SRC_FILES} ${TERRALIB_LAYOUT_HDR_FILES})
 
-# MapDisplay
+  # mapdisplay
   list(APPEND TERRALIB_FILES ${TERRALIB_MAPDISPLAY_SRC_FILES} ${TERRALIB_MAPDISPLAY_HDR_FILES})
 
-# Plugin - builder
+  # plugin - builder
   QT5_WRAP_UI(TERRALIB_PLUGIN_BUILDER_GEN_HDR_FILES ${TERRALIB_PLUGIN_BUILDER_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_PLUGIN_BUILDER_SRC_FILES} ${TERRALIB_PLUGIN_BUILDER_HDR_FILES} ${TERRALIB_PLUGIN_BUILDER_GEN_HDR_FILES})
 
-# Plugin - manager
+  # plugin - manager
   QT5_WRAP_UI(TERRALIB_PLUGIN_MANAGER_GEN_HDR_FILES ${TERRALIB_PLUGIN_MANAGER_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_PLUGIN_MANAGER_SRC_FILES} ${TERRALIB_PLUGIN_MANAGER_HDR_FILES} ${TERRALIB_PLUGIN_MANAGER_GEN_HDR_FILES})
 
-# Progress
+  # progress
   list(APPEND TERRALIB_FILES ${TERRALIB_PROGRESS_SRC_FILES} ${TERRALIB_PROGRESS_HDR_FILES})
 
-# Property
+  # property
   QT5_WRAP_UI(TERRALIB_PROPERTY_GEN_HDR_FILES ${TERRALIB_PROPERTY_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_PROPERTY_SRC_FILES} ${TERRALIB_PROPERTY_HDR_FILES} ${TERRALIB_PROPERTY_GEN_HDR_FILES})
 
-# PropertyBrowser
+  # propertybrowser
   list(APPEND TERRALIB_FILES ${TERRALIB_PROPERTY_BROWSER_SRC_FILES} ${TERRALIB_PROPERTY_BROWSER_HDR_FILES})
 
-# Query
+  # query
   QT5_WRAP_UI(TERRALIB_QUERY_GEN_HDR_FILES ${TERRALIB_QUERY_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_QUERY_SRC_FILES} ${TERRALIB_QUERY_HDR_FILES} ${TERRALIB_QUERY_GEN_HDR_FILES})
 
-# Raster Processing
+  # raster Processing
   QT5_WRAP_UI(TERRALIB_RP_GEN_HDR_FILES ${TERRALIB_RP_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_RP_SRC_FILES} ${TERRALIB_RP_HDR_FILES} ${TERRALIB_RP_GEN_HDR_FILES})
 
-# Symbology Encoding
+  # symbology Encoding
   QT5_WRAP_UI(TERRALIB_SE_GEN_HDR_FILES ${TERRALIB_SE_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_SE_SRC_FILES} ${TERRALIB_SE_HDR_FILES} ${TERRALIB_SE_GEN_HDR_FILES})
 
-# SRS
+  # srs
   QT5_WRAP_UI(TERRALIB_SRS_GEN_HDR_FILES ${TERRALIB_SRS_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_SRS_SRC_FILES} ${TERRALIB_SRS_HDR_FILES} ${TERRALIB_SRS_GEN_HDR_FILES})
 
-# Spatial Temporal
+  # st
   QT5_WRAP_UI(TERRALIB_ST_GEN_HDR_FILES ${TERRALIB_ST_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_ST_SRC_FILES} ${TERRALIB_ST_HDR_FILES} ${TERRALIB_ST_GEN_HDR_FILES})
 
-# Table
+  # table
   QT5_WRAP_UI(TERRALIB_TABLE_GEN_HDR_FILES ${TERRALIB_TABLE_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_TABLE_SRC_FILES} ${TERRALIB_TABLE_HDR_FILES} ${TERRALIB_TABLE_GEN_HDR_FILES})
 
-# Temporal
+  # temporal
   QT5_WRAP_UI(TERRALIB_TEMPORAL_GEN_HDR_FILES ${TERRALIB_TEMPORAL_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_TEMPORAL_SRC_FILES} ${TERRALIB_TEMPORAL_HDR_FILES} ${TERRALIB_TEMPORAL_GEN_HDR_FILES})
 
-# Tools
+  # tools
   list(APPEND TERRALIB_FILES ${TERRALIB_TOOLS_SRC_FILES} ${TERRALIB_TOOLS_HDR_FILES})
+
+  # utils
+  QT5_WRAP_UI(TERRALIB_UTILS_GEN_HDR_FILES ${TERRALIB_UTILS_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_UTILS_SRC_FILES} ${TERRALIB_UTILS_HDR_FILES} ${TERRALIB_UTILS_GEN_HDR_FILES})
+
 
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES})
 
@@ -728,7 +501,15 @@ if(Qt5_FOUND)
 
   qt5_use_modules(terralib_mod_qt_widgets Widgets PrintSupport)
 
-else() # Qt4
+else() # QT4_FOUND
+
+  include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+  include(${QT_USE_FILE})
+
+  include_directories(${QT_INCLUDE_DIR})
+
+  add_definitions(${QT_DEFINITIONS})
 
 # uic'ing
   QT4_WRAP_UI(TERRALIB_UTILS_GEN_HDR_FILES ${TERRALIB_UTILS_UI_FILES})
@@ -855,6 +636,295 @@ else() # Qt4
   list(APPEND TERRALIB_FILES ${TERRALIB_TOOLS_SRC_FILES} ${TERRALIB_TOOLS_HDR_FILES})
 
 # moc'ing
+
+  set(TERRALIB_HDRS_TO_MOC_FILES "")
+
+  # Canvas
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/DrawLayerThread.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/EyeBirdMapDisplayWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/MapDisplay.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/MultiThreadMapDisplay.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/OverlayWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/ZoomInMapDisplayWidget.h)
+
+  # Charts
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ChartDisplay.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ChartDisplayWidget.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ChartLayerDialog.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ChartLayerWidget.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ChartProperties.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ChartStyleFrame.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ChartStyleWidget.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/HistogramDataWidget.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/HistogramDialog.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/HistogramFrame.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/HistogramStyleWidget.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ScatterDataWidget.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ScatterDialog.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ScatterFrame.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ScatterStyleWidget.h)
+
+  # Classification
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/classification/ROIManagerDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/classification/ROIManagerWidget.h)
+
+  # Color Bar
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/colorbar/ColorBar.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/colorbar/ColorCatalogWidget.h)
+
+  # Dataset
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/DataSetCategoryModel.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/DataSetExplorer.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/DataSetTreeModel.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/DataSetTreeView.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/DataSetSelectorDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/DataSetSelectorWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/DataSetSelectorWizardPage.h)
+
+  # Datasource
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/AbstractDataSourceTreeItem.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/CheckConstraintItem.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/ConstraintsItem.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/DataSetCategoryGroupItem.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/DataSetCategoryItem.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/DataSetGroupItem.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/DataSetItem.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/DataSourceExplorer.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/DataSourceItem.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/DataSourceToolBox.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/DataSourceTreeModel.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/DataSourceTreeView.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/ForeignKeyItem.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/IndexGroupItem.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/IndexItem.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/PrimaryKeyItem.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/PropertyGroupItem.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/PropertyItem.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/UniqueKeyItem.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/selector/DataSourceExplorerDialog.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/selector/DataSourceSelectorDialog.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/selector/DataSourceSelectorWidget.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h)
+
+  # Exchanger
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/DataExchangerWizard.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/DataExchangeSummaryWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/DataSetOptionsWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/DirectExchangerDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/PostGIS2SHPDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/SHP2ADODialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/SHP2PostGISDialog.h)
+
+  # External Table
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/DataPropertiesDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/DataPropertiesWidget.h)
+
+  # Help
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/AssistantHelpManagerImpl.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/HelpPushButton.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/HelpToolButton.h)
+
+  # Layer
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/AbstractTreeItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/ChartItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/ChartSliceItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/ColorMapItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/ColorMapSliceItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/DataSetAdapterLayerItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/DataSetLayerItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/FolderLayerItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/GroupingItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/GroupingSliceItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/LayerExplorer.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/LayerTreeModel.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/LayerTreeView.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/LegendItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/QueryLayerItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/RasterLayerItem.h)
+
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/info/LayerPropertiesInfo.h)
+
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/search/LayerSearchWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/search/LayerSearchWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/search/LayerSelectorWidget.h)
+
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/AbstractLayerSelector.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/DataSetLayerSelector.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/HiddenDataSetLayerSelector.h)
+
+  # Layout
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layout/DataFrame.h)
+
+  # Map Display
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/mapdisplay/DataSetDisplay.h)
+
+  # Plugin
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.h)
+
+  # Progress files
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/ProgressViewerBar.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/ProgressViewerDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/ProgressViewerWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/ProgressWidgetItem.h)
+
+  # Property files
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/ConstraintsIndexesListWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/ConstraintsIndexesPropertyDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/ConstraintWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/DataSetAdapterWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/DateTimePropertyWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/GeometryPropertyWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/IndexWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/NewPropertyDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/NewPropertyWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/NumericPropertyWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/PrimaryKeyConstraintWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/PropertyConverterDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/StringPropertyWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/UniquekeyConstraintWidget.h)
+
+
+
+  # Property Browser
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/propertybrowser/AbstractPropertyItem.h)
+
+  # Query files
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/DataSetWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/DataSetWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/FieldsWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/GroupByWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/LayerAttributesWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/OrderByWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/OrderByWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/QueryBuilderWizard.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/QueryDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/WhereClauseWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/WhereClauseWizardPage.h)
+
+  # Raster Processing
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ClassifierDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ClassifierWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ClippingWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ColorTransformWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ContrastDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ContrastWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/FilterWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/MaskDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/MixtureModelDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/MixtureModelDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/MixtureModelWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/MosaicWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/OutputRasterParametersWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterHistogramDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterHistogramWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterInfoWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterInfoWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterNavigatorDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterNavigatorWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/RasterNavigatorWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/SegmenterDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/SegmenterWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/TiePointLocatorDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/TiePointLocatorWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/TiePointsLocatorAdvancedDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/TiePointsLocatorDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/TiePointsLocatorDialog.h)
+
+  # Symbology Encoding
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/AbstractGraphicWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/AbstractGraphicWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/BasicFillPropertyItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/BasicFillWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/BasicStrokePropertyItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/BasicStrokeWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/ChannelSelectionWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/CharMapWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/ColorMapWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/ContrastEnhancementWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/GlyphGraphicWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/GlyphMarkPropertyItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/GlyphMarkWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/GraphicFillWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/GraphicProperty.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/GraphicPropertyItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/GraphicSelectorWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/GroupingDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/GroupingWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/ImageOutlineWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/LineSymbolizerProperty.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/LineSymbolizerWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/LocalGraphicWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/LocalImagePropertyItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/LocalImageWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/OverlapBehaviorWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/PointSymbolizerProperty.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/PointSymbolizerWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/PolygonSymbolizerProperty.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/PolygonSymbolizerWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/RasterSymbolizerDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/RasterSymbolizerWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/SelectedChannelWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/ShadedReliefWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/StyleControllerWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/StyleDockWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/StyleExplorer.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/SymbolEditorWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/SymbolSelectorDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/SymbolTableWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/WellKnownGraphicWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/WellKnownMarkPropertyItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/WellKnownMarkWidget.h)
+
+  # SRS
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/srs/SRSManagerDialog.h)
+
+  # Spatial Temporal
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/PixmapItem.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSliderWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryItem.h)
+
+  # Table files
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/AddColumnDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/AlterDataDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/DataSetTableVerticalHeader.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/DataSetTableView.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/RenameColumnDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/RetypeColumnDialog.h)
+
+  # Temporal files
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/ObservationDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TemporalPropertiesWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TimeSeriesDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TimeSeriesPropertiesWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TrajectoryDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TrajectoryPropertiesWidget.h)
+
+  # Tools files
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/CoordTracking.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/ExtentAcquire.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/Info.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/Measure.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/PanExtent.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/PointPicker.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/PolygonAcquire.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/ReadPixelTool.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/Selection.h)
+
+  # Utils files
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/ColorPickerToolButton.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/DoubleListWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/FileChooser.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/HorizontalSliderWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/ListWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/ParameterDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/ParameterTableWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/ResourceChooser.h)
+
+
+  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES} OPTIONS -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
   list(APPEND TERRALIB_FILES ${TERRALIB_GEN_SRC_FILES} DataSetTableView.moc)
 
@@ -871,9 +941,9 @@ set_target_properties(terralib_mod_qt_widgets
 
 install(TARGETS terralib_mod_qt_widgets
         EXPORT terralib-targets
-        RUNTIME DESTINATION bin COMPONENT runtime
-        LIBRARY DESTINATION lib COMPONENT runtime
-        ARCHIVE DESTINATION lib COMPONENT runtime)
+        RUNTIME DESTINATION TERRALIB_DESTINATION_RUNTIME COMPONENT runtime
+        LIBRARY DESTINATION TERRALIB_DESTINATION_LIBRARY COMPONENT runtime
+        ARCHIVE DESTINATION TERRALIB_DESTINATION_ARCHIVE COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION include/terralib/qt/widgets COMPONENT devel)
