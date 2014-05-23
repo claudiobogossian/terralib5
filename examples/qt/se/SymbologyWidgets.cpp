@@ -202,10 +202,10 @@ void BasicWidgets()
   QApplication app(argc, 0);
 
   // Adjusting icons theme
-//juan  QString spaths = std::string(ICON_THEME_PATH).c_str();
-//juan  QStringList paths = spaths.split(";");
-//juan  QIcon::setThemeName(ICON_THEME);
-//juan  QIcon::setThemeSearchPaths(paths);
+  QStringList ithemes = QIcon::themeSearchPaths();
+  ithemes.push_back(te::common::FindInTerraLibPath("share/terralib/icons").c_str());
+  QIcon::setThemeName("terralib");
+  QIcon::setThemeSearchPaths(ithemes);
 
   SymbolSelector();
 
