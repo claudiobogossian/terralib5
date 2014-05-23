@@ -51,6 +51,7 @@
 #include <QTextEdit>
 #include <QMenuBar>
 #include <QAction>
+#include <QPushButton>
 
 te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Observable* o ) :
 	QDockWidget("", 0, 0),
@@ -66,6 +67,9 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionImport("template_import"),
   m_optionNew("template_new"),
   m_optionScale("scale_object"),
+  m_optionMapPan("map_pan"),
+  m_optionMapZoomIn("map_zoom_in"),
+  m_optionMapZoomOut("map_zoom_out"),
   m_toolbar(0),
   m_btnMap(0)
 {
@@ -117,7 +121,13 @@ void te::layout::ToolbarOutside::createToolbar()
 {
   m_toolbar = new QToolBar;
 
+  createArrowCursorButton();
+  m_toolbar->addSeparator();
+
   createViewAreaToolButton();
+  m_toolbar->addSeparator();
+
+  createMapToolsToolButton();
   m_toolbar->addSeparator();
 
   createMapToolButton();
@@ -155,6 +165,27 @@ void te::layout::ToolbarOutside::createMapToolButton()
   m_toolbar->addWidget(btnMap);
 }
 
+void te::layout::ToolbarOutside::createMapToolsToolButton()
+{
+  QMenu* menu = new QMenu();
+  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onMapToolsTriggered(QAction*)));
+
+  QAction* actionPan = createAction("Pan Tool", m_optionMapPan, "layout-map-pan");
+  menu->addAction(actionPan);
+
+  QAction* actionZoomIn = createAction("Zoom In", m_optionMapZoomIn, "layout-map-zoom-in");
+  menu->addAction(actionZoomIn);
+
+  QAction* actionZoomOut = createAction("Zoom Out", m_optionMapZoomOut, "layout-map-zoom-out");
+  menu->addAction(actionZoomOut);
+  
+  QToolButton *btnMapTools = createToolButton("Map Tools", "Map Tools", "layout-map-pan");
+  btnMapTools->setMenu(menu);
+  btnMapTools->setPopupMode(QToolButton::InstantPopup);
+
+  m_toolbar->addWidget(btnMapTools);
+}
+
 void te::layout::ToolbarOutside::createGeometryToolButton()
 {
   QMenu* menu = new QMenu();
@@ -184,7 +215,7 @@ void te::layout::ToolbarOutside::createViewAreaToolButton()
   QAction* actionZoomOut = createAction("Zoom Out", m_optionRectangle, "layout-paper-zoom-out");
   menu->addAction(actionZoomOut);
 
-  QToolButton *btnViewArea = createToolButton("View Area Tools", "View Area Objects", "layout-paper-pan");
+  QToolButton *btnViewArea = createToolButton("Paper Tools", "Paper Tools", "layout-paper-pan");
   btnViewArea->setMenu(menu);
   btnViewArea->setPopupMode(QToolButton::InstantPopup);
 
@@ -205,11 +236,20 @@ void te::layout::ToolbarOutside::createTemplateToolButton()
   QAction* actionImport = createAction("Import Template", m_optionImport, "layout-import");
   menu->addAction(actionImport);
 
-  QToolButton *btnTemplate = createToolButton("Template Options", "Template", "layout-export");
+  QToolButton *btnTemplate = createToolButton("Template Tools", "Template Tools", "layout-export");
   btnTemplate->setMenu(menu);
   btnTemplate->setPopupMode(QToolButton::InstantPopup);
 
   m_toolbar->addWidget(btnTemplate);
+}
+
+void te::layout::ToolbarOutside::createArrowCursorButton()
+{
+  QToolButton *btnArrowCursor = createToolButton("Arrow Cursor", "Arrow Cursor", "layout-default-cursor");
+  btnArrowCursor->setCheckable(false);
+  connect(btnArrowCursor, SIGNAL(clicked(bool)), this, SLOT(onArrowCursorClicked(bool)));
+
+  m_toolbar->addWidget(btnArrowCursor);
 }
 
 void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
@@ -229,6 +269,22 @@ void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
   if(action->objectName().compare(m_optionScale.c_str()) == 0)
   {
     changeAction(TypeCreateScale);
+  }
+}
+
+void te::layout::ToolbarOutside::onMapToolsTriggered( QAction* action )
+{
+  if(action->objectName().compare(m_optionMapPan.c_str()) == 0)
+  {
+    changeAction(TypeMapPan);
+  }
+  if(action->objectName().compare(m_optionMapZoomIn.c_str()) == 0)
+  {
+    changeAction(TypeMapZoomIn);
+  }
+  if(action->objectName().compare(m_optionMapZoomOut.c_str()) == 0)
+  {
+    changeAction(TypeMapZoomOut);
   }
 }
 
@@ -272,6 +328,11 @@ void te::layout::ToolbarOutside::onTemplateTriggered( QAction* action )
   }
 }
 
+void te::layout::ToolbarOutside::onArrowCursorClicked(bool checked)
+{
+  changeAction(TypeArrowCursor);
+}
+
 void te::layout::ToolbarOutside::changeAction( LayoutMode mode )
 {
   bool result = false;
@@ -293,6 +354,20 @@ QToolButton* te::layout::ToolbarOutside::createToolButton( std::string text, std
   btn->setCheckable(true);
   btn->setToolTip(tooltip.c_str());
   
+  std::string icon_path = LAYOUT_IMAGES_PNG"/" + icon;
+  btn->setIcon(QIcon::fromTheme(icon_path.c_str()));
+
+  return btn;
+}
+
+QPushButton* te::layout::ToolbarOutside::createPushButton( std::string text, std::string tooltip, std::string icon )
+{
+  QPushButton *btn = new QPushButton;
+  btn->setText(text.c_str());
+  btn->setGeometry(0,0,10,10);
+  btn->setCheckable(true);
+  btn->setToolTip(tooltip.c_str());
+
   std::string icon_path = LAYOUT_IMAGES_PNG"/" + icon;
   btn->setIcon(QIcon::fromTheme(icon_path.c_str()));
 

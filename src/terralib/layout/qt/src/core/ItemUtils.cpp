@@ -28,6 +28,7 @@
 // TerraLib
 #include "ItemUtils.h"
 #include "ItemModelObservable.h"
+#include "Context.h"
 
 // STL
 #include <stddef.h>  // defines NULL
@@ -163,4 +164,28 @@ TELAYOUTEXPORT int te::layout::maxTypeId( QList<QGraphicsItem*> graphicsItems, L
   }
 
   return id;
+}
+
+TELAYOUTEXPORT bool te::layout::isCurrentMapTools()
+{
+  bool result = false;
+
+  te::layout::LayoutMode mode = te::layout::Context::getInstance()->getMode();
+
+  switch(mode)
+  {
+  case TypeMapPan:
+    result = true;
+    break;
+  case TypeMapZoomIn:
+    result = true;
+    break;
+  case TypeMapZoomOut:
+    result = true;
+    break;
+  default:
+    result = false;
+  }
+
+  return result;
 }

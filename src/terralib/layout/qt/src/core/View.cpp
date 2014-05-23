@@ -55,6 +55,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QPixmap>
+#include "ItemUtils.h"
 
 #define _psPointInMM 0.352777778 //<! 1 PostScript point in millimeters
 #define _inchInPSPoints 72 //<! 1 Inch in PostScript point
@@ -108,7 +109,9 @@ void te::layout::View::mouseMoveEvent( QMouseEvent * event )
 
 void te::layout::View::wheelEvent( QWheelEvent *event )
 {
-  scaleView(pow((double)2, -event->delta() / 240.0));
+  QGraphicsView::wheelEvent(event);
+
+  //scaleView(pow((double)2, -event->delta() / 240.0));
 }
 
 void te::layout::View::scaleView( qreal scaleFactor )
@@ -254,42 +257,84 @@ void te::layout::View::onToolbarChangeContext( bool change )
   if(!sc)
     return;
 
-  if(Context::getInstance()->getMode() == TypeUnitsMetricsChange)
-  {
+  LayoutMode mode = Context::getInstance()->getMode();
+  QList<QGraphicsItem*> graphicsItems;
 
-  }
-
-  if( Context::getInstance()->getMode() == TypeNewTemplate)
+  switch(mode)
   {
-    sc->refresh();
-    m_visualizationArea->build();
-  }
-  if(Context::getInstance()->getMode() == TypeExportPropsJSON)
-  {
-    sc->exportPropsAsJSON();
-  }
-  if(Context::getInstance()->getMode() == TypeImportJSONProps)
-  {
-    sc->buildTemplate(m_visualizationArea);
-  }
-
-  if(Context::getInstance()->getMode() == TypePan)
-  {
-    //Use ScrollHand Drag Mode to enable Panning
-    //You do need the enable scroll bars for that to work.
-    setDragMode(ScrollHandDrag);
-    //Whole view not interactive while in ScrollHandDrag Mode
-    setInteractive(false);
-    //setCursor(Qt::OpenHandCursor);
-  }
-  else
-  {
-    //Use ScrollHand Drag Mode to enable Panning
-    //You do need the enable scroll bars for that to work.
-    setDragMode(RubberBandDrag);
-    //Whole view not interactive while in ScrollHandDrag Mode
-    setInteractive(true);
-    setCursor(Qt::ArrowCursor);
+  case TypeUnitsMetricsChange:
+    {
+      break;
+    }
+  case TypeNewTemplate:
+    {
+      sc->refresh();
+      m_visualizationArea->build();
+      resetDefaultConfig();
+      break;
+    }
+  case TypeExportPropsJSON:
+    {
+      sc->exportPropsAsJSON();
+      resetDefaultConfig();
+      break;
+    }
+  case TypeImportJSONProps:
+    {
+      sc->buildTemplate(m_visualizationArea);
+      resetDefaultConfig();
+      break;
+    }
+  case TypeMapPan:
+    {
+      graphicsItems = sc->selectedItems();
+      if(te::layout::getMapItemList(graphicsItems).empty())
+      {
+        resetDefaultConfig();
+      }
+      else
+      {
+        sc->setCurrentToolInSelectedMapItems(TypeMapPan);
+      }
+      break;
+    }
+  case TypeMapZoomIn:
+    {
+      graphicsItems = sc->selectedItems();
+      if(te::layout::getMapItemList(graphicsItems).empty())
+      {
+        resetDefaultConfig();
+      }
+      else
+      {
+        sc->setCurrentToolInSelectedMapItems(TypeMapZoomIn);
+      }
+      break;
+    }
+  case TypeMapZoomOut:
+    {
+      graphicsItems = sc->selectedItems();
+      if(te::layout::getMapItemList(graphicsItems).empty())
+      {
+        resetDefaultConfig();
+      }
+      else
+      {
+        sc->setCurrentToolInSelectedMapItems(TypeMapZoomOut);
+      }
+      break;
+    }
+  case TypePan:
+    {
+      //Use ScrollHand Drag Mode to enable Panning
+      //You do need the enable scroll bars for that to work.
+      setDragMode(ScrollHandDrag);
+      //Whole view not interactive while in ScrollHandDrag Mode
+      setInteractive(false);
+      break;
+    }
+  default:
+    resetDefaultConfig();
   }
 }
 
@@ -361,4 +406,14 @@ void te::layout::View::destroyItemGroup()
       }
     }
   }
+}
+
+void te::layout::View::resetDefaultConfig()
+{
+  //Use ScrollHand Drag Mode to enable Panning
+  //You do need the enable scroll bars for that to work.
+  setDragMode(RubberBandDrag);
+  //Whole view not interactive while in ScrollHandDrag Mode
+  setInteractive(true);
+  setCursor(Qt::ArrowCursor);
 }

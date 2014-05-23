@@ -37,24 +37,28 @@ namespace te
     */
     typedef enum
     {
-      TypeSelectByBox,
-      TypeSelect,
-      TypePan,
-      TypeZoomIn,
-      TypeZoomOut,
-      TypeCreate,
-      TypeCreateMap,
-      TypeCreateMapGrid,
-      TypeCreateLegend,
-      TypeCreateRectangle,
-      TypeCreateText,
-      TypeCreateItemGroup,
-      TypeUnitsMetricsChange,
-      TypeExportPropsJSON,
-      TypeImportJSONProps,
-      TypeNewTemplate,
-      TypeCreateScale,
-      TypeNone
+      TypeSelectByBox = 1,
+      TypeSelect = 2,
+      TypeArrowCursor = 3,
+      TypePan = 4,
+      TypeZoomIn = 5,
+      TypeZoomOut = 6,
+      TypeMapPan = 7,
+      TypeMapZoomIn = 8,
+      TypeMapZoomOut = 9,
+      TypeCreate = 10,
+      TypeCreateMap = 11,
+      TypeCreateMapGrid = 12,
+      TypeCreateLegend = 13,
+      TypeCreateRectangle = 14,
+      TypeCreateText = 15,
+      TypeCreateItemGroup = 16,
+      TypeUnitsMetricsChange = 17,
+      TypeExportPropsJSON = 18,
+      TypeImportJSONProps = 19,
+      TypeNewTemplate = 20,
+      TypeCreateScale = 21,
+      TypeNone = 0
     } LayoutMode;
 
     /*!
@@ -72,7 +76,7 @@ namespace te
     typedef enum
     {
       TypePlanar = 0,
-      TypeGeodesic = 90
+      TypeGeodesic = 1
     } LayoutGridType;
   }
 }

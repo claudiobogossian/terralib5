@@ -55,6 +55,7 @@ void te::layout::ItemGroupModel::draw( ContextItem context )
   
   canvas->setPolygonContourWidth(2);
   canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 255, 255));
+  canvas->setPolygonFillColor(m_backgroundColor);
   canvas->setBackgroundColor(m_backgroundColor);
   
   utils->drawRectW(m_box);

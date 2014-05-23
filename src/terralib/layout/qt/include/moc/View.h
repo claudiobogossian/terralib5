@@ -94,6 +94,8 @@ namespace te
 
         virtual void destroyItemGroup();
         
+        virtual void resetDefaultConfig();
+        
       protected:
         OutsideArea*  m_outsideArea;
         VisualizationArea* m_visualizationArea;

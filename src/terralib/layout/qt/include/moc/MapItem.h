@@ -36,6 +36,8 @@
 #include "ItemObserver.h"
 #include "../../../../qt/widgets/canvas/MultiThreadMapDisplay.h"
 #include "../../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
+#include "../../../../qt/widgets/tools/AbstractTool.h"
+#include "EnumMode.h"
 
 class QGraphicsSceneMouseEvent;
 class QMimeData;
@@ -68,6 +70,10 @@ namespace te
         virtual void setPos(const QPointF &pos);
 
         void	setZValue ( qreal z );
+
+        virtual void changeCurrentTool(LayoutMode mode);
+
+        void clearCurrentTool();
                         
       protected slots:
 
@@ -99,6 +105,8 @@ namespace te
 
       virtual int getZValueItem();
 
+      void setCurrentTool(te::qt::widgets::AbstractTool* tool);
+
     protected:
 
       QPixmap m_pixmap;
@@ -108,6 +116,7 @@ namespace te
       te::qt::widgets::MultiThreadMapDisplay* m_mapDisplay;
       bool m_grabbedByWidget;
       te::qt::widgets::AbstractTreeItem* m_treeItem;
+      te::qt::widgets::AbstractTool* m_tool;
     };
   }
 }

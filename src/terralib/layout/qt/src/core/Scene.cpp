@@ -30,7 +30,6 @@
 #include "ItemObserver.h"
 #include <QWidget>
 #include "Context.h"
-#include "EnumMode.h"
 #include "ItemGroup.h"
 #include "ItemGroupModel.h"
 #include "ItemGroupController.h"
@@ -44,6 +43,8 @@
 #include "PaperConfig.h"
 #include "VisualizationArea.h"
 #include "BuildGraphicsItem.h"
+#include "MapItem.h"
+#include "ItemUtils.h"
 
 // STL
 #include <iostream>
@@ -648,5 +649,32 @@ void te::layout::Scene::createItem( const te::gm::Coord2D& coord )
   if(item)
   {
     Context::getInstance()->setMode(TypeNone);
+  }
+}
+
+void te::layout::Scene::setCurrentToolInSelectedMapItems( LayoutMode mode )
+{
+  if(mode == TypeNone)
+    return;
+
+  if(!te::layout::isCurrentMapTools())
+    return;
+
+  QList<QGraphicsItem*> graphicsItems = selectedItems();
+
+  foreach(QGraphicsItem *item, graphicsItems) 
+  {
+    if(!item)
+      continue;
+
+    te::layout::ItemObserver* lItem = dynamic_cast<te::layout::ItemObserver*>(item);
+    if(!lItem)
+      continue;
+
+    te::layout::MapItem* mit = dynamic_cast<te::layout::MapItem*>(lItem);
+    if(!mit)
+      continue;
+
+    mit->changeCurrentTool(mode);
   }
 }

@@ -36,6 +36,9 @@
 #include "../../../../geometry/Envelope.h"
 #include "EnumMode.h"
 
+// STL
+#include <string>
+
 class QGraphicsItem;
 class QWidget;
 class QToolBar;
@@ -43,6 +46,7 @@ class QGroupBox;
 class QAction;
 class QToolButton;
 class QMenu;
+class QPushButton;
 
 namespace te
 {
@@ -65,11 +69,15 @@ namespace te
       
       virtual void onMapTriggered(QAction* action);
 
+      virtual void onMapToolsTriggered(QAction* action);
+
       virtual void onGeometryTriggered(QAction* action);
 
       virtual void onViewAreaTriggered(QAction* action);
 
       virtual void onTemplateTriggered(QAction* action);
+
+      virtual void onArrowCursorClicked(bool checked);
 
     signals:
 
@@ -81,15 +89,21 @@ namespace te
 
       virtual void createMapToolButton();
 
+      virtual void createMapToolsToolButton();
+
       virtual void createGeometryToolButton();
 
       virtual void createViewAreaToolButton();
 
       virtual void createTemplateToolButton();
 
+      virtual void createArrowCursorButton();
+
       virtual void changeAction(LayoutMode mode);
 
       virtual QToolButton* createToolButton(std::string text, std::string tooltip, std::string icon);
+
+      virtual QPushButton* createPushButton(std::string text, std::string tooltip, std::string icon);
       
       virtual QAction* createAction(std::string text, std::string objName, std::string icon, std::string tooltip = "");
 
@@ -101,6 +115,11 @@ namespace te
       std::string m_optionMapGrid;
       std::string m_optionLegendDefault;
       std::string m_optionScale;
+
+      /* Map Tools */
+      std::string m_optionMapZoomIn;
+      std::string m_optionMapZoomOut;
+      std::string m_optionMapPan;
 
       /* Geometry Menu */
       std::string m_optionRectangle;

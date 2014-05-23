@@ -44,6 +44,12 @@
 #include "../../../../srs/Converter.h"
 #include "../../../../qt/widgets/tools/ZoomWheel.h"
 #include "../../../../maptools/Utils.h"
+#include "MapController.h"
+#include "../../../../qt/widgets/tools/Pan.h"
+#include "../../../../qt/widgets/tools/ZoomArea.h"
+#include "../../../../qt/widgets/tools/ZoomClick.h"
+#include "LayoutConfig.h"
+#include "ItemUtils.h"
 
 // STL
 #include <vector>
@@ -64,14 +70,15 @@
 #include <QApplication>
 #include <QGraphicsSceneMouseEvent>
 #include <QStyleOptionGraphicsItem>
-#include "MapController.h"
+#include <QEvent>
 
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   QGraphicsProxyWidget(0),
   ItemObserver(controller, o),
   m_mapDisplay(0),
   m_grabbedByWidget(false),
-  m_treeItem(0)
+  m_treeItem(0),
+  m_tool(0)
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
@@ -105,6 +112,12 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
 
 te::layout::MapItem::~MapItem()
 {
+  if(m_tool)
+  {
+    delete m_tool;
+    m_tool = 0;
+  }
+
   if(m_mapDisplay)
   {
     setWidget(0);
@@ -170,7 +183,6 @@ void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsI
   {
     drawSelection(painter);
   }
-
 }
 
 void te::layout::MapItem::drawSelection( QPainter* painter)
@@ -278,17 +290,50 @@ void te::layout::MapItem::setPos( const QPointF &pos )
 
 void te::layout::MapItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
 {
-  QGraphicsItem::mouseMoveEvent(event);
+  if(!te::layout::isCurrentMapTools())
+  {
+    clearCurrentTool();
+    QGraphicsItem::mouseMoveEvent(event);
+  }
+  else
+  {
+    QMouseEvent mouseEvent(QEvent::MouseMove,QPoint(event->pos().x(), event->pos().y()),
+      event->button(),event->buttons(), event->modifiers());
+    QApplication::sendEvent(m_mapDisplay, &mouseEvent);
+    event->setAccepted(mouseEvent.isAccepted());
+  }
 }
 
 void te::layout::MapItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
 {
-  QGraphicsItem::mousePressEvent(event);
+  if(!te::layout::isCurrentMapTools())
+  {
+    clearCurrentTool();
+    QGraphicsItem::mousePressEvent(event);
+  }
+  else
+  {
+    QMouseEvent mouseEvent(QEvent::MouseButtonPress,QPoint(event->pos().x(), event->pos().y()),
+    event->button(),event->buttons(), event->modifiers());
+    QApplication::sendEvent(m_mapDisplay, &mouseEvent);
+    event->setAccepted(mouseEvent.isAccepted());
+  }
 }
 
 void te::layout::MapItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
 {
-  QGraphicsItem::mouseReleaseEvent(event);
+  if(!te::layout::isCurrentMapTools())
+  {
+    clearCurrentTool();
+    QGraphicsItem::mouseReleaseEvent(event); 
+  }
+  else
+  {
+    QMouseEvent mouseEvent(QEvent::MouseButtonRelease,QPoint(event->pos().x(), event->pos().y()),
+    event->button(),event->buttons(), event->modifiers());
+    QApplication::sendEvent(m_mapDisplay, &mouseEvent);
+    event->setAccepted(mouseEvent.isAccepted());
+  }
 
   refresh();
 }
@@ -384,4 +429,54 @@ int te::layout::MapItem::getZValueItem()
   return QGraphicsItem::zValue();
 }
 
+void te::layout::MapItem::setCurrentTool( te::qt::widgets::AbstractTool* tool )
+{
+  if(m_tool)
+  {
+    m_mapDisplay->removeEventFilter(m_tool);
+    delete m_tool;
+    m_tool = 0;
+  }
+  
+  m_tool = tool;
 
+  m_mapDisplay->installEventFilter(m_tool);
+}
+
+void te::layout::MapItem::clearCurrentTool()
+{
+  if(m_tool)
+  {
+    m_mapDisplay->removeEventFilter(m_tool);
+
+    delete m_tool;
+    m_tool = 0;
+  }
+  
+  setCursor(Qt::ArrowCursor);
+}
+
+void te::layout::MapItem::changeCurrentTool( LayoutMode mode )
+{
+  if(mode == TypeMapPan)
+  {
+    te::qt::widgets::Pan* pan = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);
+    setCurrentTool(pan);
+  }
+  if(mode == TypeMapZoomIn)
+  {
+    //Zoom In
+    std::string icon_path_zoom_area = LAYOUT_IMAGES_PNG"/layout-map-zoom-in";
+    QCursor zoomAreaCursor(QIcon::fromTheme(icon_path_zoom_area.c_str()).pixmap(QSize(10,10)));
+    te::qt::widgets::ZoomArea* zoomArea = new te::qt::widgets::ZoomArea(m_mapDisplay, zoomAreaCursor);
+    setCurrentTool(zoomArea);
+  }
+  if(mode == TypeMapZoomOut)
+  {
+    //Zoom Out
+    std::string icon_path_zoom_out = LAYOUT_IMAGES_PNG"/layout-map-zoom-out";
+    QCursor zoomOutCursor(QIcon::fromTheme(icon_path_zoom_out.c_str()).pixmap(QSize(10,10)));
+    te::qt::widgets::ZoomClick* zoomOut = new te::qt::widgets::ZoomClick(m_mapDisplay, zoomOutCursor, 2.0, te::qt::widgets::Zoom::Out);
+    setCurrentTool(zoomOut);
+  }
+}

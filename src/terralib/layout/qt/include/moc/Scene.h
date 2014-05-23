@@ -35,6 +35,7 @@
 // TerraLib
 #include "AbstractScene.h"
 #include "AbstractType.h"
+#include "EnumMode.h"
 
 class QGraphicsSceneMouseEvent;
 class QGraphicsItemGroup;
@@ -108,6 +109,8 @@ namespace te
         
         virtual void deleteItems();
 
+        virtual void setCurrentToolInSelectedMapItems(LayoutMode mode);
+
       protected slots:
 
         virtual void printPaper(QPrinter* printer);
@@ -117,6 +120,7 @@ namespace te
         void addItemFinalized();
 
       protected:
+
         virtual void mousePressEvent ( QGraphicsSceneMouseEvent* mouseEvent );
 
         virtual te::gm::Envelope* calculateBoxPaper();

@@ -53,6 +53,8 @@ namespace te
     TELAYOUTEXPORT int countType(QList<QGraphicsItem*> graphicsItems, te::layout::LayoutAbstractObjectType type);
 
     TELAYOUTEXPORT int maxTypeId(QList<QGraphicsItem*> graphicsItems, te::layout::LayoutAbstractObjectType type);
+
+    TELAYOUTEXPORT bool isCurrentMapTools();
   }
 }
 
