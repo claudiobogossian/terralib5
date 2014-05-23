@@ -57,14 +57,16 @@ void LoadOGRModule()
   
     std::string plugin_path = te::common::FindInTerraLibPath("share/terralib/plugins");
 
+#ifdef TERRALIB_MOD_OGR_ENABLED
     info = te::plugin::GetInstalledPlugin(plugin_path + "/te.da.ogr.teplg");
-    te::plugin::PluginManager::getInstance().add(info); 
+    te::plugin::PluginManager::getInstance().add(info);
+#endif
 
     te::plugin::PluginManager::getInstance().loadAll();
   }
   catch(...)
   {
-    std::cout << std::endl << "Failed to load data source OGR driver: unknow exception!" << std::endl;
+    std::cout << std::endl << "Failed to load the data source OGR driver: unknown exception!" << std::endl;
   }
 }
 
@@ -172,7 +174,7 @@ int main(int /*argc*/, char** /*argv*/)
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred: " << e.what() << std::endl;
 
     std::cout << "Press Enter to exit..." << std::endl;
     std::cin.get();
@@ -181,7 +183,7 @@ int main(int /*argc*/, char** /*argv*/)
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
 
     std::cout << "Press Enter to exit..." << std::endl;
     std::cin.get();

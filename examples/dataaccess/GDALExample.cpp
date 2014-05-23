@@ -28,11 +28,11 @@ void OpenFile()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in GDALExample OpenFile(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in GDALExample OpenFile(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in GDALExample OpenFile()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in GDALExample OpenFile()!" << std::endl;
   }
 }
 
@@ -62,11 +62,11 @@ void OpenDirectory()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in GDALExample OpenDirectory(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in GDALExample OpenDirectory(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in GDALExample OpenDirectory()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in GDALExample OpenDirectory()!" << std::endl;
   }
 
 }
@@ -97,11 +97,11 @@ void DataSourceTransactor()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in GDALExample DataSourceTransactor(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in GDALExample DataSourceTransactor(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in GDALExample DataSourceTransactor()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in GDALExample DataSourceTransactor()!" << std::endl;
   }
 }
 

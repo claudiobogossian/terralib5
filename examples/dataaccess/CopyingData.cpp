@@ -69,10 +69,10 @@ void CopyingData()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in the Copy Example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in the Copy Example: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in the Copy Example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in the Copy Example!" << std::endl;
   }
 }

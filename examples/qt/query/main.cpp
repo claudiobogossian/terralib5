@@ -104,7 +104,7 @@ int main(int argc, char** argv)
   }
   catch(const std::exception& e)
   {
-    std::string msg =  "An exception has occurried: ";
+    std::string msg =  "An exception has occurred: ";
                 msg += e.what();
 
     QMessageBox::warning(0, "Query Example", msg.c_str());
@@ -113,7 +113,7 @@ int main(int argc, char** argv)
   }
   catch(...)
   {
-    std::string msg =  "An unexpected exception has occurried!";
+    std::string msg =  "An unexpected exception has occurred!";
 
     QMessageBox::warning(0, "Query Example", msg.c_str());
 

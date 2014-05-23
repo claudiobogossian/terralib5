@@ -65,11 +65,11 @@ void CreateGPMAdjacencyGraph(bool draw)
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in Graph Example - CreateGPMGraph Adjacency: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in Graph Example - CreateGPMGraph Adjacency: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in Graph Example - CreateGPMGraph Adjacency!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in Graph Example - CreateGPMGraph Adjacency!" << std::endl;
   }
 
   if(draw)

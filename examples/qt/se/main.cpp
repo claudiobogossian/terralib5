@@ -52,8 +52,10 @@ void LoadGDALModule()
     //te::plugin::PluginInfo* info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg"));
     
     std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
-    
+
+#ifdef TERRALIB_MOD_GDAL_ENABLED
     te::plugin::PluginInfo* info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.gdal.teplg");
+#endif
 
     te::plugin::PluginManager::getInstance().add(info);
   }

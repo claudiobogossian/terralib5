@@ -40,11 +40,11 @@ void OGRExampleRead()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in the OGR Example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in the OGR Example: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in the OGR Example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in the OGR Example!" << std::endl;
   }
 }
 
@@ -91,11 +91,11 @@ void ORGExampleWrite()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in the OGR Example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in the OGR Example: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in the OGR Example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in the OGR Example!" << std::endl;
   }
 }
 //------- Old code -----//
