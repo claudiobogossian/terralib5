@@ -35,9 +35,7 @@ endif()
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/postgis/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/postgis/*.h)
 
-set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
-
-add_library(terralib_mod_postgis SHARED ${TERRALIB_FILES})
+add_library(terralib_mod_postgis SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 target_link_libraries(terralib_mod_postgis terralib_mod_dataaccess
                                            terralib_mod_geometry
@@ -56,12 +54,12 @@ set_target_properties(terralib_mod_postgis
 
 install(TARGETS terralib_mod_postgis
         EXPORT terralib-targets
-        RUNTIME DESTINATION bin COMPONENT runtime
-        LIBRARY DESTINATION lib COMPONENT runtime
-        ARCHIVE DESTINATION lib COMPONENT runtime)
+        RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
+        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION include/terralib/postgis COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/postgis COMPONENT devel)
 
 install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.da.pgis.teplg
               ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/postgis-capabilities.xml

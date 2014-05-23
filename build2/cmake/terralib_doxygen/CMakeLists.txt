@@ -33,5 +33,7 @@ add_custom_target(terralib_doxygen
                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                   COMMENT "Generating API documentation with Doxygen" VERBATIM)
 
+install(CODE "execute_process(COMMAND ${CMAKE_BUILD_TOOL} terralib_doxygen)")
+
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc
-        DESTINATION share/terralib/doc COMPONENT devel)
+        DESTINATION share/terralib COMPONENT devel)

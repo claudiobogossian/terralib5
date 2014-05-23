@@ -120,38 +120,38 @@ set_target_properties(terralib_mod_graph
 
 install(TARGETS terralib_mod_graph
         EXPORT terralib-targets
-        RUNTIME DESTINATION bin COMPONENT runtime
-        LIBRARY DESTINATION lib COMPONENT runtime
-        ARCHIVE DESTINATION lib COMPONENT runtime)
+        RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
+        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION include/terralib/graph COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/graph COMPONENT devel)
 
 install(FILES ${TERRALIB_BUILDER_HDR_FILES}
-        DESTINATION include/terralib/graph/builder COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/graph/builder COMPONENT devel)
 
 install(FILES ${TERRALIB_CACHE_HDR_FILES}
-        DESTINATION include/terralib/graph/cache COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/graph/cache COMPONENT devel)
 
 install(FILES ${TERRALIB_CORE_HDR_FILES}
-        DESTINATION include/terralib/graph/core COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/graph/core COMPONENT devel)
 
 install(FILES ${TERRALIB_DRIVERS_DATASOURCE_HDR_FILES}
-        DESTINATION include/terralib/graph/drivers/datasource COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/graph/drivers/datasource COMPONENT devel)
 
 install(FILES ${TERRALIB_FUNCTIONS_HDR_FILES}
-        DESTINATION include/terralib/graph/functions COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/graph/functions COMPONENT devel)
 
 install(FILES ${TERRALIB_GRAPHS_HDR_FILES}
-        DESTINATION include/terralib/graph/graphs COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/graph/graphs COMPONENT devel)
 
 install(FILES ${TERRALIB_ITERATOR_HDR_FILES}
-        DESTINATION include/terralib/graph/iterator COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/graph/iterator COMPONENT devel)
 
 install(FILES ${TERRALIB_LOADER_HDR_FILES}
-        DESTINATION include/terralib/graph/loader COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/graph/loader COMPONENT devel)
 
 install(FILES ${TERRALIB_MAPTOOLS_HDR_FILES}
-        DESTINATION include/terralib/graph/maptools COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/graph/maptools COMPONENT devel)
 
 export(TARGETS terralib_mod_graph APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

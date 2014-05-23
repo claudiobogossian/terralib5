@@ -105,28 +105,28 @@ set_target_properties(terralib_mod_dataaccess
 
 install(TARGETS terralib_mod_dataaccess
         EXPORT terralib-targets
-        RUNTIME DESTINATION bin COMPONENT runtime
-        LIBRARY DESTINATION lib COMPONENT runtime
-        ARCHIVE DESTINATION lib COMPONENT runtime)
+        RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
+        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION include/terralib/dataaccess COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/dataaccess COMPONENT devel)
 
 install(FILES ${TERRALIB_DATASET_HDR_FILES}
-        DESTINATION include/terralib/dataaccess/dataset COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/dataaccess/dataset COMPONENT devel)
 
 install(FILES ${TERRALIB_DATASOURCE_HDR_FILES}
-        DESTINATION include/terralib/dataaccess/datasource COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/dataaccess/datasource COMPONENT devel)
 
 install(FILES ${TERRALIB_QUERY_HDR_FILES}
-        DESTINATION include/terralib/dataaccess/query COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/dataaccess/query COMPONENT devel)
 
 install(FILES ${TERRALIB_UTILS_HDR_FILES}
-        DESTINATION include/terralib/dataaccess/utils COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/dataaccess/utils COMPONENT devel)
 
 if(TERRALIB_MOD_XML_ENABLED)
   install(FILES ${TERRALIB_XML_HDR_FILES}
-          DESTINATION include/terralib/dataaccess/serialization/xml COMPONENT devel)
+          DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/dataaccess/serialization/xml COMPONENT devel)
 endif()
 
 export(TARGETS terralib_mod_dataaccess APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
