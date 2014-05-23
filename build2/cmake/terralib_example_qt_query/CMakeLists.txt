@@ -28,30 +28,14 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
-if(Qt5_FOUND)
-  #set(CMAKE_AUTOMOC ON)
-  set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-else() # QT4_FOUND
-
-  include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-  include(${QT_USE_FILE})
-
-  include_directories(${QT_INCLUDE_DIR})
-
-  add_definitions(${QT_DEFINITIONS})
-
-endif()
-
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/qt/query/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/qt/query/*.h)
 
-set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
-
-add_executable(terralib_example_qt_query ${TERRALIB_FILES})
+add_executable(terralib_example_qt_query ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 if(Qt5_FOUND)
+
+  set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
   target_link_libraries(terralib_example_qt_query terralib_mod_dataaccess
                                                   terralib_mod_plugin
@@ -61,6 +45,14 @@ if(Qt5_FOUND)
 
 else()
 
+  include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+  include(${QT_USE_FILE})
+
+  include_directories(${QT_INCLUDE_DIR})
+
+  add_definitions(${QT_DEFINITIONS})
+
   target_link_libraries(terralib_example_qt_query terralib_mod_dataaccess
                                                        terralib_mod_plugin
                                                        terralib_mod_qt_widgets
@@ -68,6 +60,5 @@ else()
 
 endif()
 
-install(FILES ${TERRALIB_FILES}
+install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/qt/query COMPONENT devel)
-

@@ -47,9 +47,7 @@ endif()
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/colorbar/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/colorbar/*.h)
 
-set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
-
-add_executable(terralib_example_colorbar ${TERRALIB_FILES})
+add_executable(terralib_example_colorbar ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 if(Qt5_FOUND)
 
@@ -64,6 +62,6 @@ else()
 
 endif()
 
-install(FILES ${TERRALIB_FILES}
+install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/colorbar COMPONENT devel)
 

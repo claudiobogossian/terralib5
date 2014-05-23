@@ -31,13 +31,11 @@ include_directories(${Boost_INCLUDE_DIR})
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/cppplugin/helloworld/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/cppplugin/helloworld/*.h)
 
-set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
-
-add_library(terralib_example_cppplugin_helloworld SHARED ${TERRALIB_FILES})
+add_library(terralib_example_cppplugin_helloworld SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 target_link_libraries(terralib_example_cppplugin_helloworld terralib_mod_common
                                                             terralib_mod_plugin)
 
-install(FILES ${TERRALIB_FILES}
+install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/cppplugin/helloworld COMPONENT devel)
 

@@ -26,21 +26,15 @@
 #ifndef __TERRALIB_EXAMPLES_MAPTOOLS_INTERNAL_MAPTOOLSEXAMPLES_H
 #define __TERRALIB_EXAMPLES_MAPTOOLS_INTERNAL_MAPTOOLSEXAMPLES_H
 
+// TerraLib Examples
+#include "../Config.h"
+
 // TerraLib
 #include <terralib/dataaccess_fw.h>
 #include <terralib/se_fw.h>
 
 // STL
 #include <string>
-
-/*!
-  \brief Flags for TerraLib MapTools Examples.
-         The set of flags below controls which data source driver will be loaded.
-         If you want to disable a specific data source driver just just set the flag to 0.
-*/
-#define TE_EXAMPLE_USE_OGR  1
-#define TE_EXAMPLE_USE_GDAL 1
-#define TE_EXAMPLE_USE_PGIS 0
 
 // Global Id
 extern unsigned int G_ID;

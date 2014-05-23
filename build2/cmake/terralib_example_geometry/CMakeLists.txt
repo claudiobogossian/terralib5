@@ -31,13 +31,10 @@ include_directories(${Boost_INCLUDE_DIR})
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/geometry/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/geometry/*.h)
 
-set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
-
-add_executable(terralib_example_geometry ${TERRALIB_FILES})
+add_executable(terralib_example_geometry ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 target_link_libraries(terralib_example_geometry terralib_mod_geometry
                                                 ${BOOST_SYSTEM_LIBRARY})
 
-install(FILES ${TERRALIB_FILES}
+install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/geometry COMPONENT devel)
-

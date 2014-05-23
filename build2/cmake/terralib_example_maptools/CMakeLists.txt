@@ -28,16 +28,32 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/geometry/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/geometry/*.h)
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/maptools/*.cpp)
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/maptools/*.h)
 
-set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+add_executable(terralib_example_maptools ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
-add_executable(terralib_example_maptools ${TERRALIB_FILES})
+if(Qt5_FOUND)
+  target_link_libraries(terralib_example_maptools terralib_mod_qt_widgets
+                                                  terralib_mod_maptools
+                                                  ${BOOST_SYSTEM_LIBRARY})
 
-target_link_libraries(terralib_example_maptools terralib_mod_maptools
-                                                ${BOOST_SYSTEM_LIBRARY})
+  qt5_use_modules(terralib_example_maptools Widgets)
+else()
+  include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-install(FILES ${TERRALIB_FILES}
+  include(${QT_USE_FILE})
+
+  include_directories(${QT_INCLUDE_DIR})
+
+  add_definitions(${QT_DEFINITIONS})
+
+  target_link_libraries(terralib_example_maptools terralib_mod_qt_widgets
+                                                  terralib_mod_maptools
+                                                  ${BOOST_SYSTEM_LIBRARY}
+                                                  ${QT_LIBRARIES})
+endif()
+
+install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/maptools COMPONENT devel)
 

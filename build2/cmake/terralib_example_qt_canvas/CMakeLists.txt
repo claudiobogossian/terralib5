@@ -28,11 +28,19 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
-if(Qt5_FOUND)
-  set(CMAKE_AUTOMOC ON)
-  set(CMAKE_INCLUDE_CURRENT_DIR ON)
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/qt/canvas/*.cpp)
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/qt/canvas/*.h)
 
-else() # QT4_FOUND
+add_executable(terralib_example_qt_canvas ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+
+if(Qt5_FOUND)
+
+  target_link_libraries(terralib_example_qt_canvas terralib_mod_qt_widgets
+                                                   ${BOOST_SYSTEM_LIBRARY})
+
+  qt5_use_modules(terralib_example_qt_canvas Widgets)
+
+else()
 
   include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
@@ -42,33 +50,11 @@ else() # QT4_FOUND
 
   add_definitions(${QT_DEFINITIONS})
 
-endif()
-
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/qt/canvas/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/qt/canvas/*.h)
-
-if(Qt5_FOUND)
-
-  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
-
-  add_executable(terralib_example_qt_canvas ${TERRALIB_FILES})
-
-  target_link_libraries(terralib_example_qt_canvas terralib_mod_qt_widgets
-                                                   ${BOOST_SYSTEM_LIBRARY})
-
-  qt5_use_modules(terralib_example_qt_canvas Widgets)
-
-else()
-
-  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
-
-  add_executable(terralib_example_qt_canvas ${TERRALIB_FILES})
-
   target_link_libraries(terralib_example_qt_canvas terralib_mod_qt_widgets
                                                    ${BOOST_SYSTEM_LIBRARY}
                                                    ${QT_LIBRARIES})
 
 endif()
 
-install(FILES ${TERRALIB_FILES}
+install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/qt/canvas COMPONENT devel)

@@ -28,30 +28,15 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
-if(Qt5_FOUND)
-  set(CMAKE_AUTOMOC ON)
-  set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-else() # QT4_FOUND
-
-  include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-  include(${QT_USE_FILE})
-
-  include_directories(${QT_INCLUDE_DIR})
-
-  add_definitions(${QT_DEFINITIONS})
-
-endif()
-
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/graph/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/graph/*.h)
 
 if(Qt5_FOUND)
 
-  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+  set(CMAKE_AUTOMOC ON)
+  set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-  add_executable(terralib_example_graph ${TERRALIB_FILES})
+  add_executable(terralib_example_graph ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
   target_link_libraries(terralib_example_graph terralib_mod_graph
                                                terralib_mod_plugin
@@ -62,14 +47,20 @@ if(Qt5_FOUND)
 
 else()
 
+  include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+  include(${QT_USE_FILE})
+
+  include_directories(${QT_INCLUDE_DIR})
+
+  add_definitions(${QT_DEFINITIONS})
+
   set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/graph/DisplayWindow.h)
   
 # moc'ing
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 
-  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_SRC_FILES})
-
-  add_executable(terralib_example_graph ${TERRALIB_FILES})
+  add_executable(terralib_example_graph ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_SRC_FILES})
 
   target_link_libraries(terralib_example_graph terralib_mod_graph
                                                terralib_mod_plugin
@@ -79,6 +70,5 @@ else()
 
 endif()
 
-install(FILES ${TERRALIB_FILES}
+install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/graph COMPONENT devel)
-
