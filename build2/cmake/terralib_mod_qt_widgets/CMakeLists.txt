@@ -360,6 +360,9 @@ list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_plugin")
 list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES ${QWT_LIBRARY})
 list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES ${QTPROPERTYBROWSER_LIBRARY})
 
+# Set the initial value of TERRALIB_FILES (valid for Qt4 and Qt5)
+list(APPEND TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+
 
 if(Qt5_FOUND)
   set(CMAKE_AUTOMOC ON)
@@ -369,8 +372,6 @@ if(Qt5_FOUND)
   #
   # Qt5 uic'ing
   #
-
-  list(APPEND TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
   # canvas
   QT5_WRAP_UI(TERRALIB_CANVAS_GEN_HDR_FILES ${TERRALIB_CANVAS_UI_FILES})
@@ -494,6 +495,7 @@ if(Qt5_FOUND)
   QT5_WRAP_UI(TERRALIB_UTILS_GEN_HDR_FILES ${TERRALIB_UTILS_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_UTILS_SRC_FILES} ${TERRALIB_UTILS_HDR_FILES} ${TERRALIB_UTILS_GEN_HDR_FILES})
 
+  # end of Qt5 uic'ing
 
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES})
 
@@ -511,135 +513,137 @@ else() # QT4_FOUND
 
   add_definitions(${QT_DEFINITIONS})
 
-# uic'ing
-  QT4_WRAP_UI(TERRALIB_UTILS_GEN_HDR_FILES ${TERRALIB_UTILS_UI_FILES})
+  #
+  # Qt4 uic'ing
+  #
 
-  list(APPEND TERRALIB_FILES ${TERRALIB_UTILS_SRC_FILES} ${TERRALIB_UTILS_HDR_FILES} ${TERRALIB_UTILS_GEN_HDR_FILES})
-
-# Canvas
+  # canvas
   QT4_WRAP_UI(TERRALIB_CANVAS_GEN_HDR_FILES ${TERRALIB_CANVAS_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_CANVAS_SRC_FILES} ${TERRALIB_CANVAS_HDR_FILES} ${TERRALIB_CANVAS_GEN_HDR_FILES})
 
-# Charts
+  # charts
   QT4_WRAP_UI(TERRALIB_CHARTS_GEN_HDR_FILES ${TERRALIB_CHARTS_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_CHARTS_SRC_FILES} ${TERRALIB_CHARTS_HDR_FILES} ${TERRALIB_CHARTS_GEN_HDR_FILES})
 
-# Classification
+  # classification
   QT4_WRAP_UI(TERRALIB_CLASSIFICATION_GEN_HDR_FILES ${TERRALIB_CLASSIFICATION_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_CLASSIFICATION_SRC_FILES} ${TERRALIB_CLASSIFICATION_HDR_FILES} ${TERRALIB_CLASSIFICATION_GEN_HDR_FILES})
 
-# Color Bar
+  # colorbar
   QT4_WRAP_UI(TERRALIB_COLORBAR_GEN_HDR_FILES ${TERRALIB_COLORBAR_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_COLORBAR_SRC_FILES} ${TERRALIB_COLORBAR_HDR_FILES} ${TERRALIB_COLORBAR_GEN_HDR_FILES})
 
-# Dataset - Explorer
+  # dataset - explorer
   list(APPEND TERRALIB_FILES ${TERRALIB_DATASET_EXPLORER_SRC_FILES} ${TERRALIB_DATASET_EXPLORER_HDR_FILES})
 
-# Dataset - Selector
+  # dataset - selector
   QT4_WRAP_UI(TERRALIB_DATASET_SELECTOR_GEN_HDR_FILES ${TERRALIB_DATASET_SELECTOR_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_DATASET_SELECTOR_SRC_FILES} ${TERRALIB_DATASET_SELECTOR_HDR_FILES} ${TERRALIB_DATASET_SELECTOR_GEN_HDR_FILES})
 
-# Datasource - Connector
+  # datasource - connector
   list(APPEND TERRALIB_FILES ${TERRALIB_DATASOURCE_CONNECTOR_SRC_FILES} ${TERRALIB_DATASOURCE_CONNECTOR_HDR_FILES})
 
-# Datasource - Core
+  # datasource - core
   list(APPEND TERRALIB_FILES ${TERRALIB_DATASOURCE_CORE_SRC_FILES} ${TERRALIB_DATASOURCE_CORE_HDR_FILES})
 
-# Datasource - Explorer
+  # datasource - explorer
   list(APPEND TERRALIB_FILES ${TERRALIB_DATASOURCE_EXPLORER_SRC_FILES} ${TERRALIB_DATASOURCE_EXPLORER_HDR_FILES})
 
-# Datasource - Selector
+  # datasource - selector
   QT4_WRAP_UI(TERRALIB_DATASOURCE_SELECTOR_GEN_HDR_FILES ${TERRALIB_DATASOURCE_SELECTOR_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_DATASOURCE_SELECTOR_SRC_FILES} ${TERRALIB_DATASOURCE_SELECTOR_HDR_FILES} ${TERRALIB_DATASOURCE_SELECTOR_GEN_HDR_FILES})
 
-# Exchanger
+  # exchanger
   QT4_WRAP_UI(TERRALIB_EXCHANGER_GEN_HDR_FILES ${TERRALIB_EXCHANGER_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_EXCHANGER_SRC_FILES} ${TERRALIB_EXCHANGER_HDR_FILES} ${TERRALIB_EXCHANGER_GEN_HDR_FILES})
 
-# External Table
+  # externaltable
   QT4_WRAP_UI(TERRALIB_EXTERNALTABLE_GEN_HDR_FILES ${TERRALIB_EXTERNALTABLE_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_EXTERNALTABLE_SRC_FILES} ${TERRALIB_EXTERNALTABLE_HDR_FILES} ${TERRALIB_EXTERNALTABLE_GEN_HDR_FILES})
 
-# Help
+  # help
   list(APPEND TERRALIB_FILES ${TERRALIB_HELP_SRC_FILES} ${TERRALIB_HELP_HDR_FILES})
 
-# Layer - Explorer
+  # layer - explorer
   list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_EXPLORER_SRC_FILES} ${TERRALIB_LAYER_EXPLORER_HDR_FILES})
 
-# Layer - Info
+  # layer - info
   list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_INFO_SRC_FILES} ${TERRALIB_LAYER_INFO_HDR_FILES})
 
-# Layer - Search
+  # layer - search
   QT4_WRAP_UI(TERRALIB_LAYER_SEARCH_GEN_HDR_FILES ${TERRALIB_LAYER_SEARCH_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_SEARCH_SRC_FILES} ${TERRALIB_LAYER_SEARCH_HDR_FILES} ${TERRALIB_LAYER_SEARCH_GEN_HDR_FILES})
 
-# Layer - Selector
+  # layer - selector
   list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_SELECTOR_SRC_FILES} ${TERRALIB_LAYER_SELECTOR_HDR_FILES})
 
-# Layer - Utils
+  # layer - utils
   list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_UTILS_SRC_FILES} ${TERRALIB_LAYER_UTILS_HDR_FILES})
 
-# Layout
+  # layout
   list(APPEND TERRALIB_FILES ${TERRALIB_LAYOUT_SRC_FILES} ${TERRALIB_LAYOUT_HDR_FILES})
 
-# MapDisplay
+  # mapdisplay
   list(APPEND TERRALIB_FILES ${TERRALIB_MAPDISPLAY_SRC_FILES} ${TERRALIB_MAPDISPLAY_HDR_FILES})
 
-# Plugin - builder
+  # plugin - builder
   QT4_WRAP_UI(TERRALIB_PLUGIN_BUILDER_GEN_HDR_FILES ${TERRALIB_PLUGIN_BUILDER_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_PLUGIN_BUILDER_SRC_FILES} ${TERRALIB_PLUGIN_BUILDER_HDR_FILES} ${TERRALIB_PLUGIN_BUILDER_GEN_HDR_FILES})
 
-# Plugin - manager
+  # plugin - manager
   QT4_WRAP_UI(TERRALIB_PLUGIN_MANAGER_GEN_HDR_FILES ${TERRALIB_PLUGIN_MANAGER_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_PLUGIN_MANAGER_SRC_FILES} ${TERRALIB_PLUGIN_MANAGER_HDR_FILES} ${TERRALIB_PLUGIN_MANAGER_GEN_HDR_FILES})
 
-# Progress
+  # progress
   list(APPEND TERRALIB_FILES ${TERRALIB_PROGRESS_SRC_FILES} ${TERRALIB_PROGRESS_HDR_FILES})
 
-# Property
+  # property
   QT4_WRAP_UI(TERRALIB_PROPERTY_GEN_HDR_FILES ${TERRALIB_PROPERTY_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_PROPERTY_SRC_FILES} ${TERRALIB_PROPERTY_HDR_FILES} ${TERRALIB_PROPERTY_GEN_HDR_FILES})
   
-# PropertyBrowser
+  # propertybrowser
   list(APPEND TERRALIB_FILES ${TERRALIB_PROPERTY_BROWSER_SRC_FILES} ${TERRALIB_PROPERTY_BROWSER_HDR_FILES})
 
-# Query
+  # query
   QT4_WRAP_UI(TERRALIB_QUERY_GEN_HDR_FILES ${TERRALIB_QUERY_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_QUERY_SRC_FILES} ${TERRALIB_QUERY_HDR_FILES} ${TERRALIB_QUERY_GEN_HDR_FILES})
 
-# Raster Processing
+  # rp
   QT4_WRAP_UI(TERRALIB_RP_GEN_HDR_FILES ${TERRALIB_RP_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_RP_SRC_FILES} ${TERRALIB_RP_HDR_FILES} ${TERRALIB_RP_GEN_HDR_FILES})
 
-# Symbology Encoding
+  # se
   QT4_WRAP_UI(TERRALIB_SE_GEN_HDR_FILES ${TERRALIB_SE_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_SE_SRC_FILES} ${TERRALIB_SE_HDR_FILES} ${TERRALIB_SE_GEN_HDR_FILES})
 
-# SRS
+  # srs
   QT4_WRAP_UI(TERRALIB_SRS_GEN_HDR_FILES ${TERRALIB_SRS_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_SRS_SRC_FILES} ${TERRALIB_SRS_HDR_FILES} ${TERRALIB_SRS_GEN_HDR_FILES})
 
-# Spatial Temporal
+  # st
   QT4_WRAP_UI(TERRALIB_ST_GEN_HDR_FILES ${TERRALIB_ST_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_ST_SRC_FILES} ${TERRALIB_ST_HDR_FILES} ${TERRALIB_ST_GEN_HDR_FILES})
 
-# Table
-  QT4_GENERATE_MOC(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/DataSetTableView.cpp DataSetTableView.moc)
+  # table
   QT4_WRAP_UI(TERRALIB_TABLE_GEN_HDR_FILES ${TERRALIB_TABLE_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_TABLE_SRC_FILES} ${TERRALIB_TABLE_HDR_FILES} ${TERRALIB_TABLE_GEN_HDR_FILES})
 
-# Temporal
+  # temporal
   QT4_WRAP_UI(TERRALIB_TEMPORAL_GEN_HDR_FILES ${TERRALIB_TEMPORAL_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_TEMPORAL_SRC_FILES} ${TERRALIB_TEMPORAL_HDR_FILES} ${TERRALIB_TEMPORAL_GEN_HDR_FILES})
 
-# Tools
+  # tools
   list(APPEND TERRALIB_FILES ${TERRALIB_TOOLS_SRC_FILES} ${TERRALIB_TOOLS_HDR_FILES})
 
-# moc'ing
+  # utils
+  QT4_WRAP_UI(TERRALIB_UTILS_GEN_HDR_FILES ${TERRALIB_UTILS_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_UTILS_SRC_FILES} ${TERRALIB_UTILS_HDR_FILES} ${TERRALIB_UTILS_GEN_HDR_FILES})
 
-  set(TERRALIB_HDRS_TO_MOC_FILES "")
+  #
+  # Qt4 moc'ing
+  #
 
-  # Canvas
+  # canvas
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/DrawLayerThread.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/EyeBirdMapDisplayWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/MapDisplay.h
@@ -647,7 +651,7 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/OverlayWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/ZoomInMapDisplayWidget.h)
 
-  # Charts
+  # charts
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ChartDisplay.h
                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ChartDisplayWidget.h
                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ChartLayerDialog.h
@@ -664,15 +668,15 @@ else() # QT4_FOUND
                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ScatterFrame.h
                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ScatterStyleWidget.h)
 
-  # Classification
+  # classification
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/classification/ROIManagerDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/classification/ROIManagerWidget.h)
 
-  # Color Bar
+  # colorbar
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/colorbar/ColorBar.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/colorbar/ColorCatalogWidget.h)
 
-  # Dataset
+  # dataset
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/DataSetCategoryModel.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/DataSetExplorer.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/explorer/DataSetTreeModel.h
@@ -681,7 +685,7 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/DataSetSelectorWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/dataset/selector/DataSetSelectorWizardPage.h)
 
-  # Datasource
+  # datasource
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/AbstractDataSourceTreeItem.h
                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/CheckConstraintItem.h
                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/explorer/ConstraintsItem.h
@@ -706,7 +710,7 @@ else() # QT4_FOUND
                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/selector/DataSourceSelectorWidget.h
                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h)
 
-  # Exchanger
+  # exchanger
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/DataExchangerWizard.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/DataExchangeSummaryWizardPage.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/DataSetOptionsWizardPage.h
@@ -715,16 +719,16 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/SHP2ADODialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/SHP2PostGISDialog.h)
 
-  # External Table
+  # externaltable
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/DataPropertiesDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/DataPropertiesWidget.h)
 
-  # Help
+  # help
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/AssistantHelpManagerImpl.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/HelpPushButton.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/HelpToolButton.h)
 
-  # Layer
+  # layer
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/AbstractTreeItem.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/ChartItem.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/explorer/ChartSliceItem.h
@@ -752,23 +756,23 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/DataSetLayerSelector.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/HiddenDataSetLayerSelector.h)
 
-  # Layout
+  # layout
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layout/DataFrame.h)
 
-  # Map Display
+  # mapdisplay
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/mapdisplay/DataSetDisplay.h)
 
-  # Plugin
+  # plugin
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/builder/PluginBuilderWizard.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/plugin/manager/PluginManagerDialog.h)
 
-  # Progress files
+  # progress
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/ProgressViewerBar.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/ProgressViewerDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/ProgressViewerWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/progress/ProgressWidgetItem.h)
 
-  # Property files
+  # property
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/ConstraintsIndexesListWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/ConstraintsIndexesPropertyDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/ConstraintWidget.h
@@ -784,12 +788,10 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/StringPropertyWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/property/UniquekeyConstraintWidget.h)
 
-
-
-  # Property Browser
+  # propertybrowser
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/propertybrowser/AbstractPropertyItem.h)
 
-  # Query files
+  # query
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/DataSetWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/DataSetWizardPage.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/FieldsWizardPage.h
@@ -802,7 +804,7 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/WhereClauseWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/WhereClauseWizardPage.h)
 
-  # Raster Processing
+  # rp
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ClassifierDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ClassifierWizardPage.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ClippingWizardPage.h
@@ -831,7 +833,7 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/TiePointsLocatorDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/TiePointsLocatorDialog.h)
 
-  # Symbology Encoding
+  # se
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/AbstractGraphicWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/AbstractGraphicWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/BasicFillPropertyItem.h
@@ -876,16 +878,16 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/WellKnownMarkPropertyItem.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/se/WellKnownMarkWidget.h)
 
-  # SRS
+  # srs
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/srs/SRSManagerDialog.h)
 
-  # Spatial Temporal
+  # st
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationItem.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/PixmapItem.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSliderWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryItem.h)
 
-  # Table files
+  # table
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/AddColumnDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/AlterDataDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/DataSetTableVerticalHeader.h
@@ -893,7 +895,7 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/RenameColumnDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/RetypeColumnDialog.h)
 
-  # Temporal files
+  # temporal
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/ObservationDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TemporalPropertiesWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TimeSeriesDialog.h
@@ -901,7 +903,7 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TrajectoryDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TrajectoryPropertiesWidget.h)
 
-  # Tools files
+  # tools
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/CoordTracking.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/ExtentAcquire.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/Info.h
@@ -912,7 +914,7 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/ReadPixelTool.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/Selection.h)
 
-  # Utils files
+  # utils
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/ColorPickerToolButton.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/DoubleListWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/FileChooser.h
@@ -922,11 +924,11 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/ParameterTableWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/ResourceChooser.h)
 
-
-  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+  # Moc'ing DataSetTableView.cpp
+  QT4_GENERATE_MOC(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/DataSetTableView.cpp DataSetTableView.moc)
+  list(APPEND TERRALIB_FILES ${TERRALIB_GEN_SRC_FILES} DataSetTableView.moc)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES} OPTIONS -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
-  list(APPEND TERRALIB_FILES ${TERRALIB_GEN_SRC_FILES} DataSetTableView.moc)
 
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES})
 
@@ -934,6 +936,8 @@ else() # QT4_FOUND
                                                 ${QT_LIBRARIES})
 
 endif() 
+
+################### end of uic'ing and moc'ing #######################
 
 set_target_properties(terralib_mod_qt_widgets
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
@@ -946,14 +950,108 @@ install(TARGETS terralib_mod_qt_widgets
         ARCHIVE DESTINATION TERRALIB_DESTINATION_ARCHIVE COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION include/terralib/qt/widgets COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets COMPONENT devel)
 
-install(FILES ${TERRALIB_UTILS_HDR_FILES} ${TERRALIB_UTILS_GEN_HDR_FILES}
-        DESTINATION include/terralib/qt/widgets/utils COMPONENT devel)
+install(FILES ${TERRALIB_CANVAS_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/canvas COMPONENT devel)
 
-if(TERRALIB_MOD_MAPTOOLS_ENABLED)
-  install(FILES ${TERRALIB_CANVAS_HDR_FILES} ${TERRALIB_CANVAS_GEN_HDR_FILES}
-          DESTINATION include/terralib/qt/widgets/canvas COMPONENT devel)
-endif()
+install(FILES ${TERRALIB_CHARTS_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/charts COMPONENT devel)
+
+install(FILES ${TERRALIB_CLASSIFICATION_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/classification COMPONENT devel)
+
+install(FILES ${TERRALIB_COLORBAR_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/colorbar COMPONENT devel)
+
+install(FILES ${TERRALIB_DATASET_EXPLORER_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/dataset/explorer COMPONENT devel)
+
+install(FILES ${TERRALIB_DATASET_SELECTOR_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/dataset/selector COMPONENT devel)
+
+install(FILES ${TERRALIB_DATASOURCE_CONNECTOR_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/datasource/connector COMPONENT devel)
+
+install(FILES ${TERRALIB_DATASOURCE_CORE_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/datasource/core COMPONENT devel)
+
+install(FILES ${TERRALIB_DATASOURCE_EXPLORER_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/datasource/explorer COMPONENT devel)
+
+install(FILES ${TERRALIB_DATASOURCE_SELECTOR_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/datasource/selector COMPONENT devel)
+
+install(FILES ${TERRALIB_EXCHANGER_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/exchanger COMPONENT devel)
+
+install(FILES ${TERRALIB_EXTERNALTABLE_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/externaltable COMPONENT devel)
+
+install(FILES ${TERRALIB_HELP_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/help COMPONENT devel)
+
+install(FILES ${TERRALIB_LAYER_EXPLORER_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/layer/explorer COMPONENT devel)
+
+install(FILES ${TERRALIB_LAYER_INFO_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/layer/info COMPONENT devel)
+
+install(FILES ${TERRALIB_LAYER_SEARCH_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/layer/search COMPONENT devel)
+
+install(FILES ${TERRALIB_LAYER_SELECTOR_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/layer/selector COMPONENT devel)
+
+install(FILES ${TERRALIB_LAYER_UTILS_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/layer/utils COMPONENT devel)
+
+install(FILES ${TERRALIB_LAYOUT_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/layout COMPONENT devel)
+
+install(FILES ${TERRALIB_MAPDISPLAY_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/mapdisplay COMPONENT devel)
+
+install(FILES ${TERRALIB_PLUGIN_BUILDER_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/plugin/builder COMPONENT devel)
+
+install(FILES ${TERRALIB_PLUGIN_MANAGER_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/plugin/manager COMPONENT devel)
+
+install(FILES ${TERRALIB_PROGRESS_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/progress COMPONENT devel)
+
+install(FILES ${TERRALIB_PROPERTY_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/property COMPONENT devel)
+
+install(FILES ${TERRALIB_PROPERTY_BROWSER_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/propertybrowser COMPONENT devel)
+
+install(FILES ${TERRALIB_QUERY_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/query COMPONENT devel)
+
+install(FILES ${TERRALIB_RP_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/rp COMPONENT devel)
+
+install(FILES ${TERRALIB_SE_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/se COMPONENT devel)
+
+install(FILES ${TERRALIB_SRS_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/srs COMPONENT devel)
+
+install(FILES ${TERRALIB_ST_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/st COMPONENT devel)
+
+install(FILES ${TERRALIB_TABLE_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/table COMPONENT devel)
+
+install(FILES ${TERRALIB_TEMPORAL_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/temporal COMPONENT devel)
+
+install(FILES ${TERRALIB_TOOLS_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/tools COMPONENT devel)
+
+install(FILES ${TERRALIB_UTILS_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/utils COMPONENT devel)
 
 export(TARGETS terralib_mod_qt_widgets APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
