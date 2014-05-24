@@ -84,14 +84,14 @@ endif()
 
 install(TARGETS terraview
         EXPORT terralib-targets
-        RUNTIME DESTINATION bin COMPONENT runtime
-        LIBRARY DESTINATION lib COMPONENT runtime
-        ARCHIVE DESTINATION lib COMPONENT runtime)
+        RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
+        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
               ${TERRALIB_GEN_HDR_FILES}
               ${CMAKE_BINARY_DIR}/terraview_config.h
-        DESTINATION include/terraview COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terraview COMPONENT devel)
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terraview
         DESTINATION share/terraview COMPONENT runtime)

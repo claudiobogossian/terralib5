@@ -34,9 +34,6 @@ endif()
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/stmemory/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/stmemory/*.h)
 
-source_group("Source Files" FILES ${TERRALIB_SRC_FILES})
-source_group("Header Files" FILES ${TERRALIB_HDR_FILES})
-
 set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 add_library(terralib_mod_stmemory SHARED ${TERRALIB_FILES})
@@ -50,7 +47,6 @@ list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_memory")
 list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_common")
 list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES ${Boost_DATE_TIME_LIBRARY})
 
-
 target_link_libraries(terralib_mod_stmemory ${TERRALIB_LIBRARIES_DEPENDENCIES})
 
 set_target_properties(terralib_mod_stmemory
@@ -59,11 +55,11 @@ set_target_properties(terralib_mod_stmemory
 
 install(TARGETS terralib_mod_stmemory
         EXPORT terralib-targets
-        RUNTIME DESTINATION bin COMPONENT runtime
-        LIBRARY DESTINATION lib COMPONENT runtime
-        ARCHIVE DESTINATION lib COMPONENT runtime)
+        RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
+        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION include/terralib/stmemory COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/stmemory COMPONENT devel)
 
 export(TARGETS terralib_mod_st APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

@@ -103,32 +103,32 @@ set_target_properties(terralib_mod_st
 
 install(TARGETS terralib_mod_st
         EXPORT terralib-targets
-        RUNTIME DESTINATION bin COMPONENT runtime
-        LIBRARY DESTINATION lib COMPONENT runtime
-        ARCHIVE DESTINATION lib COMPONENT runtime)
+        RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
+        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION include/terralib/st COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/st COMPONENT devel)
 
 install(FILES ${TERRALIB_CORE_COVERAGE_HDR_FILES}
-        DESTINATION include/terralib/st/core/coverage COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/st/core/coverage COMPONENT devel)
 
 install(FILES ${TERRALIB_CORE_EVENT_HDR_FILES}
-        DESTINATION include/terralib/st/core/event COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/st/core/event COMPONENT devel)
 
 install(FILES ${TERRALIB_CORE_INTERPOLATOR_HDR_FILES}
-        DESTINATION include/terralib/st/core/interpolator COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/st/core/interpolator COMPONENT devel)
 
 install(FILES ${TERRALIB_CORE_OBSERVATION_HDR_FILES}
-        DESTINATION include/terralib/st/core/observation COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/st/core/observation COMPONENT devel)
 
 install(FILES ${TERRALIB_CORE_TIMESERIES_HDR_FILES}
-        DESTINATION include/terralib/st/core/timeseries COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/st/core/timeseries COMPONENT devel)
 
 install(FILES ${TERRALIB_CORE_TRAJECTORY_HDR_FILES}
-        DESTINATION include/terralib/st/core/trajectory COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/st/core/trajectory COMPONENT devel)
 
  install(FILES ${TERRALIB_LOADER_HDR_FILES}
-        DESTINATION include/terralib/st/loader COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/st/loader COMPONENT devel)
 
 export(TARGETS terralib_mod_st APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

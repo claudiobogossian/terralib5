@@ -31,9 +31,26 @@ if(WIN32)
   add_definitions(-DTESTATDLL)
 endif()
 
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/qt/*.cpp)
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/qt/*.h)
+file(GLOB TERRALIB_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/qt/ui/*.ui)
+
 if(Qt5_FOUND)
+
   set(CMAKE_AUTOMOC ON)
+
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+  # uic'ing
+  QT5_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
+
+  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES})
+
+  add_library(terralib_mod_statistics_qt SHARED ${TERRALIB_FILES})
+
+  target_link_libraries(terralib_mod_statistics_qt terralib_mod_statistics_core)
+
+  qt5_use_modules(terralib_mod_statistics_qt Widgets)
 
 else() # QT4_FOUND
 
@@ -45,43 +62,22 @@ else() # QT4_FOUND
 
   add_definitions(${QT_DEFINITIONS})
 
+  # uic'ing
+    QT4_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
+
+  # moc'ing
+    set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/qt/StatisticsDialog.h)
+
+    QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
+
+    set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES} ${TERRALIB_GEN_SRC_FILES})
+
+    add_library(terralib_mod_statistics_qt SHARED ${TERRALIB_FILES})
+
+    target_link_libraries(terralib_mod_statistics_qt terralib_mod_statistics_core
+                                                     ${QT_LIBRARIES})
+
 endif()
-
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/qt/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/qt/*.h)
-file(GLOB TERRALIB_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/qt/ui/*.ui)
-
-if(Qt5_FOUND)
-
-# uic'ing
-  QT5_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
-
-  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES})
-
-  add_library(terralib_mod_statistics_qt SHARED ${TERRALIB_FILES})
-
-  target_link_libraries(terralib_mod_statistics_qt terralib_mod_statistics_core)
-
-  qt5_use_modules(terralib_mod_statistics_qt Widgets)
-
-else()
-
-# uic'ing
-  QT4_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
-
-# moc'ing
-  set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/statistics/qt/StatisticsDialog.h)
-
-  QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
-
-  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES} ${TERRALIB_GEN_SRC_FILES})
-
-  add_library(terralib_mod_statistics_qt SHARED ${TERRALIB_FILES})
-
-  target_link_libraries(terralib_mod_statistics_qt terralib_mod_statistics_core
-                                                   ${QT_LIBRARIES})
-
-endif() 
 
 set_target_properties(terralib_mod_statistics_qt
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
@@ -89,11 +85,11 @@ set_target_properties(terralib_mod_statistics_qt
 
 install(TARGETS terralib_mod_statistics_qt
         EXPORT terralib-targets
-        RUNTIME DESTINATION bin COMPONENT runtime
-        LIBRARY DESTINATION lib COMPONENT runtime
-        ARCHIVE DESTINATION lib COMPONENT runtime)
+        RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
+        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
-install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}
-        DESTINATION include/terralib/statistics/qt COMPONENT devel)
+install(FILES ${TERRALIB_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/statistics/qt COMPONENT devel)
 
 export(TARGETS terralib_mod_statistics_qt APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
