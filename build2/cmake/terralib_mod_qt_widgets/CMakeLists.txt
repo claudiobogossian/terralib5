@@ -82,9 +82,9 @@ file(GLOB TERRALIB_EXCHANGER_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terrali
 file(GLOB TERRALIB_EXCHANGER_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/ui/*.ui)
 
 # externaltable
-file(GLOB TERRALIB_EXTERNALTABLE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/*.cpp)
-file(GLOB TERRALIB_EXTERNALTABLE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/*.h)
-file(GLOB TERRALIB_EXTERNALTABLE_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/ui/*.ui)
+file(GLOB TERRALIB_EXTERNALTABLE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externaltable/*.cpp)
+file(GLOB TERRALIB_EXTERNALTABLE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externaltable/*.h)
+file(GLOB TERRALIB_EXTERNALTABLE_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externaltable/ui/*.ui)
 
 # help
 file(GLOB TERRALIB_HELP_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/*.cpp)
@@ -242,9 +242,9 @@ source_group("Header Files\\exchanger"  FILES ${TERRALIB_EXCHANGER_HDR_FILES})
 source_group("UI Files\\exchanger"      FILES ${TERRALIB_EXCHANGER_UI_FILES})
 
 # externaltable
-source_group("Source Files\\externalTable"  FILES ${TERRALIB_EXCHANGER_SRC_FILES})
-source_group("Header Files\\externalTable"  FILES ${TERRALIB_EXCHANGER_HDR_FILES})
-source_group("UI Files\\externalTable"      FILES ${TERRALIB_EXCHANGER_UI_FILES})
+source_group("Source Files\\externaltable"  FILES ${TERRALIB_EXCHANGER_SRC_FILES})
+source_group("Header Files\\externaltable"  FILES ${TERRALIB_EXCHANGER_HDR_FILES})
+source_group("UI Files\\externaltable"      FILES ${TERRALIB_EXCHANGER_UI_FILES})
 
 # help
 source_group("Source Files\\help"  FILES ${TERRALIB_HELP_SRC_FILES})
@@ -720,8 +720,8 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/SHP2PostGISDialog.h)
 
   # externaltable
-  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/DataPropertiesDialog.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/DataPropertiesWidget.h)
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externaltable/DataPropertiesDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externaltable/DataPropertiesWidget.h)
 
   # help
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/AssistantHelpManagerImpl.h
