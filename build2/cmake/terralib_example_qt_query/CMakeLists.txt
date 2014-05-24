@@ -18,7 +18,7 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build configuration for the application examples of the SRS module.
+#  Description: The Qt Query example.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
@@ -54,9 +54,9 @@ else()
   add_definitions(${QT_DEFINITIONS})
 
   target_link_libraries(terralib_example_qt_query terralib_mod_dataaccess
-                                                       terralib_mod_plugin
-                                                       terralib_mod_qt_widgets
-                                                       ${QT_LIBRARIES})
+                                                  terralib_mod_plugin
+                                                  terralib_mod_qt_widgets
+                                                  ${QT_LIBRARIES})
 
 endif()
 

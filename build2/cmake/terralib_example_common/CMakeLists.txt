@@ -18,7 +18,7 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build configuration for the application examples about the Common runtime module.
+#  Description: Build the example for the Common module.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
@@ -35,6 +35,6 @@ add_executable(terralib_example_common ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILE
 
 target_link_libraries(terralib_example_common terralib_mod_common terralib_mod_srs)
 
-install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
+install(FILES TERRALIB_SRC_FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/common COMPONENT devel)
 
