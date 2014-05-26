@@ -99,6 +99,7 @@ if(CPACK_GENERATOR MATCHES "NSIS")
     set(CPACK_NSIS_PACKAGE_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY}") 
   endif() 
 
+  # To overwrite a previous installed version
   set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY ${CPACK_PACKAGE_NAME}) 
 
   # Creating TERRALIB_DIR enviroment variable.
