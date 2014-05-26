@@ -18,7 +18,7 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build configuration for the example of the TerraLib Qt Canvas support.
+#  Description: The TerraLib Qt Canvas example.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>

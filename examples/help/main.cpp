@@ -18,7 +18,7 @@
  */
 
 //Qt
-#include <QtGui/QApplication>
+#include <QApplication>
 
 #include "MainWindow.h"
 

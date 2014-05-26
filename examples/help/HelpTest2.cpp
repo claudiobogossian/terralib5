@@ -4,7 +4,7 @@
 #include <terralib/qt/widgets/help/HelpPushButton.h>
 
 //Qt 
-#include <QtGui/QGridLayout>
+#include <QGridLayout>
 
 HelpTest2::HelpTest2(QWidget* parent) :
 QWidget(parent, Qt::Dialog)

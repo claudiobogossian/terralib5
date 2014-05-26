@@ -75,16 +75,16 @@ set_target_properties(terralib_mod_symbology
 
 install(TARGETS terralib_mod_symbology
         EXPORT terralib-targets
-        RUNTIME DESTINATION bin COMPONENT runtime
-        LIBRARY DESTINATION lib COMPONENT runtime
-        ARCHIVE DESTINATION lib COMPONENT runtime)
+        RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
+        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION include/terralib/se COMPONENT devel)
 
 if(TERRALIB_MOD_XML_ENABLED)
   install(FILES ${TERRALIB_XML_HDR_FILES}
-          DESTINATION include/terralib/se/serialization/xml COMPONENT devel)
+          DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/se/serialization/xml COMPONENT devel)
 endif()
 
 export(TARGETS terralib_mod_symbology APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

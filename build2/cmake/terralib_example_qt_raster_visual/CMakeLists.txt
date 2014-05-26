@@ -18,7 +18,7 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build configuration for the Qt Raster Visual support example.
+#  Description: The Qt Raster Visual example.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>

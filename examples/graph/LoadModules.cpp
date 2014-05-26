@@ -10,9 +10,9 @@
 void LoadModules()
 {
   te::plugin::PluginInfo* info;
-  
+
   std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
-  
+
 #ifdef TERRALIB_MOD_POSTGIS_ENABLED
   info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.pgis.teplg");
   te::plugin::PluginManager::getInstance().add(info);

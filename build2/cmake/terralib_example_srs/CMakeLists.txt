@@ -18,7 +18,7 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build configuration for the application examples of the SRS module.
+#  Description: Example for the TerraLib SRS module.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>

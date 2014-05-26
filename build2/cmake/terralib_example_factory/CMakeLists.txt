@@ -35,6 +35,6 @@ add_executable(terralib_example_factory ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FIL
 
 target_link_libraries(terralib_example_factory terralib_mod_common)
 
-install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
+install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/factory COMPONENT devel)
 

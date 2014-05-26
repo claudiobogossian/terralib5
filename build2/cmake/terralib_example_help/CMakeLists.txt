@@ -28,20 +28,25 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/progress/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/progress/*.h)
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/help/*.cpp)
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/help/*.h)
+file(GLOB TERRALIB_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/help/*.ui)
+
+source_group("UI Files"  FILES ${TERRALIB_UI_FILES})
 
 if(Qt5_FOUND)
 
   set(CMAKE_AUTOMOC ON)
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-  add_executable(terralib_example_progress ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+  # uic'ing
+  QT5_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
 
-  target_link_libraries(terralib_example_progress terralib_mod_qt_widgets
-                                                  ${BOOST_SYSTEM_LIBRARY})
+  add_executable(terralib_example_help ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES})
 
-  qt5_use_modules(terralib_example_progress Widgets)
+  target_link_libraries(terralib_example_help terralib_mod_qt_widgets)
+
+  qt5_use_modules(terralib_example_help Widgets)
 
 else()
 
@@ -53,19 +58,23 @@ else()
 
   add_definitions(${QT_DEFINITIONS})
 
-  set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/progress/DummyWindow.h)
-  
-# moc'ing
+  # uic'ing
+  QT4_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
+
+  # moc'ing
+  set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/examples/help/Plugin.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/examples/help/MainWindow.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/examples/help/HelpTest.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/examples/help/HelpTest2.h)
+
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 
-  add_executable(terralib_example_progress ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_SRC_FILES})
+  add_executable(terralib_example_help ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES} ${TERRALIB_GEN_SRC_FILES})
 
-  target_link_libraries(terralib_example_progress terralib_mod_qt_widgets
-                                                  ${BOOST_SYSTEM_LIBRARY}
-                                                  ${QT_LIBRARIES})
+  target_link_libraries(terralib_example_help terralib_mod_qt_widgets
+                                              ${QT_LIBRARIES})
 
 endif()
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/progress COMPONENT devel)
-
+        DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/help COMPONENT devel)

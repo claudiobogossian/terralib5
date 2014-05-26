@@ -18,7 +18,7 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: The Qt Query example.
+#  Description: Example for the TerraLib ADO module.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
@@ -28,37 +28,13 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/qt/query/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/qt/query/*.h)
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/ado/*.cpp)
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/ado/*.h)
 
-add_executable(terralib_example_qt_query ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+add_executable(terralib_example_ado ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
-if(Qt5_FOUND)
-
-  set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-  target_link_libraries(terralib_example_qt_query terralib_mod_dataaccess
-                                                  terralib_mod_plugin
-                                                  terralib_mod_qt_widgets)
-
-  qt5_use_modules(terralib_example_qt_query Widgets)
-
-else()
-
-  include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-  include(${QT_USE_FILE})
-
-  include_directories(${QT_INCLUDE_DIR})
-
-  add_definitions(${QT_DEFINITIONS})
-
-  target_link_libraries(terralib_example_qt_query terralib_mod_dataaccess
-                                                  terralib_mod_plugin
-                                                  terralib_mod_qt_widgets
-                                                  ${QT_LIBRARIES})
-
-endif()
+target_link_libraries(terralib_example_ado terralib_mod_dataaccess
+                                           terralib_mod_plugin)
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/qt/query COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/ado COMPONENT devel)
