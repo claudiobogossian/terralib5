@@ -206,6 +206,15 @@ endif()
 
 find_package(Xerces)
 
+if(NOT QT_QCOLLECTIONGENERATOR_EXECUTABLE)
+  find_program(QT_QCOLLECTIONGENERATOR_EXECUTABLE
+               NAME qcollectiongenerator
+               PATHS /usr
+                     /usr/local
+                     ${Qt5_DIR}/../../..
+               PATH_SUFFIXES bin)
+endif()
+
 
 #
 # some variables needed in config file
@@ -420,7 +429,9 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_VP_QT_ENABLED "Build Vector Processing Qt mo
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_APF_ENABLED "Build Qt Application Framework?" ON "TERRALIB_QT_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 
-CMAKE_DEPENDENT_OPTION(TERRALIB_QHELP_ENABLED  "Enable Qt-Help build?" ON "TERRALIB_QT_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
+if(QT_QCOLLECTIONGENERATOR_EXECUTABLE)
+  CMAKE_DEPENDENT_OPTION(TERRALIB_QHELP_ENABLED  "Enable Qt-Help build?" ON "TERRALIB_QT_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
+endif()
 
 option(TERRALIB_MOD_XSD_ENABLED "Build XSD module?" ON)
 

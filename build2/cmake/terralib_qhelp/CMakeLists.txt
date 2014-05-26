@@ -27,7 +27,7 @@
 
 file(WRITE
      ${CMAKE_BINARY_DIR}/config_qhelp.cmake
-     "configure_file (${TERRALIB_ABSOLUTE_ROOT_DIR}/doc/qhelp/help.qhcp.in ${CMAKE_BINARY_DIR}/help/help.qhcp)"
+     "configure_file (${TERRALIB_ABSOLUTE_ROOT_DIR}/doc/qhelp/help.qhcp.in ${CMAKE_BINARY_DIR}/help/help.qhcp @ONLY)"
 )
 
 add_custom_command(
@@ -38,7 +38,7 @@ add_custom_command(
 
 add_custom_command(
   OUTPUT copy_dir
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${TERRALIB_ABSOLUTE_ROOT_DIR}/doc/qhelp ${CMAKE_BINARY_DIR}/help
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${TERRALIB_ABSOLUTE_ROOT_DIR}/doc/qhelp/src ${CMAKE_BINARY_DIR}/help
   DEPENDS del_dir
   COMMENT "Copying QHelp directory..."
 )
@@ -83,7 +83,7 @@ add_custom_command(
 )
 
 add_custom_target(
-  "Generate QHelp"
+  "terralib_qhelp"
   DEPENDS remove_files
   COMMENT "Generate QHelp project"
   VERBATIM
