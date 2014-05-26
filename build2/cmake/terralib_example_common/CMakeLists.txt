@@ -35,6 +35,6 @@ add_executable(terralib_example_common ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILE
 
 target_link_libraries(terralib_example_common terralib_mod_common terralib_mod_srs)
 
-install(FILES TERRALIB_SRC_FILES ${TERRALIB_HDR_FILES}
+install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/common COMPONENT devel)
 

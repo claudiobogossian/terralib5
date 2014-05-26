@@ -91,7 +91,7 @@ install(TARGETS terralib_mod_qt_plugins_st
         LIBRARY DESTINATION lib COMPONENT runtime
         ARCHIVE DESTINATION lib COMPONENT runtime)
 
-install(FILES ${TERRALIB_HDR_FILES}}
+install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION include/terralib/qt/plugins/st COMPONENT devel)
 
 install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.qt.st.teplg

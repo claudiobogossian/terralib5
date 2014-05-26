@@ -37,6 +37,6 @@ target_link_libraries(terralib_example_xerces terralib_mod_common
                                               terralib_mod_plugin
                                               terralib_mod_xml)
 
-install(FILES TERRALIB_SRC_FILES ${TERRALIB_HDR_FILES}
+install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/xerces COMPONENT devel)
 
