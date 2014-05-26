@@ -25,15 +25,16 @@
 #          Juan P. Garrido <juan@dpi.inpe.br>
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
-set(TERRALIB_BUILD_TERRAVIEW @TERRALIB_BUILD_TERRAVIEW@)
+set(TERRALIB_TERRAVIEW_ENABLED @TERRALIB_TERRAVIEW_ENABLED@)
 
 if(WIN32)
 
-  if(TERRALIB_BUILD_TERRAVIEW)
+  if(TERRALIB_TERRAVIEW_ENABLED)
     set(TERRALIB_APPLICATION "${CMAKE_INSTALL_PREFIX}/bin/terraview@CMAKE_EXECUTABLE_SUFFIX@")
+    set(TERRALIB_LIBRARIES "${CMAKE_INSTALL_PREFIX}/bin/terralib_mod_xerces.dll")
   endif()
 
-  set(TERRALIB_DIRS "@BOOST_ROOT@/lib")
+  set(TERRALIB_DIRS "C:/mydevel/terralib5-3rdparty-win32-qt5/lib")
 
 elseif(APPLE)
 
@@ -47,5 +48,5 @@ endif()
 
 include(BundleUtilities)
 
-fixup_bundle("${TERRALIB_APPLICATION}" "" "${TERRALIB_DIRS}")
+fixup_bundle("${TERRALIB_APPLICATION}" "${TERRALIB_LIBRARIES}" "${TERRALIB_DIRS}")
 

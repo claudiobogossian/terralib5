@@ -880,18 +880,15 @@ install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/json
 # Track dependencies
 #
 
-if(${TERRALIB_TRACK_DEPENDENCIES})
+#set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP ON)
 
-  #set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP ON)
+include(InstallRequiredSystemLibraries)
 
-  include(InstallRequiredSystemLibraries)
+#install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+#        DESTINATION bin
+#        COMPONENT runtime)
 
-  install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-          DESTINATION bin
-          COMPONENT runtime)
-
-  add_subdirectory(fix_bundle)
-endif()
+add_subdirectory(fix_bundle)
 
 
 #
