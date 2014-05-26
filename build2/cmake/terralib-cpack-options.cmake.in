@@ -91,6 +91,33 @@ if(CPACK_GENERATOR MATCHES "NSIS")
   set(CPACK_NSIS_URL_INFO_ABOUT "http://www.dpi.inpe.br/terralib5/wiki")
   set(CPACK_NSIS_CONTACT "terralib-team@terralib.org")
 
+  if(CMAKE_CL_64) 
+    set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64") 
+    set(CPACK_NSIS_PACKAGE_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} (Win64)") 
+  else() 
+    set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES") 
+    set(CPACK_NSIS_PACKAGE_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY}") 
+  endif() 
+
+  set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY ${CPACK_PACKAGE_NAME}) 
+
+  # Creating TERRALIB_DIR enviroment variable.
+  list (APPEND CPACK_NSIS_EXTRA_INSTALL_COMMANDS "  WriteRegExpandStr HKLM 'SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment' 'TERRALIB_DIR' '$INSTDIR'  \\n  SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000")
+
+  # Removing TERRALIB_DIR from enviroment variables.
+  set (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS " DeleteRegValue HKLM 'SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment' 'TERRALIB_DIR' \\n  SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000")
+
+  list (APPEND CPACK_NSIS_CREATE_ICONS_EXTRA ${CPACK_NSIS_CREATE_ICONS_EXTRA}
+  "\nSetOutPath \\\"$INSTDIR\\\\bin\\\""
+  "\nCreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\TerraView-5.0.0-alpha.lnk\\\" \\\"$INSTDIR\\\\bin\\\\terraview.exe\\\" \\\"\\\" \\\"$INSTDIR\\\\resources\\\\images\\\\ico\\\\terralib-globe.ico\\\""
+  "\nCreateShortCut \\\"$DESKTOP\\\\TerraView-5.0.0-alpha.lnk\\\" \\\"$INSTDIR\\\\bin\\\\terraview.exe\\\" \\\"\\\" \\\"$INSTDIR\\\\resources\\\\images\\\\ico\\\\terralib-globe.ico\\\""
+  )
+
+  list (APPEND CPACK_NSIS_DELETE_ICONS_EXTRA ${CPACK_NSIS_DELETE_ICONS_EXTRA}
+  "\nDelete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\TerraView-5.0.0-alpha.lnk\\\""
+  "\nDelete \\\"$DESKTOP\\\\TerraView-5.0.0-alpha.lnk\\\""
+  )
+  
 endif()
 
 if(CPACK_GENERATOR MATCHES "ZIP")
@@ -113,7 +140,7 @@ if(CPACK_GENERATOR MATCHES "DEB")
 
   set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.1-6), libgcc1 (>= 1:3.4.2-12)")
 
-  set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Gilberto Ribeiro de Queiroz (gribeiro@dpi.inpe.br)"
+  set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Gilberto Ribeiro de Queiroz (gribeiro@dpi.inpe.br)")
 
   set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "SciDB-GUI")
 
