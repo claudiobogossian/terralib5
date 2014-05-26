@@ -47,6 +47,7 @@ class QString;
 class QHideEvent;
 class QCloseEvent;
 class QGraphicsItemGroup;
+class QLineF;
 
 namespace te
 {
@@ -66,12 +67,16 @@ namespace te
         virtual void config();        
         
         void setOutsideArea(OutsideArea* outsideArea);
-                
+                        
       public slots:
 
         virtual void onToolbarChangeContext(bool change);
         virtual void onSelectionChanged();
         virtual void onAddItemFinalized();
+
+      signals:
+
+        void changeSceneCoordMouse(QPointF pos);
 
       protected:
 
@@ -99,6 +104,8 @@ namespace te
       protected:
         OutsideArea*  m_outsideArea;
         VisualizationArea* m_visualizationArea;
+        QLineF*             m_lineIntersectHrz;
+        QLineF*             m_lineIntersectVrt;
     };
   }
 }

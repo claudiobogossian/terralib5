@@ -79,6 +79,10 @@ namespace te
 
       virtual void onArrowCursorClicked(bool checked);
 
+      virtual void onItemToolsTriggered(QAction* action);
+
+      virtual void onLineIntersectionMouse(bool checked);
+
     signals:
 
       void changeContext(bool change);
@@ -98,6 +102,10 @@ namespace te
       virtual void createTemplateToolButton();
 
       virtual void createArrowCursorButton();
+
+      virtual void createItemTools();
+
+      virtual void createLineIntersectionToolButton();
 
       virtual void changeAction(LayoutMode mode);
 
@@ -133,6 +141,12 @@ namespace te
       std::string m_optionNew;
       std::string m_optionExport;
       std::string m_optionImport;
+
+      /* Items Tools */
+
+      std::string m_optionGroup;
+      std::string m_optionUngroup;
+      std::string m_optionLineIntersectionMouse;
     };
   }
 }

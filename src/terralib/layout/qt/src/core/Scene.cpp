@@ -64,7 +64,8 @@ te::layout::Scene::Scene( QWidget* widget):
   m_boxW(0),
   m_boxPaperW(0),
   m_masterParent(0),
-  m_pointIntersection(0,0)
+  m_lineIntersectHrz(0),
+  m_lineIntersectVrt(0)
 {
 
 }
@@ -576,11 +577,30 @@ void te::layout::Scene::refresh()
 void te::layout::Scene::drawForeground( QPainter *painter, const QRectF &rect )
 {
   QGraphicsScene::drawForeground(painter, rect);
-}
+  
+  if(Context::getInstance()->getLineIntersectionMouseMode() != TypeActiveLinesIntersectionMouse)
+    return;
 
-void te::layout::Scene::setPointIntersectionMouse( QPointF point )
-{
-  m_pointIntersection = point;
+  QBrush brush = painter->brush();
+
+  QBrush brushCopy = brush;
+  brush.setColor(QColor(0,0,0,255));
+
+  QPen pen = painter->pen();
+
+  QPen penCopy = pen;
+  penCopy.setStyle(Qt::DashDotLine);
+
+  painter->save();
+  painter->setPen(penCopy);
+  painter->setBrush(brushCopy);
+  painter->drawLines(m_lineIntersectHrz, 1);
+  painter->drawLines(m_lineIntersectVrt, 1);
+  painter->restore();  
+
+  painter->setBrush(brush);
+
+  update();
 }
 
 void te::layout::Scene::buildTemplate(VisualizationArea* vzArea)
@@ -677,4 +697,14 @@ void te::layout::Scene::setCurrentToolInSelectedMapItems( LayoutMode mode )
 
     mit->changeCurrentTool(mode);
   }
+}
+
+void te::layout::Scene::setLineIntersectionHzr( QLineF* line )
+{
+  m_lineIntersectHrz = line;
+}
+
+void te::layout::Scene::setLineIntersectionVrt( QLineF* line )
+{
+  m_lineIntersectVrt = line;
 }

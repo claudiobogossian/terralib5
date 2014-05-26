@@ -42,6 +42,7 @@ class QGraphicsItemGroup;
 class QGraphicsProxyWidget;
 class QPrinter;
 class QPainter;
+class QLine;
 
 namespace te
 {
@@ -101,8 +102,6 @@ namespace te
 
         virtual void refresh();
 
-        void setPointIntersectionMouse(QPointF point);
-
         virtual void buildTemplate(VisualizationArea* vzArea);
 
         virtual void createItem(const te::gm::Coord2D& coord );
@@ -110,6 +109,10 @@ namespace te
         virtual void deleteItems();
 
         virtual void setCurrentToolInSelectedMapItems(LayoutMode mode);
+
+        void setLineIntersectionHzr(QLineF* line);
+
+        void setLineIntersectionVrt(QLineF* line);
 
       protected slots:
 
@@ -145,7 +148,8 @@ namespace te
         double m_screenWidthMM;
         double m_screenHeightMM;
         QGraphicsItem* m_masterParent;
-        QPointF m_pointIntersection;
+        QLineF*        m_lineIntersectHrz;
+        QLineF*        m_lineIntersectVrt;
     };
   }
 }

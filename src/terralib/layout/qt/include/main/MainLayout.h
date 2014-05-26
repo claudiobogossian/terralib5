@@ -33,6 +33,7 @@
 
 class QWidget;
 class QGroupBox;
+class QStatusBar;
 
 namespace te
 {
@@ -70,7 +71,7 @@ namespace te
         \exception te::layout::Exception if the 
         */
         virtual void init(QWidget* mainWindow = 0);
-      
+              
       protected:
       
         /*! \brief Constructor. */
@@ -90,6 +91,7 @@ namespace te
         te::qt::widgets::Canvas* m_canvas;
         QGroupBox* m_groupBox;
         BuildGraphicsItem* m_buildGraphicsItem;
+        QStatusBar* m_statusBar;
         
       private:
       

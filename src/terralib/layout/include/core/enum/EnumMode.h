@@ -58,6 +58,10 @@ namespace te
       TypeImportJSONProps = 19,
       TypeNewTemplate = 20,
       TypeCreateScale = 21,
+      TypeGroup = 22,
+      TypeUngroup = 23,
+      TypeActiveLinesIntersectionMouse = 24,
+      TypeOffLinesIntersectionMouse = 25,
       TypeNone = 0
     } LayoutMode;
 
