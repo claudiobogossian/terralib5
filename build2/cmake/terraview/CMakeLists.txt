@@ -25,6 +25,58 @@
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
+# Macro installQtPlugins
+#
+# Installs the required Qt plugins.
+#
+# param plugs List of the names of plugins to be installed.
+MACRO(installQtPlugins plgs)
+
+  if ("${QT_PLUGINS_DIR}" STREQUAL "")
+    set (QT_PLUGINS_DIR "${Qt5_DIR}/../../../plugins")
+  endif()
+
+  set (_regex_exp "")
+
+  set( _first TRUE)
+
+  foreach(plg ${plgs})
+    if(NOT _first)
+      set (_regex_exp ${_regex_exp}|${plg})
+    else()
+      set (_regex_exp ${plg})
+      set (_first FALSE)
+    endif()
+  endforeach()
+
+  set (_regex_exp "(${_regex_exp})(${CMAKE_SHARED_LIBRARY_SUFFIX})$")
+
+  set (_dest qtplugins)
+
+  install (DIRECTORY ${QT_PLUGINS_DIR}/imageformats  
+    DESTINATION ${_dest} 
+    COMPONENT runtime
+    FILES_MATCHING
+    REGEX "${_regex_exp}"
+  )
+
+  install (DIRECTORY ${QT_PLUGINS_DIR}/iconengines  
+    DESTINATION ${_dest} 
+    COMPONENT runtime
+    FILES_MATCHING
+    REGEX "${_regex_exp}"
+  )
+
+  install (DIRECTORY ${QT_PLUGINS_DIR}/sqldrivers  
+    DESTINATION ${_dest} 
+    COMPONENT runtime
+    FILES_MATCHING
+    REGEX "${_regex_exp}"
+  )
+
+ENDMACRO(installQtPlugins)
+
+
 configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/Config.h.in
                ${CMAKE_BINARY_DIR}/terraview_config.h @ONLY)
 
@@ -82,6 +134,16 @@ else()
 
 endif() 
 
+installQtPlugins("qgif;qico;qjpeg;qmng;qtiff;qsvg;qsvgicon;qsqlite")
+
+file (
+  WRITE
+  ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
+  "[Paths]
+  Binaries = .
+  Plugins = ../qtplugins"
+)
+
 install(TARGETS terraview
         EXPORT terralib-targets
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
@@ -95,5 +157,9 @@ install(FILES ${TERRALIB_HDR_FILES}
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terraview
         DESTINATION share/terraview COMPONENT runtime)
+		
+install (FILES ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
+        DESTINATION ${TERRALIB_DESTINATION_RUNTIME}
+		COMPONENT runtime)
 
 export(TARGETS terraview APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
