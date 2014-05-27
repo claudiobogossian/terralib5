@@ -251,6 +251,28 @@ std::auto_ptr<te::gm::Envelope> GetExtent(te::da::DataSet* dset, te::qt::widgets
   return std::auto_ptr<te::gm::Envelope>();
 }
 
+bool IsPrimaryKey(const int& col, te::qt::widgets::DataSetTableView* view)
+{
+  te::qt::widgets::HighlightDelegate* d = dynamic_cast<te::qt::widgets::HighlightDelegate*>(view->itemDelegate());
+
+  if(d == 0)
+    return false;
+
+  const te::da::ObjectIdSet* objs = d->getSelected();
+
+  if(objs == 0)
+    return false;
+
+  std::vector<size_t> cols = objs->getPropertyPos();
+  std::vector<size_t>::iterator it;
+
+  for(it = cols.begin(); it != cols.end(); ++it)
+    if((size_t)col == *it)
+      return true;
+
+  return false;
+}
+
 /*!
   \class Filter for popup menus
 */
@@ -318,114 +340,119 @@ class TablePopupFilter : public QObject
           if(watched == hHdr)
           {
             delete m_hMenu;
+            m_hMenu = 0;
 
             QContextMenuEvent* evt = static_cast<QContextMenuEvent*>(event);
             QPoint pos = evt->globalPos();
 
             m_columnPressed = hHdr->logicalIndex(hHdr->visualIndexAt(evt->pos().x()));
+            bool isPKey = IsPrimaryKey(m_columnPressed, m_view);
 
-            m_hMenu = new QMenu;
+            if(m_columnPressed > 0 && !isPKey)
+            {
+              m_hMenu = new QMenu;
 
-            QAction* act = new QAction(m_hMenu);
-            act->setText(tr("Hide column"));
-            act->setToolTip(tr("Hides the selected column."));
+              QAction* act = new QAction(m_hMenu);
+              act->setText(tr("Hide column"));
+              act->setToolTip(tr("Hides the selected column."));
 
-            m_hMenu->addAction(act);
+              m_hMenu->addAction(act);
 
-            QMenu* hMnu = GetHiddenColumnsMenu(hHdr, m_dset, m_hMenu);
+              QMenu* hMnu = GetHiddenColumnsMenu(hHdr, m_dset, m_hMenu);
 
-            if(m_columnPressed == -1)
-              act->setEnabled(false);
+              if(m_columnPressed == -1)
+                act->setEnabled(false);
 
-            m_hMenu->addAction(hMnu->menuAction());
+              m_hMenu->addAction(hMnu->menuAction());
 
-            QAction* act2 = GetShowAllMenu(hHdr, m_dset, m_hMenu);
-            m_hMenu->addAction(act2);
+              QAction* act2 = GetShowAllMenu(hHdr, m_dset, m_hMenu);
+              m_hMenu->addAction(act2);
 
-            QAction* act3 = new QAction(m_hMenu);
-            act3->setText(tr("Reset columns order"));
-            act3->setToolTip(tr("Put all columns in the original order."));
-            m_hMenu->addAction(act3);
+              QAction* act3 = new QAction(m_hMenu);
+              act3->setText(tr("Reset columns order"));
+              act3->setToolTip(tr("Put all columns in the original order."));
+              m_hMenu->addAction(act3);
 
-            m_hMenu->addSeparator();
+              m_hMenu->addSeparator();
 
-            QAction* act5 = new QAction(m_hMenu);
-            act5->setText(tr("Sort data ASC"));
-            act5->setToolTip(tr("Sort data in ascendent order using selected columns."));
-            m_hMenu->addAction(act5);
+              QAction* act5 = new QAction(m_hMenu);
+              act5->setText(tr("Sort data ASC"));
+              act5->setToolTip(tr("Sort data in ascendent order using selected columns."));
+              m_hMenu->addAction(act5);
 
-            QAction* act9 = new QAction(m_hMenu);
-            act9->setText(tr("Sort data DESC"));
-            act9->setToolTip(tr("Sort data in descendent order using selected columns."));
-            m_hMenu->addAction(act9);
+              QAction* act9 = new QAction(m_hMenu);
+              act9->setText(tr("Sort data DESC"));
+              act9->setToolTip(tr("Sort data in descendent order using selected columns."));
+              m_hMenu->addAction(act9);
 
-            m_hMenu->addSeparator();
+              m_hMenu->addSeparator();
 
-            QAction* act4 = new QAction(m_hMenu);
-            act4->setText(tr("Histogram"));
-            act4->setToolTip(tr("Creates a new histogram based on the data of the selected colunm."));
-            m_hMenu->addAction(act4);
+              QAction* act4 = new QAction(m_hMenu);
+              act4->setText(tr("Histogram"));
+              act4->setToolTip(tr("Creates a new histogram based on the data of the selected colunm."));
+              m_hMenu->addAction(act4);
 
-            QAction* act6 = new QAction(m_hMenu);
-            act6->setText(tr("Statistics"));
-            act6->setToolTip(tr("Show the statistics summary of the selected colunm."));
-            m_hMenu->addAction(act6);
+              QAction* act6 = new QAction(m_hMenu);
+              act6->setText(tr("Statistics"));
+              act6->setToolTip(tr("Show the statistics summary of the selected colunm."));
+              m_hMenu->addAction(act6);
 
-            m_hMenu->addSeparator();
+              m_hMenu->addSeparator();
 
-            QAction* act7 = new QAction(m_hMenu);
-            act7->setText(tr("Add column"));
-            act7->setToolTip(tr("Adds a column to the table."));
-            m_hMenu->addAction(act7);
+              QAction* act7 = new QAction(m_hMenu);
+              act7->setText(tr("Add column"));
+              act7->setToolTip(tr("Adds a column to the table."));
+              m_hMenu->addAction(act7);
 
-            act7->setEnabled(m_caps->supportsAddColumn());
+              act7->setEnabled(m_caps->supportsAddColumn());
 
-            QAction* act8 = new QAction(m_hMenu);
-            act8->setText(tr("Remove column"));
-            act8->setToolTip(tr("Removes a column from the table."));
-            m_hMenu->addAction(act8);
+              QAction* act8 = new QAction(m_hMenu);
+              act8->setText(tr("Remove column"));
+              act8->setToolTip(tr("Removes a column from the table."));
+              m_hMenu->addAction(act8);
 
-            act8->setEnabled(m_caps->supportsRemoveColumn());
+              act8->setEnabled(m_caps->supportsRemoveColumn());
 
-            QAction* act10 = new QAction(m_hMenu);
-            act10->setText(tr("Rename column"));
-            act10->setToolTip(tr("Renames a column of the table."));
-            m_hMenu->addAction(act10);
+              QAction* act10 = new QAction(m_hMenu);
+              act10->setText(tr("Rename column"));
+              act10->setToolTip(tr("Renames a column of the table."));
+              m_hMenu->addAction(act10);
 
-            QAction* act11 = new QAction(m_hMenu);
-            act11->setText(tr("Change column type"));
-            act11->setToolTip(tr("Changes the type of a column of the table."));
-            m_hMenu->addAction(act11);
+              QAction* act11 = new QAction(m_hMenu);
+              act11->setText(tr("Change column type"));
+              act11->setToolTip(tr("Changes the type of a column of the table."));
+              m_hMenu->addAction(act11);
 
-            QAction* act12 = new QAction(m_hMenu);
-            act12->setText(tr("Change column data"));
-            act12->setToolTip(tr("Changes the data of a column of the table."));
-            m_hMenu->addAction(act12);
+              QAction* act12 = new QAction(m_hMenu);
+              act12->setText(tr("Change column data"));
+              act12->setToolTip(tr("Changes the data of a column of the table."));
+              m_hMenu->addAction(act12);
 
-            QAction* act13 = new QAction(m_hMenu);
-            act13->setText(tr("Save editions"));
-            act13->setToolTip(tr("Save pendent editions to layer."));
-            m_hMenu->addAction(act13);
+              QAction* act13 = new QAction(m_hMenu);
+              act13->setText(tr("Save editions"));
+              act13->setToolTip(tr("Save pendent editions to layer."));
+              m_hMenu->addAction(act13);
 
-            // Signal / Slot connections
-            connect(act, SIGNAL(triggered()), SLOT(hideColumn()));
-            connect(hMnu, SIGNAL(triggered(QAction*)), SLOT(showColumn(QAction*)));
-            connect(act8, SIGNAL(triggered()), SLOT(removeColumn()));
-            connect(act4, SIGNAL(triggered()), SLOT(createHistogram()));
+              // Signal / Slot connections
+              connect(act, SIGNAL(triggered()), SLOT(hideColumn()));
+              connect(hMnu, SIGNAL(triggered(QAction*)), SLOT(showColumn(QAction*)));
+              connect(act8, SIGNAL(triggered()), SLOT(removeColumn()));
+              connect(act4, SIGNAL(triggered()), SLOT(createHistogram()));
 
-            m_view->connect(act2, SIGNAL(triggered()), SLOT(showAllColumns()));
-            m_view->connect(act3, SIGNAL(triggered()), SLOT(resetColumnsOrder()));
-            m_view->connect(act7, SIGNAL(triggered()), SLOT(addColumn()));
+              m_view->connect(act2, SIGNAL(triggered()), SLOT(showAllColumns()));
+              m_view->connect(act3, SIGNAL(triggered()), SLOT(resetColumnsOrder()));
+              m_view->connect(act7, SIGNAL(triggered()), SLOT(addColumn()));
             
-            connect(act6, SIGNAL(triggered()), SLOT(showStatistics()));
-            connect (act5, SIGNAL(triggered()), SLOT(sortDataAsc()));
-            connect (act9, SIGNAL(triggered()), SLOT(sortDataDesc()));
-            connect (act10, SIGNAL(triggered()), SLOT(renameColumn()));
-            connect (act11, SIGNAL(triggered()), SLOT(retypeColumn()));
-            connect (act12, SIGNAL(triggered()), SLOT(changeColumnData()));
-            connect (act13, SIGNAL(triggered()), SIGNAL(saveEditions()));
+              connect(act6, SIGNAL(triggered()), SLOT(showStatistics()));
+              connect (act5, SIGNAL(triggered()), SLOT(sortDataAsc()));
+              connect (act9, SIGNAL(triggered()), SLOT(sortDataDesc()));
+              connect (act10, SIGNAL(triggered()), SLOT(renameColumn()));
+              connect (act11, SIGNAL(triggered()), SLOT(retypeColumn()));
+              connect (act12, SIGNAL(triggered()), SLOT(changeColumnData()));
+              connect (act13, SIGNAL(triggered()), SIGNAL(saveEditions()));
 
-            m_hMenu->popup(pos);
+              m_hMenu->popup(pos);
+            }
           }
           else if(watched == vport)
           {
