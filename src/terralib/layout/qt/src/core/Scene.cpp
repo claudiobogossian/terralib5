@@ -370,6 +370,8 @@ void te::layout::Scene::printPreview(bool isPdf)
     QPrintPreviewDialog preview(printer);
     connect(&preview, SIGNAL(paintRequested(QPrinter*)), SLOT(printPaper(QPrinter*)));
     preview.exec();
+
+    Context::getInstance()->setMode(TypeNone);
 }
 
 void te::layout::Scene::printPaper(QPrinter* printer)

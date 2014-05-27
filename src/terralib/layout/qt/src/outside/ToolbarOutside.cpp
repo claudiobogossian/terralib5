@@ -73,6 +73,7 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionGroup("items_group"),
   m_optionUngroup("items_ungroup"),
   m_optionLineIntersectionMouse("items_intersection_mouse"),
+  m_optionPrinter("printer"),
   m_toolbar(0),
   m_btnMap(0)
 {
@@ -147,6 +148,9 @@ void te::layout::ToolbarOutside::createToolbar()
 
   //Test
   createTemplateToolButton();
+  m_toolbar->addSeparator();
+
+  createPrinterToolButton();
   m_toolbar->addSeparator();
 }
 
@@ -287,6 +291,15 @@ void te::layout::ToolbarOutside::createLineIntersectionToolButton()
   m_toolbar->addWidget(btnLineMouse);
 }
 
+void te::layout::ToolbarOutside::createPrinterToolButton()
+{
+  QToolButton *btnPrinter = createToolButton("Print", "Print", "layout-printer");
+  btnPrinter->setCheckable(false);
+  connect(btnPrinter, SIGNAL(clicked(bool)), this, SLOT(onPrinterClicked(bool)));
+
+  m_toolbar->addWidget(btnPrinter);
+}
+
 void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
 {
   if(action->objectName().compare(m_optionMapDefault.c_str()) == 0)
@@ -401,6 +414,11 @@ void te::layout::ToolbarOutside::onLineIntersectionMouse( bool checked )
   }
 
   emit changeContext(result);
+}
+
+void te::layout::ToolbarOutside::onPrinterClicked(bool checked)
+{
+  changeAction(TypePrinter);
 }
 
 void te::layout::ToolbarOutside::changeAction( LayoutMode mode )

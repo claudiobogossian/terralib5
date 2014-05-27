@@ -65,11 +65,14 @@ void te::layout::ScaleModel::draw( ContextItem context )
 
   drawScale(canvas, utils, m_box);
 
-  canvas->setPolygonContourWidth(2);
-  canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
-  canvas->setPolygonFillColor(m_backgroundColor);
+  if(m_border)
+  {
+    canvas->setPolygonContourWidth(2);
+    canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
+    canvas->setPolygonFillColor(m_backgroundColor);
 
-  utils->drawRectW(m_box);
+    utils->drawRectW(m_box);
+  }
 
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);

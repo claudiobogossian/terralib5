@@ -238,6 +238,7 @@ set (
   ${SRCDIR}/qt/include/moc/GridSettingsOutside.h
   ${SRCDIR}/qt/include/moc/ObjectInspectorPropertyBrowser.h
   ${SRCDIR}/qt/include/moc/PropertiesItemPropertyBrowser.h
+  ${SRCDIR}/qt/include/moc/PageSetupOutside.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/layout/qt/include/moc" MOC)
 

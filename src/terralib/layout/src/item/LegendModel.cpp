@@ -59,11 +59,14 @@ void te::layout::LegendModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
   
-  canvas->setPolygonContourWidth(2);
-  canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
-  canvas->setPolygonFillColor(m_backgroundColor);
+  if(m_border)
+  {
+    canvas->setPolygonContourWidth(2);
+    canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
+    canvas->setPolygonFillColor(m_backgroundColor);
 
-  utils->drawRectW(m_box);
+    utils->drawRectW(m_box);
+  }
 
   drawLegend(canvas, utils);
 
@@ -92,7 +95,7 @@ void te::layout::LegendModel::drawLegend( te::map::Canvas* canvas, Utils* utils 
   canvas->setTextPointSize(12);
   canvas->setTextColor(te::color::RGBAColor(0, 0, 0, 255));
   canvas->drawText(m_box.getLowerLeftX(), m_box.getUpperRightY() - 5, layerName, 0);
-
+  
   // Creates a canvas configurer
   te::map::CanvasConfigurer cc(canvas);
 
@@ -104,7 +107,7 @@ void te::layout::LegendModel::drawLegend( te::map::Canvas* canvas, Utils* utils 
         
     // Gets the set of symbolizers defined on current rule
     const std::vector<te::se::Symbolizer*>& symbolizers = rule->getSymbolizers();
-    
+
     if(symbolizers.empty())
     {
       continue;
@@ -125,6 +128,12 @@ void te::layout::LegendModel::drawLegend( te::map::Canvas* canvas, Utils* utils 
       te::gm::Envelope box(m_box.getLowerLeftX(), m_box.getUpperRightY() - 20, m_box.getLowerLeftX() + 10, m_box.getUpperRightY() - 10);
       utils->drawRectW(box);
       
+      canvas->setTextPointSize(12);
+      canvas->setTextColor(te::color::RGBAColor(0, 0, 0, 255));
+      std::string* name = const_cast<std::string*>(rule->getName());
+      if(name)
+        canvas->drawText(m_box.getLowerLeftX() + 15, m_box.getUpperRightY() - 20, name->c_str(), 0);
+
       count+= 20;
 
     } // end for each <Symbolizer>

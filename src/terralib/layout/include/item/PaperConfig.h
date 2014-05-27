@@ -43,6 +43,7 @@ namespace te
         PaperConfig(LayoutAbstractPaperType paperType);
         virtual ~PaperConfig();
 
+        virtual void setPaperSizeCustom(double w, double h);
         virtual void setPaperSize(LayoutAbstractPaperType paperType);
         virtual void getPaperSize(double &w, double &h);
 
@@ -53,6 +54,8 @@ namespace te
 
         LayoutAbstractPaperType m_paperType;
         LayoutOrientationType   m_paperOrientationType;
+        double                  m_customW;
+        double                  m_customH;
     };
   }
 }

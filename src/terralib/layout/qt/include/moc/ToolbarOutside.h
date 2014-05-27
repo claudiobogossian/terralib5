@@ -83,6 +83,8 @@ namespace te
 
       virtual void onLineIntersectionMouse(bool checked);
 
+      virtual void onPrinterClicked(bool checked);
+
     signals:
 
       void changeContext(bool change);
@@ -106,6 +108,8 @@ namespace te
       virtual void createItemTools();
 
       virtual void createLineIntersectionToolButton();
+
+      virtual void createPrinterToolButton();
 
       virtual void changeAction(LayoutMode mode);
 
@@ -146,7 +150,10 @@ namespace te
 
       std::string m_optionGroup;
       std::string m_optionUngroup;
+
       std::string m_optionLineIntersectionMouse;
+
+      std::string m_optionPrinter;
     };
   }
 }

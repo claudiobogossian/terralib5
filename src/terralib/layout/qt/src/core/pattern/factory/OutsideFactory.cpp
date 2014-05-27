@@ -34,6 +34,7 @@
 #include "DisplayOutside.h"
 #include "ObjectInspectorOutside.h"
 #include "GridSettingsOutside.h"
+#include "PageSetupOutside.h"
 
 te::layout::OutsideFactory::OutsideFactory()
 {
@@ -85,6 +86,13 @@ te::layout::Observer* te::layout::OutsideFactory::make( LayoutAbstractObjectType
     {
       GridSettingsOutside* gridSettings = new GridSettingsOutside(params.getController(), params.getModel());		
       outside = (Observer*)gridSettings;
+      return outside;
+      break;
+    }
+  case TPPageSetup:
+    {
+      PageSetupOutside* pageSetup = new PageSetupOutside(params.getController(), params.getModel());		
+      outside = (Observer*)pageSetup;
       return outside;
       break;
     }

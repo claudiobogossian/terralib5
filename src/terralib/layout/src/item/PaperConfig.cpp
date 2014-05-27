@@ -30,7 +30,9 @@
 
 te::layout::PaperConfig::PaperConfig() :
   m_paperOrientationType(Portrait),
-  m_paperType(A4)
+  m_paperType(A4),
+  m_customW(0),
+  m_customH(0)
 {
   
 }
@@ -107,6 +109,13 @@ void te::layout::PaperConfig::getPaperSize( double &w, double &h )
       w=37;
       h=52;
       break;
+    case Custom:
+      w = m_customW;
+      h = m_customH;
+      break;
+    default:
+      w = 0;
+      h = 0;
   }
 }
 
@@ -118,4 +127,10 @@ void te::layout::PaperConfig::setPaperOrientation( LayoutOrientationType orienta
 te::layout::LayoutOrientationType te::layout::PaperConfig::getPaperOrientantion()
 {
   return m_paperOrientationType;
+}
+
+void te::layout::PaperConfig::setPaperSizeCustom( double w, double h )
+{
+  m_customW = w;
+  m_customH = h;
 }

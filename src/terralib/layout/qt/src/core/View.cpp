@@ -136,7 +136,7 @@ void te::layout::View::wheelEvent( QWheelEvent *event )
 {
   QGraphicsView::wheelEvent(event);
 
-  //scaleView(pow((double)2, -event->delta() / 240.0));
+  scaleView(pow((double)2, -event->delta() / 240.0));
 }
 
 void te::layout::View::scaleView( qreal scaleFactor )
@@ -368,6 +368,9 @@ void te::layout::View::onToolbarChangeContext( bool change )
   case TypeUngroup:
     destroyItemGroup();
     resetDefaultConfig();
+    break;
+  case TypePrinter:
+    sc->printPreview();
     break;
   default:
     resetDefaultConfig();

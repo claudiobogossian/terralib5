@@ -62,6 +62,7 @@ namespace te
       TypeUngroup = 23,
       TypeActiveLinesIntersectionMouse = 24,
       TypeOffLinesIntersectionMouse = 25,
+      TypePrinter = 26,
       TypeNone = 0
     } LayoutMode;
 
