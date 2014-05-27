@@ -869,8 +869,13 @@ void te::qt::widgets::DataSetTableView::changeColumnData(const int& column)
       dsrc->execute(sql);
       setLayer(m_layer);
     }
-    catch(Exception& /*e*/)
+    catch(te::common::Exception& e)
     {
+      QMessageBox::information(this, tr("Updating data failure"), e.what());
+    }
+    catch(...)
+    {
+      QMessageBox::information(this, tr("Updating data failure"), tr("Data source operation fail for unknown reason."));
     }
   }
 }
