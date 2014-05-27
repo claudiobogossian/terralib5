@@ -215,11 +215,11 @@ void GribExample()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in Grib example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in Grib example: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unknown exception has occuried in Grib example!" << std::endl;
+    std::cout << std::endl << "An unknown exception has occurred in Grib example!" << std::endl;
   }
 
 #endif  // TE_EXAMPLE_USE_GRIB
