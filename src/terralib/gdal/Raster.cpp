@@ -267,7 +267,7 @@ te::gdal::Raster& te::gdal::Raster::operator=(const te::gdal::Raster& rhs)
   return *this;
 }
 
-te::rst::Raster* te::gdal::Raster::resample(int method, int scale, const std::map<std::string, std::string>& rinfo)
+te::rst::Raster* te::gdal::Raster::resample(int method, int scale, const std::map<std::string, std::string>& rinfo) const
 {
   assert(scale != 0);
 
@@ -286,7 +286,7 @@ te::rst::Raster* te::gdal::Raster::resample(int method, int scale, const std::ma
 
   int overviewScale[1] = { -scale };
 
-  GDALDataset* inds = static_cast<te::gdal::Raster*>(this)->getGDALDataset();
+  GDALDataset* inds = getGDALDataset();
 
   GDALDataset* outds = static_cast<te::gdal::Raster*>(rout)->getGDALDataset();
 

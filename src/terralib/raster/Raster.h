@@ -521,7 +521,7 @@ namespace te
 
           \warning A scale of 0 is not allowed. Use 1, 2, 3, or -1, -2, 3...
         */
-        virtual Raster* resample(int method, unsigned int drow, unsigned int dcolumn, unsigned int height, unsigned int width, unsigned int newheight, unsigned int newwidth, const std::map<std::string, std::string>& rinfo);
+        virtual Raster* resample(int method, unsigned int drow, unsigned int dcolumn, unsigned int height, unsigned int width, unsigned int newheight, unsigned int newwidth, const std::map<std::string, std::string>& rinfo) const;
 
         /*!
           \brief Resample raster.
@@ -536,7 +536,7 @@ namespace te
 
           \warning A scale of 0 is not allowed. Use 1, 2, 3, or -1, -2, 3...
         */
-        virtual Raster* resample(int method, int scale, const std::map<std::string, std::string>& rinfo);
+        virtual Raster* resample(int method, int scale, const std::map<std::string, std::string>& rinfo) const;
 
         /*!
           \brief Return the raster grid for a specific scale.
@@ -547,7 +547,7 @@ namespace te
 
           \note The caller will take the ownership of the returned pointer.
         */
-        Grid* getResampledGrid(int scale);
+        Grid* getResampledGrid(int scale) const;
 
         /*!
           \brief Reprojects this raster to a distinct SRS.
@@ -636,7 +636,7 @@ namespace te
 
           \return The scaled value.
         */
-        double applyScale(int i, const double& v);
+        double applyScale(int i, const double& v) const;
 
       protected:
 
