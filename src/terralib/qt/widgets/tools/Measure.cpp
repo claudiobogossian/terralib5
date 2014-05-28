@@ -45,12 +45,14 @@
 // STL
 #include <cassert>
 
-te::qt::widgets::Measure::Measure(te::qt::widgets::MapDisplay* display, const MeasureType& measureType, QObject* parent) 
+te::qt::widgets::Measure::Measure(te::qt::widgets::MapDisplay* display, const MeasureType& measureType, const QCursor& cursor, QObject* parent) 
   : AbstractTool(display, parent),
     m_measureType(measureType),
     m_isFinished(false),
     m_unit("")
 {
+  setCursor(cursor);
+
   // Setups the path style
   m_pen.setColor(QColor(100, 177, 216));
   m_pen.setWidth(3);

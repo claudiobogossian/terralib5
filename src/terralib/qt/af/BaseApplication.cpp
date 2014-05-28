@@ -1520,7 +1520,9 @@ void te::qt::af::BaseApplication::onMeasureDistanceToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::Measure* distance = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Distance);
+  QCursor measureDistanceCursor(QIcon::fromTheme("distance-measure-cursor").pixmap(m_mapCursorSize), 0, 0);
+
+  te::qt::widgets::Measure* distance = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Distance, measureDistanceCursor);
   m_display->setCurrentTool(distance);
 }
 
@@ -1529,7 +1531,9 @@ void te::qt::af::BaseApplication::onMeasureAreaToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::Measure* area = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Area);
+  QCursor measureAreaCursor(QIcon::fromTheme("area-measure-cursor").pixmap(m_mapCursorSize), 0, 0);
+
+  te::qt::widgets::Measure* area = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Area, measureAreaCursor);
   m_display->setCurrentTool(area);
 }
 
@@ -1538,7 +1542,9 @@ void te::qt::af::BaseApplication::onMeasureAngleToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::Measure* angle = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Angle);
+  QCursor measureAngleCursor(QIcon::fromTheme("angle-measure-cursor").pixmap(m_mapCursorSize), 0, 0);
+
+  te::qt::widgets::Measure* angle = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Angle,measureAngleCursor);
   m_display->setCurrentTool(angle);
 }
 

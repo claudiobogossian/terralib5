@@ -469,7 +469,7 @@ te::rst::Raster* te::rst::Raster::trim(const te::gm::Envelope* env, const std::m
   return rout;
 }
 
-te::rst::Raster* te::rst::Raster::resample(int method, int scale, const std::map<std::string, std::string>& rinfo)
+te::rst::Raster* te::rst::Raster::resample(int method, int scale, const std::map<std::string, std::string>& rinfo) const
 {
   assert(scale != 0);
 
@@ -511,7 +511,7 @@ te::rst::Raster* te::rst::Raster::resample(int method, int scale, const std::map
   return rout;
 }
 
-te::rst::Raster* te::rst::Raster::resample(int method, unsigned int drow, unsigned int dcolumn, unsigned int height, unsigned int width, unsigned int newheight, unsigned int newwidth, const std::map<std::string, std::string>& rinfo)
+te::rst::Raster* te::rst::Raster::resample(int method, unsigned int drow, unsigned int dcolumn, unsigned int height, unsigned int width, unsigned int newheight, unsigned int newwidth, const std::map<std::string, std::string>& rinfo) const
 {
   assert(drow + height <= getNumberOfRows());
   assert(dcolumn + width <= getNumberOfColumns());
@@ -565,7 +565,7 @@ te::rst::Raster* te::rst::Raster::resample(int method, unsigned int drow, unsign
   return rout;
 }
 
-te::rst::Grid* te::rst::Raster::getResampledGrid(int scale)
+te::rst::Grid* te::rst::Raster::getResampledGrid(int scale) const
 {
   assert(scale != 0);
 
@@ -577,7 +577,7 @@ te::rst::Grid* te::rst::Raster::getResampledGrid(int scale)
                            ulc, getSRID());
 }
 
-double te::rst::Raster::applyScale(int i, const double& v)
+double te::rst::Raster::applyScale(int i, const double& v) const
 {
   if (i > 0)
     return (v / i);
