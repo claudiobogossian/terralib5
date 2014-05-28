@@ -208,7 +208,7 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
     break;
   case DataTypeBool:
     vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Bool, tr(property.getName().c_str()));
-    vproperty->setValue(property.getValue().toInt());
+    vproperty->setValue(property.getValue().toBool());
     break;
   case DataTypeColor:
     vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Color, tr(property.getName().c_str()));

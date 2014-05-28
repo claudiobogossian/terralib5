@@ -55,7 +55,8 @@ namespace te
       TPText = 16,
       TPItemGroup = 17,
       TPScaleItem = 18,
-      TPObjectUnknown = 19
+      TPPageSetup = 19,
+      TPObjectUnknown = 0
     } LayoutAbstractObjectType;
 
     /*!
@@ -76,7 +77,7 @@ namespace te
       Letter,
       Legal,
       Executive,
-      CUSTOM
+      Custom
     } LayoutAbstractPaperType;
 
     typedef enum _TdkOrientation

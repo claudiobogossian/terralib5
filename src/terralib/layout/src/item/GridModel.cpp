@@ -94,3 +94,18 @@ void te::layout::GridModel::setMapScale( double scale )
   m_mapScale = scale;
 }
 
+void te::layout::GridModel::setWorldBox( te::gm::Envelope box )
+{
+  m_worldBox = box;
+}
+
+void te::layout::GridModel::setBoxMapMM( te::gm::Envelope box )
+{
+  m_boxMapMM = box;
+}
+
+void te::layout::GridModel::setBoundingBoxItemMM( te::gm::Envelope box )
+{
+  m_boundingBoxItemMM = box;
+}
+

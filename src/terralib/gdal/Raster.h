@@ -116,7 +116,7 @@ namespace te
 
       Raster& operator=(const Raster& rhs);
 
-      te::rst::Raster* resample(int method, int scale, const std::map<std::string, std::string>& rinfo);
+      te::rst::Raster* resample(int method, int scale, const std::map<std::string, std::string>& rinfo) const;
 
       /*!
        \note When the parameter USE_TERRALIB_REPROJECTION = TRUE in rinfo, the default reprojection will be called.

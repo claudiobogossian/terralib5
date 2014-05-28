@@ -70,6 +70,10 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionMapPan("map_pan"),
   m_optionMapZoomIn("map_zoom_in"),
   m_optionMapZoomOut("map_zoom_out"),
+  m_optionGroup("items_group"),
+  m_optionUngroup("items_ungroup"),
+  m_optionLineIntersectionMouse("items_intersection_mouse"),
+  m_optionPrinter("printer"),
   m_toolbar(0),
   m_btnMap(0)
 {
@@ -124,6 +128,9 @@ void te::layout::ToolbarOutside::createToolbar()
   createArrowCursorButton();
   m_toolbar->addSeparator();
 
+  createLineIntersectionToolButton();
+  m_toolbar->addSeparator();
+
   createViewAreaToolButton();
   m_toolbar->addSeparator();
 
@@ -136,8 +143,14 @@ void te::layout::ToolbarOutside::createToolbar()
   createGeometryToolButton();
   m_toolbar->addSeparator();
 
+  createItemTools();
+  m_toolbar->addSeparator();
+
   //Test
   createTemplateToolButton();
+  m_toolbar->addSeparator();
+
+  createPrinterToolButton();
   m_toolbar->addSeparator();
 }
 
@@ -252,6 +265,41 @@ void te::layout::ToolbarOutside::createArrowCursorButton()
   m_toolbar->addWidget(btnArrowCursor);
 }
 
+void te::layout::ToolbarOutside::createItemTools()
+{
+  QMenu* menu = new QMenu();
+  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onItemToolsTriggered(QAction*)));
+
+  QAction* actionGroup = createAction("Group", m_optionGroup, "layout-group");
+  menu->addAction(actionGroup);
+
+  QAction* actionUngroup = createAction("Ungroup", m_optionUngroup, "layout-ungroup");
+  menu->addAction(actionUngroup);
+  
+  QToolButton *btnTools = createToolButton("Item Tools", "Item Tools", "layout-group");
+  btnTools->setMenu(menu);
+  btnTools->setPopupMode(QToolButton::InstantPopup);
+
+  m_toolbar->addWidget(btnTools);
+}
+
+void te::layout::ToolbarOutside::createLineIntersectionToolButton()
+{
+  QToolButton *btnLineMouse = createToolButton("Draw Line Intersection Mouse", "Draw Line Intersection Mouse", "layout-draw-line-mouse-intersection");
+  connect(btnLineMouse, SIGNAL(toggled(bool)), this, SLOT(onLineIntersectionMouse(bool)));
+
+  m_toolbar->addWidget(btnLineMouse);
+}
+
+void te::layout::ToolbarOutside::createPrinterToolButton()
+{
+  QToolButton *btnPrinter = createToolButton("Print", "Print", "layout-printer");
+  btnPrinter->setCheckable(false);
+  connect(btnPrinter, SIGNAL(clicked(bool)), this, SLOT(onPrinterClicked(bool)));
+
+  m_toolbar->addWidget(btnPrinter);
+}
+
 void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
 {
   if(action->objectName().compare(m_optionMapDefault.c_str()) == 0)
@@ -331,6 +379,46 @@ void te::layout::ToolbarOutside::onTemplateTriggered( QAction* action )
 void te::layout::ToolbarOutside::onArrowCursorClicked(bool checked)
 {
   changeAction(TypeArrowCursor);
+}
+
+void te::layout::ToolbarOutside::onItemToolsTriggered( QAction* action )
+{
+  if(action->objectName().compare(m_optionGroup.c_str()) == 0)
+  {
+    changeAction(TypeGroup);
+  }
+  if(action->objectName().compare(m_optionUngroup.c_str()) == 0)
+  {
+    changeAction(TypeUngroup);
+  }
+}
+
+void te::layout::ToolbarOutside::onLineIntersectionMouse( bool checked )
+{
+  bool result = false;
+  LayoutMode mouseMode = Context::getInstance()->getLineIntersectionMouseMode();
+
+  if(checked)
+  {
+    if(TypeActiveLinesIntersectionMouse != mouseMode)
+    {
+      Context::getInstance()->setLineIntersectionMouseMode(TypeActiveLinesIntersectionMouse);
+    }
+  }
+  else
+  {
+    if(TypeOffLinesIntersectionMouse != mouseMode)
+    {
+      Context::getInstance()->setLineIntersectionMouseMode(TypeOffLinesIntersectionMouse);
+    }
+  }
+
+  emit changeContext(result);
+}
+
+void te::layout::ToolbarOutside::onPrinterClicked(bool checked)
+{
+  changeAction(TypePrinter);
 }
 
 void te::layout::ToolbarOutside::changeAction( LayoutMode mode )

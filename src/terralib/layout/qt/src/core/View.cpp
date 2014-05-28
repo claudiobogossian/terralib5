@@ -37,6 +37,7 @@
 #include "PropertiesOutside.h"
 #include "ObjectInspectorOutside.h"
 #include "ToolbarOutside.h"
+#include "ItemUtils.h"
 
 // STL
 #include <math.h>
@@ -55,7 +56,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QPixmap>
-#include "ItemUtils.h"
+#include <QLineF>
 
 #define _psPointInMM 0.352777778 //<! 1 PostScript point in millimeters
 #define _inchInPSPoints 72 //<! 1 Inch in PostScript point
@@ -64,11 +65,16 @@
 te::layout::View::View( QWidget* widget) : 
   QGraphicsView(new QGraphicsScene, widget),
   m_outsideArea(0),
-  m_visualizationArea(0)
+  m_visualizationArea(0),
+  m_lineIntersectHrz(0),
+  m_lineIntersectVrt(0)
 {
   //Use ScrollHand Drag Mode to enable Panning
   //You do need the enable scroll bars for that to work.
   setDragMode(RubberBandDrag);
+
+  m_lineIntersectHrz = new QLineF(0,0,0,0);
+  m_lineIntersectVrt = new QLineF(0,0,0,0);
 }
 
 te::layout::View::~View()
@@ -77,6 +83,18 @@ te::layout::View::~View()
   {
     delete m_visualizationArea;
     m_visualizationArea = 0;
+  }
+
+  if(m_lineIntersectHrz)
+  {
+    delete m_lineIntersectHrz;
+    m_lineIntersectHrz = 0;
+  }
+
+  if(m_lineIntersectVrt)
+  {
+    delete m_lineIntersectVrt;
+    m_lineIntersectVrt = 0;
   }
 }
 
@@ -104,14 +122,21 @@ void te::layout::View::mouseMoveEvent( QMouseEvent * event )
     return;
 
    QPointF scenePos = mapToScene(event->pos());
-   sc->setPointIntersectionMouse(scenePos);
+
+   emit changeSceneCoordMouse(scenePos);
+   
+   m_lineIntersectHrz->setP1(QPointF(sc->sceneRect().topLeft().x(), scenePos.y()));
+   m_lineIntersectHrz->setP2(scenePos);
+
+   m_lineIntersectVrt->setP1(QPointF(scenePos.x(), sc->sceneRect().topLeft().y()));
+   m_lineIntersectVrt->setP2(scenePos);
 }
 
 void te::layout::View::wheelEvent( QWheelEvent *event )
 {
   QGraphicsView::wheelEvent(event);
 
-  //scaleView(pow((double)2, -event->delta() / 240.0));
+  scaleView(pow((double)2, -event->delta() / 240.0));
 }
 
 void te::layout::View::scaleView( qreal scaleFactor )
@@ -200,6 +225,9 @@ void te::layout::View::config()
 
   m_visualizationArea = new VisualizationArea(boxW);
   m_visualizationArea->build();
+
+  lScene->setLineIntersectionHzr(m_lineIntersectHrz);
+  lScene->setLineIntersectionVrt(m_lineIntersectVrt);
         
   scene()->setBackgroundBrush(QBrush(QColor(105,105,030)));
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -333,6 +361,17 @@ void te::layout::View::onToolbarChangeContext( bool change )
       setInteractive(false);
       break;
     }
+  case TypeGroup:
+    createItemGroup();
+    resetDefaultConfig();
+    break;
+  case TypeUngroup:
+    destroyItemGroup();
+    resetDefaultConfig();
+    break;
+  case TypePrinter:
+    sc->printPreview();
+    break;
   default:
     resetDefaultConfig();
   }

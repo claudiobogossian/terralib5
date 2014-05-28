@@ -63,7 +63,8 @@ namespace te
           m_templateFactory(0),
           m_version("TerraPrintQt4_1.0.0"),
           m_paperConfig(0),
-          m_buildGraphicsItem(0)
+          m_buildGraphicsItem(0),
+          m_lineIntersectionMouseMode(TypeOffLinesIntersectionMouse)
         {
         };  // Private so that it can  not be called	
         Context(Context const&){};             // copy constructor is private	
@@ -121,8 +122,12 @@ namespace te
         BuildGraphicsItem* getBuildGraphicsItem();
         void setBuildGraphicsItem(BuildGraphicsItem* build);
 
+        LayoutMode getLineIntersectionMouseMode();
+        void setLineIntersectionMouseMode(LayoutMode mode);
+
       protected:
         LayoutMode						    m_mode;
+        LayoutMode						    m_lineIntersectionMouseMode;
         LayoutUnitsMetrics        m_unitMetric;
         AbstractScene*					  m_scene;
         double							      m_zoomFactor;

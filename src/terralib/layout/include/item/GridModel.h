@@ -33,6 +33,7 @@
 #include "../../../maptools/Canvas.h"
 #include "../../../maptools/Enums.h"
 #include "Property.h"
+#include "../../../geometry/Envelope.h"
 
 namespace te
 {
@@ -57,6 +58,12 @@ namespace te
         virtual void setVisible(bool visible);
 
         virtual void setMapScale(double scale);
+
+        virtual void setWorldBox(te::gm::Envelope box);
+
+        virtual void setBoxMapMM(te::gm::Envelope box);
+
+        virtual void setBoundingBoxItemMM(te::gm::Envelope box);
                 
        protected:
 
@@ -72,6 +79,10 @@ namespace te
          double                  m_mapScale;
          std::string             m_name;
          int                     m_srid;
+
+         te::gm::Envelope     m_boxMapMM;
+         te::gm::Envelope     m_boundingBoxItemMM;
+         te::gm::Envelope     m_worldBox;
 
          /* Grid */
          bool   m_visible;

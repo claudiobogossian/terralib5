@@ -85,6 +85,12 @@ te::layout::MainLayout::~MainLayout()
     m_view = 0;
   }
 
+  if(m_statusBar)
+  {
+    delete m_statusBar;
+    m_statusBar = 0;
+  }
+
   if(m_itemFactory)
   {
     delete m_itemFactory;
@@ -181,13 +187,13 @@ void te::layout::MainLayout::createDockLayoutDisplay(QWidget* mainWindow, View* 
       Observer* itemDockDisplay = (Observer*)dockDisplayController->getView();
       m_dockLayoutDisplay = dynamic_cast<DisplayOutside*>(itemDockDisplay);    
 
-      QStatusBar* status = new QStatusBar;
-      status->setMinimumSize(200, 10);
-      status->showMessage("TerraPrint. Terralib 5 - Ready...");
+      m_statusBar = new QStatusBar;
+      m_statusBar->setMinimumSize(200, 10);
+      m_statusBar->showMessage("TerraPrint. Terralib 5 - Ready...");
 
       QVBoxLayout* vLayout = new QVBoxLayout;
       vLayout->addWidget(view);
-      vLayout->addWidget(status);
+      vLayout->addWidget(m_statusBar);
 
       m_groupBox = new QGroupBox(m_dockLayoutDisplay);
       m_groupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);

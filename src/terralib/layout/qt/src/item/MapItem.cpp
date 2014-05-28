@@ -282,7 +282,7 @@ te::gm::Coord2D te::layout::MapItem::getPosition()
 }
 
 void te::layout::MapItem::setPos( const QPointF &pos )
-{
+{    
   QGraphicsItem::setPos(pos);
 
   refresh();

@@ -187,3 +187,13 @@ void te::layout::Context::setBuildGraphicsItem( BuildGraphicsItem* build )
 {
   m_buildGraphicsItem = build;
 }
+
+te::layout::LayoutMode te::layout::Context::getLineIntersectionMouseMode()
+{
+  return m_lineIntersectionMouseMode;
+}
+
+void te::layout::Context::setLineIntersectionMouseMode( LayoutMode mode )
+{
+  m_lineIntersectionMouseMode = mode;
+}

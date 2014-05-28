@@ -79,7 +79,7 @@ te::layout::BuildGraphicsItem::BuildGraphicsItem() :
   m_verticalRuler("VERTICAL_RULER_"),
   m_groupItem("ITEM_GROUP_")
 {
-
+  m_sharedProps = new SharedProperties;
 }
 
 te::layout::BuildGraphicsItem::~BuildGraphicsItem()

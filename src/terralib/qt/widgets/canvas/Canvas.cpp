@@ -2071,7 +2071,7 @@ te::gm::Polygon* te::qt::widgets::Canvas::getTextBoundary(const QPoint& p, const
 
 //converter QPolygon para te::gm::Polygon. Como fazer isso?
   te::gm::LinearRing* lr = new te::gm::LinearRing(4, te::gm::LineStringType);
-  te::gm::Polygon* poly = new te::gm::Polygon(0, te::gm::PolygonType);
+  te::gm::Polygon* poly = new te::gm::Polygon(1, te::gm::PolygonType);
   poly->setRingN(0, lr);
   lr->setPoint(0, polf.at(0).x(), polf.at(0).y());
   lr->setPoint(1, polf.at(1).x(), polf.at(1).y());
