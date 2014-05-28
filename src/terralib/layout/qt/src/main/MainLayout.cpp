@@ -59,8 +59,6 @@ te::layout::MainLayout::MainLayout() :
 
 te::layout::MainLayout::~MainLayout()
 {
-  finish();  
-  
   if(m_outsideArea)
   {
     delete m_outsideArea;
@@ -73,10 +71,18 @@ te::layout::MainLayout::~MainLayout()
     m_view = 0;
   }
 
+  finish();  
+
   if(m_statusBar)
   {
     delete m_statusBar;
     m_statusBar = 0;
+  }
+
+  if(m_buildContext)
+  {
+    delete m_buildContext;
+    m_buildContext = 0;
   }
 }
 
@@ -94,6 +100,7 @@ void te::layout::MainLayout::init(QWidget* mainWindow, QMenu* mnuLayout)
 
   if(!m_view)
   {
+
     create = true;
     m_view = new View();
     m_view->setScene(new Scene());
@@ -169,6 +176,8 @@ void te::layout::MainLayout::finish()
 {
   if(m_dockLayoutDisplay)
   {
+    //m_dockLayoutDisplay->removeDock();
+
     m_dockLayoutDisplay->close();
     delete m_dockLayoutDisplay;
     m_dockLayoutDisplay = 0;

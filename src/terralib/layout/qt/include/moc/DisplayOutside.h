@@ -55,11 +55,11 @@ namespace te
 	    virtual void setPosition(const double& x, const double& y);
 	    virtual te::gm::Coord2D getPosition();
       void setPreviousCentralWidget(QWidget* previous);
-      
+      virtual void removeDock();
+
     protected:
 
       virtual void	closeEvent ( QCloseEvent * event );
-      virtual void removeDock();
 
       QWidget* m_previousCentralWidget; /* Previous central display of application */
       bool     m_previousCentralWidgetVisibilite;

@@ -303,8 +303,25 @@ void te::layout::OutsideArea::openMainMenu()
   if(!m_mainMenu)
     return;
 
-  m_parentMenu->addSeparator();
-  m_parentMenu->addMenu(m_mainMenu);
+  bool exist_menu = false;
+  QAction* action = m_mainMenu->menuAction();
+  QList<QAction*> acts = m_parentMenu->actions();
+  if(action)
+  {
+    foreach(QAction* act, acts)
+    {
+      if(act == action)
+      {
+        exist_menu = true;
+      }
+    }
+  }
+
+  if(!exist_menu)
+  {
+    m_parentMenu->addSeparator();
+    m_parentMenu->addMenu(m_mainMenu);
+  }
 }
 
 void te::layout::OutsideArea::closeMainMenu()
@@ -316,5 +333,15 @@ void te::layout::OutsideArea::closeMainMenu()
     return;
 
   QAction* action = m_mainMenu->menuAction();
-  m_parentMenu->removeAction(action);
+  QList<QAction*> acts = m_parentMenu->actions();
+  if(action)
+  {
+    foreach(QAction* act, acts)
+    {
+      if(act == action)
+      {
+        m_parentMenu->removeAction(action);
+      }
+    }
+  }
 }

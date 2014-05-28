@@ -86,7 +86,10 @@ void te::layout::DisplayOutside::closeEvent( QCloseEvent * event )
 {
   QDockWidget::closeEvent(event);
 
-  widget()->close();
+  if(widget())
+  {
+    widget()->close();
+  }
 
   removeDock();
 }
