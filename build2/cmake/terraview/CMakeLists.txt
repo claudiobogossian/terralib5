@@ -25,84 +25,18 @@
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
-# Macro installQtPlugins
-#
-# Installs the required Qt plugins.
-#
-# param plugs List of the names of plugins to be installed.
-MACRO(installQtPlugins plgs)
-
-  if ("${QT_PLUGINS_DIR}" STREQUAL "")
-    set (QT_PLUGINS_DIR "${Qt5_DIR}/../../../plugins")
-  endif()
-
-  set (_regex_exp "")
-
-  set( _first TRUE)
-
-  foreach(plg ${plgs})
-    if(NOT _first)
-      set (_regex_exp ${_regex_exp}|${plg})
-    else()
-      set (_regex_exp ${plg})
-      set (_first FALSE)
-    endif()
-  endforeach()
-
-  set (_regex_exp "(${_regex_exp})(${CMAKE_SHARED_LIBRARY_SUFFIX})$")
-
-  set (_dest qtplugins)
-
-  install (DIRECTORY ${QT_PLUGINS_DIR}/imageformats  
-    DESTINATION ${_dest} 
-    COMPONENT runtime
-    FILES_MATCHING
-    REGEX "${_regex_exp}"
-  )
-
-  install (DIRECTORY ${QT_PLUGINS_DIR}/iconengines  
-    DESTINATION ${_dest} 
-    COMPONENT runtime
-    FILES_MATCHING
-    REGEX "${_regex_exp}"
-  )
-
-  install (DIRECTORY ${QT_PLUGINS_DIR}/sqldrivers  
-    DESTINATION ${_dest} 
-    COMPONENT runtime
-    FILES_MATCHING
-    REGEX "${_regex_exp}"
-  )
-
-ENDMACRO(installQtPlugins)
-
-
 configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/Config.h.in
                ${CMAKE_BINARY_DIR}/terraview_config.h @ONLY)
 
 include_directories(${Boost_INCLUDE_DIR})
-
-if(Qt5_FOUND)
-  set(CMAKE_AUTOMOC ON)
-  set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-else() # QT4_FOUND
-
-  include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-  include(${QT_USE_FILE})
-
-  include_directories(${QT_INCLUDE_DIR})
-
-  add_definitions(${QT_DEFINITIONS})
-
-endif()
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/*.h)
 file(GLOB TERRALIB_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/ui/*.ui)
 
 if(Qt5_FOUND)
+  set(CMAKE_AUTOMOC ON)
+  set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # uic'ing
   QT5_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
@@ -116,6 +50,14 @@ if(Qt5_FOUND)
   qt5_use_modules(terraview Widgets)
 
 else()
+
+  include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+  include(${QT_USE_FILE})
+
+  include_directories(${QT_INCLUDE_DIR})
+
+  add_definitions(${QT_DEFINITIONS})
 
 # uic'ing
   QT4_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
@@ -132,17 +74,7 @@ else()
   target_link_libraries(terraview terralib_mod_qt_apf
                                   ${QT_LIBRARIES})
 
-endif() 
-
-installQtPlugins("qgif;qico;qjpeg;qmng;qtiff;qsvg;qsvgicon;qsqlite")
-
-file (
-  WRITE
-  ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
-  "[Paths]
-  Binaries = .
-  Plugins = ../qtplugins"
-)
+endif()
 
 install(TARGETS terraview
         EXPORT terralib-targets
@@ -157,9 +89,16 @@ install(FILES ${TERRALIB_HDR_FILES}
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terraview
         DESTINATION share/terraview COMPONENT runtime)
-		
-install (FILES ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
-        DESTINATION ${TERRALIB_DESTINATION_RUNTIME}
-		COMPONENT runtime)
+
+if(TERRALIB_TRACK_3RDPARTY_DEPENDENCIES)
+  TeInstallQtPlugins("qgif;qico;qjpeg;qmng;qtiff;qsvg;qsvgicon;qsqlite")
+
+  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
+       "[Paths]\nBinaries = .\nPlugins = ../qtplugins")
+
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
+          DESTINATION ${TERRALIB_DESTINATION_RUNTIME}
+          COMPONENT runtime)
+endif()
 
 export(TARGETS terraview APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

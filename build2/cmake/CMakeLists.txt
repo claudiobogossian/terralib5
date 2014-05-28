@@ -42,6 +42,23 @@ set(TERRALIB_VERSION_STRING "${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
 set(TERRALIB_VERSION "0x050000")
 set(TERRALIB_PKG_VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}.${TERRALIB_VERSION_PATCH})
 
+# variable indicating that
+if(NOT DEFINED TERRALIB_TRACK_3RDPARTY_DEPENDENCIES)
+  set(TERRALIB_TRACK_3RDPARTY_DEPENDENCIES 0 CACHE BOOL "If \"on\" it will search for 3rd-party libraries and install them when building the install target (e.g.: make install)")
+endif()
+
+# variables storing absolute paths
+set(TERRALIB_ABSOLUTE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+
+# variables that control paths
+if(NOT DEFINED TERRALIB_DIR_VAR_NAME)
+  set(TERRALIB_DIR_VAR_NAME "TERRALIB_HOME" CACHE STRING "Name of an environment variable with the base installation path of TerraLib")
+endif()
+
+if(NOT DEFINED TERRALIB_EXAMPLES_DATA_DIR)
+  set(TERRALIB_EXAMPLES_DATA_DIR "${CMAKE_BINARY_DIR}/data" CACHE PATH "Path to a directory containing the data used in the examples")
+endif()
+
 # variables that control the install location
 if(NOT DEFINED TERRALIB_DESTINATION_PLUGINS)
   set(TERRALIB_DESTINATION_PLUGINS "share/terralib/plugins")
@@ -65,18 +82,6 @@ endif()
 
 if(NOT DEFINED TERRALIB_DESTINATION_HEADERS)
   set(TERRALIB_DESTINATION_HEADERS "include")
-endif()
-
-# variables storing absolute paths
-set(TERRALIB_ABSOLUTE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
-
-# variables that control paths
-if(NOT DEFINED TERRALIB_DIR_VAR_NAME)
-  set(TERRALIB_DIR_VAR_NAME "TERRALIB_HOME" CACHE STRING "Name of an environment variable with the base installation path of TerraLib")
-endif()
-
-if(NOT DEFINED TERRALIB_EXAMPLES_DATA_DIR)
-  set(TERRALIB_EXAMPLES_DATA_DIR "${CMAKE_BINARY_DIR}/data" CACHE PATH "Path to a directory containing the data used in the examples")
 endif()
 
 # variables that controls what is built
@@ -147,6 +152,13 @@ endif()
 #
 
 include(CMakeDependentOption)
+
+
+#
+# including TerraLib auxiliary macros and functions
+#
+
+include(terralib_macros.cmake)
 
 
 #
@@ -887,16 +899,17 @@ install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/json
 #
 # Track dependencies
 #
+if(TERRALIB_TRACK_3RDPARTY_DEPENDENCIES)
+  #set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP ON)
 
-#set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP ON)
+  include(InstallRequiredSystemLibraries)
 
-include(InstallRequiredSystemLibraries)
+  #install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+  #        DESTINATION bin
+  #        COMPONENT runtime)
 
-#install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-#        DESTINATION bin
-#        COMPONENT runtime)
-
-add_subdirectory(fix_bundle)
+  add_subdirectory(fix_bundle)
+endif()
 
 
 #
