@@ -159,9 +159,6 @@ void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* o
   for(it=objIdIdx.begin(); it!=objIdIdx.end(); ++it)
     added->addProperty(m_layer->getData()->getPropertyName(*it), *it, m_layer->getData()->getPropertyDataType(*it));
 
-  oids->clear();
-  m_layer->select(added);
-
   //Acquiring the envelope
   if(added->size() > 0)
   {
@@ -180,12 +177,15 @@ void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* o
       }
     }
 
+    m_layer->select(added);
     te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer, computeDataSetEnvelope(ds, geomPos));
     ApplicationController::getInstance().broadcast(&e);
   }
   else
   {
+    m_layer->select(added);
     te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer);
     ApplicationController::getInstance().broadcast(&e);
   }
+  oids->clear();
 }
