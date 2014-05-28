@@ -400,6 +400,8 @@ namespace te
           */
           QColor getSelectionColor() const;
 
+          /*! \brief Sets the application selection color. */
+          void setSelectionColor(const QColor& c);
 
           /*!
             \brief Returns main window.

@@ -4,6 +4,7 @@
 // TerraLib
 #include "terralib/common/SystemApplicationSettings.h"
 #include "terralib/common/UserApplicationSettings.h"
+#include "../ApplicationController.h"
 #include "../Utils.h"
 
 // Qt
@@ -434,7 +435,8 @@ void te::qt::af::GeneralConfigWidget::textChanged(const QString&)
   changeApplyButtonState(true);
 }
 
-void te::qt::af::GeneralConfigWidget::colorChanged(const QColor&)
+void te::qt::af::GeneralConfigWidget::colorChanged(const QColor& c)
 {
+  ApplicationController::getInstance().setSelectionColor(c);
   changeApplyButtonState(true);
 }
