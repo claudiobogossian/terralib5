@@ -84,7 +84,7 @@ namespace te
 
           void textChanged(const QString&);
 
-          void colorChanged(const QColor&);
+          void colorChanged(const QColor& c);
 
         protected:
 
