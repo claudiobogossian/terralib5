@@ -765,6 +765,11 @@ QColor te::qt::af::ApplicationController::getSelectionColor() const
   return m_selectionColor;
 }
 
+void te::qt::af::ApplicationController::setSelectionColor(const QColor& c)
+{
+  m_selectionColor = c;
+}
+
 QWidget* te::qt::af::ApplicationController::getMainWindow() const
 {
   return m_msgBoxParentWidget;
