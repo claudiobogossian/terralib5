@@ -65,10 +65,10 @@ endif()
 # specific configuration for NSIS package generator
 #
 if(CPACK_GENERATOR MATCHES "NSIS")
-  set(CPACK_NSIS_MUI_ICON @TERRALIB_ABSOLUTE_ROOT_DIR@/resources/icons/cmake/install.ico)
-  set(CPACK_NSIS_MUI_UNIICON @TERRALIB_ABSOLUTE_ROOT_DIR@/resources/icons/cmake/uninstall.ico)
-  set(CPACK_NSIS_INSTALLED_ICON_NAME @TERRALIB_ABSOLUTE_ROOT_DIR@/resources/icons/cmake/terralib.ico)
-  set(CPACK_PACKAGE_ICON @TERRALIB_ABSOLUTE_ROOT_DIR@/resources/bmp/cmake\\install.bmp)
+  set(CPACK_NSIS_MUI_ICON @TERRALIB_ABSOLUTE_ROOT_DIR@/resources/icons/cmake_install.ico)
+  set(CPACK_NSIS_MUI_UNIICON @TERRALIB_ABSOLUTE_ROOT_DIR@/resources/icons/cmake_uninstall.ico)
+  set(CPACK_NSIS_INSTALLED_ICON_NAME @TERRALIB_ABSOLUTE_ROOT_DIR@/resources/icons/terralib-globe.ico)
+  set(CPACK_PACKAGE_ICON @TERRALIB_ABSOLUTE_ROOT_DIR@/resources/images/bmp\\terralib-installer-logo-large.bmp)
 
   set(CPACK_RESOURCE_FILE_LICENSE @TERRALIB_ABSOLUTE_ROOT_DIR@/COPYING)
   set(CPACK_RESOURCE_FILE_README @TERRALIB_ABSOLUTE_ROOT_DIR@/build/cmake/GENERAL-README)
