@@ -63,9 +63,6 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionViewPan("view_pan"),
   m_optionViewZoomIn("view_zoom_in"),
   m_optionViewZoomOut("view_zoom_out"),
-  m_optionExport("template_export"),
-  m_optionImport("template_import"),
-  m_optionNew("template_new"),
   m_optionScale("scale_object"),
   m_optionMapPan("map_pan"),
   m_optionMapZoomIn("map_zoom_in"),
@@ -73,7 +70,6 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionGroup("items_group"),
   m_optionUngroup("items_ungroup"),
   m_optionLineIntersectionMouse("items_intersection_mouse"),
-  m_optionPrinter("printer"),
   m_toolbar(0),
   m_btnMap(0)
 {
@@ -144,13 +140,6 @@ void te::layout::ToolbarOutside::createToolbar()
   m_toolbar->addSeparator();
 
   createItemTools();
-  m_toolbar->addSeparator();
-
-  //Test
-  createTemplateToolButton();
-  m_toolbar->addSeparator();
-
-  createPrinterToolButton();
   m_toolbar->addSeparator();
 }
 
@@ -235,27 +224,6 @@ void te::layout::ToolbarOutside::createViewAreaToolButton()
   m_toolbar->addWidget(btnViewArea);
 }
 
-void te::layout::ToolbarOutside::createTemplateToolButton()
-{
-  QMenu* menu = new QMenu();
-  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onTemplateTriggered(QAction*)));
-
-  QAction* actionNew = createAction("New Template", m_optionNew, "layout-new");
-  menu->addAction(actionNew);
-
-  QAction* actionSave = createAction("Export Template", m_optionExport, "layout-export");
-  menu->addAction(actionSave);
-
-  QAction* actionImport = createAction("Import Template", m_optionImport, "layout-import");
-  menu->addAction(actionImport);
-
-  QToolButton *btnTemplate = createToolButton("Template Tools", "Template Tools", "layout-export");
-  btnTemplate->setMenu(menu);
-  btnTemplate->setPopupMode(QToolButton::InstantPopup);
-
-  m_toolbar->addWidget(btnTemplate);
-}
-
 void te::layout::ToolbarOutside::createArrowCursorButton()
 {
   QToolButton *btnArrowCursor = createToolButton("Arrow Cursor", "Arrow Cursor", "layout-default-cursor");
@@ -289,15 +257,6 @@ void te::layout::ToolbarOutside::createLineIntersectionToolButton()
   connect(btnLineMouse, SIGNAL(toggled(bool)), this, SLOT(onLineIntersectionMouse(bool)));
 
   m_toolbar->addWidget(btnLineMouse);
-}
-
-void te::layout::ToolbarOutside::createPrinterToolButton()
-{
-  QToolButton *btnPrinter = createToolButton("Print", "Print", "layout-printer");
-  btnPrinter->setCheckable(false);
-  connect(btnPrinter, SIGNAL(clicked(bool)), this, SLOT(onPrinterClicked(bool)));
-
-  m_toolbar->addWidget(btnPrinter);
 }
 
 void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
@@ -360,22 +319,6 @@ void te::layout::ToolbarOutside::onViewAreaTriggered( QAction* action )
   }
 }
 
-void te::layout::ToolbarOutside::onTemplateTriggered( QAction* action )
-{
-  if(action->objectName().compare(m_optionNew.c_str()) == 0)
-  {
-    changeAction(TypeNewTemplate);
-  }
-  if(action->objectName().compare(m_optionExport.c_str()) == 0)
-  {
-    changeAction(TypeExportPropsJSON);
-  }
-  if(action->objectName().compare(m_optionImport.c_str()) == 0)
-  {
-    changeAction(TypeImportJSONProps);
-  }
-}
-
 void te::layout::ToolbarOutside::onArrowCursorClicked(bool checked)
 {
   changeAction(TypeArrowCursor);
@@ -416,19 +359,18 @@ void te::layout::ToolbarOutside::onLineIntersectionMouse( bool checked )
   emit changeContext(result);
 }
 
-void te::layout::ToolbarOutside::onPrinterClicked(bool checked)
-{
-  changeAction(TypePrinter);
-}
-
 void te::layout::ToolbarOutside::changeAction( LayoutMode mode )
 {
-  bool result = false;
+  bool result = true;
   LayoutMode layoutMode = Context::getInstance()->getMode();
 
   if(mode != layoutMode)
   {
     Context::getInstance()->setMode(mode);
+  }
+  else
+  {
+    result = false;
   }
 
   emit changeContext(result);

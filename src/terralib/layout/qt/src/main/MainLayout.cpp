@@ -26,10 +26,6 @@
 // TerraLib
 #include "MainLayout.h"
 #include "Scene.h"
-#include "ItemFactory.h"
-#include "OutsideFactory.h"
-#include "Context.h"
-#include "Utils.h"
 #include "View.h"
 #include "../../../../color/RGBAColor.h"
 #include "../../../../geometry/Envelope.h"
@@ -39,9 +35,8 @@
 #include "DisplayOutside.h"
 #include "Scene.h"
 #include "Observer.h"
-#include "TemplateFactory.h"
+#include "BuildContext.h"
 #include "OutsideArea.h"
-#include "PaperConfig.h"
 
 // Qt
 #include <QGraphicsScene>
@@ -52,27 +47,20 @@
 #include <QVBoxLayout>
 #include <QStatusBar>
 #include <QGroupBox>
-#include "BuildGraphicsItem.h"
 
 te::layout::MainLayout::MainLayout() :
   m_view(0),
   m_dockLayoutDisplay(0),
-  m_outsideArea(0),
-  m_itemFactory(0),
-  m_outsideFactory(0),
-  m_templateFactory(0),
-  m_utils(0),
-  m_paperConfig(0),
-  m_canvas(0),
-  m_buildGraphicsItem(0)
+  m_buildContext(0),
+  m_outsideArea(0)
 {
-
+  m_buildContext = new BuildContext;
 }
 
 te::layout::MainLayout::~MainLayout()
 {
   finish();  
-
+  
   if(m_outsideArea)
   {
     delete m_outsideArea;
@@ -90,51 +78,9 @@ te::layout::MainLayout::~MainLayout()
     delete m_statusBar;
     m_statusBar = 0;
   }
-
-  if(m_itemFactory)
-  {
-    delete m_itemFactory;
-    m_itemFactory = 0;
-  }
-
-  if(m_outsideFactory)
-  {
-    delete m_outsideFactory;
-    m_outsideFactory = 0;
-  }
-
-  if(m_templateFactory)
-  {
-    delete m_templateFactory;
-    m_templateFactory = 0;
-  }
-
-  if(m_utils)
-  {
-    delete m_utils;
-    m_utils = 0;
-  }
-
-  if(m_paperConfig)
-  {
-    delete m_paperConfig;
-    m_paperConfig = 0;
-  }
-
-  if(m_buildGraphicsItem)
-  {
-    delete m_buildGraphicsItem;
-    m_buildGraphicsItem = 0;
-  }
-
-  if(m_canvas)
-  {
-    delete m_canvas;
-    m_canvas = 0;
-  }
 }
 
-void te::layout::MainLayout::init(QWidget* mainWindow)
+void te::layout::MainLayout::init(QWidget* mainWindow, QMenu* mnuLayout)
 {
   bool create = false;
 
@@ -157,11 +103,11 @@ void te::layout::MainLayout::init(QWidget* mainWindow)
   const QRect screen = QApplication::desktop()->screenGeometry();
   m_view->move( screen.center() - m_view->rect().center() );
 
-  createLayoutContext(size.width(), size.height(), m_view);
+  createLayoutContext(size.width(), size.height());
   createDockLayoutDisplay(mainWindow, m_view);
-  
+    
   if(!m_outsideArea)
-    m_outsideArea = new OutsideArea(mainWindow);
+    m_outsideArea = new OutsideArea(mainWindow, mnuLayout);
 
   if(create)
   {
@@ -171,7 +117,8 @@ void te::layout::MainLayout::init(QWidget* mainWindow)
   }
   
   m_view->show();
-
+  m_outsideArea->openMainMenu();
+  m_outsideArea->openAllDocks();
 }
 
 void te::layout::MainLayout::createDockLayoutDisplay(QWidget* mainWindow, View* view)
@@ -210,70 +157,12 @@ void te::layout::MainLayout::createDockLayoutDisplay(QWidget* mainWindow, View* 
   }
 }
 
-void te::layout::MainLayout::createLayoutContext( int width, int height, View* view )
+void te::layout::MainLayout::createLayoutContext(int width, int height)
 {
-  ItemFactory* f = dynamic_cast<ItemFactory*>(Context::getInstance()->getItemFactory());
+  if(!m_buildContext)
+    return;
 
-  if(!Context::getInstance()->getItemFactory())
-  {
-    m_itemFactory = new ItemFactory;
-    Context::getInstance()->setItemFactory(m_itemFactory);
-  }
-
-  if(!Context::getInstance()->getOutsideFactory())
-  {
-    m_outsideFactory = new OutsideFactory;
-    Context::getInstance()->setOutsideFactory(m_outsideFactory);
-  }
-
-  if(!Context::getInstance()->getTemplateFactory())
-  {
-    m_templateFactory = new TemplateFactory;
-    Context::getInstance()->setTemplateFactory(m_templateFactory);
-  }
-
-  if(!Context::getInstance()->getUtils())
-  {
-    m_utils = new Utils;
-    Context::getInstance()->setUtils(m_utils);
-  } 
-
-  if(!Context::getInstance()->getPaperConfig())
-  {
-    m_paperConfig = new PaperConfig;
-    Context::getInstance()->setPaperConfig(m_paperConfig);
-  } 
-
-  if(!Context::getInstance()->getCanvas())
-  {
-    Scene* lScene = dynamic_cast<Scene*>(m_view->scene());
-
-    if(lScene)
-    {
-      te::gm::Envelope* worldbox = lScene->getWorldBox();
-
-      if(!worldbox)
-        worldbox = new te::gm::Envelope;
-
-      //Create Canvas
-      m_canvas = new te::qt::widgets::Canvas(width, height);    
-      m_canvas->setWindow(worldbox->getLowerLeftX(), worldbox->getLowerLeftY(), worldbox->getUpperRightX(), worldbox->getUpperRightY());
-      m_canvas->clear();
-      Context::getInstance()->setCanvas(m_canvas);
-    }
-  }
-
-  if(!Context::getInstance()->getScene())
-  {
-    Scene* lScene = dynamic_cast<Scene*>(view->scene());
-    if(lScene)
-      Context::getInstance()->setScene(lScene);
-  }  
-  if(!Context::getInstance()->getBuildGraphicsItem())
-  {
-    m_buildGraphicsItem = new BuildGraphicsItem;
-    Context::getInstance()->setBuildGraphicsItem(m_buildGraphicsItem);
-  }
+  m_buildContext->createLayoutContext(width, height, m_view);
 }
 
 void te::layout::MainLayout::finish()

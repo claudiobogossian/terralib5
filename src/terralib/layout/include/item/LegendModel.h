@@ -55,12 +55,32 @@ namespace te
 
         virtual void visitDependent();
 
+        virtual void setBorderDisplacement(double value);
+        
+        virtual double getBorderDisplacement();
+
+        virtual void setDisplacementBetweenSymbols(double value);
+
+        virtual double getDisplacementBetweenSymbols();
+
+        virtual void setDisplacementBetweenTitleAndSymbols(double value);
+
+        virtual double getDisplacementBetweenTitleAndSymbols();
+
+        virtual void setDisplacementBetweenSymbolAndText(double value);
+
+        virtual double getDisplacementBetweenSymbolAndText();
+
        protected:
 
-         virtual void drawLegend(te::map::Canvas* canvas, Utils* utils);
+        virtual void drawLegend(te::map::Canvas* canvas, Utils* utils);
 
         std::string m_mapName;
         te::map::AbstractLayerPtr m_layer;
+        double m_borderDisplacement;
+        double m_displacementBetweenSymbols;
+        double m_displacementBetweenTitleAndSymbols;
+        double m_displacementBetweenSymbolsAndText;
     };
   }
 }

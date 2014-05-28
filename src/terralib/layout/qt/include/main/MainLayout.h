@@ -29,11 +29,11 @@
 // TerraLib
 #include "../../../../common/Singleton.h"
 #include "../../../include/core/Config.h"
-#include "../../../../qt/widgets/canvas/Canvas.h"
 
 class QWidget;
 class QGroupBox;
 class QStatusBar;
+class QMenu;
 
 namespace te
 {
@@ -41,14 +41,9 @@ namespace te
   {
     class View;
     class DisplayOutside;
+    class BuildContext;
     class OutsideArea;
-    class ItemFactory;
-    class OutsideFactory;
-    class TemplateFactory;
-    class Utils;
-    class PaperConfig;
-    class BuildGraphicsItem;
-
+   
     /*!
     \class 
      
@@ -70,28 +65,22 @@ namespace te
         This methods 
         \exception te::layout::Exception if the 
         */
-        virtual void init(QWidget* mainWindow = 0);
+        virtual void init(QWidget* mainWindow = 0, QMenu* mnuLayout = 0);
               
       protected:
       
         /*! \brief Constructor. */
         MainLayout();
         void createDockLayoutDisplay(QWidget* mainWindow, View* view);
-        void createLayoutContext(int width, int height, View* view);
+        void createLayoutContext(int width, int height);
         void finish();
 
         View* m_view;
         DisplayOutside* m_dockLayoutDisplay;
-        OutsideArea*    m_outsideArea;     
-        ItemFactory*    m_itemFactory;
-        OutsideFactory* m_outsideFactory;
-        TemplateFactory* m_templateFactory;
-        Utils* m_utils;
-        PaperConfig* m_paperConfig;
-        te::qt::widgets::Canvas* m_canvas;
         QGroupBox* m_groupBox;
-        BuildGraphicsItem* m_buildGraphicsItem;
         QStatusBar* m_statusBar;
+        BuildContext* m_buildContext;
+        OutsideArea*    m_outsideArea;  
         
       private:
       

@@ -280,3 +280,30 @@ te::gm::LinearRing* te::layout::Utils::addCoordsInY( te::gm::Envelope box, doubl
 
   return line;
 }
+
+void te::layout::Utils::textBoundingBox( double &w, double &h, std::string txt )
+{
+  te::map::Canvas* canvas = Context::getInstance()->getCanvas();
+
+  if(!canvas)
+  {
+    return;
+  }
+
+  w = 0;
+  h = 0;
+
+  te::gm::Polygon* poly = canvas->getTextBoundary(0, 0, txt, 0);
+  if(poly)
+  {
+    //Box = mbr: minimum bounding rectangle
+    const te::gm::Envelope* env = poly->getMBR();
+    te::gm::Envelope* box = 0;
+    box = const_cast<te::gm::Envelope*>(env);
+    if(box)
+    {
+      w = box->getWidth();
+      h = box->getHeight();
+    }
+  }
+}

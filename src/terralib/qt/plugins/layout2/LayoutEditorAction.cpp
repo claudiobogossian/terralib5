@@ -53,5 +53,5 @@ te::qt::plugins::layout2::LayoutEditorAction::~LayoutEditorAction()
 
 void te::qt::plugins::layout2::LayoutEditorAction::onActionActivated(bool checked)
 {  
-  te::layout::MainLayout::getInstance().init(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::layout::MainLayout::getInstance().init(te::qt::af::ApplicationController::getInstance().getMainWindow(), m_menu);
 }

@@ -28,9 +28,15 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_AREA_H 
 #define __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_AREA_H
 
+// Qt
 #include <QObject>
 
+// TerraLib
+#include "EnumMode.h"
+
 class QWidget;
+class QMenu;
+class QAction;
 
 namespace te
 {
@@ -40,13 +46,13 @@ namespace te
     class ObjectInspectorOutside;
     class ToolbarOutside;
 
-    class OutsideArea : QObject
+    class OutsideArea : public QObject
     {
 	    Q_OBJECT //for slots/signals
 
     public:
 
-	    OutsideArea(QWidget* dockParent = 0);
+	    OutsideArea(QWidget* dockParent = 0, QMenu* mnuLayout = 0);
 	    virtual ~OutsideArea();
 
       PropertiesOutside* getPropertiesOutside();
@@ -56,14 +62,47 @@ namespace te
       virtual void openAllDocks();
       virtual void closeAllDocks();
 
+      virtual void openMainMenu();
+      virtual void closeMainMenu();
+
+    public slots:
+
+      virtual void onMainMenuTriggered(QAction* action);
+
+    signals:
+
+      void changeMenuContext(bool change);
+
     protected:
 
       virtual void init();
+      virtual void createPropertiesDock();
+      virtual void createInspectorDock();
+      virtual void createToolbarDock();
+      virtual void createMainMenu();
+
+      virtual QAction* createAction(std::string text, std::string objName, std::string icon, std::string tooltip = "");
+
+      virtual void changeAction(LayoutMode mode);
+
+    protected:
 
       QWidget* m_dockParent;
       PropertiesOutside* m_dockProperties;
       ObjectInspectorOutside* m_dockInspector;
       ToolbarOutside* m_dockToolbar;
+      QMenu* m_mainMenu;
+      QMenu* m_parentMenu;
+
+      /* Menu options */
+      
+      std::string m_optionNew;
+      std::string m_optionUpdate;
+      std::string m_optionImport;
+      std::string m_optionExport;
+      std::string m_optionPageConfig;
+      std::string m_optionPrint;
+      std::string m_optionExit;
     };
   }
 }

@@ -82,6 +82,9 @@ namespace te
         virtual bool isBorder();
 
         virtual void setBorder(bool value);
+
+        /* Resize Box */
+        virtual void resize(double w, double h);
                 
       protected:
         virtual void notifyAll(ContextItem context);

@@ -36,10 +36,17 @@
 #include "../../../se/Symbolizer.h"
 #include "../../../se/Style.h"
 #include "../../../se/Rule.h"
+#include "../../../geometry/Polygon.h"
+#include "../../../geometry/Geometry.h"
+#include "../../../geometry/Envelope.h"
 
 te::layout::LegendModel::LegendModel() :
   m_mapName(""),
-  m_layer(0)
+  m_layer(0),
+  m_borderDisplacement(2),
+  m_displacementBetweenSymbols(2),
+  m_displacementBetweenTitleAndSymbols(5),
+  m_displacementBetweenSymbolsAndText(3)
 {
   m_box = te::gm::Envelope(0., 0., 70., 50.);
 }
@@ -92,9 +99,14 @@ void te::layout::LegendModel::drawLegend( te::map::Canvas* canvas, Utils* utils 
   //Header
   std::string layerName = m_layer->getTitle();
   
+  double wtxt = 0;
+  double htxt = 0;
+ 
+  utils->textBoundingBox(wtxt, htxt, layerName);
+
   canvas->setTextPointSize(12);
   canvas->setTextColor(te::color::RGBAColor(0, 0, 0, 255));
-  canvas->drawText(m_box.getLowerLeftX(), m_box.getUpperRightY() - 5, layerName, 0);
+  canvas->drawText(m_box.getCenter().x - wtxt, m_box.getUpperRightY() - htxt, layerName, 0);
   
   // Creates a canvas configurer
   te::map::CanvasConfigurer cc(canvas);
@@ -115,7 +127,6 @@ void te::layout::LegendModel::drawLegend( te::map::Canvas* canvas, Utils* utils 
 
     std::size_t nSymbolizers = symbolizers.size();
 
-    int count = 5;
     for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
     {
       // The current symbolizer
@@ -131,11 +142,9 @@ void te::layout::LegendModel::drawLegend( te::map::Canvas* canvas, Utils* utils 
       canvas->setTextPointSize(12);
       canvas->setTextColor(te::color::RGBAColor(0, 0, 0, 255));
       std::string* name = const_cast<std::string*>(rule->getName());
+      std::string n = symb->getName();
       if(name)
         canvas->drawText(m_box.getLowerLeftX() + 15, m_box.getUpperRightY() - 20, name->c_str(), 0);
-
-      count+= 20;
-
     } // end for each <Symbolizer>
 
   }   // end for each <Rule>
@@ -189,4 +198,44 @@ void te::layout::LegendModel::visitDependent()
     contextNotify.setWait(true);
     notifyAll(contextNotify);
   }	
+}
+
+void te::layout::LegendModel::setBorderDisplacement( double value )
+{
+  m_borderDisplacement = value;
+}
+
+double te::layout::LegendModel::getBorderDisplacement()
+{
+  return m_borderDisplacement;
+}
+
+void te::layout::LegendModel::setDisplacementBetweenSymbols( double value )
+{
+  m_displacementBetweenSymbols = value;
+}
+
+double te::layout::LegendModel::getDisplacementBetweenSymbols()
+{
+  return m_displacementBetweenSymbols;
+}
+
+void te::layout::LegendModel::setDisplacementBetweenTitleAndSymbols( double value )
+{
+  m_displacementBetweenTitleAndSymbols = value;
+}
+
+double te::layout::LegendModel::getDisplacementBetweenTitleAndSymbols()
+{
+  return m_displacementBetweenTitleAndSymbols;
+}
+
+void te::layout::LegendModel::setDisplacementBetweenSymbolAndText( double value )
+{
+  m_displacementBetweenSymbolsAndText = value;
+}
+
+double te::layout::LegendModel::getDisplacementBetweenSymbolAndText()
+{
+  return m_displacementBetweenSymbolsAndText;
 }

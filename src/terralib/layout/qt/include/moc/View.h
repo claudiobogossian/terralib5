@@ -71,6 +71,7 @@ namespace te
       public slots:
 
         virtual void onToolbarChangeContext(bool change);
+        virtual void onMainMenuChangeContext(bool change);
         virtual void onSelectionChanged();
         virtual void onAddItemFinalized();
 
@@ -100,6 +101,8 @@ namespace te
         virtual void destroyItemGroup();
         
         virtual void resetDefaultConfig();
+
+        virtual void outsideAreaChangeContext(bool change);
         
       protected:
         OutsideArea*  m_outsideArea;

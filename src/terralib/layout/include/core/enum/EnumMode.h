@@ -63,6 +63,7 @@ namespace te
       TypeActiveLinesIntersectionMouse = 24,
       TypeOffLinesIntersectionMouse = 25,
       TypePrinter = 26,
+      TypeExit = 27,
       TypeNone = 0
     } LayoutMode;
 

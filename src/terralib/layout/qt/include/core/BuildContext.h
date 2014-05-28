@@ -18,50 +18,51 @@
  */
 
 /*!
-  \file VisualizationArea.h
+  \file BuildContext.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_VISUALIZATION_AREA_H 
-#define __TERRALIB_LAYOUT_INTERNAL_VISUALIZATION_AREA_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_BUILD_CONTEXT_H
+#define __TERRALIB_LAYOUT_INTERNAL_BUILD_CONTEXT_H
 
-#include <QObject>
-#include "../../../../geometry/Envelope.h"
+//TerraLib
+#include "View.h"
+#include "../../../../qt/widgets/canvas/Canvas.h"
 
 namespace te
 {
   namespace layout
   {
-    class VisualizationArea : public QObject
+    class ItemFactory;
+    class OutsideFactory;
+    class TemplateFactory;
+    class Utils;
+    class PaperConfig;
+    class BuildGraphicsItem;
+
+    class BuildContext 
     {
-	    Q_OBJECT //for slots/signals
+      public:
 
-    public:
+        BuildContext();
+        virtual ~BuildContext();
 
-	    VisualizationArea(te::gm::Envelope* boxArea);
-	    virtual ~VisualizationArea();
+        void createLayoutContext(int width, int height, View* view);
 
-      virtual void build();
-      virtual void rebuildWithoutPaper();
-      virtual void changeBoxArea(te::gm::Envelope* boxArea);
-
-    protected:
-
-      virtual void createVerticalRuler();
-      virtual void createHorizontalRuler();
-      virtual void createPaper();
-
-    protected:
-
-      virtual void init();
-      te::gm::Envelope* m_boxArea;
-
+      protected:
+   
+        ItemFactory*    m_itemFactory;
+        OutsideFactory* m_outsideFactory;
+        TemplateFactory* m_templateFactory;
+        Utils* m_utils;
+        PaperConfig* m_paperConfig;
+        te::qt::widgets::Canvas* m_canvas;
+        BuildGraphicsItem* m_buildGraphicsItem;
     };
   }
 }
-
 
 #endif
