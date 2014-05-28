@@ -55,25 +55,13 @@ MACRO(TeInstallQtPlugins plgs)
 
   set (_dest qtplugins)
 
-  install (DIRECTORY ${QT_PLUGINS_DIR}/imageformats  
-    DESTINATION ${_dest} 
-    COMPONENT runtime
-    FILES_MATCHING
-    REGEX "${_regex_exp}"
-  )
+  set (_plugin_dirs "imageformats;iconengines;sqldrivers;platforms")
 
-  install (DIRECTORY ${QT_PLUGINS_DIR}/iconengines  
-    DESTINATION ${_dest} 
-    COMPONENT runtime
-    FILES_MATCHING
-    REGEX "${_regex_exp}"
-  )
+  foreach(_plugin_dir ${_plugin_dirs})
 
-  install (DIRECTORY ${QT_PLUGINS_DIR}/sqldrivers  
-    DESTINATION ${_dest} 
-    COMPONENT runtime
-    FILES_MATCHING
-    REGEX "${_regex_exp}"
-  )
+    install (DIRECTORY ${QT_PLUGINS_DIR}/${_plugin_dir}
+             DESTINATION ${_dest}  COMPONENT runtime
+             FILES_MATCHING REGEX "${_regex_exp}")
+  endforeach()
 
 ENDMACRO(TeInstallQtPlugins)

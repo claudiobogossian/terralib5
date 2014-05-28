@@ -91,7 +91,7 @@ install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terraview
         DESTINATION share/terraview COMPONENT runtime)
 
 if(TERRALIB_TRACK_3RDPARTY_DEPENDENCIES)
-  TeInstallQtPlugins("qgif;qico;qjpeg;qmng;qtiff;qsvg;qsvgicon;qsqlite")
+  TeInstallQtPlugins("qgif;qico;qjpeg;qmng;qtiff;qsvg;qsvgicon;qsqlite;qwindows")
 
   file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
        "[Paths]\nBinaries = .\nPlugins = ../qtplugins")

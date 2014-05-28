@@ -884,17 +884,19 @@ install(EXPORT terralib-targets
         COMPONENT devel)
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/config
-        DESTINATION share/terralib/config COMPONENT runtime)
+        DESTINATION share/terralib COMPONENT runtime)
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/icons
-        DESTINATION share/terralib/icons COMPONENT runtime)
+        DESTINATION share/terralib COMPONENT runtime)
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/images
-        DESTINATION share/terralib/images COMPONENT runtime)
+        DESTINATION share/terralib COMPONENT runtime)
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/json
-        DESTINATION share/terralib/json COMPONENT runtime)
+        DESTINATION share/terralib COMPONENT runtime)
 
+install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/schemas
+        DESTINATION share/terralib COMPONENT runtime)
 
 #
 # Track dependencies
