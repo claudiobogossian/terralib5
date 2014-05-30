@@ -28,36 +28,42 @@
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
 #
 
-find_path(TERRALIB4_INCLUDE_DIR
-          NAMES terralib4/drivers/ado/TeAdoDB.h
-          PATHS include)
+find_path(TERRALIB4_INCLUDE_DIR 
+          NAMES kernel/TeDefines.h
+          PATHS /usr
+                /usr/local
+          PATH_SUFFIXES include
+                        include/terralib4)
 
-find_library(TERRALIB4_LIBRARY_RELEASE
-             NAMES terralib4
-             PATHS lib)
+if(WIN32)
+  find_library(TERRALIB4_LIBRARY_RELEASE
+               NAMES terralib4 terralib
+               PATH_SUFFIXES lib)
 
-find_library(TERRALIB4_ADO_LIBRARY_RELEASE
-             NAMES terralib4_ado
-             PATHS lib)
+  find_library(TERRALIB4_ADO_LIBRARY_RELEASE
+               NAMES terralib4_ado terralib_ado
+               PATH_SUFFIXES lib)
 
-find_library(TERRALIB4_LIBRARY_DEBUG
-             NAMES terralib4d
-             PATHS lib)
+  find_library(TERRALIB4_LIBRARY_DEBUG
+               NAMES terralib4d terralibd terralib_d
+               PATH_SUFFIXES lib)
 
-find_library(TERRALIB4_ADO_LIBRARY_DEBUG
-             NAMES terralib4_adod
-             PATHS lib)
+  find_library(TERRALIB4_ADO_LIBRARY_DEBUG
+               NAMES terralib4_adod terralib4_ado_d terralib_adod terralib_ado_d
+               PATH_SUFFIXES lib)
 
-set(TERRALIB_LIBRARIES_RELEASE ${TERRALIB4_LIBRARY_RELEASE} ${TERRALIB4_ADO_LIBRARY_RELEASE})
+  set(TERRALIB_LIBRARIES_RELEASE ${TERRALIB4_LIBRARY_RELEASE} ${TERRALIB4_ADO_LIBRARY_RELEASE})
 
-set(TERRALIB_LIBRARIES_DEBUG ${TERRALIB4_LIBRARY_DEBUG} ${TERRALIB4_ADO_LIBRARY_DEBUG})
+  set(TERRALIB_LIBRARIES_DEBUG ${TERRALIB4_LIBRARY_DEBUG} ${TERRALIB4_ADO_LIBRARY_DEBUG})
 
-if(TERRALIB_LIBRARIES_RELEASE AND TERRALIB_LIBRARIES_DEBUG)
-  set(TERRALIB4_LIBRARIES optimized ${TERRALIB_LIBRARIES_RELEASE} debug ${TERRALIB_LIBRARIES_DEBUG})
-elseif(TERRALIB_LIBRARIES_RELEASE)
-  set(TERRALIB4_LIBRARIES optimized ${TERRALIB_LIBRARIES_RELEASE} debug ${TERRALIB_LIBRARIES_RELEASE})
-elseif(TERRALIB_LIBRARIES_DEBUG)
-  set(TERRALIB4_LIBRARIES optimized ${TERRALIB_LIBRARIES_DEBUG} debug ${TERRALIB_LIBRARIES_DEBUG})
+  if(TERRALIB_LIBRARIES_RELEASE AND TERRALIB_LIBRARIES_DEBUG)
+    set(TERRALIB4_LIBRARIES optimized ${TERRALIB_LIBRARIES_RELEASE} debug ${TERRALIB_LIBRARIES_DEBUG})
+  elseif(TERRALIB_LIBRARIES_RELEASE)
+    set(TERRALIB4_LIBRARIES optimized ${TERRALIB_LIBRARIES_RELEASE} debug ${TERRALIB_LIBRARIES_RELEASE})
+  elseif(TERRALIB_LIBRARIES_DEBUG)
+    set(TERRALIB4_LIBRARIES optimized ${TERRALIB_LIBRARIES_DEBUG} debug ${TERRALIB_LIBRARIES_DEBUG})
+  endif()
+
 endif()
 
 include(FindPackageHandleStandardArgs)
