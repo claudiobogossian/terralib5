@@ -30,7 +30,7 @@
 #include "ExternalGraphicRenderer.h"
 
 // Qt
-#include <QtGui/QImage>
+#include <QImage>
 
 te::qt::widgets::ExternalGraphicRenderer::ExternalGraphicRenderer()
   : te::map::AbstractExternalGraphicRenderer()

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -41,9 +41,6 @@ te::cl::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib Intersection Operation support
-  TE_ADD_TEXT_DOMAIN(TE_CL_TEXT_DOMAIN, TE_CL_TEXT_DOMAIN, "UTF-8");
 }
 
 te::cl::Module::~Module()
@@ -53,10 +50,10 @@ te::cl::Module::~Module()
 
 void te::cl::Module::initialize()
 {
-  TE_LOG_TRACE(TR_CL("TerraLib Classification module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Classification module initialized!"));
 }
 
 void te::cl::Module::finalize()
 {
-  TE_LOG_TRACE(TR_CL("TerraLib Classification module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Classification module finalized!"));
 }

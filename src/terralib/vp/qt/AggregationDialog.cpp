@@ -29,37 +29,36 @@
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/utils/Utils.h"
-#include "../../qt/af/Utils.h"
-#include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
-#include "../qt/widgets/layer/utils/DataSet2Layer.h"
-#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../datatype/Enums.h"
 #include "../../datatype/Property.h"
 #include "../../maptools/AbstractLayer.h"
+#include "../../qt/af/Utils.h"
+#include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../statistics/core/Utils.h"
-#include "../Config.h"
 #include "../Exception.h"
-#include "AggregationMemory.h"
-#include "AggregationOp.h"
-#include "AggregationQuery.h"
 #include "AggregationDialog.h"
+#include "../AggregationMemory.h"
+#include "../AggregationOp.h"
+#include "../AggregationQuery.h"
 #include "ui_AggregationDialogForm.h"
-#include "VectorProcessingConfig.h"
 #include "Utils.h"
 
 // Qt
-#include <QtCore/QList>
-#include <QtGui/QFileDialog>
-#include <QtGui/QListWidget>
-#include <QtGui/QListWidgetItem>
-#include <QtGui/QMessageBox>
-#include <QtGui/QTreeWidget>
+#include <QFileDialog>
+#include <QList>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QMessageBox>
+#include <QTreeWidget>
 
 // Boost
 #include <boost/algorithm/string.hpp>
@@ -80,7 +79,7 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
   m_ui->m_outputStatisticsGroupBox->setVisible(false);
 
 // add icons
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-aggregation-hint").pixmap(112,48));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-aggregation-hint").pixmap(112,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
   setStatisticalSummary();

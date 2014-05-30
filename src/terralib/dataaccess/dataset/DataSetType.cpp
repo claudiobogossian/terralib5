@@ -214,7 +214,7 @@ te::da::DataSetType& te::da::DataSetType::operator=(const DataSetType& /*rhs*/)
 {
   //if(this != &rhs)
   //{
-    throw Exception(TR_DATAACCESS("Not implemented yet!"));
+    throw Exception(TE_TR("Not implemented yet!"));
   //}
 
   //return *this;
@@ -493,7 +493,7 @@ void te::da::DataSetType::remove(ForeignKey* fk)
   assert(fk);
 
   if(fk->getDataSetType() != this)
-    throw Exception(TR_DATAACCESS("The foreign key is not associated to this DataSetType!"));
+    throw Exception(TE_TR("The foreign key is not associated to this DataSetType!"));
 
   if(m_catalog)
     m_catalog->removeRef(fk);

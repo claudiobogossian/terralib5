@@ -33,7 +33,7 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QDialog>
+#include <QDialog>
 
 namespace Ui { class RasterInfoDialogForm; }
 

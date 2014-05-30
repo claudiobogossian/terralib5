@@ -1,6 +1,7 @@
 #include "ProgressExamples.h"
 
 // TerraLib
+#include "../../src/terralib/Defines.h"
 #include <terralib/common/TerraLib.h>
 #include "terralib/common/progress/TaskProgress.h"
 

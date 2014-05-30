@@ -29,7 +29,7 @@
 #include "DataSetWizardPage.h"
 
 // Qt
-#include <QtGui/QGridLayout>
+#include <QGridLayout>
 
 
 te::qt::widgets::DataSetWizardPage::DataSetWizardPage(QWidget* parent)

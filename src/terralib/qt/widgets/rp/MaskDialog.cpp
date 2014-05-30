@@ -28,9 +28,9 @@
 #include "ui_MaskDialogForm.h"
 
 // Qt
-#include <QtGui/QGridLayout>
-#include <QtGui/QLineEdit>
-#include <QtGui/QMessageBox>
+#include <QGridLayout>
+#include <QLineEdit>
+#include <QMessageBox>
 
 te::qt::widgets::MaskDialog::MaskDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),

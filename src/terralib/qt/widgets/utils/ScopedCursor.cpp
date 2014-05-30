@@ -27,7 +27,7 @@
 #include "ScopedCursor.h"
 
 // Qt
-#include <QtGui/QApplication>
+#include <QApplication>
 
 te::qt::widgets::ScopedCursor::ScopedCursor(const QCursor& cursor)
 {

@@ -26,14 +26,14 @@
 // TerraLib
 #include "../../../../common/Translator.h"
 #include "../../Exception.h"
-#include "ui_DataSourceExplorerDialogForm.h"
-#include "ui_DataSourceSelectorWidgetForm.h"
 #include "DataSourceExplorerDialog.h"
 #include "DataSourceSelectorWidget.h"
+#include "ui_DataSourceExplorerDialogForm.h"
+#include "ui_DataSourceSelectorWidgetForm.h"
 
 // Qt
-#include <QtGui/QMessageBox>
-#include <QtGui/QVBoxLayout>
+#include <QMessageBox>
+#include <QVBoxLayout>
 
 te::qt::widgets::DataSourceExplorerDialog::DataSourceExplorerDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),

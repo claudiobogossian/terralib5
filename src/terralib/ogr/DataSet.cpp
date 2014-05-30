@@ -206,17 +206,17 @@ bool te::ogr::DataSet::isAfterEnd() const
 
 char te::ogr::DataSet::getChar(std::size_t /*i*/) const
 {
-  throw te::common::Exception(TR_OGR("OGR driver: getChar not supported."));
+  throw te::common::Exception(TE_TR("OGR driver: getChar not supported."));
 }
 
 unsigned char te::ogr::DataSet::getUChar(std::size_t /*i*/) const
 {
-  throw te::common::Exception(TR_OGR("OGR driver: getUChar not supported."));
+  throw te::common::Exception(TE_TR("OGR driver: getUChar not supported."));
 }
 
 boost::int16_t te::ogr::DataSet::getInt16(std::size_t /*i*/) const
 {
-  throw te::common::Exception(TR_OGR("OGR driver: getInt16 not supported."));
+  throw te::common::Exception(TE_TR("OGR driver: getInt16 not supported."));
 }
 
 boost::int32_t te::ogr::DataSet::getInt32(std::size_t i) const
@@ -226,17 +226,17 @@ boost::int32_t te::ogr::DataSet::getInt32(std::size_t i) const
 
 boost::int64_t te::ogr::DataSet::getInt64(std::size_t /*i*/) const
 {
-  throw te::common::Exception(TR_OGR("OGR driver: getInt64 not supported."));
+  throw te::common::Exception(TE_TR("OGR driver: getInt64 not supported."));
 }
 
 bool te::ogr::DataSet::getBool(std::size_t /*i*/) const
 {
-  throw te::common::Exception(TR_OGR("OGR driver: getBool not supported."));
+  throw te::common::Exception(TE_TR("OGR driver: getBool not supported."));
 }
 
 float te::ogr::DataSet::getFloat(std::size_t /*i*/) const
 {
-  throw te::common::Exception(TR_OGR("OGR driver: getFloat not supported."));
+  throw te::common::Exception(TE_TR("OGR driver: getFloat not supported."));
 }
 
 double te::ogr::DataSet::getDouble(std::size_t i) const
@@ -277,7 +277,7 @@ std::auto_ptr<te::gm::Geometry> te::ogr::DataSet::getGeometry(std::size_t /*i*/)
 
 std::auto_ptr<te::rst::Raster> te::ogr::DataSet::getRaster(std::size_t /*i*/) const
 {
-  throw te::common::Exception(TR_OGR("OGR driver: getRaster not supported."));
+  throw te::common::Exception(TE_TR("OGR driver: getRaster not supported."));
 }
 
 std::auto_ptr<te::dt::DateTime> te::ogr::DataSet::getDateTime(std::size_t i) const

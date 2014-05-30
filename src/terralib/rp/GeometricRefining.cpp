@@ -534,6 +534,7 @@ namespace te
                   searchAreaULRow;
                 outParamsPtr->m_matchingResult[ refRasterIdx ].m_searchAreaColStart = (unsigned int)
                   searchAreaULCol;   
+
                 outParamsPtr->m_matchingResult[ refRasterIdx ].m_searchAreaWidth =
                   searchAreaWidth;   
                 outParamsPtr->m_matchingResult[ refRasterIdx ].m_searchAreaHeigh =

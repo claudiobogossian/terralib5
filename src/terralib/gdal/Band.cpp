@@ -228,7 +228,7 @@ void te::gdal::Band::read(int x, int y, void* buffer) const
         }
         break;
       default :
-        throw Exception(TR_GDAL("Invalid band index"));
+        throw Exception(TE_TR("Invalid band index"));
         break;          
     }
   }   

@@ -29,7 +29,7 @@
 #include "ExtentAcquire.h"
 
 // Qt
-#include <QtGui/QMouseEvent>
+#include <QMouseEvent>
 
 te::qt::widgets::ExtentAcquire::ExtentAcquire(te::qt::widgets::MapDisplay* display, const QCursor& cursor, QObject* parent) 
   : RubberBand(display, parent),

@@ -36,8 +36,8 @@
 #include "Utils.h"
 
 // Qt
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QMessageBox>
 
 // STL
 #include <cassert>

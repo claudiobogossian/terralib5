@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -32,8 +32,8 @@
 #include <terralib/qt/widgets/srs/SRSManagerDialog.h>
 
 // QT
-#include <QtGui/QApplication>
-#include <QtGui/qmessagebox.h>
+#include <QApplication>
+#include <qmessagebox.h>
 
 // STL
 #include <exception>

@@ -39,9 +39,7 @@
 
 void te::plugin::UnloadAllPluginsFromEngine(const std::string& engine)
 {
-  std::vector<std::string> plugins;
-
-  PluginManager::getInstance().getPlugins(plugins);
+  std::vector<std::string> plugins = PluginManager::getInstance().getPlugins();
 
   std::vector<std::string>::reverse_iterator it = plugins.rbegin();
   std::vector<std::string>::reverse_iterator itend = plugins.rend();
@@ -89,26 +87,23 @@ te::plugin::PluginInfo* te::plugin::GetInstalledPlugin(const std::string& plugin
 
 // check
   if(!boost::filesystem::is_regular_file(pluginFileName))
-    throw Exception((boost::format(TR_PLUGIN("The informed plugin file is not valid: %1%.")) % pluginFileName).str());
+    throw Exception((boost::format(TE_TR("The informed plugin file is not valid: %1%.")) % pluginFileName).str());
 
   std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());
 
   xmlReader->read(pluginFileName.string());
 
   if(!xmlReader->next())
-    throw Exception(TR_PLUGIN("Could not read plugin information!"));
+    throw Exception(TE_TR("Could not read plugin information!"));
 
   if(xmlReader->getNodeType() != te::xml::START_ELEMENT)
-    throw Exception(TR_PLUGIN("The document has problems!"));
+    throw Exception(TE_TR("The document has problems!"));
 
   if(xmlReader->getElementLocalName() != "PluginInfo")
-    throw Exception(TR_PLUGIN("The first tag in the document is not 'PluginInfo'!"));
+    throw Exception(TE_TR("The first tag in the document is not 'PluginInfo'!"));
 
   std::auto_ptr<PluginInfo> pInfo(new PluginInfo);
   *pInfo << *xmlReader;
-
-  pInfo->m_folder = pluginFileName.parent_path().string();
-//  pInfo->m_file_name = pluginFileName.generic_string();
 
   return pInfo.release();
 }

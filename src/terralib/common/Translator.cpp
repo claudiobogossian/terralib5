@@ -26,13 +26,13 @@
 // TerraLib
 #include "Translator.h"
 
-#if TE_TRANSLATOR_ENABLED
+#ifdef TERRALIB_TRANSLATOR_ENABLED
 
 // TerraLib
 #include "Exception.h"
 
 // GNU Text Utilities
-#if TE_USE_GNU_TEXT_UTILITIES
+#ifdef TERRALIB_GNU_GETTEXT_ENABLED
 #include <libintl.h>
 #endif
 
@@ -43,7 +43,7 @@ const char* te::common::Translator::translate(const std::string& message, const 
 
 const char* te::common::Translator::translate(const char* message, const char* textDomain)
 {
-#if TE_USE_GNU_TEXT_UTILITIES
+#ifdef TERRALIB_GNU_GETTEXT_ENABLED
   return dgettext(textDomain, message);  
 #else
   return message;
@@ -63,7 +63,7 @@ const char* te::common::Translator::translate(const char* textDomain,
                                               const char* msg2,
                                               unsigned int n)
 {
-#if TE_USE_GNU_TEXT_UTILITIES
+#ifdef TERRALIB_GNU_GETTEXT_ENABLED
   return dngettext(textDomain, msg1, msg2, n);
 #else
   return ((n == 1) ? msg1 : msg2);
@@ -73,11 +73,11 @@ const char* te::common::Translator::translate(const char* textDomain,
 const char* te::common::Translator::addTextDomain(const std::string& textDomain, const std::string& textDomainDir)
 {
   if(exist(textDomain))
-    throw Exception(TR_COMMON("The text domain already exist."));
+    throw Exception(TE_TR("The text domain already exist."));
 
   m_textDomainMap[textDomain] = textDomainDir;
 
-#if TE_USE_GNU_TEXT_UTILITIES
+#ifdef TERRALIB_GNU_GETTEXT_ENABLED
   return bindtextdomain(textDomain.c_str(), textDomainDir.c_str());
 #else
   return "";
@@ -87,9 +87,9 @@ const char* te::common::Translator::addTextDomain(const std::string& textDomain,
 const char* te::common::Translator::setTextDomainCodeSet(const std::string& textDomain, const std::string& codeset)
 {
   if(exist(textDomain) == false)
-    throw Exception(TR_COMMON("The text domain doesn't exist."));  
+    throw Exception(TE_TR("The text domain doesn't exist."));  
 
-#if TE_USE_GNU_TEXT_UTILITIES
+#ifdef TERRALIB_GNU_GETTEXT_ENABLED
   return bind_textdomain_codeset(textDomain.c_str(), codeset.c_str());
 #else
   return "";
@@ -124,5 +124,5 @@ te::common::Translator::~Translator()
 {
 }
 
-#endif  // TE_TRANSLATOR_ENABLED
+#endif  // TERRALIB_TRANSLATOR_ENABLED
 

@@ -34,14 +34,14 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QAction>
-#include <QtGui/QMenu>
+#include <QAction>
+#include <QMenu>
 
-#include <QtCore/QRect>
-#include <QtGui/QMatrix>
-#include <QtGui/QWidget>
-#include <QtGui/QPaintEvent>
-#include <QtGui/QResizeEvent>
+#include <QRect>
+#include <QMatrix>
+#include <QWidget>
+#include <QPaintEvent>
+#include <QResizeEvent>
 
 namespace te
 {

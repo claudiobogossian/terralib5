@@ -105,7 +105,7 @@ namespace te
         break;
 
         default:
-          throw Exception(TR_GEOM("Invalid geometry type to encode to a WKB!"));
+          throw Exception(TE_TR("Invalid geometry type to encode to a WKB!"));
       }
 
       if(te::common::Globals::sm_machineByteOrder != byteOrder)

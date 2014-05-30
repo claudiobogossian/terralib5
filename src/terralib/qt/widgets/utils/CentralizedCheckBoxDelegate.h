@@ -28,7 +28,7 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QStyledItemDelegate>
+#include <QStyledItemDelegate>
 
 namespace te
 {

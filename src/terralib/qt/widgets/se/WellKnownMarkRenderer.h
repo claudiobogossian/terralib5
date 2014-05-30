@@ -31,7 +31,7 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QPainter>
+#include <QPainter>
 
 // STL
 #include <map>

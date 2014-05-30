@@ -37,7 +37,7 @@
 te::dt::AbstractData* te::gm::GeometryToByteArrayConverter(te::dt::AbstractData* d) throw(Exception)
 {
   if(d->getTypeCode() != te::dt::GEOMETRY_TYPE)
-    throw Exception(TR_GEOM("The input data type is not a geometry!"));
+    throw Exception(TE_TR("The input data type is not a geometry!"));
 
   std::size_t size = 0;
   char* wkb = static_cast<const Geometry*>(d)->asBinary(size);
@@ -48,7 +48,7 @@ te::dt::AbstractData* te::gm::GeometryToByteArrayConverter(te::dt::AbstractData*
 te::dt::AbstractData* te::gm::GeometryToStringConverter(te::dt::AbstractData* d) throw(Exception)
 {
   if(d->getTypeCode() != te::dt::GEOMETRY_TYPE)
-    throw Exception(TR_GEOM("The input data type is not a geometry!"));
+    throw Exception(TE_TR("The input data type is not a geometry!"));
 
   return new te::dt::String(static_cast<const Geometry*>(d)->asText());
 }
@@ -56,7 +56,7 @@ te::dt::AbstractData* te::gm::GeometryToStringConverter(te::dt::AbstractData* d)
 te::dt::AbstractData* te::gm::ByteArrayToGeometryConverter(te::dt::AbstractData* d)
 {
   if(d->getTypeCode() != te::dt::BYTE_ARRAY_TYPE)
-    throw Exception(TR_GEOM("The input data type is not a byte array!"));
+    throw Exception(TE_TR("The input data type is not a byte array!"));
 
   return WKBReader::read(static_cast<const te::dt::ByteArray*>(d)->getData());
 }
@@ -64,7 +64,7 @@ te::dt::AbstractData* te::gm::ByteArrayToGeometryConverter(te::dt::AbstractData*
 te::dt::AbstractData* te::gm::StringToGeometryConverter(te::dt::AbstractData* d)
 {
   if(d->getTypeCode() != te::dt::STRING_TYPE)
-    throw Exception(TR_GEOM("The input data type is not a string!"));
+    throw Exception(TE_TR("The input data type is not a string!"));
 
   return WKTReader::read(static_cast<const te::dt::String*>(d)->getValue().c_str());
 }

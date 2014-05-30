@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERFRAMEFACTORY_H
 
 // QT
-#include <QtGui/QWidget>
+#include <QWidget>
 
 // TerraLib
 #include "../../../common/AbstractFactory.h"

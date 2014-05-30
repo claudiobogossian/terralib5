@@ -45,10 +45,10 @@ const te::qt::widgets::DataSourceType* te::qt::widgets::DataSourceTypeManager::g
 void te::qt::widgets::DataSourceTypeManager::add(DataSourceType* dst)
 {
   if(dst == 0)
-    throw Exception(TR_QT_WIDGETS("Can not insert a NULL data source type into the manager!"));
+    throw Exception(TE_TR("Can not insert a NULL data source type into the manager!"));
 
   if(te::common::GetPValue(m_datasourceTypeMap, dst->getName()) != 0)
-    throw Exception((boost::format(TR_QT_WIDGETS("There is already a data source type with the given id (%1%) in data source manager!")) % dst->getName()).str());
+    throw Exception((boost::format(TE_TR("There is already a data source type with the given id (%1%) in data source manager!")) % dst->getName()).str());
 
   m_datasourceTypeMap[dst->getName()] = dst;
 }

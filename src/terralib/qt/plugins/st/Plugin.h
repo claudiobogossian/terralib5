@@ -31,7 +31,7 @@
 #include "Config.h"
 
 // Qt
-#include <QtGui/QMenu>
+#include <QMenu>
 
 namespace te
 {

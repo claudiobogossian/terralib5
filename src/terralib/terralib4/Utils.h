@@ -39,8 +39,8 @@
 #include "Config.h"
 
 // TerraLib 4.x
-#include <terralib/kernel/TeAttribute.h>
-#include <terralib/kernel/TeDatabase.h>
+#include <terralib4/kernel/TeAttribute.h>
+#include <terralib4/kernel/TeDatabase.h>
 
 namespace te
 {

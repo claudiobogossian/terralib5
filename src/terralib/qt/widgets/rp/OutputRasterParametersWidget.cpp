@@ -30,7 +30,7 @@
 #include "ui_OutputRasterParametersWidgetForm.h"
 
 //QT
-#include <QtGui/QFileDialog>
+#include <QFileDialog>
 
 te::qt::widgets::OutputRasterParametersWidget::OutputRasterParametersWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),

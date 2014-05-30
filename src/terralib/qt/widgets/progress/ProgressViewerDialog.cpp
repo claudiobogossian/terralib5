@@ -32,7 +32,7 @@
 
 // Qt
 #include <QtCore/QCoreApplication>
-#include <QtGui/QApplication>
+#include <QApplication>
 
 te::qt::widgets::ProgressViewerDialog::ProgressViewerDialog(QWidget* parent)
   : AbstractProgressViewer(),
@@ -132,7 +132,7 @@ void te::qt::widgets::ProgressViewerDialog::updateMessage(int /*taskId*/)
   }
   else
   {
-    m_message = TR_QT_WIDGETS("Multi Tasks");
+    m_message = TE_TR("Multi Tasks");
   }
 
   QCoreApplication::postEvent(this, new ProgressSetMessageEvent(m_message));

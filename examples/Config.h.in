@@ -1,0 +1,91 @@
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file examples/terralib_examples_config.h
+
+  \brief Global configuration file for the TerraLib examples.
+*/
+
+#ifndef __EXAMPLES_INTERNAL_TERRALIB_EXAMPLES_CONFIG_H
+#define __EXAMPLES_INTERNAL_TERRALIB_EXAMPLES_CONFIG_H
+
+#define TERRALIB_EXAMPLES_DATA_DIR "@TERRALIB_EXAMPLES_DATA_DIR@"
+
+#cmakedefine TERRALIB_EXAMPLE_COMMON_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_FACTORY_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_ADO_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_COLORBAR_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_CPPPLUGIN_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_DATAACCESS_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_GEOMETRY_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_GRAPH_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_HELP_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_LAYEREXPLORER_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_MAPTOOLS_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_PROGRESS_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_QT_CANVAS_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_QT_CHARTS_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_QT_DATASOURCE_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_QT_QUERY_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_QT_RASTER_VISUAL_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_QT_RP_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_QT_SE_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_QT_SRS_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_QT_TOOLS_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_QT_UTILS_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_RASTER_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_RP_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_SAM_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_SERIALIZATION_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_SRS_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_ST_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_VP_ENABLED
+
+#cmakedefine TERRALIB_EXAMPLE_XERCES_ENABLED
+
+#endif  // __EXAMPLES_INTERNAL_TERRALIB_EXAMPLES_CONFIG_H

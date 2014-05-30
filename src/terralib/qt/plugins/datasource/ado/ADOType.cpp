@@ -68,12 +68,12 @@ std::string te::qt::plugins::ado::ADOType::getName() const
 std::string te::qt::plugins::ado::ADOType::getTitle() const
 {
   // Friendly Name
-  return TR_QT_WIDGETS("Microsoft Access");
+  return TE_TR("Microsoft Access");
 }
 
 std::string te::qt::plugins::ado::ADOType::getDescription() const
 {
-  return TR_QT_WIDGETS("Access geospatial data stored in ADO database");
+  return TE_TR("Access geospatial data stored in ADO database");
 }
 
 QWidget* te::qt::plugins::ado::ADOType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const

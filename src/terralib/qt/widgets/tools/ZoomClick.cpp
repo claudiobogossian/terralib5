@@ -28,7 +28,7 @@
 #include "ZoomClick.h"
 
 // Qt
-#include <QtGui/QMouseEvent>
+#include <QMouseEvent>
 
 te::qt::widgets::ZoomClick::ZoomClick(te::qt::widgets::MapDisplay* display, const QCursor& cursor, const double& zoomFactor, const ZoomType& type, QObject* parent) 
   : Zoom(display, zoomFactor, type, parent)
@@ -45,7 +45,11 @@ bool te::qt::widgets::ZoomClick::mousePressEvent(QMouseEvent* e)
   if(e->button() != Qt::LeftButton)
     return false;
 
+#if QT_VERSION >= 0x050000
+  applyZoom(m_display->transform(e->localPos()));
+#else
   applyZoom(m_display->transform(e->posF()));
+#endif
 
   return true;
 }

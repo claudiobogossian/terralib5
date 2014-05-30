@@ -34,11 +34,11 @@
 #include "Utils.h"
 
 // Qt
-#include <QtGui/QTreeView>
+#include <QTreeView>
 
 //STL
-#include <vector>
 #include <memory>
+#include <vector>
 
 // Boost
 #include <boost/algorithm/string.hpp>

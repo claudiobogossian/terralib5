@@ -30,7 +30,7 @@
 #include "ZoomLeftAndRightClick.h"
 
 // Qt
-#include <QtGui/QMouseEvent>
+#include <QMouseEvent>
 
 te::qt::widgets::ZoomLeftAndRightClick::ZoomLeftAndRightClick(
   te::qt::widgets::MapDisplay* display, const double& zoomFactor,
@@ -54,7 +54,11 @@ bool te::qt::widgets::ZoomLeftAndRightClick::mousePressEvent(QMouseEvent* e)
 
     // If point is not null, the zoom extent will be centered on this point. Otherwise, keep the current center.
     te::gm::Coord2D center;
+#if QT_VERSION >= 0x050000
+    QPointF point( m_display->transform( e->localPos() ) );
+#else
     QPointF point( m_display->transform( e->posF() ) );
+#endif
     point.isNull() ? center = currentExtent.getCenter() : center = te::gm::Coord2D(point.x(), point.y());
 
     // Bulding the zoom extent based on zoom factor value and the given point
@@ -75,7 +79,11 @@ bool te::qt::widgets::ZoomLeftAndRightClick::mousePressEvent(QMouseEvent* e)
 
     // If point is not null, the zoom extent will be centered on this point. Otherwise, keep the current center.
     te::gm::Coord2D center;
+#if QT_VERSION >= 0x050000
+    QPointF point( m_display->transform( e->localPos() ) );
+#else
     QPointF point( m_display->transform( e->posF() ) );
+#endif
     point.isNull() ? center = currentExtent.getCenter() : center = te::gm::Coord2D(point.x(), point.y());
 
     // Bulding the zoom extent based on zoom factor value and the given point

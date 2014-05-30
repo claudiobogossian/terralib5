@@ -56,8 +56,8 @@
 #include <cassert>
 
 // Qt
-#include <QtGui/QMessageBox>
-#include <QtGui/QIcon>
+#include <QMessageBox>
+#include <QIcon>
 
 // Boost
 #include <boost/uuid/random_generator.hpp>

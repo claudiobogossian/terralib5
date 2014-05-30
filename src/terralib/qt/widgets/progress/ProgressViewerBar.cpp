@@ -32,7 +32,7 @@
 
 // Qt
 #include <QtCore/QCoreApplication>
-#include <QtGui/QApplication>
+#include <QApplication>
 
 te::qt::widgets::ProgressViewerBar::ProgressViewerBar(QWidget* parent)
   : QWidget(parent), 

@@ -47,7 +47,7 @@ te::color::RGBAColor** te::map::ChartRendererManager::render(const Chart* chart,
   LockWrite l;
 
   if(m_renderer == 0)
-    throw Exception(TR_MAP("There is not a chart renderer registered!"));
+    throw Exception(TE_TR("There is not a chart renderer registered!"));
 
   return m_renderer->render(chart, dataset, width);
 }

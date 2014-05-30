@@ -32,8 +32,8 @@
 
 // Qt
 #include <QtCore/QObject>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
+#include <QMenu>
+#include <QAction>
 
 namespace te
 {

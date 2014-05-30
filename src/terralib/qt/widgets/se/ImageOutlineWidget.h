@@ -30,8 +30,8 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QWidget>
-#include <QtGui/QGridLayout> 
+#include <QWidget>
+#include <QGridLayout> 
 
 // STL
 #include <memory>

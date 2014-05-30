@@ -42,9 +42,6 @@ te::stat::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib Intersection Operation support
-  TE_ADD_TEXT_DOMAIN(TE_STATISTICS_TEXT_DOMAIN, TE_STATISTICS_TEXT_DOMAIN, "UTF-8");
 }
 
 te::stat::Module::~Module()
@@ -54,12 +51,12 @@ te::stat::Module::~Module()
 
 void te::stat::Module::initialize()
 {
-  TE_LOG_TRACE(TR_STATISTICS("TerraLib statistics module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib statistics module initialized!"));
 }
 
 void te::stat::Module::finalize()
 {
 
-  TE_LOG_TRACE(TR_STATISTICS("TerraLib statistics module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib statistics module finalized!"));
 }
 

@@ -39,7 +39,7 @@
 
 
 // Qt
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 
 
 te::qt::widgets::QueryBuilderWizard::QueryBuilderWizard(QWidget* parent)

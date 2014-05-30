@@ -26,14 +26,14 @@
 // TerraLib
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/Index.h"
-#include "DoubleListWidget.h"
+#include "../utils/DoubleListWidget.h"
 #include "IndexWidget.h"
 #include "ui_DoubleListWidgetForm.h"
 #include "ui_IndexWidgetForm.h"
 
 // Qt
-#include <QtGui/QGridLayout>
-#include <QtGui/QMessageBox>
+#include <QGridLayout>
+#include <QMessageBox>
 
 te::qt::widgets::IndexWidget::IndexWidget(te::da::DataSetType* dsType, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),

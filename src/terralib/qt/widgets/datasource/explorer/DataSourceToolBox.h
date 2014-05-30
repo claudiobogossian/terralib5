@@ -33,7 +33,7 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QToolBox>
+#include <QToolBox>
 
 namespace te
 {

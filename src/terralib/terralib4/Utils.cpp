@@ -39,12 +39,12 @@
 #include "Utils.h"
 
 // TerraLib 4.x
-#include <terralib/kernel/TeBox.h>
-#include <terralib/kernel/TeDatabaseFactoryParams.h>
-#include <terralib/kernel/TeDecoderDatabase.h>
-#include <terralib/kernel/TeProjection.h>
-#include <terralib/kernel/TeTable.h>
-#include <terralib/kernel/TeRasterParams.h>
+#include <terralib4/kernel/TeBox.h>
+#include <terralib4/kernel/TeDatabaseFactoryParams.h>
+#include <terralib4/kernel/TeDecoderDatabase.h>
+#include <terralib4/kernel/TeProjection.h>
+#include <terralib4/kernel/TeTable.h>
+#include <terralib4/kernel/TeRasterParams.h>
 
 // Boost
 #include <boost/lexical_cast.hpp>
@@ -120,7 +120,7 @@ std::auto_ptr<te::dt::Property> terralib4::Convert2T5(const TeAttributeRep& attR
     case TeTEXTSETTYPE:
     case TeOBJECT:
     default:
-      throw te::common::Exception(TR_COMMON("The informed attribute representation is not supported!"));
+      throw te::common::Exception(TE_TR("The informed attribute representation is not supported!"));
   }
 }
 

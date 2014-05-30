@@ -48,7 +48,7 @@ te::graph::Vertex* te::graph::SequenceIterator::getFirstVertex()
 {
   if(m_graph == 0 || m_graph->getMetadata() == 0)
   {
-    throw Exception(TR_GRAPH("Invalid graph pointer."));
+    throw Exception(TE_TR("Invalid graph pointer."));
   }
 
   if(m_vertexQuery.get())
@@ -138,7 +138,7 @@ te::graph::Vertex* te::graph::SequenceIterator::getFirstVertex()
 
   if(m_vertexQuery.get() == 0)
   {
-    throw Exception(TR_GRAPH("Iterator not initialized."));
+    throw Exception(TE_TR("Iterator not initialized."));
   }
 
   int id;
@@ -159,7 +159,7 @@ te::graph::Edge* te::graph::SequenceIterator::getFirstEdge()
 {
   if(m_graph == 0 || m_graph->getMetadata() == 0)
   {
-    throw Exception(TR_GRAPH("Invalid graph pointer."));
+    throw Exception(TE_TR("Invalid graph pointer."));
   }
 
   if(m_edgeQuery.get())
@@ -194,7 +194,7 @@ te::graph::Edge* te::graph::SequenceIterator::getFirstEdge()
 
   if(m_edgeQuery.get() == 0)
   {
-    throw Exception(TR_GRAPH("Iterator not initialized."));
+    throw Exception(TE_TR("Iterator not initialized."));
   }
 
   int id;

@@ -36,7 +36,7 @@
 #include "ui_SHP2ADODialogForm.h"
 
 // Qt
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 Q_DECLARE_METATYPE(te::da::DataSourceInfoPtr);

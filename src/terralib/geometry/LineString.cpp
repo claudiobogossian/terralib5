@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../common/Translator.h"
 #include "../srs/Converter.h"
 #include "Coord2D.h"
 #include "Envelope.h"
@@ -144,6 +145,7 @@ void te::gm::LineString::setSRID(int srid) throw()
 
 void te::gm::LineString::transform(int srid) throw(te::common::Exception)
 {
+#ifdef TERRALIB_MOD_SRS_ENABLED
   if(srid == m_srid)
     return;
 
@@ -161,6 +163,9 @@ void te::gm::LineString::transform(int srid) throw(te::common::Exception)
     computeMBR(false);
 
   m_srid = srid;
+#else
+  throw Exception(TE_TR("transform method is not supported!"));
+#endif // TERRALIB_MOD_SRS_ENABLED
 }
 
 void te::gm::LineString::computeMBR(bool /*cascade*/) const throw()

@@ -30,12 +30,12 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "../../../raster/Interpolator.h"
-#include "../../widgets/help/HelpPushButton.h"
-#include "../../widgets/progress/ProgressViewerDialog.h"
+#include "../help/HelpPushButton.h"
+#include "../layer/search/LayerSearchWidget.h"
+#include "../layer/search/LayerSearchWizardPage.h"
+#include "../progress/ProgressViewerDialog.h"
 #include "ClippingWizard.h"
 #include "ClippingWizardPage.h"
-#include "LayerSearchWidget.h"
-#include "LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "Utils.h"
@@ -44,7 +44,7 @@
 #include <cassert>
 
 // Qt
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 
 
 te::qt::widgets::ClippingWizard::ClippingWizard(QWidget* parent)

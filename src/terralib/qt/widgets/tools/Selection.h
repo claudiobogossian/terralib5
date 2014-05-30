@@ -32,7 +32,7 @@
 #include "RubberBand.h"
 
 // Qt
-#include <QtGui/QColor>
+#include <QColor>
 
 // STL
 #include <list>

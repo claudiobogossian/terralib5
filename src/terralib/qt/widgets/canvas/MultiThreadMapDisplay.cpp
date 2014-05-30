@@ -30,9 +30,9 @@
 #include "MultiThreadMapDisplay.h"
 
 // Qt
-#include <QtGui/QApplication>
-#include <QtGui/QCursor>
-#include <QtGui/QPainter>
+#include <QApplication>
+#include <QCursor>
+#include <QPainter>
 
 te::qt::widgets::MultiThreadMapDisplay::MultiThreadMapDisplay(const QSize& size, const bool& showFeedback, QWidget* parent, Qt::WindowFlags f)
   : te::qt::widgets::MapDisplay(size, parent, f),

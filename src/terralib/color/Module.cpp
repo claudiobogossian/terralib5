@@ -42,9 +42,6 @@ te::color::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib Color module
- TE_ADD_TEXT_DOMAIN(TE_COLOR_TEXT_DOMAIN, TE_COLOR_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::color::Module::~Module()
@@ -54,15 +51,15 @@ te::color::Module::~Module()
 
 void te::color::Module::initialize()
 {
-#ifdef TE_AUTOMATIC_INITIALIZATION
+#ifdef TERRALIB_AUTOMATIC_INITIALIZATION
   te::color::ColorSchemeCatalogManager::getInstance().init();
 #endif
 
-  TE_LOG_TRACE(TR_COLOR("TerraLib Color module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Color module initialized!"));
 }
 
 void te::color::Module::finalize()
 {
-  TE_LOG_TRACE(TR_COLOR("TerraLib Color module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Color module finalized!"));
 }
 

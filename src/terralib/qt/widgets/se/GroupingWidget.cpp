@@ -51,8 +51,8 @@
 #include <cassert>
 
 // QT
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QMessageBox>
+#include <QDialogButtonBox>
+#include <QMessageBox>
 
 #define MAX_SLICES 200
 #define PRECISION 15
@@ -169,7 +169,11 @@ void te::qt::widgets::GroupingWidget::initialize()
 
   //adjust table
   m_ui->m_tableWidget->resizeColumnsToContents();
+#if (QT_VERSION >= 0x050000)
+  m_ui->m_tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+#else
   m_ui->m_tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+#endif
 
   m_manual = false;
 }
@@ -327,7 +331,11 @@ void te::qt::widgets::GroupingWidget::updateUi(bool loadColorBar)
   }
 
   m_ui->m_tableWidget->resizeColumnsToContents();
+#if (QT_VERSION >= 0x050000)
+  m_ui->m_tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+#else
   m_ui->m_tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+#endif
 
   connect(m_ui->m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(onTableWidgetItemChanged(QTableWidgetItem*)));
 }

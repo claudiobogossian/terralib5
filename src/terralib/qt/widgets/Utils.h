@@ -35,10 +35,10 @@
 #include "Globals.h"
 
 // Qt
-#include <QtCore/QObject>
-#include <QtCore/QString>
-#include <QtGui/QColor>
-#include <QtGui/QPixmap>
+#include <QColor>
+#include <QObject>
+#include <QPixmap>
+#include <QString>
 
 // STL
 #include <string>

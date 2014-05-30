@@ -27,7 +27,7 @@
 #define __TERRALIB_VP_CORE_INTERNAL_EXCEPTION_H
 
 // TerraLib
-#include "../../common/Exception.h"
+#include "../common/Exception.h"
 #include "Config.h"
 
 namespace te

@@ -42,7 +42,7 @@ te::st::STDataLoaderImpl* te::st::STDataLoaderImplFactory::make(const std::strin
   //use the factory only to create a data source
   std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make(dsType);
   if(ds.get()==0)
-    throw Exception(TR_ST("ST Loader: Could not find a data source!"));
+    throw Exception(TE_TR("ST Loader: Could not find a data source!"));
   
   std::string loaderType = te::st::Globals::sm_loaderFromMemDSIdentifier; 
 

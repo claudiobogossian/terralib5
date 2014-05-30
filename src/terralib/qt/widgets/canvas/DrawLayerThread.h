@@ -35,7 +35,7 @@
 #include <QtCore/QString>
 #include <QtCore/QTimer>
 #include <QtCore/QThread>
-#include <QtGui/QImage>
+#include <QImage>
 
 namespace te
 {

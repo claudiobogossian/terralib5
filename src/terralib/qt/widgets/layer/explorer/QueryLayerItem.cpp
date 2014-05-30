@@ -35,8 +35,8 @@
 #include <cassert>
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QWidget>
 
 te::qt::widgets::QueryLayerItem::QueryLayerItem(const te::map::AbstractLayerPtr& l, QObject* parent)
   : AbstractTreeItem(parent)

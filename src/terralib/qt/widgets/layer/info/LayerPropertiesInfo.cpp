@@ -1,5 +1,5 @@
 #include "LayerPropertiesInfo.h"
-#include "../../widgets/propertybrowser/AbstractPropertyManager.h"
+#include "../../propertybrowser/AbstractPropertyManager.h"
 
 #include "../../../../maptools/AbstractLayer.h"
 

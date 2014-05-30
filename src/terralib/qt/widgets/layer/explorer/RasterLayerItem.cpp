@@ -32,8 +32,8 @@
 #include "LegendItem.h"
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QWidget>
 
 te::qt::widgets::RasterLayerItem::RasterLayerItem(const te::map::AbstractLayerPtr& l, QObject* parent)
   : AbstractTreeItem(parent)

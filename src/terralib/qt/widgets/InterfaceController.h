@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_INTERFACECONTROLLER_H
 
 // Terralib
-#include "../../../maptools/AbstractLayer.h"
+#include "../../maptools/AbstractLayer.h"
 #include "Config.h"
 
 namespace te

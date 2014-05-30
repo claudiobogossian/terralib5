@@ -23,7 +23,7 @@
 #include <terralib/color.h>
 
 //Qt
-#include <QtGui/QApplication>
+#include <QApplication>
 
 int main(int argc, char *argv[])
 {

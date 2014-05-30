@@ -31,7 +31,7 @@
 
 #ifdef WIN32
   // Terralib 4.x
-  #include <terralib/drivers/ado/TeAdoDB.h>
+  #include <terralib4/drivers/ado/TeAdoDB.h>
 #endif
 
 // Boost
@@ -51,16 +51,13 @@ void terralib4::Module::startup()
   if(m_initialized)
     return;
 
-// it initializes the Translator support for the TerraLib PostGIS driver support
-  TE_ADD_TEXT_DOMAIN(TE_TERRALIB4_TEXT_DOMAIN, TE_TERRALIB4_TEXT_DOMAIN_DIR, "UTF-8");
-
   // Register the data source factory
   te::da::DataSourceFactory::add("TERRALIB4", terralib4::Build);
 
   terralib4::Globals::sm_capabilities = new te::da::DataSourceCapabilities();
   terralib4::Globals::sm_queryDialect = new te::da::SQLDialect();
 
-  TE_LOG_TRACE(TR_TERRALIB4("TerraLib Terralib 4 driver support initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Terralib 4 driver support initialized!"));
 
   m_initialized = true;
 }
@@ -74,7 +71,7 @@ void terralib4::Module::shutdown()
 
   te::da::DataSourceManager::getInstance().detachAll(TERRALIB4_DRIVER_IDENTIFIER);
  
-  TE_LOG_TRACE(TR_TERRALIB4("TerraLib Terralib 4 driver shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Terralib 4 driver shutdown!"));
 
   m_initialized = false;
 }

@@ -24,6 +24,7 @@
  */
 
 // TerraLib
+#include "../../Config.h"
 #include "Config.h"
 #include "LoadModules.h"
 #include <terralib/common.h>
@@ -41,7 +42,7 @@
 #include <terralib/raster/RasterFactory.h>
 
 // QT
-#include <QtGui/QApplication>
+#include <QApplication>
 
 // STL
 #include <exception>
@@ -119,17 +120,18 @@ void TiePointsLocatorDialogExample( int argc, char** argv )
 void SegmenterDialogExample( int argc, char** argv )
 {
   // open the input raster
-
+  
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_EXAMPLE_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = data_dir +  "/rasters/cbers2b_rgb342_crop.tif";
 
   std::auto_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(rinfo) );
 
   // Defining the output raster info
 
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_EXAMPLE_DIR
-    "/data/rasters/terralib_example_qt_rp_SegmenterDialog.tif";
+  outputRasterInfo["URI"] = data_dir + "/rasters/terralib_example_qt_rp_SegmenterDialog.tif";
 
   // Executing the dialog
 
@@ -151,17 +153,18 @@ void SegmenterDialogExample( int argc, char** argv )
 void ContrastDialogExample( int argc, char** argv )
 {
   // open the input raster
+  
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_EXAMPLE_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = data_dir +  "/rasters/cbers2b_rgb342_crop.tif";
 
   std::auto_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(rinfo) );
 
   // Defining the output raster info
 
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_EXAMPLE_DIR
-    "/data/rasters/terralib_example_qt_rp_ContrastDialog.tif";
+  outputRasterInfo["URI"] = data_dir + "/rasters/terralib_example_qt_rp_ContrastDialog.tif";
 
   // Executing the dialog
 
@@ -183,21 +186,23 @@ void ContrastDialogExample( int argc, char** argv )
 void ClassifierDialogExample(int argc, char** argv)
 {
 // open the input raster
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
 
   std::auto_ptr<te::rst::Raster> inputRasterPointer(te::rst::RasterFactory::open(rinfo));
 
 // define the output raster info
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_EXAMPLE_DIR"/data/rasters/terralib_example_qt_rp_ClassifierDialog.tif";
+  outputRasterInfo["URI"] = data_dir + "/rasters/terralib_example_qt_rp_ClassifierDialog.tif";
 
 // execute the dialog
   QApplication app(argc, argv);
 
 // open a previously segmentation (from SegmenterDialogExample)
   std::map<std::string, std::string> segmentedinfo;
-  segmentedinfo["URI"] = TE_DATA_EXAMPLE_DIR"/data/rasters/terralib_example_qt_rp_SegmenterDialog.tif";
+  segmentedinfo["URI"] = data_dir + "/rasters/terralib_example_qt_rp_SegmenterDialog.tif";
   std::auto_ptr<te::rst::Raster> segmentedraster(te::rst::RasterFactory::open(segmentedinfo));
 
 // vectorize the segmentation
@@ -223,9 +228,11 @@ void ClassifierDialogExample(int argc, char** argv)
 void MixtureModelDialogExample(int argc, char** argv)
 {
 // open the input raster
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+
   const std::string dsname("cbers2b_rgb342_crop.tif");
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] =""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
   std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
  
   ds->open();
@@ -251,7 +258,7 @@ void MixtureModelDialogExample(int argc, char** argv)
 
 // define the output raster info
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_EXAMPLE_DIR"/data/rasters/terralib_example_qt_rp_MixtureModelDialog.tif";
+  outputRasterInfo["URI"] = data_dir + "/rasters/terralib_example_qt_rp_MixtureModelDialog.tif";
 
 // execute the dialog
   QApplication app(argc, argv);
@@ -286,13 +293,13 @@ int main(int argc, char** argv)
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred: " << e.what() << std::endl;
 
     return EXIT_FAILURE;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
 
     return EXIT_FAILURE;
   }

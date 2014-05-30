@@ -41,9 +41,6 @@ te::rst::Module::Module()
 
 // Initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// It initializes the Translator support for the TerraLib Data Type support
-  TE_ADD_TEXT_DOMAIN(TE_RASTER_TEXT_DOMAIN, TE_RASTER_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::rst::Module::~Module()
@@ -53,11 +50,11 @@ te::rst::Module::~Module()
 
 void te::rst::Module::initialize()
 {
-  TE_LOG_TRACE(TR_RASTER("TerraLib Raster module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Raster module initialized!"));
 }
 
 void te::rst::Module::finalize()
 {
-  TE_LOG_TRACE(TR_RASTER("TerraLib Raster module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Raster module finalized!"));
 }
 

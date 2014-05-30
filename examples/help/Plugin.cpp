@@ -6,7 +6,7 @@
 #include <terralib/qt/widgets/help/HelpPushButton.h>
 
 //Qt 
-#include <QtGui/QGridLayout>
+#include <QGridLayout>
 
 Plugin::Plugin(QWidget* parent) :
 QWidget(parent, Qt::Dialog)

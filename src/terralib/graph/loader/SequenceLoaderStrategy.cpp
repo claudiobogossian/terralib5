@@ -61,13 +61,13 @@ void te::graph::SequenceLoaderStrategy::loadDataByVertexId(int vertexId, te::gra
 {
   if(m_graphMetadata == 0 || m_graphMetadata->getDataSource() == 0 || g == 0)
   {
-    throw Exception(TR_GRAPH(""));
+    throw Exception(TE_TR(""));
   }
 
   //ONLY WORKS FOR te::graph::Edge_List
   if(m_graphMetadata->getStorageMode() == te::graph::Vertex_List)
   {
-    throw Exception(TR_GRAPH("TO DO"));
+    throw Exception(TE_TR("TO DO"));
   }
 
   //get the table names
@@ -190,13 +190,13 @@ void te::graph::SequenceLoaderStrategy::loadDataByEdgeId(int edgeId, te::graph::
 {
   if(m_graphMetadata == 0 || m_graphMetadata->getDataSource() == 0 || g == 0)
   {
-    throw Exception(TR_GRAPH(""));
+    throw Exception(TE_TR(""));
   }
 
   //ONLY WORKS FOR te::graph::Edge_List
   if(m_graphMetadata->getStorageMode() == te::graph::Vertex_List)
   {
-    throw Exception(TR_GRAPH("TO DO"));
+    throw Exception(TE_TR("TO DO"));
   }
 
   //get the tables names

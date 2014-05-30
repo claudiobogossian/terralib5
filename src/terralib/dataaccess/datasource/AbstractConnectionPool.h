@@ -199,8 +199,8 @@ namespace te
         /*! \brief Default constructor. */
         AbstractConnectionPool() { }
 
-        /*! \brief Non virtual destructor. */
-        ~AbstractConnectionPool() { }
+        /*! \brief Virtual destructor. */
+        virtual ~AbstractConnectionPool() { }
     };
 
   } // end namespace da

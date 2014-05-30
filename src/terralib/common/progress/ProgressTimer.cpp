@@ -97,13 +97,13 @@ std::string te::common::ProgressTimer::getMessage()
 
   if(m_remainingTime < 1.0)
   {
-    strTime += TR_COMMON("Remaining Time: Less than one minute");
+    strTime += TE_TR("Remaining Time: Less than one minute");
   }
   else
   {
-    strTime += TR_COMMON("Remaining Time: ") + te::common::Convert2String(m_remainingTime, 1);
-    strTime += TR_COMMON(" minute(s) - Speed: ") + te::common::Convert2String(m_speedTime, 2);
-    strTime += TR_COMMON(" Steps/Second");
+    strTime += TE_TR("Remaining Time: ") + te::common::Convert2String(m_remainingTime, 1);
+    strTime += TE_TR(" minute(s) - Speed: ") + te::common::Convert2String(m_speedTime, 2);
+    strTime += TE_TR(" Steps/Second");
   }
 
   return strTime;

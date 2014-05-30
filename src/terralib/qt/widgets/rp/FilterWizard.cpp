@@ -30,12 +30,12 @@
 #include "../../../raster/Raster.h"
 #include "../../../rp/Filter.h"
 #include "../../../rp/Module.h"
-#include "../../widgets/help/HelpPushButton.h"
-#include "../../widgets/progress/ProgressViewerDialog.h"
+#include "../help/HelpPushButton.h"
+#include "../layer/search/LayerSearchWidget.h"
+#include "../layer/search/LayerSearchWizardPage.h"
+#include "../progress/ProgressViewerDialog.h"
 #include "FilterWizard.h"
 #include "FilterWizardPage.h"
-#include "LayerSearchWidget.h"
-#include "LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "Utils.h"
@@ -44,8 +44,8 @@
 #include <cassert>
 
 // Qt
-#include <QtGui/QMessageBox>
-#include <QtGui/QApplication>
+#include <QMessageBox>
+#include <QApplication>
 
 
 te::qt::widgets::FilterWizard::FilterWizard(QWidget* parent)

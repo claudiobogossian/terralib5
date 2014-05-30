@@ -40,7 +40,7 @@
 #include <boost/uuid/uuid_io.hpp>
 
 // Qt
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 
 te::qt::plugins::pgis::PostGISCreatorDialog::PostGISCreatorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -76,7 +76,7 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::applyPushButtonPressed()
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("POSTGIS") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for PostgreSQL data sources!"));
+      throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for PostgreSQL data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -106,7 +106,7 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::applyPushButtonPressed()
     m_driver.reset(ds.release());
 
     if(m_driver.get() == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open POSTGIS data source due to an unknown error!"));
+      throw te::qt::widgets::Exception(TE_TR("Could not open POSTGIS data source due to an unknown error!"));
     
     QString title = m_ui->m_hostNameLineEdit->text().trimmed() + QString::fromStdString("@") + m_ui->m_newDatabaseNameLineEdit->text().trimmed() + QString::fromStdString("@") + m_ui->m_userNameLineEdit->text().trimmed();
 

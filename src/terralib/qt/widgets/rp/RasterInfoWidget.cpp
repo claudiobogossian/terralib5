@@ -26,8 +26,8 @@
 // TerraLib
 #include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../utils/ParameterTableWidget.h"
 #include "../Utils.h"
-#include "ParameterTableWidget.h"
 #include "RasterInfoWidget.h"
 #include "ui_RasterInfoWidgetForm.h"
 #include "ui_ParameterTableWidgetForm.h"

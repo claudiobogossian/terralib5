@@ -108,5 +108,5 @@ te::dt::AbstractData* te::dt::BooleanToStringConverter(te::dt::AbstractData* d) 
 void te::dt::AssertBoolean(AbstractData* d) throw(Exception)
 {
   if(d->getTypeCode() != BOOLEAN_TYPE)
-    throw Exception(TR_DATATYPE("The input data type is not a boolean!"));
+    throw Exception(TE_TR("The input data type is not a boolean!"));
 }

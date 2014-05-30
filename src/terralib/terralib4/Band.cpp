@@ -30,7 +30,7 @@
 #include "Raster.h"
 
 // TerraLib 4.x
-#include <terralib/kernel/TeRaster.h>
+#include <terralib4/kernel/TeRaster.h>
 
 class terralib4::Band::Impl
 {
@@ -70,7 +70,7 @@ void terralib4::Band::getValue(unsigned int c, unsigned int r, double& value) co
 
 void terralib4::Band::setValue(unsigned int /*c*/, unsigned int /*r*/, const double /*value*/)
 {
-  throw Exception(TR_TERRALIB4("This method is not supported by TerraLib 4.x driver!"));
+  throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
 void terralib4::Band::getIValue(unsigned int /*c*/, unsigned int /*r*/, double& value) const
@@ -80,7 +80,7 @@ void terralib4::Band::getIValue(unsigned int /*c*/, unsigned int /*r*/, double& 
 
 void terralib4::Band::setIValue(unsigned int /*c*/, unsigned int /*r*/, const double /*value*/)
 {
-  throw Exception(TR_TERRALIB4("This method is not supported by TerraLib 4.x driver!"));
+  throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
 void terralib4::Band::read(int x, int y, void* buffer) const
@@ -95,6 +95,6 @@ void* terralib4::Band::read(int x, int y)
 
 void terralib4::Band::write(int /*x*/, int /*y*/, void* /*buffer*/)
 {
-  throw Exception(TR_TERRALIB4("This method is not supported by TerraLib 4.x driver!"));
+  throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 

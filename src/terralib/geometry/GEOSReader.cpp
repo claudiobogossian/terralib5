@@ -26,7 +26,7 @@
 // TerraLib
 #include "GEOSReader.h"
 
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
 // TerraLib
 #include "../common/Translator.h"
 #include "Exception.h"
@@ -85,7 +85,7 @@ te::gm::Geometry* te::gm::GEOSReader::read(const geos::geom::Geometry* geom)
       return read(dynamic_cast<const geos::geom::GeometryCollection*>(geom));
 
     default:
-      throw Exception(TR_GEOM("The type of informed geometry can not be converted from GEOS to TerraLib!"));
+      throw Exception(TE_TR("The type of informed geometry can not be converted from GEOS to TerraLib!"));
   }
 }
 
@@ -218,5 +218,5 @@ te::gm::GeometryCollection* te::gm::GEOSReader::read(const geos::geom::GeometryC
   return geomColl;
 }
 
-#endif  // TE_USE_GEOS
+#endif  // TERRALIB_GEOS_ENABLED
 

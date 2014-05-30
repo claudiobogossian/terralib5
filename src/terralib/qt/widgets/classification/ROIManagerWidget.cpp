@@ -47,10 +47,10 @@
 #include "ui_ROIManagerWidgetForm.h"
 
 // Qt
-#include <QtCore/QPointF>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
-#include <QtGui/QGridLayout>
+#include <QFileDialog>
+#include <QGridLayout>
+#include <QMessageBox>
+#include <QPointF>
 
 //STL
 #include <memory>

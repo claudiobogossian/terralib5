@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../Version.h"
 #include "Version.h"
 
 // STL
@@ -31,23 +32,23 @@
 
 int te::common::Version::majorNumber()
 {
-  return TERRALIB_MAJOR_VERSION;
+  return TERRALIB_VERSION_MAJOR;
 }
 
 int te::common::Version::minorNumber()
 {
-  return TERRALIB_MINOR_VERSION;
+  return TERRALIB_VERSION_MINOR;
 }
 
 int te::common::Version::patchNumber()
 {
-  return TERRALIB_PATCH_VERSION;
+  return TERRALIB_VERSION_PATCH;
 }
 
 std::string te::common::Version::releaseStatus()
 {
-  assert(TERRALIB_RELEASE_STATUS);
-  return std::string(TERRALIB_RELEASE_STATUS);
+  assert(TERRALIB_VERSION_STATUS);
+  return std::string(TERRALIB_VERSION_STATUS);
 }
 
 std::string te::common::Version::buildDate()
@@ -58,12 +59,12 @@ std::string te::common::Version::buildDate()
 
 std::string te::common::Version::asString()
 {
-  assert(TERRALIB_STRING_VERSION);
-  return std::string(TERRALIB_STRING_VERSION);
+  assert(TERRALIB_VERSION_STRING);
+  return std::string(TERRALIB_VERSION_STRING);
 }
 
 int te::common::Version::asInt()
 {
-  return TERRALIB_INT_VERSION;
+  return TERRALIB_VERSION;
 }
 

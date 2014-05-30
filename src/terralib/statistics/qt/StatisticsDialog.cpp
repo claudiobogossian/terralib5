@@ -38,8 +38,8 @@
 #include "ui_StatisticsDialogForm.h"
 
 // Qt
-#include <QtGui/QListWidget>
-#include <QtGui/QMessageBox>
+#include <QListWidget>
+#include <QMessageBox>
 
 // Boost
 #include <boost/lexical_cast.hpp>

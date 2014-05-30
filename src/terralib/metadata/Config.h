@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -31,34 +31,6 @@
 
 #define TE_MD_MODULE_NAME "te.metadata"
 
-
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
-  \def TE_METADATA_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib metadata module.
-*/
-#define TE_METADATA_TEXT_DOMAIN "temetadata"
-
-/*!
-  \def TE_METADATA_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
-*/
-#define TE_METADATA_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TR_METADATA
-
-  \brief It marks a string in order to get translated. This is a special mark used in the Plugin module of TerraLib. 
-*/
-#define TR_METADATA(message) TR(message, TE_METADATA_TEXT_DOMAIN)
-
-//@}
 
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library

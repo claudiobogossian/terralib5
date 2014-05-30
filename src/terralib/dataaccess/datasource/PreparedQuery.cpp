@@ -142,7 +142,7 @@ void te::da::PreparedQuery::bind(int i, const te::dt::AbstractData& ad)
     break;
 
     default :
-      throw Exception(TR_DATAACCESS("The TerraLib data type is not supported by default prepared query implementation!"));
+      throw Exception(TE_TR("The TerraLib data type is not supported by default prepared query implementation!"));
   }
 }
 

@@ -15,9 +15,9 @@
 #include <vector>
 
 // Qt
-#include <QtGui/QApplication>
-#include <QtGui/QDialog>
-#include <QtGui/QLabel>
+#include <QApplication>
+#include <QDialog>
+#include <QLabel>
 
 /** @name Polygon Styles */
 //@{

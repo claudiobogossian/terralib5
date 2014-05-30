@@ -85,7 +85,7 @@ void te::map::DataSetLayerRenderer::draw(AbstractLayer* layer,
   DataSetLayer* dlayer = dynamic_cast<DataSetLayer*>(layer);
 
   if(dlayer == 0)
-    throw Exception(TR_MAP("Wrong type render type for this layer!"));
+    throw Exception(TE_TR("Wrong type render type for this layer!"));
 
 // check if layer extent intersects the drawing area and so compute bounding box intersection
   te::gm::Envelope reprojectedBBOX(bbox);
@@ -96,7 +96,7 @@ void te::map::DataSetLayerRenderer::draw(AbstractLayer* layer,
   }
   else if(dlayer->getSRID() != srid)
   {
-    throw Exception(TR_MAP("The layer or map don't have a valid SRID!"));
+    throw Exception(TE_TR("The layer or map don't have a valid SRID!"));
   }
 
   if(!reprojectedBBOX.intersects(dlayer->getExtent()))
@@ -136,7 +136,7 @@ void te::map::DataSetLayerRenderer::draw(AbstractLayer* layer,
       style = te::se::CreateFeatureTypeStyle(geometryProperty->getGeometryType());
 
       if(style == 0)
-        throw Exception((boost::format(TR_MAP("Could not create a default feature type style to the layer %1%.")) % layer->getTitle()).str());
+        throw Exception((boost::format(TE_TR("Could not create a default feature type style to the layer %1%.")) % layer->getTitle()).str());
 
       dlayer->setStyle(style);
     }
@@ -144,7 +144,7 @@ void te::map::DataSetLayerRenderer::draw(AbstractLayer* layer,
 // should I render this style?
     te::se::FeatureTypeStyle* fts = dynamic_cast<te::se::FeatureTypeStyle*>(style);
     if(fts == 0)
-      throw Exception(TR_MAP("The layer style is not a Feature Type Style!"));
+      throw Exception(TE_TR("The layer style is not a Feature Type Style!"));
 
     DrawGeometries(dstype.get(), ds, canvas, ibbox, dlayer->getSRID(), srid, fts);
   }
@@ -161,7 +161,7 @@ void te::map::DataSetLayerRenderer::draw(AbstractLayer* layer,
       style = te::se::CreateCoverageStyle(rasterProperty->getBandProperties());
 
       if(style == 0)
-        throw Exception((boost::format(TR_MAP("Could not create a default coverage style to the layer %1%.")) % layer->getTitle()).str());
+        throw Exception((boost::format(TE_TR("Could not create a default coverage style to the layer %1%.")) % layer->getTitle()).str());
 
       dlayer->setStyle(style);
     }
@@ -169,13 +169,13 @@ void te::map::DataSetLayerRenderer::draw(AbstractLayer* layer,
 // should I render this style?
     te::se::CoverageStyle* cs = dynamic_cast<te::se::CoverageStyle*>(style);
     if(cs == 0)
-      throw Exception(TR_MAP("The layer style is not a Coverage Style!"));
+      throw Exception(TE_TR("The layer style is not a Coverage Style!"));
 
     DrawRaster(dstype.get(), ds, canvas, ibbox, dlayer->getSRID(), bbox, srid, cs);
   }
   else
   {
-    throw Exception(TR_MAP("The layer don't have a geometry or raster property!"));
+    throw Exception(TE_TR("The layer don't have a geometry or raster property!"));
   }
 }
 
@@ -218,7 +218,7 @@ void te::map::DataSetLayerRenderer::drawGrouping(DataSetLayer* layer, te::da::Da
   std::size_t nGroupItems = items.size();
 
 // build task message; e.g. ("Drawing the layer Countries. Rule 1 of 3.")
-  std::string message = TR_MAP("Drawing the grouping of layer");
+  std::string message = TE_TR("Drawing the grouping of layer");
   message += " " + layer->getTitle() + ".";
 
 // create the draw task
@@ -300,7 +300,7 @@ void te::map::DataSetLayerRenderer::drawGrouping(DataSetLayer* layer, te::da::Da
     }
 
     if(dataset.get() == 0)
-      throw Exception((boost::format(TR_MAP("Could not retrieve the data set %1% referenced by the layer %2%.")) % dsname % layer->getTitle()).str());
+      throw Exception((boost::format(TE_TR("Could not retrieve the data set %1% referenced by the layer %2%.")) % dsname % layer->getTitle()).str());
 
     if(dataset->moveNext() == false)
       continue;

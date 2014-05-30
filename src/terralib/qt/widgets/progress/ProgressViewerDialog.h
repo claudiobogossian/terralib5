@@ -32,7 +32,7 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QProgressDialog>
+#include <QProgressDialog>
 
 // STL
 #include <map>

@@ -27,8 +27,8 @@
 #define __TERRALIB_QT_AF_ABSTRACTSETTINGWIDGET_H
 
 // Qt
-#include <QtGui/QWidget>
-#include <QtGui/QMessageBox>
+#include <QWidget>
+#include <QMessageBox>
 
 namespace te
 {

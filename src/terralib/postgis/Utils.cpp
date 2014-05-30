@@ -293,7 +293,7 @@ bool te::pgis::SetColumnDef(std::string& s, const te::dt::Property* p, bool just
     break;
 
     default:
-      throw Exception(TR_PGIS("The informed type could not be mapped to PostgreSQL type system!"));
+      throw Exception(TE_TR("The informed type could not be mapped to PostgreSQL type system!"));
     break;
   }  
 
@@ -549,7 +549,7 @@ std::string te::pgis::GetSQLValue(const te::dt::Property* p, std::size_t propert
         if(pgerror != 0)
         {
           delete [] valueto;
-          throw Exception(TR_PGIS("Could not escape string!"));
+          throw Exception(TE_TR("Could not escape string!"));
         }
 
         value += "'";
@@ -622,7 +622,7 @@ std::string te::pgis::GetSQLValue(const te::dt::Property* p, std::size_t propert
     break;
 
     default :
-      throw Exception(TR_PGIS("The TerraLib data type is not supported by the PostgreSQL driver!"));
+      throw Exception(TE_TR("The TerraLib data type is not supported by the PostgreSQL driver!"));
   }
 
   return value;

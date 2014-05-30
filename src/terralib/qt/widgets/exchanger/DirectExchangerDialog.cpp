@@ -40,8 +40,8 @@
 #include "ui_DirectExchangerDialogForm.h"
 
 // Qt
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QMessageBox>
 
 // Boost
 #include <boost/filesystem.hpp>

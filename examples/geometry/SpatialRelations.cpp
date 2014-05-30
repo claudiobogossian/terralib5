@@ -34,6 +34,9 @@ bool spatialRelation(te::gm::Geometry* g1, te::gm::Geometry* g2, te::gm::Spatial
 
 		case te::gm::WITHIN:
 			return g1->within(g2);
+            
+        default:
+            return false;
 	}
 
 	return false;

@@ -28,8 +28,8 @@
 #include "ChartSliceItem.h"
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QWidget>
 
 te::qt::widgets::ChartSliceItem::ChartSliceItem(const QString& propertyName, const QColor& color,
                                                 const QColor& contourColor, int contourWidth,

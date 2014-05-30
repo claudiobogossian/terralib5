@@ -37,8 +37,8 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QWidget>
 
 te::qt::widgets::PropertyGroupItem::PropertyGroupItem(AbstractDataSourceTreeItem* parent)
   : AbstractDataSourceTreeItem(parent)

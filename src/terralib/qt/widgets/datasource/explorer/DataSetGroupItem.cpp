@@ -43,10 +43,10 @@
 #include <memory>
 
 // Qt
-#include <QtCore/QAbstractItemModel>
-#include <QtGui/QMenu>
-#include <QtGui/QMessageBox>
-#include <QtGui/QWidget>
+#include <QAbstractItemModel>
+#include <QMenu>
+#include <QMessageBox>
+#include <QWidget>
 
 te::qt::widgets::DataSetGroupItem::DataSetGroupItem(const te::da::DataSourceInfoPtr& ds, AbstractDataSourceTreeItem* parent)
   : AbstractDataSourceTreeItem(parent),

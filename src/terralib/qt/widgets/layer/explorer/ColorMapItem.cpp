@@ -34,8 +34,8 @@
 #include "ColorMapItem.h"
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QWidget>
 
 te::qt::widgets::ColorMapItem::ColorMapItem(te::se::ColorMap* cm, QObject* parent)
   : AbstractTreeItem(parent),

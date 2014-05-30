@@ -30,9 +30,9 @@
 #include "../../../raster/Raster.h"
 #include "../../../rp/Register.h"
 #include "../../../rp/Module.h"
-#include "../../widgets/help/HelpPushButton.h"
-#include "LayerSearchWidget.h"
-#include "LayerSearchWizardPage.h"
+#include "../help/HelpPushButton.h"
+#include "../layer/search/LayerSearchWidget.h"
+#include "../layer/search/LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "RegisterWizard.h"
@@ -46,8 +46,8 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QApplication>
-#include <QtGui/QMessageBox>
+#include <QApplication>
+#include <QMessageBox>
 
 
 te::qt::widgets::RegisterWizard::RegisterWizard(QWidget* parent)
