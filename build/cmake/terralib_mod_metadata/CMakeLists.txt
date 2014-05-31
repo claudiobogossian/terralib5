@@ -28,7 +28,7 @@
 include_directories(${Boost_INCLUDE_DIR})
 
 if(WIN32)
-  add_definitions(-DTEMDDLL)
+  add_definitions(-D_SCL_SECURE_NO_WARNINGS -DTEMDDLL)
 endif()
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/metadata/*.cpp)
