@@ -31,9 +31,9 @@
 #include "../../Config.h"
 
 //Qt
-#include <QtCore/QModelIndex>
-#include <QtCore/QObject>
-#include <QtCore/QVariant>
+#include <QModelIndex>
+#include <QObject>
+#include <QVariant>
 
 // Forward declaration
 class QMenu;
