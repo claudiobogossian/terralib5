@@ -104,7 +104,7 @@ bool BufferOGRToPGIS()
 {
   std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
   
-  std::string filename(data_dir + "/data/shp/Buffer/SP_meso.shp");
+  std::string filename(data_dir + "/shp/Buffer/SP_meso.shp");
   
   std::map<std::string, std::string> srcInfo;
   srcInfo["URI"] = filename;
@@ -312,7 +312,7 @@ bool BufferPGISToOGR()
   
   std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
   
-  std::string uriResult(data_dir + "/data/shp/Buffer/bufferPGISToOGR.shp");
+  std::string uriResult(data_dir + "/shp/Buffer/bufferPGISToOGR.shp");
 
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = uriResult;

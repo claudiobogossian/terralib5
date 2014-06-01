@@ -25,7 +25,7 @@ void RasterSymbologyWidgets()
   
   std::string filename(data_dir + "/Nulos/nulos2.shp");
   
-  //rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  //rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/rasters/cbers2b_rgb342_crop.tif";
   rinfo["URI"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
 
 // open input raster

@@ -47,7 +47,7 @@
 //  std::vector<te::dt::Property*> groupingProperties;
 //  groupingProperties.push_back(aggregBy.release());
 //  
-//  std::string filename(""TE_DATA_EXAMPLE_DIR"/data/vpresult/sp_nomemesoPGIStoOGR.shp");
+//  std::string filename(""TE_DATA_EXAMPLE_DIR"/vpresult/sp_nomemesoPGIStoOGR.shp");
 //  
 //  std::map<std::string, std::string> tgrInfo;
 //  tgrInfo["URI"] = filename;
@@ -73,7 +73,7 @@
 
 //bool AggregOGRToPGIS()
 //{
-//  std::string filename(""TE_DATA_EXAMPLE_DIR"/data/shp/SP_cities.shp");
+//  std::string filename(""TE_DATA_EXAMPLE_DIR"/shp/SP_cities.shp");
 //  
 //  std::map<std::string, std::string> srcInfo;
 //  srcInfo["URI"] = filename;
@@ -125,7 +125,7 @@
 
 //bool AggregOGRToOGR()
 //{
-//  std::string filename(""TE_DATA_EXAMPLE_DIR"/data/shp/SP_cities.shp");
+//  std::string filename(""TE_DATA_EXAMPLE_DIR"/shp/SP_cities.shp");
 //  
 //  std::map<std::string, std::string> srcInfo;
 //  srcInfo["URI"] = filename;
@@ -149,7 +149,7 @@
 //  
 //  std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > stats;
 //  
-//  std::string filename2(""TE_DATA_EXAMPLE_DIR"/data/vpresult/sp_nomemesoOGRtoOGR.shp");
+//  std::string filename2(""TE_DATA_EXAMPLE_DIR"/vpresult/sp_nomemesoOGRtoOGR.shp");
 //  std::map<std::string, std::string> tgrInfo;
 //  tgrInfo["URI"] = filename2;
 //  tgrInfo["DRIVER"] = "ESRI Shapefile";

@@ -45,10 +45,10 @@ void ExportingOGR()
   openFile(data_dir + "/ogr", "OGR");
   
   saveUsingOGR(data_dir + "/ogr/testeOGR.shp", "ESRI Shapefile");
-  saveUsingOGR(data_dir + "/data/ogr/testeOGR.kml", "KML");
-  saveUsingOGR(data_dir + "/data/ogr/testeOGR.mif", "MapInfo File");
-  saveUsingOGR(data_dir + "/data/ogr/testeOGR.json", "GeoJSON");
-  saveUsingOGR(data_dir + "/data/ogr/testeOGR.gml", "GML");
+  saveUsingOGR(data_dir + "/ogr/testeOGR.kml", "KML");
+  saveUsingOGR(data_dir + "/ogr/testeOGR.mif", "MapInfo File");
+  saveUsingOGR(data_dir + "/ogr/testeOGR.json", "GeoJSON");
+  saveUsingOGR(data_dir + "/ogr/testeOGR.gml", "GML");
   
   std::cout << std::endl << "6 - ";
   openFile(data_dir + "/ogr", "OGR");

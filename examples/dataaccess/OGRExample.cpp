@@ -108,7 +108,7 @@ void ORGExampleWrite()
 //
 //    te::da::DataSetType* newDt = new te::da::DataSetType(*datas->getType());
 //    std::map<std::string, std::string> ogrInfo;
-//    ogrInfo["connection_string"] = ""TE_DATA_EXAMPLE_DIR"/data/shp/soilmeasure.shp";
+//    ogrInfo["connection_string"] = ""TE_DATA_EXAMPLE_DIR"/shp/soilmeasure.shp";
 //    te::da::DataSource* ds = te::da::DataSource::create("OGR", ogrInfo);
 //
 //    te::da::DataSourceTransactor* trans = ds->getTransactor();

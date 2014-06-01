@@ -40,7 +40,7 @@ void TrajectoryExamples()
 	  //Calculate the intersection between the first trajectory and a geometry
 	  //Load the geometry from a shapefile
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/st/trajectory/t41_region.shp" ; 
+    connInfo["URI"] = ""TERRALIB_EXAMPLES_DATA_DIR"/st/trajectory/t41_region.shp" ; 
     
     std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR"));
     ds->setConnectionInfo(connInfo); 
@@ -61,11 +61,11 @@ void TrajectoryExamples()
   
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in TrajectoryExamples: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in TrajectoryExamples: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in TrajectoryExamples!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in TrajectoryExamples!" << std::endl;
   } 
 }
 

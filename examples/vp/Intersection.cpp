@@ -42,7 +42,7 @@
 //    return false;
 //  }
 //
-//  std::string filename(""TE_DATA_EXAMPLE_DIR"/data/vpresult/intersectionResult.shp");
+//  std::string filename(""TE_DATA_EXAMPLE_DIR"/vpresult/intersectionResult.shp");
 //  
 //  std::map<std::string, std::string> tgrInfo;
 //  tgrInfo["URI"] = filename;
@@ -66,8 +66,8 @@
 //
 //bool IntersectionOGRToPGIS()
 //{
-//  std::string filename1(""TE_DATA_EXAMPLE_DIR"/data/shp/PLANO_plano1_pol.shp");
-//  std::string filename2(""TE_DATA_EXAMPLE_DIR"/data/shp/PLANO_plano2_pol.shp");
+//  std::string filename1(""TE_DATA_EXAMPLE_DIR"/shp/PLANO_plano1_pol.shp");
+//  std::string filename2(""TE_DATA_EXAMPLE_DIR"/shp/PLANO_plano2_pol.shp");
 //  
 //  std::map<std::string, std::string> srcInfo;
 //  srcInfo["URI"] = filename1;

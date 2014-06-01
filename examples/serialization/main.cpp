@@ -73,7 +73,7 @@ int main(int /*argc*/, char** /*argv*/)
     /* XSD Schema */
 
     std::cout << "Decoding schema..." << std::endl;
-    DecodeSchema(""TERRALIB_EXAMPLES_DATA_DIR"/data/xml/plugin_info.xsd");
+    DecodeSchema(""TERRALIB_EXAMPLES_DATA_DIR"/xml/plugin_info.xsd");
   }
   catch(const std::exception& e)
   {

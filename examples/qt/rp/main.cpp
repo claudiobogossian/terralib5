@@ -56,7 +56,7 @@ void TiePointsLocatorDialogExample( int argc, char** argv )
 
   //const std::string dataSet1Name( "cbers2b_rgb342_crop.tif" );
   //std::map<std::string, std::string> rinfo1;
-  //rinfo1["URI"] = TE_DATA_EXAMPLE_DIR "/data/rasters";
+  //rinfo1["URI"] = TE_DATA_EXAMPLE_DIR "/rasters";
   //std::auto_ptr< te::da::DataSource > ds1( te::da::DataSourceFactory::make("GDAL") );
   //ds1->open(rinfo1);
   //if( ! ds1->isOpened() )
@@ -79,7 +79,7 @@ void TiePointsLocatorDialogExample( int argc, char** argv )
 
   //const std::string dataSet2Name( "cbers2b_rgb342_crop.tif" );
   //std::map<std::string, std::string> rinfo2;
-  //rinfo2["URI"] = TE_DATA_EXAMPLE_DIR "/data/rasters";
+  //rinfo2["URI"] = TE_DATA_EXAMPLE_DIR "/rasters";
   //std::auto_ptr< te::da::DataSource > ds2( te::da::DataSourceFactory::make("GDAL") );
   //ds2->open(rinfo2);
   //if( ! ds2->isOpened() )
