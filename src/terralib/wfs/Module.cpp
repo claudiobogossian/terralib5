@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -59,9 +59,6 @@ void te::wfs::Module::startup()
   if(m_initialized)
     return;
 
-// it initializes the Translator support for the TerraLib WFS driver support
-  TE_ADD_TEXT_DOMAIN(TE_WFS_TEXT_DOMAIN, TE_WFS_TEXT_DOMAIN_DIR, "UTF-8");
-
   te::da::DataSourceFactory::add(TE_WFS_DRIVER_IDENTIFIER, te::wfs::Build);
 
   #include "WFSDialect.h"
@@ -72,7 +69,7 @@ void te::wfs::Module::startup()
 // registers all format drivers built into OGR.
   OGRRegisterAll();
 
-  TE_LOG_TRACE(TR_WFS("TerraLib WFS driver startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib WFS driver startup!"));
 
   m_initialized = true;
 }
@@ -88,7 +85,7 @@ void te::wfs::Module::shutdown()
 
   OGRCleanupAll();
 
-  TE_LOG_TRACE(TR_WFS("TerraLib WFS driver shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib WFS driver shutdown!"));
 
   m_initialized = false;
 }
