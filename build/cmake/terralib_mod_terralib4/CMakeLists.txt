@@ -27,7 +27,7 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${ADO_LIBRARY_DIRS})
-include_directories(${TERRALIB4_INCLUDE_DIR})
+include_directories(${TERRALIB4_INCLUDE_DIRS})
 
 add_definitions(-DTETERRALIB4DLL)
 
