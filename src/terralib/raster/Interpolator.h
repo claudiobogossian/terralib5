@@ -33,6 +33,9 @@
 #include <complex>
 #include <vector>
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
   namespace rst
@@ -48,7 +51,7 @@ namespace te
 
       \ingroup rst
     */
-    class TERASTEREXPORT Interpolator
+    class TERASTEREXPORT Interpolator : public boost::noncopyable
     {
       public:
 
@@ -95,6 +98,13 @@ namespace te
           \param v A vector of values, for all bands, or the current input raster no-data values if the requested coordinates are outside the valid image bounds..
         */
         void getValues(const double& c, const double& r, std::vector<std::complex<double> >& values);
+        
+        /*!
+          \brief Create a clone copy of this instance.
+          
+          \return A clone copy of this instance (the caller of this method must take the ownership of the returned object).
+        */        
+        te::rst::Interpolator* clone() const;
 
       protected:
 

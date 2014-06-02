@@ -829,41 +829,13 @@ namespace te
                 currentRasterBandsScales,  
                 &mosaicValidDataPol,
                 0,                
-                *geoTransPtr ), 
-                "Blender initiazing error" );                    
-
-              std::vector< double > blendedValues( mosaicRasterHandler->getNumberOfBands() );
-              unsigned int outputRow = 0;
-              unsigned int outputCol = 0;
-              const unsigned int nBands = mosaicRasterHandler->getNumberOfBands();
-              unsigned int outBandIdx = 0;
-              te::rst::Raster& outputRaster = *mosaicRasterHandler;
+                *geoTransPtr,
+                m_inputParameters.m_enableMultiThread ? 0 : 1,
+                false ),
+                "Blender initiazing error" );   
               
-              for( outputRow = lastInputRasterBBoxURYIndexed ; outputRow <= lastInputRasterBBoxLLYIndexed ;
-                ++outputRow )
-              {
-                for( outputCol = lastInputRasterBBoxLLXIndexed ; outputCol <= lastInputRasterBBoxURXIndexed ;
-                  ++outputCol )
-                {
-                  blenderInstance.getBlendedValues( (double)outputRow, (double)outputCol,
-                    blendedValues );
-                    
-                  for( outBandIdx = 0 ; outBandIdx < nBands ; ++outBandIdx )
-                  {
-                    double& blendedValue = blendedValues[ outBandIdx ];
-                    
-                    if( blendedValue != m_inputParameters.m_noDataValue )
-                    {
-                      blendedValue = std::max( blendedValue , 
-                        mosaicBandsRangeMin[ outBandIdx ] );
-                      blendedValue = std::min( blendedValue , 
-                        mosaicBandsRangeMax[ outBandIdx ] );
-
-                      outputRaster.setValue( outputCol, outputRow, blendedValue, outBandIdx );
-                    }
-                  }                    
-                }
-              }
+              TERP_TRUE_OR_RETURN_FALSE( blenderInstance.blendIntoRaster1(), 
+                 "Error blending images" );
             }
             
             // updating the mosaic related polygons
