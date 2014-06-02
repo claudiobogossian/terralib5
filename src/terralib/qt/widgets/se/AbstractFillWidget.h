@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_SE_INTERNAL_ABSTRACTFILLWIDGET_H
 
 // Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 namespace te
 {

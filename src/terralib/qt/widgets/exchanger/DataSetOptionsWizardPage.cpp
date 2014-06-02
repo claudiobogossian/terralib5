@@ -35,8 +35,8 @@
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../qt/widgets/utils/ScopedCursor.h"
 #include "../../../qt/widgets/srs/SRSManagerDialog.h"
-#include "ConstraintsIndexesListWidget.h"
-#include "DataSetAdapterWidget.h"
+#include "../property/ConstraintsIndexesListWidget.h"
+#include "../property/DataSetAdapterWidget.h"
 #include "DataSetOptionsWizardPage.h"
 #include "ui_DataSetOptionsWizardPageForm.h"
 
@@ -47,8 +47,8 @@
 #include <boost/lexical_cast.hpp>
 
 // Qt
-#include <QtGui/QIcon>
-#include <QtGui/QMessageBox>
+#include <QIcon>
+#include <QMessageBox>
 
 te::qt::widgets::DataSetOptionsWizardPage::DataSetOptionsWizardPage(QWidget* parent)
   : QWizardPage(parent),

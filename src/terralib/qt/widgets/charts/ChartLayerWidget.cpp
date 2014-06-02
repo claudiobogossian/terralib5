@@ -34,10 +34,10 @@
 #include "ui_ChartLayerWidgetForm.h"
 
 // Qt
-#include <QtCore/QString>
-#include <QtGui/QColor>
-#include <QtGui/QMessageBox>
-#include <QtGui/QPainterPath>
+#include <QString>
+#include <QColor>
+#include <QMessageBox>
+#include <QPainterPath>
 
 // STL
 #include <memory>

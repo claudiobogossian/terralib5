@@ -223,7 +223,7 @@ void te::da::DataSource::renameProperty(const std::string& datasetName,
 void te::da::DataSource::changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
-  return t->changePropertyDefinition(datasetName, propName, newProp);  
+  return t->changePropertyDefinition(datasetName, propName, newProp);
 }
 
 void te::da::DataSource::changePropertiesDefinitions(const std::string& datasetName, const std::vector<std::string>& propsNames, const std::vector<te::dt::Property*> newProps)
@@ -233,7 +233,6 @@ void te::da::DataSource::changePropertiesDefinitions(const std::string& datasetN
   for(std::size_t i = 0; i < propsNames.size(); ++i)
     changePropertyDefinition(datasetName, propsNames[i], newProps[i]);
 }
-
 
 std::auto_ptr<te::da::PrimaryKey> te::da::DataSource::getPrimaryKey(const std::string& datasetName)
 {
@@ -506,7 +505,7 @@ std::auto_ptr<te::da::DataSource> te::da::DataSource::create(const std::string& 
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not find the appropriate factory to create a data source instance!"));
+    throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
 
   ds->create(dsInfo);
 
@@ -518,7 +517,7 @@ void te::da::DataSource::drop(const std::string& dsType, const std::map<std::str
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not find the appropriate factory to create a data source instance!"));
+    throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
 
   ds->drop(dsInfo);
 }
@@ -528,7 +527,7 @@ bool te::da::DataSource::exists(const std::string& dsType, const std::map<std::s
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not find the appropriate factory in order to create a data source instance!"));
+    throw Exception(TE_TR("Could not find the appropriate factory in order to create a data source instance!"));
 
   return ds->exists(dsInfo);
 }
@@ -538,7 +537,7 @@ std::vector<std::string> te::da::DataSource::getDataSourceNames(const std::strin
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not find the appropriate factory to create a data source instance!"));
+    throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
 
   return ds->getDataSourceNames(dsInfo);
 }
@@ -548,7 +547,7 @@ std::vector<te::common::CharEncoding> te::da::DataSource::getEncodings(const std
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not find the appropriate factory to create a data source instance!"));
+    throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
 
   return ds->getEncodings(dsInfo);
 }

@@ -37,9 +37,9 @@
 #include <boost/noncopyable.hpp>
 
 // Qt
-#include <QtGui/QColor>
-#include <QtGui/QLineEdit>
-#include <QtGui/QMainWindow>
+#include <QColor>
+#include <QLineEdit>
+#include <QMainWindow>
 
 class QLabel;
 

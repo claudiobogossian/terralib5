@@ -61,9 +61,6 @@ te::gml::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib GML module
-  TE_ADD_TEXT_DOMAIN(TE_GML_TEXT_DOMAIN, TE_GML_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::gml::Module::~Module()
@@ -73,12 +70,12 @@ te::gml::Module::~Module()
 
 void te::gml::Module::initialize()
 {
-  TE_LOG_TRACE(TR_GML("TerraLib GML module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib GML module initialized!"));
 }
 
 void te::gml::Module::finalize()
 {
-  TE_LOG_TRACE(TR_GML("TerraLib GML module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib GML module finalized!"));
 }
 
 //// TerraLib

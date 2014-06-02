@@ -1,6 +1,8 @@
+
+#include "../Config.h"
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
-#include <terralib/vp/Intersection.h>
+//#include <terralib/vp/Intersection.h>
 #include <terralib/vp/IntersectionMemory.h>
 #include <terralib/vp/IntersectionOp.h>
 #include <terralib/vp/IntersectionQuery.h>
@@ -40,7 +42,7 @@
 //    return false;
 //  }
 //
-//  std::string filename(""TE_DATA_EXAMPLE_DIR"/data/vpresult/intersectionResult.shp");
+//  std::string filename(""TE_DATA_EXAMPLE_DIR"/vpresult/intersectionResult.shp");
 //  
 //  std::map<std::string, std::string> tgrInfo;
 //  tgrInfo["URI"] = filename;
@@ -64,8 +66,8 @@
 //
 //bool IntersectionOGRToPGIS()
 //{
-//  std::string filename1(""TE_DATA_EXAMPLE_DIR"/data/shp/PLANO_plano1_pol.shp");
-//  std::string filename2(""TE_DATA_EXAMPLE_DIR"/data/shp/PLANO_plano2_pol.shp");
+//  std::string filename1(""TE_DATA_EXAMPLE_DIR"/shp/PLANO_plano1_pol.shp");
+//  std::string filename2(""TE_DATA_EXAMPLE_DIR"/shp/PLANO_plano2_pol.shp");
 //  
 //  std::map<std::string, std::string> srcInfo;
 //  srcInfo["URI"] = filename1;
@@ -170,12 +172,16 @@
 //ORG to OGR
 bool IntersectionOGRToOGR()
 {
-  std::string filename1(""TE_DATA_EXAMPLE_DIR"/data/shp/Intersection/rodovias.shp");
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  std::string filename1(data_dir + "shp/Intersection/rodovias.shp");
+  
   std::map<std::string, std::string> srcInfo1;
   srcInfo1["URI"] = filename1;
   srcInfo1["DRIVER"] = "ESRI Shapefile";
 
-  std::auto_ptr<te::da::DataSource> srcDs1 = te::da::DataSourceFactory::make("OGR");
+  //std::auto_ptr<te::da::DataSource> srcDs1 = te::da::DataSourceFactory::make("OGR");
+  te::da::DataSourcePtr srcDs1(te::da::DataSourceFactory::make("OGR"));
   srcDs1->setConnectionInfo(srcInfo1);
   srcDs1->open();
 
@@ -190,12 +196,13 @@ bool IntersectionOGRToOGR()
   std::auto_ptr<te::da::DataSetType> inDsetType1 = srcDs1->getDataSetType(inDsetName1);
 
 
-  std::string filename2(""TE_DATA_EXAMPLE_DIR"/data/shp/Intersection/SP_meso.shp");
+  std::string filename2(data_dir + "/shp/Intersection/SP_meso.shp");
   std::map<std::string, std::string> srcInfo2;
   srcInfo2["URI"] = filename2;
   srcInfo2["DRIVER"] = "ESRI Shapefile";
   
-  std::auto_ptr<te::da::DataSource> srcDs2 = te::da::DataSourceFactory::make("OGR");
+  //std::auto_ptr<te::da::DataSource> srcDs2 = te::da::DataSourceFactory::make("OGR");
+  te::da::DataSourcePtr srcDs2(te::da::DataSourceFactory::make("OGR"));
   srcDs2->setConnectionInfo(srcInfo2);
   srcDs2->open();
   
@@ -212,13 +219,14 @@ bool IntersectionOGRToOGR()
   bool copyInputColumns = true;
   std::size_t inSRID = 0;
 
-  std::string filenameResult(""TE_DATA_EXAMPLE_DIR"/data/shp/Intersection/intersectionOGR2OGR.shp");
+  std::string filenameResult(data_dir + "/shp/Intersection/intersectionOGR2OGR.shp");
 
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = filenameResult;
   tgrInfo["DRIVER"] = "ESRI Shapefile";
 
-  std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
+  //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR"));
   trgDs->setConnectionInfo(tgrInfo);
   trgDs->open();
   
@@ -252,12 +260,16 @@ bool IntersectionOGRToOGR()
 //OGR to Postgis
 bool IntersectionOGRToPGIS()
 {
-  std::string filename1(""TE_DATA_EXAMPLE_DIR"/data/shp/Intersection/rodovias.shp");
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  std::string filename1(data_dir + "/shp/Intersection/rodovias.shp");
+  
   std::map<std::string, std::string> srcInfo1;
   srcInfo1["URI"] = filename1;
   srcInfo1["DRIVER"] = "ESRI Shapefile";
 
-  std::auto_ptr<te::da::DataSource> srcDs1 = te::da::DataSourceFactory::make("OGR");
+  //std::auto_ptr<te::da::DataSource> srcDs1 = te::da::DataSourceFactory::make("OGR");
+  te::da::DataSourcePtr srcDs1(te::da::DataSourceFactory::make("OGR"));
   srcDs1->setConnectionInfo(srcInfo1);
   srcDs1->open();
 
@@ -272,12 +284,13 @@ bool IntersectionOGRToPGIS()
   std::auto_ptr<te::da::DataSetType> inDsetType1 = srcDs1->getDataSetType(inDsetName1);
 
 
-  std::string filename2(""TE_DATA_EXAMPLE_DIR"/data/shp/Intersection/SP_meso.shp");
+  std::string filename2(data_dir + "/shp/Intersection/SP_meso.shp");
   std::map<std::string, std::string> srcInfo2;
   srcInfo2["URI"] = filename2;
   srcInfo2["DRIVER"] = "ESRI Shapefile";
   
-  std::auto_ptr<te::da::DataSource> srcDs2 = te::da::DataSourceFactory::make("OGR");
+  //std::auto_ptr<te::da::DataSource> srcDs2 = te::da::DataSourceFactory::make("OGR");
+  te::da::DataSourcePtr srcDs2(te::da::DataSourceFactory::make("OGR"));
   srcDs2->setConnectionInfo(srcInfo2);
   srcDs2->open();
   
@@ -302,8 +315,9 @@ bool IntersectionOGRToPGIS()
   connInfo["PG_DB_NAME"] = "testPostGIS";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
   connInfo["PG_CLIENT_ENCODING"] = "WIN1252";
-  
-  std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("POSTGIS");
+
+  //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("POSTGIS");
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("POSTGIS"));
   trgDs->setConnectionInfo(connInfo);
   trgDs->open();
   
@@ -346,7 +360,8 @@ bool IntersectionPGISToPGIS()
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
   connInfo["PG_CLIENT_ENCODING"] = "WIN1252"; 
 
-  std::auto_ptr<te::da::DataSource> srcDs1 = te::da::DataSourceFactory::make("POSTGIS");
+  //std::auto_ptr<te::da::DataSource> srcDs1 = te::da::DataSourceFactory::make("POSTGIS");
+  te::da::DataSourcePtr srcDs1(te::da::DataSourceFactory::make("POSTGIS"));
   srcDs1->setConnectionInfo(connInfo);
   srcDs1->open();
   
@@ -360,8 +375,8 @@ bool IntersectionPGISToPGIS()
   std::auto_ptr<te::da::DataSet> inDset1 = srcDs1->getDataSet(inDsetName1);
   std::auto_ptr<te::da::DataSetType> inDsetType1 = srcDs1->getDataSetType(inDsetName1);
 
-
-  std::auto_ptr<te::da::DataSource> srcDs2 = te::da::DataSourceFactory::make("POSTGIS");
+  //std::auto_ptr<te::da::DataSource> srcDs2 = te::da::DataSourceFactory::make("POSTGIS");
+  te::da::DataSourcePtr srcDs2(te::da::DataSourceFactory::make("POSTGIS"));
   srcDs2->setConnectionInfo(connInfo);
   srcDs2->open();
   
@@ -375,11 +390,11 @@ bool IntersectionPGISToPGIS()
   std::auto_ptr<te::da::DataSet> inDset2 = srcDs2->getDataSet(inDsetName2);
   std::auto_ptr<te::da::DataSetType> inDsetType2 = srcDs2->getDataSetType(inDsetName2);
 
-
   bool copyInputColumns = true;
   std::size_t inSRID = 0;
 
-  std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("POSTGIS");
+  //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("POSTGIS");
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("POSTGIS"));
   trgDs->setConnectionInfo(connInfo);
   trgDs->open();
   
@@ -422,7 +437,8 @@ bool IntersectionPGISToOGR()
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
   connInfo["PG_CLIENT_ENCODING"] = "WIN1252"; 
 
-  std::auto_ptr<te::da::DataSource> srcDs1 = te::da::DataSourceFactory::make("POSTGIS");
+  //std::auto_ptr<te::da::DataSource> srcDs1 = te::da::DataSourceFactory::make("POSTGIS");
+  te::da::DataSourcePtr srcDs1(te::da::DataSourceFactory::make("POSTGIS"));
   srcDs1->setConnectionInfo(connInfo);
   srcDs1->open();
   
@@ -436,8 +452,8 @@ bool IntersectionPGISToOGR()
   std::auto_ptr<te::da::DataSet> inDset1 = srcDs1->getDataSet(inDsetName1);
   std::auto_ptr<te::da::DataSetType> inDsetType1 = srcDs1->getDataSetType(inDsetName1);
 
-
-  std::auto_ptr<te::da::DataSource> srcDs2 = te::da::DataSourceFactory::make("POSTGIS");
+  //std::auto_ptr<te::da::DataSource> srcDs2 = te::da::DataSourceFactory::make("POSTGIS");
+  te::da::DataSourcePtr srcDs2(te::da::DataSourceFactory::make("POSTGIS"));
   srcDs2->setConnectionInfo(connInfo);
   srcDs2->open();
   
@@ -457,13 +473,17 @@ bool IntersectionPGISToOGR()
 
 
   std::string outDSet = "intersectionPGIS2OGR";
+  
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
 
-  std::string uriResult(""TE_DATA_EXAMPLE_DIR"/data/shp/Intersection/intersectionPGIS2OGR.shp");
+  std::string uriResult(data_dir + "/shp/Intersection/intersectionPGIS2OGR.shp");
+  
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = uriResult;
   tgrInfo["DRIVER"] = "ESRI Shapefile";
 
-  std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
+  //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR"));
   trgDs->setConnectionInfo(tgrInfo);
   trgDs->open();
 

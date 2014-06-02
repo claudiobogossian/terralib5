@@ -33,7 +33,7 @@
 // STL
 #include <sstream>
 
-#if TE_CHARENCODING_ENABLED
+#ifdef TERRALIB_GNU_ICONV_ENABLED
 // iconv
 #include <errno.h>
 #include <iconv.h>
@@ -52,32 +52,32 @@ te::common::CharEncodingConv::CharEncodingConv(const CharEncoding& fromCode, con
     m_toCode(toCode)
 {
   if(m_fromCode == UNKNOWN_CHAR_ENCODING || m_toCode == UNKNOWN_CHAR_ENCODING)
-    throw Exception(TR_COMMON("Impossible conversion of unknown char encoding!"));
+    throw Exception(TE_TR("Impossible conversion of unknown char encoding!"));
 
-#if TE_CHARENCODING_ENABLED
+#ifdef TERRALIB_GNU_ICONV_ENABLED
   m_cd = iconv_open(iconv_names[toCode], iconv_names[fromCode]);
 
   if(m_cd == (iconv_t)(-1))
   {
     if(errno == EINVAL) 
-      throw Exception(TR_COMMON("Failed to start iconv to start converting charsets: the conversion from fromCode to toCode is not supported!"));
+      throw Exception(TE_TR("Failed to start iconv to start converting charsets: the conversion from fromCode to toCode is not supported!"));
     else
-      throw Exception(TR_COMMON("Failed to start iconv to start converting charsets!"));
+      throw Exception(TE_TR("Failed to start iconv to start converting charsets!"));
   }
 #endif
 }
 
 te::common::CharEncodingConv::~CharEncodingConv()
 {
-#if TE_CHARENCODING_ENABLED
+#ifdef TERRALIB_GNU_ICONV_ENABLED
   if(iconv_close(m_cd))
-    throw Exception(TR_COMMON("Failed to close iconv! This wasn't supposed to occur! Contact TerraLib Team!"));
+    throw Exception(TE_TR("Failed to close iconv! This wasn't supposed to occur! Contact TerraLib Team!"));
 #endif
 }
 
 std::string te::common::CharEncodingConv::conv(const std::string& src)
 {
-#if TE_CHARENCODING_ENABLED
+#ifdef TERRALIB_GNU_ICONV_ENABLED
   std::ostringstream outstring(std::ios_base::out);
   const char* inbuff = src.c_str();
   std::size_t inbytesleft = src.length();
@@ -106,9 +106,9 @@ std::string te::common::CharEncodingConv::conv(const std::string& src)
       nbytes = iconv(m_cd, 0, 0, 0, 0);
 
       if(nbytes == (std::size_t)(-1))
-        throw Exception(TR_COMMON("Failed to convert character sets and also to bring iconv to its initial state!"));
+        throw Exception(TE_TR("Failed to convert character sets and also to bring iconv to its initial state!"));
       else
-        throw Exception(TR_COMMON("Failed to convert character sets!"));
+        throw Exception(TE_TR("Failed to convert character sets!"));
     }
 
     outstring.write(outchar, TE_CONVERSION_BUFFERSIZE_SIZE - outbytesleft);
@@ -120,7 +120,7 @@ std::string te::common::CharEncodingConv::conv(const std::string& src)
   nbytes = iconv(m_cd, 0, 0, 0, 0);
 
   if(nbytes == (std::size_t)(-1))
-    throw Exception(TR_COMMON("Failed to bring iconv to its initial state!"));
+    throw Exception(TE_TR("Failed to bring iconv to its initial state!"));
 
   return outstring.str();
 #else
@@ -128,21 +128,20 @@ std::string te::common::CharEncodingConv::conv(const std::string& src)
 #endif
 }
 
-
 std::string te::common::CharEncodingConv::convert(const std::string& src, const CharEncoding& fromCode, const CharEncoding& toCode)
 {
   if(fromCode == UNKNOWN_CHAR_ENCODING || toCode == UNKNOWN_CHAR_ENCODING)
-    throw Exception(TR_COMMON("Impossible conversion of unknown char encoding!"));
+    throw Exception(TE_TR("Impossible conversion of unknown char encoding!"));
 
-#if TE_CHARENCODING_ENABLED
+#ifdef TERRALIB_GNU_ICONV_ENABLED
   iconv_t cd = iconv_open(iconv_names[toCode], iconv_names[fromCode]);
 
   if(cd == (iconv_t)(-1))
   {
     if(errno == EINVAL) 
-      throw Exception(TR_COMMON("Failed to start iconv to start converting charsets: the conversion from fromCode to toCode is not supported!"));
+      throw Exception(TE_TR("Failed to start iconv to start converting charsets: the conversion from fromCode to toCode is not supported!"));
     else
-      throw Exception(TR_COMMON("Failed to start iconv to start converting charsets!"));
+      throw Exception(TE_TR("Failed to start iconv to start converting charsets!"));
   }
 
   std::ostringstream outstring(std::ios_base::out);
@@ -169,7 +168,7 @@ std::string te::common::CharEncodingConv::convert(const std::string& src, const 
     if((nbytes == (std::size_t)(-1)) && (errno != E2BIG))
     {
       iconv_close(cd);
-      throw Exception(TR_COMMON("Failed to convert character sets!"));
+      throw Exception(TE_TR("Failed to convert character sets!"));
     }
 
     outstring.write(outchar, TE_CONVERSION_BUFFERSIZE_SIZE - outbytesleft);
@@ -179,7 +178,7 @@ std::string te::common::CharEncodingConv::convert(const std::string& src, const 
   }
 
   if(iconv_close(cd))
-    throw Exception(TR_COMMON("Failed to close iconv!"));
+    throw Exception(TE_TR("Failed to close iconv!"));
 
   return outstring.str();
 #else

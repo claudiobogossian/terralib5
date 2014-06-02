@@ -35,8 +35,8 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QSlider>
-#include <QtGui/QWidget>
+#include <QSlider>
+#include <QWidget>
 
 namespace te
 {

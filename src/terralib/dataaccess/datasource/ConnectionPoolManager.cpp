@@ -119,7 +119,7 @@ void te::da::ConnectionPoolManager::monitore()
           pools[i]->idle();
       }
 
-      boost::posix_time::seconds sleepTime(TE_POOL_DEFAULT_MONITORING_TIME);
+      boost::posix_time::seconds sleepTime(TERRALIB_POOL_DEFAULT_MONITORING_TIME);
       boost::this_thread::sleep(sleepTime);
     }
   }

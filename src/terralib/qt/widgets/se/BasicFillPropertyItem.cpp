@@ -23,15 +23,16 @@
   \brief A widget used to define the basic fill se object.
 */
 
-#include "../../../../../third-party/qt/propertybrowser/qtpropertybrowser.h"
 #include "../../../color.h"
 #include "../../../se/Fill.h"
 #include "../../../se/Utils.h"
-#include "AbstractPropertyManager.h"
+#include "../propertybrowser/AbstractPropertyManager.h"
 #include "BasicFillPropertyItem.h"
 
 // STL
 #include <cassert>
+
+// QtPropertyBrowser
 
 
 te::qt::widgets::BasicFillPropertyItem::BasicFillPropertyItem(QtTreePropertyBrowser* pb, QColor c) : te::qt::widgets::AbstractPropertyItem(pb, c),

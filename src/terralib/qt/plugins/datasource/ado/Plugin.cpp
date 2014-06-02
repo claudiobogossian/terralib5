@@ -48,10 +48,7 @@ void te::qt::plugins::ado::Plugin::startup()
 
   te::qt::widgets::DataSourceTypeManager::getInstance().add(new ADOType);
 
-// it initializes the Translator support for the TerraLib ADO driver support
-  TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_DATASOURCE_ADO_TEXT_DOMAIN, TE_QT_PLUGIN_DATASOURCE_ADO_TEXT_DOMAIN_DIR, "UTF-8");
-
-  TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_ADO("TerraLib Qt ADO widget startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt ADO widget startup!"));
 
   m_initialized = true;
 }
@@ -64,7 +61,7 @@ void te::qt::plugins::ado::Plugin::shutdown()
   te::da::DataSourceInfoManager::getInstance().removeByType("ADO");
   te::qt::widgets::DataSourceTypeManager::getInstance().remove("ADO");
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_ADO("TerraLib Qt ADO widget shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt ADO widget shutdown!"));
 
   m_initialized = false;
 }

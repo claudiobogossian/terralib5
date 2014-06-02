@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in Progress examples: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in the Progress examples: " << e.what() << std::endl;
 
     std::cout << std::endl << "Press Enter to exit..." << std::endl;
 
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in Progress examples!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in Progress examples!" << std::endl;
 
     std::cout << std::endl << "Press Enter to exit..." << std::endl;
     std::cin.get();

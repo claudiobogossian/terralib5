@@ -3,12 +3,10 @@
 // TerraLib
 #include <terralib/fe.h>
 #include <terralib/se.h>
-#include <terralib/fe/serialization/Filter.h>
-#include <terralib/se/serialization/Style.h>
-//#include <terralib/serialization/xlink/SimpleLink.h>
-#include <terralib/xlink/XLinkSerializer.h>
-//#include <terralib/serialization/xsd/Schema.h>
-#include <terralib/xsd/XSDSerializer.h>
+#include <terralib/fe/serialization/xml/Filter.h>
+#include <terralib/se/serialization/xml/Style.h>
+#include <terralib/xlink/serialization/xml/XLinkSerializer.h>
+#include <terralib/xsd/serialization/xml/XSDSerializer.h>
 #include <terralib/xml/Reader.h>
 #include <terralib/xml/ReaderFactory.h>
 #include <terralib/xml/Writer.h>

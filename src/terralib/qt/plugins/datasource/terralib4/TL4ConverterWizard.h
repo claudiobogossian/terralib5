@@ -36,9 +36,9 @@
 #include <string>
 
 // Qt
-#include <QtGui/QTableWidget>
-#include <QtGui/QWizard>
-#include <QtGui/QWizardPage>
+#include <QTableWidget>
+#include <QWizard>
+#include <QWizardPage>
 
 // Forward declaration
 namespace Ui { class TL4ConverterWizardForm; }

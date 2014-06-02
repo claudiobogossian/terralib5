@@ -31,8 +31,8 @@
 
 
 // Qt
-#include <QtGui/QIcon>
-#include <QtGui/QMessageBox>
+#include <QIcon>
+#include <QMessageBox>
 
 te::qt::widgets::OrderByWidget::OrderByWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),

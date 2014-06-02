@@ -33,12 +33,12 @@
 #include "../../../statistics/qt/StatisticsDialog.h"
 
 // Qt
-#include <QtGui/QHeaderView>
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QMenu>
-#include <QtGui/QCursor>
-#include <QtGui/QPainter>
-#include <QtGui/QMessageBox>
+#include <QHeaderView>
+#include <QContextMenuEvent>
+#include <QMenu>
+#include <QCursor>
+#include <QPainter>
+#include <QMessageBox>
 
 // STL
 #include <vector>
@@ -655,7 +655,12 @@ te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
 
   setVerticalHeader(new DataSetTableVerticalHeader(this));
   setHorizontalHeader(new DataSetTableHorizontalHeader(this));
+
+#if QT_VERSION >= 0x050000
+  horizontalHeader()->setSectionsMovable(true);
+#else
   horizontalHeader()->setMovable(true);
+#endif
 
   setSelectionMode(QAbstractItemView::MultiSelection);
   setSelectionBehavior(QAbstractItemView::SelectColumns);
@@ -1215,3 +1220,6 @@ void te::qt::widgets::DataSetTableView::saveEditions()
     QMessageBox::warning(this, tr("Save edition failure"), e.what());
   }
 }
+
+#include "DataSetTableView.moc"
+

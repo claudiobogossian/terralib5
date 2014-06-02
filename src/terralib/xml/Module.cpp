@@ -41,9 +41,6 @@ te::xml::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib XML module
-  TE_ADD_TEXT_DOMAIN(TE_XML_TEXT_DOMAIN, TE_XML_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::xml::Module::~Module()
@@ -53,11 +50,11 @@ te::xml::Module::~Module()
 
 void te::xml::Module::initialize()
 {
-  TE_LOG_TRACE(TR_XML("TerraLib XML module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib XML module initialized!"));
 }
 
 void te::xml::Module::finalize()
 {
-  TE_LOG_TRACE(TR_XML("TerraLib XML module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib XML module finalized!"));
 }
 

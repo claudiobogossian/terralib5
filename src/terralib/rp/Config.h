@@ -85,39 +85,6 @@
 
 #define TE_RP_MODULE_NAME "te.rasterprocessing"
 
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
-  \def TE_RP_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib Raster Processing module.
- */
-#define TE_RP_TEXT_DOMAIN "terasterprocessing"
-
-/*!
-  \def TE_RP_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
- */
-#define TE_RP_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TR_RP
-
-  \brief It marks a string in order to get translated. This is a special mark used in the Raster Processing module of TerraLib.
- */
-#define TR_RP(message) TR(message, TE_RP_TEXT_DOMAIN)
-
-//@}
-
-/** @name DLL/LIB Module
- *  Flags for building TerraLib as a DLL or as a Static Library
- */
-//@{
-
 /*!
   \def TERPEXPORT
 
@@ -127,25 +94,22 @@
 
   \note If you want to compile TerraLib as an Static Library under Windows, remember to insert the TERPEXPORT flag into the project list of defines.
  */
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+#ifdef WIN32
 
-  #if TE_COMPILER == TE_COMPILERCODE_VCPLUSPLUS
-    #pragma warning( disable : 4251 )
-    #pragma warning( disable : 4275 )
-  #endif
-
-  #ifdef TERPSTATIC
-    #define TERPEXPORT                          // Don't need to export/import... it is a static library
-  #elif TERPDLL
-    #define TERPEXPORT  __declspec(dllexport)   // export DLL information
-  #else
-    #define TERPEXPORT  __declspec(dllimport)   // import DLL information
-  #endif 
-#else
-  #define TERPEXPORT
+#ifdef _MSC_VER
+#pragma warning( disable : 4251 )
 #endif
 
-//@}        
+#ifdef TERPSTATIC
+#define TERPEXPORT                          // Don't need to export/import... it is a static library
+#elif TERPDLL
+#define TERPEXPORT  __declspec(dllexport)   // export DLL information
+#else
+#define TERPEXPORT  __declspec(dllimport)   // import DLL information
+#endif
+#else
+#define TERPEXPORT
+#endif
 
 #endif  // __TERRALIB_RP_INTERNAL_CONFIG_H
 

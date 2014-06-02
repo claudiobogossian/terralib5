@@ -39,8 +39,8 @@
 #include "Utils.h"
 
 // Terralib 4.x
-#include <terralib/kernel/TeGeometry.h>
-#include <terralib/kernel/TeRepresentation.h>
+#include <terralib4/kernel/TeGeometry.h>
+#include <terralib4/kernel/TeRepresentation.h>
 
 std::auto_ptr<te::gm::Point> terralib4::GeomReader::getPoint(const TePoint& pt)
 {
@@ -207,7 +207,7 @@ std::auto_ptr<te::gm::Geometry> terralib4::GeomReader::getGeometry(const TeGeome
     }
 
     default:
-      throw Exception(TR_TERRALIB4("Geometry Type Not supported!"));
+      throw Exception(TE_TR("Geometry Type Not supported!"));
     
   }
 

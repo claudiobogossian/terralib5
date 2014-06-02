@@ -29,8 +29,8 @@
 #include "ui_RasterInfoWidgetForm.h"
 
 // Qt
-#include <QtGui/QGridLayout>
-#include <QtGui/QMessageBox>
+#include <QGridLayout>
+#include <QMessageBox>
 
 te::qt::widgets::RasterInfoWizardPage::RasterInfoWizardPage(QWidget* parent)
   : QWizardPage(parent)

@@ -23,7 +23,7 @@
 #include "../../widgets/layer/utils/DataSet2Layer.h"
 #include "../help/HelpPushButton.h"
 #include "../layer/search/LayerSearchWidget.h"
-#include "LayerSearchWizardPage.h"
+#include "../layer/search/LayerSearchWizardPage.h"
 #include "VectorizationWizard.h"
 #include "VectorizationWizardPage.h"
 

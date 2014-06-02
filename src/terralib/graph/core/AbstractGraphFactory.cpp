@@ -65,7 +65,7 @@ te::graph::AbstractGraph* te::graph::AbstractGraphFactory::make(const std::strin
   AbstractGraphFactory* f = static_cast<AbstractGraphFactory*>(d.find(ucase));
 
   if(f == 0)
-    throw Exception(TR_GRAPH("Could not find concrete factory! Check if it was initialized!"));
+    throw Exception(TE_TR("Could not find concrete factory! Check if it was initialized!"));
 
   AbstractGraph* g = f->create(dsInfo, gInfo);
 
@@ -88,7 +88,7 @@ te::graph::AbstractGraph* te::graph::AbstractGraphFactory::open(const std::strin
   AbstractGraphFactory* f = static_cast<AbstractGraphFactory*>(d.find(ucase));
 
   if(f == 0)
-    throw Exception(TR_GRAPH("Could not find concrete factory! Check if it was initialized!"));
+    throw Exception(TE_TR("Could not find concrete factory! Check if it was initialized!"));
 
   AbstractGraph* g = f->iOpen(dsInfo, gInfo);
 

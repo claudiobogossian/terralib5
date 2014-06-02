@@ -26,10 +26,10 @@ void ArithmeticWithRaster()
 
 // set raster names
     std::map<std::string, std::string> sri, srndvi, srndvin, srden;
-    sri["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
-    srndvi["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_ndvi.tif";
-    srndvin["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_ndvi_normalized.tif";
-    std::string base_path = ""TE_DATA_EXAMPLE_DIR"/data/rasters/";
+    sri["URI"] = ""TERRALIB_EXAMPLES_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+    srndvi["URI"] = ""TERRALIB_EXAMPLES_DATA_DIR"/rasters/cbers2b_ndvi.tif";
+    srndvin["URI"] = ""TERRALIB_EXAMPLES_DATA_DIR"/rasters/cbers2b_ndvi_normalized.tif";
+    std::string base_path = ""TERRALIB_EXAMPLES_DATA_DIR"/rasters/";
 
 // open input raster (band 0 = Red, band 1 = IRed, band 2 = Blue)
     te::rst::Raster* ri = te::rst::RasterFactory::open(sri);
@@ -120,10 +120,10 @@ void ArithmeticWithRaster()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in ArithmetichWithRaster(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in ArithmetichWithRaster(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in ArithmetichWithRaster()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in ArithmetichWithRaster()!" << std::endl;
   }
 }

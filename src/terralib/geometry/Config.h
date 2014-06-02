@@ -31,41 +31,6 @@
 
 #define TE_GEOMETRY_MODULE_NAME "te.geometry"
 
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
-  \def TE_GEOM_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib Vector Geometry module.
- */
-#define TE_GEOM_TEXT_DOMAIN "tegeometry"
-
-/*!
-  \def GTE_GEOM_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
- */
-#define TE_GEOM_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TR_GEOM
-
-  \brief It marks a string in order to get translated. This is a special mark used in the Vector Geometry module of TerraLib. 
- */
-#define TR_GEOM(message) TR(message, TE_GEOM_TEXT_DOMAIN)
-
-/*!
-  \def TR_GEOM_PLURAL
-
-  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the Geometry module of TerraLib. 
- */
-#define TR_GEOM_PLURAL(message1, message2, n) TR_PLURAL(TE_GEOM_TEXT_DOMAIN, message1, message2, n)
-
-//@}
-
 /** @name GEOS Config
  *  Flags when using GEOS in TerraLib.
  */

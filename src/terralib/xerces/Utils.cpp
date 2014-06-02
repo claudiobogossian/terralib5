@@ -66,27 +66,27 @@ xercesc::DOMDocument* te::xerces::readXML(const std::string& xmlFile,
   }
   catch(const xercesc::SAXException& e)
   {
-    std::string m =  TR_XERCES("Could not read the XML file: ");
+    std::string m =  TE_TR("Could not read the XML file: ");
                 m += xmlFile;
-                m += TR_XERCES(", due to the following error: ");
+                m += TE_TR(", due to the following error: ");
                 m += ToString(e.getMessage());
 
     throw Exception(m);
   }
   catch(const xercesc::DOMException& e)
   {
-    std::string m =  TR_XERCES("Could not read the XML file: ");
+    std::string m =  TE_TR("Could not read the XML file: ");
                 m += xmlFile;
-                m += TR_XERCES(", due to the following error: ");
+                m += TE_TR(", due to the following error: ");
                 m += ToString(e.getMessage());
 
     throw Exception(m);
   }
   catch(const xercesc::XMLException& e)
   {
-    std::string m =  TR_XERCES("Could not read the XML file: ");
+    std::string m =  TE_TR("Could not read the XML file: ");
                 m += xmlFile;
-                m += TR_XERCES(", due to the following error: ");
+                m += TE_TR(", due to the following error: ");
                 m += ToString(e.getMessage());
 
     throw Exception(m);
@@ -94,7 +94,7 @@ xercesc::DOMDocument* te::xerces::readXML(const std::string& xmlFile,
   
   if(parser->getErrorCount() > 0)
   {
-    std::string m =  TR_XERCES("Could not read the XML file: ");
+    std::string m =  TE_TR("Could not read the XML file: ");
                 m += xmlFile;
                 m += ", due to the following problem: ";
                 m += errHandler->getErrors();
@@ -106,7 +106,7 @@ xercesc::DOMDocument* te::xerces::readXML(const std::string& xmlFile,
   xercesc::DOMDocument* doc = parser->adoptDocument();
 
   if(doc == 0)
-    throw Exception(TR_XERCES("Unable to read the XML document!"));
+    throw Exception(TE_TR("Unable to read the XML document!"));
 
   return doc;
 }

@@ -32,8 +32,8 @@
 #include <ui_ClassifierForm.h>
 
 // QT
-#include <QtGui/QListWidgetItem>
-#include <QtGui/QMessageBox>
+#include <QListWidgetItem>
+#include <QMessageBox>
 
 te::qt::widgets::ClassifierDialog::ClassifierDialog(const te::rst::Raster* inputRasterPtr, std::vector<te::gm::Polygon*> inputPolygons,
                                                     const std::string& outpuRasterDSType, const std::map<std::string, std::string>& outpuRasterInfo,

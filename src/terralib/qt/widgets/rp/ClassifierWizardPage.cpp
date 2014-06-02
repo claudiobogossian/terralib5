@@ -41,9 +41,9 @@
 
 // Qt
 #include <QGridLayout>
-#include <QtGui/QDoubleValidator>
-#include <QtGui/QIntValidator>
-#include <QtGui/QMessageBox>
+#include <QDoubleValidator>
+#include <QIntValidator>
+#include <QMessageBox>
 
 // stl
 #include <memory>

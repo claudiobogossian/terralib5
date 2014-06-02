@@ -37,7 +37,7 @@ void te::da::AttributeConverterManager::addConverter(const std::string& name, At
   std::map<std::string, AttributeConverter>::iterator it = m_converters.find(name);
 
   if(it != m_converters.end())
-    throw Exception((boost::format(TR_DATAACCESS("There is already a converter registered with the given name %1%.")) % name).str());
+    throw Exception((boost::format(TE_TR("There is already a converter registered with the given name %1%.")) % name).str());
 
   m_converters[name] = converter;
 }
@@ -47,7 +47,7 @@ te::da::AttributeConverter te::da::AttributeConverterManager::getConverter(const
   std::map<std::string, AttributeConverter>::iterator it = m_converters.find(name);
 
   if(it == m_converters.end())
-    throw Exception((boost::format(TR_DATAACCESS("There is no converter registered with the given name %1%.")) % name).str());
+    throw Exception((boost::format(TE_TR("There is no converter registered with the given name %1%.")) % name).str());
 
   return m_converters[name];
 }

@@ -52,8 +52,8 @@
 #include <QtCore/QPointF>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <QtGui/QMessageBox>
-#include <QtGui/QMouseEvent>
+#include <QMessageBox>
+#include <QMouseEvent>
 
 // STL
 #include <cassert>
@@ -97,8 +97,12 @@ bool te::qt::widgets::Info::mouseReleaseEvent(QMouseEvent* e)
     return false;
 
   QPointF pixelOffset(4.0, 4.0);
+#if (QT_VERSION >= 0x050000)
+  QRectF rect = QRectF(e->localPos() - pixelOffset, e->localPos() + pixelOffset);
+#else
   QRectF rect = QRectF(e->posF() - pixelOffset, e->posF() + pixelOffset);
-
+#endif
+      
   // Converts rect boundary to world coordinates
   QPointF ll(rect.left(), rect.bottom());
   QPointF ur(rect.right(), rect.top());

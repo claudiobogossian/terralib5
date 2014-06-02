@@ -25,13 +25,13 @@
 
 // TerraLib
 #include "../../../dataaccess/dataset/DataSetType.h"
+#include "../utils/DoubleListWidget.h"
 #include "ConstraintWidget.h"
-#include "DoubleListWidget.h"
 #include "ui_ConstraintWidgetForm.h"
 #include "ui_DoubleListWidgetForm.h"
 
 // Qt
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 
 te::qt::widgets::ConstraintWidget::ConstraintWidget(te::da::DataSetType* dsType, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),

@@ -45,9 +45,6 @@ te::st::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib ST support
-  TE_ADD_TEXT_DOMAIN(TE_ST_TEXT_DOMAIN, TE_ST_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::st::Module::~Module()
@@ -61,7 +58,7 @@ void te::st::Module::initialize()
   te::st::STDataLoaderFromDSFactory::initialize();
   te::st::STDataLoaderFromMemDSFactory::initialize();
 
-  TE_LOG_TRACE(TR_ST("TerraLib ST module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib ST module initialized!"));
 }
 
 void te::st::Module::finalize()
@@ -70,6 +67,6 @@ void te::st::Module::finalize()
   te::st::STDataLoaderFromDSFactory::finalize();
   te::st::STDataLoaderFromMemDSFactory::finalize();
 
-  TE_LOG_TRACE(TR_ST("TerraLib ST module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib ST module finalized!"));
 }
 

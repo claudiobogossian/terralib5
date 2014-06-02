@@ -26,7 +26,7 @@
 // TerraLib
 #include "GEOSWriter.h"
 
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
 // TerraLib
 #include "../common/Translator.h"
 #include "Exception.h"
@@ -132,7 +132,7 @@ geos::geom::Geometry* te::gm::GEOSWriter::write(const Geometry* geom)
       return write(static_cast<const PolyhedralSurface*>(geom));*/
 
     default:
-      throw Exception(TR_GEOM("The type of informed geometry can not be converted from TerraLib to GEOS!"));
+      throw Exception(TE_TR("The type of informed geometry can not be converted from TerraLib to GEOS!"));
   }
 }
 
@@ -366,5 +366,5 @@ std::vector<geos::geom::Geometry*>* te::gm::GEOSWriter::getGeometries(const Geom
   return geoms;
 }
 
-#endif  // TE_USE_GEOS
+#endif  // TERRALIB_GEOS_ENABLED
 

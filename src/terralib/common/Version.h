@@ -28,7 +28,6 @@
 
 // TerraLib
 #include "Config.h"
-#include "Static.h"
 
 // STL
 #include <string>
@@ -37,7 +36,7 @@ namespace te
 {
   namespace common
   {
-    class TECOMMONEXPORT Version : public Static
+    class TECOMMONEXPORT Version
     {
       public:
 
@@ -54,6 +53,12 @@ namespace te
         static std::string asString();
 
         static int asInt();
+
+      private:
+
+        Version();
+
+        ~Version();
     };
 
   } // end namespace common

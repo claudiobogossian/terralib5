@@ -34,7 +34,7 @@
 #include <map>
 
 //TerraLib
-#include "../widgets/Config.h"
+#include "../Config.h"
 
 class QMenu;
 class QAction;

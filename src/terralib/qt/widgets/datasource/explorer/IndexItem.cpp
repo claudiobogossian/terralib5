@@ -31,8 +31,8 @@
 #include "PropertyItem.h"
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QWidget>
 
 te::qt::widgets::IndexItem::IndexItem(te::da::Index* idx, AbstractDataSourceTreeItem* parent)
   : AbstractDataSourceTreeItem(parent),

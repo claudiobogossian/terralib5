@@ -72,7 +72,7 @@ void te::wms::WMSLayerRenderer::draw(te::map::AbstractLayer* layer,
                                      int srid)
 {
   if(!bbox.isValid())
-    throw Exception(TR_WMS("The requested box is invalid!"));
+    throw Exception(TE_TR("The requested box is invalid!"));
 
   assert(layer);
   assert(canvas);
@@ -81,7 +81,7 @@ void te::wms::WMSLayerRenderer::draw(te::map::AbstractLayer* layer,
   WMSLayer* wmsLayer = dynamic_cast<WMSLayer*>(layer);
 
   if(wmsLayer == 0)
-    throw Exception(TR_WMS("Wrong type render type for this layer!"));
+    throw Exception(TE_TR("Wrong type render type for this layer!"));
 
   draw(wmsLayer, canvas, bbox, srid);
 }
@@ -97,7 +97,7 @@ void te::wms::WMSLayerRenderer::draw(WMSLayer* layer, te::map::Canvas* canvas, c
   }
   else if(layer->getSRID() != srid)
   {
-    throw Exception(TR_WMS("The layer or map don't have a valid SRID!"));
+    throw Exception(TE_TR("The layer or map has no valid SRID!"));
   }
 
   if(!reprojectedBBOX.intersects(layer->getExtent()))
@@ -121,7 +121,7 @@ void te::wms::WMSLayerRenderer::draw(WMSLayer* layer, te::map::Canvas* canvas, c
     style = te::se::CreateCoverageStyle(rasterProperty->getBandProperties());
 
     if(style == 0)
-      throw Exception((boost::format(TR_WMS("Could not create a default coverage style to the layer %1%.")) % layer->getTitle()).str());
+      throw Exception((boost::format(TE_TR("Could not create a default coverage style for the layer %1%!")) % layer->getTitle()).str());
 
     layer->setStyle(style);
   }
@@ -129,7 +129,7 @@ void te::wms::WMSLayerRenderer::draw(WMSLayer* layer, te::map::Canvas* canvas, c
   // Should I render this style?
   te::se::CoverageStyle* cs = dynamic_cast<te::se::CoverageStyle*>(style);
   if(cs == 0)
-    throw Exception(TR_WMS("The layer style is not a Coverage Style!"));
+    throw Exception(TE_TR("The layer style is not a Coverage Style!"));
 
   // Setup the WMS Layer to request data
   layer->setWidth(canvas->getWidth());
@@ -139,14 +139,14 @@ void te::wms::WMSLayerRenderer::draw(WMSLayer* layer, te::map::Canvas* canvas, c
   std::auto_ptr<te::da::DataSet> dataset = layer->getData(rasterProperty->getName(), &ibbox, te::gm::INTERSECTS);
 
   if(dataset.get() == 0)
-    throw Exception((boost::format(TR_WMS("Could not retrieve the WMS data from the layer %1%.")) % layer->getTitle()).str());
+    throw Exception((boost::format(TE_TR("Could not retrieve the WMS data from the layer %1%!")) % layer->getTitle()).str());
 
   std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
 
   // Retrieve the raster
   std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));
   if(dataset.get() == 0)
-    throw Exception((boost::format(TR_WMS("Could not retrieve the WMS data from the layer %1%.")) % layer->getTitle()).str());
+    throw Exception((boost::format(TE_TR("Could not retrieve the WMS data from the layer %1%!")) % layer->getTitle()).str());
 
   // Let's draw!
   drawRaster(layer->getTitle(), raster.get(), canvas, ibbox, layer->getSRID(), bbox, srid, cs);
@@ -217,7 +217,7 @@ void te::wms::WMSLayerRenderer::drawRaster(const std::string& layerTitle, te::rs
     needRemap = true;
 
   // Build task message
-  std::string message = TR_MAP("Drawing the WMS layer");
+  std::string message = TE_TR("Drawing the WMS layer");
   !layerTitle.empty() ? message += " " + layerTitle + ". " : message += "...";
 
   // Create the draw task

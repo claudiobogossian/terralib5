@@ -30,7 +30,7 @@
 #include "../../../widgets/datasource/connector/AbstractDataSourceConnector.h"
 
 //! Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 namespace te
 {

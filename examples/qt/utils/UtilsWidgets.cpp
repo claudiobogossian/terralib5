@@ -11,10 +11,10 @@
 
 
 // Qt
-#include <QtGui/QApplication>
-#include <QtGui/QDialog>
-#include <QtGui/QFrame>
-#include <QtGui/QGridLayout>
+#include <QApplication>
+#include <QDialog>
+#include <QFrame>
+#include <QGridLayout>
 
 
 void UtilsWidgets()

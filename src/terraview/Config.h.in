@@ -1,0 +1,50 @@
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of TerraView - A Free and Open Source GIS Application.
+
+    TerraView is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraView is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with TerraLib Code Editor. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@dpi.inpe.br>.
+ */
+
+/*!
+  \file terraview/terraview_config.h
+
+  \brief Contains definitions for TerraView.
+
+  \author Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
+  \author Juan C. P. Garrido <juan@dpi.inpe.br>
+*/
+
+#ifndef __TERRAVIEW_INTERNAL_TERRAVIEWCONFIG_H
+#define __TERRAVIEW_INTERNAL_TERRAVIEWCONFIG_H
+
+//! Image to be showed on splash screen
+#define TVIEW_SPLASH_SCREEN_PIXMAP "share/terraview/images/png/terraview-splashscreen.png"
+
+//! Image to be showed as tv icon
+#define TVIEW_LOGO_ICON "@TVIEW_ICO@"
+
+//! Image to be showed as tv logo
+#define TVIEW_LOGO_PIXMAP "@TVIEW_LOGO@"
+
+//! Image to be showed as tv logo
+#define TVIEW_LARGE_LOGO_PIXMAP "@TVIEW_LARGE_LOGO@"
+
+//! Image to be showed as terralib logo
+#define TVIEW_TE_LOGO_PIXMAP "@TVIEW_TE_LOGO@"
+
+//! TerraView resource file
+#define TVIEW_RESOURCE_FILE "@TVIEW_RESOURCE_FILE@"
+
+#endif // __TERRAVIEW_INTERNAL_TERRAVIEWCONFIG_H

@@ -52,7 +52,7 @@ te::rst::SynchronizedRaster::SynchronizedRaster( RasterSynchronizer& sync,
   sync.m_mutex.unlock();
   
   if( ! m_blocksManager.initialize( sync, maxMemPercentUsed ) )
-    throw Exception(TR_RASTER("Cannot initialize the blocks menager") );
+    throw Exception(TE_TR("Cannot initialize the blocks menager") );
   
   for( unsigned int bandsIdx = 0 ; bandsIdx < sync.m_raster.getNumberOfBands() ; 
     ++bandsIdx )
@@ -69,7 +69,7 @@ te::rst::SynchronizedRaster::SynchronizedRaster( const unsigned int maxNumberOfC
   sync.m_mutex.unlock();
   
   if( ! m_blocksManager.initialize( maxNumberOfCacheBlocks, sync ) )
-    throw Exception(TR_RASTER("Cannot initialize the blocks menager") );
+    throw Exception(TE_TR("Cannot initialize the blocks menager") );
   
   for( unsigned int bandsIdx = 0 ; bandsIdx < sync.m_raster.getNumberOfBands() ; 
     ++bandsIdx )

@@ -30,7 +30,7 @@
 #include "ui_TrajectoryPropertiesWidgetForm.h"
 
 //QT
-#include <QtGui/QWidget>
+#include <QWidget>
 
 te::qt::widgets::TrajectoryPropertiesWidget::TrajectoryPropertiesWidget(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
   : m_dataSet (dataSet),

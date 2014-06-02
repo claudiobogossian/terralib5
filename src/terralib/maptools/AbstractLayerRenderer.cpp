@@ -91,7 +91,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
                                           int srid)
 {
   if(!bbox.isValid())
-    throw Exception(TR_MAP("The requested box is invalid!"));
+    throw Exception(TE_TR("The requested box is invalid!"));
 
   assert(layer);
   assert(canvas);
@@ -104,11 +104,11 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
     reprojectedBBOX.transform(srid, layer->getSRID());
 
     if(!reprojectedBBOX.isValid())
-      throw Exception(TR_MAP("The reprojected box is invalid!"));
+      throw Exception(TE_TR("The reprojected box is invalid!"));
   }
   else if(layer->getSRID() != srid)
   {
-    throw Exception(TR_MAP("The layer or map don't have a valid SRID!"));
+    throw Exception(TE_TR("The layer or map don't have a valid SRID!"));
   }
 
   if(!reprojectedBBOX.intersects(layer->getExtent()))
@@ -158,7 +158,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
       style = te::se::CreateFeatureTypeStyle(geometryProperty->getGeometryType());
 
       if(style == 0)
-        throw Exception((boost::format(TR_MAP("Could not create a default feature type style to the layer %1%.")) % layer->getTitle()).str());
+        throw Exception((boost::format(TE_TR("Could not create a default feature type style to the layer %1%.")) % layer->getTitle()).str());
 
       layer->setStyle(style);
     }
@@ -166,7 +166,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
     // Should I render this style?
     te::se::FeatureTypeStyle* fts = dynamic_cast<te::se::FeatureTypeStyle*>(style);
     if(fts == 0)
-      throw Exception(TR_MAP("The layer style is not a Feature Type Style!"));
+      throw Exception(TE_TR("The layer style is not a Feature Type Style!"));
 
     drawLayerGeometries(layer, geometryProperty->getName(), fts, canvas, ibbox, srid);
   }
@@ -189,7 +189,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
       style = te::se::CreateCoverageStyle(rasterProperty->getBandProperties());
 
       if(style == 0)
-        throw Exception((boost::format(TR_MAP("Could not create a default coverage style to the layer %1%.")) % layer->getTitle()).str());
+        throw Exception((boost::format(TE_TR("Could not create a default coverage style to the layer %1%.")) % layer->getTitle()).str());
 
       layer->setStyle(style);
     }
@@ -197,25 +197,25 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
     // Should I render this style?
     te::se::CoverageStyle* cs = dynamic_cast<te::se::CoverageStyle*>(style);
     if(cs == 0)
-      throw Exception(TR_MAP("The layer style is not a Coverage Style!"));
+      throw Exception(TE_TR("The layer style is not a Coverage Style!"));
 
     // Retrieves the data
     std::auto_ptr<te::da::DataSet> dataset = layer->getData(rasterProperty->getName(), &ibbox, te::gm::INTERSECTS);
 
     if(dataset.get() == 0)
-      throw Exception((boost::format(TR_MAP("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
+      throw Exception((boost::format(TE_TR("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
 
     // Retrieves the raster
     std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rasterProperty->getName()));
     if(dataset.get() == 0)
-      throw Exception((boost::format(TR_MAP("Could not retrieve the raster from the layer %1%.")) % layer->getTitle()).str());
+      throw Exception((boost::format(TE_TR("Could not retrieve the raster from the layer %1%.")) % layer->getTitle()).str());
 
     // Let's draw!
     DrawRaster(raster.get(), canvas, ibbox, layer->getSRID(), bbox, srid, cs);
   }
   else
   {
-    throw Exception(TR_MAP("The layer don't have a geometry or raster property!"));
+    throw Exception(TE_TR("The layer don't have a geometry or raster property!"));
   }
 }
 
@@ -270,7 +270,7 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
         // Converts the Filter expression to a TerraLib Expression!
         te::da::Expression* exp = filter2Query.getExpression(filter);
         if(exp == 0)
-          throw Exception(TR_MAP("Could not convert the OGC Filter expression to TerraLib expression!"));
+          throw Exception(TE_TR("Could not convert the OGC Filter expression to TerraLib expression!"));
 
         /* 1) Creating the final restriction. i.e. Filter expression + extent spatial restriction */
 
@@ -292,7 +292,7 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
     }
 
     if(dataset.get() == 0)
-      throw Exception((boost::format(TR_MAP("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
+      throw Exception((boost::format(TE_TR("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
 
     if(dataset->moveNext() == false)
       continue;
@@ -301,10 +301,10 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
     const std::vector<te::se::Symbolizer*>& symbolizers = rule->getSymbolizers();
 
     // Builds task message; e.g. ("Drawing the layer Countries. Rule 1 of 3.")
-    std::string message = TR_MAP("Drawing the layer");
+    std::string message = TE_TR("Drawing the layer");
     message += " " + layer->getTitle() + ". ";
-    message += TR_MAP("Rule");
-    message += " " + boost::lexical_cast<std::string>(i + 1) + " " + TR_MAP("of") + " ";
+    message += TE_TR("Rule");
+    message += " " + boost::lexical_cast<std::string>(i + 1) + " " + TE_TR("of") + " ";
     message += boost::lexical_cast<std::string>(nRules) + ".";
 
     // Creates a draw task
@@ -382,7 +382,7 @@ void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
   std::size_t nGroupItems = items.size();
 
   // Builds the task message; e.g. ("Drawing the grouping of layer Countries.")
-  std::string message = TR_MAP("Drawing the grouping of layer");
+  std::string message = TE_TR("Drawing the grouping of layer");
   message += " " + layer->getTitle() + ".";
 
   // Creates the draw task
@@ -450,7 +450,7 @@ void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
     }
 
     if(dataset.get() == 0)
-      throw Exception((boost::format(TR_MAP("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
+      throw Exception((boost::format(TE_TR("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
 
     if(dataset->moveNext() == false)
       continue;
@@ -545,7 +545,7 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
   }
 
   // Builds the task message; e.g. ("Drawing the grouping of layer Countries.")
-  std::string message = TR_MAP("Drawing the grouping of layer");
+  std::string message = TE_TR("Drawing the grouping of layer");
   message += " " + layer->getTitle() + ".";
 
   // Creates the draw task
@@ -562,7 +562,7 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
   }
 
   if(dataset.get() == 0)
-    throw Exception((boost::format(TR_MAP("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
+    throw Exception((boost::format(TE_TR("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
 
   if(dataset->moveNext() == false)
     return;

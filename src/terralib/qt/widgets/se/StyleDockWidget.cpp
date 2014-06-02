@@ -37,8 +37,8 @@
 #include "StyleDockWidget.h"
 
 // Qt
-#include <QtGui/QLayout>
-#include <QtGui/QScrollArea>
+#include <QLayout>
+#include <QScrollArea>
 
 te::qt::widgets::StyleDockWidget::StyleDockWidget(const QString& title, QWidget* parent, Qt::WindowFlags flags)
   : QDockWidget(title, parent, flags),

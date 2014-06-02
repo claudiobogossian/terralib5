@@ -42,22 +42,22 @@
 
 
 // Qt
-#include <QtGui/QApplication>
-#include <QtGui/QAction>
-#include <QtGui/QMenu>
-#include <QtGui/QToolTip>
-#include <QtGui/QPainter>
-#include <QtGui/QColor>
-#include <QtGui/QWidget>
-#include <QtGui/QFontDatabase>
-#include <QtGui/QResizeEvent>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QMessageBox>
-#include <QtGui/QInputDialog>
-
-#include <QtCore/QRect>
-#include <QtCore/QCoreApplication>
-#include <QtCore/QEvent>
+#include <QApplication>
+#include <QAction>
+#include <QMenu>
+#include <QToolTip>
+#include <QPainter>
+#include <QColor>
+#include <QWidget>
+#include <QFontDatabase>
+#include <QResizeEvent>
+#include <QBoxLayout>
+#include <QMessageBox>
+#include <QInputDialog>
+#include <QMimeData>
+#include <QRect>
+#include <QCoreApplication>
+#include <QEvent>
 
 te::qt::widgets::DataFrame::DataFrame(const QRectF& frameRect, te::qt::widgets::LayoutEditor* me, Qt::WindowFlags f) :
   te::qt::widgets::Frame(me, f),

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with TerraLib. See COPYING. If not, write to
     TerraLib Team at <terralib-team@terralib.org>.
  */
@@ -20,110 +20,99 @@
 /*!
   \file terralib.h
 
-  \brief This file contains include headers for all TerraLib modules.
+  \brief This file contains include headers for all modules from TerraLib that were built.
  */
 
-#ifndef __TERRALIB_INTERNAL_TERRALIB_H
-#define __TERRALIB_INTERNAL_TERRALIB_H
+#ifndef __TERRALIB_INTERNAL_TERRALIB_H__
+#define __TERRALIB_INTERNAL_TERRALIB_H__
 
-// TerraLib
-#ifdef TE_COMPILE_COLOR_MODULE
+
+#include "terralib/Config.h"
+
+#include "terralib/common.h"
+
+#ifdef TERRALIB_MOD_ANNOTATIONTEXT_ENABLED
+#include "terralib/annotationtext.h"
+#endif
+
+#ifdef TERRALIB_MOD_COLOR_ENABLED
 #include "terralib/color.h"
 #endif
 
-#ifdef TE_COMPILE_COMMON_MODULE
-#include "terralib/common.h"
-#endif
-
-#ifdef TE_COMPILE_DATAACCESS_MODULE
+#ifdef TERRALIB_MOD_DATAACCESS_ENABLED
 #include "terralib/dataaccess.h"
 #endif
 
-#ifdef TE_COMPILE_FILTER_ENCODING_MODULE
+#ifdef TERRALIB_MOD_DATATYPE_ENABLED
+#include "terralib/datatype.h"
+#endif
+
+#ifdef TERRALIB_MOD_FILTER_ENCODING_ENABLED
 #include "terralib/fe.h"
 #endif
 
-#ifdef TE_COMPILE_GEOMETRY_MODULE
+#ifdef TERRALIB_MOD_GEOMETRY_ENABLED
 #include "terralib/geometry.h"
 #endif
 
-#ifdef TE_COMPILE_RASTER_MODULE
-#include "terralib/raster.h"
-#endif
-
-#ifdef TE_COMPILE_GML_MODULE
+#ifdef TERRALIB_MOD_GML_ENABLED
 #include "terralib/gml.h"
 #endif
 
-#ifdef TE_COMPILE_LAYOUT_MODULE
-#include "terralib/layout.h"
+#ifdef TERRALIB_MOD_GRAPH_ENABLED
+#include "terralib/graph.h"
 #endif
 
-#ifdef TE_COMPILE_MAPTOOLS_MODULE
+#ifdef TERRALIB_MOD_MAPTOOLS_ENABLED
 #include "terralib/maptools.h"
 #endif
 
-#ifdef TE_COMPILE_PLUGIN_MODULE
+#ifdef TERRALIB_MOD_MEMORY_ENABLED
+#include "terralib/memory.h"
+#endif
+
+#ifdef TERRALIB_MOD_METADATA_ENABLED
+#include "terralib/metadata.h"
+#endif
+
+#ifdef TERRALIB_MOD_PLUGIN_ENABLED
 #include "terralib/plugin.h"
 #endif
 
-#ifdef TE_COMPILE_POSTGIS_MODULE
-#include "terralib/postgis.h"
-#endif
-
-#ifdef TE_COMPILE_PROJ4_MODULE
-#include "terralib/proj4.h"
-#endif
-
-#ifdef TE_COMPILE_QT_MODULE
+#ifdef TERRALIB_MOD_QT_ENABLED
 #include "terralib/qt.h"
 #endif
 
-#ifdef TE_COMPILE_SYMBOLOGY_ENCODING_MODULE
+#ifdef TERRALIB_MOD_RASTER_ENABLED
+#include "terralib/raster.h"
+#endif
+
+#ifdef TERRALIB_MOD_RP_ENABLED
+#include "terralib/rp.h"
+#endif
+
+#ifdef TERRALIB_MOD_SAM_ENABLED
+#include "terralib/sam.h"
+#endif
+
+#ifdef TERRALIB_MOD_SE_ENABLED
 #include "terralib/se.h"
 #endif
 
-#ifdef TE_COMPILE_SQLITE_MODULE
-#include "terralib/sqlite.h"
-#endif
-
-#ifdef TE_COMPILE_SRS_MODULE
+#ifdef TERRALIB_MOD_SRS_ENABLED
 #include "terralib/srs.h"
 #endif
 
-#ifdef TE_COMPILE_XLINK_MODULE
+#ifdef TERRALIB_MOD_ST_ENABLED
+#include "terralib/st.h"
+#endif
+
+#ifdef TERRALIB_MOD_STATISTICS_ENABLED
+#include "terralib/statistics.h"
+#endif
+
+#ifdef TERRALIB_MOD_XLINK_ENABLED
 #include "terralib/xlink.h"
 #endif
 
-#ifdef TE_COMPILE_GDAL_MODULE
-#include "terralib/gdal.h"
-#endif
-
-/*!
-  \brief All the TerraLib code is inside this namespace, and each modulo (or package) will add its own namespace.
-
-  The use of namespace has several benefits, and we try to use it carefully.
-  The rule used in TerraLib is very simple:
-  <ul>
-  <li>Each module has its own namespace;</li>
-  <li>And all namespaces belong to the main namespace called <b>te</b>.</li>
-  </ul>
-  We recommend to avoid the C++ <i>using</i> keyword. For example, if you want to use
-  a class called Exception located in the Common module, you can write a code like this:
-  <br>
-  \code
-  te::common::Exception e("my exception text goes here...");
-  \endcode
-
-  and if you want to call a function, like Convert2String:
-  <br>
-  \code
-  std::string mystring = te::common::Convert2String(67);
-  \endcode
- */
-namespace te
-{
-}	// end namespace te
-
-#endif  // __TERRALIB_INTERNAL_TERRALIB_H
-
+#endif  // __TERRALIB_INTERNAL_TERRALIB_H__

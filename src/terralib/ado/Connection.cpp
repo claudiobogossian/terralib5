@@ -56,14 +56,14 @@ te::ado::Connection::Connection(const std::string& conninfo)
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 
   long status = m_conn->GetState();
 
   if(status != adStateOpen)
   {
-    boost::format errmsg(TR_ADO("It was not possible to create a connection to the given data source due to the following error: %1%."));
+    boost::format errmsg(TE_TR("It was not possible to create a connection to the given data source due to the following error: %1%."));
 
     errmsg = errmsg % m_conn->GetErrors()->GetItem(0)->GetDescription();
 
@@ -97,7 +97,7 @@ _RecordsetPtr te::ado::Connection::query(const std::string& query, bool connecte
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 
   return recordset;
@@ -111,7 +111,7 @@ void te::ado::Connection::execute(const std::string& command)
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 

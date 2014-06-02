@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../common/Exception.h"
+#include "../common/PlatformUtils.h"
 #include "../common/STLUtils.h"
 #include "../common/Translator.h"
 #include "ColorScheme.h"
@@ -32,35 +33,34 @@
 #include "ColorSchemeGroup.h"
 #include "ColorSchemeCatalogManager.h"
 
-// Boost
-#include <boost/foreach.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-
 // STL
 #include <cassert>
 #include <fstream>
 #include <vector>
 
+// Boost
+#include <boost/foreach.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
 void te::color::ColorSchemeCatalogManager::init()
 {
   te::color::ColorSchemeCatalog* csc = findByName("Default");
+
   if(csc)
-    throw te::common::Exception(TR_COLOR("The default color scheme catalog is already initialized!"));
-
-  const char* te_env = getenv("TERRALIB_DIR");
-
-  if(te_env == 0)
-    throw te::common::Exception(TR_COLOR("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
+    throw te::common::Exception(TE_TR("The default color scheme catalog is already initialized!"));
 
   try
   {
     std::ifstream f;
 
-    std::string jsonf(te_env);
-    jsonf += "/resources/json/color_ramps.json";
+    std::string jsonf = te::common::FindInTerraLibPath("share/terralib/json/color_ramps.json");
+    
+    if(jsonf.empty())
+      throw te::common::Exception(TE_TR("Could not find color_ramps.json file!"));
     
     f.open(jsonf.c_str());
+    
     if (!f.is_open())
       return;
 
@@ -108,7 +108,7 @@ void te::color::ColorSchemeCatalogManager::init()
   catch(boost::property_tree::json_parser::json_parser_error &je)
   {
     std::string errmsg = "Error parsing: " + je.filename() + ": " + je.message();
-    te::common::Exception ex(TR_COLOR(errmsg));
+    te::common::Exception ex(TE_TR(errmsg));
     throw(ex);
   }
   catch (std::exception const& e)
@@ -123,7 +123,7 @@ void te::color::ColorSchemeCatalogManager::insert(ColorSchemeCatalog* c)
   assert(c);
 
   if(findByName(c->getName()))
-    throw te::common::Exception(TR_COLOR("There is already a color scheme catalog with the given name!"));
+    throw te::common::Exception(TE_TR("There is already a color scheme catalog with the given name!"));
 
   m_catalogs.push_back(c);
   m_catalogIdxByName.insert(std::map<std::string, ColorSchemeCatalog*>::value_type(c->getName(), c));
@@ -137,7 +137,7 @@ void te::color::ColorSchemeCatalogManager::disconnect(ColorSchemeCatalog* c)
   std::map<std::string, ColorSchemeCatalog*>::iterator itProjectIdxByName = m_catalogIdxByName.find(c->getName());
 
   if(itProjectIdxByName != m_catalogIdxByName.end())
-    throw te::common::Exception(TR_COLOR("Couldn't find the catalog with the given name!"));
+    throw te::common::Exception(TE_TR("Couldn't find the catalog with the given name!"));
 
   size_t i = 0;
 
@@ -148,7 +148,7 @@ void te::color::ColorSchemeCatalogManager::disconnect(ColorSchemeCatalog* c)
   }
 
   if(i == m_catalogs.size())
-    throw te::common::Exception(TR_COLOR("Couldn't find the catalog with the given name!"));
+    throw te::common::Exception(TE_TR("Couldn't find the catalog with the given name!"));
   
 // if we are here, so all entries are ok... just remove them
   m_catalogs.erase(m_catalogs.begin() + i);

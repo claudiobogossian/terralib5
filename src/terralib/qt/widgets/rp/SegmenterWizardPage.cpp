@@ -36,9 +36,9 @@
 
 // Qt
 #include <QGridLayout>
-#include <QtGui/QCheckBox>
-#include <QtGui/QIntValidator>
-#include <QtGui/QMessageBox>
+#include <QCheckBox>
+#include <QIntValidator>
+#include <QMessageBox>
 
 // STL
 #include <memory>
@@ -230,7 +230,12 @@ void te::qt::widgets::SegmenterWizardPage::onStrategyTypeComboBoxActivated(int i
   }
 
   m_ui->m_bandTableWidget->resizeColumnsToContents();
+  
+#if (QT_VERSION >= 0x050000)
+  m_ui->m_bandTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+#else
   m_ui->m_bandTableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+#endif
 }
 
 void te::qt::widgets::SegmenterWizardPage::apply()

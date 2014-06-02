@@ -87,6 +87,6 @@ bool te::gm::SatisfySpatialRelation(const Geometry* g1,
       return g1->within(g2);
 
     default:
-      throw Exception(TR_GEOM("Invalid spatial relation!"));
+      throw Exception(TE_TR("Invalid spatial relation!"));
   }
 }

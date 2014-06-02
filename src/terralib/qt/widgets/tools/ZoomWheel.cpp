@@ -28,8 +28,8 @@
 #include "ZoomWheel.h"
 
 // Qt
-#include <QtGui/QPixmap>
-#include <QtGui/QWheelEvent>
+#include <QPixmap>
+#include <QWheelEvent>
 
 te::qt::widgets::ZoomWheel::ZoomWheel(te::qt::widgets::MapDisplay* display, const double& zoomFactor, QObject* parent) 
   : Zoom(display, zoomFactor, In, parent)

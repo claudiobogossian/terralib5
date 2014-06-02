@@ -32,9 +32,9 @@
 #include "../Config.h"
 
 //Qt
-#include <QtGui/QDialog>
-#include <QtGui/QGridLayout>
-#include <QtGui/QScrollArea>
+#include <QDialog>
+#include <QGridLayout>
+#include <QScrollArea>
 
 // STL
 #include <map>

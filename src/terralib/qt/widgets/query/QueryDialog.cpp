@@ -38,8 +38,8 @@
 #include "ui_QueryDialogForm.h"
 
 // Qt
-#include <QtGui/QGridLayout>
-#include <QtGui/QMessageBox>
+#include <QGridLayout>
+#include <QMessageBox>
 
 // STL
 #include <cassert>

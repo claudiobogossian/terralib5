@@ -34,9 +34,9 @@
 #include "PolygonAcquire.h"
 
 // Qt
-#include <QtGui/QMouseEvent>
-#include <QtGui/QPainter>
-#include <QtGui/QPixmap>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QPixmap>
 
 // STL
 #include <cassert>
@@ -82,10 +82,19 @@ bool te::qt::widgets::PolygonAcquire::mouseMoveEvent(QMouseEvent* e)
   if(m_coords.size() < 1 || m_isFinished)
     return false;
 
+#if QT_VERSION >= 0x050000
+  QPointF pw = m_display->transform(e->localPos());
+#else
   QPointF pw = m_display->transform(e->posF());
+#endif
   m_coords.push_back(te::gm::Coord2D(pw.x(), pw.y()));
-  
+
+#if QT_VERSION >= 0x050000
+  QPointF pos = e->localPos() + QPointF(0.0001, 0.0001); // To avoid collinear points on polygon
+#else
   QPointF pos = e->posF() + QPointF(0.0001, 0.0001); // To avoid collinear points on polygon
+#endif
+
   pw = m_display->transform(pos);
   m_lastPos = te::gm::Coord2D(pw.x(), pw.y());
 

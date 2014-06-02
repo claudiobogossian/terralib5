@@ -67,12 +67,12 @@ std::string te::qt::plugins::pgis::PostGISType::getName() const
 
 std::string te::qt::plugins::pgis::PostGISType::getTitle() const
 {
-  return TR_QT_WIDGETS("PostGIS");
+  return TE_TR("PostGIS");
 }
 
 std::string te::qt::plugins::pgis::PostGISType::getDescription() const
 {
-  return TR_QT_WIDGETS("Access geospatial data in a PostgreSQL database with the geospatial extension PostGIS");
+  return TE_TR("Access geospatial data in a PostgreSQL database with the geospatial extension PostGIS");
 }
 
 QWidget* te::qt::plugins::pgis::PostGISType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const

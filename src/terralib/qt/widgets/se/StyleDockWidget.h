@@ -31,8 +31,8 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QDockWidget>
-#include <QtGui/QTabWidget>
+#include <QDockWidget>
+#include <QTabWidget>
 
 namespace te
 {

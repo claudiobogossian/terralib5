@@ -114,7 +114,7 @@ te::dt::AbstractData* te::dt::Int32ToStringConverter(te::dt::AbstractData* d) th
 void te::dt::AssertInt32(AbstractData* d) throw(Exception)
 {
   if(d->getTypeCode() != INT32_TYPE)
-    throw Exception(TR_DATATYPE("The input data type is not a 32-bit integer!"));
+    throw Exception(TE_TR("The input data type is not a 32-bit integer!"));
 }
 
 // UInt32
@@ -198,5 +198,5 @@ te::dt::AbstractData* te::dt::UInt32ToStringConverter(te::dt::AbstractData* d) t
 void te::dt::AssertUInt32(AbstractData* d) throw(Exception)
 {
   if(d->getTypeCode() != UINT32_TYPE)
-    throw Exception(TR_DATATYPE("The input data type is not an unsigned 32-bit integer!"));
+    throw Exception(TE_TR("The input data type is not an unsigned 32-bit integer!"));
 }

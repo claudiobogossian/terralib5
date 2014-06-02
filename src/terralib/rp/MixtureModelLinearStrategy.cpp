@@ -143,7 +143,7 @@ bool te::rp::MixtureModelLinearStrategy::execute(const te::rst::Raster& inputRas
   boost::numeric::ublas::matrix<double> productAX = boost::numeric::ublas::matrix<double>(matrixA.size1(), matrixX.size2());
   boost::numeric::ublas::matrix<double> matrixE = boost::numeric::ublas::matrix<double>(matrixR.size1(), matrixR.size2());
 
-  te::common::TaskProgress task(TR_RP("Linear Mixture Model"), te::common::TaskProgress::UNDEFINED, inputRaster.getNumberOfRows());
+  te::common::TaskProgress task(TE_TR("Linear Mixture Model"), te::common::TaskProgress::UNDEFINED, inputRaster.getNumberOfRows());
   double value;
   for (unsigned r = 0; r < inputRaster.getNumberOfRows(); r++)
   {

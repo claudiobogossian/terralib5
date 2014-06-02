@@ -34,7 +34,7 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 namespace Ui { class RasterHistogramWidgetForm; }
 

@@ -31,8 +31,8 @@
 #include "TL4ConverterWizard.h"
 
 // Qt
-#include <QtCore/QObject>
-#include <QtGui/QMessageBox>
+#include <QObject>
+#include <QMessageBox>
 
 // STL
 #include <cassert>

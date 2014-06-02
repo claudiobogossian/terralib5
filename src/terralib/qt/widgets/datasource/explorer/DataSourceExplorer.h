@@ -30,7 +30,7 @@
 #include "../../Config.h"
 
 // Qt
-#include <QtGui/QDockWidget>
+#include <QDockWidget>
 
 namespace te
 {

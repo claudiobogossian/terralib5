@@ -1,7 +1,8 @@
+
+#include "../Config.h"
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
-#include <terralib/vp/Aggregation.h>
 #include <terralib/vp/AggregationMemory.h>
 #include <terralib/vp/AggregationOp.h>
 #include <terralib/vp/AggregationQuery.h>
@@ -46,7 +47,7 @@
 //  std::vector<te::dt::Property*> groupingProperties;
 //  groupingProperties.push_back(aggregBy.release());
 //  
-//  std::string filename(""TE_DATA_EXAMPLE_DIR"/data/vpresult/sp_nomemesoPGIStoOGR.shp");
+//  std::string filename(""TE_DATA_EXAMPLE_DIR"/vpresult/sp_nomemesoPGIStoOGR.shp");
 //  
 //  std::map<std::string, std::string> tgrInfo;
 //  tgrInfo["URI"] = filename;
@@ -72,7 +73,7 @@
 
 //bool AggregOGRToPGIS()
 //{
-//  std::string filename(""TE_DATA_EXAMPLE_DIR"/data/shp/SP_cities.shp");
+//  std::string filename(""TE_DATA_EXAMPLE_DIR"/shp/SP_cities.shp");
 //  
 //  std::map<std::string, std::string> srcInfo;
 //  srcInfo["URI"] = filename;
@@ -124,7 +125,7 @@
 
 //bool AggregOGRToOGR()
 //{
-//  std::string filename(""TE_DATA_EXAMPLE_DIR"/data/shp/SP_cities.shp");
+//  std::string filename(""TE_DATA_EXAMPLE_DIR"/shp/SP_cities.shp");
 //  
 //  std::map<std::string, std::string> srcInfo;
 //  srcInfo["URI"] = filename;
@@ -148,7 +149,7 @@
 //  
 //  std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > stats;
 //  
-//  std::string filename2(""TE_DATA_EXAMPLE_DIR"/data/vpresult/sp_nomemesoOGRtoOGR.shp");
+//  std::string filename2(""TE_DATA_EXAMPLE_DIR"/vpresult/sp_nomemesoOGRtoOGR.shp");
 //  std::map<std::string, std::string> tgrInfo;
 //  tgrInfo["URI"] = filename2;
 //  tgrInfo["DRIVER"] = "ESRI Shapefile";
@@ -218,13 +219,19 @@
 //OGR to OGR
 bool AggregOGRToOGR()
 {
-  //std::string filename(""TE_DATA_EXAMPLE_DIR"/data/shp/SP_cities.shp");
-  std::string filename(""TE_DATA_EXAMPLE_DIR"/Nulos/nulos2.shp");
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  //std::string filename(data_dir + '/shp/SP_cities.shp");
+  
+  std::string filename(data_dir + "/Nulos/nulos2.shp");
+  
   std::map<std::string, std::string> srcInfo;
   srcInfo["URI"] = filename;
   srcInfo["DRIVER"] = "ESRI Shapefile";
   
-  std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("OGR");
+  //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("OGR");
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR"));
+  
   srcDs->setConnectionInfo(srcInfo);
   srcDs->open();
   
@@ -234,7 +241,7 @@ bool AggregOGRToOGR()
     std::cout << "Input dataset not found: " << inDsetName << std::endl;
     return false;
   }
-  
+
   std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
   std::auto_ptr<te::da::DataSetType> inDsetType = srcDs->getDataSetType(inDsetName);
   
@@ -252,12 +259,13 @@ bool AggregOGRToOGR()
   stat1.push_back(te::stat::MODE);
   stats.insert(std::make_pair(prop1.release(), stat1));
   
-  std::string filename2(""TE_DATA_EXAMPLE_DIR"/Nulos/result.shp");
+  std::string filename2(data_dir + "/Nulos/result.shp");
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = filename2;
   tgrInfo["DRIVER"] = "ESRI Shapefile";
-  
-  std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
+
+  //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR"));
   trgDs->setConnectionInfo(tgrInfo);
   trgDs->open();
   
@@ -291,13 +299,18 @@ bool AggregOGRToOGR()
 //OGR to Postgis
 bool AggregOGRToPGIS()
 {
-  //std::string filename(""TE_DATA_EXAMPLE_DIR"/data/shp/SP_cities.shp");
-  std::string filename(""TE_DATA_EXAMPLE_DIR"/Nulos/nulos2.shp");
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  //std::string filename(data_dir + "/shp/SP_cities.shp");
+  
+  std::string filename(data_dir + "/Nulos/nulos2.shp");
+  
   std::map<std::string, std::string> srcInfo;
   srcInfo["URI"] = filename;
   srcInfo["DRIVER"] = "ESRI Shapefile";
   
-  std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("OGR");
+  //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("OGR");
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR"));
   srcDs->setConnectionInfo(srcInfo);
   srcDs->open();
   
@@ -334,7 +347,8 @@ bool AggregOGRToPGIS()
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
   connInfo["PG_CLIENT_ENCODING"] = "WIN1252";
   
-  std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("POSTGIS");
+  //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("POSTGIS");
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("POSTGIS"));
   trgDs->setConnectionInfo(connInfo);
   trgDs->open();
   
@@ -377,7 +391,8 @@ bool AggregPGISToPGIS()
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
   connInfo["PG_CLIENT_ENCODING"] = "WIN1252"; 
 
-  std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
+  //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("POSTGIS"));
   srcDs->setConnectionInfo(connInfo);
   srcDs->open();
   
@@ -406,7 +421,8 @@ bool AggregPGISToPGIS()
   
   std::string outDSet = "result";
 
-  std::auto_ptr<te::da::DataSource> outDsource = te::da::DataSourceFactory::make("POSTGIS");
+  //std::auto_ptr<te::da::DataSource> outDsource = te::da::DataSourceFactory::make("POSTGIS");
+  te::da::DataSourcePtr outDsource(te::da::DataSourceFactory::make("POSTGIS"));
   outDsource->setConnectionInfo(connInfo);
   outDsource->open();
 
@@ -447,7 +463,8 @@ bool AggregPGISToOGR()
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
   connInfo["PG_CLIENT_ENCODING"] = "WIN1252"; 
 
-  std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
+  //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("POSTGIS"));
   srcDs->setConnectionInfo(connInfo);
   srcDs->open();
   
@@ -474,12 +491,16 @@ bool AggregPGISToOGR()
   stat1.push_back(te::stat::MIN_VALUE);
   stats.insert(std::make_pair(prop1.release(), stat1));
 
-  std::string uriResult(""TE_DATA_EXAMPLE_DIR"/Nulos/result.shp");
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  std::string uriResult(data_dir + "/Nulos/result.shp");
+  
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = uriResult;
   tgrInfo["DRIVER"] = "ESRI Shapefile";
 
-  std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
+  //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR"));
   trgDs->setConnectionInfo(tgrInfo);
   trgDs->open();
 

@@ -30,7 +30,7 @@
 #include "DataSetSelectorWizardPage.h"
 
 // Qt
-#include <QtGui/QVBoxLayout>
+#include <QVBoxLayout>
 
 te::qt::widgets::DataSetSelectorWizardPage::DataSetSelectorWizardPage(QWidget* parent)
   : QWizardPage(parent),

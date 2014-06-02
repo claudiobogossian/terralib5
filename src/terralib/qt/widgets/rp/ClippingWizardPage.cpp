@@ -35,10 +35,10 @@
 
 // Qt
 #include <QGridLayout>
-#include <QtGui/QCheckBox>
-#include <QtGui/QDoubleValidator>
-#include <QtGui/QIntValidator>
-#include <QtGui/QMessageBox>
+#include <QCheckBox>
+#include <QDoubleValidator>
+#include <QIntValidator>
+#include <QMessageBox>
 
 // STL
 #include <memory>

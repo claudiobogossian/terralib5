@@ -30,7 +30,7 @@
 #include "../common/Static.h"
 #include "Config.h"
 
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
 
 // STL
 #include <vector>
@@ -238,7 +238,7 @@ namespace te
   } // end namespace gm
 }   // end namespace te
 
-#endif  // TE_USE_GEOS
+#endif  // TERRALIB_GEOS_ENABLED
 
 #endif  // __TERRALIB_GEOMETRY_INTERNAL_GEOSWRITER_H
 

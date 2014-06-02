@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../dataaccess/datasource/DataSourceTransactor.h"
+#include "../dataaccess/query/SQLDialect.h"
 #include "../common/StringUtils.h"
 #include "../common/Translator.h"
 #include "DataSource.h"
@@ -70,7 +71,7 @@ void te::wfs::DataSource::setConnectionInfo(const std::map<std::string, std::str
 std::auto_ptr<te::da::DataSourceTransactor> te::wfs::DataSource::getTransactor()
 {
   if(!m_isOpened)
-    throw Exception(TR_WFS("The data source is not open."));
+    throw Exception(TE_TR("The data source is not opened!"));
 
   return std::auto_ptr<te::da::DataSourceTransactor>(new Transactor(this));
 }
@@ -85,7 +86,7 @@ void te::wfs::DataSource::open()
   m_ogrDS = OGRSFDriverRegistrar::Open(m_connectionInfo.find("URI")->second.c_str());
 
   if(m_ogrDS == 0)
-    throw Exception(TR_WFS("Could not open the WFS data source!"));
+    throw Exception(TE_TR("Could not open the WFS data source!"));
 
   m_isOpened = true;
 }
@@ -161,12 +162,12 @@ const std::vector<te::wfs::WFSLayerInfo>& te::wfs::DataSource::getLayersInfo()
 
 void te::wfs::DataSource::create(const std::map<std::string, std::string>& /*dsInfo*/)
 {
-  throw Exception(TR_WFS("The create() method is not supported by the WFS driver."));
+  throw Exception(TE_TR("The create() method is not supported by the WFS driver!"));
 }
 
 void te::wfs::DataSource::drop(const std::map<std::string, std::string>& /*dsInfo*/)
 {
-  throw Exception(TR_WFS("The drop() method is not supported by the WFS driver."));
+  throw Exception(TE_TR("The drop() method is not supported by the WFS driver!"));
 }
 
 bool te::wfs::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
@@ -200,11 +201,11 @@ std::vector<te::common::CharEncoding> te::wfs::DataSource::getEncodings(const st
 void te::wfs::DataSource::verifyConnectionInfo() const
 {
   if(m_connectionInfo.empty())
-    throw Exception(TR_WFS("The connection information is empty."));
+    throw Exception(TE_TR("The connection information is empty!"));
 
   std::map<std::string, std::string>::const_iterator it = m_connectionInfo.find("URI");
   if(it == m_connectionInfo.end())
-    throw Exception(TR_WFS("The connection information is invalid. Missing URI parameter."));
+    throw Exception(TE_TR("The connection information is invalid. Missing URI parameter!"));
 }
 
 void te::wfs::DataSource::buildLayersInfo()
@@ -214,7 +215,7 @@ void te::wfs::DataSource::buildLayersInfo()
   OGRLayer* wfsMetadata = m_ogrDS->GetLayerByName("WFSLayerMetadata");
 
   if(wfsMetadata == 0)
-    throw Exception(TR_WFS("Could not retrieve the metadata from WFS server."));
+    throw Exception(TE_TR("Could not retrieve the metadata from WFS server!"));
 
   OGRFeature* f;
   wfsMetadata->ResetReading();

@@ -37,8 +37,8 @@
 #include "ui_PostGIS2SHPDialogForm.h"
 
 // Qt
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QMessageBox>
 
 // Boost
 #include <boost/uuid/random_generator.hpp>

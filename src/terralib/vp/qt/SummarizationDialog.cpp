@@ -37,15 +37,14 @@
 #include "../Exception.h"
 #include "SummarizationDialog.h"
 #include "ui_SummarizationDialogForm.h"
-#include "VectorProcessingConfig.h"
 
 // Qt
-#include <QtCore/QList>
-#include <QtCore/QSize>
-#include <QtGui/QFileDialog>
-#include <QtGui/QListWidget>
-#include <QtGui/QListWidgetItem>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QList>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QMessageBox>
+#include <QSize>
 
 te::vp::SummarizationDialog::SummarizationDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -57,7 +56,7 @@ te::vp::SummarizationDialog::SummarizationDialog(QWidget* parent, Qt::WindowFlag
   m_ui->setupUi(this);
 
 // add icons
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-summarization-hint").pixmap(62,48));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-summarization-hint").pixmap(62,48));
 
 //signals
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));

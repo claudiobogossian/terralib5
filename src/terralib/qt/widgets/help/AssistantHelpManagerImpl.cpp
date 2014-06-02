@@ -30,14 +30,13 @@
 #include <cassert>
 
 // Qt
-#include <QtCore/QDir>
-#include <QtCore/QFileInfo>
-#include <QtCore/QLibraryInfo>
-#include <QtCore/QProcess>
-#include <QtGui/QApplication>
-#include <QtGui/QMainWindow>
-#include <QtGui/QMessageBox>
-
+#include <QApplication>
+#include <QDir>
+#include <QFileInfo>
+#include <QLibraryInfo>
+#include <QMainWindow>
+#include <QMessageBox>
+#include <QProcess>
 
 QWidget* GetMainWindow()
 {

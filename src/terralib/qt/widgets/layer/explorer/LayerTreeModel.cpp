@@ -34,24 +34,26 @@
 #include "LayerTreeModel.h"
 
 // Qt
-#include <QtGui/QMessageBox>
-#include <QtCore/QMimeData>
-#include <QtCore/QStringList>
+#include <QMessageBox>
+#include <QMimeData>
+#include <QStringList>
 
 te::qt::widgets::LayerTreeModel::LayerTreeModel(QObject* parent)
   : QAbstractItemModel(parent),
     m_checkable(false)
 {
-  //setSupportedDragActions(Qt::MoveAction | Qt::CopyAction);
-  setSupportedDragActions(Qt::MoveAction | Qt::CopyAction | Qt::LinkAction);
+#if (QT_VERSION < 0x050000)
+  setSupportedDragActions(Qt::MoveAction | Qt::CopyAction  | Qt::LinkAction);
+#endif
 }
 
 te::qt::widgets::LayerTreeModel::LayerTreeModel(const std::list<te::map::AbstractLayerPtr>& layers, QObject * parent)
   : QAbstractItemModel(parent),
     m_checkable(false)
 {
-  //setSupportedDragActions(Qt::MoveAction | Qt::CopyAction);
+#if (QT_VERSION < 0x050000)
   setSupportedDragActions(Qt::MoveAction | Qt::CopyAction | Qt::LinkAction);
+#endif
 }
 
 te::qt::widgets::LayerTreeModel::~LayerTreeModel()
@@ -110,7 +112,7 @@ void te::qt::widgets::LayerTreeModel::fetchMore(const QModelIndex& parent)
   AbstractTreeItem* item = static_cast<AbstractTreeItem*>(parent.internalPointer());
 
   if(item == 0)
-    throw Exception(TR_QT_WIDGETS("Invalid data associated to the layer model!"));
+    throw Exception(TE_TR("Invalid data associated to the layer model!"));
 
   item->fetchMore();
 }
@@ -128,7 +130,7 @@ int te::qt::widgets::LayerTreeModel::rowCount(const QModelIndex& parent) const
   AbstractTreeItem* item = static_cast<AbstractTreeItem*>(parent.internalPointer());
 
   if(item == 0)
-    throw Exception(TR_QT_WIDGETS("Error: NULL layer item!"));
+    throw Exception(TE_TR("Error: NULL layer item!"));
 
   return item->children().count();
 }
@@ -152,7 +154,7 @@ QModelIndex te::qt::widgets::LayerTreeModel::index(int row, int column, const QM
   AbstractTreeItem* parentItem = static_cast<AbstractTreeItem*>(parent.internalPointer());
 
   if(parentItem == 0)
-    throw Exception(TR_QT_WIDGETS("Invalid data associated to the layer model!"));
+    throw Exception(TE_TR("Invalid data associated to the layer model!"));
 
   if(row >= parentItem->children().count())
     return QModelIndex();
@@ -160,7 +162,7 @@ QModelIndex te::qt::widgets::LayerTreeModel::index(int row, int column, const QM
   AbstractTreeItem* item = dynamic_cast<AbstractTreeItem*>(parentItem->children().at(row));
 
   if(item == 0)
-    throw Exception(TR_QT_WIDGETS("The layer item is not an AbstractTreeItem!"));
+    throw Exception(TE_TR("The layer item is not an AbstractTreeItem!"));
 
   return createIndex(row, column, item);
 }
@@ -178,7 +180,7 @@ QModelIndex te::qt::widgets::LayerTreeModel::parent(const QModelIndex& index) co
   AbstractTreeItem* parentItem = dynamic_cast<AbstractTreeItem*>(item->parent());
 
   if(parentItem == 0)
-    throw Exception(TR_QT_WIDGETS("The layer item is not an AbstractTreeItem!"));
+    throw Exception(TE_TR("The layer item is not an AbstractTreeItem!"));
 
   AbstractTreeItem* grandParentItem = dynamic_cast<AbstractTreeItem*>(parentItem->parent());
 
@@ -205,7 +207,7 @@ QModelIndex te::qt::widgets::LayerTreeModel::parent(const QModelIndex& index) co
     }
   }
 
-  throw Exception(TR_QT_WIDGETS("Could not determine the layer index in the model!"));
+  throw Exception(TE_TR("Could not determine the layer index in the model!"));
 }
 
 Qt::ItemFlags te::qt::widgets::LayerTreeModel::flags(const QModelIndex& index) const
@@ -216,7 +218,7 @@ Qt::ItemFlags te::qt::widgets::LayerTreeModel::flags(const QModelIndex& index) c
   AbstractTreeItem* item = static_cast<AbstractTreeItem*>(index.internalPointer());
 
   if(item == 0)
-    throw Exception(TR_QT_WIDGETS("Invalid data associated to the layer model!"));
+    throw Exception(TE_TR("Invalid data associated to the layer model!"));
 
   return QAbstractItemModel::flags(index) | item->flags();
 }
@@ -273,7 +275,7 @@ bool te::qt::widgets::LayerTreeModel::hasChildren(const QModelIndex& parent) con
   AbstractTreeItem* item = static_cast<AbstractTreeItem*>(parent.internalPointer());
 
   if(item == 0)
-    throw Exception(TR_QT_WIDGETS("Invalid data associated to the layer model!"));
+    throw Exception(TE_TR("Invalid data associated to the layer model!"));
 
   return item->hasChildren();
 }
@@ -292,6 +294,13 @@ Qt::DropActions te::qt::widgets::LayerTreeModel::supportedDropActions() const
   //return Qt::MoveAction | Qt::CopyAction;
   return Qt::MoveAction | Qt::CopyAction | Qt::LinkAction;
 }
+
+#if (QT_VERSION >= 0x050000)
+Qt::DropActions te::qt::widgets::LayerTreeModel::supportedDragActions() const
+{
+  return Qt::MoveAction | Qt::CopyAction | Qt::LinkAction;
+}
+#endif
 
 QMimeData* te::qt::widgets::LayerTreeModel::mimeData(const QModelIndexList& indexes) const
 {

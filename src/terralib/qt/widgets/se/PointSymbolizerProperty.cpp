@@ -35,8 +35,11 @@
 #include "PointSymbolizerProperty.h"
 
 // Qt
-#include "../../../../../third-party/qt/propertybrowser/qtpropertybrowser.h"
-#include <QtGui/QGridLayout>
+#include <QGridLayout>
+
+// QtPropertyBrowser
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
+#include <QtPropertyBrowser/QtVariantPropertyManager>
 
 // STL
 #include <cassert>

@@ -27,11 +27,12 @@
 #include "../../../se/Utils.h"
 #include "../../../se.h"
 #include "../../../xlink/SimpleLink.h"
+#include "../propertybrowser/AbstractPropertyManager.h"
 #include "GraphicPropertyItem.h"
-#include "AbstractPropertyManager.h"
 
-// Qt
-#include "../../../../../third-party/qt/propertybrowser/qtpropertybrowser.h"
+// QtPropertyBrowser
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
+#include <QtPropertyBrowser/QtVariantPropertyManager>
 
 // STL
 #include <cassert>

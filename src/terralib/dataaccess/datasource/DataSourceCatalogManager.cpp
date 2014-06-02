@@ -40,7 +40,7 @@
 te::da::DataSourceCatalogPtr te::da::DataSourceCatalogManager::create(DataSourcePtr ds)
 {
   if(find(ds))
-    throw Exception(TR_DATAACCESS("There is already a catalog for the data source given!"));
+    throw Exception(TE_TR("There is already a catalog for the data source given!"));
 
   DataSourceCatalogPtr catalog(new te::da::DataSourceCatalog());
 
@@ -101,14 +101,14 @@ bool te::da::DataSourceCatalogManager::find(const DataSourcePtr& ds) const
 void te::da::DataSourceCatalogManager::insert(const DataSourceCatalogPtr& catalog)
 {
   if(catalog.get() == 0)
-    throw Exception(TR_DATAACCESS("Please, specifify a non-null data source to be managed!"));
+    throw Exception(TE_TR("Please, specifify a non-null data source to be managed!"));
 
   LockWrite l(this);
 
   DataSourcePtr ds(catalog->getDataSource());
 
   if(find(ds))
-    throw Exception(TR_DATAACCESS("There is already a catalog for the data source of the given catalog!"));
+    throw Exception(TE_TR("There is already a catalog for the data source of the given catalog!"));
 
   m_catalogs[ds] = catalog;
 }
@@ -128,7 +128,7 @@ te::da::DataSourceCatalogPtr te::da::DataSourceCatalogManager::detach(const Data
   LockWrite l(this);
 
   if(!find(ds))
-    throw Exception(TR_DATAACCESS("This catalog is not valid to be detached from the manager!"));
+    throw Exception(TE_TR("This catalog is not valid to be detached from the manager!"));
 
   iterator it = m_catalogs.find(ds);
 

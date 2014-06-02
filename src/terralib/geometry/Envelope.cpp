@@ -29,6 +29,7 @@
 #include "../srs/Converter.h"
 #include "Coord2D.h"
 #include "Envelope.h"
+#include "Exception.h"
 
 // STL
 #include <cassert>
@@ -88,6 +89,7 @@ double te::gm::Envelope::distance(const Envelope& rhs) const
 
 void te::gm::Envelope::transform(int oldsrid, int newsrid)
 {
+#ifdef TERRALIB_MOD_SRS_ENABLED
   if(oldsrid == newsrid)
     return;
 
@@ -117,5 +119,7 @@ void te::gm::Envelope::transform(int oldsrid, int newsrid)
   m_urx = std::max(std::max(x1,x4),std::max(x2,x3));
   m_lly = std::min(std::min(y1,y4),std::min(y2,y3));
   m_ury = std::max(std::max(y1,y4),std::max(y2,y3));
+#else
+  throw Exception(TE_TR("transform method is not supported!"));
+#endif // TERRALIB_MOD_SRS_ENABLED
 }
-

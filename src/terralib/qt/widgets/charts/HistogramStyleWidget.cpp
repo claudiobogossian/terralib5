@@ -25,16 +25,16 @@
 
 
 //Terralib
-#include "BasicFillDialog.h"
-#include "BasicStrokeDialog.h"
 #include "../../../se/Fill.h"
 #include "../../../se/Stroke.h"
+#include "../se/BasicFillDialog.h"
+#include "../se/BasicStrokeDialog.h"
 #include "HistogramStyleWidget.h"
 #include "HistogramStyle.h"
 #include "ui_HistogramStyleWidgetForm.h"
 
 //QT
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #include <memory>
 

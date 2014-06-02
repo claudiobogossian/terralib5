@@ -28,7 +28,7 @@
 #include "AbstractTool.h"
 
 // Qt
-#include <QtGui/QMouseEvent>
+#include <QMouseEvent>
 
 // STL
 #include <cassert>

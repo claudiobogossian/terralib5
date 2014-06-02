@@ -1,7 +1,9 @@
+
+#include "../Config.h"
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
-#include <terralib/vp/Buffer.h>
+//#include <terralib/vp/Buffer.h>
 #include <terralib/vp/BufferMemory.h>
 #include <terralib/vp/BufferOp.h>
 #include <terralib/vp/BufferQuery.h>
@@ -18,12 +20,16 @@
 //OGR to OGR
 bool BufferOGRToOGR()
 {
-  std::string filename(""TE_DATA_EXAMPLE_DIR"/data/shp/Buffer/SP_meso.shp");
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  std::string filename = data_dir + "/shp/Buffer/SP_meso.shp";
+  
   std::map<std::string, std::string> srcInfo;
   srcInfo["URI"] = filename;
   srcInfo["DRIVER"] = "ESRI Shapefile";
 
-  std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("OGR");
+  //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("OGR");
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR"));
   srcDs->setConnectionInfo(srcInfo);
   srcDs->open();
 
@@ -51,12 +57,14 @@ bool BufferOGRToOGR()
   bool copyInputColumns = false;
   int levels = 1;
 
-  std::string file_result(""TE_DATA_EXAMPLE_DIR"/data/shp/Buffer/file_result.shp");
+  std::string file_result = data_dir + "/shp/Buffer/file_result.shp";
+
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = file_result;
   tgrInfo["DRIVER"] = "ESRI Shapefile";
 
-  std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
+  //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR"));
   trgDs->setConnectionInfo(tgrInfo);
   trgDs->open();
 
@@ -94,12 +102,16 @@ bool BufferOGRToOGR()
 //OGR to Postgis
 bool BufferOGRToPGIS()
 {
-  std::string filename(""TE_DATA_EXAMPLE_DIR"/data/shp/Buffer/SP_meso.shp");
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  std::string filename(data_dir + "/shp/Buffer/SP_meso.shp");
+  
   std::map<std::string, std::string> srcInfo;
   srcInfo["URI"] = filename;
   srcInfo["DRIVER"] = "ESRI Shapefile";
   
-  std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("OGR");
+  //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("OGR");
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR"));
   srcDs->setConnectionInfo(srcInfo);
   srcDs->open();
   
@@ -144,7 +156,8 @@ bool BufferOGRToPGIS()
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
   connInfo["PG_CLIENT_ENCODING"] = "WIN1252";
   
-  std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("POSTGIS");
+  //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("POSTGIS");
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("POSTGIS"));
   trgDs->setConnectionInfo(connInfo);
   trgDs->open();
   
@@ -191,7 +204,8 @@ bool BufferPGISToPGIS()
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
   connInfo["PG_CLIENT_ENCODING"] = "WIN1252"; 
 
-  std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
+  //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("POSTGIS"));
   srcDs->setConnectionInfo(connInfo);
   srcDs->open();
   
@@ -221,7 +235,8 @@ bool BufferPGISToPGIS()
   bool copyInputColumns = false;
   int levels = 2;
 
-  std::auto_ptr<te::da::DataSource> outDsource = te::da::DataSourceFactory::make("POSTGIS");
+  //std::auto_ptr<te::da::DataSource> outDsource = te::da::DataSourceFactory::make("POSTGIS");
+  te::da::DataSourcePtr outDsource(te::da::DataSourceFactory::make("POSTGIS"));
   outDsource->setConnectionInfo(connInfo);
   outDsource->open();
 
@@ -266,7 +281,8 @@ bool BufferPGISToOGR()
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
   connInfo["PG_CLIENT_ENCODING"] = "WIN1252";
 
-  std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
+  //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("POSTGIS"));
   srcDs->setConnectionInfo(connInfo);
   srcDs->open();
   
@@ -293,13 +309,17 @@ bool BufferPGISToOGR()
 
   bool copyInputColumns = false;
   int levels = 1;
+  
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  std::string uriResult(data_dir + "/shp/Buffer/bufferPGISToOGR.shp");
 
-  std::string uriResult(""TE_DATA_EXAMPLE_DIR"/data/shp/Buffer/bufferPGISToOGR.shp");
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = uriResult;
   tgrInfo["DRIVER"] = "ESRI Shapefile";
 
-  std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
+  //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR"));
   trgDs->setConnectionInfo(tgrInfo);
   trgDs->open();
 

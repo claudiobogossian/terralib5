@@ -37,7 +37,7 @@
 #include <boost/noncopyable.hpp>
 
 // Qt
-#include <QtGui/QTreeView>
+#include <QTreeView>
 
 // Forward declaration
 class QAction;

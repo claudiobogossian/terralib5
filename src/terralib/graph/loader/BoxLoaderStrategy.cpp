@@ -63,7 +63,7 @@ void te::graph::BoxLoaderStrategy::loadDataByVertexId(int vertexId, te::graph::A
 {
   if(m_graphMetadata == 0 || m_graphMetadata->getDataSource() == 0 || g == 0)
   {
-    throw Exception(TR_GRAPH(""));
+    throw Exception(TE_TR(""));
   }
 
   Vertex* vAux = 0;
@@ -79,13 +79,13 @@ void te::graph::BoxLoaderStrategy::loadDataByVertexId(int vertexId, te::graph::A
 
   if(vAux == 0)
   {
-    throw Exception(TR_GRAPH("Vertex Id not found."));
+    throw Exception(TE_TR("Vertex Id not found."));
   }
 
   //ONLY WORKS FOR te::graph::Edge_List
   if(m_graphMetadata->getStorageMode() == te::graph::Vertex_List)
   {
-    throw Exception(TR_GRAPH("TO DO"));
+    throw Exception(TE_TR("TO DO"));
   }
 
   //get the tables names
@@ -227,7 +227,7 @@ void te::graph::BoxLoaderStrategy::loadDataByEdgeId(int edgeId, te::graph::Abstr
 {
   if(m_graphMetadata == 0 || m_graphMetadata->getDataSource() == 0 || g == 0)
   {
-    throw Exception(TR_GRAPH(""));
+    throw Exception(TE_TR(""));
   }
 
   Edge* e = 0;
@@ -243,7 +243,7 @@ void te::graph::BoxLoaderStrategy::loadDataByEdgeId(int edgeId, te::graph::Abstr
 
   if(e == 0)
   {
-    throw Exception(TR_GRAPH("Edge Id not found."));
+    throw Exception(TE_TR("Edge Id not found."));
   }
 
   Vertex* vAux = 0;
@@ -261,7 +261,7 @@ void te::graph::BoxLoaderStrategy::loadDataByEdgeId(int edgeId, te::graph::Abstr
 
   if(vAux == 0)
   {
-    throw Exception(TR_GRAPH("Vertex Id not found."));
+    throw Exception(TE_TR("Vertex Id not found."));
   }
 
   delete e;
@@ -269,7 +269,7 @@ void te::graph::BoxLoaderStrategy::loadDataByEdgeId(int edgeId, te::graph::Abstr
   //ONLY WORKS FOR te::graph::Edge_List
   if(m_graphMetadata->getStorageMode() == te::graph::Vertex_List)
   {
-    throw Exception(TR_GRAPH("TO DO"));
+    throw Exception(TE_TR("TO DO"));
   }
 
   //get the tables names
@@ -421,7 +421,7 @@ void te::graph::BoxLoaderStrategy::loadDataByVertexId(int vertexId, te::graph::A
 {
   if(m_graphMetadata == 0 || m_graphMetadata->getDataSource() == 0 || g == 0)
   {
-    throw Exception(TR_GRAPH(""));
+    throw Exception(TE_TR(""));
   }
 
   Vertex* vAux = 0;
@@ -437,13 +437,13 @@ void te::graph::BoxLoaderStrategy::loadDataByVertexId(int vertexId, te::graph::A
 
   if(vAux == 0)
   {
-    throw Exception(TR_GRAPH("Vertex Id not found."));
+    throw Exception(TE_TR("Vertex Id not found."));
   }
 
   //ONLY WORKS FOR te::graph::Edge_List
   if(m_graphMetadata->getStorageMode() == te::graph::Vertex_List)
   {
-    throw Exception(TR_GRAPH("TO DO"));
+    throw Exception(TE_TR("TO DO"));
   }
 
   //get the tables names
@@ -536,7 +536,7 @@ void te::graph::BoxLoaderStrategy::loadDataByVertexId(int vertexId, te::graph::A
 
   if(!transactor)
   {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
+    throw Exception(TE_TR("Error getting Transactor."));
   }
 
   te::da::DataSourceCatalogLoader* catalog = transactor->getCatalogLoader();
@@ -611,7 +611,7 @@ void te::graph::BoxLoaderStrategy::loadDataByEdgeId(int edgeId, te::graph::Abstr
 {
   if(m_graphMetadata == 0 || m_graphMetadata->getDataSource() == 0 || g == 0)
   {
-    throw Exception(TR_GRAPH(""));
+    throw Exception(TE_TR(""));
   }
 
   Edge* e = 0;
@@ -627,7 +627,7 @@ void te::graph::BoxLoaderStrategy::loadDataByEdgeId(int edgeId, te::graph::Abstr
 
   if(e == 0)
   {
-    throw Exception(TR_GRAPH("Edge Id not found."));
+    throw Exception(TE_TR("Edge Id not found."));
   }
 
   int vId = e->getIdFrom();

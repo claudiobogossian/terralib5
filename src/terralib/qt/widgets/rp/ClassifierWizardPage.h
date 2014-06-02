@@ -40,8 +40,8 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QWizardPage>
-#include <QtGui/QTableWidget>
+#include <QWizardPage>
+#include <QTableWidget>
 
 // Forward declaration
 namespace Ui { class ClassifierWizardPageForm; }

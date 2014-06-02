@@ -31,8 +31,8 @@
 #include "UniqueKeyItem.h"
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QWidget>
 
 te::qt::widgets::UniqueKeyItem::UniqueKeyItem(te::da::UniqueKey* uk, AbstractDataSourceTreeItem* parent)
   : AbstractDataSourceTreeItem(parent),

@@ -49,9 +49,6 @@ te::plugin::Module::Module()
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
 
-// it initializes the Translator support for the TerraLib Plugin module
-  TE_ADD_TEXT_DOMAIN(TE_PLUGIN_TEXT_DOMAIN, TE_PLUGIN_TEXT_DOMAIN_DIR, "UTF-8");
-
 // just to make our singleton alive!
   PluginManager::getInstance();
 }
@@ -69,13 +66,13 @@ void te::plugin::Module::initialize()
   pinfo.m_category = "XML";
   pinfo.m_engine = TE_CPPPLUGINENGINE_CODE;
   //pinfo.m_folder = "."; //the default search directories will be used
-  pinfo.m_resources.push_back(te::plugin::PluginInfo::Resource("SharedLibraryName", "terralib_xerces"));
+  pinfo.m_resources.push_back(te::plugin::PluginInfo::Resource("SharedLibraryName", "terralib_mod_xerces"));
 
   te::plugin::PluginManager::getInstance().load(pinfo, true);
 
   sg_xercesPlugins = te::plugin::PluginManager::getInstance().detach("TERRALIB_XERCES");
 #endif
-  TE_LOG_TRACE(TR_PLUGIN("TerraLib Plugin module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Plugin module initialized!"));
 }
 
 void te::plugin::Module::finalize()
@@ -92,7 +89,7 @@ void te::plugin::Module::finalize()
   }
 #endif
 
-  TE_LOG_TRACE(TR_PLUGIN("TerraLib Plugin module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Plugin module finalized!"));
 }
 
 

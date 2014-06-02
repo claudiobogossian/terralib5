@@ -41,9 +41,6 @@ te::se::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib Symbology Encoding module
-  TE_ADD_TEXT_DOMAIN(TE_SE_TEXT_DOMAIN, TE_SE_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::se::Module::~Module()
@@ -53,11 +50,11 @@ te::se::Module::~Module()
 
 void te::se::Module::initialize()
 {
-  TE_LOG_TRACE(TR_SE("TerraLib Symbology Encoding module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Symbology Encoding module initialized!"));
 }
 
 void te::se::Module::finalize()
 {
-  TE_LOG_TRACE(TR_SE("TerraLib Symbology Encoding module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Symbology Encoding module finalized!"));
 }
 

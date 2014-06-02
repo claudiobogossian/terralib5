@@ -28,7 +28,7 @@
 
 
 // Qt
-#include <QtGui/QMainWindow>
+#include <QMainWindow>
 
 // STL
 #include <list>

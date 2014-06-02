@@ -28,12 +28,12 @@
 #include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
-#include "../../widgets/help/HelpPushButton.h"
-#include "../../widgets/progress/ProgressViewerDialog.h"
+#include "../help/HelpPushButton.h"
+#include "../layer/search/LayerSearchWidget.h"
+#include "../layer/search/LayerSearchWizardPage.h"
+#include "../progress/ProgressViewerDialog.h"
 #include "MosaicWizard.h"
 #include "MosaicWizardPage.h"
-#include "LayerSearchWidget.h"
-#include "LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "Utils.h"
@@ -42,8 +42,8 @@
 #include <cassert>
 
 // Qt
-#include <QtGui/QMessageBox>
-#include <QtGui/QApplication>
+#include <QMessageBox>
+#include <QApplication>
 
 
 te::qt::widgets::MosaicWizard::MosaicWizard(QWidget* parent)

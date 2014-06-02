@@ -29,11 +29,11 @@
 #include "../../../raster/Raster.h"
 #include "../../../rp/Contrast.h"
 #include "../../../rp/Module.h"
-#include "../../widgets/help/HelpPushButton.h"
+#include "../help/HelpPushButton.h"
+#include "../layer/search/LayerSearchWidget.h"
+#include "../layer/search/LayerSearchWizardPage.h"
 #include "ContrastWizard.h"
 #include "ContrastWizardPage.h"
-#include "LayerSearchWidget.h"
-#include "LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "Utils.h"
@@ -42,8 +42,8 @@
 #include <cassert>
 
 // Qt
-#include <QtGui/QApplication>
-#include <QtGui/QMessageBox>
+#include <QApplication>
+#include <QMessageBox>
 
 
 te::qt::widgets::ContrastWizard::ContrastWizard(QWidget* parent)

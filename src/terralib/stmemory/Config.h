@@ -47,56 +47,6 @@
 */
 #define TE_STMEMORY_DRIVER_MAX_DATASETS 1024
 
-
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
-  \def TE_STMEMORY_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib ST memory module.
- */
-#define TE_STMEMORY_TEXT_DOMAIN "testmemory"
-
-/*!
-  \def TE_STMEMORY_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
- */
-#define TE_STMEMORY_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TR_STMEMORY
-
-  \brief It marks a string in order to get translated. This is a special mark used in the ST memory module of TerraLib.
- */
-#define TR_STMEMORY(message) TR(message, TE_STMEMORY_TEXT_DOMAIN)
-
-/*!
-  \def TR_PLURAL_ST
-
-  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the ST module of TerraLib. 
- */
-#define TR_PLURAL_STMEMORY(message1, message2, n) TR_PLURAL(TE_STMEMORY_TEXT_DOMAIN, message1, message2, n)
-
-//@}
-
-/** @name Logger Defines
- *  Flags for building TerraLib with Log support
- */
-//@{
-
-/*!
-  \def TE_STMEMORY_LOGGER_NAME
-  
-  \brief This is the fully qualified TerraLib ST API logger name.
- */
-#define TE_STMEMORY_LOGGER_NAME "te.stmemory"
-
-//@}
-
 /** @name DLL/LIB Module
  *  Flags for building TerraLib ST memory module as a DLL or as a Static Library
  */

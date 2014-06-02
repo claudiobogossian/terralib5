@@ -52,9 +52,9 @@
 #include "MapDisplay.h"
 
 // Qt
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QMessageBox>
-#include <QtGui/QAction>
+#include <QAction>
+#include <QContextMenuEvent>
+#include <QMessageBox>
 
 // STL
 #include <cassert>

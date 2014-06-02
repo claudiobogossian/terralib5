@@ -35,8 +35,8 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QTreeWidgetItem>
-#include <QtGui/QWidget>
+#include <QTreeWidgetItem>
+#include <QWidget>
 
 namespace Ui { class ROIManagerWidgetForm; }
 

@@ -39,7 +39,7 @@ te::gm::Geometry* te::gm::WKTReader::read(const char* wkt)
   
   bool isValid = phrase_parse(beginS, endS, parser, boost::spirit::ascii::space);
   if(!isValid)
-    throw Exception(TR_GEOM("Invalid Geometry WKT - parsing failed!"));
+    throw Exception(TE_TR("Invalid Geometry WKT - parsing failed!"));
 
   te::gm::Geometry* g = parser.getGeometry();
 

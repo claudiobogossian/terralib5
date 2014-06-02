@@ -28,8 +28,8 @@
 #include "HelpToolButton.h"
 
 //Qt
-#include <QtGui/QIcon>
-#include <QtGui/QMouseEvent>
+#include <QIcon>
+#include <QMouseEvent>
 
 te::qt::widgets::HelpToolButton::HelpToolButton(QWidget* parent)
   : QToolButton(parent)

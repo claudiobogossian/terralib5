@@ -23,20 +23,23 @@
   \brief A widget used to define the basic fill se object.
 */
 
-#include "BasicStrokePropertyItem.h"
-#include "AbstractPropertyManager.h"
-
+// TerraLib
 #include "../../../se/Config.h"
 #include "../../../se/Stroke.h"
 #include "../../../se/SvgParameter.h"
 #include "../../../se/Utils.h"
 #include "../../../maptools/Utils.h"
 #include "../../../maptools/Enums.h"
+#include "../propertybrowser/AbstractPropertyManager.h"
+#include "BasicStrokePropertyItem.h"
 
 // Qt
-#include <QtGui/QPainter>
-#include <QtGui/QIcon>
-#include "../../../../../third-party/qt/propertybrowser/qtpropertybrowser.h"
+#include <QPainter>
+#include <QIcon>
+
+// QtPropertyBrowser
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
+#include <QtPropertyBrowser/QtVariantPropertyManager>
 
 // STL
 #include <cassert>

@@ -37,7 +37,7 @@
 #include "ui_WellKnownGraphicWidgetForm.h"
 
 // Qt
-#include <QtGui/QGridLayout>
+#include <QGridLayout>
 
 // STL
 #include <cassert>

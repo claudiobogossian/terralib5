@@ -30,7 +30,7 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QCursor>
+#include <QCursor>
 
 namespace te
 {

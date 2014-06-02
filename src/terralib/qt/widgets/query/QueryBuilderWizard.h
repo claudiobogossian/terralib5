@@ -30,7 +30,7 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QWizard>
+#include <QWizard>
 
 // Boost
 #include <boost/bimap.hpp>

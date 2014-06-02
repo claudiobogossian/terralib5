@@ -30,7 +30,7 @@ void Moran()
   assert(dGraph.get());
 
   //associate dataset attribute from a data source
-  std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(TE_DATA_EXAMPLE_DIR "/data/graph/UP_pol.shp");
+  std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(TERRALIB_EXAMPLES_DATA_DIR "/graph/UP_pol.shp");
   std::string dataSetName = "UP_pol";
   int columnId = 1; //"COD_UP";
   int attrId = 6; //"HOM_03";

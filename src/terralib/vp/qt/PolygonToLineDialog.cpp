@@ -37,15 +37,14 @@
 #include "../Exception.h"
 #include "PolygonToLineDialog.h"
 #include "ui_PolygonToLineDialogForm.h"
-#include "VectorProcessingConfig.h"
 
 // Qt
-#include <QtCore/QList>
-#include <QtCore/QSize>
-#include <QtGui/QFileDialog>
-#include <QtGui/QListWidget>
-#include <QtGui/QListWidgetItem>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QList>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QMessageBox>
+#include <QSize>
 
 te::vp::PolygonToLineDialog::PolygonToLineDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -57,7 +56,7 @@ te::vp::PolygonToLineDialog::PolygonToLineDialog(QWidget* parent, Qt::WindowFlag
   m_ui->setupUi(this);
 
 // add icons
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-polygon-line-hint").pixmap(112,48));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-polygon-line-hint").pixmap(112,48));
 
 //signals
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));

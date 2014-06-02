@@ -5,9 +5,9 @@
 #include "TableWidget.h"
 
 // Qt
-#include <QtCore/QSettings>
-#include <QtGui/QColor>
-#include <QtGui/QColorDialog>
+#include <QSettings>
+#include <QColor>
+#include <QColorDialog>
 
 QString GetRGBString(QColor color)
 {
