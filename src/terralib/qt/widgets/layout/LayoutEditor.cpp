@@ -35,12 +35,13 @@
 
 // Qt
 
-#include <QtGui/QPainter>
-#include <QtGui/QColor>
-#include <QtGui/QApplication>
-#include <QtGui/QMessageBox>
-#include <QtGui/QInputDialog>
-#include <QtCore/QDir>
+#include <QPainter>
+#include <QColor>
+#include <QApplication>
+#include <QMessageBox>
+#include <QInputDialog>
+#include <QDir>
+#include <QMimeData>
 
 te::qt::widgets::LayoutEditor::LayoutEditor(QWidget* parent, Qt::WindowFlags f) :
   QWidget(parent, f),
@@ -481,7 +482,7 @@ void te::qt::widgets::LayoutEditor::insertRulers()
   int a = xmin;
   while(a <= (xmax+1))
   {
-    int xp = qRound(m_matrixPaperViewToVp.map(QPoint(a, m_paperViewRect.top())).x());
+    int xp = m_matrixPaperViewToVp.map(QPoint(a, m_paperViewRect.top())).x();
     pb1.setX(xp);
     pb2.setX(xp);
     pb3.setX(xp);

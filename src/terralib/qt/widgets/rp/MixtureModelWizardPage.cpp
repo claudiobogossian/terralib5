@@ -38,16 +38,15 @@
 #include "../../../se/Mark.h"
 #include "../../../se/Stroke.h"
 #include "../../../se/Utils.h"
-#include "../../widgets/canvas/Canvas.h"
-#include "../../widgets/canvas/MapDisplay.h"
+#include "../canvas/Canvas.h"
+#include "../canvas/MapDisplay.h"
 #include "MixtureModelWizardPage.h"
-#include "MapDisplay.h"
 #include "RasterNavigatorWidget.h"
 #include "RasterNavigatorDialog.h"
 #include "ui_MixtureModelWizardPageForm.h"
 
 // Qt
-#include <QtGui/QGridLayout>
+#include <QGridLayout>
 
 // Boost
 #include <boost/uuid/random_generator.hpp>

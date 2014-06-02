@@ -23,7 +23,7 @@
   \brief 
 */
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #include "../../Config.h"
 

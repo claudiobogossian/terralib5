@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
  
  This file is part of the TerraLib - a Framework for building GIS enabled applications.
  
@@ -46,7 +46,7 @@ te::md::MetadataManager::insert(te::md::MetadataAnnotation* a)
   std::map<std::string,MetadataAnnotation*>::const_iterator it = m_metadata.find(a->getAnnotationtId());
   
   if (it != m_metadata.end())
-    throw te::common::Exception(TR_METADATA("A metadata annotation with this id already exists in the manager."));
+    throw te::common::Exception(TE_TR("A metadata annotation with this id already exists in the manager."));
   
   m_metadata.insert(std::make_pair(a->getAnnotationtId(),a));
 }
@@ -59,7 +59,7 @@ te::md::MetadataManager::erase(te::md::MetadataAnnotation* a)
   std::map<std::string,MetadataAnnotation*>::iterator it = m_metadata.find(a->getAnnotationtId());
   
   if (it == m_metadata.end())
-    throw te::common::Exception(TR_METADATA("A metadata annotation with this id already exists in the manager."));
+    throw te::common::Exception(TE_TR("A metadata annotation with this id already exists in the manager."));
   
   m_metadata.erase(it);
   

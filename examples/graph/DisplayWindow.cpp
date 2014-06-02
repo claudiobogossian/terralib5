@@ -47,10 +47,10 @@
 
 
 // Qt
-#include <QtGui/QAction>
-#include <QtGui/QActionGroup>
-#include <QtGui/QStatusBar>
-#include <QtGui/QToolBar>
+#include <QAction>
+#include <QActionGroup>
+#include <QStatusBar>
+#include <QToolBar>
 
 // STL
 #include <cassert>

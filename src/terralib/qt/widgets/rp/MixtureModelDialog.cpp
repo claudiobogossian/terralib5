@@ -45,13 +45,13 @@
 #include <ui_MixtureModelForm.h>
 
 // QT
-#include <QtGui/QCheckBox>
-#include <QtGui/QComboBox>
-#include <QtGui/QGridLayout>
-#include <QtGui/QImage>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QLineEdit>
-#include <QtGui/QMessageBox>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QGridLayout>
+#include <QImage>
+#include <QKeyEvent>
+#include <QLineEdit>
+#include <QMessageBox>
 
 // defines
 #define PATTERN_W 11
@@ -222,7 +222,11 @@ void te::qt::widgets::MixtureModelDialog::on_okPushButton_clicked()
 
 // insert sensor description of band
       QComboBox *sensorComboBox = (QComboBox*) m_uiPtr->m_bandsListGroupBox->layout()->itemAt(i + 1)->widget();
+#if (QT_VERSION >= 0x050000)
+      algoInputParameters.m_inputSensorBands.push_back(std::string(sensorComboBox->currentText().toLatin1()));
+#else
       algoInputParameters.m_inputSensorBands.push_back(std::string(sensorComboBox->currentText().toAscii()));
+#endif
     }
     else
       selectedBandsVector.push_back(false);

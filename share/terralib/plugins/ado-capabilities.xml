@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<DataSourceCapabilities xmlns="http://www.terralib.org/schemas/dataaccess"
+                        xmlns:te_dt="http://www.terralib.org/schemas/datatype"
+                        xmlns:te_common="http://www.terralib.org/schemas/common"
+                        xmlns:te_gm="http://www.terralib.org/schemas/geometry"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+                        xsd:schemaLocation="http://www.terralib.org/schemas/dataaccess ../schemas/terralib/dataaccess/capabilities.xsd"
+                        version="5.0.0-alpha.1">
+
+  <DataTypeCapabilities>
+    <DataType>INT16_TYPE</DataType>
+    <DataType>INT32_TYPE</DataType>
+    <DataType>INT64_TYPE</DataType>
+    <DataType>DOUBLE_TYPE</DataType>
+    <DataType>STRING_TYPE</DataType>
+    <DataType>BYTE_ARRAY_TYPE</DataType>
+    <DataType>DATETIME_TYPE</DataType>
+    <DataType>NUMERIC_TYPE</DataType>
+    <DataType>GEOMETRY_TYPE</DataType>
+  </DataTypeCapabilities>
+  <QueryCapabilities>
+    <SQLDialect>true</SQLDialect>
+    <SpatialSQLDialect>false</SpatialSQLDialect>
+    <Insert>true</Insert>
+    <Update>true</Update>
+    <Delete>true</Delete>
+    <Create>true</Create>
+    <Drop>true</Drop>
+    <Alter>true</Alter>
+    <Select>true</Select>
+    <SelectInto>true</SelectInto>	
+    <SpatialTopologicOperators>
+      <Function name="st_envelopeintersects">
+        <BinaryOpEncoder alias="st_envelopeintersects"/>
+      </Function>
+    </SpatialTopologicOperators>
+    <SpatialMetricOperators/>
+    <SpatialNewGeomOperators/>
+    <SpatialOperators>
+    </SpatialOperators>
+    <LogicalOperators>
+      <Function name="and">
+        <BinaryOpEncoder alias="AND"/>
+      </Function>
+      <Function name="or">
+        <BinaryOpEncoder alias="OR"/>
+      </Function>
+      <Function name="not">
+        <BinaryOpEncoder alias="NOT"/>
+      </Function>
+    </LogicalOperators>
+    <ComparsionOperators>
+      <Function name="=">
+        <BinaryOpEncoder alias="="/>
+      </Function>
+      <Function name="&#60;&#62;">
+        <BinaryOpEncoder alias="&#60;&#62;"/>
+      </Function>
+      <Function name="&#62;">
+        <BinaryOpEncoder alias="&#62;"/>
+      </Function>
+      <Function name="&#60;">
+        <BinaryOpEncoder alias="&#60;"/>
+      </Function>
+      <Function name="&#62;=">
+        <BinaryOpEncoder alias="&#62;="/>
+      </Function>
+      <Function name="&#60;=">
+        <BinaryOpEncoder alias="&#60;="/>
+      </Function>
+    </ComparsionOperators>
+    <ArithmeticOperators>
+      <Function name="+">
+        <BinaryOpEncoder alias="+"/>
+      </Function>
+      <Function name="-">
+        <BinaryOpEncoder alias="-"/>
+      </Function>
+      <Function name="*">
+        <BinaryOpEncoder alias="*"/>
+      </Function>
+      <Function name="/">
+        <BinaryOpEncoder alias="/"/>
+      </Function>
+    </ArithmeticOperators>
+    <Functions>
+      <Function name="upper">
+        <FunctionEncoder alias="UCase"/>
+      </Function>
+      <Function name="lower">
+        <FunctionEncoder alias="LCase"/>
+      </Function>
+      <Function name="trim">
+        <FunctionEncoder alias="Trim"/>
+      </Function>
+      <Function name="sum">
+        <FunctionEncoder alias="Sum"/>
+      </Function>
+      <Function name="avg">
+        <FunctionEncoder alias="Avg"/>
+      </Function>
+      <Function name="count">
+        <FunctionEncoder alias="Count"/>
+      </Function>
+      <Function name="max">
+        <FunctionEncoder alias="Max"/>
+      </Function>
+      <Function name="min">
+        <FunctionEncoder alias="Min"/>
+      </Function>
+    </Functions>
+    <GeomOperands/>
+  </QueryCapabilities>
+  <DataSetTypeCapabilities>
+    <SupportPrimaryKey>true</SupportPrimaryKey>
+    <SupportUniqueKey>true</SupportUniqueKey>
+    <SupportForeignKey>true</SupportForeignKey>
+    <SupportSequence>false</SupportSequence>
+    <SupportCheckConstraints>true</SupportCheckConstraints>
+    <SupportIndex>true</SupportIndex>
+    <SupportRTreeIndex>false</SupportRTreeIndex>
+    <SupportBTreeIndex>true</SupportBTreeIndex>
+    <SupportHashIndex>false</SupportHashIndex>
+    <SupportQuadTreeIndex>false</SupportQuadTreeIndex>
+  </DataSetTypeCapabilities>
+  <DataSetCapabilities>
+    <Bidirectional>false</Bidirectional>
+    <Random>false</Random>
+    <Indexed>false</Indexed>
+    <EfficientMovePrevious>false</EfficientMovePrevious>
+    <EfficientMoveBeforeFirst>true</EfficientMoveBeforeFirst>
+    <EfficientMoveLast>false</EfficientMoveLast>
+    <EfficientMoveAfterLast>false</EfficientMoveAfterLast>
+    <EfficientMove>false</EfficientMove>
+    <EfficientSize>false</EfficientSize>
+  </DataSetCapabilities>
+  <SpecificCapabilities/>
+  <AccessPolicyName>RW_ACCESS</AccessPolicyName>
+  <SupportTransactions>true</SupportTransactions>
+  <SupportDataSetPesistenceAPI>true</SupportDataSetPesistenceAPI>
+  <SupportDataSetTypePesistenceAPI>true</SupportDataSetTypePesistenceAPI>
+  <SupportPreparedQueryAPI>true</SupportPreparedQueryAPI>
+  <SupportBatchExecutorAPI>true</SupportBatchExecutorAPI>
+</DataSourceCapabilities>

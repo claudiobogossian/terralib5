@@ -35,7 +35,7 @@
 #include "ui_ColorCatalogWidgetForm.h"
 
 // QT
-#include <QtGui/QGridLayout>
+#include <QGridLayout>
 
 
 te::qt::widgets::ColorCatalogWidget::ColorCatalogWidget(QWidget* parent, Qt::WindowFlags f)

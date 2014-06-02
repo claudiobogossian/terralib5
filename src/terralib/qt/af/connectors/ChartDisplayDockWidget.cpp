@@ -32,8 +32,22 @@
 #include "../../../maptools/AbstractLayer.h"
 #include "../../widgets/charts/ChartConfigurer.h"
 #include "../../widgets/charts/ChartDisplayWidget.h"
-#include "events/LayerEvents.h"
+#include "../events/LayerEvents.h"
 #include "../ApplicationController.h"
+
+te::gm::Envelope* computeDataSetEnvelope(std::auto_ptr<te::da::DataSet> dataset, size_t propNum)
+{
+  te::gm::Envelope* result = new te::gm::Envelope;
+
+  while(dataset->moveNext())
+  {
+    te::gm::Geometry* geom = dataset->getGeometry(propNum).release();
+    assert(geom);
+    result->Union(*geom->getMBR());
+  }
+  return result;
+}
+
 
 te::qt::af::ChartDisplayDockWidget::ChartDisplayDockWidget(te::qt::widgets::ChartDisplayWidget* displayWidget, QWidget* parent) :
 QDockWidget(parent, Qt::Widget),
@@ -119,7 +133,7 @@ void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* o
     if (add)
     {
       te::da::ObjectIdSet* removed = new te::da::ObjectIdSet();
-      //Checking if the objectIds need to be inserted or removed from the current selection
+      //Checking if the objectIds need to be emoved from the current selection
       std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator itObjSet; 
       for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
       {
@@ -145,8 +159,33 @@ void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* o
   for(it=objIdIdx.begin(); it!=objIdIdx.end(); ++it)
     added->addProperty(m_layer->getData()->getPropertyName(*it), *it, m_layer->getData()->getPropertyDataType(*it));
 
+  //Acquiring the envelope
+  if(added->size() > 0)
+  {
+    std::auto_ptr<te::da::DataSet> ds = m_layer->getData(added);
+    ds->moveBeforeFirst();
+
+    size_t numProp, geomPos;
+    numProp =  ds->getNumProperties();
+
+    for(size_t i=0; i<numProp; i++)
+    {
+      if(ds->getPropertyDataType(i) == te::dt::GEOMETRY_TYPE)
+      {
+        geomPos = i;
+        break;
+      }
+    }
+
+    m_layer->select(added);
+    te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer, computeDataSetEnvelope(ds, geomPos));
+    ApplicationController::getInstance().broadcast(&e);
+  }
+  else
+  {
+    m_layer->select(added);
+    te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer);
+    ApplicationController::getInstance().broadcast(&e);
+  }
   oids->clear();
-  m_layer->select(added);
-  te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer);
-  ApplicationController::getInstance().broadcast(&e);
 }

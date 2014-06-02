@@ -34,7 +34,7 @@
 #include <set>
 
 // Qt
-#include <QtGui/QDialog>
+#include <QDialog>
 
 // Forward declaration
 namespace Ui { class PluginManagerDialogForm; }

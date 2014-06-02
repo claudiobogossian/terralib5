@@ -164,7 +164,7 @@ bool te::rst::Vectorizer::run(std::vector<te::gm::Geometry*>& polygons)
   double val;
   int countObjects = 0;
   std::vector<unsigned int> indexVec;
-  te::common::TaskProgress task(TR_RASTER("Vectorizing"), te::common::TaskProgress::UNDEFINED, m_nLines);
+  te::common::TaskProgress task(TE_TR("Vectorizing"), te::common::TaskProgress::UNDEFINED, m_nLines);
 
 // scanning rotulated image in row order to vectorize the cells
   te::gm::Coord2D last_line_ll_point;

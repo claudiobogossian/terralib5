@@ -72,7 +72,7 @@ std::auto_ptr<te::da::DataSet> te::wfs::Transactor::getDataSet(const std::string
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
-    throw Exception(TR_WFS("The informed data set could not be found in the data source."));
+    throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
   return std::auto_ptr<te::da::DataSet>(new te::ogr::DataSet(ds, layer));
 }
@@ -93,7 +93,7 @@ std::auto_ptr<te::da::DataSet> te::wfs::Transactor::getDataSet(const std::string
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
-    throw Exception(TR_OGR("The informed data set could not be found in the data source."));
+    throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
   layer->SetSpatialFilterRect(e->m_llx, e->m_lly, e->m_urx, e->m_ury);
   
@@ -116,7 +116,7 @@ std::auto_ptr<te::da::DataSet> te::wfs::Transactor::getDataSet(const std::string
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
-    throw Exception(TR_OGR("The informed data set could not be found in the data source."));
+    throw Exception(TE_TR("The informed data set could not be found in the data source!"));
   
   OGRGeometry* ogrg = te::ogr::Convert2OGR(g);
 
@@ -147,7 +147,7 @@ std::auto_ptr<te::da::DataSet> te::wfs::Transactor::query(const te::da::Select& 
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
-    throw Exception(TR_OGR("The informed data set could not be found in the data source."));
+    throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
   te::gm::Envelope* e = visitor.getMBR();
 
@@ -169,7 +169,7 @@ std::auto_ptr<te::da::DataSet> te::wfs::Transactor::query(const std::string& que
   OGRLayer* layer = ds->ExecuteSQL(query.c_str(), 0, 0);
 
   if(layer == 0)
-    throw Exception(TR_OGR("The informed data set could not be found in the data source."));
+    throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
   return std::auto_ptr<te::da::DataSet>(new te::ogr::DataSet(ds, layer));
 }
@@ -205,7 +205,7 @@ std::auto_ptr<te::da::DataSetType> te::wfs::Transactor::getDataSetType(const std
   OGRLayer* layer = m_ds->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
-    throw Exception(TR_WFS("Could not retrieve the informed data set!"));
+    throw Exception(TE_TR("Could not retrieve the informed data set!"));
 
   std::auto_ptr<te::da::DataSetType> type(te::ogr::Convert2TerraLib(layer->GetLayerDefn()));
   type->setName(name);
@@ -257,7 +257,7 @@ std::auto_ptr<te::dt::Property> te::wfs::Transactor::getProperty(const std::stri
   OGRLayer* layer = m_ds->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
-    throw Exception(TR_WFS("Could not retrieve the informed data set!"));
+    throw Exception(TE_TR("Could not retrieve the informed data set!"));
 
   int propertyPos = layer->GetLayerDefn()->GetFieldIndex(name.c_str());
 
@@ -276,7 +276,7 @@ std::auto_ptr<te::dt::Property> te::wfs::Transactor::getProperty(const std::stri
   OGRLayer* layer = m_ds->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
-    throw Exception(TR_WFS("Could not retrieve the informed data set!"));
+    throw Exception(TE_TR("Could not retrieve the informed data set!"));
 
   OGRFeatureDefn* def = layer->GetLayerDefn();
   OGRFieldDefn* fdef = def->GetFieldDefn(propertyPos);
@@ -300,7 +300,7 @@ std::vector<std::string> te::wfs::Transactor::getPropertyNames(const std::string
   OGRLayer* layer = m_ds->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
-    throw Exception(TR_WFS("Could not retrieve the informed data set!"));
+    throw Exception(TE_TR("Could not retrieve the informed data set!"));
 
   std::vector<std::string> propertyNames;
 
@@ -342,14 +342,14 @@ std::auto_ptr<te::gm::Envelope> te::wfs::Transactor::getExtent(const std::string
   OGRLayer* layer = m_ds->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
-    throw Exception(TR_WFS("Could not retrieve the informed data set!"));
+    throw Exception(TE_TR("Could not retrieve the informed data set!"));
 
   std::auto_ptr<OGREnvelope> ogrEnv(new OGREnvelope);
 
   if(layer->GetExtent(ogrEnv.get()) != OGRERR_NONE)
   {
     m_ds->getOGRDataSource()->ReleaseResultSet(layer);
-    throw Exception(TR_OGR("Error when attempting get extent."));
+    throw Exception(TE_TR("Error when attempting to get the extent!"));
   }
 
   std::auto_ptr<te::gm::Envelope> teEnv(te::ogr::Convert2TerraLib(ogrEnv.get()));
@@ -372,7 +372,7 @@ std::size_t te::wfs::Transactor::getNumberOfItems(const std::string& datasetName
   OGRLayer* layer = m_ds->getOGRDataSource()->GetLayerByName(datasetName.c_str());
 
   if(layer == 0)
-    throw Exception(TR_WFS("Could not retrieve the informed data set!"));
+    throw Exception(TE_TR("Could not retrieve the informed data set!"));
 
   return layer->GetFeatureCount();
 }
@@ -398,251 +398,251 @@ bool te::wfs::Transactor::dataSetExists(const std::string& name)
 
 void te::wfs::Transactor::begin()
 {
-  throw Exception(TR_WFS("The method begin() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method begin() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::commit()
 {
-  throw Exception(TR_WFS("The method commit() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method commit() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::rollBack()
 {
-  throw Exception(TR_WFS("The method rollBack() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method rollBack() is not supported by the WFS driver!"));
 }
 
 bool te::wfs::Transactor::isInTransaction() const
 {
-  throw Exception(TR_WFS("The method isInTransaction() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method isInTransaction() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::execute(const te::da::Query& /*command*/)
 {
-  throw Exception(TR_WFS("The method execute() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method execute() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::execute(const std::string& /*command*/)
 {
-  throw Exception(TR_WFS("The method execute() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method execute() is not supported by the WFS driver!"));
 }
 
 std::auto_ptr<te::da::PreparedQuery> te::wfs::Transactor::getPrepared(const std::string& /*qName*/)
 {
-  throw Exception(TR_WFS("The method getPrepared() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method getPrepared() is not supported by the WFS driver!"));
 }
 
 std::auto_ptr<te::da::BatchExecutor> te::wfs::Transactor::getBatchExecutor()
 {
-  throw Exception(TR_WFS("The method getBatchExecutor() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method getBatchExecutor() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::cancel()
 {
-  throw Exception(TR_WFS("The method cancel() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method cancel() is not supported by the WFS driver!"));
 }
 
 boost::int64_t te::wfs::Transactor::getLastGeneratedId()
 {
-  throw Exception(TR_WFS("The method getLastGeneratedId() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method getLastGeneratedId() is not supported by the WFS driver!"));
 }
 
 std::string te::wfs::Transactor::escape(const std::string& /*value*/)
 {
-  throw Exception(TR_WFS("The method escape() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method escape() is not supported by the WFS driver!"));
 }
 
 bool te::wfs::Transactor::isDataSetNameValid(const std::string& /*datasetName*/)
 {
-  throw Exception(TR_WFS("The method isDataSetNameValid() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method isDataSetNameValid() is not supported by the WFS driver!"));
 }
 
 bool te::wfs::Transactor::isPropertyNameValid(const std::string& /*propertyName*/)
 {
-  throw Exception(TR_WFS("The method isPropertyNameValid() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method isPropertyNameValid() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::addProperty(const std::string& /*datasetName*/, te::dt::Property* /*p*/)
 {
-  throw Exception(TR_WFS("The method addProperty() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method addProperty() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::dropProperty(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WFS("The method dropProperty() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method dropProperty() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::renameProperty(const std::string& /*datasetName*/, const std::string& /*propertyName*/, const std::string& /*newPropertyName*/)
 {
-  throw Exception(TR_WFS("The method renameProperty() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method renameProperty() is not supported by the WFS driver!"));
 }
 
 std::auto_ptr<te::da::PrimaryKey> te::wfs::Transactor::getPrimaryKey(const std::string& /*datasetName*/)
 {
-  throw Exception(TR_WFS("The method getPrimaryKey() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method getPrimaryKey() is not supported by the WFS driver!"));
 }
 
 bool te::wfs::Transactor::primaryKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WFS("The method primaryKeyExists() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method primaryKeyExists() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::addPrimaryKey(const std::string& /*datasetName*/, te::da::PrimaryKey* /*pk*/)
 {
-  throw Exception(TR_WFS("The method addPrimaryKey() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method addPrimaryKey() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::dropPrimaryKey(const std::string& /*datasetName*/)
 {
-  throw Exception(TR_WFS("The method dropPrimaryKey() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method dropPrimaryKey() is not supported by the WFS driver!"));
 }
 
 std::auto_ptr<te::da::ForeignKey> te::wfs::Transactor::getForeignKey(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WFS("The method getForeignKey() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method getForeignKey() is not supported by the WFS driver!"));
 }
 
 std::vector<std::string> te::wfs::Transactor::getForeignKeyNames(const std::string& /*datasetName*/)
 {
-  throw Exception(TR_WFS("The method getForeignKeyNames() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method getForeignKeyNames() is not supported by the WFS driver!"));
 }
 
 bool te::wfs::Transactor::foreignKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WFS("The method foreignKeyExists() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method foreignKeyExists() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::addForeignKey(const std::string& /*datasetName*/, te::da::ForeignKey* /*fk*/)
 {
-  throw Exception(TR_WFS("The method addForeignKey() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method addForeignKey() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::dropForeignKey(const std::string& /*datasetName*/, const std::string& /*fkName*/)
 {
-  throw Exception(TR_WFS("The method dropForeignKey() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method dropForeignKey() is not supported by the WFS driver!"));
 }
 
 std::auto_ptr<te::da::UniqueKey> te::wfs::Transactor::getUniqueKey(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WFS("The method getUniqueKey() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method getUniqueKey() is not supported by the WFS driver!"));
 }
 
 std::vector<std::string> te::wfs::Transactor::getUniqueKeyNames(const std::string& /*datasetName*/)
 {
-  throw Exception(TR_WFS("The method getUniqueKeyNames() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method getUniqueKeyNames() is not supported by the WFS driver!"));
 }
 
 bool te::wfs::Transactor::uniqueKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WFS("The method uniqueKeyExists() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method uniqueKeyExists() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::addUniqueKey(const std::string& /*datasetName*/, te::da::UniqueKey* /*uk*/)
 {
-  throw Exception(TR_WFS("The method addUniqueKey() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method addUniqueKey() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::dropUniqueKey(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WFS("The method dropUniqueKey() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method dropUniqueKey() is not supported by the WFS driver!"));
 }
 
 std::auto_ptr<te::da::CheckConstraint> te::wfs::Transactor::getCheckConstraint(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WFS("The method getCheckConstraint() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method getCheckConstraint() is not supported by the WFS driver!"));
 }
 
 std::vector<std::string> te::wfs::Transactor::getCheckConstraintNames(const std::string& /*datasetName*/)
 {
-  throw Exception(TR_WFS("The method getCheckConstraintNames() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method getCheckConstraintNames() is not supported by the WFS driver!"));
 }
 
 bool te::wfs::Transactor::checkConstraintExists(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WFS("The method checkConstraintExists() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method checkConstraintExists() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::addCheckConstraint(const std::string& /*datasetName*/, te::da::CheckConstraint* /*cc*/)
 {
-  throw Exception(TR_WFS("The method addCheckConstraint() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method addCheckConstraint() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::dropCheckConstraint(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WFS("The method dropCheckConstraint() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method dropCheckConstraint() is not supported by the WFS driver!"));
 }
 
 std::auto_ptr<te::da::Index> te::wfs::Transactor::getIndex(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WFS("The method getIndex() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method getIndex() is not supported by the WFS driver!"));
 }
 
 std::vector<std::string> te::wfs::Transactor::getIndexNames(const std::string& /*datasetName*/)
 {
-  throw Exception(TR_WFS("The method getIndexNames() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method getIndexNames() is not supported by the WFS driver!"));
 }
 
 bool te::wfs::Transactor::indexExists(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WFS("The method indexExists() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method indexExists() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::addIndex(const std::string& /*datasetName*/, te::da::Index* /*idx*/, const std::map<std::string, std::string>& /*options*/)
 {
-  throw Exception(TR_WFS("The method addIndex() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method addIndex() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::dropIndex(const std::string& /*datasetName*/, const std::string& /*idxName*/)
 {
-  throw Exception(TR_WFS("The method dropIndex() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method dropIndex() is not supported by the WFS driver!"));
 }
 
 std::auto_ptr<te::da::Sequence> te::wfs::Transactor::getSequence(const std::string& /*name*/)
 {
-  throw Exception(TR_WFS("The method getSequence() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method getSequence() is not supported by the WFS driver!"));
 }
 
 std::vector<std::string> te::wfs::Transactor::getSequenceNames()
 {
-  throw Exception(TR_WFS("The method getSequenceNames() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method getSequenceNames() is not supported by the WFS driver!"));
 }
 
 bool te::wfs::Transactor::sequenceExists(const std::string& /*name*/)
 {
-  throw Exception(TR_WFS("The method sequenceExists() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method sequenceExists() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::addSequence(te::da::Sequence* /*sequence*/)
 {
-  throw Exception(TR_WFS("The method addSequence() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method addSequence() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::dropSequence(const std::string& /*name*/)
 {
-  throw Exception(TR_WFS("The method dropSequence() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method dropSequence() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::createDataSet(te::da::DataSetType* /*dt*/,
                                         const std::map<std::string, std::string>& /*options*/)
 {
-  throw Exception(TR_WFS("The method createDataSet() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method createDataSet() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::cloneDataSet(const std::string& /*name*/,
                                        const std::string& /*cloneName*/,
                                        const std::map<std::string, std::string>& /*options*/)
 {
-  throw Exception(TR_WFS("The method cloneDataSet() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method cloneDataSet() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::dropDataSet(const std::string& /*name*/)
 {
-  throw Exception(TR_WFS("The method dropDataSet() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method dropDataSet() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::renameDataSet(const std::string& /*name*/,
                                         const std::string& /*newName*/)
 {
-  throw Exception(TR_WFS("The method renameDataSet() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method renameDataSet() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::add(const std::string& /*datasetName*/,
@@ -650,12 +650,12 @@ void te::wfs::Transactor::add(const std::string& /*datasetName*/,
                               const std::map<std::string, std::string>& /*options*/,
                               std::size_t /*limit*/)
 {
-  throw Exception(TR_WFS("The method add() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method add() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::remove(const std::string& /*datasetName*/, const te::da::ObjectIdSet* /*oids*/)
 {
-  throw Exception(TR_WFS("The method remove() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method remove() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::update(const std::string& /*datasetName*/,
@@ -665,12 +665,12 @@ void te::wfs::Transactor::update(const std::string& /*datasetName*/,
                                  const std::map<std::string, std::string>& /*options*/,
                                  std::size_t /*limit*/)
 {
-  throw Exception(TR_WFS("The method update() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method update() is not supported by the WFS driver!"));
 }
 
 void te::wfs::Transactor::optimize(const std::map<std::string, std::string>& /*opInfo*/)
 {
-  throw Exception(TR_WFS("The method optimize() is not supported by the WFS driver."));
+  throw Exception(TE_TR("The method optimize() is not supported by the WFS driver!"));
 }
 
 //@}

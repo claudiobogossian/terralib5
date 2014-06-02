@@ -177,7 +177,7 @@ void te::rst::SynchronizedBandBlocksManager::free()
           {
             if( !m_syncPtr->releaseBlock( blockBIdx, blockXIdx, blockYIdx, blockPtr ) )
             {
-              throw Exception(TR_RASTER("Block release error") );
+              throw Exception(TE_TR("Block release error") );
             }
           }
         }
@@ -247,7 +247,7 @@ void* te::rst::SynchronizedBandBlocksManager::getBlockPointer(unsigned int band,
       if( !m_syncPtr->releaseBlock( choosedSwapBlockIndex.m_b, 
         choosedSwapBlockIndex.m_x, choosedSwapBlockIndex.m_y, m_getBlockPointer_BlkPtr ) )
       {
-        throw Exception(TR_RASTER("Block release error") );
+        throw Exception(TE_TR("Block release error") );
       }        
       
       // advances the next swap block fifo index
@@ -262,7 +262,7 @@ void* te::rst::SynchronizedBandBlocksManager::getBlockPointer(unsigned int band,
     
     if( !m_syncPtr->acquireBlock( band, x, y, m_getBlockPointer_BlkPtr ) )
     {
-      throw Exception(TR_RASTER("Block release error") );
+      throw Exception(TE_TR("Block release error") );
     }      
 
     m_blocksPointers[ band ][ y ][ x ] = m_getBlockPointer_BlkPtr;

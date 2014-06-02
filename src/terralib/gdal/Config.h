@@ -37,50 +37,6 @@
  */
 #define TE_GDAL_DRIVER_IDENTIFIER "GDAL"
 
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
-  \def TE_GDAL_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib Coverage module.
- */
-#define TE_GDAL_TEXT_DOMAIN "tegdal"
-
-/*!
-  \def TE_GDAL_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
- */
-#define TE_GDAL_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TR_GDAL
-
-  \brief It marks a string in order to get translated. This is a special mark used in the Vector Geometry module of TerraLib. 
- */
-#define TR_GDAL(message) TR(message, TE_GDAL_TEXT_DOMAIN)
-
-#define TR_GDAL_PLURAL(message1, message2, n) TR_PLURAL(TE_GDAL_TEXT_DOMAIN, message1, message2, n)
-
-//@}
-
-/** @name Logger Defines
- *  Flags for building TerraLib with Log support
- */
-//@{
-
-/*!
-  \def TE_GDAL_LOGGER_NAME
-  
-  \brief This is the fully qualified TerraLib Vector Geometry Model logger name.
- */
-#define TE_GDAL_LOGGER_NAME "te.da.gdal"
-
-//@}
-
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library
  */

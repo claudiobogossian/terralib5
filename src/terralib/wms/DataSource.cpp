@@ -63,7 +63,7 @@ void te::wms::DataSource::setConnectionInfo(const std::map<std::string, std::str
 std::auto_ptr<te::da::DataSourceTransactor> te::wms::DataSource::getTransactor()
 {
   if(!m_isOpened)
-    throw Exception(TR_WMS("The data source is not open."));
+    throw Exception(TE_TR("The data source is not opened!"));
 
   return std::auto_ptr<te::da::DataSourceTransactor>(new Transactor(m_connectionInfo.find("URI")->second, m_layersInfo));
 }
@@ -77,7 +77,7 @@ void te::wms::DataSource::open()
 
   GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(m_connectionInfo.find("URI")->second.c_str(), GA_ReadOnly));
   if(gds == 0)
-    throw Exception(TR_WMS("Error establishing connection with the informed server."));
+    throw Exception(TE_TR("Error establishing connection with the informed server!"));
 
   // Gets the layer informations from server
   char** subdatasets = gds->GetMetadata("SUBDATASETS");
@@ -141,12 +141,12 @@ const std::map<std::string, te::wms::WMSLayerInfo>& te::wms::DataSource::getLaye
 
 void te::wms::DataSource::create(const std::map<std::string, std::string>& /*dsInfo*/)
 {
-  throw Exception(TR_WMS("The create() method is not supported by the WMS driver."));
+  throw Exception(TE_TR("The create() method is not supported by the WMS driver!"));
 }
 
 void te::wms::DataSource::drop(const std::map<std::string, std::string>& /*dsInfo*/)
 {
-  throw Exception(TR_WMS("The drop() method is not supported by the WMS driver."));
+  throw Exception(TE_TR("The drop() method is not supported by the WMS driver!"));
 }
 
 bool te::wms::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
@@ -180,9 +180,9 @@ std::vector<te::common::CharEncoding> te::wms::DataSource::getEncodings(const st
 void te::wms::DataSource::verifyConnectionInfo() const
 {
   if(m_connectionInfo.empty())
-    throw Exception(TR_WMS("The connection information is empty."));
+    throw Exception(TE_TR("The connection information is empty!"));
 
   std::map<std::string, std::string>::const_iterator it = m_connectionInfo.find("URI");
   if(it == m_connectionInfo.end())
-    throw Exception(TR_WMS("The connection information is invalid. Missing URI parameter."));
+    throw Exception(TE_TR("The connection information is invalid. Missing URI parameter!"));
 }

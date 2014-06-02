@@ -34,7 +34,7 @@
 #include "../../../color/RGBAColor.h"
 
 // Qt
-#include <QtGui/QDialog>
+#include <QDialog>
 #include <QtCore/QObject>
 #include <QtCore/QPoint>
 

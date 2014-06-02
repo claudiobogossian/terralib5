@@ -33,7 +33,7 @@
 #include "GEOSWriter.h"
 #include "Point.h"
 
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
 // GEOS
 #include <geos/algorithm/CentroidArea.h>
 #include <geos/geom/Geometry.h>
@@ -133,19 +133,19 @@ void te::gm::CurvePolygon::clear()
 
 double te::gm::CurvePolygon::getArea() const
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> g(GEOSWriter::write(this));
 
   return g->getArea();
 
 #else
-  throw Exception(TR_GEOM("getArea routine is supported by GEOS! Please, enable the GEOS support."));
+  throw Exception(TE_TR("getArea routine is supported by GEOS! Please, enable the GEOS support."));
 #endif  
 }
 
 te::gm::Point* te::gm::CurvePolygon::getCentroid() const
 {
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   geos::algorithm::CentroidArea c;
@@ -164,7 +164,7 @@ te::gm::Point* te::gm::CurvePolygon::getCentroid() const
   return 0;
 
 #else
-  throw te::common::Exception(TR_GEOM("buffer routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("buffer routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
@@ -216,6 +216,7 @@ void te::gm::CurvePolygon::setSRID(int srid) throw()
 
 void te::gm::CurvePolygon::transform(int srid) throw(te::common::Exception)
 {
+#ifdef TERRALIB_MOD_SRS_ENABLED
   if(srid == m_srid)
     return;
 
@@ -228,6 +229,9 @@ void te::gm::CurvePolygon::transform(int srid) throw(te::common::Exception)
     computeMBR(true);  // just update the polygon MBR
 
   m_srid = srid;
+#else
+  throw Exception(TE_TR("transform method is not supported!"));
+#endif // TERRALIB_MOD_SRS_ENABLED
 }
 
 void te::gm::CurvePolygon::computeMBR(bool cascade) const throw()

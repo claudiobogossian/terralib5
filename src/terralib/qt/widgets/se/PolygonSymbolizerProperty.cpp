@@ -27,7 +27,6 @@
 */
 
 // Terralib
-#include "../../../../../third-party/qt/propertybrowser/qttreepropertybrowser.h"
 #include "../../../se/Fill.h"
 #include "../../../se/PolygonSymbolizer.h"
 #include "BasicFillPropertyItem.h"
@@ -36,8 +35,12 @@
 #include "PolygonSymbolizerProperty.h"
 
 // Qt
-#include <QtGui/QGridLayout>
-#include <QtGui/QToolBox>
+#include <QGridLayout>
+#include <QToolBox>
+
+// QtPropertyBrowser
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
+#include <QtPropertyBrowser/QtVariantPropertyManager>
 
 // STL
 #include <cassert>

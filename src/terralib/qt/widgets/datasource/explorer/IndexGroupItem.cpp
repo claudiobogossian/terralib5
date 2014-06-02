@@ -36,8 +36,8 @@
 #include "IndexItem.h"
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QWidget>
 
 te::qt::widgets::IndexGroupItem::IndexGroupItem(AbstractDataSourceTreeItem* parent)
   : AbstractDataSourceTreeItem(parent)

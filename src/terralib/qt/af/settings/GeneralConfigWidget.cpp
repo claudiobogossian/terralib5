@@ -4,15 +4,16 @@
 // TerraLib
 #include "terralib/common/SystemApplicationSettings.h"
 #include "terralib/common/UserApplicationSettings.h"
+#include "../ApplicationController.h"
 #include "../Utils.h"
 
 // Qt
-#include <QtCore/QDir>
-#include <QtCore/QFileInfo>
-#include <QtGui/QInputDialog>
-#include <QtGui/QPainter>
-#include <QtGui/QPixmap>
-#include <QtGui/QPushButton>
+#include <QDir>
+#include <QFileInfo>
+#include <QInputDialog>
+#include <QPainter>
+#include <QPixmap>
+#include <QPushButton>
 
 // Boost
 #include <boost/foreach.hpp>
@@ -62,6 +63,7 @@ void GetPluginsCategories(QComboBox* cbb)
   boost::property_tree::ptree& p = te::common::SystemApplicationSettings::getInstance().getAllSettings().get_child("Application");
 
   if(!p.empty())
+  {
     BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("DefaultPluginsCategory"))
     {
       if(v.second.data().empty())
@@ -69,6 +71,7 @@ void GetPluginsCategories(QComboBox* cbb)
 
       cbb->addItem(v.second.data().c_str());
     }
+  }
 }
 
 void FillSRSList(QComboBox* list)
@@ -113,12 +116,12 @@ void FillSRSList(QComboBox* list)
 
 te::qt::af::GeneralConfigWidget::GeneralConfigWidget(QWidget* parent) :
 AbstractSettingWidget(parent),
-m_ui(new Ui::GeneralConfigWidgetForm),
 m_needRestart(false),
 m_sysIcon(0),
 m_sizeIcon(0),
 m_aboutIcon(0),
-m_terraIcon(0)
+m_terraIcon(0),
+m_ui(new Ui::GeneralConfigWidgetForm)
 {
   m_ui->setupUi(this);
 
@@ -235,8 +238,8 @@ void te::qt::af::GeneralConfigWidget::saveChanges()
   if(usrFileChanged)
     UpdateUserSettingsFile(userFile.c_str());
 
-  if(plgFileChanged)
-    UpdateAppPluginsFile(plgFile.c_str());
+  //if(plgFileChanged)
+  //  UpdateAppPluginsFile(plgFile.c_str());
 
   if(appSet.getValue("Application.Organization") != org)
     orgChanged = true;
@@ -434,7 +437,8 @@ void te::qt::af::GeneralConfigWidget::textChanged(const QString&)
   changeApplyButtonState(true);
 }
 
-void te::qt::af::GeneralConfigWidget::colorChanged(const QColor&)
+void te::qt::af::GeneralConfigWidget::colorChanged(const QColor& c)
 {
+  ApplicationController::getInstance().setSelectionColor(c);
   changeApplyButtonState(true);
 }

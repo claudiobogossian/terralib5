@@ -29,9 +29,9 @@
 #include "ui_DataSetWidgetForm.h"
 
 // Qt
-#include <QtGui/QIcon>
-#include <QtGui/QMessageBox>
-#include <QtGui/QToolButton>
+#include <QIcon>
+#include <QMessageBox>
+#include <QToolButton>
 
 
 te::qt::widgets::DataSetWidget::DataSetWidget(QWidget* parent, Qt::WindowFlags f)

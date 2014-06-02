@@ -1,5 +1,5 @@
 // TerraLib
-//#include <terralib/dataaccess.h>
+#include "../Config.h"
 
 // Examples
 #include "DataAccessExamples.h"
@@ -15,8 +15,12 @@ void MemoryExample()
   try
   {
     std::auto_ptr<te::da::DataSource> dsMem = te::da::DataSourceFactory::make("MEM");
+  
     std::map<std::string, std::string> connInfo;
-    connInfo["SOURCE"] = ""TE_DATA_EXAMPLE_DIR"/data/mem";
+  
+    std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+    connInfo["SOURCE"] = data_dir + "/mem";
     dsMem->setConnectionInfo(connInfo);
 
     //It creates a data set type in memory called "SoilMeasures"
@@ -51,12 +55,12 @@ void MemoryExample()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in Memory Example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in Memory Example: " << e.what() << std::endl;
     return;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in Memory Example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in Memory Example!" << std::endl;
     return;
   }  
 }

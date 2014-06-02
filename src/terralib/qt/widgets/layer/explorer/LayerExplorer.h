@@ -35,7 +35,7 @@
 #include <list>
 
 // Qt
-#include <QtGui/QDockWidget>
+#include <QDockWidget>
 #include <QModelIndex>
 
 namespace te

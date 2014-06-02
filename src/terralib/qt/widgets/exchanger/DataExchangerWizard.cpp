@@ -56,9 +56,9 @@
 //#include <boost/chrono.hpp>
 
 // Qt
-#include <QtGui/QAbstractButton>
-#include <QtGui/QMessageBox>
-#include <QtGui/QVBoxLayout>
+#include <QAbstractButton>
+#include <QMessageBox>
+#include <QVBoxLayout>
 
 te::qt::widgets::DataExchangerWizard::DataExchangerWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f),

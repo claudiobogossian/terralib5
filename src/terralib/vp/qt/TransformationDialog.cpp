@@ -37,15 +37,14 @@
 #include "../Exception.h"
 #include "TransformationDialog.h"
 #include "ui_TransformationDialogForm.h"
-#include "VectorProcessingConfig.h"
 
 // Qt
-#include <QtCore/QList>
-#include <QtCore/QSize>
-#include <QtGui/QFileDialog>
-#include <QtGui/QListWidget>
-#include <QtGui/QListWidgetItem>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QList>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QMessageBox>
+#include <QSize>
 
 te::vp::TransformationDialog::TransformationDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),

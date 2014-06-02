@@ -62,7 +62,7 @@ namespace te
       public:
 
         /*! \brief It tries to find a default config file based on system macros and default condigurations. */
-        void load();
+        //void load();
 
         /*!
           \brief It loads the setting from the given file.

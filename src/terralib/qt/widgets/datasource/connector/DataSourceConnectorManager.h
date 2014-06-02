@@ -34,7 +34,7 @@
 #include <string>
 
 // Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 namespace te
 {

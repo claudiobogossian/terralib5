@@ -31,41 +31,6 @@
 
 #define TE_VP_MODULE_NAME "te.vp"
 
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
-  \def TE_VP_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in Terrralib Vector Processing module.
- */
-#define TE_VP_TEXT_DOMAIN "tevp"
-
-/*!
-  \def TE_VP_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
- */
-#define TE_VP_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TR_VP
-
-  \brief It marks a string in order to get translated. This is a special mark used in the Terrralib Vector Processing module. 
- */
-#define TR_VP(message) TR(message, TE_VP_TEXT_DOMAIN)
-
-/*!
-  \def TR_PLURAL_VP
-
-  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the Vector Processing module of Terrralib. 
- */
-#define TR_PLURAL_VP(message1, message2, n) TR_PLURAL(TE_VP_TEXT_DOMAIN, message1, message2, n)
-
-//@}
-
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library
  */

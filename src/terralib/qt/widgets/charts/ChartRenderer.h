@@ -31,8 +31,8 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QImage>
-#include <QtGui/QPainter>
+#include <QImage>
+#include <QPainter>
 
 // STL
 #include <vector>

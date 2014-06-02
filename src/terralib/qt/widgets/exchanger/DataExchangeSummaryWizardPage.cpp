@@ -33,8 +33,8 @@
 #include <boost/lexical_cast.hpp>
 
 // Qt
-#include <QtGui/QIcon>
-#include <QtGui/QMessageBox>
+#include <QIcon>
+#include <QMessageBox>
 
 te::qt::widgets::DataExchangeSummaryWizardPage::DataExchangeSummaryWizardPage(QWidget* parent)
   : QWizardPage(parent),

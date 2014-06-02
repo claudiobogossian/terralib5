@@ -124,7 +124,7 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
-    throw Exception(TR_OGR("The informed data set could not be found in the data source."));
+    throw Exception(TE_TR("The informed data set could not be found in the data source."));
 
   return std::auto_ptr<te::da::DataSet>(new DataSet(ds, layer));
 }
@@ -146,7 +146,7 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
-    throw Exception(TR_OGR("The informed data set could not be found in the data source."));
+    throw Exception(TE_TR("The informed data set could not be found in the data source."));
 
   layer->SetSpatialFilterRect(e->m_llx, e->m_lly, e->m_urx, e->m_ury);
   
@@ -170,7 +170,7 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
-    throw Exception(TR_OGR("The informed data set could not be found in the data source."));
+    throw Exception(TE_TR("The informed data set could not be found in the data source."));
   
   OGRGeometry* ogrg = Convert2OGR(g);
 
@@ -202,7 +202,7 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const te::da::Select& 
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
-    throw Exception(TR_OGR("Could not retrieve the DataSet from data source."));
+    throw Exception(TE_TR("Could not retrieve the DataSet from data source."));
 
   te::gm::Envelope* e = visitor.getMBR();
 
@@ -225,7 +225,7 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const std::string& que
   OGRLayer* layer = ds->ExecuteSQL(query.c_str(), 0, 0);
 
   if(layer == 0)
-    throw Exception(TR_OGR("Could not retrieve the DataSet from data source."));
+    throw Exception(TE_TR("Could not retrieve the DataSet from data source."));
 
   return std::auto_ptr<te::da::DataSet>(new DataSet(ds, layer));
 }
@@ -516,7 +516,7 @@ void te::ogr::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
     if(p->getType() != te::dt::GEOMETRY_TYPE)
     {
 //      if(!l->TestCapability(OLCCreateField))
-//        throw Exception(TR_OGR("This dataset do not support add fields operation."));
+//        throw Exception(TE_TR("This dataset do not support add fields operation."));
 
       OGRFieldDefn* nField = Convert2OGR(p);
       OGRErr error = l->CreateField(nField);
@@ -524,12 +524,12 @@ void te::ogr::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
       delete nField;
 
       if(error != OGRERR_NONE)
-        throw Exception(TR_OGR("Error when attempting add the property."));
+        throw Exception(TE_TR("Error when attempting add the property."));
 
       error = l->SyncToDisk();
 
       if(error != OGRERR_NONE)
-        throw Exception(TR_OGR("Error saving changes on the file."));
+        throw Exception(TE_TR("Error saving changes on the file."));
     }
   }
 }
@@ -541,22 +541,22 @@ void te::ogr::Transactor::dropProperty(const std::string& datasetName, const std
   if(l != 0)
   {
     if(!l->TestCapability(OLCDeleteField))
-      throw Exception(TR_OGR("This dataset do not support remove properties operation."));
+      throw Exception(TE_TR("This dataset do not support remove properties operation."));
 
     int fPos = l->GetLayerDefn()->GetFieldIndex(name.c_str());
 
     if(fPos < 0)
-      throw Exception(TR_OGR("Field not found."));
+      throw Exception(TE_TR("Field not found."));
 
     OGRErr error = l->DeleteField(fPos);
 
     if(error != OGRERR_NONE)
-      throw Exception(TR_OGR("Error when attempting remove the property."));
+      throw Exception(TE_TR("Error when attempting remove the property."));
 
     error = l->SyncToDisk();
 
     if(error != OGRERR_NONE)
-      throw Exception(TR_OGR("Error saving changes on the file."));
+      throw Exception(TE_TR("Error saving changes on the file."));
   }
 }
 
@@ -574,7 +574,7 @@ void te::ogr::Transactor::renameProperty(const std::string& datasetName,
     int idx = l->GetLayerDefn()->GetFieldIndex(propertyName.c_str());
 
     if(idx == -1)
-      throw Exception(TR_OGR("Field to be renamed does not exists."));
+      throw Exception(TE_TR("Field to be renamed does not exists."));
 
     OGRFieldDefn* df = l->GetLayerDefn()->GetFieldDefn(idx);
 
@@ -585,7 +585,7 @@ void te::ogr::Transactor::renameProperty(const std::string& datasetName,
     OGRErr err = l->AlterFieldDefn(idx, dfn, ALTER_NAME_FLAG);
 
     if(err != OGRERR_NONE)
-      throw Exception(TR_OGR("Fail to rename field."));
+      throw Exception(TE_TR("Fail to rename field."));
   }
 }
 
@@ -603,12 +603,12 @@ void te::ogr::Transactor::changePropertyDefinition(const std::string& datasetNam
   if(l != 0)
   {
     if(!l->TestCapability(OLCAlterFieldDefn))
-      throw Exception(TR_OGR("This data source do not support the operation of alter columns type."));
+      throw Exception(TE_TR("This data source do not support the operation of alter columns type."));
 
     int idx = l->GetLayerDefn()->GetFieldIndex(propName.c_str());
 
     if(idx == -1)
-      throw Exception(TR_OGR("Field to be renamed does not exists."));
+      throw Exception(TE_TR("Field to be renamed does not exists."));
 
     OGRFieldDefn* dfn = new OGRFieldDefn(l->GetLayerDefn()->GetFieldDefn(idx));
 
@@ -617,7 +617,7 @@ void te::ogr::Transactor::changePropertyDefinition(const std::string& datasetNam
     OGRErr err = l->AlterFieldDefn(idx, dfn, ALTER_TYPE_FLAG);
 
     if(err != OGRERR_NONE)
-      throw Exception(TR_OGR("Fail to to change field type."));
+      throw Exception(TE_TR("Fail to to change field type."));
 
     std::string name = m_ogrDs->getOGRDataSource()->GetName();
 
@@ -806,7 +806,7 @@ std::auto_ptr<te::gm::Envelope> te::ogr::Transactor::getExtent(const std::string
     if(l->GetExtent(env.get()) != OGRERR_NONE)
     {
       m_ogrDs->getOGRDataSource()->ReleaseResultSet(l);
-      throw Exception(TR_OGR("Error when attempting get extent."));
+      throw Exception(TE_TR("Error when attempting get extent."));
     }
 
     res.reset(Convert2TerraLib(env.get()));
@@ -858,7 +858,7 @@ void te::ogr::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<
     return;
   
   if(!m_ogrDs->getOGRDataSource()->TestCapability(ODsCCreateLayer))
-    throw Exception(TR_OGR("This driver does not support dataset creation."));
+    throw Exception(TE_TR("This driver does not support dataset creation."));
 
   OGRwkbGeometryType geomType = wkbUnknown;
   OGRSpatialReference* srs = 0;
@@ -892,7 +892,7 @@ void te::ogr::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<
     CSLDestroy(papszOptions);
 
   if(newLayer == 0)
-    throw Exception(TR_OGR("Error when attempting create the dataset type."));
+    throw Exception(TE_TR("Error when attempting create the dataset type."));
   
   dt->setName(newLayer->GetName());
 
@@ -909,17 +909,17 @@ void te::ogr::Transactor::cloneDataSet(const std::string& name,
     return;
 
   if(!m_ogrDs->getOGRDataSource()->TestCapability(ODsCCreateLayer))
-    throw Exception(TR_OGR("This driver does not support creates a dataset."));
+    throw Exception(TE_TR("This driver does not support creates a dataset."));
 
   OGRLayer* l = m_ogrDs->getOGRDataSource()->GetLayerByName(name.c_str());
 
   if(l == 0)
-    throw Exception(TR_OGR("Could not retrieve the DataSet from data source."));
+    throw Exception(TE_TR("Could not retrieve the DataSet from data source."));
 
   OGRLayer* cl = m_ogrDs->getOGRDataSource()->CopyLayer(l, cloneName.c_str());
 
   if(cl == 0)
-    throw Exception(TR_OGR("Error when attempting clone the dataset."));
+    throw Exception(TE_TR("Error when attempting clone the dataset."));
 }
 
 void te::ogr::Transactor::dropDataSet(const std::string& name)
@@ -928,7 +928,7 @@ void te::ogr::Transactor::dropDataSet(const std::string& name)
     return;
 
   if(!m_ogrDs->getOGRDataSource()->TestCapability(ODsCDeleteLayer))
-    throw Exception(TR_OGR("This driver does not support remove a dataset."));
+    throw Exception(TE_TR("This driver does not support remove a dataset."));
 
   int i=0;
 
@@ -937,10 +937,10 @@ void te::ogr::Transactor::dropDataSet(const std::string& name)
       break;
 
   if(i == m_ogrDs->getOGRDataSource()->GetLayerCount())
-    throw Exception(TR_OGR("Could not retrieve the DataSet from data source."));
+    throw Exception(TE_TR("Could not retrieve the DataSet from data source."));
 
   if(m_ogrDs->getOGRDataSource()->DeleteLayer(i) != OGRERR_NONE)
-    throw Exception(TR_OGR("Error when attempting to remove the dataset."));
+    throw Exception(TE_TR("Error when attempting to remove the dataset."));
 }
 
 void te::ogr::Transactor::renameDataSet(const std::string& /*name*/, const std::string& /*newName*/)
@@ -961,7 +961,7 @@ void te::ogr::Transactor::add(const std::string& datasetName,
   OGRLayer* layer = m_ogrDs->getOGRDataSource()->GetLayerByName(datasetName.c_str());
 
   if(layer == 0)
-    throw Exception(TR_OGR("Could not retrieve the DataSet from data source."));
+    throw Exception(TE_TR("Could not retrieve the DataSet from data source."));
 
   try
   {
@@ -1065,7 +1065,7 @@ void te::ogr::Transactor::add(const std::string& datasetName,
                 break;
               }
 
-              throw Exception (TR_OGR("Unsupported date and time type by OGR."));
+              throw Exception (TE_TR("Unsupported date and time type by OGR."));
             }
           break;
 
@@ -1078,14 +1078,14 @@ void te::ogr::Transactor::add(const std::string& datasetName,
           break;
 
           default:
-            throw Exception(TR_OGR("Unsupported data type by OGR."));
+            throw Exception(TE_TR("Unsupported data type by OGR."));
         }
       }
 
       if(layer->CreateFeature(feat) != OGRERR_NONE)
       {
         OGRFeature::DestroyFeature(feat);
-        throw Exception(TR_OGR("Fail to insert dataset item."));
+        throw Exception(TE_TR("Fail to insert dataset item."));
       }
 
       OGRFeature::DestroyFeature(feat);
@@ -1109,10 +1109,10 @@ void te::ogr::Transactor::remove(const std::string& datasetName, const te::da::O
   OGRLayer* l = m_ogrDs->getOGRDataSource()->GetLayerByName(datasetName.c_str());
 
   if(l == 0)
-    throw Exception(TR_OGR("Could not retrieve the DataSet from data source."));
+    throw Exception(TE_TR("Could not retrieve the DataSet from data source."));
 
   if(!l->TestCapability(OLCDeleteFeature))
-    throw Exception(TR_OGR("Driver does not support removal of features."));
+    throw Exception(TE_TR("Driver does not support removal of features."));
 
   std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it = oids->begin();
 
@@ -1123,7 +1123,7 @@ void te::ogr::Transactor::remove(const std::string& datasetName, const te::da::O
     if(l->DeleteFeature(atoi((*it)->getValue()[0].toString().c_str())) != OGRERR_NONE)
     {
       rollBack();
-      throw Exception(TR_OGR("Error when attempting to remove the feature."));
+      throw Exception(TE_TR("Error when attempting to remove the feature."));
     }
 
     ++it;
@@ -1146,12 +1146,12 @@ void te::ogr::Transactor::update(const std::string &datasetName, te::da::DataSet
                                  const std::vector<size_t>& ids)
 {
   if(m_ogrDs->getOGRDataSource() == 0)
-    throw Exception(TR_OGR("Data source failure"));
+    throw Exception(TE_TR("Data source failure"));
 
   OGRLayer* l = m_ogrDs->getOGRDataSource()->GetLayerByName(datasetName.c_str());
 
   if(l == 0)
-    throw Exception(TR_OGR("Could not retrieve dataset"));
+    throw Exception(TE_TR("Could not retrieve dataset"));
 
   dataset->moveFirst();
   int i = 0;

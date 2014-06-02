@@ -34,7 +34,7 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QWizardPage>
+#include <QWizardPage>
 
 namespace te
 {

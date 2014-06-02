@@ -35,7 +35,7 @@
 #include "Symbol.h"
 
 // Qt
-#include <QtGui/QIcon>
+#include <QIcon>
 
 // STL
 #include <cassert>

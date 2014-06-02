@@ -97,7 +97,7 @@ std::auto_ptr<te::da::DataSet> te::da::SpatialQueryProcessor::getDataSet(DataSou
   assert(oids.get());
 
   if(oids->size() == 0)
-    throw(Exception(TR_DATAACCESS("The query result is empty.")));
+    throw(Exception(TE_TR("The query result is empty.")));
 
   // Gets the dataset name
   std::string datasetName = getDataSetName(q);

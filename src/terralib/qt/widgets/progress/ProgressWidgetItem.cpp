@@ -31,8 +31,8 @@
 
 // Qt
 #include <QtCore/QCoreApplication>
-#include <QtGui/QSizePolicy>
-#include <QtGui/QStyle>
+#include <QSizePolicy>
+#include <QStyle>
 
 te::qt::widgets::ProgressWidgetItem::ProgressWidgetItem(QWidget* parent, int taskId, int totalSteps)
   : QWidget(parent),

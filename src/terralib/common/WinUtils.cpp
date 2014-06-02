@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../Defines.h"
 #include "WinUtils.h"
 
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS

@@ -64,7 +64,7 @@ void te::plugin::DefaultFinder::getDefaultDirs( std::vector< std::string >& dirs
 // if the default dir is not available in the current dir let's try an environment variable defined as TERRALIB_DIR_ENVIRONMENT_VARIABLE
 
   {
-    char* e = getenv(TE_DIR_ENVIRONMENT_VARIABLE);
+    char* e = getenv(TERRALIB_DIR_VAR_NAME);
 
     if(e != 0)
     {
@@ -76,20 +76,20 @@ void te::plugin::DefaultFinder::getDefaultDirs( std::vector< std::string >& dirs
     }
   }
   
-  #ifdef TE_PLUGINS_INSTALL_PATH
+#ifdef TE_PLUGINS_INSTALL_PATH
     {
       boost::filesystem::path p(TE_PLUGINS_INSTALL_PATH);
 
       if(boost::filesystem::is_directory(p))
         dirs.push_back( boost::filesystem::system_complete(p).string() );
     }
-  #endif   
+#endif
 }
 
 void te::plugin::DefaultFinder::addPluginsDir(const std::string& path)
 {
   if(!boost::filesystem::is_directory(path))
-    throw Exception((boost::format(TR_PLUGIN("Default plugin directory is invalid: %1%.")) % path).str());
+    throw Exception((boost::format(TE_TR("Default plugin directory is invalid: %1%.")) % path).str());
 
   boost::filesystem::path p(boost::filesystem::system_complete(path));
 
@@ -115,7 +115,7 @@ void te::plugin::DefaultFinder::getPlugins(boost::ptr_vector<PluginInfo>& plugin
   for(std::size_t i = 0; i < ndirs; ++i)
   {
     if(!boost::filesystem::is_directory(m_pluginsDir[i]))
-      throw Exception((boost::format(TR_PLUGIN("The base plugin directory is invalid: %1%.")) % m_pluginsDir[i]).str());
+      throw Exception((boost::format(TE_TR("The base plugin directory is invalid: %1%.")) % m_pluginsDir[i]).str());
 
     boost::filesystem::path path(m_pluginsDir[i]);
 

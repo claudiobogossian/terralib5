@@ -400,6 +400,8 @@ namespace te
           */
           QColor getSelectionColor() const;
 
+          /*! \brief Sets the application selection color. */
+          void setSelectionColor(const QColor& c);
 
           /*!
             \brief Returns main window.
@@ -409,6 +411,8 @@ namespace te
           QWidget* getMainWindow() const;
 
           void setResetTerraLibFlag(const bool& status);
+        
+          const QString& getUserDataDir() const;
 
         protected:
 
@@ -418,6 +422,7 @@ namespace te
           std::set<QObject*> m_applicationItems;      //!< The list of registered application items.
           QWidget* m_msgBoxParentWidget;              //!< Parent used to show message boxes.
           std::string m_appConfigFile;                //!< The application framework configuration file.
+          QString m_userDataDir;                      //!< The data dir used to store data files.
           QString m_appOrganization;                  //!< Organization name.
           QString m_appName;                          //!< Application name.
           QString m_appTitle;                         //!< Application title.

@@ -31,7 +31,7 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QPixmap>
+#include <QPixmap>
 
 // STL
 #include <vector>

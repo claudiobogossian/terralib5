@@ -29,7 +29,7 @@
 #include "PointSymbolizerWidget.h"
 
 // Qt
-#include <QtGui/QGridLayout>
+#include <QGridLayout>
 
 // STL
 #include <cassert>

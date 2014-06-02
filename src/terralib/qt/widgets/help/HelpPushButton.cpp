@@ -28,7 +28,7 @@
 #include "HelpPushButton.h"
 
 //Qt
-#include <QtGui/QMouseEvent>
+#include <QMouseEvent>
 
 te::qt::widgets::HelpPushButton::HelpPushButton(QWidget* parent)
   : QPushButton(tr("&Help"), parent)

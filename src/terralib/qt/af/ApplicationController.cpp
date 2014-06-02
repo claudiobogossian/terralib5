@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../common/Exception.h"
+#include "../../common/PlatformUtils.h"
 #include "../../common/Translator.h"
 #include "../../common/TerraLib.h"
 #include "../../common/SystemApplicationSettings.h"
@@ -36,6 +37,7 @@
 #include "../../dataaccess/serialization/xml/Serializer.h"
 #include "../../plugin/PluginManager.h"
 #include "../../plugin/PluginInfo.h"
+#include "../../plugin/Utils.h"
 #include "../../srs/Config.h"
 #include "../widgets/help/AssistantHelpManagerImpl.h"
 #include "../widgets/help/HelpManager.h"
@@ -43,22 +45,26 @@
 #include "../widgets/utils/ScopedCursor.h"
 #include "events/ApplicationEvents.h"
 #include "ApplicationController.h"
-#include "ApplicationPlugins.h"
 #include "Exception.h"
 #include "Project.h"
 #include "SplashScreenManager.h"
-#include "UserPlugins.h"
 #include "Utils.h"
 #include "XMLFormatter.h"
 
 // Qt
-#include <QtCore/QDir>
-#include <QtCore/QResource>
-#include <QtGui/QApplication>
-#include <QtGui/QIcon>
-#include <QtGui/QMessageBox>
-#include <QtGui/QWidget>
-#include <QtGui/QMenu>
+#include <QApplication>
+#if QT_VERSION < 0x050000
+#include <QDesktopServices>
+#endif
+#include <QDir>
+#include <QIcon>
+#include <QMenu>
+#include <QMessageBox>
+#include <QResource>
+#if QT_VERSION >= 0x050000
+#include <QStandardPaths>
+#endif
+#include <QWidget>
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -74,23 +80,12 @@ te::qt::af::ApplicationController::ApplicationController(/*QObject* parent*/)
     m_project(0),
     m_resetTerralib(true)
 {
-  //if(sm_instance)
-  //  throw Exception(TR_QT_AF("Can not start another instance of the TerraLib Application Controller!"));
-
-  //sm_instance = this;
 }
 
 te::qt::af::ApplicationController::~ApplicationController()
 {
-  finalize();
 
-//  sm_instance = 0;
 }
-
-//te::qt::af::ApplicationController& te::qt::af::ApplicationController::getInstance()
-//{
-//  return *sm_instance;
-//}
 
 void te::qt::af::ApplicationController::setConfigFile(const std::string& configFileName)
 {
@@ -117,7 +112,7 @@ void te::qt::af::ApplicationController::registerToolBar(const QString& id, QTool
   QToolBar* b = getToolBar(id);
 
   if(b != 0)
-    throw Exception(TR_QT_AF("There is already a tool bar registered with the same name!"));
+    throw Exception(TE_TR("There is already a tool bar registered with the same name!"));
 
   m_toolbars[id] = bar;
 }
@@ -262,6 +257,16 @@ void  te::qt::af::ApplicationController::initialize()
 {
   if(m_initialized)
     return;
+  
+// find user data directory
+#if QT_VERSION >= 0x050000
+  m_userDataDir = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+#else
+  m_userDataDir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+#endif
+  
+  if(!boost::filesystem::exists(m_userDataDir.toStdString()))
+    boost::filesystem::create_directories(m_userDataDir.toStdString());
 
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
@@ -274,9 +279,6 @@ void  te::qt::af::ApplicationController::initialize()
 
   SplashScreenManager::getInstance().showMessage(tr("Loading the application configuration file..."));
 
-  if(m_appConfigFile.empty())
-    m_appConfigFile = TERRALIB_APPLICATION_CONFIG_FILE;
-
   te::common::SystemApplicationSettings::getInstance().load(m_appConfigFile);
 
 // general application info
@@ -285,8 +287,19 @@ void  te::qt::af::ApplicationController::initialize()
   m_appName = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Name"));
   m_appTitle = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Title"));
   m_appIconName = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconName"));
+  
+  if(!boost::filesystem::exists(m_appIconName.toStdString()))
+    m_appIconName = te::common::FindInTerraLibPath(m_appIconName.toStdString()).c_str();
+
   m_aboutLogo = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.AboutDialogLogo.<xmlattr>.xlink:href"));
+  
+  if(!boost::filesystem::exists(m_aboutLogo.toStdString()))
+    m_aboutLogo = te::common::FindInTerraLibPath(m_aboutLogo.toStdString()).c_str();
+  
   m_tLibLogo = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.TerraLibLogo.<xmlattr>.xlink:href"));
+  
+  if(!boost::filesystem::exists(m_tLibLogo.toStdString()))
+    m_tLibLogo = te::common::FindInTerraLibPath(m_tLibLogo.toStdString()).c_str();
 
   qApp->setApplicationName(m_appName);
 
@@ -294,43 +307,14 @@ void  te::qt::af::ApplicationController::initialize()
 
   qApp->setOrganizationName(m_appOrganization);
 
-// read used config data
-  SplashScreenManager::getInstance().showMessage(tr("Reading user settings..."));
-
-  m_appUserSettingsFile = te::common::SystemApplicationSettings::getInstance().getValue("Application.UserSettingsFile.<xmlattr>.xlink:href");
-
-  te::common::UserApplicationSettings::getInstance().load(m_appUserSettingsFile);
-
-  SplashScreenManager::getInstance().showMessage(tr("User settings read!"));
-
-// read application resources
-  {
-    SplashScreenManager::getInstance().showMessage(tr("Loading application resources..."));
-
-    //boost::property_tree::ptree& p = te::common::SystemApplicationSettings::getInstance().getAllSettings();
-
-    //BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("Application.Resources"))
-    //{
-    //  const std::string& resourceFile = v.second.get<std::string>("<xmlattr>.xlink:href");
-
-    //  QResource::registerResource(resourceFile.c_str());
-    //}
-
-    SplashScreenManager::getInstance().showMessage(tr("Application resources loaded!"));
-  }
-
 // load help system
   try
   {
-    m_appHelpFile = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.HelpFile.<xmlattr>.xlink:href"));
+    std::string help_file = te::common::FindInTerraLibPath(te::common::SystemApplicationSettings::getInstance().getValue("Application.HelpFile.<xmlattr>.xlink:href"));
+
+    m_appHelpFile = QString::fromStdString(help_file);
 
     QFileInfo info(m_appHelpFile);
-
-    //if(!info.exists())
-    //{
-    //  m_appHelpFile = "";
-    //  te::common::SystemApplicationSettings::getInstance().setValue("Application.HelpFile.<xmlattr>.xlink:href", "fodas.txt");
-    //}
 
     if(!m_appHelpFile.isEmpty() && info.exists())
     {
@@ -353,13 +337,21 @@ void  te::qt::af::ApplicationController::initialize()
 
     QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
   }
+  
+// hold user settings
+  QSettings user_settings(QSettings::IniFormat,
+                          QSettings::UserScope,
+                          QApplication::instance()->organizationName(),
+                          QApplication::instance()->applicationName());
 
 // load icon theme
   try
   {
     SplashScreenManager::getInstance().showMessage(tr("Loading application icon theme..."));
 
-    m_appIconThemeDir = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.BaseDirectory.<xmlattr>.xlink:href"));
+    std::string icon_dir = te::common::FindInTerraLibPath(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.BaseDirectory.<xmlattr>.xlink:href"));
+    
+    m_appIconThemeDir = QString::fromStdString(icon_dir);
 
     if(!m_appIconThemeDir.isEmpty())
     {
@@ -371,39 +363,27 @@ void  te::qt::af::ApplicationController::initialize()
     }
 
     m_appDefaultIconTheme = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.DefaultTheme"));
+    
+    QVariant iconTheme = user_settings.value("icon_theme/selected_theme", m_appDefaultIconTheme);
 
-    QString iconTheme = QString::fromStdString(te::common::UserApplicationSettings::getInstance().getValue("UserSettings.SelectedIconTheme"));
+    QIcon::setThemeName(iconTheme.toString());
 
-    if(iconTheme.isEmpty())
-      QIcon::setThemeName(m_appDefaultIconTheme);
-    else
-      QIcon::setThemeName(iconTheme);
+    QVariant iconSize = user_settings.value("toolbars/icon_size", te::common::SystemApplicationSettings::getInstance().getValue("Application.ToolBarDefaultIconSize").c_str());
 
-    std::string iconSize = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.ToolBarIconSize");
-
-    if(iconSize.empty())
-      iconSize = te::common::SystemApplicationSettings::getInstance().getValue("Application.ToolBarDefaultIconSize");
-    if(!iconSize.empty())
     {
-      QString sh = QString("QToolBar { qproperty-iconSize: ") + iconSize.c_str() + "px " + iconSize.c_str() + "px; }";
+      QString sh = QString("QToolBar { qproperty-iconSize: ") + iconSize.toString() + "px " + iconSize.toString() + "px; }";
       qApp->setStyleSheet(sh);
     }
 
-    // Default SRID
-    QString srid = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.DefaultSRID").c_str();
-    if(srid.isEmpty())
-      srid = te::common::SystemApplicationSettings::getInstance().getValue("Application.DefaultSRID").c_str();
+// Default SRID
+    QVariant srid = user_settings.value("srs/default_srid", te::common::SystemApplicationSettings::getInstance().getValue("Application.DefaultSRID").c_str());
+    
+    m_defaultSRID = srid.toInt();
 
-    if(!srid.isEmpty())
-      m_defaultSRID = srid.toInt();
+// Selection Color
+    QVariant selectionColor = user_settings.value("color/selection_color", te::common::SystemApplicationSettings::getInstance().getValue("Application.DefaultSelectionColor").c_str());
 
-    // Selection Color
-    QString selectionColor = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.SelectionColor").c_str();
-    if(selectionColor.isEmpty())
-      selectionColor = te::common::SystemApplicationSettings::getInstance().getValue("Application.DefaultSelectionColor").c_str();
-
-    if(!selectionColor.isEmpty())
-      m_selectionColor = QColor(selectionColor);
+    m_selectionColor = QColor(selectionColor.toString());
 
     SplashScreenManager::getInstance().showMessage(tr("Application icon theme loaded!"));
   }
@@ -421,7 +401,7 @@ void  te::qt::af::ApplicationController::initialize()
 // load registered data sources
   try
   {
-    m_appDatasourcesFile = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.DataSourcesFile");
+    m_appDatasourcesFile = user_settings.value("data_sources/data_file", "").toString().toStdString();
 
     if(!m_appDatasourcesFile.empty())
     {
@@ -445,9 +425,7 @@ void  te::qt::af::ApplicationController::initialize()
     QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
   }
 
-  QSettings s(QSettings::IniFormat, QSettings::UserScope, m_appOrganization, m_appName);
-
-  QFileInfo info(s.fileName());
+  QFileInfo info(user_settings.fileName());
 
   if(!info.exists())
     CreateDefaultSettings();
@@ -461,37 +439,63 @@ void te::qt::af::ApplicationController::initializePlugins()
 
   bool loadPlugins = true;
 
+  std::vector<std::string> plgFiles;
+
   try
   {
     SplashScreenManager::getInstance().showMessage(tr("Reading application plugins list..."));
 
-    std::string appPlugins = te::common::SystemApplicationSettings::getInstance().getValue("Application.PluginsFile.<xmlattr>.xlink:href");
+    plgFiles = GetPluginsFiles();
 
-    ApplicationPlugins::getInstance().load(appPlugins);
+    //SplashScreenManager::getInstance().showMessage(tr("Plugins list read!"));
 
-    SplashScreenManager::getInstance().showMessage(tr("Plugins list read!"));
-  }
-  catch(const std::exception& e)
-  {
-    loadPlugins = false;
+    SplashScreenManager::getInstance().showMessage(tr("Checking enabled plugins..."));
+    
+    QSettings user_settings(QSettings::IniFormat,
+                            QSettings::UserScope,
+                            QApplication::instance()->organizationName(),
+                            QApplication::instance()->applicationName());
 
-    te::qt::widgets::ScopedCursor acursor(Qt::ArrowCursor);
+    user_settings.beginGroup("plugins");
 
-    QString msgErr(tr("Error reading application's plugin list: %1"));
+    std::set<std::string> user_enabled_plugins;
 
-    msgErr = msgErr.arg(e.what());
+    int nitems = user_settings.beginReadArray("enabled");
 
-    QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
-  }
+    for(int i = 0; i != nitems; ++i)
+    {
+      user_settings.setArrayIndex(i);
 
-  if(!loadPlugins)
-    return;
+      QString name = user_settings.value("name").toString();
 
-  try
-  {
+      user_enabled_plugins.insert(name.toStdString());
+    }
+
+    user_settings.endArray();
+
+    user_settings.endGroup();
+
+    //SplashScreenManager::getInstance().showMessage(tr("Enabled plugin list read!"));
+
     SplashScreenManager::getInstance().showMessage(tr("Loading plugins..."));
 
-    UserPlugins::getInstance().load();
+// retrieve information for each plugin
+    boost::ptr_vector<te::plugin::PluginInfo> plugins;
+    
+    for(std::size_t i = 0; i != plgFiles.size(); ++i)
+    {
+      te::plugin::PluginInfo* pinfo = te::plugin::GetInstalledPlugin(plgFiles[i]);
+      
+      if(user_enabled_plugins.empty())                        // if there is no list of enabled plugins
+        plugins.push_back(pinfo);                             // try to load all!
+      else if(user_enabled_plugins.count(pinfo->m_name) != 0) // else, if a list is available,
+        plugins.push_back(pinfo);                             // load only enabled plugins
+      else                                                    // otherwise
+        delete pinfo;                                         // release plugin info
+    }
+    
+// load and start each plugin
+    te::plugin::PluginManager::getInstance().load(plugins);
 
     SplashScreenManager::getInstance().showMessage(tr("Plugins loaded successfully!"));
   }
@@ -499,23 +503,11 @@ void te::qt::af::ApplicationController::initializePlugins()
   {
     te::qt::widgets::ScopedCursor acursor(Qt::ArrowCursor);
 
-    SplashScreenManager::getInstance().close();
-
-    QString msgErr(tr("Some plugins couldn't be loaded. %1\n\n"
-                      "Please, refer to plugin manager to fix the problem."));
+    QString msgErr(tr("Error reading application's plugin list: %1"));
 
     msgErr = msgErr.arg(e.what());
 
     QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
-
-    //const std::vector<te::plugin::PluginInfo*>& bps = te::plugin::PluginManager::getInstance().getBrokenPlugins();
-
-    //for(int kk = 0; kk < bps.size(); ++kk)
-    //{
-    //  QMessageBox::warning(sm_instance,
-    //                     tr(SystemApplicationSettings::getInstance().getValue("Application.Title").c_str()),
-    //                     tr(bps[kk]->m_name.c_str()));
-    //}
   }
 }
 
@@ -525,42 +517,45 @@ void te::qt::af::ApplicationController::initializeProjectMenus()
 
   try
   {
-    boost::property_tree::ptree p = te::common::UserApplicationSettings::getInstance().getAllSettings().get_child("UserSettings");
-    std::string projPath, projTitle;
+    QSettings user_settings(QSettings::IniFormat,
+                            QSettings::UserScope,
+                            QApplication::instance()->organizationName(),
+                            QApplication::instance()->applicationName());
 
-    projPath = p.get<std::string>("MostRecentProject.<xmlattr>.xlink:href");
-    projTitle = p.get<std::string>("MostRecentProject.<xmlattr>.title");
+    QVariant projPath = user_settings.value("projects/most_recent/path", "");
+    QVariant projTitle = user_settings.value("projects/most_recent/title", "");
 
     QMenu* mnu = getMenu("File.Recent Projects");
 
-    if(!projPath.empty())
+    if(!projPath.toString().isEmpty())
     {
-      QString pp = projPath.c_str();
-      QAction* act = mnu->addAction(pp);
-      act->setData(pp);
+      QAction* act = mnu->addAction(projPath.toString());
+      act->setData(projPath);
 
       mnu->addSeparator();
 
-      m_recentProjs.append(pp);
-      m_recentProjsTitles.append(projTitle.c_str());
+      m_recentProjs.append(projPath.toString());
+      m_recentProjsTitles.append(projTitle.toString());
     }
-
-    bool hasProjects = p.count("RecentProjects") > 0;
-
-    if(hasProjects)
+    
+    user_settings.beginGroup("projects");
+    
+    int nrc = user_settings.beginReadArray("recents");
+    
+    for(int i = 0; i != nrc; ++i)
     {
-      BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("RecentProjects"))
-      {
-        QString pp = v.second.get<std::string>("<xmlattr>.xlink:href").c_str();
-        QString pt = v.second.get<std::string>("<xmlattr>.title").c_str();
-        QAction* act = mnu->addAction(pp);
-        act->setData(pp);
-        m_recentProjs.append(pp);
-        m_recentProjsTitles.append(pt);
-      }
-
-      mnu->setEnabled(true);
+      user_settings.setArrayIndex(i);
+      QString npath = user_settings.value("projects/path").toString();
+      QString ntitle = user_settings.value("projects/title").toString();
+      
+      
+      QAction* act = mnu->addAction(npath);
+      act->setData(npath);
+      m_recentProjs.append(npath);
+      m_recentProjsTitles.append(ntitle);
     }
+
+    mnu->setEnabled(true);
 
     SplashScreenManager::getInstance().showMessage("Recent projects loaded!");
   }
@@ -589,7 +584,7 @@ void te::qt::af::ApplicationController::updateRecentProjects(const QString& prjF
   {
     if(pos < 0)
     {
-      if(m_recentProjs.size() >= maxSaved) // TODO: Size of the list must be configurable.
+      if(m_recentProjs.size() > maxSaved) // TODO: Size of the list must be configurable.
       {
         m_recentProjs.removeLast();
         m_recentProjsTitles.removeLast();
@@ -648,10 +643,6 @@ void te::qt::af::ApplicationController::finalize()
 {
   if(!m_initialized)
     return;
-
-  te::common::SystemApplicationSettings::getInstance().update();
-
-  UpdateApplicationPlugins();
 
   UpdateUserSettings(m_recentProjs, m_recentProjsTitles, m_appUserSettingsFile);
 
@@ -765,6 +756,11 @@ QColor te::qt::af::ApplicationController::getSelectionColor() const
   return m_selectionColor;
 }
 
+void te::qt::af::ApplicationController::setSelectionColor(const QColor& c)
+{
+  m_selectionColor = c;
+}
+
 QWidget* te::qt::af::ApplicationController::getMainWindow() const
 {
   return m_msgBoxParentWidget;
@@ -773,4 +769,9 @@ QWidget* te::qt::af::ApplicationController::getMainWindow() const
 void te::qt::af::ApplicationController::setResetTerraLibFlag(const bool& status)
 {
   m_resetTerralib = status;
+}
+
+const QString& te::qt::af::ApplicationController::getUserDataDir() const
+{
+  return m_userDataDir;
 }

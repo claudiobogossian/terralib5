@@ -41,8 +41,8 @@
 #include <cassert>
 
 // Qt
-#include <QtGui/QMessageBox>
-#include <QtGui/QResizeEvent>
+#include <QMessageBox>
+#include <QResizeEvent>
 
 te::qt::widgets::DataSetDisplay::DataSetDisplay(QWidget * parent, Qt::WindowFlags f)
   : QFrame(parent, f)

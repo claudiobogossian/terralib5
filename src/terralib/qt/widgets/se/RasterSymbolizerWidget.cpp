@@ -27,7 +27,7 @@
 #include "../../../common/STLUtils.h"
 #include "../../../raster.h"
 #include "../../../se/Utils.h"
-#include "HorizontalSliderWidget.h"
+#include "../utils/HorizontalSliderWidget.h"
 #include "RasterSymbolizerWidget.h"
 #include "ui_RasterSymbolizerWidgetForm.h"
 

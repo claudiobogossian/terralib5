@@ -32,8 +32,8 @@
 #include "AbstractTool.h"
 
 // Qt
-#include <QtGui/QTreeWidget>
-#include <QtGui/QTreeWidgetItem>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
 
 // STL
 #include <list>

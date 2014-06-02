@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "Exception.h"
+#include "PlatformUtils.h"
 #include "STLUtils.h"
 #include "StringUtils.h"
 #include "Translator.h"
@@ -157,7 +158,7 @@ double te::common::UnitsOfMeasureManager::getConversion(const std::string& unitF
   UnitOfMeasurePtr uTo = this->find(unitToName);
 
   if (uFrom->getType() != uTo->getType())
-    throw Exception(TR_COMMON("There is not conversion between units for different types of measures."));
+    throw Exception(TE_TR("There is not conversion between units for different types of measures."));
 
   if (uFrom->getBaseUnitId() == uTo->getId()) // converting from derived to base
   {
@@ -170,23 +171,20 @@ double te::common::UnitsOfMeasureManager::getConversion(const std::string& unitF
     uTo->getConversionFactors(a,b,c,d);
     return ((b-d)/(c-a));
   }
-  throw Exception(TR_COMMON("There is no known conversion."));
+  throw Exception(TE_TR("There is no known conversion."));
 }
 
 void te::common::UnitsOfMeasureManager::init()
 {
   if(!m_uoms.empty())
-    throw Exception(TR_COMMON("The unit of measure manager is already initialized!"));
+    throw Exception(TE_TR("The unit of measure manager is already initialized!"));
+  
+  std::string uom_file = FindInTerraLibPath("share/terralib/json/uom.json");
+  
+  if(uom_file.empty())
+    throw Exception(TE_TR("The unit of measure JSON file could not be found!"));
 
   boost::property_tree::ptree pt;
-
-  const char* te_env = getenv("TERRALIB_DIR");
-
-  if(te_env == 0)
-    throw Exception(TR_COMMON("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
-
-  std::string uom_file(te_env);
-  uom_file += "/resources/json/uom.json";
 
   boost::property_tree::json_parser::read_json(uom_file, pt);
 
@@ -221,7 +219,7 @@ void te::common::UnitsOfMeasureManager::init()
       t = Speed;
     else
     {
-      throw Exception((boost::format(TR_COMMON("Invalid unit of measure type: %1%!")) % stype).str());
+      throw Exception((boost::format(TE_TR("Invalid unit of measure type: %1%!")) % stype).str());
     }
 
     UnitOfMeasurePtr uom(new UnitOfMeasure(id, name, symbol, t, targetUOM, a, b, c, d, description));

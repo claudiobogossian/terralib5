@@ -30,7 +30,7 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 // Forward declarations
 class QTableWidget;

@@ -2,6 +2,7 @@
 #include "DataAccessExamples.h"
 
 // TerraLib
+#include "../Config.h"
 #include <terralib/dataaccess.h>
 #include <terralib/geometry.h>
 
@@ -13,10 +14,14 @@ void CopyingData()
   try
   {
 // let's take the input dataset from a shape file
-  std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_DIR"/data/shp/munic_2001.shp");
+  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  
+  std::string ogrInfo("connection_string=" + data_dir + "/shp/munic_2001.shp");
+ 
   std::map<std::string, std::string> connInfo;
   std::auto_ptr<te::da::DataSource> dsOrigin = te::da::DataSourceFactory::make("OGR");
-  connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/shp/munic_2001.shp";
+  
+  connInfo["URI"] = data_dir + "/shp/munic_2001.shp";
 
   dsOrigin->setConnectionInfo(connInfo);
   dsOrigin->open();
@@ -60,14 +65,14 @@ void CopyingData()
   tDestination->createDataSet(newDataSet,options);
   tDestination->add(newDataSet->getName(), datasetOrigin.get(),options);
   tDestination->commit();
-  std::cout << std::endl << "copy finished..." << std::endl;
+  std::cout << std::endl << "C opy finished..." << std::endl;
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in Copy Example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in the Copy Example: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in Copy Example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in the Copy Example!" << std::endl;
   }
 }

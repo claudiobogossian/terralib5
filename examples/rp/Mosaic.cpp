@@ -19,7 +19,7 @@ void Mosaic()
     
     // Openning the the input images
     
-    auxRasterInfo["URI"] = TE_DATA_EXAMPLE_DIR "/data/rasters/cbers_rgb342_crop1.tif";
+    auxRasterInfo["URI"] = TERRALIB_EXAMPLES_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
     te::rst::Raster* inputRaster1Pointer = te::rst::RasterFactory::open(
       auxRasterInfo );
     if( inputRaster1Pointer == 0 )
@@ -28,7 +28,7 @@ void Mosaic()
       return;
     }
     
-    auxRasterInfo["URI"] = TE_DATA_EXAMPLE_DIR "/data/rasters/cbers_rgb342_crop2.tif";
+    auxRasterInfo["URI"] = TERRALIB_EXAMPLES_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
     te::rst::Raster* inputRaster2Pointer =  te::rst::RasterFactory::open(
       auxRasterInfo );
     if( inputRaster2Pointer == 0 )
@@ -37,7 +37,7 @@ void Mosaic()
       return;
     }
     
-    auxRasterInfo["URI"] = TE_DATA_EXAMPLE_DIR "/data/rasters/cbers_rgb342_crop3_EPSG_22522.tif";
+    auxRasterInfo["URI"] = TERRALIB_EXAMPLES_DATA_DIR "/rasters/cbers_rgb342_crop3_EPSG_22522.tif";
     te::rst::Raster* inputRaster3Pointer ( te::rst::RasterFactory::open(
       auxRasterInfo ) );
     if( inputRaster3Pointer == 0 )
@@ -80,7 +80,7 @@ void Mosaic()
     
     // The output raster info
     algoOutputParams.m_rInfo["URI"] =  
-      TE_DATA_EXAMPLE_DIR "/data/rasters/GeoReferencedImagesMosaicExample.tif";  
+      TERRALIB_EXAMPLES_DATA_DIR "/rasters/GeoReferencedImagesMosaicExample.tif";  
     algoOutputParams.m_rType = "GDAL";
     
     // Executing the algorithm

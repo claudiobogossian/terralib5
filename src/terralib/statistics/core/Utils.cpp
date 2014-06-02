@@ -36,46 +36,46 @@ std::string te::stat::GetStatSummaryShortName(const int& e)
   switch(e)
   {
     case te::stat::MIN_VALUE:
-      return TR_STATISTICS("MIN_VALUE");
+      return TE_TR("MIN_VALUE");
       
     case te::stat::MAX_VALUE:
-      return TR_STATISTICS("MAX_VALUE");
+      return TE_TR("MAX_VALUE");
     
     case te::stat::MEAN:
-      return TR_STATISTICS("MEAN");
+      return TE_TR("MEAN");
     
     case te::stat::SUM:
-      return TR_STATISTICS("SUM");
+      return TE_TR("SUM");
     
     case te::stat::COUNT:
-      return TR_STATISTICS("COUNT");
+      return TE_TR("COUNT");
     
     case te::stat::VALID_COUNT:
-      return TR_STATISTICS("VALID_COUNT");
+      return TE_TR("VALID_COUNT");
     
     case te::stat::STANDARD_DEVIATION:
-      return TR_STATISTICS("STANDARD_DEVIATION");
+      return TE_TR("STANDARD_DEVIATION");
     
     case te::stat::VARIANCE:
-      return TR_STATISTICS("VARIANCE");
+      return TE_TR("VARIANCE");
     
     case te::stat::SKEWNESS:
-      return TR_STATISTICS("SKEWNESS");
+      return TE_TR("SKEWNESS");
     
     case te::stat::KURTOSIS:
-      return TR_STATISTICS("KURTOSIS");
+      return TE_TR("KURTOSIS");
     
     case te::stat::AMPLITUDE:
-      return TR_STATISTICS("AMPLITUDE");
+      return TE_TR("AMPLITUDE");
     
     case te::stat::MEDIAN:
-      return TR_STATISTICS("MEDIAN");
+      return TE_TR("MEDIAN");
     
     case te::stat::VAR_COEFF:
-      return TR_STATISTICS("VAR_COEFF");
+      return TE_TR("VAR_COEFF");
     
     case te::stat::MODE:
-      return TR_STATISTICS("MODE");
+      return TE_TR("MODE");
 
     default:
       return ("");
@@ -87,46 +87,46 @@ std::string te::stat::GetStatSummaryFullName(const int& e)
   switch(e)
   {
     case te::stat::MIN_VALUE:
-      return TR_STATISTICS("Minimum value");
+      return TE_TR("Minimum value");
       
     case te::stat::MAX_VALUE:
-      return TR_STATISTICS("Maximum value");
+      return TE_TR("Maximum value");
     
     case te::stat::MEAN:
-      return TR_STATISTICS("Mean");
+      return TE_TR("Mean");
     
     case te::stat::SUM:
-      return TR_STATISTICS("Sum of values");
+      return TE_TR("Sum of values");
     
     case te::stat::COUNT:
-      return TR_STATISTICS("Total number of values");
+      return TE_TR("Total number of values");
     
     case te::stat::VALID_COUNT:
-      return TR_STATISTICS("Total not null values");
+      return TE_TR("Total not null values");
     
     case te::stat::STANDARD_DEVIATION:
-      return TR_STATISTICS("Standard deviation");
+      return TE_TR("Standard deviation");
     
     case te::stat::VARIANCE:
-      return TR_STATISTICS("Variance");
+      return TE_TR("Variance");
     
     case te::stat::SKEWNESS:
-      return TR_STATISTICS("Skewness");
+      return TE_TR("Skewness");
     
     case te::stat::KURTOSIS:
-      return TR_STATISTICS("Kurtosis");
+      return TE_TR("Kurtosis");
     
     case te::stat::AMPLITUDE:
-      return TR_STATISTICS("Amplitude");
+      return TE_TR("Amplitude");
     
     case te::stat::MEDIAN:
-      return TR_STATISTICS("Median");
+      return TE_TR("Median");
     
     case te::stat::VAR_COEFF:
-      return TR_STATISTICS("Coefficient variation");
+      return TE_TR("Coefficient variation");
     
     case te::stat::MODE:
-      return TR_STATISTICS("Mode");
+      return TE_TR("Mode");
 
     default:
       return ("");

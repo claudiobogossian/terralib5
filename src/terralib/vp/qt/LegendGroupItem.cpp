@@ -32,7 +32,7 @@
 #include "LegendGroupItem.h"
 
 // Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 te::vp::LegendGroupItem::LegendGroupItem(std::vector<te::se::Rule*> rules, AbstractTreeItem* parent)
   : AbstractTreeItem(parent)
@@ -64,7 +64,7 @@ int te::vp::LegendGroupItem::columnCount() const
 QVariant te::vp::LegendGroupItem::data(int column, int role) const
 {
   if(role == Qt::DisplayRole && column == 0)
-    return QVariant(TR_VP("Legends"));
+    return QVariant(TE_TR("Legends"));
 
   return QVariant();
 }

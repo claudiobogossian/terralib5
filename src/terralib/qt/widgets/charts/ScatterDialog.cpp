@@ -30,6 +30,7 @@
 #include "../../../datatype/Property.h"
 #include "../../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../../se/Graphic.h"
+#include "../se/Symbol.h"
 #include "ChartDisplay.h"
 #include "ChartDisplayWidget.h"
 #include "ChartStyle.h"
@@ -38,12 +39,11 @@
 #include "ScatterDataWidget.h"
 #include "ScatterDialog.h"
 #include "ScatterStyle.h"
-#include "Symbol.h"
 #include "ui_ScatterDialogForm.h"
 #include "ui_ScatterDataWidgetForm.h"
 
 //QT
-#include <QtGui/QDockWidget>
+#include <QDockWidget>
 
 //QWT
 #include <qwt_symbol.h>

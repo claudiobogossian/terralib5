@@ -38,19 +38,21 @@
 #include "Measure.h"
 
 // Qt
-#include <QtGui/QMouseEvent>
-#include <QtGui/QPainter>
-#include <QtGui/QPixmap>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QPixmap>
 
 // STL
 #include <cassert>
 
-te::qt::widgets::Measure::Measure(te::qt::widgets::MapDisplay* display, const MeasureType& measureType, QObject* parent) 
+te::qt::widgets::Measure::Measure(te::qt::widgets::MapDisplay* display, const MeasureType& measureType, const QCursor& cursor, QObject* parent) 
   : AbstractTool(display, parent),
     m_measureType(measureType),
     m_isFinished(false),
     m_unit("")
 {
+  setCursor(cursor);
+
   // Setups the path style
   m_pen.setColor(QColor(100, 177, 216));
   m_pen.setWidth(3);
@@ -98,10 +100,18 @@ bool te::qt::widgets::Measure::mouseMoveEvent(QMouseEvent* e)
   if(m_coords.size() < 1 || m_isFinished)
     return false;
 
+#if QT_VERSION >= 0x050000
+  QPointF pw = m_display->transform(e->localPos());
+#else
   QPointF pw = m_display->transform(e->posF());
+#endif
   m_coords.push_back(te::gm::Coord2D(pw.x(), pw.y()));
   
+#if QT_VERSION >= 0x050000
+  QPointF pos = e->localPos() + QPointF(0.0001, 0.0001); // To avoid collinear points on polygon
+#else
   QPointF pos = e->posF() + QPointF(0.0001, 0.0001); // To avoid collinear points on polygon
+#endif
   pw = m_display->transform(pos);
   m_lastPos = te::gm::Coord2D(pw.x(), pw.y());
 

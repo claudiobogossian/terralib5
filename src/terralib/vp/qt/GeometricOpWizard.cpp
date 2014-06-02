@@ -49,16 +49,16 @@
 #include "GeometricOpWizard.h"
 #include "GeometricOpWizardPage.h"
 #include "GeometricOpOutputWizardPage.h"
-#include "GeometricOp.h"
-#include "GeometricOpMemory.h"
-#include "GeometricOpQuery.h"
+#include "../GeometricOp.h"
+#include "../GeometricOpMemory.h"
+#include "../GeometricOpQuery.h"
 //#include "Utils.h"
 
 // STL
 #include <cassert>
 
 // Qt
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 
 // Boost
 #include <boost/filesystem.hpp>

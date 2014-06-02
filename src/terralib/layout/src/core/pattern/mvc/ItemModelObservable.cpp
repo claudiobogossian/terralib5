@@ -318,3 +318,15 @@ void te::layout::ItemModelObservable::setId( int id )
 {
   m_id = id;
 }
+
+void te::layout::ItemModelObservable::resize( double w, double h )
+{
+  if((w <= 0) || (h <= 0))
+    return;
+
+  if(w == m_box.getWidth() && h == m_box.getHeight())
+    return;
+
+  m_box.m_urx = m_box.m_llx + w;
+  m_box.m_ury = m_box.m_lly + h;
+}

@@ -52,10 +52,10 @@
 #include "ui_ColorMapWidgetForm.h"
 
 // Qt
-#include <QtGui/QColorDialog>
-#include <QtGui/QMessageBox>
-#include <QtGui/QPainter>
-#include <QtGui/QValidator>
+#include <QColorDialog>
+#include <QMessageBox>
+#include <QPainter>
+#include <QValidator>
 
 // STL
 #include <cassert>

@@ -27,7 +27,7 @@
 #include "../Config.h"
 
 //Qt
-#include <QtGui/QWizardPage>
+#include <QWizardPage>
 
 //STL
 #include <memory>

@@ -52,9 +52,9 @@
 #include "WhereClauseWidget.h"
 
 // Qt
-#include <QtGui/QIcon>
-#include <QtGui/QMessageBox>
-#include <QtGui/QToolButton>
+#include <QIcon>
+#include <QMessageBox>
+#include <QToolButton>
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 

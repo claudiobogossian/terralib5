@@ -48,7 +48,7 @@ te::graph::Vertex* te::graph::AbstractIterator::getNextVertex()
 {
   if(m_vertexQuery.get() == 0)
   {
-    throw Exception(TR_GRAPH("Iterator not initialized."));
+    throw Exception(TE_TR("Iterator not initialized."));
   }
 
   int id;
@@ -69,7 +69,7 @@ te::graph::Vertex* te::graph::AbstractIterator::getPreviousVertex()
 {
   if(m_vertexQuery.get() == 0)
   {
-    throw Exception(TR_GRAPH("Iterator not initialized."));
+    throw Exception(TE_TR("Iterator not initialized."));
   }
 
   int id;
@@ -90,7 +90,7 @@ bool te::graph::AbstractIterator::isVertexIteratorAfterEnd()
 {
   if(m_vertexQuery.get() == 0)
   {
-    throw Exception(TR_GRAPH("Iterator not initialized."));
+    throw Exception(TE_TR("Iterator not initialized."));
   }
 
   return m_vertexQuery->isAfterEnd();
@@ -100,7 +100,7 @@ size_t te::graph::AbstractIterator::getVertexInteratorCount()
 {
   if(m_vertexQuery.get() == 0)
   {
-    throw Exception(TR_GRAPH("Iterator not initialized."));
+    throw Exception(TE_TR("Iterator not initialized."));
   }
 
   return m_vertexQuery->size();
@@ -115,7 +115,7 @@ te::graph::Edge* te::graph::AbstractIterator::getNextEdge()
 {
   if(m_edgeQuery.get() == 0)
   {
-    throw Exception(TR_GRAPH("Iterator not initialized."));
+    throw Exception(TE_TR("Iterator not initialized."));
   }
 
   int id;
@@ -136,7 +136,7 @@ te::graph::Edge* te::graph::AbstractIterator::getPreviousEdge()
 {
   if(m_edgeQuery.get() == 0)
   {
-    throw Exception(TR_GRAPH("Iterator not initialized."));
+    throw Exception(TE_TR("Iterator not initialized."));
   }
 
   int id;
@@ -157,7 +157,7 @@ bool te::graph::AbstractIterator::isEdgeIteratorAfterEnd()
 {
   if(m_edgeQuery.get() == 0)
   {
-    throw Exception(TR_GRAPH("Iterator not initialized."));
+    throw Exception(TE_TR("Iterator not initialized."));
   }
 
   return m_edgeQuery->isAfterEnd();
@@ -167,7 +167,7 @@ size_t te::graph::AbstractIterator::getEdgeInteratorCount()
 {
   if(m_edgeQuery.get() == 0)
   {
-    throw Exception(TR_GRAPH("Iterator not initialized."));
+    throw Exception(TE_TR("Iterator not initialized."));
   }
 
   return m_edgeQuery->size();

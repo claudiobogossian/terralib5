@@ -39,7 +39,7 @@ te::da::FunctionCatalogManager::~FunctionCatalogManager()
 void te::da::FunctionCatalogManager::insert(const std::string& dsType, FunctionCatalog* fcatalog)
 {
   if(te::common::GetPValue(m_fcatalogMap, dsType) != 0)
-    throw Exception(TR_DATAACCESS("There is already a function catalog resgistered for the data source type!"));
+    throw Exception(TE_TR("There is already a function catalog resgistered for the data source type!"));
 
   m_fcatalogMap.insert(std::map<std::string, FunctionCatalog*>::value_type(dsType, fcatalog));
 }

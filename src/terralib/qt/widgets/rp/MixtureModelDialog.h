@@ -33,7 +33,7 @@
 #include "../../../raster/Raster.h"
 
 // Qt
-#include <QtGui/QDialog>
+#include <QDialog>
 #include <QPointF>
 
 // STL

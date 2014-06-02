@@ -28,8 +28,8 @@
 #include "../../../srs/SpatialReferenceSystemManager.h"
 
 #include <ui_SRSManagerDialogForm.h>
-#include <QtGui/QApplication>
-#include <QtGui/QMessageBox>
+#include <QApplication>
+#include <QMessageBox>
 #include <QSettings>
 #include <QString>
 

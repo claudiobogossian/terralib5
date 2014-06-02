@@ -26,9 +26,9 @@
 #include "ui_VectorizationWizardPageForm.h"
 
 // Qt
-#include <QtGui/QCheckBox>
-#include <QtGui/QFileDialog>
-#include <QtGui/QIntValidator>
+#include <QCheckBox>
+#include <QFileDialog>
+#include <QIntValidator>
 
 // BOOST
 #include <boost/algorithm/string.hpp>

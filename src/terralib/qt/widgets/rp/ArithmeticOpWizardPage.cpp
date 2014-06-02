@@ -31,9 +31,9 @@
 #include "ui_ArithmeticOpWizardPageForm.h"
 
 // Qt
-#include <QtGui/QApplication>
-#include <QtGui/QGridLayout>
-#include <QtGui/QMessageBox>
+#include <QApplication>
+#include <QGridLayout>
+#include <QMessageBox>
 
 // stl
 #include <memory>

@@ -30,8 +30,8 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QPixmap>
-#include <QtGui/QWidget>
+#include <QPixmap>
+#include <QWidget>
 
 namespace te
 {

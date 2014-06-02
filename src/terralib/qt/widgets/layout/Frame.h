@@ -31,10 +31,10 @@
 #include "../Config.h"
 
 // Qt
-#include <QtCore/QRect>
-#include <QtCore/QRectF>
-#include <QtGui/QPixmap>
-#include <QtGui/QWidget>
+#include <QRect>
+#include <QRectF>
+#include <QPixmap>
+#include <QWidget>
 
 namespace te
 {

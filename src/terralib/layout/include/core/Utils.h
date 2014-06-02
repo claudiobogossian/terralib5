@@ -68,6 +68,8 @@ namespace te
         virtual te::gm::Envelope viewportBox(te::gm::Envelope box);
 
         virtual te::gm::Envelope viewportBoxFromGeo(te::gm::Envelope boxgeo, te::gm::Envelope boxmm);
+
+        virtual void textBoundingBox(double &w, double &h, std::string txt);
         
       protected:
 

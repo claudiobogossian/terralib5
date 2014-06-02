@@ -32,7 +32,7 @@
 #include "../../Config.h"
 
 // Qt
-#include <QtGui/QDialog>
+#include <QDialog>
 
 namespace Ui { class DataSetSelectorDialogForm; }
 

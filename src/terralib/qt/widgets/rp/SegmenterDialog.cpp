@@ -30,8 +30,8 @@
 #include "../../../rp/SegmenterRegionGrowingStrategy.h"
 #include <ui_SegmenterForm.h>
 
-#include <QtGui/QMessageBox>
-#include <QtGui/QListWidgetItem>
+#include <QMessageBox>
+#include <QListWidgetItem>
 
 // TerraLib
 

@@ -31,8 +31,8 @@
 #include "PropertyItem.h"
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QWidget>
 
 te::qt::widgets::PrimaryKeyItem::PrimaryKeyItem(te::da::PrimaryKey* pk, AbstractDataSourceTreeItem* parent)
   : AbstractDataSourceTreeItem(parent),

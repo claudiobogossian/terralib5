@@ -29,7 +29,7 @@
 #include "WhereClauseWizardPage.h"
 
 // Qt
-#include <QtGui/QGridLayout>
+#include <QGridLayout>
 
 
 te::qt::widgets::WhereClauseWizardPage::WhereClauseWizardPage(QWidget* parent)

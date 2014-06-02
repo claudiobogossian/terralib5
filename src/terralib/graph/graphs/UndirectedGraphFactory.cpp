@@ -85,7 +85,7 @@ te::graph::AbstractGraph* te::graph::UndirectedGraphFactory::iOpen(const std::ma
   }
   catch(const std::exception& e)
   {
-    std::string errorMessage = TR_GRAPH("Error opening graph metadata: ");
+    std::string errorMessage = TE_TR("Error opening graph metadata: ");
     errorMessage += e.what();
 
     throw Exception(errorMessage);
@@ -116,7 +116,7 @@ te::graph::AbstractGraph* te::graph::UndirectedGraphFactory::create(const std::m
   }
   catch(const std::exception& e)
   {
-    std::string errorMessage = TR_GRAPH("Error saving graph metadata: ");
+    std::string errorMessage = TE_TR("Error saving graph metadata: ");
     errorMessage += e.what();
 
     throw Exception(errorMessage);

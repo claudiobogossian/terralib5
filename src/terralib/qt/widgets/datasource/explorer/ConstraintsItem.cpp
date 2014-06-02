@@ -42,8 +42,8 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QWidget>
 
 te::qt::widgets::ConstraintsItem::ConstraintsItem(AbstractDataSourceTreeItem* parent)
   : AbstractDataSourceTreeItem(parent)

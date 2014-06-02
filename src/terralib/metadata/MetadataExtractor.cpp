@@ -24,7 +24,7 @@
 // TerraLib
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/utils/utils.h"
+#include "../dataaccess/utils/Utils.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/GeometryProperty.h"
 #include "Config.h"

@@ -68,7 +68,7 @@ void te::graph::AbstractGraphLoaderStrategy::saveData(GraphData* data)
 {
   if(m_graphMetadata == 0 || m_graphMetadata->getDataSource() == 0)
   {
-    throw Exception(TR_GRAPH(""));
+    throw Exception(TE_TR(""));
   }
 
   //save graph topology
@@ -83,7 +83,7 @@ void te::graph::AbstractGraphLoaderStrategy::removeEdge(int id)
 {
   if(m_graphMetadata == 0 || m_graphMetadata->getDataSource() == 0)
   {
-    throw Exception(TR_GRAPH(""));
+    throw Exception(TE_TR(""));
   }
 }
 
@@ -92,7 +92,7 @@ void te::graph::AbstractGraphLoaderStrategy::removeVertex(int id)
 {
   if(m_graphMetadata == 0 || m_graphMetadata->getDataSource() == 0)
   {
-    throw Exception(TR_GRAPH(""));
+    throw Exception(TE_TR(""));
   }
 }
 
@@ -303,17 +303,17 @@ void te::graph::AbstractGraphLoaderStrategy::saveVertexAttributes(GraphData* dat
 
 void te::graph::AbstractGraphLoaderStrategy::saveGraphVertexList(GraphData* data)
 {
-  throw Exception(TR_GRAPH("TO DO"));
+  throw Exception(TE_TR("TO DO"));
 }
 
 void te::graph::AbstractGraphLoaderStrategy::saveEdgeAttributes(GraphData* data)
 {
-  throw Exception(TR_GRAPH("TO DO"));
+  throw Exception(TE_TR("TO DO"));
 }
 
 te::graph::Vertex* te::graph::AbstractGraphLoaderStrategy::loadVertex(int id)
 {
-  throw Exception(TR_GRAPH("TO DO"));
+  throw Exception(TE_TR("TO DO"));
 }
 
 te::graph::Vertex* te::graph::AbstractGraphLoaderStrategy::loadVertexAttrs(int id)
@@ -412,5 +412,5 @@ te::graph::Edge* te::graph::AbstractGraphLoaderStrategy::loadEdge(int id)
 
 te::graph::Edge* te::graph::AbstractGraphLoaderStrategy::loadEdgeAttrs(int id)
 {
-  throw Exception(TR_GRAPH("TO DO"));
+  throw Exception(TE_TR("TO DO"));
 }

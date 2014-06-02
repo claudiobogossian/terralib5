@@ -48,13 +48,13 @@ te::color::RGBAColor** te::map::ExternalGraphicRendererManager::render(const te:
   LockWrite l;
 
   if(height == 0)
-    throw Exception(TR_MAP("Requested size is invalid!"));
+    throw Exception(TE_TR("Requested size is invalid!"));
 
   if(eg == 0)
-    throw Exception(TR_MAP("The given external graphic is invalid!"));
+    throw Exception(TE_TR("The given external graphic is invalid!"));
 
   if(m_renderers.empty())
-    throw Exception(TR_MAP("There are not external graphic renderers registered!"));
+    throw Exception(TE_TR("There are not external graphic renderers registered!"));
 
   for(std::size_t i = 0; i < m_renderers.size(); ++i)
   {
@@ -63,7 +63,7 @@ te::color::RGBAColor** te::map::ExternalGraphicRendererManager::render(const te:
       return image;
   }
 
-  throw Exception(TR_MAP("The given external graphic cannot be processed by any registered external graphic renderer!"));
+  throw Exception(TE_TR("The given external graphic cannot be processed by any registered external graphic renderer!"));
 }
 
 void te::map::ExternalGraphicRendererManager::add(AbstractExternalGraphicRenderer* renderer)

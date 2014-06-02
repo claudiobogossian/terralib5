@@ -31,9 +31,9 @@
 
 // Qt
 #include <QtCore/QCoreApplication>
-#include <QtGui/QApplication>
-#include <QtGui/QCloseEvent>
-#include <QtGui/QScrollBar>
+#include <QApplication>
+#include <QCloseEvent>
+#include <QScrollBar>
 
 te::qt::widgets::ProgressViewerWidget::ProgressViewerWidget(QWidget* parent)
   : QDialog(parent, Qt::Tool),

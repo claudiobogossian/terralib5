@@ -90,7 +90,7 @@ bool te::graph::QueryGraphBuilder::build(te::graph::AbstractGraph* g, te::da::Ex
     te::common::TaskProgress t;
 
     t.setTotalSteps(it->getVertexInteratorCount());
-    t.setMessage(TR_GRAPH("Query Graph Builder - Vertex..."));
+    t.setMessage(TE_TR("Query Graph Builder - Vertex..."));
     t.useTimer(true);
 
 
@@ -120,7 +120,7 @@ bool te::graph::QueryGraphBuilder::build(te::graph::AbstractGraph* g, te::da::Ex
     te::common::TaskProgress t;
 
     t.setTotalSteps(it->getEdgeInteratorCount());
-    t.setMessage(TR_GRAPH("Query Graph Builder - Edges..."));
+    t.setMessage(TE_TR("Query Graph Builder - Edges..."));
     t.useTimer(true);
 
 

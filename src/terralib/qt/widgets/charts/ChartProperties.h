@@ -27,8 +27,8 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_CHARTPROPERTIES_H
 
 // QT
-#include <QtGui/QDialog>
-#include <QtGui/QListWidgetItem>
+#include <QDialog>
+#include <QListWidgetItem>
 
 // TerraLib
 #include "../Config.h"

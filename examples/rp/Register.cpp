@@ -15,7 +15,7 @@ void Register()
     // Openning the the input image
     
     std::map<std::string, std::string> auxRasterInfo;    
-    auxRasterInfo["URI"] = TE_DATA_EXAMPLE_DIR "/data/rasters/cbers_rgb342_crop1.tif";
+    auxRasterInfo["URI"] = TERRALIB_EXAMPLES_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
     te::rst::Raster* inputRasterPointer = te::rst::RasterFactory::open(
       auxRasterInfo );
     if( inputRasterPointer == 0 )
@@ -70,7 +70,7 @@ void Register()
     te::rp::Register::OutputParameters algoOutputParams;
     
     algoOutputParams.m_rInfo["URI"] =  
-      TE_DATA_EXAMPLE_DIR "/GeoReferencedImagesRegisterExample.tif";  
+      TERRALIB_EXAMPLES_DATA_DIR "/GeoReferencedImagesRegisterExample.tif";  
     algoOutputParams.m_rType = "GDAL";
     
     // Executing the algorithm

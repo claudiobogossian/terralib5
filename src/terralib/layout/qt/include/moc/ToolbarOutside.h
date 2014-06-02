@@ -59,10 +59,13 @@ namespace te
     public:
 
 	    ToolbarOutside(OutsideController* controller, Observable* o);
+
 	    virtual ~ToolbarOutside();
 
 	    virtual void updateObserver(ContextItem context);
+
 	    virtual void setPosition(const double& x, const double& y);
+
 	    virtual te::gm::Coord2D getPosition();
       
     public slots:
@@ -74,17 +77,13 @@ namespace te
       virtual void onGeometryTriggered(QAction* action);
 
       virtual void onViewAreaTriggered(QAction* action);
-
-      virtual void onTemplateTriggered(QAction* action);
-
+      
       virtual void onArrowCursorClicked(bool checked);
 
       virtual void onItemToolsTriggered(QAction* action);
 
       virtual void onLineIntersectionMouse(bool checked);
-
-      virtual void onPrinterClicked(bool checked);
-
+      
     signals:
 
       void changeContext(bool change);
@@ -101,15 +100,11 @@ namespace te
 
       virtual void createViewAreaToolButton();
 
-      virtual void createTemplateToolButton();
-
       virtual void createArrowCursorButton();
 
       virtual void createItemTools();
 
       virtual void createLineIntersectionToolButton();
-
-      virtual void createPrinterToolButton();
 
       virtual void changeAction(LayoutMode mode);
 
@@ -140,20 +135,13 @@ namespace te
       std::string m_optionViewPan;
       std::string m_optionViewZoomIn;
       std::string m_optionViewZoomOut;
-
-      /* Template Menu */
-      std::string m_optionNew;
-      std::string m_optionExport;
-      std::string m_optionImport;
-
+      
       /* Items Tools */
 
       std::string m_optionGroup;
       std::string m_optionUngroup;
 
       std::string m_optionLineIntersectionMouse;
-
-      std::string m_optionPrinter;
     };
   }
 }

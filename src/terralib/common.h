@@ -45,6 +45,7 @@
 #include "common/Logger.h"
 #include "common/Module.h"
 #include "common/ParameterizedAbstractFactory.h"
+#include "common/PlatformUtils.h"
 #include "common/Singleton.h"
 #include "common/STLUtils.h"
 #include "common/StringUtils.h"

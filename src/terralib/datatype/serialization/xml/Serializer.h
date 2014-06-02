@@ -30,6 +30,8 @@
 #include "../../../common/Singleton.h"
 #include "../../Config.h"
 
+#ifdef TERRALIB_MOD_XML_ENABLED
+
 // STL
 #include <memory>
 
@@ -57,6 +59,8 @@ namespace te
     } // end namespace xml
   }   // end namespace serialize
 }     // end namespace te
+
+#endif // TERRALIB_MOD_XML_ENABLED
 
 #endif  // __TERRALIB_DATATYPE_SERIALIZATION_XML_INTERNAL_SERIALIZER_H
 

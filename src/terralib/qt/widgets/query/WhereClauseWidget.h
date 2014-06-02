@@ -39,8 +39,8 @@
 #include <set>
 
 // Qt
-#include <QtGui/QComboBox>
-#include <QtGui/QWidget>
+#include <QComboBox>
+#include <QWidget>
 
 
 namespace Ui { class WhereClauseWidgetForm; }

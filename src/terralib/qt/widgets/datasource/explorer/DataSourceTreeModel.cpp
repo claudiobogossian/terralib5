@@ -31,8 +31,8 @@
 #include "DataSourceTreeModel.h"
 
 // Qt
-#include <QtGui/QMessageBox>
-#include <QtGui/QWidget>
+#include <QMessageBox>
+#include <QWidget>
 
 te::qt::widgets::DataSourceTreeModel::DataSourceTreeModel(const std::vector<te::da::DataSourceInfoPtr>& datasources, QWidget* parent)
   : QAbstractItemModel(parent),

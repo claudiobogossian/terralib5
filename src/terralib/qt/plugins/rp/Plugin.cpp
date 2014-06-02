@@ -80,8 +80,8 @@
 #endif
 
 // QT
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
+#include <QMenu>
+#include <QMenuBar>
 
 te::qt::plugins::rp::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo), m_rpMenu(0)
@@ -98,18 +98,18 @@ void te::qt::plugins::rp::Plugin::startup()
     return;
 
 // it initializes the Translator support for the TerraLib RP Qt Plugin
-  TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_RP_TEXT_DOMAIN, TE_QT_PLUGIN_RP_TEXT_DOMAIN_DIR, "UTF-8");
+  //TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_RP_TEXT_DOMAIN, TE_QT_PLUGIN_RP_TEXT_DOMAIN_DIR, "UTF-8");
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_RP("TerraLib Qt RP Plugin startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt RP Plugin startup!"));
 
 // add plugin menu
   m_rpMenu = te::qt::af::ApplicationController::getInstance().getMenu("RP");
 
-  m_rpMenu->setTitle(TE_QT_PLUGIN_RP("Raster Processing"));
+  m_rpMenu->setTitle(TE_TR("Raster Processing"));
 
 // add pop up menu
   m_popupAction = new QAction(m_rpMenu);
-  m_popupAction->setText(TE_QT_PLUGIN_RP("Raster Processing"));
+  m_popupAction->setText(TE_TR("Raster Processing"));
 
   //add to application layer tree pop up menu
   //te::qt::af::evt::LayerPopUpAddAction evt(m_popupAction, "RASTER_LAYER_ITEM", 2 /*UNIQUE_ITEM_SELECTED*/);
@@ -139,7 +139,7 @@ void te::qt::plugins::rp::Plugin::shutdown()
 // unregister actions
   unRegisterActions();
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_RP("TerraLib Qt RP Plugin shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt RP Plugin shutdown!"));
 
   m_initialized = false;
 }

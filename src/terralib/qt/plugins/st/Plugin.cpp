@@ -35,8 +35,8 @@
 #endif
 
 // QT
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
+#include <QMenu>
+#include <QMenuBar>
 
 te::qt::plugins::slider::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo), m_sliderMenu(0)
@@ -53,14 +53,14 @@ void te::qt::plugins::slider::Plugin::startup()
     return;
 
 // it initializes the Translator support for the TerraLib slider Qt Plugin
-  TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_SLIDER_TEXT_DOMAIN, TE_QT_PLUGIN_SLIDER_TEXT_DOMAIN_DIR, "UTF-8");
+  //TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_SLIDER_TEXT_DOMAIN, TE_QT_PLUGIN_SLIDER_TEXT_DOMAIN_DIR, "UTF-8");
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_SLIDER("TerraLib Qt SLIDER Plugin startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt SLIDER Plugin startup!"));
 
 // add plugin menu
   m_sliderMenu = te::qt::af::ApplicationController::getInstance().getMenu("SLIDER");
 
-  m_sliderMenu->setTitle(TE_QT_PLUGIN_SLIDER("Slider"));
+  m_sliderMenu->setTitle(TE_TR("Slider"));
 
 // register actions
   registerActions();
@@ -79,7 +79,7 @@ void te::qt::plugins::slider::Plugin::shutdown()
 // remove menu
   delete m_sliderMenu;
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_SLIDER("TerraLib Qt SLIDER Plugin shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt SLIDER Plugin shutdown!"));
 
   m_initialized = false;
 }

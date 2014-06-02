@@ -27,6 +27,7 @@
 #include "ReaderExample.h"
 
 // TerraLib
+#include "../Config.h"
 #include <terralib/common/TerraLib.h>
 #include <terralib/plugin.h>
 
@@ -41,14 +42,14 @@ void LoadXerces()
     pinfo.m_name = "TERRALIB_XERCES";
     pinfo.m_category = "XML";
     pinfo.m_engine = TE_CPPPLUGINENGINE_CODE;
-    pinfo.m_folder = TE_PLUGINS_PATH;
+    //pinfo.m_folder = TE_PLUGINS_PATH;
     pinfo.m_resources.push_back(te::plugin::PluginInfo::Resource("SharedLibraryName", "terralib_xerces"));
 
     te::plugin::PluginManager::getInstance().load(pinfo, true);
   }
   catch(...)
   {
-    std::cout << std::endl << "Failed to load XERCES plugin: unknow exception!" << std::endl;
+    std::cout << std::endl << "Failed to load XERCES plugin: unknown exception!" << std::endl;
   }
 }
 
@@ -57,22 +58,22 @@ int main(int /*argc*/, char** /*argv*/)
   try
   {
     TerraLib::getInstance().initialize();
-    ReadXML(""TE_DATA_EXAMPLE_DIR"/data/xml/xerces/note.xml", true, false);
-    ReadXML(""TE_DATA_EXAMPLE_DIR"/data/xml/xerces/note.xml", false, false);
-    ReadXML(""TE_DATA_EXAMPLE_DIR"/data/xml/xerces/note.xml", false, true);
-    //ReadXML(""TE_DATA_EXAMPLE_DIR"/data/xml/xerces/test.xml", false, true); //not found 
-    //ReadXML(""TE_DATA_EXAMPLE_DIR"/data/xml/xerces/test_contracted.xml", false, true); //not found
+    ReadXML(""TERRALIB_EXAMPLES_DATA_DIR"/xml/xerces/note.xml", true, false);
+    ReadXML(""TERRALIB_EXAMPLES_DATA_DIR"/xml/xerces/note.xml", false, false);
+    ReadXML(""TERRALIB_EXAMPLES_DATA_DIR"/xml/xerces/note.xml", false, true);
+    //ReadXML(""TE_DATA_EXAMPLE_DIR"/xml/xerces/test.xml", false, true); //not found 
+    //ReadXML(""TE_DATA_EXAMPLE_DIR"/xml/xerces/test_contracted.xml", false, true); //not found
 
     TerraLib::getInstance().finalize();
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred: " << e.what() << std::endl;
     return EXIT_FAILURE;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
     return EXIT_FAILURE;
   }
 

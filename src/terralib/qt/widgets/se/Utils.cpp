@@ -26,9 +26,9 @@
 // TerraLib
 #include "../../../color/RGBAColor.h"
 #include "../../../maptools/Utils.h"
+#include "../../../se/serialization/xml/Symbolizer.h"
 #include "../../../se/Stroke.h"
 #include "../../../se/SvgParameter.h"
-#include "../../../se/serialization/Symbolizer.h"
 #include "../../../se/Utils.h"
 #include "../../../xml/Reader.h"
 #include "../../../xml/ReaderFactory.h"
@@ -43,8 +43,8 @@
 
 // Qt
 #include <QtCore/QVector>
-#include <QtGui/QBrush>
-#include <QtGui/QPen>
+#include <QBrush>
+#include <QPen>
 
 // STL
 #include <cassert>
@@ -131,13 +131,13 @@ void te::qt::widgets::ReadSymbolLibrary(const std::string& path)
   reader->read(path);
 
   if(!reader->next())
-    throw Exception((boost::format(TR_QT_WIDGETS("Could not read symbol library information in file: %1%.")) % path).str());
+    throw Exception((boost::format(TE_TR("Could not read symbol library information in file: %1%.")) % path).str());
 
   if(reader->getNodeType() != te::xml::START_ELEMENT)
-    throw Exception((boost::format(TR_QT_WIDGETS("Error reading the document %1%, the start element wasn't found.")) % path).str());
+    throw Exception((boost::format(TE_TR("Error reading the document %1%, the start element wasn't found.")) % path).str());
 
   if(reader->getElementLocalName() != "SymbolLibrary")
-    throw Exception((boost::format(TR_QT_WIDGETS("The first tag in the document %1% is not 'SymbolLibrary'.")) % path).str());
+    throw Exception((boost::format(TE_TR("The first tag in the document %1% is not 'SymbolLibrary'.")) % path).str());
 
   std::string name = reader->getAttr("name");
 

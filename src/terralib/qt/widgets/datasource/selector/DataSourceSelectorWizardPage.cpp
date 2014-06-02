@@ -24,12 +24,12 @@
 */
 
 // TerraLib
-#include "ui_DataSourceSelectorWidgetForm.h"
 #include "DataSourceSelectorWidget.h"
 #include "DataSourceSelectorWizardPage.h"
+#include "ui_DataSourceSelectorWidgetForm.h"
 
 // Qt
-#include <QtGui/QVBoxLayout>
+#include <QVBoxLayout>
 
 te::qt::widgets::DataSourceSelectorWizardPage::DataSourceSelectorWizardPage(QWidget* parent)
   : QWizardPage(parent)

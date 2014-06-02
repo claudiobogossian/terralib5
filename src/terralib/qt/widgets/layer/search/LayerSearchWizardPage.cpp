@@ -29,7 +29,7 @@
 #include "LayerSearchWizardPage.h"
 
 // Qt
-#include <QtGui/QGridLayout>
+#include <QGridLayout>
 
 te::qt::widgets::LayerSearchWizardPage::LayerSearchWizardPage(QWidget* parent)
   : QWizardPage(parent)

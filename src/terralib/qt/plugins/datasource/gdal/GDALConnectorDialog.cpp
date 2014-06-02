@@ -42,9 +42,9 @@
 #include <boost/lexical_cast.hpp>
 
 // Qt
-#include <QtCore/QFileInfo>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
+#include <QFileInfo>
+#include <QFileDialog>
+#include <QMessageBox>
 
 te::qt::plugins::gdal::GDALConnectorDialog::GDALConnectorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -96,7 +96,7 @@ void te::qt::plugins::gdal::GDALConnectorDialog::openPushButtonPressed()
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("GDAL") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for GDAL data sources!"));
+      throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for GDAL data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -111,7 +111,7 @@ void te::qt::plugins::gdal::GDALConnectorDialog::openPushButtonPressed()
     m_driver.reset(ds.release());
 
     if(m_driver.get() == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open dataset via GDAL due to an unknown error!"));
+      throw te::qt::widgets::Exception(TE_TR("Could not open dataset via GDAL due to an unknown error!"));
 
     QString title = m_ui->m_datasourceTitleLineEdit->text();
 
@@ -168,7 +168,7 @@ void te::qt::plugins::gdal::GDALConnectorDialog::testPushButtonPressed()
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("GDAL") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for GDAL data sources!"));
+      throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for GDAL data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -182,7 +182,7 @@ void te::qt::plugins::gdal::GDALConnectorDialog::testPushButtonPressed()
     ds->open();
 
     if(ds.get() == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open dataset via GDAL!"));
+      throw te::qt::widgets::Exception(TE_TR("Could not open dataset via GDAL!"));
 
     QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
@@ -244,7 +244,7 @@ void te::qt::plugins::gdal::GDALConnectorDialog::getConnectionInfo(std::map<std:
   QString qstr = m_ui->m_datasetLineEdit->text().trimmed();
   
   if(qstr.isEmpty())
-    throw te::qt::widgets::Exception(TR_QT_WIDGETS("Please select a dataset first!"));
+    throw te::qt::widgets::Exception(TE_TR("Please select a dataset first!"));
 
   if(boost::filesystem::is_directory(qstr.toUtf8().data()))
     connInfo["URI"] = qstr.toUtf8().data();

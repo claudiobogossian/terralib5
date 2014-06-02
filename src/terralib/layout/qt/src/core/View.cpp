@@ -223,6 +223,8 @@ void te::layout::View::config()
   
   connect(m_outsideArea->getToolbarOutside(), SIGNAL(changeContext(bool)), this, SLOT(onToolbarChangeContext(bool)));
 
+  connect(m_outsideArea, SIGNAL(changeMenuContext(bool)), this, SLOT(onMainMenuChangeContext(bool)));
+
   m_visualizationArea = new VisualizationArea(boxW);
   m_visualizationArea->build();
 
@@ -259,7 +261,10 @@ void te::layout::View::hideEvent( QHideEvent * event )
   QGraphicsView::hideEvent(event);
 
   if(m_outsideArea)
+  {
     m_outsideArea->closeAllDocks();
+    m_outsideArea->closeMainMenu();
+  }
 }
 
 void te::layout::View::closeEvent( QCloseEvent * event )
@@ -267,7 +272,10 @@ void te::layout::View::closeEvent( QCloseEvent * event )
   QGraphicsView::closeEvent(event);
 
   if(m_outsideArea)
+  {
     m_outsideArea->closeAllDocks();
+    m_outsideArea->closeMainMenu();
+  }
 }
 
 void te::layout::View::showEvent( QShowEvent * event )
@@ -275,11 +283,107 @@ void te::layout::View::showEvent( QShowEvent * event )
   QGraphicsView::showEvent(event);
 
   if(m_outsideArea)
+  {
     m_outsideArea->openAllDocks();
+    m_outsideArea->openMainMenu();
+  }
 }
 
 void te::layout::View::onToolbarChangeContext( bool change )
 {
+  outsideAreaChangeContext(change);
+}
+
+void te::layout::View::onSelectionChanged()
+{
+  QList<QGraphicsItem*> graphicsItems = scene()->selectedItems();
+  QList<QGraphicsItem*> allItems = scene()->items();
+  //Refresh Property window   
+  if(m_outsideArea->getPropertiesOutside())
+    m_outsideArea->getPropertiesOutside()->itemsSelected(graphicsItems, allItems);
+}
+
+void te::layout::View::onAddItemFinalized()
+{
+  QList<QGraphicsItem*> graphicsItems = scene()->selectedItems();
+  //Refresh Inspector Object window
+  if(m_outsideArea->getObjectInspectorOutside())
+    m_outsideArea->getObjectInspectorOutside()->itemsInspector(graphicsItems);
+}
+
+void te::layout::View::setOutsideArea( OutsideArea* outsideArea )
+{
+  m_outsideArea = outsideArea;
+}
+
+void te::layout::View::createItemGroup()
+{
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  QList<QGraphicsItem*> graphicsItems = this->scene()->selectedItems();
+
+  if(sc)
+  {
+    QGraphicsItemGroup* group = sc->createItemGroup(graphicsItems);
+
+    if(!group)
+      return;
+          
+    ItemGroup* layoutGroup = dynamic_cast<ItemGroup*>(group);
+      
+    if(!layoutGroup)
+      return;
+
+    layoutGroup->redraw();
+
+    /*If "enabled=true", QGraphicsItemGroup will handle all the events. For example, 
+    the event of mouse click on the child item won't be handled by child item.
+    If "enabled=false", QGraphicsItem Group will not block the child item's event 
+    and let child item handle it own event.*/
+    group->setHandlesChildEvents(true);
+  }
+}
+
+void te::layout::View::destroyItemGroup()
+{
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  QList<QGraphicsItem*> graphicsItems = this->scene()->selectedItems();
+
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if (item)
+    {
+      QGraphicsItemGroup* group = dynamic_cast<QGraphicsItemGroup*>(item);
+      if(group)
+      {
+        if(sc)
+        {
+          sc->destroyItemGroup(group);
+        }
+      }
+    }
+  }
+}
+
+void te::layout::View::resetDefaultConfig()
+{
+  //Use ScrollHand Drag Mode to enable Panning
+  //You do need the enable scroll bars for that to work.
+  setDragMode(RubberBandDrag);
+  //Whole view not interactive while in ScrollHandDrag Mode
+  setInteractive(true);
+  setCursor(Qt::ArrowCursor);
+}
+
+void te::layout::View::onMainMenuChangeContext( bool change )
+{
+  outsideAreaChangeContext(change);
+}
+
+void te::layout::View::outsideAreaChangeContext( bool change )
+{
+  if(!change)
+    return;
+
   Scene* sc = dynamic_cast<Scene*>(scene());
 
   if(!sc)
@@ -362,97 +466,30 @@ void te::layout::View::onToolbarChangeContext( bool change )
       break;
     }
   case TypeGroup:
-    createItemGroup();
-    resetDefaultConfig();
+    {
+      createItemGroup();
+      resetDefaultConfig();
+    }
     break;
   case TypeUngroup:
-    destroyItemGroup();
-    resetDefaultConfig();
+    {
+      destroyItemGroup();
+      resetDefaultConfig();
+    }
     break;
   case TypePrinter:
-    sc->printPreview();
+    {
+      sc->printPreview();
+    }
+    break;
+  case TypeExit:
+    {
+      //hide();
+    }
     break;
   default:
-    resetDefaultConfig();
-  }
-}
-
-void te::layout::View::onSelectionChanged()
-{
-  QList<QGraphicsItem*> graphicsItems = scene()->selectedItems();
-  QList<QGraphicsItem*> allItems = scene()->items();
-  //Refresh Property window   
-  if(m_outsideArea->getPropertiesOutside())
-    m_outsideArea->getPropertiesOutside()->itemsSelected(graphicsItems, allItems);
-}
-
-void te::layout::View::onAddItemFinalized()
-{
-  QList<QGraphicsItem*> graphicsItems = scene()->selectedItems();
-  //Refresh Inspector Object window
-  if(m_outsideArea->getObjectInspectorOutside())
-    m_outsideArea->getObjectInspectorOutside()->itemsInspector(graphicsItems);
-}
-
-void te::layout::View::setOutsideArea( OutsideArea* outsideArea )
-{
-  m_outsideArea = outsideArea;
-}
-
-void te::layout::View::createItemGroup()
-{
-  Scene* sc = dynamic_cast<Scene*>(scene());
-  QList<QGraphicsItem*> graphicsItems = this->scene()->selectedItems();
-
-  if(sc)
-  {
-    QGraphicsItemGroup* group = sc->createItemGroup(graphicsItems);
-
-    if(!group)
-      return;
-          
-    ItemGroup* layoutGroup = dynamic_cast<ItemGroup*>(group);
-      
-    if(!layoutGroup)
-      return;
-
-    layoutGroup->redraw();
-
-    /*If "enabled=true", QGraphicsItemGroup will handle all the events. For example, 
-    the event of mouse click on the child item won't be handled by child item.
-    If "enabled=false", QGraphicsItem Group will not block the child item's event 
-    and let child item handle it own event.*/
-    group->setHandlesChildEvents(true);
-  }
-}
-
-void te::layout::View::destroyItemGroup()
-{
-  Scene* sc = dynamic_cast<Scene*>(scene());
-  QList<QGraphicsItem*> graphicsItems = this->scene()->selectedItems();
-
-  foreach( QGraphicsItem *item, graphicsItems) 
-  {
-    if (item)
     {
-      QGraphicsItemGroup* group = dynamic_cast<QGraphicsItemGroup*>(item);
-      if(group)
-      {
-        if(sc)
-        {
-          sc->destroyItemGroup(group);
-        }
-      }
+      resetDefaultConfig();
     }
   }
-}
-
-void te::layout::View::resetDefaultConfig()
-{
-  //Use ScrollHand Drag Mode to enable Panning
-  //You do need the enable scroll bars for that to work.
-  setDragMode(RubberBandDrag);
-  //Whole view not interactive while in ScrollHandDrag Mode
-  setInteractive(true);
-  setCursor(Qt::ArrowCursor);
 }

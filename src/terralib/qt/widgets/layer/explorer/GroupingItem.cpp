@@ -29,8 +29,8 @@
 #include "GroupingItem.h"
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QWidget>
 
 te::qt::widgets::GroupingItem::GroupingItem(te::map::Grouping* grouping, QObject* parent)
   : AbstractTreeItem(parent),

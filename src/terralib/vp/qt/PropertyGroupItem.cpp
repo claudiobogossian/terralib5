@@ -32,7 +32,7 @@
 #include "PropertyItem.h"
 
 // Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 te::vp::PropertyGroupItem::PropertyGroupItem(std::vector<te::dt::Property*> properties, AbstractTreeItem* parent)
   : AbstractTreeItem(parent)
@@ -67,7 +67,7 @@ int te::vp::PropertyGroupItem::columnCount() const
 QVariant te::vp::PropertyGroupItem::data(int column, int role) const
 {
   if(role == Qt::DisplayRole && column == 0)
-    return QVariant(TR_VP("Properties"));
+    return QVariant(TE_TR("Properties"));
 
   return QVariant();
 }

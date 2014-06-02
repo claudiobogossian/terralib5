@@ -34,8 +34,8 @@
 #include <string>
 
 // Qt
-#include <QtGui/QIcon>
-#include <QtGui/QWidget>
+#include <QIcon>
+#include <QWidget>
 
 namespace te
 {

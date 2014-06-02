@@ -37,8 +37,8 @@
 #include <boost/filesystem.hpp>
 
 // Qt
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QMessageBox>
 
 te::qt::plugins::ado::ADOConnector::ADOConnector(QWidget* parent, Qt::WindowFlags f)
   : AbstractDataSourceConnector(parent, f)

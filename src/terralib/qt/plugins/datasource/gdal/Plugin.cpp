@@ -49,11 +49,11 @@
 #include <boost/filesystem.hpp>
 
 // Qt 
-#include <QtGui/QAction>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMenu>
-#include <QtCore/QFileInfo>
-#include <QtGui/QMessageBox>
+#include <QAction>
+#include <QFileDialog>
+#include <QMenu>
+#include <QFileInfo>
+#include <QMessageBox>
 
 std::list<te::da::DataSetTypePtr> GetDataSetsInfo(const te::da::DataSourceInfoPtr& info)
 {
@@ -97,10 +97,7 @@ void te::qt::plugins::gdal::Plugin::startup()
 
   te::qt::widgets::DataSourceTypeManager::getInstance().add(new GDALType);
 
-// it initializes the Translator support for the TerraLib PostGIS driver support
-  TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_DATASOURCE_GDAL_TEXT_DOMAIN, TE_QT_PLUGIN_DATASOURCE_GDAL_TEXT_DOMAIN_DIR, "UTF-8");
-
-  TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_GDAL("TerraLib Qt GDAL widget startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt GDAL widget startup!"));
 
   m_initialized = true;
 
@@ -130,7 +127,7 @@ void te::qt::plugins::gdal::Plugin::shutdown()
   te::da::DataSourceInfoManager::getInstance().removeByType("GDAL");
   te::qt::widgets::DataSourceTypeManager::getInstance().remove("GDAL");
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_GDAL("TerraLib Qt GDAL widget shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt GDAL widget shutdown!"));
 
   m_initialized = false;
 

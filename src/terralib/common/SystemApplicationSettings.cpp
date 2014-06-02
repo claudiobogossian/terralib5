@@ -35,59 +35,59 @@
 // Boost
 #include <boost/filesystem.hpp>
 
-void te::common::SystemApplicationSettings::load()
-{
-// look in the application current dir for a file TERRALIB_SYSTEM_SETTINGS_FILE inside the folder TERRALIB_CONFIG_DIR
-  boost::filesystem::path config_file = boost::filesystem::current_path();
-
-  config_file /= TERRALIB_CONFIG_DIR;
-
-  config_file /= TERRALIB_SYSTEM_SETTINGS_FILE;
-
-  if(boost::filesystem::is_regular_file(config_file))
-  {
-    load(config_file.string());
-    return;
-  }
-
-// if not found let's try to search in the system application data dir
-  //const std::string& app_data_dir = OSSettingsDir::getInstance().getSystemSettingsPath();
-
-  //if(!app_data_dir.empty())
-  //{
-  //  config_file = app_data_dir;
-
-  //  config_file /= TERRALIB_DIR;
-
-  //  config_file /= TERRALIB_SYSTEM_SETTINGS_FILE;
-
-  //  if(boost::filesystem::is_regular_file(config_file))
-  //  {
-  //    load(config_file.string());
-  //    return;
-  //  }
-  //}
-
-// the last chance...
-  char* mgis_dir = getenv(TERRALIB_DIR_ENVVAR);
-
-  if(mgis_dir != 0)
-  {
-    config_file = mgis_dir;
-
-    config_file /= TERRALIB_CONFIG_DIR;
-
-    config_file /= TERRALIB_SYSTEM_SETTINGS_FILE;
-
-    if(boost::filesystem::is_regular_file(config_file))
-    {
-      load(config_file.string());
-      return;
-    }
-  }
-
-  throw Exception(TR_COMMON("Could not find system application config file!"));
-}
+//void te::common::SystemApplicationSettings::load()
+//{
+//// look in the application current dir for a file TERRALIB_SYSTEM_SETTINGS_FILE inside the folder TERRALIB_CONFIG_DIR
+//  boost::filesystem::path config_file = boost::filesystem::current_path();
+//
+//  config_file /= TERRALIB_CONFIG_DIR;
+//
+//  config_file /= TERRALIB_SYSTEM_SETTINGS_FILE;
+//
+//  if(boost::filesystem::is_regular_file(config_file))
+//  {
+//    load(config_file.string());
+//    return;
+//  }
+//
+//// if not found let's try to search in the system application data dir
+//  //const std::string& app_data_dir = OSSettingsDir::getInstance().getSystemSettingsPath();
+//
+//  //if(!app_data_dir.empty())
+//  //{
+//  //  config_file = app_data_dir;
+//
+//  //  config_file /= TERRALIB_DIR;
+//
+//  //  config_file /= TERRALIB_SYSTEM_SETTINGS_FILE;
+//
+//  //  if(boost::filesystem::is_regular_file(config_file))
+//  //  {
+//  //    load(config_file.string());
+//  //    return;
+//  //  }
+//  //}
+//
+//// the last chance...
+//  char* mgis_dir = getenv(TERRALIB_DIR_VAR_NAME);
+//
+//  if(mgis_dir != 0)
+//  {
+//    config_file = mgis_dir;
+//
+//    config_file /= TERRALIB_CONFIG_DIR;
+//
+//    config_file /= TERRALIB_SYSTEM_SETTINGS_FILE;
+//
+//    if(boost::filesystem::is_regular_file(config_file))
+//    {
+//      load(config_file.string());
+//      return;
+//    }
+//  }
+//
+//  throw Exception(TE_TR("Could not find system application config file!"));
+//}
 
 void te::common::SystemApplicationSettings::load(const std::string& fileName)
 {

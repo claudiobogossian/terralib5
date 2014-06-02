@@ -35,41 +35,6 @@
  */
 #define OGR_DRIVER_IDENTIFIER "OGR"
 
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
-  \def TE_OGR_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib OGR driver implementation.
- */
-#define TE_OGR_TEXT_DOMAIN "teogr"
-
-/*!
-  \def TE_OGR_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
- */
-#define TE_OGR_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TR_OGR
-
-  \brief It marks a string in order to get translated. This is a special mark used in the DataAccess module of TerraLib.
- */
-#define TR_OGR(message) TR(message, TE_OGR_TEXT_DOMAIN)
-
-/*!
-  \def TR_PLURAL_OGR
-
-  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the DataAccess module of TerraLib. 
- */
-#define TR_PLURAL_OGR(message1, message2, n) TR_PLURAL(TE_OGR_TEXT_DOMAIN, message1, message2, n)
-
-//@}
-
 /** @name Logger Defines
  *  Flags for building TerraLib with Log support
  */

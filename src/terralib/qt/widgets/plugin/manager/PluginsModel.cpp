@@ -6,7 +6,7 @@
 #include "../../../../plugin/PluginManager.h"
 
 // Qt
-#include <QtGui/QFont>
+#include <QFont>
 
 std::string GetData(const int& column, const te::plugin::PluginInfo& info)
 {
@@ -241,7 +241,12 @@ void te::qt::widgets::PluginsModel::addPlugin(const te::plugin::PluginInfo* info
   m_plugins.push_back(new te::plugin::PluginInfo(*info));
   m_pluginsStatus.push_back(status);
 
+#if (QT_VERSION < 0x050000)
   reset();
+#else
+  beginResetModel();
+  endResetModel();
+#endif
 }
 
 void te::qt::widgets::PluginsModel::removePlugins(const QModelIndexList& plgs)
@@ -251,7 +256,13 @@ void te::qt::widgets::PluginsModel::removePlugins(const QModelIndexList& plgs)
   for(it=plgs.constBegin(); it!=plgs.constEnd(); ++it)
     m_pluginsStatus[(*it).row()] = To_remove;
 
+#if (QT_VERSION < 0x050000)
   reset();
+#else
+  beginResetModel();
+  endResetModel();
+#endif
+
 }
 
 void te::qt::widgets::PluginsModel::getPluginsInfo(std::vector<te::plugin::PluginInfo*>& plgs, std::vector<PluginsStatus>& status)

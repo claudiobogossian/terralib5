@@ -45,9 +45,6 @@ te::da::Module::Module()
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
 
-// it initializes the Translator support for the TerraLib Data Access support
-  TE_ADD_TEXT_DOMAIN(TE_DATAACCESS_TEXT_DOMAIN, TE_DATAACCESS_TEXT_DOMAIN_DIR, "UTF-8");
-
 // initializes the ConnectionPoolManager singleton
   ConnectionPoolManager::getInstance();
 }
@@ -59,7 +56,7 @@ te::da::Module::~Module()
 
 void te::da::Module::initialize()
 {
-#if TE_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER
+#if TERRALIB_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER
   ConnectionPoolManager::getInstance().start();
 #endif
 
@@ -75,15 +72,15 @@ void te::da::Module::initialize()
   AttributeConverterManager::getInstance().addConverter("PointToMConverter", te::da::PointToMConverter);
   AttributeConverterManager::getInstance().addConverter("TupleToStringConverter", te::da::TupleToStringConverter);
 
-  TE_LOG_TRACE(TR_DATAACCESS("TerraLib Data Access module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Data Access module initialized!"));
 }
 
 void te::da::Module::finalize()
 {
-#if TE_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER
+#if TERRALIB_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER
   ConnectionPoolManager::getInstance().stop();
 #endif
 
-  TE_LOG_TRACE(TR_DATAACCESS("TerraLib Data Access module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Data Access module finalized!"));
 }
 

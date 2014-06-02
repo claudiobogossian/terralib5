@@ -368,7 +368,8 @@ te::gm::Envelope te::layout::ObjectItem::createNewBoxInCoordScene( const double&
         QPointF pbxy1 = mapToScene(boundingRect().bottomLeft());
         if(posAtual.x() > posItem.x() && posAtual.y() < pbxy1.y())
         {
-          boxScene = te::gm::Envelope(posItem.x(), pbxy1.y(), pbxy2.x() + dx, posItem.y() + dy);
+          boxScene = te::gm::Envelope(boxScene.getLowerLeftX(), 
+            boxScene.getLowerLeftY(), pbxy2.x() + dx, posItem.y() + dy);
 
           QPointF p_f = mapFromScene(QPointF(posItem.x(), posItem.y() + dy));
           QPointF p_ff = mapToParent(p_f);
@@ -376,7 +377,7 @@ te::gm::Envelope te::layout::ObjectItem::createNewBoxInCoordScene( const double&
           yTranslation = p_ff.y();
 
           //In Parent Coordinates
-          //setPos( QPointF(xTranslation, yTranslation) );
+          setPos( QPointF(xTranslation, yTranslation) );
         }
         break;
       }

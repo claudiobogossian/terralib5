@@ -27,11 +27,11 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_TIMESERIESDIALOG_H
 
 //TerraLib
-#include "../../maptools/AbstractLayer.h"
-#include "Config.h"
+#include "../../../maptools/AbstractLayer.h"
+#include "../Config.h"
 
 // Qt
-#include <QtGui/QDialog>
+#include <QDialog>
 
 #include <memory>
 

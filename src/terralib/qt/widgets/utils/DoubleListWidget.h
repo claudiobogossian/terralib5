@@ -33,7 +33,7 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 class QListWidgetItem;
 

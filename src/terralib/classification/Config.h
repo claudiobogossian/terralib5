@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -31,41 +31,6 @@
 #include "../Config.h"
 
 #define TE_CL_MODULE_NAME "te.classification"
-
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
-  \def TE_CL_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in Terrralib Classification module.
- */
-#define TE_CL_TEXT_DOMAIN "teclassification"
-
-/*!
-  \def TE_CL_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
- */
-#define TE_CL_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TR_CL
-
-  \brief It marks a string in order to get translated. This is a special mark used in the Terrralib Classification module.
- */
-#define TR_CL(message) TR(message, TE_CL_TEXT_DOMAIN)
-
-/*!
-  \def TR_PLURAL_CLASSIFICATION
-
-  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the Classification module of Terrralib.
- */
-#define TR_PLURAL_CLASSIFICATION(message1, message2, n) TR_PLURAL(TE_CLASSIFICATION_TEXT_DOMAIN, message1, message2, n)
-
-//@}
 
 /** @name ROI Defines
  *  Flags for ROI export and import funcions

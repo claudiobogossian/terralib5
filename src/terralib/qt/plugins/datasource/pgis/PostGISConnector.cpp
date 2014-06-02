@@ -37,8 +37,8 @@
 #include <boost/filesystem.hpp>
 
 // Qt
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QMessageBox>
 
 te::qt::plugins::pgis::PostGISConnector::PostGISConnector(QWidget* parent, Qt::WindowFlags f)
   : te::qt::widgets::AbstractDataSourceConnector(parent, f)

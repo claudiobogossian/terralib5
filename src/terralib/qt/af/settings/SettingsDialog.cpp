@@ -9,7 +9,7 @@
 #include "GeneralConfigWidgetFactory.h"
 
 // Qt
-#include <QtGui/QScrollArea>
+#include <QScrollArea>
 
 void GetFactoriesNames (QVector<QString>& facNames)
 {

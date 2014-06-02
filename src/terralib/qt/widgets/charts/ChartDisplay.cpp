@@ -48,7 +48,7 @@
 
 //Qt
 #include <qapplication.h>
-#include <QtGui/QPen>
+#include <QPen>
 
 //STL
 #include <memory>

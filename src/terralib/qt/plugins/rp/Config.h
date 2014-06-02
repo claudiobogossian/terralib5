@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -123,27 +123,6 @@
   \brief It contains the plugin name.
 */
 #define TE_QT_PLUGIN_RP_PLUGIN_NAME "te.qt.rp"
-
-/*!
-  \def TE_QT_PLUGIN_RP_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib RP Qt Plugin implementation.
-*/
-#define TE_QT_PLUGIN_RP_TEXT_DOMAIN "teqtpluginrp"
-
-/*!
-  \def TE_QT_PLUGIN_RP_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
-*/
-#define TE_QT_PLUGIN_RP_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TE_QT_PLUGIN_RP
-
-  \brief It marks a string in order to get translated. This is a special mark used in the RP QtPlugin of TerraLib.
-*/
-#define TE_QT_PLUGIN_RP(message) TR(message, TE_QT_PLUGIN_RP_TEXT_DOMAIN)
 
 /*!
   \def TEQTPLUGINRPEXPORT

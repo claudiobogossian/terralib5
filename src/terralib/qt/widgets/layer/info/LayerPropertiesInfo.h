@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/info/LayerPropertiesInfo.h
+  \file terralib/qt/widgets/layer/info/LayerPropertiesInfo.h
 
   \brief 
 */
@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_LAYERPROPERTIESINFO_H
 
 #include "../../Config.h"
-#include "../../widgets/propertybrowser/AbstractPropertyItem.h"
+#include "../../propertybrowser/AbstractPropertyItem.h"
 
 namespace te
 {

@@ -222,12 +222,12 @@ void te::da::SpatialRestrictionVisitor::addSpatialRestriction(const Function& f)
   // Gets the geometry restriction
   te::gm::Geometry* geom = getGeometryRestriction(f);
   if(geom == 0)
-    throw Exception(TR_DATAACCESS("The spatial function not have a literal geometry or literal envelope!"));
+    throw Exception(TE_TR("The spatial function not have a literal geometry or literal envelope!"));
 
   // Gets the property name
   std::string pname = getPropertyName(f);
   if(pname.empty())
-    throw Exception(TR_DATAACCESS("The spatial function not have a property name!"));
+    throw Exception(TE_TR("The spatial function not have a property name!"));
 
   // Creates the spatial restriction
   SpatialRestriction* restriction = new SpatialRestriction;

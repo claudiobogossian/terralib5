@@ -47,7 +47,7 @@ PGresult* te::pgis::Connection::query(const std::string& query)
 
   if(PQresultStatus(result) != PGRES_TUPLES_OK)
   {
-    boost::format errmsg(TR_PGIS("Could not retrieve the dataset due to the following error: %1%."));
+    boost::format errmsg(TE_TR("Could not retrieve the dataset due to the following error: %1%."));
                   errmsg = errmsg % PQerrorMessage(m_pgconn);
 
     PQclear(result);
@@ -65,7 +65,7 @@ void te::pgis::Connection::execute(const std::string& command)
   if((PQresultStatus(result) != PGRES_COMMAND_OK) &&
      (PQresultStatus(result) != PGRES_TUPLES_OK))
   {
-    boost::format errmsg(TR_PGIS("Could not execute the sql statement due to the following error: %1%."));
+    boost::format errmsg(TE_TR("Could not execute the sql statement due to the following error: %1%."));
     
     errmsg = errmsg % PQerrorMessage(m_pgconn);
 
@@ -99,7 +99,7 @@ te::pgis::Connection::Connection(ConnectionPool* pool, const std::string& connin
 
   if(status != CONNECTION_OK)
   {
-    boost::format errmsg(TR_PGIS("It was not possible to create a connection to the given data source due to the following error: %1%."));
+    boost::format errmsg(TE_TR("It was not possible to create a connection to the given data source due to the following error: %1%."));
 
     errmsg = errmsg % PQerrorMessage(m_pgconn);
 
@@ -117,7 +117,7 @@ te::pgis::Connection::Connection(ConnectionPool* pool, const std::string& connin
 
   if(PQsetClientEncoding(m_pgconn, cencoding.c_str()) == -1)
   {
-    boost::format errmsg(TR_PGIS("It was not possible to set the client encoding for the PostGIS data source due to the following error: %1%."));
+    boost::format errmsg(TE_TR("It was not possible to set the client encoding for the PostGIS data source due to the following error: %1%."));
 
     errmsg = errmsg % PQerrorMessage(m_pgconn);
 

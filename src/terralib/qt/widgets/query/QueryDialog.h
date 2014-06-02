@@ -36,8 +36,8 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QColor>
-#include <QtGui/QDialog>
+#include <QColor>
+#include <QDialog>
 
 namespace Ui { class QueryDialogForm; }
 

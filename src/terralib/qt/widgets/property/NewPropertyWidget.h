@@ -31,8 +31,8 @@
 
 
 // Qt
-#include <QtGui/QWidget>
-#include <QtGui/QGridLayout>
+#include <QWidget>
+#include <QGridLayout>
 
 #include <memory>
 

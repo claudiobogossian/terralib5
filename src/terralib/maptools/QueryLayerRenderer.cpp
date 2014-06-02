@@ -82,7 +82,7 @@ void te::map::QueryLayerRenderer::draw(AbstractLayer* layer,
   te::map::QueryLayer* qlayer = dynamic_cast<te::map::QueryLayer*>(layer);
 
   if(qlayer == 0)
-    throw Exception(TR_MAP("Wrong type render type for this layer!"));
+    throw Exception(TE_TR("Wrong type render type for this layer!"));
 
 // check if layer extent intersects the drawing area and so compute bounding box intersection
   te::gm::Envelope reprojectedBBOX(bbox);
@@ -93,7 +93,7 @@ void te::map::QueryLayerRenderer::draw(AbstractLayer* layer,
   }
   else if(qlayer->getSRID() != srid)
   {
-    throw Exception(TR_MAP("The layer or map don't have a valid SRID!"));
+    throw Exception(TE_TR("The layer or map don't have a valid SRID!"));
   }
 
   if(!reprojectedBBOX.intersects(qlayer->getExtent()))
@@ -115,7 +115,7 @@ void te::map::QueryLayerRenderer::draw(AbstractLayer* layer,
   }
   else
   {
-    throw Exception(TR_MAP("The layer don't have a geometry or raster property!"));
+    throw Exception(TE_TR("The layer don't have a geometry or raster property!"));
   }
 }
 
@@ -144,7 +144,7 @@ void te::map::QueryLayerRenderer::drawGeometries(QueryLayer* layer,
     style = te::se::CreateFeatureTypeStyle(geometryProperty->getGeometryType());
 
     if(style == 0)
-      throw Exception((boost::format(TR_MAP("Could not create a default feature type style to the layer %1%.")) % layer->getTitle()).str());
+      throw Exception((boost::format(TE_TR("Could not create a default feature type style to the layer %1%.")) % layer->getTitle()).str());
 
     layer->setStyle(style);
   }
@@ -152,7 +152,7 @@ void te::map::QueryLayerRenderer::drawGeometries(QueryLayer* layer,
 // should I render this style?
   te::se::FeatureTypeStyle* fts = dynamic_cast<te::se::FeatureTypeStyle*>(style);
   if(fts == 0)
-    throw Exception(TR_MAP("The layer style is not a Feature Type Style!"));
+    throw Exception(TE_TR("The layer style is not a Feature Type Style!"));
 
 // create a canvas configurer
   te::map::CanvasConfigurer cc(canvas);
@@ -181,11 +181,11 @@ void te::map::QueryLayerRenderer::drawGeometries(QueryLayer* layer,
     else
     {
       // TODO!
-      throw Exception(TR_MAP("No implemented yet!"));
+      throw Exception(TE_TR("No implemented yet!"));
     }
 
     if(dataset.get() == 0)
-      throw Exception((boost::format(TR_MAP("Could not retrieve the data set %1% referenced by the layer %2%.")) % schema->getName() % layer->getTitle()).str());
+      throw Exception((boost::format(TE_TR("Could not retrieve the data set %1% referenced by the layer %2%.")) % schema->getName() % layer->getTitle()).str());
 
     if(dataset->moveNext() == false)
       continue;
@@ -195,10 +195,10 @@ void te::map::QueryLayerRenderer::drawGeometries(QueryLayer* layer,
     std::size_t nSymbolizers = symbolizers.size();
 
 // build task message; e.g. ("Drawing the layer Countries. Rule 1 of 3.")
-    std::string message = TR_MAP("Drawing the layer");
+    std::string message = TE_TR("Drawing the layer");
     message += " " + layer->getTitle() + ". ";
-    message += TR_MAP("Rule");
-    message += " " + boost::lexical_cast<std::string>(i + 1) + " " + TR_MAP("of") + " ";
+    message += TE_TR("Rule");
+    message += " " + boost::lexical_cast<std::string>(i + 1) + " " + TE_TR("of") + " ";
     message += boost::lexical_cast<std::string>(nRules) + ".";
 
 // create a draw task

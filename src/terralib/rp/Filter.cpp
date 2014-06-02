@@ -290,7 +290,7 @@ namespace te
       std::auto_ptr< te::common::TaskProgress > task;
       if( m_inputParameters.m_enableProgress && useGlobalProgress )
       {
-        task.reset( new te::common::TaskProgress(TR_RP("Filtering"),
+        task.reset( new te::common::TaskProgress(TE_TR("Filtering"),
           te::common::TaskProgress::UNDEFINED,
          ( m_inputParameters.m_iterationsNumber *
           m_inputParameters.m_inRasterBands.size() ) ) );
@@ -347,7 +347,7 @@ namespace te
             ( m_inputParameters.m_enableProgress && (!useGlobalProgress) ) ) ==
             false )
           {
-            TERP_LOG_AND_RETURN_FALSE( TR_RP( "Filter error" ) );
+            TERP_LOG_AND_RETURN_FALSE( TE_TR( "Filter error" ) );
           }
         }
 
@@ -369,49 +369,49 @@ namespace te
 
       Filter::InputParameters const* inputParamsPtr = dynamic_cast<
         Filter::InputParameters const* >( &inputParams );
-      TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr, TR_RP( "Invalid parameters" ) );
+      TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr, TE_TR( "Invalid parameters" ) );
 
 
       TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_filterType !=
         InputParameters::InvalidFilterT,
-        TR_RP( "Invalid filter type" ) );
+        TE_TR( "Invalid filter type" ) );
 
       TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_inRasterPtr,
-        TR_RP( "Invalid raster pointer" ) );
+        TE_TR( "Invalid raster pointer" ) );
       TERP_TRUE_OR_RETURN_FALSE(
         inputParamsPtr->m_inRasterPtr->getAccessPolicy() & te::common::RAccess,
-        TR_RP( "Invalid raster" ) );
+        TE_TR( "Invalid raster" ) );
 
       TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_inRasterBands.size() > 0,
-        TR_RP( "Invalid raster bands number" ) );
+        TE_TR( "Invalid raster bands number" ) );
       for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx <
         inputParamsPtr->m_inRasterBands.size() ; ++inRasterBandsIdx )
       {
         TERP_TRUE_OR_RETURN_FALSE(
           inputParamsPtr->m_inRasterBands[ inRasterBandsIdx ] <
           inputParamsPtr->m_inRasterPtr->getNumberOfBands(),
-          TR_RP( "Invalid raster bands" ) );
+          TE_TR( "Invalid raster bands" ) );
       }
 
       TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_iterationsNumber > 0,
-        TR_RP( "Invalid iterations number" ) );
+        TE_TR( "Invalid iterations number" ) );
 
       TERP_TRUE_OR_RETURN_FALSE( ( inputParamsPtr->m_windowH > 2 ) &&
         ( ( inputParamsPtr->m_windowH % 2 ) != 0 ),
-        TR_RP( "Invalid mask window height" ) );
+        TE_TR( "Invalid mask window height" ) );
 
       TERP_TRUE_OR_RETURN_FALSE( ( inputParamsPtr->m_windowW > 2 ) &&
         ( ( inputParamsPtr->m_windowW % 2 ) != 0 ),
-        TR_RP( "Invalid mask window width" ) );
+        TE_TR( "Invalid mask window width" ) );
 
       if( inputParamsPtr->m_filterType == InputParameters::UserDefinedWindowT )
       {
         TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_window.size1() ==
           inputParamsPtr->m_window.size2(),
-          TR_RP( "Invalid convolution matrix" ) );
+          TE_TR( "Invalid convolution matrix" ) );
 
         TERP_TRUE_OR_RETURN_FALSE( ( ( inputParamsPtr->m_window.size1() % 2 ) != 0 ),
-          TR_RP( "Invalid convolution matrix" ) );
+          TE_TR( "Invalid convolution matrix" ) );
       }
 
       m_inputParameters = *inputParamsPtr;
@@ -449,7 +449,7 @@ namespace te
       std::auto_ptr< te::common::TaskProgress > task;
       if( useProgress )
       {
-        task.reset( new te::common::TaskProgress(TR_RP("Mean Filter"),
+        task.reset( new te::common::TaskProgress(TE_TR("Mean Filter"),
           te::common::TaskProgress::UNDEFINED,
          srcRaster.getNumberOfRows() - 2) );
       }
@@ -558,7 +558,7 @@ namespace te
       std::auto_ptr< te::common::TaskProgress > task;
       if( useProgress )
       {
-        task.reset( new te::common::TaskProgress(TR_RP("Mean Filter"),
+        task.reset( new te::common::TaskProgress(TE_TR("Mean Filter"),
           te::common::TaskProgress::UNDEFINED,
          srcRaster.getNumberOfRows() - 2) );
       }
@@ -697,7 +697,7 @@ namespace te
       std::auto_ptr< te::common::TaskProgress > task;
       if( useProgress )
       {
-        task.reset( new te::common::TaskProgress(TR_RP("Mean Filter"),
+        task.reset( new te::common::TaskProgress(TE_TR("Mean Filter"),
           te::common::TaskProgress::UNDEFINED, 100 ) );
       }
 
@@ -771,7 +771,7 @@ namespace te
       std::auto_ptr< te::common::TaskProgress > task;
       if( useProgress )
       {
-        task.reset( new te::common::TaskProgress(TR_RP("Mode Filter"),
+        task.reset( new te::common::TaskProgress(TE_TR("Mode Filter"),
           te::common::TaskProgress::UNDEFINED, 100 ) );
       }
 
@@ -845,7 +845,7 @@ namespace te
       std::auto_ptr< te::common::TaskProgress > task;
       if( useProgress )
       {
-        task.reset( new te::common::TaskProgress(TR_RP("Median Filter"),
+        task.reset( new te::common::TaskProgress(TE_TR("Median Filter"),
           te::common::TaskProgress::UNDEFINED, 100 ) );
       }
 
@@ -921,7 +921,7 @@ namespace te
       std::auto_ptr< te::common::TaskProgress > task;
       if( useProgress )
       {
-        task.reset( new te::common::TaskProgress(TR_RP("Dilation Filter"),
+        task.reset( new te::common::TaskProgress(TE_TR("Dilation Filter"),
           te::common::TaskProgress::UNDEFINED, 100 ) );
       }
 
@@ -997,7 +997,7 @@ namespace te
       std::auto_ptr< te::common::TaskProgress > task;
       if( useProgress )
       {
-        task.reset( new te::common::TaskProgress(TR_RP("Erosion Filter"),
+        task.reset( new te::common::TaskProgress(TE_TR("Erosion Filter"),
           te::common::TaskProgress::UNDEFINED, 100 ) );
       }
 
@@ -1073,7 +1073,7 @@ namespace te
       std::auto_ptr< te::common::TaskProgress > task;
       if( useProgress )
       {
-        task.reset( new te::common::TaskProgress(TR_RP("User Defined Filter"),
+        task.reset( new te::common::TaskProgress(TE_TR("User Defined Filter"),
           te::common::TaskProgress::UNDEFINED, 100 ) );
       }
 

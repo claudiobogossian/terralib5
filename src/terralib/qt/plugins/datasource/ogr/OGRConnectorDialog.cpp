@@ -43,9 +43,9 @@
 #include <boost/lexical_cast.hpp>
 
 // Qt
-#include <QtCore/QFileInfo>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
+#include <QFileInfo>
+#include <QFileDialog>
+#include <QMessageBox>
 
 // STL
 #include <cassert>
@@ -100,7 +100,7 @@ void te::qt::plugins::ogr::OGRConnectorDialog::openPushButtonPressed()
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("OGR") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for OGR data sources!"));
+      throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for OGR data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -115,7 +115,7 @@ void te::qt::plugins::ogr::OGRConnectorDialog::openPushButtonPressed()
     m_driver.reset(ds.release());
 
     if(m_driver.get() == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open dataset via OGR due to an unknown error!"));
+      throw te::qt::widgets::Exception(TE_TR("Could not open dataset via OGR due to an unknown error!"));
 
     QString title = m_ui->m_datasourceTitleLineEdit->text().trimmed();
 
@@ -195,7 +195,7 @@ void te::qt::plugins::ogr::OGRConnectorDialog::testPushButtonPressed()
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("OGR") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for OGR data sources!"));
+      throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for OGR data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -208,7 +208,7 @@ void te::qt::plugins::ogr::OGRConnectorDialog::testPushButtonPressed()
     ds->open();
 
     if(ds.get() == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open feature repository via OGR!"));
+      throw te::qt::widgets::Exception(TE_TR("Could not open feature repository via OGR!"));
     
     if (m_ui->m_dirRadioButton->isChecked() && ds->getNumberOfDataSets() <= 0)
       QMessageBox::information(this,
@@ -277,7 +277,7 @@ void te::qt::plugins::ogr::OGRConnectorDialog::getConnectionInfo(std::map<std::s
   QString qstr = m_ui->m_featureRepoLineEdit->text().trimmed();
   
   if(qstr.isEmpty())
-    throw te::qt::widgets::Exception(TR_QT_WIDGETS("Please select a feature file first!"));
+    throw te::qt::widgets::Exception(TE_TR("Please select a feature file first!"));
   
   connInfo["URI"] = qstr.toLatin1().data();
 }

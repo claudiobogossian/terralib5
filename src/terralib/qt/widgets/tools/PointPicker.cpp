@@ -28,7 +28,7 @@
 #include "PointPicker.h"
 
 // Qt
-#include <QtGui/QMouseEvent>
+#include <QMouseEvent>
 
 te::qt::widgets::PointPicker::PointPicker(te::qt::widgets::MapDisplay* display, const QCursor& cursor, QObject* parent) 
   : AbstractTool(display, parent)
@@ -42,7 +42,12 @@ te::qt::widgets::PointPicker::~PointPicker()
 
 bool te::qt::widgets::PointPicker::mouseReleaseEvent(QMouseEvent* e)
 {
+#if QT_VERSION >= 0x050000
+  QPointF p = e->localPos();
+#else
   QPointF p = e->posF();
+#endif
+
   p = m_display->transform(p);
   if(!p.isNull())
     emit pointPicked(p);

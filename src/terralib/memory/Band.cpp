@@ -108,7 +108,7 @@ te::mem::Band& te::mem::Band::operator=(const Band& rhs)
   if(&rhs != this)
   {
     if(m_blksize != rhs.m_blksize)
-      throw Exception(TR_MEMORY("You can not assign a band to another one with different block size"));
+      throw Exception(TE_TR("You can not assign a band to another one with different block size"));
 
     te::rst::Band::operator=(rhs);
 

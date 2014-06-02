@@ -31,8 +31,8 @@
 #include "../../../geometry.h"
 #include "../../../datatype.h"
 // Qt
-#include <QtGui/QGraphicsPixmapItem>
-#include <QtCore/QAbstractAnimation>
+#include <QGraphicsPixmapItem>
+#include <QAbstractAnimation>
 
 namespace te
 {

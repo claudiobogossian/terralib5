@@ -87,6 +87,9 @@ namespace te
           \exception Exception It throws an exception if none is found.
         */
         const DataTypeConverter& get(const std::pair<int, int>& typeMap) throw(Exception);
+  
+        /*! \brief Clear the container. */
+        void clear();
 
       protected:
 

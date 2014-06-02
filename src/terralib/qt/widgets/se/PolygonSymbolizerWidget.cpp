@@ -32,7 +32,7 @@
 #include "ui_PolygonSymbolizerWidgetForm.h"
 
 // Qt
-#include <QtGui/QStackedWidget>
+#include <QStackedWidget>
 
 // STL
 #include <cassert>

@@ -35,7 +35,7 @@ namespace te
 {
   namespace layout
   {
-    class VisualizationArea : QObject
+    class VisualizationArea : public QObject
     {
 	    Q_OBJECT //for slots/signals
 

@@ -85,7 +85,6 @@
 #include "events/ToolEvents.h"
 #include "settings/SettingsDialog.h"
 #include "ApplicationController.h"
-#include "ApplicationPlugins.h"
 #include "BaseApplication.h"
 #include "Exception.h"
 #include "Project.h"
@@ -94,20 +93,20 @@
 #include "Utils.h"
 
 // Qt
-#include <QtCore/QDir>
-#include <QtGui/QActionGroup>
-#include <QtGui/QApplication>
-#include <QtGui/QCloseEvent>
-#include <QtGui/QDockWidget>
-#include <QtGui/QFileDialog>
-#include <QtGui/QInputDialog>
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
-#include <QtGui/QMessageBox>
-#include <QtGui/QStatusBar>
-#include <QtGui/QToolBar>
-#include <QtGui/QToolButton>
-#include <QtGui/QLabel>
+#include <QDir>
+#include <QActionGroup>
+#include <QApplication>
+#include <QCloseEvent>
+#include <QDockWidget>
+#include <QFileDialog>
+#include <QInputDialog>
+#include <QLabel>
+#include <QMenu>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QStatusBar>
+#include <QToolBar>
+#include <QToolButton>
 
 // STL
 #include <list>
@@ -181,7 +180,8 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   m_projectMenu = new QMenu(m_menubar);
   m_projectAddLayerMenu = new QMenu(m_projectMenu);
   m_menubar->addAction(m_projectMenu->menuAction());
-  m_projectMenu->addAction(m_projectAddLayerMenu->menuAction());
+  //m_projectMenu->addAction(m_projectAddLayerMenu->menuAction());
+  m_projectMenu->addMenu(m_projectAddLayerMenu);
   m_layerMenu = new QMenu(m_menubar);
   m_menubar->addAction(m_layerMenu->menuAction());
   m_mapMenu = new QMenu(m_menubar);
@@ -236,19 +236,6 @@ void te::qt::af::BaseApplication::init(const std::string& configFile)
   try
   {
     te::qt::af::ApplicationController::getInstance().initialize();
-
-    // Use the json file in the user directory to load SRS manager.
-    if(!m_restartTerraLib)
-    {
-      QFileInfo info(configFile.c_str());
-      std::string srsFile = info.absolutePath().toStdString();
-#ifdef _DEBUG      
-       srsFile += "/resources/json/srs_incomplete.json";
-#else
-      srsFile += "/resources/json/srs.json";
-#endif
-      te::srs::SpatialReferenceSystemManager::getInstance().init(srsFile);
-    }
   }
   catch(const std::exception& e)
   {
@@ -432,12 +419,12 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
     std::auto_ptr<QWidget> lselectorw(dsType->getWidget(te::qt::widgets::DataSourceType::WIDGET_LAYER_SELECTOR, this));
 
     if(lselectorw.get() == 0)
-      throw Exception((boost::format(TR_QT_AF("No layer selector widget found for this type of data source: %1%!")) % dsTypeId).str());
+      throw Exception((boost::format(TE_TR("No layer selector widget found for this type of data source: %1%!")) % dsTypeId).str());
 
     te::qt::widgets::AbstractLayerSelector* lselector = dynamic_cast<te::qt::widgets::AbstractLayerSelector*>(lselectorw.get());
 
     if(lselector == 0)
-      throw Exception(TR_QT_AF("Wrong type of object for layer selection!"));
+      throw Exception(TE_TR("Wrong type of object for layer selection!"));
 
     lselector->set(selectedDatasources);
 
@@ -446,7 +433,7 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
     lselectorw.reset(0);
 
     if(m_project == 0)
-      throw Exception(TR_QT_AF("Error: there is no opened project!"));
+      throw Exception(TE_TR("Error: there is no opened project!"));
 
     std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin();
     std::list<te::map::AbstractLayerPtr>::const_iterator itend = layers.end();
@@ -483,7 +470,7 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
    try
   {
     if(m_project == 0)
-      throw Exception(TR_QT_AF("Error: there is no opened project!"));
+      throw Exception(TE_TR("Error: there is no opened project!"));
 
     // Get the parent layer where the dataset layer(s) will be added.
     te::map::AbstractLayerPtr parentLayer(0);
@@ -532,7 +519,7 @@ void te::qt::af::BaseApplication::onAddTabularLayerTriggered()
   try
   {
     if(m_project == 0)
-      throw Exception(TR_QT_AF("Error: there is no opened project!"));
+      throw Exception(TE_TR("Error: there is no opened project!"));
 
     // Get the parent layer where the tabular layer will be added.
     te::map::AbstractLayerPtr parentLayer(0);
@@ -727,12 +714,23 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
       return;
     }
   }
-
+  
+  // Set the project title and its status as "no change"
+  std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
+  m_project->setTitle(projectTitle);
+  
+  m_project->setProjectAsChanged(false);
+  
+  // Save the project
   te::qt::af::Save(*m_project, m_project->getFileName());
 
-  m_project->setProjectAsChanged(false);
-
-  setWindowTitle(te::qt::af::UnsavedStar(windowTitle(), m_project->hasChanged()));
+  // Set the window title
+  QString wTitle = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
+  wTitle += tr("Project:");
+  wTitle += " ";
+  wTitle += projectTitle.c_str();
+  
+  setWindowTitle(wTitle);
 
   te::qt::af::ApplicationController::getInstance().updateRecentProjects(m_project->getFileName().c_str(), m_project->getTitle().c_str());
 
@@ -755,16 +753,22 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
 
   te::qt::af::Save(*m_project, fName);
 
+  ApplicationController::getInstance().updateRecentProjects(fileName, m_project->getTitle().c_str());
+  
+  // Set the project title and its status as "no change"
+  std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
+  m_project->setTitle(projectTitle);
+  
   m_project->setProjectAsChanged(false);
 
-  setWindowTitle(te::qt::af::UnsavedStar(windowTitle(), m_project->hasChanged()));
-
-  ApplicationController::getInstance().updateRecentProjects(fileName, m_project->getTitle().c_str());
-
-  QString projectTile(tr(" - Project: %1 - %2"));
-  std::string name = boost::filesystem::basename(m_project->getFileName()) + boost::filesystem::extension(m_project->getFileName());
-  setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str(), name.c_str()));
-
+  // Set the window title
+  QString wTitle = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
+  wTitle += tr("Project:");
+  wTitle += " ";
+  wTitle += projectTitle.c_str();
+  
+  setWindowTitle(wTitle);
+  
   te::qt::af::SaveDataSourcesFile();
 }
 
@@ -868,7 +872,7 @@ void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
 {
   if(m_project == 0)
   {
-    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no current project."));
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no current project!"));
     return;
   }
 
@@ -877,9 +881,13 @@ void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
   
   if(editor.exec() == QDialog::Accepted)
   {
-    QString projectTile(tr(" - Project: %1 - %2"));
-    std::string fName = boost::filesystem::basename(m_project->getFileName()) + boost::filesystem::extension(m_project->getFileName());
-    setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str(), fName.c_str()));
+    // Set window title
+    QString title = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
+    title += tr("Project:");
+    title += " ";
+    title += m_project->getTitle().c_str();
+  
+    setWindowTitle(title);
   }
 }
 
@@ -1308,7 +1316,7 @@ void te::qt::af::BaseApplication::onLayerFitOnMapDisplayTriggered()
     if(display->getSRID() == TE_UNKNOWN_SRS || selectedLayer->getSRID() == TE_UNKNOWN_SRS)
     {
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
-                           TR_QT_AF("The spatial reference system of the map display and the layer are not compatible!"));
+                           TE_TR("The spatial reference system of the map display and the layer are not compatible!"));
       return;
     }
 
@@ -1520,7 +1528,9 @@ void te::qt::af::BaseApplication::onMeasureDistanceToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::Measure* distance = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Distance);
+  QCursor measureDistanceCursor(QIcon::fromTheme("distance-measure-cursor").pixmap(m_mapCursorSize), 0, 0);
+
+  te::qt::widgets::Measure* distance = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Distance, measureDistanceCursor);
   m_display->setCurrentTool(distance);
 }
 
@@ -1529,7 +1539,9 @@ void te::qt::af::BaseApplication::onMeasureAreaToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::Measure* area = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Area);
+  QCursor measureAreaCursor(QIcon::fromTheme("area-measure-cursor").pixmap(m_mapCursorSize), 0, 0);
+
+  te::qt::widgets::Measure* area = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Area, measureAreaCursor);
   m_display->setCurrentTool(area);
 }
 
@@ -1538,7 +1550,9 @@ void te::qt::af::BaseApplication::onMeasureAngleToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::Measure* angle = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Angle);
+  QCursor measureAngleCursor(QIcon::fromTheme("angle-measure-cursor").pixmap(m_mapCursorSize), 0, 0);
+
+  te::qt::widgets::Measure* angle = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Angle,measureAngleCursor);
   m_display->setCurrentTool(angle);
 }
 
@@ -1702,7 +1716,7 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 
     if(!boost::filesystem::exists(projectFileName.toStdString()))
     {
-      QMessageBox::critical(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), (boost::format(TR_QT_AF("This project could not be found: %1%.")) % projectFileName.toStdString()).str().c_str());
+      QMessageBox::critical(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), (boost::format(TE_TR("This project could not be found: %1%.")) % projectFileName.toStdString()).str().c_str());
       return;
     }
 
@@ -1713,12 +1727,22 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
     delete m_project;
 
     m_project = nproject;
-
+    
+    // Set the project title and its status as "no changed"
+    std::string projectTitle = boost::filesystem::basename(m_project->getFileName()).c_str();
+    m_project->setTitle(projectTitle);
+    
+    m_project->setProjectAsChanged(false);
+   
     ApplicationController::getInstance().updateRecentProjects(projectFileName, m_project->getTitle().c_str());
-
-    QString projectTile(tr(" - Project: %1 - %2"));
-    std::string fName = boost::filesystem::basename(m_project->getFileName()) + boost::filesystem::extension(m_project->getFileName());
-    setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str(), fName.c_str()));
+  
+    // Set the window title
+    QString wTitle = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
+    wTitle += tr("Project:");
+    wTitle += " ";
+    wTitle += projectTitle.c_str();
+    
+    setWindowTitle(wTitle);
 
     te::qt::af::ApplicationController::getInstance().set(m_project);
 
@@ -1736,7 +1760,7 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
     
     msg = msg.arg(projectFileName);
     
-    throw Exception(TR_QT_AF(msg.toStdString()));
+    throw Exception(TE_TR(msg.toStdString()));
   }
 }
 
@@ -1767,14 +1791,12 @@ void te::qt::af::BaseApplication::newProject()
 
   GetProjectInformationsFromSettings(author, maxSaved);
 
-  m_project->setTitle("New Project");
+  //m_project->setTitle("New Project");
 
   m_project->setAuthor(author.toStdString());
-
-  QString projectTile(tr(" - Project: %1 - %2"));
-  std::string fName = boost::filesystem::basename(m_project->getFileName()) + boost::filesystem::extension(m_project->getFileName());
-  setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str(), fName.c_str()));
-
+  
+  setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle());
+  
   te::qt::af::ApplicationController::getInstance().set(m_project);
 
   m_project->setProjectAsChanged(false);
@@ -2232,7 +2254,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_projectMenu->setObjectName("Project");
   m_projectMenu->setTitle(tr("&Project"));
 
-  m_projectMenu->addAction(m_projectAddLayerMenu->menuAction());
+  //m_projectMenu->addAction(m_projectAddLayerMenu->menuAction());
   m_projectAddLayerMenu->setObjectName("Project.Add Layer");
   m_projectAddLayerMenu->setTitle(tr("&Add Layer"));
   m_projectAddLayerMenu->setIcon(QIcon::fromTheme("layer-add"));
@@ -2357,50 +2379,6 @@ void te::qt::af::BaseApplication::initToolbars()
     m_viewToolBarsMenu->addAction(bar->toggleViewAction());
     ApplicationController::getInstance().registerToolBar(bar->objectName(), bar);
   }
-// File Tool Bar
-  //m_fileToolBar = new QToolBar(this);
-  //m_fileToolBar->setObjectName("File Tool Bar");
-  //addToolBar(Qt::TopToolBarArea, m_fileToolBar);
-  //m_fileToolBar->setWindowTitle(tr("File Tool Bar"));
-  //m_fileToolBar->addAction(m_fileNewProject);
-  //m_fileToolBar->addAction(m_fileOpenProject);
-  //m_fileToolBar->addAction(m_fileSaveProject);
-
-  //m_viewToolBarsMenu->addAction(m_fileToolBar->toggleViewAction());
-
-// Edit Tool Bar
-  //m_editToolBar = new QToolBar(this);
-  //m_editToolBar->setObjectName("EditToolBar");
-  //addToolBar(Qt::TopToolBarArea, m_editToolBar);
-  //m_editToolBar->setWindowTitle(tr("Edit Tool Bar"));
-  //m_editToolBar->addAction(m_editUndo);
-  //m_editToolBar->addAction(m_editRedo);
-  //m_editToolBar->addSeparator();
-  //m_editToolBar->addAction(m_editCut);
-  //m_editToolBar->addAction(m_editCopy);
-  //m_editToolBar->addAction(m_editPaste);
-
-  //m_viewToolBarsMenu->addAction(m_editToolBar->toggleViewAction());
-
-// Map Display Tool Bar
-  //m_mapToolBar = new QToolBar(this);
-  //m_mapToolBar->setObjectName("Map Tool Bar");
-  //addToolBar(Qt::TopToolBarArea, m_mapToolBar);
-  //m_mapToolBar->setWindowTitle(tr("Map Tool Bar"));
-  //m_mapToolBar->addAction(m_mapDraw);
-  //m_mapToolBar->addAction(m_mapZoomIn);
-  //m_mapToolBar->addAction(m_mapZoomOut);
-  //m_mapToolBar->addAction(m_mapPan);
-  //m_mapToolBar->addAction(m_mapZoomExtent);
-  //m_mapToolBar->addAction(m_mapPreviousExtent);
-  //m_mapToolBar->addAction(m_mapNextExtent);
-
-//  m_viewToolBarsMenu->addAction(m_mapToolBar->toggleViewAction());
-
-// registering the toolbars
-  //ApplicationController::getInstance().registerToolBar(m_fileToolBar->objectName(), m_fileToolBar);
-  ////ApplicationController::getInstance().registerToolBar("EditToolBar", m_editToolBar);
-  //ApplicationController::getInstance().registerToolBar(m_mapToolBar->objectName(), m_mapToolBar);
 }
 
 void te::qt::af::BaseApplication::initStatusBar()

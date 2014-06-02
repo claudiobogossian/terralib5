@@ -23,28 +23,29 @@
   \brief A widget used to define a local image graphic for a se symbolizer.
 */
 
-#include "LocalImagePropertyItem.h"
-#include "ExternalGraphicRenderer.h"
-#include "AbstractPropertyManager.h"
-
+// TerraLib
 #include "../../../se/Config.h"
 #include "../../../se/ExternalGraphic.h"
 #include "../../../xlink/SimpleLink.h"
-
-
-// Qt
-#include <QtGui/QDialog>
-#include <QtGui/QFileDialog>
-#include <QtGui/QGridLayout>
-#include <QtGui/QImageReader>
-#include <QtGui/QMessageBox>
-#include <QtGui/QScrollArea>
-#include <QtGui/QPushButton>
-
-#include "../../../../../third-party/qt/propertybrowser/qtpropertybrowser.h"
+#include "../propertybrowser/AbstractPropertyManager.h"
+#include "LocalImagePropertyItem.h"
+#include "ExternalGraphicRenderer.h"
 
 // STL
 #include <cassert>
+
+// Qt
+#include <QDialog>
+#include <QFileDialog>
+#include <QGridLayout>
+#include <QImageReader>
+#include <QMessageBox>
+#include <QScrollArea>
+#include <QPushButton>
+
+// QtPropertyBrowser
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
+#include <QtPropertyBrowser/QtVariantPropertyManager>
 
 
 te::qt::widgets::LocalImagePropertyItem::LocalImagePropertyItem(QtTreePropertyBrowser* pb, QColor c) : te::qt::widgets::AbstractPropertyItem(pb, c) ,

@@ -139,7 +139,7 @@ te::gm::Envelope* te::da::GetExtent(const std::string& datasetName,
   DataSourcePtr datasource(te::da::DataSourceManager::getInstance().find(datasourceId));
 
   if(datasource.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not retrieve data source in order to search for a property extent!"));
+    throw Exception(TE_TR("Could not retrieve data source in order to search for a property extent!"));
 
   std::auto_ptr<te::gm::Envelope> mbr(datasource->getExtent(datasetName, propertyName));
 
@@ -245,7 +245,7 @@ te::da::DataSetType* te::da::GetDataSetType(const std::string& name, const std::
 //    DataSourceInfoPtr dsinfo = te::da::DataSourceInfoManager::getInstance().get(datasourceId);
 //
 //    if(dsinfo.get() == 0)
-//      throw Exception(TR_DATAACCESS("Could not find data source!"));
+//      throw Exception(TE_TR("Could not find data source!"));
 //
 //    te::da::DataSourceManager::getInstance().open(datasourceId, dsinfo->getAccessDriver(), dsinfo->getConnInfo());
 //
@@ -266,7 +266,7 @@ te::da::DataSourcePtr te::da::GetDataSource(const std::string& datasourceId, con
     DataSourceInfoPtr dsinfo = te::da::DataSourceInfoManager::getInstance().get(datasourceId);
 
     if(dsinfo.get() == 0)
-      throw Exception(TR_DATAACCESS("Could not find data source!"));
+      throw Exception(TE_TR("Could not find data source!"));
 
     datasource = te::da::DataSourceManager::getInstance().make(datasourceId, dsinfo->getAccessDriver());
 

@@ -45,9 +45,6 @@ te::mem::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib Color module
- TE_ADD_TEXT_DOMAIN(TE_MEMORY_TEXT_DOMAIN, TE_MEMORY_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::mem::Module::~Module()
@@ -90,9 +87,7 @@ void te::mem::Module::initialize()
 
   DataSource::setCapabilities(capabilities);
 
-  TE_LOG_TRACE(TR_MEMORY("TerraLib In-Memory driver initialized!"));
-
-  TE_LOG_TRACE(TR_MEMORY("TerraLib In-Memory driver initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib In-Memory driver initialized!"));
 }
 
 void te::mem::Module::finalize()
@@ -100,5 +95,5 @@ void te::mem::Module::finalize()
   // Unregister the data source factory
   te::da::DataSourceFactory::remove(TE_MEMORY_DRIVER_IDENTIFIER);
 
-  TE_LOG_TRACE(TR_MEMORY("TerraLib In-Memory driver finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib In-Memory driver finalized!"));
 }

@@ -29,13 +29,12 @@
 // TerraLib
 #include "../Config.h"
 
-
 // STL
 #include <memory>
 
 // Qt
-#include <QtGui/QWizardPage>
-#include <QtGui/QTableWidget>
+#include <QTableWidget>
+#include <QWizardPage>
 
 namespace te
 {
