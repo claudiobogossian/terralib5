@@ -35,6 +35,7 @@ if(UNIX)
                   /usr/local
                   /usr/local/qwt
             PATH_SUFFIXES include
+                          qwt
                           include/qwt
                           lib/qwt.framework/Headers)
 
@@ -51,6 +52,7 @@ elseif(WIN32)
   find_path(QWT_INCLUDE_DIR
             NAMES qwt.h
             PATH_SUFFIXES include
+                          qwt
                           include/qwt)
 
   find_library(QWT_LIBRARY_RELEASE

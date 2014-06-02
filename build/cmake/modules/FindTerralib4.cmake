@@ -33,7 +33,13 @@ find_path(TERRALIB4_INCLUDE_DIR
           PATHS /usr
                 /usr/local
           PATH_SUFFIXES include
+                        terralib4
                         include/terralib4)
+                        
+if(TERRALIB4_INCLUDE_DIR)
+  set(TERRALIB4_INCLUDE_DIR ${TERRALIB4_INCLUDE_DIR}
+                            ${TERRALIB4_INCLUDE_DIR}/kernel CACHE STRING "Path to include dir" FORCE)
+endif()
 
 if(WIN32)
   find_library(TERRALIB4_LIBRARY_RELEASE
