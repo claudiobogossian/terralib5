@@ -20,27 +20,46 @@
 #
 #  Description: Find Terralib4 - find Terralib4 include directory and libraries.
 #
-#  TERRALIB4_INCLUDE_DIR  - where to find Terralib4 include files.
-#  TERRALIB4_LIBRARIES    - where to find Terralib4 libraries.
-#  TERRALIB4_FOUND        - True, if Terralib4 is found.
+#  TERRALIB4_INCLUDE_DIRS        - where to find the Terralib4 include files.
+#  TERRALIB4_KERNEL_INCLUDE_DIR  - where to find Terralib4 kernel include files.
+#  TERRALIB4_ADO_INCLUDE_DIR     - where to find Terralib4 ado include files.
+#  TERRALIB4_UTILS_INCLUDE_DIR   - where to find Terralib4 utils include files.
+#  TERRALIB4_LIBRARIES           - where to find Terralib4 libraries.
+#  TERRALIB4_FOUND               - True, if Terralib4 is found.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
 #
 
-find_path(TERRALIB4_INCLUDE_DIR 
-          NAMES kernel/TeDefines.h
+find_path(TERRALIB4_KERNEL_INCLUDE_DIR 
+          NAMES TeDefines.h
           PATHS /usr
                 /usr/local
           PATH_SUFFIXES include
                         terralib4
-                        include/terralib4)
-                        
-if(TERRALIB4_INCLUDE_DIR)
-  set(TERRALIB4_INCLUDE_DIR ${TERRALIB4_INCLUDE_DIR}
-                            ${TERRALIB4_INCLUDE_DIR}/kernel CACHE STRING "Path to include dir" FORCE)
-endif()
+                        include/terralib4/kernel)
+						
+find_path(TERRALIB4_ADO_INCLUDE_DIR 
+          NAMES TeAdoDB.h
+          PATHS /usr
+                /usr/local
+          PATH_SUFFIXES include
+                        terralib4
+                        include/terralib4/drivers/ado)
+						
+find_path(TERRALIB4_UTILS_INCLUDE_DIR 
+          NAMES TeUtilsDefines.h
+          PATHS /usr
+                /usr/local
+          PATH_SUFFIXES include
+                        terralib4
+                        include/terralib4/utils)
 
+						
+set(TERRALIB4_INCLUDE_DIRS ${TERRALIB4_KERNEL_INCLUDE_DIR}
+                           ${TERRALIB4_ADO_INCLUDE_DIR}
+						   ${TERRALIB4_UTILS_INCLUDE_DIR})
+					  				
 if(WIN32)
   find_library(TERRALIB4_LIBRARY_RELEASE
                NAMES terralib4 terralib
@@ -80,6 +99,6 @@ endif()
 
 include(FindPackageHandleStandardArgs)
 
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(Terralib4 DEFAULT_MSG TERRALIB4_LIBRARIES TERRALIB4_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(Terralib4 DEFAULT_MSG TERRALIB4_LIBRARIES TERRALIB4_INCLUDE_DIRS)
 
-mark_as_advanced(TERRALIB4_INCLUDE_DIR TERRALIB4_LIBRARIES)
+mark_as_advanced(TERRALIB4_INCLUDE_DIRS TERRALIB4_KERNEL_INCLUDE_DIR TERRALIB4_ADO_INCLUDE_DIR TERRALIB4_UTILS_INCLUDE_DIR TERRALIB4_LIBRARIES)
