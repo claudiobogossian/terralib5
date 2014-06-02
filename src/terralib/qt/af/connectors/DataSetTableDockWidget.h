@@ -55,6 +55,7 @@ namespace te
     {
       // Forward declarations
       class DataSetTableView;
+      class ChartDisplayWidget;
     }
     
     namespace af
@@ -105,6 +106,14 @@ namespace te
         protected slots:
 
           /*!
+            \brief Broadcasts the creation of a new chartWidget to the application
+
+            \param chartWidget The widget containing the generated chart.
+
+          */
+          void chartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartWidget);
+
+          /*!
             \brief Used for capture events sent by application framework.
           */
           void onApplicationTriggered(te::qt::af::evt::Event* evt);
@@ -132,6 +141,14 @@ namespace te
           void removeSelectedOIds(te::da::ObjectIdSet* oids);
 
         signals:
+
+          /*!
+            \brief Broadcasts the creation of a new chartWidget to the application
+
+            \param chartWidget The widget containing the generated chart.
+
+          */
+          void createChartDisplay(te::qt::widgets::ChartDisplayWidget*);
 
           /*!
             \brief Emitted before this widget was closed.

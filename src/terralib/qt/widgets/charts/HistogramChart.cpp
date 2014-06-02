@@ -410,7 +410,6 @@ te::da::ObjectIdSet* te::qt::widgets::HistogramChart::highlight(QRectF rect)
   return m_histogram->find(selected);
 }
 
-
 void te::qt::widgets::HistogramChart::setSelectionColor(QColor selColor)
 {
   m_selection->setBrush(selColor);

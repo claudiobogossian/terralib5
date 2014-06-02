@@ -43,6 +43,7 @@ te::qt::af::DataSetTableDockWidget::DataSetTableDockWidget(QWidget* parent)
 
   connect (m_view, SIGNAL(selectOIds(te::da::ObjectIdSet*, const bool&, te::gm::Envelope*)), SLOT(selectionChanged(te::da::ObjectIdSet*, const bool&, te::gm::Envelope*)));
   connect (m_view, SIGNAL(deselectOIds(te::da::ObjectIdSet*)), SLOT(removeSelectedOIds(te::da::ObjectIdSet*)));
+  connect (m_view, SIGNAL(createChartDisplay(te::qt::widgets::ChartDisplayWidget*)), SLOT(chartDisplayCreated(te::qt::widgets::ChartDisplayWidget*)));
 
   // Alternate Colors
   if(te::qt::af::GetAlternateRowColorsFromSettings())
@@ -81,6 +82,11 @@ void te::qt::af::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* layer)
 te::map::AbstractLayer* te::qt::af::DataSetTableDockWidget::getLayer() const
 {
   return m_layer;
+}
+
+void te::qt::af::DataSetTableDockWidget::chartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartWidget)
+{
+  emit createChartDisplay(chartWidget);
 }
 
 void te::qt::af::DataSetTableDockWidget::onApplicationTriggered(te::qt::af::evt::Event* evt)

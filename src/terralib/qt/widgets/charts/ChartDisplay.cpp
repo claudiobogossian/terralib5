@@ -71,11 +71,12 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title, Char
   setAutoReplot( true );
 
   // zoom in/out with the wheel
-  ( void ) new QwtPlotMagnifier( this->canvas() );
+  m_magnifier = new QwtPlotMagnifier(this->canvas());
+  m_magnifier->setMouseButton(Qt::MiddleButton);
 
   // Pan on the plotted chart
   m_panner =  new QwtPlotPanner(this->canvas());
-  m_panner->setMouseButton(Qt::MidButton);
+  m_panner->setMouseButton(Qt::RightButton);
 
   // Selection based on a rectangle - also works as a point based selection if the rectangle's width and height are both equal 0
   m_leftPicker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::RectRubberBand, QwtPicker::AlwaysOff, this->canvas());
@@ -102,6 +103,7 @@ te::qt::widgets::ChartDisplay::~ChartDisplay()
   delete m_ctrlPicker;
   delete m_grid;
   delete m_leftPicker;
+  delete m_magnifier;
   delete m_panner;
   delete m_shiftPicker;
 }

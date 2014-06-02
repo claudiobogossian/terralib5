@@ -568,6 +568,38 @@ void te::qt::af::BaseApplication::onAddTabularLayerTriggered()
   }
 }
 
+void te::qt::af::BaseApplication::onChartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartDisplay)
+{
+  try
+  {
+    std::list<te::map::AbstractLayerPtr> selectedLayers = m_explorer->getExplorer()->getSelectedSingleLayers();
+
+    if(selectedLayers.empty())
+    {
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                            tr("Select a layer in the layer explorer!"));
+      return;
+    }
+
+    // The histogram will be created based on the first selected layer
+    te::map::AbstractLayerPtr selectedLayer = *(selectedLayers.begin());
+
+    ChartDisplayDockWidget* doc = new ChartDisplayDockWidget(chartDisplay, this);
+    doc->setSelectionColor(ApplicationController::getInstance().getSelectionColor());
+    doc->setWindowTitle("Histogram");
+    doc->setWindowIcon(QIcon::fromTheme("chart-bar"));
+    doc->setLayer(selectedLayer.get());
+
+    ApplicationController::getInstance().addListener(doc);
+    addDockWidget(Qt::RightDockWidgetArea, doc, Qt::Horizontal);
+    doc->show();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
 void te::qt::af::BaseApplication::onRemoveLayerTriggered()
 {
  std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedLayerItems();
@@ -1016,6 +1048,7 @@ void te::qt::af::BaseApplication::onLayerShowTableTriggered()
     addDockWidget(Qt::BottomDockWidgetArea, doc);
 
     connect (doc, SIGNAL(closed(te::qt::af::DataSetTableDockWidget*)), SLOT(onLayerTableClose(te::qt::af::DataSetTableDockWidget*)));
+    connect (doc, SIGNAL(createChartDisplay(te::qt::widgets::ChartDisplayWidget*)), SLOT(chartDisplayCreated(te::qt::widgets::ChartDisplayWidget*)));
 
     if(!m_tableDocks.empty())
       tabifyDockWidget(m_tableDocks[m_tableDocks.size()-1], doc);
