@@ -76,7 +76,7 @@ if(WIN32)
   find_library(TERRALIB4_ADO_LIBRARY_DEBUG
                NAMES terralib4_adod terralib4_ado_d terralib_adod terralib_ado_d
                PATH_SUFFIXES lib)
-			   
+
   if(TERRALIB4_LIBRARY_RELEASE AND TERRALIB4_LIBRARY_DEBUG)
     set(TERRALIB_LIBRARY optimized ${TERRALIB4_LIBRARY_RELEASE} debug ${TERRALIB4_LIBRARY_DEBUG})
   elseif(TERRALIB4_LIBRARY_RELEASE)
