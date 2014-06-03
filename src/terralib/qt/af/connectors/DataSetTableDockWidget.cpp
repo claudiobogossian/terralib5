@@ -86,7 +86,7 @@ te::map::AbstractLayer* te::qt::af::DataSetTableDockWidget::getLayer() const
 
 void te::qt::af::DataSetTableDockWidget::chartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartWidget)
 {
-  emit createChartDisplay(chartWidget);
+  emit createChartDisplay(chartWidget, getLayer());
 }
 
 void te::qt::af::DataSetTableDockWidget::onApplicationTriggered(te::qt::af::evt::Event* evt)

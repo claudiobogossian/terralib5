@@ -111,7 +111,7 @@ namespace te
 
           void onAddTabularLayerTriggered();
 
-          void onChartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartDisplay);
+          void onChartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartDisplay, te::map::AbstractLayer* layer);
 
           void onRemoveLayerTriggered();
 

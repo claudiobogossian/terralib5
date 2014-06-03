@@ -148,7 +148,7 @@ namespace te
             \param chartWidget The widget containing the generated chart.
 
           */
-          void createChartDisplay(te::qt::widgets::ChartDisplayWidget*);
+          void createChartDisplay(te::qt::widgets::ChartDisplayWidget*, te::map::AbstractLayer* layer);
 
           /*!
             \brief Emitted before this widget was closed.
