@@ -106,6 +106,12 @@ void te::rst::Interpolator::getValues(const double& c, const double& r, std::vec
   }
 }
 
+te::rst::Interpolator* te::rst::Interpolator::clone() const
+{
+  te::rst::Interpolator* newInstancePtr = new te::rst::Interpolator( m_raster, m_method );
+  return newInstancePtr;
+}
+
 void te::rst::Interpolator::nearestNeighborGetValue(const double& c, const double& r, std::complex<double>& v, const std::size_t& b)
 {
   if( ( c > (-0.5) ) && ( r > (-0.5) ) && ( c < m_nnLastCol ) && ( r < m_nnLastRow ) )

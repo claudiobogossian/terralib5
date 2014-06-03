@@ -35,6 +35,13 @@
 #include "../raster/Grid.h"
 #include "../raster/Band.h"
 #include "../raster/BandProperty.h"
+#include "../raster/Utils.h"
+#include "../raster/SynchronizedRaster.h"
+
+#include "../common/PlatformUtils.h"
+
+#include <boost/thread.hpp>
+#include <boost/graph/graph_concepts.hpp>
 
 #include <complex>
 #include <limits>
@@ -68,6 +75,78 @@ namespace te
 {
   namespace rp
   {
+    Blender::BlendIntoRaster1ThreadParams::BlendIntoRaster1ThreadParams()
+    : m_returnValuePtr( 0 ), m_sync1Ptr( 0 ), m_sync2Ptr( 0 ),
+      m_raster1BlocksInfosPtr( 0 ), m_mutexPtr( 0 ), 
+      m_blendMethod( te::rp::Blender::InvalidBlendMethod ),
+      m_interpMethod1( te::rst::Interpolator::NearestNeighbor ),
+      m_interpMethod2( te::rst::Interpolator::NearestNeighbor ),
+      m_noDataValue( 0.0 ), m_forceInputNoDataValue( false ), 
+      m_maxMemPercentToUse( 0 )
+    {
+    };
+    
+    Blender::BlendIntoRaster1ThreadParams::BlendIntoRaster1ThreadParams( 
+      const BlendIntoRaster1ThreadParams& rhs )
+    {
+      operator=( rhs );
+    };         
+    
+    Blender::BlendIntoRaster1ThreadParams::~BlendIntoRaster1ThreadParams()
+    {
+    };
+    
+    te::rp::Blender::BlendIntoRaster1ThreadParams& Blender::BlendIntoRaster1ThreadParams::operator=( 
+      const BlendIntoRaster1ThreadParams& rhs )
+    {
+      m_returnValuePtr = rhs.m_returnValuePtr;
+      m_sync1Ptr = rhs.m_sync1Ptr;
+      m_sync2Ptr = rhs.m_sync2Ptr;
+      m_raster1BlocksInfosPtr = rhs.m_raster1BlocksInfosPtr;
+      m_mutexPtr = rhs.m_mutexPtr;
+      m_raster1Bands = rhs.m_raster1Bands;
+      m_raster2Bands = rhs.m_raster2Bands;
+      m_blendMethod = rhs.m_blendMethod;
+      m_interpMethod1 = rhs.m_interpMethod1;
+      m_interpMethod2 = rhs.m_interpMethod2;
+      m_noDataValue = rhs.m_noDataValue;
+      m_forceInputNoDataValue = rhs.m_forceInputNoDataValue;
+      m_pixelOffsets1 = rhs.m_pixelOffsets1;
+      m_pixelScales1 = rhs.m_pixelScales1;
+      m_pixelOffsets2 = rhs.m_pixelOffsets2;
+      m_pixelScales2 = rhs.m_pixelScales2;
+      
+      if( rhs.m_r1ValidDataDelimiterPtr.get() )
+      {
+        m_r1ValidDataDelimiterPtr.reset( (te::gm::Polygon*) rhs.m_r1ValidDataDelimiterPtr->clone() );
+      }
+      else
+      {
+        m_r1ValidDataDelimiterPtr.reset();
+      }
+      
+      if( rhs.m_r2ValidDataDelimiterPtr.get() )
+      {
+        m_r2ValidDataDelimiterPtr.reset( (te::gm::Polygon*) rhs.m_r2ValidDataDelimiterPtr->clone() );
+      }      
+      else
+      {
+        m_r2ValidDataDelimiterPtr.reset();
+      }
+      
+      if( rhs.m_geomTransformationPtr.get() )
+      {
+        m_geomTransformationPtr.reset( rhs.m_geomTransformationPtr->clone() );
+      }        
+      else
+      {
+        m_geomTransformationPtr.reset();
+      }
+      
+      return *this;
+    }
+    
+    // ----------------------------------------------------------------------
     Blender::Blender()
     {
       initState();
@@ -78,7 +157,7 @@ namespace te
       clear();
     }    
     
-    bool Blender::initialize( const te::rst::Raster& raster1, 
+    bool Blender::initialize( te::rst::Raster& raster1, 
       const std::vector< unsigned int >& raster1Bands, 
       const te::rst::Raster& raster2, 
       const std::vector< unsigned int >& raster2Bands,
@@ -93,7 +172,9 @@ namespace te
       const std::vector< double >& pixelScales2,
       te::gm::Polygon const * const r1ValidDataDelimiterPtr,
       te::gm::Polygon const * const r2ValidDataDelimiterPtr,
-      const te::gm::GeometricTransformation& geomTransformation )
+      const te::gm::GeometricTransformation& geomTransformation,
+      const unsigned int threadsNumber,
+       const bool enableProgressInterface )
     {
       TERP_TRUE_OR_RETURN_FALSE( 
         raster1.getAccessPolicy() & te::common::RAccess, 
@@ -128,6 +209,15 @@ namespace te
       m_raster2Ptr = &raster2;
       
       // Generating the valid data area points
+      
+      if( r1ValidDataDelimiterPtr )
+      {
+        m_r1ValidDataDelimiterPtr.reset( (te::gm::Polygon*)r1ValidDataDelimiterPtr->clone() );
+      }
+      if( r2ValidDataDelimiterPtr )
+      {
+        m_r2ValidDataDelimiterPtr.reset( (te::gm::Polygon*)r2ValidDataDelimiterPtr->clone() );
+      }      
       
       std::auto_ptr< te::gm::Polygon > indexedDelimiter1Ptr; // indexed under raster 1 lines/cols
       
@@ -410,15 +500,13 @@ namespace te
         m_r1IntersectionSegmentsPointsSize = (unsigned int)m_r1IntersectionSegmentsPoints.size();
       }
       
-      // defining the blending function
+      // defining the blending method
       
-      m_blendMethod = blendMethod;
-        
       switch( blendMethod )
       {
         case NoBlendMethod :
         {
-          m_blendFuncPtr = &te::rp::Blender::noBlendMethodImp;
+          m_blendMethod = NoBlendMethod;
           break;
         }
         case EuclideanDistanceMethod :
@@ -427,20 +515,24 @@ namespace te
             ( m_r1IntersectionSegmentsPointsSize > 1 ) && 
             ( m_r2IntersectionSegmentsPointsSize > 1 ) )
           {
-            m_blendFuncPtr = &te::rp::Blender::euclideanDistanceMethodImp;
+            m_blendMethod = EuclideanDistanceMethod;
           }
           else
           {
-            m_blendFuncPtr = &te::rp::Blender::noBlendMethodImp;
+            m_blendMethod = NoBlendMethod;
           }
           break;
         }        
         default :
         {
-          return false;
+          TERP_LOG_AND_THROW( "Invalid blend method" );
           break;
         }
-      }         
+      }      
+      
+      // Defining the blending function pointers
+      
+      setBlendFunctionPonter( m_blendMethod );
               
       // defining the geometric transformation  
         
@@ -464,7 +556,7 @@ namespace te
         TERP_TRUE_OR_RETURN_FALSE( raster2Bands[ rasterBandsIdx ] <
           raster2.getNumberOfBands(), "Invalid band" );            
         
-        
+        m_forceInputNoDataValue = forceInputNoDataValue;
         if( forceInputNoDataValue )
         {
           m_raster1NoDataValues.push_back( noDataValue );
@@ -494,11 +586,29 @@ namespace te
       m_pixelOffsets2 = pixelOffsets2;
       m_pixelScales2 = pixelScales2;
       
+      // threads
+      
+      if( threadsNumber == 0 )
+      {
+        m_threadsNumber = te::common::GetPhysProcNumber();
+      }
+      else
+      {
+        m_threadsNumber = threadsNumber;
+      }
+      
+      // progress interface
+      
+      m_enableProgressInterface = enableProgressInterface;
+      
       return true;
     }
     
     void Blender::initState()
     {
+      m_enableProgressInterface = false;
+      m_forceInputNoDataValue = false;
+      m_threadsNumber = 0;
       m_blendMethod = InvalidBlendMethod;
       m_blendFuncPtr = 0;
       m_raster1Ptr = 0;
@@ -515,6 +625,8 @@ namespace te
     
     void Blender::clear()
     {
+      m_r1ValidDataDelimiterPtr.reset();
+      m_r2ValidDataDelimiterPtr.reset();
       m_intersectionPtr.reset();
       m_r1IntersectionSegmentsPoints.clear();
       m_r2IntersectionSegmentsPoints.clear();
@@ -531,6 +643,28 @@ namespace te
       m_raster2NoDataValues.clear();
 
       initState();
+    }
+    
+    void Blender::setBlendFunctionPonter( const BlendMethod blendMethod )
+    {
+      switch( blendMethod )
+      {
+        case NoBlendMethod :
+        {
+          m_blendFuncPtr = &Blender::noBlendMethodImp;
+          break;
+        }
+        case EuclideanDistanceMethod :
+        {
+          m_blendFuncPtr = &Blender::euclideanDistanceMethodImp;
+          break;
+        }        
+        default :
+        {
+          TERP_LOG_AND_THROW( "Invalid blend method" );
+          break;
+        }
+      }  
     }
     
     void Blender::noBlendMethodImp( const double& line, const double& col,
@@ -745,6 +879,412 @@ namespace te
         noBlendMethodImp( line, col, values );
       }
     }    
+    
+    bool Blender::blendIntoRaster1()
+    {
+      TERP_TRUE_OR_RETURN_FALSE( m_raster1Ptr->getAccessPolicy() & 
+        te::common::WAccess, "Invalid output raster access policy" );      
+      
+      // Locating raster2 over the raster1
+      
+      unsigned int firstOutputRasterCol = 0;
+      unsigned int lastOutputRasterRow = 0;
+      unsigned int lastOutputRasterCol = 0;
+      unsigned int firstOutputRasterRow = 0;
+      
+      {
+        const double raster2LastRowIdx = 
+          (double)( m_raster2Ptr->getNumberOfRows() - 1 );
+        const double raster2LastColIdx =
+          (double)( m_raster2Ptr->getNumberOfColumns() - 1 );
+        double raster2LLColOverRaster1 = 0;
+        double raster2LLRowOverRaster1 = 0;
+        double raster2LRColOverRaster1 = 0;
+        double raster2LRRowOverRaster1 = 0;
+        double raster2URColOverRaster1 = 0;
+        double raster2URRowOverRaster1 = 0;
+        double raster2ULColOverRaster1 = 0;
+        double raster2ULRowOverRaster1 = 0;          
+
+        m_geomTransformationPtr->inverseMap( 
+          0.0,
+          raster2LastRowIdx,
+          raster2LLColOverRaster1,
+          raster2LLRowOverRaster1);
+        m_geomTransformationPtr->inverseMap( 
+          raster2LastColIdx,
+          raster2LastRowIdx,
+          raster2LRColOverRaster1,
+          raster2LRRowOverRaster1);                
+        m_geomTransformationPtr->inverseMap( 
+          raster2LastColIdx,
+          0.0,
+          raster2URColOverRaster1,
+          raster2URRowOverRaster1); 
+        m_geomTransformationPtr->inverseMap( 
+          0.0,
+          0.0,
+          raster2ULColOverRaster1,
+          raster2ULRowOverRaster1);  
+        
+        firstOutputRasterCol = (unsigned int)
+          std::max( 0.0,
+            std::min( (double)( m_raster1Ptr->getNumberOfColumns() - 1 ),              
+              std::floor( 
+                std::min( raster2LLColOverRaster1, 
+                  std::min( raster2LRColOverRaster1, 
+                    std::min( raster2URColOverRaster1, 
+                                raster2ULColOverRaster1
+                    ) 
+                  ) 
+                )
+              )
+            )
+          );
+          
+        lastOutputRasterRow = (unsigned int)
+          std::max( 0.0,
+            std::min( (double)( m_raster1Ptr->getNumberOfRows() - 1 ),                
+              std::ceil( 
+                std::max( raster2LLRowOverRaster1, 
+                  std::max( raster2LRRowOverRaster1, 
+                    std::max( raster2URRowOverRaster1, 
+                                raster2ULRowOverRaster1
+                    ) 
+                  ) 
+                ) 
+              )
+            )
+          );
+          
+        lastOutputRasterCol = (unsigned int)
+          std::max( 0.0,
+            std::min( (double)( m_raster1Ptr->getNumberOfColumns() - 1 ),                
+              std::ceil( 
+                std::max( raster2LLColOverRaster1, 
+                  std::max( raster2LRColOverRaster1, 
+                    std::max( raster2URColOverRaster1, 
+                                raster2ULColOverRaster1
+                    ) 
+                  ) 
+                )
+              )
+            )
+          );
+          
+        firstOutputRasterRow = (unsigned int)
+          std::max( 0.0,
+            std::min( (double)( m_raster1Ptr->getNumberOfRows() - 1 ),               
+              std::floor( 
+                std::min( raster2LLRowOverRaster1, 
+                  std::min( raster2LRRowOverRaster1, 
+                    std::min( raster2URRowOverRaster1, 
+                                raster2ULRowOverRaster1
+                    ) 
+                  ) 
+                ) 
+              )
+            )
+          );
+          
+        assert( firstOutputRasterCol >= 0 );
+        assert( firstOutputRasterCol <= 
+          ( m_raster1Ptr->getNumberOfColumns() - 1 ) );    
+        assert( lastOutputRasterRow >= 0 );
+        assert( lastOutputRasterRow <= 
+          ( m_raster1Ptr->getNumberOfRows() - 1 ) );                 
+        assert( lastOutputRasterCol >= 0 );
+        assert( lastOutputRasterCol <= 
+          ( m_raster1Ptr->getNumberOfColumns() - 1 ) ); 
+        assert( firstOutputRasterRow >= 0 );
+        assert( firstOutputRasterRow <= 
+          ( m_raster1Ptr->getNumberOfRows() - 1 ) );
+      }  
+      
+      // Discovering the raster 1 blocks we need to process
+      
+      std::vector< RasterBlockInfo > raster1BlocksInfos;
+      bool allBandsWithSameBlocking = true;
+      
+      {
+        const te::rst::Band& firstBand = *( m_raster1Ptr->getBand(
+           m_raster1Bands[ 0 ] ) );        
+        
+        for( unsigned int raster1BandsIdx = 0 ; raster1BandsIdx < 
+          m_raster1Bands.size() ; ++raster1BandsIdx )
+        {
+          const te::rst::Band& band = *( m_raster1Ptr->getBand(
+            m_raster1Bands[ raster1BandsIdx ] ) ); 
+          
+          if(
+              ( band.getProperty()->m_blkh != firstBand.getProperty()->m_blkh )
+              ||
+              ( band.getProperty()->m_blkw != firstBand.getProperty()->m_blkw )
+              ||
+              ( band.getProperty()->m_nblocksx != firstBand.getProperty()->m_nblocksx )
+              ||
+              ( band.getProperty()->m_nblocksy != firstBand.getProperty()->m_nblocksy )
+            )
+          {
+            allBandsWithSameBlocking = false;
+            break;
+          }
+        }
+          
+        unsigned int firstBlockX = firstOutputRasterCol / 
+          firstBand.getProperty()->m_blkw;
+        unsigned int lastBlockX = lastOutputRasterCol / 
+          firstBand.getProperty()->m_blkw;
+        unsigned int firstBlockY = firstOutputRasterRow / 
+          firstBand.getProperty()->m_blkh;
+        unsigned int lastBlockY = lastOutputRasterRow / 
+          firstBand.getProperty()->m_blkh;                        
+          
+        for( unsigned int blkY = firstBlockY ; blkY <= lastBlockY ; ++blkY )
+        {
+          for( unsigned int blkX = firstBlockX ; blkX <= lastBlockX ; ++blkX )
+          {
+            raster1BlocksInfos.push_back( RasterBlockInfo() );
+            
+            RasterBlockInfo& rBInfo = raster1BlocksInfos.back();
+            
+            rBInfo.m_wasProcessed = false;
+            
+            rBInfo.m_blkFirstRow = blkY * firstBand.getProperty()->m_blkh;
+            rBInfo.m_blkFirstRow = std::max( firstOutputRasterRow,
+              rBInfo.m_blkFirstRow );
+            rBInfo.m_blkFirstRow = std::min( lastOutputRasterRow,
+              rBInfo.m_blkFirstRow );
+            
+            rBInfo.m_blkRowsBound = ( blkY + 1 ) * firstBand.getProperty()->m_blkh;
+            rBInfo.m_blkRowsBound = std::max( firstOutputRasterRow,
+              rBInfo.m_blkRowsBound );
+            rBInfo.m_blkRowsBound = std::min( lastOutputRasterRow,
+              rBInfo.m_blkRowsBound );              
+            
+            rBInfo.m_blkFirstCol = blkX * firstBand.getProperty()->m_blkw;
+            rBInfo.m_blkFirstCol = std::max( firstOutputRasterCol,
+              rBInfo.m_blkFirstCol );
+            rBInfo.m_blkFirstCol = std::min( lastOutputRasterCol,
+              rBInfo.m_blkFirstCol );              
+            
+            rBInfo.m_blkColsBound = ( blkX + 1 ) * firstBand.getProperty()->m_blkw;          
+            rBInfo.m_blkColsBound = std::max( firstOutputRasterCol,
+              rBInfo.m_blkColsBound );
+            rBInfo.m_blkColsBound = std::min( lastOutputRasterCol,
+              rBInfo.m_blkColsBound );                
+          }
+        }
+      }          
+      
+      // blending
+      
+      bool returnValue = true;
+      
+      {
+        // Creating thread exec params
+        
+        boost::mutex mutex;
+        te::rst::RasterSynchronizer sync1( *m_raster1Ptr, te::common::WAccess );
+        te::rst::RasterSynchronizer sync2( *((te::rst::Raster*)m_raster2Ptr), te::common::RAccess );
+        
+        BlendIntoRaster1ThreadParams auxThreadParams;
+        auxThreadParams.m_returnValuePtr = &returnValue;
+        auxThreadParams.m_sync1Ptr = &sync1;
+        auxThreadParams.m_sync2Ptr = &sync2;
+        auxThreadParams.m_raster1BlocksInfosPtr = &raster1BlocksInfos;
+        auxThreadParams.m_mutexPtr = &mutex;
+        auxThreadParams.m_raster1Bands = m_raster1Bands;
+        auxThreadParams.m_raster2Bands = m_raster2Bands;
+        auxThreadParams.m_blendMethod = m_blendMethod;
+        auxThreadParams.m_interpMethod1 = m_interpMethod1;
+        auxThreadParams.m_interpMethod2 = m_interpMethod2;
+        auxThreadParams.m_noDataValue = m_outputNoDataValue;
+        auxThreadParams.m_forceInputNoDataValue = m_forceInputNoDataValue;
+        auxThreadParams.m_pixelOffsets1 = m_pixelOffsets1;
+        auxThreadParams.m_pixelScales1 = m_pixelScales1;
+        auxThreadParams.m_pixelOffsets2 = m_pixelOffsets2;
+        auxThreadParams.m_pixelScales2 = m_pixelScales2;          
+        
+        std::vector< BlendIntoRaster1ThreadParams > allThreadsParams( m_threadsNumber,
+          auxThreadParams );
+        
+        // creating threads
+        
+        if( ( m_threadsNumber == 1 ) || (!allBandsWithSameBlocking) )
+        {
+          if( m_r1ValidDataDelimiterPtr.get() )
+          {
+            allThreadsParams[ 0 ].m_r1ValidDataDelimiterPtr.reset( 
+              (te::gm::Polygon*)m_r1ValidDataDelimiterPtr->clone() );
+          }
+          if( m_r2ValidDataDelimiterPtr.get() )
+          {
+            allThreadsParams[ 0 ].m_r2ValidDataDelimiterPtr.reset( 
+              (te::gm::Polygon*)m_r2ValidDataDelimiterPtr->clone() );
+          }
+          allThreadsParams[ 0 ].m_geomTransformationPtr.reset( 
+            m_geomTransformationPtr->clone() );
+          allThreadsParams[ 0 ].m_maxMemPercentToUse = 90;
+          
+          blendIntoRaster1Thread( &( allThreadsParams[ 0 ] ) );
+        }
+        else
+        {
+          boost::thread_group threads;
+          double maxMemPercentTouse = 90;
+          
+          for( unsigned int threadIdx = 0 ; threadIdx < m_threadsNumber ;
+            ++threadIdx )
+          {
+            if( m_r1ValidDataDelimiterPtr.get() )
+            {
+              allThreadsParams[ threadIdx ].m_r1ValidDataDelimiterPtr.reset( 
+                (te::gm::Polygon*)m_r1ValidDataDelimiterPtr->clone() );
+            }
+            if( m_r2ValidDataDelimiterPtr.get() )
+            {
+              allThreadsParams[ threadIdx ].m_r2ValidDataDelimiterPtr.reset( 
+                (te::gm::Polygon*)m_r2ValidDataDelimiterPtr->clone() );
+            }
+            allThreadsParams[ threadIdx ].m_geomTransformationPtr.reset( 
+              m_geomTransformationPtr->clone() );
+            
+            allThreadsParams[ threadIdx ].m_maxMemPercentToUse = 
+              (unsigned char)
+              (
+                maxMemPercentTouse / ((double)( m_threadsNumber - threadIdx ))
+              );
+            maxMemPercentTouse -= allThreadsParams[ threadIdx ].m_maxMemPercentToUse;
+            
+            threads.add_thread( new boost::thread( blendIntoRaster1Thread, 
+               &( allThreadsParams[ threadIdx ] ) ) );
+          };    
+          
+          threads.join_all();
+        }
+      }
+      
+      return returnValue;
+    }
+    
+    void Blender::blendIntoRaster1Thread( BlendIntoRaster1ThreadParams* paramsPtr )
+    {
+      // Instantiating the local rasters instance
+      
+      te::rst::SynchronizedRaster raster1( *( paramsPtr->m_sync1Ptr ),
+        paramsPtr->m_maxMemPercentToUse / 2 );
+      te::rst::SynchronizedRaster raster2( *( paramsPtr->m_sync2Ptr ),
+        paramsPtr->m_maxMemPercentToUse / 2 );
+      
+      // Guessing the output raster channels ranges
+      
+      std::vector< double > raster1BandsRangeMin( 
+        paramsPtr->m_raster1Bands.size(), 0 );
+      std::vector< double > raster1BandsRangeMax( 
+        paramsPtr->m_raster1Bands.size(), 0 ); 
+      
+      {
+        for( unsigned int raster1BandsIdx = 0 ;  raster1BandsIdx < 
+          paramsPtr->m_raster1Bands.size() ; ++raster1BandsIdx )
+        {
+          unsigned int bandIdx = paramsPtr->m_raster1Bands[ raster1BandsIdx ];
+          
+          te::rst::GetDataTypeRanges( raster1.getBand( bandIdx )->getProperty()->m_type,
+            raster1BandsRangeMin[ raster1BandsIdx ],
+            raster1BandsRangeMax[ raster1BandsIdx ]);             
+        }
+      }      
+      
+      // instantiating the thread local blender instance
+      
+      paramsPtr->m_mutexPtr->lock();
+      const unsigned int raster1BlocksInfosSize = paramsPtr->m_raster1BlocksInfosPtr->size();
+      paramsPtr->m_mutexPtr->unlock();
+      
+      Blender blender;
+      
+      if( ! blender.initialize( 
+        raster1,
+        paramsPtr->m_raster1Bands,
+        raster2,
+        paramsPtr->m_raster2Bands,
+        paramsPtr->m_blendMethod,
+        paramsPtr->m_interpMethod1,
+        paramsPtr->m_interpMethod2,
+        paramsPtr->m_noDataValue,
+        paramsPtr->m_forceInputNoDataValue,
+        paramsPtr->m_pixelOffsets1,
+        paramsPtr->m_pixelScales1,
+        paramsPtr->m_pixelOffsets2,
+        paramsPtr->m_pixelScales2,
+        paramsPtr->m_r1ValidDataDelimiterPtr.get(),
+        paramsPtr->m_r2ValidDataDelimiterPtr.get(),
+        *( paramsPtr->m_geomTransformationPtr ),
+        1,
+        false ) )
+      {
+        paramsPtr->m_mutexPtr->lock();
+        paramsPtr->m_noDataValue = false;
+        paramsPtr->m_mutexPtr->unlock();
+        return;
+      }
+      
+      // loocking for the next raster block to blend
+      
+      for( unsigned int raster1BlocksInfosIdx = 0 ; raster1BlocksInfosIdx <
+        raster1BlocksInfosSize ; ++raster1BlocksInfosIdx )
+      {
+        paramsPtr->m_mutexPtr->lock();
+        
+        if( paramsPtr->m_raster1BlocksInfosPtr->operator[]( raster1BlocksInfosIdx ).m_wasProcessed )
+        {
+          paramsPtr->m_mutexPtr->unlock();
+        }
+        else
+        {
+          RasterBlockInfo& rBInfo = paramsPtr->m_raster1BlocksInfosPtr->operator[]( 
+            raster1BlocksInfosIdx );
+          rBInfo.m_wasProcessed = true;
+          paramsPtr->m_mutexPtr->unlock();
+          
+          std::vector< unsigned int > raster1Bands = paramsPtr->m_raster1Bands;
+          const unsigned int raster1BandsSize = raster1Bands.size();
+          std::vector< double > blendedValues( raster1BandsSize );
+          double noDataValue = paramsPtr->m_noDataValue;
+          unsigned int raster1Row = 0;
+          unsigned int raster1Col = 0;
+          unsigned int raster1BandsIdx = 0;
+         
+          for( raster1Row = rBInfo.m_blkFirstRow ; raster1Row < rBInfo.m_blkRowsBound ;
+            ++raster1Row )
+          {
+            for( raster1Col = rBInfo.m_blkFirstCol ; raster1Col < rBInfo.m_blkColsBound ;
+              ++raster1Col )
+            {
+              blender.getBlendedValues( (double)raster1Row, (double)raster1Col,
+                blendedValues );            
+                
+              for( raster1BandsIdx = 0 ; raster1BandsIdx < raster1BandsSize ; ++raster1BandsIdx )
+              {
+                double& blendedValue = blendedValues[ raster1BandsIdx ];
+                
+                if( blendedValue != noDataValue )
+                {
+                  blendedValue = std::max( blendedValue , 
+                    raster1BandsRangeMin[ raster1BandsIdx ] );
+                  blendedValue = std::min( blendedValue , 
+                    raster1BandsRangeMax[ raster1BandsIdx ] );
+
+                  raster1.setValue( raster1Col, raster1Row, blendedValue,
+                    raster1Bands[ raster1BandsIdx ] );
+                }
+              }                    
+            }
+          }
+        }
+      }
+    }
 
   } // end namespace rp
 }   // end namespace te    

@@ -64,6 +64,8 @@ namespace te
           \brief Constructor.
 
           \param raster The raster to synchronize.
+          
+          \param policy The access policy to use on the given input raster.
         */
         RasterSynchronizer( Raster& raster, const te::common::AccessPolicy policy );
         

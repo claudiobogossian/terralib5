@@ -70,11 +70,11 @@ bool te::rst::SynchronizedBandBlocksManager::initialize(
   if( !( sync.m_policy & te::common::WAccess ) )
   {
     sync.m_mutex.lock();
-    for( unsigned int bandIdx = 0 ; bandIdx < m_syncPtr->m_raster.getNumberOfBands() ;
+    for( unsigned int bandIdx = 0 ; bandIdx < sync.m_raster.getNumberOfBands() ;
       ++bandIdx )
     {
-      if( maxBlockSizeBytes < (unsigned int)m_syncPtr->m_raster.getBand( bandIdx )->getBlockSize() )
-        maxBlockSizeBytes = (unsigned int)m_syncPtr->m_raster.getBand( bandIdx )->getBlockSize();
+      if( maxBlockSizeBytes < (unsigned int)sync.m_raster.getBand( bandIdx )->getBlockSize() )
+        maxBlockSizeBytes = (unsigned int)sync.m_raster.getBand( bandIdx )->getBlockSize();
     }
     sync.m_mutex.unlock();
     
