@@ -199,7 +199,7 @@ void te::qt::af::Save(const te::qt::af::Project& project, const std::string& uri
 
 void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& writer)
 {
-  std::string schema_loc = te::common::FindInTerraLibPath("schemas/terralib/qt/af/project.xsd");
+  std::string schema_loc = te::common::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
 
   writer.writeStartDocument("UTF-8", "no");
 
@@ -772,7 +772,7 @@ void te::qt::af::WriteDefaultProjectFile(const QString& fileName)
 {
   boost::property_tree::ptree p;
 
-  std::string schema_location = te::common::FindInTerraLibPath("schemas/terralib/qt/af/project.xsd");
+  std::string schema_location = te::common::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
 
   //Header
   p.add("Project.<xmlattr>.xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");

@@ -555,6 +555,26 @@ void te::qt::af::BaseApplication::onAddTabularLayerTriggered()
   }
 }
 
+void te::qt::af::BaseApplication::onChartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartDisplay, te::map::AbstractLayer* layer)
+{
+  try
+  {
+    ChartDisplayDockWidget* doc = new ChartDisplayDockWidget(chartDisplay, this);
+    doc->setSelectionColor(ApplicationController::getInstance().getSelectionColor());
+    doc->setWindowTitle("Histogram");
+    doc->setWindowIcon(QIcon::fromTheme("chart-bar"));
+    doc->setLayer(layer);
+
+    ApplicationController::getInstance().addListener(doc);
+    addDockWidget(Qt::RightDockWidgetArea, doc, Qt::Horizontal);
+    doc->show();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
 void te::qt::af::BaseApplication::onRemoveLayerTriggered()
 {
  std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedLayerItems();
@@ -1024,6 +1044,7 @@ void te::qt::af::BaseApplication::onLayerShowTableTriggered()
     addDockWidget(Qt::BottomDockWidgetArea, doc);
 
     connect (doc, SIGNAL(closed(te::qt::af::DataSetTableDockWidget*)), SLOT(onLayerTableClose(te::qt::af::DataSetTableDockWidget*)));
+    connect (doc, SIGNAL(createChartDisplay(te::qt::widgets::ChartDisplayWidget*, te::map::AbstractLayer*)), SLOT(onChartDisplayCreated(te::qt::widgets::ChartDisplayWidget*, te::map::AbstractLayer*)));
 
     if(!m_tableDocks.empty())
       tabifyDockWidget(m_tableDocks[m_tableDocks.size()-1], doc);

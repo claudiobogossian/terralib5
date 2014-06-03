@@ -64,6 +64,7 @@ namespace te
       // Forward declaration
       class DataSetTableModel;
       class HighlightDelegate;
+      class ChartDisplayWidget;
 
       /*!
         \class DataSetTableView
@@ -274,6 +275,8 @@ namespace te
           void selectOIds(te::da::ObjectIdSet*, const bool&, te::gm::Envelope*);
 
           void deselectOIds(te::da::ObjectIdSet*);
+
+          void createChartDisplay(te::qt::widgets::ChartDisplayWidget*);
 
         protected:
 

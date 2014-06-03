@@ -212,7 +212,7 @@ void te::serialize::xml::Save(std::ostream& ostr)
 
 void te::serialize::xml::Save(te::xml::Writer& writer)
 {
-  std::string schema_loc = te::common::FindInTerraLibPath("schemas/terralib/dataaccess/dataaccess.xsd");
+  std::string schema_loc = te::common::FindInTerraLibPath("share/terralib/schemas/terralib/dataaccess/dataaccess.xsd");
 
   writer.writeStartDocument("UTF-8", "no");
 

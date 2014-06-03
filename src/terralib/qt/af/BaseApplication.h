@@ -56,6 +56,7 @@ namespace te
     namespace widgets
     {
       class QueryDialog;
+      class ChartDisplayWidget;
     }
 
     namespace af
@@ -109,6 +110,8 @@ namespace te
           void onAddQueryLayerTriggered();
 
           void onAddTabularLayerTriggered();
+
+          void onChartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartDisplay, te::map::AbstractLayer* layer);
 
           void onRemoveLayerTriggered();
 
@@ -248,7 +251,6 @@ namespace te
 
         signals:
           void applicationClose();
-
 
         protected:
 
