@@ -24,6 +24,7 @@
  */
 
 // TerraLib
+#include "../Defines.h"
 #include "CharEncodingConv.h"
 
 // TerraLib
