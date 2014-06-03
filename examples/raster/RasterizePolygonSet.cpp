@@ -78,10 +78,10 @@ void RasterizePolygonSet()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in RasterizePolygonSet(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in RasterizePolygonSet(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in RasterizePolygonSet()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in RasterizePolygonSet()!" << std::endl;
   }
 }

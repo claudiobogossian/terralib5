@@ -381,11 +381,11 @@ void ExemplifyIterators()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in ExemplifyIterators(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in ExemplifyIterators(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in ExemplifyIterators()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in ExemplifyIterators()!" << std::endl;
   }
 
 }

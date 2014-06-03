@@ -40,11 +40,11 @@ void MakeRasterCrop()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in MakeRasterCrop(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in MakeRasterCrop(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in MakeRasterCrop()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in MakeRasterCrop()!" << std::endl;
   }
 
 }
