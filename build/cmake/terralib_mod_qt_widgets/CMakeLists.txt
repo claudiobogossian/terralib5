@@ -644,12 +644,12 @@ else() # QT4_FOUND
   #
 
   # canvas
-  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/DrawLayerThread.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/EyeBirdMapDisplayWidget.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/MapDisplay.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/MultiThreadMapDisplay.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/OverlayWidget.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/ZoomInMapDisplayWidget.h)
+  set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/DrawLayerThread.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/EyeBirdMapDisplayWidget.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/MapDisplay.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/MultiThreadMapDisplay.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/OverlayWidget.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/canvas/ZoomInMapDisplayWidget.h)
 
   # charts
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ChartDisplay.h
@@ -720,8 +720,8 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/exchanger/SHP2PostGISDialog.h)
 
   # externaltable
-  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externaltable/DataPropertiesDialog.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externaltable/DataPropertiesWidget.h)
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/DataPropertiesDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/DataPropertiesWidget.h)
 
   # help
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/AssistantHelpManagerImpl.h
@@ -926,18 +926,15 @@ else() # QT4_FOUND
 
   # Moc'ing DataSetTableView.cpp
   QT4_GENERATE_MOC(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/DataSetTableView.cpp DataSetTableView.moc)
-  list(APPEND TERRALIB_FILES ${TERRALIB_GEN_SRC_FILES} DataSetTableView.moc)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES} OPTIONS -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 
-  add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES})
+  add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES} ${TERRALIB_GEN_SRC_FILES} DataSetTableView.moc)
 
   target_link_libraries(terralib_mod_qt_widgets ${TERRALIB_LIBRARIES_DEPENDENCIES}
                                                 ${QT_LIBRARIES})
 
-endif() 
-
-################### end of uic'ing and moc'ing #######################
+endif()
 
 set_target_properties(terralib_mod_qt_widgets
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}

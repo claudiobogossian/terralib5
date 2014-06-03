@@ -72,7 +72,6 @@ else()
 
 # moc'ing
   set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/AggregationDialog.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/BasicGeographicOperationDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/BufferDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/IntersectionDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/LayerItem.h
