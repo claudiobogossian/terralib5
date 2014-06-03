@@ -84,17 +84,17 @@ namespace te
       m_noDataValue( 0.0 ), m_forceInputNoDataValue( false ), 
       m_maxMemPercentToUse( 0 )
     {
-    };
+    }
     
     Blender::BlendIntoRaster1ThreadParams::BlendIntoRaster1ThreadParams( 
       const BlendIntoRaster1ThreadParams& rhs )
     {
       operator=( rhs );
-    };         
+    }
     
     Blender::BlendIntoRaster1ThreadParams::~BlendIntoRaster1ThreadParams()
     {
-    };
+    }
     
     te::rp::Blender::BlendIntoRaster1ThreadParams& Blender::BlendIntoRaster1ThreadParams::operator=( 
       const BlendIntoRaster1ThreadParams& rhs )
@@ -150,7 +150,7 @@ namespace te
     Blender::Blender()
     {
       initState();
-    };
+    }
     
     Blender::~Blender()
     {
@@ -621,7 +621,7 @@ namespace te
       m_outputNoDataValue = 0;
       m_interp1 = 0;
       m_interp2 = 0;      
-    };    
+    }
     
     void Blender::clear()
     {

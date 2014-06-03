@@ -715,7 +715,7 @@ namespace te
       m_segmentsPool.clear();
       m_segmentsIdsMatrix.reset();
       m_parameters.reset();
-    };
+    }
     
     bool SegmenterRegionGrowingStrategy::execute( 
       SegmenterIdsManager& segmenterIdsManager,

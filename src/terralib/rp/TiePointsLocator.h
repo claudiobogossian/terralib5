@@ -665,7 +665,7 @@ namespace te
           }
           
           bufferPtr[ lastLineIdx ] = auxLinePtr;
-        };
+        }
         
         /*! 
           \brief Fill a buffer with zeroes.
@@ -691,7 +691,7 @@ namespace te
               linePtr[ col ] = 0;
             }
           }
-        };        
+        }     
         
         /*!
           \brief Moravec interest points locator.
@@ -948,7 +948,7 @@ namespace te
             - ( ( upperLeftY ) ? buffer[ upperLeftY - 1 ][ lowerRightX ] : 0 )
             - ( ( upperLeftX ) ? buffer[ lowerRightY ][ upperLeftX - 1 ] : 0 )
             + ( ( ( upperLeftX != 0 ) && ( upperLeftY != 0 ) ) ? buffer[ upperLeftY - 1 ][ upperLeftX - 1 ] : 0 );
-        };
+        }
         
         /*! 
           \brief Return a SURF box filter Dxx derivative centered over the given position from the given integral image buffer.
@@ -1095,7 +1095,7 @@ namespace te
               ( centerY - radius ),
               ( centerX - 1 ),
               ( centerY + radius ) );
-        };
+        }
         
         /*! 
           \brief Return a Haar Y intesity vector for the window centered at the given point.
@@ -1127,7 +1127,7 @@ namespace te
               ( centerY + 1 ),
               ( centerX + radius ),
               ( centerY + radius ) );
-        };        
+        }
         
         /*! 
           \brief Return the surf octave filter step size (width).

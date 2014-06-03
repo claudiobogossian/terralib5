@@ -44,13 +44,13 @@ namespace te
   namespace da
   {
     class DataSource;    
-  };
+  }
   
   namespace rst
   {
     class Raster;
     class Band;
-  };
+  }
   
   namespace rp
   {

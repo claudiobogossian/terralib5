@@ -50,7 +50,7 @@
             /*! This block is under segmentation */
             BlockUnderSegmentation = 1,        
             /*! This block already was segmented */
-            BlockSegmented = 2,
+            BlockSegmented = 2
           };    
           
           /*! Segment ID data type definition - (zero: means invalid ID) */
