@@ -1,7 +1,6 @@
 #include "RPExamples.h"
 
 // TerraLib
-#include <terralib/gdal/Utils.h>
 #include <terralib/geometry.h>
 #include <terralib/raster.h>
 #include <terralib/rp/Classifier.h>
@@ -195,7 +194,7 @@ std::vector<te::gm::Polygon*> SegmentImage(te::rst::Raster* rin)
 
 // export the segmentation into shapefile
   std::vector<te::gm::Geometry*> geometries;
-  te::gdal::Vectorize(((te::gdal::Raster*) algoOutputParameters.m_outputRasterPtr.get())->getGDALDataset()->GetRasterBand(1), geometries);
+  algoOutputParameters.m_outputRasterPtr->vectorize( geometries, 0 );
 
   std::vector<te::gm::Polygon*> polygons;
   for (unsigned i = 0; i < geometries.size(); i++)

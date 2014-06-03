@@ -1,7 +1,6 @@
 #include "RPExamples.h"
 
 // TerraLib
-#include <terralib/gdal/Utils.h>
 #include <terralib/raster.h>
 #include <terralib/dataaccess.h>
 //#include <terralib/dataaccess/dataset/DataSetPersistence.h>
@@ -67,41 +66,6 @@ void Segmenter()
 
     if( !seginstance.initialize( algoInputParameters ) ) throw;
     if( !seginstance.execute( algoOutputParameters ) ) throw;
-
-// export the segmentation into shapefile
-    std::vector<te::gm::Geometry*> geometries;
-    te::gdal::Vectorize(((te::gdal::Raster*) algoOutputParameters.m_outputRasterPtr.get()
-      )->getGDALDataset()->GetRasterBand(1), geometries);
-
-    te::da::DataSetType* dst = new te::da::DataSetType("objects from segmentation");
-
-    te::dt::SimpleProperty* id_prop = new te::dt::SimpleProperty("id", te::dt::INT32_TYPE, true);
-    id_prop->setAutoNumber(true);
-
-    te::gm::GeometryProperty* obj_prop = new te::gm::GeometryProperty("objects", 0, te::gm::PolygonType, true);
-    obj_prop->setSRID(rin->getSRID());
-
-    dst->add(id_prop);
-    dst->add(obj_prop);
-//    dst->setDefaultGeomProperty(obj_prop);
-
-    //define a primary key
-    te::da::PrimaryKey* pkey = new te::da::PrimaryKey("primary key", dst);
-    pkey->add(id_prop);
-
-    te::mem::DataSet* dset = new te::mem::DataSet(dst);
-    for (unsigned i = 0; i < geometries.size(); i++)
-    {
-      te::mem::DataSetItem* dsitem = new te::mem::DataSetItem(dset);
-      dsitem->setGeometry(obj_prop->getName(),geometries[i]);
-      dset->add(dsitem);
-    }
-
-    std::map<std::string, std::string> osinfo;
-    osinfo["URI"] = ""TERRALIB_EXAMPLES_DATA_DIR"/rasters/cbers2b_rgb342_crop_segmentedMean.shp";
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSource::create("OGR", osinfo);
-    std::auto_ptr<te::da::DataSourceTransactor> trans = ds->getTransactor();
-    trans->add(dst->getName(), dset, std::map<std::string, std::string> ());
 
 // clean up
     delete rin;
@@ -169,42 +133,6 @@ void Segmenter()
 
     if( ! seginstance.initialize(algoInputParameters) ) throw;
     if( ! seginstance.execute( algoOutputParameters ) ) throw;
-
-// export the segmentation into shapefile
-    std::vector<te::gm::Geometry*> geometries;
-    te::gdal::Vectorize(((te::gdal::Raster*) algoOutputParameters.m_outputRasterPtr.get()
-      )->getGDALDataset()->GetRasterBand(1), geometries);
-
-    te::da::DataSetType* dst = new te::da::DataSetType("objects from segmentation");
-
-    te::dt::SimpleProperty* id_prop = new te::dt::SimpleProperty("id", te::dt::INT32_TYPE, true);
-    id_prop->setAutoNumber(true);
-
-    te::gm::GeometryProperty* obj_prop = new te::gm::GeometryProperty("objects", 0, te::gm::PolygonType, true);
-    obj_prop->setSRID(rin->getSRID());
-
-    dst->add(id_prop);
-    dst->add(obj_prop);
-//    dst->setDefaultGeomProperty(obj_prop);
-
-    //define a primary key
-    te::da::PrimaryKey* pkey = new te::da::PrimaryKey("primary key", dst);
-    pkey->add(id_prop);
-
-    te::mem::DataSet* dset = new te::mem::DataSet(dst);
-    for (unsigned i = 0; i < geometries.size(); i++)
-    {
-      te::mem::DataSetItem* dsitem = new te::mem::DataSetItem(dset);
-      dsitem->setGeometry("objects", geometries[i]);
-      //dsitem->setGeometry("objects", *geometries[i]);
-      dset->add(dsitem);
-    }
-
-    std::map<std::string, std::string> osinfo;
-    osinfo["connection_string"] = ""TERRALIB_EXAMPLES_DATA_DIR"/rasters/cbers2b_rgb342_crop_segmentedBaatz.shp";
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSource::create("OGR", osinfo);
-    std::auto_ptr<te::da::DataSourceTransactor> trans = ds->getTransactor();
-    trans->add(dst->getName(), dset,  std::map<std::string, std::string> ());
 
 // clean up
     delete rin;
