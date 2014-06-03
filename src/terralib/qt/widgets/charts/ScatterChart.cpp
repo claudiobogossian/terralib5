@@ -188,21 +188,11 @@ te::da::ObjectIdSet* te::qt::widgets::ScatterChart::highlight(QPointF point)
 
   QPoint mappedPoint = QPoint(cx, cy);
 
-  double dist;
-  int index = closestPoint( mappedPoint, &dist );
+  int index = closestPoint( mappedPoint);
 
-  if(dist < 10)
-  {
-    double x = sample(index).x();
-    double y = sample(index).y();
-    return m_scatter->find(x, y);
-  }
-  else
-  {
-    double x = std::numeric_limits<double>::max();
-    double y = std::numeric_limits<double>::max();
-    return m_scatter->find(x, y);
-  }
+  double x = sample(index).x();
+  double y = sample(index).y();
+  return m_scatter->find(x, y);
 }
 
 te::da::ObjectIdSet* te::qt::widgets::ScatterChart::highlight(QRectF rect)
@@ -210,13 +200,14 @@ te::da::ObjectIdSet* te::qt::widgets::ScatterChart::highlight(QRectF rect)
   QwtSeriesData<QPointF>* values = data();
   std::vector<QPointF> selected;
 
+  if(rect.width() == 0 && rect.height() == 0)
+    return highlight(QPoint(rect.x(), rect.y()));
+
   //Acquiring all the selected points:
   for(size_t i = 0; i < values->size(); ++i)
   {
     if( rect.contains(values->sample(i)))
-    {
       selected.push_back(values->sample(i));
-    }
   }
   return m_scatter->find(selected);
 }

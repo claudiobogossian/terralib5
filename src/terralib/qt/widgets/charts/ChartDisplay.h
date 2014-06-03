@@ -35,9 +35,11 @@
 //STL
 #include <string>
 
+//QWT Forward declarations
 class QwtPlotGrid;
 class QwtPlotPanner;
 class QwtPlotPicker;
+class QwtPlotMagnifier;
 
 namespace te
 {
@@ -142,12 +144,13 @@ namespace te
 
          private:
 
-          ChartStyle*     m_chartStyle;  //!< The display's style.
-          QwtPlotGrid*    m_grid;        //!< The display's grid
-          QwtPlotPanner*  m_panner;      //!< The display's panner.
-          QwtPlotPicker*  m_leftPicker;  //!< The display's left button picker.
-          QwtPlotPicker*  m_ctrlPicker;  //!< The display's control button picker.
-          QwtPlotPicker*  m_shiftPicker;  //!< The display's control button picker.
+          ChartStyle*       m_chartStyle;   //!< The display's style.
+          QwtPlotGrid*      m_grid;         //!< The display's grid
+          QwtPlotPanner*    m_panner;       //!< The display's panner.
+          QwtPlotPicker*    m_leftPicker;   //!< The display's left button picker.
+          QwtPlotMagnifier* m_magnifier;     //!< The display's magnifinifier.
+          QwtPlotPicker*    m_ctrlPicker;   //!< The display's control button picker.
+          QwtPlotPicker*    m_shiftPicker;  //!< The display's shift button picker.
       };
     } // end namespace widgets
   }   // end namespace qt

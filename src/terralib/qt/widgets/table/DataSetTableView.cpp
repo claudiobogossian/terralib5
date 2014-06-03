@@ -797,8 +797,7 @@ void te::qt::widgets::DataSetTableView::createHistogram(const int& column)
 {
   const te::map::LayerSchema* schema = m_layer->getSchema().release();
   te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
-  te::qt::widgets::createHistogramDisplay(m_dset, dataType, column);
-  delete schema;
+  emit createChartDisplay(te::qt::widgets::createHistogramDisplay(m_dset, dataType, column));
 }
 
 void te::qt::widgets::DataSetTableView::hideColumn(const int& column)
