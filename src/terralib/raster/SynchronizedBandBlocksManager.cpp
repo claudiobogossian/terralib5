@@ -282,6 +282,6 @@ te::rst::Raster* te::rst::SynchronizedBandBlocksManager::getRaster() const
   {
     return 0;
   }
-};
+}
        
 

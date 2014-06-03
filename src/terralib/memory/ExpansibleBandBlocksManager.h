@@ -376,7 +376,7 @@ namespace te
             
             ++it;
           }
-        };
+        }
         
         /*!
           \brief Shift 3D coords.
@@ -414,7 +414,7 @@ namespace te
 
             ++it;
           }
-        };
+        }
 
       protected:
 

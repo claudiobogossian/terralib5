@@ -53,7 +53,7 @@ namespace te
   {
     class BandProperty;
     class Grid;
-  };
+  }
 
   namespace rp
   {
@@ -146,7 +146,7 @@ namespace te
     inline void TERPEXPORT GetDataTypeRange( const int dataType, double& min, double& max )
     {
       te::rst::GetDataTypeRanges( dataType, min, max );
-    };
+    }
 
     /*!
       \brief Convert vector elements.
@@ -261,7 +261,7 @@ namespace te
       }
       
       return true;
-    }; 
+    } 
     
     /*! 
       \brief Returns a vector os with band's names. 

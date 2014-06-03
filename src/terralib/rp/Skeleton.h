@@ -300,7 +300,7 @@ namespace te
           }
           
           return true;
-        };
+        }
         
         /*!
           \brief Generate the magnitude map from the input vectors.
@@ -346,7 +346,7 @@ namespace te
           }
           
           return true;
-        };        
+        }
           
         /*!
           \brief Create an Edge strenght Map from the input data.

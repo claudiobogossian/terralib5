@@ -104,7 +104,7 @@ int te::rst::SynchronizedRaster::getBandDataType(std::size_t i) const
   m_blocksManager.getSynchronizer()->m_mutex.unlock();
   
   return returnValue;
-};
+}
 
 void te::rst::SynchronizedRaster::open(const std::map<std::string, std::string>& /*rinfo*/,
   te::common::AccessPolicy /*p*/)
