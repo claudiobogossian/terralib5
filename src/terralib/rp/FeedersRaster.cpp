@@ -38,22 +38,22 @@ namespace te
       const std::vector< const te::rst::Raster* > rasters )
     : m_currentOffset( 0 ), m_rasters( rasters )
     {
-    };
+    }
     
     FeederConstRasterVector::FeederConstRasterVector()
     : m_currentOffset( 0 )
     {
-    };    
+    }
     
     FeederConstRasterVector::~FeederConstRasterVector()
     {
-    };
+    }
     
     te::rst::Raster const* FeederConstRasterVector::getCurrentObj() const
     {
       return ( m_currentOffset < m_rasters.size() ) ?
         m_rasters[ m_currentOffset ] : 0;            
-    };    
+    }
     
     bool FeederConstRasterVector::moveNext()
     {
@@ -106,21 +106,21 @@ namespace te
       TERP_TRUE_OR_THROW( rTypes.size() == rInfos.size(),
         "Invalid rasters info" )
       reset();
-    };
+    }
     
     FeederConstRasterInfo::FeederConstRasterInfo()
     : m_currentOffset( 0 )
     {
-    };    
+    }
     
     FeederConstRasterInfo::~FeederConstRasterInfo()
     {
-    };
+    }
     
     te::rst::Raster const* FeederConstRasterInfo::getCurrentObj() const
     {
       return m_currentRasterPtr.get();
-    };    
+    }
     
     bool FeederConstRasterInfo::moveNext()
     {
@@ -299,21 +299,21 @@ namespace te
       m_currentOffset = m_filesNames.size();
       
       reset();
-    };
+    }
     
     FeederConstRasterDirectory::FeederConstRasterDirectory()
     : m_currentOffset( 0 )
     {
-    };    
+    }
     
     FeederConstRasterDirectory::~FeederConstRasterDirectory()
     {
-    };
+    }
     
     te::rst::Raster const* FeederConstRasterDirectory::getCurrentObj() const
     {
       return m_currentRasterPtr.get();
-    };    
+    }
     
     bool FeederConstRasterDirectory::moveNext()
     {

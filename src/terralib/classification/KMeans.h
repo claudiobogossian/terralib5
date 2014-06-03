@@ -117,8 +117,8 @@ namespace te
         Parameters m_parameters;                           //!< Internal execution parameters.
     };
 
-  }; // end namespace cl
-};  // end namespace te
+  } // end namespace cl
+}  // end namespace te
 
 // class of Parameters
 template <class TTRAIN, class TCLASSIFY>

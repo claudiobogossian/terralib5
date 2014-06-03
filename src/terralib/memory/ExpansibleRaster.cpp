@@ -182,7 +182,7 @@ void te::mem::ExpansibleRaster::open(const std::map<std::string, std::string>& /
 std::map<std::string, std::string> te::mem::ExpansibleRaster::getInfo() const
 {
   return std::map<std::string, std::string>();
-};
+}
 
 te::dt::AbstractData* te::mem::ExpansibleRaster::clone() const
 {
