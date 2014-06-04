@@ -58,7 +58,7 @@ else() # QT4_FOUND
 
   # moc'ing
     set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/qt/tools/MainWindow.h
-	                               ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/qt/tools/SelectionWindow.h)
+                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/qt/tools/SelectionTool.h)
 
     QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 
@@ -68,8 +68,8 @@ else() # QT4_FOUND
 
       target_link_libraries(terralib_example_qt_tools terralib_mod_common
                                                       terralib_mod_geometry
-												      terralib_mod_maptools
-												      terralib_mod_plugin
+                                                      terralib_mod_maptools
+                                                      terralib_mod_plugin
                                                       terralib_mod_qt_widgets
                                                       ${QT_LIBRARIES})
 
