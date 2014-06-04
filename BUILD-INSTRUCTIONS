@@ -66,6 +66,17 @@ $ make install
 2. Building with CMake GUI
 --------------------------
 
+2.1 On Windows:
+
+For Windows systems, you might add and set the parameter CMAKE_PREFIX_PATH with the informations (separated by semicolons):
+
+ - Microsoft SDK;
+ - TerraLib 5 Third party path;
+ - Qt CMake.
+
+Example:
+
+C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A;D:/PROJETOS/Terralib5/terralib5-3rdparty-win32-Qt5;C:/Qt/Qt5.3.0/5.3/msvc2010_opengl/lib/cmake/Qt5
 
 
 3. Eclipse on Linux
