@@ -333,6 +333,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
       task.setTotalSteps((dataset->getNumProperties()) * 2);
 
        //Calculating the minimum and maximum values of the given property and adjusting the Histogram's interval.
+       dataset->moveBeforeFirst();
        while(dataset->moveNext())
        {
 
@@ -446,6 +447,8 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
       std::vector<te::da::ObjectId*> valuesOIds;
 
       //Adjusting the histogram's intervals
+
+      dataset->moveBeforeFirst();
       while(dataset->moveNext())
       {
 
