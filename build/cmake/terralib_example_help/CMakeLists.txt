@@ -62,10 +62,10 @@ else()
   QT4_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
 
   # moc'ing
-  set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/examples/help/Plugin.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/examples/help/MainWindow.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/examples/help/HelpTest.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/examples/help/HelpTest2.h)
+  set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/help/HelpTest.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/help/HelpTest2.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/help/MainWindow.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/help/Plugin.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 
