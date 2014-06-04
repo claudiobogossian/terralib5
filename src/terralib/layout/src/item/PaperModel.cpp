@@ -35,8 +35,6 @@
 te::layout::PaperModel::PaperModel() :
   m_paperConfig(0)
 {
-  setName("PAPER_A4");
-
   m_shadowPadding = 10.;
 
   m_backgroundColor = te::color::RGBAColor(255, 255, 255, 255);
@@ -49,9 +47,6 @@ te::layout::PaperModel::PaperModel() :
 te::layout::PaperModel::PaperModel( PaperConfig* paperConfig ) :
   m_paperConfig(paperConfig)
 {
-
-  setName("PAPER_A4");
-
   m_shadowPadding = 10.;
 
   m_backgroundColor = te::color::RGBAColor(255, 255, 255, 255);
@@ -140,5 +135,23 @@ void te::layout::PaperModel::setShadowPadding( double padding )
 double te::layout::PaperModel::getShadowPadding()
 {
   return m_shadowPadding;
+}
+
+te::gm::Envelope te::layout::PaperModel::getBoxWithZoomFactor()
+{
+  Utils* utils = Context::getInstance()->getUtils();
+    
+  te::gm::Envelope envPp = utils->applyZoomFactor(m_boxPaper);
+
+  double pw = m_boxPaper.getWidth();
+  double ph = m_boxPaper.getHeight();
+
+  double width = m_shadowPadding + pw;
+  double height = m_shadowPadding + ph;
+
+  te::gm::Envelope envShw = utils->applyZoomFactor(m_boxShadow);
+
+  te::gm::Envelope box = te::gm::Envelope(0., 0., width, height);  
+  return box;
 }
 

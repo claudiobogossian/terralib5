@@ -46,17 +46,16 @@ namespace te
         virtual void insertOutside(OutsideObserver* widget) = 0;
         virtual te::gm::Envelope getSceneBox() = 0;
         virtual te::gm::Envelope* getWorldBox() const = 0;
-        virtual te::gm::Envelope* getPaperBox() const = 0;
         /*
           params widthMM width of physical screen in millimeters
           params heightMM height of physical screen in millimeters
         */
-        virtual void init(double widthMM, double heightMM) = 0;
+        virtual void init(double widthMM, double heightMM, double paperMMW, double paperMMH) = 0;
 
       protected:
         
-        virtual te::gm::Envelope* calculateBoxPaper() = 0;
-        virtual te::gm::Envelope* calculateWindow() = 0;
+        virtual te::gm::Envelope* calculateBoxPaper(double wMM, double hMM, double paperMMW, double paperMMH) = 0;
+        virtual te::gm::Envelope* calculateWindow(double wMM, double hMM, double paperMMW, double paperMMH) = 0;
         virtual void calculateMatrixViewScene() = 0;
         virtual void createMasterParentItem() = 0;        
     };

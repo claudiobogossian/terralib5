@@ -39,6 +39,7 @@
 #include "AbstractView.h"
 #include "../../../../geometry/Envelope.h"
 #include "../../../../geometry/Coord2D.h"
+#include "Scene.h"
 
 class QMouseEvent;
 class QWheelEvent;
@@ -55,6 +56,7 @@ namespace te
   {
     class OutsideArea;
     class VisualizationArea;
+    class AbstractViewTool;
 
     class View : public QGraphicsView, public AbstractView
     {
@@ -67,7 +69,7 @@ namespace te
         virtual void config();        
         
         void setOutsideArea(OutsideArea* outsideArea);
-                        
+                                
       public slots:
 
         virtual void onToolbarChangeContext(bool change);
@@ -103,12 +105,17 @@ namespace te
         virtual void resetDefaultConfig();
 
         virtual void outsideAreaChangeContext(bool change);
-        
+
+        virtual void configTransform(Scene* sc);
+
+        virtual void recalculateSceneSize(double zoomFactor);
+                
       protected:
         OutsideArea*  m_outsideArea;
         VisualizationArea* m_visualizationArea;
         QLineF*             m_lineIntersectHrz;
         QLineF*             m_lineIntersectVrt;
+        AbstractViewTool* m_currentTool;
     };
   }
 }

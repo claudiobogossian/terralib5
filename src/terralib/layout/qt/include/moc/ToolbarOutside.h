@@ -47,6 +47,7 @@ class QAction;
 class QToolButton;
 class QMenu;
 class QPushButton;
+class QComboBox;
 
 namespace te
 {
@@ -83,6 +84,12 @@ namespace te
       virtual void onItemToolsTriggered(QAction* action);
 
       virtual void onLineIntersectionMouse(bool checked);
+
+      virtual void onSceneZoomCurrentIndexChanged(int index);
+
+      virtual void onBringToFrontClicked(bool checked);
+
+      virtual void onSendToBackClicked(bool checked);
       
     signals:
 
@@ -106,6 +113,12 @@ namespace te
 
       virtual void createLineIntersectionToolButton();
 
+      virtual void createSceneZoomCombobox();
+
+      virtual void createBringToFrontToolButton();
+
+      virtual void createSendToBackToolButton();
+
       virtual void changeAction(LayoutMode mode);
 
       virtual QToolButton* createToolButton(std::string text, std::string tooltip, std::string icon);
@@ -114,9 +127,11 @@ namespace te
       
       virtual QAction* createAction(std::string text, std::string objName, std::string icon, std::string tooltip = "");
 
+    protected:
+
       QToolBar*  m_toolbar;
       QToolButton* m_btnMap;
-
+      QComboBox* m_comboSceneZoom;
       /* Map Menu */
       std::string m_optionMapDefault;
       std::string m_optionMapGrid;
@@ -142,6 +157,8 @@ namespace te
       std::string m_optionUngroup;
 
       std::string m_optionLineIntersectionMouse;
+
+      std::string m_optionSceneZoom;
     };
   }
 }

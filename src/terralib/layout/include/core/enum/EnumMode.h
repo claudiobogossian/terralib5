@@ -64,6 +64,9 @@ namespace te
       TypeOffLinesIntersectionMouse = 25,
       TypePrinter = 26,
       TypeExit = 27,
+      TypeSceneZoom = 28,
+      TypeBringToFront = 29,
+      TypeSendToBack = 30,
       TypeNone = 0
     } LayoutMode;
 

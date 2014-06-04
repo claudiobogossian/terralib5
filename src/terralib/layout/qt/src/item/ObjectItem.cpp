@@ -94,7 +94,7 @@ void te::layout::ObjectItem::setPixmap( const QPixmap& pixmap )
   QPointF point = pos();
 
   Observable* model = (Observable*)m_controller->getModel();
-  te::gm::Envelope box = model->getBox();
+  te::gm::Envelope box = model->getBoxWithZoomFactor();
 
   //If you modify the boundingRect value, you need to inform Graphics View about it by calling QGraphicsItem::prepareGeometryChange();
   QGraphicsObject::prepareGeometryChange();
@@ -361,11 +361,11 @@ te::gm::Envelope te::layout::ObjectItem::createNewBoxInCoordScene( const double&
         QRectF bond = boundingRect();
 
         QPointF pbxy2 = mapToScene(boundingRect().topRight());
-
+        QPointF pbxy1 = mapToScene(boundingRect().bottomLeft());
+        
         dx = posAtual.x() - pbxy2.x();
         dy = posAtual.y() - pbxy2.y();
 
-        QPointF pbxy1 = mapToScene(boundingRect().bottomLeft());
         if(posAtual.x() > posItem.x() && posAtual.y() < pbxy1.y())
         {
           boxScene = te::gm::Envelope(boxScene.getLowerLeftX(), 
@@ -376,6 +376,8 @@ te::gm::Envelope te::layout::ObjectItem::createNewBoxInCoordScene( const double&
           xTranslation = p_ff.x();
           yTranslation = p_ff.y();
 
+          setRect(QRectF(0, 0, boxScene.getWidth(), boxScene.getHeight()));
+          
           //In Parent Coordinates
           setPos( QPointF(xTranslation, yTranslation) );
         }

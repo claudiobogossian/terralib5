@@ -67,6 +67,9 @@ namespace te
         virtual void setPrintable(bool print);
         virtual bool isPrintable();
 
+        virtual void setCanChangeGraphicOrder(bool canChange);
+        virtual bool isCanChangeGraphicOrder();
+
         virtual ItemController*	getController();
         virtual Observable*	getModel();
         
@@ -82,6 +85,7 @@ namespace te
         te::layout::Observable*		m_model;
         double					m_ppi;
         bool            m_printable;
+        bool            m_canChangeGraphicOrder; //!< Define if item can send to back ou bring to front
     };
   }
 }

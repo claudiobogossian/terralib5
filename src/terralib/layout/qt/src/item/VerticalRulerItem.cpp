@@ -41,6 +41,7 @@ te::layout::VerticalRulerItem::VerticalRulerItem( ItemController* controller, Ob
   ObjectItem(controller, o)
 {
   m_printable = false;
+  m_canChangeGraphicOrder = false;
 }
 
 te::layout::VerticalRulerItem::~VerticalRulerItem()

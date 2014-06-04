@@ -40,6 +40,7 @@ te::layout::HorizontalRulerItem::HorizontalRulerItem( ItemController* controller
   ObjectItem(controller, o)
 {
   m_printable = false;
+  m_canChangeGraphicOrder = false;
 }
 
 te::layout::HorizontalRulerItem::~HorizontalRulerItem()

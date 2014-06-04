@@ -32,7 +32,8 @@ te::layout::PaperConfig::PaperConfig() :
   m_paperOrientationType(Portrait),
   m_paperType(A4),
   m_customW(0),
-  m_customH(0)
+  m_customH(0),
+  m_paperBoxW(0)
 {
   
 }
@@ -133,4 +134,14 @@ void te::layout::PaperConfig::setPaperSizeCustom( double w, double h )
 {
   m_customW = w;
   m_customH = h;
+}
+
+te::gm::Envelope* te::layout::PaperConfig::getPaperBoxW()
+{
+  return m_paperBoxW;
+}
+
+void te::layout::PaperConfig::setPaperBoxW( te::gm::Envelope* box )
+{
+  m_paperBoxW = box;
 }

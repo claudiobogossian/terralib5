@@ -42,7 +42,7 @@
 te::layout::PaperItem::PaperItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
 {  
-
+  m_canChangeGraphicOrder = false;
 }
 
 te::layout::PaperItem::~PaperItem()

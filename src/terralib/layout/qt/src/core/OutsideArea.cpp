@@ -322,6 +322,13 @@ void te::layout::OutsideArea::openMainMenu()
     m_parentMenu->addSeparator();
     m_parentMenu->addMenu(m_mainMenu);
   }
+
+  if(!acts.empty())
+  {
+    //m_parentMenu: The first QAction of the QMenu is to open the layout
+    QAction* firstOption = acts.first();
+    firstOption->setVisible(false);
+  }
 }
 
 void te::layout::OutsideArea::closeMainMenu()
@@ -343,5 +350,12 @@ void te::layout::OutsideArea::closeMainMenu()
         m_parentMenu->removeAction(action);
       }
     }
+  }
+
+  if(!acts.empty())
+  {
+    //m_parentMenu: The first QAction of the QMenu is to open the layout
+    QAction* firstOption = acts.first();
+    firstOption->setVisible(true);
   }
 }

@@ -431,15 +431,8 @@ int te::layout::MapItem::getZValueItem()
 
 void te::layout::MapItem::setCurrentTool( te::qt::widgets::AbstractTool* tool )
 {
-  if(m_tool)
-  {
-    m_mapDisplay->removeEventFilter(m_tool);
-    delete m_tool;
-    m_tool = 0;
-  }
-  
   m_tool = tool;
-
+  
   m_mapDisplay->installEventFilter(m_tool);
 }
 
@@ -452,12 +445,12 @@ void te::layout::MapItem::clearCurrentTool()
     delete m_tool;
     m_tool = 0;
   }
-  
-  setCursor(Qt::ArrowCursor);
 }
 
 void te::layout::MapItem::changeCurrentTool( LayoutMode mode )
 {
+  clearCurrentTool();
+
   if(mode == TypeMapPan)
   {
     te::qt::widgets::Pan* pan = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);

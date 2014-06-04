@@ -30,6 +30,7 @@
 #include "Observer.h"
 #include "Property.h"
 #include "Properties.h"
+#include "Context.h"
 
 te::layout::OutsideModelObservable::OutsideModelObservable() :
 	m_color(0),
@@ -165,4 +166,12 @@ int te::layout::OutsideModelObservable::getId()
 void te::layout::OutsideModelObservable::setId( int id )
 {
   m_id = id;
+}
+
+te::gm::Envelope te::layout::OutsideModelObservable::getBoxWithZoomFactor()
+{
+  Utils* utils = Context::getInstance()->getUtils();
+
+  te::gm::Envelope box = utils->applyZoomFactor(m_box);
+  return box;
 }

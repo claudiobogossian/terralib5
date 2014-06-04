@@ -38,6 +38,7 @@ te::layout::ItemObserver::ItemObserver(ItemController* controller, Observable* o
   m_controller(controller),
   m_model(o),
   m_printable(true),
+  m_canChangeGraphicOrder(true),
   m_ppi(96)
 {
   m_model->addObserver(this);
@@ -109,4 +110,14 @@ std::string te::layout::ItemObserver::getName()
 void te::layout::ItemObserver::setZValueItem( int z )
 {
   m_model->setZValue(z);
+}
+
+void te::layout::ItemObserver::setCanChangeGraphicOrder( bool canChange )
+{
+  m_canChangeGraphicOrder = canChange;
+}
+
+bool te::layout::ItemObserver::isCanChangeGraphicOrder()
+{
+  return m_canChangeGraphicOrder;
 }

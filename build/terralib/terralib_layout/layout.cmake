@@ -72,12 +72,14 @@ set (
   qt/include/main
   qt/include/moc
   qt/include/outside
+  qt/include/tools
   qt/include/utils
   qt/include/core/pattern/factory
   qt/src/core
   qt/src/item
   qt/src/main
   qt/src/outside
+  qt/src/tools
   qt/src/utils
   qt/src/core/pattern/factory
   src
@@ -160,6 +162,9 @@ appPrefix ("qt/include/moc" "${_DIRS}" QT_INC_INST_DIRS)
   
 # Files in build tree
 appPrefix ("qt/include/outside" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
+appPrefix ("qt/include/tools" "${_DIRS}" QT_INC_INST_DIRS)
   
 # Files in build tree
 appPrefix ("qt/include/utils" "${_DIRS}" QT_INC_INST_DIRS)
@@ -178,6 +183,9 @@ appPrefix ("qt/src/main" "${_DIRS}" QT_INC_INST_DIRS)
   
 # Files in build tree
 appPrefix ("qt/src/outside" "${_DIRS}" QT_INC_INST_DIRS)
+
+# Files in build tree
+appPrefix ("qt/src/tools" "${_DIRS}" QT_INC_INST_DIRS)
   
 # Files in build tree
 appPrefix ("qt/src/utils" "${_DIRS}" QT_INC_INST_DIRS)

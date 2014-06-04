@@ -40,7 +40,6 @@
 #include "RectangleModel.h"
 #include "RectangleController.h"
 #include "RectangleItem.h"
-#include "PaperConfig.h"
 #include "VisualizationArea.h"
 #include "BuildGraphicsItem.h"
 #include "MapItem.h"
@@ -67,7 +66,7 @@ te::layout::Scene::Scene( QWidget* widget):
   m_lineIntersectHrz(0),
   m_lineIntersectVrt(0)
 {
-
+  setBackgroundBrush(QBrush(QColor(109,109,109)));
 }
 
 te::layout::Scene::~Scene()
@@ -85,13 +84,13 @@ te::layout::Scene::~Scene()
   }
 }
 
-void te::layout::Scene::init( double widthMM, double heightMM )
+void te::layout::Scene::init( double widthMM, double heightMM, double paperMMW, double paperMMH )
 {
   m_screenWidthMM = widthMM;
   m_screenHeightMM = heightMM;
   
-  m_boxW = calculateWindow();
-  m_boxPaperW = calculateBoxPaper();
+  m_boxW = calculateWindow(widthMM, heightMM, paperMMW, paperMMH);
+  m_boxPaperW = calculateBoxPaper(widthMM, heightMM, paperMMW, paperMMH);
 
   calculateMatrixViewScene();
 
@@ -157,10 +156,12 @@ te::gm::Envelope te::layout::Scene::getSceneBox()
   return box;
 }
 
-void te::layout::Scene::redrawItems()
+void te::layout::Scene::redrawItems(bool viewArea)
 {
-  double factor = Context::getInstance()->getZoomFactor();
+  viewArea = true;
 
+  double scaleFactor = Context::getInstance()->getZoomFactor();
+  
   QList<QGraphicsItem*> graphicsItems = items();
   foreach( QGraphicsItem *item, graphicsItems) 
   {
@@ -169,7 +170,17 @@ void te::layout::Scene::redrawItems()
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
       {
-        lItem->redraw(factor);
+        if(!viewArea)
+        {
+          if(lItem->isCanChangeGraphicOrder())
+          {
+            lItem->redraw(scaleFactor);
+          }
+        }
+        else
+        {
+          lItem->redraw(scaleFactor);
+        }        
       }
     }
   }
@@ -213,21 +224,17 @@ void te::layout::Scene::destroyItemGroup( QGraphicsItemGroup *group )
   QGraphicsScene::destroyItemGroup(group);
 }
 
-te::gm::Envelope* te::layout::Scene::calculateBoxPaper()
+te::gm::Envelope* te::layout::Scene::calculateBoxPaper(double wMM, double hMM, double paperMMW, double paperMMH)
 {
-  PaperConfig* config =  Context::getInstance()->getPaperConfig();
-
-  double ppSizeWMM = 0;
-  double ppSizeHMM = 0;
-
-  config->getPaperSize(ppSizeWMM, ppSizeHMM);
-
+  double ppSizeWMM = paperMMW;
+  double ppSizeHMM = paperMMH;
+  
   double x1 = 0.;
   double y1 = 0.;
   double x2 = 0.;
   double y2 = 0.;
 
-  te::gm::Envelope* boxW = calculateWindow();
+  te::gm::Envelope* boxW = calculateWindow(wMM, hMM, paperMMW, paperMMH);
 
   int widthW = boxW->getWidth();
   int heightW = boxW->getHeight();
@@ -264,22 +271,18 @@ te::gm::Envelope* te::layout::Scene::calculateBoxPaper()
   return box;
 }
 
-te::gm::Envelope* te::layout::Scene::calculateWindow()
+te::gm::Envelope* te::layout::Scene::calculateWindow(double wMM, double hMM, double paperMMW, double paperMMH)
 {
-  PaperConfig* config =  Context::getInstance()->getPaperConfig();
-
-  double ppSizeWMM = 0;
-  double ppSizeHMM = 0;
-
-  config->getPaperSize(ppSizeWMM, ppSizeHMM);
-
+  double ppSizeWMM = paperMMW;
+  double ppSizeHMM = paperMMH;
+  
   double x1 = 0;
   double y1 = 0;
   double x2 = 0;
   double y2 = 0;
 
-  int w = m_screenWidthMM;
-  int h = m_screenHeightMM;
+  int w = wMM;
+  int h = hMM;
 
   double paddingW = w - ppSizeWMM;
   double margin1 = paddingW / 2.;
@@ -353,8 +356,9 @@ void te::layout::Scene::createMasterParentItem()
 
   //Background
   QRectF sceneRectBack = sceneRect();	
-  m_masterParent = addRect(sceneRectBack);
-  ((QGraphicsRectItem*)m_masterParent)->setBrush((QBrush(QColor(109,109,109))));	
+  m_masterParent = addRect(sceneRectBack);  
+ ((QGraphicsRectItem*)m_masterParent)->setBrush((QBrush(QColor(109,109,109))));	
+ ((QGraphicsRectItem*)m_masterParent)->setPen(QPen(Qt::NoPen));	//not draw any boundary line
   m_masterParent->setPos(0, 0);
 }
 
@@ -434,12 +438,10 @@ QPrinter* te::layout::Scene::createPrinter()
 void te::layout::Scene::renderScene( QPainter* newPainter )
 {      
   changePrintVisibility(false);
-
-  te::gm::Envelope* paperBox =  getPaperBox();
-      
+        
   //Box Paper in the Scene (Source)
-  QRectF mmSourceRect(paperBox->getLowerLeftX(), paperBox->getLowerLeftY(), 
-    paperBox->getWidth(), paperBox->getHeight());
+  QRectF mmSourceRect(m_boxPaperW->getLowerLeftX(), m_boxPaperW->getLowerLeftY(), 
+    m_boxPaperW->getWidth(), m_boxPaperW->getHeight());
 
   //Paper size using the printer dpi (Target)
   QRect pxTargetRect(0, 0, newPainter->device()->width(), newPainter->device()->height());
@@ -449,7 +451,7 @@ void te::layout::Scene::renderScene( QPainter* newPainter )
 
   Utils* utils = Context::getInstance()->getUtils();
   //Convert world to screen coordinate. Uses dpi printer.
-  te::gm::Envelope paperNewBox = utils->viewportBox(*paperBox);
+  te::gm::Envelope paperNewBox = utils->viewportBox(*m_boxPaperW);
   
   this->render(newPainter, pxTargetRect, mmSourceRect); 
 
@@ -571,6 +573,17 @@ std::vector<te::layout::Properties*> te::layout::Scene::getItemsProperties()
 }
 
 void te::layout::Scene::refresh()
+{
+  double llx = m_boxW->getLowerLeftX();
+  double lly = m_boxW->getLowerLeftY();
+  double urx = m_boxW->getUpperRightX();
+  double ury = m_boxW->getUpperRightY();
+
+  //Coordenadas de mundo - mm
+  setSceneRect(QRectF(QPointF(llx, lly), QPointF(urx, ury)));
+}
+
+void te::layout::Scene::reset()
 {
   clear();
   createMasterParentItem();
@@ -709,4 +722,83 @@ void te::layout::Scene::setLineIntersectionHzr( QLineF* line )
 void te::layout::Scene::setLineIntersectionVrt( QLineF* line )
 {
   m_lineIntersectVrt = line;
+}
+
+void te::layout::Scene::bringToFront()
+{
+  if (selectedItems().isEmpty())
+    return;
+
+  QGraphicsItem *selectedItem = selectedItems().first();
+  QList<QGraphicsItem *> overlapItems = selectedItem->collidingItems();
+
+  qreal maxZValue = selectedItem->zValue();
+  QGraphicsItem* itemMaxZValue = selectedItem;
+
+  qreal zValue = selectedItem->zValue();
+  foreach (QGraphicsItem *item, overlapItems) 
+  {
+    if(item)
+    {
+      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+      if(it)
+      {        
+        if((item->zValue() >= zValue) && (it->isCanChangeGraphicOrder()))
+        {
+          maxZValue = item->zValue();
+          itemMaxZValue = item;     
+        }
+      }
+    }
+  }
+  selectedItem->setZValue(maxZValue);
+  if(itemMaxZValue)
+  {
+    itemMaxZValue->setZValue(zValue);
+  }
+}
+
+void te::layout::Scene::sendToBack()
+{
+  if (selectedItems().isEmpty())
+    return;
+
+  QGraphicsItem *selectedItem = selectedItems().first();
+  QList<QGraphicsItem *> overlapItems = selectedItem->collidingItems();
+
+  qreal minimumZValue = selectedItem->zValue();
+  QGraphicsItem* itemMinimumZValue = selectedItem;
+
+  qreal zValue = selectedItem->zValue();
+  foreach (QGraphicsItem *item, overlapItems) 
+  {
+    if(item)
+    {
+      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+      if(it)
+      {
+        if (item->zValue() <= zValue && (it->isCanChangeGraphicOrder()))
+        {
+          minimumZValue = item->zValue();
+          itemMinimumZValue = item;
+        }
+      }
+    }
+  }
+  selectedItem->setZValue(minimumZValue);
+  if(itemMinimumZValue)
+  {
+    itemMinimumZValue->setZValue(zValue);
+  }
+}
+
+void te::layout::Scene::restart( double widthMM, double heightMM, double paperMMW, double paperMMH )
+{
+  m_screenWidthMM = widthMM;
+  m_screenHeightMM = heightMM;
+
+  m_boxW = calculateWindow(widthMM, heightMM, paperMMW, paperMMH);
+  m_boxPaperW = calculateBoxPaper(widthMM, heightMM, paperMMW, paperMMH);
+
+  calculateMatrixViewScene();
 }

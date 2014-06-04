@@ -69,6 +69,9 @@ void te::layout::VisualizationArea::rebuildWithoutPaper()
 
 void te::layout::VisualizationArea::createVerticalRuler()
 {
+  if(!m_boxArea)
+    return;
+
   double dpiX = te::layout::Context::getInstance()->getDpiX();
 
   double llx = m_boxArea->getLowerLeftX();
@@ -77,7 +80,7 @@ void te::layout::VisualizationArea::createVerticalRuler()
   double ury = m_boxArea->getUpperRightY();
 
   //Régua Vertical
-  VerticalRulerModel* modelRulerV = new VerticalRulerModel();		
+  VerticalRulerModel* modelRulerV = new VerticalRulerModel(te::layout::Context::getInstance()->getPaperConfig());		
   modelRulerV->setBox(te::gm::Envelope(llx, lly, llx + 10, ury));
   VerticalRulerController* controllerRulerV = new VerticalRulerController(modelRulerV);
   ItemObserver* itemRulerV = (ItemObserver*)controllerRulerV->getView();
@@ -90,6 +93,9 @@ void te::layout::VisualizationArea::createVerticalRuler()
 
 void te::layout::VisualizationArea::createHorizontalRuler()
 {
+  if(!m_boxArea)
+    return;
+
   double dpiX = te::layout::Context::getInstance()->getDpiX();
 
   double llx = m_boxArea->getLowerLeftX();
@@ -98,7 +104,7 @@ void te::layout::VisualizationArea::createHorizontalRuler()
   double ury = m_boxArea->getUpperRightY();
 
   //Régua Horizontal
-  HorizontalRulerModel* modelRuler = new HorizontalRulerModel();		
+  HorizontalRulerModel* modelRuler = new HorizontalRulerModel(te::layout::Context::getInstance()->getPaperConfig());		
   modelRuler->setBox(te::gm::Envelope(llx, lly, urx, lly + 10));
   HorizontalRulerController* controllerRuler = new HorizontalRulerController(modelRuler);
   ItemObserver* itemRuler = (ItemObserver*)controllerRuler->getView();
@@ -111,6 +117,9 @@ void te::layout::VisualizationArea::createHorizontalRuler()
 
 void te::layout::VisualizationArea::createPaper()
 {
+  if(!m_boxArea)
+    return;
+
   double dpiX = te::layout::Context::getInstance()->getDpiX();
 
   double llx = m_boxArea->getLowerLeftX();

@@ -45,12 +45,12 @@ namespace te
     {
       public:
 
-        VerticalRulerModel();
+        VerticalRulerModel(PaperConfig* paperConfig);
         virtual ~VerticalRulerModel();
 
-        virtual void draw( ContextItem context );
-        
         virtual void setBox(te::gm::Envelope box);
+
+        virtual void draw( ContextItem context );
 
       protected:
 

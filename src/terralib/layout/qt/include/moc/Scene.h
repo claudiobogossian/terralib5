@@ -68,7 +68,8 @@ namespace te
         
         virtual te::gm::Envelope getSceneBox();
 
-        virtual void redrawItems();
+        /* Redraw all items except, if viewArea false, the items than create the Visualization Area */
+        virtual void redrawItems(bool viewArea = false);
 
         QGraphicsItemGroup*	createItemGroup ( const QList<QGraphicsItem *> & items );
 
@@ -78,14 +79,16 @@ namespace te
           params widthMM width of physical screen in millimeters
           params heightMM height of physical screen in millimeters
         */
-        virtual void init(double widthMM, double heightMM);
+        virtual void init(double widthMM, double heightMM, double paperMMW, double paperMMH);
 
+        virtual void restart(double widthMM, double heightMM, double paperMMW, double paperMMH);
+        
         /* World coordinates (mm) */
         virtual te::gm::Envelope* getWorldBox() const;
 
         /* World coordinates (mm) */
         virtual te::gm::Envelope* getPaperBox() const;
-        
+                
         virtual QTransform getMatrixViewScene();
 
         virtual QGraphicsItem* getMasterParentItem();
@@ -102,6 +105,8 @@ namespace te
 
         virtual void refresh();
 
+        virtual void reset();
+
         virtual void buildTemplate(VisualizationArea* vzArea);
 
         virtual void createItem(const te::gm::Coord2D& coord );
@@ -114,6 +119,10 @@ namespace te
 
         void setLineIntersectionVrt(QLineF* line);
 
+        virtual void bringToFront();
+
+        virtual void sendToBack();
+        
       protected slots:
 
         virtual void printPaper(QPrinter* printer);
@@ -126,8 +135,8 @@ namespace te
 
         virtual void mousePressEvent ( QGraphicsSceneMouseEvent* mouseEvent );
 
-        virtual te::gm::Envelope* calculateBoxPaper();
-        virtual te::gm::Envelope* calculateWindow();
+        virtual te::gm::Envelope* calculateBoxPaper(double wMM, double hMM, double paperMMW, double paperMMH);
+        virtual te::gm::Envelope* calculateWindow(double wMM, double hMM, double paperMMW, double paperMMH);
         virtual void calculateMatrixViewScene();
         virtual void createMasterParentItem();
 
@@ -139,7 +148,7 @@ namespace te
         virtual std::vector<te::layout::Properties*> getItemsProperties();
 
         virtual void drawForeground(QPainter *painter, const QRectF &rect);
-        
+
       protected:
 
         te::gm::Envelope* m_boxPaperW;

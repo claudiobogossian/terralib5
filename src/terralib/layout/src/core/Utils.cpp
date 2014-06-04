@@ -35,6 +35,8 @@
 #include "../../../geometry/LinearRing.h"
 #include "../../../geometry/Point.h"
 #include "../../../qt/widgets/canvas/Canvas.h"
+#include "PaperConfig.h"
+#include "AbstractType.h"
 
 te::layout::Utils::Utils() 
 {
@@ -124,6 +126,7 @@ int te::layout::Utils::mm2pixel( double mm )
 void te::layout::Utils::configCanvas( te::gm::Envelope box, bool resize )
 {
   te::gm::Envelope boxViewport = viewportBox(box);
+  box = applyZoomFactor(box);
   changeCanvas(boxViewport, box, resize); 
 }
 
@@ -179,6 +182,8 @@ te::gm::Envelope te::layout::Utils::viewportBoxFromMM( te::gm::Envelope box )
   int pxwidth = mm2pixel(box.getWidth());
   int pxheight = mm2pixel(box.getHeight());
 
+  box = applyZoomFactor(box);
+  
   // Adjust internal renderer transformer
   transf.setTransformationParameters(box.getLowerLeftX(), box.getLowerLeftY(), 
     box.getUpperRightX(), box.getUpperRightY(), pxwidth, pxheight);
@@ -198,7 +203,7 @@ te::gm::Envelope te::layout::Utils::viewportBoxFromGeo( te::gm::Envelope boxgeo,
     return boxViewport;
 
   te::map::WorldDeviceTransformer transf; // World Device Transformer.
-
+  
   int pxwidth = mm2pixel(boxmm.getWidth());
   int pxheight = mm2pixel(boxmm.getHeight());
 
@@ -260,7 +265,7 @@ te::gm::LinearRing* te::layout::Utils::addCoordsInY( te::gm::Envelope box, doubl
 {
   te::gm::LinearRing* line = new te::gm::LinearRing(te::gm::LineStringType);
   std::map<int, te::gm::Point> coords;
-
+  
   int count = 1;
   for(double sub_y = box.getLowerLeftY(); sub_y < box.getUpperRightY(); sub_y +=(gap / 4.))
   {
@@ -284,7 +289,7 @@ te::gm::LinearRing* te::layout::Utils::addCoordsInY( te::gm::Envelope box, doubl
 void te::layout::Utils::textBoundingBox( double &w, double &h, std::string txt )
 {
   te::map::Canvas* canvas = Context::getInstance()->getCanvas();
-
+  
   if(!canvas)
   {
     return;
@@ -306,4 +311,70 @@ void te::layout::Utils::textBoundingBox( double &w, double &h, std::string txt )
       h = box->getHeight();
     }
   }
+}
+
+te::gm::Envelope te::layout::Utils::applyZoomFactor( te::gm::Envelope box )
+{
+  double zoomFactor = Context::getInstance()->getZoomFactor();
+  double oldZoomFactor = Context::getInstance()->getOldZoomFactor();
+  
+  if(zoomFactor > 0)
+  {
+    zoomFactor = 1. / zoomFactor;
+  }
+
+  te::gm::Coord2D center = box.getCenter();
+
+  double halfWidth = (box.getWidth() * zoomFactor) / 2.;
+  double halfHeight = (box.getHeight() * zoomFactor) / 2.;
+
+  te::gm::Envelope zoomBox(center.x - halfWidth, center.y - halfHeight,
+    center.x + halfWidth, center.y + halfHeight);
+
+  return zoomBox;
+}
+
+double te::layout::Utils::calculateRulerZoomFactor()
+{
+  int						factor = 1;
+  double				factorView = 0.5;
+  int						pageValue=210;
+  double        ury = 0.;
+  double        lly = 0.;
+  
+  te::map::Canvas* canvas = Context::getInstance()->getCanvas();
+  PaperConfig* pConfig = Context::getInstance()->getPaperConfig();
+
+  double paperW = 0.;
+  double paperH = 0.;
+
+  pConfig->getPaperSize(paperW, paperH);
+
+  if(pConfig->getPaperOrientantion() != Portrait)
+  {
+    pageValue=297;	
+  }
+
+  if( paperW > paperH)
+  {
+    factor= (int) (factor * paperW / pageValue);
+  }
+  else
+  {
+    factor= (int) (factor * paperH / pageValue);
+  }
+  if(factor < 1) 
+    factor = 1;
+
+  ury = canvas->getHeight();
+
+  // Viewport - device coordinate system
+  factorView = 1. / (733./(factorView * fabs(ury-lly)));
+  factorView = 1. / factorView;
+  
+  if(factorView < 1) 
+    factorView = 1;
+
+  double result = factor * factorView;
+  return result;
 }

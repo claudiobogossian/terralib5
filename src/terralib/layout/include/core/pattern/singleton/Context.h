@@ -55,6 +55,7 @@ namespace te
           m_scene(0),
           m_canvas(0),
           m_zoomFactor(1.),
+          m_oldZoomFactor(1.),
           m_itemFactory(0),
           m_outsideFactory(0),
           m_utils(0),
@@ -86,6 +87,9 @@ namespace te
 
         double getZoomFactor();
         void  setZoomFactor(double zoomFactor);
+
+        double getOldZoomFactor();
+        void  setOldZoomFactor(double zoomFactor);
       
         AbstractItemFactory* getItemFactory();
         void setItemFactory(AbstractItemFactory* factory);
@@ -131,6 +135,7 @@ namespace te
         LayoutUnitsMetrics        m_unitMetric;
         AbstractScene*					  m_scene;
         double							      m_zoomFactor;
+        double                    m_oldZoomFactor;
         te::map::Canvas*	        m_canvas;
         AbstractItemFactory*		  m_itemFactory;
         AbstractOutsideFactory*	  m_outsideFactory;

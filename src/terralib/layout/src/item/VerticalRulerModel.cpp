@@ -40,7 +40,8 @@
 #include <sstream>
 #include <string>     // std::string, std::to_string
 
-te::layout::VerticalRulerModel::VerticalRulerModel() 
+te::layout::VerticalRulerModel::VerticalRulerModel(PaperConfig* paperConfig):
+  AbstractRulerModel(paperConfig)
 {
 
 }
@@ -86,11 +87,19 @@ void te::layout::VerticalRulerModel::drawRuler( te::map::Canvas* canvas, Utils* 
   te::color::RGBAColor colorp85(145,145,145, TE_OPAQUE);
   drawRectW(m_backEndBox, colorp85, canvas, utils);
 
-  envPaper = te::gm::Envelope(m_backEndBox.getLowerLeftX(), m_paperBox.getLowerLeftY(),
-    m_backEndBox.getUpperRightX(), m_backEndBox.getUpperRightY());
+  if(m_paperConfig)
+  {
+    te::gm::Envelope* paperBox = m_paperConfig->getPaperBoxW();
 
-  te::color::RGBAColor colorp2(255,255,255, TE_OPAQUE);
-  drawRectW(envPaper, colorp2, canvas, utils);
+    if(paperBox)
+    {
+      envPaper = te::gm::Envelope(m_backEndBox.getLowerLeftX(), paperBox->getLowerLeftY(),
+        m_backEndBox.getUpperRightX(), m_backEndBox.getUpperRightY());
+
+      te::color::RGBAColor colorp2(255,255,255, TE_OPAQUE);
+      drawRectW(envPaper, colorp2, canvas, utils);
+    }
+  }
 
   te::color::RGBAColor colorp3(0,0,0, TE_OPAQUE);
   canvas->setLineColor(colorp3);

@@ -30,7 +30,7 @@
 
 // TerraLib
 #include "AbstractType.h"
-
+#include "../../../geometry/Envelope.h"
 namespace te
 {
   namespace layout
@@ -50,12 +50,16 @@ namespace te
         virtual void setPaperOrientation(LayoutOrientationType orientation);
         virtual LayoutOrientationType getPaperOrientantion();
 
+        virtual te::gm::Envelope* getPaperBoxW();
+        virtual void setPaperBoxW(te::gm::Envelope* box);
+
       protected:
 
         LayoutAbstractPaperType m_paperType;
         LayoutOrientationType   m_paperOrientationType;
         double                  m_customW;
         double                  m_customH;
+        te::gm::Envelope*       m_paperBoxW;
     };
   }
 }

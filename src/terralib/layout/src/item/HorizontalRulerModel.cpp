@@ -41,7 +41,8 @@
 #include <sstream>
 #include <string>    
 
-te::layout::HorizontalRulerModel::HorizontalRulerModel() 
+te::layout::HorizontalRulerModel::HorizontalRulerModel(PaperConfig* paperConfig) :
+  AbstractRulerModel(paperConfig)
 {
 
 }
@@ -87,11 +88,16 @@ void te::layout::HorizontalRulerModel::drawRuler( te::map::Canvas* canvas, Utils
   te::color::RGBAColor colorp85(145,145,145, TE_OPAQUE);
   drawRectW(m_backEndBox, colorp85, canvas, utils);
                 
-  envPaper = te::gm::Envelope(m_paperBox.getLowerLeftX(), m_backEndBox.getLowerLeftY(),
-    m_paperBox.getUpperRightX(), m_backEndBox.getUpperRightY());
+  if(m_paperConfig)
+  {
+    te::gm::Envelope* paperBox = m_paperConfig->getPaperBoxW();
 
-  te::color::RGBAColor colorp5(255,255,255, TE_OPAQUE);
-  drawRectW(envPaper, colorp5, canvas, utils);
+    envPaper = te::gm::Envelope(paperBox->getLowerLeftX(), m_backEndBox.getLowerLeftY(),
+      paperBox->getUpperRightX(), m_backEndBox.getUpperRightY());
+
+    te::color::RGBAColor colorp5(255,255,255, TE_OPAQUE);
+    drawRectW(envPaper, colorp5, canvas, utils);
+  }
 
   te::color::RGBAColor colorp6(0,0,0, TE_OPAQUE);
   canvas->setLineColor(colorp6);
@@ -113,7 +119,7 @@ void te::layout::HorizontalRulerModel::drawHorizontalRuler(te::map::Canvas* canv
   double urx = m_backEndBox.getUpperRightX();
 
   te::gm::Envelope box;
-
+  
   for(int i = (int)llx ; i < (int) urx ; ++i)
   {
     if((i % (int)m_blockSize) == 0)

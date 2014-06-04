@@ -44,7 +44,7 @@ namespace te
     {
       public:
 
-        HorizontalRulerModel();
+        HorizontalRulerModel(PaperConfig* paperConfig);
         virtual ~HorizontalRulerModel();
         
         virtual void draw( ContextItem context );

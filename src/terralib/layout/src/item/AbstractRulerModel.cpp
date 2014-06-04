@@ -26,9 +26,11 @@
 */
 
 #include "AbstractRulerModel.h"
+#include "PaperConfig.h"
+#include "Context.h"
 
 
-te::layout::AbstractRulerModel::AbstractRulerModel() :
+te::layout::AbstractRulerModel::AbstractRulerModel(PaperConfig* paperConfig) :
   m_visible(true),
   m_spacing(1.),
   m_blockSize(10),
@@ -40,10 +42,10 @@ te::layout::AbstractRulerModel::AbstractRulerModel() :
   m_borderLineSize(0.3),
   m_lineMargin(2.),
   m_backEndSpacing(10),
-  m_backEndMargin(2.)
+  m_backEndMargin(2.),
+  m_paperConfig(paperConfig)
 {
   m_box = te::gm::Envelope(0., 0., 150., 150.);
-  m_paperBox = te::gm::Envelope(0., 0., 210., 297.); // A4 default
   m_backEndBox = te::gm::Envelope(0., 0., 150., 150.);
 }
 
@@ -67,16 +69,6 @@ void te::layout::AbstractRulerModel::drawRectW( te::gm::Envelope box, te::color:
   utils->drawRectW(box);
 }
 
-void te::layout::AbstractRulerModel::setPaperBox( te::gm::Envelope box )
-{
-  m_paperBox = box;
-}
-
-te::gm::Envelope te::layout::AbstractRulerModel::getPaperBox()
-{
-  return m_paperBox;
-}
-
 void te::layout::AbstractRulerModel::setVisible( bool visible )
 {
   m_visible = visible;
@@ -85,4 +77,14 @@ void te::layout::AbstractRulerModel::setVisible( bool visible )
 bool te::layout::AbstractRulerModel::isVisible()
 {
   return m_visible;
+}
+
+void te::layout::AbstractRulerModel::setPaperConfig( PaperConfig* pConfig )
+{
+  m_paperConfig = pConfig;
+}
+
+te::layout::PaperConfig* te::layout::AbstractRulerModel::getPaperConfig() const
+{
+  return m_paperConfig;
 }

@@ -197,3 +197,13 @@ void te::layout::Context::setLineIntersectionMouseMode( LayoutMode mode )
 {
   m_lineIntersectionMouseMode = mode;
 }
+
+double te::layout::Context::getOldZoomFactor()
+{
+  return m_oldZoomFactor;
+}
+
+void te::layout::Context::setOldZoomFactor( double zoomFactor )
+{
+  m_oldZoomFactor = zoomFactor;
+}

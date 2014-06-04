@@ -33,6 +33,7 @@
 #include "../../../../../geometry/Coord2D.h"
 #include "Properties.h"
 #include "SharedProperties.h"
+#include "Context.h"
 
 te::layout::ItemModelObservable::ItemModelObservable() :
   m_id(0),
@@ -329,4 +330,12 @@ void te::layout::ItemModelObservable::resize( double w, double h )
 
   m_box.m_urx = m_box.m_llx + w;
   m_box.m_ury = m_box.m_lly + h;
+}
+
+te::gm::Envelope te::layout::ItemModelObservable::getBoxWithZoomFactor()
+{
+  Utils* utils = Context::getInstance()->getUtils();
+
+  te::gm::Envelope box = utils->applyZoomFactor(m_box);
+  return box;
 }

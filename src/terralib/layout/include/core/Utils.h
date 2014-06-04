@@ -45,8 +45,11 @@ namespace te
 
         Utils();
         virtual ~Utils();
+
         virtual void drawRectW(te::gm::Envelope box);
+
         virtual void drawLineW(te::gm::LinearRing* line);
+
         virtual te::color::RGBAColor** getImageW(te::gm::Envelope boxmm);
 
         virtual int mm2pixel(double mm);
@@ -71,8 +74,12 @@ namespace te
 
         virtual void textBoundingBox(double &w, double &h, std::string txt);
         
-      protected:
+        virtual te::gm::Envelope applyZoomFactor(te::gm::Envelope box);
 
+        virtual double calculateRulerZoomFactor();
+
+      protected:
+        
         virtual void changeCanvas(te::gm::Envelope viewport, te::gm::Envelope world, bool resize = true);
 
         virtual te::gm::Envelope transformToViewport(te::map::WorldDeviceTransformer transf, te::gm::Envelope box);

@@ -70,6 +70,7 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionGroup("items_group"),
   m_optionUngroup("items_ungroup"),
   m_optionLineIntersectionMouse("items_intersection_mouse"),
+  m_optionSceneZoom("scene_zoom"),
   m_toolbar(0),
   m_btnMap(0)
 {
@@ -141,12 +142,18 @@ void te::layout::ToolbarOutside::createToolbar()
 
   createItemTools();
   m_toolbar->addSeparator();
+
+  createBringToFrontToolButton();
+  createSendToBackToolButton();
+  m_toolbar->addSeparator();
+
+  /*createSceneZoomCombobox();
+  m_toolbar->addSeparator();*/
 }
 
 void te::layout::ToolbarOutside::createMapToolButton()
 {
   QMenu* menu = new QMenu();
-  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onMapTriggered(QAction*)));
 
   QAction* actionDefaultMenu = createAction("Default Map Object", m_optionMapDefault, "layout-default-map");
   menu->addAction(actionDefaultMenu);
@@ -164,13 +171,13 @@ void te::layout::ToolbarOutside::createMapToolButton()
   btnMap->setMenu(menu);
   btnMap->setPopupMode(QToolButton::InstantPopup);
 
+  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onMapTriggered(QAction*)));
   m_toolbar->addWidget(btnMap);
 }
 
 void te::layout::ToolbarOutside::createMapToolsToolButton()
 {
   QMenu* menu = new QMenu();
-  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onMapToolsTriggered(QAction*)));
 
   QAction* actionPan = createAction("Pan Tool", m_optionMapPan, "layout-map-pan");
   menu->addAction(actionPan);
@@ -185,13 +192,13 @@ void te::layout::ToolbarOutside::createMapToolsToolButton()
   btnMapTools->setMenu(menu);
   btnMapTools->setPopupMode(QToolButton::InstantPopup);
 
+  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onMapToolsTriggered(QAction*)));
   m_toolbar->addWidget(btnMapTools);
 }
 
 void te::layout::ToolbarOutside::createGeometryToolButton()
 {
   QMenu* menu = new QMenu();
-  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onGeometryTriggered(QAction*)));
 
   QAction* actionRectagle = createAction("Rectangle Object", m_optionRectangle, "layout-square");
   menu->addAction(actionRectagle);
@@ -200,13 +207,13 @@ void te::layout::ToolbarOutside::createGeometryToolButton()
   btnGeometry->setMenu(menu);
   btnGeometry->setPopupMode(QToolButton::InstantPopup);
 
+  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onGeometryTriggered(QAction*)));
   m_toolbar->addWidget(btnGeometry);
 }
 
 void te::layout::ToolbarOutside::createViewAreaToolButton()
 {
   QMenu* menu = new QMenu();
-  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onViewAreaTriggered(QAction*)));
 
   QAction* actionPan = createAction("Pan Tool", m_optionViewPan, "layout-paper-pan");
   menu->addAction(actionPan);
@@ -221,6 +228,7 @@ void te::layout::ToolbarOutside::createViewAreaToolButton()
   btnViewArea->setMenu(menu);
   btnViewArea->setPopupMode(QToolButton::InstantPopup);
 
+  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onViewAreaTriggered(QAction*)));
   m_toolbar->addWidget(btnViewArea);
 }
 
@@ -236,7 +244,6 @@ void te::layout::ToolbarOutside::createArrowCursorButton()
 void te::layout::ToolbarOutside::createItemTools()
 {
   QMenu* menu = new QMenu();
-  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onItemToolsTriggered(QAction*)));
 
   QAction* actionGroup = createAction("Group", m_optionGroup, "layout-group");
   menu->addAction(actionGroup);
@@ -248,6 +255,7 @@ void te::layout::ToolbarOutside::createItemTools()
   btnTools->setMenu(menu);
   btnTools->setPopupMode(QToolButton::InstantPopup);
 
+  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onItemToolsTriggered(QAction*)));
   m_toolbar->addWidget(btnTools);
 }
 
@@ -257,6 +265,43 @@ void te::layout::ToolbarOutside::createLineIntersectionToolButton()
   connect(btnLineMouse, SIGNAL(toggled(bool)), this, SLOT(onLineIntersectionMouse(bool)));
 
   m_toolbar->addWidget(btnLineMouse);
+}
+
+void te::layout::ToolbarOutside::createSceneZoomCombobox()
+{
+  m_comboSceneZoom = new QComboBox();
+  m_comboSceneZoom->setObjectName(m_optionSceneZoom.c_str());
+
+  m_comboSceneZoom->addItem("50%", 0.5);
+  m_comboSceneZoom->addItem("70%", 0.7);
+  m_comboSceneZoom->addItem("100%", 1.);
+  m_comboSceneZoom->addItem("150%", 1.5);
+  m_comboSceneZoom->addItem("200%", 2.);
+  m_comboSceneZoom->addItem("300%", 3.);
+  m_comboSceneZoom->addItem("400%", 4.); 
+
+  connect(m_comboSceneZoom, SIGNAL(currentIndexChanged(int)), this, SLOT(onSceneZoomCurrentIndexChanged(int)));
+  m_comboSceneZoom->setCurrentIndex(1);
+  
+  m_toolbar->addWidget(m_comboSceneZoom);
+}
+
+void te::layout::ToolbarOutside::createBringToFrontToolButton()
+{
+  QToolButton *btn = createToolButton("Bring to front", "Bring to front", "layout-in-front");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onBringToFrontClicked(bool)));
+
+  m_toolbar->addWidget(btn);
+}
+
+void te::layout::ToolbarOutside::createSendToBackToolButton()
+{
+  QToolButton *btn = createToolButton("Send to back", "Send to back", "layout-to-back");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onSendToBackClicked(bool)));
+
+  m_toolbar->addWidget(btn);
 }
 
 void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
@@ -357,6 +402,29 @@ void te::layout::ToolbarOutside::onLineIntersectionMouse( bool checked )
   }
 
   emit changeContext(result);
+}
+
+void te::layout::ToolbarOutside::onSceneZoomCurrentIndexChanged( int index )
+{
+  QVariant variant = m_comboSceneZoom->itemData(index);
+  double zoomFactor = Context::getInstance()->getZoomFactor();
+  if(variant.toDouble() != zoomFactor)
+  {
+    double oldZoom = Context::getInstance()->getZoomFactor();
+    Context::getInstance()->setZoomFactor(variant.toDouble());
+    Context::getInstance()->setOldZoomFactor(oldZoom);
+    changeAction(TypeSceneZoom);
+  }
+}
+
+void te::layout::ToolbarOutside::onBringToFrontClicked( bool checked )
+{
+  changeAction(TypeBringToFront);
+}
+
+void te::layout::ToolbarOutside::onSendToBackClicked( bool checked )
+{
+  changeAction(TypeSendToBack);
 }
 
 void te::layout::ToolbarOutside::changeAction( LayoutMode mode )

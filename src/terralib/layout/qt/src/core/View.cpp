@@ -30,7 +30,6 @@
 #include "Context.h"
 #include "EnumMode.h"
 #include "ItemGroup.h"
-#include "Scene.h"
 #include "VisualizationArea.h"
 #include "OutsideArea.h"
 #include "../../../../color/RGBAColor.h"
@@ -38,6 +37,7 @@
 #include "ObjectInspectorOutside.h"
 #include "ToolbarOutside.h"
 #include "ItemUtils.h"
+#include "PaperConfig.h"
 
 // STL
 #include <math.h>
@@ -57,6 +57,7 @@
 #include <QMessageBox>
 #include <QPixmap>
 #include <QLineF>
+#include "ViewPan.h"
 
 #define _psPointInMM 0.352777778 //<! 1 PostScript point in millimeters
 #define _inchInPSPoints 72 //<! 1 Inch in PostScript point
@@ -67,7 +68,8 @@ te::layout::View::View( QWidget* widget) :
   m_outsideArea(0),
   m_visualizationArea(0),
   m_lineIntersectHrz(0),
-  m_lineIntersectVrt(0)
+  m_lineIntersectVrt(0),
+  m_currentTool(0)
 {
   //Use ScrollHand Drag Mode to enable Panning
   //You do need the enable scroll bars for that to work.
@@ -135,30 +137,17 @@ void te::layout::View::mouseMoveEvent( QMouseEvent * event )
 void te::layout::View::wheelEvent( QWheelEvent *event )
 {
   QGraphicsView::wheelEvent(event);
-
-  scaleView(pow((double)2, -event->delta() / 240.0));
 }
 
 void te::layout::View::scaleView( qreal scaleFactor )
 {
-  //Window - Mundo
-  double dpiX = this->logicalDpiX();
-  double dpiY = this->logicalDpiY();
-  double scaleX = (dpiX / 25.4) * scaleFactor;
-  double scaleY = (-dpiY / 25.4) * scaleFactor;
-
-  qreal factor = QTransform().scale(scaleX, scaleY).mapRect(QRectF(0, 0, 1, 1)).width();
-
-  if (factor < 0.5 || factor > 10)
-    return;
-
-  scale(scaleFactor, scaleFactor);
-  			
   Scene* sc = dynamic_cast<Scene*>(scene());
-  if(sc)
-  {
-    sc->redrawItems();
-  }
+  if(!sc)
+    return;
+  
+  recalculateSceneSize(scaleFactor);
+
+  sc->redrawItems();
 }
 
 void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
@@ -204,23 +193,23 @@ void te::layout::View::config()
   if(!lScene)
     return;
 
-  lScene->init(widthMM(), heightMM());
+  PaperConfig* pConfig =  Context::getInstance()->getPaperConfig();
+
+  double w = 0;
+  double h = 0;
+
+  pConfig->getPaperSize(w, h);
+
+  lScene->init(widthMM(), heightMM(), w, h);
+
+  configTransform(lScene);
+
+  //----------------------------------------------------------------------------------------------
 
   te::gm::Envelope* boxW = lScene->getWorldBox();
+  te::gm::Envelope* box = lScene->getPaperBox();
+  pConfig->setPaperBoxW(box);
 
-  double llx = boxW->getLowerLeftX();
-  double ury = boxW->getUpperRightY();
-  		
-  //Transform calcula automaticamente a matriz inversa
-  setTransform(lScene->getMatrixViewScene());
-  			
-  setTransformationAnchor(QGraphicsView::NoAnchor);	
-  centerOn(QPointF(llx, ury));
-  
-  /* Mirror the y coordinate, because the scene is in Cartesian coordinates. */
-  scale(1, -1);    
-  //----------------------------------------------------------------------------------------------
-  
   connect(m_outsideArea->getToolbarOutside(), SIGNAL(changeContext(bool)), this, SLOT(onToolbarChangeContext(bool)));
 
   connect(m_outsideArea, SIGNAL(changeMenuContext(bool)), this, SLOT(onMainMenuChangeContext(bool)));
@@ -231,7 +220,6 @@ void te::layout::View::config()
   lScene->setLineIntersectionHzr(m_lineIntersectHrz);
   lScene->setLineIntersectionVrt(m_lineIntersectVrt);
         
-  scene()->setBackgroundBrush(QBrush(QColor(105,105,030)));
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
@@ -243,10 +231,10 @@ void te::layout::View::resizeEvent(QResizeEvent * event)
 
 int te::layout::View::metric( PaintDeviceMetric metric ) const 
 {
-  if(metric == PdmHeightMM)
+  /*if(metric == PdmHeightMM)
   {
     return 297;
-  }
+  }*/
 	
   return QGraphicsView::metric(metric);
 }
@@ -372,6 +360,12 @@ void te::layout::View::resetDefaultConfig()
   //Whole view not interactive while in ScrollHandDrag Mode
   setInteractive(true);
   setCursor(Qt::ArrowCursor);
+  if(m_currentTool)
+  {
+    viewport()->removeEventFilter(m_currentTool);
+    delete m_currentTool;
+    m_currentTool = 0;
+  }
 }
 
 void te::layout::View::onMainMenuChangeContext( bool change )
@@ -381,9 +375,6 @@ void te::layout::View::onMainMenuChangeContext( bool change )
 
 void te::layout::View::outsideAreaChangeContext( bool change )
 {
-  if(!change)
-    return;
-
   Scene* sc = dynamic_cast<Scene*>(scene());
 
   if(!sc)
@@ -391,6 +382,7 @@ void te::layout::View::outsideAreaChangeContext( bool change )
 
   LayoutMode mode = Context::getInstance()->getMode();
   QList<QGraphicsItem*> graphicsItems;
+  double zoomFactor = Context::getInstance()->getZoomFactor();
 
   switch(mode)
   {
@@ -400,7 +392,7 @@ void te::layout::View::outsideAreaChangeContext( bool change )
     }
   case TypeNewTemplate:
     {
-      sc->refresh();
+      sc->reset();
       m_visualizationArea->build();
       resetDefaultConfig();
       break;
@@ -458,11 +450,14 @@ void te::layout::View::outsideAreaChangeContext( bool change )
     }
   case TypePan:
     {
-      //Use ScrollHand Drag Mode to enable Panning
-      //You do need the enable scroll bars for that to work.
-      setDragMode(ScrollHandDrag);
-      //Whole view not interactive while in ScrollHandDrag Mode
+      /*
+        The QGraphicsView inherits QAbstractScrollArea. 
+        The QAbstractScrollArea on your EventFilter event invokes the viewportEvent instead eventFilter of the son, 
+        so it is necessary to add QAbstractScrollArea for the filter installed can listen to events.       
+      */
       setInteractive(false);
+      m_currentTool = new ViewPan(this, Qt::OpenHandCursor, Qt::ClosedHandCursor);
+      viewport()->installEventFilter(m_currentTool);
       break;
     }
   case TypeGroup:
@@ -487,9 +482,83 @@ void te::layout::View::outsideAreaChangeContext( bool change )
       //hide();
     }
     break;
+  case TypeSceneZoom:
+    {
+      scaleView(zoomFactor);
+      resetDefaultConfig();
+    }
+    break;
+  case TypeBringToFront:
+    {
+      sc->bringToFront();
+      resetDefaultConfig();
+    }
+    break;
+  case TypeSendToBack:
+    {
+      sc->sendToBack();
+      resetDefaultConfig();
+    }
+    break;
   default:
     {
       resetDefaultConfig();
     }
   }
+}
+
+void te::layout::View::configTransform( Scene* sc )
+{
+  te::gm::Envelope* boxW = sc->getWorldBox();
+
+  double llx = boxW->getLowerLeftX();
+  double ury = boxW->getUpperRightY();
+
+  //Transform calcula automaticamente a matriz inversa
+  setTransform(sc->getMatrixViewScene());
+
+  setTransformationAnchor(QGraphicsView::NoAnchor);	
+  centerOn(QPointF(llx, ury));
+
+  /* Mirror the y coordinate, because the scene is in Cartesian coordinates. */
+  scale(1, -1);    
+}
+
+void te::layout::View::recalculateSceneSize( double zoomFactor )
+{
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  if(!sc)
+    return;
+
+  PaperConfig* pConfig =  Context::getInstance()->getPaperConfig();
+
+  double w = 0;
+  double h = 0;
+
+  pConfig->getPaperSize(w, h);
+
+  Utils* utils = Context::getInstance()->getUtils();
+  te::gm::Envelope env(0.,0., widthMM(), heightMM());
+  env = utils->applyZoomFactor(env);
+
+  sc->restart(env.getWidth(), env.getHeight(), w, h);
+
+  //-----------------------------------------------------------------------------------------------
+
+  te::gm::Envelope* boxW = sc->getWorldBox();
+
+  double llx = boxW->getLowerLeftX();
+  double ury = boxW->getUpperRightY();
+
+  setTransform(sc->getMatrixViewScene());
+
+  setTransformationAnchor(QGraphicsView::NoAnchor);	
+  centerOn(QPointF(llx, ury));
+  
+  scale(zoomFactor, -zoomFactor);    
+
+  //----------------------------------------------------------------------------------------------
+
+  te::gm::Envelope* box = sc->getPaperBox();
+  pConfig->setPaperBoxW(box);
 }

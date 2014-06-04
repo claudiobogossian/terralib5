@@ -53,8 +53,11 @@ namespace te
 
       virtual bool addObserver(Observer* o);
       virtual bool removeObserver(Observer* o);
+
+      virtual te::gm::Envelope getBoxWithZoomFactor();
       virtual te::gm::Envelope getBox();
       virtual void setBox(te::gm::Envelope box);
+
       virtual int getColor();
       virtual void setColor(int color);
 

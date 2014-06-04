@@ -338,6 +338,8 @@ std::string te::layout::Variant::convertToString()
 
 bool te::layout::Variant::checkNumberAsString( const void* valueCopy )
 {
+  return false;
+
   void* value = const_cast<void*>(valueCopy);
 
   std::string* sp = 0;

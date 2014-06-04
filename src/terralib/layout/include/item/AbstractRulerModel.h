@@ -33,6 +33,7 @@
 #include "Utils.h"
 #include "../../../qt/widgets/canvas/Canvas.h"
 #include "../../../color/RGBAColor.h"
+#include "PaperConfig.h"
 
 namespace te
 {
@@ -42,12 +43,9 @@ namespace te
     {
       public:
 
-        AbstractRulerModel();
+        AbstractRulerModel(PaperConfig* paperConfig);
         virtual ~AbstractRulerModel(void);
-
-        virtual void setPaperBox(te::gm::Envelope	 box);
-        virtual te::gm::Envelope	 getPaperBox();
-
+        
         virtual void setVisible(bool visible);
         virtual bool isVisible();
 
@@ -59,11 +57,15 @@ namespace te
 
         virtual void drawRectW(te::gm::Envelope box, te::color::RGBAColor color, te::map::Canvas* canvas, Utils* utils);
 
+        virtual void setPaperConfig(PaperConfig* pConfig );
+
+        virtual PaperConfig* getPaperConfig() const;
+
       protected:
 
         bool m_visible;
 
-        te::gm::Envelope	 m_paperBox;
+        PaperConfig* m_paperConfig;
         te::gm::Envelope	 m_backEndBox;
         double	  m_longLine;
         double	  m_mediumLine;
