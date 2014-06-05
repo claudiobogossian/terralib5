@@ -26,6 +26,7 @@
 // TerraLib
 #include "../common/STLUtils.h"
 #include "../common/Translator.h"
+#include "Config.h"
 #include "Coord2D.h"
 #include "Curve.h"
 #include "CurvePolygon.h"
@@ -196,7 +197,14 @@ te::gm::Coord2D* te::gm::CurvePolygon::getCoordOnSurface() const
 
 double te::gm::CurvePolygon::getPerimeter() const
 {
-  return 0.0;
+#ifdef TERRALIB_GEOS_ENABLED
+  std::auto_ptr<geos::geom::Geometry> g(GEOSWriter::write(this));
+
+  return g->getLength();
+
+#else
+  throw Exception(TE_TR("getLength routine is supported by GEOS! Please, enable the GEOS support."));
+#endif 
 }
 
 const std::string& te::gm::CurvePolygon::getGeometryType() const throw()

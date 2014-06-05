@@ -42,6 +42,7 @@
 #include "JoinConditionOn.h"
 #include "JoinConditionUsing.h"
 #include "Literal.h"
+#include "LiteralBool.h"
 #include "LiteralByteArray.h"
 #include "LiteralDateTime.h"
 #include "LiteralDouble.h"
@@ -179,6 +180,12 @@ void te::da::SQLVisitor::visit(const Literal& visited)
 {
   if(visited.getValue())
     m_sql += visited.getValue()->toString();
+}
+
+void te::da::SQLVisitor::visit(const LiteralBool& visited)
+{
+  if(visited.getValue())
+    m_sql += "bool(" + visited.getValue()->toString() + ")";
 }
 
 void te::da::SQLVisitor::visit(const LiteralByteArray& visited)

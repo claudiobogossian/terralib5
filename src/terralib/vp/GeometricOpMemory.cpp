@@ -277,7 +277,11 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
             {
               std::size_t pos = te::da::GetPropertyPos(dsType, "convex_hull");
               if(pos < dsType->size())
-                item->setGeometry("convex_hull", in_geom->convexHull());
+              {
+                std::auto_ptr<te::gm::Geometry> convexHull(in_geom->convexHull());
+                if(convexHull->getGeomTypeId() == te::gm::PolygonType)
+                  item->setGeometry("convex_hull", convexHull.release());
+              }
             }
             break;
           case te::vp::CENTROID:
@@ -296,7 +300,11 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
             {
               std::size_t pos = te::da::GetPropertyPos(dsType, "mbr");
               if(pos < dsType->size())
-                item->setGeometry("mbr", in_geom->getEnvelope());
+              {
+                std::auto_ptr<te::gm::Geometry> mbr(in_geom->getEnvelope());
+                if(mbr->getGeomTypeId() == te::gm::PolygonType)
+                  item->setGeometry("mbr", mbr.release());
+              }
             }
             break;
         }
@@ -671,9 +679,39 @@ double te::vp::GeometricOpMemory::CalculateTabularOp( int tabOperation,
         }
         if(geomType == te::gm::MultiPolygonType)
         {
-          te::gm::MultiPolygon* m_pol = dynamic_cast<te::gm::MultiPolygon*>(geom);
-          if(m_pol)
-            value = m_pol->getArea();
+          std::string type = geom->getGeometryType();
+
+          if(type == "GeometryCollection")
+          {
+            te::gm::GeometryCollection* m_geoColl = dynamic_cast<te::gm::GeometryCollection*>(geom);
+            
+            if(m_geoColl)
+            {
+              std::vector<te::gm::Geometry*> geomVec = m_geoColl->getGeometries();
+              for(std::size_t i = 0; i < geomVec.size(); ++i)
+              {
+                te::gm::GeomType inType = geomVec[i]->getGeomTypeId();
+                if(inType == te::gm::PolygonType)
+                {
+                  te::gm::Polygon* m_pol = dynamic_cast<te::gm::Polygon*>(geomVec[i]);
+                  if(m_pol)
+                    value += m_pol->getArea();
+                }
+                if(inType == te::gm::MultiPolygonType)
+                {
+                  te::gm::MultiPolygon* m_pol = dynamic_cast<te::gm::MultiPolygon*>(geomVec[i]);
+                  if(m_pol)
+                    value += m_pol->getArea();
+                }
+              }
+            }
+          }
+          else
+          {
+            te::gm::MultiPolygon* m_pol = dynamic_cast<te::gm::MultiPolygon*>(geom);
+            if(m_pol)
+              value = m_pol->getArea();
+          }
         }
         return value;
       }
@@ -705,9 +743,39 @@ double te::vp::GeometricOpMemory::CalculateTabularOp( int tabOperation,
         }
         if(geomType == te::gm::MultiPolygonType)
         {
-          te::gm::MultiPolygon* m_pol = dynamic_cast<te::gm::MultiPolygon*>(geom);
-          if(m_pol)
-            value = m_pol->getPerimeter();
+          std::string type = geom->getGeometryType();
+
+          if(type == "GeometryCollection")
+          {
+            te::gm::GeometryCollection* m_geoColl = dynamic_cast<te::gm::GeometryCollection*>(geom);
+            
+            if(m_geoColl)
+            {
+              std::vector<te::gm::Geometry*> geomVec = m_geoColl->getGeometries();
+              for(std::size_t i = 0; i < geomVec.size(); ++i)
+              {
+                te::gm::GeomType inType = geomVec[i]->getGeomTypeId();
+                if(inType == te::gm::PolygonType)
+                {
+                  te::gm::Polygon* m_pol = dynamic_cast<te::gm::Polygon*>(geomVec[i]);
+                  if(m_pol)
+                    value += m_pol->getPerimeter();
+                }
+                if(inType == te::gm::MultiPolygonType)
+                {
+                  te::gm::MultiPolygon* m_pol = dynamic_cast<te::gm::MultiPolygon*>(geomVec[i]);
+                  if(m_pol)
+                    value += m_pol->getPerimeter();
+                }
+              }
+            }
+          }
+          else
+          {
+            te::gm::MultiPolygon* m_pol = dynamic_cast<te::gm::MultiPolygon*>(geom);
+            if(m_pol)
+              value = m_pol->getPerimeter();
+          }
         }
         return value;
       }
