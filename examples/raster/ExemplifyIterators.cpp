@@ -128,11 +128,11 @@ void ExemplifyRasterIterator()
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
 
 // create iterators for bands 0 and 1
-  std::vector<std::size_t> bands;
+  std::vector<unsigned int> bands;
 
   bands.push_back(0);
   bands.push_back(1);
-
+  
   te::rst::RasterIterator<unsigned char> it = te::rst::RasterIterator<unsigned char>::begin(inraster, bands);
 
   te::rst::RasterIterator<unsigned char> itend = te::rst::RasterIterator<unsigned char>::end(inraster, bands);
@@ -381,11 +381,11 @@ void ExemplifyIterators()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in ExemplifyIterators(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in ExemplifyIterators(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in ExemplifyIterators()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in ExemplifyIterators()!" << std::endl;
   }
 
 }

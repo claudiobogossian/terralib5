@@ -153,11 +153,11 @@ void GribPolygonExample()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in GribPolygonExample(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in GribPolygonExample(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in GribPolygonExample()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in GribPolygonExample()!" << std::endl;
   }
 
 }

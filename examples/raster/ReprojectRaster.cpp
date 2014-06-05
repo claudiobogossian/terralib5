@@ -63,11 +63,11 @@ void ReprojectRasterUsingDriver()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in ReprojectRasterUsingDriver(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in ReprojectRasterUsingDriver(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in ReprojectRasterUsingDriver()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in ReprojectRasterUsingDriver()!" << std::endl;
   }
 }
 
@@ -127,10 +127,10 @@ void ReprojectRasterUsingFunction()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in ReprojectRasterUsingFunction(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in ReprojectRasterUsingFunction(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in ReprojectRasterUsingFunction()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in ReprojectRasterUsingFunction()!" << std::endl;
   }
 }
