@@ -164,7 +164,7 @@ te::gm::Point* te::gm::CurvePolygon::getCentroid() const
   return 0;
 
 #else
-  throw te::common::Exception(TE_TR("buffer routine is supported by GEOS! Please, enable the GEOS support."));
+  throw te::common::Exception(TE_TR("getCentroid routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }
 
