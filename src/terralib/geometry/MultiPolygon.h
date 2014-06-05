@@ -93,6 +93,18 @@ namespace te
 
         //@}
 
+
+        /** @name Re-Implementation from MultiSurface.
+         *  Methods re-Implementated from MultiSurface.
+         */
+        //@{
+
+        Point* getCentroid() const;
+
+        Coord2D* getCentroidCoord() const;
+
+        //@}
+
         /** @name Re-Implementation from AbstractData
          *  Methods re-Implementated from AbstractData.
          */
