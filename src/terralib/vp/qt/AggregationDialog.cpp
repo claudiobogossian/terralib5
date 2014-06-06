@@ -44,6 +44,7 @@
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../statistics/core/Utils.h"
+#include "../Config.h"
 #include "../Exception.h"
 #include "AggregationDialog.h"
 #include "../AggregationMemory.h"

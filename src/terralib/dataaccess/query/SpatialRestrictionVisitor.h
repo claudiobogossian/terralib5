@@ -93,6 +93,7 @@ namespace te
         virtual void visit(const JoinConditionOn& visited) {}
         virtual void visit(const JoinConditionUsing& visited) {}
         virtual void visit(const Literal& visited) {}
+        virtual void visit(const LiteralBool& visited) {}
         virtual void visit(const LiteralByteArray& visited) {}
         virtual void visit(const LiteralDateTime& visited) {}
         virtual void visit(const LiteralDouble& visited) {}

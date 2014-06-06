@@ -42,7 +42,7 @@ namespace te
     class DataSetName;
     class Div;
     class EqualTo;
-    class Expression;    
+    class Expression;
     class Field;
     class FromFunctionCall;
     class FromItem;
@@ -68,6 +68,7 @@ namespace te
     class LessThanOrEqualTo;
     class Like;
     class Literal;
+    class LiteralBool;
     class LiteralByteArray;
     class LiteralDateTime;
     class LiteralDouble;
@@ -91,9 +92,12 @@ namespace te
     class SQLDialect;
     class SQLFunctionEncoder;
     class SQLVisitor;
+    class ST_Area;
     class ST_Beyond;
     class ST_Buffer;
+    class ST_Centroid;
     class ST_Contains;
+    class ST_ConvexHull;
     class ST_Crosses;
     class ST_Difference;
     class ST_Disjoint;
@@ -102,7 +106,9 @@ namespace te
     class ST_Equals;
     class ST_Intersection;
     class ST_Intersects;
+    class ST_Length;
     class ST_Overlaps;
+    class ST_Perimeter;
     class ST_Relate;
     class ST_Touches;
     class ST_Transform;
