@@ -45,13 +45,16 @@
 #include "../dataaccess/query/FromItem.h"
 #include "../dataaccess/query/GroupBy.h"
 #include "../dataaccess/query/GroupByItem.h"
-#include "../dataaccess/query/Max.h"
-#include "../dataaccess/query/Min.h"
+#include "../dataaccess/query/Literal.h"
+#include "../dataaccess/query/LiteralBool.h"
 #include "../dataaccess/query/PropertyName.h"
 #include "../dataaccess/query/Select.h"
-#include "../dataaccess/query/Sub.h"
-#include "../dataaccess/query/Sum.h"
-#include "../dataaccess/query/StdDev.h"
+#include "../dataaccess/query/ST_Area.h"
+#include "../dataaccess/query/ST_Centroid.h"
+#include "../dataaccess/query/ST_ConvexHull.h"
+#include "../dataaccess/query/ST_Envelope.h"
+#include "../dataaccess/query/ST_Length.h"
+#include "../dataaccess/query/ST_Perimeter.h"
 #include "../dataaccess/query/ST_Union.h"
 #include "../dataaccess/query/Variance.h"
 #include "../dataaccess/utils/Utils.h"
@@ -247,25 +250,38 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* d
     }
   }
 
+  std::string name = m_inDset->getPropertyName(geom_pos);
+
   if(tabVec.size() > 0)
   {
     for(std::size_t tabPos = 0; tabPos < tabVec.size(); ++tabPos)
     {
+      te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_inDsetType.get());
+
+      te::da::Expression* ex;
+      te::da::Field* f;
+
       switch(tabVec[tabPos])
       {
         case te::vp::AREA:
           {
-            
+            ex = new te::da::ST_Area(te::da::PropertyName(name));
+            f = new te::da::Field(*ex, "area");
+            fields->push_back(f);
           }
           break;
         case te::vp::LINE:
           {
-            
+            ex = new te::da::ST_Length(te::da::PropertyName(name));
+            f = new te::da::Field(*ex, "line_length");
+            fields->push_back(f);
           }
           break;
         case te::vp::PERIMETER:
           {
-            
+            ex = new te::da::ST_Perimeter(te::da::PropertyName(name));
+            f = new te::da::Field(*ex, "perimeter");
+            fields->push_back(f);
           }
           break;
       }
@@ -276,21 +292,42 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* d
   {
     for(std::size_t geoPos = 0; geoPos < geoVec.size(); ++geoPos)
     {
+      te::da::Expression* ex_geom;
+      te::da::Field* f_geom;
+
       switch(geoVec[geoPos])
       {
         case te::vp::CONVEX_HULL:
           {
-
+            std::size_t pos = dsType->getPropertyPosition("convex_hull");
+            if( pos < outDSet->getNumProperties() && pos > 0)
+            {
+              ex_geom = new te::da::ST_ConvexHull(te::da::PropertyName(name));
+              f_geom = new te::da::Field(*ex_geom, "convex_hull");
+              fields->push_back(f_geom);
+            }
           }
           break;
         case te::vp::CENTROID:
           {
-
+            std::size_t pos = dsType->getPropertyPosition("centroid");
+            if( pos < outDSet->getNumProperties() && pos > 0)
+            {
+              ex_geom = new te::da::ST_Centroid(te::da::PropertyName(name));
+              f_geom = new te::da::Field(*ex_geom, "centroid");
+              fields->push_back(f_geom);
+            }
           }
           break;
         case te::vp::MBR:
           {
-
+            std::size_t pos = dsType->getPropertyPosition("mbr");
+            if( pos < outDSet->getNumProperties() && pos > 0)
+            {
+              ex_geom = new te::da::ST_Envelope(te::da::PropertyName(name));
+              f_geom = new te::da::Field(*ex_geom, "mbr");
+              fields->push_back(f_geom);
+            }
           }
           break;
       }
@@ -298,7 +335,6 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* d
   }
   else
   {
-    std::string name = m_inDset->getPropertyName(geom_pos);
     te::da::Field* f_prop = new te::da::Field(name);
     fields->push_back(f_prop);
   }
@@ -324,8 +360,117 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregObj( te::da::DataSetType* d
                                                           std::vector<int> geoVec)
 {
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
+  std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(m_inDset.get());
+  std::string name = m_inDset->getPropertyName(geom_pos);
+  
+  te::da::Fields* fields = new te::da::Fields;
 
+  if(tabVec.size() > 0)
+  {
+    for(std::size_t tabPos = 0; tabPos < tabVec.size(); ++tabPos)
+    {
+      te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_inDsetType.get());
 
+      te::da::Expression* ex;
+      te::da::Field* f;
+
+      switch(tabVec[tabPos])
+      {
+        case te::vp::AREA:
+          {
+            te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
+            ex = new te::da::ST_Area(*e_union);
+            f = new te::da::Field(*ex, "area");
+            fields->push_back(f);
+          }
+          break;
+        case te::vp::LINE:
+          {
+            te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
+            ex = new te::da::ST_Length(*e_union);
+            f = new te::da::Field(*ex, "line_length");
+            fields->push_back(f);
+          }
+          break;
+        case te::vp::PERIMETER:
+          {
+            te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
+            ex = new te::da::ST_Perimeter(*e_union);
+            f = new te::da::Field(*ex, "perimeter");
+            fields->push_back(f);
+          }
+          break;
+      }
+    }
+  }
+
+  if(geoVec.size() > 0)
+  {
+    for(std::size_t geoPos = 0; geoPos < geoVec.size(); ++geoPos)
+    {
+      te::da::Expression* ex_geom;
+      te::da::Field* f_geom;
+
+      switch(geoVec[geoPos])
+      {
+        case te::vp::CONVEX_HULL:
+          {
+            std::size_t pos = dsType->getPropertyPosition("convex_hull");
+            if( pos < outDSet->getNumProperties() && pos > 0)
+            {
+              te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
+              ex_geom = new te::da::ST_ConvexHull(*e_union);
+              f_geom = new te::da::Field(*ex_geom, "convex_hull");
+              fields->push_back(f_geom);
+            }
+          }
+          break;
+        case te::vp::CENTROID:
+          {
+            std::size_t pos = dsType->getPropertyPosition("centroid");
+            if( pos < outDSet->getNumProperties() && pos > 0)
+            {
+              te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
+              ex_geom = new te::da::ST_Centroid(*e_union);
+              f_geom = new te::da::Field(*ex_geom, "centroid");
+              fields->push_back(f_geom);
+            }
+          }
+          break;
+        case te::vp::MBR:
+          {
+            std::size_t pos = dsType->getPropertyPosition("mbr");
+            if( pos < outDSet->getNumProperties() && pos > 0)
+            {
+              te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
+              ex_geom = new te::da::ST_Envelope(*e_union);
+              f_geom = new te::da::Field(*ex_geom, "mbr");
+              fields->push_back(f_geom);
+            }
+          }
+          break;
+      }
+    }
+  }
+  else
+  {
+    te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
+    te::da::Field* f_prop = new te::da::Field(*e_union, name);
+    fields->push_back(f_prop);
+  }
+
+  te::da::FromItem* fromItem = new te::da::DataSetName(m_inDsetType->getName());
+  te::da::From* from = new te::da::From;
+  from->push_back(fromItem);
+
+  te::da::Select select(fields, from);
+
+  std::auto_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
+
+  if (dsQuery->isEmpty())
+    return false;
+
+  SetOutputDSet(dsQuery.get(), outDSet.get());
 
   return outDSet.release();
 }
@@ -335,8 +480,123 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSe
                                                                   std::vector<int> geoVec)
 {
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
+  std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(m_inDset.get());
+  std::string name = m_inDset->getPropertyName(geom_pos);
+  
+  te::da::Fields* fields = new te::da::Fields;
 
+  if(tabVec.size() > 0)
+  {
+    for(std::size_t tabPos = 0; tabPos < tabVec.size(); ++tabPos)
+    {
+      te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_inDsetType.get());
 
+      te::da::Expression* ex;
+      te::da::Field* f;
+
+      switch(tabVec[tabPos])
+      {
+        case te::vp::AREA:
+          {
+            te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
+            ex = new te::da::ST_Area(*e_union);
+            f = new te::da::Field(*ex, "area");
+            fields->push_back(f);
+          }
+          break;
+        case te::vp::LINE:
+          {
+            te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
+            ex = new te::da::ST_Length(*e_union);
+            f = new te::da::Field(*ex, "line_length");
+            fields->push_back(f);
+          }
+          break;
+        case te::vp::PERIMETER:
+          {
+            te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
+            ex = new te::da::ST_Perimeter(*e_union);
+            f = new te::da::Field(*ex, "perimeter");
+            fields->push_back(f);
+          }
+          break;
+      }
+    }
+  }
+
+  if(geoVec.size() > 0)
+  {
+    for(std::size_t geoPos = 0; geoPos < geoVec.size(); ++geoPos)
+    {
+      te::da::Expression* ex_geom;
+      te::da::Field* f_geom;
+
+      switch(geoVec[geoPos])
+      {
+        case te::vp::CONVEX_HULL:
+          {
+            std::size_t pos = dsType->getPropertyPosition("convex_hull");
+            if( pos < outDSet->getNumProperties() && pos > 0)
+            {
+              te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
+              ex_geom = new te::da::ST_ConvexHull(*e_union);
+              f_geom = new te::da::Field(*ex_geom, "convex_hull");
+              fields->push_back(f_geom);
+            }
+          }
+          break;
+        case te::vp::CENTROID:
+          {
+            std::size_t pos = dsType->getPropertyPosition("centroid");
+            if( pos < outDSet->getNumProperties() && pos > 0)
+            {
+              te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
+              ex_geom = new te::da::ST_Centroid(*e_union);
+              f_geom = new te::da::Field(*ex_geom, "centroid");
+              fields->push_back(f_geom);
+            }
+          }
+          break;
+        case te::vp::MBR:
+          {
+            std::size_t pos = dsType->getPropertyPosition("mbr");
+            if( pos < outDSet->getNumProperties() && pos > 0)
+            {
+              te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
+              ex_geom = new te::da::ST_Envelope(*e_union);
+              f_geom = new te::da::Field(*ex_geom, "mbr");
+              fields->push_back(f_geom);
+            }
+          }
+          break;
+      }
+    }
+  }
+  else
+  {
+    te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
+    te::da::Field* f_prop = new te::da::Field(*e_union, name);
+    fields->push_back(f_prop);
+  }
+
+  te::da::FromItem* fromItem = new te::da::DataSetName(m_inDsetType->getName());
+  te::da::From* from = new te::da::From;
+  from->push_back(fromItem);
+
+  te::da::Select select(fields, from);
+
+  te::da::GroupBy* groupBy = new te::da::GroupBy();
+  te::da::GroupByItem* e_groupBy = new te::da::GroupByItem(m_attribute);
+  groupBy->push_back(e_groupBy);
+  
+  select.setGroupBy(groupBy);
+
+  std::auto_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
+
+  if (dsQuery->isEmpty())
+    return false;
+
+  SetOutputDSet(dsQuery.get(), outDSet.get());
 
   return outDSet.release();
 }
@@ -345,40 +605,106 @@ void te::vp::GeometricOpQuery::SetOutputDSet( te::da::DataSet* inDataSet,
                                               te::mem::DataSet* outDataSet)
 {
   std::size_t numProps = inDataSet->getNumProperties();
-  
+  int pk = 0;
+
   inDataSet->moveBeforeFirst();
   while(inDataSet->moveNext())
   {
     te::mem::DataSetItem* dItem = new te::mem::DataSetItem(outDataSet);
+    std::size_t size = dItem->getNumProperties();
+
+    dItem->setInt32(0, pk);
+
     for(std::size_t i = 0; i < numProps; ++i)
     {
       int type = inDataSet->getPropertyDataType(i);
       switch(type)
       {
         case te::dt::INT16_TYPE:
-          dItem->setInt16(i, inDataSet->getInt16(i));
+          dItem->setInt16(i+1, inDataSet->getInt16(i));
           break;
         case te::dt::INT32_TYPE:
-          dItem->setInt32(i, inDataSet->getInt32(i));
+          dItem->setInt32(i+1, inDataSet->getInt32(i));
           break;
         case te::dt::INT64_TYPE:
-          dItem->setInt64(i, inDataSet->getInt64(i));
+          dItem->setInt64(i+1, inDataSet->getInt64(i));
           break;
         case te::dt::DOUBLE_TYPE:
-          dItem->setDouble(i, inDataSet->getDouble(i));
+          dItem->setDouble(i+1, inDataSet->getDouble(i));
           break;
         case te::dt::STRING_TYPE:
-          dItem->setString(i, inDataSet->getString(i));
+          dItem->setString(i+1, inDataSet->getString(i));
           break;
         case te::dt::GEOMETRY_TYPE:
           {
-            te::gm::Geometry* geom = inDataSet->getGeometry(i).release();
-            if(geom->isValid())
-              dItem->setGeometry(i, geom);
+            std::string inPropName = inDataSet->getPropertyName(i);
+
+            if(inPropName == "convex_hull")
+            {
+              te::gm::Geometry* geom = inDataSet->getGeometry(i).release();
+              if(geom->isValid())
+                dItem->setGeometry("convex_hull", geom);
+            }
+            else if(inPropName == "centroid")
+            {
+              te::gm::Geometry* geom = inDataSet->getGeometry(i).release();
+              if(geom->isValid())
+                dItem->setGeometry("centroid", geom);
+            }
+            else if(inPropName == "mbr")
+            {
+              te::gm::Geometry* geom = inDataSet->getGeometry(i).release();
+              if(geom->isValid())
+                dItem->setGeometry("mbr", geom);
+            }
+            else
+            {
+              te::gm::Geometry* geom = inDataSet->getGeometry(i).release();
+
+              switch(geom->getGeomTypeId())
+              {
+                case te::gm::PointType:
+                  {
+                    te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(1, te::gm::MultiPointType, geom->getSRID());
+                    if(geom->isValid())
+                    {
+                      teGeomColl->setGeometryN(0, geom);
+                      dItem->setGeometry(i+1, teGeomColl);
+                    }
+                  }
+                  break;
+                case te::gm::LineStringType:
+                  {
+                    te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(1, te::gm::MultiLineStringType, geom->getSRID());
+                    if(geom->isValid())
+                    {
+                      teGeomColl->setGeometryN(0, geom);
+                      dItem->setGeometry(i+1, teGeomColl);
+                    }
+                  }
+                  break;
+                case te::gm::PolygonType:
+                  {
+                    te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(1, te::gm::MultiPolygonType, geom->getSRID());
+                    if(geom->isValid())
+                    {
+                      teGeomColl->setGeometryN(0, geom);
+                      dItem->setGeometry(i+1, teGeomColl);
+                    }
+                  }
+                  break;
+                default:
+                  {
+                    dItem->setGeometry(i+1, geom);
+                  }
+                  break;
+              }
+            }
           }
           break;
       }
     }
+    ++pk;
     outDataSet->add(dItem);
   }
 }

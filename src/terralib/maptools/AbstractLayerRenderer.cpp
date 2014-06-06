@@ -45,6 +45,8 @@
 #include "../geometry/Coord2D.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/GeometryProperty.h"
+#include "../geometry/MultiPolygon.h"
+#include "../geometry/Polygon.h"
 #include "../raster/Raster.h"
 #include "../raster/RasterProperty.h"
 #include "../se/FeatureTypeStyle.h"
@@ -751,12 +753,35 @@ void te::map::AbstractLayerRenderer::buildChart(Chart* chart, te::da::DataSet* d
   if(!chart->isVisible())
     return;
 
-  // Builds the chart point (world coordinates)
-  const te::gm::Envelope* e = geom->getMBR();
+  // World coordinates
+  std::auto_ptr<te::gm::Coord2D> worldCoord;
+
+  // Try finds the geometry centroid
+  switch(geom->getGeomTypeId())
+  {
+    case te::gm::PolygonType:
+    {
+      te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom);
+      worldCoord.reset(p->getCentroidCoord());
+    }
+
+    case te::gm::MultiPolygonType:
+    {
+      te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom);
+      worldCoord.reset(mp->getCentroidCoord());
+    }
+  }
+
+  // Case not find, use the center of the MBR
+  if(worldCoord.get() == 0)
+  {
+    const te::gm::Envelope* e = geom->getMBR();
+    worldCoord.reset(new te::gm::Coord2D(e->getCenter().x, e->getCenter().y));
+  }
 
   // Device coordinates
   double dx = 0.0; double dy = 0.0;
-  m_transformer.world2Device(e->getCenter().x, e->getCenter().y, dx, dy);
+  m_transformer.world2Device(worldCoord->x, worldCoord->y, dx, dy);
 
   double dw = dx + chart->getWidth();
   double dh = dy + chart->getHeight();

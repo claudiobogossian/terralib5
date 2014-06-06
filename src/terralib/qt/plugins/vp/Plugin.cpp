@@ -90,8 +90,8 @@ void te::qt::plugins::vp::Plugin::shutdown()
 void te::qt::plugins::vp::Plugin::registerActions()
 {
   m_aggregation = new te::qt::plugins::vp::AggregationAction(m_vpMenu);
-  m_geometricOp = new te::qt::plugins::vp::GeometricOpAction(m_vpMenu);
   m_buffer = new te::qt::plugins::vp::BufferAction(m_vpMenu);
+  m_geometricOp = new te::qt::plugins::vp::GeometricOpAction(m_vpMenu);
   m_intersection = new te::qt::plugins::vp::IntersectionAction(m_vpMenu);
   //m_polygonToLine = new te::qt::plugins::vp::PolygonToLineAction(m_vpMenu);
   //m_summarization = new te::qt::plugins::vp::SummarizationAction(m_vpMenu);
@@ -101,8 +101,8 @@ void te::qt::plugins::vp::Plugin::registerActions()
 void  te::qt::plugins::vp::Plugin::unRegisterActions()
 {
   delete m_aggregation;
-  delete m_geometricOp;
   delete m_buffer;
+  delete m_geometricOp;
   delete m_intersection;
   //delete m_polygonToLine;
   //delete m_summarization;

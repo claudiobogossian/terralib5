@@ -24,7 +24,17 @@
 */
 
 // TerraLib
+#include "../common/STLUtils.h"
+#include "../common/Translator.h"
+#include "Config.h"
 #include "Curve.h"
+#include "GEOSWriter.h"
+
+#ifdef TERRALIB_GEOS_ENABLED
+// GEOS
+#include <geos/geom/Geometry.h>
+#include <geos/util/GEOSException.h>
+#endif
 
 te::gm::Curve::Curve(GeomType t, int srid, Envelope* mbr)
   : Geometry(t, srid, mbr)
@@ -34,6 +44,18 @@ te::gm::Curve::Curve(GeomType t, int srid, Envelope* mbr)
 te::gm::Curve::Curve(const Curve& rhs)
   : Geometry(rhs)
 {
+}
+
+double te::gm::Curve::getLength() const
+{
+#ifdef TERRALIB_GEOS_ENABLED
+  std::auto_ptr<geos::geom::Geometry> g(GEOSWriter::write(this));
+
+  return g->getLength();
+
+#else
+  throw Exception(TR_TR("getLength routine is supported by GEOS! Please, enable the GEOS support."));
+#endif  
 }
 
 te::gm::Curve& te::gm::Curve::operator=(const Curve& rhs)

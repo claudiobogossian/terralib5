@@ -36,7 +36,6 @@
 #include "../datatype/StringProperty.h"
 
 #include "../geometry/Geometry.h"
-#include "../geometry/GeometryCollection.h"
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/Utils.h"
 

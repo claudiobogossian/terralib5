@@ -26,9 +26,11 @@
 // TerraLib
 #include "../common/Translator.h"
 #include "../srs/Converter.h"
+#include "Config.h"
 #include "Coord2D.h"
 #include "Envelope.h"
 #include "Exception.h"
+#include "GEOSWriter.h"
 #include "LineString.h"
 #include "Point.h"
 #include "PointM.h"
@@ -40,6 +42,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <memory>
+
+#ifdef TERRALIB_GEOS_ENABLED
+// GEOS
+#include <geos/geom/Geometry.h>
+#include <geos/util/GEOSException.h>
+#endif
 
 const std::string te::gm::LineString::sm_typeName("LineString");
 
@@ -204,10 +212,10 @@ te::gm::Geometry* te::gm::LineString::locateBetween(const double& /*mStart*/, co
   return 0;
 }
 
-double te::gm::LineString::getLength() const
-{
-  return 0.0;
-}
+//double te::gm::LineString::getLength() const
+//{
+//  return 0.0;
+//}
 
 te::gm::Point* te::gm::LineString::getStartPoint() const
 {
