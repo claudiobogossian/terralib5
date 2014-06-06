@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../common/Translator.h"
 #include "../../geometry/Envelope.h"
+#include "../dataset/DataSetTypeCapabilities.h"
 #include "../dataset/ObjectIdSet.h"
 #include "../query/DataSetName.h"
 #include "../query/Field.h"
