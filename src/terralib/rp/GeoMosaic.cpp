@@ -43,6 +43,8 @@
 #include "../srs/Converter.h"
 #include "../common/progress/TaskProgress.h"
 
+#include <boost/shared_array.hpp>
+
 #include <climits>
 #include <cfloat>
 #include <cmath>
@@ -769,7 +771,7 @@ namespace te
                 outputRasterPtr,
                 (te::gm::Polygon const*)overlappedResult->getGeometryN( overlappedResultIdx ) );
                 
-              std::vector< double > blendedValues( outputRasterPtr->getNumberOfBands() );
+              boost::scoped_array< double > blendedValues( new double[ outputRasterPtr->getNumberOfBands() ] );
               unsigned int outputRow = 0;
               unsigned int outputCol = 0;
               const unsigned int nBands = outputRasterPtr->getNumberOfBands();
@@ -781,7 +783,7 @@ namespace te
                 outputRow = itB.getRow();
                 outputCol = itB.getColumn();
 
-                blenderInstance.getBlendedValues( outputRow, outputCol, blendedValues );
+                blenderInstance.getBlendedValues( outputRow, outputCol, blendedValues.get() );
                 
                 for( outBandIdx = 0 ; outBandIdx < nBands ; ++outBandIdx )
                 {
