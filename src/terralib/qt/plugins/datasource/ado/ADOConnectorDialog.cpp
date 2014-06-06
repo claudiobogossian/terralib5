@@ -44,7 +44,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-te::qt::plugins::ado::ADOConnectorDialog::ADOConnectorDialog(QWidget* parent, Qt::WindowFlags f)
+te::qt::plugins::ado::ADOConnectorDialog::ADOConnectorDialog(QWidget* parent, Qt::WindowFlags f, Operation op)
   : QDialog(parent, f),
     m_ui(new Ui::ADOConnectorDialogForm)
 {
@@ -62,6 +62,9 @@ te::qt::plugins::ado::ADOConnectorDialog::ADOConnectorDialog(QWidget* parent, Qt
 
   m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins");
   m_ui->m_helpPushButton->setPageReference("plugins/ado/ado.html");
+
+  if(op == UPDATE)
+    m_ui->m_openPushButton->setText(TE_TR("Update"));
 }
 
 te::qt::plugins::ado::ADOConnectorDialog::~ADOConnectorDialog()
@@ -253,8 +256,9 @@ void te::qt::plugins::ado::ADOConnectorDialog::setConnectionInfo(const std::map<
 
   if(it != itend)
     m_ui->m_fileLineEdit->setText(it->second.c_str());
-  
+
   it = connInfo.find("PASSWORD");
 
-  m_ui->m_passwordLineEdit->setText(it->second.c_str());
+  if(it != itend)
+    m_ui->m_passwordLineEdit->setText(it->second.c_str());
 }
