@@ -61,6 +61,9 @@ file(GLOB TERRALIB_CORE_TRAJECTORY_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/t
 file(GLOB TERRALIB_LOADER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib//st/loader/*.cpp)
 file(GLOB TERRALIB_LOADER_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/st/loader/*.h)
 
+file(GLOB TERRALIB_MAPTOOLS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib//st/maptools/*.cpp)
+file(GLOB TERRALIB_MAPTOOLS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/st/maptools/*.h)
+
 source_group("Source Files\\core\\event"         FILES ${TERRALIB_CORE_EVENT_SRC_FILES})
 source_group("Header Files\\core\\event"         FILES ${TERRALIB_CORE_EVENT_HDR_FILES})
 source_group("Source Files\\core\\interpolator"  FILES ${TERRALIB_CORE_INTERPOLATOR_SRC_FILES})
@@ -73,6 +76,8 @@ source_group("Source Files\\core\\trajectory"    FILES ${TERRALIB_CORE_TRAJECTOR
 source_group("Header Files\\core\\trajectory"    FILES ${TERRALIB_CORE_TRAJECTORY_HDR_FILES})
 source_group("Source Files\\loader"              FILES ${TERRALIB_LOADER_SRC_FILES})
 source_group("Header Files\\loader"              FILES ${TERRALIB_LOADER_HDR_FILES})
+source_group("Source Files\\maptools"            FILES ${TERRALIB_MAPTOOLS_SRC_FILES})
+source_group("Header Files\\maptools"            FILES ${TERRALIB_MAPTOOLS_HDR_FILES})
 
 set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
                    ${TERRALIB_CORE_COVERAGE_SRC_FILES} ${TERRALIB_CORE_COVERAGE_HDR_FILES}
@@ -81,9 +86,9 @@ set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
                    ${TERRALIB_CORE_OBSERVATION_SRC_FILES} ${TERRALIB_CORE_OBSERVATION_HDR_FILES}
                    ${TERRALIB_CORE_TIMESERIES_SRC_FILES} ${TERRALIB_CORE_TIMESERIES_HDR_FILES}
                    ${TERRALIB_CORE_TRAJECTORY_SRC_FILES} ${TERRALIB_CORE_TRAJECTORY_HDR_FILES}
-                   ${TERRALIB_LOADER_SRC_FILES} ${TERRALIB_LOADER_HDR_FILES})
+                   ${TERRALIB_LOADER_SRC_FILES} ${TERRALIB_LOADER_HDR_FILES} ${TERRALIB_MAPTOOLS_SRC_FILES}
+				   ${TERRALIB_MAPTOOLS_HDR_FILES})
                    
-
 add_library(terralib_mod_st SHARED ${TERRALIB_FILES})
 
 set(TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_dataaccess")
@@ -93,6 +98,7 @@ list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_raster")
 list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_stmemory")
 list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_plugin")
 list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_common")
+list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_maptools")
 list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES ${Boost_DATE_TIME_LIBRARY})
 
 target_link_libraries(terralib_mod_st ${TERRALIB_LIBRARIES_DEPENDENCIES})
@@ -131,4 +137,7 @@ install(FILES ${TERRALIB_CORE_TRAJECTORY_HDR_FILES}
  install(FILES ${TERRALIB_LOADER_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/st/loader COMPONENT devel)
 
+ install(FILES ${TERRALIB_MAPTOOLS_HDR_FILES}
+	DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/st/maptools COMPONENT devel)
+		
 export(TARGETS terralib_mod_st APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

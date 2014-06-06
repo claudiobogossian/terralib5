@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/qt/plugins/slider/Plugin.cpp
+  \file terralib/qt/plugins/st/Plugin.cpp
 
-  \brief Plugin implementation for the slider Qt Plugin widget.
+  \brief Plugin implementation for the st Qt Plugin widget.
 */
 
 // TerraLib
@@ -30,37 +30,49 @@
 #include "../../af/ApplicationController.h"
 #include "Plugin.h"
 
-#ifdef TE_QT_PLUGIN_SLIDER_HAVE_SLIDER
+#ifdef TE_QT_PLUGIN_ST_HAVE_SLIDER
   #include "TimeSliderWidgetAction.h"
+#endif
+
+#ifdef TE_QT_PLUGIN_ST_HAVE_OBSERVATION
+    #include "ObservationAction.h"
+#endif
+
+#ifdef TE_QT_PLUGIN_ST_HAVE_TIMESERIES
+    #include "TimeSeriesAction.h"
+#endif
+
+#ifdef TE_QT_PLUGIN_ST_HAVE_TRAJECTORY
+    #include "TrajectoryAction.h"
 #endif
 
 // QT
 #include <QMenu>
 #include <QMenuBar>
 
-te::qt::plugins::slider::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo), m_sliderMenu(0)
+te::qt::plugins::st::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
+  : te::plugin::Plugin(pluginInfo), m_stMenu(0)
 {
 }
 
-te::qt::plugins::slider::Plugin::~Plugin() 
+te::qt::plugins::st::Plugin::~Plugin() 
 {
 }
 
-void te::qt::plugins::slider::Plugin::startup()
+void te::qt::plugins::st::Plugin::startup()
 {
   if(m_initialized)
     return;
 
-// it initializes the Translator support for the TerraLib slider Qt Plugin
-  //TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_SLIDER_TEXT_DOMAIN, TE_QT_PLUGIN_SLIDER_TEXT_DOMAIN_DIR, "UTF-8");
+// it initializes the Translator support for the TerraLib st Qt Plugin
+  //TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_ST_TEXT_DOMAIN, TE_QT_PLUGIN_ST_TEXT_DOMAIN_DIR, "UTF-8");
 
-  TE_LOG_TRACE(TE_TR("TerraLib Qt SLIDER Plugin startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt ST Plugin startup!"));
 
 // add plugin menu
-  m_sliderMenu = te::qt::af::ApplicationController::getInstance().getMenu("SLIDER");
+  m_stMenu = te::qt::af::ApplicationController::getInstance().getMenu("Project.Add Layer.Add Temporal Layer");
 
-  m_sliderMenu->setTitle(TE_TR("Slider"));
+  m_stMenu->setTitle(TE_TR("Add Temporal Layer"));
 
 // register actions
   registerActions();
@@ -68,7 +80,7 @@ void te::qt::plugins::slider::Plugin::startup()
   m_initialized = true;
 }
 
-void te::qt::plugins::slider::Plugin::shutdown()
+void te::qt::plugins::st::Plugin::shutdown()
 {
   if(!m_initialized)
     return;
@@ -77,25 +89,49 @@ void te::qt::plugins::slider::Plugin::shutdown()
   unRegisterActions();
 
 // remove menu
-  delete m_sliderMenu;
+  delete m_stMenu;
 
-  TE_LOG_TRACE(TE_TR("TerraLib Qt SLIDER Plugin shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt ST Plugin shutdown!"));
 
   m_initialized = false;
 }
 
-void te::qt::plugins::slider::Plugin::registerActions()
+void te::qt::plugins::st::Plugin::registerActions()
 {
-#ifdef TE_QT_PLUGIN_SLIDER_HAVE_SLIDER
-    m_sliderAction = new te::qt::plugins::slider::TimeSliderWidgetAction(m_sliderMenu);
+//#ifdef TE_QT_PLUGIN_ST_HAVE_SLIDER
+//    m_sliderAction = new te::qt::plugins::st::TimeSliderWidgetAction(m_stMenu);
+//#endif
+
+#ifdef TE_QT_PLUGIN_ST_HAVE_OBSERVATION
+    m_observactionAction = new te::qt::plugins::st::ObservationAction(m_stMenu);
+#endif
+
+#ifdef TE_QT_PLUGIN_ST_HAVE_TIMESERIES
+    m_timeSeriesAction = new te::qt::plugins::st::TimeSeriesAction(m_stMenu);
+#endif
+
+#ifdef TE_QT_PLUGIN_ST_HAVE_TRAJECTORY
+    m_trajectoryAction = new te::qt::plugins::st::TrajectoryAction(m_stMenu);
 #endif
 }
 
-void  te::qt::plugins::slider::Plugin::unRegisterActions()
+void  te::qt::plugins::st::Plugin::unRegisterActions()
 {
-#ifdef TE_QT_PLUGIN_SLIDER_HAVE_SLIDER
-    delete m_sliderAction;
+//#ifdef TE_QT_PLUGIN_ST_HAVE_SLIDER
+//    delete m_sliderAction;
+//#endif
+
+#ifdef TE_QT_PLUGIN_ST_HAVE_OBSERVATION
+    delete m_observactionAction;
+#endif
+
+#ifdef TE_QT_PLUGIN_ST_HAVE_TIMESERIES
+    delete m_timeSeriesAction;
+#endif
+
+#ifdef TE_QT_PLUGIN_ST_HAVE_TRAJECTORY
+    delete m_trajectoryAction;
 #endif
 }
 
-PLUGIN_CALL_BACK_IMPL(te::qt::plugins::slider::Plugin)
+PLUGIN_CALL_BACK_IMPL(te::qt::plugins::st::Plugin)
