@@ -118,12 +118,12 @@ namespace te
           \brief Blend a pixel value using the current parameters.
           \param line Line (raster 1 reference).
           \param col Column (raster 1 reference).
-          \param values Blended values for each band.
+          \param values A pointer to a pre-allocated vector where the blended values will be stored.
           \note The caller of this method must be aware that the returned blended value may be outside the original input rasters valid values range.
           \note Raster 1 values have precedence over raster 2 values (when applicable).
         */
         inline void getBlendedValues( const double& line, const double& col, 
-          std::vector< double >& values )
+          double* const values )
         {
           TERP_DEBUG_TRUE_OR_THROW( m_blendFuncPtr, "Invalid blend function pointer" );
           (this->*m_blendFuncPtr)( line, col, values );
@@ -141,12 +141,12 @@ namespace te
           \brief Type definition for the a bleding function pointer.
           \param line Raster 1 Line.
           \param col Raster 1 Column.
-          \param values Blended values for each band.
+          \param values A pointer to a pre-allocated vector where the blended values will be stored.
           \note The caller of this method must be aware that the returned blended value may be outside the original input rasters valid values range.
           \note Raster 1 values have precedence over raster 2 values (when applicable).
         */      
         typedef void (Blender::*BlendFunctPtr)( const double& line, 
-          const double& col, std::vector< double >& values );   
+          const double& col, double* const values );   
         
         /*!
           \brief Raster block info
@@ -154,10 +154,13 @@ namespace te
         struct RasterBlockInfo
         {
           bool m_wasProcessed;
-          unsigned int m_blkFirstRow;
-          unsigned int m_blkRowsBound;
-          unsigned int m_blkFirstCol;
-          unsigned int m_blkColsBound;
+          unsigned int m_blkX;
+          unsigned int m_blkY;
+          unsigned int m_blkTotalPixelsNumber;
+          unsigned int m_firstRasterRow2Process;
+          unsigned int m_rasterRows2ProcessBound;
+          unsigned int m_firstRasterCol2Process;
+          unsigned int m_rasterCols2ProcessBound;
         };
         
         /*! 
@@ -265,19 +268,19 @@ namespace te
           \brief Implementation for NoBlendMethod.
           \param line Raster 1 Line.
           \param col Raster 1 Column.
-          \param values Blended values for each band.
+          \param values A pointer to a pre-allocated vector where the blended values will be stored.
         */
         void noBlendMethodImp( const double& line1, const double& col1,
-          std::vector< double >& values );        
+          double* const values );        
 
         /*!
           \brief Implementation for EuclideanDistanceMethod.
           \param line Raster 1 Line.
           \param col Raster 1 Column.
-          \param values Blended values for each band.
+          \param values A pointer to a pre-allocated vector where the blended values will be stored.
         */
         void euclideanDistanceMethodImp( const double& line1, const double& col1,
-          std::vector< double >& values );              
+          double* const values );              
         
         /*!
           \brief Thread entry for the method blendIntoRaster1.
