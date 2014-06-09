@@ -71,7 +71,8 @@ endif()
 
 set_target_properties(terralib_mod_symbology
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
-                      SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
+                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
+                                 INSTALL_NAME_DIR "@executable_path/../lib")
 
 install(TARGETS terralib_mod_symbology
         EXPORT terralib-targets
@@ -80,7 +81,7 @@ install(TARGETS terralib_mod_symbology
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION include/terralib/se COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/se COMPONENT devel)
 
 if(TERRALIB_MOD_XML_ENABLED)
   install(FILES ${TERRALIB_XML_HDR_FILES}

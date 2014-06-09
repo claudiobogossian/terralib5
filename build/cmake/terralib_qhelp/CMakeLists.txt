@@ -90,4 +90,4 @@ add_custom_target(
 )
 
 install(DIRECTORY ${CMAKE_BINARY_DIR}/help
-        DESTINATION share/terraview/help COMPONENT runtime)
+        DESTINATION ${TERRALIB_DESTINATION_SHARE}/terraview COMPONENT runtime)

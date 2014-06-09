@@ -53,7 +53,11 @@ MACRO(TeInstallQtPlugins plgs)
 
   set (_regex_exp "(${_regex_exp})(${CMAKE_SHARED_LIBRARY_SUFFIX})$")
 
-  set (_dest qtplugins)
+  if(APPLE)
+    set (_dest terraview.app/Contents/qtplugins)
+  else()
+    set (_dest qtplugins)
+  endif()
 
   set (_plugin_dirs "imageformats;iconengines;sqldrivers;platforms")
 
