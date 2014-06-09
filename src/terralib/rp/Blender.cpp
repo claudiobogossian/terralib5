@@ -42,6 +42,7 @@
 
 #include <boost/thread.hpp>
 #include <boost/graph/graph_concepts.hpp>
+#include <boost/scoped_ptr.hpp>
 
 #include <complex>
 #include <limits>
@@ -668,10 +669,8 @@ namespace te
     }
     
     void Blender::noBlendMethodImp( const double& line, const double& col,
-      std::vector< double >& values )
+      double* const values )
     {
-      TERP_DEBUG_TRUE_OR_THROW( values.size() == m_raster1Bands.size(), "Invalid values vector size" );
-      
       // Finding the point over the second raster
       
       m_geomTransformationPtr->directMap( col, line, m_noBlendMethodImp_Point2Col,
@@ -714,9 +713,8 @@ namespace te
     }
     
     void Blender::euclideanDistanceMethodImp( const double& line, const double& col,
-      std::vector< double >& values )
+      double* const values )
     {
-      TERP_DEBUG_TRUE_OR_THROW( values.size() == m_raster1Bands.size(), "Invalid values vector size" );
       TERP_DEBUG_TRUE_OR_THROW( m_intersectionPtr.get(), "Invalid intersection pointer" );
       TERP_DEBUG_TRUE_OR_THROW( m_r1IntersectionSegmentsPointsSize > 1, "Invalid intersection points" );
       TERP_DEBUG_TRUE_OR_THROW( m_r2IntersectionSegmentsPointsSize > 1, "Invalid intersection points" );
@@ -1004,7 +1002,7 @@ namespace te
       // Discovering the raster 1 blocks we need to process
       
       std::vector< RasterBlockInfo > raster1BlocksInfos;
-      bool allBandsWithSameBlocking = true;
+      bool allRaster1BandsWithSameBlocking = true;
       
       {
         const te::rst::Band& firstBand = *( m_raster1Ptr->getBand(
@@ -1026,7 +1024,7 @@ namespace te
               ( band.getProperty()->m_nblocksy != firstBand.getProperty()->m_nblocksy )
             )
           {
-            allBandsWithSameBlocking = false;
+            allRaster1BandsWithSameBlocking = false;
             break;
           }
         }
@@ -1048,31 +1046,35 @@ namespace te
             
             RasterBlockInfo& rBInfo = raster1BlocksInfos.back();
             
-            rBInfo.m_wasProcessed = false;
+            rBInfo.m_wasProcessed = false;            
+            rBInfo.m_blkX = blkX;
+            rBInfo.m_blkY = blkY;
+            rBInfo.m_blkTotalPixelsNumber = firstBand.getProperty()->m_blkh *
+              firstBand.getProperty()->m_blkw;
             
-            rBInfo.m_blkFirstRow = blkY * firstBand.getProperty()->m_blkh;
-            rBInfo.m_blkFirstRow = std::max( firstOutputRasterRow,
-              rBInfo.m_blkFirstRow );
-            rBInfo.m_blkFirstRow = std::min( lastOutputRasterRow,
-              rBInfo.m_blkFirstRow );
+            rBInfo.m_firstRasterRow2Process = blkY * firstBand.getProperty()->m_blkh;
+            rBInfo.m_firstRasterRow2Process = std::max( firstOutputRasterRow,
+              rBInfo.m_firstRasterRow2Process );
+            rBInfo.m_firstRasterRow2Process = std::min( lastOutputRasterRow,
+              rBInfo.m_firstRasterRow2Process );
             
-            rBInfo.m_blkRowsBound = ( blkY + 1 ) * firstBand.getProperty()->m_blkh;
-            rBInfo.m_blkRowsBound = std::max( firstOutputRasterRow,
-              rBInfo.m_blkRowsBound );
-            rBInfo.m_blkRowsBound = std::min( lastOutputRasterRow,
-              rBInfo.m_blkRowsBound );              
+            rBInfo.m_rasterRows2ProcessBound = ( blkY + 1 ) * firstBand.getProperty()->m_blkh;
+            rBInfo.m_rasterRows2ProcessBound = std::max( firstOutputRasterRow,
+              rBInfo.m_rasterRows2ProcessBound );
+            rBInfo.m_rasterRows2ProcessBound = std::min( lastOutputRasterRow,
+              rBInfo.m_rasterRows2ProcessBound );              
             
-            rBInfo.m_blkFirstCol = blkX * firstBand.getProperty()->m_blkw;
-            rBInfo.m_blkFirstCol = std::max( firstOutputRasterCol,
-              rBInfo.m_blkFirstCol );
-            rBInfo.m_blkFirstCol = std::min( lastOutputRasterCol,
-              rBInfo.m_blkFirstCol );              
+            rBInfo.m_firstRasterCol2Process = blkX * firstBand.getProperty()->m_blkw;
+            rBInfo.m_firstRasterCol2Process = std::max( firstOutputRasterCol,
+              rBInfo.m_firstRasterCol2Process );
+            rBInfo.m_firstRasterCol2Process = std::min( lastOutputRasterCol,
+              rBInfo.m_firstRasterCol2Process );              
             
-            rBInfo.m_blkColsBound = ( blkX + 1 ) * firstBand.getProperty()->m_blkw;          
-            rBInfo.m_blkColsBound = std::max( firstOutputRasterCol,
-              rBInfo.m_blkColsBound );
-            rBInfo.m_blkColsBound = std::min( lastOutputRasterCol,
-              rBInfo.m_blkColsBound );                
+            rBInfo.m_rasterCols2ProcessBound = ( blkX + 1 ) * firstBand.getProperty()->m_blkw;          
+            rBInfo.m_rasterCols2ProcessBound = std::max( firstOutputRasterCol,
+              rBInfo.m_rasterCols2ProcessBound );
+            rBInfo.m_rasterCols2ProcessBound = std::min( lastOutputRasterCol,
+              rBInfo.m_rasterCols2ProcessBound );                
           }
         }
       }          
@@ -1111,7 +1113,7 @@ namespace te
         
         // creating threads
         
-        if( ( m_threadsNumber == 1 ) || (!allBandsWithSameBlocking) )
+        if( ( m_threadsNumber == 1 ) || (!allRaster1BandsWithSameBlocking) )
         {
           if( m_r1ValidDataDelimiterPtr.get() )
           {
@@ -1179,16 +1181,18 @@ namespace te
       
       // Guessing the output raster channels ranges
       
-      std::vector< double > raster1BandsRangeMin( 
-        paramsPtr->m_raster1Bands.size(), 0 );
-      std::vector< double > raster1BandsRangeMax( 
-        paramsPtr->m_raster1Bands.size(), 0 ); 
+      const std::vector< unsigned int >& raster1Bands = 
+        paramsPtr->m_raster1Bands;
+      const unsigned int raster1BandsSize = raster1Bands.size();      
+      
+      std::vector< double > raster1BandsRangeMin( raster1BandsSize, 0 );
+      std::vector< double > raster1BandsRangeMax( raster1BandsSize, 0 ); 
       
       {
         for( unsigned int raster1BandsIdx = 0 ;  raster1BandsIdx < 
-          paramsPtr->m_raster1Bands.size() ; ++raster1BandsIdx )
+          raster1BandsSize ; ++raster1BandsIdx )
         {
-          unsigned int bandIdx = paramsPtr->m_raster1Bands[ raster1BandsIdx ];
+          unsigned int bandIdx = raster1Bands[ raster1BandsIdx ];
           
           te::rst::GetDataTypeRanges( raster1.getBand( bandIdx )->getProperty()->m_type,
             raster1BandsRangeMin[ raster1BandsIdx ],
@@ -1232,6 +1236,13 @@ namespace te
       
       // loocking for the next raster block to blend
       
+      boost::scoped_array< double > blendedValuesHandler( new double[ raster1BandsSize ] );
+      
+      const double noDataValue = paramsPtr->m_noDataValue;
+      
+      boost::scoped_array< double > blendedBandsBlockHandler;
+      unsigned int blendedBandsBlockPixelsNumber = 0;
+      
       for( unsigned int raster1BlocksInfosIdx = 0 ; raster1BlocksInfosIdx <
         raster1BlocksInfosSize ; ++raster1BlocksInfosIdx )
       {
@@ -1248,26 +1259,48 @@ namespace te
           rBInfo.m_wasProcessed = true;
           paramsPtr->m_mutexPtr->unlock();
           
-          std::vector< unsigned int > raster1Bands = paramsPtr->m_raster1Bands;
-          const unsigned int raster1BandsSize = raster1Bands.size();
-          std::vector< double > blendedValues( raster1BandsSize );
-          double noDataValue = paramsPtr->m_noDataValue;
+          // Allocating the blended block memory
+          
+          if( blendedBandsBlockPixelsNumber < rBInfo.m_blkTotalPixelsNumber )
+          {
+            blendedBandsBlockHandler.reset( new double[ rBInfo.m_blkTotalPixelsNumber *
+              raster1BandsSize ] );
+            blendedBandsBlockPixelsNumber = rBInfo.m_blkTotalPixelsNumber;
+          }
+          
+          //blending block data          
+          
           unsigned int raster1Row = 0;
           unsigned int raster1Col = 0;
           unsigned int raster1BandsIdx = 0;
-         
-          for( raster1Row = rBInfo.m_blkFirstRow ; raster1Row < rBInfo.m_blkRowsBound ;
+          double* blendedBandsBlockHandlerPointer = blendedBandsBlockHandler.get();
+          
+          for( raster1Row = rBInfo.m_firstRasterRow2Process ; raster1Row < rBInfo.m_rasterRows2ProcessBound ;
             ++raster1Row )
           {
-            for( raster1Col = rBInfo.m_blkFirstCol ; raster1Col < rBInfo.m_blkColsBound ;
+            for( raster1Col = rBInfo.m_firstRasterCol2Process ; raster1Col < rBInfo.m_rasterCols2ProcessBound ;
               ++raster1Col )
             {
               blender.getBlendedValues( (double)raster1Row, (double)raster1Col,
-                blendedValues );            
-                
-              for( raster1BandsIdx = 0 ; raster1BandsIdx < raster1BandsSize ; ++raster1BandsIdx )
+                blendedBandsBlockHandlerPointer );            
+              
+              blendedBandsBlockHandlerPointer = blendedBandsBlockHandlerPointer + raster1BandsSize;
+            }
+          }
+          
+          blendedBandsBlockHandlerPointer = blendedBandsBlockHandler.get();
+         
+          for( raster1BandsIdx = 0 ; raster1BandsIdx < raster1BandsSize ; ++raster1BandsIdx )
+          {          
+            blendedBandsBlockHandlerPointer = blendedBandsBlockHandler.get() + raster1BandsIdx;
+            
+            for( raster1Row = rBInfo.m_firstRasterRow2Process ; raster1Row < rBInfo.m_rasterRows2ProcessBound ;
+              ++raster1Row )
+            {
+              for( raster1Col = rBInfo.m_firstRasterCol2Process ; raster1Col < rBInfo.m_rasterCols2ProcessBound ;
+                ++raster1Col )
               {
-                double& blendedValue = blendedValues[ raster1BandsIdx ];
+                double& blendedValue = *( blendedBandsBlockHandlerPointer );
                 
                 if( blendedValue != noDataValue )
                 {
@@ -1279,13 +1312,14 @@ namespace te
                   raster1.setValue( raster1Col, raster1Row, blendedValue,
                     raster1Bands[ raster1BandsIdx ] );
                 }
-              }                    
+                
+                blendedBandsBlockHandlerPointer = blendedBandsBlockHandlerPointer + raster1BandsSize;
+              }
             }
           }
         }
       }
     }
-
   } // end namespace rp
 }   // end namespace te    
 
