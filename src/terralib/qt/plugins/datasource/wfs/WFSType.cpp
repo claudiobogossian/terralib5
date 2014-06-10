@@ -67,12 +67,12 @@ std::string te::qt::plugins::wfs::WFSType::getName() const
 
 std::string te::qt::plugins::wfs::WFSType::getTitle() const
 {
-  return TE_QT_PLUGIN_DATASOURCE_WFS("Web Feature Service");
+  return TE_TR("Web Feature Service");
 }
 
 std::string te::qt::plugins::wfs::WFSType::getDescription() const
 {
-  return TE_QT_PLUGIN_DATASOURCE_WFS("Access to geospatial through a Web Feature Service (WFS)");
+  return TE_TR("Access to geospatial through a Web Feature Service (WFS)");
 }
 
 QWidget* te::qt::plugins::wfs::WFSType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
