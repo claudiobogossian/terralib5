@@ -94,7 +94,7 @@ void te::da::DataSourceTransactor::changePropertyDefinition(const std::string& d
 {
 }
 
-void te::da::DataSourceTransactor::update(const std::string &/*datasetName*/, te::da::DataSet */*dataset*/, const std::vector< std::set<int> >& /*properties*/,
+void te::da::DataSourceTransactor::update(const std::string &/*datasetName*/, te::da::DataSet* /*dataset*/, const std::vector< std::set<int> >& /*properties*/,
                                           const std::vector<size_t>& /*ids*/)
 {
   throw te::da::Exception("Operation not implemented for this data source");
