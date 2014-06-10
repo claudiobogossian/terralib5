@@ -84,6 +84,10 @@ if(NOT DEFINED TERRALIB_DESTINATION_HEADERS)
   set(TERRALIB_DESTINATION_HEADERS "include")
 endif()
 
+if(NOT DEFINED TERRALIB_DESTINATION_SHARE)
+  set(TERRALIB_DESTINATION_SHARE "share")
+endif()
+
 # variables that controls what is built
 if(NOT DEFINED TERRALIB_BUILD_EXAMPLES_ENABLED)
   set(TERRALIB_BUILD_EXAMPLES_ENABLED 1 CACHE BOOL "If on, shows a list of examples to be built")
@@ -165,7 +169,7 @@ include(terralib_macros.cmake)
 # first check of libraries
 #
 
-find_package(Boost 1.54.0 REQUIRED system date_time chrono timer filesystem thread log log_setup program_options unit_test_framework)
+find_package(Boost 1.54.0 REQUIRED system date_time chrono timer filesystem thread unit_test_framework)
 
 if(NOT Boost_FOUND)
   message(FATAL_ERROR "TerraLib: could not find required Boost libraries!")
@@ -883,18 +887,20 @@ install(FILES ${CMAKE_BINARY_DIR}/terralib_config.h
               ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Config.h
               ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Defines.h
               ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Version.h
-        DESTINATION include/terralib COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib COMPONENT devel)
 
 install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib.h
-        DESTINATION include COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS} COMPONENT devel)
 
-install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h.in
-              ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h
-        DESTINATION ${TERRALIB_DESTINATION_EXAMPLES} COMPONENT devel)
+if(TERRALIB_BUILD_EXAMPLES_ENABLED)
+  install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h.in
+                ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h
+          DESTINATION ${TERRALIB_DESTINATION_EXAMPLES} COMPONENT devel)
+endif()
 
 install(FILES ${terralib_BINARY_DIR}/pkg/terralib-config.cmake
               ${terralib_BINARY_DIR}/terralib-config-version.cmake
-        DESTINATION lib/cmake/terralib-${TERRALIB_PKG_VERSION} COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_LIBRARY}/cmake/terralib-${TERRALIB_PKG_VERSION} COMPONENT devel)
 
 install(EXPORT terralib-targets
         DESTINATION ${TERRALIB_DESTINATION_LIBRARY}/cmake/terralib-${TERRALIB_PKG_VERSION}
@@ -902,19 +908,19 @@ install(EXPORT terralib-targets
         COMPONENT devel)
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/config
-        DESTINATION share/terralib COMPONENT runtime)
+        DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/icons
-        DESTINATION share/terralib COMPONENT runtime)
+        DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/images
-        DESTINATION share/terralib COMPONENT runtime)
+        DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/json
-        DESTINATION share/terralib COMPONENT runtime)
+        DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/schemas
-        DESTINATION share/terralib COMPONENT runtime)
+        DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
 
 #
 # Track dependencies
