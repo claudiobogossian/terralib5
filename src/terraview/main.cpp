@@ -25,6 +25,7 @@
 
 // TerraView
 #include "Config.h"
+#include "../terralib/Defines.h"
 #include "TerraView.h"
 
 // TerraLib
