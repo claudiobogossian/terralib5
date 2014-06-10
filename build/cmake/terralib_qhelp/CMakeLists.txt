@@ -59,7 +59,7 @@ add_custom_command(
 
 add_custom_command(
   OUTPUT ${CMAKE_BINARY_DIR}/share/terraview/help/help.qhc
-  COMMAND ${QT_QCOLLECTIONGENERATOR_EXECUTABLE} ${CMAKE_BINARY_DIR}/help/help.qhcp -o ${CMAKE_BINARY_DIR}/share/terraview/help/help.qhc
+  COMMAND ${QT_QCOLLECTIONGENERATOR_EXECUTABLE} ${CMAKE_BINARY_DIR}/share/terraview/help/help.qhcp -o ${CMAKE_BINARY_DIR}/share/terraview/help/help.qhc
   DEPENDS copy_icon ${CMAKE_BINARY_DIR}/share/terraview/help/help.qhcp
   COMMENT "Building QHelp files ..."
 )
