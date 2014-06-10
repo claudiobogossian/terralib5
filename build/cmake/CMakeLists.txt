@@ -552,6 +552,7 @@ configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Version.h.in
 configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h.in
                ${CMAKE_BINARY_DIR}/terralib_examples_config.h @ONLY)
 
+configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/COPYING ${CMAKE_BINARY_DIR}/COPYING.txt COPYONLY)
 
 #
 # build modules
