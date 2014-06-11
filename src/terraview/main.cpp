@@ -106,7 +106,6 @@ int main(int argc, char** argv)
         
       chdir(dPath.path().toStdString().c_str());
 #endif
-      
 
       tview.init();
 
