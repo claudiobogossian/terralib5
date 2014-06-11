@@ -38,7 +38,7 @@
 
 static std::string sg_expansibleRasterFactoryId("EXPANSIBLE");
 
-te::mem::ExpansibleRasterFactory te::mem::ExpansibleRasterFactory::sm_factory;
+te::mem::ExpansibleRasterFactory* te::mem::ExpansibleRasterFactory::sm_factoryPointer( 0 );
 
 te::mem::ExpansibleRasterFactory::~ExpansibleRasterFactory()
 {
@@ -94,4 +94,16 @@ te::rst::Raster* te::mem::ExpansibleRasterFactory::build()
 std::map<std::string, std::string> te::mem::ExpansibleRasterFactory::getCapabilities() const
 {
   return std::map<std::string, std::string>();
+}
+
+void te::mem::ExpansibleRasterFactory::initialize()
+{
+  finalize();
+  sm_factoryPointer = new ExpansibleRasterFactory;
+}
+
+void te::mem::ExpansibleRasterFactory::finalize()
+{
+  delete sm_factoryPointer;
+  sm_factoryPointer = 0;
 }
