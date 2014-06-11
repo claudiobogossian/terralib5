@@ -27,9 +27,9 @@
 #define __TERRALIB_UNITTEST_COMMON_INTERNAL_UOMM_H
 
 // TerraLib
-#include "Config.h"
-#include "UnitsOfMeasureManager.h"
-#include "UnitOfMeasure.h"
+//#include "Config.h"
+#include "../../src/terralib/common/UnitsOfMeasureManager.h"
+#include "../../src/terralib/common/UnitOfMeasure.h"
 
 // STL
 #include <map>
@@ -110,10 +110,10 @@ class TsUnitsOfMeasureManager : public CPPUNIT_NS::TestFixture
 
   private:
 
-  te::common::UnitOfMeasure* uomA;
-  te::common::UnitOfMeasure* uomB;
-  te::common::UnitOfMeasure* uomC;
-  te::common::UnitOfMeasure* uomD;
+  te::common::UnitOfMeasurePtr uomA;
+  te::common::UnitOfMeasurePtr uomB;
+  te::common::UnitOfMeasurePtr uomC;
+  te::common::UnitOfMeasurePtr uomD;
 
   std::vector<std::string> alternativeNames;
 

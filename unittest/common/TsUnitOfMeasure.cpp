@@ -23,7 +23,7 @@
   \brief A class for representing a unit of measure.
 */
 
-#include "UnitOfMeasure.h"
+#include "../../src/terralib/common/UnitOfMeasure.h"
 #include "TsUnitOfMeasure.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsUnitOfMeasure );

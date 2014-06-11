@@ -45,20 +45,20 @@ void TsTranslator::tearDown()
 void TsTranslator::tcLocalePtBR()
 {
 // test translated messages
-  CPPUNIT_ASSERT(strcmp(TR_COMMON("BR-GIS"), "SIG-BR") == 0);
-  CPPUNIT_ASSERT(strcmp(TR_COMMON("Wrong cryptographer algorithm type!"), "O tipo de algoritmo de criptografia está errado!") == 0);
-  CPPUNIT_ASSERT(strcmp(TR_COMMON("You must specify a logger configuration file!"), "Você deve especificar o arquivo de configuração do logger!") == 0);
-  CPPUNIT_ASSERT(strcmp(TR_COMMON("It was not possible to initialize the the logger!"), "Não foi possível inicializar o logger!") == 0);
-  CPPUNIT_ASSERT(strcmp(TR_COMMON("Invalid logger configuration type!"), "Tipo de configuração inválido para o logger!") == 0);
-  CPPUNIT_ASSERT(strcmp(TR_COMMON("The logger name is empty!"), "O nome do logger está vazio!") == 0);
-  CPPUNIT_ASSERT(strcmp(TR_COMMON("TerraLib Core Initialized!"), "O módulo Core do TerraLib foi inicializado!") == 0);
-  CPPUNIT_ASSERT(strcmp(TR_COMMON("TerraLib Core Finalized!"), "O módulo Core do TerraLib foi finalizado!") == 0);
-  CPPUNIT_ASSERT(strcmp(TR_COMMON("The text domain already exist."), "Text domain já existente.") == 0);
-  CPPUNIT_ASSERT(strcmp(TR_COMMON("The text domain doesn't exist."), "O text domain informado não existe.") == 0);
+  CPPUNIT_ASSERT(strcmp(TE_TR("BR-GIS"), "SIG-BR") == 0);
+  CPPUNIT_ASSERT(strcmp(TE_TR("Wrong cryptographer algorithm type!"), "O tipo de algoritmo de criptografia está errado!") == 0);
+  CPPUNIT_ASSERT(strcmp(TE_TR("You must specify a logger configuration file!"), "Você deve especificar o arquivo de configuração do logger!") == 0);
+  CPPUNIT_ASSERT(strcmp(TE_TR("It was not possible to initialize the the logger!"), "Não foi possível inicializar o logger!") == 0);
+  CPPUNIT_ASSERT(strcmp(TE_TR("Invalid logger configuration type!"), "Tipo de configuração inválido para o logger!") == 0);
+  CPPUNIT_ASSERT(strcmp(TE_TR("The logger name is empty!"), "O nome do logger está vazio!") == 0);
+  CPPUNIT_ASSERT(strcmp(TE_TR("TerraLib Core Initialized!"), "O módulo Core do TerraLib foi inicializado!") == 0);
+  CPPUNIT_ASSERT(strcmp(TE_TR("TerraLib Core Finalized!"), "O módulo Core do TerraLib foi finalizado!") == 0);
+  CPPUNIT_ASSERT(strcmp(TE_TR("The text domain already exist."), "Text domain já existente.") == 0);
+  CPPUNIT_ASSERT(strcmp(TE_TR("The text domain doesn't exist."), "O text domain informado não existe.") == 0);
 
 // test un-translated messages
-  CPPUNIT_ASSERT(strcmp(TR_COMMON("The unprepared english text will remain the same."), "The unprepared english text will remain the same.") == 0);
-  CPPUNIT_ASSERT(strcmp(TR_COMMON("Wrong cryptographer algorithm type!"), "O tipo de algoritmo de criptografia estã errado!") != 0);
+  CPPUNIT_ASSERT(strcmp(TE_TR("The unprepared english text will remain the same."), "The unprepared english text will remain the same.") == 0);
+  CPPUNIT_ASSERT(strcmp(TE_TR("Wrong cryptographer algorithm type!"), "O tipo de algoritmo de criptografia estã errado!") != 0);
 
   return;
 }
