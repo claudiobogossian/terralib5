@@ -37,8 +37,8 @@
 #include "../raster/BandProperty.h"
 #include "../raster/Utils.h"
 #include "../raster/SynchronizedRaster.h"
-
 #include "../common/PlatformUtils.h"
+#include "../common/progress/TaskProgress.h"
 
 #include <boost/thread.hpp>
 #include <boost/graph/graph_concepts.hpp>
@@ -47,6 +47,7 @@
 #include <complex>
 #include <limits>
 #include <algorithm>
+#include <memory>
 
 // Get the perpendicular distance from a point P(pX,pY) from a line defined
 // by the points A(lineAX,lineAY) and B(lineBX,lineBY)
@@ -77,13 +78,14 @@ namespace te
   namespace rp
   {
     Blender::BlendIntoRaster1ThreadParams::BlendIntoRaster1ThreadParams()
-    : m_returnValuePtr( 0 ), m_sync1Ptr( 0 ), m_sync2Ptr( 0 ),
-      m_raster1BlocksInfosPtr( 0 ), m_mutexPtr( 0 ), 
+    : m_returnValuePtr( 0 ), m_abortValuePtr( 0 ), m_sync1Ptr( 0 ), m_sync2Ptr( 0 ),
+      m_raster1BlocksInfosPtr( 0 ), m_mutexPtr( 0 ), m_blockProcessedSignalMutexPtr( 0 ),
+      m_blockProcessedSignalPtr( 0 ), m_runningThreadsCounterPtr( 0 ),
       m_blendMethod( te::rp::Blender::InvalidBlendMethod ),
       m_interpMethod1( te::rst::Interpolator::NearestNeighbor ),
       m_interpMethod2( te::rst::Interpolator::NearestNeighbor ),
       m_noDataValue( 0.0 ), m_forceInputNoDataValue( false ), 
-      m_maxMemPercentToUse( 0 )
+      m_maxRasterCachedBlocks( 0 ), m_useProgress( false )
     {
     }
     
@@ -101,10 +103,14 @@ namespace te
       const BlendIntoRaster1ThreadParams& rhs )
     {
       m_returnValuePtr = rhs.m_returnValuePtr;
+      m_abortValuePtr = rhs.m_abortValuePtr;
       m_sync1Ptr = rhs.m_sync1Ptr;
       m_sync2Ptr = rhs.m_sync2Ptr;
       m_raster1BlocksInfosPtr = rhs.m_raster1BlocksInfosPtr;
       m_mutexPtr = rhs.m_mutexPtr;
+      m_blockProcessedSignalMutexPtr = rhs.m_blockProcessedSignalMutexPtr;
+      m_blockProcessedSignalPtr = rhs.m_blockProcessedSignalPtr;
+      m_runningThreadsCounterPtr = rhs.m_runningThreadsCounterPtr;
       m_raster1Bands = rhs.m_raster1Bands;
       m_raster2Bands = rhs.m_raster2Bands;
       m_blendMethod = rhs.m_blendMethod;
@@ -112,10 +118,12 @@ namespace te
       m_interpMethod2 = rhs.m_interpMethod2;
       m_noDataValue = rhs.m_noDataValue;
       m_forceInputNoDataValue = rhs.m_forceInputNoDataValue;
+      m_maxRasterCachedBlocks = rhs.m_maxRasterCachedBlocks;
       m_pixelOffsets1 = rhs.m_pixelOffsets1;
       m_pixelScales1 = rhs.m_pixelScales1;
       m_pixelOffsets2 = rhs.m_pixelOffsets2;
       m_pixelScales2 = rhs.m_pixelScales2;
+      m_useProgress = rhs.m_useProgress;
       
       if( rhs.m_r1ValidDataDelimiterPtr.get() )
       {
@@ -183,6 +191,8 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( 
         raster2.getAccessPolicy() & te::common::RAccess, 
         "Invalid raster 2" ); 
+      TERP_TRUE_OR_RETURN_FALSE( raster1Bands.size() > 0,
+        "Invalid raster bands vector" );      
       TERP_TRUE_OR_RETURN_FALSE( raster1Bands.size() ==
         raster2Bands.size(), "Invalid raster bands vector" );
       TERP_TRUE_OR_RETURN_FALSE( pixelOffsets1.size() ==  
@@ -1084,18 +1094,33 @@ namespace te
       bool returnValue = true;
       
       {
+        // Guessing memory resources
+        
+        const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
+        const double usedVMem = (double)te::common::GetUsedVirtualMemory();
+        const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() );
+        const double maxVMem2Use = 0.75 * MIN( totalPhysMem, ( totalVMem - usedVMem ) );
+        
         // Creating thread exec params
         
+        bool abortValue = false;
         boost::mutex mutex;
-        te::rst::RasterSynchronizer sync1( *m_raster1Ptr, te::common::WAccess );
+        te::rst::RasterSynchronizer sync1( *m_raster1Ptr, te::common::RWAccess );
         te::rst::RasterSynchronizer sync2( *((te::rst::Raster*)m_raster2Ptr), te::common::RAccess );
+        boost::mutex blockProcessedSignalMutex;
+        boost::condition_variable blockProcessedSignal;
+        unsigned int runningThreadsCounter = 0;
         
         BlendIntoRaster1ThreadParams auxThreadParams;
         auxThreadParams.m_returnValuePtr = &returnValue;
+        auxThreadParams.m_abortValuePtr = &abortValue;
         auxThreadParams.m_sync1Ptr = &sync1;
         auxThreadParams.m_sync2Ptr = &sync2;
         auxThreadParams.m_raster1BlocksInfosPtr = &raster1BlocksInfos;
         auxThreadParams.m_mutexPtr = &mutex;
+        auxThreadParams.m_blockProcessedSignalMutexPtr = &blockProcessedSignalMutex;
+        auxThreadParams.m_blockProcessedSignalPtr = &blockProcessedSignal;
+        auxThreadParams.m_runningThreadsCounterPtr = &runningThreadsCounter;
         auxThreadParams.m_raster1Bands = m_raster1Bands;
         auxThreadParams.m_raster2Bands = m_raster2Bands;
         auxThreadParams.m_blendMethod = m_blendMethod;
@@ -1115,6 +1140,7 @@ namespace te
         
         if( ( m_threadsNumber == 1 ) || (!allRaster1BandsWithSameBlocking) )
         {
+          runningThreadsCounter = 1;
           if( m_r1ValidDataDelimiterPtr.get() )
           {
             allThreadsParams[ 0 ].m_r1ValidDataDelimiterPtr.reset( 
@@ -1127,14 +1153,16 @@ namespace te
           }
           allThreadsParams[ 0 ].m_geomTransformationPtr.reset( 
             m_geomTransformationPtr->clone() );
-          allThreadsParams[ 0 ].m_maxMemPercentToUse = 90;
+          allThreadsParams[ 0 ].m_maxRasterCachedBlocks = ((unsigned int)maxVMem2Use)
+            / ((unsigned int)m_raster2Ptr->getBand( m_raster1Bands[ 0 ] )->getBlockSize() );
+          allThreadsParams[ 0 ].m_useProgress = m_enableProgressInterface;
           
           blendIntoRaster1Thread( &( allThreadsParams[ 0 ] ) );
         }
         else
         {
           boost::thread_group threads;
-          double maxMemPercentTouse = 90;
+          runningThreadsCounter = m_threadsNumber;
           
           for( unsigned int threadIdx = 0 ; threadIdx < m_threadsNumber ;
             ++threadIdx )
@@ -1152,16 +1180,63 @@ namespace te
             allThreadsParams[ threadIdx ].m_geomTransformationPtr.reset( 
               m_geomTransformationPtr->clone() );
             
-            allThreadsParams[ threadIdx ].m_maxMemPercentToUse = 
-              (unsigned char)
+            allThreadsParams[ 0 ].m_maxRasterCachedBlocks = 
+              ((unsigned int)maxVMem2Use)
+              / 
               (
-                maxMemPercentTouse / ((double)( m_threadsNumber - threadIdx ))
+                ((unsigned int)m_raster2Ptr->getBand( m_raster1Bands[ 0 ] )->getBlockSize() )
+                *
+                m_threadsNumber
               );
-            maxMemPercentTouse -= allThreadsParams[ threadIdx ].m_maxMemPercentToUse;
+            
+            allThreadsParams[ threadIdx ].m_useProgress = false;
             
             threads.add_thread( new boost::thread( blendIntoRaster1Thread, 
                &( allThreadsParams[ threadIdx ] ) ) );
           };    
+          
+          // progress stuff
+          
+          std::auto_ptr< te::common::TaskProgress > progressPtr;
+          if( m_enableProgressInterface )
+          {
+            progressPtr.reset( new te::common::TaskProgress );
+            progressPtr->setTotalSteps( raster1BlocksInfos.size() );
+            progressPtr->setMessage( "Blending" );
+          
+            while( (!abortValue) && (runningThreadsCounter > 0 ) )
+            {
+              if( progressPtr->isActive() )
+              {
+                boost::unique_lock<boost::mutex> lock( blockProcessedSignalMutex );
+                blockProcessedSignal.timed_wait( lock, 
+                  boost::posix_time::seconds( 1 ) );
+                  
+                int processedBlocksNmb = 0;
+                for( unsigned int raster1BlocksInfosIdx = 0 ; raster1BlocksInfosIdx <
+                  raster1BlocksInfos.size() ; ++raster1BlocksInfosIdx )
+                {
+                  if( raster1BlocksInfos[ raster1BlocksInfosIdx ].m_wasProcessed )
+                  {
+                    ++processedBlocksNmb;
+                  }
+                }
+                
+                if( processedBlocksNmb != progressPtr->getCurrentStep() )
+                {
+                  progressPtr->pulse();
+                }
+              }
+              else
+              {
+                mutex.lock();
+                abortValue = true;
+                mutex.unlock();
+              }
+            }
+          }
+          
+          // Joining threads
           
           threads.join_all();
         }
@@ -1174,10 +1249,9 @@ namespace te
     {
       // Instantiating the local rasters instance
       
-      te::rst::SynchronizedRaster raster1( *( paramsPtr->m_sync1Ptr ),
-        paramsPtr->m_maxMemPercentToUse / 2 );
-      te::rst::SynchronizedRaster raster2( *( paramsPtr->m_sync2Ptr ),
-        paramsPtr->m_maxMemPercentToUse / 2 );
+      te::rst::SynchronizedRaster raster1( 1, *( paramsPtr->m_sync1Ptr ) );
+      te::rst::SynchronizedRaster raster2( paramsPtr->m_maxRasterCachedBlocks,
+        *( paramsPtr->m_sync2Ptr ) );
       
       // Guessing the output raster channels ranges
       
@@ -1229,10 +1303,23 @@ namespace te
         false ) )
       {
         paramsPtr->m_mutexPtr->lock();
-        paramsPtr->m_noDataValue = false;
+        *(paramsPtr->m_abortValuePtr) = true;
+        *(paramsPtr->m_returnValuePtr) = false;
+        --( *(paramsPtr->m_runningThreadsCounterPtr) );
         paramsPtr->m_mutexPtr->unlock();
         return;
-      }
+      }      
+      
+      // progress stuff
+      
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      
+      if( paramsPtr->m_useProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        progressPtr->setTotalSteps( raster1BlocksInfosSize );
+        progressPtr->setMessage( "Blending" );
+      }       
       
       // loocking for the next raster block to blend
       
@@ -1317,8 +1404,45 @@ namespace te
               }
             }
           }
+          
+          // progress stuff
+          
+          if( paramsPtr->m_useProgress )
+          {
+            if( progressPtr->isActive() )
+            {
+              progressPtr->pulse();
+            }
+            else
+            {
+              paramsPtr->m_mutexPtr->lock();
+              *(paramsPtr->m_abortValuePtr) = true;
+              *(paramsPtr->m_returnValuePtr) = false;
+              --( *(paramsPtr->m_runningThreadsCounterPtr) );
+              paramsPtr->m_mutexPtr->unlock();
+              return;
+            }
+          }
+          else
+          {
+            // notifying the main thread with the block processed signal
+            
+            boost::lock_guard<boost::mutex> blockProcessedSignalLockGuard( 
+              *( paramsPtr->m_blockProcessedSignalMutexPtr) );              
+            
+            paramsPtr->m_blockProcessedSignalPtr->notify_one();
+          }
+        }
+        
+        // do we must continue processing ?
+        
+        if( *(paramsPtr->m_abortValuePtr) )
+        {
+          break;
         }
       }
+      
+      --( *(paramsPtr->m_runningThreadsCounterPtr) );
     }
   } // end namespace rp
 }   // end namespace te    
