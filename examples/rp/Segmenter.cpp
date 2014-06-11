@@ -74,11 +74,11 @@ void Segmenter()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in Segmenter(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in Segmenter(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in Segmenter()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in Segmenter()!" << std::endl;
   }
   
   // -------------------------------------------------------------------------------------------------------------
@@ -141,11 +141,11 @@ void Segmenter()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in Segmenter(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in Segmenter(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in Segmenter()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in Segmenter()!" << std::endl;
   }  
   
 }

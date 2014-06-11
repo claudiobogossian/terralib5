@@ -59,6 +59,10 @@ if(NOT DEFINED TERRALIB_EXAMPLES_DATA_DIR)
   set(TERRALIB_EXAMPLES_DATA_DIR "${CMAKE_BINARY_DIR}/data" CACHE PATH "Path to a directory containing the data used in the examples")
 endif()
 
+if(NOT DEFINED TERRALIB_UNITTEST_REPORT_DIR)
+  set(TERRALIB_UNITTEST_REPORT_DIR "${CMAKE_BINARY_DIR}/report" CACHE PATH "Path to a directory containing the report used in the unit test")
+endif()
+
 # variables that control the install location
 if(NOT DEFINED TERRALIB_DESTINATION_PLUGINS)
   set(TERRALIB_DESTINATION_PLUGINS "share/terralib/plugins")
@@ -66,6 +70,10 @@ endif()
 
 if(NOT DEFINED TERRALIB_DESTINATION_EXAMPLES)
   set(TERRALIB_DESTINATION_EXAMPLES "share/terralib/examples")
+endif()
+
+if(NOT DEFINED TERRALIB_DESTINATION_UNITTEST)
+  set(TERRALIB_DESTINATION_UNITTEST "share/terralib/unittest")
 endif()
 
 if(NOT DEFINED TERRALIB_DESTINATION_LIBRARY)
@@ -90,11 +98,11 @@ endif()
 
 # variables that controls what is built
 if(NOT DEFINED TERRALIB_BUILD_EXAMPLES_ENABLED)
-  set(TERRALIB_BUILD_EXAMPLES_ENABLED 1 CACHE BOOL "If on, shows a list of examples to be built")
+  set(TERRALIB_BUILD_EXAMPLES_ENABLED ON CACHE BOOL "If on, shows the list of examples to be built")
 endif()
 
 if(NOT DEFINED TERRALIB_BUILD_UNITTEST_ENABLED)
-  set(TERRALIB_BUILD_UNITTEST_ENABLED 1 CACHE BOOL "If on, shows a list of unit-tests to be built")
+  set(TERRALIB_BUILD_UNITTEST_ENABLED ON CACHE BOOL "If on, shows the list of unit-tests to be built")
 endif()
 
 if(NOT DEFINED TERRALIB_BUILD_AS_BUNDLE)
@@ -229,6 +237,8 @@ if(NOT QT_QCOLLECTIONGENERATOR_EXECUTABLE)
                PATH_SUFFIXES bin)
 endif()
 
+find_package(CppUnit)
+
 
 #
 # some variables needed in config file
@@ -355,6 +365,10 @@ if(XERCES_FOUND)
   set(TERRALIB_XERCES_ENABLED ON)
 endif()
 
+if(CPPUNIT_FOUND)
+  set(TERRALIB_CPPUNIT_ENABLED ON)
+endif()
+
 
 #
 # build options
@@ -456,6 +470,8 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_TERRALIB4_ENABLED "Bui
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WFS_ENABLED "Build WFS Driver Qt plugin?" ON "TERRALIB_MOD_WFS_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WMS_ENABLED "Build WMS Driver Qt plugin?" ON "TERRALIB_MOD_WMS_CORE_ENABLED;TERRALIB_MOD_WMS_QT_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
+
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_VP_ENABLED "Build Vector Processing Driver Qt plugin?" ON "TERRALIB_MOD_VP_QT_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_QT_APF_ENABLED" OFF)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_RP_ENABLED "Build Raster Processing Driver Qt plugin?" ON "TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_QT_APF_ENABLED" OFF)
@@ -530,6 +546,15 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_XERCES_ENABLED "Build the Xerces example
 
 
 #
+# build options for the TerraLib Unit Test
+#
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_UNITTEST_COMMON_ENABLED "Build the unit test for the Common module?" ON "TERRALIB_CPPUNIT_ENABLED;TERRALIB_BUILD_UNITTEST_ENABLED" OFF)
+
+
+
+
+#
 # process TERRALIB configuration files
 #
 
@@ -553,6 +578,9 @@ configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Version.h.in
 
 configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h.in
                ${CMAKE_BINARY_DIR}/terralib_examples_config.h @ONLY)
+
+configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/Config.h.in
+               ${CMAKE_BINARY_DIR}/terralib_unittest_config.h @ONLY)
 
 configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/COPYING ${CMAKE_BINARY_DIR}/COPYING.txt COPYONLY)
 
@@ -670,6 +698,10 @@ endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WFS_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_datasource_wfs)
+endif()
+
+if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WMS_ENABLED)
+  add_subdirectory(terralib_mod_qt_plugins_datasource_wms)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_VP_ENABLED)
@@ -883,6 +915,15 @@ endif()
 
 if(TERRALIB_EXAMPLE_XERCES_ENABLED)
   add_subdirectory(terralib_example_xerces)
+endif()
+
+
+#
+# build unit test
+#
+
+if(TERRALIB_UNITTEST_COMMON_ENABLED)
+  add_subdirectory(terralib_unittest_common)
 endif()
 
 
