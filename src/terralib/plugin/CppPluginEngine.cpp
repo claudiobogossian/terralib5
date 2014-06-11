@@ -98,6 +98,10 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
     {
 // search for alternative paths
       std::vector<std::string> alternative_paths;
+      
+#if TE_PLATFORM == TE_PLATFORMCODE_APPLE
+      alternative_paths.push_back("./");
+#endif
 
 // 1st: in a place indicated by a environment variable defined in macro TERRALIB_DIR_VAR_NAME
       const char* home_dir = getenv(TERRALIB_DIR_VAR_NAME);

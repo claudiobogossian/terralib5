@@ -37,15 +37,21 @@ file(GLOB TERRALIB_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/ui/*.ui
 set(TERRALIB_APP_TYPE "")
 
 if(APPLE AND TERRALIB_BUILD_AS_BUNDLE)
+
+  find_library(COREFOUNDATION_LIBRARY CoreFoundation "/")
+  if(COREFOUNDATION_LIBRARY)
+    list (APPEND _dep_libs ${COREFOUNDATION_LIBRARY})
+  endif()
+
   set(TERRALIB_APP_TYPE MACOSX_BUNDLE)
 
   set(MACOSX_BUNDLE_BUNDLE_NAME "TerraView")
   set(MACOSX_BUNDLE_COPYRIGHT "Copyright 2001-2014")
   set(MACOSX_BUNDLE_SIGNATURE "TerraView")
   set(MACOSX_BUNDLE_GUI_IDENTIFIER "http://www.terraview.org")
-  set(MACOSX_BUNDLE_EXECUTABLE_NAME "terraview")
+  set(MACOSX_BUNDLE_EXECUTABLE_NAME "TerraView")
   set(MACOSX_BUNDLE_INFO_STRING "System for manipulating geographical data.")
-  set(MACOSX_BUNDLE_ICON_FILE "share/terralib/images/icns/terralib-globe.icns")
+  set(MACOSX_BUNDLE_ICON_FILE "../share/terralib/images/icns/terralib-globe.icns")
   set(MACOSX_BUNDLE_LONG_VERSION_STRING ${TERRALIB_STRING_VERSION})
   set(MACOSX_BUNDLE_SHORT_VERSION_STRING ${TERRALIB_PKG_VERSION})
   set(MACOSX_BUNDLE_BUNDLE_VERSION ${TERRALIB_STRING_VERSION})
@@ -69,7 +75,7 @@ if(Qt5_FOUND)
 
   add_executable(terraview ${TERRALIB_APP_TYPE} ${TERRALIB_FILES})
 
-  target_link_libraries(terraview terralib_mod_qt_apf)
+  target_link_libraries(terraview terralib_mod_qt_apf ${COREFOUNDATION_LIBRARY})
 
   qt5_use_modules(terraview Widgets)
 
@@ -96,7 +102,7 @@ else()
   add_executable(terraview ${TERRALIB_APP_TYPE} ${TERRALIB_FILES})
 
   target_link_libraries(terraview terralib_mod_qt_apf
-                                  ${QT_LIBRARIES})
+                                  ${QT_LIBRARIES} ${COREFOUNDATION_LIBRARY})
 
 endif()
 
