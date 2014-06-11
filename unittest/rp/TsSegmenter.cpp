@@ -47,7 +47,7 @@ void TsSegmenter::BlockProcessingWithoutMerging()
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR 
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
     "/data/rasters/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -102,7 +102,7 @@ void TsSegmenter::BlockProcessingWithMerging()
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -156,7 +156,7 @@ void TsSegmenter::ThreadedProcessing()
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -210,7 +210,7 @@ void TsSegmenter::RegionGrowingMeanStrategy()
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -266,7 +266,7 @@ void TsSegmenter::RegionGrowingBaatzStrategy()
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
