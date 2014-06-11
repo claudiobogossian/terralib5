@@ -14,7 +14,7 @@ void OGRExampleRead()
 {
   try
   {
-    std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+    std::string data_dir = TERRALIB_DATA_DIR;
   
     std::string ogrInfo(data_dir + "/shp");
   
@@ -63,7 +63,7 @@ void ORGExampleWrite()
   
     std::map<std::string, std::string> connInfo;
   
-    std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+    std::string data_dir = TERRALIB_DATA_DIR;
   
     connInfo["URI"] = data_dir + "/shp";
   

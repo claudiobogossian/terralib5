@@ -31,7 +31,7 @@ void DataSetTypePersistence()
 
     // access a datasource to persist it
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TERRALIB_EXAMPLES_DATA_DIR"/rasters";
+    connInfo["URI"] = ""TERRALIB_DATA_DIR"/rasters";
 
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
     ds->setConnectionInfo(connInfo);
@@ -78,7 +78,7 @@ void DataSet()
 
 // access a datasource to persist it
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TERRALIB_EXAMPLES_DATA_DIR"/rasters";
+    connInfo["URI"] = ""TERRALIB_DATA_DIR"/rasters";
 
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
     ds->setConnectionInfo(connInfo);
@@ -124,7 +124,7 @@ void DataSetPersistence()
   {
     std::cout << "=== Example DataSetPersistence === " << std::endl;
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TERRALIB_EXAMPLES_DATA_DIR"/rasters";
+    connInfo["URI"] = ""TERRALIB_DATA_DIR"/rasters";
 
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
     ds->setConnectionInfo(connInfo);
@@ -164,7 +164,7 @@ void DataSource()
   {
     std::cout << "=== Example Data Source === " << std::endl;
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TERRALIB_EXAMPLES_DATA_DIR"/rasters";
+    connInfo["URI"] = ""TERRALIB_DATA_DIR"/rasters";
 
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
     ds->setConnectionInfo(connInfo);

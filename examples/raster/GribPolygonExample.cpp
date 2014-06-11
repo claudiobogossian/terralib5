@@ -126,11 +126,11 @@ void GribPolygonExample()
     // load input raster
     //std::map<std::string, std::string> rinfo;
 
-    //rinfo["URI"] = ""TERRALIB_EXAMPLES_DATA_DIR"/rasters/Z500.grb";
+    //rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/Z500.grb";
 
     //te::rst::Raster* graster = te::rst::RasterFactory::open("GRIB", rinfo);
 
-    std::auto_ptr<te::rst::Raster> iraster(te::rst::RasterFactory::open("URI", ""TERRALIB_EXAMPLES_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif"));
+    std::auto_ptr<te::rst::Raster> iraster(te::rst::RasterFactory::open("URI", ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif"));
 
     // create rectangle
     const te::gm::Envelope* mbr = iraster->getExtent();
@@ -145,7 +145,7 @@ void GribPolygonExample()
     // describe output
     std::map<std::string, std::string> routinfo;
 
-    routinfo["URI"] = ""TERRALIB_EXAMPLES_DATA_DIR"/rasters/Z500_out.tif";
+    routinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/Z500_out.tif";
 
     std::auto_ptr<te::rst::Raster> newRaster(Mask(iraster.get(), poly.get(), routinfo));
 

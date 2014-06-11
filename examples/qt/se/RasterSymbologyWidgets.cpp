@@ -19,7 +19,7 @@ void RasterSymbologyWidgets()
   // set input raster name
   std::map<std::string, std::string> rinfo;
   
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   
   //std::string filename(data_dir + '/shp/SP_cities.shp");
   

@@ -26,7 +26,7 @@ void ExchangeSpatialWeightsFiles(bool draw)
 
   try
   {
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   
     std::auto_ptr<te::da::DataSource> dataSource = OpenOGRDataSource(data_dir +  "/graph/BR_Estados.shp");
     std::string dataSetName = "BR_Estados";

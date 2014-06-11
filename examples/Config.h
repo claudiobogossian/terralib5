@@ -28,5 +28,6 @@
 
 // TerraLib
 #include "terralib_examples_config.h"
+#include "terralib_config.h"
 
 #endif  // __TERRALIB_EXAMPLES_INTERNAL_CONFIG_H

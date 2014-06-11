@@ -219,7 +219,7 @@
 //OGR to OGR
 bool AggregOGRToOGR()
 {
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   
   //std::string filename(data_dir + '/shp/SP_cities.shp");
   
@@ -299,7 +299,7 @@ bool AggregOGRToOGR()
 //OGR to Postgis
 bool AggregOGRToPGIS()
 {
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   
   //std::string filename(data_dir + "/shp/SP_cities.shp");
   
@@ -491,7 +491,7 @@ bool AggregPGISToOGR()
   stat1.push_back(te::stat::MIN_VALUE);
   stats.insert(std::make_pair(prop1.release(), stat1));
 
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   
   std::string uriResult(data_dir + "/Nulos/result.shp");
   

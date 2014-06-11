@@ -15,7 +15,7 @@ void IHSFusion()
     // Openning the the input image
     
     std::map<std::string, std::string> auxRasterInfo1;    
-    auxRasterInfo1["URI"] = TERRALIB_EXAMPLES_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+    auxRasterInfo1["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
     te::rst::Raster* inputRasterPointer1 = te::rst::RasterFactory::open(
       auxRasterInfo1 );
     if( inputRasterPointer1 == 0 )
@@ -25,7 +25,7 @@ void IHSFusion()
     }
     
     std::map<std::string, std::string> auxRasterInfo2;    
-    auxRasterInfo2["URI"] = TERRALIB_EXAMPLES_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
+    auxRasterInfo2["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
     te::rst::Raster* inputRasterPointer2 = te::rst::RasterFactory::open(
       auxRasterInfo2 );
     if( inputRasterPointer2 == 0 )
@@ -48,7 +48,7 @@ void IHSFusion()
     te::rp::IHSFusion::OutputParameters algoOutputParams;
     
     algoOutputParams.m_rInfo["URI"] =  
-      TERRALIB_EXAMPLES_DATA_DIR "/rasters/IHSFusionExample.tif";  
+      TERRALIB_DATA_DIR "/rasters/IHSFusionExample.tif";  
     algoOutputParams.m_rType = "GDAL";
     
     // Executing the algorithm

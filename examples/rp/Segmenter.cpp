@@ -27,13 +27,13 @@ void Segmenter()
 
 // open input raster
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TERRALIB_EXAMPLES_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
     std::map<std::string, std::string> orinfo;
-    orinfo["URI"] = ""TERRALIB_EXAMPLES_DATA_DIR"/rasters/cbers2b_rgb342_crop_segmentedMean.tif";
+    orinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_segmentedMean.tif";
 
 // define segmentation parameters
 
@@ -90,13 +90,13 @@ void Segmenter()
 
 // open input raster
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TERRALIB_EXAMPLES_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
     std::map<std::string, std::string> orinfo;
-    orinfo["URI"] = ""TERRALIB_EXAMPLES_DATA_DIR"/rasters/cbers2b_rgb342_crop_segmentedBaatz.tif";
+    orinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_segmentedBaatz.tif";
 
 // define segmentation parameters
 

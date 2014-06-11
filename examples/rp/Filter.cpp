@@ -15,7 +15,7 @@ void Filter()
     // Openning the the input image
     
     std::map<std::string, std::string> auxRasterInfo;    
-    auxRasterInfo["URI"] = TERRALIB_EXAMPLES_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+    auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
     te::rst::Raster* inputRasterPointer = te::rst::RasterFactory::open(
       auxRasterInfo );
     if( inputRasterPointer == 0 )
@@ -40,7 +40,7 @@ void Filter()
     te::rp::Filter::OutputParameters algoOutputParams;
 
     algoOutputParams.m_rInfo["URI"] =
-      TERRALIB_EXAMPLES_DATA_DIR "/rasters/FilterExample.tif";
+      TERRALIB_DATA_DIR "/rasters/FilterExample.tif";
     algoOutputParams.m_rType = "GDAL";
 
     // Executing the algorithm
