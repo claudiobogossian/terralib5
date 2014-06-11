@@ -38,7 +38,7 @@ find_path(TERRALIB4_KERNEL_INCLUDE_DIR
           PATH_SUFFIXES include
                         terralib4
                         include/terralib4/kernel)
-						
+
 find_path(TERRALIB4_ADO_INCLUDE_DIR 
           NAMES TeAdoDB.h
           PATHS /usr
@@ -46,7 +46,7 @@ find_path(TERRALIB4_ADO_INCLUDE_DIR
           PATH_SUFFIXES include
                         terralib4
                         include/terralib4/drivers/ado)
-						
+
 find_path(TERRALIB4_UTILS_INCLUDE_DIR 
           NAMES TeUtilsDefines.h
           PATHS /usr
@@ -55,11 +55,10 @@ find_path(TERRALIB4_UTILS_INCLUDE_DIR
                         terralib4
                         include/terralib4/utils)
 
-						
 set(TERRALIB4_INCLUDE_DIRS ${TERRALIB4_KERNEL_INCLUDE_DIR}
                            ${TERRALIB4_ADO_INCLUDE_DIR}
-						   ${TERRALIB4_UTILS_INCLUDE_DIR})
-					  				
+                           ${TERRALIB4_UTILS_INCLUDE_DIR})
+
 if(WIN32)
   find_library(TERRALIB4_LIBRARY_RELEASE
                NAMES terralib4 terralib

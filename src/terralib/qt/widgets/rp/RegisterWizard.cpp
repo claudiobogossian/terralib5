@@ -243,7 +243,7 @@ bool te::qt::widgets::RegisterWizard::execute()
   }
   catch(...)
   {
-    QMessageBox::warning(this, tr("Register"), tr("An exception has occuried!"));
+    QMessageBox::warning(this, tr("Register"), tr("An exception has occurred!"));
 
     QApplication::restoreOverrideCursor();
 

@@ -843,7 +843,7 @@ QStringList te::qt::widgets::WhereClauseWidget::getPropertyValues(std::string pr
   }
   catch(const std::exception& e)
   {
-    std::string msg =  "An exception has occuried: ";
+    std::string msg =  "An exception has occurred: ";
                 msg += e.what();
 
     QMessageBox::warning(0, "Query Error: ", msg.c_str());
@@ -852,7 +852,7 @@ QStringList te::qt::widgets::WhereClauseWidget::getPropertyValues(std::string pr
   }
   catch(...)
   {
-    std::string msg =  "An unexpected exception has occuried!";
+    std::string msg =  "An unexpected exception has occurred!";
 
     QMessageBox::warning(0, "Query Error: ", msg.c_str());
 

@@ -165,7 +165,7 @@ bool te::qt::widgets::ColorTransformWizard::execute()
   }
   catch(...)
   {
-    QMessageBox::warning(this, tr("Color Transform"), tr("An exception has occuried!"));
+    QMessageBox::warning(this, tr("Color Transform"), tr("An exception has occurred!"));
 
     te::common::ProgressManager::getInstance().removeViewer(id);
 

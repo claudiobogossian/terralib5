@@ -87,8 +87,6 @@ namespace te
 
         void onLayerComboBoxChanged(int index);
 
-        void onFilterLineEditTextChanged(const QString& text);
-
         void onFixedDistanceToggled();
 
         void onAttDistanceToggled();

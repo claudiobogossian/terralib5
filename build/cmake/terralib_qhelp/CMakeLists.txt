@@ -27,24 +27,24 @@
 
 file(WRITE
      ${CMAKE_BINARY_DIR}/config_qhelp.cmake
-     "configure_file (${TERRALIB_ABSOLUTE_ROOT_DIR}/doc/qhelp/help.qhcp.in ${CMAKE_BINARY_DIR}/help/help.qhcp @ONLY)"
+     "configure_file (${TERRALIB_ABSOLUTE_ROOT_DIR}/doc/qhelp/help.qhcp.in ${CMAKE_BINARY_DIR}/share/terraview/help/help.qhcp @ONLY)"
 )
 
 add_custom_command(
   OUTPUT del_dir
-  COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/help
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/share/terraview/help
   COMMENT "Removing QHelp directory..."
 )
 
 add_custom_command(
   OUTPUT copy_dir
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${TERRALIB_ABSOLUTE_ROOT_DIR}/doc/qhelp/src ${CMAKE_BINARY_DIR}/help
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${TERRALIB_ABSOLUTE_ROOT_DIR}/doc/qhelp/src ${CMAKE_BINARY_DIR}/share/terraview/help
   DEPENDS del_dir
   COMMENT "Copying QHelp directory..."
 )
 
 add_custom_command(
-  OUTPUT ${CMAKE_BINARY_DIR}/help/help.qhcp
+  OUTPUT ${CMAKE_BINARY_DIR}/share/terraview/help/help.qhcp
   COMMAND  ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/config_qhelp.cmake
   DEPENDS copy_dir
   COMMENT "Configuring QHelp collection file..."
@@ -52,33 +52,33 @@ add_custom_command(
 
 add_custom_command(
   OUTPUT copy_icon
-  COMMAND  ${CMAKE_COMMAND} -E copy ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/images/png/terralib-globe.png ${CMAKE_BINARY_DIR}/help
+  COMMAND  ${CMAKE_COMMAND} -E copy ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/images/png/terralib-globe.png ${CMAKE_BINARY_DIR}/share/terraview/help
   DEPENDS copy_dir
   COMMENT "Copying icon file..."
 )
 
 add_custom_command(
-  OUTPUT ${CMAKE_BINARY_DIR}/help/help.qhc
-  COMMAND ${QT_QCOLLECTIONGENERATOR_EXECUTABLE} ${CMAKE_BINARY_DIR}/help/help.qhcp -o ${CMAKE_BINARY_DIR}/help/help.qhc
-  DEPENDS copy_icon ${CMAKE_BINARY_DIR}/help/help.qhcp
+  OUTPUT ${CMAKE_BINARY_DIR}/share/terraview/help/help.qhc
+  COMMAND ${QT_QCOLLECTIONGENERATOR_EXECUTABLE} ${CMAKE_BINARY_DIR}/share/terraview/help/help.qhcp -o ${CMAKE_BINARY_DIR}/share/terraview/help/help.qhc
+  DEPENDS copy_icon ${CMAKE_BINARY_DIR}/share/terraview/help/help.qhcp
   COMMENT "Building QHelp files ..."
 )
 
 add_custom_command(
   OUTPUT remove_files
-  COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/help/apf
-  COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/help/terraview
-  COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/help/widgets
-  COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/help/plugins
-  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/about.txt
-  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/sobre.txt
-  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/widgets.qhp
-  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/terraview.qhp
-  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/plugins.qhp
-  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/apf.qhp
-  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/help.qhcp
-  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/terralib-globe.png
-  DEPENDS ${CMAKE_BINARY_DIR}/help/help.qhc
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/share/terraview/help/apf
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/share/terraview/help/terraview
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/share/terraview/help/widgets
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/share/terraview/help/plugins
+  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/share/terraview/help/about.txt
+  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/share/terraview/help/sobre.txt
+  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/share/terraview/help/widgets.qhp
+  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/share/terraview/help/terraview.qhp
+  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/share/terraview/help/plugins.qhp
+  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/share/terraview/help/apf.qhp
+  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/share/terraview/help/help.qhcp
+  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/share/terraview/help/terralib-globe.png
+  DEPENDS ${CMAKE_BINARY_DIR}/share/terraview/help/help.qhc
   COMMENT "Removing copied files"
 )
 
@@ -89,5 +89,5 @@ add_custom_target(
   VERBATIM
 )
 
-install(DIRECTORY ${CMAKE_BINARY_DIR}/help
-        DESTINATION ${TERRALIB_DESTINATION_SHARE}/terraview COMPONENT runtime)
+install(DIRECTORY ${CMAKE_BINARY_DIR}/share/terraview/help
+        DESTINATION ${TERRALIB_DESTINATION_SHARE}/terraview/help COMPONENT runtime)
