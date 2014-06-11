@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,14 +20,13 @@
 /*!
   \file unittest/Config.h
 
-  \brief Global configuration flags for the TerraLib Unit Tests.
-*/
+  \brief Proxy file for the real global configuration of TerraLib Unit Test.
+ */
 
 #ifndef __TERRALIB_UNITTEST_INTERNAL_CONFIG_H
 #define __TERRALIB_UNITTEST_INTERNAL_CONFIG_H
 
 // TerraLib
-#include <terralib/Config.h>
+#include "terralib_unittest_config.h"
 
 #endif  // __TERRALIB_UNITTEST_INTERNAL_CONFIG_H
-
