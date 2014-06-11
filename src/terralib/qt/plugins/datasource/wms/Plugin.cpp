@@ -51,7 +51,7 @@ void te::qt::plugins::wms::Plugin::startup()
 // it initializes the Translator support for the TerraLib PostGIS driver support
   TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_DATASOURCE_WMS_TEXT_DOMAIN, TE_QT_PLUGIN_DATASOURCE_WMS_TEXT_DOMAIN_DIR, "UTF-8");
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_WMS("TerraLib Qt OGC Web Map Service (WMS) widget startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt OGC Web Map Service (WMS) widget startup!"));
 
   m_initialized = true;
 }
@@ -64,7 +64,7 @@ void te::qt::plugins::wms::Plugin::shutdown()
   te::da::DataSourceInfoManager::getInstance().removeByType("WMS");
   te::qt::widgets::DataSourceTypeManager::getInstance().remove("WMS");
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_WMS("TerraLib Qt OGC Web Map Service (WMS) widget shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt OGC Web Map Service (WMS) widget shutdown!"));
 
   m_initialized = false;
 }
