@@ -86,7 +86,7 @@ int main(int argc, char** argv)
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
     std::cout << "Press Enter to exit..." << std::endl;
     std::cin.get();
 

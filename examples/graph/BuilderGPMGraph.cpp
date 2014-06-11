@@ -55,7 +55,7 @@ boost::shared_ptr<te::graph::AbstractGraph> CreateGPMAdjacencyGraph(bool draw)
     {
       if(!builder.buildAdjacency(ds, dataSetName, columnId, true))
       {
-        std::cout << std::endl << "An exception has occuried in Graph Example - CreateGPMGraph Adjacency: " << builder.getErrorMessage() << std::endl;
+        std::cout << std::endl << "An exception has occurred in Graph Example - CreateGPMGraph Adjacency: " << builder.getErrorMessage() << std::endl;
       }
       else
       {
@@ -133,7 +133,7 @@ boost::shared_ptr<te::graph::AbstractGraph> CreateGPMDistanceGraph(bool draw)
     {
       if(!builder.buildDistance(ds, dataSetName, columnId, distance))
       {
-        std::cout << std::endl << "An exception has occuried in Graph Example - CreateGPMGraph Distance: " << builder.getErrorMessage() << std::endl;
+        std::cout << std::endl << "An exception has occurred in Graph Example - CreateGPMGraph Distance: " << builder.getErrorMessage() << std::endl;
       }
       else
       {
@@ -143,11 +143,11 @@ boost::shared_ptr<te::graph::AbstractGraph> CreateGPMDistanceGraph(bool draw)
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in Graph Example - CreateGPMGraph Distance: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in Graph Example - CreateGPMGraph Distance: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in Graph Example - CreateGPMGraph Distance!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in Graph Example - CreateGPMGraph Distance!" << std::endl;
   }
 
   if(draw)
