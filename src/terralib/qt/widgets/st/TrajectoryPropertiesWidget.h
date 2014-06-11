@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/Trajectory/TrajectoryPropertiesWidget.h
+  \file terralib/qt/widgets/st/TrajectoryPropertiesWidget.h
 
   \brief A widget used to adjust a Trajectory layer's properties
 */
@@ -41,7 +41,7 @@ namespace te
 {
 
     //forward declarations
-  namespace da  {class DataSet;}
+  namespace da  {class DataSetType;}
 
   namespace qt
   {
@@ -62,11 +62,11 @@ namespace te
           /*!
             \brief Constructor
 
-            \param dataSet The dataset that will be used to generate a TrajectoryLayer.
+            \param dataSetType The datasetType that will be used to generate a TrajectoryLayer.
             \param parent this widget's parent
             \param f Window flags used to configure this widget
           */
-          TrajectoryPropertiesWidget(te::da::DataSet* dataSet, QWidget* parent = 0,  Qt::WindowFlags f = 0);
+          TrajectoryPropertiesWidget(te::da::DataSetType* dataType, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
           /*!
             \brief Destructor
@@ -88,7 +88,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::TrajectoryPropertiesWidgetForm>  m_ui;        //!< The widget's form.
-          std::auto_ptr<te::da::DataSet>                     m_dataSet;   //!< The dataset that will be used to generate the histogram graph.
+          std::auto_ptr<te::da::DataSetType>                 m_dataType;  //!< The datasetType that will be used to generate the TrajectoryLayer.
        };
     } // end namespace widgets
   }   // end namespace qt

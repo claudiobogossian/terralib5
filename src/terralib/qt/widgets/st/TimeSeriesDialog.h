@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/TimeSeriesDialog.h
+  \file terralib/qt/widgets/st/TimeSeriesDialog.h
 
   \brief A dialog used to define the basic parameters of a new TimeSeriesLayer.
 */

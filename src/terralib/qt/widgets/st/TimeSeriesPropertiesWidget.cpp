@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/tempoal/TimePropertiesWidget.cpp
+  \file terralib/qt/widgets/st/TimePropertiesWidget.cpp
 
   \brief A widget used to adjust a TimeSeries layer's properties
 */

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/TimeSeriesDialog.cpp
+  \file terralib/qt/widgets/st/TimeSeriesDialog.cpp
 
   \brief  A dialog used to define the basic parameters of a new TimeSeriesLayer.
 */
@@ -42,7 +42,10 @@ te::qt::widgets::TimeSeriesDialog::TimeSeriesDialog(te::map::AbstractLayerPtr la
 
   // Time Properties Widget
   te::da::DataSet* dataset = layer->getData().release();
-  m_propertiesWidget.reset(new te::qt::widgets::TemporalPropertiesWidget(dataset, this));
+  const te::map::LayerSchema* schema = layer->getSchema().release();
+  te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
+
+  m_propertiesWidget.reset(new te::qt::widgets::TemporalPropertiesWidget(dataType, this));
   m_uniquePropWidget.reset(new te::qt::widgets::TimeSeriesPropertiesWidget(dataset, this));
 
   //Observed Properties

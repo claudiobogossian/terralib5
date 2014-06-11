@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/ObservationDialog.h
+  \file terralib/qt/widgets/st/ObservationDialog.h
 
   \brief A dialog used to define the basic parameters of a new ObservationLayer.
 */

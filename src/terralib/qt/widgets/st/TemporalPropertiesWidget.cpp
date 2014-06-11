@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/tempoal/TimePropertiesWidget.cpp
+  \file terralib/qt/widgets/st/TimePropertiesWidget.cpp
 
   \brief A widget used to adjust a temporal layer's properties
 */
@@ -32,20 +32,21 @@
 //QT
 #include <QWidget>
 
-te::qt::widgets::TemporalPropertiesWidget::TemporalPropertiesWidget(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::TemporalPropertiesWidget::TemporalPropertiesWidget(te::da::DataSetType* dataType, QWidget* parent, Qt::WindowFlags f)
 : QWidget(parent, f),
   m_ui(new Ui::TemporalPropertiesWidgetForm),
-  m_dataSet (dataSet)
+  m_dataType (dataType)
     
 {
   m_ui->setupUi(this);
   QString item;
+  const std::vector<te::dt::Property*>& properties = m_dataType->getProperties();
 
-  for (std::size_t i = 0; i < dataSet->getNumProperties(); i++)
+  for (std::size_t i = 0; i < properties.size(); i++)
   {
-    if(dataSet->getPropertyDataType(i) == te::dt::DATETIME_TYPE)
+    if(properties.at(i)->getType() == te::dt::DATETIME_TYPE)
     {
-      item = QString::fromStdString(dataSet->getPropertyName(i));
+      item = QString::fromStdString(properties.at(i)->getName());
       m_ui->m_phenomenomComboBox->addItem(item);
       m_ui->m_resultComboBox->addItem(item);
       m_ui->m_validComboBox->addItem(item);

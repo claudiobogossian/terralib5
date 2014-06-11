@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/TrajectoryDialog.h
+  \file terralib/qt/widgets/st/TrajectoryDialog.h
 
   \brief A dialog used to define the basic parameters of a new TrajectoryLayer.
 */
@@ -33,6 +33,7 @@
 // Qt
 #include <QDialog>
 
+//STL
 #include <memory>
 
 namespace Ui { class TrajectoryDialogForm; }

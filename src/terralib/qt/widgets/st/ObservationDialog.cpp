@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/ObservationDialog.cpp
+  \file terralib/qt/widgets/st/ObservationDialog.cpp
 
   \brief  A dialog used to define the basic parameters of a new ObservationLayer.
 */
@@ -41,7 +41,10 @@ te::qt::widgets::ObservationDialog::ObservationDialog(te::map::AbstractLayerPtr 
 
   // Time Properties Widget
   te::da::DataSet* dataset = layer->getData().release();
-  m_propertiesWidget.reset(new te::qt::widgets::TemporalPropertiesWidget(dataset, this));
+  const te::map::LayerSchema* schema = layer->getSchema().release();
+  te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
+
+  m_propertiesWidget.reset(new te::qt::widgets::TemporalPropertiesWidget(dataType, this));
 
   //Observed Properties
   std::vector<std::string> properties;

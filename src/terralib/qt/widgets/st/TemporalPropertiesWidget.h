@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/temporal/TimePropertiesWidget.h
+  \file terralib/qt/widgets/st/TimePropertiesWidget.h
 
   \brief A widget used to adjust a temporal layer's properties
 */
@@ -62,11 +62,11 @@ namespace te
           /*!
             \brief Constructor
 
-            \param dataSet The dataset that will be used to generate a TemporalLayer.
+            \param dataSet The datasetType that will be used to generate a TemporalLayer.
             \param parent this widget's parent
             \param f Window flags used to configure this widget
           */
-          TemporalPropertiesWidget(te::da::DataSet* dataSet, QWidget* parent = 0,  Qt::WindowFlags f = 0);
+          TemporalPropertiesWidget(te::da::DataSetType* dataType, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
           /*!
             \brief Destructor
@@ -88,7 +88,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::TemporalPropertiesWidgetForm>  m_ui;        //!< The widget's form.
-          std::auto_ptr<te::da::DataSet>                   m_dataSet;   //!< The dataset that will be used to generate the histogram graph.
+          std::auto_ptr<te::da::DataSetType>               m_dataType;  //!< The datasetType that will be used to generate the spatio-temporal layer.
        };
     } // end namespace widgets
   }   // end namespace qt

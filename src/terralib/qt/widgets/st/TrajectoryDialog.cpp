@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/TrajectoryDialog.cpp
+  \file terralib/qt/widgets/st/TrajectoryDialog.cpp
 
   \brief  A dialog used to define the basic parameters of a new TrajectoryLayer.
 */
@@ -38,9 +38,11 @@ te::qt::widgets::TrajectoryDialog::TrajectoryDialog(te::map::AbstractLayerPtr la
 
   // Time Properties Widgets
   te::da::DataSet* dataset = layer->getData().release();
+  const te::map::LayerSchema* schema = layer->getSchema().release();
+  te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
 
-  m_propertiesWidget.reset(new te::qt::widgets::TemporalPropertiesWidget(dataset, this));
-  m_uniquePropWidget.reset(new te::qt::widgets::TrajectoryPropertiesWidget(dataset, this));
+  m_propertiesWidget.reset(new te::qt::widgets::TemporalPropertiesWidget(dataType, this));
+  m_uniquePropWidget.reset(new te::qt::widgets::TrajectoryPropertiesWidget(dataType, this));
 
   // Adjusting...
   QGridLayout* layout = new QGridLayout(m_ui->m_propertiesWidgetFrame);

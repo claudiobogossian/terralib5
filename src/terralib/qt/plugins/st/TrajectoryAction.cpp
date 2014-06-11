@@ -23,22 +23,29 @@
   \brief This file defines the Trajectory Action class
 */
 
+
 //Terralib
+#include "../../../qt/widgets/dataset/selector/DataSetSelectorWizardPage.h"
+#include "../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
 #include "../../../qt/widgets/layer/explorer/AbstractTreeItemFactory.h"
-#include "../../../qt/widgets/st/TrajectoryDialog.h"
+#include "../../../qt/widgets/st/TrajectoryWizard.h"
 #include "../../af/ApplicationController.h"
 #include "TrajectoryAction.h"
 #include "TrajectoryLayerItem.h"
 
 // Qt
 #include <QMessageBox>
+#include <QWizard>
+#include <QWizardPage>
 
 //STL
 #include <memory>
 
 // Boost
-#include <boost/functional/factory.hpp>
 #include <boost/bind.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/format.hpp>
+#include <boost/functional/factory.hpp>
 
 te::qt::plugins::st::TrajectoryAction::TrajectoryAction(QMenu* menu)
 : te::qt::plugins::st::AbstractAction(menu)
@@ -54,9 +61,10 @@ te::qt::plugins::st::TrajectoryAction::TrajectoryAction(QMenu* menu)
 void te::qt::plugins::st::TrajectoryAction::onActionActivated(bool checked)
 {
   QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
-  te::qt::widgets::TrajectoryDialog dlg (0, parent);
 
-  if(dlg.exec() != QDialog::Accepted)
-  return;
-
+  te::qt::widgets::TrajectoryWizard* SUperTestWizard = new te::qt::widgets::TrajectoryWizard();
+  SUperTestWizard->addPage(new te::qt::widgets::DataSourceSelectorWizardPage(parent));
+  SUperTestWizard->addPage(new te::qt::widgets::DataSetSelectorWizardPage(parent));
+  //SUperTestWizard.addPage(new QWizardPage(new te::qt::widgets::TrajectoryPropertiesWidget(0, parent)));
+  int tes = SUperTestWizard->exec();
 }
