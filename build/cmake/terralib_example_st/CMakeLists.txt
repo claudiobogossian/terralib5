@@ -27,7 +27,9 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
-add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+if(WIN32)
+  add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+endif()
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/st/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/st/*.h)
@@ -37,9 +39,8 @@ add_executable(terralib_example_st ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 target_link_libraries(terralib_example_st terralib_mod_common
                                           terralib_mod_dataaccess
                                           terralib_mod_datatype
-									      terralib_mod_geometry
-										  terralib_mod_st)
+                                          terralib_mod_geometry
+                                          terralib_mod_st)
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/st COMPONENT devel)
-
