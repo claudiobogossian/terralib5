@@ -58,6 +58,13 @@ namespace te
         void getCreationalParameters(std::vector< std::pair<std::string, std::string> >& params) const;
 
         std::map<std::string, std::string> getCapabilities() const;
+        
+        /*! \brief It initializes the factory: the singleton instance will be registered in the abstract factory DataSourceFactory. */
+        static void initialize();
+
+        /*! \brief It finalizes the factory: the singleton instance will be destroyed and will be unregistered from the abstract factory DataSourceFactory. */
+        static void finalize();
+        
 
       protected:
 
@@ -69,7 +76,7 @@ namespace te
 
       private:
 
-        static ExpansibleRasterFactory sm_factory;
+        static ExpansibleRasterFactory* sm_factoryPointer;
     };
 
   } // end namespace mem

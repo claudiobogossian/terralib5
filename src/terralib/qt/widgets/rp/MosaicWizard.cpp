@@ -235,7 +235,7 @@ bool te::qt::widgets::MosaicWizard::executeGeoMosaic()
   }
   catch(...)
   {
-    QMessageBox::warning(this, tr("Mosaic"), tr("An exception has occuried!"));
+    QMessageBox::warning(this, tr("Mosaic"), tr("An exception has occurred!"));
 
     te::common::ProgressManager::getInstance().removeViewer(id);
 
@@ -358,7 +358,7 @@ bool te::qt::widgets::MosaicWizard::executeTiePointMosaic()
   }
   catch(...)
   {
-    QMessageBox::warning(this, tr("Mosaic"), tr("An exception has occuried!"));
+    QMessageBox::warning(this, tr("Mosaic"), tr("An exception has occurred!"));
 
     te::common::ProgressManager::getInstance().removeViewer(id);
 
@@ -493,7 +493,7 @@ bool te::qt::widgets::MosaicWizard::executeSequenceMosaic()
   }
   catch(...)
   {
-    QMessageBox::warning(this, tr("Mosaic"), tr("An exception has occuried!"));
+    QMessageBox::warning(this, tr("Mosaic"), tr("An exception has occurred!"));
 
     te::common::ProgressManager::getInstance().removeViewer(id);
 

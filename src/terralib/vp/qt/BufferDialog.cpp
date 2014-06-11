@@ -104,7 +104,6 @@ te::vp::BufferDialog::BufferDialog(QWidget* parent, Qt::WindowFlags f)
 
 //signals
   connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLayerComboBoxChanged(int)));
-  connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onFilterLineEditTextChanged(const QString&)));
   connect(m_ui->m_fixedRadioButton, SIGNAL(toggled(bool)), this, SLOT(onFixedDistanceToggled()));
   connect(m_ui->m_fromAttRadioButton, SIGNAL(toggled(bool)), this, SLOT(onAttDistanceToggled()));
   connect(m_ui->m_ruleInOutRadioButton, SIGNAL(toggled(bool)), this, SLOT(onRuleInOutToggled()));
@@ -247,25 +246,6 @@ void te::vp::BufferDialog::onLayerComboBoxChanged(int index)
 
       return;
     }
-    ++it;
-  }
-}
-
-void te::vp::BufferDialog::onFilterLineEditTextChanged(const QString& text)
-{
-  std::list<te::map::AbstractLayerPtr> filteredLayers = te::vp::GetFilteredLayers(text.toStdString(), m_layers);
-
-  m_ui->m_layersComboBox->clear();
-
-  if(text.isEmpty())
-    filteredLayers = m_layers;
-
-  std::list<te::map::AbstractLayerPtr>::iterator it = filteredLayers.begin();
-
-  while(it != filteredLayers.end())
-  {
-    if(it->get()->getSchema()->hasGeom())
-      m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
     ++it;
   }
 }

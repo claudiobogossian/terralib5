@@ -84,6 +84,7 @@ namespace te
       m_autoEqualize = true;
       m_useRasterCache = true;
       m_enableProgress = false;
+      m_enableMultiThread = true;
     }
 
     const TiePointsMosaic::InputParameters& TiePointsMosaic::InputParameters::operator=(
@@ -102,6 +103,7 @@ namespace te
       m_autoEqualize = params.m_autoEqualize;
       m_useRasterCache = params.m_useRasterCache;
       m_enableProgress = params.m_enableProgress;
+      m_enableMultiThread = params.m_enableMultiThread;
 
       return *this;
     }
@@ -719,7 +721,7 @@ namespace te
           mosaicBBoxesUnionPtr.get(),
           0,
           *( eachRasterPixelToMosaicRasterPixelGeomTransfms[ inputRasterIdx - 1 ] ),
-          1,
+          m_inputParameters.m_enableMultiThread ? 0 : 1,
           false ), 
           "Blender initiazing error" );
         

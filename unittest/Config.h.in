@@ -18,15 +18,17 @@
  */
 
 /*!
-  \file unittest/Config.h
+  \file unittest/Config.h.in
 
-  \brief Proxy file for the real global configuration of TerraLib Unit Test.
- */
+  \brief Global configuration file for the TerraLib Unit Test.
+*/
 
-#ifndef __TERRALIB_UNITTEST_INTERNAL_CONFIG_H
-#define __TERRALIB_UNITTEST_INTERNAL_CONFIG_H
+#ifndef __UNITTEST_INTERNAL_TERRALIB_UNITTEST_CONFIG_H
+#define __UNITTEST_INTERNAL_TERRALIB_UNITTEST_CONFIG_H
 
-// TerraLib
-#include "terralib_unittest_config.h"
+#define TERRALIB_UNITTEST_REPORT_DIR "@TERRALIB_UNITTEST_REPORT_DIR@"
 
-#endif  // __TERRALIB_UNITTEST_INTERNAL_CONFIG_H
+#cmakedefine TERRALIB_UNITTEST_COMMON_ENABLED
+
+
+#endif  // __UNITTEST_INTERNAL_TERRALIB_UNITTEST_CONFIG_H

@@ -24,9 +24,12 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TsLibrary);
 
 void TsLibrary::setUp()
 {
-  lib1 = new te::common::Library("terralib_common_d");
-  lib2 = new te::common::Library("terralib_postgis_d");
-  lib3 = new te::common::Library("terralib_ogr_d");
+  lib1 = new te::common::Library("terralib_mod_common");
+  lib2 = new te::common::Library("terralib_mod_postgis");
+  lib3 = new te::common::Library("terralib_mod_ogr");
+  //lib1 = new te::common::Library("terralib_common_d");
+  //lib2 = new te::common::Library("terralib_postgis_d");
+  //lib3 = new te::common::Library("terralib_ogr_d");
 }
 
 void TsLibrary::tearDown()
