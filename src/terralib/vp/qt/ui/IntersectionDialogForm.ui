@@ -96,7 +96,7 @@
           <item row="2" column="0">
            <widget class="QCheckBox" name="m_firstCheckBox">
             <property name="enabled">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="text">
              <string>Only Selected</string>
@@ -129,7 +129,7 @@
             <item row="0" column="0">
              <widget class="QCheckBox" name="m_secondCheckBox">
               <property name="enabled">
-               <bool>true</bool>
+               <bool>false</bool>
               </property>
               <property name="text">
                <string>Only Selected</string>
@@ -185,6 +185,13 @@
         <item row="1" column="0">
          <widget class="QLineEdit" name="m_repositoryLineEdit"/>
         </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Layer Name:</string>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="1">
          <widget class="QToolButton" name="m_targetFileToolButton">
           <property name="minimumSize">
@@ -198,17 +205,10 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>Layer Name:</string>
-          </property>
-         </widget>
-        </item>
         <item row="3" column="0">
          <widget class="QLineEdit" name="m_newLayerNameLineEdit"/>
         </item>
-        <item row="3" column="1">
+        <item row="1" column="2">
          <widget class="QToolButton" name="m_targetDatasourceToolButton">
           <property name="minimumSize">
            <size>
