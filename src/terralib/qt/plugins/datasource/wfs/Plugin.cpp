@@ -48,9 +48,6 @@ void te::qt::plugins::wfs::Plugin::startup()
 
   te::qt::widgets::DataSourceTypeManager::getInstance().add(new WFSType);
 
-// it initializes the Translator support for the TerraLib PostGIS driver support
-  TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_DATASOURCE_WFS_TEXT_DOMAIN, TE_QT_PLUGIN_DATASOURCE_WFS_TEXT_DOMAIN_DIR, "UTF-8");
-
   TE_LOG_TRACE(TE_TR("TerraLib Qt OGC Web Feature Service (WFS) widget startup!"));
 
   m_initialized = true;

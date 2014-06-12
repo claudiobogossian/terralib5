@@ -76,11 +76,11 @@ void Contrast()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in Contrast(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in Contrast(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in Contrast()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in Contrast()!" << std::endl;
   }
 }
 

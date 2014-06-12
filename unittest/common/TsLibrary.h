@@ -20,15 +20,15 @@
 /*!
   \file TsLibrary.h
  
-  \brief Test suite for the Lirary  class.
+  \brief Test suite for the Library  class.
  */
 
 #ifndef __TERRALIB_UNITTEST_COMMON_INTERNAL_LIBRARY_H
 #define __TERRALIB_UNITTEST_COMMON_INTERNAL_LIBRARY_H
 
 // TerraLib
-#include "Config.h"
-#include "Library.h"
+//#include "Config.h"
+#include "../../src/terralib/common/Library.h"
 
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>

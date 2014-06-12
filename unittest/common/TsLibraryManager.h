@@ -27,9 +27,9 @@
 #define __TERRALIB_UNITTEST_COMMON_INTERNAL_LIBRARYM_H
 
 // TerraLib
-#include "Config.h"
-#include "Library.h"
-#include "LibraryManager.h"
+//#include "Config.h"
+#include "../../src/terralib/common/Library.h"
+#include "../../src/terralib/common/LibraryManager.h"
 
 // Boost
 #include <boost/weak_ptr.hpp>
