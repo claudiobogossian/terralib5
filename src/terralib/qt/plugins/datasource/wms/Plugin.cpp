@@ -28,9 +28,15 @@
 #include "../../../../common/Translator.h"
 #include "../../../../common/Logger.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../../../wms/qt/WMSLayerItem.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
+#include "../../../widgets/layer/explorer/AbstractTreeItemFactory.h"
 #include "WMSType.h"
 #include "Plugin.h"
+
+// Boost
+#include <boost/functional/factory.hpp>
+#include <boost/bind.hpp>
 
 te::qt::plugins::wms::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo)
@@ -46,10 +52,9 @@ void te::qt::plugins::wms::Plugin::startup()
   if(m_initialized)
     return;
 
-  te::qt::widgets::DataSourceTypeManager::getInstance().add(new WMSType);
+  te::qt::widgets::AbstractTreeItemFactory::reg("WMSLAYER", boost::bind(boost::factory<te::wms::WMSLayerItem*>(), _1, _2));
 
-// it initializes the Translator support for the TerraLib PostGIS driver support
-  TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_DATASOURCE_WMS_TEXT_DOMAIN, TE_QT_PLUGIN_DATASOURCE_WMS_TEXT_DOMAIN_DIR, "UTF-8");
+  te::qt::widgets::DataSourceTypeManager::getInstance().add(new WMSType);
 
   TE_LOG_TRACE(TE_TR("TerraLib Qt OGC Web Map Service (WMS) widget startup!"));
 
