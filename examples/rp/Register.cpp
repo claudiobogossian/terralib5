@@ -99,11 +99,11 @@ void Register()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried:" << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred:" << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
   }
 }
 

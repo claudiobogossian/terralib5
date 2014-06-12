@@ -50,18 +50,18 @@ void CreateLDDGraph(bool draw)
 
     if(!builder.build(lddRaster.get(), connInfo, graphType, graphInfo))
     {
-      std::cout << std::endl << "An exception has occuried in Graph Example - CreateLDDGraph: " << builder.getErrorMessage() << std::endl;
+      std::cout << std::endl << "An exception has occurred in Graph Example - CreateLDDGraph: " << builder.getErrorMessage() << std::endl;
     }
 
     graph = builder.getGraph();
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in Graph Example - CreateLDDGraph: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in Graph Example - CreateLDDGraph: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in Graph Example - CreateLDDGraph!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in Graph Example - CreateLDDGraph!" << std::endl;
   }
 
   if(draw)

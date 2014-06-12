@@ -31,6 +31,7 @@
 #include "../dataaccess/datasource/DataSourceFactory.h"
 #include "Config.h"
 #include "DataSource.h"
+#include "ExpansibleRasterFactory.h"
 #include "DataSourceFactory.h"
 #include "Module.h"
 
@@ -86,12 +87,20 @@ void te::mem::Module::initialize()
   capabilities.setQueryCapabilities(queryCapabilities);
 
   DataSource::setCapabilities(capabilities);
+  
+  // Register the expansible raster factory
+  
+  te::mem::ExpansibleRasterFactory::initialize();
 
   TE_LOG_TRACE(TE_TR("TerraLib In-Memory driver initialized!"));
 }
 
 void te::mem::Module::finalize()
 {
+  // unregister the expansible raster factory
+  
+  te::mem::ExpansibleRasterFactory::finalize();  
+  
   // Unregister the data source factory
   te::da::DataSourceFactory::remove(TE_MEMORY_DRIVER_IDENTIFIER);
 

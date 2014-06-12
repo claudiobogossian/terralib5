@@ -30,7 +30,7 @@ namespace te
   {
     RasterHandler::RasterHandler()
     {
-    };
+    }
     
     RasterHandler::RasterHandler(
       te::da::DataSource* dataSourcePtr,
@@ -42,7 +42,7 @@ namespace te
       m_transactorPtr.reset( transactorPtr );
       m_dataSetPtr.reset( dataSetPtr );
       m_rasterPtr.reset( rasterPtr );
-    };    
+    }    
     
     RasterHandler::RasterHandler(
       te::da::DataSourceTransactor* transactorPtr,
@@ -52,18 +52,18 @@ namespace te
       m_transactorPtr.reset( transactorPtr );
       m_dataSetPtr.reset( dataSetPtr );
       m_rasterPtr.reset( rasterPtr );
-    };    
+    }    
     
     
     RasterHandler::RasterHandler( te::rst::Raster* rasterPtr )
     {
       m_rasterPtr.reset( rasterPtr );
-    };     
+    }     
     
     RasterHandler::~RasterHandler()
     {
       reset();
-    };
+    }
     
     void RasterHandler::reset()
     {
@@ -72,7 +72,7 @@ namespace te
       m_dataSetPtr.reset();
       m_transactorPtr.reset();
       m_dataSourcePtr.reset();
-    };    
+    }    
     
     void RasterHandler::reset( 
       te::da::DataSource* dataSourcePtr,

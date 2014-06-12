@@ -201,7 +201,7 @@ bool te::qt::widgets::ArithmeticOpWizard::execute()
   }
   catch(...)
   {
-    QMessageBox::warning(this, tr("Arithmetic Operation"), tr("An exception has occuried!"));
+    QMessageBox::warning(this, tr("Arithmetic Operation"), tr("An exception has occurred!"));
 
     te::common::ProgressManager::getInstance().removeViewer(id);
 

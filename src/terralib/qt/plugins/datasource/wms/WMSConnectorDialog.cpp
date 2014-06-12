@@ -40,7 +40,7 @@
 #include <boost/lexical_cast.hpp>
 
 // Qt
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 
 te::qt::plugins::wms::WMSConnectorDialog::WMSConnectorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -93,7 +93,7 @@ void te::qt::plugins::wms::WMSConnectorDialog::openPushButtonPressed()
   {
     // Check if driver is loaded
     if(te::da::DataSourceFactory::find("WMS") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for WMS data sources!"));
+      throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for WMS data sources!"));
 
     // Get the data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -106,7 +106,7 @@ void te::qt::plugins::wms::WMSConnectorDialog::openPushButtonPressed()
     m_driver.reset(ds.release());
 
     if(m_driver.get() == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open WMS data source due to an unknown error!"));
+      throw te::qt::widgets::Exception(TE_TR("Could not open WMS data source due to an unknown error!"));
 
     QString title = m_ui->m_datasourceTitleLineEdit->text().trimmed();
 
@@ -161,7 +161,7 @@ void te::qt::plugins::wms::WMSConnectorDialog::testPushButtonPressed()
   {
     // Check if driver is loaded
     if(te::da::DataSourceFactory::find("WMS") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for WMS data sources!"));
+      throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for WMS data sources!"));
 
     // Get the data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -171,7 +171,7 @@ void te::qt::plugins::wms::WMSConnectorDialog::testPushButtonPressed()
     std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("WMS"));
 
     if(ds.get() == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open WMS server!"));
+      throw te::qt::widgets::Exception(TE_TR("Could not open WMS server!"));
 
     ds->setConnectionInfo(dsInfo);
     ds->open();
@@ -210,7 +210,7 @@ void te::qt::plugins::wms::WMSConnectorDialog::getConnectionInfo(std::map<std::s
   // Get the server URL
   QString url = m_ui->m_serverLineEdit->text().trimmed();
   if(url.isEmpty())
-    throw te::qt::widgets::Exception(TR_QT_WIDGETS("Please define the server address first!"));
+    throw te::qt::widgets::Exception(TE_TR("Please define the server address first!"));
 
   if(!url.startsWith("WMS:"))
     url.prepend("WMS:");
