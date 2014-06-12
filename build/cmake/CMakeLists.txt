@@ -600,6 +600,8 @@ if(TERRALIB_MOD_ADO_ENABLED)
   add_subdirectory(terralib_mod_ado)
 endif()
 
+add_definitions( /MP )
+
 if(TERRALIB_MOD_TERRALIB4_ENABLED)
   add_subdirectory(terralib_mod_terralib4)
 endif()
