@@ -51,7 +51,7 @@ std::vector<te::gm::Polygon*> SegmentImage(te::rst::Raster* rin)
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TERRALIB_DATA_DIR"/data/rasters/cbers2b_rgb342_crop_segmented.tif";
+  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_segmented.tif";
 
 // input parameters
   te::rp::Segmenter::InputParameters algoInputParameters;
@@ -96,13 +96,13 @@ void TsClassifier::ISOSeg()
 {
 // first open the input image
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TERRALIB_DATA_DIR"/data/rasters/terralib_unittest_rp_Classifier_ISOSeg_Test.tif";
+  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/terralib_unittest_rp_Classifier_ISOSeg_Test.tif";
 
 // to apply ISOSeg the image must be segmented
   std::vector<te::gm::Polygon*> pin = SegmentImage(rin);
@@ -143,13 +143,13 @@ void TsClassifier::MAP()
 {
 // first open the input image
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TERRALIB_DATA_DIR"/data/rasters/terralib_unittest_rp_Classifier_MAP_Test.tif";
+  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/terralib_unittest_rp_Classifier_MAP_Test.tif";
 
 // Defining the classes samples
 
@@ -232,13 +232,13 @@ void TsClassifier::EM()
 {
 // first open the input image
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TERRALIB_DATA_DIR"/data/rasters/terralib_unittest_rp_Classifier_EM_Test.tif";
+  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/terralib_unittest_rp_Classifier_EM_Test.tif";
 
 // define classification parameters
 
@@ -279,13 +279,13 @@ void TsClassifier::SAM()
 {
 // first open the input image
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TERRALIB_DATA_DIR"/data/rasters/terralib_unittest_rp_Classifier_SAM_Test.tif";
+  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/terralib_unittest_rp_Classifier_SAM_Test.tif";
 
 // Defining the classes samples
 
@@ -352,13 +352,13 @@ void TsClassifier::KMeans()
 {
 // first open the input image
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TERRALIB_DATA_DIR"/data/rasters/terralib_unittest_rp_Classifier_KMeans_Test.tif";
+  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/terralib_unittest_rp_Classifier_KMeans_Test.tif";
 
 // define classification parameters
 
