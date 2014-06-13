@@ -35,6 +35,7 @@
 #include "../datatype/SimpleProperty.h"
 #include "../datatype/StringProperty.h"
 
+#include "../dataaccess/dataset/ObjectIdSet.h"
 #include "../dataaccess/query/Avg.h"
 #include "../dataaccess/query/Count.h"
 #include "../dataaccess/query/DataSetName.h"
@@ -54,6 +55,7 @@
 #include "../dataaccess/query/StdDev.h"
 #include "../dataaccess/query/ST_Union.h"
 #include "../dataaccess/query/Variance.h"
+#include "../dataaccess/query/Where.h"
 #include "../dataaccess/utils/Utils.h"
 
 #include "../geometry/Geometry.h"
@@ -216,7 +218,15 @@ bool te::vp::AggregationQuery::run()
   te::da::From* from = new te::da::From;
   from->push_back(fromItem);
   
-  te::da::Select select(fields, from);
+  te::da::Where* w_oid = 0;
+
+  if(m_onlySelectedObjects)
+  {
+    std::auto_ptr<te::da::ObjectIdSet>oidSet(te::da::GenerateOIDSet(m_inDset.get(), m_inDsetType.get()));
+    w_oid = new te::da::Where(oidSet->getExpression());
+  }
+
+  te::da::Select select(fields, from, w_oid);
   
   te::da::GroupBy* groupBy = new te::da::GroupBy();
   for(std::size_t i=0; i<m_groupProps.size(); ++i)
@@ -227,7 +237,8 @@ bool te::vp::AggregationQuery::run()
   select.setGroupBy(groupBy);
   
   std::auto_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
-  
+
+
   if (dsQuery->isEmpty())
     return false;
   

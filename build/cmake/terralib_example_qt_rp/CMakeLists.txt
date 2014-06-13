@@ -27,6 +27,7 @@
 
 
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${GDAL_INCLUDE_DIR})
 
 if(Qt5_FOUND)
 
