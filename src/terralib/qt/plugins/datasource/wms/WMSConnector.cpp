@@ -36,8 +36,8 @@
 #include <boost/filesystem.hpp>
 
 // Qt
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QMessageBox>
 
 te::qt::plugins::wms::WMSConnector::WMSConnector(QWidget* parent, Qt::WindowFlags f)
   : te::qt::widgets::AbstractDataSourceConnector(parent, f)

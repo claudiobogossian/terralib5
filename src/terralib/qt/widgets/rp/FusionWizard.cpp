@@ -259,7 +259,7 @@ bool te::qt::widgets::FusionWizard::executeIHS()
   }
   catch(...)
   {
-    QMessageBox::warning(this, tr("Fusion"), tr("An exception has occuried!"));
+    QMessageBox::warning(this, tr("Fusion"), tr("An exception has occurred!"));
 
     te::common::ProgressManager::getInstance().removeViewer(id);
 
@@ -383,7 +383,7 @@ bool te::qt::widgets::FusionWizard::executePCA()
   }
   catch(...)
   {
-    QMessageBox::warning(this, tr("Fusion"), tr("An exception has occuried!"));
+    QMessageBox::warning(this, tr("Fusion"), tr("An exception has occurred!"));
 
     te::common::ProgressManager::getInstance().removeViewer(id);
 

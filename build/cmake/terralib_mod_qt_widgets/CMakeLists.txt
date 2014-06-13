@@ -225,8 +225,8 @@ source_group("Source Files\\datasource\\connector" FILES ${TERRALIB_DATASOURCE_C
 source_group("Header Files\\datasource\\connector" FILES ${TERRALIB_DATASOURCE_CONNECTOR_HDR_FILES})
 source_group("Source Files\\datasource\\core"      FILES ${TERRALIB_DATASOURCE_CORE_SRC_FILES})
 source_group("Header Files\\datasource\\core"      FILES ${TERRALIB_DATASOURCE_CORE_HDR_FILES})
-source_group("Source Files\\datasource\\core"      FILES ${TERRALIB_DATASOURCE_EXPLORER_SRC_FILES})
-source_group("Header Files\\datasource\\core"      FILES ${TERRALIB_DATASOURCE_EXPLORER_HDR_FILES})
+source_group("Source Files\\datasource\\explorer"  FILES ${TERRALIB_DATASOURCE_EXPLORER_SRC_FILES})
+source_group("Header Files\\datasource\\explorer"  FILES ${TERRALIB_DATASOURCE_EXPLORER_HDR_FILES})
 source_group("Source Files\\datasource\\selector"  FILES ${TERRALIB_DATASOURCE_SELECTOR_SRC_FILES})
 source_group("Header Files\\datasource\\selector"  FILES ${TERRALIB_DATASOURCE_SELECTOR_HDR_FILES})
 source_group("UI Files\\datasource\\selector"      FILES ${TERRALIB_DATASOURCE_SELECTOR_UI_FILES})
@@ -937,7 +937,8 @@ endif()
 
 set_target_properties(terralib_mod_qt_widgets
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
-                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
+                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
+                                 INSTALL_NAME_DIR "@executable_path/../lib")
 
 install(TARGETS terralib_mod_qt_widgets
         EXPORT terralib-targets

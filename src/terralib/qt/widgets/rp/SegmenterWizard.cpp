@@ -224,7 +224,7 @@ bool te::qt::widgets::SegmenterWizard::execute()
   }
   catch(...)
   {
-    QMessageBox::warning(this, tr("Segmenter"), tr("An exception has occuried!"));
+    QMessageBox::warning(this, tr("Segmenter"), tr("An exception has occurred!"));
 
     te::common::ProgressManager::getInstance().removeViewer(id);
 

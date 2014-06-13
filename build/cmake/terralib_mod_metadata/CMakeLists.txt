@@ -77,7 +77,8 @@ endif()
 
 set_target_properties(terralib_mod_metadata
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
-                      SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
+                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
+                                 INSTALL_NAME_DIR "@executable_path/../lib")
 
 install(TARGETS terralib_mod_metadata
         EXPORT terralib-targets

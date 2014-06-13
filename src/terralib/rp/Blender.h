@@ -170,11 +170,15 @@ namespace te
         {
           public :
             
-            bool* m_returnValuePtr;
+            bool* m_returnValuePtr; //!< A pointer to the threadreturn value.
+            bool* m_abortValuePtr; //!< A pointer to the abort execution value.
             te::rst::RasterSynchronizer* m_sync1Ptr; //!< Raster 1 syncronizer pointer.
             te::rst::RasterSynchronizer* m_sync2Ptr; //!< Raster 1 syncronizer pointer.
             std::vector< RasterBlockInfo >* m_raster1BlocksInfosPtr; //!< blocks to process.
             boost::mutex* m_mutexPtr; //!< mutex pointer.
+            boost::mutex* m_blockProcessedSignalMutexPtr; //!< Mutex used to update the main process progress update.
+            boost::condition_variable* m_blockProcessedSignalPtr; //!< Signal used to update the main process progress update.            
+            unsigned int* m_runningThreadsCounterPtr; //!< a pointer to the running threads counter.
             std::vector< unsigned int > m_raster1Bands; //!< Input raster 1 band indexes to use.
             std::vector< unsigned int > m_raster2Bands; //!< Input raster 2 band indexes to use (this vector has the same size as raster1Bands).
             BlendMethod m_blendMethod; //!<  The blend method to apply.
@@ -189,7 +193,8 @@ namespace te
             std::auto_ptr< te::gm::Polygon > m_r1ValidDataDelimiterPtr; //!< A pointer to a geometry (raster 1 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
             std::auto_ptr< te::gm::Polygon > m_r2ValidDataDelimiterPtr; //!< A pointer to a geometry (raster 2 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
             std::auto_ptr< te::gm::GeometricTransformation > m_geomTransformationPtr; //!< A transformation mapping raster 1 pixels ( te::gm::GTParameters::TiePoint::first ) to raster 2 pixels ( te::gm::GTParameters::TiePoint::second ) (Note: all coords are indexed by lines/columns).
-            unsigned char m_maxMemPercentToUse; //!< The maximum free memory percentual to use valid range: [1:100].
+            unsigned long int m_maxRasterCachedBlocks; //!< The maximum number of raster cache blocks.
+            bool m_useProgress; //!< If enabled each thread will use its own progress interface, if false only a signal will be emitted on each processed block.
             
             BlendIntoRaster1ThreadParams();
             

@@ -69,7 +69,8 @@ namespace te
                     std::auto_ptr<te::da::DataSetType> inDsetType);
       
       void setParams(std::vector<te::dt::Property*>& groupProps,
-                     std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >&statSum);
+                     std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >&statSum,
+                     bool onlySelectedObjects = false);
       
       void setOutput(te::da::DataSourcePtr outDsrc, std::string dsname);
       
@@ -86,6 +87,7 @@ namespace te
       
       std::vector<te::dt::Property*> m_groupProps;
       std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > m_statSum;
+      bool m_onlySelectedObjects;
       
       te::da::DataSourcePtr m_outDsrc;
       std::string m_outDset;

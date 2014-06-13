@@ -53,10 +53,12 @@ void te::vp::AggregationOp::setInput(te::da::DataSourcePtr inDsrc,
 }
 
 void te::vp::AggregationOp::setParams(std::vector<te::dt::Property*>& groupProps,
-                                      std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >&statSum)
+                                      std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >&statSum,
+                                      bool onlySelectedObjects)
 {
   m_groupProps = groupProps;
   m_statSum = statSum;
+  m_onlySelectedObjects = onlySelectedObjects;
 }
 
 void te::vp::AggregationOp::setOutput(te::da::DataSourcePtr outDsrc, std::string dsname)

@@ -59,6 +59,10 @@ if(NOT DEFINED TERRALIB_EXAMPLES_DATA_DIR)
   set(TERRALIB_EXAMPLES_DATA_DIR "${CMAKE_BINARY_DIR}/data" CACHE PATH "Path to a directory containing the data used in the examples")
 endif()
 
+if(NOT DEFINED TERRALIB_UNITTEST_REPORT_DIR)
+  set(TERRALIB_UNITTEST_REPORT_DIR "${CMAKE_BINARY_DIR}/report" CACHE PATH "Path to a directory containing the report used in the unit test")
+endif()
+
 # variables that control the install location
 if(NOT DEFINED TERRALIB_DESTINATION_PLUGINS)
   set(TERRALIB_DESTINATION_PLUGINS "share/terralib/plugins")
@@ -66,6 +70,10 @@ endif()
 
 if(NOT DEFINED TERRALIB_DESTINATION_EXAMPLES)
   set(TERRALIB_DESTINATION_EXAMPLES "share/terralib/examples")
+endif()
+
+if(NOT DEFINED TERRALIB_DESTINATION_UNITTEST)
+  set(TERRALIB_DESTINATION_UNITTEST "share/terralib/unittest")
 endif()
 
 if(NOT DEFINED TERRALIB_DESTINATION_LIBRARY)
@@ -84,13 +92,17 @@ if(NOT DEFINED TERRALIB_DESTINATION_HEADERS)
   set(TERRALIB_DESTINATION_HEADERS "include")
 endif()
 
+if(NOT DEFINED TERRALIB_DESTINATION_SHARE)
+  set(TERRALIB_DESTINATION_SHARE "share")
+endif()
+
 # variables that controls what is built
 if(NOT DEFINED TERRALIB_BUILD_EXAMPLES_ENABLED)
-  set(TERRALIB_BUILD_EXAMPLES_ENABLED 1 CACHE BOOL "If on, shows a list of examples to be built")
+  set(TERRALIB_BUILD_EXAMPLES_ENABLED ON CACHE BOOL "If on, shows the list of examples to be built")
 endif()
 
 if(NOT DEFINED TERRALIB_BUILD_UNITTEST_ENABLED)
-  set(TERRALIB_BUILD_UNITTEST_ENABLED 1 CACHE BOOL "If on, shows a list of unit-tests to be built")
+  set(TERRALIB_BUILD_UNITTEST_ENABLED ON CACHE BOOL "If on, shows the list of unit-tests to be built")
 endif()
 
 if(NOT DEFINED TERRALIB_BUILD_AS_BUNDLE)
@@ -165,7 +177,7 @@ include(terralib_macros.cmake)
 # first check of libraries
 #
 
-find_package(Boost 1.54.0 REQUIRED system date_time chrono timer filesystem thread log log_setup program_options unit_test_framework)
+find_package(Boost 1.54.0 REQUIRED system date_time chrono timer filesystem thread unit_test_framework)
 
 if(NOT Boost_FOUND)
   message(FATAL_ERROR "TerraLib: could not find required Boost libraries!")
@@ -224,6 +236,8 @@ if(NOT QT_QCOLLECTIONGENERATOR_EXECUTABLE)
                      ${Qt5_DIR}/../../..
                PATH_SUFFIXES bin)
 endif()
+
+find_package(CppUnit)
 
 
 #
@@ -351,6 +365,10 @@ if(XERCES_FOUND)
   set(TERRALIB_XERCES_ENABLED ON)
 endif()
 
+if(CPPUNIT_FOUND)
+  set(TERRALIB_CPPUNIT_ENABLED ON)
+endif()
+
 
 #
 # build options
@@ -450,6 +468,10 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_POSTGIS_ENABLED "Build
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_TERRALIB4_ENABLED "Build TerraLib4 Driver Qt plugin?" ON "TERRALIB_MOD_TERRALIB4_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WFS_ENABLED "Build WFS Driver Qt plugin?" ON "TERRALIB_MOD_WFS_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WMS_ENABLED "Build WMS Driver Qt plugin?" ON "TERRALIB_MOD_WMS_CORE_ENABLED;TERRALIB_MOD_WMS_QT_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
+
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_VP_ENABLED "Build Vector Processing Driver Qt plugin?" ON "TERRALIB_MOD_VP_QT_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_QT_APF_ENABLED" OFF)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_RP_ENABLED "Build Raster Processing Driver Qt plugin?" ON "TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_QT_APF_ENABLED" OFF)
@@ -524,6 +546,15 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_XERCES_ENABLED "Build the Xerces example
 
 
 #
+# build options for the TerraLib Unit Test
+#
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_UNITTEST_COMMON_ENABLED "Build the unit test for the Common module?" ON "TERRALIB_CPPUNIT_ENABLED;TERRALIB_BUILD_UNITTEST_ENABLED" OFF)
+
+
+
+
+#
 # process TERRALIB configuration files
 #
 
@@ -548,6 +579,10 @@ configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Version.h.in
 configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h.in
                ${CMAKE_BINARY_DIR}/terralib_examples_config.h @ONLY)
 
+configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/Config.h.in
+               ${CMAKE_BINARY_DIR}/terralib_unittest_config.h @ONLY)
+
+configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/COPYING ${CMAKE_BINARY_DIR}/COPYING.txt COPYONLY)
 
 #
 # build modules
@@ -657,6 +692,14 @@ endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_POSTGIS_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_datasource_pgis)
+endif()
+
+if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WFS_ENABLED)
+  add_subdirectory(terralib_mod_qt_plugins_datasource_wfs)
+endif()
+
+if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WMS_ENABLED)
+  add_subdirectory(terralib_mod_qt_plugins_datasource_wms)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_VP_ENABLED)
@@ -874,6 +917,15 @@ endif()
 
 
 #
+# build unit test
+#
+
+if(TERRALIB_UNITTEST_COMMON_ENABLED)
+  add_subdirectory(terralib_unittest_common)
+endif()
+
+
+#
 # install and targets export
 #
 
@@ -883,18 +935,20 @@ install(FILES ${CMAKE_BINARY_DIR}/terralib_config.h
               ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Config.h
               ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Defines.h
               ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Version.h
-        DESTINATION include/terralib COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib COMPONENT devel)
 
 install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib.h
-        DESTINATION include COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS} COMPONENT devel)
 
-install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h.in
-              ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h
-        DESTINATION ${TERRALIB_DESTINATION_EXAMPLES} COMPONENT devel)
+if(TERRALIB_BUILD_EXAMPLES_ENABLED)
+  install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h.in
+                ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/Config.h
+          DESTINATION ${TERRALIB_DESTINATION_EXAMPLES} COMPONENT devel)
+endif()
 
 install(FILES ${terralib_BINARY_DIR}/pkg/terralib-config.cmake
               ${terralib_BINARY_DIR}/terralib-config-version.cmake
-        DESTINATION lib/cmake/terralib-${TERRALIB_PKG_VERSION} COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_LIBRARY}/cmake/terralib-${TERRALIB_PKG_VERSION} COMPONENT devel)
 
 install(EXPORT terralib-targets
         DESTINATION ${TERRALIB_DESTINATION_LIBRARY}/cmake/terralib-${TERRALIB_PKG_VERSION}
@@ -902,19 +956,19 @@ install(EXPORT terralib-targets
         COMPONENT devel)
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/config
-        DESTINATION share/terralib COMPONENT runtime)
+        DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/icons
-        DESTINATION share/terralib COMPONENT runtime)
+        DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/images
-        DESTINATION share/terralib COMPONENT runtime)
+        DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/json
-        DESTINATION share/terralib COMPONENT runtime)
+        DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/schemas
-        DESTINATION share/terralib COMPONENT runtime)
+        DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
 
 #
 # Track dependencies

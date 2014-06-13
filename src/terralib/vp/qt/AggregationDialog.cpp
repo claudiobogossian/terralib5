@@ -492,25 +492,23 @@ void te::vp::AggregationDialog::onCalculateStatistics(bool visible)
 
 void te::vp::AggregationDialog::onFilterLineEditTextChanged(const QString& text)
 {
-  std::list<te::map::AbstractLayerPtr> filteredLayers = te::vp::GetFilteredLayers(text.toStdString(), m_layers);
-
-  m_ui->m_layersComboBox->clear();
-
-  m_ui->m_selectAllComboBox->setCurrentIndex(0);
-  m_ui->m_rejectAllComboBox->setCurrentIndex(0);
-  m_ui->m_outputListWidget->clear();
-
-  if(text.isEmpty())
-    filteredLayers = m_layers;
-
-  std::list<te::map::AbstractLayerPtr>::iterator it = filteredLayers.begin();
-
-  while(it != filteredLayers.end())
-  {  
-    if(it->get()->getSchema()->hasGeom())
-      m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-    ++it;
+  QList<QListWidgetItem*> allItems;
+  int count = m_ui->m_propertieslistWidget->count();
+  for(int index = 0; index < count; ++index)
+  {
+    allItems.push_back(m_ui->m_propertieslistWidget->item(index));
   }
+
+  QList<QListWidgetItem*> filteredItems = m_ui->m_propertieslistWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive);
+
+  for(int i = 0; i < allItems.size(); ++i)
+  {
+    QListWidgetItem* item = allItems.at(i);
+    bool hide = filteredItems.indexOf(item) == -1;
+    item->setHidden(hide);
+  }
+  
+  m_ui->m_propertieslistWidget->update();
 }
 
 void te::vp::AggregationDialog::onSelectAllComboBoxChanged(int index)
@@ -622,15 +620,19 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 
   if(m_ui->m_onlySelectedCheckBox->isChecked())
   {
-    std::auto_ptr<const te::da::ObjectIdSet> oidSet(m_selectedLayer->getSelected());
-    if(!oidSet.get())
+    const te::da::ObjectIdSet* oidSet = m_selectedLayer->getSelected();
+    if(!oidSet)
     {
       QMessageBox::information(this, "Aggregation", "Select the layer objects to perform the aggregation operation.");
       return;
     }
-    inDataset = dsLayer->getData(oidSet.get());
+    inDataset = dsLayer->getData(oidSet);
   }
-  
+  else
+  {
+    inDataset = dsLayer->getData();
+  }
+
   te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
   if (!inDataSource.get())
   {
@@ -711,9 +713,9 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
         aggregOp = new te::vp::AggregationMemory();
       }
 
-      aggregOp->setInput(inDataSource, dsLayer->getData(), dsLayer->getSchema());
+      aggregOp->setInput(inDataSource, inDataset, dsLayer->getSchema());
       aggregOp->setOutput(dsOGR, outputdataset);
-      aggregOp->setParams(selProperties, outputStatisticalSummary);
+      aggregOp->setParams(selProperties, outputStatisticalSummary, m_ui->m_onlySelectedCheckBox->isChecked());
 
       if (!aggregOp->paramsAreValid())
         res = false;
@@ -734,7 +736,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       // let's include the new datasource in the managers
       boost::uuids::basic_random_generator<boost::mt19937> gen;
       boost::uuids::uuid u = gen();
-      std::string id = boost::uuids::to_string(u);
+      std::string id_ds = boost::uuids::to_string(u);
       
       te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
       ds->setConnInfo(dsinfo);
@@ -742,9 +744,9 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       ds->setAccessDriver("OGR");
       ds->setType("OGR");
       ds->setDescription(uri.string());
-      ds->setId(id);
+      ds->setId(id_ds);
       
-      te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id, "OGR", ds->getConnInfo());
+      te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id_ds, "OGR", ds->getConnInfo());
       newds->open();
       te::da::DataSourceInfoManager::getInstance().add(ds);
       m_outputDatasource = ds;
@@ -779,9 +781,9 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
         aggregOp = new te::vp::AggregationMemory();
       }
 
-      aggregOp->setInput(inDataSource, dsLayer->getData(), dsLayer->getSchema());
+      aggregOp->setInput(inDataSource, inDataset, dsLayer->getSchema());
       aggregOp->setOutput(aux, outputdataset);
-      aggregOp->setParams(selProperties, outputStatisticalSummary);
+      aggregOp->setParams(selProperties, outputStatisticalSummary, m_ui->m_onlySelectedCheckBox->isChecked());
 
       if (!aggregOp->paramsAreValid())
         res = false;
@@ -809,8 +811,9 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
   catch(const std::exception& e)
   {
     this->setCursor(Qt::ArrowCursor);
-    QMessageBox::information(this, "Aggregation", e.what());
 
+    QMessageBox::information(this, "Aggregation", e.what());
+    
     te::common::Logger::logDebug("vp", e.what());
     te::common::ProgressManager::getInstance().removeViewer(id);
     return;

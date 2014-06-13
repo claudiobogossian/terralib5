@@ -25,6 +25,7 @@
 
 // TerraView
 #include "Config.h"
+#include "../terralib/Defines.h"
 #include "TerraView.h"
 
 // TerraLib
@@ -44,6 +45,11 @@
 #include <QMessageBox>
 #include <QSplashScreen>
 #include <QTextCodec>
+
+#if TE_PLATFORM == TE_PLATFORMCODE_APPLE
+#include <CoreFoundation/CoreFoundation.h>
+#endif
+
 
 int main(int argc, char** argv)
 {
@@ -82,6 +88,24 @@ int main(int argc, char** argv)
       TerraView tview;
 
       tview.resetTerraLib(waitVal != RESTART_CODE);
+      
+#if TE_PLATFORM == TE_PLATFORMCODE_APPLE
+      CFBundleRef mainBundle = CFBundleGetMainBundle();
+      CFURLRef execPath = CFBundleCopyBundleURL(mainBundle);
+        
+      char path[PATH_MAX];
+      
+      if (!CFURLGetFileSystemRepresentation(execPath, TRUE, (UInt8 *)path, PATH_MAX))
+        throw; // error!
+        
+      CFRelease(execPath);
+        
+      QDir dPath(path);
+        
+      dPath.cd("Contents");
+        
+      chdir(dPath.path().toStdString().c_str());
+#endif
 
       tview.init();
 

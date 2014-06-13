@@ -79,7 +79,8 @@ target_link_libraries(terralib_mod_geometry ${TERRALIB_LIBRARIES_DEPENDENCIES})
 
 set_target_properties(terralib_mod_geometry
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
-                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
+                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
+                                 INSTALL_NAME_DIR "@executable_path/../lib")
 
 install(TARGETS terralib_mod_geometry
         EXPORT terralib-targets

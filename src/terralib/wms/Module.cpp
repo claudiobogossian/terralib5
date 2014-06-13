@@ -29,8 +29,6 @@
 #include "../dataaccess/datasource/DataSourceFactory.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../plugin/PluginInfo.h"
-//#include "../qt/widgets/layer/explorer/AbstractTreeItemFactory.h"
-//#include "./qt/WMSLayerItem.h"
 #include "Config.h"
 #include "DataSourceFactory.h"
 #include "Module.h"
@@ -60,8 +58,6 @@ void te::wms::Module::startup()
 
   GDALAllRegister();
 
-  //te::qt::widgets::AbstractTreeItemFactory::reg("WMSLAYER", boost::bind(boost::factory<WMSLayerItem*>(),_1, _2));
-  
   TE_LOG_TRACE(TE_TR("TerraLib WMS driver startup!"));
 
   m_initialized = true;
