@@ -880,11 +880,8 @@ else() # QT4_FOUND
 										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/PixmapItem.h
 										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryItem.h
 										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSliderWidget.h
-										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/ObservationDialog.h
 										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TemporalPropertiesWidget.h
-										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSeriesDialog.h
 										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSeriesPropertiesWidget.h
-										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryDialog.h
 										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryPropertiesWidget.h)
 
 
