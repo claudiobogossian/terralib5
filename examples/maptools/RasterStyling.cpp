@@ -436,7 +436,7 @@ void DrawRasterStyledLayers()
   try
   {
     // Creates a layer of raster
-    std::auto_ptr<te::map::DataSetLayer> rasterLayer(CreateRasterLayer(TERRALIB_EXAMPLES_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif"));
+    std::auto_ptr<te::map::DataSetLayer> rasterLayer(CreateRasterLayer(TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif"));
 
     // Get the box to be painted
     te::gm::Envelope* extent = new te::gm::Envelope(rasterLayer->getExtent());

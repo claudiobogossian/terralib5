@@ -18,7 +18,7 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description:The Qt Raster Processing example.
+#  Description: Build the example for the Raster Processing module.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
@@ -26,45 +26,26 @@
 #
 
 
-include_directories(${Boost_INCLUDE_DIR})
-include_directories(${GDAL_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIR}
+                    ${CPPUNIT_INCLUDE_DIR})
 
-if(Qt5_FOUND)
-
-  set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-else() # QT4_FOUND
-
-  include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-  include(${QT_USE_FILE})
-
-  include_directories(${QT_INCLUDE_DIR})
-
-  add_definitions(${QT_DEFINITIONS})
-
+if(WIN32)
+  add_definitions(-D_SCL_SECURE_NO_WARNINGS)
 endif()
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/qt/rp/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/qt/rp/*.h)
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/TsBlender.cpp
+                             ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/TsBlenderMain.cpp)
 
-add_executable(terralib_example_qt_rp ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/LoadModules.h
+                             ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/TsBlender.h)
 
-if(Qt5_FOUND)
+add_executable(terralib_unittest_rp_blender ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
-  target_link_libraries(terralib_example_qt_rp terralib_mod_gdal
-                                               terralib_mod_qt_widgets)
-
-  qt5_use_modules(terralib_example_qt_rp Widgets)
-
-else()
-
-  target_link_libraries(terralib_example_qt_rp terralib_mod_gdal
-                                               terralib_mod_qt_widgets
-                                               ${QT_LIBRARIES})
-
-endif()
+target_link_libraries(terralib_unittest_rp_blender terralib_mod_geometry
+                                                   terralib_mod_plugin
+                                                   terralib_mod_raster
+                                                   terralib_mod_rp
+                                                   ${CPPUNIT_LIBRARY})
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/qt/rp COMPONENT devel)
-
+        DESTINATION ${TERRALIB_DESTINATION_UNITTEST}/rp COMPONENT devel)

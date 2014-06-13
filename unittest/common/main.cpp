@@ -69,7 +69,7 @@ int main(int /*argc*/, char** /*argv*/)
   // One level up TE_OUTPUT_REPORT_DIR should have a 'data' directory with all files used by unit test.
   
   //CPPUNIT_NS::OFileStream file2( TE_OUTPUT_REPORT_DIR"/testResults_common_xml.xml" );
-  CPPUNIT_NS::OFileStream file2(TERRALIB_UNITTEST_REPORT_DIR"/testResults_common_xml.xml");
+  CPPUNIT_NS::OFileStream file2(TERRALIB_REPORT_DIR"/testResults_common_xml.xml");
   CPPUNIT_NS::XmlOutputter xml(&result, file2);
   xml.setStyleSheet("report.xsl");
   xml.write();

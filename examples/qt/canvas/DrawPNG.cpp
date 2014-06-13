@@ -23,7 +23,7 @@ void DrawPNG()
   {
     std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
     
-    std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+    std::string data_dir = TERRALIB_DATA_DIR;
         
     std::map<std::string, std::string> connInfo;    
     

@@ -19,7 +19,7 @@ void DrawingRasterObject()
   QApplication app(argc, 0);
  
   // set input raster name
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   
   std::map<std::string, std::string> rinfo;
   rinfo["URI"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";

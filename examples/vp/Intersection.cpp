@@ -172,7 +172,7 @@
 //ORG to OGR
 bool IntersectionOGRToOGR()
 {
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   
   std::string filename1(data_dir + "shp/Intersection/rodovias.shp");
   
@@ -260,7 +260,7 @@ bool IntersectionOGRToOGR()
 //OGR to Postgis
 bool IntersectionOGRToPGIS()
 {
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   
   std::string filename1(data_dir + "/shp/Intersection/rodovias.shp");
   
@@ -474,7 +474,7 @@ bool IntersectionPGISToOGR()
 
   std::string outDSet = "intersectionPGIS2OGR";
   
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
 
   std::string uriResult(data_dir + "/shp/Intersection/intersectionPGIS2OGR.shp");
   

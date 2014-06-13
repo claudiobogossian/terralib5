@@ -20,7 +20,7 @@
 //OGR to OGR
 bool BufferOGRToOGR()
 {
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   
   std::string filename = data_dir + "/shp/Buffer/SP_meso.shp";
   
@@ -102,7 +102,7 @@ bool BufferOGRToOGR()
 //OGR to Postgis
 bool BufferOGRToPGIS()
 {
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   
   std::string filename(data_dir + "/shp/Buffer/SP_meso.shp");
   
@@ -310,7 +310,7 @@ bool BufferPGISToOGR()
   bool copyInputColumns = false;
   int levels = 1;
   
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   
   std::string uriResult(data_dir + "/shp/Buffer/bufferPGISToOGR.shp");
 

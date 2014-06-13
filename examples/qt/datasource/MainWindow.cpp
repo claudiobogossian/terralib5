@@ -32,8 +32,8 @@
 #include <terralib/qt/plugins/datasource/pgis/PostGISConnectorDialog.h>
 #include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/postgis/Utils.h>
-#include <terralib/gdal/Utils.h>
-#include <terralib/ogr/Utils.h>
+//#include <terralib/gdal/Utils.h>
+//#include <terralib/ogr/Utils.h>
 // Qt
 #include <QAction>
 #include <QActionGroup>
