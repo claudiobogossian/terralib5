@@ -280,7 +280,7 @@ bool AggregOGRToOGR()
   // sera feito por algum tipo de factory
   te::vp::AggregationOp* aggregOp = new te::vp::AggregationMemory();
 
-  aggregOp->setInput(srcDs, inDset, inDsetType);
+  aggregOp->setInput(srcDs, inDsetName, inDsetType);
   aggregOp->setOutput(trgDs, outDS);
   aggregOp->setParams(groupingProperties, stats);
   
@@ -363,7 +363,7 @@ bool AggregOGRToPGIS()
   // sera feito por algum tipo de factory
   te::vp::AggregationOp* aggregOp = new te::vp::AggregationMemory();
 
-  aggregOp->setInput(srcDs, inDset, inDsetType);
+  aggregOp->setInput(srcDs, inDsetName, inDsetType);
   aggregOp->setOutput(trgDs, outDS);
   aggregOp->setParams(groupingProperties, stats);
   
@@ -435,7 +435,7 @@ bool AggregPGISToPGIS()
   // sera feito por algum tipo de factory
   te::vp::AggregationOp* aggregOp = new te::vp::AggregationQuery();
 
-  aggregOp->setInput(srcDs, inDset, inDsetType);
+  aggregOp->setInput(srcDs, inDsetName, inDsetType);
   aggregOp->setOutput(outDsource, outDSet);
   aggregOp->setParams(groupingProperties, stats);
   
@@ -515,7 +515,7 @@ bool AggregPGISToOGR()
   // sera feito por algum tipo de factory
   te::vp::AggregationOp* aggregOp = new te::vp::AggregationQuery();
 
-  aggregOp->setInput(srcDs, inDset, inDsetType);
+  aggregOp->setInput(srcDs, inDsetName, inDsetType);
   aggregOp->setOutput(trgDs, outDSet);
   aggregOp->setParams(groupingProperties, stats);
   
