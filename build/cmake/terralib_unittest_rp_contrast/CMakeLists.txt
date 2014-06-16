@@ -29,10 +29,6 @@
 include_directories(${Boost_INCLUDE_DIR}
                     ${CPPUNIT_INCLUDE_DIR})
 
-#if(WIN32)
-#  add_definitions(-D_SCL_SECURE_NO_WARNINGS)
-#endif()
-
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/TsContrast.cpp
                              ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/TsContrastMain.cpp)
 
