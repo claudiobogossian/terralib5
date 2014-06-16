@@ -28,5 +28,6 @@
 
 // TerraLib
 #include "terralib_unittest_config.h"
+#include "terralib_config.h"
 
 #endif  // __TERRALIB_UNITTEST_INTERNAL_CONFIG_H

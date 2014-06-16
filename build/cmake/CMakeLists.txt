@@ -55,12 +55,12 @@ if(NOT DEFINED TERRALIB_DIR_VAR_NAME)
   set(TERRALIB_DIR_VAR_NAME "TERRALIB_HOME" CACHE STRING "Name of an environment variable with the base installation path of TerraLib")
 endif()
 
-if(NOT DEFINED TERRALIB_EXAMPLES_DATA_DIR)
-  set(TERRALIB_EXAMPLES_DATA_DIR "${CMAKE_BINARY_DIR}/data" CACHE PATH "Path to a directory containing the data used in the examples")
+if(NOT DEFINED TERRALIB_DATA_DIR)
+  set(TERRALIB_DATA_DIR "${CMAKE_BINARY_DIR}/data" CACHE PATH "Path to a directory containing the data used in the examples and/or in the unit test")
 endif()
 
-if(NOT DEFINED TERRALIB_UNITTEST_REPORT_DIR)
-  set(TERRALIB_UNITTEST_REPORT_DIR "${CMAKE_BINARY_DIR}/report" CACHE PATH "Path to a directory containing the report used in the unit test")
+if(NOT DEFINED TERRALIB_REPORT_DIR)
+  set(TERRALIB_REPORT_DIR "${CMAKE_BINARY_DIR}/report" CACHE PATH "Path to a directory containing the report used in the examples and/or in the unit test")
 endif()
 
 # variables that control the install location
@@ -551,6 +551,9 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_EXAMPLE_XERCES_ENABLED "Build the Xerces example
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_UNITTEST_COMMON_ENABLED "Build the unit test for the Common module?" ON "TERRALIB_CPPUNIT_ENABLED;TERRALIB_BUILD_UNITTEST_ENABLED" OFF)
 
+CMAKE_DEPENDENT_OPTION(TERRALIB_UNITTEST_RP_BLENDER_ENABLED "Build the unit test for the RP Blender?" ON "TERRALIB_CPPUNIT_ENABLED;TERRALIB_BUILD_UNITTEST_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_RASTER_ENABLED;TERRALIB_MOD_RP_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_UNITTEST_RP_CLASSIFIER_ENABLED "Build the unit test for the RP Classifier?" ON "TERRALIB_CPPUNIT_ENABLED;TERRALIB_BUILD_UNITTEST_ENABLED;TERRALIB_MOD_GDAL_ENABLED;TERRALIB_MOD_RP_ENABLED" OFF)
 
 
 
@@ -924,6 +927,13 @@ if(TERRALIB_UNITTEST_COMMON_ENABLED)
   add_subdirectory(terralib_unittest_common)
 endif()
 
+if(TERRALIB_UNITTEST_RP_BLENDER_ENABLED)
+  add_subdirectory(terralib_unittest_rp_blender)
+endif()
+
+if(TERRALIB_UNITTEST_RP_CLASSIFIER_ENABLED)
+  add_subdirectory(terralib_unittest_rp_classifier)
+endif()
 
 #
 # install and targets export
