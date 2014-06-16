@@ -102,11 +102,9 @@ int main(int /*argc*/, char** /*argv*/)
   // finalize TerraLib Plataform
   TerraLib::getInstance().finalize();
 
-  return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
-
   std::cout << "\nPress Enter to exit..." << std::endl;
   std::cin.get();
 
-  return EXIT_FAILURE;
+  return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
