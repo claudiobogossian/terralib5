@@ -146,7 +146,7 @@ int main(int /*argc*/, char** /*argv*/)
     // Get a dataset
     std::map<std::string, std::string> connInfo;
   
-    std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+    std::string data_dir = TERRALIB_DATA_DIR;
     connInfo["URI"] = data_dir + "/shp";
   
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");

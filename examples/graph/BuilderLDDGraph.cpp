@@ -26,7 +26,7 @@ void CreateLDDGraph(bool draw)
   std::string graphName = "graphAsu";
 
 // open raster
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   std::auto_ptr<te::rst::Raster> lddRaster = OpenRaster(data_dir + "/graph/asu30_dem.tif", 29193);
 
 // graph type

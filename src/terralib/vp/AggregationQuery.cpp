@@ -220,10 +220,9 @@ bool te::vp::AggregationQuery::run()
   
   te::da::Where* w_oid = 0;
 
-  if(m_onlySelectedObjects)
+  if(m_oidSet)
   {
-    std::auto_ptr<te::da::ObjectIdSet>oidSet(te::da::GenerateOIDSet(m_inDset.get(), m_inDsetType.get()));
-    w_oid = new te::da::Where(oidSet->getExpression());
+    w_oid = new te::da::Where(m_oidSet->getExpression());
   }
 
   te::da::Select select(fields, from, w_oid);

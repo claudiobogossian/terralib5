@@ -65,7 +65,7 @@ int main(int argc, char** argv)
     QIcon::setThemeSearchPaths(ithemes);
 
     // Load datasource
-    std::string fileName = TERRALIB_EXAMPLES_DATA_DIR "/shp/munic_2001.shp";
+    std::string fileName = TERRALIB_DATA_DIR "/shp/munic_2001.shp";
 
     //LoadShapeDataSource(fileName, "MunicShp2001");
 

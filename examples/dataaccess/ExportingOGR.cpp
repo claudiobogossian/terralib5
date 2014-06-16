@@ -27,7 +27,7 @@ void openDirectory(const std::string& filename, const std::string dstype);
 void saveUsingOGR(const std::string& filename, const std::string drivername);
 void ExportingOGR()
 {
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   
   std::cout << std::endl << "1 - ";
   openFile(data_dir + "/rasters/cbers_b2_crop.tif", "GDAL");

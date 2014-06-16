@@ -483,6 +483,8 @@ namespace te
           */
           void onResetFinalTimePushButtonClicked();
 
+          void dropAction();
+
         signals:
 
           /*!
@@ -514,8 +516,12 @@ namespace te
           int                                     m_maxSliderValue;           //!< The max slider value.
           bool                                    m_finished;
           QList<QPair<QString, QString> >         m_itemList;                 //!< List of all animation items (URI, DataSetName).
+          Qt::KeyboardModifiers                   m_dropModifiers;            //!< Control pressed to add animation with drag and drop.
+          QList<QUrl>                             m_dropUrls;                 //!< Urls to animation with drag and drop.
+          QByteArray                              m_dropBA;                   //!< Layer animation with drag and drop.
 
           QRectF          m_initialDisplayRect; // so para teste
+
       };
     } // end namespace widgets
   }   // end namespace qt
