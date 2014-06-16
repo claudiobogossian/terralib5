@@ -35,6 +35,7 @@
 #include <QWidget>
 #include <QAbstractAnimation>
 #include <QDateTime>
+#include <QUrl>
 
 //STL
 #include <memory>
