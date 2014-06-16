@@ -628,8 +628,11 @@ namespace te
         
       // Initiating the mosaic bounding boxes union
 
-      std::auto_ptr< te::gm::Polygon > mosaicBBoxesUnionPtr( 
-        (te::gm::Polygon*)( rastersBBoxes[ 0 ].clone() ) );        
+      std::auto_ptr< te::gm::MultiPolygon > mosaicBBoxesUnionPtr( 
+        new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType, 
+        rastersBBoxes[ 0 ].getSRID(), 0 ) );
+      
+      mosaicBBoxesUnionPtr->add( (te::gm::Polygon*)( rastersBBoxes[ 0 ].clone() ) );        
       
       // globals
 
@@ -739,10 +742,22 @@ namespace te
             &( rastersBBoxes[ inputRasterIdx ] ) ) );
           TERP_TRUE_OR_RETURN_FALSE( unionMultiPolPtr.get(), "Invalid pointer" );
           unionMultiPolPtr->setSRID( mosaicBBoxesUnionPtr->getSRID() );
-          TERP_TRUE_OR_RETURN_FALSE( unionMultiPolPtr->getGeomTypeId() == te::gm::PolygonType,
-            "Invalid geometry type")
           
-          mosaicBBoxesUnionPtr.reset( (te::gm::Polygon*)unionMultiPolPtr.release() );
+          if( unionMultiPolPtr->getGeomTypeId() == te::gm::MultiPolygonType )
+          {
+            mosaicBBoxesUnionPtr.reset( (te::gm::MultiPolygon*)unionMultiPolPtr.release() );
+          }
+          else if( unionMultiPolPtr->getGeomTypeId() == te::gm::PolygonType )
+          {
+            te::gm::MultiPolygon* mPolPtr = new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType,
+              unionMultiPolPtr->getSRID(), 0 );
+            mPolPtr->add( (te::gm::Polygon*)unionMultiPolPtr.release() );
+            mosaicBBoxesUnionPtr.reset( mPolPtr );
+          }
+          else
+          {
+            TERP_LOG_AND_RETURN_FALSE( "Invalid union geometry type" );
+          }
         }                
         
         // moving to the next raster

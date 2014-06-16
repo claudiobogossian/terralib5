@@ -107,8 +107,8 @@ namespace te
           const std::vector< double >& pixelScales1,
           const std::vector< double >& pixelOffsets2,
           const std::vector< double >& pixelScales2,
-          te::gm::Polygon const * const r1ValidDataDelimiterPtr,
-          te::gm::Polygon const * const r2ValidDataDelimiterPtr,
+          te::gm::MultiPolygon const * const r1ValidDataDelimiterPtr,
+          te::gm::MultiPolygon const * const r2ValidDataDelimiterPtr,
           const te::gm::GeometricTransformation& geomTransformation,
           const unsigned int threadsNumber,
           const bool enableProgressInterface );
@@ -190,8 +190,8 @@ namespace te
             std::vector< double > m_pixelScales1; //!< The values scale to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
             std::vector< double > m_pixelOffsets2; //!< The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
             std::vector< double > m_pixelScales2; //!< The values scale to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
-            std::auto_ptr< te::gm::Polygon > m_r1ValidDataDelimiterPtr; //!< A pointer to a geometry (raster 1 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
-            std::auto_ptr< te::gm::Polygon > m_r2ValidDataDelimiterPtr; //!< A pointer to a geometry (raster 2 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
+            std::auto_ptr< te::gm::MultiPolygon > m_r1ValidDataDelimiterPtr; //!< A pointer to a geometry (raster 1 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
+            std::auto_ptr< te::gm::MultiPolygon > m_r2ValidDataDelimiterPtr; //!< A pointer to a geometry (raster 2 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
             std::auto_ptr< te::gm::GeometricTransformation > m_geomTransformationPtr; //!< A transformation mapping raster 1 pixels ( te::gm::GTParameters::TiePoint::first ) to raster 2 pixels ( te::gm::GTParameters::TiePoint::second ) (Note: all coords are indexed by lines/columns).
             unsigned long int m_maxRasterCachedBlocks; //!< The maximum number of raster cache blocks.
             bool m_useProgress; //!< If enabled each thread will use its own progress interface, if false only a signal will be emitted on each processed block.
@@ -212,9 +212,9 @@ namespace te
         BlendFunctPtr m_blendFuncPtr; //!< The current blend function.
         te::rst::Raster * m_raster1Ptr; //!< Input raster 1.
         te::rst::Raster const * m_raster2Ptr; //!< Input raster 2.
-        std::auto_ptr< te::gm::Polygon > m_r1ValidDataDelimiterPtr; //!< A pointer to a geometry (raster 1 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
-        std::auto_ptr< te::gm::Polygon > m_r2ValidDataDelimiterPtr; //!< A pointer to a geometry (raster 2 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
-        std::auto_ptr< te::gm::MultiPolygon > m_intersectionPtr; //!< The Intersection geometry ( Multipolygon geometry - raster 1 indexed coods).
+        std::auto_ptr< te::gm::MultiPolygon > m_r1ValidDataDelimiterPtr; //!< A pointer to a geometry (raster 1 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
+        std::auto_ptr< te::gm::MultiPolygon > m_r2ValidDataDelimiterPtr; //!< A pointer to a geometry (raster 2 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
+        std::auto_ptr< te::gm::MultiPolygon > m_intersectionPtr; //!< The Intersection geometry ( raster 1 indexed coods).
         std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > > m_r1IntersectionSegmentsPoints; //!< A sub-set of the intersection polygon wich is part of raster 1 valid data polygon ( raster 1 indexed coods).
         std::size_t m_r1IntersectionSegmentsPointsSize; //!< Size of m_r1IntersectionSegmentsPoints;
         std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > > m_r2IntersectionSegmentsPoints; //!< A sub-set of the intersection polygon wich is part of raster 2 valid data polygon ( raster 1 indexed coods).
