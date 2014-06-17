@@ -75,6 +75,8 @@ namespace te
             
             bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
             
+            bool m_enableMultiThread; //!< Enable/disable the use of threads (default:true).
+            
             InputParameters();
             
             InputParameters( const InputParameters& );
