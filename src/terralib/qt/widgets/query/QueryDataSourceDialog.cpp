@@ -56,9 +56,12 @@ te::qt::widgets::QueryDataSourceDialog::QueryDataSourceDialog(QWidget* parent, Q
 {
   m_ui->setupUi(this);
 
+  m_ui->m_tabWidget->widget(3)->setEnabled(false);
+
   m_ui->m_applyToolButton->setIcon(QIcon::fromTheme("media-playback-start-green"));
   m_ui->m_clearToolButton->setIcon(QIcon::fromTheme("edit-clear"));
   m_ui->m_applySelToolButton->setIcon(QIcon::fromTheme("check"));
+  m_ui->m_applyQueryLayerToolButton->setIcon(QIcon::fromTheme("check"));
 
   m_ui->m_saveSqlToolButton->setIcon(QIcon::fromTheme("document-save-as"));
   m_ui->m_openSqlToolButton->setIcon(QIcon::fromTheme("document-open"));
@@ -175,6 +178,11 @@ void te::qt::widgets::QueryDataSourceDialog::onDataSourceSelected(int index)
   m_ui->m_attrDataSetListWidget->clear();
 
   std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(index).toString().toStdString();
+
+  te::da::DataSourcePtr ds = te::da::GetDataSource(dataSourceId);
+
+  if(!ds->isOpened())
+    ds->open();
 
   std::vector<std::string> dataSetNames;
   te::da::GetDataSetNames(dataSetNames, dataSourceId);
