@@ -27,7 +27,6 @@
 
 // TerraLib
 #include "MapGridItem.h"
-#include "Context.h"
 #include "ItemModelObservable.h"
 #include "ItemObserver.h"
 #include "ItemController.h"

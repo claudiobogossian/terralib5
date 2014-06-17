@@ -33,7 +33,11 @@ te::layout::ContextItem::ContextItem() :
   m_pixmap(0),
   m_show(false),
   m_wait(false),
-  m_resizeCanvas(true)
+  m_resizeCanvas(true),
+  m_canvas(0),
+  m_utils(0),
+  m_dpiX(96),
+  m_dpiY(96)
 {
 
 }
@@ -44,7 +48,11 @@ te::layout::ContextItem::ContextItem( ParamsCreate params, double zoomFactor ) :
   m_pixmap(0),
   m_show(false),
   m_wait(false),
-  m_resizeCanvas(true)
+  m_resizeCanvas(true),
+  m_canvas(0),
+  m_utils(0),
+  m_dpiX(96),
+  m_dpiY(96)
 {
 
 }
@@ -114,3 +122,42 @@ void te::layout::ContextItem::setResizeCanvas( bool clear )
   m_resizeCanvas = clear;
 }
 
+te::map::Canvas* te::layout::ContextItem::getCanvas()
+{
+  return m_canvas;
+}
+
+void te::layout::ContextItem::setCanvas( te::map::Canvas* canvas )
+{
+  m_canvas = canvas;
+}
+
+te::layout::Utils* te::layout::ContextItem::getUtils()
+{
+  return m_utils;
+}
+
+void te::layout::ContextItem::setUtils( Utils* utils )
+{
+  m_utils = utils;
+}
+
+double te::layout::ContextItem::getDpiX()
+{
+  return m_dpiX;
+}
+
+void te::layout::ContextItem::setDpiX( double dpi )
+{
+  m_dpiX = dpi;
+}
+
+double te::layout::ContextItem::getDpiY()
+{
+  return m_dpiY;
+}
+
+void te::layout::ContextItem::setDpiY( double dpi )
+{
+  m_dpiY = dpi;
+}

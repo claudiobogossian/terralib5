@@ -61,14 +61,26 @@ namespace te
         virtual te::gm::Envelope getWorldInDegrees();
 
         virtual te::common::UnitOfMeasurePtr unitMeasureLayer();
-        
+
+        virtual void setBox(te::gm::Envelope box);
+
+        virtual te::gm::Envelope getMapBox();
+
+        virtual void setPosition(const double& x, const double& y);
+
+        virtual double getDisplacementX();
+
+        virtual double getDisplacementY();
+                
       protected:
-
-        std::string proj4DescToPlanar(int zone);
         
-        std::string proj4DescToGeodesic();
-
         te::map::AbstractLayerPtr m_layer;
+
+        te::gm::Envelope m_mapBoxMM;
+
+        double m_mapDisplacementX;
+
+        double m_mapDisplacementY;
     };
   }
 }

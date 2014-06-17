@@ -28,6 +28,9 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_CONTEXT_ABSTRACT_VISITOR_H
 #define __TERRALIB_LAYOUT_INTERNAL_CONTEXT_ABSTRACT_VISITOR_H
 
+// TerraLib
+#include "ContextItem.h"
+
 namespace te
 {
   namespace layout
@@ -45,9 +48,12 @@ namespace te
 
         virtual void disassociate();
 
-        virtual void visitDependent() = 0;
+        virtual void visitDependent(ContextItem context) = 0;
 
       protected:
+
+        ContextItem getContextItem();
+
         Visitable* m_visitable;
     };
   }

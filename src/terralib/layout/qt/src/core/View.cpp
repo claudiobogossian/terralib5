@@ -38,6 +38,8 @@
 #include "ToolbarOutside.h"
 #include "ItemUtils.h"
 #include "PaperConfig.h"
+#include "ViewPan.h"
+#include "Utils.h"
 
 // STL
 #include <math.h>
@@ -57,7 +59,6 @@
 #include <QMessageBox>
 #include <QPixmap>
 #include <QLineF>
-#include "ViewPan.h"
 
 #define _psPointInMM 0.352777778 //<! 1 PostScript point in millimeters
 #define _inchInPSPoints 72 //<! 1 Inch in PostScript point
@@ -137,17 +138,6 @@ void te::layout::View::mouseMoveEvent( QMouseEvent * event )
 void te::layout::View::wheelEvent( QWheelEvent *event )
 {
   QGraphicsView::wheelEvent(event);
-}
-
-void te::layout::View::scaleView( qreal scaleFactor )
-{
-  Scene* sc = dynamic_cast<Scene*>(scene());
-  if(!sc)
-    return;
-  
-  recalculateSceneSize(scaleFactor);
-
-  sc->redrawItems();
 }
 
 void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
@@ -231,11 +221,6 @@ void te::layout::View::resizeEvent(QResizeEvent * event)
 
 int te::layout::View::metric( PaintDeviceMetric metric ) const 
 {
-  /*if(metric == PdmHeightMM)
-  {
-    return 297;
-  }*/
-	
   return QGraphicsView::metric(metric);
 }
 
@@ -484,7 +469,8 @@ void te::layout::View::outsideAreaChangeContext( bool change )
     break;
   case TypeSceneZoom:
     {
-      scaleView(zoomFactor);
+      sc->refresh(this);
+      sc->redrawItems(true);
       resetDefaultConfig();
     }
     break;
@@ -521,44 +507,5 @@ void te::layout::View::configTransform( Scene* sc )
   centerOn(QPointF(llx, ury));
 
   /* Mirror the y coordinate, because the scene is in Cartesian coordinates. */
-  scale(1, -1);    
-}
-
-void te::layout::View::recalculateSceneSize( double zoomFactor )
-{
-  Scene* sc = dynamic_cast<Scene*>(scene());
-  if(!sc)
-    return;
-
-  PaperConfig* pConfig =  Context::getInstance()->getPaperConfig();
-
-  double w = 0;
-  double h = 0;
-
-  pConfig->getPaperSize(w, h);
-
-  Utils* utils = Context::getInstance()->getUtils();
-  te::gm::Envelope env(0.,0., widthMM(), heightMM());
-  env = utils->applyZoomFactor(env);
-
-  sc->restart(env.getWidth(), env.getHeight(), w, h);
-
-  //-----------------------------------------------------------------------------------------------
-
-  te::gm::Envelope* boxW = sc->getWorldBox();
-
-  double llx = boxW->getLowerLeftX();
-  double ury = boxW->getUpperRightY();
-
-  setTransform(sc->getMatrixViewScene());
-
-  setTransformationAnchor(QGraphicsView::NoAnchor);	
-  centerOn(QPointF(llx, ury));
-  
-  scale(zoomFactor, -zoomFactor);    
-
-  //----------------------------------------------------------------------------------------------
-
-  te::gm::Envelope* box = sc->getPaperBox();
-  pConfig->setPaperBoxW(box);
+  scale(1, -1);   
 }

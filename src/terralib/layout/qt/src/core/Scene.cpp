@@ -64,9 +64,12 @@ te::layout::Scene::Scene( QWidget* widget):
   m_boxPaperW(0),
   m_masterParent(0),
   m_lineIntersectHrz(0),
-  m_lineIntersectVrt(0)
+  m_lineIntersectVrt(0),
+  m_fixedRuler(true)
 {
   setBackgroundBrush(QBrush(QColor(109,109,109)));
+
+  /*setBackgroundBrush(QBrush(QColor(100,100,106)));*/
 }
 
 te::layout::Scene::~Scene()
@@ -157,11 +160,7 @@ te::gm::Envelope te::layout::Scene::getSceneBox()
 }
 
 void te::layout::Scene::redrawItems(bool viewArea)
-{
-  viewArea = true;
-
-  double scaleFactor = Context::getInstance()->getZoomFactor();
-  
+{  
   QList<QGraphicsItem*> graphicsItems = items();
   foreach( QGraphicsItem *item, graphicsItems) 
   {
@@ -174,12 +173,12 @@ void te::layout::Scene::redrawItems(bool viewArea)
         {
           if(lItem->isCanChangeGraphicOrder())
           {
-            lItem->redraw(scaleFactor);
+            lItem->redraw();
           }
         }
         else
         {
-          lItem->redraw(scaleFactor);
+          lItem->redraw();
         }        
       }
     }
@@ -329,7 +328,7 @@ void te::layout::Scene::calculateMatrixViewScene()
 
   //mm (inversão do y)
   m_matrix = QTransform().scale(dpiX / 25.4, -dpiY / 25.4).translate(-llx, -ury);
-
+  
   //Coordenadas de mundo - mm
   setSceneRect(QRectF(QPointF(llx, lly), QPointF(urx, ury)));
 }
@@ -572,15 +571,67 @@ std::vector<te::layout::Properties*> te::layout::Scene::getItemsProperties()
   return props;
 }
 
-void te::layout::Scene::refresh()
+void te::layout::Scene::refresh(QGraphicsView* view)
 {
+  calculateMatrixViewScene();
+  refreshViews(view);
+  refreshPosRulers();
+}
+
+void te::layout::Scene::refreshPosRulers()
+{
+  if(!m_fixedRuler)
+    return;
+
   double llx = m_boxW->getLowerLeftX();
   double lly = m_boxW->getLowerLeftY();
-  double urx = m_boxW->getUpperRightX();
+  
+  QList<QGraphicsItem*> graphicsItems = items();
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if (item)
+    {			
+      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+      if(lItem)
+      {       
+        QPointF pt(llx, lly);
+
+        if(lItem->getModel()->getType() == TPHorizontalRuler ||
+          lItem->getModel()->getType() == TPVerticalRuler)
+        {
+          QPointF p = item->scenePos();
+          item->setPos(pt);
+        }
+      }
+    }
+  }
+}
+
+void te::layout::Scene::refreshViews( QGraphicsView* view /*= 0*/ )
+{
+  double llx = m_boxW->getLowerLeftX();
   double ury = m_boxW->getUpperRightY();
 
-  //Coordenadas de mundo - mm
-  setSceneRect(QRectF(QPointF(llx, lly), QPointF(urx, ury)));
+  if(view)
+  {
+    //Transform calcula automaticamente a matriz inversa
+    view->setTransform(getMatrixViewScene());
+    view->setTransformationAnchor(QGraphicsView::NoAnchor);	
+    view->centerOn(QPointF(llx, ury));
+    view->scale(1, -1);
+  }
+  else
+  {
+    QList<QGraphicsView*> vws = views();
+    foreach(QGraphicsView* v, vws)
+    {
+      //Transform calcula automaticamente a matriz inversa
+      v->setTransform(getMatrixViewScene());
+      v->setTransformationAnchor(QGraphicsView::NoAnchor);	
+      v->centerOn(QPointF(llx, ury));
+      v->scale(1, -1);
+    }
+  } 
 }
 
 void te::layout::Scene::reset()
@@ -801,4 +852,24 @@ void te::layout::Scene::restart( double widthMM, double heightMM, double paperMM
   m_boxPaperW = calculateBoxPaper(widthMM, heightMM, paperMMW, paperMMH);
 
   calculateMatrixViewScene();
+}
+
+void te::layout::Scene::redrawRulers()
+{
+  QList<QGraphicsItem*> graphicsItems = items();
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if (item)
+    {			
+      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+      if(lItem)
+      {       
+        if(lItem->getModel()->getType() == TPHorizontalRuler ||
+          lItem->getModel()->getType() == TPVerticalRuler)
+        {
+          lItem->redraw();
+        }
+      }
+    }
+  }
 }

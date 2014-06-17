@@ -103,7 +103,7 @@ namespace te
 
         virtual std::vector<te::layout::Properties*> importJsonAsProps();
 
-        virtual void refresh();
+        virtual void refresh(QGraphicsView* view = 0);
 
         virtual void reset();
 
@@ -122,6 +122,8 @@ namespace te
         virtual void bringToFront();
 
         virtual void sendToBack();
+
+        virtual void redrawRulers();
         
       protected slots:
 
@@ -149,6 +151,10 @@ namespace te
 
         virtual void drawForeground(QPainter *painter, const QRectF &rect);
 
+        virtual void refreshPosRulers();
+
+        virtual void refreshViews(QGraphicsView* view = 0);
+
       protected:
 
         te::gm::Envelope* m_boxPaperW;
@@ -159,6 +165,7 @@ namespace te
         QGraphicsItem* m_masterParent;
         QLineF*        m_lineIntersectHrz;
         QLineF*        m_lineIntersectVrt;
+        bool           m_fixedRuler;
     };
   }
 }

@@ -28,7 +28,6 @@
 // TerraLib
 #include "MapGridModel.h"
 #include "ContextItem.h"
-#include "Context.h"
 #include "../../../maptools/Canvas.h"
 #include "Property.h"
 #include "Properties.h"
@@ -54,6 +53,11 @@ te::layout::MapGridModel::MapGridModel() :
 
   m_geodesicGridProperties = new GeodesicGridSettingsConfigProperties;
   m_planarGridProperties = new PlanarGridSettingsConfigProperties;
+  
+  m_mapBoxMM = te::gm::Envelope(m_mapDisplacementX, m_mapDisplacementY, 
+    m_box.getUpperRightX() - m_mapDisplacementX, m_box.getUpperRightY() - m_mapDisplacementY);
+
+  m_border = false;
 
   m_properties->setHasGridWindows(true);
 }
@@ -89,30 +93,37 @@ void te::layout::MapGridModel::draw( ContextItem context )
 {
   te::color::RGBAColor** pixmap = 0;
   
-  te::map::Canvas* canvas = Context::getInstance()->getCanvas();
-  Utils* utils = Context::getInstance()->getUtils();
+  te::map::Canvas* canvas = context.getCanvas();
+  Utils* utils = context.getUtils();
 
+  if((!canvas) || (!utils))
+    return;
+  
   utils->configCanvas(m_box);
 
   drawGrid(canvas, utils);
 
-  utils->configCanvas(m_box, false);
+  utils->configCanvas(m_box, true, false);
 
+  //m_backgroundColor = te::color::RGBAColor(255,0,0, 100);
+  
   te::color::RGBAColor colorp6(0,0,0, TE_OPAQUE);
   canvas->setLineColor(colorp6);
 
-  canvas->setPolygonContourColor(m_borderColor);
-  canvas->setPolygonFillColor(m_backgroundColor);
-
   if(m_border)
+  {
+    canvas->setPolygonContourWidth(2);
+    canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
+    canvas->setPolygonFillColor(m_backgroundColor);
+
     utils->drawRectW(m_box);
+  }
   
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
     
-  ContextItem contextNotify;
-  contextNotify.setPixmap(pixmap);
-  notifyAll(contextNotify);
+  context.setPixmap(pixmap);
+  notifyAll(context);
 }
 
 void te::layout::MapGridModel::drawGrid(te::map::Canvas* canvas, Utils* utils)
@@ -125,17 +136,20 @@ void te::layout::MapGridModel::drawGrid(te::map::Canvas* canvas, Utils* utils)
 
   // Planar Grid
   te::gm::Envelope planarBox = getWorldInMeters();
-  utils->configGeoCanvas(planarBox, m_box, false);
-
   m_gridPlanar->setMapScale(scale);
-  m_gridPlanar->draw(canvas, planarBox, srid);
+  m_gridPlanar->setBoxMapMM(m_mapBoxMM);
+  m_gridPlanar->draw(canvas, utils, planarBox, srid);
 
   // Geodesic Grid
   te::gm::Envelope geoBox = getWorldInDegrees();
-  utils->configGeoCanvas(geoBox, m_box, false);
-
   m_gridGeodesic->setMapScale(scale);
-  m_gridGeodesic->draw(canvas, geoBox, srid);
+  m_gridGeodesic->setBoxMapMM(m_mapBoxMM);
+  /* Box necessário para desenhar a curvatura */
+  te::gm::Envelope planarBoxGeodesic = geoBox;
+  int zone = utils->calculatePlanarZone(geoBox);
+  utils->remapToPlanar(&planarBoxGeodesic, zone);
+  m_gridGeodesic->setPlanarBox(planarBoxGeodesic);
+  m_gridGeodesic->draw(canvas, utils, geoBox, srid);
 }
 
 te::layout::Properties* te::layout::MapGridModel::getProperties() const

@@ -27,7 +27,6 @@
 
 // TerraLib
 #include "ItemGroup.h"
-#include "Utils.h"
 #include "Context.h"
 #include "ItemModelObservable.h"
 #include "ItemController.h"
@@ -72,7 +71,7 @@ void te::layout::ItemGroup::updateObserver( ContextItem context )
   if(!rgba)
     return;
   
-  Utils* utils = Context::getInstance()->getUtils();
+  Utils* utils = context.getUtils();
 
   if(!utils)
     return;

@@ -27,8 +27,8 @@
 
 // TerraLib
 #include "ObjectItem.h"
-#include "ItemController.h"
 #include "Context.h"
+#include "ItemController.h"
 #include "AbstractScene.h"
 #include "ItemModelObservable.h"
 #include "Scene.h"
@@ -90,11 +90,10 @@ void te::layout::ObjectItem::setPixmap( const QPixmap& pixmap )
   if(m_pixmap.isNull())
     return;
 
-  Utils* utils = Context::getInstance()->getUtils();
   QPointF point = pos();
 
   Observable* model = (Observable*)m_controller->getModel();
-  te::gm::Envelope box = model->getBoxWithZoomFactor();
+  te::gm::Envelope box = m_controller->getBoxWithZoomFactor();
 
   //If you modify the boundingRect value, you need to inform Graphics View about it by calling QGraphicsItem::prepareGeometryChange();
   QGraphicsObject::prepareGeometryChange();
@@ -205,8 +204,7 @@ void te::layout::ObjectItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event
     //Antes é necessário saber se o pixmap continua o mesmo, ou foi modificado.
     //Só chamará o redraw se foi modificado.
 
-    double zoomfactor = Context::getInstance()->getZoomFactor();
-    redraw(zoomfactor);
+    redraw();
     setOpacity(1.);
   }
 

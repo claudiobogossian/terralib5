@@ -34,6 +34,7 @@
 #include "../../../../../geometry/Coord2D.h"
 #include "../../../color/RGBAColor.h"
 #include "AbstractType.h"
+#include "Utils.h"
 
 namespace te
 {
@@ -56,7 +57,7 @@ namespace te
 
         virtual te::gm::Envelope getBox() = 0;
 
-        virtual te::gm::Envelope getBoxWithZoomFactor() = 0;
+        virtual te::gm::Envelope boxWithZoomFactor(Utils* utils) = 0;
 
         virtual LayoutAbstractObjectType getType() = 0;
         virtual void setType(LayoutAbstractObjectType type) = 0;

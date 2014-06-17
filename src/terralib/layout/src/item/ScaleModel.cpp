@@ -27,7 +27,6 @@
 
 // TerraLib
 #include "ScaleModel.h"
-#include "Context.h"
 #include "MapModel.h"
 #include "Property.h"
 #include "Properties.h"
@@ -57,9 +56,12 @@ void te::layout::ScaleModel::draw( ContextItem context )
 {
   te::color::RGBAColor** pixmap = 0;
 
-  te::map::Canvas* canvas = Context::getInstance()->getCanvas();
-  Utils* utils = Context::getInstance()->getUtils();
+  te::map::Canvas* canvas = context.getCanvas();
+  Utils* utils = context.getUtils();
   
+  if((!canvas) || (!utils))
+    return;
+
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
 
@@ -77,9 +79,8 @@ void te::layout::ScaleModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
 
-  ContextItem contextNotify;
-  contextNotify.setPixmap(pixmap);
-  notifyAll(contextNotify);
+  context.setPixmap(pixmap);
+  notifyAll(context);
 }
 
 void te::layout::ScaleModel::drawScale( te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box )
@@ -107,7 +108,7 @@ void te::layout::ScaleModel::drawScale( te::map::Canvas* canvas, Utils* utils, t
   double x1 = box.getLowerLeftX();
   te::color::RGBAColor black(0, 0, 0, 255);
   te::color::RGBAColor white(255, 255, 255, 255);
-  te::color::RGBAColor firtRect = black;
+  te::color::RGBAColor firstRect = black;
   te::color::RGBAColor secondRect = white;
   te::color::RGBAColor changeColor;
   te::gm::Envelope newBoxFirst;
@@ -118,7 +119,7 @@ void te::layout::ScaleModel::drawScale( te::map::Canvas* canvas, Utils* utils, t
   for( ; x1 < box.getUpperRightX() ; x1 += width)
   {
     //Up rect
-    canvas->setPolygonFillColor(firtRect);
+    canvas->setPolygonFillColor(firstRect);
     newBoxFirst = te::gm::Envelope(x1, box.getUpperRightY(), x1 + m_scaleGapX, box.getUpperRightY() - m_scaleGapY);
     utils->drawRectW(newBoxFirst);
 
@@ -138,8 +139,8 @@ void te::layout::ScaleModel::drawScale( te::map::Canvas* canvas, Utils* utils, t
     std::string s_value = ss_value.str();
     canvas->drawText(x1, newBoxSecond.getLowerLeftY() - 5, s_value, 0);
 
-    changeColor = firtRect;
-    firtRect = secondRect;
+    changeColor = firstRect;
+    firstRect = secondRect;
     secondRect = changeColor;
   }
 
@@ -208,7 +209,7 @@ void te::layout::ScaleModel::updateProperties( te::layout::Properties* propertie
   }
 }
 
-void te::layout::ScaleModel::visitDependent()
+void te::layout::ScaleModel::visitDependent(ContextItem context)
 {
   MapModel* map = dynamic_cast<MapModel*>(m_visitable);
 
@@ -216,13 +217,7 @@ void te::layout::ScaleModel::visitDependent()
   {
     m_mapScale = map->getScale();
 
-    ContextItem contx;
-
-    draw(contx);
-
-    ContextItem contextNotify;
-    contextNotify.setWait(true);
-    notifyAll(contextNotify);
+    draw(context);
   }	
 }
 

@@ -28,7 +28,6 @@
 // TerraLib
 #include "HorizontalRulerItem.h"
 #include "ItemController.h"
-#include "Context.h"
 #include "AbstractScene.h"
 #include "ItemModelObservable.h"
 #include "../../../color/RGBAColor.h"
@@ -58,12 +57,12 @@ void te::layout::HorizontalRulerItem::updateObserver( ContextItem context )
   if(!rgba)
     return;
 
-  Utils* utils = Context::getInstance()->getUtils();
+  Utils* utils = context.getUtils();
 
   if(!utils)
     return;
 
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
+  te::gm::Envelope box = utils->viewportBox(m_model->getBox(), false);
 
   if(!box.isValid())
     return;

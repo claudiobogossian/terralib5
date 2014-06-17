@@ -27,8 +27,6 @@
 
 #include "AbstractRulerModel.h"
 #include "PaperConfig.h"
-#include "Context.h"
-
 
 te::layout::AbstractRulerModel::AbstractRulerModel(PaperConfig* paperConfig) :
   m_visible(true),

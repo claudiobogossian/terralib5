@@ -84,13 +84,19 @@ namespace te
       protected:
 
         virtual void mousePressEvent(QMouseEvent * event);
+
         virtual void	mouseMoveEvent ( QMouseEvent * event );
+
         void wheelEvent(QWheelEvent *event);
-        void scaleView(qreal scaleFactor);
+
         virtual void keyPressEvent(QKeyEvent* keyEvent);
+
         virtual void resizeEvent(QResizeEvent * event);
+
         void hideEvent ( QHideEvent * event );
+
         void closeEvent ( QCloseEvent * event );
+
         virtual void	showEvent ( QShowEvent * event );
 
         virtual void	paintEvent ( QPaintEvent * event );
@@ -107,9 +113,7 @@ namespace te
         virtual void outsideAreaChangeContext(bool change);
 
         virtual void configTransform(Scene* sc);
-
-        virtual void recalculateSceneSize(double zoomFactor);
-                
+                        
       protected:
         OutsideArea*  m_outsideArea;
         VisualizationArea* m_visualizationArea;

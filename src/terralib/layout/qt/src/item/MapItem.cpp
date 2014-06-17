@@ -71,6 +71,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QStyleOptionGraphicsItem>
 #include <QEvent>
+#include "MapModel.h"
 
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   QGraphicsProxyWidget(0),
@@ -88,8 +89,18 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   setAcceptDrops(true);
   
   Utils* utils = Context::getInstance()->getUtils();
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
-
+  te::gm::Envelope box;
+  
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(model)
+  {
+    box = utils->viewportBox(model->getMapBox());
+  }
+  else
+  {
+    box = utils->viewportBox(m_model->getBox());
+  }
+    
   m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(QSize(box.getWidth(), box.getHeight()), true);
   m_mapDisplay->setAcceptDrops(true);
   m_mapDisplay->setBackgroundColor(Qt::gray);
@@ -106,7 +117,15 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
     
   QGraphicsItem* item = this;
   Context::getInstance()->getScene()->insertItem((ItemObserver*)item);
-    
+  
+  te::gm::Envelope boxProxy = utils->viewportBox(m_model->getBox());
+
+  double wMargin = (boxProxy.getWidth() - box.getWidth()) / 2.;
+  double hMargin = (boxProxy.getHeight() - box.getHeight()) / 2.;
+  
+  //this also changes the bounding rectangle size.
+  setWindowFrameMargins(wMargin, hMargin, wMargin, hMargin);
+      
   m_mapDisplay->show();
 }
 
@@ -136,7 +155,7 @@ void te::layout::MapItem::updateObserver( ContextItem context )
   if(!rgba)
     return;
 
-  Utils* utils = Context::getInstance()->getUtils();
+  Utils* utils = context.getUtils();
 
   if(!utils)
     return;
@@ -173,7 +192,6 @@ void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsI
     boundRect = boundingRect();
 
     painter->save();
-    painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );
     painter->drawPixmap(boundRect, m_pixmap, QRectF( 0, 0, m_pixmap.width(), m_pixmap.height() ));
     painter->restore(); 
   }
@@ -247,10 +265,10 @@ void te::layout::MapItem::setPixmap( const QPixmap& pixmap )
   if(m_pixmap.isNull())
     return;
 
-  Utils* utils = Context::getInstance()->getUtils();
-  QPointF point = pos();
-
   ItemModelObservable* model = (ItemModelObservable*)m_controller->getModel();
+  if(!model)
+    return;
+  
   te::gm::Envelope box = model->getBox();
 
   //If you modify the boundingRect value, you need to inform Graphics View about it by calling QGraphicsItem::prepareGeometryChange();
@@ -270,10 +288,20 @@ void te::layout::MapItem::setRect( QRectF rect )
 
 te::gm::Coord2D te::layout::MapItem::getPosition()
 {
-  QPointF posF = scenePos();
-  qreal valuex = posF.x();
-  qreal valuey = posF.y();
+  double x = 0;
+  double y = 0;
 
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(model)
+  {
+    x = model->getDisplacementX();
+    y = model->getDisplacementY();
+  }
+
+  QPointF posF = scenePos();
+  qreal valuex = posF.x() - x;
+  qreal valuey = posF.y() - y;
+  
   te::gm::Coord2D coordinate;
   coordinate.x = valuex;
   coordinate.y = valuey;

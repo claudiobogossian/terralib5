@@ -28,7 +28,6 @@
 // TerraLib
 #include "RectangleItem.h"
 #include "ItemController.h"
-#include "Context.h"
 #include "AbstractScene.h"
 #include "Observable.h"
 #include "../../../color/RGBAColor.h"
@@ -60,7 +59,7 @@ void te::layout::RectangleItem::updateObserver( ContextItem context )
   if(!rgba)
     return;
 
-  Utils* utils = Context::getInstance()->getUtils();
+  Utils* utils = context.getUtils();
 
   if(!utils)
     return;

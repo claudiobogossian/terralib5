@@ -27,7 +27,6 @@
 
 // TerraLib
 #include "LegendModel.h"
-#include "Context.h"
 #include "MapModel.h"
 #include "Property.h"
 #include "Properties.h"
@@ -60,8 +59,11 @@ void te::layout::LegendModel::draw( ContextItem context )
 {
   te::color::RGBAColor** pixmap = 0;
 
-  te::map::Canvas* canvas = Context::getInstance()->getCanvas();
-  Utils* utils = Context::getInstance()->getUtils();
+  te::map::Canvas* canvas = context.getCanvas();
+  Utils* utils = context.getUtils();
+
+  if((!canvas) || (!utils))
+    return;
 
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
@@ -80,9 +82,8 @@ void te::layout::LegendModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
 
-  ContextItem contextNotify;
-  contextNotify.setPixmap(pixmap);
-  notifyAll(contextNotify);
+  context.setPixmap(pixmap);
+  notifyAll(context);
 }
 
 void te::layout::LegendModel::drawLegend( te::map::Canvas* canvas, Utils* utils )
@@ -182,7 +183,7 @@ void te::layout::LegendModel::updateProperties( te::layout::Properties* properti
   }
 }
 
-void te::layout::LegendModel::visitDependent()
+void te::layout::LegendModel::visitDependent(ContextItem context)
 {
   MapModel* map = dynamic_cast<MapModel*>(m_visitable);
 
@@ -190,13 +191,7 @@ void te::layout::LegendModel::visitDependent()
   {
     m_layer = map->getLayer();
 
-    ContextItem contx;
-
-    draw(contx);
-
-    ContextItem contextNotify;
-    contextNotify.setWait(true);
-    notifyAll(contextNotify);
+    draw(context);
   }	
 }
 

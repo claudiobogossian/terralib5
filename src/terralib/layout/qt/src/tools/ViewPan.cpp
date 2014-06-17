@@ -52,7 +52,7 @@ bool te::layout::ViewPan::mousePressEvent(QMouseEvent* e)
 
   // Adjusting the action cursor
   if(m_actionCursor.shape() != Qt::BlankCursor)
-    m_view->setCursor(m_actionCursor);
+    m_view->viewport()->setCursor(m_actionCursor);
 
   return true;
 }
@@ -73,7 +73,7 @@ bool te::layout::ViewPan::mouseReleaseEvent(QMouseEvent* e)
   m_panStarted = false;
 
   // Roll back the default tool cursor
-  m_view->setCursor(m_cursor);
+  m_view->viewport()->setCursor(m_cursor);
 
   if(e->button() != Qt::LeftButton || m_delta.isNull())
     return false;
@@ -102,7 +102,8 @@ bool te::layout::ViewPan::mouseReleaseEvent(QMouseEvent* e)
   sceneBox->m_urx = bounding.x() + bounding.width();
   sceneBox->m_ury = bounding.y() + bounding.height();
 
-  scene->refresh();
+  scene->refresh(m_view);
+  scene->redrawRulers();
   scene->update();
   
   return true;

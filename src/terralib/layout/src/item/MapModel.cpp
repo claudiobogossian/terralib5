@@ -28,20 +28,22 @@
 // TerraLib
 #include "MapModel.h"
 #include "ContextItem.h"
-#include "Context.h"
 #include "../../../maptools/Canvas.h"
-#include "terralib4/terralib/kernel/TeDefines.h"
 #include "../../../srs/SpatialReferenceSystemManager.h"
 #include "../../../common/StringUtils.h"
+#include "Context.h"
 
 // STL
 #include <vector>
 #include <string>
 #include <sstream> // std::stringstream
 
-te::layout::MapModel::MapModel()
+te::layout::MapModel::MapModel() :
+  m_mapDisplacementX(15),
+  m_mapDisplacementY(15)
 {
   m_box = te::gm::Envelope(0., 0., 150., 120.);
+  m_mapBoxMM = m_box;
 }
 
 te::layout::MapModel::~MapModel()
@@ -53,9 +55,8 @@ void te::layout::MapModel::draw( ContextItem context )
 {
   te::color::RGBAColor** pixmap = 0;
   
-  ContextItem contextNotify;
-  contextNotify.setPixmap(pixmap);
-  notifyAll(contextNotify);
+  context.setPixmap(pixmap);
+  notifyAll(context);
 }
 
 void te::layout::MapModel::updateProperties( te::layout::Properties* properties )
@@ -164,24 +165,17 @@ te::gm::Envelope te::layout::MapModel::getWorldInMeters()
 
   if(unitPtrStr.compare("DEGREE") == 0)
   {
-    double longitude = worldBox.getCenter().x;
-    int meridiano = (int)(longitude / 6);
-    meridiano = meridiano * 6;
-    meridiano = abs(meridiano) + 3;
 
-    double long0 = -meridiano * TeCDR;
+    Utils* utils = Context::getInstance()->getUtils();
 
-    // TeUTM T4
-    int zone = ((int)((long0*TeCRD+183.0)/6.0));
-
-    std::string proj4 = proj4DescToPlanar(zone);
+    int zone = utils->calculatePlanarZone(worldBox);
+    std::string proj4 = utils->proj4DescToPlanar(zone);
     
     // Get the id of the projection of destination 
     std::pair<std::string, unsigned int> projMeters = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt(proj4); 
 
     // Remapping 
-    worldBox.transform(srid, projMeters.second); 
-  
+    worldBox.transform(srid, projMeters.second);   
   }
 
   return worldBox;
@@ -195,14 +189,11 @@ te::common::UnitOfMeasurePtr te::layout::MapModel::unitMeasureLayer()
     return unitPtr;
 
   //About units names (SI): terralib5\resources\json\uom.json 
-
+  
   int srid = m_layer->getSRID();
 
-  // Checks if is Planar Geographic
-  std::string authName = "EPSG"; // Now: So far it is the only one supported by TerraLib 5. Future: Review this line!
-  te::srs::SpatialReferenceSystemManager::getInstance().isGeographic(srid, authName);
-  unitPtr = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(srid, authName);
-
+  Utils* utils = Context::getInstance()->getUtils();
+  unitPtr = utils->unitMeasure(srid);
   return unitPtr;
 }
 
@@ -231,7 +222,8 @@ te::gm::Envelope te::layout::MapModel::getWorldInDegrees()
 
   if(unitPtrStr.compare("DEGREE") != 0)
   {
-    std::string proj4 = proj4DescToGeodesic();
+    Utils* utils = Context::getInstance()->getUtils();
+    std::string proj4 = utils->proj4DescToGeodesic();
 
     // Get the id of the projection of destination 
     std::pair<std::string, unsigned int> projMeters = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt(proj4); 
@@ -243,45 +235,37 @@ te::gm::Envelope te::layout::MapModel::getWorldInDegrees()
   return worldBox;
 }
 
-std::string te::layout::MapModel::proj4DescToPlanar( int zone )
+void te::layout::MapModel::setBox( te::gm::Envelope box )
 {
-  /* 
-  PROJ4
-  +proj      Projection name
-  +datum  Datum name
-  +lat_0    Latitude of origin
-  +lon_0   Central meridian 
-  +x_0       False easting
-  +y_0       False northing   
-  +lat_1     Latitude of first standard parallel
-  +lat_2     Latitude of second standard parallel
-  +units     meters, US survey feet, etc.
-  +lat_ts    Latitude of true scale
-  +south   Denotes southern hemisphere UTM zone
-  +no_defs Don't use the /usr/share/proj/proj_def.dat defaults file 
-  */
-  
-  std::stringstream szone;
-  szone << zone;
+  ItemModelObservable::setBox(box);
 
-  std::string proj4 = "+proj=utm";
-  proj4+= " +zone="+ szone.str();
-  proj4+= " +south"; // pode ser +noth?
-  proj4+= " +ellps=intl";
-  proj4+= " +towgs84=-206,172,-6,0,0,0,0";
-  proj4+= " +units=m"; 
-  proj4+= " +no_defs ";
-  
-  return proj4;
+  m_mapBoxMM.m_llx = box.m_llx + m_mapDisplacementX;
+  m_mapBoxMM.m_lly = box.m_lly + m_mapDisplacementY;
+  m_mapBoxMM.m_urx = box.m_urx - m_mapDisplacementX;
+  m_mapBoxMM.m_ury = box.m_ury - m_mapDisplacementY;
 }
 
-std::string te::layout::MapModel::proj4DescToGeodesic()
+te::gm::Envelope te::layout::MapModel::getMapBox()
 {
-  std::string proj4;
-  proj4 += "+proj=longlat";
-  proj4 += " +ellps=aust_SA";
-  proj4 += " +towgs84=-57,1,-41,0,0,0,0";
-  proj4 += " +no_defs ";
+  return m_mapBoxMM;
+}
 
-  return proj4;
+void te::layout::MapModel::setPosition( const double& x, const double& y )
+{
+  ItemModelObservable::setPosition(x, y);
+
+  m_mapBoxMM.m_llx = m_box.m_llx + m_mapDisplacementX;
+  m_mapBoxMM.m_lly = m_box.m_lly + m_mapDisplacementY;
+  m_mapBoxMM.m_urx = m_box.m_urx - m_mapDisplacementX;
+  m_mapBoxMM.m_ury = m_box.m_ury - m_mapDisplacementY;
+}
+
+double te::layout::MapModel::getDisplacementX()
+{
+  return m_mapDisplacementX;
+}
+
+double te::layout::MapModel::getDisplacementY()
+{
+  return m_mapDisplacementY;
 }

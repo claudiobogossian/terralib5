@@ -29,7 +29,6 @@
 // TerraLib
 #include "VerticalRulerItem.h"
 #include "ItemController.h"
-#include "Context.h"
 #include "AbstractScene.h"
 #include "ItemModelObservable.h"
 #include "../../../color/RGBAColor.h"
@@ -59,7 +58,7 @@ void te::layout::VerticalRulerItem::updateObserver( ContextItem context )
   if(!rgba)
     return;
 
-  Utils* utils = Context::getInstance()->getUtils();
+  Utils* utils = context.getUtils();
 
   if(!utils)
     return;

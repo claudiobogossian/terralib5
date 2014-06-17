@@ -28,7 +28,6 @@
 // TerraLib
 #include "RectangleModel.h"
 #include "ContextItem.h"
-#include "Context.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../color/RGBAColor.h"
 #include "../../../maptools/Canvas.h"
@@ -50,8 +49,11 @@ void te::layout::RectangleModel::draw( ContextItem context )
 {
   te::color::RGBAColor** pixmap = 0;
   
-  te::map::Canvas* canvas = Context::getInstance()->getCanvas();
-  Utils* utils = Context::getInstance()->getUtils();
+  te::map::Canvas* canvas = context.getCanvas();
+  Utils* utils = context.getUtils();
+
+  if((!canvas) || (!utils))
+    return;
 
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
@@ -65,8 +67,7 @@ void te::layout::RectangleModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
   
-  ContextItem contextNotify;
-  contextNotify.setPixmap(pixmap);
-  notifyAll(contextNotify);
+  context.setPixmap(pixmap);
+  notifyAll(context);
 }
 

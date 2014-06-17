@@ -271,6 +271,7 @@ void te::layout::ToolbarOutside::createSceneZoomCombobox()
 {
   m_comboSceneZoom = new QComboBox();
   m_comboSceneZoom->setObjectName(m_optionSceneZoom.c_str());
+  //m_comboSceneZoom->setVisible(false);
 
   m_comboSceneZoom->addItem("50%", 0.5);
   m_comboSceneZoom->addItem("70%", 0.7);

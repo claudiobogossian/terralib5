@@ -28,6 +28,9 @@
 // TerraLib
 #include "AbstractVisitor.h"
 #include "Visitable.h"
+#include "Context.h"
+#include "../../../../../maptools/Canvas.h"
+#include "Utils.h"
 
 te::layout::AbstractVisitor::AbstractVisitor() :
   m_visitable(0)
@@ -42,6 +45,8 @@ te::layout::AbstractVisitor::~AbstractVisitor( void )
 
 void te::layout::AbstractVisitor::visit( Visitable* visitable )
 {
+  ContextItem context = getContextItem();
+
   if(m_visitable)
   {
     if(visitable)
@@ -52,14 +57,14 @@ void te::layout::AbstractVisitor::visit( Visitable* visitable )
         m_visitable = visitable;
       }
     }
-    visitDependent();
+    visitDependent(context);
   }
   else
   {
     if(visitable)
     {
       m_visitable = visitable;
-      visitDependent();
+      visitDependent(context);
     }
   }
 }
@@ -67,4 +72,22 @@ void te::layout::AbstractVisitor::visit( Visitable* visitable )
 void te::layout::AbstractVisitor::disassociate()
 {
   m_visitable = 0;
+}
+
+te::layout::ContextItem te::layout::AbstractVisitor::getContextItem()
+{
+  te::map::Canvas* canvas = Context::getInstance()->getCanvas();
+  Utils* utils = Context::getInstance()->getUtils();
+  double zoomFactor = Context::getInstance()->getZoomFactor();
+  double dpiX = Context::getInstance()->getDpiX();
+  double dpiY = Context::getInstance()->getDpiY();
+
+  ContextItem context;
+  context.setCanvas(canvas);
+  context.setUtils(utils);
+  context.setZoomFactor(zoomFactor);
+  context.setDpiX(dpiX);
+  context.setDpiY(dpiY);
+
+  return context;
 }

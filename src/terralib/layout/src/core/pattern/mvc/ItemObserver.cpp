@@ -55,10 +55,10 @@ te::layout::Properties* te::layout::ItemObserver::getProperties() const
   return m_model->getProperties();
 }
 
-void te::layout::ItemObserver::redraw( const double& scaleFactor /*= 1.*/ )
+void te::layout::ItemObserver::redraw()
 {
   refresh();
-  m_controller->redraw(scaleFactor);
+  m_controller->redraw();
 }
 
 void te::layout::ItemObserver::refresh()

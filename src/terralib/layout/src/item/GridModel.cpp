@@ -28,7 +28,6 @@
 // TerraLib
 #include "GridModel.h"
 #include "ContextItem.h"
-#include "Context.h"
 #include "../../../../../geometry/Envelope.h"
 #include "../../../../../geometry/Coord2D.h"
 #include "Property.h"
@@ -49,8 +48,8 @@ te::layout::GridModel::GridModel() :
   m_textColor(),
   m_visibleAllTexts(true),
   m_superscriptText(false),
-  m_lneVrtDisplacement(10),
-  m_lneHrzDisplacement(10),
+  m_lneVrtDisplacement(7),
+  m_lneHrzDisplacement(7),
   m_bottomText(true),
   m_leftText(true),
   m_rightText(true),

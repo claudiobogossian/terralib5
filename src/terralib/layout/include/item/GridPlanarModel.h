@@ -45,7 +45,7 @@ namespace te
         GridPlanarModel();
         virtual ~GridPlanarModel();
 
-        virtual void draw(te::map::Canvas* canvas, te::gm::Envelope box, int srid);
+        virtual void draw(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid);
 
         virtual te::layout::Property getProperty();
 
@@ -53,9 +53,9 @@ namespace te
 
        protected:
 
-         virtual void drawVerticalLines(te::map::Canvas* canvas, te::gm::Envelope box);
+         virtual void drawVerticalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
 
-         virtual void drawHorizontalLines(te::map::Canvas* canvas, te::gm::Envelope box);
+         virtual void drawHorizontalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
 
          virtual void calculateGaps(te::gm::Envelope box);
 

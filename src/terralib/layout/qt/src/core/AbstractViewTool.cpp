@@ -38,7 +38,7 @@ te::layout::AbstractViewTool::AbstractViewTool(View* view, QObject* parent)
 te::layout::AbstractViewTool::~AbstractViewTool()
 {
   // Roll back the default map display cursor
-  m_view->setCursor(Qt::ArrowCursor);
+  m_view->viewport()->setCursor(Qt::ArrowCursor);
 }
 
 bool te::layout::AbstractViewTool::eventFilter(QObject* watched, QEvent* e)
@@ -60,7 +60,7 @@ bool te::layout::AbstractViewTool::eventFilter(QObject* watched, QEvent* e)
     case QEvent::Enter:
     {
       if(m_cursor.shape() != Qt::BlankCursor)
-        m_view->setCursor(m_cursor);
+        m_view->viewport()->setCursor(m_cursor);
       return false;
     }
 

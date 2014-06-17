@@ -91,11 +91,16 @@ void te::layout::MainLayout::init(QWidget* mainWindow, QMenu* mnuLayout)
   bool create = false;
 
   QSize size(800, 600);
+  QRect screen = QApplication::desktop()->screenGeometry();
 
   if(mainWindow)
   {
     QMainWindow* mw = dynamic_cast<QMainWindow*>(mainWindow);
-    size = mw->centralWidget()->size();
+    if(mw)
+    {
+      size = mw->centralWidget()->size();
+      screen = mw->centralWidget()->geometry();
+    }
   }
 
   if(!m_view)
@@ -107,7 +112,6 @@ void te::layout::MainLayout::init(QWidget* mainWindow, QMenu* mnuLayout)
   }
     
   //Resize the dialog and put it in the screen center	
-  const QRect screen = QApplication::desktop()->screenGeometry();
   m_view->move( screen.center() - m_view->rect().center() );
 
   createLayoutContext(size.width(), size.height());
@@ -146,11 +150,12 @@ void te::layout::MainLayout::createDockLayoutDisplay(QWidget* mainWindow, View* 
       m_statusBar->showMessage("TerraPrint. Terralib 5 - Ready...");
 
       QVBoxLayout* vLayout = new QVBoxLayout;
+      //view->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
       vLayout->addWidget(view);
       vLayout->addWidget(m_statusBar);
 
       m_groupBox = new QGroupBox(m_dockLayoutDisplay);
-      m_groupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+      //m_groupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
       m_groupBox->setLayout(vLayout);
     }   
 

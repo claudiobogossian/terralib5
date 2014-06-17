@@ -332,10 +332,9 @@ void te::layout::ItemModelObservable::resize( double w, double h )
   m_box.m_ury = m_box.m_lly + h;
 }
 
-te::gm::Envelope te::layout::ItemModelObservable::getBoxWithZoomFactor()
+te::gm::Envelope te::layout::ItemModelObservable::boxWithZoomFactor( Utils* utils )
 {
-  Utils* utils = Context::getInstance()->getUtils();
-
-  te::gm::Envelope box = utils->applyZoomFactor(m_box);
-  return box;
+  /*te::gm::Envelope box = utils->applyZoomFactor(m_box);*/
+  
+  return m_box;
 }

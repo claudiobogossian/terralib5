@@ -28,13 +28,17 @@
 // TerraLib
 #include "GridGeodesicModel.h"
 #include "ContextItem.h"
-#include "Context.h"
 #include "../../../../../geometry/Envelope.h"
 #include "../../../../../geometry/Coord2D.h"
 #include "Property.h"
 #include "EnumUtils.h"
 #include "GeodesicGridSettingsConfigProperties.h"
 #include "../../../srs/Config.h"
+#include "WorldTransformer.h"
+
+// STL
+#include <string>
+#include <sstream> 
 
 te::layout::GridGeodesicModel::GridGeodesicModel() :
   m_degreesText(true),
@@ -79,36 +83,40 @@ te::layout::GridGeodesicModel::~GridGeodesicModel()
   }
 }
 
-void te::layout::GridGeodesicModel::draw( te::map::Canvas* canvas, te::gm::Envelope box, int srid )
+void te::layout::GridGeodesicModel::draw( te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid )
 {
+  if((!canvas) || (!utils))
+    return;
+
   if(!box.isValid())
     return;
+
+  m_srid = srid;
 
   calculateGaps(box);
 
   if(!m_visible)
     return;
-
-  m_srid = srid;
-
-  Utils* utils = Context::getInstance()->getUtils();
-
+  
   te::color::RGBAColor color = te::color::RGBAColor(0, 0, 0, 255);
   canvas->setLineColor(color);
 
-  drawVerticalLines(canvas, box);
-  drawHorizontalLines(canvas, box);
+  drawVerticalLines(canvas, utils, box);
+  drawHorizontalLines(canvas, utils, box);
 }
 
-void te::layout::GridGeodesicModel::drawVerticalLines(te::map::Canvas* canvas, te::gm::Envelope box)
+void te::layout::GridGeodesicModel::drawVerticalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box)
 {
   // Draw a horizontal line and the y coordinate change(vertical)
-
-  Utils* utils = Context::getInstance()->getUtils();
-
+  
   double			y1;
   double			yInit;
 
+  WorldTransformer transf = utils->getTransformGeo(m_planarBox, m_boxMapMM);
+  transf.setMirroring(false);
+
+  int zone = utils->calculatePlanarZone(box);
+  
   yInit = m_initialGridPointY;
   if(yInit < box.getLowerLeftY())
   {
@@ -130,13 +138,28 @@ void te::layout::GridGeodesicModel::drawVerticalLines(te::map::Canvas* canvas, t
     if(y1 < box.getLowerLeftY())
       continue;
 
-    te::gm::Envelope newBox(box.getLowerLeftX(), y1, 
-      box.getUpperRightX(), y1);
-
+    te::gm::Envelope env(box.getLowerLeftX(), y1, box.getUpperRightX(), y1);
+    
     te::gm::LinearRing* line = 0;
-    line = utils->addCoordsInX(newBox, m_lneVrtGap);
+    line = utils->addCoordsInX(env, y1, m_lneVrtGap);
+
+    // Curvatura da linha: de latlong para planar;
+    // Desenhar linha: de planar para milimetro
+
+    const te::gm::Envelope* t1 = line->getMBR();
+    utils->remapToPlanar(line, zone);
+    const te::gm::Envelope* t2 = line->getMBR();
+    utils->convertToMillimeter(transf, line);
+
     utils->drawLineW(line);
 
+    std::string text = utils->convertDecimalToDegree(y1, m_degreesText, m_minutesText, m_secondsText);
+    
+    te::gm::Envelope* ev = const_cast<te::gm::Envelope*>(line->getMBR());
+    
+    canvas->drawText(ev->getLowerLeftX() - m_lneHrzDisplacement, ev->getLowerLeftY(), text, 0);
+    canvas->drawText(ev->getUpperRightX() + m_lneHrzDisplacement, ev->getUpperRightY(), text, 0);
+    
     if(line)
     {
       delete line;
@@ -145,14 +168,17 @@ void te::layout::GridGeodesicModel::drawVerticalLines(te::map::Canvas* canvas, t
   }
 }
 
-void te::layout::GridGeodesicModel::drawHorizontalLines(te::map::Canvas* canvas, te::gm::Envelope box)
+void te::layout::GridGeodesicModel::drawHorizontalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box)
 {
   // Draw a vertical line and the x coordinate change(horizontal)
-
-  Utils* utils = Context::getInstance()->getUtils();
-
+  
   double			x1;
   double			xInit;
+
+  WorldTransformer transf = utils->getTransformGeo(m_planarBox, m_boxMapMM);
+  transf.setMirroring(false);
+
+  int zone = utils->calculatePlanarZone(box);
 
   xInit = m_initialGridPointX;
   if(xInit < box.getLowerLeftX())
@@ -176,12 +202,27 @@ void te::layout::GridGeodesicModel::drawHorizontalLines(te::map::Canvas* canvas,
     if(x1 < box.getLowerLeftX())
       continue;
 
-    te::gm::Envelope newBox(x1, box.getLowerLeftY(), 
-      x1, box.getUpperRightY());
+    double lly = 0;
+    double ury = 0;
+    double x = 0;
 
+    te::gm::Envelope env(x1, box.getLowerLeftY(), x1, box.getUpperRightY());
     te::gm::LinearRing* line = 0;
-    line = utils->addCoordsInY(newBox, m_lneHrzGap);
+    line = utils->addCoordsInY(env, x1, m_lneHrzGap);
+
+    // Curvatura da linha: de latlong para planar;
+    // Desenhar linha: de planar para milimetro
+    utils->remapToPlanar(line, zone);
+    utils->convertToMillimeter(transf, line);
+
     utils->drawLineW(line);
+
+    std::string text = utils->convertDecimalToDegree(x1, m_degreesText, m_minutesText, m_secondsText);
+
+    te::gm::Envelope* ev = const_cast<te::gm::Envelope*>(line->getMBR());
+
+    canvas->drawText(ev->getLowerLeftX(), ev->getLowerLeftX() - m_lneVrtDisplacement, text, 0);
+    canvas->drawText(ev->getUpperRightX(), ev->getUpperRightY() + m_lneVrtDisplacement, text, 0);
 
     if(line)
     {
@@ -193,11 +234,6 @@ void te::layout::GridGeodesicModel::drawHorizontalLines(te::map::Canvas* canvas,
 
 void te::layout::GridGeodesicModel::calculateGaps( te::gm::Envelope box )
 {
-  if(m_lneHrzGap > 0 && m_lneVrtGap > 0)
-  {
-    return;
-  }
-
   te::gm::Coord2D init = box.getLowerLeft();
   te::gm::Coord2D end = box.getUpperRight();
 
@@ -522,4 +558,9 @@ void te::layout::GridGeodesicModel::updateProperty( te::layout::Property propert
   {
     m_topRotateText = pro_topRotateText.getValue().toBool();
   }
+}
+
+void te::layout::GridGeodesicModel::setPlanarBox( te::gm::Envelope box )
+{
+  m_planarBox = box;
 }

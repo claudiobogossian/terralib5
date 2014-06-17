@@ -31,6 +31,8 @@
 // TerraLib
 #include "ParamsCreate.h"
 #include "../../../color/RGBAColor.h"
+#include "Utils.h"
+#include "../../../maptools/Canvas.h"
 
 namespace te
 {
@@ -117,6 +119,22 @@ namespace te
         */
         void setResizeCanvas(bool clear);
 
+        te::map::Canvas* getCanvas();
+
+        void setCanvas(te::map::Canvas* canvas);
+
+        Utils* getUtils();
+
+        void setUtils(Utils* utils);
+
+        double getDpiX();
+
+        void setDpiX(double dpi);
+
+        double getDpiY();
+
+        void setDpiY(double dpi);
+
       protected:
         ParamsCreate            m_params; //!<
         double                  m_zoomFactor; //!<
@@ -124,6 +142,10 @@ namespace te
         bool		                m_show; //!<
         bool		                m_wait; //!<
         bool                    m_resizeCanvas; //!<
+        Utils*                  m_utils;
+        te::map::Canvas*        m_canvas;
+        double                  m_dpiX;
+        double                  m_dpiY;
     };
   }
 }

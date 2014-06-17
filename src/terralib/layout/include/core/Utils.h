@@ -34,6 +34,8 @@
 #include "../../../color/RGBAColor.h"
 #include "../../../maptools/Canvas.h"
 #include "../../../maptools/WorldDeviceTransformer.h"
+#include "WorldTransformer.h"
+#include "../../../common/UnitOfMeasure.h"
 
 namespace te
 {
@@ -50,27 +52,22 @@ namespace te
 
         virtual void drawLineW(te::gm::LinearRing* line);
 
-        virtual te::color::RGBAColor** getImageW(te::gm::Envelope boxmm);
+        virtual te::color::RGBAColor** getImageW(te::gm::Envelope boxmm, bool applyZoom = true);
 
         virtual int mm2pixel(double mm);
 
         virtual te::gm::LinearRing* createSimpleLine(te::gm::Envelope box);
 
-        virtual te::gm::LinearRing* addCoordsInX(te::gm::Envelope box, double gap);
+        virtual te::gm::LinearRing* addCoordsInX(te::gm::Envelope box, double axisCoord, double gap);
 
-        virtual te::gm::LinearRing* addCoordsInY(te::gm::Envelope box, double gap);
+        virtual te::gm::LinearRing* addCoordsInY(te::gm::Envelope box, double axisCoord, double gap);
 
-        virtual void configCanvas(te::gm::Envelope box, bool resize = true);
+        virtual void configCanvas(te::gm::Envelope box, bool applyZoom = true, bool resize = true);
 
         /* The calculation of the viewport is from the box in mm */
         virtual void configGeoCanvas(te::gm::Envelope boxgeo, te::gm::Envelope boxmm, bool resize = true);
-
-        /* The calculation of the viewport is from the geographical box  */
-        virtual void configGeoCanvasFromGeo(te::gm::Envelope boxgeo, te::gm::Envelope boxmm, bool resize = true);
-        
-        virtual te::gm::Envelope viewportBox(te::gm::Envelope box);
-
-        virtual te::gm::Envelope viewportBoxFromGeo(te::gm::Envelope boxgeo, te::gm::Envelope boxmm);
+                
+        virtual te::gm::Envelope viewportBox(te::gm::Envelope box, bool applyZoom = true);
 
         virtual void textBoundingBox(double &w, double &h, std::string txt);
         
@@ -78,13 +75,40 @@ namespace te
 
         virtual double calculateRulerZoomFactor();
 
+        te::layout::WorldTransformer getTransformGeo(te::gm::Envelope boxgeo, te::gm::Envelope boxmm);
+
+        virtual std::string convertDecimalToDegree(const double& value, bool bDegrees, bool bMinutes, bool bSeconds);
+
+        virtual double convertDegreeToDecimal();
+
+        virtual std::string convertNumberToString(const double& value, int precision);
+
+        /* Rounds double to int */
+        virtual int roundNumber(const double& value);
+
+        std::string proj4DescToPlanar(int zone);
+
+        std::string proj4DescToGeodesic();
+
+        int calculatePlanarZone(te::gm::Envelope latLongBox);
+
+        te::common::UnitOfMeasurePtr unitMeasure(int srid);
+
+        virtual void remapToPlanar(te::gm::Envelope* latLongBox, int zone);
+
+        virtual void remapToPlanar(te::gm::LinearRing* line, int zone);
+
+        virtual void convertToMillimeter(WorldTransformer transf, te::gm::LinearRing* line); 
+
       protected:
         
         virtual void changeCanvas(te::gm::Envelope viewport, te::gm::Envelope world, bool resize = true);
 
         virtual te::gm::Envelope transformToViewport(te::map::WorldDeviceTransformer transf, te::gm::Envelope box);
 
-        virtual te::gm::Envelope viewportBoxFromMM(te::gm::Envelope box);
+        virtual te::gm::Envelope transformToMM(te::layout::WorldTransformer transf, te::gm::Envelope boxGeo);
+
+        virtual te::gm::Envelope viewportBoxFromMM(te::gm::Envelope box, bool applyZoom = true);
     };
   }
 }

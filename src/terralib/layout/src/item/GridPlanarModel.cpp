@@ -35,6 +35,10 @@
 #include "EnumUtils.h"
 #include "PlanarGridSettingsConfigProperties.h"
 
+// STL
+#include <string>
+#include <sstream> 
+
 te::layout::GridPlanarModel::GridPlanarModel() :
   m_unit(StyleKilometer)
 {
@@ -54,8 +58,11 @@ te::layout::GridPlanarModel::~GridPlanarModel()
   }
 }
 
-void te::layout::GridPlanarModel::draw( te::map::Canvas* canvas, te::gm::Envelope box, int srid )
+void te::layout::GridPlanarModel::draw( te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid )
 {
+  if((!canvas) || (!utils))
+    return;
+
   if(!box.isValid())
     return;
 
@@ -65,24 +72,23 @@ void te::layout::GridPlanarModel::draw( te::map::Canvas* canvas, te::gm::Envelop
     return;
 
   m_srid = srid;
-
-  Utils* utils = Context::getInstance()->getUtils();
-
+  
   te::color::RGBAColor color = te::color::RGBAColor(0, 0, 0, 255);
   canvas->setLineColor(color);
   
-  drawVerticalLines(canvas, box);
-  drawHorizontalLines(canvas, box);
+  drawVerticalLines(canvas, utils, box);
+  drawHorizontalLines(canvas, utils, box);
 }
 
-void te::layout::GridPlanarModel::drawVerticalLines(te::map::Canvas* canvas, te::gm::Envelope box)
+void te::layout::GridPlanarModel::drawVerticalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box)
 {
   // Draw a horizontal line and the y coordinate change(vertical)
-
-  Utils* utils = Context::getInstance()->getUtils();
-
+  
   double			y1;
   double			yInit;
+
+  WorldTransformer transf = utils->getTransformGeo(box, m_boxMapMM);
+  transf.setMirroring(false);
 
   yInit = m_initialGridPointY;
   if(yInit < box.getLowerLeftY())
@@ -104,13 +110,26 @@ void te::layout::GridPlanarModel::drawVerticalLines(te::map::Canvas* canvas, te:
   {
     if(y1 < box.getLowerLeftY())
       continue;
+    
+    double llx = 0;
+    double urx = 0;
+    double y = 0;
+    transf.system1Tosystem2(box.getLowerLeftX(), y1, llx, y);
+    transf.system1Tosystem2(box.getUpperRightX(), y1, urx, y);
 
-    te::gm::Envelope newBox(box.getLowerLeftX(), y1, 
-      box.getUpperRightX(), y1);
+    te::gm::Envelope newBox(llx, y, urx, y);
 
     te::gm::LinearRing* line = 0;
     line = utils->createSimpleLine(newBox);
     utils->drawLineW(line);
+    
+    std::ostringstream convert;
+    convert.precision(10);
+    double number = y1 / (double)m_unit;
+    convert << number;
+
+    canvas->drawText(llx - m_lneHrzDisplacement, y, convert.str(), 0);
+    canvas->drawText(urx + m_lneHrzDisplacement, y, convert.str(), 0);
 
     if(line)
     {
@@ -120,15 +139,16 @@ void te::layout::GridPlanarModel::drawVerticalLines(te::map::Canvas* canvas, te:
   }
 }
 
-void te::layout::GridPlanarModel::drawHorizontalLines(te::map::Canvas* canvas, te::gm::Envelope box)
+void te::layout::GridPlanarModel::drawHorizontalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box)
 {
   // Draw a vertical line and the x coordinate change(horizontal)
-
-  Utils* utils = Context::getInstance()->getUtils();
-  
+    
   double			x1;
   double			xInit;
   
+  WorldTransformer transf = utils->getTransformGeo(box, m_boxMapMM);
+  transf.setMirroring(false);
+
   xInit = m_initialGridPointX;
   if(xInit < box.getLowerLeftX())
   {
@@ -150,13 +170,33 @@ void te::layout::GridPlanarModel::drawHorizontalLines(te::map::Canvas* canvas, t
   {
     if(x1 < box.getLowerLeftX())
       continue;
+    
+    double lly = 0;
+    double ury = 0;
+    double x = 0;
+    transf.system1Tosystem2(x1, box.getLowerLeftY(), x, lly);
+    transf.system1Tosystem2(x1, box.getUpperRightY(), x, ury);
+    
+    te::gm::Envelope newBox(x, lly, x, ury);
 
-    te::gm::Envelope newBox(x1, box.getLowerLeftY(), 
-      x1, box.getUpperRightY());
+    if(lly > ury)
+    {
+      double ycopy = lly;
+      lly = ury;
+      ury = lly;
+    }
 
     te::gm::LinearRing* line = 0;
     line = utils->createSimpleLine(newBox);
     utils->drawLineW(line);
+
+    std::ostringstream convert;
+    convert.precision(10);
+    double number = x1 / (double)m_unit;
+    convert << number;
+
+    canvas->drawText(x, lly - m_lneVrtDisplacement, convert.str(), 0);
+    canvas->drawText(x, ury + m_lneVrtDisplacement, convert.str(), 0);
 
     if(line)
     {

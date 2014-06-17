@@ -53,7 +53,7 @@ namespace te
         
         virtual void updateProperties(te::layout::Properties* properties);
 
-        virtual void visitDependent();
+        virtual void visitDependent(ContextItem context);
 
         virtual void setBorderDisplacement(double value);
         

@@ -59,19 +59,31 @@ te::layout::ItemController::~ItemController()
   }
 }
 
-void te::layout::ItemController::redraw( const double& zoomFactor )
+void te::layout::ItemController::redraw()
 {
+  if(!m_model)
+    return;
+
+  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
+  if(!model)
+    return;
+
   ParamsCreate params;
-  ContextItem context(params, zoomFactor);
+  double zoomFactor = Context::getInstance()->getZoomFactor();
+  ContextItem contxt(params, zoomFactor);
 
   te::map::Canvas* canvas = Context::getInstance()->getCanvas();
+  Utils* utils = Context::getInstance()->getUtils();
+  double dpiX = Context::getInstance()->getDpiX();
+  double dpiY = Context::getInstance()->getDpiY();
+
+  contxt.setCanvas(canvas);
+  contxt.setUtils(utils);
+  contxt.setDpiX(dpiX);
+  contxt.setDpiY(dpiY);
+
   canvas->clear();
-  if(m_model)
-  {
-    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
-    if(model)
-      model->draw(context);
-  }
+  model->draw(contxt);
   canvas->clear();
 }
 
@@ -114,4 +126,16 @@ bool te::layout::ItemController::contains( const te::gm::Coord2D &coord ) const
       return model->contains(coord);
   }
   return false;
+}
+
+te::gm::Envelope te::layout::ItemController::getBoxWithZoomFactor()
+{
+  te::gm::Envelope env;
+
+  if(!m_model)
+    return env;
+  
+  Utils* utils = Context::getInstance()->getUtils();  
+  env = m_model->boxWithZoomFactor(utils);
+  return env;
 }

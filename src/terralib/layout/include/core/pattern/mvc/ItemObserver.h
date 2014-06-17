@@ -60,7 +60,7 @@ namespace te
 
         virtual te::layout::Properties* getProperties() const;	
         virtual void updateProperties(te::layout::Properties* properties);
-        virtual void redraw(const double& scaleFactor = 1.);
+        virtual void redraw();
 
         virtual void setPPI(const double& ppi);
         

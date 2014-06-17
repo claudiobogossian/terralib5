@@ -34,6 +34,7 @@
 #include "../../../maptools/Enums.h"
 #include "Property.h"
 #include "../../../geometry/Envelope.h"
+#include "Utils.h"
 
 namespace te
 {
@@ -46,7 +47,7 @@ namespace te
         GridModel();
         virtual ~GridModel();
 
-        virtual void draw(te::map::Canvas* canvas, te::gm::Envelope box, int srid) = 0;
+        virtual void draw(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid) = 0;
 
         virtual te::layout::Property getProperty() = 0;
         virtual void updateProperty(Property property) = 0;
@@ -67,9 +68,9 @@ namespace te
                 
        protected:
 
-         virtual void drawVerticalLines(te::map::Canvas* canvas, te::gm::Envelope box) = 0;
+         virtual void drawVerticalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box) = 0;
 
-         virtual void drawHorizontalLines(te::map::Canvas* canvas, te::gm::Envelope box) = 0;
+         virtual void drawHorizontalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box) = 0;
          
          virtual void calculateGaps(te::gm::Envelope box) = 0;
 

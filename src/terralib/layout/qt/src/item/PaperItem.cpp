@@ -28,7 +28,6 @@
 // TerraLib
 #include "PaperItem.h"
 #include "ItemController.h"
-#include "Context.h"
 #include "Scene.h"
 #include "Observable.h"
 #include "../../../color/RGBAColor.h"
@@ -60,7 +59,7 @@ void te::layout::PaperItem::updateObserver( ContextItem context )
   if(!rgba)
     return;
 
-  Utils* utils = Context::getInstance()->getUtils();
+  Utils* utils = context.getUtils();
 
   if(!utils)
     return;

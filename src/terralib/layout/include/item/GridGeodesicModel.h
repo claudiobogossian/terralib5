@@ -44,23 +44,27 @@ namespace te
         GridGeodesicModel();
         virtual ~GridGeodesicModel();
 
-        virtual void draw(te::map::Canvas* canvas, te::gm::Envelope box, int srid);
+        virtual void draw(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid);
 
         virtual te::layout::Property getProperty();
 
         virtual void updateProperty(te::layout::Property property);
 
+        virtual void setPlanarBox(te::gm::Envelope box);
+
        protected:
 
-         virtual void drawVerticalLines(te::map::Canvas* canvas, te::gm::Envelope box);
+         virtual void drawVerticalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
 
-         virtual void drawHorizontalLines(te::map::Canvas* canvas, te::gm::Envelope box);  
+         virtual void drawHorizontalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);  
 
          virtual void calculateGaps(te::gm::Envelope box);
 
        protected:
 
          GeodesicGridSettingsConfigProperties* m_settingsConfig;
+
+         te::gm::Envelope m_planarBox;
 
          /*Text: Basic Configuration*/
          int    m_pointTextSizeCorner;

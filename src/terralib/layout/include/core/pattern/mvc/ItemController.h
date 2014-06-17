@@ -47,16 +47,26 @@ namespace te
       public:
 
         ItemController(Observable* o);
+
         ItemController(Observable* o, LayoutAbstractObjectType type);
+
         virtual ~ItemController();
 
         virtual void setPosition(const double& x, const double& y) = 0;
-        virtual void redraw(const double& zoomFactor);
+
+        virtual void redraw();
+
         const Observable* getModel();
+
         const Observer* getView();
+
         virtual void setBox(te::gm::Envelope box);
+
         virtual void updateProperties(te::layout::Properties* properties);
+
         virtual bool contains(const te::gm::Coord2D &coord) const;
+
+        virtual te::gm::Envelope getBoxWithZoomFactor();
 
       protected:
         Observable* m_model;
