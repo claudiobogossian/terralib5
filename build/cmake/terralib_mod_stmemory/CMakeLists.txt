@@ -63,4 +63,4 @@ install(TARGETS terralib_mod_stmemory
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/stmemory COMPONENT devel)
 
-export(TARGETS terralib_mod_st APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
+export(TARGETS terralib_mod_stmemory APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

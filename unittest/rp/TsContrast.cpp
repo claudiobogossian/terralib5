@@ -41,7 +41,7 @@ void TsContrast::LinearContrast()
   // open input raster
 
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -80,7 +80,7 @@ void TsContrast::HistogramEqualizationContrast()
   // open input raster
 
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -118,7 +118,7 @@ void TsContrast::SetMeanAndStdContrast()
   // open input raster
 
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(
     inputRasterInfo ) );

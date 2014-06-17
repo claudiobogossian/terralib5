@@ -141,6 +141,8 @@ namespace te
 
           void onToolsDataExchangerDirectPopUpTriggered();
 
+          void onToolsQueryDataSourceTriggered();
+
           void onProjectPropertiesTriggered();
 
           void onAddFolderLayerTriggered();
@@ -275,6 +277,7 @@ namespace te
           QAction* m_toolsDataExchangerDirect;
           QAction* m_toolsDataExchangerDirectPopUp;
           QAction* m_toolsDataSourceExplorer;
+          QAction* m_toolsQueryDataSource;
           QAction* m_pluginsManager;
           QAction* m_helpContents;
           QAction* m_helpUpdate;
