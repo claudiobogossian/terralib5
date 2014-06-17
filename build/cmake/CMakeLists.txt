@@ -963,8 +963,23 @@ install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/config
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/icons
         DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
 
-install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/images
-        DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
+#install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/images
+#        DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
+
+install ( # -- images folder
+  DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/images
+  DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib 
+  COMPONENT runtime
+  PATTERN "*icns*" EXCLUDE
+)
+
+if(WIN32)
+  install ( # Application icon on windows system
+    FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/resources/images/ico/terralib-globe.ico
+    DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib/images/ico 
+    COMPONENT runtime
+  )
+endif()
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/json
         DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)

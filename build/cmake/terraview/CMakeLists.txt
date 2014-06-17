@@ -34,16 +34,12 @@ file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/*.h)
 file(GLOB TERRALIB_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/ui/*.ui)
 
-set(TERRALIB_APP_TYPE "")
-
 if(APPLE AND TERRALIB_BUILD_AS_BUNDLE)
 
   find_library(COREFOUNDATION_LIBRARY CoreFoundation "/")
   if(COREFOUNDATION_LIBRARY)
     list (APPEND _dep_libs ${COREFOUNDATION_LIBRARY})
   endif()
-
-  set(TERRALIB_APP_TYPE MACOSX_BUNDLE)
 
   set(MACOSX_BUNDLE_BUNDLE_NAME "TerraView")
   set(MACOSX_BUNDLE_COPYRIGHT "Copyright 2001-2014")
@@ -73,7 +69,7 @@ if(Qt5_FOUND)
 
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES})
 
-  add_executable(terraview ${TERRALIB_APP_TYPE} ${TERRALIB_FILES})
+  add_executable(terraview ${TERRAVIEW_APP_TYPE} ${TERRALIB_FILES})
 
   target_link_libraries(terraview terralib_mod_qt_apf ${COREFOUNDATION_LIBRARY})
 
@@ -99,7 +95,7 @@ else()
 
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES} ${TERRALIB_GEN_SRC_FILES})
 
-  add_executable(terraview ${TERRALIB_APP_TYPE} ${TERRALIB_FILES})
+  add_executable(terraview ${TERRAVIEW_APP_TYPE} ${TERRALIB_FILES})
 
   target_link_libraries(terraview terralib_mod_qt_apf
                                   ${QT_LIBRARIES} ${COREFOUNDATION_LIBRARY})
