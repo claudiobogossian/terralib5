@@ -119,7 +119,7 @@ void TsTiePointsLocator::MoravecStrategySameImage()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR 
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -161,7 +161,7 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
   // openning input rasters
   
   std::map<std::string, std::string> inputRaster1Info;
-  inputRaster1Info["URI"] = TE_DATA_DIR 
+  inputRaster1Info["URI"] = TERRALIB_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
@@ -169,7 +169,7 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
   CPPUNIT_ASSERT( inputRaster1Pointer.get() );     
   
   std::map<std::string, std::string> inputRaster2Info;
-  inputRaster2Info["URI"] = TE_DATA_DIR 
+  inputRaster2Info["URI"] = TERRALIB_DATA_DIR 
     "/data/rasters/cbers_b2_crop_contrast_halfsampled_90rotation.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
@@ -214,7 +214,7 @@ void TsTiePointsLocator::MoravecStrategySameImageDifBoxes()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR 
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -264,7 +264,7 @@ void TsTiePointsLocator::MoravecStrategyMultipleThreads()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR 
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -304,7 +304,7 @@ void TsTiePointsLocator::MoravecStrategyMaximumOffset()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR 
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -347,7 +347,7 @@ void TsTiePointsLocator::MoravecStrategyRescaleFactor()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR 
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -390,7 +390,7 @@ void TsTiePointsLocator::SurfStrategySameImage()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR 
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -432,7 +432,7 @@ void TsTiePointsLocator::SurfStrategySameImageDifBoxes()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR 
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -482,7 +482,7 @@ void TsTiePointsLocator::SurfStrategyHalfRotated90Image()
   // openning input rasters
   
   std::map<std::string, std::string> inputRaster1Info;
-  inputRaster1Info["URI"] = TE_DATA_DIR 
+  inputRaster1Info["URI"] = TERRALIB_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
@@ -490,7 +490,7 @@ void TsTiePointsLocator::SurfStrategyHalfRotated90Image()
   CPPUNIT_ASSERT( inputRaster1Pointer.get() );     
   
   std::map<std::string, std::string> inputRaster2Info;
-  inputRaster2Info["URI"] = TE_DATA_DIR 
+  inputRaster2Info["URI"] = TERRALIB_DATA_DIR 
     "/data/rasters/cbers_b2_crop_contrast_halfsampled_90rotation.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
@@ -533,7 +533,7 @@ void TsTiePointsLocator::SurfStrategyMultipleThreads()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR 
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -573,7 +573,7 @@ void TsTiePointsLocator::SurfStrategyMaximumOffset()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR 
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -616,7 +616,7 @@ void TsTiePointsLocator::SurfStrategyRescaleFactor()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR 
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(

@@ -58,7 +58,7 @@ int main(int /*argc*/, char** /*argv*/)
     connInfo["USER_NAME"] = "";
     connInfo["PASSWORD"] = "";
 
-    std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+    std::string data_dir = TERRALIB_DATA_DIR;
     connInfo["DB_NAME"] = data_dir + "/mdb/ADODataSource.mdb";
    
     // Create a data source using the data source factory

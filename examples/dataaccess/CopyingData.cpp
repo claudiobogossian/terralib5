@@ -14,7 +14,7 @@ void CopyingData()
   try
   {
 // let's take the input dataset from a shape file
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   
   std::string ogrInfo("connection_string=" + data_dir + "/shp/munic_2001.shp");
  

@@ -50,18 +50,18 @@ void TsGeometricRefining::Test001()
   // openning input rasters
   
   std::map<std::string, std::string> inRasterInfo;
-  inRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_hrc_crop.tif";
+  inRasterInfo["URI"] = TERRALIB_DATA_DIR "/data/rasters/cbers2b_hrc_crop.tif";
   boost::shared_ptr< te::rst::Raster > inRasterPointer ( te::rst::RasterFactory::open(
     inRasterInfo ) );
   CPPUNIT_ASSERT( inRasterPointer.get() );
   
   std::vector< std::string > referenceRastersTypes( 5, "GDAL" );
   std::vector< std::map< std::string, std::string > >  referenceRastersInfos( 5 );
-  referenceRastersInfos[ 0 ]["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_hrc_crop_01.tif";
-  referenceRastersInfos[ 1 ]["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_hrc_crop_02.tif";
-  referenceRastersInfos[ 2 ]["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_hrc_crop_03.tif";
-  referenceRastersInfos[ 3 ]["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_hrc_crop_04.tif";
-  referenceRastersInfos[ 4 ]["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_hrc_crop_05.tif";
+  referenceRastersInfos[ 0 ]["URI"] = TERRALIB_DATA_DIR "/data/rasters/cbers2b_hrc_crop_01.tif";
+  referenceRastersInfos[ 1 ]["URI"] = TERRALIB_DATA_DIR "/data/rasters/cbers2b_hrc_crop_02.tif";
+  referenceRastersInfos[ 2 ]["URI"] = TERRALIB_DATA_DIR "/data/rasters/cbers2b_hrc_crop_03.tif";
+  referenceRastersInfos[ 3 ]["URI"] = TERRALIB_DATA_DIR "/data/rasters/cbers2b_hrc_crop_04.tif";
+  referenceRastersInfos[ 4 ]["URI"] = TERRALIB_DATA_DIR "/data/rasters/cbers2b_hrc_crop_05.tif";
   te::rp::FeederConstRasterInfo referenceRastersfeeder( referenceRastersTypes,
     referenceRastersInfos );                                                        
     

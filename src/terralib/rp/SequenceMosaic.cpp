@@ -231,7 +231,7 @@ namespace te
       std::auto_ptr< te::mem::ExpansibleRaster > mosaicRasterHandler;
       std::vector< double > mosaicTargetMeans;
       std::vector< double > mosaicTargetVariances;
-      te::gm::Polygon mosaicValidDataPol(  0, te::gm::PolygonType, 0 ); // the polygon delimiting the valid data inside the mosaic (mosaic world coods)
+      te::gm::MultiPolygon mosaicValidAreaPols(  0, te::gm::MultiPolygonType, 0 ); // the polygons delimiting the valid data inside the mosaic (mosaic world coods)
       std::vector< double > mosaicBandsRangeMin;
       std::vector< double > mosaicBandsRangeMax;        
       unsigned int lastInputRasterBBoxLLXIndexed = 0; // The last raster added to the mosaic position
@@ -285,9 +285,14 @@ namespace te
           auxLinearRingPtr->setPoint( 2, mosaicURX, mosaicLLY );
           auxLinearRingPtr->setPoint( 3, mosaicLLX, mosaicLLY );
           auxLinearRingPtr->setPoint( 4, mosaicLLX, mosaicURY );
-          mosaicValidDataPol.clear();
-          mosaicValidDataPol.push_back( auxLinearRingPtr );
-          mosaicValidDataPol.setSRID( inputRasterPtr->getGrid()->getSRID() );
+          
+          te::gm::Polygon* outPolPtr = new te::gm::Polygon( 0, te::gm::PolygonType, 
+            inputRasterPtr->getGrid()->getSRID(), 0 ); 
+          outPolPtr->add( auxLinearRingPtr );
+          
+          mosaicValidAreaPols.clear();
+          mosaicValidAreaPols.add( outPolPtr );
+          mosaicValidAreaPols.setSRID( inputRasterPtr->getGrid()->getSRID() );
           
           lastInputRasterBBoxLLXIndexed = 0;
           lastInputRasterBBoxLLYIndexed = inputRasterPtr->getNumberOfRows() - 1;
@@ -827,7 +832,7 @@ namespace te
                 dummyRasterScales,                                                                    
                 currentRasterBandsOffsets,
                 currentRasterBandsScales,  
-                &mosaicValidDataPol,
+                &mosaicValidAreaPols,
                 0,                
                 *geoTransPtr,
                 m_inputParameters.m_enableMultiThread ? 0 : 1,
@@ -876,22 +881,27 @@ namespace te
               lastMosaicAddedRasterPol.push_back( auxLinearRingPtr );
               lastMosaicAddedRasterPol.setSRID( mosaicRasterHandler->getSRID() );
               
-              // current mosaic area in a multi-polygon form
-              std::auto_ptr< te::gm::MultiPolygon > mosaicValidDataPolMultiPolPtr(
-                new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType,
-                mosaicValidDataPol.getSRID(), 0 ) );
-              mosaicValidDataPolMultiPolPtr->add( (te::gm::Polygon*)mosaicValidDataPol.clone() );
-              
               // union of the current raster box with the current mosaic valid area under the mosaic SRID
-              std::auto_ptr< te::gm::Geometry > unionMultiPolPtr; 
-              unionMultiPolPtr.reset( mosaicValidDataPolMultiPolPtr->Union(
-                &lastMosaicAddedRasterPol ) );
+              
+              std::auto_ptr< te::gm::Geometry > unionMultiPolPtr(
+                mosaicValidAreaPols.Union( &lastMosaicAddedRasterPol ) );
               TERP_TRUE_OR_THROW( unionMultiPolPtr.get(), "Invalid pointer" );
               unionMultiPolPtr->setSRID( mosaicRasterHandler->getSRID() );
               
-              TERP_TRUE_OR_THROW( unionMultiPolPtr->getGeomTypeId() == te::gm::PolygonType,
-                "Invalid geometry type")
-              mosaicValidDataPol = *( (te::gm::Polygon*)unionMultiPolPtr.get() );
+              if( unionMultiPolPtr->getGeomTypeId() == te::gm::MultiPolygonType )
+              {
+                mosaicValidAreaPols = *( (te::gm::MultiPolygon*)unionMultiPolPtr.get() );
+              }
+              else if( unionMultiPolPtr->getGeomTypeId() == te::gm::PolygonType )
+              {
+                mosaicValidAreaPols.clear();
+                mosaicValidAreaPols.setSRID( unionMultiPolPtr->getSRID() );
+                mosaicValidAreaPols.add( (te::gm::Polygon*)unionMultiPolPtr.release() );
+              }
+              else
+              {
+                TERP_LOG_AND_RETURN_FALSE( "Invalid union geometry type" );
+              }
             }       
             
             // Move to the next raster

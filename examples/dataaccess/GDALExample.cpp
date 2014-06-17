@@ -13,7 +13,7 @@ void OpenFile()
 
     bool res = dsGDAL->isOpened();  // expect false;
   
-    std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+    std::string data_dir = TERRALIB_DATA_DIR;
 
     std::map<std::string, std::string> connInfo;
     connInfo["SOURCE"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
@@ -41,7 +41,7 @@ void OpenDirectory()
 {
   try
   {
-    std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+    std::string data_dir = TERRALIB_DATA_DIR;
   
     std::map<std::string, std::string> connInfo;
     connInfo["URI"] = data_dir + "/rasters";
@@ -76,7 +76,7 @@ void DataSourceTransactor()
 {
   try
   {
-    std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+    std::string data_dir = TERRALIB_DATA_DIR;
 
     std::map<std::string, std::string> connInfo;
     connInfo["URI"] = data_dir + "/rasters";

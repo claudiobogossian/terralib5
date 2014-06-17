@@ -45,12 +45,12 @@ void TsBlender::PixelByPixelNoBlendTest()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop2.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
   std::auto_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster1Pointer.get() );    
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
   std::auto_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster2Pointer.get() );
@@ -146,7 +146,7 @@ void TsBlender::PixelByPixelNoBlendTest()
   {
     for( unsigned int col = 0 ; col < outRasterPtr->getNumberOfColumns() ; ++col )
     {
-      blender.getBlendedValues( row, col, values );
+      blender.getBlendedValues( row, col, &values[col] );
       
       for( unsigned int band = 0 ; band < values.size() ; ++band )
       {
@@ -162,12 +162,12 @@ void TsBlender::PixelByPixelEucBlendTest()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop2.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
   std::auto_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster1Pointer.get() );    
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
   std::auto_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster2Pointer.get() );
@@ -263,7 +263,7 @@ void TsBlender::PixelByPixelEucBlendTest()
   {
     for( unsigned int col = 0 ; col < outRasterPtr->getNumberOfColumns() ; ++col )
     {
-      blender.getBlendedValues( row, col, values );
+      blender.getBlendedValues( row, col, &values[col] );
       
       for( unsigned int band = 0 ; band < values.size() ; ++band )
       {
@@ -283,12 +283,12 @@ void TsBlender::FullRasterBlendTest()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop2.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
   std::auto_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster1Pointer.get() );    
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
   std::auto_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster2Pointer.get() );
@@ -358,7 +358,7 @@ void TsBlender::FullRasterBlendTest()
         for( col = 0; col < inputNCols ; ++col )
         {
           inputRaster1Pointer->getValue( col, row, value, band );
-          outRasterPtr->setValue( col + outULCol, row + outULRow, value, band );
+          outRasterPtr->setValue((unsigned int)(col + outULCol), (unsigned int)(row + outULRow), value, band );
         }
       }
     }
@@ -438,12 +438,12 @@ void TsBlender::ThreadedFullRasterBlendTest()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop2.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
   std::auto_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster1Pointer.get() );    
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
   std::auto_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster2Pointer.get() );
@@ -513,7 +513,7 @@ void TsBlender::ThreadedFullRasterBlendTest()
         for( col = 0; col < inputNCols ; ++col )
         {
           inputRaster1Pointer->getValue( col, row, value, band );
-          outRasterPtr->setValue( col + outULCol, row + outULRow, value, band );
+          outRasterPtr->setValue( (unsigned int)(col + outULCol), (unsigned int)(row + outULRow), value, band );
         }
       }
     }

@@ -121,7 +121,7 @@ void SegmenterDialogExample( int argc, char** argv )
 {
   // open the input raster
   
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   
   std::map<std::string, std::string> rinfo;
   rinfo["URI"] = data_dir +  "/rasters/cbers2b_rgb342_crop.tif";
@@ -154,7 +154,7 @@ void ContrastDialogExample( int argc, char** argv )
 {
   // open the input raster
   
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
 
   std::map<std::string, std::string> rinfo;
   rinfo["URI"] = data_dir +  "/rasters/cbers2b_rgb342_crop.tif";
@@ -186,7 +186,7 @@ void ContrastDialogExample( int argc, char** argv )
 void ClassifierDialogExample(int argc, char** argv)
 {
 // open the input raster
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
 
   std::map<std::string, std::string> rinfo;
   rinfo["URI"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
@@ -228,7 +228,7 @@ void ClassifierDialogExample(int argc, char** argv)
 void MixtureModelDialogExample(int argc, char** argv)
 {
 // open the input raster
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
 
   const std::string dsname("cbers2b_rgb342_crop.tif");
   std::map<std::string, std::string> rinfo;

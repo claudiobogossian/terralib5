@@ -17,7 +17,7 @@ void VectorizeRaster()
 
 // define raster info and load
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TERRALIB_EXAMPLES_DATA_DIR"/rasters/pattern1.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/pattern1.tif";
     te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
 
     std::vector<te::gm::Geometry*> polygons;

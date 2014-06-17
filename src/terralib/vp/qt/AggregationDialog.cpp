@@ -616,21 +616,16 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
     return;
   }
 
-  std::auto_ptr<te::da::DataSet> inDataset;
+  const te::da::ObjectIdSet* oidSet = 0;
 
   if(m_ui->m_onlySelectedCheckBox->isChecked())
   {
-    std::auto_ptr<const te::da::ObjectIdSet> oidSet(m_selectedLayer->getSelected());
-    if(!oidSet.get())
+    oidSet = m_selectedLayer->getSelected();
+    if(!oidSet)
     {
       QMessageBox::information(this, "Aggregation", "Select the layer objects to perform the aggregation operation.");
       return;
     }
-    inDataset = dsLayer->getData(oidSet.get());
-  }
-  else
-  {
-    inDataset = dsLayer->getData();
   }
 
   te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
@@ -713,7 +708,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
         aggregOp = new te::vp::AggregationMemory();
       }
 
-      aggregOp->setInput(inDataSource, inDataset, dsLayer->getSchema());
+      aggregOp->setInput(inDataSource, dsLayer->getDataSetName(),dsLayer->getSchema(), oidSet);
       aggregOp->setOutput(dsOGR, outputdataset);
       aggregOp->setParams(selProperties, outputStatisticalSummary);
 
@@ -781,7 +776,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
         aggregOp = new te::vp::AggregationMemory();
       }
 
-      aggregOp->setInput(inDataSource, inDataset, dsLayer->getSchema());
+      aggregOp->setInput(inDataSource, dsLayer->getDataSetName(), dsLayer->getSchema(), oidSet);
       aggregOp->setOutput(aux, outputdataset);
       aggregOp->setParams(selProperties, outputStatisticalSummary);
 
