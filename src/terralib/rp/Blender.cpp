@@ -1493,7 +1493,9 @@ namespace te
         }
       }
       
+      paramsPtr->m_mutexPtr->lock();
       --( *(paramsPtr->m_runningThreadsCounterPtr) );
+      paramsPtr->m_mutexPtr->unlock();
     }
   } // end namespace rp
 }   // end namespace te    
