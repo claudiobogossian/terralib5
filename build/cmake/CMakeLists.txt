@@ -131,6 +131,12 @@ if(WIN32)
   cmake_policy(SET CMP0020 NEW)
 endif()
 
+if(${CMAKE_MAJOR_VERSION} GREATER 2)
+  cmake_policy(SET CMP0042 NEW)  
+  cmake_policy(SET CMP0043 NEW)  
+endif()
+
+
 include_directories(${CMAKE_BINARY_DIR})
 include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
