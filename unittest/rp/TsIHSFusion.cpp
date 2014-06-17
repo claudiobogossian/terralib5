@@ -39,12 +39,12 @@ void TsIHSFusion::Test001()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
   boost::shared_ptr< te::rst::Raster > lowResRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( lowResRasterPtr.get() );  
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_hrc_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/data/rasters/cbers2b_hrc_crop.tif";
   boost::shared_ptr< te::rst::Raster > highResRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( highResRasterPtr.get() );   

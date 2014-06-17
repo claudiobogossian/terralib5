@@ -17,10 +17,10 @@ void RasterInMemory()
     std::cout << "This test uses the memory driver." << std::endl << std::endl;
 
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TERRALIB_EXAMPLES_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
     te::mem::Raster r;
-    te::rst::Raster* memraster = te::rst::RasterFactory::open(std::string("MEM"), rinfo);
+    te::rst::Raster* memraster = te::rst::RasterFactory::open(std::string("MEM"), rinfo, te::common::RWAccess);
 
     const te::rst::RasterSummary* rs = te::rst::RasterSummaryManager::getInstance().get(memraster, te::rst::SUMMARY_ALL);
 

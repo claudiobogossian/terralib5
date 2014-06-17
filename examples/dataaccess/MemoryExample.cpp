@@ -18,7 +18,7 @@ void MemoryExample()
   
     std::map<std::string, std::string> connInfo;
   
-    std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+    std::string data_dir = TERRALIB_DATA_DIR;
   
     connInfo["SOURCE"] = data_dir + "/mem";
     dsMem->setConnectionInfo(connInfo);

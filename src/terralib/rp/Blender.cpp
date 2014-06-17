@@ -127,7 +127,7 @@ namespace te
       
       if( rhs.m_r1ValidDataDelimiterPtr.get() )
       {
-        m_r1ValidDataDelimiterPtr.reset( (te::gm::Polygon*) rhs.m_r1ValidDataDelimiterPtr->clone() );
+        m_r1ValidDataDelimiterPtr.reset( (te::gm::MultiPolygon*) rhs.m_r1ValidDataDelimiterPtr->clone() );
       }
       else
       {
@@ -136,7 +136,7 @@ namespace te
       
       if( rhs.m_r2ValidDataDelimiterPtr.get() )
       {
-        m_r2ValidDataDelimiterPtr.reset( (te::gm::Polygon*) rhs.m_r2ValidDataDelimiterPtr->clone() );
+        m_r2ValidDataDelimiterPtr.reset( (te::gm::MultiPolygon*) rhs.m_r2ValidDataDelimiterPtr->clone() );
       }      
       else
       {
@@ -179,8 +179,8 @@ namespace te
       const std::vector< double >& pixelScales1,
       const std::vector< double >& pixelOffsets2,
       const std::vector< double >& pixelScales2,
-      te::gm::Polygon const * const r1ValidDataDelimiterPtr,
-      te::gm::Polygon const * const r2ValidDataDelimiterPtr,
+      te::gm::MultiPolygon const * const r1ValidDataDelimiterPtr,
+      te::gm::MultiPolygon const * const r2ValidDataDelimiterPtr,
       const te::gm::GeometricTransformation& geomTransformation,
       const unsigned int threadsNumber,
        const bool enableProgressInterface )
@@ -204,10 +204,10 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( pixelScales2.size() ==  
         raster2Bands.size(), "Invalid pixel scales" );        
       TERP_TRUE_OR_RETURN_FALSE( ( r1ValidDataDelimiterPtr ?
-        ( r1ValidDataDelimiterPtr->getNPoints() > 1 ) : true ),
+        ( r1ValidDataDelimiterPtr->getNumGeometries() > 0 ) : true ),
         "Invalid polygon 1" )
       TERP_TRUE_OR_RETURN_FALSE( ( r2ValidDataDelimiterPtr ?
-        ( r2ValidDataDelimiterPtr->getNPoints() > 1 ) : true ),
+        ( r2ValidDataDelimiterPtr->getNumGeometries() > 0 ) : true ),
         "Invalid polygon 2" )
       TERP_TRUE_OR_RETURN_FALSE( geomTransformation.isValid(),
         "Invalid transformation" );
@@ -223,49 +223,62 @@ namespace te
       
       if( r1ValidDataDelimiterPtr )
       {
-        m_r1ValidDataDelimiterPtr.reset( (te::gm::Polygon*)r1ValidDataDelimiterPtr->clone() );
+        m_r1ValidDataDelimiterPtr.reset( (te::gm::MultiPolygon*)r1ValidDataDelimiterPtr->clone() );
       }
       if( r2ValidDataDelimiterPtr )
       {
-        m_r2ValidDataDelimiterPtr.reset( (te::gm::Polygon*)r2ValidDataDelimiterPtr->clone() );
+        m_r2ValidDataDelimiterPtr.reset( (te::gm::MultiPolygon*)r2ValidDataDelimiterPtr->clone() );
       }      
       
-      std::auto_ptr< te::gm::Polygon > indexedDelimiter1Ptr; // indexed under raster 1 lines/cols
+      // indexed under raster 1 lines/cols
+      std::auto_ptr< te::gm::MultiPolygon > indexedDelimiter1Ptr(
+        new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType, 0, 0 ) ); 
       
       if( r1ValidDataDelimiterPtr )
       {
-        const std::size_t nRings = r1ValidDataDelimiterPtr->getNumRings();
         const te::rst::Grid& grid = (*raster1.getGrid());
         
-        indexedDelimiter1Ptr.reset( new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 ) );
+        const std::size_t nGeoms = r1ValidDataDelimiterPtr->getNumGeometries();        
         
-        for( std::size_t ringIdx = 0 ; ringIdx < nRings ; ++ringIdx )
+        for( std::size_t geomIdx = 0 ; geomIdx < nGeoms ; ++geomIdx )
         {
-          te::gm::LinearRing const* inRingPtr = dynamic_cast< te::gm::LinearRing const* >( 
-            r1ValidDataDelimiterPtr->getRingN( ringIdx ) );
-          assert( inRingPtr );
+          te::gm::Polygon const* geomPtr = dynamic_cast< te::gm::Polygon* >(
+            r1ValidDataDelimiterPtr->getGeometryN( geomIdx ) );
+          TERP_DEBUG_TRUE_OR_THROW( geomPtr, "Invalid geometry pointer" );
           
-          const std::size_t nPoints = inRingPtr->getNPoints();
-          te::gm::Coord2D const * inCoordsPtr = inRingPtr->getCoordinates();
-          te::gm::Coord2D auxCoord;        
+          const std::size_t nRings = geomPtr->getNumRings();
           
-          te::gm::LinearRing* outRingPtr = new te::gm::LinearRing( nPoints, 
-             te::gm::LineStringType, 0, 0 );
+          te::gm::Polygon* outPolPtr = new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 );           
           
-          for( std::size_t pIdx = 0 ; pIdx < nPoints ; ++pIdx )
+          for( std::size_t ringIdx = 0 ; ringIdx < nRings ; ++ringIdx )
           {
-            grid.geoToGrid( inCoordsPtr[ pIdx ].x, inCoordsPtr[ pIdx ].y, 
-              auxCoord.x, auxCoord.y ); 
-            outRingPtr->setPoint( pIdx, auxCoord.x, auxCoord.y );
+            te::gm::LinearRing const* inRingPtr = dynamic_cast< te::gm::LinearRing const* >( 
+              geomPtr->getRingN( ringIdx ) );
+            assert( inRingPtr );
+            
+            const std::size_t nPoints = inRingPtr->getNPoints();
+            te::gm::Coord2D const * inCoordsPtr = inRingPtr->getCoordinates();
+            te::gm::Coord2D auxCoord;        
+            
+            te::gm::LinearRing* outRingPtr = new te::gm::LinearRing( nPoints, 
+               te::gm::LineStringType, 0, 0 );
+            
+            for( std::size_t pIdx = 0 ; pIdx < nPoints ; ++pIdx )
+            {
+              grid.geoToGrid( inCoordsPtr[ pIdx ].x, inCoordsPtr[ pIdx ].y, 
+                auxCoord.x, auxCoord.y ); 
+              outRingPtr->setPoint( pIdx, auxCoord.x, auxCoord.y );
+            }
+            
+            outPolPtr->add( outRingPtr );          
+            
           }
           
-          indexedDelimiter1Ptr->add( outRingPtr );
+          indexedDelimiter1Ptr->add( outPolPtr );
         }
       }
       else
       {
-        indexedDelimiter1Ptr.reset( new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 ) );        
-        
         te::gm::LinearRing* outRingPtr = new te::gm::LinearRing( 5, 
            te::gm::LineStringType, 0, 0 );        
         
@@ -284,48 +297,64 @@ namespace te
         outRingPtr->setPoint( 4, 
            -0.5, 
            -0.5 );
+        
+        te::gm::Polygon* outPolPtr = new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 );           
+        
+        outPolPtr->add( outRingPtr );
            
-        indexedDelimiter1Ptr->add( outRingPtr );
+        indexedDelimiter1Ptr->add( outPolPtr );
       }
       
-      std::auto_ptr< te::gm::Polygon > indexedDelimiter2Ptr; // indexed under raster 1 lines/cols
+      // indexed under raster 1 lines/cols
+      std::auto_ptr< te::gm::MultiPolygon > indexedDelimiter2Ptr(
+        new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType, 0, 0 ) ); 
       
       if( r2ValidDataDelimiterPtr )
       {
-        const std::size_t nRings = r2ValidDataDelimiterPtr->getNumRings();
         const te::rst::Grid& grid = (*raster2.getGrid());
         
-        indexedDelimiter2Ptr.reset( new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 ) );
+        const std::size_t nGeoms = r2ValidDataDelimiterPtr->getNumGeometries();
         
-        for( std::size_t ringIdx = 0 ; ringIdx < nRings ; ++ringIdx )
-        {
-          te::gm::LinearRing const* inRingPtr = dynamic_cast< te::gm::LinearRing const* >( 
-            r2ValidDataDelimiterPtr->getRingN( ringIdx ) );
-          assert( inRingPtr );
+        for( std::size_t geomIdx = 0 ; geomIdx < nGeoms ; ++geomIdx )
+        {        
+          te::gm::Polygon const* geomPtr = dynamic_cast< te::gm::Polygon* >(
+            r2ValidDataDelimiterPtr->getGeometryN( geomIdx ) );
+          TERP_DEBUG_TRUE_OR_THROW( geomPtr, "Invalid geometry pointer" );          
           
-          const std::size_t nPoints = inRingPtr->getNPoints();
-          te::gm::Coord2D const * inCoordsPtr = inRingPtr->getCoordinates();
-          te::gm::Coord2D auxCoord;        
-          te::gm::Coord2D auxCoord2;        
+          const std::size_t nRings = geomPtr->getNumRings();
           
-          te::gm::LinearRing* outRingPtr = new te::gm::LinearRing( nPoints, 
-             te::gm::LineStringType, 0, 0 );
+          te::gm::Polygon* outPolPtr = new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 ); 
           
-          for( std::size_t pIdx = 0 ; pIdx < nPoints ; ++pIdx )
+          for( std::size_t ringIdx = 0 ; ringIdx < nRings ; ++ringIdx )
           {
-            grid.geoToGrid( inCoordsPtr[ pIdx ].x, inCoordsPtr[ pIdx ].y, 
-              auxCoord.x, auxCoord.y ); 
-            geomTransformation.inverseMap( auxCoord.x, auxCoord.y, auxCoord2.x, auxCoord2.y );
-            outRingPtr->setPoint( pIdx, auxCoord2.x, auxCoord2.y );
+            te::gm::LinearRing const* inRingPtr = dynamic_cast< te::gm::LinearRing const* >( 
+              geomPtr->getRingN( ringIdx ) );
+            assert( inRingPtr );
+            
+            const std::size_t nPoints = inRingPtr->getNPoints();
+            te::gm::Coord2D const * inCoordsPtr = inRingPtr->getCoordinates();
+            te::gm::Coord2D auxCoord;        
+            te::gm::Coord2D auxCoord2;        
+            
+            te::gm::LinearRing* outRingPtr = new te::gm::LinearRing( nPoints, 
+               te::gm::LineStringType, 0, 0 );
+            
+            for( std::size_t pIdx = 0 ; pIdx < nPoints ; ++pIdx )
+            {
+              grid.geoToGrid( inCoordsPtr[ pIdx ].x, inCoordsPtr[ pIdx ].y, 
+                auxCoord.x, auxCoord.y ); 
+              geomTransformation.inverseMap( auxCoord.x, auxCoord.y, auxCoord2.x, auxCoord2.y );
+              outRingPtr->setPoint( pIdx, auxCoord2.x, auxCoord2.y );
+            }
+            
+            outPolPtr->add( outRingPtr );
           }
           
-          indexedDelimiter2Ptr->add( outRingPtr );
-        }        
+          indexedDelimiter2Ptr->add( outPolPtr );
+        }
       }
       else
       {
-        indexedDelimiter2Ptr.reset( new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 ) );        
-        
         te::gm::LinearRing* outRingPtr = new te::gm::LinearRing( 5, 
            te::gm::LineStringType, 0, 0 );          
         
@@ -356,10 +385,14 @@ namespace te
           auxCoord.x, auxCoord.y );
         outRingPtr->setPoint( 3, auxCoord.x, auxCoord.y );
         
-        indexedDelimiter2Ptr->add( outRingPtr );
+        te::gm::Polygon* outPolPtr = new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 );   
+        
+        outPolPtr->add( outRingPtr );
+        
+        indexedDelimiter2Ptr->add( outPolPtr );
       }
       
-      // Calculating the intersection
+      // Calculating the intersection (raster 1 lines/cols)
       
       {
         std::auto_ptr< te::gm::Geometry > geomIntersectionPtr( 
@@ -387,27 +420,51 @@ namespace te
       if( m_intersectionPtr.get() )
       {
         std::size_t ringIdx = 0;
+        std::auto_ptr< te::gm::Geometry > ringIntersectionPtr;
+        std::size_t nPols = indexedDelimiter2Ptr->getNumGeometries();   
         
-        for( ringIdx = 0 ; ringIdx < indexedDelimiter2Ptr->getNumRings() ;
-          ++ringIdx )
+        for( std::size_t polIdx = 0 ; polIdx < nPols ; ++polIdx )
         {
-          std::auto_ptr< te::gm::Geometry > ringIntersectionPtr;
-          ringIntersectionPtr.reset( indexedDelimiter1Ptr->intersection( indexedDelimiter2Ptr->getRingN( ringIdx ) ) );
-          
-          if( ringIntersectionPtr.get() != 0 ) 
+          te::gm::Polygon const* polPtr = dynamic_cast< te::gm::Polygon* >(
+            indexedDelimiter2Ptr->getGeometryN( polIdx ) );
+          TERP_DEBUG_TRUE_OR_THROW( polPtr, "Invalid geometry pointer" );        
+        
+          for( ringIdx = 0 ; ringIdx < polPtr->getNumRings() ;
+            ++ringIdx )
           {
-            if( ringIntersectionPtr->getGeomTypeId() == te::gm::MultiLineStringType )
+            ringIntersectionPtr.reset( indexedDelimiter1Ptr->intersection( 
+              polPtr->getRingN( ringIdx ) ) );
+            
+            if( ringIntersectionPtr.get() != 0 ) 
             {
-              te::gm::MultiLineString const* ringIntersectionNPtr = dynamic_cast< te::gm::MultiLineString const * >(
-                ringIntersectionPtr.get() );
-              assert( ringIntersectionNPtr );
-              
-              std::size_t numGeoms = ringIntersectionNPtr->getNumGeometries();
-              
-              for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+              if( ringIntersectionPtr->getGeomTypeId() == te::gm::MultiLineStringType )
+              {
+                te::gm::MultiLineString const* ringIntersectionNPtr = dynamic_cast< te::gm::MultiLineString const * >(
+                  ringIntersectionPtr.get() );
+                assert( ringIntersectionNPtr );
+                
+                std::size_t numGeoms = ringIntersectionNPtr->getNumGeometries();
+                
+                for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+                {
+                  te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
+                    ringIntersectionNPtr->getGeometryN( gIdx ) );
+                  assert( segIndexedNPtr );
+                  
+                  std::size_t nPoints = segIndexedNPtr->size();
+                  te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
+                  
+                  for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
+                  {
+                    m_r2IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
+                      coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
+                  }
+                }
+              }
+              else if( ringIntersectionPtr->getGeomTypeId() == te::gm::LineStringType )
               {
                 te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-                  ringIntersectionNPtr->getGeometryN( gIdx ) );
+                  ringIntersectionPtr.get() );
                 assert( segIndexedNPtr );
                 
                 std::size_t nPoints = segIndexedNPtr->size();
@@ -420,44 +477,53 @@ namespace te
                 }
               }
             }
-            else if( ringIntersectionPtr->getGeomTypeId() == te::gm::LineStringType )
-            {
-              te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-                ringIntersectionPtr.get() );
-              assert( segIndexedNPtr );
-              
-              std::size_t nPoints = segIndexedNPtr->size();
-              te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
-              
-              for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
-              {
-                m_r2IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
-                  coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
-              }
-            }
           }
         }
         
-        for( ringIdx = 0 ; ringIdx < indexedDelimiter1Ptr->getNumRings() ;
-          ++ringIdx )
+        nPols = indexedDelimiter1Ptr->getNumGeometries();  
+        
+        for( std::size_t polIdx = 0 ; polIdx < nPols ; ++polIdx )
         {
-          std::auto_ptr< te::gm::Geometry > ringIntersectionPtr;
-          ringIntersectionPtr.reset( indexedDelimiter2Ptr->intersection( indexedDelimiter1Ptr->getRingN( ringIdx ) ) );
-          
-          if( ringIntersectionPtr.get() != 0 ) 
+          te::gm::Polygon const* polPtr = dynamic_cast< te::gm::Polygon* >(
+            indexedDelimiter1Ptr->getGeometryN( polIdx ) );
+          TERP_DEBUG_TRUE_OR_THROW( polPtr, "Invalid geometry pointer" );         
+        
+          for( ringIdx = 0 ; ringIdx < polPtr->getNumRings() ;
+            ++ringIdx )
           {
-            if( ringIntersectionPtr->getGeomTypeId() == te::gm::MultiLineStringType )
+            ringIntersectionPtr.reset( indexedDelimiter2Ptr->intersection( 
+              polPtr->getRingN( ringIdx ) ) );
+            
+            if( ringIntersectionPtr.get() != 0 ) 
             {
-              te::gm::MultiLineString const* ringIntersectionNPtr = dynamic_cast< te::gm::MultiLineString const * >(
-                ringIntersectionPtr.get() );
-              assert( ringIntersectionNPtr );
-              
-              std::size_t numGeoms = ringIntersectionNPtr->getNumGeometries();
-              
-              for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+              if( ringIntersectionPtr->getGeomTypeId() == te::gm::MultiLineStringType )
+              {
+                te::gm::MultiLineString const* ringIntersectionNPtr = dynamic_cast< te::gm::MultiLineString const * >(
+                  ringIntersectionPtr.get() );
+                assert( ringIntersectionNPtr );
+                
+                std::size_t numGeoms = ringIntersectionNPtr->getNumGeometries();
+                
+                for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+                {
+                  te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
+                    ringIntersectionNPtr->getGeometryN( gIdx ) );
+                  assert( segIndexedNPtr );
+                  
+                  std::size_t nPoints = segIndexedNPtr->size();
+                  te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
+                  
+                  for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
+                  {
+                    m_r1IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
+                      coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
+                  }
+                }
+              }
+              else if( ringIntersectionPtr->getGeomTypeId() == te::gm::LineStringType )
               {
                 te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-                  ringIntersectionNPtr->getGeometryN( gIdx ) );
+                  ringIntersectionPtr.get() );
                 assert( segIndexedNPtr );
                 
                 std::size_t nPoints = segIndexedNPtr->size();
@@ -470,23 +536,8 @@ namespace te
                 }
               }
             }
-            else if( ringIntersectionPtr->getGeomTypeId() == te::gm::LineStringType )
-            {
-              te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-                ringIntersectionPtr.get() );
-              assert( segIndexedNPtr );
-              
-              std::size_t nPoints = segIndexedNPtr->size();
-              te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
-              
-              for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
-              {
-                m_r1IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
-                  coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
-              }
-            }
-          }
-        }        
+          }    
+        }    
 
 /*        std::cout << std::endl;
         for( unsigned int idx = 0 ; idx < m_r1IntersectionSegmentsPoints.size() ; ++idx )
@@ -1144,12 +1195,12 @@ namespace te
           if( m_r1ValidDataDelimiterPtr.get() )
           {
             allThreadsParams[ 0 ].m_r1ValidDataDelimiterPtr.reset( 
-              (te::gm::Polygon*)m_r1ValidDataDelimiterPtr->clone() );
+              (te::gm::MultiPolygon*)m_r1ValidDataDelimiterPtr->clone() );
           }
           if( m_r2ValidDataDelimiterPtr.get() )
           {
             allThreadsParams[ 0 ].m_r2ValidDataDelimiterPtr.reset( 
-              (te::gm::Polygon*)m_r2ValidDataDelimiterPtr->clone() );
+              (te::gm::MultiPolygon*)m_r2ValidDataDelimiterPtr->clone() );
           }
           allThreadsParams[ 0 ].m_geomTransformationPtr.reset( 
             m_geomTransformationPtr->clone() );
@@ -1170,12 +1221,12 @@ namespace te
             if( m_r1ValidDataDelimiterPtr.get() )
             {
               allThreadsParams[ threadIdx ].m_r1ValidDataDelimiterPtr.reset( 
-                (te::gm::Polygon*)m_r1ValidDataDelimiterPtr->clone() );
+                (te::gm::MultiPolygon*)m_r1ValidDataDelimiterPtr->clone() );
             }
             if( m_r2ValidDataDelimiterPtr.get() )
             {
               allThreadsParams[ threadIdx ].m_r2ValidDataDelimiterPtr.reset( 
-                (te::gm::Polygon*)m_r2ValidDataDelimiterPtr->clone() );
+                (te::gm::MultiPolygon*)m_r2ValidDataDelimiterPtr->clone() );
             }
             allThreadsParams[ threadIdx ].m_geomTransformationPtr.reset( 
               m_geomTransformationPtr->clone() );

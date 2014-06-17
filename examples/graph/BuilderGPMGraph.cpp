@@ -26,7 +26,7 @@ boost::shared_ptr<te::graph::AbstractGraph> CreateGPMAdjacencyGraph(bool draw)
   std::string graphName = "graphGPMAdjacency";
 
 // open data source
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   
   std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(data_dir +  "/graph/UP_pol.shp");
   std::string dataSetName = "UP_pol";
@@ -104,7 +104,7 @@ boost::shared_ptr<te::graph::AbstractGraph> CreateGPMDistanceGraph(bool draw)
   std::string graphName = "graphGPMDistance";
 
 // open data source
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(data_dir + "/graph/UP_pol.shp");
   std::string dataSetName = "UP_pol";
   std::string columnId = "COD_UP";
@@ -155,7 +155,7 @@ boost::shared_ptr<te::graph::AbstractGraph> CreateGPMDistanceGraph(bool draw)
     // set visual
     te::se::Style* style = getGPMGraphStyle();
   
-    std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+    std::string data_dir = TERRALIB_DATA_DIR;
 
     std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(data_dir + "/graph/BR_Estados.shp");
 

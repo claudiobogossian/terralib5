@@ -18,7 +18,7 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build the Unit Test for the Common module.
+#  Description: Build the Unit Test for the Raster Processing Contrast.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
@@ -29,18 +29,17 @@
 include_directories(${Boost_INCLUDE_DIR}
                     ${CPPUNIT_INCLUDE_DIR})
 
-if(WIN32)
-  add_definitions(-D_SCL_SECURE_NO_WARNINGS)
-endif()
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/TsContrast.cpp
+                             ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/TsContrastMain.cpp)
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/common/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/common/*.h)
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/LoadModules.h
+                             ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/TsContrast.h)
 
-add_executable(terralib_unittest_common ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+add_executable(terralib_unittest_rp_contrast ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
-target_link_libraries(terralib_unittest_common terralib_mod_common
-                                               ${CPPUNIT_LIBRARY})
+target_link_libraries(terralib_unittest_rp_contrast terralib_mod_plugin
+                                                    terralib_mod_rp
+                                                    ${CPPUNIT_LIBRARY})
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_UNITTEST}/common COMPONENT devel)
-
+        DESTINATION ${TERRALIB_DESTINATION_UNITTEST}/rp COMPONENT devel)

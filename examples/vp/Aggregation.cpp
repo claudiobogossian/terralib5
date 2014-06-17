@@ -219,7 +219,7 @@
 //OGR to OGR
 bool AggregOGRToOGR()
 {
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   
   //std::string filename(data_dir + '/shp/SP_cities.shp");
   
@@ -280,7 +280,7 @@ bool AggregOGRToOGR()
   // sera feito por algum tipo de factory
   te::vp::AggregationOp* aggregOp = new te::vp::AggregationMemory();
 
-  aggregOp->setInput(srcDs, inDset, inDsetType);
+  aggregOp->setInput(srcDs, inDsetName, inDsetType);
   aggregOp->setOutput(trgDs, outDS);
   aggregOp->setParams(groupingProperties, stats);
   
@@ -299,7 +299,7 @@ bool AggregOGRToOGR()
 //OGR to Postgis
 bool AggregOGRToPGIS()
 {
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   
   //std::string filename(data_dir + "/shp/SP_cities.shp");
   
@@ -363,7 +363,7 @@ bool AggregOGRToPGIS()
   // sera feito por algum tipo de factory
   te::vp::AggregationOp* aggregOp = new te::vp::AggregationMemory();
 
-  aggregOp->setInput(srcDs, inDset, inDsetType);
+  aggregOp->setInput(srcDs, inDsetName, inDsetType);
   aggregOp->setOutput(trgDs, outDS);
   aggregOp->setParams(groupingProperties, stats);
   
@@ -435,7 +435,7 @@ bool AggregPGISToPGIS()
   // sera feito por algum tipo de factory
   te::vp::AggregationOp* aggregOp = new te::vp::AggregationQuery();
 
-  aggregOp->setInput(srcDs, inDset, inDsetType);
+  aggregOp->setInput(srcDs, inDsetName, inDsetType);
   aggregOp->setOutput(outDsource, outDSet);
   aggregOp->setParams(groupingProperties, stats);
   
@@ -491,7 +491,7 @@ bool AggregPGISToOGR()
   stat1.push_back(te::stat::MIN_VALUE);
   stats.insert(std::make_pair(prop1.release(), stat1));
 
-  std::string data_dir = TERRALIB_EXAMPLES_DATA_DIR;
+  std::string data_dir = TERRALIB_DATA_DIR;
   
   std::string uriResult(data_dir + "/Nulos/result.shp");
   
@@ -515,7 +515,7 @@ bool AggregPGISToOGR()
   // sera feito por algum tipo de factory
   te::vp::AggregationOp* aggregOp = new te::vp::AggregationQuery();
 
-  aggregOp->setInput(srcDs, inDset, inDsetType);
+  aggregOp->setInput(srcDs, inDsetName, inDsetType);
   aggregOp->setOutput(trgDs, outDSet);
   aggregOp->setParams(groupingProperties, stats);
   
