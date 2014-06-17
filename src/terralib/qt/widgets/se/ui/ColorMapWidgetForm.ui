@@ -62,7 +62,7 @@
      <item row="1" column="0">
       <widget class="QGroupBox" name="m_groupBox">
        <property name="title">
-        <string>Color Map Parameters</string>
+        <string>Parameters</string>
        </property>
        <property name="flat">
         <bool>false</bool>
