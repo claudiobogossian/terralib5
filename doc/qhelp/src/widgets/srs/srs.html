@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Spatial Reference System</title>
+</head>
+<body>
+<div align="center">
+<h3><font face="Calibri Light"><strong></strong>Spatial
+Reference System</font></h3>
+</div>
+<p style="text-align: justify;"><font face="Calibri Light">The Spatial
+Reference System interface
+is used to define or change the SRID of a layer,&nbsp; and also to
+set
+or change&nbsp; the map display SRID. &nbsp;</font></p>
+<p style="text-align: justify;"><font face="Calibri Light">It is
+accessible through:</font></p>
+<p style="text-align: justify;"><font face="Calibri Light">&nbsp;&nbsp;&nbsp;
+<b>Layer
+Explorer &gt; &nbsp;Right Click </b>over a
+Layer-name</font><font face="Calibri Light"><b> &gt;
+Inform SRS...</b>&nbsp;</font></p>
+<p style="text-align: justify;"><font face="Calibri Light">&nbsp;
+&nbsp; <b>Map
+Display &nbsp;&gt;&nbsp; Right Click </b>inside
+the map display area</font><font face="Calibri Light"><b>
+&nbsp;&gt; &nbsp;SRS...</b></font></p>
+<p style="text-align: justify;"><font face="Calibri Light">Use <b>Tools
+&gt;
+Customize... &gt; Tool Bars &gt; SRS </b>&nbsp;and/or
+<b>SRID</b> to make both
+icons available at the tool bar. &nbsp;There is also a icon called
+UnknownSRID
+used to reset the map display SRID.</font></p>
+<p style="text-align: justify;"><font face="Calibri Light">When more
+than one layer is selected to
+be&nbsp;drawn, the first valid layer SRID is used to set the map
+display
+SRID, and the other layers are remapped if
+necessary.</font></p>
+<p style="text-align: justify;"><font face="Calibri Light">To choose a
+SRID, click over its <span
+ style="font-style: italic; font-weight: bold;">Name</span>
+at SRSs Available list</font><font face="Calibri Light"><span
+ style="font-style: italic; font-weight: bold;"></span>,
+note the <span style="font-style: italic; font-weight: bold;">Proj4
+description</span> and click on <span
+ style="font-style: italic; font-weight: bold;">OK</span>.
+&nbsp;</font></p>
+<p style="text-align: center;"><font face="Calibri Light"><img
+ style="width: 704px; height: 722px;" alt="" src="./srs1.png"></font></p>
+<p style="text-align: justify;"><font face="Calibri Light">To
+help&nbsp;finding&nbsp;a
+SRS, fill&nbsp; <i>Filter</i>
+&nbsp;field with a meaningful word (or a SRID) to see a subset of&nbsp;SRSs
+which
+contain that word (or that SRID) at the list <i>SRSs available</i></font>. </p>
+<p style="text-align: justify;"><font face="Calibri Light">For example
+fill the word UTM in <i>Filter</i>
+and see
+all SRID that have this word in its definition. &nbsp;Try to fill <span
+ style="font-style: italic;">Filter</span> with the
+following words one at once and see the SRSs showed: Corrego Alegre,
+Sirgas, 2916, 29168, etc.</font></p>
+<p style="text-align: center;"><font face="Calibri Light"><img
+ style="width: 704px; height: 722px;" alt="" src="./srs_filter2.png"></font></p>
+<h3><span style="font-family: Calibri Light;">Usage tips</span></h3>
+<p style="text-align: justify;"><font face="Calibri Light">The addition, removing and edition
+of SRSs using this interface are under development. However, you can edit the configuration file
+<i>srs.json</i> and update the definitions available there.</p>
+<p style="text-align: justify;"><font face="Calibri Light">If you wish to include a user defined
+SRS you have to provide a not used before SRID greater than 100000, a name, and a valid
+PROJ.4 description for it. It will be listed under the "User defined SRS" division of the
+interface.</p>
+</body>
+</html>

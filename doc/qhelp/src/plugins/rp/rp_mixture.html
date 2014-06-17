@@ -1,0 +1,317 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+  
+  <title>MixModel</title>
+</head>
+
+
+<body>
+
+
+<div style="text-align: left;">
+<h3 style="text-align: center;"><span style="font-family: Calibri Light;">Mixture Model</span></h3>
+
+
+<span style="font-family: Calibri Light;">The
+</span><span style="font-weight: bold; font-family: Calibri Light;">Mixture
+Model </span><span style="font-family: Calibri Light;">is
+a component that implements a raster
+decomposition
+using the mixture model
+strategy. The spatial resolution of remote sensing satellites, in
+general, allows that a single pixel contains more than a target (for
+example vegetation + shadow + soil). The mixture model algorithms allow
+to decompose the raster into fraction images, where the value of the
+resultant pixels indicate the fraction of each target inside the pixel.</span>
+</div>
+
+
+<p style="text-align: justify; font-family: Calibri Light;"><span style="font-style: italic;"></span>The main
+information needed to execute a mixture model are:</p>
+
+
+<ul style="font-family: Calibri Light;">
+
+
+  <li>One Raster file.</li>
+
+
+</ul>
+
+
+<ul style="font-family: Calibri Light;">
+
+
+  <li>A map of pure <span style="font-style: italic;">endmembers</span>,
+which are pixel values where the user knows the exact proportion of a
+component.</li>
+
+
+</ul>
+
+
+<ul style="font-family: Calibri Light;">
+
+
+  <li>Sensor information for each
+band, if available</li>
+
+
+</ul>
+
+
+<br style="font-family: Calibri Light;">
+
+
+The
+available methods in TerraLib
+are<span style="font-style: italic; font-family: Calibri Light;">:</span><br style="font-family: Calibri Light;">
+
+
+<ul style="font-family: Calibri Light;">
+
+
+  <li><span style="font-weight: bold;">Linear</span>:
+It is calculated
+by the following equation:</li>
+
+
+</ul>
+
+
+<div style="text-align: center;"><img style="width: 132px; height: 47px;" alt="" src="mixmodel_equation.png"></div>
+
+
+<ul style="font-family: Calibri Light;">
+
+
+  
+  <ul>
+
+
+    <li><span style="font-style: italic;">r</span><small style="font-style: italic;">i</small>
+is the pixel value at band <small style="font-style: italic;">i</small>,</li>
+
+
+    <li><span style="font-style: italic;">a</span><small style="font-style: italic;">ij</small>
+is the known value of the
+component <small style="font-style: italic;">j</small>
+at band <small style="font-style: italic;">i</small>,</li>
+
+
+    <li><span style="font-style: italic;">x</span><small style="font-style: italic;"><small>j</small></small>
+is the proportion
+of component <small style="font-style: italic;">j</small>,</li>
+
+
+    <li><span style="font-style: italic;">e</span><small style="font-style: italic;">i</small>
+is the estimation error for band <small style="font-style: italic;">i</small>.</li>
+
+
+  
+  </ul>
+
+
+</ul>
+
+
+<ul style="font-family: Calibri Light;">
+
+
+  <li><span style="font-weight: bold;">PCA</span>:
+The component matrix
+is transformed using Principal Component Analysis, and the fraction of
+each component is obtained by using the proper number of eigenvectors.</li>
+
+
+</ul>
+
+
+<br>
+
+
+<font style="font-family: Calibri Light;">It
+is
+accessible through:</font><br>
+
+
+<font style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp;
+</font><br>
+
+
+<font style="font-family: Calibri Light;"><b>&nbsp;&nbsp;&nbsp;&nbsp;</b></font><font style="font-family: Calibri Light;"><b>Raster
+Processing &gt;&nbsp;</b></font><font style="font-family: Calibri Light;"><b>Mixture
+Model</b></font><font style="font-family: Calibri Light;"><b>...</b></font><font style="font-family: Calibri Light;"><b>
+</b>(list of all
+raster layers will be available) <br>
+
+
+<br>
+
+
+</font><font style="font-family: Calibri Light;" face="Calibri Light">This
+wizard consists of the
+following steps:</font><br>
+
+
+<h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
+Wizard Page 1 -&nbsp;</font><span style="font-family: Calibri Light;">Selection
+of the layer with the desired raster (<span style="text-decoration: underline;"><a href="../../widgets/layer/search.html">Layer Search</a></span>)</span></h4>
+
+
+<ol>
+
+
+  <li><font face="Calibri Light">On the <i>List
+of Layers</i> select the raster layer to apply the Mixture
+Model.&nbsp;</font></li>
+
+
+  <li><font face="Calibri Light">Optionally use <i>Filter
+By Name</i> field
+giving part of the layer name to help find the layer in the list.</font></li>
+
+
+  <li><font face="Calibri Light">Press <b>Next&nbsp;</b>
+to go to next step or <b>Cancel </b>to close the
+dialog.</font><br>
+
+
+  </li>
+
+
+</ol>
+
+
+<div style="text-align: left;"><span style="font-family: Calibri Light;"></span>
+<div style="text-align: left;">
+<h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
+Wizard Page 2 - </font><span style="font-family: Calibri Light;">Mixture Model interface</span><span style="font-family: Calibri Light;"></span></h4>
+
+
+<span style="font-family: Calibri Light;"></span></div>
+
+
+<ol style="font-family: Calibri Light;">
+
+
+  <li>&nbsp;<b>Type</b> - Select the <i>Type</i>
+of mixture
+model to be used and set specific
+parameters (the parameters will vary depending on the selected contrast
+type).</li>
+
+
+  <li><b>Options</b>&nbsp;</li>
+
+
+  
+  <ul>
+
+
+    <li><i>Normalize output</i>:
+indicate that output raster will be normalized, by default [0, 255].
+    </li>
+
+    <li><i>Create error images:</i><b>
+      </b>indicate that output raster will include the error
+bands.</li>
+
+
+  
+  </ul>
+
+  <li><b>Raster Bands</b></li>
+
+  
+  <ul>
+
+    <li>Select the input &nbsp;<i>Bands</i> and
+the <i>Sensor </i>information for each band.</li>
+
+  
+  </ul>
+
+  <li><b>Selected Components List</b>: it lists the <i>Names</i> and the <i>Values</i> (one for each band) of the components acquired
+over the image (for example samples of soil, water and shadow). The
+number of components (samples) and bands must be the same.</li>
+
+  
+  <ul>
+
+    <li><span style="font-family: Calibri Light;">Use&nbsp; <img alt="" src="../../gen_icones/ic_wand.PNG" height="24" width="25"> tool to enable the acquisition of components (samples) through the interface <a href="../../widgets/rp/raster_navigator.html">Raster
+Navigator</a>. This interface offers several tools (such
+as zoom, color composition) to help on collecting good samples.&nbsp;</span></li>
+
+    <li><span style="font-family: Calibri Light;">Use&nbsp; <img alt="" src="../../gen_icones/ic_picker.PNG" height="22" width="21"> &nbsp;tool to and click over a&nbsp; "pure" sample over the image to acquire a component</span><span style="font-family: Calibri Light;">. The components will be listed with a default name.&nbsp;</span></li>
+
+    <li><span style="font-family: Calibri Light;">To change the name,&nbsp;<i>double click</i> over the cell&nbsp; (Component&lt;x&gt;) to enable the name edition and change it, pressing <i>enter</i> after all.</span></li>
+
+    <li><span style="font-family: Calibri Light;">Use &nbsp;<img alt="" src="../../gen_icones/ic_remove.PNG" height="23" width="24"> tool to remove undesired&nbsp;samples from the list.</span></li>
+
+  
+  </ul>
+
+  <li><span style="font-family: Calibri Light;"></span><font face="Calibri Light">Press <b>Next&nbsp;</b>
+to go to next step, <b>Back</b> to return to the previous wizard or <b>Cancel </b>to close the
+dialog.</font></li>
+
+</ol>
+
+<font face="Calibri Light"></font>
+<ol style="font-family: Calibri Light;">
+
+
+</ol>
+
+<span style="font-family: Calibri Light;">
+
+</span>
+<h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
+Wizard Page 3 - </font><span style="font-family: Calibri Light;">Output
+information (<span style="text-decoration: underline;"><a href="../../widgets/rp/output_raster_info.html">Output
+Raster
+Information</a></span>)</span></h4>
+
+
+<ol>
+
+
+  <li><font face="Calibri Light"><i>Raster Info</i>
+- First press <img alt="" src="../../gen_icones/ic_3points.PNG" height="19" width="27"> and inform the folder where the resulting
+file&nbsp;will be saved.</font></li>
+
+
+  <li><font face="Calibri Light"><i>Name - </i>inform
+the raster name.</font></li>
+
+
+  <li><font face="Calibri Light"><i>Extra
+Parameters</i> - if there are some, see the details on how to
+inform then <a href="../../widgets/rp/output_raster_info.html">here</a>.</font></li>
+
+
+  <li><font face="Calibri Light">Press <b>Finish</b>
+to save the resulting raster or&nbsp;<b>Back</b>
+to go to the previous wizard page.</font></li>
+
+
+</ol>
+
+<font face="Calibri Light"> Hint: The Mixture Model result is added to
+the TerraView project as a new layer and the default style used is color
+composition. Use the <a href="../../widgets/style/explorer.html">Style Explorer</a> to select just one band in monochromatic &nbsp;to check each component (</font><font face="Calibri Light">soil, water, shadow).</font>
+
+
+
+</div>
+
+
+</body>
+</html>
