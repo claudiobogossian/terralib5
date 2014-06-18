@@ -82,7 +82,6 @@ namespace te
       m_raster1BlocksInfosPtr( 0 ), m_mutexPtr( 0 ), m_blockProcessedSignalMutexPtr( 0 ),
       m_blockProcessedSignalPtr( 0 ), m_runningThreadsCounterPtr( 0 ),
       m_blendMethod( te::rp::Blender::InvalidBlendMethod ),
-      m_interpMethod1( te::rst::Interpolator::NearestNeighbor ),
       m_interpMethod2( te::rst::Interpolator::NearestNeighbor ),
       m_noDataValue( 0.0 ), m_forceInputNoDataValue( false ), 
       m_maxRasterCachedBlocks( 0 ), m_useProgress( false )
@@ -114,7 +113,6 @@ namespace te
       m_raster1Bands = rhs.m_raster1Bands;
       m_raster2Bands = rhs.m_raster2Bands;
       m_blendMethod = rhs.m_blendMethod;
-      m_interpMethod1 = rhs.m_interpMethod1;
       m_interpMethod2 = rhs.m_interpMethod2;
       m_noDataValue = rhs.m_noDataValue;
       m_forceInputNoDataValue = rhs.m_forceInputNoDataValue;
@@ -1175,7 +1173,6 @@ namespace te
         auxThreadParams.m_raster1Bands = m_raster1Bands;
         auxThreadParams.m_raster2Bands = m_raster2Bands;
         auxThreadParams.m_blendMethod = m_blendMethod;
-        auxThreadParams.m_interpMethod1 = m_interpMethod1;
         auxThreadParams.m_interpMethod2 = m_interpMethod2;
         auxThreadParams.m_noDataValue = m_outputNoDataValue;
         auxThreadParams.m_forceInputNoDataValue = m_forceInputNoDataValue;
@@ -1204,8 +1201,9 @@ namespace te
           }
           allThreadsParams[ 0 ].m_geomTransformationPtr.reset( 
             m_geomTransformationPtr->clone() );
-          allThreadsParams[ 0 ].m_maxRasterCachedBlocks = ((unsigned int)maxVMem2Use)
-            / ((unsigned int)m_raster2Ptr->getBand( m_raster1Bands[ 0 ] )->getBlockSize() );
+          allThreadsParams[ 0 ].m_maxRasterCachedBlocks = std::max( 1u, 
+            ((unsigned int)maxVMem2Use)
+            / ((unsigned int)m_raster2Ptr->getBand( m_raster1Bands[ 0 ] )->getBlockSize() ) );
           allThreadsParams[ 0 ].m_useProgress = m_enableProgressInterface;
           
           blendIntoRaster1Thread( &( allThreadsParams[ 0 ] ) );
@@ -1231,14 +1229,14 @@ namespace te
             allThreadsParams[ threadIdx ].m_geomTransformationPtr.reset( 
               m_geomTransformationPtr->clone() );
             
-            allThreadsParams[ 0 ].m_maxRasterCachedBlocks = 
+            allThreadsParams[ 0 ].m_maxRasterCachedBlocks = std::max( 1u,
               ((unsigned int)maxVMem2Use)
               / 
               (
                 ((unsigned int)m_raster2Ptr->getBand( m_raster1Bands[ 0 ] )->getBlockSize() )
                 *
                 m_threadsNumber
-              );
+              ) );
             
             allThreadsParams[ threadIdx ].m_useProgress = false;
             
@@ -1339,7 +1337,7 @@ namespace te
         raster2,
         paramsPtr->m_raster2Bands,
         paramsPtr->m_blendMethod,
-        paramsPtr->m_interpMethod1,
+        te::rst::Interpolator::NearestNeighbor,
         paramsPtr->m_interpMethod2,
         paramsPtr->m_noDataValue,
         paramsPtr->m_forceInputNoDataValue,
