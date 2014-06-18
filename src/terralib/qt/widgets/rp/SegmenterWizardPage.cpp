@@ -24,12 +24,14 @@
 */
 
 // TerraLib
+#include "../../../common/progress/ProgressManager.h"
 #include "../../../common/StringUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/Segmenter.h"
 #include "../../../rp/SegmenterRegionGrowingStrategy.h"
+#include "../progress/ProgressViewerDialog.h"
 #include "RasterNavigatorWidget.h"
 #include "SegmenterWizardPage.h"
 #include "ui_SegmenterWizardPageForm.h"
@@ -267,6 +269,10 @@ void te::qt::widgets::SegmenterWizardPage::apply()
   //run contrast
   te::rp::Segmenter algorithmInstance;
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
   try
   {
     if(algorithmInstance.initialize(algoInputParams))
@@ -283,6 +289,8 @@ void te::qt::widgets::SegmenterWizardPage::apply()
   {
     QMessageBox::warning(this, tr("Warning"), tr("Constrast error."));
   }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
 
   QApplication::restoreOverrideCursor();
 

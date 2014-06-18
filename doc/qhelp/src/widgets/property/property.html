@@ -1,0 +1,240 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+  
+  <title>Property_Interface</title>
+</head>
+
+
+<body>
+
+<div style="text-align: center; font-family: Calibri Light;">
+<h3><font size="3"> <strong>Property</strong></font></h3>
+
+</div>
+
+<p style="text-align: justify; font-family: Calibri Light;">This
+interface is used to inform all parameters needed to create properties.&nbsp;<span style="font-style: italic;"></span><span style="font-family: Calibri Light;">Depending on the data type
+chosen, <span style="font-style: italic;">Specific Parameters</span> are required. </span>The mandatory parameters for
+all data types are called&nbsp;<span style="font-style: italic;">General Parameters:</span><span style="font-family: Calibri Light;"></span></p>
+
+<ul style="font-family: Calibri Light;">
+
+  <li><span style="font-weight: bold;">Property Name</span>: Defined
+name for the new property.</li>
+
+</ul>
+
+<ul style="font-family: Calibri Light;">
+
+  <li><span style="font-weight: bold;">Default Value</span>: Default
+value associated with the data type chosen.</li>
+
+</ul>
+
+<ul style="font-family: Calibri Light;">
+
+  <li><span style="font-weight: bold;">Is Auto Number</span>: Indicates
+whether this property will be used as an identifier attribute.</li>
+
+</ul>
+
+<ul style="font-family: Calibri Light;">
+
+  <li><span style="font-weight: bold;">Is Required</span>: Indicates
+whether this attribute should always be set.</li>
+
+</ul>
+<span style="font-family: Calibri Light;">To create properties of basic data types, just inform the General Parameters. The basic data types are:</span><span style="font-family: Calibri Light;"><br>
+</span>
+<div style="text-align: left; font-family: Calibri Light;">
+<div style="text-align: center;">
+
+
+
+
+<div style="text-align: left;">
+<ul style="font-weight: bold;">
+
+  <li>Boolean</li>
+
+</ul>
+
+<ul style="font-weight: bold;">
+
+  <li>Double</li>
+
+</ul>
+
+<ul style="font-weight: bold;">
+
+  <li>Float</li>
+
+</ul>
+
+<ul style="font-weight: bold;">
+
+  <li>Int 16/32/64<span style="font-family: Calibri Light;">&nbsp;</span><span style="font-family: Calibri Light;"></span><br>
+  </li>
+
+</ul>
+<br>
+For Date and Time type the additional <span style="font-style: italic;">Specific&nbsp;Parameters</span> are:<br>
+
+<ul>
+
+  <li><span style="font-weight: bold;">Date Time Type</span>:&nbsp;</li>
+
+  
+  <ul>
+
+    <li>Date</li>
+
+    <li>Date Period</li>
+
+    <li>Date Duration</li>
+
+    <li>Time Duration</li>
+
+    <li>Time Instante</li>
+
+    <li>Time Period</li>
+
+    <li>Time Instante wih Zone</li>
+
+    <li>Time Period with Zone</li>
+
+  
+  </ul>
+
+</ul>
+
+<div style="text-align: center;">
+<br>
+
+<div style="text-align: left;">For Geometry type the additional<span style="font-style: italic;"> Specific&nbsp;Parameters</span> are: <br>
+<br>
+
+<ul>
+
+  <li><span style="font-weight: bold;">Geometry Type</span>: For all geometry types, the following extensions apply -&nbsp; Z / M
+/ ZM.</li>
+
+  
+  <ul>
+
+    <li>Geometry</li>
+
+    <li>Point&nbsp;</li>
+
+    <li>Line String&nbsp;</li>
+
+    <li>Circular String&nbsp;</li>
+
+    <li>Compound Curve&nbsp;</li>
+
+    <li>Polygon&nbsp;</li>
+
+    <li>Geometry Collection</li>
+
+    <li>Multi Point</li>
+
+    <li>Multi Line</li>
+
+    <li>Multi Polygon</li>
+
+    <li>Polyhedral Surface</li>
+
+    <li>TIN</li>
+
+    <li>Triangle</li>
+
+  
+  </ul>
+
+</ul>
+
+<ul>
+
+  <li><span style="font-weight: bold;">SRID</span>: Spatial Reference
+System information.</li>
+
+</ul>
+
+<br>
+
+<div style="text-align: center;">
+<div style="text-align: left;">For Numeric type the additional<span style="font-style: italic;"> Specific&nbsp;Parameters</span> are:<br>
+
+<ul>
+
+  <li><span style="font-weight: bold;">Precision</span>: Total number
+of digits of a numeric value.</li>
+
+</ul>
+
+<ul>
+
+  <li><span style="font-weight: bold;">Scale</span>: Number of digits
+for the right of the decimal point of a numeric value.<br>
+  </li>
+
+</ul>
+
+<div style="text-align: center;">
+<br>
+
+<div style="text-align: left;">For String type the additional
+parameters are:<br>
+
+<ul>
+
+  <li><span style="font-weight: bold;">String Type</span>:</li>
+
+  
+  <ul>
+
+    <li>String</li>
+
+    <li>Fixed String</li>
+
+    <li>Var String</li>
+
+  
+  </ul>
+
+</ul>
+
+<ul>
+
+  <li><span style="font-weight: bold;">Size</span>: Maximum number of
+characters for a varying string or the number of characters for a fixed
+length string.</li>
+
+</ul>
+
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>

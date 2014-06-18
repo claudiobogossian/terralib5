@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+  
+  <title>Property_Converter_Interface</title>
+</head>
+
+
+<body>
+
+<div style="text-align: center; font-family: Calibri Light;">
+<h3><font size="3"> <strong>Property
+Converter</strong></font></h3>
+
+</div>
+
+
+<p style="text-align: justify; font-family: Calibri Light;">This
+interface allows the user to define how a property should be converted.
+A series of converters are provided, allowing the user to perform
+simple conversions or complex conversions using more than one property.</p>
+<p style="text-align: justify; font-family: Calibri Light;">The<span style="font-style: italic;"> Origin Properties</span> frame shows all properties of the dataset. Use the property check box to
+choose which properties will be involved and then select the converter to be used.</p>
+
+<p style="text-align: justify; font-family: Calibri Light;">The&nbsp;<span style="font-style: italic;">Converter</span> frame displays all types of conversion supported. The types
+are:</p>
+
+<ul style="font-family: Calibri Light;">
+
+  <li><span style="font-weight: bold;">GenericAttributeConverter</span>:
+Simple conversion between data types.</li>
+
+</ul>
+
+<ul style="font-family: Calibri Light;">
+
+  <li><span style="font-weight: bold;">XYToPointConverter</span>:
+Converts two basic attributes for geometric type - point. An attribute
+should identify the point's X coordinate and the Y coordinate of the
+other point.</li>
+
+</ul>
+
+<ul style="font-family: Calibri Light;">
+
+  <li><span style="font-weight: bold;">XYZToPointConverter</span>:
+Converts three basic attributes for geometric type - point. Besides the
+x and y attributes, an attribute must identify the Z component.</li>
+
+</ul>
+
+<ul style="font-family: Calibri Light;">
+
+  <li><span style="font-weight: bold;">XYMToPointConverter</span>:&nbsp;Converts
+three basic attributes for geometric type - point. Besides the
+x and y attributes, an attribute must identify the M component.</li>
+
+</ul>
+
+<ul style="font-family: Calibri Light;">
+
+  <li><span style="font-weight: bold;">XYZMToPointConverter</span>:&nbsp;Converts
+four basic attributes for geometric type - point. Besides the
+x and y attributes, two attributes must identify the Z and M components.</li>
+
+</ul>
+
+<ul style="font-family: Calibri Light;">
+
+  <li><span style="font-weight: bold;">PointToXConverter</span>:
+Converts a geometric attribute of type point, generating a basic
+attribute with the X coordinate.</li>
+
+</ul>
+
+<ul style="font-family: Calibri Light;">
+
+  <li><span style="font-weight: bold;">PointToYConverter</span>:&nbsp;Converts
+a geometric attribute of type point, generating a basic attribute with
+the Y coordinate.</li>
+
+</ul>
+
+<ul style="font-family: Calibri Light;">
+
+  <li><span style="font-weight: bold;">PointToZConverter</span>:&nbsp;Converts
+a geometric attribute of type point, generating a basic attribute with
+the Z coordinate.</li>
+
+</ul>
+
+<ul style="font-family: Calibri Light;">
+
+  <li><span style="font-weight: bold;">PointToMConverter</span>:&nbsp;Converts
+a geometric attribute of type point, generating a basic attribute with
+the M coordinate.</li>
+
+</ul>
+
+<ul style="font-family: Calibri Light;">
+
+  <li><span style="font-weight: bold;">TupleToStringConverter</span>:
+Converts a set of attributes for a single attribute of type string.</li>
+
+</ul>
+
+<span style="font-family: Calibri Light;"></span>
+<p style="text-align: justify; font-family: Calibri Light;">The new property to be generated is defined in the&nbsp;<span style="font-style: italic;">Target Property</span> frame, where the data type, property name and other parameters are filled. To
+assist in this process use the <a href="property.html">Property
+Interface</a>.</p>
+
+
+</body>
+</html>

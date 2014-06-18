@@ -61,8 +61,9 @@
 #include "../widgets/progress/ProgressViewerBar.h"
 #include "../widgets/progress/ProgressViewerDialog.h"
 #include "../widgets/progress/ProgressViewerWidget.h"
-#include "../widgets/query/QueryLayerBuilderWizard.h"
+#include "../widgets/query/QueryDataSourceDialog.h"
 #include "../widgets/query/QueryDialog.h"
+#include "../widgets/query/QueryLayerBuilderWizard.h"
 #include "../widgets/se/GroupingDialog.h"
 #include "../widgets/se/StyleDockWidget.h"
 #include "../widgets/tools/Info.h"
@@ -879,6 +880,23 @@ void  te::qt::af::BaseApplication::onToolsDataExchangerDirectPopUpTriggered()
     layers.push_back(selectedLayer);
 
     dlg.setLayers(layers);
+
+    dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
+void te::qt::af::BaseApplication::onToolsQueryDataSourceTriggered()
+{
+  try
+  {
+    te::qt::widgets::QueryDataSourceDialog dlg(this);
+
+    std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers();
+    dlg.setLayerList(layers);
 
     dlg.exec();
   }
@@ -2118,6 +2136,8 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_toolsDataExchangerDirectPopUp, "data-exchange-direct-icon", "Tools.Exchanger.Direct", tr("&Exchange..."), tr("Exchange data sets from layers"), true, false, true, m_menubar);
   initAction(m_toolsDataSourceExplorer, "datasource-explorer", "Tools.Data Source Explorer", tr("&Data Source Explorer..."), tr("Show or hide the data source explorer"), 
     true, false, true, m_menubar);
+  initAction(m_toolsQueryDataSource, "datasource-query", "Tools.Query Data Source", tr("&Query Data Source..."), tr("Allows you to query data in a data source"), true, false, true, m_menubar);
+
 
 // Menu -Edit- actions
   //initAction(m_editUndo, "edit-undo", "Undo", tr("&Undo"), tr("Undo the last operation"), true, false, false);
@@ -2360,6 +2380,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_toolsExchangerMenu->addAction(m_toolsDataExchanger);
 
   m_toolsMenu->addAction(m_toolsDataSourceExplorer);
+  m_toolsMenu->addAction(m_toolsQueryDataSource);
   m_toolsMenu->addSeparator();
   m_toolsMenu->addAction(m_toolsCustomize);  
 
@@ -2464,6 +2485,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_toolsDataExchanger, SIGNAL(triggered()), SLOT(onToolsDataExchangerTriggered()));
   connect(m_toolsDataExchangerDirect, SIGNAL(triggered()), SLOT(onToolsDataExchangerDirectTriggered()));
   connect(m_toolsDataExchangerDirectPopUp, SIGNAL(triggered()), SLOT(onToolsDataExchangerDirectPopUpTriggered()));
+  connect(m_toolsQueryDataSource, SIGNAL(triggered()), SLOT(onToolsQueryDataSourceTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
   connect(m_layerChartsScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));

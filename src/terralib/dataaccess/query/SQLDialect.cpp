@@ -48,3 +48,19 @@ const te::da::SQLFunctionEncoder* te::da::SQLDialect::find(const std::string& fu
   return te::common::GetPValue(m_regFunctions, funcName);
 }
 
+std::vector<std::string> te::da::SQLDialect::getRegisteredNames() const
+{
+  std::vector<std::string> vec;
+
+  std::map<std::string, te::da::SQLFunctionEncoder*>::const_iterator it= m_regFunctions.begin();
+
+  while(it != m_regFunctions.end())
+  {
+    vec.push_back(it->first);
+
+    ++it;
+  }
+
+  return vec;
+}
+

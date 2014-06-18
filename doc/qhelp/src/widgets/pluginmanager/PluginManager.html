@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+
+  
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+
+  
+  
+  <title>Plugin Manager</title>
+</head>
+
+
+<body>
+
+
+<h3 style="text-align: center; font-family: Calibri Light;">Plugins Manager</h3>
+
+
+<font style="font-family: Calibri Light;" face="Calibri Light">The <span style="font-weight: bold;">Plugin Manager</span> is used to control the plugins that can be used in
+the application. &nbsp;The following operations are available:
+</font>
+<ol style="font-family: Calibri Light;">
+
+
+  <li> Enable a plugin that is disabled </li>
+
+
+  <li> Disable a plugin that is enabled </li>
+
+
+  <li> Add new plugins </li>
+
+
+  <li> Remove a plugin reference (do not remove the plugin itself) </li>
+
+
+</ol>
+
+
+<p style="font-family: Calibri Light;" align="justify">&nbsp;The following figure shows the plugin
+manager component:
+</p>
+
+
+<p style="font-family: Calibri Light;" align="center"> <span style="" lang="EN-GB"></span><span style="" lang="EN-GB"></span>
+<img style="width: 581px; height: 453px;" alt="" src="plg_mgr2.PNG"></p>
+
+
+<p style="font-family: Calibri Light;" align="justify"> Each line
+presented in the table
+represents a plugin in the system. Note in the <span style="font-style: italic;">Enabling</span>
+column that
+there are some plugins checked&nbsp;and others are not checked. The
+plugins checked are loaded with the applicaton and the unchecked are
+not loaded even though they are available in the system.</p>
+
+<h4 style="font-family: Calibri Light;"><font size="3"><strong> Loading and&nbsp;Unloading plugins</strong></font></h4>
+
+
+<p style="font-family: Calibri Light;" align="justify"> Loading and
+unloading plugins changes the way they are presented in the table. The
+lines highlighted in bold letter reflects the plugins
+changes.&nbsp;Thus, it is possible to know which plugins changed from
+Enable to Disable and vice-versa looking all lines highlighted. These
+modifications are not valid
+until the user press the <span style="font-weight: bold;">Apply</span> buttom. After that the highlighted &nbsp;lines comes back to normal.</p>
+
+<ol style="font-family: Calibri Light;">
+
+  <li><font style="font-family: Calibri Light;">Check/Uncheck&nbsp; the <span style="font-style: italic;">Enabling</span> box of the</font><font style="font-family: Calibri Light;"> desired plugin.</font></li>
+
+  <li><font style="font-family: Calibri Light;">Press <span style="font-weight: bold;">Apply</span>.</font></li>
+
+  <li><font style="font-family: Calibri Light;">Answer Yes/No the question about the dependencies.<br>
+
+    </font></li>
+
+</ol>
+
+<h4 style="font-family: Calibri Light;"><font><strong><font size="3"><strong> Plugins Dependencies&nbsp;</strong></font></strong></font></h4>
+
+<p style="font-family: Calibri Light;" align="justify">When enabling a
+plugin
+all of its dependencies must be loaded either. The dependencies list
+are checked by the plugin manager that ask for the user to load them
+one by one.&nbsp;If all dependencies are satisfied then
+the plugin will be loaded.&nbsp;</p>
+
+<p style="font-family: Calibri Light;" align="justify">When disabling a plugin all of its dependencies will also be unloaded, unless the
+client answer "no" to the question.</p>
+
+<h4 style="font-family: Calibri Light;"><font size="3"><strong> Adding
+plugins</strong></font></h4>
+
+<ol style="font-family: Calibri Light;">
+
+  <li><font style="font-family: Calibri Light;">Click on&nbsp;</font><font style="font-family: Calibri Light;"><img style="width: 24px; height: 24px;" alt="" src="../../gen_icones/ic_add.PNG"></font><font style="font-family: Calibri Light;"> to add an existing plugin.</font></li>
+
+  <li><font style="font-family: Calibri Light;">Choose <span style="font-style: italic;">File</span> or <span style="font-style: italic;">Directory</span> &nbsp;</font><font style="font-family: Calibri Light;">(where a list of manifest files for plugins are)&nbsp;</font></li>
+
+  <li><font style="font-family: Calibri Light;">Press <img style="width: 26px; height: 22px;" alt="folder icon" src="../../gen_icones/ic_folder.PNG">and select the xml&nbsp; file that represent the plugin (TerraLib plugin *.teplg) &nbsp;</font></li>
+
+  <li><font style="font-family: Calibri Light;">Press <span style="font-weight: bold;">OK</span><br>
+
+    </font></li>
+
+</ol>
+
+
+    
+    
+    
+    
+    
+    
+<p style="font-family: Calibri Light;" align="justify">&nbsp;Adding plugins does not means that it will be enabled. The add operation just adds the plugin to
+the list of unloaded plugins. &nbsp;See the enabel/diable section above.</p>
+
+
+
+<h4 style="font-family: Calibri Light;"><font size="3"><strong>
+Removing
+plugins</strong></font></h4>
+
+
+<ol style="font-family: Calibri Light;">
+
+  <li><font style="font-family: Calibri Light;">Select &nbsp;the plugins to be removed clicking over the line.</font></li>
+
+  <li><font style="font-family: Calibri Light;">Click on&nbsp;</font><img style="width: 24px; height: 23px;" alt="remve icon" src="../../gen_icones/ic_remove.PNG"><font style="font-family: Calibri Light;"> to remove the plugin reference in the list.</font></li>
+
+  <li><font style="font-family: Calibri Light;">See the plugins selected to be removed&nbsp;in italic &nbsp;font on the table.<br>
+
+    </font></li>
+
+  <li><font style="font-family: Calibri Light;">Press <span style="font-weight: bold;">Apply.</span></font>&nbsp;</li>
+
+  <li>Resolve its dependencies saying Yes or No to its dependencies which will also be removed.</li>
+
+</ol>
+
+<p style="font-family: Calibri Light;" align="justify">Removing
+plugins do not remove
+physically its files, it only removes its reference in the list. The manager will
+not load it any more.&nbsp;</p>
+
+
+<h4 style="font-family: Calibri Light;"><font size="3"><strong> Broked
+plugins</strong></font></h4>
+
+
+<p style="font-family: Calibri Light;" align="justify">Brokek Plugins
+are plugins
+which have dependencies missed. For some reason its dependencies can
+not be load. This kind of plugin will be showed in the manager without
+the checking box enabled, because it can not be loaded. To revert this
+situation, its is necessary to load all its dependencies.
+</p>
+
+
+</body>
+</html>

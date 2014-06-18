@@ -1,0 +1,801 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <title>Grouping</title>
+</head>
+
+
+<body>
+
+
+
+
+
+
+
+<div style="text-align: center; font-family: Calibri Light;">
+<h3>Classification</h3>
+
+
+
+
+
+
+
+<div style="text-align: left;"><br>
+
+
+
+
+
+
+
+The <b><span style="font-weight: bold;">Classification&nbsp;</span></b> can be applied in both vector and raster data. The basic principle of this type of classification is grouping
+the data following the logic of some selected method.<br>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+<div style="text-align: left;"><br>
+
+
+
+
+
+
+
+<font style="font-family: Calibri Light;">It is
+accessible through:</font><br>
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+<font style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp;
+</font><font style="font-family: Calibri Light;"><b>Layer
+Explorer &gt; &nbsp;Right Click </b></font>over a
+Layer-name<font style="font-family: Calibri Light;"><b> &gt;
+Classification...</b></font><br>
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+<font style="font-family: Calibri Light;"><b>&nbsp;&nbsp; </b></font><font style="font-family: Calibri Light;"><b>Layer &gt;&nbsp;</b></font><font style="font-family: Calibri Light;"><b>Classification...<br>
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+</b>The interface shows specific parameters depending on the data type chosen,&nbsp;</font><font style="font-family: Calibri Light;"><a href="grouping.html#Vectorial">Vector Classification</a></font><font style="font-family: Calibri Light;"> or &nbsp;</font><font style="font-family: Calibri Light;"><a href="grouping.html#Raster">Raster&nbsp; Classification</a></font><font style="font-family: Calibri Light;">.<br>
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+</font><font style="font-family: Calibri Light;"> </font></div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+<h4 style="font-family: Calibri Light;"><a name="Vectorial"></a>Vector Classification</h4>
+
+
+
+
+
+
+
+<span style="font-family: Calibri Light;">The
+available methods in TerraLib
+are:</span>
+<ul style="font-family: Calibri Light;">
+
+
+
+
+
+
+
+  <li>Unique Values: It groups the values using the unique value
+algorithm.</li>
+
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+
+<ul style="font-family: Calibri Light;">
+
+
+
+
+
+
+
+  <li>Equal Steps: The entire range of values <i>(max - min)</i> is
+divided equally into however many categories have been defined. It
+groups the values defined by a range of an attribute using the equal steps algorithm.</li>
+
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+
+<ul style="font-family: Calibri Light;">
+
+
+
+
+
+
+
+  <li>Quantil: This method classifies data into a certain number of
+categories with an equal number of units in each category.&nbsp; It
+groups the values defined by a range of a attribute
+using the quantil algorithm.)</li>
+
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+
+<ul style="font-family: Calibri Light;">
+
+
+
+
+
+
+
+  <li>Standard Deviation: It groups the values defined by a range of a
+attribute using the standard deviation algorithm.</li>
+
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+
+<span style="font-family: Calibri Light;">The parameters necessary to execute the Classification are grouped in frames at the interface. &nbsp;See the details bellow.<br>
+
+
+
+<br>
+
+
+<span style="font-weight: bold;">
+Frame 1</span><span style="font-style: italic;"><span style="font-weight: bold;"> - </span></span><span style="font-weight: bold; font-style: italic;">Import Layer Grouping</span> - Check this box to eventually use the parameters used in other layer<br>
+
+
+
+</span>
+<ol style="font-family: Calibri Light;">
+
+
+
+  <li><span style="font-style: italic;">Layer</span> - select the layer from where to&nbsp;import the parameters of classification. It might not be possible to import any of them.</li>
+
+
+
+  <li>Press <span style="font-weight: bold;">Import</span></li>
+
+
+
+</ol>
+
+
+
+<br style="font-family: Calibri Light;">
+
+
+
+
+<span style="font-family: Calibri Light;"><span style="font-weight: bold;">Frame 2 - </span><span style="font-style: italic; font-weight: bold;">Classification Parameters</span>&nbsp; </span><br style="font-family: Calibri Light;">
+
+
+
+
+
+<ol style="font-family: Calibri Light;">
+
+
+
+
+
+
+
+  <li><span style="font-style: italic;">Type</span> - Select the method of classification (unique value, equal steps, quantil).</li>
+
+
+
+
+
+
+
+  <li><span style="font-style: italic;">Attribute</span> - Select the attribute to be used &nbsp;in the classification. The
+attributes listed may vary depending on selected method of
+classification.</li>
+
+
+
+
+
+
+
+  <li><span style="font-style: italic;">Slices</span> - Set the number of slices to be created in the classification.</li>
+
+
+
+
+
+
+
+  <li><span style="font-style: italic;">Precision</span> - Sets the precision value.</li>
+
+
+
+
+
+
+
+  <li><span style="font-style: italic;">Standard Deviation</span> -&nbsp; &nbsp;</li>
+
+
+
+  <li><span style="font-style: italic;">Color &nbsp;Bar</span> - Set the color ramp as explained here.</li>
+
+
+
+  
+  
+  
+  <ul>
+
+
+
+    <li><span style="font-style: italic;">Use Schema</span> - &nbsp;???</li>
+
+
+
+  
+  
+  
+  </ul>
+
+
+
+  
+  
+  
+  <ol>
+
+
+
+    
+    
+    
+    <ol>
+
+
+
+      <li style="font-style: italic;">Catalog - ??</li>
+
+
+
+      <li><span style="font-style: italic;">Group</span> - &nbsp;??</li>
+
+
+
+      <li><span style="font-style: italic;">Schema</span> - ??</li>
+
+
+
+    
+    
+    
+    </ol>
+
+
+
+  
+  
+  
+  </ol>
+
+
+
+
+
+
+
+  <li>Press <span style="font-weight: bold;">Apply</span> to show the <span style="font-style: italic;">Classification</span> frame with the slices identified by <span style="font-style: italic;">Symbol</span>, <span style="font-style: italic;">Title</span>, <span style="font-style: italic;">Value</span>, <span style="font-style: italic;">Count</span>.&nbsp;</li>
+
+
+
+
+  <li>Press <span style="font-weight: bold;">OK</span> to generate the <span style="font-style: italic;">Classification by Grouping</span> with these parameters or change the parameters and apply again.</li>
+
+
+
+
+
+
+
+</ol>
+
+
+<span style="font-family: Calibri Light;">The result
+of classification by region over Brazil states, using <span style="font-style: italic;">Unique Value</span> type, is showed bellow.</span><br style="font-family: Calibri Light;">
+
+
+
+
+
+
+
+<div style="text-align: center; font-family: Calibri Light;">
+<div style="text-align: left;">&nbsp; &nbsp; &nbsp;&nbsp;<img style="width: 458px; height: 453px;" alt="" src="group2.PNG"><img style="width: 187px; height: 107px;" alt="" src="group_leg.PNG"><br>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+<h4 style="font-family: Calibri Light;"><a name="Raster"></a></h4>
+<h4 style="font-family: Calibri Light;"><br>
+</h4>
+<h4 style="font-family: Calibri Light;">Raster Classification</h4>
+
+
+
+
+
+
+
+<span style="font-family: Calibri Light;">The
+available methods in TerraLib
+are:</span>
+<ul style="font-family: Calibri Light;">
+
+
+
+
+
+
+
+  <li>Categorize: The transformation of continuous values to distinct
+values.</li>
+
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+
+<ul style="font-family: Calibri Light;">
+
+
+
+
+
+
+
+  <li>Interpolation: The transformation of continuous values to a
+number of values.</li>
+
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+
+<br style="font-family: Calibri Light;">
+
+
+
+
+
+
+
+<span style="font-family: Calibri Light;">The parameters necessary to execute the Classification are grouped in frames at the interface. &nbsp;See the details bellow.</span><span style="font-family: Calibri Light;"><br>
+
+
+<br>
+
+
+</span><span style="font-family: Calibri Light;"><span style="font-weight: bold;">
+Frame 1</span><span style="font-style: italic;"><span style="font-weight: bold;"> - </span></span><span style="font-weight: bold; font-style: italic;">Import Layer Grouping</span> - Check this box to eventually choose the same parameters used in other layer<br>
+
+
+
+</span>
+<ol style="font-family: Calibri Light;">
+
+
+  <li><span style="font-style: italic;">Layer</span> - select the layer from where to&nbsp;import the parameters of classification. It might not be possible to import any of them.</li>
+
+
+  <li>Press <span style="font-weight: bold;">Import.</span></li>
+
+
+</ol>
+
+
+
+<br style="font-family: Calibri Light;">
+
+
+
+
+<span style="font-family: Calibri Light;"><span style="font-weight: bold;">Frame 2 - <span style="font-style: italic;">Classification Parameters</span></span><span style="font-style: italic; font-weight: bold;"></span> </span>
+<ol style="font-family: Calibri Light;">
+
+
+
+
+
+
+
+  <li><span style="font-style: italic;">Band</span> - Select which band will be classified.</li>
+
+
+
+
+
+
+
+  <li><span style="font-style: italic;">Minimum Value</span> - Set the minimum value (the suggested value
+is get from the selected band).</li>
+
+
+
+
+
+
+
+  <li><span style="font-style: italic;">Maximum Value</span> -&nbsp; Set the maximum value &nbsp;(the suggested value is get from the selected band).</li>
+
+
+
+
+
+
+
+  <li><span style="font-style: italic;">Transformation</span> - Select the method for classification (categorize or interpolation).</li>
+
+
+
+
+
+
+
+  <li><span style="font-style: italic;">Slices</span> - Set the number of slices to be created in the classification.</li>
+
+
+
+
+
+
+
+  <li><span style="font-style: italic;">Type</span> - Defines how data is classified.</li>
+
+
+  <li><span style="font-style: italic;">Color &nbsp;Bar</span> - Set the color ramp as explained here. ??</li>
+
+
+  
+  
+  <ul>
+
+
+    <li><span style="font-style: italic;">Use Schema</span> - &nbsp;???</li>
+
+
+  
+  
+  </ul>
+
+
+  
+  
+  <ol>
+
+
+    
+    
+    <ol>
+
+
+      <li style="font-style: italic;">Catalog - ??</li>
+
+
+      <li><span style="font-style: italic;">Group</span> - &nbsp;??</li>
+
+
+      <li><span style="font-style: italic;">Schema</span> - ??</li>
+
+
+    
+    
+    </ol>
+
+
+  
+  
+  </ol>
+
+
+  <li>Press <span style="font-weight: bold;">Apply</span> to show the <span style="font-style: italic;">Color Map</span>&nbsp;with the slices identified by<span style="font-style: italic;"> Value, Color and Label</span><span style="font-style: italic;"></span><span style="font-style: italic;"></span>.&nbsp;</li>
+
+
+  <li>Press <span style="font-weight: bold;">OK</span> to generate the <span style="font-style: italic;">Classification</span> with these parameters or change the parameters and apply again.</li>
+
+
+</ol>
+
+
+<span style="font-family: Calibri Light;"></span> <span style="font-family: Calibri Light;">The figures bellow show a original image in color composition, band-0 and the results of classification.<br>
+
+<br>
+
+RGB-012 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; BAND-0<br>
+
+<img style="width: 245px; height: 235px;" alt="" src="rst_comp.PNG"> &nbsp; &nbsp; &nbsp; <img style="width: 245px; height: 232px;" alt="" src="rst_b0.PNG"><br>
+
+<br>
+
+</span>
+<div style="text-align: center; font-family: Calibri Light;">
+<div style="text-align: left;">
+
+
+
+
+
+<br>
+
+
+<div style="text-align: left;">
+
+
+
+
+The result
+of Classification using <span style="font-style: italic;">Categorize</span> method with default parameters and 6 slices.</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+<span style="font-style: italic; font-family: Calibri Light;"></span><img style="width: 244px; height: 235px;" alt="" src="rst_categ.PNG"><img style="width: 203px; height: 129px;" alt="" src="rst_categ_leg.PNG"><br>
+
+<br>
+
+<br>
+
+
+
+
+
+
+
+<div style="text-align: center; font-family: Calibri Light;">
+<div style="text-align: left;">The result
+of Classification using <span style="font-style: italic;">Interpolation</span> method&nbsp;with default parameters and 6 slices.
+
+
+
+
+<br>
+
+<img style="width: 245px; height: 235px;" alt="" src="rst_interp.PNG"><img style="width: 194px; height: 127px;" alt="" src="rst_interp_leg.PNG"><br>
+
+<br>
+
+<br>
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</body>
+</html>
