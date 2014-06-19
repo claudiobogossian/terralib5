@@ -34,34 +34,33 @@ file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/*.h)
 file(GLOB TERRALIB_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/ui/*.ui)
 
-set(TERRALIB_APP_TYPE "")
-
-if(APPLE AND TERRALIB_BUILD_AS_BUNDLE)
-
+if(APPLE)
   find_library(COREFOUNDATION_LIBRARY CoreFoundation "/")
   if(COREFOUNDATION_LIBRARY)
     list (APPEND _dep_libs ${COREFOUNDATION_LIBRARY})
   endif()
 
-  set(TERRALIB_APP_TYPE MACOSX_BUNDLE)
+  if(TERRALIB_BUILD_AS_BUNDLE)
+    set(MACOSX_BUNDLE_BUNDLE_NAME "TerraView")
+    set(MACOSX_BUNDLE_COPYRIGHT "Copyright 2001-2014")
+    set(MACOSX_BUNDLE_SIGNATURE "TerraView")
+    set(MACOSX_BUNDLE_GUI_IDENTIFIER "http://www.terraview.org")
+    set(MACOSX_BUNDLE_EXECUTABLE_NAME "TerraView")
+    set(MACOSX_BUNDLE_INFO_STRING "System for manipulating geographical data.")
+    set(MACOSX_BUNDLE_ICON_FILE "../share/terralib/images/icns/terralib-globe.icns")
+    set(MACOSX_BUNDLE_LONG_VERSION_STRING ${TERRALIB_STRING_VERSION})
+    set(MACOSX_BUNDLE_SHORT_VERSION_STRING ${TERRALIB_PKG_VERSION})
+    set(MACOSX_BUNDLE_BUNDLE_VERSION ${TERRALIB_STRING_VERSION})
 
-  set(MACOSX_BUNDLE_BUNDLE_NAME "TerraView")
-  set(MACOSX_BUNDLE_COPYRIGHT "Copyright 2001-2014")
-  set(MACOSX_BUNDLE_SIGNATURE "TerraView")
-  set(MACOSX_BUNDLE_GUI_IDENTIFIER "http://www.terraview.org")
-  set(MACOSX_BUNDLE_EXECUTABLE_NAME "TerraView")
-  set(MACOSX_BUNDLE_INFO_STRING "System for manipulating geographical data.")
-  set(MACOSX_BUNDLE_ICON_FILE "../share/terralib/images/icns/terralib-globe.icns")
-  set(MACOSX_BUNDLE_LONG_VERSION_STRING ${TERRALIB_STRING_VERSION})
-  set(MACOSX_BUNDLE_SHORT_VERSION_STRING ${TERRALIB_PKG_VERSION})
-  set(MACOSX_BUNDLE_BUNDLE_VERSION ${TERRALIB_STRING_VERSION})
+    configure_file(${CMAKE_ROOT}/Modules/MacOSXBundleInfo.plist.in ${CMAKE_BINARY_DIR}/Info.plist)
 
-  configure_file(${CMAKE_ROOT}/Modules/MacOSXBundleInfo.plist.in ${CMAKE_BINARY_DIR}/Info.plist)
-
-  set(CPACK_PACKAGE_ICON "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/images/icns/terralib-globe.icns")
-  set(CPACK_BUNDLE_NAME "TerraView")
-  set(CPACK_BUNDLE_ICON ${CPACK_PACKAGE_ICON})
-  set(CPACK_BUNDLE_PLIST ${CMAKE_BINARY_DIR}/Info.plist)
+    set(CPACK_PACKAGE_ICON "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/images/icns/terralib-globe.icns")
+    set(CPACK_BUNDLE_NAME "TerraView")
+    set(CPACK_BUNDLE_ICON ${CPACK_PACKAGE_ICON})
+    set(CPACK_BUNDLE_PLIST ${CMAKE_BINARY_DIR}/Info.plist)
+	
+	set (TERRAVIEW_APP_TYPE MACOSX_BUNDLE)
+  endif()
 endif()
 
 if(Qt5_FOUND)
@@ -73,7 +72,7 @@ if(Qt5_FOUND)
 
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES})
 
-  add_executable(terraview ${TERRALIB_APP_TYPE} ${TERRALIB_FILES})
+  add_executable(terraview ${TERRAVIEW_APP_TYPE} ${TERRALIB_FILES})
 
   target_link_libraries(terraview terralib_mod_qt_apf ${COREFOUNDATION_LIBRARY})
 
@@ -99,7 +98,7 @@ else()
 
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES} ${TERRALIB_GEN_SRC_FILES})
 
-  add_executable(terraview ${TERRALIB_APP_TYPE} ${TERRALIB_FILES})
+  add_executable(terraview ${TERRAVIEW_APP_TYPE} ${TERRALIB_FILES})
 
   target_link_libraries(terraview terralib_mod_qt_apf
                                   ${QT_LIBRARIES} ${COREFOUNDATION_LIBRARY})
