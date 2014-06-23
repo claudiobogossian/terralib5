@@ -182,7 +182,6 @@ namespace te
             std::vector< unsigned int > m_raster1Bands; //!< Input raster 1 band indexes to use.
             std::vector< unsigned int > m_raster2Bands; //!< Input raster 2 band indexes to use (this vector has the same size as raster1Bands).
             BlendMethod m_blendMethod; //!<  The blend method to apply.
-            te::rst::Interpolator::Method m_interpMethod1; //!< The interpolation method to use when reading raster 1 data.
             te::rst::Interpolator::Method m_interpMethod2; //!< The interpolation method to use when reading raster 2 data.
             double m_noDataValue; //!< The value returned where there is no pixel data bo blend.
             bool m_forceInputNoDataValue; //!< Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored) 
