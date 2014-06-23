@@ -961,12 +961,12 @@ endif()
 # install and targets export
 #
 
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/*.h)
+
 install(FILES ${CMAKE_BINARY_DIR}/terralib_config.h
               ${CMAKE_BINARY_DIR}/terralib_defines.h
               ${CMAKE_BINARY_DIR}/terralib_version.h
-              ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Config.h
-              ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Defines.h
-              ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Version.h
+              ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib COMPONENT devel)
 
 install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib.h

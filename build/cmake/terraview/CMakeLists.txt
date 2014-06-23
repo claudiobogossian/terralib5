@@ -35,10 +35,10 @@ file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/*.h)
 file(GLOB TERRALIB_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/ui/*.ui)
 
 if(APPLE)
-  find_library(COREFOUNDATION_LIBRARY CoreFoundation "/")
-  if(COREFOUNDATION_LIBRARY)
-    list (APPEND _dep_libs ${COREFOUNDATION_LIBRARY})
-  endif()
+
+  find_library(TERRALIB_COREFOUNDATION_LIBRARY
+               NAMES CoreFoundation
+               PATHS "/")
 
   if(TERRALIB_BUILD_AS_BUNDLE)
     set(MACOSX_BUNDLE_BUNDLE_NAME "TerraView")
@@ -58,8 +58,8 @@ if(APPLE)
     set(CPACK_BUNDLE_NAME "TerraView")
     set(CPACK_BUNDLE_ICON ${CPACK_PACKAGE_ICON})
     set(CPACK_BUNDLE_PLIST ${CMAKE_BINARY_DIR}/Info.plist)
-	
-	set (TERRAVIEW_APP_TYPE MACOSX_BUNDLE)
+
+    set (TERRAVIEW_APP_TYPE MACOSX_BUNDLE)
   endif()
 endif()
 
@@ -74,7 +74,11 @@ if(Qt5_FOUND)
 
   add_executable(terraview ${TERRAVIEW_APP_TYPE} ${TERRALIB_FILES})
 
-  target_link_libraries(terraview terralib_mod_qt_apf ${COREFOUNDATION_LIBRARY})
+  if(APPLE)
+    target_link_libraries(terraview terralib_mod_qt_apf ${TERRALIB_COREFOUNDATION_LIBRARY})
+  else()
+    target_link_libraries(terraview terralib_mod_qt_apf)
+  endif()
 
   qt5_use_modules(terraview Widgets)
 
@@ -100,8 +104,11 @@ else()
 
   add_executable(terraview ${TERRAVIEW_APP_TYPE} ${TERRALIB_FILES})
 
-  target_link_libraries(terraview terralib_mod_qt_apf
-                                  ${QT_LIBRARIES} ${COREFOUNDATION_LIBRARY})
+  if(APPLE)
+    target_link_libraries(terraview terralib_mod_qt_apf ${QT_LIBRARIES} ${TERRALIB_COREFOUNDATION_LIBRARY})
+  else()
+    target_link_libraries(terraview terralib_mod_qt_apf ${QT_LIBRARIES})
+  endif()
 
 endif()
 
