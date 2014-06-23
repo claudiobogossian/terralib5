@@ -1298,7 +1298,8 @@ namespace te
     {
       // Instantiating the local rasters instance
       
-      te::rst::SynchronizedRaster raster1( 1, *( paramsPtr->m_sync1Ptr ) );
+      te::rst::SynchronizedRaster raster1( paramsPtr->m_raster1Bands.size(), 
+        *( paramsPtr->m_sync1Ptr ) );
       te::rst::SynchronizedRaster raster2( paramsPtr->m_maxRasterCachedBlocks,
         *( paramsPtr->m_sync2Ptr ) );
       
@@ -1373,11 +1374,9 @@ namespace te
       // loocking for the next raster block to blend
       
       boost::scoped_array< double > blendedValuesHandler( new double[ raster1BandsSize ] );
+      double* blendedValuesHandlerPtr = blendedValuesHandler.get();
       
       const double noDataValue = paramsPtr->m_noDataValue;
-      
-      boost::scoped_array< double > blendedBandsBlockHandler;
-      unsigned int blendedBandsBlockPixelsNumber = 0;
       
       for( unsigned int raster1BlocksInfosIdx = 0 ; raster1BlocksInfosIdx <
         raster1BlocksInfosSize ; ++raster1BlocksInfosIdx )
@@ -1395,22 +1394,12 @@ namespace te
           rBInfo.m_wasProcessed = true;
           paramsPtr->m_mutexPtr->unlock();
           
-          // Allocating the blended block memory
-          
-          if( blendedBandsBlockPixelsNumber < rBInfo.m_blkTotalPixelsNumber )
-          {
-            blendedBandsBlockHandler.reset( new double[ rBInfo.m_blkTotalPixelsNumber *
-              raster1BandsSize ] );
-            blendedBandsBlockPixelsNumber = rBInfo.m_blkTotalPixelsNumber;
-          }
-          
           //blending block data          
           
           unsigned int raster1Row = 0;
           unsigned int raster1Col = 0;
           unsigned int raster1BandsIdx = 0;
-          double* blendedBandsBlockHandlerPointer = blendedBandsBlockHandler.get();
-          
+            
           for( raster1Row = rBInfo.m_firstRasterRow2Process ; raster1Row < rBInfo.m_rasterRows2ProcessBound ;
             ++raster1Row )
           {
@@ -1418,25 +1407,11 @@ namespace te
               ++raster1Col )
             {
               blender.getBlendedValues( (double)raster1Row, (double)raster1Col,
-                blendedBandsBlockHandlerPointer );            
+                blendedValuesHandlerPtr );  
               
-              blendedBandsBlockHandlerPointer = blendedBandsBlockHandlerPointer + raster1BandsSize;
-            }
-          }
-          
-          blendedBandsBlockHandlerPointer = blendedBandsBlockHandler.get();
-         
-          for( raster1BandsIdx = 0 ; raster1BandsIdx < raster1BandsSize ; ++raster1BandsIdx )
-          {          
-            blendedBandsBlockHandlerPointer = blendedBandsBlockHandler.get() + raster1BandsIdx;
-            
-            for( raster1Row = rBInfo.m_firstRasterRow2Process ; raster1Row < rBInfo.m_rasterRows2ProcessBound ;
-              ++raster1Row )
-            {
-              for( raster1Col = rBInfo.m_firstRasterCol2Process ; raster1Col < rBInfo.m_rasterCols2ProcessBound ;
-                ++raster1Col )
-              {
-                double& blendedValue = *( blendedBandsBlockHandlerPointer );
+              for( raster1BandsIdx = 0 ; raster1BandsIdx < raster1BandsSize ; ++raster1BandsIdx )
+              {          
+                double& blendedValue = blendedValuesHandlerPtr[ raster1BandsIdx ];
                 
                 if( blendedValue != noDataValue )
                 {
@@ -1448,8 +1423,6 @@ namespace te
                   raster1.setValue( raster1Col, raster1Row, blendedValue,
                     raster1Bands[ raster1BandsIdx ] );
                 }
-                
-                blendedBandsBlockHandlerPointer = blendedBandsBlockHandlerPointer + raster1BandsSize;
               }
             }
           }
