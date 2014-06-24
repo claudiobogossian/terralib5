@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -36,7 +36,7 @@ void TsRasterVectorizer::tcRasterVectorizer()
 {
 // define raster info and load
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_DIR"/data/rasters/pattern1.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/pattern1.tif";
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
 
   std::vector<te::gm::Geometry*> polygons;
