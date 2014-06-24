@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../../common/Translator.h"
+#include "../../../widgets/layer/selector/DataSetLayerSelector.h"
 #include "WCSConnector.h"
 #include "WCSType.h"
 
@@ -39,6 +40,26 @@ te::qt::plugins::wcs::WCSType::~WCSType()
 {
 }
 
+bool te::qt::plugins::wcs::WCSType::hasDatabaseSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::wcs::WCSType::hasFileSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::wcs::WCSType::hasRasterSupport() const
+{
+  return true;
+}
+
+bool te::qt::plugins::wcs::WCSType::hasVectorialSupport() const
+{
+  return false;
+}
+
 std::string te::qt::plugins::wcs::WCSType::getName() const
 {
   return "WCS";
@@ -46,12 +67,12 @@ std::string te::qt::plugins::wcs::WCSType::getName() const
 
 std::string te::qt::plugins::wcs::WCSType::getTitle() const
 {
-  return TE_QT_PLUGIN_DATASOURCE_WCS("Web Coverage Service");
+  return TE_TR("Web Coverage Service");
 }
 
 std::string te::qt::plugins::wcs::WCSType::getDescription() const
 {
-  return TE_QT_PLUGIN_DATASOURCE_WCS("Access to geospatial through a Web Coverage Service (WCS)");
+  return TE_TR("Access to geospatial through a Web Coverage Service (WCS)");
 }
 
 QWidget* te::qt::plugins::wcs::WCSType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
@@ -61,8 +82,8 @@ QWidget* te::qt::plugins::wcs::WCSType::getWidget(int widgetType, QWidget* paren
     case te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new WCSConnector(parent, f);
 
-    //case DataSourceType::WIDGET_LAYER_SELECTOR:
-      //return new DataSetLayerSelector(parent, f);
+    case DataSourceType::WIDGET_LAYER_SELECTOR:
+      return new te::qt::widgets::DataSetLayerSelector(parent, f);
 
     default:
       return 0;
@@ -83,5 +104,3 @@ QIcon te::qt::plugins::wcs::WCSType::getIcon(int iconType) const
       return QIcon::fromTheme("unknown-icon");
   }
 }
-
-
