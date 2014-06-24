@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -39,12 +39,12 @@ void TsIHSFusion::Test001()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
   boost::shared_ptr< te::rst::Raster > lowResRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( lowResRasterPtr.get() );  
   
-  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/data/rasters/cbers2b_hrc_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
   boost::shared_ptr< te::rst::Raster > highResRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( highResRasterPtr.get() );   
@@ -77,8 +77,3 @@ void TsIHSFusion::Test001()
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
 }
-
-
-
-
-
