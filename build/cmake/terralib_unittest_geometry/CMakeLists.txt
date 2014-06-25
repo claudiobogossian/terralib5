@@ -18,7 +18,7 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build the Unit Test for the Data Access module.
+#  Description: Build the Unit Test for the Geometry module.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
@@ -30,18 +30,13 @@ include_directories(${Boost_INCLUDE_DIR}
                     ${CPPUNIT_INCLUDE_DIR})
 
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/dataaccess/*.cpp)
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/geometry/*.cpp)
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/geometry/*.h)
 
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/dataaccess/*.h)
+add_executable(terralib_unittest_geometry ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
-add_executable(terralib_unittest_dataaccess ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
-
-target_link_libraries(terralib_unittest_dataaccess terralib_mod_common
-                                                   terralib_mod_dataaccess
-                                                   terralib_mod_geometry
-                                                   terralib_mod_plugin
-                                                   terralib_mod_raster
-                                                   ${CPPUNIT_LIBRARY})
+target_link_libraries(terralib_unittest_geometry terralib_mod_geometry
+                                                 ${CPPUNIT_LIBRARY})
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_UNITTEST}/dataaccess COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_UNITTEST}/geometry COMPONENT devel)
