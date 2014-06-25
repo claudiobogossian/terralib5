@@ -223,8 +223,9 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
   while(m_inDset->moveNext())
   {
     te::mem::DataSetItem* item = new te::mem::DataSetItem(outDSet.get());
-     
+    
     item->setInt32(0, pk);
+    bool geom = true;
 
     if(m_selectedProps.size() > 0)
     {
@@ -271,6 +272,8 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
     {
       for(std::size_t geoPos = 0; geoPos < geoVec.size(); ++geoPos)
       {
+        geom = true;
+
         switch(geoVec[geoPos])
         {
           case te::vp::CONVEX_HULL:
@@ -281,6 +284,8 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
                 std::auto_ptr<te::gm::Geometry> convexHull(in_geom->convexHull());
                 if(convexHull->getGeomTypeId() == te::gm::PolygonType)
                   item->setGeometry("convex_hull", convexHull.release());
+                else
+                  geom = false;
               }
             }
             break;
@@ -304,6 +309,8 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
                 std::auto_ptr<te::gm::Geometry> mbr(in_geom->getEnvelope());
                 if(mbr->getGeomTypeId() == te::gm::PolygonType)
                   item->setGeometry("mbr", mbr.release());
+                else
+                  geom = false;
               }
             }
             break;
@@ -342,9 +349,11 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
         item->setGeometry("geom", g.release());
     }
 
-    outDSet->add(item);
-
-    ++pk;
+    if(geom)
+    {
+      outDSet->add(item);
+      ++pk;
+    }
   }
 
   return outDSet.release();

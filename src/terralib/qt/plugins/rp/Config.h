@@ -114,7 +114,7 @@
 
   \brief It defines if the RP Qt Plugin has the vectorization operation.
 */
-#define TE_QT_PLUGIN_RP_HAVE_VECTORIZATION
+//#define TE_QT_PLUGIN_RP_HAVE_VECTORIZATION
 
 
 /*!
