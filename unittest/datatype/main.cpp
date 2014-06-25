@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -71,29 +71,28 @@ int main(int /*argc*/, char** /*argv*/)
 // Testing  different outputs
 
 // Print only fail results in a txt file (the same you can see in DOS window)  
-  std::ofstream file1( TE_OUTPUT_REPORT_DIR "/testsResult_datatype_dos.txt" );
+  std::ofstream file1( TERRALIB_REPORT_DIR "/testsResult_datatype_dos.txt" );
   CPPUNIT_NS::CompilerOutputter outputter1( &result, file1); 
   outputter1.write();
   file1.close();  
 
 // Printing testResults in XML file 
-  // The testResult_*.xml files will be saved at TE_OUTPUT_REPORT_DIR directory.
+  // The testResult_*.xml files will be saved at TERRALIB_REPORT_DIR directory.
   // NOTE: styleSheet 'report.xsl' should be at this directory (found originally at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl)
   // and then you can open the testResults using your web-browser.
-  // One level up TE_OUTPUT_REPORT_DIR should have a 'data' directory with all files used by unit test.
+  // One level up TERRALIB_REPORT_DIR should have a 'data' directory with all files used by unit test.
  
-  CPPUNIT_NS::OFileStream file2( TE_OUTPUT_REPORT_DIR "/testsResult_datatype_xml.xml" );
+  CPPUNIT_NS::OFileStream file2( TERRALIB_REPORT_DIR "/testsResult_datatype_xml.xml" );
   CPPUNIT_NS::XmlOutputter xml( &result, file2 );
   xml.setStyleSheet( "report.xsl" );
   xml.write();
   file2.close();
 
 // Print formated testResult in a txt 
-  CPPUNIT_NS::OFileStream file3( TE_OUTPUT_REPORT_DIR "/testsResult_datatype_formated.txt" );
+  CPPUNIT_NS::OFileStream file3( TERRALIB_REPORT_DIR "/testsResult_datatype_formated.txt" );
   CPPUNIT_NS::TextOutputter outputter3( &result, file3 );
   outputter3.write();
   file3.close();
-
 
   bool resultStatus = result.wasSuccessful();
 
@@ -101,4 +100,3 @@ int main(int /*argc*/, char** /*argv*/)
 
   return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }
-
