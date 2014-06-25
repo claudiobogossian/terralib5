@@ -161,6 +161,8 @@ namespace te
       \param names   A non empty vector of property names to be used to identify the elements.
      
       \return The object id set generated from the given dataset.
+
+      \exception Exception It throws an exception if a property was not found in data set
     */
     TEDATAACCESSEXPORT ObjectIdSet* GenerateOIDSet(DataSet* dataset, const std::vector<std::string>& names);
 
