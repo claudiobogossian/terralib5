@@ -1,130 +1,330 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <meta http-equiv="Content-Type"
- content="text/html; charset=ISO-8859-1">
-  <title>Query</title>
+
+
+
+
+  
+  
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+
+
+  
+  
+  
+  <title>WHERE Clause</title>
 </head>
+
+
 <body>
-<h3 style="text-align: center;"><span
- style="font-family: Calibri Light;">Query Interface</span></h3>
-<span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp;
-The Query Interface
-is used to create user restrictions on a data set. You can either
-create restrictions by attribute or a spatial restriction. The
-operators may vary
-depending on the selected data type.</span>
-<p style="text-align: justify; font-family: Calibri Light;">To create a
-restriction, the user must
-follow this steps:</p>
+
+
+
+
+<h3 style="text-align: center; font-family: Calibri Light;">WHERE clause</h3>
+
+
+
+
+<span style="font-family: Calibri Light;">&nbsp;The WHERE clause
+Interface
+is used to define the restriction used to generate a new dataset. The
+restriction can involve&nbsp; one or more datasets, using standard and/or spatial attributes (vertical
+tabs). The
+list of operators supported is adjusted to the type of attributes involved.&nbsp;</span><br style="font-family: Calibri Light;">
+
+
+<span style="font-family: Calibri Light;"><br>
+
+
+The operators &nbsp;&lt;,&gt;,&lt;=,&gt;=,&lt;&gt;,=, LIKE, NOT are
+used with standard attributes comparison, and the spatial operators
+such as ST_UNION, ST_INTERSECTION, ST_AREA among others are used to
+operate over geometric attributes.<br>
+
+
+<br>
+
+
+
+</span>
+<p style="text-align: justify; font-family: Calibri Light;">To define a restriction based on Attributes follow the steps:</p>
+
+
+
+
 <ol style="font-family: Calibri Light;">
-  <li>Select the type of restriction</li>
+
+
+
+
+  <li>Select restriction type on the vertical tab:</li>
+
+
+
+
+  
+  
+  
   <ul>
-    <li>Attribute,</li>
-    <li>Spatial.</li>
+
+
+
+
+    <li><span style="font-style: italic;">Attribute</span>,</li>
+
+
+
+
+  
+  
+  
   </ul>
-  <li>Define a restriction.</li>
-  <ul>
-    <li>(+) Add a new restriction.</li>
-  </ul>
-  <li>Down below is presented all restrictions defined. This component
-has two elements:</li>
-  <ul>
-    <li><span style="font-weight: bold;">Table</span>: List of
-restrictions</li>
-    <li><span style="font-weight: bold;">SQL</span>: Restriction
-defined as SQL (<span style="font-style: italic;">only for
-visualization purposes of the restriction generated</span>).</li>
-  </ul>
+
+
+
+  <li>Define a restriction by selecting:</li>
+
+
+
+  
+  
+  
+  <ol>
+
+
+
+    <li style="font-style: italic;">&nbsp;Property</li>
+
+
+
+    <li style="font-style: italic;">&nbsp;Operator &nbsp;(&gt;, &gt;=, &lt;, &lt;=, = )</li>
+
+
+
+    <li><span style="font-style: italic;">&nbsp;Value</span> - it can be a property of other dataset or a value among all values of the property chosen.</li>
+
+
+    
+    
+    <ul>
+
+
+      <li><span style="font-style: italic;">Property</span>&nbsp;</li>
+
+
+      <li><span style="font-style: italic;">Value</span></li>
+
+
+    
+    
+    </ul>
+
+
+
+  
+  
+  
+  </ol>
+
+
+
+  <li>Click on <img style="width: 24px; height: 24px;" alt="add part of restriction" src="../../gen_icones/ic_add.PNG"> to add this combination (property x operator x value)&nbsp; to the Table/SQL tabs bellow.</li>
+
+
+
+  <li>On the frame <span style="font-style: italic;">Table</span><span style="font-style: italic;"></span>/<span style="font-style: italic;">SQL</span> &nbsp;it is possible to handle the restriction adding more clauses, removing one or all lines, or checking the SQL generated:</li>
+
+
+
+  
+  
+  
+  <ol>
+
+
+
+    <li>Check the list of restrictions.</li>
+
+
+
+    <li>Define the connector (<span style="font-style: italic;">and</span>, <span style="font-style: italic;">or</span>, nothing) &nbsp;and the next restriction.</li>
+
+
+
+    <li>Clear all restriction using <img style="width: 28px; height: 26px;" alt="clear all restricition" src="../../gen_icones/ic_clear.PNG"> or only one line using&nbsp; <img style="width: 24px; height: 23px;" alt="remove" src="../../gen_icones/ic_remove.PNG">.</li>
+
+
+
+    <li>Optionally,&nbsp;change to <span style="font-style: italic;">SQL</span> tab to see the restriction generated in&nbsp; SQL.</li>
+
+
+
+  
+  
+  
+  </ol>
+
+
+
+  <li>Go to the step 1 to define the next part of the restriction as necessary.</li>
+
+
+
 </ol>
-<span style="font-family: Calibri Light;"></span><br
- style="font-family: Calibri Light;">
-<br style="font-family: Calibri Light;">
-<div style="text-align: center; font-family: Calibri Light;"><img
- style="width: 485px; height: 410px;" alt="" src="q1.png"><br>
+
+<span style="font-family: Calibri Light;">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span><img style="width: 484px; height: 408px;" alt="attribute restriction" src="q1.png"><br>
+
+
+
+
+<div style="text-align: center; font-family: Calibri Light;"><br>
+
+
+
+
+<br>
+
+
+
+
 </div>
+
+
+
+
 <div style="text-align: left; font-family: Calibri Light;">
+
+To define &nbsp;a restriction based on spatial attributes follow the steps:<br>
+
+
+<ol>
+
+
+  <li>Select restriction type on the vertical tab:</li>
+
+
+  
+  
+  <ul>
+
+
+    <li><span style="font-style: italic;">Spatial</span></li>
+
+
+  
+  
+  </ul>
+
+
+  <li>Define a restriction by selecting:</li>
+
+
+  
+  
+  <ol>
+
+
+    <li style="font-style: italic;">&nbsp;Property - geometry attribute of the selected dataset</li>
+
+
+    <li style="font-style: italic;">&nbsp;Operator (ST_Contains, ST_Union, ST_Crosses, ...)</li>
+
+
+    <li><span style="font-style: italic;">&nbsp;Layer - </span><span style="font-weight: normal;">select the layer to be confronted with the restriction defined.</span></li>
+
+    <li><span style="font-style: italic;">Use Selected Objects - </span>check this option if the goal is to apply the restriction only over the selected objects in the layer displayed.</li>
+
+  
+  </ol>
+
+
+  <li>Click on <img style="width: 24px; height: 24px;" alt="add part of restriction" src="../../gen_icones/ic_add.PNG"> to add this combination (property x operator x value)&nbsp; to the Table/SQL tabs bellow.</li>
+
+
+  <li>On the frame <span style="font-style: italic;">Table</span><span style="font-style: italic;"></span>/<span style="font-style: italic;">SQL</span> &nbsp;it is possible to handle the restriction adding more clauses, removing or checking the SQL generated:</li>
+
+
+  
+  
+  <ol>
+
+
+    <li>Check the list of restrictions.</li>
+
+
+    <li>Define the connector (<span style="font-style: italic;">and</span>, <span style="font-style: italic;">or</span>, nothing) &nbsp;and the next&nbsp;restriction.</li>
+
+
+    <li>Clear all restriction using <img style="width: 28px; height: 26px;" alt="clear all restricition" src="../../gen_icones/ic_clear.PNG"> or only one line using&nbsp;<img style="width: 24px; height: 23px;" alt="remove" src="../../gen_icones/ic_remove.PNG">.</li>
+
+
+    <li>Optionally,&nbsp;change to <span style="font-style: italic;">SQL</span> tab to see the restriction generated in&nbsp; SQL.</li>
+
+
+  
+  
+  </ol>
+
+
+  <li>Go to the step 1 to define the next part of the restriction as necessary.<br>
+
+  </li>
+
+
+</ol>
+
+<div style="text-align: center;">
+<div style="text-align: left;">
+<div style="text-align: center;">
+<div style="text-align: left;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <img style="width: 483px; height: 409px;" alt="spatial restriction example" src="q2.png"><br>
+
+
+
+
+<br>
+
+
+
+
 <div style="text-align: center;"><br>
-<br>
+
+
+
+
 </div>
-For restrictions by attributes, the fields to be defined are:<br>
-<ul>
-  <li style="font-weight: bold;">Property<span
- style="font-weight: normal;">: Attribute to be restricted.</span></li>
-</ul>
-<ul>
-  <li style="font-weight: bold;">Operator:&nbsp;<span
- style="font-weight: normal;">List of operators supported for the type
-of selected data.</span></li>
-</ul>
-<ul>
-  <li style="font-weight: bold;">Value</li>
-</ul>
-<ul>
-  <ul>
-    <li style="font-weight: bold;">Property<span
- style="font-weight: normal;">: Uses another attribute of the dataset
-to build the restriction.</span></li>
-  </ul>
-</ul>
-<ul>
-  <ul>
-    <li style="font-weight: bold;">Value<span
- style="font-weight: normal;">: Uses a specific value to create the
-restriction.</span></li>
-  </ul>
-</ul>
-<div style="text-align: center;"><img
- style="width: 484px; height: 408px;" alt="" src="q2.png"><br>
-<br>
-<br>
-<div style="text-align: left;">The result for this restrictions is
-shown in below figure.<br>
-<br>
-<div style="text-align: center;"><img
- style="width: 704px; height: 699px;" alt="" src="q3.png"><br>
-<br>
+
+
+
+
 </div>
+
+
+
+
 </div>
-<br>
-<div style="text-align: left;">For spatial restrictions, the fields to
-be defined are:<br>
-<ul>
-  <li style="font-weight: bold;">Geometry Attribute<span
- style="font-weight: normal;">: Attribute with the geometric
-representation of the selected data set.</span></li>
-</ul>
-<ul>
-  <li style="font-weight: bold;">Operator<span
- style="font-weight: normal;">: List of operators supported for the
-type of selected data.</span></li>
-</ul>
-<ul>
-  <li style="font-weight: bold;">Layer<span style="font-weight: normal;">:
-Layer to be confronted with the restriction defined.</span></li>
-</ul>
-<ul>
-  <li><span style="font-weight: bold;">Use Selected Objects</span>:
-Option used if the user wants to use the selected dataset geometries to
-build the restriction.</li>
-</ul>
-<br>
-<div style="text-align: center;"><img
- style="width: 483px; height: 409px;" alt="" src="q4.png"><br>
-<br>
-<br>
-<div style="text-align: left;">For this example the
-user&nbsp;creates a spatial restriction and use the selected dataset
-geometries.<br>
-<br>
-<br>
-<div style="text-align: center;"><img
- style="width: 701px; height: 699px;" alt="" src="q5.png"><br>
+
+
+
+
 </div>
+
+
+
+
 </div>
+
+
+
+
 </div>
-</div>
-</div>
-</div>
+
+
+
+
 </body>
 </html>

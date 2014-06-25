@@ -286,7 +286,22 @@ void te::qt::widgets::QueryDataSourceDialog::onApplyPushButtonClicked()
   //draw dataset
   m_dataSetDisplay->clear();
 
-  m_dataSetDisplay->draw(dsType, ds, dataSet.get());
+  bool draw = false;
+  for(std::size_t t = 0;  t < dataSet->getNumProperties(); ++t)
+  {
+    int type = dataSet->getPropertyDataType(t);
+
+    if(type == te::dt::GEOMETRY_TYPE)
+    {
+      draw = true;
+      break;
+    }
+  }
+
+  if(draw)
+    m_dataSetDisplay->draw(dsType, ds, dataSet.get());
+  else
+    m_dataSetDisplay->clear();
 
   //show dataset on table
   m_tableModel->setDataSet(dataSet.release());
@@ -482,22 +497,30 @@ void te::qt::widgets::QueryDataSourceDialog::onApplySelToolButtonClicked()
     return;
   }
 
-  if(m_ui->m_newSelRadioButton->isChecked())
+  try
   {
-    // Generates the oids
-    dataSet->moveBeforeFirst();
-    te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataSet.get(), dsType.get());
+    if(m_ui->m_newSelRadioButton->isChecked())
+    {
+      // Generates the oids
+      dataSet->moveBeforeFirst();
+      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataSet.get(), dsType.get());
 
-    layer->clearSelected();
-    layer->select(oids);
+      layer->clearSelected();
+      layer->select(oids);
+    }
+    else if(m_ui->m_addSelRadioButton->isChecked())
+    {
+      // Generates the oids
+      dataSet->moveBeforeFirst();
+      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataSet.get(), dsType.get());
+
+      layer->select(oids);
+    }
   }
-  else if(m_ui->m_addSelRadioButton->isChecked())
+  catch(te::common::Exception& e)
   {
-    // Generates the oids
-    dataSet->moveBeforeFirst();
-    te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataSet.get(), dsType.get());
-
-    layer->select(oids);
+    QMessageBox::warning(this, tr("Query DataSource"), tr("Error selecting objects: ") + e.what());
+    return;
   }
 
   QMessageBox::information(this, tr("Query DataSource"), tr("Selection done."));
