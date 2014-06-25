@@ -629,6 +629,10 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
 
         std::auto_ptr<te::da::DataSetAdapter> ds_adapter(te::da::CreateAdapter(ds.get(), dt_adapter.get()));
 
+        ::terralib4::DataSource* tl4Ds = dynamic_cast<::terralib4::DataSource*>(m_tl4Database.get());
+
+        ds_adapter->setSRID(tl4Ds->getLayerSRID(targetName));
+
         std::map<std::string, std::string> opt;
 
         ds_adapter->moveBeforeFirst();

@@ -878,3 +878,20 @@ TeTheme* terralib4::Transactor::getTL4Theme(const ::terralib4::ThemeInfo theme)
 
   return 0;
 }
+
+int terralib4::Transactor::getLayerSRID(const std::string & layerName)
+{
+  std::map<int, TeLayer*>::iterator it = m_layerMap.begin();
+
+  while(it != m_layerMap.end())
+  {
+    if(it->second->name() == layerName)
+    {
+      return it->second->projection()->epsgCode();
+    }
+
+    ++it;
+  }
+
+  return 0;
+}
