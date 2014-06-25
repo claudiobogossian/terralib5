@@ -210,7 +210,7 @@ void TsGEOSWriterReader::loadGeometry(std::vector<WKBEntry>& hwkbVec) const
 {
   hwkbVec.clear();
 
-  FILE* f = fopen( TE_DATA_DIR "/data/hwkb.csv", "r");
+  FILE* f = fopen( TERRALIB_DATA_DIR "/hwkb.csv", "r");
 
   CPPUNIT_ASSERT(f != NULL);
 
@@ -263,7 +263,7 @@ void TsGEOSWriterReader::loadWKT(std::vector<std::string>& geom_wkt) const
 {
   geom_wkt.clear();
 
-  FILE* f = fopen( TE_DATA_DIR "/data/wkt_line.txt", "r");
+  FILE* f = fopen( TERRALIB_DATA_DIR "/wkt_line.txt", "r");
 
   CPPUNIT_ASSERT(f != NULL);
 
@@ -292,7 +292,7 @@ void TsGEOSWriterReader::loadWKT(std::string filewkt, std::vector<std::string>& 
 {
   geom_wkt.clear();
 
-  std::string  filename = TE_DATA_DIR  + filewkt;
+  std::string  filename = TERRALIB_DATA_DIR  + filewkt;
   FILE* f = fopen( filename.c_str() , "r");
 
   CPPUNIT_ASSERT(f != NULL);
