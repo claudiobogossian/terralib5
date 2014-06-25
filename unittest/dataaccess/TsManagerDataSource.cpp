@@ -28,12 +28,12 @@
 #include <terralib/dataaccess.h>
 #include <terralib/datatype.h>
 #include <terralib/geometry.h>
-#include <terralib/gdal.h>
+//#include <terralib/gdal2.h>
 #include <terralib/raster.h>
-
 // Unit-Test TerraLib
 #include "TsManagerDataSource.h"
 #include "../dataaccess/Config.h"
+#include <terralib/dataaccess/datasource/DataSourceFactory.h>  //por algum motivo se nao colocar essa linha pega o antigo.
 
 // Boost
 #include <boost/property_tree/json_parser.hpp>
@@ -45,15 +45,18 @@
 // static members defined aand loaded from *.json file for each driver(postgis.json, gdal.josn, mysql.json, etc)
 
 // Datasource type and connection parameters
+//std::auto_ptr<te::da::DataSource> TsManagerDataSource::sm_datasource;
 te::da::DataSource* TsManagerDataSource::sm_datasource;
 std::string TsManagerDataSource::sm_dsType;
 std::map<std::string, std::string> TsManagerDataSource::sm_connInfo;
+std::map<std::string, std::string> TsManagerDataSource::sm_connInfoExist;
+
 te::da::DataSourceCapabilities  TsManagerDataSource::sm_capabilit;
 std::map<std::string, std::string> TsManagerDataSource::sm_connInfoNewDs;
 std::map<std::string, std::string> TsManagerDataSource::sm_connInfoDropDs;
 std::string TsManagerDataSource::sm_connStr;
 
-// Vector of dataSetType�s names, envelops, rect, size, recsize
+// Vector of dataSetTypes names, envelops, rect, size, recsize
 std::vector<std::string> TsManagerDataSource::sm_vecDtNames;
 std::vector<te::gm::Envelope> TsManagerDataSource::sm_vecEnvelops;
 std::vector<te::gm::Envelope> TsManagerDataSource::sm_recEnvelops;
@@ -151,7 +154,7 @@ void TsManagerDataSource::ConvertVectorToPoints(std::vector<std::vector<double> 
          d[i] = (*it1);       
          i+= 1;
       }      
-      pt.setSRID(d[0]);
+      pt.setSRID((int)d[0]);
       pt.setX(d[1]);
       pt.setY(d[2]);
       vectp.push_back(pt);
@@ -176,7 +179,7 @@ void TsManagerDataSource::ConvertVectorToLinearRing(std::vector<std::vector<doub
       lr.setPoint(p,d[1],d[2]);
       p+= 1;
     }
-    lr.setSRID(d[0]);
+    lr.setSRID((int)d[0]);
 }
 
 void TsManagerDataSource::ConvertToPropType(std::string s, te::dt::StringType &t)
@@ -276,6 +279,7 @@ void TsManagerDataSource::initialize(const std::string driver_name)
   sm_dsType = driver.get_child("ds.ds_type").data();
 
   te::common::Convert(driver.get_child("ds.ds_connInfo"), sm_connInfo);
+  te::common::Convert(driver.get_child("ds.ds_connInfoExist"), sm_connInfoExist);
   te::common::Convert(driver.get_child("ds.ds_connInfoNewDs"), sm_connInfoNewDs);
   te::common::Convert(driver.get_child("ds.ds_connInfoDropDs"), sm_connInfoDropDs);
   sm_connStr = driver.get_child("ds.ds_connStr").data();
@@ -389,7 +393,8 @@ void TsManagerDataSource::initialize(const std::string driver_name)
     te::gm::LinearRing *sm_linearRing1= new te::gm::LinearRing(vect_ptsx.size(),te::gm::LineStringType);
     ConvertVectorToLinearRing(vect_ptsx, *sm_linearRing1);
 	  
-    size_t lr_size = sm_linearRing1->size(); int i;
+    size_t lr_size = sm_linearRing1->size();
+    std::size_t i;
     std::vector<te::gm::Point> vect_pis;
     te::gm::Point pi;
 
@@ -504,16 +509,21 @@ void TsManagerDataSource::initialize(const std::string driver_name)
 
   // End of Specification of variables to be used in DataSetTypePersistence tests
 
-  sm_datasource = te::da::DataSourceFactory::make(sm_dsType);
+    sm_datasource = (te::da::DataSourceFactory::make(sm_dsType)).release();
+//  sm_datasource = te::da::DataSourceFactory::make(sm_dsType);
+  //sm_datasource = te::da::DataSourceFactory::make(sm_dsType);
+  sm_datasource->setConnectionInfo(sm_connInfo);
+
   sm_capabilit = sm_datasource->getCapabilities();
 }
 
 void TsManagerDataSource::finalize()
 {
 // delete all static pointers created at TsManagerDataSource::initialize
-  delete sm_datasource;
+  //delete sm_datasource;
   sm_dsType = "";
   sm_connInfo.clear();
+  sm_connInfoExist.clear();
   sm_connInfoNewDs.clear();
   sm_connInfoDropDs.clear();
 
