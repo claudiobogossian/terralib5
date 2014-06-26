@@ -65,7 +65,7 @@ std::auto_ptr<te::da::DataSourceTransactor> te::wcs::DataSource::getTransactor()
   if(!m_isOpened)
     throw Exception(TE_TR("The data source is not opened!"));
 
-  return std::auto_ptr<te::da::DataSourceTransactor>(new Transactor(m_connectionInfo.find("URI")->second, m_layersInfo));
+  return std::auto_ptr<te::da::DataSourceTransactor>(new Transactor(m_connectionInfo.find("URI")->second, m_connectionInfo.find("COVERAGE_NAME")->second));
 }
 
 void te::wcs::DataSource::open()
@@ -75,15 +75,11 @@ void te::wcs::DataSource::open()
 
   verifyConnectionInfo();
 
-  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(m_connectionInfo.find("URI")->second.c_str(), GA_ReadOnly));
+  std::string request = BuildRequest(m_connectionInfo.find("URI")->second, m_connectionInfo.find("COVERAGE_NAME")->second);
+
+  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(request.c_str(), GA_ReadOnly));
   if(gds == 0)
     throw Exception(TE_TR("Error establishing connection with the informed server!"));
-
-  // Gets the layer informations from server
-  char** subdatasets = gds->GetMetadata("SUBDATASETS");
-
-  // Builds the layer informations from informed GDAL subdatasets
-  BuildLayersInfo(subdatasets, m_layersInfo);
 
   GDALClose(gds);
 
@@ -93,7 +89,6 @@ void te::wcs::DataSource::open()
 void te::wcs::DataSource::close()
 {
   m_isOpened = false;
-  m_layersInfo.clear();
 }
 
 bool te::wcs::DataSource::isOpened() const
@@ -132,11 +127,6 @@ void te::wcs::DataSource::setCapabilities(const te::da::DataSourceCapabilities& 
 const te::da::SQLDialect* te::wcs::DataSource::getDialect() const
 {
   return 0;
-}
-
-const std::map<std::string, te::wcs::WCSLayerInfo>& te::wcs::DataSource::getLayersInfo() const
-{
-  return m_layersInfo;
 }
 
 void te::wcs::DataSource::create(const std::map<std::string, std::string>& /*dsInfo*/)
@@ -185,4 +175,8 @@ void te::wcs::DataSource::verifyConnectionInfo() const
   std::map<std::string, std::string>::const_iterator it = m_connectionInfo.find("URI");
   if(it == m_connectionInfo.end())
     throw Exception(TE_TR("The connection information is invalid. Missing URI parameter!"));
+
+  it = m_connectionInfo.find("COVERAGE_NAME");
+  if(it == m_connectionInfo.end())
+    throw Exception(TE_TR("The connection information is invalid. Missing COVERAGE_NAME parameter!"));
 }

@@ -31,7 +31,6 @@
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "Config.h"
 #include "Exception.h"
-#include "WCSLayerInfo.h"
 
 // STL
 #include <map>
@@ -76,8 +75,6 @@ namespace te
 
         const te::da::SQLDialect* getDialect() const;
 
-        const std::map<std::string, WCSLayerInfo>& getLayersInfo() const;
-
       protected:
 
         void create(const std::map<std::string, std::string>& dsInfo);
@@ -98,7 +95,6 @@ namespace te
 
         std::map<std::string, std::string> m_connectionInfo;
         bool m_isOpened;
-        std::map<std::string, WCSLayerInfo> m_layersInfo;
         static te::da::DataSourceCapabilities sm_capabilities;
     };
 

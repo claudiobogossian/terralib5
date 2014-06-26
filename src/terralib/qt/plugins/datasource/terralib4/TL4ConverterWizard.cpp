@@ -111,7 +111,7 @@ te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* pare
   m_datasourceSelectorPage->getSelectorWidget()->showDataSourceWithRasterSupport(false);
 
   m_rasterFolderSelectionPage.reset(new TL4RasterFolderSelectionWizardPage(this));
-  m_rasterFolderSelectionPage->setTitle(tr("Raster Folder"));
+  m_rasterFolderSelectionPage->setTitle(tr("Target Raster Folder"));
   m_rasterFolderSelectionPage->setSubTitle(tr("Select folder to store raster data"));
 
   m_resolveNamePage.reset(new QWizardPage(this));

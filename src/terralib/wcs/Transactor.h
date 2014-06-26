@@ -49,8 +49,7 @@ namespace te
     {
       public:
       
-        Transactor(const std::string& uri,
-                   const std::map<std::string, WCSLayerInfo>& layersInfo);
+        Transactor(const std::string& serviceURL, const std::string& coverageName);
 
         ~Transactor();
 
@@ -243,8 +242,8 @@ namespace te
 
       private:
 
-        std::string m_uri;
-        std::map<std::string, WCSLayerInfo> m_layersInfo;
+        std::string m_serviceURL;
+        std::string m_coverageName;
     };
 
   } // end namespace wcs
