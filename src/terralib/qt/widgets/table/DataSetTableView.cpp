@@ -30,6 +30,7 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/Geometry.h"
 #include "../../../maptools/DataSetLayer.h"
+#include "../../../maptools/QueryLayer.h"
 #include "../../../statistics/qt/StatisticsDialog.h"
 
 // Qt
@@ -116,10 +117,20 @@ te::da::DataSourcePtr GetDataSource(const te::map::AbstractLayer* layer)
   // Getting data source, if it is available
   te::da::DataSourcePtr ds;
 
-  const te::map::DataSetLayer* l = dynamic_cast<const te::map::DataSetLayer*>(layer);
+  if(layer->getType() == "DATASETLAYER")
+  {
+    const te::map::DataSetLayer* l = dynamic_cast<const te::map::DataSetLayer*>(layer);
 
-  if(l != 0)
-    ds = te::da::DataSourceManager::getInstance().find(l->getDataSourceId());
+    if(l != 0)
+      ds = te::da::DataSourceManager::getInstance().find(l->getDataSourceId());
+  }
+  else if(layer->getType() == "QUERYLAYER")
+  {
+    const te::map::QueryLayer* l = dynamic_cast<const te::map::QueryLayer*>(layer);
+
+    if(l != 0)
+      ds = te::da::DataSourceManager::getInstance().find(l->getDataSourceId());
+  }
 
   return ds;
 }
@@ -192,7 +203,22 @@ std::auto_ptr<te::da::DataSet> GetDataSet(const te::map::AbstractLayer* layer, c
 
 std::auto_ptr<te::da::DataSet> GetDataSet(const te::map::AbstractLayer* layer, const std::vector<std::string>& colsNames, const bool& asc)
 {
-  std::auto_ptr<te::da::Select> query = GetSelectExpression(layer->getSchema()->getName(), colsNames, asc);
+  std::auto_ptr<te::da::Select> query;
+  
+  if(layer->getType() == "DATASETLAYER")
+  {
+    const te::map::DataSetLayer* l = dynamic_cast<const te::map::DataSetLayer*>(layer);
+
+    if(l != 0)
+      query = GetSelectExpression(layer->getSchema()->getName(), colsNames, asc);
+  }
+  else if(layer->getType() == "QUERYLAYER")
+  {
+    const te::map::QueryLayer* l = dynamic_cast<const te::map::QueryLayer*>(layer);
+
+    if(l != 0)
+      query.reset(new te::da::Select(l->getQuery()));
+  }
 
   try
   {
@@ -399,57 +425,63 @@ class TablePopupFilter : public QObject
 
               m_hMenu->addSeparator();
 
-              QAction* act7 = new QAction(m_hMenu);
-              act7->setText(tr("Add column"));
-              act7->setToolTip(tr("Adds a column to the table."));
-              m_hMenu->addAction(act7);
-
-              act7->setEnabled(m_caps->supportsAddColumn());
-
-              QAction* act8 = new QAction(m_hMenu);
-              act8->setText(tr("Remove column"));
-              act8->setToolTip(tr("Removes a column from the table."));
-              m_hMenu->addAction(act8);
-
-              act8->setEnabled(m_caps->supportsRemoveColumn());
-
-              QAction* act10 = new QAction(m_hMenu);
-              act10->setText(tr("Rename column"));
-              act10->setToolTip(tr("Renames a column of the table."));
-              m_hMenu->addAction(act10);
-
-              QAction* act11 = new QAction(m_hMenu);
-              act11->setText(tr("Change column type"));
-              act11->setToolTip(tr("Changes the type of a column of the table."));
-              m_hMenu->addAction(act11);
-
-              QAction* act12 = new QAction(m_hMenu);
-              act12->setText(tr("Change column data"));
-              act12->setToolTip(tr("Changes the data of a column of the table."));
-              m_hMenu->addAction(act12);
-
-              QAction* act13 = new QAction(m_hMenu);
-              act13->setText(tr("Save editions"));
-              act13->setToolTip(tr("Save pendent editions to layer."));
-              m_hMenu->addAction(act13);
-
               // Signal / Slot connections
               connect(act, SIGNAL(triggered()), SLOT(hideColumn()));
               connect(hMnu, SIGNAL(triggered(QAction*)), SLOT(showColumn(QAction*)));
-              connect(act8, SIGNAL(triggered()), SLOT(removeColumn()));
+              
               connect(act4, SIGNAL(triggered()), SLOT(createHistogram()));
 
               m_view->connect(act2, SIGNAL(triggered()), SLOT(showAllColumns()));
               m_view->connect(act3, SIGNAL(triggered()), SLOT(resetColumnsOrder()));
-              m_view->connect(act7, SIGNAL(triggered()), SLOT(addColumn()));
+              
             
               connect(act6, SIGNAL(triggered()), SLOT(showStatistics()));
               connect (act5, SIGNAL(triggered()), SLOT(sortDataAsc()));
               connect (act9, SIGNAL(triggered()), SLOT(sortDataDesc()));
-              connect (act10, SIGNAL(triggered()), SLOT(renameColumn()));
-              connect (act11, SIGNAL(triggered()), SLOT(retypeColumn()));
-              connect (act12, SIGNAL(triggered()), SLOT(changeColumnData()));
-              connect (act13, SIGNAL(triggered()), SIGNAL(saveEditions()));
+              
+
+              if(m_caps.get())
+              {
+                QAction* act7 = new QAction(m_hMenu);
+                act7->setText(tr("Add column"));
+                act7->setToolTip(tr("Adds a column to the table."));
+                m_hMenu->addAction(act7);
+                act7->setEnabled(m_caps->supportsAddColumn());
+
+                QAction* act8 = new QAction(m_hMenu);
+                act8->setText(tr("Remove column"));
+                act8->setToolTip(tr("Removes a column from the table."));
+                m_hMenu->addAction(act8);
+                act8->setEnabled(m_caps->supportsRemoveColumn());
+
+                QAction* act10 = new QAction(m_hMenu);
+                act10->setText(tr("Rename column"));
+                act10->setToolTip(tr("Renames a column of the table."));
+                m_hMenu->addAction(act10);
+
+                QAction* act11 = new QAction(m_hMenu);
+                act11->setText(tr("Change column type"));
+                act11->setToolTip(tr("Changes the type of a column of the table."));
+                m_hMenu->addAction(act11);
+
+                QAction* act12 = new QAction(m_hMenu);
+                act12->setText(tr("Change column data"));
+                act12->setToolTip(tr("Changes the data of a column of the table."));
+                m_hMenu->addAction(act12);
+
+                QAction* act13 = new QAction(m_hMenu);
+                act13->setText(tr("Save editions"));
+                act13->setToolTip(tr("Save pendent editions to layer."));
+                m_hMenu->addAction(act13);
+
+                m_view->connect(act7, SIGNAL(triggered()), SLOT(addColumn()));
+
+                connect(act8, SIGNAL(triggered()), SLOT(removeColumn()));
+                connect (act10, SIGNAL(triggered()), SLOT(renameColumn()));
+                connect (act11, SIGNAL(triggered()), SLOT(retypeColumn()));
+                connect (act12, SIGNAL(triggered()), SLOT(changeColumnData()));
+                connect (act13, SIGNAL(triggered()), SIGNAL(saveEditions()));
+              }
 
               m_hMenu->popup(pos);
             }
@@ -705,7 +737,13 @@ void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* l
 
   if (m_orderby.empty())
   {
-    std::vector<te::dt::Property*> psps = sch->getPrimaryKey()->getProperties();
+    std::vector<te::dt::Property*> psps;
+    
+    if(sch->getPrimaryKey())
+      psps = sch->getPrimaryKey()->getProperties();
+    else
+      psps = sch->getProperties();
+
     std::vector<te::dt::Property*>::iterator it;
 
     for(it = psps.begin(); it != psps.end(); ++it)
@@ -719,7 +757,8 @@ void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* l
 
   m_popupFilter->setDataSetTypeCapabilities(caps);
 
-  m_model->setEditable(caps->supportsDataEdition());
+  if(caps)
+    m_model->setEditable(caps->supportsDataEdition());
 
   te::da::DataSourcePtr dsc = GetDataSource(m_layer);
 
