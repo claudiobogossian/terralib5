@@ -233,3 +233,11 @@ TeTheme* terralib4::DataSource::getTL4Theme(const ::terralib4::ThemeInfo theme)
 
   return tl4Theme;
 }
+
+int terralib4::DataSource::getLayerSRID(const std::string & layerName)
+{
+  std::auto_ptr<te::da::DataSourceTransactor> t = getTransactor();
+  
+  terralib4::Transactor* t4t = dynamic_cast<terralib4::Transactor*>(t.get());
+  return t4t->getLayerSRID(layerName);
+}
