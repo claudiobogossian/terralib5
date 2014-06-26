@@ -44,6 +44,7 @@ namespace te
     struct TEWCSEXPORT WCSLayerInfo
     {
       std::string m_name; /*!< The layer name. */
+      // continue...
     };
 
   }   // end namespace wcs

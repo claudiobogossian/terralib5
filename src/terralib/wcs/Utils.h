@@ -43,13 +43,7 @@ namespace te
 
   namespace wcs
   {
-    void BuildLayersInfo(char** subdatasets, std::map<std::string, WCSLayerInfo>& info);
-
-    WCSLayerInfo BuildLayerInfo(const std::map<std::string, std::string>& kvp);
-
-    void ExtractRequestValues(const std::string& request, std::string& layer);
-
-    std::string BuildRequest(const std::string& serverUrl, const WCSLayerInfo& info);
+    std::string BuildRequest(const std::string& serviceURL, const std::string& coverageName, const te::gm::Envelope* e = 0);
 
   } // end namespace wcs
 }   // end namespace te
