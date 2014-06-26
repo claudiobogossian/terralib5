@@ -688,7 +688,7 @@ void te::qt::af::BaseApplication::onNewProjectTriggered()
 {
   newProject();
 
-  onSaveProjectAsTriggered();
+  //onSaveProjectAsTriggered();
 }
 
 void te::qt::af::BaseApplication::onOpenProjectTriggered()
@@ -737,8 +737,8 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
   }
   
   // Set the project title and its status as "no change"
-  std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
-  m_project->setTitle(projectTitle);
+  //std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
+  //m_project->setTitle(projectTitle);
   
   m_project->setProjectAsChanged(false);
   
@@ -749,7 +749,8 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
   QString wTitle = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
   wTitle += tr("Project:");
   wTitle += " ";
-  wTitle += projectTitle.c_str();
+  //wTitle += projectTitle.c_str();
+  wTitle += m_project->getTitle().c_str();
   
   setWindowTitle(wTitle);
 
@@ -777,8 +778,8 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   ApplicationController::getInstance().updateRecentProjects(fileName, m_project->getTitle().c_str());
   
   // Set the project title and its status as "no change"
-  std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
-  m_project->setTitle(projectTitle);
+  //std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
+  //m_project->setTitle(projectTitle);
   
   m_project->setProjectAsChanged(false);
 
@@ -786,7 +787,8 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   QString wTitle = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
   wTitle += tr("Project:");
   wTitle += " ";
-  wTitle += projectTitle.c_str();
+  //wTitle += projectTitle.c_str();
+  wTitle += m_project->getTitle().c_str();
   
   setWindowTitle(wTitle);
   
@@ -1768,8 +1770,8 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
     m_project = nproject;
     
     // Set the project title and its status as "no changed"
-    std::string projectTitle = boost::filesystem::basename(m_project->getFileName()).c_str();
-    m_project->setTitle(projectTitle);
+    //std::string projectTitle = boost::filesystem::basename(m_project->getFileName()).c_str();
+    //m_project->setTitle(projectTitle);
     
     m_project->setProjectAsChanged(false);
    
@@ -1779,7 +1781,8 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
     QString wTitle = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
     wTitle += tr("Project:");
     wTitle += " ";
-    wTitle += projectTitle.c_str();
+    //wTitle += projectTitle.c_str();
+    wTitle += m_project->getTitle().c_str();
     
     setWindowTitle(wTitle);
 
@@ -1830,11 +1833,20 @@ void te::qt::af::BaseApplication::newProject()
 
   GetProjectInformationsFromSettings(author, maxSaved);
 
-  //m_project->setTitle("New Project");
+  m_project->setTitle(tr("New Project").toStdString());
 
   m_project->setAuthor(author.toStdString());
   
-  setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle());
+  //setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle());
+
+  // Set the window title
+  QString wTitle = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
+  wTitle += tr("Project:");
+  wTitle += " ";
+  //wTitle += projectTitle.c_str();
+  wTitle += m_project->getTitle().c_str();
+
+  setWindowTitle(wTitle);
   
   te::qt::af::ApplicationController::getInstance().set(m_project);
 
