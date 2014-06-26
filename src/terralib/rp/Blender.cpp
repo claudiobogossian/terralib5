@@ -419,9 +419,11 @@ namespace te
       {
         std::size_t ringIdx = 0;
         std::auto_ptr< te::gm::Geometry > ringIntersectionPtr;
-        std::size_t nPols = indexedDelimiter2Ptr->getNumGeometries();   
+        std::size_t nPols = 0;
+        std::size_t polIdx = 0;
         
-        for( std::size_t polIdx = 0 ; polIdx < nPols ; ++polIdx )
+        nPols = indexedDelimiter2Ptr->getNumGeometries();           
+        for( polIdx = 0 ; polIdx < nPols ; ++polIdx )
         {
           te::gm::Polygon const* polPtr = dynamic_cast< te::gm::Polygon* >(
             indexedDelimiter2Ptr->getGeometryN( polIdx ) );
@@ -435,52 +437,14 @@ namespace te
             
             if( ringIntersectionPtr.get() != 0 ) 
             {
-              if( ringIntersectionPtr->getGeomTypeId() == te::gm::MultiLineStringType )
-              {
-                te::gm::MultiLineString const* ringIntersectionNPtr = dynamic_cast< te::gm::MultiLineString const * >(
-                  ringIntersectionPtr.get() );
-                assert( ringIntersectionNPtr );
-                
-                std::size_t numGeoms = ringIntersectionNPtr->getNumGeometries();
-                
-                for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
-                {
-                  te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-                    ringIntersectionNPtr->getGeometryN( gIdx ) );
-                  assert( segIndexedNPtr );
-                  
-                  std::size_t nPoints = segIndexedNPtr->size();
-                  te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
-                  
-                  for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
-                  {
-                    m_r2IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
-                      coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
-                  }
-                }
-              }
-              else if( ringIntersectionPtr->getGeomTypeId() == te::gm::LineStringType )
-              {
-                te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-                  ringIntersectionPtr.get() );
-                assert( segIndexedNPtr );
-                
-                std::size_t nPoints = segIndexedNPtr->size();
-                te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
-                
-                for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
-                {
-                  m_r2IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
-                    coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
-                }
-              }
+              TERP_TRUE_OR_THROW( getSegments( ringIntersectionPtr.get(),
+                m_r2IntersectionSegmentsPoints ), "Error getting intersection segments" );
             }
           }
         }
         
-        nPols = indexedDelimiter1Ptr->getNumGeometries();  
-        
-        for( std::size_t polIdx = 0 ; polIdx < nPols ; ++polIdx )
+        nPols = indexedDelimiter1Ptr->getNumGeometries();          
+        for( polIdx = 0 ; polIdx < nPols ; ++polIdx )
         {
           te::gm::Polygon const* polPtr = dynamic_cast< te::gm::Polygon* >(
             indexedDelimiter1Ptr->getGeometryN( polIdx ) );
@@ -494,45 +458,8 @@ namespace te
             
             if( ringIntersectionPtr.get() != 0 ) 
             {
-              if( ringIntersectionPtr->getGeomTypeId() == te::gm::MultiLineStringType )
-              {
-                te::gm::MultiLineString const* ringIntersectionNPtr = dynamic_cast< te::gm::MultiLineString const * >(
-                  ringIntersectionPtr.get() );
-                assert( ringIntersectionNPtr );
-                
-                std::size_t numGeoms = ringIntersectionNPtr->getNumGeometries();
-                
-                for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
-                {
-                  te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-                    ringIntersectionNPtr->getGeometryN( gIdx ) );
-                  assert( segIndexedNPtr );
-                  
-                  std::size_t nPoints = segIndexedNPtr->size();
-                  te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
-                  
-                  for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
-                  {
-                    m_r1IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
-                      coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
-                  }
-                }
-              }
-              else if( ringIntersectionPtr->getGeomTypeId() == te::gm::LineStringType )
-              {
-                te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-                  ringIntersectionPtr.get() );
-                assert( segIndexedNPtr );
-                
-                std::size_t nPoints = segIndexedNPtr->size();
-                te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
-                
-                for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
-                {
-                  m_r1IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
-                    coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
-                }
-              }
+              TERP_TRUE_OR_THROW( getSegments( ringIntersectionPtr.get(),
+                m_r1IntersectionSegmentsPoints ), "Error getting intersection segments" );
             }
           }    
         }    
@@ -1468,6 +1395,75 @@ namespace te
       --( *(paramsPtr->m_runningThreadsCounterPtr) );
       paramsPtr->m_mutexPtr->unlock();
     }
+    
+    bool Blender::getSegments( te::gm::Geometry const * const geometryPtr, 
+      std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > >& segments ) const
+    {
+      switch( geometryPtr->getGeomTypeId() )
+      {
+        case te::gm::MultiLineStringType :
+        {
+          te::gm::MultiLineString const * castGeomPtr = 
+            dynamic_cast< te::gm::MultiLineString const * >( geometryPtr );
+          assert( castGeomPtr );
+          
+          std::size_t numGeoms = castGeomPtr->getNumGeometries();
+          
+          for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+          {
+            if( ! ( getSegments( castGeomPtr->getGeometryN( gIdx ), segments ) ) )
+            {
+              return false;
+            }
+          }
+          
+          break;
+        }
+        case te::gm::LineStringType :
+        {
+          te::gm::LineString const* castGeomPtr = 
+            dynamic_cast< te::gm::LineString const * >( geometryPtr );
+          assert( castGeomPtr );
+          
+          std::size_t nPoints = castGeomPtr->size();
+          te::gm::Coord2D const* coodsPtr = castGeomPtr->getCoordinates();
+          
+          for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
+          {
+            segments.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
+              coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
+          }
+          
+          break;
+        }
+        case te::gm::GeometryCollectionType :
+        {
+          te::gm::GeometryCollection const * castGeomPtr = 
+            dynamic_cast< te::gm::GeometryCollection const * >( geometryPtr );
+          assert( castGeomPtr );
+          
+          std::size_t numGeoms = castGeomPtr->getNumGeometries();
+          
+          for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+          {
+            if( ! ( getSegments( castGeomPtr->getGeometryN( gIdx ), segments ) ) )
+            {
+              return false;
+            }
+          }
+                    
+          break;
+        }
+        default :
+        {
+          TERP_LOG_AND_RETURN_FALSE( "Invalid geometry type:" + geometryPtr->getGeometryType() );
+          break;
+        }
+      }
+      
+      return true;
+    }
+    
   } // end namespace rp
 }   // end namespace te    
 

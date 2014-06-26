@@ -291,6 +291,15 @@ namespace te
 
         */        
         static void blendIntoRaster1Thread( BlendIntoRaster1ThreadParams* paramsPtr );
+        
+        /*!
+          \brief Extract segments from the given geometry.
+          \param geometryPtr Input geometry.
+          \param segments Found segments (appended here).
+          \return true if OK, false on errors.
+        */        
+        bool getSegments( te::gm::Geometry const * const geometryPtr, 
+          std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > >& segments ) const;
     };
 
   } // end namespace rp
