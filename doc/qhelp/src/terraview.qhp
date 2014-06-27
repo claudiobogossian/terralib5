@@ -75,6 +75,7 @@
 					<section title="Register" ref="./plugins/rp/rp_register.html"/>
 					<section title="Segmenter" ref="./plugins/rp/rp_segmenter.html"/>
 				</section>
+				<section title="TerraLib 4.x Converter" ref="./plugins/terralib4/Terralib4Converter.html"/>
 		    </section>
        </toc>
        <files>
