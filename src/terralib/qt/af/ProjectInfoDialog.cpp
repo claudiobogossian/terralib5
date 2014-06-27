@@ -10,7 +10,7 @@
 te::qt::af::ProjectInfoDialog::ProjectInfoDialog(QWidget* parent) :
 QDialog(parent)
 {
-  QDialog::setWindowTitle(tr("Project properties editor"));
+  QDialog::setWindowTitle(tr("Project Properties"));
   QDialog::setWindowModality(Qt::ApplicationModal);
 
   //Buttons
