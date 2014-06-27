@@ -39,9 +39,9 @@
 // STL
 #include <vector>
 
-te::wcs::Transactor::Transactor(const std::string& uri, const std::map<std::string, WCSLayerInfo>& layersInfo)
-  : m_uri(uri),
-    m_layersInfo(layersInfo)
+te::wcs::Transactor::Transactor(const std::string& serviceURL, const std::string& coverageName)
+  : m_serviceURL(serviceURL),
+    m_coverageName(coverageName)
 {
 }
 
@@ -59,21 +59,14 @@ std::auto_ptr<te::da::DataSet> te::wcs::Transactor::getDataSet(const std::string
                                                                bool /*connected*/,
                                                                const te::common::AccessPolicy /*accessPolicy*/)
 {
-  std::string layer;
-  ExtractRequestValues(name, layer);
-
-  if(layer.empty())
-    throw Exception(TE_TR("Invalid data set request. Missing the parameter 'LAYER'!"));
-
-  std::map<std::string, WCSLayerInfo>::const_iterator it = m_layersInfo.find(layer);
-  if(it == m_layersInfo.end())
-    throw Exception(TE_TR("The informed data set could not be found in the data source!"));
+  if(name != m_coverageName)
+    throw Exception(TE_TR("The informed data set could not be found in the data source!!"));
 
   // Retrieves the data set type
-  std::auto_ptr<te::da::DataSetType> type = getDataSetType(layer);
+  std::auto_ptr<te::da::DataSetType> type = getDataSetType(name);
 
-  // Build the GetMap request
-  std::string request = BuildRequest(m_uri, it->second);
+  // Build the GDAL WCS request
+  std::string request = BuildRequest(m_serviceURL, m_coverageName);
 
   return std::auto_ptr<te::da::DataSet>(new te::gdal::DataSet(type, te::common::RAccess, request));
 }
@@ -86,21 +79,14 @@ std::auto_ptr<te::da::DataSet> te::wcs::Transactor::getDataSet(const std::string
                                                                bool /*connected*/,
                                                                const te::common::AccessPolicy /*accessPolicy*/)
 {
-  std::string layer;
-  ExtractRequestValues(name, layer);
-
-  if(layer.empty())
-    throw Exception(TE_TR("Invalid data set request. Missing the parameter 'LAYER'!"));
-
-  std::map<std::string, WCSLayerInfo>::const_iterator it = m_layersInfo.find(layer);
-  if(it == m_layersInfo.end())
+  if(name != m_coverageName)
     throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
   // Retrieves the data set type
-  std::auto_ptr<te::da::DataSetType> type = getDataSetType(layer);
+  std::auto_ptr<te::da::DataSetType> type = getDataSetType(name);
 
-  // Build the GetMap request
-  std::string request = BuildRequest(m_uri, it->second);
+  // Build the GDAL WCS request with extent restriction
+  std::string request = BuildRequest(m_serviceURL, m_coverageName, e);
 
   return std::auto_ptr<te::da::DataSet>(new te::gdal::DataSet(type, te::common::RAccess, request));
 }
@@ -130,7 +116,6 @@ std::auto_ptr<te::da::DataSet> te::wcs::Transactor::query(const te::da::Select& 
                                                           bool connected,
                                                           const te::common::AccessPolicy accessPolicy)
 {
-  // TODO: Review to considet GetFeatureInfo request?
   throw Exception(TE_TR("Query operations is not supported by the WCS driver!"));
 }
 
@@ -139,40 +124,36 @@ std::auto_ptr<te::da::DataSet> te::wcs::Transactor::query(const std::string& que
                                                           bool connected,
                                                           const te::common::AccessPolicy accessPolicy)
 {
-  // TODO: Review to considet GetFeatureInfo request?
   throw Exception(TE_TR("Query operations is not supported by the WCS driver!"));
 }
 
 std::vector<std::string> te::wcs::Transactor::getDataSetNames()
 {
   std::vector<std::string> names;
-
-  std::map<std::string, WCSLayerInfo>::const_iterator it;
-  for(it = m_layersInfo.begin(); it != m_layersInfo.end(); ++it)
-    names.push_back(it->second.m_name);
+  names.push_back(m_coverageName);
 
   return names;
 }
 
 std::size_t te::wcs::Transactor::getNumberOfDataSets()
 {
-  return m_layersInfo.size();
+  return 1;
 }
 
 std::auto_ptr<te::da::DataSetType> te::wcs::Transactor::getDataSetType(const std::string& name)
 {
-  std::map<std::string, WCSLayerInfo>::const_iterator it = m_layersInfo.find(name);
-  if(it == m_layersInfo.end())
+  if(name != m_coverageName)
     throw Exception(TE_TR("The informed data set could not be found in the data source."));
 
-  const WCSLayerInfo& info = it->second;
+   // Build the GDAL WCS request
+  std::string request = BuildRequest(m_serviceURL, m_coverageName);
 
-  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(info.m_name.c_str(), GA_ReadOnly));
+  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(request.c_str(), GA_ReadOnly));
   if(gds == 0)
     throw Exception(TE_TR("The data set type could not be retrieved from data source."));
   
-  te::da::DataSetType* type = new te::da::DataSetType(info.m_name, 0);
-  type->setTitle(info.m_name);
+  te::da::DataSetType* type = new te::da::DataSetType(m_coverageName, 0);
+  type->setTitle(m_coverageName);
   
   te::rst::Grid* grid = te::gdal::GetGrid(gds);
 
@@ -295,12 +276,12 @@ std::size_t te::wcs::Transactor::getNumberOfItems(const std::string& datasetName
 
 bool te::wcs::Transactor::hasDataSets()
 {
-  return !m_layersInfo.empty();
+  return !m_coverageName.empty();
 }
 
 bool te::wcs::Transactor::dataSetExists(const std::string& name)
 {
-  return m_layersInfo.find(name) != m_layersInfo.end();
+  return name == m_coverageName;
 }
 
 /** NOT SUPPORTED METHODS */
