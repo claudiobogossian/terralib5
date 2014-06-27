@@ -35,6 +35,7 @@
 #include "../datatype/SimpleProperty.h"
 #include "../datatype/StringProperty.h"
 
+#include "../dataaccess/dataset/ObjectIdSet.h"
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Expression.h"
 #include "../dataaccess/query/Field.h"
@@ -45,6 +46,7 @@
 #include "../dataaccess/query/Select.h"
 #include "../dataaccess/query/ST_Buffer.h"
 #include "../dataaccess/query/ST_Difference.h"
+#include "../dataaccess/query/Where.h"
 #include "../dataaccess/utils/Utils.h"
 
 #include "../geometry/Geometry.h"
@@ -149,7 +151,14 @@ bool te::vp::BufferQuery::run()
   te::da::From* from = new te::da::From;
   from->push_back(fromItem);
 
-  te::da::Select select(fields, from);
+  te::da::Where* w_oid = 0;
+
+  if(m_oidSet)
+  {
+    w_oid = new te::da::Where(m_oidSet->getExpression());
+  }
+
+  te::da::Select select(fields, from, w_oid);
   std::auto_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
 
   std::auto_ptr<te::da::DataSetType> outDSType(GetDataSetType());

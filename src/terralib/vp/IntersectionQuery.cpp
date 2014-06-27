@@ -36,6 +36,8 @@
 #include "../datatype/SimpleProperty.h"
 #include "../datatype/StringProperty.h"
 
+#include "../dataaccess/dataset/ObjectIdSet.h"
+#include "../dataaccess/query/And.h"
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Expression.h"
 #include "../dataaccess/query/Field.h"
@@ -48,6 +50,7 @@
 #include "../dataaccess/query/Select.h"
 #include "../dataaccess/query/ST_Intersection.h"
 #include "../dataaccess/query/ST_Intersects.h"
+#include "../dataaccess/query/Where.h"
 #include "../dataaccess/utils/Utils.h"
 
 #include "../geometry/Geometry.h"
@@ -131,8 +134,25 @@ bool te::vp::IntersectionQuery::run()
   select->setFields(fields);
   select->setFrom(from);
 
+//Where clause if the object ids were selected.
+  te::da::Where* w_oid = 0;
+  if(m_firstOidSet && m_secondOidSet)
+  {
+    te::da::And* exp_and = new te::da::And(m_firstOidSet->getExpression(m_inFirstDsetType->getName()), m_secondOidSet->getExpression(m_inSecondDsetType->getName()));
+    w_oid = new te::da::Where(exp_and);
+  }
+  else if(m_firstOidSet)
+    w_oid = new te::da::Where(m_firstOidSet->getExpression(m_inFirstDsetType->getName()));
+  else if(m_secondOidSet)
+    w_oid = new te::da::Where(m_secondOidSet->getExpression(m_inSecondDsetType->getName()));
+  
+  select->setWhere(w_oid);
+
   std::auto_ptr<te::da::DataSet> dsQuery = m_inFirstDsrc->query(select);
   dsQuery->moveBeforeFirst();
+
+  if(dsQuery->size() == 0)
+    throw te::common::Exception(TE_TR("The Layers do not intersect!"));
 
 
   std::auto_ptr<te::da::DataSetType> outDataSetType(new te::da::DataSetType(m_outDsetName));

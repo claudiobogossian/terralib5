@@ -221,9 +221,7 @@ bool te::vp::AggregationQuery::run()
   te::da::Where* w_oid = 0;
 
   if(m_oidSet)
-  {
     w_oid = new te::da::Where(m_oidSet->getExpression());
-  }
 
   te::da::Select select(fields, from, w_oid);
   
