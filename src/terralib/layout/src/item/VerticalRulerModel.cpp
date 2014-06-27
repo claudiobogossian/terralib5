@@ -63,7 +63,7 @@ void te::layout::VerticalRulerModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);  
   
-  drawRuler(canvas, utils);
+  drawRuler(canvas, utils, context.getZoomFactor());
 
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
@@ -72,7 +72,7 @@ void te::layout::VerticalRulerModel::draw( ContextItem context )
   notifyAll(context);
 }
 
-void te::layout::VerticalRulerModel::drawRuler( te::map::Canvas* canvas, Utils* utils )
+void te::layout::VerticalRulerModel::drawRuler( te::map::Canvas* canvas, Utils* utils, double zoomFactor )
 {  
   if(!m_visible)
   {
@@ -91,11 +91,18 @@ void te::layout::VerticalRulerModel::drawRuler( te::map::Canvas* canvas, Utils* 
   if(m_paperConfig)
   {
     te::gm::Envelope* paperBox = m_paperConfig->getPaperBoxW();
-
+    
     if(paperBox)
     {
+
+      double ury = paperBox->getUpperRightY();
+      if(zoomFactor >= 1.)
+      {
+        ury = m_backEndBox.getUpperRightY();
+      }
+
       envPaper = te::gm::Envelope(m_backEndBox.getLowerLeftX(), paperBox->getLowerLeftY(),
-        m_backEndBox.getUpperRightX(), m_backEndBox.getUpperRightY());
+        m_backEndBox.getUpperRightX(), ury);
 
       te::color::RGBAColor colorp2(255,255,255, TE_OPAQUE);
       drawRectW(envPaper, colorp2, canvas, utils);

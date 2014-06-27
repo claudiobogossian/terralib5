@@ -51,7 +51,7 @@ namespace te
 
       protected:
 
-        virtual void drawRuler(te::map::Canvas* canvas, Utils* utils) = 0;
+        virtual void drawRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor) = 0;
 
         virtual void drawLineW(te::gm::Envelope box, Utils* utils);
 

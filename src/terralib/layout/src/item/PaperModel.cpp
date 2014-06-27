@@ -137,21 +137,3 @@ double te::layout::PaperModel::getShadowPadding()
 {
   return m_shadowPadding;
 }
-
-te::gm::Envelope te::layout::PaperModel::boxWithZoomFactor( Utils* utils )
-{
-  te::gm::Envelope envPp = utils->applyZoomFactor(m_boxPaper);
-
-  double pw = m_boxPaper.getWidth();
-  double ph = m_boxPaper.getHeight();
-
-  double width = m_shadowPadding + pw;
-  double height = m_shadowPadding + ph;
-
-  te::gm::Envelope envShw = utils->applyZoomFactor(m_boxShadow);
-
-  te::gm::Envelope box = te::gm::Envelope(0., 0., width, height); 
-
-  //box = utils->applyZoomFactor(m_box);
-  return box;
-}

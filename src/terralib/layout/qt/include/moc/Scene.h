@@ -44,6 +44,19 @@ class QPrinter;
 class QPainter;
 class QLine;
 
+/*!
+	\def __LAYOUT_HORIZONTAL_MARGIN
+	Defines the layout margin to relation with viewport
+*/
+#define __LAYOUT_HORIZONTAL_MARGIN 0.05
+
+
+/*!
+	\def __LAYOUT_VERTICAL_MARGIN
+	Defines the layout margin to relation with viewport
+*/
+#define __LAYOUT_VERTICAL_MARGIN 0.1
+
 namespace te
 {
   namespace layout
@@ -79,9 +92,7 @@ namespace te
           params widthMM width of physical screen in millimeters
           params heightMM height of physical screen in millimeters
         */
-        virtual void init(double widthMM, double heightMM, double paperMMW, double paperMMH);
-
-        virtual void restart(double widthMM, double heightMM, double paperMMW, double paperMMH);
+        virtual void init(double screenWMM, double screenHMM, double paperMMW, double paperMMH, double zoomFactor = 1.0);
         
         /* World coordinates (mm) */
         virtual te::gm::Envelope* getWorldBox() const;
@@ -90,8 +101,6 @@ namespace te
         virtual te::gm::Envelope* getPaperBox() const;
                 
         virtual QTransform getMatrixViewScene();
-
-        virtual QGraphicsItem* getMasterParentItem();
 
         virtual void printPreview(bool isPdf = false);
 
@@ -103,7 +112,7 @@ namespace te
 
         virtual std::vector<te::layout::Properties*> importJsonAsProps();
 
-        virtual void refresh(QGraphicsView* view = 0);
+        virtual void refresh(QGraphicsView* view = 0, double zoomFactor = 1.0);
 
         virtual void reset();
 
@@ -124,6 +133,8 @@ namespace te
         virtual void sendToBack();
 
         virtual void redrawRulers();
+
+        virtual void refreshRulers(te::gm::Envelope newBox);
         
       protected slots:
 
@@ -139,8 +150,7 @@ namespace te
 
         virtual te::gm::Envelope* calculateBoxPaper(double wMM, double hMM, double paperMMW, double paperMMH);
         virtual te::gm::Envelope* calculateWindow(double wMM, double hMM, double paperMMW, double paperMMH);
-        virtual void calculateMatrixViewScene();
-        virtual void createMasterParentItem();
+        virtual void calculateMatrixViewScene(double zoomFactor = 1.);
 
         virtual QPrinter* createPrinter();
         void renderScene( QPainter* newPainter );
@@ -151,8 +161,6 @@ namespace te
 
         virtual void drawForeground(QPainter *painter, const QRectF &rect);
 
-        virtual void refreshPosRulers();
-
         virtual void refreshViews(QGraphicsView* view = 0);
 
       protected:
@@ -162,7 +170,6 @@ namespace te
         QTransform m_matrix;
         double m_screenWidthMM;
         double m_screenHeightMM;
-        QGraphicsItem* m_masterParent;
         QLineF*        m_lineIntersectHrz;
         QLineF*        m_lineIntersectVrt;
         bool           m_fixedRuler;

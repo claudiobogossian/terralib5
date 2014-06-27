@@ -55,7 +55,7 @@ namespace te
 
         virtual void drawHorizontalRuler(te::map::Canvas* canvas, Utils* utils);
 
-        virtual void drawRuler(te::map::Canvas* canvas, Utils* utils);
+        virtual void drawRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
     };
   }
 }

@@ -56,9 +56,7 @@ namespace te
         virtual void updateProperties(te::layout::Properties* properties) = 0;
 
         virtual te::gm::Envelope getBox() = 0;
-
-        virtual te::gm::Envelope boxWithZoomFactor(Utils* utils) = 0;
-
+        
         virtual LayoutAbstractObjectType getType() = 0;
         virtual void setType(LayoutAbstractObjectType type) = 0;
 

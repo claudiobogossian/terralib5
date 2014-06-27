@@ -56,9 +56,7 @@ namespace te
 
         virtual void setShadowPadding(double padding);
         virtual double getShadowPadding();
-
-        virtual te::gm::Envelope boxWithZoomFactor(Utils* utils);
-
+        
     protected:
 
       virtual void config();

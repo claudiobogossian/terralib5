@@ -127,15 +127,3 @@ bool te::layout::ItemController::contains( const te::gm::Coord2D &coord ) const
   }
   return false;
 }
-
-te::gm::Envelope te::layout::ItemController::getBoxWithZoomFactor()
-{
-  te::gm::Envelope env;
-
-  if(!m_model)
-    return env;
-  
-  Utils* utils = Context::getInstance()->getUtils();  
-  env = m_model->boxWithZoomFactor(utils);
-  return env;
-}

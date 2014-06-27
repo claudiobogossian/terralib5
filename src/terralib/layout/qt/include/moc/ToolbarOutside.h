@@ -90,6 +90,8 @@ namespace te
       virtual void onBringToFrontClicked(bool checked);
 
       virtual void onSendToBackClicked(bool checked);
+
+      virtual void onRecomposeClicked(bool checked);
       
     signals:
 
@@ -118,6 +120,8 @@ namespace te
       virtual void createBringToFrontToolButton();
 
       virtual void createSendToBackToolButton();
+
+      virtual void createRecomposeToolButton();
 
       virtual void changeAction(LayoutMode mode);
 

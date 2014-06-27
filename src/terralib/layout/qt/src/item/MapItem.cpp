@@ -50,6 +50,7 @@
 #include "../../../../qt/widgets/tools/ZoomClick.h"
 #include "LayoutConfig.h"
 #include "ItemUtils.h"
+#include "MapModel.h"
 
 // STL
 #include <vector>
@@ -71,7 +72,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QStyleOptionGraphicsItem>
 #include <QEvent>
-#include "MapModel.h"
+#include <QPoint>
 
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   QGraphicsProxyWidget(0),
@@ -310,7 +311,7 @@ te::gm::Coord2D te::layout::MapItem::getPosition()
 }
 
 void te::layout::MapItem::setPos( const QPointF &pos )
-{    
+{
   QGraphicsItem::setPos(pos);
 
   refresh();
@@ -500,4 +501,9 @@ void te::layout::MapItem::changeCurrentTool( LayoutMode mode )
     te::qt::widgets::ZoomClick* zoomOut = new te::qt::widgets::ZoomClick(m_mapDisplay, zoomOutCursor, 2.0, te::qt::widgets::Zoom::Out);
     setCurrentTool(zoomOut);
   }
+}
+
+QVariant te::layout::MapItem::itemChange( GraphicsItemChange change, const QVariant & value )
+{
+  return QGraphicsProxyWidget::itemChange(change, value);
 }

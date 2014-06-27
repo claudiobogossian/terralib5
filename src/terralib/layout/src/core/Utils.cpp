@@ -103,7 +103,7 @@ te::gm::LinearRing* te::layout::Utils::createSimpleLine( te::gm::Envelope box )
   return line;
 }
 
-te::color::RGBAColor** te::layout::Utils::getImageW( te::gm::Envelope boxmm, bool applyZoom )
+te::color::RGBAColor** te::layout::Utils::getImageW( te::gm::Envelope boxmm )
 {
   te::color::RGBAColor** pixmap = 0;
 
@@ -114,7 +114,7 @@ te::color::RGBAColor** te::layout::Utils::getImageW( te::gm::Envelope boxmm, boo
     return pixmap;
   }
 
-  te::gm::Envelope boxViewport = viewportBox(boxmm, applyZoom);
+  te::gm::Envelope boxViewport = viewportBox(boxmm);
 
   if(boxViewport.isValid())
   {
@@ -130,11 +130,9 @@ int te::layout::Utils::mm2pixel( double mm )
   return px;
 }
 
-void te::layout::Utils::configCanvas( te::gm::Envelope box, bool applyZoom, bool resize )
+void te::layout::Utils::configCanvas( te::gm::Envelope box, bool resize )
 {
   te::gm::Envelope boxViewport = viewportBox(box);
-  if(applyZoom)
-    box = applyZoomFactor(box);
   changeCanvas(boxViewport, box, resize); 
 }
 
@@ -166,7 +164,7 @@ void te::layout::Utils::changeCanvas( te::gm::Envelope viewport, te::gm::Envelop
     world.getUpperRightX(), world.getUpperRightY()); 
 }
 
-te::gm::Envelope te::layout::Utils::viewportBox( te::gm::Envelope box, bool applyZoom )
+te::gm::Envelope te::layout::Utils::viewportBox( te::gm::Envelope box)
 {
   te::gm::Envelope boxViewport;
   
@@ -177,16 +175,13 @@ te::gm::Envelope te::layout::Utils::viewportBox( te::gm::Envelope box, bool appl
   return boxViewport;
 }
 
-te::gm::Envelope te::layout::Utils::viewportBoxFromMM( te::gm::Envelope box, bool applyZoom )
+te::gm::Envelope te::layout::Utils::viewportBoxFromMM( te::gm::Envelope box)
 {
   te::map::WorldDeviceTransformer transf; // World Device Transformer.
 
   int pxwidth = mm2pixel(box.getWidth());
   int pxheight = mm2pixel(box.getHeight());
-
-  if(applyZoom)
-    box = applyZoomFactor(box);
-  
+    
   // Adjust internal renderer transformer
   transf.setTransformationParameters(box.getLowerLeftX(), box.getLowerLeftY(), 
     box.getUpperRightX(), box.getUpperRightY(), pxwidth, pxheight);
@@ -291,27 +286,6 @@ void te::layout::Utils::textBoundingBox( double &w, double &h, std::string txt )
       h = box->getHeight();
     }
   }
-}
-
-te::gm::Envelope te::layout::Utils::applyZoomFactor( te::gm::Envelope box )
-{
-  double zoomFactor = Context::getInstance()->getZoomFactor();
-  double oldZoomFactor = Context::getInstance()->getOldZoomFactor();
-  
-  if(zoomFactor > 0)
-  {
-    zoomFactor = 1. / zoomFactor;
-  }
-
-  te::gm::Coord2D center = box.getCenter();
-
-  double halfWidth = (box.getWidth() * zoomFactor) / 2.;
-  double halfHeight = (box.getHeight() * zoomFactor) / 2.;
-
-  te::gm::Envelope zoomBox(center.x - halfWidth, center.y - halfHeight,
-    center.x + halfWidth, center.y + halfHeight);
-
-  return zoomBox;
 }
 
 double te::layout::Utils::calculateRulerZoomFactor()

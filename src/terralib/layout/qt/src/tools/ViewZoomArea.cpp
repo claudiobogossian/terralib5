@@ -18,7 +18,7 @@
  */
 
 // TerraLib
-#include "ViewPan.h"
+#include "ViewZoomArea.h"
 #include "../../../geometry/Envelope.h"
 #include "View.h"
 #include "Scene.h"
@@ -29,54 +29,45 @@
 #include <QtGui/QPainter>
 #include <QtGui/QPixmap>
 
-te::layout::ViewPan::ViewPan(View* view, const QCursor& cursor, const QCursor& actionCursor, QObject* parent) 
-  : AbstractViewTool(view, parent),
-    m_panStarted(false),
-    m_actionCursor(actionCursor)
+te::layout::ViewZoomArea::ViewZoomArea(View* view, const QCursor& cursor, QObject* parent) 
+  : ViewRubberBand(view, parent),
+    m_zoomStarted(false)
 {
   setCursor(cursor);
 }
 
-te::layout::ViewPan::~ViewPan()
+te::layout::ViewZoomArea::~ViewZoomArea()
 {
 
 }
 
-bool te::layout::ViewPan::mousePressEvent(QMouseEvent* e)
+bool te::layout::ViewZoomArea::mousePressEvent(QMouseEvent* e)
 {
   if(e->button() != Qt::LeftButton)
     return false;
 
-  m_panStarted = true;
-  m_origin = e->pos();
-  m_delta *= 0;
+  m_zoomStarted = true;
+  m_rect = QRectF();
 
-  // Adjusting the action cursor
-  if(m_actionCursor.shape() != Qt::BlankCursor)
-    m_view->viewport()->setCursor(m_actionCursor);
-
-  return true;
+  return ViewRubberBand::mousePressEvent(e);
 }
 
-bool te::layout::ViewPan::mouseMoveEvent(QMouseEvent* e)
+bool te::layout::ViewZoomArea::mouseMoveEvent(QMouseEvent* e)
 {
-  if(!m_panStarted)
+  if(!m_zoomStarted)
     return false;
 
-  // Calculates the delta value
-  m_delta = e->pos() - m_origin;
-  
-  return true;
+  return ViewRubberBand::mouseMoveEvent(e);
 }
 
-bool te::layout::ViewPan::mouseReleaseEvent(QMouseEvent* e)
+bool te::layout::ViewZoomArea::mouseReleaseEvent(QMouseEvent* e)
 {
-  m_panStarted = false;
+  m_zoomStarted = false;
 
   // Roll back the default tool cursor
   m_view->viewport()->setCursor(m_cursor);
 
-  if(e->button() != Qt::LeftButton || m_delta.isNull())
+  if(e->button() != Qt::LeftButton)
     return false;
 
   // Calculates the extent translated
@@ -85,29 +76,39 @@ bool te::layout::ViewPan::mouseReleaseEvent(QMouseEvent* e)
   if(!scene)
     return false;
 
-  QRect rec(0, 0, m_view->width(), m_view->height());
-  QPoint center = rec.center();
-  center -= m_delta;
-  rec.moveCenter(center);
-  
-  // Conversion to world coordinates
-  QPolygonF poly = m_view->mapToScene(rec);
+  ViewRubberBand::mouseReleaseEvent(e);
+
+  if(m_rect.isNull()) // Zoom by click
+  {
+
+    QRectF scRct = scene->sceneRect();
+    QPolygonF scRctViewport = m_view->mapFromScene(scRct);
+    m_rect = QRectF(scRctViewport.boundingRect().topLeft() * 0.5, scRctViewport.boundingRect().bottomRight() * 0.5);
+    m_rect.moveCenter(m_origin);
+  }
+
+  // Converts zoom boundary to world coordinates
+  QPoint ll(m_rect.left(), m_rect.bottom());
+  QPoint ur(m_rect.right(), m_rect.top());
+
+  QPointF llworld = m_view->mapToScene(ll);
+  QPointF urworld = m_view->mapToScene(ur);
 
   // Updates the map display with the new extent
-  QRectF bounding = poly.boundingRect();
+  te::gm::Envelope envelope(ll.x(), ll.y(), ur.x(), ur.y());
 
   te::gm::Envelope* sceneBox = scene->getWorldBox();
-  
-  sceneBox->m_llx = bounding.x();
-  sceneBox->m_lly = bounding.y();
-  sceneBox->m_urx = bounding.x() + bounding.width();
-  sceneBox->m_ury = bounding.y() + bounding.height();
+
+  sceneBox->m_llx = ll.x();
+  sceneBox->m_lly = ll.y();
+  sceneBox->m_urx = ur.x();
+  sceneBox->m_ury = ur.y();
 
   double zoomFactor = Context::getInstance()->getZoomFactor();
 
-  scene->refresh(m_view, zoomFactor);
+  /*scene->refresh(m_view, zoomFactor);
   scene->redrawRulers();
-  scene->update();
+  scene->update();*/
   
   return true;
 }

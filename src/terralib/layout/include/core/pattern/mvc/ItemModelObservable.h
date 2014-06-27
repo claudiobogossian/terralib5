@@ -54,7 +54,6 @@ namespace te
         virtual LayoutAbstractObjectType getType();
         virtual void setType(LayoutAbstractObjectType type);
 
-        virtual te::gm::Envelope boxWithZoomFactor(Utils* utils);
         virtual te::gm::Envelope getBox();
         virtual void setBox(te::gm::Envelope box);
 

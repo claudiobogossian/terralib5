@@ -66,8 +66,6 @@ namespace te
 
         virtual bool contains(const te::gm::Coord2D &coord) const;
 
-        virtual te::gm::Envelope getBoxWithZoomFactor();
-
       protected:
         Observable* m_model;
         Observer* m_view;

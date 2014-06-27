@@ -41,6 +41,7 @@
 
 class QGraphicsSceneMouseEvent;
 class QMimeData;
+class QVariant;
 
 namespace te
 {
@@ -92,6 +93,8 @@ namespace te
       virtual void	dragLeaveEvent ( QGraphicsSceneDragDropEvent * event );
       virtual void	dragMoveEvent ( QGraphicsSceneDragDropEvent * event );
       virtual void resizeEvent ( QGraphicsSceneResizeEvent * event );
+
+      virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
       
       virtual te::gm::Coord2D getPosition();
             

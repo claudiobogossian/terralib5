@@ -52,11 +52,15 @@ namespace te
 	    virtual ~DisplayOutside();
 
 	    virtual void updateObserver(ContextItem context);
-	    virtual void setPosition(const double& x, const double& y);
-	    virtual te::gm::Coord2D getPosition();
+	    
+      virtual void setPosition(const double& x, const double& y);
+	    
+      virtual te::gm::Coord2D getPosition();
+      
       void setPreviousCentralWidget(QWidget* previous);
+      
       virtual void removeDock();
-
+      
     protected:
 
       virtual void	closeEvent ( QCloseEvent * event );

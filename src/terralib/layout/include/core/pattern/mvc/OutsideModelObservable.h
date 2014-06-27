@@ -54,7 +54,6 @@ namespace te
       virtual bool addObserver(Observer* o);
       virtual bool removeObserver(Observer* o);
 
-      virtual te::gm::Envelope boxWithZoomFactor( Utils* utils );
       virtual te::gm::Envelope getBox();
       virtual void setBox(te::gm::Envelope box);
 

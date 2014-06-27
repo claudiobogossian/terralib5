@@ -166,9 +166,3 @@ void te::layout::OutsideModelObservable::setId( int id )
 {
   m_id = id;
 }
-
-te::gm::Envelope te::layout::OutsideModelObservable::boxWithZoomFactor( Utils* utils )
-{
-  te::gm::Envelope box = utils->applyZoomFactor(m_box);
-  return box;
-}

@@ -60,11 +60,11 @@ void te::layout::HorizontalRulerModel::draw( ContextItem context )
 
   if((!canvas) || (!utils))
     return;
-  
+
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);  
   
-  drawRuler(canvas, utils);
+  drawRuler(canvas, utils, context.getZoomFactor());
 
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
@@ -73,7 +73,7 @@ void te::layout::HorizontalRulerModel::draw( ContextItem context )
   notifyAll(context);
 }
 
-void te::layout::HorizontalRulerModel::drawRuler( te::map::Canvas* canvas, Utils* utils )
+void te::layout::HorizontalRulerModel::drawRuler( te::map::Canvas* canvas, Utils* utils, double zoomFactor )
 {  
   if(!m_visible)
   {

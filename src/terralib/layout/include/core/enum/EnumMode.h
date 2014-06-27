@@ -67,6 +67,7 @@ namespace te
       TypeSceneZoom = 28,
       TypeBringToFront = 29,
       TypeSendToBack = 30,
+      TypeRecompose = 31,
       TypeNone = 0
     } LayoutMode;
 

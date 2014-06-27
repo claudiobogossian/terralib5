@@ -103,7 +103,7 @@ void te::layout::MapGridModel::draw( ContextItem context )
 
   drawGrid(canvas, utils);
 
-  utils->configCanvas(m_box, true, false);
+  utils->configCanvas(m_box, false);
 
   //m_backgroundColor = te::color::RGBAColor(255,0,0, 100);
   

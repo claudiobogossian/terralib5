@@ -125,6 +125,9 @@ void te::layout::ToolbarOutside::createToolbar()
   createArrowCursorButton();
   m_toolbar->addSeparator();
 
+  createRecomposeToolButton();
+  m_toolbar->addSeparator();
+
   createLineIntersectionToolButton();
   m_toolbar->addSeparator();
 
@@ -147,8 +150,8 @@ void te::layout::ToolbarOutside::createToolbar()
   createSendToBackToolButton();
   m_toolbar->addSeparator();
 
-  /*createSceneZoomCombobox();
-  m_toolbar->addSeparator();*/
+  createSceneZoomCombobox();
+  m_toolbar->addSeparator();
 }
 
 void te::layout::ToolbarOutside::createMapToolButton()
@@ -271,8 +274,8 @@ void te::layout::ToolbarOutside::createSceneZoomCombobox()
 {
   m_comboSceneZoom = new QComboBox();
   m_comboSceneZoom->setObjectName(m_optionSceneZoom.c_str());
-  //m_comboSceneZoom->setVisible(false);
 
+  m_comboSceneZoom->addItem("42%", 0.42);
   m_comboSceneZoom->addItem("50%", 0.5);
   m_comboSceneZoom->addItem("70%", 0.7);
   m_comboSceneZoom->addItem("100%", 1.);
@@ -283,6 +286,7 @@ void te::layout::ToolbarOutside::createSceneZoomCombobox()
 
   connect(m_comboSceneZoom, SIGNAL(currentIndexChanged(int)), this, SLOT(onSceneZoomCurrentIndexChanged(int)));
   m_comboSceneZoom->setCurrentIndex(1);
+  Context::getInstance()->setDefaultZoomFactor(m_comboSceneZoom->itemData(1).toDouble());
   
   m_toolbar->addWidget(m_comboSceneZoom);
 }
@@ -301,6 +305,16 @@ void te::layout::ToolbarOutside::createSendToBackToolButton()
   QToolButton *btn = createToolButton("Send to back", "Send to back", "layout-to-back");
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onSendToBackClicked(bool)));
+
+  m_toolbar->addWidget(btn);
+}
+
+
+void te::layout::ToolbarOutside::createRecomposeToolButton()
+{
+  QToolButton *btn = createToolButton("Recompose", "Recompose", "layout-recompose");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onRecomposeClicked(bool)));
 
   m_toolbar->addWidget(btn);
 }
@@ -411,9 +425,8 @@ void te::layout::ToolbarOutside::onSceneZoomCurrentIndexChanged( int index )
   double zoomFactor = Context::getInstance()->getZoomFactor();
   if(variant.toDouble() != zoomFactor)
   {
-    double oldZoom = Context::getInstance()->getZoomFactor();
     Context::getInstance()->setZoomFactor(variant.toDouble());
-    Context::getInstance()->setOldZoomFactor(oldZoom);
+    Context::getInstance()->setOldZoomFactor(zoomFactor);
     changeAction(TypeSceneZoom);
   }
 }
@@ -426,6 +439,12 @@ void te::layout::ToolbarOutside::onBringToFrontClicked( bool checked )
 void te::layout::ToolbarOutside::onSendToBackClicked( bool checked )
 {
   changeAction(TypeSendToBack);
+}
+
+void te::layout::ToolbarOutside::onRecomposeClicked( bool checked )
+{
+  m_comboSceneZoom->setCurrentIndex(1);
+  changeAction(TypeRecompose);
 }
 
 void te::layout::ToolbarOutside::changeAction( LayoutMode mode )

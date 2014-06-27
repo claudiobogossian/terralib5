@@ -59,6 +59,7 @@
 #include <QMessageBox>
 #include <QPixmap>
 #include <QLineF>
+#include "ViewZoomArea.h"
 
 #define _psPointInMM 0.352777778 //<! 1 PostScript point in millimeters
 #define _inchInPSPoints 72 //<! 1 Inch in PostScript point
@@ -190,7 +191,11 @@ void te::layout::View::config()
 
   pConfig->getPaperSize(w, h);
 
-  lScene->init(widthMM(), heightMM(), w, h);
+  double sw = widthMM();
+  double sh = h;
+
+  double zoomFactor = Context::getInstance()->getZoomFactor();
+  lScene->init(sw, sh, w, h, zoomFactor);
 
   configTransform(lScene);
 
@@ -216,6 +221,14 @@ void te::layout::View::config()
 
 void te::layout::View::resizeEvent(QResizeEvent * event)
 {
+  Scene* lScene = dynamic_cast<Scene*>(scene());
+
+  if(lScene)
+  {
+    double zoomFactor = Context::getInstance()->getZoomFactor();
+    lScene->refresh(this, zoomFactor);
+    lScene->redrawItems(true);
+  }
   QGraphicsView::resizeEvent(event);
 }
 
@@ -368,6 +381,14 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   LayoutMode mode = Context::getInstance()->getMode();
   QList<QGraphicsItem*> graphicsItems;
   double zoomFactor = Context::getInstance()->getZoomFactor();
+  double oldZoomFactor = Context::getInstance()->getOldZoomFactor();
+
+  te::gm::Envelope* env = sc->getWorldBox();
+
+  double newZoomFactor = zoomFactor / oldZoomFactor;
+  double halfWidth = env->getWidth() * zoomFactor  / 2.;
+  double halfHeight = env->getHeight() * zoomFactor / 2.;
+  te::gm::Coord2D center = env->getCenter();
 
   switch(mode)
   {
@@ -469,7 +490,12 @@ void te::layout::View::outsideAreaChangeContext( bool change )
     break;
   case TypeSceneZoom:
     {
-      sc->refresh(this);
+      env->m_llx = center.x - halfWidth;
+      env->m_lly = center.y - halfHeight;
+      env->m_urx = center.x + halfWidth;
+      env->m_ury = center.y + halfHeight;
+       
+      sc->refresh(this, zoomFactor);
       sc->redrawItems(true);
       resetDefaultConfig();
     }
@@ -483,6 +509,37 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   case TypeSendToBack:
     {
       sc->sendToBack();
+      resetDefaultConfig();
+    }
+    break;
+  case TypeZoomIn:
+    {
+      resetDefaultConfig();
+      /*
+        The QGraphicsView inherits QAbstractScrollArea. 
+        The QAbstractScrollArea on your EventFilter event invokes the viewportEvent instead eventFilter of the son, 
+        so it is necessary to add QAbstractScrollArea for the filter installed can listen to events.       
+      */
+      setInteractive(false);
+      m_currentTool = new ViewZoomArea(this, Qt::CrossCursor);
+      viewport()->installEventFilter(m_currentTool);
+      break;
+    }
+    break;
+  case TypeZoomOut:
+    {
+
+    }
+    break;
+  case TypeRecompose:
+    {
+      double dZoom = Context::getInstance()->getDefaultZoomFactor();
+      double zoom = Context::getInstance()->getZoomFactor();
+      if(dZoom != zoom)
+      {
+        sc->refresh(this, dZoom);
+        sc->redrawItems(true);
+      }
       resetDefaultConfig();
     }
     break;

@@ -62,7 +62,7 @@ void te::layout::HorizontalRulerItem::updateObserver( ContextItem context )
   if(!utils)
     return;
 
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox(), false);
+  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
 
   if(!box.isValid())
     return;

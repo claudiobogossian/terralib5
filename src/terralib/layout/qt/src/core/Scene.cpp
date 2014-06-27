@@ -62,14 +62,13 @@ te::layout::Scene::Scene( QWidget* widget):
   QGraphicsScene(widget),
   m_boxW(0),
   m_boxPaperW(0),
-  m_masterParent(0),
   m_lineIntersectHrz(0),
   m_lineIntersectVrt(0),
   m_fixedRuler(true)
 {
   setBackgroundBrush(QBrush(QColor(109,109,109)));
 
-  /*setBackgroundBrush(QBrush(QColor(100,100,106)));*/
+  //setBackgroundBrush(QBrush(QColor(100,100,0)));
 }
 
 te::layout::Scene::~Scene()
@@ -87,17 +86,15 @@ te::layout::Scene::~Scene()
   }
 }
 
-void te::layout::Scene::init( double widthMM, double heightMM, double paperMMW, double paperMMH )
+void te::layout::Scene::init(double screenWMM, double screenHMM, double paperMMW, double paperMMH, double zoomFactor)
 {
-  m_screenWidthMM = widthMM;
-  m_screenHeightMM = heightMM;
+  m_screenWidthMM = screenWMM;
+  m_screenHeightMM = screenHMM;
   
-  m_boxW = calculateWindow(widthMM, heightMM, paperMMW, paperMMH);
-  m_boxPaperW = calculateBoxPaper(widthMM, heightMM, paperMMW, paperMMH);
+  m_boxW = calculateWindow(m_screenWidthMM, m_screenHeightMM, paperMMW, paperMMH);
+  m_boxPaperW = calculateBoxPaper(m_screenWidthMM, m_screenHeightMM, paperMMW, paperMMH);
 
-  calculateMatrixViewScene();
-
-  createMasterParentItem();
+  calculateMatrixViewScene(zoomFactor);
 }
 
 void te::layout::Scene::insertItem( ItemObserver* item )
@@ -110,14 +107,23 @@ void te::layout::Scene::insertItem( ItemObserver* item )
   {
     if(qitem->scene() != this) 
     {
-      if(m_masterParent)
-      {
-        total = m_masterParent->childItems().count();    
-        qitem->setParentItem(m_masterParent); // have a addItem call inside
-      }
-      else
-        this->addItem(qitem);
-
+      total = this->items().count();
+      //MapItem* map = dynamic_cast<MapItem*>(qitem);
+      //if(map)
+      //{
+      //  /*
+      //  As the coordinate system of the scene is in millimeters, 
+      //  their children are too. But the map can not draw the mapDisplay in millimeters, 
+      //  since its size is given in pixels. So the object got the 
+      //  inverted matrix, to draw pixel by proper scaling between world and screen.
+      //  */
+      //  QTransform transf = m_matrix.inverted();
+      //  double scalex = m_matrix.inverted().m11();
+      //  double scaley = m_matrix.inverted().m22();
+      //  transf.scale(scalex, scaley);
+      //  map->setTransform(transf);
+      //}
+      this->addItem(qitem);
       qitem->setZValue(total);
     }
 
@@ -316,8 +322,11 @@ te::gm::Envelope* te::layout::Scene::calculateWindow(double wMM, double hMM, dou
   return box;
 }
 
-void te::layout::Scene::calculateMatrixViewScene()
+void te::layout::Scene::calculateMatrixViewScene(double zoomFactor)
 {
+  if(!m_boxW)
+    return;
+
   double llx = m_boxW->getLowerLeftX();
   double lly = m_boxW->getLowerLeftY();
   double urx = m_boxW->getUpperRightX();
@@ -326,8 +335,19 @@ void te::layout::Scene::calculateMatrixViewScene()
   double dpiX = Context::getInstance()->getDpiX();
   double dpiY = Context::getInstance()->getDpiY();
 
+  /*
+    The zoom is controlled by the main matrix, 
+    so it's not necessary to redraw the objects 
+    considering the zoom factor. When the zoom 
+    factor changes, only the matrix is recalculated 
+    and informed. All objects are redrawn in millimeters 
+    without any change.
+  */
+
+  double newZoomFactor = (dpiX / 25.4) * zoomFactor;
+
   //mm (inversão do y)
-  m_matrix = QTransform().scale(dpiX / 25.4, -dpiY / 25.4).translate(-llx, -ury);
+  m_matrix = QTransform().scale(newZoomFactor, -newZoomFactor).translate(-llx, -ury);
   
   //Coordenadas de mundo - mm
   setSceneRect(QRectF(QPointF(llx, lly), QPointF(urx, ury)));
@@ -346,24 +366,6 @@ te::gm::Envelope* te::layout::Scene::getPaperBox() const
 QTransform te::layout::Scene::getMatrixViewScene()
 {
   return m_matrix;
-}
-
-void te::layout::Scene::createMasterParentItem()
-{
-  double llx = m_boxW->getLowerLeftX();
-  double lly = m_boxW->getLowerLeftY();
-
-  //Background
-  QRectF sceneRectBack = sceneRect();	
-  m_masterParent = addRect(sceneRectBack);  
- ((QGraphicsRectItem*)m_masterParent)->setBrush((QBrush(QColor(109,109,109))));	
- ((QGraphicsRectItem*)m_masterParent)->setPen(QPen(Qt::NoPen));	//not draw any boundary line
-  m_masterParent->setPos(0, 0);
-}
-
-QGraphicsItem* te::layout::Scene::getMasterParentItem()
-{
-  return m_masterParent;
 }
 
 void te::layout::Scene::printPreview(bool isPdf)
@@ -571,21 +573,36 @@ std::vector<te::layout::Properties*> te::layout::Scene::getItemsProperties()
   return props;
 }
 
-void te::layout::Scene::refresh(QGraphicsView* view)
+void te::layout::Scene::refresh(QGraphicsView* view, double zoomFactor)
 {
-  calculateMatrixViewScene();
+  if(!m_boxW)
+    return;
+
+  calculateMatrixViewScene(zoomFactor);
   refreshViews(view);
-  refreshPosRulers();
+
+  te::gm::Envelope newBox = *m_boxW;
+  if(view)
+  {
+    /* New box because the zoom factor change the transform(matrix) */
+    QPointF ll = view->mapToScene(0,0);
+    QPointF ur = view->mapToScene(view->size().width(), view->size().height());
+    newBox = te::gm::Envelope(ll.x(), ll.y(), ur.x(), ur.y());
+  }
+
+  refreshRulers(newBox);
 }
 
-void te::layout::Scene::refreshPosRulers()
+void te::layout::Scene::refreshRulers(te::gm::Envelope newBox)
 {
   if(!m_fixedRuler)
     return;
 
-  double llx = m_boxW->getLowerLeftX();
-  double lly = m_boxW->getLowerLeftY();
-  
+  double llx = newBox.getLowerLeftX();
+  double lly = newBox.getLowerLeftY();
+  double urx = newBox.getUpperRightX();
+  double ury = newBox.getUpperRightY();
+
   QList<QGraphicsItem*> graphicsItems = items();
   foreach( QGraphicsItem *item, graphicsItems) 
   {
@@ -596,9 +613,20 @@ void te::layout::Scene::refreshPosRulers()
       {       
         QPointF pt(llx, lly);
 
-        if(lItem->getModel()->getType() == TPHorizontalRuler ||
-          lItem->getModel()->getType() == TPVerticalRuler)
+        ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(lItem->getModel());
+
+        if(!model)
+          continue;
+
+        if(model->getType() == TPHorizontalRuler)
         {
+          model->setBox(te::gm::Envelope(llx, lly, urx, lly + 10));
+          QPointF p = item->scenePos();
+          item->setPos(pt);
+        }
+        if(model->getType() == TPVerticalRuler)
+        {
+          model->setBox(te::gm::Envelope(llx, lly, llx + 10, ury));
           QPointF p = item->scenePos();
           item->setPos(pt);
         }
@@ -609,6 +637,9 @@ void te::layout::Scene::refreshPosRulers()
 
 void te::layout::Scene::refreshViews( QGraphicsView* view /*= 0*/ )
 {
+  if(!m_boxW)
+    return;
+
   double llx = m_boxW->getLowerLeftX();
   double ury = m_boxW->getUpperRightY();
 
@@ -637,7 +668,6 @@ void te::layout::Scene::refreshViews( QGraphicsView* view /*= 0*/ )
 void te::layout::Scene::reset()
 {
   clear();
-  createMasterParentItem();
 }
 
 void te::layout::Scene::drawForeground( QPainter *painter, const QRectF &rect )
@@ -841,17 +871,6 @@ void te::layout::Scene::sendToBack()
   {
     itemMinimumZValue->setZValue(zValue);
   }
-}
-
-void te::layout::Scene::restart( double widthMM, double heightMM, double paperMMW, double paperMMH )
-{
-  m_screenWidthMM = widthMM;
-  m_screenHeightMM = heightMM;
-
-  m_boxW = calculateWindow(widthMM, heightMM, paperMMW, paperMMH);
-  m_boxPaperW = calculateBoxPaper(widthMM, heightMM, paperMMW, paperMMH);
-
-  calculateMatrixViewScene();
 }
 
 void te::layout::Scene::redrawRulers()

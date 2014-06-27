@@ -331,10 +331,3 @@ void te::layout::ItemModelObservable::resize( double w, double h )
   m_box.m_urx = m_box.m_llx + w;
   m_box.m_ury = m_box.m_lly + h;
 }
-
-te::gm::Envelope te::layout::ItemModelObservable::boxWithZoomFactor( Utils* utils )
-{
-  /*te::gm::Envelope box = utils->applyZoomFactor(m_box);*/
-  
-  return m_box;
-}
