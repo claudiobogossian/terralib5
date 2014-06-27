@@ -25,7 +25,7 @@ void CoverageSeriesExamples()
     
     //Load the centroide of the Angra city -> from a shapefile with the Angra city
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/st/coverage/angra_city.shp" ; 
+    connInfo["URI"] = ""TERRALIB_DATA_DIR"/st/coverage/angra_city.shp" ; 
     std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR"));
     ds->setConnectionInfo(connInfo); 
     ds->open();
@@ -52,11 +52,11 @@ void CoverageSeriesExamples()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in CoverageExamples: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in CoverageExamples: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in CoverageExamples!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in CoverageExamples!" << std::endl;
   } 
 }
 

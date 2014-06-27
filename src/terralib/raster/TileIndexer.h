@@ -40,7 +40,7 @@ namespace te
 // Forward declarations
     class Point;
     class Polygon;
-  };
+  }
 
   namespace rst
   {

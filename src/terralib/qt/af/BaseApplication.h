@@ -37,9 +37,9 @@
 #include <boost/noncopyable.hpp>
 
 // Qt
-#include <QtGui/QColor>
-#include <QtGui/QLineEdit>
-#include <QtGui/QMainWindow>
+#include <QColor>
+#include <QLineEdit>
+#include <QMainWindow>
 
 class QLabel;
 
@@ -56,6 +56,7 @@ namespace te
     namespace widgets
     {
       class QueryDialog;
+      class ChartDisplayWidget;
     }
 
     namespace af
@@ -110,6 +111,8 @@ namespace te
 
           void onAddTabularLayerTriggered();
 
+          void onChartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartDisplay, te::map::AbstractLayer* layer);
+
           void onRemoveLayerTriggered();
 
           void onLayerRemoveItemTriggered();
@@ -137,6 +140,8 @@ namespace te
           void onToolsDataExchangerDirectTriggered();
 
           void onToolsDataExchangerDirectPopUpTriggered();
+
+          void onToolsQueryDataSourceTriggered();
 
           void onProjectPropertiesTriggered();
 
@@ -249,7 +254,6 @@ namespace te
         signals:
           void applicationClose();
 
-
         protected:
 
           //! Qt components
@@ -273,6 +277,7 @@ namespace te
           QAction* m_toolsDataExchangerDirect;
           QAction* m_toolsDataExchangerDirectPopUp;
           QAction* m_toolsDataSourceExplorer;
+          QAction* m_toolsQueryDataSource;
           QAction* m_pluginsManager;
           QAction* m_helpContents;
           QAction* m_helpUpdate;

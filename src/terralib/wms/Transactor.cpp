@@ -63,11 +63,11 @@ std::auto_ptr<te::da::DataSet> te::wms::Transactor::getDataSet(const std::string
   ExtractRequestValues(name, layer, width, height, format);
 
   if(layer.empty())
-    throw Exception(TR_WMS("Invalid data set request. Missing the parameter 'LAYER'."));
+    throw Exception(TE_TR("Invalid data set request. Missing the parameter 'LAYER'!"));
 
   std::map<std::string, WMSLayerInfo>::const_iterator it = m_layersInfo.find(layer);
   if(it == m_layersInfo.end())
-    throw Exception(TR_WMS("The informed data set could not be found in the data source."));
+    throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
   // Retrieves the data set type
   std::auto_ptr<te::da::DataSetType> type = getDataSetType(layer);
@@ -90,11 +90,11 @@ std::auto_ptr<te::da::DataSet> te::wms::Transactor::getDataSet(const std::string
   ExtractRequestValues(name, layer, width, height, format);
 
   if(layer.empty())
-    throw Exception(TR_WMS("Invalid data set request. Missing the parameter 'LAYER'."));
+    throw Exception(TE_TR("Invalid data set request. Missing the parameter 'LAYER'!"));
 
   std::map<std::string, WMSLayerInfo>::const_iterator it = m_layersInfo.find(layer);
   if(it == m_layersInfo.end())
-    throw Exception(TR_WMS("The informed data set could not be found in the data source."));
+    throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
   // Retrieves the data set type
   std::auto_ptr<te::da::DataSetType> type = getDataSetType(layer);
@@ -122,7 +122,7 @@ std::auto_ptr<te::da::DataSet> te::wms::Transactor::getDataSet(const std::string
                                                                bool connected,
                                                                const te::common::AccessPolicy accessPolicy)
 {
-  throw Exception(TR_WMS("The ObjectIdSet concept is not supported by the WMS driver."));
+  throw Exception(TE_TR("The ObjectIdSet concept is not supported by the WMS driver!"));
 }
 
 std::auto_ptr<te::da::DataSet> te::wms::Transactor::query(const te::da::Select& q,
@@ -131,7 +131,7 @@ std::auto_ptr<te::da::DataSet> te::wms::Transactor::query(const te::da::Select& 
                                                           const te::common::AccessPolicy accessPolicy)
 {
   // TODO: Review to considet GetFeatureInfo request?
-  throw Exception(TR_WMS("Query operations is not supported by the WMS driver."));
+  throw Exception(TE_TR("Query operations is not supported by the WMS driver!"));
 }
 
 std::auto_ptr<te::da::DataSet> te::wms::Transactor::query(const std::string& query,
@@ -140,7 +140,7 @@ std::auto_ptr<te::da::DataSet> te::wms::Transactor::query(const std::string& que
                                                           const te::common::AccessPolicy accessPolicy)
 {
   // TODO: Review to considet GetFeatureInfo request?
-  throw Exception(TR_WMS("Query operations is not supported by the WMS driver."));
+  throw Exception(TE_TR("Query operations is not supported by the WMS driver!"));
 }
 
 std::vector<std::string> te::wms::Transactor::getDataSetNames()
@@ -163,13 +163,13 @@ std::auto_ptr<te::da::DataSetType> te::wms::Transactor::getDataSetType(const std
 {
   std::map<std::string, WMSLayerInfo>::const_iterator it = m_layersInfo.find(name);
   if(it == m_layersInfo.end())
-    throw Exception(TR_WMS("The informed data set could not be found in the data source."));
+    throw Exception(TE_TR("The informed data set could not be found in the data source."));
 
   const WMSLayerInfo& info = it->second;
 
   GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(info.m_pseudoGetMapRequest.c_str(), GA_ReadOnly));
   if(gds == 0)
-    throw Exception(TR_WMS("The data set type could not be retrieved from data source."));
+    throw Exception(TE_TR("The data set type could not be retrieved from data source."));
   
   te::da::DataSetType* type = new te::da::DataSetType(info.m_name, 0);
   type->setTitle(info.m_title);
@@ -216,7 +216,7 @@ std::auto_ptr<te::dt::Property> te::wms::Transactor::getProperty(const std::stri
       return std::auto_ptr<te::dt::Property>(props[i]->clone()); 
   }
 
-  throw Exception(TR_WMS("The informed property name could not be found in the data set."));
+  throw Exception(TE_TR("The informed property name could not be found in the data set."));
 }
 
 std::auto_ptr<te::dt::Property> te::wms::Transactor::getProperty(const std::string& datasetName, std::size_t propertyPos)
@@ -226,7 +226,7 @@ std::auto_ptr<te::dt::Property> te::wms::Transactor::getProperty(const std::stri
   const std::vector<te::dt::Property*>& props = type->getProperties();
 
   if(propertyPos >= props.size())
-    throw Exception(TR_WMS("The informed property position could not be found in the data set."));
+    throw Exception(TE_TR("The informed property position could not be found in the data set."));
 
   return std::auto_ptr<te::dt::Property>(props[propertyPos]->clone());
 }
@@ -308,251 +308,251 @@ bool te::wms::Transactor::dataSetExists(const std::string& name)
 
 void te::wms::Transactor::begin()
 {
-  throw Exception(TR_WMS("The method begin() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method begin() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::commit()
 {
-  throw Exception(TR_WMS("The method commit() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method commit() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::rollBack()
 {
-  throw Exception(TR_WMS("The method rollBack() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method rollBack() is not supported by the WMS driver!"));
 }
 
 bool te::wms::Transactor::isInTransaction() const
 {
-  throw Exception(TR_WMS("The method isInTransaction() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method isInTransaction() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::execute(const te::da::Query& /*command*/)
 {
-  throw Exception(TR_WMS("The method execute() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method execute() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::execute(const std::string& /*command*/)
 {
-  throw Exception(TR_WMS("The method execute() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method execute() is not supported by the WMS driver!"));
 }
 
 std::auto_ptr<te::da::PreparedQuery> te::wms::Transactor::getPrepared(const std::string& /*qName*/)
 {
-  throw Exception(TR_WMS("The method getPrepared() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method getPrepared() is not supported by the WMS driver!"));
 }
 
 std::auto_ptr<te::da::BatchExecutor> te::wms::Transactor::getBatchExecutor()
 {
-  throw Exception(TR_WMS("The method getBatchExecutor() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method getBatchExecutor() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::cancel()
 {
-  throw Exception(TR_WMS("The method cancel() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method cancel() is not supported by the WMS driver!"));
 }
 
 boost::int64_t te::wms::Transactor::getLastGeneratedId()
 {
-  throw Exception(TR_WMS("The method getLastGeneratedId() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method getLastGeneratedId() is not supported by the WMS driver!"));
 }
 
 std::string te::wms::Transactor::escape(const std::string& /*value*/)
 {
-  throw Exception(TR_WMS("The method escape() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method escape() is not supported by the WMS driver!"));
 }
 
 bool te::wms::Transactor::isDataSetNameValid(const std::string& /*datasetName*/)
 {
-  throw Exception(TR_WMS("The method isDataSetNameValid() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method isDataSetNameValid() is not supported by the WMS driver!"));
 }
 
 bool te::wms::Transactor::isPropertyNameValid(const std::string& /*propertyName*/)
 {
-  throw Exception(TR_WMS("The method isPropertyNameValid() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method isPropertyNameValid() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::addProperty(const std::string& /*datasetName*/, te::dt::Property* /*p*/)
 {
-  throw Exception(TR_WMS("The method addProperty() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method addProperty() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::dropProperty(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WMS("The method dropProperty() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method dropProperty() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::renameProperty(const std::string& /*datasetName*/, const std::string& /*propertyName*/, const std::string& /*newPropertyName*/)
 {
-  throw Exception(TR_WMS("The method renameProperty() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method renameProperty() is not supported by the WMS driver!"));
 }
 
 std::auto_ptr<te::da::PrimaryKey> te::wms::Transactor::getPrimaryKey(const std::string& /*datasetName*/)
 {
-  throw Exception(TR_WMS("The method getPrimaryKey() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method getPrimaryKey() is not supported by the WMS driver!"));
 }
 
 bool te::wms::Transactor::primaryKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WMS("The method primaryKeyExists() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method primaryKeyExists() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::addPrimaryKey(const std::string& /*datasetName*/, te::da::PrimaryKey* /*pk*/)
 {
-  throw Exception(TR_WMS("The method addPrimaryKey() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method addPrimaryKey() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::dropPrimaryKey(const std::string& /*datasetName*/)
 {
-  throw Exception(TR_WMS("The method dropPrimaryKey() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method dropPrimaryKey() is not supported by the WMS driver!"));
 }
 
 std::auto_ptr<te::da::ForeignKey> te::wms::Transactor::getForeignKey(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WMS("The method getForeignKey() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method getForeignKey() is not supported by the WMS driver!"));
 }
 
 std::vector<std::string> te::wms::Transactor::getForeignKeyNames(const std::string& /*datasetName*/)
 {
-  throw Exception(TR_WMS("The method getForeignKeyNames() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method getForeignKeyNames() is not supported by the WMS driver!"));
 }
 
 bool te::wms::Transactor::foreignKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WMS("The method foreignKeyExists() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method foreignKeyExists() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::addForeignKey(const std::string& /*datasetName*/, te::da::ForeignKey* /*fk*/)
 {
-  throw Exception(TR_WMS("The method addForeignKey() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method addForeignKey() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::dropForeignKey(const std::string& /*datasetName*/, const std::string& /*fkName*/)
 {
-  throw Exception(TR_WMS("The method dropForeignKey() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method dropForeignKey() is not supported by the WMS driver!"));
 }
 
 std::auto_ptr<te::da::UniqueKey> te::wms::Transactor::getUniqueKey(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WMS("The method getUniqueKey() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method getUniqueKey() is not supported by the WMS driver!"));
 }
 
 std::vector<std::string> te::wms::Transactor::getUniqueKeyNames(const std::string& /*datasetName*/)
 {
-  throw Exception(TR_WMS("The method getUniqueKeyNames() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method getUniqueKeyNames() is not supported by the WMS driver!"));
 }
 
 bool te::wms::Transactor::uniqueKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WMS("The method uniqueKeyExists() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method uniqueKeyExists() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::addUniqueKey(const std::string& /*datasetName*/, te::da::UniqueKey* /*uk*/)
 {
-  throw Exception(TR_WMS("The method addUniqueKey() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method addUniqueKey() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::dropUniqueKey(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WMS("The method dropUniqueKey() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method dropUniqueKey() is not supported by the WMS driver!"));
 }
 
 std::auto_ptr<te::da::CheckConstraint> te::wms::Transactor::getCheckConstraint(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WMS("The method getCheckConstraint() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method getCheckConstraint() is not supported by the WMS driver!"));
 }
 
 std::vector<std::string> te::wms::Transactor::getCheckConstraintNames(const std::string& /*datasetName*/)
 {
-  throw Exception(TR_WMS("The method getCheckConstraintNames() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method getCheckConstraintNames() is not supported by the WMS driver!"));
 }
 
 bool te::wms::Transactor::checkConstraintExists(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WMS("The method checkConstraintExists() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method checkConstraintExists() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::addCheckConstraint(const std::string& /*datasetName*/, te::da::CheckConstraint* /*cc*/)
 {
-  throw Exception(TR_WMS("The method addCheckConstraint() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method addCheckConstraint() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::dropCheckConstraint(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WMS("The method dropCheckConstraint() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method dropCheckConstraint() is not supported by the WMS driver!"));
 }
 
 std::auto_ptr<te::da::Index> te::wms::Transactor::getIndex(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WMS("The method getIndex() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method getIndex() is not supported by the WMS driver!"));
 }
 
 std::vector<std::string> te::wms::Transactor::getIndexNames(const std::string& /*datasetName*/)
 {
-  throw Exception(TR_WMS("The method getIndexNames() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method getIndexNames() is not supported by the WMS driver!"));
 }
 
 bool te::wms::Transactor::indexExists(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_WMS("The method indexExists() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method indexExists() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::addIndex(const std::string& /*datasetName*/, te::da::Index* /*idx*/, const std::map<std::string, std::string>& /*options*/)
 {
-  throw Exception(TR_WMS("The method addIndex() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method addIndex() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::dropIndex(const std::string& /*datasetName*/, const std::string& /*idxName*/)
 {
-  throw Exception(TR_WMS("The method dropIndex() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method dropIndex() is not supported by the WMS driver!"));
 }
 
 std::auto_ptr<te::da::Sequence> te::wms::Transactor::getSequence(const std::string& /*name*/)
 {
-  throw Exception(TR_WMS("The method getSequence() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method getSequence() is not supported by the WMS driver!"));
 }
 
 std::vector<std::string> te::wms::Transactor::getSequenceNames()
 {
-  throw Exception(TR_WMS("The method getSequenceNames() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method getSequenceNames() is not supported by the WMS driver!"));
 }
 
 bool te::wms::Transactor::sequenceExists(const std::string& /*name*/)
 {
-  throw Exception(TR_WMS("The method sequenceExists() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method sequenceExists() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::addSequence(te::da::Sequence* /*sequence*/)
 {
-  throw Exception(TR_WMS("The method addSequence() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method addSequence() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::dropSequence(const std::string& /*name*/)
 {
-  throw Exception(TR_WMS("The method dropSequence() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method dropSequence() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::createDataSet(te::da::DataSetType* /*dt*/,
                                         const std::map<std::string, std::string>& /*options*/)
 {
-  throw Exception(TR_WMS("The method createDataSet() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method createDataSet() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::cloneDataSet(const std::string& /*name*/,
                                        const std::string& /*cloneName*/,
                                        const std::map<std::string, std::string>& /*options*/)
 {
-  throw Exception(TR_WMS("The method cloneDataSet() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method cloneDataSet() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::dropDataSet(const std::string& /*name*/)
 {
-  throw Exception(TR_WMS("The method dropDataSet() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method dropDataSet() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::renameDataSet(const std::string& /*name*/,
                                         const std::string& /*newName*/)
 {
-  throw Exception(TR_WMS("The method renameDataSet() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method renameDataSet() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::add(const std::string& /*datasetName*/,
@@ -560,12 +560,12 @@ void te::wms::Transactor::add(const std::string& /*datasetName*/,
                               const std::map<std::string, std::string>& /*options*/,
                               std::size_t /*limit*/)
 {
-  throw Exception(TR_WMS("The method add() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method add() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::remove(const std::string& /*datasetName*/, const te::da::ObjectIdSet* /*oids*/)
 {
-  throw Exception(TR_WMS("The method remove() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method remove() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::update(const std::string& /*datasetName*/,
@@ -575,12 +575,12 @@ void te::wms::Transactor::update(const std::string& /*datasetName*/,
                                  const std::map<std::string, std::string>& /*options*/,
                                  std::size_t /*limit*/)
 {
-  throw Exception(TR_WMS("The method update() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method update() is not supported by the WMS driver!"));
 }
 
 void te::wms::Transactor::optimize(const std::map<std::string, std::string>& /*opInfo*/)
 {
-  throw Exception(TR_WMS("The method optimize() is not supported by the WMS driver."));
+  throw Exception(TE_TR("The method optimize() is not supported by the WMS driver!"));
 }
 
 //@}

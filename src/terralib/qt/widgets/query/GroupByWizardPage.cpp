@@ -26,12 +26,12 @@
 // TerraLib
 #include "../../../dataaccess/query/GroupByItem.h"
 #include "../../../dataaccess/query/PropertyName.h"
-#include "DoubleListWidget.h"
+#include "../utils/DoubleListWidget.h"
 #include "GroupByWizardPage.h"
 #include "ui_DoubleListWidgetForm.h"
 
 // Qt
-#include <QtGui/QGridLayout>
+#include <QGridLayout>
 
 
 te::qt::widgets::GroupByWizardPage::GroupByWizardPage(QWidget* parent)

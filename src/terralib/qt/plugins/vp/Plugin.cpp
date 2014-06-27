@@ -38,8 +38,8 @@
 //#include "TransformationAction.h"
 
 // QT
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
+#include <QMenu>
+#include <QMenuBar>
 
 te::qt::plugins::vp::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo), m_vpMenu(0)
@@ -56,14 +56,14 @@ void te::qt::plugins::vp::Plugin::startup()
     return;
 
 // it initializes the Translator support for the TerraLib VP Qt Plugin
-  TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_VP_TEXT_DOMAIN, TE_QT_PLUGIN_VP_TEXT_DOMAIN_DIR, "UTF-8");
+  //TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_VP_TEXT_DOMAIN, TE_QT_PLUGIN_VP_TEXT_DOMAIN_DIR, "UTF-8");
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_VP("TerraLib Qt VP Plugin startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt VP Plugin startup!"));
 
 // add plugin menu
   m_vpMenu = te::qt::af::ApplicationController::getInstance().getMenu("VP");
 
-  m_vpMenu->setTitle(TE_QT_PLUGIN_VP("Vector Processing"));
+  m_vpMenu->setTitle(TE_TR("Vector Processing"));
 
 // register actions
   registerActions();
@@ -82,7 +82,7 @@ void te::qt::plugins::vp::Plugin::shutdown()
 // unregister actions
   unRegisterActions();
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_VP("TerraLib Qt VP Plugin shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt VP Plugin shutdown!"));
 
   m_initialized = false;
 }
@@ -90,8 +90,8 @@ void te::qt::plugins::vp::Plugin::shutdown()
 void te::qt::plugins::vp::Plugin::registerActions()
 {
   m_aggregation = new te::qt::plugins::vp::AggregationAction(m_vpMenu);
-  m_geometricOp = new te::qt::plugins::vp::GeometricOpAction(m_vpMenu);
   m_buffer = new te::qt::plugins::vp::BufferAction(m_vpMenu);
+  m_geometricOp = new te::qt::plugins::vp::GeometricOpAction(m_vpMenu);
   m_intersection = new te::qt::plugins::vp::IntersectionAction(m_vpMenu);
   //m_polygonToLine = new te::qt::plugins::vp::PolygonToLineAction(m_vpMenu);
   //m_summarization = new te::qt::plugins::vp::SummarizationAction(m_vpMenu);
@@ -101,8 +101,8 @@ void te::qt::plugins::vp::Plugin::registerActions()
 void  te::qt::plugins::vp::Plugin::unRegisterActions()
 {
   delete m_aggregation;
-  delete m_geometricOp;
   delete m_buffer;
+  delete m_geometricOp;
   delete m_intersection;
   //delete m_polygonToLine;
   //delete m_summarization;

@@ -35,10 +35,19 @@
 #include "../raster/Grid.h"
 #include "../raster/Band.h"
 #include "../raster/BandProperty.h"
+#include "../raster/Utils.h"
+#include "../raster/SynchronizedRaster.h"
+#include "../common/PlatformUtils.h"
+#include "../common/progress/TaskProgress.h"
+
+#include <boost/thread.hpp>
+#include <boost/graph/graph_concepts.hpp>
+#include <boost/scoped_ptr.hpp>
 
 #include <complex>
 #include <limits>
 #include <algorithm>
+#include <memory>
 
 // Get the perpendicular distance from a point P(pX,pY) from a line defined
 // by the points A(lineAX,lineAY) and B(lineBX,lineBY)
@@ -68,17 +77,94 @@ namespace te
 {
   namespace rp
   {
+    Blender::BlendIntoRaster1ThreadParams::BlendIntoRaster1ThreadParams()
+    : m_returnValuePtr( 0 ), m_abortValuePtr( 0 ), m_sync1Ptr( 0 ), m_sync2Ptr( 0 ),
+      m_raster1BlocksInfosPtr( 0 ), m_mutexPtr( 0 ), m_blockProcessedSignalMutexPtr( 0 ),
+      m_blockProcessedSignalPtr( 0 ), m_runningThreadsCounterPtr( 0 ),
+      m_blendMethod( te::rp::Blender::InvalidBlendMethod ),
+      m_interpMethod2( te::rst::Interpolator::NearestNeighbor ),
+      m_noDataValue( 0.0 ), m_forceInputNoDataValue( false ), 
+      m_maxRasterCachedBlocks( 0 ), m_useProgress( false )
+    {
+    }
+    
+    Blender::BlendIntoRaster1ThreadParams::BlendIntoRaster1ThreadParams( 
+      const BlendIntoRaster1ThreadParams& rhs )
+    {
+      operator=( rhs );
+    }
+    
+    Blender::BlendIntoRaster1ThreadParams::~BlendIntoRaster1ThreadParams()
+    {
+    }
+    
+    te::rp::Blender::BlendIntoRaster1ThreadParams& Blender::BlendIntoRaster1ThreadParams::operator=( 
+      const BlendIntoRaster1ThreadParams& rhs )
+    {
+      m_returnValuePtr = rhs.m_returnValuePtr;
+      m_abortValuePtr = rhs.m_abortValuePtr;
+      m_sync1Ptr = rhs.m_sync1Ptr;
+      m_sync2Ptr = rhs.m_sync2Ptr;
+      m_raster1BlocksInfosPtr = rhs.m_raster1BlocksInfosPtr;
+      m_mutexPtr = rhs.m_mutexPtr;
+      m_blockProcessedSignalMutexPtr = rhs.m_blockProcessedSignalMutexPtr;
+      m_blockProcessedSignalPtr = rhs.m_blockProcessedSignalPtr;
+      m_runningThreadsCounterPtr = rhs.m_runningThreadsCounterPtr;
+      m_raster1Bands = rhs.m_raster1Bands;
+      m_raster2Bands = rhs.m_raster2Bands;
+      m_blendMethod = rhs.m_blendMethod;
+      m_interpMethod2 = rhs.m_interpMethod2;
+      m_noDataValue = rhs.m_noDataValue;
+      m_forceInputNoDataValue = rhs.m_forceInputNoDataValue;
+      m_maxRasterCachedBlocks = rhs.m_maxRasterCachedBlocks;
+      m_pixelOffsets1 = rhs.m_pixelOffsets1;
+      m_pixelScales1 = rhs.m_pixelScales1;
+      m_pixelOffsets2 = rhs.m_pixelOffsets2;
+      m_pixelScales2 = rhs.m_pixelScales2;
+      m_useProgress = rhs.m_useProgress;
+      
+      if( rhs.m_r1ValidDataDelimiterPtr.get() )
+      {
+        m_r1ValidDataDelimiterPtr.reset( (te::gm::MultiPolygon*) rhs.m_r1ValidDataDelimiterPtr->clone() );
+      }
+      else
+      {
+        m_r1ValidDataDelimiterPtr.reset();
+      }
+      
+      if( rhs.m_r2ValidDataDelimiterPtr.get() )
+      {
+        m_r2ValidDataDelimiterPtr.reset( (te::gm::MultiPolygon*) rhs.m_r2ValidDataDelimiterPtr->clone() );
+      }      
+      else
+      {
+        m_r2ValidDataDelimiterPtr.reset();
+      }
+      
+      if( rhs.m_geomTransformationPtr.get() )
+      {
+        m_geomTransformationPtr.reset( rhs.m_geomTransformationPtr->clone() );
+      }        
+      else
+      {
+        m_geomTransformationPtr.reset();
+      }
+      
+      return *this;
+    }
+    
+    // ----------------------------------------------------------------------
     Blender::Blender()
     {
       initState();
-    };
+    }
     
     Blender::~Blender()
     {
       clear();
     }    
     
-    bool Blender::initialize( const te::rst::Raster& raster1, 
+    bool Blender::initialize( te::rst::Raster& raster1, 
       const std::vector< unsigned int >& raster1Bands, 
       const te::rst::Raster& raster2, 
       const std::vector< unsigned int >& raster2Bands,
@@ -91,9 +177,11 @@ namespace te
       const std::vector< double >& pixelScales1,
       const std::vector< double >& pixelOffsets2,
       const std::vector< double >& pixelScales2,
-      te::gm::Polygon const * const r1ValidDataDelimiterPtr,
-      te::gm::Polygon const * const r2ValidDataDelimiterPtr,
-      const te::gm::GeometricTransformation& geomTransformation )
+      te::gm::MultiPolygon const * const r1ValidDataDelimiterPtr,
+      te::gm::MultiPolygon const * const r2ValidDataDelimiterPtr,
+      const te::gm::GeometricTransformation& geomTransformation,
+      const unsigned int threadsNumber,
+       const bool enableProgressInterface )
     {
       TERP_TRUE_OR_RETURN_FALSE( 
         raster1.getAccessPolicy() & te::common::RAccess, 
@@ -101,6 +189,8 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( 
         raster2.getAccessPolicy() & te::common::RAccess, 
         "Invalid raster 2" ); 
+      TERP_TRUE_OR_RETURN_FALSE( raster1Bands.size() > 0,
+        "Invalid raster bands vector" );      
       TERP_TRUE_OR_RETURN_FALSE( raster1Bands.size() ==
         raster2Bands.size(), "Invalid raster bands vector" );
       TERP_TRUE_OR_RETURN_FALSE( pixelOffsets1.size() ==  
@@ -112,10 +202,10 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( pixelScales2.size() ==  
         raster2Bands.size(), "Invalid pixel scales" );        
       TERP_TRUE_OR_RETURN_FALSE( ( r1ValidDataDelimiterPtr ?
-        ( r1ValidDataDelimiterPtr->getNPoints() > 1 ) : true ),
+        ( r1ValidDataDelimiterPtr->getNumGeometries() > 0 ) : true ),
         "Invalid polygon 1" )
       TERP_TRUE_OR_RETURN_FALSE( ( r2ValidDataDelimiterPtr ?
-        ( r2ValidDataDelimiterPtr->getNPoints() > 1 ) : true ),
+        ( r2ValidDataDelimiterPtr->getNumGeometries() > 0 ) : true ),
         "Invalid polygon 2" )
       TERP_TRUE_OR_RETURN_FALSE( geomTransformation.isValid(),
         "Invalid transformation" );
@@ -129,42 +219,64 @@ namespace te
       
       // Generating the valid data area points
       
-      std::auto_ptr< te::gm::Polygon > indexedDelimiter1Ptr; // indexed under raster 1 lines/cols
+      if( r1ValidDataDelimiterPtr )
+      {
+        m_r1ValidDataDelimiterPtr.reset( (te::gm::MultiPolygon*)r1ValidDataDelimiterPtr->clone() );
+      }
+      if( r2ValidDataDelimiterPtr )
+      {
+        m_r2ValidDataDelimiterPtr.reset( (te::gm::MultiPolygon*)r2ValidDataDelimiterPtr->clone() );
+      }      
+      
+      // indexed under raster 1 lines/cols
+      std::auto_ptr< te::gm::MultiPolygon > indexedDelimiter1Ptr(
+        new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType, 0, 0 ) ); 
       
       if( r1ValidDataDelimiterPtr )
       {
-        const std::size_t nRings = r1ValidDataDelimiterPtr->getNumRings();
         const te::rst::Grid& grid = (*raster1.getGrid());
         
-        indexedDelimiter1Ptr.reset( new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 ) );
+        const std::size_t nGeoms = r1ValidDataDelimiterPtr->getNumGeometries();        
         
-        for( std::size_t ringIdx = 0 ; ringIdx < nRings ; ++ringIdx )
+        for( std::size_t geomIdx = 0 ; geomIdx < nGeoms ; ++geomIdx )
         {
-          te::gm::LinearRing const* inRingPtr = dynamic_cast< te::gm::LinearRing const* >( 
-            r1ValidDataDelimiterPtr->getRingN( ringIdx ) );
-          assert( inRingPtr );
+          te::gm::Polygon const* geomPtr = dynamic_cast< te::gm::Polygon* >(
+            r1ValidDataDelimiterPtr->getGeometryN( geomIdx ) );
+          TERP_DEBUG_TRUE_OR_THROW( geomPtr, "Invalid geometry pointer" );
           
-          const std::size_t nPoints = inRingPtr->getNPoints();
-          te::gm::Coord2D const * inCoordsPtr = inRingPtr->getCoordinates();
-          te::gm::Coord2D auxCoord;        
+          const std::size_t nRings = geomPtr->getNumRings();
           
-          te::gm::LinearRing* outRingPtr = new te::gm::LinearRing( nPoints, 
-             te::gm::LineStringType, 0, 0 );
+          te::gm::Polygon* outPolPtr = new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 );           
           
-          for( std::size_t pIdx = 0 ; pIdx < nPoints ; ++pIdx )
+          for( std::size_t ringIdx = 0 ; ringIdx < nRings ; ++ringIdx )
           {
-            grid.geoToGrid( inCoordsPtr[ pIdx ].x, inCoordsPtr[ pIdx ].y, 
-              auxCoord.x, auxCoord.y ); 
-            outRingPtr->setPoint( pIdx, auxCoord.x, auxCoord.y );
+            te::gm::LinearRing const* inRingPtr = dynamic_cast< te::gm::LinearRing const* >( 
+              geomPtr->getRingN( ringIdx ) );
+            assert( inRingPtr );
+            
+            const std::size_t nPoints = inRingPtr->getNPoints();
+            te::gm::Coord2D const * inCoordsPtr = inRingPtr->getCoordinates();
+            te::gm::Coord2D auxCoord;        
+            
+            te::gm::LinearRing* outRingPtr = new te::gm::LinearRing( nPoints, 
+               te::gm::LineStringType, 0, 0 );
+            
+            for( std::size_t pIdx = 0 ; pIdx < nPoints ; ++pIdx )
+            {
+              grid.geoToGrid( inCoordsPtr[ pIdx ].x, inCoordsPtr[ pIdx ].y, 
+                auxCoord.x, auxCoord.y ); 
+              outRingPtr->setPoint( pIdx, auxCoord.x, auxCoord.y );
+            }
+            
+            outPolPtr->add( outRingPtr );          
+            
           }
           
-          indexedDelimiter1Ptr->add( outRingPtr );
+          indexedDelimiter1Ptr->add( outPolPtr );
         }
       }
       else
       {
-        indexedDelimiter1Ptr.reset( new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 ) );        
-        
         te::gm::LinearRing* outRingPtr = new te::gm::LinearRing( 5, 
            te::gm::LineStringType, 0, 0 );        
         
@@ -183,48 +295,64 @@ namespace te
         outRingPtr->setPoint( 4, 
            -0.5, 
            -0.5 );
+        
+        te::gm::Polygon* outPolPtr = new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 );           
+        
+        outPolPtr->add( outRingPtr );
            
-        indexedDelimiter1Ptr->add( outRingPtr );
+        indexedDelimiter1Ptr->add( outPolPtr );
       }
       
-      std::auto_ptr< te::gm::Polygon > indexedDelimiter2Ptr; // indexed under raster 1 lines/cols
+      // indexed under raster 1 lines/cols
+      std::auto_ptr< te::gm::MultiPolygon > indexedDelimiter2Ptr(
+        new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType, 0, 0 ) ); 
       
       if( r2ValidDataDelimiterPtr )
       {
-        const std::size_t nRings = r2ValidDataDelimiterPtr->getNumRings();
         const te::rst::Grid& grid = (*raster2.getGrid());
         
-        indexedDelimiter2Ptr.reset( new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 ) );
+        const std::size_t nGeoms = r2ValidDataDelimiterPtr->getNumGeometries();
         
-        for( std::size_t ringIdx = 0 ; ringIdx < nRings ; ++ringIdx )
-        {
-          te::gm::LinearRing const* inRingPtr = dynamic_cast< te::gm::LinearRing const* >( 
-            r2ValidDataDelimiterPtr->getRingN( ringIdx ) );
-          assert( inRingPtr );
+        for( std::size_t geomIdx = 0 ; geomIdx < nGeoms ; ++geomIdx )
+        {        
+          te::gm::Polygon const* geomPtr = dynamic_cast< te::gm::Polygon* >(
+            r2ValidDataDelimiterPtr->getGeometryN( geomIdx ) );
+          TERP_DEBUG_TRUE_OR_THROW( geomPtr, "Invalid geometry pointer" );          
           
-          const std::size_t nPoints = inRingPtr->getNPoints();
-          te::gm::Coord2D const * inCoordsPtr = inRingPtr->getCoordinates();
-          te::gm::Coord2D auxCoord;        
-          te::gm::Coord2D auxCoord2;        
+          const std::size_t nRings = geomPtr->getNumRings();
           
-          te::gm::LinearRing* outRingPtr = new te::gm::LinearRing( nPoints, 
-             te::gm::LineStringType, 0, 0 );
+          te::gm::Polygon* outPolPtr = new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 ); 
           
-          for( std::size_t pIdx = 0 ; pIdx < nPoints ; ++pIdx )
+          for( std::size_t ringIdx = 0 ; ringIdx < nRings ; ++ringIdx )
           {
-            grid.geoToGrid( inCoordsPtr[ pIdx ].x, inCoordsPtr[ pIdx ].y, 
-              auxCoord.x, auxCoord.y ); 
-            geomTransformation.inverseMap( auxCoord.x, auxCoord.y, auxCoord2.x, auxCoord2.y );
-            outRingPtr->setPoint( pIdx, auxCoord2.x, auxCoord2.y );
+            te::gm::LinearRing const* inRingPtr = dynamic_cast< te::gm::LinearRing const* >( 
+              geomPtr->getRingN( ringIdx ) );
+            assert( inRingPtr );
+            
+            const std::size_t nPoints = inRingPtr->getNPoints();
+            te::gm::Coord2D const * inCoordsPtr = inRingPtr->getCoordinates();
+            te::gm::Coord2D auxCoord;        
+            te::gm::Coord2D auxCoord2;        
+            
+            te::gm::LinearRing* outRingPtr = new te::gm::LinearRing( nPoints, 
+               te::gm::LineStringType, 0, 0 );
+            
+            for( std::size_t pIdx = 0 ; pIdx < nPoints ; ++pIdx )
+            {
+              grid.geoToGrid( inCoordsPtr[ pIdx ].x, inCoordsPtr[ pIdx ].y, 
+                auxCoord.x, auxCoord.y ); 
+              geomTransformation.inverseMap( auxCoord.x, auxCoord.y, auxCoord2.x, auxCoord2.y );
+              outRingPtr->setPoint( pIdx, auxCoord2.x, auxCoord2.y );
+            }
+            
+            outPolPtr->add( outRingPtr );
           }
           
-          indexedDelimiter2Ptr->add( outRingPtr );
-        }        
+          indexedDelimiter2Ptr->add( outPolPtr );
+        }
       }
       else
       {
-        indexedDelimiter2Ptr.reset( new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 ) );        
-        
         te::gm::LinearRing* outRingPtr = new te::gm::LinearRing( 5, 
            te::gm::LineStringType, 0, 0 );          
         
@@ -255,10 +383,14 @@ namespace te
           auxCoord.x, auxCoord.y );
         outRingPtr->setPoint( 3, auxCoord.x, auxCoord.y );
         
-        indexedDelimiter2Ptr->add( outRingPtr );
+        te::gm::Polygon* outPolPtr = new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 );   
+        
+        outPolPtr->add( outRingPtr );
+        
+        indexedDelimiter2Ptr->add( outPolPtr );
       }
       
-      // Calculating the intersection
+      // Calculating the intersection (raster 1 lines/cols)
       
       {
         std::auto_ptr< te::gm::Geometry > geomIntersectionPtr( 
@@ -286,106 +418,51 @@ namespace te
       if( m_intersectionPtr.get() )
       {
         std::size_t ringIdx = 0;
+        std::auto_ptr< te::gm::Geometry > ringIntersectionPtr;
+        std::size_t nPols = 0;
+        std::size_t polIdx = 0;
         
-        for( ringIdx = 0 ; ringIdx < indexedDelimiter2Ptr->getNumRings() ;
-          ++ringIdx )
+        nPols = indexedDelimiter2Ptr->getNumGeometries();           
+        for( polIdx = 0 ; polIdx < nPols ; ++polIdx )
         {
-          std::auto_ptr< te::gm::Geometry > ringIntersectionPtr;
-          ringIntersectionPtr.reset( indexedDelimiter1Ptr->intersection( indexedDelimiter2Ptr->getRingN( ringIdx ) ) );
-          
-          if( ringIntersectionPtr.get() != 0 ) 
+          te::gm::Polygon const* polPtr = dynamic_cast< te::gm::Polygon* >(
+            indexedDelimiter2Ptr->getGeometryN( polIdx ) );
+          TERP_DEBUG_TRUE_OR_THROW( polPtr, "Invalid geometry pointer" );        
+        
+          for( ringIdx = 0 ; ringIdx < polPtr->getNumRings() ;
+            ++ringIdx )
           {
-            if( ringIntersectionPtr->getGeomTypeId() == te::gm::MultiLineStringType )
+            ringIntersectionPtr.reset( indexedDelimiter1Ptr->intersection( 
+              polPtr->getRingN( ringIdx ) ) );
+            
+            if( ringIntersectionPtr.get() != 0 ) 
             {
-              te::gm::MultiLineString const* ringIntersectionNPtr = dynamic_cast< te::gm::MultiLineString const * >(
-                ringIntersectionPtr.get() );
-              assert( ringIntersectionNPtr );
-              
-              std::size_t numGeoms = ringIntersectionNPtr->getNumGeometries();
-              
-              for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
-              {
-                te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-                  ringIntersectionNPtr->getGeometryN( gIdx ) );
-                assert( segIndexedNPtr );
-                
-                std::size_t nPoints = segIndexedNPtr->size();
-                te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
-                
-                for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
-                {
-                  m_r2IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
-                    coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
-                }
-              }
-            }
-            else if( ringIntersectionPtr->getGeomTypeId() == te::gm::LineStringType )
-            {
-              te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-                ringIntersectionPtr.get() );
-              assert( segIndexedNPtr );
-              
-              std::size_t nPoints = segIndexedNPtr->size();
-              te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
-              
-              for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
-              {
-                m_r2IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
-                  coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
-              }
+              TERP_TRUE_OR_THROW( getSegments( ringIntersectionPtr.get(),
+                m_r2IntersectionSegmentsPoints ), "Error getting intersection segments" );
             }
           }
         }
         
-        for( ringIdx = 0 ; ringIdx < indexedDelimiter1Ptr->getNumRings() ;
-          ++ringIdx )
+        nPols = indexedDelimiter1Ptr->getNumGeometries();          
+        for( polIdx = 0 ; polIdx < nPols ; ++polIdx )
         {
-          std::auto_ptr< te::gm::Geometry > ringIntersectionPtr;
-          ringIntersectionPtr.reset( indexedDelimiter2Ptr->intersection( indexedDelimiter1Ptr->getRingN( ringIdx ) ) );
-          
-          if( ringIntersectionPtr.get() != 0 ) 
+          te::gm::Polygon const* polPtr = dynamic_cast< te::gm::Polygon* >(
+            indexedDelimiter1Ptr->getGeometryN( polIdx ) );
+          TERP_DEBUG_TRUE_OR_THROW( polPtr, "Invalid geometry pointer" );         
+        
+          for( ringIdx = 0 ; ringIdx < polPtr->getNumRings() ;
+            ++ringIdx )
           {
-            if( ringIntersectionPtr->getGeomTypeId() == te::gm::MultiLineStringType )
+            ringIntersectionPtr.reset( indexedDelimiter2Ptr->intersection( 
+              polPtr->getRingN( ringIdx ) ) );
+            
+            if( ringIntersectionPtr.get() != 0 ) 
             {
-              te::gm::MultiLineString const* ringIntersectionNPtr = dynamic_cast< te::gm::MultiLineString const * >(
-                ringIntersectionPtr.get() );
-              assert( ringIntersectionNPtr );
-              
-              std::size_t numGeoms = ringIntersectionNPtr->getNumGeometries();
-              
-              for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
-              {
-                te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-                  ringIntersectionNPtr->getGeometryN( gIdx ) );
-                assert( segIndexedNPtr );
-                
-                std::size_t nPoints = segIndexedNPtr->size();
-                te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
-                
-                for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
-                {
-                  m_r1IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
-                    coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
-                }
-              }
+              TERP_TRUE_OR_THROW( getSegments( ringIntersectionPtr.get(),
+                m_r1IntersectionSegmentsPoints ), "Error getting intersection segments" );
             }
-            else if( ringIntersectionPtr->getGeomTypeId() == te::gm::LineStringType )
-            {
-              te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-                ringIntersectionPtr.get() );
-              assert( segIndexedNPtr );
-              
-              std::size_t nPoints = segIndexedNPtr->size();
-              te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
-              
-              for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
-              {
-                m_r1IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
-                  coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
-              }
-            }
-          }
-        }        
+          }    
+        }    
 
 /*        std::cout << std::endl;
         for( unsigned int idx = 0 ; idx < m_r1IntersectionSegmentsPoints.size() ; ++idx )
@@ -410,15 +487,13 @@ namespace te
         m_r1IntersectionSegmentsPointsSize = (unsigned int)m_r1IntersectionSegmentsPoints.size();
       }
       
-      // defining the blending function
+      // defining the blending method
       
-      m_blendMethod = blendMethod;
-        
       switch( blendMethod )
       {
         case NoBlendMethod :
         {
-          m_blendFuncPtr = &te::rp::Blender::noBlendMethodImp;
+          m_blendMethod = NoBlendMethod;
           break;
         }
         case EuclideanDistanceMethod :
@@ -427,20 +502,24 @@ namespace te
             ( m_r1IntersectionSegmentsPointsSize > 1 ) && 
             ( m_r2IntersectionSegmentsPointsSize > 1 ) )
           {
-            m_blendFuncPtr = &te::rp::Blender::euclideanDistanceMethodImp;
+            m_blendMethod = EuclideanDistanceMethod;
           }
           else
           {
-            m_blendFuncPtr = &te::rp::Blender::noBlendMethodImp;
+            m_blendMethod = NoBlendMethod;
           }
           break;
         }        
         default :
         {
-          return false;
+          TERP_LOG_AND_THROW( "Invalid blend method" );
           break;
         }
-      }         
+      }      
+      
+      // Defining the blending function pointers
+      
+      setBlendFunctionPonter( m_blendMethod );
               
       // defining the geometric transformation  
         
@@ -464,7 +543,7 @@ namespace te
         TERP_TRUE_OR_RETURN_FALSE( raster2Bands[ rasterBandsIdx ] <
           raster2.getNumberOfBands(), "Invalid band" );            
         
-        
+        m_forceInputNoDataValue = forceInputNoDataValue;
         if( forceInputNoDataValue )
         {
           m_raster1NoDataValues.push_back( noDataValue );
@@ -494,11 +573,29 @@ namespace te
       m_pixelOffsets2 = pixelOffsets2;
       m_pixelScales2 = pixelScales2;
       
+      // threads
+      
+      if( threadsNumber == 0 )
+      {
+        m_threadsNumber = te::common::GetPhysProcNumber();
+      }
+      else
+      {
+        m_threadsNumber = threadsNumber;
+      }
+      
+      // progress interface
+      
+      m_enableProgressInterface = enableProgressInterface;
+      
       return true;
     }
     
     void Blender::initState()
     {
+      m_enableProgressInterface = false;
+      m_forceInputNoDataValue = false;
+      m_threadsNumber = 0;
       m_blendMethod = InvalidBlendMethod;
       m_blendFuncPtr = 0;
       m_raster1Ptr = 0;
@@ -511,10 +608,12 @@ namespace te
       m_outputNoDataValue = 0;
       m_interp1 = 0;
       m_interp2 = 0;      
-    };    
+    }
     
     void Blender::clear()
     {
+      m_r1ValidDataDelimiterPtr.reset();
+      m_r2ValidDataDelimiterPtr.reset();
       m_intersectionPtr.reset();
       m_r1IntersectionSegmentsPoints.clear();
       m_r2IntersectionSegmentsPoints.clear();
@@ -533,11 +632,31 @@ namespace te
       initState();
     }
     
-    void Blender::noBlendMethodImp( const double& line, const double& col,
-      std::vector< double >& values )
+    void Blender::setBlendFunctionPonter( const BlendMethod blendMethod )
     {
-      TERP_DEBUG_TRUE_OR_THROW( values.size() == m_raster1Bands.size(), "Invalid values vector size" );
-      
+      switch( blendMethod )
+      {
+        case NoBlendMethod :
+        {
+          m_blendFuncPtr = &Blender::noBlendMethodImp;
+          break;
+        }
+        case EuclideanDistanceMethod :
+        {
+          m_blendFuncPtr = &Blender::euclideanDistanceMethodImp;
+          break;
+        }        
+        default :
+        {
+          TERP_LOG_AND_THROW( "Invalid blend method" );
+          break;
+        }
+      }  
+    }
+    
+    void Blender::noBlendMethodImp( const double& line, const double& col,
+      double* const values )
+    {
       // Finding the point over the second raster
       
       m_geomTransformationPtr->directMap( col, line, m_noBlendMethodImp_Point2Col,
@@ -580,9 +699,8 @@ namespace te
     }
     
     void Blender::euclideanDistanceMethodImp( const double& line, const double& col,
-      std::vector< double >& values )
+      double* const values )
     {
-      TERP_DEBUG_TRUE_OR_THROW( values.size() == m_raster1Bands.size(), "Invalid values vector size" );
       TERP_DEBUG_TRUE_OR_THROW( m_intersectionPtr.get(), "Invalid intersection pointer" );
       TERP_DEBUG_TRUE_OR_THROW( m_r1IntersectionSegmentsPointsSize > 1, "Invalid intersection points" );
       TERP_DEBUG_TRUE_OR_THROW( m_r2IntersectionSegmentsPointsSize > 1, "Invalid intersection points" );
@@ -745,7 +863,607 @@ namespace te
         noBlendMethodImp( line, col, values );
       }
     }    
+    
+    bool Blender::blendIntoRaster1()
+    {
+      TERP_TRUE_OR_RETURN_FALSE( m_raster1Ptr->getAccessPolicy() & 
+        te::common::WAccess, "Invalid output raster access policy" );      
+      
+      // Locating raster2 over the raster1
+      
+      unsigned int firstOutputRasterCol = 0;
+      unsigned int lastOutputRasterRow = 0;
+      unsigned int lastOutputRasterCol = 0;
+      unsigned int firstOutputRasterRow = 0;
+      
+      {
+        const double raster2LastRowIdx = 
+          (double)( m_raster2Ptr->getNumberOfRows() - 1 );
+        const double raster2LastColIdx =
+          (double)( m_raster2Ptr->getNumberOfColumns() - 1 );
+        double raster2LLColOverRaster1 = 0;
+        double raster2LLRowOverRaster1 = 0;
+        double raster2LRColOverRaster1 = 0;
+        double raster2LRRowOverRaster1 = 0;
+        double raster2URColOverRaster1 = 0;
+        double raster2URRowOverRaster1 = 0;
+        double raster2ULColOverRaster1 = 0;
+        double raster2ULRowOverRaster1 = 0;          
 
+        m_geomTransformationPtr->inverseMap( 
+          0.0,
+          raster2LastRowIdx,
+          raster2LLColOverRaster1,
+          raster2LLRowOverRaster1);
+        m_geomTransformationPtr->inverseMap( 
+          raster2LastColIdx,
+          raster2LastRowIdx,
+          raster2LRColOverRaster1,
+          raster2LRRowOverRaster1);                
+        m_geomTransformationPtr->inverseMap( 
+          raster2LastColIdx,
+          0.0,
+          raster2URColOverRaster1,
+          raster2URRowOverRaster1); 
+        m_geomTransformationPtr->inverseMap( 
+          0.0,
+          0.0,
+          raster2ULColOverRaster1,
+          raster2ULRowOverRaster1);  
+        
+        firstOutputRasterCol = (unsigned int)
+          std::max( 0.0,
+            std::min( (double)( m_raster1Ptr->getNumberOfColumns() - 1 ),              
+              std::floor( 
+                std::min( raster2LLColOverRaster1, 
+                  std::min( raster2LRColOverRaster1, 
+                    std::min( raster2URColOverRaster1, 
+                                raster2ULColOverRaster1
+                    ) 
+                  ) 
+                )
+              )
+            )
+          );
+          
+        lastOutputRasterRow = (unsigned int)
+          std::max( 0.0,
+            std::min( (double)( m_raster1Ptr->getNumberOfRows() - 1 ),                
+              std::ceil( 
+                std::max( raster2LLRowOverRaster1, 
+                  std::max( raster2LRRowOverRaster1, 
+                    std::max( raster2URRowOverRaster1, 
+                                raster2ULRowOverRaster1
+                    ) 
+                  ) 
+                ) 
+              )
+            )
+          );
+          
+        lastOutputRasterCol = (unsigned int)
+          std::max( 0.0,
+            std::min( (double)( m_raster1Ptr->getNumberOfColumns() - 1 ),                
+              std::ceil( 
+                std::max( raster2LLColOverRaster1, 
+                  std::max( raster2LRColOverRaster1, 
+                    std::max( raster2URColOverRaster1, 
+                                raster2ULColOverRaster1
+                    ) 
+                  ) 
+                )
+              )
+            )
+          );
+          
+        firstOutputRasterRow = (unsigned int)
+          std::max( 0.0,
+            std::min( (double)( m_raster1Ptr->getNumberOfRows() - 1 ),               
+              std::floor( 
+                std::min( raster2LLRowOverRaster1, 
+                  std::min( raster2LRRowOverRaster1, 
+                    std::min( raster2URRowOverRaster1, 
+                                raster2ULRowOverRaster1
+                    ) 
+                  ) 
+                ) 
+              )
+            )
+          );
+          
+        assert( firstOutputRasterCol >= 0 );
+        assert( firstOutputRasterCol <= 
+          ( m_raster1Ptr->getNumberOfColumns() - 1 ) );    
+        assert( lastOutputRasterRow >= 0 );
+        assert( lastOutputRasterRow <= 
+          ( m_raster1Ptr->getNumberOfRows() - 1 ) );                 
+        assert( lastOutputRasterCol >= 0 );
+        assert( lastOutputRasterCol <= 
+          ( m_raster1Ptr->getNumberOfColumns() - 1 ) ); 
+        assert( firstOutputRasterRow >= 0 );
+        assert( firstOutputRasterRow <= 
+          ( m_raster1Ptr->getNumberOfRows() - 1 ) );
+      }  
+      
+      // Discovering the raster 1 blocks we need to process
+      
+      std::vector< RasterBlockInfo > raster1BlocksInfos;
+      bool allRaster1BandsWithSameBlocking = true;
+      
+      {
+        const te::rst::Band& firstBand = *( m_raster1Ptr->getBand(
+           m_raster1Bands[ 0 ] ) );        
+        
+        for( unsigned int raster1BandsIdx = 0 ; raster1BandsIdx < 
+          m_raster1Bands.size() ; ++raster1BandsIdx )
+        {
+          const te::rst::Band& band = *( m_raster1Ptr->getBand(
+            m_raster1Bands[ raster1BandsIdx ] ) ); 
+          
+          if(
+              ( band.getProperty()->m_blkh != firstBand.getProperty()->m_blkh )
+              ||
+              ( band.getProperty()->m_blkw != firstBand.getProperty()->m_blkw )
+              ||
+              ( band.getProperty()->m_nblocksx != firstBand.getProperty()->m_nblocksx )
+              ||
+              ( band.getProperty()->m_nblocksy != firstBand.getProperty()->m_nblocksy )
+            )
+          {
+            allRaster1BandsWithSameBlocking = false;
+            break;
+          }
+        }
+          
+        unsigned int firstBlockX = firstOutputRasterCol / 
+          firstBand.getProperty()->m_blkw;
+        unsigned int lastBlockX = lastOutputRasterCol / 
+          firstBand.getProperty()->m_blkw;
+        unsigned int firstBlockY = firstOutputRasterRow / 
+          firstBand.getProperty()->m_blkh;
+        unsigned int lastBlockY = lastOutputRasterRow / 
+          firstBand.getProperty()->m_blkh;                        
+          
+        for( unsigned int blkY = firstBlockY ; blkY <= lastBlockY ; ++blkY )
+        {
+          for( unsigned int blkX = firstBlockX ; blkX <= lastBlockX ; ++blkX )
+          {
+            raster1BlocksInfos.push_back( RasterBlockInfo() );
+            
+            RasterBlockInfo& rBInfo = raster1BlocksInfos.back();
+            
+            rBInfo.m_wasProcessed = false;            
+            rBInfo.m_blkX = blkX;
+            rBInfo.m_blkY = blkY;
+            rBInfo.m_blkTotalPixelsNumber = firstBand.getProperty()->m_blkh *
+              firstBand.getProperty()->m_blkw;
+            
+            rBInfo.m_firstRasterRow2Process = blkY * firstBand.getProperty()->m_blkh;
+            rBInfo.m_firstRasterRow2Process = std::max( firstOutputRasterRow,
+              rBInfo.m_firstRasterRow2Process );
+            rBInfo.m_firstRasterRow2Process = std::min( lastOutputRasterRow,
+              rBInfo.m_firstRasterRow2Process );
+            
+            rBInfo.m_rasterRows2ProcessBound = ( blkY + 1 ) * firstBand.getProperty()->m_blkh;
+            rBInfo.m_rasterRows2ProcessBound = std::max( firstOutputRasterRow,
+              rBInfo.m_rasterRows2ProcessBound );
+            rBInfo.m_rasterRows2ProcessBound = std::min( lastOutputRasterRow,
+              rBInfo.m_rasterRows2ProcessBound );              
+            
+            rBInfo.m_firstRasterCol2Process = blkX * firstBand.getProperty()->m_blkw;
+            rBInfo.m_firstRasterCol2Process = std::max( firstOutputRasterCol,
+              rBInfo.m_firstRasterCol2Process );
+            rBInfo.m_firstRasterCol2Process = std::min( lastOutputRasterCol,
+              rBInfo.m_firstRasterCol2Process );              
+            
+            rBInfo.m_rasterCols2ProcessBound = ( blkX + 1 ) * firstBand.getProperty()->m_blkw;          
+            rBInfo.m_rasterCols2ProcessBound = std::max( firstOutputRasterCol,
+              rBInfo.m_rasterCols2ProcessBound );
+            rBInfo.m_rasterCols2ProcessBound = std::min( lastOutputRasterCol,
+              rBInfo.m_rasterCols2ProcessBound );                
+          }
+        }
+      }          
+      
+      // blending
+      
+      bool returnValue = true;
+      
+      {
+        // Guessing memory resources
+        
+        const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
+        const double usedVMem = (double)te::common::GetUsedVirtualMemory();
+        const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() );
+        const double maxVMem2Use = 0.75 * MIN( totalPhysMem, ( totalVMem - usedVMem ) );
+        
+        // Creating thread exec params
+        
+        bool abortValue = false;
+        boost::mutex mutex;
+        te::rst::RasterSynchronizer sync1( *m_raster1Ptr, te::common::RWAccess );
+        te::rst::RasterSynchronizer sync2( *((te::rst::Raster*)m_raster2Ptr), te::common::RAccess );
+        boost::mutex blockProcessedSignalMutex;
+        boost::condition_variable blockProcessedSignal;
+        unsigned int runningThreadsCounter = 0;
+        
+        BlendIntoRaster1ThreadParams auxThreadParams;
+        auxThreadParams.m_returnValuePtr = &returnValue;
+        auxThreadParams.m_abortValuePtr = &abortValue;
+        auxThreadParams.m_sync1Ptr = &sync1;
+        auxThreadParams.m_sync2Ptr = &sync2;
+        auxThreadParams.m_raster1BlocksInfosPtr = &raster1BlocksInfos;
+        auxThreadParams.m_mutexPtr = &mutex;
+        auxThreadParams.m_blockProcessedSignalMutexPtr = &blockProcessedSignalMutex;
+        auxThreadParams.m_blockProcessedSignalPtr = &blockProcessedSignal;
+        auxThreadParams.m_runningThreadsCounterPtr = &runningThreadsCounter;
+        auxThreadParams.m_raster1Bands = m_raster1Bands;
+        auxThreadParams.m_raster2Bands = m_raster2Bands;
+        auxThreadParams.m_blendMethod = m_blendMethod;
+        auxThreadParams.m_interpMethod2 = m_interpMethod2;
+        auxThreadParams.m_noDataValue = m_outputNoDataValue;
+        auxThreadParams.m_forceInputNoDataValue = m_forceInputNoDataValue;
+        auxThreadParams.m_pixelOffsets1 = m_pixelOffsets1;
+        auxThreadParams.m_pixelScales1 = m_pixelScales1;
+        auxThreadParams.m_pixelOffsets2 = m_pixelOffsets2;
+        auxThreadParams.m_pixelScales2 = m_pixelScales2;          
+        
+        std::vector< BlendIntoRaster1ThreadParams > allThreadsParams( m_threadsNumber,
+          auxThreadParams );
+        
+        // creating threads
+        
+        if( ( m_threadsNumber == 1 ) || (!allRaster1BandsWithSameBlocking) )
+        {
+          runningThreadsCounter = 1;
+          if( m_r1ValidDataDelimiterPtr.get() )
+          {
+            allThreadsParams[ 0 ].m_r1ValidDataDelimiterPtr.reset( 
+              (te::gm::MultiPolygon*)m_r1ValidDataDelimiterPtr->clone() );
+          }
+          if( m_r2ValidDataDelimiterPtr.get() )
+          {
+            allThreadsParams[ 0 ].m_r2ValidDataDelimiterPtr.reset( 
+              (te::gm::MultiPolygon*)m_r2ValidDataDelimiterPtr->clone() );
+          }
+          allThreadsParams[ 0 ].m_geomTransformationPtr.reset( 
+            m_geomTransformationPtr->clone() );
+          allThreadsParams[ 0 ].m_maxRasterCachedBlocks = std::max( 1u, 
+            ((unsigned int)maxVMem2Use)
+            / ((unsigned int)m_raster2Ptr->getBand( m_raster1Bands[ 0 ] )->getBlockSize() ) );
+          allThreadsParams[ 0 ].m_useProgress = m_enableProgressInterface;
+          
+          blendIntoRaster1Thread( &( allThreadsParams[ 0 ] ) );
+        }
+        else
+        {
+          boost::thread_group threads;
+          runningThreadsCounter = m_threadsNumber;
+          
+          for( unsigned int threadIdx = 0 ; threadIdx < m_threadsNumber ;
+            ++threadIdx )
+          {
+            if( m_r1ValidDataDelimiterPtr.get() )
+            {
+              allThreadsParams[ threadIdx ].m_r1ValidDataDelimiterPtr.reset( 
+                (te::gm::MultiPolygon*)m_r1ValidDataDelimiterPtr->clone() );
+            }
+            if( m_r2ValidDataDelimiterPtr.get() )
+            {
+              allThreadsParams[ threadIdx ].m_r2ValidDataDelimiterPtr.reset( 
+                (te::gm::MultiPolygon*)m_r2ValidDataDelimiterPtr->clone() );
+            }
+            allThreadsParams[ threadIdx ].m_geomTransformationPtr.reset( 
+              m_geomTransformationPtr->clone() );
+            
+            allThreadsParams[ 0 ].m_maxRasterCachedBlocks = std::max( 1u,
+              ((unsigned int)maxVMem2Use)
+              / 
+              (
+                ((unsigned int)m_raster2Ptr->getBand( m_raster1Bands[ 0 ] )->getBlockSize() )
+                *
+                m_threadsNumber
+              ) );
+            
+            allThreadsParams[ threadIdx ].m_useProgress = false;
+            
+            threads.add_thread( new boost::thread( blendIntoRaster1Thread, 
+               &( allThreadsParams[ threadIdx ] ) ) );
+          };    
+          
+          // progress stuff
+          
+          std::auto_ptr< te::common::TaskProgress > progressPtr;
+          if( m_enableProgressInterface )
+          {
+            progressPtr.reset( new te::common::TaskProgress );
+            progressPtr->setTotalSteps( raster1BlocksInfos.size() );
+            progressPtr->setMessage( "Blending" );
+          
+            while( (!abortValue) && (runningThreadsCounter > 0 ) )
+            {
+              if( progressPtr->isActive() )
+              {
+                boost::unique_lock<boost::mutex> lock( blockProcessedSignalMutex );
+                blockProcessedSignal.timed_wait( lock, 
+                  boost::posix_time::seconds( 1 ) );
+                  
+                int processedBlocksNmb = 0;
+                for( unsigned int raster1BlocksInfosIdx = 0 ; raster1BlocksInfosIdx <
+                  raster1BlocksInfos.size() ; ++raster1BlocksInfosIdx )
+                {
+                  if( raster1BlocksInfos[ raster1BlocksInfosIdx ].m_wasProcessed )
+                  {
+                    ++processedBlocksNmb;
+                  }
+                }
+                
+                if( processedBlocksNmb != progressPtr->getCurrentStep() )
+                {
+                  progressPtr->pulse();
+                }
+              }
+              else
+              {
+                mutex.lock();
+                abortValue = true;
+                mutex.unlock();
+              }
+            }
+          }
+          
+          // Joining threads
+          
+          threads.join_all();
+        }
+      }
+      
+      return returnValue;
+    }
+    
+    void Blender::blendIntoRaster1Thread( BlendIntoRaster1ThreadParams* paramsPtr )
+    {
+      // Instantiating the local rasters instance
+      
+      te::rst::SynchronizedRaster raster1( paramsPtr->m_raster1Bands.size(), 
+        *( paramsPtr->m_sync1Ptr ) );
+      te::rst::SynchronizedRaster raster2( paramsPtr->m_maxRasterCachedBlocks,
+        *( paramsPtr->m_sync2Ptr ) );
+      
+      // Guessing the output raster channels ranges
+      
+      const std::vector< unsigned int >& raster1Bands = 
+        paramsPtr->m_raster1Bands;
+      const unsigned int raster1BandsSize = raster1Bands.size();      
+      
+      std::vector< double > raster1BandsRangeMin( raster1BandsSize, 0 );
+      std::vector< double > raster1BandsRangeMax( raster1BandsSize, 0 ); 
+      
+      {
+        for( unsigned int raster1BandsIdx = 0 ;  raster1BandsIdx < 
+          raster1BandsSize ; ++raster1BandsIdx )
+        {
+          unsigned int bandIdx = raster1Bands[ raster1BandsIdx ];
+          
+          te::rst::GetDataTypeRanges( raster1.getBand( bandIdx )->getProperty()->m_type,
+            raster1BandsRangeMin[ raster1BandsIdx ],
+            raster1BandsRangeMax[ raster1BandsIdx ]);             
+        }
+      }      
+      
+      // instantiating the thread local blender instance
+      
+      paramsPtr->m_mutexPtr->lock();
+      const unsigned int raster1BlocksInfosSize = paramsPtr->m_raster1BlocksInfosPtr->size();
+      paramsPtr->m_mutexPtr->unlock();
+      
+      Blender blender;
+      
+      if( ! blender.initialize( 
+        raster1,
+        paramsPtr->m_raster1Bands,
+        raster2,
+        paramsPtr->m_raster2Bands,
+        paramsPtr->m_blendMethod,
+        te::rst::Interpolator::NearestNeighbor,
+        paramsPtr->m_interpMethod2,
+        paramsPtr->m_noDataValue,
+        paramsPtr->m_forceInputNoDataValue,
+        paramsPtr->m_pixelOffsets1,
+        paramsPtr->m_pixelScales1,
+        paramsPtr->m_pixelOffsets2,
+        paramsPtr->m_pixelScales2,
+        paramsPtr->m_r1ValidDataDelimiterPtr.get(),
+        paramsPtr->m_r2ValidDataDelimiterPtr.get(),
+        *( paramsPtr->m_geomTransformationPtr ),
+        1,
+        false ) )
+      {
+        paramsPtr->m_mutexPtr->lock();
+        *(paramsPtr->m_abortValuePtr) = true;
+        *(paramsPtr->m_returnValuePtr) = false;
+        --( *(paramsPtr->m_runningThreadsCounterPtr) );
+        paramsPtr->m_mutexPtr->unlock();
+        return;
+      }      
+      
+      // progress stuff
+      
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      
+      if( paramsPtr->m_useProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        progressPtr->setTotalSteps( raster1BlocksInfosSize );
+        progressPtr->setMessage( "Blending" );
+      }       
+      
+      // loocking for the next raster block to blend
+      
+      boost::scoped_array< double > blendedValuesHandler( new double[ raster1BandsSize ] );
+      double* blendedValuesHandlerPtr = blendedValuesHandler.get();
+      
+      const double noDataValue = paramsPtr->m_noDataValue;
+      
+      for( unsigned int raster1BlocksInfosIdx = 0 ; raster1BlocksInfosIdx <
+        raster1BlocksInfosSize ; ++raster1BlocksInfosIdx )
+      {
+        paramsPtr->m_mutexPtr->lock();
+        
+        if( paramsPtr->m_raster1BlocksInfosPtr->operator[]( raster1BlocksInfosIdx ).m_wasProcessed )
+        {
+          paramsPtr->m_mutexPtr->unlock();
+        }
+        else
+        {
+          RasterBlockInfo& rBInfo = paramsPtr->m_raster1BlocksInfosPtr->operator[]( 
+            raster1BlocksInfosIdx );
+          rBInfo.m_wasProcessed = true;
+          paramsPtr->m_mutexPtr->unlock();
+          
+          //blending block data          
+          
+          unsigned int raster1Row = 0;
+          unsigned int raster1Col = 0;
+          unsigned int raster1BandsIdx = 0;
+            
+          for( raster1Row = rBInfo.m_firstRasterRow2Process ; raster1Row < rBInfo.m_rasterRows2ProcessBound ;
+            ++raster1Row )
+          {
+            for( raster1Col = rBInfo.m_firstRasterCol2Process ; raster1Col < rBInfo.m_rasterCols2ProcessBound ;
+              ++raster1Col )
+            {
+              blender.getBlendedValues( (double)raster1Row, (double)raster1Col,
+                blendedValuesHandlerPtr );  
+              
+              for( raster1BandsIdx = 0 ; raster1BandsIdx < raster1BandsSize ; ++raster1BandsIdx )
+              {          
+                double& blendedValue = blendedValuesHandlerPtr[ raster1BandsIdx ];
+                
+                if( blendedValue != noDataValue )
+                {
+                  blendedValue = std::max( blendedValue , 
+                    raster1BandsRangeMin[ raster1BandsIdx ] );
+                  blendedValue = std::min( blendedValue , 
+                    raster1BandsRangeMax[ raster1BandsIdx ] );
+
+                  raster1.setValue( raster1Col, raster1Row, blendedValue,
+                    raster1Bands[ raster1BandsIdx ] );
+                }
+              }
+            }
+          }
+          
+          // progress stuff
+          
+          if( paramsPtr->m_useProgress )
+          {
+            if( progressPtr->isActive() )
+            {
+              progressPtr->pulse();
+            }
+            else
+            {
+              paramsPtr->m_mutexPtr->lock();
+              *(paramsPtr->m_abortValuePtr) = true;
+              *(paramsPtr->m_returnValuePtr) = false;
+              --( *(paramsPtr->m_runningThreadsCounterPtr) );
+              paramsPtr->m_mutexPtr->unlock();
+              return;
+            }
+          }
+          else
+          {
+            // notifying the main thread with the block processed signal
+            
+            boost::lock_guard<boost::mutex> blockProcessedSignalLockGuard( 
+              *( paramsPtr->m_blockProcessedSignalMutexPtr) );              
+            
+            paramsPtr->m_blockProcessedSignalPtr->notify_one();
+          }
+        }
+        
+        // do we must continue processing ?
+        
+        if( *(paramsPtr->m_abortValuePtr) )
+        {
+          break;
+        }
+      }
+      
+      paramsPtr->m_mutexPtr->lock();
+      --( *(paramsPtr->m_runningThreadsCounterPtr) );
+      paramsPtr->m_mutexPtr->unlock();
+    }
+    
+    bool Blender::getSegments( te::gm::Geometry const * const geometryPtr, 
+      std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > >& segments ) const
+    {
+      switch( geometryPtr->getGeomTypeId() )
+      {
+        case te::gm::MultiLineStringType :
+        {
+          te::gm::MultiLineString const * castGeomPtr = 
+            dynamic_cast< te::gm::MultiLineString const * >( geometryPtr );
+          assert( castGeomPtr );
+          
+          std::size_t numGeoms = castGeomPtr->getNumGeometries();
+          
+          for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+          {
+            if( ! ( getSegments( castGeomPtr->getGeometryN( gIdx ), segments ) ) )
+            {
+              return false;
+            }
+          }
+          
+          break;
+        }
+        case te::gm::LineStringType :
+        {
+          te::gm::LineString const* castGeomPtr = 
+            dynamic_cast< te::gm::LineString const * >( geometryPtr );
+          assert( castGeomPtr );
+          
+          std::size_t nPoints = castGeomPtr->size();
+          te::gm::Coord2D const* coodsPtr = castGeomPtr->getCoordinates();
+          
+          for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
+          {
+            segments.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
+              coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
+          }
+          
+          break;
+        }
+        case te::gm::GeometryCollectionType :
+        {
+          te::gm::GeometryCollection const * castGeomPtr = 
+            dynamic_cast< te::gm::GeometryCollection const * >( geometryPtr );
+          assert( castGeomPtr );
+          
+          std::size_t numGeoms = castGeomPtr->getNumGeometries();
+          
+          for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+          {
+            if( ! ( getSegments( castGeomPtr->getGeometryN( gIdx ), segments ) ) )
+            {
+              return false;
+            }
+          }
+                    
+          break;
+        }
+        default :
+        {
+          TERP_LOG_AND_RETURN_FALSE( "Invalid geometry type:" + geometryPtr->getGeometryType() );
+          break;
+        }
+      }
+      
+      return true;
+    }
+    
   } // end namespace rp
 }   // end namespace te    
 

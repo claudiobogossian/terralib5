@@ -38,7 +38,7 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QWizardPage>
+#include <QWizardPage>
 
 
 // Forward declaration

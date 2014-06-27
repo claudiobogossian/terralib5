@@ -33,7 +33,7 @@
 #include "LegendGroupItem.h"
 
 // Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 // STL
 #include <memory>

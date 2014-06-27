@@ -33,9 +33,9 @@
 #include "Plugin.h"
 
 // QT
-#include <QtGui/QAction>
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
+#include <QAction>
+#include <QMenu>
+#include <QMenuBar>
 
 te::qt::plugins::terralib4::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : QObject(), te::plugin::Plugin(pluginInfo)
@@ -51,10 +51,7 @@ void te::qt::plugins::terralib4::Plugin::startup()
   if(m_initialized)
     return;
 
-// it initializes the Translator support for the TerraLib TERRALIB4 Qt Plugin
-  TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_TERRALIB4_TEXT_DOMAIN, TE_QT_PLUGIN_TERRALIB4_TEXT_DOMAIN_DIR, "UTF-8");
-
-  TE_LOG_TRACE(TE_QT_PLUGIN_TERRALIB4("TerraLib Qt TERRALIB4 Plugin startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt TERRALIB4 Plugin startup!"));
 
 // add plugin menu
   //m_terralib4Menu = te::qt::af::ApplicationController::getInstance().getMenu("Terralib4");
@@ -84,7 +81,7 @@ void te::qt::plugins::terralib4::Plugin::shutdown()
 
   delete m_showWindow;
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_TERRALIB4("TerraLib Qt TERRALIB4 Plugin shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt TERRALIB4 Plugin shutdown!"));
 
   m_initialized = false;
 }

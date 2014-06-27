@@ -2,7 +2,7 @@
 #include "DataSetTableView.h"
 
 // Qt
-#include <QtGui/QMouseEvent>
+#include <QMouseEvent>
 
 te::qt::widgets::DataSetTableVerticalHeader::DataSetTableVerticalHeader(DataSetTableView* view) :
 QHeaderView(Qt::Vertical, view),

@@ -25,6 +25,7 @@
 #include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/dataset/DataSetTypeConverter.h"
+#include "../dataaccess/dataset/ObjectIdSet.h"
 #include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/utils/Utils.h"
@@ -44,12 +45,14 @@ te::vp::AggregationOp::AggregationOp():
 }
 
 void te::vp::AggregationOp::setInput(te::da::DataSourcePtr inDsrc,
-                                     std::auto_ptr<te::da::DataSet> inDset,
-                                     std::auto_ptr<te::da::DataSetType> inDsetType)
+                                     std::string inDsetName,
+                                     std::auto_ptr<te::da::DataSetType> inDsetType,
+                                     const te::da::ObjectIdSet* oidSet)
 {
   m_inDsrc = inDsrc;
-  m_inDset = inDset;
+  m_inDsetName = inDsetName;
   m_inDsetType = inDsetType;
+  m_oidSet = oidSet;
 }
 
 void te::vp::AggregationOp::setParams(std::vector<te::dt::Property*>& groupProps,
@@ -81,7 +84,7 @@ te::gm::GeomType te::vp::AggregationOp::getGeomResultType(te::gm::GeomType geom)
 
 bool te::vp::AggregationOp::paramsAreValid()
 {
-  if (!m_inDset.get() || !m_inDsetType.get())
+  if (!m_inDsetType.get())
     return false;
   
   if (!m_inDsetType->hasGeom())

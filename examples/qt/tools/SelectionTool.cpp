@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -35,8 +35,8 @@
 #include <terralib/qt/widgets/canvas/MapDisplay.h>
 
 // Qt
-#include <QtGui/QMouseEvent>
-#include <QtGui/QToolTip>
+#include <QMouseEvent>
+#include <QToolTip>
 
 // STL
 #include <cassert>
@@ -68,9 +68,13 @@ bool SelectionTool::mouseReleaseEvent(QMouseEvent* e)
     return false;
 
   // Converts clicked point to world coordinates
+#if QT_VERSION >= 0x050000
+  QPointF qpoint = m_display->transform(e->localPos());
+#else
   QPointF qpoint = m_display->transform(e->posF());
+#endif
 
-  // Gets datasource and transactor
+  // Get the datasource and the transactor
   te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().find(m_layer->getDataSourceId());
   std::auto_ptr<te::da::DataSourceTransactor> transactor(dataSource->getTransactor());
 

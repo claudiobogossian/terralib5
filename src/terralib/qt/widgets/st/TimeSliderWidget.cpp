@@ -25,12 +25,12 @@
 
 //Terralib
 //#include "TimePropertiesDialog.h"
+#include "../canvas/MapDisplay.h"
 #include "Animation.h"
 #include "AnimationScene.h"
 #include "TrajectoryItem.h"
 #include "PixmapItem.h"
 #include "TimeSliderWidget.h"
-#include "MapDisplay.h"
 #include "ui_TimeSliderWidgetForm.h"
 #include <terralib/dataaccess.h>
 #include <terralib/stmemory.h>
@@ -41,29 +41,29 @@
 #include <terralib/dataaccess.h>
 
 //QT
-#include <qgraphicseffect.h>
-#include <QtGui/QSlider>
-#include <QtGui/QGraphicsView>
-#include <QtCore/QParallelAnimationGroup>
-#include <QtCore/QPropertyAnimation>
-#include <QtCore/QTimer>
-#include <QtCore/QThread>
-#include <QtCore/QTextStream>
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QMessageBox>
-#include <QtGui/QInputDialog>
-#include <QtGui/QDateTimeEdit>
-#include <QtGui/QColorDialog>
-#include <QtCore/QUrl>
-
+#include <QGraphicsEffect>
+#include <QSlider>
+#include <QGraphicsView>
+#include <QMimeData>
+#include <QParallelAnimationGroup>
+#include <QPropertyAnimation>
+#include <QTimer>
+#include <QThread>
+#include <QTextStream>
+#include <QContextMenuEvent>
+#include <QMessageBox>
+#include <QInputDialog>
+#include <QDateTimeEdit>
+#include <QColorDialog>
+#include <QUrl>
 
 te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay* md, QWidget* parent,  Qt::WindowFlags f)
   : QWidget(parent, f),
     m_display(md),
     m_erasePerfectly(false),
     m_maxSliderValue(1000000000),
-    m_finished(false),
-    m_ui(new Ui::TimeSliderWidgetForm)
+    m_ui(new Ui::TimeSliderWidgetForm),
+    m_finished(false)
 {
   te::qt::widgets::ScopedCursor scopedCursor(Qt::WaitCursor);
   m_ui->setupUi(this);
@@ -320,15 +320,21 @@ void te::qt::widgets::TimeSliderWidget::dragEnterEvent(QDragEnterEvent* e)
 
 void te::qt::widgets::TimeSliderWidget::dropEvent(QDropEvent* e)
 {
+  m_dropModifiers = e->keyboardModifiers();
+  const QMimeData* mdata = e->mimeData();
+  m_dropUrls = mdata->urls();
+  m_dropBA = mdata->data("application/x-terralib;value=\"DraggedItems\"");
+  QTimer::singleShot(10, this, SLOT(dropAction()));
+}
+
+void te::qt::widgets::TimeSliderWidget::dropAction()
+{
   te::qt::widgets::ScopedCursor scopedCursor(Qt::WaitCursor);
   int state = m_parallelAnimation->state();
   if(state == QAbstractAnimation::Running)
     onPlayToolButtonnClicked(); // put to paused state
 
-  const QMimeData* mdata = e->mimeData();
-  QList<QUrl> urls = mdata->urls();
-
-  if(e->keyboardModifiers() == Qt::NoModifier)
+  if(m_dropModifiers == Qt::NoModifier)
   {
     onStopToolButtonnClicked();
     m_itemList.clear();
@@ -356,12 +362,11 @@ void te::qt::widgets::TimeSliderWidget::dropEvent(QDropEvent* e)
     m_display->update();
   }
 
-  if(urls.empty())
+  if(m_dropUrls.empty())
   {
-    QByteArray ba = mdata->data("application/x-terralib;value=\"DraggedItems\"");
-    if(ba.count() != 0)
+    if(m_dropBA.count() != 0)
     {
-      QString s(ba);
+      QString s(m_dropBA);
       std::vector<te::qt::widgets::AbstractTreeItem*>* ditems = (std::vector<AbstractTreeItem*>*)s.toULongLong();
       std::vector<te::qt::widgets::AbstractTreeItem*>::iterator it;
       for(it = ditems->begin(); it != ditems->end(); ++it)
@@ -396,7 +401,7 @@ void te::qt::widgets::TimeSliderWidget::dropEvent(QDropEvent* e)
   }
   else
   {
-    QString path = urls.first().path();
+    QString path = m_dropUrls.first().path();
     path.remove(0, 1);
 
     QPair<QString, QString> p(path, "");
@@ -407,7 +412,7 @@ void te::qt::widgets::TimeSliderWidget::dropEvent(QDropEvent* e)
       addTemporalImages(path);
   }
 
-  if(state == QAbstractAnimation::Running || e->keyboardModifiers() == Qt::NoModifier)
+  if(state == QAbstractAnimation::Running || m_dropModifiers == Qt::NoModifier)
     onPlayToolButtonnClicked();
 }
 

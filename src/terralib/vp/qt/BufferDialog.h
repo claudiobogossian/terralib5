@@ -39,7 +39,7 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QDialog>
+#include <QDialog>
 
 namespace Ui { class BufferDialogForm; }
 
@@ -86,8 +86,6 @@ namespace te
       protected slots:
 
         void onLayerComboBoxChanged(int index);
-
-        void onFilterLineEditTextChanged(const QString& text);
 
         void onFixedDistanceToggled();
 

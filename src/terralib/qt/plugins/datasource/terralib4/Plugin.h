@@ -32,7 +32,7 @@
 
 // Qt
 #include <QObject>
-#include <QtGui/QMenu>
+#include <QMenu>
 
 namespace te
 {

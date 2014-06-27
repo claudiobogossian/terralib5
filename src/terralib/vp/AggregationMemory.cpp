@@ -36,7 +36,6 @@
 #include "../datatype/StringProperty.h"
 
 #include "../geometry/Geometry.h"
-#include "../geometry/GeometryCollection.h"
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/Utils.h"
 
@@ -247,23 +246,31 @@ bool te::vp::AggregationMemory::run()
   
   std::map<std::string, std::vector<te::mem::DataSetItem*> > groups;
   std::map<std::string, std::vector<te::mem::DataSetItem*> >::iterator itg;
-  size_t nprops = m_inDset->getNumProperties();
   
-  m_inDset->moveBeforeFirst();
-  while(m_inDset->moveNext())
+  std::auto_ptr<te::da::DataSet> inDset;
+
+  if(m_oidSet == 0)
+    inDset = m_inDsrc->getDataSet(m_inDsetName);
+  else
+    inDset = m_inDsrc->getDataSet(m_inDsetName, m_oidSet);
+
+  size_t nprops = inDset->getNumProperties();
+  
+  inDset->moveBeforeFirst();
+  while(inDset->moveNext())
   {      
     // the group key is a combination of the distinct grouping property values as a string
-    std::string key = m_inDset->getAsString(groupPropIdxs[0]);
+    std::string key = inDset->getAsString(groupPropIdxs[0]);
     for(std::size_t i=1; i<groupPropIdxs.size(); ++i)
-      key += "_" + m_inDset->getAsString(groupPropIdxs[i]);
+      key += "_" + inDset->getAsString(groupPropIdxs[i]);
     
     // copy it to a dataset item in memory (TODO: this should be reviewed to avoid the copy)
-    te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(m_inDset.get());
+    te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(inDset.get());
     for(std::size_t j=0; j<nprops; ++j)
     {
-      if (!m_inDset->isNull(j))
+      if (!inDset->isNull(j))
       {
-        std::auto_ptr<te::dt::AbstractData> val = m_inDset->getValue(j);
+        std::auto_ptr<te::dt::AbstractData> val = inDset->getValue(j);
         dataSetItem->setValue(j,val.release());
       }
     }
@@ -344,7 +351,7 @@ bool te::vp::AggregationMemory::run()
     ++itg;
   
     if (task.isActive() == false)
-      throw te::vp::Exception(TR_VP("Operation canceled!"));
+      throw te::vp::Exception(TE_TR("Operation canceled!"));
   
     task.pulse();
   }

@@ -31,41 +31,6 @@
 
 #define TE_FILTERENCODING_MODULE_NAME "te.filter_encoding"
 
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
-  \def TE_FE_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib Filter module.
- */
-#define TE_FE_TEXT_DOMAIN "tefe"
-
-/*!
-  \def TE_FE_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
- */
-#define TE_FE_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TR_FE
-
-  \brief It marks a string in order to get translated. This is a special mark used in the Filter module of TerraLib. 
- */
-#define TR_FE(message) TR(message, TE_FE_TEXT_DOMAIN)
-
-/*!
-  \def TR_PLURAL_FE
-
-  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the Filter module of TerraLib. 
- */
-#define TR_PLURAL_FE(message1, message2, n) TR_PLURAL(TE_FE_TEXT_DOMAIN, message1, message2, n)
-
-//@}
-
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library
  */

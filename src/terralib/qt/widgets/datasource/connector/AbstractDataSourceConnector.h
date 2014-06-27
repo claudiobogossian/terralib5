@@ -31,7 +31,7 @@
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
 
 // Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 // STL
 #include <list>

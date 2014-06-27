@@ -1,7 +1,7 @@
 #include "CentralizedCheckBoxDelegate.h"
 
-#include <QtGui/QApplication>
-#include <QtGui/QMouseEvent>
+#include <QApplication>
+#include <QMouseEvent>
 
 te::qt::widgets::CentralizedCheckBoxDelegate::CentralizedCheckBoxDelegate(QObject* parent):
 QStyledItemDelegate(parent)

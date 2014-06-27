@@ -117,7 +117,7 @@ void te::xerces::Reader::read(const std::string& fileURI)
     {
       ErrorHandler* errH = static_cast<ErrorHandler*>(m_parser->getErrorHandler());
 
-      std::string m  = TR_XERCES("Could not start reading the file due to the following problem: ");
+      std::string m  = TE_TR("Could not start reading the file due to the following problem: ");
                   m += errH->getErrors();
                   m += ".";
 
@@ -131,14 +131,14 @@ void te::xerces::Reader::read(const std::string& fileURI)
   }
   catch(const xercesc::XMLException& e)
   {
-    std::string m  = TR_XERCES("Error when reading the XML document. Exception messages is: ");
+    std::string m  = TE_TR("Error when reading the XML document. Exception messages is: ");
                 m += ToString(e.getMessage());
 
     throw Exception(m);
   }
   catch(...)
   {
-    throw Exception(TR_XERCES("Unexpected error reading the XML document!"));
+    throw Exception(TE_TR("Unexpected error reading the XML document!"));
   }
 }
 
@@ -178,7 +178,7 @@ bool te::xerces::Reader::next()
   }
   catch(const xercesc::XMLException& e)
   {
-    std::string m  = TR_XERCES("Error parsing the XML document. Exception messages is: ");
+    std::string m  = TE_TR("Error parsing the XML document. Exception messages is: ");
                 m += ToString(e.getMessage());
 
     throw Exception(m);
@@ -189,7 +189,7 @@ bool te::xerces::Reader::next()
   }
   catch(...)
   {
-    throw Exception(TR_XERCES("Unexpected error in parse next!"));
+    throw Exception(TE_TR("Unexpected error in parse next!"));
   }
 
   return false;
@@ -320,14 +320,14 @@ void te::xerces::Reader::reset()
   }
   catch(const xercesc::XMLException& e)
   {
-    std::string m  = TR_XERCES("Error reseting the parser. Exception messages is: ");
+    std::string m  = TE_TR("Error reseting the parser. Exception messages is: ");
                 m += ToString(e.getMessage());
 
     throw Exception(m);
   }
   catch(...)
   {
-    throw Exception(TR_XERCES("Unexpected error reseting the parser!"));
+    throw Exception(TE_TR("Unexpected error reseting the parser!"));
   }
 }
 

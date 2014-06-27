@@ -26,7 +26,7 @@ void ExemplifyBandIterator()
 
 // define raster info and load
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
 
   te::rst::Band* band = inraster->getBand(0);
@@ -79,19 +79,19 @@ void ExemplifyBandIteratorMask()
 
 // define raster info and load
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
 
   te::rst::Band* band = inraster->getBand(0);
 
 // define raster mask and load
   std::map<std::string, std::string> minfo;
-  minfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_mask_1bit.tif";
+  minfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_mask_1bit.tif";
   te::rst::Raster* mraster = te::rst::RasterFactory::open(minfo);
 
 // define output raster and create (only one band will be created)
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_mask_8bits.tif";
+  orinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_mask_8bits.tif";
   te::rst::Grid* ogrid = new te::rst::Grid(*inraster->getGrid());
   std::vector<te::rst::BandProperty*> obprops;
   for (unsigned int i = 0; i < inraster->getNumberOfBands(); i++)
@@ -124,15 +124,15 @@ void ExemplifyRasterIterator()
 
 // define raster info and load
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
 
 // create iterators for bands 0 and 1
-  std::vector<std::size_t> bands;
+  std::vector<unsigned int> bands;
 
   bands.push_back(0);
   bands.push_back(1);
-
+  
   te::rst::RasterIterator<unsigned char> it = te::rst::RasterIterator<unsigned char>::begin(inraster, bands);
 
   te::rst::RasterIterator<unsigned char> itend = te::rst::RasterIterator<unsigned char>::end(inraster, bands);
@@ -167,12 +167,12 @@ void ExemplifyBandIteratorWindow()
 
 // define raster info and load
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
 
 // define output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_band3_crop_median_5x5.tif";
+  orinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_band3_crop_median_5x5.tif";
 
   te::rst::Grid* grid = new te::rst::Grid(*inraster->getGrid());
 
@@ -233,7 +233,7 @@ void ExemplifyPolygonIterator()
 
 // define raster info and load
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
 
   unsigned int nvalues = 0;
@@ -283,7 +283,7 @@ void ExemplifyLineIterator()
 
 // define raster info and load
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
 
 // create a line to use the iterator, corresponds to a horizontal line in the middle of the raster
@@ -322,7 +322,7 @@ void ExemplifyPointSetIterator()
 
 // define raster info and load
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
 
 // create a vector of random points inside the band's envelope
@@ -381,11 +381,11 @@ void ExemplifyIterators()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in ExemplifyIterators(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in ExemplifyIterators(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in ExemplifyIterators()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in ExemplifyIterators()!" << std::endl;
   }
 
 }

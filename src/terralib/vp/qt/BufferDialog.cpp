@@ -44,26 +44,24 @@
 #include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../srs/Config.h"
-#include "../Config.h"
 #include "../Exception.h"
-#include "../qt/widgets/layer/utils/DataSet2Layer.h"
-#include "BufferMemory.h"
-#include "BufferOp.h"
-#include "BufferQuery.h"
+#include "../BufferMemory.h"
 #include "BufferDialog.h"
+#include "../BufferOp.h"
+#include "../BufferQuery.h"
 #include "ui_BufferDialogForm.h"
-#include "VectorProcessingConfig.h"
 #include "Utils.h"
 
 // Qt
-#include <QtCore/QList>
-#include <QtCore/QSize>
-#include <QtGui/QFileDialog>
-#include <QtGui/QListWidget>
-#include <QtGui/QListWidgetItem>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QList>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QMessageBox>
+#include <QSize>
 
 // STL
 #include <map>
@@ -85,7 +83,7 @@ te::vp::BufferDialog::BufferDialog(QWidget* parent, Qt::WindowFlags f)
   m_ui->setupUi(this);
 
 // add icons
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-buffer-hint").pixmap(112,48));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-buffer-hint").pixmap(112,48));
   
   QSize iconSize(96, 48);
 
@@ -106,7 +104,6 @@ te::vp::BufferDialog::BufferDialog(QWidget* parent, Qt::WindowFlags f)
 
 //signals
   connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLayerComboBoxChanged(int)));
-  connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onFilterLineEditTextChanged(const QString&)));
   connect(m_ui->m_fixedRadioButton, SIGNAL(toggled(bool)), this, SLOT(onFixedDistanceToggled()));
   connect(m_ui->m_fromAttRadioButton, SIGNAL(toggled(bool)), this, SLOT(onAttDistanceToggled()));
   connect(m_ui->m_ruleInOutRadioButton, SIGNAL(toggled(bool)), this, SLOT(onRuleInOutToggled()));
@@ -249,25 +246,6 @@ void te::vp::BufferDialog::onLayerComboBoxChanged(int index)
 
       return;
     }
-    ++it;
-  }
-}
-
-void te::vp::BufferDialog::onFilterLineEditTextChanged(const QString& text)
-{
-  std::list<te::map::AbstractLayerPtr> filteredLayers = te::vp::GetFilteredLayers(text.toStdString(), m_layers);
-
-  m_ui->m_layersComboBox->clear();
-
-  if(text.isEmpty())
-    filteredLayers = m_layers;
-
-  std::list<te::map::AbstractLayerPtr>::iterator it = filteredLayers.begin();
-
-  while(it != filteredLayers.end())
-  {
-    if(it->get()->getSchema()->hasGeom())
-      m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
     ++it;
   }
 }

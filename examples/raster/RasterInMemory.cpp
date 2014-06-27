@@ -17,10 +17,10 @@ void RasterInMemory()
     std::cout << "This test uses the memory driver." << std::endl << std::endl;
 
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
     te::mem::Raster r;
-    te::rst::Raster* memraster = te::rst::RasterFactory::open(std::string("MEM"), rinfo);
+    te::rst::Raster* memraster = te::rst::RasterFactory::open(std::string("MEM"), rinfo, te::common::RWAccess);
 
     const te::rst::RasterSummary* rs = te::rst::RasterSummaryManager::getInstance().get(memraster, te::rst::SUMMARY_ALL);
 
@@ -55,11 +55,11 @@ void RasterInMemory()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in RasterInMemory(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in RasterInMemory(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in RasterInMemory()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in RasterInMemory()!" << std::endl;
   }
 
 }

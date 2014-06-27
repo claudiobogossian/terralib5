@@ -31,6 +31,7 @@
 #include "../dataaccess/datasource/DataSourceFactory.h"
 #include "Config.h"
 #include "DataSource.h"
+#include "ExpansibleRasterFactory.h"
 #include "DataSourceFactory.h"
 #include "Module.h"
 
@@ -45,9 +46,6 @@ te::mem::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib Color module
- TE_ADD_TEXT_DOMAIN(TE_MEMORY_TEXT_DOMAIN, TE_MEMORY_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::mem::Module::~Module()
@@ -89,16 +87,22 @@ void te::mem::Module::initialize()
   capabilities.setQueryCapabilities(queryCapabilities);
 
   DataSource::setCapabilities(capabilities);
+  
+  // Register the expansible raster factory
+  
+  te::mem::ExpansibleRasterFactory::initialize();
 
-  TE_LOG_TRACE(TR_MEMORY("TerraLib In-Memory driver initialized!"));
-
-  TE_LOG_TRACE(TR_MEMORY("TerraLib In-Memory driver initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib In-Memory driver initialized!"));
 }
 
 void te::mem::Module::finalize()
 {
+  // unregister the expansible raster factory
+  
+  te::mem::ExpansibleRasterFactory::finalize();  
+  
   // Unregister the data source factory
   te::da::DataSourceFactory::remove(TE_MEMORY_DRIVER_IDENTIFIER);
 
-  TE_LOG_TRACE(TR_MEMORY("TerraLib In-Memory driver finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib In-Memory driver finalized!"));
 }

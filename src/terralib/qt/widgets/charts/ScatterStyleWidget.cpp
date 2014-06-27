@@ -24,16 +24,17 @@
 */
 
 //Terralib
-#include "ui_ScatterStyleWidgetForm.h"
+#include "../../../se/Graphic.h"
+#include "../se/GraphicDialog.h"
 #include "ScatterStyle.h"
 #include "ScatterStyleWidget.h"
-#include "../../../se/Graphic.h"
-#include "GraphicDialog.h"
+#include "ui_ScatterStyleWidgetForm.h"
+
+// STL
+#include <memory>
 
 //QT
-#include <qdialog.h>
-
-#include <memory>
+#include <QDialog>
 
 te::qt::widgets::ScatterStyleWidget::ScatterStyleWidget(te::qt::widgets::ScatterStyle* initial, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),

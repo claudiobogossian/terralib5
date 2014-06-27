@@ -24,21 +24,23 @@
 */
 
 // TerraLib
+#include "../../../common/progress/ProgressManager.h"
 #include "../../../common/StringUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/Segmenter.h"
 #include "../../../rp/SegmenterRegionGrowingStrategy.h"
+#include "../progress/ProgressViewerDialog.h"
 #include "RasterNavigatorWidget.h"
 #include "SegmenterWizardPage.h"
 #include "ui_SegmenterWizardPageForm.h"
 
 // Qt
 #include <QGridLayout>
-#include <QtGui/QCheckBox>
-#include <QtGui/QIntValidator>
-#include <QtGui/QMessageBox>
+#include <QCheckBox>
+#include <QIntValidator>
+#include <QMessageBox>
 
 // STL
 #include <memory>
@@ -230,7 +232,12 @@ void te::qt::widgets::SegmenterWizardPage::onStrategyTypeComboBoxActivated(int i
   }
 
   m_ui->m_bandTableWidget->resizeColumnsToContents();
+  
+#if (QT_VERSION >= 0x050000)
+  m_ui->m_bandTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+#else
   m_ui->m_bandTableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+#endif
 }
 
 void te::qt::widgets::SegmenterWizardPage::apply()
@@ -262,6 +269,10 @@ void te::qt::widgets::SegmenterWizardPage::apply()
   //run contrast
   te::rp::Segmenter algorithmInstance;
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
   try
   {
     if(algorithmInstance.initialize(algoInputParams))
@@ -278,6 +289,8 @@ void te::qt::widgets::SegmenterWizardPage::apply()
   {
     QMessageBox::warning(this, tr("Warning"), tr("Constrast error."));
   }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
 
   QApplication::restoreOverrideCursor();
 

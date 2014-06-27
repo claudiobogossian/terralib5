@@ -18,7 +18,7 @@ void LoadTrajectoryDataSetFromKML(boost::ptr_vector<te::st::TrajectoryDataSet>& 
     te::da::DataSourceInfo dsinfo;
 
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/st/trajectory/t_40_41.kml" ; 
+    connInfo["URI"] = ""TERRALIB_DATA_DIR"/st/trajectory/t_40_41.kml" ; 
     dsinfo.setConnInfo(connInfo);
     dsinfo.setType("OGR");
 
@@ -67,11 +67,11 @@ void LoadTrajectoryDataSetFromKML(boost::ptr_vector<te::st::TrajectoryDataSet>& 
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in TrajectoryExamplesFromKML: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in TrajectoryExamplesFromKML: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in TrajectoryExamplesFromKML!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in TrajectoryExamplesFromKML!" << std::endl;
   }
 }
 

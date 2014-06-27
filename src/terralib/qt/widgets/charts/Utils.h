@@ -52,6 +52,7 @@ namespace te
 
     class Scatter;
     class Histogram;
+    class ChartDisplayWidget;
 
     /*!
         \brief Scatter Creator
@@ -81,10 +82,10 @@ namespace te
         \note It will traverse the data set, using the moveNext() method
         \note It will not take the ownership of the "dataset" pointer.
         \note It will not take the ownership of the "dataType" pointer.
-        \note The caller will take the ownership of the returned scatter pointer.
+        \note The caller will take the ownership of the returned ChartDisplayWidget pointer.
 
     */
-    TEQTWIDGETSEXPORT void createScatterDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propX, int propY);
+    TEQTWIDGETSEXPORT ChartDisplayWidget* createScatterDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propX, int propY);
 
     /*!
         \brief Histogram Creator
@@ -131,10 +132,10 @@ namespace te
         \note It will traverse the data set, using the moveNext() method
         \note It will not take the ownership of the "dataset" pointer.
         \note It will not take the ownership of the "dataType" pointer. 
-        \note The caller will take the ownership of the returned histogram pointer.
+        \note The caller will take the ownership of the returned ChartDisplayWidget pointer.
 
     */
-    TEQTWIDGETSEXPORT void createHistogramDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int slices = 10);
+    TEQTWIDGETSEXPORT ChartDisplayWidget* createHistogramDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int slices = 10);
 
     /*!
         \function Terralib2Qwt

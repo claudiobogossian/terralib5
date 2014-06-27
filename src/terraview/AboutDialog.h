@@ -30,7 +30,7 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QDialog>
+#include <QDialog>
 
 // Forward declaration
 namespace Ui { class AboutDialogForm; }

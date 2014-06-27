@@ -31,7 +31,7 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QDialog>
+#include <QDialog>
 
 // STL
 #include <memory>

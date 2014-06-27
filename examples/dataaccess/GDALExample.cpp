@@ -1,3 +1,5 @@
+
+#include "../Config.h"
 #include "DataAccessExamples.h"
 
 #include <iostream>
@@ -10,11 +12,15 @@ void OpenFile()
     std::auto_ptr<te::da::DataSource> dsGDAL = te::da::DataSourceFactory::make("GDAL");
 
     bool res = dsGDAL->isOpened();  // expect false;
+  
+    std::string data_dir = TERRALIB_DATA_DIR;
 
     std::map<std::string, std::string> connInfo;
-    connInfo["SOURCE"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+    connInfo["SOURCE"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
+  
     dsGDAL->setConnectionInfo(connInfo);
     dsGDAL->open();
+  
     res = dsGDAL->isOpened();  // expect true
     res = dsGDAL->isValid();   // expect true
 
@@ -22,11 +28,11 @@ void OpenFile()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in GDALExample OpenFile(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in GDALExample OpenFile(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in GDALExample OpenFile()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in GDALExample OpenFile()!" << std::endl;
   }
 }
 
@@ -35,8 +41,11 @@ void OpenDirectory()
 {
   try
   {
+    std::string data_dir = TERRALIB_DATA_DIR;
+  
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters" ; 
+    connInfo["URI"] = data_dir + "/rasters";
+  
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
     ds->setConnectionInfo(connInfo);
  
@@ -53,11 +62,11 @@ void OpenDirectory()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in GDALExample OpenDirectory(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in GDALExample OpenDirectory(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in GDALExample OpenDirectory()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in GDALExample OpenDirectory()!" << std::endl;
   }
 
 }
@@ -67,8 +76,11 @@ void DataSourceTransactor()
 {
   try
   {
+    std::string data_dir = TERRALIB_DATA_DIR;
+
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters";
+    connInfo["URI"] = data_dir + "/rasters";
+  
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
 
     ds->setConnectionInfo(connInfo);
@@ -85,11 +97,11 @@ void DataSourceTransactor()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in GDALExample DataSourceTransactor(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in GDALExample DataSourceTransactor(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in GDALExample DataSourceTransactor()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in GDALExample DataSourceTransactor()!" << std::endl;
   }
 }
 

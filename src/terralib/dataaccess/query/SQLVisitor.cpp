@@ -42,6 +42,7 @@
 #include "JoinConditionOn.h"
 #include "JoinConditionUsing.h"
 #include "Literal.h"
+#include "LiteralBool.h"
 #include "LiteralByteArray.h"
 #include "LiteralDateTime.h"
 #include "LiteralDouble.h"
@@ -88,7 +89,7 @@ void te::da::SQLVisitor::visit(const Function& visited)
   const SQLFunctionEncoder* encoder = m_dialect.find(fname);
 
   if(encoder == 0)
-    throw Exception(TR_DATAACCESS("The informed function is not supported by this driver!"));
+    throw Exception(TE_TR("The informed function is not supported by this driver!"));
 
   encoder->toSQL(visited, m_sql, *this);
 }
@@ -179,6 +180,12 @@ void te::da::SQLVisitor::visit(const Literal& visited)
 {
   if(visited.getValue())
     m_sql += visited.getValue()->toString();
+}
+
+void te::da::SQLVisitor::visit(const LiteralBool& visited)
+{
+  if(visited.getValue())
+    m_sql += "bool(" + visited.getValue()->toString() + ")";
 }
 
 void te::da::SQLVisitor::visit(const LiteralByteArray& visited)

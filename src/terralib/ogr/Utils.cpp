@@ -96,13 +96,13 @@ OGRGeometry* te::ogr::Convert2OGR(const te::gm::Geometry* teGeom)
     return ogrGeom;
 
   if(result == OGRERR_NOT_ENOUGH_DATA)
-    throw te::common::Exception(TR_OGR("Error when attempting convert the geometry to OGR. Not enough data."));
+    throw te::common::Exception(TE_TR("Error when attempting convert the geometry to OGR. Not enough data."));
 
   if(result == OGRERR_UNSUPPORTED_GEOMETRY_TYPE)
-    throw te::common::Exception(TR_OGR("Error when attempting convert the geometry to OGR. Unsupported geometry type."));
+    throw te::common::Exception(TE_TR("Error when attempting convert the geometry to OGR. Unsupported geometry type."));
 
   if(result == OGRERR_CORRUPT_DATA)
-    throw te::common::Exception(TR_OGR("Error when attempting convert the geometry to OGR. Corrupt data."));
+    throw te::common::Exception(TE_TR("Error when attempting convert the geometry to OGR. Corrupt data."));
 
   return 0;
 }
@@ -163,7 +163,7 @@ OGRSpatialReference* te::ogr::Convert2OGRProjection(int srid)
   OGRErr error = osrs->importFromEPSG(srid);
   
   if(error != OGRERR_NONE)
-    throw(te::common::Exception(TR_OGR("Error converting spatial reference system.")));
+    throw(te::common::Exception(TE_TR("Error converting spatial reference system.")));
   
   return osrs;
 }
@@ -281,7 +281,7 @@ te::dt::Property* te::ogr::Convert2TerraLib(OGRFieldDefn* fieldDef)
     break;
 
     default:
-      throw(te::common::Exception(TR_OGR("Unexpected data type.")));
+      throw(te::common::Exception(TE_TR("Unexpected data type.")));
   }
 
   return p;
@@ -308,7 +308,7 @@ OGRFieldDefn* te::ogr::Convert2OGR(te::dt::Property* p)
       else if(elementType == te::dt::DOUBLE_TYPE)
         fieldDef->SetType(OFTRealList);
       else
-        throw(te::common::Exception(TR_OGR("Unsupported data type by OGR.")));
+        throw(te::common::Exception(TE_TR("Unsupported data type by OGR.")));
       break;
     }
 
@@ -341,12 +341,12 @@ OGRFieldDefn* te::ogr::Convert2OGR(te::dt::Property* p)
       else if(elementType == te::dt::TIME_INSTANT)
         fieldDef->SetType(OFTDateTime);
       else
-        throw(te::common::Exception(TR_OGR("Unsupported data type by OGR.")));
+        throw(te::common::Exception(TE_TR("Unsupported data type by OGR.")));
       break;
     }
 
     default:
-      throw(te::common::Exception(TR_OGR("Unsupported data type by OGR.")));
+      throw(te::common::Exception(TE_TR("Unsupported data type by OGR.")));
   }
   
   return fieldDef;
@@ -459,7 +459,7 @@ OGRwkbGeometryType te::ogr::Convert2OGR(te::gm::GeomType geomType)
       return wkbGeometryCollection25D;
 
     default:  
-      throw(te::common::Exception(TR_OGR("Unsupported geometry type by OGR Driver.")));
+      throw(te::common::Exception(TE_TR("Unsupported geometry type by OGR Driver.")));
   }
 }
 
@@ -523,7 +523,7 @@ std::string te::ogr::GetOGRConnectionInfo(const std::map<std::string, std::strin
   if(it != connInfo.end())
     return it->second;
 
-  throw te::common::Exception(TR_OGR("Invalid data source connection information!."));
+  throw te::common::Exception(TE_TR("Invalid data source connection information!."));
 }
 
 std::string te::ogr::RemoveSpatialSql(const std::string& sql)
@@ -546,3 +546,4 @@ std::string te::ogr::RemoveSpatialSql(const std::string& sql)
 
   return newQuery;
 }
+

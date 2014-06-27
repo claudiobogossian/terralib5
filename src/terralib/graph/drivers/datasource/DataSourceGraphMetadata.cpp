@@ -60,7 +60,7 @@ void te::graph::DataSourceGraphMetadata::load(int id)
 {
   if(m_ds == 0)
   {
-    throw Exception(TR_GRAPH("Data Source not defined."));
+    throw Exception(TE_TR("Data Source not defined."));
   }
 
   //load graph metada information
@@ -74,17 +74,17 @@ void te::graph::DataSourceGraphMetadata::save()
 {
   if(m_ds == 0)
   {
-    throw Exception(TR_GRAPH("Data Source not defined."));
+    throw Exception(TE_TR("Data Source not defined."));
   }
 
   if(this->getName().empty())
   {
-    throw Exception(TR_GRAPH("Graph name not defined."));
+    throw Exception(TE_TR("Graph name not defined."));
   }
 
   if(!isValidGraphName(this->getName()))
   {
-    throw Exception(TR_GRAPH("Invalid graph name."));
+    throw Exception(TE_TR("Invalid graph name."));
   }
 
   //add graph table entry
@@ -118,7 +118,7 @@ void te::graph::DataSourceGraphMetadata::update()
 {
   if(m_ds == 0)
   {
-    throw Exception(TR_GRAPH(""));
+    throw Exception(TE_TR(""));
   }
 }
 
@@ -160,7 +160,7 @@ void te::graph::DataSourceGraphMetadata::addEdgeProperty(te::dt::Property* p)
 {
   if(this->getStorageMode() == te::graph::Vertex_List)
   {
-      throw Exception(TR_GRAPH("TO DO."));
+    throw Exception(TE_TR("TO DO."));
   }
 
   te::graph::GraphMetadata::addEdgeProperty(p);
@@ -284,7 +284,7 @@ void te::graph::DataSourceGraphMetadata::createGraphAttributesTable()
 
 void te::graph::DataSourceGraphMetadata::createGraphTableVertexModel()
 {
-  throw Exception(TR_GRAPH("TO DO."));
+  throw Exception(TE_TR("TO DO."));
 }
 
 void te::graph::DataSourceGraphMetadata::createGraphTableEdgeModel()
@@ -415,7 +415,7 @@ void te::graph::DataSourceGraphMetadata::createVertexAttrTable()
 
 void te::graph::DataSourceGraphMetadata::createEdgeAttrTable()
 {
-  throw Exception(TR_GRAPH("TO DO."));
+  throw Exception(TE_TR("TO DO."));
 }
 
 void te::graph::DataSourceGraphMetadata::createTable(std::string tableName, te::da::DataSetType* dt)

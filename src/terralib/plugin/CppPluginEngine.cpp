@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/plugin/CppPluginEngine.cpp
-  
+
   \brief A plugin engine for plugins written in C++.
 */
 
@@ -30,6 +30,7 @@
 #include "../common/Logger.h"
 #include "../common/Translator.h"
 #include "../common/PlatformUtils.h"
+#include "../Defines.h"
 #include "CppPluginEngine.h"
 #include "CppPluginProxy.h"
 #include "Plugin.h"
@@ -46,21 +47,18 @@
 
 te::plugin::CppPluginEngine::CppPluginEngine()
 {
-  getDefaultDirs( m_defaultSearchDirs );
 }
 
 te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& pInfo)
 {
-  PluginInfo internalPluginInfo = pInfo;
-  
 // get the plugin's shared library name in the resources list
-  std::vector<PluginInfo::Resource>::const_iterator it = std::find_if(internalPluginInfo.m_resources.begin(),
-                                                                      internalPluginInfo.m_resources.end(),
+  std::vector<PluginInfo::Resource>::const_iterator it = std::find_if(pInfo.m_resources.begin(),
+                                                                      pInfo.m_resources.end(),
                                                                       PluginInfo::Finder1st("SharedLibraryName"));
 
-  if(it == internalPluginInfo.m_resources.end())
+  if(it == pInfo.m_resources.end())
   {
-    std::string m  = TR_PLUGIN("Shared library name not informed for plugin: ");
+    std::string m  = TE_TR("Shared library name not informed for plugin: ");
                 m += pInfo.m_name;
                 m += "!";
 
@@ -73,67 +71,137 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
 // is there a library already loaded with this name?
   te::common::LibraryPtr slib(te::common::LibraryManager::getInstance().find(libName));
 
-  if(slib.get() == 0)
+  if(slib.get() != 0)
   {
-// if not loaded, load it!
+// if it already exists, just check if it is loaded
+    if(!slib->isLoaded())
+      slib->load();
+  }
+  else
+  {
+// if not loaded yet, load it!
 
-    boost::filesystem::path pluginFile( internalPluginInfo.m_folder );
-    pluginFile /= libName;
-    
-// the plugin library file may be in a special dir informed by internalPluginInfo.m_folder
-    if( boost::filesystem::exists(pluginFile) && 
-      boost::filesystem::is_regular_file(pluginFile) )
+// the plugin library file may be in a special dir informed by pInfo.m_folder
+    boost::filesystem::path pluginFile(libName);
+
+    slib.reset(new te::common::Library(pluginFile.string(), true));
+
+    try
     {
-      // create shared library entry but doesn't load it yet!
-      slib.reset(new te::common::Library(pluginFile.string(), true));
+      slib->load();
     }
-    else
+    catch(...)
     {
-      for( std::vector< std::string >::size_type dirIdx = 0 ; dirIdx <
-        m_defaultSearchDirs.size() ; ++dirIdx )
+    }
+
+    if(!slib->isLoaded())
+    {
+// search for alternative paths
+      std::vector<std::string> alternative_paths;
+      
+#if TE_PLATFORM == TE_PLATFORMCODE_APPLE
+      alternative_paths.push_back("./");
+#endif
+
+// 1st: in a place indicated by a environment variable defined in macro TERRALIB_DIR_VAR_NAME
+      const char* home_dir = getenv(TERRALIB_DIR_VAR_NAME);
+
+      if(home_dir != 0)
+        alternative_paths.push_back(home_dir);
+
+// 2nd: in the install prefix dir
+      alternative_paths.push_back(TERRALIB_INSTALL_PREFIX_PATH);
+
+      for(std::size_t i = 0; i != alternative_paths.size(); ++i)
       {
-        pluginFile = m_defaultSearchDirs[ dirIdx ];
-        pluginFile /= libName;
-        
-        if(boost::filesystem::exists(pluginFile) &&
-          boost::filesystem::is_regular_file(pluginFile) )
+        try
         {
-          internalPluginInfo.m_folder = m_defaultSearchDirs[ dirIdx ];
+          pluginFile = alternative_paths[i];
+          pluginFile /= libName;
           slib.reset(new te::common::Library(pluginFile.string(), true));
+          slib->load();
           break;
         }
+        catch(...)
+        {
+        }
+
+        try
+        {
+          pluginFile = alternative_paths[i];
+          pluginFile /= "lib";
+          pluginFile /= libName;
+          slib.reset(new te::common::Library(pluginFile.string(), true));
+          slib->load();
+          break;
+        }
+        catch(...)
+        {
+        }
+
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+        try
+        {
+          pluginFile = alternative_paths[i];
+          pluginFile /= "Release";
+          pluginFile /= libName;
+          slib.reset(new te::common::Library(pluginFile.string(), true));
+          slib->load();
+          break;
+        }
+        catch(...)
+        {
+        }
+
+        try
+        {
+          pluginFile = alternative_paths[i];
+          pluginFile /= "Debug";
+          pluginFile /= libName;
+          slib.reset(new te::common::Library(pluginFile.string(), true));
+          slib->load();
+          break;
+        }
+        catch(...)
+        {
+        }
+#endif
+      }
+
+      if(!slib->isLoaded())
+      {
+        std::string m  = TE_TR("Could not find shared library: ");
+                    m += pInfo.m_name;
+        throw te::common::Exception(m);
       }
     }
   }
-  
+
   if(slib.get() == 0)
   {
-    std::string m  = TR_PLUGIN("Could not find load plugin: ");
-                m += internalPluginInfo.m_name;
+    std::string m  = TE_TR("Could not find shared library: ");
+                m += pInfo.m_name;
     throw te::common::Exception(m);
   }  
-  
-  if(!slib->isLoaded())
-    slib->load();
 
 // now we need to get the plugin constructor function address
   GetPluginFPtr getPluginFptr = (GetPluginFPtr) (slib->getAddress("CppPluginGetInstance"));
 
   if(getPluginFptr == NULL)
   {
-    std::string m  = TR_PLUGIN("Could not find CppPluginGetInstance function into the plugin's code: ");
-                m += internalPluginInfo.m_name;
+    std::string m  = TE_TR("Could not find CppPluginGetInstance function into the plugin's code: ");
+                m += pInfo.m_name;
                 m += "!";
 
     throw te::common::Exception(m);
   }
 
-  std::auto_ptr<Plugin> cppPlugin(getPluginFptr(internalPluginInfo));
+  std::auto_ptr<Plugin> cppPlugin(getPluginFptr(pInfo));
 
   if(cppPlugin.get() == 0)
   {
-    std::string m  = TR_PLUGIN("CppPluginGetInstance returned a null plugin instance: ");
-                m += internalPluginInfo.m_name;
+    std::string m  = TE_TR("CppPluginGetInstance returned a null plugin instance: ");
+                m += pInfo.m_name;
                 m += "!";
 
     throw te::common::Exception(m);
@@ -155,195 +223,8 @@ void te::plugin::CppPluginEngine::unload(AbstractPlugin* plugin)
 
 std::string te::plugin::CppPluginEngine::getPluginFileName(const std::string& libName)
 {
-#ifdef NDEBUG
-  std::string nativeName = libName;
-#else
-  std::string nativeName = libName + "_d";  // add a suffix _d to the library name in debug mode
-#endif
-  nativeName = te::common::Library::getNativeName(nativeName);
+  std::string nativeName = te::common::Library::getNativeName(libName);
 
   return nativeName;
-}
-
-void te::plugin::CppPluginEngine::getDefaultDirs( std::vector< std::string >& dirs )
-{
-  dirs.clear();
-  
-  dirs.push_back( "." );
-  
-  {
-    boost::filesystem::path p("lib");
-    
-    if(boost::filesystem::is_directory(p))
-      dirs.push_back( boost::filesystem::system_complete( p ).string() );   
-  }
-
-  {
-    boost::filesystem::path p("win32");
-    
-    if(boost::filesystem::is_directory(p))
-      dirs.push_back( boost::filesystem::system_complete( p ).string() );   
-  }
-
-  {
-    boost::filesystem::path p("win64");
-    
-    if(boost::filesystem::is_directory(p))
-      dirs.push_back( boost::filesystem::system_complete( p ).string() );   
-  }
-  
-  #ifdef TE_DEFAULT_PLUGINS_DIR
-    if(boost::filesystem::is_directory(TE_DEFAULT_PLUGINS_DIR))
-    {
-      dirs.push_back( boost::filesystem::system_complete(TE_DEFAULT_PLUGINS_DIR).string() );
-    }
-  #endif
-
-  #ifdef TE_DIR_ENVIRONMENT_VARIABLE
-    {
-      char* e = getenv(TE_DIR_ENVIRONMENT_VARIABLE);
-
-      if(e != 0)
-      {
-	      if(boost::filesystem::is_directory(e))
-          dirs.push_back( boost::filesystem::system_complete(e).string() );
-
-        {
-          boost::filesystem::path p(e);
-          p /= "lib";
-
-          if(boost::filesystem::is_directory(p))
-            dirs.push_back( boost::filesystem::system_complete(p).string() );
-        }  
-
-        {
-          boost::filesystem::path p(e);
-          p /= "bin32";
-
-          if(boost::filesystem::is_directory(p))
-            dirs.push_back( boost::filesystem::system_complete(p).string() );
-        }
-
-        {
-          boost::filesystem::path p(e);
-          p /= "bin64";
-
-          if(boost::filesystem::is_directory(p))
-            dirs.push_back( boost::filesystem::system_complete(p).string() );
-        }
-      
-        #ifdef TE_DEFAULT_PLUGINS_DIR
-          {
-            boost::filesystem::path p(e);
-            p /= TE_DEFAULT_PLUGINS_DIR;
-
-            if(boost::filesystem::is_directory(p))
-              dirs.push_back( boost::filesystem::system_complete(p).string() );
-          }
-        #endif
-      }
-    }
-  #endif
-
-  {
-    char* e = getenv("TERRALIB_DIR");
-
-    if(e != 0)
-    {
-	    if(boost::filesystem::is_directory(e))
-        dirs.push_back( boost::filesystem::system_complete(e).string() );
-
-      {
-        boost::filesystem::path p(e);
-        p /= "lib";
-
-        if(boost::filesystem::is_directory(p))
-          dirs.push_back( boost::filesystem::system_complete(p).string() );
-      }  
-
-      {
-        boost::filesystem::path p(e);
-        p /= "bin32";
-
-        if(boost::filesystem::is_directory(p))
-          dirs.push_back( boost::filesystem::system_complete(p).string() );
-      }
-
-      {
-        boost::filesystem::path p(e);
-        p /= "bin64";
-
-        if(boost::filesystem::is_directory(p))
-          dirs.push_back( boost::filesystem::system_complete(p).string() );
-      }
-      
-      #ifdef TE_DEFAULT_PLUGINS_DIR
-        {
-          boost::filesystem::path p(e);
-          p /= TE_DEFAULT_PLUGINS_DIR;
-
-          if(boost::filesystem::is_directory(p))
-            dirs.push_back( boost::filesystem::system_complete(p).string() );
-        }
-      #endif
-    }
-  }
-
-  #ifdef TE_PLUGINS_PATH
-    {
-	    if(boost::filesystem::is_directory(TE_PLUGINS_PATH))
-        dirs.push_back( boost::filesystem::system_complete(TE_PLUGINS_PATH).string() );
-
-      {
-        boost::filesystem::path p(TE_PLUGINS_PATH);
-        p /= "lib";
-
-        if(boost::filesystem::is_directory(p))
-          dirs.push_back( boost::filesystem::system_complete(p).string() );
-      }  
-
-      {
-        boost::filesystem::path p(TE_PLUGINS_PATH);
-        p /= "bin32";
-
-        if(boost::filesystem::is_directory(p))
-          dirs.push_back( boost::filesystem::system_complete(p).string() );
-      }
-
-      {
-        boost::filesystem::path p(TE_PLUGINS_PATH);
-        p /= "bin64";
-
-        if(boost::filesystem::is_directory(p))
-          dirs.push_back( boost::filesystem::system_complete(p).string() );
-      }
-      
-      #ifdef TE_DEFAULT_PLUGINS_DIR
-        {
-          boost::filesystem::path p(TE_PLUGINS_PATH);
-          p /= TE_DEFAULT_PLUGINS_DIR;
-
-          if(boost::filesystem::is_directory(p))
-            dirs.push_back( boost::filesystem::system_complete(p).string() );
-        }
-      #endif
-    }
-  #endif
- 
-  std::vector< std::string > decPath;
-  te::common::GetDecompostedPathEnvVar( decPath );
-  for( std::vector< std::string >::size_type decPathIdx = 0 ; decPathIdx < decPath.size() ;
-    ++decPathIdx )
-  {
-    dirs.push_back( decPath[ decPathIdx ] );
-  }
-  
-  std::vector< std::string > decLDPath;
-  te::common::GetDecompostedLDPathEnvVar( decLDPath );
-  for( std::vector< std::string >::size_type decLDPathIdx = 0 ; decLDPathIdx < decLDPath.size() ;
-    ++decLDPathIdx )
-  {
-    dirs.push_back( decLDPath[ decLDPathIdx ] );
-  }
 }
 

@@ -63,6 +63,8 @@ namespace te
           \param maxMemPercentUsed The maximum free memory percentual to use valid range: [1:100].
           
           \return true if OK, false on errors.
+          
+          \note For the case where using the write raster access policy: The use of multiple cached blocks can cause deadlocks if multiple threads are locking blocks needed by other threads, use it with caution!
         */
         bool initialize( RasterSynchronizer& sync,
                          const unsigned char maxMemPercentUsed );
@@ -75,6 +77,8 @@ namespace te
           \param maxNumberOfCacheBlocks The maximum number of cache blocks.
 
           \return true if OK, false on errors.
+          
+          \note For the case where using the write raster access policy: The use of multiple cached blocks can cause deadlocks if multiple threads are locking blocks needed by other threads, use it with caution!
         */
         bool initialize( const unsigned int maxNumberOfCacheBlocks, 
                          RasterSynchronizer& sync );

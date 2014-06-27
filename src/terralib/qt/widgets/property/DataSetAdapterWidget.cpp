@@ -35,7 +35,7 @@
 #include "ui_DataSetAdapterWidgetForm.h"
 
 // Qt
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 
 
 te::qt::widgets::DataSetAdapterWidget::DataSetAdapterWidget(QWidget* parent, Qt::WindowFlags f)

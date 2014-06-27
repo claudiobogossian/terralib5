@@ -163,7 +163,7 @@ te::da::ObjectIdSet* te::qt::widgets::Histogram::find(std::vector<te::dt::Abstra
   typedef te::qt::widgets::IntervalToObjectIdSet::nth_index<0>::type::iterator itIntervalToObjectIdSet;
   te::da::ObjectIdSet* oids = new te::da::ObjectIdSet;
 
-  for(int i = 0; i < intervals.size(); ++i)
+  for(size_t i = 0; i < intervals.size(); ++i)
   {
     IntervalToObjectId aux(intervals[i], 0);
 

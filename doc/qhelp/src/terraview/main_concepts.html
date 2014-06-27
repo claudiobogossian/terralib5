@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+  
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+
+  
+  <title>main_window_utf8</title>
+</head>
+
+
+<body>
+
+<span style="font-family: Calibri Light;"></span>
+<h3 style="text-align: center; font-family: Calibri Light;">TerraView
+Main Concepts</h3>
+
+<span style="font-family: Calibri Light;">This new version of TerraView
+introduces some new concepts. It is important for the new user to have
+knowledge of these concepts, making it easier to adapt. Some of these
+concepts are:</span>
+<h4 style="font-family: Calibri Light;">Project</h4>
+
+<span style="font-family: Calibri Light;">The project is a physical
+file that defines the workspace of a user. All layers created by a user
+are serialized in this file. Importantly, the data are not stored in
+the project file, but just a link to where the data sources are located.<br>
+
+<br>
+
+</span>
+<h4 style="font-family: Calibri Light;">Data Sources</h4>
+
+<span style="font-family: Calibri Light;">The TerraView supports
+different data sources such as:<br>
+
+</span>
+<ul style="font-family: Calibri Light;">
+
+  <li>Databases: PostGIS, Microsoft Access, SQLite</li>
+
+</ul>
+
+<ul>
+
+  <li><span style="font-family: Calibri Light;">Files: Files can either
+be vector files as raster files. To support these data types, libraries GDAL / OGR are used.</span></li>
+
+</ul>
+
+<span style="font-family: Calibri Light;"></span>
+<h4 style="font-family: Calibri Light;">Layers</h4>
+
+<span style="font-family: Calibri Light;">Layers are the representation
+of the data sets in TerraView. Initially there are some types of layers:</span><br style="font-family: Calibri Light;">
+
+<br style="font-family: Calibri Light;">
+
+<ul style="font-family: Calibri Light;">
+
+  <li><span style="font-weight: bold;">DataSetLayer</span>: This is the
+most common type of layer. Layers of this type have one data set that
+belongs to a data source.</li>
+
+</ul>
+
+<ul style="font-family: Calibri Light;">
+
+  <li><span style="font-weight: bold;">FolderLayer</span>: This type of
+layer is used to facilitate the organization of layers in the Layer Explorer, allowing the grouping of layers.</li>
+
+</ul>
+
+<ul style="font-family: Calibri Light;">
+
+  <li><span style="font-weight: bold;">QueryLayer</span>: This type of
+layer is used&nbsp;to create a subset of a DataSetLayer. For example, when a
+restriction clause&nbsp; over a dataset is defined, it generates a new dataset that is represented by
+this type of layer.</li>
+
+</ul>
+
+<ul style="font-family: Calibri Light;">
+
+  <li><span style="font-weight: bold;">TabularLayer</span>: This type of layer
+is used to show a dataset represented in textual files with well-defined
+format such as CSV, or even binary files of type DBF. These files may
+or may not have geometric representations.</li>
+
+</ul>
+
+<h4 style="font-family: Calibri Light;">Layer Explorer</h4>
+
+<span style="font-family: Calibri Light;">This component uses a tree
+structure to represent the layers contained in a project. A context
+menu is provided for quick access operations that are relevant to each
+type of layer or sub element of this layer.<br>
+
+<br style="font-family: Calibri Light;">
+
+</span>
+<h4 style="font-family: Calibri Light;">Data Table</h4>
+
+<span style="font-family: Calibri Light;">This component is a table
+used to represent the textual data associated with each layer. Context
+menus are also provided to access the relevant operations.<br>
+
+<br style="font-family: Calibri Light;">
+
+</span>
+<h4 style="font-family: Calibri Light;">Map Display</h4>
+
+<span style="font-family: Calibri Light;">The map display is the area
+to be used to render the selected layer in the layer explorer. This
+component defines a geographical reference system to be followed by all
+layers to be drawn in this component.<br>
+
+<br>
+
+</span><span style="font-family: Calibri Light;"></span>
+<h4 style="font-family: Calibri Light;">Style</h4>
+
+<span style="font-family: Calibri Light;">The style defines how
+a&nbsp;data set should be rendered in the Map Display. For each type of
+geometric representation exists a kind of style to set it. &nbsp;A
+style is defined by a set of rules and the rules&nbsp;are composed of
+sets of symbolizers.</span><br style="font-family: Calibri Light;">
+
+<br style="font-family: Calibri Light;">
+
+<ul style="font-family: Calibri Light;">
+
+  <li>Rules: It is possible to define a set of rules within a style,
+allowing different parts of the dataset to have different visual. The
+rule is a filter to be applied to the data set.</li>
+
+</ul>
+
+<ul>
+
+  <li><span style="font-family: Calibri Light;">Symbolizers: Structure
+that defines how an object should be rendered. Attributes such as fill
+color, opacity and others are defined in this element. A symbolizer can also be
+represented by an image file or well-known mark.</span></li>
+
+</ul>
+
+<span style="font-family: Calibri Light;"><br style="font-family: Calibri Light;">
+
+</span>
+<h4 style="font-family: Calibri Light;">Style Explorer</h4>
+
+<span style="font-family: Calibri Light;">Displays the style associated
+with a layer. This component is possible to add, remove or modify the
+symbols that make up the style. A property browser displays all
+attributes of a selected symbol, simply allowing its modification.<br>
+
+<br style="font-family: Calibri Light;">
+
+</span>
+<h4 style="font-family: Calibri Light;">SRS / SRID</h4>
+
+<span style="font-family: Calibri Light;">SRS stands for Spatial
+Reference Systems and SRID defines an identifier of a spatial
+reference. To correctly render a DataSetLayer&nbsp; in a Map Display it
+is necessary to have&nbsp;consistent SRIDs (projections) for both the
+Map and the Layer.<br>
+<br>
+
+<br style="font-family: Calibri Light;">
+
+</span>
+<h4 style="font-family: Calibri Light;">Plugins</h4>
+
+<span style="font-family: Calibri Light;">Plugins are modules of
+TerraView that can easily be associated with or removed from the
+application. An example of these plugins are the drivers that support different data sources.</span>
+</body>
+</html>

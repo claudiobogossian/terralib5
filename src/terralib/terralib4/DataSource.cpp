@@ -27,14 +27,13 @@
 #include "Utils.h"
 
 // TerraLib 4.x
-#include <terralib/kernel/TeDatabase.h>
-#include <terralib/kernel/TeDatabaseFactory.h>
-#include <terralib/kernel/TeDatabaseFactoryParams.h>
-#include <terralib/kernel/TeDBConnectionsPool.h>
-#include <terralib/kernel/TeDefines.h>
-#include <terralib/kernel/TeTheme.h>
-#include <terralib/utils/TeUpdateDBVersion.h>
-
+#include <terralib4/kernel/TeDatabase.h>
+#include <terralib4/kernel/TeDatabaseFactory.h>
+#include <terralib4/kernel/TeDatabaseFactoryParams.h>
+#include <terralib4/kernel/TeDBConnectionsPool.h>
+#include <terralib4/kernel/TeDefines.h>
+#include <terralib4/kernel/TeTheme.h>
+#include <terralib4/utils/TeUpdateDBVersion.h>
 
 te::da::DataSourceCapabilities terralib4::DataSource::sm_capabilities;
 te::da::SQLDialect* terralib4::DataSource::sm_dialect(0);
@@ -87,7 +86,7 @@ void terralib4::DataSource::open()
   if(!m_db->isConnected())
   {
     if(!m_db->connect(hostName, userName, password, auxDbName, portNumber))
-      throw te::da::Exception(TR_TERRALIB4("Could not connect to informed database!"));
+      throw te::da::Exception(TE_TR("Could not connect to informed database!"));
   }
 
   string DBver;
@@ -99,12 +98,12 @@ void terralib4::DataSource::open()
     {
       close();
 
-      throw te::da::Exception(TR_TERRALIB4("Cannot connect to database because the version of Terraview is lower than the version of the database!"));
+      throw te::da::Exception(TE_TR("Cannot connect to database because the version of Terraview is lower than the version of the database!"));
     }
 
     close();
 
-    throw te::da::Exception(TR_TERRALIB4("The database must be converted to the model ") + dbVersion + "! \n");
+    throw te::da::Exception(TE_TR("The database must be converted to the model ") + dbVersion + "! \n");
   }
 
   m_db->loadLayerSet();
@@ -139,12 +138,12 @@ const te::da::SQLDialect* terralib4::DataSource::getDialect() const
 
 void terralib4::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
-  throw Exception(TR_TERRALIB4("This driver is read-only!"));
+  throw Exception(TE_TR("This driver is read-only!"));
 }
 
 void terralib4::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
 {
-  throw Exception(TR_TERRALIB4("This driver is read-only!"));
+  throw Exception(TE_TR("This driver is read-only!"));
 }
 
 bool terralib4::DataSource::exists(const std::map<std::string, std::string>& dsInfo)

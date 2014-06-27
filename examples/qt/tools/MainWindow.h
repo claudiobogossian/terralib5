@@ -31,7 +31,7 @@
 #include <terralib/maptools/AbstractLayer.h>
 
 // Qt
-#include <QtGui/QMainWindow>
+#include <QMainWindow>
 
 // STL
 #include <list>

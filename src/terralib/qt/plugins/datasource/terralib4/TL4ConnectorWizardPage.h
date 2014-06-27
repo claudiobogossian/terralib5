@@ -35,7 +35,7 @@
 #include <string>
 
 // Qt
-#include <QtGui/QWizardPage>
+#include <QWizardPage>
 
 // Forward declaration
 namespace Ui { class TL4ConnectorWizardPageForm; }

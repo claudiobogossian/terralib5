@@ -35,8 +35,8 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QWidget>
-#include <QtGui/QTreeWidgetItem>
+#include <QTreeWidgetItem>
+#include <QWidget>
 
 namespace Ui { class LayerSearchWidgetForm; }
 

@@ -166,7 +166,7 @@ namespace te
       if(factory)
         return factory->build(p);
 
-      throw Exception(TR_COMMON("Concrete factory not found!"));
+      throw Exception(TE_TR("Concrete factory not found!"));
     }
 
     template<class TPRODUCT, class TFACTORYKEY, class TPARAM, class TKEYCOMPARE> inline

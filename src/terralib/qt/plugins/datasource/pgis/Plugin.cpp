@@ -48,10 +48,7 @@ void te::qt::plugins::pgis::Plugin::startup()
 
   te::qt::widgets::DataSourceTypeManager::getInstance().add(new PostGISType);
 
-// it initializes the Translator support for the TerraLib PostGIS driver support
-  TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_DATASOURCE_PGIS_TEXT_DOMAIN, TE_QT_PLUGIN_DATASOURCE_PGIS_TEXT_DOMAIN_DIR, "UTF-8");
-
-  TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_PGIS("TerraLib Qt PostGIS widget startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt PostGIS widget startup!"));
 
   m_initialized = true;
 }
@@ -64,7 +61,7 @@ void te::qt::plugins::pgis::Plugin::shutdown()
   te::da::DataSourceInfoManager::getInstance().removeByType("POSTGIS");
   te::qt::widgets::DataSourceTypeManager::getInstance().remove("POSTGIS");
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_PGIS("TerraLib Qt PostGIS widget shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt PostGIS widget shutdown!"));
 
   m_initialized = false;
 }

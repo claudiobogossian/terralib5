@@ -29,6 +29,7 @@
 // TerraLib
 #include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../Config.h"
 
@@ -36,7 +37,7 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QFrame>
+#include <QFrame>
 
 namespace te
 {
@@ -62,7 +63,7 @@ namespace te
 
           ~DataSetDisplay();
 
-          void draw(const te::da::DataSetTypePtr& dataset, const te::da::DataSourcePtr& ds);
+          void draw(const te::da::DataSetTypePtr& dataset, const te::da::DataSourcePtr& ds, te::da::DataSet* datasetData = 0);
 
           void draw(const te::da::DataSetTypePtr& dataset, const te::da::DataSourceInfoPtr& ds);
 

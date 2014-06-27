@@ -103,7 +103,7 @@ te::mem::ExpansibleRaster::ExpansibleRaster( const unsigned char maxMemPercentUs
   if( ! m_blocksManager.initialize( maxNumberOfBlocks, numbersOfBlocksX,
     numbersOfBlocksY, blocksSizesBytes, 
     TLINTERNAL_EXPANSIBLERASTER_MAXDISKFILESSIZE ) )
-    throw Exception(TR_MEMORY("Cannot initialize the blocks menager") );
+    throw Exception(TE_TR("Cannot initialize the blocks menager") );
   
   for( unsigned int bandsIdx = 0 ; bandsIdx < bandsProperties.size() ; 
     ++bandsIdx )
@@ -156,7 +156,7 @@ te::mem::ExpansibleRaster::ExpansibleRaster( te::rst::Grid* grid,
   if( ! m_blocksManager.initialize( maxNumberOfRAMBlocks, numbersOfBlocksX,
     numbersOfBlocksY, blocksSizesBytes, 
     TLINTERNAL_EXPANSIBLERASTER_MAXDISKFILESSIZE ) )
-    throw Exception(TR_MEMORY("Cannot initialize the blocks menager") );
+    throw Exception(TE_TR("Cannot initialize the blocks menager") );
   
   for( unsigned int bandsIdx = 0 ; bandsIdx < bandsProperties.size() ; 
     ++bandsIdx )
@@ -182,7 +182,7 @@ void te::mem::ExpansibleRaster::open(const std::map<std::string, std::string>& /
 std::map<std::string, std::string> te::mem::ExpansibleRaster::getInfo() const
 {
   return std::map<std::string, std::string>();
-};
+}
 
 te::dt::AbstractData* te::mem::ExpansibleRaster::clone() const
 {

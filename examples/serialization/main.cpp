@@ -29,6 +29,7 @@
 #include <terralib/common.h>
 #include <terralib/plugin.h>
 #include <terralib/se/Style.h>
+#include "../Config.h"
 
 // STL
 #include <cassert>
@@ -61,8 +62,8 @@ int main(int /*argc*/, char** /*argv*/)
 
     ShowResult(encodedStyle); // Shows the serializaton result.
     
-    SaveResult(encodedStyle, ""TE_DATA_EXAMPLE_DIR"/data/xml/style.xml"); // Saves the enconded style to XML file.
-    te::se::Style* style = DecodeStyle(""TE_DATA_EXAMPLE_DIR"/data/xml/style.xml"); // Decodes the created XML file.
+    SaveResult(encodedStyle, ""TERRALIB_DATA_DIR"/xml/style.xml"); // Saves the enconded style to XML file.
+    te::se::Style* style = DecodeStyle(""TERRALIB_DATA_DIR"/xml/style.xml"); // Decodes the created XML file.
 
     std::string backData = EncodeStyle(style); // Encodes again.
     
@@ -72,11 +73,11 @@ int main(int /*argc*/, char** /*argv*/)
     /* XSD Schema */
 
     std::cout << "Decoding schema..." << std::endl;
-    DecodeSchema(""TE_DATA_EXAMPLE_DIR"/data/xml/plugin_info.xsd");
+    DecodeSchema(""TERRALIB_DATA_DIR"/xml/plugin_info.xsd");
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred: " << e.what() << std::endl;
 
     std::cout << "Press Enter to exit..." << std::endl;
     std::cin.get();
@@ -85,7 +86,7 @@ int main(int /*argc*/, char** /*argv*/)
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
 
     std::cout << "Press Enter to exit..." << std::endl;
     std::cin.get();

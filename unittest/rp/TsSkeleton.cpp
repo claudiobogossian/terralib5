@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -36,11 +36,10 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TsSkeleton );
 
 void TsSkeleton::Pattern1Test()
 {
-  // openning input raster
-  
+  // opening input raster
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/pattern1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/pattern1.tif";
   boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRasterPtrPointer.get() );  
@@ -67,8 +66,7 @@ void TsSkeleton::Pattern1Test()
 
   te::rp::Skeleton::OutputParameters algoOutputParams;
   
-  algoOutputParams.m_rInfo["URI"] =  
-    "terralib_unittest_rp_skeleton_test1.tif";  
+  algoOutputParams.m_rInfo["URI"] = "terralib_unittest_rp_skeleton_test1.tif";
   algoOutputParams.m_rType = "GDAL";
   
   // Executing the algorithm
@@ -78,8 +76,3 @@ void TsSkeleton::Pattern1Test()
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
 }
-
-
-
-
-

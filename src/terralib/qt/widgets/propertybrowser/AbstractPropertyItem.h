@@ -31,9 +31,11 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QWidget>
-#include "../../../../../third-party/qt/propertybrowser/qtpropertymanager.h"
-#include "../../../../../third-party/qt/propertybrowser/qttreepropertybrowser.h"
+#include <QWidget>
+
+// QtPropertyBrowser
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
+#include <QtPropertyBrowser/QtVariantPropertyManager>
 
 namespace te
 {

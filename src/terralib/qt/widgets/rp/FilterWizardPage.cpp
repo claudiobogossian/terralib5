@@ -39,9 +39,9 @@
 #include "ui_FilterWizardPageForm.h"
 
 //QT
-#include <QtGui/QApplication>
-#include <QtGui/QGridLayout>
-#include <QtGui/QMessageBox>
+#include <QApplication>
+#include <QGridLayout>
+#include <QMessageBox>
 
 //Boost
 #include <boost/lexical_cast.hpp>

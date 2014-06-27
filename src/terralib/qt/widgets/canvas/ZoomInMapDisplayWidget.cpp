@@ -41,7 +41,7 @@
 #include "ZoomInMapDisplayWidget.h"
 
 // Qt
-#include <QtGui/QGridLayout>
+#include <QGridLayout>
 
 #define PATTERN_SIZE 14
 

@@ -1,4 +1,5 @@
 //TerraLib
+#include "../Config.h"
 #include <terralib/graph/builder/LDDGraphBuilder.h>
 #include <terralib/graph/core/AbstractGraph.h>
 #include <terralib/graph/Globals.h>
@@ -13,7 +14,7 @@
 #include <boost/shared_ptr.hpp>
 
 // Qt
-#include <QtGui/QApplication>
+#include <QApplication>
 
 te::se::Style* getLDDGraphStyle();
 
@@ -25,7 +26,8 @@ void CreateLDDGraph(bool draw)
   std::string graphName = "graphAsu";
 
 // open raster
-  std::auto_ptr<te::rst::Raster> lddRaster = OpenRaster(TE_DATA_EXAMPLE_DIR "/data/graph/asu30_dem.tif", 29193);
+  std::string data_dir = TERRALIB_DATA_DIR;
+  std::auto_ptr<te::rst::Raster> lddRaster = OpenRaster(data_dir + "/graph/asu30_dem.tif", 29193);
 
 // graph type
   std::string graphType = te::graph::Globals::sm_graphFactoryDefaultObject;
@@ -48,18 +50,18 @@ void CreateLDDGraph(bool draw)
 
     if(!builder.build(lddRaster.get(), connInfo, graphType, graphInfo))
     {
-      std::cout << std::endl << "An exception has occuried in Graph Example - CreateLDDGraph: " << builder.getErrorMessage() << std::endl;
+      std::cout << std::endl << "An exception has occurred in Graph Example - CreateLDDGraph: " << builder.getErrorMessage() << std::endl;
     }
 
     graph = builder.getGraph();
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in Graph Example - CreateLDDGraph: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in Graph Example - CreateLDDGraph: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in Graph Example - CreateLDDGraph!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in Graph Example - CreateLDDGraph!" << std::endl;
   }
 
   if(draw)

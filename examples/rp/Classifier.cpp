@@ -1,7 +1,6 @@
 #include "RPExamples.h"
 
 // TerraLib
-#include <terralib/gdal/Utils.h>
 #include <terralib/geometry.h>
 #include <terralib/raster.h>
 #include <terralib/rp/Classifier.h>
@@ -98,13 +97,13 @@ void DummyClassifier()
 
 // open input raster
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
     std::map<std::string, std::string> orinfo;
-    orinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_classified_dummy.tif";
+    orinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_classified_dummy.tif";
 
 // create 4 input polygons
     std::vector<te::gm::Polygon*> pin = CreatePolygons(rin);
@@ -147,11 +146,11 @@ void DummyClassifier()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in DummyClassifier(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in DummyClassifier(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in DummyClassifier()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in DummyClassifier()!" << std::endl;
   }
 }
 
@@ -162,7 +161,7 @@ std::vector<te::gm::Polygon*> SegmentImage(te::rst::Raster* rin)
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_segmented.tif";
+  orinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_segmented.tif";
 
 // input parameters
   te::rp::Segmenter::InputParameters algoInputParameters;
@@ -195,7 +194,7 @@ std::vector<te::gm::Polygon*> SegmentImage(te::rst::Raster* rin)
 
 // export the segmentation into shapefile
   std::vector<te::gm::Geometry*> geometries;
-  te::gdal::Vectorize(((te::gdal::Raster*) algoOutputParameters.m_outputRasterPtr.get())->getGDALDataset()->GetRasterBand(1), geometries);
+  algoOutputParameters.m_outputRasterPtr->vectorize( geometries, 0 );
 
   std::vector<te::gm::Polygon*> polygons;
   for (unsigned i = 0; i < geometries.size(); i++)
@@ -212,13 +211,13 @@ void ISOSegClassifier()
 
 // first open the input image
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
     std::map<std::string, std::string> orinfo;
-    orinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_classified_isoseg.tif";
+    orinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_classified_isoseg.tif";
 
 // to apply ISOSeg the image must be segmented
     std::vector<te::gm::Polygon*> polygons = SegmentImage(rin);
@@ -263,11 +262,11 @@ void ISOSegClassifier()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in ISOSegClassifier(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in ISOSegClassifier(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in ISOSegClassifier()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in ISOSegClassifier()!" << std::endl;
   }
 }
 
@@ -279,13 +278,13 @@ void MAPClassifier()
 
 // first open the input image
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
     std::map<std::string, std::string> orinfo;
-    orinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_classified_MAP.tif";
+    orinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_classified_MAP.tif";
 
 // Defining the classes samples
 
@@ -367,11 +366,11 @@ void MAPClassifier()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in MAPClassifier(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in MAPClassifier(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in MAPClassifier()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in MAPClassifier()!" << std::endl;
   }
 }
 
@@ -383,13 +382,13 @@ void EMClassifier()
 
 // first open the input image
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
     std::map<std::string, std::string> orinfo;
-    orinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_classified_em.tif";
+    orinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_classified_em.tif";
 
 // define classification parameters
 
@@ -431,11 +430,11 @@ void EMClassifier()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in EMClassifier(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in EMClassifier(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in EMClassifier()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in EMClassifier()!" << std::endl;
   }
 }
 
@@ -447,13 +446,13 @@ void SAMClassifier()
 
 // first open the input image
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
     std::map<std::string, std::string> orinfo;
-    orinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_classified_SAM.tif";
+    orinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_classified_SAM.tif";
 
 // Defining the classes samples
 
@@ -520,11 +519,11 @@ void SAMClassifier()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in SAMClassifier(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in SAMClassifier(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in SAMClassifier()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in SAMClassifier()!" << std::endl;
   }
 }
 
@@ -536,13 +535,13 @@ void KMeansClassifier()
 
 // first open the input image
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
     std::map<std::string, std::string> orinfo;
-    orinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_classified_kmeans.tif";
+    orinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_classified_kmeans.tif";
 
 // define classification parameters
 
@@ -582,11 +581,11 @@ void KMeansClassifier()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in KMeansClassifier(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in KMeansClassifier(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in KMeansClassifier()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in KMeansClassifier()!" << std::endl;
   }
 }
 

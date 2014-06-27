@@ -65,27 +65,23 @@ bool te::rst::SynchronizedBandBlocksManager::initialize(
   // Finding the global block dimensions
   
   unsigned int maxBlockSizeBytes = 0;
-  unsigned int maxNumberOfCacheBlocks = 1;
   
-  if( !( sync.m_policy & te::common::WAccess ) )
+  sync.m_mutex.lock();
+  for( unsigned int bandIdx = 0 ; bandIdx < sync.m_raster.getNumberOfBands() ;
+    ++bandIdx )
   {
-    sync.m_mutex.lock();
-    for( unsigned int bandIdx = 0 ; bandIdx < m_syncPtr->m_raster.getNumberOfBands() ;
-      ++bandIdx )
-    {
-      if( maxBlockSizeBytes < (unsigned int)m_syncPtr->m_raster.getBand( bandIdx )->getBlockSize() )
-        maxBlockSizeBytes = (unsigned int)m_syncPtr->m_raster.getBand( bandIdx )->getBlockSize();
-    }
-    sync.m_mutex.unlock();
-    
-    const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
-    const double usedVMem = (double)te::common::GetUsedVirtualMemory();
-    const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() );
-    const double freeVMem = ( ((double)maxMemPercentUsed) / 100.0 ) *
-      std::min( totalPhysMem, ( totalVMem - usedVMem ) );  
-    maxNumberOfCacheBlocks = (unsigned int)
-      std::max( 1.0, std::ceil( freeVMem / ((double)maxBlockSizeBytes) ) );
+    if( maxBlockSizeBytes < (unsigned int)sync.m_raster.getBand( bandIdx )->getBlockSize() )
+      maxBlockSizeBytes = (unsigned int)sync.m_raster.getBand( bandIdx )->getBlockSize();
   }
+  sync.m_mutex.unlock();
+  
+  const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
+  const double usedVMem = (double)te::common::GetUsedVirtualMemory();
+  const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() );
+  const double freeVMem = ( ((double)maxMemPercentUsed) / 100.0 ) *
+    std::min( totalPhysMem, ( totalVMem - usedVMem ) );  
+  unsigned int maxNumberOfCacheBlocks = (unsigned int)
+    std::max( 1.0, std::ceil( freeVMem / ((double)maxBlockSizeBytes) ) );
     
   return initialize( maxNumberOfCacheBlocks, sync );
 }
@@ -123,15 +119,8 @@ bool te::rst::SynchronizedBandBlocksManager::initialize(
     
   // Allocating the internal structures
   
-  if( sync.m_policy & te::common::WAccess )
-  {
-    m_maxNumberOfCacheBlocks = std::min( numberOfRasterBlocks, 1u );
-  }
-  else
-  {
-    m_maxNumberOfCacheBlocks = std::min( maxNumberOfCacheBlocks, numberOfRasterBlocks );
-    m_maxNumberOfCacheBlocks = std::max( m_maxNumberOfCacheBlocks, 1u );
-  }
+  m_maxNumberOfCacheBlocks = std::min( maxNumberOfCacheBlocks, numberOfRasterBlocks );
+  m_maxNumberOfCacheBlocks = std::max( m_maxNumberOfCacheBlocks, 1u );
   
   unsigned int blockBIdx = 0;  
   m_blocksPointers.resize( m_syncPtr->m_raster.getNumberOfBands() );
@@ -177,7 +166,7 @@ void te::rst::SynchronizedBandBlocksManager::free()
           {
             if( !m_syncPtr->releaseBlock( blockBIdx, blockXIdx, blockYIdx, blockPtr ) )
             {
-              throw Exception(TR_RASTER("Block release error") );
+              throw Exception(TE_TR("Block release error") );
             }
           }
         }
@@ -247,7 +236,7 @@ void* te::rst::SynchronizedBandBlocksManager::getBlockPointer(unsigned int band,
       if( !m_syncPtr->releaseBlock( choosedSwapBlockIndex.m_b, 
         choosedSwapBlockIndex.m_x, choosedSwapBlockIndex.m_y, m_getBlockPointer_BlkPtr ) )
       {
-        throw Exception(TR_RASTER("Block release error") );
+        throw Exception(TE_TR("Block release error") );
       }        
       
       // advances the next swap block fifo index
@@ -262,7 +251,7 @@ void* te::rst::SynchronizedBandBlocksManager::getBlockPointer(unsigned int band,
     
     if( !m_syncPtr->acquireBlock( band, x, y, m_getBlockPointer_BlkPtr ) )
     {
-      throw Exception(TR_RASTER("Block release error") );
+      throw Exception(TE_TR("Block release error") );
     }      
 
     m_blocksPointers[ band ][ y ][ x ] = m_getBlockPointer_BlkPtr;
@@ -282,6 +271,6 @@ te::rst::Raster* te::rst::SynchronizedBandBlocksManager::getRaster() const
   {
     return 0;
   }
-};
+}
        
 

@@ -24,26 +24,25 @@
 */
 
 // TerraLib
-#include "PluginBuilderWizard.h"
-
-#include "../../utils/DoubleListWidget.h"
-#include "../../utils/ParameterTableWidget.h"
-#include "PluginCMakeWriter.h"
-#include "PluginSourceWriter.h"
+#include "../../../../common/StringUtils.h"
+#include "../../../../common/Version.h"
 #include "../../../../plugin/PluginManager.h"
 #include "../../../../plugin/PluginInfo.h"
 #include "../../../../plugin/Provider.h"
-#include "ui_PluginBuilderWizardForm.h"
+#include "../../utils/DoubleListWidget.h"
+#include "../../utils/ParameterTableWidget.h"
+#include "PluginBuilderWizard.h"
+#include "PluginCMakeWriter.h"
+#include "PluginSourceWriter.h"
 #include "ui_DoubleListWidgetForm.h"
 #include "ui_ParameterTableWidgetForm.h"
-#include "../../../../common/StringUtils.h"
-#include "../../../../common/Version.h"
+#include "ui_PluginBuilderWizardForm.h"
 
 // Qt
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
-#include <QtCore/QRegExp>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QRegExp>
+#include <QVBoxLayout>
 
 te::qt::widgets::PluginBuilderWizard::PluginBuilderWizard(QWidget* parent)
   : QWizard(parent),
@@ -116,8 +115,7 @@ te::qt::widgets::PluginBuilderWizard::PluginBuilderWizard(QWidget* parent)
   m_pluginDependencies->getForm()->m_rightItemsLabel->setText(tr("Required Plugins"));
   m_ui->m_pluginDependenciesGridLayout->addWidget(m_pluginDependencies.get());
 
-  std::vector<std::string> plugins;
-  te::plugin::PluginManager::getInstance().getPlugins(plugins);
+  std::vector<std::string> plugins = te::plugin::PluginManager::getInstance().getPlugins();
   m_pluginDependencies->setInputValues(plugins);
 
 // category dependencies
@@ -344,7 +342,7 @@ void te::qt::widgets::PluginBuilderWizard::buildPlugin()
   pi.m_licenseURL = m_ui->m_pluginLicenseSiteLineEdit->text().toStdString();
   pi.m_category = m_ui->m_pluginCategoryComboBox->currentText().toStdString();
   pi.m_site = m_ui->m_pluginSiteLineEdit->text().toStdString();
-  pi.m_folder = m_ui->m_buildLocationLineEdit->text().toStdString();
+  //pi.m_folder = m_ui->m_buildLocationLineEdit->text().toStdString();
 
   pi.m_requiredPlugins = m_pluginDependencies->getOutputValues();
   pi.m_requiredPluginCategories = m_categoryDependencies->getOutputValues();

@@ -65,7 +65,7 @@ namespace te
 
         \note Warning: It consider that the parameters of Stroke element is enconded using a Literal OGC Filter expression.
       */
-      void Config(QPen& pen, const te::se::Stroke* stroke);
+      TEQTWIDGETSEXPORT void Config(QPen& pen, const te::se::Stroke* stroke);
 
       /*!
         \brief It configs the given brush based on Symbology Enconding Fill element.
@@ -75,21 +75,21 @@ namespace te
 
         \note Warning: It consider that the parameters of Fill element is enconded using a Literal OGC Filter expression.
       */
-      void Config(QBrush& brush, const te::se::Fill* fill);
+      TEQTWIDGETSEXPORT void Config(QBrush& brush, const te::se::Fill* fill);
 
       /*!
         \brief It reads a symbol library file and put the result on SymbolLibraryManager.
 
         \param path  The path of the symbol library file.
       */
-      void ReadSymbolLibrary(const std::string& path);
+      TEQTWIDGETSEXPORT void ReadSymbolLibrary(const std::string& path);
 
       /*!
         \brief It reads a symbol using the given reader.
 
-        \retrun The symbol read.
+        \return The symbol read.
       */
-      Symbol* ReadSymbol(te::xml::Reader& reader);
+      TEQTWIDGETSEXPORT Symbol* ReadSymbol(te::xml::Reader& reader);
 
     } // end namespace widgets
   }   // end namespace qt

@@ -1,4 +1,5 @@
 // Examples
+#include "../Config.h"
 #include "DataAccessExamples.h"
 
 // TerraLib
@@ -13,9 +14,14 @@ void OGRExampleRead()
 {
   try
   {
-    std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_DIR"/data/shp");
+    std::string data_dir = TERRALIB_DATA_DIR;
+  
+    std::string ogrInfo(data_dir + "/shp");
+  
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/shp";
+  
+    connInfo["URI"] = data_dir + "/shp";
+  
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
     ds->setConnectionInfo(connInfo);
     ds->open();
@@ -34,11 +40,11 @@ void OGRExampleRead()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in OGR Example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in the OGR Example: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in OGR Example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in the OGR Example!" << std::endl;
   }
 }
 
@@ -51,10 +57,16 @@ void ORGExampleWrite()
     //PrintDataSet("marisa_soilmeasures", datas);
 
     te::da::DataSetType* dt1 = CreateDataSetTypeInMemory("test_marisa");
+  
     //Writing in OGR
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
+  
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/shp";
+  
+    std::string data_dir = TERRALIB_DATA_DIR;
+  
+    connInfo["URI"] = data_dir + "/shp";
+  
     ds->setConnectionInfo(connInfo);
     ds->open();
 
@@ -79,11 +91,11 @@ void ORGExampleWrite()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in OGR Example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in the OGR Example: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in OGR Example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in the OGR Example!" << std::endl;
   }
 }
 //------- Old code -----//
@@ -96,7 +108,7 @@ void ORGExampleWrite()
 //
 //    te::da::DataSetType* newDt = new te::da::DataSetType(*datas->getType());
 //    std::map<std::string, std::string> ogrInfo;
-//    ogrInfo["connection_string"] = ""TE_DATA_EXAMPLE_DIR"/data/shp/soilmeasure.shp";
+//    ogrInfo["connection_string"] = ""TE_DATA_EXAMPLE_DIR"/shp/soilmeasure.shp";
 //    te::da::DataSource* ds = te::da::DataSource::create("OGR", ogrInfo);
 //
 //    te::da::DataSourceTransactor* trans = ds->getTransactor();

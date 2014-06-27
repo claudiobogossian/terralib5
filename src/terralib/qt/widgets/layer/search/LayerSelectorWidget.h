@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_LAYERSELECTORWIDGET_H
 
 // TerraLib
-#include "../../../maptools/AbstractLayer.h"
+#include "../../../../maptools/AbstractLayer.h"
 #include "../../Config.h"
 
 // STL
@@ -35,7 +35,7 @@
 #include <list>
 
 // Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 namespace Ui { class LayerSelectorWidgetForm; }
 

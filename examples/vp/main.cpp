@@ -24,6 +24,7 @@
  */
 
 // TerraLib
+#include <terralib/common/PlatformUtils.h>
 #include <terralib/common.h>
 #include <terralib/plugin.h>
 
@@ -45,18 +46,25 @@ int main(int argc, char** argv)
     TerraLib::getInstance().initialize();
     
     te::plugin::PluginInfo* info;
-    
-    info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg"));
-    te::plugin::PluginManager::getInstance().add(info);
-    
-    info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.ogr.teplg"));
-    te::plugin::PluginManager::getInstance().add(info);
-    
-    info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.pgis.teplg"));
-    te::plugin::PluginManager::getInstance().add(info);
-    
-    te::plugin::PluginManager::getInstance().loadAll();
+  
+    std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
 
+#ifdef TERRALIB_MOD_GDAL_ENABLED
+    info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.gdal.teplg");
+    te::plugin::PluginManager::getInstance().add(info);
+#endif
+
+#ifdef TERRALIB_MOD_OGR_ENABLED
+    info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.ogr.teplg");
+    te::plugin::PluginManager::getInstance().add(info);
+#endif
+
+#ifdef TERRALIB_MOD_POSTGIS_ENABLED
+    info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.pgis.teplg");
+    te::plugin::PluginManager::getInstance().add(info);
+#endif
+
+    te::plugin::PluginManager::getInstance().loadAll();
 
     //Aggregation examples
 
@@ -120,7 +128,7 @@ int main(int argc, char** argv)
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred: " << e.what() << std::endl;
 
     std::cout << "Press Enter to exit..." << std::endl;
     std::cin.get();
@@ -129,7 +137,7 @@ int main(int argc, char** argv)
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
 
     std::cout << "Press Enter to exit..." << std::endl;
     std::cin.get();

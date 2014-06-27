@@ -15,7 +15,7 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QApplication>
+#include <QApplication>
 
 void MapDisplay()
 {
@@ -26,7 +26,7 @@ void MapDisplay()
   try
   {
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/shp/munic_2001.shp";
+    connInfo["URI"] = TERRALIB_DATA_DIR "/shp/munic_2001.shp";
 
     // Creates and connects data source
     te::da::DataSourcePtr datasource = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(G_ID++), "OGR", connInfo);
@@ -87,10 +87,10 @@ void MapDisplay()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in DrawLayer example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in DrawLayer example: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in DrawLayer example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in DrawLayer example!" << std::endl;
   }
 }

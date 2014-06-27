@@ -26,7 +26,7 @@
 #ifndef __TERRALIB_EXAMPLES_QT_CANVAS_INTERNAL_CANVAS_H
 #define __TERRALIB_EXAMPLES_QT_CANVAS_INTERNAL_CANVAS_H
 
-#include "../Config.h"
+#include "../../Config.h"
 
 #define TE_EXAMPLE_USE_OGR 1
 

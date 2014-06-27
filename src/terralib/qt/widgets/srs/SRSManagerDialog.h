@@ -30,10 +30,10 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QTableWidgetItem>
-#include <QtGui/QTreeWidgetItem>
-#include <QtGui/QDialog>
+#include <QDialog>
 #include <QStringList>
+#include <QTableWidgetItem>
+#include <QTreeWidgetItem>
 
 //STL
 #include <string>

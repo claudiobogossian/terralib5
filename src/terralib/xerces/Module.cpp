@@ -51,7 +51,6 @@ void te::xerces::Module::startup()
   if(m_initialized)
     return;
 
-  TE_ADD_TEXT_DOMAIN(TE_XERCES_TEXT_DOMAIN, TE_XERCES_TEXT_DOMAIN_DIR, "UTF-8");
   try
   {
     xercesc::XMLPlatformUtils::Initialize();
@@ -60,7 +59,7 @@ void te::xerces::Module::startup()
   {
     char* exceptMesg = xercesc::XMLString::transcode(e.getMessage());
     
-    std::string m  = TR_XERCES("Error during Xerces initialization. Exception messages is: ");
+    std::string m  = TE_TR("Error during Xerces initialization. Exception messages is: ");
     m += exceptMesg;
     
     xercesc::XMLString::release(&exceptMesg);
@@ -71,7 +70,7 @@ void te::xerces::Module::startup()
     // it initializes the reader factory based on Xerces
   ReaderFactory::initialize();
   
-  TE_LOG_TRACE(TR_XERCES("TerraLib Xerces driver startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Xerces driver startup!"));
   
   m_initialized = true;
 }
@@ -92,7 +91,7 @@ void te::xerces::Module::shutdown()
   {
     char* exceptMesg = xercesc::XMLString::transcode(e.getMessage());
     
-    std::string m  = TR_XERCES("Error during Xerces finalization. Exception messages is: ");
+    std::string m  = TE_TR("Error during Xerces finalization. Exception messages is: ");
     m += exceptMesg;
     
     xercesc::XMLString::release(&exceptMesg);
@@ -100,7 +99,7 @@ void te::xerces::Module::shutdown()
     throw te::xerces::Exception(m);
   }
 
-  TE_LOG_TRACE(TR_XERCES("TerraLib Xerces driver shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Xerces driver shutdown!"));
   
   m_initialized = true;
 }

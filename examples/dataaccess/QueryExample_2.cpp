@@ -118,10 +118,10 @@ void QueryExample_2()
 
         std::auto_ptr<te::da::DataSet> dataset = transactor->query(sql);
         PrintDataSet("All neighbours of Ouro Preto", dataset.get());
-     
       }
 
-      bool trans_connected = transactor->isInTransaction(); 
+    bool trans_connected;
+    trans_connected = transactor->isInTransaction();
     }
 
 // At the end, let's release transactor and close data source
@@ -130,11 +130,11 @@ void QueryExample_2()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in QueryExample: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in QueryExample: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in QueryExample!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in QueryExample!" << std::endl;
   }
 
 

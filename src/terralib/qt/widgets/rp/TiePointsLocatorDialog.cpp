@@ -40,10 +40,10 @@
 #include <ui_TiePointsLocatorForm.h>
 
 #include <QtCore/QString>
-#include <QtGui/QGridLayout>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QLineEdit>
-#include <QtGui/QColor>
+#include <QGridLayout>
+#include <QKeyEvent>
+#include <QLineEdit>
+#include <QColor>
 
 #define TPLDIALOG_P_PATTERN_W 11
 

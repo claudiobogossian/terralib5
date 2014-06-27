@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -52,7 +52,7 @@ te::wms::WMSLayerPtr te::wms::WMS2Layer::operator()(const te::da::DataSetTypePtr
   static boost::uuids::basic_random_generator<boost::mt19937> gen;
 
   if(dataset.get() == 0)
-    throw Exception(TR_WMS("Can not convert a NULL dataset to a WMS layer!"));
+    throw Exception(TE_TR("Can not convert a NULL dataset to a WMS layer!"));
 
   boost::uuids::uuid u = gen();
   std::string id = boost::uuids::to_string(u);

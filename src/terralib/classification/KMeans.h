@@ -117,8 +117,8 @@ namespace te
         Parameters m_parameters;                           //!< Internal execution parameters.
     };
 
-  }; // end namespace cl
-};  // end namespace te
+  } // end namespace cl
+}  // end namespace te
 
 // class of Parameters
 template <class TTRAIN, class TCLASSIFY>
@@ -181,7 +181,7 @@ bool te::cl::KMeans<TTRAIN, TCLASSIFY>::initialize(const typename te::cl::KMeans
 
   if (m_parameters.m_K < 2)
   {
-    TR_CL("The value of K must be at least 2.");
+    TE_TR("The value of K must be at least 2.");
     return false;
   }
   if (m_parameters.m_maxIterations < 1)
@@ -251,7 +251,7 @@ bool te::cl::KMeans<TTRAIN, TCLASSIFY>::train(TTRAIN& itBegin, TTRAIN& itEnd,
     tmpNs.push_back(0);
   }
 
-  te::common::TaskProgress task(TR_CL("K-Means algorithm - training step"), te::common::TaskProgress::UNDEFINED, m_parameters.m_maxIterations);
+  te::common::TaskProgress task(TE_TR("K-Means algorithm - training step"), te::common::TaskProgress::UNDEFINED, m_parameters.m_maxIterations);
   for (unsigned int t = 0; t < m_parameters.m_maxIterations; t++)
   {
     for (unsigned int k = 0; k <= m_parameters.m_K; k++)

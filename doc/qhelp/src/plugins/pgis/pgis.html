@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <title>PostGIS plugin</title>
+</head>
+
+
+<body>
+
+
+
+
+
+
+<div style="text-align: center; font-family: Calibri Light;">
+<h3><font size="3"> <strong> PostGIS
+Connector<br>
+
+
+
+
+
+
+Defining PostGIS database as a Data Source </strong></font></h3>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+<font style="font-family: Calibri Light;" face="Calibri Light"><br>
+
+
+
+
+
+
+</font>
+<div style="text-align: justify; font-family: Calibri Light;"> The
+<b>PostGIS Connector</b> is used to
+define a connection with a specific PostGIS database.&nbsp; <br>
+
+
+
+
+<br>
+
+
+
+
+It is
+accessed through:<br>
+
+
+
+
+<br>
+
+
+
+
+&nbsp; <b>Project &gt; Add Layer &gt; From Data Source... &gt; PostGIS &gt; <img style="width: 24px; height: 24px;" alt="(+)" src="../../gen_icones/ic_add.PNG"></b><br>
+
+
+
+
+or<br>
+
+
+
+
+&nbsp; <b>Tools &gt; &nbsp;Data Source Explorer... &gt; PostGIS &gt;</b><b> <img style="width: 24px; height: 24px;" alt="(+)" src="../../gen_icones/ic_add.PNG"></b><br>
+
+
+
+
+<span style="font-weight: bold;"></span>
+
+<br>
+
+
+
+
+
+
+To define PostGIS database as a data source,&nbsp; fill at least the <span style="font-style: italic;">Title</span> and the <span style="font-style: italic;">Connection Information</span>
+needed by PostGIS to establish a connection with the database informed.<span style="font-style: italic;"><br>
+
+
+
+
+
+<br>
+
+
+
+
+
+</span>As a example, the connection parameters to access a database called "my_db" can be: <br>
+
+
+
+
+
+<ol>
+
+
+
+
+
+  <li><i>Title = conn_postgis_my_db&nbsp;</i></li>
+
+
+
+
+
+  <li><i>Host Name/IP = xxxx.dpi.inpe.br &nbsp; (or localhost)</i></li>
+
+
+
+
+
+  <li><i>Port = 5432 &nbsp;(the default port used by PostGRES/PostGIS)</i></li>
+
+
+
+
+
+  <li><i>User = &nbsp;postgres&nbsp;</i></li>
+
+
+
+
+  <li><i>Password = &nbsp;*******</i></li>
+
+
+
+
+
+  <li><i>Database Name = my_db</i></li>
+
+
+
+
+
+  <li><i>Client Encoding = UTF8</i></li>
+
+
+
+  <li>Press<b> Open</b> to
+make this connection available at <span style="font-weight: bold;"><a href="../../widgets/datasource_selector/datasource_selector.html">Data
+Source Selector</a> </span>with the same title specified here.&nbsp;</li>
+
+
+
+  <li>Press<b> Test</b> to check the parameters used to establish the connection. <br>
+
+
+
+  </li>
+
+
+
+
+
+</ol>
+
+
+
+
+
+
+
+
+Also there is <span style="font-style: italic;">Advanced
+Connections Options</span>
+to change same default
+parameters. It is possible to hide spatial metadata tables
+(spatial_ref_sys, geometry_columns) ,&nbsp;define new connection pooling
+parameter and so on. </div>
+
+
+
+
+
+
+
+
+</body>
+</html>

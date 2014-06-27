@@ -33,12 +33,12 @@
 #include "../../../statistics/qt/StatisticsDialog.h"
 
 // Qt
-#include <QtGui/QHeaderView>
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QMenu>
-#include <QtGui/QCursor>
-#include <QtGui/QPainter>
-#include <QtGui/QMessageBox>
+#include <QHeaderView>
+#include <QContextMenuEvent>
+#include <QMenu>
+#include <QCursor>
+#include <QPainter>
+#include <QMessageBox>
 
 // STL
 #include <vector>
@@ -655,7 +655,12 @@ te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
 
   setVerticalHeader(new DataSetTableVerticalHeader(this));
   setHorizontalHeader(new DataSetTableHorizontalHeader(this));
+
+#if QT_VERSION >= 0x050000
+  horizontalHeader()->setSectionsMovable(true);
+#else
   horizontalHeader()->setMovable(true);
+#endif
 
   setSelectionMode(QAbstractItemView::MultiSelection);
   setSelectionBehavior(QAbstractItemView::SelectColumns);
@@ -792,8 +797,7 @@ void te::qt::widgets::DataSetTableView::createHistogram(const int& column)
 {
   const te::map::LayerSchema* schema = m_layer->getSchema().release();
   te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
-  te::qt::widgets::createHistogramDisplay(m_dset, dataType, column);
-  delete schema;
+  emit createChartDisplay(te::qt::widgets::createHistogramDisplay(m_dset, dataType, column));
 }
 
 void te::qt::widgets::DataSetTableView::hideColumn(const int& column)
@@ -1184,7 +1188,6 @@ void te::qt::widgets::DataSetTableView::removeSelection(const int& initRow, cons
   selectionModel()->select(toRemove, QItemSelectionModel::Deselect);
 }
 
-
 void te::qt::widgets::DataSetTableView::saveEditions()
 {
   try
@@ -1217,3 +1220,6 @@ void te::qt::widgets::DataSetTableView::saveEditions()
     QMessageBox::warning(this, tr("Save edition failure"), e.what());
   }
 }
+
+#include "DataSetTableView.moc"
+

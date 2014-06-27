@@ -33,7 +33,7 @@
 #include "SimplePropertyWidget.h"
 
 // QT
-#include <QtGui/QWidget>
+#include <QWidget>
 
 namespace te
 {

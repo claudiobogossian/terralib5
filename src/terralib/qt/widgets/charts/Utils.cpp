@@ -265,7 +265,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
   return newScatter;
 }
 
-void te::qt::widgets::createScatterDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propX, int propY)
+te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createScatterDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propX, int propY)
 {
   //Creating the scatter and it's chart with the given dataset
   te::qt::widgets::ScatterChart* chart = new te::qt::widgets::ScatterChart(te::qt::widgets::createScatter(dataset, dataType, propX, propY));
@@ -285,6 +285,7 @@ void te::qt::widgets::createScatterDisplay(te::da::DataSet* dataset, te::da::Dat
   te::qt::widgets::ChartDisplayWidget* displayWidget = new te::qt::widgets::ChartDisplayWidget(chart, te::qt::widgets::SCATTER_CHART, chartDisplay);
   displayWidget->show();
   displayWidget->setWindowTitle("Scatter");
+  return displayWidget;
 }
 
 te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int slices)
@@ -332,6 +333,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
       task.setTotalSteps((dataset->getNumProperties()) * 2);
 
        //Calculating the minimum and maximum values of the given property and adjusting the Histogram's interval.
+       dataset->moveBeforeFirst();
        while(dataset->moveNext())
        {
 
@@ -445,6 +447,8 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
       std::vector<te::da::ObjectId*> valuesOIds;
 
       //Adjusting the histogram's intervals
+
+      dataset->moveBeforeFirst();
       while(dataset->moveNext())
       {
 
@@ -507,7 +511,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
   return newHistogram;
 }
 
-void te::qt::widgets::createHistogramDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int slices)
+te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createHistogramDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int slices)
 {
   te::qt::widgets::HistogramChart* chart;
   int propType = dataset->getPropertyDataType(propId);
@@ -533,6 +537,7 @@ void te::qt::widgets::createHistogramDisplay(te::da::DataSet* dataset, te::da::D
   te::qt::widgets::ChartDisplayWidget* displayWidget = new te::qt::widgets::ChartDisplayWidget(chart, te::qt::widgets::HISTOGRAM_CHART, chartDisplay);
   displayWidget->show();
   displayWidget->setWindowTitle("Histogram");
+  return displayWidget;
 }
 
 QwtText* te::qt::widgets::Terralib2Qwt(const std::string& text)

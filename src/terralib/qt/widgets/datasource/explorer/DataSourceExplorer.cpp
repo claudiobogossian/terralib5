@@ -28,8 +28,8 @@
 #include "DataSourceToolBox.h"
 
 // Qt
-#include <QtGui/QScrollArea>
-#include <QtGui/QVBoxLayout>
+#include <QScrollArea>
+#include <QVBoxLayout>
 
 te::qt::widgets::DataSourceExplorer::DataSourceExplorer(QWidget* parent, Qt::WindowFlags flags)
   : QDockWidget(tr("Data Source Explorer"), parent, flags),

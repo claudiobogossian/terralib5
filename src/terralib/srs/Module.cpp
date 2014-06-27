@@ -42,9 +42,6 @@ te::srs::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib SRS module
- TE_ADD_TEXT_DOMAIN(TE_SRS_TEXT_DOMAIN, TE_SRS_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::srs::Module::~Module()
@@ -54,17 +51,17 @@ te::srs::Module::~Module()
 
 void te::srs::Module::initialize()
 {
-#ifdef TE_SRS_AUTOLOAD_ENABLED
+#ifdef TERRALIB_AUTOMATIC_INITIALIZATION
   te::srs::SpatialReferenceSystemManager::getInstance().init();
 #endif
 
-  TE_LOG_TRACE(TR_SRS("TerraLib SRS initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib SRS initialized!"));
 }
 
 void te::srs::Module::finalize()
 {
   
-  TE_LOG_TRACE(TR_SRS("TerraLib SRS Finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib SRS Finalized!"));
 }
 
 

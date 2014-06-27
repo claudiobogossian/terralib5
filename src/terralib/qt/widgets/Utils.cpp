@@ -34,16 +34,16 @@
 #include "Utils.h"
 
 // Qt
-#include <QtCore/QSettings>
-#include <QtGui/QApplication>
-#include <QtGui/QImage>
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
-#include <QtGui/QMessageBox>
-#include <QtGui/QPainter>
-#include <QtGui/QPen>
-#include <QtGui/QTreeWidgetItem>
-#include <QtGui/QTreeWidgetItemIterator>
+#include <QApplication>
+#include <QImage>
+#include <QMenu>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QPainter>
+#include <QPen>
+#include <QSettings>
+#include <QTreeWidgetItem>
+#include <QTreeWidgetItemIterator>
 
 void te::qt::widgets::SetChildrenCheckState(QTreeWidgetItem* item, int column, Qt::CheckState state)
 {

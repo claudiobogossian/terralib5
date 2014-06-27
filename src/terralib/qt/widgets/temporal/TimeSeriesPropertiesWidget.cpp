@@ -30,7 +30,7 @@
 #include "ui_TimeSeriesPropertiesWidgetForm.h"
 
 //QT
-#include <QtGui/QWidget>
+#include <QWidget>
 
 te::qt::widgets::TimeSeriesPropertiesWidget::TimeSeriesPropertiesWidget(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
 : QWidget(parent, f),

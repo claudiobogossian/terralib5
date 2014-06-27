@@ -30,8 +30,8 @@
 #include "CheckConstraintItem.h"
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QWidget>
 
 te::qt::widgets::CheckConstraintItem::CheckConstraintItem(te::da::CheckConstraint* cc, AbstractDataSourceTreeItem* parent)
   : AbstractDataSourceTreeItem(parent),

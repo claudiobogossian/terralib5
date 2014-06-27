@@ -17,7 +17,7 @@ void VectorizeRaster()
 
 // define raster info and load
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/pattern1.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/pattern1.tif";
     te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
 
     std::vector<te::gm::Geometry*> polygons;
@@ -35,10 +35,10 @@ void VectorizeRaster()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in VectorizeRaster(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in VectorizeRaster(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in VectorizeRaster()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in VectorizeRaster()!" << std::endl;
   }
 }

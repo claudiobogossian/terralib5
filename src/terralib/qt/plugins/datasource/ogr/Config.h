@@ -29,28 +29,7 @@
 // TerraLib
 #include "../../../../Config.h"
 
-#define TE_QT_PLUGIN_DATASOURCE_OGR_PLUGIN_NAME "te.qt.datasource.ogr"
-
-/*!
-  \def TE_QT_PLUGIN_DATASOURCE_OGR_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib OGR driver implementation.
-*/
-#define TE_QT_PLUGIN_DATASOURCE_OGR_TEXT_DOMAIN "teqtplugindatasourceogr"
-
-/*!
-  \def TE_QT_PLUGIN_DATASOURCE_OGR_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
-*/
-#define TE_QT_PLUGIN_DATASOURCE_OGR_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TE_QT_PLUGIN_DATASOURCE_OGR
-
-  \brief It marks a string in order to get translated. This is a special mark used in the DataAccess module of TerraLib.
-*/
-#define TE_QT_PLUGIN_DATASOURCE_OGR(message) TR(message, TE_QT_PLUGIN_DATASOURCE_OGR_TEXT_DOMAIN)
+#define TE_TR_PLUGIN_NAME "te.qt.datasource.ogr"
 
 /*!
   \def TEQTPLUGINOGREXPORT

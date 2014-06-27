@@ -30,12 +30,12 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/RasterFactory.h"
 #include "../../../rp/Functions.h"
-#include "../../widgets/help/HelpPushButton.h"
-#include "../../widgets/progress/ProgressViewerDialog.h"
+#include "../help/HelpPushButton.h"
+#include "../layer/search/LayerSearchWidget.h"
+#include "../layer/search/LayerSearchWizardPage.h"
+#include "../progress/ProgressViewerDialog.h"
 #include "ColorTransformWizard.h"
 #include "ColorTransformWizardPage.h"
-#include "LayerSearchWidget.h"
-#include "LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "Utils.h"
@@ -44,9 +44,8 @@
 #include <cassert>
 
 // Qt
-#include <QtGui/QMessageBox>
-#include <QtGui/QApplication>
-
+#include <QApplication>
+#include <QMessageBox>
 
 te::qt::widgets::ColorTransformWizard::ColorTransformWizard(QWidget* parent)
   : QWizard(parent)
@@ -166,7 +165,7 @@ bool te::qt::widgets::ColorTransformWizard::execute()
   }
   catch(...)
   {
-    QMessageBox::warning(this, tr("Color Transform"), tr("An exception has occuried!"));
+    QMessageBox::warning(this, tr("Color Transform"), tr("An exception has occurred!"));
 
     te::common::ProgressManager::getInstance().removeViewer(id);
 

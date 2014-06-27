@@ -29,7 +29,7 @@
 // TerraLib
 #include "Config.h"
 
-#if TE_TRANSLATOR_ENABLED
+#ifdef TERRALIB_TRANSLATOR_ENABLED
 #include "Singleton.h"
 
 // STL
@@ -53,22 +53,22 @@ namespace te
       all the job of calling the translation for you. Actually, the translation
       is done using GNU Text Utilities. So, you can use commands like:
       \verbatim      
-      terralib# xgettext -D ../src/terralib/common -d tlcommon -o tlcommon.pot -f common.txt --keyword=TR_COMMON --from-code=UTF-8 --msgid-bugs-address=gribeiro.mg@gmail.com -p common
+      terralib# xgettext -D ../src/terralib/common -d tlcommon -o tlcommon.pot -f common.txt --keyword=TE_TR --from-code=UTF-8 --msgid-bugs-address=gribeiro.mg@gmail.com -p common
       terralib# msgmerge --directory=common -U tlcommon-pt_BR.po tlcommon.pot
       msgfmt --directory=common -c -v -o common/tlcommon-pt_BR.mo tlcommon-pt_BR.po
       \endverbatim
 
       Each module must define its translation macro. For example, in the 
-      Common module we define the macro TR_COMMON, and all strings in the Common module are marked like:
+      Common module we define the macro TE_TR, and all strings in the Common module are marked like:
 
       \code
       #include <terralib/common/Translator.h>
       ...
-      char* msg = TR_COMMON("My Message");
+      char* msg = TE_TR("My Message");
       ...
       or
       ...
-      std::cout << TR_COMMON("Other message");
+      std::cout << TE_TR("Other message");
       ...
       \endcode
 
@@ -257,7 +257,117 @@ namespace te
   } // end namespace common
 }   // end namespace te
 
-#endif  // TE_TRANSLATOR_ENABLED
+#endif  // TERRALIB_TRANSLATOR_ENABLED
+
+/** @name Internationalization Defines
+ *  Flags for TerraLib code internationalization.
+ */
+//@{
+
+
+// Check if the TR macro has already been defined
+// by another application... if so, it will output
+// an error message and stop compiling!
+#ifdef TERRALIB_TRANSLATOR_ENABLED
+#ifdef TE_TR
+#error "The TE_TR macro has been already defined by another application or code. Please, inform TerraLib Development Team <terralib-team@dpi.inpe.br>, we will be glad to help solving this problem!"
+#endif
+#endif
+
+/*!
+  \def TERRALIB_TEXT_DOMAIN
+ 
+  \brief It contains the name of the text domain used in the translation of messages in TerraLib.
+ */
+#define TERRALIB_TEXT_DOMAIN "terralib"
+
+/*!
+  \def TERRALIB_TEXT_DOMAIN_DIR
+ 
+  \brief It contains the translation catalog directory.
+ */
+#define TERRALIB_TEXT_DOMAIN_DIR "locale"
+
+
+/*!
+  \def TE_ADD_TEXT_DOMAIN
+ 
+  \brief It adds the given text domain located at domain-dir with the given codeset to the multilingual system.
+ 
+  \note This macro will check if the domain already exists before doing anyting.
+ */
+#ifdef TERRALIB_TRANSLATOR_ENABLED
+  #define TE_ADD_TEXT_DOMAIN(domain, domaindir, codeset)                         \
+  if(!te::common::Translator::getInstance().exist(domain))                       \
+  {                                                                              \
+    te::common::Translator::getInstance().addTextDomain(domain, domaindir);      \
+    te::common::Translator::getInstance().setTextDomainCodeSet(domain, codeset); \
+  }                                                                              \
+  ((void)0)
+#else
+  #define TE_ADD_TEXT_DOMAIN(domain, domaindir, codeset) ((void)0)
+#endif
+
+/*!
+  \def TE_GENERAL_TR
+ 
+  \brief Try to translate the message according to the given domain. See the TE_TR macro for more infomation on how to create a translation mark for your code.
+ */
+#ifdef TERRALIB_TRANSLATOR_ENABLED
+  #define TE_GENERAL_TR(message, domain) te::common::Translator::getInstance().getInstance().translate(message, domain)
+#else
+  #define TE_GENERAL_TR(message, domain) message
+#endif
+
+/*!
+  \def TE_GENERAL_TR_PLURAL
+ 
+  \brief Try to translate the message according to the given domain and plural form. See the TE_TR_PLURAL macro for more infomation on how to create a translation mark for your code.
+ */
+#ifdef TERRALIB_TRANSLATOR_ENABLED
+  #define TE_GENERAL_TR_PLURAL(domain, message1, message2, n) te::common::Translator::getInstance().getInstance().translate(domain, message1, message2, n)
+#else
+  #define TE_GENERAL_TR_PLURAL(domain, message1, message2, n) (n > 1 ? message2 : message1)
+#endif
+
+/*!
+  \def TE_TR
+ 
+  \brief It marks a string in order to get translated.
+ 
+  Example of usage:
+  \code
+  std::cout << TE_TR("My message!");
+ 
+  throw Exception(TE_TR("My other message!"));
+  \endcode
+ */
+#define TE_TR(message) TE_GENERAL_TR(message, TERRALIB_TEXT_DOMAIN)
+
+/*!
+  \def TE_TR_PLURAL
+ 
+  \brief It marks a string in order to get translated according to plural form.
+ 
+  Example of usage:
+  \code
+  int n = f(...);
+ 
+  std::cout << TE_TR_PLURAL("One Message!", "Two Messages", n);
+ 
+  throw Exception(TE_TR_PLURAL("One Message!", "Two Messages", n));
+  \endcode
+ 
+  In the above example, the parameter n can be
+  a threshold that helps to choose between the first or the second construction.
+  If your trabslation file is configured with a theashold of 1,
+  indicating that if n > 1 must choose the second construction,
+  the plural versin will be choosed, otherwise, it will choose the
+  singular form (the fisrt one).
+ */
+#define TE_TR_PLURAL(message1, message2, n) TE_GENERAL_TR_PLURAL(TERRALIB_TEXT_DOMAIN, message1, message2, n)
+
+//@}
 
 #endif  // __TERRALIB_COMMON_INTERNAL_TRANSLATOR_H
 

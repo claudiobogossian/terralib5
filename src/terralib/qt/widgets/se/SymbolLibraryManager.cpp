@@ -39,7 +39,7 @@ void te::qt::widgets::SymbolLibraryManager::insert(te::qt::widgets::SymbolLibrar
 
   std::string name = library->getName();
   if(findByName(name))
-    throw te::common::Exception(TR_QT_WIDGETS("There is already a symbol library with the given name."));
+    throw te::common::Exception(TE_TR("There is already a symbol library with the given name."));
 
   m_symbolLibraryMap[name] = library;
 }
@@ -52,7 +52,7 @@ void te::qt::widgets::SymbolLibraryManager::remove(te::qt::widgets::SymbolLibrar
   std::map<std::string, SymbolLibrary*>::iterator it = m_symbolLibraryMap.find(name);
 
   if(it == m_symbolLibraryMap.end())
-    throw te::common::Exception(TR_QT_WIDGETS("Could not find the symbol library with the given name."));
+    throw te::common::Exception(TE_TR("Could not find the symbol library with the given name."));
 
   m_symbolLibraryMap.erase(it);
   

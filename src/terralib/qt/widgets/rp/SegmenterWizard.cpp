@@ -31,13 +31,13 @@
 #include "../../../rp/Segmenter.h"
 #include "../../../rp/SegmenterRegionGrowingStrategy.h"
 #include "../../../rp/Module.h"
-#include "../../widgets/help/HelpPushButton.h"
-#include "../../widgets/progress/ProgressViewerDialog.h"
+#include "../help/HelpPushButton.h"
+#include "../layer/search/LayerSearchWidget.h"
+#include "../layer/search/LayerSearchWizardPage.h"
+#include "../progress/ProgressViewerDialog.h"
 #include "SegmenterWizard.h"
 #include "SegmenterAdvancedOptionsWizardPage.h"
 #include "SegmenterWizardPage.h"
-#include "LayerSearchWidget.h"
-#include "LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "ui_SegmenterAdvancedOptionsWizardPageForm.h"
@@ -47,7 +47,7 @@
 #include <cassert>
 
 // Qt
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 
 
 te::qt::widgets::SegmenterWizard::SegmenterWizard(QWidget* parent)
@@ -224,7 +224,7 @@ bool te::qt::widgets::SegmenterWizard::execute()
   }
   catch(...)
   {
-    QMessageBox::warning(this, tr("Segmenter"), tr("An exception has occuried!"));
+    QMessageBox::warning(this, tr("Segmenter"), tr("An exception has occurred!"));
 
     te::common::ProgressManager::getInstance().removeViewer(id);
 

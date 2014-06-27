@@ -27,7 +27,7 @@
 #define __TERRALIB_UNITTEST_COMMON_INTERNAL_UOM_H
 
 // TerraLib
-#include "Config.h"
+//#include "Config.h"
 
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>

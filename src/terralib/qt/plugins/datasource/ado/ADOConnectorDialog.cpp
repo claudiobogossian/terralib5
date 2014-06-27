@@ -41,10 +41,10 @@
 #include <boost/uuid/uuid_io.hpp>
 
 // Qt
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QMessageBox>
 
-te::qt::plugins::ado::ADOConnectorDialog::ADOConnectorDialog(QWidget* parent, Qt::WindowFlags f)
+te::qt::plugins::ado::ADOConnectorDialog::ADOConnectorDialog(QWidget* parent, Qt::WindowFlags f, Operation op)
   : QDialog(parent, f),
     m_ui(new Ui::ADOConnectorDialogForm)
 {
@@ -62,6 +62,9 @@ te::qt::plugins::ado::ADOConnectorDialog::ADOConnectorDialog(QWidget* parent, Qt
 
   m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins");
   m_ui->m_helpPushButton->setPageReference("plugins/ado/ado.html");
+
+  if(op == UPDATE)
+    m_ui->m_openPushButton->setText(TE_TR("Update"));
 }
 
 te::qt::plugins::ado::ADOConnectorDialog::~ADOConnectorDialog()
@@ -98,7 +101,7 @@ void te::qt::plugins::ado::ADOConnectorDialog::openPushButtonPressed()
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("ADO") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for ADO data sources!"));
+      throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for ADO data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -113,7 +116,7 @@ void te::qt::plugins::ado::ADOConnectorDialog::openPushButtonPressed()
     m_driver.reset(ds.release());
 
     if(m_driver.get() == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open ADO data source due to an unknown error!"));
+      throw te::qt::widgets::Exception(TE_TR("Could not open ADO data source due to an unknown error!"));
 
     QString title = m_ui->m_datasourceTitleLineEdit->text().trimmed();
 
@@ -170,7 +173,7 @@ void te::qt::plugins::ado::ADOConnectorDialog::testPushButtonPressed()
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("ADO") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for ADO data sources!"));
+      throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for ADO data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -184,7 +187,7 @@ void te::qt::plugins::ado::ADOConnectorDialog::testPushButtonPressed()
     ds->open();
 
     if(ds.get() == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open ADO database!"));
+      throw te::qt::widgets::Exception(TE_TR("Could not open ADO database!"));
 
     QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
@@ -253,8 +256,9 @@ void te::qt::plugins::ado::ADOConnectorDialog::setConnectionInfo(const std::map<
 
   if(it != itend)
     m_ui->m_fileLineEdit->setText(it->second.c_str());
-  
+
   it = connInfo.find("PASSWORD");
 
-  m_ui->m_passwordLineEdit->setText(it->second.c_str());
+  if(it != itend)
+    m_ui->m_passwordLineEdit->setText(it->second.c_str());
 }

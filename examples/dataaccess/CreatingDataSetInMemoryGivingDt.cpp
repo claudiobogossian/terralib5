@@ -153,12 +153,12 @@ te::da::DataSet* CreatingDataSetInMemoryGivingDt(te::da::DataSetType* dt)
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried when Creating DataSet In Memory Example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred when Creating DataSet In Memory Example: " << e.what() << std::endl;
     return 0;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried when Creating DataSet In Memory Example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred when Creating DataSet In Memory Example!" << std::endl;
     return 0;
   }
 }

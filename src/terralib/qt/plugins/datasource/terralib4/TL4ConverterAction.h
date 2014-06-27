@@ -30,9 +30,9 @@
 #include "Config.h"
 
 // Qt
-#include <QtCore/QObject>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
+#include <QObject>
+#include <QMenu>
+#include <QAction>
 
 namespace te
 {

@@ -34,8 +34,8 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QComboBox>
-#include <QtGui/QWizardPage>
+#include <QComboBox>
+#include <QWizardPage>
 
 
 // Forward declaration

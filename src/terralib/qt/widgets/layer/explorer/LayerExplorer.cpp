@@ -30,15 +30,8 @@
 #include "LayerTreeModel.h"
 
 // Qt
-//#include <QtCore/QMimeData>
-//#include <QtCore/QUrl>
-//#include <QtGui/QDragEnterEvent>
-//#include <QtGui/QDragLeaveEvent>
-//#include <QtGui/QDragMoveEvent>
-//#include <QtGui/QDropEvent>
-//#include <QtGui/QMessageBox>
-#include <QtGui/QScrollArea>
-#include <QtGui/QVBoxLayout>
+#include <QScrollArea>
+#include <QVBoxLayout>
 
 te::qt::widgets::LayerExplorer::LayerExplorer(QWidget* parent, Qt::WindowFlags flags)
   : QDockWidget(tr("Layer Explorer"), parent, flags),

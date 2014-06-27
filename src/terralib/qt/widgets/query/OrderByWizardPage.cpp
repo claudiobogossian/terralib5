@@ -29,7 +29,7 @@
 #include "OrderByWizardPage.h"
 
 // Qt
-#include <QtGui/QGridLayout>
+#include <QGridLayout>
 
 
 te::qt::widgets::OrderByWizardPage::OrderByWizardPage(QWidget* parent)

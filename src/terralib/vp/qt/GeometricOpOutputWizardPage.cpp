@@ -33,12 +33,12 @@
 #include "../../qt/widgets/utils/DoubleListWidget.h"
 #include "GeometricOpOutputWizardPage.h"
 #include "ui_GeometricOpOutputWizardPageForm.h"
-#include "VectorProcessingConfig.h"
+//#include "VectorProcessingConfig.h"
 
 // Qt
-#include <QtGui/QFileDialog>
-#include <QtGui/QIntValidator>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QIntValidator>
+#include <QMessageBox>
 
 // BOOST
 #include <boost/filesystem.hpp>
@@ -54,7 +54,7 @@ te::vp::GeometricOpOutputWizardPage::GeometricOpOutputWizardPage(QWidget* parent
 // setup controls
   m_ui->setupUi(this);
 
-  // configure page
+// configure page
   this->setTitle(tr("Output Layer Attributes"));
   this->setSubTitle(tr("Choose the output parameters that compose the output layer."));
 
@@ -62,22 +62,22 @@ te::vp::GeometricOpOutputWizardPage::GeometricOpOutputWizardPage(QWidget* parent
   QSize iconSize(32, 32);
 
   m_ui->m_convexHullCheckBox->setIconSize(iconSize);
-  m_ui->m_convexHullCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-convex-hull-hint"));
+  m_ui->m_convexHullCheckBox->setIcon(QIcon::fromTheme("vp-convex-hull-hint"));
 
   m_ui->m_centroidCheckBox->setIconSize(iconSize);
-  m_ui->m_centroidCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-centroid-hint"));
+  m_ui->m_centroidCheckBox->setIcon(QIcon::fromTheme("vp-centroid-hint"));
 
   m_ui->m_mbrCheckBox->setIconSize(iconSize);
-  m_ui->m_mbrCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-mbr-hint"));
+  m_ui->m_mbrCheckBox->setIcon(QIcon::fromTheme("vp-mbr-hint"));
 
   m_ui->m_areaCheckBox->setIconSize(iconSize);
-  m_ui->m_areaCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-area-hint"));
+  m_ui->m_areaCheckBox->setIcon(QIcon::fromTheme("vp-area-hint"));
 
   m_ui->m_lineCheckBox->setIconSize(iconSize);
-  m_ui->m_lineCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-line-length-hint"));
+  m_ui->m_lineCheckBox->setIcon(QIcon::fromTheme("vp-line-length-hint"));
 
   m_ui->m_perimeterCheckBox->setIconSize(iconSize);
-  m_ui->m_perimeterCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-perimeter-hint"));
+  m_ui->m_perimeterCheckBox->setIcon(QIcon::fromTheme("vp-perimeter-hint"));
 
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 

@@ -210,7 +210,7 @@ bool te::map::DataSetAdapterLayer::isValid() const
 void te::map::DataSetAdapterLayer::draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid)
 {
   if(m_rendererType.empty())
-    throw Exception((boost::format(TR_MAP("Could not draw the data set layer %1%. The renderer type is empty!")) % getTitle()).str());
+    throw Exception((boost::format(TE_TR("Could not draw the data set layer %1%. The renderer type is empty!")) % getTitle()).str());
 
   std::auto_ptr<te::da::DataSetType> dsType = getSchema();
 
@@ -220,7 +220,7 @@ void te::map::DataSetAdapterLayer::draw(Canvas* canvas, const te::gm::Envelope& 
   // Try get the defined renderer
   std::auto_ptr<AbstractRenderer> renderer(RendererFactory::make(m_rendererType));
   if(renderer.get() == 0)
-    throw Exception((boost::format(TR_MAP("Could not draw the data set layer %1%. The renderer %2% could not be created!")) % getTitle() % m_rendererType).str());
+    throw Exception((boost::format(TE_TR("Could not draw the data set layer %1%. The renderer %2% could not be created!")) % getTitle() % m_rendererType).str());
 
   renderer->draw(this, canvas, bbox, srid);
 }

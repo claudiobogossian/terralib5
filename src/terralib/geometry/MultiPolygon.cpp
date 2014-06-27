@@ -24,7 +24,15 @@
 */
 
 // TerraLib
+#include "GEOSWriter.h"
 #include "MultiPolygon.h"
+#include "Point.h"
+
+#ifdef TERRALIB_GEOS_ENABLED
+// GEOS
+#include <geos/algorithm/CentroidArea.h>
+#include <geos/geom/MultiPolygon.h>
+#endif
 
 // STL
 #include <cassert>
@@ -40,6 +48,47 @@ te::gm::MultiPolygon::MultiPolygon(std::size_t nGeom, GeomType t, int srid, Enve
 te::gm::MultiPolygon::MultiPolygon(const MultiPolygon& rhs)
   : MultiSurface(rhs) 
 {
+}
+
+te::gm::Point* te::gm::MultiPolygon::getCentroid() const
+{
+#ifdef TERRALIB_GEOS_ENABLED
+  std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
+
+  geos::algorithm::CentroidArea c;
+  
+  c.add(thisGeom.get());
+
+  geos::geom::Coordinate coord;
+
+  if(c.getCentroid(coord))
+  {
+    Point* pt = new Point(coord.x, coord.y, m_srid, 0);
+
+    return pt;
+  }
+
+  return 0;
+
+#else
+  throw te::common::Exception(TE_TR("getCentroid routine is supported by GEOS! Please, enable the GEOS support."));
+#endif
+}
+
+te::gm::Coord2D* te::gm::MultiPolygon::getCentroidCoord() const
+{
+  te::gm::Point * p = getCentroid();
+
+  if(p)
+  {
+    te::gm::Coord2D* coord = new te::gm::Coord2D(p->getX(), p->getY());
+
+    delete p;
+
+    return coord;
+  }
+
+  return 0;
 }
 
 te::gm::MultiPolygon& te::gm::MultiPolygon::operator=(const MultiPolygon& rhs)

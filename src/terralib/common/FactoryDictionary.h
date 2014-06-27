@@ -194,12 +194,12 @@ namespace te
                                                                        TFACTORY* factory)
     {
       if(factory == 0)
-        throw Exception(TR_COMMON("Could not insert the given factory into the dictionary. The factory is a NULL object!"));
+        throw Exception(TE_TR("Could not insert the given factory into the dictionary. The factory is a NULL object!"));
 
       typename std::map<TFACTORYKEY, TFACTORY*, TKEYCOMPARE>::const_iterator it = m_factoryMap.find(factoryKey);
 
       if(it != m_factoryMap.end())
-        throw Exception(TR_COMMON("Could not insert the given factory into the dictionary. There is a factory already registered with the given key."));
+        throw Exception(TE_TR("Could not insert the given factory into the dictionary. There is a factory already registered with the given key."));
 
       m_factoryMap[factoryKey] = factory;
     }
@@ -212,7 +212,7 @@ namespace te
       if(it != m_factoryMap.end())
         m_factoryMap.erase(it);
       else
-        throw Exception(TR_COMMON("Could not unregister the informed factory. Object factory not found!"));
+        throw Exception(TE_TR("Could not unregister the informed factory. Object factory not found!"));
     }
 
     template<class TFACTORY, class TFACTORYKEY, class TKEYCOMPARE> inline

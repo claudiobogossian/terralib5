@@ -183,6 +183,7 @@ bool te::qt::af::Project::hasChanged()
 void te::qt::af::Project::setFileName(const std::string& fName)
 {
   m_fileName = fName;
+  m_changed = true;
 }
 
 const std::string& te::qt::af::Project::getFileName() const
@@ -198,5 +199,5 @@ void te::qt::af::Project::setProjectAsChanged(const bool& changed)
 void te::qt::af::Project::clear()
 {
   m_topLayers.clear();
-  setProjectAsChanged(true);
+  m_changed = true;
 }

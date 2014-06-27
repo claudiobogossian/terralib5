@@ -27,6 +27,7 @@
 #define __TERRALIB_GEOMETRY_INTERNAL_CURVE_H
 
 // TerraLib
+#include "Config.h"
 #include "Geometry.h"
 
 namespace te
@@ -107,7 +108,7 @@ namespace te
 
           \return The length of this Curve in the unit associated to its spatial reference system.
         */
-        virtual double getLength() const = 0;
+        virtual double getLength() const;
 
         /*!
           \brief It returns the curve start point.

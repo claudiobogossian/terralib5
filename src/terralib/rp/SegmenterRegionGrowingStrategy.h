@@ -64,7 +64,7 @@ namespace te
             {
               InvalidFeaturesType, //!< Invalid features type.
               MeanFeaturesType, //!< The mean of segments pixel values will be used - Reference: S. A. Bins, L. M. G. Fonseca, G. J. Erthal e F. M. Ii, "Satellite Imagery segmentation: a region growing approach", VIII Simposio Brasileiro de Sensoriamento Remoto, Salvador, BA, 14-19 abril 1996.
-              BaatzFeaturesType, //!< The Baatz based features will be used - Reference: Baatz, M.; Schape, A. Multiresolution segmentation: an optimization approach for high quality multi-scale image segmentation. In: XII Angewandte Geographische Informationsverarbeitung, Wichmann-Verlag, Heidelberg, 2000.
+              BaatzFeaturesType //!< The Baatz based features will be used - Reference: Baatz, M.; Schape, A. Multiresolution segmentation: an optimization approach for high quality multi-scale image segmentation. In: XII Angewandte Geographische Informationsverarbeitung, Wichmann-Verlag, Heidelberg, 2000.
             };             
             
             unsigned int m_minSegmentSize; //!< A positive minimum segment size (pixels number - default: 100).

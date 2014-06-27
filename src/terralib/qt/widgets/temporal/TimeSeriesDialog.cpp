@@ -26,7 +26,7 @@
 //Terralib
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
-#include "DoubleListWidget.h"
+#include "../utils/DoubleListWidget.h"
 #include "TimeSeriesDialog.h"
 #include "TemporalPropertiesWidget.h"
 #include "TimeSeriesPropertiesWidget.h"

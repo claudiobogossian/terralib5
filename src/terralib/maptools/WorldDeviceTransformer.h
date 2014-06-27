@@ -146,19 +146,19 @@ namespace te
 
       public:
 
-        double mapUnitsPP_;   //!< Map units per-pixel.
-        double wllx_;         //!< Lower left x-coordinate of the World (Spatial Coordinate System of the features).
-        double wlly_;         //!< Lower left y-coordinate of the World (Spatial Coordinate System of the features).
-        double wurx_;         //!< Upper right x-coordinate of the World (Spatial Coordinate System of the features).
-        double wury_;         //!< Upper right y-coordinate of the World (Spatial Coordinate System of the features).
+        double m_mapUnitsPP;   //!< Map units per-pixel.
+        double m_wllx;         //!< Lower left x-coordinate of the World (Spatial Coordinate System of the features).
+        double m_wlly;         //!< Lower left y-coordinate of the World (Spatial Coordinate System of the features).
+        double m_wurx;         //!< Upper right x-coordinate of the World (Spatial Coordinate System of the features).
+        double m_wury;         //!< Upper right y-coordinate of the World (Spatial Coordinate System of the features).
     };
 
     inline WorldDeviceTransformer::WorldDeviceTransformer()
-      : mapUnitsPP_(0.0),
-        wllx_(0.0),
-        wlly_(0.0),
-        wurx_(0.0),
-        wury_(0.0)
+      : m_mapUnitsPP(0.0),
+        m_wllx(0.0),
+        m_wlly(0.0),
+        m_wurx(0.0),
+        m_wury(0.0)
     {
     }
 
@@ -185,29 +185,29 @@ namespace te
       
       if(muppY > muppX)
       {
-        mapUnitsPP_ = muppY;
-        wlly_ = wlly;
-        wury_ = wury;
-        double whitespace = ((static_cast<double>(deviceWidth) * mapUnitsPP_) - worldWidth) * 0.5;
-        wllx_ = wllx - whitespace;
-        wurx_ = wurx + whitespace;
+        m_mapUnitsPP = muppY;
+        m_wlly = wlly;
+        m_wury = wury;
+        double whitespace = ((static_cast<double>(deviceWidth) * m_mapUnitsPP) - worldWidth) * 0.5;
+        m_wllx = wllx - whitespace;
+        m_wurx = wurx + whitespace;
       }
       else
       {
-        mapUnitsPP_ = muppX;
-        wllx_ = wllx;
-        wurx_ = wurx;
-        double whitespace = ((static_cast<double>(deviceHeight) * mapUnitsPP_) - worldHeight) * 0.5;
-        wlly_ = wlly - whitespace;
-        wury_ = wury + whitespace;
+        m_mapUnitsPP = muppX;
+        m_wllx = wllx;
+        m_wurx = wurx;
+        double whitespace = ((static_cast<double>(deviceHeight) * m_mapUnitsPP) - worldHeight) * 0.5;
+        m_wlly = wlly - whitespace;
+        m_wury = wury + whitespace;
       }
     }
 
 
     inline void WorldDeviceTransformer::world2Device(double& wx, double& wy) const
     {
-      wx = (wx - wllx_) / mapUnitsPP_;
-      wy = (wury_ - wy) / mapUnitsPP_;
+      wx = (wx - m_wllx) / m_mapUnitsPP;
+      wy = (m_wury - wy) / m_mapUnitsPP;
     }
 
     inline void WorldDeviceTransformer::world2Device(double* line, unsigned int npoints, double* pts)
@@ -216,29 +216,29 @@ namespace te
 
       for(register unsigned int i = 0; i != nstep; i+=2)
       {
-        pts[i] = (line[i] - wllx_) / mapUnitsPP_;
-        pts[i + 1] = (wury_ - line[i + 1]) / mapUnitsPP_;
+        pts[i] = (line[i] - m_wllx) / m_mapUnitsPP;
+        pts[i + 1] = (m_wury - line[i + 1]) / m_mapUnitsPP;
       }
     }
 
     inline void WorldDeviceTransformer::world2Device(const double& wx, const double& wy,
                                                      double& dx, double& dy) const
     {
-      dx = (wx - wllx_) / mapUnitsPP_;
-      dy = (wury_ - wy) / mapUnitsPP_;
+      dx = (wx - m_wllx) / m_mapUnitsPP;
+      dy = (m_wury - wy) / m_mapUnitsPP;
     }
 
     inline void WorldDeviceTransformer::device2World(double& dx, double& dy) const
     {
-      dx = dx * mapUnitsPP_ + wllx_;
-      dy = wury_ - dy * mapUnitsPP_;
+      dx = dx * m_mapUnitsPP + m_wllx;
+      dy = m_wury - dy * m_mapUnitsPP;
     }
 
     inline void WorldDeviceTransformer::device2World(int dx, int dy,
                                                      double& wx, double& wy) const
     {
-      wx = ((double)(dx)) * mapUnitsPP_ + wllx_;
-      wy = wury_ - ((double)(dy)) * mapUnitsPP_;
+      wx = ((double)(dx)) * m_mapUnitsPP + m_wllx;
+      wy = m_wury - ((double)(dy)) * m_mapUnitsPP;
     }
 
   }   // end namespace map

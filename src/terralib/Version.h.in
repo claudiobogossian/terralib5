@@ -1,0 +1,73 @@
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file terralib/terralib_version.h
+
+  \brief System versioning macros.
+*/
+
+#ifndef __TERRALIB_INTERNAL_TERRALIB_VERSION_H__
+#define __TERRALIB_INTERNAL_TERRALIB_VERSION_H__
+
+/*!
+  \def TERRALIB_VERSION_MAJOR
+
+  \brief Major version of TerraLib (or version).
+ */
+#define TERRALIB_VERSION_MAJOR @TERRALIB_VERSION_MAJOR@
+
+/*!
+  \def TERRALIB_VERSION_MINOR
+
+  \brief Minor version of TerraLib (or revision). 
+ */
+#define TERRALIB_VERSION_MINOR @TERRALIB_VERSION_MINOR@
+
+/*!
+  \def TERRALIB_VERSION_PATCH
+
+  \brief Patched version of TerraLib (or patch).
+ */
+#define TERRALIB_VERSION_PATCH @TERRALIB_VERSION_PATCH@
+
+/*!
+  \def TERRALIB_VERSION_STATUS
+
+  \brief
+ */
+#define TERRALIB_VERSION_STATUS "@TERRALIB_VERSION_STATUS@"
+
+/*!
+  \def TERRALIB_VERSION_STRING
+
+  \brief This flag is used for versioning the TerraLib code. If you have plugins and other tools
+         that must check the TerraLib version, you can test against this string.
+ */
+#define TERRALIB_VERSION_STRING "@TERRALIB_VERSION_STRING@"
+
+/*!
+  \def TERRALIB_VERSION
+
+  \brief This flag is used for versioning the TerraLib code. If you have plugins and other tools
+         that must check the TerraLib version, you can test against this number.
+ */
+#define TERRALIB_VERSION @TERRALIB_VERSION@
+
+#endif  // __TERRALIB_INTERNAL_TERRALIB_VERSION_H__

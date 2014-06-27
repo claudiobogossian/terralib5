@@ -40,7 +40,7 @@
 #include <set>
 
 // Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 namespace Ui { class TiePointLocatorWidgetForm; }
 

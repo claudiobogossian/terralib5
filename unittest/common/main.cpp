@@ -68,15 +68,19 @@ int main(int /*argc*/, char** /*argv*/)
   // The styleSheet 'report.xsl' should be at this directory (found originally at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl).
   // One level up TE_OUTPUT_REPORT_DIR should have a 'data' directory with all files used by unit test.
   
-  CPPUNIT_NS::OFileStream file2( TE_OUTPUT_REPORT_DIR"/testResults_common_xml.xml" );
-  CPPUNIT_NS::XmlOutputter xml( &result, file2 );
-  xml.setStyleSheet( "report.xsl" );
+  //CPPUNIT_NS::OFileStream file2( TE_OUTPUT_REPORT_DIR"/testResults_common_xml.xml" );
+  CPPUNIT_NS::OFileStream file2(TERRALIB_REPORT_DIR"/testResults_common_xml.xml");
+  CPPUNIT_NS::XmlOutputter xml(&result, file2);
+  xml.setStyleSheet("report.xsl");
   xml.write();
   file2.close();
 
   bool resultStatus = result.wasSuccessful();
 
   TerraLib::getInstance().finalize();
+
+  std::cout << "\nPress Enter to exit..." << std::endl;
+  std::cin.get();
 
   return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }

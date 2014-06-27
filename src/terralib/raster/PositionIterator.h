@@ -537,7 +537,7 @@ namespace te
 // throw exception when other types?
       else
       {
-        std::string message = "An exception has occurried in Polygon Iterator, with geometry " + g->toString();
+        std::string message = "An exception has occurred in Polygon Iterator, with geometry " + g->toString();
 
         throw(message.c_str());
       }

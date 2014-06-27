@@ -47,7 +47,7 @@ void TsFunctions::ihs()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( diskRasterPtr.get() );  
@@ -120,7 +120,7 @@ void TsFunctions::getMeanValue()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_hrc_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( diskRasterPtr.get() );  
@@ -139,7 +139,7 @@ void TsFunctions::getMeanValueOptimized()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_hrc_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( diskRasterPtr.get() );  
@@ -158,7 +158,7 @@ void TsFunctions::getCovarianceValue()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_hrc_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( diskRasterPtr.get() );  
@@ -178,7 +178,7 @@ void TsFunctions::getCovarianceValueOptimized()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_hrc_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( diskRasterPtr.get() );  
@@ -198,7 +198,7 @@ void TsFunctions::PrincipalComponents()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( diskRasterPtr.get() );  
@@ -271,7 +271,7 @@ void TsFunctions::PrincipalComponentsOptimized()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( diskRasterPtr.get() );  
@@ -331,7 +331,7 @@ void TsFunctions::GetStdDevValue()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_hrc_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( diskRasterPtr.get() );  
@@ -350,7 +350,7 @@ void TsFunctions::GetStdDevValueOptimized()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_hrc_crop.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
   std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( diskRasterPtr.get() );  

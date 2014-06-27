@@ -23,12 +23,8 @@
  \brief A singleton to manage Coordinate Systems representations.  
 */
 
-// Boost
-#include <boost/foreach.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-
 // TerraLib
+#include "../common/PlatformUtils.h"
 #include "../common/Translator.h"
 #include "../common/UnitsOfMeasureManager.h"
 #include "Exception.h"
@@ -38,6 +34,11 @@
 // STL
 #include <algorithm>
 #include <cassert>
+
+// Boost
+#include <boost/foreach.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 void LoadSpatialReferenceSystemManager(const std::string fileName, te::srs::SpatialReferenceSystemManager* mger) 
 {
@@ -93,15 +94,15 @@ te::srs::SpatialReferenceSystemManager::~SpatialReferenceSystemManager()
 void te::srs::SpatialReferenceSystemManager::init()
 {
   if(!m_set.empty())
-    throw Exception(TR_SRS("The spatial reference system manager is already initialized!"));
+    throw Exception(TE_TR("The spatial reference system manager is already initialized!"));
   
-  const char* te_env = getenv("TERRALIB_DIR");
-
-  if(te_env == 0)
-    throw Exception(TR_SRS("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
-
-  std::string jsonf(te_env);
-  jsonf += "/resources/json/srs.json";
+#ifdef NDEBUG
+  std::string jsonf = te::common::FindInTerraLibPath("share/terralib/json/srs.json");
+#else
+  std::string jsonf = te::common::FindInTerraLibPath("share/terralib/json/srs_incomplete.json");
+#endif
+  if(jsonf.empty())
+    throw Exception(TE_TR("Could not find srs.json!"));
 
   init(jsonf);
 }
@@ -116,7 +117,7 @@ void te::srs::SpatialReferenceSystemManager::init(const std::string& fileName)
   catch(boost::property_tree::json_parser::json_parser_error &je)
   {
     std::string errmsg = "Error parsing: " + je.filename() + ": " + je.message();
-    te::srs::Exception ex(TR_SRS(errmsg));
+    te::srs::Exception ex(TE_TR(errmsg));
     throw(ex);
   }
   catch (std::exception const& e)
@@ -134,7 +135,7 @@ void te::srs::SpatialReferenceSystemManager::add(const std::string& name, const 
   
   boost::multi_index::nth_index<srs_set,0>::type::iterator it = boost::multi_index::get<0>(m_set).find(key);
   if (it != boost::multi_index::get<0>(m_set).end())
-    throw te::srs::Exception(TR_SRS("The CS identification already exists in the manager.")); 
+    throw te::srs::Exception(TE_TR("The CS identification already exists in the manager.")); 
   
   srs_desc record(name, id, authName, p4Txt, wkt);
   m_set.insert(record);
@@ -171,7 +172,7 @@ std::auto_ptr<te::srs::SpatialReferenceSystem> te::srs::SpatialReferenceSystemMa
   }
   catch(...)
   {
-    throw te::srs::Exception(TR_SRS("Error parsing the registered CS WKT."));
+    throw te::srs::Exception(TE_TR("Error parsing the registered CS WKT."));
   }
   return std::auto_ptr<te::srs::SpatialReferenceSystem>();
 }
@@ -247,7 +248,7 @@ std::pair<std::string,unsigned int> te::srs::SpatialReferenceSystemManager::getI
 { 
   boost::multi_index::nth_index<srs_set,1>::type::iterator it = boost::multi_index::get<1>(m_set).find(name);
   if (it==boost::multi_index::get<1>(m_set).end()) 
-    throw te::srs::Exception(TR_SRS("CS name not recognized."));
+    throw te::srs::Exception(TE_TR("CS name not recognized."));
   
   return std::pair<std::string,unsigned int>(it->m_auth_name, it->m_auth_id);
 }
@@ -257,7 +258,7 @@ std::pair<std::string,unsigned int> te::srs::SpatialReferenceSystemManager::getI
 {  
   boost::multi_index::nth_index<srs_set,2>::type::iterator it = boost::multi_index::get<2>(m_set).find(p4Txt);
   if (it==boost::multi_index::get<2>(m_set).end()) 
-    throw te::srs::Exception(TR_SRS("CS name not recognized."));
+    throw te::srs::Exception(TE_TR("CS name not recognized."));
   
   return std::pair<std::string,unsigned int>(it->m_auth_name, it->m_auth_id);
 }
@@ -266,7 +267,7 @@ std::pair<std::string,unsigned int> te::srs::SpatialReferenceSystemManager::getI
 { 
   boost::multi_index::nth_index<srs_set,3>::type::iterator it = boost::multi_index::get<3>(m_set).find(wkt);
   if (it==boost::multi_index::get<3>(m_set).end()) 
-    throw te::srs::Exception(TR_SRS("CS name not recognized."));
+    throw te::srs::Exception(TE_TR("CS name not recognized."));
 
   return std::pair<std::string,unsigned int>(it->m_auth_name, it->m_auth_id);
 }

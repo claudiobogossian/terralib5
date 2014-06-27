@@ -27,7 +27,7 @@
 #define __TERRAVIEW_INTERNAL_TERRAVIEW_H
 
 // TerraLib
-#include "../terralib/qt/af/BaseApplication.h"
+#include <terralib/qt/af/BaseApplication.h>
 
 // STL
 #include <string>

@@ -1,4 +1,5 @@
 //TerraLib
+#include "../Config.h"
 #include <terralib/graph/builder/GPMGraphBuilder.h>
 #include <terralib/graph/core/AbstractGraph.h>
 #include <terralib/graph/Globals.h>
@@ -13,7 +14,7 @@
 #include <boost/shared_ptr.hpp>
 
 // Qt
-#include <QtGui/QApplication>
+#include <QApplication>
 
 te::se::Style* getGPMGraphStyle();
 
@@ -25,7 +26,9 @@ boost::shared_ptr<te::graph::AbstractGraph> CreateGPMAdjacencyGraph(bool draw)
   std::string graphName = "graphGPMAdjacency";
 
 // open data source
-  std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(TE_DATA_EXAMPLE_DIR "/data/graph/UP_pol.shp");
+  std::string data_dir = TERRALIB_DATA_DIR;
+  
+  std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(data_dir +  "/graph/UP_pol.shp");
   std::string dataSetName = "UP_pol";
   std::string columnId = "COD_UP";
 
@@ -52,7 +55,7 @@ boost::shared_ptr<te::graph::AbstractGraph> CreateGPMAdjacencyGraph(bool draw)
     {
       if(!builder.buildAdjacency(ds, dataSetName, columnId, true))
       {
-        std::cout << std::endl << "An exception has occuried in Graph Example - CreateGPMGraph Adjacency: " << builder.getErrorMessage() << std::endl;
+        std::cout << std::endl << "An exception has occurred in Graph Example - CreateGPMGraph Adjacency: " << builder.getErrorMessage() << std::endl;
       }
       else
       {
@@ -62,11 +65,11 @@ boost::shared_ptr<te::graph::AbstractGraph> CreateGPMAdjacencyGraph(bool draw)
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in Graph Example - CreateGPMGraph Adjacency: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in Graph Example - CreateGPMGraph Adjacency: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in Graph Example - CreateGPMGraph Adjacency!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in Graph Example - CreateGPMGraph Adjacency!" << std::endl;
   }
 
   if(draw)
@@ -74,7 +77,7 @@ boost::shared_ptr<te::graph::AbstractGraph> CreateGPMAdjacencyGraph(bool draw)
     // set visual
     te::se::Style* style = getGPMGraphStyle();
 
-    std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(TE_DATA_EXAMPLE_DIR "/data/graph/BR_Estados.shp");
+    std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(data_dir + "/graph/BR_Estados.shp");
 
     std::auto_ptr<te::gm::Envelope> ext = getDataSetExtent(ds.get(), dataSetName);
 
@@ -101,7 +104,8 @@ boost::shared_ptr<te::graph::AbstractGraph> CreateGPMDistanceGraph(bool draw)
   std::string graphName = "graphGPMDistance";
 
 // open data source
-  std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(TE_DATA_EXAMPLE_DIR "/data/graph/UP_pol.shp");
+  std::string data_dir = TERRALIB_DATA_DIR;
+  std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(data_dir + "/graph/UP_pol.shp");
   std::string dataSetName = "UP_pol";
   std::string columnId = "COD_UP";
   double distance = 3000;
@@ -129,7 +133,7 @@ boost::shared_ptr<te::graph::AbstractGraph> CreateGPMDistanceGraph(bool draw)
     {
       if(!builder.buildDistance(ds, dataSetName, columnId, distance))
       {
-        std::cout << std::endl << "An exception has occuried in Graph Example - CreateGPMGraph Distance: " << builder.getErrorMessage() << std::endl;
+        std::cout << std::endl << "An exception has occurred in Graph Example - CreateGPMGraph Distance: " << builder.getErrorMessage() << std::endl;
       }
       else
       {
@@ -139,19 +143,21 @@ boost::shared_ptr<te::graph::AbstractGraph> CreateGPMDistanceGraph(bool draw)
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in Graph Example - CreateGPMGraph Distance: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in Graph Example - CreateGPMGraph Distance: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in Graph Example - CreateGPMGraph Distance!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in Graph Example - CreateGPMGraph Distance!" << std::endl;
   }
 
   if(draw)
   {
     // set visual
     te::se::Style* style = getGPMGraphStyle();
+  
+    std::string data_dir = TERRALIB_DATA_DIR;
 
-    std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(TE_DATA_EXAMPLE_DIR "/data/graph/BR_Estados.shp");
+    std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(data_dir + "/graph/BR_Estados.shp");
 
     std::auto_ptr<te::gm::Envelope> ext = getDataSetExtent(ds.get(), dataSetName);
 

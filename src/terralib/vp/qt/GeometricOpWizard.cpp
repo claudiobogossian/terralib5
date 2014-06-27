@@ -49,16 +49,16 @@
 #include "GeometricOpWizard.h"
 #include "GeometricOpWizardPage.h"
 #include "GeometricOpOutputWizardPage.h"
-#include "GeometricOp.h"
-#include "GeometricOpMemory.h"
-#include "GeometricOpQuery.h"
+#include "../GeometricOp.h"
+#include "../GeometricOpMemory.h"
+#include "../GeometricOpQuery.h"
 //#include "Utils.h"
 
 // STL
 #include <cassert>
 
 // Qt
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -183,6 +183,10 @@ bool te::vp::GeometricOpWizard::execute()
 {
   bool result;
 
+// progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
   try
   {
     te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inLayer.get());
@@ -244,10 +248,22 @@ bool te::vp::GeometricOpWizard::execute()
         return false;
       }
 
+      this->setCursor(Qt::WaitCursor);
+
       // sera feito por algum tipo de factory
-      te::vp::GeometricOp* geomOp = new te::vp::GeometricOpMemory();
-      
-      //te::vp::BasicGeoOp* basicGeoOp = new te::vp::BasicGeoOpQuery();
+      te::vp::GeometricOp* geomOp = 0;
+
+      // select a strategy based on the capabilities of the input datasource
+      const te::da::DataSourceCapabilities dsCapabilities = inDataSource->getCapabilities();
+
+      if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
+      {
+        geomOp = new te::vp::GeometricOpQuery();
+      }
+      else
+      {
+        geomOp = new te::vp::GeometricOpMemory();
+      }
 
       geomOp->setInput(inDataSource, dsLayer->getData(), dsLayer->getSchema());
       geomOp->setOutput(dsOGR, outputdataset);
@@ -308,7 +324,19 @@ bool te::vp::GeometricOpWizard::execute()
         return false;
       }
 
-      te::vp::GeometricOp* geomOp = new te::vp::GeometricOpMemory();
+      te::vp::GeometricOp* geomOp = 0;
+      
+      // select a strategy based on the capabilities of the input datasource
+      const te::da::DataSourceCapabilities dsCapabilities = inDataSource->getCapabilities();
+
+      if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
+      {
+        geomOp = new te::vp::GeometricOpQuery();
+      }
+      else
+      {
+        geomOp = new te::vp::GeometricOpMemory();
+      }
 
       geomOp->setInput(inDataSource, dsLayer->getData(), dsLayer->getSchema());
       geomOp->setOutput(trgDs, outputdataset);
@@ -349,6 +377,9 @@ bool te::vp::GeometricOpWizard::execute()
     //te::common::ProgressManager::getInstance().removeViewer(id);
     return false;
   }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
+  this->setCursor(Qt::ArrowCursor);
 
   return true;
 }

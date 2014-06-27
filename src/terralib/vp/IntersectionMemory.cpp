@@ -98,7 +98,7 @@ bool te::vp::IntersectionMemory::run()
   resultPair = this->pairwiseIntersection(m_outDsetName, firstMember, secondMember, m_SRID);
 
   if(resultPair.second->size() < 1)
-    throw te::common::Exception(TR_VP("The Layers do not intersect!"));
+    throw te::common::Exception(TE_TR("The Layers do not intersect!"));
 
   std::auto_ptr<te::da::DataSet> outDataSet(resultPair.second);
   std::auto_ptr<te::da::DataSetType> outDataSetType(resultPair.first);
@@ -268,7 +268,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
       delete outputDt;
       delete outputDs;
 
-      throw te::common::Exception(TR_VP("Operation canceled!"));
+      throw te::common::Exception(TE_TR("Operation canceled!"));
     }
 
     task.pulse();

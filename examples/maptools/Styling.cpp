@@ -15,9 +15,9 @@
 #include <vector>
 
 // Qt
-#include <QtGui/QApplication>
-#include <QtGui/QDialog>
-#include <QtGui/QLabel>
+#include <QApplication>
+#include <QDialog>
+#include <QLabel>
 
 /** @name Polygon Styles */
 //@{
@@ -334,7 +334,7 @@ void DrawStyledLayers()
     //te::map::MarkRendererManager::getAllSupportedMarks(marks); // AbstractMarkFactory::SupportedMarks(marks);
     te::map::MarkRendererManager::getInstance().getAllSupportedMarks(marks);
     // Creates a layer of polygons
-    te::map::DataSetLayer* polygons = CreateDataSetLayer("./data/shp/style/polygons.shp");
+    te::map::DataSetLayer* polygons = CreateDataSetLayer("./shp/style/polygons.shp");
 
     // Polygon Styles
     std::vector<te::se::Style*> polygonStyles;
@@ -354,7 +354,7 @@ void DrawStyledLayers()
     }
 
     // Creates a layer of lines
-    te::map::DataSetLayer* lines = CreateDataSetLayer("./data/shp/style/lines.shp");
+    te::map::DataSetLayer* lines = CreateDataSetLayer("./shp/style/lines.shp");
 
     // Line Styles
     std::vector<te::se::Style*> lineStyles;
@@ -372,7 +372,7 @@ void DrawStyledLayers()
     }
 
     // Creates a layer of points
-    te::map::DataSetLayer* points = CreateDataSetLayer("./data/shp/style/points.shp");
+    te::map::DataSetLayer* points = CreateDataSetLayer("./shp/style/points.shp");
 
     // Point Styles
     std::vector<te::se::Style*> pointStyles;
@@ -392,10 +392,10 @@ void DrawStyledLayers()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in Styling example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in Styling example: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in Styling example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in Styling example!" << std::endl;
   }
 }

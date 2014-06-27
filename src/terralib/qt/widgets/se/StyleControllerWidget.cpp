@@ -34,7 +34,7 @@
 #include "SymbolSelectorDialog.h"
 
 // Qt
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 
 // STL
 #include <cassert>

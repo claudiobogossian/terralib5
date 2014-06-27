@@ -28,8 +28,8 @@
 #include "DataSetTreeView.h"
 
 // Qt
-#include <QtGui/QScrollArea>
-#include <QtGui/QVBoxLayout>
+#include <QScrollArea>
+#include <QVBoxLayout>
 
 te::qt::widgets::DataSetExplorer::DataSetExplorer(QWidget* parent, Qt::WindowFlags flags)
   : QDockWidget(tr("Dataset Explorer"), parent, flags)

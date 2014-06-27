@@ -38,7 +38,7 @@ te::da::SQLDialect::~SQLDialect()
 void te::da::SQLDialect::insert(const std::string& funcName, SQLFunctionEncoder* encoder)
 {
   if(te::common::GetPValue(m_regFunctions, funcName) != 0)
-    throw Exception(TR_DATAACCESS("There is already a function registered with the given name!"));
+    throw Exception(TE_TR("There is already a function registered with the given name!"));
 
   m_regFunctions.insert(std::map<std::string, SQLFunctionEncoder*>::value_type(funcName, encoder));
 }
@@ -46,5 +46,21 @@ void te::da::SQLDialect::insert(const std::string& funcName, SQLFunctionEncoder*
 const te::da::SQLFunctionEncoder* te::da::SQLDialect::find(const std::string& funcName) const
 {
   return te::common::GetPValue(m_regFunctions, funcName);
+}
+
+std::vector<std::string> te::da::SQLDialect::getRegisteredNames() const
+{
+  std::vector<std::string> vec;
+
+  std::map<std::string, te::da::SQLFunctionEncoder*>::const_iterator it= m_regFunctions.begin();
+
+  while(it != m_regFunctions.end())
+  {
+    vec.push_back(it->first);
+
+    ++it;
+  }
+
+  return vec;
 }
 

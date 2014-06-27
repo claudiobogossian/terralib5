@@ -34,7 +34,7 @@
 #include "ui_BasicStrokeWidgetForm.h"
 
 // Qt
-#include <QtGui/QPainter>
+#include <QPainter>
 
 // STL
 #include <cassert>

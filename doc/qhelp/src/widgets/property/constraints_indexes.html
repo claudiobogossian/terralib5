@@ -1,0 +1,479 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <title>Constraints_Indexes</title>
+</head>
+
+
+<body>
+
+
+
+
+
+
+<div style="text-align: center; font-family: Calibri Light;">
+<h3><font size="3"> <strong>Constraints
+and Indexes</strong></font></h3>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+<p style="text-align: justify; font-family: Calibri Light;">This
+interface allows the creation of special kinds of attributes called <i>constraints</i>.
+The&nbsp;constraints are specific types of attributes
+that can be defined by one or more attributes of a data set. Usually it
+is used to uniquely identify an entry in a table. These constraints can
+also be used as indexes.</p>
+
+
+
+
+
+
+
+<span style="font-family: Calibri Light;">There are three different types of constraints:</span><br style="font-family: Calibri Light;">
+
+
+
+
+
+
+<ul style="font-family: Calibri Light;">
+
+
+
+
+
+
+  <li><span style="font-weight: bold;">Primary Key</span>:&nbsp;uniquely
+identify an entry in a table, null values are not alloed and each table
+can have only one primary key.</li>
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+<ul style="font-family: Calibri Light;">
+
+
+
+
+
+
+  <li><span style="font-weight: bold;">Unique Key</span>:&nbsp;uniquely
+identify an entry in a table,&nbsp; null values are allowed and each table
+can have multiple unique keys.</li>
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+<ul style="font-family: Calibri Light;">
+
+
+
+
+
+
+  <li><span style="font-weight: bold;">Index</span>: used to optimize
+the searching of the data. The attributes used to index the data
+will vary depending on the type of index to be created. Supported types
+of index are:</li>
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+<ul style="font-family: Calibri Light;">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <ul>
+
+
+
+
+
+
+    <li><span style="font-style: italic;">Btree</span> index type,</li>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  </ul>
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+<ul style="font-family: Calibri Light;">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <ul>
+
+
+
+
+
+
+    <li><span style="font-style: italic;">RTree</span> index type,</li>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  </ul>
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+<ul style="font-family: Calibri Light;">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <ul>
+
+
+
+
+
+
+    <li><span style="font-style: italic;">QuadTree</span> index type,</li>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  </ul>
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+<ul style="font-family: Calibri Light;">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <ul>
+
+
+
+
+
+
+    <li><span style="font-style: italic;">Hash</span> index type.&nbsp;</li>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  </ul>
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span style="font-family: Calibri Light; font-weight: bold;">Creating Primary or unique keys</span><br style="font-family: Calibri Light;">
+
+
+
+
+
+
+<ol>
+
+
+
+
+
+
+  <li style="font-family: Calibri Light;"><span style="font-style: italic;">Type</span> - Select the type to be created
+(primary key or unique key).</li>
+
+
+
+
+
+
+  <li style="font-family: Calibri Light;"><span style="font-style: italic;">Name</span> - Define the constraint name.</li>
+
+
+
+
+
+
+  <li><span style="font-family: Calibri Light;"><span style="font-style: italic;">Available Properties</span> &nbsp;x <span style="font-style: italic;">Selected Properties</span>&nbsp;-
+Select from available properties list which ones&nbsp;will compose the
+constraint
+and click on icon arrow to transfer them to the selected properties
+list. Use the arrows to move from one list to the other as necessary.</span></li>
+
+
+
+  <li><span style="font-family: Calibri Light;">Press <span style="font-weight: bold;">Ok</span> to create the constraint or <span style="font-weight: bold;">Cancel</span> to close the dialog.<br>
+
+
+
+    </span></li>
+
+
+
+
+
+
+</ol>
+
+
+
+
+
+
+<p style="text-align: justify; font-family: Calibri Light;"><span style="font-family: Calibri Light; font-weight: bold;"></span></p>
+
+
+<p style="text-align: justify; font-family: Calibri Light;"><span style="font-family: Calibri Light; font-weight: bold;">Creating Indexes</span><span style="font-family: Calibri Light;"></span></p>
+
+
+
+<ol>
+
+
+
+  <li style="font-family: Calibri Light;"><span style="font-style: italic;">Type</span> - Select the constraint type as &nbsp;<span style="font-style: italic;">Index.</span></li>
+
+
+
+  <li style="font-family: Calibri Light;"><span style="font-style: italic;">Name</span> - Define the index name.</li>
+
+
+
+  <li style="font-family: Calibri Light;"><span style="font-style: italic;">Type</span> - Select the index type (BTree, RTree, QuadTree, Hash).</li>
+
+
+
+  <li><span style="font-family: Calibri Light;"><span style="font-style: italic;">Available Properties</span> &nbsp;x <span style="font-style: italic;">Selected Properties</span>&nbsp;-
+Select from <span style="font-style: italic;">available properties</span> list which ones&nbsp;will compose the index
+and use the arrow icon to transfer them to the <span style="font-style: italic;">selected properties</span>
+list. Use the arrows to move from one list to the other as necessary.</span></li>
+
+
+
+  <li><span style="font-family: Calibri Light;">Press <span style="font-weight: bold;">Ok</span> to create the constraint or <span style="font-weight: bold;">Cancel</span> to close the dialog.</span></li>
+
+
+
+</ol>
+
+<p style="text-align: justify; font-family: Calibri Light;"></p>
+
+
+
+<br>
+
+
+
+<div style="text-align: left; font-family: Calibri Light;">
+<div style="text-align: center;"><br>
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+</body>
+</html>

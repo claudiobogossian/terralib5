@@ -29,7 +29,7 @@
 #include "HorizontalSliderWidget.h"
 
 // Qt
-#include <QtGui/QPushButton>
+#include <QPushButton>
 
 
 

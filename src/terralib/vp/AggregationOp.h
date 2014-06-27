@@ -32,6 +32,7 @@
 
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/dataset/ObjectIdSet.h"
 #include "../dataaccess/datasource/DataSource.h"
 
 #include "../datatype/Property.h"
@@ -65,8 +66,9 @@ namespace te
       virtual bool paramsAreValid();
       
       void setInput(te::da::DataSourcePtr inDsrc,
-                    std::auto_ptr<te::da::DataSet> inDset,
-                    std::auto_ptr<te::da::DataSetType> inDsetType);
+                    std::string inDsetName,
+                    std::auto_ptr<te::da::DataSetType> inDsetType,
+                    const te::da::ObjectIdSet* oidSet = 0);
       
       void setParams(std::vector<te::dt::Property*>& groupProps,
                      std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >&statSum);
@@ -81,9 +83,10 @@ namespace te
       te::gm::GeomType getGeomResultType(te::gm::GeomType geom);
       
       te::da::DataSourcePtr m_inDsrc;
-      std::auto_ptr<te::da::DataSet> m_inDset;
+      std::string m_inDsetName;
       std::auto_ptr<te::da::DataSetType> m_inDsetType;
-      
+      const te::da::ObjectIdSet* m_oidSet;
+
       std::vector<te::dt::Property*> m_groupProps;
       std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > m_statSum;
       

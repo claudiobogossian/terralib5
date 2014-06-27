@@ -62,7 +62,7 @@ te::rst::ProxyRaster::ProxyRaster(const std::vector<RasterPtr>& rasters)
 
 te::rst::ProxyRaster::ProxyRaster(const ProxyRaster& /*rhs*/)
 {
-  throw Exception(TR_RASTER("Not implemented yet!"));
+  throw Exception(TE_TR("Not implemented yet!"));
 }
 
 te::rst::ProxyRaster::~ProxyRaster()

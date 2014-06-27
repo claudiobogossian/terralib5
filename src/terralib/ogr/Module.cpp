@@ -57,9 +57,6 @@ void te::ogr::Module::startup()
   if(m_initialized)
     return;
 
-// it initializes the Translator support for the TerraLib OGR driver support
-  TE_ADD_TEXT_DOMAIN(TE_OGR_TEXT_DOMAIN, TE_OGR_TEXT_DOMAIN_DIR, "UTF-8");
-
 // registers all format drivers built into OGR.
   OGRRegisterAll();
 
@@ -68,7 +65,7 @@ void te::ogr::Module::startup()
 
   #include "OGRDialect.h"
 
-  TE_LOG_TRACE(TR_OGR("TerraLib OGR driver startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib OGR driver startup!"));
 
   m_initialized = true;
 }
@@ -88,7 +85,7 @@ void te::ogr::Module::shutdown()
 
   DataSource::setDialect(0);
 
-  TE_LOG_TRACE(TR_OGR("TerraLib OGR driver shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib OGR driver shutdown!"));
 
   m_initialized = false;
 }

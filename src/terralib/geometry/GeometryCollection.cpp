@@ -25,7 +25,9 @@
 
 // TerraLib
 #include "../common/STLUtils.h"
+#include "../common/Translator.h"
 #include "Envelope.h"
+#include "Exception.h"
 #include "GeometryCollection.h"
 
 // STL
@@ -103,6 +105,7 @@ void te::gm::GeometryCollection::setSRID(int srid) throw()
 
 void te::gm::GeometryCollection::transform(int srid) throw(te::common::Exception)
 {
+#ifdef TERRALIB_MOD_SRS_ENABLED
   if(srid == m_srid)
     return;
 
@@ -115,6 +118,9 @@ void te::gm::GeometryCollection::transform(int srid) throw(te::common::Exception
 
   if(m_mbr)
     computeMBR(false);  // the above transform will do the job for the parts, so don't compute mbr again!
+#else
+  throw Exception(TE_TR("transform method is not supported!"));
+#endif // TERRALIB_MOD_SRS_ENABLED
 }
 
 void te::gm::GeometryCollection::computeMBR(bool cascade) const throw()

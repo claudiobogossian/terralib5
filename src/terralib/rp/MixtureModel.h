@@ -38,7 +38,7 @@ namespace te
   {
     class Raster;
     class Band;
-  };
+  }
 
   namespace rp
   {

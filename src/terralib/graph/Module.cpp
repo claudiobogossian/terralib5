@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -49,9 +49,6 @@ te::graph::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib Symbology Encoding module
-  TE_ADD_TEXT_DOMAIN(TE_GRAPH_TEXT_DOMAIN, TE_GRAPH_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::graph::Module::~Module()
@@ -75,7 +72,7 @@ void te::graph::Module::initialize()
   DirectedGraphFactory::initialize();
   UndirectedGraphFactory::initialize();
 
-  TE_LOG_TRACE(TR_GRAPH("TerraLib Graph module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Graph module initialized!"));
 }
 
 void te::graph::Module::finalize()
@@ -94,5 +91,5 @@ void te::graph::Module::finalize()
   DirectedGraphFactory::finalize();
   UndirectedGraphFactory::finalize();
 
-  TE_LOG_TRACE(TR_GRAPH("TerraLib Graph module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Graph module finalized!"));
 }

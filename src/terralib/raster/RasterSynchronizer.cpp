@@ -34,8 +34,25 @@
 
 te::rst::RasterSynchronizer::RasterSynchronizer( Raster& raster,
   const te::common::AccessPolicy policy )
-: m_policy( policy ), m_raster( raster )
+: m_raster( raster )
 {
+  if( ( raster.getAccessPolicy() & te::common::WAccess ) &&
+    ( policy & te::common::WAccess ) )
+  {
+    m_policy = raster.getAccessPolicy();
+  }
+  else
+  {
+    if( raster.getAccessPolicy() & te::common::RAccess ) 
+    {
+      m_policy = te::common::RAccess;
+    }
+    else
+    {
+      m_policy = te::common::NoAccess;
+    }
+  }
+  
   m_blocksUseCounters.resize( raster.getNumberOfBands() );
   
   for( unsigned int bandIdx = 0; bandIdx < m_blocksUseCounters.size() ;  ++bandIdx )
@@ -63,17 +80,17 @@ bool te::rst::RasterSynchronizer::acquireBlock( const unsigned int bandIdx,
   if( bandIdx >= m_blocksUseCounters.size() )
   {
     m_mutex.unlock();
-    throw Exception(TR_RASTER("Inalid band index") );
+    throw Exception(TE_TR("Inalid band index") );
   }
   if( blockYIndex >= m_blocksUseCounters[ bandIdx ].size() )
   {
     m_mutex.unlock();
-    throw Exception(TR_RASTER("Inalid block Y index") );
+    throw Exception(TE_TR("Inalid block Y index") );
   }
   if( blockXIndex >= m_blocksUseCounters[ bandIdx ][ blockYIndex ].size() )
   {
     m_mutex.unlock();
-    throw Exception(TR_RASTER("Inalid block X index") );
+    throw Exception(TE_TR("Inalid block X index") );
   }  
   
   if( m_policy & te::common::WAccess )
@@ -116,17 +133,17 @@ bool te::rst::RasterSynchronizer::releaseBlock( const unsigned int bandIdx,
   if( bandIdx >= m_blocksUseCounters.size() )
   {
     m_mutex.unlock();
-    throw Exception(TR_RASTER("Inalid band index") );
+    throw Exception(TE_TR("Inalid band index") );
   }
   if( blockYIndex >= m_blocksUseCounters[ bandIdx ].size() )
   {
     m_mutex.unlock();
-    throw Exception(TR_RASTER("Inalid block Y index") );
+    throw Exception(TE_TR("Inalid block Y index") );
   }
   if( blockXIndex >= m_blocksUseCounters[ bandIdx ][ blockYIndex ].size() )
   {
     m_mutex.unlock();
-    throw Exception(TR_RASTER("Inalid block X index") );
+    throw Exception(TE_TR("Inalid block X index") );
   }  
   
   if( m_blocksUseCounters[ bandIdx ][ blockYIndex ][ blockXIndex ] )

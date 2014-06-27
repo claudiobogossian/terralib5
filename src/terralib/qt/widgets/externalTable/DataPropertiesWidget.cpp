@@ -40,19 +40,19 @@
 #include "../../../datatype/StringProperty.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../memory/DataSet.h"
+#include "../property/DataSetAdapterWidget.h"
+#include "../srs/SRSManagerDialog.h"
 #include "../table/DataSetTableView.h"
 #include "../Utils.h"
-#include "SRSManagerDialog.h"
 #include "DataPropertiesWidget.h"
-#include "DataSetAdapterWidget.h"
 #include "ui_DataPropertiesWidgetForm.h"
 
 // Qt
 #include <QCheckBox>
-#include <QtGui/QComboBox>
-#include <QtCore/QFileInfo>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
+#include <QComboBox>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QMessageBox>
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -387,7 +387,11 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
 
     m_ui->m_dataPropertiesTableWidget->resizeColumnsToContents();
     m_ui->m_dataPropertiesTableWidget->resizeRowsToContents();
+#if (QT_VERSION >= 0x050000)
+    m_ui->m_dataPropertiesTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+#else
     m_ui->m_dataPropertiesTableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+#endif
 
     //Clearing the Comboxes if they aren't empty
     m_ui->m_xAxisComboBox->clear();

@@ -26,7 +26,7 @@
 #include "../../../maptools/AbstractLayer.h"
 
 //Qt
-#include <QtGui/QWizard>
+#include <QWizard>
 
 //STL
 #include <memory>

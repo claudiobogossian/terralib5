@@ -35,14 +35,14 @@
 #include <boost/tuple/tuple.hpp>
 
 // Qt
-#include <QtCore/QMimeData>
-#include <QtCore/QUrl>
-#include <QtGui/QDragEnterEvent>
-#include <QtGui/QDragLeaveEvent>
-#include <QtGui/QDragMoveEvent>
-#include <QtGui/QDropEvent>
-#include <QtGui/QMenu>
-#include <QtGui/QMessageBox>
+#include <QDragEnterEvent>
+#include <QDragLeaveEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
+#include <QMenu>
+#include <QMessageBox>
+#include <QMimeData>
+#include <QUrl>
 
 /*!
   \class te::qt::widgets::LayerTreeView::Impl

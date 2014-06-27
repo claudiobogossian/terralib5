@@ -34,7 +34,7 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QDialog>
+#include <QDialog>
 
 // Forward declaraion
 namespace Ui { class OverlayDialogForm; }

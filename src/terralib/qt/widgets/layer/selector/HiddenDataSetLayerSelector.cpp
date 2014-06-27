@@ -68,7 +68,7 @@ std::list<te::map::AbstractLayerPtr> te::qt::widgets::HiddenDataSetLayerSelector
       datasource = te::da::DataSourceManager::getInstance().get((*it)->getId(), (*it)->getAccessDriver(), (*it)->getConnInfo());
 
       if(datasource.get() == 0)
-        throw Exception(TR_QT_WIDGETS("Could not retrieve the data source instance!"));
+        throw Exception(TE_TR("Could not retrieve the data source instance!"));
     }
 
     if(!datasource->isOpened())

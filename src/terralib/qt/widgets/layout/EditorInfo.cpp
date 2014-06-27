@@ -26,7 +26,7 @@
 // TerraLib
 #include "EditorInfo.h"
 #include "LayoutEditor.h"
-#include <QtGui/QWidget>
+#include <QWidget>
 
 te::qt::widgets::EditorInfo::EditorInfo(te::qt::widgets::LayoutEditor* me, Qt::WindowFlags f) :
   LayoutObject(me, f)

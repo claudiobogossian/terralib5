@@ -30,7 +30,7 @@
 #include "../common/Static.h"
 #include "Config.h"
 
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
 
 // Forward declaration
 namespace geos
@@ -192,7 +192,7 @@ namespace te
   } // end namespace gm
 }   // end namespace te
 
-#endif  // TE_USE_GEOS
+#endif  // TERRALIB_GEOS_ENABLED
 
 #endif  // __TERRALIB_GEOMETRY_INTERNAL_GEOSREADER_H
 

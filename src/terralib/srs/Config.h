@@ -36,34 +36,6 @@
  */
 #define TE_SRS_MODULE_NAME "te.srs"
 
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
- \def TE_SRS_TEXT_DOMAIN
- 
- \brief It contains the name of the text domain used in the translation of messages in the TerraLib srs module.
- */
-#define TE_SRS_TEXT_DOMAIN "tesrs"
-
-/*!
- \def TE_SRS_TEXT_DOMAIN_DIR
- 
- \brief It contains the translation catalog directory.
- */
-#define TE_SRS_TEXT_DOMAIN_DIR "locale"
-
-/*!
- \def TR_SRS
- 
- \brief It marks a string in order to get translated. This is a special mark used in the SRS module of TerraLib.
- */
-#define TR_SRS(message) TR(message, TE_SRS_TEXT_DOMAIN)
-
-//@}
-
 /*!
  \def TE_UNKNOWN_SRS
  

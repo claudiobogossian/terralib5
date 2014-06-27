@@ -67,7 +67,7 @@ namespace te
               MedianFilterT = 5,      //!< The resultant pixel will be the median of pixels in the convolution window.
               DilationFilterT = 6,    //!< The resultant pixel will be the highest pixel value in the convolution window.
               ErosionFilterT = 7,     //!< The resultant pixel will be the lowest pixel value in the convolution window.
-              UserDefinedWindowT = 8, //!< The user will define the weights of a convolution window.
+              UserDefinedWindowT = 8  //!< The user will define the weights of a convolution window.
             };
 
             FilterType m_filterType; //!< The edge filter type.

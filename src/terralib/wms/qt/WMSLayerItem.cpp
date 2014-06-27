@@ -35,8 +35,8 @@
 #include "WMSLayerItem.h"
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QWidget>
 
 // STL
 #include <map>

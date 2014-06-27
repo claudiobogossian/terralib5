@@ -101,7 +101,7 @@ void te::common::ConsoleProgressViewer::updateValue(int /*taskId*/)
   {
     m_propStep = val;
 
-    std::cout << m_message << TR_COMMON(" - Percent: ") << m_propStep << "%" <<std::endl;
+    std::cout << m_message << TE_TR(" - Percent: ") << m_propStep << "%" <<std::endl;
   }
 }
 
@@ -113,7 +113,7 @@ void te::common::ConsoleProgressViewer::updateMessage(int /*taskId*/)
   }
   else
   {
-    m_message = TR_COMMON("Multi Tasks");
+    m_message = TE_TR("Multi Tasks");
   }
 }
 

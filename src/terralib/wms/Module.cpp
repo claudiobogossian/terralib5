@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,8 +29,6 @@
 #include "../dataaccess/datasource/DataSourceFactory.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../plugin/PluginInfo.h"
-#include "../qt/widgets/layer/explorer/AbstractTreeItemFactory.h"
-#include "./qt/WMSLayerItem.h"
 #include "Config.h"
 #include "DataSourceFactory.h"
 #include "Module.h"
@@ -56,16 +54,11 @@ void te::wms::Module::startup()
   if(m_initialized)
     return;
 
-// it initializes the Translator support for the TerraLib WMS driver support
-  TE_ADD_TEXT_DOMAIN(TE_WMS_TEXT_DOMAIN, TE_WMS_TEXT_DOMAIN_DIR, "UTF-8");
-
   te::da::DataSourceFactory::add(TE_WMS_DRIVER_IDENTIFIER, te::wms::Build);
 
   GDALAllRegister();
 
-  te::qt::widgets::AbstractTreeItemFactory::reg("WMSLAYER", boost::bind(boost::factory<WMSLayerItem*>(),_1, _2));
-  
-  TE_LOG_TRACE(TR_WMS("TerraLib WMS driver startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib WMS driver startup!"));
 
   m_initialized = true;
 }
@@ -79,7 +72,7 @@ void te::wms::Module::shutdown()
 
   te::da::DataSourceManager::getInstance().detachAll(TE_WMS_DRIVER_IDENTIFIER);
 
-  TE_LOG_TRACE(TR_WMS("TerraLib WMS driver shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib WMS driver shutdown!"));
 
   m_initialized = false;
 }

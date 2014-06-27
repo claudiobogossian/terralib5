@@ -453,7 +453,6 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
   RansacItCounterT currentIteration = 0;
 
   RansacItCounterT dynamicMaxIterations = globalDynamicMaxIterations;
-  RansacItCounterT dynamicMaxIterationsEstimation = 0;
   RansacItCounterT dynamicMaxConsecutiveInvalidIterations =
     RANSACGETMAXINVALIDITERATIONS( assurance, dynamicMaxIterations );
   const RansacItCounterT threadSyncMaxIterations = procsNumber;

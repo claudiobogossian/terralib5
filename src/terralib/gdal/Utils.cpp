@@ -166,7 +166,7 @@ void te::gdal::GetBandProperties(GDALDataset* gds, std::vector<te::rst::BandProp
           nBands = 3;
           break;
         default :
-          throw Exception(TR_GDAL("invalid palette interpretation"));
+          throw Exception(TE_TR("invalid palette interpretation"));
           break;
       }        
     }
@@ -208,7 +208,7 @@ te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband,
             bprop->m_colorInterp = te::rst::GrayIdxCInt;
             break;
           default :
-            throw Exception(TR_GDAL("invalid band index"));
+            throw Exception(TE_TR("invalid band index"));
             break;
         }
         break;
@@ -228,7 +228,7 @@ te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband,
             bprop->m_colorInterp = te::rst::AlphaCInt;
             break;            
           default :
-            throw Exception(TR_GDAL("invalid band index"));
+            throw Exception(TE_TR("invalid band index"));
             break;
         }        
         break;
@@ -248,7 +248,7 @@ te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband,
             bprop->m_colorInterp = te::rst::KeyCInt;
             break;            
           default :
-            throw Exception(TR_GDAL("invalid band index"));
+            throw Exception(TE_TR("invalid band index"));
             break;
         }        
         break;          
@@ -265,12 +265,12 @@ te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband,
             bprop->m_colorInterp = te::rst::LigCInt;
             break;
           default :
-            throw Exception(TR_GDAL("invalid band index"));
+            throw Exception(TE_TR("invalid band index"));
             break;
         }         
         break;
       default :
-        throw Exception(TR_GDAL("invalid palette interpretation"));
+        throw Exception(TE_TR("invalid palette interpretation"));
         break;
     }
   }
@@ -306,7 +306,7 @@ void te::gdal::GetBands(te::gdal::Raster* rst, std::vector<te::gdal::Band*>& ban
     {
       if( rst->getGDALDataset()->GetRasterBand(1)->GetColorTable() == 0 )
       {
-        throw Exception(TR_GDAL("invalid color table"));
+        throw Exception(TE_TR("invalid color table"));
       }
       
       switch( rst->getGDALDataset()->GetRasterBand(1)->GetColorTable()->GetPaletteInterpretation() )
@@ -324,7 +324,7 @@ void te::gdal::GetBands(te::gdal::Raster* rst, std::vector<te::gdal::Band*>& ban
           nBands = 3;
           break;
         default :
-          throw Exception(TR_GDAL("invalid palette interpretation"));
+          throw Exception(TE_TR("invalid palette interpretation"));
           break;
       }        
     }
@@ -673,7 +673,7 @@ std::string te::gdal::GetGDALConnectionInfo(const std::map<std::string, std::str
   if(it != connInfo.end())
     return it->second;
 
-  throw Exception(TR_GDAL("Invalid data source connection information!."));
+  throw Exception(TE_TR("Invalid data source connection information!."));
 }
 
 void te::gdal::Vectorize(GDALRasterBand* band, std::vector<te::gm::Geometry*>& geometries)

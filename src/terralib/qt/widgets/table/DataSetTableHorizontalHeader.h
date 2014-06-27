@@ -21,7 +21,7 @@
 #ifndef TE_QT_WIDGETS_DATASETTABLEHORIZONTALHEADER_H
 #define TE_QT_WIDGETS_DATASETTABLEHORIZONTALHEADER_H
 
-#include <QtGui/QHeaderView>
+#include <QHeaderView>
 
 namespace te
 {

@@ -37,7 +37,7 @@
 #include "ui_HistogramDataWidgetForm.h"
 
 //QT
-#include <QtGui/QDockWidget>
+#include <QDockWidget>
 
 te::qt::widgets::HistogramDialog::HistogramDialog(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),

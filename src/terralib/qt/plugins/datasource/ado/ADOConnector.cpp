@@ -37,8 +37,8 @@
 #include <boost/filesystem.hpp>
 
 // Qt
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QMessageBox>
 
 te::qt::plugins::ado::ADOConnector::ADOConnector(QWidget* parent, Qt::WindowFlags f)
   : AbstractDataSourceConnector(parent, f)
@@ -100,7 +100,7 @@ void te::qt::plugins::ado::ADOConnector::update(std::list<te::da::DataSourceInfo
     if(it->get() == 0)
       continue;
 
-    std::auto_ptr<ADOConnectorDialog> cdialog(new ADOConnectorDialog(static_cast<QWidget*>(parent())));
+    std::auto_ptr<ADOConnectorDialog> cdialog(new ADOConnectorDialog(static_cast<QWidget*>(parent()), 0, ADOConnectorDialog::UPDATE));
 
     cdialog->set(*it);
 

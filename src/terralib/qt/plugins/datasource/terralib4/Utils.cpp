@@ -51,13 +51,13 @@
 #include "Utils.h"
 
 // TerraLib 4
-#include <terralib/kernel/TeAbstractTheme.h>
-#include <terralib/kernel/TeDataTypes.h>
-#include <terralib/kernel/TeLegendEntry.h>
-#include <terralib/kernel/TeRaster.h>
-#include <terralib/kernel/TeRasterTransform.h>
-#include <terralib/kernel/TeTheme.h>
-#include <terralib/kernel/TeVisual.h>
+#include <terralib4/kernel/TeAbstractTheme.h>
+#include <terralib4/kernel/TeDataTypes.h>
+#include <terralib4/kernel/TeLegendEntry.h>
+#include <terralib4/kernel/TeRaster.h>
+#include <terralib4/kernel/TeRasterTransform.h>
+#include <terralib4/kernel/TeTheme.h>
+#include <terralib4/kernel/TeVisual.h>
 
 // Boost
 #include <boost/lexical_cast.hpp>

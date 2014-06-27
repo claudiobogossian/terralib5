@@ -32,7 +32,7 @@
 #include "../../../maptools/AbstractLayer.h"
 #include "../../widgets/charts/ChartConfigurer.h"
 #include "../../widgets/charts/ChartDisplayWidget.h"
-#include "events/LayerEvents.h"
+#include "../events/LayerEvents.h"
 #include "../ApplicationController.h"
 
 te::gm::Envelope* computeDataSetEnvelope(std::auto_ptr<te::da::DataSet> dataset, size_t propNum)

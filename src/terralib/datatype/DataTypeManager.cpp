@@ -47,10 +47,10 @@ int te::dt::DataTypeManager::add(const std::string& name, const std::string& des
   std::auto_ptr<DataType> dt(new DataType(id, name, description));
 
   if(m_types.find(dt.get()) != m_types.end())
-    throw Exception(TR_DATATYPE("There is already a data type with the given id!"));
+    throw Exception(TE_TR("There is already a data type with the given id!"));
 
   if(m_nameIdx.find(dt.get()) != m_nameIdx.end())
-    throw Exception(TR_DATATYPE("There is already a data type with the given name!"));
+    throw Exception(TE_TR("There is already a data type with the given name!"));
 
   m_types.insert(dt.get());
   m_nameIdx.insert(dt.get());

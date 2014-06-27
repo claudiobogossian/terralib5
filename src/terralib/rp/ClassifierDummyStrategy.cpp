@@ -90,7 +90,7 @@ bool te::rp::ClassifierDummyStrategy::initialize(te::rp::StrategyParameters cons
 
   m_parameters = *(paramsPtr);
 
-  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_dummyParameter > 1, TR_RP("The value of dummy must be at least 2."))
+  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_dummyParameter > 1, TE_TR("The value of dummy must be at least 2."))
 
   m_isInitialized = true;
 
@@ -101,7 +101,7 @@ bool te::rp::ClassifierDummyStrategy::execute(const te::rst::Raster& inputRaster
                                               const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
                                               const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception)
 {
-  TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, TR_RP("Instance not initialized"))
+  TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, TE_TR("Instance not initialized"))
 
   unsigned int c;
   unsigned int r;

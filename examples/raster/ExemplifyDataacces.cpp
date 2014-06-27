@@ -31,7 +31,7 @@ void DataSetTypePersistence()
 
     // access a datasource to persist it
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters";
+    connInfo["URI"] = ""TERRALIB_DATA_DIR"/rasters";
 
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
     ds->setConnectionInfo(connInfo);
@@ -46,11 +46,11 @@ void DataSetTypePersistence()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in DataAccess DataSetTypePersistence(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in DataAccess DataSetTypePersistence(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in DataAccess DataSetTypePersistence()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in DataAccess DataSetTypePersistence()!" << std::endl;
   }
   std::cout << "=== End example DataSetTypePersistence === " << std::endl;
 }
@@ -78,7 +78,7 @@ void DataSet()
 
 // access a datasource to persist it
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters";
+    connInfo["URI"] = ""TERRALIB_DATA_DIR"/rasters";
 
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
     ds->setConnectionInfo(connInfo);
@@ -88,7 +88,8 @@ void DataSet()
     tr->createDataSet(dstp, std::map<std::string, std::string> ());
 
 // access the data set
-    std::auto_ptr<te::da::DataSet> dset = tr->getDataSet("test.tif", te::common::FORWARDONLY, te::common::RWAccess);
+    //std::auto_ptr<te::da::DataSet> dset = tr->getDataSet("test.tif", te::common::FORWARDONLY, te::common::RWAccess);
+    std::auto_ptr<te::da::DataSet> dset = tr->getDataSet("test.tif", te::common::FORWARDONLY);
 
 // access the raster
     std::size_t rpos = te::da::GetFirstPropertyPos(dset.get(), te::dt::RASTER_TYPE);
@@ -107,11 +108,11 @@ void DataSet()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in DataAccess DataSet(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in DataAccess DataSet(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in DataAccess DataSet()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in DataAccess DataSet()!" << std::endl;
   }
   std::cout << "=== End example Data Set === " << std::endl;
 }
@@ -123,7 +124,7 @@ void DataSetPersistence()
   {
     std::cout << "=== Example DataSetPersistence === " << std::endl;
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters";
+    connInfo["URI"] = ""TERRALIB_DATA_DIR"/rasters";
 
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
     ds->setConnectionInfo(connInfo);
@@ -148,11 +149,11 @@ void DataSetPersistence()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in DataAccess DataSetPersistence(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in DataAccess DataSetPersistence(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in DataAccess DataSetPersistence()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in DataAccess DataSetPersistence()!" << std::endl;
   }
   std::cout << "=== End example DataSetPersistence === " << std::endl;
 }
@@ -163,7 +164,7 @@ void DataSource()
   {
     std::cout << "=== Example Data Source === " << std::endl;
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters";
+    connInfo["URI"] = ""TERRALIB_DATA_DIR"/rasters";
 
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
     ds->setConnectionInfo(connInfo);
@@ -185,11 +186,11 @@ void DataSource()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in RasterDataAccessExamples DataSetPersistence(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in RasterDataAccessExamples DataSetPersistence(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in RasterDataAccessExamples DataSetPersistence()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in RasterDataAccessExamples DataSetPersistence()!" << std::endl;
   }
 }
 

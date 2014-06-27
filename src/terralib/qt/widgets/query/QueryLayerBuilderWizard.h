@@ -33,7 +33,7 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QWizard>
+#include <QWizard>
 
 namespace te
 {

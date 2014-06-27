@@ -261,12 +261,12 @@ bool te::map::QueryLayer::isValid() const
 void te::map::QueryLayer::draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid)
 {
   if(m_rendererType.empty())
-    throw Exception((boost::format(TR_MAP("Could not draw the query layer %1%. The renderer type is empty!")) % getTitle()).str());
+    throw Exception((boost::format(TE_TR("Could not draw the query layer %1%. The renderer type is empty!")) % getTitle()).str());
 
   // Try get the defined renderer
   std::auto_ptr<AbstractRenderer> renderer(RendererFactory::make(m_rendererType));
   if(renderer.get() == 0)
-    throw Exception((boost::format(TR_MAP("Could not draw the query layer %1%. The renderer %2% could not be created!")) % getTitle() % m_rendererType).str());
+    throw Exception((boost::format(TE_TR("Could not draw the query layer %1%. The renderer %2% could not be created!")) % getTitle() % m_rendererType).str());
 
   renderer->draw(this, canvas, bbox, srid);
 }
