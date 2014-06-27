@@ -32,8 +32,11 @@
 #include <terralib/raster/BandProperty.h>
 #include <terralib/raster/RasterFactory.h>
 #include <terralib/geometry/GTFactory.h>
+#include <terralib/geometry/LinearRing.h>
 #include <terralib/common/progress/ConsoleProgressViewer.h>
 #include <terralib/common/progress/ProgressManager.h>
+
+#include <boost/scoped_array.hpp>
 
 #include <memory>
 
@@ -141,14 +144,14 @@ void TsBlender::PixelByPixelNoBlendTest()
     
   CPPUNIT_ASSERT( outRasterPtr.get() );
   
-  std::vector< double > values( outRasterPtr->getNumberOfBands() );
+  boost::scoped_array< double > values( new double[ outRasterPtr->getNumberOfBands() ] );
   for( unsigned int row = 0 ; row < outRasterPtr->getNumberOfRows() ; ++row )
   {
     for( unsigned int col = 0 ; col < outRasterPtr->getNumberOfColumns() ; ++col )
     {
-      blender.getBlendedValues( row, col, &values[col] );
+      blender.getBlendedValues( row, col, values.get() );
       
-      for( unsigned int band = 0 ; band < values.size() ; ++band )
+      for( unsigned int band = 0 ; band < outRasterPtr->getNumberOfBands() ; ++band )
       {
         outRasterPtr->setValue( col, row, values[ band ], band );
       }
@@ -258,14 +261,14 @@ void TsBlender::PixelByPixelEucBlendTest()
     
   CPPUNIT_ASSERT( outRasterPtr.get() );
   
-  std::vector< double > values( outRasterPtr->getNumberOfBands() );
+  boost::scoped_array< double > values( new double[ outRasterPtr->getNumberOfBands() ] );
   for( unsigned int row = 0 ; row < outRasterPtr->getNumberOfRows() ; ++row )
   {
     for( unsigned int col = 0 ; col < outRasterPtr->getNumberOfColumns() ; ++col )
     {
-      blender.getBlendedValues( row, col, &values[col] );
+      blender.getBlendedValues( row, col, values.get() );
       
-      for( unsigned int band = 0 ; band < values.size() ; ++band )
+      for( unsigned int band = 0 ; band < outRasterPtr->getNumberOfBands() ; ++band )
       {
         outRasterPtr->setValue( col, row, values[ band ], band );
       }
@@ -293,6 +296,58 @@ void TsBlender::FullRasterBlendTest()
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster2Pointer.get() );
   
+  // Creating the valid area delimiters
+  
+  std::auto_ptr< te::gm::MultiPolygon > r1ValidDataDelimiterPtr(
+    new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType, 
+    inputRaster1Pointer->getSRID(), 0 ) );
+  {
+    const double& LLX = inputRaster1Pointer->getGrid()->getExtent()->m_llx;
+    const double& LLY = inputRaster1Pointer->getGrid()->getExtent()->m_lly;
+    const double& URX = inputRaster1Pointer->getGrid()->getExtent()->m_urx;
+    const double& URY = inputRaster1Pointer->getGrid()->getExtent()->m_ury;
+    const int& SRID =  inputRaster1Pointer->getSRID();
+    
+    te::gm::LinearRing* ringPtr = new te::gm::LinearRing( 5, 
+       te::gm::LineStringType, SRID, 0 );  
+    ringPtr = new te::gm::LinearRing(5, te::gm::LineStringType, SRID);
+    ringPtr->setPoint( 0, LLX, URY );
+    ringPtr->setPoint( 1, URX, URY );
+    ringPtr->setPoint( 2, URX, LLY );
+    ringPtr->setPoint( 3, LLX, LLY );
+    ringPtr->setPoint( 4, LLX, URY );    
+    
+    te::gm::Polygon* polPtr = new te::gm::Polygon( 0, te::gm::PolygonType, SRID, 0 );           
+    polPtr->add( ringPtr );
+       
+    r1ValidDataDelimiterPtr->add( polPtr );
+  }
+  
+  std::auto_ptr< te::gm::MultiPolygon > r2ValidDataDelimiterPtr(
+    new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType, 
+    inputRaster2Pointer->getSRID(), 0 ) );
+  {
+    const double& LLX = inputRaster2Pointer->getGrid()->getExtent()->m_llx;
+    const double& LLY = inputRaster2Pointer->getGrid()->getExtent()->m_lly;
+    const double& URX = inputRaster2Pointer->getGrid()->getExtent()->m_urx;
+    const double& URY = inputRaster2Pointer->getGrid()->getExtent()->m_ury;
+    const int& SRID =  inputRaster2Pointer->getSRID();
+    
+    te::gm::LinearRing* ringPtr = new te::gm::LinearRing( 5, 
+       te::gm::LineStringType, SRID, 0 );  
+    ringPtr = new te::gm::LinearRing(5, te::gm::LineStringType, SRID);
+    ringPtr->setPoint( 0, LLX, URY );
+    ringPtr->setPoint( 1, URX, URY );
+    ringPtr->setPoint( 2, URX, LLY );
+    ringPtr->setPoint( 3, LLX, LLY );
+    ringPtr->setPoint( 4, LLX, URY );    
+    
+    te::gm::Polygon* polPtr = new te::gm::Polygon( 0, te::gm::PolygonType, SRID, 0 );           
+    polPtr->add( ringPtr );
+       
+    r2ValidDataDelimiterPtr->add( polPtr );
+  }  
+  
   // Creating the output image
   
   std::auto_ptr< te::rst::Raster > outRasterPtr;
@@ -301,18 +356,23 @@ void TsBlender::FullRasterBlendTest()
     std::map<std::string, std::string> outputRasterInfo;
     outputRasterInfo["URI"] = "terralib_unittest_rp_Blender_FullRasterBlendTest_Test.tif";
     
+    te::rst::Grid* gridPtr = new te::rst::Grid( 
+      *( inputRaster1Pointer->getGrid() ) );
+    gridPtr->setNumberOfColumns( inputRaster1Pointer->getGrid()->getNumberOfColumns() * 2 );
+    gridPtr->setNumberOfRows( inputRaster1Pointer->getGrid()->getNumberOfRows() * 2 );    
+    
     std::vector< te::rst::BandProperty* > bandsProperties;
     for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx <
       inputRaster1Pointer->getNumberOfBands() ; ++inRasterBandsIdx )
     {
       bandsProperties.push_back( new te::rst::BandProperty(
         *( inputRaster1Pointer->getBand( 0 )->getProperty() ) ) );
+      bandsProperties[ inRasterBandsIdx ]->m_blkh = 1;
+      bandsProperties[ inRasterBandsIdx ]->m_blkw = gridPtr->getNumberOfColumns();
+      bandsProperties[ inRasterBandsIdx ]->m_nblocksx = 1;
+      bandsProperties[ inRasterBandsIdx ]->m_nblocksy = gridPtr->getNumberOfRows();
       bandsProperties[ inRasterBandsIdx ]->m_noDataValue = 0.0;
     }
-    
-    te::rst::Grid* gridPtr = new te::rst::Grid( *( inputRaster1Pointer->getGrid() ) );
-    gridPtr->setNumberOfColumns( gridPtr->getNumberOfColumns() * 2 );
-    gridPtr->setNumberOfRows( gridPtr->getNumberOfRows() * 2 );
     
     outRasterPtr.reset( te::rst::RasterFactory::make(
       "GDAL",
@@ -417,8 +477,8 @@ void TsBlender::FullRasterBlendTest()
     pixelScales1,
     pixelOffsets2,
     pixelScales2,
-    0,
-    0,
+    r1ValidDataDelimiterPtr.get(),
+    r2ValidDataDelimiterPtr.get(),
     *transPtr,
     1,
     true ) );
@@ -448,6 +508,58 @@ void TsBlender::ThreadedFullRasterBlendTest()
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster2Pointer.get() );
   
+  // Creating the valid area delimiters
+  
+  std::auto_ptr< te::gm::MultiPolygon > r1ValidDataDelimiterPtr(
+    new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType, 
+    inputRaster1Pointer->getSRID(), 0 ) );
+  {
+    const double& LLX = inputRaster1Pointer->getGrid()->getExtent()->m_llx;
+    const double& LLY = inputRaster1Pointer->getGrid()->getExtent()->m_lly;
+    const double& URX = inputRaster1Pointer->getGrid()->getExtent()->m_urx;
+    const double& URY = inputRaster1Pointer->getGrid()->getExtent()->m_ury;
+    const int& SRID =  inputRaster1Pointer->getSRID();
+    
+    te::gm::LinearRing* ringPtr = new te::gm::LinearRing( 5, 
+       te::gm::LineStringType, SRID, 0 );  
+    ringPtr = new te::gm::LinearRing(5, te::gm::LineStringType, SRID);
+    ringPtr->setPoint( 0, LLX, URY );
+    ringPtr->setPoint( 1, URX, URY );
+    ringPtr->setPoint( 2, URX, LLY );
+    ringPtr->setPoint( 3, LLX, LLY );
+    ringPtr->setPoint( 4, LLX, URY );    
+    
+    te::gm::Polygon* polPtr = new te::gm::Polygon( 0, te::gm::PolygonType, SRID, 0 );           
+    polPtr->add( ringPtr );
+       
+    r1ValidDataDelimiterPtr->add( polPtr );
+  }
+  
+  std::auto_ptr< te::gm::MultiPolygon > r2ValidDataDelimiterPtr(
+    new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType, 
+    inputRaster2Pointer->getSRID(), 0 ) );
+  {
+    const double& LLX = inputRaster2Pointer->getGrid()->getExtent()->m_llx;
+    const double& LLY = inputRaster2Pointer->getGrid()->getExtent()->m_lly;
+    const double& URX = inputRaster2Pointer->getGrid()->getExtent()->m_urx;
+    const double& URY = inputRaster2Pointer->getGrid()->getExtent()->m_ury;
+    const int& SRID =  inputRaster2Pointer->getSRID();
+    
+    te::gm::LinearRing* ringPtr = new te::gm::LinearRing( 5, 
+       te::gm::LineStringType, SRID, 0 );  
+    ringPtr = new te::gm::LinearRing(5, te::gm::LineStringType, SRID);
+    ringPtr->setPoint( 0, LLX, URY );
+    ringPtr->setPoint( 1, URX, URY );
+    ringPtr->setPoint( 2, URX, LLY );
+    ringPtr->setPoint( 3, LLX, LLY );
+    ringPtr->setPoint( 4, LLX, URY );    
+    
+    te::gm::Polygon* polPtr = new te::gm::Polygon( 0, te::gm::PolygonType, SRID, 0 );           
+    polPtr->add( ringPtr );
+       
+    r2ValidDataDelimiterPtr->add( polPtr );
+  }   
+  
   // Creating the output image
   
   std::auto_ptr< te::rst::Raster > outRasterPtr;
@@ -456,19 +568,23 @@ void TsBlender::ThreadedFullRasterBlendTest()
     std::map<std::string, std::string> outputRasterInfo;
     outputRasterInfo["URI"] = "terralib_unittest_rp_Blender_ThreadedFullRasterBlendTest_Test.tif";
     
+    te::rst::Grid* gridPtr = new te::rst::Grid( *( inputRaster1Pointer->getGrid() ) );
+    gridPtr->setNumberOfColumns( inputRaster1Pointer->getGrid()->getNumberOfColumns() * 2 );
+    gridPtr->setNumberOfRows( inputRaster1Pointer->getGrid()->getNumberOfRows() * 2 );    
+    
     std::vector< te::rst::BandProperty* > bandsProperties;
     for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx <
       inputRaster1Pointer->getNumberOfBands() ; ++inRasterBandsIdx )
     {
       bandsProperties.push_back( new te::rst::BandProperty(
         *( inputRaster1Pointer->getBand( 0 )->getProperty() ) ) );
+      bandsProperties[ inRasterBandsIdx ]->m_blkh = 1;
+      bandsProperties[ inRasterBandsIdx ]->m_blkw = gridPtr->getNumberOfColumns();
+      bandsProperties[ inRasterBandsIdx ]->m_nblocksx = 1;
+      bandsProperties[ inRasterBandsIdx ]->m_nblocksy = gridPtr->getNumberOfRows();      
       bandsProperties[ inRasterBandsIdx ]->m_noDataValue = 0.0;
     }
-    
-    te::rst::Grid* gridPtr = new te::rst::Grid( *( inputRaster1Pointer->getGrid() ) );
-    gridPtr->setNumberOfColumns( gridPtr->getNumberOfColumns() * 2 );
-    gridPtr->setNumberOfRows( gridPtr->getNumberOfRows() * 2 );
-    
+        
     outRasterPtr.reset( te::rst::RasterFactory::make(
       "GDAL",
       gridPtr,
@@ -572,8 +688,8 @@ void TsBlender::ThreadedFullRasterBlendTest()
     pixelScales1,
     pixelOffsets2,
     pixelScales2,
-    0,
-    0,
+    r1ValidDataDelimiterPtr.get(),
+    r2ValidDataDelimiterPtr.get(),
     *transPtr,
     0,
     true ) );
