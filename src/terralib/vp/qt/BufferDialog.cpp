@@ -351,6 +351,18 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
     return;
   }
   
+  const te::da::ObjectIdSet* oidSet = 0;
+
+  if(m_ui->m_onlySelectedCheckBox->isChecked())
+  {
+    oidSet = m_selectedLayer->getSelected();
+    if(!oidSet)
+    {
+      QMessageBox::information(this, "Buffer", "Select the layer objects to perform the buffer operation.");
+      return;
+    }
+  }
+
   te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
   if (!inDataSource.get())
   {
@@ -448,7 +460,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
         bufferOp = new te::vp::BufferMemory();
       }
 
-      bufferOp->setInput(inDataSource, dsLayer->getData(), dsLayer->getSchema());
+      bufferOp->setInput(inDataSource, dsLayer->getDataSetName(), dsLayer->getSchema(), oidSet);
       bufferOp->setOutput(dsOGR, outputdataset);
       bufferOp->setParams(fixedDistance, bufferPolygonRule, bufferBoundariesRule, copyInputColumns, levels);
 
@@ -512,7 +524,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
         bufferOp = new te::vp::BufferMemory();
       }
 
-      bufferOp->setInput(inDataSource, dsLayer->getData(), dsLayer->getSchema());
+      bufferOp->setInput(inDataSource, dsLayer->getDataSetName(), dsLayer->getSchema());
       bufferOp->setOutput(aux, outputdataset);
       bufferOp->setParams(fixedDistance, bufferPolygonRule, bufferBoundariesRule, copyInputColumns, levels);
 

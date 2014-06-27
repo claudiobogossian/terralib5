@@ -44,18 +44,23 @@ te::vp::IntersectionOp::IntersectionOp():
 }
 
 void te::vp::IntersectionOp::setInput(te::da::DataSourcePtr inFirstDsrc,
-                                      std::auto_ptr<te::da::DataSet> inFirstDset,
+                                      std::string inFirstDsetName,
                                       std::auto_ptr<te::da::DataSetType> inFirstDsetType,
                                       te::da::DataSourcePtr inSecondDsrc,
-                                      std::auto_ptr<te::da::DataSet> inSecondDset,
-                                      std::auto_ptr<te::da::DataSetType> inSecondDsetType)
+                                      std::string inSecondDsetName,
+                                      std::auto_ptr<te::da::DataSetType> inSecondDsetType,
+                                      const te::da::ObjectIdSet* firstOidSet,
+                                      const te::da::ObjectIdSet* secondOidSet)
 {
   m_inFirstDsrc = inFirstDsrc;
-  m_inFirstDset = inFirstDset;
+  m_inFirstDsetName = inFirstDsetName;
   m_inFirstDsetType = inFirstDsetType;
   m_inSecondDsrc = inSecondDsrc;
-  m_inSecondDset = inSecondDset;
+  m_inSecondDsetName = inSecondDsetName;
   m_inSecondDsetType = inSecondDsetType;
+
+  m_firstOidSet = firstOidSet;
+  m_secondOidSet = secondOidSet;
 }
 
 void te::vp::IntersectionOp::setParams( const bool& copyInputColumns,
@@ -87,13 +92,13 @@ te::gm::GeomType te::vp::IntersectionOp::getGeomResultType(te::gm::GeomType geom
 
 bool te::vp::IntersectionOp::paramsAreValid()
 {
-  if (!m_inFirstDset.get() || !m_inFirstDsetType.get())
+  if (!m_inFirstDsetType.get())
     return false;
 
   if (!m_inFirstDsetType->hasGeom())
     return false;
 
-  if (!m_inSecondDset.get() || !m_inSecondDsetType.get())
+  if (!m_inSecondDsetType.get())
     return false;
 
   if (!m_inSecondDsetType->hasGeom())

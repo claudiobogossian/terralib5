@@ -65,11 +65,13 @@ namespace te
       virtual bool paramsAreValid();
       
       void setInput(te::da::DataSourcePtr inFirstDsrc,
-                    std::auto_ptr<te::da::DataSet> inFirstDset,
+                    std::string inFirstDsetName,
                     std::auto_ptr<te::da::DataSetType> inFirstDsetType,
                     te::da::DataSourcePtr inSecondDsrc,
-                    std::auto_ptr<te::da::DataSet> inSecondDset,
-                    std::auto_ptr<te::da::DataSetType> inSecondDsetType);
+                    std::string inSecondDsetName,
+                    std::auto_ptr<te::da::DataSetType> inSecondDsetType,
+                    const te::da::ObjectIdSet* firstOidSet = 0,
+                    const te::da::ObjectIdSet* secondOidSet = 0);
 
       void setParams(const bool& copyInputColumns, std::size_t inSRID);
 
@@ -86,11 +88,13 @@ namespace te
       te::gm::GeomType getGeomResultType(te::gm::GeomType geom);
       
       te::da::DataSourcePtr m_inFirstDsrc;
-      std::auto_ptr<te::da::DataSet> m_inFirstDset;
+      std::string m_inFirstDsetName;
       std::auto_ptr<te::da::DataSetType> m_inFirstDsetType;
       te::da::DataSourcePtr m_inSecondDsrc;
-      std::auto_ptr<te::da::DataSet> m_inSecondDset;
+      std::string m_inSecondDsetName;
       std::auto_ptr<te::da::DataSetType> m_inSecondDsetType;
+      const te::da::ObjectIdSet* m_firstOidSet;
+      const te::da::ObjectIdSet* m_secondOidSet;
 
       bool m_copyInputColumns;
       std::size_t m_SRID;

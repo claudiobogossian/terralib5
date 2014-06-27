@@ -85,7 +85,7 @@
         <item row="1" column="0">
          <widget class="QCheckBox" name="m_onlySelectedCheckBox">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>Only Selected</string>
