@@ -37,12 +37,14 @@
 
 // Qt
 #include <QDir>
+#include <QPushButton>
 #include <QString>
 
 te::qt::af::GeneralConfigWidget::GeneralConfigWidget(QWidget* parent)
   : AbstractSettingWidget(parent),
     m_ui(new Ui::GeneralConfigWidgetForm),
-    m_defaultSRID(TE_UNKNOWN_SRS)
+    m_defaultSRID(TE_UNKNOWN_SRS),
+    m_needRestart(false)
 {
   m_resumeText = tr("Changes the general configurations of the application.");
 
@@ -53,6 +55,28 @@ te::qt::af::GeneralConfigWidget::GeneralConfigWidget(QWidget* parent)
 
 te::qt::af::GeneralConfigWidget::~GeneralConfigWidget()
 {
+  if(m_needRestart)
+  {
+    QMessageBox msgBox(this);
+
+    msgBox.setText(tr("The system must be restarted for the changes to take effect."));
+    msgBox.setInformativeText(tr("Do you want to do it now?"));
+    msgBox.setWindowTitle(tr("Restart system"));
+
+    std::auto_ptr<QPushButton> restartButton;
+    restartButton.reset(msgBox.addButton(tr("Restart now"), QMessageBox::ActionRole));
+
+    std::auto_ptr<QPushButton> laterResButton;
+    laterResButton.reset(msgBox.addButton(tr("Restart later"), QMessageBox::DestructiveRole));
+    msgBox.addButton(QMessageBox::NoButton);
+
+    msgBox.setDefaultButton(restartButton.get());
+
+    msgBox.exec();
+
+    if(msgBox.clickedButton() == restartButton.get())
+      qApp->exit(1000);
+  }
 }
 
 void te::qt::af::GeneralConfigWidget::saveChanges()
@@ -61,6 +85,7 @@ void te::qt::af::GeneralConfigWidget::saveChanges()
 
   sett.setValue("srs/default_srid", m_defaultSRID);
   sett.setValue("color/selection_color", m_colorPicker->getColor().name());
+  sett.setValue("toolbars/icon_size", m_ui->m_toolBarIconSizeSpinBox->value());
 
   ApplicationController::getInstance().setSelectionColor(m_colorPicker->getColor());
 
@@ -104,6 +129,10 @@ void te::qt::af::GeneralConfigWidget::initialize()
   QColor selectionColor = QColor(selectionColorName);
   m_colorPicker->setColor(selectionColor);
 
+  // ToolBar Icon Size
+  int iconSize = settings.value("toolbars/icon_size", te::common::SystemApplicationSettings::getInstance().getValue("Application.ToolBarDefaultIconSize").c_str()).toInt();
+  m_ui->m_toolBarIconSizeSpinBox->setValue(iconSize);
+
   // Icon Theme
   std::string iconThemesDirPath = te::common::FindInTerraLibPath(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.BaseDirectory.<xmlattr>.xlink:href"));
   QDir iconThemesDir(iconThemesDirPath.c_str());
@@ -116,6 +145,7 @@ void te::qt::af::GeneralConfigWidget::initialize()
   // Signals & slots
   connect(m_ui->m_defaultSRSToolButton, SIGNAL(pressed()), SLOT(onDefaultSRSToolButtonPressed()));
   connect(m_colorPicker, SIGNAL(colorChanged(const QColor&)), SLOT(onSelectionColorChanged(const QColor&)));
+  connect(m_ui->m_toolBarIconSizeSpinBox, SIGNAL(valueChanged(int)), SLOT(onToolBarIconSizeValueChanged(int)));
 }
 
 void te::qt::af::GeneralConfigWidget::setupSRSUi()
@@ -140,5 +170,11 @@ void te::qt::af::GeneralConfigWidget::onDefaultSRSToolButtonPressed()
 
 void te::qt::af::GeneralConfigWidget::onSelectionColorChanged(const QColor& /*color*/)
 {
+  changeApplyButtonState(true);
+}
+
+void te::qt::af::GeneralConfigWidget::onToolBarIconSizeValueChanged(int value)
+{
+  m_needRestart = true;
   changeApplyButtonState(true);
 }

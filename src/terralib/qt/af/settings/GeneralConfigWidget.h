@@ -86,11 +86,14 @@ namespace te
 
           void onSelectionColorChanged(const QColor& color);
 
+          void onToolBarIconSizeValueChanged(int value);
+
         private:
 
           std::auto_ptr<Ui::GeneralConfigWidgetForm> m_ui;
           te::qt::widgets::ColorPickerToolButton* m_colorPicker;
           int m_defaultSRID;
+          bool m_needRestart;
       };
 
     }   // end namespace af
