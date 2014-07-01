@@ -35,7 +35,8 @@
 #include <vector>
 
 te::qt::widgets::StyleExplorer::StyleExplorer(QWidget* parent)
-  : QTreeWidget(parent)
+  : QTreeWidget(parent),
+  m_style(0)
 {
   // Setup
   setAlternatingRowColors(true);
@@ -68,6 +69,9 @@ void te::qt::widgets::StyleExplorer::setStyle(te::se::Style* style)
 void te::qt::widgets::StyleExplorer::updateStyleTree()
 {
   clear();
+
+  if(!m_style)
+    return;
 
   QTreeWidgetItem* root = new QTreeWidgetItem(this, STYLE);
   root->setText(0, tr("Style"));
