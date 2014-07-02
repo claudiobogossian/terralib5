@@ -1,27 +1,58 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <meta http-equiv="Content-Type"
- content="text/html; charset=ISO-8859-1">
+
+
+
+  
+  
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+
+
+  
+  
+  
   <title>Style Explorer</title>
 </head>
+
+
 <body>
-<span style="font-family: Calibri Light;"><span
- style="font-weight: bold;"></span></span>
-<h3 style="text-align: center;"><span
- style="font-family: Calibri Light;">Style Explorer</span><br>
+
+
+
+<span style="font-family: Calibri Light;"><span style="font-weight: bold;"></span></span>
+<h3 style="text-align: center;"><span style="font-family: Calibri Light;">Style Explorer</span><br>
+
+
+
 </h3>
-<div style="text-align: left; font-family: Calibri Light;"><font
- size="3">
+
+
+
+<div style="text-align: left; font-family: Calibri Light;"><font size="3">
 The <span style="font-weight: bold;">Style
 Explorer</span> component&nbsp;
 is used to access and manipulate the style associated with the layer.
-For every layer with geometric representation (point, line and polygon)
-or raster, there is always an associated default style.<br>
+For every layer with geometric&nbsp; (point, line and polygon)
+or raster </font><font size="3">representation</font><font size="3">, there is always an associated default style.<br>
+
+
+
 <br>
+
+
+
 </font><font style="font-family: Calibri Light;">It is
 accessible through:</font><br>
+
+
+
 <br>
+
+
+
 <font style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp;
 </font><font style="font-family: Calibri Light;"><b>Layer
 Explorer &gt; &nbsp;Right Click </b></font>over
@@ -29,413 +60,1404 @@ a
 Layer-name<font style="font-family: Calibri Light;"><b>
 &gt;&nbsp;</b></font><font size="3"><span style="font-weight: bold;">Style
 Explorer</span></font><br>
+
+
+
 <br>
+
+
+
 <font style="font-family: Calibri Light;"><b>&nbsp;&nbsp;&nbsp;
-View &gt;&nbsp;</b></font><font size="3"><span
- style="font-weight: bold;">Style Explorer</span></font><font
- style="font-family: Calibri Light;"> </font><br>
-<font size="3"><br>
-</font>
-<div style="text-align: center;"><font size="3"><img
- style="width: 399px; height: 850px;" alt="" src="explorer_1.png"><br>
+View &gt;&nbsp;</b></font><font size="3"><span style="font-weight: bold;">Style Explorer</span></font><font style="font-family: Calibri Light;"> </font><font size="3"></font><br>
+
+<div style="text-align: center;"><font size="3">
+
 <br>
+
+
+
 </font>
 <div style="text-align: left;">The
 explorer style has three distinct components:<br>
-<br>
+
+
+
 <ul>
-  <li><span style="font-weight: bold;">Explorer</span>:
-Uses a tree structure to represent the hierarchy of the style
-associated with the layer. The structure is:</li>
+
+
+
+  
 </ul>
+
+
+<ol>
+
+
+  <li><span style="font-weight: bold;">Style Explorer</span>:
+Uses a tree structure (style, rule and symbolizer) to represent the hierarchy of the style
+associated with the layer. The tree structure is shown bellow with examples of styles for polygon, line and point:</li>
+
+
+</ol>
+
+
 <ul>
+
+
+
+</ul>
+
+
+
+<ul>
+
+
+
+  
+  
+  
   <ul>
+
+
+
     <li><span style="font-weight: bold;">Style</span>:
-It is the top level. Represents the&nbsp;layer style. The style has
-a set of Rules.</li>
+It is the top level and represents the&nbsp;layer style. A style can
+have more than one rule, each one can represent a restriction over the
+data. The default behavior is one rule per layer without restrictions.</li>
+
+
+
+  
+  
+  
   </ul>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
+  
+  
+  
   <ul>
+
+
+
+    
+    
+    
     <ul>
-      <li><span style="font-weight: bold;">Rule</span>:
-A rule is a symbology set to a restriction on a data set. The default
-rule has no restriction and includes all data. The rule has a set of
-Symbolizers.</li>
+
+
+
+      <li><span style="font-weight: bold;">Rule</span>: A rule is&nbsp;composed by a set of symbolizers defined in the next tree level. The default
+rule has no restriction and includes all data.&nbsp;</li>
+
+
+
+    
+    
+    
     </ul>
+
+
+
+  
+  
+  
   </ul>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
+  
+  
+  
   <ul>
+
+
+
+    
+    
+    
     <ul>
+
+
+
+      
+      
+      
       <ul>
+
+
+
         <li><span style="font-weight: bold;">Symbolizer:</span>
-Defined as&nbsp;data set should be presented. </li>
+Once a rule is selected, use the <a href="#Tool_Bar">tool bar</a> do add, remove and move up/down the symbols &nbsp;that will compose the rule. &nbsp;The <a href="#Symbology">Symbology</a> component explains how to define symbols. </li>
+
+
+
+      
+      
+      
       </ul>
+
+
+
+    
+    
+    
     </ul>
+
+
+
+  
+  
+  
   </ul>
+
+
+
 </ul>
-<div style="text-align: center;"><img
- style="width: 398px; height: 298px;" alt="" src="explorer_2.png"></div>
-<ul>
-  <li><span style="font-weight: bold;">Tool Bar</span>:
-Provides tools for the user to manipulate the style. The tools are:</li>
-</ul>
-<ul>
-  <ul>
-    <li><span style="font-weight: bold;">Draw</span>:
-The drawing tool is only a shortcut to the <span
- style="font-style: italic;">Draw Tool</span>
-in the application.&nbsp;</li>
-  </ul>
-</ul>
-<ul>
-  <ul>
-    <li><span style="font-weight: bold;">Add</span>:
-Add a new symbol. The symbol will be created within the selected rule
-and always will be a clone of the selected symbol.</li>
-  </ul>
-</ul>
-<ul>
-  <ul>
-    <li><span style="font-weight: bold;">Remove</span>:
-Removes the selected symbol.</li>
-  </ul>
-</ul>
-<ul>
-  <ul>
-    <li><span style="font-weight: bold;">Up</span>:
-Changes the order of the symbol in the tree, rising the symbol.</li>
-  </ul>
-</ul>
-<ul>
-  <ul>
-    <li><span style="font-weight: bold;">Down</span>:
-Changes the order of the symbol in the tree, lowering the symbol.</li>
-  </ul>
-</ul>
-<ul>
-  <ul>
-    <li><span style="font-weight: bold;">Preview Scale</span>:
-Allows you to change the size of the preview box.</li>
-  </ul>
-</ul>
-<div style="text-align: center;"><img
- style="width: 365px; height: 34px;" alt="" src="explorer_10.png"><br>
-<div style="text-align: left;"><br>
-Note: The modifications on the selected symbol is effective only on the
-preview of the Style Explorer.</div>
+
+
+
+<div style="text-align: left;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<img style="width: 240px; height: 180px;" alt="" src="explorer_1.PNG"> <img style="width: 208px; height: 240px;" alt="" src="explorer_2.PNG"> <img style="width: 221px; height: 180px;" alt="" src="explorer_3.PNG"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br>
+<br>
+
+
 </div>
+
+
+
 <ul>
-  <li><span style="font-weight: bold;">Symbology</span>:
-This component allows the user to modify the symbol, having access to
-all property belongs to the selected symbol. The properties may vary
-depending on the data type. The data types and their properties are:</li>
+
+
+
+  
+</ul>
+
+
+<ol start="2">
+
+
+  <li><span style="font-weight: bold;"><a name="Tool_Bar"></a>Tool Bar</span>: It provides tools&nbsp;to manipulate the symbols:</li>
+
+
+</ol>
+
+
+<ul>
+
+
+
+</ul>
+
+
+
+<ul>
+
+
+
+  
+  
+  
+  <ul>
+
+
+
+    <li><span style="font-weight: bold;"><img style="width: 21px; height: 23px;" alt="Draw" src="../../gen_icones/ic_draw.PNG"></span> It is only a shortcut to the <span style="font-style: italic;">Draw Tool</span>
+in the application and draw the layer using the defined style.</li>
+
+
+
+  
+  
+  
+  </ul>
+
+
+
+</ul>
+
+
+
+<ul>
+
+
+
+  
+  
+  
+  <ul>
+
+
+
+    <li><span style="font-weight: bold;"><img style="width: 24px; height: 24px;" alt="Add" src="../../gen_icones/ic_add.PNG"></span>
+It&nbsp;add a new&nbsp;symbol to the rule. Initially, the symbol
+added&nbsp; is&nbsp;a clone of the selected symbol (default). To change
+the properties that define its symbology go to <a href="#Symbology">Symbology</a> component.</li>
+
+
+
+  
+  
+  
+  </ul>
+
+
+
+</ul>
+
+
+
+<ul>
+
+
+
+  
+  
+  
+  <ul>
+
+
+
+    <li><span style="font-weight: bold;"><img style="width: 24px; height: 23px;" alt="Remove" src="../../gen_icones/ic_remove.PNG"></span> It removes the selected symbol from the rule.</li>
+
+
+
+  
+  
+  
+  </ul>
+
+
+
+</ul>
+
+
+
+<ul>
+
+
+
+  
+  
+  
+  <ul>
+
+
+
+    <li><span style="font-weight: bold;"><img style="width: 22px; height: 23px;" alt="" src="../../gen_icones/ic_arrow_up.PNG"></span> &nbsp;and <img style="width: 19px; height: 21px;" alt="" src="../../gen_icones/ic_arrow_down.PNG"> changes the order of the symbol in the rule.</li>
+
+
+
+  
+  
+  
+  </ul>
+
+
+
+</ul>
+
+
+
+
+
+
+<ul>
+
+
+
+  
+  
+  
+  <ul>
+
+
+
+    <li><span style="font-weight: bold;"><img style="width: 175px; height: 32px;" alt="" src="../../gen_icones/ic_scale.PNG"></span>&nbsp;It
+is used to change the scale of the symbols used to compose the rule and
+displays at preview. It will not take effect on the Map Display.</li>
+  </ul>
 </ul>
 <ul>
   <ul>
+    <li><img style="width: 22px; height: 22px;" alt="" src="../../gen_icones/ic_library.PNG"> It is used to open a&nbsp;library manager from where is it possible to seach and&nbsp;pick up the symbol. &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; <br>
+
+
+
+    </li>
+
+
+
+  
+  
+  
+  </ul>
+
+
+
+</ul>
+
+
+
+<div style="text-align: center;">
+
+
+</div>
+
+
+
+<ul>
+
+
+
+  
+</ul>
+
+
+<ol start="3">
+
+
+  <li><span style="font-weight: bold;"><a name="Symbology"></a>Symbology</span>:
+This component allows the user to modify the symbol,&nbsp;
+accessing&nbsp;all properties belonging to the selected symbols. The
+details may vary
+depending on the feature being represented. The feature types and their
+properties are listed bellow and the links leads to the Symbolizers session:</li>
+
+
+</ol>
+
+
+<ul>
+
+
+
+</ul>
+
+
+
+<ul>
+
+
+
+  
+  
+  
+  <ul>
+
+
+
     <li>Polygons:</li>
+
+
+
+    
+    
+    
     <ul>
-      <li><span style="text-decoration: underline;"><a
- href="#Basic_Symbology">Basic Symbology</a></span></li>
+
+
+
+      <li><span style="text-decoration: underline;"><a href="#Basic_Symbology">Basic Symbology</a></span></li>
+
+
+
+    
+    
+    
     </ul>
+
+
+
+  
+  
+  
   </ul>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
+  
+  
+  
   <ul>
+
+
+
+    
+    
+    
     <ul>
-      <li><a href="#Graphic_Symbology">Graphic Symbology</a>.</li>
+
+
+
+      <li><a href="#Graphic_Symbology">Graphic Symbology</a></li>
+
+
+
+    
+    
+    
     </ul>
+
+
+
+  
+  
+  
   </ul>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
+  
+  
+  
   <ul>
+
+
+
     <li>Lines:</li>
+
+
+
+    
+    
+    
     <ul>
+
+
+
       <li><a href="#Basic_Symbology">Basic Symbology</a>
-(only <a href="#Basic_Stroke">stroke</a>).</li>
+(only <a href="#Basic_Stroke">stroke</a>)</li>
+
+
+
+    
+    
+    
     </ul>
+
+
+
+  
+  
+  
   </ul>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
+  
+  
+  
   <ul>
+
+
+
     <li>Points:</li>
+
+
+
+    
+    
+    
     <ul>
-      <li><a href="#Graphic_Symbology">Graphic Symbology</a>.</li>
+
+
+
+      <li><a href="#Graphic_Symbology">Graphic Symbology</a></li>
+
+
+
+    
+    
+    
     </ul>
+
+
+
+  
+  
+  
   </ul>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
+  
+  
+  
   <ul>
+
+
+
     <li>Raster:</li>
+
+
+
+    
+    
+    
     <ul>
-      <li><a href="#Raster_Symbology">Raster Symbology</a>.</li>
+
+
+
+      <li><a href="#Raster_Symbology">Raster Symbology</a><br>
+
+
+
+      </li>
+
+
+
+    
+    
+    
     </ul>
+
+
+
+  
+  
+  
   </ul>
+
+
+
 </ul>
-<div style="text-align: center;"><img
- style="width: 383px; height: 514px;" alt="" src="explorer_3.png"><br>
-<br>
-<br>
-<h3>Symbolizers</h3>
+
+
+
+<div style="text-align: center;">
+<h3 style="text-align: left;"><a name="Symbolizers"></a>Symbolizers</h3>
+
 <div style="text-align: left;">A
 Symbolizer is an abstract type for encoding the graphical properties
 used to portray geographic information.&nbsp; A Symbolizer
-describes how a feature is to appear on a map. The Symbolizer describes
+describes how a feature will appear on a map. The Symbolizer describes
 not just the shape that should appear but also such graphical
 properties as color and opacity. A Symbolizer is obtained by specifying
 one of a small number of different types of Symbolizers and then
-supplying parameters to override its default behaviour.</div>
+supplying parameters to override its default behaviour.
+
+
+
+</div>
+
 <div style="text-align: left;">
-<h3><a name="Basic_Symbology"></a>Basic
+<div style="text-align: left;">
+</div>
+
+<h3 style="text-align: left;"><a name="Basic_Symbology"></a>Basic
 Symbology</h3>
+
+
+
 <h4><a name="Basic_Fill"></a>Basic
 Fill</h4>
-A Fill specifies the pattern for filling an area geometry.<br>
+
+
+
+A&nbsp;Fill specifies the pattern for filling an area geometry.<br>
+
+
+
 <br>
+
+
+
 Properties:<br>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Color</span>:
 Sets the color used to draw the fill.</li>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Opacity</span>:
 Sets the opacity to draw&nbsp;the fill.</li>
+
+
+
 </ul>
+
+
+
 <h4><a name="Basic_Stroke"></a>Basic
 Stroke</h4>
+
+
+
 A Stroke specifies the appearance of a linear geometry.<br>
+
+
+
 <br>
-<br>
+
+
+
 Properties:<br>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Color</span>:
 Sets the color for the contour drawing.</li>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Opacity</span>:&nbsp;Sets
 the opacity for the contour drawing.</li>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Width</span>:&nbsp;Sets
 the width for the contour drawing.</li>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Dash</span>:
 Sets the dash for contour drawing.</li>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Join</span>:
 This property defines how a line should be joined (between line
 segments).</li>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Cap</span>:
 This property defines how a line should be capped (at the two ends of
 the line).</li>
+
+
+
 </ul>
+
+
+
+
+
 <br>
-<br>
-<div style="text-align: center;"><img
- style="width: 366px; height: 445px;" alt="" src="explorer_4.png"><br>
+
+
+
+<div style="text-align: center;">
+<div style="text-align: left;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<img style="width: 366px; height: 445px;" alt="" src="explorer_4.png"><br>
+
 </div>
-<h3 style="text-align: center;"><a name="Graphic_Symbology"></a>Graphic
+
+
+<br>
+
+
+
+</div>
+
+
+
+<h3 style="text-align: left;"><a name="Graphic_Symbology"></a>Graphic
 Symbology</h3>
+
+
+
 A Graphic is a graphic symbol with an inherent shape, color(s), and
 possibly size. A graphic can be defined very informally as "a little
-picture" and&nbsp;can be of either a raster or vector-graphic
+picture" and&nbsp;can be&nbsp;either a raster or vector-graphic
 source type.<br>
+
+
+
 <br>
-<br>
-<div style="text-align: center;"><img
- style="width: 363px; height: 440px;" alt="" src="explorer_5.png"><br>
+
+
+
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<img style="width: 363px; height: 440px;" alt="" src="explorer_5.png"><br>
+
+
+
+<div style="text-align: center;">
 <div style="text-align: left;">
 <h4>Graphic Properties</h4>
+
+
+
 The basic parameters of a graphic symbology are:<br>
-<br>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Size</span>:&nbsp;Sets
 the size for the&nbsp;graphic drawing. If a size is specified, the
 height of the graphic will be scaled to that size and the corresponding
 aspect will be used for the width.</li>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Angle</span>:&nbsp;Sets
-the angle for the graphic drawing. &nbsp;Its gives the rotation of
+the angle for the graphic drawing. &nbsp;It gives the rotation of
 a graphic in the clockwise direction about its center point in decimal
 degrees, encoded as a floating-point number. Negative values mean
 counter-clockwise rotation.</li>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Opacity</span>:
 &nbsp;Sets the opacity for the graphic drawing.</li>
+
+
+
 </ul>
-<h4>Well Known Mark</h4>
+
+
+
+<h3>Well Known Mark</h3>
+
+
+
 <div style="text-align: center;">
-<div style="text-align: left;">A
-Mark specifies a geometric shape and applies coloring to it.
-&nbsp;The Well Known Mark element gives the well-known name of the
-shape of the mark. Allowed values include at least "square", "circle",
-"triangle", "star", "cross",&nbsp; and "x", though map servers may
+<div style="text-align: left;">A <span style="font-style: italic;">WellKnown Mark</span> are&nbsp;geometric shapes used to represent a feature in a map. Available shapes&nbsp;include at least&nbsp;&nbsp;<span style="font-style: italic;">circle,
+square, cross, triangle,&nbsp;star and x</span>, although map servers may
 draw a different symbol&nbsp;instead if they don't have a shape for
 all of these.<br>
+
+
+
 <br>
+
+
+
 The basic parameters of a&nbsp;Well Known Mark are:<br>
-<br>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Type</span>:
-Defines the Well Known Mark type.</li>
+Defines the Well Known Mark type (<span style="font-style: italic;">circle,
+square, cross, triangle,&nbsp;star, x among others)</span></li>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
   <li><a href="#Basic_Fill">Basic Fill</a></li>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
   <li><a href="#Basic_Stroke">Basic Stroke</a></li>
+
+
+
 </ul>
-<br>
-<br>
+
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<img style="width: 355px; height: 319px;" alt="" src="explorer_6.png"><br>
+
 </div>
-<img style="width: 355px; height: 319px;" alt="" src="explorer_6.png"></div>
+
+</div>
+
+
+
 <h4>Glyph Mark</h4>
+
+
+
 <div style="text-align: center;">
 <div style="text-align: left;">The
-alternative to a&nbsp;Well Known Mark is an external mark format.
+alternative to the Well Known Marks is an external mark format.
 The Glyph Mark allows to use a&nbsp; TrueType font file and select
 an individual glyph from that file.<br>
+
+
+
 <br>
-The basic parameters of a&nbsp;Well Known Mark are:<br>
-<br>
+
+
+
+The basic parameters of a Glyph Mark are:<br>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Font:</span>
 Defines the True Type font to be used.</li>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Char</span>:
 Defines a specific character in the font selected.</li>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
   <li><a href="explorer.html#Basic_Fill">Basic Fill</a></li>
+
+
+
 </ul>
+
+
+
 <br>
-<br>
+
+
+
+ &nbsp; &nbsp; &nbsp; &nbsp; <img style="width: 355px; height: 319px;" alt="" src="explorer_7.png"></div>
+
 </div>
-<img style="width: 355px; height: 319px;" alt="" src="explorer_7.png"></div>
+
+
+
 <h4>Local Image</h4>
-Another type of mark that can be defined are the image files (png
-files).<br>
+
+
+
+Another type of mark that can be defined is the image files (png
+files). To define it click on the value <br>
+
+
+
 <br>
+
+
+
 The only parameters for a Local Image is:<br>
-<br>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Image:</span>
 Displays a dialog box that allows you to choose a local file containing
-an image.</li>
+an image. Click on the value and then on the&nbsp;<img style="width: 27px; height: 19px;" alt="" src="../../gen_icones/ic_3points.PNG">.</li>
+
+
+
 </ul>
-<br>
-<br>
-<div style="text-align: center;"><img
- style="width: 356px; height: 325px;" alt="" src="explorer_8.png"></div>
+
+
+
+
+
+<div style="text-align: left;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<img style="width: 340px; height: 125px;" alt="" src="explorer_8.PNG">&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp; &nbsp; &nbsp;</div>
+
+
+
 </div>
+
+
+
 </div>
-<h3 style="text-align: center;"><a name="Raster_Symbology"></a>Raster
+
+
+
+<h3 style="text-align: left;"><a name="Raster_Symbology"></a>Raster
 Symbology</h3>
+
+
+
 <div style="text-align: center;">
 <div style="text-align: left;">A
 Raster Symbology is used to specify the rendering of
 raster/matrix-coverage data (e.g., satellite images, DEMs).<br>
+
+
+
 <br>
+
+
+
 The basic parameters of a Raster Symbology&nbsp; are:<br>
-<br>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Opacity:</span>&nbsp;
 Sets the opacity to draw&nbsp;the raster.</li>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Enhancement</span>:
-Allows you to apply enhancements over the image so that the changes are
+Allows&nbsp;to apply enhancements over the image so that the changes are
 applied equally on all bands.</li>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
+  
+  
+  
   <ul>
+
+
+
     <li><span style="font-weight: bold;">Brightness: </span>Lets you
 adjust the brightness of the image.</li>
+
+
+
+  
+  
+  
   </ul>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
+  
+  
+  
   <ul>
-    <li><span style="font-weight: bold;">Sharpness:</span> <span
- style="font-weight: bold;"></span>Lets you adjust the sharpness of the
+
+
+
+    <li><span style="font-weight: bold;">Sharpness:</span> <span style="font-weight: bold;"></span>Lets you adjust the sharpness of the
 image.</li>
+
+
+
+  
+  
+  
   </ul>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Channel Selection</span>: The
 Channel Selection property specifies the false-color channel selection
 for a multispectral raster source (such as a multi-band
 satellite-imagery source).</li>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
+  
+  
+  
   <ul>
+
+
+
     <li><span style="font-weight: bold;">Mono</span>: Defines a band to
 be displayed on the gray channel.</li>
+
+
+
+  
+  
+  
   </ul>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
+  
+  
+  
   <ul>
+
+
+
     <li><span style="font-weight: bold;">Red</span>:&nbsp;Defines a
 band to be displayed on the red channel.</li>
+
+
+
+  
+  
+  
   </ul>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
+  
+  
+  
   <ul>
+
+
+
     <li><span style="font-weight: bold;">Green</span>:&nbsp;Defines a
 band to be displayed on the green channel.</li>
+
+
+
+  
+  
+  
   </ul>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
+  
+  
+  
   <ul>
+
+
+
     <li><span style="font-weight: bold;">Blue</span>:&nbsp;Defines a
 band to be displayed on the blue channel.</li>
+
+
+
+  
+  
+  
   </ul>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
+  
+  
+  
   <ul>
+
+
+
     <li><span style="font-weight: bold;">Composition</span>: Allows
 selection of three bands to do the color composition on red, green and
 blue channels.</li>
+
+
+
+  
+  
+  
   </ul>
+
+
+
 </ul>
+
+
+
 <ul>
+
+
+
   <li><span style="font-weight: bold;">Contrast Enhancement</span>:
 Improves the contrast of each individual channel image.</li>
+
+
+
 </ul>
-<br>
+
+
+
+
+
 </div>
+
+
+
 <br>
-<img style="width: 340px; height: 517px;" alt="" src="explorer_9.png"></div>
+
+
+
+<div style="text-align: left;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img style="width: 340px; height: 517px;" alt="" src="explorer_9.png"></div>
+
+</div>
+
+
+
 <br>
+
+
+
 <h3 style="text-align: left;">Example</h3>
-The following is an example of using different display styles defined
-from the styler explorer. Three vector data were used in this example:<br>
+In this example three vector data were used and its three respective styles(rules) where defined by the Style Explorer:<br>
+
+
+
 <ul>
+
+
+
   <li>Polygons: Brazil.</li>
+
+
+
   <li>Lines: Highway of Brazil.</li>
+
+
+
   <li>Points: Capitals of Brazil.</li>
+
+
+
 </ul>
-<div style="text-align: center;"><img
- style="width: 365px; height: 268px;" alt="" src="explorer_13.png"><img
- style="width: 364px; height: 269px;" alt="" src="explorer_11.png"><img
- style="width: 364px; height: 267px;" alt="" src="explorer_12.png"><br>
+&nbsp;&nbsp;&nbsp;<img style="width: 240px; height: 180px;" alt="" src="explorer_1.PNG"> <img style="width: 208px; height: 240px;" alt="" src="explorer_2.PNG"> <img style="width: 221px; height: 180px;" alt="" src="explorer_3.PNG"><br>
+<div style="text-align: center;">
+
+
 <br>
+
+
+
 </div>
-<div style="text-align: center;"><img
- style="width: 701px; height: 698px;" alt="" src="explorer_14.png"></div>
+
+
+
+<div style="text-align: center;"><img style="width: 701px; height: 698px;" alt="" src="explorer_11.png"><br>
 </div>
+
+
+
 </div>
+
+
+
 </div>
+
+
+
 </div>
+
+
+
 </div>
+
+
+
+</div>
+
+
+
 <p align="center"><font face="Arial, Helvetica, sans-serif" size="3"> </font>
 </p>
+
+
+
 </body>
 </html>
