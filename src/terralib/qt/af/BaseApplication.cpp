@@ -104,7 +104,6 @@
 #include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
-#include <QMessageBox>
 #include <QStatusBar>
 #include <QToolBar>
 #include <QToolButton>
@@ -201,7 +200,6 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
 
 te::qt::af::BaseApplication::~BaseApplication()
 {
-  checkProjectSave();
   te::qt::af::SaveState(this);
 
   if(m_iController)
@@ -1753,7 +1751,8 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 {
   try
   {
-    checkProjectSave();
+    if(checkProjectSave() == QMessageBox::Cancel)
+      return;
 
     if(!boost::filesystem::exists(projectFileName.toStdString()))
     {
@@ -1806,23 +1805,28 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
   }
 }
 
-void te::qt::af::BaseApplication::checkProjectSave()
+QMessageBox::StandardButton te::qt::af::BaseApplication::checkProjectSave()
 {
   if(m_project != 0 && m_project->hasChanged())
   {
     QString msg("The current project has unsaved changes. Do you want to save them?");
-    int btn = QMessageBox::question(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg, QMessageBox::No, QMessageBox::Yes);
+    QMessageBox::StandardButton btn = QMessageBox::question(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg, QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Save);
 
     if(btn == QMessageBox::Yes)
       onSaveProjectTriggered();
+
+    return btn;
   }
+
+  return QMessageBox::NoButton;
 }
 
 void te::qt::af::BaseApplication::newProject()
 {
-  CloseAllTables(m_tableDocks);
+  if(checkProjectSave() == QMessageBox::Cancel)
+    return;
 
-  checkProjectSave();
+  CloseAllTables(m_tableDocks);
 
   delete m_project;
 
@@ -2098,14 +2102,15 @@ void te::qt::af::BaseApplication::makeDialog()
 
 void te::qt::af::BaseApplication::closeEvent(QCloseEvent* e)
 {
+  if(checkProjectSave() == QMessageBox::Cancel)
+  {
+    e->ignore();
+    return;
+  }
+
   emit applicationClose(); // it is used to close the ST animation
 
-  QMainWindow::closeEvent(e);
-  //checkProjectSave();
-
-  //te::qt::af::SaveState(this);
-
-  //e->accept();
+  e->accept();
 }
 
 void te::qt::af::BaseApplication::initAction(QAction*& act, const QString& icon, const QString& name,
