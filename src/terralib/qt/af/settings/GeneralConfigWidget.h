@@ -88,6 +88,8 @@ namespace te
 
           void onToolBarIconSizeValueChanged(int value);
 
+          void onIconThemeCurrentIndexChanged(const QString& value);
+
         private:
 
           std::auto_ptr<Ui::GeneralConfigWidgetForm> m_ui;

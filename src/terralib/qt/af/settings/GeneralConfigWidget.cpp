@@ -81,11 +81,12 @@ te::qt::af::GeneralConfigWidget::~GeneralConfigWidget()
 
 void te::qt::af::GeneralConfigWidget::saveChanges()
 {
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
-  sett.setValue("srs/default_srid", m_defaultSRID);
-  sett.setValue("color/selection_color", m_colorPicker->getColor().name());
-  sett.setValue("toolbars/icon_size", m_ui->m_toolBarIconSizeSpinBox->value());
+  settings.setValue("srs/default_srid", m_defaultSRID);
+  settings.setValue("color/selection_color", m_colorPicker->getColor().name());
+  settings.setValue("toolbars/icon_size", m_ui->m_toolBarIconSizeSpinBox->value());
+  settings.setValue("icon_theme/selected_theme", m_ui->m_iconThemeComboBox->currentText());
 
   ApplicationController::getInstance().setSelectionColor(m_colorPicker->getColor());
 
@@ -146,6 +147,7 @@ void te::qt::af::GeneralConfigWidget::initialize()
   connect(m_ui->m_defaultSRSToolButton, SIGNAL(pressed()), SLOT(onDefaultSRSToolButtonPressed()));
   connect(m_colorPicker, SIGNAL(colorChanged(const QColor&)), SLOT(onSelectionColorChanged(const QColor&)));
   connect(m_ui->m_toolBarIconSizeSpinBox, SIGNAL(valueChanged(int)), SLOT(onToolBarIconSizeValueChanged(int)));
+  connect(m_ui->m_iconThemeComboBox, SIGNAL(currentIndexChanged(const QString&)), SLOT(onIconThemeCurrentIndexChanged(const QString&)));
 }
 
 void te::qt::af::GeneralConfigWidget::setupSRSUi()
@@ -174,6 +176,12 @@ void te::qt::af::GeneralConfigWidget::onSelectionColorChanged(const QColor& /*co
 }
 
 void te::qt::af::GeneralConfigWidget::onToolBarIconSizeValueChanged(int value)
+{
+  m_needRestart = true;
+  changeApplyButtonState(true);
+}
+
+void te::qt::af::GeneralConfigWidget::onIconThemeCurrentIndexChanged(const QString& value)
 {
   m_needRestart = true;
   changeApplyButtonState(true);
