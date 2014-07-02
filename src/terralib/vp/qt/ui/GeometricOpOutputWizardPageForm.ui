@@ -13,12 +13,12 @@
   <property name="windowTitle">
    <string>WizardPage</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_8">
+  <layout class="QGridLayout" name="gridLayout_10">
    <item row="0" column="0">
     <widget class="QWidget" name="m_widgetOutput" native="true">
-     <layout class="QGridLayout" name="gridLayout_7">
+     <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0">
-       <layout class="QGridLayout" name="gridLayout_5">
+       <layout class="QGridLayout" name="gridLayout_9">
         <item row="0" column="0">
          <widget class="QGroupBox" name="m_operationGroupBox">
           <property name="minimumSize">
@@ -95,7 +95,7 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <layout class="QGridLayout" name="gridLayout_2">
+         <layout class="QGridLayout" name="gridLayout_8">
           <item row="0" column="0">
            <widget class="QGroupBox" name="m_methodologyGroupBox">
             <property name="title">
@@ -150,7 +150,7 @@
             <property name="checkable">
              <bool>true</bool>
             </property>
-            <layout class="QGridLayout" name="gridLayout_3">
+            <layout class="QGridLayout" name="gridLayout_2">
              <item row="0" column="0">
               <widget class="QLabel" name="label_4">
                <property name="text">
