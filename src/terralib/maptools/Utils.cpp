@@ -659,7 +659,7 @@ te::rst::Raster* te::map::GetExtentRaster(te::rst::Raster* raster, int w, int h,
   {
     te::rst::Band* band = raster->getBand(t);
 
-    te::rst::BandProperty* bp = new te::rst::BandProperty(*band->getProperty());
+    te::rst::BandProperty* bp = new te::rst::BandProperty(t, band->getProperty()->getType(), "");
 
     bprops.push_back(bp);
   }
