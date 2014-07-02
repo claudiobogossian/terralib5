@@ -120,6 +120,21 @@ namespace te
       std::vector< te::rst::BandProperty* > bandsProperties,
       const std::string& fileName,
       RasterHandler& outRasterHandler );
+    
+    /*!
+      \brief Create a new raster into a GDAL datasource.
+      \param rasterGrid The template grid used to create the output raster.
+      \param bandsProperties The template band properties used to create the output raster.
+      \param fileName The output tif file name.
+      \param outRasterPtr The created raster pointer.
+      \return true if OK, false on errors.
+      \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
+      \ingroup rp_func
+     */
+    bool TERPEXPORT CreateNewGdalRaster( const te::rst::Grid& rasterGrid,
+      std::vector< te::rst::BandProperty* > bandsProperties,
+      const std::string& fileName,
+      std::auto_ptr< te::rst::Raster >& outRasterPtr );    
       
     /*!
       \brief Create a new raster into a GDAL datasource.
