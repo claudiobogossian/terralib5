@@ -127,7 +127,7 @@ elseif(APPLE)
 endif()
 
 # Note: automatically link executables with qtmain.lib on Windows when it has Qt dependency.
-if(WIN32)
+if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}" VERSION_GREATER  2.8.9)
   cmake_policy(SET CMP0020 NEW)
 endif()
 
