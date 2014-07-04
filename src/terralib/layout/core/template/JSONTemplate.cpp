@@ -27,8 +27,8 @@
 
 // TerraLib
 #include "JSONTemplate.h"
-#include "Properties.h"
-#include "JSON.h"
+#include "../property/Properties.h"
+#include "../serialization/JSON.h"
 
 // STL
 #include <iostream>

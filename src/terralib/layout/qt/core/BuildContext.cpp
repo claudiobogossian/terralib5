@@ -27,12 +27,12 @@
 
 // TerraLib
 #include "BuildContext.h"
-#include "Context.h"
-#include "ItemFactory.h"
-#include "OutsideFactory.h"
-#include "TemplateFactory.h"
-#include "Utils.h"
-#include "PaperConfig.h"
+#include "../../core/pattern/singleton/Context.h"
+#include "pattern/factory/ItemFactory.h"
+#include "pattern/factory/OutsideFactory.h"
+#include "../../core/template/TemplateFactory.h"
+#include "../../core/Utils.h"
+#include "../../item/PaperConfig.h"
 #include "Scene.h"
 #include "BuildGraphicsItem.h"
 

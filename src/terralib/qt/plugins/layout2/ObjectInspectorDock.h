@@ -18,25 +18,48 @@
  */
 
 /*!
-  \file DisplayModel.cpp
+  \file ObjectInspectorOutside.h
    
   \brief 
 
   \ingroup layout
 */
 
-// TerraLib
-#include "DisplayModel.h"
+#ifndef __TE_QT_PLUGINS_LAYOUT2_INTERNAL_OBJECT_INSPECTOR_DOCK_H 
+#define __TE_QT_PLUGINS_LAYOUT2_INTERNAL_OBJECT_INSPECTOR_DOCK_H
 
-te::layout::DisplayModel::DisplayModel()
+// Qt
+#include <QDockWidget>
+#include "../../../layout/qt/outside/ObjectInspectorOutside.h"
+
+namespace te
 {
-  m_box = te::gm::Envelope(0., 0., 200., 200.);
+  namespace qt
+  {
+    namespace plugins
+    {
+      namespace layout2
+      {
+        class ObjectInspectorDock : public QDockWidget
+        {
+	        Q_OBJECT //for slots/signals
+
+        public:
+
+	        ObjectInspectorDock(QWidget * parent = 0, Qt::WindowFlags flags = 0);
+	        virtual ~ObjectInspectorDock();
+
+          te::layout::ObjectInspectorOutside* getObjectInspectorOutside();
+	  
+        protected:
+
+          virtual void create();
+
+          te::layout::ObjectInspectorOutside* m_inspector;
+        };
+      }
+    }
+  }
 }
 
-te::layout::DisplayModel::~DisplayModel()
-{
-
-}
-
-
-
+#endif

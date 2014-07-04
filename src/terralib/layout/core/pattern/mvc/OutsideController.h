@@ -29,7 +29,8 @@
 #define __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_CONTROLLER_H
 
 // TerraLib
-#include "AbstractType.h"
+#include "../../enum/AbstractType.h"
+#include "../../Config.h"
 
 namespace te
 {
@@ -38,7 +39,7 @@ namespace te
     class Observable;
     class Observer;
 
-    class OutsideController 
+    class TELAYOUTEXPORT OutsideController 
     {
     public:
 

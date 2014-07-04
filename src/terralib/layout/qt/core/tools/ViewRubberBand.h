@@ -21,8 +21,8 @@
 #define __TERRALIB_LAYOUT_INTERNAL_VIEWRUBBER_BAND_H
 
 // TerraLib
-#include "Config.h"
-#include "AbstractViewTool.h"
+#include "../../../core/Config.h"
+#include "../AbstractViewTool.h"
 
 // Qt
 #include <QRectF>

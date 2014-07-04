@@ -25,10 +25,10 @@
 
 // TerraLib
 #include "Module.h"
-#include "../../../common/Logger.h"
-#include "../../../common/TerraLib.h"
-#include "../../../common/Translator.h"
-#include "MainLayout.h"
+#include "../../common/Logger.h"
+#include "../../common/TerraLib.h"
+#include "../../common/Translator.h"
+#include "Config.h"
 
 const te::layout::Module& sm_module = te::layout::Module::getInstance();
 
@@ -56,11 +56,11 @@ void te::layout::Module::initialize()
 //#ifdef TE_AUTOMATIC_INITIALIZATION
 //	MainLayout::getInstance().init();
 //#endif
-  TE_LOG_TRACE(TR_LAYOUT("TerraLib layout module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib layout module initialized!"));
 }
 
 void te::layout::Module::finalize()
 {
-  TE_LOG_TRACE(TR_LAYOUT("TerraLib layout module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib layout module finalized!"));
 }
 

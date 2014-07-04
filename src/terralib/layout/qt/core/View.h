@@ -30,15 +30,11 @@
 
 // Qt
 #include <QGraphicsView>
-#include <QTabwidget>
-#include <QDockWidget>
-#include <QPointF>
-#include <QList>
 
 // TerraLib
-#include "AbstractView.h"
-#include "../../../../geometry/Envelope.h"
-#include "../../../../geometry/Coord2D.h"
+#include "../../core/AbstractView.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../geometry/Coord2D.h"
 #include "Scene.h"
 
 class QMouseEvent;
@@ -54,11 +50,10 @@ namespace te
 {
   namespace layout
   {
-    class OutsideArea;
     class VisualizationArea;
     class AbstractViewTool;
 
-    class View : public QGraphicsView, public AbstractView
+    class TELAYOUTEXPORT View : public QGraphicsView, public AbstractView
     {
       Q_OBJECT //for slots/signals
 
@@ -67,15 +62,13 @@ namespace te
         ~View();
 
         virtual void config();        
-        
-        void setOutsideArea(OutsideArea* outsideArea);
                                 
       public slots:
 
         virtual void onToolbarChangeContext(bool change);
         virtual void onMainMenuChangeContext(bool change);
-        virtual void onSelectionChanged();
-        virtual void onAddItemFinalized();
+        virtual void onSelectionChanged() = 0;
+        virtual void onAddItemFinalized() = 0;
 
       signals:
 
@@ -92,18 +85,7 @@ namespace te
         virtual void keyPressEvent(QKeyEvent* keyEvent);
 
         virtual void resizeEvent(QResizeEvent * event);
-
-        void hideEvent ( QHideEvent * event );
-
-        void closeEvent ( QCloseEvent * event );
-
-        virtual void	showEvent ( QShowEvent * event );
-
-        virtual void	paintEvent ( QPaintEvent * event );
-
-        //PaintDevice
-        virtual int	metric ( PaintDeviceMetric metric ) const;
-
+        
         virtual void createItemGroup();
 
         virtual void destroyItemGroup();
@@ -115,11 +97,10 @@ namespace te
         virtual void configTransform(Scene* sc);
                         
       protected:
-        OutsideArea*  m_outsideArea;
-        VisualizationArea* m_visualizationArea;
+        VisualizationArea*  m_visualizationArea;
         QLineF*             m_lineIntersectHrz;
         QLineF*             m_lineIntersectVrt;
-        AbstractViewTool* m_currentTool;
+        AbstractViewTool*   m_currentTool;
     };
   }
 }

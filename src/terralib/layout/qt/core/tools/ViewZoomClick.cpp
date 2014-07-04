@@ -19,10 +19,10 @@
 
 // TerraLib
 #include "ViewZoomClick.h"
-#include "../../../geometry/Envelope.h"
-#include "View.h"
-#include "Scene.h"
-#include "Context.h"
+#include "../../../../geometry/Envelope.h"
+#include "../View.h"
+#include "../Scene.h"
+#include "../../../core/pattern/singleton/Context.h"
 
 // Qt
 #include <QtGui/QMouseEvent>

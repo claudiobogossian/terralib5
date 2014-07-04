@@ -29,7 +29,8 @@
 #define __TERRALIB_LAYOUT_INTERNAL_OBSERVER_H
 
 //TerraLib
-#include "ContextItem.h"
+#include "../../ContextItem.h"
+#include "../../Config.h"
 
 namespace te
 {
@@ -39,7 +40,7 @@ namespace te
     class ItemController;
     class Observable;
 
-    class Observer
+    class TELAYOUTEXPORT Observer
     {
     public:
 

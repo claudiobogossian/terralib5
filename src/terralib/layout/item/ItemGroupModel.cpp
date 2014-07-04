@@ -27,10 +27,10 @@
 
 // TerraLib
 #include "ItemGroupModel.h"
-#include "ContextItem.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../color/RGBAColor.h"
-#include "../../../maptools/Canvas.h"
+#include "../core/ContextItem.h"
+#include "../../geometry/Envelope.h"
+#include "../../color/RGBAColor.h"
+#include "../../maptools/Canvas.h"
 
 te::layout::ItemGroupModel::ItemGroupModel()
 {

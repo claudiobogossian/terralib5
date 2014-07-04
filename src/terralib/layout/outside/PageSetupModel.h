@@ -29,16 +29,17 @@
 #define __TERRALIB_LAYOUT_INTERNAL_PAGE_SETUP_MODEL_H
 
 // TerraLib
-#include "OutsideModelObservable.h"
-#include "ContextItem.h"
-#include "Properties.h"
-#include "EnumMode.h"
+#include "../core/pattern/mvc/OutsideModelObservable.h"
+#include "../core/ContextItem.h"
+#include "../core/property/Properties.h"
+#include "../core/enum/EnumMode.h"
+#include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class PageSetupModel : public OutsideModelObservable
+    class TELAYOUTEXPORT PageSetupModel : public OutsideModelObservable
     {
     public:
 

@@ -29,10 +29,10 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACTRULER_MODEL_H
 
 // TerraLib
-#include "ItemModelObservable.h"
-#include "Utils.h"
-#include "../../../qt/widgets/canvas/Canvas.h"
-#include "../../../color/RGBAColor.h"
+#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/Utils.h"
+#include "../../qt/widgets/canvas/Canvas.h"
+#include "../../color/RGBAColor.h"
 #include "PaperConfig.h"
 
 namespace te

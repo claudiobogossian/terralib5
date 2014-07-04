@@ -34,9 +34,9 @@
 #include <QPixmap>
 
 // TerraLib
-#include "ItemObserver.h"
-#include "AbstractType.h"
-#include "../../../../geometry/Envelope.h"
+#include "../../core/pattern/mvc/ItemObserver.h"
+#include "../../core/enum/AbstractType.h"
+#include "../../../geometry/Envelope.h"
 
 class QMouseEvent;
 class QWheelEvent;

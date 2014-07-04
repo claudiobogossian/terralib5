@@ -27,13 +27,13 @@
 
 // TerraLib
 #include "RectangleItem.h"
-#include "ItemController.h"
-#include "AbstractScene.h"
-#include "Observable.h"
+#include "../../core/pattern/mvc/ItemController.h"
+#include "../../core/AbstractScene.h"
+#include "../../core/pattern/mvc/Observable.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../../qt/widgets/Utils.h"
-#include "../../../../geometry/Envelope.h"
-#include "../../../../common/STLUtils.h"
+#include "../../../qt/widgets/Utils.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../common/STLUtils.h"
 
 te::layout::RectangleItem::RectangleItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)

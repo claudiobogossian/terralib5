@@ -29,11 +29,12 @@
 #define __TERRALIB_LAYOUT_INTERNAL_OBJECTINSPECTOR_OUTSIDE_H
 
 // Qt
-#include <QDockWidget>
+#include <QWidget>
 
 // TerraLib
-#include "OutsideObserver.h"
-#include "../../../../geometry/Envelope.h"
+#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../../geometry/Envelope.h"
+#include "../../core/Config.h"
 
 class QGraphicsItem;
 
@@ -43,7 +44,7 @@ namespace te
   {
     class ObjectInspectorPropertyBrowser;
 
-    class ObjectInspectorOutside : public QDockWidget, public OutsideObserver
+    class TELAYOUTEXPORT ObjectInspectorOutside : public QWidget, public OutsideObserver
     {
 	    Q_OBJECT //for slots/signals
 

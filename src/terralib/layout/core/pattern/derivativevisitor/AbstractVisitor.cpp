@@ -28,9 +28,9 @@
 // TerraLib
 #include "AbstractVisitor.h"
 #include "Visitable.h"
-#include "Context.h"
-#include "../../../../../maptools/Canvas.h"
-#include "Utils.h"
+#include "../singleton/Context.h"
+#include "../../../../maptools/Canvas.h"
+#include "../../Utils.h"
 
 te::layout::AbstractVisitor::AbstractVisitor() :
   m_visitable(0)

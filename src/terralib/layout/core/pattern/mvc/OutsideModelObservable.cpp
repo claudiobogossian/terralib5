@@ -28,9 +28,9 @@
 // TerraLib
 #include "OutsideModelObservable.h"
 #include "Observer.h"
-#include "Property.h"
-#include "Properties.h"
-#include "Context.h"
+#include "../../property/Property.h"
+#include "../../property/Properties.h"
+#include "../singleton/Context.h"
 
 te::layout::OutsideModelObservable::OutsideModelObservable() :
 	m_color(0),

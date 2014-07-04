@@ -29,12 +29,13 @@
 #define __TERRALIB_LAYOUT_INTERNAL_CONTEXT_H
 
 // TerraLib
-#include "EnumMode.h"
-#include "AbstractType.h"
-#include "Utils.h"
-#include "AbstractOutsideFactory.h"
-#include "../../../../../maptools/Canvas.h"
-#include "../../../../../geometry/Envelope.h"
+#include "../../enum/EnumMode.h"
+#include "../../enum/AbstractType.h"
+#include "../../Utils.h"
+#include "../factory/AbstractOutsideFactory.h"
+#include "../../../../maptools/Canvas.h"
+#include "../../../../geometry/Envelope.h"
+#include "../../Config.h"
 
 namespace te
 {
@@ -47,7 +48,7 @@ namespace te
     class PaperConfig;
     class BuildGraphicsItem;
 
-    class Context 
+    class  Context 
     {
       private:
         Context() :

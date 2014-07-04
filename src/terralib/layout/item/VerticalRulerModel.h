@@ -29,9 +29,9 @@
 #define __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_MODEL_H
 
 // TerraLib
-#include "ContextItem.h"
+#include "../core/ContextItem.h"
 #include "AbstractRulerModel.h"
-#include "EnumMode.h"
+#include "../core/enum/EnumMode.h"
 
 // STL
 #include <vector>

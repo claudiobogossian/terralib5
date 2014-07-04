@@ -33,11 +33,11 @@
 #include <QVariant>
 
 // TerraLib
-#include "ItemObserver.h"
-#include "../../../../qt/widgets/canvas/MultiThreadMapDisplay.h"
-#include "../../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
-#include "../../../../qt/widgets/tools/AbstractTool.h"
-#include "EnumMode.h"
+#include "../../core/pattern/mvc/ItemObserver.h"
+#include "../../../qt/widgets/canvas/MultiThreadMapDisplay.h"
+#include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
+#include "../../../qt/widgets/tools/AbstractTool.h"
+#include "../../core/enum/EnumMode.h"
 
 class QGraphicsSceneMouseEvent;
 class QMimeData;

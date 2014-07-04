@@ -27,19 +27,19 @@
 
 // TerraLib
 #include "MapGridModel.h"
-#include "ContextItem.h"
-#include "../../../maptools/Canvas.h"
-#include "Property.h"
-#include "Properties.h"
-#include "AbstractType.h"
+#include "../core/ContextItem.h"
+#include "../../maptools/Canvas.h"
+#include "../core/property/Property.h"
+#include "../core/property/Properties.h"
+#include "../core/enum/AbstractType.h"
 #include "GridPlanarModel.h"
 #include "GridGeodesicModel.h"
+#include "../core/property/GeodesicGridSettingsConfigProperties.h"
+#include "../core/property/PlanarGridSettingsConfigProperties.h"
 
 // STL
 #include <vector>
 #include <string>
-#include "GeodesicGridSettingsConfigProperties.h"
-#include "PlanarGridSettingsConfigProperties.h"
 
 te::layout::MapGridModel::MapGridModel() :
   MapModel(),
@@ -132,6 +132,10 @@ void te::layout::MapGridModel::drawGrid(te::map::Canvas* canvas, Utils* utils)
     return;
 
   int srid = m_layer->getSRID();
+
+  if(srid <= 0)
+    return;
+
   double scale = getScale();
 
   // Planar Grid

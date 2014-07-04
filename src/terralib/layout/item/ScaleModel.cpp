@@ -28,10 +28,10 @@
 // TerraLib
 #include "ScaleModel.h"
 #include "MapModel.h"
-#include "Property.h"
-#include "Properties.h"
-#include "SharedProperties.h"
-#include "../../../geometry/Polygon.h"
+#include "../core/property/Property.h"
+#include "../core/property/Properties.h"
+#include "../core/property/SharedProperties.h"
+#include "../../geometry/Polygon.h"
 
 // STL
 #include <string>

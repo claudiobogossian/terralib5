@@ -27,7 +27,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_WORLDTRANSFORMER_H
 
 // TerraLib
-#include "../../../geometry/Envelope.h"
+#include "../../geometry/Envelope.h"
 
 namespace te
 {

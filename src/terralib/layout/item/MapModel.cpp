@@ -27,11 +27,11 @@
 
 // TerraLib
 #include "MapModel.h"
-#include "ContextItem.h"
-#include "../../../maptools/Canvas.h"
-#include "../../../srs/SpatialReferenceSystemManager.h"
-#include "../../../common/StringUtils.h"
-#include "Context.h"
+#include "../core/ContextItem.h"
+#include "../../maptools/Canvas.h"
+#include "../../srs/SpatialReferenceSystemManager.h"
+#include "../../common/StringUtils.h"
+#include "../core/pattern/singleton/Context.h"
 
 // STL
 #include <vector>

@@ -29,9 +29,9 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ITEM_UTILS_H
 
 // TerraLib
-#include "Config.h"
-#include "MapItem.h"
-#include "AbstractType.h"
+#include "../../core/Config.h"
+#include "../item/MapItem.h"
+#include "../../core/enum/AbstractType.h"
 
 // Qt
 #include <QGraphicsItem>

@@ -28,12 +28,12 @@
 // TerraLib
 #include "GridSettingsOutside.h"
 #include "ui_GridSettings.h"
-#include "OutsideObserver.h"
-#include "OutsideController.h"
-#include "GridSettingsController.h"
-#include "Variant.h"
-#include "PlanarGridSettingsConfigProperties.h"
-#include "GeodesicGridSettingsConfigProperties.h"
+#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/OutsideController.h"
+#include "../../outside/GridSettingsController.h"
+#include "../../core/property/Variant.h"
+#include "../../core/property/PlanarGridSettingsConfigProperties.h"
+#include "../../core/property/GeodesicGridSettingsConfigProperties.h"
 
 // STL
 #include <string>

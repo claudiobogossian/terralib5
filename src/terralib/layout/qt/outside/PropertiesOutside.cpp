@@ -27,19 +27,19 @@
 
 // TerraLib
 #include "PropertiesOutside.h"
-#include "Context.h"
-#include "Observable.h"
-#include "ItemObserver.h"
-#include "OutsideObserver.h"
-#include "OutsideController.h"
-#include "../../../../geometry/Envelope.h"
-#include "PropertiesItemPropertyBrowser.h"
-#include "MapItem.h"
-#include "SharedProperties.h"
-#include "ItemModelObservable.h"
-#include "MapModel.h"
-#include "ItemUtils.h"
-#include "VisitorUtils.h"
+#include "../../core/pattern/singleton/Context.h"
+#include "../../core/pattern/mvc/Observable.h"
+#include "../../core/pattern/mvc/ItemObserver.h"
+#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/OutsideController.h"
+#include "../../../geometry/Envelope.h"
+#include "../core/PropertiesItemPropertyBrowser.h"
+#include "../item/MapItem.h"
+#include "../../core/property/SharedProperties.h"
+#include "../../core/pattern/mvc/ItemModelObservable.h"
+#include "../../item/MapModel.h"
+#include "../core/ItemUtils.h"
+#include "../../core/pattern/derivativevisitor/VisitorUtils.h"
 
 // Qt
 #include <QGroupBox>
@@ -50,7 +50,7 @@
 #include <QLabel>
 
 te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller, Observable* o ) :
-	QDockWidget("", 0, 0),
+	QWidget(0),
 	OutsideObserver(controller, o),
   m_updatingValues(false),
   m_sharedProps(0)
@@ -60,9 +60,7 @@ te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller,
 	setVisible(false);
 	setWindowTitle("Layout - Propriedades");
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-  setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-
+  
   m_layoutPropertyBrowser = new PropertiesItemPropertyBrowser;
 
   connect(m_layoutPropertyBrowser, SIGNAL(updateOutside(Property)), 
@@ -122,7 +120,12 @@ void te::layout::PropertiesOutside::createLayout()
   groupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   groupBox->setLayout(layout);
 
-  setWidget(groupBox);
+  QVBoxLayout* layoutAll = new QVBoxLayout(this);
+  layoutAll->setMargin(0);
+
+  layoutAll->addWidget(groupBox);
+
+  setLayout(layoutAll);
 }
 
 void te::layout::PropertiesOutside::updateObserver( ContextItem context )

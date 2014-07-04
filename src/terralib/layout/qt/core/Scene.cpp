@@ -27,22 +27,21 @@
 
 // TerraLib
 #include "Scene.h"
-#include "ItemObserver.h"
-#include <QWidget>
-#include "Context.h"
-#include "ItemGroup.h"
-#include "ItemGroupModel.h"
-#include "ItemGroupController.h"
-#include "AbstractType.h"
-#include "Observer.h"
-#include "TemplateEditor.h"
-#include "AbstractTemplate.h"
-#include "RectangleModel.h"
-#include "RectangleController.h"
-#include "RectangleItem.h"
+#include "../../core/pattern/mvc/ItemObserver.h"
+#include "../../core/pattern/singleton/Context.h"
+#include "../item/ItemGroup.h"
+#include "../../item/ItemGroupModel.h"
+#include "../../item/ItemGroupController.h"
+#include "../../core/enum/AbstractType.h"
+#include "../../core/pattern/mvc/Observer.h"
+#include "../../core/template/TemplateEditor.h"
+#include "../../core/template/AbstractTemplate.h"
+#include "../../item/RectangleModel.h"
+#include "../../item/RectangleController.h"
+#include "../item/RectangleItem.h"
 #include "VisualizationArea.h"
 #include "BuildGraphicsItem.h"
-#include "MapItem.h"
+#include "../item/MapItem.h"
 #include "ItemUtils.h"
 
 // STL
@@ -50,13 +49,19 @@
 #include <fstream>
 
 // Qt
-#include <QGraphicsScene.h>
+#include <QGraphicsView>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsItem>
 #include <QtGui>
 #include <QPixmap>
 #include <QPainter>
 #include <QMessageBox>
+#include <QPrintPreviewDialog>
+#include <QFileDialog>
+#include <QWidget>
+#include <QApplication>
+#include <QDir>
+#include <QPrinter>
 
 te::layout::Scene::Scene( QWidget* widget): 
   QGraphicsScene(widget),
@@ -401,7 +406,8 @@ void te::layout::Scene::printPaper(QPrinter* printer)
 
 void te::layout::Scene::savePaperAsImage()
 {
-  QString fileName = QFileDialog::getSaveFileName(QApplication::desktop(), tr("Save Image File"), QDir::currentPath(), tr("Image Files (*.png *.jpg *.bmp)"));
+  QWidget* wg = (QWidget*)QApplication::desktop();
+  QString fileName = QFileDialog::getSaveFileName(wg, tr("Save Image File"), QDir::currentPath(), tr("Image Files (*.png *.jpg *.bmp)"));
   if(!fileName.isEmpty())
   {
     QImage image(fileName);
@@ -417,7 +423,8 @@ void te::layout::Scene::savePaperAsImage()
 void te::layout::Scene::savePaperAsPDF()
 {
   QPrinter* printer= createPrinter();
-  QString fileName = QFileDialog::getSaveFileName(QApplication::desktop(), tr("Save Image File"), QDir::currentPath(), tr("PDF Files (*.pdf)"));
+  QWidget* wg = (QWidget*)QApplication::desktop();
+  QString fileName = QFileDialog::getSaveFileName(wg, tr("Save Image File"), QDir::currentPath(), tr("PDF Files (*.pdf)"));
   if(!fileName.isEmpty())
   {
     printer->setOutputFormat(QPrinter::PdfFormat);
@@ -482,7 +489,8 @@ bool te::layout::Scene::exportPropsAsJSON()
 {
   bool is_export = false;
 
-  QString fileName = QFileDialog::getSaveFileName(QApplication::desktop(), tr("Save File"), 
+  QWidget* wg = (QWidget*)QApplication::desktop();
+  QString fileName = QFileDialog::getSaveFileName(wg, tr("Save File"), 
     QDir::currentPath(), tr("JSON Files (*.json)"));
 
   if(fileName.isEmpty())
@@ -528,7 +536,8 @@ std::vector<te::layout::Properties*> te::layout::Scene::importJsonAsProps()
 {
   std::vector<te::layout::Properties*> props;
 
-  QString fileName = QFileDialog::getOpenFileName(QApplication::desktop(), tr("Import File"), 
+  QWidget* wg = (QWidget*)QApplication::desktop();
+  QString fileName = QFileDialog::getOpenFileName(wg, tr("Import File"), 
     QDir::currentPath(), tr("JSON Files (*.json)"));
 
   if(fileName.isEmpty())

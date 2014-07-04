@@ -27,24 +27,17 @@
 
 // TerraLib
 #include "OutsideArea.h"
-#include "PropertiesOutside.h"
-#include "PropertiesModel.h"
-#include "PropertiesController.h"
-#include "ObjectInspectorModel.h"
-#include "ObjectInspectorController.h"
-#include "ObjectInspectorOutside.h"
-#include "ToolbarModel.h"
-#include "ToolbarController.h"
-#include "ToolbarOutside.h"
-#include "LayoutConfig.h"
+#include "PropertiesDock.h"
+#include "ToolbarDock.h"
+#include "ObjectInspectorDock.h"
+#include "../../../layout/core/pattern/singleton/Context.h"
 
 // Qt
 #include <QMainWindow>
 #include <QMenu>
 #include <QAction>
-#include "Context.h"
 
-te::layout::OutsideArea::OutsideArea( QWidget* dockParent, QMenu* mnuLayout) :
+te::qt::plugins::layout2::OutsideArea::OutsideArea( QWidget* dockParent, QMenu* mnuLayout) :
   m_dockParent(dockParent),
   m_parentMenu(mnuLayout),
   m_mainMenu(0),
@@ -62,7 +55,7 @@ te::layout::OutsideArea::OutsideArea( QWidget* dockParent, QMenu* mnuLayout) :
   init();
 }
 
-te::layout::OutsideArea::~OutsideArea()
+te::qt::plugins::layout2::OutsideArea::~OutsideArea()
 {
   QMainWindow* win = (QMainWindow*)m_dockParent;
 
@@ -97,7 +90,7 @@ te::layout::OutsideArea::~OutsideArea()
   }
 }
 
-void te::layout::OutsideArea::init()
+void te::qt::plugins::layout2::OutsideArea::init()
 {
   createPropertiesDock();
 
@@ -108,34 +101,22 @@ void te::layout::OutsideArea::init()
   createMainMenu();
 }
 
-void te::layout::OutsideArea::createPropertiesDock()
+void te::qt::plugins::layout2::OutsideArea::createPropertiesDock()
 {
-  //Use the Property Browser Framework for create Property Window
-  PropertiesModel* dockPropertyModel = new PropertiesModel();		 
-  PropertiesController* dockPropertyController = new PropertiesController(dockPropertyModel);
-  OutsideObserver* itemDockProperty = (OutsideObserver*)dockPropertyController->getView();
-  m_dockProperties = dynamic_cast<PropertiesOutside*>(itemDockProperty);    
+  m_dockProperties = new PropertiesDock;  
 }
 
-void te::layout::OutsideArea::createInspectorDock()
+void te::qt::plugins::layout2::OutsideArea::createInspectorDock()
 {
-  //Use the Property Browser Framework for create Object Inspector Window
-  ObjectInspectorModel* dockInspectorModel = new ObjectInspectorModel();		 
-  ObjectInspectorController* dockInspectorController = new ObjectInspectorController(dockInspectorModel);
-  OutsideObserver* itemDockInspector = (OutsideObserver*)dockInspectorController->getView();
-  m_dockInspector = dynamic_cast<ObjectInspectorOutside*>(itemDockInspector);  
+  m_dockInspector = new ObjectInspectorDock;
 }
 
-void te::layout::OutsideArea::createToolbarDock()
+void te::qt::plugins::layout2::OutsideArea::createToolbarDock()
 {
-  //Use the Property Browser Framework for create Object Inspector Window
-  ToolbarModel* dockToolbarModel = new ToolbarModel();		 
-  ToolbarController* dockToolbarController = new ToolbarController(dockToolbarModel);
-  OutsideObserver* itemDockToolbar = (OutsideObserver*)dockToolbarController->getView();
-  m_dockToolbar = dynamic_cast<ToolbarOutside*>(itemDockToolbar); 
+  m_dockToolbar = new ToolbarDock;
 }
 
-void te::layout::OutsideArea::createMainMenu()
+void te::qt::plugins::layout2::OutsideArea::createMainMenu()
 {
   m_mainMenu = new QMenu("Print Model");
   connect(m_mainMenu, SIGNAL(triggered(QAction*)), this, SLOT(onMainMenuTriggered(QAction*)));
@@ -164,15 +145,15 @@ void te::layout::OutsideArea::createMainMenu()
 
   m_mainMenu->addSeparator();
 
-  QAction* actionExit = createAction("Exit", m_optionExit, "close");
+  QAction* actionExit = createAction("Exit", m_optionExit, "layout-close");
   m_mainMenu->addAction(actionExit);
 }
 
-void te::layout::OutsideArea::onMainMenuTriggered( QAction* action )
+void te::qt::plugins::layout2::OutsideArea::onMainMenuTriggered( QAction* action )
 {
   if(action->objectName().compare(m_optionNew.c_str()) == 0)
   {
-    changeAction(TypeNewTemplate);
+    changeAction(te::layout::TypeNewTemplate);
   }
   else if(action->objectName().compare(m_optionUpdate.c_str()) == 0)
   {
@@ -180,11 +161,11 @@ void te::layout::OutsideArea::onMainMenuTriggered( QAction* action )
   }
   else if(action->objectName().compare(m_optionImport.c_str()) == 0)
   {
-    changeAction(TypeImportJSONProps);
+    changeAction(te::layout::TypeImportJSONProps);
   }
   else if(action->objectName().compare(m_optionExport.c_str()) == 0)
   {
-    changeAction(TypeExportPropsJSON);
+    changeAction(te::layout::TypeExportPropsJSON);
   }
   else if(action->objectName().compare(m_optionPageConfig.c_str()) == 0)
   {
@@ -192,59 +173,58 @@ void te::layout::OutsideArea::onMainMenuTriggered( QAction* action )
   }
   else if(action->objectName().compare(m_optionPrint.c_str()) == 0)
   {
-    changeAction(TypePrinter);
+    changeAction(te::layout::TypePrinter);
   }
   else if(action->objectName().compare(m_optionExit.c_str()) == 0)
   {
-    changeAction(TypeExit);
+    changeAction(te::layout::TypeExit);
   }
 }
 
-QAction* te::layout::OutsideArea::createAction( std::string text, std::string objName, std::string icon, std::string tooltip )
+QAction* te::qt::plugins::layout2::OutsideArea::createAction( std::string text, std::string objName, std::string icon, std::string tooltip )
 {
   QAction *actionMenu = new QAction(text.c_str(), this);
   actionMenu->setObjectName(objName.c_str());
 
-  std::string icon_path = LAYOUT_IMAGES_PNG"/" + icon;
-  actionMenu->setIcon(QIcon::fromTheme(icon_path.c_str()));
+  actionMenu->setIcon(QIcon::fromTheme(icon.c_str()));
   actionMenu->setToolTip(tooltip.c_str());
 
   return actionMenu;
 }
 
-void te::layout::OutsideArea::changeAction( LayoutMode mode )
+void te::qt::plugins::layout2::OutsideArea::changeAction( te::layout::LayoutMode mode )
 {
-  bool result = true;
-  LayoutMode layoutMode = Context::getInstance()->getMode();
+  /*bool result = true;
+  te::layout::LayoutMode layoutMode = te::layout::Context::getInstance()->getMode();
 
   if(mode != layoutMode)
   {
-    Context::getInstance()->setMode(mode);
+  te::layout::Context::getInstance()->setMode(mode);
   }
   else
   {
-    result = false;
+  result = false;
   }
 
-  emit changeMenuContext(result);
+  emit changeMenuContext(result);*/
 }
 
-te::layout::PropertiesOutside* te::layout::OutsideArea::getPropertiesOutside()
+te::qt::plugins::layout2::PropertiesDock* te::qt::plugins::layout2::OutsideArea::getPropertiesDock()
 {
   return m_dockProperties;
 }
 
-te::layout::ObjectInspectorOutside* te::layout::OutsideArea::getObjectInspectorOutside()
+te::qt::plugins::layout2::ObjectInspectorDock* te::qt::plugins::layout2::OutsideArea::getObjectInspectorDock()
 {
   return m_dockInspector;
 }
 
-te::layout::ToolbarOutside* te::layout::OutsideArea::getToolbarOutside()
+te::qt::plugins::layout2::ToolbarDock* te::qt::plugins::layout2::OutsideArea::getToolbarDock()
 {
   return m_dockToolbar;
 }
 
-void te::layout::OutsideArea::openAllDocks()
+void te::qt::plugins::layout2::OutsideArea::openAllDocks()
 {
   QMainWindow* win = (QMainWindow*)m_dockParent;
 
@@ -271,7 +251,7 @@ void te::layout::OutsideArea::openAllDocks()
   }
 }
 
-void te::layout::OutsideArea::closeAllDocks()
+void te::qt::plugins::layout2::OutsideArea::closeAllDocks()
 {
   QMainWindow* win = (QMainWindow*)m_dockParent;
 
@@ -295,7 +275,7 @@ void te::layout::OutsideArea::closeAllDocks()
   }
 }
 
-void te::layout::OutsideArea::openMainMenu()
+void te::qt::plugins::layout2::OutsideArea::openMainMenu()
 {
   if(!m_parentMenu)
     return;
@@ -331,7 +311,7 @@ void te::layout::OutsideArea::openMainMenu()
   }
 }
 
-void te::layout::OutsideArea::closeMainMenu()
+void te::qt::plugins::layout2::OutsideArea::closeMainMenu()
 {
   if(!m_parentMenu)
     return;

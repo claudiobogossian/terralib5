@@ -29,18 +29,12 @@
 // TerraLib
 #include "Config.h"
 #include "AbstractAction.h"
-#include "../../../qt/af/connectors/LayoutEditor.h"
-#include "../../../layout/qt/include/main/MainLayout.h"
+#include "../../af/connectors/LayoutEditor.h"
 
 namespace te
 {
   namespace qt
   {
-    namespace widgets
-    {
-      class LayoutEditor;
-    }
-
     namespace plugins
     {
       namespace layout2
@@ -64,9 +58,6 @@ namespace te
           protected slots:
 
             virtual void onActionActivated(bool checked);
-
-          private:
-            te::layout::MainLayout* m_layout;
         };
 
       } // end namespace layout

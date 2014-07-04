@@ -29,12 +29,12 @@
 #define __TERRALIB_LAYOUT_INTERNAL_GRID_MODEL_H
 
 // TerraLib
-#include "Properties.h"
-#include "../../../maptools/Canvas.h"
-#include "../../../maptools/Enums.h"
-#include "Property.h"
-#include "../../../geometry/Envelope.h"
-#include "Utils.h"
+#include "../core/property/Properties.h"
+#include "../../maptools/Canvas.h"
+#include "../../maptools/Enums.h"
+#include "../core/property/Property.h"
+#include "../../geometry/Envelope.h"
+#include "../core/Utils.h"
 
 namespace te
 {

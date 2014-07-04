@@ -27,14 +27,14 @@
 
 // TerraLib
 #include "ItemUtils.h"
-#include "ItemModelObservable.h"
-#include "Context.h"
+#include "../../core/pattern/mvc/ItemModelObservable.h"
+#include "../../core/pattern/singleton/Context.h"
 
 // STL
 #include <stddef.h>  // defines NULL
 
 // Boost
-#include "boost\foreach.hpp"
+#include <boost\foreach.hpp>
 
 TELAYOUTEXPORT std::vector<te::layout::MapItem*> te::layout::getMapItemList( QList<QGraphicsItem*> graphicsItems )
 {

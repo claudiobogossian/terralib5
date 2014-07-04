@@ -27,18 +27,16 @@
 
 // TerraLib
 #include "Utils.h"
-#include "Context.h"
-#include "Scene.h"
-#include "../../../color/RGBAColor.h"
-#include "../../../geometry/Polygon.h"
-#include "../../../geometry/Enums.h"
-#include "../../../geometry/LinearRing.h"
-#include "../../../geometry/Point.h"
-#include "../../../qt/widgets/canvas/Canvas.h"
-#include "PaperConfig.h"
-#include "AbstractType.h"
-#include "terralib4/terralib/kernel/TeDefines.h"
-#include "../../../srs/SpatialReferenceSystemManager.h"
+#include "pattern/singleton/Context.h"
+#include "../../color/RGBAColor.h"
+#include "../../geometry/Polygon.h"
+#include "../../geometry/Enums.h"
+#include "../../geometry/LinearRing.h"
+#include "../../geometry/Point.h"
+#include "../../qt/widgets/canvas/Canvas.h"
+#include "../item/PaperConfig.h"
+#include "enum/AbstractType.h"
+#include "../../srs/SpatialReferenceSystemManager.h"
 
 // STL
 #include <math.h> 

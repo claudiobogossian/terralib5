@@ -28,10 +28,6 @@
 // TerraLib
 #include "ObjectInspectorPropertyBrowser.h"
 
-// Qt
-#include "../../../../../../third-party/qt/propertybrowser/qtvariantproperty.h"
-#include "../../../../../../third-party/qt/propertybrowser/qteditorfactory.h"
-
 te::layout::ObjectInspectorPropertyBrowser::ObjectInspectorPropertyBrowser(QObject* parent) :
   PropertyBrowser(parent)
 {

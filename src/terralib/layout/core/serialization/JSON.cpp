@@ -27,13 +27,13 @@
 
 // TerraLib
 #include "JSON.h"
-#include "Property.h"
-#include "Properties.h"
-#include "../../../../common/Exception.h"
-#include "../../../../common/STLUtils.h"
-#include "../../../../common/Translator.h"
-#include "Config.h"
-#include "EnumUtils.h"
+#include "../property/Property.h"
+#include "../property/Properties.h"
+#include "../../../common/Exception.h"
+#include "../../../common/STLUtils.h"
+#include "../../../common/Translator.h"
+#include "../Config.h"
+#include "../enum/EnumUtils.h"
 
 // Boost
 #include <boost/property_tree/json_parser.hpp>
@@ -76,14 +76,14 @@ bool te::layout::JSON::serialize()
   catch(boost::property_tree::json_parser::json_parser_error &je)
   {
     std::string errmsg = "Error parsing: " + je.filename() + ": " + je.message();
-    te::common::Exception ex(TR_LAYOUT(errmsg));
+    te::common::Exception ex(TE_TR(errmsg));
     throw(ex);
   }
   catch (std::ofstream::failure e) 
   {
     std::cerr << e.what() << std::endl;
     std::string errmsg = "Exception opening/reading/closing file: \n ";
-    te::common::Exception ex(TR_LAYOUT(errmsg));
+    te::common::Exception ex(TE_TR(errmsg));
     //throw(ex);
     return false;
   }
@@ -224,7 +224,7 @@ void te::layout::JSON::loadFromPath( std::string loadPath )
   catch(boost::property_tree::json_parser::json_parser_error &je)
   {
     std::string errmsg = "Error parsing: " + je.filename() + ": " + je.message();
-    te::common::Exception ex(TR_LAYOUT(errmsg));
+    te::common::Exception ex(TE_TR(errmsg));
     //throw(ex);
     return;
   }
@@ -232,7 +232,7 @@ void te::layout::JSON::loadFromPath( std::string loadPath )
   {
     std::cerr << e.what() << std::endl;
     std::string errmsg = "Exception opening/reading/closing file: \n ";
-    te::common::Exception ex(TR_LAYOUT(errmsg));
+    te::common::Exception ex(TE_TR(errmsg));
     //throw(ex);
     return;
   }

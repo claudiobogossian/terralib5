@@ -27,14 +27,14 @@
 
 // TerraLib
 #include "PaperController.h"
-#include "ItemController.h"
-#include "ContextItem.h"
-#include "AbstractItemFactory.h"
-#include "Context.h"
-#include "ItemModelObservable.h"
-#include "ItemParamsCreate.h"
-#include "ItemObserver.h"
-#include "Observer.h"
+#include "../core/pattern/mvc/ItemController.h"
+#include "../core/ContextItem.h"
+#include "../core/pattern/factory/AbstractItemFactory.h"
+#include "../core/pattern/singleton/Context.h"
+#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/pattern/factory/ItemParamsCreate.h"
+#include "../core/pattern/mvc/ItemObserver.h"
+#include "../core/pattern/mvc/Observer.h"
 
 te::layout::PaperController::PaperController( Observable* o ) :
   ItemController(o, TPPaperItem)

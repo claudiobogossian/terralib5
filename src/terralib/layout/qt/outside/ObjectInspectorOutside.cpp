@@ -27,21 +27,23 @@
 
 // TerraLib
 #include "ObjectInspectorOutside.h"
-#include "Context.h"
-#include "AbstractScene.h"
-#include "Scene.h"
-#include "OutsideModelObservable.h"
-#include "ItemObserver.h"
-#include "OutsideObserver.h"
-#include "OutsideController.h"
-#include "../../../../geometry/Envelope.h"
-#include "ObjectInspectorPropertyBrowser.h"
+#include "../../core/pattern/singleton/Context.h"
+#include "../../core/AbstractScene.h"
+#include "../core/Scene.h"
+#include "../../core/pattern/mvc/OutsideModelObservable.h"
+#include "../../core/pattern/mvc/ItemObserver.h"
+#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/OutsideController.h"
+#include "../../../geometry/Envelope.h"
+#include "../core/ObjectInspectorPropertyBrowser.h"
 
 //Qt
 #include <QGraphicsWidget>
+#include <QVBoxLayout>
+#include <QGroupBox>
 
 te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* controller, Observable* o ) :
-	QDockWidget("", 0, 0),
+	QWidget(0),
 	OutsideObserver(controller, o)
 {
 	te::gm::Envelope box = m_model->getBox();	
@@ -49,12 +51,23 @@ te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* c
 	setVisible(false);
 	setWindowTitle("Layout - Inspetor de Objetos");
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-  setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
-
+  
   m_layoutPropertyBrowser = new ObjectInspectorPropertyBrowser;
+  
+  QVBoxLayout* layout = new QVBoxLayout(this);
+  layout->setMargin(0);
+  layout->addWidget(m_layoutPropertyBrowser->getPropertyEditor());
 
-  setWidget(m_layoutPropertyBrowser->getPropertyEditor());
+  QGroupBox* groupBox = new QGroupBox;
+  groupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  groupBox->setLayout(layout);
+
+  QVBoxLayout* layoutAll = new QVBoxLayout(this);
+  layoutAll->setMargin(0);
+
+  layoutAll->addWidget(groupBox);
+
+  setLayout(layoutAll);
 }
 
 te::layout::ObjectInspectorOutside::~ObjectInspectorOutside()

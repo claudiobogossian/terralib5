@@ -27,16 +27,15 @@
 
 // TerraLib
 #include "ToolbarOutside.h"
-#include "Context.h"
-#include "AbstractScene.h"
-#include "Scene.h"
-#include "OutsideModelObservable.h"
-#include "ItemObserver.h"
-#include "OutsideObserver.h"
-#include "OutsideController.h"
-#include "../../../../geometry/Envelope.h"
-#include "EnumMode.h"
-#include "LayoutConfig.h" /*Layout Images*/
+#include "../../core/pattern/singleton/Context.h"
+#include "../../core/AbstractScene.h"
+#include "../core/Scene.h"
+#include "../../core/pattern/mvc/OutsideModelObservable.h"
+#include "../../core/pattern/mvc/ItemObserver.h"
+#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/OutsideController.h"
+#include "../../../geometry/Envelope.h"
+#include "../../core/enum/EnumMode.h"
 
 //STL
 #include <string>
@@ -54,7 +53,7 @@
 #include <QPushButton>
 
 te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Observable* o ) :
-	QDockWidget("", 0, 0),
+	QToolBar(0),
 	OutsideObserver(controller, o),
   m_optionMapDefault("map_default"),
   m_optionMapGrid("map_grid"),
@@ -71,18 +70,15 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionUngroup("items_ungroup"),
   m_optionLineIntersectionMouse("items_intersection_mouse"),
   m_optionSceneZoom("scene_zoom"),
-  m_toolbar(0),
   m_btnMap(0)
 {
 	te::gm::Envelope box = m_model->getBox();	
 
 	setVisible(false);
 	setWindowTitle("Layout - Toolbar");
-  setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
   setMinimumSize(200, 10);
 
   createToolbar();
-  setWidget(m_toolbar);
 }
 
 te::layout::ToolbarOutside::~ToolbarOutside()
@@ -120,38 +116,36 @@ te::gm::Coord2D te::layout::ToolbarOutside::getPosition()
 
 void te::layout::ToolbarOutside::createToolbar()
 {
-  m_toolbar = new QToolBar;
-
   createArrowCursorButton();
-  m_toolbar->addSeparator();
+  this->addSeparator();
 
   createRecomposeToolButton();
-  m_toolbar->addSeparator();
+  this->addSeparator();
 
   createLineIntersectionToolButton();
-  m_toolbar->addSeparator();
+  this->addSeparator();
 
   createViewAreaToolButton();
-  m_toolbar->addSeparator();
+  this->addSeparator();
 
   createMapToolsToolButton();
-  m_toolbar->addSeparator();
+  this->addSeparator();
 
   createMapToolButton();
-  m_toolbar->addSeparator();
+  this->addSeparator();
   
   createGeometryToolButton();
-  m_toolbar->addSeparator();
+  this->addSeparator();
 
   createItemTools();
-  m_toolbar->addSeparator();
+  this->addSeparator();
 
   createBringToFrontToolButton();
   createSendToBackToolButton();
-  m_toolbar->addSeparator();
+  this->addSeparator();
 
   createSceneZoomCombobox();
-  m_toolbar->addSeparator();
+  this->addSeparator();
 }
 
 void te::layout::ToolbarOutside::createMapToolButton()
@@ -175,7 +169,7 @@ void te::layout::ToolbarOutside::createMapToolButton()
   btnMap->setPopupMode(QToolButton::InstantPopup);
 
   connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onMapTriggered(QAction*)));
-  m_toolbar->addWidget(btnMap);
+  this->addWidget(btnMap);
 }
 
 void te::layout::ToolbarOutside::createMapToolsToolButton()
@@ -196,7 +190,7 @@ void te::layout::ToolbarOutside::createMapToolsToolButton()
   btnMapTools->setPopupMode(QToolButton::InstantPopup);
 
   connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onMapToolsTriggered(QAction*)));
-  m_toolbar->addWidget(btnMapTools);
+  this->addWidget(btnMapTools);
 }
 
 void te::layout::ToolbarOutside::createGeometryToolButton()
@@ -211,7 +205,7 @@ void te::layout::ToolbarOutside::createGeometryToolButton()
   btnGeometry->setPopupMode(QToolButton::InstantPopup);
 
   connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onGeometryTriggered(QAction*)));
-  m_toolbar->addWidget(btnGeometry);
+  this->addWidget(btnGeometry);
 }
 
 void te::layout::ToolbarOutside::createViewAreaToolButton()
@@ -232,7 +226,7 @@ void te::layout::ToolbarOutside::createViewAreaToolButton()
   btnViewArea->setPopupMode(QToolButton::InstantPopup);
 
   connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onViewAreaTriggered(QAction*)));
-  m_toolbar->addWidget(btnViewArea);
+  this->addWidget(btnViewArea);
 }
 
 void te::layout::ToolbarOutside::createArrowCursorButton()
@@ -241,7 +235,7 @@ void te::layout::ToolbarOutside::createArrowCursorButton()
   btnArrowCursor->setCheckable(false);
   connect(btnArrowCursor, SIGNAL(clicked(bool)), this, SLOT(onArrowCursorClicked(bool)));
 
-  m_toolbar->addWidget(btnArrowCursor);
+  this->addWidget(btnArrowCursor);
 }
 
 void te::layout::ToolbarOutside::createItemTools()
@@ -259,7 +253,7 @@ void te::layout::ToolbarOutside::createItemTools()
   btnTools->setPopupMode(QToolButton::InstantPopup);
 
   connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onItemToolsTriggered(QAction*)));
-  m_toolbar->addWidget(btnTools);
+  this->addWidget(btnTools);
 }
 
 void te::layout::ToolbarOutside::createLineIntersectionToolButton()
@@ -267,7 +261,7 @@ void te::layout::ToolbarOutside::createLineIntersectionToolButton()
   QToolButton *btnLineMouse = createToolButton("Draw Line Intersection Mouse", "Draw Line Intersection Mouse", "layout-draw-line-mouse-intersection");
   connect(btnLineMouse, SIGNAL(toggled(bool)), this, SLOT(onLineIntersectionMouse(bool)));
 
-  m_toolbar->addWidget(btnLineMouse);
+  this->addWidget(btnLineMouse);
 }
 
 void te::layout::ToolbarOutside::createSceneZoomCombobox()
@@ -288,7 +282,7 @@ void te::layout::ToolbarOutside::createSceneZoomCombobox()
   m_comboSceneZoom->setCurrentIndex(1);
   Context::getInstance()->setDefaultZoomFactor(m_comboSceneZoom->itemData(1).toDouble());
   
-  m_toolbar->addWidget(m_comboSceneZoom);
+  this->addWidget(m_comboSceneZoom);
 }
 
 void te::layout::ToolbarOutside::createBringToFrontToolButton()
@@ -297,7 +291,7 @@ void te::layout::ToolbarOutside::createBringToFrontToolButton()
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onBringToFrontClicked(bool)));
 
-  m_toolbar->addWidget(btn);
+  this->addWidget(btn);
 }
 
 void te::layout::ToolbarOutside::createSendToBackToolButton()
@@ -306,7 +300,7 @@ void te::layout::ToolbarOutside::createSendToBackToolButton()
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onSendToBackClicked(bool)));
 
-  m_toolbar->addWidget(btn);
+  this->addWidget(btn);
 }
 
 
@@ -316,7 +310,7 @@ void te::layout::ToolbarOutside::createRecomposeToolButton()
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onRecomposeClicked(bool)));
 
-  m_toolbar->addWidget(btn);
+  this->addWidget(btn);
 }
 
 void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
@@ -472,8 +466,7 @@ QToolButton* te::layout::ToolbarOutside::createToolButton( std::string text, std
   btn->setCheckable(true);
   btn->setToolTip(tooltip.c_str());
   
-  std::string icon_path = LAYOUT_IMAGES_PNG"/" + icon;
-  btn->setIcon(QIcon::fromTheme(icon_path.c_str()));
+  btn->setIcon(QIcon::fromTheme(icon.c_str()));
 
   return btn;
 }
@@ -486,8 +479,7 @@ QPushButton* te::layout::ToolbarOutside::createPushButton( std::string text, std
   btn->setCheckable(true);
   btn->setToolTip(tooltip.c_str());
 
-  std::string icon_path = LAYOUT_IMAGES_PNG"/" + icon;
-  btn->setIcon(QIcon::fromTheme(icon_path.c_str()));
+  btn->setIcon(QIcon::fromTheme(icon.c_str()));
 
   return btn;
 }
@@ -497,8 +489,7 @@ QAction* te::layout::ToolbarOutside::createAction( std::string text, std::string
   QAction *actionMenu = new QAction(text.c_str(), this);
   actionMenu->setObjectName(objName.c_str());
 
-  std::string icon_path = LAYOUT_IMAGES_PNG"/" + icon;
-  actionMenu->setIcon(QIcon::fromTheme(icon_path.c_str()));
+  actionMenu->setIcon(QIcon::fromTheme(icon.c_str()));
   actionMenu->setToolTip(tooltip.c_str());
 
   return actionMenu;

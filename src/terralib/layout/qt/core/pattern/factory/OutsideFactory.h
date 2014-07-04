@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_FACTORY_H
 
 // TerraLib
-#include "AbstractOutsideFactory.h"
+#include "../../../../core/pattern/factory/AbstractOutsideFactory.h"
 
 namespace te
 {

@@ -27,10 +27,10 @@
 
 // TerraLib
 #include "GridSettingsModel.h"
-#include "Property.h"
-#include "Properties.h"
-#include "PlanarGridSettingsConfigProperties.h"
-#include "GeodesicGridSettingsConfigProperties.h"
+#include "../core/property/Property.h"
+#include "../core/property/Properties.h"
+#include "../core/property/PlanarGridSettingsConfigProperties.h"
+#include "../core/property/GeodesicGridSettingsConfigProperties.h"
 
 te::layout::GridSettingsModel::GridSettingsModel() 
 {

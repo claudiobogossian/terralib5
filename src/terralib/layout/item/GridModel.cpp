@@ -27,11 +27,11 @@
 
 // TerraLib
 #include "GridModel.h"
-#include "ContextItem.h"
-#include "../../../../../geometry/Envelope.h"
-#include "../../../../../geometry/Coord2D.h"
-#include "Property.h"
-#include "../../../srs/Config.h"
+#include "../core/ContextItem.h"
+#include "../../geometry/Envelope.h"
+#include "../../geometry/Coord2D.h"
+#include "../core/property/Property.h"
+#include "../../srs/Config.h"
 
 te::layout::GridModel::GridModel() :
   m_name("GRID_MODEL"),

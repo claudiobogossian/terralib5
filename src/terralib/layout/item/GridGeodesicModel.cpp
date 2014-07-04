@@ -27,14 +27,14 @@
 
 // TerraLib
 #include "GridGeodesicModel.h"
-#include "ContextItem.h"
-#include "../../../../../geometry/Envelope.h"
-#include "../../../../../geometry/Coord2D.h"
-#include "Property.h"
-#include "EnumUtils.h"
-#include "GeodesicGridSettingsConfigProperties.h"
-#include "../../../srs/Config.h"
-#include "WorldTransformer.h"
+#include "../core/ContextItem.h"
+#include "../../geometry/Envelope.h"
+#include "../../geometry/Coord2D.h"
+#include "../core/property/Property.h"
+#include "../core/enum/EnumUtils.h"
+#include "../core/property/GeodesicGridSettingsConfigProperties.h"
+#include "../../srs/Config.h"
+#include "../core/WorldTransformer.h"
 
 // STL
 #include <string>
@@ -96,6 +96,9 @@ void te::layout::GridGeodesicModel::draw( te::map::Canvas* canvas, Utils* utils,
   calculateGaps(box);
 
   if(!m_visible)
+    return;
+
+  if(srid <= 0)
     return;
   
   te::color::RGBAColor color = te::color::RGBAColor(0, 0, 0, 255);

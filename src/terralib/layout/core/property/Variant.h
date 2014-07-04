@@ -29,8 +29,8 @@
 #define __TERRALIB_LAYOUT_INTERNAL_VARIANT_H
 
 // TerraLib
-#include "AbstractType.h"
-#include "../../../../color/RGBAColor.h"
+#include "../enum/AbstractType.h"
+#include "../../../color/RGBAColor.h"
 
 // STL
 #include <string>

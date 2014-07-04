@@ -27,11 +27,11 @@
 
 // TerraLib
 #include "GridSettingsController.h"
-#include "OutsideParamsCreate.h"
-#include "OutsideModelObservable.h"
-#include "AbstractOutsideFactory.h"
-#include "Context.h"
-#include "Observable.h"
+#include "../core/pattern/factory/OutsideParamsCreate.h"
+#include "../core/pattern/mvc/OutsideModelObservable.h"
+#include "../core/pattern/factory/AbstractOutsideFactory.h"
+#include "../core/pattern/singleton/Context.h"
+#include "../core/pattern/mvc/Observable.h"
 #include "GridSettingsModel.h"
 
 te::layout::GridSettingsController::GridSettingsController( Observable* o ) :

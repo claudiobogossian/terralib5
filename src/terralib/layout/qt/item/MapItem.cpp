@@ -27,30 +27,29 @@
 
 // TerraLib
 #include "MapItem.h"
-#include "Context.h"
-#include "AbstractScene.h"
-#include "ItemModelObservable.h"
-#include "ItemObserver.h"
-#include "ItemController.h"
+#include "../../core/pattern/singleton/Context.h"
+#include "../../core/AbstractScene.h"
+#include "../../core/pattern/mvc/ItemModelObservable.h"
+#include "../../core/pattern/mvc/ItemObserver.h"
+#include "../../core/pattern/mvc/ItemController.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../../qt/widgets/Utils.h"
-#include "../../../../geometry/Envelope.h"
-#include "../../../../common/STLUtils.h"
-#include "../../../../qt/widgets/canvas/Canvas.h"
-#include "../../../../dataaccess/utils/Utils.h"
-#include "../../../../dataaccess/dataset/ObjectIdSet.h"
-#include "../../../../qt/widgets/canvas/MultiThreadMapDisplay.h"
-#include "../../../../common/TreeItem.h"
-#include "../../../../srs/Converter.h"
-#include "../../../../qt/widgets/tools/ZoomWheel.h"
-#include "../../../../maptools/Utils.h"
-#include "MapController.h"
-#include "../../../../qt/widgets/tools/Pan.h"
-#include "../../../../qt/widgets/tools/ZoomArea.h"
-#include "../../../../qt/widgets/tools/ZoomClick.h"
-#include "LayoutConfig.h"
-#include "ItemUtils.h"
-#include "MapModel.h"
+#include "../../../qt/widgets/Utils.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../common/STLUtils.h"
+#include "../../../qt/widgets/canvas/Canvas.h"
+#include "../../../dataaccess/utils/Utils.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../qt/widgets/canvas/MultiThreadMapDisplay.h"
+#include "../../../common/TreeItem.h"
+#include "../../../srs/Converter.h"
+#include "../../../qt/widgets/tools/ZoomWheel.h"
+#include "../../../maptools/Utils.h"
+#include "../../item/MapController.h"
+#include "../../../qt/widgets/tools/Pan.h"
+#include "../../../qt/widgets/tools/ZoomArea.h"
+#include "../../../qt/widgets/tools/ZoomClick.h"
+#include "../core/ItemUtils.h"
+#include "../../item/MapModel.h"
 
 // STL
 #include <vector>
@@ -73,6 +72,7 @@
 #include <QStyleOptionGraphicsItem>
 #include <QEvent>
 #include <QPoint>
+#include <QMimeData>
 
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   QGraphicsProxyWidget(0),
@@ -488,7 +488,7 @@ void te::layout::MapItem::changeCurrentTool( LayoutMode mode )
   if(mode == TypeMapZoomIn)
   {
     //Zoom In
-    std::string icon_path_zoom_area = LAYOUT_IMAGES_PNG"/layout-map-zoom-in";
+    std::string icon_path_zoom_area = "layout-map-zoom-in";
     QCursor zoomAreaCursor(QIcon::fromTheme(icon_path_zoom_area.c_str()).pixmap(QSize(10,10)));
     te::qt::widgets::ZoomArea* zoomArea = new te::qt::widgets::ZoomArea(m_mapDisplay, zoomAreaCursor);
     setCurrentTool(zoomArea);
@@ -496,7 +496,7 @@ void te::layout::MapItem::changeCurrentTool( LayoutMode mode )
   if(mode == TypeMapZoomOut)
   {
     //Zoom Out
-    std::string icon_path_zoom_out = LAYOUT_IMAGES_PNG"/layout-map-zoom-out";
+    std::string icon_path_zoom_out = "layout-map-zoom-out";
     QCursor zoomOutCursor(QIcon::fromTheme(icon_path_zoom_out.c_str()).pixmap(QSize(10,10)));
     te::qt::widgets::ZoomClick* zoomOut = new te::qt::widgets::ZoomClick(m_mapDisplay, zoomOutCursor, 2.0, te::qt::widgets::Zoom::Out);
     setCurrentTool(zoomOut);

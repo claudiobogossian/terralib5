@@ -30,7 +30,8 @@
 
 //Terralib
 #include "Property.h"
-#include "AbstractType.h"
+#include "../enum/AbstractType.h"
+#include "../Config.h"
 
 //STL
 #include <vector>
@@ -40,7 +41,7 @@ namespace te
 {
   namespace layout
   {
-    class Properties
+    class TELAYOUTEXPORT Properties
     {
       public:
         Properties(std:: string objectName, LayoutAbstractObjectType type = TPObjectUnknown);

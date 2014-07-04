@@ -30,7 +30,7 @@
 
 // TerraLib
 #include "AbstractType.h"
-#include "../../../../maptools/Enums.h"
+#include "../../../maptools/Enums.h"
 
 // STL
 #include <string>

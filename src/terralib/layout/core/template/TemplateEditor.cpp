@@ -27,9 +27,9 @@
 
 // TerraLib
 #include "TemplateEditor.h"
-#include "TemplateParamsCreate.h"
-#include "Context.h"
-#include "AbstractTemplateFactory.h"
+#include "../pattern/factory/TemplateParamsCreate.h"
+#include "../pattern/singleton/Context.h"
+#include "../pattern/factory/AbstractTemplateFactory.h"
 #include "JSONTemplate.h"
 
 te::layout::TemplateEditor::TemplateEditor( te::layout::LayoutTemplateType type, std::string path ) 

@@ -27,17 +27,17 @@
 
 // TerraLib
 #include "VisitorUtils.h"
-#include "AbstractType.h"
-#include "LegendModel.h"
-#include "ItemObserver.h"
-#include "MapModel.h"
-#include "ScaleModel.h"
+#include "../../enum/AbstractType.h"
+#include "../../../item/LegendModel.h"
+#include "../mvc/ItemObserver.h"
+#include "../../../item/MapModel.h"
+#include "../../../item/ScaleModel.h"
 
 // STL
 #include <stddef.h>  // defines NULL
 
 // Boost
-#include "boost\foreach.hpp"
+#include <boost\foreach.hpp>
 
 TELAYOUTEXPORT bool te::layout::changeMapVisitable( QList<QGraphicsItem*> graphicsItems, te::layout::Visitable* visitable )
 {

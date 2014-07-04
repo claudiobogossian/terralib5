@@ -27,10 +27,10 @@
 
 // TerraLib
 #include "ObjectInspectorController.h"
-#include "OutsideParamsCreate.h"
-#include "OutsideModelObservable.h"
-#include "AbstractOutsideFactory.h"
-#include "Context.h"
+#include "../core/pattern/factory/OutsideParamsCreate.h"
+#include "../core/pattern/mvc/OutsideModelObservable.h"
+#include "../core/pattern/factory/AbstractOutsideFactory.h"
+#include "../core/pattern/singleton/Context.h"
 
 te::layout::ObjectInspectorController::ObjectInspectorController( Observable* o ) :
 	OutsideController(o, TPObjectInspectorWindow)

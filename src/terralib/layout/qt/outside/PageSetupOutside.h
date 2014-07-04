@@ -29,14 +29,14 @@
 #define __TERRALIB_LAYOUT_INTERNAL_PAGE_SETUP_OUTSIDE_H
 
 // Qt
-#include <QtGui/QDialog>
+#include <QDialog>
 
 // TerraLib
-#include "OutsideObserver.h"
-#include "../../../include/core/Config.h"
-#include "../../../../geometry/Envelope.h"
-#include "../../../../color/RGBAColor.h"
-#include "EnumMode.h"
+#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/Config.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../color/RGBAColor.h"
+#include "../../core/enum/EnumMode.h"
 
 namespace Ui { class PageSetup; }
 

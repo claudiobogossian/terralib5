@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_VISITOR_UTILS_H
 
 // TerraLib
-#include "Config.h"
+#include "../../Config.h"
 #include "Visitable.h"
 
 // Qt

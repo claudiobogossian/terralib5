@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_VISUALIZATION_AREA_H
 
 #include <QObject>
-#include "../../../../geometry/Envelope.h"
+#include "../../../geometry/Envelope.h"
 
 namespace te
 {

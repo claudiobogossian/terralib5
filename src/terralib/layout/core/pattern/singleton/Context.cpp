@@ -27,11 +27,11 @@
 
 // TerraLib
 #include "Context.h"
-#include "AbstractItemFactory.h"
-#include "Utils.h"
-#include "AbstractOutsideFactory.h"
-#include "../../../../../maptools/Canvas.h"
-#include "../../../../../geometry/Envelope.h"
+#include "../factory/AbstractItemFactory.h"
+#include "../../Utils.h"
+#include "../factory/AbstractOutsideFactory.h"
+#include "../../../../maptools/Canvas.h"
+#include "../../../../geometry/Envelope.h"
 
 // STL
 #include <stddef.h>  // defines NULL

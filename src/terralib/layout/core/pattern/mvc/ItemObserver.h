@@ -30,11 +30,7 @@
 
 // TerraLib
 #include "Observer.h"
-#include "ContextItem.h"
-#include "../../../../../geometry/Coord2D.h"
-
-// Boost
-#include <boost/property_tree/ptree.hpp>
+#include "../../../../geometry/Coord2D.h"
 
 namespace te
 {

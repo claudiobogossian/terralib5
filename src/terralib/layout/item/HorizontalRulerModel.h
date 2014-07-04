@@ -30,7 +30,7 @@
 
 // TerraLib
 #include "AbstractRulerModel.h"
-#include "EnumMode.h"
+#include "../core/enum/EnumMode.h"
 
 // STL
 #include <vector>

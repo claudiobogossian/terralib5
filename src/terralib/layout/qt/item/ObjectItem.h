@@ -35,9 +35,9 @@
 #include <QPainter>
 
 // TerraLib
-#include "ItemObserver.h"
-#include "../../../../geometry/Envelope.h"
-#include "AbstractType.h"
+#include "../../core/pattern/mvc/ItemObserver.h"
+#include "../../../geometry/Envelope.h"
+#include "../../core/enum/AbstractType.h"
 
 class QGraphicsSceneMouseEvent;
 class QGraphicsSceneHoverEvent;

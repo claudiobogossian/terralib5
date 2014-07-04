@@ -28,6 +28,8 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_MODE_H
 #define __TERRALIB_LAYOUT_INTERNAL_MODE_H
 
+#include "..\Config.h"
+
 namespace te
 {
   namespace layout
@@ -35,7 +37,7 @@ namespace te
     /*!
     \brief Enum LayoutMode. This is the enumeration of the components types
     */
-    typedef enum
+    typedef TELAYOUTEXPORT enum
     {
       TypeSelectByBox = 1,
       TypeSelect = 2,
@@ -74,7 +76,7 @@ namespace te
     /*!
     \brief Enum LayoutRulerOrientation. This is the enumeration of the ruler orientation types
     */
-    typedef enum
+    typedef TELAYOUTEXPORT enum
     {
       TypeRulerVertical = 0,
       TypeRulerHorizontal = 90
@@ -83,7 +85,7 @@ namespace te
     /*!
     \brief Enum LayoutGridType. This is the enumeration of the grid types
     */
-    typedef enum
+    typedef TELAYOUTEXPORT enum
     {
       TypePlanar = 0,
       TypeGeodesic = 1

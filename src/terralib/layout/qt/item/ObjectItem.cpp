@@ -27,15 +27,15 @@
 
 // TerraLib
 #include "ObjectItem.h"
-#include "Context.h"
-#include "ItemController.h"
-#include "AbstractScene.h"
-#include "ItemModelObservable.h"
-#include "Scene.h"
+#include "../../core/pattern/singleton/Context.h"
+#include "../../core/pattern/mvc/ItemController.h"
+#include "../../core/AbstractScene.h"
+#include "../../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/Scene.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../../qt/widgets/Utils.h"
-#include "../../../../geometry/Envelope.h"
-#include "../../../../common/STLUtils.h"
+#include "../../../qt/widgets/Utils.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../common/STLUtils.h"
 
 // Qt
 #include <QGraphicsSceneHoverEvent>

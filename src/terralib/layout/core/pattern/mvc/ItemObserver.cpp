@@ -27,12 +27,12 @@
 
 // TerraLib
 #include "ItemObserver.h"
-#include "Context.h"
-#include "AbstractScene.h"
-#include "Properties.h"
+#include "../singleton/Context.h"
+#include "../../AbstractScene.h"
+#include "../../property/Properties.h"
 #include "ItemController.h"
 #include "Observable.h"
-#include "../../../../../geometry/Coord2D.h"
+#include "../../../../geometry/Coord2D.h"
 
 te::layout::ItemObserver::ItemObserver(ItemController* controller, Observable* o) :
   m_controller(controller),

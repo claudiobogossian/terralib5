@@ -27,11 +27,11 @@
 
 // TerraLib
 #include "PropertiesController.h"
-#include "OutsideParamsCreate.h"
-#include "OutsideModelObservable.h"
-#include "AbstractOutsideFactory.h"
-#include "Context.h"
-#include "Observer.h"
+#include "../core/pattern/factory/OutsideParamsCreate.h"
+#include "../core/pattern/mvc/OutsideModelObservable.h"
+#include "../core/pattern/factory/AbstractOutsideFactory.h"
+#include "../core/pattern/singleton/Context.h"
+#include "../core/pattern/mvc/Observer.h"
 
 te::layout::PropertiesController::PropertiesController( Observable* o ) :
 	OutsideController(o, TPPropertiesWindow)

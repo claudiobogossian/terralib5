@@ -27,17 +27,17 @@
 
 // TerraLib
 #include "VisualizationArea.h"
-#include "HorizontalRulerModel.h"
-#include "HorizontalRulerController.h"
-#include "HorizontalRulerItem.h"
-#include "VerticalRulerModel.h"
-#include "VerticalRulerController.h"
-#include "VerticalRulerItem.h"
-#include "PaperModel.h"
-#include "PaperController.h"
-#include "PaperItem.h"
-#include "ItemObserver.h"
-#include "Context.h"
+#include "../../item/HorizontalRulerModel.h"
+#include "../../item/HorizontalRulerController.h"
+#include "../item/HorizontalRulerItem.h"
+#include "../../item/VerticalRulerModel.h"
+#include "../../item/VerticalRulerController.h"
+#include "../item/VerticalRulerItem.h"
+#include "../../item/PaperModel.h"
+#include "../../item/PaperController.h"
+#include "../item/PaperItem.h"
+#include "../../core/pattern/mvc/ItemObserver.h"
+#include "../../core/pattern/singleton/Context.h"
 
 te::layout::VisualizationArea::VisualizationArea(te::gm::Envelope* boxArea)
 {

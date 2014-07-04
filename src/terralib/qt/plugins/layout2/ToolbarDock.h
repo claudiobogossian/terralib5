@@ -18,33 +18,54 @@
  */
 
 /*!
-  \file DisplayController.h
+  \file ToolbarDock.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_DISPLAY_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_DISPLAY_CONTROLLER_H
+#ifndef __TE_QT_PLUGINS_LAYOUT2_INTERNAL_TOOLBAR_DOCK_H 
+#define __TE_QT_PLUGINS_LAYOUT2_INTERNAL_TOOLBAR_DOCK_H
 
-// TerraLib
-#include "OutsideController.h"
+// Qt
+#include <QDockWidget>
+
+class QWidget;
 
 namespace te
 {
   namespace layout
   {
-    class DisplayController : public OutsideController
+    class ToolbarOutside;
+  }
+  namespace qt
+  {
+    namespace plugins
     {
-    public:
+      namespace layout2
+      {
+        class ToolbarDock : public QDockWidget
+        {
+	        Q_OBJECT //for slots/signals
 
-	    DisplayController( Observable* o );
-	    virtual ~DisplayController();
+        public:
 
-	    virtual void setPosition(const double& x, const double& y);
-    };
+	        ToolbarDock(QWidget * parent = 0, Qt::WindowFlags flags = 0);
+	        virtual ~ToolbarDock();
+
+          te::layout::ToolbarOutside* getToolbarOutside();
+
+        protected:
+
+          virtual void create();
+
+          te::layout::ToolbarOutside* m_toolbar;
+        };
+      }
+    }
   }
 }
+
 
 #endif

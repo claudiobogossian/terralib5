@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_PARAMS_CREATE_H
 
 // TerraLib
-#include "ParamsCreate.h"
+#include "../../ParamsCreate.h"
 
 namespace te
 {

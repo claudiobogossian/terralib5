@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DisplayOutside.cpp
+  \file DisplayDock.cpp
    
   \brief 
 
@@ -26,63 +26,26 @@
 */
 
 // TerraLib
-#include "DisplayOutside.h"
-#include "Context.h"
-#include "AbstractScene.h"
-#include "Scene.h"
-#include "OutsideModelObservable.h"
-#include "ItemObserver.h"
-#include "OutsideObserver.h"
-#include "OutsideController.h"
-#include "../../../../geometry/Envelope.h"
+#include "DisplayDock.h"
 
 // Qt
-#include <QGraphicsWidget>
 #include <QMainWindow>
 
-te::layout::DisplayOutside::DisplayOutside( OutsideController* controller, Observable* o ) :
-	QDockWidget("", 0, 0),
-	OutsideObserver(controller, o),
-  m_previousCentralWidget(0)
+te::qt::plugins::layout2::DisplayDock::DisplayDock( QWidget * parent, Qt::WindowFlags flags ) :
+	QDockWidget(parent, flags),
+  m_previousCentralWidget(0),
+  m_previousCentralWidgetVisibilite(true)
 {  
 	setVisible(false);
 	setWindowTitle("Layout Display");
 }
 
-te::layout::DisplayOutside::~DisplayOutside()
+te::qt::plugins::layout2::DisplayDock::~DisplayDock()
 {
 
 }
 
-void te::layout::DisplayOutside::updateObserver( ContextItem context )
-{
-	setVisible(context.getShow());
-	if(context.getShow() == true)
-		show();
-	else
-		hide();
-}
-
-void te::layout::DisplayOutside::setPosition( const double& x, const double& y )
-{
-	move(x,y);
-	refresh();
-}
-
-te::gm::Coord2D te::layout::DisplayOutside::getPosition()
-{
-  QPointF posF = pos();
-  qreal valuex = posF.x();
-  qreal valuey = posF.y();
-
-  te::gm::Coord2D coordinate;
-  coordinate.x = valuex;
-  coordinate.y = valuey;
-
-  return coordinate;
-}
-
-void te::layout::DisplayOutside::closeEvent( QCloseEvent * event )
+void te::qt::plugins::layout2::DisplayDock::closeEvent( QCloseEvent * event )
 {
   QDockWidget::closeEvent(event);
 
@@ -94,12 +57,12 @@ void te::layout::DisplayOutside::closeEvent( QCloseEvent * event )
   removeDock();
 }
 
-void te::layout::DisplayOutside::setPreviousCentralWidget( QWidget* previous )
+void te::qt::plugins::layout2::DisplayDock::setPreviousCentralWidget( QWidget* previous )
 {
   m_previousCentralWidget = previous;
 }
 
-void te::layout::DisplayOutside::removeDock()
+void te::qt::plugins::layout2::DisplayDock::removeDock()
 {
   QMainWindow* mw = (QMainWindow*)parentWidget();
 

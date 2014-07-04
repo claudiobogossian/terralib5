@@ -29,10 +29,10 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ITEM_CONTROLLER_H
 
 // TerraLib
-#include "../../../../../geometry/Envelope.h"
-#include "../../../../../geometry/Coord2D.h"
-#include "../../../color/RGBAColor.h"
-#include "AbstractType.h"
+#include "../../../../geometry/Envelope.h"
+#include "../../../../geometry/Coord2D.h"
+#include "../../../../color/RGBAColor.h"
+#include "../../enum/AbstractType.h"
 
 namespace te
 {

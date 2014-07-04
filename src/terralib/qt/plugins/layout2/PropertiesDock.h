@@ -18,33 +18,57 @@
  */
 
 /*!
-  \file DisplayModel.h
+  \file PropertiesDock.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_DISPLAY_MODEL_H 
-#define __TERRALIB_LAYOUT_INTERNAL_DISPLAY_MODEL_H
+#ifndef __TE_QT_PLUGINS_LAYOUT2_INTERNAL_PROPERTIES_DOCK_H 
+#define __TE_QT_PLUGINS_LAYOUT2_INTERNAL_PROPERTIES_DOCK_H
 
-// TerraLib
-#include "OutsideModelObservable.h"
-#include "ContextItem.h"
-#include "Properties.h"
+// Qt
+#include <QDockWidget>
+
+// STL
+#include <vector>
+
 
 namespace te
 {
   namespace layout
   {
-    class DisplayModel : public OutsideModelObservable
+    class PropertiesOutside;
+  }    
+  namespace qt
+  {
+    namespace plugins
     {
-    public:
+      namespace layout2
+      {
+        class PropertiesDock : public QDockWidget
+        {
+	        Q_OBJECT //for slots/signals
 
-      DisplayModel();
-      virtual ~DisplayModel();
-    };
+        public:
+
+	        PropertiesDock( QWidget * parent = 0, Qt::WindowFlags flags = 0 );
+	        virtual ~PropertiesDock();
+
+          te::layout::PropertiesOutside* getPropertiesOutside();
+
+        protected:
+
+          virtual void create();
+
+          te::layout::PropertiesOutside* m_properties;
+
+        };
+      }
+    }
   }
 }
+
 
 #endif

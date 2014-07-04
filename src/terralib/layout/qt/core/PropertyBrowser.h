@@ -29,22 +29,20 @@
 #define __TERRALIB_LAYOUT_INTERNAL_PROPERTY_BROWSER_H
 
 // TerraLib
-#include "Property.h"
+#include "../../core/property/Property.h"
 
 // Qt
 #include <QObject>
-#include "../../../../../../third-party/qt/propertybrowser/qttreepropertybrowser.h"
-#include "../../../../../../third-party/qt/propertybrowser/qtpropertybrowser.h"
-#include "../../../../../../third-party/qt/propertybrowser/qtpropertymanager.h"
-#include <QList>
+
+// QtPropertyBrowser
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
+#include <QtPropertyBrowser/QtStringPropertyManager>
+#include <QtPropertyBrowser/QtProperty>
+#include <QtPropertyBrowser/QtVariantPropertyManager>
+#include <QtPropertyBrowser/QtBrowserItem>
 
 class QGraphicsItem;
 class QWidget;
-
-class QtVariantProperty;
-class QtProperty;
-class QtVariantPropertyManager;
-class QtBrowserIndex;
 
 namespace te
 {

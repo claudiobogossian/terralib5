@@ -28,6 +28,8 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_TYPE_H 
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_TYPE_H
 
+#include "..\Config.h"
+
 namespace te
 {
   namespace layout
@@ -35,7 +37,7 @@ namespace te
     /*!
     \brief Enum TdkAbstractComponentType. This is the enumeration of the components types
     */
-    typedef enum
+    typedef TELAYOUTEXPORT enum
     {
       TPRetangleItem = 1,
       TPMapItem = 2,
@@ -119,7 +121,7 @@ namespace te
     /*!
     \brief Enum TdkAbstractComponentType. This is the enumeration of the components types
     */
-    typedef enum
+    typedef TELAYOUTEXPORT enum
     {
       TPMillimeter = 0,
       TPInch = 1
@@ -128,7 +130,7 @@ namespace te
     /*!
     \brief Enum LayoutPropertyDataType. 
     */
-    typedef enum
+    typedef TELAYOUTEXPORT enum
     {
       DataTypeInt = 1,
       DataTypeDouble = 2,
@@ -145,7 +147,7 @@ namespace te
     /*!
     \brief Enum LayoutTemplateType.
     */
-    typedef enum
+    typedef TELAYOUTEXPORT enum
     {
       TPJSONTemplate = 1
     } LayoutTemplateType;

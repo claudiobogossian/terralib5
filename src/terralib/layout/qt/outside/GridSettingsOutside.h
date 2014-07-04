@@ -29,15 +29,15 @@
 #define __TERRALIB_LAYOUT_INTERNAL_GRID_SETTINGS_OUTSIDE_H
 
 // Qt
-#include <QtGui/QDialog>
+#include <QDialog>
 
 // TerraLib
-#include "OutsideObserver.h"
-#include "GridSettingsConfigProperties.h"
-#include "../../../include/core/Config.h"
-#include "../../../../geometry/Envelope.h"
-#include "../../../../color/RGBAColor.h"
-#include "EnumMode.h"
+#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/property/GridSettingsConfigProperties.h"
+#include "../../core/Config.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../color/RGBAColor.h"
+#include "../../core/enum/EnumMode.h"
 
 namespace Ui { class GridSettings; }
 

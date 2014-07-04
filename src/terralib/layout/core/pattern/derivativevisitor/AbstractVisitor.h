@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_CONTEXT_ABSTRACT_VISITOR_H
 
 // TerraLib
-#include "ContextItem.h"
+#include "../../ContextItem.h"
 
 namespace te
 {

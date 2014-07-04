@@ -27,13 +27,13 @@
 
 // TerraLib
 #include "VerticalRulerModel.h"
-#include "ContextItem.h"
-#include "ItemModelObservable.h"
-#include "EnumMode.h"
-#include "Utils.h"
-#include "../../../maptools/Canvas.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../geometry/Point.h"
+#include "../core/ContextItem.h"
+#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/enum/EnumMode.h"
+#include "../core/Utils.h"
+#include "../../maptools/Canvas.h"
+#include "../../geometry/Envelope.h"
+#include "../../geometry/Point.h"
 
 // STL
 #include <sstream>

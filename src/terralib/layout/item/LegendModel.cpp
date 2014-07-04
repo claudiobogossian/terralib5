@@ -28,16 +28,16 @@
 // TerraLib
 #include "LegendModel.h"
 #include "MapModel.h"
-#include "Property.h"
-#include "Properties.h"
-#include "SharedProperties.h"
-#include "../../../maptools/CanvasConfigurer.h"
-#include "../../../se/Symbolizer.h"
-#include "../../../se/Style.h"
-#include "../../../se/Rule.h"
-#include "../../../geometry/Polygon.h"
-#include "../../../geometry/Geometry.h"
-#include "../../../geometry/Envelope.h"
+#include "../core/property/Property.h"
+#include "../core/property/Properties.h"
+#include "../core/property/SharedProperties.h"
+#include "../../maptools/CanvasConfigurer.h"
+#include "../../se/Symbolizer.h"
+#include "../../se/Style.h"
+#include "../../se/Rule.h"
+#include "../../geometry/Polygon.h"
+#include "../../geometry/Geometry.h"
+#include "../../geometry/Envelope.h"
 
 te::layout::LegendModel::LegendModel() :
   m_mapName(""),

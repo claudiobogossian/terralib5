@@ -27,14 +27,14 @@
 
 // TerraLib
 #include "PropertiesItemPropertyBrowser.h"
-#include "GridSettingsOutside.h"
-#include "GridSettingsModel.h"
-#include "GridSettingsController.h"
+#include "../outside/GridSettingsOutside.h"
+#include "../../outside/GridSettingsModel.h"
+#include "../../outside/GridSettingsController.h"
+#include "../../core/pattern/mvc/ItemController.h"
 
 // Qt
-#include "../../../../../../third-party/qt/propertybrowser/qtvariantproperty.h"
-#include "../../../../../../third-party/qt/propertybrowser/qteditorfactory.h"
-#include "ItemController.h"
+#include <QtPropertyBrowser/QtVariantPropertyManager>
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
 
 te::layout::PropertiesItemPropertyBrowser::PropertiesItemPropertyBrowser(QObject* parent) :
   PropertyBrowser(parent),

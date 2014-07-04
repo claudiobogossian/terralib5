@@ -29,15 +29,16 @@
 #define __TERRALIB_LAYOUT_INTERNAL_PAGE_SETUP_CONTROLLER_H
 
 // TerraLib
-#include "OutsideController.h"
-#include "Property.h"
-#include "EnumMode.h"
+#include "../core/pattern/mvc/OutsideController.h"
+#include "../core/property/Property.h"
+#include "../core/enum/EnumMode.h"
+#include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class PageSetupController : public OutsideController
+    class TELAYOUTEXPORT PageSetupController : public OutsideController
     {
     public:
 

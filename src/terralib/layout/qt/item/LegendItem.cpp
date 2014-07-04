@@ -27,13 +27,13 @@
 
 // TerraLib
 #include "LegendItem.h"
-#include "ItemController.h"
-#include "Scene.h"
-#include "Observable.h"
+#include "../../core/pattern/mvc/ItemController.h"
+#include "../core/Scene.h"
+#include "../../core/pattern/mvc/Observable.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../../qt/widgets/Utils.h"
-#include "../../../../geometry/Envelope.h"
-#include "../../../../common/STLUtils.h"
+#include "../../../qt/widgets/Utils.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../common/STLUtils.h"
 
 // Qt
 #include <QPixmap>

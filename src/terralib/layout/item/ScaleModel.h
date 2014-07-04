@@ -29,11 +29,11 @@
 #define __TERRALIB_LAYOUT_INTERNAL_SCALE_MODEL_H
 
 // TerraLib
-#include "ItemModelObservable.h"
-#include "ContextItem.h"
-#include "AbstractVisitor.h"
-#include "../../../maptools/Canvas.h"
-#include "Utils.h"
+#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/ContextItem.h"
+#include "../core/pattern/derivativevisitor/AbstractVisitor.h"
+#include "../../maptools/Canvas.h"
+#include "../core/Utils.h"
 
 namespace te
 {

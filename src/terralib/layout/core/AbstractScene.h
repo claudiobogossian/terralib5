@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_SCENE_H
 
 // TerraLib
-#include "../../../../geometry/Envelope.h"
+#include "../../geometry/Envelope.h"
 
 namespace te
 {

@@ -29,11 +29,11 @@
 #define __TERRALIB_LAYOUT_INTERNAL_MAP_MODEL_H
 
 // TerraLib
-#include "ItemModelObservable.h"
-#include "ContextItem.h"
-#include "Visitable.h"
-#include "../../../maptools/AbstractLayer.h"
-#include "../../../common/UnitOfMeasure.h"
+#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/ContextItem.h"
+#include "../core/pattern/derivativevisitor/Visitable.h"
+#include "../../maptools/AbstractLayer.h"
+#include "../../common/UnitOfMeasure.h"
 
 namespace te
 {

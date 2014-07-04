@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_LEGEND_CONTROLLER_H
 
 // TerraLib
-#include "ItemController.h"
+#include "../core/pattern/mvc/ItemController.h"
 
 namespace te
 {

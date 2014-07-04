@@ -27,10 +27,10 @@
 
 // TerraLib
 #include "RectangleModel.h"
-#include "ContextItem.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../color/RGBAColor.h"
-#include "../../../maptools/Canvas.h"
+#include "../core/ContextItem.h"
+#include "../../geometry/Envelope.h"
+#include "../../color/RGBAColor.h"
+#include "../../maptools/Canvas.h"
 
 te::layout::RectangleModel::RectangleModel() 
 {

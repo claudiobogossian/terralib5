@@ -21,8 +21,8 @@
 #define __TERRALIB_LAYOUT_INTERNAL_VIEWZOOM_H
 
 // TerraLib
-#include "Config.h"
-#include "AbstractViewTool.h"
+#include "../../../core/Config.h"
+#include "../AbstractViewTool.h"
 
 namespace te
 {

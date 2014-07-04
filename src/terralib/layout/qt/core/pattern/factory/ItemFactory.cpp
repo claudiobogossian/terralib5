@@ -27,16 +27,16 @@
 
 // TerraLib
 #include "ItemFactory.h"
-#include "RectangleItem.h"
-#include "HorizontalRulerItem.h"
-#include "VerticalRulerItem.h"
-#include "ItemGroup.h"
-#include "PaperItem.h"
-#include "MapItem.h"
-#include "Observer.h"
-#include "MapGridItem.h"
-#include "LegendItem.h"
-#include "ScaleItem.h"
+#include "../../../item/RectangleItem.h"
+#include "../../../item/HorizontalRulerItem.h"
+#include "../../../item/VerticalRulerItem.h"
+#include "../../../item/ItemGroup.h"
+#include "../../../item/PaperItem.h"
+#include "../../../item/MapItem.h"
+#include "../../../../core/pattern/mvc/Observer.h"
+#include "../../../item/MapGridItem.h"
+#include "../../../item/LegendItem.h"
+#include "../../../item/ScaleItem.h"
 
 te::layout::ItemFactory::ItemFactory()
 {

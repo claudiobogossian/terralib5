@@ -29,19 +29,19 @@
 #define __TERRALIB_LAYOUT_INTERNAL_TOOLBAR_OUTSIDE_H
 
 // Qt
-#include <QDockWidget>
+#include <QToolBar>
 
 // TerraLib
-#include "OutsideObserver.h"
-#include "../../../../geometry/Envelope.h"
-#include "EnumMode.h"
+#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../../geometry/Envelope.h"
+#include "../../core/enum/EnumMode.h"
+#include "../../core/Config.h"
 
 // STL
 #include <string>
 
 class QGraphicsItem;
 class QWidget;
-class QToolBar;
 class QGroupBox;
 class QAction;
 class QToolButton;
@@ -53,7 +53,7 @@ namespace te
 {
   namespace layout
   {
-    class ToolbarOutside : public QDockWidget, public OutsideObserver
+    class TELAYOUTEXPORT ToolbarOutside : public QToolBar, public OutsideObserver
     {
 	    Q_OBJECT //for slots/signals
 
@@ -133,7 +133,6 @@ namespace te
 
     protected:
 
-      QToolBar*  m_toolbar;
       QToolButton* m_btnMap;
       QComboBox* m_comboSceneZoom;
       /* Map Menu */

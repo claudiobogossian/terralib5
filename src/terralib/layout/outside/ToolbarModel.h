@@ -29,15 +29,16 @@
 #define __TERRALIB_LAYOUT_INTERNAL_TOOLBAR_MODEL_H
 
 // TerraLib
-#include "OutsideModelObservable.h"
-#include "ContextItem.h"
-#include "Properties.h"
+#include "../core/pattern/mvc/OutsideModelObservable.h"
+#include "../core/ContextItem.h"
+#include "../core/property/Properties.h"
+#include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class ToolbarModel : public OutsideModelObservable
+    class TELAYOUTEXPORT ToolbarModel : public OutsideModelObservable
     {
     public:
 

@@ -29,8 +29,8 @@
 #define __TERRALIB_LAYOUT_INTERNAL_MAP_CONTROLLER_H
 
 // TerraLib
-#include "ItemController.h"
-#include "../../../maptools/AbstractLayer.h"
+#include "../core/pattern/mvc/ItemController.h"
+#include "../../maptools/AbstractLayer.h"
 
 namespace te
 {

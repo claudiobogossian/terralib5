@@ -30,7 +30,7 @@
 
 //TerraLib
 #include "Serialization.h"
-#include "Property.h"
+#include "../property/Property.h"
 
 // Boost
 #include <boost/property_tree/ptree.hpp>

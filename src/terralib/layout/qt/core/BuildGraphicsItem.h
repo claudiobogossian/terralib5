@@ -29,11 +29,11 @@
 #define __TERRALIB_LAYOUT_INTERNAL_BUILD_GRAPHICS_ITEM_H
 
 //TerraLib
-#include "../../../../geometry/Envelope.h"
-#include "../../../../geometry/Coord2D.h"
-#include "EnumMode.h"
-#include "Properties.h"
-#include "AbstractType.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../geometry/Coord2D.h"
+#include "../../core/enum/EnumMode.h"
+#include "../../core/property/Properties.h"
+#include "../../core/enum/AbstractType.h"
 
 class QGraphicsItem;
 

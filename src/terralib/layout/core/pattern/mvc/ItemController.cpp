@@ -29,9 +29,9 @@
 #include "ItemController.h"
 #include "ItemModelObservable.h"
 #include "ItemObserver.h"
-#include "ContextItem.h"
-#include "Context.h"
-#include "../../../../../maptools/Canvas.h"
+#include "../../ContextItem.h"
+#include "../singleton/Context.h"
+#include "../../../../maptools/Canvas.h"
 
 te::layout::ItemController::ItemController( Observable* o ) :
   m_model(o)

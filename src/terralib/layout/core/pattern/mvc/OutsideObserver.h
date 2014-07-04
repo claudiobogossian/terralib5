@@ -30,9 +30,9 @@
 
 // TerraLib
 #include "Observer.h"
-#include "Properties.h"
-#include "ContextItem.h"
-#include "../../../../../geometry/Coord2D.h"
+#include "../../property/Properties.h"
+#include "../../ContextItem.h"
+#include "../../../../geometry/Coord2D.h"
 
 namespace te
 {

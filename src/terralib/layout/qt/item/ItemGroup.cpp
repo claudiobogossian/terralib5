@@ -27,22 +27,22 @@
 
 // TerraLib
 #include "ItemGroup.h"
-#include "Context.h"
-#include "ItemModelObservable.h"
-#include "ItemController.h"
+#include "../../core/pattern/singleton/Context.h"
+#include "../../core/pattern/mvc/ItemModelObservable.h"
+#include "../../core/pattern/mvc/ItemController.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../../qt/widgets/Utils.h"
-#include "../../../../geometry/Envelope.h"
-#include "../../../../common/STLUtils.h"
-#include "AbstractScene.h"
-#include "ItemObserver.h"
+#include "../../../qt/widgets/Utils.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../common/STLUtils.h"
+#include "../../core/AbstractScene.h"
+#include "../../core/pattern/mvc/ItemObserver.h"
 
 // Qt
 #include <QGraphicsSceneMouseEvent>
 #include <QStyleOptionGraphicsItem>
 
 te::layout::ItemGroup::ItemGroup( ItemController* controller, Observable* o ) :
-  QGraphicsItemGroup(0, 0),
+  QGraphicsItemGroup(0),
   ItemObserver(controller, o)
 {
   this->setFlags(QGraphicsItem::ItemIsMovable

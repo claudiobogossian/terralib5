@@ -29,12 +29,12 @@
 #define __TERRALIB_LAYOUT_INTERNAL_OBSERVABLE_H
 
 // TerraLib
-#include "ContextItem.h"
-#include "../../../../../geometry/Envelope.h"
-#include "../../../../../geometry/Coord2D.h"
-#include "../../../color/RGBAColor.h"
-#include "AbstractType.h"
-#include "Utils.h"
+#include "../../ContextItem.h"
+#include "../../../../geometry/Envelope.h"
+#include "../../../../geometry/Coord2D.h"
+#include "../../../../color/RGBAColor.h"
+#include "../../enum/AbstractType.h"
+#include "../../Utils.h"
 
 namespace te
 {

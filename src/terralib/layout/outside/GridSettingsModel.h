@@ -29,10 +29,11 @@
 #define __TERRALIB_LAYOUT_INTERNAL_GRID_SETTINGS_MODEL_H
 
 // TerraLib
-#include "OutsideModelObservable.h"
-#include "ContextItem.h"
-#include "Properties.h"
-#include "EnumMode.h"
+#include "../core/pattern/mvc/OutsideModelObservable.h"
+#include "../core/ContextItem.h"
+#include "../core/property/Properties.h"
+#include "../core/enum/EnumMode.h"
+#include "../core/Config.h"
 
 namespace te
 {
@@ -41,7 +42,7 @@ namespace te
     class PlanarGridSettingsConfigProperties;
     class GeodesicGridSettingsConfigProperties;
 
-    class GridSettingsModel : public OutsideModelObservable
+    class TELAYOUTEXPORT GridSettingsModel : public OutsideModelObservable
     {
     public:
 

@@ -29,13 +29,16 @@
 #define __TERRALIB_LAYOUT_INTERNAL_UTILS_H
 
 // TerraLib
-#include "../../../geometry/Envelope.h"
-#include "../../../geometry/LinearRing.h"
-#include "../../../color/RGBAColor.h"
-#include "../../../maptools/Canvas.h"
-#include "../../../maptools/WorldDeviceTransformer.h"
+#include "../../geometry/Envelope.h"
+#include "../../geometry/LinearRing.h"
+#include "../../color/RGBAColor.h"
+#include "../../maptools/Canvas.h"
+#include "../../maptools/WorldDeviceTransformer.h"
 #include "WorldTransformer.h"
-#include "../../../common/UnitOfMeasure.h"
+#include "../../common/UnitOfMeasure.h"
+
+const double	TeCDR =	0.01745329251994329576;		//!< Conversion factor: degrees to radians
+const double	TeCRD = 57.29577951308232087679;	//!< Conversion factor: radians to degrees
 
 namespace te
 {

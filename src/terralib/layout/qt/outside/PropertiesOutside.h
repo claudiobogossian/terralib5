@@ -29,24 +29,21 @@
 #define __TERRALIB_LAYOUT_INTERNAL_PROPERTIES_OUTSIDE_H
 
 // Qt
-#include <QDockWidget>
-#include "../../../../../../third-party/qt/propertybrowser/qtpropertybrowser.h"
+#include <QWidget>
+
+// QtPropertyBrowser
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
 
 // TerraLib
-#include "OutsideObserver.h"
-#include "../../../../geometry/Envelope.h"
+#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../../geometry/Envelope.h"
+#include "../../core/Config.h"
 
 // STL
 #include <vector>
 
 class QGraphicsItem;
-class QWidget;
 class QGraphicsProxyWidget;
-
-class QtTreePropertyBrowser;
-class QtVariantProperty;
-class QtProperty;
-class QtVariantPropertyManager;
 
 class QtBrowserIndex;
 class QLabel;
@@ -64,7 +61,7 @@ namespace te
     class MapItem;
     class MapModel;
 
-    class PropertiesOutside : public QDockWidget, public OutsideObserver
+    class TELAYOUTEXPORT PropertiesOutside : public QWidget, public OutsideObserver
     {
 	    Q_OBJECT //for slots/signals
 

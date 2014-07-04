@@ -27,15 +27,18 @@
 
 // TerraLib
 #include "PropertyBrowser.h"
-#include "Properties.h"
+#include "../../core/property/Properties.h"
 
 // Qt
 #include <QRegExpValidator>
 #include <QRegExp>
 #include <QWidget>
-#include "../../../../../../third-party/qt/propertybrowser/qtvariantproperty.h"
-#include "../../../../../../third-party/qt/propertybrowser/qteditorfactory.h"
 #include <QVariant>
+
+// QtPropertyBrowser
+#include <QtPropertyBrowser/QtVariantPropertyManager>
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
+#include <QtPropertyBrowser/qteditorfactory.h>
 
 // STL
 #include <algorithm>    // std::find

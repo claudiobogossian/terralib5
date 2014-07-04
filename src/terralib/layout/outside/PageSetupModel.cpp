@@ -27,8 +27,8 @@
 
 // TerraLib
 #include "PageSetupModel.h"
-#include "Property.h"
-#include "Properties.h"
+#include "../core/property/Property.h"
+#include "../core/property/Properties.h"
 
 te::layout::PageSetupModel::PageSetupModel() 
 {

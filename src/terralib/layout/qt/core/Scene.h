@@ -33,9 +33,10 @@
 #include <QTransform>
 
 // TerraLib
-#include "AbstractScene.h"
-#include "AbstractType.h"
-#include "EnumMode.h"
+#include "../../core/AbstractScene.h"
+#include "../../core/enum/AbstractType.h"
+#include "../../core/enum/EnumMode.h"
+#include "../../core/Config.h"
 
 class QGraphicsSceneMouseEvent;
 class QGraphicsItemGroup;
@@ -65,7 +66,7 @@ namespace te
     class Properties;
     class VisualizationArea;
 
-    class Scene : public QGraphicsScene, public AbstractScene
+    class TELAYOUTEXPORT Scene : public QGraphicsScene, public AbstractScene
     {
       Q_OBJECT //for slots/signals
 

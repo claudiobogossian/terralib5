@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_TEMPLATE_EDITOR_H
 
 // TerraLib
-#include "AbstractType.h"
+#include "../enum/AbstractType.h"
 #include <string>
 
 namespace te

@@ -29,13 +29,14 @@
 #define __TERRALIB_LAYOUT_INTERNAL_OBJECTINSPECTOR_CONTROLLER_H
 
 // TerraLib
-#include "OutsideController.h"
+#include "../core/pattern/mvc/OutsideController.h"
+#include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class ObjectInspectorController : public OutsideController
+    class TELAYOUTEXPORT ObjectInspectorController : public OutsideController
     {
     public:
 

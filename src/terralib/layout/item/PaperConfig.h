@@ -29,8 +29,8 @@
 #define __TERRALIB_LAYOUT_INTERNAL_PAPER_CONFIG_H
 
 // TerraLib
-#include "AbstractType.h"
-#include "../../../geometry/Envelope.h"
+#include "../core/enum/AbstractType.h"
+#include "../../geometry/Envelope.h"
 namespace te
 {
   namespace layout

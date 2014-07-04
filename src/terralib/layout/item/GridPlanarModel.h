@@ -30,7 +30,7 @@
 
 // TerraLib
 #include "GridModel.h"
-#include "AbstractType.h"
+#include "../core/enum/AbstractType.h"
 
 namespace te
 {

@@ -27,13 +27,13 @@
 
 // TerraLib
 #include "HorizontalRulerItem.h"
-#include "ItemController.h"
-#include "AbstractScene.h"
-#include "ItemModelObservable.h"
+#include "../../core/pattern/mvc/ItemController.h"
+#include "../../core/AbstractScene.h"
+#include "../../core/pattern/mvc/ItemModelObservable.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../../qt/widgets/Utils.h"
-#include "../../../../geometry/Envelope.h"
-#include "../../../../common/STLUtils.h"
+#include "../../../qt/widgets/Utils.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../common/STLUtils.h"
 
 te::layout::HorizontalRulerItem::HorizontalRulerItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)

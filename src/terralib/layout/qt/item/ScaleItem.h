@@ -30,7 +30,6 @@
 
 // TerraLib
 #include "ObjectItem.h"
-#include "ItemObserver.h"
 
 namespace te
 {

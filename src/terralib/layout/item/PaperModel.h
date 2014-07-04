@@ -29,8 +29,8 @@
 #define __TERRALIB_LAYOUT_INTERNAL_PAPER_MODEL_H
 
 // TerraLib
-#include "ItemModelObservable.h"
-#include "ContextItem.h"
+#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/ContextItem.h"
 
 namespace te
 {

@@ -27,12 +27,12 @@
 
 // TerraLib
 #include "VerticalRulerController.h"
-#include "ItemController.h"
-#include "ContextItem.h"
-#include "ItemModelObservable.h"
-#include "AbstractItemFactory.h"
-#include "Context.h"
-#include "Observer.h"
+#include "../core/pattern/mvc/ItemController.h"
+#include "../core/ContextItem.h"
+#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/pattern/factory/AbstractItemFactory.h"
+#include "../core/pattern/singleton/Context.h"
+#include "../core/pattern/mvc/Observer.h"
 
 te::layout::VerticalRulerController::VerticalRulerController( Observable* o ) :
   ItemController(o, TPVerticalRuler)

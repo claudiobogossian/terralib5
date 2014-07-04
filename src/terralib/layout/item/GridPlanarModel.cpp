@@ -27,13 +27,13 @@
 
 // TerraLib
 #include "GridPlanarModel.h"
-#include "ContextItem.h"
-#include "Context.h"
-#include "../../../../../geometry/Envelope.h"
-#include "../../../../../geometry/Coord2D.h"
-#include "Property.h"
-#include "EnumUtils.h"
-#include "PlanarGridSettingsConfigProperties.h"
+#include "../core/ContextItem.h"
+#include "../core/pattern/singleton/Context.h"
+#include "../../geometry/Envelope.h"
+#include "../../geometry/Coord2D.h"
+#include "../core/property/Property.h"
+#include "../core/enum/EnumUtils.h"
+#include "../core/property/PlanarGridSettingsConfigProperties.h"
 
 // STL
 #include <string>
@@ -72,6 +72,9 @@ void te::layout::GridPlanarModel::draw( te::map::Canvas* canvas, Utils* utils, t
     return;
 
   m_srid = srid;
+
+  if(srid <= 0)
+    return;
   
   te::color::RGBAColor color = te::color::RGBAColor(0, 0, 0, 255);
   canvas->setLineColor(color);

@@ -21,7 +21,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACTTOOL_H
 
 // TerraLib
-#include "Config.h"
+#include "../../core/Config.h"
 
 // Boost
 #include <boost/noncopyable.hpp>

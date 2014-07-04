@@ -28,8 +28,8 @@
 // TerraLib
 #include "PageSetupOutside.h"
 #include "ui_PageSetup.h"
-#include "OutsideObserver.h"
-#include "OutsideController.h"
+#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/OutsideController.h"
 
 // STL
 #include <string>

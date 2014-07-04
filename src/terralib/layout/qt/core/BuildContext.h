@@ -30,7 +30,7 @@
 
 //TerraLib
 #include "View.h"
-#include "../../../../qt/widgets/canvas/Canvas.h"
+#include "../../../qt/widgets/canvas/Canvas.h"
 
 namespace te
 {
@@ -43,7 +43,7 @@ namespace te
     class PaperConfig;
     class BuildGraphicsItem;
 
-    class BuildContext 
+    class TELAYOUTEXPORT BuildContext 
     {
       public:
 

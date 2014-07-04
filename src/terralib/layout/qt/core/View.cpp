@@ -27,19 +27,19 @@
 
 // TerraLib
 #include "View.h"
-#include "Context.h"
-#include "EnumMode.h"
-#include "ItemGroup.h"
+#include "../../core/pattern/singleton/Context.h"
+#include "../../core/enum/EnumMode.h"
+#include "../item/ItemGroup.h"
 #include "VisualizationArea.h"
-#include "OutsideArea.h"
-#include "../../../../color/RGBAColor.h"
-#include "PropertiesOutside.h"
-#include "ObjectInspectorOutside.h"
-#include "ToolbarOutside.h"
+#include "../../../color/RGBAColor.h"
+#include "../outside/PropertiesOutside.h"
+#include "../outside/ObjectInspectorOutside.h"
+#include "../outside/ToolbarOutside.h"
 #include "ItemUtils.h"
-#include "PaperConfig.h"
-#include "ViewPan.h"
-#include "Utils.h"
+#include "../../item/PaperConfig.h"
+#include "tools/ViewPan.h"
+#include "../../core/Utils.h"
+#include "tools/ViewZoomArea.h"
 
 // STL
 #include <math.h>
@@ -59,7 +59,6 @@
 #include <QMessageBox>
 #include <QPixmap>
 #include <QLineF>
-#include "ViewZoomArea.h"
 
 #define _psPointInMM 0.352777778 //<! 1 PostScript point in millimeters
 #define _inchInPSPoints 72 //<! 1 Inch in PostScript point
@@ -67,7 +66,6 @@
 
 te::layout::View::View( QWidget* widget) : 
   QGraphicsView(new QGraphicsScene, widget),
-  m_outsideArea(0),
   m_visualizationArea(0),
   m_lineIntersectHrz(0),
   m_lineIntersectVrt(0),
@@ -204,11 +202,7 @@ void te::layout::View::config()
   te::gm::Envelope* boxW = lScene->getWorldBox();
   te::gm::Envelope* box = lScene->getPaperBox();
   pConfig->setPaperBoxW(box);
-
-  connect(m_outsideArea->getToolbarOutside(), SIGNAL(changeContext(bool)), this, SLOT(onToolbarChangeContext(bool)));
-
-  connect(m_outsideArea, SIGNAL(changeMenuContext(bool)), this, SLOT(onMainMenuChangeContext(bool)));
-
+  
   m_visualizationArea = new VisualizationArea(boxW);
   m_visualizationArea->build();
 
@@ -232,74 +226,9 @@ void te::layout::View::resizeEvent(QResizeEvent * event)
   QGraphicsView::resizeEvent(event);
 }
 
-int te::layout::View::metric( PaintDeviceMetric metric ) const 
-{
-  return QGraphicsView::metric(metric);
-}
-
-void te::layout::View::paintEvent( QPaintEvent * event )
-{
-  QGraphicsView::paintEvent(event);
-}
-
-void te::layout::View::hideEvent( QHideEvent * event )
-{
-  QGraphicsView::hideEvent(event);
-
-  if(m_outsideArea)
-  {
-    m_outsideArea->closeAllDocks();
-    m_outsideArea->closeMainMenu();
-  }
-}
-
-void te::layout::View::closeEvent( QCloseEvent * event )
-{
-  QGraphicsView::closeEvent(event);
-
-  if(m_outsideArea)
-  {
-    m_outsideArea->closeAllDocks();
-    m_outsideArea->closeMainMenu();
-  }
-}
-
-void te::layout::View::showEvent( QShowEvent * event )
-{
-  QGraphicsView::showEvent(event);
-
-  if(m_outsideArea)
-  {
-    m_outsideArea->openAllDocks();
-    m_outsideArea->openMainMenu();
-  }
-}
-
 void te::layout::View::onToolbarChangeContext( bool change )
 {
   outsideAreaChangeContext(change);
-}
-
-void te::layout::View::onSelectionChanged()
-{
-  QList<QGraphicsItem*> graphicsItems = scene()->selectedItems();
-  QList<QGraphicsItem*> allItems = scene()->items();
-  //Refresh Property window   
-  if(m_outsideArea->getPropertiesOutside())
-    m_outsideArea->getPropertiesOutside()->itemsSelected(graphicsItems, allItems);
-}
-
-void te::layout::View::onAddItemFinalized()
-{
-  QList<QGraphicsItem*> graphicsItems = scene()->selectedItems();
-  //Refresh Inspector Object window
-  if(m_outsideArea->getObjectInspectorOutside())
-    m_outsideArea->getObjectInspectorOutside()->itemsInspector(graphicsItems);
-}
-
-void te::layout::View::setOutsideArea( OutsideArea* outsideArea )
-{
-  m_outsideArea = outsideArea;
 }
 
 void te::layout::View::createItemGroup()

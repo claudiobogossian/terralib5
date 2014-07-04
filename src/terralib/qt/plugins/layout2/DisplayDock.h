@@ -18,41 +18,52 @@
  */
 
 /*!
-  \file DisplayController.h
+  \file DisplayDock.h
    
   \brief 
 
   \ingroup layout
 */
 
-// TerraLib
-#include "DisplayController.h"
-#include "OutsideParamsCreate.h"
-#include "OutsideModelObservable.h"
-#include "AbstractOutsideFactory.h"
-#include "Context.h"
-#include "Observable.h"
+#ifndef __TE_QT_PLUGINS_LAYOUT2_INTERNAL_DISPLAY_DOCK_H 
+#define __TE_QT_PLUGINS_LAYOUT2_INTERNAL_DISPLAY_DOCK_H
 
-te::layout::DisplayController::DisplayController( Observable* o ) :
-	OutsideController(o, TPDisplayWindow)
+// Qt
+#include <QDockWidget>
+
+class QCloseEvent;
+
+namespace te
 {
-	AbstractOutsideFactory* factory = Context::getInstance()->getOutsideFactory(); 
-	OutsideParamsCreate params(this, m_model);
-  if(factory)
-	  m_view = (Observer*)factory->make(TPDisplayWindow, params);
-}
-
-te::layout::DisplayController::~DisplayController()
-{
-
-}
-
-void te::layout::DisplayController::setPosition( const double& x, const double& y )
-{
-  if(m_model)
+  namespace qt
   {
-    OutsideModelObservable* model = dynamic_cast<OutsideModelObservable*>(m_model);
-    if(model)
-      return model->setPosition(x, y);
+    namespace plugins
+    {
+      namespace layout2
+      {
+        class DisplayDock : public QDockWidget
+        {
+	        Q_OBJECT //for slots/signals
+
+        public:
+
+	        DisplayDock(QWidget * parent = 0, Qt::WindowFlags flags = 0);
+	        virtual ~DisplayDock();
+                
+          void setPreviousCentralWidget(QWidget* previous);
+      
+          virtual void removeDock();
+      
+        protected:
+
+          virtual void	closeEvent ( QCloseEvent * event );
+
+          QWidget* m_previousCentralWidget; /* Previous central display of application */
+          bool     m_previousCentralWidgetVisibilite;
+        };
+      }
+    }
   }
 }
+
+#endif

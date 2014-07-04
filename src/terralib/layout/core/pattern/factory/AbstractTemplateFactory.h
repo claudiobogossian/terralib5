@@ -30,7 +30,7 @@
 
 // TerraLib
 #include "TemplateParamsCreate.h"
-#include "AbstractType.h"
+#include "../../enum/AbstractType.h"
 
 namespace te
 {

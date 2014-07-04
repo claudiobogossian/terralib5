@@ -24,24 +24,24 @@
 */
 
 // Terralib
+#include "LayoutEditorAction.h"
 #include "../../../qt/widgets/layout/LayoutEditor.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/Project.h"
-#include "LayoutEditorAction.h"
-#include "../../../layout/qt/include/main/MainLayout.h"
+#include "MainLayout.h"
 #include "../../../common/TerraLib.h"
+#include "../../../layout/core/Config.h"
 
 // Qt
-#include <QtCore/QObject>
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
+#include <QObject>
+#include <QMenu>
+#include <QMenuBar>
 
 // STL
 #include <memory>
 
 te::qt::plugins::layout2::LayoutEditorAction::LayoutEditorAction(QMenu* menu)
-  : te::qt::plugins::layout2::AbstractAction(menu),
-  m_layout(0)
+  : te::qt::plugins::layout2::AbstractAction(menu)
 {
   createAction(tr("Layout Editor 2...").toStdString());
 }
@@ -53,5 +53,5 @@ te::qt::plugins::layout2::LayoutEditorAction::~LayoutEditorAction()
 
 void te::qt::plugins::layout2::LayoutEditorAction::onActionActivated(bool checked)
 {  
-  te::layout::MainLayout::getInstance().init(te::qt::af::ApplicationController::getInstance().getMainWindow(), m_menu);
+  MainLayout::getInstance().init(te::qt::af::ApplicationController::getInstance().getMainWindow(), m_menu);
 }

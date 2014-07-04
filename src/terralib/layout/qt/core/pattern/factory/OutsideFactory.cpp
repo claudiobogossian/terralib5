@@ -27,14 +27,13 @@
 
 // TerraLib
 #include "OutsideFactory.h"
-#include "AbstractType.h"
-#include "OutsideParamsCreate.h"
-#include "ToolbarOutside.h"
-#include "PropertiesOutside.h"
-#include "DisplayOutside.h"
-#include "ObjectInspectorOutside.h"
-#include "GridSettingsOutside.h"
-#include "PageSetupOutside.h"
+#include "../../../../core/enum/AbstractType.h"
+#include "../../../../core/pattern/factory/OutsideParamsCreate.h"
+#include "../../../outside/ToolbarOutside.h"
+#include "../../../outside/PropertiesOutside.h"
+#include "../../../outside/ObjectInspectorOutside.h"
+#include "../../../outside/GridSettingsOutside.h"
+#include "../../../outside/PageSetupOutside.h"
 
 te::layout::OutsideFactory::OutsideFactory()
 {
@@ -74,14 +73,6 @@ te::layout::Observer* te::layout::OutsideFactory::make( LayoutAbstractObjectType
       return outside;
       break;
     }
-  case TPDisplayWindow:
-    {
-      DisplayOutside* displayWindow = new DisplayOutside(params.getController(), params.getModel());		
-      outside = (Observer*)displayWindow;
-      return outside;
-      break;
-    }
-
   case TPGridSettings:
     {
       GridSettingsOutside* gridSettings = new GridSettingsOutside(params.getController(), params.getModel());		

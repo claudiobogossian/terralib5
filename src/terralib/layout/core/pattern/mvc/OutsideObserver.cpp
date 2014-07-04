@@ -28,8 +28,8 @@
 // TerraLib
 #include "OutsideObserver.h"
 #include "Observable.h"
-#include "Context.h"
-#include "AbstractScene.h"
+#include "../singleton/Context.h"
+#include "../../AbstractScene.h"
 #include "OutsideController.h"
 
 te::layout::OutsideObserver::OutsideObserver(OutsideController* controller, Observable* o) :

@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_SERIALIZATION_H
 
 // TerraLib
-#include "Properties.h"
+#include "../property/Properties.h"
 
 namespace te
 {

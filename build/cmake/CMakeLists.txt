@@ -398,6 +398,10 @@ option(TERRALIB_MOD_XLINK_ENABLED "Build XLink module?" ON)
 
 option(TERRALIB_MOD_XSD_ENABLED "Build XSD module?" ON)
 
+option(TERRALIB_MOD_LAYOUT_ENABLED "Build Layout module?" OFF)
+
+option(TERRALIB_MOD_QT_PLUGINS_LAYOUT_ENABLED "Build TerraPrint Driver Qt plugin?" OFF)
+
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_GEOMETRY_ENABLED "Build Geometry module?" ON "TERRALIB_MOD_DATATYPE_ENABLED" OFF)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_ANNOTATIONTEXT_ENABLED "Build Annotation Text module?" ON "TERRALIB_MOD_GEOMETRY_ENABLED" OFF)
@@ -680,6 +684,10 @@ if(TERRALIB_MOD_GRAPH_ENABLED)
   add_subdirectory(terralib_mod_graph)
 endif()
 
+if(TERRALIB_MOD_LAYOUT_ENABLED)
+  add_subdirectory(terralib_mod_layout)
+endif()
+
 if(TERRALIB_MOD_MAPTOOLS_ENABLED)
   add_subdirectory(terralib_mod_maptools)
 endif()
@@ -746,6 +754,10 @@ endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_ST_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_st)
+endif()
+
+if(TERRALIB_MOD_QT_PLUGINS_LAYOUT_ENABLED)
+  add_subdirectory(terralib_mod_qt_plugins_layout)
 endif()
 
 if(TERRALIB_MOD_QT_WIDGETS_ENABLED)

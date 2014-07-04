@@ -28,12 +28,12 @@
 // TerraLib
 #include "ItemModelObservable.h"
 #include "Observer.h"
-#include "Property.h"
-#include "../../../../../geometry/Envelope.h"
-#include "../../../../../geometry/Coord2D.h"
-#include "Properties.h"
-#include "SharedProperties.h"
-#include "Context.h"
+#include "../../property/Property.h"
+#include "../../../../geometry/Envelope.h"
+#include "../../../../geometry/Coord2D.h"
+#include "../../property/Properties.h"
+#include "../../property/SharedProperties.h"
+#include "../singleton/Context.h"
 
 te::layout::ItemModelObservable::ItemModelObservable() :
   m_id(0),

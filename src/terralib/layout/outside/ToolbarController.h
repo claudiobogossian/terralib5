@@ -29,13 +29,14 @@
 #define __TERRALIB_LAYOUT_INTERNAL_TOOLBAR_CONTROLLER_H_H
 
 // TerraLib
-#include "OutsideController.h"
+#include "../core/pattern/mvc/OutsideController.h"
+#include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class ToolbarController : public OutsideController
+    class TELAYOUTEXPORT ToolbarController : public OutsideController
     {
     public:
 

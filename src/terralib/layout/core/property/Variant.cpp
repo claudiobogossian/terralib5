@@ -27,7 +27,7 @@
 
 // TerraLib
 #include "Variant.h"
-#include "EnumUtils.h"
+#include "../enum/EnumUtils.h"
 
 // STL
 #include <sstream>

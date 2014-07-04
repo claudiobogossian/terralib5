@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ITEM_FACTORY_H
 
 // TerraLib
-#include "AbstractItemFactory.h"
+#include "../../../../core/pattern/factory/AbstractItemFactory.h"
 
 namespace te
 {

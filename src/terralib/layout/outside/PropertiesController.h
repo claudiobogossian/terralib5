@@ -29,13 +29,14 @@
 #define __TERRALIB_LAYOUT_INTERNAL_PROPERTIES_CONTROLLER_H
 
 // TerraLib
-#include "OutsideController.h"
+#include "../core/pattern/mvc/OutsideController.h"
+#include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class PropertiesController : public OutsideController
+    class TELAYOUTEXPORT PropertiesController : public OutsideController
     {
     public:
 

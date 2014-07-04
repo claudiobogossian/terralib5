@@ -27,13 +27,13 @@
 
 // TerraLib
 #include "MapGridItem.h"
-#include "ItemModelObservable.h"
-#include "ItemObserver.h"
-#include "ItemController.h"
+#include "../../core/pattern/mvc/ItemModelObservable.h"
+#include "../../core/pattern/mvc/ItemObserver.h"
+#include "../../core/pattern/mvc/ItemController.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../../qt/widgets/Utils.h"
-#include "../../../../geometry/Envelope.h"
-#include "../../../../common/STLUtils.h"
+#include "../../../qt/widgets/Utils.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../common/STLUtils.h"
 
 te::layout::MapGridItem::MapGridItem( ItemController* controller, Observable* o ) :
   MapItem(controller, o)
