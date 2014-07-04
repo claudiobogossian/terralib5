@@ -106,8 +106,5 @@ int main(int /*argc*/, char** /*argv*/)
   te::plugin::PluginManager::getInstance().unloadAll();
   TerraLib::getInstance().finalize();
 
-  std::cout << "\nPress Enter to exit..." << std::endl;
-  std::cin.get();
-
   return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }
