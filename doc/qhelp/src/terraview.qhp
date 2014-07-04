@@ -84,6 +84,7 @@
             <file>./apf/settings/project/*.*</file>
 			<file>./apf/settings/table/*.*</file>
 			<file>./apf/settings/toolbar/*.*</file>
+			<file>./apf/settings/generalconfig/*.*</file>
 			<file>./apf/settings/*.html</file>
 			<file>./plugins/ado/*.*</file>
 			<file>./plugins/gdal/*.*</file>
