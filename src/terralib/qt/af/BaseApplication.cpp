@@ -1812,7 +1812,7 @@ QMessageBox::StandardButton te::qt::af::BaseApplication::checkProjectSave()
     QString msg("The current project has unsaved changes. Do you want to save them?");
     QMessageBox::StandardButton btn = QMessageBox::question(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg, QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Save);
 
-    if(btn == QMessageBox::Save)
+    if(btn == QMessageBox::Yes)
       onSaveProjectTriggered();
 
     return btn;
@@ -2060,12 +2060,12 @@ void te::qt::af::BaseApplication::makeDialog()
   //te::qt::af::ApplicationController::getInstance().addListener(m_viewer);
 
 // initializing connector widgets
-  //QDockWidget* doc = new QDockWidget(tr("Map Display"), this);
-  //doc->setWidget(map);
-  QMainWindow::setCentralWidget(map);
-  map->connect(m_viewMapDisplay, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
+  QDockWidget* doc = new QDockWidget(tr("Map Display"), this);
+  doc->setWidget(map);
+  QMainWindow::setCentralWidget(doc);
+  doc->connect(m_viewMapDisplay, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
   m_viewMapDisplay->setChecked(true);
-  //connect(doc, SIGNAL(visibilityChanged(bool)), this, SLOT(onDisplayVisibilityChanged(bool)));
+  connect(doc, SIGNAL(visibilityChanged(bool)), this, SLOT(onDisplayVisibilityChanged(bool)));
 
   // View Data Table
   connect(m_viewDataTable, SIGNAL(toggled(bool)), this, SLOT(onDisplayDataTableChanged(bool)));
