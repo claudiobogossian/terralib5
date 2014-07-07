@@ -56,8 +56,6 @@ void Filter2Query()
   exp->accept(sqlConverter);
 
   std::cout << "Conversion result is: " << sql << std::endl;
-  std::cout << "Press Enter..." << std::endl;
-  std::cin.get();
 
   delete filter;
   delete exp;

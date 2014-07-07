@@ -27,13 +27,14 @@
 #define __TERRALIB_QT_PLUGINS_DATASOURCE_WCS_INTERNAL_WCSCONNECTORDIALOG_H
 
 // TerraLib
+#include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
 
 // STL
 #include <memory>
 
 // Qt
-#include <QtGui/QDialog>
+#include <QDialog>
 
 namespace Ui { class WCSConnectorDialogForm; }
 
@@ -62,6 +63,8 @@ namespace te
 
             const te::da::DataSourceInfoPtr& getDataSource() const;
 
+            const te::da::DataSourcePtr& getDriver() const;
+
             void set(const te::da::DataSourceInfoPtr& ds);
 
           public slots:
@@ -74,8 +77,13 @@ namespace te
 
           private:
 
+            void getConnectionInfo(std::map<std::string, std::string>& connInfo) const;
+
+          private:
+
             std::auto_ptr<Ui::WCSConnectorDialogForm> m_ui;
             te::da::DataSourceInfoPtr m_datasource;
+            te::da::DataSourcePtr m_driver;
         };
 
       } // end namespace wcs

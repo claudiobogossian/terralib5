@@ -104,4 +104,3 @@ int main(int /*argc*/, char** /*argv*/)
 
   return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }
-

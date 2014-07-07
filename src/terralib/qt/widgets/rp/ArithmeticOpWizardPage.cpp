@@ -67,7 +67,7 @@ te::qt::widgets::ArithmeticOpWizardPage::ArithmeticOpWizardPage(QWidget* parent)
   m_ui->m_undoToolButton->setEnabled(false);
   m_ui->m_redoToolButton->setEnabled(false);
 
-  m_ui->m_tabWidget->widget(1)->setEnabled(false);
+  m_ui->m_tabWidget->removeTab(1);
 
   //connects
   connect(m_ui->m_layerComboBox, SIGNAL(activated(int)), this, SLOT(layerComboBoxActivated(int)));

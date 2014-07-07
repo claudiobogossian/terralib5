@@ -166,16 +166,15 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     return;
   }
 
-  std::auto_ptr<te::da::DataSet> firstSelectedDS;
-  if(m_ui->m_firstCheckBox->isChecked())
+  const te::da::ObjectIdSet* firstOidSet = 0;
+  if(m_ui->m_firstSelectedCheckBox->isChecked())
   {
-    std::auto_ptr<const te::da::ObjectIdSet> firstOidSet(m_firstSelectedLayer->getSelected());
-    if(!firstOidSet.get())
+    firstOidSet = firstDataSetLayer->getSelected();
+    if(!firstOidSet)
     {
       QMessageBox::information(this, "Intersection", "Select the layer objects to perform the intersection operation.");
       return;
     }
-    firstSelectedDS = firstDataSetLayer->getData(firstOidSet.get());
   }
 
   te::da::DataSourcePtr firstDataSource = te::da::GetDataSource(firstDataSetLayer->getDataSourceId(), true);
@@ -197,24 +196,23 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     QMessageBox::information(this, "Intersection", "Can not execute this operation on this type of second layer.");
     return;
   }
-  
+
+  const te::da::ObjectIdSet* secondOidSet = 0;
+  if(m_ui->m_secondSelectedCheckBox->isChecked())
+  {
+    secondOidSet = m_secondSelectedLayer->getSelected();
+    if(!secondOidSet)
+    {
+      QMessageBox::information(this, "Intersection", "Select the layer objects to perform the intersection operation.");
+      return;
+    }
+  }
+
   te::da::DataSourcePtr secondDataSource = te::da::GetDataSource(secondDataSetLayer->getDataSourceId(), true);
   if (!secondDataSource.get())
   {
     QMessageBox::information(this, "Intersection", "The selected second input data source can not be accessed.");
     return;
-  }
-
-  std::auto_ptr<te::da::DataSet> secondSelectedDS;
-  if(m_ui->m_secondCheckBox->isChecked())
-  {
-    std::auto_ptr<const te::da::ObjectIdSet> secondOidSet(m_secondSelectedLayer->getSelected());
-    if(!secondOidSet.get())
-    {
-      QMessageBox::information(this, "Intersection", "Select the layer objects to perform the intersection operation.");
-      return;
-    }
-    secondSelectedDS = secondDataSetLayer->getData(secondOidSet.get());
   }
 
   if(m_ui->m_repositoryLineEdit->text().isEmpty())
@@ -292,8 +290,9 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
         intersectionOp = new te::vp::IntersectionMemory();
       }
 
-      intersectionOp->setInput( firstDataSource, firstDataSetLayer->getData(), firstDataSetLayer->getSchema(),
-                                secondDataSource, secondDataSetLayer->getData(), secondDataSetLayer->getSchema());
+      intersectionOp->setInput( firstDataSource, firstDataSetLayer->getDataSetName(), firstDataSetLayer->getSchema(),
+                                secondDataSource, secondDataSetLayer->getDataSetName(), secondDataSetLayer->getSchema(),
+                                firstOidSet, secondOidSet);
       intersectionOp->setOutput(dsOGR, outputdataset);
       intersectionOp->setParams(copyInputColumns, firstDataSetLayer->getSRID());
 
@@ -363,8 +362,9 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
         intersectionOp = new te::vp::IntersectionMemory();
       }
 
-      intersectionOp->setInput( firstDataSource, firstDataSetLayer->getData(), firstDataSetLayer->getSchema(),
-                                secondDataSource, secondDataSetLayer->getData(), secondDataSetLayer->getSchema());
+      intersectionOp->setInput( firstDataSource, firstDataSetLayer->getDataSetName(), firstDataSetLayer->getSchema(),
+                                secondDataSource, secondDataSetLayer->getDataSetName(), secondDataSetLayer->getSchema(),
+                                firstOidSet, secondOidSet);
       intersectionOp->setOutput(aux, outputdataset);
       intersectionOp->setParams(copyInputColumns, firstDataSetLayer->getSRID());
 

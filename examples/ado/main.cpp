@@ -78,28 +78,19 @@ int main(int /*argc*/, char** /*argv*/)
   catch(const std::exception& e)
   {
     std::cout << std::endl << "An exception has occurred: " << e.what() << std::endl;
-    
-    std::cout << "Press Enter to exit..." << std::endl;
-    std::cin.get();
-    
+
     return EXIT_FAILURE;
   }
   catch(...)
   {
     std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
-    
-    std::cout << "Press Enter to exit..." << std::endl;
-    std::cin.get();
-    
+
     return EXIT_FAILURE;
   }
   
   te::plugin::PluginManager::getInstance().unloadAll();
   
   TerraLib::getInstance().finalize();
-  
-  std::cout << "Press Enter to exit..." << std::endl;
-  std::cin.get();
-  
+
   return EXIT_SUCCESS;
 }

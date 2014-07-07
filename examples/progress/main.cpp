@@ -44,24 +44,14 @@ int main(int argc, char *argv[])
   {
     std::cout << std::endl << "An exception has occurred in the Progress examples: " << e.what() << std::endl;
 
-    std::cout << std::endl << "Press Enter to exit..." << std::endl;
-
-    std::cin.get();
-
     return EXIT_FAILURE;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurred in Progress examples!" << std::endl;
-
-    std::cout << std::endl << "Press Enter to exit..." << std::endl;
-    std::cin.get();
+    std::cout << std::endl << "An unexpected exception has occurred in the Progress examples!" << std::endl;
 
     return EXIT_FAILURE;
   }
-
-  std::cout << std::endl << "Press Enter to exit..." << std::endl;
-  std::cin.get();
 
   return EXIT_SUCCESS;
 }

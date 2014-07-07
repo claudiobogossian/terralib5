@@ -22,6 +22,7 @@
 #include "../Config.h"
 
 // TerraLib
+#include <terralib/Defines.h>
 #include <terralib/common.h>
 #include <terralib/common/Globals.h>
 #include <terralib/geometry.h>
@@ -1356,7 +1357,7 @@ void TsGeometry::loadGeometry(std::vector<WKBEntry>& hwkbVec) const
 {
   hwkbVec.clear();
 
-  FILE* f = fopen( TE_DATA_DIR "/data/hwkb.csv", "r");
+  FILE* f = fopen( TERRALIB_DATA_DIR "/hwkb.csv", "r");
 
   CPPUNIT_ASSERT(f != NULL);
 

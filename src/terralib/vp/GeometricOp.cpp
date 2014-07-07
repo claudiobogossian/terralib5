@@ -100,6 +100,7 @@ bool  te::vp::GeometricOp::save(std::auto_ptr<te::mem::DataSet> result, std::aut
   
   // copy from memory to output datasource
   result->moveBeforeFirst();
+  std::string name = dsTypeResult->getName();
   m_outDsrc->add(dsTypeResult->getName(),result.get(), options);
   
   // create the primary key if it is possible
@@ -118,14 +119,31 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
                                                           bool multiGeomColumns,
                                                           int geomOp)
 {
-  std::stringstream geomStr;
-  geomStr << geomOp;
   te::da::DataSetType* dsType = 0;
 
   if(geomOp != -1)
   {
-    dsType = new te::da::DataSetType(m_outDsetName + "_" + geomStr.str());
-    dsType->setTitle(m_outDsetName + "_" + geomStr.str());
+    switch(geomOp)
+    {
+      case 0:
+        {
+          dsType = new te::da::DataSetType(m_outDsetName + "_convex_hull");
+          dsType->setTitle(m_outDsetName + "_convex_hull");
+          break;
+        }
+      case 1:
+        {
+          dsType = new te::da::DataSetType(m_outDsetName + "_centroid");
+          dsType->setTitle(m_outDsetName + "_centroid");
+          break;
+        }
+      case 2:
+        {
+          dsType = new te::da::DataSetType(m_outDsetName + "_mbr");
+          dsType->setTitle(m_outDsetName + "_mbr");
+          break;
+        }
+    }
   }
   else
   {

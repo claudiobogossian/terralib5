@@ -380,8 +380,11 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const std:
   for(std::size_t i = 0; i < names.size(); ++i)
   {
     std::size_t pos = GetPropertyPos(dataset, names[i]);
-    assert(pos != std::string::npos);
-    oids->addProperty(names[i], pos, dataset->getPropertyDataType(pos));
+    
+    if(pos == std::string::npos)
+      throw Exception(TE_TR("Primary Key ") + names[i] + TE_TR(" not found!"));
+    
+      oids->addProperty(names[i], pos, dataset->getPropertyDataType(pos));
   }
 
   while(dataset->moveNext())

@@ -23,11 +23,6 @@ void te::qt::af::ProjectInfoWidget::setProject(Project* project)
     m_ui->m_author->setText(project->getAuthor().c_str());
     m_ui->m_title->setText(project->getTitle().c_str());
     m_ui->m_location->setText(project->getFileName().c_str());
-
-    QString desc("This project contains %1 layers");
-    desc = desc.arg(QString::number((int)m_proj->getTopLayers().size()));
-
-    m_ui->m_description->setText(desc);
   }
 }
 
