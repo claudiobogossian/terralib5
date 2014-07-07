@@ -32,14 +32,47 @@
 //QT
 #include <QWidget>
 
-te::qt::widgets::TrajectoryPropertiesWidget::TrajectoryPropertiesWidget(te::da::DataSetType* dataType, QWidget* parent, Qt::WindowFlags f)
-  : m_dataType (dataType),
-    QWidget(parent, f),
+te::qt::widgets::TrajectoryPropertiesWidget::TrajectoryPropertiesWidget(QWidget* parent, Qt::WindowFlags f)
+  : QWidget(parent, f),
     m_ui(new Ui::TrajectoryPropertiesWidgetForm)
 {
   m_ui->setupUi(this);
+
+// connect signal and slots
+  //connect(m_ui->m_phenomenomComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onPropertyComboBoxIndexChanged(QString)));
+}
+
+te::qt::widgets::TrajectoryPropertiesWidget::~TrajectoryPropertiesWidget()
+{
+}
+
+Ui::TrajectoryPropertiesWidgetForm* te::qt::widgets::TrajectoryPropertiesWidget::getForm()
+{
+  return m_ui.get();
+}
+
+int te::qt::widgets::TrajectoryPropertiesWidget::getId()
+{
+  if(m_dataType)
+    return m_dataType->getPropertyPosition(m_ui->m_idComboBox->currentText().toStdString());
+  else
+    return -1;
+}
+
+int te::qt::widgets::TrajectoryPropertiesWidget::getGeometryId()
+{
+  if(m_dataType)
+    return m_dataType->getPropertyPosition(m_ui->m_geometryComboBox->currentText().toStdString());
+  else
+    return -1;
+}
+
+void te::qt::widgets::TrajectoryPropertiesWidget::setUp (const te::da::DataSetTypePtr dataType)
+{
   QString item;
-  const std::vector<te::dt::Property*>& properties = m_dataType->getProperties();
+  m_dataType = dataType;
+
+  const std::vector<te::dt::Property*>& properties = dataType->getProperties();
 
   for (std::size_t i = 0; i < properties.size(); i++)
   {
@@ -54,18 +87,6 @@ te::qt::widgets::TrajectoryPropertiesWidget::TrajectoryPropertiesWidget(te::da::
       m_ui->m_idComboBox->addItem(item);
     }
   }
-
-// connect signal and slots
-  //connect(m_ui->m_phenomenomComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onPropertyComboBoxIndexChanged(QString)));
-}
-
-te::qt::widgets::TrajectoryPropertiesWidget::~TrajectoryPropertiesWidget()
-{
-}
-
-Ui::TrajectoryPropertiesWidgetForm* te::qt::widgets::TrajectoryPropertiesWidget::getForm()
-{
-  return m_ui.get();
 }
 
 void te::qt::widgets::TrajectoryPropertiesWidget::onPropertyComboBoxIndexChanged (QString text)

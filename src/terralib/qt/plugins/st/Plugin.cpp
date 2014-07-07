@@ -98,9 +98,9 @@ void te::qt::plugins::st::Plugin::shutdown()
 
 void te::qt::plugins::st::Plugin::registerActions()
 {
-//#ifdef TE_QT_PLUGIN_ST_HAVE_SLIDER
-//    m_sliderAction = new te::qt::plugins::st::TimeSliderWidgetAction(m_stMenu);
-//#endif
+#ifdef TE_QT_PLUGIN_ST_HAVE_SLIDER
+    m_sliderAction = new te::qt::plugins::st::TimeSliderWidgetAction( te::qt::af::ApplicationController::getInstance().getMenu("View"));
+#endif
 
 #ifdef TE_QT_PLUGIN_ST_HAVE_OBSERVATION
     m_observactionAction = new te::qt::plugins::st::ObservationAction(m_stMenu);
@@ -117,9 +117,9 @@ void te::qt::plugins::st::Plugin::registerActions()
 
 void  te::qt::plugins::st::Plugin::unRegisterActions()
 {
-//#ifdef TE_QT_PLUGIN_ST_HAVE_SLIDER
-//    delete m_sliderAction;
-//#endif
+#ifdef TE_QT_PLUGIN_ST_HAVE_SLIDER
+    delete m_sliderAction;
+#endif
 
 #ifdef TE_QT_PLUGIN_ST_HAVE_OBSERVATION
     delete m_observactionAction;

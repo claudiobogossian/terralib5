@@ -32,26 +32,11 @@
 //QT
 #include <QWidget>
 
-te::qt::widgets::TemporalPropertiesWidget::TemporalPropertiesWidget(te::da::DataSetType* dataType, QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::TemporalPropertiesWidget::TemporalPropertiesWidget(QWidget* parent, Qt::WindowFlags f)
 : QWidget(parent, f),
-  m_ui(new Ui::TemporalPropertiesWidgetForm),
-  m_dataType (dataType)
-    
+  m_ui(new Ui::TemporalPropertiesWidgetForm)
 {
   m_ui->setupUi(this);
-  QString item;
-  const std::vector<te::dt::Property*>& properties = m_dataType->getProperties();
-
-  for (std::size_t i = 0; i < properties.size(); i++)
-  {
-    if(properties.at(i)->getType() == te::dt::DATETIME_TYPE)
-    {
-      item = QString::fromStdString(properties.at(i)->getName());
-      m_ui->m_phenomenomComboBox->addItem(item);
-      m_ui->m_resultComboBox->addItem(item);
-      m_ui->m_validComboBox->addItem(item);
-    }
-  }
 
 // connect signal and slots
   connect(m_ui->m_phenomenomComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onPropertyComboBoxIndexChanged(QString)));
@@ -64,6 +49,49 @@ te::qt::widgets::TemporalPropertiesWidget::~TemporalPropertiesWidget()
 Ui::TemporalPropertiesWidgetForm* te::qt::widgets::TemporalPropertiesWidget::getForm()
 {
   return m_ui.get();
+}
+
+int te::qt::widgets::TemporalPropertiesWidget::getPhenomenonTime()
+{
+  if(m_dataType)
+    return m_dataType->getPropertyPosition(m_ui->m_phenomenomComboBox->currentText().toStdString());
+  else
+    return -1;
+}
+
+int te::qt::widgets::TemporalPropertiesWidget::getResultTime()
+{
+  if(m_dataType)
+    return m_dataType->getPropertyPosition(m_ui->m_resultComboBox->currentText().toStdString());
+  else
+    return -1;
+}
+
+int te::qt::widgets::TemporalPropertiesWidget::getValidTime()
+{
+  if(m_dataType)
+    return m_dataType->getPropertyPosition(m_ui->m_validComboBox->currentText().toStdString());
+  else
+    return -1;
+}
+
+void te::qt::widgets::TemporalPropertiesWidget::setUp (const te::da::DataSetTypePtr dataType)
+{
+  QString item;
+  m_dataType = dataType;
+
+  const std::vector<te::dt::Property*>& properties = dataType.get()->getProperties();
+
+  for (std::size_t i = 0; i < properties.size(); i++)
+  {
+    if(properties.at(i)->getType() == te::dt::DATETIME_TYPE)
+    {
+      item = QString::fromStdString(properties.at(i)->getName());
+      m_ui->m_phenomenomComboBox->addItem(item);
+      m_ui->m_resultComboBox->addItem(item);
+      m_ui->m_validComboBox->addItem(item);
+    }
+  }
 }
 
 void te::qt::widgets::TemporalPropertiesWidget::onPropertyComboBoxIndexChanged (QString text)

@@ -23,10 +23,13 @@
   \brief This file defines the TimeSeriers Action class
 */
 
-
 //Terralib
+#include "../../../qt/af/events/LayerEvents.h"
+#include "../../../qt/widgets/dataset/selector/DataSetSelectorWizardPage.h"
+#include "../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
 #include "../../../qt/widgets/layer/explorer/AbstractTreeItemFactory.h"
-#include "../../../qt/widgets/st/TimeSeriesDialog.h"
+#include "../../../qt/widgets/st/TimeSeriesWizard.h"
+#include "../../../st/loader/STDataLoader.h"
 #include "../../af/ApplicationController.h"
 #include "TimeSeriesAction.h"
 #include "TimeSeriesLayerItem.h"
@@ -54,5 +57,18 @@ te::qt::plugins::st::TimeSeriesAction::TimeSeriesAction(QMenu* menu)
 
 void te::qt::plugins::st::TimeSeriesAction::onActionActivated(bool checked)
 {
- 
+  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+
+  std::auto_ptr<te::qt::widgets::TimeSeriesWizard> timeWiz;
+  timeWiz.reset( new te::qt::widgets::TimeSeriesWizard(parent));
+
+  int res = timeWiz->exec();
+  if (res == QDialog::Accepted)
+  {
+        //Initialize STDataLoader support
+    te::st::STDataLoader::initialize();
+
+    //te::qt::af::evt::LayerAdded evt(timeWiz->getTImeSeriesLayer(), 0);
+    //te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+  }
 }

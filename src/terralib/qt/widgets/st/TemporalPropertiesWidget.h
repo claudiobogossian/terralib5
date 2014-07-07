@@ -27,6 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_TIMEPROPERTIESWIDGET_H
 
 //TerraLib
+#include "../../../dataaccess/dataset/DataSetType.h"
 #include "../Config.h"
 
 // Qt
@@ -41,7 +42,7 @@ namespace te
 {
 
     //forward declarations
-  namespace da  {class DataSet;}
+  namespace da  {class DataSetType;}
 
   namespace qt
   {
@@ -62,11 +63,11 @@ namespace te
           /*!
             \brief Constructor
 
-            \param dataSet The datasetType that will be used to generate a TemporalLayer.
+
             \param parent this widget's parent
             \param f Window flags used to configure this widget
           */
-          TemporalPropertiesWidget(te::da::DataSetType* dataType, QWidget* parent = 0,  Qt::WindowFlags f = 0);
+          TemporalPropertiesWidget(QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
           /*!
             \brief Destructor
@@ -81,6 +82,37 @@ namespace te
           */
           Ui::TemporalPropertiesWidgetForm* getForm();
 
+          /*!
+            \brief Returns the index of the Phenomenom Time
+
+            \return The index of the Phenomenom Time.
+            \note Will return an invalid index if the dataSeType hasn't been given.
+          */
+          int getPhenomenonTime();
+
+          /*!
+            \brief Returns the index of the Result Time
+
+            \return The index of the result Time.
+            \note Will return an invalid index if the dataSeType hasn't been given.
+          */
+          int getResultTime();
+
+          /*!
+            \brief Returns the index of the Valid Time
+
+            \return The index of the valid Time.
+            \note Will return an invalid index if the dataSeType hasn't been given.
+          */
+          int getValidTime();
+
+          /*!
+            \brief Adjusts the widget values according to the given datasettype
+
+            \param dataType The datasetType that will be used to configure the widget.
+          */
+          void setUp(const te::da::DataSetTypePtr dataType);
+
         protected slots:
 
           void onPropertyComboBoxIndexChanged(QString text);
@@ -88,7 +120,8 @@ namespace te
         private:
 
           std::auto_ptr<Ui::TemporalPropertiesWidgetForm>  m_ui;        //!< The widget's form.
-          std::auto_ptr<te::da::DataSetType>               m_dataType;  //!< The datasetType that will be used to generate the spatio-temporal layer.
+          te::da::DataSetTypePtr                           m_dataType;  //!< The datasetType that will be used to generate the spatio-temporal layer.
+
        };
     } // end namespace widgets
   }   // end namespace qt

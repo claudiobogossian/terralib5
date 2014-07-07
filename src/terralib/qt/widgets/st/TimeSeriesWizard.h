@@ -18,30 +18,27 @@
  */
 
 /*!
-  \file terralib/qt/widgets/st/TrajectoryWizard.h
+  \file terralib/qt/widgets/st/ TimeSeriesWizard.h
 
-  \brief  A wizard used to generate a new Trajectorylayer.
+  \brief  A wizard used to generate a new  TimeSerieslayer.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_TRAJECTORYWIZARD_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_TRAJECTORYWIZARD_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_TIMESERIESWIZARD_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_TIMESERIESWIZARD_H
 
 //TerraLib
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../dataaccess.h"
-#include "../../../st/maptools/TrajectoryDataSetLayer.h"
 #include "../Config.h"
 
 // Qt
 #include <QWizard>
 
 // Forward declaration
-namespace Ui { class TrajectoryWizardForm; }
+namespace Ui { class  TimeSeriesWizardForm; }
 
 namespace te
 {
-  namespace st { class TrajectoryDataSetLayer; }
-
   namespace qt
   {
     namespace widgets
@@ -50,26 +47,26 @@ namespace te
     //Forward declarations
     class DataSourceSelectorWizardPage;
     class DataSetSelectorWizardPage;
-    class TrajectoryPropertiesWizardPage;
+    class TimeSeriesPropertiesWizardPage;
     
     /*!
-        \class TrajectoryDialog
+        \class  TimeSeriesDialog
 
-        \brief A Dialog used to generate a new TrajectoryLayer
+        \brief A Dialog used to generate a new  TimeSeriesLayer
       */
-      class TEQTWIDGETSEXPORT TrajectoryWizard : public QWizard
+      class TEQTWIDGETSEXPORT  TimeSeriesWizard : public QWizard
       {
       Q_OBJECT
 
         public:
 
-          TrajectoryWizard(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          TimeSeriesWizard(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          ~TrajectoryWizard();
+          ~TimeSeriesWizard();
 
           te::da::DataSourceInfoPtr getDataSource() const;
 
-          std::list<te::st::TrajectoryDataSetLayerPtr> getTrajectoryLayers();
+          te::da::DataSetTypePtr getDatasetType() const;
 
     protected slots:
 
@@ -77,26 +74,23 @@ namespace te
 
           void next();
 
-          void finish();
-
       private:
 
           enum
           {
             PAGE_DATASOURCE_SELECTION,
             PAGE_DATASET_SELECTION,
-            PAGE_TRAJECTORY_PROPERTIES_SELECTION
+            PAGE_TIMESERIES_PROPERTIES_SELECTION
           };
 
-        std::auto_ptr<Ui::TrajectoryWizardForm>        m_ui;                      //!< The wizard's form
+        std::auto_ptr<Ui::TimeSeriesWizardForm>        m_ui;                      //!< The wizard's form
         std::auto_ptr<DataSourceSelectorWizardPage>    m_datasourceSelectorPage;  //!< The wizard page used to select the datasource
         std::auto_ptr<DataSetSelectorWizardPage>       m_datasetSelectorPage;     //!< The wizard page used to select the dataset
-        std::auto_ptr<TrajectoryPropertiesWizardPage>  m_PropWidgetPage;          //!< The widget used to configure the properties of the new TrajectoryLayer
-        std::list<te::st::TrajectoryDataSetLayerPtr>   m_trajectoryLayers;        //!< The new Trajectory Layer(s);
-
+        std::auto_ptr<TimeSeriesPropertiesWizardPage>  m_PropWidgetPage;          //!< The widget used to configure the properties of the new TimeSeriesLayer 
+    
       };
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_TRAJECTORYWIZARD_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_TIMESERIESWIZARD_H

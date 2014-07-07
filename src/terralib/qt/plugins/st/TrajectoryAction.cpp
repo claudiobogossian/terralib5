@@ -25,10 +25,12 @@
 
 
 //Terralib
+#include "../../../qt/af/events/LayerEvents.h"
 #include "../../../qt/widgets/dataset/selector/DataSetSelectorWizardPage.h"
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
 #include "../../../qt/widgets/layer/explorer/AbstractTreeItemFactory.h"
 #include "../../../qt/widgets/st/TrajectoryWizard.h"
+#include "../../../st/loader/STDataLoader.h"
 #include "../../af/ApplicationController.h"
 #include "TrajectoryAction.h"
 #include "TrajectoryLayerItem.h"
@@ -43,8 +45,6 @@
 
 // Boost
 #include <boost/bind.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/format.hpp>
 #include <boost/functional/factory.hpp>
 
 te::qt::plugins::st::TrajectoryAction::TrajectoryAction(QMenu* menu)
@@ -62,9 +62,24 @@ void te::qt::plugins::st::TrajectoryAction::onActionActivated(bool checked)
 {
   QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
 
-  te::qt::widgets::TrajectoryWizard* SUperTestWizard = new te::qt::widgets::TrajectoryWizard();
-  SUperTestWizard->addPage(new te::qt::widgets::DataSourceSelectorWizardPage(parent));
-  SUperTestWizard->addPage(new te::qt::widgets::DataSetSelectorWizardPage(parent));
-  //SUperTestWizard.addPage(new QWizardPage(new te::qt::widgets::TrajectoryPropertiesWidget(0, parent)));
-  int tes = SUperTestWizard->exec();
+  std::auto_ptr<te::qt::widgets::TrajectoryWizard> trajWiz;
+  trajWiz.reset( new te::qt::widgets::TrajectoryWizard(parent));
+
+  int res = trajWiz->exec();
+  if (res == QDialog::Accepted)
+  {
+    //Initialize STDataLoader support
+    te::st::STDataLoader::initialize();
+
+    std::list<te::st::TrajectoryDataSetLayerPtr> layers = trajWiz->getTrajectoryLayers();
+    std::list<te::st::TrajectoryDataSetLayerPtr>::const_iterator layerItB = layers.begin();
+    std::list<te::st::TrajectoryDataSetLayerPtr>::const_iterator layerItE = layers.end();
+
+    while(layerItB != layerItE)
+    {
+      te::qt::af::evt::LayerAdded evt(*layerItB, 0);
+      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+      layerItB++;
+    }
+  }
 }

@@ -116,6 +116,22 @@ std::auto_ptr<te::da::DataSet> te::st::TrajectoryDataSetLayer::getData(const std
   return result;
 }
 
+std::auto_ptr<te::da::DataSet> te::st::TrajectoryDataSetLayer::getData(te::da::Expression* restriction,
+                                        te::common::TraverseType travType,
+                                        const te::common::AccessPolicy accessPolicy) const
+{
+  std::auto_ptr<te::da::DataSet> result;
+  return result;
+}
+
+std::auto_ptr<te::da::DataSet> te::st::TrajectoryDataSetLayer::getData(const te::da::ObjectIdSet* oids,
+                                                                       te::common::TraverseType travType,
+                                                                       const te::common::AccessPolicy accessPolicy) const
+{
+  std::auto_ptr<te::da::DataSet> result;
+  return result;
+}
+
 std::auto_ptr<te::st::TrajectoryDataSet> te::st::TrajectoryDataSetLayer::getTrajectoryDataset(te::common::TraverseType travType) const
 {
   return te::st::STDataLoader::getDataSet(*m_info.get(), travType);

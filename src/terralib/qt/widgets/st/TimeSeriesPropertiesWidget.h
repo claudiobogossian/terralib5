@@ -27,6 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_TIMESERIESWIDGET_H
 
 //TerraLib
+#include "../../../dataaccess/dataset/DataSetType.h"
 #include "../Config.h"
 
 // Qt
@@ -39,10 +40,6 @@ namespace Ui { class TimeSeriesPropertiesWidgetForm; }
 
 namespace te
 {
-
-    //forward declarations
-  namespace da  {class DataSet;}
-
   namespace qt
   {
     namespace widgets
@@ -66,7 +63,7 @@ namespace te
             \param parent this widget's parent
             \param f Window flags used to configure this widget
           */
-          TimeSeriesPropertiesWidget(te::da::DataSet* dataSet, QWidget* parent = 0,  Qt::WindowFlags f = 0);
+          TimeSeriesPropertiesWidget(QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
           /*!
             \brief Destructor
@@ -81,6 +78,13 @@ namespace te
           */
           Ui::TimeSeriesPropertiesWidgetForm* getForm();
 
+          /*!
+            \brief Adjusts the widget's components based on the given datasettype
+
+            \param dataType The datasetType that will be used to configure the widget.
+          */
+          void setUp(const te::da::DataSetTypePtr dataType);
+
         protected slots:
 
           void onPropertyComboBoxIndexChanged(QString text);
@@ -88,7 +92,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::TimeSeriesPropertiesWidgetForm>  m_ui;        //!< The widget's form.
-          std::auto_ptr<te::da::DataSet>           m_dataSet;   //!< The dataset that will be used to generate the histogram graph.
+//          std::auto_ptr<te::da::DataSet>           m_dataSet;   //!< The dataset that will be used to generate the histogram graph.
        };
     } // end namespace widgets
   }   // end namespace qt
