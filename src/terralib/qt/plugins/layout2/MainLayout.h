@@ -47,7 +47,6 @@ namespace te
       {   
         class DisplayDock;
         class OutsideArea;
-        class LayoutView;
         /*!
         \class 
      
@@ -79,7 +78,7 @@ namespace te
             void createLayoutContext(int width, int height);
             void finish();
 
-            LayoutView* m_view;
+            te::layout::View* m_view;
             DisplayDock* m_dockLayoutDisplay;
             QGroupBox* m_groupBox;
             QStatusBar* m_statusBar;

@@ -33,6 +33,7 @@
 
 // TerraLib
 #include "../../../layout/core/enum/EnumMode.h"
+#include "../../../layout/qt/core/View.h"
 
 class QWidget;
 class QMenu;
@@ -56,7 +57,7 @@ namespace te
 
         public:
 
-	        OutsideArea(QWidget* dockParent = 0, QMenu* mnuLayout = 0);
+	        OutsideArea(te::layout::View* view, QWidget* dockParent = 0, QMenu* mnuLayout = 0);
 	        virtual ~OutsideArea();
 
           PropertiesDock* getPropertiesDock();
@@ -72,6 +73,11 @@ namespace te
         public slots:
 
           virtual void onMainMenuTriggered(QAction* action);
+          virtual void onSelectionChanged();
+          virtual void onAddItemFinalized();
+          virtual void onShowView();
+          virtual void onHideView();
+          virtual void onCloseView();
 
         signals:
 
@@ -97,6 +103,7 @@ namespace te
           ToolbarDock* m_dockToolbar;
           QMenu* m_mainMenu;
           QMenu* m_parentMenu;
+          te::layout::View* m_view;
 
           /* Menu options */
       

@@ -31,13 +31,16 @@
 #include "ToolbarDock.h"
 #include "ObjectInspectorDock.h"
 #include "../../../layout/core/pattern/singleton/Context.h"
+#include "../../../layout/qt/outside/PropertiesOutside.h"
+#include "../../../layout/qt/outside/ObjectInspectorOutside.h"
 
 // Qt
 #include <QMainWindow>
 #include <QMenu>
 #include <QAction>
 
-te::qt::plugins::layout2::OutsideArea::OutsideArea( QWidget* dockParent, QMenu* mnuLayout) :
+te::qt::plugins::layout2::OutsideArea::OutsideArea( te::layout::View* view, QWidget* dockParent, QMenu* mnuLayout) :
+  m_view(view),
   m_dockParent(dockParent),
   m_parentMenu(mnuLayout),
   m_mainMenu(0),
@@ -92,6 +95,15 @@ te::qt::plugins::layout2::OutsideArea::~OutsideArea()
 
 void te::qt::plugins::layout2::OutsideArea::init()
 {
+  if(m_view)
+  {
+    connect(m_view->scene(), SIGNAL(selectionChanged()), this, SLOT(onSelectionChanged()));
+    connect(m_view->scene(), SIGNAL(addItemFinalized()), this, SLOT(onAddItemFinalized()));
+    connect(m_view, SIGNAL(hideView()), this, SLOT(onHideView()));
+    connect(m_view, SIGNAL(closeView()), this, SLOT(onCloseView()));
+    connect(m_view, SIGNAL(showView()), this, SLOT(onShowView()));
+  }
+
   createPropertiesDock();
 
   createInspectorDock();
@@ -99,6 +111,10 @@ void te::qt::plugins::layout2::OutsideArea::init()
   createToolbarDock();
 
   createMainMenu();
+
+  if(m_dockToolbar)
+    connect(m_dockToolbar, SIGNAL(changeContext(bool)), this, SLOT(onToolbarChangeContext(bool)));
+  connect(this, SIGNAL(changeMenuContext(bool)), this, SLOT(onMainMenuChangeContext(bool)));
 }
 
 void te::qt::plugins::layout2::OutsideArea::createPropertiesDock()
@@ -338,4 +354,39 @@ void te::qt::plugins::layout2::OutsideArea::closeMainMenu()
     QAction* firstOption = acts.first();
     firstOption->setVisible(true);
   }
+}
+
+void te::qt::plugins::layout2::OutsideArea::onSelectionChanged()
+{
+  QList<QGraphicsItem*> graphicsItems = m_view->scene()->selectedItems();
+  QList<QGraphicsItem*> allItems = m_view->scene()->items();
+  //Refresh Property window   
+  if(m_dockProperties)
+    m_dockProperties->getPropertiesOutside()->itemsSelected(graphicsItems, allItems);
+}
+
+void te::qt::plugins::layout2::OutsideArea::onAddItemFinalized()
+{
+  QList<QGraphicsItem*> graphicsItems = m_view->scene()->selectedItems();
+  //Refresh Inspector Object window
+  if(m_dockInspector)
+    m_dockInspector->getObjectInspectorOutside()->itemsInspector(graphicsItems);
+}
+
+void te::qt::plugins::layout2::OutsideArea::onShowView()
+{
+  openAllDocks();
+  openMainMenu();
+}
+
+void te::qt::plugins::layout2::OutsideArea::onHideView()
+{
+  closeAllDocks();
+  closeMainMenu();
+}
+
+void te::qt::plugins::layout2::OutsideArea::onCloseView()
+{
+  closeAllDocks();
+  closeMainMenu();
 }

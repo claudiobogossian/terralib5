@@ -29,7 +29,6 @@
 #include "../../../color/RGBAColor.h"
 #include "../../../geometry/Envelope.h"
 #include "OutsideArea.h"
-#include "LayoutView.h"
 #include "DisplayDock.h"
 
 // Qt
@@ -92,7 +91,7 @@ void te::qt::plugins::layout2::MainLayout::init(QWidget* mainWindow, QMenu* mnuL
   if(!m_view)
   {
     create = true;
-    m_view = new LayoutView;
+    m_view = new te::layout::View;
     m_view->setScene(new te::layout::Scene());
   }
       
@@ -103,11 +102,10 @@ void te::qt::plugins::layout2::MainLayout::init(QWidget* mainWindow, QMenu* mnuL
   createDockLayoutDisplay(mainWindow, m_view);
     
   if(!m_outsideArea)
-    m_outsideArea = new OutsideArea(mainWindow, mnuLayout);
+    m_outsideArea = new OutsideArea(m_view, mainWindow, mnuLayout);
 
   if(create)
   {
-    m_view->setOutsideArea(m_outsideArea);
     //Set a new window size
     m_view->config();
   }

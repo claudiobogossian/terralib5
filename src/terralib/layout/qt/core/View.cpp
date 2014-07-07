@@ -174,9 +174,6 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
 
 void te::layout::View::config()
 {	
-  connect(scene(), SIGNAL(selectionChanged()), this, SLOT(onSelectionChanged()));
-  connect(scene(), SIGNAL(addItemFinalized()), this, SLOT(onAddItemFinalized()));
-
   Scene* lScene = dynamic_cast<Scene*>(scene());
 
   if(!lScene)
@@ -494,4 +491,22 @@ void te::layout::View::configTransform( Scene* sc )
 
   /* Mirror the y coordinate, because the scene is in Cartesian coordinates. */
   scale(1, -1);   
+}
+
+void te::layout::View::hideEvent( QHideEvent * event )
+{
+  QGraphicsView::hideEvent(event);
+  emit hideView();
+}
+
+void te::layout::View::closeEvent( QCloseEvent * event )
+{
+  QGraphicsView::closeEvent(event);
+  emit closeView();
+}
+
+void te::layout::View::showEvent( QShowEvent * event )
+{
+  QGraphicsView::showEvent(event);
+  emit showView();
 }

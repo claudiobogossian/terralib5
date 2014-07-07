@@ -67,12 +67,13 @@ namespace te
 
         virtual void onToolbarChangeContext(bool change);
         virtual void onMainMenuChangeContext(bool change);
-        virtual void onSelectionChanged() = 0;
-        virtual void onAddItemFinalized() = 0;
 
       signals:
 
         void changeSceneCoordMouse(QPointF pos);
+        void showView();
+        void closeView();
+        void hideView();
 
       protected:
 
@@ -85,6 +86,12 @@ namespace te
         virtual void keyPressEvent(QKeyEvent* keyEvent);
 
         virtual void resizeEvent(QResizeEvent * event);
+
+        virtual void hideEvent ( QHideEvent * event );
+
+        virtual void closeEvent ( QCloseEvent * event );
+
+        virtual void	showEvent ( QShowEvent * event );
         
         virtual void createItemGroup();
 
