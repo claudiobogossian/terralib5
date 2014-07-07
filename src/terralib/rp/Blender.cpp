@@ -509,7 +509,12 @@ namespace te
             m_blendMethod = NoBlendMethod;
           }
           break;
-        }        
+        }
+        case SumMethod :
+        {
+          m_blendMethod = SumMethod;
+          break;
+        }
         default :
         {
           TERP_LOG_AND_THROW( "Invalid blend method" );
@@ -645,7 +650,12 @@ namespace te
         {
           m_blendFuncPtr = &Blender::euclideanDistanceMethodImp;
           break;
-        }        
+        }  
+        case SumMethod :
+        {
+          m_blendFuncPtr = &Blender::sumMethodImp;
+          break;
+        }
         default :
         {
           TERP_LOG_AND_THROW( "Invalid blend method" );
@@ -863,7 +873,97 @@ namespace te
         noBlendMethodImp( line, col, values );
       }
     }    
+
+    void Blender::sumMethodImp( const double& line, const double& col,
+      double* const values )
+    {
+      TERP_DEBUG_TRUE_OR_THROW( m_intersectionPtr.get(), "Invalid intersection pointer" );
+      TERP_DEBUG_TRUE_OR_THROW( m_r1IntersectionSegmentsPointsSize > 1, "Invalid intersection points" );
+      TERP_DEBUG_TRUE_OR_THROW( m_r2IntersectionSegmentsPointsSize > 1, "Invalid intersection points" );
+      
+      // Checking if it is inside the intersection
+      
+      m_sumMethodImp_auxPoint.setX( col );
+      m_sumMethodImp_auxPoint.setY( line );
+      
+      if( m_sumMethodImp_auxPoint.within( m_intersectionPtr.get() ) )
+      {
+        // Finding the point over the second raster
+        
+        m_geomTransformationPtr->directMap( col, line, m_sumMethodImp_Point2Col,
+          m_sumMethodImp_Point2Line );      
+        
+        // Blending values
+
+        for( m_sumMethodImp_BandIdx = 0 ; m_sumMethodImp_BandIdx <
+          m_raster1Bands.size() ; ++m_sumMethodImp_BandIdx )
+        {
+          m_interp1->getValue( col, line, m_sumMethodImp_cValue1, 
+            m_raster1Bands[ m_sumMethodImp_BandIdx ] ); 
+          m_interp2->getValue( m_sumMethodImp_Point2Col, 
+            m_sumMethodImp_Point2Line, m_sumMethodImp_cValue2, 
+            m_raster2Bands[ m_sumMethodImp_BandIdx ] );
+      
+          if( m_sumMethodImp_cValue1.real() == m_raster1NoDataValues[ m_sumMethodImp_BandIdx ] )
+          {
+            if( m_sumMethodImp_cValue2.real() == m_raster2NoDataValues[ m_sumMethodImp_BandIdx ] )
+            {
+              values[ m_sumMethodImp_BandIdx ] = m_outputNoDataValue;
+            }
+            else
+            {
+              values[ m_sumMethodImp_BandIdx ] = 
+                ( m_sumMethodImp_cValue2.real() * 
+                m_pixelScales2[ m_sumMethodImp_BandIdx ] ) + 
+                m_pixelOffsets2[ m_sumMethodImp_BandIdx ]; 
+            }
+          }
+          else
+          {
+            if( m_sumMethodImp_cValue2.real() == m_raster2NoDataValues[ m_sumMethodImp_BandIdx ] )
+            {
+              values[ m_sumMethodImp_BandIdx ] =  
+                ( m_sumMethodImp_cValue1.real()  * 
+                m_pixelScales1[ m_sumMethodImp_BandIdx ] ) +
+                m_pixelOffsets1[ m_sumMethodImp_BandIdx ]; 
+            }
+            else
+            {
+              values[ m_sumMethodImp_BandIdx ] =
+                (
+                  (
+                    ( 
+                      m_sumMethodImp_cValue1.real()  
+                      * 
+                      m_pixelScales1[ m_sumMethodImp_BandIdx ] 
+                    ) 
+                    +
+                    m_pixelOffsets1[ m_sumMethodImp_BandIdx ]
+                  )
+                )
+                +
+                (
+                  (
+                    ( 
+                      m_sumMethodImp_cValue2.real() 
+                      * 
+                      m_pixelScales2[ m_sumMethodImp_BandIdx ] 
+                    ) 
+                    + 
+                    m_pixelOffsets2[ m_sumMethodImp_BandIdx ]
+                  )
+                );
+            }          
+          }      
+        }
+      }
+      else
+      {
+        noBlendMethodImp( line, col, values );
+      }
+    }    
     
+        
     bool Blender::blendIntoRaster1()
     {
       TERP_TRUE_OR_RETURN_FALSE( m_raster1Ptr->getAccessPolicy() & 

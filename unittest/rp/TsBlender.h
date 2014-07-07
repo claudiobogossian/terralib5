@@ -42,6 +42,8 @@ class TsBlender : public CPPUNIT_NS::TestFixture
   
   CPPUNIT_TEST( PixelByPixelNoBlendTest );
   
+  CPPUNIT_TEST( PixelByPixelSumBlendTest );
+  
   CPPUNIT_TEST( FullRasterBlendTest );
   
   CPPUNIT_TEST( ThreadedFullRasterBlendTest );
@@ -53,6 +55,8 @@ protected :
   void PixelByPixelNoBlendTest();
   
   void PixelByPixelEucBlendTest();
+  
+  void PixelByPixelSumBlendTest();
   
   void FullRasterBlendTest();
   

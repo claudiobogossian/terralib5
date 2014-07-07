@@ -60,9 +60,10 @@ namespace te
         /*! \enum BlendMethod Pixel Blend methods. */      
         enum BlendMethod 
         {
-          InvalidBlendMethod = 0, //!< Invalid blending method.
-          NoBlendMethod = 1, //!< No blending performed.
-          EuclideanDistanceMethod = 2 //!< Euclidean distance method.
+          InvalidBlendMethod, //!< Invalid blending method.
+          NoBlendMethod, //!< No blending performed.
+          EuclideanDistanceMethod, //!< Euclidean distance method.
+          SumMethod //!< Pixels will be summed inside the raster overlapped area.
         };        
         
         /*! Default constructor. */
@@ -258,6 +259,13 @@ namespace te
         double m_euclideanDistanceMethodImp_aux1;
         double m_euclideanDistanceMethodImp_aux2;
         
+        // variables used by the sumMethodImp method
+        te::gm::Point m_sumMethodImp_auxPoint;
+        double m_sumMethodImp_Point2Line;
+        double m_sumMethodImp_Point2Col;        
+        std::complex< double > m_sumMethodImp_cValue1;
+        std::complex< double > m_sumMethodImp_cValue2;
+        unsigned int m_sumMethodImp_BandIdx;   
         
         /*! \brief Reset the instance to its initial default state. */
         void initState();
@@ -284,7 +292,16 @@ namespace te
           \param values A pointer to a pre-allocated vector where the blended values will be stored.
         */
         void euclideanDistanceMethodImp( const double& line1, const double& col1,
-          double* const values );              
+          double* const values );
+        
+        /*!
+          \brief Implementation for SumMethod.
+          \param line Raster 1 Line.
+          \param col Raster 1 Column.
+          \param values A pointer to a pre-allocated vector where the blended values will be stored.
+        */
+        void sumMethodImp( const double& line1, const double& col1,
+          double* const values );        
         
         /*!
           \brief Thread entry for the method blendIntoRaster1.
