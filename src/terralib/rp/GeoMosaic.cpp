@@ -619,19 +619,19 @@ namespace te
           transParams.m_tiePoints.push_back( auxTP );
           
           auxTP.first.x = 0;
-          auxTP.first.y = (double)outputRasterPtr->getNumberOfRows();
+          auxTP.first.y = (double)( outputRasterPtr->getNumberOfRows() - 1 );
           outputRasterPtr->getGrid()->gridToGeo( auxTP.first.x, auxTP.first.y, auxX, auxY );
           inputRasterPtr->getGrid()->geoToGrid( auxX, auxY, auxTP.second.x, auxTP.second.y );          
           transParams.m_tiePoints.push_back( auxTP );
           
-          auxTP.first.x = (double)outputRasterPtr->getNumberOfColumns();
+          auxTP.first.x = (double)( outputRasterPtr->getNumberOfColumns() - 1);
           auxTP.first.y = 0;
           outputRasterPtr->getGrid()->gridToGeo( auxTP.first.x, auxTP.first.y, auxX, auxY );
           inputRasterPtr->getGrid()->geoToGrid( auxX, auxY, auxTP.second.x, auxTP.second.y );
           transParams.m_tiePoints.push_back( auxTP );
           
-          auxTP.first.x = (double)outputRasterPtr->getNumberOfColumns();
-          auxTP.first.y = (double)outputRasterPtr->getNumberOfRows();
+          auxTP.first.x = (double)( outputRasterPtr->getNumberOfColumns() - 1 );
+          auxTP.first.y = (double)( outputRasterPtr->getNumberOfRows() - 1 );
           outputRasterPtr->getGrid()->gridToGeo( auxTP.first.x, auxTP.first.y, auxX, auxY );
           inputRasterPtr->getGrid()->geoToGrid( auxX, auxY, auxTP.second.x, auxTP.second.y );                    
           transParams.m_tiePoints.push_back( auxTP );
