@@ -392,26 +392,8 @@ namespace te
       
       // Calculating the intersection (raster 1 lines/cols)
       
-      {
-        std::auto_ptr< te::gm::Geometry > geomIntersectionPtr( 
-          indexedDelimiter2Ptr->intersection( indexedDelimiter1Ptr.get() ) );
-          
-        if( geomIntersectionPtr.get() )
-        {
-          if( geomIntersectionPtr->getGeomTypeId() == te::gm::PolygonType )
-          {
-            std::auto_ptr< te::gm::MultiPolygon > multiPolIntersectionPtr( 
-              new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType, 0, 0 ) );
-            multiPolIntersectionPtr->add( geomIntersectionPtr.release() );
-            
-            m_intersectionPtr.reset( multiPolIntersectionPtr.release() );
-          }
-          else if( geomIntersectionPtr->getGeomTypeId() == te::gm::MultiPolygonType )
-          {
-            m_intersectionPtr.reset( (te::gm::MultiPolygon*)geomIntersectionPtr.release() );
-          }
-        }
-      }
+      m_intersectionPtr.reset( indexedDelimiter2Ptr->intersection( 
+        indexedDelimiter1Ptr.get() ) );
       
       // Extracting the intersection segments points
       
@@ -512,7 +494,16 @@ namespace te
         }
         case SumMethod :
         {
-          m_blendMethod = SumMethod;
+          if( ( m_intersectionPtr.get() != 0 ) && 
+            ( m_r1IntersectionSegmentsPointsSize > 1 ) && 
+            ( m_r2IntersectionSegmentsPointsSize > 1 ) )
+          {
+            m_blendMethod = SumMethod;
+          }
+          else
+          {
+            m_blendMethod = NoBlendMethod;
+          }
           break;
         }
         default :
