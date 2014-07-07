@@ -214,7 +214,7 @@ namespace te
         te::rst::Raster const * m_raster2Ptr; //!< Input raster 2.
         std::auto_ptr< te::gm::MultiPolygon > m_r1ValidDataDelimiterPtr; //!< A pointer to a geometry (raster 1 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
         std::auto_ptr< te::gm::MultiPolygon > m_r2ValidDataDelimiterPtr; //!< A pointer to a geometry (raster 2 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
-        std::auto_ptr< te::gm::MultiPolygon > m_intersectionPtr; //!< The Intersection geometry ( raster 1 indexed coods).
+        std::auto_ptr< te::gm::Geometry > m_intersectionPtr; //!< The Intersection geometry ( raster 1 indexed coods).
         std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > > m_r1IntersectionSegmentsPoints; //!< A sub-set of the intersection polygon wich is part of raster 1 valid data polygon ( raster 1 indexed coods).
         std::size_t m_r1IntersectionSegmentsPointsSize; //!< Size of m_r1IntersectionSegmentsPoints;
         std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > > m_r2IntersectionSegmentsPoints; //!< A sub-set of the intersection polygon wich is part of raster 2 valid data polygon ( raster 1 indexed coods).
