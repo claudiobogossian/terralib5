@@ -254,10 +254,6 @@ int main(int /*argc*/, char** /*argv*/)
 
   deleteGeometries();
 
-
-  std::cout << "Press Enter to exit..." << std::endl;
-  std::cin.get();
-
   TerraLib::getInstance().finalize();
 
   return EXIT_SUCCESS;

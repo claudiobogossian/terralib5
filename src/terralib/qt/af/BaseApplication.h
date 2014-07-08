@@ -40,6 +40,7 @@
 #include <QColor>
 #include <QLineEdit>
 #include <QMainWindow>
+#include <QMessageBox>
 
 class QLabel;
 
@@ -229,7 +230,7 @@ namespace te
 
           virtual void openProject(const QString& projectFileName);
 
-          virtual void checkProjectSave();
+          virtual QMessageBox::StandardButton checkProjectSave();
 
           virtual void newProject();
 

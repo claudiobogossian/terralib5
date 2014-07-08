@@ -75,6 +75,17 @@ void TsDataSourceTransactor::tcComit()
 //#endif
 }
 
+void TsDataSourceTransactor::tcRollback()
+{
+//#ifdef TE_COMPILE_ALL
+//#endif
+}
+
+void tcIsIntransaction()
+{
+}
+
+
 void TsDataSourceTransactor::tcExecuteQuery()
 {
 //#ifdef TE_COMPILE_ALL
@@ -91,10 +102,9 @@ void TsDataSourceTransactor::tcExecuteCommand()
 void TsDataSourceTransactor::tcGetDataSource()
 {
 //#ifdef TE_COMPILE_ALL
-  CPPUNIT_ASSERT_NO_THROW(m_ds->open(m_connInfo));
-  std::auto_ptr<te::da::DataSourceTransactor> t(0);
-  CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
-  CPPUNIT_ASSERT(t.get());
+  CPPUNIT_ASSERT_NO_THROW(m_ds->open());
+  std::auto_ptr<te::da::DataSourceTransactor> t = m_ds->getTransactor();
+  //CPPUNIT_ASSERT_NO_THROW(t->getDataSource());
 
   te::da::DataSource* ds1 = t->getDataSource();
   CPPUNIT_ASSERT(ds1);
@@ -108,22 +118,16 @@ void TsDataSourceTransactor::tcGetDataSet()
   CPPUNIT_ASSERT(m_ds->isOpened()== true);
 
 // get a transactor to retrieve information about the data source 
-  std::auto_ptr<te::da::DataSourceTransactor> t(0);
-  CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
-  CPPUNIT_ASSERT(t.get());
+  CPPUNIT_ASSERT_NO_THROW(m_ds->open());
+  std::auto_ptr<te::da::DataSourceTransactor> t = m_ds->getTransactor();
 
-// get a catalogloader 
-  std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
-  CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
-  CPPUNIT_ASSERT(cl.get());
+  std::vector<std::string>  datasets = t->getDataSetNames();
 
-  boost::ptr_vector<std::string>  datasets;
-  cl->getDataSets(datasets);
-  //CPPUNIT_ASSERT(datasets.size() == m_nroDataSets);
+  CPPUNIT_ASSERT(datasets.size() > 0);
 
-  te::da::DataSet* dt;
+  std::auto_ptr<te::da::DataSet> dt;
   
-// get dataSet by  name 
+// get dataSet by name using transactor
   try
   {
     size_t i=0;
@@ -146,46 +150,48 @@ void TsDataSourceTransactor::tcGetDataSetByGeometry()
 {
 //#ifdef TE_COMPILE_ALL
   CPPUNIT_ASSERT(m_ds->isOpened()== true);
+
   if (!((m_capabilit.getDataTypeCapabilities()).supportsGeometry()))
-    CPPUNIT_ASSERT_THROW_MESSAGE("GEOMETRY_DT is not supported by this datasource",(m_capabilit.getDataTypeCapabilities()).supportsGeometry() == 0, te::common::Exception);
+    //CPPUNIT_ASSERT_THROW_MESSAGE("GEOMETRY_DT is not supported by this datasource",(m_capabilit.getDataTypeCapabilities()).supportsGeometry() == 0, te::common::Exception);
+    CPPUNIT_ASSERT_THROW_MESSAGE("GEOMETRY_DT is not supported by this datasource",(m_capabilit.getDataTypeCapabilities()).supportsGeometry(), te::common::Exception);
 
-  else
+// get a transactor to retrieve information about the data source 
+  std::auto_ptr<te::da::DataSourceTransactor> t = m_ds->getTransactor();
+  CPPUNIT_ASSERT(t.get());
+
+  std::auto_ptr<te::da::DataSet> dt;
+  std::vector<std::string>::iterator it = m_vecDtNames.begin();
+  std::auto_ptr<te::da::DataSetType> datasetType = t->getDataSetType(*it);
+  te::dt::Property* p = datasetType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
+  std::string propname = p->getName();
+
+  //Testing getDataSet(name,geometry, ...)
+  try
   {
-  // get a transactor to retrieve information about the data source 
-    std::auto_ptr<te::da::DataSourceTransactor> t(0);
-    CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
-    CPPUNIT_ASSERT(t.get());
+    dt = t->getDataSet((*it),propname, &m_pt,te::gm::INTERSECTS);
+    CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet((*it),propname, &m_pt,te::gm::INTERSECTS)); //point
+    int nprop = dt->getNumProperties();
+    int pos = static_cast<int>(te::da::GetFirstSpatialPropertyPos(dt.get()));
+    dt->moveNext();
+    m_geom = static_cast<te::gm::Geometry*>(dt->getGeometry(pos)->clone());
+    m_geom->computeMBR(true);
 
-    te::da::DataSet* dt;
-    std::vector<std::string>::iterator it = m_vecDtNames.begin();
+    std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size() <<  std::endl ;
 
-    //Testing getDataSet(name,geometry, ...)
-    try
-    {
-    
-      CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet( (*it), &m_pt, te::gm::INTERSECTS)); //point
-      int nprop = dt->getNumProperties();
-      int pos = static_cast<int>(te::da::GetFirstSpatialPropertyPos(dt));
-      dt->moveNext();
-      m_geom = static_cast<te::gm::Geometry*>(dt->getGeometry(pos)->clone());
-      m_geom->computeMBR(true);
+    CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet((*it),propname, &m_box, te::gm::INTERSECTS)); //box
+    std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size() << std::endl ;
 
-      std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size() <<  std::endl ;
-
-      CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet( (*it), &m_box, te::gm::INTERSECTS)); //box
-      std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size() << std::endl ;
-
-      CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet( (*it), m_pol, te::gm::INTERSECTS)); //polygon
-      std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size()  << std::endl ;
+    CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet((*it),propname, m_pol, te::gm::INTERSECTS)); //polygon
+    std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size()  << std::endl ;
   
-      CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet( (*it), m_geom , te::gm::INTERSECTS)); //using the geometry recovered above
-      std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size()  << std::endl ;
-    }
-    catch (te::common::Exception  e)
-    { 
-      throw e;
-    }
+    CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet((*it),propname, m_geom , te::gm::INTERSECTS)); //using the geometry recovered above
+    std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size()  << std::endl ;
   }
+  catch (te::common::Exception  e)
+  { 
+    throw e;
+  }
+
 //#endif
 }
 
@@ -194,49 +200,49 @@ void TsDataSourceTransactor::tcGetDataSetByProperty()
 //#ifdef TE_COMPILE_ALL
   CPPUNIT_ASSERT(m_ds->isOpened()== true);
 // get a transactor to retrieve information about the data source 
-  std::auto_ptr<te::da::DataSourceTransactor> t(0);
-  CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
+  CPPUNIT_ASSERT_NO_THROW(m_ds->open());
+  std::auto_ptr<te::da::DataSourceTransactor> t = m_ds->getTransactor();
   CPPUNIT_ASSERT(t.get());
+  if (!((m_capabilit.getDataTypeCapabilities()).supportsGeometry()))
+    //CPPUNIT_ASSERT_THROW_MESSAGE("GEOMETRY_DT is not supported by this datasource", (m_capabilit.getDataTypeCapabilities()).supportsGeometry() == false,te::common::Exception);
+    CPPUNIT_ASSERT_THROW_MESSAGE("GEOMETRY_DT is not supported by this datasource", (m_capabilit.getDataTypeCapabilities()).supportsGeometry(),te::common::Exception);
 
-// get a catalogloader 
-  std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
-  CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
-  CPPUNIT_ASSERT(cl.get());
+  std::vector<std::string>  datasets = t->getDataSetNames();
 
-  te::da::DataSet* dt;
+  std::auto_ptr<te::da::DataSet> dt;
+
   std::vector<std::string>::iterator it = m_vecDtNames.begin();
-  te::da::DataSetType* datasetType = cl->getDataSetType(*it);
+  std::auto_ptr<te::da::DataSetType> datasetType = t->getDataSetType(*it);
   te::dt::Property* p = datasetType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
+  std::string propname = p->getName();
 
-  //Testing getDataSet(name,property,geometry, ...)
+  //Testing getDataSet(datasetname,propertyname,geometry, ...)
 
-  if ((m_capabilit.getDataTypeCapabilities()).supportsGeometry())
-  { 
-    try
-    {
-      dt = t-> getDataSet((*it),p, &m_pt, te::gm::INTERSECTS);
-      CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet((*it),p, &m_pt, te::gm::INTERSECTS)); //point
-      int pos = datasetType->getPropertyPosition(p->getName());
-      dt->moveNext();
-      m_geom = static_cast<te::gm::Geometry*>(dt->getGeometry(pos)->clone());
-      m_geom->computeMBR(true);
+  try
+  {
+    dt = t->getDataSet((*it),propname, &m_pt, te::gm::INTERSECTS);
+    CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet((*it),propname, &m_pt, te::gm::INTERSECTS)); //point
+    int pos = datasetType->getPropertyPosition(p->getName());
+    dt->moveNext();
+    m_geom = static_cast<te::gm::Geometry*>(dt->getGeometry(pos)->clone());
+    m_geom->computeMBR(true);
 
-      std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size() << std::endl ;
+    std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size() << std::endl ;
 
-      CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet( (*it), p, &m_box, te::gm::INTERSECTS)); //box
-      std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size() << std::endl ;
+    CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet((*it),propname, &m_box, te::gm::INTERSECTS)); //box
+    std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size() << std::endl ;
 
-      CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet( (*it),p, m_pol, te::gm::INTERSECTS)); //polygon
-      std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size() << std::endl ;
+    CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet((*it),propname, m_pol, te::gm::INTERSECTS)); //polygon
+    std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size() << std::endl ;
   
-      CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet( (*it),p, m_geom , te::gm::INTERSECTS)); //using the geometry recovered above
-      std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size() << std::endl ;
-    }
-    catch (te::common::Exception  e)
-    { 
-      throw e;
-    }
+    CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet((*it),propname, m_geom , te::gm::INTERSECTS)); //using the geometry recovered above
+    std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size() << std::endl ;
   }
+  catch (te::common::Exception  e)
+  { 
+    throw e;
+  }
+
 //#endif
 }
 
@@ -248,34 +254,34 @@ void TsDataSourceTransactor::tcGetDataSetByEnvRec()
   std::auto_ptr<te::da::DataSourceTransactor> t(m_ds->getTransactor());
   CPPUNIT_ASSERT(t.get());
 
-  // get a catalogloader 
-  std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
-  CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
-  CPPUNIT_ASSERT(cl.get());
-
+  if (!((m_capabilit.getDataTypeCapabilities()).supportsGeometry()))
+    //CPPUNIT_ASSERT_THROW_MESSAGE("GEOMETRY_DT is not supported by this datasource", (m_capabilit.getDataTypeCapabilities()).supportsGeometry() == false,te::common::Exception);
+    CPPUNIT_ASSERT_THROW_MESSAGE("GEOMETRY_DT is not supported by this datasource", (m_capabilit.getDataTypeCapabilities()).supportsGeometry(),te::common::Exception);
+ 
   std::vector<std::string>::iterator it = m_vecDtNames.begin();
-  te::da::DataSetType* datasetType = cl->getDataSetType(*it);
+  std::auto_ptr<te::da::DataSetType> datasetType = t->getDataSetType(*it);
   te::dt::Property* p = datasetType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
-  
+  std::string propname = p->getName();
+ 
   te::gm::Envelope *rec = new te::gm::Envelope(-60.0,-20.0,-35.0,2.0);
 
 // Testing getDataSet(name,property,envelope, spatialRelation,...)
-  te::da::DataSet* dtRec;
-  CPPUNIT_ASSERT_NO_THROW(dtRec = t->getDataSet(*it,p,rec,te::gm::INTERSECTS));
+  std::auto_ptr<te::da::DataSet> dtRec;
 
-  if (dtRec)
+  CPPUNIT_ASSERT_NO_THROW(dtRec = t->getDataSet(*it,propname,rec,te::gm::INTERSECTS));
+
+  if (dtRec.get())
   {
-    te::gm::Envelope* envRec; 
-    int pos = static_cast<int>(te::da::GetFirstSpatialPropertyPos(dtRec));
-    CPPUNIT_ASSERT_NO_THROW(envRec = dtRec->getExtent(pos));
-    if (envRec)
+    std::auto_ptr<te::gm::Envelope> envRec; 
+    int pos = static_cast<int>(te::da::GetFirstSpatialPropertyPos(dtRec.get()));
+    CPPUNIT_ASSERT_NO_THROW(envRec = (dtRec.get())->getExtent(pos));
+    if (envRec.get())
     {
       std::cout << std::endl << "DataSetRec Name: " << (*it) << "Size: "<< dtRec->size() << std::endl ;
       std::cout << "DataSetRec Envelop :  " << envRec->m_llx << "," << envRec->m_lly << "," << envRec->m_urx << "," << envRec->m_ury << std::endl;
       std::cout << "Test Envelop :  " << rec->m_llx << "," << rec->m_lly << "," << rec->m_urx << "," << rec->m_ury << std::endl;
     }
   }
-  delete rec;
 //#endif
 }
 
@@ -286,20 +292,28 @@ void TsDataSourceTransactor::tcGetDataSetByEnvRec1()
   std::auto_ptr<te::da::DataSourceTransactor> t(m_ds->getTransactor());
   CPPUNIT_ASSERT(t.get());
 
-  te::da::DataSet* dtRec;
-  te::gm::Envelope recE;
-  std::string dtname;
+  if (!((m_capabilit.getDataTypeCapabilities()).supportsGeometry()))
+    //CPPUNIT_ASSERT_THROW_MESSAGE("GEOMETRY_DT is not supported by this datasource", (m_capabilit.getDataTypeCapabilities()).supportsGeometry() == false,te::common::Exception);
+    CPPUNIT_ASSERT_THROW_MESSAGE("GEOMETRY_DT is not supported by this datasource", (m_capabilit.getDataTypeCapabilities()).supportsGeometry(),te::common::Exception);
+ 
+  std::vector<std::string>::iterator it = m_vecDtNames.begin();
+  std::auto_ptr<te::da::DataSetType> datasetType = t->getDataSetType(*it);
+
+  te::dt::Property* p = datasetType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
+  std::string propname = p->getName();
+
+  std::auto_ptr<te::da::DataSet> dtRec;
 
   std::vector<std::pair<std::string, te::gm::Envelope> >::iterator itpair;  
   for(itpair = m_vecNamesAndRecs.begin(); itpair < m_vecNamesAndRecs.end(); itpair++)
   {
     try
     {
-      CPPUNIT_ASSERT_NO_THROW(dtRec = t->getDataSet( (*itpair).first, &(*itpair).second, te::gm::INTERSECTS ));
-      if (dtRec)
+      CPPUNIT_ASSERT_NO_THROW(dtRec = t->getDataSet( (*itpair).first,propname, &(*itpair).second, te::gm::INTERSECTS ));
+      if (dtRec.get())
       {
-        te::gm::Envelope* envRec; 
-        int pos = static_cast<int>(te::da::GetFirstSpatialPropertyPos(dtRec));
+        std::auto_ptr<te::gm::Envelope> envRec; 
+        int pos = static_cast<int>(te::da::GetFirstSpatialPropertyPos(dtRec.get()));
         CPPUNIT_ASSERT_NO_THROW(envRec = dtRec->getExtent(pos));
         std::cout << std::endl << "DataSet Name: " << (*itpair).first << " Size: " << dtRec->size() << std::endl ;
         std::cout << "DataSet Envelop returned: " << envRec->m_llx << "," << envRec->m_lly << "," << envRec->m_urx << "," << envRec->m_ury << std::endl;
@@ -319,11 +333,14 @@ void TsDataSourceTransactor::tcGetDataSetByEnvRec2()
 //#ifdef TE_COMPILE_ALL
   CPPUNIT_ASSERT(m_ds->isOpened()== true);
 // get a transactor to retrieve information about the data source 
-  std::auto_ptr<te::da::DataSourceTransactor> t(0);
-  CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
+  std::auto_ptr<te::da::DataSourceTransactor> t(m_ds->getTransactor());
   CPPUNIT_ASSERT(t.get());
 
-  te::da::DataSet* dtRec;
+  if (!((m_capabilit.getDataTypeCapabilities()).supportsGeometry()))
+    //CPPUNIT_ASSERT_THROW_MESSAGE("DataTypeCapabilites GEOMETRY is not supported by this datasource", (m_capabilit.getDataTypeCapabilities()).supportsGeometry() == false,te::common::Exception);
+    CPPUNIT_ASSERT_THROW_MESSAGE("DataTypeCapabilites GEOMETRY is not supported by this datasource", (m_capabilit.getDataTypeCapabilities()).supportsGeometry(),te::common::Exception);
+
+  std::auto_ptr<te::da::DataSet> dtRec;
 
   std::vector<std::pair<std::string, te::gm::Envelope> >::iterator itpair;
   std::vector<std::pair<std::string, size_t> >::iterator itsize;
@@ -331,8 +348,13 @@ void TsDataSourceTransactor::tcGetDataSetByEnvRec2()
   for(itpair = m_vecNamesAndRecs.begin(), itsize = m_vecNamesSizesRec.begin() ; itpair < m_vecNamesAndRecs.end(), itsize < m_vecNamesSizesRec.end() ; itpair++, itsize++)
   {
     try
-    {
-      CPPUNIT_ASSERT_NO_THROW(dtRec = t->getDataSet( (*itpair).first, &(*itpair).second, te::gm::INTERSECTS));
+    { 
+      //getting first geometry property name...
+      std::auto_ptr<te::da::DataSetType> datasetType = t->getDataSetType((*itpair).first);
+      te::dt::Property* p = datasetType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
+      std::string propname = p->getName();
+
+      CPPUNIT_ASSERT_NO_THROW(dtRec = t->getDataSet( (*itpair).first, propname,&(*itpair).second, te::gm::INTERSECTS));
       size_t ss = dtRec->size();
       std::cout << std::endl << "DataSet Name: " << (*itpair).first  << " DataSet Size: " << dtRec->size() << " Size expected: " << (*itsize).second << std::endl ;
       CPPUNIT_ASSERT_EQUAL_MESSAGE("DataSet size not equal expected", (*itsize).second, ss);
@@ -342,7 +364,12 @@ void TsDataSourceTransactor::tcGetDataSetByEnvRec2()
       throw e;
     }
   }
+
 //#endif
+}
+
+void TsDataSourceTransactor::tcGetDataSetByOids()
+{
 }
 
 void TsDataSourceTransactor::tcQueryByString()
@@ -352,29 +379,24 @@ void TsDataSourceTransactor::tcQueryByString()
   //SELECT_INTO_QUERY
 
   if (!((m_capabilit.getQueryCapabilities()).supportsSelectInto()))
-    CPPUNIT_ASSERT_THROW_MESSAGE("SELECT_INTO_QUERY is not supported by this datasource", m_capabilit.getQueryCapabilities().supportsSelectInto() == false,te::common::Exception);
-  else
-  {
-    std::vector<std::pair<std::string, size_t> >::iterator it = m_vecNamesSizes.begin();
-    std::string sql = "Select * FROM " + (*it).first;
-    std::auto_ptr<te::da::DataSourceTransactor> dstrans(m_ds->getTransactor());
-    CPPUNIT_ASSERT(dstrans.get());
+    //CPPUNIT_ASSERT_THROW_MESSAGE("SELECT_INTO_QUERY is not supported by this datasource", m_capabilit.getQueryCapabilities().supportsSelectInto() == false,te::common::Exception);
+    CPPUNIT_ASSERT_THROW_MESSAGE("SELECT_INTO_QUERY is not supported by this datasource", m_capabilit.getQueryCapabilities().supportsSelectInto(),te::common::Exception);
 
-    te::da::DataSet* dt;
-    CPPUNIT_ASSERT_NO_THROW(dt = dstrans->query(sql));
-    size_t dtsize = dt->size();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Size not equal expected: ", (*it).second, dtsize);
-  }
+  std::vector<std::pair<std::string, size_t> >::iterator it = m_vecNamesSizes.begin();
+  std::string sql = "Select * FROM " + (*it).first;
+  std::auto_ptr<te::da::DataSourceTransactor> dstrans(m_ds->getTransactor());
+  CPPUNIT_ASSERT(dstrans.get());
+
+  std::auto_ptr<te::da::DataSet> dt;
+  CPPUNIT_ASSERT_NO_THROW(dt = dstrans->query(sql));
+  size_t dtsize = dt->size();
+  CPPUNIT_ASSERT_EQUAL_MESSAGE("Size not equal expected: ", (*it).second, dtsize);
+ 
 //#endif
 }
+
 void TsDataSourceTransactor::tcQueryBySelect()
 {
-}
-
-void TsDataSourceTransactor::tcRollback()
-{
-//#ifdef TE_COMPILE_ALL
-//#endif
 }
 
 void TsDataSourceTransactor::tcGetPreparedStmt()
@@ -383,50 +405,6 @@ void TsDataSourceTransactor::tcGetPreparedStmt()
 
 void TsDataSourceTransactor::tcGetBatchExecutor()
 {
-}
-
-void TsDataSourceTransactor::tcGetCatalogLoader()
-{
-//#ifdef TE_COMPILE_ALL
-  CPPUNIT_ASSERT(m_ds->isOpened()== true);
-// get a transactor to retrieve information about the data source 
-  std::auto_ptr<te::da::DataSourceTransactor> t(m_ds->getTransactor());
-  CPPUNIT_ASSERT(t.get());
-
-// get a catalogloader 
-  std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
-  CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
-  CPPUNIT_ASSERT(cl.get());
-
-//#endif
-}
-
-void TsDataSourceTransactor::tcGetDataSetTypePersistence()
-{
-//#ifdef TE_COMPILE_ALL
-  CPPUNIT_ASSERT(m_ds->isOpened()== true);
-// get a transactor to retrieve information about the data source 
-  std::auto_ptr<te::da::DataSourceTransactor> t(m_ds->getTransactor());
-  CPPUNIT_ASSERT(t.get());
-
-// get a DataSetTypePersistence 
-  CPPUNIT_ASSERT_NO_THROW(t.get()->getDataSetTypePersistence());
-
-//#endif
-}
-
-void TsDataSourceTransactor::tcGetDataSetPersistence()
-{
-//#ifdef TE_COMPILE_ALL
-  CPPUNIT_ASSERT(m_ds->isOpened()== true);
-// get a transactor to retrieve information about the data source 
-  std::auto_ptr<te::da::DataSourceTransactor> t(m_ds->getTransactor());
-  CPPUNIT_ASSERT(t.get());
-
-// get a DataSetTypePersistence 
-  CPPUNIT_ASSERT_NO_THROW(t.get()->getDataSetPersistence());
-
-//#endif
 }
 
 void TsDataSourceTransactor::tcCancel()

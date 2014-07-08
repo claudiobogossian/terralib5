@@ -606,10 +606,14 @@ void te::vp::GeometricOpQuery::SetOutputDSet( te::da::DataSet* inDataSet,
 {
   std::size_t numProps = inDataSet->getNumProperties();
   int pk = 0;
+  
+  bool geomFlag = true;
 
   inDataSet->moveBeforeFirst();
   while(inDataSet->moveNext())
   {
+    geomFlag = true;
+
     te::mem::DataSetItem* dItem = new te::mem::DataSetItem(outDataSet);
     std::size_t size = dItem->getNumProperties();
 
@@ -643,7 +647,12 @@ void te::vp::GeometricOpQuery::SetOutputDSet( te::da::DataSet* inDataSet,
             {
               te::gm::Geometry* geom = inDataSet->getGeometry(i).release();
               if(geom->isValid())
-                dItem->setGeometry("convex_hull", geom);
+              {
+                if(geom->getGeomTypeId() == te::gm::PolygonType)
+                  dItem->setGeometry("convex_hull", geom);
+                else
+                  geomFlag = false;
+              }
             }
             else if(inPropName == "centroid")
             {
@@ -655,7 +664,12 @@ void te::vp::GeometricOpQuery::SetOutputDSet( te::da::DataSet* inDataSet,
             {
               te::gm::Geometry* geom = inDataSet->getGeometry(i).release();
               if(geom->isValid())
-                dItem->setGeometry("mbr", geom);
+              {
+                if(geom->getGeomTypeId() == te::gm::PolygonType)
+                  dItem->setGeometry("mbr", geom);
+                else
+                  geomFlag = false;
+              }
             }
             else
             {
@@ -704,7 +718,10 @@ void te::vp::GeometricOpQuery::SetOutputDSet( te::da::DataSet* inDataSet,
           break;
       }
     }
-    ++pk;
-    outDataSet->add(dItem);
+    if(geomFlag)
+    {
+      ++pk;
+      outDataSet->add(dItem);
+    }
   }
 }

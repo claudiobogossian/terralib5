@@ -219,13 +219,22 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const std::string& que
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
-  
+
   OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
 
-  OGRLayer* layer = ds->ExecuteSQL(query.c_str(), 0, 0);
+  // Adding FID attribute case "SELECT *"
+  std::string queryCopy = query;
+  std::size_t pos = queryCopy.find("*");
+  if(pos != std::string::npos)
+  {
+    std::string fid = "FID, *";
+    queryCopy.replace(pos, 1, fid);
+  }
+
+  OGRLayer* layer = ds->ExecuteSQL(queryCopy.c_str(), 0, 0);
 
   if(layer == 0)
-    throw Exception(TE_TR("Could not retrieve the DataSet from data source."));
+  throw Exception(TE_TR("Could not retrieve the DataSet from data source."));
 
   return std::auto_ptr<te::da::DataSet>(new DataSet(ds, layer));
 }

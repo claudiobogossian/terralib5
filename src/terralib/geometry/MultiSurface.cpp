@@ -91,7 +91,19 @@ te::gm::Coord2D* te::gm::MultiSurface::getCoordOnSurface() const
 
 double te::gm::MultiSurface::getPerimeter() const
 {
-  return 0.0;
+  double sum = 0.0;
+
+  std::size_t n = m_geometries.size();
+
+  for(std::size_t i = 0; i < n; ++i)
+  {
+    Surface* surface = static_cast<Surface*>(m_geometries[i]);
+    assert(surface);
+
+    sum += surface->getPerimeter();
+  }
+
+  return sum;
 }
 
 te::gm::Dimensionality te::gm::MultiSurface::getDimension() const throw()

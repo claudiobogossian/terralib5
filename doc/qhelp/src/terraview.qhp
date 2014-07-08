@@ -63,11 +63,19 @@
 					<section title="Intersection" ref="./plugins/vp/vp_intersection.html"/>
 				</section>
 				<section title="Raster Processing" ref="./plugins/rp/rp.html">
+					<section title="Arithmetic Operations" ref="./plugins/rp/rp_arithOp.html"/>
+					<section title="Classifier" ref="./plugins/rp/rp_classifier.html"/>
+					<section title="Clipping" ref="./plugins/rp/rp_clipping.html"/>
+					<section title="Color Transform" ref="./plugins/rp/rp_colorTransform.html"/>
 					<section title="Contrast" ref="./plugins/rp/rp_contrast.html"/>
+					<section title="Filter" ref="./plugins/rp/rp_filter.html"/>
+					<section title="Fusion" ref="./plugins/rp/rp_fusion.html"/>
 					<section title="Mixture Model" ref="./plugins/rp/rp_mixture.html"/>
+					<section title="Mosaic" ref="./plugins/rp/rp_mosaic.html"/>
 					<section title="Register" ref="./plugins/rp/rp_register.html"/>
 					<section title="Segmenter" ref="./plugins/rp/rp_segmenter.html"/>
 				</section>
+				<section title="TerraLib 4.x Converter" ref="./plugins/terralib4/Terralib4Converter.html"/>
 		    </section>
        </toc>
        <files>
@@ -76,6 +84,7 @@
             <file>./apf/settings/project/*.*</file>
 			<file>./apf/settings/table/*.*</file>
 			<file>./apf/settings/toolbar/*.*</file>
+			<file>./apf/settings/generalconfig/*.*</file>
 			<file>./apf/settings/*.html</file>
 			<file>./plugins/ado/*.*</file>
 			<file>./plugins/gdal/*.*</file>
@@ -155,10 +164,17 @@
 			<keyword name="Intersection" ref="./plugins/vp/vp_intersection.html"/>
 
 			<keyword name="Raster Processing" ref="./plugins/rp/rp.html"/>
+			<keyword name="Arithmetic Operations" ref="./plugins/rp/rp_arithOp.html"/>
+			<keyword name="Classifier" ref="./plugins/rp/rp_classifier.html"/>
+			<keyword name="Clipping" ref="./plugins/rp/rp_clipping.html"/>
+			<keyword name="Color Transform" ref="./plugins/rp/rp_colorTransform.html"/>
 			<keyword name="Contrast" ref="./plugins/rp/rp_contrast.html"/>
+			<keyword name="Filter" ref="./plugins/rp/rp_filter.html"/>
+			<keyword name="Fusion" ref="./plugins/rp/rp_fusion.html"/>
 			<keyword name="Mixture Model" ref="./plugins/rp/rp_mixture.html"/>
-			<keyword name="Segmenter" ref="./plugins/rp/rp_segmenter.html"/>
+			<keyword name="Mosaic" ref="./plugins/rp/rp_mosaic.html"/>
 			<keyword name="Register" ref="./plugins/rp/rp_register.html"/>
+			<keyword name="Segmenter" ref="./plugins/rp/rp_segmenter.html"/>
 		</keywords>
    </filterSection>
 </QtHelpProject>

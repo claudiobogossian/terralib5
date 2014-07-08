@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Intitute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -107,8 +107,8 @@ void TsTiePointsLocator::saveImagesAndTiePoints(
   
   while( itB != itE )
   {
-    outputRaster1Ptr->setValue( itB->first.x, itB->first.y, 255, 1 );
-    outputRaster2Ptr->setValue( itB->second.x, itB->second.y, 255, 1 );
+    outputRaster1Ptr->setValue( (unsigned int)(itB->first.x), (unsigned int)(itB->first.y), 255, 1 );
+    outputRaster2Ptr->setValue( (unsigned int)(itB->second.x), (unsigned int)(itB->second.y), 255, 1 );
     
     ++itB;
   }
@@ -120,7 +120,7 @@ void TsTiePointsLocator::MoravecStrategySameImage()
   
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
-    "/data/rasters/cbers_b2_crop.tif";
+    "/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -162,7 +162,7 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
   
   std::map<std::string, std::string> inputRaster1Info;
   inputRaster1Info["URI"] = TERRALIB_DATA_DIR 
-    "/data/rasters/cbers_b2_crop.tif";
+    "/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     inputRaster1Info ) );
@@ -170,7 +170,7 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
   
   std::map<std::string, std::string> inputRaster2Info;
   inputRaster2Info["URI"] = TERRALIB_DATA_DIR 
-    "/data/rasters/cbers_b2_crop_contrast_halfsampled_90rotation.tif";
+    "/rasters/cbers_b2_crop_contrast_halfsampled_90rotation.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     inputRaster2Info ) );
@@ -215,7 +215,7 @@ void TsTiePointsLocator::MoravecStrategySameImageDifBoxes()
   
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
-    "/data/rasters/cbers_b2_crop.tif";
+    "/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -265,7 +265,7 @@ void TsTiePointsLocator::MoravecStrategyMultipleThreads()
   
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
-    "/data/rasters/cbers_b2_crop.tif";
+    "/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -305,7 +305,7 @@ void TsTiePointsLocator::MoravecStrategyMaximumOffset()
   
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
-    "/data/rasters/cbers_b2_crop.tif";
+    "/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -348,7 +348,7 @@ void TsTiePointsLocator::MoravecStrategyRescaleFactor()
   
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
-    "/data/rasters/cbers_b2_crop.tif";
+    "/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -391,7 +391,7 @@ void TsTiePointsLocator::SurfStrategySameImage()
   
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
-    "/data/rasters/cbers_b2_crop.tif";
+    "/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -433,7 +433,7 @@ void TsTiePointsLocator::SurfStrategySameImageDifBoxes()
   
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
-    "/data/rasters/cbers_b2_crop.tif";
+    "/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -483,7 +483,7 @@ void TsTiePointsLocator::SurfStrategyHalfRotated90Image()
   
   std::map<std::string, std::string> inputRaster1Info;
   inputRaster1Info["URI"] = TERRALIB_DATA_DIR 
-    "/data/rasters/cbers_b2_crop.tif";
+    "/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     inputRaster1Info ) );
@@ -491,7 +491,7 @@ void TsTiePointsLocator::SurfStrategyHalfRotated90Image()
   
   std::map<std::string, std::string> inputRaster2Info;
   inputRaster2Info["URI"] = TERRALIB_DATA_DIR 
-    "/data/rasters/cbers_b2_crop_contrast_halfsampled_90rotation.tif";
+    "/rasters/cbers_b2_crop_contrast_halfsampled_90rotation.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     inputRaster2Info ) );
@@ -534,7 +534,7 @@ void TsTiePointsLocator::SurfStrategyMultipleThreads()
   
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
-    "/data/rasters/cbers_b2_crop.tif";
+    "/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -574,7 +574,7 @@ void TsTiePointsLocator::SurfStrategyMaximumOffset()
   
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
-    "/data/rasters/cbers_b2_crop.tif";
+    "/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -617,7 +617,7 @@ void TsTiePointsLocator::SurfStrategyRescaleFactor()
   
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TERRALIB_DATA_DIR 
-    "/data/rasters/cbers_b2_crop.tif";
+    "/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );

@@ -65,8 +65,9 @@ namespace te
       virtual bool paramsAreValid();
       
       void setInput(te::da::DataSourcePtr inDsrc,
-                    std::auto_ptr<te::da::DataSet> inDset,
-                    std::auto_ptr<te::da::DataSetType> inDsetType);
+                    std::string inDsetName,
+                    std::auto_ptr<te::da::DataSetType> inDsetType,
+                    const te::da::ObjectIdSet* oidSet = 0);
 
       void setParams(const double& distance,
                     const int& bufferPolygonRule,
@@ -86,8 +87,9 @@ namespace te
       te::gm::GeomType getGeomResultType(te::gm::GeomType geom);
       
       te::da::DataSourcePtr m_inDsrc;
-      std::auto_ptr<te::da::DataSet> m_inDset;
+      std::string m_inDsetName;
       std::auto_ptr<te::da::DataSetType> m_inDsetType;
+      const te::da::ObjectIdSet* m_oidSet;
       
       double m_distance;
       int m_bufferPolygonRule;

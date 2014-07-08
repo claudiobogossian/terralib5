@@ -77,8 +77,5 @@ int main(int /*argc*/, char** /*argv*/)
     return EXIT_FAILURE;
   }
 
-  std::cout << "Press Enter to exit..." << std::endl;
-  std::cin.get();
-
   return EXIT_SUCCESS;
 }

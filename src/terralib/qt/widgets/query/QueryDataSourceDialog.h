@@ -76,7 +76,7 @@ namespace te
             \brief This method is used to set the list of layers
             
           */
-          void setLayerList(std::list<te::map::AbstractLayerPtr>& layerList);
+          void setLayerList(std::list<te::map::AbstractLayerPtr> layerList);
 
         protected:
 
@@ -87,6 +87,8 @@ namespace te
         protected slots:
 
           void onDataSourceSelected(int index);
+
+          void onBaseDataSetSelected(int index);
 
           void onDataSetItemClicked(QListWidgetItem* item);
 
@@ -100,6 +102,8 @@ namespace te
 
           void onOpenSqlToolButtonClicked();
 
+          void onApplySelToolButtonClicked();
+
         signals:
 
           /*! This signal is emitted when the layer objects must be highlighted. */
@@ -108,6 +112,8 @@ namespace te
         private:
 
           std::auto_ptr<Ui::QueryDataSourceDialogForm> m_ui;
+
+          std::list<te::map::AbstractLayerPtr> m_layerList;
 
           te::qt::widgets::DataSetTableModel* m_tableModel;
 

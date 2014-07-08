@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file DisplayWidget.h
+  \file GeneralConfigWidget.h
 
-  \brief A frame for setting display options.
+  \brief A frame for setting general options.
 */
 
 #ifndef __TERRALIB_QT_AF_GENERALCONFIGWIDGET_H
@@ -36,23 +36,27 @@
 #include <memory>
 
 // Forward declaration
-namespace Ui 
-{ 
-  class GeneralConfigWidgetForm; 
+namespace Ui
+{
+  class GeneralConfigWidgetForm;
 }
-
-class QPixmap;
 
 namespace te
 {
   namespace qt
   {
+// Forward declaration
+    namespace widgets
+    {
+      class ColorPickerToolButton;
+    }
+
     namespace af
-      {
+    {
       /*!
         \class DisplayWidget
 
-        \brief A frame for setting display options.
+        \brief A frame for setting general options.
       */
       class TEQTAFEXPORT GeneralConfigWidget : public AbstractSettingWidget
       {
@@ -67,38 +71,31 @@ namespace te
           void saveChanges();
 
           void resetState();
-          
+
           void getHelpInformations(QString& ns, QString& helpFile);
 
-          bool eventFilter(QObject* watched, QEvent* e);
+        private:
 
-        protected slots:
+          void initialize();
 
-          void valueChanged(QString s);
+          void setupSRSUi();
 
-          void iconSizeChanged(int size);
+        private slots:
 
-          void addPluginCategory();
+          void onDefaultSRSToolButtonPressed();
 
-          void removePluginCategory();
+          void onSelectionColorChanged(const QColor& color);
 
-          void textChanged(const QString&);
+          void onToolBarIconSizeValueChanged(int value);
 
-          void colorChanged(const QColor& c);
-
-        protected:
-
-          bool m_needRestart;
-
-          std::auto_ptr<QPixmap> m_sysIcon;
-          std::auto_ptr<QPixmap> m_sizeIcon;
-          std::auto_ptr<QPixmap> m_aboutIcon;
-          std::auto_ptr<QPixmap> m_terraIcon;
-          std::auto_ptr<QPixmap> m_toolBarSizeIcon;
+          void onIconThemeCurrentIndexChanged(const QString& value);
 
         private:
 
           std::auto_ptr<Ui::GeneralConfigWidgetForm> m_ui;
+          te::qt::widgets::ColorPickerToolButton* m_colorPicker;
+          int m_defaultSRID;
+          bool m_needRestart;
       };
 
     }   // end namespace af
@@ -106,4 +103,3 @@ namespace te
 }       // end namespace te
 
 #endif  // __TERRALIB_QT_AF_GENERALCONFIGWIDGET_H
-

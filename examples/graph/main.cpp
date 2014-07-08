@@ -63,23 +63,14 @@ int main()
   {
     std::cout << std::endl << "An exception has occurred in the Graph examples: " << e.what() << std::endl;
 
-    std::cout << "Press Enter to exit..." << std::endl;
-    std::cin.get();
-
     return EXIT_FAILURE;
   }
   catch(...)
   {
     std::cout << std::endl << "An unexpected exception has occurred in the Graph examples!" << std::endl;
 
-    std::cout << "Press Enter to exit..." << std::endl;
-    std::cin.get();
-
     return EXIT_FAILURE;
   }
-
-  std::cout << "Press Enter to exit..." << std::endl;
-  std::cin.get();
 
   return EXIT_SUCCESS;
 }

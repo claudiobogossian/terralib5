@@ -56,8 +56,6 @@ te::qt::widgets::QueryDataSourceDialog::QueryDataSourceDialog(QWidget* parent, Q
 {
   m_ui->setupUi(this);
 
-  m_ui->m_tabWidget->widget(3)->setEnabled(false);
-
   m_ui->m_applyToolButton->setIcon(QIcon::fromTheme("media-playback-start-green"));
   m_ui->m_clearToolButton->setIcon(QIcon::fromTheme("edit-clear"));
   m_ui->m_applySelToolButton->setIcon(QIcon::fromTheme("check"));
@@ -79,12 +77,14 @@ te::qt::widgets::QueryDataSourceDialog::QueryDataSourceDialog(QWidget* parent, Q
 
   // Signals¨& slots
   connect(m_ui->m_dataSourceComboBox, SIGNAL(activated(int)), this, SLOT(onDataSourceSelected(int)));
+  connect(m_ui->m_baseDataSetComboBox, SIGNAL(activated(int)), this, SLOT(onBaseDataSetSelected(int)));
   connect(m_ui->m_dataSetListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(onDataSetItemClicked(QListWidgetItem*)));
   connect(m_ui->m_applyToolButton, SIGNAL(clicked()), this, SLOT(onApplyPushButtonClicked()));
   connect(m_ui->m_clearToolButton, SIGNAL(clicked()), this, SLOT(onClearPushButtonClicked()));
   connect(m_ui->m_saveSqlToolButton, SIGNAL(clicked()), this, SLOT(onSaveSqlToolButtonClicked()));
   connect(m_ui->m_openSqlToolButton, SIGNAL(clicked()), this, SLOT(onOpenSqlToolButtonClicked()));
   connect(m_ui->m_sqlEditorTextEdit, SIGNAL(textChanged()), this, SLOT(onSQLEditorTextChanged()));
+  connect(m_ui->m_applySelToolButton, SIGNAL(clicked()), this, SLOT(onApplySelToolButtonClicked()));
 
   //load data sources information
   loadDataSourcesInformation();
@@ -95,25 +95,12 @@ te::qt::widgets::QueryDataSourceDialog::~QueryDataSourceDialog()
   m_keyWords.clear();
 }
 
-void te::qt::widgets::QueryDataSourceDialog::setLayerList(std::list<te::map::AbstractLayerPtr>& layerList)
+void te::qt::widgets::QueryDataSourceDialog::setLayerList(std::list<te::map::AbstractLayerPtr> layerList)
 {
-  m_ui->m_layerComboBox->clear();
+  m_layerList = layerList;
 
-  std::list<te::map::AbstractLayerPtr>::iterator it = layerList.begin();
-
-  while(it != layerList.end())
-  {
-    te::map::AbstractLayerPtr l = *it;
-
-    std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
-
-    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
-
-    if(dsLayer && dsType->hasGeom())
-      m_ui->m_layerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
-
-    ++it;
-  }
+  if(m_ui->m_baseDataSetComboBox->count() > 0)
+    onBaseDataSetSelected(0);
 }
 
 void te::qt::widgets::QueryDataSourceDialog::loadDataSourcesInformation()
@@ -193,7 +180,33 @@ void te::qt::widgets::QueryDataSourceDialog::onDataSourceSelected(int index)
     m_ui->m_dataSetListWidget->addItem(dataSetNames[t].c_str());
   }
 
+  if(m_ui->m_baseDataSetComboBox->count() > 0)
+    onBaseDataSetSelected(0);
+
   buildMap();
+}
+
+void te::qt::widgets::QueryDataSourceDialog::onBaseDataSetSelected(int index)
+{
+  std::string dataSet = m_ui->m_baseDataSetComboBox->itemText(index).toStdString();
+
+  m_ui->m_layerComboBox->clear();
+
+  std::list<te::map::AbstractLayerPtr>::iterator it = m_layerList.begin();
+
+  while(it != m_layerList.end())
+  {
+    te::map::AbstractLayerPtr l = *it;
+
+    std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
+
+    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
+
+    if(dsLayer && dsType->getName() == dataSet)
+      m_ui->m_layerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
+
+    ++it;
+  }
 }
 
 void te::qt::widgets::QueryDataSourceDialog::onDataSetItemClicked(QListWidgetItem* item)
@@ -273,7 +286,22 @@ void te::qt::widgets::QueryDataSourceDialog::onApplyPushButtonClicked()
   //draw dataset
   m_dataSetDisplay->clear();
 
-  m_dataSetDisplay->draw(dsType, ds, dataSet.get());
+  bool draw = false;
+  for(std::size_t t = 0;  t < dataSet->getNumProperties(); ++t)
+  {
+    int type = dataSet->getPropertyDataType(t);
+
+    if(type == te::dt::GEOMETRY_TYPE)
+    {
+      draw = true;
+      break;
+    }
+  }
+
+  if(draw)
+    m_dataSetDisplay->draw(dsType, ds, dataSet.get());
+  else
+    m_dataSetDisplay->clear();
 
   //show dataset on table
   m_tableModel->setDataSet(dataSet.release());
@@ -383,7 +411,7 @@ void te::qt::widgets::QueryDataSourceDialog::onSaveSqlToolButtonClicked()
   
   if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) 
   {
-    QMessageBox::information(0, "error", file.errorString());
+    QMessageBox::warning(this, tr("Query DataSource"), file.errorString());
     return;
   }
 
@@ -408,7 +436,7 @@ void te::qt::widgets::QueryDataSourceDialog::onOpenSqlToolButtonClicked()
   
   if(!file.open(QIODevice::ReadOnly)) 
   {
-    QMessageBox::information(0, "error", file.errorString());
+    QMessageBox::warning(this, tr("Query DataSource"), file.errorString());
     return;
   }
 
@@ -425,4 +453,75 @@ void te::qt::widgets::QueryDataSourceDialog::onOpenSqlToolButtonClicked()
   }
 
   file.close();
+}
+
+void te::qt::widgets::QueryDataSourceDialog::onApplySelToolButtonClicked()
+{
+  if(m_ui->m_sqlEditorTextEdit->toPlainText().isEmpty())
+    return;
+
+  QVariant varLayer = m_ui->m_layerComboBox->itemData(m_ui->m_layerComboBox->currentIndex(), Qt::UserRole);
+  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+
+  if(!layer.get())
+  {
+    QMessageBox::warning(this, tr("Query DataSource"), tr("No layer selected."));
+    return;
+  }
+
+  std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toStdString();
+
+  te::da::DataSourcePtr ds = te::da::GetDataSource(dataSourceId);
+
+  std::string dataSetName = m_ui->m_baseDataSetComboBox->currentText().toStdString();
+
+  te::da::DataSetTypePtr dsType(te::da::GetDataSetType(dataSetName, dataSourceId));
+
+  std::string sql = "";
+
+  if(m_ui->m_sqlEditorTextEdit->textCursor().selectedText().isEmpty())
+    sql = m_ui->m_sqlEditorTextEdit->toPlainText().toStdString();
+  else
+    sql = m_ui->m_sqlEditorTextEdit->textCursor().selectedText().toStdString();
+
+  //get dataset
+  std::auto_ptr<te::da::DataSet> dataSet;
+  
+  try
+  {
+    dataSet = ds->query(sql);
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Query DataSource"), tr("Error executing SQL."));
+    return;
+  }
+
+  try
+  {
+    if(m_ui->m_newSelRadioButton->isChecked())
+    {
+      // Generates the oids
+      dataSet->moveBeforeFirst();
+      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataSet.get(), dsType.get());
+
+      layer->clearSelected();
+      layer->select(oids);
+    }
+    else if(m_ui->m_addSelRadioButton->isChecked())
+    {
+      // Generates the oids
+      dataSet->moveBeforeFirst();
+      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataSet.get(), dsType.get());
+
+      layer->select(oids);
+    }
+  }
+  catch(te::common::Exception& e)
+  {
+    QMessageBox::warning(this, tr("Query DataSource"), tr("Error selecting objects: ") + e.what());
+    return;
+  }
+
+  QMessageBox::information(this, tr("Query DataSource"), tr("Selection done."));
 }

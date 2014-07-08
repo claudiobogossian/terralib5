@@ -88,7 +88,7 @@ namespace te
 
           \note The caller will take the ownership of the given pointer.
         */
-        Expression* getExpression() const;
+        Expression* getExpression(const std::string source = "") const;
 
         /*!
           \brief It clears this object id set.

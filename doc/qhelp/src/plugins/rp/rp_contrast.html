@@ -1,219 +1,133 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-
-
-
-  
-  
-  
-  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-
-
-
-  
-  
-  
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=ISO-8859-1">
   <title>Contrast</title>
 </head>
-
-
 <body>
-
-
-
-<h3 style="text-align: center;"><font face="Calibri Light"><span style="font-family: Calibri Light;">Contrast</span></font></h3>
-
-
-
-<font face="Calibri Light"><span style="font-family: Calibri Light;">The </span><span style="font-weight: bold; font-family: Calibri Light;">Contrast </span><span style="font-family: Calibri Light;">operation is used to&nbsp;</span><span style="font-family: Calibri Light;">enhance the visual quality of the image represented by a raster file. </span><span style="font-family: Calibri Light;"></span>The
+<h3 style="text-align: center;"><font face="Calibri Light"><span
+ style="font-family: Calibri Light;">Contrast</span></font></h3>
+<font face="Calibri Light"><span style="font-family: Calibri Light;">The
+</span><span style="font-weight: bold; font-family: Calibri Light;">Contrast
+</span><span style="font-family: Calibri Light;">operation is used
+to&nbsp;</span><span style="font-family: Calibri Light;">enhance the
+visual quality of the image represented by a raster file. </span><span
+ style="font-family: Calibri Light;"></span>The
 available methods in TerraLib
 are:<br style="font-family: Calibri Light;">
-
 </font>
-
 <ul style="font-family: Calibri Light;">
-
-
-
-  <li><font face="Calibri Light"><span style="font-weight: bold;">Linear</span>: The user defines
+  <li><font face="Calibri Light"><span style="font-weight: bold;">Linear</span>:
+The user defines
 a new minimum and maximum values for the pixels in the image. The
 algorithm then applies a linear function over the pixels using this 2
 values.</font></li>
-
-
-
 </ul>
-
-
-
 <ul style="font-family: Calibri Light;">
-
-
-
-  <li><font face="Calibri Light"><span style="font-weight: bold;">Histogram Equalization</span>:&nbsp;
+  <li><font face="Calibri Light"><span style="font-weight: bold;">Histogram
+Equalization</span>:&nbsp;
 Using this method, the histogram of the image will be equalized
 automatically.</font></li>
-
-
-
 </ul>
-
-
-
 <ul style="font-family: Calibri Light;">
-
-
-
-  <li><font face="Calibri Light"><span style="font-weight: bold;">Set Mean and Standard Deviation</span>:
+  <li><font face="Calibri Light"><span style="font-weight: bold;">Set
+Mean and Standard Deviation</span>:
 The contrasted image will have a predefined mean and standard
 deviation, defined by the user.</font></li>
-
-
-
 </ul>
-
-
-
 <font style="font-family: Calibri Light;" face="Calibri Light"><br>
-
-
-
 It is
-accessible through:</font><font style="font-family: Calibri Light;" face="Calibri Light"><b><br>
-
-
+accessible through:</font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><b><br>
 </b></font>
 <font face="Calibri Light"><br>
-
 </font>
-
-<font style="font-family: Calibri Light;" face="Calibri Light"><b>&nbsp;&nbsp;&nbsp;</b></font><font style="font-family: Calibri Light;" face="Calibri Light"><b>Raster Processing &gt;
-Contrast...</b></font><font style="font-family: Calibri Light;" face="Calibri Light"><b> </b>(list
+<font style="font-family: Calibri Light;" face="Calibri Light"><b>&nbsp;&nbsp;&nbsp;</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b>Raster
+Processing &gt;
+Contrast...</b></font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><b> </b>(list
 of all
 raster layers will be available)&nbsp;<br>
-
-
-
 <br>
-
-
-
-<span style="font-family: Calibri Light;"></span></font><font style="font-family: Calibri Light;" face="Calibri Light">This
+<span style="font-family: Calibri Light;"></span></font><font
+ style="font-family: Calibri Light;" face="Calibri Light">This
 wizard consists of the
 following steps:</font><font face="Calibri Light"><br>
-
 </font>
-
 <h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
-Wizard Page 1 -&nbsp;</font><font face="Calibri Light"><span style="font-family: Calibri Light;">Selection
-of the layer to apply the contrast (<span style="text-decoration: underline;"><a href="../../widgets/layer/search.html">Layer Search</a></span>)</span></font></h4>
-
-
+Wizard Page 1 -&nbsp;</font><font face="Calibri Light"><span
+ style="font-family: Calibri Light;">Selection
+of the layer to apply the contrast (<span
+ style="text-decoration: underline;"><a
+ href="../../widgets/layer/search.html">Layer Search</a></span>)</span></font></h4>
 <ol>
-
-
   <li><font face="Calibri Light">On the <i>List
 of Layers</i> select the raster layer to apply the contrast.&nbsp;</font></li>
-  <li><font face="Calibri Light">Optionally use <i>Filter By Name</i> field
+  <ol>
+  </ol>
+  <li><font face="Calibri Light">Optionally use <i>Filter By Name</i>
+field
 giving part of the layer name to help find the layer in the list.</font></li>
-
-
   <li><font face="Calibri Light">Press <b>Next&nbsp;</b>
 to go to next step or <b>Cancel </b>to close the
 dialog.&nbsp;</font></li>
-
-
 </ol>
-
-
 <div style="text-align: center;">
-<div style="text-align: left;"><font face="Calibri Light"><span style="font-family: Calibri Light;"></span></font>
+<div style="text-align: left;"><font face="Calibri Light"><span
+ style="font-family: Calibri Light;"></span></font>
 <h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
-Wizard Page 2 - </font><font face="Calibri Light"><span style="font-family: Calibri Light;">Contrast parameters</span><span style="font-family: Calibri Light;"></span></font></h4>
-
-
-
+Wizard Page 2 - </font><font face="Calibri Light"><span
+ style="font-family: Calibri Light;">Contrast parameters</span><span
+ style="font-family: Calibri Light;"></span></font></h4>
 <font face="Calibri Light"><span style="font-family: Calibri Light;"></span></font></div>
-
-
-
 </div>
-
-
-
 <ol style="font-family: Calibri Light;">
-
-
-
-  <li><font face="Calibri Light">Select the <i>Type</i> of contrast to be used (Linear, &nbsp;Histogram or Mean and Standard deviation).</font></li>
-
-
-
-  <li><font face="Calibri Light">In <i>Raster Bands</i> check the desired bands and set the
+  <li><font face="Calibri Light">Select the <i>Type</i> of contrast to
+be used (Linear, &nbsp;Histogram or Mean and Standard deviation).</font></li>
+  <li><font face="Calibri Light">In <i>Raster Bands</i> check the
+desired bands and set the
 specific parameters which will varies depending on the contrast type
-chosen. &nbsp;<i>Double Click</i> over the cell of each parameter to make the cell editable and then change the value and press enter:</font></li>
-
-
-  
-  
+chosen. &nbsp;<i>Double Click</i> over the cell of each parameter to
+make the cell editable and then change the value and press enter:</font></li>
   <ol>
-
-
-    <li>If&nbsp; <font face="Calibri Light"><i>Linear: </i>set the new value for&nbsp;<i>Minimum</i> and/or <i>Maximum,</i></font></li>
-
-
-    <li><font face="Calibri Light">If <i>Histogram Equalization</i>: set the new value for&nbsp; <i>Maximum,</i></font></li>
-
-
-    <li>If <font face="Calibri Light"><i>Mean and Standard Deviation</i>: set the new value for <i>Mean</i> and/or <i>Std Dev.</i></font></li>
-
-
-  
-  
+    <li>If&nbsp; <font face="Calibri Light"><i>Linear: </i>set the
+new value for&nbsp;<i>Minimum</i> and/or <i>Maximum,</i></font></li>
+    <li><font face="Calibri Light">If <i>Histogram Equalization</i>:
+set the new value for&nbsp; <i>Maximum,</i></font></li>
+    <li>If <font face="Calibri Light"><i>Mean and Standard Deviation</i>:
+set the new value for <i>Mean</i> and/or <i>Std Dev.</i></font></li>
   </ol>
-
-
-  <li><font face="Calibri Light">On the <i>Preview </i>&nbsp;section click on <img alt="" src="../../gen_icones/ic_check.PNG" height="22" width="25"> to have a preview of the contrast with the parameters informed.</font></li>
-
-
-  <li><font face="Calibri Light">Press <b>Next</b></font> to apply the contrast or <b>Back</b> to go to the previous wizard page.</li>
-
-
+  <li><font face="Calibri Light">On the <i>Preview </i>&nbsp;section
+click on <img alt="" src="../../gen_icones/ic_check.PNG" height="22"
+ width="25"> to have a preview of the contrast with the parameters
+informed.</font></li>
+  <li><font face="Calibri Light">Press <b>Next</b></font> to apply the
+contrast or <b>Back</b> to go to the previous wizard page.</li>
 </ol>
-
-
 <font face="Calibri Light"><span style="font-family: Calibri Light;"></span></font>
-<h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp; Wizard Page 3 -&nbsp;</font><font face="Calibri Light"><span style="font-family: Calibri Light;">Output
+<h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
+Wizard Page 3 -&nbsp;</font><font face="Calibri Light"><span
+ style="font-family: Calibri Light;">Output
 information</span></font></h4>
-
-
 <ol>
-
-
   <li><font face="Calibri Light"><i>Raster Info</i>
-- First press <img alt="" src="../../gen_icones/ic_3points.PNG" height="19" width="27"> and inform the folder where the resulting
+- First press <img alt="" src="../../gen_icones/ic_3points.PNG"
+ height="19" width="27"> and inform the folder where the resulting
 file&nbsp;will be saved.</font></li>
-
-
   <li><font face="Calibri Light"><i>Name - </i>inform
 the raster name.</font></li>
-
-
   <li><font face="Calibri Light"><i>Extra
-Parameters</i> - if there are some, see the details on how to inform then <a href="../../widgets/rp/output_raster_info.html">here</a>.</font></li>
-
-
+Parameters</i> - if there are some, see the details on how to inform
+then <a href="../../widgets/rp/output_raster_info.html">here</a>.</font></li>
   <li><font face="Calibri Light">Press <b>Finish</b>
 to save the resulting contrasted raster or&nbsp;<b>Back</b>
 to go to the previous wizard page.</font></li>
-
-
 </ol>
-
 <font face="Calibri Light">
-Hint: The contrasted image will be added as a new layer at the TerraView project.
-
+Hint: The contrasted image will be added as a new layer at the
+TerraView project.
 </font>
 </body>
 </html>

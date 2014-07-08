@@ -127,7 +127,7 @@ void TsRTree::tcRTreeInts()
   const te::gm::Envelope* mbr2 = new te::gm::Envelope(1.5,1.5,7.5,7.5);
   CPPUNIT_ASSERT(rtree.search(*mbr2, report1) == 6);
 
-  for (int j = 0; j < report1.size(); j++)
+  for (std::size_t j = 0; j < report1.size(); j++)
   {
     std::cout << std::endl << "Print report RTree points["<< j <<"]: " << report1[j] << std::endl;
   }
@@ -169,7 +169,7 @@ void TsRTree::tcRTreePointers()
   const te::gm::Envelope* mbr1 = new te::gm::Envelope(0.0,0.0,3.5,3.5);
   std::vector<int*> report1;
   CPPUNIT_ASSERT(rtree.search(*mbr1, report1) == 4);
-  for (int j = 0; j < report1.size(); j++)
+  for (std::size_t j = 0; j < report1.size(); j++)
   {
     std::cout << std::endl << "Print report["<< j <<"]: " << report1[j] << std::endl;
   }
@@ -184,7 +184,7 @@ void TsRTree::tcRTreeGradeInts()
   te::sam::rtree::Index<int, 4> rtree;
 
   pointVec.reserve(100);
-  int j; 
+  std::size_t j; 
   int k = 0; //id 
   for(int i = 0; i < 10; ++i)
   {
@@ -236,7 +236,7 @@ void TsRTree::tcRTreeBox()
   te::sam::rtree::Index<int, 4> rtree;
 
   envelopeVec.reserve(121);
-  int j; 
+  std::size_t j; 
   int k = 0; //id 
   for(int i = 0; i < 11; ++i)
   {
@@ -257,7 +257,7 @@ void TsRTree::tcRTreeBox()
   env_size = envelopeVec.size();
   size = rtree.size();
 
-  for(int i = 0; i < env_size; ++i)
+  for(std::size_t i = 0; i < env_size; ++i)
   {
     std::vector<int> report;
     const te::gm::Envelope* mbr = envelopeVec[i];
@@ -320,7 +320,7 @@ void TsRTree::tcRTreeBox_4()
   std::vector<te::gm::Envelope*> envelopeVec;
   envelopeVec.reserve(12);
 
-  int j; 
+  std::size_t j; 
   int k = 0; //id 
   {
     envelopeVec.push_back(r15);
@@ -367,7 +367,7 @@ void TsRTree::tcRTreeBox_4()
   envelopeVec.push_back(boxInsert);
   rtree.insert(*(boxInsert), k++);
 
-  for(int i = 0; i < env_size; ++i)
+  for(std::size_t i = 0; i < env_size; ++i)
   {
     std::vector<int> report;
     const te::gm::Envelope* mbr = envelopeVec[i];
@@ -439,7 +439,7 @@ void TsRTree::tcRTreeBox_3()
   std::vector<te::gm::Envelope*> envelopeVec;
   envelopeVec.reserve(12);
 
-  int j; 
+  std::size_t j; 
   int k = 0; //id 
   {
     envelopeVec.push_back(r15);
@@ -487,7 +487,7 @@ void TsRTree::tcRTreeBox_3()
   rtree.insert(*(boxInsert), k++);
   CPPUNIT_ASSERT(rtree.size() == size +1 );
 
-  for(int i = 0; i < env_size; ++i)
+  for(std::size_t i = 0; i < env_size; ++i)
   {
     std::vector<int> report;
     const te::gm::Envelope* mbr = envelopeVec[i];
@@ -576,7 +576,7 @@ void TsRTree::tcRTreeBox_2()
   size_t env_size = envelopeVec.size();
 
   int k = 0; //id
-  for (int j = 0; j < env_size; j++)
+  for (std::size_t j = 0; j < env_size; j++)
   {
     te::gm::Envelope* mbr = envelopeVec[j];
     rtree.insert(*(mbr), k++);
@@ -587,7 +587,7 @@ void TsRTree::tcRTreeBox_2()
   rtree.insert(*(boxInsert), k++);
   env_size = envelopeVec.size();
 
-  for(int i = 0; i < env_size; ++i)
+  for(std::size_t i = 0; i < env_size; ++i)
   {
     std::vector<int> report;
     const te::gm::Envelope* mbr = envelopeVec[i];
@@ -596,7 +596,7 @@ void TsRTree::tcRTreeBox_2()
     std::cout << std::endl << "Printing search_result using mbr(x1,y1,x2,y2) " << mbr->m_llx << " " << mbr->m_lly << " " <<mbr->m_urx << " " << mbr->m_ury << std::endl;
     std::cout << "    Search Result = " << search_result << std::endl;
 
-    for (int n = 0; n < report.size(); n++)
+    for (std::size_t n = 0; n < report.size(); n++)
     {
       std::cout << std::endl << "    Print report["<< n << "]: " << report[n] << std::endl;
     }

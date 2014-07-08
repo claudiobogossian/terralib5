@@ -241,7 +241,7 @@ bool IntersectionOGRToOGR()
   // sera feito por algum tipo de factory
   te::vp::IntersectionOp* intersectionOp = new te::vp::IntersectionMemory();
 
-  intersectionOp->setInput(srcDs1, inDset1, inDsetType1, srcDs2, inDset2, inDsetType2);
+  intersectionOp->setInput(srcDs1, inDsetName1, inDsetType1, srcDs2, inDsetName2, inDsetType2);
   intersectionOp->setOutput(trgDs, outDS);
   intersectionOp->setParams(copyInputColumns, inSRID);
   
@@ -332,7 +332,7 @@ bool IntersectionOGRToPGIS()
   // sera feito por algum tipo de factory
   te::vp::IntersectionOp* intersectionOp = new te::vp::IntersectionMemory();
 
-  intersectionOp->setInput(srcDs1, inDset1, inDsetType1, srcDs2, inDset2, inDsetType2);
+  intersectionOp->setInput(srcDs1, inDsetName1, inDsetType1, srcDs2, inDsetName2, inDsetType2);
   intersectionOp->setOutput(trgDs, outDS);
   intersectionOp->setParams(copyInputColumns, inSRID);
   
@@ -409,7 +409,7 @@ bool IntersectionPGISToPGIS()
   // sera feito por algum tipo de factory
   te::vp::IntersectionOp* intersectionOp = new te::vp::IntersectionMemory();
 
-  intersectionOp->setInput(srcDs1, inDset1, inDsetType1, srcDs2, inDset2, inDsetType2);
+  intersectionOp->setInput(srcDs1, inDsetName1, inDsetType1, srcDs2, inDsetName2, inDsetType2);
   intersectionOp->setOutput(trgDs, outDS);
   intersectionOp->setParams(copyInputColumns, inSRID);
   
@@ -496,7 +496,7 @@ bool IntersectionPGISToOGR()
   // sera feito por algum tipo de factory
   te::vp::IntersectionOp* intersectionOp = new te::vp::IntersectionQuery();
 
-  intersectionOp->setInput(srcDs1, inDset1, inDsetType1, srcDs2, inDset2, inDsetType2);
+  intersectionOp->setInput(srcDs1, inDsetName1, inDsetType1, srcDs2, inDsetName2, inDsetType2);
   intersectionOp->setOutput(trgDs, outDSet);
   intersectionOp->setParams(copyInputColumns, inSRID);
   
