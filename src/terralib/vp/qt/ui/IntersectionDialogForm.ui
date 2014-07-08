@@ -94,9 +94,9 @@
            <widget class="QComboBox" name="m_firstLayerComboBox"/>
           </item>
           <item row="2" column="0">
-           <widget class="QCheckBox" name="m_firstCheckBox">
+           <widget class="QCheckBox" name="m_firstSelectedCheckBox">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>Only Selected</string>
@@ -127,9 +127,9 @@
           <item row="2" column="0">
            <layout class="QGridLayout" name="gridLayout_2">
             <item row="0" column="0">
-             <widget class="QCheckBox" name="m_secondCheckBox">
+             <widget class="QCheckBox" name="m_secondSelectedCheckBox">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="text">
                <string>Only Selected</string>

@@ -69,6 +69,7 @@ else()
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/terralib4/TL4LayerSelectionWizardPage.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/terralib4/TL4RasterFolderSelectionWizardPage.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/terralib4/TL4ThemeSelectionWizardPage.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/terralib4/TL4FinalPageWizardPage.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/terralib4/Plugin.h)
 

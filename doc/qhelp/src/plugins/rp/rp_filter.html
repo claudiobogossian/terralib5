@@ -1,0 +1,246 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Raster Filter</title>
+</head>
+<body>
+<p></p>
+<div style="text-align: center;">
+<h3 style="text-align: center;"><span
+ style="font-family: Calibri Light;">Filter</span></h3>
+</div>
+<font face="Calibri Light"><br>
+</font>
+<div style="text-align: justify;">
+<div style="text-align: left;"><span style="font-family: Calibri Light;">The
+concept of filtering involves
+neighborhood operations work with the values of the image pixels in the
+neighborhood and the corresponding values of a sub image that has the
+same dimensions as the neighborhood.
+&nbsp;</span><font style="font-family: Calibri Light;"
+ face="Calibri Light">The <span style="font-weight: bold;">Filter</span><span
+ style="font-weight: bold;">
+</span>operation can be
+classified as:</font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><span style="font-weight: bold;"></span></font>
+<h4 style="font-family: Calibri Light;"><span style="font-weight: bold;">Edge
+Filter</span> </h4>
+<span style="font-family: Calibri Light;">Local discontinuities in
+image luminance from one level to another are
+called
+luminance edges, limited to image amplitude discontinuities between
+reasonably smooth
+regions.
+There are two major classes of differential edge detection: first- and
+second-order
+derivative. For the first-order class, some form of spatial first-order
+differentiation is
+performed, and the resulting edge gradient is compared to a threshold
+value. An
+edge is judged present if the gradient exceeds the threshold. For the
+second-order
+derivative class of differential edge detection, an edge is judged
+present if there is a
+significant spatial change in the polarity of the second derivative.</span><br
+ style="font-family: Calibri Light;">
+<br style="font-family: Calibri Light;">
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-style: italic;">Sobel</span>: The Sobel
+operator edge detector where the mask values of
+the north, south, east, and west pixels are doubled. The motivation for
+this weighting is to give equal importance to each pixel in terms of
+its contribution to the spatial gradient.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-style: italic;">Roberts</span>: Diagonal edge
+gradients can be obtained by forming
+running differences of diagonal
+pairs of pixels. This is the basis of the Roberts cross-difference
+operator:</li>
+</ul>
+<span style="font-family: Calibri Light;">
+</span>
+<h4 style="font-family: Calibri Light;">Smoothing Spatial Filters</h4>
+<span style="font-family: Calibri Light;">Smoothing filters are used
+for blurring and for noise reduction.
+Blurring is used
+in preprocessing steps, such as removal of small details from an image
+prior to
+(large) object extraction, and bridging of small gaps in lines or
+curves. Noise
+reduction can be accomplished by blurring with a linear filter and also
+by nonlinear
+filtering.
+</span><br style="font-family: Calibri Light;">
+<br style="font-family: Calibri Light;">
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-style: italic;">Mean</span>: The output of a
+mean, linear spatial filter is simply the
+average
+of the pixels contained in the neighborhood of the filter mask. These
+filters
+sometimes are called averaging filters or lowpass filters.
+A major use of averaging filters is in the reduction of
+&ldquo;irrelevant&rdquo; detail in an
+image. By &ldquo;irrelevant&rdquo; we mean pixel regions that are small
+with respect to the
+size of the filter mask. </li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-style: italic;">Mode</span>: The Mode filter is
+used to remove noise from an image by
+replacing pixels with the most frequently occurring pixel value
+selected from a certain window size. </li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-style: italic;">Median</span>: A median filter,
+which, as its name implies, replaces the
+value of a pixel by the
+median of the gray levels in the neighborhood of that pixel (the
+original value
+of the pixel is included in the computation of the median). Median
+filters are
+quite popular because, for certain types of random noise, they provide
+excellent
+noise-reduction capabilities, with considerably less blurring than
+linear
+smoothing filters of similar size.</li>
+</ul>
+<h4 style="font-family: Calibri Light;">Morphological Filters</h4>
+<span style="font-family: Calibri Light;">Morphological image
+processing is a type of processing in which the
+spatial form or
+structure of objects within an image are modified. Dilation and erosion
+are three fundamental morphological operations.
+</span><br style="font-family: Calibri Light;">
+<br style="font-family: Calibri Light;">
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-style: italic;">Dilation</span>: With dilation,
+an object grows uniformly in spatial
+extent, whereas with erosion an object shrinks uniformly. </li>
+</ul>
+<ul>
+  <li><span style="font-family: Calibri Light;"><span
+ style="font-style: italic;">Erosion</span>: With erosion an object
+shrinks uniformly.</span> </li>
+</ul>
+<font style="font-family: Calibri Light;" face="Calibri Light"><br>
+It is
+accessible through:</font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><b><br>
+</b></font>
+<font face="Calibri Light"><br>
+</font>
+<font style="font-family: Calibri Light;" face="Calibri Light"><b>&nbsp;&nbsp;&nbsp;</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b>Raster
+Processing &gt; Filter...</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b> </b>(list
+of all
+raster layers will be available)&nbsp;<br>
+<br>
+<span style="font-family: Calibri Light;"></span></font><font
+ style="font-family: Calibri Light;" face="Calibri Light">This
+wizard consists of the
+following steps:</font><font face="Calibri Light"><br>
+</font>
+<h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
+Wizard Page 1 -&nbsp;</font><font face="Calibri Light"><span
+ style="font-family: Calibri Light;">Selection
+of the layer to apply the filter (<span
+ style="text-decoration: underline;"><a
+ href="../../widgets/layer/search.html">Layer Search</a></span>)</span></font></h4>
+<ol>
+  <li><font face="Calibri Light">On the <i>List
+of Layers</i> select the raster layer to apply the filter.&nbsp;</font></li>
+  <li><font face="Calibri Light">Optionally use <i>Filter By Name</i>
+field
+giving part of the layer name to help find the layer in the list.</font></li>
+  <li><font face="Calibri Light">Press <b>Next&nbsp;</b>
+to go to next step or <b>Cancel </b>to close the
+dialog.&nbsp;</font></li>
+</ol>
+<div style="text-align: center;">
+<div style="text-align: left;"><font face="Calibri Light"><span
+ style="font-family: Calibri Light;"></span></font>
+<h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
+Wizard Page 2 - Filter</font><font face="Calibri Light"><span
+ style="font-family: Calibri Light;"> parameters</span><span
+ style="font-family: Calibri Light;"></span></font></h4>
+<font face="Calibri Light"><span style="font-family: Calibri Light;"></span></font></div>
+</div>
+<ol style="font-family: Calibri Light;">
+  <li><font face="Calibri Light">Select the <i>Type</i> of filter to
+be used.</font></li>
+  <li><font face="Calibri Light">Set the number of iterations.<br>
+    </font></li>
+  <li><font face="Calibri Light">In&nbsp;<i> Bands</i> select the
+desired bands to be processed.</font></li>
+  <li><font face="Calibri Light">On the <i>Preview </i>&nbsp;section
+click on <img alt="" src="../../gen_icones/ic_check.PNG" height="22"
+ width="25"> to have a preview of the filter with the parameters
+informed.</font></li>
+  <li><font face="Calibri Light">Press <b>Next</b></font> to apply the
+contrast or <b>Back</b> to go to the previous wizard page.</li>
+</ol>
+<span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; If the
+user selects the "User Defined" type, </span><span
+ style="font-family: Calibri Light;" id="result_box" class="" lang="en"><span
+ class="hps"></span><span></span><span class=""></span><span class="hps">is</span>
+<span class="hps">allowed</span> <span class="hps">to define</span> <span
+ class="hps">information</span> <span class="hps">about the</span> <span
+ class="hps">mask</span> <span class="hps">being used</span><span>.<br>
+</span></span>
+<ul>
+  <li style="font-family: Calibri Light;"><span id="result_box" class=""
+ lang="en"><span><span style="font-style: italic;">Size</span>: size of
+the mask</span></span></li>
+  <li><span id="result_box" class="" lang="en"><span><span
+ style="font-style: italic; font-family: Calibri Light;">Default Value</span><span
+ style="font-family: Calibri Light;">: default value used in the mask.</span></span></span></li>
+  <li><span id="result_box" class="" lang="en"><span><span
+ style="font-family: Calibri Light;">The <img
+ style="width: 23px; height: 22px; font-family: Calibri Light;"
+ alt="Empty Mask" src="../../gen_icones/ic_emptymask.PNG"><span
+ style="font-family: Calibri Light;"> tool&nbsp;</span></span></span></span><span
+ style="font-family: Calibri Light;" id="result_box" class="" lang="en"><span
+ class="hps">shows a empty component that</span> <span class="hps">allows
+the definition of</span> <span class="hps">a mask</span> <span
+ class="hps">with</span> <span class="hps">a size</span> <span
+ class="hps">defined</span> <span class="hps">by the user.</span></span></li>
+  <li><span id="result_box" class="" lang="en"><span class="hps"><span
+ style="font-family: Calibri Light;">The </span><img
+ style="width: 23px; height: 22px; font-family: Calibri Light;"
+ alt="Last Mask" src="../../gen_icones/ic_mask.PNG"><span
+ style="font-family: Calibri Light;"> tool shows a component with
+previous mask defined by the user.</span><br>
+    </span></span></li>
+</ul>
+<font face="Calibri Light"><span style="font-family: Calibri Light;"></span></font>
+<h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
+Wizard Page 3 -&nbsp;</font><font face="Calibri Light"><span
+ style="font-family: Calibri Light;">Output
+information</span></font></h4>
+<ol>
+  <li><font face="Calibri Light"><i>Raster Info</i>
+- First press <img alt="" src="../../gen_icones/ic_3points.PNG"
+ height="19" width="27"> and inform the folder where the resulting
+file&nbsp;will be saved.</font></li>
+  <li><font face="Calibri Light"><i>Name - </i>inform
+the raster name.</font></li>
+  <li><font face="Calibri Light"><i>Extra
+Parameters</i> - if there are some, see the details on how to inform
+then <a href="../../widgets/rp/output_raster_info.html">here</a>.</font></li>
+  <li><font face="Calibri Light">Press <b>Finish</b>
+to save the resulting contrasted raster or&nbsp;<b>Back</b>
+to go to the previous wizard page.</font></li>
+</ol>
+<font face="Calibri Light">
+Hint: The filtered image will be added as a new layer at the
+TerraView project.</font><font face="Calibri Light">
+</font></div>
+<br>
+</div>
+</body>
+</html>

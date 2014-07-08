@@ -76,6 +76,8 @@ namespace terralib4
 
       TeTheme* getTL4Theme(const ::terralib4::ThemeInfo theme);
 
+      int getLayerSRID(const std::string & layerName);
+
     protected:
 
       void create(const std::map<std::string, std::string>& dsInfo);

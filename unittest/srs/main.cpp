@@ -47,7 +47,7 @@ int main(int /*argc*/, char** /*argv*/)
 // Testing  different outputs
 
 // Print testResults in a txt file 
-  std::ofstream file1( TE_OUTPUT_REPORT_DIR "/testsResult_srs_dos.txt" );
+  std::ofstream file1( TERRALIB_REPORT_DIR "/testsResult_srs_dos.txt" );
   CPPUNIT_NS::CompilerOutputter outputter1( &result, file1);
   outputter1.write();
   file1.close();
@@ -57,14 +57,14 @@ int main(int /*argc*/, char** /*argv*/)
   // The styleSheet 'report.xsl' should be at this directory (found originally at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl).
   // One level up TE_OUTPUT_REPORT_DIR should have a 'data' directory with all files used by unit test.
   
-  CPPUNIT_NS::OFileStream file2( TE_OUTPUT_REPORT_DIR "/testsResult_srs_xml.xml" );
+  CPPUNIT_NS::OFileStream file2( TERRALIB_REPORT_DIR "/testsResult_srs_xml.xml" );
   CPPUNIT_NS::XmlOutputter xml( &result, file2 );
   xml.setStyleSheet( "report.xsl" );
   xml.write();
   file2.close();
 
 // Print testResult in a formated file 
-  CPPUNIT_NS::OFileStream file3( TE_OUTPUT_REPORT_DIR "/testsResult_srs_formated.txt" );
+  CPPUNIT_NS::OFileStream file3( TERRALIB_REPORT_DIR "/testsResult_srs_formated.txt" );
   CPPUNIT_NS::TextOutputter outputter3( &result, file3 );
   outputter3.write();
   file3.close();  

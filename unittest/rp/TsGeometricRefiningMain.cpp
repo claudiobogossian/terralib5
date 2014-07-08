@@ -40,73 +40,67 @@
 
 int main(int /*argc*/, char** /*argv*/)
 {
-  // GDAL is required to run this test
-  #if TE_USE_GDAL
-    // initialize Terralib platform
-    TerraLib::getInstance().initialize();
+  // initialize Terralib platform
+  TerraLib::getInstance().initialize();
     
-    LoadModules();
+  LoadModules();
 
-    // it creates the event manager and test controller
-    CPPUNIT_NS::TestResult controller;
+  // it creates the event manager and test controller
+  CPPUNIT_NS::TestResult controller;
 
-    // it adds a listener that collects test result 
-    CPPUNIT_NS::TestResultCollector result;
+  // it adds a listener that collects test result 
+  CPPUNIT_NS::TestResultCollector result;
 
-    controller.addListener(&result);
+  controller.addListener(&result);
 
-    // it adds a listener that print dots as test run.
-    CPPUNIT_NS::BriefTestProgressListener progress;
+  // it adds a listener that print dots as test run.
+  CPPUNIT_NS::BriefTestProgressListener progress;
 
-    controller.addListener(&progress);
+  controller.addListener(&progress);
 
-    // it adds the top suite to the test runner
-    CppUnit::Test* suite = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
+  // it adds the top suite to the test runner
+  CppUnit::Test* suite = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
 
-    CPPUNIT_NS::TestRunner runner;
+  CPPUNIT_NS::TestRunner runner;
 
-    runner.addTest(suite);
+  runner.addTest(suite);
 
-    runner.run(controller);
+  runner.run(controller);
 
-    CPPUNIT_NS::CompilerOutputter outputter( &result, CPPUNIT_NS::stdCOut() );
-    outputter.write();
+  CPPUNIT_NS::CompilerOutputter outputter( &result, CPPUNIT_NS::stdCOut() );
+  outputter.write();
 
 // Testing  different outputs
 
 // Print only fail results in a txt file (the same containt you see in DOS window)
-    std::ofstream file1(TE_OUTPUT_REPORT_DIR "/" TS_TEST_NAME ".txt" );
-    CPPUNIT_NS::CompilerOutputter outputter1( &result, file1);
-    outputter1.write();
-    file1.close();
+  std::ofstream file1(TERRALIB_REPORT_DIR "/" TS_TEST_NAME ".txt" );
+  CPPUNIT_NS::CompilerOutputter outputter1( &result, file1);
+  outputter1.write();
+  file1.close();
 
 // Printing testResults in XML file
-    // The testResult_*.xml files will be saved at TE_OUTPUT_REPORT_DIR directory.
-    // NOTE: styleSheet 'report.xsl' should be at this directory (found originally at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl)
-    // and then you can open the testResults using your web-browser.
-    // One level up TE_OUTPUT_REPORT_DIR should have a 'data' directory with all files used by unit test.
-    CPPUNIT_NS::OFileStream file2(TE_OUTPUT_REPORT_DIR "/" TS_TEST_NAME ".xml");
-    CPPUNIT_NS::XmlOutputter xml( &result, file2 );
-    xml.setStyleSheet(  "report.xsl" ); 
-    xml.write();
-    file2.close();
+  // The testResult_*.xml files will be saved at TE_OUTPUT_REPORT_DIR directory.
+  // NOTE: styleSheet 'report.xsl' should be at this directory (found originally at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl)
+  // and then you can open the testResults using your web-browser.
+  // One level up TE_OUTPUT_REPORT_DIR should have a 'data' directory with all files used by unit test.
+  CPPUNIT_NS::OFileStream file2(TERRALIB_REPORT_DIR "/" TS_TEST_NAME ".xml");
+  CPPUNIT_NS::XmlOutputter xml( &result, file2 );
+  xml.setStyleSheet(  "report.xsl" ); 
+  xml.write();
+  file2.close();
 
 // Print formated testResult in a txt 
-    CPPUNIT_NS::OFileStream file3(TE_OUTPUT_REPORT_DIR "/" TS_TEST_NAME ".txt" );
-    CPPUNIT_NS::TextOutputter outputter3( &result, file3 );
-    outputter3.write();
-    file3.close();
+  CPPUNIT_NS::OFileStream file3(TERRALIB_REPORT_DIR "/" TS_TEST_NAME ".txt" );
+  CPPUNIT_NS::TextOutputter outputter3( &result, file3 );
+  outputter3.write();
+  file3.close();
 
-    bool resultStatus = result.wasSuccessful();
+  bool resultStatus = result.wasSuccessful();
 
-    // finalize defined drivers test suit
+  // finalize defined drivers test suit
 
-    // finalize TerraLib Plataform
-    TerraLib::getInstance().finalize();
-    
-    return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
-  #endif
+  // finalize TerraLib Plataform
+  TerraLib::getInstance().finalize();
 
-  return EXIT_FAILURE;
+  return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }
-

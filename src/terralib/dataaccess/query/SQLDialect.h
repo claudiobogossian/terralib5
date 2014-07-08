@@ -84,6 +84,13 @@ namespace te
         */
         const SQLFunctionEncoder* find(const std::string& funcName) const;
 
+        /*!
+          \brief It gets the all registered names from  registed functions.
+
+          \return A vector with TerraLib general name for SQL functions.
+        */
+        std::vector<std::string> getRegisteredNames() const;
+
       private:
 
         std::map<std::string, SQLFunctionEncoder*> m_regFunctions; //!< A map from the TerraLib general name to a given SQL formatter.

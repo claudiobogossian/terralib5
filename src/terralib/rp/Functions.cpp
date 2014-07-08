@@ -238,39 +238,39 @@ namespace te
       const std::string& fileName,
       RasterHandler& outRasterHandler )
     {
-      
-      boost::filesystem::path pathInfo( fileName );
-
-      // Creating a new datasource
-
-      std::auto_ptr< te::da::DataSource > dataSourcePtr(
-        te::da::DataSourceFactory::make( "GDAL" ) );
-      if( dataSourcePtr.get() == 0 ) return false;
-
-      std::map<std::string, std::string> outputRasterInfo;
-      outputRasterInfo["SOURCE"] = pathInfo.parent_path().string().empty() ?
-        "." : pathInfo.parent_path().string();
-
-      dataSourcePtr->setConnectionInfo(outputRasterInfo);
-      dataSourcePtr->open();
-      if( ! dataSourcePtr->isOpened() ) return false;
-      
-      RasterHandler internalRasterHandler;
-      
-      if( CreateNewRaster( rasterGrid, bandsProperties, 
-        pathInfo.filename().string(), *dataSourcePtr, internalRasterHandler ) )
+      std::auto_ptr< te::rst::Raster > outRasterPtr;
+      if( CreateNewGdalRaster( rasterGrid, bandsProperties, fileName, outRasterPtr ) )
       {
-        std::auto_ptr< te::da::DataSource > dummyDataSourcePtr;
-        std::auto_ptr< te::da::DataSourceTransactor > transactorPtr;
-        std::auto_ptr< te::da::DataSet > dataSetPtr;
-        std::auto_ptr< te::rst::Raster > rasterPtr;
-        
-        internalRasterHandler.release( dummyDataSourcePtr, transactorPtr,
-          dataSetPtr, rasterPtr );
-          
-        outRasterHandler.reset( dataSourcePtr.release(), transactorPtr.release(), 
-          dataSetPtr.release(), rasterPtr.release() );
-        
+        outRasterHandler.reset( outRasterPtr.release() ); 
+        return true;
+      }
+      else
+      {
+        outRasterHandler.reset();
+        return false;
+      }
+    }
+    
+    bool CreateNewGdalRaster( const te::rst::Grid& rasterGrid,
+      std::vector< te::rst::BandProperty* > bandsProperties,
+      const std::string& fileName,
+      std::auto_ptr< te::rst::Raster >& outRasterPtr )
+    {
+      outRasterPtr.reset();
+      
+      std::map< std::string, std::string > rInfo;
+      rInfo[ "URI" ] = fileName;
+      
+      outRasterPtr.reset( te::rst::RasterFactory::make(
+        "GDAL",
+        new te::rst::Grid( rasterGrid ),
+        bandsProperties,
+        rInfo,
+        0,
+        0 ) );
+      
+      if( outRasterPtr.get() )
+      {
         return true;
       }
       else

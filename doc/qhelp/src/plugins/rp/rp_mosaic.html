@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Mosaic</title>
+</head>
+<body>
+<p></p>
+<div style="text-align: center;">
+<h3 style="text-align: center;"><span
+ style="font-family: Calibri Light;">Mosaic</span></h3>
+</div>
+<font face="Calibri Light"><br>
+</font>
+<div style="text-align: justify;">
+<div style="text-align: left;"><font style="font-family: Calibri Light;"
+ face="Calibri Light">The <span style="font-weight: bold;">Mosaic</span><span
+ style="font-weight: bold;">
+</span>operation is used
+to&nbsp;</font><span style="font-family: Calibri Light;">create a
+mosaic from a set of rasters. Image mosaic refer to that multi images,
+which are shot in
+the same or different shooting condition and have overlapped
+regions, are stitched and combined to a image to enlarge the
+field of vision that a image can cover</span><font
+ style="font-family: Calibri Light;" face="Calibri Light">. The
+available methods in TerraLib
+are:<br>
+</font>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Geo Mosaic:</span>&nbsp;Create a
+mosaic from a set of geo-referenced rasters. </li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Tie Points Mosaic</span>:&nbsp;Create
+a mosaic from a set of rasters using tie-points over each adjacent
+rasters pair.
+  </li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><font style="font-family: Calibri Light;" face="Calibri Light"><span
+ style="font-weight: bold;">Sequence Mosaic</span>:&nbsp;</font>Create
+mosaics from a sequence of overlapped rasters using an automatic
+tie-points detection method. </li>
+</ul>
+<font style="font-family: Calibri Light;" face="Calibri Light"><br>
+It is
+accessible through:</font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><b><br>
+</b></font>
+<font face="Calibri Light"><br>
+</font>
+<font style="font-family: Calibri Light;" face="Calibri Light"><b>&nbsp;&nbsp;&nbsp;</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b>Raster
+Processing &gt; Mosaic...</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b> </b>(list
+of all
+raster layers will be available)&nbsp;<br>
+<br>
+<span style="font-family: Calibri Light;"></span></font><font
+ style="font-family: Calibri Light;" face="Calibri Light">This
+wizard consists of the
+following steps:</font><font face="Calibri Light"><br>
+</font>
+<h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
+Wizard Page 1 -&nbsp;</font><font face="Calibri Light"><span
+ style="font-family: Calibri Light;">Selection
+of the layers to mosaic (<span style="text-decoration: underline;"><a
+ href="../../widgets/layer/search.html">Layer Search</a></span>)</span></font></h4>
+<ol>
+  <li><font face="Calibri Light">On the <i>List
+of Layers</i> select the raster layers to apply the mosaic.&nbsp;</font></li>
+  <li><font face="Calibri Light">Optionally use <i>Filter By Name</i>
+field
+giving part of the layer name to help find the layer in the list.</font></li>
+  <li><font face="Calibri Light">Press <b>Next&nbsp;</b>
+to go to next step or <b>Cancel </b>to close the
+dialog.&nbsp;</font></li>
+</ol>
+<div style="text-align: center;">
+<div style="text-align: left;"><font face="Calibri Light"><span
+ style="font-family: Calibri Light;"></span></font>
+<h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
+Wizard Page 2 - Mosaic</font><font face="Calibri Light"><span
+ style="font-family: Calibri Light;"> parameters</span><span
+ style="font-family: Calibri Light;"></span></font></h4>
+<font face="Calibri Light"><span style="font-family: Calibri Light;"></span></font></div>
+</div>
+<ol style="font-family: Calibri Light;">
+  <li><font face="Calibri Light">Select the <i>Type</i> of mosaic to
+be used and set their specific parameters.</font></li>
+  <ul>
+    <li><font face="Calibri Light">Geo Mosaic</font></li>
+    <li><font face="Calibri Light">Tie Points Mosaic</font></li>
+    <ul>
+      <li style="font-style: italic;"><font face="Calibri Light">Layer A</font></li>
+      <li style="font-style: italic;"><font face="Calibri Light">Layer B</font></li>
+      <li style="font-style: italic;"><font face="Calibri Light">Geometric
+transformation</font></li>
+      <li style="font-style: italic;"><font face="Calibri Light">Tie
+Points Link Type</font></li>
+      <li><span style="font-family: Calibri Light;">Use&nbsp; <img
+ alt="" src="../../gen_icones/ic_wand.PNG" height="24" width="25"> tool
+to show the interface for the acquisition of tie points. This interface
+is the same used in the <a href="rp_register.html">register</a>
+operation.&nbsp;</span></li>
+    </ul>
+    <li><span style="font-family: Calibri Light;">Sequence Mosaic</span></li>
+    <ul>
+      <li style="font-style: italic;"><span
+ style="font-family: Calibri Light;">Geometric Transformation</span></li>
+      <li><span style="font-family: Calibri Light;"><span
+ style="font-style: italic;">Reference Band</span>: The band used to
+locate tie-points.</span></li>
+      <li><span style="font-family: Calibri Light;"><span
+ style="font-style: italic;">Minimum Required Tie Points</span>: The
+minimum required tie-points covered area percent of each raster area -
+valid range [0,100] (default : 0).</span></li>
+    </ul>
+  </ul>
+  <li><span style="font-family: Calibri Light;">The common parameters
+are:</span></li>
+  <ul>
+    <li><span style="font-family: Calibri Light;"><span
+ style="font-style: italic;">Interpolator</span>: The raster
+interpolator method.</span></li>
+    <li><span style="font-family: Calibri Light;"><span
+ style="font-style: italic;">Blender</span>: The pixel blending method.</span></li>
+    <li><span style="font-family: Calibri Light;"><span
+ style="font-style: italic;">No Data</span>:&nbsp;</span></li>
+    <ul>
+      <li><span style="font-family: Calibri Light;"><span
+ style="font-style: italic;">Value</span>: The pixel value used where
+no raster data is available (default : 0).</span></li>
+      <li><span style="font-family: Calibri Light;"><span
+ style="font-style: italic;">Force</span> <span
+ style="font-style: italic;">Input Value</span>: &nbsp;If checked, no
+data value will be used as the no-data value for input rasters.</span></li>
+    </ul>
+    <li style="font-style: italic;"><span
+ style="font-family: Calibri Light;">Options</span></li>
+    <ul>
+      <li><span style="font-family: Calibri Light;"><span
+ style="font-style: italic;">Auto Equalize</span>: Auto equalization
+will be performed using the overlaped image areas.</span></li>
+      <li><span style="font-family: Calibri Light;"><span
+ style="font-style: italic;">Use Raster Cache</span><br>
+        </span></li>
+    </ul>
+  </ul>
+  <li><font face="Calibri Light">Press <b>Next</b></font> to apply the
+contrast or <b>Back</b> to go to the previous wizard page.</li>
+</ol>
+<font face="Calibri Light"><span style="font-family: Calibri Light;"></span></font>
+<h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
+Wizard Page 3 -&nbsp;</font><font face="Calibri Light"><span
+ style="font-family: Calibri Light;">Output
+information</span></font></h4>
+<ol>
+  <li><font face="Calibri Light"><i>Raster Info</i>
+- First press <img alt="" src="../../gen_icones/ic_3points.PNG"
+ height="19" width="27"> and inform the folder where the resulting
+file&nbsp;will be saved.</font></li>
+  <li><font face="Calibri Light"><i>Name - </i>inform
+the raster name.</font></li>
+  <li><font face="Calibri Light"><i>Extra
+Parameters</i> - if there are some, see the details on how to inform
+then <a href="../../widgets/rp/output_raster_info.html">here</a>.</font></li>
+  <li><font face="Calibri Light">Press <b>Finish</b>
+to save the resulting contrasted raster or&nbsp;<b>Back</b>
+to go to the previous wizard page.</font></li>
+</ol>
+<font face="Calibri Light">
+Hint: The mosaic image will be added as a new layer at the
+TerraView project.</font><font face="Calibri Light">
+</font></div>
+<br>
+</div>
+</body>
+</html>

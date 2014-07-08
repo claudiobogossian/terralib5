@@ -74,7 +74,7 @@ void te::da::ObjectIdSet::add(te::da::ObjectId* oid)
   m_oids.insert(oid);
 }
 
-te::da::Expression* te::da::ObjectIdSet::getExpression() const
+te::da::Expression* te::da::ObjectIdSet::getExpression(const std::string source) const
 {
   assert(m_pnames.size() == m_ptypes.size());
 
@@ -84,7 +84,11 @@ te::da::Expression* te::da::ObjectIdSet::getExpression() const
   // for each property used to be part of the object identification builds a IN clause
   for(std::size_t i = 0; i < m_pnames.size(); ++i)
   {
-    In* in = new In(m_pnames[i]);
+    In* in = 0;
+    if(source.empty())
+      in = new In(m_pnames[i]);
+    else
+      in = new In(source + "." + m_pnames[i]);
 
     // for each object in the set include its property value in the IN clause
     std::set<ObjectId*, te::common::LessCmp<ObjectId*> >::const_iterator it;

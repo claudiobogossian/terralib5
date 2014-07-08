@@ -34,8 +34,25 @@
 
 te::rst::RasterSynchronizer::RasterSynchronizer( Raster& raster,
   const te::common::AccessPolicy policy )
-: m_policy( policy ), m_raster( raster )
+: m_raster( raster )
 {
+  if( ( raster.getAccessPolicy() & te::common::WAccess ) &&
+    ( policy & te::common::WAccess ) )
+  {
+    m_policy = raster.getAccessPolicy();
+  }
+  else
+  {
+    if( raster.getAccessPolicy() & te::common::RAccess ) 
+    {
+      m_policy = te::common::RAccess;
+    }
+    else
+    {
+      m_policy = te::common::NoAccess;
+    }
+  }
+  
   m_blocksUseCounters.resize( raster.getNumberOfBands() );
   
   for( unsigned int bandIdx = 0; bandIdx < m_blocksUseCounters.size() ;  ++bandIdx )

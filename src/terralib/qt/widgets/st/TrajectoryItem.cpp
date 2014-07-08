@@ -9,6 +9,7 @@
 #include <QtCore/QPropertyAnimation>
 #include <QtGui/QPainter>
 #include <QtCore/QVector>
+#include <QtCore/QFile>
 
 
 te::qt::widgets::TrajectoryItem::TrajectoryItem(const QString& title, const QString& file, te::qt::widgets::MapDisplay* display)
@@ -17,7 +18,22 @@ te::qt::widgets::TrajectoryItem::TrajectoryItem(const QString& title, const QStr
     m_backwardColor(Qt::magenta),
     m_lineWidth(2)
 {
-  setPixmap(QPixmap(file));
+  QFile f(file);
+  if(f.exists())
+    setPixmap(QPixmap(file));
+  else
+  {
+    QPixmap pix(20, 20);
+    pix.fill(Qt::transparent);
+    QPainter painter(&pix);
+    QBrush b(Qt::red);
+    painter.setBrush(b);
+    QPen p(Qt::red);
+    painter.setPen(p);
+    painter.drawEllipse(QRect(1, 1, 18, 18));
+    painter.end();
+    setPixmap(pix);
+  }
   setMatrix();
 }
 

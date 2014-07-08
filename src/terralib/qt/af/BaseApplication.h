@@ -40,6 +40,7 @@
 #include <QColor>
 #include <QLineEdit>
 #include <QMainWindow>
+#include <QMessageBox>
 
 class QLabel;
 
@@ -141,6 +142,8 @@ namespace te
 
           void onToolsDataExchangerDirectPopUpTriggered();
 
+          void onToolsQueryDataSourceTriggered();
+
           void onProjectPropertiesTriggered();
 
           void onAddFolderLayerTriggered();
@@ -227,7 +230,7 @@ namespace te
 
           virtual void openProject(const QString& projectFileName);
 
-          virtual void checkProjectSave();
+          virtual QMessageBox::StandardButton checkProjectSave();
 
           virtual void newProject();
 
@@ -275,6 +278,7 @@ namespace te
           QAction* m_toolsDataExchangerDirect;
           QAction* m_toolsDataExchangerDirectPopUp;
           QAction* m_toolsDataSourceExplorer;
+          QAction* m_toolsQueryDataSource;
           QAction* m_pluginsManager;
           QAction* m_helpContents;
           QAction* m_helpUpdate;

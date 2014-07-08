@@ -1,0 +1,348 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <title>PostGIS Creator</title>
+</head>
+
+
+<body>
+
+
+
+
+
+
+
+
+<div style="text-align: center; font-family: Calibri Light;">
+<h3><font size="3"> <strong> PostGIS Creator</strong></font></h3>
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div style="text-align: center; font-family: Calibri Light;">
+<h3><font size="3"><strong>Creating
+a&nbsp; new empty PostGIS&nbsp; database as Data Source </strong></font></h3>
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+<font style="font-family: Calibri Light;" face="Calibri Light">
+
+
+
+
+It is
+accessible through:<br>
+
+
+
+
+<br>
+
+
+
+
+
+
+
+
+&nbsp; <b>Project &gt; Add Layer &gt; From Data Source... &gt; PostGIS &gt;&nbsp;<img style="width: 22px; height: 23px;" alt="create icon" src="../../gen_icones/ic_datasource.PNG"></b><br>
+
+
+
+
+
+
+
+
+or<br>
+
+
+
+
+
+
+
+
+&nbsp; <b>Tools &gt; &nbsp;Data Source Explorer... &gt; PostGIS &gt;</b></font><font style="font-family: Calibri Light;" face="Calibri Light"><b>&nbsp;<img style="width: 22px; height: 23px;" alt="create icon" src="../../gen_icones/ic_datasource.PNG"></b></font><font style="font-family: Calibri Light;" face="Calibri Light"><br>
+
+
+
+
+</font>
+
+
+
+
+
+
+<font style="font-family: Calibri Light;" face="Calibri Light"><br>
+
+
+
+
+
+
+
+To create a new PostGIS&nbsp; database name "my_db" as data source it is
+necessary to inform:</font><font style="font-family: Calibri Light;" face="Calibri Light"><br>
+
+
+
+
+
+
+
+
+</font>
+<ol style="font-family: Calibri Light;">
+
+
+
+
+
+
+
+
+  <li><font style="font-family: Calibri Light;">&nbsp;<b><span style="font-weight: bold;">Server
+    </span>information</b> <span style="font-style: italic;"></span></font></li>
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <ul>
+
+
+
+
+
+
+
+
+    <li><font style="font-family: Calibri Light;"><span style="font-style: italic;">Host
+Name/IP = xxxx.dpi.inpe.br &nbsp; or localhost&nbsp;</span></font></li>
+
+
+
+
+
+
+
+
+    <li><font style="font-family: Calibri Light;"><span style="font-style: italic;">Port = 5432</span></font></li>
+
+    <li><font style="font-family: Calibri Light;"><span style="font-style: italic;">User = postgres</span></font></li>
+
+
+
+
+
+
+
+
+    <li><font style="font-family: Calibri Light;"><span style="font-style: italic;">Password =
+*****</span></font></li>
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  </ul>
+
+
+
+
+
+
+
+
+  <li><font style="font-family: Calibri Light;"><span style="font-weight: bold;">Creation
+Information</span></font></li>
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <ul>
+
+
+
+
+
+
+
+
+    <li><font style="font-family: Calibri Light;"><span style="font-style: italic;">New
+Database Name</span> = <i>my_db</i></font></li>
+
+
+
+
+
+
+
+
+    <li><font style="font-family: Calibri Light;"><span style="font-style: italic;">Template </span>= <i>template_postgis_20</i>)</font></li>
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  </ul>
+
+
+
+
+
+
+
+  <li><b>Advanced
+Creation Options (Optional)&nbsp;</b>can be used to change same default
+parameters, like <span style="font-style: italic;">Owner</span>,
+    <span style="font-style: italic;">Encoding</span>,
+    <span style="font-style: italic;">Tablespace</span><span style="font-style: italic;">, Limit connections</span>
+whose default values are&nbsp;<span style="font-style: italic;">Postgres</span>,
+    <span style="font-style: italic;">UTF8</span>,
+    <span style="font-style: italic;">pg_default</span>
+and <span style="font-style: italic;">4&nbsp;</span>
+respectively.</li>
+
+
+
+
+
+
+
+  <li><b>Apply</b></li>
+
+
+
+
+
+
+
+
+</ol>
+
+
+
+
+
+
+
+<div align="left"><font style="font-family: Calibri Light;" face="Calibri Light">Note: After
+that a new
+PostGIS connector will be available with&nbsp;a title formed by host, database name and postgres&nbsp;</font><font style="font-family: Calibri Light;" face="Calibri Light">at <a href="../../widgets/datasource_selector/datasource_selector.html">Data Source Selector&gt; PostGIS</a> </font><font style="font-family: Calibri Light;" face="Calibri Light">interface where it can be changed using the<i> Edit</i> option <img style="width: 23px; height: 21px;" alt="edit option" src="../../gen_icones/ic_update.PNG">. In this example the connection title would be &nbsp;</font><font style="font-family: Calibri Light;" face="Calibri Light"><span style="font-style: italic;">xxxx.dpi.inpe.br@</span></font><font style="font-family: Calibri Light;" face="Calibri Light"><i>my_db@postgres.</i></font><span style="font-family: Calibri Light;"> </span><font face="Calibri Light"><br>
+
+</font><font face="Calibri Light"></font></div>
+
+
+
+
+
+
+
+<p style="text-align: left; font-family: Calibri Light;"></p>
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,7 +26,7 @@
 // TerraLib
 #include "../Config.h"
 #include "TsMixtureModel.h"
-#include <terralib/gdal.h>
+//#include <terralib/gdal.h>
 #include <terralib/raster.h>
 #include <terralib/rp/MixtureModel.h>
 #include <terralib/rp/MixtureModelLinearStrategy.h>
@@ -38,13 +38,13 @@ void TsMixtureModel::Linear()
 {
 // first open the input image
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster for linear mixture model
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TERRALIB_DATA_DIR"/data/rasters/cbers2b_rgb342_crop_linearMixtureModel.tif";
+  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_linearMixtureModel.tif";
 
 // create algorithm parameters
   te::rp::MixtureModel::InputParameters mmInputParameters;
@@ -93,13 +93,13 @@ void TsMixtureModel::PCA()
 {
 // first open the input image
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster for PCA mixture model
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TERRALIB_DATA_DIR"/data/rasters/cbers2b_rgb342_crop_PCAMixtureModel.tif";
+  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_PCAMixtureModel.tif";
 
 // create algorithm parameters
   te::rp::MixtureModel::InputParameters mmInputParameters;

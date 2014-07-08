@@ -79,7 +79,7 @@ bool BufferOGRToOGR()
   // sera feito por algum tipo de factory
   te::vp::BufferOp* bufferOp = new te::vp::BufferMemory();
 
-  bufferOp->setInput(srcDs, inDset, inDsetType);
+  bufferOp->setInput(srcDs, inDsetName, inDsetType);
   bufferOp->setOutput(trgDs, outDS);
   bufferOp->setParams(distance,
                       bufferPolygonRule,
@@ -172,7 +172,7 @@ bool BufferOGRToPGIS()
   // sera feito por algum tipo de factory
   te::vp::BufferOp* bufferOp = new te::vp::BufferMemory();
 
-  bufferOp->setInput(srcDs, inDset, inDsetType);
+  bufferOp->setInput(srcDs, inDsetName, inDsetType);
   bufferOp->setOutput(trgDs, outDS);
   bufferOp->setParams(distance,
                       bufferPolygonRule,
@@ -249,7 +249,7 @@ bool BufferPGISToPGIS()
   // sera feito por algum tipo de factory
   te::vp::BufferOp* bufferOp = new te::vp::BufferMemory();
 
-  bufferOp->setInput(srcDs, inDset, inDsetType);
+  bufferOp->setInput(srcDs, inDsetName, inDsetType);
   bufferOp->setOutput(outDsource, outDSet);
   bufferOp->setParams(distance,
                       bufferPolygonRule,
@@ -334,7 +334,7 @@ bool BufferPGISToOGR()
   // sera feito por algum tipo de factory
   te::vp::BufferOp* bufferOp = new te::vp::BufferQuery();
 
-  bufferOp->setInput(srcDs, inDset, inDsetType);
+  bufferOp->setInput(srcDs, inDsetName, inDsetType);
   bufferOp->setOutput(trgDs, outDSet);
   bufferOp->setParams(distance,
                       bufferPolygonRule,

@@ -60,9 +60,10 @@ namespace te
         /*! \enum BlendMethod Pixel Blend methods. */      
         enum BlendMethod 
         {
-          InvalidBlendMethod = 0, //!< Invalid blending method.
-          NoBlendMethod = 1, //!< No blending performed.
-          EuclideanDistanceMethod = 2 //!< Euclidean distance method.
+          InvalidBlendMethod, //!< Invalid blending method.
+          NoBlendMethod, //!< No blending performed.
+          EuclideanDistanceMethod, //!< Euclidean distance method.
+          SumMethod //!< Pixels will be summed inside the raster overlapped area.
         };        
         
         /*! Default constructor. */
@@ -182,7 +183,6 @@ namespace te
             std::vector< unsigned int > m_raster1Bands; //!< Input raster 1 band indexes to use.
             std::vector< unsigned int > m_raster2Bands; //!< Input raster 2 band indexes to use (this vector has the same size as raster1Bands).
             BlendMethod m_blendMethod; //!<  The blend method to apply.
-            te::rst::Interpolator::Method m_interpMethod1; //!< The interpolation method to use when reading raster 1 data.
             te::rst::Interpolator::Method m_interpMethod2; //!< The interpolation method to use when reading raster 2 data.
             double m_noDataValue; //!< The value returned where there is no pixel data bo blend.
             bool m_forceInputNoDataValue; //!< Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored) 
@@ -214,7 +214,7 @@ namespace te
         te::rst::Raster const * m_raster2Ptr; //!< Input raster 2.
         std::auto_ptr< te::gm::MultiPolygon > m_r1ValidDataDelimiterPtr; //!< A pointer to a geometry (raster 1 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
         std::auto_ptr< te::gm::MultiPolygon > m_r2ValidDataDelimiterPtr; //!< A pointer to a geometry (raster 2 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
-        std::auto_ptr< te::gm::MultiPolygon > m_intersectionPtr; //!< The Intersection geometry ( raster 1 indexed coods).
+        std::auto_ptr< te::gm::Geometry > m_intersectionPtr; //!< The Intersection geometry ( raster 1 indexed coods).
         std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > > m_r1IntersectionSegmentsPoints; //!< A sub-set of the intersection polygon wich is part of raster 1 valid data polygon ( raster 1 indexed coods).
         std::size_t m_r1IntersectionSegmentsPointsSize; //!< Size of m_r1IntersectionSegmentsPoints;
         std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > > m_r2IntersectionSegmentsPoints; //!< A sub-set of the intersection polygon wich is part of raster 2 valid data polygon ( raster 1 indexed coods).
@@ -259,6 +259,13 @@ namespace te
         double m_euclideanDistanceMethodImp_aux1;
         double m_euclideanDistanceMethodImp_aux2;
         
+        // variables used by the sumMethodImp method
+        te::gm::Point m_sumMethodImp_auxPoint;
+        double m_sumMethodImp_Point2Line;
+        double m_sumMethodImp_Point2Col;        
+        std::complex< double > m_sumMethodImp_cValue1;
+        std::complex< double > m_sumMethodImp_cValue2;
+        unsigned int m_sumMethodImp_BandIdx;   
         
         /*! \brief Reset the instance to its initial default state. */
         void initState();
@@ -285,13 +292,31 @@ namespace te
           \param values A pointer to a pre-allocated vector where the blended values will be stored.
         */
         void euclideanDistanceMethodImp( const double& line1, const double& col1,
-          double* const values );              
+          double* const values );
+        
+        /*!
+          \brief Implementation for SumMethod.
+          \param line Raster 1 Line.
+          \param col Raster 1 Column.
+          \param values A pointer to a pre-allocated vector where the blended values will be stored.
+        */
+        void sumMethodImp( const double& line1, const double& col1,
+          double* const values );        
         
         /*!
           \brief Thread entry for the method blendIntoRaster1.
 
         */        
         static void blendIntoRaster1Thread( BlendIntoRaster1ThreadParams* paramsPtr );
+        
+        /*!
+          \brief Extract segments from the given geometry.
+          \param geometryPtr Input geometry.
+          \param segments Found segments (appended here).
+          \return true if OK, false on errors.
+        */        
+        bool getSegments( te::gm::Geometry const * const geometryPtr, 
+          std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > >& segments ) const;
     };
 
   } // end namespace rp

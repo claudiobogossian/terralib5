@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Segmenter</title>
+</head>
+<body>
+<h3 style="text-align: center;"><span
+ style="font-family: Calibri Light;">Segmentation</span></h3>
+<p style="text-align: justify; font-family: Calibri Light;">Image <b
+ style="font-family: Calibri Light;">segmentation</b><span
+ style="font-family: Calibri Light;">
+covers techniques for splitting one image in several homogeneous
+regions.&nbsp;The </span><span
+ style="font-weight: bold; font-family: Calibri Light;">Segmenter </span><span
+ style="font-family: Calibri Light;">interface implements methods to
+segment a
+raster.&nbsp;</span><span
+ style="font-style: italic; font-family: Calibri Light;">
+</span><span style="font-family: Calibri Light;">The available methods
+in TerraLib
+are:</span><span style="font-style: italic; font-family: Calibri Light;"><br>
+</span>
+</p>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Region Growing</span>: Creates
+regions by
+merging similar neighboring pixels. To reduce processing time, the
+raster is divided into pieces, and such pieces are segmented
+individually.</li>
+</ul>
+<span style="font-family: Calibri Light;"></span>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Based on Baatz and Shape</span>:
+Creates
+regions by merging similar neighboring pixels. The resultant regions
+must fit a predefined scale and compactness, provided by the user.</li>
+</ul>
+<p style="text-align: justify; font-family: Calibri Light;"><span
+ style="font-style: italic;">Input:</span></p>
+<ul style="font-family: Calibri Light;">
+  <li>One Raster,</li>
+  <li>A vector of bands indices used to perform segmentation.</li>
+</ul>
+<span style="font-style: italic; font-family: Calibri Light;">Output:<br>
+</span>
+<ul style="font-family: Calibri Light;">
+  <li>One Raster with a
+single band, where the pixel value stands for the index of the region
+to which it belongs.<br>
+  </li>
+</ul>
+<span style="font-style: italic; font-family: Calibri Light;"></span><font
+ style="font-family: Calibri Light;"><br>
+It is
+accessible through:</font><br style="font-family: Calibri Light;">
+<br style="font-family: Calibri Light;">
+<font style="font-family: Calibri Light;"><b>&nbsp;&nbsp;&nbsp;&nbsp;</b></font><font
+ style="font-family: Calibri Light;"><b>Raster Processing &gt;&nbsp;</b></font><font
+ style="font-family: Calibri Light;"><b>Segmenter</b></font><font
+ style="font-family: Calibri Light;"><b>...</b></font><font
+ style="font-family: Calibri Light;"><b> </b>(list of all
+raster layers) <br>
+<br>
+<br>
+</font><font style="font-family: Calibri Light;" face="Calibri Light">This
+wizard consists of the
+following steps:</font><br style="font-family: Calibri Light;">
+<h4 style="font-family: Calibri Light;"><font
+ style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp;
+Wizard Page 1 -&nbsp;</font>Selection
+of the layer with the desired raster (<span
+ style="text-decoration: underline;"><a
+ href="../../widgets/layer/search.html">Layer Search</a></span>)</h4>
+<ol style="font-family: Calibri Light;">
+  <li>On the <i>List
+of Layers</i> select the raster layer to apply the segmentation.&nbsp;</li>
+  <li>Optionally use <i>Filter By Name</i> &nbsp;field
+giving part of the layer name to help find the layer in the list.</li>
+  <li>Press <b>Next&nbsp;</b>
+to go to next step or <b>Cancel </b>to close the
+dialog.&nbsp;</li>
+</ol>
+<div style="text-align: left; font-family: Calibri Light;">
+<div style="text-align: left;">
+<h4><font style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp;
+Wizard Page 2 - </font>Segmentation interface</h4>
+</div>
+<ol>
+  <li><i>Type</i> -&nbsp; Choose the method of segmentation and set the
+specific
+parameters required.</li>
+  <ul>
+    <li>Region Growing</li>
+    <ul>
+      <li><i>Minimum segment size</i>: &nbsp;A positive minimum segment
+size (pixels number ).</li>
+      <li><i>Similarity Threshold</i>: &nbsp;Use lower values to merge
+only those segments that are more similar - Higher values will allow
+more segments to be merged - valid values range: positive values -
+default: 0.1.</li>
+    </ul>
+    <li>Baatz</li>
+    <ul>
+      <li><i>Minimum segment size</i>: &nbsp;A positive minimum segment
+size (pixels number ).</li>
+      <li><i>Similarity Threshold</i>:&nbsp;Use lower values to merge
+only those segments that are more similar -
+Higher values will allow more segments to be merged - valid values
+range: positive values - default: 0.1.</li>
+      <li><i>Color Weight</i>: The weight given to the color component,
+default: 0.75, valid range: [0,1].</li>
+      <li><i>Compactness Weight</i>: The weight given to the
+compactness component,&nbsp;default : 0.5, valid range: [0,1]. </li>
+    </ul>
+  </ul>
+  <li>Select the<i> Input Bands</i> to be segmented by checking its
+box. For Baatz method, its is also possible to change <i>Weight</i>
+(The weight given to each band (note: the bands weights sum must always
+be 1) or an empty vector indicating that all bands have the same
+weight.)</li>
+  <li><i>Preview</i> - optionally click on <img alt=""
+ src="../../gen_icones/ic_check.PNG" height="22" width="25">to check
+the segmentation of a small box of the image.</li>
+  <li>Press <b>Next&nbsp;</b>
+to go to next step, <b>Back </b>to check the previous wizard page or <b>Cancel
+    </b>to close the
+dialog.&nbsp;&nbsp;<br>
+  </li>
+</ol>
+<h4><font style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp;
+Wizard Page 3 - </font>Segmentation Advanced parameters interface.</h4>
+&nbsp;&nbsp;&nbsp; Optionally, use this page to change default values
+of&nbsp; advanced parameters related with performance. <br>
+<div style="text-align: center;">
+<div style="text-align: left;">
+<ul>
+</ul>
+<ol>
+  <li><i>Block options</i>:</li>
+  <ol>
+  </ol>
+  <ul>
+    <li><span style="font-weight: bold;">Enable block processing</span>:
+If checked, the original raster will be split into small blocks,
+each one will be segmented independently and the result will be merged
+(if possible) at the end.</li>
+    <li><span style="font-weight: bold;">Enable block merging</span>:
+If &nbsp;checked, a block merging procedure will be performed</li>
+  </ul>
+  <ol>
+  </ol>
+  <li><i>Thread options</i>:</li>
+  <ol>
+  </ol>
+  <ul>
+    <li><span style="font-weight: bold;">Maximum block size</span>: The
+input image
+will be split into blocks with this width for processing, this
+parameter tells the maximum block lateral size (width or height). The
+default behavior, the size will be defined following the current system
+resources and physical processors number.</li>
+    <li><span style="font-weight: bold;">Maximum threads
+number</span>: The maximum number of concurrent &nbsp;threads. The
+default behavior is: automatically found.</li>
+  </ul>
+  <ol>
+  </ol>
+</ol>
+</div>
+</div>
+<h4><font style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp;
+Wizard Page 4 - </font>Output
+Raster information</h4>
+<ol>
+  <li><i>Raster Info</i>
+- First press <img alt="" src="../../gen_icones/ic_3points.PNG"
+ height="19" width="27"> and inform the folder where the resulting
+file&nbsp;will be saved.</li>
+  <li><i>Name - </i>inform
+the raster name.</li>
+  <li><i>Extra
+Parameters</i> - if there are some, see the details on how to inform
+then <a href="../../widgets/rp/output_raster_info.html">here</a>.</li>
+  <li>Press <b>Finish</b>
+to save the resulting segmented raster or&nbsp;<b>Back</b>
+to go to the previous wizard page.</li>
+</ol>
+</div>
+</body>
+</html>

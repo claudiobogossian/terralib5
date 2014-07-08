@@ -34,6 +34,7 @@
 #include "../../common/SystemApplicationSettings.h"
 #include "../../common/UserApplicationSettings.h"
 #include "../../common/Logger.h"
+#include "../../common/Version.h"
 #include "../../dataaccess/serialization/xml/Serializer.h"
 #include "../../plugin/PluginManager.h"
 #include "../../plugin/PluginInfo.h"
@@ -301,7 +302,8 @@ void  te::qt::af::ApplicationController::initialize()
   if(!boost::filesystem::exists(m_tLibLogo.toStdString()))
     m_tLibLogo = te::common::FindInTerraLibPath(m_tLibLogo.toStdString()).c_str();
 
-  qApp->setApplicationName(m_appName);
+  QString fullAppName = m_appName + "-" + QString(te::common::Version::asString().c_str());
+  qApp->setApplicationName(fullAppName);
 
   m_appOrganization = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Organization"));
 

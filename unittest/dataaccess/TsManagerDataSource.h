@@ -111,9 +111,12 @@ class TsManagerDataSource
 
 // The sm_* will be initialized here and the setUp of PostGIS driver will use them to run all test suite
   static te::da::DataSource* sm_datasource ;
+  //static std::auto_ptr<te::da::DataSource> sm_datasource;
   static te::da::DataSourceCapabilities  sm_capabilit;
   static std::string sm_dsType;
   static std::map<std::string, std::string> sm_connInfo;
+  static std::map<std::string, std::string> sm_connInfoExist;
+
   static std::map<std::string, std::string> sm_connInfoNewDs;
   static std::map<std::string, std::string> sm_connInfoDropDs;
   static std::string sm_connStr;

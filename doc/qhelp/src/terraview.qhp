@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QtHelpProject version="1.0">
+   <namespace>dpi.inpe.br.terraview</namespace>
+   <virtualFolder>doc</virtualFolder>
+   <filterSection>
+       <filterAttribute>help</filterAttribute>
+       <toc>
+            <section title="TerraView User Manual" ref="./terraview/index.html"/>
+			<section title="TerraView Main Concepts" ref="./terraview/main_concepts.html"/>
+			<section title="TerraView GUI" ref="./terraview/main_window.html">
+				<section title="Menu Bar" ref="./terraview/terraview_menus.html">
+					<section title="File Menu" ref="./terraview/terraview_menus.html#File_Menu"/>
+					<section title="Project Menu" ref="./terraview/terraview_menus.html#Project_Menu"/>
+					<section title="View Menu" ref="./terraview/terraview_menus.html#View_Menu"/>
+					<section title="Layer Menu" ref="./terraview/terraview_menus.html#Layer_Menu"/>
+					<section title="Map Display Menu" ref="./terraview/terraview_menus.html#Map_Display_Menu"/>
+					<section title="Tools Menu" ref="./terraview/terraview_menus.html#Tools_Menu"/>
+					<section title="Plugins Menu" ref="./terraview/terraview_menus.html#Plugins_Menu"/>
+					<section title="Help Menu" ref="./terraview/terraview_menus.html#Help_Menu"/>
+				</section>
+				<section title="Tool Bars" ref="./terraview/terraview_toolbars.html"/>
+				<section title="Layer Explorer" ref="./widgets/layer/explorer.html"/>
+				<section title="Data Table" ref="./widgets/table/index.html"/>
+				<section title="Style Explorer" ref="./widgets/style/explorer.html"/>
+			</section>
+ 		    <section title="How to manipulate data?" ref="./widgets/index.html">
+				<section title="Data Source Exchanger" ref="./widgets/exchanger_all/exchanger_all.html"/>
+				<section title="Data Source Selector" ref="./widgets/datasource_selector/datasource_selector.html"/>
+				<section title="Dataset Selector" ref="./widgets/dataset_selector/dataset_selector.html"/>
+				<section title="Data Table" ref="./widgets/table/index.html">
+					<section title="Basic Features" ref="./widgets/table/basicFeatures.html"/>
+					<section title="Hide Column" ref="./widgets/table/hideColumn.html"/>
+					<section title="Reset Columns Order" ref="./widgets/table/resetColumnsOrder.html"/>
+					<section title="Show hidden column / Show all columns" ref="./widgets/table/showColumn.html"/>
+					<section title="Sort data ASC / Sort data DESC" ref="./widgets/table/sortData.html"/>
+					<section title="Statistics" ref="./widgets/table/statistics.html"/>
+				</section>
+				<section title="Layer Exchanger" ref="./widgets/exchanger_direct/exchanger_direct.html"/>
+				<section title="Classification" ref="./widgets/grouping/grouping.html"/>
+				<section title="Charts" ref="./widgets/charts/index.html">
+					<section title="Histogram" ref="./widgets/charts/histogram/histogram.html"/>
+					<section title="Scatter" ref="./widgets/charts/scatter/scatter.html"/>
+					<section title="Chart Display" ref="./widgets/charts/display/display.html"/>
+					<section title="Chart Style" ref="./widgets/charts/style/style.html"/>
+				</section>
+				<section title="Pie Bar" ref="./widgets/charts/pie_bar/pie_bar.html"/>
+				<section title="Query" ref="./widgets/query/query_dialog.html"/>
+				<section title="Tabular File " ref="./widgets/external_table/external_table.html"/>
+				<section title="Spatial Reference System" ref="./widgets/srs/srs.html"/>
+		    </section>
+		    <section title="How to change the visual presentation of points, lines, polygons, raster data?" ref="./widgets/style/explorer.html"/>
+			<section title="How to Load/Unload, Add/Remove Plugins" ref="./widgets/pluginmanager/PluginManager.html"/>
+			<section title="Using Plugins Available" ref="./plugins/index.html">
+				<section title="PostGIS Connector" ref="./plugins/pgis/pgis.html"/>
+				<section title="PostGIS Creator" ref="./plugins/pgis/pgis_creator.html"/>
+				<section title="GDAL" ref="./plugins/gdal/gdal.html"/>
+				<section title="OGR" ref="./plugins/ogr/ogr.html"/>
+				<section title="Microsoft Access Connector" ref="./plugins/ado/ado.html"/>
+				<section title="Microsoft Access Creator" ref="./plugins/ado/ado_creator.html"/>
+				<section title="Vector Processing" ref="./plugins/vp/vp.html">
+					<section title="Aggregation" ref="./plugins/vp/vp_aggregation.html"/>
+					<section title="Buffer" ref="./plugins/vp/vp_buffer.html"/>
+					<section title="Intersection" ref="./plugins/vp/vp_intersection.html"/>
+				</section>
+				<section title="Raster Processing" ref="./plugins/rp/rp.html">
+					<section title="Arithmetic Operations" ref="./plugins/rp/rp_arithOp.html"/>
+					<section title="Classifier" ref="./plugins/rp/rp_classifier.html"/>
+					<section title="Clipping" ref="./plugins/rp/rp_clipping.html"/>
+					<section title="Color Transform" ref="./plugins/rp/rp_colorTransform.html"/>
+					<section title="Contrast" ref="./plugins/rp/rp_contrast.html"/>
+					<section title="Filter" ref="./plugins/rp/rp_filter.html"/>
+					<section title="Fusion" ref="./plugins/rp/rp_fusion.html"/>
+					<section title="Mixture Model" ref="./plugins/rp/rp_mixture.html"/>
+					<section title="Mosaic" ref="./plugins/rp/rp_mosaic.html"/>
+					<section title="Register" ref="./plugins/rp/rp_register.html"/>
+					<section title="Segmenter" ref="./plugins/rp/rp_segmenter.html"/>
+				</section>
+				<section title="TerraLib 4.x Converter" ref="./plugins/terralib4/Terralib4Converter.html"/>
+		    </section>
+       </toc>
+       <files>
+			<file>./gen_icones/*.png</file>
+            <file>./apf/settings/display/*.*</file>
+            <file>./apf/settings/project/*.*</file>
+			<file>./apf/settings/table/*.*</file>
+			<file>./apf/settings/toolbar/*.*</file>
+			<file>./apf/settings/generalconfig/*.*</file>
+			<file>./apf/settings/*.html</file>
+			<file>./plugins/ado/*.*</file>
+			<file>./plugins/gdal/*.*</file>
+			<file>./plugins/ogr/*.*</file>
+			<file>./plugins/pgis/*.*</file>
+			<file>./plugins/rp/*.*</file>
+			<file>./plugins/terralib4/*.*</file>
+			<file>./plugins/vp/*.*</file>
+			<file>./plugins/*.html</file>
+			<file>./terraview/*.*</file>
+			<file>./widgets/charts/histogram/*.*</file>
+		    <file>./widgets/charts/scatter/*.*</file>
+			<file>./widgets/charts/display/*.*</file>
+		    <file>./widgets/charts/style/*.*</file>
+			<file>./widgets/charts/pie_bar/*.*</file>
+			<file>./widgets/charts/*.*</file>
+			<file>./widgets/dataset_selector/*.*</file>
+			<file>./widgets/datasource_explorer/*.*</file>
+			<file>./widgets/datasource_selector/*.*</file>
+			<file>./widgets/exchanger_all/*.*</file>
+			<file>./widgets/exchanger_direct/*.*</file>
+			<file>./widgets/external_table/*.*</file>
+			<file>./widgets/grouping/*.*</file>
+			<file>./widgets/layer/*.*</file>
+			<file>./widgets/pluginmanager/*.*</file>
+			<file>./widgets/property/*.*</file>
+			<file>./widgets/query/*.*</file>
+			<file>./widgets/rp/*.*</file>
+			<file>./widgets/srs/*.*</file>
+            <file>./widgets/style/*.*</file>
+			<file>./widgets/table/*.*</file>
+			<file>./widgets/*.html</file>
+			<file>./*.png</file>
+       </files>
+	   <keywords>
+			<keyword name="TerraView GUI" ref="./terraview/main_window.html"/>
+			<keyword name="Settings" ref="./apf/settings/SettingsConfigurations.html"/>
+			<keyword name="Display Settings" ref="./apf/settings/display/DisplayConfig.html"/>
+			<keyword name="Project Settings" ref="./apf/settings/project/ProjectConfig.html"/>
+			<keyword name="Table Settings" ref="./apf/settings/table/TableConfig.html"/>
+			<keyword name="Toolbar" ref="./apf/settings/toolbar/ToolbarConfig.html"/>
+			<keyword name="Plugin manager" ref="./widgets/pluginmanager/PluginManager.html"/>
+			<keyword name="Plugins Available" ref="./plugins/index.html"/>
+
+			<keyword name="Data Source" ref="./widgets/datasource_selector/datasource_selector.html"/>
+			<keyword name="Data Source Explorer" ref="./widgets/datasource_explorer/datasource_explorer.html"/>
+			<keyword name="Dataset Selector" ref="./widgets/dataset_selector/dataset_selector.html"/>
+			<keyword name="Layer Exchanger" ref="./widgets/exchanger_direct/exchanger_direct.html"/>
+			<keyword name="Data Source Exchanger" ref="./widgets/exchanger_all/exchanger_all.html"/>
+			<keyword name="Table" ref="./widgets/table/index.html"/>
+			<keyword name="Add Column" ref="./widgets/table/addColumn.html"/>
+			<keyword name="Spatial Reference System" ref="./widgets/srs/srs.html"/>
+			<keyword name="SRID" ref="./widgets/srs/srs.html"/>
+			<keyword name="Style Explorer" ref="./widgets/style/explorer.html"/>
+
+			<keyword name="Classification" ref="./widgets/grouping/grouping.html"/>
+			<keyword name="Query" ref="./widgets/query/query_dialog.html"/>
+			<keyword name="Query Layer" ref="./widgets/query/query_layer.html"/>
+			<keyword name="Chart" ref="./widgets/charts/index.html"/>
+	        <keyword name="Histogram" ref="./widgets/charts/histogram/histogram.html"/>
+            <keyword name="Scatter" ref="./widgets/charts/scatter/scatter.html"/>
+			<keyword name="Chart Display" ref="./widgets/charts/display/display.html"/>
+	        <keyword name="Chart Style" ref="./widgets/charts/style/style.html"/>
+			<keyword name="Pie Bar Chart" ref="./widgets/charts/pie_bar/pie_bar.html"/>
+
+			<keyword name="PostGIS Connector" ref="./plugins/pgis/pgis.html"/>
+			<keyword name="PostGIS creator" ref="./plugins/pgis/pgis_creator.html"/>
+			<keyword name="OGR" ref="./plugins/ogr/ogr.html"/>
+			<keyword name="GDAL" ref="./plugins/gdal/gdal.html"/>
+			<keyword name="ADO" ref="./plugins/ado/ado.html"/>
+			<keyword name="Microsoft Access Connector" ref="./plugins/ado/ado.html"/>
+            <keyword name="Microsoft Access Creator" ref="./plugins/ado/ado_creator.html"/>
+
+			<keyword name="Vector Processing" ref="./plugins/vp/vp.html"/>
+			<keyword name="Aggregation" ref="./plugins/vp/vp_aggregation.html"/>
+			<keyword name="Buffer" ref="./plugins/vp/vp_buffer.html"/>
+			<keyword name="Intersection" ref="./plugins/vp/vp_intersection.html"/>
+
+			<keyword name="Raster Processing" ref="./plugins/rp/rp.html"/>
+			<keyword name="Arithmetic Operations" ref="./plugins/rp/rp_arithOp.html"/>
+			<keyword name="Classifier" ref="./plugins/rp/rp_classifier.html"/>
+			<keyword name="Clipping" ref="./plugins/rp/rp_clipping.html"/>
+			<keyword name="Color Transform" ref="./plugins/rp/rp_colorTransform.html"/>
+			<keyword name="Contrast" ref="./plugins/rp/rp_contrast.html"/>
+			<keyword name="Filter" ref="./plugins/rp/rp_filter.html"/>
+			<keyword name="Fusion" ref="./plugins/rp/rp_fusion.html"/>
+			<keyword name="Mixture Model" ref="./plugins/rp/rp_mixture.html"/>
+			<keyword name="Mosaic" ref="./plugins/rp/rp_mosaic.html"/>
+			<keyword name="Register" ref="./plugins/rp/rp_register.html"/>
+			<keyword name="Segmenter" ref="./plugins/rp/rp_segmenter.html"/>
+		</keywords>
+   </filterSection>
+</QtHelpProject>

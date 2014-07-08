@@ -27,7 +27,6 @@
 #define __TERRALIB_INTERNAL_POSTGIS_H
 
 // TerraLib
-#include "postgis/CatalogLoader.h"
 #include "postgis/Config.h"
 #include "postgis/ConnectionPool.h"
 #include "postgis/DataSet.h"

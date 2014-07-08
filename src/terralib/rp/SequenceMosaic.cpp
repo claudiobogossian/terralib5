@@ -41,10 +41,12 @@
 #include "../geometry/MultiPoint.h"
 #include "../geometry/Point.h"
 #include "../common/progress/TaskProgress.h"
+#include "../common/PlatformUtils.h"
 
 #include <boost/lexical_cast.hpp>
 
 #include <memory>
+#include <cmath>
 
 #define SEQUENCE_RASTER_MAX_MOSAIC_MEM_USE 10
 
@@ -274,40 +276,35 @@ namespace te
         
         if( mosaicRasterHandler.get() == 0 )
         {
-          const double& mosaicLLX = inputRasterPtr->getGrid()->getExtent()->m_llx;
-          const double& mosaicLLY = inputRasterPtr->getGrid()->getExtent()->m_lly;
-          const double& mosaicURX = inputRasterPtr->getGrid()->getExtent()->m_urx;
-          const double& mosaicURY = inputRasterPtr->getGrid()->getExtent()->m_ury;        
+          // calculating the initial mosaic blocking scheme          
           
-          te::gm::LinearRing* auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
-          auxLinearRingPtr->setPoint( 0, mosaicLLX, mosaicURY );
-          auxLinearRingPtr->setPoint( 1, mosaicURX, mosaicURY );
-          auxLinearRingPtr->setPoint( 2, mosaicURX, mosaicLLY );
-          auxLinearRingPtr->setPoint( 3, mosaicLLX, mosaicLLY );
-          auxLinearRingPtr->setPoint( 4, mosaicLLX, mosaicURY );
+          unsigned int mosaicNBlocksX = 4;
+          unsigned int mosaicNBlocksY = 4;
+          if( m_inputParameters.m_enableMultiThread )
+          {
+            const unsigned int nProc = te::common::GetPhysProcNumber();
+            
+            if( ( mosaicNBlocksX * mosaicNBlocksY ) < nProc )
+            {
+              mosaicNBlocksX = mosaicNBlocksY = (unsigned int)std::ceil( 
+                std::sqrt( (double)nProc ) );
+            }            
+          }
           
-          te::gm::Polygon* outPolPtr = new te::gm::Polygon( 0, te::gm::PolygonType, 
-            inputRasterPtr->getGrid()->getSRID(), 0 ); 
-          outPolPtr->add( auxLinearRingPtr );
+          unsigned int mosaicBlockW = (unsigned int)std::ceil( ((double) inputRasterPtr->getNumberOfColumns()) 
+            / ((double)mosaicNBlocksX) );
+          unsigned int mosaicBlockH = (unsigned int)std::ceil( ((double)inputRasterPtr->getNumberOfRows()) 
+            / ((double)mosaicNBlocksY ) );          
           
-          mosaicValidAreaPols.clear();
-          mosaicValidAreaPols.add( outPolPtr );
-          mosaicValidAreaPols.setSRID( inputRasterPtr->getGrid()->getSRID() );
+          unsigned int mosaicNCols = mosaicBlockW * mosaicNBlocksX;
+          unsigned int mosaicNRows = mosaicBlockH * mosaicNBlocksY;
           
-          lastInputRasterBBoxLLXIndexed = 0;
-          lastInputRasterBBoxLLYIndexed = inputRasterPtr->getNumberOfRows() - 1;
-          lastInputRasterBBoxURXIndexed = inputRasterPtr->getNumberOfColumns() - 1;
-          lastInputRasterBBoxURYIndexed = 0;
-          
-          mosaicBandsRangeMin.resize( 
-            m_inputParameters.m_inputRastersBands[ inputRasterIdx ].size(), 0 );
-          mosaicBandsRangeMax.resize( 
-            m_inputParameters.m_inputRastersBands[ inputRasterIdx ].size(), 0 );           
+          // creating the raster mosaic
           
           std::vector< te::rst::BandProperty* > bandsProperties;
-          for( std::vector< unsigned int >::size_type inputRastersBandsIdx = 0 ;  
-            inputRastersBandsIdx <
-            m_inputParameters.m_inputRastersBands[ inputRasterIdx ].size() ; 
+          
+          for( std::vector< unsigned int >::size_type inputRastersBandsIdx = 0 ; 
+            inputRastersBandsIdx < m_inputParameters.m_inputRastersBands[ inputRasterIdx ].size() ; 
             ++inputRastersBandsIdx )
           {
             te::rst::BandProperty const* const inBandPropPtr =
@@ -317,28 +314,71 @@ namespace te
             bandsProperties.push_back( new te::rst::BandProperty( *inBandPropPtr ) );
             bandsProperties[ inputRastersBandsIdx ]->m_colorInterp = te::rst::GrayIdxCInt;
             bandsProperties[ inputRastersBandsIdx ]->m_noDataValue = m_inputParameters.m_noDataValue;
-            bandsProperties[ inputRastersBandsIdx ]->m_blkw = (unsigned int)
-              std::ceil( ((double)inputRasterPtr->getNumberOfColumns()) / 4.0 );
-            bandsProperties[ inputRastersBandsIdx ]->m_blkh = (unsigned int)
-              std::ceil( ((double)inputRasterPtr->getNumberOfRows()) / 4.0 );
-            bandsProperties[ inputRastersBandsIdx ]->m_nblocksx = (unsigned int)
-              std::ceil( ((double)inputRasterPtr->getNumberOfColumns()) /
-              ((double)bandsProperties[ inputRastersBandsIdx ]->m_blkw ) );
-            bandsProperties[ inputRastersBandsIdx ]->m_nblocksy = (unsigned int)
-              std::ceil( ((double)inputRasterPtr->getNumberOfRows()) /
-              ((double)bandsProperties[ inputRastersBandsIdx ]->m_blkh ) );              
-            
-            te::rst::GetDataTypeRanges( bandsProperties[ inputRastersBandsIdx ]->m_type,
-              mosaicBandsRangeMin[ inputRastersBandsIdx ],
-              mosaicBandsRangeMax[ inputRastersBandsIdx ]);             
+            bandsProperties[ inputRastersBandsIdx ]->m_blkw = mosaicBlockW;
+            bandsProperties[ inputRastersBandsIdx ]->m_blkh = mosaicBlockH;
+            bandsProperties[ inputRastersBandsIdx ]->m_nblocksx = mosaicNBlocksX;
+            bandsProperties[ inputRastersBandsIdx ]->m_nblocksy = mosaicNBlocksY;              
           }
+          
+          te::gm::Coord2D uLC( inputRasterPtr->getGrid()->getExtent()->getLowerLeftX(),
+            inputRasterPtr->getGrid()->getExtent()->getUpperRightY() );
+          
+          te::rst::Grid* mosaicGridPtr = new te::rst::Grid( 
+            mosaicNCols, 
+            mosaicNRows,
+            inputRasterPtr->getGrid()->getResolutionX(),
+            inputRasterPtr->getGrid()->getResolutionY(),
+            &uLC,
+            inputRasterPtr->getSRID() );
 
           mosaicRasterHandler.reset( 
             new te::mem::ExpansibleRaster( SEQUENCE_RASTER_MAX_MOSAIC_MEM_USE,
-            new te::rst::Grid( *( inputRasterPtr->getGrid() ) ),
+            mosaicGridPtr,
             bandsProperties ) );
           TERP_TRUE_OR_RETURN_FALSE( mosaicRasterHandler.get(),
             "Output raster creation error" );
+          
+          // updating the global mosaic variables
+          
+          mosaicBandsRangeMin.resize( 
+            mosaicRasterHandler->getNumberOfBands(), 0 );
+          mosaicBandsRangeMax.resize( 
+            mosaicRasterHandler->getNumberOfBands(), 0 );          
+          for( unsigned int mosaicBandidx = 0 ; mosaicBandidx <
+            mosaicRasterHandler->getNumberOfBands() ;  ++mosaicBandidx )
+          {
+            te::rst::GetDataTypeRanges( 
+              mosaicRasterHandler->getBand( mosaicBandidx )->getProperty()->m_type,
+              mosaicBandsRangeMin[ mosaicBandidx ],
+              mosaicBandsRangeMax[ mosaicBandidx ]);             
+          }          
+          
+          lastInputRasterBBoxLLXIndexed = 0;
+          lastInputRasterBBoxLLYIndexed = inputRasterPtr->getNumberOfRows() - 1;
+          lastInputRasterBBoxURXIndexed = inputRasterPtr->getNumberOfColumns() - 1;
+          lastInputRasterBBoxURYIndexed = 0;              
+          
+          const double& mosaicLLX = mosaicRasterHandler->getGrid()->getExtent()->m_llx;
+          const double& mosaicLLY = mosaicRasterHandler->getGrid()->getExtent()->m_lly;
+          const double& mosaicURX = mosaicRasterHandler->getGrid()->getExtent()->m_urx;
+          const double& mosaicURY = mosaicRasterHandler->getGrid()->getExtent()->m_ury;        
+          
+          te::gm::LinearRing* auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
+          auxLinearRingPtr->setPoint( 0, mosaicLLX, mosaicURY );
+          auxLinearRingPtr->setPoint( 1, mosaicURX, mosaicURY );
+          auxLinearRingPtr->setPoint( 2, mosaicURX, mosaicLLY );
+          auxLinearRingPtr->setPoint( 3, mosaicLLX, mosaicLLY );
+          auxLinearRingPtr->setPoint( 4, mosaicLLX, mosaicURY );             
+          
+          te::gm::Polygon* outPolPtr = new te::gm::Polygon( 0, te::gm::PolygonType, 
+            mosaicRasterHandler->getGrid()->getSRID(), 0 ); 
+          outPolPtr->add( auxLinearRingPtr ); 
+          
+          mosaicValidAreaPols.clear();
+          mosaicValidAreaPols.add( outPolPtr );
+          mosaicValidAreaPols.setSRID( mosaicRasterHandler->getGrid()->getSRID() );
+
+          // copying the raster data 
             
           const unsigned int nBands = mosaicRasterHandler->getNumberOfBands();
           
@@ -350,7 +390,7 @@ namespace te
           {
             const unsigned int inputBandIdx =  
               m_inputParameters.m_inputRastersBands[ inputRasterIdx ][ inputRastersBandsIdx ] ;
-            const double& bandNoDataValue = m_inputParameters.m_forceInputNoDataValue ?
+            const double& inputBandNoDataValue = m_inputParameters.m_forceInputNoDataValue ?
               m_inputParameters.m_noDataValue : inputRasterPtr->getBand( inputBandIdx
               )->getProperty()->m_noDataValue;
             const unsigned int outRowsBound = inputRasterPtr->getNumberOfRows();
@@ -373,7 +413,7 @@ namespace te
               {
                 inBand.getValue( outCol, outRow, pixelValue );
 
-                if( pixelValue != bandNoDataValue )
+                if( pixelValue != inputBandNoDataValue )
                 {
                   outBand.setValue( outCol, outRow, pixelValue );
                   
@@ -401,7 +441,7 @@ namespace te
                 {
                   outBand.getValue( outCol, outRow, pixelValue );
 
-                  if( pixelValue != bandNoDataValue )
+                  if( pixelValue != inputBandNoDataValue )
                   {
                     variance += ( ( pixelValue - mean ) * ( pixelValue -
                       mean ) ) / ( (double)validPixelsNumber );

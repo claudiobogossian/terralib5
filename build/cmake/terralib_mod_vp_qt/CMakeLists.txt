@@ -73,6 +73,9 @@ else()
 # moc'ing
   set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/AggregationDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/BufferDialog.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/GeometricOpOutputWizardPage.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/GeometricOpWizard.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/GeometricOpWizardPage.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/IntersectionDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/LayerItem.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/LayerTreeModel.h

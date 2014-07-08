@@ -56,6 +56,8 @@ namespace te
           \param sync The raster synchronizer instance.
 
           \param maxMemPercentUsed The maximum free memory percentual to use valid range: [1:100].
+          
+          \note For the case where using the write raster access policy: The use of multiple cached blocks can cause deadlocks if multiple threads are locking blocks needed by other threads, use it with caution!
         */
         SynchronizedRaster( RasterSynchronizer& sync, const unsigned char maxMemPercentUsed );
 
@@ -65,6 +67,8 @@ namespace te
           \param sync The raster synchronizer instance.
 
           \param maxNumberOfCacheBlocks The maximum number of cache blocks.
+          
+          \note For the case where using the write raster access policy: The use of multiple cached blocks can cause deadlocks if multiple threads are locking blocks needed by other threads, use it with caution!
         */
         SynchronizedRaster( const unsigned int maxNumberOfCacheBlocks, RasterSynchronizer& sync );
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -36,20 +36,21 @@
 
 void LoadModules()
 {
+  std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
+
   te::plugin::PluginInfo* info;
-
-  #if TE_USE_OGR == 1
-    info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.ogr.teplg"));
-    te::plugin::PluginManager::getInstance().add(info); 
-  #endif
-
-  #if TE_USE_GDAL
-    info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg"));
-    te::plugin::PluginManager::getInstance().add(info); 
-  #endif
   
-  te::plugin::PluginManager::getInstance().loadAll();
+#ifdef TERRALIB_MOD_OGR_ENABLED
+  info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.ogr.teplg");
+  te::plugin::PluginManager::getInstance().add(info); 
+#endif
 
+#ifdef TERRALIB_MOD_GDAL_ENABLED
+  info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.gdal.teplg");
+  te::plugin::PluginManager::getInstance().add(info);
+#endif
+
+  te::plugin::PluginManager::getInstance().loadAll();  
 };
 
 #endif  // __TERRALIB_UNITTEST_RASTER_LOADMODULES_H

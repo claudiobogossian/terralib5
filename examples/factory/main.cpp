@@ -32,16 +32,10 @@ int main(int /*argc*/, char** /*argv*/)
   delete a4;
   delete a5;
 
-
-
   /* at the end of program execution, let's finalize all factories */
   KillerWhaleFactory::finalize();
   PlatypusFactory::finalize();
   MyrmecophagidaeFactory::finalize();
 
-  std::cout << "Press Enter to exit..." << std::endl;
-  std::cin.get();
-
   return EXIT_SUCCESS;
 }
-

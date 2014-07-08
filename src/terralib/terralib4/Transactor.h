@@ -260,6 +260,8 @@ namespace terralib4
 
       TeTheme* getTL4Theme(const ::terralib4::ThemeInfo theme);
 
+      int getLayerSRID(const std::string & layerName);
+
     private:
 
       DataSource* m_ds;

@@ -1,0 +1,407 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+
+
+
+  
+  
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+
+
+  
+  
+  
+  <title>Query Datasets</title>
+</head>
+
+
+<body>
+
+
+
+
+<div style="text-align: center; font-family: Calibri Light;">
+<div style="text-align: justify;">
+<h3 style="text-align: center;">Query Datasets</h3>
+
+
+
+
+The<span style="font-weight: bold;"> Query Datasets </span>is
+a component
+build as wizard interface, which&nbsp;has the functionality to
+create a
+new
+layer using a restriction clause over&nbsp;datasets&nbsp;of the
+same
+data source (the <span style="font-style: italic;">where</span>, <span style="font-style: italic;">group by</span> and&nbsp;<span style="font-style: italic;">order by</span> clauses of SQL).&nbsp;The restriction clause
+can involve one or more
+attributes of the same dataset, or&nbsp;involve more than one
+dataset
+and its attributes.<br>
+
+
+
+
+<br>
+
+
+
+
+<div style="text-align: left;">Basically it is possible to
+make a query
+through this interface, selecting the datasets involved, the attributes (properties)
+desired and the restriction used to generate the new layer. &nbsp;The restriction clause
+can involve standard attributes and/or spatial&nbsp;attributes, and the result can be grouped and&nbsp;ordered.&nbsp;<br>
+
+
+
+
+<br>
+
+
+
+
+It is also possible to write directly the WHERE, GROUP BY and ORDER BY clauses of the SQL
+command or check the SQL generated. The details will be given in the wizard pages.<br>
+
+
+
+
+</div>
+
+
+
+
+<br>
+
+
+
+
+It is accessible through:<br>
+
+
+
+
+&nbsp;&nbsp;&nbsp; <span style="font-weight: bold;"></span><br>
+
+
+
+
+&nbsp;&nbsp;&nbsp; <span style="font-weight: bold;">Project</span>
+&gt; <span style="font-weight: bold;">Add Layer</span>
+&gt; <span style="font-weight: bold;">Query Dataset</span>...<br>
+
+
+
+
+<br>
+
+
+
+
+<br>
+
+
+
+
+<font style="font-family: Calibri Light;">The <span style="font-weight: bold;">Query layer Builder</span>
+wizard consists of the
+following steps:&nbsp;<br>
+
+
+
+
+</font>
+<h4><font style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp;
+Wizard
+Page 1 - Data Source Selector</font></h4>
+
+
+
+
+<ol style="font-family: Calibri Light;">
+
+
+
+
+  <li><font style="font-family: Calibri Light;">Choose
+the&nbsp;Data Source&nbsp;type
+(PostGIS, Microsoft Access, Vector File or Raster
+Files) clicking over it.</font></li>
+
+
+
+
+  <li><font style="font-family: Calibri Light;">Choose
+one of the <i>Available
+Data Sources</i> by clicking over it. &nbsp;If the list is
+empty click on&nbsp;<img style="width: 24px; height: 24px;" alt="" src="../../gen_icones/ic_add.PNG"> to add
+a&nbsp;new data source before using it.</font></li>
+
+
+
+
+  <li><font style="font-family: Calibri Light;">Click
+    </font><span style="" lang="EN-GB">on <span style="font-weight: bold;">Next</span> &nbsp;to go
+to the next &nbsp;wizard page or <span style="font-weight: bold;">Cancel</span> to close the
+dialog.</span></li>
+
+
+
+
+</ol>
+
+
+
+
+<h4><font><font style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp;
+Wizard
+Page 2 - Dataset selection</font></font></h4>
+
+
+
+
+<ol>
+
+
+
+
+  <li><span style="font-style: italic;">Name</span>
+-&nbsp; select which datasets will be part of the
+query (it is the FROM part of a query).</li>
+
+
+
+
+  <li><span style="font-style: italic;">Alias</span> - optionally change the suggested alias associated
+with the dataset.</li>
+
+
+
+
+  <li>Click on&nbsp;<img style="width: 24px; height: 24px;" alt="add dataset" src="../../gen_icones/ic_add.PNG"> to add this dataset name to the list and go to
+the step one again to select other dataset.</li>
+
+
+
+
+  <li>On the <span style="font-style: italic;">Data
+Set</span> list:&nbsp;</li>
+
+
+
+
+  
+  
+  
+  <ol>
+
+
+
+
+    <li>Click on&nbsp;<img style="width: 24px; height: 23px;" alt="remove icon" src="../../gen_icones/ic_remove.PNG"> to remove datasets
+already selected.</li>
+
+
+
+
+  
+  
+  
+  </ol>
+
+
+
+
+  <li><font style="font-family: Calibri Light;">Click
+    </font><span style="" lang="EN-GB">on <span style="font-weight: bold;">Next</span> , <span style="font-weight: bold;">Back</span></span> or
+    <span style="" lang="EN-GB"><span style="font-weight: bold;">Cancel</span> to close the
+dialog.</span></li>
+
+
+
+
+</ol>
+
+
+
+
+<h4><font><font><font><font style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp;
+Wizard Page 3 - Attribute selection</font></font></font></font></h4>
+
+
+
+
+<ol>
+
+
+
+
+  <li><span style="font-style: italic;">Available
+Properties</span> - it list all properties of the datasets
+selected - choose which properties will compose the new
+layer (use Ctrl and Shift keys to select then).&nbsp;The geometric
+property is always selected and listed in <span style="font-style: italic;">Used Properties.</span></li>
+
+
+
+
+  <li>Click on <img style="width: 24px; height: 25px;" alt="right arrow" src="../../gen_icones/ic_arrow_right.PNG">&nbsp;move the selected properties
+to the list&nbsp;of <span style="font-style: italic;">Used
+Properties</span> (or <img style="width: 23px; height: 21px;" alt="right_all arrow" src="../../gen_icones/ic_arrow_right_all.PNG"> to move all).</li>
+
+
+
+
+  <li>Make use of all&nbsp;arrows to adjust the&nbsp;<span style="font-style: italic;">Used
+Properties</span> list.</li>
+
+
+
+
+  <li><font style="font-family: Calibri Light;">Click
+    </font><span style="" lang="EN-GB">on <span style="font-weight: bold;">Next</span> , <span style="font-weight: bold;">Back</span></span> or
+    <span style="" lang="EN-GB"><span style="font-weight: bold;">Cancel</span> to close the
+dialog.</span></li>
+
+
+
+
+</ol>
+
+
+
+
+<h4><font><font><font><font style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp;
+Wizard Page 4 - Where Clause Definition</font></font></font></font></h4>
+
+<ol>
+
+  <li>Define the <span style="font-weight: bold;">WHERE</span> clause as explained <a href="query.html">here</a>.</li>
+  <li>Follow the next wizard pages.</li>
+
+</ol>
+
+
+
+
+
+
+
+
+<h4><font><font><font><font style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; Wizard Page 5 -&nbsp; Group By
+Definition</font></font></font></font></h4>
+<ol>
+  <li><span style="font-style: italic;">Available Properties</span> - choose which properties will be used to create groups summarizing results generated by the restriction for example.&nbsp;</li>
+  <li>Use <img style="width: 24px; height: 25px;" alt="" src="../../gen_icones/ic_arrow_right.PNG">to move/remove them to the <span style="font-style: italic;">Used Properties</span> list.</li>
+  <li>Click on <span style="font-weight: bold;">Next</span> to go the next wizard page, &nbsp; <span style="font-weight: bold;">Back</span> &nbsp;to review the previous one, &nbsp;or <span style="font-weight: bold;">Cancel</span> to close the dialog.</li>
+</ol>
+<h4><font><font><font><font style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; Wizard Page 6 - Order By
+Definition</font></font></font></font></h4>
+<ol>
+  <li><span style="font-style: italic;">Property</span> - choose the property to order the query result.&nbsp;</li>
+  <li><span style="font-style: italic;">Order</span> - choose the ordering (asc/desc)</li>
+  <li>Click on <img style="width: 24px; height: 24px;" alt="add" src="../../gen_icones/ic_add.PNG"> to add or <img style="width: 24px; height: 23px;" alt="remove" src="../../gen_icones/ic_remove.PNG"> to remove the selected attributes.</li>
+  <li>Click on <span style="font-weight: bold;">Next</span> to go the next wizard page, &nbsp; <span style="font-weight: bold;">Back</span> &nbsp;to review the previous one, &nbsp;or <span style="font-weight: bold;">Cancel</span> to close the dialog.</li>
+</ol>
+<h4><font><font><font><font style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; Wizard Page 7 - Layer
+Attributes (resulting layer)</font></font></font></font></h4>
+<ol>
+  <li><span style="font-style: italic;">Layer Name</span> - Finally the user must enter a name for the new layer being created.</li>
+  <li>Click on Finish to perform the query, &nbsp;<span style="font-weight: bold;">Back</span> &nbsp;to review the previous page, &nbsp;or <span style="font-weight: bold;">Cancel</span> to close the dialog.</li>
+</ol>
+NOTE: The SQL query command and its correspondent wizard page are given bellow:<br>
+&nbsp;&nbsp;&nbsp; SELECT &nbsp; &nbsp; &nbsp; &nbsp; - wizard page 3<br>
+&nbsp;&nbsp;&nbsp; FROM &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; - &nbsp;wizard page 2<br>
+&nbsp;&nbsp;&nbsp; WHERE &nbsp; &nbsp; &nbsp; &nbsp;- &nbsp;wizard page 4 <br>
+&nbsp; &nbsp; GROUP BY &nbsp; - &nbsp;wizard page 5<br>
+&nbsp; &nbsp; ORDER BY &nbsp; - &nbsp;wizard page 6<br>
+<br>
+
+
+
+
+<div style="text-align: center;">
+<div style="text-align: left;">
+<div style="text-align: center;"><br>
+
+
+
+
+<br>
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+<h4></h4>
+
+
+
+
+<font style="font-family: Calibri Light;"><br>
+
+
+
+
+</font><br>
+
+
+
+
+<br>
+
+
+
+
+<br>
+
+
+
+
+<br>
+
+
+
+
+<br>
+
+
+
+
+<br>
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+</body>
+</html>

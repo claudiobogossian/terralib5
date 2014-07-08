@@ -61,8 +61,9 @@
 #include "../widgets/progress/ProgressViewerBar.h"
 #include "../widgets/progress/ProgressViewerDialog.h"
 #include "../widgets/progress/ProgressViewerWidget.h"
-#include "../widgets/query/QueryLayerBuilderWizard.h"
+#include "../widgets/query/QueryDataSourceDialog.h"
 #include "../widgets/query/QueryDialog.h"
+#include "../widgets/query/QueryLayerBuilderWizard.h"
 #include "../widgets/se/GroupingDialog.h"
 #include "../widgets/se/StyleDockWidget.h"
 #include "../widgets/tools/Info.h"
@@ -103,7 +104,6 @@
 #include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
-#include <QMessageBox>
 #include <QStatusBar>
 #include <QToolBar>
 #include <QToolButton>
@@ -200,7 +200,6 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
 
 te::qt::af::BaseApplication::~BaseApplication()
 {
-  checkProjectSave();
   te::qt::af::SaveState(this);
 
   if(m_iController)
@@ -687,7 +686,7 @@ void te::qt::af::BaseApplication::onNewProjectTriggered()
 {
   newProject();
 
-  onSaveProjectAsTriggered();
+  //onSaveProjectAsTriggered();
 }
 
 void te::qt::af::BaseApplication::onOpenProjectTriggered()
@@ -736,8 +735,8 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
   }
   
   // Set the project title and its status as "no change"
-  std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
-  m_project->setTitle(projectTitle);
+  //std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
+  //m_project->setTitle(projectTitle);
   
   m_project->setProjectAsChanged(false);
   
@@ -748,7 +747,8 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
   QString wTitle = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
   wTitle += tr("Project:");
   wTitle += " ";
-  wTitle += projectTitle.c_str();
+  //wTitle += projectTitle.c_str();
+  wTitle += m_project->getTitle().c_str();
   
   setWindowTitle(wTitle);
 
@@ -776,8 +776,8 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   ApplicationController::getInstance().updateRecentProjects(fileName, m_project->getTitle().c_str());
   
   // Set the project title and its status as "no change"
-  std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
-  m_project->setTitle(projectTitle);
+  //std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
+  //m_project->setTitle(projectTitle);
   
   m_project->setProjectAsChanged(false);
 
@@ -785,7 +785,8 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   QString wTitle = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
   wTitle += tr("Project:");
   wTitle += " ";
-  wTitle += projectTitle.c_str();
+  //wTitle += projectTitle.c_str();
+  wTitle += m_project->getTitle().c_str();
   
   setWindowTitle(wTitle);
   
@@ -879,6 +880,23 @@ void  te::qt::af::BaseApplication::onToolsDataExchangerDirectPopUpTriggered()
     layers.push_back(selectedLayer);
 
     dlg.setLayers(layers);
+
+    dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
+void te::qt::af::BaseApplication::onToolsQueryDataSourceTriggered()
+{
+  try
+  {
+    te::qt::widgets::QueryDataSourceDialog dlg(this);
+
+    std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers();
+    dlg.setLayerList(layers);
 
     dlg.exec();
   }
@@ -1733,7 +1751,8 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 {
   try
   {
-    checkProjectSave();
+    if(checkProjectSave() == QMessageBox::Cancel)
+      return;
 
     if(!boost::filesystem::exists(projectFileName.toStdString()))
     {
@@ -1750,8 +1769,8 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
     m_project = nproject;
     
     // Set the project title and its status as "no changed"
-    std::string projectTitle = boost::filesystem::basename(m_project->getFileName()).c_str();
-    m_project->setTitle(projectTitle);
+    //std::string projectTitle = boost::filesystem::basename(m_project->getFileName()).c_str();
+    //m_project->setTitle(projectTitle);
     
     m_project->setProjectAsChanged(false);
    
@@ -1761,7 +1780,8 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
     QString wTitle = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
     wTitle += tr("Project:");
     wTitle += " ";
-    wTitle += projectTitle.c_str();
+    //wTitle += projectTitle.c_str();
+    wTitle += m_project->getTitle().c_str();
     
     setWindowTitle(wTitle);
 
@@ -1785,23 +1805,28 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
   }
 }
 
-void te::qt::af::BaseApplication::checkProjectSave()
+QMessageBox::StandardButton te::qt::af::BaseApplication::checkProjectSave()
 {
   if(m_project != 0 && m_project->hasChanged())
   {
     QString msg("The current project has unsaved changes. Do you want to save them?");
-    int btn = QMessageBox::question(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg, QMessageBox::No, QMessageBox::Yes);
+    QMessageBox::StandardButton btn = QMessageBox::question(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg, QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Save);
 
     if(btn == QMessageBox::Yes)
       onSaveProjectTriggered();
+
+    return btn;
   }
+
+  return QMessageBox::NoButton;
 }
 
 void te::qt::af::BaseApplication::newProject()
 {
-  CloseAllTables(m_tableDocks);
+  if(checkProjectSave() == QMessageBox::Cancel)
+    return;
 
-  checkProjectSave();
+  CloseAllTables(m_tableDocks);
 
   delete m_project;
 
@@ -1812,11 +1837,20 @@ void te::qt::af::BaseApplication::newProject()
 
   GetProjectInformationsFromSettings(author, maxSaved);
 
-  //m_project->setTitle("New Project");
+  m_project->setTitle(tr("New Project").toStdString());
 
   m_project->setAuthor(author.toStdString());
   
-  setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle());
+  //setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle());
+
+  // Set the window title
+  QString wTitle = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
+  wTitle += tr("Project:");
+  wTitle += " ";
+  //wTitle += projectTitle.c_str();
+  wTitle += m_project->getTitle().c_str();
+
+  setWindowTitle(wTitle);
   
   te::qt::af::ApplicationController::getInstance().set(m_project);
 
@@ -2068,14 +2102,15 @@ void te::qt::af::BaseApplication::makeDialog()
 
 void te::qt::af::BaseApplication::closeEvent(QCloseEvent* e)
 {
+  if(checkProjectSave() == QMessageBox::Cancel)
+  {
+    e->ignore();
+    return;
+  }
+
   emit applicationClose(); // it is used to close the ST animation
 
-  QMainWindow::closeEvent(e);
-  //checkProjectSave();
-
-  //te::qt::af::SaveState(this);
-
-  //e->accept();
+  e->accept();
 }
 
 void te::qt::af::BaseApplication::initAction(QAction*& act, const QString& icon, const QString& name,
@@ -2118,6 +2153,8 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_toolsDataExchangerDirectPopUp, "data-exchange-direct-icon", "Tools.Exchanger.Direct", tr("&Exchange..."), tr("Exchange data sets from layers"), true, false, true, m_menubar);
   initAction(m_toolsDataSourceExplorer, "datasource-explorer", "Tools.Data Source Explorer", tr("&Data Source Explorer..."), tr("Show or hide the data source explorer"), 
     true, false, true, m_menubar);
+  initAction(m_toolsQueryDataSource, "datasource-query", "Tools.Query Data Source", tr("&Query Data Source..."), tr("Allows you to query data in a data source"), true, false, true, m_menubar);
+
 
 // Menu -Edit- actions
   //initAction(m_editUndo, "edit-undo", "Undo", tr("&Undo"), tr("Undo the last operation"), true, false, false);
@@ -2360,6 +2397,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_toolsExchangerMenu->addAction(m_toolsDataExchanger);
 
   m_toolsMenu->addAction(m_toolsDataSourceExplorer);
+  m_toolsMenu->addAction(m_toolsQueryDataSource);
   m_toolsMenu->addSeparator();
   m_toolsMenu->addAction(m_toolsCustomize);  
 
@@ -2464,6 +2502,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_toolsDataExchanger, SIGNAL(triggered()), SLOT(onToolsDataExchangerTriggered()));
   connect(m_toolsDataExchangerDirect, SIGNAL(triggered()), SLOT(onToolsDataExchangerDirectTriggered()));
   connect(m_toolsDataExchangerDirectPopUp, SIGNAL(triggered()), SLOT(onToolsDataExchangerDirectPopUpTriggered()));
+  connect(m_toolsQueryDataSource, SIGNAL(triggered()), SLOT(onToolsQueryDataSourceTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
   connect(m_layerChartsScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));
