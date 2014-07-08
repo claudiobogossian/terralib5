@@ -69,13 +69,13 @@ void te::layout::ItemController::redraw()
     return;
 
   ParamsCreate params;
-  double zoomFactor = Context::getInstance()->getZoomFactor();
+  double zoomFactor = Context::getInstance().getZoomFactor();
   ContextItem contxt(params, zoomFactor);
 
-  te::map::Canvas* canvas = Context::getInstance()->getCanvas();
-  Utils* utils = Context::getInstance()->getUtils();
-  double dpiX = Context::getInstance()->getDpiX();
-  double dpiY = Context::getInstance()->getDpiY();
+  te::map::Canvas* canvas = Context::getInstance().getCanvas();
+  Utils* utils = Context::getInstance().getUtils();
+  double dpiX = Context::getInstance().getDpiX();
+  double dpiY = Context::getInstance().getDpiY();
 
   contxt.setCanvas(canvas);
   contxt.setUtils(utils);

@@ -52,7 +52,7 @@ te::layout::ObjectItem::ObjectItem( ItemController* controller, Observable* o ) 
   m_enumSides(TPNoneSide)
 {
   QGraphicsItem* item = this;
-  Context::getInstance()->getScene()->insertItem((ItemObserver*)item);
+  Context::getInstance().getScene()->insertItem((ItemObserver*)item);
 
   //If enabled is true, this item will accept hover events
   setAcceptHoverEvents(true);

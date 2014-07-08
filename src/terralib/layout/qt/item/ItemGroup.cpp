@@ -50,7 +50,7 @@ te::layout::ItemGroup::ItemGroup( ItemController* controller, Observable* o ) :
     | QGraphicsItem::ItemSendsGeometryChanges);
 
   QGraphicsItem* item = this;
-  Context::getInstance()->getScene()->insertItem((ItemObserver*)item);
+  Context::getInstance().getScene()->insertItem((ItemObserver*)item);
 
   //If enabled is true, this item will accept hover events
   setAcceptHoverEvents(true);

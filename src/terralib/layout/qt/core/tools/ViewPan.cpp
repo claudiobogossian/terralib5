@@ -103,7 +103,7 @@ bool te::layout::ViewPan::mouseReleaseEvent(QMouseEvent* e)
   sceneBox->m_urx = bounding.x() + bounding.width();
   sceneBox->m_ury = bounding.y() + bounding.height();
 
-  double zoomFactor = Context::getInstance()->getZoomFactor();
+  double zoomFactor = Context::getInstance().getZoomFactor();
 
   scene->refresh(m_view, zoomFactor);
   scene->redrawRulers();

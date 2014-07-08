@@ -166,7 +166,7 @@ te::gm::Envelope te::layout::MapModel::getWorldInMeters()
   if(unitPtrStr.compare("DEGREE") == 0)
   {
 
-    Utils* utils = Context::getInstance()->getUtils();
+    Utils* utils = Context::getInstance().getUtils();
 
     int zone = utils->calculatePlanarZone(worldBox);
     std::string proj4 = utils->proj4DescToPlanar(zone);
@@ -192,7 +192,7 @@ te::common::UnitOfMeasurePtr te::layout::MapModel::unitMeasureLayer()
   
   int srid = m_layer->getSRID();
 
-  Utils* utils = Context::getInstance()->getUtils();
+  Utils* utils = Context::getInstance().getUtils();
   unitPtr = utils->unitMeasure(srid);
   return unitPtr;
 }
@@ -222,7 +222,7 @@ te::gm::Envelope te::layout::MapModel::getWorldInDegrees()
 
   if(unitPtrStr.compare("DEGREE") != 0)
   {
-    Utils* utils = Context::getInstance()->getUtils();
+    Utils* utils = Context::getInstance().getUtils();
     std::string proj4 = utils->proj4DescToGeodesic();
 
     // Get the id of the projection of destination 

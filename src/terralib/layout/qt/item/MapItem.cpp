@@ -89,7 +89,7 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   
   setAcceptDrops(true);
   
-  Utils* utils = Context::getInstance()->getUtils();
+  Utils* utils = Context::getInstance().getUtils();
   te::gm::Envelope box;
   
   MapModel* model = dynamic_cast<MapModel*>(m_model);
@@ -117,7 +117,7 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   setWidget(m_mapDisplay);
     
   QGraphicsItem* item = this;
-  Context::getInstance()->getScene()->insertItem((ItemObserver*)item);
+  Context::getInstance().getScene()->insertItem((ItemObserver*)item);
   
   te::gm::Envelope boxProxy = utils->viewportBox(m_model->getBox());
 

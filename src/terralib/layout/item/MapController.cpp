@@ -54,7 +54,7 @@ te::layout::MapController::~MapController()
 
 void te::layout::MapController::create()
 {
-  AbstractItemFactory* factory = Context::getInstance()->getItemFactory(); 
+  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
   m_view = (Observer*)factory->make(TPMapItem, params);
 }

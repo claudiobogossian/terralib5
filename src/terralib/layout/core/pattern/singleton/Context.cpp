@@ -33,24 +33,30 @@
 #include "../../../../maptools/Canvas.h"
 #include "../../../../geometry/Envelope.h"
 
-// STL
-#include <stddef.h>  // defines NULL
-
-// Global static pointer used to ensure a single instance of the class.
-te::layout::Context* te::layout::Context::_instance = NULL;
-
-/** This function is called to create an instance of the class. 
-Calling the constructor publicly is not allowed. The constructor 
-is private and is only called by this Instance function.
-*/
-te::layout::Context* te::layout::Context::getInstance()
+te::layout::Context::Context() :
+  m_mode(TypeNone),
+  m_scene(0),
+  m_canvas(0),
+  m_zoomFactor(1.),
+  m_defaultZoomFactor(0.7),
+  m_oldZoomFactor(1.),
+  m_itemFactory(0),
+  m_outsideFactory(0),
+  m_utils(0),
+  m_dpiX(96),
+  m_dpiY(96),
+  m_templateFactory(0),
+  m_version("TerraPrintQt4_1.0.0"),
+  m_paperConfig(0),
+  m_buildGraphicsItem(0),
+  m_lineIntersectionMouseMode(TypeOffLinesIntersectionMouse)
 {
-  if(!_instance)
-  {
-    _instance = new Context;
-    return _instance;
-  }
-  return _instance;
+
+}
+
+te::layout::Context::~Context()
+{
+
 }
 
 te::layout::LayoutMode te::layout::Context::getMode()

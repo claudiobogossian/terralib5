@@ -179,7 +179,7 @@ void te::layout::View::config()
   if(!lScene)
     return;
 
-  PaperConfig* pConfig =  Context::getInstance()->getPaperConfig();
+  PaperConfig* pConfig =  Context::getInstance().getPaperConfig();
 
   double w = 0;
   double h = 0;
@@ -189,7 +189,7 @@ void te::layout::View::config()
   double sw = widthMM();
   double sh = h;
 
-  double zoomFactor = Context::getInstance()->getZoomFactor();
+  double zoomFactor = Context::getInstance().getZoomFactor();
   lScene->init(sw, sh, w, h, zoomFactor);
 
   configTransform(lScene);
@@ -216,7 +216,7 @@ void te::layout::View::resizeEvent(QResizeEvent * event)
 
   if(lScene)
   {
-    double zoomFactor = Context::getInstance()->getZoomFactor();
+    double zoomFactor = Context::getInstance().getZoomFactor();
     lScene->refresh(this, zoomFactor);
     lScene->redrawItems(true);
   }
@@ -304,10 +304,10 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   if(!sc)
     return;
 
-  LayoutMode mode = Context::getInstance()->getMode();
+  LayoutMode mode = Context::getInstance().getMode();
   QList<QGraphicsItem*> graphicsItems;
-  double zoomFactor = Context::getInstance()->getZoomFactor();
-  double oldZoomFactor = Context::getInstance()->getOldZoomFactor();
+  double zoomFactor = Context::getInstance().getZoomFactor();
+  double oldZoomFactor = Context::getInstance().getOldZoomFactor();
 
   te::gm::Envelope* env = sc->getWorldBox();
 
@@ -459,8 +459,8 @@ void te::layout::View::outsideAreaChangeContext( bool change )
     break;
   case TypeRecompose:
     {
-      double dZoom = Context::getInstance()->getDefaultZoomFactor();
-      double zoom = Context::getInstance()->getZoomFactor();
+      double dZoom = Context::getInstance().getDefaultZoomFactor();
+      double zoom = Context::getInstance().getZoomFactor();
       if(dZoom != zoom)
       {
         sc->refresh(this, dZoom);

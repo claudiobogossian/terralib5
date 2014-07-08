@@ -202,7 +202,7 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
   QGraphicsItemGroup* p = QGraphicsScene::createItemGroup(items);
   
   //Create a new group
-  BuildGraphicsItem* build = Context::getInstance()->getBuildGraphicsItem();
+  BuildGraphicsItem* build = Context::getInstance().getBuildGraphicsItem();
   te::gm::Coord2D coord(0,0);
   QGraphicsItem* item = build->createItem(TypeCreateItemGroup, coord, false);
 
@@ -337,8 +337,8 @@ void te::layout::Scene::calculateMatrixViewScene(double zoomFactor)
   double urx = m_boxW->getUpperRightX();
   double ury = m_boxW->getUpperRightY();
   
-  double dpiX = Context::getInstance()->getDpiX();
-  double dpiY = Context::getInstance()->getDpiY();
+  double dpiX = Context::getInstance().getDpiX();
+  double dpiY = Context::getInstance().getDpiY();
 
   /*
     The zoom is controlled by the main matrix, 
@@ -381,7 +381,7 @@ void te::layout::Scene::printPreview(bool isPdf)
     connect(&preview, SIGNAL(paintRequested(QPrinter*)), SLOT(printPaper(QPrinter*)));
     preview.exec();
 
-    Context::getInstance()->setMode(TypeNone);
+    Context::getInstance().setMode(TypeNone);
 }
 
 void te::layout::Scene::printPaper(QPrinter* printer)
@@ -392,16 +392,16 @@ void te::layout::Scene::printPaper(QPrinter* printer)
   QPainter newPainter(printer);
   newPainter.setRenderHint(QPainter::Antialiasing);
   
-  double dpiX = Context::getInstance()->getDpiX();
-  double dpiY = Context::getInstance()->getDpiY();
+  double dpiX = Context::getInstance().getDpiX();
+  double dpiY = Context::getInstance().getDpiY();
 
-  Context::getInstance()->setDpiX(printer->logicalDpiX());
-  Context::getInstance()->setDpiY(printer->logicalDpiY());
+  Context::getInstance().setDpiX(printer->logicalDpiX());
+  Context::getInstance().setDpiY(printer->logicalDpiY());
 
   renderScene(&newPainter);
 
-  Context::getInstance()->setDpiX(dpiX);
-  Context::getInstance()->setDpiY(dpiY);
+  Context::getInstance().setDpiX(dpiX);
+  Context::getInstance().setDpiY(dpiY);
 }
 
 void te::layout::Scene::savePaperAsImage()
@@ -457,7 +457,7 @@ void te::layout::Scene::renderScene( QPainter* newPainter )
   /* Print Paper (Scene to Printer)
   draw items with printer painter */
 
-  Utils* utils = Context::getInstance()->getUtils();
+  Utils* utils = Context::getInstance().getUtils();
   //Convert world to screen coordinate. Uses dpi printer.
   te::gm::Envelope paperNewBox = utils->viewportBox(*m_boxPaperW);
   
@@ -683,7 +683,7 @@ void te::layout::Scene::drawForeground( QPainter *painter, const QRectF &rect )
 {
   QGraphicsScene::drawForeground(painter, rect);
   
-  if(Context::getInstance()->getLineIntersectionMouseMode() != TypeActiveLinesIntersectionMouse)
+  if(Context::getInstance().getLineIntersectionMouseMode() != TypeActiveLinesIntersectionMouse)
     return;
 
   QBrush brush = painter->brush();
@@ -710,7 +710,7 @@ void te::layout::Scene::drawForeground( QPainter *painter, const QRectF &rect )
 
 void te::layout::Scene::buildTemplate(VisualizationArea* vzArea)
 {
-  BuildGraphicsItem* build = Context::getInstance()->getBuildGraphicsItem();
+  BuildGraphicsItem* build = Context::getInstance().getBuildGraphicsItem();
 
   if(!build)
     return;
@@ -759,21 +759,21 @@ void te::layout::Scene::deleteItems()
 
 void te::layout::Scene::createItem( const te::gm::Coord2D& coord )
 {
-  BuildGraphicsItem* build = Context::getInstance()->getBuildGraphicsItem();
+  BuildGraphicsItem* build = Context::getInstance().getBuildGraphicsItem();
 
   if(!build)
     return;
 
   QGraphicsItem* item = 0;
 
-  LayoutMode mode = Context::getInstance()->getMode();
+  LayoutMode mode = Context::getInstance().getMode();
 
   item = build->createItem(mode, coord);
 
   //If Create item
   if(item)
   {
-    Context::getInstance()->setMode(TypeNone);
+    Context::getInstance().setMode(TypeNone);
   }
 }
 

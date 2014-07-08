@@ -96,37 +96,37 @@ te::layout::BuildContext::~BuildContext()
 
 void te::layout::BuildContext::createLayoutContext( int width, int height, View* view )
 {
-  if(!Context::getInstance()->getItemFactory())
+  if(!Context::getInstance().getItemFactory())
   {
     m_itemFactory = new ItemFactory;
-    Context::getInstance()->setItemFactory(m_itemFactory);
+    Context::getInstance().setItemFactory(m_itemFactory);
   }
 
-  if(!Context::getInstance()->getOutsideFactory())
+  if(!Context::getInstance().getOutsideFactory())
   {
     m_outsideFactory = new OutsideFactory;
-    Context::getInstance()->setOutsideFactory(m_outsideFactory);
+    Context::getInstance().setOutsideFactory(m_outsideFactory);
   }
 
-  if(!Context::getInstance()->getTemplateFactory())
+  if(!Context::getInstance().getTemplateFactory())
   {
     m_templateFactory = new TemplateFactory;
-    Context::getInstance()->setTemplateFactory(m_templateFactory);
+    Context::getInstance().setTemplateFactory(m_templateFactory);
   }
 
-  if(!Context::getInstance()->getUtils())
+  if(!Context::getInstance().getUtils())
   {
     m_utils = new Utils;
-    Context::getInstance()->setUtils(m_utils);
+    Context::getInstance().setUtils(m_utils);
   } 
 
-  if(!Context::getInstance()->getPaperConfig())
+  if(!Context::getInstance().getPaperConfig())
   {
     m_paperConfig = new PaperConfig;
-    Context::getInstance()->setPaperConfig(m_paperConfig);
+    Context::getInstance().setPaperConfig(m_paperConfig);
   } 
 
-  if(!Context::getInstance()->getCanvas())
+  if(!Context::getInstance().getCanvas())
   {
     Scene* lScene = dynamic_cast<Scene*>(view->scene());
 
@@ -142,20 +142,20 @@ void te::layout::BuildContext::createLayoutContext( int width, int height, View*
       m_canvas->setWindow(worldbox->getLowerLeftX(), worldbox->getLowerLeftY(), 
         worldbox->getUpperRightX(), worldbox->getUpperRightY());
       m_canvas->clear();
-      Context::getInstance()->setCanvas(m_canvas);
+      Context::getInstance().setCanvas(m_canvas);
     }
   }
 
-  if(!Context::getInstance()->getScene())
+  if(!Context::getInstance().getScene())
   {
     Scene* lScene = dynamic_cast<Scene*>(view->scene());
     if(lScene)
-      Context::getInstance()->setScene(lScene);
+      Context::getInstance().setScene(lScene);
   }  
-  if(!Context::getInstance()->getBuildGraphicsItem())
+  if(!Context::getInstance().getBuildGraphicsItem())
   {
     m_buildGraphicsItem = new BuildGraphicsItem;
-    Context::getInstance()->setBuildGraphicsItem(m_buildGraphicsItem);
+    Context::getInstance().setBuildGraphicsItem(m_buildGraphicsItem);
   }
 }
 

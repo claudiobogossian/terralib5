@@ -72,7 +72,7 @@ void te::layout::VisualizationArea::createVerticalRuler()
   if(!m_boxArea)
     return;
 
-  double dpiX = te::layout::Context::getInstance()->getDpiX();
+  double dpiX = te::layout::Context::getInstance().getDpiX();
 
   double llx = m_boxArea->getLowerLeftX();
   double lly = m_boxArea->getLowerLeftY();
@@ -80,7 +80,7 @@ void te::layout::VisualizationArea::createVerticalRuler()
   double ury = m_boxArea->getUpperRightY();
 
   //Régua Vertical
-  VerticalRulerModel* modelRulerV = new VerticalRulerModel(te::layout::Context::getInstance()->getPaperConfig());		
+  VerticalRulerModel* modelRulerV = new VerticalRulerModel(te::layout::Context::getInstance().getPaperConfig());		
   modelRulerV->setBox(te::gm::Envelope(llx, lly, llx + 10, ury));
   VerticalRulerController* controllerRulerV = new VerticalRulerController(modelRulerV);
   ItemObserver* itemRulerV = (ItemObserver*)controllerRulerV->getView();
@@ -96,7 +96,7 @@ void te::layout::VisualizationArea::createHorizontalRuler()
   if(!m_boxArea)
     return;
 
-  double dpiX = te::layout::Context::getInstance()->getDpiX();
+  double dpiX = te::layout::Context::getInstance().getDpiX();
 
   double llx = m_boxArea->getLowerLeftX();
   double lly = m_boxArea->getLowerLeftY();
@@ -104,7 +104,7 @@ void te::layout::VisualizationArea::createHorizontalRuler()
   double ury = m_boxArea->getUpperRightY();
 
   //Régua Horizontal
-  HorizontalRulerModel* modelRuler = new HorizontalRulerModel(te::layout::Context::getInstance()->getPaperConfig());		
+  HorizontalRulerModel* modelRuler = new HorizontalRulerModel(te::layout::Context::getInstance().getPaperConfig());		
   modelRuler->setBox(te::gm::Envelope(llx, lly, urx, lly + 10));
   HorizontalRulerController* controllerRuler = new HorizontalRulerController(modelRuler);
   ItemObserver* itemRuler = (ItemObserver*)controllerRuler->getView();
@@ -120,7 +120,7 @@ void te::layout::VisualizationArea::createPaper()
   if(!m_boxArea)
     return;
 
-  double dpiX = te::layout::Context::getInstance()->getDpiX();
+  double dpiX = te::layout::Context::getInstance().getDpiX();
 
   double llx = m_boxArea->getLowerLeftX();
   double lly = m_boxArea->getLowerLeftY();
@@ -128,7 +128,7 @@ void te::layout::VisualizationArea::createPaper()
   double ury = m_boxArea->getUpperRightY();
 
   //Paper
-  PaperModel* modelPaper = new PaperModel(te::layout::Context::getInstance()->getPaperConfig());	
+  PaperModel* modelPaper = new PaperModel(te::layout::Context::getInstance().getPaperConfig());	
   PaperController* controllerPaper = new PaperController(modelPaper);
   ItemObserver* itemPaper = (ItemObserver*)controllerPaper->getView();
   PaperItem* qPaper = dynamic_cast<PaperItem*>(itemPaper);

@@ -55,7 +55,7 @@ te::layout::Utils::~Utils()
 
 void te::layout::Utils::drawRectW( te::gm::Envelope box )
 {
-  te::map::Canvas* canvas = Context::getInstance()->getCanvas();
+  te::map::Canvas* canvas = Context::getInstance().getCanvas();
 
   if(!canvas)
   {
@@ -79,7 +79,7 @@ void te::layout::Utils::drawRectW( te::gm::Envelope box )
 
 void te::layout::Utils::drawLineW( te::gm::LinearRing* line )
 {
-  te::map::Canvas* canvas = Context::getInstance()->getCanvas();
+  te::map::Canvas* canvas = Context::getInstance().getCanvas();
 
   if(!canvas)
   {
@@ -105,7 +105,7 @@ te::color::RGBAColor** te::layout::Utils::getImageW( te::gm::Envelope boxmm )
 {
   te::color::RGBAColor** pixmap = 0;
 
-  te::map::Canvas* canvas = Context::getInstance()->getCanvas();
+  te::map::Canvas* canvas = Context::getInstance().getCanvas();
 
   if(!canvas)
   {
@@ -123,7 +123,7 @@ te::color::RGBAColor** te::layout::Utils::getImageW( te::gm::Envelope boxmm )
 
 int te::layout::Utils::mm2pixel( double mm )
 {
-  int devDpi = Context::getInstance()->getDpiX();
+  int devDpi = Context::getInstance().getDpiX();
   int px = (mm * devDpi) / 25.4 ;
   return px;
 }
@@ -142,7 +142,7 @@ void te::layout::Utils::configGeoCanvas( te::gm::Envelope boxgeo, te::gm::Envelo
 
 void te::layout::Utils::changeCanvas( te::gm::Envelope viewport, te::gm::Envelope world, bool resize /*= true*/ )
 {
-  te::map::Canvas* canvas = Context::getInstance()->getCanvas();
+  te::map::Canvas* canvas = Context::getInstance().getCanvas();
 
   if(!canvas)
   {
@@ -261,7 +261,7 @@ te::gm::LinearRing* te::layout::Utils::addCoordsInY( te::gm::Envelope box, doubl
 
 void te::layout::Utils::textBoundingBox( double &w, double &h, std::string txt )
 {
-  te::map::Canvas* canvas = Context::getInstance()->getCanvas();
+  te::map::Canvas* canvas = Context::getInstance().getCanvas();
   
   if(!canvas)
   {
@@ -294,8 +294,8 @@ double te::layout::Utils::calculateRulerZoomFactor()
   double        ury = 0.;
   double        lly = 0.;
   
-  te::map::Canvas* canvas = Context::getInstance()->getCanvas();
-  PaperConfig* pConfig = Context::getInstance()->getPaperConfig();
+  te::map::Canvas* canvas = Context::getInstance().getCanvas();
+  PaperConfig* pConfig = Context::getInstance().getPaperConfig();
 
   double paperW = 0.;
   double paperH = 0.;

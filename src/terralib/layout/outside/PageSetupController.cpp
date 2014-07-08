@@ -36,7 +36,7 @@
 te::layout::PageSetupController::PageSetupController( Observable* o ) :
 	OutsideController(o, TPPageSetup)
 {
-	AbstractOutsideFactory* factory = Context::getInstance()->getOutsideFactory(); 
+	AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
 	OutsideParamsCreate params(this, m_model);
   if(factory)
 	  m_view = (Observer*)factory->make(TPPageSetup, params);

@@ -37,7 +37,7 @@
 te::layout::ScaleController::ScaleController( Observable* o ) :
   ItemController(o, TPScaleItem)
 {
-  AbstractItemFactory* factory = Context::getInstance()->getItemFactory(); 
+  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
   m_view = (Observer*)factory->make(TPScaleItem, params);
 }

@@ -36,6 +36,7 @@
 #include "../../../../maptools/Canvas.h"
 #include "../../../../geometry/Envelope.h"
 #include "../../Config.h"
+#include "../../../../common/Singleton.h"
 
 namespace te
 {
@@ -48,35 +49,16 @@ namespace te
     class PaperConfig;
     class BuildGraphicsItem;
 
-    class  Context 
+    class TELAYOUTEXPORT Context : public te::common::Singleton<Context>
     {
-      private:
-        Context() :
-          m_mode(TypeNone),
-          m_scene(0),
-          m_canvas(0),
-          m_zoomFactor(1.),
-          m_defaultZoomFactor(0.7),
-          m_oldZoomFactor(1.),
-          m_itemFactory(0),
-          m_outsideFactory(0),
-          m_utils(0),
-          m_dpiX(96),
-          m_dpiY(96),
-          m_templateFactory(0),
-          m_version("TerraPrintQt4_1.0.0"),
-          m_paperConfig(0),
-          m_buildGraphicsItem(0),
-          m_lineIntersectionMouseMode(TypeOffLinesIntersectionMouse)
-        {
-        };  // Private so that it can  not be called	
-        Context(Context const&){};             // copy constructor is private	
-        Context& operator=(Context const&){};  // assignment operator is private	
-        static Context* _instance;
+      friend class te::common::Singleton<Context>;
+      
+      protected:
+
+        Context();  
 
       public:
-        virtual ~Context(){};
-        static Context* getInstance();
+        virtual ~Context();
 
         LayoutMode	 getMode();
         void setMode(LayoutMode mode);
@@ -134,7 +116,26 @@ namespace te
         LayoutMode getLineIntersectionMouseMode();
         void setLineIntersectionMouseMode(LayoutMode mode);
 
+        private:
+      
+            /*!
+            \brief Copy constructor not allowed.
+       
+            \param rhs The right-hand-side copy that would be used to copy from.
+            */
+            Context(const Context& rhs);
+      
+            /*!
+            \brief Assignment operator not allowed.
+       
+            \param rhs The right-hand-side copy that would be used to copy from.
+       
+            \return A reference to this object.
+            */
+            Context& operator=(const Context& rhs);
+
       protected:
+        
         LayoutMode						    m_mode;
         LayoutMode						    m_lineIntersectionMouseMode;
         LayoutUnitsMetrics        m_unitMetric;

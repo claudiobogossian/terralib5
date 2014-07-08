@@ -225,7 +225,7 @@ int te::layout::BuildGraphicsItem::findZValue( te::layout::Properties* props )
 
 std::string te::layout::BuildGraphicsItem::nameItem( std::string name, te::layout::LayoutAbstractObjectType type )
 {
-  AbstractScene* abstScene = Context::getInstance()->getScene();
+  AbstractScene* abstScene = Context::getInstance().getScene();
 
   QList<QGraphicsItem*> graphicsItems;
   std::stringstream ss;//create a stringstream
@@ -267,7 +267,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createPaper()
   //Paper
   QGraphicsItem* item = 0;
 
-  PaperModel* model = new PaperModel(te::layout::Context::getInstance()->getPaperConfig());
+  PaperModel* model = new PaperModel(te::layout::Context::getInstance().getPaperConfig());
   if(m_props)
   {
     model->updateProperties(m_props);

@@ -34,7 +34,7 @@
 
 te::layout::TemplateEditor::TemplateEditor( te::layout::LayoutTemplateType type, std::string path ) 
 {
-  AbstractTemplateFactory* factory = Context::getInstance()->getTemplateFactory(); 
+  AbstractTemplateFactory* factory = Context::getInstance().getTemplateFactory(); 
   TemplateParamsCreate params(path);
   m_template = factory->make(type, params);
 }

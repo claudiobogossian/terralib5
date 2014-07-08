@@ -280,7 +280,7 @@ void te::layout::ToolbarOutside::createSceneZoomCombobox()
 
   connect(m_comboSceneZoom, SIGNAL(currentIndexChanged(int)), this, SLOT(onSceneZoomCurrentIndexChanged(int)));
   m_comboSceneZoom->setCurrentIndex(1);
-  Context::getInstance()->setDefaultZoomFactor(m_comboSceneZoom->itemData(1).toDouble());
+  Context::getInstance().setDefaultZoomFactor(m_comboSceneZoom->itemData(1).toDouble());
   
   this->addWidget(m_comboSceneZoom);
 }
@@ -393,20 +393,20 @@ void te::layout::ToolbarOutside::onItemToolsTriggered( QAction* action )
 void te::layout::ToolbarOutside::onLineIntersectionMouse( bool checked )
 {
   bool result = false;
-  LayoutMode mouseMode = Context::getInstance()->getLineIntersectionMouseMode();
+  LayoutMode mouseMode = Context::getInstance().getLineIntersectionMouseMode();
 
   if(checked)
   {
     if(TypeActiveLinesIntersectionMouse != mouseMode)
     {
-      Context::getInstance()->setLineIntersectionMouseMode(TypeActiveLinesIntersectionMouse);
+      Context::getInstance().setLineIntersectionMouseMode(TypeActiveLinesIntersectionMouse);
     }
   }
   else
   {
     if(TypeOffLinesIntersectionMouse != mouseMode)
     {
-      Context::getInstance()->setLineIntersectionMouseMode(TypeOffLinesIntersectionMouse);
+      Context::getInstance().setLineIntersectionMouseMode(TypeOffLinesIntersectionMouse);
     }
   }
 
@@ -416,11 +416,11 @@ void te::layout::ToolbarOutside::onLineIntersectionMouse( bool checked )
 void te::layout::ToolbarOutside::onSceneZoomCurrentIndexChanged( int index )
 {
   QVariant variant = m_comboSceneZoom->itemData(index);
-  double zoomFactor = Context::getInstance()->getZoomFactor();
+  double zoomFactor = Context::getInstance().getZoomFactor();
   if(variant.toDouble() != zoomFactor)
   {
-    Context::getInstance()->setZoomFactor(variant.toDouble());
-    Context::getInstance()->setOldZoomFactor(zoomFactor);
+    Context::getInstance().setZoomFactor(variant.toDouble());
+    Context::getInstance().setOldZoomFactor(zoomFactor);
     changeAction(TypeSceneZoom);
   }
 }
@@ -444,11 +444,11 @@ void te::layout::ToolbarOutside::onRecomposeClicked( bool checked )
 void te::layout::ToolbarOutside::changeAction( LayoutMode mode )
 {
   bool result = true;
-  LayoutMode layoutMode = Context::getInstance()->getMode();
+  LayoutMode layoutMode = Context::getInstance().getMode();
 
   if(mode != layoutMode)
   {
-    Context::getInstance()->setMode(mode);
+    Context::getInstance().setMode(mode);
   }
   else
   {

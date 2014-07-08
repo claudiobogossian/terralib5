@@ -76,11 +76,11 @@ void te::layout::AbstractVisitor::disassociate()
 
 te::layout::ContextItem te::layout::AbstractVisitor::getContextItem()
 {
-  te::map::Canvas* canvas = Context::getInstance()->getCanvas();
-  Utils* utils = Context::getInstance()->getUtils();
-  double zoomFactor = Context::getInstance()->getZoomFactor();
-  double dpiX = Context::getInstance()->getDpiX();
-  double dpiY = Context::getInstance()->getDpiY();
+  te::map::Canvas* canvas = Context::getInstance().getCanvas();
+  Utils* utils = Context::getInstance().getUtils();
+  double zoomFactor = Context::getInstance().getZoomFactor();
+  double dpiX = Context::getInstance().getDpiX();
+  double dpiY = Context::getInstance().getDpiY();
 
   ContextItem context;
   context.setCanvas(canvas);

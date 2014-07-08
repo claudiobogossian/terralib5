@@ -38,7 +38,7 @@
 te::layout::ItemGroupController::ItemGroupController( Observable* o ) :
   ItemController(o, TPItemGroup)
 {
-  AbstractItemFactory* factory = Context::getInstance()->getItemFactory(); 
+  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
   m_view = (Observer*)factory->make(TPItemGroup, params);
 }

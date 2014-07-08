@@ -35,7 +35,7 @@
 te::layout::ObjectInspectorController::ObjectInspectorController( Observable* o ) :
 	OutsideController(o, TPObjectInspectorWindow)
 {
-	AbstractOutsideFactory* factory = Context::getInstance()->getOutsideFactory(); 
+	AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
 	OutsideParamsCreate params(this, m_model);
   if(factory)
 	  m_view = (Observer*)factory->make(TPObjectInspectorWindow, params);

@@ -33,6 +33,7 @@
 #include "../../../layout/core/pattern/singleton/Context.h"
 #include "../../../layout/qt/outside/PropertiesOutside.h"
 #include "../../../layout/qt/outside/ObjectInspectorOutside.h"
+#include "../../../layout/qt/outside/ToolbarOutside.h"
 
 // Qt
 #include <QMainWindow>
@@ -113,8 +114,8 @@ void te::qt::plugins::layout2::OutsideArea::init()
   createMainMenu();
 
   if(m_dockToolbar)
-    connect(m_dockToolbar, SIGNAL(changeContext(bool)), this, SLOT(onToolbarChangeContext(bool)));
-  connect(this, SIGNAL(changeMenuContext(bool)), this, SLOT(onMainMenuChangeContext(bool)));
+    connect(m_dockToolbar->getToolbarOutside(), SIGNAL(changeContext(bool)), m_view, SLOT(onToolbarChangeContext(bool)));
+  connect(this, SIGNAL(changeMenuContext(bool)), m_view, SLOT(onMainMenuChangeContext(bool)));
 }
 
 void te::qt::plugins::layout2::OutsideArea::createPropertiesDock()
@@ -210,19 +211,19 @@ QAction* te::qt::plugins::layout2::OutsideArea::createAction( std::string text, 
 
 void te::qt::plugins::layout2::OutsideArea::changeAction( te::layout::LayoutMode mode )
 {
-  /*bool result = true;
-  te::layout::LayoutMode layoutMode = te::layout::Context::getInstance()->getMode();
+  bool result = true;
+  te::layout::LayoutMode layoutMode = te::layout::Context::getInstance().getMode();
 
   if(mode != layoutMode)
   {
-  te::layout::Context::getInstance()->setMode(mode);
+    te::layout::Context::getInstance().setMode(mode);
   }
   else
   {
-  result = false;
+    result = false;
   }
 
-  emit changeMenuContext(result);*/
+  emit changeMenuContext(result);
 }
 
 te::qt::plugins::layout2::PropertiesDock* te::qt::plugins::layout2::OutsideArea::getPropertiesDock()

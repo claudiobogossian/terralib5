@@ -170,7 +170,7 @@ TELAYOUTEXPORT bool te::layout::isCurrentMapTools()
 {
   bool result = false;
 
-  te::layout::LayoutMode mode = te::layout::Context::getInstance()->getMode();
+  te::layout::LayoutMode mode = te::layout::Context::getInstance().getMode();
 
   switch(mode)
   {

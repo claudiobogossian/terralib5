@@ -39,7 +39,7 @@
 te::layout::PaperController::PaperController( Observable* o ) :
   ItemController(o, TPPaperItem)
 {
-  AbstractItemFactory* factory = Context::getInstance()->getItemFactory(); 
+  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
   m_view = (Observer*)factory->make(TPPaperItem, params);
 }
