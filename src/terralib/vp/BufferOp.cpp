@@ -45,12 +45,14 @@ te::vp::BufferOp::BufferOp():
 }
 
 void te::vp::BufferOp::setInput(te::da::DataSourcePtr inDsrc,
-                                std::auto_ptr<te::da::DataSet> inDset,
-                                std::auto_ptr<te::da::DataSetType> inDsetType)
+                                std::string inDsetName,
+                                std::auto_ptr<te::da::DataSetType> inDsetType,
+                                const te::da::ObjectIdSet* oidSet)
 {
   m_inDsrc = inDsrc;
-  m_inDset = inDset;
+  m_inDsetName = inDsetName;
   m_inDsetType = inDsetType;
+  m_oidSet = oidSet;
 }
 
 void te::vp::BufferOp::setParams(const double& distance,
@@ -74,9 +76,6 @@ void te::vp::BufferOp::setOutput(te::da::DataSourcePtr outDsrc, std::string dsna
 
 bool te::vp::BufferOp::paramsAreValid()
 {
-  if (!m_inDset.get() || !m_inDsetType.get())
-    return false;
-  
   if (!m_inDsetType->hasGeom())
     return false;
 

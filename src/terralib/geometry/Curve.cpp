@@ -54,7 +54,7 @@ double te::gm::Curve::getLength() const
   return g->getLength();
 
 #else
-  throw Exception(TR_TR("getLength routine is supported by GEOS! Please, enable the GEOS support."));
+  throw Exception(TE_TR("getLength routine is supported by GEOS! Please, enable the GEOS support."));
 #endif  
 }
 

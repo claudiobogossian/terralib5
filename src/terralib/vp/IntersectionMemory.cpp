@@ -85,12 +85,18 @@ bool te::vp::IntersectionMemory::run()
 
   IntersectionMember firstMember;
   firstMember.dt = m_inFirstDsetType.release();
-  firstMember.ds = m_inFirstDset.release();
+  if(m_firstOidSet == 0)
+    firstMember.ds = m_inFirstDsrc->getDataSet(m_inFirstDsetName).release();
+  else
+    firstMember.ds = m_inFirstDsrc->getDataSet(m_inFirstDsetName, m_firstOidSet).release();
   firstMember.props = firstProps;
 
   IntersectionMember secondMember;
   secondMember.dt = m_inSecondDsetType.release();
-  secondMember.ds = m_inSecondDset.release();
+  if(m_secondOidSet == 0)
+    secondMember.ds = m_inSecondDsrc->getDataSet(m_inSecondDsetName).release();
+  else
+    secondMember.ds = m_inSecondDsrc->getDataSet(m_inSecondDsetName, m_secondOidSet).release();
   if(m_copyInputColumns)
     secondMember.props = getTabularProps(secondMember.dt);
   

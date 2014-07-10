@@ -48,10 +48,7 @@ void te::qt::plugins::wcs::Plugin::startup()
 
   te::qt::widgets::DataSourceTypeManager::getInstance().add(new WCSType);
 
-// it initializes the Translator support for the TerraLib PostGIS driver support
-  TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_DATASOURCE_WCS_TEXT_DOMAIN, TE_QT_PLUGIN_DATASOURCE_WCS_TEXT_DOMAIN_DIR, "UTF-8");
-
-  TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_WCS("TerraLib Qt OGC Web Coverage Service (WCS) widget startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt OGC Web Coverage Service (WCS) widget startup!"));
 
   m_initialized = true;
 }
@@ -64,7 +61,7 @@ void te::qt::plugins::wcs::Plugin::shutdown()
   te::da::DataSourceInfoManager::getInstance().removeByType("WCS");
   te::qt::widgets::DataSourceTypeManager::getInstance().remove("WCS");
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_WCS("TerraLib Qt OGC Web Coverage Service (WCS) widget shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt OGC Web Coverage Service (WCS) widget shutdown!"));
 
   m_initialized = false;
 }

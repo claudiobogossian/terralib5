@@ -4,6 +4,10 @@
 
 
 
+
+
+  
+  
   
   
   
@@ -11,6 +15,10 @@
 
 
 
+
+
+  
+  
   
   
   
@@ -22,9 +30,13 @@
 
 
 
+
+
 <div style="text-align: left; font-family: Calibri Light;">
 <div style="text-align: center; height: 27px;">
 <h3><strong><strong><strong><strong>Layer Exchanger</strong></strong></strong></strong></h3>
+
+
 
 
 
@@ -32,11 +44,17 @@
 
 
 
+
+
 </div>
 
 
 
+
+
 </div>
+
+
 
 
 
@@ -44,14 +62,20 @@
 
 
 
+
+
 The
 <span style="font-weight: bold;">Layer Exchanger</span> interface is
-used to export one TerraLib layer to a external source.&nbsp; The list of output data sources types may
-vary depending on the active plugins (PostGIS, OGR, etc).<br>
+used to export a TerraLib layer to a external data source.&nbsp; The list of output data sources types may
+vary depending on the plugins loaded (PostGIS, OGR, etc).<br>
+
+
 
 
 
 <br>
+
+
 
 
 
@@ -60,7 +84,11 @@ accessible through:</font><br>
 
 
 
+
+
 <br>
+
+
 
 
 
@@ -69,7 +97,13 @@ accessible through:</font><br>
 Explorer &gt; &nbsp;Right Clicking </b></font>over a
 Layer-name<font style="font-family: Calibri Light;"><b> &gt;
 Exchange... </b>(used to export a
-specific layer)</font><br>
+specific layer)<br>
+
+<br>
+
+or<br>
+
+</font>
 
 
 
@@ -77,15 +111,22 @@ specific layer)</font><br>
 
 
 
+
+
 <font style="font-family: Calibri Light;"><b>&nbsp;&nbsp;&nbsp;
-Tools &gt; Data Exchanger &gt; Layer Exchanger... </b>(list of all
-layers will be available)</font><br>
+Tools &gt; Data Exchanger &gt; Layer Exchanger... </b>(all layers are listed and one must be selected)</font><br>
+
+
 
 
 
 </div>
 
+
+
 <div style="text-align: left; font-family: Calibri Light;"><br>
+
+
 
 
 
@@ -94,7 +135,11 @@ the following steps:<br>
 
 
 
+
+
 <ol>
+
+
 
 
 
@@ -103,52 +148,72 @@ the following steps:<br>
 
 
 
-  <li>Select the <i>Output Data Source Type</i><span style="font-weight: bold;"></span>. The next fields may vary according to the selected
-Data Source Type.&nbsp;</li>
+
+
+  <li>Select the <i>Output Data Source Type</i><span style="font-weight: bold;"></span> (DBMS or&nbsp;OGR).</li>
 
 
 
-  <li>Inform the <i>Output Data Source</i> &nbsp;(it is the database name managed by the data source type) or</li>
+
+
+  <li>Choose the <i>Output Data Source</i> &nbsp;(it is the database-name managed by the data source type).</li>
+  <ol>
+    <li>Optionally, if there is no <span style="font-style: italic;">Output Data Source</span> available ,click on&nbsp;<img style="width: 21px; height: 23px;" alt="datasource icon" src="../../gen_icones/ic_database.PNG"> to define a new one to store the exported layer.</li>
+  </ol>
 
 
 
-  <li>Inform the<i> Data Set Name</i> &nbsp;and the location path where the data will be
-exported.</li>
+
+
+  <li>Optionally, inform the<i> Data Set Name</i> and the location path where the input layer will be
+exported (if the data source type is not a DBMS).</li>
 
 
 
-  <li>Optionally check <i>Create Spatial Index. &nbsp;</i>It is only available if it is supported by the data source type.<br>
 
-  </li>
+
+  <li>Optionally check <i>Create Spatial Index. &nbsp;</i>It is only available if the data source type&nbsp;supports index creation.</li>
+  <li>Click on <span style="font-weight: bold;">OK</span> to export the layer.</li>
+
+
 
 </ol>
 
 
 
+
+
 </div>
+
+
 
 <div style="text-align: left; font-family: Calibri Light;">
 
 At the end of the process a successful message or a error indication will be displayed.<br>
 
+
+
 <br>
-
-NOTE: It is possible to add a new <i>Output Data Source</i> to store
-the exported data by clicking on the database icon showed. Usually it
-is used when there is no data source available to
-choose.&nbsp;The&nbsp; <a href="../datasource_explorer/datasource_explorer.html">Data Source Explorer</a> interface will be showed in this case. </div>
-
+</div>
 <div style="text-align: left; font-family: Calibri Light;"><br>
+
+
 
 
 
 <div style="text-align: center;"><br>
 
+
+
 </div>
 
 
 
+
+
 </div>
+
+
 
 
 

@@ -73,8 +73,16 @@ bool te::vp::BufferMemory::run()
   int type;
   int pk = 0;
 
-  m_inDset->moveBeforeFirst();
-  while(m_inDset->moveNext())
+  std::auto_ptr<te::da::DataSet> inDset;
+  
+  if(m_oidSet == 0)
+    inDset = m_inDsrc->getDataSet(m_inDsetName);
+  else
+    inDset = m_inDsrc->getDataSet(m_inDsetName, m_oidSet);
+  
+  inDset->moveBeforeFirst();
+
+  while(inDset->moveNext())
   {
     te::gm::Geometry* auxGeom = 0;
 
@@ -82,32 +90,32 @@ bool te::vp::BufferMemory::run()
     {
       te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outDSet.get());
 
-      for(std::size_t j = 0; j < m_inDset->getNumProperties(); ++j)
+      for(std::size_t j = 0; j < inDset->getNumProperties(); ++j)
       {
-        type = m_inDset->getPropertyDataType(j);
+        type = inDset->getPropertyDataType(j);
         if(m_copyInputColumns)
         {
           switch (type)
           {
             case te::dt::INT32_TYPE:
-              if(m_inDset->getPropertyName(j) != "FID")
-                dataSetItem->setInt32(j+2, m_inDset->getInt32(j));
+              if(inDset->getPropertyName(j) != "FID")
+                dataSetItem->setInt32(j+2, inDset->getInt32(j));
               break;
             case te::dt::INT64_TYPE:
-              dataSetItem->setInt64(j+2, m_inDset->getInt64(j));
+              dataSetItem->setInt64(j+2, inDset->getInt64(j));
               break;
             case te::dt::DOUBLE_TYPE:
-              dataSetItem->setDouble(j+2, m_inDset->getDouble(j));
+              dataSetItem->setDouble(j+2, inDset->getDouble(j));
               break;
             case te::dt::STRING_TYPE:
-              dataSetItem->setString(j+2, m_inDset->getString(j));
+              dataSetItem->setString(j+2, inDset->getString(j));
               break;
             case te::dt::GEOMETRY_TYPE:
               dataSetItem->setInt32(0, pk); //pk
               dataSetItem->setInt32(1, i); //level
               dataSetItem->setDouble(2, m_distance*(i)); //distance
 
-              std::auto_ptr<te::gm::Geometry> currentGeom = m_inDset->getGeometry(j);
+              std::auto_ptr<te::gm::Geometry> currentGeom = inDset->getGeometry(j);
               std::auto_ptr<te::gm::Geometry> outGeom;
 
               if(currentGeom->isValid())
@@ -141,7 +149,7 @@ bool te::vp::BufferMemory::run()
             dataSetItem->setInt32(1, i); //level
             dataSetItem->setDouble(2, m_distance*(i)); //distance
 
-            std::auto_ptr<te::gm::Geometry> currentGeom = m_inDset->getGeometry(j);
+            std::auto_ptr<te::gm::Geometry> currentGeom = inDset->getGeometry(j);
             std::auto_ptr<te::gm::Geometry> outGeom;
 
             if(currentGeom->isValid())
