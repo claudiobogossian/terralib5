@@ -55,22 +55,69 @@ Make sure to have at least version 6.1.0 installed.
 5. GDAL (Optional)
 ------------------
 
+GDAL is available from http://www.gdal.org.
 
-6. PostgreSQL libpq
--------------------
+Make sure to have at least version 1.10.0 installed.
 
 
-7. Microsodt Data Access (ADO)
+6. PostgreSQL libpq (Optional)
 ------------------------------
 
+libpq is available with PostgreSQL source from http://www.postgresql.org.
 
-8. SQLite
----------
+Make sure to have at least version 9.1.0 installed.
 
 
-9. SpatiaLite
--------------
+7. Microsoft ADO (Optional)
+---------------------------
 
+
+8. Xerces-c (Optional)
+----------------------
+
+Apache Xerces-C++ is available from http://xerces.apache.org/xerces-c.
+
+Make sure to have at least version 3.1.0 installed.
+
+
+9. GEOS (Optional)
+------------------
+
+GEOS is available from http://trac.osgeo.org/geos.
+
+Make sure to have at least version 3.3.9 installed.
+
+
+10. Apache log4cxx (Optional)
+-----------------------------
+
+Apache log4cxx is available from http://logging.apache.org/log4cxx.
+
+Make sure to have at least version 0.10.0 installed.
+
+
+11. Proj4 (Optional)
+--------------------
+
+Proj4 is available from http://trac.osgeo.org/proj.
+
+Make sure to have at least version 4.8.0 installed.
+
+
+12. GNU Iconv (Optional)
+------------------------
+
+GNU Iconv is available from https://www.gnu.org/software/libiconv.
+
+Any recent version may be used.
+
+
+13. GNU gettext (Optional)
+--------------------------
+
+GNU gettext is available from https://www.gnu.org/software/gettext.
+
+Any recent version may be used.
 
 
 For more information on TerraLib, please, visit its main web page at:
