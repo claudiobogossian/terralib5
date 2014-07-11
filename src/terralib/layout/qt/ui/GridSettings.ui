@@ -1067,11 +1067,11 @@
                  <property name="title">
                   <string>Font Settings</string>
                  </property>
-                 <layout class="QGridLayout" name="gridLayout">
+                 <layout class="QGridLayout" name="gridLayout_57">
                   <item row="0" column="0">
                    <layout class="QVBoxLayout" name="verticalLayout_17">
                     <item>
-                     <layout class="QGridLayout" name="gridLayout_3">
+                     <layout class="QGridLayout" name="gridLayout_33">
                       <item row="0" column="0" colspan="2">
                        <widget class="QLabel" name="textLabel7_2">
                         <property name="text">
@@ -2957,7 +2957,7 @@
                        </layout>
                       </item>
                       <item>
-                       <layout class="QGridLayout" name="gridLayout_13">
+                       <layout class="QGridLayout" name="gridLayout_43">
                         <item row="0" column="0">
                          <widget class="QLabel" name="textLabel10_2_2">
                           <property name="text">
