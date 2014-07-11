@@ -46,6 +46,7 @@ te::qt::plugins::st::TimeSliderWidgetAction::~TimeSliderWidgetAction()
     te::qt::af::ApplicationController::getInstance().removeListener(m_timeSliderWidget);
     delete m_timeSliderWidget;
   }
+  delete m_menu;
 }
 
 void te::qt::plugins::st::TimeSliderWidgetAction::onActionActivated(bool checked)

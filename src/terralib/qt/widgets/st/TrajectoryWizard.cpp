@@ -40,6 +40,25 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+te::st::TrajectoryDataSetLayerPtr generateLayer(te::da::DataSetTypePtr dataType, te::st::TrajectoryDataSetInfo* trajInfo, te::da::DataSourceInfoPtr dataInfo)
+{
+  static boost::uuids::basic_random_generator<boost::mt19937> gen;
+  boost::uuids::uuid u = gen();
+  std::string id = boost::uuids::to_string(u);
+  std::string title = dataType->getTitle().empty() ? dataType->getName() : dataType->getTitle();
+
+  te::st::TrajectoryDataSetLayerPtr trajectoryLayer = new te::st::TrajectoryDataSetLayer(id, title, 0, trajInfo);
+  trajectoryLayer->setVisibility(te::map::NOT_VISIBLE);
+  trajectoryLayer->setRendererType("ABSTRACT_LAYER_RENDERER");
+
+  te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dataType.get());
+  std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(dataType->getName(), gp->getName(), dataInfo->getId()));
+  trajectoryLayer->setSRID(gp->getSRID());
+  trajectoryLayer->setExtent(*mbr);
+  trajectoryLayer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));
+  return trajectoryLayer;
+}
+
 te::qt::widgets::TrajectoryWizard::TrajectoryWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f),
     m_ui(new Ui::TrajectoryWizardForm)
@@ -115,6 +134,7 @@ void te::qt::widgets::TrajectoryWizard::next()
 
 void te::qt::widgets::TrajectoryWizard::finish()
 {
+  QApplication::setOverrideCursor(Qt::WaitCursor);
   te::da::DataSourceInfoPtr dataInfo = getDataSource();
   std::list<te::da::DataSetTypePtr> dataTypes = m_datasetSelectorPage->getCheckedDataSets();
 
@@ -146,29 +166,20 @@ void te::qt::widgets::TrajectoryWizard::finish()
     std::list<te::st::TrajectoryDataSetInfo*> infos = m_PropWidgetPage->getInfo(dataInfo);
     std::list<te::st::TrajectoryDataSetInfo*>::const_iterator infosBegin = infos.begin();
     std::list<te::st::TrajectoryDataSetInfo*>::const_iterator infosEnd = infos.end();
-
     std::list<te::da::DataSetTypePtr>::const_iterator typesItBegin = dataTypes.begin();
 
-    while(infosBegin != infosEnd)
+    if (infos.size() == 1)
     {
-      static boost::uuids::basic_random_generator<boost::mt19937> gen;
-      boost::uuids::uuid u = gen();
-      std::string id = boost::uuids::to_string(u);
-      std::string title = typesItBegin->get()->getTitle().empty() ? typesItBegin->get()->getName() : typesItBegin->get()->getTitle();
-
-      te::st::TrajectoryDataSetLayerPtr trajectoryLayer = new te::st::TrajectoryDataSetLayer(id, title, 0, *infosBegin);
-      trajectoryLayer->setVisibility(te::map::NOT_VISIBLE);
-      trajectoryLayer->setRendererType("ABSTRACT_LAYER_RENDERER");
-
-      te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(typesItBegin->get());
-      std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(typesItBegin->get()->getName(), gp->getName(), dataInfo->getId()));
-      trajectoryLayer->setSRID(gp->getSRID());
-      trajectoryLayer->setExtent(*mbr);
-      trajectoryLayer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));
-      m_trajectoryLayers.push_front(trajectoryLayer);
-
-      infosBegin++;
-      typesItBegin++;
+      m_trajectoryLayers.push_back(generateLayer(*typesItBegin, *infosBegin, dataInfo));
+    }
+    else
+    {
+      while(infosBegin != infosEnd)
+      {
+        m_trajectoryLayers.push_back(generateLayer(*typesItBegin, *infosBegin, dataInfo));
+        infosBegin++;
+        typesItBegin++;
+      }
     }
   }
   catch(const te::common::Exception& e)
@@ -182,5 +193,6 @@ void te::qt::widgets::TrajectoryWizard::finish()
     QWizard::finished(1);
   }
 
+  QApplication::restoreOverrideCursor();
   QWizard::finished(0);
 }

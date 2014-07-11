@@ -61,7 +61,7 @@ std::list<te::st::TrajectoryDataSetInfo*> te::qt::widgets::TrajectoryPropertiesW
 
   while(typesItBegin != typesItEnd)
   {
-    trajInfos.push_front(new te::st::TrajectoryDataSetInfo(*dsInfo.get(), typesItBegin->get()->getName(), m_genPropWidget->getPhenomenonTime(), m_propWidget->getGeometryId(), -1, typesItBegin->get()->getName()));
+    trajInfos.push_back(new te::st::TrajectoryDataSetInfo(*dsInfo.get(), typesItBegin->get()->getName(), m_genPropWidget->getPhenomenonTime(), m_propWidget->getGeometryId(), -1, typesItBegin->get()->getName()));
     typesItBegin++;
   }
 

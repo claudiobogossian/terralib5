@@ -99,7 +99,7 @@ void te::qt::plugins::st::Plugin::shutdown()
 void te::qt::plugins::st::Plugin::registerActions()
 {
 #ifdef TE_QT_PLUGIN_ST_HAVE_SLIDER
-    m_sliderAction = new te::qt::plugins::st::TimeSliderWidgetAction( te::qt::af::ApplicationController::getInstance().getMenu("View"));
+    m_sliderAction = new te::qt::plugins::st::TimeSliderWidgetAction(te::qt::af::ApplicationController::getInstance().findMenu("View"));
 #endif
 
 #ifdef TE_QT_PLUGIN_ST_HAVE_OBSERVATION
