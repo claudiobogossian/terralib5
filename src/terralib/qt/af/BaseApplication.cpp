@@ -1380,7 +1380,7 @@ void te::qt::af::BaseApplication::onLayerFitSelectedOnMapDisplayTriggered()
     return;
   }
 
-  te::gm::Envelope finalEnv = te::map::GetSelectedExtent(layers, m_display->getDisplay()->getSRID(), true);
+  te::gm::Envelope finalEnv = te::map::GetSelectedExtent(layers, m_display->getDisplay()->getSRID(), false);
 
   if(!finalEnv.isValid())
   {
@@ -2196,8 +2196,8 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerChartsScatter, "chart-scatter", "Layer.Charts.Scatter", tr("&Scatter..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerChart, "chart-pie", "Layer.Charts.Chart", tr("&Pie/Bar Chart..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit Layer on the Map Display", tr("Fit Layer"), tr("Fit the current layer on the Map Display"), true, false, true, m_menubar);
-  initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected Objects on the Map Display", tr("Fit Selected Objects"), tr("Fit the selected objects on the Map Display"), true, false, true, m_menubar);
-  initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan to Selected Objects on Map Display", tr("Pan to Selected Objects"), tr("Pan to the selected objects on the Map Display"), true, false, true, m_menubar);
+  initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected Features on the Map Display", tr("Fit Selected Features"), tr("Fit the selected features on the Map Display"), true, false, true, m_menubar);
+  initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan to Selected Features on Map Display", tr("Pan to Selected Features"), tr("Pan to the selected features on the Map Display"), true, false, true, m_menubar);
   initAction(m_queryLayer, "view-filter", "Layer.Query", tr("Query..."), tr(""), true, false, true, m_menubar);
 
 // Menu -File- actions

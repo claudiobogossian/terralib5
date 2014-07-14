@@ -44,6 +44,7 @@
 #include <QMessageBox>
 
 // Boost
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/random_generator.hpp>
@@ -301,6 +302,9 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
         te::da::Index* idx = new te::da::Index(dsTypeResult);
 
         std::string name = m_ui->m_dataSetLineEdit->text().toStdString() + "_" + p->getName() + "_idx";
+
+        boost::replace_all(name, ".", "_");
+
         idx->setName(name);
         idx->setIndexType(te::da::R_TREE_TYPE);
 
@@ -316,7 +320,9 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
       te::da::PrimaryKey* pk = new te::da::PrimaryKey(dsTypeResult);
       
       std::string name = m_ui->m_dataSetLineEdit->text().toStdString() + "_" + dsType->getPrimaryKey()->getName() + "_pk";
-      
+
+      boost::replace_all(name, ".", "_");
+
       pk->setName(name);
 
       std::vector<te::dt::Property*> props =  dsType->getPrimaryKey()->getProperties();
