@@ -1380,7 +1380,7 @@ void te::qt::af::BaseApplication::onLayerFitSelectedOnMapDisplayTriggered()
     return;
   }
 
-  te::gm::Envelope finalEnv = te::map::GetSelectedExtent(layers, m_display->getDisplay()->getSRID(), true);
+  te::gm::Envelope finalEnv = te::map::GetSelectedExtent(layers, m_display->getDisplay()->getSRID(), false);
 
   if(!finalEnv.isValid())
   {
