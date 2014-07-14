@@ -32,6 +32,8 @@
 #include "../../../geometry/Utils.h"
 #include "../../../maptools/Utils.h"
 #include "../../../srs/Config.h"
+#include "../../../st/maptools/TrajectoryDataSetLayer.h"
+#include "../../../st/core/trajectory/TrajectoryDataSet.h"
 #include "../../widgets/st/TimeSliderWidget.h"
 #include "../../widgets/Utils.h"
 #include "../events/LayerEvents.h"
@@ -80,6 +82,17 @@ void te::qt::af::TimeSliderWidget::onApplicationTriggered(te::qt::af::evt::Event
     }
     break;
 
+    case te::qt::af::evt::LAYER_ADDED:
+      {
+        te::qt::af::evt::LayerAdded* ev = static_cast<te::qt::af::evt::LayerAdded*>(e);
+
+        if(ev->m_layer->getType() == "TRAJECTORYDATASETLAYER")
+        {
+          te::st::TrajectoryDataSet* test = dynamic_cast<te::st::TrajectoryDataSetLayer*>(ev->m_layer.get())->getTrajectoryDataset().release();
+          m_timeSliderWidget->addTrajectory(QString::fromStdString(test->getId()), "C:/Users/andre.oliveira/Funcate/Projetos/Fontes/Terralib/source/resources/images/terralib.png", test);
+        }
+      }
+    break;
     default:
       return;
   }

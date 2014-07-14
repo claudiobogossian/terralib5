@@ -51,8 +51,8 @@ namespace te
   {    
 
     // Forward declarations
-    class ObservationDataSetType;
     class Observation;
+    class ObservationDataSetType;
     class TrajectoryDataSet;
     class TimeSeriesDataSet;
 

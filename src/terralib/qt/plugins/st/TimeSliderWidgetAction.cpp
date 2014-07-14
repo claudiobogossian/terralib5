@@ -32,23 +32,24 @@
 #include "../../af/Project.h"
 #include "TimeSliderWidgetAction.h"
 
-te::qt::plugins::slider::TimeSliderWidgetAction::TimeSliderWidgetAction(QMenu* menu)
-  : te::qt::plugins::slider::AbstractAction(menu),
+te::qt::plugins::st::TimeSliderWidgetAction::TimeSliderWidgetAction(QMenu* menu)
+  : te::qt::plugins::st::AbstractAction(menu),
   m_timeSliderWidget(0)
 {
   createAction(tr("Time Slider...").toStdString());
 }
 
-te::qt::plugins::slider::TimeSliderWidgetAction::~TimeSliderWidgetAction()
+te::qt::plugins::st::TimeSliderWidgetAction::~TimeSliderWidgetAction()
 {
   if(m_timeSliderWidget)
   {
     te::qt::af::ApplicationController::getInstance().removeListener(m_timeSliderWidget);
     delete m_timeSliderWidget;
   }
+  delete m_menu;
 }
 
-void te::qt::plugins::slider::TimeSliderWidgetAction::onActionActivated(bool checked)
+void te::qt::plugins::st::TimeSliderWidgetAction::onActionActivated(bool checked)
 {
   if(m_timeSliderWidget == 0)
   {
@@ -78,7 +79,7 @@ void te::qt::plugins::slider::TimeSliderWidgetAction::onActionActivated(bool che
   }
 }
 
-void te::qt::plugins::slider::TimeSliderWidgetAction::onDeleteTimeSliderWidget()
+void te::qt::plugins::st::TimeSliderWidgetAction::onDeleteTimeSliderWidget()
 {
   if(m_timeSliderWidget)
     delete m_timeSliderWidget;

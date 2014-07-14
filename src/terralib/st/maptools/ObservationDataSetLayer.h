@@ -36,6 +36,7 @@ namespace te
   {
 
     //Forward declarations
+    class ObservationDataSet;
     class ObservationDataSetInfo;
 
     typedef te::da::DataSetType LayerSchema;

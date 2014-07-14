@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/canvas/AnimationItem.h
+  \file terralib/qt/widgets/st/AnimationItem.h
 
   \brief This file defines a class for a Animation Item.
 */
