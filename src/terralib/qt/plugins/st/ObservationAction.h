@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,56 +18,46 @@
  */
 
 /*!
-  \file terralib/qt/plugins/layout/SliderAction.h
+  \file terralib/qt/plugins/st/Observation.h
 
-  \brief This file defines the SliderAction class
+  \brief This file defines the Observation Action class
 */
 
-#ifndef __TE_QT_PLUGINS_ST_INTERNAL_TIMESLIDERWIDGET_H
-#define __TE_QT_PLUGINS_ST_INTERNAL_TIMESLIDERWIDGET_H
+#ifndef __TE_QT_PLUGINS_ST_INTERNAL_OBSERVATIONACTION_H
+#define __TE_QT_PLUGINS_ST_INTERNAL_OBSERVATIONACTION_H
 
 // TerraLib
 #include "Config.h"
 #include "AbstractAction.h"
-#include "../../../qt/af/connectors/TimeSliderWidget.h"
 
 namespace te
 {
   namespace qt
   {
-    namespace widgets
-    {
-      class Slider;
-    }
-
     namespace plugins
     {
       namespace st
       {
-        /*!
-          \class TimeSliderWidgetAction
 
-          \brief This class register the contrast action into TIMESLIDERWIDGET Plugin.
+        /*!
+          \class TrajectoryAction
+
+          \brief This class register the observation action into the St plugin.
 
         */
-        class TimeSliderWidgetAction : public te::qt::plugins::st::AbstractAction
+        class ObservationAction : public te::qt::plugins::st::AbstractAction
         {
           Q_OBJECT
-            
+
           public:
 
-            TimeSliderWidgetAction(QMenu* menu);
+            ObservationAction(QMenu* menu);
 
-            virtual ~TimeSliderWidgetAction();
+            virtual ~ObservationAction();
 
           protected slots:
 
             virtual void onActionActivated(bool checked);
-
-            virtual void onDeleteTimeSliderWidget();
-
-          private:
-            te::qt::af::TimeSliderWidget* m_timeSliderWidget;
         };
 
       } // end namespace st
@@ -75,4 +65,4 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-#endif //__TE_QT_PLUGINS_ST_INTERNAL_TIMESLIDERWIDGET_H
+#endif //__TE_QT_PLUGINS_ST_INTERNAL_OBSERVATIONACTION_H

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/Trajectory/TrajectoryPropertiesWidget.h
+  \file terralib/qt/widgets/st/TrajectoryPropertiesWidget.h
 
   \brief A widget used to adjust a Trajectory layer's properties
 */
@@ -27,6 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_TRAJECTORYPROPERTIESWIDGET_H
 
 //TerraLib
+#include "../../../dataaccess/dataset/DataSetType.h"
 #include "../Config.h"
 
 // Qt
@@ -39,10 +40,6 @@ namespace Ui { class TrajectoryPropertiesWidgetForm; }
 
 namespace te
 {
-
-    //forward declarations
-  namespace da  {class DataSet;}
-
   namespace qt
   {
     namespace widgets
@@ -62,11 +59,11 @@ namespace te
           /*!
             \brief Constructor
 
-            \param dataSet The dataset that will be used to generate a TrajectoryLayer.
+            \param dataSetType The datasetType that will be used to generate a TrajectoryLayer.
             \param parent this widget's parent
             \param f Window flags used to configure this widget
           */
-          TrajectoryPropertiesWidget(te::da::DataSet* dataSet, QWidget* parent = 0,  Qt::WindowFlags f = 0);
+          TrajectoryPropertiesWidget(QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
           /*!
             \brief Destructor
@@ -81,6 +78,29 @@ namespace te
           */
           Ui::TrajectoryPropertiesWidgetForm* getForm();
 
+          /*!
+            \brief Returns the index of the temporal property id
+
+            \return The temporal property id
+            \note Will return an invalid index if the dataSeType hasn't been given.
+          */
+          int getId();
+
+          /*!
+            \brief Returns the index of the temporal property geometry
+
+            \return The index of the temporal property geometry
+            \note Will return an invalid index if the dataSeType hasn't been given.
+          */
+          int getGeometryId();
+
+          /*!
+            \brief Adjusts the widget's components based on the given datasettype
+
+            \param dataType The datasetType that will be used to configure the widget.
+          */
+          void setUp(const te::da::DataSetTypePtr dataType);
+
         protected slots:
 
           void onPropertyComboBoxIndexChanged(QString text);
@@ -88,7 +108,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::TrajectoryPropertiesWidgetForm>  m_ui;        //!< The widget's form.
-          std::auto_ptr<te::da::DataSet>                     m_dataSet;   //!< The dataset that will be used to generate the histogram graph.
+          te::da::DataSetTypePtr                             m_dataType;  //!< The datasetType that will be used to generate the spatio-temporal layer.
        };
     } // end namespace widgets
   }   // end namespace qt

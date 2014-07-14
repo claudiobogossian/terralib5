@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/tempoal/TimePropertiesWidget.cpp
+  \file terralib/qt/widgets/st/TimePropertiesWidget.cpp
 
   \brief A widget used to adjust a TimeSeries layer's properties
 */
@@ -32,27 +32,12 @@
 //QT
 #include <QWidget>
 
-te::qt::widgets::TimeSeriesPropertiesWidget::TimeSeriesPropertiesWidget(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::TimeSeriesPropertiesWidget::TimeSeriesPropertiesWidget(QWidget* parent, Qt::WindowFlags f)
 : QWidget(parent, f),
-  m_ui(new Ui::TimeSeriesPropertiesWidgetForm),
-  m_dataSet (dataSet)
+  m_ui(new Ui::TimeSeriesPropertiesWidgetForm)
 {
   m_ui->setupUi(this);
   QString item;
-
-  for (std::size_t i = 0; i < dataSet->getNumProperties(); i++)
-  {
-    if(dataSet->getPropertyDataType(i) == te::dt::GEOMETRY_TYPE)
-    {
-      item = QString::fromStdString(dataSet->getPropertyName(i));
-      m_ui->m_locationComboBox->addItem(item);
-    }
-    else if(dataSet->getPropertyDataType(i) != te::dt::DATETIME_TYPE)
-    {
-      item = QString::fromStdString(dataSet->getPropertyName(i));
-      m_ui->m_idComboBox->addItem(item);
-    }
-  }
 
 // connect signal and slots
   //connect(m_ui->m_phenomenomComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onPropertyComboBoxIndexChanged(QString)));
@@ -65,6 +50,26 @@ te::qt::widgets::TimeSeriesPropertiesWidget::~TimeSeriesPropertiesWidget()
 Ui::TimeSeriesPropertiesWidgetForm* te::qt::widgets::TimeSeriesPropertiesWidget::getForm()
 {
   return m_ui.get();
+}
+
+void te::qt::widgets::TimeSeriesPropertiesWidget::setUp (const te::da::DataSetTypePtr dataType)
+{
+  QString item;
+  const std::vector<te::dt::Property*>& properties = dataType->getProperties();
+
+  for (std::size_t i = 0; i < properties.size(); i++)
+  {
+    if(properties.at(i)->getType() == te::dt::GEOMETRY_TYPE)
+    {
+      item = QString::fromStdString(properties.at(i)->getName());
+      m_ui->m_locationComboBox->addItem(item);
+    }
+    else if(properties.at(i)->getType() != te::dt::DATETIME_TYPE)
+    {
+      item = QString::fromStdString(properties.at(i)->getName());
+      m_ui->m_idComboBox->addItem(item);
+    }
+  }
 }
 
 void te::qt::widgets::TimeSeriesPropertiesWidget::onPropertyComboBoxIndexChanged (QString text)

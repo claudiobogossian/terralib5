@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2010-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,36 +18,28 @@
  */
 
 /*!
-  \file terralib/qt/plugins/slider/AbstractAction.cpp
+  \file terralib/qt/widgets/st/ TimeSeriesPropertiesWIzardPage.cpp
 
-  \brief This file defines the abstract class AbstractAction
+  \brief  A wizardPage used to configure the generaç properties of a new TimeSeries layer.
 */
 
-#include "AbstractAction.h"
+// TerraLib
+#include "TimeSeriesPropertiesWidget.h"
+#include "TimeSeriesPropertiesWizardPage.h"
+#include "ui_TimeSeriesPropertiesWidgetForm.h"
 
-// STL
-#include <cassert>
+te::qt::widgets:: TimeSeriesPropertiesWizardPage:: TimeSeriesPropertiesWizardPage(QWidget* parent)
+  : QWizardPage(parent)
+{
+  m_propWidget.reset(new TimeSeriesPropertiesWidget(this));
+}
 
-te::qt::plugins::st::AbstractAction::AbstractAction(QMenu* menu): m_menu(menu), m_action(0)
+te::qt::widgets:: TimeSeriesPropertiesWizardPage::~ TimeSeriesPropertiesWizardPage()
 {
 }
 
-te::qt::plugins::st::AbstractAction::~AbstractAction()
+void te::qt::widgets:: TimeSeriesPropertiesWizardPage::set(const te::da::DataSetTypePtr dataType)
 {
+  m_propWidget->setUp(dataType);
 }
 
-void te::qt::plugins::st::AbstractAction::createAction(std::string name, std::string pixmap)
-{
-  assert(m_menu);
-
-  m_action = new QAction(m_menu);
-
-  m_action->setText(name.c_str());
-
-  if(pixmap.empty() == false)
-    m_action->setIcon(QIcon::fromTheme(pixmap.c_str()));
-
-  connect(m_action, SIGNAL(triggered(bool)), this, SLOT(onActionActivated(bool)));
-
-  m_menu->addAction(m_action);
-}

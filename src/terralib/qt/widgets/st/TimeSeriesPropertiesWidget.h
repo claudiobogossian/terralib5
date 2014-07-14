@@ -18,15 +18,16 @@
  */
 
 /*!
-  \file terralib/qt/widgets/temporal/TimePropertiesWidget.h
+  \file terralib/qt/widgets/st/TimeSeriesPropertiesWidget.h
 
-  \brief A widget used to adjust a temporal layer's properties
+  \brief A widget used to adjust a time series layer's properties
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_TIMEPROPERTIESWIDGET_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_TIMEPROPERTIESWIDGET_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_TIMESERIESWIDGET_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_TIMESERIESWIDGET_H
 
 //TerraLib
+#include "../../../dataaccess/dataset/DataSetType.h"
 #include "../Config.h"
 
 // Qt
@@ -35,24 +36,20 @@
 //STL
 #include <memory>
 
-namespace Ui { class TemporalPropertiesWidgetForm; }
+namespace Ui { class TimeSeriesPropertiesWidgetForm; }
 
 namespace te
 {
-
-    //forward declarations
-  namespace da  {class DataSet;}
-
   namespace qt
   {
     namespace widgets
     {
     /*!
-        \class TemporalPropertiesWidget
+        \class TimeSeriesPropertiesWidget
 
-        \brief A widget used to adjust a temporal layer's properties
+        \brief A widget used to adjust a time series layer's properties
       */
-      class TEQTWIDGETSEXPORT TemporalPropertiesWidget : public QWidget
+      class TEQTWIDGETSEXPORT TimeSeriesPropertiesWidget : public QWidget
       {
 
         Q_OBJECT
@@ -66,20 +63,27 @@ namespace te
             \param parent this widget's parent
             \param f Window flags used to configure this widget
           */
-          TemporalPropertiesWidget(te::da::DataSet* dataSet, QWidget* parent = 0,  Qt::WindowFlags f = 0);
+          TimeSeriesPropertiesWidget(QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
           /*!
             \brief Destructor
           */
-          ~TemporalPropertiesWidget();
+          ~TimeSeriesPropertiesWidget();
 
           /*!
             \brief Returns a pointer to the widget's form
 
-            \return A TemporalPropertiesWidgetForm type pointer to the widget's form.
+            \return A TimeSeriesPropertiesWidgetForm type pointer to the widget's form.
             \note The caller will not take ownership of the returned pointer.
           */
-          Ui::TemporalPropertiesWidgetForm* getForm();
+          Ui::TimeSeriesPropertiesWidgetForm* getForm();
+
+          /*!
+            \brief Adjusts the widget's components based on the given datasettype
+
+            \param dataType The datasetType that will be used to configure the widget.
+          */
+          void setUp(const te::da::DataSetTypePtr dataType);
 
         protected slots:
 
@@ -87,11 +91,11 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::TemporalPropertiesWidgetForm>  m_ui;        //!< The widget's form.
-          std::auto_ptr<te::da::DataSet>                   m_dataSet;   //!< The dataset that will be used to generate the histogram graph.
+          std::auto_ptr<Ui::TimeSeriesPropertiesWidgetForm>  m_ui;        //!< The widget's form.
+//          std::auto_ptr<te::da::DataSet>           m_dataSet;   //!< The dataset that will be used to generate the histogram graph.
        };
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_TIMEPROPERTIESWIDGET_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_TIMESERIESWIDGET_H
