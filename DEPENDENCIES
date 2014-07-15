@@ -38,11 +38,22 @@ Make sure to have at least version 4.6.3 installed.
 QtPropertyBrowser is a free and open source Qt component available from:
 https://qt.gitorious.org/qt-solutions/qt-solutions
 
-We have been using a especial port of QtPropertyBrowser that you can get from here:
-http://www.terralib.org/3rdparty/5.0.0/qtpropertybrowser.tar.gz
+We have been using a special port of QtPropertyBrowser that you can get from here:
+http://www.dpi.inpe.br/terralib5-devel/qtpropertybrowser.tar.gz
 
-See the install notes in QtPropertyBrowser package or its main site.
+You can extract the qtpropertybrowser.tar.gz files using:
 
+  tar xzvf qtpropertybrowser.tar.gz
+
+Run qmake specifying the installation directory:
+
+  qmake "TERRALIB_DIR=install_dir"
+
+Run make and make install:
+
+  make
+  
+  make install
 
 4. Qwt (Optional)
 -----------------
