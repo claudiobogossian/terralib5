@@ -30,6 +30,7 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/Geometry.h"
 #include "../../../maptools/DataSetLayer.h"
+#include "../../../maptools/DataSetAdapterLayer.h"
 #include "../../../maptools/QueryLayer.h"
 #include "../../../statistics/qt/StatisticsDialog.h"
 
@@ -124,6 +125,13 @@ te::da::DataSourcePtr GetDataSource(const te::map::AbstractLayer* layer)
     if(l != 0)
       ds = te::da::DataSourceManager::getInstance().find(l->getDataSourceId());
   }
+  else if(layer->getType() == "DATASETADAPTERLAYER")
+  {
+    const te::map::DataSetAdapterLayer* l = dynamic_cast<const te::map::DataSetAdapterLayer*>(layer);
+
+    if(l != 0)
+      ds = te::da::DataSourceManager::getInstance().find(l->getDataSourceId());
+  }
   else if(layer->getType() == "QUERYLAYER")
   {
     const te::map::QueryLayer* l = dynamic_cast<const te::map::QueryLayer*>(layer);
@@ -208,6 +216,13 @@ std::auto_ptr<te::da::DataSet> GetDataSet(const te::map::AbstractLayer* layer, c
   if(layer->getType() == "DATASETLAYER")
   {
     const te::map::DataSetLayer* l = dynamic_cast<const te::map::DataSetLayer*>(layer);
+
+    if(l != 0)
+      query = GetSelectExpression(layer->getSchema()->getName(), colsNames, asc);
+  }
+  else if(layer->getType() == "DATASETADAPTERLAYER")
+  {
+    const te::map::DataSetAdapterLayer* l = dynamic_cast<const te::map::DataSetAdapterLayer*>(layer);
 
     if(l != 0)
       query = GetSelectExpression(layer->getSchema()->getName(), colsNames, asc);
