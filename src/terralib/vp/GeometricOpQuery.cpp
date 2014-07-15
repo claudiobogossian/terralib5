@@ -237,7 +237,8 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* d
                                                           std::vector<int> geoVec)
 {
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
-  std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(m_inDset.get());
+  std::auto_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inDsetName);
+  std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(inDset.get());
 
   te::da::Fields* fields = new te::da::Fields;
 
@@ -250,7 +251,7 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* d
     }
   }
 
-  std::string name = m_inDset->getPropertyName(geom_pos);
+  std::string name = inDset->getPropertyName(geom_pos);
 
   if(tabVec.size() > 0)
   {
@@ -360,8 +361,10 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregObj( te::da::DataSetType* d
                                                           std::vector<int> geoVec)
 {
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
-  std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(m_inDset.get());
-  std::string name = m_inDset->getPropertyName(geom_pos);
+  
+  std::auto_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inDsetName);
+  std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(inDset.get());
+  std::string name = inDset->getPropertyName(geom_pos);
   
   te::da::Fields* fields = new te::da::Fields;
 
@@ -480,8 +483,9 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSe
                                                                   std::vector<int> geoVec)
 {
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
-  std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(m_inDset.get());
-  std::string name = m_inDset->getPropertyName(geom_pos);
+  std::auto_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inDsetName);
+  std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(inDset.get());
+  std::string name = inDset->getPropertyName(geom_pos);
   
   te::da::Fields* fields = new te::da::Fields;
 

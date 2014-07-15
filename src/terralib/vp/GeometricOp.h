@@ -65,7 +65,7 @@ namespace te
       virtual bool paramsAreValid();
       
       void setInput(te::da::DataSourcePtr inDsrc,
-                    std::auto_ptr<te::da::DataSet> inDset,
+                    std::string inDsetName,
                     std::auto_ptr<te::da::DataSetType> inDsetType);
       
       void setParams(std::vector<std::string> selectedProps, 
@@ -85,7 +85,7 @@ namespace te
                                           int geomOp = -1);
 
       te::da::DataSourcePtr m_inDsrc;
-      std::auto_ptr<te::da::DataSet> m_inDset;
+      std::string m_inDsetName;
       std::auto_ptr<te::da::DataSetType> m_inDsetType;
 
       std::vector<std::string> m_selectedProps;
