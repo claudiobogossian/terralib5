@@ -73,10 +73,6 @@ namespace te
       ~Transactor();
       
       te::da::DataSource* getDataSource() const;
-            
-      bool isDataSetNameValid(const std::string& datasetName);
-      
-      bool isPropertyNameValid(const std::string& propertyName);
       
       std::vector<std::string> getDataSetNames();
       
