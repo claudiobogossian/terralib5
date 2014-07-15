@@ -103,10 +103,6 @@ namespace te
 
         std::string escape(const std::string& value);
 
-        bool isDataSetNameValid(const std::string& datasetName);
-
-        bool isPropertyNameValid(const std::string& propertyName);
-
         std::vector<std::string> getDataSetNames();
 
         std::size_t getNumberOfDataSets();
