@@ -660,6 +660,11 @@ if(TERRALIB_MOD_TERRALIB4_ENABLED)
   add_subdirectory(terralib_mod_terralib4)
 endif()
 
+# Turn on multi process compilation
+if(MSVC)
+  add_definitions(/MP)
+endif()
+
 if(TERRALIB_MOD_ANNOTATIONTEXT_ENABLED)
   add_subdirectory(terralib_mod_annotationtext)
 endif()
@@ -1121,8 +1126,23 @@ install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/config
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/icons
         DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
 
-install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/images
-        DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
+#install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/images
+#        DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
+
+install ( # -- images folder
+  DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/images
+  DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib 
+  COMPONENT runtime
+  PATTERN "*icns*" EXCLUDE
+)
+
+if(WIN32)
+  install ( # Application icon on windows system
+    FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/resources/images/ico/terralib-globe.ico
+    DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib/images/ico 
+    COMPONENT runtime
+  )
+endif()
 
 install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/json
         DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib COMPONENT runtime)
