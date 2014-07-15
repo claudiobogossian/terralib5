@@ -1812,7 +1812,7 @@ QMessageBox::StandardButton te::qt::af::BaseApplication::checkProjectSave()
     QString msg("The current project has unsaved changes. Do you want to save them?");
     QMessageBox::StandardButton btn = QMessageBox::question(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg, QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Save);
 
-    if(btn == QMessageBox::Yes)
+    if(btn == QMessageBox::Save)
       onSaveProjectTriggered();
 
     return btn;
