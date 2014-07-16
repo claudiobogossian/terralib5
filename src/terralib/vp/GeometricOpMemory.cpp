@@ -215,12 +215,14 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
                                                             std::vector<int> geoVec)
 {
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
-
+  
   int pk = 0;
-  m_inDset->moveBeforeFirst();
-  std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(m_inDset.get());
+  std::auto_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inDsetName);
+  inDset->moveBeforeFirst();
+  
+  std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(inDset.get());
 
-  while(m_inDset->moveNext())
+  while(inDset->moveNext())
   {
     te::mem::DataSetItem* item = new te::mem::DataSetItem(outDSet.get());
     
@@ -231,11 +233,11 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
     {
       for(std::size_t prop_pos = 0; prop_pos < m_selectedProps.size(); ++prop_pos)
       {
-        item->setValue(m_selectedProps[prop_pos], m_inDset->getValue(m_selectedProps[prop_pos]).release());
+        item->setValue(m_selectedProps[prop_pos], inDset->getValue(m_selectedProps[prop_pos]).release());
       }
     }
 
-    std::auto_ptr<te::gm::Geometry> in_geom = m_inDset->getGeometry(geom_pos);
+    std::auto_ptr<te::gm::Geometry> in_geom = inDset->getGeometry(geom_pos);
 
     if(tabVec.size() > 0)
     {
@@ -282,6 +284,8 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
               if(pos < dsType->size())
               {
                 std::auto_ptr<te::gm::Geometry> convexHull(in_geom->convexHull());
+                convexHull->setSRID(in_geom->getSRID());
+
                 if(convexHull->getGeomTypeId() == te::gm::PolygonType)
                   item->setGeometry("convex_hull", convexHull.release());
                 else
@@ -307,6 +311,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
               if(pos < dsType->size())
               {
                 std::auto_ptr<te::gm::Geometry> mbr(in_geom->getEnvelope());
+                mbr->setSRID(in_geom->getSRID());
                 if(mbr->getGeomTypeId() == te::gm::PolygonType)
                   item->setGeometry("mbr", mbr.release());
                 else
@@ -367,22 +372,23 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregObj(te::da::DataSetType* d
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
 
   int pk = 0;
-  std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(m_inDset.get());
-
+  std::auto_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inDsetName);
+  std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(inDset.get());
   // move first to take a seed geom.
-  m_inDset->moveFirst();
+  inDset->moveFirst();
   te::mem::DataSetItem* item = new te::mem::DataSetItem(outDSet.get());
   
   item->setInt32(0, pk);
 
-  std::auto_ptr<te::gm::Geometry> seedGeom = m_inDset->getGeometry(geom_pos);
-  te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, seedGeom->getSRID());
+  std::auto_ptr<te::gm::Geometry> seedGeom = inDset->getGeometry(geom_pos);
+  int srid = seedGeom->getSRID();
+  te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, srid);
 
-  if(m_inDset->size() > 1)
+  if(inDset->size() > 1)
   {
-    while(m_inDset->moveNext())
+    while(inDset->moveNext())
     {
-      std::auto_ptr<te::gm::Geometry> c_geom = m_inDset->getGeometry(geom_pos);
+      std::auto_ptr<te::gm::Geometry> c_geom = inDset->getGeometry(geom_pos);
       if(c_geom->isValid())
         teGeomColl->add(c_geom.release());
     }
@@ -391,6 +397,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregObj(te::da::DataSetType* d
   if(teGeomColl->getNumGeometries() > 1)
   {
     seedGeom.reset(seedGeom->Union(teGeomColl));
+    seedGeom->setSRID(srid);
   }
 
   if(tabVec.size() > 0)
@@ -434,7 +441,11 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregObj(te::da::DataSetType* d
           {
             std::size_t pos = te::da::GetPropertyPos(dsType, "convex_hull");
             if(pos < dsType->size())
-              item->setGeometry("convex_hull", seedGeom->convexHull());
+            {
+              std::auto_ptr<te::gm::Geometry> convexHull(seedGeom->convexHull());
+              convexHull->setSRID(seedGeom->getSRID());
+              item->setGeometry("convex_hull", convexHull.release());
+            }
           }
           break;
         case te::vp::CENTROID:
@@ -453,7 +464,11 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregObj(te::da::DataSetType* d
           {
             std::size_t pos = te::da::GetPropertyPos(dsType, "mbr");
             if(pos < dsType->size())
-              item->setGeometry("mbr", seedGeom->getEnvelope());
+            {
+              std::auto_ptr<te::gm::Geometry> mbr(seedGeom->getEnvelope());
+              mbr->setSRID(seedGeom->getSRID());
+              item->setGeometry("mbr", mbr.release());
+            }
           }
           break;
       }
@@ -502,30 +517,33 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
 {
   std::vector<te::gm::Geometry*> geometries;
 
+  std::auto_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inDsetName);
+
   te::gm::GeometryProperty* propGeom = static_cast<te::gm::GeometryProperty*>(m_inDsetType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
-  std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(m_inDset.get());
+  std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(inDset.get());
 
   // move first to take a seed geom.
-  m_inDset->moveFirst();
-  std::auto_ptr<te::gm::Geometry> seedGeom = m_inDset->getGeometry(geom_pos);
+  inDset->moveFirst();
+  std::auto_ptr<te::gm::Geometry> seedGeom = inDset->getGeometry(geom_pos);
+  int srid = seedGeom->getSRID();
 
-  if(m_inDset->size() > 1)
+  if(inDset->size() > 1)
   {
     std::map<std::string, std::vector<te::mem::DataSetItem*> > groups;
     std::map<std::string, std::vector<te::mem::DataSetItem*> >::iterator itg;
-    size_t nprops = m_inDset->getNumProperties();
+    size_t nprops = inDset->getNumProperties();
 
     // move first to take a seed geom.
-    m_inDset->moveBeforeFirst();
-    while(m_inDset->moveNext())
+    inDset->moveBeforeFirst();
+    while(inDset->moveNext())
     {
-      std::string key = m_inDset->getAsString(m_attribute);
-      te::mem::DataSetItem* item = new te::mem::DataSetItem(m_inDset.get());
+      std::string key = inDset->getAsString(m_attribute);
+      te::mem::DataSetItem* item = new te::mem::DataSetItem(inDset.get());
       for(std::size_t j=0; j<nprops; ++j)
       {
-        if (!m_inDset->isNull(j))
+        if (!inDset->isNull(j))
         {
-          std::auto_ptr<te::dt::AbstractData> val = m_inDset->getValue(j);
+          std::auto_ptr<te::dt::AbstractData> val = inDset->getValue(j);
           item->setValue(j,val.release());
         }
       }
@@ -607,7 +625,11 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
             {
               std::size_t pos = te::da::GetPropertyPos(dsType, "convex_hull");
               if(pos < dsType->size())
-                outItem->setGeometry("convex_hull", geometries[i]->convexHull());
+              {
+                std::auto_ptr<te::gm::Geometry> convexHull(geometries[i]->convexHull());
+                convexHull->setSRID(seedGeom->getSRID());
+                outItem->setGeometry("convex_hull", convexHull.release());
+              }
             }
             break;
           case te::vp::CENTROID:
@@ -626,7 +648,11 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
             {
               std::size_t pos = te::da::GetPropertyPos(dsType, "mbr");
               if(pos < dsType->size())
-                outItem->setGeometry("mbr", geometries[i]->getEnvelope());
+              {
+                std::auto_ptr<te::gm::Geometry> mbr(geometries[i]->getEnvelope());
+                mbr->setSRID(seedGeom->getSRID());
+                outItem->setGeometry("mbr", mbr.release());
+              }
             }
             break;
         }

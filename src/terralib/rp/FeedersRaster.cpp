@@ -27,6 +27,7 @@
 #include "../raster/RasterFactory.h"
 #include "../raster/Grid.h"
 #include "../geometry/LinearRing.h"
+#include "../common/Exception.h"
 
 #include <boost/filesystem.hpp>
 
@@ -263,9 +264,7 @@ namespace te
       }
       else
       {
-        ++m_selectedRasterIndexesOffset;
-        
-        if( m_selectedRasterIndexesOffset == m_selectedRastersIndexes.size() )
+        if( ( m_selectedRasterIndexesOffset + 1 ) == m_selectedRastersIndexes.size() )
         {
           m_currentRasterPtr.reset();
           return false;
@@ -274,14 +273,23 @@ namespace te
         {
           std::map< std::string, std::string > mInfo;
           mInfo[ "URI" ] = m_allRasterFileNames[ m_selectedRastersIndexes[ 
-            m_selectedRasterIndexesOffset ] ];
+            m_selectedRasterIndexesOffset + 1 ] ];
           
-          m_currentRasterPtr.reset( te::rst::RasterFactory::open( 
-            m_rType, mInfo, 
-            te::common::RAccess ) );          
+          try
+          {
+            m_currentRasterPtr.reset( te::rst::RasterFactory::open( 
+              m_rType, mInfo, 
+              te::common::RAccess ) );          
+          }
+          catch( const te::common::Exception& excep )
+          {
+            TERP_LOGWARN( "GDAL error:" + std::string( excep.what() ) );
+            m_currentRasterPtr.reset();
+          }              
             
           if( m_currentRasterPtr.get() )
           {
+            ++m_selectedRasterIndexesOffset;
             return true;
           }
           else
@@ -296,22 +304,31 @@ namespace te
     {
       if( index >= m_selectedRastersIndexes.size() )
       {
+        m_currentRasterPtr.reset();
         return false;
       }
       else
       {
-        m_selectedRasterIndexesOffset = index;
-        
         std::map< std::string, std::string > mInfo;
         mInfo[ "URI" ] = m_allRasterFileNames[ m_selectedRastersIndexes[
-          m_selectedRasterIndexesOffset ] ];
+          index ] ];
+
+        try
+        {
+          m_currentRasterPtr.reset( te::rst::RasterFactory::open( 
+            m_rType, mInfo, 
+            te::common::RAccess ) );  
+        }
+        catch( const te::common::Exception& excep )
+        {
+          TERP_LOGWARN( "GDAL error:" + std::string( excep.what() ) );
+          m_currentRasterPtr.reset();
+        }          
         
-        m_currentRasterPtr.reset( te::rst::RasterFactory::open( 
-          m_rType, mInfo, 
-          te::common::RAccess ) );          
           
         if( m_currentRasterPtr.get() )
         {
+          m_selectedRasterIndexesOffset = index;
           return true;
         }
         else
@@ -330,8 +347,16 @@ namespace te
         std::map< std::string, std::string > mInfo;
         mInfo[ "URI" ] = m_allRasterFileNames[ m_selectedRastersIndexes[ 0 ] ];        
         
-        m_currentRasterPtr.reset( te::rst::RasterFactory::open( m_rType,
-          mInfo, te::common::RAccess ) );          
+        try
+        {
+          m_currentRasterPtr.reset( te::rst::RasterFactory::open( m_rType,
+            mInfo, te::common::RAccess ) );          
+        }
+        catch( const te::common::Exception& excep )
+        {
+          TERP_LOGWARN( "GDAL error:" + std::string( excep.what() ) );
+          m_currentRasterPtr.reset();
+        }        
           
         if( m_currentRasterPtr.get() )
         {
@@ -379,31 +404,42 @@ namespace te
          {
             mInfo[ "URI" ] = m_allRasterFileNames[ allRasterFileNamesIdx ];        
             
-            rasterPtr.reset( te::rst::RasterFactory::open( m_rType,
-              mInfo, te::common::RAccess ) );          
-            TERP_TRUE_OR_THROW( rasterPtr.get(), "Invalid raster" );
+            try
+            {
+              rasterPtr.reset( te::rst::RasterFactory::open( m_rType,
+                mInfo, te::common::RAccess ) );          
+              TERP_TRUE_OR_THROW( rasterPtr.get(), "Invalid raster" );
+            }
+            catch( const te::common::Exception& excep )
+            {
+              TERP_LOGWARN( "GDAL error:" + std::string( excep.what() ) );
+              rasterPtr.reset();
+            }
             
-            rasterExtPtr = rasterPtr->getGrid()->getExtent();
-            
-            auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
-            auxLinearRingPtr->setPoint( 0, rasterExtPtr->m_llx, 
-              rasterExtPtr->m_ury );
-            auxLinearRingPtr->setPoint( 1, rasterExtPtr->m_urx, 
-              rasterExtPtr->m_ury );
-            auxLinearRingPtr->setPoint( 2, rasterExtPtr->m_urx, 
-              rasterExtPtr->m_lly );
-            auxLinearRingPtr->setPoint( 3, rasterExtPtr->m_llx, 
-              rasterExtPtr->m_lly );
-            auxLinearRingPtr->setPoint( 4, rasterExtPtr->m_llx, 
-              rasterExtPtr->m_ury );
-            auxLinearRingPtr->setSRID( rasterPtr->getSRID() );
-            
-            auxPolygon.clear();
-            auxPolygon.push_back( auxLinearRingPtr );
-            
-            auxPolygon.setSRID( rasterPtr->getSRID() );
-            
-            m_allRastersBoundingBoxes.push_back( auxPolygon );            
+            if( rasterPtr.get() )
+            {
+              rasterExtPtr = rasterPtr->getGrid()->getExtent();
+              
+              auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
+              auxLinearRingPtr->setPoint( 0, rasterExtPtr->m_llx, 
+                rasterExtPtr->m_ury );
+              auxLinearRingPtr->setPoint( 1, rasterExtPtr->m_urx, 
+                rasterExtPtr->m_ury );
+              auxLinearRingPtr->setPoint( 2, rasterExtPtr->m_urx, 
+                rasterExtPtr->m_lly );
+              auxLinearRingPtr->setPoint( 3, rasterExtPtr->m_llx, 
+                rasterExtPtr->m_lly );
+              auxLinearRingPtr->setPoint( 4, rasterExtPtr->m_llx, 
+                rasterExtPtr->m_ury );
+              auxLinearRingPtr->setSRID( rasterPtr->getSRID() );
+              
+              auxPolygon.clear();
+              auxPolygon.push_back( auxLinearRingPtr );
+              
+              auxPolygon.setSRID( rasterPtr->getSRID() );
+              
+              m_allRastersBoundingBoxes.push_back( auxPolygon );
+            }
          }
        }
        
