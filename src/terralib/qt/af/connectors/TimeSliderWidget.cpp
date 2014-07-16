@@ -88,8 +88,8 @@ void te::qt::af::TimeSliderWidget::onApplicationTriggered(te::qt::af::evt::Event
 
         if(ev->m_layer->getType() == "TRAJECTORYDATASETLAYER")
         {
-          te::st::TrajectoryDataSet* test = dynamic_cast<te::st::TrajectoryDataSetLayer*>(ev->m_layer.get())->getTrajectoryDataset().release();
-          m_timeSliderWidget->addTrajectory(QString::fromStdString(test->getId()), "C:/Users/andre.oliveira/Funcate/Projetos/Fontes/Terralib/source/resources/images/terralib.png", test);
+          te::st::TrajectoryDataSet* trajLayer = dynamic_cast<te::st::TrajectoryDataSetLayer*>(ev->m_layer.get())->getTrajectoryDataset().release();
+          m_timeSliderWidget->addTrajectory(QString::fromStdString(trajLayer->getId()), "", trajLayer);
         }
       }
     break;
