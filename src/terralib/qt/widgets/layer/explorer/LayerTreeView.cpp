@@ -115,6 +115,12 @@ class te::qt::widgets::LayerTreeView::Impl
         // Get the type of the selected item
         std::string selectedItemType;
 
+        if(!layer->isValid())
+        {
+          QMessageBox::warning(0, tr("Warning"), tr("Is not possible to perform the action because this is an invalid layer!"));
+          return;
+        }
+
         if(layer && layer->getSchema().get() && layer->getSchema()->hasRaster())
           selectedItemType = "RASTER_LAYER_ITEM";
         else
@@ -167,6 +173,12 @@ class te::qt::widgets::LayerTreeView::Impl
           te::map::AbstractLayerPtr layer = (*it)->getLayer();
           if(!layer)
             return;
+
+          if(!layer->isValid())
+          {
+            QMessageBox::warning(0, tr("Warning"), tr("Is not possible to perform the action because there are invalid layers in the selection!"));
+            return;
+          }
 
           if(layer->getSchema().get() && layer->getSchema()->hasRaster())
             layerType = "RASTER_LAYER_ITEM";

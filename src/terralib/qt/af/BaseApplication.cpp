@@ -896,7 +896,21 @@ void te::qt::af::BaseApplication::onToolsQueryDataSourceTriggered()
     te::qt::widgets::QueryDataSourceDialog dlg(this);
 
     std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers();
-    dlg.setLayerList(layers);
+    std::list<te::map::AbstractLayerPtr> validLayers;
+    
+    std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
+
+    while(it != layers.end())
+    {
+      if(it->get()->isValid())
+      {
+        validLayers.push_back(it->get());
+      }
+
+      ++it;
+    }
+    
+    dlg.setLayerList(validLayers);
 
     dlg.exec();
   }
@@ -1006,6 +1020,13 @@ void te::qt::af::BaseApplication::onLayerRemoveSelectionTriggered()
   while(it != layers.end())
   {
     te::map::AbstractLayerPtr layer = (*it);
+
+    if(!layer->isValid())
+    {
+      ++it;
+      continue;
+    }
+
     layer->clearSelected();
 
     ++it;
@@ -1046,12 +1067,28 @@ void te::qt::af::BaseApplication::onLayerShowTableTriggered()
     QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
     return;
   }
+  else
+    {
+      std::list<te::qt::widgets::AbstractTreeItem*>::iterator it = layers.begin();
+
+      while(it != layers.end())
+      {
+        if(!(*it)->getLayer()->isValid())
+        {
+          QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                           tr("There are invalid layers selected!"));
+          return;
+        }
+
+        ++it;
+      }
+    }
+
 
   te::map::AbstractLayerPtr lay = (*layers.begin())->getLayer();
 
   if (lay->getSchema()->hasRaster())
     return;
-
 
   te::qt::af::DataSetTableDockWidget* doc = GetLayerDock(lay.get(), m_tableDocks);
 
@@ -1093,6 +1130,22 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
                            tr("Select a layer in the layer explorer!"));
       return;
+    }
+    else
+    {
+      std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
+
+      while(it != selectedLayers.end())
+      {
+        if(!it->get()->isValid())
+        {
+          QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                           tr("There are invalid layers selected!"));
+          return;
+        }
+
+        ++it;
+      }
     }
 
     // The histogram will be created based on the first selected layer
@@ -1137,6 +1190,22 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
                            tr("Select a layer in the layer explorer!"));
       return;
     }
+    else
+    {
+      std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
+
+      while(it != selectedLayers.end())
+      {
+        if(!it->get()->isValid())
+        {
+          QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                           tr("There are invalid layers selected!"));
+          return;
+        }
+
+        ++it;
+      }
+    }
 
     // The scatter will be created based on the first selected layer
     te::map::AbstractLayerPtr selectedLayer = *(selectedLayers.begin());
@@ -1179,6 +1248,22 @@ void te::qt::af::BaseApplication::onLayerChartTriggered()
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
                            tr("Select a single layer in the layer explorer!"));
       return;
+    }
+    else
+    {
+      std::list<te::qt::widgets::AbstractTreeItem*>::iterator it = selectedLayerItems.begin();
+
+      while(it != selectedLayerItems.end())
+      {
+        if(!(*it)->getLayer()->isValid())
+        {
+          QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                           tr("There are invalid layers selected!"));
+          return;
+        }
+
+        ++it;
+      }
     }
 
     // The chart will be accomplished only on the first single layer selected
@@ -1238,6 +1323,23 @@ void te::qt::af::BaseApplication::onLayerGroupingTriggered()
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
                            tr("Select a single layer in the layer explorer!"));
       return;
+    }
+    else
+    {
+      std::list<te::qt::widgets::AbstractTreeItem*>::iterator it = selectedLayerItems.begin();
+
+      while(it != selectedLayerItems.end())
+      {
+        if(!(*it)->getLayer()->isValid())
+        {
+          QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                           tr("There are invalid layers selected!"));
+
+          return;
+        }
+
+        ++it;
+      }
     }
 
     // The object grouping will be accomplished only on the first layer selected
@@ -1338,6 +1440,23 @@ void te::qt::af::BaseApplication::onLayerFitOnMapDisplayTriggered()
                            tr("Select a layer in the layer explorer!"));
       return;
     }
+    else
+    {
+      std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
+
+      while(it != selectedLayers.end())
+      {
+        if(!it->get()->isValid())
+        {
+          QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                           tr("There are invalid layers selected!"));
+
+          return;
+        }
+
+        ++it;
+      }
+    }
 
     // The layer fitting will be accomplished only on the first layer selected
     te::map::AbstractLayerPtr selectedLayer = *(selectedLayers.begin());
@@ -1372,15 +1491,31 @@ void te::qt::af::BaseApplication::onLayerFitOnMapDisplayTriggered()
 
 void te::qt::af::BaseApplication::onLayerFitSelectedOnMapDisplayTriggered()
 {
-  std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getSelectedSingleLayers();
-  if(layers.empty())
+  std::list<te::map::AbstractLayerPtr> selectedLayers = m_explorer->getExplorer()->getSelectedSingleLayers();
+  if(selectedLayers.empty())
   {
     QString msg = tr("Select at least a layer to accomplish this operation!");
     QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg);
     return;
   }
+  else
+  {
+    std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
 
-  te::gm::Envelope finalEnv = te::map::GetSelectedExtent(layers, m_display->getDisplay()->getSRID(), false);
+    while(it != selectedLayers.end())
+    {
+      if(!it->get()->isValid())
+      {
+        QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                          tr("There are invalid layers selected!"));
+        return;
+      }
+
+      ++it;
+    }
+  }
+
+  te::gm::Envelope finalEnv = te::map::GetSelectedExtent(selectedLayers, m_display->getDisplay()->getSRID(), false);
 
   if(!finalEnv.isValid())
   {
@@ -1394,16 +1529,33 @@ void te::qt::af::BaseApplication::onLayerFitSelectedOnMapDisplayTriggered()
 
 void te::qt::af::BaseApplication::onLayerPanToSelectedOnMapDisplayTriggered()
 {
-  std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getSelectedSingleLayers();
-  if(layers.empty())
+  std::list<te::map::AbstractLayerPtr> selectedLayers = m_explorer->getExplorer()->getSelectedSingleLayers();
+  if(selectedLayers.empty())
   {
-    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
+    QString msg = tr("Select at least a layer to accomplish this operation!");
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg);
     return;
+  }
+  else
+  {
+    std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
+
+    while(it != selectedLayers.end())
+    {
+      if(!it->get()->isValid())
+      {
+        QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                          tr("There are invalid layers selected!"));
+        return;
+      }
+
+      ++it;
+    }
   }
 
   te::map::MapDisplay* display = m_display->getDisplay();
 
-  te::gm::Envelope selectedExtent = te::map::GetSelectedExtent(layers, display->getSRID(), true);
+  te::gm::Envelope selectedExtent = te::map::GetSelectedExtent(selectedLayers, display->getSRID(), true);
 
   te::gm::Coord2D centerOfSelectedExtent = selectedExtent.getCenter();
 
@@ -1425,6 +1577,31 @@ void te::qt::af::BaseApplication::onLayerPanToSelectedOnMapDisplayTriggered()
 
 void te::qt::af::BaseApplication::onQueryLayerTriggered()
 {
+  std::list<te::map::AbstractLayerPtr> selectedLayers = m_explorer->getExplorer()->getSelectedSingleLayers();
+
+  if(selectedLayers.empty())
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                         tr("Select a layer in the layer explorer!"));
+    return;
+  }
+  else
+  {
+    std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
+
+    while(it != selectedLayers.end())
+    {
+      if(!it->get()->isValid())
+      {
+        QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                          tr("There are invalid layers selected!"));
+        return;
+      }
+
+      ++it;
+    }
+  }
+
   if(!m_queryDlg)
   {
     m_queryDlg = new te::qt::widgets::QueryDialog(this);
@@ -1538,6 +1715,13 @@ void te::qt::af::BaseApplication::onMapRemoveSelectionTriggered()
   while(it != layers.end())
   {
     te::map::AbstractLayerPtr layer = (*it);
+    
+    if(!layer->isValid())
+    {
+      ++it;
+      continue;
+    }
+
     layer->clearSelected();
 
     ++it;

@@ -62,7 +62,12 @@ int te::qt::widgets::DataSetLayerItem::columnCount() const
 QVariant te::qt::widgets::DataSetLayerItem::data(int /*column*/, int role) const
 {
   if(role == Qt::DecorationRole)
-    return QVariant(QIcon::fromTheme("dataset-layer"));
+  {
+    if(m_layer->isValid())
+      return QVariant(QIcon::fromTheme("dataset-layer"));
+    else
+      return QVariant(QIcon::fromTheme("dataset-layer-invalid"));
+  }
 
   if(role == Qt::DisplayRole)
     return QVariant(QString::fromStdString(m_layer->getTitle()));
@@ -173,6 +178,9 @@ bool te::qt::widgets::DataSetLayerItem::hasColorMapItem() const
 
 QString te::qt::widgets::DataSetLayerItem::buildToolTip() const
 {
+  if(!m_layer->isValid())
+    return tr("Invalid Layer");
+
   QString toolTip;
 
   // Gets the data set name
