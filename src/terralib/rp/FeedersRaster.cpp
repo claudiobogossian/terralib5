@@ -227,7 +227,7 @@ namespace te
       const std::vector< std::string >& fileExtensions )
     {
       TERP_TRUE_OR_THROW( initialize( directoryName, recursive, rType,
-        sortFileNames, fileExtensions, 0 ), "Feeder initialization error" );
+        sortFileNames, fileExtensions, 0, false ), "Feeder initialization error" );
     }
     
     FeederConstRasterDirectory::FeederConstRasterDirectory(
@@ -236,10 +236,12 @@ namespace te
       const std::string& rType,
       const bool sortFileNames,
       const std::vector< std::string >& fileExtensions,
-      const te::gm::Geometry& restrictionGeom )
+      te::gm::Geometry const * const restrictionGeomPtr,
+      const bool ignoreInvalidRasterFiles )
     {
       TERP_TRUE_OR_THROW( initialize( directoryName, recursive, rType,
-        sortFileNames, fileExtensions, &restrictionGeom ), "Feeder initialization error" );
+        sortFileNames, fileExtensions, restrictionGeomPtr, ignoreInvalidRasterFiles ), 
+        "Feeder initialization error" );
     }    
     
     FeederConstRasterDirectory::FeederConstRasterDirectory()
@@ -251,6 +253,19 @@ namespace te
     {
     }
     
+    const std::string& FeederConstRasterDirectory::getCurrentRasterFileName()
+    {
+      if( m_selectedRasterIndexesOffset < m_selectedRastersIndexes.size() )
+      {
+        return m_allRasterFileNames[ m_selectedRastersIndexes[ m_selectedRasterIndexesOffset ] ];
+      }
+      else
+      {
+        static std::string emptyStr;
+        return emptyStr;
+      }
+    }
+    
     te::rst::Raster const* FeederConstRasterDirectory::getCurrentObj() const
     {
       return m_currentRasterPtr.get();
@@ -258,45 +273,50 @@ namespace te
     
     bool FeederConstRasterDirectory::moveNext()
     {
-      if( m_selectedRasterIndexesOffset == m_selectedRastersIndexes.size() )
+      m_currentRasterPtr.reset();
+      
+      std::map< std::string, std::string > mInfo;
+      
+      std::size_t nextSelectedRasterIndexesOffset = m_selectedRasterIndexesOffset + 1;
+      
+      while( nextSelectedRasterIndexesOffset < m_selectedRastersIndexes.size() )
       {
-        return false;
+        mInfo[ "URI" ] = m_allRasterFileNames[ m_selectedRastersIndexes[ 
+          nextSelectedRasterIndexesOffset ] ];
+        
+        try
+        {
+          m_currentRasterPtr.reset( te::rst::RasterFactory::open( 
+            m_rType, mInfo, 
+            te::common::RAccess ) );          
+        }
+        catch( const te::common::Exception& excep )
+        {
+          if( !m_ignoreInvalidRasterFiles )
+          {
+            m_selectedRasterIndexesOffset = m_selectedRastersIndexes.size();
+            m_currentRasterPtr.reset();
+            TERP_LOG_AND_RETURN_FALSE( "Error:" + std::string( excep.what() ) );
+          }
+        }
+        
+        if( m_currentRasterPtr.get() )
+        {
+          break;
+        }
+        
+        ++nextSelectedRasterIndexesOffset;
       }
+      
+      m_selectedRasterIndexesOffset = nextSelectedRasterIndexesOffset;
+      
+      if( m_currentRasterPtr.get() )
+      {
+        return true;
+      } 
       else
       {
-        if( ( m_selectedRasterIndexesOffset + 1 ) == m_selectedRastersIndexes.size() )
-        {
-          m_currentRasterPtr.reset();
-          return false;
-        }
-        else
-        {
-          std::map< std::string, std::string > mInfo;
-          mInfo[ "URI" ] = m_allRasterFileNames[ m_selectedRastersIndexes[ 
-            m_selectedRasterIndexesOffset + 1 ] ];
-          
-          try
-          {
-            m_currentRasterPtr.reset( te::rst::RasterFactory::open( 
-              m_rType, mInfo, 
-              te::common::RAccess ) );          
-          }
-          catch( const te::common::Exception& excep )
-          {
-            TERP_LOGWARN( "GDAL error:" + std::string( excep.what() ) );
-            m_currentRasterPtr.reset();
-          }              
-            
-          if( m_currentRasterPtr.get() )
-          {
-            ++m_selectedRasterIndexesOffset;
-            return true;
-          }
-          else
-          {
-            return false;
-          }
-        }
+        return false;
       }
     }
     
@@ -321,7 +341,7 @@ namespace te
         }
         catch( const te::common::Exception& excep )
         {
-          TERP_LOGWARN( "GDAL error:" + std::string( excep.what() ) );
+          TERP_LOGWARN( "Error:" + std::string( excep.what() ) );
           m_currentRasterPtr.reset();
         }          
         
@@ -342,10 +362,13 @@ namespace te
     {
       m_currentRasterPtr.reset();
       
-      if( ! m_selectedRastersIndexes.empty() )
+      std::map< std::string, std::string > mInfo;
+      std::size_t nextSelectedRasterIndexesOffset = 0;
+      
+      while( nextSelectedRasterIndexesOffset < m_selectedRastersIndexes.size() )
       {
-        std::map< std::string, std::string > mInfo;
-        mInfo[ "URI" ] = m_allRasterFileNames[ m_selectedRastersIndexes[ 0 ] ];        
+        mInfo[ "URI" ] = m_allRasterFileNames[ m_selectedRastersIndexes[ 
+          nextSelectedRasterIndexesOffset ] ];        
         
         try
         {
@@ -354,19 +377,24 @@ namespace te
         }
         catch( const te::common::Exception& excep )
         {
-          TERP_LOGWARN( "GDAL error:" + std::string( excep.what() ) );
-          m_currentRasterPtr.reset();
+          if( !m_ignoreInvalidRasterFiles )
+          {
+            TERP_LOGWARN( "Error:" + std::string( excep.what() ) );
+            m_currentRasterPtr.reset();
+            m_selectedRasterIndexesOffset = m_selectedRastersIndexes.size();
+            return;
+          }
         }        
           
         if( m_currentRasterPtr.get() )
         {
-          m_selectedRasterIndexesOffset = 0;
+          break;
         }
-        else
-        {
-          m_selectedRasterIndexesOffset = m_selectedRastersIndexes.size();
-        }
+        
+        ++nextSelectedRasterIndexesOffset;
       }
+      
+      m_selectedRasterIndexesOffset = nextSelectedRasterIndexesOffset;
     }
     
     unsigned int FeederConstRasterDirectory::getObjsCount() const
@@ -412,8 +440,16 @@ namespace te
             }
             catch( const te::common::Exception& excep )
             {
-              TERP_LOGWARN( "GDAL error:" + std::string( excep.what() ) );
               rasterPtr.reset();
+              
+              if( m_ignoreInvalidRasterFiles )
+              {
+                TERP_LOGWARN( "Error:" + std::string( excep.what() ) );
+              }
+              else
+              {
+                TERP_LOG_AND_THROW( "Error:" + std::string( excep.what() ) );
+              }
             }
             
             if( rasterPtr.get() )
@@ -475,8 +511,11 @@ namespace te
       const std::string& rType,
       const bool sortFileNames,
       const std::vector< std::string >& fileExtensions,
-      te::gm::Geometry const * const restrictionGeomPtr )
+      te::gm::Geometry const * const restrictionGeomPtr,
+      const bool ignoreInvalidRasterFiles )
     {
+      m_ignoreInvalidRasterFiles = ignoreInvalidRasterFiles;
+      
       // updating m_allRasterFileNames
       
       {

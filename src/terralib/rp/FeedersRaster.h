@@ -163,16 +163,24 @@ namespace te
           \param rType The name of the specific driver to instantiate each raster. 
           \param sortFileNames If true, the file names will be sorted.
           \param fileExtensions The file extensions filter (example: ".tif"), or an empty vector if all extensions must be accepted.
-          \param restrictionGeom A restriction geometry (only rasters intercepting this geomtry will be considered).
+          \param restrictionGeomPtr A pointer to a restriction geometry (only rasters intercepting this geomtry will be considered) or a null pointer if there is no restriction.
+          \param ignoreInvalidRasterFiles If true, invalid raster files will be ignored.
         */        
         FeederConstRasterDirectory( const std::string& directoryName,
           const bool recursive,
           const std::string& rType,
           const bool sortFileNames,
           const std::vector< std::string >& fileExtensions,
-          const te::gm::Geometry& restrictionGeom );        
+          te::gm::Geometry const * const restrictionGeomPtr,
+          const bool ignoreInvalidRasterFiles );        
         
         ~FeederConstRasterDirectory();
+
+        /*!
+          \brief Returns the current raster file name.
+          \return Returns the current raster file name.
+        */        
+        const std::string& getCurrentRasterFileName();
         
         //overloads
         te::rst::Raster const* getCurrentObj() const;
@@ -190,6 +198,7 @@ namespace te
         
       protected :
         
+        bool m_ignoreInvalidRasterFiles; //!< If true, invalid raster files will be ignored.
         std::string m_rType;
         std::vector< unsigned int > m_selectedRastersIndexes;
         std::vector< unsigned int > ::size_type m_selectedRasterIndexesOffset;
@@ -208,13 +217,15 @@ namespace te
           \param sortFileNames If true, the file names will be sorted.
           \param fileExtensions The file extensions filter (example: ".tif"), or an empty vector if all extensions must be accepted.
           \param restrictionGeomPtr A pointer to a restriction geometry (only rasters intercepting this geomtry will be considered) or a null pointer if there is no restriction.
+          \param ignoreInvalidRasterFiles If true, invalid raster files will be ignored.
         */            
         bool initialize(  const std::string& directoryName,
           const bool recursive,
           const std::string& rType,
           const bool sortFileNames,
           const std::vector< std::string >& fileExtensions,
-          te::gm::Geometry const * const restrictionGeomPtr );
+          te::gm::Geometry const * const restrictionGeomPtr,
+          const bool ignoreInvalidRasterFiles );
     };      
   } // end namespace rp
 }   // end namespace te
