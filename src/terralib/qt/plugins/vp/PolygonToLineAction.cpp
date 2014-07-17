@@ -54,7 +54,7 @@ void te::qt::plugins::vp::PolygonToLineAction::onActionActivated(bool checked)
 
   if(prj)
   {
-    dlg.setLayers(prj->getSingleLayers());
+    dlg.setLayers(prj->getSingleLayers(false));
   }
 
   dlg.exec();

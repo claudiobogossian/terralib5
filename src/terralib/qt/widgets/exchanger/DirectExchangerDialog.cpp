@@ -98,16 +98,10 @@ void te::qt::widgets::DirectExchangerDialog::setLayers(std::list<te::map::Abstra
   {
     te::map::AbstractLayerPtr l = *it;
 
-    if(!l->isValid())
-    {
-      ++it;
-      continue;
-    }
+      std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
 
-    std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
-
-    if(dsType.get() && !dsType->hasRaster())
-      m_ui->m_inputLayerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
+      if(dsType.get() && !dsType->hasRaster())
+        m_ui->m_inputLayerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
 
     ++it;
   }

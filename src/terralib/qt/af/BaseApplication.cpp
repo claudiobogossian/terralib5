@@ -481,7 +481,7 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
 
     std::auto_ptr<te::qt::widgets::QueryLayerBuilderWizard> qlb(new te::qt::widgets::QueryLayerBuilderWizard(this));
 
-    std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers();
+    std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false);
 
     qlb->setLayerList(layers);
 
@@ -842,7 +842,7 @@ void te::qt::af::BaseApplication::onToolsDataExchangerDirectTriggered()
   {
     te::qt::widgets::DirectExchangerDialog dlg(this);
 
-    std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers();
+    std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false);
     dlg.setLayers(layers);
 
      QString dsTypeSett = GetLastDatasourceFromSettings();
@@ -895,22 +895,8 @@ void te::qt::af::BaseApplication::onToolsQueryDataSourceTriggered()
   {
     te::qt::widgets::QueryDataSourceDialog dlg(this);
 
-    std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers();
-    std::list<te::map::AbstractLayerPtr> validLayers;
-    
-    std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
-
-    while(it != layers.end())
-    {
-      if(it->get()->isValid())
-      {
-        validLayers.push_back(it->get());
-      }
-
-      ++it;
-    }
-    
-    dlg.setLayerList(validLayers);
+    std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false);
+    dlg.setLayerList(layers);
 
     dlg.exec();
   }
@@ -1688,7 +1674,7 @@ void te::qt::af::BaseApplication::onZoomExtentTriggered()
     return;
 
   //m_display->fit(m_explorer->getExplorer()->getAllLayers());
-  m_display->fit(te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers());
+  m_display->fit(te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false));
 
 }
 
@@ -1709,18 +1695,12 @@ void te::qt::af::BaseApplication::onInfoToggled(bool checked)
 void te::qt::af::BaseApplication::onMapRemoveSelectionTriggered()
 {
   //std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getAllLayers();
-  std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers();
+  std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false);
   std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
   
   while(it != layers.end())
   {
     te::map::AbstractLayerPtr layer = (*it);
-    
-    if(!layer->isValid())
-    {
-      ++it;
-      continue;
-    }
 
     layer->clearSelected();
 
