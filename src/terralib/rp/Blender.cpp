@@ -29,6 +29,7 @@
 #include "../geometry/MultiPoint.h"
 #include "../geometry/MultiLineString.h"
 #include "../geometry/Point.h"
+#include "../geometry/CurvePolygon.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Enums.h"
 #include "../raster/Raster.h"
@@ -1490,67 +1491,50 @@ namespace te
     bool Blender::getSegments( te::gm::Geometry const * const geometryPtr, 
       std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > >& segments ) const
     {
-      switch( geometryPtr->getGeomTypeId() )
+      if( dynamic_cast< te::gm::LineString const * >( geometryPtr ) )
       {
-        case te::gm::MultiLineStringType :
+        te::gm::LineString const* castGeomPtr = 
+          dynamic_cast< te::gm::LineString const * >( geometryPtr );
+        
+        std::size_t nPoints = castGeomPtr->size();
+        te::gm::Coord2D const* coodsPtr = castGeomPtr->getCoordinates();
+        
+        for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
         {
-          te::gm::MultiLineString const * castGeomPtr = 
-            dynamic_cast< te::gm::MultiLineString const * >( geometryPtr );
-          assert( castGeomPtr );
-          
-          std::size_t numGeoms = castGeomPtr->getNumGeometries();
-          
-          for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+          segments.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
+            coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
+        }
+      } 
+      else if( dynamic_cast< te::gm::CurvePolygon const * >( geometryPtr ) )
+      {
+        te::gm::CurvePolygon const * castGeomPtr = 
+          dynamic_cast< te::gm::CurvePolygon const * >( geometryPtr );
+        
+        std::size_t numGeoms = castGeomPtr->getNumRings();
+        
+        for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+        {
+          if( ! ( getSegments( castGeomPtr->getRingN( gIdx ), segments ) ) )
           {
-            if( ! ( getSegments( castGeomPtr->getGeometryN( gIdx ), segments ) ) )
-            {
-              return false;
-            }
+            return false;
           }
-          
-          break;
         }
-        case te::gm::LineStringType :
+      }              
+      else if( dynamic_cast< te::gm::GeometryCollection const * >( geometryPtr ) )
+      {
+        te::gm::GeometryCollection const * castGeomPtr = 
+          dynamic_cast< te::gm::GeometryCollection const * >( geometryPtr );
+        
+        std::size_t numGeoms = castGeomPtr->getNumGeometries();
+        
+        for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
         {
-          te::gm::LineString const* castGeomPtr = 
-            dynamic_cast< te::gm::LineString const * >( geometryPtr );
-          assert( castGeomPtr );
-          
-          std::size_t nPoints = castGeomPtr->size();
-          te::gm::Coord2D const* coodsPtr = castGeomPtr->getCoordinates();
-          
-          for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
+          if( ! ( getSegments( castGeomPtr->getGeometryN( gIdx ), segments ) ) )
           {
-            segments.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
-              coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
+            return false;
           }
-          
-          break;
         }
-        case te::gm::GeometryCollectionType :
-        {
-          te::gm::GeometryCollection const * castGeomPtr = 
-            dynamic_cast< te::gm::GeometryCollection const * >( geometryPtr );
-          assert( castGeomPtr );
-          
-          std::size_t numGeoms = castGeomPtr->getNumGeometries();
-          
-          for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
-          {
-            if( ! ( getSegments( castGeomPtr->getGeometryN( gIdx ), segments ) ) )
-            {
-              return false;
-            }
-          }
-                    
-          break;
-        }
-        default :
-        {
-          TERP_LOG_AND_RETURN_FALSE( "Invalid geometry type:" + geometryPtr->getGeometryType() );
-          break;
-        }
-      }
+      }     
       
       return true;
     }
