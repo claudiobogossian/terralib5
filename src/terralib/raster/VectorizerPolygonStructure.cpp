@@ -68,7 +68,6 @@ void te::rst::VectorizerPolygonStructure::clear()
 {
   if(m_indexer)
     delete m_indexer;
-
   init();
 }
 
