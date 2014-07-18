@@ -264,7 +264,8 @@ te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent)
     m_dataset(0),
     m_currentRow(-1),
     m_OIdsVisible(true),
-    m_enabled(true)
+    m_enabled(true),
+    m_rowCount(0)
 {
   m_promoter = new Promoter;
   m_editor.reset(new Editor);
