@@ -32,6 +32,7 @@
 
 // STL Includes
 #include <memory>
+#include <string>
 
 namespace te
 {
