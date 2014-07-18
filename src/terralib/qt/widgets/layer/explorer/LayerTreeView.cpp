@@ -115,7 +115,7 @@ class te::qt::widgets::LayerTreeView::Impl
         // Get the type of the selected item
         std::string selectedItemType;
 
-        if(!layer->isValid())
+        if(layer && !layer->isValid())
         {
           QMessageBox::warning(0, tr("Warning"), tr("Is not possible to perform the action because this is an invalid layer!"));
           return;
@@ -174,7 +174,7 @@ class te::qt::widgets::LayerTreeView::Impl
           if(!layer)
             return;
 
-          if(!layer->isValid())
+          if(layer && !layer->isValid())
           {
             QMessageBox::warning(0, tr("Warning"), tr("Is not possible to perform the action because there are invalid layers in the selection!"));
             return;
