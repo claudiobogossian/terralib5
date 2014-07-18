@@ -253,6 +253,9 @@ void te::qt::widgets::ROIManagerWidget::onOpenLayerROIToolButtonClicked()
   QVariant varLayer = m_ui->m_layerROIComboBox->itemData(idxLayer, Qt::UserRole);
   te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
 
+  if(!layer.get())
+    return;
+
   std::auto_ptr<te::da::DataSet> ds = layer->getData();
 
   if(m_rs)
