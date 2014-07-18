@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/canvas/Animation.h
+  \file terralib/qt/widgets/st/Animation.h
 
   \brief This file defines a class for a Trajectory Animation.
 */

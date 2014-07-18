@@ -35,8 +35,8 @@
 #endif
 
 // QT
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
+#include <QMenu>
+#include <QMenuBar>
 
 te::qt::plugins::layout2::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo), m_layoutMenu(0)
@@ -55,12 +55,12 @@ void te::qt::plugins::layout2::Plugin::startup()
 // it initializes the Translator support for the TerraLib LayoutEditor Qt Plugin
   TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_LAYOUT2_TEXT_DOMAIN, TE_QT_PLUGIN_LAYOUT2_TEXT_DOMAIN_DIR, "UTF-8");
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_LAYOUT2("TerraLib Qt LAYOUT Plugin startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt LAYOUT Plugin startup!"));
 
 // add plugin menu
   m_layoutMenu = te::qt::af::ApplicationController::getInstance().getMenu("LAYOUT");
 
-  m_layoutMenu->setTitle(TE_QT_PLUGIN_LAYOUT2("Layout"));
+  m_layoutMenu->setTitle(TE_TR("Layout"));
 
 // register actions
   registerActions();
@@ -79,7 +79,7 @@ void te::qt::plugins::layout2::Plugin::shutdown()
 // unregister actions
   unRegisterActions();
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_LAYOUT2("TerraLib Qt LAYOUT Plugin 2 shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt LAYOUT Plugin 2 shutdown!"));
 
   m_initialized = false;
 }

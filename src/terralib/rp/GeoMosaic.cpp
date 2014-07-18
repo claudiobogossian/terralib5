@@ -623,12 +623,12 @@ namespace te
           outputRasterPtr->getGrid()->gridToGeo( auxTP.first.x, auxTP.first.y, auxX, auxY );
           inputRasterPtr->getGrid()->geoToGrid( auxX, auxY, auxTP.second.x, auxTP.second.y );          
           transParams.m_tiePoints.push_back( auxTP );
-          
-          auxTP.first.x = (double)( outputRasterPtr->getNumberOfColumns() - 1);
-          auxTP.first.y = 0;
-          outputRasterPtr->getGrid()->gridToGeo( auxTP.first.x, auxTP.first.y, auxX, auxY );
-          inputRasterPtr->getGrid()->geoToGrid( auxX, auxY, auxTP.second.x, auxTP.second.y );
-          transParams.m_tiePoints.push_back( auxTP );
+//           
+//           auxTP.first.x = (double)( outputRasterPtr->getNumberOfColumns() - 1);
+//           auxTP.first.y = 0;
+//           outputRasterPtr->getGrid()->gridToGeo( auxTP.first.x, auxTP.first.y, auxX, auxY );
+//           inputRasterPtr->getGrid()->geoToGrid( auxX, auxY, auxTP.second.x, auxTP.second.y );
+//           transParams.m_tiePoints.push_back( auxTP );
           
           auxTP.first.x = (double)( outputRasterPtr->getNumberOfColumns() - 1 );
           auxTP.first.y = (double)( outputRasterPtr->getNumberOfRows() - 1 );
@@ -636,7 +636,7 @@ namespace te
           inputRasterPtr->getGrid()->geoToGrid( auxX, auxY, auxTP.second.x, auxTP.second.y );                    
           transParams.m_tiePoints.push_back( auxTP );
           
-          transPtr.reset( te::gm::GTFactory::make( "RST" ) );
+          transPtr.reset( te::gm::GTFactory::make( "Affine" ) );
           TERP_TRUE_OR_RETURN_FALSE( transPtr.get(), "Could not instantiate a geometric transformation" );
           
           TERP_TRUE_OR_RETURN_FALSE( transPtr->initialize( transParams ),

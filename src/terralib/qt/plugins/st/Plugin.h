@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/plugins/slider/Plugin.h
+  \file terralib/qt/plugins/st/Plugin.h
 
-  \brief Plugin implementation for the SLIDER Qt Plugin widget.
+  \brief Plugin implementation for the ST Qt Plugin widget.
 */
 
-#ifndef __TE_QT_PLUGINS_SLIDER_INTERNAL_PLUGIN_H
-#define __TE_QT_PLUGINS_SLIDER_INTERNAL_PLUGIN_H
+#ifndef __TE_QT_PLUGINS_ST_INTERNAL_PLUGIN_H
+#define __TE_QT_PLUGINS_ST_INTERNAL_PLUGIN_H
 
 // TerraLib
 #include "../../../plugin/Plugin.h"
@@ -39,9 +39,12 @@ namespace te
   {
     namespace plugins
     {
-      namespace slider
+      namespace st
       {
         class TimeSliderWidgetAction;
+		class ObservationAction;
+        class TimeSeriesAction;
+        class TrajectoryAction;
 
         class Plugin : public te::plugin::Plugin
         {
@@ -71,16 +74,18 @@ namespace te
 
           protected:
 
-            QMenu* m_sliderMenu;                                        //!< SLIDER Main Menu registered.
-
-            te::qt::plugins::slider::TimeSliderWidgetAction* m_sliderAction;    //!< Slider Process Action
+            QMenu*                                        m_stMenu;              //!< ST Main Menu registered.
+            te::qt::plugins::st::TimeSliderWidgetAction*  m_sliderAction;        //!< Slider Process Action
+            te::qt::plugins::st::ObservationAction*       m_observactionAction;  //!< Observation Layer Action
+            te::qt::plugins::st::TimeSeriesAction*        m_timeSeriesAction;    //!< TimeSeries Layer Action
+            te::qt::plugins::st::TrajectoryAction*        m_trajectoryAction;    //!< Trajectory Layer Action
         };
 
-      } // end namespace slider
+      } // end namespace st
     }   // end namespace plugins
   }     // end namespace qt
 }       // end namespace te
 
-PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINSLIDEREXPORT);
+PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINSTEXPORT);
 
-#endif //__TE_QT_PLUGINS_SLIDER_INTERNAL_PLUGIN_H
+#endif //__TE_QT_PLUGINS_ST_INTERNAL_PLUGIN_H

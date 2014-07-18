@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/canvas/TrajectoryItem.h
+  \file terralib/qt/widgets/st/TrajectoryItem.h
 
   \brief This file defines a class for a Trajectory Item.
 */

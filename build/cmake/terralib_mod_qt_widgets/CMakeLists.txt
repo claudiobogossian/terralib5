@@ -172,11 +172,6 @@ file(GLOB TERRALIB_TABLE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt
 file(GLOB TERRALIB_TABLE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/*.h)
 file(GLOB TERRALIB_TABLE_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/ui/*.ui)
 
-# temporal
-file(GLOB TERRALIB_TEMPORAL_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/*.cpp)
-file(GLOB TERRALIB_TEMPORAL_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/*.h)
-file(GLOB TERRALIB_TEMPORAL_UI_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/ui/*.ui)
-
 # tools
 file(GLOB TERRALIB_TOOLS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/*.cpp)
 file(GLOB TERRALIB_TOOLS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/*.h)
@@ -880,10 +875,20 @@ else() # QT4_FOUND
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/srs/SRSManagerDialog.h)
 
   # st
-  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationItem.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/PixmapItem.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSliderWidget.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryItem.h)
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/Animation.h
+                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationItem.h
+										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationScene.h
+										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/PixmapItem.h
+										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryItem.h
+										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSliderWidget.h
+										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TemporalPropertiesWidget.h
+										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSeriesPropertiesWidget.h
+										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSeriesPropertiesWizardPage.h
+										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSeriesWizard.h
+										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryPropertiesWidget.h
+										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryPropertiesWizardPage.h
+										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryWizard.h)
+
 
   # table
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/AddColumnDialog.h
@@ -893,14 +898,6 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/DataSetTableView.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/RenameColumnDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/RetypeColumnDialog.h)
-
-  # temporal
-  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/ObservationDialog.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TemporalPropertiesWidget.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TimeSeriesDialog.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TimeSeriesPropertiesWidget.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TrajectoryDialog.h
-                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/temporal/TrajectoryPropertiesWidget.h)
 
   # tools
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/tools/CoordTracking.h
