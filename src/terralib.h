@@ -91,6 +91,10 @@
 #include "terralib/rp.h"
 #endif
 
+#ifdef TERRALIB_MOD_SA_CORE_ENABLED
+#include "terralib/sa.h"
+#endif
+
 #ifdef TERRALIB_MOD_SAM_ENABLED
 #include "terralib/sam.h"
 #endif
