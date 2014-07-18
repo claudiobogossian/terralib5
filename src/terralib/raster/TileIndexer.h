@@ -27,6 +27,8 @@
 #define __TERRALIB_RASTER_INTERNAL_TILEINDEXER_H
 
 // TerraLib
+#include "../geometry/Point.h"
+#include "../geometry/Polygon.h"
 #include "Config.h"
 
 // STL
@@ -35,13 +37,6 @@
 
 namespace te
 {
-  namespace gm
-  {
-// Forward declarations
-    class Point;
-    class Polygon;
-  }
-
   namespace rst
   {
     /*!

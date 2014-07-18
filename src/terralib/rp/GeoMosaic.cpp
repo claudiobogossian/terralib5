@@ -240,6 +240,7 @@ namespace te
             auxLinearRingPtr->setPoint( 2, mosaicURX, mosaicLLY );
             auxLinearRingPtr->setPoint( 3, mosaicLLX, mosaicLLY );
             auxLinearRingPtr->setPoint( 4, mosaicLLX, mosaicURY );
+            auxLinearRingPtr->setSRID( mosaicSRID );
             auxPolygon.push_back( auxLinearRingPtr );
             auxPolygon.setSRID( mosaicSRID );
             rastersBBoxes.push_back( auxPolygon );
@@ -293,6 +294,7 @@ namespace te
             auxLinearRingPtr->setPoint( 2, urCoord1.x, llCoord1.y );
             auxLinearRingPtr->setPoint( 3, llCoord1.x, llCoord1.y );
             auxLinearRingPtr->setPoint( 4, llCoord1.x, urCoord1.y );
+            auxLinearRingPtr->setSRID( mosaicSRID );
             auxPolygon.push_back( auxLinearRingPtr );
             auxPolygon.setSRID( mosaicSRID );
             rastersBBoxes.push_back( auxPolygon );
