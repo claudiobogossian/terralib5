@@ -173,12 +173,10 @@ bool te::rst::Vectorizer::run(std::vector<te::gm::Geometry*>& polygons)
   te::gm::Coord2D last_line_lr_point;
   te::gm::Coord2D last_line_lr_point_indexed;
 
-std::cout << "raster bbox: " << te::gm::GetGeomFromEnvelope(m_raster->getGrid()->getExtent(), m_raster->getSRID())->toString() << std::endl;
   for (unsigned int j = 0; j < m_nLines ; j++)
   {
     task.pulse();
-std::cout << "analyzing line " << j << "/" << m_nLines << std::endl;
-   
+    
 // cleaning the tileindexers that will not be used anymore
     last_line_ll_point_indexed.x = 0.0;
     last_line_ll_point_indexed.y = ((double) j) - 1.0;
@@ -210,22 +208,16 @@ std::cout << "analyzing line " << j << "/" << m_nLines << std::endl;
 // iterating through columns
     for (unsigned int i = 0; i < m_nColumns; i++)
     {
-std::cout << " column " << i << "/" << m_nColumns << std::endl;
-
 // verifying if the current point is already inside a polygon generated before
-      te::gm::Coord2D coordMatrix(i, j);
-      te::gm::Coord2D coordWorld = m_raster->getGrid()->gridToGeo(coordMatrix.x, coordMatrix.y);
+      te::gm::Coord2D coordWorld = m_raster->getGrid()->gridToGeo(i, j);
       //te::gm::Coord2D coordWorld = m_raster->index2Coord(coordMatrix);
       te::gm::Envelope boxPoint(coordWorld.x, coordWorld.y, coordWorld.x, coordWorld.y);
-      te::gm::Point pointWorld(coordWorld.x, coordWorld.y);
+      te::gm::Point pointWorld(coordWorld.x, coordWorld.y, m_raster->getSRID());
 
       bool exist = false;
-
       indexVec.clear();
       m_rTreePolygons->search(boxPoint, indexVec);
-
       m_raster->getValue(i, j, val, m_rasterBand);
-//      val = m_noDataValue;
 
       if (!indexVec.empty())
       {
@@ -239,12 +231,21 @@ std::cout << " column " << i << "/" << m_nColumns << std::endl;
 
           if (val == pol_str_ref.m_value)
           {
-	    // if (pol_str_ref.m_indexer->getPolygon().contains(&pointWorld))
-	    if (pointWorld.intersects(&pol_str_ref.m_indexer->getPolygon()))
-            //if( TePDIUtils::TeRelation( coordWorld, *( pol_str_ref.m_indexer ) ) == TeINSIDE )
+            try
             {
-              exist = true;
-              break;
+              if (pol_str_ref.m_indexer->getPolygon().contains(&pointWorld))
+              //if( TePDIUtils::TeRelation( coordWorld, *( pol_str_ref.m_indexer ) ) == TeINSIDE )
+              {
+                exist = true;
+                break;
+              }
+            }
+            catch(std::exception e)
+            {
+              std::cout << "Exception (is current point inside a polygon?)" << std::endl;
+              std::cout << pol_str_ref.m_indexer->getPolygon().toString() << std::endl;
+              std::cout << pointWorld.toString() << std::endl;
+              std::cout << "with j: " << j << " i: " << i << " val: " << val << " -> " << e.what() << std::endl << std::endl;
             }
           }
 
@@ -272,16 +273,25 @@ std::cout << " column " << i << "/" << m_nColumns << std::endl;
                 m_containerPolygons[indexVec[indexVec_index]];
               te::rst::TileIndexer& m_indexerref = *(pol_struct_ref.m_indexer);
               te::gm::Polygon& pol_ref = pol_struct_ref.m_polygon;
-
-              if (m_indexerref.getPolygon().contains(&pointWorld))
+              
+              try
               {
-              // if( TePDIUtils::TeRelation( coordWorld, m_indexerref ) == TeINSIDE )
+                if (m_indexerref.getPolygon().contains(&pointWorld))
+                {
+                // if( TePDIUtils::TeRelation( coordWorld, m_indexerref ) == TeINSIDE )
+                  pol_ref.add((te::gm::LinearRing*) (poly->getRingN(0)->clone()));
+                  m_indexerref.addRing(pol_ref.getNumRings() - 1); // .getNumRings()
 
-                pol_ref.add(poly->getRingN(0));
-                m_indexerref.addRing(pol_ref.getNumRings() - 1);
-
-                break;
+                  break;
+                }
               }
+              catch(std::exception e)
+              {
+                std::cout << "Exception (is polygon a hole?)" << std::endl;
+                std::cout << m_indexerref.getPolygon().toString() << std::endl;
+                std::cout << pointWorld.toString() << std::endl;
+                std::cout << "with j: " << j << " i: " << i << " val: " << val << " -> " << e.what() << std::endl << std::endl;
+              }              
 
               ++indexVec_index;
             }
@@ -289,40 +299,35 @@ std::cout << " column " << i << "/" << m_nColumns << std::endl;
             indexVec.clear();
 
 // inserting the new polygon into tree and container
-            /*if(m_useNoData && (val == m_noDataValue))
+            if (poly->getMBR()->getWidth() > 0 && poly->getMBR()->getHeight() > 0)
             {
-              poly.objectId( "none" );
+              if (!m_useNoData)
+                ++countObjects;
+              else
+                if (val != m_noDataValue)// && poly->getMBR()->getHeight() > 0 && poly->getMBR()->getWidth() > 0 && poly->operator[](0)->getNPoints() > 0)
+                  ++countObjects;
+
+                VectorizerPolygonStructure dummy_ps;
+                m_containerPolygons.push_back(dummy_ps);
+                m_containerPolygons[m_containerPolygons.size() - 1].reset(*poly, (int)val,
+                        std::max(
+                            (
+                              4.0 * poly->getMBR()->getHeight()
+                              /
+                              (
+                                poly->getMBR()->getWidth()
+                                *
+                                ( (double) poly->operator[](0)->getNPoints() )
+                              )
+                            )
+                            ,
+                            m_raster->getResolutionY()
+                          )
+                      );
+
+                m_rTreePolygons->insert(*poly->getMBR(), m_containerPolygons.size() - 1);
             }
-            else
-            {*/
-            if (val != m_noDataValue)
-	    {
-              ++countObjects;
-              /*poly.objectId(Te2String(countObjects));
-            }*/
-std::cout << "countObjects: " << countObjects << std::endl;
-std::cout << poly->toString() << std::endl;
-	    }
-
-            VectorizerPolygonStructure dummy_ps;
-            m_containerPolygons.push_back(dummy_ps);
-            m_containerPolygons[m_containerPolygons.size() - 1].reset(*poly, (int)val,
-              std::max(
-                  (
-                    4.0 * poly->getMBR()->getHeight()
-                    /
-                    (
-                      poly->getMBR()->getWidth()
-                      *
-                      ( (double) poly->operator[](0)->getNPoints() )
-                    )
-                  )
-                  ,
-                  m_raster->getResolutionY()
-                 )
-            );
-
-            m_rTreePolygons->insert(*poly->getMBR(), m_containerPolygons.size() - 1);
+            
           }
           catch(...)
           {
@@ -378,8 +383,7 @@ std::cout << poly->toString() << std::endl;
         {
           std::vector<te::gm::Polygon*> dummy_ps;
           dummy_ps.push_back(&cpit->m_polygon);
-	  std::cout << cpit->m_polygon.toString() << std::endl;
-          //dummy_ps.add(cpit->m_polygon);
+	  //dummy_ps.add(cpit->m_polygon);
 
           output_polsets[value] = dummy_ps;
           // (*output_polsets)[value] = dummy_ps;
@@ -402,8 +406,11 @@ std::cout << poly->toString() << std::endl;
   polygons.clear();
   for (psm_it = output_polsets.begin(); psm_it != output_polsets.end(); ++psm_it)
   {
-    std::cout << psm_it->second[0]->toString() << std::endl;
-    polygons.push_back(psm_it->second[0]); //???
+    if (psm_it->second.size() > 0)
+    {
+      te::gm::Polygon* new_polygon((te::gm::Polygon*) psm_it->second[0]->clone());
+      polygons.push_back(new_polygon); //???
+    }
   }
 
   return true;
@@ -411,7 +418,6 @@ std::cout << poly->toString() << std::endl;
 
 bool te::rst::Vectorizer::detectEdge(long i, long j, te::gm::LineString& line)
 {
-std::cout << "detectEdge(" << i << "," << j << ")" << std::endl;
   assert(startingEdgeTest(i, j)); // "Starting edge detection error at x = i line = j
 
   line.makeEmpty();
@@ -420,9 +426,7 @@ std::cout << "detectEdge(" << i << "," << j << ")" << std::endl;
   {
 // current polygon pixel values
     double pol_pixels_value = 0;
-
     m_raster->getValue(i, j, pol_pixels_value, m_rasterBand);
-    // pol_pixels_value = m_noDataValue;
 
 // generating chain code by following the polygon borders
     short curr_dir = EAST;
@@ -483,7 +487,6 @@ std::cout << "detectEdge(" << i << "," << j << ")" << std::endl;
 // that is the last one
         curr_chain_p.x += m_directions[EAST].x;
         curr_chain_p.y += m_directions[EAST].y;
-
         line.setNumCoordinates(line.getNPoints() + 1);
         line.setPoint(line.getNPoints() - 1, curr_chain_p.x, curr_chain_p.y);
 
@@ -495,7 +498,7 @@ std::cout << "detectEdge(" << i << "," << j << ")" << std::endl;
         curr_chain_p.x += m_directions[WEST].x;
         curr_chain_p.y += m_directions[WEST].y;
         line.setNumCoordinates(line.getNPoints() + 1);
-        line.setPoint(line.getNPoints(), curr_chain_p.x, curr_chain_p.y);
+        line.setPoint(line.getNPoints() - 1, curr_chain_p.x, curr_chain_p.y);
 
         curr_chain_p.x += m_directions[NORTH].x;
         curr_chain_p.y += m_directions[NORTH].y;
@@ -514,7 +517,6 @@ std::cout << "detectEdge(" << i << "," << j << ")" << std::endl;
           {
             curr_chain_p.x += m_directions[SOUTH].x;
             curr_chain_p.y += m_directions[SOUTH].y;
-
             line.setNumCoordinates(line.getNPoints() + 1);
             line.setPoint(line.getNPoints() - 1, curr_chain_p.x, curr_chain_p.y);
 
@@ -555,7 +557,7 @@ std::cout << "detectEdge(" << i << "," << j << ")" << std::endl;
           }
           default:
           {
-            // error message: "Invalid pixel corner=" + curr_pixel_corner + curr_dir=" + curr_dir;
+            std::cout << "Error message: Invalid pixel corner " << std::endl; // << curr_pixel_corner + curr_dir=" + curr_dir;
             break;
           }
         }
@@ -630,7 +632,7 @@ std::cout << "detectEdge(" << i << "," << j << ")" << std::endl;
                   line.setPoint(line.getNPoints() - 1, curr_chain_p.x, curr_chain_p.y);
 
                   curr_chain_p.x += m_directions[EAST].x;
-                  curr_chain_p.x += m_directions[EAST].x;
+                  curr_chain_p.y += m_directions[EAST].y;
                   line.setNumCoordinates(line.getNPoints() + 1);
                   line.setPoint(line.getNPoints() - 1, curr_chain_p.x, curr_chain_p.y);
 
@@ -855,19 +857,12 @@ std::cout << "detectEdge(" << i << "," << j << ")" << std::endl;
         curr_dir = new_dir;
       }
     }
-
 // changing lines coords to world coords
     const te::gm::Coord2D chain_init_p = m_raster->getGrid()->gridToGeo(((double) i) - 0.5, ((double) j) - 0.5);
-
-std::cout << "linha antes: ";
-for (unsigned int i = 0; i < line.getNPoints(); i++)
-  std::cout << line.getX(i) << " " << line.getY(i) << ", ";
-std::cout << std::endl;
-
     double min_x = std::numeric_limits<double>::max();
     double min_y = std::numeric_limits<double>::max();
-    double max_x = ( -1.0 ) * std::numeric_limits<double>::max();
-    double max_y = ( -1.0 ) * std::numeric_limits<double>::max();
+    double max_x = (-1.0) * std::numeric_limits<double>::max();
+    double max_y = (-1.0) * std::numeric_limits<double>::max();
     double tmp_x;
     double tmp_y;
 
@@ -886,11 +881,6 @@ std::cout << std::endl;
       line.setY(i, tmp_y);
     }
     
-std::cout << "linha depois: ";
-for (unsigned int i = 0; i < line.getNPoints(); i++)
-  std::cout << line.getX(i) << " " << line.getY(i) << ", ";
-std::cout << std::endl;
-
 // updating the line box
     // te::gm::Envelope newbox(min_x, min_y, max_x, max_y);
     // line.setBox( newbox );
@@ -899,7 +889,8 @@ std::cout << std::endl;
 // closing the line, if necessary
     if (line.getNPoints() > 1)
     {
-      if (line.getStartPoint() != line.getEndPoint())
+      if ((line.getStartPoint()->getX() != line.getEndPoint()->getX()) ||
+          (line.getStartPoint()->getY() != line.getEndPoint()->getY()))
       {
         line.setNumCoordinates(line.getNPoints() + 1);
         line.setPoint(line.getNPoints() - 1, line.getX(0), line.getY(0));
@@ -908,7 +899,7 @@ std::cout << std::endl;
   }
   catch(...)
   {
-    // error message: "Unable to detect edge - not enough memory"
+    std::cout << "Unable to detect edge - not enough memory" << std::endl;
     line.makeEmpty();
 
     return false;
@@ -940,6 +931,7 @@ bool te::rst::Vectorizer::startingEdgeTest(const int& x, const int& y)
 
     return true;
   }
+ 
 }
 
 void te::rst::Vectorizer::clear()
