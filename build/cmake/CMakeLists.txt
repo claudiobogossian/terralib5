@@ -785,7 +785,7 @@ if(TERRALIB_MOD_QT_PLUGINS_RP_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_rp)
 endif()
 
-if(TERRALIB_MOD_QT_PLUGINS_VP_ENABLED)
+if(TERRALIB_MOD_QT_PLUGINS_SA_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_sa)
 endif()
 
