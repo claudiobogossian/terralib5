@@ -7,13 +7,16 @@
     <x>0</x>
     <y>0</y>
     <width>584</width>
-    <height>505</height>
+    <height>508</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Create Proximity Matrix</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_18">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetFixedSize</enum>
+   </property>
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_17">
      <item row="0" column="0">

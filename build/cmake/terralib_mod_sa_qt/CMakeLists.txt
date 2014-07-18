@@ -21,9 +21,6 @@
 #  Description: Build configuration for the Spatial Analysis Qt Module.
 #
 #  Author: Eric Silva Abreu <eric@dpi.inpe.br>
-#          Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
-#          Juan Carlos P. Garrido <juan@dpi.inpe.br>
-#          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
 include_directories(${Boost_INCLUDE_DIR})
