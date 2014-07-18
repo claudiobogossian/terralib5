@@ -265,7 +265,7 @@ bool te::vp::GeometricOpWizard::execute()
         geomOp = new te::vp::GeometricOpMemory();
       }
 
-      geomOp->setInput(inDataSource, dsLayer->getData(), dsLayer->getSchema());
+      geomOp->setInput(inDataSource, dsLayer->getDataSetName(), dsLayer->getSchema());
       geomOp->setOutput(dsOGR, outputdataset);
       geomOp->setParams(geoProps, 
                         m_ops, 
@@ -338,7 +338,7 @@ bool te::vp::GeometricOpWizard::execute()
         geomOp = new te::vp::GeometricOpMemory();
       }
 
-      geomOp->setInput(inDataSource, dsLayer->getData(), dsLayer->getSchema());
+      geomOp->setInput(inDataSource, dsLayer->getDataSetName(), dsLayer->getSchema());
       geomOp->setOutput(trgDs, outputdataset);
       geomOp->setParams(geoProps,
                         m_ops,

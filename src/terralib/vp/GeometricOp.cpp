@@ -46,11 +46,11 @@ te::vp::GeometricOp::GeometricOp():
 }
 
 void te::vp::GeometricOp::setInput(te::da::DataSourcePtr inDsrc,
-                                  std::auto_ptr<te::da::DataSet> inDset,
+                                  std::string inDsetName,
                                   std::auto_ptr<te::da::DataSetType> inDsetType)
 {
   m_inDsrc = inDsrc;
-  m_inDset = inDset;
+  m_inDsetName = inDsetName;
   m_inDsetType = inDsetType;
 }
 
@@ -75,7 +75,7 @@ void te::vp::GeometricOp::setOutput(std::auto_ptr<te::da::DataSource> outDsrc, s
 
 bool te::vp::GeometricOp::paramsAreValid()
 {
-  if (!m_inDset.get() || !m_inDsetType.get())
+  if (!m_inDsetType.get())
     return false;
   
   if (!m_inDsetType->hasGeom())

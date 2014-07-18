@@ -90,15 +90,21 @@ void te::vp::GeometricOpWizardPage::loadAttributes()
 {
   std::auto_ptr<te::da::DataSetType> dsType = m_layer->getSchema();
   std::vector<te::dt::Property*> vecProps = dsType->getProperties();
-  std::vector<std::string> vecPropNames;
+  std::vector<std::string> propsAux;
 
   for(std::size_t i = 0; i < vecProps.size(); ++i)
   {
     if(vecProps[i]->getType() != te::dt::GEOMETRY_TYPE)
-      m_props.push_back(vecProps[i]->getName());
+      propsAux.push_back(vecProps[i]->getName());
   }
 
-  m_widget->setInputValues(m_props);
+  if(propsAux != m_props)
+  {
+    m_props = propsAux;
 
+    m_widget->clearInputValues();
+    m_widget->clearOutputValues();
+    m_widget->setInputValues(m_props);
+  }
 }
 
