@@ -21,9 +21,6 @@
 #  Description: Build configuration for the Vector Processing Core Module.
 #
 #  Author: Eric Silva Abreu <eric@dpi.inpe.br>
-#          Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
-#          Juan Carlos P. Garrido <juan@dpi.inpe.br>
-#          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
 include_directories(${Boost_INCLUDE_DIR})
@@ -44,8 +41,8 @@ file(GLOB TERRALIB_CORE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sa/
 source_group("Source Files\\core"  FILES ${TERRALIB_CORE_SRC_FILES})
 source_group("Header Files\\core"  FILES ${TERRALIB_CORE_HDR_FILES})
 
-set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
-				   ${TERRALIB_CORE_SRC_FILES} ${TERRALIB_CORE_HDR_FILES})
+set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} 
+                   ${TERRALIB_CORE_SRC_FILES} ${TERRALIB_CORE_HDR_FILES})
 
 add_library(terralib_mod_sa_core SHARED ${TERRALIB_FILES})
 
@@ -53,7 +50,7 @@ target_link_libraries(terralib_mod_sa_core terralib_mod_dataaccess
                                            terralib_mod_geometry
                                            terralib_mod_datatype
                                            terralib_mod_common
-										   terralib_mod_graph)
+                                           terralib_mod_graph)
 
 set_target_properties(terralib_mod_sa_core
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
