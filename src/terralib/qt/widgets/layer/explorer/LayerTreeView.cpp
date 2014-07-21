@@ -116,12 +116,8 @@ class te::qt::widgets::LayerTreeView::Impl
         std::string selectedItemType;
 
         if(layer && !layer->isValid())
-        {
-          QMessageBox::warning(0, tr("Warning"), tr("Is not possible to perform the action because this is an invalid layer!"));
-          return;
-        }
-
-        if(layer && layer->getSchema().get() && layer->getSchema()->hasRaster())
+          selectedItemType = "INVALID_LAYER_ITEM";
+        else if(layer && layer->getSchema().get() && layer->getSchema()->hasRaster())
           selectedItemType = "RASTER_LAYER_ITEM";
         else
           selectedItemType = selectedItem->getItemType();
@@ -147,7 +143,7 @@ class te::qt::widgets::LayerTreeView::Impl
             continue;
           }
 
-          if(selectedItemType == "RASTER_LAYER_ITEM" || selectedItemType == "FOLDER_LAYER_ITEM")
+          if(selectedItemType == "RASTER_LAYER_ITEM" || selectedItemType == "FOLDER_LAYER_ITEM" || "INVALID_LAYER_ITEM")
           {
             if(aItemType == selectedItemType)
               menu.addAction(action);
@@ -174,13 +170,9 @@ class te::qt::widgets::LayerTreeView::Impl
           if(!layer)
             return;
 
-          if(layer && !layer->isValid())
-          {
-            QMessageBox::warning(0, tr("Warning"), tr("Is not possible to perform the action because there are invalid layers in the selection!"));
-            return;
-          }
-
-          if(layer->getSchema().get() && layer->getSchema()->hasRaster())
+          if(!layer->isValid())
+            layerType = "INVALID_LAYER_ITEM";
+          else if(layer->getSchema().get() && layer->getSchema()->hasRaster())
             layerType = "RASTER_LAYER_ITEM";
           else
             layerType = (*it)->getItemType();
