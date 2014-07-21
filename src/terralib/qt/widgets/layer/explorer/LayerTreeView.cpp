@@ -143,7 +143,7 @@ class te::qt::widgets::LayerTreeView::Impl
             continue;
           }
 
-          if(selectedItemType == "RASTER_LAYER_ITEM" || selectedItemType == "FOLDER_LAYER_ITEM" || "INVALID_LAYER_ITEM")
+          if(selectedItemType == "RASTER_LAYER_ITEM" || selectedItemType == "FOLDER_LAYER_ITEM" || selectedItemType == "INVALID_LAYER_ITEM")
           {
             if(aItemType == selectedItemType)
               menu.addAction(action);
