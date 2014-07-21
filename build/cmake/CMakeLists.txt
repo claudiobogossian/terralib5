@@ -656,6 +656,11 @@ if(TERRALIB_MOD_TERRALIB4_ENABLED)
   add_subdirectory(terralib_mod_terralib4)
 endif()
 
+# Turn on multi process compilation
+if(MSVC)
+  add_definitions(/MP)
+endif()
+
 if(TERRALIB_MOD_ANNOTATIONTEXT_ENABLED)
   add_subdirectory(terralib_mod_annotationtext)
 endif()
