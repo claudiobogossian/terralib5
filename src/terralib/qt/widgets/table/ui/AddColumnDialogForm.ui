@@ -157,6 +157,9 @@
          <property name="text">
           <string>&amp;Ok</string>
          </property>
+         <property name="default">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item>
@@ -180,13 +183,13 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>m_cancelBTN</tabstop>
+  <tabstop>m_colNameLNE</tabstop>
   <tabstop>m_okBTN</tabstop>
   <tabstop>m_helpBTN</tabstop>
   <tabstop>m_tblNameCBB</tabstop>
   <tabstop>m_colTypeCBB</tabstop>
   <tabstop>lineEdit</tabstop>
-  <tabstop>m_colNameLNE</tabstop>
+  <tabstop>m_cancelBTN</tabstop>
  </tabstops>
  <resources/>
  <connections/>
