@@ -2160,6 +2160,10 @@ void te::qt::af::BaseApplication::makeDialog()
 
   treeView->add(m_layerProperties, "", "RASTER_LAYER_ITEM");
 
+  // Actions for invalid layers
+
+  treeView->add(m_projectRemoveLayer, "", "INVALID_LAYER_ITEM");
+
   /********* Actions to be added to the context menu when there are multiple items selected ***********/
 
   treeView->add(m_layerFitSelectedOnMapDisplay, "", "DATASET_LAYER_ITEM", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
