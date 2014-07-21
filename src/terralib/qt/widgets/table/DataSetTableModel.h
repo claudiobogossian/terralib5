@@ -83,9 +83,11 @@ namespace te
 
             \param dset The new data set to be used.
 
+            \param clearEditor True for reset editions, false to maintain it.
+
             \note This method DOES TAKE the ownership of \a dset.
           */
-          void setDataSet(te::da::DataSet* dset);
+          void setDataSet(te::da::DataSet* dset, const bool& clearEditor = true);
 
           /*!
             \brief Sets the columns used as pkeys, for presentation purposes.

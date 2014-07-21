@@ -96,8 +96,10 @@ namespace te
             \brief Sets the layer to be presented.
           
             \param layer Pointer to the layer to be presented.
+
+            \param clearEditor True for reset editions, false to maintain it.
           */
-          void setLayer(const te::map::AbstractLayer* layer);
+          void setLayer(const te::map::AbstractLayer* layer, const bool& clearEditor = true);
 
           /*!
             \brief Updates the data set being visualized.
@@ -105,8 +107,10 @@ namespace te
             Note that this DataSet MUST HAVE random access. The view DOES TAKE the ownership of the pointer.
 
             \param dset The new data set to be visualized.
+
+            \param clearEditor True for reset editions, false to maintain it.
           */
-          void setDataSet(te::da::DataSet* dset);
+          void setDataSet(te::da::DataSet* dset, const bool& clearEditor = true);
 
           /*!
             \brief Sets the schema of the data set. It is used to define the primary keys and create the ObjectIdSet.
