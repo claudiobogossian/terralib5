@@ -177,7 +177,7 @@
                  <item row="2" column="0">
                   <widget class="QRadioButton" name="m_weightSquareInverseDistRadioButton">
                    <property name="enabled">
-                    <bool>false</bool>
+                    <bool>true</bool>
                    </property>
                    <property name="text">
                     <string>Iinverse of the Square of the Distance</string>
@@ -190,7 +190,7 @@
                  <item row="1" column="0">
                   <widget class="QRadioButton" name="m_weightInverseDistRadioButton">
                    <property name="enabled">
-                    <bool>false</bool>
+                    <bool>true</bool>
                    </property>
                    <property name="text">
                     <string>Inverse of the Distance</string>

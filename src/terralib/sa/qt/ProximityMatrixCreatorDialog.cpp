@@ -34,6 +34,10 @@
 #include "../core/GPMConstructorAbstractStrategy.h"
 #include "../core/GPMConstructorAdjacencyStrategy.h"
 #include "../core/GPMConstructorDistanceStrategy.h"
+#include "../core/GPMWeightsAbstractStrategy.h"
+#include "../core/GPMWeightsInverseDistanceStrategy.h"
+#include "../core/GPMWeightsNoWeightsStrategy.h"
+#include "../core/GPMWeightsSquaredInverseDistanceStrategy.h"
 #include "../core/SpatialWeightsExchanger.h"
 #include "../Exception.h"
 #include "ProximityMatrixCreatorDialog.h"
@@ -166,6 +170,7 @@ void te::sa::ProximityMatrixCreatorDialog::onOkPushButtonClicked()
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
 
+  //get constructor strategy
   te::sa::GPMConstructorAbstractStrategy* constructor = 0;
 
   if(m_ui->m_buildStratContiguityRadioButton->isChecked())
@@ -183,8 +188,24 @@ void te::sa::ProximityMatrixCreatorDialog::onOkPushButtonClicked()
     constructor = new te::sa::GPMConstructorDistanceStrategy(m_ui->m_distanceLineEdit->text().toDouble());
   }
 
+  //get weights strategy
+  te::sa::GPMWeightsAbstractStrategy* weights = 0;
+
+  if(m_ui->m_weightNoWeightRadioButton->isChecked())
+  {
+    weights = new te::sa::GPMWeightsNoWeightsStrategy(m_ui->m_normalizeWeightCheckBox->isChecked());
+  }
+  else if(m_ui->m_weightInverseDistRadioButton->isChecked())
+  {
+    weights = new te::sa::GPMWeightsInverseDistanceStrategy(m_ui->m_normalizeWeightCheckBox->isChecked()); // using default parameters
+  }
+  else if(m_ui->m_weightSquareInverseDistRadioButton->isChecked())
+  {
+    weights = new te::sa::GPMWeightsSquaredInverseDistanceStrategy(m_ui->m_normalizeWeightCheckBox->isChecked()); // using default parameters
+  }
+
   //run operation
-  te::sa::GPMBuilder builder(constructor);
+  te::sa::GPMBuilder builder(constructor, weights);
 
   std::auto_ptr<te::sa::GeneralizedProximityMatrix> gpm;
 

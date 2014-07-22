@@ -29,12 +29,14 @@
 #include "../../graph/Globals.h"
 #include "GPMBuilder.h"
 #include "GPMConstructorAbstractStrategy.h"
+#include "GPMWeightsAbstractStrategy.h"
 
 // STL Includes
 #include <cassert>
 
-te::sa::GPMBuilder::GPMBuilder(GPMConstructorAbstractStrategy* constructor) : 
-  m_constructor(constructor), 
+te::sa::GPMBuilder::GPMBuilder(GPMConstructorAbstractStrategy* constructor, GPMWeightsAbstractStrategy* weights) : 
+  m_constructor(constructor),
+  m_weights(weights),
   m_gpm(0)
 {
 }
@@ -78,7 +80,12 @@ std::auto_ptr<te::sa::GeneralizedProximityMatrix> te::sa::GPMBuilder::build()
   assert(m_gpm.get());
 
   if(m_constructor)
+  {
     m_constructor->construct(m_ds.get(), m_gpm.get());
+
+    if(m_weights)
+      m_weights->calculate(m_gpm.get());
+  }
 
   return m_gpm;
 }

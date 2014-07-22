@@ -42,6 +42,7 @@ namespace te
   {
     // Forward declarations
     class GPMConstructorAbstractStrategy;
+    class GPMWeightsAbstractStrategy;
   
     /*!
       \class GPMBuilder
@@ -55,7 +56,7 @@ namespace te
       public:
 
         /*! \brief Default constructor. */
-        GPMBuilder(GPMConstructorAbstractStrategy* constructor);
+        GPMBuilder(GPMConstructorAbstractStrategy* constructor, GPMWeightsAbstractStrategy* weights);
 
         /*! \brief Virtual destructor. */
         virtual ~GPMBuilder();
@@ -85,6 +86,8 @@ namespace te
       private:
 
         GPMConstructorAbstractStrategy* m_constructor;    //!< Strategy used to construct the gpm.
+
+        GPMWeightsAbstractStrategy* m_weights;            //!< Strategy used to calculate the weight of a gpm.
 
         std::auto_ptr<GeneralizedProximityMatrix> m_gpm;  //!< GPM reference pointer.
 

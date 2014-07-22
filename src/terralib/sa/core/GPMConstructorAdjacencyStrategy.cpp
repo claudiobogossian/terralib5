@@ -61,11 +61,7 @@ void te::sa::GPMConstructorAdjacencyStrategy::constructStrategy()
   //create distance attribute
   if(m_calcDistance)
   {
-    te::dt::SimpleProperty* p = new te::dt::SimpleProperty(TE_SA_DISTANCE_ATTR_NAME, te::dt::DOUBLE_TYPE);
-    p->setParent(0);
-    p->setId(0);
-
-    m_gpm->getGraph()->addEdgeProperty(p);
+    createDistanceAttribute(m_gpm);
   }
 
   //create tree
