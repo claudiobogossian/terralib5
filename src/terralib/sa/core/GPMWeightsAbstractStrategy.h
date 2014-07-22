@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file GPMConstructorAbstractStrategy.h
+  \file GPMWeightsAbstractStrategy.h
 
-  \brief This class defines a an Abstract class for a GPM constructor.
+  \brief This class defines a an Abstract class to calculates a weight for a GPM.
 */
 
-#ifndef __TERRALIB_SA_INTERNAL_GPMCONSTRUCTORABSTRACTSTRATEGY_H
-#define __TERRALIB_SA_INTERNAL_GPMCONSTRUCTORABSTRACTSTRATEGY_H
+#ifndef __TERRALIB_SA_INTERNAL_GPMWEIGHTSABSTRACTSTRATEGY_H
+#define __TERRALIB_SA_INTERNAL_GPMWEIGHTSABSTRACTSTRATEGY_H
 
 // Terralib Includes
 #include "../Config.h"
@@ -36,11 +36,10 @@
 
 namespace te
 {
-  // Forward declarations
-  namespace da 
-  {
-    class DataSource; 
-    class DataSet;
+  namespace graph 
+  { 
+    class Edge; 
+    class GraphMetadata;
   }
 
   namespace sa
@@ -49,22 +48,22 @@ namespace te
     class GeneralizedProximityMatrix;
   
     /*!
-      \class GPMConstructorAbstractStrategy
+      \class GPMWeightsAbstractStrategy
 
-      \brief This class defines a an Abstract class for a GPM constructor.
+      \brief This class defines a an Abstract class to calculates a weight for a GPM.
 
       \sa GPMBuilder
     */
 
-    class TESAEXPORT GPMConstructorAbstractStrategy
+    class TESAEXPORT GPMWeightsAbstractStrategy
     {
       public:
 
         /*! \brief Default constructor. */
-        GPMConstructorAbstractStrategy();
+        GPMWeightsAbstractStrategy();
 
         /*! \brief Virtual destructor. */
-        virtual ~GPMConstructorAbstractStrategy();
+        virtual ~GPMWeightsAbstractStrategy();
 
         
         /** @name Methods
@@ -74,33 +73,26 @@ namespace te
 
       public:
 
-        GPMConstructorStrategyType getConstructorType();
+        GPMWeightsStrategyType getWeightsType();
 
-        void construct(te::da::DataSource* ds, GeneralizedProximityMatrix* gpm);
+        virtual void calculate(GeneralizedProximityMatrix* gpm) = 0;
 
       protected:
 
-        /*! \brief Function used to create all vertex object based on data set */
-        void createVertexObjects();
+        /*! \brief Added to the edge a new attribute for weight information */
+        void createWeightAttribute(GeneralizedProximityMatrix* gpm);
 
-        /*! \brief Added to the edge a new attribute for distance information */
-        void createDistanceAttribute(GeneralizedProximityMatrix* gpm);
+        /*! \brief Function used to get the distance attribute index. */
+        bool getDistanceAttributeIndex(te::graph::GraphMetadata* gm, int& index);
 
-        /*! \brief Function used to generated the edge id */
-        int getEdgeId();
-
-        /*! \brief Build the edges using specific strategy. */
-        virtual void constructStrategy() = 0;
+        /*! \brief Function used to get the distance value from a edge element. */
+        double getDistanceAttributeValue(te::graph::Edge* e, const int index);
 
         //@}
 
       protected:
 
-        GPMConstructorStrategyType m_type;   //!< Constructor Type.
-
-        int m_edgeId;                        //!< Attribute used as a index counter for edge objects
-
-        te::da::DataSource* m_ds;            //!< Data Source pointer.
+        GPMWeightsStrategyType m_type;       //!< Weight Type.
 
         GeneralizedProximityMatrix* m_gpm;   //!< GPM Pointer.
     };
@@ -108,4 +100,4 @@ namespace te
   } // end namespace sa
 } // end namespace te
 
-#endif //__TERRALIB_SA_INTERNAL_GPMCONSTRUCTORABSTRACTSTRATEGY_H
+#endif //__TERRALIB_SA_INTERNAL_GPMWEIGHTSABSTRACTSTRATEGY_H

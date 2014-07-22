@@ -35,6 +35,9 @@
 #define TE_SA_DISTANCE_ATTR_NAME "distance"
 
 /*! Defines the attribute name used in gpm to identigy the distance information*/
+#define TE_SA_WEIGHT_ATTR_NAME "weight"
+
+/*! Defines the attribute name used in gpm to identigy the distance information*/
 #define TE_SA_GEOMETRY_ATTR_NAME "coord"
 
 

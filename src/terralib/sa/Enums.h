@@ -41,6 +41,18 @@ namespace te
       AdjacencyStrategy,
       DistanceStrategy
     };
+
+    /*!
+      \enum GPMWeightsStrategyType
+
+      \brief Strategies to calculate the weight for a GPM.
+    */
+    enum GPMWeightsStrategyType
+    {
+      NoWeightStrategy,
+      InverseDistanceStrategy,
+      SquaredInverseDistanceStrategy
+    };
   }
 }
 

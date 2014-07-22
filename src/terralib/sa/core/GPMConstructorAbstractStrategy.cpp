@@ -37,6 +37,9 @@
 #include "GeneralizedProximityMatrix.h"
 #include "GPMConstructorAbstractStrategy.h"
 
+// STL Includes
+#include <cassert>
+
 te::sa::GPMConstructorAbstractStrategy::GPMConstructorAbstractStrategy() : m_ds(0), m_gpm(0)
 {
   m_edgeId = 0;
@@ -129,6 +132,17 @@ void te::sa::GPMConstructorAbstractStrategy::createVertexObjects()
 
     m_gpm->getGraph()->add(v);
   }
+}
+
+void te::sa::GPMConstructorAbstractStrategy::createDistanceAttribute(GeneralizedProximityMatrix* gpm)
+{
+  assert(gpm);
+
+  te::dt::SimpleProperty* p = new te::dt::SimpleProperty(TE_SA_DISTANCE_ATTR_NAME, te::dt::DOUBLE_TYPE);
+  p->setParent(0);
+  p->setId(0);
+
+  gpm->getGraph()->addEdgeProperty(p);
 }
 
 int te::sa::GPMConstructorAbstractStrategy::getEdgeId()
