@@ -84,7 +84,7 @@ void te::layout::VerticalRulerModel::drawRuler( te::map::Canvas* canvas, Utils* 
 
   te::color::RGBAColor colorp4(180,180,180, TE_OPAQUE);
   drawRectW(m_box, colorp4, canvas, utils);
-
+  
   te::color::RGBAColor colorp85(145,145,145, TE_OPAQUE);
   drawRectW(m_backEndBox, colorp85, canvas, utils);
 
@@ -163,4 +163,15 @@ void te::layout::VerticalRulerModel::setBox( te::gm::Envelope box )
   m_box = box;
   m_backEndBox = te::gm::Envelope(m_box.getLowerLeftX() + m_backEndMargin, m_box.getLowerLeftY(),
     m_box.getUpperRightX() - m_backEndMargin , m_box.getUpperRightY() - m_backEndSpacing);
+}
+
+te::gm::Envelope te::layout::VerticalRulerModel::applyZoom( te::gm::Envelope env, double zoom )
+{
+  double w = env.getWidth() * zoom;
+  double h = env.getHeight() * zoom;
+
+  env.m_urx = env.m_llx + w;
+  env.m_ury = env.m_lly + h;
+
+  return env;
 }

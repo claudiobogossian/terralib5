@@ -84,8 +84,7 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges 
-    | QGraphicsItem::ItemIgnoresTransformations);
+    | QGraphicsItem::ItemSendsGeometryChanges);
   
   setAcceptDrops(true);
   
@@ -284,6 +283,7 @@ void te::layout::MapItem::setRect( QRectF rect )
     return;
 
   m_rect = rect;
+
   update(rect);
 }
 
@@ -312,8 +312,12 @@ te::gm::Coord2D te::layout::MapItem::getPosition()
 
 void te::layout::MapItem::setPos( const QPointF &pos )
 {
-  QGraphicsItem::setPos(pos);
+  /* The matrix transformation of MapItem object is the inverse of the scene, 
+  so you need to do translate when you change the position, since the coordinate 
+  must be in the world coordinate. */
+  QPointF p1(pos.x() - transform().dx(), pos.y() - transform().dy());
 
+  QGraphicsItem::setPos(p1);
   refresh();
 }
 

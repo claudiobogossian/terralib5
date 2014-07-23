@@ -102,6 +102,8 @@ namespace te
         virtual void outsideAreaChangeContext(bool change);
 
         virtual void configTransform(Scene* sc);
+
+        virtual te::gm::Envelope calculateNewBox(te::gm::Envelope env);
                         
       protected:
         VisualizationArea*  m_visualizationArea;

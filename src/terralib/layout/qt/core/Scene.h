@@ -149,8 +149,7 @@ namespace te
 
         virtual void mousePressEvent ( QGraphicsSceneMouseEvent* mouseEvent );
 
-        virtual te::gm::Envelope* calculateBoxPaper(double wMM, double hMM, double paperMMW, double paperMMH);
-        virtual te::gm::Envelope* calculateWindow(double wMM, double hMM, double paperMMW, double paperMMH);
+        virtual te::gm::Envelope* calculateWindow(double wMM, double hMM);
         virtual void calculateMatrixViewScene(double zoomFactor = 1.);
 
         virtual QPrinter* createPrinter();
