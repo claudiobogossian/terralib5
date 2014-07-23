@@ -54,16 +54,24 @@ bool te::gdal::DataSetsManager::incrementUseCounter( const std::string& uri,
     }
     else
     {
-      if( it->second.first & SingleAccessType )
+      if( aType == SingleAccessType )
       {
-        m_mutex.unlock(); 
+        m_mutex.unlock();
         return false;
       }
       else
       {
-        ++( it->second.second );
-        m_mutex.unlock(); 
-        return true;
+        if( it->second.first == SingleAccessType )
+        {
+          m_mutex.unlock(); 
+          return false;
+        }
+        else
+        {
+          ++( it->second.second );
+          m_mutex.unlock(); 
+          return true;
+        }
       }
     }
   }
