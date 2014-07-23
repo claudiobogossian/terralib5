@@ -116,6 +116,8 @@ namespace te
 
           void onRemoveLayerTriggered();
 
+          void onChangeLayerDataSourceTriggered();
+
           void onLayerRemoveItemTriggered();
 
           void onRenameLayerTriggered();
@@ -288,6 +290,7 @@ namespace te
           QAction *m_projectAddLayerTabularDataSet;
           QAction* m_projectAddLayerGraph;
           QAction* m_projectAddFolderLayer;
+          QAction* m_projectChangeLayerDataSource;
           QAction* m_projectRemoveLayer;
           QAction* m_projectRenameLayer;
           QAction* m_projectProperties;
