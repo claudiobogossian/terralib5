@@ -23,8 +23,8 @@
   \brief This file defines the abstract class AbstractAction
 */
 
-#ifndef __TE_QT_PLUGINS_SLIDER_INTERNAL_ABSTRACTACTION_H
-#define __TE_QT_PLUGINS_SLIDER_INTERNAL_ABSTRACTACTION_H
+#ifndef __TE_QT_PLUGINS_ST_INTERNAL_ABSTRACTACTION_H
+#define __TE_QT_PLUGINS_ST_INTERNAL_ABSTRACTACTION_H
 
 // TerraLib
 #include "Config.h"
@@ -40,12 +40,12 @@ namespace te
   {
     namespace plugins
     {
-      namespace slider
+      namespace st
       {
         /*!
           \class AbstractAction
 
-          \brief This is an abstract class used to register actions into slider pluging.
+          \brief This is an abstract class used to register actions into st pluging.
 
         */
         class AbstractAction : public QObject
@@ -92,9 +92,9 @@ namespace te
             QAction* m_action;    //!< Action used to call the process.
         };
 
-      } // end namespace slider
+      } // end namespace st
     }   // end namespace plugins
   }     // end namespace qt
 }       // end namespace te
 
-#endif //__TE_QT_PLUGINS_SLIDER_INTERNAL_ABSTRACTACTION_H
+#endif //__TE_QT_PLUGINS_ST_INTERNAL_ABSTRACTACTION_H

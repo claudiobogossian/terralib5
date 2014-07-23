@@ -30,6 +30,7 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/Geometry.h"
 #include "../../../maptools/DataSetLayer.h"
+#include "../../../maptools/DataSetAdapterLayer.h"
 #include "../../../maptools/QueryLayer.h"
 #include "../../../statistics/qt/StatisticsDialog.h"
 
@@ -65,7 +66,7 @@ std::vector<int> GetHiddenSections(QHeaderView* hView, te::da::DataSet* dset)
 {
   std::vector<int> res;
 
-  int sz = hView->count();
+  int sz = dset->getNumProperties();
 
   if(sz > 0)
   {
@@ -120,6 +121,13 @@ te::da::DataSourcePtr GetDataSource(const te::map::AbstractLayer* layer)
   if(layer->getType() == "DATASETLAYER")
   {
     const te::map::DataSetLayer* l = dynamic_cast<const te::map::DataSetLayer*>(layer);
+
+    if(l != 0)
+      ds = te::da::DataSourceManager::getInstance().find(l->getDataSourceId());
+  }
+  else if(layer->getType() == "DATASETADAPTERLAYER")
+  {
+    const te::map::DataSetAdapterLayer* l = dynamic_cast<const te::map::DataSetAdapterLayer*>(layer);
 
     if(l != 0)
       ds = te::da::DataSourceManager::getInstance().find(l->getDataSourceId());
@@ -212,6 +220,13 @@ std::auto_ptr<te::da::DataSet> GetDataSet(const te::map::AbstractLayer* layer, c
     if(l != 0)
       query = GetSelectExpression(layer->getSchema()->getName(), colsNames, asc);
   }
+  else if(layer->getType() == "DATASETADAPTERLAYER")
+  {
+    const te::map::DataSetAdapterLayer* l = dynamic_cast<const te::map::DataSetAdapterLayer*>(layer);
+
+    if(l != 0)
+      query = GetSelectExpression(layer->getSchema()->getName(), colsNames, asc);
+  }
   else if(layer->getType() == "QUERYLAYER")
   {
     const te::map::QueryLayer* l = dynamic_cast<const te::map::QueryLayer*>(layer);
@@ -297,6 +312,19 @@ bool IsPrimaryKey(const int& col, te::qt::widgets::DataSetTableView* view)
       return true;
 
   return false;
+}
+
+void HideGeometryColumns(te::da::DataSet* dset, te::qt::widgets::DataSetTableView* view)
+{
+  if(dset != 0)
+  {
+    std::vector<int> geoCols;
+    std::vector<int>::iterator it;
+    GetGeometryColumnsPositions(dset, geoCols);
+
+    for(it = geoCols.begin(); it != geoCols.end(); ++it)
+      view->hideColumn(*it);
+  }
 }
 
 /*!
@@ -728,7 +756,7 @@ te::qt::widgets::DataSetTableView::~DataSetTableView()
   }
 }
 
-void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* layer)
+void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* layer, const bool& clearEditor)
 {
   ScopedCursor cursor(Qt::WaitCursor);
 
@@ -750,7 +778,7 @@ void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* l
       m_orderby.push_back((*it)->getName());
   }
 
-  setDataSet(GetDataSet(m_layer, m_orderby, m_orderAsc).release());
+  setDataSet(GetDataSet(m_layer, m_orderby, m_orderAsc).release(), clearEditor);
   setLayerSchema(sch.get());
 
   te::da::DataSetTypeCapabilities* caps = GetCapabilities(m_layer);
@@ -771,19 +799,13 @@ void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* l
   highlightOIds(m_layer->getSelected());
 }
 
-void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset)
+void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset, const bool& clearEditor)
 {
-  m_model->setDataSet(dset);
+  reset();
 
-  if(dset != 0)
-  {
-    std::vector<int> geoCols;
-    std::vector<int>::iterator it;
-    GetGeometryColumnsPositions(dset, geoCols);
+  m_model->setDataSet(dset, clearEditor);
 
-    for(it = geoCols.begin(); it != geoCols.end(); ++it)
-      hideColumn(*it);
-  }
+  HideGeometryColumns(dset, this);
 
   m_popupFilter->setDataSet(dset);
   m_delegate->setDataSet(dset);
@@ -1157,9 +1179,9 @@ void te::qt::widgets::DataSetTableView::addColumn()
       ds->addProperty(dsName, p.get());
 
       if(ds->getType().compare("OGR") == 0)
-        m_model->insertColumns((int)n_prop-1, 0);
+        m_model->insertColumns(((int)n_prop-1), 0);
 
-      setLayer(m_layer);
+      setLayer(m_layer, false);
     }
   }
   catch(te::common::Exception& e)
@@ -1188,7 +1210,7 @@ void te::qt::widgets::DataSetTableView::removeColumn(const int& column)
 
       m_model->removeColumns(column, 0);
 
-      setLayer(m_layer);
+      setLayer(m_layer, false);
     }
   }
   catch(te::common::Exception& e)

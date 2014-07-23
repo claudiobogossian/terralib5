@@ -115,9 +115,13 @@ namespace te
                                                te::common::TraverseType travType = te::common::FORWARDONLY,
                                                const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
-        //std::auto_ptr<te::da::DataSet> getData(te::da::Expression* restriction,
-        //                                       te::common::TraverseType travType = te::common::FORWARDONLY,
-        //                                       const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
+        std::auto_ptr<te::da::DataSet> getData(te::da::Expression* restriction,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
+
+        std::auto_ptr<te::da::DataSet> getData(const te::da::ObjectIdSet* oids,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
         std::auto_ptr<te::st::TrajectoryDataSet> getTrajectoryDataset(te::common::TraverseType travType = te::common::FORWARDONLY) const;
 

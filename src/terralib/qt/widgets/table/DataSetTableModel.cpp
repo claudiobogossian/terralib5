@@ -176,7 +176,7 @@ class Editor
           bool edited = ef.find(j) != ef.end();
 
           if(!edited)
-            item->setValue(j, in->getValue(j).release());
+            item->setValue(j, (in->isNull(j)) ? 0 : in->getValue(j).release());
           else
           {
             std::string data = getValue(rows[i], j);
@@ -219,6 +219,35 @@ class Editor
 
         out->add(item);
       }
+    }
+
+    void columnsRemoved(const int& init, const int& final)
+    {
+      for(int i = init; i <= final; i++)
+        columnRemoved(i);
+    }
+
+    void columnRemoved(const int& column)
+    {
+      std::map< std::pair<int, int>, std::string > aux;
+      std::map< std::pair<int, int>, std::string >::iterator it;
+
+      for(it = m_editions.begin(); it != m_editions.end(); ++it)
+      {
+        int cE = it->first.second;
+
+        if(cE == column)
+          continue;
+
+        std::pair<int, int> rC = it->first;
+
+        if(rC.second > column)
+          rC.second--;
+
+        aux[rC] = it->second;
+      }
+
+      m_editions = aux;
     }
 
   protected:
@@ -264,7 +293,8 @@ te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent)
     m_dataset(0),
     m_currentRow(-1),
     m_OIdsVisible(true),
-    m_enabled(true)
+    m_enabled(true),
+    m_rowCount(0)
 {
   m_promoter = new Promoter;
   m_editor.reset(new Editor);
@@ -276,7 +306,7 @@ te::qt::widgets::DataSetTableModel::~DataSetTableModel()
   delete m_promoter;
 }
 
-void te::qt::widgets::DataSetTableModel::setDataSet(te::da::DataSet* dset)
+void te::qt::widgets::DataSetTableModel::setDataSet(te::da::DataSet* dset, const bool& clearEditor)
 {
   beginResetModel();
 
@@ -284,7 +314,8 @@ void te::qt::widgets::DataSetTableModel::setDataSet(te::da::DataSet* dset)
 
   m_dataset = dset;
 
-  m_editor->clear();
+  if(clearEditor)
+    m_editor->clear();
 
   m_rowCount = (m_dataset == 0 || !m_enabled) ? 0 : (int)m_dataset->size();
 
@@ -408,23 +439,23 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
         m_dataset->move(row);
       }
 
-      if(!m_dataset->isNull(index.column()))
-      {
-        if(m_editor->isEdited(m_promoter->getLogicalRow(index.row()), index.column()))
-          return m_editor->getValue(m_promoter->getLogicalRow(index.row()), index.column()).c_str();
+      if(m_editor->isEdited(m_promoter->getLogicalRow(index.row()), index.column()))
+        return m_editor->getValue(m_promoter->getLogicalRow(index.row()), index.column()).c_str();
 
-        if(m_dataset->getPropertyDataType(index.column()) == te::dt::STRING_TYPE)
-        {
-          std::string value = m_dataset->getString(index.column());
-          te::common::CharEncoding encoding = m_dataset->getPropertyCharEncoding(index.column());
-          if (encoding == te::common::UNKNOWN_CHAR_ENCODING)
-            return value.c_str();
-          else
-			      return Convert2Qt(value, encoding);
-        }
+      if(m_dataset->isNull(index.column()))
+        return QVariant();
+
+      if(m_dataset->getPropertyDataType(index.column()) == te::dt::STRING_TYPE)
+      {
+        std::string value = m_dataset->getString(index.column());
+        te::common::CharEncoding encoding = m_dataset->getPropertyCharEncoding(index.column());
+        if (encoding == te::common::UNKNOWN_CHAR_ENCODING)
+          return value.c_str();
         else
-          return m_dataset->getAsString(index.column(), 6).c_str();
+			    return Convert2Qt(value, encoding);
       }
+      else
+        return m_dataset->getAsString(index.column(), 6).c_str();
     }
     break;
 
@@ -572,6 +603,8 @@ bool te::qt::widgets::DataSetTableModel::insertColumns(int column, int count, co
 bool te::qt::widgets::DataSetTableModel::removeColumns(int column, int count, const QModelIndex& parent)
 {
   beginRemoveColumns(parent, column, column+count);
+
+  m_editor->columnsRemoved(column, column+count);
 
   endRemoveColumns();
 

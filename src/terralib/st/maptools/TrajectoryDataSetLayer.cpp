@@ -116,6 +116,22 @@ std::auto_ptr<te::da::DataSet> te::st::TrajectoryDataSetLayer::getData(const std
   return result;
 }
 
+std::auto_ptr<te::da::DataSet> te::st::TrajectoryDataSetLayer::getData(te::da::Expression* restriction,
+                                        te::common::TraverseType travType,
+                                        const te::common::AccessPolicy accessPolicy) const
+{
+  std::auto_ptr<te::da::DataSet> result;
+  return result;
+}
+
+std::auto_ptr<te::da::DataSet> te::st::TrajectoryDataSetLayer::getData(const te::da::ObjectIdSet* oids,
+                                                                       te::common::TraverseType travType,
+                                                                       const te::common::AccessPolicy accessPolicy) const
+{
+  std::auto_ptr<te::da::DataSet> result;
+  return result;
+}
+
 std::auto_ptr<te::st::TrajectoryDataSet> te::st::TrajectoryDataSetLayer::getTrajectoryDataset(te::common::TraverseType travType) const
 {
   return te::st::STDataLoader::getDataSet(*m_info.get(), travType);
@@ -209,12 +225,12 @@ bool te::st::TrajectoryDataSetLayer::isValid() const
 void te::st::TrajectoryDataSetLayer::draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid)
 {
   if(m_rendererType.empty())
-    throw te::map::Exception((boost::format(TR_MAP("Could not draw the data set layer %1%. The renderer type is empty!")) % getTitle()).str());
+    throw te::map::Exception((boost::format(TE_TR("Could not draw the data set layer %1%. The renderer type is empty!")) % getTitle()).str());
 
   // Try get the defined renderer
   std::auto_ptr<te::map::AbstractRenderer> renderer(te::map::RendererFactory::make(m_rendererType));
   if(renderer.get() == 0)
-    throw te::map::Exception((boost::format(TR_MAP("Could not draw the data set layer %1%. The renderer %2% could not be created!")) % getTitle() % m_rendererType).str());
+    throw te::map::Exception((boost::format(TE_TR("Could not draw the data set layer %1%. The renderer %2% could not be created!")) % getTitle() % m_rendererType).str());
 
   renderer->draw(this, canvas, bbox, srid);
 }

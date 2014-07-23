@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/canvas/PixmapItem.h
+  \file terralib/qt/widgets/st/PixmapItem.h
 
   \brief This file defines a class for a Pixmap Item.
 */

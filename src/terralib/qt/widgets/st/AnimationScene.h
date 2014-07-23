@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/canvas/AnimationScene.h
+  \file terralib/qt/widgets/st/AnimationScene.h
 
   \brief This file defines a class for a Animation Scene.
 */

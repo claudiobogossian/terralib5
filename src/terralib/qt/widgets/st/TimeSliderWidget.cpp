@@ -18,7 +18,7 @@
  */
  
  /*!
-  \file terralib/qt/widgets/slider/TimeSliderWidget.cpp
+  \file terralib/qt/widgets/st/TimeSliderWidget.cpp
 
   \brief A widget used to alow the user to controle the visualization of temporal data
 */
