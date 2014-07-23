@@ -105,7 +105,14 @@ te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds)
     return 0;
 
   int srid = TE_UNKNOWN_SRS;
+  
+  // The calling of GetProjectionRef isn't thread safe, even for distinct datasets
+  // under some linuxes
+  boost::unique_lock< boost::mutex > lockGuard( getStaticMutex() );
   char* projWKT = (char*)gds->GetProjectionRef();
+  lockGuard.release();
+  getStaticMutex().unlock();
+  
   if (projWKT)
   {
     char** projWKTPtr = &(projWKT);
@@ -774,4 +781,10 @@ std::string te::gdal::GetParentDataSetName(const std::string& subDataSetName)
   {
     return subDataSetName;
   }
+}
+
+boost::mutex& te::gdal::getStaticMutex()
+{
+  static boost::mutex getStaticMutexStaticMutex;
+  return getStaticMutexStaticMutex;
 }
