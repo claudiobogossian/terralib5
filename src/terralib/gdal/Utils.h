@@ -42,6 +42,7 @@
 #include <string>
 
 #include <boost/filesystem.hpp>
+#include <boost/thread/mutex.hpp>
 
 namespace te
 {
@@ -339,6 +340,12 @@ namespace te
      \note If the given name does not refers to a sub-dataset it will be returned.
      */
     std::string GetParentDataSetName(const std::string& subDataSetName);
+    
+    /*!
+     \brief Returns a reference to a static mutex initialized when this module is initialized.
+     \return Returns a reference to a static mutex initialized when this module is initialized.
+     */
+    TEGDALEXPORT boost::mutex& getStaticMutex();    
         
   } // end namespace gdal
 } // end namespace te
