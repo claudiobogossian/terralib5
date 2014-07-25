@@ -18,11 +18,9 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build configuration for the Vector Processing Qt plugin.
+#  Description: Build configuration for the Layout Plugin.
 #
-#  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
-#          Juan Carlos P. Garrido <juan@dpi.inpe.br>
-#          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
+#  Author: Juliana Hohara de Souza Coelho <juliana.coelho@funcate.org.br>
 #
 
 include_directories(${Boost_INCLUDE_DIR})
@@ -43,15 +41,15 @@ if(Qt5_FOUND)
   add_library(terralib_mod_qt_plugins_layout SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_qt_plugins_layout terralib_mod_layout
-                                                  terralib_mod_plugin
-                                                  terralib_mod_qt_apf
-												  terralib_mod_color
-												  terralib_mod_common
-												  terralib_mod_dataaccess
-												  terralib_mod_datatype
-												  terralib_mod_geometry
-												  terralib_mod_maptools
-												  terralib_mod_qt_widgets)
+                                                       terralib_mod_plugin
+                                                       terralib_mod_qt_apf
+                                                       terralib_mod_color
+                                                       terralib_mod_common
+                                                       terralib_mod_dataaccess
+                                                       terralib_mod_datatype
+                                                       terralib_mod_geometry
+                                                       terralib_mod_maptools
+                                                       terralib_mod_qt_widgets)
 
   qt5_use_modules(terralib_mod_qt_plugins_layout Widgets)
 
@@ -64,11 +62,11 @@ else()
 # moc'ing
   set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/LayoutEditorAction.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/AbstractAction.h
-								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/OutsideArea.h
-								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/DisplayDock.h
-								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/ObjectInspectorDock.h
-								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/PropertiesDock.h
-								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/ToolbarDock.h)
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/OutsideArea.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/DisplayDock.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/ObjectInspectorDock.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/PropertiesDock.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/ToolbarDock.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES} OPTIONS -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 
@@ -77,9 +75,9 @@ else()
   add_library(terralib_mod_qt_plugins_layout SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_qt_plugins_layout terralib_mod_layout
-                                                   terralib_mod_plugin
-                                                   terralib_mod_qt_apf
-                                                   ${QT_LIBRARIES})
+                                                       terralib_mod_plugin
+                                                       terralib_mod_qt_apf
+                                                       ${QT_LIBRARIES})
 
 endif()
 
