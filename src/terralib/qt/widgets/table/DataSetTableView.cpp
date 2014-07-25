@@ -35,12 +35,17 @@
 #include "../../../statistics/qt/StatisticsDialog.h"
 
 // Qt
-#include <QHeaderView>
+#include <QBoxLayout>
 #include <QContextMenuEvent>
-#include <QMenu>
 #include <QCursor>
-#include <QPainter>
+#include <QDialogButtonBox>
+#include <QHeaderView>
+#include <QLabel>
+#include <QMenu>
 #include <QMessageBox>
+#include <QPainter>
+#include <QSpinBox>
+
 
 // STL
 #include <vector>
@@ -349,8 +354,7 @@ class TablePopupFilter : public QObject
       m_showOidsColumns(false),
       m_enabled(true),
       m_autoScrollEnabled(false),
-      m_promotionEnabled(false),
-      m_isOGR(false)
+      m_promotionEnabled(false)
     {
       m_view->horizontalHeader()->installEventFilter(this);
       m_view->verticalHeader()->installEventFilter(this);
@@ -491,13 +495,11 @@ class TablePopupFilter : public QObject
                 QAction* act11 = new QAction(m_hMenu);
                 act11->setText(tr("Change column type"));
                 act11->setToolTip(tr("Changes the type of a column of the table."));
-                act11->setEnabled(!m_isOGR);
                 m_hMenu->addAction(act11);
 
                 QAction* act12 = new QAction(m_hMenu);
                 act12->setText(tr("Change column data"));
                 act12->setToolTip(tr("Changes the data of a column of the table."));
-                act12->setEnabled(!m_isOGR);
                 m_hMenu->addAction(act12);
 
                 QAction* act13 = new QAction(m_hMenu);
@@ -587,11 +589,6 @@ class TablePopupFilter : public QObject
     void setPromotionEnabled(const bool& enabled)
     {
       m_promotionEnabled = enabled;
-    }
-
-    void setIsOGR(const bool& isOGR)
-    {
-      m_isOGR = isOGR;
     }
 
   protected slots:
@@ -706,7 +703,6 @@ class TablePopupFilter : public QObject
     int m_columnPressed;
     bool m_autoScrollEnabled;
     bool m_promotionEnabled;
-    bool m_isOGR;
 };
 
 te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
@@ -801,10 +797,8 @@ void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* l
 
   if(dsc.get() != 0)
   {
-    bool isOGR = (dsc->getType().compare("OGR") == 0);
-    setSelectionMode(isOGR ? SingleSelection : MultiSelection);
-    setSelectionBehavior(isOGR ? QAbstractItemView::SelectColumns : QAbstractItemView::SelectItems);
-    m_popupFilter->setIsOGR(isOGR);
+    setSelectionMode((dsc->getType().compare("OGR") == 0) ? SingleSelection : MultiSelection);
+    setSelectionBehavior((dsc->getType().compare("OGR") == 0) ? QAbstractItemView::SelectColumns : QAbstractItemView::SelectItems);
   }
 
   highlightOIds(m_layer->getSelected());
@@ -867,9 +861,39 @@ void te::qt::widgets::DataSetTableView::setHighlightColor(const QColor& color)
 
 void te::qt::widgets::DataSetTableView::createHistogram(const int& column)
 {
-  const te::map::LayerSchema* schema = m_layer->getSchema().release();
-  te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
-  emit createChartDisplay(te::qt::widgets::createHistogramDisplay(m_dset, dataType, column));
+  int propType = m_dset->getPropertyDataType(column);
+
+  if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
+    emit createChartDisplay(te::qt::widgets::createHistogramDisplay(m_dset, m_layer->getSchema().get(), column));
+  else
+  {
+    QDialog* dialog = new QDialog(this);
+    dialog->setFixedSize(160, 75);
+
+    QBoxLayout* vLayout = new QBoxLayout(QBoxLayout::TopToBottom, dialog);
+    QBoxLayout* hLayout = new QBoxLayout(QBoxLayout::LeftToRight, dialog);
+
+    QLabel* slicesProp = new QLabel(QString::fromStdString("Number of Slices: "), dialog);
+    hLayout->addWidget(slicesProp);
+
+    QSpinBox* slicesSB = new QSpinBox(dialog);
+    slicesSB->setValue(5);
+    slicesSB->setMinimum(2);
+
+    hLayout->addWidget(slicesSB);
+    vLayout->addLayout(hLayout);
+
+    QDialogButtonBox* bbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dialog);
+    connect(bbox, SIGNAL(accepted()), dialog, SLOT(accept()));
+    connect(bbox, SIGNAL(rejected()), dialog, SLOT(reject()));
+    vLayout->addWidget(bbox);
+
+    int res = dialog->exec();
+    if (res == QDialog::Accepted)
+      emit createChartDisplay(te::qt::widgets::createHistogramDisplay(m_dset, m_layer->getSchema().get(), column, slicesSB->value()));
+
+    delete dialog;
+  }
 }
 
 void te::qt::widgets::DataSetTableView::hideColumn(const int& column)
