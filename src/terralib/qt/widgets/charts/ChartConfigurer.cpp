@@ -61,8 +61,10 @@ void te::qt::widgets::ChartConfigurer::config(const te::se::Symbolizer* symboliz
 
 void te::qt::widgets::ChartConfigurer::config(te::map::AbstractLayer* layer)
 {
-  if(layer->getStyle())
-   config(layer->getStyle()->getRule(0)->getSymbolizer(0));
+  if(layer->getStyle() 
+     && !layer->getStyle()->getRules().empty()
+     && !layer->getStyle()->getRule(0)->getSymbolizers().empty())
+      config(layer->getStyle()->getRule(0)->getSymbolizer(0));
 }
 
 void te::qt::widgets::ChartConfigurer::visit(const te::se::Style& visited)

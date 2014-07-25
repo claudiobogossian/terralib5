@@ -290,6 +290,9 @@ te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createScatterDisplay(te::d
 
 te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int slices)
 {
+  if(slices <=1)
+    slices = 2;
+
   te::qt::widgets::Histogram* newHistogram = new te::qt::widgets::Histogram();
 
   std::size_t rpos = te::da::GetFirstPropertyPos(dataset, te::dt::RASTER_TYPE);
@@ -515,6 +518,9 @@ te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createHistogramDisplay(te:
 {
   te::qt::widgets::HistogramChart* chart;
   int propType = dataset->getPropertyDataType(propId);
+
+  if(slices <=1)
+    slices = 2;
 
   //Creating the histogram and it's chart with the given dataset
   if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
