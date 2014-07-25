@@ -69,7 +69,8 @@ te::layout::Scene::Scene( QWidget* widget):
   m_boxPaperW(0),
   m_lineIntersectHrz(0),
   m_lineIntersectVrt(0),
-  m_fixedRuler(true)
+  m_fixedRuler(true),
+  m_previewState(PreviewScene)
 {
   setBackgroundBrush(QBrush(QColor(109,109,109)));
 
@@ -99,8 +100,12 @@ void te::layout::Scene::init(double screenWMM, double screenHMM, double paperMMW
   m_boxPaperW = new te::gm::Envelope(0, 0, paperMMW, paperMMH);
   m_boxW = calculateWindow(m_screenWidthMM, m_screenHeightMM); 
   
-  double w = m_boxW->getWidth() * zoomFactor;
-  double h = m_boxW->getHeight() * zoomFactor;
+  double newZoomFactor = 1. / zoomFactor;
+  if(zoomFactor < 1.)
+    newZoomFactor = zoomFactor;
+
+  double w = m_boxW->getWidth() * newZoomFactor;
+  double h = m_boxW->getHeight() * newZoomFactor;
 
   te::gm::Coord2D center = m_boxW->getCenter();
 
@@ -424,6 +429,17 @@ QPrinter* te::layout::Scene::createPrinter()
 
 void te::layout::Scene::renderScene( QPainter* newPainter )
 {      
+  if(m_previewState == PreviewScene)
+  {
+    m_previewState = PrintScene;
+    //redrawItems(true);
+  }
+  else
+  {
+    m_previewState = PreviewScene;
+    //redrawItems(true);
+  }
+
   changePrintVisibility(false);
         
   //Box Paper in the Scene (Source)
@@ -439,9 +455,9 @@ void te::layout::Scene::renderScene( QPainter* newPainter )
   Utils* utils = Context::getInstance().getUtils();
   //Convert world to screen coordinate. Uses dpi printer.
   te::gm::Envelope paperNewBox = utils->viewportBox(*m_boxPaperW);
-  
+    
   this->render(newPainter, pxTargetRect, mmSourceRect); 
-
+  
   changePrintVisibility(true);
 }
 

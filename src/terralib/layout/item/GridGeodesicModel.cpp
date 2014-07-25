@@ -39,6 +39,7 @@
 // STL
 #include <string>
 #include <sstream> 
+#include <cmath>
 
 te::layout::GridGeodesicModel::GridGeodesicModel() :
   m_degreesText(true),
@@ -253,7 +254,7 @@ void te::layout::GridGeodesicModel::calculateGaps( te::gm::Envelope box )
   {
     if(m_lneHrzGap <= 0)
     {
-      m_lneHrzGap = fabs(init.x - end.x);
+      m_lneHrzGap = std::fabs(init.x - end.x);
       m_lneHrzGap /= 4;
     }
     if(m_lneVrtGap <= 0)

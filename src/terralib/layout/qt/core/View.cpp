@@ -316,8 +316,12 @@ void te::layout::View::outsideAreaChangeContext( bool change )
 
   te::gm::Envelope* env = sc->getWorldBox();
 
-  double halfWidth = env->getWidth() * zoomFactor  / 2.;
-  double halfHeight = env->getHeight() * zoomFactor / 2.;
+  double newZoomFactor = 1. / zoomFactor;
+  if(zoomFactor < 1.)
+    newZoomFactor = zoomFactor;
+
+  double halfWidth = env->getWidth() * newZoomFactor  / 2.;
+  double halfHeight = env->getHeight() * newZoomFactor / 2.;
   te::gm::Coord2D center = env->getCenter();
 
   te::gm::Envelope zoomBox;
@@ -422,11 +426,11 @@ void te::layout::View::outsideAreaChangeContext( bool change )
     break;
   case TypeSceneZoom:
     {
-      /*env->m_llx = center.x - halfWidth;
+      env->m_llx = center.x - halfWidth;
       env->m_lly = center.y - halfHeight;
       env->m_urx = center.x + halfWidth;
-      env->m_ury = center.y + halfHeight;*/
- 
+      env->m_ury = center.y + halfHeight;
+       
       sc->refresh(this, zoomFactor);
       sc->redrawItems(true);
       resetDefaultConfig();

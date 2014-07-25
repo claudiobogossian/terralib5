@@ -59,7 +59,7 @@ void te::layout::VerticalRulerModel::draw( ContextItem context )
  
   if((!canvas) || (!utils))
     return;
-
+  
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);  
   

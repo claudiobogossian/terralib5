@@ -61,6 +61,23 @@ void te::layout::HorizontalRulerModel::draw( ContextItem context )
   if((!canvas) || (!utils))
     return;
 
+  /*te::gm::Envelope newBox = m_box;
+  double zoomFactor = context.getZoomFactor();
+
+  double w = newBox.getWidth() * (1 / zoomFactor);
+  double h = newBox.getHeight() * (1 / zoomFactor);
+
+  if(zoomFactor > 1.)
+  {
+  w = newBox.getWidth() * zoomFactor;
+  h = newBox.getHeight() * zoomFactor;
+  }
+
+  newBox.m_urx = newBox.m_llx + w;
+  newBox.m_ury = newBox.m_lly + h;
+
+  m_box = newBox;*/
+
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);  
   

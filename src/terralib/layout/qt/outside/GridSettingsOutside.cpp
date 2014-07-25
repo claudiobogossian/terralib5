@@ -190,7 +190,7 @@ bool te::layout::GridSettingsOutside::checkValidDegreeValue(const QString &value
   std::string							strDegree = "";
   double								ret = 0;
 
-  strDegree=value.toLatin1();
+  strDegree = std::string(value.toLatin1());
   if((index=strDegree.find("º")) !=std::string::npos)	
   {
     strDegree.replace(index,1,"");

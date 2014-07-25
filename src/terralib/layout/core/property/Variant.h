@@ -52,7 +52,7 @@ namespace te
         virtual ~Variant();
         
         template <typename ValueType>
-        void setValue(typename ValueType value, LayoutPropertyDataType type);
+        void setValue(ValueType value, LayoutPropertyDataType type);
 
         LayoutPropertyDataType getType();
         
@@ -76,7 +76,7 @@ namespace te
     protected:
 
       template <typename ValueType>
-      void variantSetValue(Variant &v, const typename ValueType& value, LayoutPropertyDataType type);
+      void variantSetValue(Variant &v, const ValueType& value, LayoutPropertyDataType type);
       
       void convertValue(const void* valueCopy);
 
@@ -104,16 +104,16 @@ namespace te
     };
 
     template<typename ValueType>
-    inline void te::layout::Variant::setValue( typename ValueType value, LayoutPropertyDataType type )
+    inline void te::layout::Variant::setValue( ValueType value, LayoutPropertyDataType type )
     { 
-      typename ValueType v = value;
+      ValueType v = value;
       variantSetValue(*this, v, type);
     }
 
     /* Is still necessary to revise this method.*/
     template <typename ValueType>
     inline void te::layout::Variant::variantSetValue(Variant &v, 
-      const typename ValueType& value, LayoutPropertyDataType type )
+      const ValueType& value, LayoutPropertyDataType type )
     {
       v = Variant(type, &value);      
     }

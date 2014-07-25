@@ -71,6 +71,13 @@ namespace te
       Q_OBJECT //for slots/signals
 
       public:
+        
+        enum PrinterScene
+        {
+          PreviewScene,
+          PrintScene
+        };
+        
         Scene(QWidget* widget = (QWidget*)0);
         ~Scene();
 
@@ -173,6 +180,7 @@ namespace te
         QLineF*        m_lineIntersectHrz;
         QLineF*        m_lineIntersectVrt;
         bool           m_fixedRuler;
+        PrinterScene     m_previewState;
     };
   }
 }
