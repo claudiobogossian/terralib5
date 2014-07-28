@@ -18,54 +18,48 @@
  */
 
 /*!
-  \file ToolbarDock.h
+  \file ObjectInspectorOutside.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TE_QT_PLUGINS_LAYOUT2_INTERNAL_TOOLBAR_DOCK_H 
-#define __TE_QT_PLUGINS_LAYOUT2_INTERNAL_TOOLBAR_DOCK_H
+#ifndef __TE_QT_PLUGINS_LAYOUT_INTERNAL_OBJECT_INSPECTOR_DOCK_H 
+#define __TE_QT_PLUGINS_LAYOUT_INTERNAL_OBJECT_INSPECTOR_DOCK_H
 
 // Qt
 #include <QDockWidget>
-
-class QWidget;
+#include "../../../layout/qt/outside/ObjectInspectorOutside.h"
 
 namespace te
 {
-  namespace layout
-  {
-    class ToolbarOutside;
-  }
   namespace qt
   {
     namespace plugins
     {
-      namespace layout2
+      namespace layout
       {
-        class ToolbarDock : public QDockWidget
+        class ObjectInspectorDock : public QDockWidget
         {
 	        Q_OBJECT //for slots/signals
 
         public:
 
-	        ToolbarDock(QWidget * parent = 0, Qt::WindowFlags flags = 0);
-	        virtual ~ToolbarDock();
+	        ObjectInspectorDock(QWidget * parent = 0, Qt::WindowFlags flags = 0);
+	        virtual ~ObjectInspectorDock();
 
-          te::layout::ToolbarOutside* getToolbarOutside();
-
+          te::layout::ObjectInspectorOutside* getObjectInspectorOutside();
+	  
         protected:
 
           virtual void create();
 
-          te::layout::ToolbarOutside* m_toolbar;
+          te::layout::ObjectInspectorOutside* m_inspector;
         };
       }
     }
   }
 }
-
 
 #endif

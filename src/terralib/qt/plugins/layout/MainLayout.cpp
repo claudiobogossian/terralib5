@@ -39,7 +39,7 @@
 #include <QString>
 #include <QVBoxLayout>
 
-te::qt::plugins::layout2::MainLayout::MainLayout() :
+te::qt::plugins::layout::MainLayout::MainLayout() :
   m_view(0),
   m_dockLayoutDisplay(0),
   m_buildContext(0),
@@ -48,7 +48,7 @@ te::qt::plugins::layout2::MainLayout::MainLayout() :
   m_buildContext = new te::layout::BuildContext;
 }
 
-te::qt::plugins::layout2::MainLayout::~MainLayout()
+te::qt::plugins::layout::MainLayout::~MainLayout()
 {
   if(m_outsideArea)
   {
@@ -71,7 +71,7 @@ te::qt::plugins::layout2::MainLayout::~MainLayout()
   }
 }
 
-void te::qt::plugins::layout2::MainLayout::init(QWidget* mainWindow, QMenu* mnuLayout)
+void te::qt::plugins::layout::MainLayout::init(QWidget* mainWindow, QMenu* mnuLayout)
 {
   bool create = false;
 
@@ -115,7 +115,7 @@ void te::qt::plugins::layout2::MainLayout::init(QWidget* mainWindow, QMenu* mnuL
   m_outsideArea->openAllDocks();
 }
 
-void te::qt::plugins::layout2::MainLayout::createDockLayoutDisplay(QWidget* mainWindow, te::layout::View* view)
+void te::qt::plugins::layout::MainLayout::createDockLayoutDisplay(QWidget* mainWindow, te::layout::View* view)
 {
   if(mainWindow)
   {
@@ -148,7 +148,7 @@ void te::qt::plugins::layout2::MainLayout::createDockLayoutDisplay(QWidget* main
   }
 }
 
-void te::qt::plugins::layout2::MainLayout::createLayoutContext(int width, int height)
+void te::qt::plugins::layout::MainLayout::createLayoutContext(int width, int height)
 {
   if(!m_buildContext)
     return;
@@ -156,7 +156,7 @@ void te::qt::plugins::layout2::MainLayout::createLayoutContext(int width, int he
   m_buildContext->createLayoutContext(width, height, m_view);
 }
 
-void te::qt::plugins::layout2::MainLayout::finish()
+void te::qt::plugins::layout::MainLayout::finish()
 {
   if(m_dockLayoutDisplay)
   {

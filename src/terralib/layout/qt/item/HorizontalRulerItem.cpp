@@ -38,8 +38,8 @@
 te::layout::HorizontalRulerItem::HorizontalRulerItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
 {
-  //this->setFlags(/*QGraphicsItem::ItemSendsGeometryChanges
-  //|*/ /*QGraphicsItem::ItemIgnoresTransformations*/);
+  /*this->setFlags(QGraphicsItem::ItemSendsGeometryChanges
+  | QGraphicsItem::ItemIgnoresTransformations);*/
 
   m_printable = false;
   m_canChangeGraphicOrder = false;
@@ -86,5 +86,3 @@ void te::layout::HorizontalRulerItem::updateObserver( ContextItem context )
   setPixmap(pixmap);
   update();
 }
-
-

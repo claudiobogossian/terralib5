@@ -45,7 +45,7 @@ namespace te
   {
     namespace plugins
     {
-      namespace layout2
+      namespace layout
       {
         class PropertiesDock : public QDockWidget
         {

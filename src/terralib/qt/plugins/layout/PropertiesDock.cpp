@@ -32,7 +32,7 @@
 #include "../../../layout/core/pattern/mvc/OutsideObserver.h"
 #include "../../../layout/qt/outside/PropertiesOutside.h"
 
-te::qt::plugins::layout2::PropertiesDock::PropertiesDock( QWidget * parent, Qt::WindowFlags flags ) :
+te::qt::plugins::layout::PropertiesDock::PropertiesDock( QWidget * parent, Qt::WindowFlags flags ) :
 	QDockWidget(parent, flags)
 {
   setVisible(false);
@@ -44,12 +44,12 @@ te::qt::plugins::layout2::PropertiesDock::PropertiesDock( QWidget * parent, Qt::
   setWidget(m_properties);
 }
 
-te::qt::plugins::layout2::PropertiesDock::~PropertiesDock()
+te::qt::plugins::layout::PropertiesDock::~PropertiesDock()
 {
   
 }
 
-void te::qt::plugins::layout2::PropertiesDock::create()
+void te::qt::plugins::layout::PropertiesDock::create()
 {
   //Use the Property Browser Framework for create Property Window
   te::layout::PropertiesModel* dockPropertyModel = new te::layout::PropertiesModel();		 
@@ -58,7 +58,7 @@ void te::qt::plugins::layout2::PropertiesDock::create()
   m_properties = dynamic_cast<te::layout::PropertiesOutside*>(itemDockProperty);   
 }
 
-te::layout::PropertiesOutside* te::qt::plugins::layout2::PropertiesDock::getPropertiesOutside()
+te::layout::PropertiesOutside* te::qt::plugins::layout::PropertiesDock::getPropertiesOutside()
 {
   return m_properties;
 }

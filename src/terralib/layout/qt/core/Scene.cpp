@@ -315,7 +315,7 @@ void te::layout::Scene::calculateMatrixViewScene(double zoomFactor)
 {
   if(!m_boxW)
     return;
-    
+      
   double llx = m_boxW->getLowerLeftX();
   double lly = m_boxW->getLowerLeftY();
   double urx = m_boxW->getUpperRightX();

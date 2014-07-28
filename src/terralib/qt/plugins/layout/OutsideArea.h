@@ -25,8 +25,8 @@
   \ingroup layout
 */
 
-#ifndef __TE_QT_PLUGINS_LAYOUT2_INTERNAL_OUTSIDE_AREA_H 
-#define __TE_QT_PLUGINS_LAYOUT2_INTERNAL_OUTSIDE_AREA_H
+#ifndef __TE_QT_PLUGINS_LAYOUT_INTERNAL_OUTSIDE_AREA_H 
+#define __TE_QT_PLUGINS_LAYOUT_INTERNAL_OUTSIDE_AREA_H
 
 // Qt
 #include <QObject>
@@ -45,7 +45,7 @@ namespace te
   {
     namespace plugins
     {
-      namespace layout2
+      namespace layout
       {
         class PropertiesDock;
         class ObjectInspectorDock;

@@ -94,7 +94,6 @@ void te::layout::VerticalRulerModel::drawRuler( te::map::Canvas* canvas, Utils* 
     
     if(paperBox)
     {
-
       double ury = paperBox->getUpperRightY();
       if(zoomFactor >= 1.)
       {

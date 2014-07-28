@@ -18,52 +18,54 @@
  */
 
 /*!
-  \file DisplayDock.h
+  \file ToolbarDock.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TE_QT_PLUGINS_LAYOUT2_INTERNAL_DISPLAY_DOCK_H 
-#define __TE_QT_PLUGINS_LAYOUT2_INTERNAL_DISPLAY_DOCK_H
+#ifndef __TE_QT_PLUGINS_LAYOUT_INTERNAL_TOOLBAR_DOCK_H 
+#define __TE_QT_PLUGINS_LAYOUT_INTERNAL_TOOLBAR_DOCK_H
 
 // Qt
 #include <QDockWidget>
 
-class QCloseEvent;
+class QWidget;
 
 namespace te
 {
+  namespace layout
+  {
+    class ToolbarOutside;
+  }
   namespace qt
   {
     namespace plugins
     {
-      namespace layout2
+      namespace layout
       {
-        class DisplayDock : public QDockWidget
+        class ToolbarDock : public QDockWidget
         {
 	        Q_OBJECT //for slots/signals
 
         public:
 
-	        DisplayDock(QWidget * parent = 0, Qt::WindowFlags flags = 0);
-	        virtual ~DisplayDock();
-                
-          void setPreviousCentralWidget(QWidget* previous);
-      
-          virtual void removeDock();
-      
+	        ToolbarDock(QWidget * parent = 0, Qt::WindowFlags flags = 0);
+	        virtual ~ToolbarDock();
+
+          te::layout::ToolbarOutside* getToolbarOutside();
+
         protected:
 
-          virtual void	closeEvent ( QCloseEvent * event );
+          virtual void create();
 
-          QWidget* m_previousCentralWidget; /* Previous central display of application */
-          bool     m_previousCentralWidgetVisibilite;
+          te::layout::ToolbarOutside* m_toolbar;
         };
       }
     }
   }
 }
+
 
 #endif

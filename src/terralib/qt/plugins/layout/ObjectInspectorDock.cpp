@@ -33,7 +33,7 @@
 #include "../../../layout/qt/outside/ObjectInspectorOutside.h"
 
 
-te::qt::plugins::layout2::ObjectInspectorDock::ObjectInspectorDock( QWidget * parent /*= 0*/, Qt::WindowFlags flags /*= 0*/ ) :
+te::qt::plugins::layout::ObjectInspectorDock::ObjectInspectorDock( QWidget * parent /*= 0*/, Qt::WindowFlags flags /*= 0*/ ) :
   QDockWidget(parent, flags)
 {
   setWindowTitle("Layout - Object Inspector");
@@ -44,12 +44,12 @@ te::qt::plugins::layout2::ObjectInspectorDock::ObjectInspectorDock( QWidget * pa
   setWidget(m_inspector);
 }
 
-te::qt::plugins::layout2::ObjectInspectorDock::~ObjectInspectorDock()
+te::qt::plugins::layout::ObjectInspectorDock::~ObjectInspectorDock()
 {
 
 }
 
-void te::qt::plugins::layout2::ObjectInspectorDock::create()
+void te::qt::plugins::layout::ObjectInspectorDock::create()
 {
   te::layout::ObjectInspectorModel* dockInspectorModel = new te::layout::ObjectInspectorModel();		 
   te::layout::ObjectInspectorController* dockInspectorController = new te::layout::ObjectInspectorController(dockInspectorModel);
@@ -57,7 +57,7 @@ void te::qt::plugins::layout2::ObjectInspectorDock::create()
   m_inspector = dynamic_cast<te::layout::ObjectInspectorOutside*>(itemDockInspector);  
 }
 
-te::layout::ObjectInspectorOutside* te::qt::plugins::layout2::ObjectInspectorDock::getObjectInspectorOutside()
+te::layout::ObjectInspectorOutside* te::qt::plugins::layout::ObjectInspectorDock::getObjectInspectorOutside()
 {
   return m_inspector;
 }

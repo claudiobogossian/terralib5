@@ -6,7 +6,7 @@
             version="5.0.0-alpha.1"
             release="2013-01-01"
             engine="C++">
-  <Name>te.qt.layout2</Name>
+  <Name>te.qt.layout</Name>
   <DisplayName>TerraPrint</DisplayName>
   <Description>This plugin adds creating cartographic maps to TerraLib applications.</Description>
   <TerraLibVersion>5.0.0-alpha.1</TerraLibVersion>

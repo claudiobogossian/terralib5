@@ -40,7 +40,7 @@
 #include <QMenu>
 #include <QAction>
 
-te::qt::plugins::layout2::OutsideArea::OutsideArea( te::layout::View* view, QWidget* dockParent, QMenu* mnuLayout) :
+te::qt::plugins::layout::OutsideArea::OutsideArea( te::layout::View* view, QWidget* dockParent, QMenu* mnuLayout) :
   m_view(view),
   m_dockParent(dockParent),
   m_parentMenu(mnuLayout),
@@ -59,7 +59,7 @@ te::qt::plugins::layout2::OutsideArea::OutsideArea( te::layout::View* view, QWid
   init();
 }
 
-te::qt::plugins::layout2::OutsideArea::~OutsideArea()
+te::qt::plugins::layout::OutsideArea::~OutsideArea()
 {
   QMainWindow* win = (QMainWindow*)m_dockParent;
 
@@ -94,7 +94,7 @@ te::qt::plugins::layout2::OutsideArea::~OutsideArea()
   }
 }
 
-void te::qt::plugins::layout2::OutsideArea::init()
+void te::qt::plugins::layout::OutsideArea::init()
 {
   if(m_view)
   {
@@ -118,22 +118,22 @@ void te::qt::plugins::layout2::OutsideArea::init()
   connect(this, SIGNAL(changeMenuContext(bool)), m_view, SLOT(onMainMenuChangeContext(bool)));
 }
 
-void te::qt::plugins::layout2::OutsideArea::createPropertiesDock()
+void te::qt::plugins::layout::OutsideArea::createPropertiesDock()
 {
   m_dockProperties = new PropertiesDock;  
 }
 
-void te::qt::plugins::layout2::OutsideArea::createInspectorDock()
+void te::qt::plugins::layout::OutsideArea::createInspectorDock()
 {
   m_dockInspector = new ObjectInspectorDock;
 }
 
-void te::qt::plugins::layout2::OutsideArea::createToolbarDock()
+void te::qt::plugins::layout::OutsideArea::createToolbarDock()
 {
   m_dockToolbar = new ToolbarDock;
 }
 
-void te::qt::plugins::layout2::OutsideArea::createMainMenu()
+void te::qt::plugins::layout::OutsideArea::createMainMenu()
 {
   m_mainMenu = new QMenu("Print Model");
   connect(m_mainMenu, SIGNAL(triggered(QAction*)), this, SLOT(onMainMenuTriggered(QAction*)));
@@ -166,7 +166,7 @@ void te::qt::plugins::layout2::OutsideArea::createMainMenu()
   m_mainMenu->addAction(actionExit);
 }
 
-void te::qt::plugins::layout2::OutsideArea::onMainMenuTriggered( QAction* action )
+void te::qt::plugins::layout::OutsideArea::onMainMenuTriggered( QAction* action )
 {
   if(action->objectName().compare(m_optionNew.c_str()) == 0)
   {
@@ -198,7 +198,7 @@ void te::qt::plugins::layout2::OutsideArea::onMainMenuTriggered( QAction* action
   }
 }
 
-QAction* te::qt::plugins::layout2::OutsideArea::createAction( std::string text, std::string objName, std::string icon, std::string tooltip )
+QAction* te::qt::plugins::layout::OutsideArea::createAction( std::string text, std::string objName, std::string icon, std::string tooltip )
 {
   QAction *actionMenu = new QAction(text.c_str(), this);
   actionMenu->setObjectName(objName.c_str());
@@ -209,7 +209,7 @@ QAction* te::qt::plugins::layout2::OutsideArea::createAction( std::string text, 
   return actionMenu;
 }
 
-void te::qt::plugins::layout2::OutsideArea::changeAction( te::layout::LayoutMode mode )
+void te::qt::plugins::layout::OutsideArea::changeAction( te::layout::LayoutMode mode )
 {
   bool result = true;
   te::layout::LayoutMode layoutMode = te::layout::Context::getInstance().getMode();
@@ -226,22 +226,22 @@ void te::qt::plugins::layout2::OutsideArea::changeAction( te::layout::LayoutMode
   emit changeMenuContext(result);
 }
 
-te::qt::plugins::layout2::PropertiesDock* te::qt::plugins::layout2::OutsideArea::getPropertiesDock()
+te::qt::plugins::layout::PropertiesDock* te::qt::plugins::layout::OutsideArea::getPropertiesDock()
 {
   return m_dockProperties;
 }
 
-te::qt::plugins::layout2::ObjectInspectorDock* te::qt::plugins::layout2::OutsideArea::getObjectInspectorDock()
+te::qt::plugins::layout::ObjectInspectorDock* te::qt::plugins::layout::OutsideArea::getObjectInspectorDock()
 {
   return m_dockInspector;
 }
 
-te::qt::plugins::layout2::ToolbarDock* te::qt::plugins::layout2::OutsideArea::getToolbarDock()
+te::qt::plugins::layout::ToolbarDock* te::qt::plugins::layout::OutsideArea::getToolbarDock()
 {
   return m_dockToolbar;
 }
 
-void te::qt::plugins::layout2::OutsideArea::openAllDocks()
+void te::qt::plugins::layout::OutsideArea::openAllDocks()
 {
   QMainWindow* win = (QMainWindow*)m_dockParent;
 
@@ -268,7 +268,7 @@ void te::qt::plugins::layout2::OutsideArea::openAllDocks()
   }
 }
 
-void te::qt::plugins::layout2::OutsideArea::closeAllDocks()
+void te::qt::plugins::layout::OutsideArea::closeAllDocks()
 {
   QMainWindow* win = (QMainWindow*)m_dockParent;
 
@@ -292,7 +292,7 @@ void te::qt::plugins::layout2::OutsideArea::closeAllDocks()
   }
 }
 
-void te::qt::plugins::layout2::OutsideArea::openMainMenu()
+void te::qt::plugins::layout::OutsideArea::openMainMenu()
 {
   if(!m_parentMenu)
     return;
@@ -328,7 +328,7 @@ void te::qt::plugins::layout2::OutsideArea::openMainMenu()
   }
 }
 
-void te::qt::plugins::layout2::OutsideArea::closeMainMenu()
+void te::qt::plugins::layout::OutsideArea::closeMainMenu()
 {
   if(!m_parentMenu)
     return;
@@ -357,7 +357,7 @@ void te::qt::plugins::layout2::OutsideArea::closeMainMenu()
   }
 }
 
-void te::qt::plugins::layout2::OutsideArea::onSelectionChanged()
+void te::qt::plugins::layout::OutsideArea::onSelectionChanged()
 {
   QList<QGraphicsItem*> graphicsItems = m_view->scene()->selectedItems();
   QList<QGraphicsItem*> allItems = m_view->scene()->items();
@@ -366,7 +366,7 @@ void te::qt::plugins::layout2::OutsideArea::onSelectionChanged()
     m_dockProperties->getPropertiesOutside()->itemsSelected(graphicsItems, allItems);
 }
 
-void te::qt::plugins::layout2::OutsideArea::onAddItemFinalized()
+void te::qt::plugins::layout::OutsideArea::onAddItemFinalized()
 {
   QList<QGraphicsItem*> graphicsItems = m_view->scene()->selectedItems();
   //Refresh Inspector Object window
@@ -374,19 +374,19 @@ void te::qt::plugins::layout2::OutsideArea::onAddItemFinalized()
     m_dockInspector->getObjectInspectorOutside()->itemsInspector(graphicsItems);
 }
 
-void te::qt::plugins::layout2::OutsideArea::onShowView()
+void te::qt::plugins::layout::OutsideArea::onShowView()
 {
   openAllDocks();
   openMainMenu();
 }
 
-void te::qt::plugins::layout2::OutsideArea::onHideView()
+void te::qt::plugins::layout::OutsideArea::onHideView()
 {
   closeAllDocks();
   closeMainMenu();
 }
 
-void te::qt::plugins::layout2::OutsideArea::onCloseView()
+void te::qt::plugins::layout::OutsideArea::onCloseView()
 {
   closeAllDocks();
   closeMainMenu();

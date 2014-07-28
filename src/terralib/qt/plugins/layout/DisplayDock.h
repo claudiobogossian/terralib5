@@ -18,19 +18,20 @@
  */
 
 /*!
-  \file ObjectInspectorOutside.h
+  \file DisplayDock.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TE_QT_PLUGINS_LAYOUT2_INTERNAL_OBJECT_INSPECTOR_DOCK_H 
-#define __TE_QT_PLUGINS_LAYOUT2_INTERNAL_OBJECT_INSPECTOR_DOCK_H
+#ifndef __TE_QT_PLUGINS_LAYOUT_INTERNAL_DISPLAY_DOCK_H 
+#define __TE_QT_PLUGINS_LAYOUT_INTERNAL_DISPLAY_DOCK_H
 
 // Qt
 #include <QDockWidget>
-#include "../../../layout/qt/outside/ObjectInspectorOutside.h"
+
+class QCloseEvent;
 
 namespace te
 {
@@ -38,24 +39,27 @@ namespace te
   {
     namespace plugins
     {
-      namespace layout2
+      namespace layout
       {
-        class ObjectInspectorDock : public QDockWidget
+        class DisplayDock : public QDockWidget
         {
 	        Q_OBJECT //for slots/signals
 
         public:
 
-	        ObjectInspectorDock(QWidget * parent = 0, Qt::WindowFlags flags = 0);
-	        virtual ~ObjectInspectorDock();
-
-          te::layout::ObjectInspectorOutside* getObjectInspectorOutside();
-	  
+	        DisplayDock(QWidget * parent = 0, Qt::WindowFlags flags = 0);
+	        virtual ~DisplayDock();
+                
+          void setPreviousCentralWidget(QWidget* previous);
+      
+          virtual void removeDock();
+      
         protected:
 
-          virtual void create();
+          virtual void	closeEvent ( QCloseEvent * event );
 
-          te::layout::ObjectInspectorOutside* m_inspector;
+          QWidget* m_previousCentralWidget; /* Previous central display of application */
+          bool     m_previousCentralWidgetVisibilite;
         };
       }
     }

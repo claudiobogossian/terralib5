@@ -74,7 +74,7 @@ namespace te
 
         virtual void textBoundingBox(double &w, double &h, std::string txt);
         
-        virtual double calculateRulerZoomFactor();
+        virtual double calculateRulerZoomFactor(double &factor, double &factorView);
 
         te::layout::WorldTransformer getTransformGeo(te::gm::Envelope boxgeo, te::gm::Envelope boxmm);
 

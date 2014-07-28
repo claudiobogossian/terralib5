@@ -35,7 +35,7 @@
 // Qt
 #include <QWidget>
 
-te::qt::plugins::layout2::ToolbarDock::ToolbarDock( QWidget * parent, Qt::WindowFlags flags ) :
+te::qt::plugins::layout::ToolbarDock::ToolbarDock( QWidget * parent, Qt::WindowFlags flags ) :
   QDockWidget(parent, flags)
 {
   create();
@@ -43,12 +43,12 @@ te::qt::plugins::layout2::ToolbarDock::ToolbarDock( QWidget * parent, Qt::Window
   setWidget(m_toolbar);
 }
 
-te::qt::plugins::layout2::ToolbarDock::~ToolbarDock()
+te::qt::plugins::layout::ToolbarDock::~ToolbarDock()
 {
 
 }
 
-void te::qt::plugins::layout2::ToolbarDock::create()
+void te::qt::plugins::layout::ToolbarDock::create()
 {
   //Use the Property Browser Framework for create Object Inspector Window
   te::layout::ToolbarModel* dockToolbarModel = new te::layout::ToolbarModel();		 
@@ -57,7 +57,7 @@ void te::qt::plugins::layout2::ToolbarDock::create()
   m_toolbar = dynamic_cast<te::layout::ToolbarOutside*>(itemDockToolbar); 
 }
 
-te::layout::ToolbarOutside* te::qt::plugins::layout2::ToolbarDock::getToolbarOutside()
+te::layout::ToolbarOutside* te::qt::plugins::layout::ToolbarDock::getToolbarOutside()
 {
   return m_toolbar;
 }
