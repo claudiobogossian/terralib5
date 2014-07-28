@@ -122,7 +122,7 @@ elseif(WIN32)
   endif()
 endif()
 
-include(${CMAKE_CURRENT_LIST_DIR}/FindPackageHandleStandardArgs.cmake)
+include(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(GDAL DEFAULT_MSG GDAL_LIBRARY GDAL_INCLUDE_DIR)
 
 set(GDAL_LIBRARIES ${GDAL_LIBRARY})
