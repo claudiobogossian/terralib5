@@ -48,7 +48,7 @@ te::sa::GPMWeightsStrategyType te::sa::GPMWeightsAbstractStrategy::getWeightsTyp
   return m_type;
 }
 
-void te::sa::GPMWeightsAbstractStrategy::createWeightAttribute(GeneralizedProximityMatrix* gpm)
+int te::sa::GPMWeightsAbstractStrategy::createWeightAttribute(GeneralizedProximityMatrix* gpm)
 {
   assert(gpm);
 
@@ -58,6 +58,10 @@ void te::sa::GPMWeightsAbstractStrategy::createWeightAttribute(GeneralizedProxim
   p->setId(0);
 
   gpm->getGraph()->addEdgeProperty(p);
+
+  int pos = gpm->getGraph()->getEdgePropertySize();
+
+  return pos - 1;
 }
 
 bool te::sa::GPMWeightsAbstractStrategy::getDistanceAttributeIndex(te::graph::GraphMetadata* gm, int& index)
