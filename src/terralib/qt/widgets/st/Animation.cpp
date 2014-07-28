@@ -1,5 +1,5 @@
 #include "Animation.h"
-#include "TrajectoryItem.h"
+#include "AnimationItem.h"
 
 te::qt::widgets::Animation::Animation(QObject* target, const QByteArray& propertyName, QObject* parent)
   : QPropertyAnimation(target, propertyName, parent)

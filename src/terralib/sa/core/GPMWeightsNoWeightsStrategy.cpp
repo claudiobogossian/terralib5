@@ -27,6 +27,7 @@
 #include "../../datatype/SimpleData.h"
 #include "../../graph/core/AbstractGraph.h"
 #include "../../graph/core/Edge.h"
+#include "../../graph/core/GraphMetadata.h"
 #include "../../graph/core/Vertex.h"
 #include "../../graph/iterator/MemoryIterator.h"
 #include "GeneralizedProximityMatrix.h"
@@ -45,7 +46,9 @@ te::sa::GPMWeightsNoWeightsStrategy::~GPMWeightsNoWeightsStrategy()
 void te::sa::GPMWeightsNoWeightsStrategy::calculate(GeneralizedProximityMatrix* gpm)
 {
   //create weight property
-  createWeightAttribute(gpm);
+  int weightIdx = createWeightAttribute(gpm);
+
+  int nEdgeAttrs = gpm->getGraph()->getMetadata()->getEdgePropertySize();
 
   //iterate over all vertex
   te::graph::AbstractGraph* g = gpm->getGraph();
@@ -71,9 +74,9 @@ void te::sa::GPMWeightsNoWeightsStrategy::calculate(GeneralizedProximityMatrix* 
 
       if(e)
       {
-        std::size_t pos = e->getAttributes().size() - 1;
+        e->setAttributeVecSize(nEdgeAttrs);
 
-        e->addAttribute(pos, new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(weight));
+        e->addAttribute(weightIdx, new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(weight));
       }
 
       ++itNeighbours;

@@ -79,8 +79,8 @@ namespace te
 
       protected:
 
-        /*! \brief Added to the edge a new attribute for weight information */
-        void createWeightAttribute(GeneralizedProximityMatrix* gpm);
+        /*! \brief Added to the edge a new attribute for weight information and return the attr index*/
+        int createWeightAttribute(GeneralizedProximityMatrix* gpm);
 
         /*! \brief Function used to get the distance attribute index. */
         bool getDistanceAttributeIndex(te::graph::GraphMetadata* gm, int& index);
