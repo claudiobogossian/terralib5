@@ -440,13 +440,9 @@ te::rst::Raster* te::rst::Raster::trim(const te::gm::Envelope* env, const std::m
   const unsigned dyoff = static_cast<unsigned>(curenv.y);
 
 // create output parameters and raster
-  te::rst::Grid* grid = new te::rst::Grid();
-
-  grid->setGeoreference(te::gm::Coord2D(env->getLowerLeftX(), env->getUpperRightY()), getSRID(), getResolutionX(), getResolutionY());
-
-  grid->setNumberOfColumns(width);
-
-  grid->setNumberOfRows(height);
+  te::gm::Coord2D ulc(env->getLowerLeftX(), env->getUpperRightY());
+  te::rst::Grid* grid = new te::rst::Grid( width, height, getResolutionX(),
+    getResolutionY(), &ulc, getSRID() );
 
   std::vector<te::rst::BandProperty*> bands;
 
@@ -456,15 +452,21 @@ te::rst::Raster* te::rst::Raster::trim(const te::gm::Envelope* env, const std::m
   te::rst::Raster* rout = te::rst::RasterFactory::make(grid, bands, rinfo);
 
 // perform trim
-  std::vector<std::complex<double> > values;
+  
+  if( rout )
+  {
+    std::vector<std::complex<double> > values;
 
-  for (unsigned ri = dyoff, ro = 0; ro < height; ri++, ro++)
-    for (unsigned ci = dxoff, co = 0; co < width; ci++, co++)
+    for (unsigned ri = dyoff, ro = 0; ro < height; ri++, ro++)
     {
-      getValues(ci, ri, values);
+      for (unsigned ci = dxoff, co = 0; co < width; ci++, co++)
+      {
+        getValues(ci, ri, values);
 
-      rout->setValues(co, ro, values);
+        rout->setValues(co, ro, values);
+      }
     }
+  }
 
   return rout;
 }
@@ -511,18 +513,25 @@ te::rst::Raster* te::rst::Raster::resample(int method, int scale, const std::map
   return rout;
 }
 
-te::rst::Raster* te::rst::Raster::resample(int method, unsigned int drow, unsigned int dcolumn, unsigned int height, unsigned int width, unsigned int newheight, unsigned int newwidth, const std::map<std::string, std::string>& rinfo) const
+te::rst::Raster* te::rst::Raster::resample(int method, unsigned int drow, 
+  unsigned int dcolumn, unsigned int height, unsigned int width, 
+  unsigned int newheight, unsigned int newwidth, 
+  const std::map<std::string, std::string>& rinfo) const
 {
   assert(drow + height <= getNumberOfRows());
   assert(dcolumn + width <= getNumberOfColumns());
+  
+  te::gm::Coord2D ulc = getGrid()->gridToGeo( ((double)dcolumn) - 0.5, ((double)drow) - 0.5);
+  te::gm::Coord2D lrc = getGrid()->gridToGeo( ((double)(dcolumn + width)) - 0.5, 
+    ((double)(drow + height)) - 0.5);
+  
+  te::gm::Envelope* newEnvelopePtr = new te::gm::Envelope( ulc.x, lrc.y, lrc.x,
+    ulc.y );  
 
-  te::gm::Coord2D ulc = getGrid()->gridToGeo(((double)dcolumn) - 0.5, ((double)drow) - 0.5);
-  double newResX = m_grid->getExtent()->getWidth() / ((double)newwidth);
-  double newResY = m_grid->getExtent()->getHeight() / ((double)newheight);
-
-// create output parameters and raster
-  te::rst::Grid* grid = new te::rst::Grid(newwidth, newheight, newResX,
-    newResY, &ulc, getSRID());
+  // create output parameters and raster
+  
+  te::rst::Grid* grid = new te::rst::Grid(newwidth, newheight, newEnvelopePtr,
+    getSRID());
 
   std::vector<te::rst::BandProperty*> bands;
 
@@ -543,9 +552,9 @@ te::rst::Raster* te::rst::Raster::resample(int method, unsigned int drow, unsign
   te::rst::Interpolator* interp = new te::rst::Interpolator(this, method);
 
 // fill output raster
-  double ripp = (double) height / newheight;
+  double ripp = ((double)height) / ((double)newheight);
 
-  double cipp = (double) width / newwidth;
+  double cipp = ((double)width) / ((double)newwidth);
 
   double ri = drow;
 
