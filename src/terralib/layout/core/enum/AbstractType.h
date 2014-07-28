@@ -28,7 +28,7 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_TYPE_H 
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_TYPE_H
 
-#include "..\Config.h"
+#include "../Config.h"
 
 namespace te
 {

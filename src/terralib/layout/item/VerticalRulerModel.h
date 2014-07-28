@@ -57,6 +57,8 @@ namespace te
         virtual void drawVerticalRuler(te::map::Canvas* canvas, Utils* utils);
  
         virtual void drawRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
+
+        virtual te::gm::Envelope applyZoom(te::gm::Envelope env, double zoom);
         
     };
   }

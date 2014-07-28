@@ -69,7 +69,7 @@ bool te::layout::JSON::serialize()
     json = buf.str();
 
     std::ofstream outputFile;
-    outputFile.open(m_serializationPath, std::ios::out | std::ios::app);
+    outputFile.open(m_serializationPath.c_str(), std::ios::out | std::ios::app);
     outputFile << json;
     outputFile.close();
   } 
@@ -213,7 +213,7 @@ void te::layout::JSON::loadFromPath( std::string loadPath )
 
   try 
   {     
-    inputFile.open(m_loadPath);
+    inputFile.open(m_loadPath.c_str());
 
     if (!inputFile.is_open())
       return;

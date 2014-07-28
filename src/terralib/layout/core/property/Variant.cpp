@@ -33,6 +33,7 @@
 #include <sstream>
 #include <string>  
 #include <exception>
+#include <stdexcept>
 
 te::layout::Variant::Variant() :
   m_sValue("unknown"),

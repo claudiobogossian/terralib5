@@ -71,6 +71,13 @@ namespace te
       Q_OBJECT //for slots/signals
 
       public:
+        
+        enum PrinterScene
+        {
+          PreviewScene,
+          PrintScene
+        };
+        
         Scene(QWidget* widget = (QWidget*)0);
         ~Scene();
 
@@ -149,8 +156,7 @@ namespace te
 
         virtual void mousePressEvent ( QGraphicsSceneMouseEvent* mouseEvent );
 
-        virtual te::gm::Envelope* calculateBoxPaper(double wMM, double hMM, double paperMMW, double paperMMH);
-        virtual te::gm::Envelope* calculateWindow(double wMM, double hMM, double paperMMW, double paperMMH);
+        virtual te::gm::Envelope* calculateWindow(double wMM, double hMM);
         virtual void calculateMatrixViewScene(double zoomFactor = 1.);
 
         virtual QPrinter* createPrinter();
@@ -174,6 +180,7 @@ namespace te
         QLineF*        m_lineIntersectHrz;
         QLineF*        m_lineIntersectVrt;
         bool           m_fixedRuler;
+        PrinterScene     m_previewState;
     };
   }
 }
