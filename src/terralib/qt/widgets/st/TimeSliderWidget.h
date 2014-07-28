@@ -27,9 +27,11 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_TIMESLIDERWIDGET_H
 
 //TerraLib
-#include "../Config.h"
+#include "../../../maptools/AbstractLayer.h"
 #include "../../../geometry.h"
 #include "../../../datatype.h"
+#include "../Config.h"
+#include "../InterfaceController.h"
 
 // Qt
 #include <QWidget>
@@ -78,7 +80,7 @@ namespace te
 
         \brief A wdiget used to control the visualization of temporal data
       */
-      class TEQTWIDGETSEXPORT TimeSliderWidget : public QWidget
+      class TEQTWIDGETSEXPORT TimeSliderWidget : public QWidget, public InterfaceController
       {
         Q_OBJECT
 
@@ -97,6 +99,24 @@ namespace te
             It destructs a Time Slider Widget
           */
           ~TimeSliderWidget();
+
+          /*!
+            \brief This method is used to set current layer
+            
+          */
+          virtual void layerSelected(te::map::AbstractLayerPtr layer);
+
+          /*!
+            \brief This method is used to add a new layer
+            
+          */
+          virtual void layerAdded(te::map::AbstractLayerPtr layer);
+
+          /*!
+            \brief This method is used to remove a layer
+            
+          */
+          virtual void layerRemoved(te::map::AbstractLayerPtr layer);
 
           void addTemporalImages(const QString& filePath);
 
@@ -198,27 +218,6 @@ namespace te
           */
           void putToBack(AnimationItem* item);
 
-          /*!
-            \brief It gets the initial time.
-
-            \return The initial time.
-          */
-           te::dt::TimeInstant getInitialTime();
-
-          /*!
-            \brief It gets the final time.
-
-            \return The final time.
-          */
-           te::dt::TimeInstant getFinalTime();
-
-          ///*!
-          //  \brief It converts simple time string to iso time string.
-
-          //  \return The converted time string.
-          //*/
-          // QString simpleTimeString2IsoString(QString timeString);
-
         protected:
 
           /*!
@@ -311,35 +310,9 @@ namespace te
 
         bool alreadyExists(QPair<QString, QString>& item);
 
-          /*!
-            \brief It initialize a property animation dialog
-          */
-          void initProperty();
+          //void dragEnterEvent(QDragEnterEvent*);
 
-          /*!
-            \brief Show Property
-
-            \param b true = show, false = hide
-          */
-          void showPropertySection(bool b);
-
-          /*!
-            \brief Is Setting Changed
-
-            \return true = changed, false = not changed
-          */
-          bool isSettingChanged();
-
-          /*!
-            \brief Remove animation item from the opacity combo box and trajectory color combo box.
-
-            \param ai The item to be removed.
-          */
-          void removeComboItem(te::qt::widgets::AnimationItem* ai);
-
-          void dragEnterEvent(QDragEnterEvent*);
-
-          void dropEvent(QDropEvent*);
+          //void dropEvent(QDropEvent*);
 
         protected slots:
 
@@ -390,101 +363,27 @@ namespace te
           void onDurationValueChanged(int v);
 
           /*!
-            \brief It takes the necessary steps after changing the duration.
-            \param v Value of opacity (0 - 255).
-          */
-          void onOpacityValueChanged(int v);
-
-          /*!
             \brief It takes the necessary steps after changing the current time of animation.
 
             \param t The new current time.
           */
           void onDateTimeEditChanged(const QDateTime& t);
 
-          void onAddEtaPushButtonClicked(bool);
-          void onAddHidroPushButtonClicked(bool);
-          void onAutoPanCheckBoxClicked(bool);
-          void onAddPushButtonClicked(bool b);
-          void onRemovePushButtonClicked(bool b);
-          void onFrontPushButtonClicked(bool b);
-          void onBackPushButtonClicked(bool b);
+//          void dropAction();
 
-          ///*!
-          //  \brief Ok button clicked.
-          //*/
-          //void onOkPushButtonClicked();
+          /*
 
-          ///*!
-          //  \brief Cancel button clicked.
-          //*/
-          //void onCancelPushButtonClicked();
-
-          ///*!
-          //  \brief Help button clicked.
-          //*/
-          //void onHelpPushButtonClicked();
-
-          /*!
-            \brief Forward radio button clicked.
-
-            \param b True if the button is checked, or false if the button is unchecked
+========================================================================================================
+                                      To be updated/removed
+========================================================================================================
           */
-          void onForwardRadioButtonClicked(bool b);
 
-          /*!
-            \brief Backward radio button clicked.
-
-            \param b True if the button is checked, or false if the button is unchecked
-          */
-          void onBackwardRadioButtonClicked(bool b);
-
-          /*!
-            \brief Loop check box clicked.
-
-            \param b True if the button is checked, or false if the button is unchecked
-          */
-          void onLoopCheckBoxClicked(bool b);
-
-          /*!
-            \brief Forward and then backward check box clicked.
-
-            \param b True if the button is checked, or false if the button is unchecked
-          */
-          void onGoAndBackCheckBoxClicked(bool b);
-
-          /*!
-            \brief Apply time interval push button clicked.
-
-            \param b True if the button is checked, or false if the button is unchecked
-          */
-          void onApplyTimeIntervalPushButtonClicked(bool b);
-
-          /*!
-            \brief Trajectory color combo box activated.
-
-            \param i The index of combo box.
-          */
-          void onTrajectoryColorComboBoxActivated(int i);
-
-          /*!
-            \brief Opacity combo box activated.
-
-            \param i The index of combo box.
-          */
-          void onOpacityComboBoxActivated(int i);
-
-          /*!
-            \brief Reset initial time button clicked.
-          */
-          void onResetInitialTimePushButtonClicked();
-
-          /*!
-            \brief Reset final time button clicked.
-          */
-          void onResetFinalTimePushButtonClicked();
-
-          void dropAction();
+          //void onAddEtaPushButtonClicked(bool);
+          //void onAddHidroPushButtonClicked(bool);
+          //void onAddPushButtonClicked(bool b);
+          //void onRemovePushButtonClicked(bool b);
+          //void onFrontPushButtonClicked(bool b);
+          //void onBackPushButtonClicked(bool b);
 
         signals:
 
@@ -517,9 +416,9 @@ namespace te
           int                                     m_maxSliderValue;           //!< The max slider value.
           bool                                    m_finished;
           QList<QPair<QString, QString> >         m_itemList;                 //!< List of all animation items (URI, DataSetName).
-          Qt::KeyboardModifiers                   m_dropModifiers;            //!< Control pressed to add animation with drag and drop.
-          QList<QUrl>                             m_dropUrls;                 //!< Urls to animation with drag and drop.
-          QByteArray                              m_dropBA;                   //!< Layer animation with drag and drop.
+          //Qt::KeyboardModifiers                   m_dropModifiers;            //!< Control pressed to add animation with drag and drop.
+          //QList<QUrl>                             m_dropUrls;                 //!< Urls to animation with drag and drop.
+          //QByteArray                              m_dropBA;                   //!< Layer animation with drag and drop.
 
           QRectF          m_initialDisplayRect; // so para teste
 
