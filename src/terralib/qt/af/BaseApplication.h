@@ -98,6 +98,8 @@ namespace te
 
           MapDisplay* getDisplay();
 
+          InterfaceController* getInterfaceController();
+
           virtual void resetState();
 
           void resetTerraLib(const bool& status);

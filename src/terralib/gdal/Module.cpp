@@ -34,6 +34,7 @@
 #include "DataSourceFactory.h"
 #include "Module.h"
 #include "RasterFactory.h"
+#include "Utils.h"
 
 // GDAL
 #include <gdal_priv.h>
@@ -83,6 +84,9 @@ void te::gdal::Module::startup()
   capabilities.setAccessPolicy(te::common::RWAccess);
 
   te::gdal::DataSource::setCapabilities(capabilities);
+  
+  // initializing the static mutex
+  boost::mutex& staticMutex = getStaticMutex();
   
   TE_LOG_TRACE(TE_TR("TerraLib GDAL driver startup!"));
 

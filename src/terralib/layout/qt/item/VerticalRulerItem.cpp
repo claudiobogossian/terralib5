@@ -41,6 +41,11 @@ te::layout::VerticalRulerItem::VerticalRulerItem( ItemController* controller, Ob
 {
   m_printable = false;
   m_canChangeGraphicOrder = false;
+
+  /*this->setFlags(QGraphicsItem::ItemIsMovable
+    | QGraphicsItem::ItemIsSelectable
+    | QGraphicsItem::ItemSendsGeometryChanges 
+    | QGraphicsItem::ItemIgnoresTransformations);*/
 }
 
 te::layout::VerticalRulerItem::~VerticalRulerItem()

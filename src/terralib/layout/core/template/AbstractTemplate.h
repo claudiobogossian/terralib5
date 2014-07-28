@@ -28,9 +28,12 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_TEMPLATE_H 
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_TEMPLATE_H
 
+// TerraLib
+#include "../enum/AbstractType.h"
+
 // STL
 #include <vector>
-#include "../enum/AbstractType.h"
+#include <string>
 
 namespace te
 {

@@ -29,7 +29,7 @@
 // TerraLib
 #include "Config.h"
 #include "AbstractAction.h"
-#include "../../../qt/af/connectors/TimeSliderWidget.h"
+#include "../../../qt/widgets/st/TimeSliderWidget.h"
 
 namespace te
 {
@@ -67,7 +67,7 @@ namespace te
             virtual void onDeleteTimeSliderWidget();
 
           private:
-            te::qt::af::TimeSliderWidget* m_timeSliderWidget;
+            te::qt::widgets::TimeSliderWidget* m_timeSliderWidget;
         };
 
       } // end namespace st

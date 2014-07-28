@@ -307,7 +307,10 @@ void  te::qt::af::BaseApplication::resetState()
 te::qt::af::MapDisplay* te::qt::af::BaseApplication::getDisplay()
 {
   return m_display;
-
+}
+te::qt::af::InterfaceController* te::qt::af::BaseApplication::getInterfaceController()
+{
+  return m_iController;
 }
 
 void te::qt::af::BaseApplication::resetTerraLib(const bool& status)
