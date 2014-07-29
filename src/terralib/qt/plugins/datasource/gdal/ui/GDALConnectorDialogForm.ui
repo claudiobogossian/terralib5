@@ -97,16 +97,19 @@
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="m_urlRadioButton">
+         <widget class="QRadioButton" name="m_dirRadioButton">
           <property name="text">
-           <string>URL</string>
+           <string>Directory</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="m_dirRadioButton">
+         <widget class="QRadioButton" name="m_urlRadioButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
-           <string>Directory</string>
+           <string>URL</string>
           </property>
          </widget>
         </item>
@@ -218,8 +221,6 @@
  </customwidgets>
  <tabstops>
   <tabstop>m_fileRadioButton</tabstop>
-  <tabstop>m_urlRadioButton</tabstop>
-  <tabstop>m_dirRadioButton</tabstop>
   <tabstop>m_searchDatasetToolButton</tabstop>
   <tabstop>m_datasetLineEdit</tabstop>
   <tabstop>m_datasourceTitleLineEdit</tabstop>
