@@ -33,13 +33,12 @@ $ cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE:STRING="Release" -DCMAKE_INSTALL_
 
 Notes:
 
-       a) Some Linux flavours with diffrent versions of GNU gcc and Boost will need more parameters:
-          $ cmake ../codebase/build/cmake -G "Unix Makefiles"
-                  -DCMAKE_BUILD_TYPE:STRING="Release"
-                  -DCMAKE_INCLUDE_PATH:PATH="/usr/local;/opt/include"
-                  -DCMAKE_LIBRARY_PATH:PATH="/usr/local;/opt/lib"
-                  -DCMAKE_PROGRAM_PATH:PATH="/usr/local/bin;/opt/bin"
-                  -DBOOST_ROOT:PATH="/opt/boost"
+       a) Some Linux flavours with diffrent versions of GNU gcc and Boost will need more parameters such as:
+          -DCMAKE_PREFIX_PATH:PATH="/usr/local;/opt/include"
+          -DCMAKE_INCLUDE_PATH:PATH="/usr/local;/opt/include"
+          -DCMAKE_LIBRARY_PATH:PATH="/usr/local;/opt/lib"
+          -DCMAKE_PROGRAM_PATH:PATH="/usr/local/bin;/opt/bin"
+          -DBOOST_ROOT:PATH="/opt/boost"
 
        b) Boost can also be indicated by BOOST_INCLUDEDIR (note: without an '_' separating INCLUDE and DIR):
           -DBOOST_INCLUDEDIR:PATH="/usr/local/include"
@@ -47,15 +46,11 @@ Notes:
        c) The parameter -lpthread must be informed only if your Boost was not built as a shared library:
           -DCMAKE_CXX_FLAGS:STRING="-lpthread"
 
-       d) If you are using a CMake version before 2.8.11 the above command must be run twice in order to enable the right components.
-
-       e) Some versions of Clang and gcc needs to add -ftemplate-depth-1024 to CMAKE_CXX_FLAGS.
-
-       f) For building with Qt5 you can provide the Qt5_DIR variable as:
+       d) For building with Qt5 you can provide the Qt5_DIR variable as:
           -DQt5_DIR:PATH="/usr/local/lib/cmake/Qt5"
 
-       g) For generating a debug version set CMAKE_BUILD_TYPE as:
-          -DCMAKE_BUILD_TYPE:STRING=Debug
+       e) For generating a debug version set CMAKE_BUILD_TYPE as:
+          -DCMAKE_BUILD_TYPE:STRING="Debug"
 
 1.5 Building:
 $ make -j 4
@@ -63,25 +58,20 @@ $ make -j 4
 1.6 Installing:
 $ make install
 
+
 2. Building with CMake GUI
 --------------------------
 
 2.1 On Windows:
 
 For Windows systems, you might add and set the parameter CMAKE_PREFIX_PATH with the informations (separated by semicolons):
-
  - Microsoft SDK;
  - TerraLib 5 Third party path;
  - Qt CMake.
 
 Example:
 
-C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A;D:/PROJETOS/Terralib5/terralib5-3rdparty-win32-Qt5;C:/Qt/Qt5.3.0/5.3/msvc2010_opengl/lib/cmake/Qt5
-
-
-3. Eclipse on Linux
--------------------
-
+-DCMAKE_PREFIX_PATH:PATH="C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A;D:/PROJETOS/Terralib5/terralib5-3rdparty-win32-Qt5;C:/Qt/Qt5.3.0/5.3/msvc2010_opengl/lib/cmake/Qt5"
 
 
 For more information on TerraLib, please, visit its main web page at:

@@ -46,7 +46,7 @@ te::qt::widgets::HistogramDialog::HistogramDialog(te::da::DataSet* dataSet, te::
   m_ui->setupUi(this);
 
   // Histogram data Widget
-  m_histogramDataWidget = new te::qt::widgets::HistogramDataWidget(dataSet, dataType, this, 0);
+  m_histogramDataWidget = new te::qt::widgets::HistogramDataWidget(dataSet, dataType, this);
 
   // Adjusting...
   QGridLayout* layout = new QGridLayout(m_ui->m_dataWidgetFrame);

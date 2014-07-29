@@ -40,7 +40,8 @@ te::map::Chart::Chart(ChartType type, const std::vector<std::string>& properties
     m_height(24),
     m_barWidth(16),
     m_isVisible(true),
-    m_maxValue(0.0)
+    m_maxValue(0.0),
+    m_avoidConflicts(true)
 {
   assert(!properties.empty());
 
@@ -61,7 +62,8 @@ te::map::Chart::Chart(ChartType type, const std::vector<std::string>& properties
     m_height(24),
     m_barWidth(16),
     m_isVisible(true),
-    m_maxValue(0.0)
+    m_maxValue(0.0),
+    m_avoidConflicts(true)
 {
   assert(!properties.empty());
   assert(properties.size() == colors.size());
@@ -168,4 +170,14 @@ bool te::map::Chart::isVisible() const
 void te::map::Chart::setVisibility(bool visible)
 {
   m_isVisible = visible;
+}
+
+void te::map::Chart::setAvoidConflicts(bool on)
+{
+  m_avoidConflicts = on;
+}
+
+bool te::map::Chart::getAvoidConflicts() const
+{
+  return m_avoidConflicts;
 }

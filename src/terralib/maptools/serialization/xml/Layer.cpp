@@ -807,27 +807,22 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
 
   reader.next();
 
-  te::da::DataSourcePtr dsc = te::da::GetDataSource(datasourceId);
-  if (dsc.get())
-  {
-    std::auto_ptr<te::map::DataSetLayer> layer(new te::map::DataSetLayer(id, title, 0));
-    layer->setSRID(srid);
-    layer->setExtent(*mbr.get());
-    layer->setVisibility(GetVisibility(visible));
-    layer->setDataSetName(dataset);
-    layer->setDataSourceId(datasourceId);
-    layer->setRendererType(rendererId);
-    layer->setStyle(style.release());
+  std::auto_ptr<te::map::DataSetLayer> layer(new te::map::DataSetLayer(id, title, 0));
+  layer->setSRID(srid);
+  layer->setExtent(*mbr.get());
+  layer->setVisibility(GetVisibility(visible));
+  layer->setDataSetName(dataset);
+  layer->setDataSourceId(datasourceId);
+  layer->setRendererType(rendererId);
+  layer->setStyle(style.release());
     
-    if(grouping)
-      layer->setGrouping(grouping);
+  if(grouping)
+    layer->setGrouping(grouping);
     
-    if(chart.get())
-      layer->setChart(chart.release());
+  if(chart.get())
+    layer->setChart(chart.release());
     
-    return layer.release();
-  }
-  return 0;
+  return layer.release();
 }
 
 te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
@@ -1392,14 +1387,9 @@ void DataSetLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& w
 
   writer.writeStartElement("te_map:DataSetLayer");
 
-  bool ogrType = te::da::GetDataSource(layer->getDataSourceId())->getType() == "OGR";
+  WriteAbstractLayer(layer, writer);
 
-  if(ogrType)
-    WriteOGRAbstractLayer(layer, writer);
-  else
-    WriteAbstractLayer(layer, writer);
-
-  writer.writeElement("te_map:DataSetName", (ogrType) ? te::common::ConvertLatin1UTFString(layer->getDataSetName()) : layer->getDataSetName());
+  writer.writeElement("te_map:DataSetName", layer->getDataSetName());
   writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
   writer.writeElement("te_map:SRID", layer->getSRID());
   te::serialize::xml::SaveExtent(layer->getExtent(), writer);

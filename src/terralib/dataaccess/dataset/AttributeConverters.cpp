@@ -185,7 +185,7 @@ te::dt::AbstractData* te::da::CharEncodingConverter::operator()(DataSet* dataset
   if(fromCode == te::common::UNKNOWN_CHAR_ENCODING || m_toCode == te::common::UNKNOWN_CHAR_ENCODING)
     return new te::dt::String(value);
 
-#if TE_CHARENCODING_ENABLED
+#ifdef TERRALIB_CHARENCODING_ENABLED
   try
   {
     std::string result = te::common::CharEncodingConv::convert(value, fromCode, m_toCode);

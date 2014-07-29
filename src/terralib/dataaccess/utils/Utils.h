@@ -299,6 +299,16 @@ namespace te
     
     TEDATAACCESSEXPORT int GetPropertyIndex(te::da::DataSet* dataSet, const std::string propName);
 
+    /*!
+      \brief It checks if the name is not valid as the existence of invalid characters, reserved words, and others.
+
+      \param name         Name that will be checked.
+      \param invalidChar  Records the invalid character.
+
+      \return If the name is valid.
+    */
+    TEDATAACCESSEXPORT bool IsValidName(const std::string& name, std::string& invalidChar);
+
   } // end namespace da
 }   // end namespace te
 

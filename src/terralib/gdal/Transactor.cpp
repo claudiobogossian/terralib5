@@ -97,16 +97,6 @@ te::da::DataSource* te::gdal::Transactor::getDataSource() const
   return 0;
 }
 
-bool te::gdal::Transactor::isDataSetNameValid(const std::string& datasetName)
-{
-  return true;
-}
-
-bool te::gdal::Transactor::isPropertyNameValid(const std::string& propertyName)
-{
-  return true;
-}
-
 void te::gdal::Transactor::getDataSetNames(const boost::filesystem::path& path, std::vector<std::string>& dsnames)
 {  
   if (boost::filesystem::is_regular_file(path))

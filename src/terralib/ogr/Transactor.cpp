@@ -284,16 +284,6 @@ std::string te::ogr::Transactor::escape(const std::string& value)
   return value;
 }
 
-bool te::ogr::Transactor::isDataSetNameValid(const std::string& /*datasetName*/)
-{
-  return true;
-}
-
-bool te::ogr::Transactor::isPropertyNameValid(const std::string& /*propertyName*/)
-{
-  return true;
-}
-
 std::vector<std::string> te::ogr::Transactor::getDataSetNames()
 {
   std::vector<std::string> names;
