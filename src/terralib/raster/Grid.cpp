@@ -252,12 +252,14 @@ const double* te::rst::Grid::getGeoreference() const
 
 double te::rst::Grid::getResolutionX() const
 {
-  return m_geoT[0];
+  assert( m_extent );
+  return m_extent->getWidth() / ((double)m_nCols );
 }
 
 double te::rst::Grid::getResolutionY() const
 {
-  return ( -1.0 * m_geoT[4] );
+  assert( m_extent );
+  return m_extent->getHeight() / ((double)m_nRows );
 }
 
 int te::rst::Grid::getSRID() const
