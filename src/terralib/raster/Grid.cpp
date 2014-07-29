@@ -182,6 +182,12 @@ te::rst::Grid& te::rst::Grid::operator=(const Grid& rhs)
 void te::rst::Grid::setNumberOfColumns(unsigned int nCols)
 {
   m_nCols = nCols;
+
+  if( ! computeAffineParameters( m_extent->getWidth(), m_extent->getHeight(),
+    m_nCols, m_nRows, m_extent->m_llx, m_extent->m_ury, m_geoT, m_geoTInverse ) )
+  {
+    throw te::rst::Exception("Unable to compute affine parameters");
+  }     
 }
 
 unsigned int te::rst::Grid::getNumberOfColumns() const
@@ -192,6 +198,12 @@ unsigned int te::rst::Grid::getNumberOfColumns() const
 void te::rst::Grid::setNumberOfRows(unsigned int nRows)
 {
   m_nRows = nRows;
+  
+  if( ! computeAffineParameters( m_extent->getWidth(), m_extent->getHeight(),
+    m_nCols, m_nRows, m_extent->m_llx, m_extent->m_ury, m_geoT, m_geoTInverse ) )
+  {
+    throw te::rst::Exception("Unable to compute affine parameters");
+  }    
 }
 
 unsigned int te::rst::Grid::getNumberOfRows() const
@@ -212,12 +224,7 @@ void te::rst::Grid::setGeoreference(const te::gm::Coord2D& ulLocation, int srid,
     throw te::rst::Exception("Unable to compute affine parameters");
   }  
   
-  if(!m_extent)
-  {
-    m_extent = new te::gm::Envelope( 
-       ulLocation.x, ulLocation.y - extentheight,
-       ulLocation.x + extentWidth, ulLocation.y );
-  }
+  computeExtent();
 }
 
 void te::rst::Grid::setGeoreference(const double geoTrans[], int srid)
@@ -280,13 +287,13 @@ void te::rst::Grid::computeExtent() const
   te::gm::Coord2D ur = gridToGeo( ((double)m_nCols) - 0.5, -0.5 );
   te::gm::Coord2D ul = gridToGeo( -0.5, -0.5 );
 
-  if(!m_extent)
-    m_extent = new te::gm::Envelope;
-
-  m_extent->init(std::min(ll.x, ul.x),
-                 std::min(ll.y, lr.y),
-                 std::max(ur.x, lr.x),
-                 std::max(ul.y, ur.y));
+  if(m_extent)
+  {
+    delete m_extent;
+  }
+    
+  m_extent = new te::gm::Envelope( std::min(ll.x, ul.x), std::min(ll.y, lr.y),
+    std::max(ur.x, lr.x), std::max(ul.y, ur.y) );
 }
 
 void te::rst::Grid::gridToGeo(const double& col, const double& row, double& x, double& y) const
