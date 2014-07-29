@@ -247,9 +247,9 @@ void te::qt::plugins::gdal::GDALConnectorDialog::getConnectionInfo(std::map<std:
     throw te::qt::widgets::Exception(TE_TR("Please select a dataset first!"));
 
   if(boost::filesystem::is_directory(qstr.toUtf8().data()))
-    connInfo["URI"] = qstr.toUtf8().data();
+    connInfo["SOURCE"] = qstr.toUtf8().data();    
   else
-    connInfo["SOURCE"] = qstr.toUtf8().data();
+    connInfo["URI"] = qstr.toUtf8().data();
 }
 
 void te::qt::plugins::gdal::GDALConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
