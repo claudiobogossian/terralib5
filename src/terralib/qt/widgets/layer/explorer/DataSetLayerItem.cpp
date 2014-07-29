@@ -62,7 +62,12 @@ int te::qt::widgets::DataSetLayerItem::columnCount() const
 QVariant te::qt::widgets::DataSetLayerItem::data(int /*column*/, int role) const
 {
   if(role == Qt::DecorationRole)
-    return QVariant(QIcon::fromTheme("dataset-layer"));
+  {
+    if(m_layer->isValid())
+      return QVariant(QIcon::fromTheme("dataset-layer"));
+    else
+      return QVariant(QIcon::fromTheme("dataset-layer-invalid"));
+  }
 
   if(role == Qt::DisplayRole)
     return QVariant(QString::fromStdString(m_layer->getTitle()));
@@ -173,19 +178,27 @@ bool te::qt::widgets::DataSetLayerItem::hasColorMapItem() const
 
 QString te::qt::widgets::DataSetLayerItem::buildToolTip() const
 {
+  if(!m_layer->isValid())
+    return tr("Invalid Layer");
+
+  QString toolTip;
+
+  // Gets the data set name
+  toolTip += tr("DataSet") + ": " + m_layer->getDataSetName().c_str() + "\n";
+
   // Gets the connection info
   const std::string& id = m_layer->getDataSourceId();
   te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(id);
   const std::map<std::string, std::string>& connInfo = info->getConnInfo();
 
-  QString toolTip;
+  toolTip += tr("Connection Info") + ":\n";
 
   std::size_t i = 0;
   std::map<std::string, std::string>::const_iterator it;
   for(it = connInfo.begin(); it != connInfo.end(); ++it)
   {
     toolTip += it->first.c_str();
-    toolTip += " = ";
+    toolTip += ": ";
     toolTip += it->second.c_str();
     ++i;
     if(i != connInfo.size())

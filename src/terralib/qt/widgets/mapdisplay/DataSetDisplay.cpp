@@ -152,7 +152,7 @@ void te::qt::widgets::DataSetDisplay::draw(const te::da::DataSetTypePtr& dataset
       break;
   }
 
-  if(dataset)
+  if(datasetData)
   {
     std::size_t gpos = te::da::GetFirstPropertyPos(datasetData, te::dt::GEOMETRY_TYPE);
 

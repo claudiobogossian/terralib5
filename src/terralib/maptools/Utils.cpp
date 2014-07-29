@@ -234,7 +234,7 @@ void te::map::GetVisibleLayers(const te::map::AbstractLayerPtr& layer, std::list
   if(visibility == te::map::NOT_VISIBLE)
     return;
 
-  if(visibility == te::map::VISIBLE)
+  if(visibility == te::map::VISIBLE && layer->isValid())
     visibleLayers.push_back(layer);
 
   for(std::size_t i = 0; i < layer->getChildrenCount(); ++i)

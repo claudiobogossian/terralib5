@@ -1,3 +1,4 @@
+
 #
 #  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 #
@@ -70,12 +71,10 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/share/terraview/help/terraview
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/share/terraview/help/widgets
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/share/terraview/help/plugins
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/share/terraview/help/gen_icones 
   COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/share/terraview/help/about.txt
   COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/share/terraview/help/sobre.txt
-  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/share/terraview/help/widgets.qhp
   COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/share/terraview/help/terraview.qhp
-  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/share/terraview/help/plugins.qhp
-  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/share/terraview/help/apf.qhp
   COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/share/terraview/help/help.qhcp
   COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/share/terraview/help/terralib-globe.png
   DEPENDS ${CMAKE_BINARY_DIR}/share/terraview/help/help.qhc
@@ -89,5 +88,5 @@ add_custom_target(
   VERBATIM
 )
 
-install(DIRECTORY ${CMAKE_BINARY_DIR}/share/terraview/help
+install(DIRECTORY ${CMAKE_BINARY_DIR}/share/terraview/help/
         DESTINATION ${TERRALIB_DESTINATION_SHARE}/terraview/help COMPONENT runtime)

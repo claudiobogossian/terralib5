@@ -257,7 +257,7 @@ void te::qt::af::MapDisplay::onDrawLayersFinished(const QMap<QString, QString>& 
   m_lastDisplayContent = QPixmap(*m_display->getDisplayPixmap());
 
   // Draw the layers selection
-  drawLayersSelection(ApplicationController::getInstance().getProject()->getSingleLayers());
+  drawLayersSelection(ApplicationController::getInstance().getProject()->getSingleLayers(false));
 }
 
 void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
