@@ -125,22 +125,16 @@ te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds)
   }
 
   double gtp[6];
-  double gridAffineParams[ 6 ];
+  
   te::rst::Grid* grid = 0;
   
   if( gds->GetGeoTransform(gtp) == CE_Failure )
   {
-    gridAffineParams[ 0 ] = 1;
-    gridAffineParams[ 1 ] = 0;
-    gridAffineParams[ 2 ] = 0;
-    gridAffineParams[ 3 ] = 0;
-    gridAffineParams[ 4 ] = 1;
-    gridAffineParams[ 5 ] = 0;   
-    
-    grid = new te::rst::Grid(gridAffineParams, 1, 1, srid);    
+    grid = new te::rst::Grid(gds->GetRasterXSize(), gds->GetRasterYSize(), 1.0, 1.0, (te::gm::Envelope*)0, srid);    
   }
   else
   {
+    double gridAffineParams[ 6 ];
     gridAffineParams[ 0 ] = gtp[ 1 ];
     gridAffineParams[ 1 ] = gtp[ 2 ];
     gridAffineParams[ 2 ] = gtp[ 0 ];

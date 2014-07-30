@@ -88,5 +88,5 @@ add_custom_target(
   VERBATIM
 )
 
-install(DIRECTORY ${CMAKE_BINARY_DIR}/share/terraview/help
+install(DIRECTORY ${CMAKE_BINARY_DIR}/share/terraview/help/
         DESTINATION ${TERRALIB_DESTINATION_SHARE}/terraview/help COMPONENT runtime)

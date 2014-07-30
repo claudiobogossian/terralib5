@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>579</width>
+    <width>641</width>
     <height>425</height>
    </rect>
   </property>
@@ -130,6 +130,12 @@
               <widget class="QComboBox" name="m_attributesComboBox">
                <property name="enabled">
                 <bool>false</bool>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>300</width>
+                 <height>0</height>
+                </size>
                </property>
               </widget>
              </item>

@@ -38,7 +38,7 @@
 namespace te
 {
   /*! \brief Namespace for the OGR Driver Implementation of TerraLib. */
-  namespace org
+  namespace ogr
   {
   } // end namespace org
 }   // end namespace te
