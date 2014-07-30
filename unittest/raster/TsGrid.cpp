@@ -38,34 +38,34 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TsGrid );
 
 void TsGrid::tcGridConstructor1()
 {
-  te::rst::Grid grid( 2u, 2u, new te::gm::Envelope( 1.0, 1.0, 3.0, 3.0 ), 12345 );
+  te::rst::Grid grid( 2u, 2u, new te::gm::Envelope( 1.0, 1.0, 5.0, 3.0 ), 12345 );
   
   CPPUNIT_ASSERT( grid.getNumberOfColumns() == 2 );
   CPPUNIT_ASSERT( grid.getNumberOfRows() == 2 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getResolutionX(), 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0, grid.getResolutionX(), 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getResolutionY(), 0.0000000001 );
   CPPUNIT_ASSERT( grid.getSRID() == 12345 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, grid.getExtent()->m_llx, 1.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, grid.getExtent()->m_lly, 1.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0, grid.getExtent()->m_urx, 3.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0, grid.getExtent()->m_ury, 3.0000000001 ); 
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.0, grid.getExtent()->m_urx, 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 3.0, grid.getExtent()->m_ury, 0.0000000001 ); 
   
   double x = 0;
   double y = 0;
   
   grid.gridToGeo( 0.0 , 0.0, x, y );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.5, x, 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0, x, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.5, y, 0.0000000001 ); 
 
   grid.gridToGeo( 1.0 , 1.0, x, y );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.5, x, 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 4.0, x, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.5, y, 0.0000000001 );  
   
-  grid.geoToGrid(1.5 , 2.5, x, y );
+  grid.geoToGrid(2.0 , 2.5, x, y );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, x, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, y, 0.0000000001 ); 
 
-  grid.geoToGrid( 2.5 , 1.5, x, y );
+  grid.geoToGrid( 4.0 , 1.5, x, y );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, x, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, y, 0.0000000001 );    
 }
@@ -111,36 +111,36 @@ void TsGrid::tcGridConstructor2()
   ulc.x = 1;
   ulc.y = 3;
   
-  te::rst::Grid grid( 2u, 2u, 1.0, 1.0, &ulc, 12345 );
+  te::rst::Grid grid( 2u, 2u, 2.0, 1.0, &ulc, 12345 );
   
   CPPUNIT_ASSERT( grid.getNumberOfColumns() == 2 );
   CPPUNIT_ASSERT( grid.getNumberOfRows() == 2 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getResolutionX(), 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0, grid.getResolutionX(), 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getResolutionY(), 0.0000000001 );
   CPPUNIT_ASSERT( grid.getSRID() == 12345 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getExtent()->m_llx, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getExtent()->m_lly, 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 3.0, grid.getExtent()->m_urx, 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.0, grid.getExtent()->m_urx, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 3.0, grid.getExtent()->m_ury, 0.0000000001 ); 
   
   double x = 0;
   double y = 0;
   
   grid.gridToGeo( 0.0 , 0.0, x, y );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.5, x, 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0, x, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.5, y, 0.0000000001 ); 
 
   grid.gridToGeo( 1.0 , 1.0, x, y );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.5, x, 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 4.0, x, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.5, y, 0.0000000001 );  
   
-  grid.geoToGrid(1.5 , 2.5, x, y );
+  grid.geoToGrid(2.0 , 2.5, x, y );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, x, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, y, 0.0000000001 ); 
 
-  grid.geoToGrid( 2.5 , 1.5, x, y );
+  grid.geoToGrid( 4.0 , 1.5, x, y );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, x, 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, y, 0.0000000001 );  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, y, 0.0000000001 );
 }
 
 void TsGrid::tcGridConstructor2NoUlc()
@@ -179,68 +179,68 @@ void TsGrid::tcGridConstructor2NoUlc()
 
 void TsGrid::tcGridConstructor3()
 {
-  te::rst::Grid grid( 2u, 2u, 1.0, 1.0, new te::gm::Envelope( 1.0, 1.0, 3.0, 3.0 ), 12345 );
+  te::rst::Grid grid( 2u, 2u, 2.0, 1.0, new te::gm::Envelope( 1.0, 1.0, 5.0, 3.0 ), 12345 );
   
   CPPUNIT_ASSERT( grid.getNumberOfColumns() == 2 );
   CPPUNIT_ASSERT( grid.getNumberOfRows() == 2 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getResolutionX(), 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0, grid.getResolutionX(), 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getResolutionY(), 0.0000000001 );
   CPPUNIT_ASSERT( grid.getSRID() == 12345 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getExtent()->m_llx, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getExtent()->m_lly, 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 3.0, grid.getExtent()->m_urx, 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.0, grid.getExtent()->m_urx, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 3.0, grid.getExtent()->m_ury, 0.0000000001 ); 
   
   double x = 0;
   double y = 0;
   
   grid.gridToGeo( 0.0 , 0.0, x, y );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.5, x, 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0, x, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.5, y, 0.0000000001 ); 
 
   grid.gridToGeo( 1.0 , 1.0, x, y );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.5, x, 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 4.0, x, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.5, y, 0.0000000001 );  
   
-  grid.geoToGrid(1.5 , 2.5, x, y );
+  grid.geoToGrid(2.0 , 2.5, x, y );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, x, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, y, 0.0000000001 ); 
 
-  grid.geoToGrid( 2.5 , 1.5, x, y );
+  grid.geoToGrid( 4.0 , 1.5, x, y );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, x, 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, y, 0.0000000001 );    
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, y, 0.0000000001 );     
 }
 
 void TsGrid::tcGridConstructor4()
 {
-  te::rst::Grid grid( 1.0, 1.0, new te::gm::Envelope( 1.0, 1.0, 3.0, 3.0 ), 12345 );
+  te::rst::Grid grid( 2.0, 1.0, new te::gm::Envelope( 1.0, 1.0, 5.0, 3.0 ), 12345 );
   
   CPPUNIT_ASSERT( grid.getNumberOfColumns() == 2 );
   CPPUNIT_ASSERT( grid.getNumberOfRows() == 2 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getResolutionX(), 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0, grid.getResolutionX(), 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getResolutionY(), 0.0000000001 );
   CPPUNIT_ASSERT( grid.getSRID() == 12345 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getExtent()->m_llx, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getExtent()->m_lly, 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 3.0, grid.getExtent()->m_urx, 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.0, grid.getExtent()->m_urx, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 3.0, grid.getExtent()->m_ury, 0.0000000001 ); 
   
   double x = 0;
   double y = 0;
   
   grid.gridToGeo( 0.0 , 0.0, x, y );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.5, x, 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0, x, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.5, y, 0.0000000001 ); 
 
   grid.gridToGeo( 1.0 , 1.0, x, y );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.5, x, 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 4.0, x, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.5, y, 0.0000000001 );  
   
-  grid.geoToGrid(1.5 , 2.5, x, y );
+  grid.geoToGrid(2.0 , 2.5, x, y );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, x, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, y, 0.0000000001 ); 
 
-  grid.geoToGrid( 2.5 , 1.5, x, y );
+  grid.geoToGrid( 4.0 , 1.5, x, y );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, x, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, y, 0.0000000001 );    
 }
@@ -248,9 +248,9 @@ void TsGrid::tcGridConstructor4()
 void TsGrid::tcGridConstructor5()
 {
   double geoTrans[ 6 ];
-  geoTrans[ 0 ] = 1.0;
+  geoTrans[ 0 ] = 2.0;
   geoTrans[ 1 ] = 0.0;
-  geoTrans[ 2 ] = 1.5;
+  geoTrans[ 2 ] = 2.0;
   geoTrans[ 3 ] = 0.0;
   geoTrans[ 4 ] = -1.0;
   geoTrans[ 5 ] = 2.5;
@@ -259,30 +259,30 @@ void TsGrid::tcGridConstructor5()
   
   CPPUNIT_ASSERT( grid.getNumberOfColumns() == 2 );
   CPPUNIT_ASSERT( grid.getNumberOfRows() == 2 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getResolutionX(), 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0, grid.getResolutionX(), 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getResolutionY(), 0.0000000001 );
   CPPUNIT_ASSERT( grid.getSRID() == 12345 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getExtent()->m_llx, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getExtent()->m_lly, 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 3.0, grid.getExtent()->m_urx, 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.0, grid.getExtent()->m_urx, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 3.0, grid.getExtent()->m_ury, 0.0000000001 ); 
   
   double x = 0;
   double y = 0;
   
   grid.gridToGeo( 0.0 , 0.0, x, y );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.5, x, 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0, x, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.5, y, 0.0000000001 ); 
 
   grid.gridToGeo( 1.0 , 1.0, x, y );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.5, x, 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 4.0, x, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.5, y, 0.0000000001 );  
   
-  grid.geoToGrid(1.5 , 2.5, x, y );
+  grid.geoToGrid(2.0 , 2.5, x, y );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, x, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, y, 0.0000000001 ); 
 
-  grid.geoToGrid( 2.5 , 1.5, x, y );
+  grid.geoToGrid( 4.0 , 1.5, x, y );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, x, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, y, 0.0000000001 );    
 }
