@@ -28,6 +28,7 @@
 #include "Band.h"
 #include "BandProperty.h"
 #include "Utils.h"
+#include "Exception.h"
 
 // STL
 #include <cassert>
@@ -46,45 +47,20 @@
 #define BICUBIC_KERNEL( x , a ) BICUBIC_RANGES( BICUBIC_MODULE(x) , a )
 
 te::rst::Interpolator::Interpolator(Raster const* r, int m)
-  : m_raster(r),
-    m_method(m)
 {
-  switch(m_method)
+  if( ! initialize( r, m, std::vector< std::complex<double> >()  ) )
   {
-    case Bicubic:
-      m_function = &te::rst::Interpolator::bicubicGetValue;
-      break;
-    case Bilinear:
-      m_function = &te::rst::Interpolator::bilinearGetValue;
-      break;
-    case NearestNeighbor:
-      m_function = &te::rst::Interpolator::nearestNeighborGetValue;
-      break;
+    throw te::rst::Exception("Interpolator initialization error");
   }
-  
-  // raster no-data values (for each band)
-  
-  for( unsigned int bandIdx = 0 ; bandIdx < r->getNumberOfBands() ; ++bandIdx )
-    m_noDataValues.push_back( r->getBand( bandIdx )->getProperty()->m_noDataValue );
-  
-  // ancillary values for nearest Neighbor interpolation
-  
-  m_nnLastRow = ( (double) m_raster->getNumberOfRows() ) - 0.5;
-  m_nnLastCol = ( (double) m_raster->getNumberOfColumns() ) - 0.5;
+}
 
-  // ancillary values for bilinear interpolation
-  m_bilValues.resize(4, 0);
-
-  m_bilLastRow = (double) m_raster->getNumberOfRows() - 1.0;
-
-  m_bilLastCol = (double) m_raster->getNumberOfColumns() - 1.0;
-
-  // ancillary values for bicubic interpolation
-  m_bicKernel = -1.0;
-
-  m_bicRowBound = m_bilLastRow - 1.0;
-
-  m_bicColBound = m_bilLastCol - 1.0;
+te::rst::Interpolator::Interpolator(Raster const* r, int m, 
+  const std::vector< std::complex<double> >& noDataValues )
+{
+  if( ! initialize( r, m, noDataValues ) )
+  {
+    throw te::rst::Exception("Interpolator initialization error");
+  }
 }
 
 te::rst::Interpolator::~Interpolator()
@@ -123,7 +99,7 @@ void te::rst::Interpolator::nearestNeighborGetValue(const double& c, const doubl
   }
   else
   {
-    v = std::complex<double>( m_noDataValues[ b ], m_noDataValues[ b ] );
+    v = m_noDataValues[ b ];
   }
 }
 
@@ -158,9 +134,32 @@ void te::rst::Interpolator::bilinearGetValue(const double& c, const double& r, s
   m_bilWeights[3] = (m_bilDistances[3] == 0)? 1.0: (1 / m_bilDistances[3]);
 
   m_raster->getValue((unsigned) m_bilColMin, (unsigned) m_bilRowMin, m_bilValues[0], b);
+  if( m_bilValues[0] == m_noDataValues[ b ] )
+  {
+    nearestNeighborGetValue(c, r, v, b);
+    return;
+  }
+  
   m_raster->getValue((unsigned) m_bilColMax, (unsigned) m_bilRowMin, m_bilValues[1], b);
+  if( m_bilValues[1] == m_noDataValues[ b ] )
+  {
+    nearestNeighborGetValue(c, r, v, b);
+    return;
+  }
+    
   m_raster->getValue((unsigned) m_bilColMin, (unsigned) m_bilRowMax, m_bilValues[2], b);
+  if( m_bilValues[2] == m_noDataValues[ b ] )
+  {
+    nearestNeighborGetValue(c, r, v, b);
+    return;
+  }
+    
   m_raster->getValue((unsigned) m_bilColMax, (unsigned) m_bilRowMax, m_bilValues[3], b);
+  if( m_bilValues[3] == m_noDataValues[ b ] )
+  {
+    nearestNeighborGetValue(c, r, v, b);
+    return;
+  }  
 
   double vr = ( (m_bilValues[0].real() * m_bilWeights[0]) +
             (m_bilValues[1].real() * m_bilWeights[1]) +
@@ -173,11 +172,6 @@ void te::rst::Interpolator::bilinearGetValue(const double& c, const double& r, s
             (m_bilValues[3].imag() * m_bilWeights[3]) ) /
             (m_bilWeights[0] + m_bilWeights[1] + m_bilWeights[2] + m_bilWeights[3]);
   v = std::complex<double>(vr,vi);
-
-  // if the output value is equal to dummy, call nearest neighbor method
-  if( (v.real() == m_raster->getBand(b)->getProperty()->m_noDataValue) ||
-      (v.imag() == m_raster->getBand(b)->getProperty()->m_noDataValue) )
-    nearestNeighborGetValue(c, r, v, b);
 }
 
 void te::rst::Interpolator::bicubicGetValue(const double& c, const double& r, std::complex<double>& v, const std::size_t& b)
@@ -196,10 +190,21 @@ void te::rst::Interpolator::bicubicGetValue(const double& c, const double& r, st
   {
     for(m_bicBufCol = 0; m_bicBufCol < 4 ; ++m_bicBufCol)
     {
+      
       m_raster->getValue(m_bicGridCol + m_bicBufCol, m_bicGridRow + m_bicBufRow,
-                         m_bicBbufferReal[m_bicBufRow][m_bicBufCol], b);
+                         m_bicReadRealValue, b);
       m_raster->getIValue(m_bicGridCol + m_bicBufCol, m_bicGridRow + m_bicBufRow,
-                          m_bicBbufferImag[m_bicBufRow][m_bicBufCol], b);
+                          m_bicReadImagValue, b);
+      
+      if( ( m_bicReadRealValue == m_noDataValues[ b ].real() ) &&
+        ( m_bicReadImagValue == m_noDataValues[ b ] ) )
+      {
+        nearestNeighborGetValue(c, r, v, b);
+        return;
+      }
+      
+      m_bicBbufferReal[m_bicBufRow][m_bicBufCol] = m_bicReadRealValue;
+      m_bicBbufferImag[m_bicBufRow][m_bicBufCol] = m_bicReadImagValue;
     }
   }
 
@@ -246,9 +251,82 @@ void te::rst::Interpolator::bicubicGetValue(const double& c, const double& r, st
             m_bicRowsValuesImag[2] * m_bicVWeights[2] +
                m_bicRowsValuesImag[3] * m_bicVWeights[3] ) / m_bicVSum;
   v = std::complex<double>(vr,vi);
+}
 
-  // if the output value is equal to dummy, call nearest neighbor method
-  if( (v.real() == m_raster->getBand(b)->getProperty()->m_noDataValue) ||
-      (v.imag() == m_raster->getBand(b)->getProperty()->m_noDataValue) )
-    nearestNeighborGetValue(c, r, v, b);
+bool te::rst::Interpolator::initialize(Raster const * const rasterPointer, int method,
+  const std::vector< std::complex<double> >& noDataValues )
+{
+  if( rasterPointer == 0 )
+  {
+    return false;
+  }
+  if( ! ( rasterPointer->getAccessPolicy() & te::common::RAccess ) )
+  {
+    return false;
+  }
+    
+  m_raster = rasterPointer;
+    
+  switch(method)
+  {
+    case Bicubic:
+      m_function = &te::rst::Interpolator::bicubicGetValue;
+      break;
+    case Bilinear:
+      m_function = &te::rst::Interpolator::bilinearGetValue;
+      break;
+    case NearestNeighbor:
+      m_function = &te::rst::Interpolator::nearestNeighborGetValue;
+      break;
+    default :
+      throw te::rst::Exception("Invalid interpolation method");
+      break;
+  }
+  
+  m_method = method;
+  
+  // raster no-data values (for each band)
+  
+  m_noDataValues.clear();
+  
+  if( noDataValues.empty() )
+  {
+    std::complex<double> auxC;
+    
+    for( unsigned int bandIdx = 0 ; bandIdx < rasterPointer->getNumberOfBands() ; ++bandIdx )
+    {
+      auxC.real( rasterPointer->getBand( bandIdx )->getProperty()->m_noDataValue );
+      m_noDataValues.push_back( auxC );
+    }
+  }
+  else
+  {
+    if( noDataValues.size() > rasterPointer->getNumberOfBands() )
+    {
+      throw te::rst::Exception("Invalid no-data values");
+    }
+    
+    m_noDataValues = noDataValues;
+  }
+  
+  // ancillary values for nearest Neighbor interpolation
+  
+  m_nnLastRow = ( (double) m_raster->getNumberOfRows() ) - 0.5;
+  m_nnLastCol = ( (double) m_raster->getNumberOfColumns() ) - 0.5;
+
+  // ancillary values for bilinear interpolation
+  m_bilValues.resize(4, 0);
+
+  m_bilLastRow = (double) m_raster->getNumberOfRows() - 1.0;
+
+  m_bilLastCol = (double) m_raster->getNumberOfColumns() - 1.0;
+
+  // ancillary values for bicubic interpolation
+  m_bicKernel = -1.0;
+
+  m_bicRowBound = m_bilLastRow - 1.0;
+
+  m_bicColBound = m_bilLastCol - 1.0;
+  
+  return true;
 }
