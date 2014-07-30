@@ -631,7 +631,12 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
 
         ::terralib4::DataSource* tl4Ds = dynamic_cast<::terralib4::DataSource*>(m_tl4Database.get());
 
-        ds_adapter->setSRID(tl4Ds->getLayerSRID(targetName));
+        int finalSrid = tl4Ds->getLayerSRID(targetName);
+
+        if(finalSrid == 4979)
+          finalSrid == 4326;
+
+        ds_adapter->setSRID(finalSrid);
 
         std::map<std::string, std::string> opt;
 
