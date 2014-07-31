@@ -634,7 +634,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
         int finalSrid = tl4Ds->getLayerSRID(targetName);
 
         if(finalSrid == 4979)
-          finalSrid == 4326;
+          finalSrid = 4326;
 
         ds_adapter->setSRID(finalSrid);
 
