@@ -34,6 +34,8 @@
 #include <QRegExp>
 #include <QWidget>
 #include <QVariant>
+#include <QFont>
+#include <QColor>
 
 // QtPropertyBrowser
 #include <QtPropertyBrowser/QtVariantPropertyManager>
@@ -187,6 +189,8 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
 
   te::color::RGBAColor color;
   QColor qcolor;
+  QFont qfont;
+  Font font;
   
   switch(property.getType())
   {
@@ -220,6 +224,18 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
     qcolor.setGreen(color.getGreen());
     qcolor.setBlue(color.getBlue());
     vproperty->setValue(qcolor);
+    break;
+  case DataTypeFont:
+    vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Font, tr(property.getName().c_str()));
+    font = property.getValue().toFont();
+    qfont.setFamily(font.getFamily().c_str());
+    qfont.setPointSize(font.getPointSize());
+    qfont.setBold(font.isBold());
+    qfont.setItalic(font.isItalic());
+    qfont.setUnderline(font.isUnderline());
+    qfont.setStrikeOut(font.isStrikeout());
+    qfont.setKerning(font.isKerning());
+    vproperty->setValue(qfont);
     break;
   default:
    vproperty = 0;    
@@ -272,6 +288,8 @@ te::layout::Property te::layout::PropertyBrowser::getProperty( std::string name 
   Variant v;
   QStringList list;
   std::string value;
+  Font font;
+  QFont qfont;
 
   switch(type)
   {
@@ -317,6 +335,18 @@ te::layout::Property te::layout::PropertyBrowser::getProperty( std::string name 
       color.setColor(qcolor.red(), qcolor.green(), qcolor.blue(), 255);
       prop.setValue(color, type);
     }
+    break;
+  case DataTypeFont:
+    qfont = variant.value<QFont>();    
+    font.setFamily(qfont.family().toStdString());
+    font.setPointSize(qfont.pointSize());
+    font.setBold(qfont.bold());
+    font.setItalic(qfont.italic());
+    font.setUnderline(qfont.underline());
+    font.setStrikeout(qfont.strikeOut());
+    font.setKerning(qfont.kerning());
+    prop.setValue(font, type);
+    break;    
   default:
     prop.setValue(0, DataTypeNone);
   }
@@ -437,6 +467,9 @@ te::layout::LayoutPropertyDataType te::layout::PropertyBrowser::getLayoutType( Q
     case QVariant::Color:
       dataType = DataTypeColor;
       break;
+    case QVariant::Font:
+      dataType = DataTypeFont;
+      break;
     default:
       dataType = DataTypeNone;
   }
@@ -469,6 +502,9 @@ QVariant::Type te::layout::PropertyBrowser::getVariantType( LayoutPropertyDataTy
     break;
   case DataTypeColor:
     type = QVariant::Color;
+    break;
+  case DataTypeFont:
+    type = QVariant::Font;
     break;
   default:
     type = QVariant::Invalid;

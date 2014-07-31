@@ -18,48 +18,56 @@
  */
 
 /*!
-  \file HorizontalRulerModel.h
+  \file ScaleModel.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_DEFAULT_TEXT_MODEL_H
+#define __TERRALIB_LAYOUT_INTERNAL_DEFAULT_TEXT_MODEL_H
 
 // TerraLib
-#include "AbstractRulerModel.h"
-#include "../core/enum/EnumMode.h"
+#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/ContextItem.h"
+#include "../core/pattern/derivativevisitor/AbstractVisitor.h"
+#include "../../maptools/Canvas.h"
+#include "../core/Utils.h"
+#include "../core/Font.h"
 
 // STL
-#include <vector>
 #include <string>
 
 namespace te
 {
   namespace layout
   {
-    class HorizontalRulerModel : public AbstractRulerModel
+    class DefaultTextModel : public ItemModelObservable
     {
       public:
 
-        HorizontalRulerModel(PaperConfig* paperConfig);
-        virtual ~HorizontalRulerModel();
-        
+        DefaultTextModel();
+        virtual ~DefaultTextModel();
+
         virtual void draw( ContextItem context );
+
+        virtual te::layout::Properties* getProperties() const;
         
-        virtual void setBox(te::gm::Envelope box);
+        virtual void updateProperties(te::layout::Properties* properties);     
 
-        virtual te::gm::Envelope sizeInZoomProportion(te::gm::Envelope env, double zoomFactor);
-                
-      protected:
+        virtual std::string getText();
 
-        virtual void drawHorizontalRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
+        virtual Font getFont();
 
-        virtual void drawRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
+       protected:
+
+         virtual void drawText(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
+
+         std::string m_text;
+         Font m_font;
     };
   }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_LAYOUTMODEL_H
+#endif 

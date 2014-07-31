@@ -18,48 +18,69 @@
  */
 
 /*!
-  \file HorizontalRulerModel.h
+  \file Font.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_MODEL_H
-
-// TerraLib
-#include "AbstractRulerModel.h"
-#include "../core/enum/EnumMode.h"
+#ifndef __TERRALIB_LAYOUT_INTERNAL_FONT_H 
+#define __TERRALIB_LAYOUT_INTERNAL_FONT_H
 
 // STL
-#include <vector>
 #include <string>
 
 namespace te
 {
   namespace layout
   {
-    class HorizontalRulerModel : public AbstractRulerModel
+    class Font 
     {
       public:
 
-        HorizontalRulerModel(PaperConfig* paperConfig);
-        virtual ~HorizontalRulerModel();
-        
-        virtual void draw( ContextItem context );
-        
-        virtual void setBox(te::gm::Envelope box);
+        /*!
+         \brief 
+        */
+        Font();
 
-        virtual te::gm::Envelope sizeInZoomProportion(te::gm::Envelope env, double zoomFactor);
-                
+        /*!
+         \brief 
+        */
+        virtual ~Font();
+
+        void setFamily(std::string family);
+        std::string getFamily();
+
+        void setPointSize(int point);
+        int getPointSize();
+
+        void setBold(bool bold);
+        bool isBold();
+
+        void setItalic(bool italic);
+        bool isItalic();
+
+        void setUnderline(bool underline);
+        bool isUnderline();
+
+        void setStrikeout(bool strikeout);
+        bool isStrikeout();
+
+        void setKerning(bool kerning);
+        bool isKerning();
+
       protected:
 
-        virtual void drawHorizontalRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
-
-        virtual void drawRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
+        std::string m_family;
+        int m_pointSize;
+        bool m_bold;
+        bool m_italic;
+        bool m_underline;
+        bool m_strikeout;
+        bool m_kerning;        
     };
   }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_LAYOUTMODEL_H
+#endif

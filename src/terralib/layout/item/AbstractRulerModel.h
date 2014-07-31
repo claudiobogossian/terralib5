@@ -49,6 +49,8 @@ namespace te
         virtual void setVisible(bool visible);
         virtual bool isVisible();
 
+        virtual te::gm::Envelope sizeInZoomProportion(te::gm::Envelope env, double zoomFactor) = 0;
+
       protected:
 
         virtual void drawRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor) = 0;

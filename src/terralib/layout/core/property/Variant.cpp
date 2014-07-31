@@ -87,6 +87,7 @@ void te::layout::Variant::convertValue( const void* valueCopy )
   int* iValue = 0;
   bool* bValue = 0;
   te::color::RGBAColor* colorValue = 0;
+  Font* fontValue = 0;
 
   try
   {
@@ -221,6 +222,15 @@ void te::layout::Variant::convertValue( const void* valueCopy )
         m_colorValue = *colorValue;
       }
       break;
+    case DataTypeFont:
+      // Cast it back to a string pointer.
+      fontValue = static_cast<Font*>(value);
+      if(fontValue)
+      {
+        null = false;
+        m_fontValue = *fontValue;
+      }
+      break;
     default:
       null = true;
       break;
@@ -268,6 +278,11 @@ bool te::layout::Variant::toBool()
 te::color::RGBAColor te::layout::Variant::toColor()
 {
   return m_colorValue;
+}
+
+te::layout::Font te::layout::Variant::toFont()
+{
+  return m_fontValue;
 }
 
 bool te::layout::Variant::isNull()
@@ -466,4 +481,3 @@ long te::layout::Variant::string2Long( std::string str )
 
   return result;
 }
-

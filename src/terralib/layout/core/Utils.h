@@ -74,7 +74,7 @@ namespace te
 
         virtual void textBoundingBox(double &w, double &h, std::string txt);
         
-        virtual double calculateRulerZoomFactor(double &factor, double &factorView);
+        virtual void calculateRulerZoomFactor(double &factor, double &factorView);
 
         te::layout::WorldTransformer getTransformGeo(te::gm::Envelope boxgeo, te::gm::Envelope boxmm);
 
@@ -100,7 +100,7 @@ namespace te
         virtual void remapToPlanar(te::gm::LinearRing* line, int zone);
 
         virtual void convertToMillimeter(WorldTransformer transf, te::gm::LinearRing* line); 
-
+        
       protected:
         
         virtual void changeCanvas(te::gm::Envelope viewport, te::gm::Envelope world, bool resize = true);

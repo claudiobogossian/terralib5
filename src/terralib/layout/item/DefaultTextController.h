@@ -18,48 +18,33 @@
  */
 
 /*!
-  \file HorizontalRulerModel.h
+  \file DefaultTextController.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_DEFAULT_TEXT_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_DEFAULT_TEXT_CONTROLLER_H
 
 // TerraLib
-#include "AbstractRulerModel.h"
-#include "../core/enum/EnumMode.h"
-
-// STL
-#include <vector>
-#include <string>
+#include "../core/pattern/mvc/ItemController.h"
 
 namespace te
 {
   namespace layout
   {
-    class HorizontalRulerModel : public AbstractRulerModel
+    class DefaultTextController : public ItemController
     {
       public:
 
-        HorizontalRulerModel(PaperConfig* paperConfig);
-        virtual ~HorizontalRulerModel();
-        
-        virtual void draw( ContextItem context );
-        
-        virtual void setBox(te::gm::Envelope box);
+        DefaultTextController( Observable* o );
+        virtual ~DefaultTextController();
 
-        virtual te::gm::Envelope sizeInZoomProportion(te::gm::Envelope env, double zoomFactor);
-                
-      protected:
-
-        virtual void drawHorizontalRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
-
-        virtual void drawRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
+        virtual void setPosition(const double& x, const double& y);
     };
   }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_LAYOUTMODEL_H
+#endif

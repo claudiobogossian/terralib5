@@ -37,6 +37,7 @@
 #include "../../../item/MapGridItem.h"
 #include "../../../item/LegendItem.h"
 #include "../../../item/ScaleItem.h"
+#include "../../../item/DefaultTextItem.h"
 
 te::layout::ItemFactory::ItemFactory()
 {
@@ -83,8 +84,12 @@ te::layout::Observer* te::layout::ItemFactory::make( LayoutAbstractObjectType ty
       return item;
       break;
     }
-  case TPText:
+  case TPTextItem:
     {
+      DefaultTextItem* txt = new DefaultTextItem(params.getController(), params.getModel());
+      item = (Observer*)txt;
+      return item;
+      break;
       break;
     }
   case TPItemGroup:

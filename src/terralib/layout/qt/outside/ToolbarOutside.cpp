@@ -70,6 +70,7 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionUngroup("items_ungroup"),
   m_optionLineIntersectionMouse("items_intersection_mouse"),
   m_optionSceneZoom("scene_zoom"),
+  m_optionTextDefault("text_default"),
   m_btnMap(0)
 {
 	te::gm::Envelope box = m_model->getBox();	
@@ -122,8 +123,8 @@ void te::layout::ToolbarOutside::createToolbar()
   createRecomposeToolButton();
   this->addSeparator();
 
-  createLineIntersectionToolButton();
-  this->addSeparator();
+  /*createLineIntersectionToolButton();
+  this->addSeparator();*/
 
   createViewAreaToolButton();
   this->addSeparator();
@@ -138,6 +139,9 @@ void te::layout::ToolbarOutside::createToolbar()
   this->addSeparator();
 
   createItemTools();
+  this->addSeparator();
+
+  createTextToolButton();
   this->addSeparator();
 
   createBringToFrontToolButton();
@@ -313,6 +317,21 @@ void te::layout::ToolbarOutside::createRecomposeToolButton()
   this->addWidget(btn);
 }
 
+void te::layout::ToolbarOutside::createTextToolButton()
+{
+  QMenu* menu = new QMenu();
+
+  QAction* actionTxtDefault = createAction("Default Text Object", m_optionTextDefault, "layout-default-text");
+  menu->addAction(actionTxtDefault);
+
+  QToolButton *btn = createToolButton("Text Tools", "Text Tools", "layout-default-text");
+  btn->setMenu(menu);
+  btn->setPopupMode(QToolButton::InstantPopup);
+
+  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onTextToolsTriggered(QAction*)));
+  this->addWidget(btn);
+}
+
 void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
 {
   if(action->objectName().compare(m_optionMapDefault.c_str()) == 0)
@@ -439,6 +458,14 @@ void te::layout::ToolbarOutside::onRecomposeClicked( bool checked )
 {
   m_comboSceneZoom->setCurrentIndex(1);
   changeAction(TypeRecompose);
+}
+
+void te::layout::ToolbarOutside::onTextToolsTriggered( QAction* action )
+{
+  if(action->objectName().compare(m_optionTextDefault.c_str()) == 0)
+  {
+    changeAction(TypeCreateText);
+  }
 }
 
 void te::layout::ToolbarOutside::changeAction( LayoutMode mode )

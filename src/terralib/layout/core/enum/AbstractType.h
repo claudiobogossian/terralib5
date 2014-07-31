@@ -54,7 +54,7 @@ namespace te
       TPGridGeodesic = 13,
       TPHorizontalRuler = 14,
       TPVerticalRuler = 15,
-      TPText = 16,
+      TPTextItem = 16,
       TPItemGroup = 17,
       TPScaleItem = 18,
       TPPageSetup = 19,
@@ -141,7 +141,8 @@ namespace te
       DataTypeColor = 7,
       DataTypeGridSettings = 8,
       DataTypeStringList = 9,
-      DataTypeNone = 10
+      DataTypeFont = 10,
+      DataTypeNone = 11
     } LayoutPropertyDataType;
 
     /*!

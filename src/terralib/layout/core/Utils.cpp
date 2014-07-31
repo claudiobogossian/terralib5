@@ -291,7 +291,7 @@ void te::layout::Utils::textBoundingBox( double &w, double &h, std::string txt )
   }
 }
 
-double te::layout::Utils::calculateRulerZoomFactor(double &factor, double &factorView)
+void te::layout::Utils::calculateRulerZoomFactor(double &factor, double &factorView)
 {
   int						pageValue=210;
   double        ury = 0.;
@@ -332,9 +332,6 @@ double te::layout::Utils::calculateRulerZoomFactor(double &factor, double &facto
   
   if(factorView < 1) 
     factorView = 1;
-
-  double result = factor * factorView;
-  return result;
 }
 
 te::gm::Envelope te::layout::Utils::transformToMM( te::layout::WorldTransformer transf, te::gm::Envelope boxGeo )

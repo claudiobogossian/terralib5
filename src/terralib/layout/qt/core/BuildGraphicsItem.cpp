@@ -52,6 +52,9 @@
 #include "../../item/ItemGroupModel.h"
 #include "../../item/ItemGroupController.h"
 #include "../item/ItemGroup.h"
+#include "../../item/DefaultTextModel.h"
+#include "../../item/DefaultTextController.h"
+#include "../item/DefaultTextItem.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -114,7 +117,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   case TPMapGridItem:
     item = createMapGrid();
     break;
-  case TPText:
+  case TPTextItem:
     item = createText();
     break;
   case TPRetangleItem:
@@ -158,7 +161,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::LayoutMode
     item = createMapGrid();
     break;
   case TypeCreateText:
-    m_name = nameItem(m_textItem, TPText);
+    m_name = nameItem(m_textItem, TPTextItem);
     item = createText();
     break;
   case TypeCreateRectangle:
@@ -371,6 +374,34 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMapGrid()
 QGraphicsItem* te::layout::BuildGraphicsItem::createText()
 {
   QGraphicsItem* item = 0;
+
+  DefaultTextModel* model = new DefaultTextModel();	
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  DefaultTextController* controller = new DefaultTextController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  DefaultTextItem* txt = dynamic_cast<DefaultTextItem*>(itemObs); 
+
+  if(txt)
+  {
+    txt->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_props)
+    {
+      txt->setZValue(m_zValue);
+    }
+    if(m_redraw)
+      itemObs->redraw();
+    return txt;
+  }
 
   return item;
 }

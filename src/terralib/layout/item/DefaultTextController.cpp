@@ -18,49 +18,41 @@
  */
 
 /*!
-  \file VerticalRulerModel.h
+  \file DefaultTextController.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_MODEL_H
-
 // TerraLib
+#include "DefaultTextController.h"
 #include "../core/ContextItem.h"
-#include "AbstractRulerModel.h"
-#include "../core/enum/EnumMode.h"
+#include "../core/pattern/factory/AbstractItemFactory.h"
+#include "../core/pattern/singleton/Context.h"
+#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/pattern/factory/ItemParamsCreate.h"
+#include "../core/pattern/mvc/ItemObserver.h"
 
-// STL
-#include <vector>
-#include <string>
-
-namespace te
+te::layout::DefaultTextController::DefaultTextController( Observable* o ) :
+  ItemController(o, TPTextItem)
 {
-  namespace layout
-  {
-    class VerticalRulerModel : public AbstractRulerModel
-    {
-      public:
-
-        VerticalRulerModel(PaperConfig* paperConfig);
-        virtual ~VerticalRulerModel();
-
-        virtual void setBox(te::gm::Envelope box);
-
-        virtual void draw( ContextItem context );
-
-        virtual te::gm::Envelope sizeInZoomProportion(te::gm::Envelope env, double zoomFactor);
-
-      protected:
-
-        virtual void drawVerticalRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
- 
-        virtual void drawRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);        
-    };
-  }
+  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
+  ItemParamsCreate params(this, m_model);
+  m_view = (Observer*)factory->make(TPTextItem, params);
 }
 
-#endif // __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_LAYOUTMODEL_H
+te::layout::DefaultTextController::~DefaultTextController()
+{
+	
+}
+
+void te::layout::DefaultTextController::setPosition( const double& x, const double& y )
+{
+  if(m_model)
+  {
+    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
+    if(model)
+      return model->setPosition(x, y);
+  }
+}
