@@ -214,6 +214,10 @@ void te::serialize::xml::Save(te::xml::Writer& writer)
 {
   std::string schema_loc = te::common::FindInTerraLibPath("share/terralib/schemas/terralib/dataaccess/dataaccess.xsd");
 
+  boost::replace_all(schema_loc, " ", "%20");
+
+  schema_loc = "file:///" + schema_loc;
+
   writer.writeStartDocument("UTF-8", "no");
 
   writer.writeStartElement("te_da:DataSourceList");

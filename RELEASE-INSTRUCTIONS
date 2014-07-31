@@ -36,6 +36,23 @@ b) Assure that the following CMake variables are set:
 
 7. Release Packages
 -------------------
+For Mac add the following entries in CMake:
+
+TERRALIB_DESTINATION_ARCHIVE  => terraview.app/Contents/lib
+TERRALIB_DESTINATION_EXAMPLES => terraview.app/Contents/share/terralib/examples
+TERRALIB_DESTINATION_HEADERS  => terraview.app/Contents/include
+TERRALIB_DESTINATION_LIBRARY  => terraview.app/Contents/lib
+TERRALIB_DESTINATION_PLUGINS  => terraview.app/Contents/share/terralib/plugins
+TERRALIB_DESTINATION_RUNTIME  => terraview.app/Contents/bin
+TERRALIB_DESTINATION_SHARE    => terraview.app/Contents/share
+TERRALIB_DESTINATION_UNITTEST => terraview.app/Contents/share/terralib/unittest
+
+For the CPACK group set only ON to the CPACK_BINARY_DRAGNDROP entry.
+
+
+
+
+
 
 
 
