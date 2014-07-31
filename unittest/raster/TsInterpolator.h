@@ -27,10 +27,11 @@
 #define __TERRALIB_UNITTEST_RASTER_INTERNAL_INTERPOLATOR_H
 
 #include <terralib/raster.h>
-#include <boost/shared_ptr.hpp>
 
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>
+
+#include <memory>
 
 /*!
   \class TsInterpolator
@@ -46,20 +47,11 @@ class TsInterpolator : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( TsInterpolator );
   
-  CPPUNIT_TEST(tcInterpolatorConstructor );
-  
-  CPPUNIT_TEST(tcGetValue );
+  CPPUNIT_TEST(tcNearestNeighbor );
 
-  CPPUNIT_TEST(tcGetValues );
+  CPPUNIT_TEST(tcBilinear );
 
-  CPPUNIT_TEST(tcNearestNeighborGetValue );
-
-  CPPUNIT_TEST(tcBilinearGetValue );
-
-  CPPUNIT_TEST(tcBicubicGetValue );
-
-  CPPUNIT_TEST(tcInterpolationFunction );
-
+  CPPUNIT_TEST(tcBicubic );
 
   // add other tests (tcXxxx)
 
@@ -67,20 +59,14 @@ class TsInterpolator : public CPPUNIT_NS::TestFixture
 
   protected :
     
-    void tcInterpolatorConstructor();
-
-    void tcGetValue();
+    void createTestRaster( unsigned int nBands, unsigned int nLines, 
+      unsigned int nCols, std::auto_ptr< te::rst::Raster >& rasterPointer );
     
-    void tcGetValues();
-
-    void tcNearestNeighborGetValue();
+    void tcNearestNeighbor();
    
-    void tcBilinearGetValue();
+    void tcBilinear();
    
-    void tcBicubicGetValue();
-   
-    void tcInterpolationFunction();
-    
+    void tcBicubic();    
 
     // add other tests...
 };

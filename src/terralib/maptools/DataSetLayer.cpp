@@ -160,6 +160,7 @@ bool te::map::DataSetLayer::isValid() const
   try
   {
     ds = te::da::GetDataSource(m_datasourceId, true);
+    this->getSchema().get();
   }
   catch(...)
   {
