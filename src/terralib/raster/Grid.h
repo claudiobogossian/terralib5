@@ -228,9 +228,6 @@ namespace te
         /*! \brief Returns the geographic extension of the grid. */
         const te::gm::Envelope* getExtent() const;
 
-        /*! \brief Computes the geographic extension of the grid. */
-        void computeExtent() const;
-
         /*!
           \brief Get the spatial location of a grid point.
 
@@ -298,6 +295,9 @@ namespace te
         int m_srid;                         //!< The associated SRS.
         double m_geoT[6];                   //!< A list of 6 coefficients describing an affine transformation to georeference a grid.
         double m_geoTInverse[6];            //!< A list of 6 coefficients describing an inverse affine transformation to georeference a grid.
+        
+        /*! \brief Computes the geographic extension of the grid. */
+        void computeExtent() const;        
         
         /*!
           \brief Compute affine parameters from the given input parameters.

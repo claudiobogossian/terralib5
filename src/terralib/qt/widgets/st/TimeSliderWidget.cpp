@@ -24,7 +24,7 @@
 */
 
 //Terralib
-//#include "TimePropertiesDialog.h"
+#include "../../../st/maptools/TrajectoryDataSetLayer.h"
 #include "../canvas/MapDisplay.h"
 #include "Animation.h"
 #include "AnimationScene.h"
@@ -32,6 +32,8 @@
 #include "PixmapItem.h"
 #include "TimeSliderWidget.h"
 #include "ui_TimeSliderWidgetForm.h"
+#include "SliderPropertiesDialog.h"
+
 #include <terralib/dataaccess.h>
 #include <terralib/stmemory.h>
 #include <terralib/st.h>
@@ -57,6 +59,9 @@
 #include <QColorDialog>
 #include <QUrl>
 
+//ST
+#include <cmath>
+
 te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay* md, QWidget* parent,  Qt::WindowFlags f)
   : QWidget(parent, f),
     m_display(md),
@@ -71,8 +76,6 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
   setMouseTracking(true);
   setAcceptDrops(true);
 
-  showPropertySection(false);
-
   te::gm::Envelope env = m_display->getExtent();
   m_initialDisplayRect = QRectF(env.m_llx, env.m_lly, env.getWidth(), env.getHeight());
 
@@ -85,63 +88,40 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
   m_ui->m_durationSpinBox->setValue(10000);
   m_ui->m_durationSpinBox->setSingleStep(10000);
 
-  m_ui->m_opacitySpinBox->setMinimum(0);
-  m_ui->m_opacitySpinBox->setMaximum(255);
-  m_ui->m_opacitySpinBox->setValue(255);
-  m_ui->m_opacitySpinBox->setSingleStep(5);
-
-  //setAutoFillBackground(true);
-  //QPalette palette;
-  //palette.setColor(QPalette::Background, Qt::white);
-  //setPalette(palette);
-
-  //The opacity used to fade the widget if the mouse is not over it
-  //QGraphicsOpacityEffect* opacityEffect = new QGraphicsOpacityEffect;
-  //opacityEffect->setOpacity(0.85);
-  //this->setGraphicsEffect(opacityEffect);
-
   //Adjusting the icons and the graphic effects
   m_ui->m_settingsToolButton->setIcon(QIcon::fromTheme("preferences-system"));
   m_ui->m_playToolButton->setIcon(QIcon::fromTheme("media-playback-start"));
   m_ui->m_stopToolButton->setIcon(QIcon::fromTheme("media-playback-stop"));
 
   // connect signal and slots
-  connect(m_ui->m_addEtaPushButton, SIGNAL(clicked(bool) ), this, SLOT(onAddEtaPushButtonClicked(bool)));
-  connect(m_ui->m_addHidroPushButton, SIGNAL(clicked(bool) ), this, SLOT(onAddHidroPushButtonClicked(bool)));
-  connect(m_ui->m_autoPanCheckBox, SIGNAL(clicked(bool) ), this, SLOT(onAutoPanCheckBoxClicked(bool)));
-  connect(m_ui->m_forwardRadioButton, SIGNAL(clicked(bool) ), this, SLOT(onForwardRadioButtonClicked(bool)));
-  connect(m_ui->m_backwardRadioButton, SIGNAL(clicked(bool) ), this, SLOT(onBackwardRadioButtonClicked(bool)));
-  connect(m_ui->m_loopCheckBox, SIGNAL(clicked(bool) ), this, SLOT(onLoopCheckBoxClicked(bool)));
-  connect(m_ui->m_goAndBackCheckBox, SIGNAL(clicked(bool) ), this, SLOT(onGoAndBackCheckBoxClicked(bool)));
-  connect(m_ui->m_applyTimeIntervalPushButton, SIGNAL(clicked(bool) ), this, SLOT(onApplyTimeIntervalPushButtonClicked(bool)));
-  connect(m_ui->m_trajectoryColorComboBox, SIGNAL(activated(int) ), this, SLOT(onTrajectoryColorComboBoxActivated(int)));
-  //connect(m_ui->m_forwardColorPushButton, SIGNAL(clicked(bool) ), this, SLOT(onForwardColorPushButton(bool)));
-  //connect(m_ui->m_backwardColorPushButton, SIGNAL(clicked(bool) ), this, SLOT(onBackwardColorPushButton(bool)));
-  connect(m_ui->m_opacityComboBox, SIGNAL(activated(int) ), this, SLOT(onOpacityComboBoxActivated(int)));
+
   connect(m_ui->m_dateTimeEdit, SIGNAL(dateTimeChanged(const QDateTime&) ), this, SLOT(onDateTimeEditChanged(const QDateTime&)));
   connect(m_ui->m_durationSpinBox, SIGNAL(valueChanged(int)), this, SLOT(onDurationValueChanged(int)));
-  connect(m_ui->m_opacitySpinBox, SIGNAL(valueChanged(int)), this, SLOT(onOpacityValueChanged(int)));
   connect(m_ui->m_settingsToolButton, SIGNAL(clicked()), this, SLOT(onSettingsToolButtonnClicked()));
   connect(m_ui->m_playToolButton, SIGNAL(clicked()), this, SLOT(onPlayToolButtonnClicked()));
   connect(m_ui->m_stopToolButton, SIGNAL(clicked()), this, SLOT(onStopToolButtonnClicked()));
   connect(m_ui->m_TemporalHorizontalSlider, SIGNAL(sliderMoved (int)), this, SLOT(onSliderMoved(int)));
-  connect(m_ui->addPushButton, SIGNAL(clicked(bool)), this, SLOT(onAddPushButtonClicked(bool)));
-  connect(m_ui->removePushButton, SIGNAL(clicked(bool)), this, SLOT(onRemovePushButtonClicked(bool)));
-  connect(m_ui->frontPushButton, SIGNAL(clicked(bool)), this, SLOT(onFrontPushButtonClicked(bool)));
-  connect(m_ui->backPushButton, SIGNAL(clicked(bool)), this, SLOT(onBackPushButtonClicked(bool)));
 
-  connect(m_ui->m_resetInitialTimePushButton, SIGNAL(clicked()), this, SLOT(onResetInitialTimePushButtonClicked()));
-  connect(m_ui->m_resetFinalTimePushButton, SIGNAL(clicked()), this, SLOT(onResetFinalTimePushButtonClicked()));
+/*
+========================================================================================================
+                                     To be updated/removed
+========================================================================================================
+*/
+
+  //connect(m_ui->m_addEtaPushButton, SIGNAL(clicked(bool) ), this, SLOT(onAddEtaPushButtonClicked(bool)));
+  //connect(m_ui->m_addHidroPushButton, SIGNAL(clicked(bool) ), this, SLOT(onAddHidroPushButtonClicked(bool)));
+  //connect(m_ui->addPushButton, SIGNAL(clicked(bool)), this, SLOT(onAddPushButtonClicked(bool)));
+  //connect(m_ui->removePushButton, SIGNAL(clicked(bool)), this, SLOT(onRemovePushButtonClicked(bool)));
+  //connect(m_ui->frontPushButton, SIGNAL(clicked(bool)), this, SLOT(onFrontPushButtonClicked(bool)));
+  //connect(m_ui->backPushButton, SIGNAL(clicked(bool)), this, SLOT(onBackPushButtonClicked(bool)));
 
   setAttribute(Qt::WA_DeleteOnClose, true);
 
-  m_loop = true; //By default, the animation not will be looping.
+  m_loop = true; //By default, the animation will be looping.
   m_duration = 10000; //By default, the animation journey time will be 10000 miliseconds.
   m_ui->m_durationSpinBox->setValue(m_duration);
   m_direction = QAbstractAnimation::Forward; //By default, the animation direction will be forward.
   setGoAndBack(true); //By default, the animation is forward and then backward.
-
-  m_ui->m_forwardRadioButton->setCheckable(true);
 
   m_animationView = new QGraphicsView();
   m_parallelAnimation = new QParallelAnimationGroup(m_animationView);
@@ -157,25 +137,9 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
   connect(m_parallelAnimation, SIGNAL(finished()), this, SLOT(onFinishAnimation()));
 
   installEventFilter(this);
-  m_ui->m_forwardColorPushButton->installEventFilter(this);
-  m_ui->m_backwardColorPushButton->installEventFilter(this);
+
   m_ui->m_dateTimeEdit->installEventFilter(this);
-  m_ui->m_initialAnimationDateTimeEdit->installEventFilter(this);
-  m_ui->m_finalAnimationDateTimeEdit->installEventFilter(this);
-
   m_ui->m_dateTimeEdit->setDisplayFormat("dd/MMM/yyyy hh:mm:ss");
-  m_ui->m_initialAnimationDateTimeEdit->setDisplayFormat("dd/MMM/yyyy hh:mm:ss");
-  m_ui->m_finalAnimationDateTimeEdit->setDisplayFormat("dd/MMM/yyyy hh:mm:ss");
-
-  //onAddHidroPushButtonClicked(true);
-
-  //calculateSpatialExtent();
-  //calculateTemporalExtent();
-  //createAnimations();
-  //setDuration(m_duration);
-  //setDirection(m_direction);
-  //updateSliderPos();
-  //onStopToolButtonnClicked();
 
   if(m_animationScene->items().isEmpty())
   {
@@ -184,7 +148,6 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
     m_ui->m_playToolButton->setEnabled(false);
     m_ui->m_stopToolButton->setEnabled(false);
     m_ui->m_dateTimeEdit->setEnabled(false);
-    showPropertySection(false);
   }
   else
   {
@@ -230,191 +193,216 @@ te::qt::widgets::TimeSliderWidget::~TimeSliderWidget()
     delete m_animationView;
 }
 
-void te::qt::widgets::TimeSliderWidget::dragEnterEvent(QDragEnterEvent* e)
+void te::qt::widgets::TimeSliderWidget::layerSelected(te::map::AbstractLayerPtr layer)
 {
-  const QMimeData* mdata = e->mimeData();
-  QList<QUrl> urls = mdata->urls();
-  if(urls.empty())
+  //setCurrentLayer(layer);
+}
+
+void te::qt::widgets::TimeSliderWidget::layerAdded(te::map::AbstractLayerPtr layer)
+{
+  if(layer->getType() == "TRAJECTORYDATASETLAYER")
   {
-    QByteArray ba = mdata->data("application/x-terralib;value=\"DraggedItems\"");
-    if(ba.count() != 0)
-    {
-      QString s(ba);
-      std::vector<te::qt::widgets::AbstractTreeItem*>* ditems = (std::vector<AbstractTreeItem*>*)s.toULongLong();
-      std::vector<te::qt::widgets::AbstractTreeItem*>::iterator it;
-      for(it = ditems->begin(); it != ditems->end(); ++it)
-      {
-        te::qt::widgets::AbstractTreeItem* ati = *it;
-        std::string ltype = ati->getLayer()->getType();
-        if(ltype == "DATASETLAYER")
-        {
-          te::map::AbstractLayerPtr al = ati->getLayer();
-          te::map::DataSetLayer* layer = (te::map::DataSetLayer*)al.get();
-          std::string dsid = layer->getDataSourceId();
-          te::da::DataSourcePtr ds = te::da::GetDataSource(dsid);
-          std::map<std::string, std::string> ci = ds->getConnectionInfo();
-          std::map<std::string, std::string>::iterator it = ci.find("URI");
-          if(it != ci.end())
-          {
-            std::string uri(it->second);
-            if(uri.find("kml") != std::string::npos)
-            {
-              if(layer->getDataSetName() == "40: locations" || layer->getDataSetName() == "41: locations")
-              {
-                e->setDropAction(Qt::LinkAction); // this line is necessary to not move items on the layer explorer
-                //e->setDropAction(Qt::CopyAction); // this line is necessary to not move items on the layer explorer
-                e->setAccepted(true);
-              }
-            }
-          }
-        }
-      }
-    }
-    else
-      e->setAccepted(false);
-  }
-  else
-  {
-    QString path = urls.begin()->path();
-    size_t pos = path.indexOf("/");
-    if(pos == 0)
-      path.remove(0, 1);
-    QDir dir(path);
-    QStringList nameFilter;
-    nameFilter.append("*.ctl");
-    QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
-    if(files.empty() == false)
-    {
-      QString file(path + "/" + files.first());
-      FILE* fp = fopen(file.toStdString().c_str(), "r");
-      char buf[2000];
-      int c = fread(buf, sizeof(char), 2000, fp);
-      fclose(fp);
-      buf[c] = 0;
-      QString s(buf);
-      if(s.contains("undef", Qt::CaseInsensitive))
-        e->setAccepted(true);
-      else
-        e->setAccepted(false);
-    }
-    else
-    {
-      nameFilter.clear();
-      nameFilter.append("S1123*.jpg");
-      QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
-      if(files.empty() == false && files.first().length() == 26)
-        e->setAccepted(true);
-      else
-      {
-        nameFilter.clear();
-        nameFilter.append("S1118*.jpg");
-        QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
-        if(files.empty() == false && files.first().length() == 26)
-          e->setAccepted(true);
-        else
-          e->setAccepted(false);
-      }
-    }
+    te::st::TrajectoryDataSet* trajLayer = dynamic_cast<te::st::TrajectoryDataSetLayer*>(layer.get())->getTrajectoryDataset().release();
+    addTrajectory(QString::fromStdString(trajLayer->getId()), "", trajLayer);
+    if(isHidden())
+      show();
   }
 }
 
-void te::qt::widgets::TimeSliderWidget::dropEvent(QDropEvent* e)
+void te::qt::widgets::TimeSliderWidget::layerRemoved(te::map::AbstractLayerPtr layer)
 {
-  m_dropModifiers = e->keyboardModifiers();
-  const QMimeData* mdata = e->mimeData();
-  m_dropUrls = mdata->urls();
-  m_dropBA = mdata->data("application/x-terralib;value=\"DraggedItems\"");
-  QTimer::singleShot(10, this, SLOT(dropAction()));
+  if(layer->getType() == "TRAJECTORYDATASETLAYER")
+  {
+    //te::st::TrajectoryDataSet* trajLayer = dynamic_cast<te::st::TrajectoryDataSetLayer*>(layer.get())->getTrajectoryDataset().release();
+    //addTrajectory(QString::fromStdString(trajLayer->getId()), "", trajLayer);
+  }
 }
 
-void te::qt::widgets::TimeSliderWidget::dropAction()
-{
-  te::qt::widgets::ScopedCursor scopedCursor(Qt::WaitCursor);
-  int state = m_parallelAnimation->state();
-  if(state == QAbstractAnimation::Running)
-    onPlayToolButtonnClicked(); // put to paused state
-
-  if(m_dropModifiers == Qt::NoModifier)
-  {
-    onStopToolButtonnClicked();
-    m_itemList.clear();
-    m_ui->m_opacityComboBox->clear();
-    m_ui->m_trajectoryColorComboBox->clear();
-    m_ui->m_TemporalHorizontalSlider->setValue(0);
-    m_parallelAnimation->setCurrentTime(0);
-    m_ui->m_settingsToolButton->setEnabled(false);
-    m_ui->m_playToolButton->setEnabled(false);
-    m_ui->m_stopToolButton->setEnabled(false);
-    m_ui->m_durationSpinBox->setEnabled(false);
-    m_ui->m_dateTimeEdit->setEnabled(false);
-    showPropertySection(false);
-
-    QList<QGraphicsItem*> list = m_animationScene->items();
-    QList<QGraphicsItem*>::iterator it;
-    for(it = list.begin(); it != list.end(); ++it)
-    {
-      te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
-      m_animationScene->removeItem(ai);
-      m_parallelAnimation->removeAnimation(ai->m_animation);
-      delete ai->m_animation;
-      delete ai;
-    }
-    m_display->update();
-  }
-
-  if(m_dropUrls.empty())
-  {
-    if(m_dropBA.count() != 0)
-    {
-      QString s(m_dropBA);
-      std::vector<te::qt::widgets::AbstractTreeItem*>* ditems = (std::vector<AbstractTreeItem*>*)s.toULongLong();
-      std::vector<te::qt::widgets::AbstractTreeItem*>::iterator it;
-      for(it = ditems->begin(); it != ditems->end(); ++it)
-      {
-        te::qt::widgets::AbstractTreeItem* ati = *it;
-        std::string ltype = ati->getLayer()->getType();
-        if(ltype == "DATASETLAYER")
-        {
-          te::map::AbstractLayerPtr al = ati->getLayer();
-          te::map::DataSetLayer* layer = (te::map::DataSetLayer*)al.get();
-          std::string dsid = layer->getDataSourceId();
-          te::da::DataSourcePtr ds = te::da::GetDataSource(dsid);
-          std::map<std::string, std::string> ci = ds->getConnectionInfo();
-          std::map<std::string, std::string>::iterator it = ci.find("URI");
-          if(it != ci.end())
-          {
-            QString dsetname(layer->getDataSetName().c_str());
-            QString uri(it->second.c_str());
-            if(dsetname == "40: locations" || dsetname == "41: locations")
-            {
-              QPair<QString, QString> p(uri, dsetname);
-
-              if(alreadyExists(p))
-                QMessageBox::information(this, dsetname + " alredy exists", "This item is already being animated!");
-              else
-                openTrajectory(uri, dsetname);
-            }
-          }
-        }
-      }
-    }
-  }
-  else
-  {
-    QString path = m_dropUrls.first().path();
-    path.remove(0, 1);
-
-    QPair<QString, QString> p(path, "");
-
-    if(alreadyExists(p))
-      QMessageBox::information(this, "animation alredy exists", "This item is already being animated!");
-    else
-      addTemporalImages(path);
-  }
-
-  if(state == QAbstractAnimation::Running || m_dropModifiers == Qt::NoModifier)
-    onPlayToolButtonnClicked();
-}
+//void te::qt::widgets::TimeSliderWidget::dragEnterEvent(QDragEnterEvent* e)
+//{
+//  const QMimeData* mdata = e->mimeData();
+//  QList<QUrl> urls = mdata->urls();
+//  if(urls.empty())
+//  {
+//    QByteArray ba = mdata->data("application/x-terralib;value=\"DraggedItems\"");
+//    if(ba.count() != 0)
+//    {
+//      QString s(ba);
+//      std::vector<te::qt::widgets::AbstractTreeItem*>* ditems = (std::vector<AbstractTreeItem*>*)s.toULongLong();
+//      std::vector<te::qt::widgets::AbstractTreeItem*>::iterator it;
+//      for(it = ditems->begin(); it != ditems->end(); ++it)
+//      {
+//        te::qt::widgets::AbstractTreeItem* ati = *it;
+//        std::string ltype = ati->getLayer()->getType();
+//        if(ltype == "DATASETLAYER")
+//        {
+//          te::map::AbstractLayerPtr al = ati->getLayer();
+//          te::map::DataSetLayer* layer = (te::map::DataSetLayer*)al.get();
+//          std::string dsid = layer->getDataSourceId();
+//          te::da::DataSourcePtr ds = te::da::GetDataSource(dsid);
+//          std::map<std::string, std::string> ci = ds->getConnectionInfo();
+//          std::map<std::string, std::string>::iterator it = ci.find("URI");
+//          if(it != ci.end())
+//          {
+//            std::string uri(it->second);
+//            if(uri.find("kml") != std::string::npos)
+//            {
+//              if(layer->getDataSetName() == "40: locations" || layer->getDataSetName() == "41: locations")
+//              {
+//                e->setDropAction(Qt::LinkAction); // this line is necessary to not move items on the layer explorer
+//                //e->setDropAction(Qt::CopyAction); // this line is necessary to not move items on the layer explorer
+//                e->setAccepted(true);
+//              }
+//            }
+//          }
+//        }
+//      }
+//    }
+//    else
+//      e->setAccepted(false);
+//  }
+//  else
+//  {
+//    QString path = urls.begin()->path();
+//    size_t pos = path.indexOf("/");
+//    if(pos == 0)
+//      path.remove(0, 1);
+//    QDir dir(path);
+//    QStringList nameFilter;
+//    nameFilter.append("*.ctl");
+//    QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
+//    if(files.empty() == false)
+//    {
+//      QString file(path + "/" + files.first());
+//      FILE* fp = fopen(file.toStdString().c_str(), "r");
+//      char buf[2000];
+//      int c = fread(buf, sizeof(char), 2000, fp);
+//      fclose(fp);
+//      buf[c] = 0;
+//      QString s(buf);
+//      if(s.contains("undef", Qt::CaseInsensitive))
+//        e->setAccepted(true);
+//      else
+//        e->setAccepted(false);
+//    }
+//    else
+//    {
+//      nameFilter.clear();
+//      nameFilter.append("S1123*.jpg");
+//      QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
+//      if(files.empty() == false && files.first().length() == 26)
+//        e->setAccepted(true);
+//      else
+//      {
+//        nameFilter.clear();
+//        nameFilter.append("S1118*.jpg");
+//        QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
+//        if(files.empty() == false && files.first().length() == 26)
+//          e->setAccepted(true);
+//        else
+//          e->setAccepted(false);
+//      }
+//    }
+//  }
+//}
+//
+//void te::qt::widgets::TimeSliderWidget::dropEvent(QDropEvent* e)
+//{
+//  m_dropModifiers = e->keyboardModifiers();
+//  const QMimeData* mdata = e->mimeData();
+//  m_dropUrls = mdata->urls();
+//  m_dropBA = mdata->data("application/x-terralib;value=\"DraggedItems\"");
+//  QTimer::singleShot(10, this, SLOT(dropAction()));
+//}
+//
+//void te::qt::widgets::TimeSliderWidget::dropAction()
+//{
+//  te::qt::widgets::ScopedCursor scopedCursor(Qt::WaitCursor);
+//  int state = m_parallelAnimation->state();
+//  if(state == QAbstractAnimation::Running)
+//    onPlayToolButtonnClicked(); // put to paused state
+//
+//  if(m_dropModifiers == Qt::NoModifier)
+//  {
+//    onStopToolButtonnClicked();
+//    m_itemList.clear();
+//    m_ui->m_opacityComboBox->clear();
+//    m_ui->m_trajectoryColorComboBox->clear();
+//    m_ui->m_TemporalHorizontalSlider->setValue(0);
+//    m_parallelAnimation->setCurrentTime(0);
+//    m_ui->m_settingsToolButton->setEnabled(false);
+//    m_ui->m_playToolButton->setEnabled(false);
+//    m_ui->m_stopToolButton->setEnabled(false);
+//    m_ui->m_durationSpinBox->setEnabled(false);
+//    m_ui->m_dateTimeEdit->setEnabled(false);
+//    showPropertySection(false);
+//
+//    QList<QGraphicsItem*> list = m_animationScene->items();
+//    QList<QGraphicsItem*>::iterator it;
+//    for(it = list.begin(); it != list.end(); ++it)
+//    {
+//      te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
+//      m_animationScene->removeItem(ai);
+//      m_parallelAnimation->removeAnimation(ai->m_animation);
+//      delete ai->m_animation;
+//      delete ai;
+//    }
+//    m_display->update();
+//  }
+//
+//  if(m_dropUrls.empty())
+//  {
+//    if(m_dropBA.count() != 0)
+//    {
+//      QString s(m_dropBA);
+//      std::vector<te::qt::widgets::AbstractTreeItem*>* ditems = (std::vector<AbstractTreeItem*>*)s.toULongLong();
+//      std::vector<te::qt::widgets::AbstractTreeItem*>::iterator it;
+//      for(it = ditems->begin(); it != ditems->end(); ++it)
+//      {
+//        te::qt::widgets::AbstractTreeItem* ati = *it;
+//        std::string ltype = ati->getLayer()->getType();
+//        if(ltype == "DATASETLAYER")
+//        {
+//          te::map::AbstractLayerPtr al = ati->getLayer();
+//          te::map::DataSetLayer* layer = (te::map::DataSetLayer*)al.get();
+//          std::string dsid = layer->getDataSourceId();
+//          te::da::DataSourcePtr ds = te::da::GetDataSource(dsid);
+//          std::map<std::string, std::string> ci = ds->getConnectionInfo();
+//          std::map<std::string, std::string>::iterator it = ci.find("URI");
+//          if(it != ci.end())
+//          {
+//            QString dsetname(layer->getDataSetName().c_str());
+//            QString uri(it->second.c_str());
+//            if(dsetname == "40: locations" || dsetname == "41: locations")
+//            {
+//              QPair<QString, QString> p(uri, dsetname);
+//
+//              if(alreadyExists(p))
+//                QMessageBox::information(this, dsetname + " alredy exists", "This item is already being animated!");
+//              else
+//                openTrajectory(uri, dsetname);
+//            }
+//          }
+//        }
+//      }
+//    }
+//  }
+//  else
+//  {
+//    QString path = m_dropUrls.first().path();
+//    path.remove(0, 1);
+//
+//    QPair<QString, QString> p(path, "");
+//
+//    if(alreadyExists(p))
+//      QMessageBox::information(this, "animation alredy exists", "This item is already being animated!");
+//    else
+//      addTemporalImages(path);
+//  }
+//
+//  if(state == QAbstractAnimation::Running || m_dropModifiers == Qt::NoModifier)
+//    onPlayToolButtonnClicked();
+//}
 
 bool te::qt::widgets::TimeSliderWidget::alreadyExists(QPair<QString, QString>& item)
 {
@@ -428,66 +416,18 @@ bool te::qt::widgets::TimeSliderWidget::alreadyExists(QPair<QString, QString>& i
   return false;
 }
 
-void te::qt::widgets::TimeSliderWidget::openTrajectory(const QString file, const QString& leao)
-{
-  te::da::DataSourceInfo dsinfo;
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = file.toStdString(); 
-  dsinfo.setConnInfo(connInfo);
-  dsinfo.setType("OGR");
-  dsinfo.setId(file.toStdString());
-
-  if(te::da::DataSourceManager::getInstance().find(file.toStdString()) == 0)
-  {
-    //Create the data source and put it into the manager
-    te::da::DataSourceManager::getInstance().open(dsinfo.getId(), dsinfo.getType(), dsinfo.getConnInfo());
-  }
-    
-  //Indicates how the trajectories are stored in the data source -> This structure is fixed for OGR driver
-  int phTimeIdx = 3;  /* property name: timestamp */
-  int geomIdx = 12;    /* property name: geom */
-
-  //It initializes the st data loader support
-  te::st::STDataLoader::initialize();
-
-  //Use the STDataLoader to create a TrajectoryDataSet with all observations
-
-  if(leao == "40: locations")
-  {
-    te::st::TrajectoryDataSetInfo tjinfo40(dsinfo, "40: locations", phTimeIdx, geomIdx, -1, "40");
-    te::st::TrajectoryDataSet* tjDS40 = te::st::STDataLoader::getDataSet(tjinfo40).release();
-    addTrajectory(leao, "c:/lixo/helicopteroT2.png", tjDS40);
-    delete tjDS40;
-  }
-  else if(leao == "41: locations")
-  {
-    te::st::TrajectoryDataSetInfo tjinfo41(dsinfo, "41: locations", phTimeIdx, geomIdx, -1, "41");
-    te::st::TrajectoryDataSet* tjDS41 = te::st::STDataLoader::getDataSet(tjinfo41).release();
-    addTrajectory(leao, "c:/lixo/cachorro_correndo_31.gif", tjDS41);
-    delete tjDS41;
-  }
-  te::st::STDataLoader::finalize();
-}
-
 void te::qt::widgets::TimeSliderWidget::addTrajectory(const QString& title, const QString& pixmapFile, te::st::TrajectoryDataSet* dset)
 {
   TrajectoryItem* ti = new TrajectoryItem(title, pixmapFile, m_display);
   m_animationScene->addItem(ti);
   Animation* animation = new Animation(ti, "pos");
   animation->setEasingCurve(QEasingCurve::Linear);
-    
-  //Indicates how the trajectories are stored in the data source -> This structure is fixed for OGR driver
-  int phTimeIdx = 3;  /* property name: timestamp */
-  int geomIdx = 12;    /* property name: geom */
 
-  if(title == "40: locations") // change default colors
-  {
-    ti->m_opacity = 120;
-    ti->m_forwardColor = Qt::green;
-    ti->m_forwardColor.setAlpha(ti->m_opacity);
-    ti->m_backwardColor = Qt::cyan;
-    ti->m_backwardColor.setAlpha(ti->m_opacity);
-  }
+  ti->m_opacity = 120;
+  ti->m_forwardColor = QColor(rand() % 255, rand() % 255, rand() % 255, TE_OPAQUE);
+  ti->m_forwardColor.setAlpha(ti->m_opacity);
+  ti->m_backwardColor = QColor(rand() % 255, rand() % 255, rand() % 255, TE_OPAQUE);;
+  ti->m_backwardColor.setAlpha(ti->m_opacity);
 
   animation->m_spatialExtent = dset->getSpatialExtent();
   animation->m_temporalExtent = *static_cast<te::dt::TimePeriod*>(dset->getTemporalExtent());
@@ -544,17 +484,6 @@ void te::qt::widgets::TimeSliderWidget::addTrajectory(const QString& title, cons
     else
       m_ui->m_dateTimeEdit->setEnabled(false);
   }
-  initProperty();
-
-  m_ui->m_trajectoryColorComboBox->addItem(title);
-  int count = m_ui->m_trajectoryColorComboBox->count();
-  m_ui->m_trajectoryColorComboBox->setCurrentIndex(count-1);
-  onTrajectoryColorComboBoxActivated(count-1);
-
-  m_ui->m_opacityComboBox->addItem(title);
-  count = m_ui->m_opacityComboBox->count();
-  m_ui->m_opacityComboBox->setCurrentIndex(count-1);
-  onOpacityComboBoxActivated(count-1);
 }
 
 void te::qt::widgets::TimeSliderWidget::addTemporalImages(const QString& filePath)
@@ -596,13 +525,13 @@ void te::qt::widgets::TimeSliderWidget::addTemporalImages(const QString& filePat
     else
       m_ui->m_dateTimeEdit->setEnabled(false);
   }
-  initProperty();
+//  initProperty();
 
-  QDir dir(filePath);
-  m_ui->m_opacityComboBox->addItem(dir.dirName());
-  int count = m_ui->m_opacityComboBox->count();
-  m_ui->m_opacityComboBox->setCurrentIndex(count-1);
-  onOpacityComboBoxActivated(count-1);
+  //QDir dir(filePath);
+  //m_ui->m_opacityComboBox->addItem(dir.dirName());
+  //int count = m_ui->m_opacityComboBox->count();
+  //m_ui->m_opacityComboBox->setCurrentIndex(count-1);
+  //onOpacityComboBoxActivated(count-1);
 }
 
 te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getGoesMetadata(const QString& path)
@@ -919,82 +848,82 @@ void te::qt::widgets::TimeSliderWidget::setAutomaticPan(const QString& title)
 
 bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
 {
-  if(obj == m_ui->m_forwardColorPushButton)
-  {
-    if(e->type() == QEvent::Paint)
-    {
-      QPainter painter(m_ui->m_forwardColorPushButton);
-      QBrush brush(m_ui->m_forwardColorPushButton->palette().color(QPalette::Window));
-      painter.fillRect(m_ui->m_forwardColorPushButton->rect(), brush);
-      return true;
-    }
-    else if(e->type() == QEvent::MouseButtonPress)
-    {
-      QColor cor = QColorDialog::getColor(m_ui->m_forwardColorPushButton->palette().color(QPalette::Window), this, "Forward Color", QColorDialog::ShowAlphaChannel);
-      if(cor.isValid() == false)
-        return true;
-      else if(cor == m_ui->m_forwardColorPushButton->palette().color(QPalette::Window))
-        return true;
+  //if(obj == m_ui->m_forwardColorPushButton)
+  //{
+  //  if(e->type() == QEvent::Paint)
+  //  {
+  //    QPainter painter(m_ui->m_forwardColorPushButton);
+  //    QBrush brush(m_ui->m_forwardColorPushButton->palette().color(QPalette::Window));
+  //    painter.fillRect(m_ui->m_forwardColorPushButton->rect(), brush);
+  //    return true;
+  //  }
+  //  else if(e->type() == QEvent::MouseButtonPress)
+  //  {
+  //    QColor cor = QColorDialog::getColor(m_ui->m_forwardColorPushButton->palette().color(QPalette::Window), this, "Forward Color", QColorDialog::ShowAlphaChannel);
+  //    if(cor.isValid() == false)
+  //      return true;
+  //    else if(cor == m_ui->m_forwardColorPushButton->palette().color(QPalette::Window))
+  //      return true;
 
-      m_ui->m_forwardColorPushButton->setPalette(QPalette(cor));
+  //    m_ui->m_forwardColorPushButton->setPalette(QPalette(cor));
 
-      QString titlecb = m_ui->m_trajectoryColorComboBox->currentText();
+  //    QString titlecb = m_ui->m_trajectoryColorComboBox->currentText();
 
-      QList<QGraphicsItem*> list = m_animationScene->items();
-      QList<QGraphicsItem*>::iterator it;
-      te::qt::widgets::TrajectoryItem* ti = 0;
+  //    QList<QGraphicsItem*> list = m_animationScene->items();
+  //    QList<QGraphicsItem*>::iterator it;
+  //    te::qt::widgets::TrajectoryItem* ti = 0;
 
-      for(it = list.begin(); it != list.end(); ++it)
-      {
-        ti = (te::qt::widgets::TrajectoryItem*)(*it);
-        QString title = ti->m_title;
-        if(title == titlecb)
-          break;
-      }
-      if(ti != 0)
-        ti->m_forwardColor = cor;
+  //    for(it = list.begin(); it != list.end(); ++it)
+  //    {
+  //      ti = (te::qt::widgets::TrajectoryItem*)(*it);
+  //      QString title = ti->m_title;
+  //      if(title == titlecb)
+  //        break;
+  //    }
+  //    if(ti != 0)
+  //      ti->m_forwardColor = cor;
 
-      return true;
-    }
-  }
-  else if(obj == m_ui->m_backwardColorPushButton)
-  {
-    if(e->type() == QEvent::Paint)
-    {
-      QPainter painter(m_ui->m_backwardColorPushButton);
-      QBrush brush(m_ui->m_backwardColorPushButton->palette().color(QPalette::Window));
-      painter.fillRect(m_ui->m_backwardColorPushButton->rect(), brush);
-      return true;
-    }
-    else if(e->type() == QEvent::MouseButtonPress)
-    {
-      QColor cor = QColorDialog::getColor(m_ui->m_backwardColorPushButton->palette().color(QPalette::Window), this, "Forward Color", QColorDialog::ShowAlphaChannel);
-      if(cor.isValid() == false)
-        return true;
-      else if(cor == m_ui->m_backwardColorPushButton->palette().color(QPalette::Window))
-        return true;
+  //    return true;
+  //  }
+  //}
+  //else if(obj == m_ui->m_backwardColorPushButton)
+  //{
+  //  if(e->type() == QEvent::Paint)
+  //  {
+  //    QPainter painter(m_ui->m_backwardColorPushButton);
+  //    QBrush brush(m_ui->m_backwardColorPushButton->palette().color(QPalette::Window));
+  //    painter.fillRect(m_ui->m_backwardColorPushButton->rect(), brush);
+  //    return true;
+  //  }
+    //else if(e->type() == QEvent::MouseButtonPress)
+    //{
+    //  QColor cor = QColorDialog::getColor(m_ui->m_backwardColorPushButton->palette().color(QPalette::Window), this, "Forward Color", QColorDialog::ShowAlphaChannel);
+    //  if(cor.isValid() == false)
+    //    return true;
+    //  else if(cor == m_ui->m_backwardColorPushButton->palette().color(QPalette::Window))
+    //    return true;
 
-      m_ui->m_backwardColorPushButton->setPalette(QPalette(cor));
+    //  m_ui->m_backwardColorPushButton->setPalette(QPalette(cor));
 
-      QString titlecb = m_ui->m_trajectoryColorComboBox->currentText();
+    //  QString titlecb = m_ui->m_trajectoryColorComboBox->currentText();
 
-      QList<QGraphicsItem*> list = m_animationScene->items();
-      QList<QGraphicsItem*>::iterator it;
-      te::qt::widgets::TrajectoryItem* ti = 0;
+    //  QList<QGraphicsItem*> list = m_animationScene->items();
+    //  QList<QGraphicsItem*>::iterator it;
+    //  te::qt::widgets::TrajectoryItem* ti = 0;
 
-      for(it = list.begin(); it != list.end(); ++it)
-      {
-        ti = (te::qt::widgets::TrajectoryItem*)(*it);
-        QString title = ti->m_title;
-        if(title == titlecb)
-          break;
-      }
-      if(ti != 0)
-        ti->m_backwardColor = cor;
+    //  for(it = list.begin(); it != list.end(); ++it)
+    //  {
+    //    ti = (te::qt::widgets::TrajectoryItem*)(*it);
+    //    QString title = ti->m_title;
+    //    if(title == titlecb)
+    //      break;
+    //  }
+    //  if(ti != 0)
+    //    ti->m_backwardColor = cor;
 
-      return true;
-    }
-  }
+    //  return true;
+    //}
+//  }
 
   if(e->type() == QEvent::Close)
   {
@@ -1050,28 +979,28 @@ bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
       m_oldQDateTime = d;
       return false;
     }
-    else if(obj == m_ui->m_initialAnimationDateTimeEdit)
-    {
-      QDateTime d = m_ui->m_initialAnimationDateTimeEdit->dateTime();
-      if(d == m_oldIQDateTime)
-      {
-        d = fixDateTimeEdit(m_ui->m_initialAnimationDateTimeEdit, d);
-        m_ui->m_initialAnimationDateTimeEdit->setDateTime(d);
-      }
-      m_oldIQDateTime = d;
-      return false;
-    }
-    else if(obj == m_ui->m_finalAnimationDateTimeEdit)
-    {
-      QDateTime d = m_ui->m_finalAnimationDateTimeEdit->dateTime();
-      if(d == m_oldFQDateTime)
-      {
-        d = fixDateTimeEdit(m_ui->m_finalAnimationDateTimeEdit, d);
-        m_ui->m_finalAnimationDateTimeEdit->setDateTime(d);
-      }
-      m_oldFQDateTime = d;
-      return false;
-    }
+    //else if(obj == m_ui->m_initialAnimationDateTimeEdit)
+    //{
+    //  QDateTime d = m_ui->m_initialAnimationDateTimeEdit->dateTime();
+    //  if(d == m_oldIQDateTime)
+    //  {
+    //    d = fixDateTimeEdit(m_ui->m_initialAnimationDateTimeEdit, d);
+    //    m_ui->m_initialAnimationDateTimeEdit->setDateTime(d);
+    //  }
+    //  m_oldIQDateTime = d;
+    //  return false;
+    //}
+    //else if(obj == m_ui->m_finalAnimationDateTimeEdit)
+    //{
+    //  QDateTime d = m_ui->m_finalAnimationDateTimeEdit->dateTime();
+    //  if(d == m_oldFQDateTime)
+    //  {
+    //    d = fixDateTimeEdit(m_ui->m_finalAnimationDateTimeEdit, d);
+    //    m_ui->m_finalAnimationDateTimeEdit->setDateTime(d);
+    //  }
+    //  m_oldFQDateTime = d;
+    //  return false;
+    //}
   }
 
   return QWidget::eventFilter(obj, e);
@@ -1079,13 +1008,33 @@ bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
 
 void te::qt::widgets::TimeSliderWidget::onSettingsToolButtonnClicked()
 {
-  if(m_ui->m_propertyWidget->isHidden())
+  std::auto_ptr<te::qt::widgets::SliderPropertiesDialog> dlg (new te::qt::widgets::SliderPropertiesDialog(this));
+  dlg->populateUi(m_temporalExtent, m_animationScene->items(), (m_direction == QAbstractAnimation::Forward), m_loop, m_goAndBack);
+
+  if (dlg->exec() == QDialog::Accepted)
   {
-    showPropertySection(true);
-    initProperty();
+    if(m_parallelAnimation->state() == QAbstractAnimation::Running)
+      onStopToolButtonnClicked();
+
+    //Adjusting basic options
+    dlg->isForwardChecked() ? m_direction = QAbstractAnimation::Forward : m_direction = QAbstractAnimation::Backward;
+    m_loop = dlg->isLoopChecked();
+    m_goAndBack = dlg->isGoBackChecked();
+
+    //Adjusting temporal options
+    m_temporalAnimationExtent = te::dt::TimePeriod(dlg->getInitialTime(), dlg->getFinalTime());
+    m_ui->m_dateTimeEdit->setMinimumDateTime(dlg->getInitialQDate());
+    m_ui->m_dateTimeEdit->setMaximumDateTime(dlg->getFinalQDate());
+    onDateTimeEditChanged(m_ui->m_dateTimeEdit->dateTime());
+
+    //Updating
+    createNewPixmap();
+    calculateSpatialExtent();
+    createAnimations();
+    setDuration(m_duration);
+    setDirection(m_direction);
+    m_display->update();
   }
-  else
-    showPropertySection(false);
 }
 
 void te::qt::widgets::TimeSliderWidget::onPlayToolButtonnClicked()
@@ -1336,302 +1285,6 @@ void te::qt::widgets::TimeSliderWidget::deleteMe()
   emit deleteTimeSliderWidget();
 }
 
-void te::qt::widgets::TimeSliderWidget::onAddPushButtonClicked(bool b)
-{
-  QString title = QInputDialog::getText(this, "Add Item", "title");
-
-  if(title.isEmpty())
-    return;
-
-  te::qt::widgets::ScopedCursor scopedCursor(Qt::WaitCursor);
-
-  QString path;
-  if(title == "eta5km"|| title == "hidro")
-    path = "C:/lixo/FORECAST/" + title;
-  else
-    path = "C:/lixo/TemporalImages/" + title;
-
-  addTemporalImages(path);
-}
-
-//void te::qt::widgets::TimeSliderWidget::onAddPushButtonClicked(bool b)
-//{
-//  QString title = QInputDialog::getText(this, "Add Item", "title");
-//
-//  if(title.isEmpty())
-//    return;
-//
-//  te::qt::widgets::ScopedCursor scopedCursor(Qt::WaitCursor);
-//
-//  if(title == "lm40" || title == "lm41")
-//  {
-//    if(m_animationScene->items().isEmpty())
-//      m_ui->m_durationSpinBox->setValue(m_duration);
-//
-//    int state = m_parallelAnimation->state();
-//    m_currentTime = m_parallelAnimation->currentTime();
-//    if(state == QAbstractAnimation::Running)
-//      onPlayToolButtonnClicked();
-//    openTrajectory(title);
-//    calculateSpatialExtent();
-//    calculateTemporalExtent();
-//    createAnimations();
-//    setDuration(m_duration);
-//    setDirection(m_direction);
-//    if(state == QAbstractAnimation::Running)
-//    {
-//      onPlayToolButtonnClicked();
-//      m_parallelAnimation->setCurrentTime(m_currentTime);
-//    }
-//    m_ui->m_playToolButton->setEnabled(true);
-//  }
-//  else
-//  {
-//    QString path = "C:/lixo/TemporalImages/";
-//    QString suffix = ".png";
-//    bool meteorological = false;
-//
-//    if(title == "NoDoubt")
-//    {
-//      title = "NoDoubt ";
-//      path += "NoDoubt/";
-//      suffix = ".jpg";
-//    }
-//    else if(title == "segredo")
-//    {
-//      title = "segredo ";
-//      path += "segredo/";
-//      suffix = ".jpg";
-//    }
-//    else if(title == "IR_high")
-//    {
-//      path += "IR_high/";
-//      meteorological = true;
-//    }
-//    else if(title == "IR_low")
-//    {
-//      path += "IR_low/";
-//      meteorological = true;
-//    }
-//    else if(title == "WV_high")
-//    {
-//      path += "WV_high/";
-//      meteorological = true;
-//    }
-//    else if(title == "WV_low")
-//    {
-//      path += "WV_low/";
-//      meteorological = true;
-//    }
-//    else if(title == "GOESColorfull_high")
-//    {
-//      path += "GOESColorfull_high/";
-//      meteorological = true;
-//    }
-//    else if(title == "GOESColorfull_low")
-//    {
-//      path += "GOESColorfull_low/";
-//      meteorological = true;
-//    }
-//    else if(title == "GOESRealce_high")
-//    {
-//      path += "GOESRealce_high/";
-//      meteorological = true;
-//    }
-//    else if(title == "GOESRealce_low")
-//    {
-//      path += "GOESRealce_low/";
-//      meteorological = true;
-//    }
-//    else if(title == "GOESRealce2_high")
-//    {
-//      path += "GOESRealce2_high/";
-//      meteorological = true;
-//    }
-//    else if(title == "GOESRealce2_low")
-//    {
-//      path += "GOESRealce2_low/";
-//      meteorological = true;
-//    }
-//    else if(title == "GMVapor_high")
-//    {
-//      path += "GMVapor_high/";
-//      meteorological = true;
-//    }
-//    else if(title == "GMVapor_low")
-//    {
-//      path += "GMVapor_low/";
-//      meteorological = true;
-//    }
-//
-//    if(meteorological)
-//    {
-//      if(m_animationScene->items().isEmpty())
-//        m_ui->m_durationSpinBox->setValue(m_duration);
-//
-//      int state = m_parallelAnimation->state();
-//      m_currentTime = m_parallelAnimation->currentTime();
-//      if(state == QAbstractAnimation::Running)
-//        onPlayToolButtonnClicked();
-//
-//      getGoesMetadata(path);
-//      calculateSpatialExtent();
-//      calculateTemporalExtent();
-//      createAnimations();
-//      setDuration(m_duration);
-//      setDirection(m_direction);
-//      if(state == QAbstractAnimation::Running)
-//      {
-//        onPlayToolButtonnClicked();
-//        m_parallelAnimation->setCurrentTime(m_currentTime);
-//      }
-//      if(m_animationScene->items().isEmpty() == false)
-//      {
-//        m_ui->m_durationSpinBox->setEnabled(true);
-//        m_ui->m_settingsToolButton->setEnabled(true);
-//        m_ui->m_playToolButton->setEnabled(true);
-//        m_ui->m_stopToolButton->setEnabled(true);
-//        if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
-//          m_ui->m_dateTimeEdit->setEnabled(true);
-//        else
-//          m_ui->m_dateTimeEdit->setEnabled(false);
-//      }
-//      initProperty();
-//
-//      m_ui->m_opacityComboBox->addItem(title);
-//      int count = m_ui->m_opacityComboBox->count();
-//      m_ui->m_opacityComboBox->setCurrentIndex(count-1);
-//      onOpacityComboBoxActivated(count-1);
-//      return;
-//    }
-//
-//
-//    QString file = path + title + "000001" + suffix;
-//    if(title.contains("fastfood"))
-//      file = path + "fastfood000001.png";
-//
-//    QFile qfile(file);
-//    if(qfile.exists())
-//    {
-//      if(m_animationScene->items().isEmpty())
-//        m_ui->m_durationSpinBox->setValue(m_duration);
-//
-//      int state = m_parallelAnimation->state();
-//      m_currentTime = m_parallelAnimation->currentTime();
-//      if(state == QAbstractAnimation::Running)
-//        onPlayToolButtonnClicked();
-//
-//      addTemporalImages(path + title + suffix, true);
-//      calculateSpatialExtent();
-//      calculateTemporalExtent();
-//      createAnimations();
-//      setDuration(m_duration);
-//      setDirection(m_direction);
-//      if(state == QAbstractAnimation::Running)
-//      {
-//        onPlayToolButtonnClicked();
-//        m_parallelAnimation->setCurrentTime(m_currentTime);
-//      }
-//    }
-//    else
-//    {
-//      QMessageBox::information(this, "Not Added", "Invalid Animation item"); 
-//      return;
-//    }
-//  }
-//
-//  if(m_animationScene->items().isEmpty() == false)
-//  {
-//    m_ui->m_durationSpinBox->setEnabled(true);
-//    m_ui->m_settingsToolButton->setEnabled(true);
-//    m_ui->m_playToolButton->setEnabled(true);
-//    m_ui->m_stopToolButton->setEnabled(true);
-//    if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
-//      m_ui->m_dateTimeEdit->setEnabled(true);
-//    else
-//      m_ui->m_dateTimeEdit->setEnabled(false);
-//  }
-//  initProperty();
-//
-//  m_ui->m_opacityComboBox->addItem(title);
-//  int count = m_ui->m_opacityComboBox->count();
-//  m_ui->m_opacityComboBox->setCurrentIndex(count-1);
-//  onOpacityComboBoxActivated(count-1);
-//}
-
-void te::qt::widgets::TimeSliderWidget::onRemovePushButtonClicked(bool b)
-{
-  QList<QGraphicsItem*> list = m_animationScene->items();
-  QList<QGraphicsItem*>::iterator it;
-
-  for(it = list.begin(); it != list.end(); ++it)
-  {
-    te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
-    QString title = ai->m_title;
-    int r = QMessageBox::question(this, "Remove Item", "Remove " + title, QMessageBox::Ok, QMessageBox::No);
-    if(r == QMessageBox::Ok)
-    {
-      removeComboItem(ai);
-      if(list.count() == 1)
-      {
-        onStopToolButtonnClicked();
-        m_animationScene->removeItem(ai);
-        m_parallelAnimation->removeAnimation(ai->m_animation);
-        delete ai->m_animation;
-        delete ai;
-        m_ui->m_TemporalHorizontalSlider->setValue(0);
-        m_parallelAnimation->setCurrentTime(0);
-        m_ui->m_settingsToolButton->setEnabled(false);
-        m_ui->m_playToolButton->setEnabled(false);
-        m_ui->m_stopToolButton->setEnabled(false);
-        m_ui->m_durationSpinBox->setEnabled(false);
-        m_ui->m_dateTimeEdit->setEnabled(false);
-        showPropertySection(false);
-        m_display->update();
-        initProperty();
-        return;
-      }
-
-      bool running = false;
-      int state = m_parallelAnimation->state();
-      if(state == QAbstractAnimation::Running)
-      {
-        running = true;;
-        onPlayToolButtonnClicked();
-      }
-
-      m_currentTime = m_parallelAnimation->currentTime();
-      m_animationScene->removeItem(ai);
-      m_parallelAnimation->removeAnimation(ai->m_animation);
-      if(ai->pixmap().isNull() == false)
-      {
-        if(m_animationScene->m_numberOfTrajectories)
-        {
-          m_animationScene->m_trajectoryPixmap->fill(Qt::transparent);
-          draw();
-        }
-      }
-      delete ai->m_animation;
-      delete ai;
-
-      calculateSpatialExtent();
-      calculateTemporalExtent();
-      createAnimations();
-      setDuration(m_duration);
-      setDirection(m_direction);
-
-      if(running)
-      {
-        onPlayToolButtonnClicked();
-        m_parallelAnimation->setCurrentTime(m_currentTime);
-      }
-
-      break;
-    }
-  }
-  initProperty();
-}
-
 void te::qt::widgets::TimeSliderWidget::putToFront(te::qt::widgets::AnimationItem* item)
 {
   int state = m_parallelAnimation->state();
@@ -1684,42 +1337,6 @@ void te::qt::widgets::TimeSliderWidget::putToBack(te::qt::widgets::AnimationItem
   }
 
   onPlayToolButtonnClicked();
-}
-
-void te::qt::widgets::TimeSliderWidget::onFrontPushButtonClicked(bool b)
-{
-  QList<QGraphicsItem*> list = m_animationScene->items();
-  QList<QGraphicsItem*>::iterator it;
-
-  for(it = list.begin(); it != list.end(); ++it)
-  {
-    te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
-    QString title = ai->m_title;
-    int r = QMessageBox::question(this, "Put To Front", "Animation Item: " + title, QMessageBox::Ok, QMessageBox::No);
-    if(r == QMessageBox::Ok)
-    {
-      putToFront(ai);
-      break;
-    }
-  }
-}
-
-void te::qt::widgets::TimeSliderWidget::onBackPushButtonClicked(bool b)
-{
-  QList<QGraphicsItem*> list = m_animationScene->items();
-  QList<QGraphicsItem*>::iterator it;
-
-  for(it = list.begin(); it != list.end(); ++it)
-  {
-    te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
-    QString title = ai->m_title;
-    int r = QMessageBox::question(this, "Put To Back", "Animation Item: " + title, QMessageBox::Ok, QMessageBox::No);
-    if(r == QMessageBox::Ok)
-    {
-      putToBack(ai);
-      break;
-    }
-  }
 }
 
 void te::qt::widgets::TimeSliderWidget::erase(const unsigned int& curTime)
@@ -2054,488 +1671,6 @@ void te::qt::widgets::TimeSliderWidget::drawTrajectoryIcon(const te::qt::widgets
   }
 }
 
-void te::qt::widgets::TimeSliderWidget::onOpacityValueChanged(int v)
-{
-  QString titlecb = m_ui->m_opacityComboBox->currentText();
-
-  QList<QGraphicsItem*> list = m_animationScene->items();
-  QList<QGraphicsItem*>::iterator it;
-
-  for(it = list.begin(); it != list.end(); ++it)
-  {
-    te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
-    QString title = ai->m_title;
-    if(title.contains(titlecb))
-    {
-      ai->m_opacity = v;
-      m_display->update();
-      break;
-    }
-  }
-}
-
-void te::qt::widgets::TimeSliderWidget::initProperty()
-{
-  te::dt::TimeInstant ti = m_temporalAnimationExtent.getInitialTimeInstant();
-  QDate qdatei(ti.getDate().getYear(), ti.getDate().getMonth(), ti.getDate().getDay());
-  QTime qtimei(ti.getTime().getHours(), ti.getTime().getMinutes(), ti.getTime().getSeconds());
-  QDateTime qdatetimei(qdatei, qtimei);
-  m_ui->m_initialAnimationDateTimeEdit->setDateTime(qdatetimei);
-
-  te::dt::TimeInstant tf = m_temporalAnimationExtent.getFinalTimeInstant();
-  QDate qdatef(tf.getDate().getYear(), tf.getDate().getMonth(), tf.getDate().getDay());
-  QTime qtimef(tf.getTime().getHours(), tf.getTime().getMinutes(), tf.getTime().getSeconds());
-  QDateTime qdatetimef(qdatef, qtimef);
-  m_ui->m_finalAnimationDateTimeEdit->setDateTime(qdatetimef);
-
-  // set mimimum datetime
-  te::dt::TimeInstant tmin = m_temporalExtent.getInitialTimeInstant();
-  QDateTime minimum(QDate(tmin.getDate().getYear(), tmin.getDate().getMonth(), tmin.getDate().getDay()),
-                    QTime(tmin.getTime().getHours(), tmin.getTime().getMinutes(), tmin.getTime().getSeconds()));
-  m_ui->m_initialAnimationDateTimeEdit->setMinimumDateTime(minimum);
-
-  // set maximum datetime
-  te::dt::TimeInstant tmax = m_temporalExtent.getFinalTimeInstant();
-  QDateTime maximum(QDate(tmax.getDate().getYear(), tmax.getDate().getMonth(), tmax.getDate().getDay()),
-                    QTime(tmax.getTime().getHours(), tmax.getTime().getMinutes(), tmax.getTime().getSeconds()));
-  m_ui->m_finalAnimationDateTimeEdit->setMaximumDateTime(maximum);
-
-  if(m_direction == QAbstractAnimation::Forward)
-  {
-    if(m_ui->m_forwardRadioButton->isChecked() == false)
-      m_ui->m_forwardRadioButton->toggle();
-  }
-
-  if(m_loop)
-    m_ui->m_loopCheckBox->setChecked(true);
-  if(m_goAndBack)
-    m_ui->m_goAndBackCheckBox->setChecked(true);
-}
-
-//void te::qt::widgets::TimeSliderWidget::onOkPushButtonClicked()
-//{
-//  te::dt::TimeInstant ti = getInitialTime();
-//  te::dt::TimeInstant tf = getFinalTime();
-//  if(ti > tf || ti == tf)
-//  {
-//    QMessageBox::warning(this, "Time Extent Error", "Initial time can not be larger than the end time!", QMessageBox::Ok);
-//    return;
-//  }
-//
-//  QDateTime dt = m_ui->m_dateTimeEdit->dateTime();
-//  te::dt::TimePeriod tp = m_temporalAnimationExtent;
-//
-//  if(isSettingChanged())
-//  {
-//    m_currentTime = m_parallelAnimation->currentTime();
-//    int state = m_parallelAnimation->state();
-//    if(state == QAbstractAnimation::Running)
-//      onPlayToolButtonnClicked();
-//
-//    QAbstractAnimation::Direction direction = m_direction;
-//
-//    if(m_ui->m_forwardRadioButton->isChecked())
-//      m_direction = QAbstractAnimation::Forward;
-//    else
-//      m_direction = QAbstractAnimation::Backward;
-//
-//    m_loop = m_ui->m_loopCheckBox->isChecked();
-//    m_goAndBack = m_ui->m_forwardAndThenBackwardCheckBox->isChecked();
-//
-//    m_temporalAnimationExtent = te::dt::TimePeriod(ti, tf);
-//
-//    QDateTime minimum(QDate(ti.getDate().getYear(), ti.getDate().getMonth(), ti.getDate().getDay()),
-//      QTime(ti.getTime().getHours(), ti.getTime().getMinutes(), ti.getTime().getSeconds()));
-//    QDateTime maximum(QDate(tf.getDate().getYear(), tf.getDate().getMonth(), tf.getDate().getDay()),
-//      QTime(tf.getTime().getHours(), tf.getTime().getMinutes(), tf.getTime().getSeconds()));
-//
-//    m_ui->m_dateTimeEdit->setMinimumDateTime(minimum);
-//    m_ui->m_dateTimeEdit->setMaximumDateTime(maximum);
-//
-//    createNewPixmap();
-//    calculateSpatialExtent();
-//    createAnimations();
-//    setDuration(m_duration);
-//    setDirection(m_direction);
-//
-//    if(state == QAbstractAnimation::Running)
-//    {
-//      onPlayToolButtonnClicked();
-//      m_parallelAnimation->setCurrentTime(m_currentTime);
-//      m_parallelAnimation->start();
-//    }
-//    else
-//    {
-//      m_parallelAnimation->setCurrentTime(m_currentTime);
-//      m_parallelAnimation->start();
-//      if(state == QAbstractAnimation::Paused)
-//        m_parallelAnimation->pause();   
-//    }
-//
-//    if(tp == m_temporalAnimationExtent)
-//      onDateTimeEditChanged(dt);
-//  }
-//  showPropertySection(false);
-//}
-
-//void te::qt::widgets::TimeSliderWidget::onCancelPushButtonClicked()
-//{
-//  showPropertySection(false);
-//}
-
-te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getInitialTime()
-{
-  QDateTime t = m_ui->m_initialAnimationDateTimeEdit->dateTime();
-  te::dt::Date date(t.date().year(), t.date().month(), t.date().day());
-  te::dt::TimeDuration duration(t.time().hour(), t.time().minute(), t.time().second());
-  te::dt::TimeInstant time(date, duration);
-  return time;
-  //QString time = m_ui->m_initialTimeLineEdit->text();
-  //QString s = simpleTimeString2IsoString(time);
-  //if(s.isEmpty())
-  //  return te::dt::TimeInstant();
-
-  //te::dt::TimeInstant t(s.toStdString());
-  //return t;
-}
-
-te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getFinalTime()
-{
-  QDateTime t = m_ui->m_finalAnimationDateTimeEdit->dateTime();
-  te::dt::Date date(t.date().year(), t.date().month(), t.date().day());
-  te::dt::TimeDuration duration(t.time().hour(), t.time().minute(), t.time().second());
-  te::dt::TimeInstant time(date, duration);
-  return time;
-}
-
-//QString te::qt::widgets::TimeSliderWidget::simpleTimeString2IsoString(QString timeString)
-//{
-//  QString timeIso;
-//
-//  QString tt = timeString.toUpper();
-//  tt.remove(" ");
-//  std::string time = tt.toStdString();
-//  if(time.size() != 19)
-//    return timeIso;
-//  std::string tIso = time.substr(0, 4);
-//
-//  std::string s = time.substr(5, 3);
-//  std::string mes;
-//  if(s == "JAN")
-//    mes = "01";
-//  else if(s == "FEB")
-//    mes = "02";
-//  else if(s == "MAR")
-//    mes = "03";
-//  else if(s == "APR")
-//    mes = "04";
-//  else if(s == "MAY")
-//    mes = "05";
-//  else if(s == "JUN")
-//    mes = "06";
-//  else if(s == "JUL")
-//    mes = "07";
-//  else if(s == "AUG")
-//    mes = "08";
-//  else if(s == "SEP")
-//    mes = "09";
-//  else if(s == "OCT")
-//    mes = "10";
-//  else if(s == "NOV")
-//    mes = "11";
-//  else if(s == "DEC")
-//    mes = "12";
-//  if(mes.empty())
-//    return timeIso;
-//
-//  tIso += mes;
-//
-//  tIso += time.substr(9, 2);
-//  tIso += "T";
-//  tIso += time.substr(11, 2);
-//  tIso += time.substr(14, 2);
-//  tIso += time.substr(17, 2);
-//
-//  timeIso = tIso.c_str();
-//  return timeIso;
-//}
-
-void te::qt::widgets::TimeSliderWidget::onResetInitialTimePushButtonClicked()
-{
-  te::dt::TimeInstant t = m_temporalExtent.getInitialTimeInstant();
-  QDate qdate(t.getDate().getYear(), t.getDate().getMonth(), t.getDate().getDay());
-  QTime qtime(t.getTime().getHours(), t.getTime().getMinutes(), t.getTime().getSeconds());
-  QDateTime qdatetime(qdate, qtime);
-  m_ui->m_initialAnimationDateTimeEdit->setDateTime(qdatetime);
-}
-
-void te::qt::widgets::TimeSliderWidget::onResetFinalTimePushButtonClicked()
-{
-  te::dt::TimeInstant t = m_temporalExtent.getFinalTimeInstant();
-  QDate qdate(t.getDate().getYear(), t.getDate().getMonth(), t.getDate().getDay());
-  QTime qtime(t.getTime().getHours(), t.getTime().getMinutes(), t.getTime().getSeconds());
-  QDateTime qdatetime(qdate, qtime);
-  m_ui->m_finalAnimationDateTimeEdit->setDateTime(qdatetime);
-}
-
-void te::qt::widgets::TimeSliderWidget::showPropertySection(bool b)
-{
-  if(b==false && m_ui->m_propertyWidget->isHidden())
-    return;
-  if(b==true && m_ui->m_propertyWidget->isHidden()==false)
-    return;
-
-  int h = m_ui->m_propertyWidget->height();
-
-  if(b == false)
-  {
-    m_ui->m_propertyWidget->hide();
-    resize(width(), height()-h);
-  }
-  else
-  {
-    m_ui->m_propertyWidget->show();
-    resize(width(), height()+h);
-  }
-}
-
-bool te::qt::widgets::TimeSliderWidget::isSettingChanged()
-{
-  te::dt::TimeInstant ti = m_temporalAnimationExtent.getInitialTimeInstant();
-  QDate qdatei(ti.getDate().getYear(), ti.getDate().getMonth(), ti.getDate().getDay());
-  QTime qtimei(ti.getTime().getHours(), ti.getTime().getMinutes(), ti.getTime().getSeconds());
-  QDateTime qdatetimei(qdatei, qtimei);
-  QDateTime qdi = m_ui->m_initialAnimationDateTimeEdit->dateTime();
-  if(qdatetimei != qdi)
-    return true;
-
-  te::dt::TimeInstant tf = m_temporalAnimationExtent.getFinalTimeInstant();
-  QDate qdatef(tf.getDate().getYear(), tf.getDate().getMonth(), tf.getDate().getDay());
-  QTime qtimef(tf.getTime().getHours(), tf.getTime().getMinutes(), tf.getTime().getSeconds());
-  QDateTime qdatetimef(qdatef, qtimef);
-  QDateTime qdf = m_ui->m_finalAnimationDateTimeEdit->dateTime();
-  if(qdatetimef != qdf)
-    return true;
-
-  if(m_ui->m_forwardRadioButton->isChecked() && m_direction != QAbstractAnimation::Forward)
-    return true;
-  if(m_ui->m_forwardRadioButton->isChecked() == false && m_direction != QAbstractAnimation::Backward)
-    return true;
-  if(m_ui->m_loopCheckBox->isChecked() != m_loop)
-    return true;
-  if(m_ui->m_goAndBackCheckBox->isChecked() != m_goAndBack)
-    return true;
-
-  return false;
-}
-
-void te::qt::widgets::TimeSliderWidget::onForwardRadioButtonClicked(bool b)
-{
-  if(m_direction == QAbstractAnimation::Forward)
-  {
-    if(m_comingBack)
-      m_comingBack = false;
-  }
-  else
-    changeDirection();
-}
-
-void te::qt::widgets::TimeSliderWidget::onBackwardRadioButtonClicked(bool b)
-{
-  if(m_direction == QAbstractAnimation::Backward)
-  {
-    if(m_comingBack)
-      m_comingBack = false;
-  }
-  else
-    changeDirection();
-}
-
-void te::qt::widgets::TimeSliderWidget::onLoopCheckBoxClicked(bool b)
-{
-  m_loop = b;
-  //char buf[10];
-  //te::dt::TimeInstant iTime = te::dt::TimeInstant(boost::posix_time::time_from_string("2008-05-01 00:00:00"));
-  //boost::posix_time::time_duration td = boost::posix_time::seconds(3600);
-
-  //QDir dir("C:/lixo/TemporalImages/TurmaDaMonicaBruxarias");
-  //QStringList nameFilter;
-  //nameFilter.append("TurmaDaMonicaBruxarias*");
-  //QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
-  //QStringList::iterator it;
-
-  //for(it = files.begin(); it != files.end(); ++it)
-  //{
-  //  QString s("C:/lixo/TemporalImages/TurmaDaMonicaBruxarias/");
-  //  QFile file(s+*it);
-  //  QString nfile = s + "TurmaDaMonicaBruxarias_";
-
-  //  nfile += s.setNum((short)iTime.getDate().getYear()) + "_";
-
-  //  sprintf(buf, "%02d_", iTime.getDate().getMonth());
-  //  buf[3] = 0;
-  //  nfile += buf;
-
-  //  sprintf(buf, "%02d_", iTime.getDate().getDay());
-  //  buf[3] = 0;
-  //  nfile += buf;
-
-  //  sprintf(buf, "%02d_", iTime.getTime().getHours());
-  //  buf[3] = 0;
-  //  nfile += buf;
-
-  //  sprintf(buf, "%02d_", iTime.getTime().getMinutes());
-  //  buf[3] = 0;
-  //  nfile += buf;
-
-  //  sprintf(buf, "%02d.jpg", iTime.getTime().getSeconds());
-  //  buf[6] = 0;
-  //  nfile += buf;
-
-  //  file.rename(nfile);
-  //  iTime = te::dt::TimeInstant(iTime.getTimeInstant() + td);
-  //}
-}
-
-void te::qt::widgets::TimeSliderWidget::onGoAndBackCheckBoxClicked(bool b)
-{
-  if(m_goAndBack != b)
-  {
-    if(m_comingBack)
-    {
-      changeDirection();
-      m_comingBack = false;
-    }
-  }
-
-  m_goAndBack = b;
-}
-
-void te::qt::widgets::TimeSliderWidget::onApplyTimeIntervalPushButtonClicked(bool b)
-{
-  te::dt::TimeInstant ti = getInitialTime();
-  te::dt::TimeInstant tf = getFinalTime();
-  if(ti > tf || ti == tf)
-  {
-    QMessageBox::warning(this, "Time Extent Error", "Initial time can not be larger than the end time!", QMessageBox::Ok);
-    return;
-  }
-
-  te::dt::TimeInstant t = m_temporalAnimationExtent.getInitialTimeInstant();
-  QDate qdatei(t.getDate().getYear(), t.getDate().getMonth(), t.getDate().getDay());
-  QTime qtimei(t.getTime().getHours(), t.getTime().getMinutes(), t.getTime().getSeconds());
-  QDateTime qdatetimei(qdatei, qtimei);
-  QDateTime qdi = m_ui->m_initialAnimationDateTimeEdit->dateTime();
-
-  t = m_temporalAnimationExtent.getFinalTimeInstant();
-  QDate qdatef(t.getDate().getYear(), t.getDate().getMonth(), t.getDate().getDay());
-  QTime qtimef(t.getTime().getHours(), t.getTime().getMinutes(), t.getTime().getSeconds());
-  QDateTime qdatetimef(qdatef, qtimef);
-  QDateTime qdf = m_ui->m_finalAnimationDateTimeEdit->dateTime();
-  if(qdatetimei == qdi && qdatetimef == qdf)
-    return;
-
-  m_currentTime = m_parallelAnimation->currentTime();
-  int state = m_parallelAnimation->state();
-  if(state == QAbstractAnimation::Running)
-    onPlayToolButtonnClicked();
-
-  QDateTime dt = m_ui->m_dateTimeEdit->dateTime();
-  te::dt::TimePeriod tp = m_temporalAnimationExtent;
-
-  m_temporalAnimationExtent = te::dt::TimePeriod(ti, tf);
-
-  QDateTime minimum(QDate(ti.getDate().getYear(), ti.getDate().getMonth(), ti.getDate().getDay()),
-    QTime(ti.getTime().getHours(), ti.getTime().getMinutes(), ti.getTime().getSeconds()));
-  QDateTime maximum(QDate(tf.getDate().getYear(), tf.getDate().getMonth(), tf.getDate().getDay()),
-    QTime(tf.getTime().getHours(), tf.getTime().getMinutes(), tf.getTime().getSeconds()));
-
-  m_ui->m_dateTimeEdit->setMinimumDateTime(minimum);
-  m_ui->m_dateTimeEdit->setMaximumDateTime(maximum);
-
-  createNewPixmap();
-  calculateSpatialExtent();
-  createAnimations();
-  setDuration(m_duration);
-  setDirection(m_direction);
-
-  if(state == QAbstractAnimation::Running)
-  {
-    onPlayToolButtonnClicked();
-    m_parallelAnimation->setCurrentTime(m_currentTime);
-    m_parallelAnimation->start();
-  }
-  else
-  {
-    m_parallelAnimation->setCurrentTime(m_currentTime);
-    m_parallelAnimation->start();
-    if(state == QAbstractAnimation::Paused)
-      m_parallelAnimation->pause();   
-  }
-
-  if(tp == m_temporalAnimationExtent)
-    onDateTimeEditChanged(dt);
-}
-
-void te::qt::widgets::TimeSliderWidget::onTrajectoryColorComboBoxActivated(int i)
-{
-  QString titlecb = m_ui->m_trajectoryColorComboBox->currentText();
-
-  QList<QGraphicsItem*> list = m_animationScene->items();
-  QList<QGraphicsItem*>::iterator it;
-  te::qt::widgets::TrajectoryItem* ti = 0;
-
-  for(it = list.begin(); it != list.end(); ++it)
-  {
-    ti = (te::qt::widgets::TrajectoryItem*)(*it);
-    QString title = ti->m_title;
-    if(title == titlecb)
-      break;
-  }
-  if(ti == 0)
-    return;
-
-  m_ui->m_forwardColorPushButton->setPalette(QPalette(ti->m_forwardColor));
-  m_ui->m_forwardColorPushButton->update();
-  m_ui->m_backwardColorPushButton->setPalette(QPalette(ti->m_backwardColor));
-  m_ui->m_backwardColorPushButton->update();
-  m_ui->m_autoPanCheckBox->setChecked(ti->m_automaticPan);
-}
-
-void te::qt::widgets::TimeSliderWidget::onOpacityComboBoxActivated(int i)
-{
-  QString titlecb = m_ui->m_opacityComboBox->currentText();
-
-  QList<QGraphicsItem*> list = m_animationScene->items();
-  QList<QGraphicsItem*>::iterator it;
-
-  for(it = list.begin(); it != list.end(); ++it)
-  {
-    te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
-    QString title = ai->m_title;
-    if(title.contains(titlecb))
-    {
-      int op = ai->m_opacity;
-      m_ui->m_opacitySpinBox->setValue(op);
-      break;
-    }
-  }
-}
-
-void te::qt::widgets::TimeSliderWidget::removeComboItem(te::qt::widgets::AnimationItem* ai)
-{
-  QString title = ai->m_title;
-  //if(title[title.length()-1] == ' ')
-  //  title = title.remove(title.length()-1, 1);
-  int index = m_ui->m_opacityComboBox->findText(title);
-  m_ui->m_opacityComboBox->removeItem(index);
-  onOpacityComboBoxActivated(m_ui->m_opacityComboBox->currentIndex());
-
-  index = m_ui->m_trajectoryColorComboBox->findText(title);
-  m_ui->m_trajectoryColorComboBox->removeItem(index);
-  onTrajectoryColorComboBoxActivated(m_ui->m_trajectoryColorComboBox->currentIndex());
-}
-
 te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getGoesTime(const QString& fileName)
 {
   QString file(fileName);
@@ -2557,93 +1692,6 @@ te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getGoesTime(const QString
   te::dt::Date date(ano.toInt(), mes.toInt(), dia.toInt());
   te::dt::TimeDuration dur(hour.toInt(), min.toInt(), 0);
   return te::dt::TimeInstant(date, dur);
-}
-
-void te::qt::widgets::TimeSliderWidget::onAddEtaPushButtonClicked(bool)
-{
-  if(m_animationScene->items().isEmpty())
-    m_ui->m_durationSpinBox->setValue(m_duration);
-
-  int state = m_parallelAnimation->state();
-  m_currentTime = m_parallelAnimation->currentTime();
-  if(state == QAbstractAnimation::Running)
-    onPlayToolButtonnClicked();
-
-  te::qt::widgets::PixmapItem* pi = getEtaMetadata("C:/lixo/FORECAST/eta5km");
-  calculateSpatialExtent();
-  calculateTemporalExtent();
-  createAnimations();
-  setDuration(m_duration);
-  setDirection(m_direction);
-  if(state == QAbstractAnimation::Running)
-  {
-    onPlayToolButtonnClicked();
-    m_parallelAnimation->setCurrentTime(m_currentTime);
-  }
-  if(m_animationScene->items().isEmpty() == false)
-  {
-    m_ui->m_durationSpinBox->setEnabled(true);
-    m_ui->m_settingsToolButton->setEnabled(true);
-    m_ui->m_playToolButton->setEnabled(true);
-    m_ui->m_stopToolButton->setEnabled(true);
-    if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
-      m_ui->m_dateTimeEdit->setEnabled(true);
-    else
-      m_ui->m_dateTimeEdit->setEnabled(false);
-  }
-  initProperty();
-
-  m_ui->m_opacityComboBox->addItem("eta5km");
-  int count = m_ui->m_opacityComboBox->count();
-  m_ui->m_opacityComboBox->setCurrentIndex(count-1);
-  onOpacityComboBoxActivated(count-1);
-}
-
-void te::qt::widgets::TimeSliderWidget::onAddHidroPushButtonClicked(bool)
-{
-  if(m_animationScene->items().isEmpty())
-    m_ui->m_durationSpinBox->setValue(m_duration);
-
-  int state = m_parallelAnimation->state();
-  m_currentTime = m_parallelAnimation->currentTime();
-  if(state == QAbstractAnimation::Running)
-    onPlayToolButtonnClicked();
-
-  te::qt::widgets::PixmapItem* pi = getHidroMetadata("C:/lixo/FORECAST/hidro");
-  calculateSpatialExtent();
-  calculateTemporalExtent();
-  createAnimations();
-  setDuration(m_duration);
-  setDirection(m_direction);
-  if(state == QAbstractAnimation::Running)
-  {
-    onPlayToolButtonnClicked();
-    m_parallelAnimation->setCurrentTime(m_currentTime);
-  }
-  if(m_animationScene->items().isEmpty() == false)
-  {
-    m_ui->m_durationSpinBox->setEnabled(true);
-    m_ui->m_settingsToolButton->setEnabled(true);
-    m_ui->m_playToolButton->setEnabled(true);
-    m_ui->m_stopToolButton->setEnabled(true);
-    if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
-      m_ui->m_dateTimeEdit->setEnabled(true);
-    else
-      m_ui->m_dateTimeEdit->setEnabled(false);
-  }
-  initProperty();
-
-  m_ui->m_opacityComboBox->addItem("hidro");
-  int count = m_ui->m_opacityComboBox->count();
-  m_ui->m_opacityComboBox->setCurrentIndex(count-1);
-  onOpacityComboBoxActivated(count-1);
-
-}
-
-void te::qt::widgets::TimeSliderWidget::onAutoPanCheckBoxClicked(bool)
-{
-  QString title = m_ui->m_trajectoryColorComboBox->currentText();
-  setAutomaticPan(title);
 }
 
 te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getHidroCtlParameters(const QString& path)
@@ -3336,3 +2384,218 @@ te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getTemporalImageTime(cons
   te::dt::TimeDuration dur(hour.toInt(), min.toInt(), sec.toInt());
   return te::dt::TimeInstant(date, dur);
 }
+
+/*
+========================================================================================================
+                                     To be updated/removed
+========================================================================================================
+*/
+
+/*
+
+void te::qt::widgets::TimeSliderWidget::onAddEtaPushButtonClicked(bool)
+{
+  if(m_animationScene->items().isEmpty())
+    m_ui->m_durationSpinBox->setValue(m_duration);
+
+  int state = m_parallelAnimation->state();
+  m_currentTime = m_parallelAnimation->currentTime();
+  if(state == QAbstractAnimation::Running)
+    onPlayToolButtonnClicked();
+
+  te::qt::widgets::PixmapItem* pi = getEtaMetadata("C:/lixo/FORECAST/eta5km");
+  calculateSpatialExtent();
+  calculateTemporalExtent();
+  createAnimations();
+  setDuration(m_duration);
+  setDirection(m_direction);
+  if(state == QAbstractAnimation::Running)
+  {
+    onPlayToolButtonnClicked();
+    m_parallelAnimation->setCurrentTime(m_currentTime);
+  }
+  if(m_animationScene->items().isEmpty() == false)
+  {
+    m_ui->m_durationSpinBox->setEnabled(true);
+    m_ui->m_settingsToolButton->setEnabled(true);
+    m_ui->m_playToolButton->setEnabled(true);
+    m_ui->m_stopToolButton->setEnabled(true);
+    if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
+      m_ui->m_dateTimeEdit->setEnabled(true);
+    else
+      m_ui->m_dateTimeEdit->setEnabled(false);
+  }
+  initProperty();
+
+  m_ui->m_opacityComboBox->addItem("eta5km");
+  int count = m_ui->m_opacityComboBox->count();
+  m_ui->m_opacityComboBox->setCurrentIndex(count-1);
+  onOpacityComboBoxActivated(count-1);
+}
+
+void te::qt::widgets::TimeSliderWidget::onAddHidroPushButtonClicked(bool)
+{
+  if(m_animationScene->items().isEmpty())
+    m_ui->m_durationSpinBox->setValue(m_duration);
+
+  int state = m_parallelAnimation->state();
+  m_currentTime = m_parallelAnimation->currentTime();
+  if(state == QAbstractAnimation::Running)
+    onPlayToolButtonnClicked();
+
+  te::qt::widgets::PixmapItem* pi = getHidroMetadata("C:/lixo/FORECAST/hidro");
+  calculateSpatialExtent();
+  calculateTemporalExtent();
+  createAnimations();
+  setDuration(m_duration);
+  setDirection(m_direction);
+  if(state == QAbstractAnimation::Running)
+  {
+    onPlayToolButtonnClicked();
+    m_parallelAnimation->setCurrentTime(m_currentTime);
+  }
+  if(m_animationScene->items().isEmpty() == false)
+  {
+    m_ui->m_durationSpinBox->setEnabled(true);
+    m_ui->m_settingsToolButton->setEnabled(true);
+    m_ui->m_playToolButton->setEnabled(true);
+    m_ui->m_stopToolButton->setEnabled(true);
+    if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
+      m_ui->m_dateTimeEdit->setEnabled(true);
+    else
+      m_ui->m_dateTimeEdit->setEnabled(false);
+  }
+
+  m_ui->m_opacityComboBox->addItem("hidro");
+  int count = m_ui->m_opacityComboBox->count();
+  m_ui->m_opacityComboBox->setCurrentIndex(count-1);
+  onOpacityComboBoxActivated(count-1);
+
+}
+
+void te::qt::widgets::TimeSliderWidget::onAddPushButtonClicked(bool b)
+{
+  QString title = QInputDialog::getText(this, "Add Item", "title");
+
+  if(title.isEmpty())
+    return;
+
+  te::qt::widgets::ScopedCursor scopedCursor(Qt::WaitCursor);
+
+  QString path;
+  if(title == "eta5km"|| title == "hidro")
+    path = "C:/lixo/FORECAST/" + title;
+  else
+    path = "C:/lixo/TemporalImages/" + title;
+
+  addTemporalImages(path);
+}
+
+void te::qt::widgets::TimeSliderWidget::onRemovePushButtonClicked(bool b)
+{
+  QList<QGraphicsItem*> list = m_animationScene->items();
+  QList<QGraphicsItem*>::iterator it;
+
+  for(it = list.begin(); it != list.end(); ++it)
+  {
+    te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
+    QString title = ai->m_title;
+    int r = QMessageBox::question(this, "Remove Item", "Remove " + title, QMessageBox::Ok, QMessageBox::No);
+    if(r == QMessageBox::Ok)
+    {
+      removeComboItem(ai);
+      if(list.count() == 1)
+      {
+        onStopToolButtonnClicked();
+        m_animationScene->removeItem(ai);
+        m_parallelAnimation->removeAnimation(ai->m_animation);
+        delete ai->m_animation;
+        delete ai;
+        m_ui->m_TemporalHorizontalSlider->setValue(0);
+        m_parallelAnimation->setCurrentTime(0);
+        m_ui->m_settingsToolButton->setEnabled(false);
+        m_ui->m_playToolButton->setEnabled(false);
+        m_ui->m_stopToolButton->setEnabled(false);
+        m_ui->m_durationSpinBox->setEnabled(false);
+        m_ui->m_dateTimeEdit->setEnabled(false);
+        m_display->update();
+        initProperty();
+        return;
+      }
+
+      bool running = false;
+      int state = m_parallelAnimation->state();
+      if(state == QAbstractAnimation::Running)
+      {
+        running = true;;
+        onPlayToolButtonnClicked();
+      }
+
+      m_currentTime = m_parallelAnimation->currentTime();
+      m_animationScene->removeItem(ai);
+      m_parallelAnimation->removeAnimation(ai->m_animation);
+      if(ai->pixmap().isNull() == false)
+      {
+        if(m_animationScene->m_numberOfTrajectories)
+        {
+          m_animationScene->m_trajectoryPixmap->fill(Qt::transparent);
+          draw();
+        }
+      }
+      delete ai->m_animation;
+      delete ai;
+
+      calculateSpatialExtent();
+      calculateTemporalExtent();
+      createAnimations();
+      setDuration(m_duration);
+      setDirection(m_direction);
+
+      if(running)
+      {
+        onPlayToolButtonnClicked();
+        m_parallelAnimation->setCurrentTime(m_currentTime);
+      }
+
+      break;
+    }
+  }
+  initProperty();
+}
+
+void te::qt::widgets::TimeSliderWidget::onFrontPushButtonClicked(bool b)
+{
+  QList<QGraphicsItem*> list = m_animationScene->items();
+  QList<QGraphicsItem*>::iterator it;
+
+  for(it = list.begin(); it != list.end(); ++it)
+  {
+    te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
+    QString title = ai->m_title;
+    int r = QMessageBox::question(this, "Put To Front", "Animation Item: " + title, QMessageBox::Ok, QMessageBox::No);
+    if(r == QMessageBox::Ok)
+    {
+      putToFront(ai);
+      break;
+    }
+  }
+}
+
+void te::qt::widgets::TimeSliderWidget::onBackPushButtonClicked(bool b)
+{
+  QList<QGraphicsItem*> list = m_animationScene->items();
+  QList<QGraphicsItem*>::iterator it;
+
+  for(it = list.begin(); it != list.end(); ++it)
+  {
+    te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
+    QString title = ai->m_title;
+    int r = QMessageBox::question(this, "Put To Back", "Animation Item: " + title, QMessageBox::Ok, QMessageBox::No);
+    if(r == QMessageBox::Ok)
+    {
+      putToBack(ai);
+      break;
+    }
+  }
+}
+*/

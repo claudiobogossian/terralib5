@@ -102,23 +102,29 @@ namespace te
           /*!
             \brief It gets all the layers (single and folder layers) of the project.
 
+            \param invalid If including invalid layers.
+
             \return The list of all the layers (single and folder layers) of the project.
           */
-          std::list<te::map::AbstractLayerPtr> getAllLayers();
+          std::list<te::map::AbstractLayerPtr> getAllLayers(bool invalid = true);
 
           /*!
             \brief It gets all the single layers of the project.
 
+            \param invalid If including invalid layers.
+
             \return The list of all the single layers of the project.
           */
-          std::list<te::map::AbstractLayerPtr> getSingleLayers();
+          std::list<te::map::AbstractLayerPtr> getSingleLayers(bool invalid = true);
 
           /*!
             \brief It gets all the single layers that are visible.
 
+            \param invalid If including invalid layers.
+
             \return The list of all the single layers that are visible.
           */
-          std::list<te::map::AbstractLayerPtr> getVisibleSingleLayers();
+          std::list<te::map::AbstractLayerPtr> getVisibleSingleLayers(bool invalid = true);
 
           /*!
             \brief It sets the top layers of the project.
@@ -130,9 +136,11 @@ namespace te
           /*!
             \brief It gets all the layers that are selected.
 
+            \param invalid If including invalid layers.
+
             \return The list of all the layers that are selected.
           */
-          const std::list<te::map::AbstractLayerPtr> getSelectedLayers() const;
+          const std::list<te::map::AbstractLayerPtr> getSelectedLayers(bool invalid = true) const;
 
           /*!
             \brief It sets all the layers that are selected.

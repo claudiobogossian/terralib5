@@ -244,7 +244,7 @@ void te::sa::ProximityMatrixCreatorDialog::onOkPushButtonClicked()
     if(m_ui->m_galRadioButton->isChecked())
       exchanger .exportToGAL(gpm.get(), fullFileName);
     else if(m_ui->m_gwtRadioButton->isChecked())
-      exchanger .exportToGWT(gpm.get(), fullFileName, 0);
+      exchanger .exportToGWT(gpm.get(), fullFileName, 1); // use 1 pos to export the weight information
   }
 
   accept();

@@ -139,8 +139,14 @@
                </item>
                <item row="1" column="0">
                 <widget class="QCheckBox" name="m_calcDistCheckBox">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="text">
                   <string>Calculate the distance of the neighborhood.</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
@@ -211,8 +217,14 @@
                </item>
                <item row="1" column="0">
                 <widget class="QCheckBox" name="m_normalizeWeightCheckBox">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="text">
                   <string>Normalize the weight by number of neighbors.</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
@@ -413,7 +425,7 @@
      <item row="1" column="0">
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
-        <string>Input Layer</string>
+        <string>Input</string>
        </property>
        <property name="flat">
         <bool>true</bool>

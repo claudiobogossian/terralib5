@@ -156,9 +156,7 @@ te::sa::GeneralizedProximityMatrix* te::sa::SpatialWeightsExchanger::importFromG
   std::ifstream file(pathFileName.c_str());
 
   if(file.is_open() == false)
-  {
     return 0;
-  }
 
   //create output gpm
   te::sa::GeneralizedProximityMatrix* gpm = new te::sa::GeneralizedProximityMatrix();
@@ -348,9 +346,7 @@ te::sa::GeneralizedProximityMatrix* te::sa::SpatialWeightsExchanger::importFromG
   std::ifstream file(pathFileName.c_str());
 
   if(file.is_open() == false)
-  {
     return 0;
-  }
 
    //create output gpm
   te::sa::GeneralizedProximityMatrix* gpm = new te::sa::GeneralizedProximityMatrix();
@@ -374,7 +370,7 @@ te::sa::GeneralizedProximityMatrix* te::sa::SpatialWeightsExchanger::importFromG
   assert(graph);
 
   //add edge property
-  te::dt::SimpleProperty* p = new te::dt::SimpleProperty("dist", te::dt::DOUBLE_TYPE);
+  te::dt::SimpleProperty* p = new te::dt::SimpleProperty(TE_SA_WEIGHT_ATTR_NAME, te::dt::DOUBLE_TYPE);
   p->setParent(0);
   p->setId(0);
 
@@ -472,6 +468,33 @@ te::sa::GeneralizedProximityMatrix* te::sa::SpatialWeightsExchanger::importFromG
     associateGeometry(gpm, ds);
 
   return gpm;
+}
+
+void te::sa::SpatialWeightsExchanger::getSpatialWeightsFileInfo(std::string pathFileName, std::string& dataSetName, std::string& attrName)
+{
+  //open file
+  std::ifstream file(pathFileName.c_str());
+
+  if(file.is_open() == false)
+    return;
+
+  //create boost tokenizer
+  typedef boost::tokenizer< boost::escaped_list_separator<char> > Tokenizer;
+  boost::escaped_list_separator<char> sep('\\', ' ', '\"');
+  
+  std::vector<std::string> line;
+  std::string buffer;
+
+  //get header line
+  std::getline(file, buffer);
+  Tokenizer tok(buffer, sep);
+  line.assign(tok.begin(), tok.end());
+
+  if(line.size() == 4) // has the number of observations and data set information
+  {
+    dataSetName = line[2];
+    attrName = line[3];
+  }
 }
 
 int te::sa::SpatialWeightsExchanger::getEdgeId()

@@ -89,7 +89,7 @@ te::gm::GeometricTransformation* te::gm::AffineGT::clone() const
   te::gm::AffineGT* newTransPtr = new AffineGT;
   newTransPtr->m_internalParameters = m_internalParameters;
   return newTransPtr;
-};
+}
         
 bool te::gm::AffineGT::computeParameters( GTParameters& params ) const
 {
@@ -221,26 +221,43 @@ bool te::gm::AffineGT::decompose( const std::vector< double >& transfParams,
     DPar = transfParams[ 3 ];
     
     determinant = ( APar * DPar ) - ( BPar * CPar );
-  }  
-  
-  const double FVar = 1.0 / ( ( APar * APar ) +
-    ( CPar * CPar ) );
     
-  skew = ( ( APar * BPar ) + ( CPar * DPar ) ) * FVar;
-  
-  squeeze = 1.0 / sqrt( FVar * determinant );
+    const double FVar = 1.0 / ( ( APar * APar ) +
+      ( CPar * CPar ) );
+      
+    skew = ( ( APar * BPar ) + ( CPar * DPar ) ) * FVar;
     
-  scaling = sqrt( determinant );
-  
-  scalingFactorX = scaling * squeeze;
-  
-  scalingFactorY = scaling / squeeze;
+    squeeze = 1.0 / sqrt( FVar * determinant );
+      
+    scaling = sqrt( determinant );
+    
+    scalingFactorX = scaling / squeeze;
+    
+    scalingFactorY = scaling * squeeze;    
+    
+    rotation = atan( APar / CPar );
+  }
+  else
+  {
+    const double FVar = 1.0 / ( ( APar * APar ) +
+      ( CPar * CPar ) );
+      
+    skew = ( ( APar * BPar ) + ( CPar * DPar ) ) * FVar;
+    
+    squeeze = 1.0 / sqrt( FVar * determinant );
+      
+    scaling = sqrt( determinant );
+    
+    scalingFactorX = scaling * squeeze;
+    
+    scalingFactorY = scaling / squeeze;    
+    
+    rotation = atan( CPar / APar );
+  }
   
   translationX = transfParams[ 2 ];
   
   translationY = transfParams[ 5 ];
-  
-  rotation = atan( CPar / APar );
   
   return true;
 }

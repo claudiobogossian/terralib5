@@ -72,6 +72,15 @@ namespace te
           \param m The method of interpolation to apply.
         */
         Interpolator(Raster const* r, int m);
+        
+        /*!
+          \brief Constructor.
+
+          \param r The raster where to resample.
+          \param m The method of interpolation to apply.
+          \param noDataValues A vector with no-data values (will overwride the input raster no-data values) or an empty vectory if the input raster no-data values must be used.
+        */
+        Interpolator(Raster const* r, int m, const std::vector< std::complex<double> >& noDataValues);        
 
         /*! \brief Destructor. */
         virtual ~Interpolator();
@@ -147,13 +156,24 @@ namespace te
           \param b The band to obtain the value.
         */
         typedef void (Interpolator::*InterpolationFunction)(const double& c, const double& r, std::complex<double>& v, const std::size_t& b);
+        
+        /*!
+          \brief Initialize this instance..
+
+          \param r The raster where to resample.
+          \param method The method of interpolation to apply.
+          \param noDataValues A vector with no-data values (will overwride the input raster no-data values) or an empty vectory if the input raster no-data values must be used.
+          \return true if OK, false on errors.
+        */
+        bool initialize(Raster const * const rasterPointer, int method,
+          const std::vector< std::complex<double> >& noDataValues );        
 
     protected:
 
         Raster const* m_raster;                                  //!< My input raster.
         int m_method;                                      //!< The interpolation method.
         InterpolationFunction m_function;                  //!< The current interpolation function pointer.
-        std::vector< double > m_noDataValues;              //!< Raster no-data values (for each band);
+        std::vector< std::complex<double> > m_noDataValues;              //!< Raster no-data values (for each band);
         
         // nearest Neighbor interpolation variables
         
@@ -183,6 +203,8 @@ namespace te
         unsigned m_bicGridCol;
         unsigned m_bicBufRow;
         unsigned m_bicBufCol;
+        double m_bicReadRealValue;
+        double m_bicReadImagValue;
         double m_bicBbufferReal[4][4];
         double m_bicBbufferImag[4][4];
         double m_bicOffsetX;

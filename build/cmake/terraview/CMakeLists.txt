@@ -74,13 +74,6 @@ if(Qt5_FOUND)
 
   add_executable(terraview ${TERRAVIEW_APP_TYPE} ${TERRALIB_FILES})
 
-  if(WIN32 AND MSVC)
-    set_target_properties(terraview PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
-    set_target_properties(terraview PROPERTIES RELWITHDEBINFO "/SUBSYSTEM:CONSOLE")
-    set_target_properties(terraview PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
-    set_target_properties(terraview PROPERTIES MINSIZEREL "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
-  endif()
-
   if(APPLE)
     target_link_libraries(terraview terralib_mod_qt_apf ${TERRALIB_COREFOUNDATION_LIBRARY})
   else()
@@ -111,19 +104,19 @@ else()
 
   add_executable(terraview ${TERRAVIEW_APP_TYPE} ${TERRALIB_FILES})
 
-  if(WIN32 AND MSVC)
-    set_target_properties(terraview PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
-    set_target_properties(terraview PROPERTIES RELWITHDEBINFO "/SUBSYSTEM:CONSOLE")
-    set_target_properties(terraview PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
-    set_target_properties(terraview PROPERTIES MINSIZEREL "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
-  endif()
-
   if(APPLE)
     target_link_libraries(terraview terralib_mod_qt_apf ${QT_LIBRARIES} ${TERRALIB_COREFOUNDATION_LIBRARY})
   else()
     target_link_libraries(terraview terralib_mod_qt_apf ${QT_LIBRARIES})
   endif()
 
+endif()
+
+if(WIN32 AND MSVC)
+  set_target_properties(terraview PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
+  set_target_properties(terraview PROPERTIES RELWITHDEBINFO "/SUBSYSTEM:CONSOLE")
+  set_target_properties(terraview PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+  set_target_properties(terraview PROPERTIES MINSIZEREL "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 endif()
 
 install(TARGETS terraview

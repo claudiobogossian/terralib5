@@ -137,8 +137,6 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
   const te::map::serialize::Layer& lserial = te::map::serialize::Layer::getInstance();
 
   // Read the layers
-  std::vector<std::string> invalidLayers;
-
   while((reader.getNodeType() != te::xml::END_ELEMENT) &&
         (reader.getElementLocalName() != "LayerList"))
   {
@@ -146,10 +144,7 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
 
     assert(layer.get());
 
-    if(layer->isValid())
-      project->add(layer);
-    else
-      invalidLayers.push_back(layer->getTitle());
+    project->add(layer);
   }
 
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
@@ -160,22 +155,6 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
   assert(reader.getElementLocalName() == "Project");
 
   project->setProjectAsChanged(false);
-
-  if(!invalidLayers.empty())
-  {
-    QString message(QObject::tr("The following layers are invalid and will not be added to TerraView"));
-
-    message += "<ul>";
-    for(std::size_t i = 0; i <invalidLayers.size(); ++i)
-    {
-      message += "<li>";
-      message += invalidLayers[i].c_str();
-      message += "</li>";
-    }
-     message += "</ul>";
-
-    QMessageBox::information(te::qt::af::ApplicationController::getInstance().getMainWindow(), te::qt::af::ApplicationController::getInstance().getAppTitle(), message);
-  }
 
   return project.release();
 }

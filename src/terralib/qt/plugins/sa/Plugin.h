@@ -43,6 +43,7 @@ namespace te
       namespace sa
       {
         class ProximityMatrixCreatorAction;
+        class SpatialStatisticsAction;
 
         class Plugin : public te::plugin::Plugin
         {
@@ -76,6 +77,7 @@ namespace te
             QAction* m_popupAction;                                  //!< SA pop up action registered.
 
             te::qt::plugins::sa::ProximityMatrixCreatorAction* m_proxMatrixCreator;  //!< Proximity Matrix Creator Process Action
+            te::qt::plugins::sa::SpatialStatisticsAction* m_spatialStatistics;       //!< Spatial Statistics Process Action
         };
 
       } // end namespace sa

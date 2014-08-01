@@ -27,6 +27,7 @@
 #include "../../datatype/SimpleData.h"
 #include "../../graph/core/AbstractGraph.h"
 #include "../../graph/core/Edge.h"
+#include "../../graph/core/GraphMetadata.h"
 #include "../../graph/core/Vertex.h"
 #include "../../graph/iterator/MemoryIterator.h"
 #include "GeneralizedProximityMatrix.h"
@@ -47,7 +48,9 @@ te::sa::GPMWeightsInverseDistanceStrategy::~GPMWeightsInverseDistanceStrategy()
 void te::sa::GPMWeightsInverseDistanceStrategy::calculate(GeneralizedProximityMatrix* gpm)
 {
   //create weight property
-  createWeightAttribute(gpm);
+  int weightIdx = createWeightAttribute(gpm);
+
+  int nEdgeAttrs = gpm->getGraph()->getMetadata()->getEdgePropertySize();
 
   //check if the gpm has the distance attribute
   int distanceIdx;
@@ -113,8 +116,6 @@ void te::sa::GPMWeightsInverseDistanceStrategy::calculate(GeneralizedProximityMa
 
       if(e)
       {
-        std::size_t pos = e->getAttributes().size() - 1;
-
         double weight = *itWeights;
 
         if(m_normalize && tot != 0.)
@@ -122,7 +123,9 @@ void te::sa::GPMWeightsInverseDistanceStrategy::calculate(GeneralizedProximityMa
           weight = weight / tot;
         }
 
-        e->addAttribute(pos, new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(weight));
+        e->setAttributeVecSize(nEdgeAttrs);
+
+        e->addAttribute(weightIdx, new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(weight));
       }
 
       ++itWeights;

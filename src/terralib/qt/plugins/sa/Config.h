@@ -33,9 +33,16 @@
 /*!
   \def TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
 
-  \brief It defines if the SA Qt Plugin has the proximity matrix creator opreation
+  \brief It defines if the SA Qt Plugin has the proximity matrix creator operation
 */
 #define TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
+
+/*!
+  \def TE_QT_PLUGIN_SA_HAVE_SPATIALSTATISTICS
+
+  \brief It defines if the SA Qt Plugin has the spatial statistics operation
+*/
+#define TE_QT_PLUGIN_SA_HAVE_SPATIALSTATISTICS
 
 
 /*!

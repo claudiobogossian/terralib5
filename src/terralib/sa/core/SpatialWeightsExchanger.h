@@ -124,6 +124,18 @@ namespace te
         */
         te::sa::GeneralizedProximityMatrix* importFromGWT(std::string pathFileName, te::da::DataSource* ds = 0);
 
+        /*!
+          \brief Function used to get information of how a Spatial Weights was generated
+
+          \param pathFileName   Path and file name (with extension) with Spatial Weights information.
+          \param dataSetName    Information about the dataset used to generate this file.
+          \param attrName       Information about the attribute used to generate this file.
+
+          \return A Valid gpm pointer if the file was correctly readed and null pointer in other case.
+
+        */
+        static void getSpatialWeightsFileInfo(std::string pathFileName, std::string& dataSetName, std::string& attrName);
+
       protected:
 
         /*!
