@@ -78,7 +78,7 @@ int main(int /*argc*/, char** /*argv*/)
     connInfo["PG_USER"] = "postgres";
     connInfo["PG_DB_NAME"] = "terralib4";
     connInfo["PG_CONNECT_TIMEOUT"] = "4";
-    connInfo["PG_CLIENT_ENCODING"] = "WIN1252";
+    connInfo["PG_CLIENT_ENCODING"] = "UTF-8";   //"WIN1252";  //"UTF-8"; 
  
     std::string dsType = "POSTGIS";
 
@@ -130,21 +130,21 @@ int main(int /*argc*/, char** /*argv*/)
 
     PostGISExample();  //ok
 
-    GDALExample();  //ok
+    //GDALExample();  //ok
 
-    ObjectId(); //ok
+    //ObjectId(); //ok
 
-    ObjectId_query(); //using builselector and query
+    //ObjectId_query(); //using builselector and query
 
-    QueryExample_2(); //ok
+    //QueryExample_2(); //ok
 
-    MemoryExample(); //Ok
+    //MemoryExample(); //Ok
 
-    ExportingOGR();  //ok
+    //ExportingOGR();  //ok
 
-    OGRExampleRead(); //ok
+    //OGRExampleRead(); //ok
 
-    ORGExampleWrite(); //ok
+    //ORGExampleWrite(); //ok
 
     CopyingData(); //ok
 
