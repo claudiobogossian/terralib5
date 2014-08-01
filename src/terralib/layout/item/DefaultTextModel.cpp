@@ -123,6 +123,11 @@ void te::layout::DefaultTextModel::updateProperties( te::layout::Properties* pro
   }
 }
 
+void te::layout::DefaultTextModel::setText( std::string txt )
+{
+  m_text = txt;
+}
+
 std::string te::layout::DefaultTextModel::getText()
 {
   return m_text;

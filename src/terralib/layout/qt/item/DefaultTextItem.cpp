@@ -56,6 +56,11 @@ te::layout::DefaultTextItem::DefaultTextItem( ItemController* controller, Observ
   Context::getInstance().getScene()->insertItem((ItemObserver*)item);
   
   std::string name = m_model->getName();
+  DefaultTextModel* model = dynamic_cast<DefaultTextModel*>(m_model);
+  if(model)
+  {
+    model->setText(name);
+  }
   setPlainText(name.c_str());
 }
 
@@ -92,6 +97,8 @@ void te::layout::DefaultTextItem::updateObserver( ContextItem context )
     qfont.setStrikeOut(font.isStrikeout());
     qfont.setKerning(font.isKerning());
     setFont(qfont);
+
+    setPlainText(model->getText().c_str());
   }
 
   te::gm::Envelope box = utils->viewportBox(m_model->getBox());

@@ -55,6 +55,9 @@
 #include "../../item/DefaultTextModel.h"
 #include "../../item/DefaultTextController.h"
 #include "../item/DefaultTextItem.h"
+#include "../../item/ImageModel.h"
+#include "../../item/ImageController.h"
+#include "../item/ImageItem.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -79,7 +82,8 @@ te::layout::BuildGraphicsItem::BuildGraphicsItem() :
   m_scaleItem("SCALE_"),
   m_horizontalRuler("HORIZONTAL_RULER_"),
   m_verticalRuler("VERTICAL_RULER_"),
-  m_groupItem("ITEM_GROUP_")
+  m_groupItem("ITEM_GROUP_"),
+  m_imageItem("IMAGE_")
 {
   m_sharedProps = new SharedProperties;
 }
@@ -119,6 +123,9 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
     break;
   case TPTextItem:
     item = createText();
+    break;
+  case TPImageItem:
+    item = createImage();
     break;
   case TPRetangleItem:
     item = createRectangle();
@@ -163,6 +170,10 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::LayoutMode
   case TypeCreateText:
     m_name = nameItem(m_textItem, TPTextItem);
     item = createText();
+    break;
+  case TypeCreateImage:
+    m_name = nameItem(m_imageItem, TPImageItem);
+    item = createImage();
     break;
   case TypeCreateRectangle:
     m_name = nameItem(m_rectangleItem, TPRetangleItem);
@@ -542,6 +553,41 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItemGroup()
       itemObs->redraw();
     }
     return view;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createImage()
+{
+  QGraphicsItem* item = 0;
+
+  ImageModel* model = new ImageModel();	
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  ImageController* controller = new ImageController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  ImageItem* img = dynamic_cast<ImageItem*>(itemObs); 
+
+  if(img)
+  {
+    img->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_props)
+    {
+      img->setZValue(m_zValue);
+    }
+    if(m_redraw)
+      itemObs->redraw();
+    return img;
   }
 
   return item;

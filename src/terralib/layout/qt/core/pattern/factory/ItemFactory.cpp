@@ -38,6 +38,7 @@
 #include "../../../item/LegendItem.h"
 #include "../../../item/ScaleItem.h"
 #include "../../../item/DefaultTextItem.h"
+#include "../../../item/ImageItem.h"
 
 te::layout::ItemFactory::ItemFactory()
 {
@@ -123,6 +124,13 @@ te::layout::Observer* te::layout::ItemFactory::make( LayoutAbstractObjectType ty
   case TPScaleItem:
     {
       ScaleItem* scale = new ScaleItem(params.getController(), params.getModel());
+      item = (Observer*)scale;
+      return item;
+      break;
+    }
+  case TPImageItem:
+    {
+      ImageItem* scale = new ImageItem(params.getController(), params.getModel());
       item = (Observer*)scale;
       return item;
       break;

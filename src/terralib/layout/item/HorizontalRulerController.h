@@ -43,6 +43,12 @@ namespace te
         virtual ~HorizontalRulerController();
 
         virtual void setPosition(const double& x, const double& y);
+
+      protected:
+
+        HorizontalRulerController( Observable* o, LayoutAbstractObjectType type );
+
+        virtual void create();
     };
   }
 }

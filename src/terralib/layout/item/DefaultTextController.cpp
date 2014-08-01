@@ -37,14 +37,25 @@
 te::layout::DefaultTextController::DefaultTextController( Observable* o ) :
   ItemController(o, TPTextItem)
 {
-  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
-  ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPTextItem, params);
+  create();
+}
+
+te::layout::DefaultTextController::DefaultTextController( Observable* o, LayoutAbstractObjectType type ) :
+  ItemController(o, type)
+{
+
 }
 
 te::layout::DefaultTextController::~DefaultTextController()
 {
 	
+}
+
+void te::layout::DefaultTextController::create()
+{
+  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
+  ItemParamsCreate params(this, m_model);
+  m_view = (Observer*)factory->make(TPTextItem, params);
 }
 
 void te::layout::DefaultTextController::setPosition( const double& x, const double& y )

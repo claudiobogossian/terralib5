@@ -37,9 +37,13 @@
 te::layout::LegendController::LegendController( Observable* o ) :
   ItemController(o, TPLegendItem)
 {
-  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
-  ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPLegendItem, params);
+  create();
+}
+
+te::layout::LegendController::LegendController( Observable* o, LayoutAbstractObjectType type ) :
+  ItemController(o, type)
+{
+
 }
 
 te::layout::LegendController::~LegendController()
@@ -55,4 +59,11 @@ void te::layout::LegendController::setPosition( const double& x, const double& y
     if(model)
       return model->setPosition(x, y);
   }
+}
+
+void te::layout::LegendController::create()
+{
+  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
+  ItemParamsCreate params(this, m_model);
+  m_view = (Observer*)factory->make(TPLegendItem, params);
 }

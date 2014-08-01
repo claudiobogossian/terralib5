@@ -71,6 +71,7 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionLineIntersectionMouse("items_intersection_mouse"),
   m_optionSceneZoom("scene_zoom"),
   m_optionTextDefault("text_default"),
+  m_optionImage("text_image"),
   m_btnMap(0)
 {
 	te::gm::Envelope box = m_model->getBox();	
@@ -324,6 +325,9 @@ void te::layout::ToolbarOutside::createTextToolButton()
   QAction* actionTxtDefault = createAction("Default Text Object", m_optionTextDefault, "layout-default-text");
   menu->addAction(actionTxtDefault);
 
+  QAction* actionImage = createAction("Image Object", m_optionImage, "layout-image");
+  menu->addAction(actionImage);
+
   QToolButton *btn = createToolButton("Text Tools", "Text Tools", "layout-default-text");
   btn->setMenu(menu);
   btn->setPopupMode(QToolButton::InstantPopup);
@@ -465,6 +469,10 @@ void te::layout::ToolbarOutside::onTextToolsTriggered( QAction* action )
   if(action->objectName().compare(m_optionTextDefault.c_str()) == 0)
   {
     changeAction(TypeCreateText);
+  }
+  else if(action->objectName().compare(m_optionImage.c_str()) == 0)
+  {
+    changeAction(TypeCreateImage);
   }
 }
 

@@ -28,6 +28,9 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_FONT_H 
 #define __TERRALIB_LAYOUT_INTERNAL_FONT_H
 
+// TerraLib
+#include "enum\AbstractType.h"
+
 // STL
 #include <string>
 
@@ -78,7 +81,8 @@ namespace te
         bool m_italic;
         bool m_underline;
         bool m_strikeout;
-        bool m_kerning;        
+        bool m_kerning;   
+        LayoutAlign m_textAlign;
     };
   }
 }

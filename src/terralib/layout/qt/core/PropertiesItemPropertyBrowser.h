@@ -31,6 +31,9 @@
 // TerraLib
 #include "PropertyBrowser.h"
 
+// STL
+#include <map>
+
 class QGraphicsItem;
 class QWidget;
 
@@ -59,13 +62,20 @@ namespace te
       virtual void clearAll();
 
       virtual void closeAllWindows();
-           
-      private slots:
 
-        void onShowGridSettingsDlg();
-        void onSetDlg(QWidget *parent, QtProperty * prop);
-        void onUpdateGridSettingsProperty();
-        virtual void blockOpenGridWindows(bool block);
+      virtual Property getProperty(std::string name);
+
+      virtual LayoutPropertyDataType getLayoutType(QVariant::Type type, std::string name = "");
+
+      virtual QVariant::Type getVariantType(LayoutPropertyDataType dataType);
+           
+      protected slots:
+
+        virtual void onShowGridSettingsDlg();
+        virtual void onSetDlg(QWidget *parent, QtProperty * prop);
+        virtual void onUpdateGridSettingsProperty();
+        virtual void blockOpenWindows(bool block);
+        virtual void onShowImageDlg();
 
       signals:
 
@@ -73,8 +83,15 @@ namespace te
       
     protected:
 
+      virtual Property findDlgProperty(std::string name);
+
+      virtual Property findDlgProperty(LayoutPropertyDataType dataType);
+
+      virtual void changeValueQtPropertyDlg(std::string name);
+      
       GridSettingsOutside* m_gridSettings;
-      Property             m_dlgProperty;
+
+      std::map<std::string, Property> m_dlgProps;
     };
   }
 }

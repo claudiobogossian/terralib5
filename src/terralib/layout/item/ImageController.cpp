@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file VerticalRulerController.cpp
+  \file RectangleController.cpp
    
   \brief 
 
@@ -26,32 +26,34 @@
 */
 
 // TerraLib
-#include "VerticalRulerController.h"
+#include "ImageController.h"
 #include "../core/pattern/mvc/ItemController.h"
 #include "../core/ContextItem.h"
-#include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/pattern/factory/AbstractItemFactory.h"
 #include "../core/pattern/singleton/Context.h"
+#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/pattern/factory/ItemParamsCreate.h"
+#include "../core/pattern/mvc/ItemObserver.h"
 #include "../core/pattern/mvc/Observer.h"
 
-te::layout::VerticalRulerController::VerticalRulerController( Observable* o ) :
-  ItemController(o, TPVerticalRuler)
+te::layout::ImageController::ImageController( Observable* o ) :
+  ItemController(o, TPImageItem)
 {
   create();
 }
 
-te::layout::VerticalRulerController::VerticalRulerController( Observable* o, LayoutAbstractObjectType type ) :
+te::layout::ImageController::ImageController( Observable* o, LayoutAbstractObjectType type ) :
   ItemController(o, type)
 {
 
 }
 
-te::layout::VerticalRulerController::~VerticalRulerController()
+te::layout::ImageController::~ImageController()
 {
-
+	
 }
 
-void te::layout::VerticalRulerController::setPosition( const double& x, const double& y )
+void te::layout::ImageController::setPosition( const double& x, const double& y )
 {
   if(m_model)
   {
@@ -61,9 +63,9 @@ void te::layout::VerticalRulerController::setPosition( const double& x, const do
   }
 }
 
-void te::layout::VerticalRulerController::create()
+void te::layout::ImageController::create()
 {
   AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPVerticalRuler, params);
+  m_view = (Observer*)factory->make(TPImageItem, params);
 }

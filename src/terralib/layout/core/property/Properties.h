@@ -60,9 +60,9 @@ namespace te
 
         virtual void setTypeObj(LayoutAbstractObjectType type);
 
-        virtual void setHasGridWindows(bool windows);
+        virtual void setHasWindows(bool windows);
 
-        virtual bool hasGridWindows();
+        virtual bool hasWindows();
 
         virtual bool contains(Property property);
 
@@ -72,14 +72,14 @@ namespace te
         std::vector<Property> m_properties;
         std::string m_objName;
         LayoutAbstractObjectType m_typeObj;
-        bool m_hasGridWindows;
+        bool m_hasWindows;
 
     };
 
     inline Properties::Properties(std:: string objectName, LayoutAbstractObjectType type) :
       m_objName(objectName),
       m_typeObj(type),
-      m_hasGridWindows(false)
+      m_hasWindows(false)
     {
     }
 
@@ -174,14 +174,14 @@ namespace te
       return property;
     }
 
-    inline void te::layout::Properties::setHasGridWindows( bool windows )
+    inline void te::layout::Properties::setHasWindows( bool windows )
     {
-	    m_hasGridWindows = windows;
+	    m_hasWindows = windows;
     }
 
-    inline bool te::layout::Properties::hasGridWindows()
+    inline bool te::layout::Properties::hasWindows()
     {
-	    return m_hasGridWindows;
+	    return m_hasWindows;
     }
   }
 }

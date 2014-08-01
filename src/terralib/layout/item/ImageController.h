@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file ScaleController.h
+  \file RectangleController.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_SCALE_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_SCALE_CONTROLLER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_IMAGE_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_IMAGE_CONTROLLER_H
 
 // TerraLib
 #include "../core/pattern/mvc/ItemController.h"
@@ -35,18 +35,18 @@ namespace te
 {
   namespace layout
   {
-    class ScaleController : public ItemController
+    class ImageController : public ItemController
     {
       public:
 
-        ScaleController( Observable* o );
-        virtual ~ScaleController();
+        ImageController( Observable* o );
+        virtual ~ImageController();
 
         virtual void setPosition(const double& x, const double& y);
 
       protected:
 
-        ScaleController( Observable* o, LayoutAbstractObjectType type );
+        ImageController( Observable* o, LayoutAbstractObjectType type );
 
         virtual void create();
     };

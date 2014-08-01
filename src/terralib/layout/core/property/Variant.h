@@ -82,7 +82,7 @@ namespace te
       void variantSetValue(Variant &v, const ValueType& value, LayoutPropertyDataType type);
       
       void convertValue(const void* valueCopy);
-
+      
       /* Check if a value passed, of type DataTypeInt and etc, is a std::string. 
          Ex.: value returned by a json file (boost). */
       bool checkNumberAsString(const void* valueCopy);

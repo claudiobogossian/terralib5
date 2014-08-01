@@ -35,7 +35,8 @@ m_bold(false),
 m_italic(false),
 m_underline(false),
 m_strikeout(false),
-m_kerning(false)
+m_kerning(false),
+m_textAlign(TPTopLeft)
 {
 
 }

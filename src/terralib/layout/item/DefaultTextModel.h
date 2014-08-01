@@ -56,6 +56,8 @@ namespace te
         
         virtual void updateProperties(te::layout::Properties* properties);     
 
+        virtual void setText(std::string txt);
+
         virtual std::string getText();
 
         virtual Font getFont();

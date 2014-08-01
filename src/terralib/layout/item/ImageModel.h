@@ -18,39 +18,49 @@
  */
 
 /*!
-  \file ScaleController.h
+  \file ImageModel.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_SCALE_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_SCALE_CONTROLLER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_IMAGE_MODEL_H
+#define __TERRALIB_LAYOUT_INTERNAL_IMAGE_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemController.h"
+#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/ContextItem.h"
+
+// STL
+#include <string>
 
 namespace te
 {
   namespace layout
   {
-    class ScaleController : public ItemController
+    class ImageModel : public ItemModelObservable
     {
       public:
 
-        ScaleController( Observable* o );
-        virtual ~ScaleController();
+        ImageModel();
+        virtual ~ImageModel();
 
-        virtual void setPosition(const double& x, const double& y);
+        virtual te::layout::Properties* getProperties() const;
+
+        virtual void updateProperties(te::layout::Properties* properties);   
+
+        virtual void draw( ContextItem context );
+
+        virtual void setFileName(std::string fileName);
+
+        virtual std::string getFileName();
 
       protected:
 
-        ScaleController( Observable* o, LayoutAbstractObjectType type );
-
-        virtual void create();
+        std::string m_fileName;
     };
   }
 }
 
-#endif
+#endif //__TERRALIB_LAYOUT_INTERNAL_IMAGE_MODEL_H

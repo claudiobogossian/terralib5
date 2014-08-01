@@ -50,7 +50,7 @@ te::layout::PropertyBrowser::PropertyBrowser(QObject* parent) :
   m_propertyEditor(0),
   m_variantPropertyEditorManager(0),
   m_strDlgManager(0),
-  m_hasGridWindows(false)
+  m_hasWindows(false)
 {
   createManager();
 }
@@ -325,12 +325,9 @@ te::layout::Property te::layout::PropertyBrowser::getProperty( std::string name 
   case DataTypeBool:
     prop.setValue(variant.toBool(), type);
     break;
-  case DataTypeGridSettings:
-    prop.setValue(variant.toString().toStdString(), type);
-    break;
   case DataTypeColor:
     qcolor = variant.value<QColor>();
-    if(qcolor.isValid())
+    if(qcolor.isValid()) 
     {
       color.setColor(qcolor.red(), qcolor.green(), qcolor.blue(), 255);
       prop.setValue(color, type);
@@ -428,19 +425,6 @@ te::layout::LayoutPropertyDataType te::layout::PropertyBrowser::getLayoutType( Q
     case QVariant::String:
       {
         dataType = DataTypeString;
-
-        //Custom types: Dialog Window Type
-        if(name.compare("") != 0)
-        {
-          QVariant variant = m_strDlgManager->property(name.c_str());
-          if(!variant.isNull())
-          {
-            if(name.compare(m_propGridSettingsName) == 0)
-            {
-              dataType = DataTypeGridSettings;
-            }
-          }
-        }
       }
       break;
     case QVariant::StringList:
@@ -497,9 +481,6 @@ QVariant::Type te::layout::PropertyBrowser::getVariantType( LayoutPropertyDataTy
   case DataTypeBool:
     type = QVariant::Bool;
     break;
-  case DataTypeGridSettings:
-    type = QVariant::String;
-    break;
   case DataTypeColor:
     type = QVariant::Color;
     break;
@@ -513,18 +494,13 @@ QVariant::Type te::layout::PropertyBrowser::getVariantType( LayoutPropertyDataTy
   return type;
 }
 
-std::string te::layout::PropertyBrowser::getPropGridSettingsName()
+void te::layout::PropertyBrowser::setHasWindows( bool hasWindows )
 {
-  return m_propGridSettingsName;
+  m_hasWindows = hasWindows;
+  blockOpenWindows(!hasWindows);
 }
 
-void te::layout::PropertyBrowser::setHasGridWindows( bool hasWindows )
-{
-  m_hasGridWindows = hasWindows;
-  blockOpenGridWindows(!hasWindows);
-}
-
-void te::layout::PropertyBrowser::blockOpenGridWindows( bool block )
+void te::layout::PropertyBrowser::blockOpenWindows( bool block )
 {
 
 }

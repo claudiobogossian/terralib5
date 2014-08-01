@@ -34,6 +34,7 @@
 #include <string>  
 #include <exception>
 #include <stdexcept>
+#include <cctype>
 
 te::layout::Variant::Variant() :
   m_sValue("unknown"),
@@ -231,6 +232,15 @@ void te::layout::Variant::convertValue( const void* valueCopy )
         m_fontValue = *fontValue;
       }
       break;
+    case DataTypeImage:
+      // Cast it back to a string pointer.
+      sp = static_cast<std::string*>(value);
+      if(sp)
+      {
+        null = false;
+        m_sValue = *sp;
+      }
+      break;
     default:
       null = true;
       break;
@@ -359,7 +369,7 @@ bool te::layout::Variant::checkNumberAsString( const void* valueCopy )
   void* value = const_cast<void*>(valueCopy);
 
   std::string* sp = 0;
-  bool result = false;
+  bool result = true;
 
   try
   {
@@ -369,20 +379,21 @@ bool te::layout::Variant::checkNumberAsString( const void* valueCopy )
     if(sp)
     {
       std::string res = (std::string)*sp;
-      
+
+      if(res.compare("") == 0)
+        return false;
+
       /* Verification because the result of static_cast<std::string*> 
         may be garbage, if the value is not a string. */
-      std::istringstream buffer(res);
-      int value = 0;
-      buffer >> value;
+      const char* strValue = res.c_str();
 
-      if (buffer.fail())
+      for(unsigned int i = 0 ; i < res.length() ; ++i)
       {
-        result = false;
-      }
-      else
-      {
-        result = true;
+        //if there is a letter in a string then string is not a number
+        if(std::isalpha(strValue[i]))
+        {
+          result = false;
+        }
       }
     }
   }

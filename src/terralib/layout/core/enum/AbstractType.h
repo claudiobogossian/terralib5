@@ -58,6 +58,7 @@ namespace te
       TPItemGroup = 17,
       TPScaleItem = 18,
       TPPageSetup = 19,
+      TPImageItem = 20,
       TPObjectUnknown = 0
     } LayoutAbstractObjectType;
 
@@ -116,7 +117,7 @@ namespace te
       TPCenterRight,
       TPCenterLeft,
       TPNoneSide
-    } LayoutSides;
+    } LayoutAlign;
 
     /*!
     \brief Enum TdkAbstractComponentType. This is the enumeration of the components types
@@ -142,7 +143,8 @@ namespace te
       DataTypeGridSettings = 8,
       DataTypeStringList = 9,
       DataTypeFont = 10,
-      DataTypeNone = 11
+      DataTypeImage = 11,
+      DataTypeNone = 12
     } LayoutPropertyDataType;
 
     /*!

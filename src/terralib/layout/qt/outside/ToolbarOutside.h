@@ -169,6 +169,7 @@ namespace te
 
       /* Text Tools */
       std::string m_optionTextDefault;
+      std::string m_optionImage;
     };
   }
 }

@@ -63,6 +63,7 @@ namespace te
 	      QGraphicsItem* createLegend();
         QGraphicsItem* createScale();
         QGraphicsItem* createItemGroup();
+        QGraphicsItem* createImage();
 
         te::gm::Coord2D findCoordinate(te::layout::Properties* props);
 
@@ -91,6 +92,7 @@ namespace te
         std::string m_verticalRuler;
         std::string m_groupItem;
         bool        m_redraw;
+        std::string m_imageItem;
     };
   }
 }

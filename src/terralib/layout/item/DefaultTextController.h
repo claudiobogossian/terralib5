@@ -41,8 +41,14 @@ namespace te
 
         DefaultTextController( Observable* o );
         virtual ~DefaultTextController();
-
+        
         virtual void setPosition(const double& x, const double& y);
+
+      protected:
+
+        DefaultTextController( Observable* o, LayoutAbstractObjectType type );
+
+        virtual void create();
     };
   }
 }
