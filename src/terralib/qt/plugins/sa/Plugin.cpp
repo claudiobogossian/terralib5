@@ -35,6 +35,10 @@
   #include "ProximityMatrixCreatorAction.h"
 #endif
 
+#ifdef TE_QT_PLUGIN_SA_HAVE_SPATIALSTATISTICS
+  #include "SpatialStatisticsAction.h"
+#endif
+
 
 // QT
 #include <QMenu>
@@ -59,11 +63,11 @@ void te::qt::plugins::sa::Plugin::startup()
 // add plugin menu
   m_saMenu = te::qt::af::ApplicationController::getInstance().getMenu("SA");
 
-  m_saMenu->setTitle(TE_TR("Spatial Analisys"));
+  m_saMenu->setTitle(TE_TR("Spatial Analysis"));
 
 // add pop up menu
   m_popupAction = new QAction(m_saMenu);
-  m_popupAction->setText(TE_TR("Spatial Analisys"));
+  m_popupAction->setText(TE_TR("Spatial Analysis"));
 
 // register actions
   registerActions();
@@ -94,6 +98,10 @@ void te::qt::plugins::sa::Plugin::registerActions()
   m_proxMatrixCreator = new te::qt::plugins::sa::ProximityMatrixCreatorAction(m_saMenu);
 #endif
 
+#ifdef TE_QT_PLUGIN_SA_HAVE_SPATIALSTATISTICS
+  m_spatialStatistics = new te::qt::plugins::sa::SpatialStatisticsAction(m_saMenu);
+#endif
+
 }
 
 void  te::qt::plugins::sa::Plugin::unRegisterActions()
@@ -101,6 +109,10 @@ void  te::qt::plugins::sa::Plugin::unRegisterActions()
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
     delete m_proxMatrixCreator;
+#endif
+
+#ifdef TE_QT_PLUGIN_SA_HAVE_SPATIALSTATISTICS
+    delete m_spatialStatistics;
 #endif
 
 }
