@@ -490,5 +490,22 @@
   <tabstop>m_helpPushButton</tabstop>
  </tabstops>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>m_cancelPushButton</sender>
+   <signal>released()</signal>
+   <receiver>SpatialStatisticsDialogForm</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>536</x>
+     <y>487</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>532</x>
+     <y>509</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

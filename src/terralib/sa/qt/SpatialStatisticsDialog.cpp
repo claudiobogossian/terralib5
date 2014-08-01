@@ -184,7 +184,7 @@ void te::sa::SpatialStatisticsDialog::onOkPushButtonClicked()
 
   std::string attrName = m_ui->m_attrIdComboBox->currentText().toStdString();
 
-  int type = m_ui->m_attrIdComboBox->currentData().toInt();
+  int type = m_ui->m_attrIdComboBox->itemData(m_ui->m_attrIdComboBox->currentIndex()).toInt();
 
   //associate the selected attribute to the GPM
   int attrIdx = te::sa::AssociateGPMVertexAttribute(ds.get(), dsLayer->getDataSetName(), attrLink, attrName, type, gpm.get());
