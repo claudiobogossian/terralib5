@@ -36,9 +36,13 @@
 te::layout::HorizontalRulerController::HorizontalRulerController( Observable* o ) :
   ItemController(o, TPHorizontalRuler)
 {
-  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
-  ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPHorizontalRuler, params);
+  create();
+}
+
+te::layout::HorizontalRulerController::HorizontalRulerController( Observable* o, LayoutAbstractObjectType type ) :
+  ItemController(o, type)
+{
+
 }
 
 te::layout::HorizontalRulerController::~HorizontalRulerController()
@@ -54,4 +58,11 @@ void te::layout::HorizontalRulerController::setPosition( const double& x, const 
     if(model)
       return model->setPosition(x, y);
   }
+}
+
+void te::layout::HorizontalRulerController::create()
+{
+  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
+  ItemParamsCreate params(this, m_model);
+  m_view = (Observer*)factory->make(TPHorizontalRuler, params);
 }

@@ -38,9 +38,13 @@
 te::layout::ItemGroupController::ItemGroupController( Observable* o ) :
   ItemController(o, TPItemGroup)
 {
-  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
-  ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPItemGroup, params);
+  create();
+}
+
+te::layout::ItemGroupController::ItemGroupController( Observable* o, LayoutAbstractObjectType type ) :
+  ItemController(o, type)
+{
+
 }
 
 te::layout::ItemGroupController::~ItemGroupController()
@@ -56,4 +60,11 @@ void te::layout::ItemGroupController::setPosition( const double& x, const double
     if(model)
       return model->setPosition(x, y);
   }
+}
+
+void te::layout::ItemGroupController::create()
+{
+  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
+  ItemParamsCreate params(this, m_model);
+  m_view = (Observer*)factory->make(TPItemGroup, params);
 }

@@ -169,9 +169,9 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
   if(m_graphicsItems.empty())
     return;
     
-  bool gridWindow = false;
-  Properties* props = intersection(graphicsItems, gridWindow);
-  m_layoutPropertyBrowser->setHasGridWindows(gridWindow);
+  bool window = false;
+  Properties* props = intersection(graphicsItems, window);
+  m_layoutPropertyBrowser->setHasWindows(window);
 
   if(!props)
     return;
@@ -220,7 +220,7 @@ void te::layout::PropertiesOutside::closeEvent( QCloseEvent * event )
   m_layoutPropertyBrowser->closeAllWindows();
 }
 
-te::layout::Properties* te::layout::PropertiesOutside::intersection( QList<QGraphicsItem*> graphicsItems, bool& gridWindow )
+te::layout::Properties* te::layout::PropertiesOutside::intersection( QList<QGraphicsItem*> graphicsItems, bool& window )
 {
   Properties* props = 0;
 
@@ -233,22 +233,22 @@ te::layout::Properties* te::layout::PropertiesOutside::intersection( QList<QGrap
       if(lItem)
       {
         props = const_cast<Properties*>(lItem->getProperties());
-        gridWindow = props->hasGridWindows();
+        window = props->hasWindows();
       }
     }
   }
   else
   {
-    props = sameProperties(graphicsItems, gridWindow);
+    props = sameProperties(graphicsItems, window);
   }
 
   return props;
 }
 
-te::layout::Properties* te::layout::PropertiesOutside::sameProperties( QList<QGraphicsItem*> graphicsItems, bool& gridWindow )
+te::layout::Properties* te::layout::PropertiesOutside::sameProperties( QList<QGraphicsItem*> graphicsItems, bool& window )
 {
   Properties* props = 0;
-  std::vector<Properties*> propsVec = getAllProperties(graphicsItems, gridWindow);
+  std::vector<Properties*> propsVec = getAllProperties(graphicsItems, window);
 
   QGraphicsItem* firstItem = graphicsItems.first();
   ItemObserver* lItem = dynamic_cast<ItemObserver*>(firstItem);
@@ -304,7 +304,7 @@ void te::layout::PropertiesOutside::contains( std::vector<Properties*>::iterator
 }
 
 std::vector<te::layout::Properties*> 
-  te::layout::PropertiesOutside::getAllProperties( QList<QGraphicsItem*> graphicsItems, bool& gridWindow )
+  te::layout::PropertiesOutside::getAllProperties( QList<QGraphicsItem*> graphicsItems, bool& window )
 {
   Properties* props = 0;
   std::vector<Properties*> propsVec;
@@ -323,14 +323,14 @@ std::vector<te::layout::Properties*>
           propsVec.push_back(propsItem);
           if(result)
           {
-            result = propsItem->hasGridWindows();
+            result = propsItem->hasWindows();
           }
         }
       }
     }
   }
 
-  gridWindow = result;
+  window = result;
   return propsVec;
 }
 

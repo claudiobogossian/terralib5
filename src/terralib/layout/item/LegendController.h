@@ -43,6 +43,12 @@ namespace te
         virtual ~LegendController();
 
         virtual void setPosition(const double& x, const double& y);
+
+      protected:
+
+        LegendController( Observable* o, LayoutAbstractObjectType type );
+
+        virtual void create();
     };
   }
 }

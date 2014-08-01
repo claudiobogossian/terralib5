@@ -34,15 +34,14 @@
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
+#include "../../core/pattern/singleton/Context.h"
 
 te::layout::HorizontalRulerItem::HorizontalRulerItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
-{
-  //this->setFlags(/*QGraphicsItem::ItemSendsGeometryChanges
-  //|*/ /*QGraphicsItem::ItemIgnoresTransformations*/);
-
+{  
   m_printable = false;
   m_canChangeGraphicOrder = false;
+  m_canZoom = false;
 }
 
 te::layout::HorizontalRulerItem::~HorizontalRulerItem()
@@ -82,9 +81,7 @@ void te::layout::HorizontalRulerItem::updateObserver( ContextItem context )
   te::common::Free(rgba, box.getHeight());
   if(img)
     delete img;
-
+  
   setPixmap(pixmap);
   update();
 }
-
-

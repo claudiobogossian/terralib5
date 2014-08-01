@@ -39,7 +39,7 @@ te::layout::ItemObserver::ItemObserver(ItemController* controller, Observable* o
   m_model(o),
   m_printable(true),
   m_canChangeGraphicOrder(true),
-  m_ppi(96)
+  m_canZoom(true)
 {
   m_model->addObserver(this);
 }
@@ -66,11 +66,6 @@ void te::layout::ItemObserver::refresh()
   te::gm::Coord2D coord = getPosition();
   m_controller->setPosition(coord.x, coord.y);
   setZValueItem(getZValueItem());
-}
-
-void te::layout::ItemObserver::setPPI( const double& ppi )
-{
-  m_ppi = ppi;
 }
 
 void te::layout::ItemObserver::updateProperties( te::layout::Properties* properties )
@@ -120,4 +115,14 @@ void te::layout::ItemObserver::setCanChangeGraphicOrder( bool canChange )
 bool te::layout::ItemObserver::isCanChangeGraphicOrder()
 {
   return m_canChangeGraphicOrder;
+}
+
+bool te::layout::ItemObserver::isCanZoom()
+{
+  return m_canZoom;
+}
+
+void te::layout::ItemObserver::setCanZoom( bool zoom )
+{
+  m_canZoom = zoom;
 }

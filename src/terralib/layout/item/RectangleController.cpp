@@ -39,9 +39,13 @@
 te::layout::RectangleController::RectangleController( Observable* o ) :
   ItemController(o, TPRetangleItem)
 {
-  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
-  ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPRetangleItem, params);
+  create();
+}
+
+te::layout::RectangleController::RectangleController( Observable* o, LayoutAbstractObjectType type ) :
+  ItemController(o, type)
+{
+
 }
 
 te::layout::RectangleController::~RectangleController()
@@ -57,4 +61,11 @@ void te::layout::RectangleController::setPosition( const double& x, const double
     if(model)
       return model->setPosition(x, y);
   }
+}
+
+void te::layout::RectangleController::create()
+{
+  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
+  ItemParamsCreate params(this, m_model);
+  m_view = (Observer*)factory->make(TPRetangleItem, params);
 }

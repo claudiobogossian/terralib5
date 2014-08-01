@@ -40,6 +40,38 @@
 /*! Defines the attribute name used in gpm to identigy the distance information*/
 #define TE_SA_GEOMETRY_ATTR_NAME "coord"
 
+/*! Defines the attribute name G used in GStatistics operation*/
+#define TE_SA_G_ATTR_NAME "G"
+
+/*! Defines the attribute name G* used in GStatistics operation*/
+#define TE_SA_GSTAR_ATTR_NAME "GStar"
+
+/*! Defines the attribute name LocalMean used in Local Mean operation*/
+#define TE_SA_LOCALMEAN_ATTR_NAME "LocalMean"
+
+/*! Defines the attribute name NumNeighbors used in Local Mean operation*/
+#define TE_SA_NUMNEIGHBORS_ATTR_NAME "NumNeighbors"
+
+/*! Defines the attribute name Standard Deviation Z used in ZAndWZ operation*/
+#define TE_SA_STDDEVZ_ATTR_NAME "Z"
+
+/*! Defines the attribute name Local Mean of Z (WZ) used in ZAndWZ operation*/
+#define TE_SA_LOCALMEANWZ_ATTR_NAME "WZ"
+
+/*! Defines the attribute name Moran Index used in MoranIndex operation*/
+#define TE_SA_MORANINDEX_ATTR_NAME "MoranIndex"
+
+/*! Defines the attribute name LISA Significance used in LisaStatisticalSignificance operation*/
+#define TE_SA_LISASIGNIFICANCE_ATTR_NAME "LISASig"
+
+/*! Defines the attribute name Box Map used in BoxMap operation*/
+#define TE_SA_BOXMAP_ATTR_NAME "BoxMap"
+
+/*! Defines the attribute name Lisa Map used in LISAMap operation*/
+#define TE_SA_LISAMAP_ATTR_NAME "LisaMap"
+
+/*! Defines the attribute name Moran Map used in MoranMap operation*/
+#define TE_SA_MORANMAP_ATTR_NAME "MoranMap"
 
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library

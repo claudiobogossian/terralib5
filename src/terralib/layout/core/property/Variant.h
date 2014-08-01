@@ -31,12 +31,14 @@
 // TerraLib
 #include "../enum/AbstractType.h"
 #include "../../../color/RGBAColor.h"
+#include "../Font.h"
 
 // STL
 #include <string>
 #include <map>
 #include <vector>
 #include <iostream>
+
 using namespace std;
 
 namespace te
@@ -62,7 +64,8 @@ namespace te
         long toLong();
         float toFloat();
         bool toBool();
-        te::color::RGBAColor toColor();       
+        te::color::RGBAColor toColor();     
+        Font toFont();
 
         std::string convertToString();
 
@@ -79,7 +82,7 @@ namespace te
       void variantSetValue(Variant &v, const ValueType& value, LayoutPropertyDataType type);
       
       void convertValue(const void* valueCopy);
-
+      
       /* Check if a value passed, of type DataTypeInt and etc, is a std::string. 
          Ex.: value returned by a json file (boost). */
       bool checkNumberAsString(const void* valueCopy);
@@ -99,6 +102,7 @@ namespace te
       float m_fValue;
       bool m_bValue;
       te::color::RGBAColor m_colorValue;
+      Font m_fontValue;
       LayoutPropertyDataType m_type;
       bool m_null;
     };

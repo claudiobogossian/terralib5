@@ -108,7 +108,7 @@ namespace te
         QPointF m_finalCoord;
         bool    m_hoverAboveItem;
         bool    m_toResizeItem;
-        LayoutSides m_enumSides;
+        LayoutAlign m_enumSides;
     };
   }
 }

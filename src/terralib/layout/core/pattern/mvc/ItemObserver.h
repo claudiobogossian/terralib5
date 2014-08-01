@@ -57,8 +57,6 @@ namespace te
         virtual te::layout::Properties* getProperties() const;	
         virtual void updateProperties(te::layout::Properties* properties);
         virtual void redraw();
-
-        virtual void setPPI(const double& ppi);
         
         virtual void setPrintable(bool print);
         virtual bool isPrintable();
@@ -71,6 +69,10 @@ namespace te
         
         virtual void refresh();
 
+        bool isCanZoom();
+
+        void setCanZoom(bool zoom);
+
       protected:
 
         virtual void setZValueItem(int z);
@@ -82,6 +84,7 @@ namespace te
         double					m_ppi;
         bool            m_printable;
         bool            m_canChangeGraphicOrder; //!< Define if item can send to back ou bring to front
+        bool            m_canZoom;
     };
   }
 }

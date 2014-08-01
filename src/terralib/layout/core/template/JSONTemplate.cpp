@@ -52,7 +52,7 @@ bool te::layout::JSONTemplate::exportTemplate( std::vector<te::layout::Propertie
   /*If the file is opened for output operations and it already existed, 
   its previous content is deleted */
   std::ofstream outputFile;
-  outputFile.open(m_path, std::ios::trunc);
+  outputFile.open(m_path.c_str(), std::ios::trunc);
   outputFile.close();
 
   JSON* json = new JSON;

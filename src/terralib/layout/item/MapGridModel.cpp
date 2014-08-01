@@ -59,7 +59,7 @@ te::layout::MapGridModel::MapGridModel() :
 
   m_border = false;
 
-  m_properties->setHasGridWindows(true);
+  m_properties->setHasWindows(true);
 }
 
 te::layout::MapGridModel::~MapGridModel()

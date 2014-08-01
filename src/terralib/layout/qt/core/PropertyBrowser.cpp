@@ -34,6 +34,8 @@
 #include <QRegExp>
 #include <QWidget>
 #include <QVariant>
+#include <QFont>
+#include <QColor>
 
 // QtPropertyBrowser
 #include <QtPropertyBrowser/QtVariantPropertyManager>
@@ -48,7 +50,7 @@ te::layout::PropertyBrowser::PropertyBrowser(QObject* parent) :
   m_propertyEditor(0),
   m_variantPropertyEditorManager(0),
   m_strDlgManager(0),
-  m_hasGridWindows(false)
+  m_hasWindows(false)
 {
   createManager();
 }
@@ -187,6 +189,8 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
 
   te::color::RGBAColor color;
   QColor qcolor;
+  QFont qfont;
+  Font font;
   
   switch(property.getType())
   {
@@ -220,6 +224,18 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
     qcolor.setGreen(color.getGreen());
     qcolor.setBlue(color.getBlue());
     vproperty->setValue(qcolor);
+    break;
+  case DataTypeFont:
+    vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Font, tr(property.getName().c_str()));
+    font = property.getValue().toFont();
+    qfont.setFamily(font.getFamily().c_str());
+    qfont.setPointSize(font.getPointSize());
+    qfont.setBold(font.isBold());
+    qfont.setItalic(font.isItalic());
+    qfont.setUnderline(font.isUnderline());
+    qfont.setStrikeOut(font.isStrikeout());
+    qfont.setKerning(font.isKerning());
+    vproperty->setValue(qfont);
     break;
   default:
    vproperty = 0;    
@@ -272,6 +288,8 @@ te::layout::Property te::layout::PropertyBrowser::getProperty( std::string name 
   Variant v;
   QStringList list;
   std::string value;
+  Font font;
+  QFont qfont;
 
   switch(type)
   {
@@ -307,16 +325,25 @@ te::layout::Property te::layout::PropertyBrowser::getProperty( std::string name 
   case DataTypeBool:
     prop.setValue(variant.toBool(), type);
     break;
-  case DataTypeGridSettings:
-    prop.setValue(variant.toString().toStdString(), type);
-    break;
   case DataTypeColor:
     qcolor = variant.value<QColor>();
-    if(qcolor.isValid())
+    if(qcolor.isValid()) 
     {
       color.setColor(qcolor.red(), qcolor.green(), qcolor.blue(), 255);
       prop.setValue(color, type);
     }
+    break;
+  case DataTypeFont:
+    qfont = variant.value<QFont>();    
+    font.setFamily(qfont.family().toStdString());
+    font.setPointSize(qfont.pointSize());
+    font.setBold(qfont.bold());
+    font.setItalic(qfont.italic());
+    font.setUnderline(qfont.underline());
+    font.setStrikeout(qfont.strikeOut());
+    font.setKerning(qfont.kerning());
+    prop.setValue(font, type);
+    break;    
   default:
     prop.setValue(0, DataTypeNone);
   }
@@ -398,19 +425,6 @@ te::layout::LayoutPropertyDataType te::layout::PropertyBrowser::getLayoutType( Q
     case QVariant::String:
       {
         dataType = DataTypeString;
-
-        //Custom types: Dialog Window Type
-        if(name.compare("") != 0)
-        {
-          QVariant variant = m_strDlgManager->property(name.c_str());
-          if(!variant.isNull())
-          {
-            if(name.compare(m_propGridSettingsName) == 0)
-            {
-              dataType = DataTypeGridSettings;
-            }
-          }
-        }
       }
       break;
     case QVariant::StringList:
@@ -436,6 +450,9 @@ te::layout::LayoutPropertyDataType te::layout::PropertyBrowser::getLayoutType( Q
       break;
     case QVariant::Color:
       dataType = DataTypeColor;
+      break;
+    case QVariant::Font:
+      dataType = DataTypeFont;
       break;
     default:
       dataType = DataTypeNone;
@@ -464,11 +481,11 @@ QVariant::Type te::layout::PropertyBrowser::getVariantType( LayoutPropertyDataTy
   case DataTypeBool:
     type = QVariant::Bool;
     break;
-  case DataTypeGridSettings:
-    type = QVariant::String;
-    break;
   case DataTypeColor:
     type = QVariant::Color;
+    break;
+  case DataTypeFont:
+    type = QVariant::Font;
     break;
   default:
     type = QVariant::Invalid;
@@ -477,18 +494,13 @@ QVariant::Type te::layout::PropertyBrowser::getVariantType( LayoutPropertyDataTy
   return type;
 }
 
-std::string te::layout::PropertyBrowser::getPropGridSettingsName()
+void te::layout::PropertyBrowser::setHasWindows( bool hasWindows )
 {
-  return m_propGridSettingsName;
+  m_hasWindows = hasWindows;
+  blockOpenWindows(!hasWindows);
 }
 
-void te::layout::PropertyBrowser::setHasGridWindows( bool hasWindows )
-{
-  m_hasGridWindows = hasWindows;
-  blockOpenGridWindows(!hasWindows);
-}
-
-void te::layout::PropertyBrowser::blockOpenGridWindows( bool block )
+void te::layout::PropertyBrowser::blockOpenWindows( bool block )
 {
 
 }

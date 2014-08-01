@@ -43,6 +43,12 @@ namespace te
         virtual ~PaperController();
 
         virtual void setPosition(const double& x, const double& y);
+
+      protected:
+
+        PaperController( Observable* o, LayoutAbstractObjectType type );
+
+        virtual void create();
     };
   }
 }

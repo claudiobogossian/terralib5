@@ -306,8 +306,6 @@ namespace te
         */
         void drawTrajectoryIcon(const TrajectoryItem* t, const QPoint& pos, QPainter* painter);
 
-        void openTrajectory(const QString file, const QString& leao); // so para teste
-
         bool alreadyExists(QPair<QString, QString>& item);
 
           //void dragEnterEvent(QDragEnterEvent*);

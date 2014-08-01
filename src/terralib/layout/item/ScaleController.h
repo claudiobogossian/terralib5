@@ -43,6 +43,12 @@ namespace te
         virtual ~ScaleController();
 
         virtual void setPosition(const double& x, const double& y);
+
+      protected:
+
+        ScaleController( Observable* o, LayoutAbstractObjectType type );
+
+        virtual void create();
     };
   }
 }

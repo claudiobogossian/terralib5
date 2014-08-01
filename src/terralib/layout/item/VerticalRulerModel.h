@@ -52,14 +52,13 @@ namespace te
 
         virtual void draw( ContextItem context );
 
+        virtual te::gm::Envelope sizeInZoomProportion(te::gm::Envelope env, double zoomFactor);
+
       protected:
 
-        virtual void drawVerticalRuler(te::map::Canvas* canvas, Utils* utils);
+        virtual void drawVerticalRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
  
-        virtual void drawRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
-
-        virtual te::gm::Envelope applyZoom(te::gm::Envelope env, double zoom);
-        
+        virtual void drawRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);        
     };
   }
 }

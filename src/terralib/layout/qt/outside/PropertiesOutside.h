@@ -84,11 +84,11 @@ namespace te
 
       virtual void	closeEvent ( QCloseEvent * event );
       virtual void createLayout();
-      virtual Properties* intersection(QList<QGraphicsItem*> graphicsItems, bool& gridWindow);
-      virtual Properties* sameProperties(QList<QGraphicsItem*> graphicsItems, bool& gridWindow);
+      virtual Properties* intersection(QList<QGraphicsItem*> graphicsItems, bool& window);
+      virtual Properties* sameProperties(QList<QGraphicsItem*> graphicsItems, bool& window);
       virtual void contains(std::vector<Properties*>::iterator itend, 
         std::vector<Properties*>::iterator it, std::string name, bool& result);
-      virtual std::vector<Properties*> getAllProperties(QList<QGraphicsItem*> graphicsItems, bool& gridWindow);
+      virtual std::vector<Properties*> getAllProperties(QList<QGraphicsItem*> graphicsItems, bool& window);
       virtual void addDynamicOptions(Property& property, std::vector<std::string> list);
       virtual void checkDynamicProperty(Property& property, QList<QGraphicsItem*> graphicsItems);
       virtual void mapNameDynamicProperty(Property& property, QList<QGraphicsItem*> graphicsItems);
