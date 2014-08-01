@@ -134,6 +134,11 @@ namespace te
           */
           void setHighlightColor(const QColor& color);
 
+          /*!
+            \brief Returns \a true if there are unsaved editions e \a false if there is not.
+          */
+          bool hasEditions() const;
+
         public slots:
           
           /*!
