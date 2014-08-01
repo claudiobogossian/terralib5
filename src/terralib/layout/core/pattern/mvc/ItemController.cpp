@@ -36,7 +36,7 @@
 te::layout::ItemController::ItemController( Observable* o ) :
   m_model(o)
 {
-
+  
 }
 
 te::layout::ItemController::ItemController( Observable* o, LayoutAbstractObjectType type ) :

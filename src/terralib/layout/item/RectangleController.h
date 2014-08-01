@@ -43,6 +43,12 @@ namespace te
         virtual ~RectangleController();
 
         virtual void setPosition(const double& x, const double& y);
+
+      protected:
+
+        RectangleController( Observable* o, LayoutAbstractObjectType type );
+
+        virtual void create();
     };
   }
 }

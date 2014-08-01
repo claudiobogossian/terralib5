@@ -29,8 +29,8 @@ if(WIN32)
   add_definitions(-DTEQTPLUGINLAYOUTDLL)
 endif()
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/*.h)
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/*.cpp)
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/*.h)
 
 if(Qt5_FOUND)
   set(CMAKE_AUTOMOC ON)
@@ -60,13 +60,13 @@ else()
   add_definitions(${QT_DEFINITIONS})
 
 # moc'ing
-  set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/LayoutEditorAction.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/AbstractAction.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/OutsideArea.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/DisplayDock.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/ObjectInspectorDock.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/PropertiesDock.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout2/ToolbarDock.h)
+  set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/LayoutEditorAction.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/AbstractAction.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/OutsideArea.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/DisplayDock.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/ObjectInspectorDock.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/PropertiesDock.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/ToolbarDock.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES} OPTIONS -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 
@@ -93,9 +93,9 @@ install(TARGETS terralib_mod_qt_plugins_layout
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/plugins/layout2 COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/plugins/layout COMPONENT devel)
 
-install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.qt.layout2.teplg
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.qt.layout.teplg
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
 
 export(TARGETS terralib_mod_qt_plugins_layout APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

@@ -62,6 +62,7 @@
 #include <QApplication>
 #include <QDir>
 #include <QPrinter>
+#include "../item/DefaultTextItem.h"
 
 te::layout::Scene::Scene( QWidget* widget): 
   QGraphicsScene(widget),
@@ -99,7 +100,7 @@ void te::layout::Scene::init(double screenWMM, double screenHMM, double paperMMW
 
   m_boxPaperW = new te::gm::Envelope(0, 0, paperMMW, paperMMH);
   m_boxW = calculateWindow(m_screenWidthMM, m_screenHeightMM); 
-  
+
   double newZoomFactor = 1. / zoomFactor;
   if(zoomFactor < 1.)
     newZoomFactor = zoomFactor;
@@ -154,6 +155,13 @@ void te::layout::Scene::insertItem( ItemObserver* item )
         transf.scale(scalex, scaley);
         
         map->setTransform(transf);
+      }
+      DefaultTextItem* txt = dynamic_cast<DefaultTextItem*>(qitem);
+      if(txt)
+      {
+        QTransform transf = m_matrix.inverted();
+        txt->setTransform(transf);
+        txt->scale(1, -1);
       }
       this->addItem(qitem);
       qitem->setZValue(total);
@@ -315,7 +323,7 @@ void te::layout::Scene::calculateMatrixViewScene(double zoomFactor)
 {
   if(!m_boxW)
     return;
-    
+      
   double llx = m_boxW->getLowerLeftX();
   double lly = m_boxW->getLowerLeftY();
   double urx = m_boxW->getUpperRightX();
@@ -763,11 +771,7 @@ void te::layout::Scene::createItem( const te::gm::Coord2D& coord )
 
   item = build->createItem(mode, coord);
 
-  //If Create item
-  if(item)
-  {
-    Context::getInstance().setMode(TypeNone);
-  }
+  Context::getInstance().setMode(TypeNone);
 }
 
 void te::layout::Scene::setCurrentToolInSelectedMapItems( LayoutMode mode )

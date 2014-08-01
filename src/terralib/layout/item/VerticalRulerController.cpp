@@ -37,9 +37,13 @@
 te::layout::VerticalRulerController::VerticalRulerController( Observable* o ) :
   ItemController(o, TPVerticalRuler)
 {
-  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
-  ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPVerticalRuler, params);
+  create();
+}
+
+te::layout::VerticalRulerController::VerticalRulerController( Observable* o, LayoutAbstractObjectType type ) :
+  ItemController(o, type)
+{
+
 }
 
 te::layout::VerticalRulerController::~VerticalRulerController()
@@ -55,4 +59,11 @@ void te::layout::VerticalRulerController::setPosition( const double& x, const do
     if(model)
       return model->setPosition(x, y);
   }
+}
+
+void te::layout::VerticalRulerController::create()
+{
+  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
+  ItemParamsCreate params(this, m_model);
+  m_view = (Observer*)factory->make(TPVerticalRuler, params);
 }

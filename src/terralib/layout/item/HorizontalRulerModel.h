@@ -50,10 +50,12 @@ namespace te
         virtual void draw( ContextItem context );
         
         virtual void setBox(te::gm::Envelope box);
+
+        virtual te::gm::Envelope sizeInZoomProportion(te::gm::Envelope env, double zoomFactor);
                 
       protected:
 
-        virtual void drawHorizontalRuler(te::map::Canvas* canvas, Utils* utils);
+        virtual void drawHorizontalRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
 
         virtual void drawRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
     };

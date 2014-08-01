@@ -101,9 +101,7 @@ namespace te
         int                       m_zValue;
         SharedProperties*         m_sharedProps;
         bool                      m_border;
-
-      private:
-        std::string m_name;
+        std::string               m_name;
     };
   }
 }

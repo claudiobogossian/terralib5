@@ -51,9 +51,7 @@ namespace te
 
         MapController( Observable* o, LayoutAbstractObjectType type );
 
-      private:
-
-        void create();
+        virtual void create();
     };
   }
 }

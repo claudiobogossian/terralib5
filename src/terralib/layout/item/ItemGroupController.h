@@ -43,6 +43,12 @@ namespace te
         virtual ~ItemGroupController();
 
         virtual void setPosition(const double& x, const double& y);
+
+      protected:
+
+        ItemGroupController( Observable* o, LayoutAbstractObjectType type );
+
+        virtual void create();
     };
   }
 }

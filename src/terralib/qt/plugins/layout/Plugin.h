@@ -23,15 +23,15 @@
   \brief Plugin implementation for the RP Qt Plugin widget.
 */
 
-#ifndef __TE_QT_PLUGINS_RP_INTERNAL_PLUGIN_H
-#define __TE_QT_PLUGINS_RP_INTERNAL_PLUGIN_H
+#ifndef __TE_QT_PLUGINS_LAYOUT_INTERNAL_PLUGIN_H
+#define __TE_QT_PLUGINS_LAYOUT_INTERNAL_PLUGIN_H
 
 // TerraLib
 #include "../../../plugin/Plugin.h"
 #include "Config.h"
 
 // Qt
-#include <QtGui/QMenu>
+#include <QMenu>
 
 namespace te
 {

@@ -41,6 +41,12 @@ namespace te
 
         MapGridController( Observable* o );
         virtual ~MapGridController();
+
+      protected:
+
+        MapGridController( Observable* o, LayoutAbstractObjectType type );
+
+        virtual void create();
     };
   }
 }

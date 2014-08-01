@@ -43,6 +43,12 @@ namespace te
         virtual ~VerticalRulerController();
 
         virtual void setPosition(const double& x, const double& y);
+
+      protected:
+
+        VerticalRulerController( Observable* o, LayoutAbstractObjectType type );
+
+        virtual void create();
     };
   }
 }
