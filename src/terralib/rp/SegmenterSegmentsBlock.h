@@ -78,19 +78,19 @@
           unsigned int m_segmentsMatrixYIndex;          
 
           /*! Top cut off profile - a vector of block line numbers (all pixels
-          above this line must be ignored - default:empty vector*/
+          above this line must be ignored - the size of this vector is m_width - default:empty vector*/
           std::vector< unsigned int > m_topCutOffProfile;
           
           /*! Bottom cut off profile - a vector of block line number (all pixels
-          below this line must be ignored - default:empty vector*/
+          below this line must be ignored - the size of this vector is m_width - default:empty vector*/
           std::vector< unsigned int > m_bottomCutOffProfile;
           
           /*! Left cut off profile - a vector of block column numbers (all pixels
-          to the left of this line must be ignored - default:empty vector*/
+          to the left of this line must be ignored - the size of this vector is m_height - default:empty vector*/
           std::vector< unsigned int > m_leftCutOffProfile;          
           
           /*! Right cut off profile - a vector of block column numbers (all pixels
-          to the right of this line must be ignored - default:empty vector*/
+          to the right of this line must be ignored - the size of this vector is m_height - default:empty vector*/
           std::vector< unsigned int > m_rightCutOffProfile;          
           
           SegmenterSegmentsBlock();

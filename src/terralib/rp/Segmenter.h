@@ -32,6 +32,7 @@
 #include "Algorithm.h"
 #include "Matrix.h"
 #include "Config.h"
+#include "../raster/RasterSynchronizer.h"
 #include "../common/progress/TaskProgress.h"
 
 #include <vector>
@@ -84,6 +85,8 @@ namespace te
             te::rst::Raster const* m_inputRasterPtr; //!< Input raster.
             
             std::vector< unsigned int > m_inputRasterBands; //!< Bands to be processed from the input raster.
+            
+            std::vector< double > m_inputRasterNoDataValues; //!< A vector of values to be used as input raster no-data values or an empty vector indicating to use the default values from the input raster..
             
             bool m_enableThreadedProcessing; //!< If true, threaded processing will be performed (best with  multi-core or multi-processor systems (default:true).
             
@@ -196,50 +199,56 @@ namespace te
         class SegmenterThreadEntryParams
         {
           public :
-            //! A pointer to the global segmenter input execution parameters (default:0). */
+            //! A pointer to the global segmenter input execution parameters (default:0).
             Segmenter::InputParameters const* m_inputParametersPtr;
             
-            //! A pointer to the global segmenter input execution parameters (default:0). */
+            //! A pointer to the global segmenter input execution parameters (default:0).
             Segmenter::OutputParameters* m_outputParametersPtr;
             
-            //! Pointer to the segments blocks matrix (default:0)*/
+            //! Pointer to the segments blocks matrix (default:0).
             SegmentsBlocksMatrixT* m_segsBlocksMatrixPtr;
             
-            //! Pointer to a general global mutex (default:0)*/
+            //! Pointer to a general global mutex (default:0).
             boost::mutex* m_generalMutexPtr;            
             
-            //! Pointer to the mutex used when accessing the input raster (default:0)*/
-            boost::mutex* m_inputRasterIOMutexPtr;
+            //! Pointer to the input raster synchronizer (default:0).
+            te::rst::RasterSynchronizer* m_inputRasterSyncPtr;
+
+            //! Pointer to the output raster synchronizer (default:0).
+            te::rst::RasterSynchronizer* m_outputRasterSyncPtr;
             
-            //! Pointer to the mutex used when accessing the output raster (default:0)*/
-            boost::mutex* m_outputRasterIOMutexPtr;
-            
-            //! Pointer to the mutex used by the block processed signal (default:0)*/
+            //! Pointer to the mutex used by the block processed signal (default:0).
             boost::mutex* m_blockProcessedSignalMutexPtr;            
             
-            //! Pointer to the abort segmentation flag (default:0)*/
+            //! Pointer to the abort segmentation flag (default:0).
             bool volatile* m_abortSegmentationFlagPtr;
             
-            //! Pointer to the segments Ids manager - (default 0) */
+            //! Pointer to the segments Ids manager - (default 0).
             SegmenterIdsManager* m_segmentsIdsManagerPtr;
             
-            //! Pointer to a signal to be emited when a segments block was processed (default:0)*/
+            //! Pointer to a signal to be emited when a segments block was processed (default:0).
             boost::condition_variable* m_blockProcessedSignalPtr;
             
-            //! Pointer to the running threads counter - default 0) */
+            //! Pointer to the running threads counter - default 0).
             unsigned int volatile* m_runningThreadsCounterPtr;        
             
-            //! Pointer to a vector of input raster bands gain values */
-            std::vector< double > const * m_inputRasterGainsPtr;
+            //! A vector of input raster bands gain values.
+            std::vector< double > m_inputRasterGains;
             
-            //! Pointer to a vector of input raster bands offset values */
-            std::vector< double > const * m_inputRasterOffsetsPtr;
+            //! A vector of input raster bands offset values.
+            std::vector< double > m_inputRasterOffsets;
             
-            //! Enable/Disable the segmentation strategy to use its own progress interface (default:false). */
+            //! A vector of values to be used as input raster no-data values.
+            std::vector< double > m_inputRasterNoDataValues; 
+            
+            //! Enable/Disable the segmentation strategy to use its own progress interface (default:false).
             bool m_enableStrategyProgress;
             
             //! A pointer to an active task progress tha should be pulsed for each processed block or a null pointer (default:null). */
             te::common::TaskProgress* m_progressPtr;
+            
+            //! The maximum number of input raster cached blocks per-thread.
+            unsigned int m_maxInputRasterCachedBlocks;
             
             SegmenterThreadEntryParams();
             
@@ -284,12 +293,10 @@ namespace te
           \param profileCenter The profile center line.
           \param inRaster The input raster.
           \param inRasterBands The input raster bands.
-          \param pixelNeighborhoodSize The pixel neighborhood size over the 
-          line transverse to each tile line.
+          \param pixelNeighborhoodSize The pixel neighborhood size over the line transverse to each tile line.
           \param tileNeighborhoodSize The buffer size around each tile.
           \param profileAntiSmoothingFactor A positive profile anti-smoothing factor.
-          \param profile The generated profile (each element is a inRaster
-          line index ).
+          \param profile The generated profile (each element is a inRaster line index ).
           \return true if OK, false on errors.
         */                
         bool genImageHCutOffProfile( const unsigned int profileCenter,
@@ -305,12 +312,10 @@ namespace te
           \param profileCenter The profile center column.
           \param inRaster The input raster.
           \param inRasterBands The input raster bands.
-          \param pixelNeighborhoodSize The pixel neighborhood size over the 
-          line transverse to each tile line.
+          \param pixelNeighborhoodSize The pixel neighborhood size over the line transverse to each tile line.
           \param tileNeighborhoodSize The buffer size around each tile.
           \param profileAntiSmoothingFactor A positive profile anti-smoothing factor.
-          \param profile The generated profile (each element is a inRaster
-          column index )
+          \param profile The generated profile (each element is a inRaster column index )
           \return true if OK, false on errors.
         */                
         bool genImageVCutOffProfile( const unsigned int profileCenter,
