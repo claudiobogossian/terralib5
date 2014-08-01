@@ -65,7 +65,8 @@ te::qt::plugins::st::TimeSliderWidgetAction::~TimeSliderWidgetAction()
     ba->getInterfaceController()->removeInteface(m_timeSliderWidget);
     delete m_timeSliderWidget;
   }
-  delete m_menu;
+  m_menu->removeAction(m_action);
+  delete m_action;
 }
 
 void te::qt::plugins::st::TimeSliderWidgetAction::onActionActivated(bool checked)
