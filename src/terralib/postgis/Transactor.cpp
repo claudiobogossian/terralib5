@@ -261,16 +261,6 @@ std::string te::pgis::Transactor::escape(const std::string& value)
   return value;
 }
 
-bool te::pgis::Transactor::isDataSetNameValid(const std::string& datasetName)
-{
-  return true;
-}
-
-bool te::pgis::Transactor::isPropertyNameValid(const std::string& propertyName)
-{
-  return true;
-}
-
 std::vector<std::string> te::pgis::Transactor::getDataSetNames()
 {
   std::vector<std::string> datasetNames;

@@ -35,12 +35,17 @@
 #include "../../../statistics/qt/StatisticsDialog.h"
 
 // Qt
-#include <QHeaderView>
+#include <QBoxLayout>
 #include <QContextMenuEvent>
-#include <QMenu>
 #include <QCursor>
-#include <QPainter>
+#include <QDialogButtonBox>
+#include <QHeaderView>
+#include <QLabel>
+#include <QMenu>
 #include <QMessageBox>
+#include <QPainter>
+#include <QSpinBox>
+
 
 // STL
 #include <vector>
@@ -856,9 +861,39 @@ void te::qt::widgets::DataSetTableView::setHighlightColor(const QColor& color)
 
 void te::qt::widgets::DataSetTableView::createHistogram(const int& column)
 {
-  const te::map::LayerSchema* schema = m_layer->getSchema().release();
-  te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
-  emit createChartDisplay(te::qt::widgets::createHistogramDisplay(m_dset, dataType, column));
+  int propType = m_dset->getPropertyDataType(column);
+
+  if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
+    emit createChartDisplay(te::qt::widgets::createHistogramDisplay(m_dset, m_layer->getSchema().get(), column));
+  else
+  {
+    QDialog* dialog = new QDialog(this);
+    dialog->setFixedSize(160, 75);
+
+    QBoxLayout* vLayout = new QBoxLayout(QBoxLayout::TopToBottom, dialog);
+    QBoxLayout* hLayout = new QBoxLayout(QBoxLayout::LeftToRight, dialog);
+
+    QLabel* slicesProp = new QLabel(QString::fromStdString("Number of Slices: "), dialog);
+    hLayout->addWidget(slicesProp);
+
+    QSpinBox* slicesSB = new QSpinBox(dialog);
+    slicesSB->setValue(5);
+    slicesSB->setMinimum(2);
+
+    hLayout->addWidget(slicesSB);
+    vLayout->addLayout(hLayout);
+
+    QDialogButtonBox* bbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dialog);
+    connect(bbox, SIGNAL(accepted()), dialog, SLOT(accept()));
+    connect(bbox, SIGNAL(rejected()), dialog, SLOT(reject()));
+    vLayout->addWidget(bbox);
+
+    int res = dialog->exec();
+    if (res == QDialog::Accepted)
+      emit createChartDisplay(te::qt::widgets::createHistogramDisplay(m_dset, m_layer->getSchema().get(), column, slicesSB->value()));
+
+    delete dialog;
+  }
 }
 
 void te::qt::widgets::DataSetTableView::hideColumn(const int& column)

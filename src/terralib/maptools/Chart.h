@@ -112,6 +112,10 @@ namespace te
         */
         void setVisibility(bool visible);
 
+        void setAvoidConflicts(bool on);
+
+        bool getAvoidConflicts() const;
+
       private:
 
         ChartType m_type;                           //!< The chart type.
@@ -123,6 +127,7 @@ namespace te
         std::size_t m_barWidth;                     //!< The bar width for char Bar type (in pixels).
         bool m_isVisible;                           //!< A flag that indicates if the chart is visible.
         double m_maxValue;                          //!< The max value of the chart.
+        bool m_avoidConflicts;                      //!< A flag that indicates if conflicts must be avoided.
     };
 
   } // end namespace map

@@ -46,12 +46,6 @@ int main(int /*argc*/, char** /*argv*/)
     //Load Modules and Plugins
     LoadModules();
 
-
-    CoverageSeriesExamples();
-
-    //TrajectoryExamplesFromKML();
-     
-
     //Initialize STDataLoader support
     te::st::STDataLoader::initialize();
     

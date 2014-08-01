@@ -418,7 +418,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual bool isDataSetNameValid(const std::string& datasetName) = 0;
+        virtual bool isDataSetNameValid(const std::string& datasetName);
 
         /*!
           \brief It checks if the given property name is valid.
@@ -429,7 +429,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual bool isPropertyNameValid(const std::string& propertyName) = 0;
+        virtual bool isPropertyNameValid(const std::string& propertyName);
         //@}
     
         /** @name Dataset Metadata Retrieval

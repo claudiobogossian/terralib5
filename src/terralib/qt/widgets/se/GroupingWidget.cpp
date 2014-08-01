@@ -960,6 +960,9 @@ void te::qt::widgets::GroupingWidget::setLayers(te::map::AbstractLayerPtr select
 
   for(std::size_t i = 0; i < allLayers.size(); ++i)
   {
+    if(!allLayers[i]->isValid())
+      continue;
+
     std::auto_ptr<te::da::DataSetType> dt(allLayers[i]->getSchema());
 
     if(dt->hasGeom() && allLayers[i]->getGrouping() && allLayers[i]->getId() != selectedLayer->getId())

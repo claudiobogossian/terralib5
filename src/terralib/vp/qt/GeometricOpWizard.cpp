@@ -71,7 +71,6 @@ te::vp::GeometricOpWizard::GeometricOpWizard(QWidget* parent)
   //configure the wizard
   this->setWizardStyle(QWizard::ModernStyle);
   this->setWindowTitle(tr("Geometric Operation"));
-  this->setFixedSize(640, 420);
 
   this->setOption(QWizard::HaveHelpButton, true);
   this->setOption(QWizard::HelpButtonOnRight, false);
