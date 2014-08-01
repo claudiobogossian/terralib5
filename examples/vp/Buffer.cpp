@@ -146,7 +146,7 @@ bool BufferOGRToPGIS()
   //connInfo["PG_PASSWORD"] = "postgres";
   //connInfo["PG_DB_NAME"] = "testPostGIS";
   //connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  //connInfo["PG_CLIENT_ENCODING"] = "WIN1252";
+  //connInfo["PG_CLIENT_ENCODING"] = "CP1252";
 
   connInfo["PG_HOST"] = "localhost" ; 
   connInfo["PG_PORT"] = "5432" ;
@@ -154,7 +154,7 @@ bool BufferOGRToPGIS()
   connInfo["PG_PASSWORD"] = "root";
   connInfo["PG_DB_NAME"] = "testPostGIS";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  connInfo["PG_CLIENT_ENCODING"] = "WIN1252";
+  connInfo["PG_CLIENT_ENCODING"] = "CP1252";
   
   //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("POSTGIS");
   te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("POSTGIS"));
@@ -202,7 +202,7 @@ bool BufferPGISToPGIS()
   connInfo["PG_PASSWORD"] = "root";
   connInfo["PG_DB_NAME"] = "testPostGIS";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  connInfo["PG_CLIENT_ENCODING"] = "WIN1252"; 
+  connInfo["PG_CLIENT_ENCODING"] = "CP1252"; 
 
   //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
   te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("POSTGIS"));
@@ -279,7 +279,7 @@ bool BufferPGISToOGR()
   connInfo["PG_PASSWORD"] = "root";
   connInfo["PG_DB_NAME"] = "testPostGIS";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  connInfo["PG_CLIENT_ENCODING"] = "WIN1252";
+  connInfo["PG_CLIENT_ENCODING"] = "CP1252";
 
   //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
   te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("POSTGIS"));
