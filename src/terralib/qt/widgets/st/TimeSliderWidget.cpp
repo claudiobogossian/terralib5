@@ -218,6 +218,192 @@ void te::qt::widgets::TimeSliderWidget::layerRemoved(te::map::AbstractLayerPtr l
   }
 }
 
+//void te::qt::widgets::TimeSliderWidget::dragEnterEvent(QDragEnterEvent* e)
+//{
+//  const QMimeData* mdata = e->mimeData();
+//  QList<QUrl> urls = mdata->urls();
+//  if(urls.empty())
+//  {
+//    QByteArray ba = mdata->data("application/x-terralib;value=\"DraggedItems\"");
+//    if(ba.count() != 0)
+//    {
+//      QString s(ba);
+//      std::vector<te::qt::widgets::AbstractTreeItem*>* ditems = (std::vector<AbstractTreeItem*>*)s.toULongLong();
+//      std::vector<te::qt::widgets::AbstractTreeItem*>::iterator it;
+//      for(it = ditems->begin(); it != ditems->end(); ++it)
+//      {
+//        te::qt::widgets::AbstractTreeItem* ati = *it;
+//        std::string ltype = ati->getLayer()->getType();
+//        if(ltype == "DATASETLAYER")
+//        {
+//          te::map::AbstractLayerPtr al = ati->getLayer();
+//          te::map::DataSetLayer* layer = (te::map::DataSetLayer*)al.get();
+//          std::string dsid = layer->getDataSourceId();
+//          te::da::DataSourcePtr ds = te::da::GetDataSource(dsid);
+//          std::map<std::string, std::string> ci = ds->getConnectionInfo();
+//          std::map<std::string, std::string>::iterator it = ci.find("URI");
+//          if(it != ci.end())
+//          {
+//            std::string uri(it->second);
+//            if(uri.find("kml") != std::string::npos)
+//            {
+//              if(layer->getDataSetName() == "40: locations" || layer->getDataSetName() == "41: locations")
+//              {
+//                e->setDropAction(Qt::LinkAction); // this line is necessary to not move items on the layer explorer
+//                //e->setDropAction(Qt::CopyAction); // this line is necessary to not move items on the layer explorer
+//                e->setAccepted(true);
+//              }
+//            }
+//          }
+//        }
+//      }
+//    }
+//    else
+//      e->setAccepted(false);
+//  }
+//  else
+//  {
+//    QString path = urls.begin()->path();
+//    size_t pos = path.indexOf("/");
+//    if(pos == 0)
+//      path.remove(0, 1);
+//    QDir dir(path);
+//    QStringList nameFilter;
+//    nameFilter.append("*.ctl");
+//    QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
+//    if(files.empty() == false)
+//    {
+//      QString file(path + "/" + files.first());
+//      FILE* fp = fopen(file.toStdString().c_str(), "r");
+//      char buf[2000];
+//      int c = fread(buf, sizeof(char), 2000, fp);
+//      fclose(fp);
+//      buf[c] = 0;
+//      QString s(buf);
+//      if(s.contains("undef", Qt::CaseInsensitive))
+//        e->setAccepted(true);
+//      else
+//        e->setAccepted(false);
+//    }
+//    else
+//    {
+//      nameFilter.clear();
+//      nameFilter.append("S1123*.jpg");
+//      QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
+//      if(files.empty() == false && files.first().length() == 26)
+//        e->setAccepted(true);
+//      else
+//      {
+//        nameFilter.clear();
+//        nameFilter.append("S1118*.jpg");
+//        QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
+//        if(files.empty() == false && files.first().length() == 26)
+//          e->setAccepted(true);
+//        else
+//          e->setAccepted(false);
+//      }
+//    }
+//  }
+//}
+//
+//void te::qt::widgets::TimeSliderWidget::dropEvent(QDropEvent* e)
+//{
+//  m_dropModifiers = e->keyboardModifiers();
+//  const QMimeData* mdata = e->mimeData();
+//  m_dropUrls = mdata->urls();
+//  m_dropBA = mdata->data("application/x-terralib;value=\"DraggedItems\"");
+//  QTimer::singleShot(10, this, SLOT(dropAction()));
+//}
+//
+//void te::qt::widgets::TimeSliderWidget::dropAction()
+//{
+//  te::qt::widgets::ScopedCursor scopedCursor(Qt::WaitCursor);
+//  int state = m_parallelAnimation->state();
+//  if(state == QAbstractAnimation::Running)
+//    onPlayToolButtonnClicked(); // put to paused state
+//
+//  if(m_dropModifiers == Qt::NoModifier)
+//  {
+//    onStopToolButtonnClicked();
+//    m_itemList.clear();
+//    m_ui->m_opacityComboBox->clear();
+//    m_ui->m_trajectoryColorComboBox->clear();
+//    m_ui->m_TemporalHorizontalSlider->setValue(0);
+//    m_parallelAnimation->setCurrentTime(0);
+//    m_ui->m_settingsToolButton->setEnabled(false);
+//    m_ui->m_playToolButton->setEnabled(false);
+//    m_ui->m_stopToolButton->setEnabled(false);
+//    m_ui->m_durationSpinBox->setEnabled(false);
+//    m_ui->m_dateTimeEdit->setEnabled(false);
+//    showPropertySection(false);
+//
+//    QList<QGraphicsItem*> list = m_animationScene->items();
+//    QList<QGraphicsItem*>::iterator it;
+//    for(it = list.begin(); it != list.end(); ++it)
+//    {
+//      te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
+//      m_animationScene->removeItem(ai);
+//      m_parallelAnimation->removeAnimation(ai->m_animation);
+//      delete ai->m_animation;
+//      delete ai;
+//    }
+//    m_display->update();
+//  }
+//
+//  if(m_dropUrls.empty())
+//  {
+//    if(m_dropBA.count() != 0)
+//    {
+//      QString s(m_dropBA);
+//      std::vector<te::qt::widgets::AbstractTreeItem*>* ditems = (std::vector<AbstractTreeItem*>*)s.toULongLong();
+//      std::vector<te::qt::widgets::AbstractTreeItem*>::iterator it;
+//      for(it = ditems->begin(); it != ditems->end(); ++it)
+//      {
+//        te::qt::widgets::AbstractTreeItem* ati = *it;
+//        std::string ltype = ati->getLayer()->getType();
+//        if(ltype == "DATASETLAYER")
+//        {
+//          te::map::AbstractLayerPtr al = ati->getLayer();
+//          te::map::DataSetLayer* layer = (te::map::DataSetLayer*)al.get();
+//          std::string dsid = layer->getDataSourceId();
+//          te::da::DataSourcePtr ds = te::da::GetDataSource(dsid);
+//          std::map<std::string, std::string> ci = ds->getConnectionInfo();
+//          std::map<std::string, std::string>::iterator it = ci.find("URI");
+//          if(it != ci.end())
+//          {
+//            QString dsetname(layer->getDataSetName().c_str());
+//            QString uri(it->second.c_str());
+//            if(dsetname == "40: locations" || dsetname == "41: locations")
+//            {
+//              QPair<QString, QString> p(uri, dsetname);
+//
+//              if(alreadyExists(p))
+//                QMessageBox::information(this, dsetname + " alredy exists", "This item is already being animated!");
+//              else
+//                openTrajectory(uri, dsetname);
+//            }
+//          }
+//        }
+//      }
+//    }
+//  }
+//  else
+//  {
+//    QString path = m_dropUrls.first().path();
+//    path.remove(0, 1);
+//
+//    QPair<QString, QString> p(path, "");
+//
+//    if(alreadyExists(p))
+//      QMessageBox::information(this, "animation alredy exists", "This item is already being animated!");
+//    else
+//      addTemporalImages(path);
+//  }
+//
+//  if(state == QAbstractAnimation::Running || m_dropModifiers == Qt::NoModifier)
+//    onPlayToolButtonnClicked();
+//}
+
 bool te::qt::widgets::TimeSliderWidget::alreadyExists(QPair<QString, QString>& item)
 {
   QList<QPair<QString, QString> >::iterator it;
@@ -228,47 +414,6 @@ bool te::qt::widgets::TimeSliderWidget::alreadyExists(QPair<QString, QString>& i
   }
   m_itemList.append(item);
   return false;
-}
-
-void te::qt::widgets::TimeSliderWidget::openTrajectory(const QString file, const QString& leao)
-{
-  te::da::DataSourceInfo dsinfo;
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = file.toStdString(); 
-  dsinfo.setConnInfo(connInfo);
-  dsinfo.setType("OGR");
-  dsinfo.setId(file.toStdString());
-
-  if(te::da::DataSourceManager::getInstance().find(file.toStdString()) == 0)
-  {
-    //Create the data source and put it into the manager
-    te::da::DataSourceManager::getInstance().open(dsinfo.getId(), dsinfo.getType(), dsinfo.getConnInfo());
-  }
-    
-  //Indicates how the trajectories are stored in the data source -> This structure is fixed for OGR driver
-  int phTimeIdx = 3;  /* property name: timestamp */
-  int geomIdx = 12;    /* property name: geom */
-
-  //It initializes the st data loader support
-  te::st::STDataLoader::initialize();
-
-  //Use the STDataLoader to create a TrajectoryDataSet with all observations
-
-  if(leao == "40: locations")
-  {
-    te::st::TrajectoryDataSetInfo tjinfo40(dsinfo, "40: locations", phTimeIdx, geomIdx, -1, "40");
-    te::st::TrajectoryDataSet* tjDS40 = te::st::STDataLoader::getDataSet(tjinfo40).release();
-    addTrajectory(leao, "c:/lixo/helicopteroT2.png", tjDS40);
-    delete tjDS40;
-  }
-  else if(leao == "41: locations")
-  {
-    te::st::TrajectoryDataSetInfo tjinfo41(dsinfo, "41: locations", phTimeIdx, geomIdx, -1, "41");
-    te::st::TrajectoryDataSet* tjDS41 = te::st::STDataLoader::getDataSet(tjinfo41).release();
-    addTrajectory(leao, "c:/lixo/cachorro_correndo_31.gif", tjDS41);
-    delete tjDS41;
-  }
-  te::st::STDataLoader::finalize();
 }
 
 void te::qt::widgets::TimeSliderWidget::addTrajectory(const QString& title, const QString& pixmapFile, te::st::TrajectoryDataSet* dset)
