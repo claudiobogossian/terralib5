@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_FONT_H
 
 // TerraLib
-#include "enum\AbstractType.h"
+#include "enum/AbstractType.h"
 
 // STL
 #include <string>
