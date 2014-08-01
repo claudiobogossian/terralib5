@@ -627,7 +627,27 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
 
         std::auto_ptr<te::da::DataSet> ds(m_tl4Database->getDataSet(sourceName));
 
-        std::auto_ptr<te::da::DataSetAdapter> ds_adapter(te::da::CreateAdapter(ds.get(), dt_adapter.get()));
+        std::auto_ptr<te::da::DataSetAdapter> ds_adapter(new te::da::DataSetAdapter(ds.get()));//te::da::CreateAdapter(ds.get(), dt_adapter.get()));
+
+        const std::vector<std::vector<std::size_t> >& indexes = dt_adapter->getConvertedPropertyIndexes();
+        const std::vector<te::da::AttributeConverter>& funcs = dt_adapter->getConverters();
+
+        te::da::DataSetType* type = dt_adapter->getResult();
+
+        for(std::size_t i = 0; i < type->size(); ++i)
+        {
+          te::dt::Property* p = type->getProperty(i);
+
+          if(p->getType() == te::dt::STRING_TYPE)
+          {
+            te::da::CharEncodingConverter conversor(te::common::CharEncoding::UTF8);
+            ds_adapter->add(p->getName(), p->getType(), indexes[i], conversor);
+          }
+          else
+          {
+            ds_adapter->add(p->getName(), p->getType(), indexes[i], funcs[i]);
+          }
+        }
 
         ::terralib4::DataSource* tl4Ds = dynamic_cast<::terralib4::DataSource*>(m_tl4Database.get());
 
