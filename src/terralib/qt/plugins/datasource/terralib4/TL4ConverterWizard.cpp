@@ -634,13 +634,15 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
 
         te::da::DataSetType* type = dt_adapter->getResult();
 
+        te::common::CharEncoding encTo = tl5ds->getEncoding();
+
         for(std::size_t i = 0; i < type->size(); ++i)
         {
           te::dt::Property* p = type->getProperty(i);
 
           if(p->getType() == te::dt::STRING_TYPE)
           {
-            te::da::CharEncodingConverter conversor(te::common::CharEncoding::UTF8);
+            te::da::CharEncodingConverter conversor(encTo);
             ds_adapter->add(p->getName(), p->getType(), indexes[i], conversor);
           }
           else
