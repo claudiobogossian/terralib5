@@ -57,8 +57,10 @@ void te::qt::plugins::rp::ClippingAction::onActionActivated(bool checked)
 
   if(dlg.exec() == QDialog::Accepted)
   {
-    //add new layer
-    addNewLayer(dlg.getOutputLayer());
+    //add layers
+    std::vector<te::map::AbstractLayerPtr> layersVec = dlg.getOutputLayers();
+    for(std::size_t i = 0; i < layersVec.size(); ++i)
+      addNewLayer(layersVec[i]);
   }
 }
 
@@ -74,8 +76,10 @@ void te::qt::plugins::rp::ClippingAction::onPopUpActionActivated(bool checked)
 
     if(dlg.exec() == QDialog::Accepted)
     {
-      //add new layer
-      addNewLayer(dlg.getOutputLayer());
+      //add layers
+      std::vector<te::map::AbstractLayerPtr> layersVec = dlg.getOutputLayers();
+      for(std::size_t i = 0; i < layersVec.size(); ++i)
+        addNewLayer(layersVec[i]);
     }
   }
   else

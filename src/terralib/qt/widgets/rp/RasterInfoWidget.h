@@ -74,6 +74,8 @@ namespace te
 
           std::map<std::string, std::string> getInfo() const;
 
+          std::map<std::string, std::string> getInfo(int count) const;
+
           std::auto_ptr<te::da::DataSource> getDataSource() const;
 
           std::string getName() const;
