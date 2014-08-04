@@ -51,8 +51,9 @@ te::dt::TimeInstant qdate2TimeInstant(QDateTime qdate)
   return time;
 }
 
-te::qt::widgets::SliderPropertiesDialog::SliderPropertiesDialog(QWidget* parent,  Qt::WindowFlags f)
+te::qt::widgets::SliderPropertiesDialog::SliderPropertiesDialog(te::dt::TimePeriod temporalExtent, QWidget* parent,  Qt::WindowFlags f)
   : QDialog(parent, f),
+    m_temporalExtent(temporalExtent),
     m_ui(new Ui::SliderPropertiesDialogForm)
 {
     m_ui->setupUi(this);
@@ -86,14 +87,14 @@ te::qt::widgets::SliderPropertiesDialog::~SliderPropertiesDialog()
 {
 }
 
-void te::qt::widgets::SliderPropertiesDialog::populateUi(te::dt::TimePeriod temporalExtent, QList<QGraphicsItem*> items, bool forward, bool loop, bool goBack)
+void te::qt::widgets::SliderPropertiesDialog::populateUi(te::dt::TimePeriod currentTemporalExtent, QList<QGraphicsItem*> items, bool forward, bool loop, bool goBack)
 {
-  m_ui->m_initialAnimationDateTimeEdit->setDateTime(timeInstant2QDate(temporalExtent.getInitialTimeInstant()));
-  m_ui->m_finalAnimationDateTimeEdit->setDateTime(timeInstant2QDate(temporalExtent.getFinalTimeInstant()));
+  m_ui->m_initialAnimationDateTimeEdit->setDateTime(timeInstant2QDate(currentTemporalExtent.getInitialTimeInstant()));
+  m_ui->m_finalAnimationDateTimeEdit->setDateTime(timeInstant2QDate(currentTemporalExtent.getFinalTimeInstant()));
 
   // set mimimum & maximum datetime
-  m_ui->m_initialAnimationDateTimeEdit->setMinimumDateTime(timeInstant2QDate(temporalExtent.getInitialTimeInstant()));
-  m_ui->m_finalAnimationDateTimeEdit->setMaximumDateTime(timeInstant2QDate(temporalExtent.getFinalTimeInstant()));
+  m_ui->m_initialAnimationDateTimeEdit->setMinimumDateTime(timeInstant2QDate(currentTemporalExtent.getInitialTimeInstant()));
+  m_ui->m_finalAnimationDateTimeEdit->setMaximumDateTime(timeInstant2QDate(currentTemporalExtent.getFinalTimeInstant()));
 
   //Adjusting ui elements
   m_ui->m_forwardRadioButton->setChecked(forward);
@@ -101,7 +102,6 @@ void te::qt::widgets::SliderPropertiesDialog::populateUi(te::dt::TimePeriod temp
   m_ui->m_loopCheckBox->setChecked(loop);
   m_ui->m_goAndBackCheckBox->setChecked(goBack);
 
-  m_temporalExtent = temporalExtent;
   m_trajectories = items;
   QList<QGraphicsItem*>::iterator it;
 
@@ -185,11 +185,13 @@ void te::qt::widgets::SliderPropertiesDialog::onAutoPanCheckBoxClicked(bool b)
 
 void te::qt::widgets::SliderPropertiesDialog::onResetInitialTimePushButtonClicked()
 {
+  m_ui->m_initialAnimationDateTimeEdit->setMinimumDateTime(timeInstant2QDate(m_temporalExtent.getInitialTimeInstant()));
   m_ui->m_initialAnimationDateTimeEdit->setDateTime(timeInstant2QDate(m_temporalExtent.getInitialTimeInstant()));
 }
 
 void te::qt::widgets::SliderPropertiesDialog::onResetFinalTimePushButtonClicked()
 {
+  m_ui->m_finalAnimationDateTimeEdit->setMaximumDateTime(timeInstant2QDate(m_temporalExtent.getFinalTimeInstant()));
   m_ui->m_finalAnimationDateTimeEdit->setDateTime(timeInstant2QDate(m_temporalExtent.getFinalTimeInstant()));
 }
 
