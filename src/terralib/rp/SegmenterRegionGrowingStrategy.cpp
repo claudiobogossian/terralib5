@@ -722,6 +722,7 @@ namespace te
       const te::rp::SegmenterSegmentsBlock& block2ProcessInfo,
       const te::rst::Raster& inputRaster,
       const std::vector< unsigned int >& inputRasterBands,
+      const std::vector< double >& inputRasterNoDataValues,
       const std::vector< double >& inputRasterGains,
       const std::vector< double >& inputRasterOffsets,
       te::rst::Raster& outputRaster,
@@ -811,8 +812,8 @@ namespace te
       // Initializing segments
         
       TERP_TRUE_OR_RETURN_FALSE( initializeSegments( segmenterIdsManager,
-        block2ProcessInfo, inputRaster, inputRasterBands, inputRasterGains,
-        inputRasterOffsets ), 
+        block2ProcessInfo, inputRaster, inputRasterBands, inputRasterNoDataValues, 
+        inputRasterGains, inputRasterOffsets ), 
         "Segments initalization error" );
         
       // Creating the merger instance
@@ -1112,24 +1113,12 @@ namespace te
       const te::rp::SegmenterSegmentsBlock& block2ProcessInfo,
       const te::rst::Raster& inputRaster,
       const std::vector< unsigned int >& inputRasterBands,   
+      const std::vector< double >& inputRasterNoDataValues,
       const std::vector< double >& inputRasterGains,
       const std::vector< double >& inputRasterOffsets )
     {
       const unsigned int inputRasterBandsSize = (unsigned int)
         inputRasterBands.size();
-        
-      // fiding band dummy values
-      
-      std::vector< double > bandDummyValues;
-      
-      {
-        for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx < 
-          inputRasterBandsSize ; ++inputRasterBandsIdx )
-        {
-          bandDummyValues.push_back( inputRaster.getBand( 
-            inputRasterBands[ inputRasterBandsIdx ] )->getProperty()->m_noDataValue );
-        }
-      }
         
       // Initializing each segment
       
@@ -1185,7 +1174,7 @@ namespace te
                 block2ProcessInfo.m_startY, value, 
                 inputRasterBands[ inputRasterBandsIdx ] );
                 
-              if( value == bandDummyValues[ inputRasterBandsIdx ] )
+              if( value == inputRasterNoDataValues[ inputRasterBandsIdx ] )
               {
                 rasterValuesAreValid = false;
                 break;

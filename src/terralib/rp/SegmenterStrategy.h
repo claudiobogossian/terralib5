@@ -70,6 +70,7 @@ namespace te
           \param block2ProcessInfo The information about the block of raster that must be processed.
           \param inputRaster Input raster.
           \param inputRasterBands Input raster bands.
+          \param inputRasterNoDataValues A vector of values to be used as input raster no-data values.
           \param inputRasterGains Normalization gain values to be appliet over the respective input raster bands.
           \param inputRasterOffsets Normalization offset values to be appliet over the respective input raster bands.
           \param outputRaster Output raster.
@@ -83,6 +84,7 @@ namespace te
           const te::rp::SegmenterSegmentsBlock& block2ProcessInfo,
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
+          const std::vector< double >& inputRasterNoDataValues,
           const std::vector< double >& inputRasterGains,
           const std::vector< double >& inputRasterOffsets,
           te::rst::Raster& outputRaster,

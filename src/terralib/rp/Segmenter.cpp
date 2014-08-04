@@ -180,7 +180,7 @@ namespace te
     
     Segmenter::SegmenterThreadEntryParams::SegmenterThreadEntryParams()
     {
-      m_inputParametersPtr = 0;
+      m_inputParameters.reset();
       m_outputParametersPtr = 0;
       m_segsBlocksMatrixPtr = 0;
       m_generalMutexPtr = 0;
@@ -193,6 +193,7 @@ namespace te
       m_runningThreadsCounterPtr = 0;
       m_inputRasterGains.clear();
       m_inputRasterOffsets.clear();
+      m_inputRasterNoDataValues.clear();
       m_enableStrategyProgress = false;
       m_progressPtr = 0;
       m_maxInputRasterCachedBlocks = 0;
@@ -330,6 +331,23 @@ namespace te
           double bandMax = -1.0 * DBL_MAX;
           double value = 0;
           
+          std::vector< double > noDataValues;
+          if( m_inputParameters.m_inputRasterNoDataValues.empty() )
+          {
+            for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx < 
+              m_inputParameters.m_inputRasterBands.size() ; ++inputRasterBandsIdx )
+            {
+              noDataValues.push_back(
+                m_inputParameters.m_inputRasterPtr->getBand(
+                m_inputParameters.m_inputRasterBands[ 
+                inputRasterBandsIdx ] )->getProperty()->m_noDataValue );
+            }
+          }
+          else
+          {
+            noDataValues = m_inputParameters.m_inputRasterNoDataValues;
+          }           
+          
           for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx <
             m_inputParameters.m_inputRasterBands.size() ; ++inputRasterBandsIdx )
           {
@@ -340,15 +358,24 @@ namespace te
             bandMax = -1.0 * DBL_MAX;
             
             for( row = 0 ; row < nRows ; ++row )
+            {
               for( col = 0 ; col < nCols ; ++col )
               {
                 band.getValue( col, row, value );
                 
-                if( bandMin > value ) bandMin = value;
-                if( bandMax < value ) bandMax = value;
+                if( value != noDataValues[ inputRasterBandsIdx ] )
+                {
+                  if( bandMin > value ) bandMin = value;
+                  if( bandMax < value ) bandMax = value;
+                }
               }
+            }
               
-            if( bandMax != bandMin )
+            if( bandMax == bandMin )
+            {
+              inputRasterGains[ inputRasterBandsIdx ] = 0.0;
+              inputRasterOffsets[ inputRasterBandsIdx ] = 1.0; 
+            }
             {
               inputRasterGains[ inputRasterBandsIdx ] = 1.0 / ( bandMax - bandMin );
               inputRasterOffsets[ inputRasterBandsIdx ] = -1.0 * bandMin;
@@ -652,7 +679,7 @@ namespace te
         }        
         
         SegmenterThreadEntryParams baseSegThreadParams;
-        baseSegThreadParams.m_inputParametersPtr = &m_inputParameters;
+        baseSegThreadParams.m_inputParameters = m_inputParameters;
         baseSegThreadParams.m_outputParametersPtr = outputParamsPtr;
         baseSegThreadParams.m_segsBlocksMatrixPtr = &segmentsblocksMatrix;
         baseSegThreadParams.m_generalMutexPtr = &generalMutex;
@@ -881,8 +908,6 @@ namespace te
     void Segmenter::segmenterThreadEntry(SegmenterThreadEntryParams* paramsPtr)
     {
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr, "Invalid pointer" );
-      TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_inputParametersPtr,
-        "Invalid parameter" );
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_outputParametersPtr,
         "Invalid parameter" );
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_segsBlocksMatrixPtr,
@@ -918,16 +943,16 @@ namespace te
         
       // Creating the segmentation strategy instance
       
+      paramsPtr->m_generalMutexPtr->lock();
+      
       boost::shared_ptr< SegmenterStrategy > strategyPtr(
         SegmenterStrategyFactory::make( 
-        paramsPtr->m_inputParametersPtr->m_strategyName ) );
+        paramsPtr->m_inputParameters.m_strategyName ) );
       TERP_TRUE_OR_THROW( strategyPtr.get(), 
         "Unable to create an segmentation strategy" );   
       if( ! strategyPtr->initialize( 
-        paramsPtr->m_inputParametersPtr->getSegStrategyParams() ) )
+        paramsPtr->m_inputParameters.getSegStrategyParams() ) )
       {
-        paramsPtr->m_generalMutexPtr->lock();
-        
         *(paramsPtr->m_runningThreadsCounterPtr) = 
           *(paramsPtr->m_runningThreadsCounterPtr) - 1;
         *(paramsPtr->m_abortSegmentationFlagPtr) = true;
@@ -938,8 +963,12 @@ namespace te
         paramsPtr->m_generalMutexPtr->unlock();
 
         return;
-      }        
-
+      }
+      else
+      {
+        paramsPtr->m_generalMutexPtr->unlock();
+      }
+      
       // Looking for a non processed segments block
       
       for( unsigned int sBMLine = 0 ; sBMLine < 
@@ -986,7 +1015,8 @@ namespace te
                 *paramsPtr->m_segmentsIdsManagerPtr,
                 segsBlk,
                 inputRaster, 
-                paramsPtr->m_inputParametersPtr->m_inputRasterBands,
+                paramsPtr->m_inputParameters.m_inputRasterBands,
+                paramsPtr->m_inputRasterNoDataValues,
                 paramsPtr->m_inputRasterGains,
                 paramsPtr->m_inputRasterOffsets,
                 outputRaster,

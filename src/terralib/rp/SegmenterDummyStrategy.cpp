@@ -60,6 +60,7 @@ namespace te
       const te::rp::SegmenterSegmentsBlock& block2ProcessInfo,
       const te::rst::Raster& inputRaster,
       const std::vector< unsigned int >& inputRasterBands,
+      const std::vector< double >& inputRasterNoDataValues,
       const std::vector< double >& inputRasterGains,
       const std::vector< double >& inputRasterOffsets,
       te::rst::Raster& outputRaster,
@@ -67,6 +68,14 @@ namespace te
       const bool enableProgressInterface )
       throw( te::rp::Exception )
     {
+      assert( inputRasterBands.size() == inputRasterNoDataValues.size() );
+      assert( inputRasterNoDataValues.size() == inputRasterGains.size() );
+      assert( inputRasterGains.size() == inputRasterOffsets.size() );      
+      assert( block2ProcessInfo.m_topCutOffProfile.size() == block2ProcessInfo.m_width );
+      assert( block2ProcessInfo.m_bottomCutOffProfile.size() == block2ProcessInfo.m_width );
+      assert( block2ProcessInfo.m_leftCutOffProfile.size() == block2ProcessInfo.m_height );
+      assert( block2ProcessInfo.m_rightCutOffProfile.size() == block2ProcessInfo.m_height );      
+      
       SegmenterSegmentsBlock::SegmentIdDataType segmentId = 
         segmenterIdsManager.getNewID();
       
@@ -83,16 +92,34 @@ namespace te
       // processing each block
       
       unsigned int blkCol = 0;
-      assert( block2ProcessInfo.m_topCutOffProfile.size() == block2ProcessInfo.m_width );
-      assert( block2ProcessInfo.m_bottomCutOffProfile.size() == block2ProcessInfo.m_width );
-      assert( block2ProcessInfo.m_leftCutOffProfile.size() == block2ProcessInfo.m_height );
-      assert( block2ProcessInfo.m_rightCutOffProfile.size() == block2ProcessInfo.m_height );
+      double value = 0;
+      unsigned int inputRasterBandsIdx = 0;
+      const unsigned int inputRasterBandsSize = inputRasterBands.size();
+      bool rasterValuesAreValid = false;
       
       for( unsigned int blkLine = 0 ; blkLine < block2ProcessInfo.m_height ; ++blkLine )
       {
         for( blkCol = 0 ; blkCol < block2ProcessInfo.m_width ; ++blkCol )
         {
+          rasterValuesAreValid = true;
+          
+          for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < 
+            inputRasterBandsSize ; ++inputRasterBandsIdx )
+          {
+            inputRaster.getValue( blkCol + block2ProcessInfo.m_startX, blkLine +
+              block2ProcessInfo.m_startY, value, 
+              inputRasterBands[ inputRasterBandsIdx ] );
+              
+            if( value == inputRasterNoDataValues[ inputRasterBandsIdx ] )
+            {
+              rasterValuesAreValid = false;
+              break;
+            }
+          }          
+          
           if( 
+              rasterValuesAreValid
+              &&
               ( blkLine >= block2ProcessInfo.m_topCutOffProfile[ blkCol ] )
               &&
               ( blkLine <= block2ProcessInfo.m_bottomCutOffProfile[ blkCol ] )
