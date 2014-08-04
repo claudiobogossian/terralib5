@@ -64,7 +64,7 @@ namespace te
 
             It constructs a Slider Slider Dialog
           */
-          SliderPropertiesDialog(QWidget* parent = 0,  Qt::WindowFlags f = 0);
+          SliderPropertiesDialog(te::dt::TimePeriod temporalExtent, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
           /*!
             \brief Destructor
@@ -76,7 +76,7 @@ namespace te
           /*!
             \brief It initialize a property animation dialog
           */
-          void populateUi(te::dt::TimePeriod temporalExtent, QList<QGraphicsItem*> items, bool forward = true, bool loop = true, bool goBack = true);
+          void populateUi(te::dt::TimePeriod currentTemporalExtent, QList<QGraphicsItem*> items, bool forward = true, bool loop = true, bool goBack = true);
 
           /*!
             \brief It returns a boolean that indicates if animation is going forward or backward

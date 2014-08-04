@@ -35,6 +35,7 @@
 #include "../raster/Enums.h"
 #include "../raster/Grid.h"
 #include "../raster/Utils.h"
+#include "../raster/SynchronizedRaster.h"
 #include "../memory/CachedRaster.h"
 #include "../dataaccess/datasource/DataSource.h"
 #include "../common/PlatformUtils.h"
@@ -74,6 +75,7 @@ namespace te
     {
       m_inputRasterPtr = 0;
       m_inputRasterBands.clear();
+      m_inputRasterNoDataValues.clear();
       m_enableThreadedProcessing = true;
       m_maxSegThreads = 0;
       m_enableBlockProcessing = true;
@@ -97,6 +99,7 @@ namespace te
         
       m_inputRasterPtr = params.m_inputRasterPtr;
       m_inputRasterBands = params.m_inputRasterBands;
+      m_inputRasterNoDataValues = params.m_inputRasterNoDataValues;
       m_enableThreadedProcessing = params.m_enableThreadedProcessing;
       m_maxSegThreads = params.m_maxSegThreads;
       m_enableBlockProcessing = params.m_enableBlockProcessing;
@@ -181,17 +184,18 @@ namespace te
       m_outputParametersPtr = 0;
       m_segsBlocksMatrixPtr = 0;
       m_generalMutexPtr = 0;
-      m_inputRasterIOMutexPtr = 0;
-      m_outputRasterIOMutexPtr = 0;
+      m_inputRasterSyncPtr = 0;
+      m_outputRasterSyncPtr = 0;
       m_blockProcessedSignalMutexPtr = 0;
       m_abortSegmentationFlagPtr = 0;
       m_segmentsIdsManagerPtr = 0;
       m_blockProcessedSignalPtr = 0;
       m_runningThreadsCounterPtr = 0;
-      m_inputRasterGainsPtr = 0;
-      m_inputRasterOffsetsPtr = 0;
+      m_inputRasterGains.clear();
+      m_inputRasterOffsets.clear();
       m_enableStrategyProgress = false;
       m_progressPtr = 0;
+      m_maxInputRasterCachedBlocks = 0;
     }
     
     Segmenter::SegmenterThreadEntryParams::~SegmenterThreadEntryParams()
@@ -237,6 +241,23 @@ namespace te
               0 ) );
           TERP_TRUE_OR_RETURN_FALSE( outputParamsPtr->m_outputRasterPtr.get(),
             "Output raster creation error" );
+          
+          // Fill with zeroes
+          
+          te::rst::Raster& outRaster = (*outputParamsPtr->m_outputRasterPtr);
+          te::rst::Band& outBand = (*outRaster.getBand( 0 ));
+          const unsigned int nRows =outRaster.getNumberOfRows();
+          const unsigned int nCols = outRaster.getNumberOfColumns();
+          unsigned int row = 0;
+          unsigned int col = 0;
+          
+          for( row = 0 ; row < nRows ; ++row )
+          {
+            for( col = 0 ; col < nCols ; ++col )
+            {
+              outBand.setValue( col, row, 0.0 );
+            }
+          }
         }
         
         // instantiating the segmentation strategy
@@ -351,8 +372,6 @@ namespace te
         unsigned int maxNonExpandedBlockHeight = 0;
         unsigned int maxExpandedBlockWidth = 0;
         unsigned int maxExpandedBlockHeight = 0;
-        unsigned int blocksHOverlapSize = 0;
-        unsigned int blocksVOverlapSize = 0;
         
         if( m_inputParameters.m_enableBlockProcessing 
             &&
@@ -442,6 +461,11 @@ namespace te
           maxNonExpandedBlockHeight = maxExpandedBlockHeight =
             cachedRasterPtr->getNumberOfRows();
         }
+        
+        const unsigned int blocksHOverlapSize = ( maxExpandedBlockWidth -
+           maxNonExpandedBlockWidth );
+        const unsigned int blocksVOverlapSize = ( maxExpandedBlockHeight -
+           maxNonExpandedBlockHeight );         
 
         // Defining number of blocks
           
@@ -456,20 +480,19 @@ namespace te
         // vector is generated
         
         std::vector< std::vector< unsigned int> > imageHorizontalProfiles;
-        std::vector< unsigned int > imageHorizontalProfilesCenterLines;
         std::vector< std::vector< unsigned int> > imageVerticalProfiles;
-        std::vector< unsigned int > imageVerticalProfilesCenterLines;
         
         if( m_inputParameters.m_enableBlockProcessing &&
           m_inputParameters.m_enableBlockMerging )
         {
 //          std::cout << std::endl << "Starting CutOff profiles generation" << std::endl;
           
-          const unsigned int tileHNeighborhoodSize =  blocksHOverlapSize / 2;
-          const unsigned int tileVNeighborhoodSize =  blocksVOverlapSize / 2;
+          const unsigned int verticalProfilesNeighborhoodSize = blocksHOverlapSize / 2;
+          const unsigned int horizontalProfilesNeighborhoodSize =  blocksVOverlapSize / 2;
           const unsigned int pixelNeighborhoodSize = 5;
           const unsigned int profileAntiSmoothingFactor = 3;            
-          
+          std::vector< unsigned int > imageHorizontalProfilesCenterLines;
+          std::vector< unsigned int > imageVerticalProfilesCenterLines;
           std::vector< unsigned int> profile;
           unsigned int profileIdx = 0;
           
@@ -478,21 +501,18 @@ namespace te
           {
             profile.clear();
             
-            const unsigned int centerLine = ( ( profileIdx ) * 
-              maxNonExpandedBlockHeight );
-            imageHorizontalProfilesCenterLines.push_back( centerLine );
+            const unsigned int centerLine = std::min( 
+              ( profileIdx * maxNonExpandedBlockHeight ) - 1,
+              cachedRasterPtr->getNumberOfRows() - 1 );
             
-            if( genImageHCutOffProfile( centerLine,
+            TERP_TRUE_OR_RETURN_FALSE( genImageHCutOffProfile( centerLine,
               *(cachedRasterPtr), m_inputParameters.m_inputRasterBands, 
-              pixelNeighborhoodSize, tileHNeighborhoodSize, 
-              profileAntiSmoothingFactor, profile ) )
-            {
-              imageHorizontalProfiles.push_back( profile );
-            }
-            else
-            {
-              imageHorizontalProfiles.push_back( std::vector< unsigned int>() );
-            }
+              pixelNeighborhoodSize, horizontalProfilesNeighborhoodSize, 
+              profileAntiSmoothingFactor, profile ),
+              "Horizontal profile generation error" );
+            
+            imageHorizontalProfiles.push_back( profile );
+            imageHorizontalProfilesCenterLines.push_back( centerLine );
           }
           
           for( profileIdx = 1 ; profileIdx < vBlocksNumber ; 
@@ -500,28 +520,25 @@ namespace te
           {
             profile.clear();
             
-            const unsigned int centerLine = ( ( profileIdx ) * 
-              maxNonExpandedBlockWidth );
-            imageVerticalProfilesCenterLines.push_back( centerLine );            
+            const unsigned int centerLine = std::min( 
+              ( profileIdx * maxNonExpandedBlockWidth ) - 1,
+              cachedRasterPtr->getNumberOfColumns() - 1 );
             
-            if( genImageVCutOffProfile( centerLine,
+            TERP_TRUE_OR_RETURN_FALSE( genImageVCutOffProfile( centerLine,
               *(cachedRasterPtr), m_inputParameters.m_inputRasterBands, 
-              pixelNeighborhoodSize, tileVNeighborhoodSize, 
-              profileAntiSmoothingFactor, profile ) )
-            {
-              imageVerticalProfiles.push_back( profile );
-            }
-            else
-            {
-              imageVerticalProfiles.push_back( std::vector< unsigned int>() );
-            }
+              pixelNeighborhoodSize, verticalProfilesNeighborhoodSize, 
+              profileAntiSmoothingFactor, profile ), 
+              "Horizontal profile generation error" );
+
+            imageVerticalProfiles.push_back( profile );
+            imageVerticalProfilesCenterLines.push_back( centerLine );
           }          
-/*          
-          TERP_TRUE_OR_THROW( createCutOffLinesTiff( imageHorizontalProfiles,
+
+/*          TERP_TRUE_OR_THROW( createCutOffLinesTiff( imageHorizontalProfiles,
             imageHorizontalProfilesCenterLines,
             imageVerticalProfiles, imageVerticalProfilesCenterLines,
-            "cutoflines.tif" ), "internal error" )                                         
-*/            
+            "cutoflines.tif" ), "internal error" )   */                                      
+
 
 //          std::cout << std::endl << "CutOff profiles generated" << std::endl;
         }
@@ -539,10 +556,12 @@ namespace te
             cachedRasterPtr->getNumberOfRows();
           const int colsBound = (int)
             cachedRasterPtr->getNumberOfColumns();
-          int blockXBound = 0;
-          int blockYBound = 0;
+          int expandedBlockXBound = 0;
+          int expandedBlockYBound = 0;
           int blockXStart = 0;
           int blockYStart = 0;
+          int expandedBlockXStart = 0;
+          int expandedBlockYStart = 0;          
             
           for( unsigned int segmentsMatrixLine = 0 ; segmentsMatrixLine < 
             segmentsblocksMatrix.getLinesNumber() ; ++segmentsMatrixLine )
@@ -550,26 +569,27 @@ namespace te
             for( unsigned int segmentsMatrixCol = 0 ; segmentsMatrixCol < 
               segmentsblocksMatrix.getColumnsNumber() ; ++segmentsMatrixCol )
             {
+              blockXStart = (int)( segmentsMatrixCol * maxNonExpandedBlockWidth );
+              blockYStart = (int)( segmentsMatrixLine * maxNonExpandedBlockHeight );
+              
+              expandedBlockXStart = std::max( 0, blockXStart - ((int)blocksHOverlapSize) );
+              expandedBlockYStart = std::max( 0, blockYStart - ((int)blocksVOverlapSize) );
+              
+              expandedBlockXBound = std::min( blockXStart + ((int)maxNonExpandedBlockWidth)
+                + ((int)blocksHOverlapSize), colsBound );
+              expandedBlockYBound = std::min( blockYStart + ((int)maxNonExpandedBlockHeight)
+                + ((int)blocksVOverlapSize), linesBound );
+              
               SegmenterSegmentsBlock& segmentsBlock = segmentsblocksMatrix( 
-                segmentsMatrixLine, segmentsMatrixCol );
-                
-              blockXStart = ((int)( segmentsMatrixCol * 
-                maxNonExpandedBlockWidth ) ) - ((int)blocksHOverlapSize );
-              blockYStart = ((int)( segmentsMatrixLine * 
-                maxNonExpandedBlockHeight ) ) - ((int)blocksVOverlapSize );
-              blockXBound = blockXStart + ((int)maxExpandedBlockWidth);
-              blockYBound = blockYStart + ((int)maxExpandedBlockHeight);          
-                
+                segmentsMatrixLine, segmentsMatrixCol );              
               segmentsBlock.m_status = 
                 SegmenterSegmentsBlock::BlockNotProcessed;
-              segmentsBlock.m_startX = (unsigned int)MAX( 0, blockXStart );
-              segmentsBlock.m_startY = (unsigned int)MAX( 0, blockYStart );          
-                
-              segmentsBlock.m_width = ((unsigned int)MIN( blockXBound, 
-                colsBound ) ) - segmentsBlock.m_startX;
-              segmentsBlock.m_height = ((unsigned int)MIN( blockYBound, 
-                linesBound ) ) - segmentsBlock.m_startY;
-              
+              segmentsBlock.m_startX = (unsigned int)expandedBlockXStart;
+              segmentsBlock.m_startY = (unsigned int)expandedBlockYStart;  
+              segmentsBlock.m_width = (unsigned int)( expandedBlockXBound - 
+                expandedBlockXStart );
+              segmentsBlock.m_height = (unsigned int)( expandedBlockYBound - 
+                expandedBlockYStart );                   
               segmentsBlock.m_segmentsMatrixXIndex = segmentsMatrixCol;
               segmentsBlock.m_segmentsMatrixYIndex = segmentsMatrixLine;
               
@@ -582,6 +602,17 @@ namespace te
                   imageHorizontalProfiles, imageVerticalProfiles, 
                   segmentsBlock ), "Block cutOff profiles update error" );
               }
+              else
+              {
+                segmentsBlock.m_topCutOffProfile.resize( segmentsBlock.m_width,
+                  0 );
+                segmentsBlock.m_bottomCutOffProfile.resize( segmentsBlock.m_width,
+                  segmentsBlock.m_height - 1 );
+                segmentsBlock.m_leftCutOffProfile.resize( segmentsBlock.m_height,
+                  0 );
+                segmentsBlock.m_rightCutOffProfile.resize( segmentsBlock.m_height,
+                  segmentsBlock.m_width - 1 );                
+              }
             }
           }
         }
@@ -590,14 +621,18 @@ namespace te
         // since it will be not used during segmentation
         
         cachedRasterHandler.reset();
-        cachedRasterPtr = m_inputParameters.m_inputRasterPtr;
+        cachedRasterPtr = 0;
         
         // Starting the segmentation 
         
         boost::mutex generalMutex;
-        boost::mutex inputRasterIOMutex;
-        boost::mutex outputRasterIOMutex;
         boost::mutex blockProcessedSignalMutex;
+        
+        te::rst::RasterSynchronizer inputRasterSync( 
+          *((te::rst::Raster*)m_inputParameters.m_inputRasterPtr),
+          te::common::RAccess );
+        te::rst::RasterSynchronizer outputRasterSync( *(outputParamsPtr->m_outputRasterPtr),
+          te::common::WAccess );
         
         volatile bool abortSegmentationFlag = false;  
         
@@ -616,27 +651,65 @@ namespace te
           progressPtr->setMessage( "Segmentation" );
         }        
         
-        SegmenterThreadEntryParams segmenterThreadEntryParams;
-        segmenterThreadEntryParams.m_inputParametersPtr = &m_inputParameters;
-        segmenterThreadEntryParams.m_outputParametersPtr = outputParamsPtr;
-        segmenterThreadEntryParams.m_segsBlocksMatrixPtr = &segmentsblocksMatrix;
-        segmenterThreadEntryParams.m_generalMutexPtr = &generalMutex;
-        segmenterThreadEntryParams.m_inputRasterIOMutexPtr = 
-          &inputRasterIOMutex;
-        segmenterThreadEntryParams.m_outputRasterIOMutexPtr = 
-          &outputRasterIOMutex;
-        segmenterThreadEntryParams.m_blockProcessedSignalMutexPtr = 
+        SegmenterThreadEntryParams baseSegThreadParams;
+        baseSegThreadParams.m_inputParametersPtr = &m_inputParameters;
+        baseSegThreadParams.m_outputParametersPtr = outputParamsPtr;
+        baseSegThreadParams.m_segsBlocksMatrixPtr = &segmentsblocksMatrix;
+        baseSegThreadParams.m_generalMutexPtr = &generalMutex;
+        baseSegThreadParams.m_inputRasterSyncPtr = 
+          &inputRasterSync;
+        baseSegThreadParams.m_outputRasterSyncPtr = 
+          &outputRasterSync;
+        baseSegThreadParams.m_blockProcessedSignalMutexPtr = 
           &blockProcessedSignalMutex;
-        segmenterThreadEntryParams.m_abortSegmentationFlagPtr = &abortSegmentationFlag;
-        segmenterThreadEntryParams.m_segmentsIdsManagerPtr = &segmenterIdsManager;
-        segmenterThreadEntryParams.m_blockProcessedSignalPtr = &blockProcessedSignal;
-        segmenterThreadEntryParams.m_runningThreadsCounterPtr = 
+        baseSegThreadParams.m_abortSegmentationFlagPtr = &abortSegmentationFlag;
+        baseSegThreadParams.m_segmentsIdsManagerPtr = &segmenterIdsManager;
+        baseSegThreadParams.m_blockProcessedSignalPtr = &blockProcessedSignal;
+        baseSegThreadParams.m_runningThreadsCounterPtr = 
           &runningThreadsCounter;
-        segmenterThreadEntryParams.m_inputRasterGainsPtr = &inputRasterGains;
-        segmenterThreadEntryParams.m_inputRasterOffsetsPtr = &inputRasterOffsets;
-        segmenterThreadEntryParams.m_enableStrategyProgress =  m_inputParameters.m_enableProgress &&
+        baseSegThreadParams.m_inputRasterGains = inputRasterGains;
+        baseSegThreadParams.m_inputRasterOffsets = inputRasterOffsets;
+        baseSegThreadParams.m_enableStrategyProgress =  m_inputParameters.m_enableProgress &&
           ( ( vBlocksNumber * hBlocksNumber ) == 1 );
-        segmenterThreadEntryParams.m_progressPtr = maxSegThreads ? 0 : progressPtr.get();
+        baseSegThreadParams.m_progressPtr = maxSegThreads ? 0 : progressPtr.get();
+        if( m_inputParameters.m_inputRasterNoDataValues.empty() )
+        {
+          for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx < 
+            m_inputParameters.m_inputRasterBands.size() ; ++inputRasterBandsIdx )
+          {
+            baseSegThreadParams.m_inputRasterNoDataValues.push_back(
+              m_inputParameters.m_inputRasterPtr->getBand(
+              m_inputParameters.m_inputRasterBands[ 
+              inputRasterBandsIdx ] )->getProperty()->m_noDataValue );
+          }
+        }
+        else
+        {
+          baseSegThreadParams.m_inputRasterNoDataValues = m_inputParameters.m_inputRasterNoDataValues;
+        }        
+        
+        if( m_inputParameters.m_enableRasterCache )
+        {
+          int bandBlockSizeBytes = 
+              m_inputParameters.m_inputRasterPtr->getBand( 
+              m_inputParameters.m_inputRasterBands[ 0 ] )->getBlockSize();          
+          double maxSimultaneousCacheBlocks = ( 0.05 * freeVMem ) / ((double)bandBlockSizeBytes);
+          
+          if( maxSegThreads )
+          {
+            baseSegThreadParams.m_maxInputRasterCachedBlocks = std::max( 
+              1u, (unsigned int)( maxSimultaneousCacheBlocks / ((double)maxSegThreads) ) );                                                            
+          }
+          else
+          {
+            baseSegThreadParams.m_maxInputRasterCachedBlocks = 
+              maxSimultaneousCacheBlocks;
+          }          
+        }
+        else
+        {
+          baseSegThreadParams.m_maxInputRasterCachedBlocks = 1;
+        }
         
         if( maxSegThreads )
         { // threaded segmentation mode
@@ -646,12 +719,15 @@ namespace te
           runningThreadsCounter = maxSegThreads;
           
           boost::thread_group threads;
+          std::vector< SegmenterThreadEntryParams > threadsParams( maxSegThreads );
           
           for( unsigned int threadIdx = 0 ; threadIdx < maxSegThreads ;
             ++threadIdx )
           {
+            threadsParams[ threadIdx ] = baseSegThreadParams;
+            
             threads.add_thread( new boost::thread( segmenterThreadEntry, 
-               &segmenterThreadEntryParams ) );
+              &( threadsParams[ threadIdx ] ) ) );
           };
           
           // waiting all threads to finish
@@ -707,7 +783,7 @@ namespace te
         else
         { // non-threaded segmentation mode 
           runningThreadsCounter = 1;
-          segmenterThreadEntry( &segmenterThreadEntryParams );
+          segmenterThreadEntry( &baseSegThreadParams );
         }
         
         return (!abortSegmentationFlag);
@@ -741,15 +817,18 @@ namespace te
         
       TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_inputRasterBands.size() > 0,
         "Invalid raster bands number" );
-        
-      for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx < 
-        inputParamsPtr->m_inputRasterBands.size() ; ++inRasterBandsIdx )
+      for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx < 
+        inputParamsPtr->m_inputRasterBands.size() ; ++inputRasterBandsIdx )
       {
-        TERP_TRUE_OR_RETURN_FALSE( 
-          inputParamsPtr->m_inputRasterBands[ inRasterBandsIdx ] <
-          inputParamsPtr->m_inputRasterPtr->getNumberOfBands(), 
-          "Invalid raster bands" );
+        TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_inputRasterBands[ 
+          inputRasterBandsIdx ] < inputParamsPtr->m_inputRasterPtr->getNumberOfBands(),
+          "Invalid raster band number" );
       }
+      
+      TERP_TRUE_OR_RETURN_FALSE( ( inputParamsPtr->m_inputRasterNoDataValues.empty() ?
+        true : ( inputParamsPtr->m_inputRasterNoDataValues.size() ==
+        inputParamsPtr->m_inputRasterBands.size() ) ),
+        "Invalid no-data values" );      
           
       m_inputParameters = *inputParamsPtr;
       m_instanceInitialized = true;
@@ -803,31 +882,39 @@ namespace te
     {
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr, "Invalid pointer" );
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_inputParametersPtr,
-        "Invalid pointer" );
+        "Invalid parameter" );
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_outputParametersPtr,
-        "Invalid pointer" );
+        "Invalid parameter" );
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_segsBlocksMatrixPtr,
-        "Invalid pointer" );
+        "Invalid parameter" );
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_generalMutexPtr,
-        "Invalid pointer" );
-      TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_inputRasterIOMutexPtr,
-        "Invalid pointer" );
-      TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_outputRasterIOMutexPtr,
-        "Invalid pointer" );
-      TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_outputRasterIOMutexPtr,
-        "Invalid pointer" );
+        "Invalid parameter" );
+      TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_inputRasterSyncPtr,
+        "Invalid parameter" );
+      TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_outputRasterSyncPtr,
+        "Invalid parameter" );
+      TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_blockProcessedSignalMutexPtr,
+        "Invalid parameter" );
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_abortSegmentationFlagPtr,
-        "Invalid pointer" );
+        "Invalid parameter" );
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_segmentsIdsManagerPtr,
-        "Invalid pointer" );
+        "Invalid parameter" );
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_blockProcessedSignalPtr,
-        "Invalid pointer" );
+        "Invalid parameter" );
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_runningThreadsCounterPtr,
-        "Invalid pointer" );
-      TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_inputRasterGainsPtr,
-        "Invalid pointer" );     
-      TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_inputRasterOffsetsPtr,
-        "Invalid pointer" );         
+        "Invalid parameter" );
+      TERP_DEBUG_TRUE_OR_THROW( !paramsPtr->m_inputRasterGains.empty(),
+        "Invalid parameter" );     
+      TERP_DEBUG_TRUE_OR_THROW( !paramsPtr->m_inputRasterOffsets.empty(),
+        "Invalid parameter" );  
+      TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_maxInputRasterCachedBlocks,
+        "Invalid parameter" );        
+      
+      // Creating the rasters instances
+      
+      te::rst::SynchronizedRaster inputRaster( paramsPtr->m_maxInputRasterCachedBlocks, 
+        *(paramsPtr->m_inputRasterSyncPtr) );
+      te::rst::SynchronizedRaster outputRaster( 1, *(paramsPtr->m_outputRasterSyncPtr) );
         
       // Creating the segmentation strategy instance
       
@@ -854,15 +941,6 @@ namespace te
       }        
 
       // Looking for a non processed segments block
-      
-      std::auto_ptr< te::rst::Raster > tempInRasterPtr;
-      std::auto_ptr< te::rst::Raster > tempOutRasterPtr;
-      
-      te::rst::Raster const* currentInRasterPtr = 0;
-      te::rst::Raster* currentOutRasterPtr = 0;
-      
-      std::vector< unsigned int > currentInRasterBands;
-      unsigned int currentOutRasterBand = 0;
       
       for( unsigned int sBMLine = 0 ; sBMLine < 
         paramsPtr->m_segsBlocksMatrixPtr->getLinesNumber() ; ++sBMLine )
@@ -902,187 +980,17 @@ namespace te
 */              
               paramsPtr->m_generalMutexPtr->unlock();
               
-              // Defining the current input and output rasters
-              
-              if( paramsPtr->m_inputParametersPtr->m_enableBlockProcessing )
-              {
-                // Defining the current input raster
-                
-                if( ( currentInRasterPtr == 0 ) ||
-                  ( currentInRasterPtr->getNumberOfColumns() != segsBlk.m_width ) ||
-                  ( currentInRasterPtr->getNumberOfRows() != segsBlk.m_height ) )
-                {
-                  paramsPtr->m_inputRasterIOMutexPtr->lock();
-                  
-                  // Creating a new temporary input raster 
-                  
-                  std::vector< te::rst::BandProperty* > newInBandProperties;
-                  
-                  for( unsigned int inRasterBandsIdx = 0; inRasterBandsIdx <
-                    paramsPtr->m_inputParametersPtr->m_inputRasterBands.size() ;
-                    ++inRasterBandsIdx )
-                  {
-                    newInBandProperties.push_back( new te::rst::BandProperty(
-                      *(paramsPtr->m_inputParametersPtr->m_inputRasterPtr->operator[]( 
-                      inRasterBandsIdx ).getProperty() ) ) );
-                  }
-                  
-                  te::rst::Grid const* oldGridPtr =
-                    paramsPtr->m_inputParametersPtr->m_inputRasterPtr->getGrid();
-                  te::gm::Coord2D newULC( oldGridPtr->gridToGeo( ((double)
-                    segsBlk.m_startX) - 0.5, ((double)segsBlk.m_startY )-0.5 ) );
-                    
-                  std::map< std::string, std::string > rInfo;
-
-                  tempInRasterPtr.reset( 
-                    te::rst::RasterFactory::make( "MEM", new te::rst::Grid( 
-                    segsBlk.m_width, segsBlk.m_height, 
-                    oldGridPtr->getResolutionX(),
-                    oldGridPtr->getResolutionY(),
-                    &newULC, oldGridPtr->getSRID() ), 
-                    newInBandProperties, rInfo ) );
-                    
-                  if( tempInRasterPtr.get() == 0 )
-                  {
-                    paramsPtr->m_inputRasterIOMutexPtr->unlock();
-                    
-                    paramsPtr->m_generalMutexPtr->lock();
-                    
-                    --( *(paramsPtr->m_runningThreadsCounterPtr) );
-                    *(paramsPtr->m_abortSegmentationFlagPtr) = true;
-                    
-//                    std::cout << std::endl<< "Thread exit (error)"
-//                      << std::endl;                    
-                    
-                    paramsPtr->m_generalMutexPtr->unlock();
-                    
-                    return;
-                  }
-                  
-                  currentInRasterPtr = tempInRasterPtr.get();
-                  
-                  currentInRasterBands.clear();
-                  
-                  for( unsigned int inRasterBandsIdx = 0; inRasterBandsIdx <
-                    paramsPtr->m_inputParametersPtr->m_inputRasterBands.size() ;
-                    ++inRasterBandsIdx )
-                  {         
-                    currentInRasterBands.push_back( inRasterBandsIdx );
-                  }
-                  
-                  paramsPtr->m_inputRasterIOMutexPtr->unlock();
-                }
-
-                // loading data
-                 
-                {
-                  paramsPtr->m_inputRasterIOMutexPtr->lock();
-                  
-                  unsigned int blkY = 0;
-                  unsigned int blkX = 0;
-                  unsigned int rasterY = 0;
-                  te::rst::Band const* inBandPtr = 0;
-                  te::rst::Band* outBandPtr = 0;
-                  double value = 0;
-                  
-                  for( unsigned int inRasterBandsIdx = 0; inRasterBandsIdx <
-                    paramsPtr->m_inputParametersPtr->m_inputRasterBands.size() ;
-                    ++inRasterBandsIdx )
-                  {         
-                    inBandPtr = 
-                      paramsPtr->m_inputParametersPtr->m_inputRasterPtr->getBand( 
-                      paramsPtr->m_inputParametersPtr->m_inputRasterBands[ 
-                      inRasterBandsIdx ] );
-                    outBandPtr = 
-                      tempInRasterPtr->getBand( inRasterBandsIdx );
-                      
-                    for( blkY = 0 ; blkY < segsBlk.m_height ; ++blkY )
-                    {
-                      rasterY = blkY + segsBlk.m_startY;
-                      
-                      for( blkX = 0 ; blkX < segsBlk.m_width ; ++blkX )
-                      {
-                        inBandPtr->getValue( blkX + segsBlk.m_startX,
-                          rasterY, value );
-                        outBandPtr->setValue( blkX, blkY, value );
-                      }
-                    }
-                  }
-                  
-                  paramsPtr->m_inputRasterIOMutexPtr->unlock();
-                }
-                
-                // Creating a new temporary output raster 
-                
-                if( ( currentOutRasterPtr == 0 ) ||
-                  ( currentOutRasterPtr->getNumberOfColumns() != segsBlk.m_width ) ||
-                  ( currentOutRasterPtr->getNumberOfRows() != segsBlk.m_height ) )
-                {
-                  paramsPtr->m_inputRasterIOMutexPtr->lock();
-                  
-                  te::rst::BandProperty* newBandPropertyPtr = 
-                    new te::rst::BandProperty( 0, te::dt::UINT32_TYPE, "" );
-                  newBandPropertyPtr->m_colorInterp = te::rst::GrayIdxCInt;
-                  newBandPropertyPtr->m_noDataValue = 0;
-                  
-                  std::vector< te::rst::BandProperty* > newBandProperties;
-                  newBandProperties.push_back( newBandPropertyPtr );
-                  
-                  te::rst::Grid const* oldGridPtr = 
-                    paramsPtr->m_inputParametersPtr->m_inputRasterPtr->getGrid();
-                  te::gm::Coord2D newULC( oldGridPtr->gridToGeo( ((double)
-                    segsBlk.m_startX) - 0.5, ((double)segsBlk.m_startY )-0.5 ) );
-                 
-                  std::map< std::string, std::string > rInfo;
-
-                  tempOutRasterPtr.reset( 
-                    te::rst::RasterFactory::make( "MEM", new te::rst::Grid( 
-                    segsBlk.m_width, segsBlk.m_height,
-                    oldGridPtr->getResolutionX(),
-                    oldGridPtr->getResolutionY(),
-                    &newULC, oldGridPtr->getSRID() ), 
-                    newBandProperties, rInfo ) );
-                    
-                  if( tempOutRasterPtr.get() == 0 )
-                  {
-                    paramsPtr->m_inputRasterIOMutexPtr->unlock();
-                    
-                    paramsPtr->m_generalMutexPtr->lock();
-                    
-                    --( *(paramsPtr->m_runningThreadsCounterPtr) );
-                    *(paramsPtr->m_abortSegmentationFlagPtr) = true;
-                    
-//                    std::cout << std::endl<< "Thread exit (error)"
-//                      << std::endl;                    
-                    
-                    paramsPtr->m_generalMutexPtr->unlock();
-                    
-                    return;
-                  }                    
-                  
-                  paramsPtr->m_inputRasterIOMutexPtr->unlock();
-                  
-                  currentOutRasterPtr = tempOutRasterPtr.get();
-                  currentOutRasterBand = 0;
-                }                
-              }
-              else
-              {
-                currentInRasterPtr = paramsPtr->m_inputParametersPtr->m_inputRasterPtr;
-                currentOutRasterPtr = paramsPtr->m_outputParametersPtr->m_outputRasterPtr.get();
-                currentInRasterBands = paramsPtr->m_inputParametersPtr->m_inputRasterBands;
-                currentOutRasterBand = 0;
-              }              
-
-              
               // Executing the strategy
               
               if( ! strategyPtr->execute( 
                 *paramsPtr->m_segmentsIdsManagerPtr,
-                *currentInRasterPtr, currentInRasterBands, 
-                *paramsPtr->m_inputRasterGainsPtr,
-                *paramsPtr->m_inputRasterOffsetsPtr,
-                *currentOutRasterPtr, currentOutRasterBand,
+                segsBlk,
+                inputRaster, 
+                paramsPtr->m_inputParametersPtr->m_inputRasterBands,
+                paramsPtr->m_inputRasterGains,
+                paramsPtr->m_inputRasterOffsets,
+                outputRaster,
+                0,
                 paramsPtr->m_enableStrategyProgress ) )
               {
                 paramsPtr->m_generalMutexPtr->lock();
@@ -1097,98 +1005,6 @@ namespace te
                 paramsPtr->m_generalMutexPtr->unlock();
                 
                 return;
-              }
-              
-              // flushing data if needed
-              
-              if( paramsPtr->m_inputParametersPtr->m_enableBlockProcessing )
-              { 
-                paramsPtr->m_outputRasterIOMutexPtr->lock();
-                
-                unsigned int blkY = 0;
-                unsigned int blkX = 0;
-                unsigned int rasterY = 0;
-                te::rst::Band& inBand =  *( tempOutRasterPtr->getBand(0) );
-                te::rst::Band& outBand = 
-                  *( paramsPtr->m_outputParametersPtr->m_outputRasterPtr->getBand( 
-                  0 ) );
-                double value = 0;
-                
-                if( paramsPtr->m_inputParametersPtr->m_enableBlockMerging )
-                {
-                  const bool hasTopCutOffProfile = 
-                    ! segsBlk.m_topCutOffProfile.empty();
-                  const bool hasBottomCutOffProfile = 
-                    ! segsBlk.m_bottomCutOffProfile.empty();
-                  const bool hasLeftCutOffProfile = 
-                    ! segsBlk.m_leftCutOffProfile.empty();
-                  const bool hasRightCutOffProfile = 
-                    ! segsBlk.m_rightCutOffProfile.empty();
-                  bool isDummyPixel = false;
-                    
-                  
-                  for( blkY = 0 ; blkY < segsBlk.m_height ; ++blkY )
-                  {
-                    rasterY = blkY + segsBlk.m_startY;
-                    
-                    for( blkX = 0 ; blkX < segsBlk.m_width ; ++blkX )
-                    {
-                      isDummyPixel = false;
-                      
-                      if( hasTopCutOffProfile )
-                      {
-                        if( segsBlk.m_topCutOffProfile[ blkX ] > blkY )
-                        {
-                          isDummyPixel = true;
-                        }
-                      }                    
-                      if( hasBottomCutOffProfile )
-                      {
-                        if( segsBlk.m_bottomCutOffProfile[ blkX ] < blkY )
-                        {
-                          isDummyPixel = true;
-                        }
-                      }      
-                      if( hasLeftCutOffProfile )
-                      {
-                        if( segsBlk.m_leftCutOffProfile[ blkY ] > blkX )
-                        {
-                          isDummyPixel = true;
-                        }
-                      }     
-                      if( hasRightCutOffProfile )
-                      {
-                        if( segsBlk.m_rightCutOffProfile[ blkY ] < blkX )
-                        {
-                          isDummyPixel = true;
-                        }
-                      }                      
-                      
-                      if( !isDummyPixel )
-                      {
-                        inBand.getValue( blkX, blkY, value );
-                        outBand.setValue( blkX + segsBlk.m_startX,
-                          rasterY, value );
-                      }
-                    }
-                  }
-                }
-                else
-                {
-                  for( blkY = 0 ; blkY < segsBlk.m_height ; ++blkY )
-                  {
-                    rasterY = blkY + segsBlk.m_startY;
-                    
-                    for( blkX = 0 ; blkX < segsBlk.m_width ; ++blkX )
-                    {
-                      inBand.getValue( blkX, blkY, value );
-                      outBand.setValue( blkX + segsBlk.m_startX,
-                        rasterY, value );
-                    }
-                  }
-                }
-                
-                paramsPtr->m_outputRasterIOMutexPtr->unlock();
               }
               
               // updating block status
@@ -1266,12 +1082,20 @@ namespace te
       const unsigned int profileAntiSmoothingFactor,
       std::vector< unsigned int>& profile ) const
     {
-      TERP_DEBUG_TRUE_OR_THROW( profileAntiSmoothingFactor,
-        "Invalid parameter" )
-        
       profile.clear();
       
-      if( tileNeighborhoodSize < pixelNeighborhoodSize ) return false;
+      if( profileAntiSmoothingFactor == 0 )
+      {
+        return false;
+      }
+      if( profileCenter >= inRaster.getNumberOfRows() )
+      {
+        return false;
+      }
+      if( tileNeighborhoodSize < pixelNeighborhoodSize )
+      {
+        return false;
+      }
       
       const int inRasterRowsNmb = (int)inRaster.getNumberOfRows();
       const int inRasterColsNmb = (int)inRaster.getNumberOfColumns();
@@ -1402,12 +1226,20 @@ namespace te
       const unsigned int profileAntiSmoothingFactor,
       std::vector< unsigned int>& profile ) const
     {
-      TERP_DEBUG_TRUE_OR_THROW( profileAntiSmoothingFactor,
-        "Invalid parameter" )
-        
       profile.clear();
       
-      if( tileNeighborhoodSize < pixelNeighborhoodSize ) return false;
+      if( profileAntiSmoothingFactor == 0 )
+      {
+        return false;
+      }
+      if( profileCenter >= inRaster.getNumberOfColumns() )
+      {
+        return false;
+      }
+      if( tileNeighborhoodSize < pixelNeighborhoodSize )
+      {
+        return false;
+      }      
       
       const int inRasterRowsNmb = (int)inRaster.getNumberOfRows();
       const int inRasterColsNmb = (int)inRaster.getNumberOfColumns();
@@ -1535,6 +1367,15 @@ namespace te
       const std::vector< std::vector< unsigned int> >& imageVerticalProfiles,
       SegmenterSegmentsBlock& segmentsBlock ) const
     {
+      if( segmentsBlock.m_segmentsMatrixXIndex > imageVerticalProfiles.size() )
+      {
+        return false;
+      }
+      if( segmentsBlock.m_segmentsMatrixYIndex > imageHorizontalProfiles.size() )
+      {
+        return false;
+      }      
+      
       // generating m_topCutOffProfile
       
       segmentsBlock.m_topCutOffProfile.clear();      
@@ -1546,7 +1387,11 @@ namespace te
         const std::vector< unsigned int >& profile = imageHorizontalProfiles[ 
           segmentsBlock.m_segmentsMatrixYIndex - 1 ];
           
-        if( ! profile.empty() )
+        if( profile.empty() )
+        {
+          return false;
+        }
+        else
         {
           segmentsBlock.m_topCutOffProfile.resize( segmentsBlock.m_width );      
           int profElementValue = 0;
@@ -1554,8 +1399,11 @@ namespace te
           for( unsigned int profEIdx = 0 ; profEIdx < segmentsBlock.m_width ;
             ++profEIdx )
           {
-            TERP_DEBUG_TRUE_OR_THROW( profEIdx + segmentsBlock.m_startX <
-              profile.size(), "Internal error" )
+            if( profEIdx + segmentsBlock.m_startX >= profile.size() )
+            {
+              return false;
+            }
+            
             profElementValue = 
               ((int)profile[ profEIdx + segmentsBlock.m_startX ]) -
               ((int)segmentsBlock.m_startY);
@@ -1565,6 +1413,10 @@ namespace te
             segmentsBlock.m_topCutOffProfile[ profEIdx ] = profElementValue;          
           }
         }
+      }
+      else
+      {
+        segmentsBlock.m_topCutOffProfile.resize( segmentsBlock.m_width, 0 );
       }
       
       // generating m_bottomCutOffProfile
@@ -1577,7 +1429,11 @@ namespace te
         const std::vector< unsigned int >& profile = imageHorizontalProfiles[ 
           segmentsBlock.m_segmentsMatrixYIndex ];
           
-        if( ! profile.empty() )
+        if( profile.empty() )
+        {
+          return false;
+        }
+        else
         {
           segmentsBlock.m_bottomCutOffProfile.resize( segmentsBlock.m_width );            
           int profElementValue = 0;
@@ -1585,8 +1441,11 @@ namespace te
           for( unsigned int profEIdx = 0 ; profEIdx < segmentsBlock.m_width ;
             ++profEIdx )
           {
-            TERP_DEBUG_TRUE_OR_THROW( profEIdx + segmentsBlock.m_startX <
-              profile.size(), "Internal error" )            
+            if( profEIdx + segmentsBlock.m_startX >= profile.size() )
+            {
+              return false;
+            }
+            
             profElementValue = 
               ((int)profile[ profEIdx + segmentsBlock.m_startX ]) -
               ((int)segmentsBlock.m_startY);
@@ -1596,7 +1455,12 @@ namespace te
             segmentsBlock.m_bottomCutOffProfile[ profEIdx ] = profElementValue;          
           }
         }
-      }      
+      }
+      else
+      {
+        segmentsBlock.m_bottomCutOffProfile.resize( segmentsBlock.m_width,
+          segmentsBlock.m_height - 1);
+      }
       
       // generating m_leftCutOffProfile
       
@@ -1609,7 +1473,11 @@ namespace te
         const std::vector< unsigned int >& profile = imageVerticalProfiles[ 
           segmentsBlock.m_segmentsMatrixXIndex - 1 ];
           
-        if( ! profile.empty() )
+        if( profile.empty() )
+        {
+          return false;
+        }
+        else
         {
           segmentsBlock.m_leftCutOffProfile.resize( segmentsBlock.m_height );      
           int profElementValue = 0;
@@ -1617,8 +1485,11 @@ namespace te
           for( unsigned int profEIdx = 0 ; profEIdx < segmentsBlock.m_height ;
             ++profEIdx )
           {
-            TERP_DEBUG_TRUE_OR_THROW( profEIdx + segmentsBlock.m_startY <
-              profile.size(), "Internal error" )            
+            if( profEIdx + segmentsBlock.m_startY >= profile.size() )
+            {
+              return false;
+            }
+            
             profElementValue = 
               ((int)profile[ profEIdx + segmentsBlock.m_startY ]) -
               ((int)segmentsBlock.m_startX);
@@ -1628,7 +1499,11 @@ namespace te
             segmentsBlock.m_leftCutOffProfile[ profEIdx ] = profElementValue;          
           }
         }
-      }      
+      }
+      else
+      {
+        segmentsBlock.m_leftCutOffProfile.resize( segmentsBlock.m_height, 0 );
+      }
       
       // generating m_rightCutOffProfile
       
@@ -1640,7 +1515,11 @@ namespace te
         const std::vector< unsigned int >& profile = imageVerticalProfiles[ 
           segmentsBlock.m_segmentsMatrixXIndex  ];
           
-        if( ! profile.empty() )
+        if( profile.empty() )
+        {
+          return false;
+        }
+        else
         {
           segmentsBlock.m_rightCutOffProfile.resize( segmentsBlock.m_height );      
           int profElementValue = 0;
@@ -1648,8 +1527,11 @@ namespace te
           for( unsigned int profEIdx = 0 ; profEIdx < segmentsBlock.m_height ;
             ++profEIdx )
           {
-            TERP_DEBUG_TRUE_OR_THROW( profEIdx + segmentsBlock.m_startY <
-              profile.size(), "Internal error" )            
+            if( profEIdx + segmentsBlock.m_startY >= profile.size() )
+            {
+              return false;
+            }
+            
             profElementValue = 
               ((int)profile[ profEIdx + segmentsBlock.m_startY ]) -
               ((int)segmentsBlock.m_startX);
@@ -1659,7 +1541,17 @@ namespace te
             segmentsBlock.m_rightCutOffProfile[ profEIdx ] = profElementValue;          
           }
         }
-      }        
+      }
+      else
+      {
+        segmentsBlock.m_rightCutOffProfile.resize( segmentsBlock.m_height, 
+          segmentsBlock.m_width - 1 ); 
+      }
+      
+      assert( segmentsBlock.m_topCutOffProfile.size() == segmentsBlock.m_width );
+      assert( segmentsBlock.m_bottomCutOffProfile.size() == segmentsBlock.m_width );
+      assert( segmentsBlock.m_leftCutOffProfile.size() == segmentsBlock.m_height );
+      assert( segmentsBlock.m_rightCutOffProfile.size() == segmentsBlock.m_height );
       
       return true;
     }

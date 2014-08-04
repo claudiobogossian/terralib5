@@ -110,10 +110,11 @@ namespace te
         //overload
         bool execute( 
           SegmenterIdsManager& segmenterIdsManager,
+          const te::rp::SegmenterSegmentsBlock& block2ProcessInfo,
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
           const std::vector< double >& inputRasterGains,
-          const std::vector< double >& inputRasterOffsets,                       
+          const std::vector< double >& inputRasterOffsets,
           te::rst::Raster& outputRaster,
           const unsigned int outputRasterBand,
           const bool enableProgressInterface ) throw( te::rp::Exception );
@@ -297,16 +298,16 @@ namespace te
         SegmentsIdsMatrixT m_segmentsIdsMatrix;
         
         /*!
-          \brief Initialize the segment objects container and the segment 
-          IDs container.
-          \param segmenterIdsManager A segments ids manager to acquire
-          unique segments ids.
+          \brief Initialize the segment objects container and the segment IDs container.
+          \param segmenterIdsManager A segments ids manager to acquire unique segments ids.
+          \param block2ProcessInfo Info about the block to process.
           \param inputRaster The input raster.
           \param inputRasterBands Input raster bands to use.
           \param segmentsIds The output segment ids container.
           \return true if OK, false on errors.
         */        
         bool initializeSegments( SegmenterIdsManager& segmenterIdsManager,
+          const te::rp::SegmenterSegmentsBlock& block2ProcessInfo, 
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
           const std::vector< double >& inputRasterGains,

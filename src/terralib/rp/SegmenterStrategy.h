@@ -27,6 +27,7 @@
 
 #include "SegmenterIdsManager.h"
 #include "SegmenterStrategyParameters.h"
+#include "SegmenterSegmentsBlock.h"
 #include "Config.h"
 #include "Exception.h"
 
@@ -64,9 +65,9 @@ namespace te
         virtual void reset() = 0;
         
         /*!
-          \brief Executes the segmentation strategy.
-          \param segmenterIdsManager The segments IDs manager to be used when
-          acquiring/releaseing unique segment IDs.
+          \brief Executes the segmentation strategy over region delimited by the given block.
+          \param segmenterIdsManager The segments IDs manager to be used when  acquiring/releaseing unique segment IDs.
+          \param block2ProcessInfo The information about the block of raster that must be processed.
           \param inputRaster Input raster.
           \param inputRasterBands Input raster bands.
           \param inputRasterGains Normalization gain values to be appliet over the respective input raster bands.
@@ -79,6 +80,7 @@ namespace te
          */
         virtual bool execute( 
           SegmenterIdsManager& segmenterIdsManager,
+          const te::rp::SegmenterSegmentsBlock& block2ProcessInfo,
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
           const std::vector< double >& inputRasterGains,

@@ -1008,8 +1008,8 @@ bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
 
 void te::qt::widgets::TimeSliderWidget::onSettingsToolButtonnClicked()
 {
-  std::auto_ptr<te::qt::widgets::SliderPropertiesDialog> dlg (new te::qt::widgets::SliderPropertiesDialog(this));
-  dlg->populateUi(m_temporalExtent, m_animationScene->items(), (m_direction == QAbstractAnimation::Forward), m_loop, m_goAndBack);
+  std::auto_ptr<te::qt::widgets::SliderPropertiesDialog> dlg (new te::qt::widgets::SliderPropertiesDialog(m_temporalExtent, this));
+  dlg->populateUi(m_temporalAnimationExtent, m_animationScene->items(), (m_direction == QAbstractAnimation::Forward), m_loop, m_goAndBack);
 
   if (dlg->exec() == QDialog::Accepted)
   {

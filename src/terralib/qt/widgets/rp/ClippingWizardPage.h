@@ -93,16 +93,23 @@ namespace te
 
           bool isLayerClipping();
 
+          bool isSingleRasterResult();
+
           void getExtentClipping(te::gm::Envelope& env);
 
           void getDimensionClipping(int& x, int& y, int& width, int& height);
 
+          void getLayerClipping(te::gm::GeometryCollection*& geomColl);
 
         public slots:
 
           void onStrategyTypeComboBoxActivated(int index);
 
+          void onStrategyTypeComboBoxChanged(int index);
+
           void onLayerComboBoxActivated(int index);
+          
+          void onLayerComboBoxChanged(int index);
 
           void onEnvelopeAcquired(te::gm::Envelope env);
 
