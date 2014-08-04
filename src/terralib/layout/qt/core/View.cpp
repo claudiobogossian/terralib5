@@ -40,6 +40,9 @@
 #include "tools/ViewPan.h"
 #include "../../core/Utils.h"
 #include "tools/ViewZoomArea.h"
+#include "../../outside/PageSetupModel.h"
+#include "../../outside/PageSetupController.h"
+#include "../../core/pattern/mvc/OutsideObserver.h"
 
 // STL
 #include <math.h>
@@ -69,7 +72,8 @@ te::layout::View::View( QWidget* widget) :
   m_visualizationArea(0),
   m_lineIntersectHrz(0),
   m_lineIntersectVrt(0),
-  m_currentTool(0)
+  m_currentTool(0),
+  m_pageSetupOutside(0)
 {
   //Use ScrollHand Drag Mode to enable Panning
   //You do need the enable scroll bars for that to work.
@@ -97,6 +101,12 @@ te::layout::View::~View()
   {
     delete m_lineIntersectVrt;
     m_lineIntersectVrt = 0;
+  }
+
+  if(m_pageSetupOutside)
+  {
+    delete m_pageSetupOutside;
+    m_pageSetupOutside = 0;
   }
 }
 
@@ -184,15 +194,11 @@ void te::layout::View::config()
   double w = 0;
   double h = 0;
 
-  //pConfig->setPaperSize(LayoutAbstractPaperType::A0);
   pConfig->getPaperSize(w, h);
 
   double sw = widthMM();
   double sh = heightMM();
     
-  /*double sw = w;
-  double sh = h;*/
-
   double zoomFactor = Context::getInstance().getZoomFactor();
   lScene->init(sw, sh, w, h, zoomFactor);
 
@@ -204,8 +210,11 @@ void te::layout::View::config()
   te::gm::Envelope* box = lScene->getPaperBox();
   pConfig->setPaperBoxW(box);
   
-  m_visualizationArea = new VisualizationArea(boxW);
-  m_visualizationArea->build();
+  if(!m_visualizationArea)
+  {
+    m_visualizationArea = new VisualizationArea(boxW);
+    m_visualizationArea->build();
+  }
 
   lScene->setLineIntersectionHzr(m_lineIntersectHrz);
   lScene->setLineIntersectionVrt(m_lineIntersectVrt);
@@ -430,11 +439,7 @@ void te::layout::View::outsideAreaChangeContext( bool change )
       env->m_lly = center.y - halfHeight;
       env->m_urx = center.x + halfWidth;
       env->m_ury = center.y + halfHeight;
-      
-      /*
-      http://www.qtcentre.org/threads/52603-Zoom-effect-by-mouse-Wheel-in-QGraphicsview
-      */
-           
+                 
       sc->refresh(this, zoomFactor);            
       sc->redrawItems(true);
       resetDefaultConfig();
@@ -482,6 +487,10 @@ void te::layout::View::outsideAreaChangeContext( bool change )
       }
       resetDefaultConfig();
     }
+    break;
+  case TypePageConfig:
+    showPageSetup();
+    resetDefaultConfig();
     break;
   default:
     {
@@ -566,4 +575,37 @@ te::gm::Envelope te::layout::View::calculateNewBox( te::gm::Envelope env )
   }
   
   return te::gm::Envelope(x0,y0,x1,y1);
+}
+
+void te::layout::View::showPageSetup()
+{
+  if(!m_pageSetupOutside)
+  {
+    PageSetupModel* model = new PageSetupModel;
+    PageSetupController* controller = new PageSetupController(model);
+    OutsideObserver* obsever = (OutsideObserver*)(controller->getView());
+    m_pageSetupOutside = dynamic_cast<PageSetupOutside*>(obsever);
+    connect(m_pageSetupOutside, SIGNAL(changeConfig()), this, SLOT(onChangeConfig()));
+  }
+
+  m_pageSetupOutside->load();
+  m_pageSetupOutside->show();
+}
+
+void te::layout::View::onChangeConfig()
+{
+  /*double dZoom = Context::getInstance().getDefaultZoomFactor();
+  Context::getInstance().setZoomFactor(dZoom);
+  config();
+
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  sc->redrawItems(true);*/
+}
+
+void te::layout::View::closePageSetup()
+{
+  if(m_pageSetupOutside)
+  {
+    m_pageSetupOutside->close();
+  }
 }

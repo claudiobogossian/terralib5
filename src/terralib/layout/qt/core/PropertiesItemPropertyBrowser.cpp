@@ -182,6 +182,10 @@ void te::layout::PropertiesItemPropertyBrowser::onShowImageDlg()
   {
     Property prop = findDlgProperty(DataTypeImage);
     prop.setValue(path.toStdString(), DataTypeImage);
+    
+    QVariant v(path);
+    changeValueQtPropertyDlg(prop.getName(), v);
+    
     emit updateOutside(prop);
   }
 }
@@ -350,14 +354,14 @@ QVariant::Type te::layout::PropertiesItemPropertyBrowser::getVariantType( Layout
   return type;
 }
 
-void te::layout::PropertiesItemPropertyBrowser::changeValueQtPropertyDlg( std::string name )
+void te::layout::PropertiesItemPropertyBrowser::changeValueQtPropertyDlg( std::string name, QVariant variant )
 {
   QList<QtProperty*> list = m_propertyEditor->properties();
   foreach( QtProperty* prop, list) 
   {
     if(prop->propertyName().toStdString().compare(name))
     {
-        
+      m_strDlgManager->setValue(prop, variant.toString());
     }
   }
 }

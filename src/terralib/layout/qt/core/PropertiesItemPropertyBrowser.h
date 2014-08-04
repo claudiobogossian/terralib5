@@ -34,6 +34,9 @@
 // STL
 #include <map>
 
+// Qt
+#include <QVariant>
+
 class QGraphicsItem;
 class QWidget;
 
@@ -87,7 +90,7 @@ namespace te
 
       virtual Property findDlgProperty(LayoutPropertyDataType dataType);
 
-      virtual void changeValueQtPropertyDlg(std::string name);
+      virtual void changeValueQtPropertyDlg(std::string name, QVariant variant);
       
       GridSettingsOutside* m_gridSettings;
 

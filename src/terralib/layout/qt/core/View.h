@@ -36,6 +36,7 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../geometry/Coord2D.h"
 #include "Scene.h"
+#include "../outside/PageSetupOutside.h"
 
 class QMouseEvent;
 class QWheelEvent;
@@ -61,12 +62,15 @@ namespace te
         View(QWidget* widget = (QWidget*)0);
         ~View();
 
-        virtual void config();        
+        virtual void config();     
+
+        virtual void closePageSetup();
                                 
       public slots:
 
         virtual void onToolbarChangeContext(bool change);
         virtual void onMainMenuChangeContext(bool change);
+        virtual void onChangeConfig();
 
       signals:
 
@@ -104,12 +108,15 @@ namespace te
         virtual void configTransform(Scene* sc);
 
         virtual te::gm::Envelope calculateNewBox(te::gm::Envelope env);
+
+        virtual void showPageSetup();
                         
       protected:
         VisualizationArea*  m_visualizationArea;
         QLineF*             m_lineIntersectHrz;
         QLineF*             m_lineIntersectVrt;
         AbstractViewTool*   m_currentTool;
+        PageSetupOutside*   m_pageSetupOutside;
     };
   }
 }

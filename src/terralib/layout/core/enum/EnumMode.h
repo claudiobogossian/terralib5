@@ -71,6 +71,7 @@ namespace te
       TypeSendToBack = 30,
       TypeRecompose = 31,
       TypeCreateImage = 32,
+      TypePageConfig = 33,
       TypeNone = 0
     } LayoutMode;
 

@@ -103,6 +103,7 @@ void te::qt::plugins::layout::OutsideArea::init()
     connect(m_view, SIGNAL(hideView()), this, SLOT(onHideView()));
     connect(m_view, SIGNAL(closeView()), this, SLOT(onCloseView()));
     connect(m_view, SIGNAL(showView()), this, SLOT(onShowView()));
+    connect(this, SIGNAL(changeMenuContext(bool)), m_view, SLOT(onMainMenuChangeContext(bool)));
   }
 
   createPropertiesDock();
@@ -115,7 +116,6 @@ void te::qt::plugins::layout::OutsideArea::init()
 
   if(m_dockToolbar)
     connect(m_dockToolbar->getToolbarOutside(), SIGNAL(changeContext(bool)), m_view, SLOT(onToolbarChangeContext(bool)));
-  connect(this, SIGNAL(changeMenuContext(bool)), m_view, SLOT(onMainMenuChangeContext(bool)));
 }
 
 void te::qt::plugins::layout::OutsideArea::createPropertiesDock()
@@ -186,7 +186,7 @@ void te::qt::plugins::layout::OutsideArea::onMainMenuTriggered( QAction* action 
   }
   else if(action->objectName().compare(m_optionPageConfig.c_str()) == 0)
   {
-    //changeAction(TypeSaveCurrentTemplate);
+    changeAction(te::layout::TypePageConfig);
   }
   else if(action->objectName().compare(m_optionPrint.c_str()) == 0)
   {
@@ -355,6 +355,8 @@ void te::qt::plugins::layout::OutsideArea::closeMainMenu()
     QAction* firstOption = acts.first();
     firstOption->setVisible(true);
   }
+
+  m_view->closePageSetup();
 }
 
 void te::qt::plugins::layout::OutsideArea::onSelectionChanged()
@@ -384,10 +386,12 @@ void te::qt::plugins::layout::OutsideArea::onHideView()
 {
   closeAllDocks();
   closeMainMenu();
+  m_view->closePageSetup();
 }
 
 void te::qt::plugins::layout::OutsideArea::onCloseView()
 {
   closeAllDocks();
   closeMainMenu();
+  m_view->closePageSetup();
 }

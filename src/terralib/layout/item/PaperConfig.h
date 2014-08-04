@@ -44,7 +44,10 @@ namespace te
         virtual ~PaperConfig();
 
         virtual void setPaperSizeCustom(double w, double h);
-        virtual void setPaperSize(LayoutAbstractPaperType paperType);
+
+        virtual void setPaperType(LayoutAbstractPaperType paperType);
+        virtual LayoutAbstractPaperType getPaperType();
+
         virtual void getPaperSize(double &w, double &h);
 
         virtual void setPaperOrientation(LayoutOrientationType orientation);
