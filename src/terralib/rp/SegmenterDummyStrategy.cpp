@@ -57,10 +57,11 @@ namespace te
     
     bool SegmenterDummyStrategy::execute( 
       SegmenterIdsManager& segmenterIdsManager,
-      const te::rst::Raster&,
+      const te::rp::SegmenterSegmentsBlock& block2ProcessInfo,
+      const te::rst::Raster& inputRaster,
       const std::vector< unsigned int >& inputRasterBands,
-      const std::vector< double >&,
-      const std::vector< double >&,                                         
+      const std::vector< double >& inputRasterGains,
+      const std::vector< double >& inputRasterOffsets,
       te::rst::Raster& outputRaster,
       const unsigned int outputRasterBand,
       const bool enableProgressInterface )
@@ -69,26 +70,41 @@ namespace te
       SegmenterSegmentsBlock::SegmentIdDataType segmentId = 
         segmenterIdsManager.getNewID();
       
-      const unsigned int nLines = outputRaster.getNumberOfRows();
-      const unsigned int nCols = outputRaster.getNumberOfColumns();
-      
       // Progress interface
       
       std::auto_ptr< te::common::TaskProgress > progressPtr;
       if( enableProgressInterface )
       {
         progressPtr.reset( new te::common::TaskProgress );
-        progressPtr->setTotalSteps( nLines );
+        progressPtr->setTotalSteps( block2ProcessInfo.m_height );
         progressPtr->setMessage( "Segmentation" );
       }        
       
-      unsigned int col = 0;
+      // processing each block
       
-      for( unsigned int line = 0 ; line < nLines ; ++line )
+      unsigned int blkCol = 0;
+      assert( block2ProcessInfo.m_topCutOffProfile.size() == block2ProcessInfo.m_width );
+      assert( block2ProcessInfo.m_bottomCutOffProfile.size() == block2ProcessInfo.m_width );
+      assert( block2ProcessInfo.m_leftCutOffProfile.size() == block2ProcessInfo.m_height );
+      assert( block2ProcessInfo.m_rightCutOffProfile.size() == block2ProcessInfo.m_height );
+      
+      for( unsigned int blkLine = 0 ; blkLine < block2ProcessInfo.m_height ; ++blkLine )
       {
-        for( col = 0 ; col < nCols ; ++col )
+        for( blkCol = 0 ; blkCol < block2ProcessInfo.m_width ; ++blkCol )
         {
-          outputRaster.setValue( col, line, segmentId, outputRasterBand );
+          if( 
+              ( blkLine >= block2ProcessInfo.m_topCutOffProfile[ blkCol ] )
+              &&
+              ( blkLine <= block2ProcessInfo.m_bottomCutOffProfile[ blkCol ] )
+              &&
+              ( blkCol >= block2ProcessInfo.m_leftCutOffProfile[ blkLine ] )
+              &&
+              ( blkCol <= block2ProcessInfo.m_rightCutOffProfile[ blkLine ] )
+            )
+          {
+            outputRaster.setValue( blkCol + block2ProcessInfo.m_startX, 
+               blkLine + block2ProcessInfo.m_startY, segmentId, outputRasterBand );
+          }
         }
         
         if( enableProgressInterface )

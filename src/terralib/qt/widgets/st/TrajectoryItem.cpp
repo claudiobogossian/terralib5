@@ -160,7 +160,6 @@ void te::qt::widgets::TrajectoryItem::drawForward(const unsigned int& curTime)
   painter.end();
 }
 
-
 void te::qt::widgets::TrajectoryItem::erase(const unsigned int& curTime)
 {
   if(m_animationRoute.empty())

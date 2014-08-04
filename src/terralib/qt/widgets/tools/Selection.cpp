@@ -143,7 +143,7 @@ void te::qt::widgets::Selection::setLayers(const std::list<te::map::AbstractLaye
 
 void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& e)
 {
-  if(layer->getVisibility() != te::map::VISIBLE)
+  if(layer->getVisibility() != te::map::VISIBLE || !layer->isValid())
     return;
 
   std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();

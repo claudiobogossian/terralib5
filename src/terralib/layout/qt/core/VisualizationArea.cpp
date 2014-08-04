@@ -85,7 +85,6 @@ void te::layout::VisualizationArea::createVerticalRuler()
   VerticalRulerController* controllerRulerV = new VerticalRulerController(modelRulerV);
   ItemObserver* itemRulerV = (ItemObserver*)controllerRulerV->getView();
   VerticalRulerItem* rectRulerV = dynamic_cast<VerticalRulerItem*>(itemRulerV);
-  rectRulerV->setPPI(dpiX);		
   rectRulerV->setPos(QPointF(llx, lly));
   rectRulerV->redraw();
   rectRulerV->setZValue(10001);
@@ -109,7 +108,6 @@ void te::layout::VisualizationArea::createHorizontalRuler()
   HorizontalRulerController* controllerRuler = new HorizontalRulerController(modelRuler);
   ItemObserver* itemRuler = (ItemObserver*)controllerRuler->getView();
   HorizontalRulerItem* rectRuler = dynamic_cast<HorizontalRulerItem*>(itemRuler);
-  rectRuler->setPPI(dpiX);
   rectRuler->setPos(QPointF(llx, lly));
   rectRuler->redraw();
   rectRuler->setZValue(10000);
@@ -132,7 +130,7 @@ void te::layout::VisualizationArea::createPaper()
   PaperController* controllerPaper = new PaperController(modelPaper);
   ItemObserver* itemPaper = (ItemObserver*)controllerPaper->getView();
   PaperItem* qPaper = dynamic_cast<PaperItem*>(itemPaper);
-  qPaper->setPos(QPointF(0,lly));
+  qPaper->setPos(QPointF(0, 0));
   qPaper->setZValue(1);
   qPaper->redraw();
 }

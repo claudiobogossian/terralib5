@@ -251,8 +251,8 @@ std::string te::layout::getLayoutAbstractObjectType( int enumVal )
   case TPVerticalRuler:
     s_val = "TPVerticalRuler";
     break;
-  case TPText:
-    s_val = "TPText";
+  case TPTextItem:
+    s_val = "TPTextItem";
     break;
   case TPItemGroup:
     s_val = "TPItemGroup";
@@ -331,9 +331,9 @@ te::layout::LayoutAbstractObjectType te::layout::getLayoutAbstractObjectType( st
   {
     type = TPVerticalRuler;
   }
-  if(val.compare("TPText") == 0)
+  if(val.compare("TPTextItem") == 0)
   {
-    type = TPText;
+    type = TPTextItem;
   }
   if(val.compare("TPItemGroup") == 0)
   {

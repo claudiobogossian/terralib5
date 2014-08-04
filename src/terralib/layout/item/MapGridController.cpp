@@ -37,12 +37,23 @@
 te::layout::MapGridController::MapGridController( Observable* o ) :
   MapController(o, TPMapGridItem)
 {
-  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
-  ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPMapGridItem, params);
+  create();
+}
+
+te::layout::MapGridController::MapGridController( Observable* o, LayoutAbstractObjectType type ) :
+  MapController(o, type)
+{
+
 }
 
 te::layout::MapGridController::~MapGridController()
 {
 	
+}
+
+void te::layout::MapGridController::create()
+{
+  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
+  ItemParamsCreate params(this, m_model);
+  m_view = (Observer*)factory->make(TPMapGridItem, params);
 }

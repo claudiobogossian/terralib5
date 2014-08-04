@@ -92,6 +92,8 @@ namespace te
       virtual void onSendToBackClicked(bool checked);
 
       virtual void onRecomposeClicked(bool checked);
+
+      virtual void onTextToolsTriggered(QAction* action);
       
     signals:
 
@@ -122,6 +124,8 @@ namespace te
       virtual void createSendToBackToolButton();
 
       virtual void createRecomposeToolButton();
+
+      virtual void createTextToolButton();
 
       virtual void changeAction(LayoutMode mode);
 
@@ -162,6 +166,10 @@ namespace te
       std::string m_optionLineIntersectionMouse;
 
       std::string m_optionSceneZoom;
+
+      /* Text Tools */
+      std::string m_optionTextDefault;
+      std::string m_optionImage;
     };
   }
 }

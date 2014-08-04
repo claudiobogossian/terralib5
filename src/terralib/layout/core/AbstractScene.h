@@ -54,8 +54,7 @@ namespace te
 
       protected:
         
-        virtual te::gm::Envelope* calculateBoxPaper(double wMM, double hMM, double paperMMW, double paperMMH) = 0;
-        virtual te::gm::Envelope* calculateWindow(double wMM, double hMM, double paperMMW, double paperMMH) = 0;
+        virtual te::gm::Envelope* calculateWindow(double wMM, double hMM) = 0;
         virtual void calculateMatrixViewScene(double zoomFactor = 1.) = 0;     
     };
   }

@@ -67,6 +67,9 @@ namespace te
         virtual bool contains(const te::gm::Coord2D &coord) const;
 
       protected:
+
+        virtual void create() = 0;
+
         Observable* m_model;
         Observer* m_view;
     };

@@ -52,6 +52,12 @@
 #include "../../item/ItemGroupModel.h"
 #include "../../item/ItemGroupController.h"
 #include "../item/ItemGroup.h"
+#include "../../item/DefaultTextModel.h"
+#include "../../item/DefaultTextController.h"
+#include "../item/DefaultTextItem.h"
+#include "../../item/ImageModel.h"
+#include "../../item/ImageController.h"
+#include "../item/ImageItem.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -76,7 +82,8 @@ te::layout::BuildGraphicsItem::BuildGraphicsItem() :
   m_scaleItem("SCALE_"),
   m_horizontalRuler("HORIZONTAL_RULER_"),
   m_verticalRuler("VERTICAL_RULER_"),
-  m_groupItem("ITEM_GROUP_")
+  m_groupItem("ITEM_GROUP_"),
+  m_imageItem("IMAGE_")
 {
   m_sharedProps = new SharedProperties;
 }
@@ -114,8 +121,11 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   case TPMapGridItem:
     item = createMapGrid();
     break;
-  case TPText:
+  case TPTextItem:
     item = createText();
+    break;
+  case TPImageItem:
+    item = createImage();
     break;
   case TPRetangleItem:
     item = createRectangle();
@@ -158,8 +168,12 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::LayoutMode
     item = createMapGrid();
     break;
   case TypeCreateText:
-    m_name = nameItem(m_textItem, TPText);
+    m_name = nameItem(m_textItem, TPTextItem);
     item = createText();
+    break;
+  case TypeCreateImage:
+    m_name = nameItem(m_imageItem, TPImageItem);
+    item = createImage();
     break;
   case TypeCreateRectangle:
     m_name = nameItem(m_rectangleItem, TPRetangleItem);
@@ -372,6 +386,34 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createText()
 {
   QGraphicsItem* item = 0;
 
+  DefaultTextModel* model = new DefaultTextModel();	
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  DefaultTextController* controller = new DefaultTextController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  DefaultTextItem* txt = dynamic_cast<DefaultTextItem*>(itemObs); 
+
+  if(txt)
+  {
+    txt->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_props)
+    {
+      txt->setZValue(m_zValue);
+    }
+    if(m_redraw)
+      itemObs->redraw();
+    return txt;
+  }
+
   return item;
 }
 
@@ -511,6 +553,41 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItemGroup()
       itemObs->redraw();
     }
     return view;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createImage()
+{
+  QGraphicsItem* item = 0;
+
+  ImageModel* model = new ImageModel();	
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  ImageController* controller = new ImageController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  ImageItem* img = dynamic_cast<ImageItem*>(itemObs); 
+
+  if(img)
+  {
+    img->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_props)
+    {
+      img->setZValue(m_zValue);
+    }
+    if(m_redraw)
+      itemObs->redraw();
+    return img;
   }
 
   return item;

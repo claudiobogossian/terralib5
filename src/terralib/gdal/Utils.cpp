@@ -105,7 +105,14 @@ te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds)
     return 0;
 
   int srid = TE_UNKNOWN_SRS;
+  
+  // The calling of GetProjectionRef isn't thread safe, even for distinct datasets
+  // under some linuxes
+  boost::unique_lock< boost::mutex > lockGuard( getStaticMutex() );
   char* projWKT = (char*)gds->GetProjectionRef();
+  lockGuard.release();
+  getStaticMutex().unlock();
+  
   if (projWKT)
   {
     char** projWKTPtr = &(projWKT);
@@ -118,20 +125,28 @@ te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds)
   }
 
   double gtp[6];
+  
+  te::rst::Grid* grid = 0;
+  
   if( gds->GetGeoTransform(gtp) == CE_Failure )
   {
-    gtp[ 0 ] = 0.0;
-    gtp[ 1 ] = 1.0;
-    gtp[ 2 ] = 0.0;
-    gtp[ 3 ] = 0.0;
-    gtp[ 4 ] = 0.0;
-    gtp[ 5 ] = -1.0;
+    grid = new te::rst::Grid(gds->GetRasterXSize(), gds->GetRasterYSize(), 1.0, 1.0, (te::gm::Envelope*)0, srid);    
+  }
+  else
+  {
+    double gridAffineParams[ 6 ];
+    gridAffineParams[ 0 ] = gtp[ 1 ];
+    gridAffineParams[ 1 ] = gtp[ 2 ];
+    gridAffineParams[ 2 ] = gtp[ 0 ];
+    gridAffineParams[ 3 ] = gtp[ 4 ];
+    gridAffineParams[ 4 ] = gtp[ 5 ];
+    gridAffineParams[ 5 ] = gtp[ 3 ];
+    
+    grid = new te::rst::Grid(gridAffineParams, gds->GetRasterXSize(),
+      gds->GetRasterYSize(), srid);    
   }
   
-  te::rst::Grid* grid = new te::rst::Grid(gtp, gds->GetRasterXSize(),
-    gds->GetRasterYSize(), srid);
-
-  return grid;
+  return grid;    
 }
 
 void te::gdal::GetBandProperties(GDALDataset* gds, std::vector<te::rst::BandProperty*>& bprops)
@@ -439,7 +454,12 @@ GDALDataset* te::gdal::CreateRaster(const std::string& name, te::rst::Grid* g, c
   
   double gt[6];
   
-  gt[0] = cgt[0]; gt[1] = cgt[1]; gt[2] = cgt[2]; gt[3] = cgt[3]; gt[4] = cgt[4]; gt[5] = cgt[5];
+  gt[0] = cgt[2]; 
+  gt[1] = cgt[0]; 
+  gt[2] = cgt[1]; 
+  gt[3] = cgt[5]; 
+  gt[4] = cgt[3]; 
+  gt[5] = cgt[4];
   
   poDataset->SetGeoTransform(gt);
   
@@ -774,4 +794,10 @@ std::string te::gdal::GetParentDataSetName(const std::string& subDataSetName)
   {
     return subDataSetName;
   }
+}
+
+boost::mutex& te::gdal::getStaticMutex()
+{
+  static boost::mutex getStaticMutexStaticMutex;
+  return getStaticMutexStaticMutex;
 }

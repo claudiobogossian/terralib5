@@ -36,6 +36,7 @@
 #include "../query/Where.h"
 #include "../utils/Utils.h"
 #include "../Exception.h"
+#include "../utils/Utils.h"
 #include "DataSource.h"
 #include "DataSourceTransactor.h"
 
@@ -98,4 +99,16 @@ void te::da::DataSourceTransactor::update(const std::string &/*datasetName*/, te
                                           const std::vector<size_t>& /*ids*/)
 {
   throw te::da::Exception("Operation not implemented for this data source");
+}
+
+bool te::da::DataSourceTransactor::isDataSetNameValid(const std::string& datasetName)
+{
+  std::string invalidChar;
+  return te::da::IsValidName(datasetName, invalidChar);
+}
+
+bool te::da::DataSourceTransactor::isPropertyNameValid(const std::string& propertyName)
+{
+  std::string invalidChar;
+  return te::da::IsValidName(propertyName, invalidChar);
 }

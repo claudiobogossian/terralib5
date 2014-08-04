@@ -75,10 +75,8 @@ namespace te
       virtual LayoutPropertyDataType getLayoutType(QVariant::Type type, std::string name = "");
 
       virtual QVariant::Type getVariantType(LayoutPropertyDataType dataType);
-
-      virtual std::string getPropGridSettingsName();
-
-      virtual void setHasGridWindows(bool hasWindows = false);
+      
+      virtual void setHasWindows(bool hasWindows = false);
             
       private slots:
 
@@ -99,7 +97,7 @@ namespace te
       virtual void changeVisibility( QList<QtBrowserItem*> items, bool visible );
       virtual QVariant findPropertyValue(std::string name);
       virtual QtProperty* findProperty(std::string name);
-      virtual void blockOpenGridWindows(bool block);
+      virtual void blockOpenWindows(bool block);
       virtual void addAttribute(QtVariantProperty* vproperty, Property property);
       virtual QVariant checkComplexType(QtVariantProperty* property);
       
@@ -113,8 +111,7 @@ namespace te
       QMap<QString, bool> m_idToExpanded;
 
       /* Custom Types: Dialog Window Type */
-      std::string          m_propGridSettingsName;
-      bool                 m_hasGridWindows;
+      bool                 m_hasWindows;
     };
   }
 }

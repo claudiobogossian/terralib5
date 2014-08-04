@@ -61,6 +61,7 @@
 					<section title="Aggregation" ref="./plugins/vp/vp_aggregation.html"/>
 					<section title="Buffer" ref="./plugins/vp/vp_buffer.html"/>
 					<section title="Intersection" ref="./plugins/vp/vp_intersection.html"/>
+					<section title="Geometric Operations" ref="./plugins/vp/vp_geometricOper.html"/>					
 				</section>
 				<section title="Raster Processing" ref="./plugins/rp/rp.html">
 					<section title="Arithmetic Operations" ref="./plugins/rp/rp_arithOp.html"/>
@@ -94,7 +95,8 @@
 			<file>./plugins/terralib4/*.*</file>
 			<file>./plugins/vp/*.*</file>
 			<file>./plugins/*.html</file>
-			<file>./terraview/*.*</file>
+			<file>./terraview/*.html</file>
+			<file>./terraview/*.png</file>			
 			<file>./widgets/charts/histogram/*.*</file>
 		    <file>./widgets/charts/scatter/*.*</file>
 			<file>./widgets/charts/display/*.*</file>
@@ -117,7 +119,7 @@
             <file>./widgets/style/*.*</file>
 			<file>./widgets/table/*.*</file>
 			<file>./widgets/*.html</file>
-			<file>./*.png</file>
+			<file>./*.*</file>
        </files>
 	   <keywords>
 			<keyword name="TerraView GUI" ref="./terraview/main_window.html"/>
@@ -162,7 +164,7 @@
 			<keyword name="Aggregation" ref="./plugins/vp/vp_aggregation.html"/>
 			<keyword name="Buffer" ref="./plugins/vp/vp_buffer.html"/>
 			<keyword name="Intersection" ref="./plugins/vp/vp_intersection.html"/>
-
+			<keyword name="Geometric Operations" ref="./plugins/vp/vp_geometricOper.html"/>
 			<keyword name="Raster Processing" ref="./plugins/rp/rp.html"/>
 			<keyword name="Arithmetic Operations" ref="./plugins/rp/rp_arithOp.html"/>
 			<keyword name="Classifier" ref="./plugins/rp/rp_classifier.html"/>

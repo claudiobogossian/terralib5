@@ -58,7 +58,7 @@ namespace te
         */
 
         template <typename ValueType>
-        void setValue(typename ValueType value, LayoutPropertyDataType type);
+        void setValue(ValueType value, LayoutPropertyDataType type);
 
         void setValue(Variant variant);
 
@@ -103,7 +103,7 @@ namespace te
     };
 
     template <typename ValueType>
-    inline void te::layout::Property::setValue(typename ValueType value, LayoutPropertyDataType type)
+    inline void te::layout::Property::setValue(ValueType value, LayoutPropertyDataType type)
     {
       //Use the information type?
       Variant v;

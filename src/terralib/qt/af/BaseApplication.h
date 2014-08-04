@@ -98,6 +98,8 @@ namespace te
 
           MapDisplay* getDisplay();
 
+          InterfaceController* getInterfaceController();
+
           virtual void resetState();
 
           void resetTerraLib(const bool& status);
@@ -115,6 +117,8 @@ namespace te
           void onChartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartDisplay, te::map::AbstractLayer* layer);
 
           void onRemoveLayerTriggered();
+
+          void onChangeLayerDataSourceTriggered();
 
           void onLayerRemoveItemTriggered();
 
@@ -288,6 +292,7 @@ namespace te
           QAction *m_projectAddLayerTabularDataSet;
           QAction* m_projectAddLayerGraph;
           QAction* m_projectAddFolderLayer;
+          QAction* m_projectChangeLayerDataSource;
           QAction* m_projectRemoveLayer;
           QAction* m_projectRenameLayer;
           QAction* m_projectProperties;

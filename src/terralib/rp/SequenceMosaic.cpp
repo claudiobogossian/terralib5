@@ -369,6 +369,7 @@ namespace te
           auxLinearRingPtr->setPoint( 2, mosaicURX, mosaicLLY );
           auxLinearRingPtr->setPoint( 3, mosaicLLX, mosaicLLY );
           auxLinearRingPtr->setPoint( 4, mosaicLLX, mosaicURY );             
+          auxLinearRingPtr->setSRID( mosaicRasterHandler->getGrid()->getSRID() );
           
           te::gm::Polygon* outPolPtr = new te::gm::Polygon( 0, te::gm::PolygonType, 
             mosaicRasterHandler->getGrid()->getSRID(), 0 ); 
@@ -917,6 +918,7 @@ namespace te
               auxLinearRingPtr->setPoint( 2, inputRasterMappedLRX, inputRasterMappedLRY );
               auxLinearRingPtr->setPoint( 3, inputRasterMappedLLX, inputRasterMappedLLY );
               auxLinearRingPtr->setPoint( 4, inputRasterMappedULX, inputRasterMappedULY );
+              auxLinearRingPtr->setSRID( mosaicRasterHandler->getSRID() );
               te::gm::Polygon lastMosaicAddedRasterPol(  0, te::gm::PolygonType, 0 ); //the polygon of the last added raster (mosaic world coords)
               lastMosaicAddedRasterPol.push_back( auxLinearRingPtr );
               lastMosaicAddedRasterPol.setSRID( mosaicRasterHandler->getSRID() );

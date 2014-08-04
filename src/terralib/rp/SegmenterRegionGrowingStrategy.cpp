@@ -719,10 +719,11 @@ namespace te
     
     bool SegmenterRegionGrowingStrategy::execute( 
       SegmenterIdsManager& segmenterIdsManager,
+      const te::rp::SegmenterSegmentsBlock& block2ProcessInfo,
       const te::rst::Raster& inputRaster,
       const std::vector< unsigned int >& inputRasterBands,
       const std::vector< double >& inputRasterGains,
-      const std::vector< double >& inputRasterOffsets,                                                   
+      const std::vector< double >& inputRasterOffsets,
       te::rst::Raster& outputRaster,
       const unsigned int outputRasterBand,
       const bool enableProgressInterface )
@@ -759,8 +760,8 @@ namespace te
         }
       }     
       // The number of segments plus 3 (due 3 auxiliary segments
-      TERP_TRUE_OR_RETURN_FALSE( m_segmentsPool.initialize( 3 + ( inputRaster.getNumberOfRows() * 
-        inputRaster.getNumberOfColumns() ), 
+      TERP_TRUE_OR_RETURN_FALSE( m_segmentsPool.initialize( 3 + ( 
+        block2ProcessInfo.m_height * block2ProcessInfo.m_width ), 
         segmentFeaturesSize ), "Segments pool initiation error" );     
         
 //       {
@@ -798,11 +799,11 @@ namespace te
       
       // Allocating the ids matrix
       
-      if( ( m_segmentsIdsMatrix.getLinesNumber() != inputRaster.getNumberOfRows() ) ||
-        ( m_segmentsIdsMatrix.getColumnsNumber() != inputRaster.getNumberOfColumns() ) )
+      if( ( m_segmentsIdsMatrix.getLinesNumber() != block2ProcessInfo.m_height ) ||
+        ( m_segmentsIdsMatrix.getColumnsNumber() != block2ProcessInfo.m_width ) )
       {
-        TERP_TRUE_OR_RETURN_FALSE( m_segmentsIdsMatrix.reset( inputRaster.getNumberOfRows(), 
-          inputRaster.getNumberOfColumns(),
+        TERP_TRUE_OR_RETURN_FALSE( m_segmentsIdsMatrix.reset( block2ProcessInfo.m_height, 
+          block2ProcessInfo.m_width,
           Matrix< SegmenterSegmentsBlock::SegmentIdDataType >::RAMMemPol ),
           "Error allocating segments Ids matrix" );
       }      
@@ -810,7 +811,7 @@ namespace te
       // Initializing segments
         
       TERP_TRUE_OR_RETURN_FALSE( initializeSegments( segmenterIdsManager,
-        inputRaster, inputRasterBands, inputRasterGains,
+        block2ProcessInfo, inputRaster, inputRasterBands, inputRasterGains,
         inputRasterOffsets ), 
         "Segments initalization error" );
         
@@ -999,18 +1000,21 @@ namespace te
       // Flush result to the output raster
       
       {
-        const unsigned int nLines = inputRaster.getNumberOfRows();
-        const unsigned int nCols = inputRaster.getNumberOfColumns();
-        unsigned int col = 0;
+        unsigned int blkCol = 0;
         SegmenterSegmentsBlock::SegmentIdDataType* segmentsIdsLinePtr = 0;
         
-        for( unsigned int line = 0 ; line < nLines ; ++line )
+        for( unsigned int blkLine = 0 ; blkLine < block2ProcessInfo.m_height ; ++blkLine )
         {
-          segmentsIdsLinePtr = m_segmentsIdsMatrix[ line ];
+          segmentsIdsLinePtr = m_segmentsIdsMatrix[ blkLine ];
           
-          for( col = 0 ; col < nCols ; ++col )
+          for( blkCol = 0 ; blkCol < block2ProcessInfo.m_width ; ++blkCol )
           {
-            outputRaster.setValue( col, line, segmentsIdsLinePtr[ col ], outputRasterBand );
+            if( segmentsIdsLinePtr[ blkCol ] )
+            {
+              outputRaster.setValue( blkCol + block2ProcessInfo.m_startX, blkLine
+                + block2ProcessInfo.m_startY, segmentsIdsLinePtr[ blkCol ], 
+                outputRasterBand );
+            }
           }
         }
       }
@@ -1105,13 +1109,12 @@ namespace te
     
     bool SegmenterRegionGrowingStrategy::initializeSegments( 
       SegmenterIdsManager& segmenterIdsManager,
+      const te::rp::SegmenterSegmentsBlock& block2ProcessInfo,
       const te::rst::Raster& inputRaster,
       const std::vector< unsigned int >& inputRasterBands,   
       const std::vector< double >& inputRasterGains,
       const std::vector< double >& inputRasterOffsets )
     {
-      const unsigned int nLines = inputRaster.getNumberOfRows();
-      const unsigned int nCols = inputRaster.getNumberOfColumns();
       const unsigned int inputRasterBandsSize = (unsigned int)
         inputRasterBands.size();
         
@@ -1130,8 +1133,8 @@ namespace te
         
       // Initializing each segment
       
-      unsigned int line = 0;
-      unsigned int col = 0;      
+      unsigned int blkLine = 0;
+      unsigned int blkCol = 0;      
       SegmenterRegionGrowingSegment* segmentPtr = 0;
       SegmenterRegionGrowingSegment* neighborSegmentPtr = 0;
       bool rasterValuesAreValid = true;
@@ -1144,49 +1147,65 @@ namespace te
       
       std::vector< SegmenterSegmentsBlock::SegmentIdDataType > 
         lineSegmentIds;
-      lineSegmentIds.reserve( nCols );
+      lineSegmentIds.reserve( block2ProcessInfo.m_width );
       
       std::vector< SegmenterRegionGrowingSegment::FeatureType > rasterValues;
       std::vector< SegmenterRegionGrowingSegment::FeatureType > rasterSquareValues;
       rasterValues.resize( inputRasterBandsSize, 0 );
       rasterSquareValues.resize( inputRasterBandsSize, 0 );
-      std::vector< SegmenterRegionGrowingSegment* > usedSegPointers1( nCols, 0 );
-      std::vector< SegmenterRegionGrowingSegment* > usedSegPointers2( nCols, 0 );
+      std::vector< SegmenterRegionGrowingSegment* > usedSegPointers1( block2ProcessInfo.m_width, 0 );
+      std::vector< SegmenterRegionGrowingSegment* > usedSegPointers2( block2ProcessInfo.m_width, 0 );
       std::vector< SegmenterRegionGrowingSegment* >* lastLineSegsPtrs = &usedSegPointers1;
       std::vector< SegmenterRegionGrowingSegment* >* currLineSegsPtrs = &usedSegPointers2;
       
       unsigned int rasterValuesIdx = 0;
       
-      for( line = 0 ; line < nLines ; ++line )
+      for( blkLine = 0 ; blkLine < block2ProcessInfo.m_height ; ++blkLine )
       {
-        segmenterIdsManager.getNewIDs( nCols, lineSegmentIds );
+        segmenterIdsManager.getNewIDs( block2ProcessInfo.m_width, lineSegmentIds );
         
-        for( col = 0 ; col < nCols ; ++col )
+        for( blkCol = 0 ; blkCol < block2ProcessInfo.m_width ; ++blkCol )
         {
-          rasterValuesAreValid = true;
-          
-          for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < 
-            inputRasterBandsSize ; ++inputRasterBandsIdx )
+          if( 
+              ( blkLine >= block2ProcessInfo.m_topCutOffProfile[ blkCol ] )
+              &&
+              ( blkLine <= block2ProcessInfo.m_bottomCutOffProfile[ blkCol ] )
+              &&
+              ( blkCol >= block2ProcessInfo.m_leftCutOffProfile[ blkLine ] )
+              &&
+              ( blkCol <= block2ProcessInfo.m_rightCutOffProfile[ blkLine ] )
+            )
           {
-            inputRaster.getValue( col, line, value, 
-              inputRasterBands[ inputRasterBandsIdx ] );
-              
-            if( value == bandDummyValues[ inputRasterBandsIdx ] )
+            rasterValuesAreValid = true;
+            
+            for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < 
+              inputRasterBandsSize ; ++inputRasterBandsIdx )
             {
-              rasterValuesAreValid = false;
-              break;
-            }
-            else
-            {
-              value += inputRasterOffsets[ inputRasterBandsIdx ];
-              value *= inputRasterGains[ inputRasterBandsIdx ];
-              
-              rasterValues[ inputRasterBandsIdx ] = 
-                (SegmenterRegionGrowingSegment::FeatureType)value;
-              rasterSquareValues[ inputRasterBandsIdx ] = 
-                (SegmenterRegionGrowingSegment::FeatureType)( value * value );
+              inputRaster.getValue( blkCol + block2ProcessInfo.m_startX, blkLine +
+                block2ProcessInfo.m_startY, value, 
+                inputRasterBands[ inputRasterBandsIdx ] );
+                
+              if( value == bandDummyValues[ inputRasterBandsIdx ] )
+              {
+                rasterValuesAreValid = false;
+                break;
+              }
+              else
+              {
+                value += inputRasterOffsets[ inputRasterBandsIdx ];
+                value *= inputRasterGains[ inputRasterBandsIdx ];
+                
+                rasterValues[ inputRasterBandsIdx ] = 
+                  (SegmenterRegionGrowingSegment::FeatureType)value;
+                rasterSquareValues[ inputRasterBandsIdx ] = 
+                  (SegmenterRegionGrowingSegment::FeatureType)( value * value );
+              }
             }
           }
+          else
+          {
+            rasterValuesAreValid = false;
+          }            
           
           // assotiating a segment object
           
@@ -1236,25 +1255,25 @@ namespace te
               }
             }
             
-            currLineSegsPtrs->operator[]( col ) = segmentPtr;
+            currLineSegsPtrs->operator[]( blkCol ) = segmentPtr;
             
-            segmentPtr->m_id = lineSegmentIds[ col ];
+            segmentPtr->m_id = lineSegmentIds[ blkCol ];
             segmentPtr->m_status = true;
             segmentPtr->m_size = 1;
-            segmentPtr->m_xStart = col;
-            segmentPtr->m_xBound = col + 1;
-            segmentPtr->m_yStart = line;
-            segmentPtr->m_yBound = line + 1;
+            segmentPtr->m_xStart = blkCol;
+            segmentPtr->m_xBound = blkCol + 1;
+            segmentPtr->m_yStart = blkLine;
+            segmentPtr->m_yBound = blkLine + 1;
             
-            m_segmentsIdsMatrix( line, col ) = segmentPtr->m_id;
+            m_segmentsIdsMatrix( blkLine, blkCol ) = segmentPtr->m_id;
               
             // updating the neighboorhood info
             
             segmentPtr->clearNeighborSegments();
               
-            if( line ) 
+            if( blkLine ) 
             { 
-              neighborSegmentPtr = lastLineSegsPtrs->operator[]( col );
+              neighborSegmentPtr = lastLineSegsPtrs->operator[]( blkCol );
                 
               if( neighborSegmentPtr )
               {
@@ -1264,9 +1283,9 @@ namespace te
               }
             }
             
-            if( col ) 
+            if( blkCol ) 
             { 
-              neighborSegmentPtr = currLineSegsPtrs->operator[]( col - 1 );
+              neighborSegmentPtr = currLineSegsPtrs->operator[]( blkCol - 1 );
                 
               if( neighborSegmentPtr )
               {
@@ -1278,9 +1297,9 @@ namespace te
           }
           else // !rasterValueIsValid
           {
-            m_segmentsIdsMatrix( line, col ) = 0;
-            unusedLineSegmentIds.push_back( lineSegmentIds[ col ] );
-            currLineSegsPtrs->operator[]( col ) = 0;
+            m_segmentsIdsMatrix( blkLine, blkCol ) = 0;
+            unusedLineSegmentIds.push_back( lineSegmentIds[ blkCol ] );
+            currLineSegsPtrs->operator[]( blkCol ) = 0;
           }
         }
         

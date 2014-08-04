@@ -62,6 +62,7 @@
 #include <QApplication>
 #include <QDir>
 #include <QPrinter>
+#include "../item/DefaultTextItem.h"
 
 te::layout::Scene::Scene( QWidget* widget): 
   QGraphicsScene(widget),
@@ -69,7 +70,8 @@ te::layout::Scene::Scene( QWidget* widget):
   m_boxPaperW(0),
   m_lineIntersectHrz(0),
   m_lineIntersectVrt(0),
-  m_fixedRuler(true)
+  m_fixedRuler(true),
+  m_previewState(PreviewScene)
 {
   setBackgroundBrush(QBrush(QColor(109,109,109)));
 
@@ -95,10 +97,34 @@ void te::layout::Scene::init(double screenWMM, double screenHMM, double paperMMW
 {
   m_screenWidthMM = screenWMM;
   m_screenHeightMM = screenHMM;
-  
-  m_boxW = calculateWindow(m_screenWidthMM, m_screenHeightMM, paperMMW, paperMMH);
-  m_boxPaperW = calculateBoxPaper(m_screenWidthMM, m_screenHeightMM, paperMMW, paperMMH);
 
+  m_boxPaperW = new te::gm::Envelope(0, 0, paperMMW, paperMMH);
+  m_boxW = calculateWindow(m_screenWidthMM, m_screenHeightMM); 
+
+  double newZoomFactor = 1. / zoomFactor;
+  if(zoomFactor < 1.)
+    newZoomFactor = zoomFactor;
+
+  double w = m_boxW->getWidth() * newZoomFactor;
+  double h = m_boxW->getHeight() * newZoomFactor;
+
+  te::gm::Coord2D center = m_boxW->getCenter();
+
+  te::gm::Envelope* env = calculateWindow(w, h);
+
+  double halfWidth = env->getWidth() / 2.;
+  double halfHeight = env->getHeight() / 2.;
+
+  env->m_llx = center.x - halfWidth;
+  env->m_lly = center.y - halfHeight;
+  env->m_urx = center.x + halfWidth;
+  env->m_ury = center.y + halfHeight;
+
+  m_boxW->m_llx = env->m_llx;
+  m_boxW->m_lly = env->m_lly;
+  m_boxW->m_urx = env->m_urx;
+  m_boxW->m_ury = env->m_ury;
+  
   calculateMatrixViewScene(zoomFactor);
 }
 
@@ -113,21 +139,30 @@ void te::layout::Scene::insertItem( ItemObserver* item )
     if(qitem->scene() != this) 
     {
       total = this->items().count();
-      //MapItem* map = dynamic_cast<MapItem*>(qitem);
-      //if(map)
-      //{
-      //  /*
-      //  As the coordinate system of the scene is in millimeters, 
-      //  their children are too. But the map can not draw the mapDisplay in millimeters, 
-      //  since its size is given in pixels. So the object got the 
-      //  inverted matrix, to draw pixel by proper scaling between world and screen.
-      //  */
-      //  QTransform transf = m_matrix.inverted();
-      //  double scalex = m_matrix.inverted().m11();
-      //  double scaley = m_matrix.inverted().m22();
-      //  transf.scale(scalex, scaley);
-      //  map->setTransform(transf);
-      //}
+      MapItem* map = dynamic_cast<MapItem*>(qitem);
+      if(map)
+      {
+        /*
+        As the coordinate system of the scene is in millimeters, 
+        their children are too. But the map can not draw the mapDisplay in millimeters, 
+        since its size is given in pixels. So the object got the 
+        inverted matrix, to draw pixel by proper scaling between world and screen.
+        */
+        QTransform transf = m_matrix.inverted();
+        double scalex = m_matrix.inverted().m11();
+        double scaley = m_matrix.inverted().m22();
+
+        transf.scale(scalex, scaley);
+        
+        map->setTransform(transf);
+      }
+      DefaultTextItem* txt = dynamic_cast<DefaultTextItem*>(qitem);
+      if(txt)
+      {
+        QTransform transf = m_matrix.inverted();
+        txt->setTransform(transf);
+        txt->scale(1, -1);
+      }
       this->addItem(qitem);
       qitem->setZValue(total);
     }
@@ -234,57 +269,15 @@ void te::layout::Scene::destroyItemGroup( QGraphicsItemGroup *group )
   QGraphicsScene::destroyItemGroup(group);
 }
 
-te::gm::Envelope* te::layout::Scene::calculateBoxPaper(double wMM, double hMM, double paperMMW, double paperMMH)
+te::gm::Envelope* te::layout::Scene::calculateWindow(double wMM, double hMM)
 {
-  double ppSizeWMM = paperMMW;
-  double ppSizeHMM = paperMMH;
-  
-  double x1 = 0.;
-  double y1 = 0.;
-  double x2 = 0.;
-  double y2 = 0.;
+  te::gm::Envelope* box = 0;
 
-  te::gm::Envelope* boxW = calculateWindow(wMM, hMM, paperMMW, paperMMH);
+  if(!m_boxPaperW)
+    return box;
 
-  int widthW = boxW->getWidth();
-  int heightW = boxW->getHeight();
-
-  double middleWW = widthW/2.;
-  double middleHW = heightW/2.;	
-
-  double ppW = ppSizeWMM/2.;
-  double ppH = ppSizeHMM/2.;
-
-  if(widthW > ppSizeWMM)
-  {
-    x1 = 0;
-    x2 = ppSizeWMM;
-  }
-  else
-  {
-    x1 = middleWW - ppW;
-    x2 = x1 + ppSizeWMM;
-  }
-
-  if(heightW > ppSizeHMM)
-  {
-    y1 = 0;
-    y2 = ppSizeHMM;
-  }
-  else
-  {
-    y1 = middleHW - ppH;
-    y2 = y1 + ppSizeHMM;
-  }
-
-  te::gm::Envelope* box = new te::gm::Envelope(x1, y1, x2, y2);
-  return box;
-}
-
-te::gm::Envelope* te::layout::Scene::calculateWindow(double wMM, double hMM, double paperMMW, double paperMMH)
-{
-  double ppSizeWMM = paperMMW;
-  double ppSizeHMM = paperMMH;
+  double ppSizeWMM = m_boxPaperW->getWidth();
+  double ppSizeHMM = m_boxPaperW->getHeight();
   
   double x1 = 0;
   double y1 = 0;
@@ -314,8 +307,7 @@ te::gm::Envelope* te::layout::Scene::calculateWindow(double wMM, double hMM, dou
   if(h > ppSizeHMM)
   {
     y1 = - margin2;
-    y2 = (paddingW + ppSizeHMM) - margin2;
-
+    y2 = (paddingH + ppSizeHMM) - margin2;
   }
   else
   {
@@ -323,7 +315,7 @@ te::gm::Envelope* te::layout::Scene::calculateWindow(double wMM, double hMM, dou
     y2 = h;
   }
 
-  te::gm::Envelope* box = new te::gm::Envelope(x1, y1, x2, y2);
+  box = new te::gm::Envelope(x1, y1, x2, y2);
   return box;
 }
 
@@ -331,7 +323,7 @@ void te::layout::Scene::calculateMatrixViewScene(double zoomFactor)
 {
   if(!m_boxW)
     return;
-
+      
   double llx = m_boxW->getLowerLeftX();
   double lly = m_boxW->getLowerLeftY();
   double urx = m_boxW->getUpperRightX();
@@ -445,6 +437,17 @@ QPrinter* te::layout::Scene::createPrinter()
 
 void te::layout::Scene::renderScene( QPainter* newPainter )
 {      
+  if(m_previewState == PreviewScene)
+  {
+    m_previewState = PrintScene;
+    //redrawItems(true);
+  }
+  else
+  {
+    m_previewState = PreviewScene;
+    //redrawItems(true);
+  }
+
   changePrintVisibility(false);
         
   //Box Paper in the Scene (Source)
@@ -460,9 +463,9 @@ void te::layout::Scene::renderScene( QPainter* newPainter )
   Utils* utils = Context::getInstance().getUtils();
   //Convert world to screen coordinate. Uses dpi printer.
   te::gm::Envelope paperNewBox = utils->viewportBox(*m_boxPaperW);
-  
+    
   this->render(newPainter, pxTargetRect, mmSourceRect); 
-
+  
   changePrintVisibility(true);
 }
 
@@ -630,13 +633,11 @@ void te::layout::Scene::refreshRulers(te::gm::Envelope newBox)
         if(model->getType() == TPHorizontalRuler)
         {
           model->setBox(te::gm::Envelope(llx, lly, urx, lly + 10));
-          QPointF p = item->scenePos();
           item->setPos(pt);
         }
         if(model->getType() == TPVerticalRuler)
         {
           model->setBox(te::gm::Envelope(llx, lly, llx + 10, ury));
-          QPointF p = item->scenePos();
           item->setPos(pt);
         }
       }
@@ -770,11 +771,7 @@ void te::layout::Scene::createItem( const te::gm::Coord2D& coord )
 
   item = build->createItem(mode, coord);
 
-  //If Create item
-  if(item)
-  {
-    Context::getInstance().setMode(TypeNone);
-  }
+  Context::getInstance().setMode(TypeNone);
 }
 
 void te::layout::Scene::setCurrentToolInSelectedMapItems( LayoutMode mode )

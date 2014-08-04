@@ -789,15 +789,18 @@ void te::map::AbstractLayerRenderer::buildChart(Chart* chart, te::da::DataSet* d
   // Builds the chart envelope
   te::gm::Envelope chartEnvelope(dx, dy, dw, dh);
 
-  // Search on rtree
-  std::vector<std::size_t> report;
-  m_rtree.search(chartEnvelope, report);
+  if(chart->getAvoidConflicts())
+  {
+    // Search on rtree
+    std::vector<std::size_t> report;
+    m_rtree.search(chartEnvelope, report);
 
-  if(!report.empty())
-    return;
+    if(!report.empty())
+      return;
 
-  // Here, no intersections considering the current chart envelope
-  m_rtree.insert(chartEnvelope, ++m_index);
+    // Here, no intersections considering the current chart envelope
+    m_rtree.insert(chartEnvelope, ++m_index);
+  }
 
   // Stores the chart coordinate
   m_chartCoordinates.push_back(te::gm::Coord2D(dx, dy));

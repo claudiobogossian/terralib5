@@ -47,6 +47,19 @@ namespace te
       \brief A rectified grid is the spatial support for raster data.
       
       \note The upper left corner of the upper left pixel is considered the grid extent top-left reference.
+      
+      \code
+            Affine transformation:
+            
+            u = a.x + b.y + c
+            v = d.x + e.y + f
+            
+            | x |   | a b c |   | column |
+            | y | = | d e f | * | row    |
+            | 1 |   | 0 0 1 |   | 1      |
+
+            Georeference parameters order = [ a b c d e f ]
+      \endcode
 
       \ingroup rst
 
@@ -186,12 +199,6 @@ namespace te
 
           An affine transformation maps grid point (col,lin) to a spatial location (x,y) using to the
           following relationship:
-
-          \verbatin
-          X = geoTrans(0) + col*geoTrans(1) + lin*geoTrans(2)
-          Y = geoTrans(3) + col*geoTrans(4) + lin*geoTrans(5)
-          \endverbatin
-
           This method should be used mainly when there is a translation associated to the mapping.
           Otherwise use the method above.
 
@@ -220,9 +227,6 @@ namespace te
 
         /*! \brief Returns the geographic extension of the grid. */
         const te::gm::Envelope* getExtent() const;
-
-        /*! \brief Computes the geographic extension of the grid. */
-        void computeExtent() const;
 
         /*!
           \brief Get the spatial location of a grid point.
@@ -289,7 +293,41 @@ namespace te
         unsigned int m_nCols;               //!< Number of columns.
         unsigned int m_nRows;               //!< Number of rows.
         int m_srid;                         //!< The associated SRS.
-        double m_geoT[6];                   //!< A list of 6 coefficients describing an affine transformation to georeference a grid. In a north up image, m_geoT[1] is the pixel width, and m_geoT[5] is the pixel height. The upper left corner of the upper left pixel is at position (m_geoT[0],m_geoT[3]).
+        double m_geoT[6];                   //!< A list of 6 coefficients describing an affine transformation to georeference a grid.
+        double m_geoTInverse[6];            //!< A list of 6 coefficients describing an inverse affine transformation to georeference a grid.
+        
+        /*! \brief Computes the geographic extension of the grid. */
+        void computeExtent() const;        
+        
+        /*!
+          \brief Compute affine parameters from the given input parameters.
+
+          \param extentWidth Extent width.
+          \param extentHeight Extent height.
+          \param nColumns Number of columns.
+          \param nRows Number of rows.
+          \param extentULX Extent upper-left X coordinate.
+          \param extentULY Extent upper-left Y coordinate.
+          \param affineParamsPtr A pointer to a allocated vector of 6 elements where the parameters will be stored.
+          \return true if ok, false on errors.
+        */
+        bool computeAffineParameters( const double extentWidth,
+                                      const double extentHeight,
+                                      const unsigned int nColumns,
+                                      const unsigned int nRows,
+                                      const double extentULX,
+                                      const double extentULY,
+                                      double* affineParamsPtr,
+                                      double* inverseAffineParamsPtr ) const;        
+                                      
+        /*!
+          \brief Compute inverse affine parameters
+          \param affineParamsPtr A pointer to a allocated vector of 6 elements (affine parameters).
+          \param inverseAffineParamsPtr A pointer to a allocated vector of 6 elements where the parameters will be stored.
+          \return true if ok, false on errors
+        */
+        bool computeInverseParameters( double* const affineParamsPtr,
+          double* inverseAffineParamsPtr ) const;                                          
     };
 
     typedef boost::shared_ptr<Grid> GridPtr;

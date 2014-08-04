@@ -184,10 +184,14 @@ void te::layout::View::config()
   double w = 0;
   double h = 0;
 
+  //pConfig->setPaperSize(LayoutAbstractPaperType::A0);
   pConfig->getPaperSize(w, h);
 
   double sw = widthMM();
-  double sh = h;
+  double sh = heightMM();
+    
+  /*double sw = w;
+  double sh = h;*/
 
   double zoomFactor = Context::getInstance().getZoomFactor();
   lScene->init(sw, sh, w, h, zoomFactor);
@@ -212,15 +216,16 @@ void te::layout::View::config()
 
 void te::layout::View::resizeEvent(QResizeEvent * event)
 {
+  QGraphicsView::resizeEvent(event);
   Scene* lScene = dynamic_cast<Scene*>(scene());
 
   if(lScene)
   {
     double zoomFactor = Context::getInstance().getZoomFactor();
+
     lScene->refresh(this, zoomFactor);
     lScene->redrawItems(true);
   }
-  QGraphicsView::resizeEvent(event);
 }
 
 void te::layout::View::onToolbarChangeContext( bool change )
@@ -311,11 +316,16 @@ void te::layout::View::outsideAreaChangeContext( bool change )
 
   te::gm::Envelope* env = sc->getWorldBox();
 
-  double newZoomFactor = zoomFactor / oldZoomFactor;
-  double halfWidth = env->getWidth() * zoomFactor  / 2.;
-  double halfHeight = env->getHeight() * zoomFactor / 2.;
+  double newZoomFactor = 1. / zoomFactor;
+  if(zoomFactor < 1.)
+    newZoomFactor = zoomFactor;
+
+  double halfWidth = env->getWidth() * newZoomFactor  / 2.;
+  double halfHeight = env->getHeight() * newZoomFactor / 2.;
   te::gm::Coord2D center = env->getCenter();
 
+  te::gm::Envelope zoomBox;
+  
   switch(mode)
   {
   case TypeUnitsMetricsChange:
@@ -420,8 +430,12 @@ void te::layout::View::outsideAreaChangeContext( bool change )
       env->m_lly = center.y - halfHeight;
       env->m_urx = center.x + halfWidth;
       env->m_ury = center.y + halfHeight;
-       
-      sc->refresh(this, zoomFactor);
+      
+      /*
+      http://www.qtcentre.org/threads/52603-Zoom-effect-by-mouse-Wheel-in-QGraphicsview
+      */
+           
+      sc->refresh(this, zoomFactor);            
       sc->redrawItems(true);
       resetDefaultConfig();
     }
@@ -509,4 +523,47 @@ void te::layout::View::showEvent( QShowEvent * event )
 {
   QGraphicsView::showEvent(event);
   emit showView();
+}
+
+te::gm::Envelope te::layout::View::calculateNewBox( te::gm::Envelope env )
+{
+  double win_rt, world_rt;
+  double world_w, world_h;
+  double x0,y0,x1,y1;
+  double w, h;
+
+  x0 = env.getLowerLeftX();
+  y0 = env.getLowerLeftY();
+  x1 = env.getUpperRightX();
+  y1 = env.getUpperRightY();
+
+  w = width();
+  h = height();
+
+  win_rt = w / h;
+
+  world_w = (x1 - x0);
+  world_h = (y1 - y0);
+  world_rt = world_w / world_h;
+
+  if (world_rt < win_rt)
+  {
+    double dx;
+
+    dx = world_h * win_rt - world_w;
+    dx /= 2;
+    x0 -= dx;
+    x1 += dx;
+  }
+  else
+  {
+    double dy;
+
+    dy = world_w / win_rt - world_h;
+    dy /= 2;
+    y0 -= dy;
+    y1 += dy;
+  }
+  
+  return te::gm::Envelope(x0,y0,x1,y1);
 }

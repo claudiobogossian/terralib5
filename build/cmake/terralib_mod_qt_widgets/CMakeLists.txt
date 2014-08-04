@@ -108,10 +108,6 @@ file(GLOB TERRALIB_LAYER_SELECTOR_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/te
 file(GLOB TERRALIB_LAYER_UTILS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/utils/*.cpp)
 file(GLOB TERRALIB_LAYER_UTILS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/utils/*.h)
 
-# layout
-file(GLOB TERRALIB_LAYOUT_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layout/*.cpp)
-file(GLOB TERRALIB_LAYOUT_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layout/*.h)
-
 # mapdisplay
 file(GLOB TERRALIB_MAPDISPLAY_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/mapdisplay/*.cpp)
 file(GLOB TERRALIB_MAPDISPLAY_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/mapdisplay/*.h)
@@ -256,10 +252,6 @@ source_group("Header Files\\layer\\selector"  FILES ${TERRALIB_LAYER_SELECTOR_HD
 
 source_group("Source Files\\layer\\utils"  FILES ${TERRALIB_LAYER_UTILS_SRC_FILES})
 source_group("Header Files\\layer\\utils"  FILES ${TERRALIB_LAYER_UTILS_HDR_FILES})
-
-# layout
-source_group("Source Files\\layout"  FILES ${TERRALIB_LAYOUT_SRC_FILES})
-source_group("Header Files\\layout"  FILES ${TERRALIB_LAYOUT_HDR_FILES})
 
 # mapdisplay
 source_group("Source Files\\mapdisplay"  FILES ${TERRALIB_MAPDISPLAY_SRC_FILES})
@@ -425,9 +417,6 @@ if(Qt5_FOUND)
 
   # layer - utils
   list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_UTILS_SRC_FILES} ${TERRALIB_LAYER_UTILS_HDR_FILES})
-  
-  # layout
-  list(APPEND TERRALIB_FILES ${TERRALIB_LAYOUT_SRC_FILES} ${TERRALIB_LAYOUT_HDR_FILES})
 
   # mapdisplay
   list(APPEND TERRALIB_FILES ${TERRALIB_MAPDISPLAY_SRC_FILES} ${TERRALIB_MAPDISPLAY_HDR_FILES})
@@ -569,9 +558,6 @@ else() # QT4_FOUND
 
   # layer - utils
   list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_UTILS_SRC_FILES} ${TERRALIB_LAYER_UTILS_HDR_FILES})
-
-  # layout
-  list(APPEND TERRALIB_FILES ${TERRALIB_LAYOUT_SRC_FILES} ${TERRALIB_LAYOUT_HDR_FILES})
 
   # mapdisplay
   list(APPEND TERRALIB_FILES ${TERRALIB_MAPDISPLAY_SRC_FILES} ${TERRALIB_MAPDISPLAY_HDR_FILES})
@@ -746,9 +732,6 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/DataSetLayerSelector.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/HiddenDataSetLayerSelector.h)
 
-  # layout
-  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layout/DataFrame.h)
-
   # mapdisplay
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/mapdisplay/DataSetDisplay.h)
 
@@ -877,17 +860,18 @@ else() # QT4_FOUND
   # st
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/Animation.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationItem.h
-										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationScene.h
-										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/PixmapItem.h
-										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryItem.h
-										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSliderWidget.h
-										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TemporalPropertiesWidget.h
-										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSeriesPropertiesWidget.h
-										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSeriesPropertiesWizardPage.h
-										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSeriesWizard.h
-										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryPropertiesWidget.h
-										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryPropertiesWizardPage.h
-										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryWizard.h)
+                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationScene.h
+                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/PixmapItem.h
+                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/SliderPropertiesDialog.h
+                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryItem.h
+                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSliderWidget.h
+                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TemporalPropertiesWidget.h
+                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSeriesPropertiesWidget.h
+                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSeriesPropertiesWizardPage.h
+                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSeriesWizard.h
+                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryPropertiesWidget.h
+                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryPropertiesWizardPage.h
+                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryWizard.h)
 
 
   # table
@@ -999,9 +983,6 @@ install(FILES ${TERRALIB_LAYER_SELECTOR_HDR_FILES}
 
 install(FILES ${TERRALIB_LAYER_UTILS_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/layer/utils COMPONENT devel)
-
-install(FILES ${TERRALIB_LAYOUT_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/layout COMPONENT devel)
 
 install(FILES ${TERRALIB_MAPDISPLAY_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/mapdisplay COMPONENT devel)

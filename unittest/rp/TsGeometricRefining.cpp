@@ -115,10 +115,10 @@ void TsGeometricRefining::Test001()
     
   ASSERTMAXDIST( inRasterPointer->getGrid()->getExtent()->getLowerLeft(),
     algoOutputParams.m_outputRasterPtr->getGrid()->getExtent()->getLowerLeft(),
-    0.000001 );
+    0.001 );
   ASSERTMAXDIST( inRasterPointer->getGrid()->getExtent()->getUpperRight(),
     algoOutputParams.m_outputRasterPtr->getGrid()->getExtent()->getUpperRight(),
-    0.000001 );
+    0.001 );
   
   te::common::ProgressManager::getInstance().removeViewer( viewerId );  
 }

@@ -34,7 +34,7 @@
 #include <stddef.h>  // defines NULL
 
 // Boost
-#include <boost\foreach.hpp>
+#include <boost/foreach.hpp>
 
 TELAYOUTEXPORT std::vector<te::layout::MapItem*> te::layout::getMapItemList( QList<QGraphicsItem*> graphicsItems )
 {

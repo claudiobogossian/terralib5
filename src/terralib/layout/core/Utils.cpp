@@ -173,12 +173,17 @@ te::gm::Envelope te::layout::Utils::viewportBox( te::gm::Envelope box)
   return boxViewport;
 }
 
-te::gm::Envelope te::layout::Utils::viewportBoxFromMM( te::gm::Envelope box)
+te::gm::Envelope te::layout::Utils::viewportBoxFromMM( te::gm::Envelope box )
 {
   te::map::WorldDeviceTransformer transf; // World Device Transformer.
 
-  int pxwidth = mm2pixel(box.getWidth());
-  int pxheight = mm2pixel(box.getHeight());
+  double zoomFactor = Context::getInstance().getZoomFactor();
+
+  if(zoomFactor < 1.)
+    zoomFactor = 1.;
+  
+  int pxwidth = mm2pixel(box.getWidth() * zoomFactor);
+  int pxheight = mm2pixel(box.getHeight() * zoomFactor);
     
   // Adjust internal renderer transformer
   transf.setTransformationParameters(box.getLowerLeftX(), box.getLowerLeftY(), 
@@ -286,14 +291,15 @@ void te::layout::Utils::textBoundingBox( double &w, double &h, std::string txt )
   }
 }
 
-double te::layout::Utils::calculateRulerZoomFactor()
+void te::layout::Utils::calculateRulerZoomFactor(double &factor, double &factorView)
 {
-  int						factor = 1;
-  double				factorView = 0.5;
   int						pageValue=210;
   double        ury = 0.;
   double        lly = 0.;
-  
+ 
+  factor = 1;
+  factorView = 0.5;
+
   te::map::Canvas* canvas = Context::getInstance().getCanvas();
   PaperConfig* pConfig = Context::getInstance().getPaperConfig();
 
@@ -321,14 +327,11 @@ double te::layout::Utils::calculateRulerZoomFactor()
   ury = canvas->getHeight();
 
   // Viewport - device coordinate system
-  factorView = 1. / (733./(factorView * fabs(ury-lly)));
+  factorView = 1. / (733./(factorView * std::fabs(ury-lly)));
   factorView = 1. / factorView;
   
   if(factorView < 1) 
     factorView = 1;
-
-  double result = factor * factorView;
-  return result;
 }
 
 te::gm::Envelope te::layout::Utils::transformToMM( te::layout::WorldTransformer transf, te::gm::Envelope boxGeo )

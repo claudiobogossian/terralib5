@@ -44,18 +44,6 @@ void LoadModules();
 /*! \brief Creates a LDD GRAPH. */
 void CreateLDDGraph(bool draw);
 
-/*! \brief Creates a GRAPH using GPM with adjacency strategy. */
-boost::shared_ptr<te::graph::AbstractGraph> CreateGPMAdjacencyGraph(bool draw);
-
-/*! \brief Creates a GRAPH using GPM with distance strategy . */
-boost::shared_ptr<te::graph::AbstractGraph> CreateGPMDistanceGraph(bool draw);
-
-/*! \brief Imports and export graphs from  Spatial Weights Files (GAL and GWT formats). */
-void ExchangeSpatialWeightsFiles(bool draw);
-
-/*! \brief Creates a GRAPH using GPM strategy and calculates the Moran global index. */
-void Moran();
-
 /*! \brief Auxiliar functions for load a raster. */
 std::auto_ptr<te::rst::Raster> OpenRaster(const std::string& pathName, const int& srid);
 

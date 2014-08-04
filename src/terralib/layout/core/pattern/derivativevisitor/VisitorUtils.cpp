@@ -37,7 +37,7 @@
 #include <stddef.h>  // defines NULL
 
 // Boost
-#include <boost\foreach.hpp>
+#include <boost/foreach.hpp>
 
 TELAYOUTEXPORT bool te::layout::changeMapVisitable( QList<QGraphicsItem*> graphicsItems, te::layout::Visitable* visitable )
 {

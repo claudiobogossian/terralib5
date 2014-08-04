@@ -24,59 +24,33 @@
 */
 
 // Terralib
-#include "../../../qt/widgets/layout/LayoutEditor.h"
+#include "LayoutEditorAction.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/Project.h"
-#include "LayoutEditorAction.h"
+#include "MainLayout.h"
+#include "../../../common/TerraLib.h"
+#include "../../../layout/core/Config.h"
 
 // Qt
-#include <QtCore/QObject>
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
+#include <QObject>
+#include <QMenu>
+#include <QMenuBar>
 
 // STL
 #include <memory>
 
 te::qt::plugins::layout::LayoutEditorAction::LayoutEditorAction(QMenu* menu)
-  : te::qt::plugins::layout::AbstractAction(menu),
-  m_layoutEditor(0)
+  : te::qt::plugins::layout::AbstractAction(menu)
 {
   createAction(tr("Layout Editor...").toStdString());
 }
 
 te::qt::plugins::layout::LayoutEditorAction::~LayoutEditorAction()
 {
-  if(m_layoutEditor)
-    delete m_layoutEditor;
+  TerraLib::getInstance().remove(TE_LAYOUT_MODULE_NAME);
 }
 
 void te::qt::plugins::layout::LayoutEditorAction::onActionActivated(bool checked)
-{
-  if(m_layoutEditor == 0)
-  {
-    // ache o parent...
-    QMenu* menu = te::qt::af::ApplicationController::getInstance().getMenu("Help");
-    QMenuBar* menubar = (QMenuBar*)menu->parent();
-    QWidget* parent = (QWidget*)menubar->parent();
-
-    te::qt::widgets::LayoutEditor* layoutEditor = new te::qt::widgets::LayoutEditor(parent);
-    layoutEditor->show();
-
-    m_layoutEditor = new te::qt::af::LayoutEditor(layoutEditor);
-  }
-  m_layoutEditor->getLayoutEditor()->show();
-
-  //if(m_layoutEditor)
-  //  delete m_layoutEditor;
-
-  //// ache o parent...
-  //QMenu* menu = te::qt::af::ApplicationController::getInstance().getMenu("Help");
-  //QMenuBar* menubar = (QMenuBar*)menu->parent();
-  //QWidget* parent = (QWidget*)menubar->parent();
-
-  //te::qt::widgets::LayoutEditor* layoutEditor = new te::qt::widgets::LayoutEditor(parent);
-  //layoutEditor->show();
-
-  //m_layoutEditor = new te::qt::af::LayoutEditor(layoutEditor);
-  //m_layoutEditor->getLayoutEditor()->show();
+{  
+  MainLayout::getInstance().init(te::qt::af::ApplicationController::getInstance().getMainWindow(), m_menu);
 }

@@ -385,7 +385,7 @@ QString te::qt::widgets::Convert2Qt(const std::string& text, const te::common::C
 
       default:
       {
-#if TE_CHARENCODING_ENABLED
+#ifdef TERRALIB_CHARENCODING_ENABLED
         std::string latin1 = te::common::CharEncodingConv::convert(text, encoding, te::common::LATIN1);
         return QString::fromLatin1(latin1.c_str());
 #else

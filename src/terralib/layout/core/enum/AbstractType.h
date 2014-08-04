@@ -28,7 +28,7 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_TYPE_H 
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_TYPE_H
 
-#include "..\Config.h"
+#include "../Config.h"
 
 namespace te
 {
@@ -54,10 +54,11 @@ namespace te
       TPGridGeodesic = 13,
       TPHorizontalRuler = 14,
       TPVerticalRuler = 15,
-      TPText = 16,
+      TPTextItem = 16,
       TPItemGroup = 17,
       TPScaleItem = 18,
       TPPageSetup = 19,
+      TPImageItem = 20,
       TPObjectUnknown = 0
     } LayoutAbstractObjectType;
 
@@ -116,7 +117,7 @@ namespace te
       TPCenterRight,
       TPCenterLeft,
       TPNoneSide
-    } LayoutSides;
+    } LayoutAlign;
 
     /*!
     \brief Enum TdkAbstractComponentType. This is the enumeration of the components types
@@ -141,7 +142,9 @@ namespace te
       DataTypeColor = 7,
       DataTypeGridSettings = 8,
       DataTypeStringList = 9,
-      DataTypeNone = 10
+      DataTypeFont = 10,
+      DataTypeImage = 11,
+      DataTypeNone = 12
     } LayoutPropertyDataType;
 
     /*!

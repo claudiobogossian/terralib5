@@ -37,9 +37,13 @@
 te::layout::ScaleController::ScaleController( Observable* o ) :
   ItemController(o, TPScaleItem)
 {
-  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
-  ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPScaleItem, params);
+  create();
+}
+
+te::layout::ScaleController::ScaleController( Observable* o, LayoutAbstractObjectType type ) :
+  ItemController(o, type)
+{
+
 }
 
 te::layout::ScaleController::~ScaleController()
@@ -55,4 +59,11 @@ void te::layout::ScaleController::setPosition( const double& x, const double& y 
     if(model)
       return model->setPosition(x, y);
   }
+}
+
+void te::layout::ScaleController::create()
+{
+  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
+  ItemParamsCreate params(this, m_model);
+  m_view = (Observer*)factory->make(TPScaleItem, params);
 }

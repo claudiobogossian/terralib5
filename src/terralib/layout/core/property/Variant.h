@@ -31,12 +31,14 @@
 // TerraLib
 #include "../enum/AbstractType.h"
 #include "../../../color/RGBAColor.h"
+#include "../Font.h"
 
 // STL
 #include <string>
 #include <map>
 #include <vector>
 #include <iostream>
+
 using namespace std;
 
 namespace te
@@ -52,7 +54,7 @@ namespace te
         virtual ~Variant();
         
         template <typename ValueType>
-        void setValue(typename ValueType value, LayoutPropertyDataType type);
+        void setValue(ValueType value, LayoutPropertyDataType type);
 
         LayoutPropertyDataType getType();
         
@@ -62,7 +64,8 @@ namespace te
         long toLong();
         float toFloat();
         bool toBool();
-        te::color::RGBAColor toColor();       
+        te::color::RGBAColor toColor();     
+        Font toFont();
 
         std::string convertToString();
 
@@ -76,10 +79,10 @@ namespace te
     protected:
 
       template <typename ValueType>
-      void variantSetValue(Variant &v, const typename ValueType& value, LayoutPropertyDataType type);
+      void variantSetValue(Variant &v, const ValueType& value, LayoutPropertyDataType type);
       
       void convertValue(const void* valueCopy);
-
+      
       /* Check if a value passed, of type DataTypeInt and etc, is a std::string. 
          Ex.: value returned by a json file (boost). */
       bool checkNumberAsString(const void* valueCopy);
@@ -99,21 +102,22 @@ namespace te
       float m_fValue;
       bool m_bValue;
       te::color::RGBAColor m_colorValue;
+      Font m_fontValue;
       LayoutPropertyDataType m_type;
       bool m_null;
     };
 
     template<typename ValueType>
-    inline void te::layout::Variant::setValue( typename ValueType value, LayoutPropertyDataType type )
+    inline void te::layout::Variant::setValue( ValueType value, LayoutPropertyDataType type )
     { 
-      typename ValueType v = value;
+      ValueType v = value;
       variantSetValue(*this, v, type);
     }
 
     /* Is still necessary to revise this method.*/
     template <typename ValueType>
     inline void te::layout::Variant::variantSetValue(Variant &v, 
-      const typename ValueType& value, LayoutPropertyDataType type )
+      const ValueType& value, LayoutPropertyDataType type )
     {
       v = Variant(type, &value);      
     }

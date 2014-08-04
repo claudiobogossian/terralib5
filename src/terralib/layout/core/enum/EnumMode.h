@@ -28,7 +28,7 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_MODE_H
 #define __TERRALIB_LAYOUT_INTERNAL_MODE_H
 
-#include "..\Config.h"
+#include "../Config.h"
 
 namespace te
 {
@@ -70,6 +70,7 @@ namespace te
       TypeBringToFront = 29,
       TypeSendToBack = 30,
       TypeRecompose = 31,
+      TypeCreateImage = 32,
       TypeNone = 0
     } LayoutMode;
 
