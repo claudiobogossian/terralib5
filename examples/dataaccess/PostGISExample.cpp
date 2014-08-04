@@ -22,7 +22,7 @@ void PostGISExample()
     connInfo["PG_PASSWORD"] = "postgres";
     connInfo["PG_DB_NAME"] = "terralib4";
     connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-    connInfo["PG_CLIENT_ENCODING"] = "WIN1252";     // "LATIN1";
+    connInfo["PG_CLIENT_ENCODING"] = "CP1252";     // "LATIN1"; //"WIN1252" 
     
 // create a data source using the data source factory
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");

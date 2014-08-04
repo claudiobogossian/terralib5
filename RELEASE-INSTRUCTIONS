@@ -17,26 +17,45 @@ Follow the steps below in order to prepare a new release of TerraLib/TerraView.
 4. Install Packages - Test
 --------------------------
 
-4.1 Generating the Install Packages on Windows
-----------------------------------------------
+4.1 Generating the Install Packages on Windows with Microsoft Visual C++ 2010
+-----------------------------------------------------------------------------
 
-a) Create a fresh copy of the repository.
-b) Assure that the following CMake variables are set:
-   CMAKE_INSTALL_PREFIX => C:\MyInstalls\TerrsLib5
-   TERRALIB_TRACK_3RDPARTY_DEPENDENCIES => ON
-   TERRALIB_QHELP_ENABLED => ON
-   TERRALIB_DOXYGEN_ENABLED => ON
+a) Create a fresh copy of the repository into a place such as:
+   C:\terralib5\build
+
+b) Open CMake-GUI in order to generate a build project for Microsoft Visual C++ 2010 (32-bit or 64-bit).
+   Then assure that the following variables are set:
+     CMAKE_INSTALL_PREFIX => C:\MyInstalls\TerrsLib5
+     TERRALIB_TRACK_3RDPARTY_DEPENDENCIES => ON
+     TERRALIB_QHELP_ENABLED => ON
+     TERRALIB_DOXYGEN_ENABLED => ON  (if you want to distribute the API documentation)
+
+   Some project may be disabled through the following variables:
+     TERRALIB_BUILD_EXAMPLES_ENABLED => OFF
+     TERRALIB_BUILD_UNITTEST_ENABLED => OFF
+
+c) Open the generated terralib.sln solution (see in the target folder C:\terralib5\build).
+
+d) Set the active solution configuration to "Release" and then "Build Solution"
+
+e) Build additional projects: terralib_qhelp and terralib_doxygen.
+
+f) After that you can make the NSIS package by building the project named "PACKAGE".
+   According to the target platform this build will generate an executable file for the terralib installer.
+   For 32-bit build the file terralib-5.0.0-beta1-win32-msvc-2010.exe is generated in the main folder of your project (see C:\terralib5\build).
+
+4.2 Generating a Mac OS X Bundle
+--------------------------------
+    (!!UNDER DEVELOPMENT!!)
 
 
-5. Tests
---------
+a) Create a fresh copy of the repository into a place such as:
+   /Users/user/terralib5/codebase
 
-6. Tag
-------
+b) The following entries in CMake will control the path in the bundle:
 
-7. Release Packages
--------------------
-For Mac add the following entries in CMake:
+TERRALIB_TRACK_3RDPARTY_DEPENDENCIES => ON
+TERRALIB_BUILD_AS_BUNDLE => ON
 
 TERRALIB_DESTINATION_ARCHIVE  => terraview.app/Contents/lib
 TERRALIB_DESTINATION_EXAMPLES => terraview.app/Contents/share/terralib/examples
@@ -50,6 +69,16 @@ TERRALIB_DESTINATION_UNITTEST => terraview.app/Contents/share/terralib/unittest
 For the CPACK group set only ON to the CPACK_BINARY_DRAGNDROP entry.
 
 
+5. Tests
+--------
+
+
+6. Tag
+------
+
+
+7. Release Packages
+-------------------
 
 
 
