@@ -629,14 +629,7 @@ te::stmem::DataSet* te::stmem::Transactor::getData(const std::string& datasetNam
   return it->second; 
 }
 
-
-
-
-
-
-
-
-
-
-
-
+te::common::CharEncoding te::stmem::Transactor::getEncoding()
+{
+  return te::common::UTF8;
+}
