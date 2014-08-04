@@ -513,7 +513,7 @@ void te::sa::SpatialWeightsExchanger::associateGeometry(te::sa::GeneralizedProxi
   te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dataSetType.get());
 
   //create graph vertex attrs
-  te::gm::GeometryProperty* gProp = new te::gm::GeometryProperty("coords");
+  te::gm::GeometryProperty* gProp = new te::gm::GeometryProperty(TE_SA_GEOMETRY_ATTR_NAME);
   gProp->setId(0);
   gProp->setGeometryType(te::gm::PointType);
   gProp->setSRID(gp->getSRID());

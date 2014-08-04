@@ -28,6 +28,7 @@
 #include "../../dataaccess/datasource/DataSource.h"
 #include "../../datatype/AbstractData.h"
 #include "../../datatype/SimpleProperty.h"
+#include "../../geometry/GeometryProperty.h"
 #include "../../graph/core/AbstractGraph.h"
 #include "../../graph/core/GraphMetadata.h"
 #include "../../graph/core/Vertex.h"
@@ -37,7 +38,7 @@
 // STL
 #include <cassert>
 
-int te::sa::AssociateGPMVertexAttribute(te::da::DataSource* ds, std::string dataSetName, std::string attrLink, std::string attr, int dataType, te::sa::GeneralizedProximityMatrix* gpm)
+int te::sa::AssociateGPMVertexAttribute(te::sa::GeneralizedProximityMatrix* gpm, te::da::DataSource* ds, std::string dataSetName, std::string attrLink, std::string attr, int dataType, int srid, int subType)
 {
   assert(ds);
   assert(gpm);
@@ -45,7 +46,7 @@ int te::sa::AssociateGPMVertexAttribute(te::da::DataSource* ds, std::string data
   te::graph::AbstractGraph* graph = gpm->getGraph();
 
   //add graph attr
-  int attrGraphIdx = te::sa::AddGraphVertexAttribute(graph, attr, dataType);
+  int attrGraphIdx = te::sa::AddGraphVertexAttribute(graph, attr, dataType, srid, subType);
 
   //get the number of attributes from graph
   int attrSize = graph->getMetadata()->getVertexPropertySize();
@@ -76,12 +77,22 @@ int te::sa::AssociateGPMVertexAttribute(te::da::DataSource* ds, std::string data
   return attrGraphIdx;
 }
 
-int te::sa::AddGraphVertexAttribute(te::graph::AbstractGraph* graph, std::string attrName, int dataType)
+int te::sa::AddGraphVertexAttribute(te::graph::AbstractGraph* graph, std::string attrName, int dataType, int srid, int subType)
 {
   assert(graph);
 
   //add new attribute
-  te::dt::SimpleProperty* p = new te::dt::SimpleProperty(attrName, dataType);
+  te::dt::Property* p = 0;
+  
+  if(dataType == te::dt::GEOMETRY_TYPE)
+  {
+    p = new te::gm::GeometryProperty(attrName, srid, (te::gm::GeomType)subType);
+  }
+  else
+  {
+    p = new te::dt::SimpleProperty(attrName, dataType);
+  }
+
   p->setParent(0);
   p->setId(0);
 

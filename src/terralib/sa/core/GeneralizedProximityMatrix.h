@@ -27,16 +27,20 @@
 #define __TERRALIB_SA_INTERNAL_GENERALIZEDPROXIMITYMATRIX_H
 
 // Terralib Includes
+#include "../../dataaccess/datasource/DataSource.h"
 #include "../../graph/core/AbstractGraph.h"
 #include "../Config.h"
 
 // STL Includes
+#include <map>
 #include <memory>
 #include <string>
 
 namespace te
 {
   // Forward declarations
+  namespace da  { class DataSetType; }
+  namespace mem { class DataSet; }
 
   namespace sa
   {
@@ -76,6 +80,23 @@ namespace te
         void setGraph(te::graph::AbstractGraph* graph);
 
         te::graph::AbstractGraph* getGraph();
+
+        /*!
+          \brief Function used to export the all vertex attributes from gpm graph to a datasource
+
+          \param ds  Pointer to the output datasource
+          \param dataSetName The name of the new dataset that will be created into the datasource
+
+        */
+        void toDataSource(te::da::DataSourcePtr ds, std::string dataSetName);
+
+      protected:
+
+        std::auto_ptr<te::da::DataSetType> createDataSetType(std::string dataSetName);
+
+        std::auto_ptr<te::mem::DataSet> createDataSet(te::da::DataSetType* dsType);
+
+        std::map<int, std::string> getGPMPropertyMap();
 
         //@}
 
