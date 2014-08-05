@@ -2046,5 +2046,195 @@ namespace te
       return true;
     }
     
+    bool DecomposeBands( 
+      const te::rst::Raster& inputRaster,
+      const std::vector< unsigned int >& inputRasterBands,
+      const std::vector< std::string >& outputDataSetNames,
+      te::da::DataSource& outputDataSource )
+    {
+      if( !( inputRaster.getAccessPolicy() & te::common::RAccess ) )
+      {
+        return false;
+      }
+      if( ! outputDataSource.isValid() )
+      {
+        return false;
+      }
+      if( outputDataSetNames.size() != inputRasterBands.size() )
+      {
+        return false;
+      }
+      
+      const unsigned int nRows = inputRaster.getNumberOfRows();
+      const unsigned int nCols = inputRaster.getNumberOfColumns();
+      
+      for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx <
+        inputRasterBands.size() ; ++inputRasterBandsIdx )
+      {
+        const unsigned int bandIdx = inputRasterBands[ inputRasterBandsIdx ];
+        if( bandIdx >= inputRaster.getNumberOfBands() )
+        {
+          return false;
+        }
+        
+        std::vector< te::rst::BandProperty* > bandsProperties;
+
+        bandsProperties.push_back( new te::rst::BandProperty( 
+          *( inputRaster.getBand( bandIdx )->getProperty()) ) );
+        
+        if( outputDataSetNames[ inputRasterBandsIdx ].empty() )
+        {
+          return false;
+        }
+        
+        te::rp::RasterHandler outRasterHandler;
+        if( ! te::rp::CreateNewRaster( *( inputRaster.getGrid() ),
+          bandsProperties, outputDataSetNames[ inputRasterBandsIdx ], 
+          outputDataSource, outRasterHandler) )
+        {
+          return false;      
+        }
+        
+        unsigned int col = 0;
+        unsigned int row = 0;
+        double value = 0;
+        const te::rst::Band& inBand = *(inputRaster.getBand( bandIdx ));
+        te::rst::Band& outBand = *(outRasterHandler.getRasterPtr()->getBand( 0 ));
+        
+        for( row = 0 ; row < nRows ; ++row )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            inBand.getValue( col, row, value );
+            outBand.setValue( col, row, value );
+          }
+        }
+      }
+      
+      return true;
+    }
+    
+    bool ComposeBands( 
+      te::rp::FeederConstRaster& feeder,
+      const std::vector< unsigned int >& inputRasterBands,
+      const std::string& outputDataSetName,
+      const te::rst::Interpolator::Method& interpMethod,
+      te::da::DataSource& outputDataSource )
+    {
+      if( inputRasterBands.size() != feeder.getObjsCount() )
+      {
+        return false;
+      }
+      if( outputDataSetName.empty() )
+      {
+        return false;
+      }
+      if( ! outputDataSource.isValid() )
+      {
+        return false;
+      }      
+      
+      // creating the output raster
+      
+      te::rp::RasterHandler outRasterHandler;
+      
+      {
+        te::rst::Raster const * inputRasterPtr = 0;
+        te::rst::Grid outputGrid;
+        std::vector< te::rst::BandProperty* > bandsProperties;
+        
+        feeder.reset();
+        while( inputRasterPtr = feeder.getCurrentObj() )
+        {
+          if( inputRasterBands[ feeder.getCurrentOffset() ] >= 
+            inputRasterPtr->getNumberOfBands() )
+          {
+            return false;
+          }
+          
+          if( feeder.getCurrentOffset() == 0 )
+          {
+            outputGrid = ( *inputRasterPtr->getGrid() );
+          }          
+
+          bandsProperties.push_back( new te::rst::BandProperty( 
+            *( inputRasterPtr->getBand( inputRasterBands[ 
+            feeder.getCurrentOffset() ] )->getProperty()) ) );
+          
+          feeder.moveNext();
+        }
+        
+        if( ! te::rp::CreateNewRaster( outputGrid,
+          bandsProperties, outputDataSetName, 
+          outputDataSource, outRasterHandler) )
+        {
+          return false;      
+        }        
+      }
+      
+      // copying data from each input band
+        
+      {
+        te::rst::Raster const * inputRasterPtr = 0;
+        
+        feeder.reset();
+        while( inputRasterPtr = feeder.getCurrentObj() )
+        {
+          const unsigned int inBandIdx = inputRasterBands[ 
+            feeder.getCurrentOffset() ];
+          te::rst::Interpolator interp( inputRasterPtr, interpMethod );
+          unsigned int outRow = 0;
+          unsigned int outCol = 0;
+          const unsigned int nOutRows = outRasterHandler.getRasterPtr()->getNumberOfRows();
+          const unsigned int nOutCols = outRasterHandler.getRasterPtr()->getNumberOfColumns();
+          te::rst::Band& outBand = *outRasterHandler.getRasterPtr()->getBand( 
+            feeder.getCurrentOffset() );
+          const te::rst::Grid& inGrid = *inputRasterPtr->getGrid();
+          const te::rst::Grid& outGrid = * outRasterHandler.getRasterPtr()->getGrid();
+          double xOutCoord = 0;
+          double yOutCoord = 0;
+          double xInCoord = 0;
+          double yInCoord = 0;          
+          double inRow = 0;
+          double inCol = 0;
+          std::complex< double > value = 0;
+          te::srs::Converter conv( outRasterHandler.getRasterPtr()->getSRID(),
+            inputRasterPtr->getSRID() );
+          
+          if( inputRasterPtr->getSRID() == outRasterHandler.getRasterPtr()->getSRID() )
+          {
+            for( outRow = 0 ; outRow < nOutRows ; ++outRow )
+            {
+              for( outCol = 0 ; outCol < nOutCols ; ++outCol )
+              {
+                outGrid.gridToGeo( (double)outCol, (double)outRow, xOutCoord, yOutCoord );
+                inGrid.geoToGrid( xOutCoord, yOutCoord, inCol, inRow );
+                interp.getValue( inCol, inRow, value, inBandIdx );
+                outBand.setValue( outCol, outRow, value );
+              }
+            }
+          }
+          else
+          {
+            for( outRow = 0 ; outRow < nOutRows ; ++outRow )
+            {
+              for( outCol = 0 ; outCol < nOutCols ; ++outCol )
+              {
+                outGrid.gridToGeo( (double)outCol, (double)outRow, xOutCoord, yOutCoord );
+                conv.convert( xOutCoord, yOutCoord, xInCoord, yInCoord );
+                inGrid.geoToGrid( xInCoord, yInCoord, inCol, inRow );
+                interp.getValue( inCol, inRow, value, inBandIdx );
+                outBand.setValue( outCol, outRow, value );                
+              }
+            }
+          }
+          
+          feeder.moveNext();
+        }
+      }        
+      
+      return true;
+    }
+    
   } // end namespace rp
 }   // end namespace te
