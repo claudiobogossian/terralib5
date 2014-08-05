@@ -343,28 +343,6 @@ void te::pgis::Convert2TerraLib(PGresult* result,
   }
 }
 
-te::common::CharEncoding te::pgis::Convert2TerraLib(const std::string& encoding)
-{
-  if(encoding == "UTF8")
-    return te::common::UTF8;
-  else if(encoding == "WIN1250")
-    return te::common::CP1250;
-  else if(encoding == "WIN1251")
-    return te::common::CP1251;
-  else if(encoding == "WIN1252")
-    return te::common::CP1252;
-  else if(encoding == "WIN1253")
-    return te::common::CP1253;
-  else if(encoding == "WIN1254")
-    return te::common::CP1254;
-  else if(encoding == "WIN1257")
-    return te::common::CP1257;
-  else if(encoding == "LATIN1")
-    return te::common::LATIN1;
-  else
-    return te::common::UNKNOWN_CHAR_ENCODING;
-}
-
 std::string te::pgis::MakeConnectionStr(const std::map<std::string, std::string>& dsInfo)
 {
   std::map<std::string, std::string>::const_iterator it = dsInfo.find("PG_HOST");

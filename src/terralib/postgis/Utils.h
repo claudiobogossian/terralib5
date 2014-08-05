@@ -889,8 +889,6 @@ namespace te
                           unsigned int pgisRasterTypeOid,
                           std::vector<int>& teTypes);
 
-    te::common::CharEncoding Convert2TerraLib(const std::string& encoding);
-
     /*!
       \brief It converts the PostGIS geometry type to a pure OGC WKB code.
 
