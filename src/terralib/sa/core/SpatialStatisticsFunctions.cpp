@@ -180,7 +180,7 @@ void te::sa::LocalMean(te::sa::GeneralizedProximityMatrix* gpm, int attrIdx)
 
     v->setAttributeVecSize(nAttrs);
     v->addAttribute(localMeanAttrIdx, new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(sum));
-    v->addAttribute(nNeighboursAttrIdx, new te::dt::SimpleData<double, te::dt::INT32_TYPE>(nNeighbours));
+    v->addAttribute(nNeighboursAttrIdx, new te::dt::SimpleData<int, te::dt::INT32_TYPE>(nNeighbours));
 
     v = it->getNextVertex();
   }
@@ -286,12 +286,12 @@ double te::sa::MoranIndex(te::sa::GeneralizedProximityMatrix* gpm)
 
   //check if the graph has the Z attribute
   int zAttrIdx;
-  if(!te::sa::GetGraphEdgeAttrIndex(graph, TE_SA_STDDEVZ_ATTR_NAME, zAttrIdx))
+  if(!te::sa::GetGraphVertexAttrIndex(graph, TE_SA_STDDEVZ_ATTR_NAME, zAttrIdx))
     throw;
 
   //check if the graph has the WZ attribute
   int wzAttrIdx;
-  if(!te::sa::GetGraphEdgeAttrIndex(graph, TE_SA_LOCALMEANWZ_ATTR_NAME, wzAttrIdx))
+  if(!te::sa::GetGraphVertexAttrIndex(graph, TE_SA_LOCALMEANWZ_ATTR_NAME, wzAttrIdx))
     throw;
 
   double variance = te::sa::SecondMoment(gpm, zAttrIdx, 0); // MEAN is 0 ??
@@ -483,9 +483,9 @@ double te::sa::GlobalMoranSignificance(te::sa::GeneralizedProximityMatrix* gpm, 
   }
 
   if(moranIndex >= 0)
-    significance = (double)(position+1)/(permutationsNumber+1);
+    significance = (double)(position+1)/(double)(permutationsNumber+1);
   else
-    significance = (double)(permutationsNumber-position)/(permutationsNumber+1);
+    significance = (double)(permutationsNumber-position)/(double)(permutationsNumber+1);
 
   return significance;
 }
@@ -498,17 +498,17 @@ void te::sa::LisaStatisticalSignificance(te::sa::GeneralizedProximityMatrix* gpm
 
   //check if the graph has the Z attribute
   int zAttrIdx;
-  if(!te::sa::GetGraphEdgeAttrIndex(graph, TE_SA_STDDEVZ_ATTR_NAME, zAttrIdx))
+  if(!te::sa::GetGraphVertexAttrIndex(graph, TE_SA_STDDEVZ_ATTR_NAME, zAttrIdx))
     throw;
 
   //check if the graph has the local moran attribute
   int lisaAttrIdx;
-  if(!te::sa::GetGraphEdgeAttrIndex(graph, TE_SA_MORANINDEX_ATTR_NAME, lisaAttrIdx))
+  if(!te::sa::GetGraphVertexAttrIndex(graph, TE_SA_MORANINDEX_ATTR_NAME, lisaAttrIdx))
     throw;
 
   //check if the graph has the number of neighbours attribute
   int nNeighboursAttrIdx;
-  if(!te::sa::GetGraphEdgeAttrIndex(graph, TE_SA_NUMNEIGHBORS_ATTR_NAME, nNeighboursAttrIdx))
+  if(!te::sa::GetGraphVertexAttrIndex(graph, TE_SA_NUMNEIGHBORS_ATTR_NAME, nNeighboursAttrIdx))
     throw;
 
   //calculate variance
@@ -616,12 +616,12 @@ void te::sa::BoxMap(te::sa::GeneralizedProximityMatrix* gpm, double mean)
 
   //check if the graph has the Z attribute
   int zAttrIdx;
-  if(!te::sa::GetGraphEdgeAttrIndex(graph, TE_SA_STDDEVZ_ATTR_NAME, zAttrIdx))
+  if(!te::sa::GetGraphVertexAttrIndex(graph, TE_SA_STDDEVZ_ATTR_NAME, zAttrIdx))
     throw;
 
   //check if the graph has the WZ attribute
   int wzAttrIdx;
-  if(!te::sa::GetGraphEdgeAttrIndex(graph, TE_SA_LOCALMEANWZ_ATTR_NAME, wzAttrIdx))
+  if(!te::sa::GetGraphVertexAttrIndex(graph, TE_SA_LOCALMEANWZ_ATTR_NAME, wzAttrIdx))
     throw;
 
   //add boxmap attribute into gpm
@@ -664,7 +664,7 @@ void te::sa::LISAMap(te::sa::GeneralizedProximityMatrix* gpm, int permutationsNu
 
   //check if the graph has the LISASig attribute
   int lisaSigAttrIdx;
-  if(!te::sa::GetGraphEdgeAttrIndex(graph, TE_SA_LISASIGNIFICANCE_ATTR_NAME, lisaSigAttrIdx))
+  if(!te::sa::GetGraphVertexAttrIndex(graph, TE_SA_LISASIGNIFICANCE_ATTR_NAME, lisaSigAttrIdx))
     throw;
 
   //add boxmap attribute into gpm
@@ -704,12 +704,12 @@ void te::sa::MoranMap(te::sa::GeneralizedProximityMatrix* gpm)
 
   //check if the graph has the LISAMap attribute
   int lisaMapAttrIdx;
-  if(!te::sa::GetGraphEdgeAttrIndex(graph, TE_SA_LISAMAP_ATTR_NAME, lisaMapAttrIdx))
+  if(!te::sa::GetGraphVertexAttrIndex(graph, TE_SA_LISAMAP_ATTR_NAME, lisaMapAttrIdx))
     throw;
 
   //check if the graph has the BoxMap attribute
   int boxMapAttrIdx;
-  if(!te::sa::GetGraphEdgeAttrIndex(graph, TE_SA_BOXMAP_ATTR_NAME, boxMapAttrIdx))
+  if(!te::sa::GetGraphVertexAttrIndex(graph, TE_SA_BOXMAP_ATTR_NAME, boxMapAttrIdx))
     throw;
 
   //add boxmap attribute into gpm
