@@ -113,6 +113,7 @@ namespace te
           const te::rp::SegmenterSegmentsBlock& block2ProcessInfo,
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
+          const std::vector< double >& inputRasterNoDataValues,
           const std::vector< double >& inputRasterGains,
           const std::vector< double >& inputRasterOffsets,
           te::rst::Raster& outputRaster,
@@ -303,6 +304,7 @@ namespace te
           \param block2ProcessInfo Info about the block to process.
           \param inputRaster The input raster.
           \param inputRasterBands Input raster bands to use.
+          \param inputRasterNoDataValues A vector of values to be used as input raster no-data values.
           \param segmentsIds The output segment ids container.
           \return true if OK, false on errors.
         */        
@@ -310,6 +312,7 @@ namespace te
           const te::rp::SegmenterSegmentsBlock& block2ProcessInfo, 
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
+          const std::vector< double >& inputRasterNoDataValues,
           const std::vector< double >& inputRasterGains,
           const std::vector< double >& inputRasterOffsets );
           
