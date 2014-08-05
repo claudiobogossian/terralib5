@@ -38,7 +38,9 @@ te::layout::SharedProperties::SharedProperties() :
   m_y1("y1"),
   m_y2("y2"),
   m_zValue("zValue"),
-  m_border("border")
+  m_border("border"),
+  m_backgroundcolor("backgroundcolor"),
+  m_bordercolor("bordercolor")
 {
 
 }
@@ -91,4 +93,14 @@ std::string te::layout::SharedProperties::getZValue()
 std::string te::layout::SharedProperties::getBorder()
 {
   return m_border;
+}
+
+std::string te::layout::SharedProperties::getBackgroundcolor()
+{
+  return m_backgroundcolor;
+}
+
+std::string te::layout::SharedProperties::getBordercolor()
+{
+  return m_bordercolor;
 }
