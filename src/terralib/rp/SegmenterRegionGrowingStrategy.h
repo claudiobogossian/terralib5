@@ -325,6 +325,7 @@ namespace te
           \param auxSeg1Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param auxSeg2Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param auxSeg3Ptr A pointer to a valid auxiliar segment that will be used by this method.
+          \param minFoundDissimilarity The minimum dissimilarity value found.
           \return The number of merged segments.
         */           
         unsigned int mergeSegments( 
@@ -334,7 +335,8 @@ namespace te
           const bool enablelocalMutualBestFitting,
           SegmenterRegionGrowingSegment* auxSeg1Ptr,
           SegmenterRegionGrowingSegment* auxSeg2Ptr,
-          SegmenterRegionGrowingSegment* auxSeg3Ptr);
+          SegmenterRegionGrowingSegment* auxSeg3Ptr,
+          SegmenterRegionGrowingSegment::FeatureType& minFoundDissimilarity );
           
         /*!
           \brief Merge only small segments to their closest segment.
