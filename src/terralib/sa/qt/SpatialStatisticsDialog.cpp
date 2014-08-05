@@ -136,6 +136,8 @@ void te::sa::SpatialStatisticsDialog::onInputLayerComboBoxActivated(int index)
     {
       m_ui->m_attrIdComboBox->addItem(propVec[t]->getName().c_str(), dataType);
     }
+
+    m_ui->m_attrLinkComboBox->addItem(propVec[t]->getName().c_str(), dataType);
   }
 }
 
@@ -203,11 +205,9 @@ void te::sa::SpatialStatisticsDialog::onOkPushButtonClicked()
   //get necessary info to calculate statistics
   te::da::DataSourcePtr ds = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
 
-  //std::auto_ptr<te::da::DataSet> dataSet = l->getData();
-
   std::auto_ptr<te::da::DataSetType> dataSetType = l->getSchema();
 
-  std::string attrLink = dataSetType->getPrimaryKey()->getName();
+  std::string attrLink = m_ui->m_attrLinkComboBox->currentText().toStdString();
 
   std::string attrName = m_ui->m_attrIdComboBox->currentText().toStdString();
 
