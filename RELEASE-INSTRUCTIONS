@@ -44,30 +44,27 @@ f) After that you can make the NSIS package by building the project named "PACKA
    According to the target platform this build will generate an executable file for the terralib installer.
    For 32-bit build the file terralib-5.0.0-beta1-win32-msvc-2010.exe is generated in the main folder of your project (see C:\terralib5\build).
 
-4.2 Generating a Mac OS X Bundle
---------------------------------
-    (!!UNDER DEVELOPMENT!!)
-
+4.2 Generating a Mac OS X Bundle for Drag and Drop
+--------------------------------------------------
 
 a) Create a fresh copy of the repository into a place such as:
    /Users/user/terralib5/codebase
 
 b) The following entries in CMake will control the path in the bundle:
+   TERRALIB_TRACK_3RDPARTY_DEPENDENCIES: should be ON if you want to have the 3rd-party libraries in the bundle.
+   TERRALIB_BUILD_AS_BUNDLE: should be ON if you want to make a bundle in MAC OS X.
+   TERRALIB_BASE_DESTINATION_DIR: it is an optional base directory for the bundle layout. The default layout is: terraview.app/Contents/.
 
-TERRALIB_TRACK_3RDPARTY_DEPENDENCIES => ON
-TERRALIB_BUILD_AS_BUNDLE => ON
+c) Create a folder like:
+   /Users/user/terralib5/build
 
-TERRALIB_DESTINATION_ARCHIVE  => terraview.app/Contents/lib
-TERRALIB_DESTINATION_EXAMPLES => terraview.app/Contents/share/terralib/examples
-TERRALIB_DESTINATION_HEADERS  => terraview.app/Contents/include
-TERRALIB_DESTINATION_LIBRARY  => terraview.app/Contents/lib
-TERRALIB_DESTINATION_PLUGINS  => terraview.app/Contents/share/terralib/plugins
-TERRALIB_DESTINATION_RUNTIME  => terraview.app/Contents/bin
-TERRALIB_DESTINATION_SHARE    => terraview.app/Contents/share
-TERRALIB_DESTINATION_UNITTEST => terraview.app/Contents/share/terralib/unittest
+d) Go to build folder
+   cd /Users/user/terralib5/build
 
-For the CPACK group set only ON to the CPACK_BINARY_DRAGNDROP entry.
+e) Call CMake in the command line or use CMake-GUI:
+   cmake ../codebase -DCMAKE_BUILD_TYPE:STRING="Release" -DCMAKE_PREFIX_PATH:PATH="/usr/local/opt/qt5/lib/cmake/Qt5" -DCMAKE_INSTALL_PREFIX:PATH="/Users/user/MyInstalls" -DTERRALIB_TRACK_3RDPARTY_DEPENDENCIES:BOOL="ON" -DTERRALIB_BUILD_AS_BUNDLE:BOOL="ON"
 
+Note: If you are in CMake-GUI, remember to turn on only the CPACK_BINARY_DRAGNDROP entry. All other entries for CPACK must be OFF.
 
 5. Tests
 --------
