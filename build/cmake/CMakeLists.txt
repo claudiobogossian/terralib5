@@ -225,6 +225,8 @@ find_package(Qt5 5.1 QUIET COMPONENTS Core Gui Widgets PrintSupport)
 
 if(NOT Qt5_FOUND)
   find_package(Qt4 4.6.3 QUIET COMPONENTS QtCore QtGui)
+else()
+  find_package(Qt5LinguistTools QUIET)
 endif()
 
 if(Qt5_FOUND OR QT4_FOUND)
@@ -646,6 +648,10 @@ endif()
 
 if(TERRALIB_QHELP_ENABLED)
   add_subdirectory(terralib_qhelp)
+endif()
+
+if(Qt5LinguistTools_FOUND)
+  add_subdirectory(terralib_qtranslations)
 endif()
 
 if(TERRALIB_MOD_ADO_ENABLED)

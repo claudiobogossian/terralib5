@@ -126,6 +126,7 @@ foreach (qm ${qm_files})
   add_custom_command(
     TARGET terralib_qtranslations
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${qm} "${CMAKE_BINARY_DIR}/translations"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/share/terralib/translations"
+    COMMAND ${CMAKE_COMMAND} -E copy ${qm} "${CMAKE_BINARY_DIR}/share/terralib/translations"
   )
 endforeach()

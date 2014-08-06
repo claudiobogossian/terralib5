@@ -1069,17 +1069,17 @@
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="2478"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Arquivo</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="2481"/>
         <source>Recent &amp;Projects</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Projetos Recentes</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="2520"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Exibir</translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/af/BaseApplication.cpp" line="2523"/>
