@@ -421,3 +421,8 @@ void te::mem::Transactor::update(const std::string& datasetName,
 void te::mem::Transactor::optimize(const std::map<std::string, std::string>& /*opInfo*/)
 {
 }
+
+te::common::CharEncoding te::mem::Transactor::getEncoding()
+{
+  return te::common::UTF8;
+}

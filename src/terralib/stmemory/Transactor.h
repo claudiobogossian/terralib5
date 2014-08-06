@@ -246,6 +246,8 @@ namespace te
                             std::size_t limit = 0);
          
          void optimize(const std::map<std::string, std::string>& opInfo);
+
+         te::common::CharEncoding getEncoding();
          //@}
 
          /*!
