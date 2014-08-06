@@ -475,3 +475,76 @@ void TsFunctions::ComposeBandsDifSRID()
     outputDataSetName, te::rst::Interpolator::NearestNeighbor, *dsPtr ) );
 }
 
+void TsFunctions::GetDetailedExtent()
+{
+  te::rst::Grid grid( 2u, 2u, new te::gm::Envelope( 0.0, 0.0, 2.0, 2.0 ), 12345 );
+  
+  te::gm::LinearRing lr( te::gm::LineStringType, 0, 0 );
+  
+  CPPUNIT_ASSERT( te::rp::GetDetailedExtent( grid, lr ) );
+  CPPUNIT_ASSERT( lr.size() == 9 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 0 ), 0.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 0 ), 2.0 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 1 ), 1.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 1 ), 2.0 , 1.0000000001 );
+
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 2 ), 2.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 2 ), 2.0 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 3 ), 2.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 3 ), 1.0 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 4 ), 2.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 4 ), 0.0 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 5 ), 1.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 5 ), 0.0 , 1.0000000001 );          
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 6 ), 0.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 6 ), 0.0 , 1.0000000001 );          
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 7 ), 0.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 7 ), 1.0 , 1.0000000001 );          
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 8 ), 0.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 8 ), 2.0 , 1.0000000001 );          
+}
+
+void TsFunctions::GetIndexedDetailedExtent()
+{
+  te::rst::Grid grid( 2u, 2u, new te::gm::Envelope( 0.0, 0.0, 2.0, 2.0 ), 12345 );
+  
+  te::gm::LinearRing lr( te::gm::LineStringType, 0, 0 );
+  
+  CPPUNIT_ASSERT( te::rp::GetIndexedDetailedExtent( grid, lr ) );
+  CPPUNIT_ASSERT( lr.size() == 9 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 0 ), -0.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 0 ), -0.5 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 1 ), 0.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 1 ), -0.5 , 1.0000000001 );
+
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 2 ), 1.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 2 ), -0.5 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 3 ), 1.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 3 ), 0.5 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 4 ), 1.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 4 ), 1.5 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 5 ), 0.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 5 ), 1.5 , 1.0000000001 );          
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 6 ), -0.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 6 ), 1.5 , 1.0000000001 );          
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 7 ), -0.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 7 ), 0.5 , 1.0000000001 );          
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 8 ), -0.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 8 ), -0.5 , 1.0000000001 );          
+}

@@ -39,6 +39,7 @@
 #include "../raster/Interpolator.h"
 #include "../raster/Utils.h"
 #include "../srs/Converter.h"
+#include "../geometry/LinearRing.h"
 
 // STL
 #include <memory>
@@ -509,6 +510,26 @@ namespace te
       const std::string& outputDataSetName,
       const te::rst::Interpolator::Method& interpMethod,
       te::da::DataSource& outputDataSource );     
+    
+    /*!
+      \brief Create a datailed extent from the given grid.
+      \param grid Input grid.
+      \param detailedExtent The created detailed extent.
+      \return true if ok, false on errors.
+      \ingroup rp_func
+    */
+    TERPEXPORT bool GetDetailedExtent( const te::rst::Grid& grid, 
+      te::gm::LinearRing& detailedExtent );
+    
+    /*!
+      \brief Create a indexed (lines,columns) datailed extent from the given grid.
+      \param grid Input grid.
+      \param indexedDetailedExtent The created detailed extent.
+      \return true if ok, false on errors.
+      \ingroup rp_func
+    */
+    TERPEXPORT bool GetIndexedDetailedExtent( const te::rst::Grid& grid, 
+      te::gm::LinearRing& indexedDetailedExtent );     
     
   } // end namespace rp
 }   // end namespace te

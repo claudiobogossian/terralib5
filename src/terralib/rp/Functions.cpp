@@ -2236,5 +2236,106 @@ namespace te
       return true;
     }
     
+    bool GetDetailedExtent( const te::rst::Grid& grid, te::gm::LinearRing& detailedExtent )
+    {
+      const int nCols = (int)grid.getNumberOfColumns();
+      const int nRows = (int)grid.getNumberOfRows();
+      if( ( nCols == 0 ) || ( nRows == 0 ) )
+      {
+        return false;
+      }
+      
+      const unsigned int ringSize = ( 2 * ( nCols + 1 ) ) +
+        ( 2 * ( nRows - 1 ) ) + 1;
+      
+      te::gm::LinearRing ring( ringSize , te::gm::LineStringType,
+        grid.getSRID(), 0 );
+
+      const double lLX = grid.getExtent()->getLowerLeftX();
+      const double lLY = grid.getExtent()->getLowerLeftY();
+      const double uRX = grid.getExtent()->getUpperRightX();
+      const double uRY = grid.getExtent()->getUpperRightY();
+      const double& resX = grid.getResolutionX();
+      const double& resY = grid.getResolutionY();        
+      unsigned int ringIdx = 0;
+      int row = 0;
+      int col = 0;
+      
+      for( col = 0 ; col < nCols ; ++col )
+      {
+        ring.setPoint( ++ringIdx, lLX + ( ((double)( col + 1 ) ) * resX ), uRY );
+      }
+
+      for( row = 0 ; row < nRows ; ++row )
+      {
+        ring.setPoint( ++ringIdx, uRX, uRY - ( ((double)( row + 1 ) ) * resY ) );
+      } 
+      
+      for( col = nCols - 1 ; col > -1 ; --col )
+      {
+        ring.setPoint( ++ringIdx, lLX + ( ((double)( col + 1 ) ) * resX ), lLY );
+      }    
+      
+      for( row = nRows - 1 ; row > -1 ; --row )
+      {
+        ring.setPoint( ++ringIdx, lLX, uRY - ( ((double)( row + 1 ) ) * resY ) );
+      }       
+      
+      ring.setPointN( 0, *ring.getPointN( ringSize - 1 ) );            
+      
+      detailedExtent = ring;
+      
+      return true;
+    }
+    
+    bool GetIndexedDetailedExtent( const te::rst::Grid& grid, 
+      te::gm::LinearRing& indexedDetailedExtent )
+    {
+      const int nCols = (int)grid.getNumberOfColumns();
+      const int nRows = (int)grid.getNumberOfRows();
+      if( ( nCols == 0 ) || ( nRows == 0 ) )
+      {
+        return false;
+      }
+      
+      const unsigned int ringSize = ( 2 * ( nCols + 1 ) ) +
+        ( 2 * ( nRows - 1 ) ) + 1;
+      
+      te::gm::LinearRing ring( ringSize , te::gm::LineStringType,
+        0, 0 );
+
+      const double lLY = ((double)nRows) - 0.5;
+      const double uRX = ((double)nCols) - 0.5;
+      unsigned int ringIdx = 0;
+      int row = 0;
+      int col = 0;
+      
+      for( col = 0 ; col < nCols ; ++col )
+      {
+        ring.setPoint( ++ringIdx, 0.5 + ((double)col), (-0.5) );
+      }
+
+      for( row = 0 ; row < nRows ; ++row )
+      {
+        ring.setPoint( ++ringIdx, uRX, 0.5 + ((double)row) );
+      } 
+      
+      for( col = nCols - 1 ; col > -1 ; --col )
+      {
+        ring.setPoint( ++ringIdx, ((double)col) - 0.5, lLY );
+      }    
+      
+      for( row = nRows - 1 ; row > -1 ; --row )
+      {
+        ring.setPoint( ++ringIdx, (-0.5), ((double)row) - 0.5 );
+      }       
+      
+      ring.setPointN( 0, *ring.getPointN( ringSize - 1 ) );            
+      
+      indexedDetailedExtent = ring;
+      
+      return true;
+    }
+    
   } // end namespace rp
 }   // end namespace te
