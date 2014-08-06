@@ -67,8 +67,9 @@ te::common::Module::Module()
 
 // let's start the logger if the developer wants TerraLib to make it automatically during static initialization
 #if defined(TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION) && defined(TERRALIB_LOGGER_DO_STATIC_INITIALIZATION)
-  std::string loggerConfFile = FindInTerraLibPath(TERRALIB_LOGGER_DEFAULT_CONFIGURATION_FILE);
-  te::common::Logger::initialize(TERRALIB_LOGGER_DEFAULT_NAME, TERRALIB_LOGGER_DEFAULT_CONFIG_FILE_TYPE, loggerConfFile);
+
+  //std::string loggerConfFile = FindInTerraLibPath(TERRALIB_LOGGER_DEFAULT_CONFIGURATION_FILE);
+  //te::common::Logger::initialize(TERRALIB_LOGGER_DEFAULT_NAME, TERRALIB_LOGGER_DEFAULT_CONFIG_FILE_TYPE, loggerConfFile);
 #endif
 }
 

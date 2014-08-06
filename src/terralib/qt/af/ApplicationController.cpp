@@ -70,6 +70,17 @@
 // Boost
 #include <boost/filesystem.hpp>
 
+//Log4cxx
+#include <log4cxx/basicconfigurator.h>
+#include <log4cxx/consoleappender.h>
+#include <log4cxx/fileappender.h>
+#include <log4cxx/helpers/pool.h>
+#include <log4cxx/helpers/transcoder.h>
+#include <log4cxx/logger.h>
+#include <log4cxx/logmanager.h>
+#include <log4cxx/logstring.h>
+#include <log4cxx/simplelayout.h>
+
 //te::qt::af::ApplicationController* te::qt::af::ApplicationController::sm_instance(0);
 
 te::qt::af::ApplicationController::ApplicationController(/*QObject* parent*/)
@@ -272,6 +283,22 @@ void  te::qt::af::ApplicationController::initialize()
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
   SplashScreenManager::getInstance().showMessage(tr("Loading TerraLib Modules..."));
+
+// terralib log startup
+  std::string path = m_userDataDir.toStdString();
+  path += "/log/terralib.log";
+
+  log4cxx::FileAppender* fileAppender = new log4cxx::FileAppender(log4cxx::LayoutPtr(new log4cxx::SimpleLayout()),
+    log4cxx::helpers::Transcoder::decode(path.c_str()), false);
+
+  log4cxx::helpers::Pool p;
+  fileAppender->activateOptions(p);
+
+  log4cxx::BasicConfigurator::configure(log4cxx::AppenderPtr(fileAppender));
+  log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());
+  log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("te");
+
+  //LOG4CXX_INFO(logger, "Created FileAppender appender");
 
   if(m_resetTerralib)
     TerraLib::getInstance().initialize();
