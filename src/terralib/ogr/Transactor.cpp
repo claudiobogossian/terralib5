@@ -1198,3 +1198,8 @@ void te::ogr::Transactor::update(const std::string &datasetName, te::da::DataSet
 void te::ogr::Transactor::optimize(const std::map<std::string, std::string>& /*opInfo*/)
 {
 }
+
+te::common::CharEncoding te::ogr::Transactor::getEncoding()
+{
+  return te::common::LATIN1;
+}

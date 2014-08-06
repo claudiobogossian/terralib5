@@ -27,7 +27,7 @@
 //  connInfo["PG_PASSWORD"] = "postgres";
 //  connInfo["PG_DB_NAME"] = "testPostGIS";
 //  connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-//  connInfo["PG_CLIENT_ENCODING"] = "WIN1252";  
+//  connInfo["PG_CLIENT_ENCODING"] = "CP1252";  
 //
 //  std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
 //  srcDs->setConnectionInfo(connInfo);
@@ -104,7 +104,7 @@
 //  connInfo["PG_PASSWORD"] = "postgres";
 //  connInfo["PG_DB_NAME"] = "testPostGIS";
 //  connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-//  connInfo["PG_CLIENT_ENCODING"] = "WIN1252";
+//  connInfo["PG_CLIENT_ENCODING"] = "CP1252";
 //  
 //  std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("POSTGIS");
 //  trgDs->setConnectionInfo(connInfo);
@@ -181,7 +181,7 @@
 //  connInfo["PG_PASSWORD"] = "postgres";
 //  connInfo["PG_DB_NAME"] = "testPostGIS";
 //  connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-//  connInfo["PG_CLIENT_ENCODING"] = "WIN1252";  
+//  connInfo["PG_CLIENT_ENCODING"] = "CP1252";  
 //  
 //  std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
 //  srcDs->setConnectionInfo(connInfo);
@@ -345,7 +345,7 @@ bool AggregOGRToPGIS()
   connInfo["PG_PASSWORD"] = "postgres";
   connInfo["PG_DB_NAME"] = "testPostGIS";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  connInfo["PG_CLIENT_ENCODING"] = "WIN1252";
+  connInfo["PG_CLIENT_ENCODING"] = "CP1252";
   
   //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("POSTGIS");
   te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("POSTGIS"));
@@ -389,7 +389,7 @@ bool AggregPGISToPGIS()
   connInfo["PG_PASSWORD"] = "root";
   connInfo["PG_DB_NAME"] = "testPostGIS";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  connInfo["PG_CLIENT_ENCODING"] = "WIN1252"; 
+  connInfo["PG_CLIENT_ENCODING"] = "CP1252"; 
 
   //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
   te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("POSTGIS"));
@@ -461,7 +461,7 @@ bool AggregPGISToOGR()
   connInfo["PG_PASSWORD"] = "root";
   connInfo["PG_DB_NAME"] = "testPostGIS";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  connInfo["PG_CLIENT_ENCODING"] = "WIN1252"; 
+  connInfo["PG_CLIENT_ENCODING"] = "CP1252"; 
 
   //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
   te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("POSTGIS"));
