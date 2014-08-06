@@ -3773,15 +3773,15 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="92"/>
         <source>Show hidden column</source>
+        <translation>Apresenta coluna oculta</translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="105"/>
+        <source>Turns column &quot;%1&quot; visible.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="104"/>
-        <source>Turns column &quot;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="115"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="118"/>
         <source>Show all columns</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5670,142 +5670,142 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>TablePopupFilter</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="415"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="418"/>
         <source>Hide column</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="416"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="419"/>
         <source>Hides the selected column.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="431"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="434"/>
         <source>Reset columns order</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="432"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="435"/>
         <source>Put all columns in the original order.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="438"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="441"/>
         <source>Sort data ASC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="439"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="442"/>
         <source>Sort data in ascendent order using selected columns.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="443"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="446"/>
         <source>Sort data DESC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="444"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="447"/>
         <source>Sort data in descendent order using selected columns.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="450"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="453"/>
         <source>Histogram</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="451"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="454"/>
         <source>Creates a new histogram based on the data of the selected colunm.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="455"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="458"/>
         <source>Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="456"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="459"/>
         <source>Show the statistics summary of the selected colunm.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="479"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="482"/>
         <source>Add column</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="480"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="483"/>
         <source>Adds a column to the table.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="485"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="488"/>
         <source>Remove column</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="486"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="489"/>
         <source>Removes a column from the table.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="491"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="494"/>
         <source>Rename column</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="492"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="495"/>
         <source>Renames a column of the table.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="496"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="499"/>
         <source>Change column type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="497"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="500"/>
         <source>Changes the type of a column of the table.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="501"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="504"/>
         <source>Change column data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="502"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="505"/>
         <source>Changes the data of a column of the table.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="506"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="509"/>
         <source>Save editions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="507"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="510"/>
         <source>Save pendent editions to layer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="535"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="538"/>
         <source>Enable auto scroll</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="536"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="539"/>
         <source>Goes to the selected row.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="546"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="549"/>
         <source>Enable promotion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="547"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="550"/>
         <source>Enables promotion of selected rows.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8131,106 +8131,106 @@ We will provide it soon!</source>
 <context>
     <name>te::qt::widgets::DataSetTableView</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="928"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="964"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="993"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="931"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="967"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="996"/>
         <source>Fail to get data source.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="931"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="934"/>
         <source>Invalid column name. Choose another.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="951"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="954"/>
         <source>Fail to get property of the dataset.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1007"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1011"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1010"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1014"/>
         <source>Updating data failure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1011"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1014"/>
         <source>Data source operation fail for unknown reason.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1159"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1162"/>
         <source>Sort operation not supported by the source of data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1176"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1179"/>
         <source>Sorting columns failure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1176"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1179"/>
         <source>Could not sort data: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1207"/>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1243"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1210"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1246"/>
         <source>Fail to get data source of the layer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1212"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1215"/>
         <source>Name must not be empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1215"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1218"/>
         <source>The property name is invalid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1218"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1221"/>
         <source>There already exists a property with this name.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1230"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1233"/>
         <source>Creating column failure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1230"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1233"/>
         <source>The column could not be created: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1238"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1241"/>
         <source>Remove column</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1238"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1241"/>
         <source>Are you sure you want to remove this column?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1259"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1262"/>
         <source>Removing column failure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1259"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1262"/>
         <source>The column could not be removed: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1308"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1311"/>
         <source>Fail to get data source from layer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1322"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableView.cpp" line="1325"/>
         <source>Save edition failure</source>
         <translation type="unfinished"></translation>
     </message>
