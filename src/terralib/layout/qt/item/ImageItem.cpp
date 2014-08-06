@@ -34,6 +34,10 @@
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
+#include "../../item/ImageModel.h"
+
+// Qt
+#include <QStyleOptionGraphicsItem>
 
 te::layout::ImageItem::ImageItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)

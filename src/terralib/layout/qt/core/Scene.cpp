@@ -63,6 +63,7 @@
 #include <QDir>
 #include <QPrinter>
 #include "../item/DefaultTextItem.h"
+#include "../../item/PaperConfig.h"
 
 te::layout::Scene::Scene( QWidget* widget): 
   QGraphicsScene(widget),
@@ -429,7 +430,17 @@ QPrinter* te::layout::Scene::createPrinter()
 {
   QPrinter* printer=new QPrinter(QPrinter::HighResolution);
   printer->setPageSize(QPrinter::A4);
-  printer->setOrientation( QPrinter::Portrait );
+  
+  PaperConfig* conf = Context::getInstance().getPaperConfig();
+
+  if(conf->getPaperOrientantion() == Portrait)
+  {
+    printer->setOrientation( QPrinter::Portrait );
+  }
+  else
+  {
+    printer->setOrientation( QPrinter::Landscape );
+  }
   printer->pageRect(QPrinter::Millimeter);
 
   return printer;
@@ -449,10 +460,17 @@ void te::layout::Scene::renderScene( QPainter* newPainter )
   }
 
   changePrintVisibility(false);
+
+  double w = 0;
+  double h = 0;
+
+  PaperConfig* conf = Context::getInstance().getPaperConfig();
+  conf->getPaperSize(w, h);
+  te::gm::Envelope env(0, 0, w, h);
         
   //Box Paper in the Scene (Source)
-  QRectF mmSourceRect(m_boxPaperW->getLowerLeftX(), m_boxPaperW->getLowerLeftY(), 
-    m_boxPaperW->getWidth(), m_boxPaperW->getHeight());
+  QRectF mmSourceRect(env.getLowerLeftX(), env.getLowerLeftY(), 
+    env.getWidth(), env.getHeight());
 
   //Paper size using the printer dpi (Target)
   QRect pxTargetRect(0, 0, newPainter->device()->width(), newPainter->device()->height());

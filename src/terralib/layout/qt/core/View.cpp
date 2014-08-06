@@ -594,11 +594,13 @@ void te::layout::View::showPageSetup()
 
 void te::layout::View::onChangeConfig()
 {
-  /*double dZoom = Context::getInstance().getDefaultZoomFactor();
-  Context::getInstance().setZoomFactor(dZoom);
+  /*double zoomFactor = Context::getInstance().getDefaultZoomFactor();
+  Context::getInstance().setZoomFactor(zoomFactor);
   config();
 
   Scene* sc = dynamic_cast<Scene*>(scene());
+
+  sc->refresh(this, zoomFactor);            
   sc->redrawItems(true);*/
 }
 

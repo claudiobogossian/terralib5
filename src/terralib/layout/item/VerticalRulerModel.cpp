@@ -67,6 +67,13 @@ void te::layout::VerticalRulerModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);  
   
+  //double newZoomFactor = 1. / zoomFactor;
+  ///*if(zoomFactor > 1.)
+  //  newZoomFactor = zoomFactor;*/
+
+  //canvas->setTextPointSize(5 * newZoomFactor);
+  //canvas->setLineWidth(1 * newZoomFactor);
+
   drawRuler(canvas, utils, context.getZoomFactor());
 
   if(context.isResizeCanvas())

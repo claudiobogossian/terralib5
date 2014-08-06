@@ -123,6 +123,13 @@ void te::layout::PaperConfig::getPaperSize( double &w, double &h )
       w = 0;
       h = 0;
   }
+
+  if(m_paperOrientationType == Landscape)
+  {
+    double copy = w;
+    w = h;
+    h = copy;
+  }
 }
 
 void te::layout::PaperConfig::setPaperOrientation( LayoutOrientationType orientation )

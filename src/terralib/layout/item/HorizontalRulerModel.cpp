@@ -193,7 +193,7 @@ te::gm::Envelope te::layout::HorizontalRulerModel::sizeInZoomProportion( te::gm:
 
   if(zoomFactor > 1.)
   {
-    w = newBox.getWidth() * zoomFactor;
+  w = newBox.getWidth() * zoomFactor;
   }
 
   newBox.m_urx = newBox.m_llx + w;

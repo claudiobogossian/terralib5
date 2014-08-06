@@ -35,8 +35,6 @@
 
 // STL
 #include <string>
-#include <iostream>
-#include <fstream>
 
 namespace te
 {
@@ -58,16 +56,15 @@ namespace te
         virtual void setFileName(std::string fileName);
 
         virtual std::string getFileName();
-
-        virtual char* imageToChar(std::ifstream::pos_type &size);
-
+        
         virtual std::string getFileExtension();
 
+        virtual te::map::ImageType getFileType();
+
       protected:
-
-        virtual void changeExtension();
-
+        
         std::string m_fileName;
+        std::string m_fileExtension;
         te::map::ImageType m_imgType;
     };
   }
