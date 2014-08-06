@@ -140,22 +140,14 @@ bool BufferOGRToPGIS()
   int levels = 1;
 
   std::map<std::string, std::string> connInfo;
-  //connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
-  //connInfo["PG_PORT"] = "5433" ;
-  //connInfo["PG_USER"] = "postgres";
-  //connInfo["PG_PASSWORD"] = "postgres";
-  //connInfo["PG_DB_NAME"] = "testPostGIS";
-  //connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  //connInfo["PG_CLIENT_ENCODING"] = "CP1252";
-
-  connInfo["PG_HOST"] = "localhost" ; 
-  connInfo["PG_PORT"] = "5432" ;
+  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
+  connInfo["PG_PORT"] = "5433" ;
   connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "root";
+  connInfo["PG_PASSWORD"] = "postgres";
   connInfo["PG_DB_NAME"] = "testPostGIS";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
   connInfo["PG_CLIENT_ENCODING"] = "CP1252";
-  
+
   //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("POSTGIS");
   te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("POSTGIS"));
   trgDs->setConnectionInfo(connInfo);
@@ -196,10 +188,10 @@ bool BufferOGRToPGIS()
 bool BufferPGISToPGIS()
 {
   std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "localhost" ; 
-  connInfo["PG_PORT"] = "5432" ;
+  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
+  connInfo["PG_PORT"] = "5433" ;
   connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "root";
+  connInfo["PG_PASSWORD"] = "postgres";
   connInfo["PG_DB_NAME"] = "testPostGIS";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
   connInfo["PG_CLIENT_ENCODING"] = "CP1252"; 
@@ -273,10 +265,10 @@ bool BufferPGISToPGIS()
 bool BufferPGISToOGR()
 {
   std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "localhost" ; 
-  connInfo["PG_PORT"] = "5432" ;
+  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
+  connInfo["PG_PORT"] = "5433" ;
   connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "root";
+  connInfo["PG_PASSWORD"] = "postgres";
   connInfo["PG_DB_NAME"] = "testPostGIS";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
   connInfo["PG_CLIENT_ENCODING"] = "CP1252";
@@ -296,7 +288,7 @@ bool BufferPGISToOGR()
   std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
   std::auto_ptr<te::da::DataSetType> inDsetType = srcDs->getDataSetType(inDsetName);
 
-  double distance = 0.1;
+  double distance = 0.5;
 
   //options for Polygon Rule.
   int bufferPolygonRule = te::vp::INSIDE_OUTSIDE;
@@ -327,8 +319,9 @@ bool BufferPGISToOGR()
 
   if (trgDs->dataSetExists(outDSet))
   {
-    std::cout << "A dataset with the same requested output dataset name already exists: " << outDSet << std::endl;
-    return false;
+    std::cout << "A dataset with the same requested output dataset name already exists and will be removed: " << outDSet << std::endl;
+    trgDs->dropDataSet(outDSet);
+	//return true;
   }
   
   // sera feito por algum tipo de factory
