@@ -50,7 +50,8 @@ target_link_libraries(terralib_mod_sa_core terralib_mod_dataaccess
                                            terralib_mod_geometry
                                            terralib_mod_datatype
                                            terralib_mod_common
-                                           terralib_mod_graph)
+                                           terralib_mod_graph
+										   terralib_mod_raster)
 
 set_target_properties(terralib_mod_sa_core
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}

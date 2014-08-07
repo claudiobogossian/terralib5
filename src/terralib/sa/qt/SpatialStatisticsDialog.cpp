@@ -125,6 +125,9 @@ void te::sa::SpatialStatisticsDialog::onInputLayerComboBoxActivated(int index)
 
   std::vector<te::dt::Property*> propVec = dsType->getProperties();
 
+  m_ui->m_attrIdComboBox->clear();
+  m_ui->m_attrLinkComboBox->clear();
+
   for(std::size_t t = 0; t < propVec.size(); ++t)
   {
     int dataType = propVec[t]->getType();

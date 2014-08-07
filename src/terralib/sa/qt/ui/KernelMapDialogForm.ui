@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SpatialStatisticsDialogForm</class>
- <widget class="QDialog" name="SpatialStatisticsDialogForm">
+ <class>KernelMapDialogForm</class>
+ <widget class="QDialog" name="KernelMapDialogForm">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>579</width>
-    <height>560</height>
+    <width>495</width>
+    <height>462</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Spatial Statistics</string>
+   <string>Kernel Map</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_24">
+  <layout class="QGridLayout" name="gridLayout_25">
    <property name="sizeConstraint">
     <enum>QLayout::SetFixedSize</enum>
    </property>
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_23">
+    <layout class="QGridLayout" name="gridLayout_24">
      <item row="0" column="0">
       <widget class="QFrame" name="frame">
        <property name="styleSheet">
@@ -41,7 +41,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Calculates the spatial statistics of an attribute of the data set.</string>
+           <string>Calculates the kernel map of a data set.</string>
           </property>
          </widget>
         </item>
@@ -75,12 +75,12 @@
        <property name="flat">
         <bool>true</bool>
        </property>
-       <layout class="QGridLayout" name="gridLayout_6">
+       <layout class="QGridLayout" name="gridLayout_5">
         <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_5">
+         <layout class="QGridLayout" name="gridLayout_4">
           <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout_3">
-            <item row="1" column="0">
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="0" column="0">
              <widget class="QLabel" name="label">
               <property name="minimumSize">
                <size>
@@ -96,59 +96,24 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_2">
-              <property name="minimumSize">
-               <size>
-                <width>70</width>
-                <height>0</height>
-               </size>
-              </property>
+            <item row="1" column="0">
+             <widget class="QCheckBox" name="m_useAttrLayerCheckBox">
               <property name="text">
                <string>Attr Name:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QToolButton" name="m_gpmToolButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>GPM...</string>
-              </property>
-              <property name="toolButtonStyle">
-               <enum>Qt::ToolButtonTextBesideIcon</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_7">
-              <property name="text">
-               <string>Attr Link:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
            </layout>
           </item>
           <item row="0" column="1">
-           <layout class="QGridLayout" name="gridLayout_4">
-            <item row="1" column="0">
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="0" column="0">
              <widget class="QComboBox" name="m_inputLayerComboBox"/>
             </item>
-            <item row="2" column="0">
-             <widget class="QComboBox" name="m_attrIdComboBox">
+            <item row="1" column="0">
+             <widget class="QComboBox" name="m_attrLayerComboBox">
               <property name="enabled">
-               <bool>true</bool>
+               <bool>false</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
@@ -158,16 +123,6 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="0">
-             <widget class="QLineEdit" name="m_gpmLineEdit">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QComboBox" name="m_attrLinkComboBox"/>
-            </item>
            </layout>
           </item>
          </layout>
@@ -176,72 +131,72 @@
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QGroupBox" name="groupBox_3">
+      <widget class="QGroupBox" name="groupBox_2">
        <property name="title">
         <string>Params</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
-       <layout class="QGridLayout" name="gridLayout_19">
+       <layout class="QGridLayout" name="gridLayout_23">
         <item row="0" column="0">
          <layout class="QGridLayout" name="gridLayout_18">
           <item row="0" column="0">
            <widget class="QGroupBox" name="groupBox_4">
             <property name="title">
-             <string>Global</string>
+             <string>Kernel</string>
             </property>
             <property name="flat">
              <bool>true</bool>
             </property>
-            <layout class="QGridLayout" name="gridLayout_13">
+            <layout class="QGridLayout" name="gridLayout_14">
              <item row="0" column="0">
-              <layout class="QGridLayout" name="gridLayout_12">
+              <layout class="QGridLayout" name="gridLayout_13">
                <item row="0" column="0">
-                <layout class="QGridLayout" name="gridLayout_10">
+                <layout class="QGridLayout" name="gridLayout_12">
                  <item row="0" column="0">
-                  <widget class="QCheckBox" name="m_globalMoranIndexCheckBox">
-                   <property name="text">
-                    <string>Moran Index</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <layout class="QGridLayout" name="gridLayout_9">
+                  <layout class="QGridLayout" name="gridLayout_10">
                    <item row="0" column="0">
-                    <widget class="QLabel" name="label_4">
+                    <widget class="QLabel" name="label_2">
                      <property name="text">
-                      <string>Index Value:</string>
+                      <string>Function:</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QLineEdit" name="m_globalMoranIndexValueLineEdit">
-                     <property name="enabled">
-                      <bool>false</bool>
                      </property>
                     </widget>
                    </item>
                    <item row="1" column="0">
-                    <widget class="QLabel" name="label_5">
+                    <widget class="QLabel" name="label_3">
                      <property name="text">
-                      <string>P-Value:</string>
+                      <string>Estimation:</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                      </property>
                     </widget>
                    </item>
-                   <item row="1" column="1">
-                    <widget class="QLineEdit" name="m_globalMoranIndexPValueLineEdit">
-                     <property name="enabled">
-                      <bool>false</bool>
+                  </layout>
+                 </item>
+                 <item row="0" column="1">
+                  <layout class="QGridLayout" name="gridLayout_11">
+                   <item row="0" column="0">
+                    <widget class="QComboBox" name="m_functionComboBox">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QComboBox" name="m_estimationComboBox">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
                      </property>
                     </widget>
                    </item>
@@ -250,43 +205,46 @@
                 </layout>
                </item>
                <item row="1" column="0">
-                <widget class="QGroupBox" name="groupBox_5">
-                 <property name="title">
-                  <string>Evaluate Significance / Number of Permutations </string>
-                 </property>
-                 <property name="flat">
-                  <bool>true</bool>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_11">
-                  <property name="bottomMargin">
-                   <number>4</number>
-                  </property>
-                  <item row="0" column="0">
-                   <widget class="QRadioButton" name="m_globalEvalNotRadioButton">
-                    <property name="text">
-                     <string>Don't evaluate</string>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QRadioButton" name="m_globalEval99RadioButton">
-                    <property name="text">
-                     <string>99</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="2">
-                   <widget class="QRadioButton" name="m_globalEval999RadioButton">
-                    <property name="text">
-                     <string>999</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
+                <layout class="QGridLayout" name="gridLayout_6">
+                 <item row="0" column="0">
+                  <widget class="QCheckBox" name="m_useAdaptRadiusCheckBox">
+                   <property name="text">
+                    <string>Use adaptative radius:</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QSpinBox" name="m_radiusSpinBox">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>100</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                   <property name="suffix">
+                    <string>%</string>
+                   </property>
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                   <property name="maximum">
+                    <number>100</number>
+                   </property>
+                   <property name="value">
+                    <number>10</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
               </layout>
              </item>
@@ -294,91 +252,75 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QGroupBox" name="groupBox_6">
+           <widget class="QGroupBox" name="groupBox_5">
             <property name="title">
-             <string>Local</string>
+             <string>Result</string>
             </property>
             <property name="flat">
              <bool>true</bool>
             </property>
-            <layout class="QGridLayout" name="gridLayout_17">
+            <layout class="QGridLayout" name="gridLayout_19">
              <item row="0" column="0">
-              <layout class="QGridLayout" name="gridLayout_16">
+              <layout class="QGridLayout" name="gridLayout_17">
                <item row="0" column="0">
                 <layout class="QGridLayout" name="gridLayout_15">
-                 <property name="bottomMargin">
-                  <number>7</number>
-                 </property>
                  <item row="0" column="0">
-                  <widget class="QCheckBox" name="m_localGStatisticsCheckBox">
+                  <widget class="QRadioButton" name="m_gridRadioButton">
                    <property name="text">
-                    <string>G Statistics</string>
+                    <string>Grid</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
                  <item row="1" column="0">
-                  <widget class="QCheckBox" name="m_localLocalMeanCheckBox">
+                  <widget class="QRadioButton" name="m_attrRadioButton">
                    <property name="text">
-                    <string>Local Mean</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QCheckBox" name="m_localMoranIndex">
-                   <property name="text">
-                    <string>Local Moran Index (LISA)</string>
+                    <string>Attribute</string>
                    </property>
                   </widget>
                  </item>
                 </layout>
                </item>
-               <item row="1" column="0">
-                <widget class="QGroupBox" name="groupBox_7">
-                 <property name="title">
-                  <string>Evaluate Significance / Number of Permutations </string>
-                 </property>
-                 <property name="flat">
-                  <bool>true</bool>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_14">
-                  <property name="bottomMargin">
-                   <number>4</number>
-                  </property>
-                  <item row="0" column="0">
-                   <widget class="QRadioButton" name="m_localEvalNotRadioButton">
-                    <property name="text">
-                     <string>Don't evaluate</string>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QRadioButton" name="m_localEval99RadioButton">
-                    <property name="text">
-                     <string>99</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="2">
-                   <widget class="QRadioButton" name="m_localEval999RadioButton">
-                    <property name="text">
-                     <string>999</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="3">
-                   <widget class="QRadioButton" name="m_localEval9999RadioButton">
-                    <property name="text">
-                     <string>9999</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
+               <item row="0" column="1">
+                <layout class="QGridLayout" name="gridLayout_16">
+                 <item row="0" column="0">
+                  <widget class="QLineEdit" name="m_nColsLineEdit">
+                   <property name="text">
+                    <string>50</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLineEdit" name="m_attrNameLineEdit">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
               </layout>
+             </item>
+             <item row="1" column="0">
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::MinimumExpanding</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>1</height>
+                </size>
+               </property>
+              </spacer>
              </item>
             </layout>
            </widget>
@@ -389,7 +331,7 @@
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QGroupBox" name="groupBox_2">
+      <widget class="QGroupBox" name="groupBox_3">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -418,7 +360,7 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="label_3">
+             <widget class="QLabel" name="label_4">
               <property name="text">
                <string>Layer Name:</string>
               </property>
@@ -453,19 +395,6 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="2">
-               <widget class="QToolButton" name="m_targetDatasourceToolButton">
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>BD</string>
-                </property>
-               </widget>
-              </item>
              </layout>
             </item>
             <item row="1" column="0">
@@ -483,7 +412,7 @@
       </widget>
      </item>
      <item row="4" column="0">
-      <layout class="QGridLayout" name="gridLayout">
+      <layout class="QGridLayout" name="gridLayout_9">
        <item row="0" column="0" colspan="4">
         <widget class="Line" name="line">
          <property name="orientation">
@@ -540,26 +469,18 @@
  </customwidgets>
  <tabstops>
   <tabstop>m_inputLayerComboBox</tabstop>
-  <tabstop>m_attrIdComboBox</tabstop>
-  <tabstop>m_attrLinkComboBox</tabstop>
-  <tabstop>m_gpmToolButton</tabstop>
-  <tabstop>m_gpmLineEdit</tabstop>
-  <tabstop>m_globalMoranIndexCheckBox</tabstop>
-  <tabstop>m_globalMoranIndexValueLineEdit</tabstop>
-  <tabstop>m_globalMoranIndexPValueLineEdit</tabstop>
-  <tabstop>m_globalEvalNotRadioButton</tabstop>
-  <tabstop>m_globalEval99RadioButton</tabstop>
-  <tabstop>m_globalEval999RadioButton</tabstop>
-  <tabstop>m_localGStatisticsCheckBox</tabstop>
-  <tabstop>m_localLocalMeanCheckBox</tabstop>
-  <tabstop>m_localMoranIndex</tabstop>
-  <tabstop>m_localEvalNotRadioButton</tabstop>
-  <tabstop>m_localEval99RadioButton</tabstop>
-  <tabstop>m_localEval999RadioButton</tabstop>
-  <tabstop>m_localEval9999RadioButton</tabstop>
+  <tabstop>m_useAttrLayerCheckBox</tabstop>
+  <tabstop>m_attrLayerComboBox</tabstop>
+  <tabstop>m_functionComboBox</tabstop>
+  <tabstop>m_estimationComboBox</tabstop>
+  <tabstop>m_useAdaptRadiusCheckBox</tabstop>
+  <tabstop>m_radiusSpinBox</tabstop>
+  <tabstop>m_gridRadioButton</tabstop>
+  <tabstop>m_nColsLineEdit</tabstop>
+  <tabstop>m_attrRadioButton</tabstop>
+  <tabstop>m_attrNameLineEdit</tabstop>
   <tabstop>m_repositoryLineEdit</tabstop>
   <tabstop>m_targetFileToolButton</tabstop>
-  <tabstop>m_targetDatasourceToolButton</tabstop>
   <tabstop>m_newLayerNameLineEdit</tabstop>
   <tabstop>m_okPushButton</tabstop>
   <tabstop>m_cancelPushButton</tabstop>
@@ -568,18 +489,82 @@
  <resources/>
  <connections>
   <connection>
+   <sender>m_useAttrLayerCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_attrLayerComboBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>77</x>
+     <y>146</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>140</x>
+     <y>147</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_useAdaptRadiusCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_radiusSpinBox</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>68</x>
+     <y>285</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>224</x>
+     <y>287</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_gridRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_nColsLineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>281</x>
+     <y>225</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>344</x>
+     <y>236</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_attrRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_attrNameLineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>298</x>
+     <y>257</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>340</x>
+     <y>256</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
    <sender>m_cancelPushButton</sender>
    <signal>released()</signal>
-   <receiver>SpatialStatisticsDialogForm</receiver>
+   <receiver>KernelMapDialogForm</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>567</x>
-     <y>548</y>
+     <x>430</x>
+     <y>437</y>
     </hint>
     <hint type="destinationlabel">
-     <x>532</x>
-     <y>509</y>
+     <x>432</x>
+     <y>470</y>
     </hint>
    </hints>
   </connection>

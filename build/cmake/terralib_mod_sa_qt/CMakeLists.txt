@@ -70,7 +70,8 @@ else()
 
 # moc'ing
   set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sa/qt/ProximityMatrixCreatorDialog.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sa/qt/SpatialStatisticsDialog.h)
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sa/qt/SpatialStatisticsDialog.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sa/qt/KernelMapDialog.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 

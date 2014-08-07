@@ -53,6 +53,58 @@ namespace te
       InverseDistanceStrategy,
       SquaredInverseDistanceStrategy
     };
+
+    /*!
+      \enum KernelFunction
+
+      \brief Types of kernel function.
+    */
+    enum KernelFunctionType
+    {
+      Quartic,
+      Normal,
+      Triangular,
+      Uniform,
+      Negative_Exp
+    };
+
+    /*!
+      \enum KernelFunction
+
+      \brief Types of kernel estimation.
+    */
+    enum KernelEstimationType
+    {
+      Density,
+      Spatial_Moving_Average,
+      Probability
+    };
+
+    /*!
+      \enum KernelCombinationType
+
+      \brief Types of kernel combination.
+    */
+    enum KernelCombinationType
+    {
+      Ratio,
+      Log_Ratio,
+      Abs_Difference,
+      Relative_Difference,
+      Abs_Sum,
+      Relative_Sum
+    };
+    
+    /*!
+      \enum KernelOutputType
+
+      \brief Defines the kernel result storage mode.
+    */
+    enum KernelOutputType
+    {
+      Grid,
+      Attribute
+    };
   }
 }
 

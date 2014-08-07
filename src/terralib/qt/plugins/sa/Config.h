@@ -29,6 +29,12 @@
 // TerraLib
 #include "../../../Config.h"
 
+/*!
+  \def TE_QT_PLUGIN_SA_HAVE_KERNELMAP
+
+  \brief It defines if the SA Qt Plugin has the kernel map operation
+*/
+#define TE_QT_PLUGIN_SA_HAVE_KERNELMAP
 
 /*!
   \def TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR

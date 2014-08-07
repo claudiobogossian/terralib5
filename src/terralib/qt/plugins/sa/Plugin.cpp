@@ -31,6 +31,10 @@
 #include "../../af/events/LayerEvents.h"
 #include "Plugin.h"
 
+#ifdef TE_QT_PLUGIN_SA_HAVE_KERNELMAP
+  #include "KernelMapAction.h"
+#endif
+
 #ifdef TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
   #include "ProximityMatrixCreatorAction.h"
 #endif
@@ -94,6 +98,10 @@ void te::qt::plugins::sa::Plugin::shutdown()
 void te::qt::plugins::sa::Plugin::registerActions()
 {
 
+#ifdef TE_QT_PLUGIN_SA_HAVE_KERNELMAP
+  m_kernelMap = new te::qt::plugins::sa::KernelMapAction(m_saMenu);
+#endif
+
 #ifdef TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
   m_proxMatrixCreator = new te::qt::plugins::sa::ProximityMatrixCreatorAction(m_saMenu);
 #endif
@@ -106,6 +114,10 @@ void te::qt::plugins::sa::Plugin::registerActions()
 
 void  te::qt::plugins::sa::Plugin::unRegisterActions()
 {
+
+#ifdef TE_QT_PLUGIN_SA_HAVE_KERNELMAP
+    delete m_kernelMap;
+#endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
     delete m_proxMatrixCreator;
