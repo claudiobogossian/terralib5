@@ -6,16 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>457</width>
-    <height>588</height>
+    <width>525</width>
+    <height>517</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Color Map</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_17">
+  <layout class="QGridLayout" name="gridLayout_6">
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_16">
+    <layout class="QGridLayout" name="gridLayout_5">
      <item row="0" column="0">
       <widget class="QGroupBox" name="m_importGroupBox">
        <property name="title">
@@ -67,167 +67,212 @@
        <property name="flat">
         <bool>false</bool>
        </property>
-       <layout class="QGridLayout" name="gridLayout_13">
+       <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_12">
+         <layout class="QGridLayout" name="gridLayout_3">
           <item row="0" column="0">
            <layout class="QGridLayout" name="gridLayout_2">
-            <item row="0" column="0">
-             <layout class="QGridLayout" name="gridLayout_9">
-              <item row="0" column="0">
-               <layout class="QGridLayout" name="gridLayout_8">
-                <item row="0" column="0">
-                 <layout class="QGridLayout" name="gridLayout_4">
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_2">
-                    <property name="minimumSize">
-                     <size>
-                      <width>80</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>Band:</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_5">
-                    <property name="text">
-                     <string>Minimum Value:</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="0">
-                   <widget class="QLabel" name="label_6">
-                    <property name="text">
-                     <string>Maximum Value:</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item row="0" column="1">
-                 <layout class="QGridLayout" name="gridLayout_5">
-                  <item row="0" column="0">
-                   <widget class="QComboBox" name="m_bandComboBox"/>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLineEdit" name="m_minValueLineEdit"/>
-                  </item>
-                  <item row="2" column="0">
-                   <widget class="QLineEdit" name="m_maxValueLineEdit"/>
-                  </item>
-                 </layout>
-                </item>
-               </layout>
-              </item>
-              <item row="0" column="1">
-               <layout class="QGridLayout" name="gridLayout_3">
-                <item row="0" column="0">
-                 <layout class="QGridLayout" name="gridLayout_6">
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_3">
-                    <property name="minimumSize">
-                     <size>
-                      <width>80</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>Slices:</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="0">
-                   <widget class="QLabel" name="label_4">
-                    <property name="minimumSize">
-                     <size>
-                      <width>80</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>Type:</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label">
-                    <property name="minimumSize">
-                     <size>
-                      <width>80</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>Transformation:</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item row="0" column="1">
-                 <layout class="QGridLayout" name="gridLayout_7">
-                  <item row="1" column="0">
-                   <widget class="QSpinBox" name="m_slicesSpinBox">
-                    <property name="minimum">
-                     <number>2</number>
-                    </property>
-                    <property name="maximum">
-                     <number>256</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="0">
-                   <widget class="QComboBox" name="m_typeComboBox">
-                    <item>
-                     <property name="text">
-                      <string>Equal Steps</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QComboBox" name="m_transformComboBox"/>
-                  </item>
-                 </layout>
-                </item>
-               </layout>
-              </item>
-             </layout>
+            <item row="0" column="2">
+             <widget class="QLabel" name="label_5">
+              <property name="minimumSize">
+               <size>
+                <width>100</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Min Value:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QWidget" name="m_colorBarWidget" native="true">
+            <item row="0" column="3">
+             <widget class="QLineEdit" name="m_minValueLineEdit">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
              </widget>
             </item>
+            <item row="1" column="2">
+             <widget class="QLabel" name="label_6">
+              <property name="minimumSize">
+               <size>
+                <width>100</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Max Value:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QLineEdit" name="m_maxValueLineEdit">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0" colspan="4">
+             <widget class="Line" name="line_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label">
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Transformation:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QComboBox" name="m_transformComboBox">
+              <property name="minimumSize">
+               <size>
+                <width>150</width>
+                <height>0</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="2">
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>Steps:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="3">
+             <widget class="QSpinBox" name="m_slicesSpinBox">
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+              <property name="minimum">
+               <number>2</number>
+              </property>
+              <property name="maximum">
+               <number>256</number>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>Type:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QComboBox" name="m_typeComboBox">
+              <property name="minimumSize">
+               <size>
+                <width>150</width>
+                <height>0</height>
+               </size>
+              </property>
+              <item>
+               <property name="text">
+                <string>Equal Steps</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="4" column="2">
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>Precision:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="3">
+             <widget class="QSpinBox" name="m_precisionSpinBox">
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>20</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_2">
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Band:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="m_bandComboBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>150</width>
+                <height>0</height>
+               </size>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
           <item row="1" column="0">
+           <widget class="QWidget" name="m_colorBarWidget" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
            <layout class="QGridLayout" name="gridLayout_11">
             <item row="0" column="0">
              <widget class="Line" name="line">
@@ -319,12 +364,16 @@
   </layout>
  </widget>
  <tabstops>
+  <tabstop>m_importGroupBox</tabstop>
+  <tabstop>m_layersComboBox</tabstop>
+  <tabstop>m_importPushButton</tabstop>
   <tabstop>m_bandComboBox</tabstop>
   <tabstop>m_minValueLineEdit</tabstop>
   <tabstop>m_maxValueLineEdit</tabstop>
   <tabstop>m_transformComboBox</tabstop>
-  <tabstop>m_slicesSpinBox</tabstop>
   <tabstop>m_typeComboBox</tabstop>
+  <tabstop>m_slicesSpinBox</tabstop>
+  <tabstop>m_precisionSpinBox</tabstop>
   <tabstop>m_applyPushButton</tabstop>
   <tabstop>m_tableWidget</tabstop>
  </tabstops>
