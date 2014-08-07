@@ -25,6 +25,7 @@
 
 // TerraLib 
 #include "../Enums.h"
+#include "../../common/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../dataaccess/dataset/DataSet.h"
 #include "../../dataaccess/dataset/DataSetType.h"
@@ -372,8 +373,8 @@ bool te::vp::GeometricOpWizard::execute()
     this->setCursor(Qt::ArrowCursor);
     QMessageBox::information(this, "Basic Greographic Operation", e.what());
 
-    //te::common::Logger::logDebug("vp", e.what());
-    //te::common::ProgressManager::getInstance().removeViewer(id);
+    te::common::Logger::logDebug("vp", e.what());
+    te::common::ProgressManager::getInstance().removeViewer(id);
     return false;
   }
 

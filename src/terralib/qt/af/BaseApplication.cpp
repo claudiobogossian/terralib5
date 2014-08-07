@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../common/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/progress/TaskProgress.h"
 #include "../../common/SystemApplicationSettings.h"

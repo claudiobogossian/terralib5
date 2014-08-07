@@ -489,6 +489,9 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSe
   
   te::da::Fields* fields = new te::da::Fields;
 
+  te::da::Field* f_aggreg = new te::da::Field(m_attribute);
+  fields->push_back(f_aggreg);
+
   if(tabVec.size() > 0)
   {
     for(std::size_t tabPos = 0; tabPos < tabVec.size(); ++tabPos)

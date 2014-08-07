@@ -515,7 +515,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
                                                                   std::vector<int> tabVec,
                                                                   std::vector<int> geoVec)
 {
-  std::vector<te::gm::Geometry*> geometries;
+  std::map<std::string, te::gm::Geometry*> geometries;
 
   std::auto_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inDsetName);
 
@@ -566,7 +566,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
       te::gm::Geometry* geometry = te::vp::GetGeometryUnion(itg->second, geom_pos, propGeom->getGeometryType());
 
       if(geometry->isValid())
-        geometries.push_back(geometry);
+        geometries.insert(std::pair<std::string, te::gm::Geometry*>(itg->first,geometry));
 
       ++itg;
     }
@@ -574,16 +574,53 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
   }
   else
   {
-    geometries.push_back(seedGeom.release());
+    geometries.insert(std::pair<std::string, te::gm::Geometry*>(inDset->getAsString(m_attribute), seedGeom.release()));
   }
 
+// insert result in dataset.
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
+  std::map<std::string, te::gm::Geometry*>::iterator itGeom;
+  int i = 0;
 
-  for(std::size_t i = 0; i < geometries.size(); ++i)
+  itGeom = geometries.begin();
+  while(itGeom != geometries.end())
   {
     te::mem::DataSetItem* outItem = new te::mem::DataSetItem(outDSet.get());
+    
+    // inserting the id in dataSet.
     outItem->setInt32(0, i);
-
+    // inserting aggregated attribute.
+    te::dt::Property* prop = m_inDsetType->getProperty(m_attribute);
+    switch(prop->getType())
+    {
+      case te::dt::STRING_TYPE:
+        {
+          outItem->setString(1, itGeom->first);
+          break;
+        }
+      case te::dt::INT16_TYPE:
+        {
+          outItem->setInt16(1, std::stoi(itGeom->first));
+          break;
+        }
+      case te::dt::INT32_TYPE:
+        {
+          outItem->setInt32(1, std::stoi(itGeom->first));
+          break;
+        }
+      case te::dt::INT64_TYPE:
+        {
+          outItem->setInt64(1, std::stoi(itGeom->first));
+          break;
+        }
+      case te::dt::DOUBLE_TYPE:
+        {
+          outItem->setDouble(1, std::stod(itGeom->first));
+          break;
+        }
+    }
+    
+    // inserting geometries.
     if(tabVec.size() > 0)
     {
       for(std::size_t tabPos = 0; tabPos < tabVec.size(); ++tabPos)
@@ -593,21 +630,21 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
           case te::vp::AREA:
             {
               double area = 0;
-              area = CalculateTabularOp(tabVec[tabPos], geometries[i]);
+              area = CalculateTabularOp(tabVec[tabPos], itGeom->second);
               outItem->setDouble("area", area);
             }
             break;
           case te::vp::LINE:
             {
               double line = 0;
-              line = CalculateTabularOp(tabVec[tabPos], geometries[i]);
+              line = CalculateTabularOp(tabVec[tabPos], itGeom->second);
               outItem->setDouble("line_length", line);
             }
             break;
           case te::vp::PERIMETER:
             {
               double perimeter = 0;
-              perimeter = CalculateTabularOp(tabVec[tabPos], geometries[i]);
+              perimeter = CalculateTabularOp(tabVec[tabPos], itGeom->second);
               outItem->setDouble("perimeter", perimeter);
             }
             break;
@@ -626,7 +663,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
               std::size_t pos = te::da::GetPropertyPos(dsType, "convex_hull");
               if(pos < dsType->size())
               {
-                std::auto_ptr<te::gm::Geometry> convexHull(geometries[i]->convexHull());
+                std::auto_ptr<te::gm::Geometry> convexHull(itGeom->second->convexHull());
                 convexHull->setSRID(seedGeom->getSRID());
                 outItem->setGeometry("convex_hull", convexHull.release());
               }
@@ -637,9 +674,9 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
               std::size_t pos = te::da::GetPropertyPos(dsType, "centroid");
               if(pos < dsType->size())
               {
-                const te::gm::Envelope* env = geometries[i]->getMBR();
+                const te::gm::Envelope* env = itGeom->second->getMBR();
                 te::gm::Coord2D center = env->getCenter();
-                te::gm::Point* point = new te::gm::Point(center.x, center.y, geometries[i]->getSRID());
+                te::gm::Point* point = new te::gm::Point(center.x, center.y, itGeom->second->getSRID());
                 outItem->setGeometry("centroid", point);
               }
             }
@@ -649,7 +686,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
               std::size_t pos = te::da::GetPropertyPos(dsType, "mbr");
               if(pos < dsType->size())
               {
-                std::auto_ptr<te::gm::Geometry> mbr(geometries[i]->getEnvelope());
+                std::auto_ptr<te::gm::Geometry> mbr(itGeom->second->getEnvelope());
                 mbr->setSRID(seedGeom->getSRID());
                 outItem->setGeometry("mbr", mbr.release());
               }
@@ -660,36 +697,38 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
     }
     else
     {
-      te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, geometries[i]->getSRID());
+      te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, itGeom->second->getSRID());
 
-      switch(geometries[i]->getGeomTypeId())
+      switch(itGeom->second->getGeomTypeId())
       {
         case te::gm::PointType:
           {
-            if(geometries[i]->isValid())
-              teGeomColl->add(geometries[i]);
+            if(itGeom->second->isValid())
+              teGeomColl->add(itGeom->second);
           }
           break;
         case te::gm::LineStringType:
           {
-            if(geometries[i]->isValid())
-              teGeomColl->add(geometries[i]);
+            if(itGeom->second->isValid())
+              teGeomColl->add(itGeom->second);
           }
           break;
         case te::gm::PolygonType:
           {
-            if(geometries[i]->isValid())
-              teGeomColl->add(geometries[i]);
+            if(itGeom->second->isValid())
+              teGeomColl->add(itGeom->second);
           }
           break;
       }
       if(teGeomColl->getNumGeometries() != 0)
         outItem->setGeometry("geom", teGeomColl);
       else
-        outItem->setGeometry("geom", geometries[i]);
+        outItem->setGeometry("geom", itGeom->second);
     }
 
     outDSet->add(outItem);
+    ++itGeom;
+    ++i;
   }
 
   return outDSet.release();

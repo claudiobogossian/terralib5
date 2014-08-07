@@ -383,10 +383,10 @@ bool AggregOGRToPGIS()
 bool AggregPGISToPGIS()
 {
   std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "localhost" ; 
-  connInfo["PG_PORT"] = "5432" ;
+  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
+  connInfo["PG_PORT"] = "5433" ;
   connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "root";
+  connInfo["PG_PASSWORD"] = "postgres";
   connInfo["PG_DB_NAME"] = "testPostGIS";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
   connInfo["PG_CLIENT_ENCODING"] = "CP1252"; 
@@ -455,10 +455,10 @@ bool AggregPGISToPGIS()
 bool AggregPGISToOGR()
 {
   std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "localhost" ; 
-  connInfo["PG_PORT"] = "5432" ;
+  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
+  connInfo["PG_PORT"] = "5433" ;
   connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "root";
+  connInfo["PG_PASSWORD"] = "postgres";
   connInfo["PG_DB_NAME"] = "testPostGIS";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
   connInfo["PG_CLIENT_ENCODING"] = "CP1252"; 
