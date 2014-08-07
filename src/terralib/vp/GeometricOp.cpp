@@ -169,6 +169,13 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
       }
   }
 
+  if(geomOpStrategy == te::vp::AGGREG_BY_ATTRIBUTE)
+  {
+    te::dt::Property* prop = m_inDsetType->getProperty(m_attribute)->clone();
+    prop->setParent(0);
+    dsType->add(prop);
+  }
+
   for(std::size_t i = 0; i < m_operations.size(); ++i)
   {
     int op = m_operations[i];
