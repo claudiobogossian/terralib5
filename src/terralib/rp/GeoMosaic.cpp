@@ -203,10 +203,7 @@ namespace te
         te::rst::Raster const* inputRasterPtr = 0;
         unsigned int inputRasterIdx = 0;
         te::srs::Converter convInstance;
-        te::gm::Coord2D llCoord1;
-        te::gm::Coord2D urCoord1;
-        te::gm::Coord2D llCoord2;
-        te::gm::Coord2D urCoord2;
+        te::gm::LinearRing reprojectedExtent(te::gm::LineStringType, 0, 0);
 
         m_inputParameters.m_feederRasterPtr->reset();
         while( ( inputRasterPtr = m_inputParameters.m_feederRasterPtr->getCurrentObj() ) )
@@ -247,54 +244,27 @@ namespace te
           }
           else
           {
-            if( mosaicSRID == inputRasterPtr->getGrid()->getSRID() )
+            TERP_TRUE_OR_RETURN_FALSE( te::rp::GetDetailedExtent( 
+              *inputRasterPtr->getGrid(), reprojectedExtent ),
+              "Detailed raster extent calcule error" );
+            
+            if( mosaicSRID != inputRasterPtr->getGrid()->getSRID() )
             {
-              urCoord1.x = inputRasterPtr->getGrid()->getExtent()->m_urx;
-              urCoord1.y = inputRasterPtr->getGrid()->getExtent()->m_ury;
-              llCoord1.x = inputRasterPtr->getGrid()->getExtent()->m_llx;
-              llCoord1.y = inputRasterPtr->getGrid()->getExtent()->m_lly;
-            }
-            else
-            {
-              convInstance.setSourceSRID( inputRasterPtr->getGrid()->getSRID() );
-              convInstance.setTargetSRID( mosaicSRID );
-
-              convInstance.convert(
-                inputRasterPtr->getGrid()->getExtent()->m_urx,
-                inputRasterPtr->getGrid()->getExtent()->m_ury,
-                urCoord1.x,
-                urCoord1.y );
-              convInstance.convert(
-                inputRasterPtr->getGrid()->getExtent()->m_llx,
-                inputRasterPtr->getGrid()->getExtent()->m_lly,
-                llCoord1.x,
-                llCoord1.y );
+              reprojectedExtent.transform( mosaicSRID );
             }
 
             // expanding mosaic area
 
-            mosaicLLX = std::min( mosaicLLX, urCoord1.x );
-            mosaicLLX = std::min( mosaicLLX, llCoord1.x );
+            mosaicLLX = std::min( mosaicLLX, reprojectedExtent.getMBR()->getLowerLeftX() );
+            mosaicLLY = std::min( mosaicLLY, reprojectedExtent.getMBR()->getLowerLeftY() );
 
-            mosaicLLY = std::min( mosaicLLY, urCoord1.y );
-            mosaicLLY = std::min( mosaicLLY, llCoord1.y );
-
-            mosaicURX = std::max( mosaicURX, urCoord1.x );
-            mosaicURX = std::max( mosaicURX, llCoord1.x );
-
-            mosaicURY = std::max( mosaicURY, urCoord1.y );
-            mosaicURY = std::max( mosaicURY, llCoord1.y );
+            mosaicURX = std::max( mosaicURX, reprojectedExtent.getMBR()->getUpperRightX() );
+            mosaicURY = std::max( mosaicURY, reprojectedExtent.getMBR()->getUpperRightY() );
 
             // finding the current raster bounding box polygon (first raster world coordinates)
 
             auxPolygon.clear();
-            auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
-            auxLinearRingPtr->setPoint( 0, llCoord1.x, urCoord1.y );
-            auxLinearRingPtr->setPoint( 1, urCoord1.x, urCoord1.y );
-            auxLinearRingPtr->setPoint( 2, urCoord1.x, llCoord1.y );
-            auxLinearRingPtr->setPoint( 3, llCoord1.x, llCoord1.y );
-            auxLinearRingPtr->setPoint( 4, llCoord1.x, urCoord1.y );
-            auxLinearRingPtr->setSRID( mosaicSRID );
+            auxLinearRingPtr = new te::gm::LinearRing( reprojectedExtent );
             auxPolygon.push_back( auxLinearRingPtr );
             auxPolygon.setSRID( mosaicSRID );
             rastersBBoxes.push_back( auxPolygon );

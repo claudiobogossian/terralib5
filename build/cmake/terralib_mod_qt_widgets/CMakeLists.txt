@@ -228,9 +228,9 @@ source_group("Header Files\\exchanger"  FILES ${TERRALIB_EXCHANGER_HDR_FILES})
 source_group("UI Files\\exchanger"      FILES ${TERRALIB_EXCHANGER_UI_FILES})
 
 # externaltable
-source_group("Source Files\\externaltable"  FILES ${TERRALIB_EXCHANGER_SRC_FILES})
-source_group("Header Files\\externaltable"  FILES ${TERRALIB_EXCHANGER_HDR_FILES})
-source_group("UI Files\\externaltable"      FILES ${TERRALIB_EXCHANGER_UI_FILES})
+source_group("Source Files\\externaltable"  FILES ${TERRALIB_EXTERNALTABLE_SRC_FILES})
+source_group("Header Files\\externaltable"  FILES ${TERRALIB_EXTERNALTABLE_HDR_FILES})
+source_group("UI Files\\externaltable"      FILES ${TERRALIB_EXTERNALTABLE_UI_FILES})
 
 # help
 source_group("Source Files\\help"  FILES ${TERRALIB_HELP_SRC_FILES})
