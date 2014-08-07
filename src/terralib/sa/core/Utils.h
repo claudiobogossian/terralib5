@@ -27,6 +27,7 @@
 #define __TERRALIB_SA_INTERNAL_UTILS_H
 
 // TerraLib
+#include "../../maptools/AbstractLayer.h"
 #include "../../srs/Config.h"
 #include "../Config.h"
 
@@ -113,6 +114,18 @@ namespace te
       \return Return a double value if its possible.
     */
     TESAEXPORT double GetDataValue(te::dt::AbstractData* ad);
+
+    /*!
+      \brief Function used to calculate the distance from a coord to the center of a geometry
+
+      \param geom  Pointer to a geometry
+      \param coord  Reference to a coord
+      
+      \return Return a double value with distance information
+      
+      \note It's only possible if the geom has a centroid.
+    */
+    TESAEXPORT double CalculateDistance(te::gm::Geometry* geom, te::gm::Coord2D& coord);
 
   } // end namespace sa
 }   // end namespace te

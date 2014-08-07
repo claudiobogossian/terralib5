@@ -28,13 +28,11 @@
 #define M_PI       3.14159265358979323846
 
 //TerraLib
-#include "../../geometry/MultiPolygon.h"
-#include "../../geometry/Point.h"
-#include "../../geometry/Polygon.h"
 #include "../../raster/Grid.h"
 #include "../../raster/Raster.h"
 #include "KernelFunctions.h"
 #include "StatisticsFunctions.h"
+#include "Utils.h"
 
 void te::sa::GridStatRadiusKernel(te::sa::KernelParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::rst::Raster* raster, double radius)
 {
@@ -86,6 +84,73 @@ void te::sa::GridAdaptRadiusKernel(te::sa::KernelParams* params, te::sa::KernelT
 {
   assert(params);
   assert(raster);
+
+  //Evaluate kernel with a fixed radius, based on formula...
+  double radius = 0.68*pow((double)kMap.size(),-0.2)*sqrt(kTree.getMBR().getArea());
+  double sqArea = sqrt(kTree.getMBR().getArea());
+
+  te::sa::GridStatRadiusKernel(params, kTree, kMap, raster, radius);
+
+  //Evaluate geometric mean of kernel values, to adjust radius
+  double meanKernel = KernelGeometricMean(kMap);
+
+  if(meanKernel <= 0.)
+    throw;
+
+  //Reassign radius, evaluating final value for kernel
+  double totKernel = 0.;
+
+  for(unsigned int i = 0; i < raster->getNumberOfRows(); ++i)
+  {
+    for(unsigned int j = 0; j < raster->getNumberOfColumns(); ++j)
+    {
+      te::gm::Coord2D coord = raster->getGrid()->gridToGeo(j, i);
+
+      //calculate box to search
+      te::gm::Envelope ext(coord.x, coord.y, coord.x, coord.y);
+
+      ext.m_llx -= radius;
+      ext.m_lly -= radius;
+      ext.m_urx += radius;
+      ext.m_ury += radius;
+
+      //get all elements
+      if(params->m_functionType == te::sa::Normal)
+      {
+        ext = kTree.getMBR();
+      }
+
+      //search
+      std::vector<int> results;
+      kTree.search(ext, results);
+
+      //calculate new kernel valeu from old kernel value
+      double newKernel = 0.;
+      double prevKernel;
+      raster->getValue(j, i, prevKernel);
+
+      if(prevKernel > 0.)
+      {
+        //set new radius value
+        double newRadius = radius * pow((meanKernel / prevKernel), 0.5);
+
+        //limit the radius
+        if(newRadius > sqArea / 4.)
+          newRadius = sqArea / 4.;
+
+        //calculate kernel value
+        newKernel = KernelValue(params, kMap, newRadius, coord, results);
+      }
+
+      totKernel += newKernel;
+
+      //set value
+      raster->setValue(j, i, newKernel, 0);
+    }
+  }
+
+  //normalize output raster
+  KernelNormalize(params, kMap, raster, totKernel);
 }
 
 double te::sa::KernelValue(te::sa::KernelParams* params, te::sa::KernelMap& kMap, double radius, te::gm::Coord2D& coord, std::vector<int> idxVec)
@@ -100,7 +165,7 @@ double te::sa::KernelValue(te::sa::KernelParams* params, te::sa::KernelMap& kMap
 
     double intensity = kMap[id].second;
 
-    double distance = CalculateDistance(g, coord);
+    double distance = te::sa::CalculateDistance(g, coord);
 
     //calculate kernel value for this element
     double localK = 0.;
@@ -128,42 +193,6 @@ double te::sa::KernelValue(te::sa::KernelParams* params, te::sa::KernelMap& kMap
   }
 
   return kernelValue;
-}
-
-double te::sa::CalculateDistance(te::gm::Geometry* geom, te::gm::Coord2D& coord)
-{
-  double distance = std::numeric_limits<double>::max();
-
-  std::auto_ptr<te::gm::Point> point(new te::gm::Point(coord.x, coord.y));
-
-  point->setSRID(geom->getSRID());
-
-  if(geom->getGeomTypeId() == te::gm::PointType)
-  {
-    te::gm::Point* p = ((te::gm::Point*)geom);
-
-    distance = p->distance(point.get());
-  }
-  else if(geom->getGeomTypeId() == te::gm::PolygonType)
-  {
-    te::gm::Point* p = ((te::gm::Polygon*)geom)->getCentroid();
-
-    distance = p->distance(point.get());
-
-    delete p;
-  }
-  else if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
-  {
-    te::gm::Polygon* poly = (te::gm::Polygon*)((te::gm::MultiPolygon*)geom)->getGeometryN(0);
-
-    te::gm::Point* p = poly->getCentroid();
-
-    distance = p->distance(point.get());
-
-    delete p;
-  }
-
-  return distance;
 }
 
 double te::sa::KernelQuartic(double tau, double distance, double intensity) 
@@ -244,4 +273,29 @@ void te::sa::KernelNormalize(te::sa::KernelParams* params, te::sa::KernelMap& kM
       raster->setValue(j, i, normKernel);
     }
   }
+}
+
+double te::sa::KernelGeometricMean(te::sa::KernelMap& kMap)
+{
+  te::sa::KernelMap::iterator it = kMap.begin();
+
+  double meanMTmp = 0.;
+  int meanETmp = 0;
+
+  while(it != kMap.end())
+  {
+    int exp;
+    double intensity = it->second.second;
+    double mantissa = frexp(intensity, &exp);
+
+    meanMTmp += log(mantissa);
+    meanETmp += exp;
+
+    ++it;
+  }
+
+  double meanM = (meanMTmp + (meanETmp * log(2.))) / kMap.size();
+  meanM = exp(meanM);
+
+  return meanM;
 }

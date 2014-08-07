@@ -146,12 +146,20 @@ std::auto_ptr<te::rst::Raster> te::sa::KernelOperation::buildRaster()
   //get extent of input data
   te::gm::Envelope* env = new te::gm::Envelope(m_kTree.getMBR());
 
+  //get srid
+  int srid = TE_UNKNOWN_SRS;
+  
+  te::gm::GeometryProperty* gmProp = te::da::GetFirstGeomProperty(m_params->m_dsType.get());
+
+  if(gmProp)
+    srid = gmProp->getSRID();
+
   //create grid
   double val = std::max<double>(env->getWidth(), env->getHeight());
 
   double res = val / m_params->m_nCols;
 
-  te::rst::Grid* grid = new te::rst::Grid(res, res, env);
+  te::rst::Grid* grid = new te::rst::Grid(res, res, env, srid);
 
   //create bands
   te::rst::BandProperty* bProp = new te::rst::BandProperty(0, te::dt::DOUBLE_TYPE);

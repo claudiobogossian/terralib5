@@ -73,8 +73,10 @@ namespace te
         /*! Function used to build the tree with data set information */
         void buildTree();
 
+        /*! Function used to run kernel when output data is a raster */
         void runRasterKernel();
 
+        /*! Function used to create the output raster */
         std::auto_ptr<te::rst::Raster> buildRaster();
 
       protected:
