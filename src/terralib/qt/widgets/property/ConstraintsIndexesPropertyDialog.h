@@ -68,6 +68,10 @@ namespace te
 
           ~ConstraintsIndexesPropertyDialog();
 
+          void setConstraint(te::da::Constraint* constraint);
+
+          void setIndex(te::da::Index* index);
+
         public slots:
 
           void onpkRadioButtonToggled(bool status);
