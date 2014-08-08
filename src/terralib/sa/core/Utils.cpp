@@ -232,3 +232,58 @@ double te::sa::CalculateDistance(te::gm::Geometry* geom, te::gm::Coord2D& coord)
 
   return distance;
 }
+
+te::gm::Coord2D te::sa::GetCentroidCoord(te::gm::Geometry* geom)
+{
+  assert(geom);
+
+  te::gm::Coord2D coord;  
+
+  if(geom->getGeomTypeId() == te::gm::PointType)
+  {
+    te::gm::Point* p = ((te::gm::Point*)geom);
+
+    coord.x = p->getX();
+    coord.y = p->getY();
+  }
+  else if(geom->getGeomTypeId() == te::gm::PolygonType)
+  {
+    te::gm::Point* p = ((te::gm::Polygon*)geom)->getCentroid();
+
+    coord.x = p->getX();
+    coord.y = p->getY();
+
+    delete p;
+  }
+  else if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
+  {
+    te::gm::Polygon* poly = (te::gm::Polygon*)((te::gm::MultiPolygon*)geom)->getGeometryN(0);
+
+    te::gm::Point* p = poly->getCentroid();
+
+    coord.x = p->getX();
+    coord.y = p->getY();
+
+    delete p;
+  }
+
+  return coord;
+}
+
+double te::sa::GetArea(te::gm::Geometry* geom)
+{
+  assert(geom);
+
+  if(geom->getGeomTypeId() == te::gm::PolygonType)
+  {
+    return ((te::gm::Polygon*)geom)->getArea();
+  }
+  else if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
+  {
+    te::gm::Polygon* poly = (te::gm::Polygon*)((te::gm::MultiPolygon*)geom)->getGeometryN(0);
+
+    return poly->getArea();
+  }
+
+  return 0.;
+}

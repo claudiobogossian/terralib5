@@ -40,6 +40,9 @@
 
 namespace te
 {
+  //forward declarations
+  namespace mem { class DataSet; }
+
   namespace sa
   {
     ///< Tree used to store the dataset geometries MBR and its id value
@@ -70,6 +73,10 @@ namespace te
 
     */
     TESAEXPORT void GridAdaptRadiusKernel(te::sa::KernelParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::rst::Raster* raster);
+
+    TESAEXPORT void DataSetStatRadiusKernel(te::sa::KernelParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::mem::DataSet* ds, int kernelIdx, int geomIdx, double radius);
+
+    TESAEXPORT void DataSetAdaptRadiusKernel(te::sa::KernelParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::mem::DataSet* ds, int kernelIdx, int geomIdx);
 
     /*!
       \brief Evaluates kernel value of events with intensity
@@ -149,7 +156,9 @@ namespace te
       \param totKernel Sum of all kernel values from each raster pixel
 
     */
-    TESAEXPORT void KernelNormalize(te::sa::KernelParams* params, te::sa::KernelMap& kMap, te::rst::Raster* raster, double totKernel);
+    TESAEXPORT void GridKernelNormalize(te::sa::KernelParams* params, te::sa::KernelMap& kMap, te::rst::Raster* raster, double totKernel);
+
+    TESAEXPORT void DataSetKernelNormalize(te::sa::KernelParams* params, te::sa::KernelMap& kMap, te::mem::DataSet* ds, int kernelIdx, int geomIdx, double totKernel);
 
     /*!
       \brief Calculates the geometric mean from kernel map (intensity value) using log.

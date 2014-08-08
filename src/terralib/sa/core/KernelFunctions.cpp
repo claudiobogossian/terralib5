@@ -28,6 +28,7 @@
 #define M_PI       3.14159265358979323846
 
 //TerraLib
+#include "../../memory/DataSet.h"
 #include "../../raster/Grid.h"
 #include "../../raster/Raster.h"
 #include "KernelFunctions.h"
@@ -77,7 +78,7 @@ void te::sa::GridStatRadiusKernel(te::sa::KernelParams* params, te::sa::KernelTr
   }
 
   //normalize output raster
-  KernelNormalize(params, kMap, raster, totKernel);
+  GridKernelNormalize(params, kMap, raster, totKernel);
 }
 
 void te::sa::GridAdaptRadiusKernel(te::sa::KernelParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::rst::Raster* raster)
@@ -150,7 +151,126 @@ void te::sa::GridAdaptRadiusKernel(te::sa::KernelParams* params, te::sa::KernelT
   }
 
   //normalize output raster
-  KernelNormalize(params, kMap, raster, totKernel);
+  GridKernelNormalize(params, kMap, raster, totKernel);
+}
+
+void te::sa::DataSetStatRadiusKernel(te::sa::KernelParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::mem::DataSet* ds, int kernelIdx, int geomIdx, double radius)
+{
+  assert(params);
+  assert(ds);
+
+  double totKernel = 0.;
+
+  //calculate kernel attribute value
+  ds->moveBeforeFirst();
+  while(ds->moveNext())
+  {
+    std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomIdx);
+
+    te::gm::Coord2D coord = te::sa::GetCentroidCoord(geom.get());
+
+    //calculate box to search
+    te::gm::Envelope ext(coord.x, coord.y, coord.x, coord.y);
+
+    ext.m_llx -= radius;
+    ext.m_lly -= radius;
+    ext.m_urx += radius;
+    ext.m_ury += radius;
+
+    //get all elements
+    if(params->m_functionType == te::sa::Normal)
+    {
+      ext = kTree.getMBR();
+    }
+
+    //search
+    std::vector<int> results;
+    kTree.search(ext, results);
+
+    //calculate kernel value
+    double val = KernelValue(params, kMap, radius, coord, results);
+
+    totKernel += val;
+
+    //set value
+    ds->setDouble(kernelIdx, val);
+  }
+
+  //normalize output raster
+  DataSetKernelNormalize(params, kMap, ds, kernelIdx, geomIdx, totKernel);
+}
+
+void te::sa::DataSetAdaptRadiusKernel(te::sa::KernelParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::mem::DataSet* ds, int kernelIdx, int geomIdx)
+{
+  assert(params);
+  assert(ds);
+
+  //Evaluate kernel with a fixed radius, based on formula...
+  double radius = 0.68*pow((double)kMap.size(),-0.2)*sqrt(kTree.getMBR().getArea());
+  double sqArea = sqrt(kTree.getMBR().getArea());
+
+  te::sa::DataSetStatRadiusKernel(params, kTree, kMap, ds, kernelIdx, geomIdx, radius);
+
+  //Evaluate geometric mean of kernel values, to adjust radius
+  double meanKernel = KernelGeometricMean(kMap);
+
+  if(meanKernel <= 0.)
+    throw;
+
+  //Reassign radius, evaluating final value for kernel
+  double totKernel = 0.;
+
+  ds->moveBeforeFirst();
+
+  while(ds->moveNext())
+  {
+    std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomIdx);
+
+    te::gm::Coord2D coord = te::sa::GetCentroidCoord(geom.get());
+
+    //calculate box to search
+    te::gm::Envelope ext(coord.x, coord.y, coord.x, coord.y);
+
+    ext.m_llx -= radius;
+    ext.m_lly -= radius;
+    ext.m_urx += radius;
+    ext.m_ury += radius;
+
+    //get all elements
+    if(params->m_functionType == te::sa::Normal)
+    {
+      ext = kTree.getMBR();
+    }
+
+    //search
+    std::vector<int> results;
+    kTree.search(ext, results);
+
+    //calculate new kernel valeu from old kernel value
+    double newKernel = 0.;
+    double prevKernel = ds->getDouble(kernelIdx);
+
+    if(prevKernel > 0.)
+    {
+      //set new radius value
+      double newRadius = radius * pow((meanKernel / prevKernel), 0.5);
+
+      //limit the radius
+      if(newRadius > sqArea / 4.)
+        newRadius = sqArea / 4.;
+
+      //calculate kernel value
+      newKernel = KernelValue(params, kMap, newRadius, coord, results);
+    }
+
+    totKernel += newKernel;
+
+    //set value
+    ds->setDouble(kernelIdx, newKernel);
+  }
+
+  //normalize output raster
+  DataSetKernelNormalize(params, kMap, ds, kernelIdx, geomIdx, totKernel);
 }
 
 double te::sa::KernelValue(te::sa::KernelParams* params, te::sa::KernelMap& kMap, double radius, te::gm::Coord2D& coord, std::vector<int> idxVec)
@@ -234,7 +354,7 @@ double te::sa::KernelNegExponential(double tau, double distance, double intensit
   return intensity * exp(-3.0 * distance);
 }
 
-void te::sa::KernelNormalize(te::sa::KernelParams* params, te::sa::KernelMap& kMap, te::rst::Raster* raster, double totKernel)
+void te::sa::GridKernelNormalize(te::sa::KernelParams* params, te::sa::KernelMap& kMap, te::rst::Raster* raster, double totKernel)
 {
   assert(params);
   assert(raster);
@@ -272,6 +392,47 @@ void te::sa::KernelNormalize(te::sa::KernelParams* params, te::sa::KernelMap& kM
 
       raster->setValue(j, i, normKernel);
     }
+  }
+}
+
+void te::sa::DataSetKernelNormalize(te::sa::KernelParams* params, te::sa::KernelMap& kMap, te::mem::DataSet* ds, int kernelIdx, int geomIdx, double totKernel)
+{
+  assert(params);
+  assert(ds);
+
+  te::sa::KernelEstimationType type = params->m_estimationType;
+
+  double normFactor = te::sa::Sum(kMap);
+
+  //normalize kernel attribute values
+  ds->moveBeforeFirst();
+
+  while(ds->moveNext())
+  {
+    std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomIdx);
+
+    double area = te::sa::GetArea(geom.get());
+
+    double kernel = ds->getDouble(kernelIdx);
+
+    double normKernel = 0.;
+
+    switch(type)
+    {
+      case te::sa::Spatial_Moving_Average:
+        normKernel = (kernel * normFactor) / totKernel;
+        break;
+
+      case te::sa::Density:
+        normKernel = ((kernel * normFactor) / totKernel) / area;
+        break;
+
+      case te::sa::Probability:
+        normKernel = kernel / totKernel;
+        break;
+    }
+
+    ds->setDouble(kernelIdx, normKernel);
   }
 }
 
