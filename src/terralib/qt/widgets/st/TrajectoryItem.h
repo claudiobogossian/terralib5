@@ -110,6 +110,7 @@ namespace te
         void erase(const unsigned int& curTime);
 
       public:
+        bool m_drawTrail;         //!< flag to draw trail
         QColor m_forwardColor;    //!< The forward trail color.
         QColor m_backwardColor;   //!< The backward trail color.
         int m_lineWidth;          //!< The route/trail line width in pixels.

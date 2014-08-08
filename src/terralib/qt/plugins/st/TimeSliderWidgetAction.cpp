@@ -42,16 +42,17 @@ te::qt::plugins::st::TimeSliderWidgetAction::TimeSliderWidgetAction(QMenu* menu)
   QWidget* mainWindow = te::qt::af::ApplicationController::getInstance().getMainWindow();
   te::qt::af::BaseApplication* ba = (te::qt::af::BaseApplication*)mainWindow;
   te::qt::widgets::MapDisplay* display = ba->getDisplay()->getDisplay();
-  if(display->getExtent().isValid() == false)
-  {
-    // WGS84
-    te::gm::Envelope e(-180, -180, 360, 360);
-    display->setExtent(e);
-    display->setSRID(4326);
-  }
+  //if(display->getExtent().isValid() == false)
+  //{
+  //  // WGS84
+  //  te::gm::Envelope e(-180, -180, 360, 360);
+  //  display->setExtent(e);
+  //  display->setSRID(4326);
+  //}
   m_timeSliderWidget = new te::qt::widgets::TimeSliderWidget(display, display);
   connect(m_timeSliderWidget, SIGNAL(deleteTimeSliderWidget()), this, SLOT(onDeleteTimeSliderWidget()));
   connect(ba, SIGNAL(applicationClose()), this, SLOT(onDeleteTimeSliderWidget()));
+
   ba->getInterfaceController()->addInterface(m_timeSliderWidget);
   m_timeSliderWidget->hide();
 }
@@ -62,6 +63,7 @@ te::qt::plugins::st::TimeSliderWidgetAction::~TimeSliderWidgetAction()
   {
     QWidget* mainWindow = te::qt::af::ApplicationController::getInstance().getMainWindow();
     te::qt::af::BaseApplication* ba = (te::qt::af::BaseApplication*)mainWindow;
+
     ba->getInterfaceController()->removeInteface(m_timeSliderWidget);
     delete m_timeSliderWidget;
   }

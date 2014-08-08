@@ -57,6 +57,8 @@ namespace te
       {
         Q_OBJECT
 
+        friend class TimeSliderWidget;
+
         public:
 
           /*!
@@ -64,7 +66,7 @@ namespace te
 
             It constructs a Slider Slider Dialog
           */
-          SliderPropertiesDialog(te::dt::TimePeriod temporalExtent, QWidget* parent = 0,  Qt::WindowFlags f = 0);
+          SliderPropertiesDialog(QWidget* parent,  Qt::WindowFlags f = 0);
 
           /*!
             \brief Destructor
@@ -76,7 +78,7 @@ namespace te
           /*!
             \brief It initialize a property animation dialog
           */
-          void populateUi(te::dt::TimePeriod currentTemporalExtent, QList<QGraphicsItem*> items, bool forward = true, bool loop = true, bool goBack = true);
+          void populateUi();
 
           /*!
             \brief It returns a boolean that indicates if animation is going forward or backward
@@ -131,7 +133,7 @@ namespace te
 
         protected slots:
 
-          void onOkPushButtonClicked();
+          //void onOkPushButtonClicked();
           void onHelpPushButtonClicked();
 
           /*!
@@ -139,44 +141,52 @@ namespace te
 
             \param b True if the button is checked, or false if the button is unchecked
           */
-          void onAutoPanCheckBoxClicked(bool b);
+          //void onAutoPanCheckBoxClicked(bool b);
+
+          /*!
+            \brief Draw track radio button clicked.
+
+            \param b True if the button is checked, or false if the button is unchecked
+          */
+          void onDrawTrackCheckBoxClicked(bool b);
 
           /*!
             \brief It takes the necessary steps after changing the duration.
             \param v Value of opacity (0 - 255).
           */
-          void onOpacityValueChanged(int v);
+          //void onOpacityValueChanged(int v);
 
           /*!
             \brief Trajectory color combo box activated.
 
             \param i The index of combo box.
           */
-          void onTrajectoryColorComboBoxActivated(int i);
+          //void onTrajectoryColorComboBoxActivated(int i);
 
           /*!
             \brief Opacity combo box activated.
 
             \param i The index of combo box.
           */
-          void onOpacityComboBoxActivated(int i);
+          //void onOpacityComboBoxActivated(int i);
 
           /*!
             \brief Reset initial time button clicked.
           */
-          void onResetInitialTimePushButtonClicked();
+          //void onResetInitialTimePushButtonClicked();
 
 
           /*!
             \brief Reset final time button clicked.
           */
-          void onResetFinalTimePushButtonClicked();
+          //void onResetFinalTimePushButtonClicked();
 
         private:
 
           std::auto_ptr<Ui::SliderPropertiesDialogForm>  m_ui;              //!< The widget form.
-          te::dt::TimePeriod                             m_temporalExtent;  //!< The temporal extent.
-          QList<QGraphicsItem*>                          m_trajectories;    //!< The trajectory items
+          TimeSliderWidget*                              m_tsw;             //!< The Timer Slider Widget pointer
+          //te::dt::TimePeriod                             m_temporalExtent;  //!< The temporal extent.
+          //QList<QGraphicsItem*>                          m_trajectories;    //!< The trajectory items
     };
     } // end namespace widgets
   }   // end namespace qt
