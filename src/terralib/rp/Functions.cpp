@@ -2261,6 +2261,8 @@ namespace te
       int row = 0;
       int col = 0;
       
+      ring.setPoint( 0, lLX, uRY ); 
+      
       for( col = 0 ; col < nCols ; ++col )
       {
         ring.setPoint( ++ringIdx, lLX + ( ((double)( col + 1 ) ) * resX ), uRY );
@@ -2276,12 +2278,12 @@ namespace te
         ring.setPoint( ++ringIdx, lLX + ( ((double)( col + 1 ) ) * resX ), lLY );
       }    
       
-      for( row = nRows - 1 ; row > -1 ; --row )
+      for( row = nRows - 1 ; row > 0 ; --row )
       {
         ring.setPoint( ++ringIdx, lLX, uRY - ( ((double)( row + 1 ) ) * resY ) );
-      }       
+      }
       
-      ring.setPointN( 0, *ring.getPointN( ringSize - 1 ) );            
+      ring.setPoint( ringSize - 1, lLX, uRY );
       
       detailedExtent = ring;
       
@@ -2310,6 +2312,8 @@ namespace te
       int row = 0;
       int col = 0;
       
+      ring.setPoint( 0, -0.5, -0.5 );
+      
       for( col = 0 ; col < nCols ; ++col )
       {
         ring.setPoint( ++ringIdx, 0.5 + ((double)col), (-0.5) );
@@ -2330,7 +2334,7 @@ namespace te
         ring.setPoint( ++ringIdx, (-0.5), ((double)row) - 0.5 );
       }       
       
-      ring.setPointN( 0, *ring.getPointN( ringSize - 1 ) );            
+      ring.setPoint( ringSize - 1, -0.5, -0.5 );            
       
       indexedDetailedExtent = ring;
       
