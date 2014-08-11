@@ -48,6 +48,8 @@ namespace te
     namespace widgets
     {
 
+      class TimeSliderWidget;
+
       /*!
         \class SliderPropertiesDialog
 

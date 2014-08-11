@@ -31,7 +31,7 @@
 #include "../../../geometry.h"
 #include "../../../datatype.h"
 #include "../InterfaceController.h"
-
+#include "SliderPropertiesDialog.h"
 // Qt
 #include <QWidget>
 #include <QAbstractAnimation>

@@ -31,7 +31,7 @@
 te::qt::plugins::sa::KernelMapAction::KernelMapAction(QMenu *menu) :
   AbstractAction(menu)
 {
-  createAction(tr("Kernel Map...").toStdString(), "");
+  createAction(tr("Kernel Map...").toStdString(), "sa-kernelmap-icon");
 }
 
 te::qt::plugins::sa::KernelMapAction::~KernelMapAction()

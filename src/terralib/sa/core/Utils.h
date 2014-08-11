@@ -127,6 +127,28 @@ namespace te
     */
     TESAEXPORT double CalculateDistance(te::gm::Geometry* geom, te::gm::Coord2D& coord);
 
+    /*!
+      \brief Function used to get centroid coord of a geometry
+
+      \param geom  Pointer to a geometry
+      
+      \return Return a coord with centroid information
+      
+      \note It's only possible if the geom has a centroid.
+    */
+    TESAEXPORT te::gm::Coord2D GetCentroidCoord(te::gm::Geometry* geom);
+
+    /*!
+      \brief Function used to get area of a geometry
+
+      \param geom  Pointer to a geometry
+      
+      \return Return a double value with area information
+      
+      \note It's only possible if the geom has a area
+    */
+    TESAEXPORT double GetArea(te::gm::Geometry* geom);
+
   } // end namespace sa
 }   // end namespace te
 
