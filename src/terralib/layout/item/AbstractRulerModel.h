@@ -33,7 +33,7 @@
 #include "../core/Utils.h"
 #include "../../qt/widgets/canvas/Canvas.h"
 #include "../../color/RGBAColor.h"
-#include "PaperConfig.h"
+#include "../core/PaperConfig.h"
 
 namespace te
 {
@@ -47,9 +47,8 @@ namespace te
         virtual ~AbstractRulerModel(void);
         
         virtual void setVisible(bool visible);
+        
         virtual bool isVisible();
-
-        virtual te::gm::Envelope sizeInZoomProportion(te::gm::Envelope env, double zoomFactor) = 0;
 
       protected:
 

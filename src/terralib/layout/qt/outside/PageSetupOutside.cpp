@@ -31,7 +31,6 @@
 #include "../../core/pattern/mvc/OutsideObserver.h"
 #include "../../core/pattern/mvc/OutsideController.h"
 #include "../../core/pattern/singleton/Context.h"
-#include "../../item/PaperConfig.h"
 
 // STL
 #include <string>

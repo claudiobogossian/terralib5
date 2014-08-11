@@ -28,7 +28,6 @@
 // TerraLib
 #include "PaperModel.h"
 #include "../core/ContextItem.h"
-#include "PaperConfig.h"
 #include "../../maptools/Canvas.h"
 
 te::layout::PaperModel::PaperModel() :

@@ -42,6 +42,7 @@ namespace te
     class Utils;
     class PaperConfig;
     class BuildGraphicsItem;
+    class SystematicScaleConfig;
 
     class TELAYOUTEXPORT BuildContext 
     {
@@ -61,6 +62,7 @@ namespace te
         PaperConfig* m_paperConfig;
         te::qt::widgets::Canvas* m_canvas;
         BuildGraphicsItem* m_buildGraphicsItem;
+        SystematicScaleConfig* m_systematicConfig;
     };
   }
 }

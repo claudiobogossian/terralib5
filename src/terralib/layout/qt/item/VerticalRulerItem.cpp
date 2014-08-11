@@ -35,17 +35,18 @@
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
+#include "../../core/pattern/singleton/Context.h"
+
+// STL
+#include <cmath>
 
 te::layout::VerticalRulerItem::VerticalRulerItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
 {
   m_printable = false;
   m_canChangeGraphicOrder = false;
-
-  /*this->setFlags(QGraphicsItem::ItemIsMovable
-    | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges 
-    | QGraphicsItem::ItemIgnoresTransformations);*/
+  
+  m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::VerticalRulerItem::~VerticalRulerItem()
@@ -86,7 +87,18 @@ void te::layout::VerticalRulerItem::updateObserver( ContextItem context )
   if(img)
     delete img;
 
+  double zoomFactor = getZoomRuler();
+
+  setScale(zoomFactor);
+
   setPixmap(pixmap);
   update();
+}
+
+double te::layout::VerticalRulerItem::getZoomRuler()
+{
+  double zoomFactor = Context::getInstance().getZoomFactor();
+  zoomFactor = 1. / zoomFactor;
+  return zoomFactor;
 }
 

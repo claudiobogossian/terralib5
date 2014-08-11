@@ -356,7 +356,7 @@ void te::qt::plugins::layout::OutsideArea::closeMainMenu()
     firstOption->setVisible(true);
   }
 
-  m_view->closePageSetup();
+  m_view->closeOutsideWindows();
 }
 
 void te::qt::plugins::layout::OutsideArea::onSelectionChanged()
@@ -370,10 +370,10 @@ void te::qt::plugins::layout::OutsideArea::onSelectionChanged()
 
 void te::qt::plugins::layout::OutsideArea::onAddItemFinalized()
 {
-  QList<QGraphicsItem*> graphicsItems = m_view->scene()->selectedItems();
+  QList<QGraphicsItem*> allItems = m_view->scene()->items();
   //Refresh Inspector Object window
   if(m_dockInspector)
-    m_dockInspector->getObjectInspectorOutside()->itemsInspector(graphicsItems);
+    m_dockInspector->getObjectInspectorOutside()->itemsInspector(allItems);
 }
 
 void te::qt::plugins::layout::OutsideArea::onShowView()
@@ -386,12 +386,12 @@ void te::qt::plugins::layout::OutsideArea::onHideView()
 {
   closeAllDocks();
   closeMainMenu();
-  m_view->closePageSetup();
+  m_view->closeOutsideWindows();
 }
 
 void te::qt::plugins::layout::OutsideArea::onCloseView()
 {
   closeAllDocks();
   closeMainMenu();
-  m_view->closePageSetup();
+  m_view->closeOutsideWindows();
 }

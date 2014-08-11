@@ -18,47 +18,40 @@
  */
 
 /*!
-  \file HorizontalRulerModel.h
+  \file SystematicScaleModel.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_SYSTEMATIC_SCALE_MODEL_H 
+#define __TERRALIB_LAYOUT_INTERNAL_SYSTEMATIC_SCALE_MODEL_H
 
 // TerraLib
-#include "AbstractRulerModel.h"
+#include "../core/pattern/mvc/OutsideModelObservable.h"
+#include "../core/ContextItem.h"
+#include "../core/property/Properties.h"
 #include "../core/enum/EnumMode.h"
-#include "../../color/RGBAColor.h"
-
-// STL
-#include <vector>
-#include <string>
+#include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class HorizontalRulerModel : public AbstractRulerModel
+    class TELAYOUTEXPORT SystematicScaleModel : public OutsideModelObservable
     {
-      public:
+    public:
 
-        HorizontalRulerModel(PaperConfig* paperConfig);
-        virtual ~HorizontalRulerModel();
-        
-        virtual void draw( ContextItem context );
-        
-        virtual void setBox(te::gm::Envelope box);
-                
-      protected:
+      SystematicScaleModel();
+      virtual ~SystematicScaleModel();
 
-        virtual void drawHorizontalRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
+      virtual void updateProperties(te::layout::Properties* properties);
 
-        virtual void drawRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
+      virtual Properties* getProperties() const;
+
     };
   }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_LAYOUTMODEL_H
+#endif

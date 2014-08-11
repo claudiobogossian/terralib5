@@ -72,6 +72,7 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionSceneZoom("scene_zoom"),
   m_optionTextDefault("text_default"),
   m_optionImage("text_image"),
+  m_optionMapSystematicScale("map_systematic_scale"),
   m_btnMap(0)
 {
 	te::gm::Envelope box = m_model->getBox();	
@@ -189,6 +190,9 @@ void te::layout::ToolbarOutside::createMapToolsToolButton()
 
   QAction* actionZoomOut = createAction("Zoom Out", m_optionMapZoomOut, "layout-map-zoom-out");
   menu->addAction(actionZoomOut);
+
+  QAction* actionSystematic = createAction("Systematic Scale", m_optionMapSystematicScale, "layout-systematic-map");
+  menu->addAction(actionSystematic);
   
   QToolButton *btnMapTools = createToolButton("Map Tools", "Map Tools", "layout-map-pan");
   btnMapTools->setMenu(menu);
@@ -369,6 +373,10 @@ void te::layout::ToolbarOutside::onMapToolsTriggered( QAction* action )
   if(action->objectName().compare(m_optionMapZoomOut.c_str()) == 0)
   {
     changeAction(TypeMapZoomOut);
+  }
+  if(action->objectName().compare(m_optionMapSystematicScale.c_str()) == 0)
+  {
+    changeAction(TypeSystematicScale);
   }
 }
 

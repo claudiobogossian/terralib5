@@ -37,6 +37,8 @@
 #include "WorldTransformer.h"
 #include "../../common/UnitOfMeasure.h"
 #include "../../maptools/Enums.h"
+#include "../../geometry/Point.h"
+#include "../../geometry/Polygon.h"
 
 // STL
 #include <string>
@@ -71,10 +73,10 @@ namespace te
 
         virtual te::gm::LinearRing* addCoordsInY(te::gm::Envelope box, double axisCoord, double gap);
 
-        virtual void configCanvas(te::gm::Envelope box, bool resize = true);
+        virtual void configCanvas(te::gm::Envelope box, bool resize = true, bool applyZoom = true);
 
         /* The calculation of the viewport is from the box in mm */
-        virtual void configGeoCanvas(te::gm::Envelope boxgeo, te::gm::Envelope boxmm, bool resize = true);
+        virtual void configGeoCanvas(te::gm::Envelope boxgeo, te::gm::Envelope boxmm, bool resize = true, bool applyZoom = true);
                 
         virtual te::gm::Envelope viewportBox(te::gm::Envelope box);
 
@@ -105,7 +107,11 @@ namespace te
 
         virtual void remapToPlanar(te::gm::LinearRing* line, int zone);
 
+        virtual void remapToPlanar(te::gm::Point* point, int zone);
+
         virtual void convertToMillimeter(WorldTransformer transf, te::gm::LinearRing* line); 
+
+        virtual void convertToMillimeter(WorldTransformer transf, te::gm::Polygon* poly); 
 
         virtual void drawImage(std::string fileName, te::gm::Envelope box);
 
@@ -114,6 +120,10 @@ namespace te
         virtual std::string getFileExtension(std::string fileName);
 
         virtual te::map::ImageType getFileExtensionType(std::string filName);
+
+        virtual void setApplyZoom(bool apply);
+
+        virtual bool getApplyZoom();
         
       protected:
         
@@ -124,6 +134,10 @@ namespace te
         virtual te::gm::Envelope transformToMM(te::layout::WorldTransformer transf, te::gm::Envelope boxGeo);
 
         virtual te::gm::Envelope viewportBoxFromMM(te::gm::Envelope box);
+
+      protected:
+
+        bool m_applyZoom;
     };
   }
 }

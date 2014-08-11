@@ -205,3 +205,8 @@ void te::layout::MapGridModel::updateProperties( te::layout::Properties* propert
     m_gridGeodesic->updateProperty(pro_grid_geodesic);
   }
 }
+
+void te::layout::MapGridModel::generateSystematic( te::gm::Coord2D coord )
+{
+  MapModel::generateSystematic(coord);
+}

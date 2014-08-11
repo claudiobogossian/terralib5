@@ -34,7 +34,6 @@
 #include "../../geometry/LinearRing.h"
 #include "../../geometry/Point.h"
 #include "../../qt/widgets/canvas/Canvas.h"
-#include "../item/PaperConfig.h"
 #include "enum/AbstractType.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 #include "../../common/Translator.h"
@@ -45,7 +44,8 @@
 #include <sstream> 
 #include <exception>
 
-te::layout::Utils::Utils() 
+te::layout::Utils::Utils() :
+  m_applyZoom(true)
 {
 
 }
@@ -130,14 +130,16 @@ int te::layout::Utils::mm2pixel( double mm )
   return px;
 }
 
-void te::layout::Utils::configCanvas( te::gm::Envelope box, bool resize )
+void te::layout::Utils::configCanvas( te::gm::Envelope box, bool resize, bool applyZoom )
 {
+  m_applyZoom = applyZoom;
   te::gm::Envelope boxViewport = viewportBox(box);
   changeCanvas(boxViewport, box, resize); 
 }
 
-void te::layout::Utils::configGeoCanvas( te::gm::Envelope boxgeo, te::gm::Envelope boxmm, bool resize )
+void te::layout::Utils::configGeoCanvas( te::gm::Envelope boxgeo, te::gm::Envelope boxmm, bool resize, bool applyZoom )
 {
+  m_applyZoom = applyZoom;
   te::gm::Envelope boxViewport = viewportBox(boxmm);
   changeCanvas(boxViewport, boxgeo, resize);
 }
@@ -179,10 +181,14 @@ te::gm::Envelope te::layout::Utils::viewportBoxFromMM( te::gm::Envelope box )
 {
   te::map::WorldDeviceTransformer transf; // World Device Transformer.
 
-  double zoomFactor = Context::getInstance().getZoomFactor();
-
-  if(zoomFactor < 1.)
-    zoomFactor = 1.;
+  double zoomFactor = 1.;
+  
+  if(m_applyZoom)
+  {
+    zoomFactor = Context::getInstance().getZoomFactor();
+    if(zoomFactor < 1.)
+      zoomFactor = 1.;
+  }
   
   int pxwidth = mm2pixel(box.getWidth() * zoomFactor);
   int pxheight = mm2pixel(box.getHeight() * zoomFactor);
@@ -545,6 +551,17 @@ void te::layout::Utils::remapToPlanar( te::gm::LinearRing* line, int zone )
   line->computeMBR(true);
 }
 
+void te::layout::Utils::remapToPlanar( te::gm::Point* point, int zone )
+{
+  if(!point)
+    return;
+
+  const te::gm::Envelope* env = point->getMBR();
+  te::gm::Envelope* en = const_cast<te::gm::Envelope*>(env);
+  remapToPlanar(en, zone);
+  point->computeMBR(true);
+}
+
 void te::layout::Utils::convertToMillimeter( WorldTransformer transf, te::gm::LinearRing* line )
 {
   if(!line)
@@ -563,6 +580,25 @@ void te::layout::Utils::convertToMillimeter( WorldTransformer transf, te::gm::Li
   }
 
   line->computeMBR(true);
+}
+
+void te::layout::Utils::convertToMillimeter( WorldTransformer transf, te::gm::Polygon* poly )
+{
+  if(!poly)
+    return;
+
+  int nrings = poly->getNumInteriorRings();
+
+  for(int i = 0 ; i < nrings ; ++i)
+  {
+    te::gm::LinearRing* line = dynamic_cast<te::gm::LinearRing*>(poly->getInteriorRingN(i));
+    if(line)
+    {
+      convertToMillimeter(transf, line);
+    }
+  }
+
+  poly->computeMBR(true);
 }
 
 void te::layout::Utils::drawImage( std::string fileName, te::gm::Envelope box )
@@ -647,4 +683,14 @@ te::map::ImageType te::layout::Utils::getFileExtensionType( std::string fileName
   }
 
   return imgType;
+}
+
+void te::layout::Utils::setApplyZoom( bool apply )
+{
+  m_applyZoom = apply;
+}
+
+bool te::layout::Utils::getApplyZoom()
+{
+  return m_applyZoom;
 }

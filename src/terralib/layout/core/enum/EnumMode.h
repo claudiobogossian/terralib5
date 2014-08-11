@@ -72,6 +72,7 @@ namespace te
       TypeRecompose = 31,
       TypeCreateImage = 32,
       TypePageConfig = 33,
+      TypeSystematicScale = 34,
       TypeNone = 0
     } LayoutMode;
 

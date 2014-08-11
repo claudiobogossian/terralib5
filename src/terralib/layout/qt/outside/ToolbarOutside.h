@@ -149,6 +149,7 @@ namespace te
       std::string m_optionMapZoomIn;
       std::string m_optionMapZoomOut;
       std::string m_optionMapPan;
+      std::string m_optionMapSystematicScale;
 
       /* Geometry Menu */
       std::string m_optionRectangle;

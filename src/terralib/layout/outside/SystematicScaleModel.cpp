@@ -18,47 +18,43 @@
  */
 
 /*!
-  \file HorizontalRulerModel.h
+  \file SystematicScaleController.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_MODEL_H
-
 // TerraLib
-#include "AbstractRulerModel.h"
-#include "../core/enum/EnumMode.h"
-#include "../../color/RGBAColor.h"
+#include "SystematicScaleModel.h"
+#include "../core/property/Property.h"
+#include "../core/property/Properties.h"
 
-// STL
-#include <vector>
-#include <string>
-
-namespace te
+te::layout::SystematicScaleModel::SystematicScaleModel() 
 {
-  namespace layout
-  {
-    class HorizontalRulerModel : public AbstractRulerModel
-    {
-      public:
-
-        HorizontalRulerModel(PaperConfig* paperConfig);
-        virtual ~HorizontalRulerModel();
-        
-        virtual void draw( ContextItem context );
-        
-        virtual void setBox(te::gm::Envelope box);
-                
-      protected:
-
-        virtual void drawHorizontalRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
-
-        virtual void drawRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
-    };
-  }
+  m_box = te::gm::Envelope(0., 0., 200., 200.);
+  m_type = TPSystematicScale;
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_LAYOUTMODEL_H
+te::layout::SystematicScaleModel::~SystematicScaleModel()
+{
+
+}
+
+te::layout::Properties* te::layout::SystematicScaleModel::getProperties() const
+{
+  m_properties->clear();
+
+  Property pro_name;
+  pro_name.setName("PageSetup");
+
+  m_properties->addProperty(pro_name);
+
+  m_properties->setTypeObj(m_type);
+  return m_properties;
+}
+
+void te::layout::SystematicScaleModel::updateProperties( te::layout::Properties* properties )
+{
+
+}

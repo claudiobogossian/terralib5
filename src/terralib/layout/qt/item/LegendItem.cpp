@@ -45,6 +45,8 @@ te::layout::LegendItem::LegendItem( ItemController* controller, Observable* o ) 
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges
     | QGraphicsItem::ItemIsFocusable);
+
+  m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::LegendItem::~LegendItem()

@@ -35,6 +35,7 @@
 #include "../core/property/Property.h"
 #include "../../geometry/Envelope.h"
 #include "../core/Utils.h"
+#include "../core/Systematic.h"
 
 namespace te
 {
@@ -65,6 +66,8 @@ namespace te
         virtual void setBoxMapMM(te::gm::Envelope box);
 
         virtual void setBoundingBoxItemMM(te::gm::Envelope box);
+
+        virtual void setSystematic(Systematic* sys);
                 
        protected:
 
@@ -80,6 +83,7 @@ namespace te
          double                  m_mapScale;
          std::string             m_name;
          int                     m_srid;
+         Systematic*             m_systematic;
 
          te::gm::Envelope     m_boxMapMM;
          te::gm::Envelope     m_boundingBoxItemMM;

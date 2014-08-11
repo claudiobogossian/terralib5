@@ -37,6 +37,7 @@
 #include "../../core/enum/AbstractType.h"
 #include "../../core/enum/EnumMode.h"
 #include "../../core/Config.h"
+#include "../../../geometry/Coord2D.h"
 
 class QGraphicsSceneMouseEvent;
 class QGraphicsItemGroup;
@@ -65,6 +66,7 @@ namespace te
     class ItemObserver;
     class Properties;
     class VisualizationArea;
+    class Systematic;
 
     class TELAYOUTEXPORT Scene : public QGraphicsScene, public AbstractScene
     {
@@ -143,6 +145,11 @@ namespace te
         virtual void redrawRulers();
 
         virtual void refreshRulers(te::gm::Envelope newBox);
+
+        /*! \brief Get the number of map items that intersection the coordinate */
+        virtual int intersectionMap(te::gm::Coord2D coord, bool &intersection);
+
+        virtual void setCurrentMapSystematic(Systematic* systematic, te::gm::Coord2D coord);
         
       protected slots:
 

@@ -18,47 +18,63 @@
  */
 
 /*!
-  \file HorizontalRulerModel.h
+  \file Systematic.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_MODEL_H
-
-// TerraLib
-#include "AbstractRulerModel.h"
-#include "../core/enum/EnumMode.h"
-#include "../../color/RGBAColor.h"
-
-// STL
-#include <vector>
-#include <string>
+#ifndef __TERRALIB_LAYOUT_INTERNAL_SYSTEMATIC_H 
+#define __TERRALIB_LAYOUT_INTERNAL_SYSTEMATIC_H
 
 namespace te
 {
   namespace layout
   {
-    class HorizontalRulerModel : public AbstractRulerModel
+    class Systematic 
     {
       public:
 
-        HorizontalRulerModel(PaperConfig* paperConfig);
-        virtual ~HorizontalRulerModel();
-        
-        virtual void draw( ContextItem context );
-        
-        virtual void setBox(te::gm::Envelope box);
-                
+        /*!
+         \brief 
+        */
+        Systematic();
+
+        /*!
+         \brief 
+        */
+        virtual ~Systematic();
+
+        virtual void setWidth(double w);
+
+        virtual double getWidth();
+
+        virtual void setHeight(double h);
+
+        virtual double getHeight();
+
+        virtual void setScale(int scale);
+
+        virtual int getScale();
+
+        virtual void setPlanarGap(double gap);
+
+        virtual double getPlanarGap();
+
+        virtual void setGeoGap(double gap);
+
+        virtual double getGeoGap();
+
       protected:
 
-        virtual void drawHorizontalRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
-
-        virtual void drawRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
+        double m_width;
+        double m_height;
+        int m_scale;
+        double m_planarGap;
+        double m_geoGap;//minutes
     };
   }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_LAYOUTMODEL_H
+#endif

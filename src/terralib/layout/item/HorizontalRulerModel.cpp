@@ -61,18 +61,14 @@ void te::layout::HorizontalRulerModel::draw( ContextItem context )
   if((!canvas) || (!utils))
     return;
 
-  double zoomFactor = context.getZoomFactor();
-  te::gm::Envelope newBox = sizeInZoomProportion(m_box, zoomFactor);
-  m_box = newBox;
-
   if(context.isResizeCanvas())
-    utils->configCanvas(m_box);  
-  
+    utils->configCanvas(m_box, true, false);  
+    
   drawRuler(canvas, utils, context.getZoomFactor());
   
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
-  
+    
   context.setPixmap(pixmap);
   notifyAll(context);
 }
@@ -89,10 +85,7 @@ void te::layout::HorizontalRulerModel::drawRuler( te::map::Canvas* canvas, Utils
   
   te::color::RGBAColor colorp4(180,180,180, TE_OPAQUE);
   drawRectW(m_box, colorp4, canvas, utils);
-
-  te::gm::Envelope newBox = sizeInZoomProportion(m_backEndBox, zoomFactor);
-  m_backEndBox = newBox;
-
+  
   te::color::RGBAColor colorp85(145,145,145, TE_OPAQUE);
   drawRectW(m_backEndBox, colorp85, canvas, utils);
                 
@@ -114,18 +107,12 @@ void te::layout::HorizontalRulerModel::drawRuler( te::map::Canvas* canvas, Utils
 
   envMargin = te::gm::Envelope(m_backEndBox.getLowerLeftX(), m_backEndBox.getLowerLeftY() + m_lineMargin, 
     m_backEndBox.getWidth(), m_backEndBox.getLowerLeftY() + m_lineMargin);
-
-  newBox = sizeInZoomProportion(envMargin, zoomFactor);
-  envMargin = newBox;
-
+  
   drawLineW(envMargin, utils);
 
   envMargin = te::gm::Envelope(m_box.getLowerLeftX(), m_box.getLowerLeftY() + 0.2, 
     m_box.getWidth(), m_box.getLowerLeftY() + 0.2);
-
-  newBox = sizeInZoomProportion(envMargin, zoomFactor);
-  envMargin = newBox;
-
+  
   drawLineW(envMargin, utils);
 }
 
@@ -148,8 +135,6 @@ void te::layout::HorizontalRulerModel::drawHorizontalRuler(te::map::Canvas* canv
     if((i % (int)m_blockSize) == 0)
     {
       box = te::gm::Envelope(i, m_backEndBox.getLowerLeftY(), i, m_backEndBox.getLowerLeftY() + m_longLine);  
-      newBox = sizeInZoomProportion(box, zoomFactor);
-      box = newBox;
       drawLineW(box, utils);
 
       std::stringstream ss;//create a stringstream
@@ -161,15 +146,11 @@ void te::layout::HorizontalRulerModel::drawHorizontalRuler(te::map::Canvas* canv
     else if((i % (int)m_middleBlockSize) == 0)
     {
       box = te::gm::Envelope(i, m_backEndBox.getLowerLeftY(), i, m_backEndBox.getLowerLeftY() + m_mediumLine); 
-      newBox = sizeInZoomProportion(box, zoomFactor);
-      box = newBox;
       drawLineW(box, utils);
     }
     else if((i % (int)m_smallBlockSize) == 0)
     {
       box = te::gm::Envelope(i, m_backEndBox.getLowerLeftY(), i, m_backEndBox.getLowerLeftY() + m_smallLine);  
-      newBox = sizeInZoomProportion(box, zoomFactor);
-      box = newBox;
       drawLineW(box, utils);
     }
   }
@@ -183,23 +164,4 @@ void te::layout::HorizontalRulerModel::setBox( te::gm::Envelope box )
   m_box = box;
   m_backEndBox = te::gm::Envelope(m_box.getLowerLeftX() + m_backEndSpacing, m_box.getLowerLeftY() + m_backEndMargin,
     m_box.getUpperRightX(), m_box.getUpperRightY() - m_backEndMargin);
-}
-
-te::gm::Envelope te::layout::HorizontalRulerModel::sizeInZoomProportion( te::gm::Envelope env, double zoomFactor )
-{
-  /*te::gm::Envelope newBox = env;
-  double w = newBox.getWidth() * (1 / zoomFactor);
-  double h = newBox.getHeight() * (1 / zoomFactor);
-
-  if(zoomFactor > 1.)
-  {
-  w = newBox.getWidth() * zoomFactor;
-  }
-
-  newBox.m_urx = newBox.m_llx + w;
-  newBox.m_ury = newBox.m_lly + h;
-
-  return newBox;*/
-
-  return env;
 }

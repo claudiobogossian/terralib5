@@ -36,13 +36,15 @@
 #include "../outside/ObjectInspectorOutside.h"
 #include "../outside/ToolbarOutside.h"
 #include "ItemUtils.h"
-#include "../../item/PaperConfig.h"
 #include "tools/ViewPan.h"
 #include "../../core/Utils.h"
 #include "tools/ViewZoomArea.h"
 #include "../../outside/PageSetupModel.h"
 #include "../../outside/PageSetupController.h"
 #include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../outside/SystematicScaleModel.h"
+#include "../../outside/SystematicScaleController.h"
+#include "../../core/SystematicScaleConfig.h"
 
 // STL
 #include <math.h>
@@ -62,6 +64,7 @@
 #include <QMessageBox>
 #include <QPixmap>
 #include <QLineF>
+#include <QMessageBox>
 
 #define _psPointInMM 0.352777778 //<! 1 PostScript point in millimeters
 #define _inchInPSPoints 72 //<! 1 Inch in PostScript point
@@ -73,7 +76,8 @@ te::layout::View::View( QWidget* widget) :
   m_lineIntersectHrz(0),
   m_lineIntersectVrt(0),
   m_currentTool(0),
-  m_pageSetupOutside(0)
+  m_pageSetupOutside(0),
+  m_systematicOutside(0)
 {
   //Use ScrollHand Drag Mode to enable Panning
   //You do need the enable scroll bars for that to work.
@@ -108,6 +112,12 @@ te::layout::View::~View()
     delete m_pageSetupOutside;
     m_pageSetupOutside = 0;
   }
+
+  if(m_systematicOutside)
+  {
+    delete m_systematicOutside;
+    m_systematicOutside = 0;
+  }
 }
 
 void te::layout::View::mousePressEvent( QMouseEvent * event )
@@ -121,7 +131,39 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
   if(!sc)
     return;
 
-  sc->createItem(coord); 
+  if(Context::getInstance().getMode() == TypeSystematicScale)
+  {
+    bool intersection = false;
+    int number = sc->intersectionMap(coord, intersection);
+    
+    QMessageBox msgBox;
+
+    if(number == 1)
+    {
+      if(intersection)
+      {
+        m_coordSystematic = coord;
+        showSystematicScale();
+      }
+    }
+    else if(number > 1)
+    {
+      msgBox.setIcon(QMessageBox::Information);
+      msgBox.setText("Select just one object.");
+      msgBox.exec();
+    }
+    else 
+    {
+      msgBox.setIcon(QMessageBox::Information);
+      msgBox.setText("Select a Map Object.");
+      msgBox.exec();
+    }
+    Context::getInstance().setMode(TypeNone);
+  }
+  else
+  {
+    sc->createItem(coord);
+  } 
 }
 
 void te::layout::View::mouseMoveEvent( QMouseEvent * event )
@@ -534,49 +576,6 @@ void te::layout::View::showEvent( QShowEvent * event )
   emit showView();
 }
 
-te::gm::Envelope te::layout::View::calculateNewBox( te::gm::Envelope env )
-{
-  double win_rt, world_rt;
-  double world_w, world_h;
-  double x0,y0,x1,y1;
-  double w, h;
-
-  x0 = env.getLowerLeftX();
-  y0 = env.getLowerLeftY();
-  x1 = env.getUpperRightX();
-  y1 = env.getUpperRightY();
-
-  w = width();
-  h = height();
-
-  win_rt = w / h;
-
-  world_w = (x1 - x0);
-  world_h = (y1 - y0);
-  world_rt = world_w / world_h;
-
-  if (world_rt < win_rt)
-  {
-    double dx;
-
-    dx = world_h * win_rt - world_w;
-    dx /= 2;
-    x0 -= dx;
-    x1 += dx;
-  }
-  else
-  {
-    double dy;
-
-    dy = world_w / win_rt - world_h;
-    dy /= 2;
-    y0 -= dy;
-    y1 += dy;
-  }
-  
-  return te::gm::Envelope(x0,y0,x1,y1);
-}
-
 void te::layout::View::showPageSetup()
 {
   if(!m_pageSetupOutside)
@@ -594,20 +593,46 @@ void te::layout::View::showPageSetup()
 
 void te::layout::View::onChangeConfig()
 {
-  /*double zoomFactor = Context::getInstance().getDefaultZoomFactor();
+  double zoomFactor = Context::getInstance().getDefaultZoomFactor();
   Context::getInstance().setZoomFactor(zoomFactor);
   config();
 
   Scene* sc = dynamic_cast<Scene*>(scene());
 
   sc->refresh(this, zoomFactor);            
-  sc->redrawItems(true);*/
+  sc->redrawItems(true);
 }
 
-void te::layout::View::closePageSetup()
+void te::layout::View::showSystematicScale()
+{
+  if(!m_systematicOutside)
+  {
+    SystematicScaleModel* model = new SystematicScaleModel;
+    SystematicScaleController* controller = new SystematicScaleController(model);
+    OutsideObserver* obsever = (OutsideObserver*)(controller->getView());
+    m_systematicOutside = dynamic_cast<SystematicScaleOutside*>(obsever);
+    connect(m_systematicOutside, SIGNAL(systematicApply(double,SystematicScaleType)), this, SLOT(onSystematicApply(double,SystematicScaleType)));
+  }
+
+  m_systematicOutside->show();
+}
+
+void te::layout::View::closeOutsideWindows()
 {
   if(m_pageSetupOutside)
   {
     m_pageSetupOutside->close();
+  }
+}
+
+void te::layout::View::onSystematicApply(double scale, SystematicScaleType type)
+{
+  SystematicScaleConfig* config = Context::getInstance().getSystematicScaleConfig();
+  Systematic* sys = config->getSystematic(type);
+  
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  if(sc)
+  {
+    sc->setCurrentMapSystematic(sys, m_coordSystematic);
   }
 }

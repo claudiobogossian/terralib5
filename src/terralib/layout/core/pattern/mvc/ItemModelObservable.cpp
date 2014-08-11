@@ -41,7 +41,8 @@ te::layout::ItemModelObservable::ItemModelObservable() :
   m_type(TPObjectUnknown),
   m_sharedProps(0),
   m_zValue(0),
-  m_border(true)
+  m_border(true),
+  m_resizable(true)
 {
   m_box = te::gm::Envelope(0,0,0,0);
 
@@ -354,4 +355,14 @@ void te::layout::ItemModelObservable::resize( double w, double h )
 
   m_box.m_urx = m_box.m_llx + w;
   m_box.m_ury = m_box.m_lly + h;
+}
+
+void te::layout::ItemModelObservable::setResizable( bool resize )
+{
+  m_resizable = resize;
+}
+
+bool te::layout::ItemModelObservable::isResizable()
+{
+  return m_resizable;
 }

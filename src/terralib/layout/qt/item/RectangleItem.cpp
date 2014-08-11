@@ -42,6 +42,8 @@ te::layout::RectangleItem::RectangleItem( ItemController* controller, Observable
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges
     | QGraphicsItem::ItemIsFocusable);
+
+  m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::RectangleItem::~RectangleItem()

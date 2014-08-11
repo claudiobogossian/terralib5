@@ -37,7 +37,7 @@
 
 // STL
 #include <sstream>
-#include <string>     // std::string, std::to_string
+#include <string>    
 
 te::layout::VerticalRulerModel::VerticalRulerModel(PaperConfig* paperConfig):
   AbstractRulerModel(paperConfig)
@@ -59,21 +59,10 @@ void te::layout::VerticalRulerModel::draw( ContextItem context )
  
   if((!canvas) || (!utils))
     return;
-
-  double zoomFactor = context.getZoomFactor();
-  te::gm::Envelope newBox = sizeInZoomProportion(m_box, zoomFactor);
-  m_box = newBox;
-  
+    
   if(context.isResizeCanvas())
-    utils->configCanvas(m_box);  
-  
-  //double newZoomFactor = 1. / zoomFactor;
-  ///*if(zoomFactor > 1.)
-  //  newZoomFactor = zoomFactor;*/
-
-  //canvas->setTextPointSize(5 * newZoomFactor);
-  //canvas->setLineWidth(1 * newZoomFactor);
-
+    utils->configCanvas(m_box, true, false);  
+    
   drawRuler(canvas, utils, context.getZoomFactor());
 
   if(context.isResizeCanvas())
@@ -96,16 +85,13 @@ void te::layout::VerticalRulerModel::drawRuler( te::map::Canvas* canvas, Utils* 
   te::color::RGBAColor colorp4(180,180,180, TE_OPAQUE);
   drawRectW(m_box, colorp4, canvas, utils);
 
-  te::gm::Envelope newBox = sizeInZoomProportion(m_backEndBox, zoomFactor);
-  m_backEndBox = newBox;
-  
   te::color::RGBAColor colorp85(145,145,145, TE_OPAQUE);
   drawRectW(m_backEndBox, colorp85, canvas, utils);
 
   if(m_paperConfig)
   {
     te::gm::Envelope* paperBox = m_paperConfig->getPaperBoxW();
-    
+   
     if(paperBox)
     {
       double ury = paperBox->getUpperRightY();
@@ -126,21 +112,15 @@ void te::layout::VerticalRulerModel::drawRuler( te::map::Canvas* canvas, Utils* 
   canvas->setLineColor(colorp3);
 
   drawVerticalRuler(canvas, utils, zoomFactor);
-
+  
   envMargin = te::gm::Envelope(m_backEndBox.getUpperRightX() - m_lineMargin, m_backEndBox.getLowerLeftY(), 
     m_backEndBox.getUpperRightX() - m_lineMargin, m_backEndBox.getUpperRightY());
-
-  newBox = sizeInZoomProportion(envMargin, zoomFactor);
-  envMargin = newBox;
 
   drawLineW(envMargin, utils);
 
   envMargin = te::gm::Envelope(m_box.getUpperRightX() - 0.2, m_box.getLowerLeftY(), 
     m_box.getUpperRightX() - 0.2, m_backEndBox.getUpperRightY() );
   
-  newBox = sizeInZoomProportion(envMargin, zoomFactor);
-  envMargin = newBox;
-
   drawLineW(envMargin, utils);
 }
 
@@ -163,8 +143,6 @@ void te::layout::VerticalRulerModel::drawVerticalRuler(te::map::Canvas* canvas, 
     if((i % (int)m_blockSize) == 0)
     {
       box = te::gm::Envelope(m_backEndBox.getUpperRightX(), i, m_backEndBox.getUpperRightX() - m_longLine, i);
-      newBox = sizeInZoomProportion(box, zoomFactor);
-      box = newBox;
       drawLineW(box, utils);
 
       std::stringstream ss;//create a stringstream
@@ -176,15 +154,11 @@ void te::layout::VerticalRulerModel::drawVerticalRuler(te::map::Canvas* canvas, 
     else if((i % (int)m_middleBlockSize) == 0)
     {
       box = te::gm::Envelope(m_backEndBox.getUpperRightX(), i, m_backEndBox.getUpperRightX() - m_mediumLine, i);
-      newBox = sizeInZoomProportion(box, zoomFactor);
-      box = newBox;
       drawLineW(box, utils);
     }
     else if((i % (int)m_smallBlockSize) == 0)
     {
       box = te::gm::Envelope(m_backEndBox.getUpperRightX(), i, m_backEndBox.getUpperRightX() - m_smallLine, i);
-      newBox = sizeInZoomProportion(box, zoomFactor);
-      box = newBox;
       drawLineW(box, utils);
     }
   }
@@ -198,24 +172,4 @@ void te::layout::VerticalRulerModel::setBox( te::gm::Envelope box )
   m_box = box;
   m_backEndBox = te::gm::Envelope(m_box.getLowerLeftX() + m_backEndMargin, m_box.getLowerLeftY(),
     m_box.getUpperRightX() - m_backEndMargin , m_box.getUpperRightY() - m_backEndSpacing);
-}
-
-te::gm::Envelope te::layout::VerticalRulerModel::sizeInZoomProportion( te::gm::Envelope env, double zoomFactor )
-{
-  /*te::gm::Envelope newBox = env;
-
-  double w = newBox.getWidth() * (1 / zoomFactor);
-  double h = newBox.getHeight() * (1 / zoomFactor);
-
-  if(zoomFactor > 1.)
-  {
-    h = newBox.getHeight() * zoomFactor;
-  }
-
-  newBox.m_urx = newBox.m_llx + w;
-  newBox.m_ury = newBox.m_lly + h;
-
-  return newBox;*/
-
-  return env;
 }

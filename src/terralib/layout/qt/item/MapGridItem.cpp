@@ -40,6 +40,8 @@ te::layout::MapGridItem::MapGridItem( ItemController* controller, Observable* o 
 {
   m_mapDisplay->setBackgroundColor(Qt::blue);
   m_mapDisplay->refresh();
+
+  m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::MapGridItem::~MapGridItem()

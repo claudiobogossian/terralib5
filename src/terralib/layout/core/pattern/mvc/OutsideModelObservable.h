@@ -78,6 +78,10 @@ namespace te
 
       virtual void setId( int id );
 
+      virtual void setResizable(bool resize);
+
+      virtual bool isResizable();
+
     protected:
 
       virtual void notifyAll(ContextItem context);
@@ -91,6 +95,7 @@ namespace te
       LayoutAbstractObjectType  m_type;
       int                       m_zValue;
       int                     m_id;
+      bool                    m_resizable;
 
     private:
       std::string m_name;

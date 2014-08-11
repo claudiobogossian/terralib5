@@ -46,6 +46,8 @@ te::layout::ImageItem::ImageItem( ItemController* controller, Observable* o ) :
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges
     | QGraphicsItem::ItemIsFocusable);
+
+  m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::ImageItem::~ImageItem()

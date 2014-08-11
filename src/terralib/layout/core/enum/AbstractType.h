@@ -59,6 +59,7 @@ namespace te
       TPScaleItem = 18,
       TPPageSetup = 19,
       TPImageItem = 20,
+      TPSystematicScale = 21,
       TPObjectUnknown = 0
     } LayoutAbstractObjectType;
 
@@ -167,6 +168,15 @@ namespace te
       StyleMeter=1,
       StyleKilometer=1000
     } LayoutUnit;
+
+    typedef enum SystematicScaleType
+    {
+      S250000,		
+      S100000,
+      S50000,
+      S25000,
+      S0
+    };
   }
 }
 

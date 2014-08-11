@@ -18,35 +18,78 @@
  */
 
 /*!
-  \file VerticalRulerItem.h
+  \file Systematic.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_ITEM_H
-
 // TerraLib
-#include "ObjectItem.h"
+#include "Systematic.h"
 
-namespace te
+
+te::layout::Systematic::Systematic() :
+  m_height(0.),
+  m_width(0.),
+  m_scale(0),
+  m_planarGap(0.),
+  m_geoGap(0.)
 {
-  namespace layout
-  {
-    class VerticalRulerItem : public ObjectItem
-    {
-      public:
 
-        VerticalRulerItem(ItemController* controller = 0, Observable* o = 0);
-        virtual ~VerticalRulerItem();
-
-        virtual void updateObserver(ContextItem context);
-
-        virtual double getZoomRuler();
-    };
-  }
 }
 
-#endif
+te::layout::Systematic::~Systematic()
+{
+
+}
+
+void te::layout::Systematic::setWidth( double w )
+{
+  m_width = w;
+}
+
+double te::layout::Systematic::getWidth()
+{
+  return m_width;
+}
+
+void te::layout::Systematic::setHeight( double h )
+{
+  m_height = h;
+}
+
+double te::layout::Systematic::getHeight()
+{
+  return m_height;
+}
+
+void te::layout::Systematic::setScale( int scale )
+{
+  m_scale = scale;
+}
+
+int te::layout::Systematic::getScale()
+{
+  return m_scale;
+}
+
+void te::layout::Systematic::setPlanarGap( double gap )
+{
+  m_planarGap = gap;
+}
+
+double te::layout::Systematic::getPlanarGap()
+{
+  return m_planarGap;
+}
+
+void te::layout::Systematic::setGeoGap( double gap )
+{
+  m_geoGap = gap;
+}
+
+double te::layout::Systematic::getGeoGap()
+{
+  return m_geoGap;
+}

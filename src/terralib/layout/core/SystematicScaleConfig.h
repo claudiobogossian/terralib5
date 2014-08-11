@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,35 +18,34 @@
  */
 
 /*!
-  \file VerticalRulerItem.h
+  \file SystematicScaleConfig.h
    
   \brief 
 
-  \ingroup layout
+  \ingroup layout 
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_ITEM_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_SYSTEMATIC_SCALE_CONFIG_H
+#define __TERRALIB_LAYOUT_INTERNAL_SYSTEMATIC_SCALE_CONFIG_H
 
 // TerraLib
-#include "ObjectItem.h"
-
+#include "../core/enum/AbstractType.h"
+#include "../../geometry/Envelope.h"
 namespace te
 {
   namespace layout
   {
-    class VerticalRulerItem : public ObjectItem
+    class Systematic;
+
+    class SystematicScaleConfig
     {
       public:
 
-        VerticalRulerItem(ItemController* controller = 0, Observable* o = 0);
-        virtual ~VerticalRulerItem();
+        SystematicScaleConfig();
+        virtual ~SystematicScaleConfig();
 
-        virtual void updateObserver(ContextItem context);
-
-        virtual double getZoomRuler();
+        virtual Systematic* getSystematic(SystematicScaleType type);
     };
   }
 }
-
-#endif
+#endif 

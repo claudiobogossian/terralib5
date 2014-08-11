@@ -36,12 +36,17 @@
 #include "../../../common/STLUtils.h"
 #include "../../core/pattern/singleton/Context.h"
 
+// STL
+#include <cmath>
+
 te::layout::HorizontalRulerItem::HorizontalRulerItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
-{  
+{    
   m_printable = false;
   m_canChangeGraphicOrder = false;
   m_canZoom = false;
+
+  m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::HorizontalRulerItem::~HorizontalRulerItem()
@@ -81,7 +86,20 @@ void te::layout::HorizontalRulerItem::updateObserver( ContextItem context )
   te::common::Free(rgba, box.getHeight());
   if(img)
     delete img;
-  
+
+  double zoomFactor = getZoomRuler();
+
+  setScale(zoomFactor);
+
+  QTransform t = this->transform();
+
   setPixmap(pixmap);
   update();
+}
+
+double te::layout::HorizontalRulerItem::getZoomRuler()
+{
+  double zoomFactor = Context::getInstance().getZoomFactor();
+  zoomFactor = 1. / zoomFactor;
+  return zoomFactor;
 }

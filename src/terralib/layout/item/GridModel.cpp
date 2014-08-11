@@ -108,3 +108,7 @@ void te::layout::GridModel::setBoundingBoxItemMM( te::gm::Envelope box )
   m_boundingBoxItemMM = box;
 }
 
+void te::layout::GridModel::setSystematic( Systematic* sys )
+{
+  m_systematic = sys;
+}

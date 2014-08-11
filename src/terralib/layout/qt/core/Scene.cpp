@@ -43,6 +43,9 @@
 #include "BuildGraphicsItem.h"
 #include "../item/MapItem.h"
 #include "ItemUtils.h"
+#include "../item/DefaultTextItem.h"
+#include "../../core/Systematic.h"
+#include "../../item/MapModel.h"
 
 // STL
 #include <iostream>
@@ -62,8 +65,6 @@
 #include <QApplication>
 #include <QDir>
 #include <QPrinter>
-#include "../item/DefaultTextItem.h"
-#include "../../item/PaperConfig.h"
 
 te::layout::Scene::Scene( QWidget* widget): 
   QGraphicsScene(widget),
@@ -101,7 +102,7 @@ void te::layout::Scene::init(double screenWMM, double screenHMM, double paperMMW
 
   m_boxPaperW = new te::gm::Envelope(0, 0, paperMMW, paperMMH);
   m_boxW = calculateWindow(m_screenWidthMM, m_screenHeightMM); 
-
+  
   double newZoomFactor = 1. / zoomFactor;
   if(zoomFactor < 1.)
     newZoomFactor = zoomFactor;
@@ -607,7 +608,7 @@ void te::layout::Scene::refresh(QGraphicsView* view, double zoomFactor)
 {
   if(!m_boxW)
     return;
-
+  
   calculateMatrixViewScene(zoomFactor);
   refreshViews(view);
 
@@ -912,6 +913,55 @@ void te::layout::Scene::redrawRulers()
         {
           lItem->redraw();
         }
+      }
+    }
+  }
+}
+
+int te::layout::Scene::intersectionMap( te::gm::Coord2D coord, bool &intersection )
+{
+  QList<QGraphicsItem *> items = selectedItems();
+  int number = 0;
+  intersection = false;
+  te::gm::Coord2D coordInter = coord;
+  te::gm::Envelope interCoord(coordInter.x, coordInter.y, coordInter.x, coordInter.y);
+
+  foreach (QGraphicsItem *item, items) 
+  {
+    if(item)
+    {
+      number++;
+      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+      if(it)
+      {
+        MapItem* mt = dynamic_cast<MapItem*>(it);
+        if(mt)
+        {
+          te::gm::Envelope env = it->getModel()->getBox();
+          intersection = env.intersects(interCoord);
+        }
+      }
+    }
+  }
+
+  return number;
+}
+
+void te::layout::Scene::setCurrentMapSystematic( Systematic* systematic, te::gm::Coord2D coord )
+{
+  QGraphicsItem *item = selectedItems().first();
+  if(item)
+  {
+    ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+    if(it)
+    {
+      MapItem* mt = dynamic_cast<MapItem*>(it);
+      if(mt)
+      {
+        MapModel* model = dynamic_cast<MapModel*>(mt->getModel());
+        model->setSystematic(systematic);
+        model->generateSystematic(coord);
+        mt->redraw();
       }
     }
   }
