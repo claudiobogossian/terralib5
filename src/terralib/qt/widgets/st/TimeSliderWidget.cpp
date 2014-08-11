@@ -220,6 +220,13 @@ void te::qt::widgets::TimeSliderWidget::layerAdded(te::map::AbstractLayerPtr lay
   //  if(isHidden())
   //    show();
   //}
+  if(layer->getType() == "TRAJECTORYDATASETLAYER")
+  {
+    te::st::TrajectoryDataSetLayer* trajLayer = dynamic_cast<te::st::TrajectoryDataSetLayer*>(layer.get());
+    addTrajectory(trajLayer, "");
+    if(isHidden())
+      show();
+  }
 }
 
 void te::qt::widgets::TimeSliderWidget::layerRemoved(te::map::AbstractLayerPtr layer)
@@ -228,6 +235,20 @@ void te::qt::widgets::TimeSliderWidget::layerRemoved(te::map::AbstractLayerPtr l
   {
     //te::st::TrajectoryDataSet* trajLayer = dynamic_cast<te::st::TrajectoryDataSetLayer*>(layer.get())->getTrajectoryDataset().release();
     //addTrajectory(QString::fromStdString(trajLayer->getId()), "", trajLayer);
+    QString title = layer->getTitle().c_str();
+    removeAnimation(title);
+
+    size_t size = m_spd->m_ui->m_animationItemListWidget->count();
+    for(size_t i = 0; i < size; ++i)
+    {
+      QString t = m_spd->m_ui->m_animationItemListWidget->item(i)->text();
+      if(t == title)
+      {
+        QListWidgetItem* li = m_spd->m_ui->m_animationItemListWidget->takeItem(i);
+        delete li;
+        break;
+      }
+    }
   }
 }
 
