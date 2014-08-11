@@ -42,7 +42,7 @@ set(TERRALIB_VERSION_STRING "${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
 set(TERRALIB_VERSION "0x050000")
 set(TERRALIB_PKG_VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}.${TERRALIB_VERSION_PATCH})
 
-# variable indicating that
+# variable indicating that it will search for 3rd-party libraries and install them
 if(NOT DEFINED TERRALIB_TRACK_3RDPARTY_DEPENDENCIES)
   set(TERRALIB_TRACK_3RDPARTY_DEPENDENCIES 0 CACHE BOOL "If \"on\" it will search for 3rd-party libraries and install them when building the install target (e.g.: make install)")
 endif()
@@ -117,6 +117,11 @@ endif()
 
 if(NOT DEFINED TERRALIB_AUTOMATIC_INITIALIZATION)
   set(TERRALIB_AUTOMATIC_INITIALIZATION 1 CACHE BOOL "Tells that TerraLib should initialize its resources automatically")
+endif()
+
+# variable that set the bundle items as writable before install_name_tool tries to change them (for APPLE platforms)
+if(APPLE AND TERRALIB_BUILD_AS_BUNDLE AND TERRALIB_TRACK_3RDPARTY_DEPENDENCIES AND NOT DEFINED BU_CHMOD_BUNDLE_ITEMS)
+  set(BU_CHMOD_BUNDLE_ITEMS ON CACHE BOOL "If ON, set the bundle items as writable")
 endif()
 
 
