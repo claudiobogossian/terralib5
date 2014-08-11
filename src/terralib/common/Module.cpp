@@ -64,32 +64,15 @@ te::common::Module::Module()
 
 // initialize the singleton UnitsOfMeasureManager
   UnitsOfMeasureManager::getInstance();
-
-// let's start the logger if the developer wants TerraLib to make it automatically during static initialization
-#if defined(TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION) && defined(TERRALIB_LOGGER_DO_STATIC_INITIALIZATION)
-
-  //std::string loggerConfFile = FindInTerraLibPath(TERRALIB_LOGGER_DEFAULT_CONFIGURATION_FILE);
-  //te::common::Logger::initialize(TERRALIB_LOGGER_DEFAULT_NAME, TERRALIB_LOGGER_DEFAULT_CONFIG_FILE_TYPE, loggerConfFile);
-#endif
 }
 
 te::common::Module::~Module()
 {
-#if defined(TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION) && defined(TERRALIB_LOGGER_DO_STATIC_INITIALIZATION)
-  te::common::Logger::finalize(TERRALIB_LOGGER_DEFAULT_NAME);
-#endif
-
   TerraLib::getInstance().remove(TE_COMMON_MODULE_NAME);
 }
 
 void te::common::Module::initialize()
 {
-// let's start the logger if developer want TerraLib to make it automatically during static initialization
-#if defined(TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION) && !defined(TERRALIB_LOGGER_DO_STATIC_INITIALIZATION)
-  std::string loggerConfFile = FindInTerraLibPath(TERRALIB_LOGGER_DEFAULT_CONFIGURATION_FILE);
-  te::common::Logger::initialize(TERRALIB_LOGGER_DEFAULT_NAME, TERRALIB_LOGGER_DEFAULT_CONFIG_FILE_TYPE, loggerConfFile);
-#endif
-
 #ifdef TERRALIB_AUTOMATIC_INITIALIZATION
   UnitsOfMeasureManager::getInstance().init();
 #endif
@@ -102,11 +85,7 @@ void te::common::Module::initialize()
 void te::common::Module::finalize()
 {
   TE_LOG_TRACE(TE_TR("TerraLib Common Runtime finalized!"));
-
-#if defined(TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION) && !defined(TERRALIB_LOGGER_DO_STATIC_INITIALIZATION)
-  te::common::Logger::finalize(TERRALIB_LOGGER_DEFAULT_NAME);
-#endif
-  
+ 
 #ifdef TERRALIB_AUTOMATIC_INITIALIZATION
   UnitsOfMeasureManager::getInstance().clear();
 #endif
