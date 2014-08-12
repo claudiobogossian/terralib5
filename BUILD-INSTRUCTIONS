@@ -33,7 +33,7 @@ $ cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE:STRING="Release" -DCMAKE_INSTALL_
 
 Notes:
 
-       a) Some Linux flavours with diffrent versions of GNU gcc and Boost will need more parameters such as:
+       a) Some Linux flavours with different versions of GNU gcc and Boost will need more parameters such as:
           -DCMAKE_PREFIX_PATH:PATH="/usr/local;/opt/include"
           -DCMAKE_INCLUDE_PATH:PATH="/usr/local;/opt/include"
           -DCMAKE_LIBRARY_PATH:PATH="/usr/local;/opt/lib"
@@ -97,7 +97,7 @@ g) Then add an entry called CMAKE_PREFIX_PATH with the libraries location (separ
    Example: Press AddEntry button and inform the name CMAKE_PREFIX_PATH, type PATH and set its value as:
    CMAKE_PREFIX_PATH => C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A;C:/terralib/3rdparty-win32-qt5;C:/Qt/Qt5.3.0/5.3/msvc2010_opengl/lib/cmake/Qt5
 
-h) Then press "Configure" and if not problem occurs press "Generate".
+h) Then press "Configure" and if no problem occurs press "Generate".
  
 Note: Some projects may be disabled through the following variables:
         TERRALIB_BUILD_EXAMPLES_ENABLED => OFF
@@ -112,4 +112,4 @@ j) To run and debug terraview application, set it as StartUp Project at Microsof
 For more information on TerraLib, please, visit its main web page at: http://www.terralib.org.
 
 
-  May 2015, TerraLib Team <terralib-team@dpi.inpe.br>
+  August 2014, TerraLib Team <terralib-team@dpi.inpe.br>
