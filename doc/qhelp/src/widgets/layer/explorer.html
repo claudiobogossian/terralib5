@@ -3,11 +3,15 @@
 <head>
 
 
+
+  
   
   
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 
 
+
+  
   
   
   <title>Layer Explorer</title>
@@ -17,91 +21,120 @@
 <body>
 
 
+
 <h3 style="text-align: center; font-family: Calibri Light;">Layer
 Explorer</h3>
 
 
+
 <span style="font-weight: bold; font-family: Calibri Light;"><span style="font-weight: bold;"></span></span><span style="font-family: Calibri Light;">The
-Layer Explorer area of the Main Window shows all layers selected by the
-menu Project &gt;
-Add
-Layer.... To draw one or more&nbsp; layer at the Map Display, check
-its box and reach (pincel).&nbsp;</span><br style="font-family: Calibri Light;">
+Layer Explorer area of the Main Window shows all layers previously
+added to the project. To draw one or more&nbsp; layer at the Map
+Display, check
+its box and click on&nbsp;<img style="width: 21px; height: 23px;" alt="draw" src="../../gen_icones/ic_draw.PNG">&nbsp;</span><br style="font-family: Calibri Light;">
+
 
 
 <br style="font-family: Calibri Light;">
 
 
+
 <span style="font-family: Calibri Light;">
-&nbsp;The Spatial Reference System of the </span><i style="font-family: Calibri Light;">Map Display</i><span style="font-family: Calibri Light;">
+The Spatial Reference System of the </span><i style="font-family: Calibri Light;">Map Display</i><span style="font-family: Calibri Light;">
 showed at the status bar is the first valid&nbsp;SRID among the layers checked.&nbsp; It is also
 possible
-to set the </span><i style="font-family: Calibri Light;">Map Display</i><span style="font-family: Calibri Light;"> SRID by right-clicking over
+to set a specific&nbsp;</span><i style="font-family: Calibri Light;">Map Display</i><span style="font-family: Calibri Light;"> SRID by right-clicking over
 the Map Display area
 as explained </span><a style="font-family: Calibri Light;" href="../srs/srs.html">here</a><span style="font-family: Calibri Light;">. To find out
 the layer-SRID, right-click over a
 layer name and
-choose </span><b style="font-family: Calibri Light;">Properties...</b><span style="font-family: Calibri Light;">. More actions
-over&nbsp;layers will be explained here and via Layer and Map
-Display Menus. </span><br style="font-family: Calibri Light;">
+choose </span><b style="font-family: Calibri Light;">Properties...</b><span style="font-family: Calibri Light;">. </span><br style="font-family: Calibri Light;">
+
 
 
 <br style="font-family: Calibri Light;">
 
 
+
 <span style="font-family: Calibri Light;">
 Each layer
-can be in one of the 4 status: <br>
+can be in one of the these status: <br>
+
 
 
 </span>
 <ul>
 
 
+
   <li><b style="font-family: Calibri Light;">box-checked</b></li>
+
 
 
 </ul>
 
 
+
 <ul>
+
 
 
   <li><span style="font-family: Calibri Light;"><span style="font-weight: bold;"></span></span><b style="font-family: Calibri Light;">selected</b></li>
 
 
+
 </ul>
 
 
+
 <ul>
+
 
 
   <li><b style="font-family: Calibri Light;">box-checked and </b><b style="font-family: Calibri Light;">selected</b></li>
 
 
+
 </ul>
+
 
 
 <ul>
 
 
+
   <li><b style="font-family: Calibri Light;">none</b></li>
+</ul>
+<ul>
+  <li><b style="font-family: Calibri Light;">disconnected </b><span style="font-family: Calibri Light;">(<img style="width: 24px; height: 20px;" alt="layer disconnected" src="../../gen_icones/ic_layer_diconnected.PNG">)
+- when the data source containing the layer is disconnected or the
+location path changed. In this case right-click over the layer name and
+choose <span style="font-style: italic;">Change Layer Data Source</span>. &nbsp;Then, use the edit option of the <a href="../datasource_explorer/datasource_explorer.html">Data Source Explorer</a>
+interface to reopen the connection in case of databases/database or to
+change the location path when the layer is a vector/raster stored in a
+directory tree structure. <br>
+    </span></li>
+
 
 
 </ul>
 
 
+
 <span style="font-family: Calibri Light;"><br>
 
 
-Some actions at the Layer Explorer and at the Map Display depends
+
+Some actions at the <a href="../../terraview/terraview_menus.html#Layer_Menu">Layer </a>and at the <a href="../../terraview/terraview_menus.html#Map_Display_Menu">Map Display</a> depends
 on the layer status. Keep this in mind from now on and see how to
-select one or more layers at the Layer Explorer below.</span><br style="font-family: Calibri Light;">
+select one or more layers at the Layer Explorer.</span><br style="font-family: Calibri Light;">
+
 
 
 <h4 style="font-family: Calibri Light;"><strong><span style="font-weight: bold;">Layer
 Explorer - </span><span style="font-weight: bold;">Selecting
 one or more layers</span></strong></h4>
+
 
 
 <b style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; Clicking</b><span style="font-family: Calibri Light;"> over a layer
@@ -110,7 +143,9 @@ actions available
 from the context menu can be executed.&nbsp;</span><br style="font-family: Calibri Light;">
 
 
+
 <br style="font-family: Calibri Light;">
+
 
 
 <b style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; Right-clicking</b><span style="font-family: Calibri Light;"> over a
@@ -120,7 +155,9 @@ menu of actions that can be executed over a layer. Those actions are
 also accessible through the Layer Menu.</span><br style="font-family: Calibri Light;">
 
 
+
 <br style="font-family: Calibri Light;">
+
 
 
 <b style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; Shift+clicking</b><span style="font-family: Calibri Light;"> allows
@@ -137,7 +174,9 @@ layer, for example </span><i style="font-family: Calibri Light;">Remove
 Layer(s)</i><span style="font-family: Calibri Light;">.</span><br style="font-family: Calibri Light;">
 
 
+
 <br style="font-family: Calibri Light;">
+
 
 
 <b style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; Ctrl+clicking</b><span style="font-family: Calibri Light;">
@@ -151,20 +190,17 @@ menu of actions</i><span style="font-family: Calibri Light;"> that
 can be executed over all selected layer.</span><br style="font-family: Calibri Light;">
 
 
-<br style="font-family: Calibri Light;">
 
-
-<span style="font-family: Calibri Light;">
-&nbsp;&nbsp;&nbsp;
+<span style="font-family: Calibri Light;"><br>
 Note that the
-layer does not need to have its box-checked to execute some actions.
+<span style="font-weight: bold;">box-checked</span> status is not necessary for some actions.
 For example, to execute&nbsp; </span><i style="font-family: Calibri Light;">Remove Layer</i><span style="font-family: Calibri Light;">, </span><i style="font-family: Calibri Light;">Show
-Table</i><span style="font-family: Calibri Light;">&nbsp; or&nbsp; </span><i style="font-family: Calibri Light;">Classification</i><span style="font-family: Calibri Light;">&nbsp;
-it is enough to select a layer. &nbsp;All layer actions can also be
-accessed via&nbsp;Layer Menu.</span><br style="font-family: Calibri Light;">
+Table</i><span style="font-family: Calibri Light;">&nbsp; or&nbsp; </span><i style="font-family: Calibri Light;">Classification</i><span style="font-family: Calibri Light;">&nbsp;it is enough to select a layer.</span><br style="font-family: Calibri Light;">
+
 
 
 <br style="font-family: Calibri Light;">
+
 
 
 <span style="font-family: Calibri Light;"></span>

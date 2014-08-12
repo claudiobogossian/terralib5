@@ -142,3 +142,34 @@ bool te::qt::widgets::IndexWidget::checkParameters()
   return true;
 }
 
+void te::qt::widgets::IndexWidget::setIndex(te::da::Index* idx)
+{
+  if(!idx)
+    return;
+
+  m_ui->m_nameLineEdit->setText(idx->getName().c_str());
+  
+  m_ui->m_typeComboBox->setCurrentIndex(idx->getIndexType());
+
+  std::vector<te::dt::Property*> idxProps = idx->getProperties();
+  std::vector<std::string> idxPropsStr;
+  for(std::size_t i = 0; i < idxProps.size(); ++i)
+  {
+    idxPropsStr.push_back(idxProps[i]->getName());
+  }
+
+  std::vector<te::dt::Property*> dtProps = m_dsType->getProperties();
+  std::vector<std::string> dtPropsStr;
+  for(std::size_t i = 0; i < dtProps.size(); ++i)
+  {
+    std::string propStr = dtProps[i]->getName();
+
+    if(std::find(idxPropsStr.begin(), idxPropsStr.end(), propStr) != idxPropsStr.end())
+      continue;
+
+    dtPropsStr.push_back(propStr);
+  }
+
+  m_doubleListWidget->setInputValues(dtPropsStr);
+  m_doubleListWidget->setOutputValues(idxPropsStr);
+}

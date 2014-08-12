@@ -70,6 +70,7 @@
 // Boost
 #include <boost/filesystem.hpp>
 
+#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
 //Log4cxx
 #include <log4cxx/basicconfigurator.h>
 #include <log4cxx/consoleappender.h>
@@ -80,6 +81,7 @@
 #include <log4cxx/logmanager.h>
 #include <log4cxx/logstring.h>
 #include <log4cxx/simplelayout.h>
+#endif
 
 //te::qt::af::ApplicationController* te::qt::af::ApplicationController::sm_instance(0);
 
@@ -285,6 +287,7 @@ void  te::qt::af::ApplicationController::initialize()
   SplashScreenManager::getInstance().showMessage(tr("Loading TerraLib Modules..."));
 
 // terralib log startup
+#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
   std::string path = m_userDataDir.toStdString();
   path += "/log/terralib.log";
 
@@ -295,9 +298,9 @@ void  te::qt::af::ApplicationController::initialize()
   fileAppender->activateOptions(p);
 
   log4cxx::BasicConfigurator::configure(log4cxx::AppenderPtr(fileAppender));
-  log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());
+  log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getAll() /*log4cxx::Level::getDebug()*/);
   log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("te");
-
+#endif
   //LOG4CXX_INFO(logger, "Created FileAppender appender");
 
   if(m_resetTerralib)
@@ -465,8 +468,6 @@ void  te::qt::af::ApplicationController::initialize()
 void te::qt::af::ApplicationController::initializePlugins()
 {
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
-
-  bool loadPlugins = true;
 
   std::vector<std::string> plgFiles;
 

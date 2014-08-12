@@ -21,19 +21,18 @@
 #
 #  Description: Script for generating the application translations in qt format.
 #
-#  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
-#          Juan Carlos P. Garrido <juan@dpi.inpe.br>
-#          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
+#  Author: Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
+#
 
 MACRO(GenerateTranslation QM_FILE proj dir)
   file(GLOB_RECURSE h2Translate "${dir}/*.h")
   file(GLOB_RECURSE cpp2Translate "${dir}/*.c*")
   file(GLOB_RECURSE ui2Translate "${dir}/*.ui")
-  
+
   set(files2Translate ${h2Translate} ${cpp2Translate} ${ui2Translate})
-  
+
   qt5_create_translation(${QM_FILE} ${files2Translate} "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj}_pt_br.ts")	
- 
+
   install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/${proj}_pt_br.qm
     DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib/translations
