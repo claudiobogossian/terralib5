@@ -130,9 +130,12 @@ bool te::vp::GeometricOpMemory::run()
 
           for(std::size_t dsTypePos = 0; dsTypePos < dsTypeVec.size(); ++dsTypePos)
           {
+            m_outDsetNameVec.push_back(dsTypeVec[dsTypePos]->getName());
+
             std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
             std::auto_ptr<te::mem::DataSet> outDataSet(SetAllObjects(dsTypeVec[dsTypePos], opTab, opGeom));
             result = save(outDataSet, outDataSetType);
+
             if(!result)
               return result;
           }
@@ -160,9 +163,12 @@ bool te::vp::GeometricOpMemory::run()
 
           for(std::size_t dsTypePos = 0; dsTypePos < dsTypeVec.size(); ++dsTypePos)
           {
+            m_outDsetNameVec.push_back(dsTypeVec[dsTypePos]->getName());
+
             std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
             std::auto_ptr<te::mem::DataSet> outDataSet(SetAggregObj(dsTypeVec[dsTypePos], opTab, opGeom));
             result = save(outDataSet, outDataSetType);
+
             if(!result)
               return result;
           }
@@ -190,9 +196,12 @@ bool te::vp::GeometricOpMemory::run()
 
           for(std::size_t dsTypePos = 0; dsTypePos < dsTypeVec.size(); ++dsTypePos)
           {
+            m_outDsetNameVec.push_back(dsTypeVec[dsTypePos]->getName());
+
             std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
             std::auto_ptr<te::mem::DataSet> outDataSet(SetAggregByAttribute(dsTypeVec[dsTypePos], opTab, opGeom));
             result = save(outDataSet, outDataSetType);
+
             if(!result)
               return result;
           }
@@ -274,8 +283,6 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
     {
       for(std::size_t geoPos = 0; geoPos < geoVec.size(); ++geoPos)
       {
-        geom = true;
-
         switch(geoVec[geoPos])
         {
           case te::vp::CONVEX_HULL:
@@ -287,7 +294,10 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
                 convexHull->setSRID(in_geom->getSRID());
 
                 if(convexHull->getGeomTypeId() == te::gm::PolygonType)
+                {
                   item->setGeometry("convex_hull", convexHull.release());
+                  geom = true;
+                }
                 else
                   geom = false;
               }

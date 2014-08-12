@@ -87,6 +87,11 @@ bool te::vp::GeometricOp::paramsAreValid()
   return true;
 }
 
+std::vector<std::string> te::vp::GeometricOp::GetOutputDSetNames()
+{
+  return m_outDsetNameVec;
+}
+
 bool  te::vp::GeometricOp::save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType)
 {
   // do any adaptation necessary to persist the output dataset
@@ -326,3 +331,4 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
 
   return dsType;
 }
+
