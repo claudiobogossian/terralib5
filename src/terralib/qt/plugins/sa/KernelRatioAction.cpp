@@ -18,29 +18,29 @@
  */
 
 /*!
-  \file terralib/qt/plugins/sa/KernelMapAction.cpp
+  \file terralib/qt/plugins/sa/KernelRatioAction.cpp
 
-  \brief This file defines the concrete class for KernelMap Action
+  \brief This file defines the concrete class for KernelRatio Action
 */
 
 // Terralib
 #include "../../../qt/af/ApplicationController.h"
-#include "../../../sa/qt/KernelMapDialog.h"
-#include "KernelMapAction.h"
+#include "../../../sa/qt/KernelRatioDialog.h"
+#include "KernelRatioAction.h"
 
-te::qt::plugins::sa::KernelMapAction::KernelMapAction(QMenu *menu) :
+te::qt::plugins::sa::KernelRatioAction::KernelRatioAction(QMenu *menu) :
   AbstractAction(menu)
 {
-  createAction(tr("Kernel Map...").toStdString(), "sa-kernelmap-icon");
+  createAction(tr("Kernel Ratio...").toStdString(), "sa-kernelratio-icon");
 }
 
-te::qt::plugins::sa::KernelMapAction::~KernelMapAction()
+te::qt::plugins::sa::KernelRatioAction::~KernelRatioAction()
 {
 }
 
-void te::qt::plugins::sa::KernelMapAction::onActionActivated(bool checked)
+void te::qt::plugins::sa::KernelRatioAction::onActionActivated(bool checked)
 {
-  te::sa::KernelMapDialog dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::sa::KernelRatioDialog dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 

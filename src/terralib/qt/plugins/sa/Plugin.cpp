@@ -35,6 +35,10 @@
   #include "KernelMapAction.h"
 #endif
 
+#ifdef TE_QT_PLUGIN_SA_HAVE_KERNELRATIO
+  #include "KernelRatioAction.h"
+#endif
+
 #ifdef TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
   #include "ProximityMatrixCreatorAction.h"
 #endif
@@ -102,6 +106,10 @@ void te::qt::plugins::sa::Plugin::registerActions()
   m_kernelMap = new te::qt::plugins::sa::KernelMapAction(m_saMenu);
 #endif
 
+#ifdef TE_QT_PLUGIN_SA_HAVE_KERNELRATIO
+  m_kernelRatio = new te::qt::plugins::sa::KernelRatioAction(m_saMenu);
+#endif
+
 #ifdef TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
   m_proxMatrixCreator = new te::qt::plugins::sa::ProximityMatrixCreatorAction(m_saMenu);
 #endif
@@ -117,6 +125,10 @@ void  te::qt::plugins::sa::Plugin::unRegisterActions()
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_KERNELMAP
     delete m_kernelMap;
+#endif
+
+#ifdef TE_QT_PLUGIN_SA_HAVE_KERNELRATIO
+    delete m_kernelRatio;
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR

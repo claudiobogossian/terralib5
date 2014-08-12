@@ -44,34 +44,32 @@ namespace te
   namespace sa
   {
     /*!
-      \struct KernelParams
+      \class KernelInputParams
 
-      \brief Class that represents the kernel parameters.
+      \brief Class that represents the kernel input parameters.
 
       \sa KernelOperation
     */
 
-    class TESAEXPORT KernelParams
+    class TESAEXPORT KernelInputParams
     {
       public:
       
         /*! \brief Default constructor. */
-        KernelParams()
+        KernelInputParams()
         {
+          m_isRatioKernel = false;
           m_intensityAttrName = "";
+          m_intensityAttrName2 = "";
           m_functionType = te::sa::Normal;
           m_estimationType = te::sa::Density;
-          m_storageType = te::sa::Grid;
+          m_combinationType = te::sa::Ratio;
           m_useAdaptativeRadius = true;
           m_radiusPercentValue = 10;
-          m_nCols = 50;
-          m_outputAttrName = "";
-          m_outputPath = "";
-          m_outputDataSetName = "";
         }
 
         /*! \brief Virtual destructor. */
-        ~KernelParams()
+        ~KernelInputParams()
         {
         }
 
@@ -80,14 +78,48 @@ namespace te
         std::auto_ptr<te::da::DataSetType> m_dsType;      //!< Attribute used to access the data set metadata
         std::auto_ptr<te::da::DataSet> m_ds;              //!< Attribute with data set
 
+        bool m_isRatioKernel;
         std::string m_intensityAttrName;                  //!< Attribute from dataset used as intensity attr (not obrigatory)
+        std::string m_intensityAttrName2;                 //!< Attribute from dataset used as intensity attr (not obrigatory) used by ratio kernel
 
         te::sa::KernelFunctionType m_functionType;        //!< Kernel function type
         te::sa::KernelEstimationType m_estimationType;    //!< Kernel estimation type
-        te::sa::KernelOutputType m_storageType;           //!< Kernel storage type
+        te::sa::KernelCombinationType m_combinationType;  //!< Kernel combination type (used by ratio kernel)
 
         bool m_useAdaptativeRadius;                       //!< Attribute to indicate if a an adaptative radius has to be used.
         int  m_radiusPercentValue;                        //!< Attribute with radius percent value (m_useAdaptativeRadius must be false)
+    };
+
+    /*!
+      \class KernelOutputParams
+
+      \brief Class that represents the kernel output parameters.
+
+      \sa KernelOperation
+    */
+
+    class TESAEXPORT KernelOutputParams
+    {
+      public:
+      
+        /*! \brief Default constructor. */
+        KernelOutputParams()
+        {
+          m_storageType = te::sa::Grid;                   //!< Kernel storage type
+          m_nCols = 50;
+          m_outputAttrName = "";
+          m_outputPath = "";
+          m_outputDataSetName = "";
+        }
+
+        /*! \brief Virtual destructor. */
+        ~KernelOutputParams()
+        {
+        }
+
+      public:
+
+        te::sa::KernelOutputType m_storageType;           //!< Kernel storage type
 
         int m_nCols;                                      //!< Attribute with number of columns to create the grid (if KernelOutputType is Grid)
         std::string m_outputAttrName;                     //!< Attribute with the new attr name (if KernelOutputType is Attribute)

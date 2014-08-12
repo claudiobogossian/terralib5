@@ -43,6 +43,7 @@ namespace te
       namespace sa
       {
         class KernelMapAction;
+        class KernelRatioAction;
         class ProximityMatrixCreatorAction;
         class SpatialStatisticsAction;
 
@@ -78,6 +79,7 @@ namespace te
             QAction* m_popupAction;                                  //!< SA pop up action registered.
 
             te::qt::plugins::sa::KernelMapAction* m_kernelMap;                       //!< Kernel Map Process Action
+            te::qt::plugins::sa::KernelRatioAction* m_kernelRatio;                   //!< Kernel Ratio Process Action
             te::qt::plugins::sa::ProximityMatrixCreatorAction* m_proxMatrixCreator;  //!< Proximity Matrix Creator Process Action
             te::qt::plugins::sa::SpatialStatisticsAction* m_spatialStatistics;       //!< Spatial Statistics Process Action
         };

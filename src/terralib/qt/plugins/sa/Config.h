@@ -37,6 +37,13 @@
 #define TE_QT_PLUGIN_SA_HAVE_KERNELMAP
 
 /*!
+  \def TE_QT_PLUGIN_SA_HAVE_KERNELRATIO
+
+  \brief It defines if the SA Qt Plugin has the kernel ratio operation
+*/
+#define TE_QT_PLUGIN_SA_HAVE_KERNELRATIO
+
+/*!
   \def TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
 
   \brief It defines if the SA Qt Plugin has the proximity matrix creator operation
