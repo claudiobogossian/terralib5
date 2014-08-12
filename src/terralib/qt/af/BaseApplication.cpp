@@ -2488,7 +2488,11 @@ void te::qt::af::BaseApplication::initMenus()
   m_fileMenu->addAction(m_filePrint);
   m_fileMenu->addSeparator();
   m_fileMenu->addAction(m_fileRestartSystem);
+  
+#if TE_PLATFORM != TE_PLATFORMCODE_APPLE
   m_fileMenu->addSeparator();
+#endif
+  
   m_fileMenu->addAction(m_fileExit);
 
 // Edit menu
