@@ -631,6 +631,13 @@ namespace te
             currentMosaicSquenceInfo.m_rasterFeederIndexes.push_back( 
               inputRasterIdx );
             
+            // The indexed detailed extent of input raster
+            
+            te::gm::LinearRing inRasterIndexedDetailedExtent( te::gm::LineStringType, 0, 0 );
+            TERP_TRUE_OR_RETURN_FALSE( te::rp::GetIndexedDetailedExtent(
+              *inputRasterPtr->getGrid(), inRasterIndexedDetailedExtent ),
+              "Error creating the raster detailed extent" );            
+            
             // Expanding the mosaic to fit the extent requirement allowing the 
             // merge of the current raster.
             // Fiding the new geometric transformation between then.
@@ -641,11 +648,6 @@ namespace te
             {
               // guessing the limits of the new blended raster over the old mosaic
               
-              te::gm::LinearRing inRasterDetExtent( te::gm::LineStringType, 0, 0 );
-              TERP_TRUE_OR_RETURN_FALSE( te::rp::GetIndexedDetailedExtent(
-                *inputRasterPtr->getGrid(), inRasterDetExtent ),
-                "Error creating the raster detailed extent" );
-              
               double mappedLRX = std::numeric_limits< double >::min();
               double mappedLRY = std::numeric_limits< double >::min();
               double mappedULX = std::numeric_limits< double >::max();
@@ -653,11 +655,11 @@ namespace te
               double mappedX = 0;
               double mappedY = 0;
               for( unsigned int inRasterDetExtentIdx = 0 ; inRasterDetExtentIdx <
-                inRasterDetExtent.size() ; ++inRasterDetExtentIdx )
+                inRasterIndexedDetailedExtent.size() ; ++inRasterDetExtentIdx )
               {
                 locatorOutParams.m_transformationPtr->inverseMap( 
-                  inRasterDetExtent.getX( inRasterDetExtentIdx ),
-                  inRasterDetExtent.getY( inRasterDetExtentIdx ),
+                  inRasterIndexedDetailedExtent.getX( inRasterDetExtentIdx ),
+                  inRasterIndexedDetailedExtent.getY( inRasterDetExtentIdx ),
                   mappedX,
                   mappedY);
                 
@@ -765,6 +767,29 @@ namespace te
                  "Error blending images" );
             }
             
+            // The input rasters detailed extent over the expanded mosaic
+            
+            te::gm::LinearRing inRasterDetailedExtent( 
+                inRasterIndexedDetailedExtent.size(), te::gm::LineStringType,
+                mosaicRasterHandler->getSRID(), (te::gm::Envelope*)0 );
+            
+            {
+              double mappedX = 0;
+              double mappedY = 0;              
+
+              for( unsigned int inRasterDetExtentIdx = 0 ; inRasterDetExtentIdx <
+                inRasterIndexedDetailedExtent.size() ; ++inRasterDetExtentIdx )
+              {
+                locatorOutParams.m_transformationPtr->inverseMap( 
+                  inRasterIndexedDetailedExtent.getX( inRasterDetExtentIdx ),
+                  inRasterIndexedDetailedExtent.getY( inRasterDetExtentIdx ),
+                  mappedX,
+                  mappedY);
+                
+                inRasterDetailedExtent.setPoint( inRasterDetExtentIdx, mappedX, mappedY );
+              }            
+            }
+            
             // Updating the info about the position of the last blended raster
             
             {
@@ -772,20 +797,15 @@ namespace te
               prevRasterMosaicLastRow = 0;
               prevRasterMosaicFirstCol = std::numeric_limits< unsigned int >::max();
               prevRasterMosaicFirstRow = std::numeric_limits< unsigned int >::max();
-              
-              te::gm::LinearRing inRasterDetExtent( te::gm::LineStringType, 0, 0 );
-              TERP_TRUE_OR_RETURN_FALSE( te::rp::GetIndexedDetailedExtent(
-                *inputRasterPtr->getGrid(), inRasterDetExtent ),
-                "Error creating the raster detailed extent" );
-              
+
               double mappedX = 0;
               double mappedY = 0;
               for( unsigned int inRasterDetExtentIdx = 0 ; inRasterDetExtentIdx <
-                inRasterDetExtent.size() ; ++inRasterDetExtentIdx )
+                inRasterDetailedExtent.size() ; ++inRasterDetExtentIdx )
               {
                 geoTransPtr->inverseMap( 
-                  inRasterDetExtent.getX( inRasterDetExtentIdx ),
-                  inRasterDetExtent.getY( inRasterDetExtentIdx ),
+                  inRasterDetailedExtent.getX( inRasterDetExtentIdx ),
+                  inRasterDetailedExtent.getY( inRasterDetExtentIdx ),
                   mappedX,
                   mappedY);
                 
@@ -809,55 +829,9 @@ namespace te
             {
               // building a polygon of the blended raster over the mosaic (world coods)
               
-              double inRasterCol = 0;
-              double inRasterRow = 0;
-              double mosaicCol = 0;
-              double mosaicRow = 0;
-              double mosaicX = 0;
-              double mosaicY = 0;
-              
-              te::gm::LinearRing* auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
-              auxLinearRingPtr->setSRID( mosaicRasterHandler->getSRID() );              
-              
-              geoTransPtr->inverseMap( 
-                -0.5,
-                -0.5,
-                mosaicCol,
-                mosaicRow);              
-              mosaicRasterHandler->getGrid()->gridToGeo( mosaicCol, mosaicRow,
-                mosaicX, mosaicY );
-              auxLinearRingPtr->setPoint( 0, mosaicX, mosaicY );
-              auxLinearRingPtr->setPoint( 4, mosaicX, mosaicY );
-              
-              geoTransPtr->inverseMap( 
-                ((double)inputRasterPtr->getNumberOfColumns()) - 0.5,
-                -0.5,
-                mosaicCol,
-                mosaicRow);              
-              mosaicRasterHandler->getGrid()->gridToGeo( mosaicCol, mosaicRow,
-                mosaicX, mosaicY );
-              auxLinearRingPtr->setPoint( 1, mosaicX, mosaicY );              
-              
-              geoTransPtr->inverseMap( 
-                ((double)inputRasterPtr->getNumberOfColumns()) - 0.5,
-                ((double)inputRasterPtr->getNumberOfRows()) - 0.5,
-                mosaicCol,
-                mosaicRow);              
-              mosaicRasterHandler->getGrid()->gridToGeo( mosaicCol, mosaicRow,
-                mosaicX, mosaicY );
-              auxLinearRingPtr->setPoint( 2, mosaicX, mosaicY );
-              
-              geoTransPtr->inverseMap( 
-                -0.5,
-                ((double)inputRasterPtr->getNumberOfRows()) - 0.5,
-                mosaicCol,
-                mosaicRow);              
-              mosaicRasterHandler->getGrid()->gridToGeo( mosaicCol, mosaicRow,
-                mosaicX, mosaicY );
-              auxLinearRingPtr->setPoint( 3, mosaicX, mosaicY );                                
-              
               te::gm::Polygon lastMosaicAddedRasterPol(  0, te::gm::PolygonType, 0 ); //the polygon of the last added raster (mosaic world coords)
-              lastMosaicAddedRasterPol.push_back( auxLinearRingPtr );
+              lastMosaicAddedRasterPol.push_back( new te::gm::LinearRing( 
+                inRasterDetailedExtent ) );
               lastMosaicAddedRasterPol.setSRID( mosaicRasterHandler->getSRID() );
               
               // union of the current raster box with the current mosaic valid area under the mosaic SRID
