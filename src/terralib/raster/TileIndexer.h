@@ -29,6 +29,8 @@
 // TerraLib
 #include "../geometry/Point.h"
 #include "../geometry/Polygon.h"
+#include "../geometry/LinearRing.h"
+#include "../geometry/Coord2D.h"
 #include "Config.h"
 
 // STL
@@ -67,10 +69,11 @@ namespace te
           \param p2          Second segment coordinate.
           \param firstTile   The first tile index that this segment intersects.
           \param lastTile    The last tile index that this segment intersects.
+          \return true if ok, false on errors.
 
           \note  The segment does NOT need to be oriented.
         */
-        void getTileIndex(const te::gm::Point& p1, const te::gm::Point& p2,
+        bool getTileIndex(const te::gm::Point& p1, const te::gm::Point& p2,
                           unsigned int& firstTile, unsigned int& lastTile) const;
 
         /*!
@@ -78,8 +81,9 @@ namespace te
 
           \param y           Value of "y" coordinate.
           \param tileIndex   Index of corresponding tile.
+          \return true if ok, false on errors.
         */
-        void getTileIndex(const double& y, unsigned int& tileIndex) const;
+        bool getTileIndex(const double& y, unsigned int& tileIndex) const;
 
         /*! \brief Init internal variables. */
         void init();
@@ -102,26 +106,52 @@ namespace te
 
         /*!
           \brief Update the tile index with the information of the supplied ring.
-
+          
           \param ri The ring index.
+          \return true, if ok, false on errors.
         */
-        void addRing(const unsigned int& ri);
+        bool addRing(const unsigned int& ri);
 
         /*!
           \brief Gets tile index.
 
           \param y      The Y value.
-          \param index  Output tile pointer (NULL if not found).
+          \param index  Output tile pointer.
+          \return true if ok, false on errors.
         */
-        void getTile(const double& y, TileSegIndex** index) const;
+        bool getTile(const double& y, TileSegIndex** index) const;
 
         /*! \brief Returns the polygon. */
-        const te::gm::Polygon& getPolygon() const;
+        inline const te::gm::Polygon& getPolygon() const
+        {
+          return m_referencePolygon;
+        };
+        
+        /*!
+          \brief It returns true if the given geometry is within the indexed reference polygon.
+
+          \param rhs The other geometry to be compared.
+
+          \return true if the given geometry is within the indexed reference polygon.
+        */
+        bool within(const te::gm::Point& geometry) const;        
 
       protected:
         double m_dy;                                  //!< Tile resolution along "y" axis.
         const te::gm::Polygon& m_referencePolygon;    //!< Reference polygon.
         std::vector<TileSegIndex*> m_tileIndex;       //!< Each tile segments index vector.
+        
+        // Variables used by the method within
+        
+        mutable TileSegIndex* m_withinTileIndexPtr;
+        mutable double m_withinTileY; 
+        mutable double m_withinTileX;
+        mutable bool m_withinIsInside;
+        mutable int m_withinYFlag0;
+        mutable int m_withinYFlag1;
+        mutable te::gm::LinearRing const* m_withinRingPtr;
+        mutable te::gm::Coord2D m_withinVtx0;
+        mutable te::gm::Coord2D m_withinVtx1;        
 
     };
 
