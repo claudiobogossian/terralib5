@@ -4,12 +4,66 @@
 
 Follow the steps below in order to prepare a new release of TerraLib/TerraView.
 
+Three branches are essential in Terralib/terraview: develop, release-x.x.x and master:
+
+develop - is where the development team are working together to reach a "desirable" point.
+
+release-x.x.x - created from "develop" when a desirable point is reached by the team 
+and a new release should be prepared to be tagged. 
+
+master - reflects a production-ready state where a tag (x.x.x) should be created 
+after merge it with the "release-x.x.x" branch.
+
+The details of this process are given below.
 
 1. Branching
 ------------
+a) Make sure the current branch is "develop" 
 
-2. Versioning Flags
+	git branch -a                         ( *develop )
+	
+b) Create a "release-x.x.x" branch from the "develop" branch 
+   where x.x.x is the upcoming release (tag)number to be created: 5.0.0-alpha, 
+   5.0.0-beta, 5.0.0, 5.1.0, 6.2.0 and so on.
+	
+	git tag -l                  (list all tag names)
+	git branch -a release-5.0.0-beta develop
+	
+c) NOTE: In the release branch only small changes can be applied and after the 
+   stabilization it will be merged with "master" branch where a 
+   tag with the version number will be created (in this example the tag number is "5.0.0-beta").
+   
+d) Make sure the current branch is "master" and merge it with the "release" branch.
+
+	git branch -a                         ( *master ) 
+	git checkout master                   (checking out master if it is not marked with *)
+	git merge --no-ff release-5.0.0-beta  (merging master with release)
+
+	git tag -l                            (list all tag names)
+	
+e) Follow the instructions on item 4 to build all modules based on master branch, 
+   make sure the application is running (tests)
+   and after that generate a tag to finish the release branch.
+
+   git tag -a 5.0.0-beta             (create a tag named 5.0.0-beta)
+   git push --tags                   (to push all tags)
+   git push origin 5.0.0-beta        (to push only a tag named 5.0.0-beta)
+	
+
+2. Version Number schema 
 -------------------
+5.0.0-alpha
+5.0.0-beta
+5.0.0-beta1
+5.0.0
+5.0.1
+5.1.0-alpha
+5.1.0
+...
+6.0.0-alpha
+6.0.0-beta
+6.0.0
+
 
 3. Automatic Tests
 ------------------
@@ -25,7 +79,7 @@ a) Create a fresh copy of the repository into a place such as:
 
 b) Open CMake-GUI in order to generate a build project for Microsoft Visual C++ 2010 (32-bit or 64-bit).
    Then assure that the following variables are set:
-     CMAKE_INSTALL_PREFIX => C:\MyInstalls\TerrsLib5
+     CMAKE_INSTALL_PREFIX => C:\MyInstalls\TerraLib5
      TERRALIB_TRACK_3RDPARTY_DEPENDENCIES => ON
      TERRALIB_QHELP_ENABLED => ON
      TERRALIB_DOXYGEN_ENABLED => ON  (if you want to distribute the API documentation)
@@ -86,4 +140,4 @@ For more information on TerraLib, please, visit its main web page at:
 http://www.terralib.org
 
 
-  May 2015, TerraLib Team <terralib-team@dpi.inpe.br>
+  August 2014, TerraLib Team <terralib-team@dpi.inpe.br>

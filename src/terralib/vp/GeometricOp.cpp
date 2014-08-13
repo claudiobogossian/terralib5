@@ -87,6 +87,11 @@ bool te::vp::GeometricOp::paramsAreValid()
   return true;
 }
 
+std::vector<std::string> te::vp::GeometricOp::GetOutputDSetNames()
+{
+  return m_outDsetNameVec;
+}
+
 bool  te::vp::GeometricOp::save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType)
 {
   // do any adaptation necessary to persist the output dataset
@@ -167,6 +172,13 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
         prop->setParent(0);
         dsType->add(prop);
       }
+  }
+
+  if(geomOpStrategy == te::vp::AGGREG_BY_ATTRIBUTE)
+  {
+    te::dt::Property* prop = m_inDsetType->getProperty(m_attribute)->clone();
+    prop->setParent(0);
+    dsType->add(prop);
   }
 
   for(std::size_t i = 0; i < m_operations.size(); ++i)
@@ -319,3 +331,4 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
 
   return dsType;
 }
+

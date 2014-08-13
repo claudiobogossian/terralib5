@@ -523,7 +523,7 @@ void te::ogr::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
       delete nField;
 
       if(error != OGRERR_NONE)
-        throw Exception(TE_TR("Error when attempting add the property."));
+        throw Exception(TE_TR("Error when attempting add the property: " + p->getName() + "."));
 
       error = l->SyncToDisk();
 
