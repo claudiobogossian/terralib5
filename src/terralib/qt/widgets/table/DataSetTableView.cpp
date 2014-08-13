@@ -101,7 +101,10 @@ QMenu* GetHiddenColumnsMenu(QHeaderView* hView, te::da::DataSet* dset, QMenu* hM
 
       act->setText(cName);
       act->setData(QVariant(*it));
-      act->setToolTip(QObject::tr("Turns column \"") + cName + "\" visible.");
+
+      QString tt = QObject::tr("Turns column \"%1\" visible.").arg(cName);
+
+      act->setToolTip(tt);
 
       mnu->addAction(act);
     }
