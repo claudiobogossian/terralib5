@@ -396,6 +396,14 @@ namespace te
       m_intersectionPtr.reset( indexedDelimiter2Ptr->intersection( 
         indexedDelimiter1Ptr.get() ) );
       
+      // Initializing the intersection tile indexer
+      
+      if( m_intersectionPtr.get() )
+      {
+        TERP_TRUE_OR_THROW( getTileIndexers( m_intersectionPtr.get(), 
+          m_intersectionTileIndexers ), "Intersection tile indexers creation error" );
+      }
+      
       // Extracting the intersection segments points
       
       if( m_intersectionPtr.get() )
@@ -524,8 +532,8 @@ namespace te
       
       // defining the interpolators
       
-      m_interp1 = new te::rst::Interpolator( &raster1, interpMethod1 );
-      m_interp2 = new te::rst::Interpolator( &raster2, interpMethod2 );
+      m_interp1Ptr.reset( new te::rst::Interpolator( &raster1, interpMethod1 ) );
+      m_interp2Ptr.reset( new te::rst::Interpolator( &raster2, interpMethod2 ) );
         
       m_interpMethod1 = interpMethod1;
       m_interpMethod2 = interpMethod2;
@@ -603,8 +611,6 @@ namespace te
       m_interpMethod1 = te::rst::Interpolator::NearestNeighbor;
       m_interpMethod2 = te::rst::Interpolator::NearestNeighbor;
       m_outputNoDataValue = 0;
-      m_interp1 = 0;
-      m_interp2 = 0;      
     }
     
     void Blender::clear()
@@ -615,8 +621,8 @@ namespace te
       m_r1IntersectionSegmentsPoints.clear();
       m_r2IntersectionSegmentsPoints.clear();
       if( m_geomTransformationPtr ) delete m_geomTransformationPtr;
-      if( m_interp1 ) delete m_interp1;
-      if( m_interp2 ) delete m_interp2;
+      m_interp1Ptr.reset();
+      m_interp2Ptr.reset();
       m_raster1Bands.clear();
       m_raster2Bands.clear();
       m_pixelOffsets1.clear();
@@ -625,6 +631,7 @@ namespace te
       m_pixelScales2.clear();
       m_raster1NoDataValues.clear();
       m_raster2NoDataValues.clear();
+      m_intersectionTileIndexers.clear();
 
       initState();
     }
@@ -669,13 +676,13 @@ namespace te
       for( m_noBlendMethodImp_BandIdx = 0 ; m_noBlendMethodImp_BandIdx <
         m_raster1Bands.size() ; ++m_noBlendMethodImp_BandIdx )
       {
-        m_interp1->getValue( col, line, m_noBlendMethodImp_cValue, 
+        m_interp1Ptr->getValue( col, line, m_noBlendMethodImp_cValue, 
           m_raster1Bands[ m_noBlendMethodImp_BandIdx ] ); 
         m_noBlendMethodImp_Value = m_noBlendMethodImp_cValue.real();      
     
         if( m_noBlendMethodImp_Value == m_raster1NoDataValues[ m_noBlendMethodImp_BandIdx ] )
         {
-          m_interp2->getValue( m_noBlendMethodImp_Point2Col, 
+          m_interp2Ptr->getValue( m_noBlendMethodImp_Point2Col, 
             m_noBlendMethodImp_Point2Line, m_noBlendMethodImp_cValue, 
             m_raster2Bands[ m_noBlendMethodImp_BandIdx ] );
           m_noBlendMethodImp_Value =  m_noBlendMethodImp_cValue.real();          
@@ -712,7 +719,23 @@ namespace te
       m_euclideanDistanceMethodImp_auxPoint.setX( col );
       m_euclideanDistanceMethodImp_auxPoint.setY( line );
       
-      if( m_euclideanDistanceMethodImp_auxPoint.within( m_intersectionPtr.get() ) )
+      m_euclideanDistanceMethodImp_PointInsideIntersection = false;
+      for( m_euclideanDistanceMethodImp_IntersectionTileIndexersIdx = 0;
+        m_euclideanDistanceMethodImp_IntersectionTileIndexersIdx < m_intersectionTileIndexers.size() ;
+        ++m_euclideanDistanceMethodImp_IntersectionTileIndexersIdx )
+      {
+        if( m_intersectionTileIndexers[ 
+          m_euclideanDistanceMethodImp_IntersectionTileIndexersIdx ].within( 
+          m_euclideanDistanceMethodImp_auxPoint ) )
+        {
+          m_euclideanDistanceMethodImp_PointInsideIntersection = true;
+          break;
+        }
+      }
+      
+      // Blending if the point is inside the intersection
+      
+      if( m_euclideanDistanceMethodImp_PointInsideIntersection )
       {
         // Finding distances to both rasters valid area delimiters
               
@@ -772,9 +795,9 @@ namespace te
         for( m_euclideanDistanceMethodImp_BandIdx = 0 ; m_euclideanDistanceMethodImp_BandIdx <
           m_raster1Bands.size() ; ++m_euclideanDistanceMethodImp_BandIdx )
         {
-          m_interp1->getValue( col, line, m_euclideanDistanceMethodImp_cValue1, 
+          m_interp1Ptr->getValue( col, line, m_euclideanDistanceMethodImp_cValue1, 
             m_raster1Bands[ m_euclideanDistanceMethodImp_BandIdx ] ); 
-          m_interp2->getValue( m_euclideanDistanceMethodImp_Point2Col, 
+          m_interp2Ptr->getValue( m_euclideanDistanceMethodImp_Point2Col, 
             m_euclideanDistanceMethodImp_Point2Line, m_euclideanDistanceMethodImp_cValue2, 
             m_raster2Bands[ m_euclideanDistanceMethodImp_BandIdx ] );
       
@@ -878,7 +901,23 @@ namespace te
       m_sumMethodImp_auxPoint.setX( col );
       m_sumMethodImp_auxPoint.setY( line );
       
-      if( m_sumMethodImp_auxPoint.within( m_intersectionPtr.get() ) )
+      m_sumMethodImp_PointInsideIntersection = false;
+      for( m_sumMethodImp_IntersectionTileIndexersIdx = 0;
+        m_sumMethodImp_IntersectionTileIndexersIdx < m_intersectionTileIndexers.size() ;
+        ++m_sumMethodImp_IntersectionTileIndexersIdx )
+      {
+        if( m_intersectionTileIndexers[ 
+          m_sumMethodImp_IntersectionTileIndexersIdx ].within( 
+          m_sumMethodImp_auxPoint ) )
+        {
+          m_sumMethodImp_PointInsideIntersection = true;
+          break;
+        }
+      }
+      
+      // Blending if the point is inside the intersection      
+      
+      if( m_sumMethodImp_PointInsideIntersection )
       {
         // Finding the point over the second raster
         
@@ -890,9 +929,9 @@ namespace te
         for( m_sumMethodImp_BandIdx = 0 ; m_sumMethodImp_BandIdx <
           m_raster1Bands.size() ; ++m_sumMethodImp_BandIdx )
         {
-          m_interp1->getValue( col, line, m_sumMethodImp_cValue1, 
+          m_interp1Ptr->getValue( col, line, m_sumMethodImp_cValue1, 
             m_raster1Bands[ m_sumMethodImp_BandIdx ] ); 
-          m_interp2->getValue( m_sumMethodImp_Point2Col, 
+          m_interp2Ptr->getValue( m_sumMethodImp_Point2Col, 
             m_sumMethodImp_Point2Line, m_sumMethodImp_cValue2, 
             m_raster2Bands[ m_sumMethodImp_BandIdx ] );
       
@@ -1538,6 +1577,35 @@ namespace te
       
       return true;
     }
+    
+    bool Blender::getTileIndexers( te::gm::Geometry const * const geometryPtr, 
+      boost::ptr_vector< te::rst::TileIndexer >& tileIndexers ) const
+    {
+      if( dynamic_cast< te::gm::Polygon const * >( geometryPtr ) )
+      {
+        te::gm::Polygon const * castGeomPtr = 
+          dynamic_cast< te::gm::Polygon const * >( geometryPtr );
+          
+        tileIndexers.push_back( new te::rst::TileIndexer( *castGeomPtr, 1.0 ) );
+      }              
+      else if( dynamic_cast< te::gm::GeometryCollection const * >( geometryPtr ) )
+      {
+        te::gm::GeometryCollection const * castGeomPtr = 
+          dynamic_cast< te::gm::GeometryCollection const * >( geometryPtr );
+        
+        std::size_t numGeoms = castGeomPtr->getNumGeometries();
+        
+        for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+        {
+          if( ! ( getTileIndexers( castGeomPtr->getGeometryN( gIdx ), tileIndexers ) ) )
+          {
+            return false;
+          }
+        }
+      }     
+      
+      return true;
+    }    
     
   } // end namespace rp
 }   // end namespace te    
