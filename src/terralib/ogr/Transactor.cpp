@@ -354,9 +354,9 @@ std::auto_ptr<te::da::DataSetTypeCapabilities> te::ogr::Transactor::getCapabilit
 
   if(l != 0)
   {
-    cap->setSupportAddColumn(l->TestCapability(OLCCreateField));
-    cap->setSupportRemoveColumn(l->TestCapability(OLCDeleteField));
-    cap->setSupportDataEdition(l->TestCapability(OLCRandomWrite));
+    cap->setSupportAddColumn((l->TestCapability(OLCCreateField) == 0) ? false : true);
+    cap->setSupportRemoveColumn((l->TestCapability(OLCDeleteField) == 0) ? false : true);
+    cap->setSupportDataEdition((l->TestCapability(OLCRandomWrite) == 0) ? false : true);
   }
 
   return cap;
