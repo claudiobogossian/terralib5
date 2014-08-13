@@ -81,7 +81,7 @@ void te::layout::VisualizationArea::createVerticalRuler()
 
   //Régua Vertical
   VerticalRulerModel* modelRulerV = new VerticalRulerModel(te::layout::Context::getInstance().getPaperConfig());		
-  modelRulerV->setBox(te::gm::Envelope(llx, lly, llx + 10, ury));
+  modelRulerV->setBox(te::gm::Envelope(llx, lly, llx + 5, ury));
   VerticalRulerController* controllerRulerV = new VerticalRulerController(modelRulerV);
   ItemObserver* itemRulerV = (ItemObserver*)controllerRulerV->getView();
   VerticalRulerItem* rectRulerV = dynamic_cast<VerticalRulerItem*>(itemRulerV);
@@ -104,7 +104,7 @@ void te::layout::VisualizationArea::createHorizontalRuler()
 
   //Régua Horizontal
   HorizontalRulerModel* modelRuler = new HorizontalRulerModel(te::layout::Context::getInstance().getPaperConfig());		
-  modelRuler->setBox(te::gm::Envelope(llx, lly, urx, lly + 10));
+  modelRuler->setBox(te::gm::Envelope(llx, lly, urx, lly + 5));
   HorizontalRulerController* controllerRuler = new HorizontalRulerController(modelRuler);
   ItemObserver* itemRuler = (ItemObserver*)controllerRuler->getView();
   HorizontalRulerItem* rectRuler = dynamic_cast<HorizontalRulerItem*>(itemRuler);

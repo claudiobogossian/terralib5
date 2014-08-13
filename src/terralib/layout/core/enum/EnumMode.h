@@ -73,6 +73,12 @@ namespace te
       TypeCreateImage = 32,
       TypePageConfig = 33,
       TypeSystematicScale = 34,
+      TypeCreatePoint = 35,
+      TypeCreateArrow =36,
+      TypeCreateEllipse = 37,
+      TypeCreateTitle = 38,
+      TypeCreateStringGrid = 39,
+      TypeCreateMultiLineText = 40,
       TypeNone = 0
     } LayoutMode;
 

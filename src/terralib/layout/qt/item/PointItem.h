@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,30 +18,33 @@
  */
 
 /*!
-  \file ItemFactory.h
+  \file PointItem.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ITEM_FACTORY_H 
-#define __TERRALIB_LAYOUT_INTERNAL_ITEM_FACTORY_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_POINT_ITEM_H 
+#define __TERRALIB_LAYOUT_INTERNAL_POINT_ITEM_H
 
 // TerraLib
-#include "../../../../core/pattern/factory/AbstractItemFactory.h"
+#include "ObjectItem.h"
 
 namespace te
 {
   namespace layout
   {
-    class ItemFactory : public AbstractItemFactory
+    class Observable;
+
+    class PointItem : public ObjectItem
     {
       public:
-        ItemFactory();
-        virtual ~ItemFactory();
 
-        virtual Observer* make(LayoutAbstractObjectType type, ItemParamsCreate params = ItemParamsCreate());
+        PointItem( ItemController* controller, Observable* o );
+        virtual ~PointItem();
+        
+        virtual void updateObserver(ContextItem context);
     };
   }
 }

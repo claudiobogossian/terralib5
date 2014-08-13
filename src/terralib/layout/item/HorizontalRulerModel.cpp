@@ -61,9 +61,21 @@ void te::layout::HorizontalRulerModel::draw( ContextItem context )
   if((!canvas) || (!utils))
     return;
 
+  //double result = 0;
+  //if(context.getZoomFactor() < 1.)
+  //  result = m_box.getWidth() * context.getZoomFactor();
+
+  //m_box.m_llx = m_box.m_llx;
+  //m_box.m_lly = m_box.m_lly;
+  //m_box.m_urx = m_box.m_urx - result;
+  //m_box.m_ury = m_box.m_ury;
+
   if(context.isResizeCanvas())
     utils->configCanvas(m_box, true, false);  
     
+  canvas->setTextPointSize(5);
+  canvas->setFontFamily("Verdana");
+
   drawRuler(canvas, utils, context.getZoomFactor());
   
   if(context.isResizeCanvas())
@@ -93,8 +105,8 @@ void te::layout::HorizontalRulerModel::drawRuler( te::map::Canvas* canvas, Utils
   {
     te::gm::Envelope* paperBox = m_paperConfig->getPaperBoxW();
     
-    envPaper = te::gm::Envelope(paperBox->getLowerLeftX(), m_backEndBox.getLowerLeftY(),
-      paperBox->getUpperRightX(), m_backEndBox.getUpperRightY());
+    envPaper = te::gm::Envelope(paperBox->getLowerLeftX() * zoomFactor, m_backEndBox.getLowerLeftY(),
+      paperBox->getUpperRightX() * zoomFactor, m_backEndBox.getUpperRightY());
 
     te::color::RGBAColor colorp5(255,255,255, TE_OPAQUE);
     drawRectW(envPaper, colorp5, canvas, utils);
@@ -105,11 +117,13 @@ void te::layout::HorizontalRulerModel::drawRuler( te::map::Canvas* canvas, Utils
 
   drawHorizontalRuler(canvas, utils, zoomFactor);
 
+  /* Line on the marks */
   envMargin = te::gm::Envelope(m_backEndBox.getLowerLeftX(), m_backEndBox.getLowerLeftY() + m_lineMargin, 
     m_backEndBox.getWidth(), m_backEndBox.getLowerLeftY() + m_lineMargin);
   
   drawLineW(envMargin, utils);
 
+  /* Outside line */
   envMargin = te::gm::Envelope(m_box.getLowerLeftX(), m_box.getLowerLeftY() + 0.2, 
     m_box.getWidth(), m_box.getLowerLeftY() + 0.2);
   
@@ -121,7 +135,6 @@ void te::layout::HorizontalRulerModel::drawHorizontalRuler(te::map::Canvas* canv
   if(!m_box.isValid())
     return;
 
-  te::gm::Envelope newBox;
   double wtxt = 0;
   double htxt = 0;
 
@@ -129,30 +142,33 @@ void te::layout::HorizontalRulerModel::drawHorizontalRuler(te::map::Canvas* canv
   double urx = m_backEndBox.getUpperRightX();
   
   te::gm::Envelope box;
-  
+    
   for(int i = (int)llx ; i < (int) urx ; ++i)
   {
-    if((i % (int)m_blockSize) == 0)
+    if((i % (int)(m_blockSize)) == 0)
     {
       box = te::gm::Envelope(i, m_backEndBox.getLowerLeftY(), i, m_backEndBox.getLowerLeftY() + m_longLine);  
-      drawLineW(box, utils);
 
       std::stringstream ss;//create a stringstream
       ss << i;//add number to the stream
 
       utils->textBoundingBox(wtxt, htxt, ss.str());
-      canvas->drawText((double)i - (wtxt/2.), m_backEndBox.getLowerLeftY() + (m_longLine), ss.str(), 0);
+      canvas->drawText((double)(i * zoomFactor) - (wtxt/2.), m_backEndBox.getLowerLeftY() + (m_longLine), ss.str(), 0);
     }
-    else if((i % (int)m_middleBlockSize) == 0)
+    else if((i % (int)(m_middleBlockSize)) == 0)
     {
       box = te::gm::Envelope(i, m_backEndBox.getLowerLeftY(), i, m_backEndBox.getLowerLeftY() + m_mediumLine); 
-      drawLineW(box, utils);
     }
-    else if((i % (int)m_smallBlockSize) == 0)
+    else if((i % (int)(m_smallBlockSize)) == 0)
     {
       box = te::gm::Envelope(i, m_backEndBox.getLowerLeftY(), i, m_backEndBox.getLowerLeftY() + m_smallLine);  
-      drawLineW(box, utils);
     }
+
+    /* Spacing between marks depending on the zoom level */
+    box.m_llx = box.m_llx * zoomFactor;
+    box.m_urx = box.m_urx * zoomFactor;
+
+    drawLineW(box, utils);
   }
 }
 

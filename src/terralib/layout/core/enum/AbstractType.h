@@ -60,6 +60,12 @@ namespace te
       TPPageSetup = 19,
       TPImageItem = 20,
       TPSystematicScale = 21,
+      TPPointItem = 22,
+      TPArrowItem = 23,
+      TPEllipseItem = 24,
+      TPTitleItem = 25,
+      TPStringGridItem = 26,
+      TPMultiLineTextItem = 27,
       TPObjectUnknown = 0
     } LayoutAbstractObjectType;
 

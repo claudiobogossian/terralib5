@@ -73,6 +73,12 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionTextDefault("text_default"),
   m_optionImage("text_image"),
   m_optionMapSystematicScale("map_systematic_scale"),
+  m_optionPoint("geometry_point"),
+  m_optionEllipse("geometry_ellipse"),
+  m_optionArrow("geometry_arrow"),
+  m_optionMultiLineText("text_multiLineText"),
+  m_optionStringGrid("text_stringGrid"),
+  m_optionTitle("text_title"),
   m_btnMap(0)
 {
 	te::gm::Envelope box = m_model->getBox();	
@@ -209,6 +215,15 @@ void te::layout::ToolbarOutside::createGeometryToolButton()
   QAction* actionRectagle = createAction("Rectangle Object", m_optionRectangle, "layout-square");
   menu->addAction(actionRectagle);
 
+  QAction* actionArrow = createAction("Arrow Object", m_optionArrow, "layout-arrow");
+  menu->addAction(actionArrow);
+
+  QAction* actionEllipse = createAction("Ellipse Object", m_optionEllipse, "layout-ellipse");
+  menu->addAction(actionEllipse);
+
+  QAction* actionPoint = createAction("Point Object", m_optionPoint, "layout-point");
+  menu->addAction(actionPoint);
+
   QToolButton *btnGeometry = createToolButton("Geometry Tools", "Geometries Objects", "layout-square");
   btnGeometry->setMenu(menu);
   btnGeometry->setPopupMode(QToolButton::InstantPopup);
@@ -329,6 +344,15 @@ void te::layout::ToolbarOutside::createTextToolButton()
   QAction* actionTxtDefault = createAction("Default Text Object", m_optionTextDefault, "layout-default-text");
   menu->addAction(actionTxtDefault);
 
+  QAction* actionMultiLineText = createAction("MultiLine Text Object", m_optionMultiLineText, "layout-multiline-text");
+  menu->addAction(actionMultiLineText);
+
+  QAction* actionTitle = createAction("Title Object", m_optionTitle, "layout-title");
+  menu->addAction(actionTitle);
+
+  QAction* actionStringGrid = createAction("Grid Object", m_optionStringGrid, "layout-grid");
+  menu->addAction(actionStringGrid);
+
   QAction* actionImage = createAction("Image Object", m_optionImage, "layout-image");
   menu->addAction(actionImage);
 
@@ -346,15 +370,15 @@ void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
   {
     changeAction(TypeCreateMap);
   }
-  if(action->objectName().compare(m_optionMapGrid.c_str()) == 0)
+  else if(action->objectName().compare(m_optionMapGrid.c_str()) == 0)
   {
     changeAction(TypeCreateMapGrid);
   }
-  if(action->objectName().compare(m_optionLegendDefault.c_str()) == 0)
+  else if(action->objectName().compare(m_optionLegendDefault.c_str()) == 0)
   {
     changeAction(TypeCreateLegend);
   }
-  if(action->objectName().compare(m_optionScale.c_str()) == 0)
+  else if(action->objectName().compare(m_optionScale.c_str()) == 0)
   {
     changeAction(TypeCreateScale);
   }
@@ -366,15 +390,15 @@ void te::layout::ToolbarOutside::onMapToolsTriggered( QAction* action )
   {
     changeAction(TypeMapPan);
   }
-  if(action->objectName().compare(m_optionMapZoomIn.c_str()) == 0)
+  else if(action->objectName().compare(m_optionMapZoomIn.c_str()) == 0)
   {
     changeAction(TypeMapZoomIn);
   }
-  if(action->objectName().compare(m_optionMapZoomOut.c_str()) == 0)
+  else if(action->objectName().compare(m_optionMapZoomOut.c_str()) == 0)
   {
     changeAction(TypeMapZoomOut);
   }
-  if(action->objectName().compare(m_optionMapSystematicScale.c_str()) == 0)
+  else if(action->objectName().compare(m_optionMapSystematicScale.c_str()) == 0)
   {
     changeAction(TypeSystematicScale);
   }
@@ -386,6 +410,18 @@ void te::layout::ToolbarOutside::onGeometryTriggered( QAction* action )
   {
     changeAction(TypeCreateRectangle);
   }
+  else if(action->objectName().compare(m_optionArrow.c_str()) == 0)
+  {
+    changeAction(TypeCreateArrow);
+  }
+  else if(action->objectName().compare(m_optionEllipse.c_str()) == 0)
+  {
+    changeAction(TypeCreateEllipse);
+  }
+  else if(action->objectName().compare(m_optionPoint.c_str()) == 0)
+  {
+    changeAction(TypeCreatePoint);
+  }
 }
 
 void te::layout::ToolbarOutside::onViewAreaTriggered( QAction* action )
@@ -394,11 +430,11 @@ void te::layout::ToolbarOutside::onViewAreaTriggered( QAction* action )
   {
     changeAction(TypePan);
   }
-  if(action->objectName().compare(m_optionViewZoomIn.c_str()) == 0)
+  else if(action->objectName().compare(m_optionViewZoomIn.c_str()) == 0)
   {
     changeAction(TypeZoomIn);
   }
-  if(action->objectName().compare(m_optionViewZoomOut.c_str()) == 0)
+  else if(action->objectName().compare(m_optionViewZoomOut.c_str()) == 0)
   {
     changeAction(TypeZoomOut);
   }
@@ -415,7 +451,7 @@ void te::layout::ToolbarOutside::onItemToolsTriggered( QAction* action )
   {
     changeAction(TypeGroup);
   }
-  if(action->objectName().compare(m_optionUngroup.c_str()) == 0)
+  else if(action->objectName().compare(m_optionUngroup.c_str()) == 0)
   {
     changeAction(TypeUngroup);
   }
@@ -477,6 +513,18 @@ void te::layout::ToolbarOutside::onTextToolsTriggered( QAction* action )
   if(action->objectName().compare(m_optionTextDefault.c_str()) == 0)
   {
     changeAction(TypeCreateText);
+  }
+  else if(action->objectName().compare(m_optionMultiLineText.c_str()) == 0)
+  {
+    changeAction(TypeCreateMultiLineText);
+  }
+  else if(action->objectName().compare(m_optionStringGrid.c_str()) == 0)
+  {
+    changeAction(TypeCreateStringGrid);
+  }
+  else if(action->objectName().compare(m_optionTitle.c_str()) == 0)
+  {
+    changeAction(TypeCreateTitle);
   }
   else if(action->objectName().compare(m_optionImage.c_str()) == 0)
   {

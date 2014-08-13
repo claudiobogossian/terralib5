@@ -18,48 +18,45 @@
  */
 
 /*!
-  \file VerticalRulerItem.cpp
+  \file TitleItem.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-
 // TerraLib
-#include "VerticalRulerItem.h"
+#include "TitleItem.h"
 #include "../../core/pattern/mvc/ItemController.h"
 #include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/ItemModelObservable.h"
+#include "../../core/pattern/mvc/Observable.h"
 #include "../../../color/RGBAColor.h"
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
-#include "../../core/pattern/singleton/Context.h"
 
-// STL
-#include <cmath>
-
-te::layout::VerticalRulerItem::VerticalRulerItem( ItemController* controller, Observable* o ) :
+te::layout::TitleItem::TitleItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
 {
-  m_printable = false;
-  m_canChangeGraphicOrder = false;
-  
+  this->setFlags(QGraphicsItem::ItemIsMovable
+    | QGraphicsItem::ItemIsSelectable
+    | QGraphicsItem::ItemSendsGeometryChanges
+    | QGraphicsItem::ItemIsFocusable);
+
   m_nameClass = std::string(this->metaObject()->className());
 }
 
-te::layout::VerticalRulerItem::~VerticalRulerItem()
+te::layout::TitleItem::~TitleItem()
 {
 
 }
 
-void te::layout::VerticalRulerItem::updateObserver( ContextItem context )
+void te::layout::TitleItem::updateObserver( ContextItem context )
 {
   if(!m_model)
     return;
 
-  te::color::RGBAColor** rgba = context.getPixmap();
+  te::color::RGBAColor** rgba = context.getPixmap();  
 
   if(!rgba)
     return;
@@ -74,31 +71,19 @@ void te::layout::VerticalRulerItem::updateObserver( ContextItem context )
   if(!box.isValid())
     return;
 
-  QPixmap pixmap;
+  QPixmap pixmp;
   QImage* img = 0;
-
+  
   if(rgba)
   {
     img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
-    pixmap = QPixmap::fromImage(*img);
+    pixmp = QPixmap::fromImage(*img);
   }
 
   te::common::Free(rgba, box.getHeight());
   if(img)
     delete img;
-
-  /* The ruler should not change the appearance. */
-  double zoomFactor = getZoomRuler();
-  setScale(zoomFactor);
-
-  setPixmap(pixmap);
+  
+  setPixmap(pixmp);
   update();
 }
-
-double te::layout::VerticalRulerItem::getZoomRuler()
-{
-  double zoomFactor = Context::getInstance().getZoomFactor();
-  zoomFactor = 1. / zoomFactor;
-  return zoomFactor;
-}
-

@@ -616,7 +616,7 @@ void te::layout::Scene::refresh(QGraphicsView* view, double zoomFactor)
   if(view)
   {
     /* New box because the zoom factor change the transform(matrix) */
-    QPointF ll = view->mapToScene(0,0);
+    QPointF ll = view->mapToScene(0, 0);
     QPointF ur = view->mapToScene(view->size().width(), view->size().height());
     newBox = te::gm::Envelope(ll.x(), ll.y(), ur.x(), ur.y());
   }
@@ -634,6 +634,8 @@ void te::layout::Scene::refreshRulers(te::gm::Envelope newBox)
   double urx = newBox.getUpperRightX();
   double ury = newBox.getUpperRightY();
 
+  QPointF pt(llx, lly);
+
   QList<QGraphicsItem*> graphicsItems = items();
   foreach( QGraphicsItem *item, graphicsItems) 
   {
@@ -642,8 +644,6 @@ void te::layout::Scene::refreshRulers(te::gm::Envelope newBox)
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
       {       
-        QPointF pt(llx, lly);
-
         ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(lItem->getModel());
 
         if(!model)

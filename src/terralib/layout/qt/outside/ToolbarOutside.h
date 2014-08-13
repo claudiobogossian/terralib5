@@ -153,6 +153,9 @@ namespace te
 
       /* Geometry Menu */
       std::string m_optionRectangle;
+      std::string m_optionPoint;
+      std::string m_optionEllipse;
+      std::string m_optionArrow;
 
       /* View Area */
       std::string m_optionViewPan;
@@ -171,9 +174,11 @@ namespace te
       /* Text Tools */
       std::string m_optionTextDefault;
       std::string m_optionImage;
+      std::string m_optionMultiLineText;
+      std::string m_optionStringGrid;
+      std::string m_optionTitle;
     };
   }
 }
-
 
 #endif

@@ -87,12 +87,10 @@ void te::layout::HorizontalRulerItem::updateObserver( ContextItem context )
   if(img)
     delete img;
 
+  /* The ruler should not change the appearance. */
   double zoomFactor = getZoomRuler();
-
   setScale(zoomFactor);
-
-  QTransform t = this->transform();
-
+  
   setPixmap(pixmap);
   update();
 }

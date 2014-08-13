@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,32 +18,43 @@
  */
 
 /*!
-  \file ItemFactory.h
+  \file ArrowModel.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ITEM_FACTORY_H 
-#define __TERRALIB_LAYOUT_INTERNAL_ITEM_FACTORY_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ARROW_MODEL_H
+#define __TERRALIB_LAYOUT_INTERNAL_ARROW_MODEL_H
 
 // TerraLib
-#include "../../../../core/pattern/factory/AbstractItemFactory.h"
+#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/ContextItem.h"
+#include "../../geometry/Envelope.h"
+#include "../../color/RGBAColor.h"
+#include "../../maptools/Canvas.h"
 
 namespace te
 {
   namespace layout
   {
-    class ItemFactory : public AbstractItemFactory
+    class ArrowModel : public ItemModelObservable
     {
       public:
-        ItemFactory();
-        virtual ~ItemFactory();
 
-        virtual Observer* make(LayoutAbstractObjectType type, ItemParamsCreate params = ItemParamsCreate());
+        ArrowModel();
+        virtual ~ArrowModel();
+
+        virtual void draw( ContextItem context );
+
+      protected:
+
+        virtual void drawArrow(te::map::Canvas* canvas, Utils* utils);
+
+        virtual void drawHeadArrow(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
     };
   }
 }
 
-#endif
+#endif 

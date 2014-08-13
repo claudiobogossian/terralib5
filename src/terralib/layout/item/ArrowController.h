@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,30 +18,37 @@
  */
 
 /*!
-  \file ItemFactory.h
+  \file ArrowController.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ITEM_FACTORY_H 
-#define __TERRALIB_LAYOUT_INTERNAL_ITEM_FACTORY_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ARROW_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_ARROW_CONTROLLER_H
 
 // TerraLib
-#include "../../../../core/pattern/factory/AbstractItemFactory.h"
+#include "../core/pattern/mvc/ItemController.h"
 
 namespace te
 {
   namespace layout
   {
-    class ItemFactory : public AbstractItemFactory
+    class ArrowController : public ItemController
     {
       public:
-        ItemFactory();
-        virtual ~ItemFactory();
 
-        virtual Observer* make(LayoutAbstractObjectType type, ItemParamsCreate params = ItemParamsCreate());
+        ArrowController( Observable* o );
+        virtual ~ArrowController();
+
+        virtual void setPosition(const double& x, const double& y);
+
+      protected:
+
+        ArrowController( Observable* o, LayoutAbstractObjectType type );
+
+        virtual void create();
     };
   }
 }
