@@ -58,6 +58,7 @@ te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::
   m_draftPixmap->fill(Qt::transparent);
 
   resize(size);
+  setAcceptDrops(true);
 }
 
 te::qt::widgets::MapDisplay::~MapDisplay()
@@ -74,28 +75,32 @@ te::qt::widgets::MapDisplay::~MapDisplay()
 
 void te::qt::widgets::MapDisplay::dragEnterEvent(QDragEnterEvent* e)
 {
-  Qt::DropActions actions = e->dropAction();
-  if(actions != Qt::CopyAction)
-    return;
+  emit displayDragEnterEvent(e);
 
-  const QMimeData* mime = e->mimeData();
-  QString s = mime->data("application/x-terralib;value=\"DraggedItems\"").constData();
-  if(s.isEmpty())
-    return;
+  //Qt::DropActions actions = e->dropAction();
+  //if(actions != Qt::CopyAction)
+  //  return;
 
-  e->accept();
-  return;
+  //const QMimeData* mime = e->mimeData();
+  //QString s = mime->data("application/x-terralib;value=\"DraggedItems\"").constData();
+  //if(s.isEmpty())
+  //  return;
+
+  //e->accept();
+  //return;
 }
 
 void te::qt::widgets::MapDisplay::dropEvent(QDropEvent* e)
 {
-  const QMimeData* mime = e->mimeData();
-  QString s = mime->data("application/x-terralib;value=\"DraggedItems\"").constData();
-  unsigned long v = s.toULongLong();
-  std::vector<te::qt::widgets::AbstractTreeItem*>* draggedItems = reinterpret_cast<std::vector<AbstractTreeItem*>*>(v);
-  te::qt::widgets::AbstractTreeItem* item = draggedItems->operator[](0);
-  te::map::AbstractLayerPtr al = item->getLayer();
-  changeData(al);
+  emit displayDropEvent(e);
+
+  //const QMimeData* mime = e->mimeData();
+  //QString s = mime->data("application/x-terralib;value=\"DraggedItems\"").constData();
+  //unsigned long v = s.toULongLong();
+  //std::vector<te::qt::widgets::AbstractTreeItem*>* draggedItems = reinterpret_cast<std::vector<AbstractTreeItem*>*>(v);
+  //te::qt::widgets::AbstractTreeItem* item = draggedItems->operator[](0);
+  //te::map::AbstractLayerPtr al = item->getLayer();
+  //changeData(al);
 }
 
 void te::qt::widgets::MapDisplay::changeData(te::map::AbstractLayerPtr al, int nsrid)

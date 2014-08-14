@@ -41,7 +41,9 @@
 namespace te
 {
   //forward declarations
+  namespace da  { class DataSetType; }
   namespace gm  { class Geometry; }
+  namespace mem { class DataSet; }
   namespace rst { class Raster; }
 
   namespace sa
@@ -73,9 +75,23 @@ namespace te
         /*! Function used to build the tree with data set information */
         void buildTree();
 
+        /*! Function used to run kernel when output data is a raster */
         void runRasterKernel();
 
+        /*! Function used to run kernel when output data is dataset  */
+        void runDataSetKernel();
+
+        /*! Function used to create the output raster */
         std::auto_ptr<te::rst::Raster> buildRaster();
+
+        /*! Function used to save the output dataset */
+        void saveDataSet(te::da::DataSet* dataSet, te::da::DataSetType* dsType);
+
+        /*! Function used to create the output dataset type */
+        std::auto_ptr<te::da::DataSetType> createDataSetType(te::da::DataSetType* dsType);
+
+        /*! Function used to create the output dataset */
+        std::auto_ptr<te::mem::DataSet> createDataSet(te::da::DataSet* inputDataSet, te::da::DataSetType* dsType);
 
       protected:
 

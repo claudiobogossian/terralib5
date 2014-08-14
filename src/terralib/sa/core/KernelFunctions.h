@@ -40,6 +40,9 @@
 
 namespace te
 {
+  //forward declarations
+  namespace mem { class DataSet; }
+
   namespace sa
   {
     ///< Tree used to store the dataset geometries MBR and its id value
@@ -48,13 +51,45 @@ namespace te
     ///< Map with id, associated with geometry and its attribute (intensity value)
     typedef std::map<int, std::pair<te::gm::Geometry*, double> > KernelMap;
 
+    /*!
+      \brief Evaluates kernel value using a raster as output data and a fixed value for radius.
+
+      \param params Pointer to a Kernel Params
+      \param kTree Reference to  tree with all geometries from input data
+      \param kMap Reference to the kernel Map
+      \param raster Pointer to raster to set the kernel values
+      \param radius Radius used to calculate the kernel
+
+    */
     TESAEXPORT void GridStatRadiusKernel(te::sa::KernelParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::rst::Raster* raster, double radius);
 
+    /*!
+      \brief Evaluates kernel value using a raster as output data and a adaptative value for radius.
+
+      \param params Pointer to a Kernel Params
+      \param kTree Reference to  tree with all geometries from input data
+      \param kMap Reference to the kernel Map
+      \param raster Pointer to raster to set the kernel values
+
+    */
     TESAEXPORT void GridAdaptRadiusKernel(te::sa::KernelParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::rst::Raster* raster);
 
-    TESAEXPORT double KernelValue(te::sa::KernelParams* params, te::sa::KernelMap& kMap, double radius, te::gm::Coord2D& coord, std::vector<int> idxVec); 
+    TESAEXPORT void DataSetStatRadiusKernel(te::sa::KernelParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::mem::DataSet* ds, int kernelIdx, int geomIdx, double radius);
 
-    TESAEXPORT double CalculateDistance(te::gm::Geometry* geom, te::gm::Coord2D& coord);
+    TESAEXPORT void DataSetAdaptRadiusKernel(te::sa::KernelParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::mem::DataSet* ds, int kernelIdx, int geomIdx);
+
+    /*!
+      \brief Evaluates kernel value of events with intensity
+
+      \param params Pointer to a Kernel Params
+      \param kMap Reference to the kernel Map
+      \param radius Double value with radius information
+      \param coord Coord of the element to calculate the kernel value
+      \param idxVec Index of all elements that interects the box created by coord with radius value
+
+      \return Kernel value for one element.
+    */
+    TESAEXPORT double KernelValue(te::sa::KernelParams* params, te::sa::KernelMap& kMap, double radius, te::gm::Coord2D& coord, std::vector<int> idxVec); 
 
     /*!
       \brief Kernel functions for Quartic type
@@ -111,7 +146,29 @@ namespace te
     */
     TESAEXPORT double KernelNegExponential(double tau, double distance, double intensity);
 
-    TESAEXPORT void KernelNormalize(te::sa::KernelParams* params, te::sa::KernelMap& kMap, te::rst::Raster* raster, double totKernel);
+
+    /*!
+      \brief Normalizes kernel values based on type of estimation. 
+
+      \param params Pointer to a Kernel Params (used to get the estimation type)
+      \param kMap Reference to the kernel Map
+      \param raster Pointer to raster with the kernel values
+      \param totKernel Sum of all kernel values from each raster pixel
+
+    */
+    TESAEXPORT void GridKernelNormalize(te::sa::KernelParams* params, te::sa::KernelMap& kMap, te::rst::Raster* raster, double totKernel);
+
+    TESAEXPORT void DataSetKernelNormalize(te::sa::KernelParams* params, te::sa::KernelMap& kMap, te::mem::DataSet* ds, int kernelIdx, int geomIdx, double totKernel);
+
+    /*!
+      \brief Calculates the geometric mean from kernel map (intensity value) using log.
+
+      \param kMap Reference to the kernel Map
+
+      \return Double value with the geometric mean
+
+    */
+    TESAEXPORT double KernelGeometricMean(te::sa::KernelMap& kMap);
   }
 }
 

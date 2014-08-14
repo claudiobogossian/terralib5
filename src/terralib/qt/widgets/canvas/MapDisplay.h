@@ -251,6 +251,12 @@ namespace te
           /*! This signal is sent to others know that the projection was changed. */
           void displaySridChanged();
 
+          /*! This signal is sent to others know that is drag enter event. */
+          void displayDragEnterEvent(QDragEnterEvent*);
+
+          /*! This signal is sent to others know that is drop event. */
+          void displayDropEvent(QDropEvent*);
+
         private:
 
           /** @name Copy Constructor and Assignment Operator
