@@ -217,7 +217,7 @@ find_package(LibPQ)
 
 find_package(SWIG)
 
-find_package(Java COMPONENTS Development REQUIRED)
+find_package(Java COMPONENTS Development)
 
 find_package(JNI)
 
