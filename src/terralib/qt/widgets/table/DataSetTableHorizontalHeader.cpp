@@ -51,37 +51,26 @@ QHeaderView(Qt::Horizontal, view),
   m_layer(0),
   m_dset(0)
 {
-  if(m_doDragDrop)
-  {
-    setMouseTracking(true);
-    setAcceptDrops(true);
-    setDragDropMode(QAbstractItemView::DragDrop);
-    setDropIndicatorShown(true);
-  }
 }
 
 void te::qt::widgets::DataSetTableHorizontalHeader::setDragDrop(bool b)
 {
   m_doDragDrop = b;
-  if(m_doDragDrop)
-  {
-    setMouseTracking(true);
-    setAcceptDrops(true);
-    setDragDropMode(QAbstractItemView::DragDrop);
-    setDropIndicatorShown(true);
-  }
-  else
-  {
-    setMouseTracking(false);
-    setAcceptDrops(false);
-    setDragDropMode(QAbstractItemView::NoDragDrop);
-    setDropIndicatorShown(false);
-  }
 }
 
 void te::qt::widgets::DataSetTableHorizontalHeader::setAcceptDrop(bool b)
 {
   m_acceptDrop = b;
+  if(m_acceptDrop)
+  {
+    setAcceptDrops(true);
+    setDropIndicatorShown(true);
+  }
+  else
+  {
+    setAcceptDrops(false);
+    setDropIndicatorShown(false);
+  }
 }
 
 void te::qt::widgets::DataSetTableHorizontalHeader::setLayer(const te::map::AbstractLayer* layer)
@@ -173,17 +162,30 @@ void te::qt::widgets::DataSetTableHorizontalHeader::mousePressEvent(QMouseEvent 
       Qt::DropAction dropAction = drag->exec(Qt::LinkAction);    
     }
   }
-  //else if(e->button() == Qt::MiddleButton) // to test
+  //else if(e->button() == Qt::MiddleButton) // to test drag drop
   //{
   //  int cc = m_view->columnAt(e->pos().x());
+  //  cc = visualIndex(cc);
   //  if(cc == 0)
+  //  {
   //    setDragDrop(false);
+  //    QMessageBox::information(this, "", "DRAG DROP DISABLED");
+  //  }
   //  else if(cc == 1)
+  //  {
   //    setDragDrop(true);
+  //    QMessageBox::information(this, "", "DRAG DROP ENABLED");
+  //  }
   //  else if(cc == 2)
+  //  {
   //    setAcceptDrop(true);
+  //    QMessageBox::information(this, "", "DROP ENABLED");
+  //  }
   //  else if(cc == 3)
+  //  {
   //    setAcceptDrop(false);
+  //    QMessageBox::information(this, "", "DROP DISABLED");
+  //  }
   //}
 
   QHeaderView::mousePressEvent(e);

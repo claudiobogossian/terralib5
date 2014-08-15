@@ -94,6 +94,7 @@ namespace te
 
           /*!
             \brief Sets the drag drop on the horizontal header.
+                  When the drag drop is enabled, you lose the ability to swap columns
           
             \param b True: does the drag drop. False: do not drag drop.
           */
