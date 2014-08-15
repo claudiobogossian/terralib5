@@ -45,8 +45,8 @@ void TsGrid::tcGridConstructor1()
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0, grid.getResolutionX(), 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getResolutionY(), 0.0000000001 );
   CPPUNIT_ASSERT( grid.getSRID() == 12345 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getExtent()->m_llx, 0.0000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, grid.getExtent()->m_lly, 0.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, grid.getExtent()->m_llx, 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, grid.getExtent()->m_lly, 1.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.0, grid.getExtent()->m_urx, 0.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 3.0, grid.getExtent()->m_ury, 0.0000000001 ); 
   

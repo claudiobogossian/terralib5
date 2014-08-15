@@ -2480,3 +2480,10 @@ std::vector<te::da::Sequence*> te::pgis::Transactor::getSequences()
 
   return seqs;
 }
+
+te::common::CharEncoding te::pgis::Transactor::getEncoding()
+{
+  int encodingId = PQclientEncoding(m_conn->getConn());
+  std::string encodingStr = pg_encoding_to_char(encodingId);
+  return te::pgis::GetTeEncoding(encodingStr.c_str());
+}

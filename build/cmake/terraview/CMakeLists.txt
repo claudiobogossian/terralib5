@@ -73,6 +73,29 @@ if(Qt5_FOUND)
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES})
 
   add_executable(terraview ${TERRAVIEW_APP_TYPE} ${TERRALIB_FILES})
+  
+  if(WIN32)
+    get_target_property(loc terraview LOCATION_Release)
+
+    get_target_property(loc_d terraview LOCATION_Debug)
+
+    get_filename_component(loc_dir ${loc} DIRECTORY)
+
+    get_filename_component(loc_d_dir ${loc_d} DIRECTORY)
+  
+    set(qt_dir "${Qt5_DIR}/../../..")
+  
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt.conf.devel "[Paths]\nBinaries = ${qt_dir}/bin\nPlugins = ${qt_dir}/plugins\nTranslations = ../share/terralib/translations")
+
+    add_custom_command(
+      TARGET terraview
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/qt.conf.devel" "$<$<CONFIG:Release>:${loc_dir}>$<$<CONFIG:Debug>:${loc_d_dir}>"
+      COMMAND ${CMAKE_COMMAND} -E rename "$<$<CONFIG:Release>:${loc_dir}/qt.conf.devel>$<$<CONFIG:Debug>:${loc_d_dir}/qt.conf.devel>" "$<$<CONFIG:Release>:${loc_dir}/qt.conf>$<$<CONFIG:Debug>:${loc_d_dir}/qt.conf>"
+      COMMENT "Copying qt.conf file..."
+      VERBATIM
+    )
+  endif()
 
   if(APPLE)
     target_link_libraries(terraview terralib_mod_qt_apf ${TERRALIB_COREFOUNDATION_LIBRARY})
@@ -140,14 +163,14 @@ if(TERRALIB_TRACK_3RDPARTY_DEPENDENCIES)
   if(APPLE)
 
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
-         "[Paths]\nBinaries = .\nPlugins = qtplugins")
+         "[Paths]\nBinaries = .\nPlugins = qtplugins\nTranslations = share/terralib/translations")
          
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
             DESTINATION terraview.app/Contents/Resources COMPONENT runtime)
 
   elseif(WIN32)
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
-         "[Paths]\nBinaries = .\nPlugins = ../qtplugins")
+         "[Paths]\nBinaries = .\nPlugins = ../qtplugins\nTranslations = ../share/terralib/translations")
          
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
             DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime)

@@ -268,6 +268,8 @@ namespace te
       void dropSequence(const std::string&) {}
 
       void optimize(const std::map<std::string, std::string>& ){}
+
+      te::common::CharEncoding getEncoding();
       
     private:
       

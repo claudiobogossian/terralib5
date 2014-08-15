@@ -42,7 +42,7 @@ set(TERRALIB_VERSION_STRING "${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
 set(TERRALIB_VERSION "0x050000")
 set(TERRALIB_PKG_VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}.${TERRALIB_VERSION_PATCH})
 
-# variable indicating that
+# variable indicating that it will search for 3rd-party libraries and install them
 if(NOT DEFINED TERRALIB_TRACK_3RDPARTY_DEPENDENCIES)
   set(TERRALIB_TRACK_3RDPARTY_DEPENDENCIES 0 CACHE BOOL "If \"on\" it will search for 3rd-party libraries and install them when building the install target (e.g.: make install)")
 endif()
@@ -63,37 +63,43 @@ if(NOT DEFINED TERRALIB_REPORT_DIR)
   set(TERRALIB_REPORT_DIR "${CMAKE_BINARY_DIR}/report" CACHE PATH "Path to a directory containing the report used in the examples and/or in the unit test")
 endif()
 
+if(APPLE AND TERRALIB_BUILD_AS_BUNDLE AND NOT DEFINED TERRALIB_BASE_DESTINATION_DIR)
+  set(TERRALIB_BASE_DESTINATION_DIR "terraview.app/Contents/")
+elseif(NOT DEFINED TERRALIB_BASE_DESTINATION_DIR)
+  set(TERRALIB_BASE_DESTINATION_DIR "")
+endif()
+
 # variables that control the install location
 if(NOT DEFINED TERRALIB_DESTINATION_PLUGINS)
-  set(TERRALIB_DESTINATION_PLUGINS "share/terralib/plugins")
+  set(TERRALIB_DESTINATION_PLUGINS "${TERRALIB_BASE_DESTINATION_DIR}share/terralib/plugins")
 endif()
 
 if(NOT DEFINED TERRALIB_DESTINATION_EXAMPLES)
-  set(TERRALIB_DESTINATION_EXAMPLES "share/terralib/examples")
+  set(TERRALIB_DESTINATION_EXAMPLES "${TERRALIB_BASE_DESTINATION_DIR}share/terralib/examples")
 endif()
 
 if(NOT DEFINED TERRALIB_DESTINATION_UNITTEST)
-  set(TERRALIB_DESTINATION_UNITTEST "share/terralib/unittest")
+  set(TERRALIB_DESTINATION_UNITTEST "${TERRALIB_BASE_DESTINATION_DIR}share/terralib/unittest")
 endif()
 
 if(NOT DEFINED TERRALIB_DESTINATION_LIBRARY)
-  set(TERRALIB_DESTINATION_LIBRARY "lib")
+  set(TERRALIB_DESTINATION_LIBRARY "${TERRALIB_BASE_DESTINATION_DIR}lib")
 endif()
 
 if(NOT DEFINED TERRALIB_DESTINATION_RUNTIME)
-  set(TERRALIB_DESTINATION_RUNTIME "bin")
+  set(TERRALIB_DESTINATION_RUNTIME "${TERRALIB_BASE_DESTINATION_DIR}bin")
 endif()
 
 if(NOT DEFINED TERRALIB_DESTINATION_ARCHIVE)
-  set(TERRALIB_DESTINATION_ARCHIVE "lib")
+  set(TERRALIB_DESTINATION_ARCHIVE "${TERRALIB_BASE_DESTINATION_DIR}lib")
 endif()
 
 if(NOT DEFINED TERRALIB_DESTINATION_HEADERS)
-  set(TERRALIB_DESTINATION_HEADERS "include")
+  set(TERRALIB_DESTINATION_HEADERS "${TERRALIB_BASE_DESTINATION_DIR}include")
 endif()
 
 if(NOT DEFINED TERRALIB_DESTINATION_SHARE)
-  set(TERRALIB_DESTINATION_SHARE "share")
+  set(TERRALIB_DESTINATION_SHARE "${TERRALIB_BASE_DESTINATION_DIR}share")
 endif()
 
 # variables that controls what is built
@@ -111,6 +117,11 @@ endif()
 
 if(NOT DEFINED TERRALIB_AUTOMATIC_INITIALIZATION)
   set(TERRALIB_AUTOMATIC_INITIALIZATION 1 CACHE BOOL "Tells that TerraLib should initialize its resources automatically")
+endif()
+
+# variable that set the bundle items as writable before install_name_tool tries to change them (for APPLE platforms)
+if(APPLE AND TERRALIB_BUILD_AS_BUNDLE AND TERRALIB_TRACK_3RDPARTY_DEPENDENCIES AND NOT DEFINED BU_CHMOD_BUNDLE_ITEMS)
+  set(BU_CHMOD_BUNDLE_ITEMS ON CACHE BOOL "If ON, set the bundle items as writable")
 endif()
 
 
@@ -231,6 +242,8 @@ find_package(Qt5 5.1 QUIET COMPONENTS Core Gui Widgets PrintSupport)
 
 if(NOT Qt5_FOUND)
   find_package(Qt4 4.6.3 QUIET COMPONENTS QtCore QtGui)
+else()
+  find_package(Qt5LinguistTools QUIET)
 endif()
 
 if(Qt5_FOUND OR QT4_FOUND)
@@ -315,30 +328,6 @@ if(LOG4CXX_FOUND)
     set(TERRALIB_LOGGER_ENABLED 1 CACHE BOOL "Enable logger?")
   endif()
 
-  if(TERRALIB_LOGGER_ENABLED AND NOT DEFINED TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION)
-
-    set(TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION 1 CACHE BOOL "Automatic initialize logger support?")
-
-  else()
-
-    if(NOT TERRALIB_LOGGER_ENABLED AND DEFINED TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION)
-      set(TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION 0 CACHE BOOL "Automatic initialize logger support?" FORCE)
-    endif()
-
-  endif()
-  
-  if(TERRALIB_LOGGER_ENABLED AND NOT DEFINED TERRALIB_LOGGER_DO_STATIC_INITIALIZATION)
-
-    set(TERRALIB_LOGGER_DO_STATIC_INITIALIZATION 1 CACHE BOOL "Perform logger initialization support during static's initialization?")
-
-  else()
-
-    if(NOT TERRALIB_LOGGER_ENABLED AND DEFINED TERRALIB_LOGGER_DO_STATIC_INITIALIZATION)
-      set(TERRALIB_LOGGER_DO_STATIC_INITIALIZATION 0 CACHE BOOL "Perform logger initialization support during static's initialization?" FORCE)
-    endif()
-
-  endif()
-
 else()
 
   if(DEFINED TERRALIB_LOGGER_ENABLED)
@@ -416,6 +405,8 @@ option(TERRALIB_MOD_XLINK_ENABLED "Build XLink module?" ON)
 option(TERRALIB_MOD_XSD_ENABLED "Build XSD module?" ON)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_GEOMETRY_ENABLED "Build Geometry module?" ON "TERRALIB_MOD_DATATYPE_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_SAM_ENABLED "Build Spatial Access Methods?" ON "TERRALIB_MOD_GEOMETRY_ENABLED" OFF)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_ANNOTATIONTEXT_ENABLED "Build Annotation Text module?" ON "TERRALIB_MOD_GEOMETRY_ENABLED" OFF)
 
@@ -678,6 +669,10 @@ if(TERRALIB_QHELP_ENABLED)
   add_subdirectory(terralib_qhelp)
 endif()
 
+if(Qt5LinguistTools_FOUND)
+  add_subdirectory(terralib_qtranslations)
+endif()
+
 if(TERRALIB_MOD_ADO_ENABLED)
   add_subdirectory(terralib_mod_ado)
 endif()
@@ -835,6 +830,10 @@ endif()
 
 if(TERRALIB_MOD_SA_CORE_ENABLED)
   add_subdirectory(terralib_mod_sa_core)
+endif()
+
+if(TERRALIB_MOD_SAM_ENABLED)
+  add_subdirectory(terralib_mod_sam)
 endif()
 
 if(TERRALIB_MOD_SRS_ENABLED)

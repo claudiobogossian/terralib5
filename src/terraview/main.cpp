@@ -42,9 +42,13 @@
 #include <QApplication>
 #include <QDir>
 #include <QFileInfo>
+#include <QLibraryInfo>
+#include <QLocale>
 #include <QMessageBox>
 #include <QSplashScreen>
 #include <QTextCodec>
+#include <QTranslator>
+
 
 #if TE_PLATFORM == TE_PLATFORMCODE_APPLE
 #include <CoreFoundation/CoreFoundation.h>
@@ -54,6 +58,20 @@
 int main(int argc, char** argv)
 {
   QApplication app(argc, argv);
+
+  QDir dir(QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+
+  QStringList filters;
+  filters <<"*" + QLocale::system().name().toLower() + ".qm";
+
+  QFileInfoList lst = dir.entryInfoList(filters, QDir::Files);
+
+  for(int i=0; i<lst.size(); ++i)
+  {
+    QTranslator* trans = new QTranslator;
+    bool ls = trans->load(lst.at(i).baseName(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    app.installTranslator(trans);
+  }
 
   setlocale(LC_ALL,"C"); // This force to use "." as decimal separator.
 

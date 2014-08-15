@@ -354,9 +354,9 @@ std::auto_ptr<te::da::DataSetTypeCapabilities> te::ogr::Transactor::getCapabilit
 
   if(l != 0)
   {
-    cap->setSupportAddColumn(l->TestCapability(OLCCreateField));
-    cap->setSupportRemoveColumn(l->TestCapability(OLCDeleteField));
-    cap->setSupportDataEdition(l->TestCapability(OLCRandomWrite));
+    cap->setSupportAddColumn((l->TestCapability(OLCCreateField) == 0) ? false : true);
+    cap->setSupportRemoveColumn((l->TestCapability(OLCDeleteField) == 0) ? false : true);
+    cap->setSupportDataEdition((l->TestCapability(OLCRandomWrite) == 0) ? false : true);
   }
 
   return cap;
@@ -523,7 +523,7 @@ void te::ogr::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
       delete nField;
 
       if(error != OGRERR_NONE)
-        throw Exception(TE_TR("Error when attempting add the property."));
+        throw Exception(TE_TR("Error when attempting add the property: " + p->getName() + "."));
 
       error = l->SyncToDisk();
 
@@ -1197,4 +1197,9 @@ void te::ogr::Transactor::update(const std::string &datasetName, te::da::DataSet
 
 void te::ogr::Transactor::optimize(const std::map<std::string, std::string>& /*opInfo*/)
 {
+}
+
+te::common::CharEncoding te::ogr::Transactor::getEncoding()
+{
+  return te::common::LATIN1;
 }

@@ -30,6 +30,7 @@
 #include "../../dataaccess/utils/Utils.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/Utils.h"
 #include "../../qt/widgets/utils/DoubleListWidget.h"
 #include "GeometricOpOutputWizardPage.h"
 #include "ui_GeometricOpOutputWizardPageForm.h"
@@ -193,7 +194,6 @@ void te::vp::GeometricOpOutputWizardPage::onAllObjectsToggled()
 
 void te::vp::GeometricOpOutputWizardPage::onSimpleOperationToggled()
 {
-  //m_ui->m_outputGroupBox->sete;
   m_ui->m_outputGroupBox->setCheckable(false);
   m_ui->m_attributesComboBox->setEnabled(false);
   onAttributeComboBoxChanged(0);
@@ -231,18 +231,29 @@ void te::vp::GeometricOpOutputWizardPage::onTargetFileToolButtonPressed()
   m_ui->m_newLayerNameLineEdit->clear();
   m_ui->m_repositoryLineEdit->clear();
   
-  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
-                                                        QString(), tr("Shapefile (*.shp *.SHP);;"),0, QFileDialog::DontConfirmOverwrite);
+  QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), te::qt::widgets::GetFilePathFromSettings("vp_geomOp"), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
   
-  if (fileName.isEmpty())
-    return;
-  
-  boost::filesystem::path outfile(fileName.toStdString());
-  std::string aux = outfile.leaf().string();
-  m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
-  aux = outfile.string();
-  m_ui->m_repositoryLineEdit->setText(aux.c_str());
-  
-  m_toFile = true;
-  m_ui->m_newLayerNameLineEdit->setEnabled(false);
+  if(dir.isEmpty() == false)
+  {
+    m_path = dir.replace(QRegExp("\\\\"), "/").toStdString();
+
+    m_ui->m_repositoryLineEdit->setText(m_path.c_str());
+
+    te::qt::widgets::AddFilePathToSettings(m_path.c_str(), "vp_geomOp");
+
+    m_toFile = true;
+  }
+
+  /*QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."), QString(), tr("Shapefile (*.shp *.SHP);;"),0, QFileDialog::DontConfirmOverwrite);*/
+  //if (fileName.isEmpty())
+  //  return;
+  //
+  //boost::filesystem::path outfile(fileName.toStdString());
+  //std::string aux = outfile.leaf().string();
+  //m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
+  //aux = outfile.string();
+  //m_ui->m_repositoryLineEdit->setText(aux.c_str());
+  //
+  //m_toFile = true;
+  //m_ui->m_newLayerNameLineEdit->setEnabled(false);
 }

@@ -1220,6 +1220,13 @@ namespace te
                          std::size_t limit = 0);
 
         /*!
+          \brief It return the DataOurce current encoding.
+
+          \return The DataSource current encoding.
+        */
+        virtual te::common::CharEncoding getEncoding();
+
+        /*!
           \brief It removes all the informed items from the dataset.
 
           It removes all the data items from a dataset which are identified by 
