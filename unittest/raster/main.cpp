@@ -37,6 +37,7 @@
 
 // Unit-Test TerraLib includes by platform
 #include "Config.h"
+#include "LoadModules.h"
 
 #include <cstdlib>
 
@@ -44,6 +45,11 @@
 
 int main(int /*argc*/, char** /*argv*/)
 {
+  // initialize Terralib platform
+  TerraLib::getInstance().initialize();
+    
+  LoadModules();
+  
   // it creates the event manager and test controller
   CPPUNIT_NS::TestResult controller;
 
@@ -96,6 +102,9 @@ int main(int /*argc*/, char** /*argv*/)
   file3.close();
 
   bool resultStatus = result.wasSuccessful();
+  
+  // finalize TerraLib Plataform
+  TerraLib::getInstance().finalize();  
 
   return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }

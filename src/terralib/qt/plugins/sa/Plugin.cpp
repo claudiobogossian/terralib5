@@ -31,8 +31,20 @@
 #include "../../af/events/LayerEvents.h"
 #include "Plugin.h"
 
+#ifdef TE_QT_PLUGIN_SA_HAVE_BAYESGLOBAL
+  #include "BayesGlobalAction.h"
+#endif
+
+#ifdef TE_QT_PLUGIN_SA_HAVE_BAYESLOCAL
+  #include "BayesLocalAction.h"
+#endif
+
 #ifdef TE_QT_PLUGIN_SA_HAVE_KERNELMAP
   #include "KernelMapAction.h"
+#endif
+
+#ifdef TE_QT_PLUGIN_SA_HAVE_KERNELRATIO
+  #include "KernelRatioAction.h"
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
@@ -98,16 +110,31 @@ void te::qt::plugins::sa::Plugin::shutdown()
 void te::qt::plugins::sa::Plugin::registerActions()
 {
 
-#ifdef TE_QT_PLUGIN_SA_HAVE_KERNELMAP
-  m_kernelMap = new te::qt::plugins::sa::KernelMapAction(m_saMenu);
-#endif
-
 #ifdef TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
   m_proxMatrixCreator = new te::qt::plugins::sa::ProximityMatrixCreatorAction(m_saMenu);
+  m_saMenu->addSeparator();
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_SPATIALSTATISTICS
   m_spatialStatistics = new te::qt::plugins::sa::SpatialStatisticsAction(m_saMenu);
+    m_saMenu->addSeparator();
+#endif
+
+#ifdef TE_QT_PLUGIN_SA_HAVE_BAYESGLOBAL
+    m_bayesGlobal = new te::qt::plugins::sa::BayesGlobalAction(m_saMenu);
+#endif
+
+#ifdef TE_QT_PLUGIN_SA_HAVE_BAYESLOCAL
+    m_bayesLocal = new te::qt::plugins::sa::BayesLocalAction(m_saMenu);
+    m_saMenu->addSeparator();
+#endif
+
+#ifdef TE_QT_PLUGIN_SA_HAVE_KERNELMAP
+  m_kernelMap = new te::qt::plugins::sa::KernelMapAction(m_saMenu);
+#endif
+
+#ifdef TE_QT_PLUGIN_SA_HAVE_KERNELRATIO
+  m_kernelRatio = new te::qt::plugins::sa::KernelRatioAction(m_saMenu);
 #endif
 
 }
@@ -115,8 +142,20 @@ void te::qt::plugins::sa::Plugin::registerActions()
 void  te::qt::plugins::sa::Plugin::unRegisterActions()
 {
 
+#ifdef TE_QT_PLUGIN_SA_HAVE_BAYESGLOBAL
+    delete m_bayesGlobal;
+#endif
+
+#ifdef TE_QT_PLUGIN_SA_HAVE_BAYESLOCAL
+    delete m_bayesLocal;
+#endif
+
 #ifdef TE_QT_PLUGIN_SA_HAVE_KERNELMAP
     delete m_kernelMap;
+#endif
+
+#ifdef TE_QT_PLUGIN_SA_HAVE_KERNELRATIO
+    delete m_kernelRatio;
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR

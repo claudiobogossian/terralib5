@@ -51,7 +51,7 @@ namespace te
     /*!
       \class KernelOperation
 
-      \brief Class used to calculate the kernel map of a dataset
+      \brief Virtual class used to execute the kernel operations
 
       \sa KernelFunctions
     */
@@ -60,29 +60,31 @@ namespace te
       public:
 
         /*! \brief Default constructor. */
-        KernelOperation(te::sa::KernelParams* params);
+        KernelOperation();
 
         /*! \brief Virtual destructor. */
-        ~KernelOperation();
+        virtual ~KernelOperation();
 
       public:
 
         /*! \brief Function to execute the kernel operation. */
-        void execute();
+        virtual void execute() = 0;
+
+        void setParameters(te::sa::KernelInputParams* inParams, te::sa::KernelOutputParams* outParams);
 
       protected:
 
         /*! Function used to build the tree with data set information */
-        void buildTree();
+        virtual void buildTree() = 0;
 
         /*! Function used to run kernel when output data is a raster */
-        void runRasterKernel();
+        void runRasterKernel(te::sa::KernelInputParams* inputParams, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::rst::Raster* raster);
 
         /*! Function used to run kernel when output data is dataset  */
-        void runDataSetKernel();
+        std::auto_ptr<te::mem::DataSet> runDataSetKernel(te::sa::KernelInputParams* inputParams, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::da::DataSetType* dsType);
 
         /*! Function used to create the output raster */
-        std::auto_ptr<te::rst::Raster> buildRaster();
+        std::auto_ptr<te::rst::Raster> buildRaster(te::sa::KernelInputParams* inputParams, te::sa::KernelTree& kTree, std::string driver);
 
         /*! Function used to save the output dataset */
         void saveDataSet(te::da::DataSet* dataSet, te::da::DataSetType* dsType);
@@ -95,11 +97,11 @@ namespace te
 
       protected:
 
-        std::auto_ptr<te::sa::KernelParams> m_params;   //!< Attribute with the kernel parameters.
+        std::auto_ptr<te::sa::KernelInputParams> m_inputParams;       //!< Attribute with the kernel input parameters.
 
-        te::sa::KernelTree m_kTree;                     //!< Attribute used to locate near geometries
+        std::auto_ptr<te::sa::KernelOutputParams> m_outputParams;     //!< Attribute with the kernel output parameters.
 
-        te::sa::KernelMap m_kMap;                       //!< Kernel map with input data
+        te::sa::KernelTree m_kTree;                                   //!< Attribute used to locate near geometries.
     };
   } // end namespace sa
 } // end namespace te

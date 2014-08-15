@@ -26,9 +26,9 @@
 */
 
 //TerraLib
-#include "../../dataaccess/utils/Utils.h"
 #include "../../dataaccess/datasource/DataSource.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
+#include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/SimpleProperty.h"
 #include "../../geometry/Geometry.h"
 #include "../../geometry/GeometryProperty.h"
@@ -48,150 +48,78 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-te::sa::KernelOperation::KernelOperation(te::sa::KernelParams* params)
+te::sa::KernelOperation::KernelOperation()
 {
-  m_params.reset(params);
 }
 
 te::sa::KernelOperation::~KernelOperation()
 {
-  //clear kernel map
-  KernelMap::iterator it = m_kMap.begin();
-
-  while(it != m_kMap.end())
-  {
-    delete it->second.first;
-    ++it;
-  }
-
-  m_kMap.clear();
 }
 
-void te::sa::KernelOperation::execute()
+void te::sa::KernelOperation::setParameters(te::sa::KernelInputParams* inParams, te::sa::KernelOutputParams* outParams)
 {
-  assert(m_params.get());
-
-  //build tree and map kernel
-  buildTree();
-
-  //check the output storage mode
-  te::sa::KernelOutputType outType = m_params->m_storageType;
-
-  if(outType == te::sa::Grid)
-  {
-    runRasterKernel();
-  }
-  else if(outType == te::sa::Attribute)
-  {
-    runDataSetKernel();
-  }
+  m_inputParams.reset(inParams);
+  m_outputParams.reset(outParams);
 }
 
-void te::sa::KernelOperation::buildTree()
+void te::sa::KernelOperation::runRasterKernel(te::sa::KernelInputParams* inputParams, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::rst::Raster* raster)
 {
-  //get properties information
-  te::da::DataSetType* dataSetTYype = m_params->m_dsType.get();
-
-  te::da::PrimaryKey* pk = dataSetTYype->getPrimaryKey();
-
-  if(!pk)
-    throw;
-
-  te::gm::GeometryProperty* gmProp = te::da::GetFirstGeomProperty(dataSetTYype);
-
-  if(!gmProp)
-    throw;
-
-  te::da::DataSet* dataSet = m_params->m_ds.get();
-
-  dataSet->moveBeforeFirst();
-
-  //create tree and kernel map
-  while(dataSet->moveNext())
-  {
-    int id = dataSet->getInt32(pk->getName());
-
-    te::gm::Geometry* g = dataSet->getGeometry(gmProp->getName()).release();
-
-    double value = 1.; //If there is no properties, assume intensity of one
-
-    if(!m_params->m_intensityAttrName.empty())
-    {
-      value = te::sa::GetDataValue(dataSet->getValue(m_params->m_intensityAttrName).get());
-    }
-
-    std::pair<te::gm::Geometry*, double> pair(g, value);
-
-    m_kMap.insert(KernelMap::value_type(id, pair));
-
-    const te::gm::Envelope* box = g->getMBR();
-
-    m_kTree.insert(*box, id);
-  }
-}
-
-void te::sa::KernelOperation::runRasterKernel()
-{
-  //create raster
-  std::auto_ptr<te::rst::Raster> raster = buildRaster();
-
-  if(!raster.get())
+  if(!raster)
     throw;
 
   //check if use adaptative radius or not
-  if(m_params->m_useAdaptativeRadius)
+  if(inputParams->m_useAdaptativeRadius)
   {
-    te::sa::GridAdaptRadiusKernel(m_params.get(), m_kTree, m_kMap, raster.get());
+    te::sa::GridAdaptRadiusKernel(inputParams, kTree, kMap, raster);
   }
   else
   {
     double val = std::max<double>(raster->getGrid()->getExtent()->getWidth(), raster->getGrid()->getExtent()->getHeight());
-    double radius = (val * m_params->m_radiusPercentValue) / 100.;
+    double radius = (val * inputParams->m_radiusPercentValue) / 100.;
 
-    te::sa::GridStatRadiusKernel(m_params.get(), m_kTree, m_kMap, raster.get(), radius);
+    te::sa::GridStatRadiusKernel(inputParams, kTree, kMap, raster, radius);
   }
 }
 
-void te::sa::KernelOperation::runDataSetKernel()
+std::auto_ptr<te::mem::DataSet> te::sa::KernelOperation::runDataSetKernel(te::sa::KernelInputParams* inputParams, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::da::DataSetType* dsType)
 {
-  //create datasetype
-  std::auto_ptr<te::da::DataSetType> dsType = createDataSetType(m_params->m_dsType.get());
+  if(!dsType)
+    throw;
 
   //create dataset in memory
-  std::auto_ptr<te::mem::DataSet> dataSet = createDataSet(m_params->m_ds.get(), dsType.get());
+  std::auto_ptr<te::mem::DataSet> dataSet = createDataSet(inputParams->m_ds.get(), dsType);
 
   //get kernel attr index
-  std::size_t kernelIdx = dsType->getPropertyPosition(m_params->m_outputAttrName);
+  std::size_t kernelIdx = dsType->getPropertyPosition(m_outputParams->m_outputAttrName);
 
   //get geom attr index
   std::size_t geomIdx = te::da::GetFirstPropertyPos(dataSet.get(), te::dt::GEOMETRY_TYPE);
 
   //check if use adaptative radius or not
-  if(m_params->m_useAdaptativeRadius)
+  if(inputParams->m_useAdaptativeRadius)
   {
-    te::sa::DataSetAdaptRadiusKernel(m_params.get(), m_kTree, m_kMap, dataSet.get(), kernelIdx, geomIdx);
+    te::sa::DataSetAdaptRadiusKernel(inputParams, kTree, kMap, dataSet.get(), kernelIdx, geomIdx);
   }
   else
   {
-    double val = std::max<double>(m_kTree.getMBR().getWidth(), m_kTree.getMBR().getHeight());
-    double radius = (val * m_params->m_radiusPercentValue) / 100.;
+    double val = std::max<double>(kTree.getMBR().getWidth(), kTree.getMBR().getHeight());
+    double radius = (val * inputParams->m_radiusPercentValue) / 100.;
 
-    te::sa::DataSetStatRadiusKernel(m_params.get(), m_kTree, m_kMap, dataSet.get(), kernelIdx, geomIdx, radius);
+    te::sa::DataSetStatRadiusKernel(inputParams, kTree, kMap, dataSet.get(), kernelIdx, geomIdx, radius);
   }
 
-  //save dataset
-  saveDataSet(dataSet.get(), dsType.get());
+  return dataSet;
 }
 
-std::auto_ptr<te::rst::Raster> te::sa::KernelOperation::buildRaster()
+std::auto_ptr<te::rst::Raster> te::sa::KernelOperation::buildRaster(te::sa::KernelInputParams* inputParams, te::sa::KernelTree& kTree, std::string driver)
 {
   //get extent of input data
-  te::gm::Envelope* env = new te::gm::Envelope(m_kTree.getMBR());
+  te::gm::Envelope* env = new te::gm::Envelope(kTree.getMBR());
 
   //get srid
   int srid = TE_UNKNOWN_SRS;
   
-  te::gm::GeometryProperty* gmProp = te::da::GetFirstGeomProperty(m_params->m_dsType.get());
+  te::gm::GeometryProperty* gmProp = te::da::GetFirstGeomProperty(inputParams->m_dsType.get());
 
   if(gmProp)
     srid = gmProp->getSRID();
@@ -199,7 +127,7 @@ std::auto_ptr<te::rst::Raster> te::sa::KernelOperation::buildRaster()
   //create grid
   double val = std::max<double>(env->getWidth(), env->getHeight());
 
-  double res = val / m_params->m_nCols;
+  double res = val / m_outputParams->m_nCols;
 
   te::rst::Grid* grid = new te::rst::Grid(res, res, env, srid);
 
@@ -212,13 +140,13 @@ std::auto_ptr<te::rst::Raster> te::sa::KernelOperation::buildRaster()
   vecBandProp.push_back(bProp);
 
   //create raster info
-  std::string fileName = m_params->m_outputPath + "/" + m_params->m_outputDataSetName + ".tif";
+  std::string fileName = m_outputParams->m_outputPath + "/" + m_outputParams->m_outputDataSetName + ".tif";
 
   std::map<std::string, std::string> rInfo;
   rInfo["URI"] = fileName;
 
   //create raster
-  std::auto_ptr<te::rst::Raster> rst(te::rst::RasterFactory::make("GDAL", grid, vecBandProp, rInfo));
+  std::auto_ptr<te::rst::Raster> rst(te::rst::RasterFactory::make(driver, grid, vecBandProp, rInfo));
 
   return rst;
 }
@@ -226,7 +154,7 @@ std::auto_ptr<te::rst::Raster> te::sa::KernelOperation::buildRaster()
 void te::sa::KernelOperation::saveDataSet(te::da::DataSet* dataSet, te::da::DataSetType* dsType)
 {
   //create dataset info
-  std::string fileName = m_params->m_outputPath + "/" + m_params->m_outputDataSetName + ".shp";
+  std::string fileName = m_outputParams->m_outputPath + "/" + m_outputParams->m_outputDataSetName + ".shp";
 
   //connection info
   std::map<std::string, std::string> info;
@@ -247,12 +175,12 @@ void te::sa::KernelOperation::saveDataSet(te::da::DataSet* dataSet, te::da::Data
 
   ds->createDataSet(dsType, options);
 
-  ds->add(m_params->m_outputDataSetName, dataSet, options);
+  ds->add(m_outputParams->m_outputDataSetName, dataSet, options);
 }
 
 std::auto_ptr<te::da::DataSetType> te::sa::KernelOperation::createDataSetType(te::da::DataSetType* dsType)
 {
-  std::auto_ptr<te::da::DataSetType> dataSetType(new te::da::DataSetType(m_params->m_outputDataSetName));
+  std::auto_ptr<te::da::DataSetType> dataSetType(new te::da::DataSetType(m_outputParams->m_outputDataSetName));
 
   //create all input dataset properties
   std::vector<te::dt::Property*> propertyVec = dsType->getProperties();
@@ -269,7 +197,7 @@ std::auto_ptr<te::da::DataSetType> te::sa::KernelOperation::createDataSetType(te
   }
 
   //create kernel property
-  te::dt::SimpleProperty* kernelProperty = new te::dt::SimpleProperty(m_params->m_outputAttrName, te::dt::DOUBLE_TYPE);
+  te::dt::SimpleProperty* kernelProperty = new te::dt::SimpleProperty(m_outputParams->m_outputAttrName, te::dt::DOUBLE_TYPE);
   dataSetType->add(kernelProperty);
 
   return dataSetType;
@@ -296,7 +224,7 @@ std::auto_ptr<te::mem::DataSet> te::sa::KernelOperation::createDataSet(te::da::D
     }
 
     //set kernel default value
-    outDSetItem->setDouble(m_params->m_outputAttrName, 0.);
+    outDSetItem->setDouble(m_outputParams->m_outputAttrName, 0.);
 
     //add item into dataset
     outDataset->add(outDSetItem);

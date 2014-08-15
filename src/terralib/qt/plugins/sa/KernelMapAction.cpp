@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/qt/plugins/sa/SpatialStatisticsAction.cpp
+  \file terralib/qt/plugins/sa/KernelMapAction.cpp
 
-  \brief This file defines the concrete class for SpatialStatistics Action
+  \brief This file defines the concrete class for KernelMap Action
 */
 
 // Terralib

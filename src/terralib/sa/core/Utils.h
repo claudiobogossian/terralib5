@@ -62,6 +62,20 @@ namespace te
     TESAEXPORT int AssociateGPMVertexAttribute(te::sa::GeneralizedProximityMatrix* gpm, te::da::DataSource* ds, std::string dataSetName, std::string attrLink, std::string attr, int dataType, int srid = TE_UNKNOWN_SRS, int subType = te::gm::UnknownGeometryType);
 
     /*!
+      \brief Function used to set a an attribute valeu from a dataset to the vertex objects from a gpm.
+
+      \param gpm  Pointer to gpm that has the graph information.
+      \param ds DataSet pointer
+      \param attrLink Attribute name used to link the vertex id to dataset.
+      \param attr Attribute name that will be associated to the graph.
+      \param dataType The type of the attribute that will be associated.
+      \param srid If the new attribute was a geometry type
+      
+      \return Return the vertex attribute index.
+    */
+    TESAEXPORT int AssociateGPMVertexAttribute(te::sa::GeneralizedProximityMatrix* gpm, te::da::DataSet* ds, std::string attrLink, std::string attr, int dataType, int srid = TE_UNKNOWN_SRS, int subType = te::gm::UnknownGeometryType);
+
+    /*!
       \brief Function used to create the vertex attribute metadata in the graph of the gpm.
 
       \param graph  Pointer to the graph associated to the gpm.
