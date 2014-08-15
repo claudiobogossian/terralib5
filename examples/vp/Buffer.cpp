@@ -269,7 +269,7 @@ bool BufferPGISToOGR()
   connInfo["PG_PORT"] = "5433" ;
   connInfo["PG_USER"] = "postgres";
   connInfo["PG_PASSWORD"] = "postgres";
-  connInfo["PG_DB_NAME"] = "testPostGIS";
+  connInfo["PG_DB_NAME"] = "terralib4";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
   connInfo["PG_CLIENT_ENCODING"] = "CP1252";
 
@@ -278,7 +278,7 @@ bool BufferPGISToOGR()
   srcDs->setConnectionInfo(connInfo);
   srcDs->open();
   
-  std::string inDsetName = "sp_meso";
+  std::string inDsetName = "distritos";
   if (!srcDs->dataSetExists(inDsetName))
   {
     std::cout << "Input dataset not found: " << inDsetName << std::endl;
@@ -288,7 +288,7 @@ bool BufferPGISToOGR()
   std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
   std::auto_ptr<te::da::DataSetType> inDsetType = srcDs->getDataSetType(inDsetName);
 
-  double distance = 0.5;
+  double distance = 0.1;
 
   //options for Polygon Rule.
   int bufferPolygonRule = te::vp::INSIDE_OUTSIDE;
@@ -304,7 +304,7 @@ bool BufferPGISToOGR()
   
   std::string data_dir = TERRALIB_DATA_DIR;
   
-  std::string uriResult(data_dir + "/shp/Buffer/bufferPGISToOGR.shp");
+  std::string uriResult(data_dir + "/shp/Buffer/bufferPGISToOGR_distritos.shp");
 
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = uriResult;
@@ -315,7 +315,7 @@ bool BufferPGISToOGR()
   trgDs->setConnectionInfo(tgrInfo);
   trgDs->open();
 
-  std::string outDSet = "bufferPGISToOGR";
+  std::string outDSet = "bufferPGISToOGR_distritos";
 
   if (trgDs->dataSetExists(outDSet))
   {

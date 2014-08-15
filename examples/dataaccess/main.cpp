@@ -130,21 +130,21 @@ int main(int /*argc*/, char** /*argv*/)
 
     PostGISExample();  //ok
 
-    //GDALExample();  //ok
+    GDALExample();  //ok
 
-    //ObjectId(); //ok
+    ObjectId(); //ok
 
-    //ObjectId_query(); //using builselector and query
+    ObjectId_query(); //using builselector and query
 
-    //QueryExample_2(); //ok
+    QueryExample_2(); //ok
 
-    //MemoryExample(); //Ok
+    MemoryExample(); //Ok
 
-    //ExportingOGR();  //ok
+    ExportingOGR();  //ok
 
-    //OGRExampleRead(); //ok
+    OGRExampleRead(); //ok
 
-    //ORGExampleWrite(); //ok
+    ORGExampleWrite(); //ok
 
     CopyingData(); //ok
 
