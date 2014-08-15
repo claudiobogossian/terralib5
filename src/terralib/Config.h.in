@@ -94,6 +94,8 @@
 
 #cmakedefine TERRALIB_MOD_RP_ENABLED
 
+#cmakedefine TERRALIB_MOD_SAM_ENABLED
+
 #cmakedefine TERRALIB_MOD_SRS_ENABLED
 
 #cmakedefine TERRALIB_MOD_ST_ENABLED
