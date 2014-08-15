@@ -31,6 +31,8 @@
 #include "TileIndexer.h"
 #include "Config.h"
 
+#include <memory>
+
 namespace te
 {
   namespace rst
@@ -56,11 +58,11 @@ namespace te
         /*!
           \brief Constructor with non default parameters.
 
-          \param p      Polygon reference.
-          \param v      Parameter V.
+          \param polPtr      Polygon pointer (this structure will take the ownership of the given pointer)
+          \param v      The pixel value related to the polygon.
           \param tidy   Tile indexer dy.
         */
-        VectorizerPolygonStructure(const te::gm::Polygon& p, const int& v, const double& tidy);
+        VectorizerPolygonStructure( te::gm::Polygon* polPtr, const unsigned int& v, const double& tidy);
 
         /*! \brief Default destructor. */
         ~VectorizerPolygonStructure();
@@ -74,11 +76,12 @@ namespace te
         /*!
           \brief Reset the current instance.
 
-          \param p      Polygon reference.
+          \param polPtr      Polygon pointer (this structure will take the ownership of the given pointer)
           \param v      Parameter V.
           \param tidy   Tile indexer dy.
+          
         */
-        void reset(const te::gm::Polygon& p, const int& v, const double& tidy);
+        void reset( te::gm::Polygon* polPtr, const unsigned int& v, const double& tidy);
 
         /*!
           \brief Assignment operator.
@@ -90,10 +93,11 @@ namespace te
         VectorizerPolygonStructure& operator=(const VectorizerPolygonStructure& rhs);
 
       public:
-        int m_value;                   //!< The value (color) related to a polygon.
+        
+        unsigned int m_value;                   //!< The value (color) related to a polygon.
         double m_tileIndexerDY;        //!< The polygon tile indexer Y Axis resolution.
-        TileIndexer* m_indexer;        //!< The polygon tile indexer pointer.
-        te::gm::Polygon m_polygon;     //!< The stored polygon instance.
+        std::auto_ptr< TileIndexer > m_indexerPtr;        //!< A pointer to the polygon tile indexer pointer.
+        std::auto_ptr< te::gm::Polygon > m_polygonPtr;     //!< A pointer to the stored polygon instance.
 
     };
 
