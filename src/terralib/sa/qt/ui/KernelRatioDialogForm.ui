@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>KernelMapDialogForm</class>
- <widget class="QDialog" name="KernelMapDialogForm">
+ <class>KernelRatioDialogForm</class>
+ <widget class="QDialog" name="KernelRatioDialogForm">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>417</width>
-    <height>494</height>
+    <width>428</width>
+    <height>548</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Kernel Map</string>
+   <string>Kernel Ratio</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_25">
    <property name="sizeConstraint">
@@ -41,7 +41,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Calculates the kernel map of a data set.</string>
+           <string>Calculates the kernel ratio of a data sets.</string>
           </property>
          </widget>
         </item>
@@ -77,7 +77,7 @@
        </property>
        <layout class="QGridLayout" name="gridLayout_18">
         <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_5">
+         <layout class="QGridLayout" name="gridLayout_14">
           <item row="0" column="0">
            <layout class="QGridLayout" name="gridLayout_4">
             <item row="0" column="0">
@@ -99,9 +99,16 @@
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="QCheckBox" name="m_useAttrLayerCheckBox">
+               <widget class="QCheckBox" name="m_useAttrLayerCheckBoxA">
                 <property name="text">
-                 <string>Attr Name:</string>
+                 <string>Attr A Name:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QCheckBox" name="m_useAttrLayerCheckBoxB">
+                <property name="text">
+                 <string>Attr B Name:</string>
                 </property>
                </widget>
               </item>
@@ -113,7 +120,7 @@
                <widget class="QComboBox" name="m_inputLayerComboBox"/>
               </item>
               <item row="1" column="0">
-               <widget class="QComboBox" name="m_attrLayerComboBox">
+               <widget class="QComboBox" name="m_attrLayerComboBoxA">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -122,6 +129,13 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QComboBox" name="m_attrLayerComboBoxB">
+                <property name="enabled">
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -137,13 +151,13 @@
             <property name="flat">
              <bool>true</bool>
             </property>
-            <layout class="QGridLayout" name="gridLayout_14">
+            <layout class="QGridLayout" name="gridLayout_13">
              <item row="0" column="0">
-              <layout class="QGridLayout" name="gridLayout_13">
+              <layout class="QGridLayout" name="gridLayout_12">
                <item row="0" column="0">
-                <layout class="QGridLayout" name="gridLayout_12">
+                <layout class="QGridLayout" name="gridLayout_11">
                  <item row="0" column="0">
-                  <layout class="QGridLayout" name="gridLayout_10">
+                  <layout class="QGridLayout" name="gridLayout_5">
                    <item row="0" column="0">
                     <widget class="QLabel" name="label_2">
                      <property name="text">
@@ -164,10 +178,20 @@
                      </property>
                     </widget>
                    </item>
+                   <item row="2" column="0">
+                    <widget class="QLabel" name="label_8">
+                     <property name="text">
+                      <string>Combination:</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                     </property>
+                    </widget>
+                   </item>
                   </layout>
                  </item>
                  <item row="0" column="1">
-                  <layout class="QGridLayout" name="gridLayout_11">
+                  <layout class="QGridLayout" name="gridLayout_10">
                    <item row="0" column="0">
                     <widget class="QComboBox" name="m_functionComboBox">
                      <property name="sizePolicy">
@@ -180,6 +204,16 @@
                    </item>
                    <item row="1" column="0">
                     <widget class="QComboBox" name="m_estimationComboBox">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="0">
+                    <widget class="QComboBox" name="m_combinationComboBox">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -477,10 +511,13 @@
  </customwidgets>
  <tabstops>
   <tabstop>m_inputLayerComboBox</tabstop>
-  <tabstop>m_useAttrLayerCheckBox</tabstop>
-  <tabstop>m_attrLayerComboBox</tabstop>
+  <tabstop>m_useAttrLayerCheckBoxA</tabstop>
+  <tabstop>m_attrLayerComboBoxA</tabstop>
+  <tabstop>m_useAttrLayerCheckBoxB</tabstop>
+  <tabstop>m_attrLayerComboBoxB</tabstop>
   <tabstop>m_functionComboBox</tabstop>
   <tabstop>m_estimationComboBox</tabstop>
+  <tabstop>m_combinationComboBox</tabstop>
   <tabstop>m_useAdaptRadiusCheckBox</tabstop>
   <tabstop>m_radiusSpinBox</tabstop>
   <tabstop>m_gridRadioButton</tabstop>
@@ -497,18 +534,18 @@
  <resources/>
  <connections>
   <connection>
-   <sender>m_useAttrLayerCheckBox</sender>
+   <sender>m_useAttrLayerCheckBoxA</sender>
    <signal>toggled(bool)</signal>
-   <receiver>m_attrLayerComboBox</receiver>
+   <receiver>m_attrLayerComboBoxA</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>77</x>
-     <y>146</y>
+     <x>108</x>
+     <y>158</y>
     </hint>
     <hint type="destinationlabel">
-     <x>140</x>
-     <y>147</y>
+     <x>366</x>
+     <y>155</y>
     </hint>
    </hints>
   </connection>
@@ -519,12 +556,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>68</x>
-     <y>285</y>
+     <x>92</x>
+     <y>314</y>
     </hint>
     <hint type="destinationlabel">
      <x>224</x>
-     <y>287</y>
+     <y>316</y>
     </hint>
    </hints>
   </connection>
@@ -535,12 +572,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>281</x>
-     <y>225</y>
+     <x>87</x>
+     <y>383</y>
     </hint>
     <hint type="destinationlabel">
-     <x>344</x>
-     <y>236</y>
+     <x>404</x>
+     <y>384</y>
     </hint>
    </hints>
   </connection>
@@ -551,28 +588,44 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>298</x>
-     <y>257</y>
+     <x>87</x>
+     <y>408</y>
     </hint>
     <hint type="destinationlabel">
-     <x>340</x>
-     <y>256</y>
+     <x>404</x>
+     <y>410</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>m_cancelPushButton</sender>
    <signal>released()</signal>
-   <receiver>KernelMapDialogForm</receiver>
+   <receiver>KernelRatioDialogForm</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>430</x>
-     <y>437</y>
+     <x>416</x>
+     <y>529</y>
     </hint>
     <hint type="destinationlabel">
-     <x>432</x>
+     <x>427</x>
      <y>470</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_useAttrLayerCheckBoxB</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_attrLayerComboBoxB</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>90</x>
+     <y>177</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>141</x>
+     <y>177</y>
     </hint>
    </hints>
   </connection>

@@ -61,7 +61,7 @@ namespace te
       \param radius Radius used to calculate the kernel
 
     */
-    TESAEXPORT void GridStatRadiusKernel(te::sa::KernelParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::rst::Raster* raster, double radius);
+    TESAEXPORT void GridStatRadiusKernel(te::sa::KernelInputParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::rst::Raster* raster, double radius);
 
     /*!
       \brief Evaluates kernel value using a raster as output data and a adaptative value for radius.
@@ -72,11 +72,82 @@ namespace te
       \param raster Pointer to raster to set the kernel values
 
     */
-    TESAEXPORT void GridAdaptRadiusKernel(te::sa::KernelParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::rst::Raster* raster);
+    TESAEXPORT void GridAdaptRadiusKernel(te::sa::KernelInputParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::rst::Raster* raster);
 
-    TESAEXPORT void DataSetStatRadiusKernel(te::sa::KernelParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::mem::DataSet* ds, int kernelIdx, int geomIdx, double radius);
+    /*!
+      \brief Evaluates kernel ratio value using a raster as output data.
 
-    TESAEXPORT void DataSetAdaptRadiusKernel(te::sa::KernelParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::mem::DataSet* ds, int kernelIdx, int geomIdx);
+      \param params Pointer to a Kernel Params
+      \param rasterA Pointer to a raster A with kernel information
+      \param rasterB Pointer to a raster B with kernel information
+      \param raster Pointer to raster to set the kernel ratio values
+
+    */
+    TESAEXPORT void GridRatioKernel(te::sa::KernelInputParams* params, te::rst::Raster* rasterA, te::rst::Raster* rasterB, te::rst::Raster* rasterOut);
+
+    /*!
+      \brief Evaluates kernel value using a dataset as output data and a fixed value for radius.
+
+      \param params Pointer to a Kernel Params
+      \param kTree Reference to  tree with all geometries from input data
+      \param kMap Reference to the kernel Map
+      \param ds Pointer to dataset to set the kernel values
+      \param kernelIdx Attribute index to save the kernel information
+      \param geomIdx Attribute index with geometry information
+      \param radius Radius used to calculate the kernel
+
+    */
+    TESAEXPORT void DataSetStatRadiusKernel(te::sa::KernelInputParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::mem::DataSet* ds, int kernelIdx, int geomIdx, double radius);
+
+    /*!
+      \brief Evaluates kernel value using a dataset as output data and a adaptative value for radius.
+
+      \param params Pointer to a Kernel Params
+      \param kTree Reference to  tree with all geometries from input data
+      \param kMap Reference to the kernel Map
+      \param ds Pointer to dataset to set the kernel values
+      \param kernelIdx Attribute index to save the kernel information
+      \param geomIdx Attribute index with geometry information
+
+    */
+    TESAEXPORT void DataSetAdaptRadiusKernel(te::sa::KernelInputParams* params, te::sa::KernelTree& kTree, te::sa::KernelMap& kMap, te::mem::DataSet* ds, int kernelIdx, int geomIdx);
+
+    /*!
+      \brief Evaluates kernel ratio value using a dataset as output data.
+
+      \param params Pointer to a Kernel Params
+      \param dsA Pointer to a dataset A with kernel information
+      \param dsB Pointer to a dataset B with kernel information
+      \param dsOut Pointer to dataset to set the kernel ratio values
+      \param kernelIdx Attribute index to save the kernel information
+      \param geomIdx Attribute index with geometry information
+
+    */
+    TESAEXPORT void DataSetRatioKernel(te::sa::KernelInputParams* params, te::mem::DataSet* dsA, te::mem::DataSet* dsB, te::mem::DataSet* dsOut, int kernelIdx, int geomIdx);
+
+    /*!
+      \brief Normalizes kernel values based on type of estimation. 
+
+      \param params Pointer to a Kernel Params (used to get the estimation type)
+      \param kMap Reference to the kernel Map
+      \param raster Pointer to raster with the kernel values
+      \param totKernel Sum of all kernel values from each raster pixel
+
+    */
+    TESAEXPORT void GridKernelNormalize(te::sa::KernelInputParams* params, te::sa::KernelMap& kMap, te::rst::Raster* raster, double totKernel);
+
+    /*!
+      \brief Normalizes kernel values based on type of estimation. 
+
+      \param params Pointer to a Kernel Params (used to get the estimation type)
+      \param kMap Reference to the kernel Map
+      \param ds Pointer to dataset to set the kernel values
+      \param kernelIdx Attribute index to save the kernel information
+      \param geomIdx Attribute index with geometry information
+      \param totKernel Sum of all kernel values from each raster pixel
+
+    */
+    TESAEXPORT void DataSetKernelNormalize(te::sa::KernelInputParams* params, te::sa::KernelMap& kMap, te::mem::DataSet* ds, int kernelIdx, int geomIdx, double totKernel);
 
     /*!
       \brief Evaluates kernel value of events with intensity
@@ -89,7 +160,19 @@ namespace te
 
       \return Kernel value for one element.
     */
-    TESAEXPORT double KernelValue(te::sa::KernelParams* params, te::sa::KernelMap& kMap, double radius, te::gm::Coord2D& coord, std::vector<int> idxVec); 
+    TESAEXPORT double KernelValue(te::sa::KernelInputParams* params, te::sa::KernelMap& kMap, double radius, te::gm::Coord2D& coord, std::vector<int> idxVec);
+
+    /*!
+      \brief Evaluates kernel ratio value
+
+      \param params Pointer to a Kernel Params
+      \param area Value to represent the area of the element
+      \param kernelA Double value with kernel value from A element
+      \param kernelB Double value with kernel value from B element
+
+      \return Kernel value for one element.
+    */
+    TESAEXPORT double KernelRatioValue(te::sa::KernelInputParams* params, double area, double kernelA, double kernelB);
 
     /*!
       \brief Kernel functions for Quartic type
@@ -145,20 +228,6 @@ namespace te
       \return Kernel value
     */
     TESAEXPORT double KernelNegExponential(double tau, double distance, double intensity);
-
-
-    /*!
-      \brief Normalizes kernel values based on type of estimation. 
-
-      \param params Pointer to a Kernel Params (used to get the estimation type)
-      \param kMap Reference to the kernel Map
-      \param raster Pointer to raster with the kernel values
-      \param totKernel Sum of all kernel values from each raster pixel
-
-    */
-    TESAEXPORT void GridKernelNormalize(te::sa::KernelParams* params, te::sa::KernelMap& kMap, te::rst::Raster* raster, double totKernel);
-
-    TESAEXPORT void DataSetKernelNormalize(te::sa::KernelParams* params, te::sa::KernelMap& kMap, te::mem::DataSet* ds, int kernelIdx, int geomIdx, double totKernel);
 
     /*!
       \brief Calculates the geometric mean from kernel map (intensity value) using log.
