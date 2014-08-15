@@ -162,6 +162,8 @@ namespace te
 
           void onLayerHistogramTriggered();
 
+          void onLinkTriggered(); 
+
           void onLayerScatterTriggered();
 
           void onLayerChartTriggered();
@@ -309,6 +311,7 @@ namespace te
           QAction* m_layerChartsHistogram;
           QAction* m_layerChartsScatter;
           QAction* m_layerChart;
+          QAction* m_layerLinkTable;
           QAction* m_layerObjectGrouping;
           QAction* m_layerFitOnMapDisplay;
           QAction* m_layerRemoveObjectSelection;

@@ -31,12 +31,14 @@
 #include "../raster/Raster.h"
 #include "../raster/Interpolator.h"
 #include "../raster/RasterSynchronizer.h"
+#include "../raster/TileIndexer.h"
 #include "../geometry/Polygon.h"
 #include "../geometry/MultiPolygon.h"
 #include "../geometry/Point.h"
 #include "../geometry/GeometricTransformation.h"
 
 #include <boost/noncopyable.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
 
 #include <vector>
 #include <complex>
@@ -223,16 +225,17 @@ namespace te
         te::rst::Interpolator::Method m_interpMethod1; //!< The interpolation method to use when reading raster 1 data.
         te::rst::Interpolator::Method m_interpMethod2; //!< The interpolation method to use when reading raster 2 data.
         double m_outputNoDataValue; //!< The output raster no-data value.
-        te::rst::Interpolator* m_interp1; //!< Raster 1 interpolator instance pointer.
-        te::rst::Interpolator* m_interp2; //!< Raster 2 interpolator instance pointer.        
+        std::auto_ptr< te::rst::Interpolator > m_interp1Ptr; //!< Raster 1 interpolator instance pointer.
+        std::auto_ptr< te::rst::Interpolator > m_interp2Ptr; //!< Raster 2 interpolator instance pointer.        
         std::vector< unsigned int > m_raster1Bands; //!< Input raster 1 band indexes to use.
         std::vector< unsigned int > m_raster2Bands; //!< Input raster 2 band indexes to use.
         std::vector< double > m_pixelOffsets1; //!< The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
         std::vector< double > m_pixelScales1; //!< The values scale to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
         std::vector< double > m_pixelOffsets2; //!< The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
         std::vector< double > m_pixelScales2; //!< The values scale to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
-        std::vector< double > m_raster1NoDataValues; //! Raster 1 no-data values (on value per band).
-        std::vector< double > m_raster2NoDataValues; //! Raster 2 no-data values (on value per band).
+        std::vector< double > m_raster1NoDataValues; //!< Raster 1 no-data values (on value per band).
+        std::vector< double > m_raster2NoDataValues; //!< Raster 2 no-data values (on value per band).
+        boost::ptr_vector< te::rst::TileIndexer > m_intersectionTileIndexers; //!< The Intersection geometry tile indexers( raster 1 indexed coods), one indexer for each intersection polygon.
         
         // variables used by the noBlendMethodImp method
         double m_noBlendMethodImp_Point1XProj1;
@@ -258,6 +261,8 @@ namespace te
         std::size_t m_euclideanDistanceMethodImp_vecIdx;
         double m_euclideanDistanceMethodImp_aux1;
         double m_euclideanDistanceMethodImp_aux2;
+        unsigned int m_euclideanDistanceMethodImp_IntersectionTileIndexersIdx;
+        bool m_euclideanDistanceMethodImp_PointInsideIntersection;
         
         // variables used by the sumMethodImp method
         te::gm::Point m_sumMethodImp_auxPoint;
@@ -265,7 +270,9 @@ namespace te
         double m_sumMethodImp_Point2Col;        
         std::complex< double > m_sumMethodImp_cValue1;
         std::complex< double > m_sumMethodImp_cValue2;
-        unsigned int m_sumMethodImp_BandIdx;   
+        unsigned int m_sumMethodImp_BandIdx; 
+        unsigned int m_sumMethodImp_IntersectionTileIndexersIdx;
+        bool m_sumMethodImp_PointInsideIntersection;
         
         /*! \brief Reset the instance to its initial default state. */
         void initState();
@@ -317,6 +324,16 @@ namespace te
         */        
         bool getSegments( te::gm::Geometry const * const geometryPtr, 
           std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > >& segments ) const;
+          
+        
+        /*!
+          \brief Creater polygon tile indexers from the given geometry.
+          \param geometryPtr Input geometry.
+          \param tileIndexers Created indexers (appended here).
+          \return true if OK, false on errors.
+        */        
+        bool getTileIndexers( te::gm::Geometry const * const geometryPtr, 
+          boost::ptr_vector< te::rst::TileIndexer >& tileIndexers ) const;          
     };
 
   } // end namespace rp
