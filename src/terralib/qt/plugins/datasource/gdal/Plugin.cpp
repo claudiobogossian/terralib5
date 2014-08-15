@@ -82,7 +82,8 @@ void GetLayers(const te::da::DataSourceInfoPtr& info, std::list<te::map::Abstrac
 
 te::qt::plugins::gdal::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo) :
 QObject(),
- te::plugin::Plugin(pluginInfo)
+ te::plugin::Plugin(pluginInfo),
+ m_openFile(0)
 {
 }
 

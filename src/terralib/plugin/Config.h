@@ -72,14 +72,14 @@
 
   \brief The default look up plugin dir.
 */
-#define TE_DEFAULT_PLUGINS_DIR "plugins"
+#define TE_DEFAULT_PLUGINS_DIR "share/terralib/plugins"
 
 /*!
-  \def TE_DEFAULT_PLUGIN_FILE_NAME
+  \def TE_DEFAULT_PLUGIN_EXTENSION
 
-  \brief The XML file name with plugin information.
- */
-#define TE_DEFAULT_PLUGIN_FILE_NAME "plugin_info.xml"
+  \brief The default extension for plugins description files.
+*/
+#define TE_DEFAULT_PLUGIN_EXTENSION ".teplg"
 
 /*!
   \def TE_AUTOMATICALLY_LOAD_DEFAULT_XML_PLUGIN
