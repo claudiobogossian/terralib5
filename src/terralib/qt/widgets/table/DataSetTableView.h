@@ -100,6 +100,13 @@ namespace te
           void setDragDrop(bool b);
 
           /*!
+            \brief Sets the drop on the horizontal header.
+          
+            \param b True: accept drop. False: do not accept drop.
+          */
+          void setAcceptDrop(bool b);
+
+          /*!
             \brief Sets the layer to be presented.
           
             \param layer Pointer to the layer to be presented.

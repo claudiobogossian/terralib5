@@ -47,6 +47,7 @@ te::qt::widgets::DataSetTableHorizontalHeader::DataSetTableHorizontalHeader(Data
 QHeaderView(Qt::Horizontal, view),
   m_view(view),
   m_doDragDrop(false),
+  m_acceptDrop(false),
   m_layer(0),
   m_dset(0)
 {
@@ -78,6 +79,11 @@ void te::qt::widgets::DataSetTableHorizontalHeader::setDragDrop(bool b)
   }
 }
 
+void te::qt::widgets::DataSetTableHorizontalHeader::setAcceptDrop(bool b)
+{
+  m_acceptDrop = b;
+}
+
 void te::qt::widgets::DataSetTableHorizontalHeader::setLayer(const te::map::AbstractLayer* layer)
 {
   m_layer = layer;
@@ -95,6 +101,7 @@ void te::qt::widgets::DataSetTableHorizontalHeader::mousePressEvent(QMouseEvent 
     if(m_doDragDrop == false)
     {
       int c = m_view->columnAt(e->pos().x());
+
       QItemSelectionModel* sel = m_view->selectionModel();
 
       if(c > 0)
@@ -166,13 +173,25 @@ void te::qt::widgets::DataSetTableHorizontalHeader::mousePressEvent(QMouseEvent 
       Qt::DropAction dropAction = drag->exec(Qt::LinkAction);    
     }
   }
+  //else if(e->button() == Qt::MiddleButton) // to test
+  //{
+  //  int cc = m_view->columnAt(e->pos().x());
+  //  if(cc == 0)
+  //    setDragDrop(false);
+  //  else if(cc == 1)
+  //    setDragDrop(true);
+  //  else if(cc == 2)
+  //    setAcceptDrop(true);
+  //  else if(cc == 3)
+  //    setAcceptDrop(false);
+  //}
 
   QHeaderView::mousePressEvent(e);
 }
 
 void te::qt::widgets::DataSetTableHorizontalHeader::dragEnterEvent(QDragEnterEvent *e)
 {
-  if(e->source() == this)
+  if(e->source() == this || m_acceptDrop == false)
     return;
 
   const QMimeData* mdata = e->mimeData();
@@ -184,7 +203,7 @@ void te::qt::widgets::DataSetTableHorizontalHeader::dragEnterEvent(QDragEnterEve
 
 void te::qt::widgets::DataSetTableHorizontalHeader::dragMoveEvent(QDragMoveEvent *e)
 {
-  if(e->source() == this)
+  if(e->source() == this || m_acceptDrop == false)
     return;
 
   const QMimeData* mdata = e->mimeData();
@@ -196,7 +215,7 @@ void te::qt::widgets::DataSetTableHorizontalHeader::dragMoveEvent(QDragMoveEvent
 
 void te::qt::widgets::DataSetTableHorizontalHeader::dropEvent(QDropEvent *e)
 {
-  if(e->source() == this)
+  if(e->source() == this || m_acceptDrop == false)
     return;
 
   const QMimeData* mdata = e->mimeData();

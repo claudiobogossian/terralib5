@@ -767,6 +767,12 @@ void te::qt::widgets::DataSetTableView::setDragDrop(bool b)
   hheader->setDragDrop(true);
 }
 
+void te::qt::widgets::DataSetTableView::setAcceptDrop(bool b)
+{
+  DataSetTableHorizontalHeader* hheader = static_cast<DataSetTableHorizontalHeader*>(horizontalHeader());
+  hheader->setAcceptDrop(true);
+}
+
 void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* layer, const bool& clearEditor)
 {
   ScopedCursor cursor(Qt::WaitCursor);

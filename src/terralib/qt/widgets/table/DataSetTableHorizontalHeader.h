@@ -64,6 +64,13 @@ namespace te
           void setDragDrop(bool b);
 
           /*!
+            \brief Sets accept drop.
+          
+            \param b True: accept drop. False: not accept drop.
+          */
+          void setAcceptDrop(bool b);
+
+          /*!
             \brief Sets the layer to get drag and drop information.
           
             \param layer Pointer to the layer to be presented.
@@ -126,6 +133,7 @@ namespace te
         protected:
           DataSetTableView* m_view;               //!< data set table view pointer.
           bool  m_doDragDrop;                     //!< True: do drag and drop. False: do not drag and drop.
+          bool  m_acceptDrop;                     //!< True: accept drop. False: not accept drop.
           const te::map::AbstractLayer* m_layer;  //!< To get information for drag and drop.
           te::da::DataSet* m_dset;                //!< To get information for drag and drop.
           size_t m_linkFromFieldNumber;           //!< To drag drop link information.
