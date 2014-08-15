@@ -30,11 +30,32 @@
 #include "../../../Config.h"
 
 /*!
+  \def TE_QT_PLUGIN_SA_HAVE_BAYESGLOBAL
+
+  \brief It defines if the SA Qt Plugin has the Global Bayes operation
+*/
+#define TE_QT_PLUGIN_SA_HAVE_BAYESGLOBAL
+
+/*!
+  \def TE_QT_PLUGIN_SA_HAVE_BAYESLOCAL
+
+  \brief It defines if the SA Qt Plugin has the Local Bayes operation
+*/
+#define TE_QT_PLUGIN_SA_HAVE_BAYESLOCAL
+
+/*!
   \def TE_QT_PLUGIN_SA_HAVE_KERNELMAP
 
   \brief It defines if the SA Qt Plugin has the kernel map operation
 */
 #define TE_QT_PLUGIN_SA_HAVE_KERNELMAP
+
+/*!
+  \def TE_QT_PLUGIN_SA_HAVE_KERNELRATIO
+
+  \brief It defines if the SA Qt Plugin has the kernel ratio operation
+*/
+#define TE_QT_PLUGIN_SA_HAVE_KERNELRATIO
 
 /*!
   \def TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR

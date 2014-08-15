@@ -18,33 +18,43 @@
  */
 
 /*!
-  \file terralib/qt/plugins/sa/KernelMapAction.cpp
+  \file terralib/qt/plugins/sa/BayesGlobalAction.h
 
-  \brief This file defines the concrete class for KernelMap Action
+  \brief This file defines the concrete class for BayesGlobal Action
 */
 
-// Terralib
-#include "../../../qt/af/ApplicationController.h"
-#include "../../../sa/qt/KernelMapDialog.h"
-#include "KernelMapAction.h"
+#ifndef TE_QT_PLUGINS_SA_BAYESGLOBALACTION_H
+#define TE_QT_PLUGINS_SA_BAYESGLOBALACTION_H
 
-te::qt::plugins::sa::KernelMapAction::KernelMapAction(QMenu *menu) :
-  AbstractAction(menu)
+#include "AbstractAction.h"
+
+namespace te
 {
-  createAction(tr("Kernel Map...").toStdString(), "sa-kernelmap-icon");
-}
+  namespace qt
+  {
+    namespace plugins
+    {
+      namespace sa
+      {
+        
+        class BayesGlobalAction : public te::qt::plugins::sa::AbstractAction
+        {
+            Q_OBJECT
 
-te::qt::plugins::sa::KernelMapAction::~KernelMapAction()
-{
-}
+          public:
 
-void te::qt::plugins::sa::KernelMapAction::onActionActivated(bool checked)
-{
-  te::sa::KernelMapDialog dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+            BayesGlobalAction(QMenu* menu);
 
-  std::list<te::map::AbstractLayerPtr> layersList = getLayers();
+            virtual ~BayesGlobalAction();
 
-  dlg.setLayers(layersList);
+          protected slots:
 
-  dlg.exec();
-}
+            virtual void onActionActivated(bool checked);
+        };
+        
+      } // namespace sa
+    } // namespace plugins
+  } // namespace qt
+} // namespace te
+
+#endif // TE_QT_PLUGINS_SA_BAYESGLOBALACTION_H

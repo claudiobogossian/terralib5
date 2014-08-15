@@ -58,6 +58,15 @@
 int te::sa::AssociateGPMVertexAttribute(te::sa::GeneralizedProximityMatrix* gpm, te::da::DataSource* ds, std::string dataSetName, std::string attrLink, std::string attr, int dataType, int srid, int subType)
 {
   assert(ds);
+  
+  std::auto_ptr<te::da::DataSet> dataSet = ds->getDataSet(dataSetName);
+
+  return AssociateGPMVertexAttribute(gpm, dataSet.get(), attrLink, attr, dataType, srid, subType);
+}
+
+int te::sa::AssociateGPMVertexAttribute(te::sa::GeneralizedProximityMatrix* gpm, te::da::DataSet* dataSet, std::string attrLink, std::string attr, int dataType, int srid, int subType)
+{
+  assert(dataSet);
   assert(gpm);
 
   te::graph::AbstractGraph* graph = gpm->getGraph();
@@ -69,8 +78,6 @@ int te::sa::AssociateGPMVertexAttribute(te::sa::GeneralizedProximityMatrix* gpm,
   int attrSize = graph->getMetadata()->getVertexPropertySize();
 
   //dataset iterator
-  std::auto_ptr<te::da::DataSet> dataSet = ds->getDataSet(dataSetName);
-
   dataSet->moveBeforeFirst();
 
   while(dataSet->moveNext())

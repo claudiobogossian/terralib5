@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/sa/qt/KernelMapDialog.cpp
+  \file terralib/sa/qt/KernelRatioDialog.cpp
 
-  \brief A dialog to calculate the kernel map of a dataset.
+  \brief A dialog to calculate the kernel ratio of a datasets.
 */
 
 // TerraLib
@@ -31,10 +31,10 @@
 #include "../../dataaccess/datasource/DataSource.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../maptools/DataSetLayer.h"
-#include "../core/KernelMapOperation.h"
+#include "../core/KernelRatioOperation.h"
 #include "../Exception.h"
-#include "KernelMapDialog.h"
-#include "ui_KernelMapDialogForm.h"
+#include "KernelRatioDialog.h"
+#include "ui_KernelRatioDialogForm.h"
 
 // Qt
 #include <QFileDialog>
@@ -53,9 +53,9 @@
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
-te::sa::KernelMapDialog::KernelMapDialog(QWidget* parent, Qt::WindowFlags f)
+te::sa::KernelRatioDialog::KernelRatioDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::KernelMapDialogForm)
+    m_ui(new Ui::KernelRatioDialogForm)
 {
 // add controls
   m_ui->setupUi(this);
@@ -65,7 +65,7 @@ te::sa::KernelMapDialog::KernelMapDialog(QWidget* parent, Qt::WindowFlags f)
   fillKernelParameters();
 
 // add icons
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("sa-kernelmap-hint").pixmap(112,48));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("sa-kernelratio-hint").pixmap(112,48));
 
 // connectors
   connect(m_ui->m_inputLayerComboBox, SIGNAL(activated(int)), this, SLOT(onInputLayerComboBoxActivated(int)));
@@ -74,14 +74,14 @@ te::sa::KernelMapDialog::KernelMapDialog(QWidget* parent, Qt::WindowFlags f)
 
 // help info
   m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
-  m_ui->m_helpPushButton->setPageReference("plugins/sa/sa_kernelmap.html");
+  m_ui->m_helpPushButton->setPageReference("plugins/sa/sa_kernelratio.html");
 }
 
-te::sa::KernelMapDialog::~KernelMapDialog()
+te::sa::KernelRatioDialog::~KernelRatioDialog()
 {
 }
 
-void te::sa::KernelMapDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
+void te::sa::KernelRatioDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
 
@@ -94,17 +94,19 @@ void te::sa::KernelMapDialog::setLayers(std::list<te::map::AbstractLayerPtr> lay
     te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
 
     if(dsLayer && dsType->hasGeom())
+    {
       m_ui->m_inputLayerComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
+    }
 
     ++it;
   }
 
-// fill attributes combo
+// fill attributes combo A and B
   if(m_ui->m_inputLayerComboBox->count() > 0)
     onInputLayerComboBoxActivated(0);
 }
 
-void te::sa::KernelMapDialog::fillKernelParameters()
+void te::sa::KernelRatioDialog::fillKernelParameters()
 {
   //function
   m_ui->m_functionComboBox->clear();
@@ -121,9 +123,19 @@ void te::sa::KernelMapDialog::fillKernelParameters()
   m_ui->m_estimationComboBox->addItem("Density", QVariant(te::sa::Density));
   m_ui->m_estimationComboBox->addItem("Spatial Moving Average", QVariant(te::sa::Spatial_Moving_Average));
   m_ui->m_estimationComboBox->addItem("Probability", QVariant(te::sa::Probability));
+
+  //combination
+  m_ui->m_combinationComboBox->clear();
+  
+  m_ui->m_combinationComboBox->addItem("Ratio", QVariant(te::sa::Ratio));
+  m_ui->m_combinationComboBox->addItem("Log Ratio", QVariant(te::sa::Log_Ratio));
+  m_ui->m_combinationComboBox->addItem("Absolute Difference", QVariant(te::sa::Abs_Difference));
+  m_ui->m_combinationComboBox->addItem("Relative Difference", QVariant(te::sa::Relative_Difference));
+  m_ui->m_combinationComboBox->addItem("Absolute Sum", QVariant(te::sa::Abs_Sum));
+  m_ui->m_combinationComboBox->addItem("Relative Sum", QVariant(te::sa::Relative_Sum));
 }
 
-void te::sa::KernelMapDialog::onInputLayerComboBoxActivated(int index)
+void te::sa::KernelRatioDialog::onInputLayerComboBoxActivated(int index)
 {
   QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(index, Qt::UserRole);
   
@@ -133,7 +145,8 @@ void te::sa::KernelMapDialog::onInputLayerComboBoxActivated(int index)
 
   std::vector<te::dt::Property*> propVec = dsType->getProperties();
 
-  m_ui->m_attrLayerComboBox->clear();
+  m_ui->m_attrLayerComboBoxA->clear();
+  m_ui->m_attrLayerComboBoxB->clear();
 
   for(std::size_t t = 0; t < propVec.size(); ++t)
   {
@@ -144,13 +157,13 @@ void te::sa::KernelMapDialog::onInputLayerComboBoxActivated(int index)
         dataType == te::dt::INT64_TYPE || dataType == te::dt::UINT64_TYPE ||
         dataType == te::dt::FLOAT_TYPE || dataType == te::dt::DOUBLE_TYPE)
     {
-      m_ui->m_attrLayerComboBox->addItem(propVec[t]->getName().c_str(), dataType);
+      m_ui->m_attrLayerComboBoxA->addItem(propVec[t]->getName().c_str(), dataType);
+      m_ui->m_attrLayerComboBoxB->addItem(propVec[t]->getName().c_str(), dataType);
     }
   }
 }
 
-
-void te::sa::KernelMapDialog::onOkPushButtonClicked()
+void te::sa::KernelRatioDialog::onOkPushButtonClicked()
 {
   // check input parameters
   if(m_ui->m_repositoryLineEdit->text().isEmpty())
@@ -165,7 +178,7 @@ void te::sa::KernelMapDialog::onOkPushButtonClicked()
     return;
   }
 
-  //get selected layer
+  //get selected layer A
   QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(m_ui->m_inputLayerComboBox->currentIndex(), Qt::UserRole);
   te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
@@ -173,8 +186,11 @@ void te::sa::KernelMapDialog::onOkPushButtonClicked()
   //set input kernel parameters
   te::sa::KernelInputParams* kInParams = new te::sa::KernelInputParams();
 
+  kInParams->m_isRatioKernel = true;
+
   kInParams->m_functionType = (te::sa::KernelFunctionType) m_ui->m_functionComboBox->itemData(m_ui->m_functionComboBox->currentIndex()).toInt();
   kInParams->m_estimationType = (te::sa::KernelEstimationType) m_ui->m_estimationComboBox->itemData(m_ui->m_estimationComboBox->currentIndex()).toInt();
+  kInParams->m_combinationType = (te::sa::KernelCombinationType) m_ui->m_combinationComboBox->itemData(m_ui->m_combinationComboBox->currentIndex()).toInt();
 
   kInParams->m_useAdaptativeRadius = m_ui->m_useAdaptRadiusCheckBox->isChecked();
   
@@ -183,9 +199,14 @@ void te::sa::KernelMapDialog::onOkPushButtonClicked()
     kInParams->m_radiusPercentValue = m_ui->m_radiusSpinBox->value();
   }
 
-  if(m_ui->m_useAttrLayerCheckBox->isChecked())
+  if(m_ui->m_useAttrLayerCheckBoxA->isChecked())
   {
-    kInParams->m_intensityAttrName = m_ui->m_attrLayerComboBox->currentText().toStdString();
+    kInParams->m_intensityAttrName = m_ui->m_attrLayerComboBoxA->currentText().toStdString();
+  }
+
+  if(m_ui->m_useAttrLayerCheckBoxB->isChecked())
+  {
+    kInParams->m_intensityAttrName2 = m_ui->m_attrLayerComboBoxB->currentText().toStdString();
   }
 
   kInParams->m_ds = l->getData();
@@ -223,7 +244,7 @@ void te::sa::KernelMapDialog::onOkPushButtonClicked()
   //execute kernel
   try
   {
-    te::sa::KernelMapOperation op;
+    te::sa::KernelRatioOperation op;
 
     op.setParameters(kInParams, kOutParams);
 
@@ -238,7 +259,7 @@ void te::sa::KernelMapDialog::onOkPushButtonClicked()
   accept();
 }
 
-void te::sa::KernelMapDialog::onTargetFileToolButtonPressed()
+void te::sa::KernelRatioDialog::onTargetFileToolButtonPressed()
 {
   m_ui->m_newLayerNameLineEdit->clear();
   m_ui->m_repositoryLineEdit->clear();
