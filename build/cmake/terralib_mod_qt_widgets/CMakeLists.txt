@@ -700,7 +700,7 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/ColumnsLinkWizardPage.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/DataPropertiesDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/DataPropertiesWidget.h
-										 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/ExternalTableLinkWizard)
+										 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/ExternalTableLinkWizard.h)
 
   # help
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/help/AssistantHelpManagerImpl.h
