@@ -93,6 +93,13 @@ namespace te
           virtual ~DataSetTableView();
 
           /*!
+            \brief Sets the drag drop on the horizontal header.
+          
+            \param b True: does the drag drop. False: do not drag drop.
+          */
+          void setDragDrop(bool b);
+
+          /*!
             \brief Sets the layer to be presented.
           
             \param layer Pointer to the layer to be presented.

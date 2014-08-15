@@ -761,11 +761,20 @@ te::qt::widgets::DataSetTableView::~DataSetTableView()
   }
 }
 
+void te::qt::widgets::DataSetTableView::setDragDrop(bool b)
+{
+  DataSetTableHorizontalHeader* hheader = static_cast<DataSetTableHorizontalHeader*>(horizontalHeader());
+  hheader->setDragDrop(true);
+}
+
 void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* layer, const bool& clearEditor)
 {
   ScopedCursor cursor(Qt::WaitCursor);
 
   m_layer = layer;
+  DataSetTableHorizontalHeader* hheader = static_cast<DataSetTableHorizontalHeader*>(horizontalHeader());
+  hheader->setLayer(m_layer);
+
   std::auto_ptr<te::map::LayerSchema> sch = m_layer->getSchema();
 
   if (m_orderby.empty())
@@ -809,6 +818,8 @@ void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset, const 
   reset();
 
   m_model->setDataSet(dset, clearEditor);
+  DataSetTableHorizontalHeader* hheader = static_cast<DataSetTableHorizontalHeader*>(horizontalHeader());
+  hheader->setDataSet(dset);
 
   HideGeometryColumns(dset, this);
 
