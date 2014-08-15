@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../common/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/progress/TaskProgress.h"
 #include "../../common/SystemApplicationSettings.h"
@@ -48,6 +49,7 @@
 #include "../widgets/exchanger/DataExchangerWizard.h"
 #include "../widgets/exchanger/DirectExchangerDialog.h"
 #include "../widgets/externalTable/DataPropertiesDialog.h"
+#include "../widgets/externalTable/ExternalTableLinkWizard.h"
 #include "../widgets/help/HelpManager.h"
 #include "../widgets/layer/explorer/ColorMapItem.h"
 #include "../widgets/layer/explorer/ChartItem.h"
@@ -1218,6 +1220,79 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
   }
 }
 
+void te::qt::af::BaseApplication::onLinkTriggered()
+{
+   try
+  {
+    if(m_project == 0)
+      throw Exception(TE_TR("Error: there is no opened project!"));
+
+    // Get the parent layer where the dataset layer(s) will be added.
+    te::map::AbstractLayerPtr parentLayer(0);
+
+    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedLayerItems();
+
+    if(selectedLayerItems.size() == 1 && selectedLayerItems.front()->getItemType() == "FOLDER_LAYER_ITEM")
+      parentLayer = selectedLayerItems.front()->getLayer();
+
+    std::list<te::map::AbstractLayerPtr> selectedLayers = m_explorer->getExplorer()->getSelectedSingleLayers();
+
+    if(selectedLayers.empty())
+    {
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                           tr("Select a layer in the layer explorer!"));
+      return;
+    }
+    else
+    {
+      std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
+
+      while(it != selectedLayers.end())
+      {
+        if(!it->get()->isValid())
+        {
+          QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                           tr("There are invalid layers selected!"));
+          return;
+        }
+
+        ++it;
+      }
+    }
+
+    te::map::AbstractLayerPtr selectedLayer = *(selectedLayers.begin());
+
+    std::auto_ptr<te::qt::widgets::ExternalTableLinkWizard> elb(new te::qt::widgets::ExternalTableLinkWizard(this));
+    elb->setInputLayer(selectedLayer);
+
+    int retval = elb->exec();
+
+    if(retval == QDialog::Rejected)
+      return;
+
+    te::map::AbstractLayerPtr layer = elb->getQueryLayer();
+
+    if((m_explorer != 0) && (m_explorer->getExplorer() != 0))
+    {
+      te::qt::af::evt::LayerAdded evt(layer, parentLayer);
+      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+    }
+
+    te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+    ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this,
+                         te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                         tr("Unknown error while trying to add a layer from a queried dataset!"));
+  }
+}
+
 void te::qt::af::BaseApplication::onLayerScatterTriggered()
 {
   try
@@ -2139,6 +2214,7 @@ void te::qt::af::BaseApplication::makeDialog()
   treeView->add(m_layerChart);
   treeView->add(m_queryLayer);
   treeView->add(m_layerChartsScatter);
+  treeView->add(m_layerLinkTable);
 
   QAction* actionChartSep = new QAction(this);
   actionChartSep->setSeparator(true);
@@ -2423,6 +2499,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected Features on the Map Display", tr("Fit Selected Features"), tr("Fit the selected features on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan to Selected Features on Map Display", tr("Pan to Selected Features"), tr("Pan to the selected features on the Map Display"), true, false, true, m_menubar);
   initAction(m_queryLayer, "view-filter", "Layer.Query", tr("Query..."), tr(""), true, false, true, m_menubar);
+  initAction(m_layerLinkTable, "", "Layer.Link Table", tr("&Link..."), tr(""), false, false, false, m_menubar);
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project..."), tr(""), true, false, true, m_menubar);
@@ -2490,7 +2567,11 @@ void te::qt::af::BaseApplication::initMenus()
   m_fileMenu->addAction(m_filePrint);
   m_fileMenu->addSeparator();
   m_fileMenu->addAction(m_fileRestartSystem);
+  
+#if TE_PLATFORM != TE_PLATFORMCODE_APPLE
   m_fileMenu->addSeparator();
+#endif
+  
   m_fileMenu->addAction(m_fileExit);
 
 // Edit menu
@@ -2573,6 +2654,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addAction(m_layerSRS);
   m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerProperties);
+  m_layerMenu->addAction(m_layerLinkTable);
 
   // TODO
   //m_layerMenu->addAction(m_layerRaise);
@@ -2730,6 +2812,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_toolsQueryDataSource, SIGNAL(triggered()), SLOT(onToolsQueryDataSourceTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
+  connect(m_layerLinkTable, SIGNAL(triggered()), SLOT(onLinkTriggered()));
   connect(m_layerChartsScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));
   connect(m_layerChart, SIGNAL(triggered()), SLOT(onLayerChartTriggered()));
   connect(m_projectAddFolderLayer, SIGNAL(triggered()), SLOT(onAddFolderLayerTriggered()));

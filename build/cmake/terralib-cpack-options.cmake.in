@@ -78,8 +78,6 @@ if(CPACK_GENERATOR MATCHES "NSIS")
 
 #  set(CPACK_CREATE_DESKTOP_LINKS TerraView)
 
-  set(CPACK_PACKAGE_EXECUTABLES "terraview;TerraView")
-
   set(CPACK_NSIS_MENU_LINKS
       "doc/api/html/index.html" "API Reference")
 
@@ -92,9 +90,12 @@ if(CPACK_GENERATOR MATCHES "NSIS")
   set(CPACK_NSIS_URL_INFO_ABOUT "http://www.dpi.inpe.br/terralib5/wiki")
   set(CPACK_NSIS_CONTACT "terralib-team@terralib.org")
 
+  set(bitName "(Win32)")
+  
   if(CMAKE_CL_64) 
     set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64") 
     set(CPACK_NSIS_PACKAGE_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} (Win64)") 
+    set(bitName "(Win64)")
   else() 
     set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES") 
     set(CPACK_NSIS_PACKAGE_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY}") 
@@ -102,15 +103,19 @@ if(CPACK_GENERATOR MATCHES "NSIS")
 
   # To overwrite a previous installed version
   set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY ${CPACK_PACKAGE_NAME}) 
+  
+  set(shortCutName "TerraView @TERRALIB_VERSION_STRING@ ${bitName}")
 
+  set(CPACK_PACKAGE_EXECUTABLES "terraview;${shortCutName}")
+  
   set(CPACK_NSIS_CREATE_ICONS_EXTRA "
   SetOutPath \"$INSTDIR\\bin\";
-  CreateShortCut \"$SMPROGRAMS\\$STARTMENU_FOLDER\\TerraView.lnk\" \"$INSTDIR\\bin\\terraview.exe\" \"\" \"$INSTDIR\\share\\terralib\\images\\ico\\terralib-globe.ico\";
-  CreateShortCut \"$DESKTOP\\TerraView.lnk\" \"$INSTDIR\\bin\\terraview.exe\" \"\" \"$INSTDIR\\share\\terralib\\images\\ico\\terralib-globe.ico\"")
+  CreateShortCut \"$SMPROGRAMS\\$STARTMENU_FOLDER\\${shortCutName}.lnk\" \"$INSTDIR\\bin\\terraview.exe\" \"\" \"$INSTDIR\\share\\terralib\\images\\ico\\terralib-globe.ico\";
+  CreateShortCut \"$DESKTOP\\${shortCutName}.lnk\" \"$INSTDIR\\bin\\terraview.exe\" \"\" \"$INSTDIR\\share\\terralib\\images\\ico\\terralib-globe.ico\"")
 
   list (APPEND CPACK_NSIS_DELETE_ICONS_EXTRA "
-  Delete \"$SMPROGRAMS\\$MUI_TEMP\\TerraView.lnk\";
-  Delete \"$DESKTOP\\TerraView.lnk\"")
+  Delete \"$SMPROGRAMS\\$MUI_TEMP\\${shortCutName}.lnk\";
+  Delete \"$DESKTOP\\${shortCutName}.lnk\"")
   
 endif()
 

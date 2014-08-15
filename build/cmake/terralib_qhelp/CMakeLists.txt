@@ -90,3 +90,19 @@ add_custom_target(
 
 install(DIRECTORY ${CMAKE_BINARY_DIR}/share/terraview/help/
         DESTINATION ${TERRALIB_DESTINATION_SHARE}/terraview/help COMPONENT runtime)
+        
+if(Qt5_FOUND)
+  find_program(
+    ASSIST_PRG
+    NAME assistant
+    PATHS ${Qt5_DIR}/../../../bin
+  )
+  
+  if(ASSIST_PRG)
+    install (
+      FILES ${ASSIST_PRG}
+      DESTINATION ${TERRALIB_DESTINATION_RUNTIME}
+      COMPONENT runtime
+    )
+  endif()
+endif()

@@ -37,9 +37,23 @@
 //#include "SummarizationAction.h"
 //#include "TransformationAction.h"
 
+#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
+//Log4cxx
+#include <log4cxx/basicconfigurator.h>
+#include <log4cxx/consoleappender.h>
+#include <log4cxx/fileappender.h>
+#include <log4cxx/helpers/pool.h>
+#include <log4cxx/helpers/transcoder.h>
+#include <log4cxx/logger.h>
+#include <log4cxx/logmanager.h>
+#include <log4cxx/logstring.h>
+#include <log4cxx/simplelayout.h>
+#endif
+
 // QT
 #include <QMenu>
 #include <QMenuBar>
+#include <QString>
 
 te::qt::plugins::vp::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo), m_vpMenu(0)
@@ -68,6 +82,21 @@ void te::qt::plugins::vp::Plugin::startup()
 // register actions
   registerActions();
 
+// vp log startup
+  std::string path = te::qt::af::ApplicationController::getInstance().getUserDataDir().toStdString();
+  path += "/log/terralib_vp.log";
+
+#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
+  log4cxx::FileAppender* fileAppender = new log4cxx::FileAppender(log4cxx::LayoutPtr(new log4cxx::SimpleLayout()),
+    log4cxx::helpers::Transcoder::decode(path.c_str()), false);
+
+  log4cxx::helpers::Pool p;
+  fileAppender->activateOptions(p);
+
+  log4cxx::BasicConfigurator::configure(log4cxx::AppenderPtr(fileAppender));
+  log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());
+  log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("vp");
+#endif
   m_initialized = true;
 }
 
@@ -81,6 +110,10 @@ void te::qt::plugins::vp::Plugin::shutdown()
 
 // unregister actions
   unRegisterActions();
+
+#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
+  log4cxx::LogManager::shutdown();
+#endif
 
   TE_LOG_TRACE(TE_TR("TerraLib Qt VP Plugin shutdown!"));
 

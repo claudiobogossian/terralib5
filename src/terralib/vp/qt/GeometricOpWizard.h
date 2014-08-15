@@ -71,7 +71,7 @@ namespace te
 
         te::map::AbstractLayerPtr getInLayer();
 
-        te::map::AbstractLayerPtr getOutLayer();
+        std::vector<te::map::AbstractLayerPtr> getOutLayer();
 
       protected:
 
@@ -87,7 +87,7 @@ namespace te
 
         te::map::AbstractLayerPtr m_inLayer;
         te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
-        te::map::AbstractLayerPtr m_outLayer;
+        std::vector<te::map::AbstractLayerPtr> m_outLayer;
         std::vector<te::vp::GeometricOperation> m_ops;
         std::string m_attribute;
 

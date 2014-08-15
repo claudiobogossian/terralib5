@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>495</width>
-    <height>462</height>
+    <width>417</width>
+    <height>494</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -75,76 +75,64 @@
        <property name="flat">
         <bool>true</bool>
        </property>
-       <layout class="QGridLayout" name="gridLayout_5">
+       <layout class="QGridLayout" name="gridLayout_18">
         <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_4">
+         <layout class="QGridLayout" name="gridLayout_5">
           <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout">
+           <layout class="QGridLayout" name="gridLayout_4">
             <item row="0" column="0">
-             <widget class="QLabel" name="label">
-              <property name="minimumSize">
-               <size>
-                <width>70</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Layer Name:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
+             <layout class="QGridLayout" name="gridLayout">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label">
+                <property name="minimumSize">
+                 <size>
+                  <width>70</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Layer Name:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QCheckBox" name="m_useAttrLayerCheckBox">
+                <property name="text">
+                 <string>Attr Name:</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
-            <item row="1" column="0">
-             <widget class="QCheckBox" name="m_useAttrLayerCheckBox">
-              <property name="text">
-               <string>Attr Name:</string>
-              </property>
-             </widget>
+            <item row="0" column="1">
+             <layout class="QGridLayout" name="gridLayout_3">
+              <item row="0" column="0">
+               <widget class="QComboBox" name="m_inputLayerComboBox"/>
+              </item>
+              <item row="1" column="0">
+               <widget class="QComboBox" name="m_attrLayerComboBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
-          <item row="0" column="1">
-           <layout class="QGridLayout" name="gridLayout_3">
-            <item row="0" column="0">
-             <widget class="QComboBox" name="m_inputLayerComboBox"/>
-            </item>
-            <item row="1" column="0">
-             <widget class="QComboBox" name="m_attrLayerComboBox">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QGroupBox" name="groupBox_2">
-       <property name="title">
-        <string>Params</string>
-       </property>
-       <property name="flat">
-        <bool>true</bool>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_23">
-        <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_18">
-          <item row="0" column="0">
+          <item row="1" column="0">
            <widget class="QGroupBox" name="groupBox_4">
             <property name="title">
-             <string>Kernel</string>
+             <string>Kernel Params</string>
             </property>
             <property name="flat">
              <bool>true</bool>
@@ -244,83 +232,22 @@
                    </property>
                   </widget>
                  </item>
-                </layout>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QGroupBox" name="groupBox_5">
-            <property name="title">
-             <string>Result</string>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_19">
-             <item row="0" column="0">
-              <layout class="QGridLayout" name="gridLayout_17">
-               <item row="0" column="0">
-                <layout class="QGridLayout" name="gridLayout_15">
-                 <item row="0" column="0">
-                  <widget class="QRadioButton" name="m_gridRadioButton">
-                   <property name="text">
-                    <string>Grid</string>
+                 <item row="0" column="2">
+                  <spacer name="horizontalSpacer_2">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
                    </property>
-                   <property name="checked">
-                    <bool>true</bool>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
                    </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QRadioButton" name="m_attrRadioButton">
-                   <property name="text">
-                    <string>Attribute</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="0" column="1">
-                <layout class="QGridLayout" name="gridLayout_16">
-                 <item row="0" column="0">
-                  <widget class="QLineEdit" name="m_nColsLineEdit">
-                   <property name="text">
-                    <string>50</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLineEdit" name="m_attrNameLineEdit">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
+                  </spacer>
                  </item>
                 </layout>
                </item>
               </layout>
-             </item>
-             <item row="1" column="0">
-              <spacer name="verticalSpacer">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeType">
-                <enum>QSizePolicy::MinimumExpanding</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>1</height>
-                </size>
-               </property>
-              </spacer>
              </item>
             </layout>
            </widget>
@@ -330,7 +257,7 @@
        </layout>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="2" column="0">
       <widget class="QGroupBox" name="groupBox_3">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -344,65 +271,146 @@
        <property name="flat">
         <bool>true</bool>
        </property>
-       <layout class="QGridLayout" name="gridLayout_22">
+       <layout class="QGridLayout" name="gridLayout_23">
         <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_21">
+         <layout class="QGridLayout" name="gridLayout_22">
           <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout_7">
+           <layout class="QGridLayout" name="gridLayout_19">
             <item row="0" column="0">
-             <widget class="QLabel" name="label_6">
-              <property name="text">
-               <string>Repository:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_4">
-              <property name="text">
-               <string>Layer Name:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="0" column="1">
-           <layout class="QGridLayout" name="gridLayout_20">
-            <item row="0" column="0">
-             <layout class="QGridLayout" name="gridLayout_8">
+             <layout class="QGridLayout" name="gridLayout_15">
               <item row="0" column="0">
-               <widget class="QLineEdit" name="m_repositoryLineEdit">
-                <property name="enabled">
-                 <bool>false</bool>
+               <widget class="QRadioButton" name="m_gridRadioButton">
+                <property name="text">
+                 <string>Grid</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
-              <item row="0" column="1">
-               <widget class="QToolButton" name="m_targetFileToolButton">
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
+              <item row="1" column="0">
+               <widget class="QRadioButton" name="m_attrRadioButton">
                 <property name="text">
-                 <string>...</string>
+                 <string>Data Set</string>
                 </property>
                </widget>
               </item>
              </layout>
             </item>
-            <item row="1" column="0">
-             <widget class="QLineEdit" name="m_newLayerNameLineEdit">
-              <property name="readOnly">
-               <bool>false</bool>
-              </property>
-             </widget>
+            <item row="0" column="1">
+             <layout class="QGridLayout" name="gridLayout_17">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_5">
+                <property name="text">
+                 <string>Number of columns / lines:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_7">
+                <property name="text">
+                 <string>Attribute name:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="2">
+             <layout class="QGridLayout" name="gridLayout_16">
+              <item row="0" column="0">
+               <widget class="QLineEdit" name="m_nColsLineEdit">
+                <property name="text">
+                 <string>50</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLineEdit" name="m_attrNameLineEdit">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
+           <widget class="Line" name="line_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <layout class="QGridLayout" name="gridLayout_21">
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="gridLayout_7">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_6">
+                <property name="text">
+                 <string>Repository:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_4">
+                <property name="text">
+                 <string>Layer Name:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="1">
+             <layout class="QGridLayout" name="gridLayout_20">
+              <item row="0" column="0">
+               <layout class="QGridLayout" name="gridLayout_8">
+                <item row="0" column="0">
+                 <widget class="QLineEdit" name="m_repositoryLineEdit">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QToolButton" name="m_targetFileToolButton">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>...</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLineEdit" name="m_newLayerNameLineEdit">
+                <property name="readOnly">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
@@ -411,7 +419,7 @@
        </layout>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="3" column="0">
       <layout class="QGridLayout" name="gridLayout_9">
        <item row="0" column="0" colspan="4">
         <widget class="Line" name="line">

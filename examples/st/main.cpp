@@ -44,7 +44,7 @@ int main(int /*argc*/, char** /*argv*/)
     TerraLib::getInstance().initialize();
 
     //Load Modules and Plugins
-    LoadModules();
+    LoadModules();   
 
     //Initialize STDataLoader support
     te::st::STDataLoader::initialize();

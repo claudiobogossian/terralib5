@@ -22,7 +22,7 @@
 #
 #  GEOS_INCLUDE_DIR - where to find geos.h.
 #  GEOS_LIBRARY     - where to find geos library.
-#  GEOS_FOUND        - True if GEOS found.
+#  GEOS_FOUND       - True if GEOS is found.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
@@ -34,7 +34,8 @@ if(UNIX)
             NAMES geos.h
             PATHS /usr
                   /usr/local
-            PATH_SUFFIXES include)
+            PATH_SUFFIXES include
+                          include/geos)
 
   find_library(GEOS_LIBRARY
                NAMES geos

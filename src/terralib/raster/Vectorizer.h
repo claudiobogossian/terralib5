@@ -100,6 +100,15 @@ namespace te
           \return A reference to this object.
         */
         Vectorizer& operator=(const Vectorizer& rhs);
+        
+        /*!
+          \brief Returns true if current algorithm implementation runs ok, false otherwise.
+
+          \param polygons    The vector of polygons (will be cleared) to get the result of the vectorization.
+        */
+        bool run(std::vector<te::gm::Geometry*>& polygons);
+
+      protected :
 
         /*!
           \brief Tests if the current point is a edge start.
@@ -120,23 +129,17 @@ namespace te
 
           \return true if ok, otherwise false
         */
-        bool detectEdge(long i, long j, te::gm::LineString& line);
+        bool detectEdge(long i, long j, te::gm::LinearRing& line);
 
-        /*!
-          \brief Returns true if current algorithm implementation runs ok, false otherwise.
 
-          \param polygons    The vector of polygons (will be cleared) to get the result of the vectorization.
-        */
-        bool run(std::vector<te::gm::Geometry*>& polygons);
 
         /*! \brief Clear all internally allocated resources. */
         void clear();
 
       protected:
 
-        bool m_useNoData;                   //!< Flag indication for dummy value use (rotulated image).
         double m_noDataValue;               //!< The used dummy value.
-        Raster* m_raster;                   //!< The input image.
+        Raster* m_rasterPtr;                   //!< A pointer to the input image.
         te::gm::Coord2D m_directions[8];    //!< Directions vector.
         double m_resX;                      //!< Resolution X.
         double m_resY;                      //!< Resolution Y.

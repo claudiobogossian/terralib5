@@ -114,12 +114,18 @@ namespace te
           */
           te::da::DataSource* getDataSource();
 
+          Ui::DataPropertiesWidgetForm* getForm() const;
+
         protected slots:
 
           void onInputDataToolButtonTriggered();
           void onSridPushButtonCLicked();
           void onGeomPropertyChecked(int checked);
           void onPropertyTypeChanged(int index);
+
+        signals:
+
+          void itemChanged();
 
         private:
 

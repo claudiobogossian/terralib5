@@ -24,7 +24,7 @@
  */
 
 /*!
-  \mainpage Terralib 5 Code Documentation
+  \mainpage TerraLib 5 Code Documentation
 
   TerraLib 5.0 is a new version of the Terralib library (www.terralib.org).
   TerraLib is a C++ software library base to develop Geographical Information Systems (GIS).

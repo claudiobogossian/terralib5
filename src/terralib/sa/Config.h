@@ -73,6 +73,15 @@
 /*! Defines the attribute name Moran Map used in MoranMap operation*/
 #define TE_SA_MORANMAP_ATTR_NAME "MoranMap"
 
+/*! Defines the attribute name Bayes used in Bayes operation*/
+#define TE_SA_BAYES_ATTR_NAME "Bayes"
+
+/*! Defines the attribute name NeighEvent used in Local Bayes operation*/
+#define TE_SA_BAYESEVENT_ATTR_NAME "Neigh_Event"
+
+/*! Defines the attribute name NeighPop used in Local Bayes operation*/
+#define TE_SA_BAYESPOP_ATTR_NAME "Neigh_Pop"
+
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library
  */

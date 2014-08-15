@@ -31,7 +31,7 @@
 #include "../../dataaccess/datasource/DataSource.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../maptools/DataSetLayer.h"
-#include "../core/KernelOperation.h"
+#include "../core/KernelMapOperation.h"
 #include "../Exception.h"
 #include "KernelMapDialog.h"
 #include "ui_KernelMapDialogForm.h"
@@ -170,14 +170,32 @@ void te::sa::KernelMapDialog::onOkPushButtonClicked()
   te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
 
-  //set kernel parameters
-  te::sa::KernelParams* kParams = new te::sa::KernelParams();
+  //set input kernel parameters
+  te::sa::KernelInputParams* kInParams = new te::sa::KernelInputParams();
 
-  kParams->m_outputPath = m_ui->m_repositoryLineEdit->text().toStdString();
-  kParams->m_outputDataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  kInParams->m_functionType = (te::sa::KernelFunctionType) m_ui->m_functionComboBox->itemData(m_ui->m_functionComboBox->currentIndex()).toInt();
+  kInParams->m_estimationType = (te::sa::KernelEstimationType) m_ui->m_estimationComboBox->itemData(m_ui->m_estimationComboBox->currentIndex()).toInt();
 
-  kParams->m_functionType = (te::sa::KernelFunctionType) m_ui->m_functionComboBox->itemData(m_ui->m_functionComboBox->currentIndex()).toInt();
-  kParams->m_estimationType = (te::sa::KernelEstimationType) m_ui->m_estimationComboBox->itemData(m_ui->m_estimationComboBox->currentIndex()).toInt();
+  kInParams->m_useAdaptativeRadius = m_ui->m_useAdaptRadiusCheckBox->isChecked();
+  
+  if(!m_ui->m_useAdaptRadiusCheckBox->isChecked())
+  {
+    kInParams->m_radiusPercentValue = m_ui->m_radiusSpinBox->value();
+  }
+
+  if(m_ui->m_useAttrLayerCheckBox->isChecked())
+  {
+    kInParams->m_intensityAttrName = m_ui->m_attrLayerComboBox->currentText().toStdString();
+  }
+
+  kInParams->m_ds = l->getData();
+  kInParams->m_dsType = l->getSchema();
+
+  //set output kernel parameters
+  te::sa::KernelOutputParams* kOutParams = new te::sa::KernelOutputParams();
+
+  kOutParams->m_outputPath = m_ui->m_repositoryLineEdit->text().toStdString();
+  kOutParams->m_outputDataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
   if(m_ui->m_gridRadioButton->isChecked())
   {
@@ -187,8 +205,8 @@ void te::sa::KernelMapDialog::onOkPushButtonClicked()
       return;
     }
 
-    kParams->m_storageType = te::sa::Grid;
-    kParams->m_nCols = m_ui->m_nColsLineEdit->text().toInt();
+    kOutParams->m_storageType = te::sa::Grid;
+    kOutParams->m_nCols = m_ui->m_nColsLineEdit->text().toInt();
   }
   else if(m_ui->m_attrRadioButton->isChecked())
   {
@@ -198,29 +216,16 @@ void te::sa::KernelMapDialog::onOkPushButtonClicked()
       return;
     }
 
-    kParams->m_storageType = te::sa::Attribute;
-    kParams->m_outputAttrName = m_ui->m_attrNameLineEdit->text().toStdString();
+    kOutParams->m_storageType = te::sa::Attribute;
+    kOutParams->m_outputAttrName = m_ui->m_attrNameLineEdit->text().toStdString();
   }
-
-  kParams->m_useAdaptativeRadius = m_ui->m_useAdaptRadiusCheckBox->isChecked();
-  
-  if(!m_ui->m_useAdaptRadiusCheckBox->isChecked())
-  {
-    kParams->m_radiusPercentValue = m_ui->m_radiusSpinBox->value();
-  }
-
-  if(m_ui->m_useAttrLayerCheckBox->isChecked())
-  {
-    kParams->m_intensityAttrName = m_ui->m_attrLayerComboBox->currentText().toStdString();
-  }
-
-  kParams->m_ds = l->getData();
-  kParams->m_dsType = l->getSchema();
 
   //execute kernel
   try
   {
-    te::sa::KernelOperation op(kParams);
+    te::sa::KernelMapOperation op;
+
+    op.setParameters(kInParams, kOutParams);
 
     op.execute();
   }

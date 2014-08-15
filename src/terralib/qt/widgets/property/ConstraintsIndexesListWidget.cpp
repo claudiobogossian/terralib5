@@ -54,6 +54,7 @@ te::qt::widgets::ConstraintsIndexesListWidget::ConstraintsIndexesListWidget(QWid
 
   connect(m_ui->m_addToolButton, SIGNAL(clicked()), this, SLOT(onAddToolButtonClicked()));
   connect(m_ui->m_removeToolButton, SIGNAL(clicked()), this, SLOT(onRemoveToolButtonClicked()));
+  connect(m_ui->m_editToolButton, SIGNAL(clicked()), this, SLOT(onEditToolButtonClicked()));
   connect(m_ui->m_tableWidget, SIGNAL(cellClicked(int, int)), this, SLOT(onCellClicked(int, int)));
 }
 
@@ -116,7 +117,35 @@ void te::qt::widgets::ConstraintsIndexesListWidget::onRemoveToolButtonClicked()
 
 void te::qt::widgets::ConstraintsIndexesListWidget::onEditToolButtonClicked()
 {
-  //TODO
+  if(!m_ui->m_tableWidget->currentItem())
+    return;
+
+  std::string constIndxName = m_ui->m_tableWidget->item(m_ui->m_tableWidget->currentRow(), 0)->text().toStdString();
+
+  te::qt::widgets::ConstraintsIndexesPropertyDialog w(m_dsType, this);
+
+  te::da::PrimaryKey* pk = m_dsType->getPrimaryKey();
+  te::da::UniqueKey* uk = m_dsType->getUniqueKey(constIndxName);
+  te::da::Index* idx = m_dsType->getIndex(constIndxName);
+
+  if(pk->getName() == constIndxName)
+  {
+    w.setConstraint(m_dsType->getPrimaryKey());
+  }
+  else if(uk)
+  {
+    w.setConstraint(uk);
+  }
+  else if(idx)
+  {
+    w.setIndex(idx);
+  }
+
+  if(w.exec() == QDialog::Accepted)
+  {
+    listDataSetProperties();
+  }
+
 }
 
 void te::qt::widgets::ConstraintsIndexesListWidget::onCellClicked(int row, int col)
@@ -126,12 +155,15 @@ void te::qt::widgets::ConstraintsIndexesListWidget::onCellClicked(int row, int c
 
 void te::qt::widgets::ConstraintsIndexesListWidget::listDataSetProperties()
 {
+  bool isEmpty = true;
+
   m_ui->m_tableWidget->setRowCount(0);
 
   //add primary key info
   if(m_dsType->getPrimaryKey())
   {
     addConstraint(m_dsType->getPrimaryKey());
+    isEmpty = false;
   }
 
   //add unique keys info
@@ -140,6 +172,7 @@ void te::qt::widgets::ConstraintsIndexesListWidget::listDataSetProperties()
   for(size_t t = 0; t < size; ++t)
   {
     addConstraint(m_dsType->getUniqueKey(t));
+    isEmpty = false;
   }
 
   //add index info
@@ -148,9 +181,15 @@ void te::qt::widgets::ConstraintsIndexesListWidget::listDataSetProperties()
   for(size_t t = 0; t < size; ++t)
   {
     addIndex(m_dsType->getIndex(t));
+    isEmpty = false;
   }
 
   m_ui->m_tableWidget->resizeColumnsToContents();
+
+  if(!isEmpty)
+  {
+    m_ui->m_editToolButton->setEnabled(true);
+  }
 }
 
 void te::qt::widgets::ConstraintsIndexesListWidget::addConstraint(te::da::Constraint* c)
@@ -237,12 +276,15 @@ void te::qt::widgets::ConstraintsIndexesListWidget::addTableItem(std::string nam
 
   QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromStdString(name));
   m_ui->m_tableWidget->setItem(newrow, 0, itemName);
+  itemName->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
   QTableWidgetItem* itemType = new QTableWidgetItem(QString::fromStdString(type));
   m_ui->m_tableWidget->setItem(newrow, 1, itemType);
+  itemType->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
   QTableWidgetItem* itemProp = new QTableWidgetItem(QString::fromStdString(properties));
   m_ui->m_tableWidget->setItem(newrow, 2, itemProp);
+  itemProp->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 }
 
 std::string te::qt::widgets::ConstraintsIndexesListWidget::getPropertiesStr(std::vector<te::dt::Property*> vec)

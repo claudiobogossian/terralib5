@@ -72,6 +72,8 @@ namespace te
           */
           te::da::Index* getIndex();
 
+          void setIndex(te::da::Index* idx);
+
           /*!
             \brief Check the interface parameters
 

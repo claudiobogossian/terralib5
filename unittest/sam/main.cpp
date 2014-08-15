@@ -66,7 +66,7 @@ int main(int /*argc*/, char** /*argv*/)
 // Printing testResult in XML file 
   // The testResult_*.xml files will be saved at TERRALIB_REPORT_DIR directory.
   // The styleSheet 'report.xsl' should be at this directory (found originally at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl).
-  // One level up TE_OUTPUT_REPORT_DIR should have a 'data' directory with all files used by unit test. 
+  // The "data.zip" (downloaded) containing the data used in unit tests should be at TERRALIB_DATA_DIR 
   CPPUNIT_NS::OFileStream file2( TERRALIB_REPORT_DIR"/testsResult_sam_xml.xml" );
   CPPUNIT_NS::XmlOutputter xml( &result, file2 );
   xml.setStyleSheet( "report.xsl" ); //it is found at c:\....\cppunit-1.12.1\contrib\xml-xsl
