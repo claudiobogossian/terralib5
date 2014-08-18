@@ -56,6 +56,8 @@ te::layout::ObjectItem::ObjectItem( ItemController* controller, Observable* o ) 
 
   //If enabled is true, this item will accept hover events
   setAcceptHoverEvents(true);
+
+  m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::ObjectItem::~ObjectItem()

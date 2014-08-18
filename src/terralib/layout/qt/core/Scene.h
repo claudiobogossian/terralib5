@@ -37,6 +37,11 @@
 #include "../../core/enum/AbstractType.h"
 #include "../../core/enum/EnumMode.h"
 #include "../../core/Config.h"
+#include "../../../geometry/Coord2D.h"
+
+// STL
+#include <map>
+#include <string>
 
 class QGraphicsSceneMouseEvent;
 class QGraphicsItemGroup;
@@ -45,19 +50,6 @@ class QPrinter;
 class QPainter;
 class QLine;
 
-/*!
-	\def __LAYOUT_HORIZONTAL_MARGIN
-	Defines the layout margin to relation with viewport
-*/
-#define __LAYOUT_HORIZONTAL_MARGIN 0.05
-
-
-/*!
-	\def __LAYOUT_VERTICAL_MARGIN
-	Defines the layout margin to relation with viewport
-*/
-#define __LAYOUT_VERTICAL_MARGIN 0.1
-
 namespace te
 {
   namespace layout
@@ -65,6 +57,7 @@ namespace te
     class ItemObserver;
     class Properties;
     class VisualizationArea;
+    class Systematic;
 
     class TELAYOUTEXPORT Scene : public QGraphicsScene, public AbstractScene
     {
@@ -126,7 +119,7 @@ namespace te
 
         virtual void buildTemplate(VisualizationArea* vzArea);
 
-        virtual void createItem(const te::gm::Coord2D& coord );
+        virtual QGraphicsItem* createItem(const te::gm::Coord2D& coord );
         
         virtual void deleteItems();
 
@@ -143,6 +136,15 @@ namespace te
         virtual void redrawRulers();
 
         virtual void refreshRulers(te::gm::Envelope newBox);
+
+        /*! \brief Get the number of map items that intersection the coordinate */
+        virtual int intersectionMap(te::gm::Coord2D coord, bool &intersection);
+
+        virtual void setCurrentMapSystematic(Systematic* systematic, te::gm::Coord2D coord);
+
+        virtual void createTextGridAsObject();
+
+        virtual void createTextMapAsObject();
         
       protected slots:
 
@@ -157,9 +159,11 @@ namespace te
         virtual void mousePressEvent ( QGraphicsSceneMouseEvent* mouseEvent );
 
         virtual te::gm::Envelope* calculateWindow(double wMM, double hMM);
+
         virtual void calculateMatrixViewScene(double zoomFactor = 1.);
 
         virtual QPrinter* createPrinter();
+
         void renderScene( QPainter* newPainter );
 
         virtual void changePrintVisibility(bool change);
@@ -169,6 +173,8 @@ namespace te
         virtual void drawForeground(QPainter *painter, const QRectF &rect);
 
         virtual void refreshViews(QGraphicsView* view = 0);
+
+        virtual void createDefaultTextItemFromObject(std::map<te::gm::Coord2D, std::string> map);
 
       protected:
 

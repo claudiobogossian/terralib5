@@ -94,7 +94,7 @@ namespace te
       virtual void onRecomposeClicked(bool checked);
 
       virtual void onTextToolsTriggered(QAction* action);
-      
+
     signals:
 
       void changeContext(bool change);
@@ -126,7 +126,7 @@ namespace te
       virtual void createRecomposeToolButton();
 
       virtual void createTextToolButton();
-
+      
       virtual void changeAction(LayoutMode mode);
 
       virtual QToolButton* createToolButton(std::string text, std::string tooltip, std::string icon);
@@ -149,9 +149,15 @@ namespace te
       std::string m_optionMapZoomIn;
       std::string m_optionMapZoomOut;
       std::string m_optionMapPan;
+      std::string m_optionMapSystematicScale;
+      std::string m_optionMapCreateTextGrid;
+      std::string m_optionMapCreateMapText;
 
       /* Geometry Menu */
       std::string m_optionRectangle;
+      std::string m_optionPoint;
+      std::string m_optionEllipse;
+      std::string m_optionArrow;
 
       /* View Area */
       std::string m_optionViewPan;
@@ -170,9 +176,11 @@ namespace te
       /* Text Tools */
       std::string m_optionTextDefault;
       std::string m_optionImage;
+      std::string m_optionMultiLineText;
+      std::string m_optionStringGrid;
+      std::string m_optionTitle;
     };
   }
 }
-
 
 #endif

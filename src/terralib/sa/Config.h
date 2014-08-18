@@ -82,6 +82,18 @@
 /*! Defines the attribute name NeighPop used in Local Bayes operation*/
 #define TE_SA_BAYESPOP_ATTR_NAME "Neigh_Pop"
 
+/*! Defines the attribute name Id used in Sample Points Generator operation*/
+#define TE_SA_SPG_ATTR_ID_NAME "id"
+
+/*! Defines the attribute name class used in Sample Points Generator operation*/
+#define TE_SA_SPG_ATTR_CLASS_NAME "class"
+
+/*! Defines the attribute name Point used in Sample Points Generator operation*/
+#define TE_SA_SPG_ATTR_GEOM_NAME "point"
+
+/*! Defines the primary key name pk_id used in Sample Points Generator operation*/
+#define TE_SA_SPG_ATTR_PK_NAME "pk_id"
+
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library
  */

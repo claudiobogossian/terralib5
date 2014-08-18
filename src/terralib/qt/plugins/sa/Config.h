@@ -65,6 +65,13 @@
 #define TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
 
 /*!
+  \def TE_QT_PLUGIN_SA_HAVE_SAMPLEPOINTSGENERATOR
+
+  \brief It defines if the SA Qt Plugin has the sample points generator operation
+*/
+#define TE_QT_PLUGIN_SA_HAVE_SAMPLEPOINTSGENERATOR
+
+/*!
   \def TE_QT_PLUGIN_SA_HAVE_SPATIALSTATISTICS
 
   \brief It defines if the SA Qt Plugin has the spatial statistics operation

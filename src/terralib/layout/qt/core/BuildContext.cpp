@@ -32,7 +32,6 @@
 #include "pattern/factory/OutsideFactory.h"
 #include "../../core/template/TemplateFactory.h"
 #include "../../core/Utils.h"
-#include "../../item/PaperConfig.h"
 #include "Scene.h"
 #include "BuildGraphicsItem.h"
 
@@ -156,6 +155,11 @@ void te::layout::BuildContext::createLayoutContext( int width, int height, View*
   {
     m_buildGraphicsItem = new BuildGraphicsItem;
     Context::getInstance().setBuildGraphicsItem(m_buildGraphicsItem);
+  }
+  if(!Context::getInstance().getSystematicScaleConfig())
+  {
+    m_systematicConfig = new SystematicScaleConfig;
+    Context::getInstance().setSystematicScaleConfig(m_systematicConfig);
   }
 }
 

@@ -32,15 +32,24 @@
 #include "../../srs/SpatialReferenceSystemManager.h"
 #include "../../common/StringUtils.h"
 #include "../core/pattern/singleton/Context.h"
+#include "../core/Systematic.h"
+#include "../core/property/Property.h"
+#include "../core/property/Properties.h"
+#include "../core/WorldTransformer.h"
+#include "../../common/STLUtils.h"
+#include "../../geometry/Polygon.h"
+#include "../../geometry/LinearRing.h"
 
 // STL
 #include <vector>
 #include <string>
-#include <sstream> // std::stringstream
+#include <sstream> 
 
 te::layout::MapModel::MapModel() :
   m_mapDisplacementX(15),
-  m_mapDisplacementY(15)
+  m_mapDisplacementY(15),
+  m_systematic(0),
+  m_fixedScale(false)
 {
   m_box = te::gm::Envelope(0., 0., 150., 120.);
   m_mapBoxMM = m_box;
@@ -48,7 +57,11 @@ te::layout::MapModel::MapModel() :
 
 te::layout::MapModel::~MapModel()
 {
-
+  if(m_systematic)
+  {
+    delete m_systematic;
+    m_systematic = 0;
+  }
 }
 
 void te::layout::MapModel::draw( ContextItem context )
@@ -59,9 +72,29 @@ void te::layout::MapModel::draw( ContextItem context )
   notifyAll(context);
 }
 
+te::layout::Properties* te::layout::MapModel::getProperties() const
+{
+  ItemModelObservable::getProperties();
+
+  Property pro_fixed;
+  pro_fixed.setName("fixedScale");
+  pro_fixed.setId("unknown");
+  pro_fixed.setValue(m_fixedScale, DataTypeBool);
+  m_properties->addProperty(pro_fixed);
+
+  return m_properties;
+}
+
 void te::layout::MapModel::updateProperties( te::layout::Properties* properties )
 {
   ItemModelObservable::updateProperties(properties);
+
+  Properties* vectorProps = const_cast<Properties*>(properties);
+  Property pro_fixed = vectorProps->contains("fixedScale");
+  if(!pro_fixed.isNull())
+  {
+    m_fixedScale = pro_fixed.getValue().toBool();
+  }
 
   updateVisitors();
 }
@@ -97,7 +130,7 @@ double te::layout::MapModel::getScale()
   // World box: coordinates in the same SRS as the layer
   te::gm::Envelope worldBox = m_layer->getExtent();
   int srid = m_layer->getSRID();
-
+  
   //About units names (SI): terralib5\resources\json\uom.json 
   te::common::UnitOfMeasurePtr unitPtr = unitMeasureLayer();
 
@@ -137,7 +170,12 @@ double te::layout::MapModel::getScale()
   else if (nameUnit.compare("DEGREE") == 0)
     wMM /= 110000000.;
 
-  return (1. / factor ) /(wMM / area);
+  double scale = (1. / factor ) /(wMM / area);
+  if(m_systematic && m_fixedScale)
+  {
+    scale = m_systematic->getScale();
+  }
+  return scale;
 }
 
 te::gm::Envelope te::layout::MapModel::getWorldInMeters()
@@ -153,7 +191,7 @@ te::gm::Envelope te::layout::MapModel::getWorldInMeters()
   // World box: coordinates in the same SRS as the layer
   worldBox = m_layer->getExtent();
   int srid = m_layer->getSRID();
-
+  
   //About units names (SI): terralib5\resources\json\uom.json 
   te::common::UnitOfMeasurePtr unitPtr = unitMeasureLayer();
   
@@ -210,7 +248,7 @@ te::gm::Envelope te::layout::MapModel::getWorldInDegrees()
   // World box: coordinates in the same SRS as the layer
   worldBox = m_layer->getExtent();
   int srid = m_layer->getSRID();
-  
+    
   //About units names (SI): terralib5\resources\json\uom.json 
   te::common::UnitOfMeasurePtr unitPtr = unitMeasureLayer();
 
@@ -268,4 +306,155 @@ double te::layout::MapModel::getDisplacementX()
 double te::layout::MapModel::getDisplacementY()
 {
   return m_mapDisplacementY;
+}
+
+void te::layout::MapModel::setSystematic( Systematic* systematic )
+{
+  if(m_systematic)
+  {
+    delete m_systematic;
+    m_systematic = 0;
+  }
+
+  m_systematic = systematic;
+}
+
+void te::layout::MapModel::generateSystematic( te::gm::Coord2D coord )
+{
+  if(!m_systematic)
+    return;
+
+  if(!m_layer)
+    return;
+
+  if(m_layer.get() == 0)
+    return;
+
+  int srid = m_layer->getSRID();  
+  if(srid == 0)
+    return;
+
+  setFixedScale(true);
+
+  double			        height = 0.;
+  double			        width = 0.;
+  double			        x = coord.x;
+  double			        y = coord.y;
+  te::gm::Coord2D	    lowerLeft;
+  te::gm::Coord2D     upperRight;
+
+  height = m_systematic->getHeight();
+  width = m_systematic->getWidth();
+
+  te::gm::Envelope worldBox = getWorldInMeters();
+
+  Utils* utils = Context::getInstance().getUtils();
+  WorldTransformer transf = utils->getTransformGeo(worldBox, m_mapBoxMM);
+  transf.setMirroring(false);
+
+  transf.system2Tosystem1(x, y, x, y);
+
+  x = floor(x/width);
+  y = floor(y/height);
+
+  lowerLeft = te::gm::Coord2D(x * width, y * height);
+  upperRight = te::gm::Coord2D((x + 1) * width, (y + 1) * height);
+    
+  te::gm::LinearRing* lneOut0 = new te::gm::LinearRing(5, te::gm::LineStringType);
+  lneOut0->setPointN(0, te::gm::Point(lowerLeft.x, upperRight.y));
+  lneOut0->setPointN(1, te::gm::Point(lowerLeft.x, lowerLeft.y)); 
+  lneOut0->setPointN(2, te::gm::Point(upperRight.x, lowerLeft.y));
+  lneOut0->setPointN(3, te::gm::Point(upperRight.x, upperRight.y)); 
+  lneOut0->setPointN(4, te::gm::Point(lowerLeft.x, upperRight.y)); 
+
+  te::gm::Polygon* pol = new te::gm::Polygon(1, te::gm::PolygonType, 0, &worldBox);
+  pol->setRingN(0, lneOut0);
+
+  const te::gm::Envelope* polEnv = pol->getMBR();
+
+  m_worldBox.m_llx = polEnv->m_llx;
+  m_worldBox.m_lly = polEnv->m_lly;
+  m_worldBox.m_urx = polEnv->m_urx;
+  m_worldBox.m_ury = polEnv->m_ury;
+
+  updateVisitors();
+}
+
+bool te::layout::MapModel::isFixedScale()
+{
+  return m_fixedScale;
+}
+
+void te::layout::MapModel::setFixedScale( bool fixed )
+{
+  m_fixedScale = fixed;
+}
+
+bool te::layout::MapModel::isPlanar()
+{
+  bool result = false;
+
+  if(!m_layer)
+    return result;
+
+  if(m_layer.get() == 0)
+    return result;
+  
+  //About units names (SI): terralib5\resources\json\uom.json 
+  te::common::UnitOfMeasurePtr unitPtr = unitMeasureLayer();
+
+  if(!unitPtr)
+    return result;
+
+  std::string unitPtrStr = unitPtr->getName(); 
+  unitPtrStr = te::common::Convert2UCase(unitPtrStr);
+
+  if(unitPtrStr.compare("DEGREE") != 0)
+  {
+    result = true;
+  }
+
+  return result;
+}
+
+te::gm::Envelope te::layout::MapModel::getWorldBox()
+{
+  te::gm::Envelope worldBox;
+
+  if(!m_layer)
+    return worldBox;
+
+  if(m_layer.get() == 0)
+    return worldBox;
+
+  // World box: coordinates in the same SRS as the layer
+  worldBox = m_layer->getExtent();
+  int srid = m_layer->getSRID();
+
+  if(!m_worldBox.isValid())
+    return worldBox;
+
+  //Planar World
+  worldBox = m_worldBox;
+
+  if(!isPlanar())
+  {
+    Utils* utils = Context::getInstance().getUtils();
+    std::string proj4 = utils->proj4DescToGeodesic();
+
+    // Get the id of the projection of destination 
+    std::pair<std::string, unsigned int> projMeters = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt(proj4); 
+
+    // Remapping 
+    worldBox.transform(srid, projMeters.second); 
+  }
+
+  return worldBox;
+}
+
+std::map<te::gm::Coord2D, std::string> te::layout::MapModel::getTextMapAsObjectInfo()
+{
+  std::map<te::gm::Coord2D, std::string>  map;
+
+  return map;
 }

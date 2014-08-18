@@ -530,3 +530,9 @@ void te::layout::GridPlanarModel::updateProperty( Property property )
   }
 }
 
+std::map<te::gm::Coord2D, std::string> te::layout::GridPlanarModel::getGridInfo()
+{
+  std::map<te::gm::Coord2D, std::string>  map;
+
+  return map;
+}

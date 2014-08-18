@@ -39,7 +39,8 @@ te::layout::ItemObserver::ItemObserver(ItemController* controller, Observable* o
   m_model(o),
   m_printable(true),
   m_canChangeGraphicOrder(true),
-  m_canZoom(true)
+  m_canZoom(true),
+  m_nameClass("Unknown")
 {
   m_model->addObserver(this);
 }
@@ -125,4 +126,9 @@ bool te::layout::ItemObserver::isCanZoom()
 void te::layout::ItemObserver::setCanZoom( bool zoom )
 {
   m_canZoom = zoom;
+}
+
+std::string te::layout::ItemObserver::getNameClass()
+{
+  return m_nameClass;
 }

@@ -52,6 +52,14 @@ namespace te
 
         virtual void setPlanarBox(te::gm::Envelope box);
 
+        virtual std::map<te::gm::Coord2D, std::string> getGridInfo();
+
+        virtual void setVisibleAllTexts(bool visible);
+
+        virtual void setVisibleCornerTextsText(bool visible);
+
+        virtual bool isVisibleCornerTextsText();
+
        protected:
 
          virtual void drawVerticalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);

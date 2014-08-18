@@ -78,12 +78,12 @@ namespace te
             void createLayoutContext(int width, int height);
             void finish();
 
-            te::layout::View* m_view;
-            DisplayDock* m_dockLayoutDisplay;
-            QGroupBox* m_groupBox;
-            QStatusBar* m_statusBar;
+            te::layout::View*         m_view;
+            DisplayDock*              m_dockLayoutDisplay;
+            QGroupBox*                m_groupBox;
+            QStatusBar*               m_statusBar;
             te::layout::BuildContext* m_buildContext;
-            OutsideArea*    m_outsideArea;  
+            OutsideArea*              m_outsideArea;  
         
           private:
       

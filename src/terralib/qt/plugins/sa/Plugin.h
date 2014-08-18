@@ -47,6 +47,7 @@ namespace te
         class KernelMapAction;
         class KernelRatioAction;
         class ProximityMatrixCreatorAction;
+        class SamplePointsGeneratorAction;
         class SpatialStatisticsAction;
 
         class Plugin : public te::plugin::Plugin
@@ -80,12 +81,13 @@ namespace te
             QMenu* m_saMenu;                                         //!< SA Main Menu registered.
             QAction* m_popupAction;                                  //!< SA pop up action registered.
 
-            te::qt::plugins::sa::BayesGlobalAction* m_bayesGlobal;                   //!< Global Bayes Process Action
-            te::qt::plugins::sa::BayesLocalAction* m_bayesLocal;                     //!< Local Bayes Process Action
-            te::qt::plugins::sa::KernelMapAction* m_kernelMap;                       //!< Kernel Map Process Action
-            te::qt::plugins::sa::KernelRatioAction* m_kernelRatio;                   //!< Kernel Ratio Process Action
-            te::qt::plugins::sa::ProximityMatrixCreatorAction* m_proxMatrixCreator;  //!< Proximity Matrix Creator Process Action
-            te::qt::plugins::sa::SpatialStatisticsAction* m_spatialStatistics;       //!< Spatial Statistics Process Action
+            te::qt::plugins::sa::BayesGlobalAction* m_bayesGlobal;                      //!< Global Bayes Process Action
+            te::qt::plugins::sa::BayesLocalAction* m_bayesLocal;                        //!< Local Bayes Process Action
+            te::qt::plugins::sa::KernelMapAction* m_kernelMap;                          //!< Kernel Map Process Action
+            te::qt::plugins::sa::KernelRatioAction* m_kernelRatio;                      //!< Kernel Ratio Process Action
+            te::qt::plugins::sa::ProximityMatrixCreatorAction* m_proxMatrixCreator;     //!< Proximity Matrix Creator Process Action
+            te::qt::plugins::sa::SamplePointsGeneratorAction* m_samplePointsGenerator;  //!< Sample points generator Process Action
+            te::qt::plugins::sa::SpatialStatisticsAction* m_spatialStatistics;          //!< Spatial Statistics Process Action
         };
 
       } // end namespace sa

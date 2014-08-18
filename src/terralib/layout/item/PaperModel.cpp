@@ -28,7 +28,6 @@
 // TerraLib
 #include "PaperModel.h"
 #include "../core/ContextItem.h"
-#include "PaperConfig.h"
 #include "../../maptools/Canvas.h"
 
 te::layout::PaperModel::PaperModel() :
@@ -68,16 +67,11 @@ void te::layout::PaperModel::draw( ContextItem context )
 
   if((!canvas) || (!utils))
     return;
-
- // m_box = te::gm::Envelope(0., 0., m_boxShadow.getUpperRightX(), m_boxPaper.getUpperRightY());
-
-  //m_box = te::gm::Envelope(0., - m_shadowPadding, m_boxShadow.getUpperRightX(), m_boxPaper.getUpperRightY());
-
+  
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
   
-  double pw = 0.;
-  double ph = 0.;
+  config();
 
   double llx = m_box.getLowerLeftX();
   double lly = m_box.getLowerLeftY();
@@ -86,7 +80,7 @@ void te::layout::PaperModel::draw( ContextItem context )
 
   canvas->setPolygonContourColor(m_shadowColor);
   canvas->setPolygonFillColor(m_shadowColor);
-
+  
   m_boxShadow = te::gm::Envelope(llx + m_shadowPadding, lly, urx, ury - m_shadowPadding);
   utils->drawRectW(m_boxShadow);
 

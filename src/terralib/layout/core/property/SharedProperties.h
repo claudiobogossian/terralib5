@@ -51,6 +51,8 @@ namespace te
         std::string getY2();
         std::string getZValue();
         std::string getBorder();
+        std::string getBackgroundcolor();
+        std::string getBordercolor();
 
       protected:
 
@@ -63,6 +65,8 @@ namespace te
         std::string m_y2;
         std::string m_zValue;
         std::string m_border;
+        std::string m_backgroundcolor;
+        std::string m_bordercolor;
     };
   }
 }

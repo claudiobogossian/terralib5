@@ -34,6 +34,8 @@
 #include "../../../outside/ObjectInspectorOutside.h"
 #include "../../../outside/GridSettingsOutside.h"
 #include "../../../outside/PageSetupOutside.h"
+#include "../../../outside/SystematicScaleOutside.h"
+#include "../../../outside/EditTemplateOutside.h"
 
 te::layout::OutsideFactory::OutsideFactory()
 {
@@ -84,6 +86,20 @@ te::layout::Observer* te::layout::OutsideFactory::make( LayoutAbstractObjectType
     {
       PageSetupOutside* pageSetup = new PageSetupOutside(params.getController(), params.getModel());		
       outside = (Observer*)pageSetup;
+      return outside;
+      break;
+    }
+  case TPSystematicScale:
+    {
+      SystematicScaleOutside* systematic = new SystematicScaleOutside(params.getController(), params.getModel());		
+      outside = (Observer*)systematic;
+      return outside;
+      break;
+    }
+  case TPEditTemplate:
+    {
+      EditTemplateOutside* editTemplate = new EditTemplateOutside(params.getController(), params.getModel());		
+      outside = (Observer*)editTemplate;
       return outside;
       break;
     }
