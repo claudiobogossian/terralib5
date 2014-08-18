@@ -111,6 +111,7 @@ namespace te
       te::rst::Raster const * m_inputRasterPtr;
       std::vector< unsigned int > const * m_inputRasterBandsPtr;
       te::rst::Raster* m_outputRasterPtr;
+      std::vector< unsigned int > const * m_outputRasterBandsPtr;
       boost::numeric::ublas::matrix< double > const * m_remapMatrixPtr;
       Matrix< bool > * m_rasterBlocksStatusPtr;
       bool m_returnStatus;
@@ -1526,6 +1527,7 @@ namespace te
       const std::vector< unsigned int >& inputRasterBands,
       boost::numeric::ublas::matrix< double >& pcaMatrix,
       te::rst::Raster& pcaRaster,
+      const std::vector< unsigned int >& pcaRasterBands,
       const unsigned int maxThreads )
     {
       if( ( inputRaster.getAccessPolicy() & te::common::RAccess ) == 0 )
@@ -1606,13 +1608,15 @@ namespace te
       
       pcaMatrix = boost::numeric::ublas::trans( eigenVectors );
       
-      return RemapValues( inputRaster, inputRasterBands, pcaMatrix, pcaRaster, maxThreads );
+      return RemapValues( inputRaster, inputRasterBands, pcaMatrix, pcaRaster, 
+        pcaRasterBands, maxThreads );
     }
     
     bool InversePrincipalComponents( 
       const te::rst::Raster& pcaRaster,
       const boost::numeric::ublas::matrix< double >& pcaMatrix,
       te::rst::Raster& outputRaster,
+      const std::vector< unsigned int >& outputRasterBands,
       const unsigned int maxThreads )    
     {
       boost::numeric::ublas::matrix< double > inversePcaMatrix;
@@ -1630,7 +1634,7 @@ namespace te
       }
       
       return RemapValues( pcaRaster, inputRasterBands, inversePcaMatrix, 
-        outputRaster, maxThreads );
+        outputRaster, outputRasterBands, maxThreads );
     }
     
     void RemapValuesThread( RemapValuesThreadParams* paramsPtr )
@@ -1645,7 +1649,9 @@ namespace te
       
       const std::vector< unsigned int >  inputRasterBands = *( paramsPtr->m_inputRasterBandsPtr );
       const unsigned int  inputRasterBandsSize = (unsigned int)inputRasterBands.size();
+      const std::vector< unsigned int >  outputRasterBands = *( paramsPtr->m_inputRasterBandsPtr );
       assert( inputRasterBandsSize == paramsPtr->m_outputRasterPtr->getNumberOfBands() );
+      assert( inputRasterBandsSize == outputRasterBands.size() );
       
       unsigned int maxBlocksSizesBytes = 0;
       std::vector< double > inputBandsNoDataValues( inputRasterBandsSize, 0.0 );
@@ -1668,7 +1674,8 @@ namespace te
         assert( inBandIdx < paramsPtr->m_inputRasterPtr->getNumberOfBands() );
         
         te::rst::Band const * const inBandPtr = paramsPtr->m_inputRasterPtr->getBand( inBandIdx );
-        te::rst::Band * const outBandPtr = paramsPtr->m_outputRasterPtr->getBand( inputRasterBandsIdx );
+        te::rst::Band * const outBandPtr = paramsPtr->m_outputRasterPtr->getBand( 
+          outputRasterBands[ inputRasterBandsIdx ] );
         
         maxBlocksSizesBytes = std::max( maxBlocksSizesBytes, (unsigned int)inBandPtr->getBlockSize() );
         maxBlocksSizesBytes = std::max( maxBlocksSizesBytes, (unsigned int)outBandPtr->getBlockSize() );
@@ -1782,7 +1789,8 @@ namespace te
             for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < inputRasterBandsSize ;
               ++inputRasterBandsIdx )
             { 
-              te::rst::Band* outBandPtr = paramsPtr->m_outputRasterPtr->getBand( inputRasterBandsIdx );
+              te::rst::Band* outBandPtr = paramsPtr->m_outputRasterPtr->getBand( 
+                outputRasterBands[ inputRasterBandsIdx ] );
               
               ConvertDoublesVector( outDoubleBuffers[ inputRasterBandsIdx ],
                 blockElementsNumber, outBandPtr->getProperty()->getType(),
@@ -1803,6 +1811,7 @@ namespace te
       const std::vector< unsigned int >& inputRasterBands, 
       const boost::numeric::ublas::matrix< double >& remapMatrix,
       te::rst::Raster& outputRaster,
+      const std::vector< unsigned int >& outputRasterBands,
       const unsigned int maxThreads )
     {
       if( ( inputRaster.getAccessPolicy() & te::common::RAccess ) == 0 )
@@ -1833,6 +1842,30 @@ namespace te
       {
         return false;
       }    
+      if( remapMatrix.size1() != outputRasterBands.size() )
+      {
+        return false;
+      }
+      if( remapMatrix.size2() != outputRasterBands.size() )
+      {
+        return false;
+      }     
+      for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx < inputRasterBands.size() ;
+        ++inputRasterBandsIdx )
+      {
+        if( inputRasterBands[ inputRasterBandsIdx ] >= inputRaster.getNumberOfBands() )
+        {
+          return false;
+        }    
+      }
+      for( unsigned int outputRasterBandsIdx = 0 ; outputRasterBandsIdx < outputRasterBands.size() ;
+        ++outputRasterBandsIdx )
+      {
+        if( outputRasterBands[ outputRasterBandsIdx ] >= outputRaster.getNumberOfBands() )
+        {
+          return false;
+        }    
+      }      
       
       // Checking if optmized PCA can be executed
       
@@ -1926,6 +1959,7 @@ namespace te
         params.m_inputRasterPtr = &inputRaster;
         params.m_inputRasterBandsPtr = &inputRasterBands;
         params.m_outputRasterPtr = &outputRaster;
+        params.m_outputRasterBandsPtr = &outputRasterBands;
         params.m_remapMatrixPtr = &remapMatrix;
         params.m_rasterBlocksStatusPtr = &rasterBlocksStatus;
         params.m_returnStatus = true;
@@ -1981,10 +2015,10 @@ namespace te
             inputRasterBands[ inputRasterBandsIdx ] )->getProperty()->m_noDataValue;
             
           outputNoDataValues[ inputRasterBandsIdx ] = outputRaster.getBand( 
-            inputRasterBandsIdx )->getProperty()->m_noDataValue;
+            outputRasterBands[ inputRasterBandsIdx ] )->getProperty()->m_noDataValue;
             
           te::rst::GetDataTypeRanges( 
-            outputRaster.getBand( inputRasterBandsIdx )->getProperty()->getType(),
+            outputRaster.getBand( outputRasterBands[ inputRasterBandsIdx ] )->getProperty()->getType(),
             outputMinValue[ inputRasterBandsIdx ],
             outputMaxValue[ inputRasterBandsIdx ] );
         }
@@ -2027,7 +2061,7 @@ namespace te
                       remappedPixelValues( inputRasterBandsIdx, 0 )
                     )
                   ),
-                  inputRasterBandsIdx );
+                  outputRasterBands[ inputRasterBandsIdx ] );
               }              
             }
             else
@@ -2036,7 +2070,7 @@ namespace te
                 ++inputRasterBandsIdx )
               {              
                 outputRaster.setValue( col, row, outputNoDataValues[ inputRasterBandsIdx ], 
-                  inputRasterBandsIdx );
+                  outputRasterBands[ inputRasterBandsIdx ] );
               }
             }
           }

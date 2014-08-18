@@ -241,6 +241,7 @@ void TsFunctions::PrincipalComponents()
     inputRasterBands,
     pcaMatrix,
     *pcaRasterPtr,
+    inputRasterBands,
     1 ) );
     
   CPPUNIT_ASSERT( te::rp::Copy2DiskRaster( *pcaRasterPtr, "terralib_unittest_rp_functions_DirectPrincipalComponents.tif" ) ) ;  
@@ -262,6 +263,7 @@ void TsFunctions::PrincipalComponents()
     *pcaRasterPtr,
     pcaMatrix,
     *outDiskRasterPtr,
+    inputRasterBands,
     1 ) );  
 }
 
@@ -302,6 +304,7 @@ void TsFunctions::PrincipalComponentsOptimized()
     inputRasterBands,
     pcaMatrix,
     *pcaRasterPtr,
+    inputRasterBands,
     4 ) );
     
   CPPUNIT_ASSERT( te::rp::Copy2DiskRaster( *pcaRasterPtr, "terralib_unittest_rp_functions_DirectPrincipalComponentsOptimized.tif" ) ) ;  
@@ -323,6 +326,7 @@ void TsFunctions::PrincipalComponentsOptimized()
     *pcaRasterPtr,
     pcaMatrix,
     *outDiskRasterPtr,
+    inputRasterBands,
     4 ) );  
 }
 
