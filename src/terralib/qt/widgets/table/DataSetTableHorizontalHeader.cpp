@@ -58,6 +58,11 @@ void te::qt::widgets::DataSetTableHorizontalHeader::setDragDrop(bool b)
   m_doDragDrop = b;
 }
 
+bool te::qt::widgets::DataSetTableHorizontalHeader::getDragDrop()
+{
+  return m_doDragDrop;
+}
+
 void te::qt::widgets::DataSetTableHorizontalHeader::setAcceptDrop(bool b)
 {
   m_acceptDrop = b;
@@ -71,6 +76,11 @@ void te::qt::widgets::DataSetTableHorizontalHeader::setAcceptDrop(bool b)
     setAcceptDrops(false);
     setDropIndicatorShown(false);
   }
+}
+
+bool te::qt::widgets::DataSetTableHorizontalHeader::getAcceptDrop()
+{
+  return m_acceptDrop;
 }
 
 void te::qt::widgets::DataSetTableHorizontalHeader::setLayer(const te::map::AbstractLayer* layer)
@@ -154,38 +164,24 @@ void te::qt::widgets::DataSetTableHorizontalHeader::mousePressEvent(QMouseEvent 
       s.setNum(propType);
       mimeData->setData("FieldType", s.toStdString().c_str());
 
-      QDrag *drag = new QDrag(this);
-      drag->setMimeData(mimeData);
-      drag->setPixmap(pixmap);
-      drag->setHotSpot(hotSpot);
+      QDrag drag(this);
+      drag.setMimeData(mimeData);
+      drag.setPixmap(pixmap);
+      drag.setHotSpot(hotSpot);
 
-      Qt::DropAction dropAction = drag->exec(Qt::LinkAction);    
+      Qt::DropAction dropAction = drag.exec(Qt::LinkAction);    
     }
   }
   //else if(e->button() == Qt::MiddleButton) // to test drag drop
   //{
-  //  int cc = m_view->columnAt(e->pos().x());
-  //  cc = visualIndex(cc);
-  //  if(cc == 0)
-  //  {
-  //    setDragDrop(false);
-  //    QMessageBox::information(this, "", "DRAG DROP DISABLED");
-  //  }
-  //  else if(cc == 1)
-  //  {
-  //    setDragDrop(true);
+  //  m_doDragDrop = !m_doDragDrop;
+  //  m_acceptDrop = m_doDragDrop;
+  //  setDragDrop(m_doDragDrop);
+  //  setAcceptDrop(m_acceptDrop);
+  //  if(m_doDragDrop)
   //    QMessageBox::information(this, "", "DRAG DROP ENABLED");
-  //  }
-  //  else if(cc == 2)
-  //  {
-  //    setAcceptDrop(true);
-  //    QMessageBox::information(this, "", "DROP ENABLED");
-  //  }
-  //  else if(cc == 3)
-  //  {
-  //    setAcceptDrop(false);
-  //    QMessageBox::information(this, "", "DROP DISABLED");
-  //  }
+  //  else
+  //    QMessageBox::information(this, "", "DRAG DROP DISABLED");
   //}
 
   QHeaderView::mousePressEvent(e);
