@@ -59,6 +59,7 @@ else()
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/sa/KernelMapAction.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/sa/KernelRatioAction.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/sa/ProximityMatrixCreatorAction.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/sa/SamplePointsGeneratorAction.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/sa/SpatialStatisticsAction.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
