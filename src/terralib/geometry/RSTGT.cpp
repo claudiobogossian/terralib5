@@ -89,7 +89,7 @@ te::gm::GeometricTransformation* te::gm::RSTGT::clone() const
   te::gm::RSTGT* newTransPtr = new RSTGT;
   newTransPtr->m_internalParameters = m_internalParameters;
   return newTransPtr;
-};
+}
         
 bool te::gm::RSTGT::computeParameters( GTParameters& params ) const
 {

@@ -299,7 +299,7 @@ namespace te
       MD_crossTrack,/*!< perpendicular to the direction of motion of the scan point	*/
       MD_line,  /*!< scan line of a sensor	*/
       MD_sample,/*!< element along a scan line	*/
-      MD_time,  /*!< duration */
+      MD_time  /*!< duration */
     };
     
     /*!

@@ -99,7 +99,7 @@ namespace te
   } // end namespace xerces
 }   // end namespace te
 
-PLUGIN_CALL_BACK_DECLARATION(TEXERCESEXPORT);
+PLUGIN_CALL_BACK_DECLARATION(TEXERCESEXPORT)
 
 #endif  // __TERRALIB_XERCES_INTERNAL_MODULE_H
 
