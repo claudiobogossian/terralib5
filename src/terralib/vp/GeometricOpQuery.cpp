@@ -152,6 +152,8 @@ bool te::vp::GeometricOpQuery::run()
 
           for(std::size_t dsTypePos = 0; dsTypePos < dsTypeVec.size(); ++dsTypePos)
           {
+            m_outDsetNameVec.push_back(dsTypeVec[dsTypePos]->getName());
+
             std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
             std::auto_ptr<te::mem::DataSet> outDataSet(SetAllObjects(dsTypeVec[dsTypePos], opTab, opGeom));
             result = save(outDataSet, outDataSetType);
@@ -181,6 +183,8 @@ bool te::vp::GeometricOpQuery::run()
 
           for(std::size_t dsTypePos = 0; dsTypePos < dsTypeVec.size(); ++dsTypePos)
           {
+            m_outDsetNameVec.push_back(dsTypeVec[dsTypePos]->getName());
+
             std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
             std::auto_ptr<te::mem::DataSet> outDataSet(SetAggregObj(dsTypeVec[dsTypePos], opTab, opGeom));
             result = save(outDataSet, outDataSetType);
@@ -210,6 +214,8 @@ bool te::vp::GeometricOpQuery::run()
 
           for(std::size_t dsTypePos = 0; dsTypePos < dsTypeVec.size(); ++dsTypePos)
           {
+            m_outDsetNameVec.push_back(dsTypeVec[dsTypePos]->getName());
+
             std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
             std::auto_ptr<te::mem::DataSet> outDataSet(SetAggregByAttribute(dsTypeVec[dsTypePos], opTab, opGeom));
             result = save(outDataSet, outDataSetType);
@@ -488,6 +494,9 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSe
   std::string name = inDset->getPropertyName(geom_pos);
   
   te::da::Fields* fields = new te::da::Fields;
+
+  te::da::Field* f_aggreg = new te::da::Field(m_attribute);
+  fields->push_back(f_aggreg);
 
   if(tabVec.size() > 0)
   {

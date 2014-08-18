@@ -45,13 +45,16 @@ namespace std {
 static void Initialize() throw (te::common::Exception)
 {
 	TerraLib::getInstance().initialize();
+  
 	te::plugin::PluginManager::getInstance().loadAll();
 } 
 
 static void Finalize()
 {
 	te::plugin::PluginManager::getInstance().shutdownAll();
+  te::plugin::PluginManager::getInstance().unloadAll();
 	te::plugin::PluginManager::getInstance().clear();
+
 	TerraLib::getInstance().finalize();
 } 
 %} 

@@ -23,6 +23,8 @@
   \brief 
 */
 
+#include <terralib/common/PlatformUtils.h>
+
 // Qt
 #include <QApplication>
 #include <QIcon>
@@ -54,17 +56,15 @@ inline void QtInitializer::begin()
 
   m_app = new QApplication(m_argc, m_argv);
 
-/*  QStringList ithemes = QIcon::themeSearchPaths();
+  QStringList ithemes = QIcon::themeSearchPaths();
 
-  char* te_env = getenv("TERRALIB_DIR");
+  std::string th_path = te::common::FindInTerraLibPath("share/terralib/icons");
 
-  std::string themePath = te_env + std::string("/resources/themes");
-
-  ithemes.push_back(themePath.c_str());
+  ithemes.push_back(th_path.c_str());
 
   QIcon::setThemeSearchPaths(ithemes);
 
-  QIcon::setThemeName("terralib"); */
+  QIcon::setThemeName("terralib");
 }
 
 inline void QtInitializer::end()

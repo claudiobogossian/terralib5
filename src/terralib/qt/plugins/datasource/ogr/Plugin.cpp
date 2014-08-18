@@ -131,7 +131,8 @@ QString GetSupportedFiles()
 
 te::qt::plugins::ogr::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo) : 
 QObject(),
-te::plugin::Plugin(pluginInfo)
+te::plugin::Plugin(pluginInfo),
+m_showWindow(0)
 {
 }
 

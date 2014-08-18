@@ -38,7 +38,8 @@
 #include <QMenuBar>
 
 te::qt::plugins::terralib4::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : QObject(), te::plugin::Plugin(pluginInfo)
+  : QObject(), te::plugin::Plugin(pluginInfo),
+  m_showWindow(0)
 {
 }
 

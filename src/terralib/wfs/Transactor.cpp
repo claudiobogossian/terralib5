@@ -673,4 +673,9 @@ void te::wfs::Transactor::optimize(const std::map<std::string, std::string>& /*o
   throw Exception(TE_TR("The method optimize() is not supported by the WFS driver!"));
 }
 
+te::common::CharEncoding te::wfs::Transactor::getEncoding()
+{
+  return te::common::UTF8;
+}
+
 //@}

@@ -31,25 +31,24 @@
 #include <iostream>
 
 te::rst::VectorizerPolygonStructure::VectorizerPolygonStructure()
-  : m_polygon(0, te::gm::PolygonType)
 {
   init();
 }
 
 te::rst::VectorizerPolygonStructure::VectorizerPolygonStructure(const VectorizerPolygonStructure& rhs)
-  : m_polygon(0, te::gm::PolygonType)
 {
   init();
 
-  reset(rhs.m_polygon, rhs.m_value, rhs.m_tileIndexerDY);
+  reset( rhs.m_polygonPtr.get() ? (te::gm::Polygon*)rhs.m_polygonPtr->clone() : 
+    (te::gm::Polygon*)0, rhs.m_value, rhs.m_tileIndexerDY);
 }
 
-te::rst::VectorizerPolygonStructure::VectorizerPolygonStructure(const te::gm::Polygon& p, const int& v, const double& tidy)
-  : m_polygon(0, te::gm::PolygonType)
+te::rst::VectorizerPolygonStructure::VectorizerPolygonStructure( te::gm::Polygon* polPtr,
+  const unsigned int& v, const double& tidy)
 {
   init();
 
-  reset(p, v, tidy);
+  reset(polPtr, v, tidy);
 }
 
 te::rst::VectorizerPolygonStructure::~VectorizerPolygonStructure()
@@ -61,30 +60,35 @@ void te::rst::VectorizerPolygonStructure::init()
 {
   m_value = 0;
   m_tileIndexerDY = 1.0;
-  m_indexer = 0;
 }
 
 void te::rst::VectorizerPolygonStructure::clear()
 {
-  if(m_indexer)
-    delete m_indexer;
+  m_indexerPtr.reset();
+  m_polygonPtr.reset();
   init();
 }
 
-void te::rst::VectorizerPolygonStructure::reset(const te::gm::Polygon& p, const int& v, const double& tidy)
+void te::rst::VectorizerPolygonStructure::reset( te::gm::Polygon* polPtr, 
+  const unsigned int& v, const double& tidy)
 {
   clear();
 
-  m_polygon = p;
+  m_polygonPtr.reset( polPtr );
   m_value = v;
   m_tileIndexerDY = tidy;
 
-  m_indexer = new te::rst::TileIndexer(m_polygon, m_tileIndexerDY);
+  if( polPtr )
+  {
+    m_indexerPtr.reset( new te::rst::TileIndexer(*m_polygonPtr, m_tileIndexerDY) );
+  }
 }
 
-te::rst::VectorizerPolygonStructure& te::rst::VectorizerPolygonStructure::operator=(const te::rst::VectorizerPolygonStructure& rhs)
+te::rst::VectorizerPolygonStructure& te::rst::VectorizerPolygonStructure::operator=(
+  const te::rst::VectorizerPolygonStructure& rhs)
 {
-  reset(rhs.m_polygon, rhs.m_value, rhs.m_tileIndexerDY);
+  reset( rhs.m_polygonPtr.get() ? (te::gm::Polygon*)rhs.m_polygonPtr->clone() : 
+    (te::gm::Polygon*)0, rhs.m_value, rhs.m_tileIndexerDY);
 
   return *this;
 }

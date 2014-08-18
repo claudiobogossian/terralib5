@@ -55,6 +55,8 @@ namespace te
         public:
 
           virtual te::da::Constraint* getConstraint();
+
+          virtual void setConstraint(te::da::Constraint* constraint);
       }; 
 
     } // end namespace widgets

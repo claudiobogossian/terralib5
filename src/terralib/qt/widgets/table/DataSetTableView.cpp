@@ -101,7 +101,10 @@ QMenu* GetHiddenColumnsMenu(QHeaderView* hView, te::da::DataSet* dset, QMenu* hM
 
       act->setText(cName);
       act->setData(QVariant(*it));
-      act->setToolTip(QObject::tr("Turns column \"") + cName + "\" visible.");
+
+      QString tt = QObject::tr("Turns column \"%1\" visible.").arg(cName);
+
+      act->setToolTip(tt);
 
       mnu->addAction(act);
     }
@@ -505,6 +508,7 @@ class TablePopupFilter : public QObject
                 QAction* act13 = new QAction(m_hMenu);
                 act13->setText(tr("Save editions"));
                 act13->setToolTip(tr("Save pendent editions to layer."));
+                act13->setEnabled(m_view->hasEditions());
                 m_hMenu->addAction(act13);
 
                 m_view->connect(act7, SIGNAL(triggered()), SLOT(addColumn()));
@@ -761,11 +765,26 @@ te::qt::widgets::DataSetTableView::~DataSetTableView()
   }
 }
 
+void te::qt::widgets::DataSetTableView::setDragDrop(bool b)
+{
+  DataSetTableHorizontalHeader* hheader = static_cast<DataSetTableHorizontalHeader*>(horizontalHeader());
+  hheader->setDragDrop(true);
+}
+
+void te::qt::widgets::DataSetTableView::setAcceptDrop(bool b)
+{
+  DataSetTableHorizontalHeader* hheader = static_cast<DataSetTableHorizontalHeader*>(horizontalHeader());
+  hheader->setAcceptDrop(true);
+}
+
 void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* layer, const bool& clearEditor)
 {
   ScopedCursor cursor(Qt::WaitCursor);
 
   m_layer = layer;
+  DataSetTableHorizontalHeader* hheader = static_cast<DataSetTableHorizontalHeader*>(horizontalHeader());
+  hheader->setLayer(m_layer);
+
   std::auto_ptr<te::map::LayerSchema> sch = m_layer->getSchema();
 
   if (m_orderby.empty())
@@ -809,6 +828,8 @@ void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset, const 
   reset();
 
   m_model->setDataSet(dset, clearEditor);
+  DataSetTableHorizontalHeader* hheader = static_cast<DataSetTableHorizontalHeader*>(horizontalHeader());
+  hheader->setDataSet(dset);
 
   HideGeometryColumns(dset, this);
 
@@ -857,6 +878,11 @@ void te::qt::widgets::DataSetTableView::setHighlightColor(const QColor& color)
   m_delegate->setColor(color);
 
   repaint();
+}
+
+bool te::qt::widgets::DataSetTableView::hasEditions() const
+{
+  return m_model->hasEditions();
 }
 
 void te::qt::widgets::DataSetTableView::createHistogram(const int& column)

@@ -25,6 +25,7 @@
 
 // TerraLib 
 #include "../Enums.h"
+#include "../../common/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../dataaccess/dataset/DataSet.h"
 #include "../../dataaccess/dataset/DataSetType.h"
@@ -159,7 +160,7 @@ te::map::AbstractLayerPtr te::vp::GeometricOpWizard::getInLayer()
   return m_inLayer;
 }
 
-te::map::AbstractLayerPtr te::vp::GeometricOpWizard::getOutLayer()
+std::vector<te::map::AbstractLayerPtr> te::vp::GeometricOpWizard::getOutLayer()
 {
   return m_outLayer;
 }
@@ -216,6 +217,7 @@ bool te::vp::GeometricOpWizard::execute()
     std::vector<std::string> geoProps = m_geomOpPage->getSelectedProps();
 
     std::string outputdataset = m_geomOpOutputPage->getOutDsName();
+    std::vector<std::string> outputDSetNames;
 
 //get the selected property if the operation is by attribute
     m_attribute = m_geomOpOutputPage->getAttribute();
@@ -224,11 +226,13 @@ bool te::vp::GeometricOpWizard::execute()
     if(m_geomOpOutputPage->getToFile())
     {
       boost::filesystem::path uri(m_geomOpOutputPage->getPath());
-      if (boost::filesystem::exists(uri))
-      {
-        QMessageBox::information(this, "Basic Geographic Operation", "Output file already exists. Remove it or select a new name and try again.");
-        return false;
-      }
+      //boost::filesystem::path uri_file(m_geomOpOutputPage->getPath() + "/" + outputdataset + ".shp");
+
+      //if (boost::filesystem::exists(uri_file))
+      //{
+      //  QMessageBox::information(this, "Basic Geographic Operation", "Output file already exists. Remove it or select a new name and try again.");
+      //  return false;
+      //}
 
       std::size_t idx = outputdataset.find(".");
 
@@ -283,6 +287,8 @@ bool te::vp::GeometricOpWizard::execute()
         QMessageBox::information(this, "Geometric Operation", "Error: could not generate the operation.");
         return false;
       }
+
+      outputDSetNames = geomOp->GetOutputDSetNames();
 
       delete geomOp;
 
@@ -357,23 +363,29 @@ bool te::vp::GeometricOpWizard::execute()
         return false;
       }
 
+      outputDSetNames = geomOp->GetOutputDSetNames();
+
       delete geomOp;
     }
 
 // creating a layer for the result
-    //te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
-    //te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
+    te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
+    te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
 
-    //te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
-    //m_outLayer = converter(dt);
+    for(std::size_t i = 0; i < outputDSetNames.size(); ++i)
+    {
+      te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputDSetNames[i]).release());
+      if(dt)
+        m_outLayer.push_back(converter(dt));
+    }
   }
   catch(const std::exception& e)
   {
     this->setCursor(Qt::ArrowCursor);
     QMessageBox::information(this, "Basic Greographic Operation", e.what());
 
-    //te::common::Logger::logDebug("vp", e.what());
-    //te::common::ProgressManager::getInstance().removeViewer(id);
+    te::common::Logger::logDebug("vp", e.what());
+    te::common::ProgressManager::getInstance().removeViewer(id);
     return false;
   }
 

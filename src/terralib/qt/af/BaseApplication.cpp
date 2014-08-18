@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../common/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/progress/TaskProgress.h"
 #include "../../common/SystemApplicationSettings.h"
@@ -2566,7 +2567,11 @@ void te::qt::af::BaseApplication::initMenus()
   m_fileMenu->addAction(m_filePrint);
   m_fileMenu->addSeparator();
   m_fileMenu->addAction(m_fileRestartSystem);
+  
+#if TE_PLATFORM != TE_PLATFORMCODE_APPLE
   m_fileMenu->addSeparator();
+#endif
+  
   m_fileMenu->addAction(m_fileExit);
 
 // Edit menu

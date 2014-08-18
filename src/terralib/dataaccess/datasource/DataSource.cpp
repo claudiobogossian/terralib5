@@ -477,6 +477,12 @@ void te::da::DataSource::add(const std::string& datasetName,
   return t->add(datasetName, d, options, limit);
 }
 
+te::common::CharEncoding te::da::DataSource::getEncoding()
+{
+  std::auto_ptr<DataSourceTransactor> t = getTransactor();
+  return t->getEncoding();
+}
+
 void te::da::DataSource::remove(const std::string& datasetName, const ObjectIdSet* oids)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();

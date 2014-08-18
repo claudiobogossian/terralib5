@@ -25,6 +25,9 @@
 
 // TerraLib
 #include "../../../dataaccess/dataset/DataSetType.h"
+#include "../../../dataaccess/dataset/PrimaryKey.h"
+#include "../../../dataaccess/dataset/Index.h"
+#include "../../../dataaccess/dataset/UniqueKey.h"
 #include "ConstraintsIndexesPropertyDialog.h"
 #include "IndexWidget.h"
 #include "PrimaryKeyConstraintWidget.h"
@@ -93,6 +96,39 @@ void te::qt::widgets::ConstraintsIndexesPropertyDialog::onidxRadioButtonToggled(
   m_indexWidget = new te::qt::widgets::IndexWidget(m_dsType, m_ui->m_widget);
 
   m_widgetLayout->addWidget(m_indexWidget);
+}
+
+void te::qt::widgets::ConstraintsIndexesPropertyDialog::setConstraint(te::da::Constraint* constraint)
+{
+  m_ui->m_okPushButton->setText(tr("Edit"));
+
+  te::da::PrimaryKey* pk = dynamic_cast<te::da::PrimaryKey*>(constraint);
+  te::da::UniqueKey* uk = dynamic_cast<te::da::UniqueKey*>(constraint);
+
+  if(pk)
+  {
+    m_ui->m_pkRadioButton->setChecked(true);
+    m_pkConstraintWidget->setConstraint(pk);
+  }
+  else if(uk)
+  {
+    m_ui->m_ukRadioButton->setChecked(true);
+    m_ukConstraintWidget->setConstraint(uk);
+  }
+
+  m_ui->m_okPushButton->setEnabled(true);
+}
+
+void te::qt::widgets::ConstraintsIndexesPropertyDialog::setIndex(te::da::Index* index)
+{
+  m_ui->m_okPushButton->setText(tr("Edit"));
+
+  m_ui->m_idxRadioButton->setChecked(true);
+  m_ui->m_okPushButton->setEnabled(true);
+  m_indexWidget->setIndex(index);
+
+  m_ui->m_okPushButton->setEnabled(true);
+
 }
 
 void te::qt::widgets::ConstraintsIndexesPropertyDialog::onokPushButtonClicked()

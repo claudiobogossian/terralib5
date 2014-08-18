@@ -107,7 +107,7 @@ te::gm::GeometricTransformation* te::gm::SecondDegreePolynomialGT::clone() const
   te::gm::SecondDegreePolynomialGT* newTransPtr = new SecondDegreePolynomialGT;
   newTransPtr->m_internalParameters = m_internalParameters;
   return newTransPtr;
-};
+}
         
 bool te::gm::SecondDegreePolynomialGT::computeParameters( GTParameters& params ) const
 {
