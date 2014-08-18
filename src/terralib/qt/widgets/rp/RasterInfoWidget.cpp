@@ -35,6 +35,9 @@
 // QT
 #include <QFileDialog>
 
+#include <boost/lexical_cast.hpp>
+
+
 te::qt::widgets::RasterInfoWidget::RasterInfoWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
     m_ui(new Ui::RasterInfoWidgetForm),
@@ -91,6 +94,39 @@ std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo() 
   if(m_ui->m_fileRadioButton->isChecked())
   {
     std::string fileName = m_dir + "/" + name + ".tif";
+
+    rinfo["URI"] = fileName;
+  }
+  else if(m_ui->m_memRadioButton->isChecked())
+  {
+
+  }
+  else if(m_ui->m_dsRadioButton->isChecked())
+  {
+
+  }
+
+  if(m_ui->m_overightRadioButton->isChecked() == false)
+  {
+    //get extra parameters
+    std::map<std::string, std::string> extra = m_table->getMap();
+
+    rinfo.insert(extra.begin(), extra.end());
+  }
+
+  return rinfo;
+}
+
+std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo(int count) const
+{
+  std::map<std::string, std::string> rinfo;
+
+  std::string name = getBaseName();
+
+  if(m_ui->m_fileRadioButton->isChecked())
+  {
+    std::string str = boost::lexical_cast< std::string >( count );
+    std::string fileName = m_dir + "/" + name + "_" + str + ".tif";
 
     rinfo["URI"] = fileName;
   }

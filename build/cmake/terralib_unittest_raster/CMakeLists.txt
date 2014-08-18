@@ -37,6 +37,7 @@ file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/raster/*.h)
 add_executable(terralib_unittest_raster ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 target_link_libraries(terralib_unittest_raster terralib_mod_geometry
+                                               terralib_mod_plugin 
                                                terralib_mod_raster
                                                terralib_mod_memory
                                                ${CPPUNIT_LIBRARY})

@@ -26,7 +26,11 @@
 // TerraLib
 #include "../../../common/StringUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../geometry/Geometry.h"
+#include "../../../geometry/GeometryProperty.h"
+#include "../../../geometry/GeometryCollection.h"
 #include "../../../raster/Grid.h"
 #include "../../../raster/Raster.h"
 #include "RasterNavigatorWidget.h"
@@ -84,7 +88,10 @@ te::qt::widgets::ClippingWizardPage::ClippingWizardPage(QWidget* parent)
 
 //connects
   connect(m_ui->m_strategyTypeComboBox, SIGNAL(activated(int)), this, SLOT(onStrategyTypeComboBoxActivated(int)));
+  connect(m_ui->m_strategyTypeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onStrategyTypeComboBoxChanged(int)));
   connect(m_ui->m_layerComboBox, SIGNAL(activated(int)), this, SLOT(onLayerComboBoxActivated(int)));
+  connect(m_ui->m_layerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLayerComboBoxChanged(int)));
+  
 
   connect(m_ui->m_llxLineEdit, SIGNAL(editingFinished()), this, SIGNAL(completeChanged()));
   connect(m_ui->m_llyLineEdit, SIGNAL(editingFinished()), this, SIGNAL(completeChanged()));
@@ -130,6 +137,9 @@ bool te::qt::widgets::ClippingWizardPage::isComplete() const
   }
   else if(type == CLIPPING_LAYER)
   {
+    if(m_ui->m_layerComboBox->currentText().isEmpty())
+      return false;
+
     return true;
   }
 
@@ -196,6 +206,18 @@ bool te::qt::widgets::ClippingWizardPage::isLayerClipping()
   return type == CLIPPING_LAYER;
 }
 
+bool te::qt::widgets::ClippingWizardPage::isSingleRasterResult()
+{
+  if(m_ui->m_aggregAllRadioButton->isChecked())
+    return true;
+  if(m_ui->m_groupByRadioButton->isChecked())
+    return false;
+  if(m_ui->m_selectedGeomRadioButton->isChecked())
+    return true;
+
+  return true;
+}
+
 void te::qt::widgets::ClippingWizardPage::getExtentClipping(te::gm::Envelope& env)
 {
   env.m_llx = m_ui->m_llxLineEdit->text().toDouble();
@@ -212,9 +234,137 @@ void te::qt::widgets::ClippingWizardPage::getDimensionClipping(int& x, int& y, i
   height = m_ui->m_heightLineEdit->text().toInt();
 }
 
+void te::qt::widgets::ClippingWizardPage::getLayerClipping(te::gm::GeometryCollection*& geomColl)
+{
+  //get layer
+  int index = m_ui->m_layerComboBox->currentIndex();
+  QVariant varLayer = m_ui->m_layerComboBox->itemData(index, Qt::UserRole);
+  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+
+  //get geometry property data
+  std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dsType.get());
+  std::string name = geomProp->getName();
+
+  geomColl = new te::gm::GeometryCollection(0, geomProp->getGeometryType(), geomProp->getSRID());
+
+  if(m_ui->m_aggregAllRadioButton->isChecked())
+  {
+    std::auto_ptr<te::da::DataSet> ds = layer->getData();
+    ds->moveBeforeFirst();
+    
+    while(ds->moveNext())
+    {
+      geomColl->add(static_cast<te::gm::Geometry*>(ds->getGeometry(name)->clone()));
+    }
+  }
+  if(m_ui->m_selectedGeomRadioButton->isChecked())
+  {
+    const te::da::ObjectIdSet* oidSet = layer->getSelected();
+    if(!oidSet)
+    {
+      QMessageBox::information(this, "Clipping", "Select the layer objects to perform the clipping operation.");
+      return;
+    }
+    
+    std::auto_ptr<te::da::DataSet> ds = layer->getData(oidSet);
+    ds->moveBeforeFirst();
+    while(ds->moveNext())
+    {
+      geomColl->add(static_cast<te::gm::Geometry*>(ds->getGeometry(name)->clone()));
+    }
+  }
+  if(m_ui->m_groupByRadioButton->isChecked())
+  {
+    std::string propName = m_ui->m_layerAttrComboBox->currentText().toStdString();
+
+    std::map<std::string, std::vector<te::gm::Geometry*> > groups;
+    std::map<std::string, std::vector<te::gm::Geometry*> >::iterator itg;
+
+    std::auto_ptr<te::da::DataSet> ds = layer->getData();
+
+    ds->moveBeforeFirst();
+    while(ds->moveNext())
+    {
+      std::string value = ds->getAsString(propName);
+
+      itg = groups.find(value);
+      if (itg==groups.end())
+      {
+        std::vector<te::gm::Geometry*> geomVec;
+        geomVec.push_back(static_cast<te::gm::Geometry*>(ds->getGeometry(name)->clone()));
+        groups.insert(std::pair<std::string, std::vector<te::gm::Geometry*> >(value,geomVec));
+      }
+      else
+        itg->second.push_back(static_cast<te::gm::Geometry*>(ds->getGeometry(name)->clone()));
+    }
+
+    itg = groups.begin();
+    while(itg != groups.end())
+    {
+      te::gm::Geometry* resultGeometry(0);
+      std::vector<te::gm::Geometry*> aggregVec = itg->second;
+      if(aggregVec.size() < 2)
+        geomColl->add(aggregVec[0]);
+      if(aggregVec.size() == 2)
+      {
+        resultGeometry = aggregVec[0]->Union(aggregVec[1]);
+        geomColl->add(resultGeometry);
+      }
+      if(aggregVec.size() > 2)
+      {
+        te::gm::GeometryCollection* geomCollTemp = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, aggregVec[0]->getSRID());
+
+        for(std::size_t i = 1; i < aggregVec.size(); ++i)
+        {
+          std::auto_ptr<te::gm::Geometry> currentGeom(aggregVec[i]);
+
+          if(currentGeom->isValid())
+            geomCollTemp->add(currentGeom.release());
+        }
+
+        resultGeometry = aggregVec[0]->Union(geomCollTemp);
+        geomColl->add(resultGeometry);
+
+      }
+      ++itg;
+    }
+
+  }
+}
+
 void te::qt::widgets::ClippingWizardPage::onStrategyTypeComboBoxActivated(int index)
 {
   emit completeChanged();
+}
+
+void te::qt::widgets::ClippingWizardPage::onStrategyTypeComboBoxChanged(int index)
+{
+  switch(index)
+  {
+    case 0:
+      {
+        m_navigator->removeVectorial();
+        break;
+      }
+    case 1:
+      {
+        m_navigator->removeVectorial();
+        break;
+      }
+    case 2:
+      {
+        if(m_ui->m_layerComboBox->count() > 0)
+        {
+          QVariant varLayer = m_ui->m_layerComboBox->itemData(0, Qt::UserRole);
+          te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
+
+          if(l->isValid())
+            m_navigator->setVectorial(l);
+        }
+        break;
+      }
+  }
 }
 
 void te::qt::widgets::ClippingWizardPage::onLayerComboBoxActivated(int index)
@@ -223,12 +373,24 @@ void te::qt::widgets::ClippingWizardPage::onLayerComboBoxActivated(int index)
 
   QVariant varLayer = m_ui->m_layerComboBox->itemData(index, Qt::UserRole);
   te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
-
+  
   std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
 
   for(std::size_t t = 0; t < dsType->getProperties().size(); ++t)
   {
     m_ui->m_layerAttrComboBox->addItem(dsType->getProperties()[t]->getName().c_str());
+  }
+}
+
+void te::qt::widgets::ClippingWizardPage::onLayerComboBoxChanged(int index)
+{
+  if((m_ui->m_strategyTypeComboBox->currentText() == "Layer") && m_ui->m_layerComboBox->count() > 0)
+  {
+    QVariant varLayer = m_ui->m_layerComboBox->itemData(index, Qt::UserRole);
+    te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
+
+    if(l->isValid())
+      m_navigator->setVectorial(l);
   }
 }
 
@@ -281,5 +443,5 @@ void te::qt::widgets::ClippingWizardPage::fillClippingTypes()
 
   m_ui->m_strategyTypeComboBox->addItem(tr("Extent"), CLIPPING_EXTENT);
   m_ui->m_strategyTypeComboBox->addItem(tr("Dimension"), CLIPPING_DIMENSION);
-  //m_ui->m_strategyTypeComboBox->addItem(tr("Layer"), CLIPPING_LAYER);
+  m_ui->m_strategyTypeComboBox->addItem(tr("Layer"), CLIPPING_LAYER);
 }

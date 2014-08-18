@@ -27,6 +27,8 @@
 #define __TERRALIB_SA_INTERNAL_UTILS_H
 
 // TerraLib
+#include "../../maptools/AbstractLayer.h"
+#include "../../srs/Config.h"
 #include "../Config.h"
 
 // STL
@@ -47,16 +49,31 @@ namespace te
     /*!
       \brief Function used to set a an attribute valeu from a dataset to the vertex objects from a gpm.
 
+      \param gpm  Pointer to gpm that has the graph information.
       \param ds DataSource pointer that has the dataset information.
       \param dataSetName  Dataset name to get the attribute information.
       \param attrLink Attribute name used to link the vertex id to dataset.
       \param attr Attribute name that will be associated to the graph.
       \param dataType The type of the attribute that will be associated.
-      \param gpm  Pointer to gpm that has the graph information.
+      \param srid If the new attribute was a geometry type
       
       \return Return the vertex attribute index.
     */
-    TESAEXPORT int AssociateGPMVertexAttribute(te::da::DataSource* ds, std::string dataSetName, std::string attrLink, std::string attr, int dataType, te::sa::GeneralizedProximityMatrix* gpm);
+    TESAEXPORT int AssociateGPMVertexAttribute(te::sa::GeneralizedProximityMatrix* gpm, te::da::DataSource* ds, std::string dataSetName, std::string attrLink, std::string attr, int dataType, int srid = TE_UNKNOWN_SRS, int subType = te::gm::UnknownGeometryType);
+
+    /*!
+      \brief Function used to set a an attribute valeu from a dataset to the vertex objects from a gpm.
+
+      \param gpm  Pointer to gpm that has the graph information.
+      \param ds DataSet pointer
+      \param attrLink Attribute name used to link the vertex id to dataset.
+      \param attr Attribute name that will be associated to the graph.
+      \param dataType The type of the attribute that will be associated.
+      \param srid If the new attribute was a geometry type
+      
+      \return Return the vertex attribute index.
+    */
+    TESAEXPORT int AssociateGPMVertexAttribute(te::sa::GeneralizedProximityMatrix* gpm, te::da::DataSet* ds, std::string attrLink, std::string attr, int dataType, int srid = TE_UNKNOWN_SRS, int subType = te::gm::UnknownGeometryType);
 
     /*!
       \brief Function used to create the vertex attribute metadata in the graph of the gpm.
@@ -64,10 +81,11 @@ namespace te
       \param graph  Pointer to the graph associated to the gpm.
       \param attrName Attribute name that will be created.
       \param dataType The data type of the new attribute.
+      \param srid If the new attribute was a geometry type
       
       \return Return the vertex attribute index.
     */
-    TESAEXPORT int AddGraphVertexAttribute(te::graph::AbstractGraph* graph, std::string attrName, int dataType);
+    TESAEXPORT int AddGraphVertexAttribute(te::graph::AbstractGraph* graph, std::string attrName, int dataType, int srid = TE_UNKNOWN_SRS, int subType = te::gm::UnknownGeometryType);
 
     /*!
       \brief Function used to create the edge attribute metadata in the graph of the gpm.
@@ -110,6 +128,40 @@ namespace te
       \return Return a double value if its possible.
     */
     TESAEXPORT double GetDataValue(te::dt::AbstractData* ad);
+
+    /*!
+      \brief Function used to calculate the distance from a coord to the center of a geometry
+
+      \param geom  Pointer to a geometry
+      \param coord  Reference to a coord
+      
+      \return Return a double value with distance information
+      
+      \note It's only possible if the geom has a centroid.
+    */
+    TESAEXPORT double CalculateDistance(te::gm::Geometry* geom, te::gm::Coord2D& coord);
+
+    /*!
+      \brief Function used to get centroid coord of a geometry
+
+      \param geom  Pointer to a geometry
+      
+      \return Return a coord with centroid information
+      
+      \note It's only possible if the geom has a centroid.
+    */
+    TESAEXPORT te::gm::Coord2D GetCentroidCoord(te::gm::Geometry* geom);
+
+    /*!
+      \brief Function used to get area of a geometry
+
+      \param geom  Pointer to a geometry
+      
+      \return Return a double value with area information
+      
+      \note It's only possible if the geom has a area
+    */
+    TESAEXPORT double GetArea(te::gm::Geometry* geom);
 
   } // end namespace sa
 }   // end namespace te

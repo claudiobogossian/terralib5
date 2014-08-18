@@ -90,6 +90,17 @@ namespace te
     */
     TEGEOMEXPORT bool SatisfySpatialRelation(const Geometry* g1, const Geometry* g2, SpatialRelation relation);
 
+    /*!
+      \brief  Finds the correspondent smallest box that allows a box to be cut in blocks of a given size
+     
+      \param env     Reference envelope
+      \param bWidth  Block width
+      \param bHeight Block height
+      
+      \return It returns a adjusted envelope
+    */
+    TEGEOMEXPORT Envelope AdjustToCut(const Envelope & env, double bWidth, double bHeight);
+
   } // end namespace gm
 }   // end namespace te
 

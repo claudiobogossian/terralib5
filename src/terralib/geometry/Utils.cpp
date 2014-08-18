@@ -90,3 +90,49 @@ bool te::gm::SatisfySpatialRelation(const Geometry* g1,
       throw Exception(TE_TR("Invalid spatial relation!"));
   }
 }
+
+te::gm::Envelope te::gm::AdjustToCut(const Envelope & env, double bWidth, double bHeight)
+{
+  double auxD;
+  int auxI;
+
+  int magicX; 
+  auxD = env.m_llx/bWidth;
+  auxI = (int)(env.m_llx/bWidth);
+  if (env.m_llx < 0 && (auxD - auxI) != 0)
+    magicX = (int) (env.m_llx/bWidth - 1);
+  else
+    magicX = auxI;
+
+  int magicY;
+  auxD = env.m_lly/bHeight;
+  auxI = (int)(env.m_lly/bHeight);
+  if (env.m_lly < 0 && (auxD - auxI) != 0)
+    magicY  = (int)(env.m_lly/bHeight - 1);
+  else
+    magicY  = auxI;
+
+  double xi = magicX*bWidth;
+  double yi = magicY*bHeight;
+
+  int magicX2;
+  auxD = env.m_urx/bWidth;
+  auxI = (int)(env.m_urx/bWidth);
+  if ((env.m_urx < 0) || (auxD - auxI) == 0)
+    magicX2 = (int) (env.m_urx/bWidth);
+  else
+    magicX2 = (int) (env.m_urx/bWidth + 1);
+
+  int magicY2;
+  auxD = env.m_ury/bHeight;
+  auxI = (int)(env.m_ury/bHeight);
+  if ((env.m_ury < 0) || (auxD - auxI) == 0)
+    magicY2 = (int) (env.m_ury/bHeight);
+  else
+    magicY2 = (int) (env.m_ury/bHeight + 1);
+
+  double xf = (magicX2)*bWidth;
+  double yf = (magicY2)*bHeight;
+
+  return te::gm::Envelope(xi,yi,xf,yf);
+}

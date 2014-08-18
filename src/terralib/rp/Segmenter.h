@@ -199,8 +199,8 @@ namespace te
         class SegmenterThreadEntryParams
         {
           public :
-            //! A pointer to the global segmenter input execution parameters (default:0).
-            Segmenter::InputParameters const* m_inputParametersPtr;
+            //! The global segmenter input execution parameters.
+            Segmenter::InputParameters m_inputParameters;
             
             //! A pointer to the global segmenter input execution parameters (default:0).
             Segmenter::OutputParameters* m_outputParametersPtr;

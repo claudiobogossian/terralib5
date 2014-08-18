@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "../Config.h"
+#include "KernelFunctions.h"
 
 // STL
 #include <string>
@@ -50,6 +51,15 @@ namespace te
       \return Return the sum value.
     */
     TESAEXPORT double Sum(te::sa::GeneralizedProximityMatrix* gpm, int attrIdx);
+
+    /*!
+      \brief Function used to calculate sum of the intensity value from a kernel map
+
+      \param kMap  Referente to a kernel map.
+      
+      \return Return the sum value.
+    */
+    TESAEXPORT double Sum(te::sa::KernelMap& kMap);
 
     /*!
       \brief Function used to calculate mean (first moment)  of a specific attribute from a gpm

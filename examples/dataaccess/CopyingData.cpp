@@ -43,7 +43,7 @@ void CopyingData()
   pgisInfo["PG_DB_NAME"] = "terralib4";
   pgisInfo["PG_CONNECT_TIMEOUT"] = "4";
   pgisInfo["PG_CONNECT_TIMEOUT"] = "4";
-  pgisInfo["PG_CLIENT_ENCODING"] = "WIN1252";
+  pgisInfo["PG_CLIENT_ENCODING"] = "CP1252";  //WIN1252 is not accept any more - sm_
 
   std::auto_ptr<te::da::DataSource> dsDestination = te::da::DataSourceFactory::make("POSTGIS");
   dsDestination->setConnectionInfo(pgisInfo);
@@ -54,18 +54,22 @@ void CopyingData()
 
 // create and save datasettype in the datasource destination
   te::da::DataSetType* newDataSet = static_cast<te::da::DataSetType*>(dtOrigin->clone());
-  newDataSet->setName("public.new_tab_munic_2001_from_shp");
+  newDataSet->setName("public.munic_2001_from_shp_to_pgis");
   GetFirstGeomProperty(newDataSet)->setSRID(4326);
   GetFirstGeomProperty(newDataSet)->setGeometryType(te::gm::GeometryType);
 
   std::cout << std::endl << "starting copy..." << std::endl;
   std::map<std::string, std::string> options;
-
+  if (tDestination->dataSetExists("public.munic_2001_from_shp_to_pgis"))
+  {
+	tDestination->dropDataSet("public.munic_2001_from_shp_to_pgis");
+    //throw te::common::Exception("The table public.munic_2001_from_shp_to_pgis already exists!");
+  }
   tDestination->begin();
   tDestination->createDataSet(newDataSet,options);
   tDestination->add(newDataSet->getName(), datasetOrigin.get(),options);
   tDestination->commit();
-  std::cout << std::endl << "C opy finished..." << std::endl;
+  std::cout << std::endl << "Copy finished..." << std::endl;
   }
   catch(const std::exception& e)
   {

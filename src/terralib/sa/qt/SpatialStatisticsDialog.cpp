@@ -29,8 +29,13 @@
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/utils/Utils.h"
+#include "../../geometry/GeometryProperty.h"
 #include "../../maptools/DataSetLayer.h"
+#include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../core/GPMBuilder.h"
 #include "../core/GPMConstructorAdjacencyStrategy.h"
 #include "../core/GPMWeightsNoWeightsStrategy.h"
@@ -51,6 +56,12 @@
 // STL
 #include <memory>
 
+// Boost
+#include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
 te::sa::SpatialStatisticsDialog::SpatialStatisticsDialog(QWidget* parent, Qt::WindowFlags f)
@@ -63,11 +74,14 @@ te::sa::SpatialStatisticsDialog::SpatialStatisticsDialog(QWidget* parent, Qt::Wi
 // add icons
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("sa-spatialstatistics-hint").pixmap(112,48));
   m_ui->m_gpmToolButton->setIcon(QIcon::fromTheme("folder-open"));
+  m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
 // connectors
   connect(m_ui->m_inputLayerComboBox, SIGNAL(activated(int)), this, SLOT(onInputLayerComboBoxActivated(int)));
   connect(m_ui->m_gpmToolButton, SIGNAL(clicked()), this, SLOT(onGPMToolButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
+  connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
+  connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
 
 // help info
   m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
@@ -111,6 +125,9 @@ void te::sa::SpatialStatisticsDialog::onInputLayerComboBoxActivated(int index)
 
   std::vector<te::dt::Property*> propVec = dsType->getProperties();
 
+  m_ui->m_attrIdComboBox->clear();
+  m_ui->m_attrLinkComboBox->clear();
+
   for(std::size_t t = 0; t < propVec.size(); ++t)
   {
     int dataType = propVec[t]->getType();
@@ -122,6 +139,8 @@ void te::sa::SpatialStatisticsDialog::onInputLayerComboBoxActivated(int index)
     {
       m_ui->m_attrIdComboBox->addItem(propVec[t]->getName().c_str(), dataType);
     }
+
+    m_ui->m_attrLinkComboBox->addItem(propVec[t]->getName().c_str(), dataType);
   }
 }
 
@@ -155,6 +174,19 @@ void te::sa::SpatialStatisticsDialog::onGPMToolButtonClicked()
 
 void te::sa::SpatialStatisticsDialog::onOkPushButtonClicked()
 {
+  // check input parameters
+  if(m_ui->m_repositoryLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, tr("Warning"), tr("Define a repository for the result."));
+    return;
+  }
+       
+  if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, tr("Warning"), tr("Define a name for the resulting layer."));
+    return;
+  }
+
   //get GPM
   std::auto_ptr<te::sa::GeneralizedProximityMatrix> gpm;
 
@@ -176,18 +208,16 @@ void te::sa::SpatialStatisticsDialog::onOkPushButtonClicked()
   //get necessary info to calculate statistics
   te::da::DataSourcePtr ds = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
 
-  std::auto_ptr<te::da::DataSet> dataSet = l->getData();
-
   std::auto_ptr<te::da::DataSetType> dataSetType = l->getSchema();
 
-  std::string attrLink = dataSetType->getPrimaryKey()->getName();
+  std::string attrLink = m_ui->m_attrLinkComboBox->currentText().toStdString();
 
   std::string attrName = m_ui->m_attrIdComboBox->currentText().toStdString();
 
   int type = m_ui->m_attrIdComboBox->itemData(m_ui->m_attrIdComboBox->currentIndex()).toInt();
 
   //associate the selected attribute to the GPM
-  int attrIdx = te::sa::AssociateGPMVertexAttribute(ds.get(), dsLayer->getDataSetName(), attrLink, attrName, type, gpm.get());
+  int attrIdx = te::sa::AssociateGPMVertexAttribute(gpm.get(), ds.get(), dsLayer->getDataSetName(), attrLink, attrName, type);
 
   //G Statistics
   if(m_ui->m_localGStatisticsCheckBox->isChecked())
@@ -275,7 +305,57 @@ void te::sa::SpatialStatisticsDialog::onOkPushButtonClicked()
     }
   }
 
-  //update input dataset with spatial statistics calculated
+  //save spatial statistics calculated into a new dataset
+  std::string dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+
+  std::size_t idx = dataSetName.find(".");
+  if (idx != std::string::npos)
+        dataSetName=dataSetName.substr(0,idx);
+
+  te::da::DataSourcePtr outputDataSource;
+
+  if(m_toFile)
+  {
+    //create new data source
+    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+
+    std::map<std::string, std::string> dsInfo;
+    dsInfo["URI"] = uri.string();
+
+    boost::uuids::basic_random_generator<boost::mt19937> gen;
+    boost::uuids::uuid u = gen();
+    std::string id_ds = boost::uuids::to_string(u);
+
+    te::da::DataSourceInfoPtr dsInfoPtr(new te::da::DataSourceInfo);
+    dsInfoPtr->setConnInfo(dsInfo);
+    dsInfoPtr->setTitle(uri.stem().string());
+    dsInfoPtr->setAccessDriver("OGR");
+    dsInfoPtr->setType("OGR");
+    dsInfoPtr->setDescription(uri.string());
+    dsInfoPtr->setId(id_ds);
+
+    te::da::DataSourceInfoManager::getInstance().add(dsInfoPtr);
+
+    outputDataSource = te::da::DataSourceManager::getInstance().get(id_ds, "OGR", dsInfoPtr->getConnInfo());
+  }
+  else
+  {
+    outputDataSource = te::da::GetDataSource(m_outputDatasource->getId());
+  }
+
+  //associate the input geometry attribute to the GPM
+  te::gm::GeometryProperty* gmProp = te::da::GetFirstGeomProperty(dataSetType.get());
+  int geomIdx = te::sa::AssociateGPMVertexAttribute(gpm.get(), ds.get(), dsLayer->getDataSetName(), attrLink, gmProp->getName(), gmProp->getType(), gmProp->getSRID(), gmProp->getGeometryType());
+
+  try
+  {
+    gpm->toDataSource(outputDataSource, dataSetName);
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Error saving GPM into data source."));
+    return;
+  }
 
   accept();
 }
@@ -343,4 +423,47 @@ std::auto_ptr<te::sa::GeneralizedProximityMatrix> te::sa::SpatialStatisticsDialo
   }
 
   return gpm;
+}
+
+void te::sa::SpatialStatisticsDialog::onTargetDatasourceToolButtonPressed()
+{
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_newLayerNameLineEdit->setEnabled(true);
+
+  te::qt::widgets::DataSourceSelectorDialog dlg(this);
+  dlg.exec();
+
+  std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
+
+  if(dsPtrList.size() <= 0)
+    return;
+
+  std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
+
+  m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
+
+  m_outputDatasource = *it;
+  
+  m_toFile = false;
+}
+
+void te::sa::SpatialStatisticsDialog::onTargetFileToolButtonPressed()
+{
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_repositoryLineEdit->clear();
+  
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."), QString(), tr("Shapefile (*.shp *.SHP);;"),0, QFileDialog::DontConfirmOverwrite);
+  
+  if (fileName.isEmpty())
+    return;
+  
+  boost::filesystem::path outfile(fileName.toStdString());
+
+  m_ui->m_repositoryLineEdit->setText(outfile.string().c_str());
+
+  m_ui->m_newLayerNameLineEdit->setText(outfile.leaf().string().c_str());
+
+  m_ui->m_newLayerNameLineEdit->setEnabled(false);
+  
+  m_toFile = true;
 }

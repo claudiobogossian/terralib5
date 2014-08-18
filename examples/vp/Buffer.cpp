@@ -140,22 +140,14 @@ bool BufferOGRToPGIS()
   int levels = 1;
 
   std::map<std::string, std::string> connInfo;
-  //connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
-  //connInfo["PG_PORT"] = "5433" ;
-  //connInfo["PG_USER"] = "postgres";
-  //connInfo["PG_PASSWORD"] = "postgres";
-  //connInfo["PG_DB_NAME"] = "testPostGIS";
-  //connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  //connInfo["PG_CLIENT_ENCODING"] = "WIN1252";
-
-  connInfo["PG_HOST"] = "localhost" ; 
-  connInfo["PG_PORT"] = "5432" ;
+  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
+  connInfo["PG_PORT"] = "5433" ;
   connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "root";
+  connInfo["PG_PASSWORD"] = "postgres";
   connInfo["PG_DB_NAME"] = "testPostGIS";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  connInfo["PG_CLIENT_ENCODING"] = "WIN1252";
-  
+  connInfo["PG_CLIENT_ENCODING"] = "CP1252";
+
   //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("POSTGIS");
   te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("POSTGIS"));
   trgDs->setConnectionInfo(connInfo);
@@ -196,13 +188,13 @@ bool BufferOGRToPGIS()
 bool BufferPGISToPGIS()
 {
   std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "localhost" ; 
-  connInfo["PG_PORT"] = "5432" ;
+  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
+  connInfo["PG_PORT"] = "5433" ;
   connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "root";
+  connInfo["PG_PASSWORD"] = "postgres";
   connInfo["PG_DB_NAME"] = "testPostGIS";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  connInfo["PG_CLIENT_ENCODING"] = "WIN1252"; 
+  connInfo["PG_CLIENT_ENCODING"] = "CP1252"; 
 
   //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
   te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("POSTGIS"));
@@ -273,20 +265,20 @@ bool BufferPGISToPGIS()
 bool BufferPGISToOGR()
 {
   std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "localhost" ; 
-  connInfo["PG_PORT"] = "5432" ;
+  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
+  connInfo["PG_PORT"] = "5433" ;
   connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "root";
-  connInfo["PG_DB_NAME"] = "testPostGIS";
+  connInfo["PG_PASSWORD"] = "postgres";
+  connInfo["PG_DB_NAME"] = "terralib4";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  connInfo["PG_CLIENT_ENCODING"] = "WIN1252";
+  connInfo["PG_CLIENT_ENCODING"] = "CP1252";
 
   //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
   te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("POSTGIS"));
   srcDs->setConnectionInfo(connInfo);
   srcDs->open();
   
-  std::string inDsetName = "sp_meso";
+  std::string inDsetName = "distritos";
   if (!srcDs->dataSetExists(inDsetName))
   {
     std::cout << "Input dataset not found: " << inDsetName << std::endl;
@@ -312,7 +304,7 @@ bool BufferPGISToOGR()
   
   std::string data_dir = TERRALIB_DATA_DIR;
   
-  std::string uriResult(data_dir + "/shp/Buffer/bufferPGISToOGR.shp");
+  std::string uriResult(data_dir + "/shp/Buffer/bufferPGISToOGR_distritos.shp");
 
   std::map<std::string, std::string> tgrInfo;
   tgrInfo["URI"] = uriResult;
@@ -323,12 +315,13 @@ bool BufferPGISToOGR()
   trgDs->setConnectionInfo(tgrInfo);
   trgDs->open();
 
-  std::string outDSet = "bufferPGISToOGR";
+  std::string outDSet = "bufferPGISToOGR_distritos";
 
   if (trgDs->dataSetExists(outDSet))
   {
-    std::cout << "A dataset with the same requested output dataset name already exists: " << outDSet << std::endl;
-    return false;
+    std::cout << "A dataset with the same requested output dataset name already exists and will be removed: " << outDSet << std::endl;
+    trgDs->dropDataSet(outDSet);
+	//return true;
   }
   
   // sera feito por algum tipo de factory

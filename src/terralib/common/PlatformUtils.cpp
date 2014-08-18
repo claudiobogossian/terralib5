@@ -279,15 +279,7 @@ std::string te::common::FindInTerraLibPath(const std::string& p)
   if(boost::filesystem::exists(eval_path))
     return eval_path.string();
 
-// 2nd: look into the codebase path
-  tl_path = TERRALIB_CODEBASE_PATH;
-  
-  eval_path = tl_path / p;
-  
-  if(boost::filesystem::exists(eval_path))
-    return eval_path.string();
-  
-// 3rd: look for an environment variable defined by macro TERRALIB_DIR_VAR_NAME
+// 2rd: look for an environment variable defined by macro TERRALIB_DIR_VAR_NAME
   const char* te_env = getenv(TERRALIB_DIR_VAR_NAME);
   
   if(te_env != 0)
@@ -300,13 +292,22 @@ std::string te::common::FindInTerraLibPath(const std::string& p)
       return eval_path.string();
   }
   
-// 4th: look into install prefix-path
+// 3th: look into install prefix-path
   tl_path = TERRALIB_INSTALL_PREFIX_PATH;
   
   eval_path = tl_path / p;
   
   if(boost::filesystem::exists(eval_path))
     return eval_path.string();
+
+// 4nd: look into the codebase path
+  tl_path = TERRALIB_CODEBASE_PATH;
+  
+  eval_path = tl_path / p;
+  
+  if(boost::filesystem::exists(eval_path))
+    return eval_path.string();
+  
 
   return "";
 }

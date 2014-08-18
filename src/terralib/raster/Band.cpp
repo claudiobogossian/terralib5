@@ -90,11 +90,15 @@ std::complex<double> te::rst::Band::getMinValue(unsigned int rs, unsigned int cs
 
   double min_img = std::numeric_limits<double>::max();
   double min_real = std::numeric_limits<double>::max();
+  double no_data = getProperty()->m_noDataValue;
 
   for (unsigned r = rs; r <= rf; r++)
     for (unsigned c = cs; c <= cf; c++)
     {
       getValue(c, r, pixel);
+
+      if(pixel.real() == no_data)
+        continue;
 
       if (pixel.real() < min_real)
         min_real = pixel.real();
@@ -119,11 +123,15 @@ std::complex<double> te::rst::Band::getMaxValue(unsigned int rs, unsigned int cs
 
   double max_img = -1.0 * std::numeric_limits<double>::max();
   double max_real = -1.0 * std::numeric_limits<double>::max();
+  double no_data = getProperty()->m_noDataValue;
 
   for (unsigned r = rs; r <= rf; r++)
     for (unsigned c = cs; c <= cf; c++)
     {
       getValue(c, r, pixel);
+
+      if(pixel.real() == no_data)
+        continue;
 
       if (pixel.real() > max_real)
         max_real = pixel.real();

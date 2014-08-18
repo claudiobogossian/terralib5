@@ -126,11 +126,37 @@ te::gm::LineString& te::gm::LineString::operator=(const LineString& rhs)
 
     makeEmpty();
 
-    m_coords = rhs.m_coords ? static_cast<Coord2D*>(malloc(16 * rhs.m_nPts)) : 0;
+    if( rhs.m_coords )
+    {
+      m_coords = static_cast<Coord2D*>(malloc(sizeof( Coord2D ) * rhs.m_nPts));
+      memcpy( m_coords, rhs.m_coords, sizeof( Coord2D ) * rhs.m_nPts );
+    }
+    else
+    {
+      m_coords = 0;
+    }
 
-    m_zA = rhs.m_zA ? static_cast<double*>(malloc(8 * rhs.m_nPts)) : 0;
+    if( rhs.m_zA )
+    {
+      m_zA = static_cast<double*>(malloc(sizeof( double ) * rhs.m_nPts));
+      memcpy( m_zA, rhs.m_zA, sizeof( double ) * rhs.m_nPts );
+    }
+    else
+    {
+      m_zA = 0;
+    }
 
-    m_mA = rhs.m_mA ? static_cast<double*>(malloc(8 * rhs.m_nPts)) : 0;
+    if( rhs.m_mA )
+    {
+      m_mA = static_cast<double*>(malloc(sizeof( double ) * rhs.m_nPts));
+      memcpy( m_mA, rhs.m_mA, sizeof( double ) * rhs.m_nPts);
+    }
+    else
+    {
+      m_mA = 0;
+    }
+    
+    m_nPts = rhs.m_nPts;
   }
 
   return *this;

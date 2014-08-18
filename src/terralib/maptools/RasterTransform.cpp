@@ -519,7 +519,10 @@ te::color::RGBAColor te::map::RasterTransform::getCategorize(double icol, double
 
   m_rasterIn->getValue((int)icol, (int)ilin, val, m_monoBand);
 
-  return getCategorizedColor(val);
+  if(checkNoValue(val, m_monoBand) == false)
+    return getCategorizedColor(val);
+
+  return te::color::RGBAColor();
 }
 
 void te::map::RasterTransform::setInterpolate(double icol, double ilin, double ocol, double olin)
@@ -544,7 +547,10 @@ te::color::RGBAColor te::map::RasterTransform::getInterpolate(double icol, doubl
 
   m_rasterIn->getValue((int)icol, (int)ilin, val, m_monoBand);
 
-  return getInterpolatedColor(val);
+  if(checkNoValue(val, m_monoBand) == false)
+    return getInterpolatedColor(val);
+
+  return te::color::RGBAColor();
 }
 
 void te::map::RasterTransform::setBand2Band(double icol, double ilin, double ocol, double olin)

@@ -68,6 +68,22 @@ double te::sa::Sum(te::sa::GeneralizedProximityMatrix* gpm, int attrIdx)
   return sum;
 }
 
+double te::sa::Sum(te::sa::KernelMap& kMap)
+{
+  double sum = 0.;
+
+  te::sa::KernelMap::iterator it = kMap.begin();
+
+  while(it != kMap.end())
+  {
+    sum += it->second.second;
+
+    ++it;
+  }
+
+  return sum;
+}
+
 double te::sa::FirstMoment(te::sa::GeneralizedProximityMatrix* gpm, int attrIdx)
 {
   assert(gpm);

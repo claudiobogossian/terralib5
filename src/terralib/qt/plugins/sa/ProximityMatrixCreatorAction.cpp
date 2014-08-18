@@ -31,7 +31,7 @@
 te::qt::plugins::sa::ProximityMatrixCreatorAction::ProximityMatrixCreatorAction(QMenu *menu) :
   AbstractAction(menu)
 {
-  createAction(tr("Proximity Matrix Creator...").toStdString(), "");
+  createAction(tr("Proximity Matrix Creator...").toStdString(), "sa-proxmatrixcreator-icon");
 }
 
 te::qt::plugins::sa::ProximityMatrixCreatorAction::~ProximityMatrixCreatorAction()

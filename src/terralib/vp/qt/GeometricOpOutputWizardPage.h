@@ -116,6 +116,7 @@ namespace te
         std::string m_dsName;
         bool m_toFile;
         std::string m_attribute;
+        std::string m_path;
 
     };
 

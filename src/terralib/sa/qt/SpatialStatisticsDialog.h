@@ -27,6 +27,7 @@
 #define __TERRALIB_SA_INTERNAL_SPATIALSTATISTICSDIALOG_H
 
 // TerraLib
+#include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../core/GeneralizedProximityMatrix.h"
 #include "../Config.h"
@@ -71,6 +72,10 @@ namespace te
 
         void onOkPushButtonClicked();
 
+        void onTargetDatasourceToolButtonPressed();
+
+        void onTargetFileToolButtonPressed();
+
       protected:
 
         std::auto_ptr<te::sa::GeneralizedProximityMatrix> loadGPM();
@@ -78,6 +83,10 @@ namespace te
       private:
 
         std::auto_ptr<Ui::SpatialStatisticsDialogForm> m_ui;
+
+        te::da::DataSourceInfoPtr m_outputDatasource;
+
+        bool m_toFile;
     };
   }   // end namespace sa
 }     // end namespace te

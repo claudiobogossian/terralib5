@@ -98,6 +98,8 @@
 
 #cmakedefine TERRALIB_MOD_RP_ENABLED
 
+#cmakedefine TERRALIB_MOD_SAM_ENABLED
+
 #cmakedefine TERRALIB_MOD_SRS_ENABLED
 
 #cmakedefine TERRALIB_MOD_ST_ENABLED
@@ -186,12 +188,7 @@
 #cmakedefine TERRALIB_LOGGER_ENABLED
 #endif
 
-#if defined(TERRALIB_AUTOMATIC_INITIALIZATION) && defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
-#cmakedefine TERRALIB_LOGGER_DO_AUTOMATIC_INITIALIZATION
-#endif
-
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
-#cmakedefine TERRALIB_LOGGER_DO_STATIC_INITIALIZATION
 /*
    Note: If future versions need to control these variables during build time
          add these variables in TerraLib's CMake script.

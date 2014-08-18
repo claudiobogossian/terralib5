@@ -178,6 +178,11 @@ te::qt::widgets::DatapPropertiesWidget::~DatapPropertiesWidget()
   m_typeMap.clear();
 }
 
+Ui::DataPropertiesWidgetForm* te::qt::widgets::DatapPropertiesWidget::getForm() const
+{
+  return m_ui.get();
+}
+
 std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidget::getConverter()
 {
   //Searching for properties that the user selected to adapt
@@ -424,6 +429,7 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
         m_ui->m_yAxisComboBox->addItem(QString::fromStdString(propName));
       }
     }
+    emit itemChanged();
   }
   catch(const std::exception& e)
   {

@@ -51,7 +51,7 @@ MACRO(TeInstallQtPlugins plgs)
     endif()
   endforeach()
 
-  set (_regex_exp "(${_regex_exp})(${CMAKE_SHARED_LIBRARY_SUFFIX})$")
+  set (_regex_exp "(${_regex_exp})?(${CMAKE_SHARED_LIBRARY_SUFFIX})$")
 
   if(APPLE)
     set (_dest terraview.app/Contents/qtplugins)
@@ -59,7 +59,11 @@ MACRO(TeInstallQtPlugins plgs)
     set (_dest qtplugins)
   endif()
 
-  set (_plugin_dirs "imageformats;iconengines;sqldrivers;platforms")
+if(QT4_FOUND)
+  set (_plugin_dirs "imageformats;iconengines;sqldrivers")
+else()
+    set (_plugin_dirs "imageformats;iconengines;sqldrivers;platforms")
+endif()
 
   foreach(_plugin_dir ${_plugin_dirs})
 

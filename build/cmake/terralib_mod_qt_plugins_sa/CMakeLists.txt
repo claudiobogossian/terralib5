@@ -54,6 +54,10 @@ else()
 
 # moc'ing
   set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/sa/AbstractAction.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/sa/BayesGlobalAction.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/sa/BayesLocalAction.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/sa/KernelMapAction.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/sa/KernelRatioAction.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/sa/ProximityMatrixCreatorAction.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/sa/SpatialStatisticsAction.h)
 

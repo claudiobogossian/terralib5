@@ -29,6 +29,7 @@
 #include "../../../datatype/TimePeriod.h"
 #include "SliderPropertiesDialog.h"
 #include "ui_SliderPropertiesDialogForm.h"
+#include "TimeSliderWidget.h"
 
 //QT
 #include <QMessageBox>
@@ -55,7 +56,8 @@ te::qt::widgets::SliderPropertiesDialog::SliderPropertiesDialog(QWidget* parent,
   : QDialog(parent, f),
     m_ui(new Ui::SliderPropertiesDialogForm)
 {
-    m_ui->setupUi(this);
+  m_ui->setupUi(this);
+  m_tsw = (TimeSliderWidget*)parent;
 
   m_ui->m_opacitySpinBox->setMinimum(0);
   m_ui->m_opacitySpinBox->setMaximum(255);
@@ -63,56 +65,72 @@ te::qt::widgets::SliderPropertiesDialog::SliderPropertiesDialog(QWidget* parent,
   m_ui->m_opacitySpinBox->setSingleStep(5);
   m_ui->m_forwardRadioButton->setCheckable(true);
 
-  m_ui->m_forwardColorPushButton->installEventFilter(this);
-  m_ui->m_backwardColorPushButton->installEventFilter(this);
-  m_ui->m_initialAnimationDateTimeEdit->installEventFilter(this);
-  m_ui->m_finalAnimationDateTimeEdit->installEventFilter(this);
+  m_ui->m_initialAnimationDateTimeEdit->installEventFilter(m_tsw);
+  m_ui->m_finalAnimationDateTimeEdit->installEventFilter(m_tsw);
   m_ui->m_initialAnimationDateTimeEdit->setDisplayFormat("dd/MMM/yyyy hh:mm:ss");
   m_ui->m_finalAnimationDateTimeEdit->setDisplayFormat("dd/MMM/yyyy hh:mm:ss");
 
-  connect(m_ui->m_autoPanCheckBox, SIGNAL(clicked(bool) ), this, SLOT(onAutoPanCheckBoxClicked(bool)));
-  connect(m_ui->m_trajectoryColorComboBox, SIGNAL(activated(int) ), this, SLOT(onTrajectoryColorComboBoxActivated(int)));
-  connect(m_ui->m_opacityComboBox, SIGNAL(activated(int) ), this, SLOT(onOpacityComboBoxActivated(int)));
-  connect(m_ui->m_opacitySpinBox, SIGNAL(valueChanged(int)), this, SLOT(onOpacityValueChanged(int)));
-  connect(m_ui->m_resetInitialTimePushButton, SIGNAL(clicked()), this, SLOT(onResetInitialTimePushButtonClicked()));
-  connect(m_ui->m_resetFinalTimePushButton, SIGNAL(clicked()), this, SLOT(onResetFinalTimePushButtonClicked()));
+  connect(m_ui->m_drawTrailCheckBox, SIGNAL(clicked(bool) ), m_tsw, SLOT(onDrawTrailCheckBoxClicked(bool)));
+  connect(m_ui->m_applyAnimationItemPushButton, SIGNAL(clicked(bool) ), m_tsw, SLOT(onApplyAnimationItemPushButtonClicked(bool)));
+  connect(m_ui->m_autoPanCheckBox, SIGNAL(clicked(bool) ), m_tsw, SLOT(onAutoPanCheckBoxClicked(bool)));
+  connect(m_ui->m_opacitySpinBox, SIGNAL(valueChanged(int)), m_tsw, SLOT(onOpacityValueChanged(int)));
+  connect(m_ui->m_forwardRadioButton, SIGNAL(clicked(bool) ), m_tsw, SLOT(onForwardRadioButtonClicked(bool)));
+  connect(m_ui->m_backwardRadioButton, SIGNAL(clicked(bool) ), m_tsw, SLOT(onBackwardRadioButtonClicked(bool)));
+  connect(m_ui->m_loopCheckBox, SIGNAL(clicked(bool) ), m_tsw, SLOT(onLoopCheckBoxClicked(bool)));
+  connect(m_ui->m_goAndBackCheckBox, SIGNAL(clicked(bool) ), m_tsw, SLOT(onGoAndBackCheckBoxClicked(bool)));
+  connect(m_ui->m_applyTimeIntervalPushButton, SIGNAL(clicked(bool) ), m_tsw, SLOT(onApplyTimeIntervalPushButtonClicked(bool)));
+  connect(m_ui->m_frontPushButton, SIGNAL(clicked(bool)), m_tsw, SLOT(onFrontPushButtonClicked(bool)));
+  connect(m_ui->m_backPushButton, SIGNAL(clicked(bool)), m_tsw, SLOT(onBackPushButtonClicked(bool)));
+  connect(m_ui->m_opacityComboBox, SIGNAL(activated(int) ), m_tsw, SLOT(onOpacityComboBoxActivated(int)));
+  connect(m_ui->m_trajectoryColorComboBox, SIGNAL(activated(int) ), m_tsw, SLOT(onTrajectoryColorComboBoxActivated(int)));
+  connect(m_ui->m_resetInitialTimePushButton, SIGNAL(clicked()), m_tsw, SLOT(onResetInitialTimePushButtonClicked()));
+  connect(m_ui->m_resetFinalTimePushButton, SIGNAL(clicked()), m_tsw, SLOT(onResetFinalTimePushButtonClicked()));
 
-  //connect signal and slots
-  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
+
 }
 
 te::qt::widgets::SliderPropertiesDialog::~SliderPropertiesDialog()
 {
 }
 
-void te::qt::widgets::SliderPropertiesDialog::populateUi(te::dt::TimePeriod temporalExtent, QList<QGraphicsItem*> items, bool forward, bool loop, bool goBack)
+void te::qt::widgets::SliderPropertiesDialog::populateUi()
 {
-  m_ui->m_initialAnimationDateTimeEdit->setDateTime(timeInstant2QDate(temporalExtent.getInitialTimeInstant()));
-  m_ui->m_finalAnimationDateTimeEdit->setDateTime(timeInstant2QDate(temporalExtent.getFinalTimeInstant()));
+  TimeSliderWidget *tsw = (TimeSliderWidget*)parent();
+  te::dt::TimeInstant ti = tsw->m_temporalAnimationExtent.getInitialTimeInstant();
+  QDate qdatei(ti.getDate().getYear(), ti.getDate().getMonth(), ti.getDate().getDay());
+  QTime qtimei(ti.getTime().getHours(), ti.getTime().getMinutes(), ti.getTime().getSeconds());
+  QDateTime qdatetimei(qdatei, qtimei);
+  m_ui->m_initialAnimationDateTimeEdit->setDateTime(qdatetimei);
 
-  // set mimimum & maximum datetime
-  m_ui->m_initialAnimationDateTimeEdit->setMinimumDateTime(timeInstant2QDate(temporalExtent.getInitialTimeInstant()));
-  m_ui->m_finalAnimationDateTimeEdit->setMaximumDateTime(timeInstant2QDate(temporalExtent.getFinalTimeInstant()));
+  te::dt::TimeInstant tf = tsw->m_temporalAnimationExtent.getFinalTimeInstant();
+  QDate qdatef(tf.getDate().getYear(), tf.getDate().getMonth(), tf.getDate().getDay());
+  QTime qtimef(tf.getTime().getHours(), tf.getTime().getMinutes(), tf.getTime().getSeconds());
+  QDateTime qdatetimef(qdatef, qtimef);
+  m_ui->m_finalAnimationDateTimeEdit->setDateTime(qdatetimef);
 
-  //Adjusting ui elements
-  m_ui->m_forwardRadioButton->setChecked(forward);
-  m_ui->m_backwardRadioButton->setChecked(!forward);
-  m_ui->m_loopCheckBox->setChecked(loop);
-  m_ui->m_goAndBackCheckBox->setChecked(goBack);
+  // set mimimum datetime
+  te::dt::TimeInstant tmin = tsw->m_temporalExtent.getInitialTimeInstant();
+  QDateTime minimum(QDate(tmin.getDate().getYear(), tmin.getDate().getMonth(), tmin.getDate().getDay()),
+                    QTime(tmin.getTime().getHours(), tmin.getTime().getMinutes(), tmin.getTime().getSeconds()));
+  m_ui->m_initialAnimationDateTimeEdit->setMinimumDateTime(minimum);
 
-  m_temporalExtent = temporalExtent;
-  m_trajectories = items;
-  QList<QGraphicsItem*>::iterator it;
+  // set maximum datetime
+  te::dt::TimeInstant tmax = tsw->m_temporalExtent.getFinalTimeInstant();
+  QDateTime maximum(QDate(tmax.getDate().getYear(), tmax.getDate().getMonth(), tmax.getDate().getDay()),
+                    QTime(tmax.getTime().getHours(), tmax.getTime().getMinutes(), tmax.getTime().getSeconds()));
+  m_ui->m_finalAnimationDateTimeEdit->setMaximumDateTime(maximum);
 
-  for(it = m_trajectories.begin(); it != m_trajectories.end(); ++it)
+  if(tsw->m_direction == QAbstractAnimation::Forward)
   {
-    m_ui->m_trajectoryColorComboBox->addItem(((te::qt::widgets::TrajectoryItem*)(*it))->m_title);
-    onTrajectoryColorComboBoxActivated(items.size()-1);
-
-    m_ui->m_opacityComboBox->addItem(((te::qt::widgets::TrajectoryItem*)(*it))->m_title);
-    onOpacityComboBoxActivated(items.size()-1);
+    if(m_ui->m_forwardRadioButton->isChecked() == false)
+      m_ui->m_forwardRadioButton->toggle();
   }
+
+  if(tsw->m_loop)
+    m_ui->m_loopCheckBox->setChecked(true);
+  if(tsw->m_goAndBack)
+    m_ui->m_goAndBackCheckBox->setChecked(true);
 }
 
 bool te::qt::widgets::SliderPropertiesDialog::isForwardChecked()
@@ -150,102 +168,10 @@ te::dt::TimeInstant te::qt::widgets::SliderPropertiesDialog::getFinalTime()
   return qdate2TimeInstant(m_ui->m_finalAnimationDateTimeEdit->dateTime());
 }
 
-void te::qt::widgets::SliderPropertiesDialog::onOpacityValueChanged(int v)
+void te::qt::widgets::SliderPropertiesDialog::onDrawTrackCheckBoxClicked(bool b)
 {
-  QString titlecb = m_ui->m_opacityComboBox->currentText();
-
-  QList<QGraphicsItem*>::iterator it;
-
-  for(it = m_trajectories.begin(); it != m_trajectories.end(); ++it)
-  {
-    te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
-    QString title = ai->m_title;
-    if(title.contains(titlecb))
-    {
-      ai->m_opacity = v;
-      break;
-    }
-  }
-}
-
-void te::qt::widgets::SliderPropertiesDialog::onAutoPanCheckBoxClicked(bool b)
-{
-  QString title = m_ui->m_trajectoryColorComboBox->currentText();
-
-  QList<QGraphicsItem*>::iterator it;
-  for(it = m_trajectories.begin(); it != m_trajectories.end(); ++it)
-  {
-    AnimationItem* ai = (AnimationItem*)(*it);
-    if(ai->m_title == title)
-      ai->m_automaticPan = !ai->m_automaticPan; // TOGGLE
-    else
-      ai->m_automaticPan = false;
-  }
-}
-
-void te::qt::widgets::SliderPropertiesDialog::onResetInitialTimePushButtonClicked()
-{
-  m_ui->m_initialAnimationDateTimeEdit->setDateTime(timeInstant2QDate(m_temporalExtent.getInitialTimeInstant()));
-}
-
-void te::qt::widgets::SliderPropertiesDialog::onResetFinalTimePushButtonClicked()
-{
-  m_ui->m_finalAnimationDateTimeEdit->setDateTime(timeInstant2QDate(m_temporalExtent.getFinalTimeInstant()));
-}
-
-void te::qt::widgets::SliderPropertiesDialog::onTrajectoryColorComboBoxActivated(int i)
-{
-  QString titlecb = m_ui->m_trajectoryColorComboBox->currentText();
-
-  QList<QGraphicsItem*>::iterator it;
-  te::qt::widgets::TrajectoryItem* ti = 0;
-
-  for(it = m_trajectories.begin(); it != m_trajectories.end(); ++it)
-  {
-    ti = (te::qt::widgets::TrajectoryItem*)(*it);
-    QString title = ti->m_title;
-    if(title == titlecb)
-      break;
-  }
-  if(ti == 0)
-    return;
-
-  m_ui->m_forwardColorPushButton->setPalette(QPalette(ti->m_forwardColor));
-  m_ui->m_forwardColorPushButton->update();
-  m_ui->m_backwardColorPushButton->setPalette(QPalette(ti->m_backwardColor));
-  m_ui->m_backwardColorPushButton->update();
-  m_ui->m_autoPanCheckBox->setChecked(ti->m_automaticPan);
-}
-
-void te::qt::widgets::SliderPropertiesDialog::onOpacityComboBoxActivated(int i)
-{
-  QString titlecb = m_ui->m_opacityComboBox->currentText();
-  QList<QGraphicsItem*>::iterator it;
-  te::qt::widgets::TrajectoryItem* ti = 0;
-
-  for(it = m_trajectories.begin(); it != m_trajectories.end(); ++it)
-  {
-    ti = (te::qt::widgets::TrajectoryItem*)(*it);
-    QString title = ti->m_title;
-    if(title.contains(titlecb))
-    {
-      int op = ti->m_opacity;
-      m_ui->m_opacitySpinBox->setValue(op);
-      break;
-    }
-  }
 }
 
 void te::qt::widgets::SliderPropertiesDialog::onHelpPushButtonClicked()
 {
-}
-
-void te::qt::widgets::SliderPropertiesDialog::onOkPushButtonClicked()
-{
-  if(m_ui->m_initialAnimationDateTimeEdit->dateTime() >= m_ui->m_finalAnimationDateTimeEdit->dateTime())
-  {
-    QMessageBox::warning(this, "Time Extent Error", "Initial time can not be larger than the end time!", QMessageBox::Ok);
-    return;
-  }
-  this->accept();
 }

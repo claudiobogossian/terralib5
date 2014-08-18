@@ -25,34 +25,59 @@
 
 // TerraLib
 #include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../dataaccess/datasource/DataSourceManager.h"
+#include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/AbstractData.h"
 #include "../../datatype/SimpleProperty.h"
+#include "../../geometry/GeometryProperty.h"
+#include "../../geometry/MultiPolygon.h"
+#include "../../geometry/Point.h"
+#include "../../geometry/Polygon.h"
 #include "../../graph/core/AbstractGraph.h"
 #include "../../graph/core/GraphMetadata.h"
 #include "../../graph/core/Vertex.h"
+#include "../../maptools/AbstractLayer.h"
+#include "../../maptools/DataSetLayer.h"
+#include "../../raster/Grid.h"
+#include "../../raster/RasterProperty.h"
+#include "../../se/Utils.h"
 #include "GeneralizedProximityMatrix.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
 
-int te::sa::AssociateGPMVertexAttribute(te::da::DataSource* ds, std::string dataSetName, std::string attrLink, std::string attr, int dataType, te::sa::GeneralizedProximityMatrix* gpm)
+// Boost
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
+int te::sa::AssociateGPMVertexAttribute(te::sa::GeneralizedProximityMatrix* gpm, te::da::DataSource* ds, std::string dataSetName, std::string attrLink, std::string attr, int dataType, int srid, int subType)
 {
   assert(ds);
+  
+  std::auto_ptr<te::da::DataSet> dataSet = ds->getDataSet(dataSetName);
+
+  return AssociateGPMVertexAttribute(gpm, dataSet.get(), attrLink, attr, dataType, srid, subType);
+}
+
+int te::sa::AssociateGPMVertexAttribute(te::sa::GeneralizedProximityMatrix* gpm, te::da::DataSet* dataSet, std::string attrLink, std::string attr, int dataType, int srid, int subType)
+{
+  assert(dataSet);
   assert(gpm);
 
   te::graph::AbstractGraph* graph = gpm->getGraph();
 
   //add graph attr
-  int attrGraphIdx = te::sa::AddGraphVertexAttribute(graph, attr, dataType);
+  int attrGraphIdx = te::sa::AddGraphVertexAttribute(graph, attr, dataType, srid, subType);
 
   //get the number of attributes from graph
   int attrSize = graph->getMetadata()->getVertexPropertySize();
 
   //dataset iterator
-  std::auto_ptr<te::da::DataSet> dataSet = ds->getDataSet(dataSetName);
-
   dataSet->moveBeforeFirst();
 
   while(dataSet->moveNext())
@@ -76,12 +101,22 @@ int te::sa::AssociateGPMVertexAttribute(te::da::DataSource* ds, std::string data
   return attrGraphIdx;
 }
 
-int te::sa::AddGraphVertexAttribute(te::graph::AbstractGraph* graph, std::string attrName, int dataType)
+int te::sa::AddGraphVertexAttribute(te::graph::AbstractGraph* graph, std::string attrName, int dataType, int srid, int subType)
 {
   assert(graph);
 
   //add new attribute
-  te::dt::SimpleProperty* p = new te::dt::SimpleProperty(attrName, dataType);
+  te::dt::Property* p = 0;
+  
+  if(dataType == te::dt::GEOMETRY_TYPE)
+  {
+    p = new te::gm::GeometryProperty(attrName, srid, (te::gm::GeomType)subType);
+  }
+  else
+  {
+    p = new te::dt::SimpleProperty(attrName, dataType);
+  }
+
   p->setParent(0);
   p->setId(0);
 
@@ -167,4 +202,95 @@ double te::sa::GetDataValue(te::dt::AbstractData* ad)
   std::string strValue = ad->toString();
 
   return atof(strValue.c_str());
+}
+
+double te::sa::CalculateDistance(te::gm::Geometry* geom, te::gm::Coord2D& coord)
+{
+  double distance = std::numeric_limits<double>::max();
+
+  std::auto_ptr<te::gm::Point> point(new te::gm::Point(coord.x, coord.y));
+
+  point->setSRID(geom->getSRID());
+
+  if(geom->getGeomTypeId() == te::gm::PointType)
+  {
+    te::gm::Point* p = ((te::gm::Point*)geom);
+
+    distance = p->distance(point.get());
+  }
+  else if(geom->getGeomTypeId() == te::gm::PolygonType)
+  {
+    te::gm::Point* p = ((te::gm::Polygon*)geom)->getCentroid();
+
+    distance = p->distance(point.get());
+
+    delete p;
+  }
+  else if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
+  {
+    te::gm::Polygon* poly = (te::gm::Polygon*)((te::gm::MultiPolygon*)geom)->getGeometryN(0);
+
+    te::gm::Point* p = poly->getCentroid();
+
+    distance = p->distance(point.get());
+
+    delete p;
+  }
+
+  return distance;
+}
+
+te::gm::Coord2D te::sa::GetCentroidCoord(te::gm::Geometry* geom)
+{
+  assert(geom);
+
+  te::gm::Coord2D coord;  
+
+  if(geom->getGeomTypeId() == te::gm::PointType)
+  {
+    te::gm::Point* p = ((te::gm::Point*)geom);
+
+    coord.x = p->getX();
+    coord.y = p->getY();
+  }
+  else if(geom->getGeomTypeId() == te::gm::PolygonType)
+  {
+    te::gm::Point* p = ((te::gm::Polygon*)geom)->getCentroid();
+
+    coord.x = p->getX();
+    coord.y = p->getY();
+
+    delete p;
+  }
+  else if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
+  {
+    te::gm::Polygon* poly = (te::gm::Polygon*)((te::gm::MultiPolygon*)geom)->getGeometryN(0);
+
+    te::gm::Point* p = poly->getCentroid();
+
+    coord.x = p->getX();
+    coord.y = p->getY();
+
+    delete p;
+  }
+
+  return coord;
+}
+
+double te::sa::GetArea(te::gm::Geometry* geom)
+{
+  assert(geom);
+
+  if(geom->getGeomTypeId() == te::gm::PolygonType)
+  {
+    return ((te::gm::Polygon*)geom)->getArea();
+  }
+  else if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
+  {
+    te::gm::Polygon* poly = (te::gm::Polygon*)((te::gm::MultiPolygon*)geom)->getGeometryN(0);
+
+    return poly->getArea();
+  }
+
+  return 0.;
 }

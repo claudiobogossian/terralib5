@@ -37,6 +37,7 @@
 
 // Unit-Test TerraLib includes by platform
 #include "Config.h"
+#include "LoadModules.h"
 
 #include <cstdlib>
 
@@ -44,6 +45,11 @@
 
 int main(int /*argc*/, char** /*argv*/)
 {
+  // initialize Terralib platform
+  TerraLib::getInstance().initialize();
+    
+  LoadModules();
+  
   // it creates the event manager and test controller
   CPPUNIT_NS::TestResult controller;
 
@@ -79,10 +85,9 @@ int main(int /*argc*/, char** /*argv*/)
 
 // Printing testResults in XML file 
   // The testResult_*.xml files will be saved at TERRALIB_REPORT_DIR directory.
-  // NOTE: styleSheet 'report.xsl' should be at this directory (found originally at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl)
-  // and then you can open the testResults using your web-browser.
-  // One level up TERRALIB_REPORT_DIR should have a 'data' directory with all files used by unit test.
- 
+  // The styleSheet 'report.xsl' should be at this directory (found originally at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl).
+  // The "data.zip" (downloaded) containing the data used in unit tests should be at TERRALIB_DATA_DIR
+
   CPPUNIT_NS::OFileStream file2(TERRALIB_REPORT_DIR "/" TS_TEST_NAME ".xml");
   CPPUNIT_NS::XmlOutputter xml( &result, file2 );
   xml.setStyleSheet( "report.xsl" ); 
@@ -96,6 +101,9 @@ int main(int /*argc*/, char** /*argv*/)
   file3.close();
 
   bool resultStatus = result.wasSuccessful();
+  
+  // finalize TerraLib Plataform
+  TerraLib::getInstance().finalize();  
 
   return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }

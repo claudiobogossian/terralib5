@@ -55,6 +55,16 @@ class TsFunctions : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( getCovarianceValueOptimized );
   
   CPPUNIT_TEST( ihs );
+  
+  CPPUNIT_TEST( DecomposeBands );
+  
+  CPPUNIT_TEST( ComposeBandsSameSRID );
+  
+  CPPUNIT_TEST( ComposeBandsDifSRID );
+  
+  CPPUNIT_TEST( GetDetailedExtent );
+  
+  CPPUNIT_TEST( GetIndexedDetailedExtent );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -77,6 +87,16 @@ protected :
   void GetStdDevValue();
   
   void GetStdDevValueOptimized();
+  
+  void DecomposeBands();
+  
+  void ComposeBandsSameSRID();
+  
+  void ComposeBandsDifSRID();
+  
+  void GetDetailedExtent();
+  
+  void GetIndexedDetailedExtent();
   
 };
 

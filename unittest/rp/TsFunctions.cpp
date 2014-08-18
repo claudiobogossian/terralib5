@@ -32,6 +32,7 @@
 #include <terralib/raster/RasterFactory.h>
 #include <terralib/raster/BandProperty.h>
 #include <terralib/raster/Band.h>
+#include <terralib/dataaccess/datasource/DataSourceFactory.h>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/timer.hpp>
@@ -363,3 +364,187 @@ void TsFunctions::GetStdDevValueOptimized()
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 46.302240075, stdDevValue, 0.0001 );  
 }
 
+void TsFunctions::DecomposeBands()
+{
+  // openning input raster
+  
+  std::map<std::string, std::string> auxRasterInfo;
+  
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( diskRasterPtr.get() );  
+  
+  std::vector< unsigned int > inputRasterBands;
+  inputRasterBands.push_back( 2 );
+  inputRasterBands.push_back( 0 );
+  
+  std::vector< std::string > outputDataSetNames;
+  outputDataSetNames.push_back( "terralib_unittest_rp_functions_DecomposeBands_2.tif" );
+  outputDataSetNames.push_back( "terralib_unittest_rp_functions_DecomposeBands_0.tif" );
+  
+  std::map<std::string, std::string> connInfoRaster;
+  connInfoRaster["SOURCE"] = ".";
+  std::auto_ptr< te::da::DataSource > dsPtr( te::da::DataSourceFactory::make("GDAL") );
+  CPPUNIT_ASSERT( dsPtr.get() );
+  dsPtr->setConnectionInfo( connInfoRaster );
+  dsPtr->open();
+  CPPUNIT_ASSERT( dsPtr->isOpened() );
+  
+  CPPUNIT_ASSERT( te::rp::DecomposeBands( *diskRasterPtr, inputRasterBands,
+    outputDataSetNames, *dsPtr ) );
+}
+
+void TsFunctions::ComposeBandsSameSRID()
+{
+  // openning input rasters
+  
+  std::map<std::string, std::string> auxRasterInfo;
+  
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
+  std::auto_ptr< te::rst::Raster > diskRasterPtr1( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( diskRasterPtr1.get() );
+
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop3.tif";
+  std::auto_ptr< te::rst::Raster > diskRasterPtr2( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( diskRasterPtr2.get() ); 
+  
+  std::vector< const te::rst::Raster * > rasters;
+  rasters.push_back( diskRasterPtr1.get() );
+  rasters.push_back( diskRasterPtr2.get() );
+
+  te::rp::FeederConstRasterVector feeder( rasters );
+  
+  std::vector< unsigned int > inputRasterBands;
+  inputRasterBands.push_back( 2 );
+  inputRasterBands.push_back( 0 );
+  
+  std::string outputDataSetName = "terralib_unittest_rp_functions_ComposeBandsSameSRID.tif";
+  
+  std::map<std::string, std::string> connInfoRaster;
+  connInfoRaster["SOURCE"] = ".";
+  std::auto_ptr< te::da::DataSource > dsPtr( te::da::DataSourceFactory::make("GDAL") );
+  CPPUNIT_ASSERT( dsPtr.get() );
+  dsPtr->setConnectionInfo( connInfoRaster );
+  dsPtr->open();
+  CPPUNIT_ASSERT( dsPtr->isOpened() );
+  
+  CPPUNIT_ASSERT( te::rp::ComposeBands( feeder, inputRasterBands,
+    outputDataSetName, te::rst::Interpolator::NearestNeighbor, *dsPtr ) );
+}
+
+void TsFunctions::ComposeBandsDifSRID()
+{
+  // openning input rasters
+  
+  std::map<std::string, std::string> auxRasterInfo;
+  
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
+  std::auto_ptr< te::rst::Raster > diskRasterPtr1( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( diskRasterPtr1.get() );
+
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop3_EPSG_22522.tif";
+  std::auto_ptr< te::rst::Raster > diskRasterPtr2( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( diskRasterPtr2.get() ); 
+  
+  std::vector< const te::rst::Raster * > rasters;
+  rasters.push_back( diskRasterPtr1.get() );
+  rasters.push_back( diskRasterPtr2.get() );
+
+  te::rp::FeederConstRasterVector feeder( rasters );
+  
+  std::vector< unsigned int > inputRasterBands;
+  inputRasterBands.push_back( 2 );
+  inputRasterBands.push_back( 0 );
+  
+  std::string outputDataSetName = "terralib_unittest_rp_functions_ComposeBandsDifSRID.tif";
+  
+  std::map<std::string, std::string> connInfoRaster;
+  connInfoRaster["SOURCE"] = ".";
+  std::auto_ptr< te::da::DataSource > dsPtr( te::da::DataSourceFactory::make("GDAL") );
+  CPPUNIT_ASSERT( dsPtr.get() );
+  dsPtr->setConnectionInfo( connInfoRaster );
+  dsPtr->open();
+  CPPUNIT_ASSERT( dsPtr->isOpened() );
+  
+  CPPUNIT_ASSERT( te::rp::ComposeBands( feeder, inputRasterBands,
+    outputDataSetName, te::rst::Interpolator::NearestNeighbor, *dsPtr ) );
+}
+
+void TsFunctions::GetDetailedExtent()
+{
+  te::rst::Grid grid( 2u, 2u, new te::gm::Envelope( 0.0, 0.0, 2.0, 2.0 ), 12345 );
+  
+  te::gm::LinearRing lr( te::gm::LineStringType, 0, 0 );
+  
+  CPPUNIT_ASSERT( te::rp::GetDetailedExtent( grid, lr ) );
+  CPPUNIT_ASSERT( lr.size() == 9 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 0 ), 0.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 0 ), 2.0 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 1 ), 1.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 1 ), 2.0 , 1.0000000001 );
+
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 2 ), 2.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 2 ), 2.0 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 3 ), 2.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 3 ), 1.0 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 4 ), 2.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 4 ), 0.0 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 5 ), 1.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 5 ), 0.0 , 1.0000000001 );          
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 6 ), 0.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 6 ), 0.0 , 1.0000000001 );          
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 7 ), 0.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 7 ), 1.0 , 1.0000000001 );          
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 8 ), 0.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 8 ), 2.0 , 1.0000000001 );          
+}
+
+void TsFunctions::GetIndexedDetailedExtent()
+{
+  te::rst::Grid grid( 2u, 2u, new te::gm::Envelope( 0.0, 0.0, 2.0, 2.0 ), 12345 );
+  
+  te::gm::LinearRing lr( te::gm::LineStringType, 0, 0 );
+  
+  CPPUNIT_ASSERT( te::rp::GetIndexedDetailedExtent( grid, lr ) );
+  CPPUNIT_ASSERT( lr.size() == 9 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 0 ), -0.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 0 ), -0.5 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 1 ), 0.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 1 ), -0.5 , 1.0000000001 );
+
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 2 ), 1.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 2 ), -0.5 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 3 ), 1.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 3 ), 0.5 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 4 ), 1.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 4 ), 1.5 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 5 ), 0.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 5 ), 1.5 , 1.0000000001 );          
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 6 ), -0.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 6 ), 1.5 , 1.0000000001 );          
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 7 ), -0.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 7 ), 0.5 , 1.0000000001 );          
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 8 ), -0.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 8 ), -0.5 , 1.0000000001 );          
+}

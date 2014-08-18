@@ -14,14 +14,19 @@
 
 te::qt::widgets::TrajectoryItem::TrajectoryItem(const QString& title, const QString& file, te::qt::widgets::MapDisplay* display)
   : te::qt::widgets::AnimationItem(title, display),
+    m_drawTrail(true),
     m_forwardColor(Qt::blue),
     m_backwardColor(Qt::magenta),
     m_lineWidth(2)
 {
-  QFile f(file);
-  if(f.exists())
-    setPixmap(QPixmap(file));
-  else
+  if(file.isEmpty() == false)
+  {
+    QFile f(file);
+    if(f.exists())
+      setPixmap(QPixmap(file));
+  }
+
+  if(pixmap().isNull())
   {
     QPixmap pix(20, 20);
     pix.fill(Qt::transparent);
@@ -74,30 +79,33 @@ void te::qt::widgets::TrajectoryItem::paint(QPainter*, const QStyleOptionGraphic
   if(m_curTimeDuration == curTime)
     return;
 
-  bool erase = false;
-  if(m_animation->direction() == QAbstractAnimation::Forward)
+  if(m_drawTrail)
   {
-    if(curTime < m_curTimeDuration) // erase trail
-      erase = true;
-  }
-  else
-  {
-    if(curTime > m_curTimeDuration) // erase trail
-      erase = true;
-  }
-
-  if(erase)
-  {
-    if(m_erasePerfectly)
+    bool erase = false;
+    if(m_animation->direction() == QAbstractAnimation::Forward)
     {
-      m_curTimeDuration = curTime;
-      draw();
+      if(curTime < m_curTimeDuration) // erase trail
+        erase = true;
     }
     else
-      this->erase(curTime);
+    {
+      if(curTime > m_curTimeDuration) // erase trail
+        erase = true;
+    }
+
+    if(erase)
+    {
+      if(m_erasePerfectly)
+      {
+        m_curTimeDuration = curTime;
+        draw();
+      }
+      else
+        this->erase(curTime);
+    }
+    else
+      drawForward(curTime);
   }
-  else
-    drawForward(curTime);
 
   m_display->update();
 }

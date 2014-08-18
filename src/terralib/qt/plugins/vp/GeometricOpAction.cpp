@@ -58,16 +58,19 @@ void te::qt::plugins::vp::GeometricOpAction::onActionActivated(bool checked)
   if(dlg.exec() != QDialog::Accepted)
     return;
 
-  te::map::AbstractLayerPtr layer = dlg.getOutLayer();
+  std::vector<te::map::AbstractLayerPtr> layers = dlg.getOutLayer();
 
-  if(!layer)
+  if(layers.empty())
     return;
 
   int reply = QMessageBox::question(0, tr("Geometric Operation"), tr("The operation was concluded successfully. Would you like to add the layer to the project?"), QMessageBox::No, QMessageBox::Yes);
   
   if(reply == QMessageBox::Yes)
   {
-    te::qt::af::evt::LayerAdded evt(layer);
-    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+    for(std::size_t i = 0; i < layers.size(); ++i)
+    {
+      te::qt::af::evt::LayerAdded evt(layers[i]);
+      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+    }
   }
 }

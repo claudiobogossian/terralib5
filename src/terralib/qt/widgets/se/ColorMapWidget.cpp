@@ -354,7 +354,7 @@ void te::qt::widgets::ColorMapWidget::buildCategorizationMap()
   vec.push_back(m_ui->m_minValueLineEdit->text().toDouble());
   vec.push_back(m_ui->m_maxValueLineEdit->text().toDouble());
 
-  te::map::GroupingByEqualSteps(vec.begin(), vec.end(), sliceValue, legVec, 1);
+  te::map::GroupingByEqualSteps(vec.begin(), vec.end(), sliceValue, legVec, m_ui->m_precisionSpinBox->value());
 
   te::se::Categorize* c = new te::se::Categorize();
 
@@ -412,7 +412,7 @@ void te::qt::widgets::ColorMapWidget::buildInterpolationMap()
   vec.push_back(m_ui->m_minValueLineEdit->text().toDouble());
   vec.push_back(m_ui->m_maxValueLineEdit->text().toDouble());
 
-  te::map::GroupingByEqualSteps(vec.begin(), vec.end(), sliceValue, legVec, 1);
+  te::map::GroupingByEqualSteps(vec.begin(), vec.end(), sliceValue, legVec, m_ui->m_precisionSpinBox->value());
 
 
   te::se::Interpolate* interpolate = new te::se::Interpolate();

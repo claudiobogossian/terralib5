@@ -27,6 +27,7 @@
 
 #include "Config.h"
 
+#include "FeedersRaster.h"
 #include "Matrix.h"
 #include "Macros.h"
 #include "../dataaccess/datasource/DataSource.h"
@@ -35,7 +36,10 @@
 #include "../raster/Grid.h"
 #include "../raster/BandProperty.h"
 #include "../raster/RasterFactory.h"
+#include "../raster/Interpolator.h"
 #include "../raster/Utils.h"
+#include "../srs/Converter.h"
+#include "../geometry/LinearRing.h"
 
 // STL
 #include <memory>
@@ -472,7 +476,60 @@ namespace te
       const std::vector< unsigned int >& inputRasterBands,
       const boost::numeric::ublas::matrix< double >& remapMatrix,
       te::rst::Raster& outputRaster,
-      const unsigned int maxThreads );      
+      const unsigned int maxThreads ); 
+    
+    /*!
+      \brief Decompose a multi-band raster into a set of one-band rasters.
+      \param inputRaster Input raster.
+      \param inputRasterBands Input raster bands.
+      \param outputDataSetNames The generated output datasets names (one name for each decomposed band).
+      \param outputDataSource The output data source.
+      \return true if OK, false on errors.
+      \ingroup rp_func
+    */
+    TERPEXPORT bool DecomposeBands( 
+      const te::rst::Raster& inputRaster,
+      const std::vector< unsigned int >& inputRasterBands,
+      const std::vector< std::string >& outputDataSetNames,
+      te::da::DataSource& outputDataSource );   
+    
+    /*!
+      \brief Compose a set of bands into one multi-band raster.
+      \param feeder Input rasters feeder.
+      \param inputRasterBands Input raster bands (one band for each input raster).
+      \param outputDataSetName The generated output dataset name.
+      \param interpMethod The interpolator method to use.
+      \param outputDataSource The output data source.
+      \return true if OK, false on errors.
+      \note The first raster Grid will be taken as reference for the composed raster.
+      \ingroup rp_func
+    */
+    TERPEXPORT bool ComposeBands( 
+      te::rp::FeederConstRaster& feeder,
+      const std::vector< unsigned int >& inputRasterBands,
+      const std::string& outputDataSetName,
+      const te::rst::Interpolator::Method& interpMethod,
+      te::da::DataSource& outputDataSource );     
+    
+    /*!
+      \brief Create a datailed extent from the given grid.
+      \param grid Input grid.
+      \param detailedExtent The created detailed extent.
+      \return true if ok, false on errors.
+      \ingroup rp_func
+    */
+    TERPEXPORT bool GetDetailedExtent( const te::rst::Grid& grid, 
+      te::gm::LinearRing& detailedExtent );
+    
+    /*!
+      \brief Create a indexed (lines,columns) datailed extent from the given grid.
+      \param grid Input grid.
+      \param indexedDetailedExtent The created detailed extent.
+      \return true if ok, false on errors.
+      \ingroup rp_func
+    */
+    TERPEXPORT bool GetIndexedDetailedExtent( const te::rst::Grid& grid, 
+      te::gm::LinearRing& indexedDetailedExtent );     
     
   } // end namespace rp
 }   // end namespace te
