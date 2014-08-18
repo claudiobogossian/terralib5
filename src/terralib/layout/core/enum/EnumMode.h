@@ -77,8 +77,12 @@ namespace te
       TypeCreateArrow =36,
       TypeCreateEllipse = 37,
       TypeCreateTitle = 38,
-      TypeCreateStringGrid = 39,
+      TypeCreateTextGrid = 39,
       TypeCreateMultiLineText = 40,
+      TypeWidgetView = 41,
+      TypeWidgetInspector = 42,
+      TypeWidgetProperties = 43,
+      TypeWidgetToolbar = 44,
       TypeNone = 0
     } LayoutMode;
 

@@ -18,18 +18,18 @@
  */
 
 /*!
-  \file MultiLineTextItem.h
+  \file TextGridItem.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MULTILINETEXT_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MULTILINETEXT_ITEM_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_ITEM_H 
+#define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_ITEM_H
 
 // TerraLib
-#include "DefaultTextItem.h"
+#include "ObjectItem.h"
 
 namespace te
 {
@@ -37,12 +37,14 @@ namespace te
   {
     class Observable;
 
-    class MultiLineTextItem : public DefaultTextItem
+    class TextGridItem : public ObjectItem
     {
       public:
 
-        MultiLineTextItem( ItemController* controller, Observable* o );
-        virtual ~MultiLineTextItem();
+        TextGridItem( ItemController* controller, Observable* o );
+        virtual ~TextGridItem();
+        
+        virtual void updateObserver(ContextItem context);
     };
   }
 }

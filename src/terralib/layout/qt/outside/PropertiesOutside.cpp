@@ -101,6 +101,7 @@ void te::layout::PropertiesOutside::createLayout()
   m_configurePropertyEditor = new QToolButton(this);
   m_configurePropertyEditor->setText(tr("Config"));
   m_configurePropertyEditor->setBaseSize(QSize(16,16));
+  m_configurePropertyEditor->setVisible(false);
 
   m_propertyFilterEdit = new QLineEdit(this);
   m_propertyFilterEdit->setToolTip(tr("String or regular expression to filter property list with"));

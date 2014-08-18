@@ -18,37 +18,69 @@
  */
 
 /*!
-  \file MultiLineTextController.h
+  \file PageSetupOutside.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MULTILINETEXT_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MULTILINETEXT_CONTROLLER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_EDIT_TEMPLATE_OUTSIDE_H
+#define __TERRALIB_LAYOUT_INTERNAL_EDIT_TEMPLATE_OUTSIDE_H
+
+// Qt
+#include <QWidget>
 
 // TerraLib
-#include "DefaultTextController.h"
+#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/Config.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../color/RGBAColor.h"
+#include "../../core/enum/EnumMode.h"
+#include "../../core/enum/AbstractType.h"
+
+namespace Ui { class EditTemplate; }
 
 namespace te
 {
   namespace layout
   {
-    class MultiLineTextController : public DefaultTextController
-    {
-      public:
+    class OutsideController;
+    class Observable;
 
-        MultiLineTextController( Observable* o );
-        virtual ~MultiLineTextController();
+    class TELAYOUTEXPORT EditTemplateOutside : public QWidget, public OutsideObserver 
+    {
+	    Q_OBJECT
+    
+      public:
+        
+        EditTemplateOutside(OutsideController* controller, Observable* o);
+
+		    virtual ~EditTemplateOutside();
+
+        virtual void updateObserver(ContextItem context);
 
         virtual void setPosition(const double& x, const double& y);
 
+        virtual te::gm::Coord2D getPosition();
+       
+        virtual void load();
+
+      signals:
+
+        void changeTemplate();
+
+      private slots:
+        
+        virtual void on_pbApply_clicked();
+        
       protected:
 
-        MultiLineTextController( Observable* o, LayoutAbstractObjectType type );
+        virtual void init();
 
-        virtual void create();
+      private:
+
+        std::auto_ptr<Ui::EditTemplate> m_ui;
     };
   }
 }

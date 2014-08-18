@@ -63,6 +63,12 @@ void te::layout::VerticalRulerModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box, true, false);  
 
+  double zoomFactor = context.getZoomFactor();
+  int zoom = 1. / zoomFactor;
+  if(zoomFactor > 1.)
+    zoom = zoomFactor;
+
+  canvas->setLineWidth(1. * zoom);
   canvas->setTextPointSize(5);
   canvas->setFontFamily("Verdana");
     
@@ -103,8 +109,8 @@ void te::layout::VerticalRulerModel::drawRuler( te::map::Canvas* canvas, Utils* 
         ury = m_backEndBox.getUpperRightY();
       }
 
-      envPaper = te::gm::Envelope(m_backEndBox.getLowerLeftX(), paperBox->getLowerLeftY() * zoomFactor,
-        m_backEndBox.getUpperRightX(), ury * zoomFactor);
+      envPaper = te::gm::Envelope(m_backEndBox.getLowerLeftX(), paperBox->getLowerLeftY(),
+        m_backEndBox.getUpperRightX(), ury);
       
       te::color::RGBAColor colorp2(255,255,255, TE_OPAQUE);
       drawRectW(envPaper, colorp2, canvas, utils);
@@ -152,7 +158,7 @@ void te::layout::VerticalRulerModel::drawVerticalRuler(te::map::Canvas* canvas, 
       ss << i;//add number to the stream
 
       utils->textBoundingBox(wtxt, htxt, ss.str());
-      canvas->drawText(m_backEndBox.getUpperRightX() - (m_longLine), (double)(i * zoomFactor) - (wtxt/2.), ss.str(), -90);
+      canvas->drawText(m_backEndBox.getUpperRightX() - (m_longLine), (double)i - (wtxt/2.), ss.str(), -90);
     }
     else if((i % (int)m_middleBlockSize) == 0)
     {
@@ -163,10 +169,6 @@ void te::layout::VerticalRulerModel::drawVerticalRuler(te::map::Canvas* canvas, 
       box = te::gm::Envelope(m_backEndBox.getUpperRightX(), i, m_backEndBox.getUpperRightX() - m_smallLine, i);
     }
     
-    /* Spacing between marks depending on the zoom level */
-    box.m_lly = box.m_lly * zoomFactor;
-    box.m_ury = box.m_ury * zoomFactor;
-
     drawLineW(box, utils);
   }
 }

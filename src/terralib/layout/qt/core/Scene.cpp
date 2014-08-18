@@ -620,7 +620,7 @@ void te::layout::Scene::refresh(QGraphicsView* view, double zoomFactor)
     QPointF ur = view->mapToScene(view->size().width(), view->size().height());
     newBox = te::gm::Envelope(ll.x(), ll.y(), ur.x(), ur.y());
   }
-
+  
   refreshRulers(newBox);
 }
 

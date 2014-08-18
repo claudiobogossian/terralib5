@@ -112,17 +112,13 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
   if(m_graphicsItems.empty())
     return;
     
-  //QtVariantProperty *property;
+  int zValue = 0;
+  
   foreach( QGraphicsItem *item, graphicsItems) 
   {
     if (item)
     {			
-      QGraphicsWidget* outside = dynamic_cast<QGraphicsWidget*>(item);
-
-      if(outside)
-        continue;
-
-      int zValue = 0;
+      zValue = 0;
 
       QGraphicsItem* parentItem = item->parentItem();          
       zValue = item->zValue();

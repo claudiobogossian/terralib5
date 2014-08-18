@@ -34,7 +34,7 @@
 
 te::layout::ArrowModel::ArrowModel() 
 {
-  m_box = te::gm::Envelope(0., 0., 10., 10.);
+  m_box = te::gm::Envelope(0., 0., 20., 20.);
 }
 
 te::layout::ArrowModel::~ArrowModel()
@@ -98,28 +98,25 @@ void te::layout::ArrowModel::drawHeadArrow( te::map::Canvas* canvas, Utils* util
   double w = m_box.getWidth();
   double h = m_box.getHeight();
 
-  double initHead = box.m_urx - (w / 4.);
-  double sizeHead = (h / 4.);
+  double initHead = box.m_urx - (w / 5.);
+  double sizeHead = (h / 5.);
 
-  double	slopy , cosy , siny;
-  slopy = std::atan2((double)( box.getLowerLeftY() - box.getUpperRightY() ),(double)( box.getLowerLeftX() - box.getUpperRightX() ) );
-  cosy = std::cos( slopy );
-  siny = std::sin( slopy );
+  te::gm::Polygon* rect = new te::gm::Polygon(1, te::gm::PolygonType);
 
-  double rotate1 = int(- sizeHead * cosy - (sizeHead / 2.0 * siny));
-  double rotate2 = int(- sizeHead * siny + (sizeHead / 2.0 * cosy ));
-  double rotate3 = int(- sizeHead * cosy + (sizeHead / 2.0 * siny));
-  double rotate4 = int(sizeHead / 2.0 * cosy + sizeHead * siny);
-
-  te::gm::Polygon* rect = new te::gm::Polygon(1, te::gm::PolygonType, 0, &box);
-
-  te::gm::LinearRing* outRingPtr0 = new te::gm::LinearRing(4, te::gm::LineStringType);
+  te::gm::LinearRing* outRingPtr0 = new te::gm::LinearRing(5, te::gm::LineStringType);
   outRingPtr0->setPointN( 0, te::gm::Point(initHead, box.getLowerLeftY()));
-  outRingPtr0->setPointN( 1, te::gm::Point(box.getUpperRightX() - rotate1, box.getLowerLeftY() - rotate2)); 
-  outRingPtr0->setPointN( 2, te::gm::Point(box.getUpperRightX() - rotate3, box.getUpperRightY() + rotate4));
-  outRingPtr0->setPointN( 3, te::gm::Point(initHead, box.getUpperRightY())); 
+  outRingPtr0->setPointN( 1, te::gm::Point(initHead, box.getLowerLeftY() - sizeHead)); 
+  outRingPtr0->setPointN( 2, te::gm::Point(box.getUpperRightX(), box.getUpperRightY()));
+  outRingPtr0->setPointN( 3, te::gm::Point(initHead, box.getUpperRightY() + sizeHead)); 
+  outRingPtr0->setPointN( 4, te::gm::Point(initHead, box.getLowerLeftY()));
 
   rect->setRingN(0, outRingPtr0);
 
   canvas->draw(rect);
+
+  if(rect)
+  {
+    delete rect;
+    rect = 0;
+  }
 }

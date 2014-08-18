@@ -50,6 +50,7 @@ namespace te
         class PropertiesDock;
         class ObjectInspectorDock;
         class ToolbarDock;
+        class EditTemplateDock;
 
         class OutsideArea : public QObject
         {
@@ -90,6 +91,7 @@ namespace te
           virtual void createInspectorDock();
           virtual void createToolbarDock();
           virtual void createMainMenu();
+          virtual void createEditTemplateDock();
 
           virtual QAction* createAction(std::string text, std::string objName, std::string icon, std::string tooltip = "");
 
@@ -101,6 +103,7 @@ namespace te
           PropertiesDock* m_dockProperties;
           ObjectInspectorDock* m_dockInspector;
           ToolbarDock* m_dockToolbar;
+          EditTemplateDock* m_dockEditTemplate;
           QMenu* m_mainMenu;
           QMenu* m_parentMenu;
           te::layout::View* m_view;
@@ -114,6 +117,10 @@ namespace te
           std::string m_optionPageConfig;
           std::string m_optionPrint;
           std::string m_optionExit;
+          std::string m_optionDockInspector;
+          std::string m_optionDockProperties;
+          std::string m_optionDockToolbar;
+          std::string m_optionDockEditTemplate;
         };
       }
     }

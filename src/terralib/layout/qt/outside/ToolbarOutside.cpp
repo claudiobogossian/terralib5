@@ -520,7 +520,7 @@ void te::layout::ToolbarOutside::onTextToolsTriggered( QAction* action )
   }
   else if(action->objectName().compare(m_optionStringGrid.c_str()) == 0)
   {
-    changeAction(TypeCreateStringGrid);
+    changeAction(TypeCreateTextGrid);
   }
   else if(action->objectName().compare(m_optionTitle.c_str()) == 0)
   {

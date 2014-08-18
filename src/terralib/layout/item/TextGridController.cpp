@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file StringGridController.cpp
+  \file TextGridController.cpp
    
   \brief 
 
@@ -26,7 +26,7 @@
 */
 
 // TerraLib
-#include "StringGridController.h"
+#include "TextGridController.h"
 #include "../core/pattern/mvc/ItemController.h"
 #include "../core/ContextItem.h"
 #include "../core/pattern/factory/AbstractItemFactory.h"
@@ -36,24 +36,24 @@
 #include "../core/pattern/mvc/ItemObserver.h"
 #include "../core/pattern/mvc/Observer.h"
 
-te::layout::StringGridController::StringGridController( Observable* o ) :
-  ItemController(o, TPStringGridItem)
+te::layout::TextGridController::TextGridController( Observable* o ) :
+  ItemController(o, TPTextGridItem)
 {
   create();
 }
 
-te::layout::StringGridController::StringGridController( Observable* o, LayoutAbstractObjectType type ) :
+te::layout::TextGridController::TextGridController( Observable* o, LayoutAbstractObjectType type ) :
   ItemController(o, type)
 {
 
 }
 
-te::layout::StringGridController::~StringGridController()
+te::layout::TextGridController::~TextGridController()
 {
 	
 }
 
-void te::layout::StringGridController::setPosition( const double& x, const double& y )
+void te::layout::TextGridController::setPosition( const double& x, const double& y )
 {
   if(m_model)
   {
@@ -63,9 +63,9 @@ void te::layout::StringGridController::setPosition( const double& x, const doubl
   }
 }
 
-void te::layout::StringGridController::create()
+void te::layout::TextGridController::create()
 {
   AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPStringGridItem, params);
+  m_view = (Observer*)factory->make(TPTextGridItem, params);
 }

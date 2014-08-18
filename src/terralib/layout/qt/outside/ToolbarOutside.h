@@ -94,7 +94,7 @@ namespace te
       virtual void onRecomposeClicked(bool checked);
 
       virtual void onTextToolsTriggered(QAction* action);
-      
+
     signals:
 
       void changeContext(bool change);
@@ -126,7 +126,7 @@ namespace te
       virtual void createRecomposeToolButton();
 
       virtual void createTextToolButton();
-
+      
       virtual void changeAction(LayoutMode mode);
 
       virtual QToolButton* createToolButton(std::string text, std::string tooltip, std::string icon);

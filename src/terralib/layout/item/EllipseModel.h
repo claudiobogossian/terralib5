@@ -44,6 +44,10 @@ namespace te
         virtual ~EllipseModel();
 
         virtual void draw( ContextItem context );
+
+      protected:
+
+        virtual void drawEllipse(te::map::Canvas* canvas, Utils* utils);
     };
   }
 }

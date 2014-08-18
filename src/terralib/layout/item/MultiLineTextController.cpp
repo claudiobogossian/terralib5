@@ -37,13 +37,13 @@
 #include "../core/pattern/mvc/Observer.h"
 
 te::layout::MultiLineTextController::MultiLineTextController( Observable* o ) :
-  ItemController(o, TPMultiLineTextItem)
+  DefaultTextController(o, TPMultiLineTextItem)
 {
   create();
 }
 
 te::layout::MultiLineTextController::MultiLineTextController( Observable* o, LayoutAbstractObjectType type ) :
-  ItemController(o, type)
+  DefaultTextController(o, type)
 {
 
 }

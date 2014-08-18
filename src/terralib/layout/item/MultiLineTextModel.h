@@ -29,21 +29,18 @@
 #define __TERRALIB_LAYOUT_INTERNAL_MULTILINETEXT_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/ContextItem.h"
+#include "DefaultTextModel.h"
 
 namespace te
 {
   namespace layout
   {
-    class MultiLineTextModel : public ItemModelObservable
+    class MultiLineTextModel : public DefaultTextModel
     {
       public:
 
         MultiLineTextModel();
         virtual ~MultiLineTextModel();
-
-        virtual void draw( ContextItem context );
     };
   }
 }

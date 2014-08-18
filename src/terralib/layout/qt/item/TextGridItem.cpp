@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file StringGridItem.cpp
+  \file TextGridItem.cpp
    
   \brief 
 
@@ -26,7 +26,7 @@
 */
 
 // TerraLib
-#include "StringGridItem.h"
+#include "TextGridItem.h"
 #include "../../core/pattern/mvc/ItemController.h"
 #include "../../core/AbstractScene.h"
 #include "../../core/pattern/mvc/Observable.h"
@@ -35,7 +35,7 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
 
-te::layout::StringGridItem::StringGridItem( ItemController* controller, Observable* o ) :
+te::layout::TextGridItem::TextGridItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
@@ -46,12 +46,12 @@ te::layout::StringGridItem::StringGridItem( ItemController* controller, Observab
   m_nameClass = std::string(this->metaObject()->className());
 }
 
-te::layout::StringGridItem::~StringGridItem()
+te::layout::TextGridItem::~TextGridItem()
 {
 
 }
 
-void te::layout::StringGridItem::updateObserver( ContextItem context )
+void te::layout::TextGridItem::updateObserver( ContextItem context )
 {
   if(!m_model)
     return;

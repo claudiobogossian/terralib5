@@ -30,6 +30,7 @@
 #include "PropertiesDock.h"
 #include "ToolbarDock.h"
 #include "ObjectInspectorDock.h"
+#include "EditTemplateDock.h"
 #include "../../../layout/core/pattern/singleton/Context.h"
 #include "../../../layout/qt/outside/PropertiesOutside.h"
 #include "../../../layout/qt/outside/ObjectInspectorOutside.h"
@@ -48,13 +49,18 @@ te::qt::plugins::layout::OutsideArea::OutsideArea( te::layout::View* view, QWidg
   m_dockInspector(0),
   m_dockProperties(0),
   m_dockToolbar(0),
+  m_dockEditTemplate(0),
   m_optionNew("mnu_main_new"),
   m_optionUpdate("mnu_main_update"),
   m_optionImport("mnu_main_import"),
   m_optionExport("mnu_main_export"),
   m_optionPageConfig("mnu_main_page_config"),
   m_optionPrint("mnu_main_print"),
-  m_optionExit("mnu_main_exit")
+  m_optionExit("mnu_main_exit"),
+  m_optionDockInspector("mnu_dock_inspector"),
+  m_optionDockProperties("mnu_dock_properties"),
+  m_optionDockToolbar("mnu_dock_toolbar"),
+  m_optionDockEditTemplate("mnu_dock_edit_template")
 {
   init();
 }
@@ -92,6 +98,15 @@ te::qt::plugins::layout::OutsideArea::~OutsideArea()
     delete m_dockToolbar;
     m_dockToolbar = 0;
   }
+
+  if(m_dockEditTemplate)
+  {
+    win->removeDockWidget(m_dockEditTemplate);
+    m_dockEditTemplate->close();
+    m_dockEditTemplate->setParent(0);
+    delete m_dockEditTemplate;
+    m_dockEditTemplate = 0;
+  }
 }
 
 void te::qt::plugins::layout::OutsideArea::init()
@@ -114,6 +129,8 @@ void te::qt::plugins::layout::OutsideArea::init()
 
   createMainMenu();
 
+  createEditTemplateDock();
+
   if(m_dockToolbar)
     connect(m_dockToolbar->getToolbarOutside(), SIGNAL(changeContext(bool)), m_view, SLOT(onToolbarChangeContext(bool)));
 }
@@ -121,16 +138,29 @@ void te::qt::plugins::layout::OutsideArea::init()
 void te::qt::plugins::layout::OutsideArea::createPropertiesDock()
 {
   m_dockProperties = new PropertiesDock;  
+  m_dockProperties->setFeatures(QDockWidget::DockWidgetMovable |	
+    QDockWidget::DockWidgetFloatable);
 }
 
 void te::qt::plugins::layout::OutsideArea::createInspectorDock()
 {
   m_dockInspector = new ObjectInspectorDock;
+  m_dockInspector->setFeatures(QDockWidget::DockWidgetMovable |	
+    QDockWidget::DockWidgetFloatable);
 }
 
 void te::qt::plugins::layout::OutsideArea::createToolbarDock()
 {
   m_dockToolbar = new ToolbarDock;
+  m_dockToolbar->setFeatures(QDockWidget::DockWidgetMovable |	
+    QDockWidget::DockWidgetFloatable);
+}
+
+void te::qt::plugins::layout::OutsideArea::createEditTemplateDock()
+{
+  m_dockEditTemplate = new EditTemplateDock;
+  m_dockEditTemplate->setFeatures(QDockWidget::NoDockWidgetFeatures);
+  m_dockEditTemplate->setVisible(false);
 }
 
 void te::qt::plugins::layout::OutsideArea::createMainMenu()
@@ -151,6 +181,28 @@ void te::qt::plugins::layout::OutsideArea::createMainMenu()
 
   QAction* actionExport = createAction("Export Template", m_optionExport, "layout-export");
   m_mainMenu->addAction(actionExport);
+
+  m_mainMenu->addSeparator();
+  
+  QAction* actionDockInspector = createAction("Dock Inspector", m_optionDockInspector, "");
+  actionDockInspector->setCheckable(true);
+  actionDockInspector->setChecked(true);
+  m_mainMenu->addAction(actionDockInspector);
+
+  QAction* actionDockProperties = createAction("Dock Properties", m_optionDockProperties, "");
+  actionDockProperties->setCheckable(true);
+  actionDockProperties->setChecked(true);
+  m_mainMenu->addAction(actionDockProperties);
+
+  QAction* actionDockToolbar = createAction("Dock Toolbar", m_optionDockToolbar, "");
+  actionDockToolbar->setCheckable(true);
+  actionDockToolbar->setChecked(true);
+  m_mainMenu->addAction(actionDockToolbar);
+
+  QAction* actionDockEditTemplate = createAction("Dock Edit Template", m_optionDockEditTemplate, "");
+  actionDockEditTemplate->setCheckable(true);
+  actionDockEditTemplate->setChecked(false);
+  m_mainMenu->addAction(actionDockEditTemplate);
 
   m_mainMenu->addSeparator();
 
@@ -195,6 +247,50 @@ void te::qt::plugins::layout::OutsideArea::onMainMenuTriggered( QAction* action 
   else if(action->objectName().compare(m_optionExit.c_str()) == 0)
   {
     changeAction(te::layout::TypeExit);
+  }
+  else if(action->objectName().compare(m_optionDockInspector.c_str()) == 0)
+  {
+    if(m_dockInspector->isVisible())
+    {
+      m_dockInspector->setVisible(false);
+    }
+    else
+    {
+      m_dockInspector->setVisible(true);
+    }
+  }
+  else if(action->objectName().compare(m_optionDockProperties.c_str()) == 0)
+  {
+    if(m_dockProperties->isVisible())
+    {
+      m_dockProperties->setVisible(false);
+    }
+    else
+    {
+      m_dockProperties->setVisible(true);
+    }
+  }
+  else if(action->objectName().compare(m_optionDockToolbar.c_str()) == 0)
+  {
+    if(m_dockToolbar->isVisible())
+    {
+      m_dockToolbar->setVisible(false);
+    }
+    else
+    {
+      m_dockToolbar->setVisible(true);
+    }
+  }
+  else if(action->objectName().compare(m_optionDockEditTemplate.c_str()) == 0)
+  {
+    if(m_dockEditTemplate->isVisible())
+    {
+      m_dockEditTemplate->setVisible(false);
+    }
+    else
+    {
+      m_dockEditTemplate->setVisible(true);
+    }
   }
 }
 
@@ -266,6 +362,13 @@ void te::qt::plugins::layout::OutsideArea::openAllDocks()
     win->addDockWidget(Qt::TopDockWidgetArea, m_dockToolbar);
     m_dockToolbar->setVisible(true);
   }
+  if(m_dockEditTemplate)
+  {
+    m_dockEditTemplate->setParent(m_dockParent); 
+    win->addDockWidget(Qt::RightDockWidgetArea, m_dockEditTemplate);
+    bool visible = m_dockEditTemplate->isVisible();
+    m_dockEditTemplate->setVisible(visible);
+  }
 }
 
 void te::qt::plugins::layout::OutsideArea::closeAllDocks()
@@ -289,6 +392,11 @@ void te::qt::plugins::layout::OutsideArea::closeAllDocks()
   {
     win->removeDockWidget(m_dockToolbar);
     m_dockToolbar->close();
+  }
+  if(m_dockEditTemplate)
+  {
+    win->removeDockWidget(m_dockEditTemplate);
+    m_dockEditTemplate->close();
   }
 }
 

@@ -70,12 +70,12 @@
 #include "../../item/PointModel.h"
 #include "../../item/PointController.h"
 #include "../item/PointItem.h"
-#include "../../item/StringGridModel.h"
-#include "../../item/StringGridController.h"
-#include "../item/StringGridItem.h"
 #include "../../item/TitleModel.h"
 #include "../../item/TitleController.h"
 #include "../item/TitleItem.h"
+#include "../../item/TextGridModel.h"
+#include "../../item/TextGridController.h"
+#include "../item/TextGridItem.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -106,7 +106,7 @@ te::layout::BuildGraphicsItem::BuildGraphicsItem() :
   m_ellipseItem("ELLIPSE_"),
   m_multiLineTextItem("MULTILINE_TEXT_"),
   m_pointItem("POINT_"),
-  m_stringGridItem("STRING_GRID_"),
+  m_textGridItem("TEXT_GRID_"),
   m_titleItem("TITLE_")
 {
   m_sharedProps = new SharedProperties;
@@ -178,8 +178,8 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   case TPPointItem:
     item = createPoint();
     break;
-  case TPStringGridItem:
-    item = createStringGrid();
+  case TPTextGridItem:
+    item = createTextGrid();
     break;
   case TPTitleItem:
     item = createTitle();
@@ -249,9 +249,9 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::LayoutMode
     m_name = nameItem(m_titleItem, TPTitleItem);
     item = createTitle();
     break;
-  case TypeCreateStringGrid:
-    m_name = nameItem(m_stringGridItem, TPStringGridItem);
-    item = createStringGrid();
+  case TypeCreateTextGrid:
+    m_name = nameItem(m_textGridItem, TPTextGridItem);
+    item = createTextGrid();
     break;
   case TypeCreateMultiLineText:
     m_name = nameItem(m_multiLineTextItem, TPMultiLineTextItem);
@@ -807,11 +807,11 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createPoint()
   return item;
 }
 
-QGraphicsItem* te::layout::BuildGraphicsItem::createStringGrid()
+QGraphicsItem* te::layout::BuildGraphicsItem::createTextGrid()
 {
   QGraphicsItem* item = 0;
 
-  StringGridModel* model = new StringGridModel();	
+  TextGridModel* model = new TextGridModel();	
   if(m_props)
   {
     model->updateProperties(m_props);
@@ -822,10 +822,10 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createStringGrid()
     model->setName(m_name);
   }
 
-  StringGridController* controller = new StringGridController(model);
+  TextGridController* controller = new TextGridController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
-  StringGridItem* view = dynamic_cast<StringGridItem*>(itemObs); 
+  TextGridItem* view = dynamic_cast<TextGridItem*>(itemObs); 
 
   if(view)
   {

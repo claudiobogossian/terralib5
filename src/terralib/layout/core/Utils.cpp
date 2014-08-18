@@ -64,7 +64,7 @@ void te::layout::Utils::drawRectW( te::gm::Envelope box )
     return;
   }
 
-  te::gm::Polygon* rect = new te::gm::Polygon(1, te::gm::PolygonType, 0, &box);
+  te::gm::Polygon* rect = new te::gm::Polygon(1, te::gm::PolygonType);
   
   te::gm::LinearRing* outRingPtr0 = new te::gm::LinearRing(5, te::gm::LineStringType);
   outRingPtr0->setPointN( 0, te::gm::Point(box.getLowerLeftX(), box.getLowerLeftY()));
@@ -77,6 +77,11 @@ void te::layout::Utils::drawRectW( te::gm::Envelope box )
 
   canvas->draw(rect);
 
+  if(rect)
+  {
+    delete rect;
+    rect = 0;
+  }
 }
 
 void te::layout::Utils::drawLineW( te::gm::LinearRing* line )

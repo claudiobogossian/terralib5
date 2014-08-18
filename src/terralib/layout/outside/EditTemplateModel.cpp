@@ -18,33 +18,42 @@
  */
 
 /*!
-  \file MultiLineTextItem.h
+  \file EditTemplateModel.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MULTILINETEXT_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MULTILINETEXT_ITEM_H
-
 // TerraLib
-#include "DefaultTextItem.h"
+#include "EditTemplateModel.h"
+#include "../core/property/Property.h"
+#include "../core/property/Properties.h"
 
-namespace te
+te::layout::EditTemplateModel::EditTemplateModel() 
 {
-  namespace layout
-  {
-    class Observable;
-
-    class MultiLineTextItem : public DefaultTextItem
-    {
-      public:
-
-        MultiLineTextItem( ItemController* controller, Observable* o );
-        virtual ~MultiLineTextItem();
-    };
-  }
+  //m_box = te::gm::Envelope(0., 0., 200., 200.);
 }
 
-#endif
+te::layout::EditTemplateModel::~EditTemplateModel()
+{
+
+}
+
+te::layout::Properties* te::layout::EditTemplateModel::getProperties() const
+{
+  m_properties->clear();
+
+  Property pro_name;
+  pro_name.setName("PageSetup");
+
+  m_properties->addProperty(pro_name);
+
+  m_properties->setTypeObj(m_type);
+  return m_properties;
+}
+
+void te::layout::EditTemplateModel::updateProperties( te::layout::Properties* properties )
+{
+
+}

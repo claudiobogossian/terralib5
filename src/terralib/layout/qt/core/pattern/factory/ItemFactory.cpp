@@ -43,8 +43,8 @@
 #include "../../../item/ArrowItem.h"
 #include "../../../item/EllipseItem.h"
 #include "../../../item/TitleItem.h"
-#include "../../../item/StringGridItem.h"
 #include "../../../item/MultiLineTextItem.h"
+#include "../../../item/TextGridItem.h"
 
 te::layout::ItemFactory::ItemFactory()
 {
@@ -153,10 +153,10 @@ te::layout::Observer* te::layout::ItemFactory::make( LayoutAbstractObjectType ty
       item = (Observer*)title;
       break;
     }
-  case TPStringGridItem:
+  case TPTextGridItem:
     {
-      StringGridItem* sGrid = new StringGridItem(params.getController(), params.getModel());
-      item = (Observer*)sGrid;
+      TextGridItem* txtGrid = new TextGridItem(params.getController(), params.getModel());
+      item = (Observer*)txtGrid;
       break;
     }
   case TPMultiLineTextItem:

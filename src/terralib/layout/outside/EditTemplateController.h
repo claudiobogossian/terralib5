@@ -18,33 +18,35 @@
  */
 
 /*!
-  \file StringGridItem.h
+  \file EditTemplateController.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_STRING_GRID_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_STRING_GRID_ITEM_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_EDIT_TEMPLATE_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_EDIT_TEMPLATE_CONTROLLER_H
 
 // TerraLib
-#include "ObjectItem.h"
+#include "../core/pattern/mvc/OutsideController.h"
+#include "../core/property/Property.h"
+#include "../core/enum/EnumMode.h"
+#include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class Observable;
-
-    class StringGridItem : public ObjectItem
+    class TELAYOUTEXPORT EditTemplateController : public OutsideController
     {
-      public:
+    public:
 
-        StringGridItem( ItemController* controller, Observable* o );
-        virtual ~StringGridItem();
-        
-        virtual void updateObserver(ContextItem context);
+	    EditTemplateController( Observable* o );
+	    virtual ~EditTemplateController();
+
+	    virtual void setPosition(const double& x, const double& y);
+
     };
   }
 }

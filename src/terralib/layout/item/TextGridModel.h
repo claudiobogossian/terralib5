@@ -18,31 +18,32 @@
  */
 
 /*!
-  \file MultiLineTextItem.h
+  \file TextGridModel.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MULTILINETEXT_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MULTILINETEXT_ITEM_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_MODEL_H
+#define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_MODEL_H
 
 // TerraLib
-#include "DefaultTextItem.h"
+#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/ContextItem.h"
 
 namespace te
 {
   namespace layout
   {
-    class Observable;
-
-    class MultiLineTextItem : public DefaultTextItem
+    class TextGridModel : public ItemModelObservable
     {
       public:
 
-        MultiLineTextItem( ItemController* controller, Observable* o );
-        virtual ~MultiLineTextItem();
+        TextGridModel();
+        virtual ~TextGridModel();
+
+        virtual void draw( ContextItem context );
     };
   }
 }

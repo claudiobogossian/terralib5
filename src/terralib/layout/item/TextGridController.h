@@ -18,32 +18,37 @@
  */
 
 /*!
-  \file StringGridModel.h
+  \file TextGridController.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_STRING_GRID_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_STRING_GRID_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/ContextItem.h"
+#include "../core/pattern/mvc/ItemController.h"
 
 namespace te
 {
   namespace layout
   {
-    class StringGridModel : public ItemModelObservable
+    class TextGridController : public ItemController
     {
       public:
 
-        StringGridModel();
-        virtual ~StringGridModel();
+        TextGridController( Observable* o );
+        virtual ~TextGridController();
 
-        virtual void draw( ContextItem context );
+        virtual void setPosition(const double& x, const double& y);
+
+      protected:
+
+        TextGridController( Observable* o, LayoutAbstractObjectType type );
+
+        virtual void create();
     };
   }
 }

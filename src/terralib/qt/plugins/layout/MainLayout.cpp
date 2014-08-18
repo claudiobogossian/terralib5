@@ -129,12 +129,10 @@ void te::qt::plugins::layout::MainLayout::createDockLayoutDisplay(QWidget* mainW
       m_statusBar->showMessage("TerraPrint. Terralib 5 - Ready...");
 
       QVBoxLayout* vLayout = new QVBoxLayout;
-      //view->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
       vLayout->addWidget(view);
       vLayout->addWidget(m_statusBar);
 
       m_groupBox = new QGroupBox(m_dockLayoutDisplay);
-      //m_groupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
       m_groupBox->setLayout(vLayout);
     }   
 

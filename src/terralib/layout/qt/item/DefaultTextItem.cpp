@@ -42,6 +42,7 @@
 
 // Qt
 #include <QStyleOptionGraphicsItem>
+#include <QTextCursor>
 
 te::layout::DefaultTextItem::DefaultTextItem( ItemController* controller, Observable* o ) :
   QGraphicsTextItem(0),

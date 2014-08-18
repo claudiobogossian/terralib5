@@ -32,42 +32,13 @@
 #include "../../color/RGBAColor.h"
 #include "../../maptools/Canvas.h"
 
-te::layout::MultiLineTextModel::MultiLineTextModel() 
+te::layout::MultiLineTextModel::MultiLineTextModel() :
+  DefaultTextModel()
 {
-  m_borderColor = te::color::RGBAColor(0, 0, 255, 255);
-  m_backgroundColor = te::color::RGBAColor(0, 255, 0, 100);
-
-  m_box = te::gm::Envelope(0., 0., 10., 10.);
+  m_box = te::gm::Envelope(0., 0., 170., 30.);
 }
 
 te::layout::MultiLineTextModel::~MultiLineTextModel()
 {
 
 }
-
-void te::layout::MultiLineTextModel::draw( ContextItem context )
-{
-  te::color::RGBAColor** pixmap = 0;
-  
-  te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
-
-  if((!canvas) || (!utils))
-    return;
-
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-  
-  canvas->setPolygonContourWidth(2);
-  canvas->setPolygonContourColor(m_borderColor);
-  canvas->setPolygonFillColor(m_backgroundColor);
-  
-  utils->drawRectW(m_box);
-  
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
-  
-  context.setPixmap(pixmap);
-  notifyAll(context);
-}
-

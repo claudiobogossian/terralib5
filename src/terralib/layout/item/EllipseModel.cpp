@@ -32,12 +32,12 @@
 #include "../../color/RGBAColor.h"
 #include "../../maptools/Canvas.h"
 
+// STL
+#include <cmath>
+
 te::layout::EllipseModel::EllipseModel() 
 {
-  m_borderColor = te::color::RGBAColor(0, 0, 255, 255);
-  m_backgroundColor = te::color::RGBAColor(0, 255, 0, 100);
-
-  m_box = te::gm::Envelope(0., 0., 10., 10.);
+  m_box = te::gm::Envelope(0., 0., 22., 20.);
 }
 
 te::layout::EllipseModel::~EllipseModel()
@@ -62,11 +62,49 @@ void te::layout::EllipseModel::draw( ContextItem context )
   canvas->setPolygonContourColor(m_borderColor);
   canvas->setPolygonFillColor(m_backgroundColor);
   
-  utils->drawRectW(m_box);
+  drawEllipse(canvas, utils);
+
+  if(m_border)
+  {
+    utils->drawRectW(m_box);
+  }
   
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
   
   context.setPixmap(pixmap);
   notifyAll(context);
+}
+
+void te::layout::EllipseModel::drawEllipse( te::map::Canvas* canvas, Utils* utils)
+{
+    double rx = (m_box.m_urx - m_box.m_llx) / 2.;
+    double ry = (m_box.m_ury - m_box.m_lly) / 2.;
+    double cx = (m_box.m_urx + m_box.m_llx) / 2.;
+    double cy = (m_box.m_ury + m_box.m_lly) / 2.;
+
+    double lastX = m_box.m_llx;
+    double lastY = m_box.m_lly;
+
+    double x = 0;
+    double y = 0;
+    double angle = 0;
+
+    for(int i = 0 ; i < 360 ; ++i)
+    {
+      angle = i;
+      x = cx + std::cos(angle) * rx;
+      y = cy + std::sin(angle) * ry;
+
+      if (angle > 0) 
+      {
+        te::gm::Envelope box(lastX, lastY, x, y);
+        te::gm::LinearRing* line = utils->createSimpleLine(box);
+        utils->drawLineW(line);
+        if(line) delete line;        
+      }
+
+      lastX = x;
+      lastY = y;
+    }
 }

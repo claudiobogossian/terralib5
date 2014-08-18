@@ -71,7 +71,7 @@ namespace te
         QGraphicsItem* createEllipse();
         QGraphicsItem* createMultiLineText();
         QGraphicsItem* createPoint();
-        QGraphicsItem* createStringGrid();
+        QGraphicsItem* createTextGrid();
         QGraphicsItem* createTitle();
 
         te::gm::Coord2D findCoordinate(te::layout::Properties* props);
@@ -106,7 +106,7 @@ namespace te
         std::string             m_ellipseItem;
         std::string             m_multiLineTextItem;
         std::string             m_pointItem;
-        std::string             m_stringGridItem;
+        std::string             m_textGridItem;
         std::string             m_titleItem;
     };
   }

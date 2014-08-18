@@ -101,6 +101,9 @@ void te::layout::MapGridModel::draw( ContextItem context )
   
   utils->configCanvas(m_box);
 
+  canvas->setFontFamily("Arial");
+  canvas->setTextPointSize(8);
+
   drawGrid(canvas, utils);
 
   utils->configCanvas(m_box, false);

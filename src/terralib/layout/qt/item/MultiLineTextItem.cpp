@@ -36,12 +36,14 @@
 #include "../../../common/STLUtils.h"
 
 te::layout::MultiLineTextItem::MultiLineTextItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+  DefaultTextItem(controller, o)
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges
     | QGraphicsItem::ItemIsFocusable);
+
+  setTextInteractionFlags(Qt::TextEditable | Qt::TextSelectableByKeyboard);
 
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -49,41 +51,4 @@ te::layout::MultiLineTextItem::MultiLineTextItem( ItemController* controller, Ob
 te::layout::MultiLineTextItem::~MultiLineTextItem()
 {
 
-}
-
-void te::layout::MultiLineTextItem::updateObserver( ContextItem context )
-{
-  if(!m_model)
-    return;
-
-  te::color::RGBAColor** rgba = context.getPixmap();  
-
-  if(!rgba)
-    return;
-
-  Utils* utils = context.getUtils();
-
-  if(!utils)
-    return;
-
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
-
-  if(!box.isValid())
-    return;
-
-  QPixmap pixmp;
-  QImage* img = 0;
-  
-  if(rgba)
-  {
-    img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
-    pixmp = QPixmap::fromImage(*img);
-  }
-
-  te::common::Free(rgba, box.getHeight());
-  if(img)
-    delete img;
-  
-  setPixmap(pixmp);
-  update();
 }

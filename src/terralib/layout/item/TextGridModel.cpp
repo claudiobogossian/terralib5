@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file StringGridModel.cpp
+  \file TextGridModel.cpp
    
   \brief 
 
@@ -26,13 +26,13 @@
 */
 
 // TerraLib
-#include "StringGridModel.h"
+#include "TextGridModel.h"
 #include "../core/ContextItem.h"
 #include "../../geometry/Envelope.h"
 #include "../../color/RGBAColor.h"
 #include "../../maptools/Canvas.h"
 
-te::layout::StringGridModel::StringGridModel() 
+te::layout::TextGridModel::TextGridModel() 
 {
   m_borderColor = te::color::RGBAColor(0, 0, 255, 255);
   m_backgroundColor = te::color::RGBAColor(0, 255, 0, 100);
@@ -40,12 +40,12 @@ te::layout::StringGridModel::StringGridModel()
   m_box = te::gm::Envelope(0., 0., 10., 10.);
 }
 
-te::layout::StringGridModel::~StringGridModel()
+te::layout::TextGridModel::~TextGridModel()
 {
 
 }
 
-void te::layout::StringGridModel::draw( ContextItem context )
+void te::layout::TextGridModel::draw( ContextItem context )
 {
   te::color::RGBAColor** pixmap = 0;
   
