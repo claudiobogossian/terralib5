@@ -72,6 +72,15 @@ namespace te
     TESAEXPORT double FirstMoment(te::sa::GeneralizedProximityMatrix* gpm, int attrIdx);
 
     /*!
+      \brief Function used to calculate mean (first moment)  from a vector with double values
+
+      \param vec Vector with double values
+
+      \return Return the mean value.
+    */
+    TESAEXPORT double FirstMoment(std::vector<double> vec);
+
+    /*!
       \brief Function used to calculate variance (second moment)  of a specific attribute from a gpm
 
       \param gpm  Pointer to the gpm

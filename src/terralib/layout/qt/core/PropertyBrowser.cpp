@@ -223,6 +223,7 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
     qcolor.setRed(color.getRed());
     qcolor.setGreen(color.getGreen());
     qcolor.setBlue(color.getBlue());
+    qcolor.setAlpha(color.getAlpha());
     vproperty->setValue(qcolor);
     break;
   case DataTypeFont:
@@ -243,6 +244,9 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
 
   if(vproperty)
   {
+    if(!property.isEditable())
+      vproperty->setEnabled(false);
+
     addPropertyItem(vproperty, QLatin1String(property.getName().c_str()));
     return true;
   }
@@ -329,7 +333,7 @@ te::layout::Property te::layout::PropertyBrowser::getProperty( std::string name 
     qcolor = variant.value<QColor>();
     if(qcolor.isValid()) 
     {
-      color.setColor(qcolor.red(), qcolor.green(), qcolor.blue(), 255);
+      color.setColor(qcolor.red(), qcolor.green(), qcolor.blue(), qcolor.alpha());
       prop.setValue(color, type);
     }
     break;

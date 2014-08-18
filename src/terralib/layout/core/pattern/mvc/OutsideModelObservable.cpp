@@ -36,7 +36,8 @@ te::layout::OutsideModelObservable::OutsideModelObservable() :
 	m_color(0),
   m_type(TPObjectUnknown),
   m_name("unknown"),
-  m_id(0)
+  m_id(0),
+  m_resizable(true)
 {
   m_properties = new Properties("Unknown");
 }
@@ -165,4 +166,14 @@ int te::layout::OutsideModelObservable::getId()
 void te::layout::OutsideModelObservable::setId( int id )
 {
   m_id = id;
+}
+
+void te::layout::OutsideModelObservable::setResizable( bool resize )
+{
+  m_resizable = resize;
+}
+
+bool te::layout::OutsideModelObservable::isResizable()
+{
+  return m_resizable;
 }

@@ -287,9 +287,7 @@ double te::sa::GetArea(te::gm::Geometry* geom)
   }
   else if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
   {
-    te::gm::Polygon* poly = (te::gm::Polygon*)((te::gm::MultiPolygon*)geom)->getGeometryN(0);
-
-    return poly->getArea();
+    return ((te::gm::MultiPolygon*)geom)->getArea();
   }
 
   return 0.;

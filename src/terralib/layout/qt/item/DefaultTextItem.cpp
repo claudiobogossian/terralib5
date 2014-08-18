@@ -42,6 +42,7 @@
 
 // Qt
 #include <QStyleOptionGraphicsItem>
+#include <QTextCursor>
 
 te::layout::DefaultTextItem::DefaultTextItem( ItemController* controller, Observable* o ) :
   QGraphicsTextItem(0),
@@ -55,6 +56,8 @@ te::layout::DefaultTextItem::DefaultTextItem( ItemController* controller, Observ
   QGraphicsItem* item = this;
   Context::getInstance().getScene()->insertItem((ItemObserver*)item);
   
+  m_nameClass = std::string(this->metaObject()->className());
+
   std::string name = m_model->getName();
   DefaultTextModel* model = dynamic_cast<DefaultTextModel*>(m_model);
   if(model)
@@ -174,8 +177,6 @@ void te::layout::DefaultTextItem::paint( QPainter * painter, const QStyleOptionG
 
   drawBackground( painter );
 
-  QGraphicsTextItem::paint(painter, option, widget);
-
   QRectF boundRect;
   boundRect = boundingRect();
 
@@ -183,6 +184,8 @@ void te::layout::DefaultTextItem::paint( QPainter * painter, const QStyleOptionG
   painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );
   painter->drawPixmap(boundRect, m_pixmap, QRectF( 0, 0, m_pixmap.width(), m_pixmap.height() ));
   painter->restore();  
+
+  QGraphicsTextItem::paint(painter, option, widget);
 
   //Draw Selection
   if (option->state & QStyle::State_Selected)

@@ -52,6 +52,8 @@ te::layout::ItemGroup::ItemGroup( ItemController* controller, Observable* o ) :
   QGraphicsItem* item = this;
   Context::getInstance().getScene()->insertItem((ItemObserver*)item);
 
+  m_nameClass = "ItemGroup";
+
   //If enabled is true, this item will accept hover events
   setAcceptHoverEvents(true);
 }

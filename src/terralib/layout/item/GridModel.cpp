@@ -108,3 +108,22 @@ void te::layout::GridModel::setBoundingBoxItemMM( te::gm::Envelope box )
   m_boundingBoxItemMM = box;
 }
 
+void te::layout::GridModel::setSystematic( Systematic* sys )
+{
+  m_systematic = sys;
+}
+
+void te::layout::GridModel::setVisibleAllTexts( bool visible )
+{
+  m_visibleAllTexts = visible;
+
+  m_bottomText = visible;
+  m_leftText = visible;
+  m_rightText = visible;
+  m_topText = visible;
+}
+
+bool te::layout::GridModel::isVisibleAllTexts()
+{
+  return m_visibleAllTexts;
+}

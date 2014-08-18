@@ -31,6 +31,9 @@
 // TerraLib
 #include "ObjectItem.h"
 
+// Qt
+#include <QPixmap>
+
 namespace te
 {
   namespace layout

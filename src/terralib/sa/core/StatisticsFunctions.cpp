@@ -118,6 +118,16 @@ double te::sa::FirstMoment(te::sa::GeneralizedProximityMatrix* gpm, int attrIdx)
   return mean /= count;
 }
 
+double te::sa::FirstMoment(std::vector<double> vec)
+{
+  double tot = 0.;
+
+  for(std::size_t t = 0; t < vec.size(); ++t)
+    tot += vec[t];
+
+  return tot / (double)vec.size();
+}
+
 double te::sa::SecondMoment(te::sa::GeneralizedProximityMatrix* gpm, int attrIdx, double mean)
 {
   assert(gpm);

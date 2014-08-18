@@ -27,18 +27,24 @@
 
 // TerraLib
 #include "ItemFactory.h"
+#include "../../../../core/pattern/mvc/Observer.h"
 #include "../../../item/RectangleItem.h"
 #include "../../../item/HorizontalRulerItem.h"
 #include "../../../item/VerticalRulerItem.h"
 #include "../../../item/ItemGroup.h"
 #include "../../../item/PaperItem.h"
 #include "../../../item/MapItem.h"
-#include "../../../../core/pattern/mvc/Observer.h"
 #include "../../../item/MapGridItem.h"
 #include "../../../item/LegendItem.h"
 #include "../../../item/ScaleItem.h"
 #include "../../../item/DefaultTextItem.h"
 #include "../../../item/ImageItem.h"
+#include "../../../item/PointItem.h"
+#include "../../../item/ArrowItem.h"
+#include "../../../item/EllipseItem.h"
+#include "../../../item/TitleItem.h"
+#include "../../../item/MultiLineTextItem.h"
+#include "../../../item/TextGridItem.h"
 
 te::layout::ItemFactory::ItemFactory()
 {
@@ -61,81 +67,107 @@ te::layout::Observer* te::layout::ItemFactory::make( LayoutAbstractObjectType ty
     {
       RectangleItem* rectangle = new RectangleItem(params.getController(), params.getModel());
       item = (Observer*)rectangle;
-      return item;
       break;
     }
   case TPLegendItem:
     {
       LegendItem* legend = new LegendItem(params.getController(), params.getModel());
       item = (Observer*)legend;
-      return item;
       break;
     }
   case TPHorizontalRuler:
     {
       HorizontalRulerItem* ruler = new HorizontalRulerItem(params.getController(), params.getModel());
       item = (Observer*)ruler;
-      return item;
       break;
     }
   case TPVerticalRuler:
     {
       VerticalRulerItem* ruler = new VerticalRulerItem(params.getController(), params.getModel());
       item = (Observer*)ruler;
-      return item;
       break;
     }
   case TPTextItem:
     {
       DefaultTextItem* txt = new DefaultTextItem(params.getController(), params.getModel());
       item = (Observer*)txt;
-      return item;
-      break;
       break;
     }
   case TPItemGroup:
     {
       ItemGroup* group = new ItemGroup(params.getController(), params.getModel());
       item = (Observer*)group;
-      return item;
       break;
     }
   case TPPaperItem:
     {
       PaperItem* paper = new PaperItem(params.getController(), params.getModel());
       item = (Observer*)paper;
-      return item;
       break;
     }
   case TPMapItem:
     {
       MapItem* map = new MapItem(params.getController(), params.getModel());
       item = (Observer*)map;
-      return item;
       break;
     }
   case TPMapGridItem:
     {
       MapGridItem* mapGrid = new MapGridItem(params.getController(), params.getModel());
       item = (Observer*)mapGrid;
-      return item;
       break;
     }
   case TPScaleItem:
     {
       ScaleItem* scale = new ScaleItem(params.getController(), params.getModel());
       item = (Observer*)scale;
-      return item;
       break;
     }
   case TPImageItem:
     {
       ImageItem* scale = new ImageItem(params.getController(), params.getModel());
       item = (Observer*)scale;
-      return item;
       break;
     }
+  case TPPointItem:
+    {
+      PointItem* point = new PointItem(params.getController(), params.getModel());
+      item = (Observer*)point;
+      break;
+    }
+  case TPArrowItem:
+    {
+      ArrowItem* arrow = new ArrowItem(params.getController(), params.getModel());
+      item = (Observer*)arrow;
+      break;
+    }
+  case TPEllipseItem:
+    {
+      EllipseItem* ellipse = new EllipseItem(params.getController(), params.getModel());
+      item = (Observer*)ellipse;
+      break;
+    }
+  case TPTitleItem:
+    {
+      TitleItem* title = new TitleItem(params.getController(), params.getModel());
+      item = (Observer*)title;
+      break;
+    }
+  case TPTextGridItem:
+    {
+      TextGridItem* txtGrid = new TextGridItem(params.getController(), params.getModel());
+      item = (Observer*)txtGrid;
+      break;
+    }
+  case TPMultiLineTextItem:
+    {
+      MultiLineTextItem* mText = new MultiLineTextItem(params.getController(), params.getModel());
+      item = (Observer*)mText;
+      break;
+    }
+  default:
+    item = 0;
   }
 
-  return 0;
+  return item;
 }
