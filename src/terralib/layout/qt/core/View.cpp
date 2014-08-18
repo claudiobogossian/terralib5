@@ -534,6 +534,14 @@ void te::layout::View::outsideAreaChangeContext( bool change )
     showPageSetup();
     resetDefaultConfig();
     break;
+  case TypeMapCreateTextGrid:
+    sc->createTextGridAsObject();
+    resetDefaultConfig();
+    break;
+  case TypeMapCreateTextMap:
+    sc->createTextMapAsObject();
+    resetDefaultConfig();
+    break;
   default:
     {
       resetDefaultConfig();

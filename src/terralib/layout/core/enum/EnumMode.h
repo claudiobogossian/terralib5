@@ -83,6 +83,8 @@ namespace te
       TypeWidgetInspector = 42,
       TypeWidgetProperties = 43,
       TypeWidgetToolbar = 44,
+      TypeMapCreateTextGrid = 45,
+      TypeMapCreateTextMap = 46,
       TypeNone = 0
     } LayoutMode;
 

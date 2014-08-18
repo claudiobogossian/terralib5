@@ -35,6 +35,10 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../../common/UnitOfMeasure.h"
 
+// STL
+#include <map>
+#include <string>
+
 namespace te
 {
   namespace layout
@@ -88,6 +92,8 @@ namespace te
 
         virtual te::gm::Envelope getWorldBox();
 
+        virtual std::map<te::gm::Coord2D, std::string> getTextMapAsObjectInfo();
+        
       protected:
         
         te::map::AbstractLayerPtr m_layer;

@@ -36,6 +36,10 @@
 #include "../../geometry/Envelope.h"
 #include "../core/Utils.h"
 #include "../core/Systematic.h"
+#include "../../geometry/Coord2D.h"
+
+// STL
+#include <map>
 
 namespace te
 {
@@ -51,12 +55,14 @@ namespace te
         virtual void draw(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid) = 0;
 
         virtual te::layout::Property getProperty() = 0;
+
         virtual void updateProperty(Property property) = 0;
 
         virtual std::string getName();
         virtual void setName(std::string name);
 
         virtual bool isVisible();
+
         virtual void setVisible(bool visible);
 
         virtual void setMapScale(double scale);
@@ -68,7 +74,13 @@ namespace te
         virtual void setBoundingBoxItemMM(te::gm::Envelope box);
 
         virtual void setSystematic(Systematic* sys);
-                
+
+        virtual std::map<te::gm::Coord2D, std::string> getGridInfo() = 0;
+
+        virtual void setVisibleAllTexts(bool visible);
+
+        virtual bool isVisibleAllTexts();
+                        
        protected:
 
          virtual void drawVerticalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box) = 0;
@@ -79,7 +91,7 @@ namespace te
 
        protected:
 
-         te::layout::Property m_property;
+         te::layout::Property    m_property;
          double                  m_mapScale;
          std::string             m_name;
          int                     m_srid;
@@ -88,7 +100,7 @@ namespace te
          te::gm::Envelope     m_boxMapMM;
          te::gm::Envelope     m_boundingBoxItemMM;
          te::gm::Envelope     m_worldBox;
-
+         
          /* Grid */
          bool   m_visible;
          double m_lneHrzGap;

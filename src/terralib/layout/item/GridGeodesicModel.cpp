@@ -568,3 +568,32 @@ void te::layout::GridGeodesicModel::setPlanarBox( te::gm::Envelope box )
 {
   m_planarBox = box;
 }
+
+void te::layout::GridGeodesicModel::setVisibleAllTexts( bool visible )
+{
+  GridModel::setVisibleAllTexts(visible);
+
+  setVisibleCornerTextsText(visible);
+}
+
+void te::layout::GridGeodesicModel::setVisibleCornerTextsText( bool visible )
+{
+  m_visibleCornerTextsText = visible;
+
+  m_lowerRightCornerText = visible;
+  m_upperRightCornerText = visible;
+  m_lowerLeftCornerText = visible;
+  m_upperLeftCornerText = visible;
+}
+
+bool te::layout::GridGeodesicModel::isVisibleCornerTextsText()
+{
+  return m_visibleCornerTextsText;
+}
+
+std::map<te::gm::Coord2D, std::string> te::layout::GridGeodesicModel::getGridInfo()
+{
+  std::map<te::gm::Coord2D, std::string>  map;
+
+  return map;
+}

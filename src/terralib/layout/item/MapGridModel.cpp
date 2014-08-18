@@ -213,3 +213,13 @@ void te::layout::MapGridModel::generateSystematic( te::gm::Coord2D coord )
 {
   MapModel::generateSystematic(coord);
 }
+
+te::layout::GridPlanarModel* te::layout::MapGridModel::getGridPlanar()
+{
+  return m_gridPlanar;
+}
+
+te::layout::GridGeodesicModel* te::layout::MapGridModel::getGridGeodesic()
+{
+  return m_gridGeodesic;
+}

@@ -451,3 +451,10 @@ te::gm::Envelope te::layout::MapModel::getWorldBox()
 
   return worldBox;
 }
+
+std::map<te::gm::Coord2D, std::string> te::layout::MapModel::getTextMapAsObjectInfo()
+{
+  std::map<te::gm::Coord2D, std::string>  map;
+
+  return map;
+}

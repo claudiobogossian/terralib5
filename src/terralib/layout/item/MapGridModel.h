@@ -55,6 +55,10 @@ namespace te
 
         virtual void generateSystematic(te::gm::Coord2D coord);
 
+        virtual GridPlanarModel* getGridPlanar();
+
+        virtual GridGeodesicModel* getGridGeodesic();
+
       protected:
 
         virtual void drawGrid(te::map::Canvas* canvas, Utils* utils);

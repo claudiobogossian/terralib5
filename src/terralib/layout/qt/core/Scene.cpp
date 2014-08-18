@@ -46,6 +46,10 @@
 #include "../item/DefaultTextItem.h"
 #include "../../core/Systematic.h"
 #include "../../item/MapModel.h"
+#include "../item/MapGridItem.h"
+#include "../../item/MapGridModel.h"
+#include "../../item/GridGeodesicModel.h"
+#include "../../item/GridPlanarModel.h"
 
 // STL
 #include <iostream>
@@ -777,20 +781,22 @@ void te::layout::Scene::deleteItems()
   }
 }
 
-void te::layout::Scene::createItem( const te::gm::Coord2D& coord )
+QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
 {
+  QGraphicsItem* item = 0;
+
   BuildGraphicsItem* build = Context::getInstance().getBuildGraphicsItem();
 
   if(!build)
-    return;
-
-  QGraphicsItem* item = 0;
+    return item;
 
   LayoutMode mode = Context::getInstance().getMode();
 
   item = build->createItem(mode, coord);
 
   Context::getInstance().setMode(TypeNone);
+
+  return item;
 }
 
 void te::layout::Scene::setCurrentToolInSelectedMapItems( LayoutMode mode )
@@ -965,4 +971,82 @@ void te::layout::Scene::setCurrentMapSystematic( Systematic* systematic, te::gm:
       }
     }
   }
+}
+
+void te::layout::Scene::createTextGridAsObject()
+{
+  QGraphicsItem *item = selectedItems().first();
+  if(item)
+  {
+    ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+    if(it)
+    {
+      MapGridItem* mt = dynamic_cast<MapGridItem*>(it);
+      if(mt)
+      {
+        MapGridModel* model = dynamic_cast<MapGridModel*>(mt->getModel());
+
+        GridGeodesicModel* gridGeo = dynamic_cast<GridGeodesicModel*>(model->getGridGeodesic());
+        if(model->getGridGeodesic()->isVisible())
+        {
+          model->getGridGeodesic()->setVisibleAllTexts(false);
+          std::map<te::gm::Coord2D, std::string> mapGeo = gridGeo->getGridInfo();
+          createDefaultTextItemFromObject(mapGeo);
+        }
+
+        GridPlanarModel* gridPlanar = dynamic_cast<GridPlanarModel*>(model->getGridPlanar());
+        if(model->getGridPlanar()->isVisible())
+        {
+          model->getGridGeodesic()->setVisibleAllTexts(false);
+          std::map<te::gm::Coord2D, std::string> mapPlanar = gridPlanar->getGridInfo();
+          createDefaultTextItemFromObject(mapPlanar);
+        }        
+      }
+    }
+  }
+}
+
+void te::layout::Scene::createTextMapAsObject()
+{
+  QGraphicsItem *item = selectedItems().first();
+  if(item)
+  {
+    ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+    if(it)
+    {
+      MapItem* mt = dynamic_cast<MapItem*>(it);
+      if(mt)
+      {
+        MapModel* model = dynamic_cast<MapModel*>(mt->getModel());
+        std::map<te::gm::Coord2D, std::string> map = model->getTextMapAsObjectInfo();
+        createDefaultTextItemFromObject(map);
+      }
+    }
+  }
+}
+
+void te::layout::Scene::createDefaultTextItemFromObject( std::map<te::gm::Coord2D, std::string> map )
+{
+  Context::getInstance().setMode(TypeCreateText);
+
+  std::map<te::gm::Coord2D, std::string>::iterator it;
+
+  for (it = map.begin(); it != map.end(); ++it) 
+  {
+    te::gm::Coord2D coord = it->first;
+    std::string text = it->second;
+   
+    QGraphicsItem* item = 0;
+    item = createItem(coord);
+    if(!item)
+      continue;
+
+    DefaultTextItem* txtItem = dynamic_cast<DefaultTextItem*>(item);
+    if(txtItem)
+    {
+      txtItem->setPlainText(text.c_str());
+    }
+  }
+
+  Context::getInstance().setMode(TypeNone);
 }

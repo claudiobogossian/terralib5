@@ -51,6 +51,8 @@ namespace te
 
         virtual void updateProperty(te::layout::Property property);
 
+        virtual std::map<te::gm::Coord2D, std::string> getGridInfo();
+
        protected:
 
          virtual void drawVerticalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);

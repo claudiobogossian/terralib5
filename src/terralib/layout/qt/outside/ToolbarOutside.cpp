@@ -79,6 +79,9 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionMultiLineText("text_multiLineText"),
   m_optionStringGrid("text_stringGrid"),
   m_optionTitle("text_title"),
+  m_optionMapCreateTextGrid("map_text_grid"),
+  m_optionMapCreateMapText("map_text_map"),
+
   m_btnMap(0)
 {
 	te::gm::Envelope box = m_model->getBox();	
@@ -199,6 +202,12 @@ void te::layout::ToolbarOutside::createMapToolsToolButton()
 
   QAction* actionSystematic = createAction("Systematic Scale", m_optionMapSystematicScale, "layout-systematic-map");
   menu->addAction(actionSystematic);
+
+  QAction* actionTextGrid = createAction("Text Grid as Object", m_optionMapCreateTextGrid, "layout-createtext-as-obj");
+  menu->addAction(actionTextGrid);
+
+  QAction* actionTextMap = createAction("Text Map as Object", m_optionMapCreateMapText, "layout-createmap-text-as-objs");
+  menu->addAction(actionTextMap);
   
   QToolButton *btnMapTools = createToolButton("Map Tools", "Map Tools", "layout-map-pan");
   btnMapTools->setMenu(menu);
@@ -401,6 +410,14 @@ void te::layout::ToolbarOutside::onMapToolsTriggered( QAction* action )
   else if(action->objectName().compare(m_optionMapSystematicScale.c_str()) == 0)
   {
     changeAction(TypeSystematicScale);
+  }
+  else if(action->objectName().compare(m_optionMapCreateTextGrid.c_str()) == 0)
+  {
+    changeAction(TypeMapCreateTextGrid);
+  }
+  else if(action->objectName().compare(m_optionMapCreateMapText.c_str()) == 0)
+  {
+    changeAction(TypeMapCreateTextMap);
   }
 }
 
