@@ -610,22 +610,22 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
         }
       case te::dt::INT16_TYPE:
         {
-          outItem->setInt16(1, std::stoi(itGeom->first));
+          outItem->setInt16(1, boost::lexical_cast<int>(itGeom->first));
           break;
         }
       case te::dt::INT32_TYPE:
         {
-          outItem->setInt32(1, std::stoi(itGeom->first));
+          outItem->setInt32(1, boost::lexical_cast<int>(itGeom->first));
           break;
         }
       case te::dt::INT64_TYPE:
         {
-          outItem->setInt64(1, std::stoi(itGeom->first));
+          outItem->setInt64(1, boost::lexical_cast<int>(itGeom->first));
           break;
         }
       case te::dt::DOUBLE_TYPE:
         {
-          outItem->setDouble(1, std::stod(itGeom->first));
+          outItem->setDouble(1, boost::lexical_cast<double>(itGeom->first));
           break;
         }
     }
