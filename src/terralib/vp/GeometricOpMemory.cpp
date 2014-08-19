@@ -99,6 +99,8 @@ bool te::vp::GeometricOpMemory::run()
       case te::vp::PERIMETER:
         opTab.push_back(te::vp::PERIMETER);
         break;
+      default:
+        te::common::Logger::logDebug("vp", "Geometric Operation - The operation is not valid.");
     }
   }
 
@@ -207,6 +209,9 @@ bool te::vp::GeometricOpMemory::run()
           }
         }
         break;
+      default:
+        te::common::Logger::logDebug("vp", "Geometric Operation - Strategy Not found!");
+        return false;
     }
 
     return result;
@@ -275,6 +280,8 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
               item->setDouble("perimeter", perimeter);
             }
             break;
+          default:
+            te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the tabular value.");
         }
       }
     }
@@ -329,6 +336,8 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
               }
             }
             break;
+          default:
+            te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the geometric value.");
         }
       }
     }
@@ -357,6 +366,8 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
               teGeomColl->add(g.release());
           }
           break;
+        default:
+          te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the geometry in collection.");
       }
       if(teGeomColl->getNumGeometries() != 0)
         item->setGeometry("geom", teGeomColl);
@@ -437,6 +448,8 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregObj(te::da::DataSetType* d
             item->setDouble("perimeter", perimeter);
           }
           break;
+        default:
+          te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the tabular value.");
       }
     }
   }
@@ -481,6 +494,8 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregObj(te::da::DataSetType* d
             }
           }
           break;
+        default:
+          te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the geometry in collection.");
       }
     }
   }
@@ -509,6 +524,8 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregObj(te::da::DataSetType* d
             teGeomColl->add(g.release());
         }
         break;
+      default:
+        te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the geometry in collection.");
     }
     if(teGeomColl->getNumGeometries() != 0)
       item->setGeometry("geom", teGeomColl);
@@ -604,30 +621,22 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
     switch(prop->getType())
     {
       case te::dt::STRING_TYPE:
-        {
           outItem->setString(1, itGeom->first);
           break;
-        }
       case te::dt::INT16_TYPE:
-        {
           outItem->setInt16(1, boost::lexical_cast<int>(itGeom->first));
           break;
-        }
       case te::dt::INT32_TYPE:
-        {
           outItem->setInt32(1, boost::lexical_cast<int>(itGeom->first));
           break;
-        }
       case te::dt::INT64_TYPE:
-        {
           outItem->setInt64(1, boost::lexical_cast<int>(itGeom->first));
           break;
-        }
       case te::dt::DOUBLE_TYPE:
-        {
           outItem->setDouble(1, boost::lexical_cast<double>(itGeom->first));
           break;
-        }
+      default:
+        te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the aggregated value.");
     }
     
     // inserting geometries.
@@ -658,6 +667,8 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
               outItem->setDouble("perimeter", perimeter);
             }
             break;
+          default:
+            te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the tabular value.");
         }
       }
     }
@@ -702,6 +713,8 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
               }
             }
             break;
+          default:
+            te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the geometric value.");
         }
       }
     }
@@ -729,6 +742,8 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
               teGeomColl->add(itGeom->second);
           }
           break;
+        default:
+          te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the geometry in collection.");
       }
       if(teGeomColl->getNumGeometries() != 0)
         outItem->setGeometry("geom", teGeomColl);
@@ -864,6 +879,8 @@ double te::vp::GeometricOpMemory::CalculateTabularOp( int tabOperation,
         return value;
       }
       break;
+    default:
+      te::common::Logger::logDebug("vp", "Geometric Operation - Could not calculate the operation.");
   }
 
   return value;
