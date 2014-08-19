@@ -150,7 +150,7 @@ void te::qt::widgets::ContrastDialog::on_okPushButton_clicked()
         tr( "Mean and standard deviation" ) )
       {
         algoInputParams.m_type = 
-          te::rp::Contrast::InputParameters::SetMeanAndStdContrastT;
+          te::rp::Contrast::InputParameters::MeanAndStdContrastT;
         algoInputParams.m_sMASCMeanInput.resize( selectedBands.size(),
           m_uiPtr->m_sMASCMeanInputLineEdit->text().toDouble() );
         algoInputParams.m_sMASCStdInput.resize( selectedBands.size(),
