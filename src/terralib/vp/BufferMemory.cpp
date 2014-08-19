@@ -111,34 +111,39 @@ bool te::vp::BufferMemory::run()
               dataSetItem->setString(j+2, inDset->getString(j));
               break;
             case te::dt::GEOMETRY_TYPE:
-              dataSetItem->setInt32(0, pk); //pk
-              dataSetItem->setInt32(1, i); //level
-              dataSetItem->setDouble(2, m_distance*(i)); //distance
-
-              std::auto_ptr<te::gm::Geometry> currentGeom = inDset->getGeometry(j);
-              std::auto_ptr<te::gm::Geometry> outGeom;
-
-              if(currentGeom->isValid())
-                outGeom.reset(setBuffer(currentGeom.get(), m_distance, i, auxGeom));
-              else
-                te::common::Logger::logDebug("vp", "Buffer - Invalid geometry found");
-
-              if(outGeom.get() && outGeom->isValid())
               {
-                if(outGeom->getGeomTypeId() == te::gm::MultiPolygonType)
-                {
-                  dataSetItem->setGeometry(j+2, outGeom.release());
-                }
-                else
-                {
-                  std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, outGeom->getSRID()));
-                  mPolygon->add(outGeom.release());
-                  dataSetItem->setGeometry(j+2, mPolygon.release());
-                }
+                dataSetItem->setInt32(0, pk); //pk
+                dataSetItem->setInt32(1, i); //level
+                dataSetItem->setDouble(2, m_distance*(i)); //distance
 
-                outDSet->add(dataSetItem);
-                ++pk;
+                std::auto_ptr<te::gm::Geometry> currentGeom = inDset->getGeometry(j);
+                std::auto_ptr<te::gm::Geometry> outGeom;
+
+                if(currentGeom->isValid())
+                  outGeom.reset(setBuffer(currentGeom.get(), m_distance, i, auxGeom));
+                else
+                  te::common::Logger::logDebug("vp", "Buffer - Invalid geometry found");
+
+                if(outGeom.get() && outGeom->isValid())
+                {
+                  if(outGeom->getGeomTypeId() == te::gm::MultiPolygonType)
+                  {
+                    dataSetItem->setGeometry(j+2, outGeom.release());
+                  }
+                  else
+                  {
+                    std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, outGeom->getSRID()));
+                    mPolygon->add(outGeom.release());
+                    dataSetItem->setGeometry(j+2, mPolygon.release());
+                  }
+
+                  outDSet->add(dataSetItem);
+                  ++pk;
+                }
               }
+              break;
+            default:
+              te::common::Logger::logDebug("vp", "Buffer - Type not found.");
           }
         }
         else
@@ -238,6 +243,9 @@ te::gm::Geometry* te::vp::BufferMemory::setBuffer(te::gm::Geometry* geom,
       auxGeom = geomTemp;
 
       break;
+
+    default:
+      te::common::Logger::logDebug("vp", "Buffer - Polygon rule not found.");
   }
   return geomResult;
 }

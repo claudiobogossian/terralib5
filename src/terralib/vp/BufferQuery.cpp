@@ -297,28 +297,32 @@ void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType* dataSetType,
             dataSetItem->setString(j+3, dataSetQuery->getString(j));
             break;
           case te::dt::GEOMETRY_TYPE:
-            dataSetItem->setInt32(0, pk); //pk
-            dataSetItem->setInt32(1, i+1); //level
-            dataSetItem->setDouble(2, distance*(i+1)); //distance
+            {
+              dataSetItem->setInt32(0, pk); //pk
+              dataSetItem->setInt32(1, i+1); //level
+              dataSetItem->setDouble(2, distance*(i+1)); //distance
             
-            std::auto_ptr<te::gm::Geometry> geom = dataSetQuery->getGeometry(j+numCurrentItem);
-            if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
-            {
-              dataSetItem->setGeometry(j+3, geom.release());
-            }
-            else
-            {
-              std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, geom->getSRID()));
-              mPolygon->add(geom.release());
-              dataSetItem->setGeometry(j+3, mPolygon.release());
-            }
+              std::auto_ptr<te::gm::Geometry> geom = dataSetQuery->getGeometry(j+numCurrentItem);
+              if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
+              {
+                dataSetItem->setGeometry(j+3, geom.release());
+              }
+              else
+              {
+                std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, geom->getSRID()));
+                mPolygon->add(geom.release());
+                dataSetItem->setGeometry(j+3, mPolygon.release());
+              }
 
-            outputDataSet->add(dataSetItem);
+              outputDataSet->add(dataSetItem);
 
-            ++numCurrentItem;
-            ++pk;
-            j = numProps;
+              ++numCurrentItem;
+              ++pk;
+              j = numProps;
+            }
             break;
+          default:
+            te::common::Logger::logDebug("vp", "Buffer - Type not found.");
         }
       }
     }
