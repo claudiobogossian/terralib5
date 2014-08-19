@@ -65,32 +65,61 @@ namespace te
         {
           public:
             
+            /*!
+              \name Global parameters
+            */
+            /**@{*/              
+            
             /*! \enum  Allowed contrast types. */
             enum ContrastType
             {
-              InvalidContrastT = 0, /*!< Invalid contrast. */
-              LinearContrastT = 1, /*!< The histogram range will be changed to the supplied min/max range ( linear function ). */
-              HistogramEqualizationContrastT = 2, /*!< The histogram of the image will be equalized automatically. */
-              SetMeanAndStdContrastT = 3 /*!< The contrasted image will have a predefined mean and standard deviation. */
+              InvalidContrastT, /*!< Invalid contrast. */
+              LinearContrastT, /*!< The histogram range will be changed to the supplied min/max range ( linear function ). */
+              HistogramEqualizationContrastT, /*!< The histogram of the image will be equalized automatically. */
+              SetMeanAndStdContrastT, /*!< The contrasted image will have a predefined mean and standard deviation normalization. */
+              DecorrelationEnhancementT /*!< Decorrelation Enhancement using principal components. */
             };
 
             ContrastType m_type; //!< The contrast type to be applied.
             
-            std::vector< double > m_lCMinInput; //!< The contrast minimum input greyscale value of each band.
-            
-            std::vector< double > m_lCMaxInput; //!< The contrast maximum input greyscale value of each band.
-            
-            std::vector< double > m_hECMaxInput; //!<  The contrast maximum input greyscale value of each band.
-            
-            std::vector< double > m_sMASCMeanInput; //!<  The mean greyscale to be applied in each band.
-            
-            std::vector< double > m_sMASCStdInput; //!< The standard deviation to be applied in each band.
-
             te::rst::Raster const* m_inRasterPtr; //!< Input raster.
             
             std::vector< unsigned int > m_inRasterBands; //!< Bands to be processed from the input raster.
             
             bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
+            
+            //@}
+            
+            /*!
+              \name Linear contrast parameters
+            */
+            /**@{*/             
+            
+            std::vector< double > m_lCMinInput; //!< The contrast minimum input greyscale value of each band.
+            
+            std::vector< double > m_lCMaxInput; //!< The contrast maximum input greyscale value of each band.
+            
+            //@}
+            
+            /*!
+              \name Histogram equalization contrast parameters
+            */
+            /**@{*/             
+            
+            std::vector< double > m_hECMaxInput; //!<  The contrast maximum input greyscale value of each band.
+            
+            //@}
+            
+            /*!
+              \name Mean and standard deviation normalization contrast parameters
+            */
+            /**@{*/             
+            
+            std::vector< double > m_sMASCMeanInput; //!<  The mean greyscale to be applied in each band.
+            
+            std::vector< double > m_sMASCStdInput; //!< The standard deviation to be applied in each band.
+
+            //@}
           
             InputParameters();
             
@@ -190,6 +219,12 @@ namespace te
           \return true if OK, false on errors.
         */
         bool execSetMeanAndStdContrast();
+        
+        /*!
+          \brief Execute the decorrelation enhancement contrast following the internal parameters
+          \return true if OK, false on errors.
+        */
+        bool execDecorrelationEnhancement();
 
         /*!
           \brief Band gray levels remap using a remap function.
@@ -204,21 +239,21 @@ namespace te
           const bool enableProgress );
           
         // Variables used by offSetGainRemap
-        double m_offSetGainRemap_offset;
+        double m_offSetGainRemap_offset1;
+        double m_offSetGainRemap_offset2;
         double m_offSetGainRemap_gain;
         
         /*!
-          \brief Remap on gray level using an offset 
-          (Contrast::m_offSetGainRemap_offset) and a gain value
-          (Contrast::m_offSetGainRemap_gain.
+          \brief Remap on gray level using an offset and gain.
           \param inValue Input gray level.
           \param outValue Output gray level.
+          \note outValue = ( ( inValue + m_offSetGainRemap_offset1 ) * m_offSetGainRemap_gain ) + m_offSetGainRemap_offset2
          */         
         inline void offSetGainRemap( const double& inValue, double& outValue )
         {
-          outValue = ( inValue + m_offSetGainRemap_offset ) * m_offSetGainRemap_gain;
+          outValue = ( ( inValue + m_offSetGainRemap_offset1 ) * m_offSetGainRemap_gain )
+            + m_offSetGainRemap_offset2;
         };
-
     };
 
   } // end namespace rp
