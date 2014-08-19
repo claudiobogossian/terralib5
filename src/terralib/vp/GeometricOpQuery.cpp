@@ -121,6 +121,8 @@ bool te::vp::GeometricOpQuery::run()
       case te::vp::PERIMETER:
         opTab.push_back(te::vp::PERIMETER);
         break;
+      default:
+        te::common::Logger::logDebug("vp", "Geometric Operation - The operation is not valid.");
     }
   }
 
@@ -224,8 +226,11 @@ bool te::vp::GeometricOpQuery::run()
           }
         }
         break;
+      default:
+        te::common::Logger::logDebug("vp", "Geometric Operation - Strategy Not found!");
+        return false;
     }
-
+    
     return result;
 
   }
@@ -291,6 +296,8 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* d
             fields->push_back(f);
           }
           break;
+        default:
+          te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
       }
     }
   }
@@ -337,6 +344,8 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* d
             }
           }
           break;
+        default:
+          te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
       }
     }
   }
@@ -409,6 +418,8 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregObj( te::da::DataSetType* d
             fields->push_back(f);
           }
           break;
+        default:
+          te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
       }
     }
   }
@@ -458,6 +469,8 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregObj( te::da::DataSetType* d
             }
           }
           break;
+        default:
+          te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
       }
     }
   }
@@ -533,6 +546,8 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSe
             fields->push_back(f);
           }
           break;
+        default:
+          te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
       }
     }
   }
@@ -582,6 +597,8 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSe
             }
           }
           break;
+        default:
+          te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
       }
     }
   }
@@ -729,6 +746,8 @@ void te::vp::GeometricOpQuery::SetOutputDSet( te::da::DataSet* inDataSet,
             }
           }
           break;
+        default:
+          te::common::Logger::logDebug("vp", "Geometric Operation - Property type not found.");
       }
     }
     if(geomFlag)
