@@ -191,3 +191,15 @@ boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getCovarianceMat
 
   return covariance;
 }
+
+boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getGLCM(const te::rst::Raster& r, unsigned int b, int dx, int dy)
+{
+  boost::numeric::ublas::matrix<double> glcm;
+  return glcm;
+}
+        
+te::rp::Texture te::rp::RasterAttributes::getGLCMMetrics(boost::numeric::ublas::matrix<double> glcm)
+{
+  te::rp::Texture metrics;
+  return metrics;
+}

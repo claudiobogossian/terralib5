@@ -55,4 +55,10 @@ void IHSFusion();
 /* \brief Filter examples (Sobel, Mean, Median, Low/High-pass). */
 void Filter();
 
+/* \brief Arithmetic operations examples (band division band sum). */
+void ArithmeticOperations();
+
+/* \brief Texture metrics example. */
+void Texture();
+
 #endif

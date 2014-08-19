@@ -31,6 +31,7 @@
 #include "Algorithm.h"
 #include "Config.h"
 #include "Exception.h"
+#include "Texture.h"
 
 // Boost
 #include <boost/numeric/ublas/matrix.hpp>
@@ -53,7 +54,6 @@ namespace te
 
   namespace rp
   {
-
     /*!
       \class RasterAttributes
 
@@ -152,6 +152,28 @@ namespace te
           \warning All vectors sizes must fit.
         */
         boost::numeric::ublas::matrix<double> getCovarianceMatrix(const std::vector<std::vector<double> >& vpixels, const std::vector<double>& vmeans);
+        
+        /*!
+          \brief
+
+          \param r
+          \param b
+          \param dx
+          \param dy
+          
+          \return 
+        */
+        boost::numeric::ublas::matrix<double> getGLCM(const te::rst::Raster& r, unsigned int b, int dx, int dy);
+        
+        /*!
+          \brief Compute texture metrics from GLCM matrix.
+          
+          \param glcm The input GLCM matrix.
+          
+          \return The Texture structure will all available metrics computed.
+        */
+        te::rp::Texture getGLCMMetrics(boost::numeric::ublas::matrix<double> glcm);
+        
     };
 
   } // end namespace rp
