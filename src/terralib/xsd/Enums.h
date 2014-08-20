@@ -124,7 +124,7 @@ namespace te
     {
       STRICT, //!< The XML processor must obtain the schema for the required namespaces and validate the elements (this is default).
       LAX,    //!< Same as strict but; if the schema cannot be obtained, no errors will occur.
-      SKIP,   //!< The XML processor does not attempt to validate any elements from the specified namespaces.
+      SKIP   //!< The XML processor does not attempt to validate any elements from the specified namespaces.
     };
 
   } // end namespace xsd

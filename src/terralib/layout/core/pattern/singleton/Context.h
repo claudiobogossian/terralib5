@@ -37,6 +37,8 @@
 #include "../../../../geometry/Envelope.h"
 #include "../../Config.h"
 #include "../../../../common/Singleton.h"
+#include "../../SystematicScaleConfig.h"
+#include "../../PaperConfig.h"
 
 namespace te
 {
@@ -46,7 +48,6 @@ namespace te
     class AbstractItemFactory;
     class AbstractOutsideFactory;
     class AbstractTemplateFactory;
-    class PaperConfig;
     class BuildGraphicsItem;
 
     class TELAYOUTEXPORT Context : public te::common::Singleton<Context>
@@ -116,6 +117,9 @@ namespace te
         LayoutMode getLineIntersectionMouseMode();
         void setLineIntersectionMouseMode(LayoutMode mode);
 
+        SystematicScaleConfig* getSystematicScaleConfig();
+        void setSystematicScaleConfig(SystematicScaleConfig* scale);
+
         private:
       
             /*!
@@ -153,6 +157,7 @@ namespace te
         std::string               m_version;
         PaperConfig*              m_paperConfig;
         BuildGraphicsItem*        m_buildGraphicsItem;
+        SystematicScaleConfig*    m_systematicConfig;
     };
   }
 }

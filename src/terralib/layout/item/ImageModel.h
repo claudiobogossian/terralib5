@@ -31,6 +31,7 @@
 // TerraLib
 #include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/ContextItem.h"
+#include "../../maptools/Enums.h"
 
 // STL
 #include <string>
@@ -55,10 +56,16 @@ namespace te
         virtual void setFileName(std::string fileName);
 
         virtual std::string getFileName();
+        
+        virtual std::string getFileExtension();
+
+        virtual te::map::ImageType getFileType();
 
       protected:
-
+        
         std::string m_fileName;
+        std::string m_fileExtension;
+        te::map::ImageType m_imgType;
     };
   }
 }

@@ -37,7 +37,7 @@ namespace te
               CINV = -2, ///< invalid
               CEND = -1, ///< end delimitor
               CVAL = 0, ///< valid any position
-              CVA2 = 1, ///< valid anywhere but 1st position
+              CVA2 = 1 ///< valid anywhere but 1st position
           };
           /// Traits used for parsing and encoding components.
           struct TECOMMONEXPORT traits {

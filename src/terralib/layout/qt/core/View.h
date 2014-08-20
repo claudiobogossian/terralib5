@@ -36,6 +36,8 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../geometry/Coord2D.h"
 #include "Scene.h"
+#include "../outside/PageSetupOutside.h"
+#include "../outside/SystematicScaleOutside.h"
 
 class QMouseEvent;
 class QWheelEvent;
@@ -61,12 +63,16 @@ namespace te
         View(QWidget* widget = (QWidget*)0);
         ~View();
 
-        virtual void config();        
+        virtual void config();     
+
+        virtual void closeOutsideWindows();
                                 
       public slots:
 
         virtual void onToolbarChangeContext(bool change);
         virtual void onMainMenuChangeContext(bool change);
+        virtual void onChangeConfig();
+        virtual void onSystematicApply(double scale, SystematicScaleType type);
 
       signals:
 
@@ -76,7 +82,7 @@ namespace te
         void hideView();
 
       protected:
-
+        
         virtual void mousePressEvent(QMouseEvent * event);
 
         virtual void	mouseMoveEvent ( QMouseEvent * event );
@@ -102,14 +108,19 @@ namespace te
         virtual void outsideAreaChangeContext(bool change);
 
         virtual void configTransform(Scene* sc);
+        
+        virtual void showPageSetup();
 
-        virtual te::gm::Envelope calculateNewBox(te::gm::Envelope env);
+        virtual void showSystematicScale();
                         
       protected:
         VisualizationArea*  m_visualizationArea;
         QLineF*             m_lineIntersectHrz;
         QLineF*             m_lineIntersectVrt;
         AbstractViewTool*   m_currentTool;
+        PageSetupOutside*   m_pageSetupOutside;
+        SystematicScaleOutside* m_systematicOutside;
+        te::gm::Coord2D       m_coordSystematic;
     };
   }
 }

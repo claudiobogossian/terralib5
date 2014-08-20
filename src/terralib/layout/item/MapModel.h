@@ -35,10 +35,16 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../../common/UnitOfMeasure.h"
 
+// STL
+#include <map>
+#include <string>
+
 namespace te
 {
   namespace layout
   {
+    class Systematic;
+
     class MapModel : public ItemModelObservable, public Visitable
     {
       public:
@@ -47,6 +53,8 @@ namespace te
         virtual ~MapModel();
 
         virtual void draw( ContextItem context );
+
+        virtual te::layout::Properties* getProperties() const;
 
         virtual void updateProperties(te::layout::Properties* properties);
 
@@ -71,18 +79,32 @@ namespace te
         virtual double getDisplacementX();
 
         virtual double getDisplacementY();
+
+        virtual void setSystematic(Systematic* systematic);
                 
+        virtual void generateSystematic(te::gm::Coord2D coord);
+
+        virtual bool isFixedScale();
+
+        virtual void setFixedScale(bool fixed);
+
+        virtual bool isPlanar();
+
+        virtual te::gm::Envelope getWorldBox();
+
+        virtual std::map<te::gm::Coord2D, std::string> getTextMapAsObjectInfo();
+        
       protected:
         
         te::map::AbstractLayerPtr m_layer;
-
-        te::gm::Envelope m_mapBoxMM;
-
-        double m_mapDisplacementX;
-
-        double m_mapDisplacementY;
+        te::gm::Envelope          m_mapBoxMM;
+        double                    m_mapDisplacementX;
+        double                    m_mapDisplacementY;
+        Systematic*               m_systematic;
+        bool                      m_fixedScale;
+        te::gm::Envelope          m_worldBox;
     };
   }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_MAPLAYOUT_MODEL_H
+#endif 

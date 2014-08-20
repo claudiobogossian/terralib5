@@ -41,7 +41,8 @@ te::layout::ItemModelObservable::ItemModelObservable() :
   m_type(TPObjectUnknown),
   m_sharedProps(0),
   m_zValue(0),
-  m_border(true)
+  m_border(true),
+  m_resizable(true)
 {
   m_box = te::gm::Envelope(0,0,0,0);
 
@@ -111,6 +112,18 @@ te::layout::Properties* te::layout::ItemModelObservable::getProperties() const
   pro_id.setId("unknown");
   pro_id.setValue(m_id, DataTypeInt);
   m_properties->addProperty(pro_id);
+
+  Property pro_backgroundcolor;
+  pro_backgroundcolor.setName(m_sharedProps->getBackgroundcolor());
+  pro_backgroundcolor.setId("unknown");
+  pro_backgroundcolor.setValue(m_backgroundColor, DataTypeColor);
+  m_properties->addProperty(pro_backgroundcolor);
+
+  Property pro_bordercolor;
+  pro_bordercolor.setName(m_sharedProps->getBordercolor());
+  pro_bordercolor.setId("unknown");
+  pro_bordercolor.setValue(m_borderColor, DataTypeColor);
+  m_properties->addProperty(pro_bordercolor);
   
   /* Box */
 
@@ -241,6 +254,18 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
     m_id = pro_id.getValue().toInt();
   }
 
+  Property pro_backgroundcolor = vectorProps->contains(m_sharedProps->getBackgroundcolor());
+  if(!pro_backgroundcolor.isNull())
+  {
+    m_backgroundColor = pro_backgroundcolor.getValue().toColor();
+  }
+
+  Property pro_bordercolor = vectorProps->contains(m_sharedProps->getBordercolor());
+  if(!pro_bordercolor.isNull())
+  {
+    m_borderColor = pro_bordercolor.getValue().toColor();
+  }
+
   /* Box */
   
   Property pro_x1 = vectorProps->contains(m_sharedProps->getX1());
@@ -330,4 +355,14 @@ void te::layout::ItemModelObservable::resize( double w, double h )
 
   m_box.m_urx = m_box.m_llx + w;
   m_box.m_ury = m_box.m_lly + h;
+}
+
+void te::layout::ItemModelObservable::setResizable( bool resize )
+{
+  m_resizable = resize;
+}
+
+bool te::layout::ItemModelObservable::isResizable()
+{
+  return m_resizable;
 }

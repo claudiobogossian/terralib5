@@ -68,6 +68,10 @@ namespace te
         virtual int getId() = 0;
         virtual void setId(int id) = 0;
 
+        virtual void setResizable(bool resize) = 0;
+
+        virtual bool isResizable() = 0;
+
       protected:
 
         virtual void notifyAll(ContextItem context) = 0;

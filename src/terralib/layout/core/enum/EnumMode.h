@@ -71,6 +71,20 @@ namespace te
       TypeSendToBack = 30,
       TypeRecompose = 31,
       TypeCreateImage = 32,
+      TypePageConfig = 33,
+      TypeSystematicScale = 34,
+      TypeCreatePoint = 35,
+      TypeCreateArrow =36,
+      TypeCreateEllipse = 37,
+      TypeCreateTitle = 38,
+      TypeCreateTextGrid = 39,
+      TypeCreateMultiLineText = 40,
+      TypeWidgetView = 41,
+      TypeWidgetInspector = 42,
+      TypeWidgetProperties = 43,
+      TypeWidgetToolbar = 44,
+      TypeMapCreateTextGrid = 45,
+      TypeMapCreateTextMap = 46,
       TypeNone = 0
     } LayoutMode;
 

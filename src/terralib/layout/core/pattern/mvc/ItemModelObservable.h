@@ -85,6 +85,11 @@ namespace te
 
         /* Resize Box */
         virtual void resize(double w, double h);
+
+        virtual void setResizable(bool resize);
+
+        /* Systematic scale is for UTM projection */
+        virtual bool isResizable();
                 
       protected:
         virtual void notifyAll(ContextItem context);
@@ -102,6 +107,7 @@ namespace te
         SharedProperties*         m_sharedProps;
         bool                      m_border;
         std::string               m_name;
+        bool                      m_resizable;
     };
   }
 }

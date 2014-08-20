@@ -50,6 +50,7 @@
 #include "../../../qt/widgets/tools/ZoomClick.h"
 #include "../core/ItemUtils.h"
 #include "../../item/MapModel.h"
+#include "../../../common/StringUtils.h"
 
 // STL
 #include <vector>
@@ -87,6 +88,8 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
     | QGraphicsItem::ItemSendsGeometryChanges);
     
   setAcceptDrops(true);
+
+  m_nameClass = std::string(this->metaObject()->className());
   
   Utils* utils = Context::getInstance().getUtils();
   te::gm::Envelope box;
@@ -171,6 +174,29 @@ void te::layout::MapItem::updateObserver( ContextItem context )
   {
     QRect rectGeom = m_mapDisplay->geometry();
     m_mapDisplay->setGeometry(rectGeom.x(), rectGeom.y(), w, h);
+  }
+
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(model)
+  {
+    te::gm::Envelope env;
+    if(model->isPlanar())
+    {
+      env = model->getWorldInMeters();
+    }
+    else
+    {
+      env = model->getWorldInDegrees();
+    }
+    if(env.isValid())
+    {
+      if(!m_mapDisplay->getExtent().equals(env))
+      {
+
+        m_mapDisplay->setExtent(env, true);
+        m_mapDisplay->refresh();
+      }
+    }
   }
 
   te::color::RGBAColor** rgba = context.getPixmap();

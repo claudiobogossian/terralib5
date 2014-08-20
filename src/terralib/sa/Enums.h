@@ -105,6 +105,17 @@ namespace te
       Grid,
       Attribute
     };
+
+    /*!
+      \enum SamplePointsGeneratorType
+
+      \brief Generator types used to create sample of points.
+    */
+    enum SamplePointsGeneratorType
+    {
+      Random,
+      Stratified
+    };
   }
 }
 

@@ -51,9 +51,7 @@ namespace te
         virtual void setBox(te::gm::Envelope box);
 
         virtual void draw( ContextItem context );
-
-        virtual te::gm::Envelope sizeInZoomProportion(te::gm::Envelope env, double zoomFactor);
-
+        
       protected:
 
         virtual void drawVerticalRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
@@ -63,4 +61,4 @@ namespace te
   }
 }
 
-#endif // __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_LAYOUTMODEL_H
+#endif 

@@ -51,6 +51,10 @@
   #include "ProximityMatrixCreatorAction.h"
 #endif
 
+#ifdef TE_QT_PLUGIN_SA_HAVE_SAMPLEPOINTSGENERATOR
+  #include "SamplePointsGeneratorAction.h"
+#endif
+
 #ifdef TE_QT_PLUGIN_SA_HAVE_SPATIALSTATISTICS
   #include "SpatialStatisticsAction.h"
 #endif
@@ -112,29 +116,34 @@ void te::qt::plugins::sa::Plugin::registerActions()
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
   m_proxMatrixCreator = new te::qt::plugins::sa::ProximityMatrixCreatorAction(m_saMenu);
-  m_saMenu->addSeparator();
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_SPATIALSTATISTICS
+  m_saMenu->addSeparator();
   m_spatialStatistics = new te::qt::plugins::sa::SpatialStatisticsAction(m_saMenu);
-    m_saMenu->addSeparator();
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_BAYESGLOBAL
-    m_bayesGlobal = new te::qt::plugins::sa::BayesGlobalAction(m_saMenu);
+  m_saMenu->addSeparator();
+  m_bayesGlobal = new te::qt::plugins::sa::BayesGlobalAction(m_saMenu);
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_BAYESLOCAL
     m_bayesLocal = new te::qt::plugins::sa::BayesLocalAction(m_saMenu);
-    m_saMenu->addSeparator();
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_KERNELMAP
+  m_saMenu->addSeparator();
   m_kernelMap = new te::qt::plugins::sa::KernelMapAction(m_saMenu);
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_KERNELRATIO
   m_kernelRatio = new te::qt::plugins::sa::KernelRatioAction(m_saMenu);
+#endif
+
+#ifdef TE_QT_PLUGIN_SA_HAVE_SAMPLEPOINTSGENERATOR
+  m_saMenu->addSeparator();
+  m_samplePointsGenerator = new te::qt::plugins::sa::SamplePointsGeneratorAction(m_saMenu);
 #endif
 
 }
@@ -160,6 +169,10 @@ void  te::qt::plugins::sa::Plugin::unRegisterActions()
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
     delete m_proxMatrixCreator;
+#endif
+
+#ifdef TE_QT_PLUGIN_SA_HAVE_SAMPLEPOINTSGENERATOR
+  delete m_samplePointsGenerator;
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_SPATIALSTATISTICS

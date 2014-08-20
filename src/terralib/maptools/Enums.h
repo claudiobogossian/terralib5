@@ -44,7 +44,7 @@ namespace te
         XPM  = 5,    /*!< X PixMap support.                                */
         XBM  = 6,    /*!< X Bitmap support.                                */
         WBMP = 7,    /*!< Wireless Application Protocol Bitmap.            */
-        TIFF = 8,    /*!< Tag Image File Format (TIFF) support.            */
+        TIFF = 8    /*!< Tag Image File Format (TIFF) support.            */
       };
 
       /*!

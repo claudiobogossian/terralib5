@@ -37,6 +37,7 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../color/RGBAColor.h"
 #include "../../core/enum/EnumMode.h"
+#include "../../core/enum/AbstractType.h"
 
 namespace Ui { class PageSetup; }
 
@@ -65,27 +66,36 @@ namespace te
        
         virtual void load();
 
+      signals:
+
+        void changeConfig();
+
       private slots:
 
-        /* Grid */
-        /*virtual void on_pbClose_clicked();
-
-        virtual void on_pbCancel_clicked();
+        virtual void on_cmbPageSize_currentIndexChanged ( const QString & text );
 
         virtual void on_pbApply_clicked();
 
-        virtual void on_helpPushButton_clicked();
+        virtual void on_rdbLandscape_clicked();
 
-        virtual void on_cmbUnit_currentIndexChanged ( const QString & text );
-
-        virtual void on_chkShowGeodesic_clicked();
-
-        virtual void on_lneHrzPlanarGap_editingFinished();*/
-
+        virtual void on_rdbPortrait_clicked();
 
       protected:
 
         virtual void init();
+
+        /** \brief Configures the orientation page getting from layout 
+        */
+	      virtual void configureOrientationPage();
+
+	      /** \brief Configures the page size getting from layout
+	      */
+	      virtual void configurePageSize();
+
+        virtual void switchSize();
+
+        te::layout::LayoutOrientationType m_orientation;
+        te::layout::LayoutAbstractPaperType m_paperType;
                         
       private:
 

@@ -84,6 +84,9 @@ namespace te
 
         void clear();
 
+        virtual void setLabel(std::string label);
+        virtual std::string getLabel();
+
         virtual bool containsSubProperty(Property subProperty);
 
         virtual Property containsSubProperty(std::string name);
@@ -100,6 +103,7 @@ namespace te
       bool m_editable;
       std::vector<Variant> m_options;
       std::vector<te::layout::Property> m_subProperty;
+      std::string m_label;
     };
 
     template <typename ValueType>

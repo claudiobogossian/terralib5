@@ -53,6 +53,12 @@ namespace te
         virtual te::layout::Properties* getProperties() const;
         virtual void updateProperties(te::layout::Properties* properties);
 
+        virtual void generateSystematic(te::gm::Coord2D coord);
+
+        virtual GridPlanarModel* getGridPlanar();
+
+        virtual GridGeodesicModel* getGridGeodesic();
+
       protected:
 
         virtual void drawGrid(te::map::Canvas* canvas, Utils* utils);
@@ -64,5 +70,4 @@ namespace te
     };
   }
 }
-
-#endif //__TERRALIB_LAYOUT_INTERNAL_MAP_GRID_MODEL_H
+#endif 

@@ -771,10 +771,22 @@ void te::qt::widgets::DataSetTableView::setDragDrop(bool b)
   hheader->setDragDrop(true);
 }
 
+bool te::qt::widgets::DataSetTableView::getDragDrop()
+{
+  DataSetTableHorizontalHeader* hheader = static_cast<DataSetTableHorizontalHeader*>(horizontalHeader());
+  return hheader->getDragDrop();
+}
+
 void te::qt::widgets::DataSetTableView::setAcceptDrop(bool b)
 {
   DataSetTableHorizontalHeader* hheader = static_cast<DataSetTableHorizontalHeader*>(horizontalHeader());
   hheader->setAcceptDrop(true);
+}
+
+bool te::qt::widgets::DataSetTableView::getAcceptDrop()
+{
+  DataSetTableHorizontalHeader* hheader = static_cast<DataSetTableHorizontalHeader*>(horizontalHeader());
+  return hheader->getAcceptDrop();
 }
 
 void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* layer, const bool& clearEditor)

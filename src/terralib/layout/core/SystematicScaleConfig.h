@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file PaperConfig.h
+  \file SystematicScaleConfig.h
    
   \brief 
 
-  \ingroup layout
+  \ingroup layout 
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_PAPER_CONFIG_H
-#define __TERRALIB_LAYOUT_INTERNAL_PAPER_CONFIG_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_SYSTEMATIC_SCALE_CONFIG_H
+#define __TERRALIB_LAYOUT_INTERNAL_SYSTEMATIC_SCALE_CONFIG_H
 
 // TerraLib
 #include "../core/enum/AbstractType.h"
@@ -35,33 +35,17 @@ namespace te
 {
   namespace layout
   {
-    class PaperConfig
+    class Systematic;
+
+    class SystematicScaleConfig
     {
       public:
 
-        PaperConfig();
-        PaperConfig(LayoutAbstractPaperType paperType);
-        virtual ~PaperConfig();
+        SystematicScaleConfig();
+        virtual ~SystematicScaleConfig();
 
-        virtual void setPaperSizeCustom(double w, double h);
-        virtual void setPaperSize(LayoutAbstractPaperType paperType);
-        virtual void getPaperSize(double &w, double &h);
-
-        virtual void setPaperOrientation(LayoutOrientationType orientation);
-        virtual LayoutOrientationType getPaperOrientantion();
-
-        virtual te::gm::Envelope* getPaperBoxW();
-        virtual void setPaperBoxW(te::gm::Envelope* box);
-
-      protected:
-
-        LayoutAbstractPaperType m_paperType;
-        LayoutOrientationType   m_paperOrientationType;
-        double                  m_customW;
-        double                  m_customH;
-        te::gm::Envelope*       m_paperBoxW;
+        virtual Systematic* getSystematic(SystematicScaleType type);
     };
   }
 }
-
-#endif // __TERRALIB_LAYOUT_INTERNAL_PAPERLAYOUT_CONFIG_H
+#endif 

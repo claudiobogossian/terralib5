@@ -43,6 +43,8 @@ namespace te
         virtual ~VerticalRulerItem();
 
         virtual void updateObserver(ContextItem context);
+
+        virtual double getZoomRuler();
     };
   }
 }
