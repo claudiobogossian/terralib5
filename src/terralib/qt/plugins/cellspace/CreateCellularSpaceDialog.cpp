@@ -125,10 +125,27 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onLayersComboBoxChan
   te::common::UnitOfMeasurePtr unit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(layer->getSRID());
 
   if(!unit.get())
+  {
+    // METRE
     m_ui->m_unitComboBox->setCurrentIndex(1);
+  }
   else
-    m_ui->m_unitComboBox->setItemText( m_ui->m_unitComboBox->currentIndex(), 
-      te::common::UnitsOfMeasureManager::getInstance().find(unit->getName().c_str())->getName().c_str());
+  {
+    std::string layerUnitName = unit->getName();
+
+    int index = 1;
+
+    for(int i = 0; i < m_ui->m_unitComboBox->count(); ++i)
+    {
+      if(m_ui->m_unitComboBox->itemText(i).toStdString() == layerUnitName)
+      {
+        index = i;
+        break;
+      }
+    }
+
+    m_ui->m_unitComboBox->setCurrentIndex(index);
+  }
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onResXLineEditTextChanged(const QString & text)
