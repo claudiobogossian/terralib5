@@ -36,7 +36,7 @@
 
 #include <cstdlib>
 
-#define TS_TEST_NAME "terralib_unittest_rp_ihsfusion"
+#define TS_TEST_NAME "terralib_unittest_rp_fusion"
 
 int main(int /*argc*/, char** /*argv*/)
 {

@@ -18,22 +18,23 @@
  */
 
 /*!
-  \file TsIHSFusion.cpp
+  \file TsFusion.cpp
 
-  \brief A test suit for the Resiter interface.
+  \brief A test suit for the fusion classes interfaces.
  */
 
-#include "TsIHSFusion.h"
+#include "TsFusion.h"
 #include "../Config.h"
 
 #include <terralib/rp/IHSFusion.h>
+#include <terralib/rp/PCAFusion.h>
 #include <terralib/raster/Grid.h>
 #include <terralib/raster/Raster.h>
 #include <terralib/raster/RasterFactory.h>
 
-CPPUNIT_TEST_SUITE_REGISTRATION( TsIHSFusion );
+CPPUNIT_TEST_SUITE_REGISTRATION( TsFusion );
 
-void TsIHSFusion::Test001()
+void TsFusion::ihs()
 {
   // openning input raster
   
@@ -67,7 +68,7 @@ void TsIHSFusion::Test001()
   te::rp::IHSFusion::OutputParameters algoOutputParams;
   
   algoOutputParams.m_rInfo["URI"] =  
-    "terralib_unittest_rp_ihsfusion_test001.tif";  
+    "terralib_unittest_rp_fusion_ihs.tif";  
   algoOutputParams.m_rType = "GDAL";
   
   // Executing the algorithm
@@ -77,3 +78,48 @@ void TsIHSFusion::Test001()
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
 }
+
+void TsFusion::pca()
+{
+  // opening input raster
+  
+  std::map<std::string, std::string> auxRasterInfo;
+  
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  boost::shared_ptr< te::rst::Raster > lowResRasterPtr( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( lowResRasterPtr.get() );  
+  
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_hrc_crop.tif";
+  boost::shared_ptr< te::rst::Raster > highResRasterPtr( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( highResRasterPtr.get() );   
+  
+  // Creating the algorithm parameters
+  
+  te::rp::PCAFusion::InputParameters algoInputParams;
+  
+  algoInputParams.m_lowResRasterPtr = lowResRasterPtr.get();
+  algoInputParams.m_lowResRasterBands.push_back( 0 );
+  algoInputParams.m_lowResRasterBands.push_back( 1 );
+  algoInputParams.m_lowResRasterBands.push_back( 2 );
+  algoInputParams.m_highResRasterPtr = highResRasterPtr.get();
+  algoInputParams.m_highResRasterBand = 0;
+  algoInputParams.m_enableProgress = true;
+  algoInputParams.m_enableThreadedProcessing = false;
+  algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+
+  te::rp::PCAFusion::OutputParameters algoOutputParams;
+  
+  algoOutputParams.m_rInfo["URI"] =  
+    "terralib_unittest_rp_fusion_pca.tif";  
+  algoOutputParams.m_rType = "GDAL";
+  
+  // Executing the algorithm
+  
+  te::rp::PCAFusion algorithmInstance;
+  
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+}
+
