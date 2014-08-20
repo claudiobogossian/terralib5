@@ -24,6 +24,7 @@
 */
 
 // Terralib
+#include "../dataaccess/dataset/PrimaryKey.h"
 #include "../datatype/SimpleProperty.h"
 #include "../datatype/StringProperty.h"
 #include "../geometry/Envelope.h"
@@ -34,36 +35,77 @@
 #include "../memory/DataSetItem.h"
 #include "CellSpaceOperations.h"
 
+te::cellspace::CellularSpacesOperations::CellularSpacesOperations()
+  : m_outputDataSetType(0),
+    m_outputDataSet(0)
+{
+  
+}
 
-void te::cellspace::CellularSpacesOperations::createCellSpace(const std::string& layerName, te::map::AbstractLayerPtr layerBase, double resX, double resY, bool useMask)
+te::cellspace::CellularSpacesOperations::~CellularSpacesOperations()
+{
+}
+
+void te::cellspace::CellularSpacesOperations::createCellSpace(const std::string& name,
+                                                              te::map::AbstractLayerPtr layerBase,
+                                                              double resX, double resY, bool useMask,
+                                                              CellSpaceType type)
+{
+  switch(type)
+  {
+    case 0:
+      createPolygons(name, layerBase, resX, resY, useMask);
+      break;
+    case 1:
+      createPoints(name, layerBase, resX, resY, useMask);
+      break;
+    case 2:
+      createRaster(name, layerBase, resX, resY, useMask);
+      break;
+    default:
+      return;
+  }
+}
+
+void te::cellspace::CellularSpacesOperations::createPolygons(const std::string& name, te::map::AbstractLayerPtr layerBase, double resX, double resY, bool useMask)
 {
   te::gm::Envelope box = layerBase->getExtent();
 
+  te::gm::Envelope newEnv = te::gm::AdjustToCut(box, resX, resY);
+
   int srid = layerBase->getSRID();
 
-  te::da::DataSetType* dt = new te::da::DataSetType(layerName);
+  m_outputDataSetType = new te::da::DataSetType(name);
 
   te::dt::Property* idProp = new te::dt::StringProperty("id");
   te::dt::Property* colProp = new te::dt::SimpleProperty("col", te::dt::INT32_TYPE);
   te::dt::Property* rowProp = new te::dt::SimpleProperty("row", te::dt::INT32_TYPE);
   te::dt::Property* geomProp = new te::gm::GeometryProperty("geom", srid, te::gm::PolygonType);
 
-  dt->add(idProp);
-  dt->add(colProp);
-  dt->add(rowProp);
-  dt->add(geomProp);
+  m_outputDataSetType->add(idProp);
+  m_outputDataSetType->add(colProp);
+  m_outputDataSetType->add(rowProp);
+  m_outputDataSetType->add(geomProp);
 
-  te::da::DataSet* ds = new te::mem::DataSet(dt);
+  std::string pkName = name + "_pk_id";
+  te::da::PrimaryKey* pk = new te::da::PrimaryKey(pkName, m_outputDataSetType);
+  std::vector<te::dt::Property*> pkProp;
+  pkProp.push_back(idProp);
+  pk->setProperties(pkProp);
+
+  m_outputDataSet = new te::mem::DataSet(m_outputDataSetType);
+
+  te::mem::DataSet* ds = dynamic_cast<te::mem::DataSet*>(m_outputDataSet);
 
   double x1,x2,y1,y2;
-  x1 = box.getLowerLeftX();
-  y1 = box.getLowerLeftY();
-  x2 = box.getUpperRightX();
-  y2 = box.getUpperRightY();
+  x1 = newEnv.getLowerLeftX();
+  y1 = newEnv.getLowerLeftY();
+  x2 = newEnv.getUpperRightX();
+  y2 = newEnv.getUpperRightY();
 
   int maxcols, maxlines;
-  maxcols = (int)((y2-y1)/resY);
-  maxlines = (int)((x2-x1)/resX);
+  maxcols = (int)((x2-x1)/resX);
+  maxlines = (int)((y2-y1)/resY);
 
   double x;
   double y = y2;
@@ -81,15 +123,37 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(const std::string&
 
       geom = te::gm::GetGeomFromEnvelope(env, srid);
 
-      std::string itemId = "C"+col;
-      itemId += "L"+lin;
+      char celId[32];
+      sprintf(celId,"C%02dL%02d",col,lin);
 
       te::mem::DataSetItem* item = new te::mem::DataSetItem(ds);
-      item->setString(0, itemId);
+      item->setString(0, celId);
       item->setInt32(1, col);
       item->setInt32(2, lin);
       item->setGeometry(3, geom);
+      ds->add(item);
+      
       x=x+resX;
     }
   }
+}
+
+void te::cellspace::CellularSpacesOperations::createPoints(const std::string& name, te::map::AbstractLayerPtr layerBase, double resX, double resY, bool useMask)
+{
+
+}
+
+void te::cellspace::CellularSpacesOperations::createRaster(const std::string& name, te::map::AbstractLayerPtr layerBase, double resX, double resY, bool useMask)
+{
+  
+}
+
+te::da::DataSetType* te::cellspace::CellularSpacesOperations::getDataSetType()
+{
+  return m_outputDataSetType;
+}
+
+te::da::DataSet* te::cellspace::CellularSpacesOperations::getDataSet()
+{
+  return m_outputDataSet;
 }
