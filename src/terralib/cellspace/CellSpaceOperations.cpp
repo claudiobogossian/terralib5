@@ -109,13 +109,13 @@ void te::cellspace::CellularSpacesOperations::createPolygons(const std::string& 
 
   double x;
   double y = y2;
-  for (std::size_t lin = 0; lin < maxlines; ++lin)
+  for (int lin = 0; lin < maxlines; ++lin)
   {
     double yu = y;
     y=y-resY;
     x=x1;
 
-    for (std::size_t col = 0; col < maxcols; ++col)
+    for (int col = 0; col < maxcols; ++col)
     {
       te::gm::Envelope* env = new te::gm::Envelope(x, y, x+resX, yu);
 
