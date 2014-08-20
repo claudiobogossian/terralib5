@@ -112,7 +112,8 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onLayersComboBoxChan
   if(!unit.get())
     m_ui->m_unitComboBox->setCurrentIndex(1);
   else
-    m_ui->m_unitComboBox->setCurrentText(te::common::UnitsOfMeasureManager::getInstance().find(unit->getName().c_str())->getName().c_str());
+    m_ui->m_unitComboBox->setItemText( m_ui->m_unitComboBox->currentIndex(), 
+      te::common::UnitsOfMeasureManager::getInstance().find(unit->getName().c_str())->getName().c_str());
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onResXLineEditTextChanged(const QString & text)
@@ -154,7 +155,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::updateValues()
 
   te::map::AbstractLayerPtr layer = getReferenceLayer();
 
-  te::common::UnitOfMeasurePtr layerUnit(0);
+  te::common::UnitOfMeasurePtr layerUnit;
   te::common::UnitOfMeasurePtr currentUnit = getCurrentUnit();
 
   if(layer)
