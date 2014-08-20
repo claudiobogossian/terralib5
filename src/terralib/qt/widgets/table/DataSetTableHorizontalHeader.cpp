@@ -140,8 +140,15 @@ void te::qt::widgets::DataSetTableHorizontalHeader::mousePressEvent(QMouseEvent 
 
       if(m_layer)
       {
-        std::string sid(GetDataSource(m_layer)->getId());
+        te::da::DataSourcePtr ds = GetDataSource(m_layer);
+        std::string sid(ds->getId());
         mimeData->setData("DataSourceId", sid.c_str());
+        std::string stype(ds->getType());
+        mimeData->setData("DataSourceType", stype.c_str());
+        m_connInfo = ds->getConnectionInfo();
+        QString connInfo;
+        connInfo.setNum((unsigned long long)&m_connInfo);
+        mimeData->setData("DataSourceConnInfo", connInfo.toStdString().c_str());
         std::string lname(m_layer->getSchema()->getName());
         mimeData->setData("LayerName", lname.c_str());
         std::string ltytle(m_layer->getTitle());
@@ -172,7 +179,7 @@ void te::qt::widgets::DataSetTableHorizontalHeader::mousePressEvent(QMouseEvent 
       Qt::DropAction dropAction = drag.exec(Qt::LinkAction);    
     }
   }
-  //else if(e->button() == Qt::MiddleButton) // to test drag drop
+  //else if(e->button() == Qt::MiddleButton) // code for drag and drop test
   //{
   //  m_doDragDrop = !m_doDragDrop;
   //  m_acceptDrop = m_doDragDrop;
@@ -222,48 +229,61 @@ void te::qt::widgets::DataSetTableHorizontalHeader::dropEvent(QDropEvent *e)
   {
     e->setDropAction(Qt::LinkAction);
 
-    QString fromFieldNumber(mdata->data("FieldNumber").data());
-    m_linkFromFieldNumber = fromFieldNumber.toUInt();
-    m_linkFromFieldName = mdata->data("FieldName").data();
-    QString fromFieldType(mdata->data("FieldType").data());
-    m_linkFromFieldType = fromFieldType.toUInt();
+    if(m_layer)
+    {
+      te::da::DataSourcePtr sds = GetDataSource(m_layer);
+      m_secondLinkInfo.m_dataSourceId = sds->getId();
+      m_secondLinkInfo.m_dataSourceType = sds->getType();
+      m_secondLinkInfo.m_connInfo = sds->getConnectionInfo();
+      m_secondLinkInfo.m_layerId = m_layer->getId();
+      m_secondLinkInfo.m_layerName = m_layer->getSchema()->getName();
+      m_secondLinkInfo.m_layerTitle = m_layer->getTitle();
+      m_secondLinkInfo.m_layerType = m_layer->getType();
 
-    m_linkToFieldNumber = logicalIndexAt(e->pos());
-    m_linkToFieldType = m_dset->getPropertyDataType(m_linkToFieldNumber);
-    if(m_linkToFieldType != m_linkFromFieldType)
+      if(mdata->data("DataSourceId").isNull() == false)
+      {
+        m_firstLinkInfo.m_dataSourceId = mdata->data("DataSourceId").data();
+        m_firstLinkInfo.m_dataSourceType = mdata->data("DataSourceType").data();
+        QString connInfo(mdata->data("DataSourceConnInfo").data());
+        m_firstLinkInfo.m_connInfo = *(std::map<std::string, std::string>*)connInfo.toULongLong();
+        m_firstLinkInfo.m_layerName = mdata->data("LayerName").data();
+        m_firstLinkInfo.m_layerTitle = mdata->data("LayerTitle").data();
+        m_firstLinkInfo.m_layerId = mdata->data("LayerId").data();
+        m_firstLinkInfo.m_layerType = mdata->data("LayerType").data();
+
+        if(m_firstLinkInfo.m_dataSourceId != m_secondLinkInfo.m_dataSourceId)
+        {
+          QMessageBox::warning(this, "Link Error", "The data are from different sources");
+          return;
+        }
+
+        if(m_firstLinkInfo.m_layerId == m_secondLinkInfo.m_layerId)
+        {
+          QMessageBox::warning(this, "Link Error", "The data are from the same layer");
+          return;
+        }
+      }
+    }
+
+    QString fromFieldNumber(mdata->data("FieldNumber").data());
+    m_firstLinkInfo.m_fieldNumber = fromFieldNumber.toUInt();
+    m_firstLinkInfo.m_fieldName = mdata->data("FieldName").data();
+    QString fromFieldType(mdata->data("FieldType").data());
+    m_firstLinkInfo.m_fieldType = fromFieldType.toUInt();
+
+    m_secondLinkInfo.m_fieldNumber = logicalIndexAt(e->pos());
+    m_secondLinkInfo.m_fieldType = m_dset->getPropertyDataType(m_secondLinkInfo.m_fieldNumber);
+    if(m_secondLinkInfo.m_fieldType != m_firstLinkInfo.m_fieldType)
     {
       QMessageBox::warning(this, "Link Error", "Field types do not match");
       return;
     }
-    m_linkToFieldName = m_dset->getPropertyName(m_linkToFieldNumber);
+    m_secondLinkInfo.m_fieldName = m_dset->getPropertyName(m_secondLinkInfo.m_fieldNumber);
 
-    m_linkToDataSourceId = GetDataSource(m_layer)->getId();
-    m_linkToLayerId = m_layer->getId();
-    m_linkToLayerName = m_layer->getSchema()->getName();
-    m_linkToLayerTitle = m_layer->getTitle();
-    m_linkToLayerType = m_layer->getType();
-
-    if(mdata->data("DataSourceId").isNull() == false)
-    {
-      m_linkFromDataSourceId = mdata->data("DataSourceId").data();
-      m_linkFromLayerName = mdata->data("LayerName").data();
-      std::string fromLayerTitle = mdata->data("LayerTitle").data();
-      m_linkFromLayerId = mdata->data("LayerId").data();
-      m_linkFromLayerType = mdata->data("LayerType").data();
-
-      if(m_linkFromDataSourceId != m_linkToDataSourceId)
-      {
-        QMessageBox::warning(this, "Link Error", "The data are from different sources");
-        return;
-      }
-
-      if(m_linkFromLayerId == m_linkToLayerId)
-      {
-        QMessageBox::warning(this, "Link Error", "The data are from the same layer");
-        return;
-      }
-    }
-    emit linkTable(m_linkFromFieldName, m_linkToFieldName);
+    if(mdata->data("DataSourceId").isNull() == false && m_layer)
+      emit linkTable(m_firstLinkInfo, m_secondLinkInfo);
+    else
+      emit linkTable(m_firstLinkInfo.m_fieldName, m_secondLinkInfo.m_fieldName);
   }
 }
 

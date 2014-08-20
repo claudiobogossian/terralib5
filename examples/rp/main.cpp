@@ -25,6 +25,8 @@ int main()
     Register();
     IHSFusion();
     Filter();
+    ArithmeticOperations();
+    Texture();
 
     te::plugin::PluginManager::getInstance().unloadAll();
 

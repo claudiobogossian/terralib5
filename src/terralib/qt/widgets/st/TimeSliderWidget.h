@@ -234,13 +234,6 @@ namespace te
           */
            te::dt::TimeInstant getFinalTime();
 
-          ///*!
-          //  \brief It converts simple time string to iso time string.
-
-          //  \return The converted time string.
-          //*/
-          // QString simpleTimeString2IsoString(QString timeString);
-
         protected:
 
           /*!
@@ -335,9 +328,6 @@ namespace te
         */
         void drawTrajectoryIcon(const TrajectoryItem* t, const QPoint& pos, QPainter* painter);
 
-        //void openTrajectory(const QString file, const QString& leao); // so para teste
-        //void openTrajectory(te::st::TrajectoryDataSetLayer* t);
-
         bool trajectoryAlreadyExists(QPair<QString, te::st::TrajectoryDataSetLayer*>& item);
         bool coverageAlreadyExists(QPair<QString, QString>& item);
 
@@ -366,10 +356,6 @@ namespace te
             \param ai The item to be removed.
           */
           void removeComboItem(te::qt::widgets::AnimationItem* ai);
-
-          //void dragEnterEvent(QDragEnterEvent*);
-
-          //void dropEvent(QDropEvent*);
 
           void getAuxInfo(te::qt::widgets::AnimationItem* ai, int index = -1);
 
@@ -449,24 +435,13 @@ namespace te
           void onDateTimeEditChanged(const QDateTime& t);
 
           void onAutoPanCheckBoxClicked(bool);
-          //void onRemovePushButtonClicked(bool b);
           void onFrontPushButtonClicked(bool b);
           void onBackPushButtonClicked(bool b);
 
-          ///*!
-          //  \brief Ok button clicked.
-          //*/
-          //void onOkPushButtonClicked();
-
-          ///*!
-          //  \brief Cancel button clicked.
-          //*/
-          //void onCancelPushButtonClicked();
-
-          ///*!
-          //  \brief Help button clicked.
-          //*/
-          //void onHelpPushButtonClicked();
+          /*!
+            \brief Help button clicked.
+          */
+          void onHelpPushButtonClicked();
 
           /*!
             \brief Draw track check box clicked.
@@ -592,9 +567,6 @@ namespace te
           QByteArray                                              m_dropBA;                   //!< Layer animation with drag and drop.
           SliderPropertiesDialog*                                 m_spd;                      //!< Slider Properties Dialog.
           QMap<int, AnimationAuxInfo>                             m_auxInfo;                  //!< animation auxiliar information                                        
-
-          //QRectF          m_initialDisplayRect; // so para teste
-
       };
     } // end namespace widgets
   }   // end namespace qt
