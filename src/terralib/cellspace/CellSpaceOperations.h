@@ -46,7 +46,6 @@ namespace te
 
   namespace cellspace
   {
-
     class TECELLSPACEEXPORT CellularSpacesOperations
     {
       public:
@@ -84,14 +83,6 @@ namespace te
           \note The caller of this method will take the ownership of the returned pointer.
         */
         te::da::DataSet* getDataSet();
-
-      private:
-
-        void createPolygons(const std::string& name, te::map::AbstractLayerPtr layerBase, double resX, double resY, bool useMask);
-
-        void createPoints(const std::string& name, te::map::AbstractLayerPtr layerBase, double resX, double resY, bool useMask);
-
-        void createRaster(const std::string& name, te::map::AbstractLayerPtr layerBase, double resX, double resY, bool useMask);
 
       private:
 
