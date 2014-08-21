@@ -166,8 +166,8 @@ void te::layout::Scene::insertItem( ItemObserver* item )
       if(txt)
       {
         QTransform transf = m_matrix.inverted();
+        transf.scale(1., -1.);
         txt->setTransform(transf);
-        txt->scale(1, -1);
       }
       this->addItem(qitem);
       qitem->setZValue(total);
