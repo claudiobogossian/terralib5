@@ -50,7 +50,7 @@ te::qt::plugins::terralib4::TL4ThemeSelectionWizardPage::~TL4ThemeSelectionWizar
 
 void te::qt::plugins::terralib4::TL4ThemeSelectionWizardPage::onSelectAllPushButtonClicked()
 {
-  for(std::size_t i = 0; i < m_ui->m_themeListWidget->count(); ++i)
+  for(int i = 0; i < m_ui->m_themeListWidget->count(); ++i)
   {
     Qt::CheckState state = m_ui->m_themeListWidget->item(i)->checkState();
 
@@ -61,7 +61,7 @@ void te::qt::plugins::terralib4::TL4ThemeSelectionWizardPage::onSelectAllPushBut
 
 void te::qt::plugins::terralib4::TL4ThemeSelectionWizardPage::onDeselectAllPushButtonClicked()
 {
-  for(std::size_t i = 0; i < m_ui->m_themeListWidget->count(); ++i)
+  for(int i = 0; i < m_ui->m_themeListWidget->count(); ++i)
   {
     Qt::CheckState state = m_ui->m_themeListWidget->item(i)->checkState();
 
@@ -92,7 +92,7 @@ std::vector<::terralib4::ThemeInfo> te::qt::plugins::terralib4::TL4ThemeSelectio
 {
   std::vector<::terralib4::ThemeInfo> themes;
 
-  for(std::size_t i = 0; i < m_ui->m_themeListWidget->count(); ++i)
+  for(int i = 0; i < m_ui->m_themeListWidget->count(); ++i)
   {
     QListWidgetItem* item = m_ui->m_themeListWidget->item(i);
 

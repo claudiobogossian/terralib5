@@ -1,5 +1,5 @@
 /*
- * TerraLib.i
+ * File: TerraLib.i
  *
  */
 
@@ -48,7 +48,6 @@ static void Initialize() throw (te::common::Exception)
   
 	te::plugin::PluginManager::getInstance().loadAll();
 } 
-
 static void Finalize()
 {
 	te::plugin::PluginManager::getInstance().shutdownAll();
@@ -58,6 +57,36 @@ static void Finalize()
 	TerraLib::getInstance().finalize();
 } 
 %} 
+
+#ifdef SWIGJAVA
+// ---------------------------------
+// Java Documentation
+// ---------------------------------
+
+%javamethodmodifiers Initialize() "
+/**
+ * Initializes the TerraLib modules.
+ *
+ * Make sure to call this function BEFORE using any resource of the TerraLib module.
+ *
+ * @throws java.io.IOException Any problem on modules initialization will raise an java.io.IOException.
+ */
+  public";
+  
+%javamethodmodifiers Finalize() "
+/**
+ * Finalizes the TerraLib modules.
+ *
+ * Make sure to call this function BEFORE finalize the execution of your application.
+ */
+  public";
+ 
+%typemap(javaimports) TerraLib "
+/** 
+ * The main class of TerraLib module. Remember to call <i>Initialize</i> and <i>Finalize</i> methods, on the initialization and finalization of the execution 
+ * of your application respectively.
+ */"
+#endif
 
 // Wrap functions
 void Initialize() throw (te::common::Exception);

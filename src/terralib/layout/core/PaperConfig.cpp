@@ -30,7 +30,7 @@
 
 te::layout::PaperConfig::PaperConfig() :
   m_paperOrientationType(Portrait),
-  m_paperType(A4),
+  m_paperType(te::layout::A4),
   m_customW(0),
   m_customH(0),
   m_paperBoxW(0)
@@ -49,9 +49,14 @@ te::layout::PaperConfig::~PaperConfig()
 
 }
 
-void te::layout::PaperConfig::setPaperSize( LayoutAbstractPaperType paperType )
+void te::layout::PaperConfig::setPaperType( LayoutAbstractPaperType paperType )
 {
   m_paperType = paperType;
+}
+
+te::layout::LayoutAbstractPaperType te::layout::PaperConfig::getPaperType()
+{
+  return m_paperType;
 }
 
 void te::layout::PaperConfig::getPaperSize( double &w, double &h )
@@ -117,6 +122,13 @@ void te::layout::PaperConfig::getPaperSize( double &w, double &h )
     default:
       w = 0;
       h = 0;
+  }
+
+  if(m_paperOrientationType == Landscape)
+  {
+    double copy = w;
+    w = h;
+    h = copy;
   }
 }
 

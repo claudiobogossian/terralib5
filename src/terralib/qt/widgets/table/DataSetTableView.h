@@ -101,11 +101,25 @@ namespace te
           void setDragDrop(bool b);
 
           /*!
+            \brief Gets the drag drop flag.
+          
+            \return True: is drag drop. False: not is drag drop.
+          */
+          bool getDragDrop();
+
+          /*!
             \brief Sets the drop on the horizontal header.
           
             \param b True: accept drop. False: do not accept drop.
           */
           void setAcceptDrop(bool b);
+
+          /*!
+            \brief Gets accept drop flag.
+          
+            \return True: accept drop. False: not accept drop.
+          */
+          bool getAcceptDrop();
 
           /*!
             \brief Sets the layer to be presented.

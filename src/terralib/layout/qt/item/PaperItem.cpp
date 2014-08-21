@@ -42,6 +42,8 @@ te::layout::PaperItem::PaperItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
 {  
   m_canChangeGraphicOrder = false;
+
+  m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::PaperItem::~PaperItem()

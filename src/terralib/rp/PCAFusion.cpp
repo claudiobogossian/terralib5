@@ -204,8 +204,9 @@ namespace te
           TERP_LOG_AND_RETURN_FALSE( e.what() );
         }    
         
-        TERP_TRUE_OR_RETURN_FALSE( DirectPrincipalComponents( *ressampledRasterPtr, ressampledRasterBands,
-          pcaMatrix, *pcaRasterPtr, m_inputParameters.m_enableThreadedProcessing ? 0 : 1 ),
+        TERP_TRUE_OR_RETURN_FALSE( DirectPrincipalComponents( *ressampledRasterPtr, 
+          ressampledRasterBands, pcaMatrix, *pcaRasterPtr, ressampledRasterBands,
+          m_inputParameters.m_enableThreadedProcessing ? 0 : 1 ),
           "Principal components generation error" );
           
 //        te::rp::Copy2DiskRaster( *pcaRasterPtr, "pcaRaster.tif" );
@@ -235,6 +236,7 @@ namespace te
       {
         te::rst::Grid* gridPtr = new te::rst::Grid( *pcaRasterPtr->getGrid() );
         std::vector< te::rst::BandProperty * > bandProperties;
+        std::vector< unsigned int > outputRasterBands;
           
         for( unsigned int bandIdx = 0 ; bandIdx <
           pcaRasterPtr->getNumberOfBands() ; ++bandIdx )
@@ -243,6 +245,8 @@ namespace te
             *pcaRasterPtr->getBand( bandIdx )->getProperty() ) );
           bandProperties[ bandIdx ]->m_type = 
             ressampledRasterPtr->getBand( bandIdx )->getProperty()->m_type;
+            
+          outputRasterBands.push_back( bandIdx );
         } 
         
         outParamsPtr->m_outputRasterPtr.reset(
@@ -257,7 +261,7 @@ namespace te
           "Output raster creation error" );
           
         TERP_TRUE_OR_RETURN_FALSE( InversePrincipalComponents( *pcaRasterPtr,
-          pcaMatrix, *outParamsPtr->m_outputRasterPtr,
+          pcaMatrix, *outParamsPtr->m_outputRasterPtr, outputRasterBands,
           m_inputParameters.m_enableThreadedProcessing ? 0 : 1 ),
           "Inverse PCA error" );
       }                  

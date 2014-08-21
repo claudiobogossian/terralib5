@@ -35,6 +35,7 @@
 te::layout::Property::Property() :
   m_name("unknown"),
   m_id("unknown"),
+  m_label(""),
   m_editable(true),
   m_type(DataTypeNone)
 {
@@ -209,4 +210,14 @@ void te::layout::Property::setValue( Variant variant )
 {
   m_value = variant;
   m_type = variant.getType();
+}
+
+void te::layout::Property::setLabel( std::string label )
+{
+  m_label = label;
+}
+
+std::string te::layout::Property::getLabel()
+{
+  return m_label;
 }

@@ -284,7 +284,7 @@ bool te::vp::GeometricOpWizard::execute()
       if (!result)
       {
         this->setCursor(Qt::ArrowCursor);
-        QMessageBox::information(this, "Geometric Operation", "Error: could not generate the operation.");
+        QMessageBox::information(this, "Geometric Operation", "Error: could not generate the operation, check the log file.");
         return false;
       }
 

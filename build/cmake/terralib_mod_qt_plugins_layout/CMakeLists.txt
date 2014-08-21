@@ -66,7 +66,8 @@ else()
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/DisplayDock.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/ObjectInspectorDock.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/PropertiesDock.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/ToolbarDock.h)
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/ToolbarDock.h
+								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/EditTemplateDock.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES} OPTIONS -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 

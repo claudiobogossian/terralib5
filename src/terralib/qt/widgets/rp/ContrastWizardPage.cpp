@@ -162,9 +162,9 @@ te::rp::Contrast::InputParameters te::qt::widgets::ContrastWizardPage::getInputP
       }
     }
   }
-  else if(contrastType == te::rp::Contrast::InputParameters::SetMeanAndStdContrastT)
+  else if(contrastType == te::rp::Contrast::InputParameters::MeanAndStdContrastT)
   {
-    algoInputParams.m_type = te::rp::Contrast::InputParameters::SetMeanAndStdContrastT;
+    algoInputParams.m_type = te::rp::Contrast::InputParameters::MeanAndStdContrastT;
 
     for(int i = 0; i < nBands; ++i)
     {
@@ -247,7 +247,7 @@ void te::qt::widgets::ContrastWizardPage::fillContrastTypes()
 
   m_ui->m_contrastTypeComboBox->addItem(tr("Linear"), te::rp::Contrast::InputParameters::LinearContrastT);
   m_ui->m_contrastTypeComboBox->addItem(tr("Histogram Equalization"), te::rp::Contrast::InputParameters::HistogramEqualizationContrastT);
-  m_ui->m_contrastTypeComboBox->addItem(tr("Mean and Standard Deviation"), te::rp::Contrast::InputParameters::SetMeanAndStdContrastT);
+  m_ui->m_contrastTypeComboBox->addItem(tr("Mean and Standard Deviation"), te::rp::Contrast::InputParameters::MeanAndStdContrastT);
 }
 
 void te::qt::widgets::ContrastWizardPage::listBands()
@@ -351,7 +351,7 @@ void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int in
       m_ui->m_bandTableWidget->setItem(i, 1, itemMax);
     }
   }
-  else if(contrastType == te::rp::Contrast::InputParameters::SetMeanAndStdContrastT)
+  else if(contrastType == te::rp::Contrast::InputParameters::MeanAndStdContrastT)
   {
     QStringList list;
     list.append(tr("Band"));

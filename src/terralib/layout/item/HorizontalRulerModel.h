@@ -31,6 +31,7 @@
 // TerraLib
 #include "AbstractRulerModel.h"
 #include "../core/enum/EnumMode.h"
+#include "../../color/RGBAColor.h"
 
 // STL
 #include <vector>
@@ -50,8 +51,6 @@ namespace te
         virtual void draw( ContextItem context );
         
         virtual void setBox(te::gm::Envelope box);
-
-        virtual te::gm::Envelope sizeInZoomProportion(te::gm::Envelope env, double zoomFactor);
                 
       protected:
 

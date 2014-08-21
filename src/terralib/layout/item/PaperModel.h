@@ -31,6 +31,7 @@
 // TerraLib
 #include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/ContextItem.h"
+#include "../core/PaperConfig.h"
 
 namespace te
 {

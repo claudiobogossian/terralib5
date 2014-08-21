@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,53 +18,33 @@
  */
 
 /*!
-  \file terralib/cellspace/Cell.h
+  \file MultiLineTextItem.h
    
-  \brief class that define a Cell.
+  \brief 
+
+  \ingroup layout
 */
 
-#ifndef __TERRALIB_CELLSPACE_INTERNAL_CELL_H
-#define __TERRALIB_CELLSPACE_INTERNAL_CELL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_MULTILINETEXT_ITEM_H 
+#define __TERRALIB_LAYOUT_INTERNAL_MULTILINETEXT_ITEM_H
 
 // TerraLib
-#include "Config.h"
-
-// STL
-#include <string>
+#include "DefaultTextItem.h"
 
 namespace te
 {
-  namespace cellspace
+  namespace layout
   {
-    /*!
-      \class Cell
+    class Observable;
 
-      \brief This class define a cell in the Cellular Spaces module.
-    */
-    class TECELLSPACEEXPORT Cell
+    class MultiLineTextItem : public DefaultTextItem
     {
       public:
 
-        Cell(int column, int row);
-
-        ~Cell();
-
-        int getColumn();
-
-        int getRow();
-
-        void setColumn(int column);
-
-        void setRow(int row);
-
-      private:
-
-        int m_column;
-        int m_row;
+        MultiLineTextItem( ItemController* controller, Observable* o );
+        virtual ~MultiLineTextItem();
     };
+  }
+}
 
-  } // end namespace cellspace
-}   // end namespace te
-
-#endif  // __TERRALIB_CELLSPACE_INTERNAL_CELL_H
-
+#endif

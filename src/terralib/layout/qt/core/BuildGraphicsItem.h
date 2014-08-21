@@ -35,6 +35,9 @@
 #include "../../core/property/Properties.h"
 #include "../../core/enum/AbstractType.h"
 
+// STL
+#include <string>
+
 class QGraphicsItem;
 
 namespace te
@@ -63,7 +66,13 @@ namespace te
 	      QGraphicsItem* createLegend();
         QGraphicsItem* createScale();
         QGraphicsItem* createItemGroup();
-        QGraphicsItem* createImage();
+        QGraphicsItem* createImage();        
+        QGraphicsItem* createArrow();
+        QGraphicsItem* createEllipse();
+        QGraphicsItem* createMultiLineText();
+        QGraphicsItem* createPoint();
+        QGraphicsItem* createTextGrid();
+        QGraphicsItem* createTitle();
 
         te::gm::Coord2D findCoordinate(te::layout::Properties* props);
 
@@ -75,24 +84,30 @@ namespace te
 
       protected:
 
-        te::gm::Coord2D m_coord;
+        SharedProperties*       m_sharedProps;
         te::layout::Properties* m_props;
-        int m_zValue;
-        int m_id;
-        std::string m_name;
-        SharedProperties* m_sharedProps;
-        std::string m_paperItem;
-        std::string m_mapItem;
-        std::string m_mapGridItem;
-        std::string m_textItem;
-        std::string m_rectangleItem;
-        std::string m_legendItem;
-        std::string m_scaleItem;
-        std::string m_horizontalRuler;
-        std::string m_verticalRuler;
-        std::string m_groupItem;
-        bool        m_redraw;
-        std::string m_imageItem;
+        te::gm::Coord2D         m_coord;
+        int                     m_zValue;
+        int                     m_id;
+        bool                    m_redraw;
+        std::string             m_name;
+        std::string             m_paperItem;
+        std::string             m_mapItem;
+        std::string             m_mapGridItem;
+        std::string             m_textItem;
+        std::string             m_rectangleItem;
+        std::string             m_legendItem;
+        std::string             m_scaleItem;
+        std::string             m_horizontalRuler;
+        std::string             m_verticalRuler;
+        std::string             m_groupItem;
+        std::string             m_imageItem;
+        std::string             m_arrowItem;
+        std::string             m_ellipseItem;
+        std::string             m_multiLineTextItem;
+        std::string             m_pointItem;
+        std::string             m_textGridItem;
+        std::string             m_titleItem;
     };
   }
 }

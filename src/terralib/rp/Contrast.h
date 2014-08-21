@@ -31,6 +31,7 @@
 #include <string>
 #include <map>
 #include <memory>
+#include <cmath>
 
 namespace te
 {
@@ -65,32 +66,97 @@ namespace te
         {
           public:
             
+            /*!
+              \name Global parameters
+            */
+            /**@{*/              
+            
             /*! \enum  Allowed contrast types. */
             enum ContrastType
             {
-              InvalidContrastT = 0, /*!< Invalid contrast. */
-              LinearContrastT = 1, /*!< The histogram range will be changed to the supplied min/max range ( linear function ). */
-              HistogramEqualizationContrastT = 2, /*!< The histogram of the image will be equalized automatically. */
-              SetMeanAndStdContrastT = 3 /*!< The contrasted image will have a predefined mean and standard deviation. */
+              InvalidContrastT, /*!< Invalid contrast. */
+              LinearContrastT, /*!< The histogram range will be changed to the supplied min/max range ( linear function ). */
+              HistogramEqualizationContrastT, /*!< The histogram of the image will be equalized automatically. */
+              SquareContrastT, /*!< The contrasted image will be created by using a square function. */
+              SquareRootContrastT, /*!< The contrasted image will be created by using a square root function. */
+              LogContrastT, /*!< The contrasted image will be created by using a log function. */
+              MeanAndStdContrastT, /*!< The contrasted image will have a predefined mean and standard deviation normalization. */
+              DecorrelationEnhancementT /*!< Decorrelation Enhancement using principal components. */
             };
 
             ContrastType m_type; //!< The contrast type to be applied.
             
-            std::vector< double > m_lCMinInput; //!< The contrast minimum input greyscale value of each band.
-            
-            std::vector< double > m_lCMaxInput; //!< The contrast maximum input greyscale value of each band.
-            
-            std::vector< double > m_hECMaxInput; //!<  The contrast maximum input greyscale value of each band.
-            
-            std::vector< double > m_sMASCMeanInput; //!<  The mean greyscale to be applied in each band.
-            
-            std::vector< double > m_sMASCStdInput; //!< The standard deviation to be applied in each band.
-
             te::rst::Raster const* m_inRasterPtr; //!< Input raster.
             
             std::vector< unsigned int > m_inRasterBands; //!< Bands to be processed from the input raster.
             
             bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
+            
+            //@}
+            
+            /*!
+              \name Linear contrast parameters
+            */
+            /**@{*/             
+            
+            std::vector< double > m_lCMinInput; //!< The contrast minimum input greyscale value of each band.
+            
+            std::vector< double > m_lCMaxInput; //!< The contrast maximum input greyscale value of each band.
+            
+            //@}
+            
+            /*!
+              \name Histogram equalization contrast parameters
+            */
+            /**@{*/             
+            
+            std::vector< double > m_hECMaxInput; //!<  The contrast maximum input greyscale value of each band.
+            
+            //@}
+            
+            /*!
+              \name Square contrast parameters
+            */
+            /**@{*/             
+            
+            std::vector< double > m_squareCMinInput; //!< The contrast minimum input greyscale value of each band.
+            
+            std::vector< double > m_squareCMaxInput; //!< The contrast maximum input greyscale value of each band.
+            
+            //@}            
+            
+            /*!
+              \name Square root contrast parameters
+            */
+            /**@{*/             
+            
+            std::vector< double > m_squareRootCMinInput; //!< The contrast minimum input greyscale value of each band.
+            
+            std::vector< double > m_squareRootCMaxInput; //!< The contrast maximum input greyscale value of each band.
+            
+            //@}                        
+            
+            /*!
+              \name Log contrast parameters
+            */
+            /**@{*/             
+            
+            std::vector< double > m_logCMinInput; //!< The contrast minimum input greyscale value of each band.
+            
+            std::vector< double > m_logCMaxInput; //!< The contrast maximum input greyscale value of each band.
+            
+            //@}                
+            
+            /*!
+              \name Mean and standard deviation normalization contrast parameters
+            */
+            /**@{*/             
+            
+            std::vector< double > m_sMASCMeanInput; //!<  The mean greyscale to be applied in each band.
+            
+            std::vector< double > m_sMASCStdInput; //!< The standard deviation to be applied in each band.
+
+            //@}
           
             InputParameters();
             
@@ -184,12 +250,36 @@ namespace te
           \return true if OK, false on errors.
         */
         bool execHistogramEqualizationContrast();
+        
+        /*!
+          \brief Execute a square contrast following the internal parameters
+          \return true if OK, false on errors.
+         */
+        bool execSquareContrast();      
+        
+        /*!
+          \brief Execute a square root contrast following the internal parameters
+          \return true if OK, false on errors.
+         */
+        bool execSquareRootContrast(); 
+
+        /*!
+          \brief Execute a log contrast following the internal parameters
+          \return true if OK, false on errors.
+         */
+        bool execLogContrast();         
 
         /*!
           \brief Execute the histogram equalization contrast following the internal parameters
           \return true if OK, false on errors.
         */
         bool execSetMeanAndStdContrast();
+        
+        /*!
+          \brief Execute the decorrelation enhancement contrast following the internal parameters
+          \return true if OK, false on errors.
+        */
+        bool execDecorrelationEnhancement();
 
         /*!
           \brief Band gray levels remap using a remap function.
@@ -204,21 +294,65 @@ namespace te
           const bool enableProgress );
           
         // Variables used by offSetGainRemap
-        double m_offSetGainRemap_offset;
+        double m_offSetGainRemap_offset1;
+        double m_offSetGainRemap_offset2;
         double m_offSetGainRemap_gain;
         
+        // Variables used by offSetGainRemap
+        double m_squareRemap_factor;
+        
+        
+        // Variables used by offSetGainRemap
+        double m_squareRootRemap_gain;        
+        
+        // Variables used by offSetGainRemap
+        double m_logRemap_gain;
+        double m_logRemap_offset;                
+        
         /*!
-          \brief Remap on gray level using an offset 
-          (Contrast::m_offSetGainRemap_offset) and a gain value
-          (Contrast::m_offSetGainRemap_gain.
+          \brief Remap on gray level using an offset and gain.
           \param inValue Input gray level.
           \param outValue Output gray level.
+          \note outValue = ( ( inValue + m_offSetGainRemap_offset1 ) * m_offSetGainRemap_gain ) + m_offSetGainRemap_offset2
          */         
         inline void offSetGainRemap( const double& inValue, double& outValue )
         {
-          outValue = ( inValue + m_offSetGainRemap_offset ) * m_offSetGainRemap_gain;
+          outValue = ( ( inValue + m_offSetGainRemap_offset1 ) * m_offSetGainRemap_gain )
+            + m_offSetGainRemap_offset2;
         };
-
+        
+        /*!
+          \brief Remap on gray level using a square.
+          \param inValue Input gray level.
+          \param outValue Output gray level.
+          \note outValue = m_squareRemap_factor * std::pow( inValue, 2.0 )
+         */         
+        inline void squareRemap( const double& inValue, double& outValue )
+        {
+          outValue = m_squareRemap_factor * std::pow( inValue, 2.0 );
+        };  
+        
+        /*!
+          \brief Remap on gray level using a square root.
+          \param inValue Input gray level.
+          \param outValue Output gray level.
+          \note outValue = m_squareRootRemap_gain * std::sqrt( inValue );
+         */         
+        inline void squareRootRemap( const double& inValue, double& outValue )
+        {
+          outValue = m_squareRootRemap_gain * std::sqrt( inValue );
+        };       
+        
+        /*!
+          \brief Remap on gray level using a log.
+          \param inValue Input gray level.
+          \param outValue Output gray level.
+          \note outValue = m_logRemap_gain * std::log10( inValue + m_logRemap_offset + 1.0 );
+         */         
+        inline void logRemap( const double& inValue, double& outValue )
+        {
+          outValue = m_logRemap_gain * std::log10( inValue + m_logRemap_offset + 1.0 );
+        };             
     };
 
   } // end namespace rp

@@ -53,7 +53,7 @@ te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* c
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   
   m_layoutPropertyBrowser = new ObjectInspectorPropertyBrowser;
-  
+    
   QVBoxLayout* layout = new QVBoxLayout(this);
   layout->setMargin(0);
   layout->addWidget(m_layoutPropertyBrowser->getPropertyEditor());
@@ -112,35 +112,42 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
   if(m_graphicsItems.empty())
     return;
     
-  //QtVariantProperty *property;
+  int zValue = 0;
+  
   foreach( QGraphicsItem *item, graphicsItems) 
   {
     if (item)
     {			
-      QGraphicsWidget* outside = dynamic_cast<QGraphicsWidget*>(item);
-
-      if(outside)
-        continue;
-
-      int zValue = 0;
+      zValue = 0;
 
       QGraphicsItem* parentItem = item->parentItem();          
       zValue = item->zValue();
 
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
-      {
-        Properties* properties = const_cast<Properties*>(lItem->getProperties());
+      {        
 
-        foreach(Property p, properties->getProperties())
+        if(lItem->getModel()->getType() == TPPaperItem 
+          || lItem->getModel()->getType() == TPHorizontalRuler
+          || lItem->getModel()->getType() == TPVerticalRuler)
         {
-          QGraphicsObject* itemObj = dynamic_cast<QGraphicsObject*>(item);         
-
-          if(!itemObj)
-            break;
-
-          zValue = itemObj->zValue();
+          continue;
         }
+
+        QGraphicsObject* itemObj = dynamic_cast<QGraphicsObject*>(item);         
+
+        if(!itemObj)
+          break;
+
+        Property pro_class;
+        pro_class.setName(lItem->getName());
+        pro_class.setId("");
+        pro_class.setValue(lItem->getNameClass(), DataTypeString);
+        pro_class.setEditable(false);
+        
+        m_layoutPropertyBrowser->addProperty(pro_class);
+
+        zValue = itemObj->zValue();        
       }
     }
   }

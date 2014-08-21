@@ -46,7 +46,10 @@ namespace te
         ItemObserver(ItemController* controller = 0, Observable* o = 0);
         virtual ~ItemObserver();
 
-        virtual void updateObserver(ContextItem context) = 0;        
+        virtual void updateObserver(ContextItem context) = 0;  
+
+        virtual std::string getNameClass();
+
         /*
           return coordinates llx, ury
         */
@@ -85,6 +88,7 @@ namespace te
         bool            m_printable;
         bool            m_canChangeGraphicOrder; //!< Define if item can send to back ou bring to front
         bool            m_canZoom;
+        std::string     m_nameClass;
     };
   }
 }

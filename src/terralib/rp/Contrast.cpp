@@ -32,6 +32,7 @@
 #include "../raster/RasterProperty.h"
 #include "../raster/RasterSummaryManager.h"
 #include "../raster/RasterFactory.h"
+#include "../memory/ExpansibleRaster.h"
 #include "../common/progress/TaskProgress.h"
 #include "Contrast.h"
 #include "Functions.h"
@@ -60,9 +61,24 @@ namespace te
     void Contrast::InputParameters::reset() throw( te::rp::Exception )
     {
       m_type = InputParameters::InvalidContrastT;
+      
       m_lCMinInput.clear();
       m_lCMaxInput.clear();
+      
       m_hECMaxInput.clear();
+      
+      m_squareCMinInput.clear();
+      m_squareCMaxInput.clear();
+      
+      m_squareCMinInput.clear();
+      m_squareCMaxInput.clear();
+      
+      m_squareRootCMinInput.clear();
+      m_squareRootCMaxInput.clear();
+      
+      m_logCMinInput.clear();
+      m_logCMaxInput.clear();
+      
       m_sMASCMeanInput.clear();
       m_sMASCStdInput.clear();
 
@@ -77,9 +93,21 @@ namespace te
       reset();
 
       m_type = params.m_type;
+      
       m_lCMinInput = params.m_lCMinInput;
       m_lCMaxInput = params.m_lCMaxInput;
+      
       m_hECMaxInput = params.m_hECMaxInput;
+      
+      m_squareCMinInput = params.m_squareCMinInput;
+      m_squareCMaxInput = params.m_squareCMaxInput;
+      
+      m_squareRootCMinInput = params.m_squareRootCMinInput;
+      m_squareRootCMaxInput = params.m_squareRootCMaxInput;
+      
+      m_logCMinInput = params.m_logCMinInput;
+      m_logCMaxInput = params.m_logCMaxInput;
+      
       m_sMASCMeanInput = params.m_sMASCMeanInput;
       m_sMASCStdInput = params.m_sMASCStdInput;
 
@@ -228,11 +256,31 @@ namespace te
           return execHistogramEqualizationContrast();
           break;
         }
-        case InputParameters::SetMeanAndStdContrastT :
+        case InputParameters::SquareContrastT :
+        {
+          return execSquareContrast();
+          break;
+        }     
+        case InputParameters::SquareRootContrastT :
+        {
+          return execSquareRootContrast();
+          break;
+        }            
+        case InputParameters::LogContrastT :
+        {
+          return execLogContrast();
+          break;
+        }         
+        case InputParameters::MeanAndStdContrastT :
         {
           return execSetMeanAndStdContrast();
           break;
         }
+        case InputParameters::DecorrelationEnhancementT :
+        {
+          return execDecorrelationEnhancement();
+          break;
+        }        
         default :
         {
           TERP_LOG_AND_THROW( "Invalid contrast type" );
@@ -298,7 +346,40 @@ namespace te
             
           break;
         }
-        case InputParameters::SetMeanAndStdContrastT :
+        case InputParameters::SquareContrastT :
+        {
+          TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_squareCMinInput.size() ==
+            inputParamsPtr->m_inRasterBands.size(), 
+            "Invalid parameter m_squareCMinInput" );
+          TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_squareCMaxInput.size() ==
+            inputParamsPtr->m_inRasterBands.size(), 
+            "Invalid parameter m_squareCMaxInput" );
+            
+          break;
+        }  
+        case InputParameters::SquareRootContrastT :
+        {
+          TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_squareRootCMinInput.size() ==
+            inputParamsPtr->m_inRasterBands.size(), 
+            "Invalid parameter m_squareRootCMinInput" );
+          TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_squareRootCMaxInput.size() ==
+            inputParamsPtr->m_inRasterBands.size(), 
+            "Invalid parameter m_squareRootRCMaxInput" );
+            
+          break;
+        }         
+        case InputParameters::LogContrastT :
+        {
+          TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_logCMinInput.size() ==
+            inputParamsPtr->m_inRasterBands.size(), 
+            "Invalid parameter m_logCMinInput" );
+          TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_logCMaxInput.size() ==
+            inputParamsPtr->m_inRasterBands.size(), 
+            "Invalid parameter m_logCMaxInput" );
+            
+          break;
+        }                
+        case InputParameters::MeanAndStdContrastT :
         {
           TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_sMASCMeanInput.size() ==
             inputParamsPtr->m_inRasterBands.size(), 
@@ -308,6 +389,10 @@ namespace te
             "Invalid parameter m_sMASCStdInput" );            
           break;
         }
+        case InputParameters::DecorrelationEnhancementT :
+        {
+          break;
+        }        
         default :
         {
           TERP_LOG_AND_THROW( "Invalid contrast type" );
@@ -358,10 +443,17 @@ namespace te
         const double inRasterRange = m_inputParameters.m_lCMaxInput[ inRasterBandsIdx ] -
           m_inputParameters.m_lCMinInput[ inRasterBandsIdx ];
 
-        if( ( outRasterRange != 0.0 ) && ( inRasterRange != 0.0 ) )
+        if( inRasterRange != 0.0 )
         {
           m_offSetGainRemap_gain = outRasterRange / inRasterRange;
-          m_offSetGainRemap_offset = outRangeMin - m_inputParameters.m_lCMinInput[ inRasterBandsIdx ];
+          m_offSetGainRemap_offset1 = outRangeMin - m_inputParameters.m_lCMinInput[ inRasterBandsIdx ];
+          m_offSetGainRemap_offset2 = 0;
+        }
+        else
+        {
+          m_offSetGainRemap_gain = 1.0;
+          m_offSetGainRemap_offset1 = 0.0;
+          m_offSetGainRemap_offset2 = 0.0;
         }
 
         if( ! remapBandLevels( *inRasterBandPtr, *outRasterBandPtr,
@@ -453,7 +545,183 @@ namespace te
 
       return true;
     }
+    
+    bool Contrast::execSquareContrast()
+    {
+      assert( m_inputParameters.m_inRasterPtr );
+      assert( m_outputParametersPtr->m_outRasterPtr );
+      
+      const bool enableGlobalProgress = m_inputParameters.m_enableProgress &&
+         ( m_inputParameters.m_inRasterBands.size() > 1 );
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      if( enableGlobalProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        progressPtr->setMessage( "Contrast" );
+        progressPtr->setTotalSteps( m_inputParameters.m_inRasterBands.size() );
+      }
 
+      for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx <
+        m_inputParameters.m_inRasterBands.size() ; ++inRasterBandsIdx )
+      {
+        te::rst::Band const* inRasterBandPtr = m_inputParameters.m_inRasterPtr->getBand(
+          m_inputParameters.m_inRasterBands[ inRasterBandsIdx ] );
+        te::rst::Band* outRasterBandPtr =m_outputParametersPtr->m_outRasterPtr->getBand(
+         m_outputParametersPtr->m_outRasterBands[ inRasterBandsIdx ] );
+
+        double outRangeMin = 0.0;
+        double outRangeMax = 0.0;
+        GetDataTypeRange( outRasterBandPtr->getProperty()->getType(),
+          outRangeMin, outRangeMax );
+        const double outRasterRange = outRangeMax - outRangeMin;
+
+        const double inRasterRange = m_inputParameters.m_squareCMaxInput[ inRasterBandsIdx ] -
+          m_inputParameters.m_squareCMinInput[ inRasterBandsIdx ];
+
+        if( inRasterRange != 0.0 )
+        {
+          m_squareRemap_factor = outRasterRange / std::pow( inRasterRange, 2.0 );
+        }
+        else
+        {
+          m_squareRemap_factor = 0.0;
+        }
+
+        if( ! remapBandLevels( *inRasterBandPtr, *outRasterBandPtr,
+          &Contrast::squareRemap, m_inputParameters.m_enableProgress &&
+          (!enableGlobalProgress) ) )
+        {
+          return false;
+        }
+        
+        if( enableGlobalProgress )
+        {
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }        
+      }
+
+      return true;
+    }    
+
+    bool Contrast::execSquareRootContrast()
+    {
+      assert( m_inputParameters.m_inRasterPtr );
+      assert( m_outputParametersPtr->m_outRasterPtr );
+      
+      const bool enableGlobalProgress = m_inputParameters.m_enableProgress &&
+         ( m_inputParameters.m_inRasterBands.size() > 1 );
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      if( enableGlobalProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        progressPtr->setMessage( "Contrast" );
+        progressPtr->setTotalSteps( m_inputParameters.m_inRasterBands.size() );
+      }
+
+      for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx <
+        m_inputParameters.m_inRasterBands.size() ; ++inRasterBandsIdx )
+      {
+        te::rst::Band const* inRasterBandPtr = m_inputParameters.m_inRasterPtr->getBand(
+          m_inputParameters.m_inRasterBands[ inRasterBandsIdx ] );
+        te::rst::Band* outRasterBandPtr =m_outputParametersPtr->m_outRasterPtr->getBand(
+         m_outputParametersPtr->m_outRasterBands[ inRasterBandsIdx ] );
+
+        double outRangeMin = 0.0;
+        double outRangeMax = 0.0;
+        GetDataTypeRange( outRasterBandPtr->getProperty()->getType(),
+          outRangeMin, outRangeMax );
+        const double outRasterRange = outRangeMax - outRangeMin;
+
+        const double inRasterRange = m_inputParameters.m_squareRootCMaxInput[ inRasterBandsIdx ] -
+          m_inputParameters.m_squareRootCMinInput[ inRasterBandsIdx ];
+
+        if( inRasterRange != 0.0 )
+        {
+          m_squareRootRemap_gain = outRasterRange / std::sqrt( inRasterRange );
+        }
+        else
+        {
+          m_squareRootRemap_gain = 0.0;
+        }
+
+        if( ! remapBandLevels( *inRasterBandPtr, *outRasterBandPtr,
+          &Contrast::squareRootRemap, m_inputParameters.m_enableProgress &&
+          (!enableGlobalProgress) ) )
+        {
+          return false;
+        }
+        
+        if( enableGlobalProgress )
+        {
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }        
+      }
+
+      return true;
+    }
+    
+    bool Contrast::execLogContrast()
+    {
+      assert( m_inputParameters.m_inRasterPtr );
+      assert( m_outputParametersPtr->m_outRasterPtr );
+      
+      const bool enableGlobalProgress = m_inputParameters.m_enableProgress &&
+         ( m_inputParameters.m_inRasterBands.size() > 1 );
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      if( enableGlobalProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        progressPtr->setMessage( "Contrast" );
+        progressPtr->setTotalSteps( m_inputParameters.m_inRasterBands.size() );
+      }
+
+      for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx <
+        m_inputParameters.m_inRasterBands.size() ; ++inRasterBandsIdx )
+      {
+        te::rst::Band const* inRasterBandPtr = m_inputParameters.m_inRasterPtr->getBand(
+          m_inputParameters.m_inRasterBands[ inRasterBandsIdx ] );
+        te::rst::Band* outRasterBandPtr =m_outputParametersPtr->m_outRasterPtr->getBand(
+         m_outputParametersPtr->m_outRasterBands[ inRasterBandsIdx ] );
+
+        double outRangeMin = 0.0;
+        double outRangeMax = 0.0;
+        GetDataTypeRange( outRasterBandPtr->getProperty()->getType(),
+          outRangeMin, outRangeMax );
+        const double outRasterRange = outRangeMax - outRangeMin;
+
+        const double inRasterRange = m_inputParameters.m_logCMaxInput[ inRasterBandsIdx ] -
+          m_inputParameters.m_logCMinInput[ inRasterBandsIdx ];
+          
+        m_logRemap_offset = -1.0 * m_inputParameters.m_logCMinInput[ inRasterBandsIdx ];
+
+        if( inRasterRange != 0.0 )
+        {
+          m_logRemap_gain = outRasterRange / std::log10( inRasterRange + 1.0 );
+        }
+        else
+        {
+          m_logRemap_gain = 0.0;
+        }
+
+        if( ! remapBandLevels( *inRasterBandPtr, *outRasterBandPtr,
+          &Contrast::logRemap, m_inputParameters.m_enableProgress &&
+          (!enableGlobalProgress) ) )
+        {
+          return false;
+        }
+        
+        if( enableGlobalProgress )
+        {
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }        
+      }
+
+      return true;
+    }    
+    
     bool Contrast::execSetMeanAndStdContrast()
     {
       assert( m_inputParameters.m_inRasterPtr );
@@ -522,6 +790,128 @@ namespace te
 
       return true;
     }
+    
+    bool Contrast::execDecorrelationEnhancement()
+    {
+      assert( m_inputParameters.m_inRasterPtr );
+      assert( m_outputParametersPtr->m_outRasterPtr );
+
+      // Progress interface
+      
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        progressPtr->setMessage( "Contrast" );
+        progressPtr->setTotalSteps( m_inputParameters.m_inRasterBands.size() +
+          2 );
+      }
+      
+      // Compute PCA space raster
+      
+      std::auto_ptr< te::rst::Raster > pcaRasterPtr;
+      boost::numeric::ublas::matrix< double > pcaMatrix;
+      
+      {
+        te::rst::Grid* gridPtr = new te::rst::Grid( 
+          *m_inputParameters.m_inRasterPtr->getGrid() );
+        std::vector< te::rst::BandProperty * > bandProperties;
+        std::vector< unsigned int > pcaRasterBands;
+          
+        for( unsigned int bandIdx = 0 ; bandIdx <
+          m_inputParameters.m_inRasterBands.size() ; ++bandIdx )
+        {
+          bandProperties.push_back( new te::rst::BandProperty( 
+            *m_inputParameters.m_inRasterPtr->getBand( bandIdx )->getProperty() ) );
+          bandProperties[ bandIdx ]->m_type = te::dt::DOUBLE_TYPE;
+          
+          pcaRasterBands.push_back( bandIdx );
+        } 
+        
+        try
+        {
+          pcaRasterPtr.reset( new te::mem::ExpansibleRaster( 25, gridPtr,
+            bandProperties ) );    
+        }
+        catch( te::common::Exception& e )
+        {
+          TERP_LOG_AND_RETURN_FALSE( e.what() );
+        }    
+        
+        TERP_TRUE_OR_RETURN_FALSE( te::rp::DirectPrincipalComponents( 
+          *m_inputParameters.m_inRasterPtr, m_inputParameters.m_inRasterBands,
+          pcaMatrix, *pcaRasterPtr, pcaRasterBands, 0 ),
+          "Principal components generation error" );
+          
+//        te::rp::Copy2DiskRaster( *pcaRasterPtr, "pcaRaster.tif" );
+      }      
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }          
+      
+      // The reference for enhancement: mean and std dev from the first PCA band
+      
+      double pca0MeanValue = 0;
+      TERP_TRUE_OR_RETURN_FALSE( te::rp::GetMeanValue( 
+        *pcaRasterPtr->getBand( 0 ), 0, pca0MeanValue ),
+        "Mean value calcule error" );
+      
+      double pca0StdDevValue = 0;
+      TERP_TRUE_OR_RETURN_FALSE( te::rp::GetStdDevValue( 
+        *pcaRasterPtr->getBand( 0 ), 0, &pca0MeanValue,
+        pca0StdDevValue ), "StdDev value calcule error" );      
+      
+      // Enhancing PCA
+
+      for( unsigned int pcaBandIdx = 1 ; pcaBandIdx <
+        m_inputParameters.m_inRasterBands.size() ; ++pcaBandIdx )
+      {
+        te::rst::Band& pcaBand = *pcaRasterPtr->getBand( pcaBandIdx );
+
+        double meanValue = 0;
+        TERP_TRUE_OR_RETURN_FALSE( te::rp::GetMeanValue( pcaBand, 0, meanValue ),
+          "Mean value calcule error" );
+        
+        double stdDevValue = 0;
+        TERP_TRUE_OR_RETURN_FALSE( te::rp::GetStdDevValue( pcaBand, 0, &meanValue,
+          stdDevValue ), "StdDev value calcule error" );           
+
+        m_offSetGainRemap_offset1 = -1.0 * meanValue;
+        m_offSetGainRemap_gain = ( stdDevValue == 0.0 ) ? 0.0 : ( pca0StdDevValue /
+          stdDevValue );
+        m_offSetGainRemap_offset2 = pca0MeanValue;
+
+        if( ! remapBandLevels( pcaBand, pcaBand,
+          &Contrast::offSetGainRemap, 0 ) )
+        {
+          return false;
+        }
+        
+        if( m_inputParameters.m_enableProgress )
+        {
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }        
+      }
+      
+      // Generating the output enhanced raster
+      
+      TERP_TRUE_OR_RETURN_FALSE( InversePrincipalComponents( *pcaRasterPtr,
+        pcaMatrix, *m_outputParametersPtr->m_outRasterPtr, 
+        m_outputParametersPtr->m_outRasterBands, 0 ),
+        "Inverse PCA error" );
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }       
+
+      return true;
+    }    
 
     bool Contrast::remapBandLevels( const te::rst::Band& inRasterBand,
       te::rst::Band& outRasterBand, RemapFuncPtrT remapFuncPtr,

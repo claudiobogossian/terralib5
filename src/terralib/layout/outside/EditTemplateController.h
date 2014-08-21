@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,45 +18,37 @@
  */
 
 /*!
-  \file terralib/cellspace/Cell.cpp
+  \file EditTemplateController.h
    
-  \brief Implementation of a Cell.
+  \brief 
+
+  \ingroup layout
 */
 
-// Terralib
-#include "Cell.h"
+#ifndef __TERRALIB_LAYOUT_INTERNAL_EDIT_TEMPLATE_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_EDIT_TEMPLATE_CONTROLLER_H
 
-// STL
-#include <string>
+// TerraLib
+#include "../core/pattern/mvc/OutsideController.h"
+#include "../core/property/Property.h"
+#include "../core/enum/EnumMode.h"
+#include "../core/Config.h"
 
-te::cellspace::Cell::Cell(int column, int row)
-  : m_column(column),
-    m_row(row)
+namespace te
 {
+  namespace layout
+  {
+    class TELAYOUTEXPORT EditTemplateController : public OutsideController
+    {
+    public:
 
+	    EditTemplateController( Observable* o );
+	    virtual ~EditTemplateController();
+
+	    virtual void setPosition(const double& x, const double& y);
+
+    };
+  }
 }
 
-te::cellspace::Cell::~Cell()
-{
-
-}
-
-int te::cellspace::Cell::getColumn()
-{
-  return m_column;
-}
-
-int te::cellspace::Cell::getRow()
-{
-  return m_row;
-}
-
-void te::cellspace::Cell::setColumn(int column)
-{
-  m_column = column;
-}
-
-void te::cellspace::Cell::setRow(int row)
-{
-  m_row = row;
-}
+#endif

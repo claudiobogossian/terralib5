@@ -223,3 +223,13 @@ void te::layout::Context::setOldZoomFactor( double zoomFactor )
 {
   m_oldZoomFactor = zoomFactor;
 }
+
+te::layout::SystematicScaleConfig* te::layout::Context::getSystematicScaleConfig()
+{
+  return m_systematicConfig;
+}
+
+void te::layout::Context::setSystematicScaleConfig( SystematicScaleConfig* scale )
+{
+  m_systematicConfig = scale;
+}

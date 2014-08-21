@@ -34,10 +34,8 @@
 
 te::layout::RectangleModel::RectangleModel() 
 {
-  m_borderColor = te::color::RGBAColor(0, 0, 255, 255);
-  m_backgroundColor = te::color::RGBAColor(0, 255, 0, 100);
-
-  m_box = te::gm::Envelope(0., 0., 10., 10.);
+  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
+  m_box = te::gm::Envelope(0., 0., 20., 20.);
 }
 
 te::layout::RectangleModel::~RectangleModel()

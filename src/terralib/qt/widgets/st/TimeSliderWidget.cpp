@@ -78,11 +78,6 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
 
   m_spd = new SliderPropertiesDialog(this);
 
-  //showPropertySection(false);
-
-  //te::gm::Envelope env = m_display->getExtent();
-  //m_initialDisplayRect = QRectF(env.m_llx, env.m_lly, env.getWidth(), env.getHeight());
-
   // slider normalized between 0 and m_maxSliderValue
   m_ui->m_TemporalHorizontalSlider->setMinimum(0);
   m_ui->m_TemporalHorizontalSlider->setMaximum(m_maxSliderValue);
@@ -213,17 +208,15 @@ void te::qt::widgets::TimeSliderWidget::layerSelected(te::map::AbstractLayerPtr 
 
 void te::qt::widgets::TimeSliderWidget::layerAdded(te::map::AbstractLayerPtr layer)
 {
-  //if(layer->getType() == "TRAJECTORYDATASETLAYER")
-  //{
-  //  te::st::TrajectoryDataSet* trajLayer = dynamic_cast<te::st::TrajectoryDataSetLayer*>(layer.get())->getTrajectoryDataset().release();
-  //  addTrajectory(QString::fromStdString(trajLayer->getId()), "", trajLayer);
-  //  if(isHidden())
-  //    show();
-  //}
   if(layer->getType() == "TRAJECTORYDATASETLAYER")
   {
-    te::st::TrajectoryDataSetLayer* trajLayer = dynamic_cast<te::st::TrajectoryDataSetLayer*>(layer.get());
-    addTrajectory(trajLayer, "");
+    te::st::TrajectoryDataSetLayer* tl = dynamic_cast<te::st::TrajectoryDataSetLayer*>(layer.get());
+    QString title(tl->getTitle().c_str());
+    QPair<QString, te::st::TrajectoryDataSetLayer*> p(title, tl);
+    if(trajectoryAlreadyExists(p))
+      QMessageBox::information(this, title + " already exists", "This item is already being animated!");
+    else
+      addTrajectory(tl, "");
     if(isHidden())
       show();
   }
@@ -233,8 +226,6 @@ void te::qt::widgets::TimeSliderWidget::layerRemoved(te::map::AbstractLayerPtr l
 {
   if(layer->getType() == "TRAJECTORYDATASETLAYER")
   {
-    //te::st::TrajectoryDataSet* trajLayer = dynamic_cast<te::st::TrajectoryDataSetLayer*>(layer.get())->getTrajectoryDataset().release();
-    //addTrajectory(QString::fromStdString(trajLayer->getId()), "", trajLayer);
     QString title = layer->getTitle().c_str();
     removeAnimation(title);
 
@@ -275,6 +266,8 @@ void te::qt::widgets::TimeSliderWidget::onDrawTrailCheckBoxClicked(bool b)
 
 void te::qt::widgets::TimeSliderWidget::onApplyAnimationItemPushButtonClicked(bool)
 {
+  int animationState = m_parallelAnimation->state();
+
   QList<QGraphicsItem*>::iterator it;
 
   int size = m_spd->m_ui->m_animationItemListWidget->count();
@@ -305,6 +298,21 @@ void te::qt::widgets::TimeSliderWidget::onApplyAnimationItemPushButtonClicked(bo
         if(title == iTitle)
           removeAnimation(iTitle);
       }
+    }
+  }
+
+  if(animationState == QAbstractAnimation::Stopped)
+  {
+    QList<QGraphicsItem*> list = m_animationScene->items();
+    if(list.count())
+    {
+      m_ui->m_settingsToolButton->setEnabled(true);
+      m_ui->m_playToolButton->setEnabled(true);
+      m_ui->m_stopToolButton->setEnabled(true);
+      m_ui->m_durationSpinBox->setEnabled(true);
+      m_ui->m_dateTimeEdit->setEnabled(true);
+
+      onPlayToolButtonnClicked();
     }
   }
 }
@@ -524,8 +532,6 @@ void te::qt::widgets::TimeSliderWidget::dropAction()
   if(m_dropModifiers == Qt::NoModifier)
   {
     onStopToolButtonnClicked();
-    //m_trajectoryItemList.clear();
-    //m_coverageItemList.clear();
     m_spd->m_ui->m_opacityComboBox->clear();
     m_spd->m_ui->m_trajectoryColorComboBox->clear();
     m_ui->m_TemporalHorizontalSlider->setValue(0);
@@ -621,67 +627,6 @@ bool te::qt::widgets::TimeSliderWidget::coverageAlreadyExists(QPair<QString, QSt
   return false;
 }
 
-//void te::qt::widgets::TimeSliderWidget::openTrajectory(te::st::TrajectoryDataSetLayer* layer) //const QString file, const QString& dsetname)
-//{
-  //const std::string dsid = layer->getDataSourceId();
-  //te::da::DataSourcePtr ds = te::da::GetDataSource(dsid);
-  //std::map<std::string, std::string> ci = ds->getConnectionInfo();
-  //std::map<std::string, std::string>::iterator it = ci.find("URI");
-  //if(it != ci.end())
-  //{
-  //  QString dsetname(layer->getDataSetName().c_str());
-  //  QString uri(it->second.c_str());
-  //  QPair<QString, QString> p(uri, dsetname);
-  //  if(alreadyExists(p))
-  //  {
-  //    QMessageBox::information(this, dsetname + " alredy exists", "This item is already being animated!");
-  //    return;
-  //  }
-  //}
-
-
-  //te::da::DataSourceInfo dsinfo;
-  //std::map<std::string, std::string> connInfo;
-  //connInfo["URI"] = file.toStdString(); 
-  //dsinfo.setConnInfo(connInfo);
-  //dsinfo.setType("OGR");
-  //dsinfo.setId(file.toStdString());
-
-  //if(te::da::DataSourceManager::getInstance().find(file.toStdString()) == 0)
-  //{
-  //  //Create the data source and put it into the manager
-  //  te::da::DataSourceManager::getInstance().open(dsinfo.getId(), dsinfo.getType(), dsinfo.getConnInfo());
-  //}
-  //  
-  ////Indicates how the trajectories are stored in the data source -> This structure is fixed for OGR driver
-  //int phTimeIdx = 3;  /* property name: timestamp */
-  //int geomIdx = 12;    /* property name: geom */
-
-  ////It initializes the st data loader support
-  //te::st::STDataLoader::initialize();
-
-  ////Use the STDataLoader to create a TrajectoryDataSet with all observations
-  //te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dsetname, phTimeIdx, geomIdx, -1, dsetname);
-  //te::st::TrajectoryDataSet* tjDS = te::st::STDataLoader::getDataSet(tjinfo).release();
-  //addTrajectory(dsetname, "c:/lixo/helicopteroT2.png", tjDS);
-
-  ////if(dsetname == "40: locations")
-  ////{
-  ////  te::st::TrajectoryDataSetInfo tjinfo40(dsinfo, "40: locations", phTimeIdx, geomIdx, -1, "40");
-  ////  te::st::TrajectoryDataSet* tjDS40 = te::st::STDataLoader::getDataSet(tjinfo40).release();
-  ////  addTrajectory(dsetname, "c:/lixo/helicopteroT2.png", tjDS40);
-  ////  delete tjDS40;
-  ////}
-  ////else if(dsetname == "41: locations")
-  ////{
-  ////  te::st::TrajectoryDataSetInfo tjinfo41(dsinfo, "41: locations", phTimeIdx, geomIdx, -1, "41");
-  ////  te::st::TrajectoryDataSet* tjDS41 = te::st::STDataLoader::getDataSet(tjinfo41).release();
-  ////  addTrajectory(dsetname, "c:/lixo/cachorro_correndo_31.gif", tjDS41);
-  ////  delete tjDS41;
-  ////}
-  //te::st::STDataLoader::finalize();
-//}
-
 void te::qt::widgets::TimeSliderWidget::addTrajectory(te::st::TrajectoryDataSetLayer* tl, const QString& pixmapFile)
 {
   int state = m_parallelAnimation->state();
@@ -692,19 +637,6 @@ void te::qt::widgets::TimeSliderWidget::addTrajectory(te::st::TrajectoryDataSetL
   Animation* animation = new Animation(ti, "pos");
   animation->setEasingCurve(QEasingCurve::Linear);
     
-  ////Indicates how the trajectories are stored in the data source -> This structure is fixed for OGR driver
-  //int phTimeIdx = 3;  /* property name: timestamp */
-  //int geomIdx = 12;    /* property name: geom */
-
-  //if(title == "40: locations") // change default colors
-  //{
-  //  ti->m_opacity = 120;
-  //  ti->m_forwardColor = Qt::green;
-  //  ti->m_forwardColor.setAlpha(ti->m_opacity);
-  //  ti->m_backwardColor = Qt::cyan;
-  //  ti->m_backwardColor.setAlpha(ti->m_opacity);
-  //}
-
   te::st::TrajectoryDataSet* dset = tl->getTrajectoryDataset().release();
   animation->m_spatialExtent = dset->getSpatialExtent();
   animation->m_temporalExtent = *static_cast<te::dt::TimePeriod*>(dset->getTemporalExtent());
@@ -1759,96 +1691,6 @@ void te::qt::widgets::TimeSliderWidget::deleteMe()
   emit deleteTimeSliderWidget();
 }
 
-//void te::qt::widgets::TimeSliderWidget::onAddPushButtonClicked(bool b)
-//{
-//  QString title = QInputDialog::getText(this, "Add Item", "title");
-//
-//  if(title.isEmpty())
-//    return;
-//
-//  te::qt::widgets::ScopedCursor scopedCursor(Qt::WaitCursor);
-//
-//  QString path;
-//  if(title == "eta5km"|| title == "hidro")
-//    path = "C:/lixo/FORECAST/" + title;
-//  else
-//    path = "C:/lixo/TemporalImages/" + title;
-//
-//  addTemporalImages(path);
-//}
-//
-//void te::qt::widgets::TimeSliderWidget::onRemovePushButtonClicked(bool b)
-//{
-//  QList<QGraphicsItem*> list = m_animationScene->items();
-//  QList<QGraphicsItem*>::iterator it;
-//
-//  for(it = list.begin(); it != list.end(); ++it)
-//  {
-//    te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
-//    QString title = ai->m_title;
-//    int r = QMessageBox::question(this, "Remove Item", "Remove " + title, QMessageBox::Ok, QMessageBox::No);
-//    if(r == QMessageBox::Ok)
-//    {
-//      removeComboItem(ai);
-//      if(list.count() == 1)
-//      {
-//        onStopToolButtonnClicked();
-//        m_animationScene->removeItem(ai);
-//        m_parallelAnimation->removeAnimation(ai->m_animation);
-//        delete ai->m_animation;
-//        delete ai;
-//        m_ui->m_TemporalHorizontalSlider->setValue(0);
-//        m_parallelAnimation->setCurrentTime(0);
-//        m_ui->m_settingsToolButton->setEnabled(false);
-//        m_ui->m_playToolButton->setEnabled(false);
-//        m_ui->m_stopToolButton->setEnabled(false);
-//        m_ui->m_durationSpinBox->setEnabled(false);
-//        m_ui->m_dateTimeEdit->setEnabled(false);
-//        m_display->update();
-//        initProperty();
-//        return;
-//      }
-//
-//      bool running = false;
-//      int state = m_parallelAnimation->state();
-//      if(state == QAbstractAnimation::Running)
-//      {
-//        running = true;;
-//        onPlayToolButtonnClicked();
-//      }
-//
-//      m_currentTime = m_parallelAnimation->currentTime();
-//      m_animationScene->removeItem(ai);
-//      m_parallelAnimation->removeAnimation(ai->m_animation);
-//      if(ai->pixmap().isNull() == false)
-//      {
-//        if(m_animationScene->m_numberOfTrajectories)
-//        {
-//          m_animationScene->m_trajectoryPixmap->fill(Qt::transparent);
-//          draw();
-//        }
-//      }
-//      delete ai->m_animation;
-//      delete ai;
-//
-//      calculateSpatialExtent();
-//      calculateTemporalExtent();
-//      createAnimations();
-//      setDuration(m_duration);
-//      setDirection(m_direction);
-//
-//      if(running)
-//      {
-//        onPlayToolButtonnClicked();
-//        m_parallelAnimation->setCurrentTime(m_currentTime);
-//      }
-//
-//      break;
-//    }
-//  }
-//  initProperty();
-//}
-
 void te::qt::widgets::TimeSliderWidget::putToFront(te::qt::widgets::AnimationItem* item)
 {
   int state = m_parallelAnimation->state();
@@ -2585,87 +2427,6 @@ te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getGoesTime(const QString
   return te::dt::TimeInstant(date, dur);
 }
 
-//void te::qt::widgets::TimeSliderWidget::onAddEtaPushButtonClicked(bool)
-//{
-//  if(m_animationScene->items().isEmpty())
-//    m_ui->m_durationSpinBox->setValue(m_duration);
-//
-//  int state = m_parallelAnimation->state();
-//  m_currentTime = m_parallelAnimation->currentTime();
-//  if(state == QAbstractAnimation::Running)
-//    onPlayToolButtonnClicked();
-//
-//  te::qt::widgets::PixmapItem* pi = getEtaMetadata("C:/lixo/FORECAST/eta5km");
-//  calculateSpatialExtent();
-//  calculateTemporalExtent();
-//  createAnimations();
-//  setDuration(m_duration);
-//  setDirection(m_direction);
-//  if(state == QAbstractAnimation::Running)
-//  {
-//    onPlayToolButtonnClicked();
-//    m_parallelAnimation->setCurrentTime(m_currentTime);
-//  }
-//  if(m_animationScene->items().isEmpty() == false)
-//  {
-//    m_ui->m_durationSpinBox->setEnabled(true);
-//    m_ui->m_settingsToolButton->setEnabled(true);
-//    m_ui->m_playToolButton->setEnabled(true);
-//    m_ui->m_stopToolButton->setEnabled(true);
-//    if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
-//      m_ui->m_dateTimeEdit->setEnabled(true);
-//    else
-//      m_ui->m_dateTimeEdit->setEnabled(false);
-//  }
-//  initProperty();
-//
-//  m_spd->m_ui->m_opacityComboBox->addItem("eta5km");
-//  int count = m_spd->m_ui->m_opacityComboBox->count();
-//  m_spd->m_ui->m_opacityComboBox->setCurrentIndex(count-1);
-//  onOpacityComboBoxActivated(count-1);
-//}
-//
-//void te::qt::widgets::TimeSliderWidget::onAddHidroPushButtonClicked(bool)
-//{
-//  if(m_animationScene->items().isEmpty())
-//    m_ui->m_durationSpinBox->setValue(m_duration);
-//
-//  int state = m_parallelAnimation->state();
-//  m_currentTime = m_parallelAnimation->currentTime();
-//  if(state == QAbstractAnimation::Running)
-//    onPlayToolButtonnClicked();
-//
-//  te::qt::widgets::PixmapItem* pi = getHidroMetadata("C:/lixo/FORECAST/hidro");
-//  calculateSpatialExtent();
-//  calculateTemporalExtent();
-//  createAnimations();
-//  setDuration(m_duration);
-//  setDirection(m_direction);
-//  if(state == QAbstractAnimation::Running)
-//  {
-//    onPlayToolButtonnClicked();
-//    m_parallelAnimation->setCurrentTime(m_currentTime);
-//  }
-//  if(m_animationScene->items().isEmpty() == false)
-//  {
-//    m_ui->m_durationSpinBox->setEnabled(true);
-//    m_ui->m_settingsToolButton->setEnabled(true);
-//    m_ui->m_playToolButton->setEnabled(true);
-//    m_ui->m_stopToolButton->setEnabled(true);
-//    if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
-//      m_ui->m_dateTimeEdit->setEnabled(true);
-//    else
-//      m_ui->m_dateTimeEdit->setEnabled(false);
-//  }
-//  initProperty();
-//
-//  m_spd->m_ui->m_opacityComboBox->addItem("hidro");
-//  int count = m_spd->m_ui->m_opacityComboBox->count();
-//  m_spd->m_ui->m_opacityComboBox->setCurrentIndex(count-1);
-//  onOpacityComboBoxActivated(count-1);
-//
-//}
-
 void te::qt::widgets::TimeSliderWidget::onAutoPanCheckBoxClicked(bool)
 {
   QString title = m_spd->m_ui->m_trajectoryColorComboBox->currentText();
@@ -3361,4 +3122,8 @@ te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getTemporalImageTime(cons
   te::dt::Date date(ano.toInt(), mes.toInt(), dia.toInt());
   te::dt::TimeDuration dur(hour.toInt(), min.toInt(), sec.toInt());
   return te::dt::TimeInstant(date, dur);
+}
+
+void te::qt::widgets::TimeSliderWidget::onHelpPushButtonClicked()
+{
 }

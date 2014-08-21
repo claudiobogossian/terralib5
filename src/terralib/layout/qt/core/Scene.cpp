@@ -43,6 +43,13 @@
 #include "BuildGraphicsItem.h"
 #include "../item/MapItem.h"
 #include "ItemUtils.h"
+#include "../item/DefaultTextItem.h"
+#include "../../core/Systematic.h"
+#include "../../item/MapModel.h"
+#include "../item/MapGridItem.h"
+#include "../../item/MapGridModel.h"
+#include "../../item/GridGeodesicModel.h"
+#include "../../item/GridPlanarModel.h"
 
 // STL
 #include <iostream>
@@ -62,7 +69,6 @@
 #include <QApplication>
 #include <QDir>
 #include <QPrinter>
-#include "../item/DefaultTextItem.h"
 
 te::layout::Scene::Scene( QWidget* widget): 
   QGraphicsScene(widget),
@@ -100,7 +106,7 @@ void te::layout::Scene::init(double screenWMM, double screenHMM, double paperMMW
 
   m_boxPaperW = new te::gm::Envelope(0, 0, paperMMW, paperMMH);
   m_boxW = calculateWindow(m_screenWidthMM, m_screenHeightMM); 
-
+  
   double newZoomFactor = 1. / zoomFactor;
   if(zoomFactor < 1.)
     newZoomFactor = zoomFactor;
@@ -160,8 +166,8 @@ void te::layout::Scene::insertItem( ItemObserver* item )
       if(txt)
       {
         QTransform transf = m_matrix.inverted();
+        transf.scale(1., -1.);
         txt->setTransform(transf);
-        txt->scale(1, -1);
       }
       this->addItem(qitem);
       qitem->setZValue(total);
@@ -429,7 +435,17 @@ QPrinter* te::layout::Scene::createPrinter()
 {
   QPrinter* printer=new QPrinter(QPrinter::HighResolution);
   printer->setPageSize(QPrinter::A4);
-  printer->setOrientation( QPrinter::Portrait );
+  
+  PaperConfig* conf = Context::getInstance().getPaperConfig();
+
+  if(conf->getPaperOrientantion() == Portrait)
+  {
+    printer->setOrientation( QPrinter::Portrait );
+  }
+  else
+  {
+    printer->setOrientation( QPrinter::Landscape );
+  }
   printer->pageRect(QPrinter::Millimeter);
 
   return printer;
@@ -449,10 +465,17 @@ void te::layout::Scene::renderScene( QPainter* newPainter )
   }
 
   changePrintVisibility(false);
+
+  double w = 0;
+  double h = 0;
+
+  PaperConfig* conf = Context::getInstance().getPaperConfig();
+  conf->getPaperSize(w, h);
+  te::gm::Envelope env(0, 0, w, h);
         
   //Box Paper in the Scene (Source)
-  QRectF mmSourceRect(m_boxPaperW->getLowerLeftX(), m_boxPaperW->getLowerLeftY(), 
-    m_boxPaperW->getWidth(), m_boxPaperW->getHeight());
+  QRectF mmSourceRect(env.getLowerLeftX(), env.getLowerLeftY(), 
+    env.getWidth(), env.getHeight());
 
   //Paper size using the printer dpi (Target)
   QRect pxTargetRect(0, 0, newPainter->device()->width(), newPainter->device()->height());
@@ -589,7 +612,7 @@ void te::layout::Scene::refresh(QGraphicsView* view, double zoomFactor)
 {
   if(!m_boxW)
     return;
-
+  
   calculateMatrixViewScene(zoomFactor);
   refreshViews(view);
 
@@ -597,11 +620,11 @@ void te::layout::Scene::refresh(QGraphicsView* view, double zoomFactor)
   if(view)
   {
     /* New box because the zoom factor change the transform(matrix) */
-    QPointF ll = view->mapToScene(0,0);
+    QPointF ll = view->mapToScene(0, 0);
     QPointF ur = view->mapToScene(view->size().width(), view->size().height());
     newBox = te::gm::Envelope(ll.x(), ll.y(), ur.x(), ur.y());
   }
-
+  
   refreshRulers(newBox);
 }
 
@@ -615,6 +638,8 @@ void te::layout::Scene::refreshRulers(te::gm::Envelope newBox)
   double urx = newBox.getUpperRightX();
   double ury = newBox.getUpperRightY();
 
+  QPointF pt(llx, lly);
+
   QList<QGraphicsItem*> graphicsItems = items();
   foreach( QGraphicsItem *item, graphicsItems) 
   {
@@ -623,8 +648,6 @@ void te::layout::Scene::refreshRulers(te::gm::Envelope newBox)
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
       {       
-        QPointF pt(llx, lly);
-
         ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(lItem->getModel());
 
         if(!model)
@@ -758,20 +781,22 @@ void te::layout::Scene::deleteItems()
   }
 }
 
-void te::layout::Scene::createItem( const te::gm::Coord2D& coord )
+QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
 {
+  QGraphicsItem* item = 0;
+
   BuildGraphicsItem* build = Context::getInstance().getBuildGraphicsItem();
 
   if(!build)
-    return;
-
-  QGraphicsItem* item = 0;
+    return item;
 
   LayoutMode mode = Context::getInstance().getMode();
 
   item = build->createItem(mode, coord);
 
   Context::getInstance().setMode(TypeNone);
+
+  return item;
 }
 
 void te::layout::Scene::setCurrentToolInSelectedMapItems( LayoutMode mode )
@@ -897,4 +922,131 @@ void te::layout::Scene::redrawRulers()
       }
     }
   }
+}
+
+int te::layout::Scene::intersectionMap( te::gm::Coord2D coord, bool &intersection )
+{
+  QList<QGraphicsItem *> items = selectedItems();
+  int number = 0;
+  intersection = false;
+  te::gm::Coord2D coordInter = coord;
+  te::gm::Envelope interCoord(coordInter.x, coordInter.y, coordInter.x, coordInter.y);
+
+  foreach (QGraphicsItem *item, items) 
+  {
+    if(item)
+    {
+      number++;
+      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+      if(it)
+      {
+        MapItem* mt = dynamic_cast<MapItem*>(it);
+        if(mt)
+        {
+          te::gm::Envelope env = it->getModel()->getBox();
+          intersection = env.intersects(interCoord);
+        }
+      }
+    }
+  }
+
+  return number;
+}
+
+void te::layout::Scene::setCurrentMapSystematic( Systematic* systematic, te::gm::Coord2D coord )
+{
+  QGraphicsItem *item = selectedItems().first();
+  if(item)
+  {
+    ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+    if(it)
+    {
+      MapItem* mt = dynamic_cast<MapItem*>(it);
+      if(mt)
+      {
+        MapModel* model = dynamic_cast<MapModel*>(mt->getModel());
+        model->setSystematic(systematic);
+        model->generateSystematic(coord);
+        mt->redraw();
+      }
+    }
+  }
+}
+
+void te::layout::Scene::createTextGridAsObject()
+{
+  QGraphicsItem *item = selectedItems().first();
+  if(item)
+  {
+    ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+    if(it)
+    {
+      MapGridItem* mt = dynamic_cast<MapGridItem*>(it);
+      if(mt)
+      {
+        MapGridModel* model = dynamic_cast<MapGridModel*>(mt->getModel());
+
+        GridGeodesicModel* gridGeo = dynamic_cast<GridGeodesicModel*>(model->getGridGeodesic());
+        if(model->getGridGeodesic()->isVisible())
+        {
+          model->getGridGeodesic()->setVisibleAllTexts(false);
+          std::map<te::gm::Coord2D, std::string> mapGeo = gridGeo->getGridInfo();
+          createDefaultTextItemFromObject(mapGeo);
+        }
+
+        GridPlanarModel* gridPlanar = dynamic_cast<GridPlanarModel*>(model->getGridPlanar());
+        if(model->getGridPlanar()->isVisible())
+        {
+          model->getGridGeodesic()->setVisibleAllTexts(false);
+          std::map<te::gm::Coord2D, std::string> mapPlanar = gridPlanar->getGridInfo();
+          createDefaultTextItemFromObject(mapPlanar);
+        }        
+      }
+    }
+  }
+}
+
+void te::layout::Scene::createTextMapAsObject()
+{
+  QGraphicsItem *item = selectedItems().first();
+  if(item)
+  {
+    ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+    if(it)
+    {
+      MapItem* mt = dynamic_cast<MapItem*>(it);
+      if(mt)
+      {
+        MapModel* model = dynamic_cast<MapModel*>(mt->getModel());
+        std::map<te::gm::Coord2D, std::string> map = model->getTextMapAsObjectInfo();
+        createDefaultTextItemFromObject(map);
+      }
+    }
+  }
+}
+
+void te::layout::Scene::createDefaultTextItemFromObject( std::map<te::gm::Coord2D, std::string> map )
+{
+  Context::getInstance().setMode(TypeCreateText);
+
+  std::map<te::gm::Coord2D, std::string>::iterator it;
+
+  for (it = map.begin(); it != map.end(); ++it) 
+  {
+    te::gm::Coord2D coord = it->first;
+    std::string text = it->second;
+   
+    QGraphicsItem* item = 0;
+    item = createItem(coord);
+    if(!item)
+      continue;
+
+    DefaultTextItem* txtItem = dynamic_cast<DefaultTextItem*>(item);
+    if(txtItem)
+    {
+      txtItem->setPlainText(text.c_str());
+    }
+  }
+
+  Context::getInstance().setMode(TypeNone);
 }

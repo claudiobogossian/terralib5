@@ -36,10 +36,11 @@
 #include "../core/property/Properties.h"
 
 te::layout::ImageModel::ImageModel() :
-  m_fileName("")
+  m_fileName(""),
+  m_imgType(te::map::JPEG)
 {
-  m_borderColor = te::color::RGBAColor(0, 0, 255, 255);
-  m_backgroundColor = te::color::RGBAColor(0, 255, 0, 100);
+  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
+  m_backgroundColor = te::color::RGBAColor(0, 0, 255, 255);
 
   m_box = te::gm::Envelope(0., 0., 90., 90.);
 
@@ -69,6 +70,13 @@ void te::layout::ImageModel::draw( ContextItem context )
   canvas->setPolygonFillColor(m_backgroundColor);
   
   utils->drawRectW(m_box);
+
+  if(m_fileName.compare("") != 0)
+  {
+    m_imgType = utils->getFileExtensionType(m_fileName);
+    m_fileExtension = utils->getFileExtension(m_fileName);
+    utils->drawImage(m_fileName, m_box);
+  }
   
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
@@ -112,4 +120,14 @@ void te::layout::ImageModel::updateProperties( te::layout::Properties* propertie
   {
     m_fileName = pro_fileName.getValue().toString();
   }
+}
+
+std::string te::layout::ImageModel::getFileExtension()
+{
+  return m_fileExtension;
+}
+
+te::map::ImageType te::layout::ImageModel::getFileType()
+{
+  return m_imgType;
 }

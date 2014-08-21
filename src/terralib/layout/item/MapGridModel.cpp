@@ -101,6 +101,9 @@ void te::layout::MapGridModel::draw( ContextItem context )
   
   utils->configCanvas(m_box);
 
+  canvas->setFontFamily("Arial");
+  canvas->setTextPointSize(8);
+
   drawGrid(canvas, utils);
 
   utils->configCanvas(m_box, false);
@@ -204,4 +207,19 @@ void te::layout::MapGridModel::updateProperties( te::layout::Properties* propert
   {
     m_gridGeodesic->updateProperty(pro_grid_geodesic);
   }
+}
+
+void te::layout::MapGridModel::generateSystematic( te::gm::Coord2D coord )
+{
+  MapModel::generateSystematic(coord);
+}
+
+te::layout::GridPlanarModel* te::layout::MapGridModel::getGridPlanar()
+{
+  return m_gridPlanar;
+}
+
+te::layout::GridGeodesicModel* te::layout::MapGridModel::getGridGeodesic()
+{
+  return m_gridGeodesic;
 }

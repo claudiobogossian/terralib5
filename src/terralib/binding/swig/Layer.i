@@ -12,6 +12,93 @@
 #include "terralib/memory/DataSetItem.h"
 %}
 
+#ifdef SWIGJAVA
+// ---------------------------------
+// Java Documentation
+// ---------------------------------
+%typemap(javaimports) te::map::AbstractLayer "
+/**
+ * This is the base class for layers.
+ */"
+
+%javamethodmodifiers OpenLayers() throw (te::common::Exception) "
+/**
+ * Opens a window for the user to select, from available datasources, some list of layers.
+ *
+ * @return A list with the selected layers.
+ *
+ * @throws java.io.IOException An exception will be raised if the operation fail.
+ */
+  public";
+
+%javamethodmodifiers GetFolderLayer() throw (te::common::Exception) "
+/**
+ * Returns the selected layers as children of a single layer called a folder layer.
+ *
+ * @return A single layer containing all selected layers.
+ *
+ * @throws java.io.IOException An exception will be raised if the operation fail.
+ */
+ public";
+
+%javamethodmodifiers te::map::AbstractLayer::toString() "
+/**
+ * Returns the title of the layer.
+ *
+ * @return The title of the layer.
+ */
+ public";
+
+%javamethodmodifiers te::map::AbstractLayer::changeStyle() "
+/**
+ * Presents a dialog for the user to update the style of rendering of the layer.
+ * <p>
+ * After the update, the layer will always be rendered with the new style.
+ */
+ public";
+
+%javamethodmodifiers te::map::AbstractLayer::getGeometries(const te::gm::Envelope& bbox) "
+/**
+ * Returns a br.inpe.terralib5.DataSet bounded by <i>bbox</i>.
+ *
+ * @param bbox The bounding rectangle of the desired dataset.
+ *
+ * @return A DataSet or <i>null</i> if no data intersects the desired bounding rectangle.
+ */
+ public";
+	
+%javamethodmodifiers te::map::AbstractLayer::getObjectIdColsNames() "
+/**
+ * Returns the names of columns that compose the identifier of each feature.
+ *
+ * @return A set of names of the columns that compose the identifier of features.
+ */
+ public";
+	
+%javamethodmodifiers te::map::AbstractLayer::updateGeometry(te::da::ObjectId* oId, te::gm::Geometry* geom) "
+/**
+ * Updates, in the data source, the geometry <i>geom</i> identified by <i>oId</i>.
+ *
+ * @param oId Idebtifier of the geometry.
+ *
+ * @param geom The geometry to be updated.
+ */
+ public";
+
+%javamethodmodifiers te::map::AbstractLayer::updateGeometries(std::vector<te::da::ObjectId*> oIds, std::vector<te::gm::Geometry*> geoms) throw (te::common::Exception) "
+/**
+ * Updates a set o geometries in the data source.
+ * <p>
+ * Note that the <i>oIds</i> set and <i>geoms</i> set MUST have the same size. Each element in <i>oIds</i> identifies a geometry in <i>geoms</i> set.
+ *
+ * @param oIds Set of identifiers.
+ *
+ * @param geoms Set of geometries to be updated.
+ *
+ * @throws java.io.IOException If the data source could not update the geometries an exception will be raised.
+ */
+ public";
+#endif
 
 /*
  * Map tools enums

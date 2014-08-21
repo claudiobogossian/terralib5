@@ -46,8 +46,16 @@ class TsContrast : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( LinearContrast );
 
   CPPUNIT_TEST( HistogramEqualizationContrast );
+  
+  CPPUNIT_TEST( SquareContrast );
+  
+  CPPUNIT_TEST( SquareRootContrast );
+  
+  CPPUNIT_TEST( LogContrast );
 
   CPPUNIT_TEST( SetMeanAndStdContrast );
+  
+  CPPUNIT_TEST( DecorrelationEnhancementTContrast );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -55,7 +63,11 @@ class TsContrast : public CPPUNIT_NS::TestFixture
 
     void LinearContrast();
     void HistogramEqualizationContrast();
+    void SquareContrast();
+    void SquareRootContrast();
+    void LogContrast();
     void SetMeanAndStdContrast();
+    void DecorrelationEnhancementTContrast();
 };
 
 #endif  // __TERRALIB_UNITTEST_DATAACCESS_INTERNAL_H

@@ -27,6 +27,10 @@
 
 // TerraLib
 #include "BuildGraphicsItem.h"
+#include "Scene.h"
+#include "ItemUtils.h"
+#include "../../core/pattern/singleton/Context.h"
+#include "../../core/property/SharedProperties.h"
 #include "../../item/RectangleModel.h"
 #include "../../item/RectangleController.h"
 #include "../item/RectangleItem.h"
@@ -42,13 +46,9 @@
 #include "../../item/PaperModel.h"
 #include "../../item/PaperController.h"
 #include "../item/PaperItem.h"
-#include "../../core/pattern/singleton/Context.h"
-#include "../../core/property/SharedProperties.h"
 #include "../../item/ScaleModel.h"
 #include "../../item/ScaleController.h"
 #include "../item/ScaleItem.h"
-#include "Scene.h"
-#include "ItemUtils.h"
 #include "../../item/ItemGroupModel.h"
 #include "../../item/ItemGroupController.h"
 #include "../item/ItemGroup.h"
@@ -58,6 +58,24 @@
 #include "../../item/ImageModel.h"
 #include "../../item/ImageController.h"
 #include "../item/ImageItem.h"
+#include "../../item/ArrowModel.h"
+#include "../../item/ArrowController.h"
+#include "../item/ArrowItem.h"
+#include "../../item/EllipseModel.h"
+#include "../../item/EllipseController.h"
+#include "../item/EllipseItem.h"
+#include "../../item/MultiLineTextModel.h"
+#include "../../item/MultiLineTextController.h"
+#include "../item/MultiLineTextItem.h"
+#include "../../item/PointModel.h"
+#include "../../item/PointController.h"
+#include "../item/PointItem.h"
+#include "../../item/TitleModel.h"
+#include "../../item/TitleController.h"
+#include "../item/TitleItem.h"
+#include "../../item/TextGridModel.h"
+#include "../../item/TextGridController.h"
+#include "../item/TextGridItem.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -83,7 +101,13 @@ te::layout::BuildGraphicsItem::BuildGraphicsItem() :
   m_horizontalRuler("HORIZONTAL_RULER_"),
   m_verticalRuler("VERTICAL_RULER_"),
   m_groupItem("ITEM_GROUP_"),
-  m_imageItem("IMAGE_")
+  m_imageItem("IMAGE_"),
+  m_arrowItem("ARROW_"),
+  m_ellipseItem("ELLIPSE_"),
+  m_multiLineTextItem("MULTILINE_TEXT_"),
+  m_pointItem("POINT_"),
+  m_textGridItem("TEXT_GRID_"),
+  m_titleItem("TITLE_")
 {
   m_sharedProps = new SharedProperties;
 }
@@ -142,6 +166,24 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   case TPItemGroup:
     item = createItemGroup();
     break;
+  case TPArrowItem:
+    item = createArrow();
+    break;
+  case TPEllipseItem:
+    item = createEllipse();
+    break;
+  case TPMultiLineTextItem:
+    item = createMultiLineText();
+    break;
+  case TPPointItem:
+    item = createPoint();
+    break;
+  case TPTextGridItem:
+    item = createTextGrid();
+    break;
+  case TPTitleItem:
+    item = createTitle();
+    break;
   default:
     item = 0;
   }
@@ -190,6 +232,30 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::LayoutMode
   case TypeCreateItemGroup:
     m_name = nameItem(m_groupItem, TPItemGroup);
     item = createItemGroup();
+    break;
+  case TypeCreatePoint:
+    m_name = nameItem(m_pointItem, TPPointItem);
+    item = createPoint();
+    break;
+  case TypeCreateArrow:
+    m_name = nameItem(m_arrowItem, TPArrowItem);
+    item = createArrow();
+    break;
+  case TypeCreateEllipse:
+    m_name = nameItem(m_ellipseItem, TPEllipseItem);
+    item = createEllipse();
+    break;
+  case TypeCreateTitle:
+    m_name = nameItem(m_titleItem, TPTitleItem);
+    item = createTitle();
+    break;
+  case TypeCreateTextGrid:
+    m_name = nameItem(m_textGridItem, TPTextGridItem);
+    item = createTextGrid();
+    break;
+  case TypeCreateMultiLineText:
+    m_name = nameItem(m_multiLineTextItem, TPMultiLineTextItem);
+    item = createMultiLineText();
     break;
   default:
     item = 0;
@@ -588,6 +654,228 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createImage()
     if(m_redraw)
       itemObs->redraw();
     return img;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createArrow()
+{
+  QGraphicsItem* item = 0;
+
+  ArrowModel* model = new ArrowModel();	
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  ArrowController* controller = new ArrowController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  ArrowItem* view = dynamic_cast<ArrowItem*>(itemObs); 
+
+  if(view)
+  {
+    view->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_props)
+    {
+      view->setZValue(m_zValue);
+    }
+    if(m_redraw)
+    {
+      itemObs->redraw();
+    }
+    return view;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createEllipse()
+{
+  QGraphicsItem* item = 0;
+
+  EllipseModel* model = new EllipseModel();	
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  EllipseController* controller = new EllipseController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  EllipseItem* view = dynamic_cast<EllipseItem*>(itemObs); 
+
+  if(view)
+  {
+    view->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_props)
+    {
+      view->setZValue(m_zValue);
+    }
+    if(m_redraw)
+    {
+      itemObs->redraw();
+    }
+    return view;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createMultiLineText()
+{
+  QGraphicsItem* item = 0;
+
+  MultiLineTextModel* model = new MultiLineTextModel();	
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  MultiLineTextController* controller = new MultiLineTextController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  MultiLineTextItem* view = dynamic_cast<MultiLineTextItem*>(itemObs); 
+
+  if(view)
+  {
+    view->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_props)
+    {
+      view->setZValue(m_zValue);
+    }
+    if(m_redraw)
+    {
+      itemObs->redraw();
+    }
+    return view;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createPoint()
+{
+  QGraphicsItem* item = 0;
+
+  PointModel* model = new PointModel();	
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  PointController* controller = new PointController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  PointItem* view = dynamic_cast<PointItem*>(itemObs); 
+
+  if(view)
+  {
+    view->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_props)
+    {
+      view->setZValue(m_zValue);
+    }
+    if(m_redraw)
+    {
+      itemObs->redraw();
+    }
+    return view;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createTextGrid()
+{
+  QGraphicsItem* item = 0;
+
+  TextGridModel* model = new TextGridModel();	
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  TextGridController* controller = new TextGridController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  TextGridItem* view = dynamic_cast<TextGridItem*>(itemObs); 
+
+  if(view)
+  {
+    view->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_props)
+    {
+      view->setZValue(m_zValue);
+    }
+    if(m_redraw)
+    {
+      itemObs->redraw();
+    }
+    return view;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createTitle()
+{
+  QGraphicsItem* item = 0;
+
+  TitleModel* model = new TitleModel();	
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  TitleController* controller = new TitleController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  TitleItem* view = dynamic_cast<TitleItem*>(itemObs); 
+
+  if(view)
+  {
+    view->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_props)
+    {
+      view->setZValue(m_zValue);
+    }
+    if(m_redraw)
+    {
+      itemObs->redraw();
+    }
+    return view;
   }
 
   return item;
