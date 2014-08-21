@@ -83,6 +83,11 @@ std::size_t te::qt::widgets::Scatter::sizeY()
   return m_yValues.size();
 }
 
+std::vector<double> te::qt::widgets::Scatter::getXValues()
+{
+  return m_xValues;
+}
+
 double te::qt::widgets::Scatter::getX(unsigned int idx)
 {
   return m_xValues[idx];
@@ -91,6 +96,11 @@ double te::qt::widgets::Scatter::getX(unsigned int idx)
 double* te::qt::widgets::Scatter::getX()
 {
   return &m_xValues[0];
+}
+
+std::vector<double> te::qt::widgets::Scatter::getYValues()
+{
+  return m_yValues;
 }
 
 double te::qt::widgets::Scatter::getY(unsigned int idx)
@@ -123,6 +133,11 @@ double te::qt::widgets::Scatter::getMaxY()
   return m_maxY;
 }
 
+void te::qt::widgets::Scatter::setXValues(std::vector<double> xValues)
+{
+  m_xValues = xValues;
+}
+
 void te::qt::widgets::Scatter::setMinX(double& new_minX)
 {
    m_minX = new_minX;
@@ -131,6 +146,11 @@ void te::qt::widgets::Scatter::setMinX(double& new_minX)
 void te::qt::widgets::Scatter::setMaxX(double& new_maxX)
 {
   m_maxX = new_maxX;
+}
+
+void te::qt::widgets::Scatter::setYValues(std::vector<double> yValues)
+{
+  m_yValues = yValues;
 }
 
 void te::qt::widgets::Scatter::setMinY(double& new_minY)
