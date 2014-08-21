@@ -706,7 +706,6 @@
    </item>
   </layout>
   <zorder>frame_2</zorder>
-  <zorder></zorder>
  </widget>
  <resources/>
  <connections>
