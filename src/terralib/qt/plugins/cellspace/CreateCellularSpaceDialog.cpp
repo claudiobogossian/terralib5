@@ -42,7 +42,7 @@
 #include <QMessageBox>
 
 // Boost
-#include <boost\filesystem.hpp>
+#include <boost/filesystem.hpp>
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 Q_DECLARE_METATYPE(te::common::UnitOfMeasurePtr);
