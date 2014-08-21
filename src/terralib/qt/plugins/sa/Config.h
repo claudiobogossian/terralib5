@@ -58,6 +58,13 @@
 #define TE_QT_PLUGIN_SA_HAVE_KERNELRATIO
 
 /*!
+  \def TE_QT_PLUGIN_SA_HAVE_GEOSTATISTICALMETHODS
+
+  \brief It defines if the SA Qt Plugin has the geostatistical methods operation
+*/
+#define TE_QT_PLUGIN_SA_HAVE_GEOSTATISTICALMETHODS
+
+/*!
   \def TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
 
   \brief It defines if the SA Qt Plugin has the proximity matrix creator operation
@@ -77,7 +84,6 @@
   \brief It defines if the SA Qt Plugin has the spatial statistics operation
 */
 #define TE_QT_PLUGIN_SA_HAVE_SPATIALSTATISTICS
-
 
 /*!
   \def TE_QT_PLUGIN_SA_PLUGIN_NAME

@@ -44,6 +44,7 @@ namespace te
       {
         class BayesGlobalAction;
         class BayesLocalAction;
+        class GeostatisticalMethodsAction;
         class KernelMapAction;
         class KernelRatioAction;
         class ProximityMatrixCreatorAction;
@@ -83,6 +84,7 @@ namespace te
 
             te::qt::plugins::sa::BayesGlobalAction* m_bayesGlobal;                      //!< Global Bayes Process Action
             te::qt::plugins::sa::BayesLocalAction* m_bayesLocal;                        //!< Local Bayes Process Action
+            te::qt::plugins::sa::GeostatisticalMethodsAction* m_geostatistics;          //!< Geostatistics methods Process Action
             te::qt::plugins::sa::KernelMapAction* m_kernelMap;                          //!< Kernel Map Process Action
             te::qt::plugins::sa::KernelRatioAction* m_kernelRatio;                      //!< Kernel Ratio Process Action
             te::qt::plugins::sa::ProximityMatrixCreatorAction* m_proxMatrixCreator;     //!< Proximity Matrix Creator Process Action

@@ -1,0 +1,340 @@
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file terralib/sa/qt/GeostatisticalMethodsDialog.cpp
+
+  \brief A dialog with geostatistical methods to measure the spatial variability of attribute of a dataset.
+*/
+
+// TerraLib
+#include "../../common/Logger.h"
+#include "../../common/progress/ProgressManager.h"
+#include "../../common/Translator.h"
+#include "../../common/STLUtils.h"
+#include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/utils/Utils.h"
+#include "../../geometry/GeometryProperty.h"
+#include "../core/GeostatisticalFunctions.h"
+#include "../core/GeostatisticalMethodSemivariogram.h"
+#include "../core/GeostatisticalModel.h"
+#include "../core/GeostatisticalModelExponential.h"
+#include "../core/GeostatisticalModelGaussian.h"
+#include "../core/GeostatisticalModelSpherical.h"
+#include "../core/Utils.h"
+#include "../Enums.h"
+#include "../Exception.h"
+#include "GeostatisticalMethodsDialog.h"
+#include "ui_GeostatisticalMethodsDialogForm.h"
+
+// Qt
+#include <QMessageBox>
+#include <QValidator>
+
+// STL
+#include <memory>
+
+Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
+
+te::sa::GeostatisticalMethodsDialog::GeostatisticalMethodsDialog(QWidget* parent, Qt::WindowFlags f)
+  : QDialog(parent, f),
+    m_ui(new Ui::GeostatisticalMethodsDialogForm),
+    m_method(0)
+{
+// add controls
+  m_ui->setupUi(this);
+
+  m_ui->m_nLagsLineEdit->setValidator(new QIntValidator(this));
+  m_ui->m_lagsIncrementLineEdit->setValidator(new QDoubleValidator(this));
+  m_ui->m_angleDirLineEdit->setValidator(new QDoubleValidator(this));
+  m_ui->m_angleTolLineEdit->setValidator(new QDoubleValidator(this));
+
+  m_ui->m_adjustGroupBox->setEnabled(false);
+  m_ui->m_changeAttrToolButton->setEnabled(false);
+
+  fillParameters();
+
+// add icons
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("sa-measurespatialvar-hint").pixmap(112,48));
+  m_ui->m_changeAttrToolButton->setIcon(QIcon::fromTheme("view-refresh"));
+
+// connectors
+  connect(m_ui->m_inputLayerComboBox, SIGNAL(activated(int)), this, SLOT(onInputLayerComboBoxActivated(int)));
+  connect(m_ui->m_changeAttrToolButton, SIGNAL(clicked()), this, SLOT(onChangeAttrToolButtonClicked()));
+  connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyPushButtonClicked()));
+  connect(m_ui->m_adjustPushButton, SIGNAL(clicked()), this, SLOT(calculate()));
+
+  // help info
+  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
+  m_ui->m_helpPushButton->setPageReference("plugins/sa/sa_geostatisticalmethods.html");
+}
+
+te::sa::GeostatisticalMethodsDialog::~GeostatisticalMethodsDialog()
+{
+  delete m_method;
+
+  m_methodMatrix.clear();
+
+  m_modelMatrix.clear();
+}
+
+void te::sa::GeostatisticalMethodsDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
+{
+  std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
+
+  while(it != layers.end())
+  {
+    te::map::AbstractLayerPtr l = *it;
+
+    if(l->isValid())
+    {
+      std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
+
+      m_ui->m_inputLayerComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
+    }
+
+    ++it;
+  }
+
+// fill attributes combo
+  if(m_ui->m_inputLayerComboBox->count() > 0)
+    onInputLayerComboBoxActivated(0);
+}
+
+void te::sa::GeostatisticalMethodsDialog::onInputLayerComboBoxActivated(int index)
+{
+  QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(index, Qt::UserRole);
+  
+  te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
+
+  std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
+
+  std::vector<te::dt::Property*> propVec = dsType->getProperties();
+
+  m_ui->m_attributeComboBox->clear();
+
+  for(std::size_t t = 0; t < propVec.size(); ++t)
+  {
+    int dataType = propVec[t]->getType();
+
+    if (dataType == te::dt::INT16_TYPE || dataType == te::dt::UINT16_TYPE ||
+        dataType == te::dt::INT32_TYPE || dataType == te::dt::UINT32_TYPE ||
+        dataType == te::dt::INT64_TYPE || dataType == te::dt::UINT64_TYPE ||
+        dataType == te::dt::FLOAT_TYPE || dataType == te::dt::DOUBLE_TYPE)
+    {
+      m_ui->m_attributeComboBox->addItem(propVec[t]->getName().c_str(), dataType);
+    }
+  }
+
+  //reset lag increment information
+  double lagIncrement = l->getExtent().getWidth() / 10.; // guess???
+  
+  QString strLagIncrement;
+  strLagIncrement.setNum(lagIncrement);
+
+  m_ui->m_lagsIncrementLineEdit->setText(strLagIncrement);
+}
+
+void te::sa::GeostatisticalMethodsDialog::onApplyPushButtonClicked()
+{
+  //disable adjust options
+  m_ui->m_adjustGroupBox->setEnabled(false);
+  m_ui->m_changeAttrToolButton->setEnabled(false);
+
+  //check input interface parameters
+  if(m_ui->m_nLagsLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Number of lags not defined."));
+    return;
+  }
+
+  if(m_ui->m_lagsIncrementLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Lag increment not defined."));
+    return;
+  }
+
+  if(m_ui->m_angleDirLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Angular direction not defined."));
+    return;
+  }
+
+  if(m_ui->m_angleTolLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Angular tolerance not defined."));
+    return;
+  }
+
+  //get selected layer
+  QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(m_ui->m_inputLayerComboBox->currentIndex(), Qt::UserRole);
+  te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
+
+  //get dataset and dataset type
+  std::auto_ptr<te::da::DataSet> dataSet = l->getData();
+  std::auto_ptr<te::da::DataSetType> dataSetType = l->getSchema();
+
+  //get properties information
+  std::string attrName = m_ui->m_attributeComboBox->currentText().toStdString();
+  int attrIdx = te::da::GetPropertyIndex(dataSet.get(), attrName);
+
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dataSetType.get());
+  int geomIdx = te::da::GetPropertyIndex(dataSet.get(), geomProp->getName());
+
+  //create geostatistical method
+  delete m_method;
+
+  int typeIdx = m_ui->m_typeComboBox->currentIndex();
+  te::sa::GeostatisticalMethodType type = (te::sa::GeostatisticalMethodType)m_ui->m_typeComboBox->itemData(typeIdx).toInt();
+
+  if(type == te::sa::Semivariogram)
+  {
+    m_method = new te::sa::GeostatisticalMethodSemivariogram();
+  }
+  else
+  {
+    m_method = 0;
+    return;
+  }
+
+  //set geostatistical method parameters
+  m_method->setNumberOfLags((std::size_t)m_ui->m_nLagsLineEdit->text().toInt());
+  m_method->setLagIncrement(m_ui->m_lagsIncrementLineEdit->text().toDouble());
+  m_method->setAngleDirection(m_ui->m_angleDirLineEdit->text().toDouble());
+  m_method->setAngleTolerance(m_ui->m_angleTolLineEdit->text().toDouble());
+  m_method->setMatrix(te::sa::CreateMatrixFromDataSet(dataSet.get(), attrIdx, geomIdx));
+
+  //calculate moments
+  double mean = 0.;
+  double variance = 0.;
+
+  te::sa::CalculateMoments(m_method->getMatrix(), mean, variance);
+
+  //reset adjust values
+  resetAdjustParameters(mean, variance);
+
+  //run
+  calculate();
+
+  //enable adjust options
+  m_ui->m_adjustGroupBox->setEnabled(true);
+  m_ui->m_changeAttrToolButton->setEnabled(true);
+}
+
+void te::sa::GeostatisticalMethodsDialog::onChangeAttrToolButtonClicked()
+{
+  //get selected layer
+  QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(m_ui->m_inputLayerComboBox->currentIndex(), Qt::UserRole);
+  te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
+
+  //get dataset and dataset type
+  std::auto_ptr<te::da::DataSet> dataSet = l->getData();
+
+  //get properties information
+  std::string attrName = m_ui->m_attributeComboBox->currentText().toStdString();
+  int attrIdx = te::da::GetPropertyIndex(dataSet.get(), attrName);
+
+  te::sa::SetMainDiagonal(m_method->getMatrix(), dataSet.get(), attrIdx);
+
+  //calculate moments
+  double mean = 0.;
+  double variance = 0.;
+
+  te::sa::CalculateMoments(m_method->getMatrix(), mean, variance);
+
+  //reset adjust values
+  resetAdjustParameters(mean, variance);
+
+  //run
+  calculate();
+}
+
+void te::sa::GeostatisticalMethodsDialog::calculate()
+{
+ //create geostatistical model
+  int modelIdx = m_ui->m_modelComboBox->currentIndex();
+  te::sa::GeostatisticalModelType type = (te::sa::GeostatisticalModelType)m_ui->m_modelComboBox->itemData(modelIdx).toInt();
+
+  te::sa::GeostatisticalModel* model = 0;
+
+  if(type == te::sa::Spherical)
+    model = new te::sa::GeostatisticalModelSpherical();
+  else if(type == te::sa::Exponential)
+    model = new te::sa::GeostatisticalModelExponential();
+  else if(type == te::sa::Gaussian)
+    model = new te::sa::GeostatisticalModelGaussian();
+
+  model->setNugget(m_ui->m_nuggetDoubleSpinBox->value());
+  model->setSill(m_ui->m_sillDoubleSpinBox->value());
+  model->setRange(m_ui->m_rangeDoubleSpinBox->value());
+
+  //generate output matrix
+  m_methodMatrix = m_method->calculate();
+  m_modelMatrix = model->calculate(m_methodMatrix);
+
+  delete model;
+
+  //plot
+
+
+}
+
+void te::sa::GeostatisticalMethodsDialog::fillParameters()
+{
+  //fill msv types
+  m_ui->m_typeComboBox->clear();
+
+  m_ui->m_typeComboBox->addItem("Semivariogram", QVariant(te::sa::Semivariogram));
+
+  //fill msv models
+  m_ui->m_modelComboBox->clear();
+
+  m_ui->m_modelComboBox->addItem("Spherical", QVariant(te::sa::Spherical));
+  m_ui->m_modelComboBox->addItem("Exponential", QVariant(te::sa::Exponential));
+  m_ui->m_modelComboBox->addItem("Gaussian", QVariant(te::sa::Gaussian));
+}
+
+void te::sa::GeostatisticalMethodsDialog::resetAdjustParameters(double mean, double variance)
+{
+  std::size_t matrixSize = m_method->getMatrix().size1(); // guess???
+
+  //set nugget value
+  double min = 0.;
+  double max = variance;
+  double nuggetVar = (max - min)/(double)matrixSize;
+
+  m_ui->m_nuggetDoubleSpinBox->setValue(min);
+  m_ui->m_nuggetDoubleSpinBox->setRange(min - nuggetVar, max + nuggetVar);
+
+  //set sill value
+  min = 0;
+  max = variance;
+  double sillVar = (max - min)/(double)matrixSize;
+
+  m_ui->m_sillDoubleSpinBox->setValue(min);
+  m_ui->m_sillDoubleSpinBox->setRange(min - sillVar, max + sillVar);
+
+  //set range value
+  double rangeVar = m_ui->m_nLagsLineEdit->text().toDouble();
+  min = m_ui->m_lagsIncrementLineEdit->text().toDouble();
+  max = min * rangeVar;
+
+  m_ui->m_rangeDoubleSpinBox->setValue(min);
+  m_ui->m_rangeDoubleSpinBox->setRange(min - sillVar, max + sillVar);
+}
