@@ -72,7 +72,7 @@ namespace te
 
       public:
 
-        double m_contrast;        //!< GLCM metric Contrast (also called Sum of Squares Variance) $\sum_{i,j=0}^N-1P_{i,j}(i-j)^2$.
+        double m_contrast;        //!< GLCM metric Contrast (also called Sum of Squares Variance) $\sum_{i,j=0}^{N-1}P_{i,j}(i-j)^2$.
         double m_dissimilarity;   //!< GLCM metric Dissimilarity $\sum_{i,j=0}^{N-1}P_{i,j}|i-j|$.
         double m_energy;          //!< GLCM metric Energy (the square root of Angular Second Moment) $\sqrt{\sum_{i,j=0}^{N-1}P_{i,j}^2}$.
         double m_entropy;         //!< GLCM metric Entropy $\sum_{i,j=0}^{N-1}P_{i,j}(-\ln{P_{i,j}})$.
