@@ -93,6 +93,7 @@ te::sa::GeostatisticalMethodsDialog::GeostatisticalMethodsDialog(QWidget* parent
   m_chartDisplay = new te::qt::widgets::ChartDisplay(m_ui->m_chartWidget);
   chartLayout->addWidget(m_chartDisplay);
 
+
   m_chartDisplay->setAxisTitle(QwtPlot::xBottom, tr("h"));
   m_chartDisplay->setAxisTitle(QwtPlot::yLeft, tr("Y(h)"));
 
@@ -346,24 +347,27 @@ void te::sa::GeostatisticalMethodsDialog::resetAdjustParameters(double mean, dou
   double max = variance;
   double nuggetVar = (max - min)/mean;
 
-  m_ui->m_nuggetHorizontalSlider->setValue(min);
   m_ui->m_nuggetHorizontalSlider->setRange(min - nuggetVar, max + nuggetVar);
+  m_ui->m_nuggetHorizontalSlider->setValue(min);
+  m_ui->m_nuggetLabel->setNum(min);
 
   //set sill value
   min = 0;
-  max = variance;
+  max = max + variance;
   double sillVar = (max - min)/mean;
 
-  m_ui->m_sillHorizontalSlider->setValue(max);
   m_ui->m_sillHorizontalSlider->setRange(min - sillVar, max + sillVar);
+  m_ui->m_sillHorizontalSlider->setValue(min);
+  m_ui->m_sillLabel->setNum(min);
 
   //set range value
   double rangeVar = m_ui->m_nLagsLineEdit->text().toDouble();
   min = m_ui->m_lagsIncrementLineEdit->text().toDouble();
   max = min * rangeVar;
 
-  m_ui->m_rangeHorizontalSlider->setValue(max);
   m_ui->m_rangeHorizontalSlider->setRange(min - rangeVar, max + rangeVar);
+  m_ui->m_rangeHorizontalSlider->setValue(min);
+  m_ui->m_rangeLabel->setNum(min);
 }
 
 void te::sa::GeostatisticalMethodsDialog::plot()
@@ -374,7 +378,7 @@ void te::sa::GeostatisticalMethodsDialog::plot()
   std::vector<double> methodh;
   std::vector<double> methodyh;
 
-  for(std::size_t t = 0; t < m_methodMatrix.size1(); ++t)
+  for(std::size_t t = 1; t < m_methodMatrix.size1(); ++t)
   {
     methodh.push_back(m_methodMatrix(t, 0));
     methodyh.push_back(m_methodMatrix(t, 1));
