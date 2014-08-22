@@ -21,6 +21,92 @@
  * This is the base class for layers.
  */"
 
+%javamethodmodifiers te::map::AbstractLayer::getId() const "
+/**
+ * It returns the layer id.
+ *
+ * @return The layer id.
+ */
+ public";
+
+%javamethodmodifiers te::map::AbstractLayer::getTitle() const "
+/**
+ * It returns the layer title.
+ *
+ * @return The layer title.
+ */
+ public";
+
+%javamethodmodifiers te::map::AbstractLayer::getDescendants() "
+/**
+ * It returns a list with the descendants of this layer.
+ *
+ * @return A list containing the descendants of this layer.
+ */
+ public";
+
+%javamethodmodifiers te::map::AbstractLayer::getVisibility() const "
+/**
+ * It returns the layer visibility.
+ * <p>
+ * This information can be used, for instance, to know if the layer must be drawn.
+ *
+ * @return The layer visibility.
+ */
+ public";
+
+%javamethodmodifiers te::map::AbstractLayer::setVisibility(Visibility v) "
+/**
+ * It sets the layer visibility.
+ * <p>
+ * This information can be used, for instance, to know if the layer must be drawn.
+ *
+ * @param v The layer visibility.
+ */
+ public";
+
+%javamethodmodifiers te::map::AbstractLayer::getExtent() const "
+/**
+ * It returns the Layer extent (or minimum bounding box).
+ *
+ * @return The Layer extent (or minimum bounding box) with coordinates in the same SRS as the layer.
+ */
+ public";
+
+%javamethodmodifiers te::map::AbstractLayer::getSRID() const "
+/**
+ * It returns the Spatial Reference System ID associated to the Layer.
+ *
+ * @return The Spatial Reference System ID associated to the Layer.
+ */
+ public";
+
+%javamethodmodifiers te::map::AbstractLayer::getGeomPropertyName() const "
+/**
+ * Returns the name of the geometric property.
+ *
+ * @return The name of the geometric property.
+ */
+ public";
+
+%javamethodmodifiers te::map::AbstractLayer::setGeomPropertytName(const std::string& name) "
+/**
+ * Updates the name of the geometric property.
+ *
+ * @param name The new name.
+ */
+ public";
+
+%javamethodmodifiers te::map::AbstractLayer::isValid() const "
+/**
+ * It returns true if the layer can be used for instance to draw, otherwise, it returns false.
+ * <p>
+ * This method can be used to check if the data referenced by the layer is available (accessible), or not.
+ *
+ * @return True, if the layer is valid, otherwise, it returns false.
+ */
+ public"; 
+ 
 %javamethodmodifiers OpenLayers() throw (te::common::Exception) "
 /**
  * Opens a window for the user to select, from available datasources, some list of layers.

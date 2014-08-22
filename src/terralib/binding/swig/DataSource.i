@@ -4,6 +4,8 @@
 // TerraLib includes
 #include "terralib/dataaccess/datasource/DataSource.h"
 #include "terralib/dataaccess/datasource/DataSourceManager.h"
+#include "terralib/maptools/DataSetLayer.h"
+#include "terralib/qt/widgets/layer/utils/DataSet2Layer.h"
 
 // Boost includes
 #include <boost/uuid/random_generator.hpp>
@@ -735,6 +737,17 @@ namespace std {
  * @return A data source if encountered or <i>null</i>.
  */
  public";
+
+%javamethodmodifiers GetDataSetsAsLayers(te::da::DataSource* ds) "
+/**
+ * Returns all data sets in the data source as layers, each one as a single layer.
+ * <p>
+ * Note that all layers are visible.
+ * @param ds The data source to be processed.
+ *
+ * @return A set of layers of all data sets.
+ */
+ public";
  
 #endif
 
@@ -752,12 +765,33 @@ namespace std {
   {
     return te::da::DataSourceManager::getInstance().find(dSrcId).get();
   }
+  
+  static std::vector<te::map::AbstractLayer*> GetDataSetsAsLayers(te::da::DataSource* ds)
+  {
+    std::vector<te::map::AbstractLayer*> res;
+    std::vector<std::string> dsets = ds->getDataSetNames();
+    std::vector<std::string>::iterator it;
+    
+    for(it=dsets.begin(); it!=dsets.end(); ++it)
+    {
+      te::qt::widgets::DataSet2Layer converter(ds->getId());
+      std::auto_ptr<te::da::DataSetType> dt = ds->getDataSetType(*it);
+      te::da::DataSetTypePtr dtpt(dt.release());
+      te::map::AbstractLayerPtr lp = converter(dtpt);
+      te::map::AbstractLayer* l = lp.get();
+      l->attach();
+      l->setVisibility(te::map::VISIBLE);
+      res.push_back(l);
+    }
+    
+    return res;
+  }
 %}
-
 
 %include "terralib/dataaccess/datasource/DataSource.h";
 
 %newobject te::da::DataSource::newDataSet(const std::string& name);
+%newobject GetDataSetsAsLayers(te::da::DataSource* ds);
 
 %extend te::da::DataSource {
 	te::da::DataSet* newDataSet(const std::string& name)
@@ -769,3 +803,4 @@ namespace std {
 // Wrap function
 te::da::DataSource* MakeDataSource(const std::string& dsType, const std::map<std::string, std::string>& connInfo);
 te::da::DataSource* GetDataSource(const std::string& dSrcId);
+std::vector<te::map::AbstractLayer*> GetDataSetsAsLayers(te::da::DataSource* ds);
