@@ -24,22 +24,33 @@
 */
 
 // TerraLib
-#include "../../../common/UnitsOfMeasureManager.h"
+#include "../../../cellspace/CellSpaceOperations.h"
+#include "../../../common/Exception.h"
+#include "../../../common/StringUtils.h"
 #include "../../../common/Translator.h"
+#include "../../../common/UnitsOfMeasureManager.h"
+#include "../../../dataaccess/datasource/DataSource.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/Utils.h"
 #include "../../../srs/SpatialReferenceSystemManager.h"
+#include "../../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "ui_CreateCellularSpaceDialogForm.h"
 #include "CreateCellularSpaceDialog.h"
 
 // Qt
+#include <QFileDialog>
 #include <QMessageBox>
+
+// Boost
+#include <boost/filesystem.hpp>
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 Q_DECLARE_METATYPE(te::common::UnitOfMeasurePtr);
 
 te::qt::plugins::cellspace::CreateCellularSpaceDialog::CreateCellularSpaceDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::CreateCellularSpaceDialogForm)
+    m_ui(new Ui::CreateCellularSpaceDialogForm),
+    m_isFile(false)
 {
 // add controls
   m_ui->setupUi(this);
@@ -72,6 +83,12 @@ te::qt::plugins::cellspace::CreateCellularSpaceDialog::CreateCellularSpaceDialog
   connect(m_ui->m_llyLineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(onEnvelopeChanged(const QString &)));
   connect(m_ui->m_urxLineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(onEnvelopeChanged(const QString &)));
   connect(m_ui->m_uryLineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(onEnvelopeChanged(const QString &)));
+  connect(m_ui->m_targetFileToolButton, SIGNAL(clicked()), this, SLOT(onTargetFileToolButtonClicked()));
+  connect(m_ui->m_targetDatasourceToolButton, SIGNAL(clicked()), this, SLOT(onTargetDatasourceToolButtonClicked()));
+  connect(m_ui->m_createPushButton, SIGNAL(clicked()), this, SLOT(onCreatePushButtonClicked()));
+
+  // Not implemented
+  m_ui->m_targetFileToolButton->setEnabled(false);
 }
 
 te::qt::plugins::cellspace::CreateCellularSpaceDialog::~CreateCellularSpaceDialog()
@@ -81,8 +98,6 @@ te::qt::plugins::cellspace::CreateCellularSpaceDialog::~CreateCellularSpaceDialo
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
-
-  m_ui->m_layersComboBox->addItem(tr("NONE"));
 
   while(it != layers.end())
   {
@@ -110,10 +125,27 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onLayersComboBoxChan
   te::common::UnitOfMeasurePtr unit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(layer->getSRID());
 
   if(!unit.get())
+  {
+    // METRE
     m_ui->m_unitComboBox->setCurrentIndex(1);
+  }
   else
-    m_ui->m_unitComboBox->setItemText( m_ui->m_unitComboBox->currentIndex(), 
-      te::common::UnitsOfMeasureManager::getInstance().find(unit->getName().c_str())->getName().c_str());
+  {
+    std::string layerUnitName = unit->getName();
+
+    int index = 1;
+
+    for(int i = 0; i < m_ui->m_unitComboBox->count(); ++i)
+    {
+      if(m_ui->m_unitComboBox->itemText(i).toStdString() == layerUnitName)
+      {
+        index = i;
+        break;
+      }
+    }
+
+    m_ui->m_unitComboBox->setCurrentIndex(index);
+  }
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onResXLineEditTextChanged(const QString & text)
@@ -165,8 +197,21 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::updateValues()
 
   if(layerUnit != currentUnit)
   {
-    resX = te::common::UnitsOfMeasureManager::getInstance().getConversion(layerUnit->getName(), currentUnit->getName());
-    resY = te::common::UnitsOfMeasureManager::getInstance().getConversion(layerUnit->getName(), currentUnit->getName());
+    try
+    {
+      double factorX = te::common::UnitsOfMeasureManager::getInstance().getConversion(layerUnit->getName(), currentUnit->getName());
+      double factorY = te::common::UnitsOfMeasureManager::getInstance().getConversion(layerUnit->getName(), currentUnit->getName());
+      resX = resX/factorX;
+      resY = resY/factorY;
+    }
+    catch(te::common::Exception& e)
+    {
+      QMessageBox::warning(this, tr("Cellular Spaces"), e.what());
+      m_ui->m_resXLineEdit->clear();
+      m_ui->m_resYLineEdit->clear();
+      m_ui->m_colsLineEdit->clear();
+      m_ui->m_rowsLineEdit->clear();
+    }
   }
 
   te::gm::Envelope env = getOutputEnvelope();
@@ -180,18 +225,6 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::updateValues()
   double lWidth = env.getWidth();
   double lHeight = env.getHeight();
 
-  if (resX < 0. || resX >= lWidth)
-  {
-    // MESSAGE ERROR!!!  TODO
-    return;
-  }
-
-  if (resY < 0. || resY >= lHeight)
-  {
-    // MESSAGE ERROR!!!  TODO
-    return;
-  }
-
   te::gm::Envelope newEnv = te::gm::AdjustToCut(env, resX, resY);
 
   int maxCols = (int)((newEnv.m_urx - newEnv.m_llx)/resX);
@@ -199,6 +232,104 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::updateValues()
 
   m_ui->m_colsLineEdit->setText(QString::number(maxCols));
   m_ui->m_rowsLineEdit->setText(QString::number(maxRows));
+}
+
+void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonClicked()
+{
+  std::string errors;
+  if(!checkList(errors))
+  {
+    QMessageBox::warning(this, tr("Cellular Spaces"), errors.c_str());
+    return;
+  }
+
+  std::string name = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  te::map::AbstractLayerPtr referenceLayer = getReferenceLayer();
+  double resX = m_ui->m_resXLineEdit->text().toDouble();
+  double resY = m_ui->m_resYLineEdit->text().toDouble();
+  bool isPolygonsAsMask = m_ui->m_maskToolButton->isChecked();
+
+  std::auto_ptr<te::cellspace::CellularSpacesOperations> cellSpaceOp(new te::cellspace::CellularSpacesOperations());
+
+  te::cellspace::CellularSpacesOperations::CellSpaceType type;
+
+  if(m_ui->m_vectorToolButton->isChecked())
+    type = te::cellspace::CellularSpacesOperations::CELLSPACE_POLYGONS;
+  else if(m_ui->m_pointsToolButton->isChecked())
+    type = te::cellspace::CellularSpacesOperations::CELLSPACE_POINTS;
+  else if(m_ui->m_rasterToolButton->isChecked())
+    type = te::cellspace::CellularSpacesOperations::CELLSPACE_RASTER;
+
+  cellSpaceOp->createCellSpace(name, referenceLayer, resX, resY, isPolygonsAsMask, type);
+
+  std::auto_ptr<te::da::DataSetType> dst(cellSpaceOp->getDataSetType());
+
+  std::auto_ptr<te::da::DataSet> ds(cellSpaceOp->getDataSet());
+
+  std::string accessDriver;
+  std::map<std::string, std::string> connInfo;
+
+  if(m_isFile)
+  {
+    accessDriver = "OGR";
+    connInfo["URI"] = m_ui->m_repositoryLineEdit->text().toStdString();
+  }
+  else
+  {
+    accessDriver = m_outDataSourceInfo->getAccessDriver();
+    connInfo = m_outDataSourceInfo->getConnInfo();
+  }
+
+  te::da::DataSourcePtr source = te::da::GetDataSource(m_outDataSourceInfo->getId(), true);
+
+  if(source.get() == 0)
+  {
+    // ERROR MESSAGE
+    return;
+  }
+
+  std::map<std::string, std::string> op;
+
+  te::da::Create(source.get(), dst.get(), ds.get(), op);
+
+  accept();
+}
+
+void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onTargetFileToolButtonClicked()
+{
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_repositoryLineEdit->clear();
+
+  QString directory = QFileDialog::getExistingDirectory(this, tr("Open Directory..."), QString());
+
+  if(directory.isEmpty())
+    return;
+
+  m_ui->m_repositoryLineEdit->setText(directory);
+
+  m_isFile = true;
+}
+
+void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onTargetDatasourceToolButtonClicked()
+{
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_repositoryLineEdit->clear();
+
+  te::qt::widgets::DataSourceSelectorDialog dlg(this);
+  dlg.exec();
+
+  std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
+
+  if(dsPtrList.size() <= 0)
+    return;
+
+  std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
+
+  m_outDataSourceInfo = *it;
+
+  m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
+
+  m_isFile = false;
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onUnitComboBoxChanged(int index)
@@ -270,4 +401,57 @@ te::common::UnitOfMeasurePtr te::qt::plugins::cellspace::CreateCellularSpaceDial
 {
   QVariant varUnit = m_ui->m_unitComboBox->itemData(m_ui->m_unitComboBox->currentIndex(), Qt::UserRole);
   return varUnit.value<te::common::UnitOfMeasurePtr>();
+}
+
+bool te::qt::plugins::cellspace::CreateCellularSpaceDialog::checkList(std::string& errors)
+{
+  bool noErrors = true;
+
+  std::string name = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  te::map::AbstractLayerPtr referenceLayer = getReferenceLayer();
+  double resX = m_ui->m_resXLineEdit->text().toDouble();
+  double resY = m_ui->m_resYLineEdit->text().toDouble();
+
+  errors = tr("Some information is missing:").toStdString();
+
+  if(name.empty())
+  {
+    errors += "\n - " + tr("Output name").toStdString();
+    noErrors = false;
+  }
+
+  if(!referenceLayer)
+  {
+    errors += "\n - " + tr("Invalid reference layer").toStdString();
+    noErrors = false;
+  }
+
+  te::gm::Envelope env = getOutputEnvelope();
+
+  if(!env.isValid())
+  {
+    errors += "\n - " + tr("Invalid envelope").toStdString();
+    noErrors = false;
+  }
+
+  double lWidth = env.getWidth();
+  double lHeight = env.getHeight();
+
+  if (resX < 0. || resX >= lWidth)
+  {
+    char txt[40];
+    sprintf(txt,"%.8g",lWidth);
+    errors += "\n - " + tr("Resolution in X must be > 0 and < ").toStdString() + txt;
+    noErrors = false;
+  }
+
+  if (resY < 0. || resY >= lHeight)
+  {
+    char txt[40];
+    sprintf(txt,"%.8g",lHeight);
+    errors += "\n - " + tr("Resolution in X must be > 0 and < ").toStdString() + txt;
+    noErrors = false;
+  }
+
+  return noErrors;
 }

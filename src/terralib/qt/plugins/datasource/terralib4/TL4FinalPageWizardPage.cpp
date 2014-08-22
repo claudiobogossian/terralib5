@@ -61,7 +61,7 @@ std::vector<std::string> te::qt::plugins::terralib4::TL4FinalPageWizardPage::get
 {
   std::vector<std::string> checked;
 
-  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
   {
     QListWidgetItem* item = m_ui->m_layersListWidget->item(i);
 
@@ -76,7 +76,7 @@ std::vector<std::string> te::qt::plugins::terralib4::TL4FinalPageWizardPage::get
 
 void te::qt::plugins::terralib4::TL4FinalPageWizardPage::onSelectAllPushButtonClicked()
 {
-  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
   {
     Qt::CheckState state = m_ui->m_layersListWidget->item(i)->checkState();
 
@@ -87,7 +87,7 @@ void te::qt::plugins::terralib4::TL4FinalPageWizardPage::onSelectAllPushButtonCl
 
 void te::qt::plugins::terralib4::TL4FinalPageWizardPage::onDeselectAllPushButtonClicked()
 {
-  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
   {
     Qt::CheckState state = m_ui->m_layersListWidget->item(i)->checkState();
 

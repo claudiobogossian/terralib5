@@ -630,7 +630,7 @@ char* te::layout::Utils::imageToChar( std::string fileName, std::ifstream::pos_t
 
   try 
   { 
-    std::ifstream file (fileName, std::ios::in|std::ios::binary|std::ios::ate);
+    std::ifstream file (fileName.c_str(), std::ios::in|std::ios::binary|std::ios::ate);
     if (file.is_open())
     {
       size = file.tellg();

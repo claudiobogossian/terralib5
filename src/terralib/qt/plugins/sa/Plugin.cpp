@@ -47,6 +47,10 @@
   #include "KernelRatioAction.h"
 #endif
 
+#ifdef TE_QT_PLUGIN_SA_HAVE_GEOSTATISTICALMETHODS
+  #include "GeostatisticalMethodsAction.h"
+#endif
+
 #ifdef TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
   #include "ProximityMatrixCreatorAction.h"
 #endif
@@ -141,6 +145,11 @@ void te::qt::plugins::sa::Plugin::registerActions()
   m_kernelRatio = new te::qt::plugins::sa::KernelRatioAction(m_saMenu);
 #endif
 
+#ifdef TE_QT_PLUGIN_SA_HAVE_GEOSTATISTICALMETHODS
+  m_saMenu->addSeparator();
+  m_geostatistics = new te::qt::plugins::sa::GeostatisticalMethodsAction(m_saMenu);
+#endif
+
 #ifdef TE_QT_PLUGIN_SA_HAVE_SAMPLEPOINTSGENERATOR
   m_saMenu->addSeparator();
   m_samplePointsGenerator = new te::qt::plugins::sa::SamplePointsGeneratorAction(m_saMenu);
@@ -165,6 +174,10 @@ void  te::qt::plugins::sa::Plugin::unRegisterActions()
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_KERNELRATIO
     delete m_kernelRatio;
+#endif
+
+#ifdef TE_QT_PLUGIN_SA_HAVE_GEOSTATISTICALMETHODS
+    delete m_geostatistics;
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR

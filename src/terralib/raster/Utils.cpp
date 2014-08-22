@@ -28,6 +28,7 @@
 #include "../geometry/Coord2D.h"
 #include "BandIterator.h"
 #include "Exception.h"
+#include "PositionIterator.h"
 #include "RasterFactory.h"
 #include "Utils.h"
 
@@ -36,8 +37,8 @@
 
 // STL
 #include <cassert>
-
 #include <limits>
+#include <vector>
 
 static int sg_pixelSize[] = {  0,
                                0,
@@ -424,3 +425,57 @@ void te::rst::FillBand(te::rst::Band* bin, const std::complex<double>& value)
     for (unsigned int c = 0; c < bin->getRaster()->getNumberOfColumns(); c++)
       bin->setValue(c, r, value);
 }
+
+te::rst::RasterPtr te::rst::CropRaster(const te::rst::Raster& rin, const te::gm::Polygon& pin, const std::map<std::string, std::string>& rinfo, const std::string& rType)
+{
+  std::vector<te::rst::BandProperty*> bprops;
+  for(unsigned int b = 0; b < rin.getNumberOfBands(); b++)
+  {
+    bprops.push_back(new te::rst::BandProperty(*(rin.getBand(b)->getProperty())));
+  }
+
+// define new grid
+  te::gm::Envelope* envelope = new te::gm::Envelope(*pin.getMBR());
+  te::rst::Grid* grid = new te::rst::Grid(rin.getResolutionX(),
+                                          rin.getResolutionY(),
+                                          envelope,
+                                          rin.getSRID());
+// create the output raster
+  te::rst::RasterPtr rout;
+  rout.reset(te::rst::RasterFactory::make(rType, grid, bprops, rinfo, 0, 0));
+  if(rout.get() == 0)
+    return rout;
+  
+// fill bands with no data
+  for (unsigned int b = 0; b < rin.getNumberOfBands(); b++)
+  {
+    double noDataValue = rin.getBand(b)->getProperty()->m_noDataValue;
+    FillBand(rout->getBand(b), noDataValue);
+  }
+  
+// make crop using polygon iterator
+  te::gm::Coord2D geoCoord;
+  te::gm::Coord2D gridCoord;
+  te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(&rin, &pin);
+  te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(&rin, &pin);
+  std::vector<double> pixels(rin.getNumberOfBands());
+  unsigned int gridColumn;
+  unsigned int gridRow;
+  while (it != itend)
+  {
+    for (unsigned int b = 0; b < rout->getNumberOfBands(); b++)
+      pixels[b] = (*it)[b];
+    geoCoord = rin.getGrid()->gridToGeo(it.getColumn(), it.getRow());
+    ++it;
+    gridCoord = rout->getGrid()->geoToGrid(geoCoord.x, geoCoord.y);
+    gridColumn = (unsigned int) gridCoord.x;
+    gridRow = (unsigned int) gridCoord.y;
+    if (gridColumn < 0 || gridColumn >= rout->getNumberOfColumns())
+      continue;
+    if (gridRow < 0 || gridRow >= rout->getNumberOfRows())
+      continue;
+    rout->setValues(gridColumn, gridRow, pixels);
+  }
+  
+  return rout;
+} 

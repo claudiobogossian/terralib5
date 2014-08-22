@@ -62,4 +62,5 @@ void te::qt::plugins::cellspace::CreateCellLayerAction::onActionActivated(bool c
 
   if(dlg.exec() != QDialog::Accepted)
     return;
+
 }

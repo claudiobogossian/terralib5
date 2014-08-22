@@ -30,7 +30,7 @@
 #include "../Config.h"
 
 //QWT
-#include <qwt_plot.h>
+#include <qwt/qwt_plot.h>
 
 //STL
 #include <string>

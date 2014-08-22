@@ -100,10 +100,13 @@ void te::sa::SamplePointsGeneratorDialog::setLayers(std::list<te::map::AbstractL
   {
     te::map::AbstractLayerPtr l = *it;
 
-    std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
+    if(l->isValid())
+    {
+      std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
 
-    if(dsType->hasGeom())
-      m_ui->m_inputLayerComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
+      if(dsType->hasGeom())
+        m_ui->m_inputLayerComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
+    }
 
     ++it;
   }
