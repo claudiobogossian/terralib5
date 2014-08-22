@@ -2375,6 +2375,51 @@ namespace te
       return true;
     }
     
+    boost::numeric::ublas::matrix< double > CreateWaveletAtrousFilter( 
+      const WaveletAtrousFilterType& filterType )
+    {
+      boost::numeric::ublas::matrix< double > emptyFilter;
+      
+      switch( filterType )
+      {
+        case B3SplineFilter :
+        {
+          boost::numeric::ublas::matrix< double > internalFilter( 5, 5 );
+          const double weight = 256;
+          
+          internalFilter(0,0) = 1/weight; internalFilter(0,1) = 4/weight; internalFilter(0,2) = 6/weight; internalFilter(0,3) = 4/weight; internalFilter(0,4) = 1/weight;
+          internalFilter(1,0) = 4/weight; internalFilter(1,1) = 16/weight; internalFilter(1,2) = 24/weight; internalFilter(1,3) = 16/weight; internalFilter(1,4) = 4/weight;
+          internalFilter(2,0) = 6/weight; internalFilter(2,1) = 24/weight; internalFilter(2,2) = 36/weight; internalFilter(2,3) = 24/weight; internalFilter(2,4) = 6/weight;
+          internalFilter(3,0) = 4/weight; internalFilter(3,1) = 16/weight; internalFilter(3,2) = 24/weight; internalFilter(3,3) = 16/weight; internalFilter(3,4) = 4/weight;
+          internalFilter(4,0) = 1/weight; internalFilter(4,1) = 4/weight; internalFilter(4,2) = 6/weight; internalFilter(4,3) = 4/weight; internalFilter(4,4) = 1/weight;
+          
+          return internalFilter;
+          
+          break;
+        }
+        case TriangleFilter :
+        {
+          boost::numeric::ublas::matrix< double > internalFilter( 3, 3 );
+          const double weight = 16;
+          
+          internalFilter(0,0) = 1/weight; internalFilter(0,1) = 2/weight; internalFilter(0,2) = 1/weight;
+          internalFilter(1,0) = 2/weight; internalFilter(1,1) = 4/weight; internalFilter(1,2) = 2/weight;
+          internalFilter(2,0) = 1/weight; internalFilter(2,1) = 2/weight; internalFilter(2,2) = 1/weight;
+          
+          return internalFilter;
+          
+          break;
+        }  
+        default :
+        {
+          throw te::rp::Exception( "Invalid filter type" );
+          break;
+        }
+      }
+      
+      return emptyFilter;
+    }
+    
     bool DirectWaveletAtrous( 
       const te::rst::Raster& inputRaster,
       const std::vector< unsigned int >& inputRasterBands,
@@ -2616,6 +2661,107 @@ namespace te
         }
       }
            
+      return true;
+    }
+    
+    bool RasterResample( 
+      const te::rst::Raster& inputRaster,
+      const std::vector< unsigned int >& inputRasterBands,
+      const te::rst::Interpolator::Method interpMethod, 
+      const unsigned int firstRow,
+      const unsigned int firstColumn, 
+      const unsigned int height, 
+      const unsigned int width,
+      const unsigned int newheight, 
+      const unsigned int newwidth, 
+      const std::map<std::string, std::string>& rinfo,
+      const std::string& dataSourceType,
+      std::auto_ptr< te::rst::Raster >& resampledRasterPtr )
+    {
+      if( ( firstRow + height ) > inputRaster.getNumberOfRows() )
+      {
+        return false;
+      }
+      if( ( firstColumn + width ) > inputRaster.getNumberOfColumns() )
+      {
+        return false;
+      }
+      for (std::size_t inputRasterBandsIdx = 0; inputRasterBandsIdx < 
+        inputRasterBands.size(); inputRasterBandsIdx++)
+      {
+        if( inputRasterBands[ inputRasterBandsIdx ] >= inputRaster.getNumberOfBands() )
+        {
+          return false;
+        }
+      }
+      
+      te::gm::Coord2D ulc = inputRaster.getGrid()->gridToGeo( ((double)firstColumn) 
+        - 0.5, ((double)firstRow) - 0.5);
+      te::gm::Coord2D lrc = inputRaster.getGrid()->gridToGeo( ((double)(firstColumn 
+        + width)) - 0.5, ((double)(firstRow + height)) - 0.5);
+      
+      std::auto_ptr< te::gm::Envelope > newEnvelopePtr( new te::gm::Envelope( 
+        ulc.x, lrc.y, lrc.x, ulc.y ) );  
+
+      // create output parameters and raster
+      
+      std::auto_ptr< te::rst::Grid > gridPtr( new te::rst::Grid(
+        newwidth, newheight, newEnvelopePtr.release(),
+        inputRaster.getSRID()) );
+
+      std::vector<te::rst::BandProperty*> bands;
+
+      for (std::size_t inputRasterBandsIdx = 0; inputRasterBandsIdx < 
+        inputRasterBands.size(); inputRasterBandsIdx++)
+      {
+        bands.push_back( new te::rst::BandProperty(
+          *(inputRaster.getBand( inputRasterBands[ inputRasterBandsIdx ] )->getProperty())));
+        bands[ inputRasterBandsIdx ]->m_blkh = 1;
+        bands[ inputRasterBandsIdx ]->m_blkw = newwidth;
+        bands[ inputRasterBandsIdx ]->m_nblocksx = 1;
+        bands[ inputRasterBandsIdx ]->m_nblocksy = newheight;
+      }
+
+      resampledRasterPtr.reset( te::rst::RasterFactory::make( dataSourceType, 
+        gridPtr.release(), bands, rinfo, 0 ) );
+      if( resampledRasterPtr.get() == 0 )
+      {
+        return false;
+      }
+
+      // fill output raster
+            
+      std::complex<double> interpValue;
+      te::rst::Interpolator interp( &inputRaster, interpMethod);      
+      const double rowsFactor = ((double)height) / ((double)newheight);
+      const double colsFactor = ((double)width) / ((double)newwidth);
+      double inputRow = 0;
+      double inputCol = 0;      
+      unsigned int outputCol = 0;
+      unsigned int outputRow = 0;
+      unsigned int inputBandIdx = 0;
+      
+      for (std::size_t inputRasterBandsIdx = 0; inputRasterBandsIdx < 
+        inputRasterBands.size(); inputRasterBandsIdx++)
+      {
+        te::rst::Band& outputBand = *resampledRasterPtr->getBand( inputRasterBandsIdx );
+        inputBandIdx = inputRasterBands[ inputRasterBandsIdx ];
+        
+        for ( outputRow = 0; outputRow < newheight; ++outputRow)
+        {
+          inputRow = ( ((double)( outputRow ) ) * rowsFactor ) + firstRow;
+          
+          for ( outputCol = 0; outputCol < newwidth; ++outputCol )
+          {
+            inputCol = ( ((double)( outputCol ) ) * colsFactor ) + firstColumn;
+            
+            interp.getValue(inputCol, inputRow, interpValue, inputBandIdx);
+
+            outputBand.setValue(outputCol, outputRow, interpValue);
+          }
+        }
+      }
+      
       return true;
     }
     

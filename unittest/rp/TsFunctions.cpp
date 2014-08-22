@@ -601,14 +601,8 @@ void TsFunctions::WaveletAtrous()
   inputRasterBands.push_back( 1 );
   inputRasterBands.push_back( 2 );
   
-  boost::numeric::ublas::matrix< double > filter( 5, 5 );
-  const double filterWeight = 256;
-  filter(0,0) = 1/filterWeight; filter(0,1) = 4/filterWeight; filter(0,2) = 6/filterWeight; filter(0,3) = 4/filterWeight; filter(0,4) = 1/filterWeight;
-  filter(1,0) = 4/filterWeight; filter(1,1) = 16/filterWeight; filter(1,2) = 24/filterWeight; filter(1,3) = 16/filterWeight; filter(1,4) = 4/filterWeight;
-  filter(2,0) = 6/filterWeight; filter(2,1) = 24/filterWeight; filter(2,2) = 36/filterWeight; filter(2,3) = 24/filterWeight; filter(2,4) = 6/filterWeight;
-  filter(3,0) = 4/filterWeight; filter(3,1) = 16/filterWeight; filter(3,2) = 24/filterWeight; filter(3,3) = 16/filterWeight; filter(3,4) = 4/filterWeight;
-  filter(4,0) = 1/filterWeight; filter(4,1) = 4/filterWeight; filter(4,2) = 6/filterWeight; filter(4,3) = 4/filterWeight; filter(4,4) = 1/filterWeight;
-  
+  boost::numeric::ublas::matrix< double > filter = te::rp::CreateWaveletAtrousFilter( 
+    te::rp::B3SplineFilter );  
   
   CPPUNIT_ASSERT( te::rp::DirectWaveletAtrous( 
     *diskRasterPtr, 

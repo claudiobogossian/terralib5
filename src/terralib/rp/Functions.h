@@ -64,6 +64,16 @@ namespace te
     class RasterHandler;
     
     /*!
+      \brief Wavelet Atrous Filter types.
+      \ingroup rp_func
+     */    
+    enum WaveletAtrousFilterType
+    {
+      B3SplineFilter, //!< Spline filter type.
+      TriangleFilter //!< Triangle filter type.
+    };
+    
+    /*!
       \brief Create a new raster into the givem data source.
       \param rasterGrid The template grid used to create the output raster.
       \param bandsProperties The template band properties used to create the output raster.
@@ -540,6 +550,15 @@ namespace te
       te::gm::LinearRing& indexedDetailedExtent );  
     
     /*!
+      \brief Create a Wavele Atrous Filter.
+      \param filterType The filter type.
+      \return the created filter.
+      \ingroup rp_func
+    */
+    TERPEXPORT boost::numeric::ublas::matrix< double > 
+      CreateWaveletAtrousFilter( const WaveletAtrousFilterType& filterType );     
+    
+    /*!
       \brief Generate all wavelet planes from the given input raster.
       \param inputRaster Input raster.
       \param inputRasterBands Input raster bands.
@@ -573,7 +592,37 @@ namespace te
       const te::rst::Raster& waveletRaster,
       const unsigned int levelsNumber,
       te::rst::Raster& outputRaster,
-      const std::vector< unsigned int >& outputRasterBands );     
+      const std::vector< unsigned int >& outputRasterBands ); 
+    
+    /*!
+      \brief Resample a subset of the raster, given a box.
+      \param inputRaster Input raster.
+      \param inputRasterBands Input raster bands to process.
+      \param interpMethod      The method of interpolation. \sa te::rst::Interpolator
+      \param firstRow        The starting row to make a subset of the image.
+      \param firstColumn     The starting column to make a subset of the image.
+      \param height      The height of the subset.
+      \param width       The width of the subset.
+      \param newheight   The resampled height of the new raster.
+      \param newwidth    The resampled width of the new raster.
+      \param rinfo       The parameters needed to build the output raster (see RasterFactory documentation).
+      \param dataSourceType Data source type (raster type. I.E. GDAL).
+      \param resampledRasterPtr The resampled raster pointer.
+      \return true if ok, false on errors.
+    */
+    TERPEXPORT bool RasterResample( 
+      const te::rst::Raster& inputRaster,
+      const std::vector< unsigned int >& inputRasterBands,
+      const te::rst::Interpolator::Method interpMethod, 
+      const unsigned int firstRow,
+      const unsigned int firstColumn, 
+      const unsigned int height, 
+      const unsigned int width,
+      const unsigned int newheight, 
+      const unsigned int newwidth, 
+      const std::map<std::string, std::string>& rinfo,
+      const std::string& dataSourceType,
+      std::auto_ptr< te::rst::Raster >& resampledRasterPtr );    
     
   } // end namespace rp
 }   // end namespace te
