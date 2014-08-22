@@ -2375,5 +2375,249 @@ namespace te
       return true;
     }
     
+    bool DirectWaveletAtrous( 
+      const te::rst::Raster& inputRaster,
+      const std::vector< unsigned int >& inputRasterBands,
+      te::rst::Raster& waveletRaster,
+      const unsigned int levelsNumber,
+      const boost::numeric::ublas::matrix< double >& filter )
+    {
+      if( ! ( inputRaster.getAccessPolicy() & te::common::RAccess ) )
+      {
+        return false;
+      }
+      for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx <
+        inputRasterBands.size() ; ++inputRasterBandsIdx )
+      {
+        if( inputRasterBands[ inputRasterBandsIdx ] >= inputRaster.getNumberOfBands() )
+        {
+          return false;
+        }
+      }
+      if( 
+          ( ( waveletRaster.getAccessPolicy() & te::common::WAccess ) == 0 )
+          ||
+          ( waveletRaster.getNumberOfColumns() != inputRaster.getNumberOfColumns() )
+          ||
+          ( waveletRaster.getNumberOfRows() != inputRaster.getNumberOfRows() )
+          ||
+          ( waveletRaster.getNumberOfBands() < ( 2 *  levelsNumber * inputRasterBands.size() ) )
+        )
+      {
+        return false;
+      }
+      if( levelsNumber == 0 )
+      {
+        return false;
+      }
+      if( ( filter.size1() == 0 ) || ( filter.size2() == 0 ) || 
+        ( filter.size1() != filter.size2() )
+      )
+      {
+        return false;
+      }
+      
+      // no-data fill
+      
+      {
+        const unsigned int nBands = waveletRaster.getNumberOfBands();
+        const unsigned int nCols = waveletRaster.getNumberOfColumns();
+        const unsigned int nRows = waveletRaster.getNumberOfRows();
+        unsigned int row = 0;
+        unsigned int col = 0;
+        
+        for( unsigned int bandIdx = 0 ; bandIdx < nBands ; ++bandIdx )
+        {
+          te::rst::Band& band = *waveletRaster.getBand( bandIdx );
+          const double noDataVale = band.getProperty()->m_noDataValue;
+        
+          for( row = 0 ; row < nRows ; ++row )
+          {
+            for( col = 0 ; col < nCols ; ++col )
+            {
+              band.setValue( col, row, noDataVale );
+            }
+          }
+        }
+      }
+      
+      // Creating the coeficients and the resitual planes for each required
+      // wavelet level
+
+      const int filterWidth = filter.size1();
+      const int offset = filterWidth / 2;
+      const int nLines = inputRaster.getNumberOfRows();
+      const int nCols = inputRaster.getNumberOfColumns();
+      
+      for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx < inputRasterBands.size() ;
+        ++inputRasterBandsIdx )
+      {
+        for( unsigned int levelIndex = 0; levelIndex < levelsNumber; ++levelIndex)
+        {
+          const unsigned int currentSmoothBandIdx = ( 2 * levelsNumber * 
+            inputRasterBandsIdx ) + ( 2 * levelIndex );
+          te::rst::Band& currentSmoothBand = *waveletRaster.getBand( currentSmoothBandIdx );
+          
+          const unsigned int currentWaveletBandIdx = currentSmoothBandIdx + 1;
+          te::rst::Band& currentWaveletBand = *waveletRaster.getBand(
+            currentWaveletBandIdx );
+          
+          const unsigned int prevSmoothBandIdx =  currentSmoothBandIdx - 2;
+          te::rst::Band const* prevSmoothBandPtr = 0;
+          if( levelIndex == 0 )
+          {
+            prevSmoothBandPtr = inputRaster.getBand( inputRasterBands[ inputRasterBandsIdx ] );
+          }
+          else
+          {
+            prevSmoothBandPtr = waveletRaster.getBand( prevSmoothBandIdx );
+          }          
+          const te::rst::Band& prevSmoothBand = *prevSmoothBandPtr;          
+          
+          const int filterScale = std::pow(2.0, levelIndex);          
+          
+          int col = 0;
+          int row = 0;
+          int convolutionCenterCol = 0;
+          int convolutionCenterRow = 0;
+          int filterCol = 0;
+          int filterRow = 0; 
+          double valueOriginal = 0.0;
+          double valuePrev = 0.0;
+          double valueNew = 0.0;          
+
+          for (convolutionCenterRow = 0; convolutionCenterRow < nLines; convolutionCenterRow++)
+          {
+            for (convolutionCenterCol = 0; convolutionCenterCol < nCols; convolutionCenterCol++)
+            {
+              valueNew = 0.0;
+              
+              for (filterRow = 0; filterRow < filterWidth; filterRow++)
+              {
+                for (filterCol = 0; filterCol < filterWidth; filterCol++)
+                {
+                  col = convolutionCenterCol+(filterCol-offset)*filterScale;
+                  row = convolutionCenterRow+(filterRow-offset)*filterScale;
+                  
+                  if (col < 0)
+                    col = nCols + col;
+                  else if (col >= nCols)
+                    col = col - nCols;
+                  if (row < 0)
+                    row = nLines + row;
+                  else if (row >= nLines)
+                    row = row - nLines;
+                  
+                  prevSmoothBand.getValue( col, row, valueOriginal );
+                  
+                  valueNew += valueOriginal * filter( filterRow, filterCol );
+                }
+              }
+              
+              currentSmoothBand.setValue( convolutionCenterCol, convolutionCenterRow, 
+                valueNew );
+              prevSmoothBand.getValue( convolutionCenterCol, convolutionCenterRow, 
+                valueOriginal );
+              currentWaveletBand.setValue( convolutionCenterCol, convolutionCenterRow, 
+                valueOriginal - valueNew );
+            }
+          }
+        }
+      }
+      
+      return true;
+    }
+    
+    bool InverseWaveletAtrous( 
+      const te::rst::Raster& waveletRaster,
+      const unsigned int levelsNumber,
+      te::rst::Raster& outputRaster,
+      const std::vector< unsigned int >& outputRasterBands )
+    {
+      if( 
+          ( ! ( waveletRaster.getAccessPolicy() & te::common::RAccess ) )
+          ||
+          ( waveletRaster.getNumberOfBands() < ( 2 *  levelsNumber * outputRasterBands.size() ) )
+        )
+      {
+        return false;
+      }
+      if( levelsNumber == 0 )
+      {
+        return false;
+      }
+      if( 
+          ( ( outputRaster.getAccessPolicy() & te::common::WAccess ) == 0 )
+          ||
+          ( waveletRaster.getNumberOfColumns() != outputRaster.getNumberOfColumns() )
+          ||
+          ( waveletRaster.getNumberOfRows() != outputRaster.getNumberOfRows() )
+        )
+      {
+        return false;
+      }
+      for( unsigned int outputRasterBandsIdx = 0 ; outputRasterBandsIdx <
+        outputRasterBands.size() ; ++outputRasterBandsIdx )
+      {
+        if( outputRasterBands[ outputRasterBandsIdx ] >= outputRaster.getNumberOfBands() )
+        {
+          return false;
+        }
+      }
+      
+      for( unsigned int outputRasterBandsIdx = 0 ; outputRasterBandsIdx <
+        outputRasterBands.size() ; ++outputRasterBandsIdx )
+      {
+        const unsigned int outputRasterBandIdx = outputRasterBands[ outputRasterBandsIdx ];
+        const unsigned int nRows = waveletRaster.getNumberOfRows();
+        const unsigned int nCols = waveletRaster.getNumberOfColumns();        
+        const unsigned int firstSmoothBandIdx = outputRasterBandsIdx *
+          levelsNumber * 2;
+        const unsigned int firstWaveletBandIdx = firstSmoothBandIdx
+          + 1;          
+        const unsigned int lastSmoothBandIdx = firstSmoothBandIdx
+          + ( 2 * levelsNumber ) - 2;
+        const unsigned int lastWaveletBandIdx = lastSmoothBandIdx + 1;
+        unsigned int col = 0;
+        unsigned int row = 0;        
+        double value = 0;
+        double sum = 0;
+        unsigned int waveletRasterBand = 0;
+        
+        double bandAllowedMinValue = 0;
+        double bandAllowedMaxValue = 0;
+        te::rst::GetDataTypeRanges( outputRaster.getBand( 
+          outputRasterBandIdx )->getProperty()->m_type, bandAllowedMinValue,
+          bandAllowedMaxValue );
+        
+        
+        for( row = 0 ; row < nRows ; ++row )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            sum = 0.0;
+            
+            for( waveletRasterBand = firstWaveletBandIdx ; 
+              waveletRasterBand <= lastWaveletBandIdx ; 
+              waveletRasterBand += 2)
+            {
+              waveletRaster.getValue( col, row, value, waveletRasterBand );
+              sum += value;
+            }
+            
+            waveletRaster.getValue( col, row, value, lastSmoothBandIdx );
+            sum += value;
+            
+            sum = std::max( sum, bandAllowedMinValue );
+            sum = std::min( sum, bandAllowedMaxValue );
+            
+            outputRaster.setValue( col, row, sum, outputRasterBandIdx );
+          }
+        }
+      }
+           
+      return true;
+    }
+    
   } // end namespace rp
 }   // end namespace te

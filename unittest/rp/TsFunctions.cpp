@@ -552,3 +552,91 @@ void TsFunctions::GetIndexedDetailedExtent()
   CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 8 ), -0.5 , 1.0000000001 );
   CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 8 ), -0.5 , 1.0000000001 );          
 }
+
+void TsFunctions::WaveletAtrous()
+{
+  const unsigned int waveletDecompLevelsNumb = 3;
+  
+  // openning input raster
+  
+  std::map<std::string, std::string> auxRasterInfo;
+  
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( diskRasterPtr.get() );  
+  
+  std::vector< te::rst::BandProperty * > waveletRasterBandProps;
+  for( unsigned int bandIdx = 0 ; bandIdx < diskRasterPtr->getNumberOfBands() ;
+    ++bandIdx )
+  {
+    for( unsigned int levelIdx = 0 ; levelIdx < waveletDecompLevelsNumb ;
+      ++levelIdx )
+    {
+      waveletRasterBandProps.push_back( new te::rst::BandProperty( 
+        *( diskRasterPtr->getBand( 0 )->getProperty() ) ) );
+      waveletRasterBandProps.back()->m_blkh = diskRasterPtr->getNumberOfRows();
+      waveletRasterBandProps.back()->m_blkw = diskRasterPtr->getNumberOfColumns();
+      waveletRasterBandProps.back()->m_nblocksx = 1;
+      waveletRasterBandProps.back()->m_nblocksy = 1;
+      waveletRasterBandProps.back()->m_type = te::dt::DOUBLE_TYPE;
+      
+      waveletRasterBandProps.push_back( new te::rst::BandProperty( 
+        *( diskRasterPtr->getBand( 0 )->getProperty() ) ) );
+      waveletRasterBandProps.back()->m_blkh = diskRasterPtr->getNumberOfRows();
+      waveletRasterBandProps.back()->m_blkw = diskRasterPtr->getNumberOfColumns();
+      waveletRasterBandProps.back()->m_nblocksx = 1;
+      waveletRasterBandProps.back()->m_nblocksy = 1;
+      waveletRasterBandProps.back()->m_type = te::dt::DOUBLE_TYPE;      
+    }
+  }
+  
+  std::auto_ptr< te::rst::Raster > waveletRasterPtr( te::rst::RasterFactory::make(
+    "MEM", new te::rst::Grid( *( diskRasterPtr->getGrid() ) ), waveletRasterBandProps, 
+    std::map<std::string, std::string>(), 0, 0 ) );
+  CPPUNIT_ASSERT( waveletRasterPtr.get() );  
+  
+  std::vector< unsigned int > inputRasterBands;
+  inputRasterBands.push_back( 0 );
+  inputRasterBands.push_back( 1 );
+  inputRasterBands.push_back( 2 );
+  
+  boost::numeric::ublas::matrix< double > filter( 5, 5 );
+  const double filterWeight = 256;
+  filter(0,0) = 1/filterWeight; filter(0,1) = 4/filterWeight; filter(0,2) = 6/filterWeight; filter(0,3) = 4/filterWeight; filter(0,4) = 1/filterWeight;
+  filter(1,0) = 4/filterWeight; filter(1,1) = 16/filterWeight; filter(1,2) = 24/filterWeight; filter(1,3) = 16/filterWeight; filter(1,4) = 4/filterWeight;
+  filter(2,0) = 6/filterWeight; filter(2,1) = 24/filterWeight; filter(2,2) = 36/filterWeight; filter(2,3) = 24/filterWeight; filter(2,4) = 6/filterWeight;
+  filter(3,0) = 4/filterWeight; filter(3,1) = 16/filterWeight; filter(3,2) = 24/filterWeight; filter(3,3) = 16/filterWeight; filter(3,4) = 4/filterWeight;
+  filter(4,0) = 1/filterWeight; filter(4,1) = 4/filterWeight; filter(4,2) = 6/filterWeight; filter(4,3) = 4/filterWeight; filter(4,4) = 1/filterWeight;
+  
+  
+  CPPUNIT_ASSERT( te::rp::DirectWaveletAtrous( 
+    *diskRasterPtr, 
+    inputRasterBands,
+    *waveletRasterPtr,
+    waveletDecompLevelsNumb,
+    filter ) );
+    
+  CPPUNIT_ASSERT( te::rp::Copy2DiskRaster( *waveletRasterPtr, "terralib_unittest_rp_functions_DirectWaveletAtrous.tif" ) ) ;  
+  
+  auxRasterInfo.clear();
+  auxRasterInfo["URI"] = "terralib_unittest_rp_functions_InverseWaveletAtrous.tif";
+  
+  std::vector< te::rst::BandProperty * > bandProps2;
+  bandProps2.push_back( new te::rst::BandProperty( *( diskRasterPtr->getBand( 0 )->getProperty() ) ) );
+  bandProps2.push_back( new te::rst::BandProperty( *( diskRasterPtr->getBand( 1 )->getProperty() ) ) );
+  bandProps2.push_back( new te::rst::BandProperty( *( diskRasterPtr->getBand( 2 )->getProperty() ) ) );
+  
+  std::auto_ptr< te::rst::Raster > outDiskRasterPtr( te::rst::RasterFactory::make(
+    "GDAL", new te::rst::Grid( *( diskRasterPtr->getGrid() ) ), bandProps2, 
+    auxRasterInfo, 0, 0 ) );
+  CPPUNIT_ASSERT( outDiskRasterPtr.get() );
+  
+  CPPUNIT_ASSERT( te::rp::InverseWaveletAtrous( 
+    *waveletRasterPtr,
+    waveletDecompLevelsNumb,
+    *outDiskRasterPtr,
+    inputRasterBands ) );  
+}
+
+
