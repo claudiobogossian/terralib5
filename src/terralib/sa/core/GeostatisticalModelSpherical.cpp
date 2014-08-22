@@ -43,7 +43,7 @@ boost::numeric::ublas::matrix<double> te::sa::GeostatisticalModelSpherical::calc
   std::size_t nLags = matrix.size1();
 
   //create the model matrix
-  boost::numeric::ublas::matrix<double> m(nLags + 1, 2);
+  boost::numeric::ublas::matrix<double> m(nLags, 2);
 
   //fill matrix
   std::vector<double> sphericalValues;
@@ -54,25 +54,13 @@ boost::numeric::ublas::matrix<double> te::sa::GeostatisticalModelSpherical::calc
     {
       sphericalValues.push_back(m_nugget);
     }
-    else
+    else 
     {
-      sphericalValues.push_back(m_nugget + m_sill * (1.5 * (matrix(t, 0) / m_range)) - 0.5 * (pow(matrix(t, 0) / m_range, 3)));
-
-      if(sphericalValues[t] > (m_nugget + m_sill))
-      {
-        sphericalValues[t] = m_nugget + m_sill;
-      }
+      sphericalValues.push_back(m_nugget + (m_sill - m_nugget) * (1.5 * (abs(matrix(t, 0)) / m_range)) - 0.5 * (pow(abs(matrix(t, 0)) / m_range, 3)));
     }
-
-    m(t + 1, 0) = matrix(t, 0);
-    m(t + 1, 1) = sphericalValues[t];
+    m(t, 0) = matrix(t, 0);
+    m(t, 1) = sphericalValues[t];
   }
-
-  m(0, 1) = m_nugget;
-
-  //set last value
-  m(nLags, 0) = m(nLags - 1, 0) + (m(nLags - 1, 0) - m(nLags - 2, 0));
-  m(nLags, 1) = m(nLags - 1, 1);
 
   return m;
 }

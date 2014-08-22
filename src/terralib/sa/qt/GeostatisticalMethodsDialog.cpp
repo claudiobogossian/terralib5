@@ -44,8 +44,13 @@
 #include "ui_GeostatisticalMethodsDialogForm.h"
 
 // Qt
+#include <QGridLayout>
 #include <QMessageBox>
 #include <QValidator>
+
+//QWT
+#include <qwt/qwt_symbol.h>
+#include <qwt/qwt_plot.h>
 
 // STL
 #include <memory>
@@ -78,7 +83,31 @@ te::sa::GeostatisticalMethodsDialog::GeostatisticalMethodsDialog(QWidget* parent
   connect(m_ui->m_inputLayerComboBox, SIGNAL(activated(int)), this, SLOT(onInputLayerComboBoxActivated(int)));
   connect(m_ui->m_changeAttrToolButton, SIGNAL(clicked()), this, SLOT(onChangeAttrToolButtonClicked()));
   connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyPushButtonClicked()));
-  connect(m_ui->m_adjustPushButton, SIGNAL(clicked()), this, SLOT(calculate()));
+  connect(m_ui->m_modelComboBox, SIGNAL(activated(int)), this, SLOT(calculate()));
+  connect(m_ui->m_nuggetHorizontalSlider, SIGNAL(sliderMoved(int)), this, SLOT(calculate()));
+  connect(m_ui->m_sillHorizontalSlider, SIGNAL(sliderMoved(int)), this, SLOT(calculate()));
+  connect(m_ui->m_rangeHorizontalSlider, SIGNAL(sliderMoved(int)), this, SLOT(calculate()));
+
+  //create chart
+  QGridLayout* chartLayout = new QGridLayout(m_ui->m_chartWidget);
+  m_chartDisplay = new te::qt::widgets::ChartDisplay(m_ui->m_chartWidget);
+  chartLayout->addWidget(m_chartDisplay);
+
+  m_chartDisplay->setAxisTitle(QwtPlot::xBottom, tr("h"));
+  m_chartDisplay->setAxisTitle(QwtPlot::yLeft, tr("Y(h)"));
+
+  //start plot objects
+  m_scatterMethod = new te::qt::widgets::Scatter();
+  m_scatterChartMethod = new te::qt::widgets::ScatterChart(m_scatterMethod);
+  m_scatterChartMethod->setSymbol(new QwtSymbol( QwtSymbol::XCross, QBrush( Qt::red ), QPen( Qt::red, 3 ), QSize( 8, 8 )));
+  m_scatterChartMethod->attach(m_chartDisplay);
+
+  m_scatterModel = new te::qt::widgets::Scatter();
+  m_scatterChartModel = new te::qt::widgets::ScatterChart(m_scatterModel);
+  m_scatterChartModel->setPen(Qt::blue);
+  m_scatterChartModel->setSymbol(0);
+  m_scatterChartModel->setStyle(QwtPlotCurve::Lines);
+  m_scatterChartModel->attach(m_chartDisplay);
 
   // help info
   m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
@@ -143,7 +172,8 @@ void te::sa::GeostatisticalMethodsDialog::onInputLayerComboBoxActivated(int inde
   }
 
   //reset lag increment information
-  double lagIncrement = l->getExtent().getWidth() / 10.; // guess???
+  std::auto_ptr<te::da::DataSet> ds = l->getData();
+  double lagIncrement = l->getExtent().getWidth() / ds->size();
   
   QString strLagIncrement;
   strLagIncrement.setNum(lagIncrement);
@@ -280,9 +310,9 @@ void te::sa::GeostatisticalMethodsDialog::calculate()
   else if(type == te::sa::Gaussian)
     model = new te::sa::GeostatisticalModelGaussian();
 
-  model->setNugget(m_ui->m_nuggetDoubleSpinBox->value());
-  model->setSill(m_ui->m_sillDoubleSpinBox->value());
-  model->setRange(m_ui->m_rangeDoubleSpinBox->value());
+  model->setNugget((double)m_ui->m_nuggetHorizontalSlider->value());
+  model->setSill((double)m_ui->m_sillHorizontalSlider->value());
+  model->setRange((double)m_ui->m_rangeHorizontalSlider->value());
 
   //generate output matrix
   m_methodMatrix = m_method->calculate();
@@ -291,8 +321,7 @@ void te::sa::GeostatisticalMethodsDialog::calculate()
   delete model;
 
   //plot
-
-
+  plot();
 }
 
 void te::sa::GeostatisticalMethodsDialog::fillParameters()
@@ -312,29 +341,65 @@ void te::sa::GeostatisticalMethodsDialog::fillParameters()
 
 void te::sa::GeostatisticalMethodsDialog::resetAdjustParameters(double mean, double variance)
 {
-  std::size_t matrixSize = m_method->getMatrix().size1(); // guess???
-
   //set nugget value
   double min = 0.;
   double max = variance;
-  double nuggetVar = (max - min)/(double)matrixSize;
+  double nuggetVar = (max - min)/mean;
 
-  m_ui->m_nuggetDoubleSpinBox->setValue(min);
-  m_ui->m_nuggetDoubleSpinBox->setRange(min - nuggetVar, max + nuggetVar);
+  m_ui->m_nuggetHorizontalSlider->setValue(min);
+  m_ui->m_nuggetHorizontalSlider->setRange(min - nuggetVar, max + nuggetVar);
 
   //set sill value
   min = 0;
   max = variance;
-  double sillVar = (max - min)/(double)matrixSize;
+  double sillVar = (max - min)/mean;
 
-  m_ui->m_sillDoubleSpinBox->setValue(min);
-  m_ui->m_sillDoubleSpinBox->setRange(min - sillVar, max + sillVar);
+  m_ui->m_sillHorizontalSlider->setValue(max);
+  m_ui->m_sillHorizontalSlider->setRange(min - sillVar, max + sillVar);
 
   //set range value
   double rangeVar = m_ui->m_nLagsLineEdit->text().toDouble();
   min = m_ui->m_lagsIncrementLineEdit->text().toDouble();
   max = min * rangeVar;
 
-  m_ui->m_rangeDoubleSpinBox->setValue(min);
-  m_ui->m_rangeDoubleSpinBox->setRange(min - sillVar, max + sillVar);
+  m_ui->m_rangeHorizontalSlider->setValue(max);
+  m_ui->m_rangeHorizontalSlider->setRange(min - rangeVar, max + rangeVar);
+}
+
+void te::sa::GeostatisticalMethodsDialog::plot()
+{
+  m_chartDisplay->setTitle(m_ui->m_typeComboBox->currentText());
+
+  //plot method curve
+  std::vector<double> methodh;
+  std::vector<double> methodyh;
+
+  for(std::size_t t = 0; t < m_methodMatrix.size1(); ++t)
+  {
+    methodh.push_back(m_methodMatrix(t, 0));
+    methodyh.push_back(m_methodMatrix(t, 1));
+  }
+
+  m_scatterMethod->setXValues(methodh);
+  m_scatterMethod->setYValues(methodyh);
+  m_scatterMethod->calculateMinMaxValues();
+  m_scatterChartMethod->setData();
+
+  //plot model curve
+  std::vector<double> modelh;
+  std::vector<double> modelyh;
+
+  for(std::size_t t = 0; t < m_modelMatrix.size1(); ++t)
+  {
+    modelh.push_back(m_modelMatrix(t, 0));
+    modelyh.push_back(m_modelMatrix(t, 1));
+  }
+
+  m_scatterModel->setXValues(modelh);
+  m_scatterModel->setYValues(modelyh);
+  m_scatterModel->calculateMinMaxValues();
+  m_scatterChartModel->setData();
+
+  //replot the chart display
+  m_chartDisplay->replot();
 }

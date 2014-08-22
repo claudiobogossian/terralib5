@@ -43,7 +43,7 @@ boost::numeric::ublas::matrix<double> te::sa::GeostatisticalModelExponential::ca
   std::size_t nLags = matrix.size1();
 
   //create the model matrix
-  boost::numeric::ublas::matrix<double> m(nLags + 1, 2);
+  boost::numeric::ublas::matrix<double> m(nLags, 2);
 
   //fill matrix
   std::vector<double> exponentialValues;
@@ -56,18 +56,12 @@ boost::numeric::ublas::matrix<double> te::sa::GeostatisticalModelExponential::ca
     }
     else
     {
-      exponentialValues.push_back(m_nugget + m_sill * (1 - exp(- (3. * matrix(t, 0)) / m_range)));
+      exponentialValues.push_back(m_nugget + (m_sill - m_nugget) * (1 - exp(- (3. * matrix(t, 0)) / m_range)));
     }
 
-    m(t + 1, 0) = matrix(t, 0);
-    m(t + 1, 1) = exponentialValues[t];
+    m(t, 0) = matrix(t, 0);
+    m(t, 1) = exponentialValues[t];
   }
-
-  m(0, 1) = m_nugget;
-
-  //set last value
-  m(nLags, 0) = m(nLags - 1, 0) + (m(nLags - 1, 0) - m(nLags - 2, 0));
-  m(nLags, 1) = m(nLags - 1, 1);
 
   return m;
 }
