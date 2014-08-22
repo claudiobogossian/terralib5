@@ -71,6 +71,7 @@ else()
 # moc'ing
   set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sa/qt/BayesGlobalDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sa/qt/BayesLocalDialog.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sa/qt/GeostatisticalMethodsDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sa/qt/KernelMapDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sa/qt/KernelRatioDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sa/qt/ProximityMatrixCreatorDialog.h

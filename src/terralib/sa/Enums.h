@@ -116,6 +116,28 @@ namespace te
       Random,
       Stratified
     };
+
+    /*!
+      \enum GeostatisticalMethodType
+
+      \brief Geostatistical methods for measure of Spatial Variability
+    */
+    enum GeostatisticalMethodType
+    {
+      Semivariogram
+    };
+
+    /*!
+      \enum GeostatisticalModelType
+
+      \brief Geostatistical models for measure of Spatial Variability
+    */
+    enum GeostatisticalModelType
+    {
+      Spherical,
+      Exponential,
+      Gaussian
+    };
   }
 }
 

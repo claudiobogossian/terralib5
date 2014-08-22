@@ -42,7 +42,7 @@
 #include <QMessageBox>
 
 // Boost
-#include <boost\filesystem.hpp>
+#include <boost/filesystem.hpp>
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 Q_DECLARE_METATYPE(te::common::UnitOfMeasurePtr);
@@ -251,7 +251,16 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
 
   std::auto_ptr<te::cellspace::CellularSpacesOperations> cellSpaceOp(new te::cellspace::CellularSpacesOperations());
 
-  cellSpaceOp->createCellSpace(name, referenceLayer, resX, resY, isPolygonsAsMask);
+  te::cellspace::CellularSpacesOperations::CellSpaceType type;
+
+  if(m_ui->m_vectorToolButton->isChecked())
+    type = te::cellspace::CellularSpacesOperations::CELLSPACE_POLYGONS;
+  else if(m_ui->m_pointsToolButton->isChecked())
+    type = te::cellspace::CellularSpacesOperations::CELLSPACE_POINTS;
+  else if(m_ui->m_rasterToolButton->isChecked())
+    type = te::cellspace::CellularSpacesOperations::CELLSPACE_RASTER;
+
+  cellSpaceOp->createCellSpace(name, referenceLayer, resX, resY, isPolygonsAsMask, type);
 
   std::auto_ptr<te::da::DataSetType> dst(cellSpaceOp->getDataSetType());
 

@@ -29,11 +29,14 @@
 #include "../datatype/StringProperty.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/GeometryProperty.h"
+#include "../geometry/Point.h"
 #include "../geometry/Polygon.h"
 #include "../geometry/Utils.h"
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
 #include "CellSpaceOperations.h"
+
+#include <stdio.h>
 
 te::cellspace::CellularSpacesOperations::CellularSpacesOperations()
   : m_outputDataSetType(0),
@@ -51,24 +54,6 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(const std::string&
                                                               double resX, double resY, bool useMask,
                                                               CellSpaceType type)
 {
-  switch(type)
-  {
-    case 0:
-      createPolygons(name, layerBase, resX, resY, useMask);
-      break;
-    case 1:
-      createPoints(name, layerBase, resX, resY, useMask);
-      break;
-    case 2:
-      createRaster(name, layerBase, resX, resY, useMask);
-      break;
-    default:
-      return;
-  }
-}
-
-void te::cellspace::CellularSpacesOperations::createPolygons(const std::string& name, te::map::AbstractLayerPtr layerBase, double resX, double resY, bool useMask)
-{
   te::gm::Envelope box = layerBase->getExtent();
 
   te::gm::Envelope newEnv = te::gm::AdjustToCut(box, resX, resY);
@@ -80,7 +65,12 @@ void te::cellspace::CellularSpacesOperations::createPolygons(const std::string& 
   te::dt::Property* idProp = new te::dt::StringProperty("id");
   te::dt::Property* colProp = new te::dt::SimpleProperty("col", te::dt::INT32_TYPE);
   te::dt::Property* rowProp = new te::dt::SimpleProperty("row", te::dt::INT32_TYPE);
-  te::dt::Property* geomProp = new te::gm::GeometryProperty("geom", srid, te::gm::PolygonType);
+  te::dt::Property* geomProp = 0;
+
+  if(type = CELLSPACE_POLYGONS)
+    geomProp = new te::gm::GeometryProperty("geom", srid, te::gm::PolygonType);
+  else if(type = CELLSPACE_POINTS)
+    geomProp = new te::gm::GeometryProperty("geom", srid, te::gm::PointType);
 
   m_outputDataSetType->add(idProp);
   m_outputDataSetType->add(colProp);
@@ -119,9 +109,19 @@ void te::cellspace::CellularSpacesOperations::createPolygons(const std::string& 
     {
       te::gm::Envelope* env = new te::gm::Envelope(x, y, x+resX, yu);
 
-      te::gm::Geometry* geom = new te::gm::Polygon(0, te::gm::PolygonType);
+      te::gm::Geometry* geom = 0;
 
-      geom = te::gm::GetGeomFromEnvelope(env, srid);
+      if(type == CELLSPACE_POLYGONS)
+      {
+        geom = new te::gm::Polygon(0, te::gm::PolygonType);
+        geom = te::gm::GetGeomFromEnvelope(env, srid);
+      }
+      else if(type == CELLSPACE_POINTS)
+      {
+        double pX = env->m_llx +( (env->m_urx - env->m_llx) / 2);
+        double pY = env->m_lly +( (env->m_ury - env->m_lly) / 2);
+        geom = new te::gm::Point(pX, pY, srid);
+      }
 
       char celId[32];
       sprintf(celId,"C%02dL%02d",col,lin);
@@ -136,16 +136,6 @@ void te::cellspace::CellularSpacesOperations::createPolygons(const std::string& 
       x=x+resX;
     }
   }
-}
-
-void te::cellspace::CellularSpacesOperations::createPoints(const std::string& name, te::map::AbstractLayerPtr layerBase, double resX, double resY, bool useMask)
-{
-
-}
-
-void te::cellspace::CellularSpacesOperations::createRaster(const std::string& name, te::map::AbstractLayerPtr layerBase, double resX, double resY, bool useMask)
-{
-  
 }
 
 te::da::DataSetType* te::cellspace::CellularSpacesOperations::getDataSetType()
