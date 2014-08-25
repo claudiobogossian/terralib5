@@ -14,6 +14,9 @@
    <string>Geostatistical Methods</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_24">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetFixedSize</enum>
+   </property>
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_23">
      <item row="0" column="0">
