@@ -30,6 +30,8 @@
 #include "../../../common/Translator.h"
 #include "../../../common/UnitsOfMeasureManager.h"
 #include "../../../dataaccess/datasource/DataSource.h"
+#include "../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/Utils.h"
 #include "../../../srs/SpatialReferenceSystemManager.h"
@@ -269,18 +271,26 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
   std::string accessDriver;
   std::map<std::string, std::string> connInfo;
 
+  te::da::DataSourcePtr source;
+
   if(m_isFile)
   {
     accessDriver = "OGR";
     connInfo["URI"] = m_ui->m_repositoryLineEdit->text().toStdString();
+
+    source.reset(te::da::DataSourceFactory::make("OGR").release());
+    source->setConnectionInfo(connInfo);
+    source->open();
+
+    dst->setName(m_ui->m_newLayerNameLineEdit->text().toStdString());
   }
   else
   {
     accessDriver = m_outDataSourceInfo->getAccessDriver();
     connInfo = m_outDataSourceInfo->getConnInfo();
-  }
 
-  te::da::DataSourcePtr source = te::da::GetDataSource(m_outDataSourceInfo->getId(), true);
+    source = te::da::GetDataSource(m_outDataSourceInfo->getId(), true);
+  }
 
   if(source.get() == 0)
   {
@@ -288,9 +298,26 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
     return;
   }
 
-  std::map<std::string, std::string> op;
+  std::auto_ptr<te::da::DataSourceTransactor> t = source->getTransactor();
 
-  te::da::Create(source.get(), dst.get(), ds.get(), op);
+  try
+  {
+    t->begin();
+
+    std::map<std::string, std::string> op;
+
+    t->createDataSet(dst.get(), op);
+
+    t->add(name, ds.get(), op);
+
+    t->commit();
+  }
+  catch(te::common::Exception& e)
+  {
+    t->rollBack();
+
+    QMessageBox::warning(this, tr("Cellular Spaces"), e.what());
+  }
 
   accept();
 }
@@ -300,14 +327,21 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onTargetFileToolButt
   m_ui->m_newLayerNameLineEdit->clear();
   m_ui->m_repositoryLineEdit->clear();
 
-  QString directory = QFileDialog::getExistingDirectory(this, tr("Open Directory..."), QString());
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
+                     QString(), tr("Shapefile (*.shp *.SHP);;"),0, QFileDialog::DontConfirmOverwrite);
 
-  if(directory.isEmpty())
+  if (fileName.isEmpty())
     return;
 
-  m_ui->m_repositoryLineEdit->setText(directory);
+  boost::filesystem::path outfile(fileName.toStdString());
+  std::string aux = outfile.leaf().string();
+  m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
+  aux = outfile.string();
+  m_ui->m_repositoryLineEdit->setText(aux.c_str());
 
   m_isFile = true;
+
+  m_ui->m_newLayerNameLineEdit->setEnabled(false);
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onTargetDatasourceToolButtonClicked()
@@ -330,6 +364,8 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onTargetDatasourceTo
   m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
 
   m_isFile = false;
+
+  m_ui->m_newLayerNameLineEdit->setEnabled(true);
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onUnitComboBoxChanged(int index)
