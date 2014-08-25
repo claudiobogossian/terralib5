@@ -65,6 +65,8 @@
 #include <QPixmap>
 #include <QLineF>
 #include <QMessageBox>
+#include <QContextMenuEvent>
+#include <QMenu>
 
 #define _psPointInMM 0.352777778 //<! 1 PostScript point in millimeters
 #define _inchInPSPoints 72 //<! 1 Inch in PostScript point
@@ -77,7 +79,9 @@ te::layout::View::View( QWidget* widget) :
   m_lineIntersectVrt(0),
   m_currentTool(0),
   m_pageSetupOutside(0),
-  m_systematicOutside(0)
+  m_systematicOutside(0),
+  m_selectionChange(false),
+  m_menuItem(0)
 {
   //Use ScrollHand Drag Mode to enable Panning
   //You do need the enable scroll bars for that to work.
@@ -186,6 +190,18 @@ void te::layout::View::mouseMoveEvent( QMouseEvent * event )
    m_lineIntersectVrt->setP2(scenePos);
 }
 
+void te::layout::View::mouseReleaseEvent( QMouseEvent * event )
+{
+  QGraphicsView::mouseReleaseEvent(event);
+
+  /* The Properties only load when selection change and mouse release */
+  if(!m_selectionChange)
+    return;
+
+  emit reloadProperties();
+  m_selectionChange = false;
+}
+
 void te::layout::View::wheelEvent( QWheelEvent *event )
 {
   QGraphicsView::wheelEvent(event);
@@ -232,26 +248,19 @@ void te::layout::View::config()
     return;
 
   PaperConfig* pConfig =  Context::getInstance().getPaperConfig();
-
-  double w = 0;
-  double h = 0;
-
-  pConfig->getPaperSize(w, h);
-
+  
   double sw = widthMM();
   double sh = heightMM();
     
   double zoomFactor = Context::getInstance().getZoomFactor();
-  lScene->init(sw, sh, w, h, zoomFactor);
+  lScene->init(sw, sh, zoomFactor);
 
   configTransform(lScene);
 
   //----------------------------------------------------------------------------------------------
 
   te::gm::Envelope* boxW = lScene->getWorldBox();
-  te::gm::Envelope* box = lScene->getPaperBox();
-  pConfig->setPaperBoxW(box);
-  
+    
   if(!m_visualizationArea)
   {
     m_visualizationArea = new VisualizationArea(boxW);
@@ -263,6 +272,8 @@ void te::layout::View::config()
         
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+  connect(scene(), SIGNAL(selectionChanged()), this, SLOT(onSelectionChanged()));
 }
 
 void te::layout::View::resizeEvent(QResizeEvent * event)
@@ -542,6 +553,34 @@ void te::layout::View::outsideAreaChangeContext( bool change )
     sc->createTextMapAsObject();
     resetDefaultConfig();
     break;
+  case TypeAlignLeft:
+    sc->alignLeft();
+    resetDefaultConfig();
+    break;
+  case TypeAlignRight:
+    sc->alignRight();
+    resetDefaultConfig();
+    break;
+  case TypeAlignTop:
+    sc->alignTop();
+    resetDefaultConfig();
+    break;
+  case TypeAlignBottom:
+    sc->alignBottom();
+    resetDefaultConfig();
+    break;
+  case TypeAlignCenterHorizontal:
+    sc->alignCenterHorizontal();
+    resetDefaultConfig();
+    break;
+  case TypeAlignCenterVertical:
+    sc->alignCenterVertical();
+    resetDefaultConfig();
+    break;
+  case TypeRemoveObject:
+    sc->deleteItems();
+    resetDefaultConfig();
+    break;
   default:
     {
       resetDefaultConfig();
@@ -643,4 +682,48 @@ void te::layout::View::onSystematicApply(double scale, SystematicScaleType type)
   {
     sc->setCurrentMapSystematic(sys, m_coordSystematic);
   }
+}
+
+void te::layout::View::onSelectionChanged()
+{
+  m_selectionChange = true;
+}
+
+void te::layout::View::contextMenuEvent( QContextMenuEvent * event )
+{
+  if(event->reason() != QContextMenuEvent::Mouse)
+    return;
+
+  QPointF pt = mapToScene(event->pos());
+  if(!intersectionSelectionItem(pt.x(), pt.y()))
+    return;
+
+  if(!m_menuItem)
+  {
+    m_menuItem = new MenuItem(this);
+  }
+
+  QList<QGraphicsItem*> graphicsItems = this->scene()->selectedItems();
+
+  m_menuItem->createMenu(graphicsItems);
+  m_menuItem->menuExec(event->globalX(), event->globalY());
+}
+
+bool te::layout::View::intersectionSelectionItem(int x, int y)
+{
+  QList<QGraphicsItem *> items = this->scene()->selectedItems();
+  int a = items.count();
+  bool intersection = false;
+
+  QPointF pt(x, y);
+
+  foreach (QGraphicsItem *item, items) 
+  {
+    if(item)
+    {
+      intersection = item->contains(pt);
+    }
+  }
+
+  return intersection;
 }

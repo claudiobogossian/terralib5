@@ -18,31 +18,37 @@
  */
 
 /*!
-  \file TextGridModel.h
+  \file EnumDataType.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_MODEL_H
-
 // TerraLib
-#include "TitleModel.h"
+#include "Enums.h"
 
-namespace te
+te::layout::Enums::Enums() :
+  m_dataType(0)
 {
-  namespace layout
-  {
-    class TextGridModel : public TitleModel
-    {
-      public:
+  init();
+}
 
-        TextGridModel();
-        virtual ~TextGridModel();
-    };
+te::layout::Enums::~Enums()
+{
+  if(m_dataType)
+  {
+    delete m_dataType;
+    m_dataType = 0;
   }
 }
 
-#endif
+void te::layout::Enums::init()
+{
+  m_dataType = new EnumDataType;
+}
+
+te::layout::EnumDataType* te::layout::Enums::getEnumDataType()
+{
+  return m_dataType;
+}

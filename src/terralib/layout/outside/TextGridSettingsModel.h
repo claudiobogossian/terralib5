@@ -18,29 +18,38 @@
  */
 
 /*!
-  \file TextGridModel.h
+  \file TextGridSettingsModel.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_SETTINGS_MODEL_H 
+#define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_SETTINGS_MODEL_H
 
 // TerraLib
-#include "TitleModel.h"
+#include "../core/pattern/mvc/OutsideModelObservable.h"
+#include "../core/ContextItem.h"
+#include "../core/property/Properties.h"
+#include "../core/enum/EnumMode.h"
+#include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class TextGridModel : public TitleModel
+    class TELAYOUTEXPORT TextGridSettingsModel : public OutsideModelObservable
     {
-      public:
+    public:
 
-        TextGridModel();
-        virtual ~TextGridModel();
+      TextGridSettingsModel();
+      virtual ~TextGridSettingsModel();
+
+      virtual void updateProperties(te::layout::Properties* properties);
+
+      virtual Properties* getProperties() const;
+
     };
   }
 }

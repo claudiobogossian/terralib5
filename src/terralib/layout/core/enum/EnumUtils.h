@@ -51,10 +51,6 @@ namespace te
 
     te::map::LineDashStyle getLayoutEnumDashStyle( int enumVal );
     
-    std::string getLayoutPropertyDataType(int enumVal);
-
-    te::layout::LayoutPropertyDataType getLayoutPropertyDataType(std::string val);
-
     std::string getLayoutAbstractObjectType(int enumVal);
 
     te::layout::LayoutAbstractObjectType getLayoutAbstractObjectType(std::string val);

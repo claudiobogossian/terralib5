@@ -18,44 +18,63 @@
  */
 
 /*!
-  \file AbstractScene.h
+  \file Enums.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_SCENE_H
-#define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_SCENE_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ENUMS_H 
+#define __TERRALIB_LAYOUT_INTERNAL_ENUMS_H
 
 // TerraLib
-#include "../../geometry/Envelope.h"
+#include "../../../common/Singleton.h"
+#include "../Config.h"
+#include "EnumType.h"
+#include "EnumDataType.h"
 
 namespace te
 {
   namespace layout
   {
-    class ItemObserver;
-    class OutsideObserver;
-
-    class AbstractScene
+    class TELAYOUTEXPORT Enums : public te::common::Singleton<Enums>
     {
+      friend class te::common::Singleton<Enums>;
+
       public:
-        virtual ~AbstractScene(void) {};
-        virtual void insertItem(ItemObserver* item) = 0;
-        virtual void insertOutside(OutsideObserver* widget) = 0;
-        virtual te::gm::Envelope getSceneBox() = 0;
-        virtual te::gm::Envelope* getWorldBox() const = 0;
-        /*
-          params widthMM width of physical screen in millimeters
-          params heightMM height of physical screen in millimeters
-        */
-        virtual void init(double screenWMM, double screenHMM, double zoomFactor = 1.0) = 0;
+
+        virtual ~Enums();
+
+        virtual EnumDataType* getEnumDataType();
 
       protected:
-        
-        virtual te::gm::Envelope* calculateWindow(double wMM, double hMM) = 0;
-        virtual void calculateMatrixViewScene(double zoomFactor = 1.) = 0;     
+
+        Enums();  
+
+        virtual void init();
+
+      protected:
+
+        EnumDataType* m_dataType;
+
+      private:
+      
+          /*!
+          \brief Copy constructor not allowed.
+       
+          \param rhs The right-hand-side copy that would be used to copy from.
+          */
+          Enums(const Enums& rhs);
+      
+          /*!
+          \brief Assignment operator not allowed.
+       
+          \param rhs The right-hand-side copy that would be used to copy from.
+       
+          \return A reference to this object.
+          */
+          Enums& operator=(const Enums& rhs);       
     };
   }
 }

@@ -68,16 +68,20 @@ namespace te
 
       virtual Property getProperty(std::string name);
 
-      virtual LayoutPropertyDataType getLayoutType(QVariant::Type type, std::string name = "");
+      virtual EnumType* getLayoutType(QVariant::Type type, std::string name = "");
 
-      virtual QVariant::Type getVariantType(LayoutPropertyDataType dataType);
+      virtual QVariant::Type getVariantType(EnumType* dataType);
            
       protected slots:
 
         virtual void onShowGridSettingsDlg();
+
         virtual void onSetDlg(QWidget *parent, QtProperty * prop);
+
         virtual void onUpdateGridSettingsProperty();
+
         virtual void blockOpenWindows(bool block);
+
         virtual void onShowImageDlg();
 
       signals:
@@ -88,7 +92,7 @@ namespace te
 
       virtual Property findDlgProperty(std::string name);
 
-      virtual Property findDlgProperty(LayoutPropertyDataType dataType);
+      virtual Property findDlgProperty(EnumType* dataType);
 
       virtual void changeValueQtPropertyDlg(std::string name, QVariant variant);
       

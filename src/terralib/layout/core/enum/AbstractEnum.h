@@ -18,29 +18,37 @@
  */
 
 /*!
-  \file TextGridModel.h
+  \file AbstractScene.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_ENUM_H
+#define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_ENUM_H
 
 // TerraLib
-#include "TitleModel.h"
+#include "EnumType.h"
+
+// STL
+#include <string>
 
 namespace te
 {
   namespace layout
   {
-    class TextGridModel : public TitleModel
+    class AbstractEnum
     {
       public:
+       
+        virtual EnumType* getEnum(int enumId) const = 0;
 
-        TextGridModel();
-        virtual ~TextGridModel();
+        virtual EnumType* getEnum(std::string name) const = 0;
+
+      protected:
+        
+          virtual void init() = 0;
     };
   }
 }

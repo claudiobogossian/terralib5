@@ -29,13 +29,13 @@
 #define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemController.h"
+#include "TitleController.h"
 
 namespace te
 {
   namespace layout
   {
-    class TextGridController : public ItemController
+    class TextGridController : public TitleController
     {
       public:
 

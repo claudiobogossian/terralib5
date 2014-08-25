@@ -58,17 +58,10 @@ void te::layout::EllipseModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
   
-  canvas->setPolygonContourWidth(2);
-  canvas->setPolygonContourColor(m_borderColor);
-  canvas->setPolygonFillColor(m_backgroundColor);
+  drawBackground(context);
   
   drawEllipse(canvas, utils);
-
-  if(m_border)
-  {
-    utils->drawRectW(m_box);
-  }
-  
+    
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
   

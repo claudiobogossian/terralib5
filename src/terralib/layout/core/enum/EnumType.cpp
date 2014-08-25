@@ -18,31 +18,53 @@
  */
 
 /*!
-  \file TextGridModel.h
+  \file EnumType.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_MODEL_H
-
 // TerraLib
-#include "TitleModel.h"
+#include "EnumType.h"
+#include <ios> 
+#include <iostream>
+#include "../../../common/StringUtils.h"
 
-namespace te
+
+te::layout::EnumType::EnumType( int id, std::string name ) :
+  m_id(id),
+  m_label("")
 {
-  namespace layout
-  {
-    class TextGridModel : public TitleModel
-    {
-      public:
-
-        TextGridModel();
-        virtual ~TextGridModel();
-    };
-  }
+  m_name = te::common::Convert2UCase(name);
 }
 
-#endif
+te::layout::EnumType::~EnumType()
+{
+
+}
+
+int te::layout::EnumType::getId()
+{
+  return m_id;
+}
+
+std::string te::layout::EnumType::getName()
+{
+  return m_name;
+}
+
+void te::layout::EnumType::setName( std::string name )
+{
+  m_name = te::common::Convert2UCase(name);
+}
+
+std::string te::layout::EnumType::getLabel()
+{
+  return m_label;
+}
+
+void te::layout::EnumType::setLabel( std::string label )
+{
+  m_label = label;
+}

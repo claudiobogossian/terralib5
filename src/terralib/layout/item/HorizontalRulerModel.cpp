@@ -100,10 +100,14 @@ void te::layout::HorizontalRulerModel::drawRuler( te::map::Canvas* canvas, Utils
                 
   if(m_paperConfig)
   {
-    te::gm::Envelope* paperBox = m_paperConfig->getPaperBoxW();
-    
-    envPaper = te::gm::Envelope(paperBox->getLowerLeftX(), m_backEndBox.getLowerLeftY(),
-      paperBox->getUpperRightX(), m_backEndBox.getUpperRightY());
+    double w = 0;
+    double h = 0;
+
+    m_paperConfig->getPaperSize(w, h);
+    te::gm::Envelope paperBox(0, 0, w, h);
+
+    envPaper = te::gm::Envelope(paperBox.getLowerLeftX(), m_backEndBox.getLowerLeftY(),
+      paperBox.getUpperRightX(), m_backEndBox.getUpperRightY());
             
     te::color::RGBAColor colorp5(255,255,255, TE_OPAQUE);
     drawRectW(envPaper, colorp5, canvas, utils);

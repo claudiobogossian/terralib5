@@ -29,13 +29,13 @@
 #define __TERRALIB_LAYOUT_INTERNAL_TITLE_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemController.h"
+#include "DefaultTextController.h"
 
 namespace te
 {
   namespace layout
   {
-    class TitleController : public ItemController
+    class TitleController : public DefaultTextController
     {
       public:
 

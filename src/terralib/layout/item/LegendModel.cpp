@@ -38,6 +38,7 @@
 #include "../../geometry/Polygon.h"
 #include "../../geometry/Geometry.h"
 #include "../../geometry/Envelope.h"
+#include "../core/enum/Enums.h"
 
 te::layout::LegendModel::LegendModel() :
   m_mapName(""),
@@ -68,14 +69,7 @@ void te::layout::LegendModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
   
-  if(m_border)
-  {
-    canvas->setPolygonContourWidth(2);
-    canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
-    canvas->setPolygonFillColor(m_backgroundColor);
-
-    utils->drawRectW(m_box);
-  }
+  drawBackground(context);
 
   drawLegend(canvas, utils);
 
@@ -156,12 +150,14 @@ te::layout::Properties* te::layout::LegendModel::getProperties() const
 {
   ItemModelObservable::getProperties();
 
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
   Property pro_mapName;
   pro_mapName.setName(m_sharedProps->getMapName());
   pro_mapName.setId("");
-  pro_mapName.setValue(m_mapName, DataTypeStringList);
+  pro_mapName.setValue(m_mapName, dataType->getDataTypeStringList());
   Variant v;
-  v.setValue(m_mapName, DataTypeString);
+  v.setValue(m_mapName, dataType->getDataTypeString());
   pro_mapName.addOption(v);
   
   m_properties->addProperty(pro_mapName);

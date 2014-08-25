@@ -49,6 +49,7 @@ namespace te
   namespace layout
   {
     class Properties;
+    class EnumType;
 
     class PropertyBrowser : public QObject
     {
@@ -72,9 +73,9 @@ namespace te
 
       virtual Properties* getProperties();
 
-      virtual LayoutPropertyDataType getLayoutType(QVariant::Type type, std::string name = "");
+      virtual EnumType* getLayoutType(QVariant::Type type, std::string name = "");
 
-      virtual QVariant::Type getVariantType(LayoutPropertyDataType dataType);
+      virtual QVariant::Type getVariantType(EnumType* dataType);
       
       virtual void setHasWindows(bool hasWindows = false);
             

@@ -85,6 +85,13 @@ namespace te
       TypeWidgetToolbar = 44,
       TypeMapCreateTextGrid = 45,
       TypeMapCreateTextMap = 46,
+      TypeAlignCenterHorizontal = 47,
+      TypeAlignCenterVertical = 48,
+      TypeAlignLeft = 49,
+      TypeAlignRight = 50,
+      TypeAlignTop = 51,
+      TypeAlignBottom = 52,
+      TypeRemoveObject = 53,
       TypeNone = 0
     } LayoutMode;
 

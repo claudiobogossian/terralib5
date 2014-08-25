@@ -55,17 +55,10 @@ void te::layout::ArrowModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
   
-  drawArrow(canvas, utils);
-  
-  canvas->setPolygonContourWidth(2);
-  canvas->setPolygonContourColor(m_borderColor);
-  canvas->setPolygonFillColor(m_backgroundColor);
+  drawBackground(context);
 
-  if(m_border)
-  {
-    utils->drawRectW(m_box);
-  }
-  
+  drawArrow(canvas, utils);
+    
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
   

@@ -41,12 +41,17 @@
 #include <string>
 
 // Qt
+#include <QTextDocument>
 #include <QStyleOptionGraphicsItem>
 #include <QTextCursor>
+#include <QAbstractTextDocumentLayout>
 
 te::layout::DefaultTextItem::DefaultTextItem( ItemController* controller, Observable* o ) :
   QGraphicsTextItem(0),
-  ItemObserver(controller, o)
+  ItemObserver(controller, o),
+  m_table(0),
+  m_oldAdjustSizeW(-1.),
+  m_oldAdjustSizeH(-1.)
 {  
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
@@ -64,12 +69,24 @@ te::layout::DefaultTextItem::DefaultTextItem( ItemController* controller, Observ
   {
     model->setText(name);
   }
-  setPlainText(name.c_str());
+
+  QTextCursor cursor(document());
+  cursor.movePosition(QTextCursor::Start);
+  cursor.insertText(name.c_str());
+  adjustSize();
 }
 
 te::layout::DefaultTextItem::~DefaultTextItem()
 {
 
+}
+
+void te::layout::DefaultTextItem::init()
+{
+  if(!document())
+    return;
+
+  connect(document(), SIGNAL(contentsChange(int,int,int)), this, SLOT(onContentsChange(int,int,int)));
 }
 
 void te::layout::DefaultTextItem::updateObserver( ContextItem context )
@@ -101,7 +118,11 @@ void te::layout::DefaultTextItem::updateObserver( ContextItem context )
     qfont.setKerning(font.isKerning());
     setFont(qfont);
 
-    setPlainText(model->getText().c_str());
+    document()->clear();
+    QTextCursor cursor(document());
+    cursor.movePosition(QTextCursor::Start);
+    cursor.insertText(model->getText().c_str());
+    adjustSize();
   }
 
   te::gm::Envelope box = utils->viewportBox(m_model->getBox());
@@ -210,17 +231,18 @@ void te::layout::DefaultTextItem::setRect( QRectF rect )
 
 bool te::layout::DefaultTextItem::contains( const QPointF &point ) const
 {
-  return m_controller->contains(te::gm::Coord2D(point.x(), point.y()));
+  te::gm::Coord2D coord(point.x(), point.y());
+  return m_controller->contains(coord);
 }
 
 void te::layout::DefaultTextItem::setPos( const QPointF &pos )
 {
-  /* The matrix transformation of MapItem object is the inverse of the scene, 
+  /* The matrix transformation of DefaultTextItem object is the inverse of the scene, 
   so you need to do translate when you change the position, since the coordinate 
   must be in the world coordinate. */
-  QPointF p1(pos.x() - transform().dx(), pos.y() - transform().dy());
+  QPointF pt(pos.x() - transform().dx(), pos.y() - transform().dy());
 
-  QGraphicsTextItem::setPos(p1);
+  QGraphicsTextItem::setPos(pt);
 
   refresh();
 }
@@ -262,4 +284,66 @@ void te::layout::DefaultTextItem::drawSelection( QPainter* painter )
   painter->setPen(QPen(fgcolor, 0, Qt::DashLine));
   painter->setBrush(Qt::NoBrush);
   painter->drawRect(boundingRect().adjusted(adj, adj, -adj, -adj));
+}
+
+void te::layout::DefaultTextItem::onContentsChange( int position, int charsRemoved, int charsAdded )
+{
+  if(!document())
+    return;
+  
+  double vw = document()->documentLayout()->documentSize().width();
+  double vh = document()->documentLayout()->documentSize().height();
+
+  if(vw != m_oldAdjustSizeW || vh != m_oldAdjustSizeH)
+  {
+    adjustSizeMM();
+    refreshText();
+  }
+}
+
+void te::layout::DefaultTextItem::adjustSizeMM()
+{
+  if(!m_model)
+    return;
+  
+  if(!document())
+    return;
+
+  if(document()->isEmpty())
+    return;
+  
+  Utils* utils = Context::getInstance().getUtils();
+
+  if(!utils)
+    return;
+
+  te::gm::Envelope world = m_model->getBox();
+  te::gm::Envelope viewport = utils->viewportBox(world);
+
+  WorldTransformer transf = utils->getTransformGeo(world, viewport);
+  transf.setMirroring(true);
+  
+  m_oldAdjustSizeW = document()->documentLayout()->documentSize().width();
+  m_oldAdjustSizeH = document()->documentLayout()->documentSize().height();
+
+  double wx = 0;
+  double wy = 0;
+
+  transf.system2Tosystem1(m_oldAdjustSizeW, m_oldAdjustSizeH, wx, wy);
+
+  DefaultTextModel* model = dynamic_cast<DefaultTextModel*>(m_model);
+
+  if(!model)
+    return;
+
+  te::gm::Envelope newBox(model->getBox().m_llx, model->getBox().m_lly, 
+              model->getBox().m_llx + m_oldAdjustSizeW, model->getBox().m_lly + m_oldAdjustSizeH);
+  model->setBox(newBox);
+
+  redraw();
+}
+
+void te::layout::DefaultTextItem::refreshText()
+{
+
 }

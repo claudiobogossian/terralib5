@@ -121,6 +121,12 @@ bool te::layout::ItemController::contains( const te::gm::Coord2D &coord ) const
 {
   if(m_model)
   {
+    ItemObserver* iOb = (ItemObserver*)m_view;
+    if(iOb)
+    {
+      iOb->refresh(); /* Update the position of the object */
+    }
+
     ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
     if(model)
       return model->contains(coord);

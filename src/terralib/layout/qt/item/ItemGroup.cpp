@@ -232,9 +232,8 @@ void te::layout::ItemGroup::drawSelection( QPainter* painter )
 
 bool te::layout::ItemGroup::contains( const QPointF &point ) const
 {
-  ItemModelObservable* model = (ItemModelObservable*)m_controller->getModel();
-  
-  return model->contains(te::gm::Coord2D(point.x(), point.y()));
+  te::gm::Coord2D coord(point.x(), point.y());
+  return m_controller->contains(coord);
 }
 
 void te::layout::ItemGroup::setZValue( qreal z )

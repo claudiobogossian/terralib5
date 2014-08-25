@@ -73,7 +73,6 @@
 te::layout::Scene::Scene( QWidget* widget): 
   QGraphicsScene(widget),
   m_boxW(0),
-  m_boxPaperW(0),
   m_lineIntersectHrz(0),
   m_lineIntersectVrt(0),
   m_fixedRuler(true),
@@ -91,20 +90,13 @@ te::layout::Scene::~Scene()
     delete m_boxW;
     m_boxW = 0;
   }
-
-  if(m_boxPaperW)
-  {
-    delete m_boxPaperW;
-    m_boxPaperW = 0;
-  }
 }
 
-void te::layout::Scene::init(double screenWMM, double screenHMM, double paperMMW, double paperMMH, double zoomFactor)
+void te::layout::Scene::init(double screenWMM, double screenHMM, double zoomFactor)
 {
   m_screenWidthMM = screenWMM;
   m_screenHeightMM = screenHMM;
 
-  m_boxPaperW = new te::gm::Envelope(0, 0, paperMMW, paperMMH);
   m_boxW = calculateWindow(m_screenWidthMM, m_screenHeightMM); 
   
   double newZoomFactor = 1. / zoomFactor;
@@ -279,11 +271,12 @@ te::gm::Envelope* te::layout::Scene::calculateWindow(double wMM, double hMM)
 {
   te::gm::Envelope* box = 0;
 
-  if(!m_boxPaperW)
+  te::gm::Envelope env = getPaperBox();
+  if(!env.isValid())
     return box;
 
-  double ppSizeWMM = m_boxPaperW->getWidth();
-  double ppSizeHMM = m_boxPaperW->getHeight();
+  double ppSizeWMM = env.getWidth();
+  double ppSizeHMM = env.getHeight();
   
   double x1 = 0;
   double y1 = 0;
@@ -361,9 +354,16 @@ te::gm::Envelope* te::layout::Scene::getWorldBox() const
  return m_boxW; 
 }
 
-te::gm::Envelope* te::layout::Scene::getPaperBox() const
+te::gm::Envelope te::layout::Scene::getPaperBox() const
 {
-  return m_boxPaperW;
+  double w = 0;
+  double h = 0;
+
+  PaperConfig* conf = Context::getInstance().getPaperConfig();
+  conf->getPaperSize(w, h);
+  te::gm::Envelope env(0, 0, w, h);
+  
+  return env;
 }
 
 QTransform te::layout::Scene::getMatrixViewScene()
@@ -485,7 +485,7 @@ void te::layout::Scene::renderScene( QPainter* newPainter )
 
   Utils* utils = Context::getInstance().getUtils();
   //Convert world to screen coordinate. Uses dpi printer.
-  te::gm::Envelope paperNewBox = utils->viewportBox(*m_boxPaperW);
+  te::gm::Envelope paperNewBox = utils->viewportBox(env);
     
   this->render(newPainter, pxTargetRect, mmSourceRect); 
   
@@ -929,8 +929,8 @@ int te::layout::Scene::intersectionMap( te::gm::Coord2D coord, bool &intersectio
   QList<QGraphicsItem *> items = selectedItems();
   int number = 0;
   intersection = false;
-  te::gm::Coord2D coordInter = coord;
-  te::gm::Envelope interCoord(coordInter.x, coordInter.y, coordInter.x, coordInter.y);
+
+  QPointF pt(coord.x, coord.y);
 
   foreach (QGraphicsItem *item, items) 
   {
@@ -943,8 +943,7 @@ int te::layout::Scene::intersectionMap( te::gm::Coord2D coord, bool &intersectio
         MapItem* mt = dynamic_cast<MapItem*>(it);
         if(mt)
         {
-          te::gm::Envelope env = it->getModel()->getBox();
-          intersection = env.intersects(interCoord);
+          intersection = item->contains(pt);
         }
       }
     }
@@ -1049,4 +1048,218 @@ void te::layout::Scene::createDefaultTextItemFromObject( std::map<te::gm::Coord2
   }
 
   Context::getInstance().setMode(TypeNone);
+}
+
+void te::layout::Scene::alignLeft()
+{
+  QRectF sourceRect = getSelectionItemsBoundingBox();
+  
+  if(!sourceRect.isValid())
+    return;
+
+  QList<QGraphicsItem *> items = selectedItems(); 
+  double dbLeft = 0;
+
+  if(items.count() == 1)
+  {
+    te::gm::Envelope ppbx = getPaperBox();
+    dbLeft = ppbx.getLowerLeftX();
+    QPointF pot(dbLeft, items.first()->sceneBoundingRect().y());
+    items.first()->setPos(pot);
+    return;
+  }
+
+  dbLeft = sourceRect.left();
+
+  foreach (QGraphicsItem *item, items) 
+  {
+    if(item)
+    {
+      QPointF pt(dbLeft, item->scenePos().y());
+      item->setPos(pt);
+    }
+  }
+}
+
+void te::layout::Scene::alignRight()
+{
+  QRectF sourceRect = getSelectionItemsBoundingBox();
+
+  if(!sourceRect.isValid())
+    return;
+
+  QList<QGraphicsItem *> items = selectedItems(); 
+
+  double dbRight = 0;
+  double w = 0;
+
+  if(items.count() == 1)
+  {
+    te::gm::Envelope ppbx = getPaperBox();
+    dbRight = ppbx.getUpperRightX();
+    w = dbRight - items.first()->sceneBoundingRect().width();
+    QPointF pot(w, items.first()->sceneBoundingRect().y());
+    items.first()->setPos(pot);
+    return;
+  }
+
+  dbRight = sourceRect.right();
+
+  foreach (QGraphicsItem *item, items) 
+  {
+    if(item)
+    {
+      w = dbRight - item->sceneBoundingRect().width();
+      QPointF pt(w, item->scenePos().y());
+      item->setPos(pt);
+    }
+  }
+}
+
+void te::layout::Scene::alignTop()
+{
+  QRectF sourceRect = getSelectionItemsBoundingBox();
+
+  if(!sourceRect.isValid())
+    return;
+
+  QList<QGraphicsItem *> items = selectedItems(); 
+  double dbTop = 0;
+
+  if(items.count() == 1)
+  {
+    te::gm::Envelope ppbx = getPaperBox();
+    dbTop = ppbx.getLowerLeftY();
+    QPointF pot(items.first()->sceneBoundingRect().x(), dbTop);
+    items.first()->setPos(pot);
+    return;
+  }
+
+  dbTop = sourceRect.top();
+
+  foreach (QGraphicsItem *item, items) 
+  {
+    if(item)
+    {
+      QPointF pt(item->scenePos().x(), dbTop);
+      item->setPos(pt);
+    }
+  }
+}
+
+void te::layout::Scene::alignBottom()
+{
+  QRectF sourceRect = getSelectionItemsBoundingBox();
+
+  if(!sourceRect.isValid())
+    return;
+
+  QList<QGraphicsItem *> items = selectedItems(); 
+  double dbBottom = 0;
+  double h = 0;
+
+  if(items.count() == 1)
+  {
+    te::gm::Envelope ppbx = getPaperBox();
+    dbBottom = ppbx.getUpperRightY();
+    h = dbBottom - items.first()->sceneBoundingRect().height();
+    QPointF pot(items.first()->sceneBoundingRect().x(), h);
+    items.first()->setPos(pot);
+    return;
+  }
+
+  dbBottom = sourceRect.bottom();
+  
+  foreach (QGraphicsItem *item, items) 
+  {
+    if(item)
+    {
+      h = dbBottom - item->sceneBoundingRect().height();
+      QPointF pt(item->scenePos().x(), h);
+      item->setPos(pt);
+    }
+  }
+}
+
+void te::layout::Scene::alignCenterHorizontal()
+{
+  QRectF sourceRect = getSelectionItemsBoundingBox();
+
+  if(!sourceRect.isValid())
+    return;
+
+  QList<QGraphicsItem *> items = selectedItems(); 
+  double dbCenterHrz = 0;
+  double w = 0;
+
+  if(items.count() == 1)
+  {
+    te::gm::Envelope ppbx = getPaperBox();
+    dbCenterHrz = ppbx.getCenter().x;
+    w = items.first()->sceneBoundingRect().width() / 2.;
+    QPointF pot(dbCenterHrz - w, items.first()->sceneBoundingRect().y());
+    items.first()->setPos(pot);
+    return;
+  }
+
+  dbCenterHrz = sourceRect.center().x();
+
+  foreach (QGraphicsItem *item, items) 
+  {
+    if(item)
+    {
+      w = item->sceneBoundingRect().width() / 2.;
+
+      QPointF pt(dbCenterHrz - w, item->scenePos().y());
+      item->setPos(pt);
+    }
+  }
+}
+
+void te::layout::Scene::alignCenterVertical()
+{
+  QRectF sourceRect = getSelectionItemsBoundingBox();
+
+  if(!sourceRect.isValid())
+    return;
+
+  QList<QGraphicsItem *> items = selectedItems(); 
+  double dbCenterVrt = 0;
+  double h = 0;
+
+  if(items.count() == 1)
+  {
+    te::gm::Envelope ppbx = getPaperBox();
+    dbCenterVrt = ppbx.getCenter().y;
+    h = items.first()->sceneBoundingRect().height() / 2.;
+    QPointF pot(items.first()->sceneBoundingRect().x(), dbCenterVrt - h);
+    items.first()->setPos(pot);
+    return;
+  }
+
+  dbCenterVrt = sourceRect.center().y();
+
+  foreach (QGraphicsItem *item, items) 
+  {
+    if(item)
+    {
+      h = item->sceneBoundingRect().height() / 2.;
+
+      QPointF pt(item->scenePos().x(), dbCenterVrt - h);
+      item->setPos(pt);
+    }
+  }
+}
+
+QRectF te::layout::Scene::getSelectionItemsBoundingBox()
+{
+  QRectF sourceRect; 
+  QList<QGraphicsItem *> items = selectedItems(); 
+  
+  foreach(QGraphicsItem *item, items) 
+  { 
+    sourceRect = sourceRect.united(item->sceneBoundingRect()); 
+  }
+
+  return sourceRect;
 }

@@ -99,17 +99,21 @@ void te::layout::VerticalRulerModel::drawRuler( te::map::Canvas* canvas, Utils* 
 
   if(m_paperConfig)
   {
-    te::gm::Envelope* paperBox = m_paperConfig->getPaperBoxW();
+    double w = 0;
+    double h = 0;
+
+    m_paperConfig->getPaperSize(w, h);
+    te::gm::Envelope paperBox(0, 0, w, h);
    
-    if(paperBox)
+    if(paperBox.isValid())
     {
-      double ury = paperBox->getUpperRightY();
+      double ury = paperBox.getUpperRightY();
       if(zoomFactor >= 1.)
       {
         ury = m_backEndBox.getUpperRightY();
       }
 
-      envPaper = te::gm::Envelope(m_backEndBox.getLowerLeftX(), paperBox->getLowerLeftY(),
+      envPaper = te::gm::Envelope(m_backEndBox.getLowerLeftX(), paperBox.getLowerLeftY(),
         m_backEndBox.getUpperRightX(), ury);
       
       te::color::RGBAColor colorp2(255,255,255, TE_OPAQUE);

@@ -37,13 +37,13 @@
 #include "../core/pattern/mvc/Observer.h"
 
 te::layout::TitleController::TitleController( Observable* o ) :
-  ItemController(o, TPTitleItem)
+  DefaultTextController(o, TPTitleItem)
 {
   create();
 }
 
 te::layout::TitleController::TitleController( Observable* o, LayoutAbstractObjectType type ) :
-  ItemController(o, type)
+  DefaultTextController(o, type)
 {
 
 }

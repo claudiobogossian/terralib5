@@ -28,6 +28,7 @@
 // TerraLib
 #include "Variant.h"
 #include "../enum/EnumUtils.h"
+#include "../enum/Enums.h"
 
 // STL
 #include <sstream>
@@ -43,13 +44,13 @@ te::layout::Variant::Variant() :
   m_lValue(-1000),
   m_fValue(-1000.),
   m_bValue(false),
-  m_type(DataTypeNone),
+  m_type(0),
   m_null(true)
 {
-
+  m_type = Enums::getInstance().getEnumDataType()->getDataTypeNone();
 }
 
-te::layout::Variant::Variant(te::layout::LayoutPropertyDataType type, const void* valueCopy) :
+te::layout::Variant::Variant(te::layout::EnumType* type, const void* valueCopy) :
   m_sValue("unknown"),
   m_dValue(-1000.),
   m_iValue(-1000),
@@ -70,7 +71,7 @@ te::layout::Variant::~Variant()
   
 }
 
-te::layout::LayoutPropertyDataType te::layout::Variant::getType()
+te::layout::EnumType* te::layout::Variant::getType()
 {
   return m_type;
 }
@@ -90,11 +91,12 @@ void te::layout::Variant::convertValue( const void* valueCopy )
   te::color::RGBAColor* colorValue = 0;
   Font* fontValue = 0;
 
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
   try
   {
-    switch(m_type)
+    if(m_type == dataType->getDataTypeString())
     {
-    case DataTypeString:
       // Cast it back to a string pointer.
       sp = static_cast<std::string*>(value);
       if(sp)
@@ -103,8 +105,9 @@ void te::layout::Variant::convertValue( const void* valueCopy )
         m_sValue = *sp;
         //return throw_exception("Cast failure! Wrong type.");
       }
-      break;
-    case DataTypeStringList:
+    }
+    else if(m_type == dataType->getDataTypeStringList())
+    {
       // Cast it back to a string pointer.
       sp = static_cast<std::string*>(value);
       if(sp)
@@ -112,8 +115,9 @@ void te::layout::Variant::convertValue( const void* valueCopy )
         null = false;
         m_sValue = *sp;
       }
-      break;
-    case DataTypeDouble:
+    }
+   else if(m_type == dataType->getDataTypeDouble())
+   {
       if(checkNumberAsString(value))
       {
         // Cast it back to a string pointer.
@@ -133,8 +137,9 @@ void te::layout::Variant::convertValue( const void* valueCopy )
           m_dValue = *dValue;
         }
       }
-      break;
-    case DataTypeFloat:
+   }
+   else if(m_type == dataType->getDataTypeFloat())
+   {
       if(checkNumberAsString(value))
       {
         // Cast it back to a string pointer.
@@ -154,8 +159,9 @@ void te::layout::Variant::convertValue( const void* valueCopy )
           m_fValue = *fValue;
         }
       }
-      break;
-    case DataTypeLong:
+   }
+   else if(m_type == dataType->getDataTypeLong())
+   {
       if(checkNumberAsString(value))
       {
         // Cast it back to a string pointer.
@@ -175,8 +181,9 @@ void te::layout::Variant::convertValue( const void* valueCopy )
           m_lValue = *lValue;
         }
       }
-      break;
-    case DataTypeInt:
+   }
+   else if(m_type == dataType->getDataTypeInt())
+   {
       if(checkNumberAsString(value))
       {
         // Cast it back to a string pointer.
@@ -196,16 +203,18 @@ void te::layout::Variant::convertValue( const void* valueCopy )
           m_iValue = *iValue;
         }
       }
-      break;
-    case DataTypeBool:
+   }
+   else if(m_type == dataType->getDataTypeBool())
+   {
       bValue = static_cast<bool*>(value);
       if(bValue)
       {
         null = false;
         m_bValue = *bValue;
       }
-      break;
-    case DataTypeGridSettings:
+   }
+   else if(m_type == dataType->getDataTypeGridSettings())
+   {
       // Cast it back to a string pointer.
       sp = static_cast<std::string*>(value);
       if(sp)
@@ -213,8 +222,9 @@ void te::layout::Variant::convertValue( const void* valueCopy )
         null = false;
         m_sValue = *sp;
       }
-      break;
-    case DataTypeColor:
+   }
+   else if(m_type == dataType->getDataTypeColor())
+   {
       // Cast it back to a string pointer.
       colorValue = static_cast<te::color::RGBAColor*>(value);
       if(colorValue)
@@ -222,8 +232,9 @@ void te::layout::Variant::convertValue( const void* valueCopy )
         null = false;
         m_colorValue = *colorValue;
       }
-      break;
-    case DataTypeFont:
+   }
+   else if(m_type == dataType->getDataTypeFont())
+   {
       // Cast it back to a string pointer.
       fontValue = static_cast<Font*>(value);
       if(fontValue)
@@ -231,8 +242,9 @@ void te::layout::Variant::convertValue( const void* valueCopy )
         null = false;
         m_fontValue = *fontValue;
       }
-      break;
-    case DataTypeImage:
+   }
+   else if(m_type == dataType->getDataTypeImage())
+   {
       // Cast it back to a string pointer.
       sp = static_cast<std::string*>(value);
       if(sp)
@@ -240,15 +252,21 @@ void te::layout::Variant::convertValue( const void* valueCopy )
         null = false;
         m_sValue = *sp;
       }
-      break;
-    default:
-      null = true;
-      break;
-    }
+   }
+   else if(m_type == dataType->getDataTypeTextGridSettings())
+   {
+     // Cast it back to a string pointer.
+     sp = static_cast<std::string*>(value);
+     if(sp)
+     {
+       null = false;
+       m_sValue = *sp;
+     }
+   }
   }
   catch (std::exception const& e)
   {
-    std::string s_type = te::layout::getLayoutPropertyDataType(m_type);
+    std::string s_type = m_type->getName();
     std::cerr << e.what() << "Failed - te::layout::Variant: convert to " << s_type << std::endl;
   }
 
@@ -308,7 +326,7 @@ void te::layout::Variant::clear()
   m_lValue = -1000;
   m_fValue = -1000.;
   m_bValue = false;
-  m_type = DataTypeNone;
+  m_type = Enums::getInstance().getEnumDataType()->getDataTypeNone();
   m_null = true;
 }
 
@@ -320,7 +338,9 @@ std::string te::layout::Variant::convertToString()
   if(m_null)
     return s_convert;
 
-  if(m_type == DataTypeNone)
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  if(m_type == dataType->getDataTypeNone())
     return s_convert;
 
   if(m_sValue.compare("unknown") != 0)

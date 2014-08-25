@@ -56,11 +56,7 @@ void te::layout::RectangleModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
   
-  canvas->setPolygonContourWidth(2);
-  canvas->setPolygonContourColor(m_borderColor);
-  canvas->setPolygonFillColor(m_backgroundColor);
-  
-  utils->drawRectW(m_box);
+  drawBackground(context);
   
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
@@ -68,4 +64,3 @@ void te::layout::RectangleModel::draw( ContextItem context )
   context.setPixmap(pixmap);
   notifyAll(context);
 }
-

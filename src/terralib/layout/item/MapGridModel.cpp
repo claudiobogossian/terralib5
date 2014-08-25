@@ -36,6 +36,7 @@
 #include "GridGeodesicModel.h"
 #include "../core/property/GeodesicGridSettingsConfigProperties.h"
 #include "../core/property/PlanarGridSettingsConfigProperties.h"
+#include "../core/enum/Enums.h"
 
 // STL
 #include <vector>
@@ -58,6 +59,8 @@ te::layout::MapGridModel::MapGridModel() :
     m_box.getUpperRightX() - m_mapDisplacementX, m_box.getUpperRightY() - m_mapDisplacementY);
 
   m_border = false;
+
+  m_backgroundColor = te::color::RGBAColor(192, 192, 192, 255);
 
   m_properties->setHasWindows(true);
 }
@@ -101,27 +104,13 @@ void te::layout::MapGridModel::draw( ContextItem context )
   
   utils->configCanvas(m_box);
 
+  drawBackground(context);
+
   canvas->setFontFamily("Arial");
   canvas->setTextPointSize(8);
 
   drawGrid(canvas, utils);
-
-  utils->configCanvas(m_box, false);
-
-  //m_backgroundColor = te::color::RGBAColor(255,0,0, 100);
-  
-  te::color::RGBAColor colorp6(0,0,0, TE_OPAQUE);
-  canvas->setLineColor(colorp6);
-
-  if(m_border)
-  {
-    canvas->setPolygonContourWidth(2);
-    canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
-    canvas->setPolygonFillColor(m_backgroundColor);
-
-    utils->drawRectW(m_box);
-  }
-  
+    
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
     
@@ -163,11 +152,15 @@ te::layout::Properties* te::layout::MapGridModel::getProperties() const
 {
   MapModel::getProperties();
 
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
   Property pro_grid;
   pro_grid.setName("grid");
+  pro_grid.setLabel("Grid Settings");
   pro_grid.setId("unknown");
   std::string sValuePlanar = "Settings";
-  pro_grid.setValue(sValuePlanar, DataTypeGridSettings);
+  pro_grid.setValue(sValuePlanar, dataType->getDataTypeGridSettings());
+  pro_grid.setMenu(true);
 
   if(m_gridPlanar)
   {

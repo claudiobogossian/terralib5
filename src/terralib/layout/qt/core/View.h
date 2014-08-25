@@ -30,6 +30,7 @@
 
 // Qt
 #include <QGraphicsView>
+#include <QMenu>
 
 // TerraLib
 #include "../../core/AbstractView.h"
@@ -38,6 +39,7 @@
 #include "Scene.h"
 #include "../outside/PageSetupOutside.h"
 #include "../outside/SystematicScaleOutside.h"
+#include "MenuItem.h"
 
 class QMouseEvent;
 class QWheelEvent;
@@ -47,6 +49,7 @@ class QHideEvent;
 class QCloseEvent;
 class QGraphicsItemGroup;
 class QLineF;
+class QContextMenuEvent;
 
 namespace te
 {
@@ -70,9 +73,14 @@ namespace te
       public slots:
 
         virtual void onToolbarChangeContext(bool change);
+
         virtual void onMainMenuChangeContext(bool change);
+
         virtual void onChangeConfig();
+
         virtual void onSystematicApply(double scale, SystematicScaleType type);
+
+        virtual void onSelectionChanged();
 
       signals:
 
@@ -81,13 +89,18 @@ namespace te
         void closeView();
         void hideView();
 
+        /* The Properties only load when selection change and mouse release */
+        void reloadProperties(); 
+
       protected:
         
         virtual void mousePressEvent(QMouseEvent * event);
 
         virtual void	mouseMoveEvent ( QMouseEvent * event );
 
-        void wheelEvent(QWheelEvent *event);
+        virtual void	mouseReleaseEvent ( QMouseEvent * event );
+
+        virtual void wheelEvent(QWheelEvent *event);
 
         virtual void keyPressEvent(QKeyEvent* keyEvent);
 
@@ -98,6 +111,8 @@ namespace te
         virtual void closeEvent ( QCloseEvent * event );
 
         virtual void	showEvent ( QShowEvent * event );
+
+        virtual void	contextMenuEvent ( QContextMenuEvent * event );
         
         virtual void createItemGroup();
 
@@ -112,6 +127,8 @@ namespace te
         virtual void showPageSetup();
 
         virtual void showSystematicScale();
+
+        virtual bool intersectionSelectionItem(int x, int y);
                         
       protected:
         VisualizationArea*  m_visualizationArea;
@@ -121,6 +138,8 @@ namespace te
         PageSetupOutside*   m_pageSetupOutside;
         SystematicScaleOutside* m_systematicOutside;
         te::gm::Coord2D       m_coordSystematic;
+        bool                m_selectionChange;
+        MenuItem*           m_menuItem;
     };
   }
 }

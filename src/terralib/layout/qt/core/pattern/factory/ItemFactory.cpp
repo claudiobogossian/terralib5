@@ -90,6 +90,7 @@ te::layout::Observer* te::layout::ItemFactory::make( LayoutAbstractObjectType ty
   case TPTextItem:
     {
       DefaultTextItem* txt = new DefaultTextItem(params.getController(), params.getModel());
+      txt->init();
       item = (Observer*)txt;
       break;
     }
@@ -150,12 +151,14 @@ te::layout::Observer* te::layout::ItemFactory::make( LayoutAbstractObjectType ty
   case TPTitleItem:
     {
       TitleItem* title = new TitleItem(params.getController(), params.getModel());
+      title->init();
       item = (Observer*)title;
       break;
     }
   case TPTextGridItem:
     {
       TextGridItem* txtGrid = new TextGridItem(params.getController(), params.getModel());
+      txtGrid->init();
       item = (Observer*)txtGrid;
       break;
     }

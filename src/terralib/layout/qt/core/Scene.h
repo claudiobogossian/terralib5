@@ -93,13 +93,13 @@ namespace te
           params widthMM width of physical screen in millimeters
           params heightMM height of physical screen in millimeters
         */
-        virtual void init(double screenWMM, double screenHMM, double paperMMW, double paperMMH, double zoomFactor = 1.0);
+        virtual void init(double screenWMM, double screenHMM, double zoomFactor = 1.0);
         
         /* World coordinates (mm) */
         virtual te::gm::Envelope* getWorldBox() const;
 
         /* World coordinates (mm) */
-        virtual te::gm::Envelope* getPaperBox() const;
+        virtual te::gm::Envelope getPaperBox() const;
                 
         virtual QTransform getMatrixViewScene();
 
@@ -145,6 +145,20 @@ namespace te
         virtual void createTextGridAsObject();
 
         virtual void createTextMapAsObject();
+
+        virtual void alignLeft();
+
+        virtual void alignRight();
+
+        virtual void alignTop();
+
+        virtual void alignBottom();
+
+        virtual void alignCenterHorizontal();
+
+        virtual void alignCenterVertical();
+
+        virtual QRectF getSelectionItemsBoundingBox();
         
       protected slots:
 
@@ -175,10 +189,9 @@ namespace te
         virtual void refreshViews(QGraphicsView* view = 0);
 
         virtual void createDefaultTextItemFromObject(std::map<te::gm::Coord2D, std::string> map);
-
+        
       protected:
 
-        te::gm::Envelope* m_boxPaperW;
         te::gm::Envelope* m_boxW;
         QTransform m_matrix;
         double m_screenWidthMM;

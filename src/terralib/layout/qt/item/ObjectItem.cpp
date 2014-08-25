@@ -418,7 +418,8 @@ te::gm::Envelope te::layout::ObjectItem::createNewBoxInCoordScene( const double&
 
 bool te::layout::ObjectItem::contains( const QPointF &point ) const
 {
-  return m_controller->contains(te::gm::Coord2D(point.x(), point.y()));
+  te::gm::Coord2D coord(point.x(), point.y());
+  return m_controller->contains(coord);
 }
 
 QPixmap te::layout::ObjectItem::getPixmap()

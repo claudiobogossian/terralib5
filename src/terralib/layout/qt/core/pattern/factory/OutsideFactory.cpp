@@ -36,6 +36,7 @@
 #include "../../../outside/PageSetupOutside.h"
 #include "../../../outside/SystematicScaleOutside.h"
 #include "../../../outside/EditTemplateOutside.h"
+#include "../../../outside/TextGridSettingsOutside.h"
 
 te::layout::OutsideFactory::OutsideFactory()
 {
@@ -100,6 +101,13 @@ te::layout::Observer* te::layout::OutsideFactory::make( LayoutAbstractObjectType
     {
       EditTemplateOutside* editTemplate = new EditTemplateOutside(params.getController(), params.getModel());		
       outside = (Observer*)editTemplate;
+      return outside;
+      break;
+    }
+  case TPTextGridSettings:
+    {
+      TextGridSettingsOutside* textGridSettings = new TextGridSettingsOutside(params.getController(), params.getModel());		
+      outside = (Observer*)textGridSettings;
       return outside;
       break;
     }

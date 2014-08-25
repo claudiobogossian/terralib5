@@ -40,6 +40,7 @@
 #include "../../item/MapModel.h"
 #include "../core/ItemUtils.h"
 #include "../../core/pattern/derivativevisitor/VisitorUtils.h"
+#include "../../core/enum/Enums.h"
 
 // Qt
 #include <QGroupBox>
@@ -176,9 +177,12 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
 
   if(!props)
     return;
-
+  
   foreach( Property prop, props->getProperties()) 
   {
+    if(prop.isMenu())
+      continue;
+
     checkDynamicProperty(prop, allItems);
     m_layoutPropertyBrowser->addProperty(prop);
   }
@@ -188,7 +192,9 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
 
 void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
 {
-  if(property.getType() == DataTypeNone)
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  if(property.getType() == dataType->getDataTypeNone())
     return;
 
   foreach( QGraphicsItem *item, m_graphicsItems) 
@@ -337,10 +343,12 @@ std::vector<te::layout::Properties*>
 
 void te::layout::PropertiesOutside::addDynamicOptions( Property& property, std::vector<std::string> list )
 {
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
   foreach(std::string str, list) 
   {
     Variant v;
-    v.setValue(str, DataTypeString);
+    v.setValue(str, dataType->getDataTypeString());
     property.addOption(v);
   }
 }

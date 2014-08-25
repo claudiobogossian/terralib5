@@ -74,6 +74,7 @@
 #include <QEvent>
 #include <QPoint>
 #include <QMimeData>
+#include <QColor>
 
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   QGraphicsProxyWidget(0),
@@ -194,9 +195,17 @@ void te::layout::MapItem::updateObserver( ContextItem context )
       {
 
         m_mapDisplay->setExtent(env, true);
-        m_mapDisplay->refresh();
       }
     }
+
+    te::color::RGBAColor clr = model->getBackgroundColor();
+    QColor qcolor;
+    qcolor.setRed(clr.getRed());
+    qcolor.setGreen(clr.getGreen());
+    qcolor.setBlue(clr.getBlue());
+    qcolor.setAlpha(clr.getAlpha());
+    m_mapDisplay->setBackgroundColor(qcolor);
+    m_mapDisplay->refresh();
   }
 
   te::color::RGBAColor** rgba = context.getPixmap();

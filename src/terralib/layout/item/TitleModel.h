@@ -29,21 +29,85 @@
 #define __TERRALIB_LAYOUT_INTERNAL_TITLE_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/ContextItem.h"
+#include "DefaultTextModel.h"
 
 namespace te
 {
   namespace layout
   {
-    class TitleModel : public ItemModelObservable
+    class TitleModel : public DefaultTextModel
     {
       public:
 
         TitleModel();
         virtual ~TitleModel();
 
-        virtual void draw( ContextItem context );
+        virtual te::layout::Properties* getProperties() const;
+
+        virtual void updateProperties(te::layout::Properties* properties); 
+
+        virtual void setTitle(std::string title);
+
+        virtual std::string getTitle();
+
+        virtual void setSpacing(double value);
+
+        virtual double getSpacing();
+
+        virtual void setPadding(double value);
+
+        virtual double getPadding();
+
+        virtual void setNumberColumns(int value);
+
+        virtual int getNumberColumns();
+
+        virtual void setNumberRows(int value);
+
+        virtual int getNumberRows();
+
+      protected:
+
+        std::string m_title;
+
+        /* Text Table Settings */
+
+        /* General */
+
+        double m_spacing;
+        double m_padding;
+        te::color::RGBAColor m_tableColor;
+        //EnumType* m_widthConstraints;
+        double m_width;
+
+        /* Rows */
+        bool m_addRow;
+        int m_rowNumber;
+        te::color::RGBAColor m_evenRow;
+        te::color::RGBAColor m_oddRow;
+
+        /* Columns */
+
+        bool m_addColumn;
+        int m_columnNumber;
+        double m_columnWidth;
+        //EnumType* m_columnWidthConstraints;
+
+        /* Border */
+
+        double m_borderWidth;
+        te::color::RGBAColor m_borderGridColor;
+        //EnumType* m_borderStyle;
+
+        /* Header */
+
+        //EnumType* m_headerAlignment; 
+        te::color::RGBAColor m_headerHorizontalColor;
+        te::color::RGBAColor m_headerVerticalColor;
+
+        /* Cell */
+
+        //EnumType* m_cellAligment;
     };
   }
 }

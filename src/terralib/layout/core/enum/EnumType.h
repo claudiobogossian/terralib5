@@ -18,29 +18,54 @@
  */
 
 /*!
-  \file TextGridModel.h
+  \file EnumType.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ENUM_TYPE_H 
+#define __TERRALIB_LAYOUT_INTERNAL_ENUM_TYPE_H
 
-// TerraLib
-#include "TitleModel.h"
+// STL
+#include <string>
 
 namespace te
 {
   namespace layout
   {
-    class TextGridModel : public TitleModel
+    class EnumType 
     {
       public:
 
-        TextGridModel();
-        virtual ~TextGridModel();
+        /*!
+         \brief 
+        */
+        EnumType(int id, std::string name);
+
+        /*!
+         \brief 
+        */
+        virtual ~EnumType();
+
+        int getId();
+
+        std::string getName();
+
+        void setName(std::string name); 
+
+        std::string getLabel();
+        
+        void setLabel(std::string label);
+
+      public:
+        
+      protected:
+
+        int         m_id;
+        std::string m_name;
+        std::string m_label;
     };
   }
 }

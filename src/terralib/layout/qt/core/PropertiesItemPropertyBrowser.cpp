@@ -31,6 +31,7 @@
 #include "../../outside/GridSettingsModel.h"
 #include "../../outside/GridSettingsController.h"
 #include "../../core/pattern/mvc/ItemController.h"
+#include "../../core/enum/Enums.h"
 
 // STL
 #include <utility>
@@ -69,12 +70,14 @@ bool te::layout::PropertiesItemPropertyBrowser::addProperty( Property property )
 {
   if(PropertyBrowser::addProperty(property))
     return true;
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
   
   QtProperty* qproperty = 0;  
   QtVariantProperty* vproperty = 0;
 
-  if(property.getType() == DataTypeGridSettings
-    || property.getType() == DataTypeImage)
+  if(property.getType() == dataType->getDataTypeGridSettings()
+    || property.getType() == dataType->getDataTypeImage())
   {
     qproperty = m_strDlgManager->addProperty(tr(property.getName().c_str()));
     m_strDlgManager->setValue(qproperty, property.getValue().toString().c_str());
@@ -95,26 +98,29 @@ bool te::layout::PropertiesItemPropertyBrowser::addProperty( Property property )
 
 void te::layout::PropertiesItemPropertyBrowser::onSetDlg(QWidget *parent, QtProperty * prop)
 {
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
   std::string name = prop->propertyName().toStdString();
 
   Property propt = findDlgProperty(name);
-  if(propt.getType() == DataTypeNone)
+  if(propt.getType() == dataType->getDataTypeNone())
     return;
 
-  switch(propt.getType())
+  if(propt.getType() == dataType->getDataTypeGridSettings())
   {
-  case DataTypeGridSettings:
     connect(parent, SIGNAL(showDlg()), this, SLOT(onShowGridSettingsDlg()));
-    break;
-  case DataTypeImage:
+  }
+  if(propt.getType() == dataType->getDataTypeImage())
+  {
     connect(parent, SIGNAL(showDlg()), this, SLOT(onShowImageDlg()));
-    break;
   }
 }
 
 void te::layout::PropertiesItemPropertyBrowser::onShowGridSettingsDlg()
 {
-  Property prop = findDlgProperty(DataTypeGridSettings);
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  Property prop = findDlgProperty(dataType->getDataTypeGridSettings());
 
   if(!m_gridSettings)
   {
@@ -130,7 +136,7 @@ void te::layout::PropertiesItemPropertyBrowser::onShowGridSettingsDlg()
   
   if(m_gridSettings)
   {
-    if(prop.getType() == DataTypeGridSettings)
+    if(prop.getType() == dataType->getDataTypeGridSettings())
     {
       Observable* obs = dynamic_cast<Observable*>(m_gridSettings->getModel());
       if(obs)
@@ -180,8 +186,10 @@ void te::layout::PropertiesItemPropertyBrowser::onShowImageDlg()
   }
   else
   {
-    Property prop = findDlgProperty(DataTypeImage);
-    prop.setValue(path.toStdString(), DataTypeImage);
+    EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+    Property prop = findDlgProperty(dataType->getDataTypeImage());
+    prop.setValue(path.toStdString(), dataType->getDataTypeImage());
     
     QVariant v(path);
     changeValueQtPropertyDlg(prop.getName(), v);
@@ -250,7 +258,7 @@ te::layout::Property te::layout::PropertiesItemPropertyBrowser::findDlgProperty(
   return prop;
 }
 
-te::layout::Property te::layout::PropertiesItemPropertyBrowser::findDlgProperty( LayoutPropertyDataType dataType )
+te::layout::Property te::layout::PropertiesItemPropertyBrowser::findDlgProperty( te::layout::EnumType* dataType )
 {
   Property prop;
 
@@ -272,40 +280,40 @@ te::layout::Property te::layout::PropertiesItemPropertyBrowser::findDlgProperty(
 te::layout::Property te::layout::PropertiesItemPropertyBrowser::getProperty( std::string name )
 {
   Property prop = PropertyBrowser::getProperty(name);
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
   
-  if(prop.getType() != DataTypeNone)
+  if(prop.getType() != dataType->getDataTypeNone())
     return prop;
 
   QVariant variant = findPropertyValue(name);
 
-  switch(prop.getType())
+  if(prop.getType() == dataType->getDataTypeGridSettings())
   {
-  case DataTypeGridSettings:
     prop.setValue(variant.toString().toStdString(), prop.getType());
-    break;
-  case DataTypeImage:
+  }
+  else if(prop.getType() == dataType->getDataTypeImage())
+  {
     prop.setValue(variant.toString().toStdString(), prop.getType());
-    break;
-  default:
-    prop.setValue(0, DataTypeNone);
   }
 
   return prop;
 }
 
-te::layout::LayoutPropertyDataType te::layout::PropertiesItemPropertyBrowser::getLayoutType( QVariant::Type type, std::string name /*= ""*/ )
+te::layout::EnumType* te::layout::PropertiesItemPropertyBrowser::getLayoutType( QVariant::Type type, std::string name /*= ""*/ )
 {
   Property prop;
-  te::layout::LayoutPropertyDataType dataType = PropertyBrowser::getLayoutType(type, name);
+  EnumDataType* dtType = Enums::getInstance().getEnumDataType();
+  EnumType* dataType = PropertyBrowser::getLayoutType(type, name);
 
-  if(dataType != DataTypeNone)
+  if(dataType != dtType->getDataTypeNone())
     return dataType;
 
   switch(type)
   {
   case QVariant::String:
     {
-      dataType = DataTypeString;
+      dataType = dtType->getDataTypeString();
 
       //Custom types: Dialog Window Type
       if(name.compare("") != 0)
@@ -313,42 +321,45 @@ te::layout::LayoutPropertyDataType te::layout::PropertiesItemPropertyBrowser::ge
         prop = findDlgProperty(name);
         if(!prop.getValue().isNull())
         {
-          if(prop.getType() == DataTypeGridSettings)
+          if(prop.getType() == dtType->getDataTypeGridSettings())
           {
-            dataType = DataTypeGridSettings;
+            dataType = dtType->getDataTypeGridSettings();
           }
-          if(prop.getType() == DataTypeImage)
+          if(prop.getType() == dtType->getDataTypeImage())
           {
-            dataType = DataTypeImage;
+            dataType = dtType->getDataTypeImage();
           }
         }
       }
     }
     break;
   default:
-    prop.setValue(0, DataTypeNone);
+    prop.setValue(0, dtType->getDataTypeNone());
   }
 
   return dataType;
 }
 
-QVariant::Type te::layout::PropertiesItemPropertyBrowser::getVariantType( LayoutPropertyDataType dataType )
+QVariant::Type te::layout::PropertiesItemPropertyBrowser::getVariantType( te::layout::EnumType* dataType )
 {
   QVariant::Type type = PropertyBrowser::getVariantType(dataType);
+
+  EnumDataType* dtType = Enums::getInstance().getEnumDataType();
 
   if(type != QVariant::Invalid)
     return type;
 
-  switch(dataType)
+  if(dataType == dtType->getDataTypeGridSettings())
   {
-    case DataTypeGridSettings:
+    type = QVariant::String;
+  }
+  else if(dataType == dtType->getDataTypeImage())
+  {
       type = QVariant::String;
-      break;
-    case DataTypeImage:
-      type = QVariant::String;
-      break;
-    default:
-      type = QVariant::Invalid;
+  }
+  else
+  {
+    type = QVariant::Invalid;
   }
 
   return type;

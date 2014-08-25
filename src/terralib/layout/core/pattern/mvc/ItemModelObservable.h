@@ -92,7 +92,10 @@ namespace te
         virtual bool isResizable();
                 
       protected:
+
         virtual void notifyAll(ContextItem context);
+
+        virtual void drawBackground(ContextItem context);
 
       protected:
         std::set<Observer*>	      m_observers;

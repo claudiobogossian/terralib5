@@ -37,13 +37,13 @@
 #include "../core/pattern/mvc/Observer.h"
 
 te::layout::TextGridController::TextGridController( Observable* o ) :
-  ItemController(o, TPTextGridItem)
+  TitleController(o, TPTextGridItem)
 {
   create();
 }
 
 te::layout::TextGridController::TextGridController( Observable* o, LayoutAbstractObjectType type ) :
-  ItemController(o, type)
+  TitleController(o, type)
 {
 
 }

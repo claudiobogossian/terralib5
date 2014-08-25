@@ -95,6 +95,20 @@ namespace te
 
       virtual void onTextToolsTriggered(QAction* action);
 
+      virtual void onAlignLeftClicked(bool checked);
+
+      virtual void onAlignRightClicked(bool checked);
+
+      virtual void onAlignTopClicked(bool checked);
+
+      virtual void onAlignBottomClicked(bool checked);
+
+      virtual void onAlignCenterHorizontalClicked(bool checked);
+
+      virtual void onAlignCenterVerticalClicked(bool checked);
+
+      virtual void onRemoveObjectClicked(bool checked);
+
     signals:
 
       void changeContext(bool change);
@@ -126,6 +140,20 @@ namespace te
       virtual void createRecomposeToolButton();
 
       virtual void createTextToolButton();
+
+      virtual void createAlignLeftToolButton();
+
+      virtual void createAlignRightToolButton();
+
+      virtual void createAlignTopToolButton();
+
+      virtual void createAlignBottomToolButton();
+
+      virtual void createAlignCenterHorizontalToolButton();
+
+      virtual void createAlignCenterVerticalToolButton();
+
+      virtual void createRemoveObjectToolButton();
       
       virtual void changeAction(LayoutMode mode);
 
@@ -139,6 +167,7 @@ namespace te
 
       QToolButton* m_btnMap;
       QComboBox* m_comboSceneZoom;
+
       /* Map Menu */
       std::string m_optionMapDefault;
       std::string m_optionMapGrid;
@@ -173,12 +202,22 @@ namespace te
 
       std::string m_optionSceneZoom;
 
+      std::string m_optionRemoveObject;
+
       /* Text Tools */
       std::string m_optionTextDefault;
       std::string m_optionImage;
       std::string m_optionMultiLineText;
       std::string m_optionStringGrid;
       std::string m_optionTitle;
+
+      /* Align */
+      std::string m_optionAlignLeft;
+      std::string m_optionAlignRight;
+      std::string m_optionAlignTop;
+      std::string m_optionAlignBottom;
+      std::string m_optionAlignCenterHorizontal;
+      std::string m_optionAlignCenterVertical;
     };
   }
 }

@@ -67,6 +67,8 @@ namespace te
       TPTextGridItem = 26,
       TPMultiLineTextItem = 27,
       TPEditTemplate = 28,
+      TPMenuItem = 29,
+      TPTextGridSettings = 30,
       TPObjectUnknown = 0
     } LayoutAbstractObjectType;
 
@@ -139,7 +141,7 @@ namespace te
     /*!
     \brief Enum LayoutPropertyDataType. 
     */
-    typedef TELAYOUTEXPORT enum
+    /*typedef TELAYOUTEXPORT enum
     {
       DataTypeInt = 1,
       DataTypeDouble = 2,
@@ -153,7 +155,7 @@ namespace te
       DataTypeFont = 10,
       DataTypeImage = 11,
       DataTypeNone = 12
-    } LayoutPropertyDataType;
+    } LayoutPropertyDataType;*/
 
     /*!
     \brief Enum LayoutTemplateType.

@@ -36,6 +36,7 @@
 #include "../../core/pattern/mvc/OutsideController.h"
 #include "../../../geometry/Envelope.h"
 #include "../core/ObjectInspectorPropertyBrowser.h"
+#include "../../core/enum/Enums.h"
 
 //Qt
 #include <QGraphicsWidget>
@@ -113,6 +114,8 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
     return;
     
   int zValue = 0;
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
   
   foreach( QGraphicsItem *item, graphicsItems) 
   {
@@ -142,7 +145,7 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
         Property pro_class;
         pro_class.setName(lItem->getName());
         pro_class.setId("");
-        pro_class.setValue(lItem->getNameClass(), DataTypeString);
+        pro_class.setValue(lItem->getNameClass(), dataType->getDataTypeString());
         pro_class.setEditable(false);
         
         m_layoutPropertyBrowser->addProperty(pro_class);

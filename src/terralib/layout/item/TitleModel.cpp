@@ -27,17 +27,21 @@
 
 // TerraLib
 #include "TitleModel.h"
-#include "../core/ContextItem.h"
 #include "../../geometry/Envelope.h"
 #include "../../color/RGBAColor.h"
 #include "../../maptools/Canvas.h"
+#include "../core/enum/Enums.h"
+#include "../core/property/Property.h"
+#include "../core/property/Properties.h"
 
-te::layout::TitleModel::TitleModel() 
+te::layout::TitleModel::TitleModel() :
+  m_title("Title"),
+  m_spacing(1),
+  m_padding(1),
+  m_columnNumber(1),
+  m_rowNumber(2)
 {
-  m_borderColor = te::color::RGBAColor(0, 0, 255, 255);
-  m_backgroundColor = te::color::RGBAColor(0, 255, 0, 100);
-
-  m_box = te::gm::Envelope(0., 0., 10., 10.);
+  m_box = te::gm::Envelope(0., 0., 190., 170.);
 }
 
 te::layout::TitleModel::~TitleModel()
@@ -45,28 +49,82 @@ te::layout::TitleModel::~TitleModel()
 
 }
 
-void te::layout::TitleModel::draw( ContextItem context )
+void te::layout::TitleModel::setTitle( std::string title )
 {
-  te::color::RGBAColor** pixmap = 0;
-  
-  te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
+  m_title = title;
+}
 
-  if((!canvas) || (!utils))
-    return;
+std::string te::layout::TitleModel::getTitle()
+{
+  return m_title;
+}
 
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
+void te::layout::TitleModel::setSpacing( double value )
+{
+  m_spacing = value;
+}
+
+double te::layout::TitleModel::getSpacing()
+{
+  return m_spacing;
+}
+
+void te::layout::TitleModel::setPadding( double value )
+{
+  m_padding = value;
+}
+
+double te::layout::TitleModel::getPadding()
+{
+  return m_padding;
+}
+
+void te::layout::TitleModel::setNumberColumns( int value )
+{
+  m_columnNumber = value;
+}
+
+int te::layout::TitleModel::getNumberColumns()
+{
+  return m_columnNumber;
+}
+
+void te::layout::TitleModel::setNumberRows( int value )
+{
+  m_rowNumber = value;
+}
+
+int te::layout::TitleModel::getNumberRows()
+{
+  return m_rowNumber;
+}
+
+te::layout::Properties* te::layout::TitleModel::getProperties() const
+{
+  DefaultTextModel::getProperties();
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
   
-  canvas->setPolygonContourWidth(2);
-  canvas->setPolygonContourColor(m_borderColor);
-  canvas->setPolygonFillColor(m_backgroundColor);
-  
-  utils->drawRectW(m_box);
-  
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
-  
-  context.setPixmap(pixmap);
-  notifyAll(context);
+  Property pro_textGrid;
+  pro_textGrid.setName("TextGridSettings");
+  pro_textGrid.setId("");
+  pro_textGrid.setValue("TextGridSettings", dataType->getDataTypeTextGridSettings());
+  pro_textGrid.setMenu(true);
+  m_properties->addProperty(pro_textGrid);
+
+  return m_properties;
+}
+
+void te::layout::TitleModel::updateProperties( te::layout::Properties* properties )
+{
+  DefaultTextModel::updateProperties(properties);
+
+  Properties* vectorProps = const_cast<Properties*>(properties);
+
+  Property pro_textGrid = vectorProps->contains("TextGridSettings");
+
+  /*if(!pro_textGrid.isNull())
+  {
+    m_font = pro_textGrid.getValue().toFont();
+  }*/
 }

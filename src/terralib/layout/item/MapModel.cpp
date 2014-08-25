@@ -39,6 +39,7 @@
 #include "../../common/STLUtils.h"
 #include "../../geometry/Polygon.h"
 #include "../../geometry/LinearRing.h"
+#include "../core/enum/Enums.h"
 
 // STL
 #include <vector>
@@ -53,6 +54,8 @@ te::layout::MapModel::MapModel() :
 {
   m_box = te::gm::Envelope(0., 0., 150., 120.);
   m_mapBoxMM = m_box;
+
+  m_backgroundColor = te::color::RGBAColor(192, 192, 192, 255);
 }
 
 te::layout::MapModel::~MapModel()
@@ -67,6 +70,17 @@ te::layout::MapModel::~MapModel()
 void te::layout::MapModel::draw( ContextItem context )
 {
   te::color::RGBAColor** pixmap = 0;
+
+  te::map::Canvas* canvas = context.getCanvas();
+  Utils* utils = context.getUtils();
+
+  if((!canvas) || (!utils))
+    return;
+
+  if(context.isResizeCanvas())
+    utils->configCanvas(m_box);
+
+  drawBackground(context);
   
   context.setPixmap(pixmap);
   notifyAll(context);
@@ -76,10 +90,12 @@ te::layout::Properties* te::layout::MapModel::getProperties() const
 {
   ItemModelObservable::getProperties();
 
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
   Property pro_fixed;
   pro_fixed.setName("fixedScale");
   pro_fixed.setId("unknown");
-  pro_fixed.setValue(m_fixedScale, DataTypeBool);
+  pro_fixed.setValue(m_fixedScale, dataType->getDataTypeBool());
   m_properties->addProperty(pro_fixed);
 
   return m_properties;

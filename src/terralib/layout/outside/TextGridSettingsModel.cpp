@@ -18,31 +18,42 @@
  */
 
 /*!
-  \file TextGridModel.h
+  \file TextGridSettingsModel.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_MODEL_H
-
 // TerraLib
-#include "TitleModel.h"
+#include "TextGridSettingsModel.h"
+#include "../core/property/Property.h"
+#include "../core/property/Properties.h"
 
-namespace te
+te::layout::TextGridSettingsModel::TextGridSettingsModel() 
 {
-  namespace layout
-  {
-    class TextGridModel : public TitleModel
-    {
-      public:
-
-        TextGridModel();
-        virtual ~TextGridModel();
-    };
-  }
+  //m_box = te::gm::Envelope(0., 0., 200., 200.);
 }
 
-#endif
+te::layout::TextGridSettingsModel::~TextGridSettingsModel()
+{
+
+}
+
+te::layout::Properties* te::layout::TextGridSettingsModel::getProperties() const
+{
+  m_properties->clear();
+
+  Property pro_name;
+  pro_name.setName("TextGridSettings");
+
+  m_properties->addProperty(pro_name);
+
+  m_properties->setTypeObj(m_type);
+  return m_properties;
+}
+
+void te::layout::TextGridSettingsModel::updateProperties( te::layout::Properties* properties )
+{
+
+}

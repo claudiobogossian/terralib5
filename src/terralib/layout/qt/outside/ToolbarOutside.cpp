@@ -81,7 +81,13 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionTitle("text_title"),
   m_optionMapCreateTextGrid("map_text_grid"),
   m_optionMapCreateMapText("map_text_map"),
-
+  m_optionAlignLeft("align_left"),
+  m_optionAlignRight("align_right"),
+  m_optionAlignTop("align_top"),
+  m_optionAlignBottom("align_bottom"),
+  m_optionAlignCenterHorizontal("align_center_horizontal"),
+  m_optionAlignCenterVertical("align_center_vertical"),
+  m_optionRemoveObject("remove_item"),
   m_btnMap(0)
 {
 	te::gm::Envelope box = m_model->getBox();	
@@ -129,8 +135,6 @@ te::gm::Coord2D te::layout::ToolbarOutside::getPosition()
 void te::layout::ToolbarOutside::createToolbar()
 {
   createArrowCursorButton();
-  this->addSeparator();
-
   createRecomposeToolButton();
   this->addSeparator();
 
@@ -138,25 +142,32 @@ void te::layout::ToolbarOutside::createToolbar()
   this->addSeparator();*/
 
   createViewAreaToolButton();
-  this->addSeparator();
-
   createMapToolsToolButton();
   this->addSeparator();
 
-  createMapToolButton();
-  this->addSeparator();
-  
+  createMapToolButton();  
   createGeometryToolButton();
+  createTextToolButton();
   this->addSeparator();
 
   createItemTools();
   this->addSeparator();
 
-  createTextToolButton();
+  createRemoveObjectToolButton();
   this->addSeparator();
 
   createBringToFrontToolButton();
   createSendToBackToolButton();
+  this->addSeparator();
+
+  createAlignLeftToolButton();
+  createAlignTopToolButton();
+  createAlignBottomToolButton();
+  createAlignRightToolButton();
+  this->addSeparator();
+
+  createAlignCenterHorizontalToolButton();
+  createAlignCenterVerticalToolButton();
   this->addSeparator();
 
   createSceneZoomCombobox();
@@ -373,6 +384,69 @@ void te::layout::ToolbarOutside::createTextToolButton()
   this->addWidget(btn);
 }
 
+void te::layout::ToolbarOutside::createAlignLeftToolButton()
+{
+  QToolButton *btn = createToolButton("Align Left", "Align Left", "layout-alignleft");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignLeftClicked(bool)));
+
+  this->addWidget(btn);
+}
+
+void te::layout::ToolbarOutside::createAlignRightToolButton()
+{
+  QToolButton *btn = createToolButton("Align Right", "Align Right", "layout-alignright");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignRightClicked(bool)));
+
+  this->addWidget(btn);
+}
+
+void te::layout::ToolbarOutside::createAlignTopToolButton()
+{
+  QToolButton *btn = createToolButton("Align Top", "Align Top", "layout-aligntop");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignTopClicked(bool)));
+
+  this->addWidget(btn);
+}
+
+void te::layout::ToolbarOutside::createAlignBottomToolButton()
+{
+  QToolButton *btn = createToolButton("Align Bottom", "Align Bottom", "layout-alignbottom");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignBottomClicked(bool)));
+
+  this->addWidget(btn);
+}
+
+void te::layout::ToolbarOutside::createAlignCenterHorizontalToolButton()
+{
+  QToolButton *btn = createToolButton("Align Center Horizontal", "Align Center Horizontal", "layout-alignhrzcenter");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignCenterHorizontalClicked(bool)));
+
+  this->addWidget(btn);
+}
+
+void te::layout::ToolbarOutside::createAlignCenterVerticalToolButton()
+{
+  QToolButton *btn = createToolButton("Align Center Vertical", "Align Center Vertical", "layout-alignvrtcenter");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignCenterVerticalClicked(bool)));
+
+  this->addWidget(btn);
+}
+
+void te::layout::ToolbarOutside::createRemoveObjectToolButton()
+{
+  QToolButton *btn = createToolButton("Remove Object", "Remove Object", "layout-empty-trash");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onRemoveObjectClicked(bool)));
+
+  this->addWidget(btn);
+}
+
 void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
 {
   if(action->objectName().compare(m_optionMapDefault.c_str()) == 0)
@@ -547,6 +621,41 @@ void te::layout::ToolbarOutside::onTextToolsTriggered( QAction* action )
   {
     changeAction(TypeCreateImage);
   }
+}
+
+void te::layout::ToolbarOutside::onAlignLeftClicked( bool checked )
+{
+  changeAction(TypeAlignLeft);
+}
+
+void te::layout::ToolbarOutside::onAlignRightClicked( bool checked )
+{
+  changeAction(TypeAlignRight);
+}
+
+void te::layout::ToolbarOutside::onAlignTopClicked( bool checked )
+{
+  changeAction(TypeAlignTop);
+}
+
+void te::layout::ToolbarOutside::onAlignBottomClicked( bool checked )
+{
+  changeAction(TypeAlignBottom);
+}
+
+void te::layout::ToolbarOutside::onAlignCenterHorizontalClicked( bool checked )
+{
+  changeAction(TypeAlignCenterHorizontal);
+}
+
+void te::layout::ToolbarOutside::onAlignCenterVerticalClicked( bool checked )
+{
+  changeAction(TypeAlignCenterVertical);
+}
+
+void te::layout::ToolbarOutside::onRemoveObjectClicked( bool checked )
+{
+  changeAction(TypeRemoveObject);
 }
 
 void te::layout::ToolbarOutside::changeAction( LayoutMode mode )

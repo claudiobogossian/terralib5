@@ -18,35 +18,69 @@
  */
 
 /*!
-  \file TextGridItem.h
+  \file TextGridSettingsOutside.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_ITEM_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_SETTINGS_OUTSIDE_H
+#define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_SETTINGS_OUTSIDE_H
+
+// Qt
+#include <QWidget>
 
 // TerraLib
-#include "TitleItem.h"
+#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/Config.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../color/RGBAColor.h"
+#include "../../core/enum/EnumMode.h"
+#include "../../core/enum/AbstractType.h"
+
+namespace Ui { class TextGridSettings; }
 
 namespace te
 {
   namespace layout
   {
+    class OutsideController;
     class Observable;
 
-    class TextGridItem : public TitleItem
+    class TELAYOUTEXPORT TextGridSettingsOutside : public QWidget, public OutsideObserver 
     {
+	    Q_OBJECT
+    
       public:
-
-        TextGridItem( ItemController* controller, Observable* o );
-        virtual ~TextGridItem();
         
+        TextGridSettingsOutside(OutsideController* controller, Observable* o);
+
+		    virtual ~TextGridSettingsOutside();
+
         virtual void updateObserver(ContextItem context);
 
+        virtual void setPosition(const double& x, const double& y);
+
+        virtual te::gm::Coord2D getPosition();
+       
+        virtual void load();
+
+      signals:
+
+        void changeSettings();
+
+      private slots:
+        
+        virtual void on_pbApply_clicked();
+        
+      protected:
+
         virtual void init();
+
+      private:
+
+        std::auto_ptr<Ui::TextGridSettings> m_ui;
     };
   }
 }
