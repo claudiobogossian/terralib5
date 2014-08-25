@@ -2519,7 +2519,7 @@ namespace te
           }          
           const te::rst::Band& prevSmoothBand = *prevSmoothBandPtr;          
           
-          const int filterScale = std::pow(2.0, levelIndex);          
+          const int filterScale = (int)std::pow(2.0, (double)levelIndex);          
           
           int col = 0;
           int row = 0;
