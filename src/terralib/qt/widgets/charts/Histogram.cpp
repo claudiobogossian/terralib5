@@ -35,19 +35,7 @@ te::qt::widgets::Histogram::Histogram()
 
 te::qt::widgets::Histogram::~Histogram()
 {
-  HistogramValues::iterator it = m_values.begin();
-  while(it != m_values.end())
-  {
-    delete it->first;
-    ++it;
-  }
-
-  te::qt::widgets::IntervalToObjectIdSet::iterator it2= m_valuesOids.begin();
-  while(it2 != m_valuesOids.end())
-  {
-    delete it2->oid;
-    ++it2;
-  }
+  clear();
 }
 
 int& te::qt::widgets::Histogram::getType()
@@ -73,7 +61,7 @@ std::map<double, unsigned int> te::qt::widgets::Histogram::getValues()
 
 void te::qt::widgets::Histogram::setValues(std::map<te::dt::AbstractData*, unsigned int> values)
 {
-  m_values.clear();
+  clear();
   std::map<te::dt::AbstractData*, unsigned int>::iterator valItbegin = values.begin();
   std::map<te::dt::AbstractData*, unsigned int>::iterator valItend = values.end();
 
@@ -83,7 +71,6 @@ void te::qt::widgets::Histogram::setValues(std::map<te::dt::AbstractData*, unsig
     valItbegin++;
   }
 }
-
 
 std::map<std::string, unsigned int> te::qt::widgets::Histogram::getStringValues()
 { 
@@ -143,6 +130,25 @@ void te::qt::widgets::Histogram::insert(te::dt::AbstractData* interval, unsigned
 void te::qt::widgets::Histogram::insert(te::dt::AbstractData* interval, unsigned int frequency)
 {
   insert(std::make_pair(interval, frequency));
+}
+
+void te::qt::widgets::Histogram::clear()
+{
+  HistogramValues::iterator it = m_values.begin();
+  while(it != m_values.end())
+  {
+    delete it->first;
+    ++it;
+  }
+  m_values.clear();
+
+  te::qt::widgets::IntervalToObjectIdSet::iterator it2= m_valuesOids.begin();
+  while(it2 != m_valuesOids.end())
+  {
+    delete it2->oid;
+    ++it2;
+  }
+  m_valuesOids.clear();
 }
 
 te::da::ObjectIdSet* te::qt::widgets::Histogram::find(te::dt::AbstractData* interval)

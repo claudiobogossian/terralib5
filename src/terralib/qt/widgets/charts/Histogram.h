@@ -190,6 +190,11 @@ namespace te
           void insert(te::dt::AbstractData* interval, unsigned int frequency);
 
            /*!
+            \brief A function used to clear the contents of the histogram, deleting the pointers contained by the boost containers used to store the histogram's data.
+          */
+          void clear();
+
+           /*!
             \brief It returns an ObjectIdSet containing all the object Ids associeted with the given interval.
 
             \param interval The interval that will be searched.
