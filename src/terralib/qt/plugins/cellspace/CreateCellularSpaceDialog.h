@@ -66,6 +66,8 @@ namespace te
 
             void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
+            te::map::AbstractLayerPtr getLayer();
+
           protected slots:
 
             void onLayersComboBoxChanged(int index);
@@ -109,6 +111,7 @@ namespace te
             std::auto_ptr<Ui::CreateCellularSpaceDialogForm> m_ui;
             bool m_isFile;
             te::da::DataSourceInfoPtr m_outDataSourceInfo;
+            std::string m_outputDataSetName;
         }; 
       }   // end namespace cellspace
     }     // end namespace plugins

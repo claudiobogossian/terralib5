@@ -71,6 +71,20 @@ std::map<double, unsigned int> te::qt::widgets::Histogram::getValues()
   return res;
 }
 
+void te::qt::widgets::Histogram::setValues(std::map<te::dt::AbstractData*, unsigned int> values)
+{
+  m_values.clear();
+  std::map<te::dt::AbstractData*, unsigned int>::iterator valItbegin = values.begin();
+  std::map<te::dt::AbstractData*, unsigned int>::iterator valItend = values.end();
+
+  while(valItbegin != valItend)
+  {
+    m_values.insert(*valItbegin);
+    valItbegin++;
+  }
+}
+
+
 std::map<std::string, unsigned int> te::qt::widgets::Histogram::getStringValues()
 { 
   std::map<std::string, unsigned int> res;
@@ -156,7 +170,6 @@ te::da::ObjectIdSet* te::qt::widgets::Histogram::find(te::dt::AbstractData* inte
   }
   return oids;
 }
-
 
 te::da::ObjectIdSet* te::qt::widgets::Histogram::find(std::vector<te::dt::AbstractData*> intervals)
 {

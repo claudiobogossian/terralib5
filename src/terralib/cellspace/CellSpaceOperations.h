@@ -42,6 +42,12 @@ namespace te
   namespace gm
   {
     class Envelope;
+    class Geometry;
+  }
+
+  namespace mem
+  {
+    class DataSet;
   }
 
   namespace cellspace
@@ -83,6 +89,12 @@ namespace te
           \note The caller of this method will take the ownership of the returned pointer.
         */
         te::da::DataSet* getDataSet();
+
+      private:
+
+        void addCell(te::mem::DataSet* ds, int col, int row, te::gm::Geometry* geom);
+
+        te::sam::rtree::Index<size_t, 8>* getRtree(te::map::AbstractLayerPtr layerBase);
 
       private:
 
