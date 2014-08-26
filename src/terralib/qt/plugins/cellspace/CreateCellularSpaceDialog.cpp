@@ -34,6 +34,7 @@
 #include "../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/Utils.h"
+#include "../../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../../srs/SpatialReferenceSystemManager.h"
 #include "../../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "ui_CreateCellularSpaceDialogForm.h"
@@ -52,7 +53,8 @@ Q_DECLARE_METATYPE(te::common::UnitOfMeasurePtr);
 te::qt::plugins::cellspace::CreateCellularSpaceDialog::CreateCellularSpaceDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::CreateCellularSpaceDialogForm),
-    m_isFile(false)
+    m_isFile(false),
+    m_outputDataSetName("")
 {
 // add controls
   m_ui->setupUi(this);
@@ -90,7 +92,8 @@ te::qt::plugins::cellspace::CreateCellularSpaceDialog::CreateCellularSpaceDialog
   connect(m_ui->m_createPushButton, SIGNAL(clicked()), this, SLOT(onCreatePushButtonClicked()));
 
   // Not implemented
-  m_ui->m_targetFileToolButton->setEnabled(false);
+  m_ui->m_targetFileToolButton->setVisible(false);
+  m_ui->m_rasterToolButton->setEnabled(false);
 }
 
 te::qt::plugins::cellspace::CreateCellularSpaceDialog::~CreateCellularSpaceDialog()
@@ -245,7 +248,8 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
     return;
   }
 
-  std::string name = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  m_outputDataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  
   te::map::AbstractLayerPtr referenceLayer = getReferenceLayer();
   double resX = m_ui->m_resXLineEdit->text().toDouble();
   double resY = m_ui->m_resYLineEdit->text().toDouble();
@@ -262,7 +266,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
   else if(m_ui->m_rasterToolButton->isChecked())
     type = te::cellspace::CellularSpacesOperations::CELLSPACE_RASTER;
 
-  cellSpaceOp->createCellSpace(name, referenceLayer, resX, resY, isPolygonsAsMask, type);
+  cellSpaceOp->createCellSpace(m_outputDataSetName, referenceLayer, resX, resY, isPolygonsAsMask, type);
 
   std::auto_ptr<te::da::DataSetType> dst(cellSpaceOp->getDataSetType());
 
@@ -308,7 +312,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
 
     t->createDataSet(dst.get(), op);
 
-    t->add(name, ds.get(), op);
+    t->add(m_outputDataSetName, ds.get(), op);
 
     t->commit();
   }
@@ -490,4 +494,15 @@ bool te::qt::plugins::cellspace::CreateCellularSpaceDialog::checkList(std::strin
   }
 
   return noErrors;
+}
+
+te::map::AbstractLayerPtr te::qt::plugins::cellspace::CreateCellularSpaceDialog::getLayer()
+{
+  te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outDataSourceInfo->getId());
+
+  te::qt::widgets::DataSet2Layer converter(m_outDataSourceInfo->getId());
+
+  te::da::DataSetTypePtr dt(outDataSource->getDataSetType(m_outputDataSetName).release());
+
+  return converter(dt);
 }

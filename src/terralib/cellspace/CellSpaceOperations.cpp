@@ -63,9 +63,6 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(const std::string&
 
   int srid = layerBase->getSRID();
 
-  std::auto_ptr<te::da::DataSetType> refDst = layerBase->getSchema();
-  std::auto_ptr<te::da::DataSet> refDs = layerBase->getData();
-
   if(type == CELLSPACE_RASTER)
   {
     te::rst::Grid* grid = new te::rst::Grid(resX, resY, &newEnv);
@@ -83,6 +80,9 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(const std::string&
 
     return;
   }
+
+  std::auto_ptr<te::da::DataSetType> refDst = layerBase->getSchema();
+  std::auto_ptr<te::da::DataSet> refDs = layerBase->getData();
 
   m_outputDataSetType = new te::da::DataSetType(name);
 
