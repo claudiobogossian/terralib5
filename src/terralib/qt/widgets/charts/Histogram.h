@@ -90,6 +90,15 @@ namespace te
           std::map<double, unsigned int> getValues();
 
           /*!
+            \brief It sets the histogram's values. 
+
+            \param values The new values.
+            /note Any current data will be lost.
+            /noter The ObjectIds will have to be manually adjusted later.
+          */
+          void setValues(std::map<te::dt::AbstractData*, unsigned int> values);
+
+          /*!
             \brief It returns the map containing the histogram String values. 
                     The key is a unique string that represents an interval and the unsigned int is the frequency of that interval.
 
