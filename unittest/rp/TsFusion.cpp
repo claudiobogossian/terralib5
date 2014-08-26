@@ -152,12 +152,12 @@ void TsFusion::wisper()
   algoInputParams.m_highResRasterBand = 0;
   algoInputParams.m_enableProgress = true;
   algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
-  algoInputParams.m_filterType = te::rp::B3SplineFilter;
+  algoInputParams.m_waveletFilterType = te::rp::B3SplineWAFilter;
 
   te::rp::WisperFusion::OutputParameters algoOutputParams;
   
   algoOutputParams.m_rInfo["URI"] =  
-    "terralib_unittest_rp_fusion_pca.tif";  
+    "terralib_unittest_rp_fusion_wisper.tif";  
   algoOutputParams.m_rType = "GDAL";
   
   // Executing the algorithm

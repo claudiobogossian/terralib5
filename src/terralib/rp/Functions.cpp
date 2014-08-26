@@ -2382,7 +2382,7 @@ namespace te
       
       switch( filterType )
       {
-        case B3SplineFilter :
+        case B3SplineWAFilter :
         {
           boost::numeric::ublas::matrix< double > internalFilter( 5, 5 );
           const double weight = 256;
@@ -2397,7 +2397,7 @@ namespace te
           
           break;
         }
-        case TriangleFilter :
+        case TriangleWAFilter :
         {
           boost::numeric::ublas::matrix< double > internalFilter( 3, 3 );
           const double weight = 16;
@@ -2733,29 +2733,36 @@ namespace te
             
       std::complex<double> interpValue;
       te::rst::Interpolator interp( &inputRaster, interpMethod);      
-      const double rowsFactor = ((double)height) / ((double)newheight);
-      const double colsFactor = ((double)width) / ((double)newwidth);
+      const double rowsFactor = ((double)(height-1)) / ((double)(newheight-1));
+      const double colsFactor = ((double)(width-1)) / ((double)(newwidth-1));
       double inputRow = 0;
       double inputCol = 0;      
       unsigned int outputCol = 0;
       unsigned int outputRow = 0;
       unsigned int inputBandIdx = 0;
+      double allowedMin = 0;
+      double allowedMax = 0;
       
       for (std::size_t inputRasterBandsIdx = 0; inputRasterBandsIdx < 
         inputRasterBands.size(); inputRasterBandsIdx++)
       {
         te::rst::Band& outputBand = *resampledRasterPtr->getBand( inputRasterBandsIdx );
         inputBandIdx = inputRasterBands[ inputRasterBandsIdx ];
+        te::rp::GetDataTypeRange( outputBand.getProperty()->m_type, allowedMin, 
+          allowedMax );
         
         for ( outputRow = 0; outputRow < newheight; ++outputRow)
         {
-          inputRow = ( ((double)( outputRow ) ) * rowsFactor ) + firstRow;
+          inputRow = ( ((double)( outputRow ) ) * rowsFactor ) + ((double)firstRow);
           
           for ( outputCol = 0; outputCol < newwidth; ++outputCol )
           {
-            inputCol = ( ((double)( outputCol ) ) * colsFactor ) + firstColumn;
+            inputCol = ( ((double)( outputCol ) ) * colsFactor ) + ((double)firstColumn);
             
             interp.getValue(inputCol, inputRow, interpValue, inputBandIdx);
+            
+            interpValue.real( std::max( allowedMin, interpValue.real() ) );
+            interpValue.real( std::min( allowedMax, interpValue.real() ) );
 
             outputBand.setValue(outputCol, outputRow, interpValue);
           }

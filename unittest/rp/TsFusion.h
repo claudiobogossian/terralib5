@@ -38,11 +38,11 @@ class TsFusion : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( TsFusion );
   
-//   CPPUNIT_TEST( ihs );
-//   
-//   CPPUNIT_TEST( pca );
-  
   CPPUNIT_TEST( wisper );
+  
+  CPPUNIT_TEST( ihs );
+  
+  CPPUNIT_TEST( pca );  
 
   CPPUNIT_TEST_SUITE_END();
 
