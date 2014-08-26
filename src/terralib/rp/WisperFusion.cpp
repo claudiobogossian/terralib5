@@ -25,20 +25,17 @@
 #include "WisperFusion.h"
 #include "Macros.h"
 #include "Functions.h"
-
+#include "Matrix.h"
 #include "../raster/BandProperty.h"
 #include "../raster/RasterFactory.h"
 #include "../raster/Band.h"
 #include "../raster/Grid.h"
+#include "../raster/Utils.h"
 #include "../geometry/Envelope.h"
 #include "../common/progress/TaskProgress.h"
+#include "../memory/ExpansibleRaster.h"
 
 #include <cmath>
-#include <limits>
-
-#ifndef M_PI
-  #define M_PI       3.14159265358979323846
-#endif
   
 namespace te
 {
@@ -69,7 +66,8 @@ namespace te
       m_highResRasterBand = 0;
       m_enableProgress = false;
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;
-      m_filterType = te::rp::B3SplineFilter;
+      m_waveletFilterType = te::rp::B3SplineWAFilter;
+      m_userWaveletFilterPtr = 0;
     }
 
     const WisperFusion::InputParameters& WisperFusion::InputParameters::operator=(
@@ -83,7 +81,8 @@ namespace te
       m_highResRasterBand = params.m_highResRasterBand;
       m_enableProgress = params.m_enableProgress;
       m_interpMethod = params.m_interpMethod;
-      m_filterType = params.m_filterType;
+      m_waveletFilterType = params.m_waveletFilterType;
+      m_userWaveletFilterPtr = params.m_userWaveletFilterPtr;
 
       return *this;
     }
@@ -162,22 +161,13 @@ namespace te
         progressPtr->setMessage( "Fusing images" );
       }        
       
-      // defining the number of blocks each memory raster must have
-      
-      unsigned int maxNumberOfRasterBlocks = 1;
-      
-      {
-        
-      }
-      
       // creating the ressampled input raster
       
       std::auto_ptr< te::rst::Raster > resampledLlowResRasterPtr;
       
       {
         std::map< std::string, std::string > rinfo;
-        rinfo["MAXNUMBEROFRAMBLOCKS"] = boost::lexical_cast< std::string >(
-          maxNumberOfRasterBlocks );  
+        rinfo["MAXMEMPERCENTUSED"] = "30";  
         
         TERP_TRUE_OR_RETURN_FALSE( te::rp::RasterResample(
           *m_inputParameters.m_lowResRasterPtr,
@@ -194,13 +184,271 @@ namespace te
           resampledLlowResRasterPtr ), 
           "Low resolution raster resample error" );
       }
-
+      
+      TERP_TRUE_OR_THROW( te::rp::Copy2DiskRaster( *resampledLlowResRasterPtr,
+        "resampledLlowResRaster.tif" ), "" );
 
       if( m_inputParameters.m_enableProgress )
       {
         progressPtr->pulse();
         if( ! progressPtr->isActive() ) return false;
       }              
+      
+      // defining the wavelet filter
+      
+      boost::numeric::ublas::matrix< double > waveletFilter;
+      
+      if( m_inputParameters.m_userWaveletFilterPtr )
+      {
+        waveletFilter = *( m_inputParameters.m_userWaveletFilterPtr );
+      }
+      else
+      {
+        waveletFilter = te::rp::CreateWaveletAtrousFilter( 
+          m_inputParameters.m_waveletFilterType );
+      }
+      
+     
+      // The wavelet decomposition levels
+      
+      const unsigned int highResWaveletLevels = (unsigned int)
+        std::ceil(   
+          std::max(
+            (
+              std::log(      
+                (double)
+                (
+                  m_inputParameters.m_highResRasterPtr->getNumberOfColumns()
+                )
+                /
+                (double)
+                (  
+                  m_inputParameters.m_lowResRasterPtr->getNumberOfColumns()
+                )
+              )
+              /
+              log( 2.0 )
+            )
+            ,
+            (
+              std::log(      
+                (double)
+                (
+                  m_inputParameters.m_highResRasterPtr->getNumberOfRows()
+                )
+                /
+                (double)
+                (  
+                  m_inputParameters.m_lowResRasterPtr->getNumberOfRows()
+                )
+              )
+              /
+              log( 2.0 )
+            )
+          )
+        );  
+        
+      // creating the high resolution raster wavelets
+        
+      std::auto_ptr< te::rst::Raster > highResWaveletsRasterPtr;
+      
+      {
+        std::map<std::string, std::string> auxRasterInfo;
+        
+        std::vector< te::rst::BandProperty * > bandProps;
+
+        for( unsigned int levelIdx = 0 ; levelIdx < highResWaveletLevels ;
+          ++levelIdx )
+        {
+          bandProps.push_back( new te::rst::BandProperty( 
+            *( m_inputParameters.m_highResRasterPtr->getBand( 
+            m_inputParameters.m_highResRasterBand )->getProperty() ) ) );
+          bandProps.back()->m_blkh = 1;
+          bandProps.back()->m_blkw = m_inputParameters.m_highResRasterPtr->getNumberOfColumns();
+          bandProps.back()->m_nblocksx = 1;
+          bandProps.back()->m_nblocksy = m_inputParameters.m_highResRasterPtr->getNumberOfRows();
+          bandProps.back()->m_type = te::dt::DOUBLE_TYPE;
+          
+          bandProps.push_back( new te::rst::BandProperty( 
+            *( m_inputParameters.m_highResRasterPtr->getBand( 
+            m_inputParameters.m_highResRasterBand )->getProperty() ) ) );
+          bandProps.back()->m_blkh = 1;
+          bandProps.back()->m_blkw = m_inputParameters.m_highResRasterPtr->getNumberOfColumns();
+          bandProps.back()->m_nblocksx = 1;
+          bandProps.back()->m_nblocksy = m_inputParameters.m_highResRasterPtr->getNumberOfRows();
+          bandProps.back()->m_type = te::dt::DOUBLE_TYPE;      
+        }
+        
+        std::vector< unsigned int > rasterBands;
+        rasterBands.push_back( m_inputParameters.m_highResRasterBand );
+        
+        highResWaveletsRasterPtr.reset( new te::mem::ExpansibleRaster( 
+          60,
+          new te::rst::Grid( *m_inputParameters.m_highResRasterPtr->getGrid() ),
+          bandProps ) );
+        TERP_TRUE_OR_RETURN_FALSE( highResWaveletsRasterPtr.get(), "Raster allocation error" );
+        
+        TERP_TRUE_OR_RETURN_FALSE( te::rp::DirectWaveletAtrous( 
+          *m_inputParameters.m_highResRasterPtr, 
+          rasterBands,
+          *highResWaveletsRasterPtr,
+          highResWaveletLevels,
+          waveletFilter ),
+          "Low resolution raster wavelets creation error" );        
+      }
+      
+      TERP_TRUE_OR_THROW( te::rp::Copy2DiskRaster( *highResWaveletsRasterPtr,
+        "highResWaveletsRaster.tif" ), "" );      
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }
+      
+      // Creating the band weights raster
+      
+      std::auto_ptr< te::rst::Raster > weightsRasterPtr;
+      
+      {
+        const unsigned int nRows = resampledLlowResRasterPtr->getNumberOfRows();
+        const unsigned int nCols = resampledLlowResRasterPtr->getNumberOfColumns();
+        const unsigned int nBands = resampledLlowResRasterPtr->getNumberOfBands();        
+        
+        std::map<std::string, std::string> auxRasterInfo;
+        
+        std::vector< te::rst::BandProperty * > bandProps;
+
+        for( unsigned int bandIdx = 0 ; bandIdx < nBands ;
+          ++bandIdx )
+        {
+          bandProps.push_back( new te::rst::BandProperty( 
+            *( resampledLlowResRasterPtr->getBand( 0 )->getProperty() ) ) );
+          bandProps.back()->m_blkh = 1;
+          bandProps.back()->m_blkw = nCols;
+          bandProps.back()->m_nblocksx = 1;
+          bandProps.back()->m_nblocksy = nRows;
+          bandProps.back()->m_type = te::dt::DOUBLE_TYPE;   
+        }
+        
+        weightsRasterPtr.reset( new te::mem::ExpansibleRaster( 
+          90,
+          new te::rst::Grid( *resampledLlowResRasterPtr->getGrid() ),
+          bandProps ) );
+        TERP_TRUE_OR_RETURN_FALSE( weightsRasterPtr.get(), "Raster allocation error" );        
+
+        unsigned int row = 0;
+        unsigned int col = 0;
+        double value = 0;
+        double weight = 0;
+        const unsigned int hiResWaveletBandIdxBound = ( highResWaveletLevels * 2 );
+        unsigned int hiResWaveletBandIdx = 0;
+        
+        for( unsigned int outBandIdx = 0 ; outBandIdx < nBands ;  ++outBandIdx )
+        {
+          te::rst::Band& outWeightsBand = *weightsRasterPtr->getBand( outBandIdx );
+          
+          for( row = 0 ; row < nRows ; ++row )
+          {
+            for( col = 0 ; col < nCols ; ++col )
+            {
+              weight = 0.0;
+              
+              for( hiResWaveletBandIdx = 1 ; hiResWaveletBandIdx < 
+                hiResWaveletBandIdxBound ; hiResWaveletBandIdx += 2 )
+              {
+                highResWaveletsRasterPtr->getValue( col, row, value, hiResWaveletBandIdx );
+                weight += value;
+              }
+              
+              outWeightsBand.setValue( col, row, weight );
+            }
+          }
+        }
+      }
+      
+      TERP_TRUE_OR_THROW( te::rp::Copy2DiskRaster( *weightsRasterPtr,
+        "weightsRaster.tif" ), "" );      
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }         
+      
+      // Creating the output raster
+      
+      {
+        te::rst::Grid* gridPtr = new te::rst::Grid( *resampledLlowResRasterPtr->getGrid() );
+        std::vector< te::rst::BandProperty * > bandProperties;
+        std::vector< unsigned int > outputRasterBands;
+          
+        for( unsigned int bandIdx = 0 ; bandIdx <
+          resampledLlowResRasterPtr->getNumberOfBands() ; ++bandIdx )
+        {
+          bandProperties.push_back( new te::rst::BandProperty( 
+            *resampledLlowResRasterPtr->getBand( bandIdx )->getProperty() ) );
+            
+          outputRasterBands.push_back( bandIdx );
+        } 
+        
+        outParamsPtr->m_outputRasterPtr.reset(
+          te::rst::RasterFactory::make(
+            outParamsPtr->m_rType,
+            gridPtr,
+            bandProperties,
+            outParamsPtr->m_rInfo,
+            0,
+            0 ) );
+        TERP_TRUE_OR_RETURN_FALSE( outParamsPtr->m_outputRasterPtr.get(),
+          "Output raster creation error" );
+      }       
+      
+      // Recomposing levels for each band
+      
+      {
+        const unsigned int nRows = outParamsPtr->m_outputRasterPtr->getNumberOfRows();
+        const unsigned int nCols = outParamsPtr->m_outputRasterPtr->getNumberOfColumns();
+        const unsigned int nBands = outParamsPtr->m_outputRasterPtr->getNumberOfBands();
+        unsigned int row = 0;
+        unsigned int col = 0;
+        double value = 0;
+        double weight = 0;
+        double outBandMin = 0;
+        double outBandMax = 0;
+        
+        for( unsigned int outBandIdx = 0 ; outBandIdx < nBands ;  ++outBandIdx )
+        {
+          const te::rst::Band& inBand = *resampledLlowResRasterPtr->getBand( outBandIdx );
+          const te::rst::Band& inWeightsBand = *weightsRasterPtr->getBand( outBandIdx );
+          te::rst::Band& outBand = *outParamsPtr->m_outputRasterPtr->getBand( outBandIdx );
+          te::rst::GetDataTypeRanges( outBand.getProperty()->m_type, outBandMin, 
+            outBandMax );          
+          
+          for( row = 0 ; row < nRows ; ++row )
+          {
+            for( col = 0 ; col < nCols ; ++col )
+            {
+              inBand.getValue( col, row, value );
+              
+              inWeightsBand.getValue( col, row, weight );
+              
+              value += weight;
+              value = std::max( outBandMin, value );
+              value = std::min( outBandMax, value );
+              
+              outBand.setIValue( col, row, value );
+            }
+          }
+        }
+       
+      } 
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
       
       return true;
     }
@@ -254,6 +502,15 @@ namespace te
         m_inputParameters.m_highResRasterBand <
         m_inputParameters.m_highResRasterPtr->getNumberOfBands(), 
         "Invalid raster band" );   
+      
+      if( m_inputParameters.m_userWaveletFilterPtr )
+      {
+        TERP_TRUE_OR_RETURN_FALSE( 
+          ( m_inputParameters.m_userWaveletFilterPtr->size1() > 2 ) &&
+          ( m_inputParameters.m_userWaveletFilterPtr->size1() ==
+          m_inputParameters.m_userWaveletFilterPtr->size2() ), 
+          "Invalid user filter" );
+      }
         
       m_isInitialized = true;
 

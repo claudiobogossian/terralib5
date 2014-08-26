@@ -69,8 +69,9 @@ namespace te
      */    
     enum WaveletAtrousFilterType
     {
-      B3SplineFilter, //!< Spline filter type.
-      TriangleFilter //!< Triangle filter type.
+      InvalidWAFilter, //!< Invalid filter type
+      B3SplineWAFilter, //!< Spline filter type.
+      TriangleWAFilter //!< Triangle filter type.
     };
     
     /*!
@@ -586,6 +587,7 @@ namespace te
       \return true if OK, false on errors.
       \note The band order of the expected wavelet levels: { [ band0-smoothed0, band0-wavelet0, ... , band0-smoothedN, band0-waveletN ], ... }
       \note The number of bands of waveletRaster must be ( outputRasterBands.size() * 2 * levelsNumber ) at least.
+      \note Only the wavelet bands and the last smoothed band are used.
       \ingroup rp_func
     */
     TERPEXPORT bool InverseWaveletAtrous( 

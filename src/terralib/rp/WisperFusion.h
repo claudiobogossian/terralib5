@@ -74,7 +74,9 @@ namespace te
             
             te::rst::Interpolator::Method m_interpMethod; //!< The raster interpolator method (default:NearestNeighbor).
             
-            te::rp::WaveletAtrousFilterType m_filterType; //!< The wavelet filter type to use (default: B3SplineFilter);
+            te::rp::WaveletAtrousFilterType m_waveletFilterType; //!< The wavelet filter type to use (default: B3SplineFilter);
+            
+            boost::numeric::ublas::matrix< double > const* m_userWaveletFilterPtr; //!< An optional pointer to an user filter.
             
             InputParameters();
             

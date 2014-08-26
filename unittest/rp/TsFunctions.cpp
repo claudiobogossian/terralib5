@@ -602,7 +602,7 @@ void TsFunctions::WaveletAtrous()
   inputRasterBands.push_back( 2 );
   
   boost::numeric::ublas::matrix< double > filter = te::rp::CreateWaveletAtrousFilter( 
-    te::rp::B3SplineFilter );  
+    te::rp::B3SplineWAFilter );  
   
   CPPUNIT_ASSERT( te::rp::DirectWaveletAtrous( 
     *diskRasterPtr, 
