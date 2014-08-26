@@ -152,7 +152,7 @@ void te::qt::widgets::HistogramChart::setData()
     std::map<double,  unsigned int>::const_iterator it;
     values = m_histogram->getValues();
     it = values.begin();
-    double interval = 0.0;
+    double interval = m_histogram->getMinValue();
 
     while (it != values.end())
     {
