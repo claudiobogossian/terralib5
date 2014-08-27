@@ -90,6 +90,15 @@ namespace te
           std::map<double, unsigned int> getValues();
 
           /*!
+            \brief It sets the histogram's values. 
+
+            \param values The new values.
+            /note Any current data will be lost.
+            /noter The ObjectIds will have to be manually adjusted later.
+          */
+          void setValues(std::map<te::dt::AbstractData*, unsigned int> values);
+
+          /*!
             \brief It returns the map containing the histogram String values. 
                     The key is a unique string that represents an interval and the unsigned int is the frequency of that interval.
 
@@ -179,6 +188,11 @@ namespace te
             \param frequency  The unsigned int that represents that interval's frequency.
           */
           void insert(te::dt::AbstractData* interval, unsigned int frequency);
+
+           /*!
+            \brief A function used to clear the contents of the histogram, deleting the pointers contained by the boost containers used to store the histogram's data.
+          */
+          void clear();
 
            /*!
             \brief It returns an ObjectIdSet containing all the object Ids associeted with the given interval.

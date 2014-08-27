@@ -79,13 +79,13 @@ namespace te
 
             QMenu* m_vpMenu;                                    //!< VP Main Menu registered.
 
-            te::qt::plugins::vp::AggregationAction* m_aggregation;    //!< Aggregation Operation Action
-			te::qt::plugins::vp::BufferAction* m_buffer;    //!< Buffer Operation Action
-            te::qt::plugins::vp::GeometricOpAction* m_geometricOp;    //!< Geometric Operation
-            te::qt::plugins::vp::IntersectionAction* m_intersection;    //!< Intersection Operation Action
-            //te::qt::plugins::vp::PolygonToLineAction* m_polygonToLine;    //!< Polygon to Line Operation Action
-            //te::qt::plugins::vp::SummarizationAction* m_summarization;    //!< Summarization Operation Action
-            //te::qt::plugins::vp::TransformationAction* m_transformation;    //!< Transformation Operation Action
+            AggregationAction* m_aggregation;    //!< Aggregation Operation Action
+            BufferAction* m_buffer;    //!< Buffer Operation Action
+            GeometricOpAction* m_geometricOp;    //!< Geometric Operation
+            IntersectionAction* m_intersection;    //!< Intersection Operation Action
+            //PolygonToLineAction* m_polygonToLine;    //!< Polygon to Line Operation Action
+            //SummarizationAction* m_summarization;    //!< Summarization Operation Action
+            //TransformationAction* m_transformation;    //!< Transformation Operation Action
 
         };
 

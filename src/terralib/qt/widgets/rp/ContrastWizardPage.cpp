@@ -29,7 +29,7 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "ContrastWizardPage.h"
-#include "RasterHistogramDialog.h"
+#include "RasterHistogramWidget.h"
 #include "RasterNavigatorWidget.h"
 #include "ui_ContrastWizardPageForm.h"
 
@@ -54,29 +54,32 @@ te::qt::widgets::ContrastWizardPage::ContrastWizardPage(QWidget* parent)
 
   fillContrastTypes();
 
-//build form
-  QGridLayout* displayLayout = new QGridLayout(m_ui->m_frame);
-  m_navigator.reset(new te::qt::widgets::RasterNavigatorWidget(m_ui->m_frame));
+  //build preview
+  QGridLayout* displayLayout = new QGridLayout(m_ui->m_displayWidget);
+  m_navigator.reset(new te::qt::widgets::RasterNavigatorWidget(m_ui->m_displayWidget));
   m_navigator->showAsPreview(true);
   m_navigator->hideColorCompositionTool(true);
   displayLayout->addWidget(m_navigator.get());
   displayLayout->setContentsMargins(0,0,0,0);
 
-  m_histogramDlg.reset(new te::qt::widgets::RasterHistogramDialog(this));
+  //build histogram
+  QGridLayout* histogramLayout = new QGridLayout(m_ui->m_tabWidget->widget(1));
+  m_histogramWidget.reset(new te::qt::widgets::RasterHistogramWidget(m_ui->m_tabWidget->widget(1)));
+  histogramLayout->addWidget(m_histogramWidget.get());
+  histogramLayout->setContentsMargins(0,0,0,0);
 
 //connects
-  connect(m_ui->m_histogramPushButton, SIGNAL(clicked()), this, SLOT(showHistogram()));
   connect(m_ui->m_contrastTypeComboBox, SIGNAL(activated(int)), this, SLOT(onContrastTypeComboBoxActivated(int)));
   connect(m_navigator.get(), SIGNAL(previewClicked()), this, SLOT(apply()));
+
+  connect(m_histogramWidget.get(), SIGNAL(minValueSelected(int, int)), this, SLOT(onMinValueSelected(int, int)));
+  connect(m_histogramWidget.get(), SIGNAL(maxValueSelected(int, int)), this, SLOT(onMaxValueSelected(int, int)));
 
 //configure page
   this->setTitle(tr("Contrast"));
   this->setSubTitle(tr("Select the type of contrast and set their specific parameters."));
 
   onContrastTypeComboBoxActivated(m_ui->m_contrastTypeComboBox->currentIndex());
-
-  m_ui->m_histogramPushButton->setEnabled(false);
-  m_ui->m_histogramPushButton->setVisible(false);
 }
 
 te::qt::widgets::ContrastWizardPage::~ContrastWizardPage()
@@ -109,8 +112,6 @@ void te::qt::widgets::ContrastWizardPage::set(te::map::AbstractLayerPtr layer)
   list.push_back(m_layer);
 
   m_navigator->set(m_layer);
-
-  m_histogramDlg->set(m_layer);
 
   listBands();
 }
@@ -201,6 +202,8 @@ void te::qt::widgets::ContrastWizardPage::apply()
   //get preview raster
   te::rst::Raster* inputRst = m_navigator->getExtentRaster();
 
+  m_histogramWidget->setInputRaster(inputRst);
+
   //set contrast parameters
   te::rp::Contrast::InputParameters algoInputParams = getInputParams();
 
@@ -227,6 +230,8 @@ void te::qt::widgets::ContrastWizardPage::apply()
       if(algorithmInstance.execute(algoOutputParams))
       {
         m_navigator->drawRaster(algoOutputParams.m_outRasterPtr);
+
+        m_histogramWidget->setOutputRaster(algoOutputParams.m_createdOutRasterPtr.release());
       }
     }
   }
@@ -236,9 +241,6 @@ void te::qt::widgets::ContrastWizardPage::apply()
   }
 
   QApplication::restoreOverrideCursor();
-
-  //delete input raster dataset
-  delete inputRst;
 }
 
 void te::qt::widgets::ContrastWizardPage::fillContrastTypes()
@@ -297,13 +299,6 @@ void te::qt::widgets::ContrastWizardPage::listBands()
 #endif
 
   onContrastTypeComboBoxActivated(m_ui->m_contrastTypeComboBox->currentIndex());
-}
-
-void te::qt::widgets::ContrastWizardPage::showHistogram()
-{
-  assert(m_layer.get());
-
-  m_histogramDlg->show();
 }
 
 void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int index)
@@ -381,4 +376,28 @@ void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int in
 #else
   m_ui->m_bandTableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 #endif
+}
+
+void te::qt::widgets::ContrastWizardPage::onMinValueSelected(int value, int band)
+{
+  int index = m_ui->m_contrastTypeComboBox->currentIndex();
+
+  int contrastType = m_ui->m_contrastTypeComboBox->itemData(index).toInt();
+
+  if(contrastType != te::rp::Contrast::InputParameters::LinearContrastT)
+    return;
+
+  m_ui->m_bandTableWidget->item(band, 1)->setText(QString::number(value));
+}
+
+void te::qt::widgets::ContrastWizardPage::onMaxValueSelected(int value, int band)
+{
+  int index = m_ui->m_contrastTypeComboBox->currentIndex();
+
+  int contrastType = m_ui->m_contrastTypeComboBox->itemData(index).toInt();
+
+  if(contrastType != te::rp::Contrast::InputParameters::LinearContrastT)
+    return;
+
+  m_ui->m_bandTableWidget->item(band, 2)->setText(QString::number(value));
 }

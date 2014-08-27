@@ -46,7 +46,7 @@ namespace te
   {
     namespace widgets
     {
-      class RasterHistogramDialog;
+      class RasterHistogramWidget;
       class RasterNavigatorWidget;
 
       /*!
@@ -94,15 +94,17 @@ namespace te
 
           void apply();
 
-          void showHistogram();
-
           void onContrastTypeComboBoxActivated(int index);
+
+          void onMinValueSelected(int value, int band);
+
+          void onMaxValueSelected(int value, int band);
 
         private:
 
           std::auto_ptr<Ui::ContrastWizardPageForm> m_ui;
           std::auto_ptr<te::qt::widgets::RasterNavigatorWidget> m_navigator;
-          std::auto_ptr<te::qt::widgets::RasterHistogramDialog> m_histogramDlg;
+          std::auto_ptr<te::qt::widgets::RasterHistogramWidget> m_histogramWidget;
 
           te::map::AbstractLayerPtr m_layer;
       };
