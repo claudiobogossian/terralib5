@@ -40,12 +40,16 @@ namespace Ui { class RasterHistogramWidgetForm; }
 
 namespace te
 {
+  namespace rst { class Raster; }
+
   namespace qt
   {
     namespace widgets
     {
       class ChartStyle;
       class ChartDisplay;
+      class Histogram;
+      class HistogramChart;
       /*!
         \class RasterHistogramWidget
 
@@ -63,27 +67,41 @@ namespace te
 
           Ui::RasterHistogramWidgetForm* getForm() const;
 
-          void set(te::map::AbstractLayerPtr layer);
+          void setInputRaster(te::rst::Raster* raster);
+
+          void setOutputRaster(te::rst::Raster* raster);
 
 
         protected slots:
 
-          void onRedToolButtonToggled(bool flag);
+          void onApplyToolButtonClicked();
 
-          void onGreenToolButtonToggled(bool flag);
+          void onLeftPointSelected(const QPointF& point);
 
-          void onBlueToolButtonToggled(bool flag);
+          void onRigthPointSelected(const QPointF& point);
 
-          void onMonoToolButtonToggled(bool flag);
+        signals:
+
+          void minValueSelected(int value, int band);
+
+          void maxValueSelected(int value, int band);
+
 
         private:
 
          std::auto_ptr<Ui::RasterHistogramWidgetForm> m_ui;
 
+         std::auto_ptr<te::rst::Raster> m_inputRaster;
+         std::auto_ptr<te::rst::Raster> m_outputRaster;
+
          te::qt::widgets::ChartStyle* m_chartStyle;
          te::qt::widgets::ChartDisplay* m_chartDisplay;
 
-         te::map::AbstractLayerPtr m_layer;
+         te::qt::widgets::Histogram* m_histogramInput;
+         te::qt::widgets::HistogramChart* m_histogramChartInput;
+
+         te::qt::widgets::Histogram* m_histogramOutput;
+         te::qt::widgets::HistogramChart* m_histogramChartOutput;
       }; 
 
     } // end namespace widgets
