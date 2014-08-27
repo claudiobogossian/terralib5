@@ -57,8 +57,3 @@ te::qt::widgets::RasterHistogramWidget* te::qt::widgets::RasterHistogramDialog::
 {
   return m_widgetRasterHistogram.get();
 }
-
-void te::qt::widgets::RasterHistogramDialog::set(te::map::AbstractLayerPtr layer)
-{
-  m_widgetRasterHistogram->set(layer);
-}

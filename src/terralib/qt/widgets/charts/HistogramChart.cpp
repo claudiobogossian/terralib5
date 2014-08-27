@@ -152,13 +152,12 @@ void te::qt::widgets::HistogramChart::setData()
     std::map<double,  unsigned int>::const_iterator it;
     values = m_histogram->getValues();
     it = values.begin();
-    double interval = m_histogram->getMinValue();
 
     while (it != values.end())
     {
+      double interval = it->first;
       QwtInterval qwtInterval(interval, interval+1);
       samples.push_back(QwtIntervalSample(it->second, qwtInterval));
-      interval++;
       it++;
     }
 

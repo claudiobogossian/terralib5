@@ -18,19 +18,20 @@
  */
 
 /*!
-  \file terralib/qt/plugins/vp/Plugin.h
+  \file terralib/qt/plugins/processing/Plugin.h
 
-  \brief Plugin implementation for the VP Qt Plugin widget.
+  \brief Plugin implementation for the SA Qt Plugin widget.
 */
 
-#ifndef __TE_QT_PLUGINS_VP_INTERNAL_PLUGIN_H
-#define __TE_QT_PLUGINS_VP_INTERNAL_PLUGIN_H
+#ifndef __TE_QT_PLUGINS_PROCESSING_INTERNAL_PLUGIN_H
+#define __TE_QT_PLUGINS_PROCESSING_INTERNAL_PLUGIN_H
 
 // TerraLib
 #include "../../../plugin/Plugin.h"
 #include "Config.h"
 
 // Qt
+#include <QAction>
 #include <QMenu>
 
 namespace te
@@ -39,15 +40,10 @@ namespace te
   {
     namespace plugins
     {
-      namespace vp
+      namespace processing
       {
-        class AggregationAction;
-        class BufferAction;
-        class GeometricOpAction;
-        class IntersectionAction;
-        //class PolygonToLineAction;
-        //class SummarizationAction;
-        //class TransformationAction;
+        class RasterToVectorAction;
+        class VectorToRasterAction;
 
         class Plugin : public te::plugin::Plugin
         {
@@ -64,36 +60,31 @@ namespace te
           protected:
 
             /*!
-              \brief Function used to register all raster processing actions.
+              \brief Function used to register all processing actions.
 
             */
             void registerActions();
 
             /*!
-              \brief Function used to unregister all raster processing actions.
+              \brief Function used to unregister all processing actions.
 
             */
             void unRegisterActions();
 
           protected:
 
-            QMenu* m_vpMenu;                                    //!< VP Main Menu registered.
+            QMenu* m_processingMenu;                                  //!< Processing Sub Menu registered.
+            QAction* m_popupAction;                                   //!< Processing pop up action registered.
 
-            AggregationAction* m_aggregation;    //!< Aggregation Operation Action
-            BufferAction* m_buffer;    //!< Buffer Operation Action
-            GeometricOpAction* m_geometricOp;    //!< Geometric Operation
-            IntersectionAction* m_intersection;    //!< Intersection Operation Action
-            //PolygonToLineAction* m_polygonToLine;    //!< Polygon to Line Operation Action
-            //SummarizationAction* m_summarization;    //!< Summarization Operation Action
-            //TransformationAction* m_transformation;    //!< Transformation Operation Action
-
+            RasterToVectorAction* m_rasterToVector;                   //!< RasterToVector Processing Action
+            VectorToRasterAction* m_vectorToRaster;                   //!< VectorToRaster Processing Action
         };
 
-      } // end namespace vp
+      } // end namespace processing
     }   // end namespace plugins
   }     // end namespace qt
 }       // end namespace te
 
-PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINVPEXPORT);
+PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINPROCESSINGEXPORT);
 
-#endif //__TE_QT_PLUGINS_VP_INTERNAL_PLUGIN_H
+#endif //__TE_QT_PLUGINS_PROCESSING_INTERNAL_PLUGIN_H
