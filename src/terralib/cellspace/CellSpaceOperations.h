@@ -32,20 +32,74 @@
 
 namespace te
 {
+
+  namespace ds
+  {
+    class DataSetType;
+    class DataSet;
+  }
+
   namespace gm
   {
     class Envelope;
+    class Geometry;
+  }
+
+  namespace mem
+  {
+    class DataSet;
   }
 
   namespace cellspace
   {
-    class CellularSpacesOperations
+    class TECELLSPACEEXPORT CellularSpacesOperations
     {
       public:
 
-        void createCellSpace(const std::string& layerName, te::map::AbstractLayerPtr layerBase, double resX, double resY, bool useMask);
+        /*! \enum  Cellular Space Type. */
+        enum CellSpaceType
+        {
+          CELLSPACE_POLYGONS, /*!< Polygons Type. */
+          CELLSPACE_POINTS,   /*!< Points Type. */
+          CELLSPACE_RASTER    /*!< Raster Type. */
+        };
 
-        void createCellSpace(const std::string& layerName, te::gm::Envelope envelopeBase, double resX, double resY, bool useMask);
+        CellularSpacesOperations();
+
+        ~CellularSpacesOperations();
+
+        void createCellSpace(const std::string& name, te::map::AbstractLayerPtr layerBase,
+                             double resX, double resY, bool useMask,
+                             CellSpaceType type = CELLSPACE_POLYGONS);
+
+        /*!
+          \brief It return the created DataSetType.
+
+          \return The created DataSetType.
+
+          \note The caller of this method will take the ownership of the returned pointer.
+        */
+        te::da::DataSetType* getDataSetType();
+
+        /*!
+          \brief It return the created DataSet.
+
+          \return The created DataSet.
+
+          \note The caller of this method will take the ownership of the returned pointer.
+        */
+        te::da::DataSet* getDataSet();
+
+      private:
+
+        void addCell(te::mem::DataSet* ds, int col, int row, te::gm::Geometry* geom);
+
+        te::sam::rtree::Index<size_t, 8>* getRtree(te::map::AbstractLayerPtr layerBase);
+
+      private:
+
+        te::da::DataSetType* m_outputDataSetType;
+        te::da::DataSet* m_outputDataSet;
     };
   }
 }

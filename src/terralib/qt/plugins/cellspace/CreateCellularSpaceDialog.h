@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../common/UnitOfMeasure.h"
+#include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../maptools/AbstractLayer.h"
 
 // STL
@@ -65,7 +66,7 @@ namespace te
 
             void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
-            te::gm::Envelope getOutputEnvelope();
+            te::map::AbstractLayerPtr getLayer();
 
           protected slots:
 
@@ -79,9 +80,13 @@ namespace te
 
             void onEnvelopeChanged(const QString & text);
 
-          private:
+            void onTargetFileToolButtonClicked();
 
-            te::map::AbstractLayerPtr getReferenceLayer();
+            void onTargetDatasourceToolButtonClicked();
+
+            void onCreatePushButtonClicked();
+
+          private:
 
             te::common::UnitOfMeasurePtr getCurrentUnit();
 
@@ -93,9 +98,20 @@ namespace te
 
             void updateValues();
 
+            bool checkList(std::string& errors);
+
+            te::gm::Envelope getOutputEnvelope();
+
+            te::da::DataSourceInfoPtr getDataSourceInfo();
+
+            te::map::AbstractLayerPtr getReferenceLayer();
+
           private:
 
             std::auto_ptr<Ui::CreateCellularSpaceDialogForm> m_ui;
+            bool m_isFile;
+            te::da::DataSourceInfoPtr m_outDataSourceInfo;
+            std::string m_outputDataSetName;
         }; 
       }   // end namespace cellspace
     }     // end namespace plugins

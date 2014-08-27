@@ -1,5 +1,47 @@
 %apply unsigned int *INPUT{size_t& size}
 
+#ifdef SWIGJAVA
+// ---------------------------------
+// Java Documentation
+// ---------------------------------
+%javamethodmodifiers GetLayersImage(const std::vector<te::map::AbstractLayer*>& layers, te::gm::Envelope& bbox, int width, int height, size_t& size, const QColor& bckGround) "
+/**
+ * Returns a PNG image of the given layers.
+ * <p>
+ * Note that the layers will be rendered at reverse order, it means that the last layer on the layers set will be the first to be rendered.
+ *
+ * @param layers Layers to be rendered.
+ *
+ * @param bbox Bounding rectangle of the area to be rendered (return parameter). The rectangle must change to suit to the image dimensions.
+ *
+ * @param width Image width.
+ *
+ * @param height Image height.
+ *
+ * @param size Size of the image (return parameter).
+ *
+ * @param bckGround Background color of the image.
+ *
+ * @return A PNG image of the selected layers with the desired bounding rectangle.
+ */
+  public";
+
+%javamethodmodifiers GetTransformation(const te::gm::Envelope& vport, const te::gm::Envelope& win) "
+/** 
+ * Returns the transformation matrix to map world coordinates to device coordinates.
+ *
+ * @param vport Bounding rectangle of the device (pixel coordinate).
+ *
+ * @param win Bounding rectangle of the data (world coordinate).
+ *
+ * @return Transformation matrix.
+ *
+ * @see java.awt.geom.AffineTransform
+ */
+  public";
+  
+#endif
+
 %{
 // TerraLib
 #include "terralib/dataaccess/utils/Utils.h"

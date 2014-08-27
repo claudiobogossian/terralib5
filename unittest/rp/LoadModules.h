@@ -51,6 +51,6 @@ void LoadModules()
 #endif
 
   te::plugin::PluginManager::getInstance().loadAll();  
-};
+}
 
 #endif  // __TERRALIB_UNITTEST_RP_LOADMODULES_H

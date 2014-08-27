@@ -89,13 +89,16 @@ void te::sa::KernelRatioDialog::setLayers(std::list<te::map::AbstractLayerPtr> l
   {
     te::map::AbstractLayerPtr l = *it;
 
-    std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
-
-    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
-
-    if(dsLayer && dsType->hasGeom())
+    if(l->isValid())
     {
-      m_ui->m_inputLayerComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
+      std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
+
+      te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
+
+      if(dsLayer && dsType->hasGeom())
+      {
+        m_ui->m_inputLayerComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
+      }
     }
 
     ++it;

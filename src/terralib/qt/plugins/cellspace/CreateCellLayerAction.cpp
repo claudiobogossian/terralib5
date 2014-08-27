@@ -62,4 +62,19 @@ void te::qt::plugins::cellspace::CreateCellLayerAction::onActionActivated(bool c
 
   if(dlg.exec() != QDialog::Accepted)
     return;
+
+  if(QMessageBox::question(parent, tr("Cellular Spaces"), tr("Would you like to add the data in the tree?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+  {
+    te::map::AbstractLayerPtr layer = dlg.getLayer();
+
+    if(!layer)
+      return;
+
+    if(prj)
+    {
+      te::qt::af::evt::LayerAdded evt(layer);
+
+      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+    }
+  }
 }

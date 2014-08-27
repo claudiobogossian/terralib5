@@ -158,6 +158,9 @@ namespace te
           */
           void setSelectionColor(QColor selColor);
 
+          void setData();
+
+
         private:
 
             Histogram*                        m_histogram;           //!< The histogram that will be shown on this chart.

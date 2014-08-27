@@ -228,9 +228,7 @@ double te::sa::CalculateDistance(te::gm::Geometry* geom, te::gm::Coord2D& coord)
   }
   else if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
   {
-    te::gm::Polygon* poly = (te::gm::Polygon*)((te::gm::MultiPolygon*)geom)->getGeometryN(0);
-
-    te::gm::Point* p = poly->getCentroid();
+    te::gm::Point* p = ((te::gm::MultiPolygon*)geom)->getCentroid();
 
     distance = p->distance(point.get());
 
@@ -264,9 +262,7 @@ te::gm::Coord2D te::sa::GetCentroidCoord(te::gm::Geometry* geom)
   }
   else if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
   {
-    te::gm::Polygon* poly = (te::gm::Polygon*)((te::gm::MultiPolygon*)geom)->getGeometryN(0);
-
-    te::gm::Point* p = poly->getCentroid();
+    te::gm::Point* p = ((te::gm::MultiPolygon*)geom)->getCentroid();
 
     coord.x = p->getX();
     coord.y = p->getY();

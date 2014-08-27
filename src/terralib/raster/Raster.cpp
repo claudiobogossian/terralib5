@@ -552,9 +552,9 @@ te::rst::Raster* te::rst::Raster::resample(int method, unsigned int drow,
   te::rst::Interpolator* interp = new te::rst::Interpolator(this, method);
 
 // fill output raster
-  double ripp = ((double)height) / ((double)newheight);
+  double ripp = ((double)(height-1)) / ((double)(newheight-1));
 
-  double cipp = ((double)width) / ((double)newwidth);
+  double cipp = ((double)(width-1)) / ((double)(newwidth-1));
 
   double ri = drow;
 

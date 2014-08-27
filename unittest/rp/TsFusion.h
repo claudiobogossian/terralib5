@@ -18,53 +18,42 @@
  */
 
 /*!
-  \file terralib/cellspace/Cell.h
-   
-  \brief class that define a Cell.
-*/
+  \file TsFusion.h
+ 
+  \brief A test suit for the Fusion Classes.
+ */
 
-#ifndef __TERRALIB_CELLSPACE_INTERNAL_CELL_H
-#define __TERRALIB_CELLSPACE_INTERNAL_CELL_H
+#ifndef __TERRALIB_UNITTEST_RP_FUSION_INTERNAL_H
+#define __TERRALIB_UNITTEST_RP_FUSION_INTERNAL_H
 
-// TerraLib
-#include "Config.h"
+// cppUnit
+#include <cppunit/extensions/HelperMacros.h>
 
-// STL
-#include <string>
+/*!
+  \class TsFusion
 
-namespace te
+  \brief A test suit for the Fusion classes interfaces.
+ */
+class TsFusion : public CPPUNIT_NS::TestFixture 
 {
-  namespace cellspace
-  {
-    /*!
-      \class Cell
+  CPPUNIT_TEST_SUITE( TsFusion );
+  
+  CPPUNIT_TEST( wisper );
+  
+  CPPUNIT_TEST( ihs );
+  
+  CPPUNIT_TEST( pca );  
 
-      \brief This class define a cell in the Cellular Spaces module.
-    */
-    class TECELLSPACEEXPORT Cell
-    {
-      public:
+  CPPUNIT_TEST_SUITE_END();
 
-        Cell(int column, int row);
+protected :
 
-        ~Cell();
+  void ihs();
+  
+  void pca();
+  
+  void wisper();
+  
+};
 
-        int getColumn();
-
-        int getRow();
-
-        void setColumn(int column);
-
-        void setRow(int row);
-
-      private:
-
-        int m_column;
-        int m_row;
-    };
-
-  } // end namespace cellspace
-}   // end namespace te
-
-#endif  // __TERRALIB_CELLSPACE_INTERNAL_CELL_H
-
+#endif
