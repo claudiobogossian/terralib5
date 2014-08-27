@@ -75,7 +75,10 @@ void te::qt::plugins::vp::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Qt VP Plugin startup!"));
 
 // add plugin menu
-  m_vpMenu = te::qt::af::ApplicationController::getInstance().getMenu("VP");
+  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
+  m_vpMenu = new QMenu(pluginMenu);
+
+  pluginMenu->addMenu(m_vpMenu);
 
   m_vpMenu->setTitle(TE_TR("Vector Processing"));
 

@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/qt/plugins/cellspace/Plugin.cpp
+  \file terralib/qt/plugins/vp/Plugin.cpp
 
-  \brief Plugin implementation for the Cellular Spaces Qt Plugin widget.
+  \brief Plugin implementation for the Processing Qt Plugin widget.
 */
 
 // TerraLib
@@ -29,71 +29,74 @@
 #include "../../../common/Logger.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/events/LayerEvents.h"
-#include "CreateCellLayerAction.h"
+#include "RasterToVectorAction.h"
+#include "VectorToRasterAction.h"
 #include "Plugin.h"
 
 // QT
 #include <QMenu>
 #include <QMenuBar>
 
-te::qt::plugins::cellspace::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo), m_cellSpaceMenu(0)
+te::qt::plugins::processing::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
+  : te::plugin::Plugin(pluginInfo), m_processingMenu(0)
 {
 }
 
-te::qt::plugins::cellspace::Plugin::~Plugin() 
+te::qt::plugins::processing::Plugin::~Plugin() 
 {
 }
 
-void te::qt::plugins::cellspace::Plugin::startup()
+void te::qt::plugins::processing::Plugin::startup()
 {
   if(m_initialized)
     return;
 
-  TE_LOG_TRACE(TE_TR("TerraLib Qt Cellular Spaces Plugin startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt Processing Plugin startup!"));
 
 // add plugin menu
   QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
-  m_cellSpaceMenu = new QMenu(pluginMenu);
+  m_processingMenu = new QMenu(pluginMenu);
 
-  pluginMenu->addMenu(m_cellSpaceMenu);
+  pluginMenu->addMenu(m_processingMenu);
 
-  m_cellSpaceMenu->setTitle(TE_TR("Cellular Spaces"));
+  m_processingMenu->setTitle(TE_TR("Processing"));
 
   // register actions
   registerActions();
 
 // add pop up menu
-  m_popupAction = new QAction(m_cellSpaceMenu);
-  m_popupAction->setText(TE_TR("Cellular Spaces"));
+  m_popupAction = new QAction(m_processingMenu);
+  m_popupAction->setText(TE_TR("Processing"));
 
   m_initialized = true;
 }
 
-void te::qt::plugins::cellspace::Plugin::shutdown()
+void te::qt::plugins::processing::Plugin::shutdown()
 {
   if(!m_initialized)
     return;
 
 // remove menu
-  delete m_cellSpaceMenu;
+  delete m_processingMenu;
 
   // unregister actions
   unRegisterActions();
 
-  TE_LOG_TRACE(TE_TR("TerraLib Qt Cellular Spaces Plugin shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt Processing Plugin shutdown!"));
 
   m_initialized = false;
 }
 
-void te::qt::plugins::cellspace::Plugin::registerActions()
+void te::qt::plugins::processing::Plugin::registerActions()
 {
-  m_createCellLayer = new te::qt::plugins::cellspace::CreateCellLayerAction(m_cellSpaceMenu);
+  m_rasterToVector = new te::qt::plugins::processing::RasterToVectorAction(m_processingMenu);
+  m_vectorToRaster = new te::qt::plugins::processing::VectorToRasterAction(m_processingMenu);
 }
 
-void te::qt::plugins::cellspace::Plugin::unRegisterActions()
+void te::qt::plugins::processing::Plugin::unRegisterActions()
 {
-  delete m_createCellLayer;
+  delete m_rasterToVector;
+  delete m_vectorToRaster;
 }
 
-PLUGIN_CALL_BACK_IMPL(te::qt::plugins::cellspace::Plugin)
+PLUGIN_CALL_BACK_IMPL(te::qt::plugins::processing::Plugin)
