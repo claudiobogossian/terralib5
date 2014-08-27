@@ -44,9 +44,11 @@ namespace te
         TitleItem( ItemController* controller, Observable* o );
         virtual ~TitleItem();
         
-        virtual void updateObserver(ContextItem context);
-
         virtual void init();
+
+      protected:
+
+        virtual void refreshTable();
 
         virtual void refreshText();
     };

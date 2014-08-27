@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>TextGridSettings</class>
- <widget class="QWidget" name="TextGridSettings">
+ <widget class="QDialog" name="TextGridSettings">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>559</width>
-    <height>499</height>
+    <width>548</width>
+    <height>491</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Text Grid Settings</string>
+   <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_4">
    <item row="0" column="0">
@@ -240,7 +240,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QComboBox" name="cmbHeaderAlign_2"/>
+                 <widget class="QComboBox" name="cmbHeaderAlign"/>
                 </item>
                </layout>
               </item>
@@ -313,7 +313,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QComboBox" name="cmbCellAlign_2"/>
+                 <widget class="QComboBox" name="cmbCellAlign"/>
                 </item>
                </layout>
               </item>
@@ -417,17 +417,6 @@
              </layout>
             </item>
            </layout>
-           <zorder>cmbTableWidthConstraints</zorder>
-           <zorder>lblTablePadding</zorder>
-           <zorder>lblTableSpacing</zorder>
-           <zorder>lblTableBackgroundColor</zorder>
-           <zorder>lblTableWidth</zorder>
-           <zorder>lblTableWidthConstraints</zorder>
-           <zorder>grpCell</zorder>
-           <zorder>frmTableColor</zorder>
-           <zorder>lneEdtTableSpacing</zorder>
-           <zorder>lneEdtTablePadding</zorder>
-           <zorder>lneEdtTableWidth</zorder>
           </widget>
          </item>
          <item>

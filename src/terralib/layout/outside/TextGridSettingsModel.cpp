@@ -57,3 +57,31 @@ void te::layout::TextGridSettingsModel::updateProperties( te::layout::Properties
 {
 
 }
+
+void te::layout::TextGridSettingsModel::setOutsideProperty( Property property )
+{
+  m_property.clear();
+  m_property = property;
+}
+
+te::layout::Property te::layout::TextGridSettingsModel::getOutsideProperty()
+{
+  return m_property;
+}
+
+te::layout::Property te::layout::TextGridSettingsModel::containsOutsideSubProperty( std::string name )
+{
+  return m_property.containsSubProperty(name);
+}
+
+void te::layout::TextGridSettingsModel::updateOutsideSubProperty( Property subProperty )
+{
+  if(m_property.isNull())
+    return;
+
+  if(m_property.containsSubProperty(subProperty))
+  {
+    m_property.removeSubProperty(subProperty);
+    m_property.addSubProperty(subProperty);
+  }
+}

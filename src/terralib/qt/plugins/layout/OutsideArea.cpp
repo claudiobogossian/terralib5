@@ -113,7 +113,7 @@ void te::qt::plugins::layout::OutsideArea::init()
 {
   if(m_view)
   {
-    connect(m_view->scene(), SIGNAL(selectionChanged()), this, SLOT(onSelectionChanged()));
+    connect(m_view, SIGNAL(reloadProperties()), this, SLOT(onSelectionChanged()));
     connect(m_view->scene(), SIGNAL(addItemFinalized()), this, SLOT(onAddItemFinalized()));
     connect(m_view, SIGNAL(hideView()), this, SLOT(onHideView()));
     connect(m_view, SIGNAL(closeView()), this, SLOT(onCloseView()));

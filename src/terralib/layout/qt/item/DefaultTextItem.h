@@ -37,6 +37,7 @@
 #include <QVariant>
 #include <QPainter>
 #include <QTextTable>
+#include <QVariant>
 
 namespace te
 {
@@ -77,17 +78,25 @@ namespace te
 
         virtual void init();
 
+        void setTextInteraction(bool on, bool selectAll = false);
+
       protected slots:
 
         virtual void onContentsChange ( int position, int charsRemoved, int charsAdded );
 
       protected:
 
+        virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *evt);
+
+        virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
+
         virtual void drawBackground( QPainter* painter );
 
         virtual void drawSelection(QPainter* painter);
 
         virtual void adjustSizeMM();
+
+        virtual void refreshTable();
 
         virtual void refreshText();
 

@@ -40,6 +40,11 @@ te::layout::TextGridModel::TextGridModel()
   m_rowNumber = 4;
 
   m_box = te::gm::Envelope(0., 0., 190., 170.);
+
+  m_tableColor.setColor(0,0,0,255);
+  m_borderGridColor.setColor(0,0,0,255);
+  m_headerHorizontalColor.setColor(192,192,192,255);
+  m_headerVerticalColor.setColor(192,192,192,255);
 }
 
 te::layout::TextGridModel::~TextGridModel()

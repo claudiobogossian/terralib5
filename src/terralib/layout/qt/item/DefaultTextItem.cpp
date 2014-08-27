@@ -45,6 +45,7 @@
 #include <QStyleOptionGraphicsItem>
 #include <QTextCursor>
 #include <QAbstractTextDocumentLayout>
+#include <QGraphicsSceneMouseEvent>
 
 te::layout::DefaultTextItem::DefaultTextItem( ItemController* controller, Observable* o ) :
   QGraphicsTextItem(0),
@@ -57,6 +58,8 @@ te::layout::DefaultTextItem::DefaultTextItem( ItemController* controller, Observ
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges
     | QGraphicsItem::ItemIsFocusable);
+
+  setTextInteractionFlags(Qt::NoTextInteraction);
 
   QGraphicsItem* item = this;
   Context::getInstance().getScene()->insertItem((ItemObserver*)item);
@@ -104,27 +107,6 @@ void te::layout::DefaultTextItem::updateObserver( ContextItem context )
   if(!utils)
     return;
 
-  DefaultTextModel* model = dynamic_cast<DefaultTextModel*>(m_model);
-  if(model)
-  {
-    Font font = model->getFont();
-    QFont qfont;
-    qfont.setFamily(font.getFamily().c_str());
-    qfont.setPointSize(font.getPointSize());
-    qfont.setBold(font.isBold());
-    qfont.setItalic(font.isItalic());
-    qfont.setUnderline(font.isUnderline());
-    qfont.setStrikeOut(font.isStrikeout());
-    qfont.setKerning(font.isKerning());
-    setFont(qfont);
-
-    document()->clear();
-    QTextCursor cursor(document());
-    cursor.movePosition(QTextCursor::Start);
-    cursor.insertText(model->getText().c_str());
-    adjustSize();
-  }
-
   te::gm::Envelope box = utils->viewportBox(m_model->getBox());
 
   if(!box.isValid())
@@ -142,6 +124,8 @@ void te::layout::DefaultTextItem::updateObserver( ContextItem context )
   te::common::Free(rgba, box.getHeight());
   if(img)
     delete img;
+
+  refreshTable();
 
   setPixmap(pixmap);
   update();
@@ -297,7 +281,6 @@ void te::layout::DefaultTextItem::onContentsChange( int position, int charsRemov
   if(vw != m_oldAdjustSizeW || vh != m_oldAdjustSizeH)
   {
     adjustSizeMM();
-    refreshText();
   }
 }
 
@@ -340,10 +323,96 @@ void te::layout::DefaultTextItem::adjustSizeMM()
               model->getBox().m_llx + m_oldAdjustSizeW, model->getBox().m_lly + m_oldAdjustSizeH);
   model->setBox(newBox);
 
-  redraw();
+  setRect(QRectF(0, 0, newBox.getWidth(), newBox.getHeight()));
+}
+
+void te::layout::DefaultTextItem::refreshTable()
+{
+  refreshText();
 }
 
 void te::layout::DefaultTextItem::refreshText()
 {
+  DefaultTextModel* model = dynamic_cast<DefaultTextModel*>(m_model);
+  if(model)
+  {
+    Font font = model->getFont();
+    QFont qfont;
+    qfont.setFamily(font.getFamily().c_str());
+    qfont.setPointSize(font.getPointSize());
+    qfont.setBold(font.isBold());
+    qfont.setItalic(font.isItalic());
+    qfont.setUnderline(font.isUnderline());
+    qfont.setStrikeOut(font.isStrikeout());
+    qfont.setKerning(font.isKerning());
+    setFont(qfont);
 
+    document()->clear();
+    QTextCursor cursor(document());
+    cursor.movePosition(QTextCursor::Start);
+    cursor.insertText(model->getText().c_str());
+    adjustSize();
+  }
+}
+
+void te::layout::DefaultTextItem::setTextInteraction( bool on, bool selectAll /*= false*/ )
+{
+  if(on && textInteractionFlags() == Qt::NoTextInteraction)
+  {
+    // switch on editor mode:
+    setTextInteractionFlags(Qt::TextEditorInteraction);
+    // manually do what a mouse click would do else:
+    setFocus(Qt::MouseFocusReason); // this gives the item keyboard focus
+    setSelected(true); // this ensures that itemChange() gets called when we click out of the item
+    if(selectAll) // option to select the whole text (e.g. after creation of the TextItem)
+    {
+      QTextCursor c = textCursor();
+      c.select(QTextCursor::Document);
+      setTextCursor(c);
+    }
+  }
+  else if(!on && textInteractionFlags() == Qt::TextEditorInteraction)
+  {
+    // turn off editor mode:
+    setTextInteractionFlags(Qt::NoTextInteraction);
+    // deselect text (else it keeps gray shade):
+    QTextCursor c = this->textCursor();
+    c.clearSelection();
+    this->setTextCursor(c);
+    clearFocus();
+  }
+}
+
+void te::layout::DefaultTextItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent *evt )
+{
+  if(textInteractionFlags() == Qt::TextEditorInteraction)
+  {
+    // if editor mode is already on: pass double click events on to the editor:
+    QGraphicsTextItem::mouseDoubleClickEvent(evt);
+    return;
+  }
+
+  // if editor mode is off:
+  // 1. turn editor mode on and set selected and focused:
+  setTextInteraction(true);
+
+  // 2. send a single click to this QGraphicsTextItem (this will set the cursor to the mouse position):
+  // create a new mouse event with the same parameters as evt
+  QGraphicsSceneMouseEvent *click = new QGraphicsSceneMouseEvent(QEvent::GraphicsSceneMousePress);
+  click->setButton(evt->button());
+  click->setPos(evt->pos());
+  QGraphicsTextItem::mousePressEvent(click);
+  delete click; // don't forget to delete the event
+}
+
+QVariant te::layout::DefaultTextItem::itemChange( GraphicsItemChange change, const QVariant & value )
+{
+  if(change == QGraphicsItem::ItemSelectedChange 
+    && textInteractionFlags() != Qt::NoTextInteraction 
+    && !value.toBool())
+  {
+    // item received SelectedChange event AND is in editor mode AND is about to be deselected:
+    setTextInteraction(false); // leave editor mode
+  }
+  return QGraphicsTextItem::itemChange(change, value);
 }

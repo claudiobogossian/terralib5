@@ -42,11 +42,14 @@ namespace te
       public:
 
         TextGridItem( ItemController* controller, Observable* o );
+
         virtual ~TextGridItem();
         
-        virtual void updateObserver(ContextItem context);
-
         virtual void init();
+
+      protected:
+        
+        virtual void refreshText();
     };
   }
 }

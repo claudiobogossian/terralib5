@@ -53,58 +53,6 @@ te::layout::TextGridItem::~TextGridItem()
   
 }
 
-void te::layout::TextGridItem::updateObserver( ContextItem context )
-{
-  if(!m_model)
-    return;
-
-  te::color::RGBAColor** rgba = context.getPixmap();
-
-  if(!rgba)
-    return;
-
-  Utils* utils = context.getUtils();
-
-  if(!utils)
-    return;
-
-  DefaultTextModel* model = dynamic_cast<DefaultTextModel*>(m_model);
-  if(model)
-  {
-    Font font = model->getFont();
-    QFont qfont;
-    qfont.setFamily(font.getFamily().c_str());
-    qfont.setPointSize(font.getPointSize());
-    qfont.setBold(font.isBold());
-    qfont.setItalic(font.isItalic());
-    qfont.setUnderline(font.isUnderline());
-    qfont.setStrikeOut(font.isStrikeout());
-    qfont.setKerning(font.isKerning());
-    setFont(qfont);
-  }
-
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
-
-  if(!box.isValid())
-    return;
-
-  QPixmap pixmap;
-  QImage* img = 0;
-
-  if(rgba)
-  {
-    img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
-    pixmap = QPixmap::fromImage(*img);
-  }
-
-  te::common::Free(rgba, box.getHeight());
-  if(img)
-    delete img;
-
-  setPixmap(pixmap);
-  update();
-}
-
 void te::layout::TextGridItem::init()
 {
   TextGridModel* model = dynamic_cast<TextGridModel*>(m_model);
@@ -195,4 +143,105 @@ void te::layout::TextGridItem::init()
 
   DefaultTextItem::init();
   adjustSizeMM();
+  //TitleItem::init();
+}
+
+void te::layout::TextGridItem::refreshText()
+{
+  return;
+
+  TextGridModel* model = dynamic_cast<TextGridModel*>(m_model);
+
+  if(!model)
+    return;
+
+  int numRows = model->getNumberRows();
+  int numColumns = model->getNumberColumns();
+
+  QTextCursor cursor(document());
+  cursor.movePosition(QTextCursor::Start);
+
+  QTextCharFormat format = cursor.charFormat();
+  format.setFontPointSize(12);
+
+  QTextCharFormat boldFormat = format;
+  boldFormat.setFontWeight(QFont::Bold);
+
+  te::color::RGBAColor headerVtrColor = model->getHeaderVerticalColor();
+  QColor qHeaderVtrColor(headerVtrColor.getRed(), headerVtrColor.getGreen(),
+    headerVtrColor.getBlue(), headerVtrColor.getAlpha());
+
+  te::color::RGBAColor headerHrzColor = model->getHeaderHorizontalColor();
+  QColor qHeaderHrzColor(headerHrzColor.getRed(), headerHrzColor.getGreen(),
+    headerHrzColor.getBlue(), headerHrzColor.getAlpha());
+
+  te::color::RGBAColor borderColor = model->getBorderGridColor();
+  QColor qBorderColor(borderColor.getRed(), borderColor.getGreen(),
+    borderColor.getBlue(), borderColor.getAlpha());
+
+  te::color::RGBAColor evenRowColor = model->getEvenRow();
+  QColor qEvenRowColor(evenRowColor.getRed(), evenRowColor.getGreen(),
+    evenRowColor.getBlue(), evenRowColor.getAlpha());
+
+  te::color::RGBAColor oddRowColor = model->getOddRow();
+  QColor qOddRowColor(oddRowColor.getRed(), oddRowColor.getGreen(),
+    oddRowColor.getBlue(), oddRowColor.getAlpha());
+
+  //Table Headers (Hrz)
+  QBrush headerHrz(qHeaderHrzColor);
+  for(int i = 1 ; i < numRows ; ++i)
+  {
+    QTextTableCell cellOne = m_table->cellAt(i, 0);
+    
+    QTextCharFormat fmtOne = cellOne.format(); 
+    fmtOne.setBackground(headerHrz);
+    cellOne.setFormat(fmtOne);
+
+    QTextCursor cellCursorOne = cellOne.firstCursorPosition();
+    std::string title = model->getTitle();
+    //cellCursorOne.insertText(title.c_str(), fmtOne);
+  }
+
+  //Table Headers (Vrt)
+  QBrush headerVrt(qHeaderVtrColor);
+  for(int j = 0 ; j < numColumns ; ++j)
+  {
+    QTextTableCell cellTwo = m_table->cellAt(0, j);
+
+    QTextCharFormat fmtTwo = cellTwo.format(); 
+    fmtTwo.setBackground(headerVrt); 
+    cellTwo.setFormat(fmtTwo);
+
+    QTextCursor cellCursorTwo = cellTwo.firstCursorPosition();
+    std::string title = model->getTitle();
+    //cellCursorTwo.insertText(title.c_str(), fmtTwo);
+  }
+
+  //Table
+  QBrush evenRw(qEvenRowColor);
+  QBrush oddRw(qOddRowColor);
+  for (int i = 1 ; i < numRows ; ++i) 
+  {
+    for(int j = 1 ; j < numColumns ; ++j)
+    {
+      QTextTableCell cellThree = m_table->cellAt(i, j);
+
+      QTextCharFormat fmtThree = cellThree.format(); 
+
+      if (i % 2)
+      {
+        fmtThree.setBackground(oddRw); 
+      }
+      else
+      {
+        fmtThree.setBackground(evenRw); 
+      }
+
+      cellThree.setFormat(fmtThree);
+
+      /*QTextCursor cellCursorThree = cellThree.firstCursorPosition();
+      std::string text = model->getText();
+      cellCursorThree.insertText(text.c_str(), fmtThree);*/
+    }
+  }
 }

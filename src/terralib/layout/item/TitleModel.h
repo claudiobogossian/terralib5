@@ -35,6 +35,8 @@ namespace te
 {
   namespace layout
   {
+    class TextGridSettingsConfigProperties;
+
     class TitleModel : public DefaultTextModel
     {
       public:
@@ -66,7 +68,45 @@ namespace te
 
         virtual int getNumberRows();
 
+        virtual void setTableColor(te::color::RGBAColor color);
+
+        virtual te::color::RGBAColor getTableColor();
+
+        virtual void setWidth(double width);
+
+        virtual double getWidth();
+
+        virtual void setEvenRow(te::color::RGBAColor color);
+
+        virtual te::color::RGBAColor getEvenRow();
+
+        virtual void setOddRow(te::color::RGBAColor color);
+
+        virtual te::color::RGBAColor getOddRow();
+
+        virtual void setColumnWidth(double width);
+
+        virtual double getColumnWidth();
+
+        virtual void setBorderWidth(double width);
+
+        virtual double getBorderWidth();
+
+        virtual void setBorderGridColor(te::color::RGBAColor color);
+
+        virtual te::color::RGBAColor getBorderGridColor();
+
+        virtual void setHeaderHorizontalColor(te::color::RGBAColor color);
+
+        virtual te::color::RGBAColor getHeaderHorizontalColor();
+
+        virtual void setHeaderVerticalColor(te::color::RGBAColor color);
+
+        virtual te::color::RGBAColor getHeaderVerticalColor();
+
       protected:
+
+        TextGridSettingsConfigProperties* m_textgridProperties;
 
         std::string m_title;
 
@@ -107,7 +147,7 @@ namespace te
 
         /* Cell */
 
-        //EnumType* m_cellAligment;
+        //EnumType* m_cellAlignment;
     };
   }
 }

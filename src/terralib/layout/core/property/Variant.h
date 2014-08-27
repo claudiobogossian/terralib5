@@ -131,10 +131,12 @@ namespace te
       {
         if(m_sValue == otherProp.toString() &&
           m_dValue == otherProp.toDouble() &&
-          m_iValue == toInt() &&
-          m_lValue == toLong() &&
-          m_fValue == toFloat() &&
-          m_bValue == toBool())
+          m_iValue == otherProp.toInt() &&
+          m_lValue == otherProp.toLong() &&
+          m_fValue == otherProp.toFloat() &&
+          m_bValue == otherProp.toBool() &&
+          m_colorValue == otherProp.toColor() /*&&
+          m_fontValue == otherProp.toFont()*/)
         {
           return true;
         }
@@ -155,9 +157,11 @@ namespace te
       {
         if(m_sValue != otherProp.toString() ||
           m_dValue != otherProp.toDouble() ||
-          m_iValue != toInt() ||
-          m_lValue != toLong() ||
-          m_fValue != toFloat())
+          m_iValue != otherProp.toInt() ||
+          m_lValue != otherProp.toLong() ||
+          m_fValue != otherProp.toFloat() ||
+          m_colorValue != otherProp.toColor() /*||
+          m_fontValue != otherProp.toFont()*/)
         {
           return true;
         }

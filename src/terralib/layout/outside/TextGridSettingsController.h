@@ -40,13 +40,27 @@ namespace te
   {
     class TELAYOUTEXPORT TextGridSettingsController : public OutsideController
     {
-    public:
+      public:
 
-	    TextGridSettingsController( Observable* o );
-	    virtual ~TextGridSettingsController();
+	      TextGridSettingsController( Observable* o );
+	      virtual ~TextGridSettingsController();
 
-	    virtual void setPosition(const double& x, const double& y);
+	      virtual void setPosition(const double& x, const double& y);
 
+        virtual Property updateProperty();
+
+        virtual void addUpdateProperty(std::string name, Variant variant);
+
+        virtual void addUpdateTextGridProperty(Property subProperty);
+        
+        virtual void clearUpdate();
+
+        virtual Property getProperty(std::string name);
+
+      protected:
+
+        Property m_update;
+        Property m_textGridSettings;
     };
   }
 }

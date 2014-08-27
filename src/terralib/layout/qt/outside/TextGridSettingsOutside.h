@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_SETTINGS_OUTSIDE_H
 
 // Qt
-#include <QWidget>
+#include <QDialog>
 
 // TerraLib
 #include "../../core/pattern/mvc/OutsideObserver.h"
@@ -47,8 +47,9 @@ namespace te
   {
     class OutsideController;
     class Observable;
+    class TextGridSettingsConfigProperties;
 
-    class TELAYOUTEXPORT TextGridSettingsOutside : public QWidget, public OutsideObserver 
+    class TELAYOUTEXPORT TextGridSettingsOutside : public QDialog, public OutsideObserver 
     {
 	    Q_OBJECT
     
@@ -63,20 +64,70 @@ namespace te
         virtual void setPosition(const double& x, const double& y);
 
         virtual te::gm::Coord2D getPosition();
+
+        virtual void blockComponents();
+
+        virtual void unblockComponents();
        
         virtual void load();
 
+        virtual bool	eventFilter ( QObject * watched, QEvent * event );
+
       signals:
 
-        void changeSettings();
+        void updateProperty();
 
       private slots:
         
         virtual void on_pbApply_clicked();
+
+        virtual void on_pbCancel_clicked();
+
+        virtual void on_cmbColumnsWidthConstraints_currentIndexChanged ( const QString & text );
+
+        virtual void on_cmbTableWidthConstraints_currentIndexChanged ( const QString & text );
+
+        virtual void on_cmbHeaderAlign_currentIndexChanged ( const QString & text );
+
+        virtual void on_cmbBorderStyle_currentIndexChanged ( const QString & text );
+
+        virtual void on_cmbCellAlign_currentIndexChanged ( const QString & text );
+
+        virtual void on_lneEdtBorderWidth_editingFinished();
+
+        virtual void on_lneEdtColumnsNumber_editingFinished();
+
+        virtual void on_lneEdtColumnsWidth_editingFinished();
         
+        virtual void on_lneEdtRowsNumber_editingFinished();
+
+        virtual void on_lneEdtTablePadding_editingFinished();
+
+        virtual void on_lneEdtTableSpacing_editingFinished();
+
+        virtual void on_lneEdtTableWidth_editingFinished();
+
       protected:
 
+        virtual te::color::RGBAColor configColor(QWidget* widget);
+
         virtual void init();
+
+        virtual void initString( QWidget* widget, std::string nameComponent );
+
+        virtual void initInt( QWidget* widget, std::string nameComponent );
+
+        virtual void initDouble( QWidget* widget, std::string nameComponent );
+
+        virtual void initBool( QWidget* widget, std::string nameComponent );
+
+        virtual void initColor( QWidget* widget, std::string nameComponent );
+
+        virtual void initCombo(QWidget* widget, std::string nameComponent);
+
+      protected:
+
+        TextGridSettingsConfigProperties* m_propertiesNames;
 
       private:
 

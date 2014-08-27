@@ -41,14 +41,27 @@ namespace te
   {
     class TELAYOUTEXPORT TextGridSettingsModel : public OutsideModelObservable
     {
-    public:
+      public:
 
-      TextGridSettingsModel();
-      virtual ~TextGridSettingsModel();
+        TextGridSettingsModel();
 
-      virtual void updateProperties(te::layout::Properties* properties);
+        virtual ~TextGridSettingsModel();
 
-      virtual Properties* getProperties() const;
+        virtual void updateProperties(te::layout::Properties* properties);
+
+        virtual Properties* getProperties() const;
+
+        virtual void setOutsideProperty(Property property);
+
+        virtual Property getOutsideProperty();
+
+        virtual te::layout::Property containsOutsideSubProperty( std::string name );
+
+        virtual void updateOutsideSubProperty(Property subProperty);
+
+      protected:
+
+        Property m_property;
 
     };
   }

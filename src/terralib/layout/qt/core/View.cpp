@@ -712,7 +712,6 @@ void te::layout::View::contextMenuEvent( QContextMenuEvent * event )
 bool te::layout::View::intersectionSelectionItem(int x, int y)
 {
   QList<QGraphicsItem *> items = this->scene()->selectedItems();
-  int a = items.count();
   bool intersection = false;
 
   QPointF pt(x, y);

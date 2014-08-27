@@ -495,41 +495,41 @@ void te::layout::MenuItem::showTextGridSettingsDlg( Property property )
   if(!m_textGridSettings)
   {
     TextGridSettingsModel* model = new TextGridSettingsModel;
-    //model->setOutsideProperty(property);
+    model->setOutsideProperty(property);
     TextGridSettingsController* controller = new TextGridSettingsController(model);
 
     Observer* obs = const_cast<Observer*>(controller->getView());
     OutsideObserver* observer = dynamic_cast<OutsideObserver*>(obs);
     m_textGridSettings = dynamic_cast<TextGridSettingsOutside*>(observer);
-    //connect(m_textGridSettings, SIGNAL(updateProperty()), this, SLOT(onUpdateTextGridSettingsProperty()));
+    connect(m_textGridSettings, SIGNAL(updateProperty()), this, SLOT(onUpdateTextGridSettingsProperty()));
   }
 
-  if(m_gridSettings)
+  if(m_textGridSettings)
   {
-    if(property.getType() == dataType->getDataTypeGridSettings())
+    if(property.getType() == dataType->getDataTypeTextGridSettings())
     {
-      Observable* obs = dynamic_cast<Observable*>(m_gridSettings->getModel());
+      Observable* obs = dynamic_cast<Observable*>(m_textGridSettings->getModel());
       if(obs)
       {
         TextGridSettingsModel* modelObs = dynamic_cast<TextGridSettingsModel*>(obs);
         if(modelObs)
         {
-          //modelObs->setOutsideProperty(property);
+          modelObs->setOutsideProperty(property);
         }
 
-        ItemController* itCtrl = dynamic_cast<ItemController*>(m_gridSettings->getController());
+        ItemController* itCtrl = dynamic_cast<ItemController*>(m_textGridSettings->getController());
         if(itCtrl)
         {
           TextGridSettingsController* gridController = dynamic_cast<TextGridSettingsController*>(itCtrl);
           if(gridController)
           {
-            //gridController->clearUpdate();
+            gridController->clearUpdate();
           }
         }
       }
 
-      m_gridSettings->load();
-      m_gridSettings->show();
+      m_textGridSettings->load();
+      m_textGridSettings->show();
     }
   }
 }
@@ -539,12 +539,12 @@ void te::layout::MenuItem::onUpdateTextGridSettingsProperty()
   TextGridSettingsController* controller = dynamic_cast<TextGridSettingsController*>(m_textGridSettings->getController());
   if(controller)
   {
-    /*Property prop = controller->updateProperty();
+    Property prop = controller->updateProperty();
 
     if(prop.isNull())
       return;
 
-    changePropertyValue(prop);*/
+    changePropertyValue(prop);
   }
 }
 
