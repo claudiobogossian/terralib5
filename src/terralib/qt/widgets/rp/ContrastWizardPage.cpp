@@ -70,6 +70,7 @@ te::qt::widgets::ContrastWizardPage::ContrastWizardPage(QWidget* parent)
 
 //connects
   connect(m_ui->m_contrastTypeComboBox, SIGNAL(activated(int)), this, SLOT(onContrastTypeComboBoxActivated(int)));
+  connect(m_navigator.get(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(onPreviewChanged()));
   connect(m_navigator.get(), SIGNAL(previewClicked()), this, SLOT(apply()));
 
   connect(m_histogramWidget.get(), SIGNAL(minValueSelected(int, int)), this, SLOT(onMinValueSelected(int, int)));
@@ -201,8 +202,6 @@ void te::qt::widgets::ContrastWizardPage::apply()
 
   //get preview raster
   te::rst::Raster* inputRst = m_navigator->getExtentRaster();
-
-  m_histogramWidget->setInputRaster(inputRst);
 
   //set contrast parameters
   te::rp::Contrast::InputParameters algoInputParams = getInputParams();
@@ -400,4 +399,11 @@ void te::qt::widgets::ContrastWizardPage::onMaxValueSelected(int value, int band
     return;
 
   m_ui->m_bandTableWidget->item(band, 2)->setText(QString::number(value));
+}
+
+void te::qt::widgets::ContrastWizardPage::onPreviewChanged()
+{
+  te::rst::Raster* inputRst = m_navigator->getExtentRaster();
+
+  m_histogramWidget->setInputRaster(inputRst);
 }

@@ -100,6 +100,8 @@ namespace te
 
           void onMaxValueSelected(int value, int band);
 
+          void onPreviewChanged();
+
         private:
 
           std::auto_ptr<Ui::ContrastWizardPageForm> m_ui;

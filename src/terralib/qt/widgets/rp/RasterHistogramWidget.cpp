@@ -81,8 +81,9 @@ te::qt::widgets::RasterHistogramWidget::RasterHistogramWidget(QWidget* parent, Q
 
   m_histogramOutput = new te::qt::widgets::Histogram();
   m_histogramChartOutput = new te::qt::widgets::HistogramChart(m_histogramOutput);
-  m_histogramChartOutput->setPen(Qt::black);
+  m_histogramChartOutput->setPen(Qt::black, 3.);
   m_histogramChartOutput->setBrush(QBrush(QColor(255, 0, 0, 127)));
+  m_histogramChartOutput->setStyle(QwtPlotHistogram::Outline);
   m_histogramChartOutput->attach(m_chartDisplay);
   m_histogramChartOutput->setTitle(tr("Output"));
 
@@ -159,6 +160,8 @@ void te::qt::widgets::RasterHistogramWidget::onApplyToolButtonClicked()
 
     m_histogramChartOutput->setData();
   }
+
+  m_chartDisplay->updateLayout();
 
   m_chartDisplay->replot();
 }
