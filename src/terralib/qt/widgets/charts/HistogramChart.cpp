@@ -65,7 +65,7 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
     setBrush(barBrush);
   }
   
-  setHistogramData();
+  setData();
   
   m_selection = new QwtPlotHistogram();
   m_selection->setStyle(QwtPlotHistogram::Columns);
@@ -76,7 +76,7 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
 
 }
 
-void te::qt::widgets::HistogramChart::setHistogramData()
+void te::qt::widgets::HistogramChart::setData()
 {
   //Vector that will be populated by the histogram's data
   QVector<QwtIntervalSample> samples;
@@ -120,8 +120,7 @@ void te::qt::widgets::HistogramChart::setHistogramData()
       vx += m_histogram->getInterval();
       ++i;
     }
-
-    setData(new QwtIntervalSeriesData(samples));
+    setSamples(samples);
   }
 
   else if (m_histogram->getType() == te::dt::DATETIME_TYPE || m_histogram->getType() == te::dt::STRING_TYPE)
@@ -145,7 +144,7 @@ void te::qt::widgets::HistogramChart::setHistogramData()
        it++;
     }
 
-    setData(new QwtIntervalSeriesData(samples));
+    setSamples(samples);
   }
   else
   {
@@ -153,7 +152,7 @@ void te::qt::widgets::HistogramChart::setHistogramData()
     std::map<double,  unsigned int>::const_iterator it;
     values = m_histogram->getValues();
     it = values.begin();
-    double interval = 0.0;
+    double interval = m_histogram->getMinValue();
 
     while (it != values.end())
     {
@@ -170,7 +169,7 @@ void te::qt::widgets::HistogramChart::setHistogramData()
     blankStroke->setOpacity(QString::number(0, 'g', 2).toStdString());
     m_histogramStyle->setStroke(blankStroke);
 
-    setData(new QwtIntervalSeriesData(samples));
+    setSamples(samples);
   }
 }
 

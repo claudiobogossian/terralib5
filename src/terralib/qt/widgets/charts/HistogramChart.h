@@ -158,7 +158,8 @@ namespace te
           */
           void setSelectionColor(QColor selColor);
 
-          void setHistogramData();
+          void setData();
+
 
         private:
 
