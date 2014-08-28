@@ -56,9 +56,8 @@ te::sa::KernelOperation::~KernelOperation()
 {
 }
 
-void te::sa::KernelOperation::setParameters(te::sa::KernelInputParams* inParams, te::sa::KernelOutputParams* outParams)
+void te::sa::KernelOperation::setOutputParameters(te::sa::KernelOutputParams* outParams)
 {
-  m_inputParams.reset(inParams);
   m_outputParams.reset(outParams);
 }
 

@@ -228,7 +228,8 @@ void te::sa::KernelMapDialog::onOkPushButtonClicked()
   {
     te::sa::KernelMapOperation op;
 
-    op.setParameters(kInParams, kOutParams);
+    op.setInputParameters(kInParams);
+    op.setOutputParameters(kOutParams);
 
     op.execute();
   }

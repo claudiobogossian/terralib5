@@ -87,6 +87,11 @@ void te::sa::KernelMapOperation::execute()
   }
 }
 
+void te::sa::KernelMapOperation::setInputParameters(te::sa::KernelInputParams* inParams)
+{
+  m_inputParams.reset(inParams);
+}
+
 void te::sa::KernelMapOperation::buildTree()
 {
   //get properties information

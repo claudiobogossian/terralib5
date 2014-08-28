@@ -68,7 +68,8 @@ te::sa::KernelRatioOperation::~KernelRatioOperation()
 
 void te::sa::KernelRatioOperation::execute()
 {
-  assert(m_inputParams.get());
+  assert(m_inputParamsA.get());
+  assert(m_inputParamsB.get());
   assert(m_outputParams.get());
 
   //build tree and map kernel 
@@ -80,42 +81,42 @@ void te::sa::KernelRatioOperation::execute()
   if(outType == te::sa::Grid)
   {
     //create raster A
-    std::auto_ptr<te::rst::Raster> rasterA = buildRaster(m_inputParams.get(), m_kTree, "MEM");
+    std::auto_ptr<te::rst::Raster> rasterA = buildRaster(m_inputParamsA.get(), m_kTree, "MEM");
 
     //run kernel A
-    runRasterKernel(m_inputParams.get(), m_kTree, m_kMapA, rasterA.get());
+    runRasterKernel(m_inputParamsA.get(), m_kTree, m_kMapA, rasterA.get());
 
     //create raster B
-    std::auto_ptr<te::rst::Raster> rasterB = buildRaster(m_inputParams.get(), m_kTree, "MEM");
+    std::auto_ptr<te::rst::Raster> rasterB = buildRaster(m_inputParamsB.get(), m_kTree, "MEM");
 
     //run kernel B
-    runRasterKernel(m_inputParams.get(), m_kTree, m_kMapB, rasterB.get());
+    runRasterKernel(m_inputParamsB.get(), m_kTree, m_kMapB, rasterB.get());
 
     //create raster out
-    std::auto_ptr<te::rst::Raster> rasterOut = buildRaster(m_inputParams.get(), m_kTree, "GDAL");
+    std::auto_ptr<te::rst::Raster> rasterOut = buildRaster(m_inputParamsA.get(), m_kTree, "GDAL");
 
     //run kernel ratio
-    te::sa::GridRatioKernel(m_inputParams.get(), rasterA.get(), rasterB.get(), rasterOut.get());
+    te::sa::GridRatioKernel(m_outputParams.get(), rasterA.get(), rasterB.get(), rasterOut.get());
   }
   else if(outType == te::sa::Attribute)
   {
     //create datasetype A
-    std::auto_ptr<te::da::DataSetType> dsTypeA = createDataSetType(m_inputParams->m_dsType.get());
+    std::auto_ptr<te::da::DataSetType> dsTypeA = createDataSetType(m_inputParamsA->m_dsType.get());
 
     //run kernel A
-    std::auto_ptr<te::mem::DataSet> dataSetA = runDataSetKernel(m_inputParams.get(), m_kTree, m_kMapA, dsTypeA.get());
+    std::auto_ptr<te::mem::DataSet> dataSetA = runDataSetKernel(m_inputParamsA.get(), m_kTree, m_kMapA, dsTypeA.get());
 
     //create datasetype B
-    std::auto_ptr<te::da::DataSetType> dsTypeB = createDataSetType(m_inputParams->m_dsType.get());
+    std::auto_ptr<te::da::DataSetType> dsTypeB = createDataSetType(m_inputParamsB->m_dsType.get());
 
     //run kernel B
-    std::auto_ptr<te::mem::DataSet> dataSetB = runDataSetKernel(m_inputParams.get(), m_kTree, m_kMapB, dsTypeB.get());
+    std::auto_ptr<te::mem::DataSet> dataSetB = runDataSetKernel(m_inputParamsB.get(), m_kTree, m_kMapB, dsTypeB.get());
 
     //create datasetype out
-    std::auto_ptr<te::da::DataSetType> dsTypeOut = createDataSetType(m_inputParams->m_dsType.get());
+    std::auto_ptr<te::da::DataSetType> dsTypeOut = createDataSetType(m_inputParamsA->m_dsType.get());
 
     //create dataset in memory
-    std::auto_ptr<te::mem::DataSet> dataSetOut = createDataSet(m_inputParams->m_ds.get(), dsTypeOut.get());
+    std::auto_ptr<te::mem::DataSet> dataSetOut = createDataSet(m_inputParamsA->m_ds.get(), dsTypeOut.get());
 
     //get kernel attr index
     std::size_t kernelIdx = dsTypeOut->getPropertyPosition(m_outputParams->m_outputAttrName);
@@ -124,17 +125,23 @@ void te::sa::KernelRatioOperation::execute()
     std::size_t geomIdx = te::da::GetFirstPropertyPos(dataSetOut.get(), te::dt::GEOMETRY_TYPE);
 
     //run kernel ratio
-    te::sa::DataSetRatioKernel(m_inputParams.get(), dataSetA.get(), dataSetB.get(), dataSetOut.get(), kernelIdx, geomIdx);
+    te::sa::DataSetRatioKernel(m_outputParams.get(), dataSetA.get(), dataSetB.get(), dataSetOut.get(), kernelIdx, geomIdx);
 
     //save dataset
     saveDataSet(dataSetOut.get(), dsTypeOut.get());
   }
 }
 
+void te::sa::KernelRatioOperation::setInputParameters(te::sa::KernelInputParams* inParamsA, te::sa::KernelInputParams* inParamsB)
+{
+  m_inputParamsA.reset(inParamsA);
+  m_inputParamsB.reset(inParamsB);
+}
+
 void te::sa::KernelRatioOperation::buildTree()
 {
   //get properties information
-  te::da::DataSetType* dataSetType = m_inputParams->m_dsType.get();
+  te::da::DataSetType* dataSetType = m_inputParamsA->m_dsType.get();
 
   te::da::PrimaryKey* pk = dataSetType->getPrimaryKey();
 
@@ -148,7 +155,7 @@ void te::sa::KernelRatioOperation::buildTree()
   if(!gmProp)
     throw;
 
-  te::da::DataSet* dataSet = m_inputParams->m_ds.get();
+  te::da::DataSet* dataSet = m_inputParamsA->m_ds.get();
 
   dataSet->moveBeforeFirst();
 
@@ -165,9 +172,9 @@ void te::sa::KernelRatioOperation::buildTree()
 
     double valueA = 1.; //If there is no properties, assume intensity of one
 
-    if(!m_inputParams->m_intensityAttrName.empty())
+    if(!m_inputParamsA->m_intensityAttrName.empty())
     {
-      valueA = te::sa::GetDataValue(dataSet->getValue(m_inputParams->m_intensityAttrName).get());
+      valueA = te::sa::GetDataValue(dataSet->getValue(m_inputParamsA->m_intensityAttrName).get());
     }
 
     std::pair<te::gm::Geometry*, double> pairA((te::gm::Geometry*)g->clone(), valueA);
@@ -176,9 +183,9 @@ void te::sa::KernelRatioOperation::buildTree()
 
     double valueB = 1.; //If there is no properties, assume intensity of one
 
-    if(!m_inputParams->m_intensityAttrName2.empty())
+    if(!m_inputParamsB->m_intensityAttrName.empty())
     {
-      valueB = te::sa::GetDataValue(dataSet->getValue(m_inputParams->m_intensityAttrName2).get());
+      valueB = te::sa::GetDataValue(dataSet->getValue(m_inputParamsB->m_intensityAttrName).get());
     }
 
     std::pair<te::gm::Geometry*, double> pairB((te::gm::Geometry*)g->clone(), valueB);

@@ -65,6 +65,8 @@ namespace te
         /*! \brief Function to execute the kernel operation. */
         virtual void execute();
 
+        void setInputParameters(te::sa::KernelInputParams* inParamsA, te::sa::KernelInputParams* inParamsB);
+
       protected:
 
         /*! Function used to build the tree with data set information */
@@ -74,6 +76,9 @@ namespace te
 
         te::sa::KernelMap m_kMapA;                                     //!< Kernel map with input data A.
         te::sa::KernelMap m_kMapB;                                     //!< Kernel map with input data B.
+
+        std::auto_ptr<te::sa::KernelInputParams> m_inputParamsA;      //!< Kernel input parameters A.
+        std::auto_ptr<te::sa::KernelInputParams> m_inputParamsB;      //!< Kernel input parameters B.
     };
   } // end namespace sa
 } // end namespace te
