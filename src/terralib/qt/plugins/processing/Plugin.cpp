@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/plugins/vp/Plugin.cpp
+  \file terralib/qt/plugins/processing/Plugin.cpp
 
   \brief Plugin implementation for the Processing Qt Plugin widget.
 */

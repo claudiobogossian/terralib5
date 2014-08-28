@@ -71,8 +71,8 @@ else()
   QT4_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
 
 # moc'ing
-  set(TERRALIB_HDRS_TO_MOC_FILES 	${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/RasterToVectorDialog.h
-									${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt/VectorToRasterDialog.h)
+  set(TERRALIB_HDRS_TO_MOC_FILES 	${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/processing/qt/RasterToVectorDialog.h
+									${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/processing/qt/VectorToRasterDialog.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 

@@ -256,6 +256,29 @@ void te::processing::VectorToRasterDialog::onOkPushButtonClicked()
   std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
 
+  try
+  {
+    if (m_toFile)
+    {
+      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+
+
+    }
+    else
+    {
+
+    }
+  }
+  catch(const std::exception& e)
+  {
+    this->setCursor(Qt::ArrowCursor);
+
+    QMessageBox::information(this, "Fill", e.what());
+    te::common::Logger::logDebug("fill", e.what());
+
+    return;
+  }
+
 }
 
 void te::processing::VectorToRasterDialog::onCancelPushButtonClicked()
