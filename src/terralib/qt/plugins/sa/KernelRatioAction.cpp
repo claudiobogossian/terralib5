@@ -46,5 +46,9 @@ void te::qt::plugins::sa::KernelRatioAction::onActionActivated(bool checked)
 
   dlg.setLayers(layersList);
 
-  dlg.exec();
+  if(dlg.exec() == QDialog::Accepted)
+  {
+    //add new layer
+    addNewLayer(dlg.getOutputLayer());
+  }
 }

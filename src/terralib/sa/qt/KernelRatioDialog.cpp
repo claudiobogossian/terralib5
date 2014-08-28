@@ -34,6 +34,7 @@
 #include "../core/KernelRatioOperation.h"
 #include "../Exception.h"
 #include "KernelRatioDialog.h"
+#include "Utils.h"
 #include "ui_KernelRatioDialogForm.h"
 
 // Qt
@@ -107,6 +108,11 @@ void te::sa::KernelRatioDialog::setLayers(std::list<te::map::AbstractLayerPtr> l
 // fill attributes combo A and B
   if(m_ui->m_inputLayerComboBox->count() > 0)
     onInputLayerComboBoxActivated(0);
+}
+
+te::map::AbstractLayerPtr te::sa::KernelRatioDialog::getOutputLayer()
+{
+  return m_outputLayer;
 }
 
 void te::sa::KernelRatioDialog::fillKernelParameters()
@@ -285,6 +291,25 @@ void te::sa::KernelRatioDialog::onOkPushButtonClicked()
     QMessageBox::information(this, tr("Warning"), tr("Kernel Map internal error."));
     return;
   }
+
+  te::da::DataSourcePtr outputDataSource;
+
+  std::string dataSetName = "";
+
+  if(m_ui->m_gridRadioButton->isChecked())
+  {
+    outputDataSource = te::sa::CreateGDALDataSource(m_ui->m_repositoryLineEdit->text().toStdString(), m_ui->m_newLayerNameLineEdit->text().toStdString());
+
+    dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString() + ".tif";
+  }
+  else if(m_ui->m_attrRadioButton->isChecked())
+  {
+    outputDataSource = te::sa::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toStdString(), m_ui->m_newLayerNameLineEdit->text().toStdString());
+
+    dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  }
+
+  m_outputLayer = te::sa::CreateLayer(outputDataSource, dataSetName);
 
   accept();
 }

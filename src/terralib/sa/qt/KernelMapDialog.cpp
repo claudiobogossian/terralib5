@@ -34,6 +34,7 @@
 #include "../core/KernelMapOperation.h"
 #include "../Exception.h"
 #include "KernelMapDialog.h"
+#include "Utils.h"
 #include "ui_KernelMapDialogForm.h"
 
 // Qt
@@ -105,6 +106,11 @@ void te::sa::KernelMapDialog::setLayers(std::list<te::map::AbstractLayerPtr> lay
 // fill attributes combo
   if(m_ui->m_inputLayerComboBox->count() > 0)
     onInputLayerComboBoxActivated(0);
+}
+
+te::map::AbstractLayerPtr te::sa::KernelMapDialog::getOutputLayer()
+{
+  return m_outputLayer;
 }
 
 void te::sa::KernelMapDialog::fillKernelParameters()
@@ -238,6 +244,25 @@ void te::sa::KernelMapDialog::onOkPushButtonClicked()
     QMessageBox::information(this, tr("Warning"), tr("Kernel Map internal error."));
     return;
   }
+
+  te::da::DataSourcePtr outputDataSource;
+
+  std::string dataSetName = "";
+
+  if(m_ui->m_gridRadioButton->isChecked())
+  {
+    outputDataSource = te::sa::CreateGDALDataSource(m_ui->m_repositoryLineEdit->text().toStdString(), m_ui->m_newLayerNameLineEdit->text().toStdString());
+
+    dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString() + ".tif";
+  }
+  else if(m_ui->m_attrRadioButton->isChecked())
+  {
+    outputDataSource = te::sa::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toStdString(), m_ui->m_newLayerNameLineEdit->text().toStdString());
+
+    dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  }
+
+  m_outputLayer = te::sa::CreateLayer(outputDataSource, dataSetName);
 
   accept();
 }
