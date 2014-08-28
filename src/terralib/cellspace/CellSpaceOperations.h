@@ -113,6 +113,8 @@ namespace te
 
         te::sam::rtree::Index<size_t, 8>* getRtree(te::map::AbstractLayerPtr layerBase);
 
+        te::da::DataSetType* createCellularDataSetType(const std::string& name, int srid, CellSpaceType type);
+
       private:
 
         te::da::DataSetType* m_outputDataSetType;
