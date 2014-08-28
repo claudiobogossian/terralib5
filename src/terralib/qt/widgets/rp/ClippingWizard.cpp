@@ -278,8 +278,8 @@ bool te::qt::widgets::ClippingWizard::executeLayerClipping()
         te::gm::Coord2D inputCoord = inputRst->getGrid()->gridToGeo(it.getColumn(), it.getRow());
         te::gm::Coord2D outputCoord = outputRst->getGrid()->geoToGrid(inputCoord.x, inputCoord.y);
 
-        if( (te::rst::Round(inputCoord.x) >= 0 && te::rst::Round(outputCoord.x) < inputRst->getNumberOfColumns()) &&
-            (te::rst::Round(inputCoord.y) >= 0 && te::rst::Round(outputCoord.y) < inputRst->getNumberOfRows()))
+        if( (te::rst::Round(inputCoord.x) >= 0 && te::rst::Round(outputCoord.x) < (int)inputRst->getNumberOfColumns()) &&
+            (te::rst::Round(inputCoord.y) >= 0 && te::rst::Round(outputCoord.y) < (int)inputRst->getNumberOfRows()))
           outputRst->setValues(te::rst::Round(outputCoord.x), te::rst::Round(outputCoord.y), doubleVec);
 
         ++it;
@@ -327,8 +327,8 @@ bool te::qt::widgets::ClippingWizard::executeLayerClipping()
         te::gm::Coord2D inputCoord = inputRst->getGrid()->gridToGeo(it.getColumn(), it.getRow());
         te::gm::Coord2D outputCoord = outputRst->getGrid()->geoToGrid(inputCoord.x, inputCoord.y);
 
-        if( (te::rst::Round(inputCoord.x) >= 0 && te::rst::Round(outputCoord.x) < inputRst->getNumberOfColumns()) &&
-            (te::rst::Round(inputCoord.y) >= 0 && te::rst::Round(outputCoord.y) < inputRst->getNumberOfRows()))
+        if( (te::rst::Round(inputCoord.x) >= 0 && te::rst::Round(outputCoord.x) < (int)inputRst->getNumberOfColumns()) &&
+            (te::rst::Round(inputCoord.y) >= 0 && te::rst::Round(outputCoord.y) < (int)inputRst->getNumberOfRows()))
           outputRst->setValues(te::rst::Round(outputCoord.x), te::rst::Round(outputCoord.y), doubleVec);
 
         ++it;
