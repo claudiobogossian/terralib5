@@ -49,8 +49,9 @@
 #include <QValidator>
 
 //QWT
-#include <qwt/qwt_symbol.h>
+#include <qwt/qwt_legend.h>
 #include <qwt/qwt_plot.h>
+#include <qwt/qwt_symbol.h>
 
 // STL
 #include <memory>
@@ -102,6 +103,7 @@ te::sa::GeostatisticalMethodsDialog::GeostatisticalMethodsDialog(QWidget* parent
   m_scatterChartMethod = new te::qt::widgets::ScatterChart(m_scatterMethod);
   m_scatterChartMethod->setSymbol(new QwtSymbol( QwtSymbol::XCross, QBrush( Qt::red ), QPen( Qt::red, 3 ), QSize( 8, 8 )));
   m_scatterChartMethod->attach(m_chartDisplay);
+  m_scatterChartMethod->setTitle(tr("Data"));
 
   m_scatterModel = new te::qt::widgets::Scatter();
   m_scatterChartModel = new te::qt::widgets::ScatterChart(m_scatterModel);
@@ -109,6 +111,9 @@ te::sa::GeostatisticalMethodsDialog::GeostatisticalMethodsDialog(QWidget* parent
   m_scatterChartModel->setSymbol(0);
   m_scatterChartModel->setStyle(QwtPlotCurve::Lines);
   m_scatterChartModel->attach(m_chartDisplay);
+  m_scatterChartModel->setTitle(tr("Model"));
+
+  m_chartDisplay->insertLegend(new QwtLegend(), QwtPlot::RightLegend);
 
   // help info
   m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 

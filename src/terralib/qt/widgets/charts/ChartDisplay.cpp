@@ -82,6 +82,14 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title, Char
   m_leftPicker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::RectRubberBand, QwtPicker::AlwaysOff, this->canvas());
   m_leftPicker->setStateMachine(new QwtPickerDragRectMachine );
 
+  m_leftPointPicker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOff, this->canvas());
+  m_leftPointPicker->setStateMachine(new QwtPickerClickPointMachine);
+  m_leftPointPicker->setMousePattern(QwtEventPattern::MouseSelect1, Qt::LeftButton);
+
+  m_rigthPointPicker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOff, this->canvas());
+  m_rigthPointPicker->setStateMachine(new QwtPickerClickPointMachine);
+  m_rigthPointPicker->setMousePattern(QwtEventPattern::MouseSelect1, Qt::RightButton);
+
   m_ctrlPicker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::RectRubberBand, QwtPicker::AlwaysOff, this->canvas());
   m_ctrlPicker->setStateMachine(new QwtPickerDragRectMachine );
   m_ctrlPicker->setMousePattern(QwtEventPattern::MouseSelect1, Qt::LeftButton, Qt::ControlModifier);
@@ -93,6 +101,9 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title, Char
   connect(m_leftPicker, SIGNAL(selected(const QRectF&)), SLOT(onRectPicked(const QRectF&)));
   connect(m_ctrlPicker, SIGNAL(selected(const QRectF&)), SLOT(onRectPicked(const QRectF&)));
   connect(m_shiftPicker, SIGNAL(selected(const QRectF&)), SLOT(onRectPicked(const QRectF&)));
+
+  connect(m_leftPointPicker, SIGNAL(selected(const QPointF &)), SIGNAL(leftPointSelected(const QPointF &)));
+  connect(m_rigthPointPicker, SIGNAL(selected(const QPointF &)), SIGNAL(rigthPointSelected(const QPointF &)));
 
   canvas()->setCursor(Qt::CrossCursor);
 }

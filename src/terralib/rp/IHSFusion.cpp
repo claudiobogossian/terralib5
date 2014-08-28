@@ -583,9 +583,8 @@ namespace te
         }
       }
       
-      double gain = ( ( rasterVariance == 0.0 ) ? 0.0 :
-        ( std::sqrt( intensityVariance ) / std::sqrt( rasterVariance ) ) );
-      double offset = ( ( rasterVariance == 0.0 ) ? 0.0 : ( intensityMean - ( gain * rasterMean ) ) );
+      const double gain = ( ( rasterVariance == 0.0 ) ? 0.0 :
+        std::sqrt( (double)intensityVariance ) / std::sqrt( rasterVariance ) );
       float* intensityRow = 0;
       
       for( row = 0 ; row < nRows ; ++row )
@@ -595,7 +594,7 @@ namespace te
         for( col = 0 ; col < nCols ; ++col )
         {
           band.getValue( col, row, value );
-          intensityRow[ col ] = (float)std::min( 1.0, std::max( 0.0, ( ( value * gain ) - offset ) ) );
+          intensityRow[ col ] = (float)std::min( 1.0, std::max( 0.0, ( ( value - rasterMean ) * gain ) + ((double)intensityMean) ) );
         }
       }      
       
