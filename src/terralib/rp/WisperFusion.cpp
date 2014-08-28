@@ -23,6 +23,7 @@
 */
 
 #include "WisperFusion.h"
+#include "SpectralResponseFunctions.h"
 #include "Macros.h"
 #include "Functions.h"
 #include "Matrix.h"
@@ -62,8 +63,12 @@ namespace te
     {
       m_lowResRasterPtr = 0;
       m_lowResRasterBands.clear();
+      m_lowResRasterBandSensors.clear();
+      m_lowResRasterBandsSRFs.clear();
       m_highResRasterPtr = 0;
       m_highResRasterBand = 0;
+      m_hiResRasterBandSensor = te::rp::srf::InvalidSensor;
+      m_hiResRasterBandsSRFs.clear();
       m_enableProgress = false;
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;
       m_waveletFilterType = te::rp::B3SplineWAFilter;
@@ -77,8 +82,12 @@ namespace te
 
       m_lowResRasterPtr = params.m_lowResRasterPtr;
       m_lowResRasterBands = params.m_lowResRasterBands;
+      m_lowResRasterBandSensors = params.m_lowResRasterBandSensors;
+      m_lowResRasterBandsSRFs = params.m_lowResRasterBandsSRFs;
       m_highResRasterPtr = params.m_highResRasterPtr;
       m_highResRasterBand = params.m_highResRasterBand;
+      m_hiResRasterBandSensor = params.m_hiResRasterBandSensor;
+      m_hiResRasterBandsSRFs = params.m_hiResRasterBandsSRFs;
       m_enableProgress = params.m_enableProgress;
       m_interpMethod = params.m_interpMethod;
       m_waveletFilterType = params.m_waveletFilterType;
@@ -311,6 +320,42 @@ namespace te
       std::auto_ptr< te::rst::Raster > weightsRasterPtr;
       
       {
+        // loading the SRFs
+        
+        std::vector< std::map< double, double > > lowResSRFs;
+        
+        if( m_inputParameters.m_lowResRasterBandsSRFs.empty() )
+        {
+          std::map< double, double > auxMap;
+          
+          for( unsigned int sensorIdx = 0 ; sensorIdx < 
+            m_inputParameters.m_lowResRasterBandSensors.size() ; ++sensorIdx )
+          {
+            auxMap.clear();
+            te::rp::srf::getSRF( m_inputParameters.m_lowResRasterBandSensors[ sensorIdx ],
+              auxMap );
+            lowResSRFs.push_back( auxMap );
+          }
+        }
+        else
+        {
+          lowResSRFs = m_inputParameters.m_lowResRasterBandsSRFs;
+        }
+        
+        std::map< double, double > highResSRFs;
+        
+        if( m_inputParameters.m_hiResRasterBandsSRFs.empty() )
+        {
+          te::rp::srf::getSRF( m_inputParameters.m_hiResRasterBandSensor,
+            highResSRFs );
+        }
+        else
+        {
+          highResSRFs = m_inputParameters.m_hiResRasterBandsSRFs;
+        }
+        
+        //
+        
         const unsigned int nRows = resampledLlowResRasterPtr->getNumberOfRows();
         const unsigned int nCols = resampledLlowResRasterPtr->getNumberOfColumns();
         const unsigned int nBands = resampledLlowResRasterPtr->getNumberOfBands();        
@@ -470,7 +515,7 @@ namespace te
 
       m_inputParameters = *inputParamsPtr;
 
-      // Checking the m_lowResRasterPtr and m_lowResRasterBands
+      // Checking the low Resolution related parameters
 
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_lowResRasterPtr,
         "Invalid low Resolution Raster Pointer" )
@@ -488,6 +533,33 @@ namespace te
           m_inputParameters.m_lowResRasterPtr->getNumberOfBands(), 
           "Invalid low resolution raster band" );   
       }
+      
+      if( m_inputParameters.m_lowResRasterBandsSRFs.empty() )
+      {
+        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_lowResRasterBandSensors.size()
+          == m_inputParameters.m_lowResRasterBands.size(),
+          "Invalid low resolution bands sensors" );
+        
+        for( unsigned int idx = 0 ; idx < m_inputParameters.m_lowResRasterBandSensors.size() ;
+          ++idx )
+        {
+          TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_lowResRasterBandSensors[ idx ] !=
+            te::rp::srf::InvalidSensor, "Invalid low resolution sensor" );
+        }
+      }
+      else
+      {
+        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_lowResRasterBandsSRFs.size()
+          == m_inputParameters.m_lowResRasterBands.size(),
+          "Missing low resolution bands SRFs" );
+        
+        for( unsigned int idx = 0 ; idx < m_inputParameters.m_lowResRasterBandsSRFs.size() ;
+          ++idx )
+        {
+          TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_lowResRasterBandsSRFs[ idx ].size(), 
+            "Invalid low resolution SRF" );
+        }        
+      }
         
       // Checking the m_highResRasterPtr and m_highResRasterBand
 
@@ -502,6 +574,19 @@ namespace te
         m_inputParameters.m_highResRasterBand <
         m_inputParameters.m_highResRasterPtr->getNumberOfBands(), 
         "Invalid raster band" );   
+      
+      if( m_inputParameters.m_hiResRasterBandsSRFs.empty() )
+      {
+        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_hiResRasterBandSensor !=
+          te::rp::srf::InvalidSensor, "Invalid high resolution sensor" );
+      }
+      else
+      {
+        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_hiResRasterBandSensor !=
+          te::rp::srf::InvalidSensor, "Invalid high resolution sensor" );
+      }     
+      
+      // others
       
       if( m_inputParameters.m_userWaveletFilterPtr )
       {
