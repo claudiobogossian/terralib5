@@ -57,7 +57,7 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QMessageBox>
-#include <QLineEdit.h>
+#include <QLineEdit>
 
 // Boost
 #include <boost/algorithm/string.hpp>
