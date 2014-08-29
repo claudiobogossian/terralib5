@@ -75,8 +75,13 @@ te::rst::Raster* te::mem::ExpansibleRasterFactory::create(te::rst::Grid* g,
   }
   else if( rinfo.find( "MAXMEMPERCENTUSED" ) != rinfo.end() )
   {
-    unsigned charmaxMemPercentUsed = boost::lexical_cast< unsigned char>( rinfo.find( "MAXMEMPERCENTUSED" )->second );
-    rasterPtr.reset( new ExpansibleRaster( charmaxMemPercentUsed, g, bands ) );
+    unsigned int maxMemPercentUsed = boost::lexical_cast< unsigned int>( rinfo.find( "MAXMEMPERCENTUSED" )->second );
+    if( maxMemPercentUsed > 100 )
+    {
+      throw Exception(TE_TR("Invalid parameter: MAXMEMPERCENTUSED") );
+    }
+    
+    rasterPtr.reset( new ExpansibleRaster( (unsigned char)maxMemPercentUsed, g, bands ) );
   }
   else
   {

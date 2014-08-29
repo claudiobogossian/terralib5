@@ -670,7 +670,8 @@ namespace te
         
         // Generating the offset and gain info for eath band from the current raster
 
-        std::vector< double > currentRasterBandsOffsets;
+        std::vector< double > currentRasterBandsOffsetsA;
+        std::vector< double > currentRasterBandsOffsetsB;
         std::vector< double > currentRasterBandsScales;
 
         if( m_inputParameters.m_autoEqualize )
@@ -691,15 +692,18 @@ namespace te
               currentRasterMean,
               currentRasterVariance );
 
-            currentRasterBandsScales.push_back( std::sqrt( mosaicTargetVariances[ inputRastersBandsIdx ] /
+            currentRasterBandsScales.push_back( 
+              std::sqrt( mosaicTargetVariances[ inputRastersBandsIdx ] 
+              /
               currentRasterVariance ) );
-            currentRasterBandsOffsets.push_back( mosaicTargetMeans[ inputRastersBandsIdx ] -
-              ( currentRasterBandsScales[ inputRastersBandsIdx ] * currentRasterMean ) );
+            currentRasterBandsOffsetsA.push_back( -1.0 * currentRasterMean );
+            currentRasterBandsOffsetsB.push_back( mosaicTargetMeans[ inputRastersBandsIdx ] );            
           }
         }
         else
         {
-          currentRasterBandsOffsets = dummyRasterOffsets;
+          currentRasterBandsOffsetsA = dummyRasterOffsets;
+          currentRasterBandsOffsetsB = dummyRasterOffsets;
           currentRasterBandsScales = dummyRasterScales;
         }
         
@@ -718,8 +722,10 @@ namespace te
           m_inputParameters.m_noDataValue,
           m_inputParameters.m_forceInputNoDataValue,
           dummyRasterOffsets,
+          dummyRasterOffsets,
           dummyRasterScales,
-          currentRasterBandsOffsets,
+          currentRasterBandsOffsetsA,
+          currentRasterBandsOffsetsB,
           currentRasterBandsScales,
           mosaicBBoxesUnionPtr.get(),
           0,

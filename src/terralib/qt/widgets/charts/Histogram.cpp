@@ -35,19 +35,7 @@ te::qt::widgets::Histogram::Histogram()
 
 te::qt::widgets::Histogram::~Histogram()
 {
-  HistogramValues::iterator it = m_values.begin();
-  while(it != m_values.end())
-  {
-    delete it->first;
-    ++it;
-  }
-
-  te::qt::widgets::IntervalToObjectIdSet::iterator it2= m_valuesOids.begin();
-  while(it2 != m_valuesOids.end())
-  {
-    delete it2->oid;
-    ++it2;
-  }
+  clear();
 }
 
 int& te::qt::widgets::Histogram::getType()
@@ -69,6 +57,19 @@ std::map<double, unsigned int> te::qt::widgets::Histogram::getValues()
     res.insert(std::make_pair(static_cast<te::dt::Double*>(it->first)->getValue(), it->second));
 
   return res;
+}
+
+void te::qt::widgets::Histogram::setValues(std::map<te::dt::AbstractData*, unsigned int> values)
+{
+  clear();
+  std::map<te::dt::AbstractData*, unsigned int>::iterator valItbegin = values.begin();
+  std::map<te::dt::AbstractData*, unsigned int>::iterator valItend = values.end();
+
+  while(valItbegin != valItend)
+  {
+    m_values.insert(*valItbegin);
+    valItbegin++;
+  }
 }
 
 std::map<std::string, unsigned int> te::qt::widgets::Histogram::getStringValues()
@@ -131,6 +132,25 @@ void te::qt::widgets::Histogram::insert(te::dt::AbstractData* interval, unsigned
   insert(std::make_pair(interval, frequency));
 }
 
+void te::qt::widgets::Histogram::clear()
+{
+  HistogramValues::iterator it = m_values.begin();
+  while(it != m_values.end())
+  {
+    delete it->first;
+    ++it;
+  }
+  m_values.clear();
+
+  te::qt::widgets::IntervalToObjectIdSet::iterator it2= m_valuesOids.begin();
+  while(it2 != m_valuesOids.end())
+  {
+    delete it2->oid;
+    ++it2;
+  }
+  m_valuesOids.clear();
+}
+
 te::da::ObjectIdSet* te::qt::widgets::Histogram::find(te::dt::AbstractData* interval)
 {
   typedef te::qt::widgets::IntervalToObjectIdSet::nth_index<0>::type::iterator itIntervalToObjectIdSet;
@@ -156,7 +176,6 @@ te::da::ObjectIdSet* te::qt::widgets::Histogram::find(te::dt::AbstractData* inte
   }
   return oids;
 }
-
 
 te::da::ObjectIdSet* te::qt::widgets::Histogram::find(std::vector<te::dt::AbstractData*> intervals)
 {

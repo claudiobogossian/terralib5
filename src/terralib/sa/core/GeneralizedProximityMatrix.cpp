@@ -109,7 +109,9 @@ std::auto_ptr<te::da::DataSetType> te::sa::GeneralizedProximityMatrix::createDat
   dataSetType->add(idxProperty);
 
   //create primary key
-  te::da::PrimaryKey* pk = new te::da::PrimaryKey("pk_index", dataSetType.get());
+  std::string pkName = TE_SA_GPM_ATTR_PK_NAME;
+              pkName+= "_" + dataSetName;
+  te::da::PrimaryKey* pk = new te::da::PrimaryKey(pkName, dataSetType.get());
   pk->add(idxProperty);
 
   //create all gpm properties

@@ -29,9 +29,6 @@
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/datasource/DataSource.h"
-#include "../../dataaccess/datasource/DataSourceInfo.h"
-#include "../../dataaccess/datasource/DataSourceInfoManager.h"
-#include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../maptools/DataSetLayer.h"
@@ -41,6 +38,7 @@
 #include "../Enums.h"
 #include "../Exception.h"
 #include "SamplePointsGeneratorDialog.h"
+#include "Utils.h"
 #include "ui_SamplePointsGeneratorDialogForm.h"
 
 // Qt
@@ -53,10 +51,7 @@
 #include <memory>
 
 // Boost
-#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/uuid/random_generator.hpp>
-#include <boost/uuid/uuid_io.hpp>
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
@@ -100,10 +95,13 @@ void te::sa::SamplePointsGeneratorDialog::setLayers(std::list<te::map::AbstractL
   {
     te::map::AbstractLayerPtr l = *it;
 
-    std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
+    if(l->isValid())
+    {
+      std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
 
-    if(dsType->hasGeom())
-      m_ui->m_inputLayerComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
+      if(dsType->hasGeom())
+        m_ui->m_inputLayerComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
+    }
 
     ++it;
   }
@@ -111,6 +109,11 @@ void te::sa::SamplePointsGeneratorDialog::setLayers(std::list<te::map::AbstractL
 // fill attributes combo
   if(m_ui->m_inputLayerComboBox->count() > 0)
     onInputLayerComboBoxActivated(0);
+}
+
+te::map::AbstractLayerPtr te::sa::SamplePointsGeneratorDialog::getOutputLayer()
+{
+  return m_outputLayer;
 }
 
 void te::sa::SamplePointsGeneratorDialog::onInputLayerComboBoxActivated(int index)
@@ -194,27 +197,7 @@ void te::sa::SamplePointsGeneratorDialog::onOkPushButtonClicked()
 
   if(m_toFile)
   {
-    //create new data source
-    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
-
-    std::map<std::string, std::string> dsInfo;
-    dsInfo["URI"] = uri.string();
-
-    boost::uuids::basic_random_generator<boost::mt19937> gen;
-    boost::uuids::uuid u = gen();
-    std::string id_ds = boost::uuids::to_string(u);
-
-    te::da::DataSourceInfoPtr dsInfoPtr(new te::da::DataSourceInfo);
-    dsInfoPtr->setConnInfo(dsInfo);
-    dsInfoPtr->setTitle(uri.stem().string());
-    dsInfoPtr->setAccessDriver("OGR");
-    dsInfoPtr->setType("OGR");
-    dsInfoPtr->setDescription(uri.string());
-    dsInfoPtr->setId(id_ds);
-
-    te::da::DataSourceInfoManager::getInstance().add(dsInfoPtr);
-
-    outputDataSource = te::da::DataSourceManager::getInstance().get(id_ds, "OGR", dsInfoPtr->getConnInfo());
+    outputDataSource = te::sa::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toStdString());
   }
   else
   {
@@ -227,6 +210,8 @@ void te::sa::SamplePointsGeneratorDialog::onOkPushButtonClicked()
   std::size_t idx = dataSetName.find(".");
   if (idx != std::string::npos)
         dataSetName=dataSetName.substr(0,idx);
+
+  std::vector<std::string> classNames;
 
   try
   {
@@ -262,12 +247,25 @@ void te::sa::SamplePointsGeneratorDialog::onOkPushButtonClicked()
 
     spga->execute();
 
+    if(spgt == te::sa::Stratified)
+    {
+      classNames = ((te::sa::SamplePointsGeneratorStratified*)spga)->getClassNames();
+    }
+
+
     delete spga;
   }
   catch(...)
   {
     QMessageBox::warning(this, tr("Warning"), tr("Internal error. Sample Points not generated."));
     return;
+  }
+
+  m_outputLayer = te::sa::CreateLayer(outputDataSource, dataSetName);
+
+  if(spgt == te::sa::Stratified)
+  {
+    te::sa::CreateSampleGeneratorStratifiedGrouping(m_outputLayer, classNames);
   }
 
   accept();

@@ -64,6 +64,8 @@ namespace te
         */
         void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
+        te::map::AbstractLayerPtr getOutputLayer();
+
       protected slots:
 
         void onInputLayerComboBoxActivated(int index);
@@ -85,6 +87,8 @@ namespace te
         std::auto_ptr<Ui::SpatialStatisticsDialogForm> m_ui;
 
         te::da::DataSourceInfoPtr m_outputDatasource;
+
+        te::map::AbstractLayerPtr m_outputLayer;                                          //!< Generated Layer.
 
         bool m_toFile;
     };

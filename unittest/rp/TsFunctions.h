@@ -37,7 +37,7 @@
 class TsFunctions : public CPPUNIT_NS::TestFixture 
 {
   CPPUNIT_TEST_SUITE( TsFunctions );
-  
+
   CPPUNIT_TEST( GetStdDevValue );
   
   CPPUNIT_TEST( GetStdDevValueOptimized );
@@ -65,6 +65,8 @@ class TsFunctions : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( GetDetailedExtent );
   
   CPPUNIT_TEST( GetIndexedDetailedExtent );
+  
+  CPPUNIT_TEST( WaveletAtrous );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -97,6 +99,8 @@ protected :
   void GetDetailedExtent();
   
   void GetIndexedDetailedExtent();
+  
+  void WaveletAtrous();
   
 };
 

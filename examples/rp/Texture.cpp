@@ -6,6 +6,8 @@
 #include <terralib/rp/RasterAttributes.h>
 #include <terralib/rp/Texture.h>
 
+#include <boost/numeric/ublas/matrix.hpp>
+
 void Texture()
 {
   try
@@ -14,24 +16,24 @@ void Texture()
 
 // first open the input image
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/CBERS_234.tif";
+    rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
     {
 // use raster attributes to compute GLCM matrix, in northeast direction
       te::rp::RasterAttributes rattributes;
-      // boost::numeric::ublas::matrix<double> glcm = rattributes.getGLCM(*rin, 1, 1, -1);
-      te::rp::Texture metrics; // = rattributes.getGLCMMetrics(glcm);
+      boost::numeric::ublas::matrix<double> glcm_b1 = rattributes.getGLCM(*rin, 1, 1, -1);
+      te::rp::Texture metrics = rattributes.getGLCMMetrics(glcm_b1);
 
 // display texture metrics    
-      std::cout << "GLCM metrics of full image" << std::endl;
+      std::cout << "GLCM metrics of full image, band 1" << std::endl;
       std::cout << "  contrast: " << metrics.m_contrast << std::endl;
       std::cout << "  dissimilarity: " << metrics.m_dissimilarity << std::endl;
       std::cout << "  energy: " << metrics.m_energy << std::endl;
       std::cout << "  entropy: " << metrics.m_entropy << std::endl;
       std::cout << "  homogeneity: " << metrics.m_homogeneity << std::endl;
     }
-    
+
 // create raster crop using a polygon
     double xc = (rin->getExtent()->getUpperRightX() + rin->getExtent()->getLowerLeftX()) / 2;
     double yc = (rin->getExtent()->getUpperRightY() + rin->getExtent()->getLowerLeftY()) / 2;
@@ -46,25 +48,24 @@ void Texture()
     te::gm::Polygon* polygon = new te::gm::Polygon(0, te::gm::PolygonType);
     polygon->push_back(lr);
   
-/*    
     std::map<std::string, std::string> rcropinfo;
     rcropinfo["URI"] = TERRALIB_DATA_DIR"/rasters/polygon_crop_cbers2b_rgb342_crop.tif";
     te::rst::RasterPtr rcrop = te::rst::CropRaster(*rin, *polygon, rcropinfo);
+
     {
-// use raster attributes to compute GLCM matrix, in southwest direction
+// use raster attributes to compute GLCM matrix from band 2, in southeast direction
       te::rp::RasterAttributes rattributes;
-      boost::numeric::ublas::matrix<double> glcm = rattributes.getGLCM(*rcrop.get(), 1, -1, 1);
-      te::rp::Texture metrics = rattributes.getGLCMMetrics(glcm);
+      boost::numeric::ublas::matrix<double> glcm_b2 = rattributes.getGLCM(*rcrop.get(), 2, 1, 1);
+      te::rp::Texture metrics = rattributes.getGLCMMetrics(glcm_b2);
 
 // display texture metrics    
-      std::cout << "GLCM metrics of image crop image" << std::endl;
+      std::cout << "GLCM metrics of image crop image, band 2" << std::endl;
       std::cout << "  contrast: " << metrics.m_contrast << std::endl;
       std::cout << "  dissimilarity: " << metrics.m_dissimilarity << std::endl;
       std::cout << "  energy: " << metrics.m_energy << std::endl;
       std::cout << "  entropy: " << metrics.m_entropy << std::endl;
       std::cout << "  homogeneity: " << metrics.m_homogeneity << std::endl;
     }
-*/
 
 // clean up
     delete rin;

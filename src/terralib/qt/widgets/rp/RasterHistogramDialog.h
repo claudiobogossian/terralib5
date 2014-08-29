@@ -66,8 +66,6 @@ namespace te
 
           te::qt::widgets::RasterHistogramWidget* getWidget();
 
-          void set(te::map::AbstractLayerPtr layer);
-
         private:
           std::auto_ptr<Ui::RasterHistogramDialogForm> m_ui;
           std::auto_ptr<te::qt::widgets::RasterHistogramWidget> m_widgetRasterHistogram;

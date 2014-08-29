@@ -446,8 +446,8 @@ namespace te
         if( inRasterRange != 0.0 )
         {
           m_offSetGainRemap_gain = outRasterRange / inRasterRange;
-          m_offSetGainRemap_offset1 = outRangeMin - m_inputParameters.m_lCMinInput[ inRasterBandsIdx ];
-          m_offSetGainRemap_offset2 = 0;
+          m_offSetGainRemap_offset1 = (-1.0) * m_inputParameters.m_lCMinInput[ inRasterBandsIdx ];
+          m_offSetGainRemap_offset2 = outRangeMin;
         }
         else
         {

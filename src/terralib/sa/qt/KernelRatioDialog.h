@@ -62,6 +62,8 @@ namespace te
         */
         void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
+        te::map::AbstractLayerPtr getOutputLayer();
+
       protected:
 
         void fillKernelParameters();
@@ -77,6 +79,8 @@ namespace te
       private:
 
         std::auto_ptr<Ui::KernelRatioDialogForm> m_ui;
+
+        te::map::AbstractLayerPtr m_outputLayer;                                          //!< Generated Layer.
     };
   }   // end namespace sa
 }     // end namespace te

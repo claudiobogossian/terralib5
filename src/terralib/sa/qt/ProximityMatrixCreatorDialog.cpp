@@ -86,12 +86,15 @@ void te::sa::ProximityMatrixCreatorDialog::setLayers(std::list<te::map::Abstract
   {
     te::map::AbstractLayerPtr l = *it;
 
-    std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
+    if(l->isValid())
+    {
+      std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
 
-    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
+      te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
 
-    if(dsLayer && dsType->hasGeom())
-      m_ui->m_inputLayerComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
+      if(dsLayer && dsType->hasGeom())
+        m_ui->m_inputLayerComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
+    }
 
     ++it;
   }

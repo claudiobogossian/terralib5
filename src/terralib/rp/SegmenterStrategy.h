@@ -78,6 +78,7 @@ namespace te
           \param enableProgressInterface Enable the internal strategy to update
           the progress interface.
           \return true if OK, false on errors.
+          \note The used gaind/ofset calcule:  new_value = ( old_value + offset ) * gain
          */
         virtual bool execute( 
           SegmenterIdsManager& segmenterIdsManager,

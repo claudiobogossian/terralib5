@@ -34,6 +34,7 @@
 #include "../core/KernelRatioOperation.h"
 #include "../Exception.h"
 #include "KernelRatioDialog.h"
+#include "Utils.h"
 #include "ui_KernelRatioDialogForm.h"
 
 // Qt
@@ -89,13 +90,16 @@ void te::sa::KernelRatioDialog::setLayers(std::list<te::map::AbstractLayerPtr> l
   {
     te::map::AbstractLayerPtr l = *it;
 
-    std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
-
-    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
-
-    if(dsLayer && dsType->hasGeom())
+    if(l->isValid())
     {
-      m_ui->m_inputLayerComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
+      std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
+
+      te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
+
+      if(dsLayer && dsType->hasGeom())
+      {
+        m_ui->m_inputLayerComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
+      }
     }
 
     ++it;
@@ -106,23 +110,42 @@ void te::sa::KernelRatioDialog::setLayers(std::list<te::map::AbstractLayerPtr> l
     onInputLayerComboBoxActivated(0);
 }
 
+te::map::AbstractLayerPtr te::sa::KernelRatioDialog::getOutputLayer()
+{
+  return m_outputLayer;
+}
+
 void te::sa::KernelRatioDialog::fillKernelParameters()
 {
   //function
-  m_ui->m_functionComboBox->clear();
+  m_ui->m_functionComboBoxA->clear();
   
-  m_ui->m_functionComboBox->addItem("Quartic", QVariant(te::sa::Quartic));
-  m_ui->m_functionComboBox->addItem("Normal", QVariant(te::sa::Normal));
-  m_ui->m_functionComboBox->addItem("Triangular", QVariant(te::sa::Triangular));
-  m_ui->m_functionComboBox->addItem("Uniform", QVariant(te::sa::Uniform));
-  m_ui->m_functionComboBox->addItem("Negative Exponential", QVariant(te::sa::Negative_Exp));
+  m_ui->m_functionComboBoxA->addItem("Quartic", QVariant(te::sa::Quartic));
+  m_ui->m_functionComboBoxA->addItem("Normal", QVariant(te::sa::Normal));
+  m_ui->m_functionComboBoxA->addItem("Triangular", QVariant(te::sa::Triangular));
+  m_ui->m_functionComboBoxA->addItem("Uniform", QVariant(te::sa::Uniform));
+  m_ui->m_functionComboBoxA->addItem("Negative Exponential", QVariant(te::sa::Negative_Exp));
+
+  m_ui->m_functionComboBoxB->clear();
+  
+  m_ui->m_functionComboBoxB->addItem("Quartic", QVariant(te::sa::Quartic));
+  m_ui->m_functionComboBoxB->addItem("Normal", QVariant(te::sa::Normal));
+  m_ui->m_functionComboBoxB->addItem("Triangular", QVariant(te::sa::Triangular));
+  m_ui->m_functionComboBoxB->addItem("Uniform", QVariant(te::sa::Uniform));
+  m_ui->m_functionComboBoxB->addItem("Negative Exponential", QVariant(te::sa::Negative_Exp));
 
   //estimation
-  m_ui->m_estimationComboBox->clear();
+  m_ui->m_estimationComboBoxA->clear();
   
-  m_ui->m_estimationComboBox->addItem("Density", QVariant(te::sa::Density));
-  m_ui->m_estimationComboBox->addItem("Spatial Moving Average", QVariant(te::sa::Spatial_Moving_Average));
-  m_ui->m_estimationComboBox->addItem("Probability", QVariant(te::sa::Probability));
+  m_ui->m_estimationComboBoxA->addItem("Density", QVariant(te::sa::Density));
+  m_ui->m_estimationComboBoxA->addItem("Spatial Moving Average", QVariant(te::sa::Spatial_Moving_Average));
+  m_ui->m_estimationComboBoxA->addItem("Probability", QVariant(te::sa::Probability));
+
+  m_ui->m_estimationComboBoxB->clear();
+  
+  m_ui->m_estimationComboBoxB->addItem("Density", QVariant(te::sa::Density));
+  m_ui->m_estimationComboBoxB->addItem("Spatial Moving Average", QVariant(te::sa::Spatial_Moving_Average));
+  m_ui->m_estimationComboBoxB->addItem("Probability", QVariant(te::sa::Probability));
 
   //combination
   m_ui->m_combinationComboBox->clear();
@@ -178,45 +201,57 @@ void te::sa::KernelRatioDialog::onOkPushButtonClicked()
     return;
   }
 
-  //get selected layer A
+  //get selected layer
   QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(m_ui->m_inputLayerComboBox->currentIndex(), Qt::UserRole);
   te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
 
-  //set input kernel parameters
-  te::sa::KernelInputParams* kInParams = new te::sa::KernelInputParams();
+  //set input kernel parameters A
+  te::sa::KernelInputParams* kInParamsA = new te::sa::KernelInputParams();
 
-  kInParams->m_isRatioKernel = true;
-
-  kInParams->m_functionType = (te::sa::KernelFunctionType) m_ui->m_functionComboBox->itemData(m_ui->m_functionComboBox->currentIndex()).toInt();
-  kInParams->m_estimationType = (te::sa::KernelEstimationType) m_ui->m_estimationComboBox->itemData(m_ui->m_estimationComboBox->currentIndex()).toInt();
-  kInParams->m_combinationType = (te::sa::KernelCombinationType) m_ui->m_combinationComboBox->itemData(m_ui->m_combinationComboBox->currentIndex()).toInt();
-
-  kInParams->m_useAdaptativeRadius = m_ui->m_useAdaptRadiusCheckBox->isChecked();
+  kInParamsA->m_functionType = (te::sa::KernelFunctionType) m_ui->m_functionComboBoxA->itemData(m_ui->m_functionComboBoxA->currentIndex()).toInt();
+  kInParamsA->m_estimationType = (te::sa::KernelEstimationType) m_ui->m_estimationComboBoxA->itemData(m_ui->m_estimationComboBoxA->currentIndex()).toInt();
+  kInParamsA->m_useAdaptativeRadius = m_ui->m_useAdaptRadiusCheckBoxA->isChecked();
   
-  if(!m_ui->m_useAdaptRadiusCheckBox->isChecked())
+  if(!m_ui->m_useAdaptRadiusCheckBoxA->isChecked())
   {
-    kInParams->m_radiusPercentValue = m_ui->m_radiusSpinBox->value();
+    kInParamsA->m_radiusPercentValue = m_ui->m_radiusSpinBoxA->value();
   }
 
   if(m_ui->m_useAttrLayerCheckBoxA->isChecked())
   {
-    kInParams->m_intensityAttrName = m_ui->m_attrLayerComboBoxA->currentText().toStdString();
+    kInParamsA->m_intensityAttrName = m_ui->m_attrLayerComboBoxA->currentText().toStdString();
+  }
+
+  kInParamsA->m_ds = l->getData();
+  kInParamsA->m_dsType = l->getSchema();
+
+  //set input kernel parameters B
+  te::sa::KernelInputParams* kInParamsB = new te::sa::KernelInputParams();
+
+  kInParamsB->m_functionType = (te::sa::KernelFunctionType) m_ui->m_functionComboBoxB->itemData(m_ui->m_functionComboBoxB->currentIndex()).toInt();
+  kInParamsB->m_estimationType = (te::sa::KernelEstimationType) m_ui->m_estimationComboBoxB->itemData(m_ui->m_estimationComboBoxB->currentIndex()).toInt();
+  kInParamsB->m_useAdaptativeRadius = m_ui->m_useAdaptRadiusCheckBoxB->isChecked();
+  
+  if(!m_ui->m_useAdaptRadiusCheckBoxB->isChecked())
+  {
+    kInParamsB->m_radiusPercentValue = m_ui->m_radiusSpinBoxB->value();
   }
 
   if(m_ui->m_useAttrLayerCheckBoxB->isChecked())
   {
-    kInParams->m_intensityAttrName2 = m_ui->m_attrLayerComboBoxB->currentText().toStdString();
+    kInParamsB->m_intensityAttrName = m_ui->m_attrLayerComboBoxB->currentText().toStdString();
   }
 
-  kInParams->m_ds = l->getData();
-  kInParams->m_dsType = l->getSchema();
+  kInParamsB->m_ds = l->getData();
+  kInParamsB->m_dsType = l->getSchema();
 
   //set output kernel parameters
   te::sa::KernelOutputParams* kOutParams = new te::sa::KernelOutputParams();
 
   kOutParams->m_outputPath = m_ui->m_repositoryLineEdit->text().toStdString();
   kOutParams->m_outputDataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  kOutParams->m_combinationType = (te::sa::KernelCombinationType) m_ui->m_combinationComboBox->itemData(m_ui->m_combinationComboBox->currentIndex()).toInt();
 
   if(m_ui->m_gridRadioButton->isChecked())
   {
@@ -246,7 +281,8 @@ void te::sa::KernelRatioDialog::onOkPushButtonClicked()
   {
     te::sa::KernelRatioOperation op;
 
-    op.setParameters(kInParams, kOutParams);
+    op.setInputParameters(kInParamsA, kInParamsB);
+    op.setOutputParameters(kOutParams);
 
     op.execute();
   }
@@ -254,6 +290,36 @@ void te::sa::KernelRatioDialog::onOkPushButtonClicked()
   {
     QMessageBox::information(this, tr("Warning"), tr("Kernel Map internal error."));
     return;
+  }
+
+  te::da::DataSourcePtr outputDataSource;
+
+  std::string dataSetName = "";
+
+  if(m_ui->m_gridRadioButton->isChecked())
+  {
+    outputDataSource = te::sa::CreateGDALDataSource(m_ui->m_repositoryLineEdit->text().toStdString(), m_ui->m_newLayerNameLineEdit->text().toStdString());
+
+    dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString() + ".tif";
+  }
+  else if(m_ui->m_attrRadioButton->isChecked())
+  {
+    outputDataSource = te::sa::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toStdString(), m_ui->m_newLayerNameLineEdit->text().toStdString());
+
+    dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  }
+
+  //create layer
+  m_outputLayer = te::sa::CreateLayer(outputDataSource, dataSetName);
+
+  //create legend
+  if(m_ui->m_gridRadioButton->isChecked())
+  {
+    te::sa::CreateKernelColorMaping(m_outputLayer);
+  }
+  else if(m_ui->m_attrRadioButton->isChecked())
+  {
+    te::sa::CreateKernelGrouping(m_outputLayer, m_ui->m_attrNameLineEdit->text().toStdString());
   }
 
   accept();

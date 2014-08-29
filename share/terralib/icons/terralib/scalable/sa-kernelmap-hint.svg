@@ -15,11 +15,10 @@
    id="svg3793"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="sa-kernelratio-hint.svg">
+   sodipodi:docname="sa-kernelmap-hint.svg">
   <defs
      id="defs3795">
     <linearGradient
-       inkscape:collect="always"
        id="linearGradient31818"
        osb:paint="gradient">
       <stop
@@ -86,7 +85,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -566,43 +565,43 @@
          style="fill:#ffb300;fill-opacity:1;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     </g>
     <g
-       id="g37663"
-       transform="matrix(0.65773125,0,0,0.66759334,109.70568,95.144664)">
+       id="g12966"
+       transform="matrix(0.66845338,0,0,0.66845338,-63.793131,-37.957622)">
       <rect
          ry="0"
-         y="-136.32251"
-         x="-159.26956"
+         y="62.68565"
+         x="101.66201"
          height="60.482883"
          width="60.73542"
-         id="rect2985"
-         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+         id="rect2985-1"
+         style="fill:#ffaaaa;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
       <path
          inkscape:connector-curvature="0"
-         id="path3755"
-         d="m -152.32477,-136.06998 5.30331,7.95495 -2.27285,6.81853 10.10153,1.38896 8.58629,-16.41497 z"
-         style="fill:#ffffff;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+         id="path3755-7"
+         d="m 108.60681,62.93819 5.3033,7.954951 -2.27284,6.81853 10.10152,1.38896 8.5863,-16.414979 z"
+         style="fill:#ffaaaa;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
       <path
          inkscape:connector-curvature="0"
-         id="path3757"
-         d="m -139.57159,-120.16007 4.29315,14.89975 17.04632,-0.37881 2.65165,-8.96511 -5.93464,-13.25825 22.728429,2.39911 0.252538,-10.85913 -31.946077,-0.12627 z"
-         style="fill:#ffffff;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+         id="path3757-4"
+         d="m 121.35999,78.848093 4.29314,14.89975 17.04633,-0.378807 2.65165,-8.965104 -5.93465,-13.258253 22.72844,2.399113 0.25253,-10.85914 -31.94607,-0.126269 z"
+         style="fill:#ffaaaa;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
       <path
          sodipodi:nodetypes="cccccccc"
          inkscape:connector-curvature="0"
-         id="path3759"
-         d="m -159.32187,-104.12391 24.5485,-1.1364 -4.67195,-14.7735 -9.84899,-1.2627 2.90419,-6.94478 -5.3033,-7.57615 -7.56214,-0.2742 z"
-         style="fill:#ffffff;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+         id="path3759-0"
+         d="m 101.60971,94.884254 24.5485,-1.1364 -4.67195,-14.7735 -9.84899,-1.2627 2.90419,-6.944781 -5.3033,-7.57615 -7.56214,-0.2742 z"
+         style="fill:#ffaaaa;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
       <path
          inkscape:connector-curvature="0"
-         id="path3761"
-         d="m -135.36003,-105.35885 2.32143,7.857146 -9.375,5.535714 7.14286,15.982143 -23.92857,0 0.17857,-28.214283 z"
-         style="fill:#ffffff;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+         id="path3761-9"
+         d="m 125.57155,93.64932 2.32143,7.85714 -9.375,5.53572 7.14285,15.98214 -23.92857,0 0.17857,-28.214286 z"
+         style="fill:#ffaaaa;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
       <path
          sodipodi:nodetypes="ccccccccc"
          inkscape:connector-curvature="0"
-         id="path3763"
-         d="m -99.047824,-75.983847 -15.330066,-19.375 4.73215,-7.053573 -8.57143,-3.30357 -16.69643,0.71428 1.96429,7.589291 -9.19643,5.446429 7.14285,16.071428 z"
-         style="fill:#ffffff;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+         id="path3763-4"
+         d="m 161.88375,123.02432 -15.33006,-19.375 4.73214,-7.053572 -8.57143,-3.303571 -16.69642,0.714285 1.96428,7.589288 -9.19643,5.44643 7.14286,16.07142 z"
+         style="fill:#ffaaaa;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     </g>
   </g>
 </svg>

@@ -42,6 +42,17 @@ namespace te
   namespace gm
   {
     class Envelope;
+    class Geometry;
+  }
+
+  namespace mem
+  {
+    class DataSet;
+  }
+
+  namespace rst
+  {
+    class Raster;
   }
 
   namespace cellspace
@@ -66,6 +77,9 @@ namespace te
                              double resX, double resY, bool useMask,
                              CellSpaceType type = CELLSPACE_POLYGONS);
 
+        void createCellSpace(const std::string& name, double resX, double resY, te::gm::Envelope& env,
+                             int srid, CellSpaceType type = CELLSPACE_POLYGONS);
+
         /*!
           \brief It return the created DataSetType.
 
@@ -84,10 +98,28 @@ namespace te
         */
         te::da::DataSet* getDataSet();
 
+        /*!
+          \brief It return the created Raster.
+
+          \return The created Raster.
+
+          \note The caller of this method will take the ownership of the returned pointer.
+        */
+        te::rst::Raster* getRaster();
+
+      private:
+
+        void addCell(te::mem::DataSet* ds, int col, int row, te::gm::Geometry* geom);
+
+        te::sam::rtree::Index<size_t, 8>* getRtree(te::map::AbstractLayerPtr layerBase);
+
+        te::da::DataSetType* createCellularDataSetType(const std::string& name, int srid, CellSpaceType type);
+
       private:
 
         te::da::DataSetType* m_outputDataSetType;
         te::da::DataSet* m_outputDataSet;
+        te::rst::Raster* m_outputRaster;
     };
   }
 }

@@ -154,7 +154,7 @@ void te::sa::GridAdaptRadiusKernel(te::sa::KernelInputParams* params, te::sa::Ke
   GridKernelNormalize(params, kMap, raster, totKernel);
 }
 
-void te::sa::GridRatioKernel(te::sa::KernelInputParams* params,te::rst::Raster* rasterA, te::rst::Raster* rasterB, te::rst::Raster* rasterOut)
+void te::sa::GridRatioKernel(te::sa::KernelOutputParams* params,te::rst::Raster* rasterA, te::rst::Raster* rasterB, te::rst::Raster* rasterOut)
 {
   double area = rasterOut->getResolutionX() * rasterOut->getResolutionY();
 
@@ -297,7 +297,7 @@ void te::sa::DataSetAdaptRadiusKernel(te::sa::KernelInputParams* params, te::sa:
   DataSetKernelNormalize(params, kMap, ds, kernelIdx, geomIdx, totKernel);
 }
 
-void te::sa::DataSetRatioKernel(te::sa::KernelInputParams* params, te::mem::DataSet* dsA, te::mem::DataSet* dsB, te::mem::DataSet* dsOut, int kernelIdx, int geomIdx)
+void te::sa::DataSetRatioKernel(te::sa::KernelOutputParams* params, te::mem::DataSet* dsA, te::mem::DataSet* dsB, te::mem::DataSet* dsOut, int kernelIdx, int geomIdx)
 {
   dsA->moveBeforeFirst();
   dsB->moveBeforeFirst();
@@ -444,7 +444,7 @@ double te::sa::KernelValue(te::sa::KernelInputParams* params, te::sa::KernelMap&
   return kernelValue;
 }
 
-double te::sa::KernelRatioValue(te::sa::KernelInputParams* params, double area, double kernelA, double kernelB)
+double te::sa::KernelRatioValue(te::sa::KernelOutputParams* params, double area, double kernelA, double kernelB)
 {
   double kernelValue = 0.;
 
@@ -544,12 +544,16 @@ double te::sa::KernelGeometricMean(te::sa::KernelMap& kMap)
 
   while(it != kMap.end())
   {
-    int exp;
     double intensity = it->second.second;
-    double mantissa = frexp(intensity, &exp);
 
-    meanMTmp += log(mantissa);
-    meanETmp += exp;
+    if(intensity > 0.)
+    {
+      int exp;
+      double mantissa = frexp(intensity, &exp);
+
+      meanMTmp += log(mantissa);
+      meanETmp += exp;
+    }
 
     ++it;
   }

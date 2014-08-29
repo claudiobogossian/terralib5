@@ -8,6 +8,25 @@ namespace std
 	%template(ObjectIdVector) vector <te::da::ObjectId*>;
 }
 
+#ifdef SWIGJAVA
+// ---------------------------------
+// Java Documentation
+// ---------------------------------
+
+%typemap(javaimports) te::da::ObjectId "
+/** 
+ * This class represents an unique id for a data set element.
+ */"
+
+%javamethodmodifiers te::da::ObjectId::getValueAsString() const"
+/**
+ * It gets the properties values used to uniquely identify a data set element as string.
+ *
+ * @return A string that represents the set of values.
+ */
+  public";
+#endif
+
 %ignore te::da::ObjectId::ObjectId;
 %ignore te::da::ObjectId::getValue;
 %ignore te::da::ObjectId::addValue;

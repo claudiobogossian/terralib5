@@ -119,10 +119,9 @@ namespace te
 
       \param rin The input raster.
       \param uri The output raster URI.
-
       \param rType The name of the specific driver to create the raster.
 
-      \return a valid pointer to the created raster or a null (invalid) pointer if an error ocurred.
+      \return A valid pointer to the created raster or a null (invalid) pointer if an error ocurred.
     */
     TERASTEREXPORT te::rst::RasterPtr CreateCopy(const te::rst::Raster& rin, const std::string& uri,
                                                  const std::string& rType = std::string("GDAL"));
@@ -151,6 +150,21 @@ namespace te
       \param value The value to fill all the bands of the Raster.
     */
     TERASTEREXPORT void FillBand(te::rst::Band* bin, const std::complex<double>& value);
+    
+    /*!
+      \brief Creates a raster crop using a polygon delimiter.
+      
+      \param rin   The input raster.
+      \param pin   The input polygon, to be used as a delimiter.
+      \param rinfo The map of raster informations.
+      \param rType The name of the specific driver to create the raster.
+
+      \return A valid pointer to the created raster or a null (invalid) pointer if an error ocurred.
+    */      
+    TERASTEREXPORT te::rst::RasterPtr CropRaster(const te::rst::Raster& rin, 
+                                                 const te::gm::Polygon& pin,
+                                                 const std::map<std::string, std::string>& rinfo,
+                                                 const std::string& rType = std::string("GDAL"));
   } // end namespace rst
 }   // end namespace te
 
