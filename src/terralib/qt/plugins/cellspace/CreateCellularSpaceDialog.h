@@ -86,13 +86,25 @@ namespace te
 
             void onCreatePushButtonClicked();
 
+            void onVectorToolButtonToggled(bool isToggled);
+
+            void onPointsToolButtonToggled(bool isToggled);
+
+            void onRasterToolButtonToggled(bool isToggled);
+
+            void onSrsToolButtonClicked();
+
           private:
 
             te::common::UnitOfMeasurePtr getCurrentUnit();
 
+            void setCurrentUnit(te::common::UnitOfMeasurePtr unit);
+
             void initUnitsOfMeasure();
 
             void showEnvelope(const te::gm::Envelope env);
+
+            void showSRS();
 
             bool isBasicInfoSet();
 
@@ -106,12 +118,21 @@ namespace te
 
             te::map::AbstractLayerPtr getReferenceLayer();
 
+            te::gm::Envelope getEnvelope();
+
+            void clearEnvelope();
+
+            void clearResolution();
+
+            bool isNone();
+
           private:
 
             std::auto_ptr<Ui::CreateCellularSpaceDialogForm> m_ui;
             bool m_isFile;
             te::da::DataSourceInfoPtr m_outDataSourceInfo;
             std::string m_outputDataSetName;
+            int m_currentSRID;
         }; 
       }   // end namespace cellspace
     }     // end namespace plugins

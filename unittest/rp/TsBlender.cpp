@@ -70,10 +70,8 @@ void TsBlender::PixelByPixelNoBlendTest()
   raster2Bands.push_back( 2 );
   raster2Bands.push_back( 0 );
   
-  const std::vector< double > pixelOffsets1( 3, 0.0 );
-  const std::vector< double > pixelScales1( 3, 1.0 );
-  const std::vector< double > pixelOffsets2( 3, 0.0 );
-  const std::vector< double > pixelScales2( 3, 1.0 );
+  const std::vector< double > pixelOffsets( 3, 0.0 );
+  const std::vector< double > pixelScales( 3, 1.0 );
   
   te::gm::GTParameters transParams;
   transParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
@@ -107,10 +105,12 @@ void TsBlender::PixelByPixelNoBlendTest()
     te::rst::Interpolator::NearestNeighbor,
     0.0,
     false,
-    pixelOffsets1,
-    pixelScales1,
-    pixelOffsets2,
-    pixelScales2,
+    pixelOffsets,
+    pixelOffsets,
+    pixelScales,
+    pixelOffsets,
+    pixelOffsets,
+    pixelScales,
     0,
     0,
     *transPtr,
@@ -187,10 +187,8 @@ void TsBlender::PixelByPixelEucBlendTest()
   raster2Bands.push_back( 2 );
   raster2Bands.push_back( 0 );
   
-  const std::vector< double > pixelOffsets1( 3, 0.0 );
-  const std::vector< double > pixelScales1( 3, 1.0 );
-  const std::vector< double > pixelOffsets2( 3, 0.0 );
-  const std::vector< double > pixelScales2( 3, 1.0 );
+  const std::vector< double > pixelOffsets( 3, 0.0 );
+  const std::vector< double > pixelScales( 3, 1.0 );
   
   te::gm::GTParameters transParams;
   transParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
@@ -224,10 +222,12 @@ void TsBlender::PixelByPixelEucBlendTest()
     te::rst::Interpolator::NearestNeighbor,
     0.0,
     false,
-    pixelOffsets1,
-    pixelScales1,
-    pixelOffsets2,
-    pixelScales2,
+    pixelOffsets,
+    pixelOffsets,
+    pixelScales,
+    pixelOffsets,
+    pixelOffsets,
+    pixelScales,
     0,
     0,
     *transPtr,
@@ -304,10 +304,8 @@ void TsBlender::PixelByPixelSumBlendTest()
   raster2Bands.push_back( 2 );
   raster2Bands.push_back( 0 );
   
-  const std::vector< double > pixelOffsets1( 3, 0.0 );
-  const std::vector< double > pixelScales1( 3, 0.5 );
-  const std::vector< double > pixelOffsets2( 3, 0.0 );
-  const std::vector< double > pixelScales2( 3, 0.5 );
+  const std::vector< double > pixelOffsets( 3, 0.0 );
+  const std::vector< double > pixelScales( 3, 0.5 );
   
   te::gm::GTParameters transParams;
   transParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
@@ -341,10 +339,12 @@ void TsBlender::PixelByPixelSumBlendTest()
     te::rst::Interpolator::NearestNeighbor,
     0.0,
     false,
-    pixelOffsets1,
-    pixelScales1,
-    pixelOffsets2,
-    pixelScales2,
+    pixelOffsets,
+    pixelOffsets,
+    pixelScales,
+    pixelOffsets,
+    pixelOffsets,
+    pixelScales,
     0,
     0,
     *transPtr,
@@ -553,11 +553,9 @@ void TsBlender::FullRasterBlendTest()
   raster2Bands.push_back( 2 );
   raster2Bands.push_back( 0 );
   
-  const std::vector< double > pixelOffsets1( 3, 0.0 );
-  const std::vector< double > pixelScales1( 3, 1.0 );
-  const std::vector< double > pixelOffsets2( 3, 0.0 );
-  const std::vector< double > pixelScales2( 3, 1.0 );
-  
+  const std::vector< double > pixelOffsets( 3, 0.0 );
+  const std::vector< double > pixelScales( 3, 1.0 );
+ 
   te::gm::GTParameters transParams;
   transParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
      te::gm::Coord2D( 292, 538 ), te::gm::Coord2D( 0, 0 ) ) );
@@ -590,10 +588,12 @@ void TsBlender::FullRasterBlendTest()
     te::rst::Interpolator::NearestNeighbor,
     0.0,
     false,
-    pixelOffsets1,
-    pixelScales1,
-    pixelOffsets2,
-    pixelScales2,
+    pixelOffsets,
+    pixelOffsets,
+    pixelScales,
+    pixelOffsets,
+    pixelOffsets,
+    pixelScales,
     r1ValidDataDelimiterPtr.get(),
     r2ValidDataDelimiterPtr.get(),
     *transPtr,
@@ -764,10 +764,8 @@ void TsBlender::ThreadedFullRasterBlendTest()
   raster2Bands.push_back( 2 );
   raster2Bands.push_back( 0 );
   
-  const std::vector< double > pixelOffsets1( 3, 0.0 );
-  const std::vector< double > pixelScales1( 3, 1.0 );
-  const std::vector< double > pixelOffsets2( 3, 0.0 );
-  const std::vector< double > pixelScales2( 3, 1.0 );
+  const std::vector< double > pixelOffsets( 3, 0.0 );
+  const std::vector< double > pixelScales( 3, 1.0 );
   
   te::gm::GTParameters transParams;
   transParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
@@ -801,10 +799,12 @@ void TsBlender::ThreadedFullRasterBlendTest()
     te::rst::Interpolator::NearestNeighbor,
     0.0,
     false,
-    pixelOffsets1,
-    pixelScales1,
-    pixelOffsets2,
-    pixelScales2,
+    pixelOffsets,
+    pixelOffsets,
+    pixelScales,
+    pixelOffsets,
+    pixelOffsets,
+    pixelScales,
     r1ValidDataDelimiterPtr.get(),
     r2ValidDataDelimiterPtr.get(),
     *transPtr,
