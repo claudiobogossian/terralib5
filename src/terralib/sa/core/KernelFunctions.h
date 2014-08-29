@@ -83,7 +83,7 @@ namespace te
       \param raster Pointer to raster to set the kernel ratio values
 
     */
-    TESAEXPORT void GridRatioKernel(te::sa::KernelInputParams* params, te::rst::Raster* rasterA, te::rst::Raster* rasterB, te::rst::Raster* rasterOut);
+    TESAEXPORT void GridRatioKernel(te::sa::KernelOutputParams* params, te::rst::Raster* rasterA, te::rst::Raster* rasterB, te::rst::Raster* rasterOut);
 
     /*!
       \brief Evaluates kernel value using a dataset as output data and a fixed value for radius.
@@ -123,7 +123,7 @@ namespace te
       \param geomIdx Attribute index with geometry information
 
     */
-    TESAEXPORT void DataSetRatioKernel(te::sa::KernelInputParams* params, te::mem::DataSet* dsA, te::mem::DataSet* dsB, te::mem::DataSet* dsOut, int kernelIdx, int geomIdx);
+    TESAEXPORT void DataSetRatioKernel(te::sa::KernelOutputParams* params, te::mem::DataSet* dsA, te::mem::DataSet* dsB, te::mem::DataSet* dsOut, int kernelIdx, int geomIdx);
 
     /*!
       \brief Normalizes kernel values based on type of estimation. 
@@ -172,7 +172,7 @@ namespace te
 
       \return Kernel value for one element.
     */
-    TESAEXPORT double KernelRatioValue(te::sa::KernelInputParams* params, double area, double kernelA, double kernelB);
+    TESAEXPORT double KernelRatioValue(te::sa::KernelOutputParams* params, double area, double kernelA, double kernelB);
 
     /*!
       \brief Kernel functions for Quartic type

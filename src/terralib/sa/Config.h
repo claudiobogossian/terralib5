@@ -31,6 +31,9 @@
 
 #define TE_SA_MODULE_NAME "te.sa"
 
+/*! Defines the primary key name pk_id used in Generalized Proximity Matrix operation*/
+#define TE_SA_GPM_ATTR_PK_NAME "pk_id"
+
 /*! Defines the attribute name used in gpm to identigy the distance information*/
 #define TE_SA_DISTANCE_ATTR_NAME "distance"
 
