@@ -438,3 +438,22 @@ int te::layout::ObjectItem::getZValueItem()
   return QGraphicsItem::zValue();
 }
 
+void te::layout::ObjectItem::applyRotation()
+{
+  if(!m_model)
+    return;
+
+  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
+  if(!model)
+    return;
+
+  double angle = model->getAngle();
+
+  QPointF center = boundingRect().center();
+
+  double centerX = center.x();
+  double centerY = center.y();
+
+  setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
+}
+

@@ -43,7 +43,8 @@ te::layout::ItemModelObservable::ItemModelObservable() :
   m_sharedProps(0),
   m_zValue(0),
   m_border(true),
-  m_resizable(true)
+  m_resizable(true),
+  m_angle(0)
 {
   m_box = te::gm::Envelope(0,0,0,0);
 
@@ -115,8 +116,14 @@ te::layout::Properties* te::layout::ItemModelObservable::getProperties() const
   Property pro_id;
   pro_id.setName(m_sharedProps->getId());
   pro_id.setId("unknown");
-  pro_id.setValue(m_id, dataType->getDataTypeString());
+  pro_id.setValue(m_id, dataType->getDataTypeInt());
   m_properties->addProperty(pro_id);
+
+  Property pro_angle;
+  pro_angle.setName(m_sharedProps->getAngle());
+  pro_angle.setId("unknown");
+  pro_angle.setValue(m_angle, dataType->getDataTypeDouble());
+  m_properties->addProperty(pro_angle);
 
   Property pro_backgroundcolor;
   pro_backgroundcolor.setName(m_sharedProps->getBackgroundcolor());
@@ -266,6 +273,12 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
     m_id = pro_id.getValue().toInt();
   }
 
+  Property pro_angle = vectorProps->contains(m_sharedProps->getAngle());
+  if(!pro_angle.isNull())
+  {
+    m_angle = pro_angle.getValue().toDouble();
+  }
+
   Property pro_backgroundcolor = vectorProps->contains(m_sharedProps->getBackgroundcolor());
   if(!pro_backgroundcolor.isNull())
   {
@@ -398,4 +411,14 @@ void te::layout::ItemModelObservable::drawBackground( ContextItem context )
   }
   canvas->setPolygonFillColor(m_backgroundColor);
   utils->drawRectW(m_box);
+}
+
+void te::layout::ItemModelObservable::setAngle( double angle )
+{
+  m_angle = angle;
+}
+
+double te::layout::ItemModelObservable::getAngle()
+{
+  return m_angle;
 }

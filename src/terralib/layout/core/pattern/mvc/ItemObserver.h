@@ -82,6 +82,8 @@ namespace te
 
         virtual int getZValueItem() = 0;
 
+        virtual void applyRotation() = 0;
+
         te::layout::ItemController*	m_controller;
         te::layout::Observable*		m_model;
         double					m_ppi;

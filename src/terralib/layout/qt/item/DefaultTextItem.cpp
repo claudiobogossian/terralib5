@@ -416,3 +416,22 @@ QVariant te::layout::DefaultTextItem::itemChange( GraphicsItemChange change, con
   }
   return QGraphicsTextItem::itemChange(change, value);
 }
+
+void te::layout::DefaultTextItem::applyRotation()
+{
+  if(!m_model)
+    return;
+
+  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
+  if(!model)
+    return;
+
+  double angle = model->getAngle();
+
+  QPointF center = boundingRect().center();
+
+  double centerX = center.x();
+  double centerY = center.y();
+
+  setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
+}

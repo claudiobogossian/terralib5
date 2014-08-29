@@ -90,6 +90,10 @@ namespace te
 
         /* Systematic scale is for UTM projection */
         virtual bool isResizable();
+
+        virtual void setAngle(double angle);
+
+        virtual double getAngle();
                 
       protected:
 
@@ -111,6 +115,7 @@ namespace te
         bool                      m_border;
         std::string               m_name;
         bool                      m_resizable;
+        double                    m_angle;
     };
   }
 }

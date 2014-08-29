@@ -63,13 +63,11 @@ void te::layout::VerticalRulerModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box, true, false);  
 
-  double zoomFactor = context.getZoomFactor();
-  int zoom = 1. / zoomFactor;
-  if(zoomFactor > 1.)
-    zoom = zoomFactor;
-
-  canvas->setLineWidth(1. * zoom);
-  canvas->setTextPointSize(5);
+  m_backEndBox = te::gm::Envelope(m_box.getLowerLeftX() + m_backEndMargin, m_box.getLowerLeftY(),
+    m_box.getUpperRightX() - m_backEndMargin , m_box.getUpperRightY() - m_backEndSpacing);
+  
+  canvas->setLineWidth(1.);
+  canvas->setTextPointSize(6);
   canvas->setFontFamily("Verdana");
     
   drawRuler(canvas, utils, context.getZoomFactor());

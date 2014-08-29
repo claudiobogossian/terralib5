@@ -492,7 +492,7 @@ void te::layout::View::outsideAreaChangeContext( bool change )
       env->m_lly = center.y - halfHeight;
       env->m_urx = center.x + halfWidth;
       env->m_ury = center.y + halfHeight;
-                 
+      
       sc->refresh(this, zoomFactor);            
       sc->redrawItems(true);
       resetDefaultConfig();

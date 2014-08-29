@@ -67,6 +67,7 @@ void te::layout::ItemObserver::refresh()
   te::gm::Coord2D coord = getPosition();
   m_controller->setPosition(coord.x, coord.y);
   setZValueItem(getZValueItem());
+  applyRotation();
 }
 
 void te::layout::ItemObserver::updateProperties( te::layout::Properties* properties )

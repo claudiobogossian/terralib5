@@ -623,8 +623,16 @@ void te::layout::Scene::refresh(QGraphicsView* view, double zoomFactor)
     QPointF ll = view->mapToScene(0, 0);
     QPointF ur = view->mapToScene(view->size().width(), view->size().height());
     newBox = te::gm::Envelope(ll.x(), ll.y(), ur.x(), ur.y());
-  }
-  
+
+    /*QPointF tl(view->horizontalScrollBar()->value(), view->verticalScrollBar()->value());
+    QPointF br = tl + view->viewport()->rect().bottomRight();
+    QMatrix mat = view->matrix().inverted();
+    QRectF r1 = mat.mapRect(QRectF(tl,br));
+
+    QPointF ur = view->mapToScene(r1.width(), r1.height());*/
+    //newBox = te::gm::Envelope(ll.x(), ll.y(), ur.x(), ur.y());
+  } 
+
   refreshRulers(newBox);
 }
 

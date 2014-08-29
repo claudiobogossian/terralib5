@@ -110,6 +110,8 @@ namespace te
 
       void setCurrentTool(te::qt::widgets::AbstractTool* tool);
 
+      virtual void applyRotation();
+
     protected:
 
       QPixmap m_pixmap;

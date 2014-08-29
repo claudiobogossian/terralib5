@@ -100,6 +100,8 @@ namespace te
 
         virtual void refreshText();
 
+        virtual void applyRotation();
+
         QPixmap m_pixmap;
         QRectF  m_rect;//In local coordinate
         QTextTable*    m_table;
