@@ -79,6 +79,9 @@ namespace te
         /*! Function used to set if the number of samples has to be proportional to the area */
         void isProportionalToArea(bool isProp);
 
+        /*! Function used to get the names for the generated classes */
+        std::vector<std::string> getClassNames();
+
       protected:
 
         /*! Function used to create the output dataset type */

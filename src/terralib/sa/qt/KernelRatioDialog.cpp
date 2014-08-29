@@ -309,7 +309,18 @@ void te::sa::KernelRatioDialog::onOkPushButtonClicked()
     dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
   }
 
+  //create layer
   m_outputLayer = te::sa::CreateLayer(outputDataSource, dataSetName);
+
+  //create legend
+  if(m_ui->m_gridRadioButton->isChecked())
+  {
+    te::sa::CreateKernelColorMaping(m_outputLayer);
+  }
+  else if(m_ui->m_attrRadioButton->isChecked())
+  {
+    te::sa::CreateKernelGrouping(m_outputLayer, m_ui->m_attrNameLineEdit->text().toStdString());
+  }
 
   accept();
 }

@@ -36,7 +36,8 @@
 namespace te
 {
   // Forward declaration
-  namespace da  { class DataSource; }
+  namespace color { class ColorBar; }
+  namespace da    { class DataSource; }
 
   namespace sa
   {
@@ -49,6 +50,16 @@ namespace te
     TESAEXPORT te::da::DataSourcePtr CreateGDALDataSource(std::string path, std::string dataSetName);
 
     TESAEXPORT te::map::AbstractLayerPtr CreateLayer(te::da::DataSourcePtr ds, std::string dataSetName);
+
+    TESAEXPORT void CreateBayesGrouping(te::map::AbstractLayerPtr layer);
+
+    TESAEXPORT void CreateKernelGrouping(te::map::AbstractLayerPtr layer, std::string kernelAttr);
+
+    TESAEXPORT void CreateKernelColorMaping(te::map::AbstractLayerPtr layer);
+
+    TESAEXPORT void CreateSampleGeneratorStratifiedGrouping(te::map::AbstractLayerPtr layer, std::vector<std::string> strVec);
+
+    TESAEXPORT te::color::ColorBar* GetColorBar(std::string catalog, std::string group, std::string schema);
 
   } // end namespace sa
 }   // end namespace te

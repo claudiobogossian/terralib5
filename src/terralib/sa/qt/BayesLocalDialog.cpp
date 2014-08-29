@@ -235,7 +235,11 @@ void te::sa::BayesLocalDialog::onOkPushButtonClicked()
     return;
   }
 
+  //create layer
   m_outputLayer = te::sa::CreateLayer(outputDataSource, dataSetName);
+
+  //create legend
+  te::sa::CreateBayesGrouping(m_outputLayer.get());
 
   accept();
 }

@@ -211,6 +211,8 @@ void te::sa::SamplePointsGeneratorDialog::onOkPushButtonClicked()
   if (idx != std::string::npos)
         dataSetName=dataSetName.substr(0,idx);
 
+  std::vector<std::string> classNames;
+
   try
   {
     te::sa::SamplePointsGeneratorAbstract* spga;
@@ -245,6 +247,12 @@ void te::sa::SamplePointsGeneratorDialog::onOkPushButtonClicked()
 
     spga->execute();
 
+    if(spgt == te::sa::Stratified)
+    {
+      classNames = ((te::sa::SamplePointsGeneratorStratified*)spga)->getClassNames();
+    }
+
+
     delete spga;
   }
   catch(...)
@@ -254,6 +262,11 @@ void te::sa::SamplePointsGeneratorDialog::onOkPushButtonClicked()
   }
 
   m_outputLayer = te::sa::CreateLayer(outputDataSource, dataSetName);
+
+  if(spgt == te::sa::Stratified)
+  {
+    te::sa::CreateSampleGeneratorStratifiedGrouping(m_outputLayer, classNames);
+  }
 
   accept();
 }
