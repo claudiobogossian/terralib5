@@ -157,6 +157,14 @@ namespace te
         InputParameters m_inputParameters; //!< Input execution parameters.
         
         bool m_isInitialized; //!< Tells if this instance is initialized.
+        
+        /*!
+          \brief Return a SRF interpolated from the given SRFs.
+          \param SRFs Input SRFs.
+          \param frequency The desired interpolated frequency.
+          \return Return a SRF interpolated from the given SRFs.
+         */         
+        double interpolateSRF( const std::map< double, double >& sRFs, const double& frequency ) const;
     
     };
 
