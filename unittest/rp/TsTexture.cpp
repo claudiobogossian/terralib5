@@ -41,12 +41,12 @@ void TsTexture::GLCM()
 
 // use raster attributes to compute GLCM matrix, in northeast direction
   te::rp::RasterAttributes rattributes;
-  // boost::numeric::ublas::matrix<double> glcm = rattributes.getGLCM(*rin, 1, 1, -1);
-  te::rp::Texture metrics; // = rattributes.getGLCMMetrics(glcm);
+  boost::numeric::ublas::matrix<double> glcm = rattributes.getGLCM(*rin, 1, 1, -1);
+  te::rp::Texture metrics = rattributes.getGLCMMetrics(glcm);
 
 // compare texture metrics    
   double myEpsilon = 1e-4;
-  CPPUNIT_ASSERT(std::abs(metrics.m_contrast -  72.554) < myEpsilon);
+  CPPUNIT_ASSERT(std::abs(metrics.m_contrast - 72.554) < myEpsilon);
   CPPUNIT_ASSERT(std::abs(metrics.m_dissimilarity - 5.56127) < myEpsilon);
   CPPUNIT_ASSERT(std::abs(metrics.m_energy - 0.0806309) < myEpsilon);
   CPPUNIT_ASSERT(std::abs(metrics.m_entropy - 6.00814) < myEpsilon);

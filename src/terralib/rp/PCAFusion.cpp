@@ -453,7 +453,6 @@ namespace te
       }
       
       const double gain = ( ( hrStdDev == 0.0 ) ? 0.0 : ( pcaZeroStdDev / hrStdDev ) );
-      const double offset = ( hrStdDev == 0.0 ) ? 0.0 : ( pcaZeroMean - ( hrMean * gain ) );
       const double& pcaNoDataValue = pcaBand.getProperty()->m_noDataValue;
       const double& hrNoDataValue = hrBand.getProperty()->m_noDataValue;
       const unsigned int nRows = pcaRaster.getNumberOfRows();
@@ -477,7 +476,7 @@ namespace te
           }
           else
           {
-            value = ( value * gain ) + offset;
+            value = ( ( value - hrMean ) * gain ) + pcaZeroMean;
             value = std::max( pcaAllowedMin, value );
             value = std::min( pcaAllowedMax, value );
             

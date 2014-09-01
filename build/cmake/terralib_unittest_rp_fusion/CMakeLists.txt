@@ -18,7 +18,7 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Build the Unit Test for the Raster Processing IHS Fusion.
+#  Description: Build the Unit Test for the Raster Processing Fusion.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
@@ -29,17 +29,18 @@
 include_directories(${Boost_INCLUDE_DIR}
                     ${CPPUNIT_INCLUDE_DIR})
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/TsIHSFusion.cpp
-                             ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/TsIHSFusionMain.cpp)
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/TsFusion.cpp
+                             ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/TsFusionMain.cpp)
 
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/LoadModules.h
-                             ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/TsIHSFusion.h)
+                             ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/TsFusion.h)
 
-add_executable(terralib_unittest_rp_ihsfusion ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+add_executable(terralib_unittest_rp_fusion ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
-target_link_libraries(terralib_unittest_rp_ihsfusion terralib_mod_plugin
+target_link_libraries(terralib_unittest_rp_fusion terralib_mod_plugin
                                                      terralib_mod_raster
                                                      terralib_mod_rp
+                                                     terralib_mod_gdal
                                                      ${CPPUNIT_LIBRARY})
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}

@@ -243,17 +243,4 @@ void te::vp::GeometricOpOutputWizardPage::onTargetFileToolButtonPressed()
 
     m_toFile = true;
   }
-
-  /*QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."), QString(), tr("Shapefile (*.shp *.SHP);;"),0, QFileDialog::DontConfirmOverwrite);*/
-  //if (fileName.isEmpty())
-  //  return;
-  //
-  //boost::filesystem::path outfile(fileName.toStdString());
-  //std::string aux = outfile.leaf().string();
-  //m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
-  //aux = outfile.string();
-  //m_ui->m_repositoryLineEdit->setText(aux.c_str());
-  //
-  //m_toFile = true;
-  //m_ui->m_newLayerNameLineEdit->setEnabled(false);
 }

@@ -6,298 +6,174 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>557</width>
-    <height>426</height>
+    <width>1146</width>
+    <height>430</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Geostatistical Methods</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_18">
+  <layout class="QGridLayout" name="gridLayout_24">
    <property name="sizeConstraint">
     <enum>QLayout::SetFixedSize</enum>
    </property>
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_17">
+    <layout class="QGridLayout" name="gridLayout_23">
      <item row="0" column="0">
-      <widget class="QFrame" name="frame">
-       <property name="styleSheet">
-        <string notr="true">QWidget { background: white }</string>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Sunken</enum>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0">
-         <widget class="QLabel" name="m_titleLabel">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Analysis of spatial variability using geostatistical methods.</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLabel" name="m_imgLabel">
-          <property name="minimumSize">
-           <size>
-            <width>112</width>
-            <height>48</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>48</width>
-            <height>48</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Imagem</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QGroupBox" name="groupBox">
-       <property name="title">
-        <string>Input</string>
-       </property>
-       <property name="flat">
-        <bool>true</bool>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_6">
-        <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_5">
+      <layout class="QGridLayout" name="gridLayout_22">
+       <item row="0" column="0">
+        <widget class="QFrame" name="frame">
+         <property name="styleSheet">
+          <string notr="true">QWidget { background: white }</string>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout_3">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label">
-              <property name="minimumSize">
-               <size>
-                <width>70</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Layer Name:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_8">
-              <property name="text">
-               <string>Attribute:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           <widget class="QLabel" name="m_titleLabel">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Analysis of spatial variability using geostatistical methods.</string>
+            </property>
+           </widget>
           </item>
           <item row="0" column="1">
-           <layout class="QGridLayout" name="gridLayout_4">
-            <item row="0" column="0" colspan="2">
-             <widget class="QComboBox" name="m_inputLayerComboBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
+           <widget class="QLabel" name="m_imgLabel">
+            <property name="minimumSize">
+             <size>
+              <width>112</width>
+              <height>48</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>48</width>
+              <height>48</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Imagem</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>Input</string>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <item row="0" column="0">
+           <layout class="QGridLayout" name="gridLayout_5">
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="gridLayout_3">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label">
+                <property name="minimumSize">
+                 <size>
+                  <width>70</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Layer Name:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_8">
+                <property name="text">
+                 <string>Attribute:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
-            <item row="1" column="0">
-             <widget class="QComboBox" name="m_attributeComboBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QToolButton" name="m_changeAttrToolButton">
-              <property name="text">
-               <string>...</string>
-              </property>
-             </widget>
+            <item row="0" column="1">
+             <layout class="QGridLayout" name="gridLayout_4">
+              <item row="0" column="0" colspan="2">
+               <widget class="QComboBox" name="m_inputLayerComboBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QComboBox" name="m_attributeComboBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QToolButton" name="m_changeAttrToolButton">
+                <property name="text">
+                 <string>...</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
          </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QGroupBox" name="groupBox_2">
-       <property name="title">
-        <string>Params</string>
-       </property>
-       <property name="flat">
-        <bool>true</bool>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_20">
-        <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_19">
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>Params</string>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_21">
           <item row="0" column="0">
-           <widget class="QGroupBox" name="groupBox_3">
-            <property name="title">
-             <string>Statistics</string>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_10">
-             <item row="0" column="0">
-              <layout class="QGridLayout" name="gridLayout_9">
+           <layout class="QGridLayout" name="gridLayout_20">
+            <item row="0" column="0">
+             <widget class="QGroupBox" name="groupBox_3">
+              <property name="title">
+               <string>Statistics</string>
+              </property>
+              <property name="flat">
+               <bool>true</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_10">
                <item row="0" column="0">
-                <layout class="QGridLayout" name="gridLayout_8">
+                <layout class="QGridLayout" name="gridLayout_9">
                  <item row="0" column="0">
-                  <widget class="QLabel" name="label_2">
-                   <property name="text">
-                    <string>Method:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_3">
-                   <property name="text">
-                    <string>Number of Lags:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_4">
-                   <property name="text">
-                    <string>Lag Increment:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="label_5">
-                   <property name="text">
-                    <string>Angular Direction:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="label_6">
-                   <property name="text">
-                    <string>Angular Tolerance:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="0" column="1">
-                <layout class="QGridLayout" name="gridLayout_7">
-                 <item row="0" column="0">
-                  <widget class="QComboBox" name="m_typeComboBox">
-                   <property name="minimumSize">
-                    <size>
-                     <width>145</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLineEdit" name="m_nLagsLineEdit">
-                   <property name="text">
-                    <string>10</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLineEdit" name="m_lagsIncrementLineEdit">
-                   <property name="text">
-                    <string>968.0</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLineEdit" name="m_angleDirLineEdit">
-                   <property name="text">
-                    <string>0.0</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QLineEdit" name="m_angleTolLineEdit">
-                   <property name="text">
-                    <string>90.0</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QGroupBox" name="m_adjustGroupBox">
-            <property name="title">
-             <string>Adjust</string>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_16">
-             <item row="0" column="0">
-              <layout class="QGridLayout" name="gridLayout_15">
-               <item row="0" column="0">
-                <layout class="QGridLayout" name="gridLayout_13">
-                 <item row="0" column="0">
-                  <layout class="QGridLayout" name="gridLayout_11">
+                  <layout class="QGridLayout" name="gridLayout_8">
                    <item row="0" column="0">
-                    <widget class="QLabel" name="label_7">
+                    <widget class="QLabel" name="label_2">
                      <property name="text">
-                      <string>Model:</string>
+                      <string>Method:</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -305,9 +181,9 @@
                     </widget>
                    </item>
                    <item row="1" column="0">
-                    <widget class="QLabel" name="label_9">
+                    <widget class="QLabel" name="label_3">
                      <property name="text">
-                      <string>Nugget:</string>
+                      <string>Number of Lags:</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -315,9 +191,9 @@
                     </widget>
                    </item>
                    <item row="2" column="0">
-                    <widget class="QLabel" name="label_10">
+                    <widget class="QLabel" name="label_4">
                      <property name="text">
-                      <string>Sill:</string>
+                      <string>Lag Increment:</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -325,9 +201,19 @@
                     </widget>
                    </item>
                    <item row="3" column="0">
-                    <widget class="QLabel" name="label_11">
+                    <widget class="QLabel" name="label_5">
                      <property name="text">
-                      <string>Range:</string>
+                      <string>Angular Direction:</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="4" column="0">
+                    <widget class="QLabel" name="label_6">
+                     <property name="text">
+                      <string>Angular Tolerance:</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -337,9 +223,9 @@
                   </layout>
                  </item>
                  <item row="0" column="1">
-                  <layout class="QGridLayout" name="gridLayout_12">
+                  <layout class="QGridLayout" name="gridLayout_7">
                    <item row="0" column="0">
-                    <widget class="QComboBox" name="m_modelComboBox">
+                    <widget class="QComboBox" name="m_typeComboBox">
                      <property name="minimumSize">
                       <size>
                        <width>145</width>
@@ -349,21 +235,40 @@
                     </widget>
                    </item>
                    <item row="1" column="0">
-                    <widget class="QDoubleSpinBox" name="m_nuggetDoubleSpinBox">
+                    <widget class="QLineEdit" name="m_nLagsLineEdit">
+                     <property name="text">
+                      <string>10</string>
+                     </property>
                      <property name="alignment">
                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                      </property>
                     </widget>
                    </item>
                    <item row="2" column="0">
-                    <widget class="QDoubleSpinBox" name="m_sillDoubleSpinBox">
+                    <widget class="QLineEdit" name="m_lagsIncrementLineEdit">
+                     <property name="text">
+                      <string>968.0</string>
+                     </property>
                      <property name="alignment">
                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                      </property>
                     </widget>
                    </item>
                    <item row="3" column="0">
-                    <widget class="QDoubleSpinBox" name="m_rangeDoubleSpinBox">
+                    <widget class="QLineEdit" name="m_angleDirLineEdit">
+                     <property name="text">
+                      <string>0.0</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="4" column="0">
+                    <widget class="QLineEdit" name="m_angleTolLineEdit">
+                     <property name="text">
+                      <string>90.0</string>
+                     </property>
                      <property name="alignment">
                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                      </property>
@@ -373,97 +278,242 @@
                  </item>
                 </layout>
                </item>
-               <item row="1" column="0">
-                <layout class="QGridLayout" name="gridLayout_14">
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QGroupBox" name="m_adjustGroupBox">
+              <property name="title">
+               <string>Adjust</string>
+              </property>
+              <property name="flat">
+               <bool>true</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_19">
+               <item row="0" column="0">
+                <layout class="QGridLayout" name="gridLayout_18">
                  <item row="0" column="0">
-                  <spacer name="horizontalSpacer_2">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QPushButton" name="m_adjustPushButton">
-                   <property name="text">
-                    <string>Adjust</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="2">
-                  <spacer name="horizontalSpacer_3">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
+                  <layout class="QGridLayout" name="gridLayout_17">
+                   <item row="0" column="0">
+                    <layout class="QGridLayout" name="gridLayout_11">
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_7">
+                       <property name="text">
+                        <string>Model:</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="label_9">
+                       <property name="text">
+                        <string>Nugget:</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="label_10">
+                       <property name="text">
+                        <string>Sill:</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="0">
+                      <widget class="QLabel" name="label_11">
+                       <property name="text">
+                        <string>Range:</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item row="0" column="1">
+                    <layout class="QGridLayout" name="gridLayout_16">
+                     <item row="0" column="0">
+                      <widget class="QComboBox" name="m_modelComboBox">
+                       <property name="minimumSize">
+                        <size>
+                         <width>145</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="0">
+                      <layout class="QGridLayout" name="gridLayout_12">
+                       <item row="0" column="0">
+                        <widget class="QSlider" name="m_nuggetHorizontalSlider">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="1">
+                        <widget class="QLabel" name="m_nuggetLabel">
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="2" column="0">
+                      <layout class="QGridLayout" name="gridLayout_13">
+                       <item row="0" column="0">
+                        <widget class="QSlider" name="m_sillHorizontalSlider">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="1">
+                        <widget class="QLabel" name="m_sillLabel">
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="3" column="0">
+                      <layout class="QGridLayout" name="gridLayout_15">
+                       <item row="0" column="0">
+                        <widget class="QSlider" name="m_rangeHorizontalSlider">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="1">
+                        <widget class="QLabel" name="m_rangeLabel">
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
                  </item>
                 </layout>
                </item>
+               <item row="1" column="0">
+                <spacer name="verticalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Preferred</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>25</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
               </layout>
-             </item>
-            </layout>
-           </widget>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0" colspan="4">
-        <widget class="Line" name="line">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="te::qt::widgets::HelpPushButton" name="m_helpPushButton">
-         <property name="text">
-          <string>Help</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="1" column="2">
-        <widget class="QPushButton" name="m_applyPushButton">
-         <property name="text">
-          <string>Apply</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QPushButton" name="m_closePushButton">
-         <property name="text">
-          <string>Close</string>
-         </property>
-        </widget>
+       <item row="3" column="0">
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0" colspan="4">
+          <widget class="Line" name="line">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="te::qt::widgets::HelpPushButton" name="m_helpPushButton">
+           <property name="text">
+            <string>Help</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="2">
+          <widget class="QPushButton" name="m_applyPushButton">
+           <property name="text">
+            <string>Apply</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QPushButton" name="m_closePushButton">
+           <property name="text">
+            <string>Close</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
+     </item>
+     <item row="0" column="1">
+      <widget class="QWidget" name="m_chartWidget" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>600</width>
+         <height>410</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>600</width>
+         <height>410</height>
+        </size>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -479,16 +529,16 @@
  <tabstops>
   <tabstop>m_inputLayerComboBox</tabstop>
   <tabstop>m_attributeComboBox</tabstop>
+  <tabstop>m_changeAttrToolButton</tabstop>
   <tabstop>m_typeComboBox</tabstop>
   <tabstop>m_nLagsLineEdit</tabstop>
   <tabstop>m_lagsIncrementLineEdit</tabstop>
   <tabstop>m_angleDirLineEdit</tabstop>
   <tabstop>m_angleTolLineEdit</tabstop>
   <tabstop>m_modelComboBox</tabstop>
-  <tabstop>m_nuggetDoubleSpinBox</tabstop>
-  <tabstop>m_sillDoubleSpinBox</tabstop>
-  <tabstop>m_rangeDoubleSpinBox</tabstop>
-  <tabstop>m_adjustPushButton</tabstop>
+  <tabstop>m_nuggetHorizontalSlider</tabstop>
+  <tabstop>m_sillHorizontalSlider</tabstop>
+  <tabstop>m_rangeHorizontalSlider</tabstop>
   <tabstop>m_applyPushButton</tabstop>
   <tabstop>m_closePushButton</tabstop>
   <tabstop>m_helpPushButton</tabstop>
@@ -508,6 +558,54 @@
     <hint type="destinationlabel">
      <x>494</x>
      <y>419</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_nuggetHorizontalSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>m_nuggetLabel</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>430</x>
+     <y>261</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>486</x>
+     <y>261</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_sillHorizontalSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>m_sillLabel</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>456</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>487</x>
+     <y>287</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_rangeHorizontalSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>m_rangeLabel</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>446</x>
+     <y>312</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>484</x>
+     <y>313</y>
     </hint>
    </hints>
   </connection>

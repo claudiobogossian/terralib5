@@ -29,9 +29,6 @@
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/datasource/DataSource.h"
-#include "../../dataaccess/datasource/DataSourceInfo.h"
-#include "../../dataaccess/datasource/DataSourceInfoManager.h"
-#include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../maptools/DataSetLayer.h"
@@ -41,6 +38,7 @@
 #include "../core/Utils.h"
 #include "../Exception.h"
 #include "BayesGlobalDialog.h"
+#include "Utils.h"
 #include "ui_BayesGlobalDialogForm.h"
 
 // Qt
@@ -53,10 +51,8 @@
 #include <memory>
 
 // Boost
-#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/uuid/random_generator.hpp>
-#include <boost/uuid/uuid_io.hpp>
+
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
@@ -112,6 +108,11 @@ void te::sa::BayesGlobalDialog::setLayers(std::list<te::map::AbstractLayerPtr> l
 // fill attributes combo
   if(m_ui->m_inputLayerComboBox->count() > 0)
     onInputLayerComboBoxActivated(0);
+}
+
+te::map::AbstractLayerPtr te::sa::BayesGlobalDialog::getOutputLayer()
+{
+  return m_outputLayer;
 }
 
 void te::sa::BayesGlobalDialog::onInputLayerComboBoxActivated(int index)
@@ -176,27 +177,7 @@ void te::sa::BayesGlobalDialog::onOkPushButtonClicked()
 
   if(m_toFile)
   {
-    //create new data source
-    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
-
-    std::map<std::string, std::string> dsInfo;
-    dsInfo["URI"] = uri.string();
-
-    boost::uuids::basic_random_generator<boost::mt19937> gen;
-    boost::uuids::uuid u = gen();
-    std::string id_ds = boost::uuids::to_string(u);
-
-    te::da::DataSourceInfoPtr dsInfoPtr(new te::da::DataSourceInfo);
-    dsInfoPtr->setConnInfo(dsInfo);
-    dsInfoPtr->setTitle(uri.stem().string());
-    dsInfoPtr->setAccessDriver("OGR");
-    dsInfoPtr->setType("OGR");
-    dsInfoPtr->setDescription(uri.string());
-    dsInfoPtr->setId(id_ds);
-
-    te::da::DataSourceInfoManager::getInstance().add(dsInfoPtr);
-
-    outputDataSource = te::da::DataSourceManager::getInstance().get(id_ds, "OGR", dsInfoPtr->getConnInfo());
+    outputDataSource = te::sa::CreateOGRDataSource(m_ui->m_repositoryLineEdit->text().toStdString());
   }
   else
   {
@@ -229,6 +210,12 @@ void te::sa::BayesGlobalDialog::onOkPushButtonClicked()
     QMessageBox::warning(this, tr("Warning"), tr("Internal error. Global Bayes not calculated."));
     return;
   }
+
+  //create layer
+  m_outputLayer = te::sa::CreateLayer(outputDataSource, dataSetName);
+
+  //create legend
+  te::sa::CreateBayesGrouping(m_outputLayer.get());
 
   accept();
 }

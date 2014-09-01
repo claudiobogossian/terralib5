@@ -18,33 +18,41 @@
  */
 
 /*!
-  \file TsPCAFusion.h
+  \file TsFusion.h
  
-  \brief A test suit for the PCAFusion Class.
+  \brief A test suit for the Fusion Classes.
  */
 
-#ifndef __TERRALIB_UNITTEST_RP_PCAFUSION_INTERNAL_H
-#define __TERRALIB_UNITTEST_RP_PCAFUSION_INTERNAL_H
+#ifndef __TERRALIB_UNITTEST_RP_FUSION_INTERNAL_H
+#define __TERRALIB_UNITTEST_RP_FUSION_INTERNAL_H
 
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>
 
 /*!
-  \class TsPCAFusion
+  \class TsFusion
 
-  \brief A test suit for the PCAFusion class interface.
+  \brief A test suit for the Fusion classes interfaces.
  */
-class TsPCAFusion : public CPPUNIT_NS::TestFixture 
+class TsFusion : public CPPUNIT_NS::TestFixture 
 {
-  CPPUNIT_TEST_SUITE( TsPCAFusion );
+  CPPUNIT_TEST_SUITE( TsFusion );
   
-  CPPUNIT_TEST( Test001 );
+  CPPUNIT_TEST( wisper );
+  
+  CPPUNIT_TEST( ihs );
+  
+  CPPUNIT_TEST( pca );  
 
   CPPUNIT_TEST_SUITE_END();
 
 protected :
 
-  void Test001();
+  void ihs();
+  
+  void pca();
+  
+  void wisper();
   
 };
 

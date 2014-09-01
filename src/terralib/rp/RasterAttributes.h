@@ -34,6 +34,7 @@
 #include "Texture.h"
 
 // Boost
+#include <boost/numeric/ublas/io.hpp> 
 #include <boost/numeric/ublas/matrix.hpp>
 
 // STL
@@ -154,16 +155,18 @@ namespace te
         boost::numeric::ublas::matrix<double> getCovarianceMatrix(const std::vector<std::vector<double> >& vpixels, const std::vector<double>& vmeans);
         
         /*!
-          \brief
+          \brief Computes the Gray-Level CoOccurrence Matrix (GLCM) from a raster band.
 
-          \param r
-          \param b
-          \param dx
-          \param dy
+          \param rin    The input raster.
+          \param band   The input band position.
+          \param dx     The displacement in x direction, to be considered as neighborhood, can be either + or -.
+          \param dy     The displacement in y direction, to be considered as neighborhood, can be either + or -.
           
-          \return 
+          \return The GLCM from the raster band.
+          
+          \warning The pixels from the input band will be considered of type unsigned int.
         */
-        boost::numeric::ublas::matrix<double> getGLCM(const te::rst::Raster& r, unsigned int b, int dx, int dy);
+        boost::numeric::ublas::matrix<double> getGLCM(const te::rst::Raster& rin, unsigned int band, int dx, int dy);
         
         /*!
           \brief Compute texture metrics from GLCM matrix.

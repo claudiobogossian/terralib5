@@ -29,6 +29,9 @@
 // TerraLib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
+#include "../../qt/widgets/charts/ChartDisplay.h"
+#include "../../qt/widgets/charts/Scatter.h"
+#include "../../qt/widgets/charts/ScatterChart.h"
 #include "../core/GeostatisticalMethod.h"
 #include "../Config.h"
 
@@ -81,6 +84,8 @@ namespace te
 
         void resetAdjustParameters(double mean, double variance);
 
+        void plot();
+
       private:
 
         std::auto_ptr<Ui::GeostatisticalMethodsDialogForm> m_ui;
@@ -90,6 +95,14 @@ namespace te
         boost::numeric::ublas::matrix<double> m_methodMatrix;
 
         boost::numeric::ublas::matrix<double> m_modelMatrix;
+
+        te::qt::widgets::ChartDisplay* m_chartDisplay;
+
+        te::qt::widgets::Scatter* m_scatterMethod;
+        te::qt::widgets::ScatterChart* m_scatterChartMethod;
+
+        te::qt::widgets::Scatter* m_scatterModel;
+        te::qt::widgets::ScatterChart* m_scatterChartModel;
     };
   }   // end namespace sa
 }     // end namespace te

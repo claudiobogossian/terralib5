@@ -51,10 +51,6 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
   m_histogram(histogram),
   m_histogramStyle(style)
 {
-
-  //Vector that will be populated by the histogram's data
-  QVector<QwtIntervalSample> samples;
-
   if(!m_histogramStyle)
   {
     m_histogramStyle = new te::qt::widgets::HistogramStyle();
@@ -68,13 +64,28 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
     setPen(barPen);
     setBrush(barBrush);
   }
+  
+  setData();
+  
+  m_selection = new QwtPlotHistogram();
+  m_selection->setStyle(QwtPlotHistogram::Columns);
 
-  if((histogram->getType() >= te::dt::INT16_TYPE && histogram->getType() <= te::dt::UINT64_TYPE) || 
-    histogram->getType() == te::dt::FLOAT_TYPE || histogram->getType() == te::dt::DOUBLE_TYPE || 
-    histogram->getType() == te::dt::NUMERIC_TYPE)
+  //The default selection color is green
+  m_selection->setBrush(QColor("#00FF00"));
+  m_selection->attach(plot());
+
+}
+
+void te::qt::widgets::HistogramChart::setData()
+{
+  //Vector that will be populated by the histogram's data
+  QVector<QwtIntervalSample> samples;
+  if((m_histogram->getType() >= te::dt::INT16_TYPE && m_histogram->getType() <= te::dt::UINT64_TYPE) || 
+    m_histogram->getType() == te::dt::FLOAT_TYPE || m_histogram->getType() == te::dt::DOUBLE_TYPE || 
+    m_histogram->getType() == te::dt::NUMERIC_TYPE)
   {
     std::map<double, unsigned int> values;
-    values = histogram->getValues();
+    values = m_histogram->getValues();
 
     std::map<double,  unsigned int>::const_iterator it;
     it = values.begin();
@@ -83,9 +94,9 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
 
     int i = 0;
 
-    double ini = histogram->getMinValue();
+    double ini = m_histogram->getMinValue();
 
-    double vx = ini + histogram->getInterval();
+    double vx = ini + m_histogram->getInterval();
 
     while(vx <= values.rbegin()->first)
     {
@@ -106,22 +117,21 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
       samples.push_back(QwtIntervalSample(vmap[i], qinterval));
 
       ini = vx;
-      vx += histogram->getInterval();
+      vx += m_histogram->getInterval();
       ++i;
     }
-
-    setData(new QwtIntervalSeriesData(samples));
+    setSamples(samples);
   }
 
-  else if (histogram->getType() == te::dt::DATETIME_TYPE || histogram->getType() == te::dt::STRING_TYPE)
+  else if (m_histogram->getType() == te::dt::DATETIME_TYPE || m_histogram->getType() == te::dt::STRING_TYPE)
   {
     std::map<std::string, unsigned int> values;
-    values = histogram->getStringValues();
+    values = m_histogram->getStringValues();
 
     std::map<std::string,  unsigned int>::iterator it;
     it  = values.begin();
 
-    m_histogramScaleDraw = new StringScaleDraw(histogram->getStringInterval());
+    m_histogramScaleDraw = new StringScaleDraw(m_histogram->getStringInterval());
     QVector<QwtIntervalSample> samples(values.size());
     double LabelInterval = 0.0;
 
@@ -134,21 +144,20 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
        it++;
     }
 
-    setData(new QwtIntervalSeriesData(samples));
+    setSamples(samples);
   }
   else
   {
     std::map<double,  unsigned int> values;
     std::map<double,  unsigned int>::const_iterator it;
-    values = histogram->getValues();
+    values = m_histogram->getValues();
     it = values.begin();
-    double interval = 0.0;
 
     while (it != values.end())
     {
+      double interval = it->first;
       QwtInterval qwtInterval(interval, interval+1);
       samples.push_back(QwtIntervalSample(it->second, qwtInterval));
-      interval++;
       it++;
     }
 
@@ -159,16 +168,8 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
     blankStroke->setOpacity(QString::number(0, 'g', 2).toStdString());
     m_histogramStyle->setStroke(blankStroke);
 
-    setData(new QwtIntervalSeriesData(samples));
+    setSamples(samples);
   }
-
-  m_selection = new QwtPlotHistogram();
-  m_selection->setStyle(QwtPlotHistogram::Columns);
-
-  //The default selection color is green
-  m_selection->setBrush(QColor("#00FF00"));
-  m_selection->attach(plot());
-
 }
 
 te::qt::widgets::HistogramChart::~HistogramChart()

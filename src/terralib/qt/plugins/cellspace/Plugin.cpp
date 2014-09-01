@@ -53,7 +53,10 @@ void te::qt::plugins::cellspace::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Qt Cellular Spaces Plugin startup!"));
 
 // add plugin menu
-  m_cellSpaceMenu = te::qt::af::ApplicationController::getInstance().getMenu("cellspace");
+  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
+  m_cellSpaceMenu = new QMenu(pluginMenu);
+
+  pluginMenu->addMenu(m_cellSpaceMenu);
 
   m_cellSpaceMenu->setTitle(TE_TR("Cellular Spaces"));
 

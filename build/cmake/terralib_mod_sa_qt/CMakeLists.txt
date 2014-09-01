@@ -24,6 +24,7 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${QWT_INCLUDE_DIR})
 
 if(WIN32)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS -DTESADLL)
@@ -59,7 +60,8 @@ if(Qt5_FOUND)
   add_library(terralib_mod_sa_qt SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_sa_qt terralib_mod_sa_core
-                                           terralib_mod_qt_widgets)
+                                           terralib_mod_qt_widgets
+										   ${QWT_LIBRARY})
 
   qt5_use_modules(terralib_mod_sa_qt Widgets)
 
@@ -86,7 +88,8 @@ else()
 
   target_link_libraries(terralib_mod_sa_qt terralib_mod_sa_core
                                            terralib_mod_qt_widgets
-                                           ${QT_LIBRARIES})
+                                           ${QT_LIBRARIES}
+										   ${QWT_LIBRARY})
 
 endif() 
 

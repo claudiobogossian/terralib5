@@ -85,9 +85,11 @@ namespace te
           \param interpMethod2 The interpolation method to use when reading raster 2 data.
           \param noDataValue The value returned where there is no pixel data bo blend.
           \param forceInputNoDataValue Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored) 
-          \param pixelOffsets1 The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
+          \param pixelOffsetsA1 The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
+          \param pixelOffsetsB1 The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
           \param pixelScales1 The values scale to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
-          \param pixelOffsets2 The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
+          \param pixelOffsetsA2 The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
+          \param pixelOffsetsB2 The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
           \param pixelScales2 The values scale to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
           \param r1ValidDataDelimiterPtr A pointer to a geometry (raster 1 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
           \param r2ValidDataDelimiterPtr A pointer to a geometry (raster 2 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
@@ -95,6 +97,7 @@ namespace te
           \param threadsNumber Enable/disable the use of threads when applicable (0:automatic , 1:disabled, any other integer dictates the number of threads).
           \param enableProgressInterface Enable/disable the use of a progress interface when applicable.
           \return true if ok, false on errors
+          \note Aboute scale and offset parametrs:  outValue = ( ( inputValue + offsetA ) * scale ) + offsetB
         */
         bool initialize( 
           te::rst::Raster& raster1, 
@@ -106,9 +109,11 @@ namespace te
           const te::rst::Interpolator::Method& interpMethod2,
           const double& noDataValue,
           const bool forceInputNoDataValue,
-          const std::vector< double >& pixelOffsets1,
+          const std::vector< double >& pixelOffsetsA1,
+          const std::vector< double >& pixelOffsetsB1,
           const std::vector< double >& pixelScales1,
-          const std::vector< double >& pixelOffsets2,
+          const std::vector< double >& pixelOffsetsA2,
+          const std::vector< double >& pixelOffsetsB2,
           const std::vector< double >& pixelScales2,
           te::gm::MultiPolygon const * const r1ValidDataDelimiterPtr,
           te::gm::MultiPolygon const * const r2ValidDataDelimiterPtr,
@@ -188,9 +193,11 @@ namespace te
             te::rst::Interpolator::Method m_interpMethod2; //!< The interpolation method to use when reading raster 2 data.
             double m_noDataValue; //!< The value returned where there is no pixel data bo blend.
             bool m_forceInputNoDataValue; //!< Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored) 
-            std::vector< double > m_pixelOffsets1; //!< The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
+            std::vector< double > m_pixelOffsetsA1; //!< The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
+            std::vector< double > m_pixelOffsetsB1; //!< The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
             std::vector< double > m_pixelScales1; //!< The values scale to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
-            std::vector< double > m_pixelOffsets2; //!< The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
+            std::vector< double > m_pixelOffsetsA2; //!< The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
+            std::vector< double > m_pixelOffsetsB2; //!< The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
             std::vector< double > m_pixelScales2; //!< The values scale to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
             std::auto_ptr< te::gm::MultiPolygon > m_r1ValidDataDelimiterPtr; //!< A pointer to a geometry (raster 1 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
             std::auto_ptr< te::gm::MultiPolygon > m_r2ValidDataDelimiterPtr; //!< A pointer to a geometry (raster 2 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
@@ -229,9 +236,11 @@ namespace te
         std::auto_ptr< te::rst::Interpolator > m_interp2Ptr; //!< Raster 2 interpolator instance pointer.        
         std::vector< unsigned int > m_raster1Bands; //!< Input raster 1 band indexes to use.
         std::vector< unsigned int > m_raster2Bands; //!< Input raster 2 band indexes to use.
-        std::vector< double > m_pixelOffsets1; //!< The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
+        std::vector< double > m_pixelOffsetsA1; //!< The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
+        std::vector< double > m_pixelOffsetsB1; //!< The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
         std::vector< double > m_pixelScales1; //!< The values scale to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
-        std::vector< double > m_pixelOffsets2; //!< The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
+        std::vector< double > m_pixelOffsetsA2; //!< The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
+        std::vector< double > m_pixelOffsetsB2; //!< The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
         std::vector< double > m_pixelScales2; //!< The values scale to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
         std::vector< double > m_raster1NoDataValues; //!< Raster 1 no-data values (on value per band).
         std::vector< double > m_raster2NoDataValues; //!< Raster 2 no-data values (on value per band).

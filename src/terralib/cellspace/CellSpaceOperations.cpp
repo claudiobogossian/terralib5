@@ -25,6 +25,7 @@
 
 // Terralib
 #include "../dataaccess/dataset/PrimaryKey.h"
+#include "../dataaccess/utils/Utils.h"
 #include "../datatype/SimpleProperty.h"
 #include "../datatype/StringProperty.h"
 #include "../geometry/Envelope.h"
@@ -34,13 +35,16 @@
 #include "../geometry/Utils.h"
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
+#include "../raster.h"
+#include "../sam.h"
 #include "CellSpaceOperations.h"
 
 #include <stdio.h>
 
 te::cellspace::CellularSpacesOperations::CellularSpacesOperations()
   : m_outputDataSetType(0),
-    m_outputDataSet(0)
+    m_outputDataSet(0),
+    m_outputRaster(0)
 {
   
 }
@@ -60,82 +64,133 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(const std::string&
 
   int srid = layerBase->getSRID();
 
-  m_outputDataSetType = new te::da::DataSetType(name);
+  int maxcols, maxrows;
+  maxcols = te::rst::Round((newEnv.m_urx-newEnv.m_llx)/resX);
+  maxrows = te::rst::Round((newEnv.m_ury-newEnv.m_lly)/resY);
 
-  te::dt::Property* idProp = new te::dt::StringProperty("id");
-  te::dt::Property* colProp = new te::dt::SimpleProperty("col", te::dt::INT32_TYPE);
-  te::dt::Property* rowProp = new te::dt::SimpleProperty("row", te::dt::INT32_TYPE);
-  te::dt::Property* geomProp = 0;
+  std::auto_ptr<te::da::DataSetType> refDst = layerBase->getSchema();
+  std::auto_ptr<te::da::DataSet> refDs = layerBase->getData();
 
-  if(type = CELLSPACE_POLYGONS)
-    geomProp = new te::gm::GeometryProperty("geom", srid, te::gm::PolygonType);
-  else if(type = CELLSPACE_POINTS)
-    geomProp = new te::gm::GeometryProperty("geom", srid, te::gm::PointType);
-
-  m_outputDataSetType->add(idProp);
-  m_outputDataSetType->add(colProp);
-  m_outputDataSetType->add(rowProp);
-  m_outputDataSetType->add(geomProp);
-
-  std::string pkName = name + "_pk_id";
-  te::da::PrimaryKey* pk = new te::da::PrimaryKey(pkName, m_outputDataSetType);
-  std::vector<te::dt::Property*> pkProp;
-  pkProp.push_back(idProp);
-  pk->setProperties(pkProp);
+  m_outputDataSetType = createCellularDataSetType(name, srid, type);
 
   m_outputDataSet = new te::mem::DataSet(m_outputDataSetType);
 
   te::mem::DataSet* ds = dynamic_cast<te::mem::DataSet*>(m_outputDataSet);
 
-  double x1,x2,y1,y2;
-  x1 = newEnv.getLowerLeftX();
-  y1 = newEnv.getLowerLeftY();
-  x2 = newEnv.getUpperRightX();
-  y2 = newEnv.getUpperRightY();
+  std::auto_ptr<te::sam::rtree::Index<size_t, 8> > rtree;
 
-  int maxcols, maxlines;
-  maxcols = (int)((x2-x1)/resX);
-  maxlines = (int)((y2-y1)/resY);
-
-  double x;
-  double y = y2;
-  for (int lin = 0; lin < maxlines; ++lin)
+  if(useMask)
   {
-    double yu = y;
-    y=y-resY;
-    x=x1;
+    rtree.reset(getRtree(layerBase));
+  }
 
-    for (int col = 0; col < maxcols; ++col)
+  double x, y;
+  for(int lin = 0; lin < maxrows; ++lin)
+  {
+    y = newEnv.m_lly+(lin*resY);
+    for(int col = 0; col < maxcols; ++col)
     {
-      te::gm::Envelope* env = new te::gm::Envelope(x, y, x+resX, yu);
+      x = newEnv.m_llx+(col*resX);
+      te::gm::Envelope* env = new te::gm::Envelope(x, y, x+resX, y+resY);
 
-      te::gm::Geometry* geom = 0;
+      std::auto_ptr<te::gm::Geometry> geom;
 
       if(type == CELLSPACE_POLYGONS)
       {
-        geom = new te::gm::Polygon(0, te::gm::PolygonType);
-        geom = te::gm::GetGeomFromEnvelope(env, srid);
+        geom.reset(te::gm::GetGeomFromEnvelope(env, srid));
       }
       else if(type == CELLSPACE_POINTS)
       {
         double pX = env->m_llx +( (env->m_urx - env->m_llx) / 2);
         double pY = env->m_lly +( (env->m_ury - env->m_lly) / 2);
-        geom = new te::gm::Point(pX, pY, srid);
+        geom.reset(new te::gm::Point(pX, pY, srid));
       }
 
-      char celId[32];
-      sprintf(celId,"C%02dL%02d",col,lin);
+      if(useMask)
+      {
+        std::vector<size_t> report;
+        rtree->search(*geom->getMBR(), report);
 
-      te::mem::DataSetItem* item = new te::mem::DataSetItem(ds);
-      item->setString(0, celId);
-      item->setInt32(1, col);
-      item->setInt32(2, lin);
-      item->setGeometry(3, geom);
-      ds->add(item);
-      
-      x=x+resX;
+        std::size_t geomPos = te::da::GetFirstSpatialPropertyPos(refDs.get());
+
+        if(!report.empty())
+        {
+          for(std::size_t i = 0; i < report.size(); ++i)
+          {
+            refDs->move(report[i]);
+
+            std::auto_ptr<te::gm::Geometry> g = refDs->getGeometry(geomPos);
+            g->setSRID(srid);
+
+            if(geom->intersects(g.get()))
+            {
+              addCell(ds, col, lin, geom.release());
+              break;
+            }
+          }
+        }
+      }
+      else
+      {
+        addCell(ds, col, lin, geom.release());
+      }
     }
   }
+}
+
+void te::cellspace::CellularSpacesOperations::createCellSpace(const std::string& name, double resX, double resY, 
+                                                              te::gm::Envelope& env, int srid, CellSpaceType type)
+{
+  te::gm::Envelope newEnv = te::gm::AdjustToCut(env, resX, resY);
+
+  int maxcols, maxrows;
+  maxcols = te::rst::Round((newEnv.m_urx-newEnv.m_llx)/resX);
+  maxrows = te::rst::Round((newEnv.m_ury-newEnv.m_lly)/resY);
+
+  m_outputDataSetType = createCellularDataSetType(name, srid, type);
+
+  m_outputDataSet = new te::mem::DataSet(m_outputDataSetType);
+
+  te::mem::DataSet* ds = dynamic_cast<te::mem::DataSet*>(m_outputDataSet);
+
+  double x, y;
+  for(int lin = 0; lin < maxrows; ++lin)
+  {
+    y = newEnv.m_lly+(lin*resY);
+    for(int col = 0; col < maxcols; ++col)
+    {
+      x = newEnv.m_llx+(col*resX);
+      te::gm::Envelope* env = new te::gm::Envelope(x, y, x+resX, y+resY);
+
+      std::auto_ptr<te::gm::Geometry> geom;
+
+      if(type == CELLSPACE_POLYGONS)
+      {
+        geom.reset(te::gm::GetGeomFromEnvelope(env, srid));
+      }
+      else if(type == CELLSPACE_POINTS)
+      {
+        double pX = env->m_llx +( (env->m_urx - env->m_llx) / 2);
+        double pY = env->m_lly +( (env->m_ury - env->m_lly) / 2);
+        geom.reset(new te::gm::Point(pX, pY, srid));
+      }
+
+      addCell(ds, col, lin, geom.release());
+    }
+  }
+}
+
+void te::cellspace::CellularSpacesOperations::addCell(te::mem::DataSet* ds, int col, int row, te::gm::Geometry* geom)
+{
+  char celId[32];
+  sprintf(celId,"C%02dL%02d",col,row);
+
+  te::mem::DataSetItem* item = new te::mem::DataSetItem(ds);
+  item->setString(0, celId);
+  item->setInt32(1, col);
+  item->setInt32(2, row);
+  item->setGeometry(3, geom);
+  ds->add(item);
 }
 
 te::da::DataSetType* te::cellspace::CellularSpacesOperations::getDataSetType()
@@ -146,4 +201,62 @@ te::da::DataSetType* te::cellspace::CellularSpacesOperations::getDataSetType()
 te::da::DataSet* te::cellspace::CellularSpacesOperations::getDataSet()
 {
   return m_outputDataSet;
+}
+
+te::sam::rtree::Index<size_t, 8>* te::cellspace::CellularSpacesOperations::getRtree(te::map::AbstractLayerPtr layerBase)
+{
+  te::sam::rtree::Index<size_t, 8>* rtree = new te::sam::rtree::Index<size_t, 8>;
+
+  std::auto_ptr<te::da::DataSetType> dst = layerBase->getSchema();
+  std::auto_ptr<te::da::DataSet> ds = layerBase->getData();
+
+  std::size_t geomPos = te::da::GetFirstSpatialPropertyPos(ds.get());
+
+  ds->moveBeforeFirst();
+
+  int count = 0;
+
+  while(ds->moveNext())
+  {
+    std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomPos);
+
+    rtree->insert(*geom->getMBR(), count);
+
+    ++count;
+  }
+
+  return rtree;
+}
+
+te::rst::Raster* te::cellspace::CellularSpacesOperations::getRaster()
+{
+  return m_outputRaster;
+}
+
+te::da::DataSetType* te::cellspace::CellularSpacesOperations::createCellularDataSetType(const std::string& name, int srid, CellSpaceType type)
+{
+  te::da::DataSetType* dst = new te::da::DataSetType(name);
+
+  te::dt::Property* idProp = new te::dt::StringProperty("id");
+  te::dt::Property* colProp = new te::dt::SimpleProperty("col", te::dt::INT32_TYPE);
+  te::dt::Property* rowProp = new te::dt::SimpleProperty("row", te::dt::INT32_TYPE);
+  te::dt::Property* geomProp = 0;
+
+  if(type == CELLSPACE_POLYGONS)
+    geomProp = new te::gm::GeometryProperty("geom", srid, te::gm::PolygonType);
+  else if(type == CELLSPACE_POINTS)
+    geomProp = new te::gm::GeometryProperty("geom", srid, te::gm::PointType);
+
+  dst->add(idProp);
+  dst->add(colProp);
+  dst->add(rowProp);
+  dst->add(geomProp);
+
+  std::string pkName = name + "_pk_id";
+  te::da::PrimaryKey* pk = new te::da::PrimaryKey(pkName, dst);
+  std::vector<te::dt::Property*> pkProp;
+  pkProp.push_back(idProp);
+  pk->setProperties(pkProp);
+
+  return dst;
 }

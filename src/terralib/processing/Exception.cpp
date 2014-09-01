@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,34 +18,21 @@
  */
 
 /*!
-  \file TsIHSFusion.h
- 
-  \brief A test suit for the IHSFusion Class.
- */
+  \file terralib/processing/Exception.cpp
 
-#ifndef __TERRALIB_UNITTEST_RP_IHSFUSION_INTERNAL_H
-#define __TERRALIB_UNITTEST_RP_IHSFUSION_INTERNAL_H
+  \brief An exception class for the Processing module.
+*/
 
-// cppUnit
-#include <cppunit/extensions/HelperMacros.h>
+// TerraLib
+#include "Exception.h"
 
-/*!
-  \class TsIHSFusion
-
-  \brief A test suit for the IHSFusion class interface.
- */
-class TsIHSFusion : public CPPUNIT_NS::TestFixture 
+namespace te
 {
-  CPPUNIT_TEST_SUITE( TsIHSFusion );
+  namespace processing
+  {
+
+    TE_DEFINE_EXCEPTION_CLASS(Exception, te::common::Exception, "te::processing::Exception")
   
-  CPPUNIT_TEST( Test001 );
+  }   // end namespace processing
+}     // end namespace te
 
-  CPPUNIT_TEST_SUITE_END();
-
-protected :
-
-  void Test001();
-  
-};
-
-#endif

@@ -79,6 +79,22 @@ void te::sa::SamplePointsGeneratorStratified::isProportionalToArea(bool isProp)
   m_propToArea = isProp;
 }
 
+std::vector<std::string> te::sa::SamplePointsGeneratorStratified::getClassNames()
+{
+  std::vector<std::string> names;
+
+  std::map<std::string, std::vector<te::gm::Geometry*> >::iterator it =  m_classMap.begin();
+
+  while(it != m_classMap.end())
+  {
+    names.push_back(it->first);
+
+    ++it;
+  }
+
+  return names;
+}
+
 std::auto_ptr<te::da::DataSetType> te::sa::SamplePointsGeneratorStratified::createDataSetType()
 {
   std::auto_ptr<te::da::DataSetType> dsType(new te::da::DataSetType(m_outputDataSetName));
@@ -96,7 +112,9 @@ std::auto_ptr<te::da::DataSetType> te::sa::SamplePointsGeneratorStratified::crea
   dsType->add(geomProperty);
 
   //create primary key
-  te::da::PrimaryKey* pk = new te::da::PrimaryKey(TE_SA_SPG_ATTR_PK_NAME, dsType.get());
+  std::string pkName = TE_SA_SPG_ATTR_PK_NAME;
+              pkName+= "_" + m_outputDataSetName;
+  te::da::PrimaryKey* pk = new te::da::PrimaryKey(pkName, dsType.get());
   pk->add(idProperty);
 
   return dsType;

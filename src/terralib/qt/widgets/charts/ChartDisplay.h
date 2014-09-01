@@ -30,7 +30,7 @@
 #include "../Config.h"
 
 //QWT
-#include <qwt_plot.h>
+#include <qwt/qwt_plot.h>
 
 //STL
 #include <string>
@@ -142,13 +142,25 @@ namespace te
           */
           void selected(te::da::ObjectIdSet*, const bool&);
 
+         /*!
+            \brief Emmit when a clicked with left button was made.
+          */
+          void leftPointSelected(const QPointF& pos);
+
+         /*!
+            \brief Emmit when a clicked with rigth button was made.
+          */
+          void rigthPointSelected(const QPointF& pos);
+
          private:
 
           ChartStyle*       m_chartStyle;   //!< The display's style.
           QwtPlotGrid*      m_grid;         //!< The display's grid
           QwtPlotPanner*    m_panner;       //!< The display's panner.
           QwtPlotPicker*    m_leftPicker;   //!< The display's left button picker.
-          QwtPlotMagnifier* m_magnifier;     //!< The display's magnifinifier.
+          QwtPlotPicker*    m_leftPointPicker;   //!< The display's left button picker.
+          QwtPlotPicker*    m_rigthPointPicker;  //!< The display's rigth button picker.
+          QwtPlotMagnifier* m_magnifier;    //!< The display's magnifinifier.
           QwtPlotPicker*    m_ctrlPicker;   //!< The display's control button picker.
           QwtPlotPicker*    m_shiftPicker;  //!< The display's shift button picker.
       };
