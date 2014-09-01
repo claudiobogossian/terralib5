@@ -100,7 +100,7 @@ namespace te
         te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
         std::list<te::map::AbstractLayerPtr> m_layers;                //!< List of layers.
         std::vector<te::dt::Property*> m_properties;                  //!< Properties related to the selected Layer
-        te::map::AbstractLayerPtr m_selectedLayer;                     //!< Selected layer.
+        te::map::AbstractLayerPtr m_selectedLayer;                    //!< Selected layer.
         te::map::AbstractLayerPtr m_outLayer;                         //!< Generated Layer.
         std::string m_path;                                           //!< Output layer path;
         bool m_toFile;
