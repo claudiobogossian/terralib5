@@ -357,29 +357,30 @@ namespace std {
 
 	void updateGeometries(std::vector<te::da::ObjectId*> oIds, std::vector<te::gm::Geometry*> geoms) throw (te::common::Exception)
 	{
-		te::map::DataSetLayer* lDSet = dynamic_cast<te::map::DataSetLayer*>(self);
+    te::map::DataSetLayer* lDSet = dynamic_cast<te::map::DataSetLayer*>(self);
 
 		if(lDSet == 0)
 			return;
 
 		std::auto_ptr<te::map::LayerSchema> schema = self->getSchema();
 		std::vector<std::string> pNames;
-		te::da::ObjectIdSet oidSet;
 
 		te::da::DataSetType type(schema->getName());
 
 		// Adding Oids properties
 		te::da::GetOIDPropertyNames(schema.get(), pNames);
 
+    std::vector< std::set<int> > allCols;
+    std::vector< size_t > ids;
+
 		for(size_t i=0; i<pNames.size(); i++)
 		{
 			te::dt::Property* prpI = schema->getProperty(pNames[i]);
 
 			if(prpI != 0)
-			{
 				type.add(prpI->clone());
-				oidSet.addProperty(prpI->getName(), oidSet.size(), prpI->getType());
-			}
+
+      ids.push_back(i);
 		}
 
 		// Adding geometry property
@@ -404,17 +405,17 @@ namespace std {
 
 			dset.add(item);
 
-			oidSet.add(oIds[i]->clone());
+      std::set<int> cols;
+      cols.insert(data.size());
+  
+      allCols.push_back(cols);
 		}
 
 		te::da::DataSourcePtr dSrc = te::da::GetDataSource(lDSet->getDataSourceId());
-		std::vector<size_t> pprps(1, pNames.size());
-
-		std::map<std::string, std::string> opts;
 
 		if(dSrc.get() != 0)
-			dSrc->update(schema->getName(), &dset, pprps, &oidSet, opts);
-	}
+			dSrc->update(schema->getName(), &dset, allCols, ids);
+  }
 }
 
 %include "terralib/maptools/AbstractLayer.h"
