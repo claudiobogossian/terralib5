@@ -39,6 +39,7 @@
 #include <QPaintDevice>
 #include <QResizeEvent>
 #include <QTimer>
+#include <QGraphicsView>
 
 te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
@@ -71,36 +72,6 @@ te::qt::widgets::MapDisplay::~MapDisplay()
     delete it->second;
 
   m_layerCanvasMap.clear();
-}
-
-void te::qt::widgets::MapDisplay::dragEnterEvent(QDragEnterEvent* e)
-{
-  emit displayDragEnterEvent(e);
-
-  //Qt::DropActions actions = e->dropAction();
-  //if(actions != Qt::CopyAction)
-  //  return;
-
-  //const QMimeData* mime = e->mimeData();
-  //QString s = mime->data("application/x-terralib;value=\"DraggedItems\"").constData();
-  //if(s.isEmpty())
-  //  return;
-
-  //e->accept();
-  //return;
-}
-
-void te::qt::widgets::MapDisplay::dropEvent(QDropEvent* e)
-{
-  emit displayDropEvent(e);
-
-  //const QMimeData* mime = e->mimeData();
-  //QString s = mime->data("application/x-terralib;value=\"DraggedItems\"").constData();
-  //unsigned long v = s.toULongLong();
-  //std::vector<te::qt::widgets::AbstractTreeItem*>* draggedItems = reinterpret_cast<std::vector<AbstractTreeItem*>*>(v);
-  //te::qt::widgets::AbstractTreeItem* item = draggedItems->operator[](0);
-  //te::map::AbstractLayerPtr al = item->getLayer();
-  //changeData(al);
 }
 
 void te::qt::widgets::MapDisplay::changeData(te::map::AbstractLayerPtr al, int nsrid)

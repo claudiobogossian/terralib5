@@ -126,6 +126,10 @@ namespace te
 
             bool isNone();
 
+            double getResX();
+
+            double getResY();
+
           private:
 
             std::auto_ptr<Ui::CreateCellularSpaceDialogForm> m_ui;
