@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package exemplo2;
+
 
 import br.inpe.terralib5.DataSet;
 import br.inpe.terralib5.DataSource;
