@@ -70,7 +70,7 @@ namespace te
         /*! \brief Function to execute the kernel operation. */
         virtual void execute() = 0;
 
-        void setParameters(te::sa::KernelInputParams* inParams, te::sa::KernelOutputParams* outParams);
+        void setOutputParameters(te::sa::KernelOutputParams* outParams);
 
       protected:
 
@@ -96,8 +96,6 @@ namespace te
         std::auto_ptr<te::mem::DataSet> createDataSet(te::da::DataSet* inputDataSet, te::da::DataSetType* dsType);
 
       protected:
-
-        std::auto_ptr<te::sa::KernelInputParams> m_inputParams;       //!< Attribute with the kernel input parameters.
 
         std::auto_ptr<te::sa::KernelOutputParams> m_outputParams;     //!< Attribute with the kernel output parameters.
 

@@ -30,8 +30,10 @@
 #include "../raster/Raster.h"
 #include "../raster/Interpolator.h"
 #include "Functions.h"
+#include "SpectralResponseFunctions.h"
 
 #include <vector>
+#include <map>
 
 namespace te
 {
@@ -47,6 +49,8 @@ namespace te
       \note Reference: OTAZU, X.; GONZALEZ-AUDICANA, M.; FORS, O.; NUNEZ, J. Introduction of sensor spectral response into image fusion methods. application to wavelet-based methods. IEEE Transactions on Geoscience and Remote Sensing, v. 43, n. 10, p. 2376{2385, Oct. 2005. 21, 26, 36, 40.
         
       \note Reference: GONZALEZ-AUDICANA, M.; OTAZU, X.; FORS, O.; SECO, A. Comparison between Mallat's and the 'a trous' discrete wavelet transform based algorithms for the fusion of multispectral and panchromatic images. International Journal of Remote Sensing, Taylor & Francis, v. 26, n. 3, p. 595{614, 2005. 33.
+        
+      \note The spectral response functions must be in the form std::pair< double, double >( wavelength , response );
         
       \ingroup rp_fus
      */
@@ -66,9 +70,17 @@ namespace te
             
             std::vector< unsigned int > m_lowResRasterBands; //!< Bands to processe from the low resolution raster.
             
+            std::vector< te::rp::srf::SensorType > m_lowResRasterBandSensors; //!< The low resolution bands sensors.
+            
+            std::vector< std::map< double, double > > m_lowResRasterBandsSRFs; //!< An optional vector of user supplied Spectral Response Functions for each low resolution band.
+            
             te::rst::Raster const* m_highResRasterPtr; //!< Input high-resolution raster.
             
             unsigned int m_highResRasterBand; //!< Band to process from the high-resolution raster.
+            
+            te::rp::srf::SensorType m_hiResRasterBandSensor; //!< The high resolution band sensor.
+            
+            std::map< double, double > m_hiResRasterBandsSRFs; //!< An optional vector of user supplied Spectral Response Functions for the high resolution band.            
             
             bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
             
@@ -145,6 +157,14 @@ namespace te
         InputParameters m_inputParameters; //!< Input execution parameters.
         
         bool m_isInitialized; //!< Tells if this instance is initialized.
+        
+        /*!
+          \brief Return a SRF interpolated from the given SRFs.
+          \param SRFs Input SRFs.
+          \param frequency The desired interpolated frequency.
+          \return Return a SRF interpolated from the given SRFs.
+         */         
+        double interpolateSRF( const std::map< double, double >& sRFs, const double& frequency ) const;
     
     };
 

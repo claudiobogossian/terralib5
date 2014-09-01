@@ -148,8 +148,12 @@ void TsFusion::wisper()
   algoInputParams.m_lowResRasterBands.push_back( 0 );
   algoInputParams.m_lowResRasterBands.push_back( 1 );
   algoInputParams.m_lowResRasterBands.push_back( 2 );
+  algoInputParams.m_lowResRasterBandSensors.push_back( te::rp::srf::CBERS2BB3Sensor );
+  algoInputParams.m_lowResRasterBandSensors.push_back( te::rp::srf::CBERS2BB4Sensor );
+  algoInputParams.m_lowResRasterBandSensors.push_back( te::rp::srf::CBERS2BB2Sensor );
   algoInputParams.m_highResRasterPtr = highResRasterPtr.get();
   algoInputParams.m_highResRasterBand = 0;
+  algoInputParams.m_hiResRasterBandSensor = te::rp::srf::CBERS2BPANSensor;
   algoInputParams.m_enableProgress = true;
   algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
   algoInputParams.m_waveletFilterType = te::rp::B3SplineWAFilter;
