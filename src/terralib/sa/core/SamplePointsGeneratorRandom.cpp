@@ -61,7 +61,9 @@ std::auto_ptr<te::da::DataSetType> te::sa::SamplePointsGeneratorRandom::createDa
   dsType->add(geomProperty);
 
   //create primary key
-  te::da::PrimaryKey* pk = new te::da::PrimaryKey(TE_SA_SPG_ATTR_PK_NAME, dsType.get());
+  std::string pkName = TE_SA_SPG_ATTR_PK_NAME;
+              pkName+= "_" + m_outputDataSetName;
+  te::da::PrimaryKey* pk = new te::da::PrimaryKey(pkName, dsType.get());
   pk->add(idProperty);
 
   return dsType;
