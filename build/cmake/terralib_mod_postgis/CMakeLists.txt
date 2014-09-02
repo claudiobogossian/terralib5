@@ -26,7 +26,16 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR})
-include_directories(${PostgreSQL_INCLUDE_DIRS})
+
+if(PostgreSQL_INCLUDE_DIRS)
+  include_directories(${PostgreSQL_INCLUDE_DIRS})
+else()
+  include_directories(${PostgreSQL_INCLUDE_DIR})
+endif()
+
+if(NOT PostgreSQL_LIBRARIES)
+  set(PostgreSQL_LIBRARIES PostgreSQL_LIBRARY)
+endif()
 
 if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEPGISDLL)

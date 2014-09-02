@@ -1184,6 +1184,12 @@ void te::ogr::Transactor::update(const std::string &datasetName, te::da::DataSet
         case te::dt::STRING_TYPE:
           feat->SetField(fpos_o, dataset->getString(fpos).c_str());
         break;
+
+        case te::dt::GEOMETRY_TYPE:
+        {
+          std::auto_ptr<te::gm::Geometry> gm = dataset->getGeometry(fpos);
+          feat->SetGeometry(te::ogr::Convert2OGR(gm.get()));
+        }
       }
     }
 
