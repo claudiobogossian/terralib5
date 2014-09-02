@@ -42,6 +42,7 @@ target_link_libraries(terralib_mod_processing_core  terralib_mod_statistics_core
                                                     terralib_mod_memory
                                                     terralib_mod_dataaccess
                                                     terralib_mod_geometry
+                                                    terralib_mod_raster
                                                     terralib_mod_datatype
                                                     terralib_mod_common)
 

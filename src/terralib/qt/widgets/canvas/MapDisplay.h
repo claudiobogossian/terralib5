@@ -39,6 +39,7 @@
 
 // Forward declarations
 class QTimer;
+class QGraphicsView;
 
 namespace te
 {
@@ -101,10 +102,6 @@ namespace te
 
           /** @name AbstractMapDisplay Methods */
           //@{
-
-          virtual void dragEnterEvent(QDragEnterEvent*);
-
-          virtual void dropEvent(QDropEvent*);
 
           virtual void changeData(te::map::AbstractLayerPtr, int nsrid = TE_UNKNOWN_SRS);
 
@@ -251,11 +248,11 @@ namespace te
           /*! This signal is sent to others know that the projection was changed. */
           void displaySridChanged();
 
-          /*! This signal is sent to others know that is drag enter event. */
-          void displayDragEnterEvent(QDragEnterEvent*);
-
-          /*! This signal is sent to others know that is drop event. */
-          void displayDropEvent(QDropEvent*);
+          ///*! This signal is sent to others know that is drag enter event. */
+          //void displayDragEnterEvent(QDragEnterEvent*);
+          //void displayDragMoveEvent(QDragMoveEvent*);
+          ///*! This signal is sent to others know that is drop event. */
+          //void displayDropEvent(QDropEvent*);
 
         private:
 
@@ -292,7 +289,6 @@ namespace te
           QTimer* m_timer;             //!< Timer to execute redraw on resize action.
           int m_interval;              //!< Timeout interval in milliseconds to redraw.
           bool m_isDrawing;            //!< A flag that indicates if the map display is drawing.
-
           std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*> m_layerCanvasMap; //!< A map that associates a layer to a canvas.
       };
 

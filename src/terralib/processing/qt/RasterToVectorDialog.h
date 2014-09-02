@@ -30,7 +30,7 @@
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../datatype/Property.h"
 #include "../../maptools/AbstractLayer.h"
-#include "../../statistics/core/Enums.h"
+#include "../../statistics/core/Utils.h"
 #include "../Config.h"
 
 // STL
@@ -77,11 +77,41 @@ namespace te
         */
         te::map::AbstractLayerPtr getLayer();
 
+        /*!
+          \brief Get the selected statistics based on selected QListWidgetItem.
+
+          \return a Vector with selected statistics.
+        */
+        std::vector<te::stat::StatisticalSummary> getSelectedStatistics();
+
       private:
 
-        std::auto_ptr<Ui::RasterToVectorDialogForm> m_ui;
+      protected slots:
+
+        void onRasterComboBoxChanged(int index);
+
+        void onVectorComboBoxChanged(int index);
+
+        void onTargetDatasourceToolButtonPressed();
+
+        void onTargetFileToolButtonPressed();
+
+        void onHelpPushButtonClicked();
+
+        void onOkPushButtonClicked();
+
+        void onCancelPushButtonClicked();
+      
+      private:
+
+        std::auto_ptr<Ui::RasterToVectorDialogForm> m_ui;             //!< User interface.
+        te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
         std::list<te::map::AbstractLayerPtr> m_layers;                //!< List of layers.
-        te::map::AbstractLayerPtr m_layer;                            //!< Generated Layer.
+        te::map::AbstractLayerPtr m_rasterLayer;                      //!< Raster layer.
+        te::map::AbstractLayerPtr m_vectorLayer;                      //!< Vector layer.
+        te::map::AbstractLayerPtr m_outLayer;                         //!< Generated Layer.
+        std::string m_path;                                           //!< Output layer path;
+        bool m_toFile;
     };
   }   // end namespace processing
 }     // end namespace te

@@ -2462,30 +2462,6 @@ namespace te
         return false;
       }
       
-      // no-data fill
-      
-      {
-        const unsigned int nBands = waveletRaster.getNumberOfBands();
-        const unsigned int nCols = waveletRaster.getNumberOfColumns();
-        const unsigned int nRows = waveletRaster.getNumberOfRows();
-        unsigned int row = 0;
-        unsigned int col = 0;
-        
-        for( unsigned int bandIdx = 0 ; bandIdx < nBands ; ++bandIdx )
-        {
-          te::rst::Band& band = *waveletRaster.getBand( bandIdx );
-          const double noDataVale = band.getProperty()->m_noDataValue;
-        
-          for( row = 0 ; row < nRows ; ++row )
-          {
-            for( col = 0 ; col < nCols ; ++col )
-            {
-              band.setValue( col, row, noDataVale );
-            }
-          }
-        }
-      }
-      
       // Creating the coeficients and the resitual planes for each required
       // wavelet level
 
