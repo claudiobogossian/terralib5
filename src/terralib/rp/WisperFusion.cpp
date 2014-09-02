@@ -70,10 +70,12 @@ namespace te
       m_highResRasterBand = 0;
       m_hiResRasterBandSensor = te::rp::srf::InvalidSensor;
       m_hiResRasterBandsSRFs.clear();
+      m_hiResRasterWaveletLevels = 0;
       m_enableProgress = false;
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;
       m_waveletFilterType = te::rp::B3SplineWAFilter;
       m_userWaveletFilterPtr = 0;
+      m_enableMultiThread = true;
     }
 
     const WisperFusion::InputParameters& WisperFusion::InputParameters::operator=(
@@ -89,11 +91,13 @@ namespace te
       m_highResRasterBand = params.m_highResRasterBand;
       m_hiResRasterBandSensor = params.m_hiResRasterBandSensor;
       m_hiResRasterBandsSRFs = params.m_hiResRasterBandsSRFs;
+      m_hiResRasterWaveletLevels = params.m_hiResRasterWaveletLevels;
       m_enableProgress = params.m_enableProgress;
       m_interpMethod = params.m_interpMethod;
       m_waveletFilterType = params.m_waveletFilterType;
       m_userWaveletFilterPtr = params.m_userWaveletFilterPtr;
-
+      m_enableMultiThread = params.m_enableMultiThread;
+      
       return *this;
     }
 
@@ -174,10 +178,6 @@ namespace te
       // creating the ressampled input raster
       
       std::auto_ptr< te::rst::Raster > resampledLlowResRasterPtr;
-      std::vector< double > resampledLlowResBandsMeans( 
-        m_inputParameters.m_lowResRasterBands.size(), 0.0 );
-      std::vector< double > resampledLlowResBandsStdDevs( 
-        m_inputParameters.m_lowResRasterBands.size(), 0.0 );
       
       {
         std::map< std::string, std::string > rinfo;
@@ -197,18 +197,6 @@ namespace te
           "EXPANSIBLE",
           resampledLlowResRasterPtr ), 
           "Low resolution raster resample error" );
-        
-        for( unsigned int bandIdx = 0 ; bandIdx < m_inputParameters.m_lowResRasterBands.size() ;
-          ++bandIdx )
-        {
-          TERP_TRUE_OR_RETURN_FALSE( te::rp::GetMeanValue( 
-            *resampledLlowResRasterPtr->getBand( bandIdx ),
-            0, resampledLlowResBandsMeans[ bandIdx ] ), "Mean band calcule error" );
-          TERP_TRUE_OR_RETURN_FALSE( te::rp::GetStdDevValue( 
-            *resampledLlowResRasterPtr->getBand( bandIdx ),
-            0, &resampledLlowResBandsMeans[ bandIdx ], 
-            resampledLlowResBandsStdDevs[ bandIdx ] ), "StdDev band calcule error" );           
-        }
       }
       
 //       TERP_TRUE_OR_THROW( te::rp::Copy2DiskRaster( *resampledLlowResRasterPtr,
@@ -292,6 +280,7 @@ namespace te
         
         std::map< double, double >::const_iterator it1;
         std::map< double, double >::const_iterator it1End;
+        double intersectedResponseMax = 0;
         
         for( lowResBandIdx1 = 0 ; lowResBandIdx1 < nLowResBands ; ++lowResBandIdx1 )
         {
@@ -300,12 +289,23 @@ namespace te
           
           while( it1 != it1End )
           {
+            intersectedResponseMax = -1.0 * std::numeric_limits< double >::max();
+            
             for( lowResBandIdx2 = lowResBandIdx1 ; lowResBandIdx2 < nLowResBands ; ++lowResBandIdx2 )
             {
-              lRBandXlRBandSRFIntersectionAreas[ lowResBandIdx1 ] += std::min(
-                it1->second, interpolateSRF(  lowResSRFs[ lowResBandIdx2 ], it1->first ) );
+              intersectedResponseMax = 
+                std::max(
+                  intersectedResponseMax
+                  ,
+                  std::min( 
+                    it1->second
+                    , 
+                    interpolateSRF( lowResSRFs[ lowResBandIdx2 ], it1->first ) 
+                  )
+              );
             }
             
+            lRBandXlRBandSRFIntersectionAreas[ lowResBandIdx1 ] += intersectedResponseMax;
             lowResBandsSRFAreas[ lowResBandIdx1 ] += it1->second;
             
             ++it1;
@@ -332,8 +332,6 @@ namespace te
           TERP_TRUE_OR_RETURN_FALSE( lRBandXHRBandIntersectionAreas[ lowResBandIdx1 ] > 0.0,
             "One of the low resolution bands does not have intersection with the high resolution band" )
         }
-        
-        // high resolution band area
         
         hiResBandSRFArea = 0.0;
         lRBandsXHRBandTotalExclusiveIntersectionSRFArea = 0.0;
@@ -364,51 +362,52 @@ namespace te
       // The wavelet decomposition levels
       
       const unsigned int highResWaveletLevels = (unsigned int)
-        (
-          0.5
-          +
-          std::max(
-            (
-              std::log(      
-                (double)
-                (
-                  m_inputParameters.m_highResRasterPtr->getNumberOfColumns()
+        m_inputParameters.m_hiResRasterWaveletLevels ?
+          m_inputParameters.m_hiResRasterWaveletLevels 
+          :
+          (
+            0.5
+            +
+            std::max(
+              (
+                std::log(      
+                  (double)
+                  (
+                    m_inputParameters.m_highResRasterPtr->getNumberOfColumns()
+                  )
+                  /
+                  (double)
+                  (  
+                    m_inputParameters.m_lowResRasterPtr->getNumberOfColumns()
+                  )
                 )
                 /
-                (double)
-                (  
-                  m_inputParameters.m_lowResRasterPtr->getNumberOfColumns()
-                )
+                log( 2.0 )
               )
-              /
-              log( 2.0 )
-            )
-            ,
-            (
-              std::log(      
-                (double)
-                (
-                  m_inputParameters.m_highResRasterPtr->getNumberOfRows()
+              ,
+              (
+                std::log(      
+                  (double)
+                  (
+                    m_inputParameters.m_highResRasterPtr->getNumberOfRows()
+                  )
+                  /
+                  (double)
+                  (  
+                    m_inputParameters.m_lowResRasterPtr->getNumberOfRows()
+                  )
                 )
                 /
-                (double)
-                (  
-                  m_inputParameters.m_lowResRasterPtr->getNumberOfRows()
-                )
+                log( 2.0 )
               )
-              /
-              log( 2.0 )
             )
-          )
-        );  
+          );  
       TERP_TRUE_OR_RETURN_FALSE( highResWaveletLevels > 0, 
         "Minimal number of wavelet decompositions not reached" );     
         
       // creating the high resolution raster wavelets
         
       std::auto_ptr< te::rst::Raster > highResWaveletsRasterPtr;
-      double lastSmoothedHighResWaveletsRasterMean = 0;;
-      double lastSmoothedHighResWaveletsRasterStdDev = 0;
       
       {
         std::map<std::string, std::string> auxRasterInfo;
@@ -453,14 +452,6 @@ namespace te
           highResWaveletLevels,
           waveletFilter ),
           "Low resolution raster wavelets creation error" ); 
-        
-        TERP_TRUE_OR_RETURN_FALSE( te::rp::GetMeanValue( 
-          *highResWaveletsRasterPtr->getBand( 2 * ( highResWaveletLevels - 1 ) ),
-          0, lastSmoothedHighResWaveletsRasterMean ), "Mean band calcule error" );
-        TERP_TRUE_OR_RETURN_FALSE( te::rp::GetStdDevValue( 
-          *highResWaveletsRasterPtr->getBand( 2 * ( highResWaveletLevels - 1 ) ),
-          0, &lastSmoothedHighResWaveletsRasterMean, 
-          lastSmoothedHighResWaveletsRasterStdDev ), "StdDev band calcule error" );        
       }
       
 /*      TERP_TRUE_OR_THROW( te::rp::Copy2DiskRaster( *highResWaveletsRasterPtr,
@@ -509,17 +500,18 @@ namespace te
         te::rst::Raster& resampledLlowResRaster = *resampledLlowResRasterPtr;
         te::rst::Raster& outputRaster = *(outParamsPtr->m_outputRasterPtr);
         te::rst::Raster& highResWaveletsRaster = *highResWaveletsRasterPtr;
+        const unsigned int highResWaveletsRasterBands = highResWaveletsRaster.getNumberOfBands();
         unsigned int row = 0;
         unsigned int col = 0;
         unsigned int bandIdx = 0;
         std::vector< double > resLRRasterValues( nBands );
-        unsigned int hRWaveletLevel = 0;
+        unsigned int waveletBandIdx = 0;
         double outputRasterValue = 0;
         double resampledLlowResRasterValue = 0;
         double wisperTerm = 0;
         double highResWaveletsValue = 0.0;
         std::vector< double > ropi( nBands );
-        double ropiSum = 0;
+        double ropiMean = 0;
         
         std::vector< double > outBandsMinValue( nBands );
         std::vector< double > outBandsMaxValue( nBands );
@@ -529,29 +521,36 @@ namespace te
           te::rp::GetDataTypeRange( 
             outParamsPtr->m_outputRasterPtr->getBandDataType( bandIdx ),
             outBandsMinValue[ bandIdx ], outBandsMaxValue[ bandIdx ] );
-          resampledLlowResBandsGains[ bandIdx ] = lastSmoothedHighResWaveletsRasterStdDev
-            / resampledLlowResBandsStdDevs[ bandIdx ];
         }
 
         for( row = 0 ; row < nRows ; ++row )
         {
           for( col = 0 ; col < nCols ; ++col )
           {     
-            ropiSum = 0.0;
+            ropiMean = 0.0;
             for( bandIdx = 0 ; bandIdx < nBands ;  ++bandIdx )
             {
               resampledLlowResRaster.getValue( col, row, resampledLlowResRasterValue, bandIdx );
-              resampledLlowResRasterValue -= resampledLlowResBandsMeans[ bandIdx ];
-              resampledLlowResRasterValue *= resampledLlowResBandsGains[ bandIdx ];
-              resampledLlowResRasterValue += lastSmoothedHighResWaveletsRasterMean;
               
               resLRRasterValues[ bandIdx ] = resampledLlowResRasterValue;
               
               assert( lRBandXHRBandIntersectionAreas[ bandIdx ] > 0.0 );
-              ropi[ bandIdx ] = resampledLlowResRasterValue / 
-                lRBandXHRBandIntersectionAreas[ bandIdx ];
-              ropiSum += ropi[ bandIdx ];
+              ropi[ bandIdx ] = 
+                (
+                  (
+                    lRBandXHRBandIntersectionAreas[ bandIdx ]
+                    *
+                    lRBandXHRBandIntersectionAreas[ bandIdx ]
+                    *
+                    resLRRasterValues[ bandIdx ]
+                  )
+                  /
+                  lowResBandsSRFAreas[ bandIdx ]
+                );
+                  
+              ropiMean += ropi[ bandIdx ];
             }
+            ropiMean /= ((double)nBands);
             
             for( bandIdx = 0 ; bandIdx < nBands ;  ++bandIdx )
             {      
@@ -561,7 +560,7 @@ namespace te
                   (
                     ropi[ bandIdx ]
                     /
-                    ropiSum / ((double)nBands)
+                    ropiMean
                   )
                   *
                   (
@@ -591,8 +590,8 @@ namespace te
                     1.0
                     -
                     (
-                      // beta
                       (
+                        // beta
                         lRBandXlRBandSRFIntersectionAreas[ bandIdx ]
                       )
                       /
@@ -603,10 +602,11 @@ namespace te
                 
               outputRasterValue = resLRRasterValues[ bandIdx ];
               
-              for( hRWaveletLevel = 0 ; hRWaveletLevel < highResWaveletLevels ; ++hRWaveletLevel )
+              for( waveletBandIdx = 1 ; waveletBandIdx < highResWaveletsRasterBands ; 
+                waveletBandIdx += 2 )
               {
                 highResWaveletsRaster.getValue( col, row, highResWaveletsValue, 
-                  ( hRWaveletLevel * 2 ) + 1 );
+                  waveletBandIdx );
                 outputRasterValue += ( wisperTerm * highResWaveletsValue );
               }         
 
@@ -615,7 +615,7 @@ namespace te
               outputRasterValue = std::min( outBandsMaxValue[ bandIdx ], 
                 outputRasterValue );
               
-              outputRaster.setValue( col, row, outputRasterValue );
+              outputRaster.setValue( col, row, outputRasterValue, bandIdx );
             }
           }
         }

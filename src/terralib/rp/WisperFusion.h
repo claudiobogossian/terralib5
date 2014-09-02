@@ -82,6 +82,8 @@ namespace te
             
             std::map< double, double > m_hiResRasterBandsSRFs; //!< An optional vector of user supplied Spectral Response Functions for the high resolution band.            
             
+            unsigned int m_hiResRasterWaveletLevels; //!< The number of wavelet decomposition levels to use (0-automatically found, default:0).
+            
             bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
             
             te::rst::Interpolator::Method m_interpMethod; //!< The raster interpolator method (default:NearestNeighbor).
@@ -89,6 +91,8 @@ namespace te
             te::rp::WaveletAtrousFilterType m_waveletFilterType; //!< The wavelet filter type to use (default: B3SplineFilter);
             
             boost::numeric::ublas::matrix< double > const* m_userWaveletFilterPtr; //!< An optional pointer to an user filter.
+            
+            bool m_enableMultiThread; //!< Enable/Disable the use of multi-threads (default:true).
             
             InputParameters();
             
