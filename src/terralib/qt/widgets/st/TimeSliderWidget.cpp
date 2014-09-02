@@ -143,7 +143,7 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
   m_animationScene = new AnimationScene(m_display);
   m_animationView->setScene(m_animationScene);
   m_animationView->show();
-  m_animationView->resize(m_display->width(), m_display->height());
+  m_animationView->resize(4000, 2200);
   m_animationView->move(0, 0);
 
   raise();
@@ -999,12 +999,15 @@ void te::qt::widgets::TimeSliderWidget::calculateTemporalExtent()
 
   m_temporalExtent = te::dt::TimePeriod(t_initial, t_final);
   te::dt::TimePeriod tp(t_initial, t_final);
-  m_temporalAnimationExtent = tp;
-
-  for(it = list.begin(); it != list.end(); ++it)
+  if(list.count() == 1)
   {
-    AnimationItem* ai = (AnimationItem*)(*it);
-    ai->m_animation->m_temporalAnimationExtent = m_temporalExtent;
+    m_temporalAnimationExtent = tp;
+
+    for(it = list.begin(); it != list.end(); ++it)
+    {
+      AnimationItem* ai = (AnimationItem*)(*it);
+      ai->m_animation->m_temporalAnimationExtent = m_temporalExtent;
+    }
   }
 }
 
