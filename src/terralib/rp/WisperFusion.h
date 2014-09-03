@@ -72,7 +72,7 @@ namespace te
             
             std::vector< te::rp::srf::SensorType > m_lowResRasterBandSensors; //!< The low resolution bands sensors.
             
-            std::vector< std::map< double, double > > m_lowResRasterBandsSRFs; //!< An optional vector of user supplied Spectral Response Functions for each low resolution band.
+            std::vector< std::map< double, double > > m_lowResRasterBandsSRFs; //!< An optional vector of user supplied Spectral Response Functions for each low resolution band (The wavelength unit: Nanometers (nm) ).
             
             te::rst::Raster const* m_highResRasterPtr; //!< Input high-resolution raster.
             
@@ -80,7 +80,7 @@ namespace te
             
             te::rp::srf::SensorType m_hiResRasterBandSensor; //!< The high resolution band sensor.
             
-            std::map< double, double > m_hiResRasterBandsSRFs; //!< An optional vector of user supplied Spectral Response Functions for the high resolution band.            
+            std::map< double, double > m_hiResRasterBandsSRFs; //!< An optional vector of user supplied Spectral Response Functions for the high resolution band (The wavelength unit: Nanometers (nm) ).            
             
             unsigned int m_hiResRasterWaveletLevels; //!< The number of wavelet decomposition levels to use (0-automatically found, default:0).
             
