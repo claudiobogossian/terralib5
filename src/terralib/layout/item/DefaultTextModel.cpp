@@ -40,7 +40,9 @@
 te::layout::DefaultTextModel::DefaultTextModel() :
   m_text("")
 {
-  m_box = te::gm::Envelope(0., 0., 70., 30.);
+  m_type = Enums::getInstance().getEnumObjectType()->getDefaultTextItem();
+
+  m_box = te::gm::Envelope(0., 0., 40., 20.);
 }
 
 te::layout::DefaultTextModel::~DefaultTextModel()

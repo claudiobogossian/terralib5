@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file AbstractScene.h
+  \file AbstractEnum.h
    
   \brief 
 
@@ -33,6 +33,7 @@
 
 // STL
 #include <string>
+#include <vector>
 
 namespace te
 {
@@ -42,13 +43,21 @@ namespace te
     {
       public:
        
-        virtual EnumType* getEnum(int enumId) const = 0;
+        AbstractEnum();
 
-        virtual EnumType* getEnum(std::string name) const = 0;
+        virtual ~AbstractEnum();
+
+        virtual EnumType* getEnum(int enumId) const;
+
+        virtual EnumType* getEnum(std::string name) const;
 
       protected:
         
           virtual void init() = 0;
+
+      protected:
+
+        std::vector<EnumType*> m_enums;
     };
   }
 }

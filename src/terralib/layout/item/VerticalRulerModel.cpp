@@ -34,6 +34,7 @@
 #include "../../maptools/Canvas.h"
 #include "../../geometry/Envelope.h"
 #include "../../geometry/Point.h"
+#include "../core/enum/Enums.h"
 
 // STL
 #include <sstream>
@@ -42,7 +43,7 @@
 te::layout::VerticalRulerModel::VerticalRulerModel(PaperConfig* paperConfig):
   AbstractRulerModel(paperConfig)
 {
-
+  m_type = Enums::getInstance().getEnumObjectType()->getVerticalRuler();
 }
 
 te::layout::VerticalRulerModel::~VerticalRulerModel()

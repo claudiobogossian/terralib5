@@ -46,7 +46,7 @@ namespace te
 
       protected:
 
-        TextGridController( Observable* o, LayoutAbstractObjectType type );
+        TextGridController( Observable* o, EnumType* type );
 
         virtual void create();
     };

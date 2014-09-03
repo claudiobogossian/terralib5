@@ -46,7 +46,7 @@ namespace te
 
       protected:
 
-        PointController( Observable* o, LayoutAbstractObjectType type );
+        PointController( Observable* o, EnumType* type );
 
         virtual void create();
     };

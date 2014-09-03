@@ -18,43 +18,51 @@
  */
 
 /*!
-  \file EnumUtils.h
+  \file EnumGridStyleType.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ENUM_UTILS_H 
-#define __TERRALIB_LAYOUT_INTERNAL_ENUM_UTILS_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ENUM_GRIDSTYLE_TYPE_H 
+#define __TERRALIB_LAYOUT_INTERNAL_ENUM_GRIDSTYLE_TYPE_H
 
 // TerraLib
-#include "AbstractType.h"
-#include "../../../maptools/Enums.h"
-
-// STL
-#include <string>
+#include "AbstractEnum.h"
+#include "../Config.h"
 
 namespace te
 {
   namespace layout
   {
-    std::string getLayoutGridStyle( int enumVal );
+    class EnumType;
 
-    te::layout::LayoutGridStyle getLayoutEnumGridStyle( std::string val );
+    class TELAYOUTEXPORT EnumGridStyleType : public AbstractEnum
+    {
+      public:
 
-    te::layout::LayoutGridStyle getLayoutEnumGridStyle( int enumVal );
+        EnumGridStyleType(); 
 
-    std::string getLayoutDashStyle( int enumVal );
+        virtual ~EnumGridStyleType();
+        
+        virtual EnumType* getStyleNone() const;
 
-    te::map::LineDashStyle getLayoutEnumDashStyle( std::string val );
+        virtual EnumType* getStyleContinuous() const;
 
-    te::map::LineDashStyle getLayoutEnumDashStyle( int enumVal );
-    
-    std::string getLayoutAbstractObjectType(int enumVal);
+        virtual EnumType* getStyleCross() const;
 
-    te::layout::LayoutAbstractObjectType getLayoutAbstractObjectType(std::string val);
+      protected:
+
+        virtual void init();
+
+      protected:
+
+        EnumType* m_styleNone;
+        EnumType* m_styleContinuous;
+        EnumType* m_styleCross;
+    };
   }
 }
 
-#endif 
+#endif

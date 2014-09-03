@@ -39,13 +39,13 @@ te::layout::ItemController::ItemController( Observable* o ) :
   
 }
 
-te::layout::ItemController::ItemController( Observable* o, LayoutAbstractObjectType type ) :
+te::layout::ItemController::ItemController( Observable* o, EnumType* type ) :
   m_model(o)
 {
-  if(m_model)
-  {
-    m_model->setType(type);
-  }
+  if(!m_model || !type)
+    return;
+  
+  m_model->setType(type);
 }
 
 te::layout::ItemController::~ItemController()

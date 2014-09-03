@@ -18,35 +18,61 @@
  */
 
 /*!
-  \file MapController.h
+  \file EnumLineStyleType.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_CONTROLLER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ENUM_LINESTYLE_TYPE_H 
+#define __TERRALIB_LAYOUT_INTERNAL_ENUM_LINESTYLE_TYPE_H
 
 // TerraLib
-#include "MapController.h"
+#include "AbstractEnum.h"
+#include "../Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class MapGridController : public MapController
+    class EnumType;
+
+    class TELAYOUTEXPORT EnumLineStyleType : public AbstractEnum
     {
       public:
 
-        MapGridController( Observable* o );
-        virtual ~MapGridController();
+        EnumLineStyleType(); 
+
+        virtual ~EnumLineStyleType();
+        
+        virtual EnumType* getStyleNone() const;
+
+        virtual EnumType* getStyleSolid() const;
+
+        virtual EnumType* getStyleDash() const;
+
+        virtual EnumType* getStyleDot() const;
+
+        virtual EnumType* getStyleDashDot() const;
+
+        virtual EnumType* getStyleDashDotDot() const;
+
+        virtual EnumType* getStyleCustomDash() const;
 
       protected:
 
-        MapGridController( Observable* o, EnumType* type );
+        virtual void init();
 
-        virtual void create();
+      protected:
+
+        EnumType* m_styleNone;
+        EnumType* m_styleSolid;
+        EnumType* m_styleDash;
+        EnumType* m_styleDot;
+        EnumType* m_styleDashDot;
+        EnumType* m_styleDashDotDot;
+        EnumType* m_styleCustomDash;
     };
   }
 }

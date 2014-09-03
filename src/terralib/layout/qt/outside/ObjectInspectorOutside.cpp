@@ -116,6 +116,7 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
   int zValue = 0;
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
   
   foreach( QGraphicsItem *item, graphicsItems) 
   {
@@ -130,9 +131,9 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
       if(lItem)
       {        
 
-        if(lItem->getModel()->getType() == TPPaperItem 
-          || lItem->getModel()->getType() == TPHorizontalRuler
-          || lItem->getModel()->getType() == TPVerticalRuler)
+        if(lItem->getModel()->getType() == enumObj->getPaperItem() 
+          || lItem->getModel()->getType() == enumObj->getHorizontalRuler()
+          || lItem->getModel()->getType() == enumObj->getVerticalRuler())
         {
           continue;
         }

@@ -35,14 +35,15 @@
 #include "../core/pattern/factory/ItemParamsCreate.h"
 #include "../core/pattern/mvc/ItemObserver.h"
 #include "../core/pattern/mvc/Observer.h"
+#include "../core/enum/Enums.h"
 
 te::layout::PaperController::PaperController( Observable* o ) :
-  ItemController(o, TPPaperItem)
+  ItemController(o)
 {
   create();
 }
 
-te::layout::PaperController::PaperController( Observable* o, LayoutAbstractObjectType type ) :
+te::layout::PaperController::PaperController( Observable* o, EnumType* type ) :
   ItemController(o, type)
 {
 
@@ -68,5 +69,5 @@ void te::layout::PaperController::create()
 {
   AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPPaperItem, params);
+  m_view = (Observer*)factory->make(m_model->getType(), params);
 }

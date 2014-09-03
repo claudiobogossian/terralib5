@@ -30,7 +30,7 @@
 
 // TerraLib
 #include "ItemParamsCreate.h"
-#include "../../enum/AbstractType.h"
+#include "../../enum/EnumType.h"
 
 namespace te
 {
@@ -42,7 +42,7 @@ namespace te
     {
       public:
         virtual ~AbstractItemFactory(void) {}
-        virtual Observer* make(LayoutAbstractObjectType type, ItemParamsCreate params = ItemParamsCreate()) = 0;
+        virtual Observer* make(EnumType* type, ItemParamsCreate params = ItemParamsCreate()) = 0;
       };
   }
 }

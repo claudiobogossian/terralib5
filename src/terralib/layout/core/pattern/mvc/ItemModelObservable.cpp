@@ -39,13 +39,16 @@
 te::layout::ItemModelObservable::ItemModelObservable() :
   m_id(0),
   m_name("unknown"),
-  m_type(TPObjectUnknown),
+  m_type(0),
   m_sharedProps(0),
   m_zValue(0),
   m_border(true),
   m_resizable(true),
   m_angle(0)
 {
+  EnumObjectType* type = Enums::getInstance().getEnumObjectType();
+  m_type = type->getObjectUnknown();
+
   m_box = te::gm::Envelope(0,0,0,0);
 
   m_backgroundColor = te::color::RGBAColor(255, 255, 255, 0);
@@ -330,12 +333,12 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
   }
 }
 
-te::layout::LayoutAbstractObjectType te::layout::ItemModelObservable::getType()
+te::layout::EnumType* te::layout::ItemModelObservable::getType()
 {
   return m_type;
 }
 
-void te::layout::ItemModelObservable::setType( LayoutAbstractObjectType type )
+void te::layout::ItemModelObservable::setType( EnumType* type )
 {
   m_type = type;
 }

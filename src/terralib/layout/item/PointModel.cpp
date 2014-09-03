@@ -31,9 +31,12 @@
 #include "../../geometry/Envelope.h"
 #include "../../color/RGBAColor.h"
 #include "../../maptools/Canvas.h"
+#include "../core/enum/Enums.h"
 
 te::layout::PointModel::PointModel() 
 {
+  m_type = Enums::getInstance().getEnumObjectType()->getPointItem();
+
   m_borderColor = te::color::RGBAColor(0, 0, 255, 255);
   m_backgroundColor = te::color::RGBAColor(0, 255, 0, 100);
 

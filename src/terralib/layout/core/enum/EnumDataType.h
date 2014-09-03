@@ -45,11 +45,7 @@ namespace te
         EnumDataType(); 
 
         virtual ~EnumDataType();
-
-        virtual EnumType* getEnum(int enumId) const;
-
-        virtual EnumType* getEnum(std::string name) const;
-
+        
         virtual EnumType* getDataTypeNone() const;
 
         virtual EnumType* getDataTypeInt() const;

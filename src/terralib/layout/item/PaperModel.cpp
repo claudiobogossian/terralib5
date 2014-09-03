@@ -29,10 +29,13 @@
 #include "PaperModel.h"
 #include "../core/ContextItem.h"
 #include "../../maptools/Canvas.h"
+#include "../core/enum/Enums.h"
 
 te::layout::PaperModel::PaperModel() :
   m_paperConfig(0)
 {
+  m_type = Enums::getInstance().getEnumObjectType()->getPaperItem();
+
   m_shadowPadding = 10.;
 
   m_backgroundColor = te::color::RGBAColor(255, 255, 255, 255);
@@ -45,6 +48,8 @@ te::layout::PaperModel::PaperModel() :
 te::layout::PaperModel::PaperModel( PaperConfig* paperConfig ) :
   m_paperConfig(paperConfig)
 {
+  m_type = Enums::getInstance().getEnumObjectType()->getPaperItem();
+
   m_shadowPadding = 10.;
 
   m_backgroundColor = te::color::RGBAColor(255, 255, 255, 255);

@@ -34,6 +34,7 @@
 #include "../../core/enum/EnumMode.h"
 #include "../../core/property/Properties.h"
 #include "../../core/enum/AbstractType.h"
+#include "../../core/enum/EnumType.h"
 
 // STL
 #include <string>
@@ -78,7 +79,7 @@ namespace te
 
         int findZValue(te::layout::Properties* props);
 
-        std::string nameItem(std::string name, te::layout::LayoutAbstractObjectType type);
+        std::string nameItem(std::string name, te::layout::EnumType* type);
 
         void clear();
 

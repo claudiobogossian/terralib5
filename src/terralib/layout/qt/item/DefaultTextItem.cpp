@@ -57,7 +57,8 @@ te::layout::DefaultTextItem::DefaultTextItem( ItemController* controller, Observ
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges
-    | QGraphicsItem::ItemIsFocusable);
+    | QGraphicsItem::ItemIsFocusable
+    | QGraphicsItem::ItemIgnoresTransformations);
 
   setTextInteractionFlags(Qt::NoTextInteraction);
 
@@ -124,6 +125,13 @@ void te::layout::DefaultTextItem::updateObserver( ContextItem context )
   te::common::Free(rgba, box.getHeight());
   if(img)
     delete img;
+
+  /* This item ignores the transformations of the scene, so comes with no zoom. 
+  His transformation matrix is the inverse scene, understanding the pixel 
+  coordinates, and its position can only be given in the scene coordinates(mm). 
+  For these reasons, it is necessary to scale and so accompany the zoom scene. */
+  double zoomFactor = Context::getInstance().getZoomFactor();
+  setScale(zoomFactor);
 
   refreshTable();
 
@@ -258,7 +266,7 @@ void te::layout::DefaultTextItem::drawSelection( QPainter* painter )
   qreal penWidth = painter->pen().widthF();
 
   const qreal adj = penWidth / 2;
-  const QColor fgcolor(255,255,255);
+  const QColor fgcolor(0,255,0);
   const QColor backgroundColor(0,0,0);
 
   painter->setPen(QPen(backgroundColor, 0, Qt::SolidLine));
@@ -303,17 +311,11 @@ void te::layout::DefaultTextItem::adjustSizeMM()
   te::gm::Envelope world = m_model->getBox();
   te::gm::Envelope viewport = utils->viewportBox(world);
 
-  WorldTransformer transf = utils->getTransformGeo(world, viewport);
-  transf.setMirroring(true);
-  
+  adjustSize();
+    
   m_oldAdjustSizeW = document()->documentLayout()->documentSize().width();
   m_oldAdjustSizeH = document()->documentLayout()->documentSize().height();
-
-  double wx = 0;
-  double wy = 0;
-
-  transf.system2Tosystem1(m_oldAdjustSizeW, m_oldAdjustSizeH, wx, wy);
-
+  
   DefaultTextModel* model = dynamic_cast<DefaultTextModel*>(m_model);
 
   if(!model)
@@ -321,6 +323,7 @@ void te::layout::DefaultTextItem::adjustSizeMM()
 
   te::gm::Envelope newBox(model->getBox().m_llx, model->getBox().m_lly, 
               model->getBox().m_llx + m_oldAdjustSizeW, model->getBox().m_lly + m_oldAdjustSizeH);
+  
   model->setBox(newBox);
 
   setRect(QRectF(0, 0, newBox.getWidth(), newBox.getHeight()));
@@ -334,25 +337,26 @@ void te::layout::DefaultTextItem::refreshTable()
 void te::layout::DefaultTextItem::refreshText()
 {
   DefaultTextModel* model = dynamic_cast<DefaultTextModel*>(m_model);
-  if(model)
-  {
-    Font font = model->getFont();
-    QFont qfont;
-    qfont.setFamily(font.getFamily().c_str());
-    qfont.setPointSize(font.getPointSize());
-    qfont.setBold(font.isBold());
-    qfont.setItalic(font.isItalic());
-    qfont.setUnderline(font.isUnderline());
-    qfont.setStrikeOut(font.isStrikeout());
-    qfont.setKerning(font.isKerning());
-    setFont(qfont);
+  if(!model)
+    return;
 
-    document()->clear();
-    QTextCursor cursor(document());
-    cursor.movePosition(QTextCursor::Start);
-    cursor.insertText(model->getText().c_str());
-    adjustSize();
-  }
+  document()->clear();
+
+  Font font = model->getFont();
+  QFont qfont;
+  qfont.setFamily(font.getFamily().c_str());
+  qfont.setPointSize(font.getPointSize());
+  qfont.setBold(font.isBold());
+  qfont.setItalic(font.isItalic());
+  qfont.setUnderline(font.isUnderline());
+  qfont.setStrikeOut(font.isStrikeout());
+  qfont.setKerning(font.isKerning());
+  setFont(qfont);
+
+  QTextCursor cursor(document());
+  cursor.movePosition(QTextCursor::Start);
+  cursor.insertText(model->getText().c_str());
+  adjustSize();
 }
 
 void te::layout::DefaultTextItem::setTextInteraction( bool on, bool selectAll /*= false*/ )

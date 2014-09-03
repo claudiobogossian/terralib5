@@ -52,6 +52,8 @@ te::layout::MapModel::MapModel() :
   m_systematic(0),
   m_fixedScale(false)
 {
+  m_type = Enums::getInstance().getEnumObjectType()->getMapItem();
+
   m_box = te::gm::Envelope(0., 0., 150., 120.);
   m_mapBoxMM = m_box;
 

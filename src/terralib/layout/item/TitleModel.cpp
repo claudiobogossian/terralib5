@@ -49,6 +49,9 @@ te::layout::TitleModel::TitleModel() :
   m_borderWidth(0.5)
 
 {
+
+  m_type = Enums::getInstance().getEnumObjectType()->getTitleItem();
+
   m_box = te::gm::Envelope(0., 0., 190., 170.);
 
   m_tableColor.setColor(0,0,0,255);

@@ -31,7 +31,6 @@
 #include "../../geometry/Envelope.h"
 #include "../../geometry/Coord2D.h"
 #include "../core/property/Property.h"
-#include "../core/enum/EnumUtils.h"
 #include "../core/property/GeodesicGridSettingsConfigProperties.h"
 #include "../../srs/Config.h"
 #include "../core/WorldTransformer.h"
@@ -319,13 +318,13 @@ te::layout::Property te::layout::GridGeodesicModel::getProperty()
   /* Just one is visible */
   Property pro_gridStyle;
   pro_gridStyle.setName(m_settingsConfig->getStyle());
-  pro_gridStyle.setValue(te::layout::getLayoutGridStyle(m_gridStyle), dataType->getDataTypeString());  
+  pro_gridStyle.setValue(m_gridStyle->getName(), dataType->getDataTypeString());  
   m_property.addSubProperty(pro_gridStyle);
 
   /* Line */
   Property pro_lineStyle;
   pro_lineStyle.setName(m_settingsConfig->getLineStyle());
-  pro_lineStyle.setValue(te::layout::getLayoutDashStyle(m_lineStyle), dataType->getDataTypeString());  
+  pro_lineStyle.setValue(m_lineStyle->getName(), dataType->getDataTypeString());  
   m_property.addSubProperty(pro_lineStyle);
 
   Property pro_lineColor;
@@ -461,14 +460,16 @@ void te::layout::GridGeodesicModel::updateProperty( te::layout::Property propert
   if(!pro_gridStyle.isNull())
   {
     std::string style = pro_gridStyle.getValue().toString();
-    m_gridStyle = te::layout::getLayoutEnumGridStyle(style);
+    EnumType* styleType = Enums::getInstance().getEnumGridStyleType()->getEnum(style);
+    m_gridStyle = styleType;
   }
 
   Property pro_lineStyle = property.containsSubProperty(m_settingsConfig->getLineStyle());
   if(!pro_lineStyle.isNull())
   {
     std::string style = pro_lineStyle.getValue().toString();
-    m_lineStyle = te::layout::getLayoutEnumDashStyle(style);
+    EnumType* lineStyle = Enums::getInstance().getEnumLineStyleType()->getEnum(style);
+    m_lineStyle = lineStyle;
   }
 
   Property pro_lineColor = property.containsSubProperty(m_settingsConfig->getLineColor());

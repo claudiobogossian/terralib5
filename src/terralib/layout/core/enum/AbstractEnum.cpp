@@ -18,37 +18,55 @@
  */
 
 /*!
-  \file MapController.h
+  \file AbstractEnum.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_CONTROLLER_H
-
 // TerraLib
-#include "MapController.h"
+#include "AbstractEnum.h"
 
-namespace te
+
+te::layout::AbstractEnum::AbstractEnum()
 {
-  namespace layout
-  {
-    class MapGridController : public MapController
-    {
-      public:
 
-        MapGridController( Observable* o );
-        virtual ~MapGridController();
-
-      protected:
-
-        MapGridController( Observable* o, EnumType* type );
-
-        virtual void create();
-    };
-  }
 }
 
-#endif
+te::layout::AbstractEnum::~AbstractEnum()
+{
+
+}
+
+te::layout::EnumType* te::layout::AbstractEnum::getEnum( int enumId ) const
+{
+  EnumType* enumTp = 0;
+
+  for(std::vector<EnumType*>::const_iterator it = m_enums.begin(); it != m_enums.end(); it++)
+  {
+    if((*it)->getId() == enumId)
+    {
+      enumTp = (*it);
+      break;
+    }
+  }
+
+  return enumTp;
+}
+
+te::layout::EnumType* te::layout::AbstractEnum::getEnum( std::string name ) const
+{
+  EnumType* enumTp = 0;
+
+  for(std::vector<EnumType*>::const_iterator it = m_enums.begin(); it != m_enums.end(); it++)
+  {
+    if((*it)->getName().compare(name) == 0)
+    {
+      enumTp = (*it);
+      break;
+    }
+  }
+
+  return enumTp;
+}

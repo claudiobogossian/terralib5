@@ -31,9 +31,13 @@
 #include "../../geometry/Envelope.h"
 #include "../../color/RGBAColor.h"
 #include "../../maptools/Canvas.h"
+#include "../core/enum/Enums.h"
 
 te::layout::TextGridModel::TextGridModel() 
 {
+
+  m_type = Enums::getInstance().getEnumObjectType()->getTextGridItem();
+
   m_spacing = 1;
   m_padding = 1;
   m_columnNumber = 5;

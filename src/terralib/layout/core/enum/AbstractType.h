@@ -34,43 +34,43 @@ namespace te
 {
   namespace layout
   {
-    /*!
-    \brief Enum TdkAbstractComponentType. This is the enumeration of the components types
-    */
-    typedef TELAYOUTEXPORT enum
-    {
-      TPRetangleItem = 1,
-      TPMapItem = 2,
-      TPMapGridItem = 3,
-      TPPaperItem = 4,
-      TPLegendItem = 5,
-      TPPropertiesWindow = 6,
-      TPDisplayWindow = 7,
-      TPObjectInspectorWindow = 8,
-      TPToolbar = 9,
-      TPGridSettings = 10,
-      TPGrid = 11,
-      TPGridPlanar = 12,
-      TPGridGeodesic = 13,
-      TPHorizontalRuler = 14,
-      TPVerticalRuler = 15,
-      TPTextItem = 16,
-      TPItemGroup = 17,
-      TPScaleItem = 18,
-      TPPageSetup = 19,
-      TPImageItem = 20,
-      TPSystematicScale = 21,
-      TPPointItem = 22,
-      TPArrowItem = 23,
-      TPEllipseItem = 24,
-      TPTitleItem = 25,
-      TPTextGridItem = 26,
-      TPMultiLineTextItem = 27,
-      TPEditTemplate = 28,
-      TPMenuItem = 29,
-      TPTextGridSettings = 30,
-      TPObjectUnknown = 0
-    } LayoutAbstractObjectType;
+    ///*!
+    //\brief Enum TdkAbstractComponentType. This is the enumeration of the components types
+    //*/
+    //typedef TELAYOUTEXPORT enum
+    //{
+    //  TPRetangleItem = 1,
+    //  TPMapItem = 2,
+    //  TPMapGridItem = 3,
+    //  TPPaperItem = 4,
+    //  TPLegendItem = 5,
+    //  TPPropertiesWindow = 6,
+    //  TPDisplayWindow = 7,
+    //  TPObjectInspectorWindow = 8,
+    //  TPToolbar = 9,
+    //  TPGridSettings = 10,
+    //  TPGrid = 11,
+    //  TPGridPlanar = 12,
+    //  TPGridGeodesic = 13,
+    //  TPHorizontalRuler = 14,
+    //  TPVerticalRuler = 15,
+    //  TPTextItem = 16,
+    //  TPItemGroup = 17,
+    //  TPScaleItem = 18,
+    //  TPPageSetup = 19,
+    //  TPImageItem = 20,
+    //  TPSystematicScale = 21,
+    //  TPPointItem = 22,
+    //  TPArrowItem = 23,
+    //  TPEllipseItem = 24,
+    //  TPTitleItem = 25,
+    //  TPTextGridItem = 26,
+    //  TPMultiLineTextItem = 27,
+    //  TPEditTemplate = 28,
+    //  TPMenuItem = 29,
+    //  TPTextGridSettings = 30,
+    //  TPObjectUnknown = 0
+    //} LayoutAbstractObjectType;
 
     /*!
     \brief Enum TdkAbstractComponentType. This is the enumeration of the components types
@@ -165,12 +165,12 @@ namespace te
       TPJSONTemplate = 1
     } LayoutTemplateType;
 
-    typedef enum
-    {
-      StyleNone = 1,
-      StyleContinuous = 2,	//! continuos line grid
-      StyleCross = 3				//! cross grid
-    } LayoutGridStyle;
+    //typedef enum
+    //{
+    //  StyleNone = 1,
+    //  StyleContinuous = 2,	//! continuos line grid
+    //  StyleCross = 3				//! cross grid
+    //} LayoutGridStyle;
 
     typedef enum
     {

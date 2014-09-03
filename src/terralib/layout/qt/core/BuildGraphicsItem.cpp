@@ -76,6 +76,7 @@
 #include "../../item/TextGridModel.h"
 #include "../../item/TextGridController.h"
 #include "../item/TextGridItem.h"
+#include "../../core/enum/Enums.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -135,59 +136,71 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   m_zValue = findZValue(props);
   m_redraw = draw;
 
-  te::layout::LayoutAbstractObjectType type = props->getTypeObj();
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
 
-  switch(type)
+  EnumType* type = props->getTypeObj();
+
+  if(type == enumObj->getMapItem())
   {
-  case TPMapItem:
     item = createMap();
-    break;
-  case TPMapGridItem:
-    item = createMapGrid();
-    break;
-  case TPTextItem:
-    item = createText();
-    break;
-  case TPImageItem:
-    item = createImage();
-    break;
-  case TPRetangleItem:
-    item = createRectangle();
-    break;
-  case TPLegendItem:
-    item = createLegend();
-    break;
-  case TPPaperItem:
-    item = createPaper();
-    break;
-  case TPScaleItem:
-    item = createScale();
-    break;
-  case TPItemGroup:
-    item = createItemGroup();
-    break;
-  case TPArrowItem:
-    item = createArrow();
-    break;
-  case TPEllipseItem:
-    item = createEllipse();
-    break;
-  case TPMultiLineTextItem:
-    item = createMultiLineText();
-    break;
-  case TPPointItem:
-    item = createPoint();
-    break;
-  case TPTextGridItem:
-    item = createTextGrid();
-    break;
-  case TPTitleItem:
-    item = createTitle();
-    break;
-  default:
-    item = 0;
   }
-
+  else if(type == enumObj->getMapGridItem())
+  {
+    item = createMapGrid();
+  }
+  else if(type == enumObj->getDefaultTextItem())
+  {
+    item = createText();
+  }
+  else if(type == enumObj->getImageItem())
+  {
+    item = createImage();
+  }
+  else if(type == enumObj->getRetangleItem())
+  {
+    item = createRectangle();
+  }
+  else if(type == enumObj->getLegendItem())
+  {
+    item = createLegend();
+  }
+  else if(type == enumObj->getPaperItem())
+  {
+    item = createPaper();
+  }
+  else if(type == enumObj->getScaleItem())
+  {
+    item = createScale();
+  }
+  else if(type == enumObj->getItemGroup())
+  {
+    item = createItemGroup();
+  }
+  else if(type == enumObj->getArrowItem())
+  {
+    item = createArrow();
+  }
+  else if(type == enumObj->getEllipseItem())
+  {
+    item = createEllipse();
+  }
+  else if(type == enumObj->getMultiLineTextItem())
+  {
+    item = createMultiLineText();
+  }
+  else if(type == enumObj->getPointItem())
+  {
+    item = createPoint();
+  }
+  else if(type == enumObj->getTextGridItem())
+  {
+    item = createTextGrid();
+  }
+  else if(type == enumObj->getTitleItem())
+  {
+    item = createTitle();
+  }
+  
   return item;
 }
 
@@ -199,62 +212,64 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::LayoutMode
   clear();
   m_redraw = draw;
 
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+
   switch(mode)
   {
   case TypeCreateMap:
-    m_name = nameItem(m_mapItem, TPMapItem);
+    m_name = nameItem(m_mapItem, enumObj->getMapItem());
     item = createMap();
     break;
   case TypeCreateMapGrid:
-    m_name = nameItem(m_mapGridItem, TPMapGridItem);
+    m_name = nameItem(m_mapGridItem, enumObj->getMapGridItem());
     item = createMapGrid();
     break;
   case TypeCreateText:
-    m_name = nameItem(m_textItem, TPTextItem);
+    m_name = nameItem(m_textItem, enumObj->getDefaultTextItem());
     item = createText();
     break;
   case TypeCreateImage:
-    m_name = nameItem(m_imageItem, TPImageItem);
+    m_name = nameItem(m_imageItem, enumObj->getImageItem());
     item = createImage();
     break;
   case TypeCreateRectangle:
-    m_name = nameItem(m_rectangleItem, TPRetangleItem);
+    m_name = nameItem(m_rectangleItem, enumObj->getRetangleItem());
     item = createRectangle();
     break;
   case TypeCreateLegend:
-    m_name = nameItem(m_legendItem, TPLegendItem);
+    m_name = nameItem(m_legendItem, enumObj->getLegendItem());
     item = createLegend();
     break;
   case TypeCreateScale:
-    m_name = nameItem(m_scaleItem, TPScaleItem);
+    m_name = nameItem(m_scaleItem, enumObj->getScaleItem());
     item = createScale();
     break;
   case TypeCreateItemGroup:
-    m_name = nameItem(m_groupItem, TPItemGroup);
+    m_name = nameItem(m_groupItem, enumObj->getItemGroup());
     item = createItemGroup();
     break;
   case TypeCreatePoint:
-    m_name = nameItem(m_pointItem, TPPointItem);
+    m_name = nameItem(m_pointItem, enumObj->getPointItem());
     item = createPoint();
     break;
   case TypeCreateArrow:
-    m_name = nameItem(m_arrowItem, TPArrowItem);
+    m_name = nameItem(m_arrowItem, enumObj->getArrowItem());
     item = createArrow();
     break;
   case TypeCreateEllipse:
-    m_name = nameItem(m_ellipseItem, TPEllipseItem);
+    m_name = nameItem(m_ellipseItem, enumObj->getEllipseItem());
     item = createEllipse();
     break;
   case TypeCreateTitle:
-    m_name = nameItem(m_titleItem, TPTitleItem);
+    m_name = nameItem(m_titleItem, enumObj->getTitleItem());
     item = createTitle();
     break;
   case TypeCreateTextGrid:
-    m_name = nameItem(m_textGridItem, TPTextGridItem);
+    m_name = nameItem(m_textGridItem, enumObj->getTextGridItem());
     item = createTextGrid();
     break;
   case TypeCreateMultiLineText:
-    m_name = nameItem(m_multiLineTextItem, TPMultiLineTextItem);
+    m_name = nameItem(m_multiLineTextItem, enumObj->getMultiLineTextItem());
     item = createMultiLineText();
     break;
   default:
@@ -303,7 +318,7 @@ int te::layout::BuildGraphicsItem::findZValue( te::layout::Properties* props )
   return zValue;
 }
 
-std::string te::layout::BuildGraphicsItem::nameItem( std::string name, te::layout::LayoutAbstractObjectType type )
+std::string te::layout::BuildGraphicsItem::nameItem( std::string name, te::layout::EnumType* type )
 {
   AbstractScene* abstScene = Context::getInstance().getScene();
 

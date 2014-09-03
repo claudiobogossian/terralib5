@@ -33,14 +33,18 @@
 #include "../core/pattern/singleton/Context.h"
 #include "../core/pattern/mvc/Observable.h"
 #include "TextGridSettingsModel.h"
+#include "../core/enum/Enums.h"
 
 te::layout::TextGridSettingsController::TextGridSettingsController( Observable* o ) :
-	OutsideController(o, TPTextGridSettings)
+	OutsideController(o)
 {
+  EnumType* type = Enums::getInstance().getEnumObjectType()->getTextGridSettings();
+  o->setType(type);
+
 	AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
 	OutsideParamsCreate params(this, m_model);
   if(factory)
-	  m_view = (Observer*)factory->make(TPTextGridSettings, params);
+	  m_view = (Observer*)factory->make(m_model->getType(), params);
 }
 
 te::layout::TextGridSettingsController::~TextGridSettingsController()

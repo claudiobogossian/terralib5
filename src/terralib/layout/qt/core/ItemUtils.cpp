@@ -108,7 +108,7 @@ TELAYOUTEXPORT std::vector<std::string> te::layout::mapNameList( QList<QGraphics
   return strList;
 }
 
-TELAYOUTEXPORT int te::layout::countType( QList<QGraphicsItem*> graphicsItems, LayoutAbstractObjectType type )
+TELAYOUTEXPORT int te::layout::countType( QList<QGraphicsItem*> graphicsItems, te::layout::EnumType* type )
 {
   int count = 0;
 
@@ -130,7 +130,7 @@ TELAYOUTEXPORT int te::layout::countType( QList<QGraphicsItem*> graphicsItems, L
   return count;
 }
 
-TELAYOUTEXPORT int te::layout::maxTypeId( QList<QGraphicsItem*> graphicsItems, LayoutAbstractObjectType type )
+TELAYOUTEXPORT int te::layout::maxTypeId( QList<QGraphicsItem*> graphicsItems, te::layout::EnumType* type )
 {
   int id = -1;
 

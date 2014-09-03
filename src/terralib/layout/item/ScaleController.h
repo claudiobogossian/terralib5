@@ -46,7 +46,7 @@ namespace te
 
       protected:
 
-        ScaleController( Observable* o, LayoutAbstractObjectType type );
+        ScaleController( Observable* o, EnumType* type );
 
         virtual void create();
     };

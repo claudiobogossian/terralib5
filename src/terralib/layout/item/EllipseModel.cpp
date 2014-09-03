@@ -31,12 +31,15 @@
 #include "../../geometry/Envelope.h"
 #include "../../color/RGBAColor.h"
 #include "../../maptools/Canvas.h"
+#include "../core/enum/Enums.h"
 
 // STL
 #include <cmath>
 
 te::layout::EllipseModel::EllipseModel() 
 {
+  m_type = Enums::getInstance().getEnumObjectType()->getEllipseItem();
+
   m_box = te::gm::Envelope(0., 0., 22., 20.);
 }
 

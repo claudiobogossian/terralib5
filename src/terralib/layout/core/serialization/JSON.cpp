@@ -33,7 +33,6 @@
 #include "../../../common/STLUtils.h"
 #include "../../../common/Translator.h"
 #include "../Config.h"
-#include "../enum/EnumUtils.h"
 #include "../enum/Enums.h"
 
 // Boost
@@ -143,6 +142,8 @@ std::vector<te::layout::Properties*> te::layout::JSON::retrieve()
 
     te::layout::Properties* props = new te::layout::Properties((*itName).second.data());
 
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+
     std::string valName;
     boost::property_tree::ptree tree;
     Property prop;
@@ -150,7 +151,8 @@ std::vector<te::layout::Properties*> te::layout::JSON::retrieve()
     {
       if(v.first.compare("object_type") == 0)
       {
-        props->setTypeObj(te::layout::getLayoutAbstractObjectType(v.second.data()));
+        EnumType* type = enumObj->getEnum(v.second.data());
+        props->setTypeObj(type);
         continue;
       }
 
@@ -260,7 +262,7 @@ void te::layout::JSON::loadFromProperties( std::vector<te::layout::Properties*> 
   boost::property_tree::ptree childArray;
 
   rootArray.push_back(std::make_pair("name", m_rootKey));
-
+  
   int count = 0;
   for(it = m_properties.begin(); it != m_properties.end(); ++it)
   {		
@@ -274,7 +276,7 @@ void te::layout::JSON::loadFromProperties( std::vector<te::layout::Properties*> 
       continue;
 
     childArray.clear();
-    childArray.push_back(std::make_pair("object_type", te::layout::getLayoutAbstractObjectType(props->getTypeObj())));
+    childArray.push_back(std::make_pair("object_type", props->getTypeObj()->getName()));
     for(ity = vec.begin(); ity != vec.end(); ++ity)
     {
       Property prop = (*ity);

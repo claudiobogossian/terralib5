@@ -32,14 +32,15 @@
 #include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/pattern/factory/AbstractItemFactory.h"
 #include "../core/pattern/singleton/Context.h"
+#include "../core/enum/Enums.h"
 
 te::layout::HorizontalRulerController::HorizontalRulerController( Observable* o ) :
-  ItemController(o, TPHorizontalRuler)
+  ItemController(o)
 {
   create();
 }
 
-te::layout::HorizontalRulerController::HorizontalRulerController( Observable* o, LayoutAbstractObjectType type ) :
+te::layout::HorizontalRulerController::HorizontalRulerController( Observable* o, EnumType* type ) :
   ItemController(o, type)
 {
 
@@ -64,5 +65,5 @@ void te::layout::HorizontalRulerController::create()
 {
   AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPHorizontalRuler, params);
+  m_view = (Observer*)factory->make(m_model->getType(), params);
 }

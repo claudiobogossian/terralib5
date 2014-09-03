@@ -28,12 +28,15 @@
 // TerraLib
 #include "ArrowModel.h"
 #include "../core/ContextItem.h"
+#include "../core/enum/Enums.h"
 
 // STL
 #include <cmath>
 
 te::layout::ArrowModel::ArrowModel() 
 {
+  m_type = Enums::getInstance().getEnumObjectType()->getArrowItem();
+
   m_box = te::gm::Envelope(0., 0., 20., 20.);
 }
 

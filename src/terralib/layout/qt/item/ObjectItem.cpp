@@ -152,7 +152,7 @@ void te::layout::ObjectItem::drawSelection( QPainter* painter )
   qreal penWidth = painter->pen().widthF();
 
   const qreal adj = penWidth / 2;
-  const QColor fgcolor(255,255,255);
+  const QColor fgcolor(0,255,0);
   const QColor backgroundColor(0,0,0);
 
   painter->setPen(QPen(backgroundColor, 0, Qt::SolidLine));

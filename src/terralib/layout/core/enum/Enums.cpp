@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file EnumDataType.cpp
+  \file Enums.cpp
    
   \brief 
 
@@ -29,7 +29,10 @@
 #include "Enums.h"
 
 te::layout::Enums::Enums() :
-  m_dataType(0)
+  m_dataType(0),
+  m_objType(0),
+  m_gridStyleType(0),
+  m_lineStyleType(0)
 {
   init();
 }
@@ -41,14 +44,49 @@ te::layout::Enums::~Enums()
     delete m_dataType;
     m_dataType = 0;
   }
+
+  if(m_objType)
+  {
+    delete m_objType;
+    m_objType = 0;
+  }
+
+  if(m_gridStyleType)
+  {
+    delete m_gridStyleType;
+    m_gridStyleType = 0;
+  }
+  if(m_lineStyleType)
+  {
+    delete m_lineStyleType;
+    m_lineStyleType = 0;
+  }
 }
 
 void te::layout::Enums::init()
 {
   m_dataType = new EnumDataType;
+  m_objType = new EnumObjectType;
+  m_gridStyleType = new EnumGridStyleType;
+  m_lineStyleType = new EnumLineStyleType;
 }
 
 te::layout::EnumDataType* te::layout::Enums::getEnumDataType()
 {
   return m_dataType;
+}
+
+te::layout::EnumObjectType* te::layout::Enums::getEnumObjectType()
+{
+  return m_objType;
+}
+
+te::layout::EnumGridStyleType* te::layout::Enums::getEnumGridStyleType()
+{
+  return m_gridStyleType;
+}
+
+te::layout::EnumLineStyleType* te::layout::Enums::getEnumLineStyleType()
+{
+  return m_lineStyleType;
 }

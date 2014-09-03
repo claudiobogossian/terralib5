@@ -33,14 +33,18 @@
 #include "../core/pattern/singleton/Context.h"
 #include "../core/pattern/mvc/Observable.h"
 #include "GridSettingsModel.h"
+#include "../core/enum/Enums.h"
 
 te::layout::GridSettingsController::GridSettingsController( Observable* o ) :
-	OutsideController(o, TPGridSettings)
+	OutsideController(o)
 {
+  EnumType* type = Enums::getInstance().getEnumObjectType()->getGridSettings();
+  o->setType(type);
+
 	AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
 	OutsideParamsCreate params(this, m_model);
   if(factory)
-	  m_view = (Observer*)factory->make(TPGridSettings, params);
+	  m_view = (Observer*)factory->make(m_model->getType(), params);
 }
 
 te::layout::GridSettingsController::~GridSettingsController()

@@ -45,6 +45,9 @@ te::layout::ScaleModel::ScaleModel() :
   m_scaleGapX(20),
   m_scaleGapY(5)
 {
+
+  m_type = Enums::getInstance().getEnumObjectType()->getScaleItem();
+
   m_box = te::gm::Envelope(0., 0., 70., 30.);
 }
 

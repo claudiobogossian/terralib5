@@ -86,7 +86,8 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges);
+    | QGraphicsItem::ItemSendsGeometryChanges
+    | QGraphicsItem::ItemIgnoresTransformations);
     
   setAcceptDrops(true);
 
@@ -167,9 +168,10 @@ void te::layout::MapItem::updateObserver( ContextItem context )
   double w = box.getWidth();
   double h = box.getHeight();
 
-  /* No zoom maior que 1. o tamanho ainda é errado. 
-  Verificar o tamanho do pixmap de impressão, ainda a qualidade está baixa!*/
-
+  /* This item ignores the transformations of the scene, so comes with no zoom. 
+  His transformation matrix is the inverse scene, understanding the pixel 
+  coordinates, and its position can only be given in the scene coordinates(mm). 
+  For these reasons, it is necessary to resize it.*/
   if(w != m_mapDisplay->getWidth() 
     || h != m_mapDisplay->getHeight())
   {
@@ -261,7 +263,7 @@ void te::layout::MapItem::drawSelection( QPainter* painter)
   qreal penWidth = painter->pen().widthF();
 
   const qreal adj = penWidth / 2;
-  const QColor fgcolor(255,255,255);
+  const QColor fgcolor(0,255,0);
   const QColor backgroundColor(0,0,0);
 
   painter->setPen(QPen(backgroundColor, 0, Qt::SolidLine));

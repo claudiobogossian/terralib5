@@ -83,8 +83,7 @@ te::layout::View::View( QWidget* widget) :
   m_selectionChange(false),
   m_menuItem(0)
 {
-  //Use ScrollHand Drag Mode to enable Panning
-  //You do need the enable scroll bars for that to work.
+
   setDragMode(RubberBandDrag);
 
   m_lineIntersectHrz = new QLineF(0,0,0,0);
@@ -492,7 +491,7 @@ void te::layout::View::outsideAreaChangeContext( bool change )
       env->m_lly = center.y - halfHeight;
       env->m_urx = center.x + halfWidth;
       env->m_ury = center.y + halfHeight;
-      
+            
       sc->refresh(this, zoomFactor);            
       sc->redrawItems(true);
       resetDefaultConfig();

@@ -48,6 +48,8 @@ te::layout::LegendModel::LegendModel() :
   m_displacementBetweenTitleAndSymbols(5),
   m_displacementBetweenSymbolsAndText(3)
 {
+  m_type = Enums::getInstance().getEnumObjectType()->getLegendItem();
+
   m_box = te::gm::Envelope(0., 0., 70., 50.);
 }
 

@@ -36,6 +36,7 @@
 #include "../../geometry/Point.h"
 #include "../../color/RGBAColor.h"
 #include "../core/pattern/singleton/Context.h"
+#include "../core/enum/Enums.h"
 
 // STL
 #include <sstream>
@@ -44,7 +45,7 @@
 te::layout::HorizontalRulerModel::HorizontalRulerModel(PaperConfig* paperConfig) :
   AbstractRulerModel(paperConfig)
 {
-
+  m_type = Enums::getInstance().getEnumObjectType()->getHorizontalRuler();
 }
 
 te::layout::HorizontalRulerModel::~HorizontalRulerModel()
@@ -104,10 +105,29 @@ void te::layout::HorizontalRulerModel::drawRuler( te::map::Canvas* canvas, Utils
 
     m_paperConfig->getPaperSize(w, h);
     te::gm::Envelope paperBox(0, 0, w, h);
-        
-    envPaper = te::gm::Envelope(paperBox.getLowerLeftX(), m_backEndBox.getLowerLeftY(),
-      paperBox.getUpperRightX(), m_backEndBox.getUpperRightY());
             
+    /*envPaper = te::gm::Envelope(paperBox.getLowerLeftX(), m_backEndBox.getLowerLeftY(),
+      paperBox.getLowerLeftX() + (w * zoomFactor), m_backEndBox.getUpperRightY());*/
+
+    double x1 = 0;
+    double zoom = 1. / zoomFactor;
+    x1 = m_backEndBox.m_llx + paperBox.getWidth();
+    
+    double x2 = m_backEndBox.m_urx - paperBox.getWidth();
+    x2 = x2 * zoomFactor;
+
+    x1 = x1 * zoomFactor;
+
+    if(zoomFactor >= 1.)
+      x1 = 0;
+
+    envPaper = te::gm::Envelope(x1, m_backEndBox.getLowerLeftY(),
+      x1 + (w * zoomFactor), m_backEndBox.getUpperRightY());
+
+    /*te::gm::Envelope newBox1(m_backEndBox.m_llx, 0, m_backEndBox.m_llx + w, h);
+    WorldTransformer transf = utils->getTransformGeo(m_backEndBox, newBox1);
+    transf.setMirroring(false);*/
+    
     te::color::RGBAColor colorp5(255,255,255, TE_OPAQUE);
     drawRectW(envPaper, colorp5, canvas, utils);
   }

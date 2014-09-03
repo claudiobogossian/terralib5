@@ -40,6 +40,8 @@ te::layout::ImageModel::ImageModel() :
   m_fileName(""),
   m_imgType(te::map::JPEG)
 {
+  m_type = Enums::getInstance().getEnumObjectType()->getImageItem();
+
   m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
   m_backgroundColor = te::color::RGBAColor(0, 0, 255, 255);
 

@@ -35,14 +35,15 @@
 #include "../core/pattern/factory/ItemParamsCreate.h"
 #include "../core/pattern/mvc/ItemObserver.h"
 #include "../core/pattern/mvc/Observer.h"
+#include "../core/enum/Enums.h"
 
 te::layout::MultiLineTextController::MultiLineTextController( Observable* o ) :
-  DefaultTextController(o, TPMultiLineTextItem)
+  DefaultTextController(o)
 {
   create();
 }
 
-te::layout::MultiLineTextController::MultiLineTextController( Observable* o, LayoutAbstractObjectType type ) :
+te::layout::MultiLineTextController::MultiLineTextController( Observable* o, EnumType* type ) :
   DefaultTextController(o, type)
 {
 
@@ -67,5 +68,5 @@ void te::layout::MultiLineTextController::create()
 {
   AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPMultiLineTextItem, params);
+  m_view = (Observer*)factory->make(m_model->getType(), params);
 }

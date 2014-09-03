@@ -50,6 +50,7 @@
 #include "../../item/MapGridModel.h"
 #include "../../item/GridGeodesicModel.h"
 #include "../../item/GridPlanarModel.h"
+#include "../../core/enum/Enums.h"
 
 // STL
 #include <iostream>
@@ -137,6 +138,11 @@ void te::layout::Scene::insertItem( ItemObserver* item )
     if(qitem->scene() != this) 
     {
       total = this->items().count();
+
+      QTransform transf = m_matrix.inverted();
+      double scalex = m_matrix.inverted().m11();
+      double scaley = m_matrix.inverted().m22();
+
       MapItem* map = dynamic_cast<MapItem*>(qitem);
       if(map)
       {
@@ -146,19 +152,14 @@ void te::layout::Scene::insertItem( ItemObserver* item )
         since its size is given in pixels. So the object got the 
         inverted matrix, to draw pixel by proper scaling between world and screen.
         */
-        QTransform transf = m_matrix.inverted();
-        double scalex = m_matrix.inverted().m11();
-        double scaley = m_matrix.inverted().m22();
 
         transf.scale(scalex, scaley);
-        
         map->setTransform(transf);
       }
       DefaultTextItem* txt = dynamic_cast<DefaultTextItem*>(qitem);
       if(txt)
       {
-        QTransform transf = m_matrix.inverted();
-        transf.scale(1., -1.);
+        transf.scale(scalex, scaley);
         txt->setTransform(transf);
       }
       this->addItem(qitem);
@@ -621,16 +622,8 @@ void te::layout::Scene::refresh(QGraphicsView* view, double zoomFactor)
   {
     /* New box because the zoom factor change the transform(matrix) */
     QPointF ll = view->mapToScene(0, 0);
-    QPointF ur = view->mapToScene(view->size().width(), view->size().height());
+    QPointF ur = view->mapToScene(view->width(), view->height());
     newBox = te::gm::Envelope(ll.x(), ll.y(), ur.x(), ur.y());
-
-    /*QPointF tl(view->horizontalScrollBar()->value(), view->verticalScrollBar()->value());
-    QPointF br = tl + view->viewport()->rect().bottomRight();
-    QMatrix mat = view->matrix().inverted();
-    QRectF r1 = mat.mapRect(QRectF(tl,br));
-
-    QPointF ur = view->mapToScene(r1.width(), r1.height());*/
-    //newBox = te::gm::Envelope(ll.x(), ll.y(), ur.x(), ur.y());
   } 
 
   refreshRulers(newBox);
@@ -648,6 +641,8 @@ void te::layout::Scene::refreshRulers(te::gm::Envelope newBox)
 
   QPointF pt(llx, lly);
 
+  EnumObjectType* type = Enums::getInstance().getEnumObjectType();
+
   QList<QGraphicsItem*> graphicsItems = items();
   foreach( QGraphicsItem *item, graphicsItems) 
   {
@@ -661,14 +656,16 @@ void te::layout::Scene::refreshRulers(te::gm::Envelope newBox)
         if(!model)
           continue;
 
-        if(model->getType() == TPHorizontalRuler)
+        if(model->getType() == type->getHorizontalRuler())
         {
-          model->setBox(te::gm::Envelope(llx, lly, urx, lly + 10));
+          te::gm::Envelope boxH(llx, lly, urx, lly + 10);
+          model->setBox(boxH);
           item->setPos(pt);
         }
-        if(model->getType() == TPVerticalRuler)
+        if(model->getType() == type->getVerticalRuler())
         {
-          model->setBox(te::gm::Envelope(llx, lly, llx + 10, ury));
+          te::gm::Envelope boxV(llx, lly, llx + 10, ury);
+          model->setBox(boxV);
           item->setPos(pt);
         }
       }
@@ -914,6 +911,8 @@ void te::layout::Scene::sendToBack()
 
 void te::layout::Scene::redrawRulers()
 {
+  EnumObjectType* type = Enums::getInstance().getEnumObjectType();
+
   QList<QGraphicsItem*> graphicsItems = items();
   foreach( QGraphicsItem *item, graphicsItems) 
   {
@@ -922,8 +921,8 @@ void te::layout::Scene::redrawRulers()
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
       {       
-        if(lItem->getModel()->getType() == TPHorizontalRuler ||
-          lItem->getModel()->getType() == TPVerticalRuler)
+        if(lItem->getModel()->getType() == type->getHorizontalRuler() ||
+          lItem->getModel()->getType() == type->getVerticalRuler())
         {
           lItem->redraw();
         }

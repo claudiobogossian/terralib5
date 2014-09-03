@@ -49,7 +49,7 @@ namespace te
 
       protected:
 
-        MapController( Observable* o, LayoutAbstractObjectType type );
+        MapController( Observable* o, EnumType* type );
 
         virtual void create();
     };

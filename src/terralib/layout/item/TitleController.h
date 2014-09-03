@@ -46,7 +46,7 @@ namespace te
 
       protected:
 
-        TitleController( Observable* o, LayoutAbstractObjectType type );
+        TitleController( Observable* o, EnumType* type );
 
         virtual void create();
     };
