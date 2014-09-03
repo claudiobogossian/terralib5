@@ -87,6 +87,6 @@ void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool checked)
 
   assert(e.m_display);
 
-  te::edit::VertexTool* tool = new te::edit::VertexTool(e.m_display->getDisplay(), Qt::ArrowCursor, layer, 0);
+  te::edit::VertexTool* tool = new te::edit::VertexTool(e.m_display->getDisplay(), layer, 0);
   e.m_display->setCurrentTool(tool);
 }

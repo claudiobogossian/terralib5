@@ -30,10 +30,12 @@
 #include "../geometry/MultiPolygon.h"
 #include "../geometry/Point.h"
 #include "../geometry/Polygon.h"
+#include "../geometry/Utils.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
+#include <memory>
 
 void te::edit::GetLines(te::gm::Geometry* geom, std::vector<te::gm::LineString*>& lines)
 {
@@ -121,4 +123,69 @@ void te::edit::RemoveVertex(std::vector<te::gm::LineString*>& lines, const Verte
   *currentLine = *newLine;
 
   delete newLine;
+}
+
+void te::edit::AddVertex(std::vector<te::gm::LineString*>& lines, const double& x, const double& y, const te::gm::Envelope& env, int srid)
+{
+  VertexIndex index = FindSegment(lines, env, srid);
+  assert(index.isValid());
+
+  te::gm::LineString* currentLine = lines[index.m_line];
+
+  te::gm::LineString* newLine = new te::gm::LineString(currentLine->getNPoints() + 1,
+                                                       currentLine->getGeomTypeId(), currentLine->getSRID());
+
+  std::size_t pos = 0;
+  for(std::size_t i = 0; i < currentLine->getNPoints(); ++i)
+  {
+    newLine->setPoint(pos, currentLine->getX(i), currentLine->getY(i));
+    ++pos;
+
+    if(i == index.m_pos)
+    {
+      newLine->setPoint(pos, x, y);
+      ++pos;
+    }
+  }
+
+  // Copy the new line
+  *currentLine = *newLine;
+
+  delete newLine;
+}
+
+te::edit::VertexIndex te::edit::FindSegment(std::vector<te::gm::LineString*>& lines, const te::gm::Envelope& env, int srid)
+{
+  VertexIndex index;
+  index.makeInvalid();
+
+  bool found = false;
+
+  std::auto_ptr<te::gm::Geometry> geometryFromEnvelope(te::gm::GetGeomFromEnvelope(&env, srid));
+
+  for(std::size_t i = 0; i < lines.size(); ++i) // for each line
+  {
+    te::gm::LineString* line = lines[i];
+
+    for(std::size_t j = 0; j < line->getNPoints() - 1; ++j) // for each vertex
+    {
+      // Build the segment
+      std::auto_ptr<te::gm::LineString> segment(new te::gm::LineString(2, line->getGeomTypeId(), line->getSRID()));
+      segment->setPoint(0, line->getX(j), line->getY(j));
+      segment->setPoint(1, line->getX(j + 1), line->getY(j + 1));
+
+      if(geometryFromEnvelope->intersects(segment.get()))
+      {
+        index.m_line = i;
+        index.m_pos = j;
+        found = true;
+        break;
+      }
+    }
+
+    if(found)
+      break;
+  }
+
+  return index;
 }

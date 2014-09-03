@@ -51,7 +51,7 @@
 #include <memory>
 #include <string>
 
-te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const QCursor& cursor, const te::map::AbstractLayerPtr& layer, QObject* parent)
+te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
   : AbstractTool(display, parent),
     m_layer(layer),
     m_geom(0),
@@ -59,12 +59,12 @@ te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const QCu
 {
   assert(m_layer.get());
 
-  setCursor(cursor);
-
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
 
   m_currentVertexIndex.makeInvalid();
+
+  updateCursor();
 }
 
 te::edit::VertexTool::~VertexTool()
@@ -74,25 +74,25 @@ te::edit::VertexTool::~VertexTool()
 
 bool te::edit::VertexTool::mousePressEvent(QMouseEvent* e)
 {
+  Qt::KeyboardModifiers keys = e->modifiers();
+
   if(e->button() == Qt::LeftButton && m_currentStage == VERTEX_FOUND)
   {
-    Qt::KeyboardModifiers keys = e->modifiers();
-
     // Moving...
     if(keys == Qt::NoModifier)
     {
-      m_currentStage = VERTEX_MOVING;
+      setStage(VERTEX_MOVING);
       return true;
     }
 
     // Removing...
-    if(keys & Qt::ControlModifier || keys & Qt::ShiftModifier)
+    if(keys == Qt::ShiftModifier)
     {
       RemoveVertex(m_lines, m_currentVertexIndex);
 
       m_currentVertexIndex.makeInvalid();
 
-      m_currentStage = VERTEX_SEARCH;
+      setStage(VERTEX_SEARCH);
 
       updateRTree();
 
@@ -102,7 +102,12 @@ bool te::edit::VertexTool::mousePressEvent(QMouseEvent* e)
     }
   }
 
-  m_currentStage = GEOMETRY_SELECTION;
+  // This operation will be handled by mouse double click
+  if(m_currentStage == VERTEX_READY_TO_ADD)
+    return false;
+
+  // Else...
+  setStage(GEOMETRY_SELECTION);
 
   return false;
 }
@@ -126,7 +131,7 @@ bool te::edit::VertexTool::mouseMoveEvent(QMouseEvent* e)
 
       if(!report.empty()) // Vertex found!
       {
-        m_currentStage = VERTEX_FOUND;
+        setStage(VERTEX_FOUND);
 
         m_currentVertexIndex = report[0];
 
@@ -148,7 +153,7 @@ bool te::edit::VertexTool::mouseMoveEvent(QMouseEvent* e)
           borderPoint.reset(new te::gm::Point(env.getCenter().x, env.getCenter().y));
       }
 
-      borderPoint.get() != 0 ? m_currentStage = VERTEX_READY_TO_ADD : m_currentStage = VERTEX_SEARCH;
+      borderPoint.get() != 0 ? setStage(VERTEX_READY_TO_ADD) : setStage(VERTEX_SEARCH);
 
       drawVertexes(borderPoint.get());
 
@@ -186,7 +191,7 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
       pickGeometry(m_layer, getPosition(e));
 
       if(m_geom)
-        m_currentStage = VERTEX_SEARCH;
+        setStage(VERTEX_SEARCH);
 
       return true;
     }
@@ -194,7 +199,8 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
     case VERTEX_MOVING:
     {
       updateRTree();
-      m_currentStage = VERTEX_SEARCH;
+
+      setStage(VERTEX_SEARCH);
     }
 
     default:
@@ -204,6 +210,30 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
 
 bool te::edit::VertexTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
+  if(e->button() == Qt::LeftButton && m_currentStage == VERTEX_READY_TO_ADD)
+  {
+    // Added point
+    QPointF point = getPosition(e);
+
+    // Added point extent
+    te::gm::Envelope e = buildEnvelope(point);
+
+    // Convert to world coordinates
+    point = m_display->transform(point);
+
+    AddVertex(m_lines, point.x(), point.y(), e, m_display->getSRID());
+
+    m_currentVertexIndex.makeInvalid();
+
+    setStage(VERTEX_SEARCH);
+
+    updateRTree();
+
+    drawVertexes();
+
+    return true;
+  }
+
   return false;
 }
 
@@ -212,7 +242,7 @@ void te::edit::VertexTool::reset()
   delete m_geom;
   m_geom = 0;
 
-  m_currentStage = GEOMETRY_SELECTION;
+  setStage(GEOMETRY_SELECTION);
 
   m_lines.clear();
 
@@ -322,7 +352,7 @@ void te::edit::VertexTool::drawVertexes(te::gm::Point* virtualVertex)
     case te::gm::MultiPolygonMType:
     case te::gm::MultiPolygonZMType:
     {
-      te::qt::widgets::Config2DrawPolygons(&canvas, QColor(0, 255, 0, 80), Qt::black, 1);
+      te::qt::widgets::Config2DrawPolygons(&canvas, QColor(0, 255, 0, 80), Qt::black, 2);
     }
     break;
 
@@ -359,7 +389,7 @@ void te::edit::VertexTool::drawVertexes(te::gm::Point* virtualVertex)
   // Draw the current vertex
   if(m_currentVertexIndex.isValid())
   {
-    te::qt::widgets::Config2DrawPoints(&canvas, "circle", 16, Qt::transparent, Qt::blue, 3);
+    te::qt::widgets::Config2DrawPoints(&canvas, "circle", 24, Qt::transparent, Qt::blue, 3);
 
     te::gm::LineString* line = m_lines[m_currentVertexIndex.m_line];
 
@@ -372,7 +402,7 @@ void te::edit::VertexTool::drawVertexes(te::gm::Point* virtualVertex)
   {
     assert(virtualVertex);
 
-    te::qt::widgets::Config2DrawPoints(&canvas, "square", 16, Qt::transparent, Qt::green, 3);
+    te::qt::widgets::Config2DrawPoints(&canvas, "circle", 24, Qt::transparent, Qt::darkGreen, 3);
     canvas.draw(virtualVertex);
   }
 
@@ -427,5 +457,33 @@ void te::edit::VertexTool::updateRTree()
 
       m_rtree.insert(e, index);
     }
+  }
+}
+
+void te::edit::VertexTool::setStage(StageType stage)
+{
+  m_currentStage = stage;
+  updateCursor();
+}
+
+void te::edit::VertexTool::updateCursor()
+{
+  switch(m_currentStage)
+  {
+    case GEOMETRY_SELECTION:
+    case VERTEX_SEARCH:
+       m_display->setCursor(Qt::ArrowCursor);
+    break;
+
+    case VERTEX_FOUND:
+      m_display->setCursor(Qt::OpenHandCursor);
+    break;
+
+    case VERTEX_MOVING:
+      m_display->setCursor(Qt::ClosedHandCursor);
+    break;
+
+    default:
+      m_display->setCursor(Qt::ArrowCursor);
   }
 }
