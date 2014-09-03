@@ -96,7 +96,13 @@ void te::edit::MoveVertex(std::vector<te::gm::LineString*>& lines, const VertexI
 
   assert(index.m_pos < l->getNPoints());
 
-  l->setPoint(index.m_pos, x, y);
+  if(IsSpecialRingVertex(l, index))
+  {
+    l->setPoint(0, x, y);
+    l->setPoint(l->getNPoints() - 1, x, y);
+  }
+  else
+    l->setPoint(index.m_pos, x, y);
 }
 
 void te::edit::RemoveVertex(std::vector<te::gm::LineString*>& lines, const VertexIndex& index)
@@ -106,18 +112,24 @@ void te::edit::RemoveVertex(std::vector<te::gm::LineString*>& lines, const Verte
 
   te::gm::LineString* currentLine = lines[index.m_line];
 
-  te::gm::LineString* newLine = new te::gm::LineString(currentLine->getNPoints() - 1,
-                                                       currentLine->getGeomTypeId(), currentLine->getSRID());
+  te::gm::LineString* newLine = new te::gm::LineString(currentLine->getNPoints() - 1, currentLine->getGeomTypeId(), currentLine->getSRID());
 
   std::size_t pos = 0;
   for(std::size_t i = 0; i < currentLine->getNPoints(); ++i)
   {
+    // Skip the vertex
     if(i == index.m_pos)
+      continue;
+
+    if(IsSpecialRingVertex(currentLine, index) && ((i == 0) || (i == currentLine->getNPoints() - 1)))
       continue;
 
     newLine->setPoint(pos, currentLine->getX(i), currentLine->getY(i));
     ++pos;
   }
+
+  if(currentLine->isClosed())
+    newLine->setPoint(newLine->size() - 1, newLine->getX(0), newLine->getY(0));
 
   // Copy the new line
   *currentLine = *newLine;
@@ -188,4 +200,9 @@ te::edit::VertexIndex te::edit::FindSegment(std::vector<te::gm::LineString*>& li
   }
 
   return index;
+}
+
+bool te::edit::IsSpecialRingVertex(te::gm::LineString* l, const VertexIndex& index)
+{
+  return l->isClosed() && ((index.m_pos == 0) || (index.m_pos == l->getNPoints() - 1));
 }

@@ -87,6 +87,8 @@ namespace te
 
     TEEDITEXPORT VertexIndex FindSegment(std::vector<te::gm::LineString*>& lines, const te::gm::Envelope& env, int srid);
 
+    TEEDITEXPORT bool IsSpecialRingVertex(te::gm::LineString* l, const VertexIndex& index);
+
   } // end namespace edit
 }   // end namespace te
 
