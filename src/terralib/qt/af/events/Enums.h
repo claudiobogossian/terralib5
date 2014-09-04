@@ -68,6 +68,7 @@ namespace te
           ZOOM_OUT_BUTTON_TOGGLED,
           PAN_BUTTON_TOGGLED,
           SELECTION_BUTTON_TOGGLED,
+          GET_MAPDISPLAY,
           CUSTOM = 1024
         };
 

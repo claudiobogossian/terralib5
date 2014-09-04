@@ -26,6 +26,8 @@
 #ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_MAPEVENTS_H
 #define __TERRALIB_QT_AF_EVENTS_INTERNAL_MAPEVENTS_H
 
+// TerraLib
+#include "../connectors/MapDisplay.h"
 #include "Event.h"
 #include "Enums.h"
 
@@ -84,6 +86,25 @@ namespace te
           }
 
           QColor m_color;
+        };
+
+        /*!
+          \struct GetMapDisplay
+
+          \brief This event can be used to retrieve the MapDisplat component.
+        */
+        struct GetMapDisplay : public Event
+        {
+          /*!
+            \brief Constructor.
+          */
+          GetMapDisplay()
+            : Event(GET_MAPDISPLAY),
+              m_display(0)
+          {
+          }
+
+          te::qt::af::MapDisplay* m_display;
         };
       }
     }

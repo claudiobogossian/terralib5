@@ -27,6 +27,7 @@
 #define TECOMMONEXPORT
 #define TEPLUGINEXPORT
 
+#ifdef SWIGJAVA
 SWIG_JAVABODY_METHODS(protected, protected, SWIGTYPE)
 %pragma(java) jniclassclassmodifiers = "class"
 
@@ -34,6 +35,8 @@ namespace std {
  %template(Str2StrMap) map<string, string>;
  %template(StrVector) vector<string>;
 }
+
+#endif // SWIGJAVA
 
 %{
 // TerraLib includes

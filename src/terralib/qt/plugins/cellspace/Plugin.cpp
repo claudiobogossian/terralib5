@@ -59,6 +59,7 @@ void te::qt::plugins::cellspace::Plugin::startup()
   pluginMenu->addMenu(m_cellSpaceMenu);
 
   m_cellSpaceMenu->setTitle(TE_TR("Cellular Spaces"));
+  m_cellSpaceMenu->setIcon(QIcon::fromTheme("cellspace"));
 
   // register actions
   registerActions();

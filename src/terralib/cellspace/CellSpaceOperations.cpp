@@ -359,7 +359,7 @@ void te::cellspace::CellularSpacesOperations::createRasteCellSpace(te::da::DataS
   double x, y;
   for(int lin = 0; lin < maxrows; ++lin)
   {
-    y = newEnv->m_lly+(lin*resY);
+    y = newEnv->m_lly+(maxrows-lin-1)*resY;
     for(int col = 0; col < maxcols; ++col)
     {
       x = newEnv->m_llx+(col*resX);
