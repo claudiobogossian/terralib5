@@ -67,12 +67,18 @@ namespace te
 
           protected slots:
 
-            virtual void onVertexToolActivated(bool checked);
+            void onVertexToolActivated(bool checked);
+
+            void onCreatePolygonToolActivated(bool checked);
+
+            void onCreateLineToolActivated(bool checked);
 
           protected:
 
             QToolBar* m_toolBar;
             QAction* m_vertexToolAction;
+            QAction* m_createPolygonToolAction;
+            QAction* m_createLineToolAction;
         };
 
       } // end namespace edit

@@ -24,8 +24,6 @@
 */
 
 // TerraLib
-#include "../../../qt/widgets/canvas/Canvas.h"
-#include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/Coord2D.h"
@@ -36,8 +34,11 @@
 #include "../../../geometry/Polygon.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../geometry/Utils.h"
+#include "../../../qt/widgets/canvas/Canvas.h"
+#include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
 #include "../../Utils.h"
+#include "../Utils.h"
 #include "VertexTool.h"
 
 // Qt
@@ -123,7 +124,7 @@ bool te::edit::VertexTool::mouseMoveEvent(QMouseEvent* e)
       if(m_rtree.isEmpty())
         return false;
 
-      te::gm::Envelope env = buildEnvelope(getPosition(e));
+      te::gm::Envelope env = buildEnvelope(GetPosition(e));
 
       // Search on rtree
       std::vector<VertexIndex> report;
@@ -162,7 +163,7 @@ bool te::edit::VertexTool::mouseMoveEvent(QMouseEvent* e)
 
     case VERTEX_MOVING:
     {
-      QPointF point = getPosition(e);
+      QPointF point = GetPosition(e);
       point = m_display->transform(point);
 
       MoveVertex(m_lines, m_currentVertexIndex, point.x(), point.y());
@@ -188,7 +189,7 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
       if(e->button() != Qt::LeftButton)
         return false;
 
-      pickGeometry(m_layer, getPosition(e));
+      pickGeometry(m_layer, GetPosition(e));
 
       if(m_geom)
         setStage(VERTEX_SEARCH);
@@ -213,7 +214,7 @@ bool te::edit::VertexTool::mouseDoubleClickEvent(QMouseEvent* e)
   if(e->button() == Qt::LeftButton && m_currentStage == VERTEX_READY_TO_ADD)
   {
     // Added point
-    QPointF point = getPosition(e);
+    QPointF point = GetPosition(e);
 
     // Added point extent
     te::gm::Envelope e = buildEnvelope(point);
@@ -341,50 +342,11 @@ void te::edit::VertexTool::drawVertexes(te::gm::Point* virtualVertex)
     return;
   }
 
-  switch(m_geom->getGeomTypeId())
-  {
-    case te::gm::PolygonType:
-    case te::gm::PolygonZType:
-    case te::gm::PolygonMType:
-    case te::gm::PolygonZMType:
-    case te::gm::MultiPolygonType:
-    case te::gm::MultiPolygonZType:
-    case te::gm::MultiPolygonMType:
-    case te::gm::MultiPolygonZMType:
-    {
-      te::qt::widgets::Config2DrawPolygons(&canvas, QColor(0, 255, 0, 80), Qt::black, 2);
-    }
-    break;
-
-    case te::gm::LineStringType:
-    case te::gm::LineStringZType:
-    case te::gm::LineStringMType:
-    case te::gm::LineStringZMType:
-    case te::gm::MultiLineStringType:
-    case te::gm::MultiLineStringZType:
-    case te::gm::MultiLineStringMType:
-    case te::gm::MultiLineStringZMType:
-    {
-      te::qt::widgets::Config2DrawLines(&canvas, QColor(0, 0, 0, 80), 5);
-    }
-    break;
-  }
-
-  canvas.draw(m_geom);
-
-  te::qt::widgets::Config2DrawPoints(&canvas, "circle", 8, Qt::red, Qt::red, 1);
+  DrawGeometry(&canvas, m_geom, m_display->getSRID());
 
   // Draw all vertexes
-  for(std::size_t i = 0; i < m_lines.size(); ++i)
-  {
-    te::gm::LineString* line = m_lines[i];
-
-    for(std::size_t j = 0; j < line->getNPoints(); ++j)
-    {
-      std::auto_ptr<te::gm::Point> point(line->getPointN(j));
-      canvas.draw(point.get());
-    }
-  }
+  te::qt::widgets::Config2DrawPoints(&canvas, "circle", 8, Qt::red, Qt::red, 1);
+  DrawVertexes(&canvas, m_lines, m_display->getSRID()); 
 
   // Draw the current vertex
   if(m_currentVertexIndex.isValid())
@@ -398,6 +360,7 @@ void te::edit::VertexTool::drawVertexes(te::gm::Point* virtualVertex)
     canvas.draw(point.get());
   }
 
+  // Draw the virtual vertex
   if(virtualVertex)
   {
     assert(virtualVertex);
@@ -412,15 +375,6 @@ void te::edit::VertexTool::drawVertexes(te::gm::Point* virtualVertex)
 void te::edit::VertexTool::onExtentChanged()
 {
   drawVertexes();
-}
-
-QPointF te::edit::VertexTool::getPosition(QMouseEvent* e)
-{
-#if QT_VERSION >= 0x050000
-  return e->localPos();
-#else
-  return e->posF();
-#endif
 }
 
 te::gm::Envelope te::edit::VertexTool::buildEnvelope(const QPointF& pos)

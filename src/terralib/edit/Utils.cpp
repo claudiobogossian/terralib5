@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/edit/core/Utils.cpp
+  \file terralib/edit/Utils.cpp
    
   \brief Utility functions for TerraLib Edit module.
 */
