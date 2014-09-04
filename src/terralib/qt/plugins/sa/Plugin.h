@@ -49,6 +49,7 @@ namespace te
         class KernelRatioAction;
         class ProximityMatrixCreatorAction;
         class SamplePointsGeneratorAction;
+        class SkaterAction;
         class SpatialStatisticsAction;
 
         class Plugin : public te::plugin::Plugin
@@ -89,6 +90,7 @@ namespace te
             te::qt::plugins::sa::KernelRatioAction* m_kernelRatio;                      //!< Kernel Ratio Process Action
             te::qt::plugins::sa::ProximityMatrixCreatorAction* m_proxMatrixCreator;     //!< Proximity Matrix Creator Process Action
             te::qt::plugins::sa::SamplePointsGeneratorAction* m_samplePointsGenerator;  //!< Sample points generator Process Action
+            te::qt::plugins::sa::SkaterAction* m_skater;                                //!< Skater Process Action
             te::qt::plugins::sa::SpatialStatisticsAction* m_spatialStatistics;          //!< Spatial Statistics Process Action
         };
 

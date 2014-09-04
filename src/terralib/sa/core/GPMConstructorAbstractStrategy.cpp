@@ -36,6 +36,7 @@
 #include "../../graph/graphs/DirectedGraph.h"
 #include "GeneralizedProximityMatrix.h"
 #include "GPMConstructorAbstractStrategy.h"
+#include "Utils.h"
 
 // STL Includes
 #include <cassert>
@@ -103,32 +104,11 @@ void te::sa::GPMConstructorAbstractStrategy::createVertexObjects()
 
     std::auto_ptr<te::gm::Geometry> g = dataSet->getGeometry(geomPos);
 
-    te::dt::AbstractData* ad = 0;
+    te::gm::Coord2D coord = te::sa::GetCentroidCoord(g.get());
 
-    if(g->getGeomTypeId() == te::gm::PointType)
-    {
-      g->setSRID(srid);
+    te::gm::Point* p = new te::gm::Point(coord.x, coord.y, g->getSRID());
 
-      ad = g->clone();
-    }
-    else if(g->getGeomTypeId() == te::gm::PolygonType)
-    {
-      te::gm::Point* p = ((te::gm::Polygon*)g.get())->getCentroid();
-      p->setSRID(srid);
-
-      ad = p;
-    }
-    else if(g->getGeomTypeId() == te::gm::MultiPolygonType)
-    {
-      te::gm::Polygon* poly = (te::gm::Polygon*)((te::gm::MultiPolygon*)g.get())->getGeometryN(0);
-
-      te::gm::Point* p = poly->getCentroid();
-      p->setSRID(srid);
-
-      ad = p;
-    }
-
-    v->addAttribute(0, ad);
+    v->addAttribute(0, p);
 
     m_gpm->getGraph()->add(v);
   }

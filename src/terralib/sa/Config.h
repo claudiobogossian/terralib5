@@ -97,6 +97,9 @@
 /*! Defines the primary key name pk_id used in Sample Points Generator operation*/
 #define TE_SA_SPG_ATTR_PK_NAME "pk_id"
 
+/*! Defines the attribute name gpm_weight used in Skater operation*/
+#define TE_SA_SKATER_ATTR_WEIGHT_NAME "gpm_weight"
+
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library
  */
