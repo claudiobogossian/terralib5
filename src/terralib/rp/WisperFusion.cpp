@@ -265,7 +265,7 @@ namespace te
       std::vector< double > lowResBandsSRFAreas;
       std::vector< double > lRBandXHRBandIntersectionAreas;
       double lRBandsXHRBandTotalExclusiveIntersectionSRFArea = 0.0; // The LRxLR bands overlap is taken into account.
-      double hiResBandSRFArea = 0.0;
+      const double hiResBandSRFArea = getSRFArea( highResSRFs );
       
       {
         unsigned int lowResBandIdx1 = 0;
@@ -274,129 +274,97 @@ namespace te
         
         // low resolution
         
+        std::map< double, double > lRBandsXHRBandTotalExclusiveIntersectionSRF;
+        
         lRBandXlRBandSRFIntersectionAreas.reset( nLowResBands, nLowResBands );
         lowResBandsSRFAreas.resize( nLowResBands, 0.0 );
-        lRInterceptedBandIndex.resize( nLowResBands, nLowResBands + 1 );
-        
-        std::map< double, double >::const_iterator lowResSRFsIt;
-        std::map< double, double >::const_iterator lowResSRFsItEnd;
-        double sRFFrquencyMean = 0;
-        std::multimap< double, unsigned int > sRMean2BandIdxMap;
-        
+        lRBandXHRBandIntersectionAreas.resize( nLowResBands, 0.0 );
         for( lowResBandIdx1 = 0 ; lowResBandIdx1 < nLowResBands ; ++lowResBandIdx1 )
         {
-          for( lowResBandIdx2 = 0 ; lowResBandIdx2 < nLowResBands ; ++lowResBandIdx2 )
+          for( lowResBandIdx2 = lowResBandIdx1 ; lowResBandIdx2 < nLowResBands ; 
+            ++lowResBandIdx2 )
           {
-            lRBandXlRBandSRFIntersectionAreas[ lowResBandIdx1 ][ lowResBandIdx2 ] = 0.0;
+            if( lowResBandIdx1 != lowResBandIdx2 )
+            {
+              std::map< double, double > lRXLRIntersectionSRF;
+              getIntersectionSRF( lowResSRFs[ lowResBandIdx1 ], 
+                lowResSRFs[ lowResBandIdx2 ], lRXLRIntersectionSRF );
+              
+              lRBandXlRBandSRFIntersectionAreas[ lowResBandIdx1 ][ lowResBandIdx2 ] = 
+                getSRFArea( lRXLRIntersectionSRF );
+              lRBandXlRBandSRFIntersectionAreas[ lowResBandIdx2 ][ lowResBandIdx1 ] =
+                lRBandXlRBandSRFIntersectionAreas[ lowResBandIdx1 ][ lowResBandIdx2 ];
+            }
+            else
+            {
+              lRBandXlRBandSRFIntersectionAreas[ lowResBandIdx1 ][ lowResBandIdx2 ] = 0.0;
+            }
           }
-        }
+          
+          lowResBandsSRFAreas[ lowResBandIdx1 ] = getSRFArea( lowResSRFs[ lowResBandIdx1 ] );
+          
+          std::map< double, double > lRXHRIntersectionSRF;
+          getIntersectionSRF( lowResSRFs[ lowResBandIdx1 ], highResSRFs, lRXHRIntersectionSRF );
+          
+          lRBandXHRBandIntersectionAreas[ lowResBandIdx1 ] = getSRFArea( lRXHRIntersectionSRF );
+          
+          std::map< double, double > auxUnionSRF;
+          getUnionSRF( lRXHRIntersectionSRF, lRBandsXHRBandTotalExclusiveIntersectionSRF, auxUnionSRF );
+          lRBandsXHRBandTotalExclusiveIntersectionSRF = auxUnionSRF;
+        }        
         
+        lRBandsXHRBandTotalExclusiveIntersectionSRFArea = getSRFArea( 
+          lRBandsXHRBandTotalExclusiveIntersectionSRF );
+        
+        std::multimap< double, unsigned int > centralFrequency2BandIdxMap;
         for( lowResBandIdx1 = 0 ; lowResBandIdx1 < nLowResBands ; ++lowResBandIdx1 )
         {
-          lowResSRFsIt = lowResSRFs[ lowResBandIdx1 ].begin();
-          lowResSRFsItEnd = lowResSRFs[ lowResBandIdx1 ].end();
-          sRFFrquencyMean = 0.0;
+          std::map< double, double >::const_iterator lowResSRFsIt = 
+            lowResSRFs[ lowResBandIdx1 ].begin();
+          std::map< double, double >::const_iterator lowResSRFsItEnd = 
+            lowResSRFs[ lowResBandIdx1 ].end();
+          double highestResponse = -1.0 * std::numeric_limits< double >::max();
+          double highestResponseFrequency = 0;
           
           while( lowResSRFsIt != lowResSRFsItEnd )
           {
-            for( lowResBandIdx2 = 0 ; lowResBandIdx2 < nLowResBands ; ++lowResBandIdx2 )
+            if( highestResponse < lowResSRFsIt->second )
             {
-              if( lowResBandIdx1 != lowResBandIdx2 )
-              {
-                lRBandXlRBandSRFIntersectionAreas[ lowResBandIdx1 ][ lowResBandIdx2 ] +=
-                  std::min( 
-                      lowResSRFsIt->second
-                      , 
-                      interpolateSRF( lowResSRFs[ lowResBandIdx2 ], lowResSRFsIt->first ) 
-                  );
-                
-                lRBandXlRBandSRFIntersectionAreas[ lowResBandIdx2 ][ lowResBandIdx1 ] =
-                  lRBandXlRBandSRFIntersectionAreas[ lowResBandIdx1 ][ lowResBandIdx2 ];
-              }
+              highestResponse = lowResSRFsIt->second;
+              highestResponseFrequency = lowResSRFsIt->first;
             }
-            
-            lowResBandsSRFAreas[ lowResBandIdx1 ] += lowResSRFsIt->second;
-            
-            sRFFrquencyMean += ( lowResSRFsIt->first * lowResSRFsIt->second );
             
             ++lowResSRFsIt;
           }
           
-          sRFFrquencyMean /= lowResBandsSRFAreas[ lowResBandIdx1 ];
-          
-          sRMean2BandIdxMap.insert( std::pair< double, unsigned int>( sRFFrquencyMean, lowResBandIdx1 ) );
+          centralFrequency2BandIdxMap.insert( std::pair< double, unsigned int>( 
+            highestResponseFrequency, lowResBandIdx1 ) );
         }
         
-        std::map< double, unsigned int >::iterator sRMean2BandIdxMapIt =
-          sRMean2BandIdxMap.begin();
-        std::map< double, unsigned int >::iterator sRMean2BandIdxMapItPrev;
-        std::map< double, unsigned int >::iterator sRMean2BandIdxMapItEnd =
-          sRMean2BandIdxMap.end();          
-          
-        while( sRMean2BandIdxMapIt != sRMean2BandIdxMapItEnd )
+        lRInterceptedBandIndex.resize( nLowResBands, nLowResBands + 1 );
+        std::map< double, unsigned int >::iterator centralFrequency2BandIdxMapIt =
+          centralFrequency2BandIdxMap.begin();
+        std::map< double, unsigned int >::iterator centralFrequency2BandIdxMapItPrev;
+        std::map< double, unsigned int >::iterator centralFrequency2BandIdxMapItEnd =
+          centralFrequency2BandIdxMap.end();          
+        while( centralFrequency2BandIdxMapIt != centralFrequency2BandIdxMapItEnd )
         {
-          if( sRMean2BandIdxMapIt == sRMean2BandIdxMap.begin() )
+          if( centralFrequency2BandIdxMapIt == centralFrequency2BandIdxMap.begin() )
           {
-            lRInterceptedBandIndex[ sRMean2BandIdxMapIt->second ] = 
-              sRMean2BandIdxMapIt->second;
-            sRMean2BandIdxMapItPrev = sRMean2BandIdxMapIt;
+            lRInterceptedBandIndex[ centralFrequency2BandIdxMapIt->second ] = 
+              centralFrequency2BandIdxMapIt->second;
+            centralFrequency2BandIdxMapItPrev = centralFrequency2BandIdxMapIt;
           }
           else
           {
-            lRInterceptedBandIndex[ sRMean2BandIdxMapIt->second ] =
-              sRMean2BandIdxMapItPrev->second;
+            lRInterceptedBandIndex[ centralFrequency2BandIdxMapIt->second ] =
+              centralFrequency2BandIdxMapItPrev->second;
             
-            ++sRMean2BandIdxMapItPrev;
+            ++centralFrequency2BandIdxMapItPrev;
           }
             
-          ++sRMean2BandIdxMapIt;
+          ++centralFrequency2BandIdxMapIt;
         }
-        
-        // high resolution
-        
-        lRBandXHRBandIntersectionAreas.resize( nLowResBands, 0.0 );
-        
-        for( lowResBandIdx1 = 0 ; lowResBandIdx1 < nLowResBands ; ++lowResBandIdx1 )
-        {        
-          lowResSRFsIt = highResSRFs.begin();
-          lowResSRFsItEnd = highResSRFs.end();          
-          
-          while( lowResSRFsIt != lowResSRFsItEnd )
-          {
-            lRBandXHRBandIntersectionAreas[ lowResBandIdx1 ] += std::min( lowResSRFsIt->second,  
-              interpolateSRF( lowResSRFs[ lowResBandIdx1 ], lowResSRFsIt->first ) );
-              
-            ++lowResSRFsIt;
-          }
-          
-          TERP_TRUE_OR_RETURN_FALSE( lRBandXHRBandIntersectionAreas[ lowResBandIdx1 ] > 0.0,
-            "One of the low resolution bands does not have intersection with the high resolution band" )
-        }
-        
-        hiResBandSRFArea = 0.0;
-        lRBandsXHRBandTotalExclusiveIntersectionSRFArea = 0.0;
-        
-        lowResSRFsIt = highResSRFs.begin();
-        lowResSRFsItEnd = highResSRFs.end(); 
-        
-        double maxLRValue = 0;
-        
-        while( lowResSRFsIt != lowResSRFsItEnd )
-        {
-          hiResBandSRFArea += lowResSRFsIt->second;            
-          
-          maxLRValue = -1.0 * std::numeric_limits< double >::max();
-          for( lowResBandIdx1 = 0 ; lowResBandIdx1 < nLowResBands ; ++lowResBandIdx1 )
-          {           
-            maxLRValue = std::max( maxLRValue, interpolateSRF( lowResSRFs[ 
-              lowResBandIdx1 ], lowResSRFsIt->first ) );
-          }
-          
-          lRBandsXHRBandTotalExclusiveIntersectionSRFArea += std::min( lowResSRFsIt->second,
-            maxLRValue );
-          
-          ++lowResSRFsIt;
-        }        
       }       
      
       // The wavelet decomposition levels
@@ -815,6 +783,78 @@ namespace te
         return it->second;
       }
     }
+    
+    double WisperFusion::getSRFArea( const std::map< double, double >& sRFs ) const
+    {
+      double returnValue = 0.0;
+      
+      std::map< double, double >::const_iterator it = sRFs.begin();
+      std::map< double, double >::const_iterator itPrev;
+      const std::map< double, double >::const_iterator itEnd = sRFs.end();      
+      
+      while( it != itEnd )
+      {
+        if( it == sRFs.begin() )
+        {
+          itPrev = it;
+        }
+        else
+        {
+          returnValue += std::abs( it->second - itPrev->second ) * 
+            ( it->first - itPrev->first ) / 2.0;
+          returnValue += ( it->first - itPrev->first ) *
+            std::min( it->second, itPrev->second );
+          
+          ++itPrev;
+        }
+        
+        ++it;
+      }
+      
+      return returnValue;
+    }
+    
+    void WisperFusion::getIntersectionSRF( const std::map< double, double >& sRF1, 
+      const std::map< double, double >& sRF2,
+      std::map< double, double >& intersectionSRF ) const
+    {
+      getUnionSRF( sRF1, sRF2, intersectionSRF );
+      
+      std::map< double, double >::const_iterator it = intersectionSRF.begin();
+      const std::map< double, double >::const_iterator itEnd = intersectionSRF.end();
+      
+      while( it != itEnd )
+      {
+        intersectionSRF[ it->first ] =
+          std::min(
+            interpolateSRF( sRF1, it->first ),
+            interpolateSRF( sRF2, it->first )
+          );
+          
+        ++it;
+      }
+    }
+    
+    void WisperFusion::getUnionSRF( const std::map< double, double >& sRF1, 
+      const std::map< double, double >& sRF2,
+      std::map< double, double >& unionSRF ) const
+    {
+      unionSRF = sRF2;
+      
+      std::map< double, double >::const_iterator it1 = sRF1.begin();
+      const std::map< double, double >::const_iterator it1End = sRF1.end();
+      
+      while( it1 != it1End )
+      {
+        unionSRF[ it1->first ] = 
+          std::max( 
+            interpolateSRF( unionSRF, it1->first ),
+            it1->second
+          );
+          
+        ++it1;
+      }
+    }    
     
   }
 }   // end namespace te

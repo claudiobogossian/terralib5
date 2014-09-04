@@ -32,6 +32,9 @@ namespace te
 {
   namespace rp
   {
+    /*!
+      \brief Namespace related to Spectral Response Functions.
+    */    
     namespace srf
     {
       static const double CBERS2B_BAND1_SRF[][2] = 
