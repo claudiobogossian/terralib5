@@ -24,8 +24,7 @@
 */
 
 // Terralib
-#include "../dataaccess/dataset/PrimaryKey.h"
-#include "../dataaccess/utils/Utils.h"
+#include "../dataaccess.h"
 #include "../datatype/SimpleProperty.h"
 #include "../datatype/StringProperty.h"
 #include "../geometry/Envelope.h"
@@ -53,9 +52,12 @@ te::cellspace::CellularSpacesOperations::~CellularSpacesOperations()
 {
 }
 
-void te::cellspace::CellularSpacesOperations::createCellSpace(const std::string& name,
+void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSourceInfoPtr outputSource,
+                                                              const std::string& name,
                                                               te::map::AbstractLayerPtr layerBase,
-                                                              double resX, double resY, bool useMask,
+                                                              double resX,
+                                                              double resY,
+                                                              bool useMask,
                                                               CellSpaceType type)
 {
   te::gm::Envelope box = layerBase->getExtent();
@@ -63,6 +65,12 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(const std::string&
   te::gm::Envelope newEnv = te::gm::AdjustToCut(box, resX, resY);
 
   int srid = layerBase->getSRID();
+
+  if(type == CELLSPACE_RASTER)
+  {
+    createRasteCellSpace(outputSource, name, layerBase, resX, resY, useMask);
+    return;
+  }
 
   int maxcols, maxrows;
   maxcols = te::rst::Round((newEnv.m_urx-newEnv.m_llx)/resX);
@@ -91,6 +99,7 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(const std::string&
     for(int col = 0; col < maxcols; ++col)
     {
       x = newEnv.m_llx+(col*resX);
+
       te::gm::Envelope* env = new te::gm::Envelope(x, y, x+resX, y+resY);
 
       std::auto_ptr<te::gm::Geometry> geom;
@@ -136,11 +145,24 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(const std::string&
       }
     }
   }
+
+  save(outputSource);
 }
 
-void te::cellspace::CellularSpacesOperations::createCellSpace(const std::string& name, double resX, double resY, 
-                                                              te::gm::Envelope& env, int srid, CellSpaceType type)
+void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSourceInfoPtr outputSource,
+                                                              const std::string& name,
+                                                              double resX,
+                                                              double resY,
+                                                              te::gm::Envelope& env,
+                                                              int srid,
+                                                              CellSpaceType type)
 {
+  if(type == CELLSPACE_RASTER)
+  {
+    createRasteCellSpace(outputSource, name, resX, resY, env, srid);
+    return;
+  }
+
   te::gm::Envelope newEnv = te::gm::AdjustToCut(env, resX, resY);
 
   int maxcols, maxrows;
@@ -178,6 +200,8 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(const std::string&
       addCell(ds, col, lin, geom.release());
     }
   }
+
+  save(outputSource);
 }
 
 void te::cellspace::CellularSpacesOperations::addCell(te::mem::DataSet* ds, int col, int row, te::gm::Geometry* geom)
@@ -228,7 +252,7 @@ te::sam::rtree::Index<size_t, 8>* te::cellspace::CellularSpacesOperations::getRt
   return rtree;
 }
 
-te::rst::Raster* te::cellspace::CellularSpacesOperations::getRaster()
+std::auto_ptr<te::rst::Raster> te::cellspace::CellularSpacesOperations::getRaster()
 {
   return m_outputRaster;
 }
@@ -259,4 +283,151 @@ te::da::DataSetType* te::cellspace::CellularSpacesOperations::createCellularData
   pk->setProperties(pkProp);
 
   return dst;
+}
+
+void te::cellspace::CellularSpacesOperations::createRasteCellSpace(te::da::DataSourceInfoPtr outputSource,
+                                                                   const std::string& name,
+                                                                   double resX,
+                                                                   double resY,
+                                                                   te::gm::Envelope& env,
+                                                                   int srid)
+{
+
+  te::gm::Envelope* newEnv = new te::gm::Envelope(te::gm::AdjustToCut(env, resX, resY));
+
+  int maxcols, maxrows;
+  maxcols = te::rst::Round((newEnv->m_urx-newEnv->m_llx)/resX);
+  maxrows = te::rst::Round((newEnv->m_ury-newEnv->m_lly)/resY);
+
+  te::rst::Grid* grid = new te::rst::Grid(maxcols, maxrows, resX, resY, newEnv, srid);
+
+  std::vector<te::rst::BandProperty*> bprops;
+  bprops.push_back(new te::rst::BandProperty(0, te::dt::INT32_TYPE));
+
+  m_outputRaster.reset(te::rst::RasterFactory::make(outputSource->getAccessDriver(), grid, bprops, outputSource->getConnInfo()));
+
+  double x, y;
+  for(int lin = 0; lin < maxrows; ++lin)
+  {
+    y = newEnv->m_lly+(lin*resY);
+    for(int col = 0; col < maxcols; ++col)
+    {
+      x = newEnv->m_llx+(col*resX);
+
+      m_outputRaster->setValue(col, lin, 1, 0);
+
+    }
+  }
+}
+
+void te::cellspace::CellularSpacesOperations::createRasteCellSpace(te::da::DataSourceInfoPtr outputSource,
+                                                                   const std::string& name,
+                                                                   te::map::AbstractLayerPtr layerBase,
+                                                                   double resX,
+                                                                   double resY,
+                                                                   bool useMask)
+{
+  te::gm::Envelope env = layerBase->getExtent();
+
+  te::gm::Envelope* newEnv = new te::gm::Envelope(te::gm::AdjustToCut(env, resX, resY));
+
+  int srid = layerBase->getSRID();
+
+  int maxcols, maxrows;
+  maxcols = te::rst::Round((newEnv->m_urx-newEnv->m_llx)/resX);
+  maxrows = te::rst::Round((newEnv->m_ury-newEnv->m_lly)/resY);
+
+  std::auto_ptr<te::sam::rtree::Index<size_t, 8> > rtree;
+
+  if(useMask)
+  {
+    rtree.reset(getRtree(layerBase));
+  }
+
+  te::rst::Grid* grid = new te::rst::Grid(maxcols, maxrows, resX, resY, newEnv, srid);
+
+  std::vector<te::rst::BandProperty*> bprops;
+  bprops.push_back(new te::rst::BandProperty(0, te::dt::INT32_TYPE));
+
+  m_outputRaster.reset(te::rst::RasterFactory::make(outputSource->getAccessDriver(), grid, bprops, outputSource->getConnInfo()));
+
+  std::auto_ptr<te::da::DataSetType> refDst = layerBase->getSchema();
+  std::auto_ptr<te::da::DataSet> refDs = layerBase->getData();
+
+  std::size_t geomPos = te::da::GetFirstSpatialPropertyPos(refDs.get());
+
+  double x, y;
+  for(int lin = 0; lin < maxrows; ++lin)
+  {
+    y = newEnv->m_lly+(maxrows-lin-1)*resY;
+    for(int col = 0; col < maxcols; ++col)
+    {
+      x = newEnv->m_llx+(col*resX);
+
+      if(useMask)
+      {
+        std::auto_ptr<te::gm::Envelope> auxEnv(new te::gm::Envelope(x, y, x+resX, y+resY));
+
+        std::vector<size_t> report;
+        rtree->search(*auxEnv, report);
+
+        if(!report.empty())
+        {
+          for(std::size_t i = 0; i < report.size(); ++i)
+          {
+            refDs->move(report[i]);
+
+            std::auto_ptr<te::gm::Geometry> g = refDs->getGeometry(geomPos);
+            g->setSRID(srid);
+
+            std::auto_ptr<te::gm::Geometry> auxGeom(te::gm::GetGeomFromEnvelope(auxEnv.get(), srid));
+
+            if(auxGeom->intersects(g.get()))
+            {
+              m_outputRaster->setValue(col, lin, 1, 0);
+              break;
+            }
+            else
+            {
+              m_outputRaster->setValue(col, lin, 0, 0);
+            }
+
+          }
+        }
+      }
+      else
+      {
+        m_outputRaster->setValue(col, lin, 1, 0);
+      }
+
+    }
+  }
+}
+
+void te::cellspace::CellularSpacesOperations::save(te::da::DataSourceInfoPtr sourceInfo)
+{
+  std::auto_ptr<te::da::DataSource> source = te::da::DataSourceFactory::make(sourceInfo->getAccessDriver());
+  source->setConnectionInfo(sourceInfo->getConnInfo());
+
+  source->open();
+
+  std::auto_ptr<te::da::DataSourceTransactor> t = source->getTransactor();
+
+  try
+  {
+    t->begin();
+
+    std::map<std::string, std::string> op;
+
+    t->createDataSet(m_outputDataSetType, op);
+
+    t->add(m_outputDataSetType->getName(), m_outputDataSet, op);
+
+    t->commit();
+  }
+  catch(te::common::Exception& e)
+  {
+    t->rollBack();
+    throw te::common::Exception(e);
+  }
 }

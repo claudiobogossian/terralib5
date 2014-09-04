@@ -28,8 +28,6 @@
 // Qt 
 #include <QtCore/QEventLoop>
 #include <QtCore/QObject>
-//#include <QtCore/QThread>
-#include <QtCore/QTimer>
 
 // STL 
 #include <memory>
@@ -73,20 +71,8 @@ inline void MultiImager::refresh()
   m_display->refresh();
 
   QEventLoop q;
-  QTimer tT;
 
-  tT.setSingleShot(true);
-
-  connect(&tT, SIGNAL(timeout()), &q, SLOT(quit()));
   connect(m_display.get(), SIGNAL(drawLayersFinished(const QMap<QString, QString>&)), &q, SLOT(quit()));
 
-  tT.start(300000);
   q.exec();
-
-  while (true)
-    if(tT.isActive())
-    {
-      tT.stop();
-      return;
-    }
  }

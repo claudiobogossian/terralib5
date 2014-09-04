@@ -40,6 +40,9 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../../qt/af/Utils.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../../qt/widgets/Utils.h"
+#include "../../statistics/core/Utils.h"
 #include "../Config.h"
 #include "../Exception.h"
 #include "RasterToVectorDialog.h"
@@ -56,6 +59,8 @@
 // Boost
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 te::processing::RasterToVectorDialog::RasterToVectorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -64,6 +69,20 @@ te::processing::RasterToVectorDialog::RasterToVectorDialog(QWidget* parent, Qt::
 {
   // add controls
   m_ui->setupUi(this);
+
+  // add icons
+  //m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vector-raster-hint").pixmap(112,48));
+  m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
+
+  connect(m_ui->m_inRasterComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRasterComboBoxChanged(int)));
+  connect(m_ui->m_inVectorComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onVectorComboBoxChanged(int)));
+
+  connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
+  connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
+
+  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
+  connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
+
 }
 
 te::processing::RasterToVectorDialog::~RasterToVectorDialog()
@@ -89,5 +108,335 @@ void te::processing::RasterToVectorDialog::setLayers(std::list<te::map::Abstract
 
 te::map::AbstractLayerPtr te::processing::RasterToVectorDialog::getLayer()
 {
-  return m_layer;
+  return m_outLayer;
+}
+
+std::vector<te::stat::StatisticalSummary> te::processing::RasterToVectorDialog::getSelectedStatistics()
+{
+  std::vector<te::stat::StatisticalSummary> vecStatistics;
+  
+  for(int i = 0; i < m_ui->m_statisticsListWidget->count(); ++i)
+  {
+    if(m_ui->m_statisticsListWidget->isItemSelected(m_ui->m_statisticsListWidget->item(i)))
+    {
+      std::string statOp = m_ui->m_statisticsListWidget->item(i)->text().toStdString();
+      switch(i)
+      {
+        case 0:
+          vecStatistics.push_back(te::stat::MIN_VALUE);
+          break;
+        case 1:
+          vecStatistics.push_back(te::stat::MAX_VALUE);
+          break;
+        case 2:
+          vecStatistics.push_back(te::stat::MEAN);
+          break;
+        case 3:
+          vecStatistics.push_back(te::stat::SUM);
+          break;
+        case 4:
+          vecStatistics.push_back(te::stat::COUNT);
+          break;
+        case 5:
+          vecStatistics.push_back(te::stat::VALID_COUNT);
+          break;
+        case 6:
+          vecStatistics.push_back(te::stat::STANDARD_DEVIATION);
+          break;
+        case 7:
+          vecStatistics.push_back(te::stat::VARIANCE);
+          break;
+        case 8:
+          vecStatistics.push_back(te::stat::SKEWNESS);
+          break;
+        case 9:
+          vecStatistics.push_back(te::stat::KURTOSIS);
+          break;
+        case 10:
+          vecStatistics.push_back(te::stat::AMPLITUDE);
+          break;
+        case 11:
+          vecStatistics.push_back(te::stat::MEDIAN);
+          break;
+        case 12:
+          vecStatistics.push_back(te::stat::VAR_COEFF);
+          break;
+        case 13:
+          vecStatistics.push_back(te::stat::MODE);
+          break;
+        default:
+          continue;
+      }
+    }
+  }
+  return vecStatistics;
+}
+
+void te::processing::RasterToVectorDialog::onRasterComboBoxChanged(int index)
+{
+  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+  
+  std::string layerID = m_ui->m_inRasterComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+
+  while(it != m_layers.end())
+  {
+    if(layerID == it->get()->getId().c_str())
+      m_rasterLayer = it->get();
+    
+    ++it;
+  }
+
+  m_ui->m_statisticsListWidget->clear();
+
+  m_ui->m_statisticsListWidget->addItem("Minimum value");
+  m_ui->m_statisticsListWidget->addItem("Maximum value");
+  m_ui->m_statisticsListWidget->addItem("Mean");
+  m_ui->m_statisticsListWidget->addItem("Sum of values");
+  m_ui->m_statisticsListWidget->addItem("Total number of values");
+  m_ui->m_statisticsListWidget->addItem("Total not null values");
+  m_ui->m_statisticsListWidget->addItem("Standard deviation");
+  m_ui->m_statisticsListWidget->addItem("Variance");
+  m_ui->m_statisticsListWidget->addItem("Skewness");
+  m_ui->m_statisticsListWidget->addItem("Kurtosis");
+  m_ui->m_statisticsListWidget->addItem("Amplitude");
+  m_ui->m_statisticsListWidget->addItem("Median");
+  m_ui->m_statisticsListWidget->addItem("Coefficient variation");
+  m_ui->m_statisticsListWidget->addItem("Mode");
+
+}
+
+void te::processing::RasterToVectorDialog::onVectorComboBoxChanged(int index)
+{
+  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+  
+  std::string layerID = m_ui->m_inVectorComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+
+  while(it != m_layers.end())
+  {
+    if(layerID == it->get()->getId().c_str())
+      m_vectorLayer = it->get();
+    
+    ++it;
+  }
+}
+
+void te::processing::RasterToVectorDialog::onTargetDatasourceToolButtonPressed()
+{
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_newLayerNameLineEdit->setEnabled(true);
+  te::qt::widgets::DataSourceSelectorDialog dlg(this);
+  dlg.exec();
+
+  std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
+
+  if(dsPtrList.size() <= 0)
+    return;
+
+  std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
+
+  m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
+
+  m_outputDatasource = *it;
+  
+  m_toFile = false;
+}
+
+void te::processing::RasterToVectorDialog::onTargetFileToolButtonPressed()
+{
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_repositoryLineEdit->clear();
+  
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
+                                                        QString(), tr("Shapefile (*.shp *.SHP);;"),0, QFileDialog::DontConfirmOverwrite);
+  
+  if (fileName.isEmpty())
+    return;
+  
+  boost::filesystem::path outfile(fileName.toStdString());
+  std::string aux = outfile.leaf().string();
+  m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
+  aux = outfile.string();
+  m_ui->m_repositoryLineEdit->setText(aux.c_str());
+  
+  m_toFile = true;
+  m_ui->m_newLayerNameLineEdit->setEnabled(false);
+}
+
+void te::processing::RasterToVectorDialog::onHelpPushButtonClicked()
+{
+  QMessageBox::information(this, "Help", "Under development");
+}
+
+void te::processing::RasterToVectorDialog::onOkPushButtonClicked()
+{
+  if(m_ui->m_inRasterComboBox->count() == 0)
+  {
+    QMessageBox::information(this, "Fill", "Select an input raster layer.");
+    return;
+  }
+
+  if(m_ui->m_inVectorComboBox->count() == 0)
+  {
+    QMessageBox::information(this, "Fill", "Select an input vector layer.");
+    return;
+  }
+
+
+  te::map::DataSetLayer* dsRasterLayer = dynamic_cast<te::map::DataSetLayer*>(m_rasterLayer.get());
+
+  if(!dsRasterLayer)
+  {
+    QMessageBox::information(this, "Fill", "Can not execute this operation on this type of layer.");
+    return;
+  }
+
+  te::map::DataSetLayer* dsVectorLayer = dynamic_cast<te::map::DataSetLayer*>(m_vectorLayer.get());
+
+  if(!dsVectorLayer)
+  {
+    QMessageBox::information(this, "Fill", "Can not execute this operation on this type of layer.");
+    return;
+  }
+  
+  te::da::DataSourcePtr inRasterDataSource = te::da::GetDataSource(dsRasterLayer->getDataSourceId(), true);
+  if (!inRasterDataSource.get())
+  {
+    QMessageBox::information(this, "Fill", "The selected raster data source can not be accessed.");
+    return;
+  }
+
+  te::da::DataSourcePtr inVectorDataSource = te::da::GetDataSource(dsVectorLayer->getDataSourceId(), true);
+  if (!inVectorDataSource.get())
+  {
+    QMessageBox::information(this, "Fill", "The selected vector data source can not be accessed.");
+    return;
+  }
+
+  std::vector<te::stat::StatisticalSummary> vecStatistics = getSelectedStatistics();
+  if(vecStatistics.empty())
+  {
+    QMessageBox::information(this, "Fill", "Select at least one statistic operation.");
+    return;
+  }
+
+  if(m_ui->m_repositoryLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, "Fill", "Define a repository for the result.");
+    return;
+  }
+       
+  if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, "Fill", "Define a name for the resulting layer.");
+    return;
+  }
+  
+  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+
+  try
+  {
+    bool res;
+
+    if(m_toFile)
+    {
+      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+      
+      if (boost::filesystem::exists(uri))
+      {
+        QMessageBox::information(this, "Fill", "Output file already exists. Remove it or select a new name and try again.");
+        return;
+      }
+
+      std::size_t idx = outputdataset.find(".");
+      if (idx != std::string::npos)
+        outputdataset=outputdataset.substr(0,idx);
+
+      std::map<std::string, std::string> dsinfo;
+      dsinfo["URI"] = uri.string();
+
+      te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
+      dsOGR->setConnectionInfo(dsinfo);
+      dsOGR->open();
+      if (dsOGR->dataSetExists(outputdataset))
+      {
+        QMessageBox::information(this, "Fill", "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.");
+        return;
+      }
+
+      this->setCursor(Qt::WaitCursor);
+
+      te::processing::RasterToVector* rst2vec = new te::processing::RasterToVector();
+      rst2vec->setInput(inRasterDataSource, 
+                        dsRasterLayer->getDataSetName(), 
+                        dsRasterLayer->getSchema(),
+                        inVectorDataSource, 
+                        dsVectorLayer->getDataSetName(),
+                        dsVectorLayer->getSchema());
+
+      rst2vec->setParams(vecStatistics);
+
+      rst2vec->setOutput(dsOGR, outputdataset);
+      
+      if (!rst2vec->paramsAreValid())
+        res = false;
+      else
+        res = rst2vec->run();
+
+      if (!res)
+      {
+        this->setCursor(Qt::ArrowCursor);
+        dsOGR->close();
+        QMessageBox::information(this, "Fill", "Error: could not generate the operation.");
+        reject();
+      }
+      dsOGR->close();
+
+      delete rst2vec;
+
+      // let's include the new datasource in the managers
+      boost::uuids::basic_random_generator<boost::mt19937> gen;
+      boost::uuids::uuid u = gen();
+      std::string id_ds = boost::uuids::to_string(u);
+      
+      te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
+      ds->setConnInfo(dsinfo);
+      ds->setTitle(uri.stem().string());
+      ds->setAccessDriver("OGR");
+      ds->setType("OGR");
+      ds->setDescription(uri.string());
+      ds->setId(id_ds);
+      
+      te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id_ds, "OGR", ds->getConnInfo());
+      newds->open();
+      te::da::DataSourceInfoManager::getInstance().add(ds);
+      m_outputDatasource = ds;
+    }
+    else
+    {
+
+    }
+
+    // creating a layer for the result
+    te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
+    
+    te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
+      
+    te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
+    m_outLayer = converter(dt);
+  }
+  catch(const std::exception& e)
+  {
+    this->setCursor(Qt::ArrowCursor);
+
+    QMessageBox::information(this, "Fill", e.what());
+    te::common::Logger::logDebug("fill", e.what());
+
+    return;
+  }
+
+}
+
+void te::processing::RasterToVectorDialog::onCancelPushButtonClicked()
+{
+  reject();
 }

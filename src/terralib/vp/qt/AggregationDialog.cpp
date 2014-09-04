@@ -581,7 +581,7 @@ void te::vp::AggregationDialog::onTargetFileToolButtonPressed()
   
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
                                                         QString(), tr("Shapefile (*.shp *.SHP);;"),0, QFileDialog::DontConfirmOverwrite);
-  
+
   if (fileName.isEmpty())
     return;
   
