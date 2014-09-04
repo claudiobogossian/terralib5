@@ -174,40 +174,7 @@ namespace te
         
         progressPtr->setMessage( "Fusing images" );
       }        
-      
-      // creating the ressampled input raster
-      
-      std::auto_ptr< te::rst::Raster > resampledLlowResRasterPtr;
-      
-      {
-        std::map< std::string, std::string > rinfo;
-        rinfo["MAXMEMPERCENTUSED"] = "30";  
-        
-        TERP_TRUE_OR_RETURN_FALSE( te::rp::RasterResample(
-          *m_inputParameters.m_lowResRasterPtr,
-          m_inputParameters.m_lowResRasterBands,
-          m_inputParameters.m_interpMethod,
-          0,
-          0,
-          m_inputParameters.m_lowResRasterPtr->getNumberOfRows(),
-          m_inputParameters.m_lowResRasterPtr->getNumberOfColumns(),
-          m_inputParameters.m_highResRasterPtr->getNumberOfRows(),
-          m_inputParameters.m_highResRasterPtr->getNumberOfColumns(),  
-          rinfo,
-          "EXPANSIBLE",
-          resampledLlowResRasterPtr ), 
-          "Low resolution raster resample error" );
-      }
-      
-//       TERP_TRUE_OR_THROW( te::rp::Copy2DiskRaster( *resampledLlowResRasterPtr,
-//         "resampledLlowResRaster.tif" ), "" );
 
-      if( m_inputParameters.m_enableProgress )
-      {
-        progressPtr->pulse();
-        if( ! progressPtr->isActive() ) return false;
-      }              
-      
       // defining the wavelet filter
       
       boost::numeric::ublas::matrix< double > waveletFilter;
@@ -302,11 +269,15 @@ namespace te
           }
           
           lowResBandsSRFAreas[ lowResBandIdx1 ] = getSRFArea( lowResSRFs[ lowResBandIdx1 ] );
+          TERP_TRUE_OR_RETURN_FALSE( lowResBandsSRFAreas[ lowResBandIdx1 ] > 0.0,
+            "One low resolution band SRF is invalid" );          
           
           std::map< double, double > lRXHRIntersectionSRF;
           getIntersectionSRF( lowResSRFs[ lowResBandIdx1 ], highResSRFs, lRXHRIntersectionSRF );
           
           lRBandXHRBandIntersectionAreas[ lowResBandIdx1 ] = getSRFArea( lRXHRIntersectionSRF );
+          TERP_TRUE_OR_RETURN_FALSE( lRBandXHRBandIntersectionAreas[ lowResBandIdx1 ] > 0.0,
+            "One low resolution band SRF does not intersects the high resolution band SRF" );
           
           std::map< double, double > auxUnionSRF;
           getUnionSRF( lRXHRIntersectionSRF, lRBandsXHRBandTotalExclusiveIntersectionSRF, auxUnionSRF );
@@ -411,7 +382,41 @@ namespace te
             )
           );  
       TERP_TRUE_OR_RETURN_FALSE( highResWaveletLevels > 0, 
-        "Minimal number of wavelet decompositions not reached" );     
+        "Minimal number of wavelet decompositions not reached" );   
+      
+      // creating the ressampled input raster
+      
+      std::auto_ptr< te::rst::Raster > resampledLlowResRasterPtr;
+      
+      {
+        std::map< std::string, std::string > rinfo;
+        rinfo["MAXMEMPERCENTUSED"] = "30";  
+        
+        TERP_TRUE_OR_RETURN_FALSE( te::rp::RasterResample(
+          *m_inputParameters.m_lowResRasterPtr,
+          m_inputParameters.m_lowResRasterBands,
+          m_inputParameters.m_interpMethod,
+          0,
+          0,
+          m_inputParameters.m_lowResRasterPtr->getNumberOfRows(),
+          m_inputParameters.m_lowResRasterPtr->getNumberOfColumns(),
+          m_inputParameters.m_highResRasterPtr->getNumberOfRows(),
+          m_inputParameters.m_highResRasterPtr->getNumberOfColumns(),  
+          rinfo,
+          "EXPANSIBLE",
+          resampledLlowResRasterPtr ), 
+          "Low resolution raster resample error" );
+      }
+      
+//       TERP_TRUE_OR_THROW( te::rp::Copy2DiskRaster( *resampledLlowResRasterPtr,
+//         "resampledLlowResRaster.tif" ), "" );
+
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }              
+            
         
       // creating the high resolution raster wavelets
         
@@ -753,26 +758,30 @@ namespace te
     double WisperFusion::interpolateSRF( const std::map< double, double >& sRFs, 
       const double& frequency ) const
     {
-      std::map< double, double >::const_iterator it = sRFs.find( frequency );
+      std::map< double, double >::const_iterator it2 = sRFs.find( frequency );
       
-      if( it == sRFs.end() )
+      if( it2 == sRFs.end() )
       {
-        it = sRFs.lower_bound( frequency );
-        std::map< double, double >::const_iterator it2 = sRFs.upper_bound( frequency );
+        it2 = sRFs.upper_bound( frequency );
         
-        if( ( it == sRFs.end() ) || ( it2 == sRFs.end() ) )
+        if( ( it2 == sRFs.begin() ) || ( it2 == sRFs.end() ) )
         {
           return 0.0;
         }
         else
         {
-          double dist2 = it2->second - frequency;
-          double dist1 = frequency - it->second;
+          std::map< double, double >::const_iterator it1 = it2;
+          --it1;
+          
+          double dist1 = frequency - it1->first;
+          assert( dist1 > 0.0 );          
+          double dist2 = it2->first - frequency;
+          assert( dist2 > 0.0 );
           
           return ( 
-                    ( it2->second * dist1 ) 
+                    ( it1->second * dist2 ) 
                     + 
-                    ( it->second * dist2 )
+                    ( it2->second * dist1 )
                  ) 
                  / 
                  ( dist1  + dist2 );
@@ -780,7 +789,7 @@ namespace te
       }
       else
       {
-        return it->second;
+        return it2->second;
       }
     }
     
