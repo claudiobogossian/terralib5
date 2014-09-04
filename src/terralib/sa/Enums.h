@@ -138,6 +138,18 @@ namespace te
       Exponential,
       Gaussian
     };
+
+    /*!
+      \enum SkaterAggregationType
+
+      \brief Skater aggregation types used to partition the spanning tree
+    */
+    enum SkaterAggregationType
+    {
+      Clusters,
+      Population,
+      Both
+    };
   }
 }
 
