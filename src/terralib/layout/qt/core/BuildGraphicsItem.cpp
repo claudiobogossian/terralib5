@@ -204,7 +204,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   return item;
 }
 
-QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::LayoutMode mode, const te::gm::Coord2D& coordinate, bool draw )
+QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* mode, const te::gm::Coord2D& coordinate, bool draw )
 {
   QGraphicsItem* item = 0;
 
@@ -213,67 +213,77 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::LayoutMode
   m_redraw = draw;
 
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+  EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
 
-  switch(mode)
+  if(mode == enumMode->getModeCreateMap())
   {
-  case TypeCreateMap:
     m_name = nameItem(m_mapItem, enumObj->getMapItem());
     item = createMap();
-    break;
-  case TypeCreateMapGrid:
+  }
+  else if(mode == enumMode->getModeCreateMapGrid())
+  {
     m_name = nameItem(m_mapGridItem, enumObj->getMapGridItem());
     item = createMapGrid();
-    break;
-  case TypeCreateText:
+  }
+  else if(mode == enumMode->getModeCreateText())
+  {
     m_name = nameItem(m_textItem, enumObj->getDefaultTextItem());
     item = createText();
-    break;
-  case TypeCreateImage:
+  }
+  else if(mode == enumMode->getModeCreateImage())
+  {
     m_name = nameItem(m_imageItem, enumObj->getImageItem());
     item = createImage();
-    break;
-  case TypeCreateRectangle:
+  }
+  else if(mode == enumMode->getModeCreateRectangle())
+  {
     m_name = nameItem(m_rectangleItem, enumObj->getRetangleItem());
     item = createRectangle();
-    break;
-  case TypeCreateLegend:
+  }
+  else if(mode == enumMode->getModeCreateLegend())
+  {
     m_name = nameItem(m_legendItem, enumObj->getLegendItem());
     item = createLegend();
-    break;
-  case TypeCreateScale:
+  }
+  else if(mode == enumMode->getModeCreateScale())
+  {
     m_name = nameItem(m_scaleItem, enumObj->getScaleItem());
     item = createScale();
-    break;
-  case TypeCreateItemGroup:
+  }
+  else if(mode == enumMode->getModeCreateItemGroup())
+  {
     m_name = nameItem(m_groupItem, enumObj->getItemGroup());
     item = createItemGroup();
-    break;
-  case TypeCreatePoint:
+  }
+  else if(mode == enumMode->getModeCreatePoint())
+  {
     m_name = nameItem(m_pointItem, enumObj->getPointItem());
     item = createPoint();
-    break;
-  case TypeCreateArrow:
+  }
+  else if(mode == enumMode->getModeCreateArrow())
+  {
     m_name = nameItem(m_arrowItem, enumObj->getArrowItem());
     item = createArrow();
-    break;
-  case TypeCreateEllipse:
+  }
+  else if(mode == enumMode->getModeCreateEllipse())
+  {
     m_name = nameItem(m_ellipseItem, enumObj->getEllipseItem());
     item = createEllipse();
-    break;
-  case TypeCreateTitle:
+  }
+  else if(mode == enumMode->getModeCreateTitle())
+  {
     m_name = nameItem(m_titleItem, enumObj->getTitleItem());
     item = createTitle();
-    break;
-  case TypeCreateTextGrid:
+  }
+  else if(mode == enumMode->getModeCreateTextGrid())
+  {
     m_name = nameItem(m_textGridItem, enumObj->getTextGridItem());
     item = createTextGrid();
-    break;
-  case TypeCreateMultiLineText:
+  }
+  else if(mode == enumMode->getModeCreateMultiLineText())
+  {
     m_name = nameItem(m_multiLineTextItem, enumObj->getMultiLineTextItem());
     item = createMultiLineText();
-    break;
-  default:
-    item = 0;
   }
 
   return item;

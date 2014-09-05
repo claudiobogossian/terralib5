@@ -34,7 +34,6 @@
 // TerraLib
 #include "../../core/property/Properties.h"
 #include "../../core/enum/AbstractType.h"
-#include "../../core/enum/EnumMode.h"
 #include "../../core/Config.h"
 
 // STL

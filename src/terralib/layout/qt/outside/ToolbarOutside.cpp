@@ -35,7 +35,7 @@
 #include "../../core/pattern/mvc/OutsideObserver.h"
 #include "../../core/pattern/mvc/OutsideController.h"
 #include "../../../geometry/Envelope.h"
-#include "../../core/enum/EnumMode.h"
+#include "../../core/enum/Enums.h"
 
 //STL
 #include <string>
@@ -88,6 +88,8 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionAlignCenterHorizontal("align_center_horizontal"),
   m_optionAlignCenterVertical("align_center_vertical"),
   m_optionRemoveObject("remove_item"),
+  m_optionUndo("undo"),
+  m_optionRedo("redo"),
   m_btnMap(0)
 {
 	te::gm::Envelope box = m_model->getBox();	
@@ -136,6 +138,10 @@ void te::layout::ToolbarOutside::createToolbar()
 {
   createArrowCursorButton();
   createRecomposeToolButton();
+  this->addSeparator();
+
+  createUndoToolButton();
+  createRedoToolButton();
   this->addSeparator();
 
   /*createLineIntersectionToolButton();
@@ -447,124 +453,154 @@ void te::layout::ToolbarOutside::createRemoveObjectToolButton()
   this->addWidget(btn);
 }
 
+void te::layout::ToolbarOutside::createUndoToolButton()
+{
+  QToolButton *btn = createToolButton("Undo Action", "Undo Action", "layout-undo");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onUndoClicked(bool)));
+
+  this->addWidget(btn);
+}
+
+void te::layout::ToolbarOutside::createRedoToolButton()
+{
+  QToolButton *btn = createToolButton("Redo Action", "Redo Action", "layout-redo");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onRedoClicked(bool)));
+
+  this->addWidget(btn);
+}
+
 void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
 {
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+
   if(action->objectName().compare(m_optionMapDefault.c_str()) == 0)
   {
-    changeAction(TypeCreateMap);
+    changeAction(type->getModeCreateMap());
   }
   else if(action->objectName().compare(m_optionMapGrid.c_str()) == 0)
   {
-    changeAction(TypeCreateMapGrid);
+    changeAction(type->getModeCreateMapGrid());
   }
   else if(action->objectName().compare(m_optionLegendDefault.c_str()) == 0)
   {
-    changeAction(TypeCreateLegend);
+    changeAction(type->getModeCreateLegend());
   }
   else if(action->objectName().compare(m_optionScale.c_str()) == 0)
   {
-    changeAction(TypeCreateScale);
+    changeAction(type->getModeCreateScale());
   }
 }
 
 void te::layout::ToolbarOutside::onMapToolsTriggered( QAction* action )
 {
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+
   if(action->objectName().compare(m_optionMapPan.c_str()) == 0)
   {
-    changeAction(TypeMapPan);
+    changeAction(type->getModeMapPan());
   }
   else if(action->objectName().compare(m_optionMapZoomIn.c_str()) == 0)
   {
-    changeAction(TypeMapZoomIn);
+    changeAction(type->getModeMapZoomIn());
   }
   else if(action->objectName().compare(m_optionMapZoomOut.c_str()) == 0)
   {
-    changeAction(TypeMapZoomOut);
+    changeAction(type->getModeMapZoomOut());
   }
   else if(action->objectName().compare(m_optionMapSystematicScale.c_str()) == 0)
   {
-    changeAction(TypeSystematicScale);
+    changeAction(type->getModeSystematicScale());
   }
   else if(action->objectName().compare(m_optionMapCreateTextGrid.c_str()) == 0)
   {
-    changeAction(TypeMapCreateTextGrid);
+    changeAction(type->getModeCreateTextGrid());
   }
   else if(action->objectName().compare(m_optionMapCreateMapText.c_str()) == 0)
   {
-    changeAction(TypeMapCreateTextMap);
+    changeAction(type->getModeMapCreateTextMap());
   }
 }
 
 void te::layout::ToolbarOutside::onGeometryTriggered( QAction* action )
 {
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+
   if(action->objectName().compare(m_optionRectangle.c_str()) == 0)
   {
-    changeAction(TypeCreateRectangle);
+    changeAction(type->getModeCreateRectangle());
   }
   else if(action->objectName().compare(m_optionArrow.c_str()) == 0)
   {
-    changeAction(TypeCreateArrow);
+    changeAction(type->getModeCreateArrow());
   }
   else if(action->objectName().compare(m_optionEllipse.c_str()) == 0)
   {
-    changeAction(TypeCreateEllipse);
+    changeAction(type->getModeCreateEllipse());
   }
   else if(action->objectName().compare(m_optionPoint.c_str()) == 0)
   {
-    changeAction(TypeCreatePoint);
+    changeAction(type->getModeCreatePoint());
   }
 }
 
 void te::layout::ToolbarOutside::onViewAreaTriggered( QAction* action )
 {
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+
   if(action->objectName().compare(m_optionViewPan.c_str()) == 0)
   {
-    changeAction(TypePan);
+    changeAction(type->getModePan());
   }
   else if(action->objectName().compare(m_optionViewZoomIn.c_str()) == 0)
   {
-    changeAction(TypeZoomIn);
+    changeAction(type->getModeZoomIn());
   }
   else if(action->objectName().compare(m_optionViewZoomOut.c_str()) == 0)
   {
-    changeAction(TypeZoomOut);
+    changeAction(type->getModeZoomOut());
   }
 }
 
 void te::layout::ToolbarOutside::onArrowCursorClicked(bool checked)
 {
-  changeAction(TypeArrowCursor);
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeArrowCursor());
 }
 
 void te::layout::ToolbarOutside::onItemToolsTriggered( QAction* action )
 {
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+
   if(action->objectName().compare(m_optionGroup.c_str()) == 0)
   {
-    changeAction(TypeGroup);
+    changeAction(type->getModeGroup());
   }
   else if(action->objectName().compare(m_optionUngroup.c_str()) == 0)
   {
-    changeAction(TypeUngroup);
+    changeAction(type->getModeUngroup());
   }
 }
 
 void te::layout::ToolbarOutside::onLineIntersectionMouse( bool checked )
 {
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
   bool result = false;
-  LayoutMode mouseMode = Context::getInstance().getLineIntersectionMouseMode();
+  EnumType* mouseMode = Context::getInstance().getLineIntersectionMouseMode();
 
   if(checked)
   {
-    if(TypeActiveLinesIntersectionMouse != mouseMode)
+    if(type->getModeActiveLinesIntersectionMouse() != mouseMode)
     {
-      Context::getInstance().setLineIntersectionMouseMode(TypeActiveLinesIntersectionMouse);
+      Context::getInstance().setLineIntersectionMouseMode(type->getModeActiveLinesIntersectionMouse());
     }
   }
   else
   {
-    if(TypeOffLinesIntersectionMouse != mouseMode)
+    if(type->getModeOffLinesIntersectionMouse() != mouseMode)
     {
-      Context::getInstance().setLineIntersectionMouseMode(TypeOffLinesIntersectionMouse);
+      Context::getInstance().setLineIntersectionMouseMode(type->getModeOffLinesIntersectionMouse() );
     }
   }
 
@@ -577,91 +613,115 @@ void te::layout::ToolbarOutside::onSceneZoomCurrentIndexChanged( int index )
   double zoomFactor = Context::getInstance().getZoomFactor();
   if(variant.toDouble() != zoomFactor)
   {
+    EnumModeType* type = Enums::getInstance().getEnumModeType();
     Context::getInstance().setZoomFactor(variant.toDouble());
     Context::getInstance().setOldZoomFactor(zoomFactor);
-    changeAction(TypeSceneZoom);
+    changeAction(type->getModeSceneZoom());
   }
 }
 
 void te::layout::ToolbarOutside::onBringToFrontClicked( bool checked )
 {
-  changeAction(TypeBringToFront);
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeBringToFront());
 }
 
 void te::layout::ToolbarOutside::onSendToBackClicked( bool checked )
 {
-  changeAction(TypeSendToBack);
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeSendToBack());
 }
 
 void te::layout::ToolbarOutside::onRecomposeClicked( bool checked )
 {
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
   m_comboSceneZoom->setCurrentIndex(1);
-  changeAction(TypeRecompose);
+  changeAction(type->getModeRecompose());
 }
 
 void te::layout::ToolbarOutside::onTextToolsTriggered( QAction* action )
 {
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
   if(action->objectName().compare(m_optionTextDefault.c_str()) == 0)
   {
-    changeAction(TypeCreateText);
+    changeAction(type->getModeCreateText());
   }
   else if(action->objectName().compare(m_optionMultiLineText.c_str()) == 0)
   {
-    changeAction(TypeCreateMultiLineText);
+    changeAction(type->getModeCreateMultiLineText());
   }
   else if(action->objectName().compare(m_optionStringGrid.c_str()) == 0)
   {
-    changeAction(TypeCreateTextGrid);
+    changeAction(type->getModeCreateTextGrid());
   }
   else if(action->objectName().compare(m_optionTitle.c_str()) == 0)
   {
-    changeAction(TypeCreateTitle);
+    changeAction(type->getModeCreateTitle());
   }
   else if(action->objectName().compare(m_optionImage.c_str()) == 0)
   {
-    changeAction(TypeCreateImage);
+    changeAction(type->getModeCreateImage());
   }
 }
 
 void te::layout::ToolbarOutside::onAlignLeftClicked( bool checked )
 {
-  changeAction(TypeAlignLeft);
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeAlignLeft());
 }
 
 void te::layout::ToolbarOutside::onAlignRightClicked( bool checked )
 {
-  changeAction(TypeAlignRight);
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeAlignRight());
 }
 
 void te::layout::ToolbarOutside::onAlignTopClicked( bool checked )
 {
-  changeAction(TypeAlignTop);
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeAlignTop());
 }
 
 void te::layout::ToolbarOutside::onAlignBottomClicked( bool checked )
 {
-  changeAction(TypeAlignBottom);
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeAlignBottom());
 }
 
 void te::layout::ToolbarOutside::onAlignCenterHorizontalClicked( bool checked )
 {
-  changeAction(TypeAlignCenterHorizontal);
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeAlignCenterHorizontal());
 }
 
 void te::layout::ToolbarOutside::onAlignCenterVerticalClicked( bool checked )
 {
-  changeAction(TypeAlignCenterVertical);
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeAlignCenterVertical());
 }
 
 void te::layout::ToolbarOutside::onRemoveObjectClicked( bool checked )
 {
-  changeAction(TypeRemoveObject);
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeRemoveObject());
 }
 
-void te::layout::ToolbarOutside::changeAction( LayoutMode mode )
+void te::layout::ToolbarOutside::onUndoClicked( bool checked )
+{
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeUndo());
+}
+
+void te::layout::ToolbarOutside::onRedoClicked( bool checked )
+{
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeRedo());
+}
+
+void te::layout::ToolbarOutside::changeAction( EnumType* mode )
 {
   bool result = true;
-  LayoutMode layoutMode = Context::getInstance().getMode();
+  EnumType* layoutMode = Context::getInstance().getMode();
 
   if(mode != layoutMode)
   {

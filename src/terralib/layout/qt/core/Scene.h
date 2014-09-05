@@ -35,7 +35,6 @@
 // TerraLib
 #include "../../core/AbstractScene.h"
 #include "../../core/enum/AbstractType.h"
-#include "../../core/enum/EnumMode.h"
 #include "../../core/Config.h"
 #include "../../../geometry/Coord2D.h"
 
@@ -58,6 +57,7 @@ namespace te
     class Properties;
     class VisualizationArea;
     class Systematic;
+    class EnumType;
 
     class TELAYOUTEXPORT Scene : public QGraphicsScene, public AbstractScene
     {
@@ -123,7 +123,7 @@ namespace te
         
         virtual void deleteItems();
 
-        virtual void setCurrentToolInSelectedMapItems(LayoutMode mode);
+        virtual void setCurrentToolInSelectedMapItems(EnumType* mode);
 
         void setLineIntersectionHzr(QLineF* line);
 

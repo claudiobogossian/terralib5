@@ -36,6 +36,7 @@
 #include "EnumObjectType.h"
 #include "EnumGridStyleType.h"
 #include "EnumLineStyleType.h"
+#include "EnumModeType.h"
 
 namespace te
 {
@@ -57,6 +58,8 @@ namespace te
 
         virtual EnumLineStyleType* getEnumLineStyleType();
 
+        virtual EnumModeType* getEnumModeType();
+
       protected:
 
         Enums();  
@@ -69,6 +72,7 @@ namespace te
         EnumObjectType* m_objType;
         EnumGridStyleType* m_gridStyleType;
         EnumLineStyleType* m_lineStyleType;
+        EnumModeType* m_modeType;
 
       private:
       

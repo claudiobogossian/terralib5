@@ -37,7 +37,6 @@
 #include "../../../qt/widgets/canvas/MultiThreadMapDisplay.h"
 #include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
-#include "../../core/enum/EnumMode.h"
 
 class QGraphicsSceneMouseEvent;
 class QMimeData;
@@ -49,6 +48,7 @@ namespace te
   {
     class Observable;
     class ItemController;
+    class EnumType;
 
     class MapItem : public QGraphicsProxyWidget, public ItemObserver
     {
@@ -72,7 +72,7 @@ namespace te
 
         void	setZValue ( qreal z );
 
-        virtual void changeCurrentTool(LayoutMode mode);
+        virtual void changeCurrentTool(EnumType* mode);
 
         void clearCurrentTool();
                         

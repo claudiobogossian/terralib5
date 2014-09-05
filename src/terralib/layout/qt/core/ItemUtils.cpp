@@ -29,6 +29,7 @@
 #include "ItemUtils.h"
 #include "../../core/pattern/mvc/ItemModelObservable.h"
 #include "../../core/pattern/singleton/Context.h"
+#include "../../core/enum/Enums.h"
 
 // STL
 #include <stddef.h>  // defines NULL
@@ -170,22 +171,20 @@ TELAYOUTEXPORT bool te::layout::isCurrentMapTools()
 {
   bool result = false;
 
-  te::layout::LayoutMode mode = te::layout::Context::getInstance().getMode();
+  te::layout::EnumType* mode = te::layout::Context::getInstance().getMode();
+  te::layout::EnumModeType* type = te::layout::Enums::getInstance().getEnumModeType();
 
-  switch(mode)
+  if(mode == type->getModeMapPan())
   {
-  case TypeMapPan:
     result = true;
-    break;
-  case TypeMapZoomIn:
-    result = true;
-    break;
-  case TypeMapZoomOut:
-    result = true;
-    break;
-  default:
-    result = false;
   }
-
+  else if(mode == type->getModeMapZoomIn())
+  {
+    result = true;
+  }
+  else if(mode == type->getModeMapZoomOut())
+  {
+    result = true;
+  }
   return result;
 }

@@ -51,6 +51,7 @@
 #include "../core/ItemUtils.h"
 #include "../../item/MapModel.h"
 #include "../../../common/StringUtils.h"
+#include "../../core/enum/Enums.h"
 
 // STL
 #include <vector>
@@ -530,16 +531,18 @@ void te::layout::MapItem::clearCurrentTool()
   }
 }
 
-void te::layout::MapItem::changeCurrentTool( LayoutMode mode )
+void te::layout::MapItem::changeCurrentTool( EnumType* mode )
 {
   clearCurrentTool();
 
-  if(mode == TypeMapPan)
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+
+  if(mode == type->getModeMapPan())
   {
     te::qt::widgets::Pan* pan = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);
     setCurrentTool(pan);
   }
-  if(mode == TypeMapZoomIn)
+  if(mode == type->getModeMapZoomIn())
   {
     //Zoom In
     std::string icon_path_zoom_area = "layout-map-zoom-in";
@@ -547,7 +550,7 @@ void te::layout::MapItem::changeCurrentTool( LayoutMode mode )
     te::qt::widgets::ZoomArea* zoomArea = new te::qt::widgets::ZoomArea(m_mapDisplay, zoomAreaCursor);
     setCurrentTool(zoomArea);
   }
-  if(mode == TypeMapZoomOut)
+  if(mode == type->getModeMapZoomOut())
   {
     //Zoom Out
     std::string icon_path_zoom_out = "layout-map-zoom-out";

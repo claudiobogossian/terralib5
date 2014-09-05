@@ -30,7 +30,6 @@
 
 // TerraLib
 #include "AbstractRulerModel.h"
-#include "../core/enum/EnumMode.h"
 #include "../../color/RGBAColor.h"
 
 // STL

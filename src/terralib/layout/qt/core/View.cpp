@@ -28,7 +28,6 @@
 // TerraLib
 #include "View.h"
 #include "../../core/pattern/singleton/Context.h"
-#include "../../core/enum/EnumMode.h"
 #include "../item/ItemGroup.h"
 #include "VisualizationArea.h"
 #include "../../../color/RGBAColor.h"
@@ -45,6 +44,7 @@
 #include "../../outside/SystematicScaleModel.h"
 #include "../../outside/SystematicScaleController.h"
 #include "../../core/SystematicScaleConfig.h"
+#include "../../core/enum/Enums.h"
 
 // STL
 #include <math.h>
@@ -134,7 +134,12 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
   if(!sc)
     return;
 
-  if(Context::getInstance().getMode() == TypeSystematicScale)
+  EnumModeType* mode = Enums::getInstance().getEnumModeType();
+
+  if(Context::getInstance().getMode() == mode->getModeNone())
+    return;
+
+  if(Context::getInstance().getMode() == mode->getModeSystematicScale())
   {
     bool intersection = false;
     int number = sc->intersectionMap(coord, intersection);
@@ -161,7 +166,7 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
       msgBox.setText("Select a Map Object.");
       msgBox.exec();
     }
-    Context::getInstance().setMode(TypeNone);
+    Context::getInstance().setMode(mode->getModeNone());
   }
   else
   {
@@ -370,7 +375,9 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   if(!sc)
     return;
 
-  LayoutMode mode = Context::getInstance().getMode();
+  EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
+
+  EnumType* mode = Context::getInstance().getMode();
   QList<QGraphicsItem*> graphicsItems;
   double zoomFactor = Context::getInstance().getZoomFactor();
   double oldZoomFactor = Context::getInstance().getOldZoomFactor();
@@ -386,204 +393,189 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   te::gm::Coord2D center = env->getCenter();
 
   te::gm::Envelope zoomBox;
-  
-  switch(mode)
+    
+  if(mode == enumMode->getModeUnitsMetricsChange())
   {
-  case TypeUnitsMetricsChange:
+    
+  }
+  else if(mode == enumMode->getModeNewTemplate())
+  {
+    sc->reset();
+    m_visualizationArea->build();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeExportPropsJSON())
+  {
+    sc->exportPropsAsJSON();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeImportJSONProps())
+  {
+    sc->buildTemplate(m_visualizationArea);
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeMapPan())
+  {
+    graphicsItems = sc->selectedItems();
+    if(te::layout::getMapItemList(graphicsItems).empty())
     {
-      break;
-    }
-  case TypeNewTemplate:
-    {
-      sc->reset();
-      m_visualizationArea->build();
-      resetDefaultConfig();
-      break;
-    }
-  case TypeExportPropsJSON:
-    {
-      sc->exportPropsAsJSON();
-      resetDefaultConfig();
-      break;
-    }
-  case TypeImportJSONProps:
-    {
-      sc->buildTemplate(m_visualizationArea);
-      resetDefaultConfig();
-      break;
-    }
-  case TypeMapPan:
-    {
-      graphicsItems = sc->selectedItems();
-      if(te::layout::getMapItemList(graphicsItems).empty())
-      {
-        resetDefaultConfig();
-      }
-      else
-      {
-        sc->setCurrentToolInSelectedMapItems(TypeMapPan);
-      }
-      break;
-    }
-  case TypeMapZoomIn:
-    {
-      graphicsItems = sc->selectedItems();
-      if(te::layout::getMapItemList(graphicsItems).empty())
-      {
-        resetDefaultConfig();
-      }
-      else
-      {
-        sc->setCurrentToolInSelectedMapItems(TypeMapZoomIn);
-      }
-      break;
-    }
-  case TypeMapZoomOut:
-    {
-      graphicsItems = sc->selectedItems();
-      if(te::layout::getMapItemList(graphicsItems).empty())
-      {
-        resetDefaultConfig();
-      }
-      else
-      {
-        sc->setCurrentToolInSelectedMapItems(TypeMapZoomOut);
-      }
-      break;
-    }
-  case TypePan:
-    {
-      /*
-        The QGraphicsView inherits QAbstractScrollArea. 
-        The QAbstractScrollArea on your EventFilter event invokes the viewportEvent instead eventFilter of the son, 
-        so it is necessary to add QAbstractScrollArea for the filter installed can listen to events.       
-      */
-      setInteractive(false);
-      m_currentTool = new ViewPan(this, Qt::OpenHandCursor, Qt::ClosedHandCursor);
-      viewport()->installEventFilter(m_currentTool);
-      break;
-    }
-  case TypeGroup:
-    {
-      createItemGroup();
       resetDefaultConfig();
     }
-    break;
-  case TypeUngroup:
+    else
     {
-      destroyItemGroup();
+      sc->setCurrentToolInSelectedMapItems(enumMode->getModeMapPan());
+    }
+  }
+  else if(mode == enumMode->getModeMapZoomIn())
+  {
+    graphicsItems = sc->selectedItems();
+    if(te::layout::getMapItemList(graphicsItems).empty())
+    {
       resetDefaultConfig();
     }
-    break;
-  case TypePrinter:
+    else
     {
-      sc->printPreview();
+      sc->setCurrentToolInSelectedMapItems(enumMode->getModeMapZoomIn());
     }
-    break;
-  case TypeExit:
+  }
+  else if(mode == enumMode->getModeMapZoomOut()) 
+  {
+    graphicsItems = sc->selectedItems();
+    if(te::layout::getMapItemList(graphicsItems).empty())
     {
-      //hide();
+      resetDefaultConfig();
     }
-    break;
-  case TypeSceneZoom:
+    else
     {
-      env->m_llx = center.x - halfWidth;
-      env->m_lly = center.y - halfHeight;
-      env->m_urx = center.x + halfWidth;
-      env->m_ury = center.y + halfHeight;
+      sc->setCurrentToolInSelectedMapItems(enumMode->getModeMapZoomOut());
+    }
+  }
+  else if(mode == enumMode->getModePan()) 
+  {
+    /*
+      The QGraphicsView inherits QAbstractScrollArea. 
+      The QAbstractScrollArea on your EventFilter event invokes the viewportEvent instead eventFilter of the son, 
+      so it is necessary to add QAbstractScrollArea for the filter installed can listen to events.       
+    */
+    setInteractive(false);
+    m_currentTool = new ViewPan(this, Qt::OpenHandCursor, Qt::ClosedHandCursor);
+    viewport()->installEventFilter(m_currentTool);
+  }
+  else if(mode == enumMode->getModeGroup())
+  {
+    createItemGroup();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeUngroup()) 
+  {
+    destroyItemGroup();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModePrinter()) 
+  {
+    sc->printPreview();
+  }
+  else if(mode == enumMode->getModeExit()) 
+  {
+    
+  }
+  else if(mode == enumMode->getModeSceneZoom())
+  {
+    env->m_llx = center.x - halfWidth;
+    env->m_lly = center.y - halfHeight;
+    env->m_urx = center.x + halfWidth;
+    env->m_ury = center.y + halfHeight;
             
-      sc->refresh(this, zoomFactor);            
-      sc->redrawItems(true);
-      resetDefaultConfig();
-    }
-    break;
-  case TypeBringToFront:
-    {
-      sc->bringToFront();
-      resetDefaultConfig();
-    }
-    break;
-  case TypeSendToBack:
-    {
-      sc->sendToBack();
-      resetDefaultConfig();
-    }
-    break;
-  case TypeZoomIn:
-    {
-      resetDefaultConfig();
-      /*
-        The QGraphicsView inherits QAbstractScrollArea. 
-        The QAbstractScrollArea on your EventFilter event invokes the viewportEvent instead eventFilter of the son, 
-        so it is necessary to add QAbstractScrollArea for the filter installed can listen to events.       
-      */
-      setInteractive(false);
-      m_currentTool = new ViewZoomArea(this, Qt::CrossCursor);
-      viewport()->installEventFilter(m_currentTool);
-      break;
-    }
-    break;
-  case TypeZoomOut:
-    {
+    sc->refresh(this, zoomFactor);            
+    sc->redrawItems(true);
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeBringToFront()) 
+  {
+    sc->bringToFront();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeSendToBack()) 
+  {
+    sc->sendToBack();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeMapZoomIn()) 
+  {
+    resetDefaultConfig();
+    /*
+      The QGraphicsView inherits QAbstractScrollArea. 
+      The QAbstractScrollArea on your EventFilter event invokes the viewportEvent instead eventFilter of the son, 
+      so it is necessary to add QAbstractScrollArea for the filter installed can listen to events.       
+    */
+    setInteractive(false);
+    m_currentTool = new ViewZoomArea(this, Qt::CrossCursor);
+    viewport()->installEventFilter(m_currentTool);
+  }
+  else if(mode == enumMode->getModeZoomOut()) 
+  {
 
-    }
-    break;
-  case TypeRecompose:
+  }
+  else if(mode == enumMode->getModeRecompose()) 
+  {
+    double dZoom = Context::getInstance().getDefaultZoomFactor();
+    double zoom = Context::getInstance().getZoomFactor();
+    if(dZoom != zoom)
     {
-      double dZoom = Context::getInstance().getDefaultZoomFactor();
-      double zoom = Context::getInstance().getZoomFactor();
-      if(dZoom != zoom)
-      {
-        sc->refresh(this, dZoom);
-        sc->redrawItems(true);
-      }
-      resetDefaultConfig();
+      sc->refresh(this, dZoom);
+      sc->redrawItems(true);
     }
-    break;
-  case TypePageConfig:
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModePageConfig()) 
+  {
     showPageSetup();
     resetDefaultConfig();
-    break;
-  case TypeMapCreateTextGrid:
+  }
+  else if(mode == enumMode->getModeMapCreateTextGrid()) 
+  {
     sc->createTextGridAsObject();
     resetDefaultConfig();
-    break;
-  case TypeMapCreateTextMap:
+  }
+  else if(mode == enumMode->getModeMapCreateTextMap()) 
+  {
     sc->createTextMapAsObject();
     resetDefaultConfig();
-    break;
-  case TypeAlignLeft:
+  }
+  else if(mode == enumMode->getModeAlignLeft()) 
+  {
     sc->alignLeft();
     resetDefaultConfig();
-    break;
-  case TypeAlignRight:
+  }
+  else if(mode == enumMode->getModeAlignRight()) 
+  {
     sc->alignRight();
     resetDefaultConfig();
-    break;
-  case TypeAlignTop:
+  }
+  else if(mode == enumMode->getModeAlignTop()) 
+  {
     sc->alignTop();
     resetDefaultConfig();
-    break;
-  case TypeAlignBottom:
+  }
+  else if(mode == enumMode->getModeAlignBottom()) 
+  {
     sc->alignBottom();
     resetDefaultConfig();
-    break;
-  case TypeAlignCenterHorizontal:
+  }
+  else if(mode == enumMode->getModeAlignCenterHorizontal()) 
+  {
     sc->alignCenterHorizontal();
     resetDefaultConfig();
-    break;
-  case TypeAlignCenterVertical:
+  }
+  else if(mode == enumMode->getModeAlignCenterVertical()) 
+  {
     sc->alignCenterVertical();
     resetDefaultConfig();
-    break;
-  case TypeRemoveObject:
+  }
+  else if(mode == enumMode->getModeRemoveObject()) 
+  {
     sc->deleteItems();
     resetDefaultConfig();
-    break;
-  default:
-    {
-      resetDefaultConfig();
-    }
   }
 }
 

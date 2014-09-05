@@ -34,7 +34,6 @@
 // TerraLib
 #include "../../core/pattern/mvc/OutsideObserver.h"
 #include "../../../geometry/Envelope.h"
-#include "../../core/enum/EnumMode.h"
 #include "../../core/Config.h"
 
 // STL
@@ -53,6 +52,8 @@ namespace te
 {
   namespace layout
   {
+    class EnumType;
+
     class TELAYOUTEXPORT ToolbarOutside : public QToolBar, public OutsideObserver
     {
 	    Q_OBJECT //for slots/signals
@@ -109,6 +110,10 @@ namespace te
 
       virtual void onRemoveObjectClicked(bool checked);
 
+      virtual void onUndoClicked(bool checked);
+
+      virtual void onRedoClicked(bool checked);
+
     signals:
 
       void changeContext(bool change);
@@ -154,8 +159,12 @@ namespace te
       virtual void createAlignCenterVerticalToolButton();
 
       virtual void createRemoveObjectToolButton();
+
+      virtual void createUndoToolButton();
       
-      virtual void changeAction(LayoutMode mode);
+      virtual void createRedoToolButton();
+
+      virtual void changeAction(EnumType* mode);
 
       virtual QToolButton* createToolButton(std::string text, std::string tooltip, std::string icon);
 
@@ -218,6 +227,10 @@ namespace te
       std::string m_optionAlignBottom;
       std::string m_optionAlignCenterHorizontal;
       std::string m_optionAlignCenterVertical;
+
+      /* Undo/Redo */
+      std::string m_optionUndo;
+      std::string m_optionRedo;
     };
   }
 }

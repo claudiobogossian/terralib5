@@ -234,11 +234,13 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
 {
   //The scene create a new group with important restriction
   QGraphicsItemGroup* p = QGraphicsScene::createItemGroup(items);
+
+  EnumModeType* mode = Enums::getInstance().getEnumModeType();
   
   //Create a new group
   BuildGraphicsItem* build = Context::getInstance().getBuildGraphicsItem();
   te::gm::Coord2D coord(0,0);
-  QGraphicsItem* item = build->createItem(TypeCreateItemGroup, coord, false);
+  QGraphicsItem* item = build->createItem(mode->getModeCreateItemGroup(), coord, false);
 
   ItemGroup* group = dynamic_cast<ItemGroup*>(item);
 
@@ -374,13 +376,15 @@ QTransform te::layout::Scene::getMatrixViewScene()
 
 void te::layout::Scene::printPreview(bool isPdf)
 {
-    QPrinter* printer = createPrinter();
+  EnumModeType* mode = Enums::getInstance().getEnumModeType();
 
-    QPrintPreviewDialog preview(printer);
-    connect(&preview, SIGNAL(paintRequested(QPrinter*)), SLOT(printPaper(QPrinter*)));
-    preview.exec();
+  QPrinter* printer = createPrinter();
 
-    Context::getInstance().setMode(TypeNone);
+  QPrintPreviewDialog preview(printer);
+  connect(&preview, SIGNAL(paintRequested(QPrinter*)), SLOT(printPaper(QPrinter*)));
+  preview.exec();
+
+  Context::getInstance().setMode(mode->getModeNone());
 }
 
 void te::layout::Scene::printPaper(QPrinter* printer)
@@ -711,8 +715,10 @@ void te::layout::Scene::reset()
 void te::layout::Scene::drawForeground( QPainter *painter, const QRectF &rect )
 {
   QGraphicsScene::drawForeground(painter, rect);
+
+  EnumModeType* mode = Enums::getInstance().getEnumModeType();
   
-  if(Context::getInstance().getLineIntersectionMouseMode() != TypeActiveLinesIntersectionMouse)
+  if(Context::getInstance().getLineIntersectionMouseMode() != mode->getModeActiveLinesIntersectionMouse())
     return;
 
   QBrush brush = painter->brush();
@@ -795,18 +801,24 @@ QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
   if(!build)
     return item;
 
-  LayoutMode mode = Context::getInstance().getMode();
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  EnumType* mode = Context::getInstance().getMode();
 
   item = build->createItem(mode, coord);
 
-  Context::getInstance().setMode(TypeNone);
+  Context::getInstance().setMode(type->getModeNone());
 
   return item;
 }
 
-void te::layout::Scene::setCurrentToolInSelectedMapItems( LayoutMode mode )
+void te::layout::Scene::setCurrentToolInSelectedMapItems( EnumType* mode )
 {
-  if(mode == TypeNone)
+  if(!mode)
+    return;
+
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+
+  if(mode == type->getModeNone())
     return;
 
   if(!te::layout::isCurrentMapTools())
@@ -1033,7 +1045,8 @@ void te::layout::Scene::createTextMapAsObject()
 
 void te::layout::Scene::createDefaultTextItemFromObject( std::map<te::gm::Coord2D, std::string> map )
 {
-  Context::getInstance().setMode(TypeCreateText);
+  EnumModeType* mode = Enums::getInstance().getEnumModeType();
+  Context::getInstance().setMode(mode->getModeCreateText());
 
   std::map<te::gm::Coord2D, std::string>::iterator it;
 
@@ -1054,7 +1067,7 @@ void te::layout::Scene::createDefaultTextItemFromObject( std::map<te::gm::Coord2
     }
   }
 
-  Context::getInstance().setMode(TypeNone);
+  Context::getInstance().setMode(mode->getModeNone());
 }
 
 void te::layout::Scene::alignLeft()

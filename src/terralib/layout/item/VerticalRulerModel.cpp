@@ -29,7 +29,6 @@
 #include "VerticalRulerModel.h"
 #include "../core/ContextItem.h"
 #include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/enum/EnumMode.h"
 #include "../core/Utils.h"
 #include "../../maptools/Canvas.h"
 #include "../../geometry/Envelope.h"

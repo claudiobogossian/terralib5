@@ -41,6 +41,7 @@ te::layout::PaperModel::PaperModel() :
   m_backgroundColor = te::color::RGBAColor(255, 255, 255, 255);
   m_shadowColor = te::color::RGBAColor(0, 0, 0, 255);
 
+  m_borderColor = te::color::RGBAColor(255, 255, 255, 0);
 
   config();
 }
@@ -54,6 +55,8 @@ te::layout::PaperModel::PaperModel( PaperConfig* paperConfig ) :
 
   m_backgroundColor = te::color::RGBAColor(255, 255, 255, 255);
   m_shadowColor = te::color::RGBAColor(0, 0, 0, 255);
+
+  m_borderColor = te::color::RGBAColor(255, 255, 255, 0);
 
   config();
 }
@@ -83,7 +86,7 @@ void te::layout::PaperModel::draw( ContextItem context )
   double urx = m_box.getUpperRightX();
   double ury = m_box.getUpperRightY();
 
-  canvas->setPolygonContourColor(m_shadowColor);
+  canvas->setPolygonContourColor(m_borderColor);
   canvas->setPolygonFillColor(m_shadowColor);
   
   m_boxShadow = te::gm::Envelope(llx + m_shadowPadding, lly, urx, ury - m_shadowPadding);

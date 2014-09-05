@@ -31,7 +31,6 @@
 // TerraLib
 #include "../core/ContextItem.h"
 #include "AbstractRulerModel.h"
-#include "../core/enum/EnumMode.h"
 
 // STL
 #include <vector>
