@@ -53,6 +53,9 @@
 #include "../../query/FunctionEncoder.h"
 #include "../../query/GroupByItem.h"
 #include "../../query/Having.h"
+#include "../../query/Join.h"
+#include "../../query/JoinConditionOn.h"
+#include "../../query/JoinConditionUsing.h"
 #include "../../query/Literal.h"
 #include "../../query/LiteralDouble.h"
 #include "../../query/LiteralGeom.h"
@@ -1581,54 +1584,133 @@ te::da::From* te::serialize::xml::ReadFrom(te::xml::Reader& reader)
 
   while(reader.getNodeType() == te::xml::START_ELEMENT)
   {
-    assert(reader.getElementLocalName() == "FromItem");
+    if(reader.getElementLocalName() == "FromItem")
+    {
+      from->push_back(ReadFromItem(reader));
+    }
+    else if(reader.getElementLocalName() == "JoinItem")
+    {
+      reader.next();
 
-    reader.next();
+      te::da::FromItem* first = ReadFromItem(reader);
+      te::da::FromItem* second = ReadFromItem(reader);
 
-    assert(reader.getNodeType() == te::xml::START_ELEMENT);
-    assert(reader.getElementLocalName() == "Value");
+      assert(reader.getNodeType() == te::xml::START_ELEMENT);
+      assert(reader.getElementLocalName() == "Type");
 
-    reader.next();
+      reader.next();
 
-    assert(reader.getNodeType() == te::xml::VALUE);
+      assert(reader.getNodeType() == te::xml::VALUE);
 
-    std::string name = reader.getElementValue();
+      std::string type = reader.getElementValue();
 
-    reader.next();
+      reader.next();
 
-    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+      te::da::JoinType joinType = te::da::JOIN;
 
-    reader.next();
+      if(type ==  "JOIN")
+        joinType = te::da::JOIN;
+      else if (type == "INNER_JOIN")
+        joinType = te::da::INNER_JOIN;
+      else if (type == "LEFT_JOIN")
+        joinType = te::da::LEFT_JOIN;
+      else if (type == "RIGHT_JOIN")
+        joinType = te::da::RIGHT_JOIN;
+      else if (type == "FULL_OUTER_JOIN")
+        joinType = te::da::FULL_OUTER_JOIN;
+      else if ( type == "CROSS_JOIN")
+        joinType = te::da::CROSS_JOIN;
+      else
+        joinType = te::da::NATURAL_JOIN;
 
-    assert(reader.getNodeType() == te::xml::START_ELEMENT);
-    assert(reader.getElementLocalName() == "Alias");
+      assert(reader.getNodeType() == te::xml::END_ELEMENT); // Type
 
-    reader.next();
+      reader.next();
 
-    assert(reader.getNodeType() == te::xml::VALUE);
+      assert(reader.getNodeType() == te::xml::START_ELEMENT);
+      assert(reader.getElementLocalName() == "Condition");
 
-    std::string alias = reader.getElementValue();
+      reader.next();
+      te::da::JoinCondition* JoinCondition = 0;
+      assert(reader.getNodeType() == te::xml::START_ELEMENT);
 
-    reader.next();
+      if(reader.getElementLocalName() == "JoinConditionOn")
+      {
+        reader.next();
+        JoinCondition = new te::da::JoinConditionOn(ReadFunction(reader));
+        assert(reader.getNodeType() == te::xml::END_ELEMENT); // JoinConditionOn
+      }
+      else if(reader.getElementLocalName() == "JoinConditionUsing")
+      {
+        reader.next();
+        while(reader.getNodeType() == te::xml::START_ELEMENT && reader.getElementLocalName() == "PropertyName")
+        {
+          JoinCondition = new te::da::JoinConditionUsing();
+          dynamic_cast<te::da::JoinConditionUsing*>(JoinCondition)->push_back(ReadPropertyName(reader));
+        }
+        assert(reader.getNodeType() == te::xml::END_ELEMENT); // JoinConditionUsing
+      }
 
-    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+      reader.next();
+      assert(reader.getNodeType() == te::xml::END_ELEMENT); // Condition
 
-    te::da::FromItem* fi = new te::da::DataSetName(name, alias);
+      te::da::Join* join = new te::da::Join(first, second, joinType, JoinCondition);
+      from->push_back(join);
 
-    from->push_back(fi);
-
-    reader.next();
-
-    assert(reader.getNodeType() == te::xml::END_ELEMENT); // FromItem
-
-    reader.next();
+      reader.next();
+      assert(reader.getNodeType() == te::xml::END_ELEMENT); // JoinItem
+      reader.next();
+    }
   }
 
   assert(reader.getNodeType() == te::xml::END_ELEMENT); // From
-
   reader.next();
 
   return from;
+}
+
+te::da::FromItem* te::serialize::xml::ReadFromItem(te::xml::Reader& reader)
+{
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "FromItem");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Value");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::VALUE);
+
+  std::string name = reader.getElementValue();
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Alias");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::VALUE);
+
+  std::string alias = reader.getElementValue();
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // FromItem
+
+  reader.next();
+
+  return new te::da::DataSetName(name, alias);
 }
 
 te::da::Function* te::serialize::xml::ReadFunction(te::xml::Reader& reader)
@@ -2110,25 +2192,91 @@ void te::serialize::xml::Save(const te::da::From* from, te::xml::Writer& writer)
 
 void te::serialize::xml::Save(const te::da::FromItem* fromItem, te::xml::Writer& writer)
 {
-  writer.writeStartElement("te_da:FromItem");
-
   const te::da::DataSetName* dsName = dynamic_cast<const te::da::DataSetName*>(fromItem);
+  if(dsName)
+  {
+    writer.writeStartElement("te_da:FromItem");
 
-  assert(dsName);
+    writer.writeStartElement("te_da:Value");
 
-  writer.writeStartElement("te_da:Value");
+    writer.writeValue(dsName->getName());
 
-  writer.writeValue(dsName->getName());
+    writer.writeEndElement("te_da:Value");
 
-  writer.writeEndElement("te_da:Value");
+    writer.writeStartElement("te_da:Alias");
 
-  writer.writeStartElement("te_da:Alias");
+    writer.writeValue(fromItem->getAlias());
 
-  writer.writeValue(fromItem->getAlias());
+    writer.writeEndElement("te_da:Alias");
 
-  writer.writeEndElement("te_da:Alias");
+    writer.writeEndElement("te_da:FromItem");
+  }
 
-  writer.writeEndElement("te_da:FromItem");
+  const te::da::Join* dsJoin = dynamic_cast<const te::da::Join*>(fromItem);
+  if(dsJoin)
+  {
+    writer.writeStartElement("te_da:JoinItem");
+
+    Save(dsJoin->getFirst(), writer);
+
+    Save(dsJoin->getSecond(), writer);
+
+    std::string joinType;
+    switch(dsJoin->getType())
+    {
+      case te::da::JOIN:
+        joinType = "JOIN";
+        break;
+      case te::da::INNER_JOIN:
+        joinType = "INNER_JOIN";
+        break;
+      case te::da::LEFT_JOIN:
+        joinType = "LEFT_JOIN";
+        break;
+      case te::da::RIGHT_JOIN:
+        joinType = "RIGHT_JOIN";
+        break;
+      case te::da::FULL_OUTER_JOIN:
+        joinType = "FULL_OUTER_JOIN";
+        break;
+      case te::da::CROSS_JOIN:
+        joinType = "CROSS_JOIN";
+        break;
+      case te::da::NATURAL_JOIN:
+        joinType = "NATURAL_JOIN";
+        break;
+      default:
+        joinType = "JOIN";
+    }
+
+    writer.writeElement("te_da:Type",joinType);
+
+    writer.writeStartElement("te_da:Condition");
+
+    const te::da::JoinConditionOn* joinOn = dynamic_cast<const te::da::JoinConditionOn*>(dsJoin->getCondition());
+    if(joinOn)
+    {
+      writer.writeStartElement("te_da:JoinConditionOn");
+      te::da::Expression* exp = joinOn->getCondition();
+      Save(exp, writer);
+      writer.writeEndElement("te_da:JoinConditionOn");
+    }
+    const te::da::JoinConditionUsing* joinUsing = dynamic_cast<const te::da::JoinConditionUsing*>(dsJoin->getCondition());
+    if(joinUsing)
+    {
+      writer.writeStartElement("te_da:JoinConditionUsing");
+      for(std::size_t i = 0; i < joinUsing->getNumFields(); ++i)
+      {
+        const te::da::Expression* exp = (*joinUsing)[i];
+        Save(exp, writer);
+      }
+      writer.writeEndElement("te_da:JoinConditionUsing");
+    }
+
+    writer.writeEndElement("te_da:Condition");
+
+    writer.writeEndElement("te_da:JoinItem");
+  }
 }
 
 std::string Function2Ascii(std::string funcName)

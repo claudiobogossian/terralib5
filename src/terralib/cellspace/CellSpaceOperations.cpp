@@ -151,11 +151,11 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
 
 void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSourceInfoPtr outputSource,
                                                               const std::string& name,
-                                                              double resX,
-                                                              double resY,
-                                                              te::gm::Envelope& env,
-                                                              int srid,
-                                                              CellSpaceType type)
+                                                              const double resX,
+                                                              const double resY,
+                                                              const te::gm::Envelope& env,
+                                                              const int srid,
+                                                              const CellSpaceType type)
 {
   if(type == CELLSPACE_RASTER)
   {
@@ -287,10 +287,10 @@ te::da::DataSetType* te::cellspace::CellularSpacesOperations::createCellularData
 
 void te::cellspace::CellularSpacesOperations::createRasteCellSpace(te::da::DataSourceInfoPtr outputSource,
                                                                    const std::string& name,
-                                                                   double resX,
-                                                                   double resY,
-                                                                   te::gm::Envelope& env,
-                                                                   int srid)
+                                                                   const double resX,
+                                                                   const double resY,
+                                                                   const te::gm::Envelope& env,
+                                                                   const int srid)
 {
 
   te::gm::Envelope* newEnv = new te::gm::Envelope(te::gm::AdjustToCut(env, resX, resY));

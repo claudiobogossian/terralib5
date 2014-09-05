@@ -27,8 +27,8 @@
 #define __TERRALIB_EDIT_QT_INTERNAL_VERTEXTOOL_H
 
 // TerraLib
-#include "../../../qt/widgets/tools/AbstractTool.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../qt/widgets/tools/AbstractTool.h"
 #include "../../../sam/rtree/Index.h"
 #include "../../Config.h"
 #include "../../Utils.h"
@@ -128,8 +128,6 @@ namespace te
         void pickGeometry(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env);
 
         void drawVertexes(te::gm::Point* virtualVertex = 0);
-
-        QPointF getPosition(QMouseEvent* e);
 
         te::gm::Envelope buildEnvelope(const QPointF& pos);
 

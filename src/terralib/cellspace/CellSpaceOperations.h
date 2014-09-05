@@ -109,11 +109,11 @@ namespace te
         */
         void createCellSpace(te::da::DataSourceInfoPtr outputSource,
                              const std::string& name,
-                             double resX,
-                             double resY,
-                             te::gm::Envelope& env,
-                             int srid,
-                             CellSpaceType type = CELLSPACE_POLYGONS);
+                             const double resX,
+                             const double resY,
+                             const te::gm::Envelope& env,
+                             const int srid,
+                             const CellSpaceType type = CELLSPACE_POLYGONS);
 
         /*!
           \brief It return the created DataSetType.
@@ -176,10 +176,10 @@ namespace te
 
         void createRasteCellSpace(te::da::DataSourceInfoPtr outputSource,
                                   const std::string& name,
-                                  double resX,
-                                  double resY,
-                                  te::gm::Envelope& env,
-                                  int srid);
+                                  const double resX,
+                                  const double resY,
+                                  const te::gm::Envelope& env,
+                                  const int srid);
 
         void createRasteCellSpace(te::da::DataSourceInfoPtr outputSource,
                                   const std::string& name,
