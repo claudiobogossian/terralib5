@@ -864,6 +864,7 @@ else() # QT4_FOUND
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/Animation.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationItem.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationScene.h
+                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationView.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/PixmapItem.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/SliderPropertiesDialog.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryItem.h
