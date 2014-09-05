@@ -284,6 +284,8 @@ void te::sa::SkaterDialog::onOkPushButtonClicked()
   outParams->m_dataSource = outputDataSource;
   outParams->m_outputDataSetName = dataSetName;
 
+  int nClasses;
+
   try
   {
     te::sa::SkaterOperation op;
@@ -291,6 +293,8 @@ void te::sa::SkaterDialog::onOkPushButtonClicked()
     op.setParameters(inParams, outParams);
 
     op.execute();
+
+    nClasses = op.getNumberOfClasses();
   }
   catch(...)
   {
@@ -302,6 +306,7 @@ void te::sa::SkaterDialog::onOkPushButtonClicked()
   m_outputLayer = te::sa::CreateLayer(outputDataSource, dataSetName);
 
   //create legend
+  te::sa::CreateSkaterGrouping(m_outputLayer, nClasses);
 
   accept();
 }

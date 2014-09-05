@@ -62,6 +62,7 @@ namespace te
 
       std::size_t m_edgeId; //!< Edge identification
 
+      double m_SSDT;        //!< Sum of Square Difference for Tree
       double m_SSDTa;       //!< Sum of Square Difference for Tree A
       double m_SSDTb;       //!< Sum of Square Difference for Tree B
       double m_SSDi;        //!< Difference between m_SSDa and m_SSDb
@@ -92,8 +93,12 @@ namespace te
 
         /*! 
           \brief Function to execute the skater partition.
+
+          \param nGroups Number of cluster to be created.
+
+          \return Return a vector with the root vertex id for each cluster created.
         */
-        void execute();
+        std::vector<std::size_t> execute(std::size_t nGroups);
 
       protected:
 
@@ -112,6 +117,8 @@ namespace te
         std::vector<std::string> m_attrs;     //!< Vector with attributes names used to calculate the skater operation.
 
         te::graph::AbstractGraph* m_graph;    //!< Pointer to a graph that represents a minimum spanning tree.
+
+        std::vector<double> m_SSDiValues;      //!< Vector with the sum square differences for each edge removed.
 
     };
   } // end namespace sa

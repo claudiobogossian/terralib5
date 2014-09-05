@@ -58,6 +58,8 @@ namespace te
     TESAEXPORT void CreateKernelColorMaping(te::map::AbstractLayerPtr layer);
 
     TESAEXPORT void CreateSampleGeneratorStratifiedGrouping(te::map::AbstractLayerPtr layer, std::vector<std::string> strVec);
+    
+    TESAEXPORT void CreateSkaterGrouping(te::map::AbstractLayerPtr layer, int nClasses);
 
     TESAEXPORT te::color::ColorBar* GetColorBar(std::string catalog, std::string group, std::string schema);
 

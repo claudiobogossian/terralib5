@@ -26,7 +26,10 @@
 */
 
 //TerraLib
-#include "../../datatype/Property.h"
+#include "../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/datasource/DataSourceManager.h"
+#include "../../dataaccess/utils/Utils.h"
+#include "../../datatype/SimpleProperty.h"
 #include "../../datatype/SimpleData.h"
 #include "../../graph/core/AbstractGraph.h"
 #include "../../graph/core/AbstractGraphFactory.h"
@@ -35,18 +38,18 @@
 #include "../../graph/core/Vertex.h"
 #include "../../graph/iterator/MemoryIterator.h"
 #include "../../graph/Globals.h"
+#include "../../memory/DataSet.h"
+#include "../../memory/DataSetItem.h"
 #include "GeneralizedProximityMatrix.h"
-#include "Utils.h"
+#include "MinimumSpanningTree.h"
 #include "SkaterOperation.h"
 #include "SkaterPartition.h"
+#include "Utils.h"
 
 //STL
 #include <cassert>
 #include <list>
-
-//Boost
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/kruskal_min_spanning_tree.hpp>
+#include <queue>
 
 te::sa::SkaterOperation::SkaterOperation()
 {
@@ -81,12 +84,31 @@ void te::sa::SkaterOperation::execute()
   createWeightAttribute(edgeWeightIdx, attrsIdx);
 
   //calculate the mst
-  te::graph::AbstractGraph* graph = minimumSpanningTree(edgeWeightIdx);
+  te::sa::MinimumSpanningTree mst(m_inputParams->m_gpm->getGraph());
+
+  te::graph::AbstractGraph* graph = mst.kruskal(edgeWeightIdx);
 
   //partition the graph
   te::sa::SkaterPartition sp(graph, m_inputParams->m_attrs);
 
-  sp.execute();
+  std::vector<std::size_t> roots = sp.execute(m_inputParams->m_nClusters);
+
+  m_nClassGroups = (int)roots.size();
+
+  std::map<int, int> skaterMap = createSkaterMap(graph, roots);
+
+  //create output information information
+  std::auto_ptr<te::da::DataSetType> outDsType = createDataSetType(m_inputParams->m_dsType.get());
+
+  std::string gpmLink = m_inputParams->m_gpm->getAttributeName();
+
+  std::auto_ptr<te::mem::DataSet> outDs = createDataSet(m_inputParams->m_ds.get(), outDsType.get(), skaterMap, gpmLink);
+
+  //save data
+  saveDataSet(outDs.get(), outDsType.get());
+
+  roots.clear();
+  skaterMap.clear();
 
   delete graph;
 }
@@ -95,6 +117,80 @@ void te::sa::SkaterOperation::setParameters(te::sa::SkaterInputParams* inParams,
 {
   m_inputParams.reset(inParams);
   m_outputParams.reset(outParams);
+}
+
+int te::sa::SkaterOperation::getNumberOfClasses()
+{
+  return m_nClassGroups;
+}
+
+std::auto_ptr<te::da::DataSetType> te::sa::SkaterOperation::createDataSetType(te::da::DataSetType* dsType)
+{
+  std::auto_ptr<te::da::DataSetType> dataSetType(new te::da::DataSetType(m_outputParams->m_outputDataSetName));
+
+  //create all input dataset properties
+  std::vector<te::dt::Property*> propertyVec = dsType->getProperties();
+
+  for(std::size_t t = 0; t < propertyVec.size(); ++t)
+  {
+    te::dt::Property* prop = propertyVec[t];
+
+    te::dt::Property* newProp = prop->clone();
+    newProp->setId(0);
+    newProp->setParent(0);
+
+    dataSetType->add(newProp);
+  }
+
+  //create skater class event property
+  te::dt::SimpleProperty* skaterClass = new te::dt::SimpleProperty(TE_SA_SKATER_ATTR_CLASS_NAME, te::dt::INT32_TYPE);
+  dataSetType->add(skaterClass);
+
+  return dataSetType;
+}
+
+std::auto_ptr<te::mem::DataSet> te::sa::SkaterOperation::createDataSet(te::da::DataSet* inputDataSet, te::da::DataSetType* dsType, std::map<int, int>& skaterMap, std::string linkName)
+{
+  std::auto_ptr<te::mem::DataSet> outDataset(new te::mem::DataSet(dsType));
+
+  std::size_t nProp = inputDataSet->getNumProperties();
+
+  inputDataSet->moveBeforeFirst();
+
+  while(inputDataSet->moveNext())
+  {
+    //create dataset item
+    te::mem::DataSetItem* outDSetItem = new te::mem::DataSetItem(outDataset.get());
+
+    std::string idStrValue = inputDataSet->getAsString(linkName);
+
+    for(std::size_t t = 0; t < nProp; ++t)
+    {
+      te::dt::AbstractData* ad = inputDataSet->getValue(t).release();
+
+      outDSetItem->setValue(t, ad);
+    }
+
+    //set kernel default value
+    outDSetItem->setInt32(TE_SA_SKATER_ATTR_CLASS_NAME, skaterMap[atoi(idStrValue.c_str())]);
+
+    //add item into dataset
+    outDataset->add(outDSetItem);
+  }
+
+  return outDataset;
+}
+
+void te::sa::SkaterOperation::saveDataSet(te::da::DataSet* dataSet, te::da::DataSetType* dsType)
+{
+  //save dataset
+  dataSet->moveBeforeFirst();
+
+  std::map<std::string, std::string> options;
+
+  m_outputParams->m_dataSource->createDataSet(dsType, options);
+
+  m_outputParams->m_dataSource->add(m_outputParams->m_outputDataSetName, dataSet, options);
 }
 
 void te::sa::SkaterOperation::createWeightAttribute(int weightAttrIdx, std::vector<int> attrsIdx)
@@ -139,145 +235,68 @@ double te::sa::SkaterOperation::calculateWeight(std::vector<int> attrsIdx, te::g
   return sqrt(weight);
 }
 
-te::graph::AbstractGraph* te::sa::SkaterOperation::minimumSpanningTree(int weightAttrIdx)
+std::map<int, int> te::sa::SkaterOperation::createSkaterMap(te::graph::AbstractGraph* graph, std::vector<std::size_t>& roots)
 {
-  //get gpm graph
-  te::graph::AbstractGraph* gpmGraph = m_inputParams->m_gpm->getGraph();
+  std::map<int, int> skaterMap;
 
-  te::graph::MemoryIterator* iterator = new te::graph::MemoryIterator(gpmGraph);
-
-  std::size_t nEdge = iterator->getEdgeInteratorCount();
-  std::size_t nVertex = iterator->getVertexInteratorCount();
-
-  //create boost graph
-  typedef boost::adjacency_list < boost::vecS, boost::vecS, boost::undirectedS, boost::no_property, boost::property<boost::edge_weight_t, int > > boostGraph;
-
-  typedef std::pair < int, int > boostEdge;
-
-  std::vector<boostEdge> edge_vec;
-
-  std::vector<double> weight_vec;
-
-  te::graph::Edge* edge = iterator->getFirstEdge();
-
-  while(edge)
+  for(std::size_t t = 0; t < roots.size(); ++t)
   {
-    edge_vec.push_back(boostEdge(edge->getIdFrom(), edge->getIdTo()));
+    std::size_t rootId = roots[t];
 
-    weight_vec.push_back(te::sa::GetDataValue(edge->getAttributes()[weightAttrIdx]));
+    //create list
+    std::queue<int> queue;
+    std::set<int> visited;
 
-    edge = iterator->getNextEdge();
-  }
+    queue.push(rootId);
+    visited.insert(rootId);
 
-  boostGraph graph(nVertex);
-
-  boost::property_map<boostGraph, boost::edge_weight_t>::type weightmap = boost::get(boost::edge_weight, graph);
-
-  for(std::size_t t = 0; t < nEdge; ++t)
-  {
-    boost::graph_traits<boostGraph>::edge_descriptor e;
-
-    bool inserted;
-
-    boost::tie(e, inserted) = boost::add_edge(edge_vec[t].first, edge_vec[t].second, graph);
-
-    weightmap[e] = (int)weight_vec[t];
-  }
-
-  //run kruskal algorithm
-  typedef boost::graph_traits<boostGraph>::edge_descriptor Edge;
-  typedef boost::graph_traits<boostGraph>::vertex_descriptor Vertex;
-
-  boost::property_map<boostGraph, boost::edge_weight_t>::type weight = boost::get(boost::edge_weight, graph);
-
-  std::vector<Edge> spanning_tree;
-
-  kruskal_minimum_spanning_tree(graph, std::back_inserter(spanning_tree));
-
-  //create minimum spanning tree graph
-  te::graph::AbstractGraph* graphOut = createGraph();
-
-  //create edge weight property
-  int edgeWeightIdx = te::sa::AddGraphEdgeAttribute(graphOut, TE_SA_SKATER_ATTR_WEIGHT_NAME, te::dt::DOUBLE_TYPE);
-  int size = graphOut->getMetadata()->getEdgePropertySize();
-
-  for(std::size_t t = 0; t < spanning_tree.size(); ++t)
-  {
-    Edge eCur = spanning_tree[t];
-
-    int vertexSourceId = boost::source(eCur, graph);
-    int vertexTargetId = boost::target(eCur, graph);
-
-    double weightEdge = weight[eCur];
-
-    //check if output graph already has the input vertex
-    te::graph::Vertex* vFrom = graphOut->getVertex(vertexSourceId);
-
-    if(!vFrom)
+    //bfs over the graph
+    while(!queue.empty())
     {
-      vFrom = new te::graph::Vertex(gpmGraph->getVertex(vertexSourceId));
+      int currentId = queue.front();
+      queue.pop();
 
-      vFrom->getNeighborhood().clear();
-      vFrom->getPredecessors().clear();
-      vFrom->getSuccessors().clear();
-      
-      graphOut->add(vFrom);
+      //get vertex from graph
+      te::graph::Vertex* vertex = graph->getVertex(currentId);
+
+      if(vertex)
+      {
+        //add to map
+        skaterMap.insert(std::map<int, int>::value_type(currentId, (int)t));
+
+        //get neighbours
+        std::set<int> neighbours = vertex->getNeighborhood();
+        std::set<int>::iterator itNeighbours = neighbours.begin();
+
+        while(itNeighbours != neighbours.end())
+        {
+          te::graph::Edge* e = graph->getEdge(*itNeighbours);
+          te::graph::Vertex* vTo = 0;
+
+          if(e)
+          {
+            if(e->getIdFrom() == currentId)
+              vTo = graph->getVertex(e->getIdTo());
+            else
+              vTo = graph->getVertex(e->getIdFrom());
+          }
+
+          if(vTo)
+          {
+            //check if already visted
+            if(visited.find(vTo->getId()) == visited.end())
+            {
+              //add in queue
+              queue.push(vTo->getId());
+              visited.insert(vTo->getId());
+            }
+          }
+
+          ++itNeighbours;
+        }
+      }
     }
-
-    //check if output graph already has the output vertex
-    te::graph::Vertex* vTo = graphOut->getVertex(vertexTargetId);
-
-    if(!vTo)
-    {
-      vTo = new te::graph::Vertex(gpmGraph->getVertex(vertexTargetId));
-
-      vTo->getNeighborhood().clear();
-      vTo->getPredecessors().clear();
-      vTo->getSuccessors().clear();
-
-      graphOut->add(vTo);
-    }
-
-    //create edge
-    te::graph::Edge* e = new te::graph::Edge((int)t, vertexSourceId, vertexTargetId);
-
-    e->setAttributeVecSize(size);
-    e->addAttribute(edgeWeightIdx, new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(weightEdge));
-
-    graphOut->add(e);
   }
 
-  return graphOut;
-}
-
-te::graph::AbstractGraph* te::sa::SkaterOperation::createGraph()
-{
-// graph type
-  std::string graphType = te::graph::Globals::sm_factoryGraphTypeUndirectedGraph;
-
-// connection info
-  std::map<std::string, std::string> connInfo;
-
-// graph information
-  std::map<std::string, std::string> graphInfo;
-  graphInfo["GRAPH_DATA_SOURCE_TYPE"] = "MEM";
-  graphInfo["GRAPH_NAME"] = "mst_graph";
-  graphInfo["GRAPH_DESCRIPTION"] = "Generated by Skater.";
-
-  //create output graph
-  te::graph::AbstractGraph* graph = te::graph::AbstractGraphFactory::make(graphType, connInfo, graphInfo);
-
-  //copy vertex properties from gpm graph
-  te::graph::AbstractGraph* gpmGraph = m_inputParams->m_gpm->getGraph();
-
-  for(int i = 0; i < gpmGraph->getMetadata()->getVertexPropertySize(); ++i)
-  {
-    te::dt::Property* p = gpmGraph->getMetadata()->getVertexProperty(i)->clone();
-    
-    p->setParent(0);
-
-    graph->getMetadata()->addVertexProperty(p);
-  }
-
-  return graph;
+  return skaterMap;
 }
