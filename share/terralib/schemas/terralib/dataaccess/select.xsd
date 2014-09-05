@@ -77,15 +77,60 @@
   <!-- INIT From -->
 
   <xsd:complexType name="FromType">
-    <xsd:sequence>
+    <xsd:choice>
       <xsd:element name="FromItem" type="te_da:FromItemType" minOccurs="0" maxOccurs="unbounded" />
-    </xsd:sequence>
+      <xsd:element name="JoinItem" type="te_da:JoinItemType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:choice>
   </xsd:complexType>
 
   <xsd:complexType name="FromItemType">
     <xsd:sequence>
       <xsd:element name="Value" type="xsd:string" minOccurs="1" maxOccurs="1" />
       <xsd:element name="Alias" type="xsd:string" minOccurs="0" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="JoinItemType">
+    <xsd:complexContent>
+      <xsd:extension base="te_da:FromItemType">
+        <xsd:sequence>
+          <xsd:element name="First" type="te_da:FromItemType" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="Second" type="te_da:FromItemType" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="Type" type="te_da:JoinTypeType" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="Condition" type="te_da:JoinConditionType" minOccurs="1" maxOccurs="1" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:simpleType name="JoinTypeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="JOIN" />
+      <xsd:enumeration value="INNER_JOIN" />
+      <xsd:enumeration value="LEFT_JOIN" />
+      <xsd:enumeration value="RIGHT_JOIN" />
+      <xsd:enumeration value="FULL_OUTER_JOIN" />
+      <xsd:enumeration value="CROSS_JOIN" />
+      <xsd:enumeration value="NATURAL_JOIN" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="JoinConditionType">
+    <xsd:choice>
+      <xsd:element name="JoinConditionOn" type="te_da:JoinConditionOnType" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="JoinConditionUsing" type="te_da:JoinConditionUsingType" minOccurs="1" maxOccurs="1" />
+    </xsd:choice>
+  </xsd:complexType>
+
+  <xsd:complexType name="JoinConditionOnType">
+    <xsd:sequence>
+      <xsd:element ref="te_da:Function" minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="JoinConditionUsingType">
+    <xsd:sequence>
+      <xsd:element ref="te_da:PropertyName" minOccurs="1" maxOccurs="unbounded" />
     </xsd:sequence>
   </xsd:complexType>
 
