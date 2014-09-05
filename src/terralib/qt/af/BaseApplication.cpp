@@ -49,7 +49,7 @@
 #include "../widgets/exchanger/DataExchangerWizard.h"
 #include "../widgets/exchanger/DirectExchangerDialog.h"
 #include "../widgets/externalTable/DataPropertiesDialog.h"
-#include "../widgets/externalTable/ExternalTableLinkWizard.h"
+#include "../widgets/externalTable/TableLinkDialog.h"
 #include "../widgets/help/HelpManager.h"
 #include "../widgets/layer/explorer/ColorMapItem.h"
 #include "../widgets/layer/explorer/ChartItem.h"
@@ -1262,7 +1262,7 @@ void te::qt::af::BaseApplication::onLinkTriggered()
 
     te::map::AbstractLayerPtr selectedLayer = *(selectedLayers.begin());
 
-    std::auto_ptr<te::qt::widgets::ExternalTableLinkWizard> elb(new te::qt::widgets::ExternalTableLinkWizard(this));
+    std::auto_ptr<te::qt::widgets::TableLinkDialog> elb(new te::qt::widgets::TableLinkDialog(this));
     elb->setInputLayer(selectedLayer);
 
     int retval = elb->exec();
@@ -2214,7 +2214,7 @@ void te::qt::af::BaseApplication::makeDialog()
   treeView->add(m_layerChart);
   treeView->add(m_queryLayer);
   treeView->add(m_layerChartsScatter);
-  treeView->add(m_layerLinkTable);
+  treeView->add(m_layerLinkTable, "", "DATASET_LAYER_ITEM");
 
   QAction* actionChartSep = new QAction(this);
   actionChartSep->setSeparator(true);
@@ -2499,7 +2499,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected Features on the Map Display", tr("Fit Selected Features"), tr("Fit the selected features on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan to Selected Features on Map Display", tr("Pan to Selected Features"), tr("Pan to the selected features on the Map Display"), true, false, true, m_menubar);
   initAction(m_queryLayer, "view-filter", "Layer.Query", tr("Query..."), tr(""), true, false, true, m_menubar);
-  initAction(m_layerLinkTable, "", "Layer.Link Table", tr("&Link..."), tr(""), false, false, false, m_menubar);
+  initAction(m_layerLinkTable, "", "Layer.Link Table", tr("&Link..."), tr(""), true, false, true, m_menubar);
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project..."), tr(""), true, false, true, m_menubar);

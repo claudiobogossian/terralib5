@@ -48,23 +48,40 @@ te::sa::SkaterPartition::~SkaterPartition()
 
 }
 
-void te::sa::SkaterPartition::execute()
+std::vector<std::size_t> te::sa::SkaterPartition::execute(std::size_t nGroups)
 {
   assert(m_graph);
+
+  //define struct to order the roots.
+  typedef std::pair<double, std::size_t> Root;
+
+  struct RootComparer
+  {
+    bool operator()(Root a, Root b) const
+    {
+      return a.first < b.first;
+    }
+  };
+
+  typedef std::set<Root, RootComparer> RootSet;
+
+  RootSet rs;
 
   //get first vertex id from graph
   std::auto_ptr<te::graph::MemoryIterator> memIt(new te::graph::MemoryIterator(m_graph));
   int firstVertex = memIt->getFirstVertex()->getId();
-
-  //create list
-  std::queue<int> queue;
-  queue.push(firstVertex);
+  
+  rs.insert(Root(0., firstVertex));
+  std::size_t groups = 1;
 
   //bfs over the graph
-  while(!queue.empty())
+  while(!rs.empty() && groups < nGroups)
   {
-    int currentId = queue.front();
-    queue.pop();
+    RootSet::reverse_iterator it = rs.rbegin();
+
+    std::size_t currentId = it->second;
+
+    rs.erase(*it);
 
     //get vertex from graph
     te::graph::Vertex* vertex = m_graph->getVertex(currentId);
@@ -88,20 +105,24 @@ void te::sa::SkaterPartition::execute()
         //remove edge
         m_graph->removeEdge(edgeId);
 
-        //process first the cluster with major difference
-        if(diffA > diffB)
-        {
-          queue.push(vertexFrom);
-          queue.push(vertexTo);
-        }
-        else
-        {
-          queue.push(vertexTo);
-          queue.push(vertexFrom);
-        }
+        ++groups;
+
+        rs.insert(Root(diffA, vertexFrom));
+        rs.insert(Root(diffB, vertexTo));
       }
     }
   }
+
+  std::vector<std::size_t> rootsVertexId;
+
+  RootSet::iterator it;
+  
+  for(it = rs.begin(); it != rs.end(); ++it)
+  {
+    rootsVertexId.push_back(it->second);
+  }
+
+  return rootsVertexId;
 }
 
 bool te::sa::SkaterPartition::edgeToRemove(int startVertex, double& diffA, double& diffB, std::size_t& edgeToRemoveId)
@@ -166,6 +187,7 @@ bool te::sa::SkaterPartition::edgeToRemove(int startVertex, double& diffA, doubl
 
             EdgeRemovalInfo eri;
             eri.m_edgeId = e->getId();
+            eri.m_SSDT = diff;
             eri.m_SSDi = ssdi;
             eri.m_SSDTa = diffVFrom;
             eri.m_SSDTb = diffVTo;
@@ -198,6 +220,9 @@ bool te::sa::SkaterPartition::edgeToRemove(int startVertex, double& diffA, doubl
       found = true;
     }
   }
+
+  if(found)
+    m_SSDiValues.push_back(maxDiff);
 
   edgeRemovalVec.clear();
 
