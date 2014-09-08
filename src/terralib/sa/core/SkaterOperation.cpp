@@ -78,6 +78,14 @@ void te::sa::SkaterOperation::execute()
     attrsIdx.push_back(gpmIdx);
   }
 
+  //check if use population information
+  if(m_inputParams->m_attrPop != "")
+  {
+    std::size_t idx = m_inputParams->m_dsType->getPropertyPosition(m_inputParams->m_attrPop);
+    int type = m_inputParams->m_ds->getPropertyDataType(idx);
+    int gpmIdx = te::sa::AssociateGPMVertexAttribute(m_inputParams->m_gpm.get(), m_inputParams->m_ds.get(), m_inputParams->m_gpmAttrLink, m_inputParams->m_attrPop, type);
+  }
+
   //calculate gpm edge attribute
   int edgeWeightIdx = te::sa::AddGraphEdgeAttribute(m_inputParams->m_gpm->getGraph(), TE_SA_SKATER_ATTR_WEIGHT_NAME, te::dt::DOUBLE_TYPE);
 
@@ -89,7 +97,7 @@ void te::sa::SkaterOperation::execute()
   te::graph::AbstractGraph* graph = mst.kruskal(edgeWeightIdx);
 
   //partition the graph
-  te::sa::SkaterPartition sp(graph, m_inputParams->m_attrs);
+  te::sa::SkaterPartition sp(graph, m_inputParams->m_attrs, m_inputParams->m_attrPop, m_inputParams->m_minPop);
 
   std::vector<std::size_t> roots = sp.execute(m_inputParams->m_nClusters);
 

@@ -103,7 +103,7 @@ namespace te
           \param graph Pointer to a graph that represents a minimum spanning tree.
           \param attrs Vector with attributes names used to calculate the skater operation
         */
-        SkaterPartition(te::graph::AbstractGraph* graph, std::vector<std::string> attrs, std::string popAttr = "");
+        SkaterPartition(te::graph::AbstractGraph* graph, std::vector<std::string> attrs, std::string popAttr = "", std::size_t minPop = 0);
 
         /*! \brief Virtual destructor. */
         ~SkaterPartition();
@@ -125,7 +125,7 @@ namespace te
 
         double calculateEdgeDifference(int vertexFrom, int vertexTo, double& diffA, double& diffB, std::size_t& popA, std::size_t& popB);
 
-        std::vector<double> calculateRootMean(int startVertex, int vertexToIgnore, std::size_t pop);
+        std::vector<double> calculateRootMean(int startVertex, int vertexToIgnore, std::size_t& pop);
 
         double calculateRootDeviation(int startVertex, int vertexToIgnore, std::vector<double>& meanVec);
 
@@ -138,6 +138,8 @@ namespace te
         std::vector<std::string> m_attrs;     //!< Vector with attributes names used to calculate the skater operation.
 
         std::string m_popAttr;                //!< The population attribute name.
+
+        std::size_t m_popMin;                 //!< The minimum population value allowed in a cluster.
 
         std::vector<double> m_SSDiValues;      //!< Vector with the sum square differences for each edge removed.
 
