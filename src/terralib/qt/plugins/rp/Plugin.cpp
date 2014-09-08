@@ -106,7 +106,11 @@ void te::qt::plugins::rp::Plugin::startup()
   QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
   m_rpMenu = new QMenu(pluginMenu);
   m_rpMenu->setIcon(QIcon::fromTheme("rp-rasterprocessing-icon"));
-  pluginMenu->addMenu(m_rpMenu);
+
+  // Insert action before plugin manager action
+  QAction* pluginsSeparator = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
+
+  pluginMenu->insertMenu(pluginsSeparator, m_rpMenu);
 
   m_rpMenu->setTitle(TE_TR("Raster Processing"));
 

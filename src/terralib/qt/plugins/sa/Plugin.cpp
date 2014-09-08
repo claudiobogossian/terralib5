@@ -92,7 +92,11 @@ void te::qt::plugins::sa::Plugin::startup()
   QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
   m_saMenu = new QMenu(pluginMenu);
   m_saMenu->setIcon(QIcon::fromTheme("sa-spatialanalysis-icon"));
-  pluginMenu->addMenu(m_saMenu);
+
+  // Insert action before plugin manager action
+  QAction* pluginsSeparator = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
+
+  pluginMenu->insertMenu(pluginsSeparator, m_saMenu);
 
   m_saMenu->setTitle(TE_TR("Spatial Analysis"));
 
