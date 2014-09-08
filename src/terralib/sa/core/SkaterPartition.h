@@ -66,7 +66,26 @@ namespace te
       double m_SSDTa;       //!< Sum of Square Difference for Tree A
       double m_SSDTb;       //!< Sum of Square Difference for Tree B
       double m_SSDi;        //!< Difference between m_SSDa and m_SSDb
-    }; 
+      std::size_t m_popa;   //!< Sum of population for Tree A
+      std::size_t m_popb;   //!< Sum of population for Tree B
+    };
+
+    /*!
+      \struct RootComparer
+      
+      \brief A struct to order the roots.
+    */
+    typedef std::pair<double, std::size_t> Root;
+
+    struct RootComparer
+    {
+      bool operator()(Root a, Root b) const
+      {
+        return a.first < b.first;
+      }
+    };
+
+    typedef std::set<Root, RootComparer> RootSet;
     
     /*!
       \class SkaterPartition
@@ -84,7 +103,7 @@ namespace te
           \param graph Pointer to a graph that represents a minimum spanning tree.
           \param attrs Vector with attributes names used to calculate the skater operation
         */
-        SkaterPartition(te::graph::AbstractGraph* graph, std::vector<std::string> attrs);
+        SkaterPartition(te::graph::AbstractGraph* graph, std::vector<std::string> attrs, std::string popAttr = "", std::size_t minPop = 0);
 
         /*! \brief Virtual destructor. */
         ~SkaterPartition();
@@ -104,9 +123,9 @@ namespace te
 
         bool edgeToRemove(int startVertex, double& diffA, double& diffB, std::size_t& edgeToRemoveId);
 
-        double calculateEdgeDifference(int vertexFrom, int vertexTo, double& diffA, double& diffB);
+        double calculateEdgeDifference(int vertexFrom, int vertexTo, double& diffA, double& diffB, std::size_t& popA, std::size_t& popB);
 
-        std::vector<double> calculateRootMean(int startVertex, int vertexToIgnore);
+        std::vector<double> calculateRootMean(int startVertex, int vertexToIgnore, std::size_t& pop);
 
         double calculateRootDeviation(int startVertex, int vertexToIgnore, std::vector<double>& meanVec);
 
@@ -114,9 +133,13 @@ namespace te
 
       protected:
 
+        te::graph::AbstractGraph* m_graph;    //!< Pointer to a graph that represents a minimum spanning tree.
+
         std::vector<std::string> m_attrs;     //!< Vector with attributes names used to calculate the skater operation.
 
-        te::graph::AbstractGraph* m_graph;    //!< Pointer to a graph that represents a minimum spanning tree.
+        std::string m_popAttr;                //!< The population attribute name.
+
+        std::size_t m_popMin;                 //!< The minimum population value allowed in a cluster.
 
         std::vector<double> m_SSDiValues;      //!< Vector with the sum square differences for each edge removed.
 

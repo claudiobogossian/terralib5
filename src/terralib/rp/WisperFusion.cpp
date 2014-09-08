@@ -313,10 +313,10 @@ namespace te
         }
         
         lRInterceptedBandIndex.resize( nLowResBands, nLowResBands + 1 );
-        std::map< double, unsigned int >::iterator centralFrequency2BandIdxMapIt =
+        std::multimap< double, unsigned int >::iterator centralFrequency2BandIdxMapIt =
           centralFrequency2BandIdxMap.begin();
-        std::map< double, unsigned int >::iterator centralFrequency2BandIdxMapItPrev;
-        std::map< double, unsigned int >::iterator centralFrequency2BandIdxMapItEnd =
+        std::multimap< double, unsigned int >::iterator centralFrequency2BandIdxMapItPrev;
+        std::multimap< double, unsigned int >::iterator centralFrequency2BandIdxMapItEnd =
           centralFrequency2BandIdxMap.end();          
         while( centralFrequency2BandIdxMapIt != centralFrequency2BandIdxMapItEnd )
         {

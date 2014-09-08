@@ -24,18 +24,69 @@
 */
 
 // TerraLib
+#include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/utils/Utils.h"
 #include "../geometry/Coord2D.h"
 #include "../geometry/Envelope.h"
+#include "../geometry/GeometryProperty.h"
 #include "../geometry/LineString.h"
 #include "../geometry/MultiPolygon.h"
 #include "../geometry/Point.h"
 #include "../geometry/Polygon.h"
 #include "../geometry/Utils.h"
+#include "../srs/Config.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
 #include <memory>
+
+te::gm::Geometry* te::edit::PickGeometry(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid)
+{
+  if(layer->getVisibility() != te::map::VISIBLE || !layer->isValid())
+    return 0;
+
+  te::gm::Envelope reprojectedEnvelope(env);
+
+  if((layer->getSRID() != TE_UNKNOWN_SRS) && (srid != TE_UNKNOWN_SRS) && (layer->getSRID() != srid))
+    reprojectedEnvelope.transform(srid, layer->getSRID());
+
+  if(!reprojectedEnvelope.intersects(layer->getExtent()))
+    return 0;
+
+  std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema());
+
+  if(!schema->hasGeom())
+    return 0;
+
+  te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(schema.get());
+
+  // Gets the dataset
+  std::auto_ptr<te::da::DataSet> dataset = layer->getData(gp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS);
+
+  if(dataset.get() == 0)
+    return 0;
+
+  // Generates a geometry from the given extent. It will be used to refine the results
+  std::auto_ptr<te::gm::Geometry> geometryFromEnvelope(te::gm::GetGeomFromEnvelope(&reprojectedEnvelope, layer->getSRID()));
+
+  // The restriction point. It will be used to refine the results
+  te::gm::Coord2D center = reprojectedEnvelope.getCenter();
+  te::gm::Point point(center.x, center.y, layer->getSRID());
+
+  while(dataset->moveNext())
+  {
+    std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
+
+    if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()))
+    {
+      // Geometry found!
+      return g.release();
+    }
+  }
+
+  return 0;
+}
 
 void te::edit::GetLines(te::gm::Geometry* geom, std::vector<te::gm::LineString*>& lines)
 {
@@ -200,6 +251,23 @@ te::edit::VertexIndex te::edit::FindSegment(std::vector<te::gm::LineString*>& li
   }
 
   return index;
+}
+
+void te::edit::MoveGeometry(te::gm::Geometry* geom, const double& deltax, const double& deltay)
+{
+  assert(geom);
+
+  std::vector<te::gm::LineString*> lines;
+  GetLines(geom, lines);
+
+  for(std::size_t i = 0; i < lines.size(); ++i)
+  {
+    te::gm::LineString* l = lines[i];
+    assert(l);
+
+    for(std::size_t j = 0; j < l->getNPoints(); ++j)
+      l->setPoint(j, l->getX(j) + deltax, l->getY(j) + deltay);
+  }
 }
 
 bool te::edit::IsSpecialRingVertex(te::gm::LineString* l, const VertexIndex& index)
