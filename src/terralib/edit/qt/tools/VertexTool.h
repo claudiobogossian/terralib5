@@ -27,8 +27,8 @@
 #define __TERRALIB_EDIT_QT_INTERNAL_VERTEXTOOL_H
 
 // TerraLib
-#include "../../../qt/widgets/tools/AbstractTool.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../qt/widgets/tools/AbstractTool.h"
 #include "../../../sam/rtree/Index.h"
 #include "../../Config.h"
 #include "../../Utils.h"
@@ -97,7 +97,7 @@ namespace te
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        VertexTool(te::qt::widgets::MapDisplay* display, const QCursor& cursor, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
+        VertexTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
 
         /*! \brief Destructor. */
         ~VertexTool();
@@ -129,11 +129,13 @@ namespace te
 
         void drawVertexes(te::gm::Point* virtualVertex = 0);
 
-        QPointF getPosition(QMouseEvent* e);
-
         te::gm::Envelope buildEnvelope(const QPointF& pos);
 
         void updateRTree();
+
+        void setStage(StageType stage);
+
+        void updateCursor();
 
       private slots:
 

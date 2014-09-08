@@ -72,7 +72,7 @@ namespace te
             
             std::vector< te::rp::srf::SensorType > m_lowResRasterBandSensors; //!< The low resolution bands sensors.
             
-            std::vector< std::map< double, double > > m_lowResRasterBandsSRFs; //!< An optional vector of user supplied Spectral Response Functions for each low resolution band.
+            std::vector< std::map< double, double > > m_lowResRasterBandsSRFs; //!< An optional vector of user supplied Spectral Response Functions for each low resolution band (The wavelength unit: Nanometers (nm) ).
             
             te::rst::Raster const* m_highResRasterPtr; //!< Input high-resolution raster.
             
@@ -80,7 +80,7 @@ namespace te
             
             te::rp::srf::SensorType m_hiResRasterBandSensor; //!< The high resolution band sensor.
             
-            std::map< double, double > m_hiResRasterBandsSRFs; //!< An optional vector of user supplied Spectral Response Functions for the high resolution band.            
+            std::map< double, double > m_hiResRasterBandsSRFs; //!< An optional vector of user supplied Spectral Response Functions for the high resolution band (The wavelength unit: Nanometers (nm) ).            
             
             unsigned int m_hiResRasterWaveletLevels; //!< The number of wavelet decomposition levels to use (0-automatically found, default:0).
             
@@ -169,6 +169,35 @@ namespace te
           \return Return a SRF interpolated from the given SRFs.
          */         
         double interpolateSRF( const std::map< double, double >& sRFs, const double& frequency ) const;
+        
+        /*!
+          \brief Return the SRF area.
+          \param SRFs Input SRFs.
+          \return Return the SRF area.
+         */         
+        double getSRFArea( const std::map< double, double >& sRFs ) const;        
+        
+        /*!
+          \brief Return the intersetction SRF.
+          \param sRF1 Input SRFs 1.
+          \param sRF2 Input SRFs 2.
+          \param intersectionSRF The resultant intersection SRF.
+          \return Return a SRF interpolated from the given SRFs.
+         */         
+        void getIntersectionSRF( const std::map< double, double >& sRF1, 
+          const std::map< double, double >& sRF2,
+          std::map< double, double >& intersectionSRF ) const;        
+          
+        /*!
+          \brief Return the union SRF.
+          \param sRF1 Input SRFs 1.
+          \param sRF2 Input SRFs 2.
+          \param unionSRF The resultant intersection SRF.
+          \return Return a SRF interpolated from the given SRFs.
+         */         
+        void getUnionSRF( const std::map< double, double >& sRF1, 
+          const std::map< double, double >& sRF2,
+          std::map< double, double >& unionSRF ) const;            
     
     };
 

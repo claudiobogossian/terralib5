@@ -59,6 +59,10 @@
   #include "SamplePointsGeneratorAction.h"
 #endif
 
+#ifdef TE_QT_PLUGIN_SA_HAVE_SKATER
+  #include "SkaterAction.h"
+#endif
+
 #ifdef TE_QT_PLUGIN_SA_HAVE_SPATIALSTATISTICS
   #include "SpatialStatisticsAction.h"
 #endif
@@ -148,6 +152,11 @@ void te::qt::plugins::sa::Plugin::registerActions()
   m_kernelRatio = new te::qt::plugins::sa::KernelRatioAction(m_saMenu);
 #endif
 
+#ifdef TE_QT_PLUGIN_SA_HAVE_SKATER
+  m_saMenu->addSeparator();
+  m_skater = new te::qt::plugins::sa::SkaterAction(m_saMenu);
+#endif
+
 #ifdef TE_QT_PLUGIN_SA_HAVE_GEOSTATISTICALMETHODS
   m_saMenu->addSeparator();
   m_geostatistics = new te::qt::plugins::sa::GeostatisticalMethodsAction(m_saMenu);
@@ -189,6 +198,10 @@ void  te::qt::plugins::sa::Plugin::unRegisterActions()
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_SAMPLEPOINTSGENERATOR
   delete m_samplePointsGenerator;
+#endif
+
+#ifdef TE_QT_PLUGIN_SA_HAVE_SKATER
+  delete m_skater;
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_SPATIALSTATISTICS

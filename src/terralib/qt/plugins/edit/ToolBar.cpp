@@ -24,6 +24,8 @@
 */
 
 // Terralib
+#include "../../../edit/qt/tools/CreateLineTool.h"
+#include "../../../edit/qt/tools/CreatePolygonTool.h"
 #include "../../../edit/qt/tools/VertexTool.h"
 #include "../../af/events/LayerEvents.h"
 #include "../../af/events/MapEvents.h"
@@ -39,7 +41,9 @@
 
 te::qt::plugins::edit::ToolBar::ToolBar()
   : m_toolBar(0),
-    m_vertexToolAction(0)
+    m_vertexToolAction(0),
+    m_createPolygonToolAction(0),
+    m_createLineToolAction(0)
 {
   initialize();
 }
@@ -69,8 +73,14 @@ void te::qt::plugins::edit::ToolBar::initialize()
   // Create the main toolbar
   m_toolBar = new QToolBar;
 
-  // Create VertexTool action
+  // VertexTool action
   m_vertexToolAction = m_toolBar->addAction("Vertex Tool", this, SLOT(onVertexToolActivated(bool)));
+
+  // CreatePolygonTool action
+  m_createPolygonToolAction = m_toolBar->addAction("Create Polygon", this, SLOT(onCreatePolygonToolActivated(bool)));
+
+  // CreateLineTool action
+  m_createLineToolAction = m_toolBar->addAction("Create Line", this, SLOT(onCreateLineToolActivated(bool)));
 }
 
 void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool checked)
@@ -87,6 +97,28 @@ void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool checked)
 
   assert(e.m_display);
 
-  te::edit::VertexTool* tool = new te::edit::VertexTool(e.m_display->getDisplay(), Qt::ArrowCursor, layer, 0);
+  te::edit::VertexTool* tool = new te::edit::VertexTool(e.m_display->getDisplay(), layer, 0);
+  e.m_display->setCurrentTool(tool);
+}
+
+void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool checked)
+{
+  te::qt::af::evt::GetMapDisplay e;
+  te::qt::af::ApplicationController::getInstance().broadcast(&e);
+
+  assert(e.m_display);
+
+  te::edit::CreatePolygonTool* tool = new te::edit::CreatePolygonTool(e.m_display->getDisplay(), Qt::ArrowCursor, 0);
+  e.m_display->setCurrentTool(tool);
+}
+
+void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool checked)
+{
+  te::qt::af::evt::GetMapDisplay e;
+  te::qt::af::ApplicationController::getInstance().broadcast(&e);
+
+  assert(e.m_display);
+
+  te::edit::CreateLineTool* tool = new te::edit::CreateLineTool(e.m_display->getDisplay(), Qt::ArrowCursor, 0);
   e.m_display->setCurrentTool(tool);
 }

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/edit/core/Utils.h
+  \file terralib/edit/Utils.h
    
   \brief Utility functions for TerraLib Edit module.
 */
@@ -39,6 +39,7 @@ namespace te
   namespace gm
   {
     struct Coord2D;
+    class Envelope;
     class Geometry;
     class GeometryCollection;
     class LineString;
@@ -81,6 +82,12 @@ namespace te
     TEEDITEXPORT void MoveVertex(std::vector<te::gm::LineString*>& lines, const VertexIndex& index, const double& x, const double& y);
 
     TEEDITEXPORT void RemoveVertex(std::vector<te::gm::LineString*>& lines, const VertexIndex& index);
+
+    TEEDITEXPORT void AddVertex(std::vector<te::gm::LineString*>& lines, const double& x, const double& y, const te::gm::Envelope& env, int srid);
+
+    TEEDITEXPORT VertexIndex FindSegment(std::vector<te::gm::LineString*>& lines, const te::gm::Envelope& env, int srid);
+
+    TEEDITEXPORT bool IsSpecialRingVertex(te::gm::LineString* l, const VertexIndex& index);
 
   } // end namespace edit
 }   // end namespace te

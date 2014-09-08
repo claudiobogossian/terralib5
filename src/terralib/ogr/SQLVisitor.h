@@ -57,6 +57,10 @@ namespace te
 
         void visit(const te::da::Select& visited);
 
+        void visit(const te::da::Join& visited);
+
+        void visit(const te::da::JoinConditionOn& visited);
+
         void visitDistinct(const te::da::Distinct& visited);
 
         te::gm::Envelope* getMBR();
