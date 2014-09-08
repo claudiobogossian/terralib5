@@ -18,41 +18,30 @@
  */
 
 /*!
-  \file terralib/edit/qt/tools/VertexTool.h
+  \file terralib/edit/qt/tools/MoveGeometryTool.h
 
-  \brief This class implements a concrete tool for vertex operations (move, add, etc.).
+  \brief This class implements a concrete tool to move geometries.
 */
 
-#ifndef __TERRALIB_EDIT_QT_INTERNAL_VERTEXTOOL_H
-#define __TERRALIB_EDIT_QT_INTERNAL_VERTEXTOOL_H
+#ifndef __TERRALIB_EDIT_QT_INTERNAL_MOVEGEOMETRYTOOL_H
+#define __TERRALIB_EDIT_QT_INTERNAL_MOVEGEOMETRYTOOL_H
 
 // TerraLib
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
-#include "../../../sam/rtree/Index.h"
 #include "../../Config.h"
-#include "../../Utils.h"
 
-// STL
-#include <string>
-#include <vector>
+// Qt
+#include <QPointF>
 
 namespace te
 {
-// Forward declarations
-  namespace gm
-  {
-    struct Coord2D;
-    class Geometry;
-    class LineString;
-    class Point;
-  }
-
   namespace qt
   {
     namespace widgets
     {
+      class Canvas;
       class MapDisplay;
     }
   }
@@ -60,29 +49,15 @@ namespace te
   namespace edit
   {
     /*!
-      \class VertexTool
+      \class MoveGeometryTool
 
-      \brief This class implements a concrete tool for vertex operations (move, add, etc.).
+      \brief This class implements a concrete tool to move geometries.
     */
-    class TEEDITEXPORT VertexTool : public te::qt::widgets::AbstractTool
+    class TEEDITEXPORT MoveGeometryTool : public te::qt::widgets::AbstractTool
     {
       Q_OBJECT
 
       public:
-
-        /*!
-          \enum StageType
-
-          \brief Defines the operation stage to this tool.
-        */
-        enum StageType
-        {
-          GEOMETRY_SELECTION,   /*!< Selection of geometry.  */
-          VERTEX_SEARCH,        /*!< Search of vertex.       */
-          VERTEX_FOUND,         /*!< Vertex found.           */
-          VERTEX_MOVING,        /*!< Vertex movement.        */
-          VERTEX_READY_TO_ADD   /*!< Vertex add.             */
-        };
 
         /** @name Initializer Methods
           *  Methods related to instantiation and destruction.
@@ -90,17 +65,17 @@ namespace te
         //@{
 
         /*!
-          \brief It constructs a vertex tool associated with the given map display.
+          \brief It constructs a move geometry tool associated with the given map display.
 
           \param display The map display associated with the tool.
           \param parent The tool's parent.
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        VertexTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
+        MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
 
         /*! \brief Destructor. */
-        ~VertexTool();
+        ~MoveGeometryTool();
 
         //@}
 
@@ -125,15 +100,9 @@ namespace te
 
         void pickGeometry(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
 
-        void pickGeometry(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env);
-
-        void drawVertexes(te::gm::Point* virtualVertex = 0);
-
         te::gm::Envelope buildEnvelope(const QPointF& pos);
 
-        void updateRTree();
-
-        void setStage(StageType stage);
+        void drawGeometry();
 
         void updateCursor();
 
@@ -141,17 +110,16 @@ namespace te
 
         void onExtentChanged();
 
-      private:
+      protected:
 
-          te::map::AbstractLayerPtr m_layer;
-          te::gm::Geometry* m_geom;
-          std::vector<te::gm::LineString*> m_lines;
-          VertexIndex m_currentVertexIndex;
-          te::sam::rtree::Index<VertexIndex, 8> m_rtree;
-          StageType m_currentStage;
+        te::map::AbstractLayerPtr m_layer;
+        te::gm::Geometry* m_geom;
+        bool m_moveStarted;                 //!< Flag that indicates if move operation was started.
+        QPointF m_origin;                   //!< Origin point on mouse pressed.
+        QPointF m_delta;                    //!< Difference between pressed point and destination point on mouse move.
     };
 
   }   // end namespace edit
 }     // end namespace te
 
-#endif  // __TERRALIB_EDIT_QT_INTERNAL_VERTEXTOOL_H
+#endif  // __TERRALIB_EDIT_QT_INTERNAL_MOVEGEOMETRYTOOL_H

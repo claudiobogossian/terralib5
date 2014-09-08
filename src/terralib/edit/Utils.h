@@ -27,6 +27,7 @@
 #define __TERRALIB_EDIT_INTERNAL_UTILS_H
 
 // TerraLib
+#include "../maptools/AbstractLayer.h"
 #include "Config.h"
 
 // STL
@@ -71,6 +72,8 @@ namespace te
       std::size_t m_pos;
     };
 
+    TEEDITEXPORT te::gm::Geometry* PickGeometry(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid);
+
     TEEDITEXPORT void GetLines(te::gm::Geometry* geom, std::vector<te::gm::LineString*>& lines);
 
     TEEDITEXPORT void GetLines(te::gm::GeometryCollection* gc, std::vector<te::gm::LineString*>& lines);
@@ -86,6 +89,8 @@ namespace te
     TEEDITEXPORT void AddVertex(std::vector<te::gm::LineString*>& lines, const double& x, const double& y, const te::gm::Envelope& env, int srid);
 
     TEEDITEXPORT VertexIndex FindSegment(std::vector<te::gm::LineString*>& lines, const te::gm::Envelope& env, int srid);
+
+    TEEDITEXPORT void MoveGeometry(te::gm::Geometry* geom, const double& deltax, const double& deltay);
 
     TEEDITEXPORT bool IsSpecialRingVertex(te::gm::LineString* l, const VertexIndex& index);
 

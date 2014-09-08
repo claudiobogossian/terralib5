@@ -73,12 +73,15 @@ namespace te
 
             void onCreateLineToolActivated(bool checked);
 
+            void onMoveGeometryToolActivated(bool checked);
+
           protected:
 
             QToolBar* m_toolBar;
             QAction* m_vertexToolAction;
             QAction* m_createPolygonToolAction;
             QAction* m_createLineToolAction;
+            QAction* m_moveGeometryToolAction;
         };
 
       } // end namespace edit
