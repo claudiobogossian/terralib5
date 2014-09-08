@@ -24,15 +24,11 @@
 */
 
 // TerraLib
-#include "../../../dataaccess/dataset/DataSet.h"
-#include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/Coord2D.h"
 #include "../../../geometry/Geometry.h"
-#include "../../../geometry/GeometryProperty.h"
 #include "../../../geometry/LineString.h"
 #include "../../../geometry/MultiPolygon.h"
 #include "../../../geometry/Polygon.h"
-#include "../../../geometry/Envelope.h"
 #include "../../../geometry/Utils.h"
 #include "../../../qt/widgets/canvas/Canvas.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
@@ -252,7 +248,6 @@ void te::edit::VertexTool::reset()
   m_rtree.clear();
 }
 
-
 void te::edit::VertexTool::pickGeometry(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
 {
   te::gm::Envelope env = buildEnvelope(pos);
@@ -263,48 +258,9 @@ void te::edit::VertexTool::pickGeometry(const te::map::AbstractLayerPtr& layer, 
 {
   reset();
 
-  if(layer->getVisibility() != te::map::VISIBLE || !layer->isValid())
-    return;
-
-  std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema());
-
-  if(!schema->hasGeom())
-    return;
-
-  te::gm::Envelope reprojectedEnvelope(env);
-
-  if((layer->getSRID() != TE_UNKNOWN_SRS) && (m_display->getSRID() != TE_UNKNOWN_SRS) && (layer->getSRID() != m_display->getSRID()))
-    reprojectedEnvelope.transform(m_display->getSRID(), layer->getSRID());
-
-  if(!reprojectedEnvelope.intersects(layer->getExtent()))
-    return;
-
   try
   {
-    te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(schema.get());
-
-    // Gets the dataset
-    std::auto_ptr<te::da::DataSet> dataset = layer->getData(gp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS);
-    assert(dataset.get());
-
-    // Generates a geometry from the given extent. It will be used to refine the results
-    std::auto_ptr<te::gm::Geometry> geometryFromEnvelope(te::gm::GetGeomFromEnvelope(&reprojectedEnvelope, layer->getSRID()));
-
-    // The restriction point. It will be used to refine the results
-    te::gm::Coord2D center = reprojectedEnvelope.getCenter();
-    te::gm::Point point(center.x, center.y, layer->getSRID());
-
-    while(dataset->moveNext())
-    {
-      std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
-
-      if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()))
-      {
-        // Geometry found!
-        m_geom = g.release();
-        break;
-      }
-    }
+    m_geom = PickGeometry(m_layer, env, m_display->getSRID());
 
     m_lines.clear();
 
@@ -317,7 +273,6 @@ void te::edit::VertexTool::pickGeometry(const te::map::AbstractLayerPtr& layer, 
   catch(std::exception& e)
   {
     QMessageBox::critical(m_display, tr("Error"), QString(tr("The geometry cannot be selected from the layer. Details:") + " %1.").arg(e.what()));
-    // TODO: catch the exceptions...
   }
 }
 

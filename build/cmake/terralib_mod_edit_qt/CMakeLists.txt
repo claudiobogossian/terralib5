@@ -70,7 +70,8 @@ else() # QT4_FOUND
   # moc'ing
     set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/VertexTool.h
                                    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/CreatePolygonTool.h
-                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/CreateLineTool.h)
+                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/CreateLineTool.h
+                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/MoveGeometryTool.h)
 
     QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 
