@@ -44,7 +44,7 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_gridGeodesic(0),
   m_horizontalRuler(0),
   m_verticalRuler(0),
-  m_textItem(0),
+  m_defaultTextItem(0),
   m_itemGroup(0),
   m_scaleItem(0),
   m_pageSetup(0),
@@ -59,7 +59,6 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_editTemplate(0),
   m_menuItem(0),
   m_textGridSettings(0)
-
 {
   init();
 }
@@ -149,13 +148,7 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_verticalRuler;
     m_verticalRuler = 0;
   }
-
-  if(m_textItem)
-  {
-    delete m_textItem;
-    m_textItem = 0;
-  }
-
+  
   if(m_itemGroup)
   {
     delete m_itemGroup;
@@ -300,8 +293,8 @@ void te::layout::EnumObjectType::init()
   m_verticalRuler = new EnumType(14, "Vertical_Ruler");
   m_enums.push_back(m_verticalRuler);
 
-  m_textItem = new EnumType(15, "Text_Item");
-  m_enums.push_back(m_textItem);
+  m_defaultTextItem = new EnumType(15, "Text_Item");
+  m_enums.push_back(m_defaultTextItem);
 
   m_itemGroup = new EnumType(16, "Item_Group");
   m_enums.push_back(m_itemGroup);
@@ -419,11 +412,6 @@ te::layout::EnumType* te::layout::EnumObjectType::getHorizontalRuler() const
 te::layout::EnumType* te::layout::EnumObjectType::getVerticalRuler() const
 {
   return m_verticalRuler;
-}
-
-te::layout::EnumType* te::layout::EnumObjectType::getTextItem() const
-{
-  return m_textItem;
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getItemGroup() const

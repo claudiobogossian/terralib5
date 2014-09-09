@@ -76,9 +76,7 @@ namespace te
         virtual EnumType* getHorizontalRuler() const;
         
         virtual EnumType* getVerticalRuler() const;
-        
-        virtual EnumType* getTextItem() const;
-        
+                
         virtual EnumType* getItemGroup() const;
         
         virtual EnumType* getScaleItem() const;
@@ -130,7 +128,6 @@ namespace te
         EnumType* m_gridGeodesic;
         EnumType* m_horizontalRuler;
         EnumType* m_verticalRuler;
-        EnumType* m_textItem;
         EnumType* m_itemGroup;
         EnumType* m_scaleItem;
         EnumType* m_pageSetup;
