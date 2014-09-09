@@ -76,6 +76,8 @@ namespace te
 
       virtual void itemsSelected(QList<QGraphicsItem*> graphicsItems, QList<QGraphicsItem*> allItems);
 
+      virtual void refreshOutside();
+
       private slots:
 
         void onChangePropertyValue(Property property);

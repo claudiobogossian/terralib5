@@ -34,6 +34,12 @@
 #include "../outside/GridSettingsOutside.h"
 #include "../../core/pattern/mvc/ItemController.h"
 #include "../../core/enum/Enums.h"
+#include "../../outside/TextGridSettingsModel.h"
+#include "../../outside/TextGridSettingsController.h"
+#include "../outside/TextGridSettingsOutside.h"
+#include "pattern/command/ChangePropertyCommand.h"
+#include "../../core/pattern/singleton/Context.h"
+#include "Scene.h"
 
 //STL
 #include <string>
@@ -54,9 +60,7 @@
 #include <QFont>
 #include <QColorDialog>
 #include <QColor>
-#include "../../outside/TextGridSettingsModel.h"
-#include "../../outside/TextGridSettingsController.h"
-#include "../outside/TextGridSettingsOutside.h"
+#include <QUndoCommand>
 
 te::layout::MenuItem::MenuItem( QObject * parent ) :
 	QObject(parent),
@@ -555,7 +559,9 @@ void te::layout::MenuItem::changePropertyValue( Property property )
   if(property.getType() == dataType->getDataTypeNone())
     return;
 
-  foreach( QGraphicsItem* item, m_graphicsItems) 
+  Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
+
+  foreach(QGraphicsItem* item, m_graphicsItems) 
   {
     if (item)
     {			
@@ -563,6 +569,8 @@ void te::layout::MenuItem::changePropertyValue( Property property )
       if(lItem)
       {
         Properties* props = new Properties("");
+        Properties* beforeProps = lItem->getProperties();
+        Properties* oldCommand = new Properties(*beforeProps);
         if(props)
         {
           props->setObjectName(lItem->getProperties()->getObjectName());
@@ -570,6 +578,15 @@ void te::layout::MenuItem::changePropertyValue( Property property )
           props->addProperty(property);
 
           lItem->updateProperties(props);
+
+          if(beforeProps)
+          {
+            beforeProps = lItem->getProperties();
+            Properties* newCommand = new Properties(*beforeProps);
+            QUndoCommand* command = new ChangePropertyCommand(item, oldCommand, newCommand);
+            lScene->addUndoStack(command);
+          }
+
           delete props;
           props = 0;
         }       

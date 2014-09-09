@@ -48,6 +48,8 @@ class QGraphicsProxyWidget;
 class QPrinter;
 class QPainter;
 class QLine;
+class QUndoStack;
+class QUndoCommand;
 
 namespace te
 {
@@ -58,6 +60,10 @@ namespace te
     class VisualizationArea;
     class Systematic;
     class EnumType;
+    class AddCommand;
+    class ChangePropertyCommand;
+    class MoveCommand;
+    class DeleteCommand;
 
     class TELAYOUTEXPORT Scene : public QGraphicsScene, public AbstractScene
     {
@@ -123,6 +129,8 @@ namespace te
         
         virtual void deleteItems();
 
+        virtual void removeSelectedItems();
+
         virtual void setCurrentToolInSelectedMapItems(EnumType* mode);
 
         void setLineIntersectionHzr(QLineF* line);
@@ -159,6 +167,18 @@ namespace te
         virtual void alignCenterVertical();
 
         virtual QRectF getSelectionItemsBoundingBox();
+
+        /* Part of undo/redo framework */
+
+        virtual void addUndoStack(QUndoCommand* command);
+
+        virtual QUndoStack* getUndoStack();
+
+        virtual void setUndoStackLimit(int limit);
+
+        virtual int getUndoStackLimit();
+
+        virtual bool	eventFilter ( QObject * watched, QEvent * event );
         
       protected slots:
 
@@ -178,7 +198,7 @@ namespace te
 
         virtual QPrinter* createPrinter();
 
-        void renderScene( QPainter* newPainter );
+        virtual void renderScene( QPainter* newPainter );
 
         virtual void changePrintVisibility(bool change);
 
@@ -192,14 +212,18 @@ namespace te
         
       protected:
 
-        te::gm::Envelope* m_boxW;
-        QTransform m_matrix;
-        double m_screenWidthMM;
-        double m_screenHeightMM;
-        QLineF*        m_lineIntersectHrz;
-        QLineF*        m_lineIntersectVrt;
-        bool           m_fixedRuler;
-        PrinterScene     m_previewState;
+        te::gm::Envelope*  m_boxW;
+        QTransform         m_matrix;
+        double             m_screenWidthMM;
+        double             m_screenHeightMM;
+        QLineF*            m_lineIntersectHrz;
+        QLineF*            m_lineIntersectVrt;
+        bool               m_fixedRuler;
+        PrinterScene       m_previewState;
+        QUndoStack*        m_undoStack;
+        int                m_undoStackLimit;
+        bool               m_moveWatched;
+        QPointF            m_oldWatchedPos;
     };
   }
 }

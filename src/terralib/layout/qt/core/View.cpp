@@ -83,9 +83,8 @@ te::layout::View::View( QWidget* widget) :
   m_selectionChange(false),
   m_menuItem(0)
 {
-
   setDragMode(RubberBandDrag);
-
+  
   m_lineIntersectHrz = new QLineF(0,0,0,0);
   m_lineIntersectVrt = new QLineF(0,0,0,0);
 }
@@ -183,15 +182,15 @@ void te::layout::View::mouseMoveEvent( QMouseEvent * event )
   if(!sc)
     return;
 
-   QPointF scenePos = mapToScene(event->pos());
-
-   emit changeSceneCoordMouse(scenePos);
+   QPointF pt = mapToScene(event->pos());
    
-   m_lineIntersectHrz->setP1(QPointF(sc->sceneRect().topLeft().x(), scenePos.y()));
-   m_lineIntersectHrz->setP2(scenePos);
+   emit changeSceneCoordMouse(pt);
+   
+   m_lineIntersectHrz->setP1(QPointF(sc->sceneRect().topLeft().x(), pt.y()));
+   m_lineIntersectHrz->setP2(pt);
 
-   m_lineIntersectVrt->setP1(QPointF(scenePos.x(), sc->sceneRect().topLeft().y()));
-   m_lineIntersectVrt->setP2(scenePos);
+   m_lineIntersectVrt->setP1(QPointF(pt.x(), sc->sceneRect().topLeft().y()));
+   m_lineIntersectVrt->setP2(pt);
 }
 
 void te::layout::View::mouseReleaseEvent( QMouseEvent * event )
@@ -238,7 +237,7 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
   }
   else if(keyEvent->key() == Qt::Key_Delete)
   {
-    sc->deleteItems();
+    sc->removeSelectedItems();
   }
 
   QGraphicsView::keyPressEvent(keyEvent);
@@ -574,7 +573,7 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   }
   else if(mode == enumMode->getModeRemoveObject()) 
   {
-    sc->deleteItems();
+    sc->removeSelectedItems();
     resetDefaultConfig();
   }
 }

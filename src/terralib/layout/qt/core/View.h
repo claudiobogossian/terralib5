@@ -113,7 +113,7 @@ namespace te
         virtual void	showEvent ( QShowEvent * event );
 
         virtual void	contextMenuEvent ( QContextMenuEvent * event );
-        
+                
         virtual void createItemGroup();
 
         virtual void destroyItemGroup();

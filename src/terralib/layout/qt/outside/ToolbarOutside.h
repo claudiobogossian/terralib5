@@ -109,11 +109,7 @@ namespace te
       virtual void onAlignCenterVerticalClicked(bool checked);
 
       virtual void onRemoveObjectClicked(bool checked);
-
-      virtual void onUndoClicked(bool checked);
-
-      virtual void onRedoClicked(bool checked);
-
+      
     signals:
 
       void changeContext(bool change);
@@ -161,8 +157,6 @@ namespace te
       virtual void createRemoveObjectToolButton();
 
       virtual void createUndoToolButton();
-      
-      virtual void createRedoToolButton();
 
       virtual void changeAction(EnumType* mode);
 

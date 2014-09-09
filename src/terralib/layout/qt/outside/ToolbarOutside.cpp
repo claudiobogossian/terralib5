@@ -51,6 +51,7 @@
 #include <QMenuBar>
 #include <QAction>
 #include <QPushButton>
+#include <QUndoStack>
 
 te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Observable* o ) :
 	QToolBar(0),
@@ -141,7 +142,6 @@ void te::layout::ToolbarOutside::createToolbar()
   this->addSeparator();
 
   createUndoToolButton();
-  createRedoToolButton();
   this->addSeparator();
 
   /*createLineIntersectionToolButton();
@@ -455,18 +455,29 @@ void te::layout::ToolbarOutside::createRemoveObjectToolButton()
 
 void te::layout::ToolbarOutside::createUndoToolButton()
 {
-  QToolButton *btn = createToolButton("Undo Action", "Undo Action", "layout-undo");
-  btn->setCheckable(false);
-  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onUndoClicked(bool)));
+  QMenu* menu = new QMenu();
+  
+  Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene());
 
-  this->addWidget(btn);
-}
+  QUndoStack* undoStack = lScene->getUndoStack();
 
-void te::layout::ToolbarOutside::createRedoToolButton()
-{
-  QToolButton *btn = createToolButton("Redo Action", "Redo Action", "layout-redo");
-  btn->setCheckable(false);
-  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onRedoClicked(bool)));
+  QAction* actionUndo = undoStack->createUndoAction(this, tr("&Undo"));
+  actionUndo->setShortcuts(QKeySequence::Undo);
+  actionUndo->setObjectName(m_optionUndo.c_str());
+  actionUndo->setIcon(QIcon::fromTheme("layout-undo"));
+  actionUndo->setToolTip("Undo Action");
+  menu->addAction(actionUndo);
+
+  QAction* actionRedo  = undoStack->createRedoAction(this, tr("&Redo"));
+  actionRedo->setShortcuts(QKeySequence::Redo);
+  actionRedo->setObjectName(m_optionRedo.c_str());
+  actionRedo->setIcon(QIcon::fromTheme("layout-redo"));
+  actionRedo->setToolTip("Redo Action");
+  menu->addAction(actionRedo);
+  
+  QToolButton *btn = createToolButton("Undo/Redo", "Undo/Redo", "layout-undo");
+  btn->setMenu(menu);
+  btn->setPopupMode(QToolButton::InstantPopup);
 
   this->addWidget(btn);
 }
@@ -704,18 +715,6 @@ void te::layout::ToolbarOutside::onRemoveObjectClicked( bool checked )
 {
   EnumModeType* type = Enums::getInstance().getEnumModeType();
   changeAction(type->getModeRemoveObject());
-}
-
-void te::layout::ToolbarOutside::onUndoClicked( bool checked )
-{
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  changeAction(type->getModeUndo());
-}
-
-void te::layout::ToolbarOutside::onRedoClicked( bool checked )
-{
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  changeAction(type->getModeRedo());
 }
 
 void te::layout::ToolbarOutside::changeAction( EnumType* mode )

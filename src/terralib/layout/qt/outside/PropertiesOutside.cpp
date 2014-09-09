@@ -41,6 +41,8 @@
 #include "../core/ItemUtils.h"
 #include "../../core/pattern/derivativevisitor/VisitorUtils.h"
 #include "../../core/enum/Enums.h"
+#include "../core/pattern/command/ChangePropertyCommand.h"
+#include "../core/Scene.h"
 
 // Qt
 #include <QGroupBox>
@@ -49,6 +51,7 @@
 #include <QHBoxLayout>
 #include <QToolButton>
 #include <QLabel>
+#include <QUndoCommand>
 
 te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller, Observable* o ) :
 	QWidget(0),
@@ -197,6 +200,8 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
   if(property.getType() == dataType->getDataTypeNone())
     return;
 
+  Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
+
   foreach( QGraphicsItem *item, m_graphicsItems) 
   {
     if (item)
@@ -205,6 +210,8 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
       if(lItem)
       {
         Properties* props = new Properties("");
+        Properties* beforeProps = lItem->getProperties();
+        Properties* oldCommand = new Properties(*beforeProps);
         if(props)
         {
           props->setObjectName(lItem->getProperties()->getObjectName());
@@ -212,6 +219,15 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
           props->addProperty(property);
 
           lItem->updateProperties(props);
+
+          if(beforeProps)
+          {
+            beforeProps = lItem->getProperties();
+            Properties* newCommand = new Properties(*beforeProps);
+            QUndoCommand* command = new ChangePropertyCommand(item, oldCommand, newCommand, this);
+            lScene->addUndoStack(command);
+          }
+
           delete props;
           props = 0;
         }       
@@ -429,3 +445,7 @@ te::layout::MapModel* te::layout::PropertiesOutside::getMapModel( std::string na
   return map;
 }
 
+void te::layout::PropertiesOutside::refreshOutside()
+{
+  itemsSelected(m_graphicsItems, m_allItems);
+}

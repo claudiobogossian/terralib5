@@ -51,6 +51,10 @@
 #include "../../item/GridGeodesicModel.h"
 #include "../../item/GridPlanarModel.h"
 #include "../../core/enum/Enums.h"
+#include "pattern/command/AddCommand.h"
+#include "pattern/command/ChangePropertyCommand.h"
+#include "pattern/command/MoveCommand.h"
+#include "pattern/command/DeleteCommand.h"
 
 // STL
 #include <iostream>
@@ -70,6 +74,8 @@
 #include <QApplication>
 #include <QDir>
 #include <QPrinter>
+#include <QUndoStack>
+#include <QUndoCommand>
 
 te::layout::Scene::Scene( QWidget* widget): 
   QGraphicsScene(widget),
@@ -77,11 +83,14 @@ te::layout::Scene::Scene( QWidget* widget):
   m_lineIntersectHrz(0),
   m_lineIntersectVrt(0),
   m_fixedRuler(true),
-  m_previewState(PreviewScene)
+  m_previewState(PreviewScene),
+  m_undoStack(0),
+  m_undoStackLimit(6),
+  m_moveWatched(false)
 {
   setBackgroundBrush(QBrush(QColor(109,109,109)));
 
-  //setBackgroundBrush(QBrush(QColor(100,100,0)));
+  m_undoStack = new QUndoStack(this);
 }
 
 te::layout::Scene::~Scene()
@@ -90,6 +99,12 @@ te::layout::Scene::~Scene()
   {
     delete m_boxW;
     m_boxW = 0;
+  }
+
+  if(m_undoStack)
+  {
+    delete m_undoStack;
+    m_undoStack = 0;
   }
 }
 
@@ -164,6 +179,11 @@ void te::layout::Scene::insertItem( ItemObserver* item )
       }
       this->addItem(qitem);
       qitem->setZValue(total);
+      QGraphicsObject* qObj = dynamic_cast<QGraphicsObject*>(qitem);
+      if(qObj)
+      {
+        qObj->installEventFilter(this);
+      }
     }
 
     ItemObserver* obs = dynamic_cast<ItemObserver*>(qitem);
@@ -258,6 +278,9 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
       delete p;
 
       group->setParentItem(parent);
+
+      QUndoCommand* command = new AddCommand(group);
+      addUndoStack(command);
     }
   }  
 
@@ -792,6 +815,25 @@ void te::layout::Scene::deleteItems()
   }
 }
 
+void te::layout::Scene::removeSelectedItems()
+{
+  QList<QGraphicsItem*> graphicsItems = selectedItems();
+  
+  if(graphicsItems.empty())
+    return;
+
+  QUndoCommand* command = new DeleteCommand(this);
+  addUndoStack(command);
+
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if (item)
+    {
+      removeItem(item);
+    }
+  }
+}
+
 QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
 {
   QGraphicsItem* item = 0;
@@ -805,6 +847,19 @@ QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
   EnumType* mode = Context::getInstance().getMode();
 
   item = build->createItem(mode, coord);
+
+  if(item)
+  {
+    ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
+    if(obs)
+    {
+      if(obs->isCanChangeGraphicOrder())
+      {
+        QUndoCommand* command = new AddCommand(item);
+        addUndoStack(command);
+      }
+    }
+  }
 
   Context::getInstance().setMode(type->getModeNone());
 
@@ -1282,4 +1337,61 @@ QRectF te::layout::Scene::getSelectionItemsBoundingBox()
   }
 
   return sourceRect;
+}
+
+void te::layout::Scene::addUndoStack( QUndoCommand* command )
+{
+  m_undoStack->push(command);
+}
+
+void te::layout::Scene::setUndoStackLimit( int limit )
+{
+  m_undoStackLimit = limit;
+}
+
+int te::layout::Scene::getUndoStackLimit()
+{
+  return m_undoStackLimit;
+}
+
+QUndoStack* te::layout::Scene::getUndoStack()
+{
+  return m_undoStack;
+}
+
+bool te::layout::Scene::eventFilter( QObject * watched, QEvent * event )
+{
+  if(event->type() == QEvent::GraphicsSceneMousePress)
+  {
+    QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(watched);
+    if(item)
+    {
+      m_oldWatchedPos = item->scenePos();
+    }
+  }
+  
+  if(event->type() == QEvent::GraphicsSceneMouseMove)
+  {
+    QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(watched);
+    if(item)
+    {
+      m_moveWatched = true;
+    }
+  }
+
+  if(event->type() == QEvent::GraphicsSceneMouseRelease)
+  {
+    QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(watched);
+    if(item)
+    {
+      if(m_moveWatched)
+      {
+        QUndoCommand* command = new MoveCommand(item, m_oldWatchedPos);
+        addUndoStack(command);
+        m_moveWatched = false;
+      }
+    }
+  }
+
+  return QGraphicsScene::eventFilter(watched, event);
 }
