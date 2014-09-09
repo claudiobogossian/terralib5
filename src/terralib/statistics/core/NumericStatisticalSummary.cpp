@@ -74,6 +74,7 @@ te::stat::NumericStatisticalSummary::NumericStatisticalSummary(const NumericStat
   m_amplitude = rhs.m_amplitude;
   m_median = rhs.m_median;
   m_varCoeff = rhs.m_varCoeff;
+  m_mode.resize(rhs.m_mode.size());
   std::copy(rhs.m_mode.begin(), rhs.m_mode.end(), m_mode.begin());
 }
 
@@ -102,6 +103,7 @@ te::stat::NumericStatisticalSummary& te::stat::NumericStatisticalSummary::operat
     m_amplitude = rhs.m_amplitude;
     m_median = rhs.m_median;
     m_varCoeff = rhs.m_varCoeff;
+    m_mode.resize(rhs.m_mode.size());
     std::copy(rhs.m_mode.begin(), rhs.m_mode.end(), m_mode.begin());
   }
 

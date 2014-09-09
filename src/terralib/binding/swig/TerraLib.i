@@ -43,7 +43,10 @@ namespace std {
 #include "terralib/common/TerraLib.h"
 #include "terralib/plugin/PluginManager.h"
 
+#ifdef SWIGJAVA
 #include "terralib/binding/swig/QtInitializer.h"
+
+#endif // SWIGJAVA
 
 static void Initialize() throw (te::common::Exception)
 {
@@ -60,6 +63,10 @@ static void Finalize()
 	TerraLib::getInstance().finalize();
 } 
 %} 
+
+#ifdef SWIGLUA
+%include lua/Geometry.i
+#endif
 
 #ifdef SWIGJAVA
 // ---------------------------------
@@ -96,6 +103,7 @@ void Initialize() throw (te::common::Exception);
 
 void Finalize();
 
+#ifdef SWIGJAVA
 %include ObjectId.i
 %include DataSet.i
 %include DataSource.i
@@ -104,3 +112,5 @@ void Finalize();
 %include RTree.i
 
 %include "terralib/binding/swig/QtInitializer.h"
+
+#endif // SWIGJAVA

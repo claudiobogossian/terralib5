@@ -42,6 +42,7 @@
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/Utils.h"
+#include "../../raster/RasterProperty.h"
 #include "../../statistics/core/Utils.h"
 #include "../Config.h"
 #include "../Exception.h"
@@ -59,6 +60,7 @@
 // Boost
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
@@ -71,7 +73,7 @@ te::processing::RasterToVectorDialog::RasterToVectorDialog(QWidget* parent, Qt::
   m_ui->setupUi(this);
 
   // add icons
-  //m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vector-raster-hint").pixmap(112,48));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("raster-vector-hint").pixmap(112,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
   connect(m_ui->m_inRasterComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRasterComboBoxChanged(int)));
@@ -111,6 +113,20 @@ te::map::AbstractLayerPtr te::processing::RasterToVectorDialog::getLayer()
   return m_outLayer;
 }
 
+std::vector<unsigned int> te::processing::RasterToVectorDialog::getSelectedBands()
+{
+  std::vector<unsigned int> vecBands;
+  
+  for(int i = 0; i < m_ui->m_bandsListWidget->count(); ++i)
+  {
+    if(m_ui->m_bandsListWidget->isItemSelected(m_ui->m_bandsListWidget->item(i)))
+    {
+      vecBands.push_back(i);
+    }
+  }
+  return vecBands;
+}
+
 std::vector<te::stat::StatisticalSummary> te::processing::RasterToVectorDialog::getSelectedStatistics()
 {
   std::vector<te::stat::StatisticalSummary> vecStatistics;
@@ -119,7 +135,6 @@ std::vector<te::stat::StatisticalSummary> te::processing::RasterToVectorDialog::
   {
     if(m_ui->m_statisticsListWidget->isItemSelected(m_ui->m_statisticsListWidget->item(i)))
     {
-      std::string statOp = m_ui->m_statisticsListWidget->item(i)->text().toStdString();
       switch(i)
       {
         case 0:
@@ -185,6 +200,18 @@ void te::processing::RasterToVectorDialog::onRasterComboBoxChanged(int index)
     
     ++it;
   }
+
+  m_ui->m_bandsListWidget->clear();
+
+  std::auto_ptr<te::da::DataSetType> dsType = m_rasterLayer->getSchema();
+  te::rst::RasterProperty* rasterProp = te::da::GetFirstRasterProperty(dsType.get());
+  std::auto_ptr<te::da::DataSet> dsRaster = m_rasterLayer->getData();
+  std::auto_ptr<te::rst::Raster> raster = dsRaster->getRaster(rasterProp->getName());
+  std::size_t n_bands = raster->getNumberOfBands();
+
+  for(std::size_t b = 0; b < n_bands; ++b)
+    m_ui->m_bandsListWidget->addItem(boost::lexical_cast<std::string>(b).c_str());
+
 
   m_ui->m_statisticsListWidget->clear();
 
@@ -312,6 +339,13 @@ void te::processing::RasterToVectorDialog::onOkPushButtonClicked()
     return;
   }
 
+  std::vector<unsigned int> vecBands = getSelectedBands();
+  if(vecBands.empty())
+  {
+    QMessageBox::information(this, "Fill", "Select at least one band.");
+    return;
+  }
+
   std::vector<te::stat::StatisticalSummary> vecStatistics = getSelectedStatistics();
   if(vecStatistics.empty())
   {
@@ -373,7 +407,7 @@ void te::processing::RasterToVectorDialog::onOkPushButtonClicked()
                         dsVectorLayer->getDataSetName(),
                         dsVectorLayer->getSchema());
 
-      rst2vec->setParams(vecStatistics);
+      rst2vec->setParams(vecBands, vecStatistics);
 
       rst2vec->setOutput(dsOGR, outputdataset);
       
@@ -413,7 +447,46 @@ void te::processing::RasterToVectorDialog::onOkPushButtonClicked()
     }
     else
     {
+      te::da::DataSourcePtr aux = te::da::GetDataSource(m_outputDatasource->getId());
+      if (!aux)
+      {
+        QMessageBox::information(this, "Fill", "The selected output datasource can not be accessed.");
+        return;
+      }
 
+      if (aux->dataSetExists(outputdataset))
+      {
+        QMessageBox::information(this, "Fill", "Dataset already exists. Remove it or select a new name and try again.");
+        return;
+      }
+      this->setCursor(Qt::WaitCursor);
+
+      te::processing::RasterToVector* rst2vec = new te::processing::RasterToVector();
+      
+      rst2vec->setInput(inRasterDataSource, 
+                        dsRasterLayer->getDataSetName(), 
+                        dsRasterLayer->getSchema(),
+                        inVectorDataSource, 
+                        dsVectorLayer->getDataSetName(),
+                        dsVectorLayer->getSchema());
+
+      rst2vec->setParams(vecBands, vecStatistics);
+
+      rst2vec->setOutput(aux, outputdataset);
+
+      if (!rst2vec->paramsAreValid())
+        res = false;
+      else
+        res = rst2vec->run();
+
+      delete rst2vec;
+
+      if (!res)
+      {
+        this->setCursor(Qt::ArrowCursor);
+        QMessageBox::information(this, "Fill", "Error: could not generate the operation.");
+        reject();
+      }
     }
 
     // creating a layer for the result
@@ -434,6 +507,8 @@ void te::processing::RasterToVectorDialog::onOkPushButtonClicked()
     return;
   }
 
+  this->setCursor(Qt::ArrowCursor);
+  accept();
 }
 
 void te::processing::RasterToVectorDialog::onCancelPushButtonClicked()
