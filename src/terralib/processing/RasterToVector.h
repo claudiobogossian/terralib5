@@ -67,7 +67,8 @@ namespace te
                     std::string inVectorName,
                     std::auto_ptr<te::da::DataSetType> inVectorDsType);
 
-      void setParams(std::vector<te::stat::StatisticalSummary> statSum);
+      void setParams(std::vector<unsigned int> bands,
+                     std::vector<te::stat::StatisticalSummary> statSum);
 
       void setOutput(te::da::DataSourcePtr outDsrc, std::string dsName);
 
@@ -76,6 +77,8 @@ namespace te
       bool run();
 
     protected:
+
+      std::auto_ptr<te::da::DataSetType> getDataSetType();
 
       bool save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType);
 
@@ -87,6 +90,7 @@ namespace te
       std::auto_ptr<te::da::DataSetType> m_inVectorDsType;
 
       std::vector<te::stat::StatisticalSummary> m_statSum;
+      std::vector<unsigned int> m_bands;
 
       te::da::DataSourcePtr m_outDsrc;
       std::string m_outDset;
