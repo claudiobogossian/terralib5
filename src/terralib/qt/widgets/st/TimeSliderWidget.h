@@ -373,13 +373,9 @@ namespace te
             \brief Drag enter event on display.
             \param e The drag enter event.
           */
-          void onDisplayDragEnterEvent(QDragEnterEvent* e);
+          void onAnimationDragEnterEvent(QDragEnterEvent* e);
 
-          /*!
-            \brief Drop event on display.
-            \param e The drop event.
-          */
-          void onDisplayDropEvent(QDropEvent*);
+          void onAnimationDropEvent(QDropEvent*);
           /*!
             \brief it opens the configuration window animation.
           */

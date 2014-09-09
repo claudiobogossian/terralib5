@@ -78,6 +78,7 @@ else()
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sa/qt/KernelRatioDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sa/qt/ProximityMatrixCreatorDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sa/qt/SamplePointsGeneratorDialog.h
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sa/qt/SkaterDialog.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sa/qt/SpatialStatisticsDialog.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
