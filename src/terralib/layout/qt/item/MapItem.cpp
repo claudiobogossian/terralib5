@@ -196,12 +196,11 @@ void te::layout::MapItem::updateObserver( ContextItem context )
     {
       if(!m_mapDisplay->getExtent().equals(env))
       {
-
         m_mapDisplay->setExtent(env, true);
       }
     }
 
-    te::color::RGBAColor clr = model->getBackgroundColor();
+    te::color::RGBAColor clr = model->getMapBackgroundColor();
     QColor qcolor;
     qcolor.setRed(clr.getRed());
     qcolor.setGreen(clr.getGreen());
@@ -235,8 +234,6 @@ void te::layout::MapItem::updateObserver( ContextItem context )
 
 void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
-  QGraphicsProxyWidget::paint(painter, option, widget);
-  
   if(!m_pixmap.isNull())
   {
     QRectF boundRect;
@@ -246,6 +243,8 @@ void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsI
     painter->drawPixmap(boundRect, m_pixmap, QRectF( 0, 0, m_pixmap.width(), m_pixmap.height() ));
     painter->restore(); 
   }
+
+  QGraphicsProxyWidget::paint(painter, option, widget);
 
   //Draw Selection
   if (option->state & QStyle::State_Selected)
@@ -285,9 +284,8 @@ void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
 
   getMimeData(event->mimeData());
 
-  QDropEvent dropEvent(QPoint(event->pos().x(), event->pos().y()), event->possibleActions(), event->mimeData(), event->buttons(), event->modifiers());
-  QApplication::sendEvent(m_mapDisplay, &dropEvent);
-  event->setAccepted(dropEvent.isAccepted());
+  te::map::AbstractLayerPtr al = m_treeItem->getLayer();
+  m_mapDisplay->changeData(al);
 }
 
 void te::layout::MapItem::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
@@ -295,6 +293,11 @@ void te::layout::MapItem::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
   //Copy the map from layer tree
   Qt::DropActions actions = event->dropAction();
   if(actions != Qt::CopyAction)
+    return;
+
+  const QMimeData* mime = event->mimeData();
+  QString s = mime->data("application/x-terralib;value=\"DraggedItems\"").constData();
+  if(s.isEmpty())
     return;
 
   event->acceptProposedAction();

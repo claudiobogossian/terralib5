@@ -93,6 +93,10 @@ namespace te
         virtual te::gm::Envelope getWorldBox();
 
         virtual std::map<te::gm::Coord2D, std::string> getTextMapAsObjectInfo();
+
+        virtual void setMapBackgroundColor(te::color::RGBAColor color);
+
+        virtual te::color::RGBAColor getMapBackgroundColor();
         
       protected:
         
@@ -103,6 +107,7 @@ namespace te
         Systematic*               m_systematic;
         bool                      m_fixedScale;
         te::gm::Envelope          m_worldBox;
+        te::color::RGBAColor			m_mapbackgroundColor;
     };
   }
 }

@@ -249,9 +249,7 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
 
   if(vproperty)
   {
-    if(!property.isEditable())
-      vproperty->setEnabled(false);
-
+    vproperty->setEnabled(property.isEditable());
     addPropertyItem(vproperty, QLatin1String(property.getName().c_str()));
     return true;
   }

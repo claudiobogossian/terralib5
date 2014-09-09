@@ -208,11 +208,6 @@ QGraphicsProxyWidget* te::layout::Scene::insertOutsideProxy( OutsideObserver* wi
   return this->addWidget(qWidget);
 }
 
-void te::layout::Scene::mousePressEvent ( QGraphicsSceneMouseEvent * mouseEvent )
-{
-  QGraphicsScene::mousePressEvent(mouseEvent);
-}
-
 te::gm::Envelope te::layout::Scene::getSceneBox()
 {
   QRectF srect =	sceneRect();
@@ -1366,7 +1361,13 @@ bool te::layout::Scene::eventFilter( QObject * watched, QEvent * event )
     QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(watched);
     if(item)
     {
-      m_oldWatchedPos = item->scenePos();
+      QList<QGraphicsItem*> its = selectedItems();
+      m_moveWatches.clear();
+      foreach(QGraphicsItem *item, its) 
+      {
+        QPointF pt = item->scenePos();
+        m_moveWatches[item] = pt;
+      }
     }
   }
   
@@ -1386,7 +1387,7 @@ bool te::layout::Scene::eventFilter( QObject * watched, QEvent * event )
     {
       if(m_moveWatched)
       {
-        QUndoCommand* command = new MoveCommand(item, m_oldWatchedPos);
+        QUndoCommand* command = new MoveCommand(m_moveWatches);
         addUndoStack(command);
         m_moveWatched = false;
       }

@@ -33,6 +33,10 @@
 #include <QString>
 #include <QPointF>
 
+// STL
+#include <map>
+#include <vector>
+
 class QGraphicsItem;
 
 namespace te
@@ -46,14 +50,14 @@ namespace te
         MoveCommand(QGraphicsItem* item, const QPointF oldPos,
           QUndoCommand *parent = 0);
 
+        MoveCommand(std::map<QGraphicsItem*, QPointF> items, QUndoCommand *parent = 0);
+
         virtual ~MoveCommand();       
 
         virtual void undo();
 
         virtual void redo();
         
-        virtual QGraphicsItem* getItem();
-
       protected:
 
         virtual QString createCommandString(QGraphicsItem* item, const QPointF &pos);
@@ -61,6 +65,8 @@ namespace te
         QGraphicsItem*  m_item;
         QPointF         m_oldPos;
         QPointF         m_newPos;
+        std::map<QGraphicsItem*, QPointF> m_moveItems;
+        QList<QPointF>              m_itemsPoints;
     };
   }
 }

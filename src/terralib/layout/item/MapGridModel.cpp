@@ -62,7 +62,7 @@ te::layout::MapGridModel::MapGridModel() :
 
   m_border = false;
 
-  m_backgroundColor = te::color::RGBAColor(192, 192, 192, 255);
+  m_mapbackgroundColor = te::color::RGBAColor(0, 0, 255, 255);
 
   m_properties->setHasWindows(true);
 }
@@ -156,6 +156,13 @@ te::layout::Properties* te::layout::MapGridModel::getProperties() const
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
+  Property pro_mapbackgroundcolor;
+  pro_mapbackgroundcolor.setName("map_color");
+  pro_mapbackgroundcolor.setId("unknown");
+  pro_mapbackgroundcolor.setValue(m_mapbackgroundColor, dataType->getDataTypeColor());
+  pro_mapbackgroundcolor.setMenu(true);
+  m_properties->addProperty(pro_mapbackgroundcolor);
+
   Property pro_grid;
   pro_grid.setName("grid");
   pro_grid.setLabel("Grid Settings");
@@ -187,6 +194,12 @@ void te::layout::MapGridModel::updateProperties( te::layout::Properties* propert
 
   Properties* vectorProps = const_cast<Properties*>(properties);
 
+  Property pro_mapbackgroundcolor = vectorProps->contains("map_color");
+  if(!pro_mapbackgroundcolor.isNull())
+  {
+    m_mapbackgroundColor = pro_mapbackgroundcolor.getValue().toColor();
+  }
+
   Property pro_grid = vectorProps->contains("grid");
 
   Property pro_grid_planar = pro_grid.containsSubProperty(m_planarGridProperties->getName());
@@ -217,4 +230,24 @@ te::layout::GridPlanarModel* te::layout::MapGridModel::getGridPlanar()
 te::layout::GridGeodesicModel* te::layout::MapGridModel::getGridGeodesic()
 {
   return m_gridGeodesic;
+}
+
+void te::layout::MapGridModel::setBox( te::gm::Envelope box )
+{
+  ItemModelObservable::setBox(box);
+
+  m_mapBoxMM.m_llx = box.m_llx + m_mapDisplacementX;
+  m_mapBoxMM.m_lly = box.m_lly + m_mapDisplacementY;
+  m_mapBoxMM.m_urx = box.m_urx - m_mapDisplacementX;
+  m_mapBoxMM.m_ury = box.m_ury - m_mapDisplacementY;
+}
+
+void te::layout::MapGridModel::setPosition( const double& x, const double& y )
+{
+  ItemModelObservable::setPosition(x, y);
+
+  m_mapBoxMM.m_llx = m_box.m_llx + m_mapDisplacementX;
+  m_mapBoxMM.m_lly = m_box.m_lly + m_mapDisplacementY;
+  m_mapBoxMM.m_urx = m_box.m_urx - m_mapDisplacementX;
+  m_mapBoxMM.m_ury = m_box.m_ury - m_mapDisplacementY;
 }

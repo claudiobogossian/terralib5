@@ -190,8 +190,6 @@ namespace te
 
       protected:
 
-        virtual void mousePressEvent ( QGraphicsSceneMouseEvent* mouseEvent );
-
         virtual te::gm::Envelope* calculateWindow(double wMM, double hMM);
 
         virtual void calculateMatrixViewScene(double zoomFactor = 1.);
@@ -223,7 +221,7 @@ namespace te
         QUndoStack*        m_undoStack;
         int                m_undoStackLimit;
         bool               m_moveWatched;
-        QPointF            m_oldWatchedPos;
+        std::map<QGraphicsItem*, QPointF> m_moveWatches;
     };
   }
 }

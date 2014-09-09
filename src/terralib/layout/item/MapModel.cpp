@@ -40,6 +40,7 @@
 #include "../../geometry/Polygon.h"
 #include "../../geometry/LinearRing.h"
 #include "../core/enum/Enums.h"
+#include "../core/property/SharedProperties.h"
 
 // STL
 #include <vector>
@@ -58,6 +59,8 @@ te::layout::MapModel::MapModel() :
   m_mapBoxMM = m_box;
 
   m_backgroundColor = te::color::RGBAColor(192, 192, 192, 255);
+
+  m_mapbackgroundColor = te::color::RGBAColor(192, 192, 192, 255);
 }
 
 te::layout::MapModel::~MapModel()
@@ -114,6 +117,11 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties 
     m_fixedScale = pro_fixed.getValue().toBool();
   }
 
+  if(m_box.equals(m_mapBoxMM))
+  {
+    m_mapbackgroundColor = m_backgroundColor;
+  }
+    
   updateVisitors();
 }
 
@@ -294,11 +302,7 @@ te::gm::Envelope te::layout::MapModel::getWorldInDegrees()
 void te::layout::MapModel::setBox( te::gm::Envelope box )
 {
   ItemModelObservable::setBox(box);
-
-  m_mapBoxMM.m_llx = box.m_llx + m_mapDisplacementX;
-  m_mapBoxMM.m_lly = box.m_lly + m_mapDisplacementY;
-  m_mapBoxMM.m_urx = box.m_urx - m_mapDisplacementX;
-  m_mapBoxMM.m_ury = box.m_ury - m_mapDisplacementY;
+  m_mapBoxMM = m_box;
 }
 
 te::gm::Envelope te::layout::MapModel::getMapBox()
@@ -309,11 +313,7 @@ te::gm::Envelope te::layout::MapModel::getMapBox()
 void te::layout::MapModel::setPosition( const double& x, const double& y )
 {
   ItemModelObservable::setPosition(x, y);
-
-  m_mapBoxMM.m_llx = m_box.m_llx + m_mapDisplacementX;
-  m_mapBoxMM.m_lly = m_box.m_lly + m_mapDisplacementY;
-  m_mapBoxMM.m_urx = m_box.m_urx - m_mapDisplacementX;
-  m_mapBoxMM.m_ury = m_box.m_ury - m_mapDisplacementY;
+  m_mapBoxMM = m_box;
 }
 
 double te::layout::MapModel::getDisplacementX()
@@ -475,4 +475,14 @@ std::map<te::gm::Coord2D, std::string> te::layout::MapModel::getTextMapAsObjectI
   std::map<te::gm::Coord2D, std::string>  map;
 
   return map;
+}
+
+void te::layout::MapModel::setMapBackgroundColor( te::color::RGBAColor color )
+{
+  m_mapbackgroundColor = color;
+}
+
+te::color::RGBAColor te::layout::MapModel::getMapBackgroundColor()
+{
+  return m_mapbackgroundColor;
 }

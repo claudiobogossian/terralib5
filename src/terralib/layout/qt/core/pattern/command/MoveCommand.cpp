@@ -31,16 +31,33 @@
 #include "../../../../core/enum/EnumType.h"
 #include "../../../../core/pattern/mvc/Observable.h"
 #include "../../Scene.h"
+#include "../../../../core/pattern/singleton/Context.h"
 
 // Qt
 #include <QGraphicsItem>
 
 te::layout::MoveCommand::MoveCommand( QGraphicsItem* item, const QPointF oldPos, 
   QUndoCommand *parent /*= 0*/ ) :
+  QUndoCommand(parent),
   m_item(item)
 {
   m_newPos = m_item->scenePos();
   m_oldPos = oldPos;
+}
+
+te::layout::MoveCommand::MoveCommand( std::map<QGraphicsItem*, QPointF> items, 
+  QUndoCommand *parent /*= 0*/ ) :
+  QUndoCommand(parent),
+  m_moveItems(items),
+  m_item(0)
+{
+  std::map<QGraphicsItem*, QPointF>::iterator it;
+  for (it = m_moveItems.begin(); it != m_moveItems.end(); ++it)
+  {
+    QGraphicsItem* item = it->first;
+    QPointF ptNew = item->scenePos();
+    m_itemsPoints.push_back(ptNew);
+  }
 }
 
 te::layout::MoveCommand::~MoveCommand()
@@ -50,17 +67,62 @@ te::layout::MoveCommand::~MoveCommand()
 
 void te::layout::MoveCommand::undo()
 {
-  m_item->setPos(m_oldPos);
-  m_item->scene()->update();
-  setText(QObject::tr("Move %1")
-    .arg(createCommandString(m_item, m_oldPos)));
+  if(m_item)
+  {
+    m_item->setPos(m_oldPos);
+    m_item->scene()->update();
+    setText(QObject::tr("Move %1")
+      .arg(createCommandString(m_item, m_oldPos)));
+  }
+
+  if(m_moveItems.empty())
+    return;
+
+  int size = m_moveItems.size();
+
+  std::map<QGraphicsItem*, QPointF>::iterator it;
+  for (it = m_moveItems.begin(); it != m_moveItems.end(); ++it)
+  {
+    QGraphicsItem* item = it->first;
+    QPointF ptOld = it->second;
+    item->setPos(ptOld);
+  }
+
+  Scene* sc = dynamic_cast<Scene*>(Context::getInstance().getScene());
+  sc->update();
+  setText(QObject::tr("Move %1").arg(size));
 }
 
 void te::layout::MoveCommand::redo()
 {
-  m_item->setPos(m_newPos);
-  setText(QObject::tr("Move %1")
-    .arg(createCommandString(m_item, m_newPos)));
+  if(m_item)
+  {
+    m_item->setPos(m_newPos);
+    setText(QObject::tr("Move %1")
+      .arg(createCommandString(m_item, m_newPos)));
+  }
+
+  if(m_moveItems.empty())
+    return;
+
+  if(m_moveItems.size() != m_itemsPoints.size())
+    return;
+
+  int size = m_moveItems.size();
+  int index = 0;
+
+  std::map<QGraphicsItem*, QPointF>::iterator it;
+  for (it = m_moveItems.begin(); it != m_moveItems.end(); ++it)
+  {
+    QGraphicsItem* item = it->first;
+    QPointF ptNew = m_itemsPoints[index];
+    item->setPos(ptNew);
+    index++;
+  }
+
+  Scene* sc = dynamic_cast<Scene*>(Context::getInstance().getScene());
+  sc->update();
+  setText(QObject::tr("Move %1").arg(size));
 }
 
 QString te::layout::MoveCommand::createCommandString( QGraphicsItem* item, const QPointF &pos )
@@ -76,9 +138,4 @@ QString te::layout::MoveCommand::createCommandString( QGraphicsItem* item, const
   return QObject::tr("%1 at (%2, %3)")
     .arg(obs->getModel()->getType()->getName().c_str())
     .arg(pos.x()).arg(pos.y());
-}
-
-QGraphicsItem* te::layout::MoveCommand::getItem()
-{
-  return m_item;
 }

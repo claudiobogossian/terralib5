@@ -59,6 +59,10 @@ namespace te
 
         virtual GridGeodesicModel* getGridGeodesic();
 
+        virtual void setBox(te::gm::Envelope box);
+        
+        virtual void setPosition(const double& x, const double& y);
+
       protected:
 
         virtual void drawGrid(te::map::Canvas* canvas, Utils* utils);

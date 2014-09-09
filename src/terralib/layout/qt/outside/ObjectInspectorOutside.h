@@ -35,6 +35,7 @@
 #include "../../core/pattern/mvc/OutsideObserver.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/Config.h"
+#include "../core/ObjectInspectorPropertyBrowser.h"
 
 class QGraphicsItem;
 
@@ -42,8 +43,6 @@ namespace te
 {
   namespace layout
   {
-    class ObjectInspectorPropertyBrowser;
-
     class TELAYOUTEXPORT ObjectInspectorOutside : public QWidget, public OutsideObserver
     {
 	    Q_OBJECT //for slots/signals
@@ -58,7 +57,11 @@ namespace te
 	    virtual te::gm::Coord2D getPosition();
 
       virtual void itemsInspector(QList<QGraphicsItem*> graphicsItems);
+
+    protected slots:
       
+      virtual void 	onCurrentItemChanged (QtBrowserItem *current);
+
     protected:
 
       ObjectInspectorPropertyBrowser* m_layoutPropertyBrowser;

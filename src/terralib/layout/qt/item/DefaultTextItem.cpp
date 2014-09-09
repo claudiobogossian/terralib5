@@ -63,9 +63,8 @@ te::layout::DefaultTextItem::DefaultTextItem( ItemController* controller, Observ
   setTextInteractionFlags(Qt::NoTextInteraction);
 
   QGraphicsItem* item = this;
-  Context::getInstance().getScene()->insertItem((ItemObserver*)item);
-  
   m_nameClass = std::string(this->metaObject()->className());
+  Context::getInstance().getScene()->insertItem((ItemObserver*)item);
 
   std::string name = m_model->getName();
   DefaultTextModel* model = dynamic_cast<DefaultTextModel*>(m_model);

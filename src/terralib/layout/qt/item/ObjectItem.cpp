@@ -52,12 +52,11 @@ te::layout::ObjectItem::ObjectItem( ItemController* controller, Observable* o ) 
   m_enumSides(TPNoneSide)
 {
   QGraphicsItem* item = this;
+  m_nameClass = std::string(this->metaObject()->className());
   Context::getInstance().getScene()->insertItem((ItemObserver*)item);
 
   //If enabled is true, this item will accept hover events
   setAcceptHoverEvents(true);
-
-  m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::ObjectItem::~ObjectItem()

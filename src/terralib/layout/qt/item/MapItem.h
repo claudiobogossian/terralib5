@@ -79,7 +79,7 @@ namespace te
       protected slots:
 
           void onDrawLayersFinished(const QMap<QString, QString>& errors);
-
+          
     protected:
       
       virtual void	dropEvent ( QGraphicsSceneDragDropEvent * event );
@@ -87,11 +87,17 @@ namespace te
       //Override method for using moves, selected, etc., 
       //which are implemented by default in QGraphicsItem
       virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+
       virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );
+
       virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+
       virtual void	dragEnterEvent ( QGraphicsSceneDragDropEvent * event );
+
       virtual void	dragLeaveEvent ( QGraphicsSceneDragDropEvent * event );
+
       virtual void	dragMoveEvent ( QGraphicsSceneDragDropEvent * event );
+
       virtual void resizeEvent ( QGraphicsSceneResizeEvent * event );
 
       virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
