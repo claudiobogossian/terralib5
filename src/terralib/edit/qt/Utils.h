@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../geometry/Coord2D.h"
-#include "../Config.h"
+#include "Config.h"
 
 // Qt
 #include <QMouseEvent>
@@ -56,19 +56,19 @@ namespace te
 
   namespace edit
   {
-    TEEDITEXPORT QPointF GetPosition(QMouseEvent* e);
+    TEEDITQTEXPORT QPointF GetPosition(QMouseEvent* e);
 
-    TEEDITEXPORT void DrawGeometry(te::qt::widgets::Canvas* canvas, te::gm::Geometry* geom, int srid);
+    TEEDITQTEXPORT void DrawGeometry(te::qt::widgets::Canvas* canvas, te::gm::Geometry* geom, int srid);
 
-    TEEDITEXPORT void DrawVertexes(te::qt::widgets::Canvas* canvas, const std::vector<te::gm::Geometry*>& geom, int srid);
+    TEEDITQTEXPORT void DrawVertexes(te::qt::widgets::Canvas* canvas, const std::vector<te::gm::Geometry*>& geom, int srid);
 
-    TEEDITEXPORT void DrawVertexes(te::qt::widgets::Canvas* canvas, te::gm::Geometry* geom, int srid);
+    TEEDITQTEXPORT void DrawVertexes(te::qt::widgets::Canvas* canvas, te::gm::Geometry* geom, int srid);
 
-    TEEDITEXPORT void DrawVertexes(te::qt::widgets::Canvas* canvas, const std::vector<te::gm::LineString*>& lines, int srid);
+    TEEDITQTEXPORT void DrawVertexes(te::qt::widgets::Canvas* canvas, const std::vector<te::gm::LineString*>& lines, int srid);
 
-    TEEDITEXPORT void DrawVertexes(te::qt::widgets::Canvas* canvas, te::gm::LineString* line, int srid);
+    TEEDITQTEXPORT void DrawVertexes(te::qt::widgets::Canvas* canvas, te::gm::LineString* line, int srid);
 
-    TEEDITEXPORT void DrawVertexes(te::qt::widgets::Canvas* canvas, const std::vector<te::gm::Coord2D>& coords, int fromSRID, int toSRID);
+    TEEDITQTEXPORT void DrawVertexes(te::qt::widgets::Canvas* canvas, const std::vector<te::gm::Coord2D>& coords, int fromSRID, int toSRID);
 
   } // end namespace edit
 }   // end namespace te
