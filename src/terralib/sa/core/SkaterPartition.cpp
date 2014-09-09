@@ -36,9 +36,13 @@
 #include <cassert>
 #include <queue>
 
-te::sa::SkaterPartition::SkaterPartition(te::graph::AbstractGraph* graph, std::vector<std::string> attrs)
+te::sa::SkaterPartition::SkaterPartition(te::graph::AbstractGraph* graph, std::vector<std::string> attrs, std::string popAttr, std::size_t minPop)
 {
   m_graph = graph;
+
+  m_popAttr = popAttr;
+
+  m_popMin = minPop;
 
   m_attrs = attrs;
 }
@@ -48,23 +52,27 @@ te::sa::SkaterPartition::~SkaterPartition()
 
 }
 
-void te::sa::SkaterPartition::execute()
+std::vector<std::size_t> te::sa::SkaterPartition::execute(std::size_t nGroups)
 {
   assert(m_graph);
+
+  te::sa::RootSet rs;
 
   //get first vertex id from graph
   std::auto_ptr<te::graph::MemoryIterator> memIt(new te::graph::MemoryIterator(m_graph));
   int firstVertex = memIt->getFirstVertex()->getId();
-
-  //create list
-  std::queue<int> queue;
-  queue.push(firstVertex);
+  
+  rs.insert(te::sa::Root(0., firstVertex));
+  std::size_t groups = 1;
 
   //bfs over the graph
-  while(!queue.empty())
+  while(!rs.empty() && groups < nGroups)
   {
-    int currentId = queue.front();
-    queue.pop();
+    te::sa::RootSet::reverse_iterator it = rs.rbegin();
+
+    std::size_t currentId = it->second;
+
+    rs.erase(*it);
 
     //get vertex from graph
     te::graph::Vertex* vertex = m_graph->getVertex(currentId);
@@ -88,20 +96,28 @@ void te::sa::SkaterPartition::execute()
         //remove edge
         m_graph->removeEdge(edgeId);
 
-        //process first the cluster with major difference
-        if(diffA > diffB)
-        {
-          queue.push(vertexFrom);
-          queue.push(vertexTo);
-        }
-        else
-        {
-          queue.push(vertexTo);
-          queue.push(vertexFrom);
-        }
+        ++groups;
+
+        rs.insert(te::sa::Root(diffA, vertexFrom));
+        rs.insert(te::sa::Root(diffB, vertexTo));
+      }
+      else
+      {
+        rs.insert(te::sa::Root(0., currentId));
       }
     }
   }
+
+  std::vector<std::size_t> rootsVertexId;
+
+  te::sa::RootSet::iterator it;
+  
+  for(it = rs.begin(); it != rs.end(); ++it)
+  {
+    rootsVertexId.push_back(it->second);
+  }
+
+  return rootsVertexId;
 }
 
 bool te::sa::SkaterPartition::edgeToRemove(int startVertex, double& diffA, double& diffB, std::size_t& edgeToRemoveId)
@@ -110,7 +126,8 @@ bool te::sa::SkaterPartition::edgeToRemove(int startVertex, double& diffA, doubl
   std::vector<EdgeRemovalInfo> edgeRemovalVec;
 
   //calculate SSDTO
-  std::vector<double> meanVecStart = calculateRootMean(startVertex, -1);
+  std::size_t totalPop = 0;
+  std::vector<double> meanVecStart = calculateRootMean(startVertex, -1, totalPop);
   double deviationStart = calculateRootDeviation(startVertex, -1, meanVecStart);
 
   //create list
@@ -158,17 +175,23 @@ bool te::sa::SkaterPartition::edgeToRemove(int startVertex, double& diffA, doubl
             visited.insert(vTo->getId());
 
             //calculate SSDi
-            double diffVFrom, diffVTo;
+            double diffVFrom = 0.;
+            double diffVTo = 0.;
+            std::size_t popA = 0;
+            std::size_t popB = 0;
 
-            double diff = calculateEdgeDifference(vertex->getId(), vTo->getId(), diffVFrom, diffVTo);
+            double diff = calculateEdgeDifference(vertex->getId(), vTo->getId(), diffVFrom, diffVTo, popA, popB);
 
             double ssdi = deviationStart - diff;
 
             EdgeRemovalInfo eri;
             eri.m_edgeId = e->getId();
+            eri.m_SSDT = diff;
             eri.m_SSDi = ssdi;
             eri.m_SSDTa = diffVFrom;
             eri.m_SSDTb = diffVTo;
+            eri.m_popa = popA;
+            eri.m_popb = popB;
 
             edgeRemovalVec.push_back(eri);
           }
@@ -186,7 +209,7 @@ bool te::sa::SkaterPartition::edgeToRemove(int startVertex, double& diffA, doubl
 
   for(std::size_t t = 0; t < edgeRemovalVec.size(); ++t)
   {
-    if(edgeRemovalVec[t].m_SSDi > maxDiff)
+    if(edgeRemovalVec[t].m_SSDi > maxDiff && edgeRemovalVec[t].m_popa >= m_popMin && edgeRemovalVec[t].m_popb >= m_popMin)
     {
       maxDiff = edgeRemovalVec[t].m_SSDi;
 
@@ -199,26 +222,29 @@ bool te::sa::SkaterPartition::edgeToRemove(int startVertex, double& diffA, doubl
     }
   }
 
+  if(found)
+    m_SSDiValues.push_back(maxDiff);
+
   edgeRemovalVec.clear();
 
   return found;
 }
 
-double te::sa::SkaterPartition::calculateEdgeDifference(int vertexFrom, int vertexTo, double& diffA, double& diffB)
+double te::sa::SkaterPartition::calculateEdgeDifference(int vertexFrom, int vertexTo, double& diffA, double& diffB, std::size_t& popA, std::size_t& popB)
 {
   //calculate the deviation for the tree that begins with the vertex from SQDTA
-  std::vector<double> meanVecFrom = calculateRootMean(vertexFrom, vertexTo);
+  std::vector<double> meanVecFrom = calculateRootMean(vertexFrom, vertexTo, popA);
   diffA = calculateRootDeviation(vertexFrom, vertexTo, meanVecFrom);
 
   //calculate the deviation for the tree that begins with the vertex to SQDTB
-  std::vector<double> meanVecTo = calculateRootMean(vertexTo, vertexFrom);
+  std::vector<double> meanVecTo = calculateRootMean(vertexTo, vertexFrom, popB);
   diffB = calculateRootDeviation(vertexTo, vertexFrom, meanVecTo);
 
   //return the edge cost
   return diffA + diffB;
 }
 
-std::vector<double> te::sa::SkaterPartition::calculateRootMean(int startVertex, int vertexToIgnore)
+std::vector<double> te::sa::SkaterPartition::calculateRootMean(int startVertex, int vertexToIgnore, std::size_t& pop)
 {
   std::vector<double> meanAttrs(m_attrs.size(), 0.);
 
@@ -249,6 +275,13 @@ std::vector<double> te::sa::SkaterPartition::calculateRootMean(int startVertex, 
         {
           meanAttrs[t] += te::sa::GetDataValue(vertex->getAttributes()[attrIdx]);
         }
+      }
+
+      //get population information
+      int popIdx;
+      if(te::sa::GetGraphVertexAttrIndex(m_graph, m_popAttr, popIdx))
+      {
+        pop += (std::size_t)te::sa::GetDataValue(vertex->getAttributes()[popIdx]);
       }
 
       //get neighbours

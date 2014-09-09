@@ -57,7 +57,10 @@ void te::qt::plugins::processing::Plugin::startup()
   QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
   m_processingMenu = new QMenu(pluginMenu);
 
-  pluginMenu->addMenu(m_processingMenu);
+  // Insert action before plugin manager action
+  QAction* pluginsSeparator = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
+
+  pluginMenu->insertMenu(pluginsSeparator, m_processingMenu);
 
   m_processingMenu->setTitle(TE_TR("Processing"));
 

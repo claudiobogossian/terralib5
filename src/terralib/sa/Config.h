@@ -100,6 +100,9 @@
 /*! Defines the attribute name gpm_weight used in Skater operation*/
 #define TE_SA_SKATER_ATTR_WEIGHT_NAME "gpm_weight"
 
+/*! Defines the attribute name SkaterClass used in Skater operation*/
+#define TE_SA_SKATER_ATTR_CLASS_NAME "cluster"
+
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library
  */

@@ -26,6 +26,7 @@
 // Terralib
 #include "../../../edit/qt/tools/CreateLineTool.h"
 #include "../../../edit/qt/tools/CreatePolygonTool.h"
+#include "../../../edit/qt/tools/MoveGeometryTool.h"
 #include "../../../edit/qt/tools/VertexTool.h"
 #include "../../af/events/LayerEvents.h"
 #include "../../af/events/MapEvents.h"
@@ -43,7 +44,8 @@ te::qt::plugins::edit::ToolBar::ToolBar()
   : m_toolBar(0),
     m_vertexToolAction(0),
     m_createPolygonToolAction(0),
-    m_createLineToolAction(0)
+    m_createLineToolAction(0),
+    m_moveGeometryToolAction(0)
 {
   initialize();
 }
@@ -81,6 +83,9 @@ void te::qt::plugins::edit::ToolBar::initialize()
 
   // CreateLineTool action
   m_createLineToolAction = m_toolBar->addAction("Create Line", this, SLOT(onCreateLineToolActivated(bool)));
+
+  // MoveGeometryTool action
+  m_moveGeometryToolAction = m_toolBar->addAction("Move Geometry", this, SLOT(onMoveGeometryToolActivated(bool)));
 }
 
 void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool checked)
@@ -120,5 +125,23 @@ void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool checked)
   assert(e.m_display);
 
   te::edit::CreateLineTool* tool = new te::edit::CreateLineTool(e.m_display->getDisplay(), Qt::ArrowCursor, 0);
+  e.m_display->setCurrentTool(tool);
+}
+
+void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool checked)
+{
+  te::map::AbstractLayerPtr layer = getSelectedLayer();
+  if(layer.get() == 0)
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    return;
+  }
+
+  te::qt::af::evt::GetMapDisplay e;
+  te::qt::af::ApplicationController::getInstance().broadcast(&e);
+
+  assert(e.m_display);
+
+  te::edit::MoveGeometryTool* tool = new te::edit::MoveGeometryTool(e.m_display->getDisplay(), layer, 0);
   e.m_display->setCurrentTool(tool);
 }

@@ -99,6 +99,8 @@ namespace te
 
       TEDATAACCESSEXPORT te::da::From* ReadFrom(te::xml::Reader& reader);
 
+      TEDATAACCESSEXPORT te::da::FromItem* ReadFromItem(te::xml::Reader& reader);
+
       TEDATAACCESSEXPORT te::da::Function* ReadFunction(te::xml::Reader& reader);
 
       TEDATAACCESSEXPORT te::da::GroupBy* ReadGroupBy(te::xml::Reader& reader);

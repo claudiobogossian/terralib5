@@ -46,9 +46,6 @@ namespace te
 
   namespace sa
   {
-    //forward declarations
-    class SkaterRoot;
-
     /*!
       \class SkaterOperation
 
@@ -72,7 +69,18 @@ namespace te
 
         void setParameters(te::sa::SkaterInputParams* inParams, te::sa::SkaterOutputParams* outParams);
 
+        int getNumberOfClasses();
+
       protected:
+
+        /*! Function used to create the output dataset type */
+        std::auto_ptr<te::da::DataSetType> createDataSetType(te::da::DataSetType* dsType);
+
+        /*! Function used to create the output dataset */
+        std::auto_ptr<te::mem::DataSet> createDataSet(te::da::DataSet* inputDataSet, te::da::DataSetType* dsType, std::map<int, int>& skaterMap, std::string linkName);
+
+        /*! Function used to save the output dataset */
+        void saveDataSet(te::da::DataSet* dataSet, te::da::DataSetType* dsType);
 
         /*! \brief Function to create the weight attribute. */
         void createWeightAttribute(int weightAttrIdx, std::vector<int> attrsIdx);
@@ -80,17 +88,15 @@ namespace te
         /*! \brief Function to calculate the weight attribute using the euclidean distance. */
         double calculateWeight(std::vector<int> attrsIdx, te::graph::Vertex* vFrom, te::graph::Vertex* vTo);
 
-        /*! \brief Function to calculate the msf of a gpm, using boost kruskal algorithm. */
-        te::graph::AbstractGraph* minimumSpanningTree(int weightAttrIdx);
-
-        /*! \brief Function to create a empty graph with vertex attributes from gpm graph. */
-        te::graph::AbstractGraph* createGraph();
+        std::map<int, int> createSkaterMap(te::graph::AbstractGraph* graph, std::vector<std::size_t>& roots);
 
       protected:
 
         std::auto_ptr<te::sa::SkaterInputParams> m_inputParams;       //!< Attribute with the skater input parameters.
 
         std::auto_ptr<te::sa::SkaterOutputParams> m_outputParams;     //!< Attribute with the skater output parameters.
+
+        int m_nClassGroups;                                           //!< Number of classes (clusters) generated.
     };
   } // end namespace sa
 } // end namespace te

@@ -379,73 +379,84 @@ namespace te
           mosaicValidAreaPols.add( outPolPtr );
           mosaicValidAreaPols.setSRID( mosaicRasterHandler->getGrid()->getSRID() );
 
-          // copying the raster data 
+          // fill the output mosaic raster 
             
-          const unsigned int nBands = mosaicRasterHandler->getNumberOfBands();
-          
-          mosaicTargetMeans.resize( nBands, 0.0 );
-          mosaicTargetVariances.resize( nBands, 0.0 );        
-            
-          for( unsigned int inputRastersBandsIdx = 0 ; inputRastersBandsIdx <
-            nBands ; ++inputRastersBandsIdx )
           {
-            const unsigned int inputBandIdx =  
-              m_inputParameters.m_inputRastersBands[ inputRasterIdx ][ inputRastersBandsIdx ] ;
-            const double& inputBandNoDataValue = m_inputParameters.m_forceInputNoDataValue ?
-              m_inputParameters.m_noDataValue : inputRasterPtr->getBand( inputBandIdx
-              )->getProperty()->m_noDataValue;
-            const unsigned int outRowsBound = inputRasterPtr->getNumberOfRows();
-            const unsigned int outColsBound = inputRasterPtr->getNumberOfColumns();
-            te::rst::Band& outBand =
-              (*mosaicRasterHandler->getBand( inputRastersBandsIdx ));
-            const te::rst::Band& inBand =
-              (*inputRasterPtr->getBand( inputBandIdx ));
+            const unsigned int nBands = mosaicRasterHandler->getNumberOfBands();
+            const unsigned int inputRasterNRows = inputRasterPtr->getNumberOfRows();
+            const unsigned int inputRasterNCols = inputRasterPtr->getNumberOfColumns();            
+            const unsigned int mosaicNRows = mosaicRasterHandler->getNumberOfRows();
+            const unsigned int mosaicNCols = mosaicRasterHandler->getNumberOfColumns();              
             unsigned int validPixelsNumber = 0;
             unsigned int outCol = 0;
             unsigned int outRow = 0;
-            double pixelValue = 0;
+            double pixelValue = 0;            
             
-            double& mean = mosaicTargetMeans[ inputRastersBandsIdx ];
-            mean = 0;          
-
-            for( outRow = 0 ; outRow < outRowsBound ; ++outRow )
+            mosaicTargetMeans.resize( nBands, 0.0 );
+            mosaicTargetVariances.resize( nBands, 0.0 );        
+              
+            for( unsigned int inputRastersBandsIdx = 0 ; inputRastersBandsIdx <
+              nBands ; ++inputRastersBandsIdx )
             {
-              for( outCol = 0 ; outCol < outColsBound ; ++outCol )
+              const unsigned int inputBandIdx =  
+                m_inputParameters.m_inputRastersBands[ inputRasterIdx ][ inputRastersBandsIdx ] ;
+              te::rst::Band& outBand =
+                (*mosaicRasterHandler->getBand( inputRastersBandsIdx ));
+              const te::rst::Band& inBand =
+                (*inputRasterPtr->getBand( inputBandIdx ));                
+              const double& inputBandNoDataValue = m_inputParameters.m_forceInputNoDataValue ?
+                m_inputParameters.m_noDataValue : inputRasterPtr->getBand( inputBandIdx
+                )->getProperty()->m_noDataValue;
+              const double& outputBandNoDataValue = outBand.getProperty()->m_noDataValue;
+              
+              double& mean = mosaicTargetMeans[ inputRastersBandsIdx ];
+              mean = 0;          
+
+              for( outRow = 0 ; outRow < mosaicNRows ; ++outRow )
               {
-                inBand.getValue( outCol, outRow, pixelValue );
-
-                if( pixelValue != inputBandNoDataValue )
+                for( outCol = 0 ; outCol < mosaicNCols ; ++outCol )
                 {
-                  outBand.setValue( outCol, outRow, pixelValue );
-                  
-                  mean += pixelValue;
-                  ++validPixelsNumber;
-                }
-                
-              }
-            }
-
-            mean /= ( (double)validPixelsNumber );
-
-            // variance calcule
-
-            if( m_inputParameters.m_autoEqualize )
-            {
-              double& variance = mosaicTargetVariances[ inputRastersBandsIdx ];
-              variance = 0;
-
-              double pixelValue = 0;
-
-              for( outRow = 0 ; outRow < outRowsBound ; ++outRow )
-              {
-                for( outCol = 0 ; outCol < outColsBound ; ++outCol )
-                {
-                  outBand.getValue( outCol, outRow, pixelValue );
-
-                  if( pixelValue != inputBandNoDataValue )
+                  if( ( outRow < inputRasterNRows ) && ( outCol < inputRasterNCols ) )
                   {
-                    variance += ( ( pixelValue - mean ) * ( pixelValue -
-                      mean ) ) / ( (double)validPixelsNumber );
+                    inBand.getValue( outCol, outRow, pixelValue );
+
+                    if( pixelValue != inputBandNoDataValue )
+                    {
+                      outBand.setValue( outCol, outRow, pixelValue );
+                      
+                      mean += pixelValue;
+                      ++validPixelsNumber;
+                    }
+                  }
+                  else
+                  {
+                    outBand.setValue( outCol, outRow, outputBandNoDataValue );
+                  }
+                }
+              }
+
+              mean /= ( (double)validPixelsNumber );
+
+              // variance calcule
+
+              if( m_inputParameters.m_autoEqualize )
+              {
+                double& variance = mosaicTargetVariances[ inputRastersBandsIdx ];
+                variance = 0;
+
+                double pixelValue = 0;
+
+                for( outRow = 0 ; outRow < inputRasterNRows ; ++outRow )
+                {
+                  for( outCol = 0 ; outCol < inputRasterNCols ; ++outCol )
+                  {
+                    outBand.getValue( outCol, outRow, pixelValue );
+
+                    if( pixelValue != inputBandNoDataValue )
+                    {
+                      variance += ( ( pixelValue - mean ) * ( pixelValue -
+                        mean ) ) / ( (double)validPixelsNumber );
+                    }
                   }
                 }
               }

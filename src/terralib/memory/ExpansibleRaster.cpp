@@ -112,8 +112,6 @@ te::mem::ExpansibleRaster::ExpansibleRaster( const unsigned char maxMemPercentUs
       *(bandsProperties[ bandsIdx ]) , bandsIdx ) );
     delete ( bandsProperties[ bandsIdx ] );
   }
-  
-  dummyFillAllBlocks();
 }
 
 te::mem::ExpansibleRaster::ExpansibleRaster( te::rst::Grid* grid, 
@@ -165,8 +163,6 @@ te::mem::ExpansibleRaster::ExpansibleRaster( te::rst::Grid* grid,
       *(bandsProperties[ bandsIdx ]) , bandsIdx ) );
     delete ( bandsProperties[ bandsIdx ] );
   }
-  
-  dummyFillAllBlocks();
 }
 
 te::mem::ExpansibleRaster::~ExpansibleRaster()
