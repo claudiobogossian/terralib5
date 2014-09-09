@@ -2711,6 +2711,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_pluginsMenu->setObjectName("Plugins");
   m_pluginsMenu->setTitle(tr("Pl&ugins"));
 
+  m_pluginsMenu->addSeparator()->setObjectName("ManagePluginsSeparator");
   m_pluginsMenu->addAction(m_pluginsManager);
 
 // Help menu
