@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/edt/GeometryManager.h
+  \file terralib/edt/RepositoryManager.h
 
-  \brief This is a singleton for managing edited geometries.
+  \brief This is a singleton for managing edit repositories.
 */
 
-#ifndef __TERRALIB_EDIT_INTERNAL_GEOMETRYMANAGER_H
-#define __TERRALIB_EDIT_INTERNAL_GEOMETRYMANAGER_H
+#ifndef __TERRALIB_EDIT_INTERNAL_REPOSITORYMANAGER_H
+#define __TERRALIB_EDIT_INTERNAL_REPOSITORYMANAGER_H
 
 // TerraLib
 #include "../common/Singleton.h"
@@ -44,33 +44,34 @@ namespace te
 
   namespace gm
   {
+    class Envelope;
     class Geometry;
   }
 
   namespace edit
   {
 // Forward declaration
-    class IdentifiedGeometries;
-    struct IdGeom;
+    class IdGeometry;
+    class Repository;
 
     /*!
-      \class GeometryManager
+      \class RepositoryManager
 
-      \brief This is a singleton for managing edited geometries.
+      \brief This is a singleton for managing edit repositories.
     */
-    class TEEDITEXPORT GeometryManager : public te::common::Singleton<GeometryManager>
+    class TEEDITEXPORT RepositoryManager : public te::common::Singleton<RepositoryManager>
     {
-      friend class te::common::Singleton<GeometryManager>;
+      friend class te::common::Singleton<RepositoryManager>;
 
       public:
 
         void addEditedGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom);
 
-        IdentifiedGeometries* getIdentifiedGeometries(const std::string& source) const;
+        Repository* getRepository(const std::string& source) const;
 
-        std::vector<IdGeom*> getGeometries(const std::string& source, const te::gm::Envelope& e, int srid) const;
+        std::vector<IdGeometry*> getGeometries(const std::string& source, const te::gm::Envelope& e, int srid) const;
 
-        IdGeom* getGeometry(const std::string& source, const te::gm::Envelope& e, int srid) const;
+        IdGeometry* getGeometry(const std::string& source, const te::gm::Envelope& e, int srid) const;
 
         void clearAll();
 
@@ -79,17 +80,17 @@ namespace te
       protected:
 
         /*! \brief It initializes the singleton instance of the geometry manager. */
-        GeometryManager();
+        RepositoryManager();
 
         /*! \brief Singleton destructor. */
-        ~GeometryManager();
+        ~RepositoryManager();
 
       private:
 
-        std::map<std::string, IdentifiedGeometries*> m_editedGeometries;
+        std::map<std::string, Repository*> m_repositories;
     };
 
   } // end namespace edit
 }   // end namespace te
 
-#endif  // __TERRALIB_EDIT_INTERNAL_GEOMETRYMANAGER_H
+#endif  // __TERRALIB_EDIT_INTERNAL_REPOSITORYMANAGER_H

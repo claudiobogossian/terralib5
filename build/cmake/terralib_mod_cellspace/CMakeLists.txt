@@ -21,7 +21,7 @@
 #  Description: Build configuration for the Celluar Spaces Module.
 #
 #  Author: Felipe Valerio de Siqueira <felipe.siqueira@funcate.org.br>
-#		   Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
+#          Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
@@ -40,9 +40,9 @@ add_library(terralib_mod_cellspace SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_F
 target_link_libraries(terralib_mod_cellspace terralib_mod_common
                                              terralib_mod_dataaccess
                                              terralib_mod_geometry
-											 terralib_mod_maptools
+                                             terralib_mod_maptools
                                              terralib_mod_memory
-											 terralib_mod_srs)
+                                             terralib_mod_srs)
 
 set_target_properties(terralib_mod_cellspace
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}

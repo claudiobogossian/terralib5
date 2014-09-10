@@ -18,8 +18,15 @@
  */
 
 //Terralib
+#include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../datatype/SimpleProperty.h"
+#include "../../../geometry/GeometryProperty.h"
+#include "../../../memory/DataSet.h"
+#include "../../../memory/DataSetItem.h"
 #include "../../widgets/layer/utils/DataSet2Layer.h"
 #include "../help/HelpPushButton.h"
 #include "../layer/search/LayerSearchWidget.h"
@@ -152,6 +159,15 @@ bool te::qt::widgets::VectorizationWizard::execute()
   //run operation
   raster->vectorize(geomVec, band, maxGeom);
 
+  //save data
+  std::auto_ptr<te::da::DataSetType> dsType = createDataSetType(outputdataset, raster->getSRID());
+
+  std::auto_ptr<te::mem::DataSet> dsMem = createDataSet(dsType.get(), geomVec);
+
+  te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().get(outDSInfo->getId(), outDSInfo->getType(), outDSInfo->getConnInfo());
+
+  saveDataSet(dsMem.get(), dsType.get(), ds, outputdataset);
+
   //create output layer
   te::da::DataSourcePtr outDataSource = te::da::GetDataSource(outDSInfo->getId());
     
@@ -162,5 +178,59 @@ bool te::qt::widgets::VectorizationWizard::execute()
   m_outputLayer = converter(dt);
 
   return true;
+}
+
+std::auto_ptr<te::da::DataSetType> te::qt::widgets::VectorizationWizard::createDataSetType(std::string dataSetName, int srid)
+{
+  std::auto_ptr<te::da::DataSetType> dsType(new te::da::DataSetType(dataSetName));
+
+  //create id property
+  te::dt::SimpleProperty* idProperty = new te::dt::SimpleProperty("id", te::dt::INT32_TYPE);
+  dsType->add(idProperty);
+
+  //create geometry property
+  te::gm::GeometryProperty* geomProperty = new te::gm::GeometryProperty("geom", srid, te::gm::PolygonType);
+  dsType->add(geomProperty);
+
+  //create primary key
+  std::string pkName = "pk_id";
+              pkName+= "_" + dataSetName;
+  te::da::PrimaryKey* pk = new te::da::PrimaryKey(pkName, dsType.get());
+  pk->add(idProperty);
+
+  return dsType;
+}
+
+std::auto_ptr<te::mem::DataSet> te::qt::widgets::VectorizationWizard::createDataSet(te::da::DataSetType* dsType, std::vector<te::gm::Geometry*>& geoms)
+{
+  std::auto_ptr<te::mem::DataSet> ds(new te::mem::DataSet(dsType));
+
+  for(std::size_t t = 0; t < geoms.size(); ++t)
+  {
+    //create dataset item
+    te::mem::DataSetItem* item = new te::mem::DataSetItem(ds.get());
+
+    //set id
+    item->setInt32("id", (int)t);
+
+    //set geometry
+    item->setGeometry("geom", geoms[t]);
+
+    ds->add(item);
+  }
+
+  return ds;
+}
+
+void te::qt::widgets::VectorizationWizard::saveDataSet(te::mem::DataSet* dataSet, te::da::DataSetType* dsType, te::da::DataSourcePtr ds, std::string dataSetName)
+{
+  //save dataset
+  dataSet->moveBeforeFirst();
+
+  std::map<std::string, std::string> options;
+
+  ds->createDataSet(dsType, options);
+
+  ds->add(dataSetName, dataSet, options);
 }
 
