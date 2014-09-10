@@ -31,6 +31,7 @@
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/Point.h"
 #include "../geometry/Polygon.h"
+#include "../maptools/DataSetLayer.h"
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
 #include "../raster.h"
@@ -40,17 +41,13 @@
 #include <stdio.h>
 
 te::cellspace::CellularSpacesOperations::CellularSpacesOperations()
-  : m_outputDataSetType(0),
-    m_outputDataSet(0),
-    m_outputRaster(0)
 {
-  
 }
 
 te::cellspace::CellularSpacesOperations::~CellularSpacesOperations()
 {
 }
-#include <cmath>
+
 void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSourceInfoPtr outputSource,
                                                               const std::string& name,
                                                               te::map::AbstractLayerPtr layerBase,
@@ -74,14 +71,14 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
   maxcols = (int)ceil((env.m_urx-env.m_llx)/resX);
   maxrows = (int)ceil((env.m_ury-env.m_lly)/resY);
 
-  std::auto_ptr<te::da::DataSetType> refDst = layerBase->getSchema();
-  std::auto_ptr<te::da::DataSet> refDs = layerBase->getData();
+  std::auto_ptr<te::da::DataSet> refDs;
 
-  m_outputDataSetType = createCellularDataSetType(name, srid, type);
+  if(useMask)
+  {
+    refDs = layerBase->getData();
+  }
 
-  m_outputDataSet = new te::mem::DataSet(m_outputDataSetType);
-
-  te::mem::DataSet* ds = dynamic_cast<te::mem::DataSet*>(m_outputDataSet);
+  std::auto_ptr<te::da::DataSetType> outputDataSetType(createCellularDataSetType(name, srid, type));
 
   std::auto_ptr<te::sam::rtree::Index<size_t, 8> > rtree;
 
@@ -90,9 +87,27 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
     rtree.reset(getRtree(layerBase));
   }
 
+  // Output
+  std::auto_ptr<te::da::DataSource> source = te::da::DataSourceFactory::make(outputSource->getAccessDriver());
+  source->setConnectionInfo(outputSource->getConnInfo());
+
+  source->open();
+
+  std::auto_ptr<te::da::DataSourceTransactor> t = source->getTransactor();
+
+  t->begin();
+
+  std::map<std::string, std::string> op;
+
+  t->createDataSet(outputDataSetType.get(), op);
+
   double x, y;
   for(int lin = 0; lin < maxrows; ++lin)
   {
+    std::auto_ptr<te::da::DataSet> outputDataSet(new te::mem::DataSet(outputDataSetType.get()));
+
+    std::auto_ptr<te::mem::DataSet> ds(dynamic_cast<te::mem::DataSet*>(outputDataSet.release()));
+
     y = env.m_lly+(lin*resY);
     for(int col = 0; col < maxcols; ++col)
     {
@@ -131,7 +146,7 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
 
             if(geom->intersects(g.get()))
             {
-              addCell(ds, col, lin, geom.release());
+              addCell(ds.get(), col, lin, geom.release());
               break;
             }
           }
@@ -139,12 +154,14 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
       }
       else
       {
-        addCell(ds, col, lin, geom.release());
+        addCell(ds.get(), col, lin, geom.release());
       }
     }
+
+    t->add(name, ds.get(), op);
   }
 
-  save(outputSource);
+  t->commit();
 }
 
 void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSourceInfoPtr outputSource,
@@ -161,43 +178,12 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
     return;
   }
 
-  int maxcols, maxrows;
-  maxcols = (int)ceil((env.m_urx-env.m_llx)/resX);
-  maxrows = (int)ceil((env.m_ury-env.m_lly)/resY);
+  te::map::AbstractLayerPtr auxLayer = new te::map::DataSetLayer("");
 
-  m_outputDataSetType = createCellularDataSetType(name, srid, type);
+  auxLayer->setSRID(srid);
+  auxLayer->setExtent(env);
 
-  m_outputDataSet = new te::mem::DataSet(m_outputDataSetType);
-
-  te::mem::DataSet* ds = dynamic_cast<te::mem::DataSet*>(m_outputDataSet);
-
-  double x, y;
-  for(int lin = 0; lin < maxrows; ++lin)
-  {
-    y = env.m_lly+(lin*resY);
-    for(int col = 0; col < maxcols; ++col)
-    {
-      x = env.m_llx+(col*resX);
-      te::gm::Envelope* env = new te::gm::Envelope(x, y, x+resX, y+resY);
-
-      std::auto_ptr<te::gm::Geometry> geom;
-
-      if(type == CELLSPACE_POLYGONS)
-      {
-        geom.reset(te::gm::GetGeomFromEnvelope(env, srid));
-      }
-      else if(type == CELLSPACE_POINTS)
-      {
-        double pX = env->m_llx +( (env->m_urx - env->m_llx) / 2);
-        double pY = env->m_lly +( (env->m_ury - env->m_lly) / 2);
-        geom.reset(new te::gm::Point(pX, pY, srid));
-      }
-
-      addCell(ds, col, lin, geom.release());
-    }
-  }
-
-  save(outputSource);
+  createCellSpace(outputSource, name, auxLayer, resX, resY, false, type);
 }
 
 void te::cellspace::CellularSpacesOperations::addCell(te::mem::DataSet* ds, int col, int row, te::gm::Geometry* geom)
@@ -213,21 +199,10 @@ void te::cellspace::CellularSpacesOperations::addCell(te::mem::DataSet* ds, int 
   ds->add(item);
 }
 
-te::da::DataSetType* te::cellspace::CellularSpacesOperations::getDataSetType()
-{
-  return m_outputDataSetType;
-}
-
-te::da::DataSet* te::cellspace::CellularSpacesOperations::getDataSet()
-{
-  return m_outputDataSet;
-}
-
 te::sam::rtree::Index<size_t, 8>* te::cellspace::CellularSpacesOperations::getRtree(te::map::AbstractLayerPtr layerBase)
 {
   te::sam::rtree::Index<size_t, 8>* rtree = new te::sam::rtree::Index<size_t, 8>;
 
-  std::auto_ptr<te::da::DataSetType> dst = layerBase->getSchema();
   std::auto_ptr<te::da::DataSet> ds = layerBase->getData();
 
   std::size_t geomPos = te::da::GetFirstSpatialPropertyPos(ds.get());
@@ -246,11 +221,6 @@ te::sam::rtree::Index<size_t, 8>* te::cellspace::CellularSpacesOperations::getRt
   }
 
   return rtree;
-}
-
-std::auto_ptr<te::rst::Raster> te::cellspace::CellularSpacesOperations::getRaster()
-{
-  return m_outputRaster;
 }
 
 te::da::DataSetType* te::cellspace::CellularSpacesOperations::createCellularDataSetType(const std::string& name, int srid, CellSpaceType type)
@@ -288,32 +258,11 @@ void te::cellspace::CellularSpacesOperations::createRasteCellSpace(te::da::DataS
                                                                    const te::gm::Envelope& env,
                                                                    const int srid)
 {
+  te::map::AbstractLayerPtr auxLayer = new te::map::DataSetLayer("");
+  auxLayer->setSRID(srid);
+  auxLayer->setExtent(env);
 
-  te::gm::Envelope* newEnv = new te::gm::Envelope(env);
-
-  int maxcols, maxrows;
-  maxcols = (int)ceil((newEnv->m_urx-newEnv->m_llx)/resX);
-  maxrows = (int)ceil((newEnv->m_ury-newEnv->m_lly)/resY);
-
-  te::rst::Grid* grid = new te::rst::Grid(maxcols, maxrows, resX, resY, newEnv, srid);
-
-  std::vector<te::rst::BandProperty*> bprops;
-  bprops.push_back(new te::rst::BandProperty(0, te::dt::INT32_TYPE));
-
-  m_outputRaster.reset(te::rst::RasterFactory::make(outputSource->getAccessDriver(), grid, bprops, outputSource->getConnInfo()));
-
-  double x, y;
-  for(int lin = 0; lin < maxrows; ++lin)
-  {
-    y = newEnv->m_lly+(lin*resY);
-    for(int col = 0; col < maxcols; ++col)
-    {
-      x = newEnv->m_llx+(col*resX);
-
-      m_outputRaster->setValue(col, lin, 1, 0);
-
-    }
-  }
+  createRasteCellSpace(outputSource, name, auxLayer, resX, resY, false);
 }
 
 void te::cellspace::CellularSpacesOperations::createRasteCellSpace(te::da::DataSourceInfoPtr outputSource,
@@ -325,7 +274,7 @@ void te::cellspace::CellularSpacesOperations::createRasteCellSpace(te::da::DataS
 {
   te::gm::Envelope env = layerBase->getExtent();
 
-  te::gm::Envelope* newEnv = new te::gm::Envelope(te::gm::AdjustToCut(env, resX, resY));
+  te::gm::Envelope* newEnv = new te::gm::Envelope(env);
 
   int srid = layerBase->getSRID();
 
@@ -335,9 +284,15 @@ void te::cellspace::CellularSpacesOperations::createRasteCellSpace(te::da::DataS
 
   std::auto_ptr<te::sam::rtree::Index<size_t, 8> > rtree;
 
+  std::auto_ptr<te::da::DataSet> refDs;
+
+  std::size_t geomPos;
+
   if(useMask)
   {
     rtree.reset(getRtree(layerBase));
+    refDs = layerBase->getData();
+    geomPos = te::da::GetFirstSpatialPropertyPos(refDs.get());
   }
 
   te::rst::Grid* grid = new te::rst::Grid(maxcols, maxrows, resX, resY, newEnv, srid);
@@ -345,12 +300,7 @@ void te::cellspace::CellularSpacesOperations::createRasteCellSpace(te::da::DataS
   std::vector<te::rst::BandProperty*> bprops;
   bprops.push_back(new te::rst::BandProperty(0, te::dt::INT32_TYPE));
 
-  m_outputRaster.reset(te::rst::RasterFactory::make(outputSource->getAccessDriver(), grid, bprops, outputSource->getConnInfo()));
-
-  std::auto_ptr<te::da::DataSetType> refDst = layerBase->getSchema();
-  std::auto_ptr<te::da::DataSet> refDs = layerBase->getData();
-
-  std::size_t geomPos = te::da::GetFirstSpatialPropertyPos(refDs.get());
+  std::auto_ptr<te::rst::Raster> outputRaster(te::rst::RasterFactory::make(outputSource->getAccessDriver(), grid, bprops, outputSource->getConnInfo()));
 
   double x, y;
   for(int lin = 0; lin < maxrows; ++lin)
@@ -380,12 +330,12 @@ void te::cellspace::CellularSpacesOperations::createRasteCellSpace(te::da::DataS
 
             if(auxGeom->intersects(g.get()))
             {
-              m_outputRaster->setValue(col, lin, 1, 0);
+              outputRaster->setValue(col, lin, 1, 0);
               break;
             }
             else
             {
-              m_outputRaster->setValue(col, lin, 0, 0);
+              outputRaster->setValue(col, lin, 0, 0);
             }
 
           }
@@ -393,37 +343,9 @@ void te::cellspace::CellularSpacesOperations::createRasteCellSpace(te::da::DataS
       }
       else
       {
-        m_outputRaster->setValue(col, lin, 1, 0);
+        outputRaster->setValue(col, lin, 1, 0);
       }
 
     }
-  }
-}
-
-void te::cellspace::CellularSpacesOperations::save(te::da::DataSourceInfoPtr sourceInfo)
-{
-  std::auto_ptr<te::da::DataSource> source = te::da::DataSourceFactory::make(sourceInfo->getAccessDriver());
-  source->setConnectionInfo(sourceInfo->getConnInfo());
-
-  source->open();
-
-  std::auto_ptr<te::da::DataSourceTransactor> t = source->getTransactor();
-
-  try
-  {
-    t->begin();
-
-    std::map<std::string, std::string> op;
-
-    t->createDataSet(m_outputDataSetType, op);
-
-    t->add(m_outputDataSetType->getName(), m_outputDataSet, op);
-
-    t->commit();
-  }
-  catch(te::common::Exception& e)
-  {
-    t->rollBack();
-    throw te::common::Exception(e);
   }
 }

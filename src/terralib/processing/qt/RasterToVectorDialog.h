@@ -78,6 +78,13 @@ namespace te
         te::map::AbstractLayerPtr getLayer();
 
         /*!
+          \brief Get the selected bands based on selected QListWidgetItem.
+
+          \return a Vector with selected bands.
+        */
+        std::vector<unsigned int> getSelectedBands();
+
+        /*!
           \brief Get the selected statistics based on selected QListWidgetItem.
 
           \return a Vector with selected statistics.

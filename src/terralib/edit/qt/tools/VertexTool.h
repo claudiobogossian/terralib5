@@ -31,8 +31,8 @@
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
 #include "../../../sam/rtree/Index.h"
-#include "../../Config.h"
 #include "../../Utils.h"
+#include "../Config.h"
 
 // STL
 #include <string>
@@ -59,12 +59,15 @@ namespace te
 
   namespace edit
   {
+// Forward declaration
+    struct IdGeom;
+
     /*!
       \class VertexTool
 
       \brief This class implements a concrete tool for vertex operations (move, add, etc.).
     */
-    class TEEDITEXPORT VertexTool : public te::qt::widgets::AbstractTool
+    class TEEDITQTEXPORT VertexTool : public te::qt::widgets::AbstractTool
     {
       Q_OBJECT
 
@@ -137,6 +140,8 @@ namespace te
 
         void updateCursor();
 
+        void storeGeometryEdited();
+
       private slots:
 
         void onExtentChanged();
@@ -144,7 +149,7 @@ namespace te
       private:
 
           te::map::AbstractLayerPtr m_layer;
-          te::gm::Geometry* m_geom;
+          IdGeom* m_idgeom;
           std::vector<te::gm::LineString*> m_lines;
           VertexIndex m_currentVertexIndex;
           te::sam::rtree::Index<VertexIndex, 8> m_rtree;

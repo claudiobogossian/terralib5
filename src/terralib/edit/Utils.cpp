@@ -35,11 +35,76 @@
 #include "../geometry/Polygon.h"
 #include "../geometry/Utils.h"
 #include "../srs/Config.h"
+#include "GeometryManager.h"
+#include "IdGeom.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
 #include <memory>
+
+te::edit::IdGeom* te::edit::PickIdGeometry(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid)
+{
+  if(layer->getVisibility() != te::map::VISIBLE || !layer->isValid())
+    return 0;
+
+  te::gm::Envelope reprojectedEnvelope(env);
+
+  if((layer->getSRID() != TE_UNKNOWN_SRS) && (srid != TE_UNKNOWN_SRS) && (layer->getSRID() != srid))
+    reprojectedEnvelope.transform(srid, layer->getSRID());
+
+  if(!reprojectedEnvelope.intersects(layer->getExtent()))
+    return 0;
+
+  IdGeom* result = 0;
+
+  // Try retrieves geometry from GeometryManager...
+  IdGeom* idgeom = GeometryManager::getInstance().getGeometry(layer->getTitle(), env, srid);
+  if(idgeom)
+  {
+    result = new IdGeom(idgeom->m_id->clone(), dynamic_cast<te::gm::Geometry*>(idgeom->m_geom->clone()), true);
+    return result;
+  }
+
+  // ...else, retrieve from layer
+
+  std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema());
+
+  if(!schema->hasGeom())
+    return 0;
+
+  std::vector<std::string> oidPropertyNames;
+  te::da::GetOIDPropertyNames(schema.get(), oidPropertyNames);
+
+  te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(schema.get());
+
+  // Gets the dataset
+  std::auto_ptr<te::da::DataSet> dataset = layer->getData(gp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS);
+
+  if(dataset.get() == 0)
+    return 0;
+
+  // Generates a geometry from the given extent. It will be used to refine the results
+  std::auto_ptr<te::gm::Geometry> geometryFromEnvelope(te::gm::GetGeomFromEnvelope(&reprojectedEnvelope, layer->getSRID()));
+
+  // The restriction point. It will be used to refine the results
+  te::gm::Coord2D center = reprojectedEnvelope.getCenter();
+  te::gm::Point point(center.x, center.y, layer->getSRID());
+
+  while(dataset->moveNext())
+  {
+    std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
+
+    if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()))
+    {
+      // Geometry found!
+      result = new IdGeom(te::da::GenerateOID(dataset.get(), oidPropertyNames), g.release(), true);
+      break;
+    }
+  }
+
+  return result;
+}
 
 te::gm::Geometry* te::edit::PickGeometry(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid)
 {
@@ -53,6 +118,13 @@ te::gm::Geometry* te::edit::PickGeometry(const te::map::AbstractLayerPtr& layer,
 
   if(!reprojectedEnvelope.intersects(layer->getExtent()))
     return 0;
+
+  // Try retrieves geometry from GeometryManager...
+  IdGeom* idgeom = GeometryManager::getInstance().getGeometry(layer->getTitle(), env, srid);
+  if(idgeom)
+    return dynamic_cast<te::gm::Geometry*>(idgeom->m_geom->clone());
+
+  // ...else, retrieve from layer
 
   std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema());
 
