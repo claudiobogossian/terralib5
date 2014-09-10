@@ -30,7 +30,7 @@
           <string>Reference</string>
          </property>
          <property name="checkable">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
@@ -573,7 +573,7 @@
               <item>
                <widget class="QLineEdit" name="m_colsLineEdit">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="maximumSize">
                  <size>
@@ -621,7 +621,7 @@
               <item>
                <widget class="QLineEdit" name="m_rowsLineEdit">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="maximumSize">
                  <size>
@@ -787,6 +787,31 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>m_layersComboBox</tabstop>
+  <tabstop>m_maskToolButton</tabstop>
+  <tabstop>m_noMaskToolButton</tabstop>
+  <tabstop>m_vectorToolButton</tabstop>
+  <tabstop>m_pointsToolButton</tabstop>
+  <tabstop>m_rasterToolButton</tabstop>
+  <tabstop>m_resXLineEdit</tabstop>
+  <tabstop>m_resYLineEdit</tabstop>
+  <tabstop>m_targetDatasourceToolButton</tabstop>
+  <tabstop>m_targetFileToolButton</tabstop>
+  <tabstop>m_createPushButton</tabstop>
+  <tabstop>m_cancelPushButton</tabstop>
+  <tabstop>m_helpPushButton</tabstop>
+  <tabstop>m_colsLineEdit</tabstop>
+  <tabstop>m_rowsLineEdit</tabstop>
+  <tabstop>m_newLayerNameLineEdit</tabstop>
+  <tabstop>m_repositoryLineEdit</tabstop>
+  <tabstop>m_srsToolButton</tabstop>
+  <tabstop>m_unitComboBox</tabstop>
+  <tabstop>m_uryLineEdit</tabstop>
+  <tabstop>m_urxLineEdit</tabstop>
+  <tabstop>m_llyLineEdit</tabstop>
+  <tabstop>m_llxLineEdit</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

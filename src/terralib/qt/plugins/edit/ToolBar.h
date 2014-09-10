@@ -31,8 +31,10 @@
 #include "Config.h"
 
 // Qt
-#include <QToolBar>
 #include <QAction>
+#include <QActionGroup>
+#include <QIcon>
+#include <QToolBar>
 
 namespace te
 {
@@ -65,6 +67,10 @@ namespace te
 
             void initialize();
 
+            void initializeActions();
+
+            void createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const char* member);
+
           protected slots:
 
             void onVertexToolActivated(bool checked);
@@ -78,10 +84,13 @@ namespace te
           protected:
 
             QToolBar* m_toolBar;
+
             QAction* m_vertexToolAction;
             QAction* m_createPolygonToolAction;
             QAction* m_createLineToolAction;
             QAction* m_moveGeometryToolAction;
+
+            QActionGroup* m_editToolsGroup;
         };
 
       } // end namespace edit

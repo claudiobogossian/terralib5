@@ -30,7 +30,7 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
-#include "../../Config.h"
+#include "../Config.h"
 
 // Qt
 #include <QPointF>
@@ -53,7 +53,7 @@ namespace te
 
       \brief This class implements a concrete tool to move geometries.
     */
-    class TEEDITEXPORT MoveGeometryTool : public te::qt::widgets::AbstractTool
+    class TEEDITQTEXPORT MoveGeometryTool : public te::qt::widgets::AbstractTool
     {
       Q_OBJECT
 

@@ -6,26 +6,26 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>503</width>
-    <height>417</height>
+    <width>507</width>
+    <height>384</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Segmenter</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_21">
+  <layout class="QGridLayout" name="gridLayout_23">
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_20">
+    <layout class="QGridLayout" name="gridLayout_22">
      <item row="0" column="0">
-      <layout class="QGridLayout" name="gridLayout_19">
+      <layout class="QGridLayout" name="gridLayout_21">
        <item row="0" column="0">
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
           <string>Type</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_18">
+         <layout class="QGridLayout" name="gridLayout_20">
           <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout_17">
+           <layout class="QGridLayout" name="gridLayout_19">
             <item row="0" column="0">
              <widget class="QComboBox" name="m_strategyTypeComboBox">
               <property name="sizePolicy">
@@ -59,6 +59,9 @@
                   </property>
                   <property name="title">
                    <string>Region Growing</string>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_9">
                    <item row="0" column="0">
@@ -197,6 +200,9 @@
                   </property>
                   <property name="title">
                    <string>Baatz</string>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_16">
                    <item row="0" column="0">
@@ -350,6 +356,36 @@
               </widget>
              </widget>
             </item>
+            <item row="2" column="0">
+             <widget class="QGroupBox" name="groupBox_4">
+              <property name="title">
+               <string>Common Parameters</string>
+              </property>
+              <property name="flat">
+               <bool>true</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_18">
+               <item row="0" column="0">
+                <layout class="QGridLayout" name="gridLayout_17">
+                 <item row="0" column="0">
+                  <widget class="QCheckBox" name="m_noDataValueCheckBox">
+                   <property name="text">
+                    <string>Set No Data Value:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLineEdit" name="m_noDataValueLineEdit">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
            </layout>
           </item>
          </layout>
@@ -366,7 +402,7 @@
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>150</height>
+              <height>100</height>
              </size>
             </property>
             <property name="alternatingRowColors">
@@ -441,12 +477,28 @@
    <slot>setCurrentIndex(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>154</x>
-     <y>79</y>
+     <x>176</x>
+     <y>54</y>
     </hint>
     <hint type="destinationlabel">
-     <x>322</x>
-     <y>379</y>
+     <x>344</x>
+     <y>163</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_noDataValueCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_noDataValueLineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>108</x>
+     <y>200</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>169</x>
+     <y>203</y>
     </hint>
    </hints>
   </connection>

@@ -26,7 +26,9 @@
 
 include ( ${SWIG_USE_FILE} )
 
-add_definitions(-DLUA_BUILD_AS_DLL)
+if(WIN32)
+  add_definitions(-DLUA_BUILD_AS_DLL)
+endif()
 
 file (GLOB TERRALIB_SWIG_SCRIPT_FILE "../../../src/terralib/binding/swig/TerraLib.i")
 
@@ -68,6 +70,7 @@ SWIG_LINK_LIBRARIES (terralib_mod_binding_lua terralib_mod_geometry
                                               terralib_mod_datatype
                                               terralib_mod_common
                                               terralib_mod_srs
+                                              terralib_mod_plugin
                                               ${Boost_FILESYSTEM_LIBRARY}
                                               ${Boost_SYSTEM_LIBRARY}
                                               ${Boost_THREAD_LIBRARY}

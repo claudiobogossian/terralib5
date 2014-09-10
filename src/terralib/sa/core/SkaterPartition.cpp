@@ -36,11 +36,13 @@
 #include <cassert>
 #include <queue>
 
-te::sa::SkaterPartition::SkaterPartition(te::graph::AbstractGraph* graph, std::vector<std::string> attrs, std::string popAttr)
+te::sa::SkaterPartition::SkaterPartition(te::graph::AbstractGraph* graph, std::vector<std::string> attrs, std::string popAttr, std::size_t minPop)
 {
   m_graph = graph;
 
   m_popAttr = popAttr;
+
+  m_popMin = minPop;
 
   m_attrs = attrs;
 }
@@ -96,8 +98,12 @@ std::vector<std::size_t> te::sa::SkaterPartition::execute(std::size_t nGroups)
 
         ++groups;
 
-        rs.insert(Root(diffA, vertexFrom));
-        rs.insert(Root(diffB, vertexTo));
+        rs.insert(te::sa::Root(diffA, vertexFrom));
+        rs.insert(te::sa::Root(diffB, vertexTo));
+      }
+      else
+      {
+        rs.insert(te::sa::Root(0., currentId));
       }
     }
   }
@@ -203,7 +209,7 @@ bool te::sa::SkaterPartition::edgeToRemove(int startVertex, double& diffA, doubl
 
   for(std::size_t t = 0; t < edgeRemovalVec.size(); ++t)
   {
-    if(edgeRemovalVec[t].m_SSDi > maxDiff)
+    if(edgeRemovalVec[t].m_SSDi > maxDiff && edgeRemovalVec[t].m_popa >= m_popMin && edgeRemovalVec[t].m_popb >= m_popMin)
     {
       maxDiff = edgeRemovalVec[t].m_SSDi;
 
@@ -238,7 +244,7 @@ double te::sa::SkaterPartition::calculateEdgeDifference(int vertexFrom, int vert
   return diffA + diffB;
 }
 
-std::vector<double> te::sa::SkaterPartition::calculateRootMean(int startVertex, int vertexToIgnore, std::size_t pop)
+std::vector<double> te::sa::SkaterPartition::calculateRootMean(int startVertex, int vertexToIgnore, std::size_t& pop)
 {
   std::vector<double> meanAttrs(m_attrs.size(), 0.);
 

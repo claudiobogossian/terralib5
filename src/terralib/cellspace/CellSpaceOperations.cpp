@@ -31,7 +31,7 @@
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/Point.h"
 #include "../geometry/Polygon.h"
-#include "../geometry/Utils.h"
+#include "../maptools/DataSetLayer.h"
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
 #include "../raster.h"
@@ -60,24 +60,27 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
                                                               bool useMask,
                                                               CellSpaceType type)
 {
-  te::gm::Envelope box = layerBase->getExtent();
-
-  te::gm::Envelope newEnv = te::gm::AdjustToCut(box, resX, resY);
-
-  int srid = layerBase->getSRID();
-
   if(type == CELLSPACE_RASTER)
   {
     createRasteCellSpace(outputSource, name, layerBase, resX, resY, useMask);
     return;
   }
 
-  int maxcols, maxrows;
-  maxcols = te::rst::Round((newEnv.m_urx-newEnv.m_llx)/resX);
-  maxrows = te::rst::Round((newEnv.m_ury-newEnv.m_lly)/resY);
+  te::gm::Envelope env = layerBase->getExtent();
+  
+  int srid = layerBase->getSRID();
 
-  std::auto_ptr<te::da::DataSetType> refDst = layerBase->getSchema();
-  std::auto_ptr<te::da::DataSet> refDs = layerBase->getData();
+  int maxcols, maxrows;
+
+  maxcols = (int)ceil((env.m_urx-env.m_llx)/resX);
+  maxrows = (int)ceil((env.m_ury-env.m_lly)/resY);
+
+  std::auto_ptr<te::da::DataSet> refDs;
+
+  if(useMask)
+  {
+    refDs = layerBase->getData();
+  }
 
   m_outputDataSetType = createCellularDataSetType(name, srid, type);
 
@@ -95,10 +98,10 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
   double x, y;
   for(int lin = 0; lin < maxrows; ++lin)
   {
-    y = newEnv.m_lly+(lin*resY);
+    y = env.m_lly+(lin*resY);
     for(int col = 0; col < maxcols; ++col)
     {
-      x = newEnv.m_llx+(col*resX);
+      x = env.m_llx+(col*resX);
 
       te::gm::Envelope* env = new te::gm::Envelope(x, y, x+resX, y+resY);
 
@@ -163,45 +166,12 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
     return;
   }
 
-  te::gm::Envelope newEnv = te::gm::AdjustToCut(env, resX, resY);
+  te::map::AbstractLayerPtr auxLayer = new te::map::DataSetLayer("");
 
-  int maxcols, maxrows;
-  maxcols = te::rst::Round((newEnv.m_urx-newEnv.m_llx)/resX);
-  maxrows = te::rst::Round((newEnv.m_ury-newEnv.m_lly)/resY);
+  auxLayer->setSRID(srid);
+  auxLayer->setExtent(env);
 
-  m_outputDataSetType = createCellularDataSetType(name, srid, type);
-
-  m_outputDataSet = new te::mem::DataSet(m_outputDataSetType);
-
-  te::mem::DataSet* ds = dynamic_cast<te::mem::DataSet*>(m_outputDataSet);
-
-  double x, y;
-  for(int lin = 0; lin < maxrows; ++lin)
-  {
-    y = newEnv.m_lly+(lin*resY);
-    for(int col = 0; col < maxcols; ++col)
-    {
-      x = newEnv.m_llx+(col*resX);
-      te::gm::Envelope* env = new te::gm::Envelope(x, y, x+resX, y+resY);
-
-      std::auto_ptr<te::gm::Geometry> geom;
-
-      if(type == CELLSPACE_POLYGONS)
-      {
-        geom.reset(te::gm::GetGeomFromEnvelope(env, srid));
-      }
-      else if(type == CELLSPACE_POINTS)
-      {
-        double pX = env->m_llx +( (env->m_urx - env->m_llx) / 2);
-        double pY = env->m_lly +( (env->m_ury - env->m_lly) / 2);
-        geom.reset(new te::gm::Point(pX, pY, srid));
-      }
-
-      addCell(ds, col, lin, geom.release());
-    }
-  }
-
-  save(outputSource);
+  createCellSpace(outputSource, name, auxLayer, resX, resY, false, type);
 }
 
 void te::cellspace::CellularSpacesOperations::addCell(te::mem::DataSet* ds, int col, int row, te::gm::Geometry* geom)
@@ -215,16 +185,6 @@ void te::cellspace::CellularSpacesOperations::addCell(te::mem::DataSet* ds, int 
   item->setInt32(2, row);
   item->setGeometry(3, geom);
   ds->add(item);
-}
-
-te::da::DataSetType* te::cellspace::CellularSpacesOperations::getDataSetType()
-{
-  return m_outputDataSetType;
-}
-
-te::da::DataSet* te::cellspace::CellularSpacesOperations::getDataSet()
-{
-  return m_outputDataSet;
 }
 
 te::sam::rtree::Index<size_t, 8>* te::cellspace::CellularSpacesOperations::getRtree(te::map::AbstractLayerPtr layerBase)
@@ -250,11 +210,6 @@ te::sam::rtree::Index<size_t, 8>* te::cellspace::CellularSpacesOperations::getRt
   }
 
   return rtree;
-}
-
-std::auto_ptr<te::rst::Raster> te::cellspace::CellularSpacesOperations::getRaster()
-{
-  return m_outputRaster;
 }
 
 te::da::DataSetType* te::cellspace::CellularSpacesOperations::createCellularDataSetType(const std::string& name, int srid, CellSpaceType type)
@@ -292,32 +247,11 @@ void te::cellspace::CellularSpacesOperations::createRasteCellSpace(te::da::DataS
                                                                    const te::gm::Envelope& env,
                                                                    const int srid)
 {
+  te::map::AbstractLayerPtr auxLayer = new te::map::DataSetLayer("");
+  auxLayer->setSRID(srid);
+  auxLayer->setExtent(env);
 
-  te::gm::Envelope* newEnv = new te::gm::Envelope(te::gm::AdjustToCut(env, resX, resY));
-
-  int maxcols, maxrows;
-  maxcols = te::rst::Round((newEnv->m_urx-newEnv->m_llx)/resX);
-  maxrows = te::rst::Round((newEnv->m_ury-newEnv->m_lly)/resY);
-
-  te::rst::Grid* grid = new te::rst::Grid(maxcols, maxrows, resX, resY, newEnv, srid);
-
-  std::vector<te::rst::BandProperty*> bprops;
-  bprops.push_back(new te::rst::BandProperty(0, te::dt::INT32_TYPE));
-
-  m_outputRaster.reset(te::rst::RasterFactory::make(outputSource->getAccessDriver(), grid, bprops, outputSource->getConnInfo()));
-
-  double x, y;
-  for(int lin = 0; lin < maxrows; ++lin)
-  {
-    y = newEnv->m_lly+(lin*resY);
-    for(int col = 0; col < maxcols; ++col)
-    {
-      x = newEnv->m_llx+(col*resX);
-
-      m_outputRaster->setValue(col, lin, 1, 0);
-
-    }
-  }
+  createRasteCellSpace(outputSource, name, auxLayer, resX, resY, false);
 }
 
 void te::cellspace::CellularSpacesOperations::createRasteCellSpace(te::da::DataSourceInfoPtr outputSource,
@@ -329,19 +263,25 @@ void te::cellspace::CellularSpacesOperations::createRasteCellSpace(te::da::DataS
 {
   te::gm::Envelope env = layerBase->getExtent();
 
-  te::gm::Envelope* newEnv = new te::gm::Envelope(te::gm::AdjustToCut(env, resX, resY));
+  te::gm::Envelope* newEnv = new te::gm::Envelope(env);
 
   int srid = layerBase->getSRID();
 
   int maxcols, maxrows;
-  maxcols = te::rst::Round((newEnv->m_urx-newEnv->m_llx)/resX);
-  maxrows = te::rst::Round((newEnv->m_ury-newEnv->m_lly)/resY);
+  maxcols = (int)ceil((newEnv->m_urx-newEnv->m_llx)/resX);
+  maxrows = (int)ceil((newEnv->m_ury-newEnv->m_lly)/resY);
 
   std::auto_ptr<te::sam::rtree::Index<size_t, 8> > rtree;
+
+  std::auto_ptr<te::da::DataSet> refDs;
+
+  std::size_t geomPos;
 
   if(useMask)
   {
     rtree.reset(getRtree(layerBase));
+    refDs = layerBase->getData();
+    geomPos = te::da::GetFirstSpatialPropertyPos(refDs.get());
   }
 
   te::rst::Grid* grid = new te::rst::Grid(maxcols, maxrows, resX, resY, newEnv, srid);
@@ -350,11 +290,6 @@ void te::cellspace::CellularSpacesOperations::createRasteCellSpace(te::da::DataS
   bprops.push_back(new te::rst::BandProperty(0, te::dt::INT32_TYPE));
 
   m_outputRaster.reset(te::rst::RasterFactory::make(outputSource->getAccessDriver(), grid, bprops, outputSource->getConnInfo()));
-
-  std::auto_ptr<te::da::DataSetType> refDst = layerBase->getSchema();
-  std::auto_ptr<te::da::DataSet> refDs = layerBase->getData();
-
-  std::size_t geomPos = te::da::GetFirstSpatialPropertyPos(refDs.get());
 
   double x, y;
   for(int lin = 0; lin < maxrows; ++lin)
