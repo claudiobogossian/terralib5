@@ -36,7 +36,6 @@
 // Qt
 #include <QGridLayout>
 #include <QMessageBox>
-#include <QCheckBox>
 
 // Boost
 #include <boost/lexical_cast.hpp>
@@ -70,6 +69,7 @@ te::qt::widgets::ContrastWizardPage::ContrastWizardPage(QWidget* parent)
 
 //connects
   connect(m_ui->m_contrastTypeComboBox, SIGNAL(activated(int)), this, SLOT(onContrastTypeComboBoxActivated(int)));
+  connect(m_ui->m_bandTableWidget, SIGNAL(cellClicked(int, int)), this, SLOT(onCellClicked(int, int)));
   connect(m_navigator.get(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(onPreviewChanged()));
   connect(m_navigator.get(), SIGNAL(previewClicked()), this, SLOT(apply()));
 
@@ -93,9 +93,9 @@ bool te::qt::widgets::ContrastWizardPage::isComplete() const
 
   for(int i = 0; i < nBands; ++i)
   {
-    QCheckBox* checkBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget(i, 0);
+    QTableWidgetItem* item =  m_ui->m_bandTableWidget->item(i, 0);
     
-    if(checkBox->isChecked())
+    if(item->checkState() == Qt::Checked)
     {
       return true;
     }
@@ -112,7 +112,7 @@ void te::qt::widgets::ContrastWizardPage::set(te::map::AbstractLayerPtr layer)
 
   list.push_back(m_layer);
 
-  m_navigator->set(m_layer);
+  m_navigator->set(m_layer, true);
 
   listBands();
 }
@@ -137,9 +137,9 @@ te::rp::Contrast::InputParameters te::qt::widgets::ContrastWizardPage::getInputP
 
     for(int i = 0; i < nBands; ++i)
     {
-      QCheckBox* checkBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget(i, 0);
+      QTableWidgetItem* item =  m_ui->m_bandTableWidget->item(i, 0);
     
-      if(checkBox->isChecked())
+      if(item->checkState() == Qt::Checked)
       {
         QString valueMin = m_ui->m_bandTableWidget->item(i, 1)->text();
         algoInputParams.m_lCMinInput.push_back(valueMin.toDouble());
@@ -155,9 +155,9 @@ te::rp::Contrast::InputParameters te::qt::widgets::ContrastWizardPage::getInputP
 
     for(int i = 0; i < nBands; ++i)
     {
-      QCheckBox* checkBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget(i, 0);
+      QTableWidgetItem* item =  m_ui->m_bandTableWidget->item(i, 0);
     
-      if(checkBox->isChecked())
+      if(item->checkState() == Qt::Checked)
       {
         QString valueMax = m_ui->m_bandTableWidget->item(i, 1)->text();
         algoInputParams.m_hECMaxInput.push_back(valueMax.toDouble());
@@ -170,9 +170,9 @@ te::rp::Contrast::InputParameters te::qt::widgets::ContrastWizardPage::getInputP
 
     for(int i = 0; i < nBands; ++i)
     {
-      QCheckBox* checkBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget(i, 0);
+      QTableWidgetItem* item =  m_ui->m_bandTableWidget->item(i, 0);
     
-      if(checkBox->isChecked())
+      if(item->checkState() == Qt::Checked)
       {
         QString valueMean = m_ui->m_bandTableWidget->item(i, 1)->text();
         algoInputParams.m_sMASCMeanInput.push_back(valueMean.toDouble());
@@ -185,9 +185,9 @@ te::rp::Contrast::InputParameters te::qt::widgets::ContrastWizardPage::getInputP
 
   for(int i = 0; i < nBands; ++i)
   {
-    QCheckBox* checkBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget(i, 0);
+    QTableWidgetItem* item =  m_ui->m_bandTableWidget->item(i, 0);
     
-    if(checkBox->isChecked())
+    if(item->checkState() == Qt::Checked)
     {
       algoInputParams.m_inRasterBands.push_back(i);
     }
@@ -230,7 +230,10 @@ void te::qt::widgets::ContrastWizardPage::apply()
       {
         m_navigator->drawRaster(algoOutputParams.m_outRasterPtr);
 
+        //update histogram and replot
         m_histogramWidget->setOutputRaster(algoOutputParams.m_createdOutRasterPtr.release());
+
+        drawHistogram();
       }
     }
   }
@@ -278,13 +281,12 @@ void te::qt::widgets::ContrastWizardPage::listBands()
 
           QString bName(tr("Band "));
           bName.append(QString::number(b));
-        
-          QCheckBox* bandCheckBox = new QCheckBox(bName, this);
 
-          //if(inputRst->getNumberOfBands() == 1)
-            bandCheckBox->setChecked(true);
+          QTableWidgetItem* itemBand = new QTableWidgetItem(bName);
+          itemBand->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+          itemBand->setCheckState(Qt::Checked);
+          m_ui->m_bandTableWidget->setItem(newrow, 0, itemBand);
 
-          m_ui->m_bandTableWidget->setCellWidget(newrow, 0, bandCheckBox);
         }
       }
     }
@@ -319,11 +321,11 @@ void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int in
     for(int i = 0; i < nBands; ++i)
     {
       QTableWidgetItem* itemMin = new QTableWidgetItem("0");
-      itemMin->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
+      itemMin->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable);
       m_ui->m_bandTableWidget->setItem(i, 1, itemMin);
 
       QTableWidgetItem* itemMax = new QTableWidgetItem("255");
-      itemMax->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
+      itemMax->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable);
       m_ui->m_bandTableWidget->setItem(i, 2, itemMax);
     }
   }
@@ -341,7 +343,7 @@ void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int in
     for(int i = 0; i < nBands; ++i)
     {
       QTableWidgetItem* itemMax = new QTableWidgetItem("255");
-      itemMax->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
+      itemMax->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable);
       m_ui->m_bandTableWidget->setItem(i, 1, itemMax);
     }
   }
@@ -360,11 +362,11 @@ void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int in
     for(int i = 0; i < nBands; ++i)
     {
       QTableWidgetItem* itemMean = new QTableWidgetItem("127");
-      itemMean->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
+      itemMean->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable);
       m_ui->m_bandTableWidget->setItem(i, 1, itemMean);
 
       QTableWidgetItem* itemStdDev = new QTableWidgetItem("50");
-      itemStdDev->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
+      itemStdDev->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable);
       m_ui->m_bandTableWidget->setItem(i, 2, itemStdDev);
     }
   }
@@ -377,16 +379,39 @@ void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int in
 #endif
 }
 
+void te::qt::widgets::ContrastWizardPage::onCellClicked(int row, int column)
+{
+  QTableWidgetItem* item =  m_ui->m_bandTableWidget->item(row, 0);
+
+  if(item->checkState() == Qt::Checked)
+    drawHistogram();
+}
+
 void te::qt::widgets::ContrastWizardPage::onMinValueSelected(int value, int band)
 {
   int index = m_ui->m_contrastTypeComboBox->currentIndex();
 
   int contrastType = m_ui->m_contrastTypeComboBox->itemData(index).toInt();
 
-  if(contrastType != te::rp::Contrast::InputParameters::LinearContrastT)
+  if(contrastType == te::rp::Contrast::InputParameters::LinearContrastT)
+  {
+      m_ui->m_bandTableWidget->item(band, 1)->setText(QString::number(value));
+      m_ui->m_bandTableWidget->setCurrentCell(band, 1);
+  }
+  else if(contrastType == te::rp::Contrast::InputParameters::HistogramEqualizationContrastT)
+  {
+    m_ui->m_bandTableWidget->item(band, 1)->setText(QString::number(value));
+    m_ui->m_bandTableWidget->setCurrentCell(band, 1);
+  }
+  else if(contrastType == te::rp::Contrast::InputParameters::MeanAndStdContrastT)
+  {
+    m_ui->m_bandTableWidget->item(band, 1)->setText(QString::number(value));
+    m_ui->m_bandTableWidget->setCurrentCell(band, 1);
+  }
+  else
+  {
     return;
-
-  m_ui->m_bandTableWidget->item(band, 1)->setText(QString::number(value));
+  }
 }
 
 void te::qt::widgets::ContrastWizardPage::onMaxValueSelected(int value, int band)
@@ -395,10 +420,27 @@ void te::qt::widgets::ContrastWizardPage::onMaxValueSelected(int value, int band
 
   int contrastType = m_ui->m_contrastTypeComboBox->itemData(index).toInt();
 
-  if(contrastType != te::rp::Contrast::InputParameters::LinearContrastT)
-    return;
+  if(contrastType == te::rp::Contrast::InputParameters::LinearContrastT)
+  {
+    m_ui->m_bandTableWidget->item(band, 2)->setText(QString::number(value));
+    m_ui->m_bandTableWidget->setCurrentCell(band, 2);
+  }
+  else if(contrastType == te::rp::Contrast::InputParameters::MeanAndStdContrastT)
+  {
+    if(!m_ui->m_bandTableWidget->item(band, 1)->text().isEmpty())
+    {
+      double mean = m_ui->m_bandTableWidget->item(band, 1)->text().toDouble();
 
-  m_ui->m_bandTableWidget->item(band, 2)->setText(QString::number(value));
+      double stdDev = abs(mean - value);
+
+      m_ui->m_bandTableWidget->item(band, 2)->setText(QString::number(stdDev));
+      m_ui->m_bandTableWidget->setCurrentCell(band, 2);
+    }
+  }
+  else
+  {
+    return;
+  }
 }
 
 void te::qt::widgets::ContrastWizardPage::onPreviewChanged()
@@ -406,4 +448,29 @@ void te::qt::widgets::ContrastWizardPage::onPreviewChanged()
   te::rst::Raster* inputRst = m_navigator->getExtentRaster();
 
   m_histogramWidget->setInputRaster(inputRst);
+
+  drawHistogram();
+}
+
+void te::qt::widgets::ContrastWizardPage::drawHistogram()
+{
+  int curRow = 0;
+  
+  if(m_ui->m_bandTableWidget->currentRow() >= 0)
+    curRow = m_ui->m_bandTableWidget->currentRow();
+
+  int bandIdx = -1;
+
+  for(int i = 0; i <= m_ui->m_bandTableWidget->currentRow(); ++i)
+  {
+    QTableWidgetItem* item =  m_ui->m_bandTableWidget->item(i, 0);
+    
+    if(item->checkState() == Qt::Checked)
+    {
+      ++bandIdx;
+    }
+  }
+
+  if(bandIdx != -1)
+    m_histogramWidget->drawHistogram(bandIdx);
 }

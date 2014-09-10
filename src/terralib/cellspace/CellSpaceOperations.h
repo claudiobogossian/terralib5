@@ -161,13 +161,6 @@ namespace te
                                   double resY,
                                   bool useMask);
 
-        void save(te::da::DataSourceInfoPtr sourceInfo);
-
-      private:
-
-        te::da::DataSetType* m_outputDataSetType; /*!< Output DataSetType. */
-        te::da::DataSet*     m_outputDataSet;     /*!< Output DataSet. */
-        std::auto_ptr<te::rst::Raster>     m_outputRaster;      /*!< Output Raster. */
     };
   }
 }
