@@ -93,6 +93,9 @@ te::qt::widgets::RasterHistogramWidget::RasterHistogramWidget(QWidget* parent, Q
   connect(m_ui->m_applyToolButton, SIGNAL(clicked()), this, SLOT(onApplyToolButtonClicked()));
   connect(m_chartDisplay, SIGNAL(leftPointSelected(const QPointF &)), this, SLOT(onLeftPointSelected(const QPointF &)));
   connect(m_chartDisplay, SIGNAL(rigthPointSelected(const QPointF &)), this, SLOT(onRigthPointSelected(const QPointF &)));
+
+  //hide tool bar
+  m_ui->m_frame->setVisible(false);
 }
 
 te::qt::widgets::RasterHistogramWidget::~RasterHistogramWidget()
@@ -125,22 +128,22 @@ void te::qt::widgets::RasterHistogramWidget::setOutputRaster(te::rst::Raster* ra
   m_outputRaster.reset(raster);
 }
 
-void te::qt::widgets::RasterHistogramWidget::onApplyToolButtonClicked()
+void te::qt::widgets::RasterHistogramWidget::drawHistogram(int band)
 {
-  int index = m_ui->m_bandComboBox->currentIndex();
+  m_ui->m_bandComboBox->setCurrentText(QString::number(band));
 
   if(m_inputRaster.get())
   {
     m_histogramInput->setValues(std::map<te::dt::AbstractData*, unsigned int>());
 
-    std::map<double, unsigned int> values =  m_inputRaster->getBand(index)->getHistogramR();
+    std::map<double, unsigned int> values =  m_inputRaster->getBand(band)->getHistogramR();
 
     for(std::map<double, unsigned int>::iterator it = values.begin(); it != values.end(); ++it)
     {
       m_histogramInput->insert(std::make_pair(new te::dt::Double(it->first), it->second));
     }
 
-    m_histogramInput->setMinValue(m_inputRaster->getBand(index)->getMinValue().real());
+    m_histogramInput->setMinValue(m_inputRaster->getBand(band)->getMinValue().real());
 
     m_histogramChartInput->setData();
   }
@@ -149,14 +152,14 @@ void te::qt::widgets::RasterHistogramWidget::onApplyToolButtonClicked()
   {
     m_histogramOutput->setValues(std::map<te::dt::AbstractData*, unsigned int>());
 
-    std::map<double, unsigned int> values =  m_outputRaster->getBand(index)->getHistogramR();
+    std::map<double, unsigned int> values =  m_outputRaster->getBand(band)->getHistogramR();
 
     for(std::map<double, unsigned int>::iterator it = values.begin(); it != values.end(); ++it)
     {
       m_histogramOutput->insert(std::make_pair(new te::dt::Double(it->first), it->second));
     }
 
-    m_histogramOutput->setMinValue(m_outputRaster->getBand(index)->getMinValue().real());
+    m_histogramOutput->setMinValue(m_outputRaster->getBand(band)->getMinValue().real());
 
     m_histogramChartOutput->setData();
   }
@@ -164,6 +167,13 @@ void te::qt::widgets::RasterHistogramWidget::onApplyToolButtonClicked()
   m_chartDisplay->updateLayout();
 
   m_chartDisplay->replot();
+}
+
+void te::qt::widgets::RasterHistogramWidget::onApplyToolButtonClicked()
+{
+  int index = m_ui->m_bandComboBox->currentIndex();
+
+  drawHistogram(index);
 }
 
 void te::qt::widgets::RasterHistogramWidget::onLeftPointSelected(const QPointF& point)
