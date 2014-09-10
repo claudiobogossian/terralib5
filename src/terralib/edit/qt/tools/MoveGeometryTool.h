@@ -48,6 +48,9 @@ namespace te
 
   namespace edit
   {
+// Forward declaration
+    class IdGeometry;
+
     /*!
       \class MoveGeometryTool
 
@@ -106,6 +109,8 @@ namespace te
 
         void updateCursor();
 
+        void storeEditedGeometry();
+
       private slots:
 
         void onExtentChanged();
@@ -113,7 +118,7 @@ namespace te
       protected:
 
         te::map::AbstractLayerPtr m_layer;
-        te::gm::Geometry* m_geom;
+        IdGeometry* m_geom;
         bool m_moveStarted;                 //!< Flag that indicates if move operation was started.
         QPointF m_origin;                   //!< Origin point on mouse pressed.
         QPointF m_delta;                    //!< Difference between pressed point and destination point on mouse move.

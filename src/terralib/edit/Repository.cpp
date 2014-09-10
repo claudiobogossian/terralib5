@@ -18,15 +18,14 @@
  */
 
 /*!
-  \file terralib/edt/IdentifiedGeometries.cpp
+  \file terralib/edt/Repository.cpp
 
-  \brief This is a class for identifying edited geometries.
+  \brief This class represents a repository of geometries and features.
 */
 
 // TerraLib
 #include "../common/Exception.h"
 #include "../common/STLUtils.h"
-#include "../common/StringUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/ObjectId.h"
 #include "../geometry/Coord2D.h"
@@ -34,35 +33,34 @@
 #include "../geometry/Geometry.h"
 #include "../geometry/Point.h"
 #include "../geometry/Utils.h"
-#include "IdentifiedGeometries.h"
-#include "IdGeom.h"
+#include "IdGeometry.h"
+#include "Repository.h"
 
 // STL
 #include <cassert>
 #include <memory>
 
-te::edit::IdentifiedGeometries::IdentifiedGeometries(const std::string& source)
+te::edit::Repository::Repository(const std::string& source)
   : m_source(source)
 {
 }
 
-te::edit::IdentifiedGeometries::~IdentifiedGeometries()
+te::edit::Repository::~Repository()
 {
   clear();
 }
 
-void te::edit::IdentifiedGeometries::add(te::da::ObjectId* id, te::gm::Geometry* geom)
+void te::edit::Repository::add(te::da::ObjectId* id, te::gm::Geometry* geom)
 {
   assert(id);
   assert(geom);
 
   // Try find the given identifier
-  std::size_t pos = getIdentifierPos(id);
+  std::size_t pos = getPosition(id);
 
   if(pos == std::string::npos) // Not found! Insert
   {
-    m_ids.push_back(id);
-    m_geoms.push_back(geom);
+    m_geoms.push_back(new IdGeometry(id, geom));
 
     buildIndex(m_geoms.size() - 1, geom);
 
@@ -73,78 +71,71 @@ void te::edit::IdentifiedGeometries::add(te::da::ObjectId* id, te::gm::Geometry*
   set(pos, id, geom);
 }
 
-void te::edit::IdentifiedGeometries::set(te::da::ObjectId* id, te::gm::Geometry* geom)
+void te::edit::Repository::set(te::da::ObjectId* id, te::gm::Geometry* geom)
 {
   assert(id);
   assert(geom);
 
   // Try find the given identifier
-  std::size_t pos = getIdentifierPos(id);
+  std::size_t pos = getPosition(id);
 
-  if(pos == std::string::npos) // Not found!
+  if(pos == std::string::npos)
     throw te::common::Exception(TE_TR("Identifier not found!"));
 
   set(pos, id, geom);
 }
 
-void te::edit::IdentifiedGeometries::remove(te::da::ObjectId* id)
+void te::edit::Repository::remove(te::da::ObjectId* id)
 {
   assert(id);
 
   // Try find the given identifier
-  std::size_t pos = getIdentifierPos(id);
+  std::size_t pos = getPosition(id);
 
-  if(pos == std::string::npos) // Not found!
+  if(pos == std::string::npos)
     throw te::common::Exception(TE_TR("Identifier not found!"));
 
   // Cleaning...
-  delete m_ids[pos];
   delete m_geoms[pos];
 
   // Removing...
-  m_ids.erase(m_ids.begin() + pos);
   m_geoms.erase(m_geoms.begin() + pos);
 
   // Indexing...
   buildIndex();
 }
 
-std::size_t te::edit::IdentifiedGeometries::getIdentifierPos(te::da::ObjectId* id)
+std::size_t te::edit::Repository::getPosition(te::da::ObjectId* id)
 {
   assert(id);
 
-  for(std::size_t i = 0; i < m_ids.size(); ++i)
-    if(m_ids[i]->getValueAsString() == id->getValueAsString())
+  for(std::size_t i = 0; i < m_geoms.size(); ++i)
+    if(m_geoms[i]->isEquals(id))
       return i;
 
   return std::string::npos;
 }
 
-bool te::edit::IdentifiedGeometries::hasIdentifier(te::da::ObjectId* id)
+bool te::edit::Repository::hasIdentifier(te::da::ObjectId* id)
 {
-  return getIdentifierPos(id) != std::string::npos;
+  return getPosition(id) != std::string::npos;
 }
 
-const std::string& te::edit::IdentifiedGeometries::getSource() const
+const std::string& te::edit::Repository::getSource() const
 {
   return m_source;
 }
 
-const std::vector<te::da::ObjectId*>& te::edit::IdentifiedGeometries::getIdentifiers() const
-{
-  return m_ids;
-}
-
-const std::vector<te::gm::Geometry*>& te::edit::IdentifiedGeometries::getGeometries() const
+const std::vector<te::edit::IdGeometry*>& te::edit::Repository::getGeometries() const
 {
   return m_geoms;
 }
 
-std::vector<te::edit::IdGeom*> te::edit::IdentifiedGeometries::getGeometries(const te::gm::Envelope& e, int /*srid*/) const
+std::vector<te::edit::IdGeometry*> te::edit::Repository::getGeometries(const te::gm::Envelope& e, int /*srid*/) const
 {
   assert(e.isValid());
 
-  std::vector<te::edit::IdGeom*> result;
+  std::vector<te::edit::IdGeometry*> result;
 
   // Search on rtree
   std::vector<std::size_t> report;
@@ -154,18 +145,17 @@ std::vector<te::edit::IdGeom*> te::edit::IdentifiedGeometries::getGeometries(con
   {
     std::size_t pos = report[i];
 
-    assert(report[i] < m_ids.size());
-    assert(report[i] < m_geoms.size());
+    assert(pos < m_geoms.size());
 
-    result.push_back(new IdGeom(m_ids[pos], m_geoms[pos]));
+    result.push_back(m_geoms[pos]);
   }
 
   return result;
 }
 
-te::edit::IdGeom* te::edit::IdentifiedGeometries::getGeometry(const te::gm::Envelope& e, int srid) const
+te::edit::IdGeometry* te::edit::Repository::getGeometry(const te::gm::Envelope& e, int srid) const
 {
-  std::vector<te::edit::IdGeom*> candidates = getGeometries(e, srid);
+  std::vector<te::edit::IdGeometry*> candidates = getGeometries(e, srid);
 
   if(candidates.empty())
     return 0;
@@ -177,69 +167,57 @@ te::edit::IdGeom* te::edit::IdentifiedGeometries::getGeometry(const te::gm::Enve
   te::gm::Coord2D center = e.getCenter();
   te::gm::Point point(center.x, center.y, srid);
 
-  IdGeom* result = 0;
+  IdGeometry* result = 0;
 
   for(std::size_t i = 0; i < candidates.size(); ++i)
   {
-    te::gm::Geometry* g = candidates[i]->m_geom;
+    te::gm::Geometry* g = candidates[i]->getGeometry();
 
-    if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g))
-    {
-      result = new IdGeom(candidates[i]->m_id, g); // Geometry found!
-      break;
-    }
+    if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g))  // Geometry found!
+      return candidates[i];
   }
 
-  te::common::FreeContents(candidates);
-
-  return result;
+  return 0;
 }
 
-void te::edit::IdentifiedGeometries::clear()
+void te::edit::Repository::clear()
 {
-  te::common::FreeContents(m_ids);
-  m_ids.clear();
-
   te::common::FreeContents(m_geoms);
-  m_geoms.clear();
 
   clearIndex();
 }
 
-void te::edit::IdentifiedGeometries::set(const std::size_t& pos, te::da::ObjectId* id, te::gm::Geometry* geom)
+void te::edit::Repository::set(const std::size_t& pos, te::da::ObjectId* id, te::gm::Geometry* geom)
 {
   assert(pos != std::string::npos);
   assert(id);
   assert(geom);
-  assert(pos < m_ids.size());
   assert(pos < m_geoms.size());
 
   // Cleaning...
-  delete m_ids[pos];
   delete m_geoms[pos];
 
   // Set the new values
-  m_ids[pos] = id;
-  m_geoms[pos] = geom;
+  m_geoms[pos] = new IdGeometry(id, geom);
 
   // Indexing...
   buildIndex();
 }
 
-void te::edit::IdentifiedGeometries::clearIndex()
+void te::edit::Repository::clearIndex()
 {
   m_rtree.clear();
 }
 
-void te::edit::IdentifiedGeometries::buildIndex()
+void te::edit::Repository::buildIndex()
 {
   clearIndex();
 
   for(std::size_t i = 0; i < m_geoms.size(); ++i)
-    buildIndex(i, m_geoms[i]);
+    buildIndex(i, m_geoms[i]->getGeometry());
 }
 
-void te::edit::IdentifiedGeometries::buildIndex(const std::size_t& pos, te::gm::Geometry* geom)
+void te::edit::Repository::buildIndex(const std::size_t& pos, te::gm::Geometry* geom)
 {
    assert(pos != std::string::npos);
    assert(geom);

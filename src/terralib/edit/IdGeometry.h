@@ -18,50 +18,61 @@
  */
 
 /*!
-  \file terralib/edit/IdGeom.h
+  \file terralib/edit/IdGeometry.h
    
-  \brief Struct that represents an identified geometry.
+  \brief This class represents an identified geometry.
 */
 
-#ifndef __TERRALIB_EDIT_INTERNAL_IDGEOM_H
-#define __TERRALIB_EDIT_INTERNAL_IDGEOM_H
+#ifndef __TERRALIB_EDIT_INTERNAL_IDGEOMETRY_H
+#define __TERRALIB_EDIT_INTERNAL_IDGEOMETRY_H
 
 // TerraLib
-#include "../dataaccess/dataset/ObjectId.h"
-#include "../geometry/Geometry.h"
 #include "Config.h"
-
-// STL
-#include <cassert>
 
 namespace te
 {
+// Forward declarations
+  namespace da
+  {
+    class ObjectId;
+  }
+
+  namespace gm
+  {
+    class Geometry;
+  }
+
   namespace edit
   {
-    struct TEEDITEXPORT IdGeom
+    class TEEDITEXPORT IdGeometry
     {
-      IdGeom(te::da::ObjectId* id, te::gm::Geometry* geom, bool isOwner = false)
-        : m_id(id),
-          m_geom(geom),
-          m_isOwner(isOwner)
-      {
-      }
+      public:
 
-      ~IdGeom()
-      {
-        if(m_isOwner)
-        {
-          delete m_id;
-          delete m_geom;
-        }
-      }
+        IdGeometry(te::da::ObjectId* id, te::gm::Geometry* geom);
 
-      te::da::ObjectId* m_id;
-      te::gm::Geometry* m_geom;
-      bool m_isOwner;
+        ~IdGeometry();
+
+        void set(te::da::ObjectId* id, te::gm::Geometry* geom);
+
+        void setId(te::da::ObjectId* id);
+
+        void setGeometry(te::gm::Geometry* geom);
+
+        te::da::ObjectId* getId() const;
+
+        te::gm::Geometry* getGeometry() const;
+
+        bool isEquals(te::da::ObjectId* id);
+
+        IdGeometry* clone() const;
+
+      private:
+
+        te::da::ObjectId* m_id;
+        te::gm::Geometry* m_geom;
     };
 
   } // end namespace edit
 }   // end namespace te
 
-#endif  // __TERRALIB_EDIT_INTERNAL_IDGEOM_H
+#endif  // __TERRALIB_EDIT_INTERNAL_IDGEOMETRY_H
