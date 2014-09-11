@@ -60,7 +60,7 @@ namespace te
   namespace edit
   {
 // Forward declaration
-    struct IdGeom;
+    class IdGeometry;
 
     /*!
       \class VertexTool
@@ -140,7 +140,7 @@ namespace te
 
         void updateCursor();
 
-        void storeGeometryEdited();
+        void storeEditedGeometry();
 
       private slots:
 
@@ -149,7 +149,7 @@ namespace te
       private:
 
           te::map::AbstractLayerPtr m_layer;
-          IdGeom* m_idgeom;
+          IdGeometry* m_geom;
           std::vector<te::gm::LineString*> m_lines;
           VertexIndex m_currentVertexIndex;
           te::sam::rtree::Index<VertexIndex, 8> m_rtree;

@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/edt/IdentifiedGeometries.h
+  \file terralib/edit/Repository.h
 
-  \brief This is a class for identifying edited geometries.
+  \brief This class represents a repository of geometries and features.
 */
 
-#ifndef __TERRALIB_EDIT_INTERNAL_IDENTIFIEDGEOMETRIES_H
-#define __TERRALIB_EDIT_INTERNAL_IDENTIFIEDGEOMETRIES_H
+#ifndef __TERRALIB_EDIT_INTERNAL_REPOSITORY_H
+#define __TERRALIB_EDIT_INTERNAL_REPOSITORY_H
 
 // TerraLib
 #include "../sam/rtree/Index.h"
@@ -51,20 +51,20 @@ namespace te
   namespace edit
   {
 // Forward declaration
-    struct IdGeom;
+    class IdGeometry;
 
     /*!
-      \class IdentifiedGeometries
+      \class Repository
 
-      \brief This is a class for identifying edited geometries.
+      \brief This class represents a repository of geometries and features.
     */
-    class TEEDITEXPORT IdentifiedGeometries
+    class TEEDITEXPORT Repository
     {
       public:
 
-        IdentifiedGeometries(const std::string& source);
+        Repository(const std::string& source);
 
-        ~IdentifiedGeometries();
+        ~Repository();
 
         void add(te::da::ObjectId* id, te::gm::Geometry* geom);
 
@@ -72,19 +72,17 @@ namespace te
 
         void remove(te::da::ObjectId* id);
 
-        std::size_t getIdentifierPos(te::da::ObjectId* id);
+        std::size_t getPosition(te::da::ObjectId* id);
 
         bool hasIdentifier(te::da::ObjectId* id);
 
         const std::string& getSource() const;
 
-        const std::vector<te::da::ObjectId*>& getIdentifiers() const;
+        const std::vector<IdGeometry*>& getGeometries() const;
 
-        const std::vector<te::gm::Geometry*>& getGeometries() const;
+        std::vector<IdGeometry*> getGeometries(const te::gm::Envelope& e, int srid) const;
 
-        std::vector<IdGeom*> getGeometries(const te::gm::Envelope& e, int srid) const;
-
-        IdGeom* getGeometry(const te::gm::Envelope& e, int srid) const;
+        IdGeometry* getGeometry(const te::gm::Envelope& e, int srid) const;
 
         void clear();
 
@@ -100,13 +98,12 @@ namespace te
 
       private:
 
-        std::string m_source;                          //!< The source from the identifiers and geometries.
-        std::vector<te::da::ObjectId*> m_ids;          //!< The geometries identifiers.
-        std::vector<te::gm::Geometry*> m_geoms;        //!< The indetified geometries.
+        std::string m_source;                          //!< The source of the identified geometries.
+        std::vector<IdGeometry*> m_geoms;              //!< The identified geometries.
         te::sam::rtree::Index<std::size_t, 8> m_rtree; //!< Internal index used to retrieve geometries spatially.
     };
 
   } // end namespace edit
 }   // end namespace te
 
-#endif  // __TERRALIB_EDIT_INTERNAL_IDENTIFIEDGEOMETRIES_H
+#endif  // __TERRALIB_EDIT_INTERNAL_REPOSITORY_H

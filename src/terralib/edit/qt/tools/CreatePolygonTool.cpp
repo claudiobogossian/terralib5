@@ -30,9 +30,9 @@
 #include "../../../geometry/LineString.h"
 #include "../../../geometry/Point.h"
 #include "../../../geometry/Polygon.h"
-#include "../../../qt/widgets/canvas/Canvas.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
+#include "../Renderer.h"
 #include "../Utils.h"
 #include "CreatePolygonTool.h"
 
@@ -103,7 +103,7 @@ bool te::edit::CreatePolygonTool::mouseMoveEvent(QMouseEvent* e)
   else if(keys == Qt::ShiftModifier)
     m_continuousMode = true;
 
-  drawPolygon();
+  draw();
 
   return false;
 }
@@ -126,7 +126,7 @@ bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
   return true;
 }
 
-void te::edit::CreatePolygonTool::drawPolygon()
+void te::edit::CreatePolygonTool::draw()
 {
   const te::gm::Envelope& env = m_display->getExtent();
   if(!env.isValid())
@@ -136,25 +136,25 @@ void te::edit::CreatePolygonTool::drawPolygon()
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
 
-  // Prepares the canvas
-  te::qt::widgets::Canvas canvas(m_display->width(), m_display->height());
-  canvas.setDevice(draft, false);
-  canvas.setWindow(env.m_llx, env.m_lly, env.m_urx, env.m_ury);
+  // Initialize the renderer
+  Renderer& renderer = Renderer::getInstance();
+  renderer.begin(draft, env, m_display->getSRID());
 
-  // Let's draw!
-  drawPolygon(canvas);
+  if(m_coords.size() < 3)
+    drawLine();
+  else
+    drawPolygon();
 
   if(m_continuousMode == false)
     m_coords.pop_back();
 
+  renderer.end();
+
   m_display->repaint();
 }
 
-void te::edit::CreatePolygonTool::drawPolygon(te::qt::widgets::Canvas& canvas)
+void te::edit::CreatePolygonTool::drawPolygon()
 {
-  if(m_coords.size() < 3)
-    return drawLine(canvas);
-
   // Build the geometry
   te::gm::LinearRing* ring = new te::gm::LinearRing(m_coords.size() + 1, te::gm::LineStringType);
   for(std::size_t i = 0; i < m_coords.size(); ++i)
@@ -164,34 +164,25 @@ void te::edit::CreatePolygonTool::drawPolygon(te::qt::widgets::Canvas& canvas)
   te::gm::Polygon* polygon = new te::gm::Polygon(1, te::gm::PolygonType);
   polygon->setRingN(0, ring);
 
-  // Let's draw!
-  DrawGeometry(&canvas, polygon, m_display->getSRID());
-
-  drawVertexes(canvas);
+  // Draw the current geometry and the vertexes
+  Renderer& renderer = Renderer::getInstance();
+  renderer.draw(polygon, true);
 
   delete polygon;
 }
 
-void te::edit::CreatePolygonTool::drawLine(te::qt::widgets::Canvas& canvas)
+void te::edit::CreatePolygonTool::drawLine()
 {
   // Build the geometry
   te::gm::LineString* line = new te::gm::LineString(m_coords.size(), te::gm::LineStringType);
   for(std::size_t i = 0; i < m_coords.size(); ++i)
     line->setPoint(i, m_coords[i].x, m_coords[i].y);
 
-  // Let's draw!
-  DrawGeometry(&canvas, line, m_display->getSRID());
-
-  drawVertexes(canvas);
+  // Draw the current geometry and the vertexes
+  Renderer& renderer = Renderer::getInstance();
+  renderer.draw(line, true);
 
   delete line;
-}
-
-void te::edit::CreatePolygonTool::drawVertexes(te::qt::widgets::Canvas& canvas)
-{
-  te::qt::widgets::Config2DrawPoints(&canvas, "circle", 8, Qt::red, Qt::red, 1);
-
-  DrawVertexes(&canvas, m_coords, m_display->getSRID(), m_display->getSRID());
 }
 
 void te::edit::CreatePolygonTool::clear()
@@ -211,5 +202,5 @@ void te::edit::CreatePolygonTool::onExtentChanged()
 
   m_coords.push_back(m_lastPos);
 
-  drawPolygon();
+  draw();
 }

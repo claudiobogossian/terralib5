@@ -56,12 +56,6 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
                                                               bool useMask,
                                                               CellSpaceType type)
 {
-  if(type == CELLSPACE_RASTER)
-  {
-    createRasteCellSpace(outputSource, name, layerBase, resX, resY, useMask);
-    return;
-  }
-
   te::gm::Envelope env = layerBase->getExtent();
   
   int srid = layerBase->getSRID();
@@ -172,12 +166,6 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
                                                               const int srid,
                                                               const CellSpaceType type)
 {
-  if(type == CELLSPACE_RASTER)
-  {
-    createRasteCellSpace(outputSource, name, resX, resY, env, srid);
-    return;
-  }
-
   te::map::AbstractLayerPtr auxLayer = new te::map::DataSetLayer("");
 
   auxLayer->setSRID(srid);
@@ -249,103 +237,4 @@ te::da::DataSetType* te::cellspace::CellularSpacesOperations::createCellularData
   pk->setProperties(pkProp);
 
   return dst;
-}
-
-void te::cellspace::CellularSpacesOperations::createRasteCellSpace(te::da::DataSourceInfoPtr outputSource,
-                                                                   const std::string& name,
-                                                                   const double resX,
-                                                                   const double resY,
-                                                                   const te::gm::Envelope& env,
-                                                                   const int srid)
-{
-  te::map::AbstractLayerPtr auxLayer = new te::map::DataSetLayer("");
-  auxLayer->setSRID(srid);
-  auxLayer->setExtent(env);
-
-  createRasteCellSpace(outputSource, name, auxLayer, resX, resY, false);
-}
-
-void te::cellspace::CellularSpacesOperations::createRasteCellSpace(te::da::DataSourceInfoPtr outputSource,
-                                                                   const std::string& name,
-                                                                   te::map::AbstractLayerPtr layerBase,
-                                                                   double resX,
-                                                                   double resY,
-                                                                   bool useMask)
-{
-  te::gm::Envelope env = layerBase->getExtent();
-
-  te::gm::Envelope* newEnv = new te::gm::Envelope(env);
-
-  int srid = layerBase->getSRID();
-
-  int maxcols, maxrows;
-  maxcols = (int)ceil((newEnv->m_urx-newEnv->m_llx)/resX);
-  maxrows = (int)ceil((newEnv->m_ury-newEnv->m_lly)/resY);
-
-  std::auto_ptr<te::sam::rtree::Index<size_t, 8> > rtree;
-
-  std::auto_ptr<te::da::DataSet> refDs;
-
-  std::size_t geomPos;
-
-  if(useMask)
-  {
-    rtree.reset(getRtree(layerBase));
-    refDs = layerBase->getData();
-    geomPos = te::da::GetFirstSpatialPropertyPos(refDs.get());
-  }
-
-  te::rst::Grid* grid = new te::rst::Grid(maxcols, maxrows, resX, resY, newEnv, srid);
-
-  std::vector<te::rst::BandProperty*> bprops;
-  bprops.push_back(new te::rst::BandProperty(0, te::dt::INT32_TYPE));
-
-  std::auto_ptr<te::rst::Raster> outputRaster(te::rst::RasterFactory::make(outputSource->getAccessDriver(), grid, bprops, outputSource->getConnInfo()));
-
-  double x, y;
-  for(int lin = 0; lin < maxrows; ++lin)
-  {
-    y = newEnv->m_lly+(maxrows-lin-1)*resY;
-    for(int col = 0; col < maxcols; ++col)
-    {
-      x = newEnv->m_llx+(col*resX);
-
-      if(useMask)
-      {
-        std::auto_ptr<te::gm::Envelope> auxEnv(new te::gm::Envelope(x, y, x+resX, y+resY));
-
-        std::vector<size_t> report;
-        rtree->search(*auxEnv, report);
-
-        if(!report.empty())
-        {
-          for(std::size_t i = 0; i < report.size(); ++i)
-          {
-            refDs->move(report[i]);
-
-            std::auto_ptr<te::gm::Geometry> g = refDs->getGeometry(geomPos);
-            g->setSRID(srid);
-
-            std::auto_ptr<te::gm::Geometry> auxGeom(te::gm::GetGeomFromEnvelope(auxEnv.get(), srid));
-
-            if(auxGeom->intersects(g.get()))
-            {
-              outputRaster->setValue(col, lin, 1, 0);
-              break;
-            }
-            else
-            {
-              outputRaster->setValue(col, lin, 0, 0);
-            }
-
-          }
-        }
-      }
-      else
-      {
-        outputRaster->setValue(col, lin, 1, 0);
-      }
-
-    }
-  }
 }

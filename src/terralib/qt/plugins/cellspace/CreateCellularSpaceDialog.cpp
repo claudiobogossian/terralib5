@@ -36,7 +36,6 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../../qt/widgets/srs/SRSManagerDialog.h"
-#include "../../../raster.h"
 #include "../../../srs/SpatialReferenceSystemManager.h"
 #include "../../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "ui_CreateCellularSpaceDialogForm.h"
@@ -68,9 +67,8 @@ te::qt::plugins::cellspace::CreateCellularSpaceDialog::CreateCellularSpaceDialog
 // Set icons
   m_ui->m_maskToolButton->setIcon(QIcon::fromTheme("cellspace-mask-hint"));
   m_ui->m_noMaskToolButton->setIcon(QIcon::fromTheme("cellspace-no-mask-hint"));
-  m_ui->m_vectorToolButton->setIcon(QIcon::fromTheme("cellspace-vector-hint"));
+  m_ui->m_polygonsToolButton->setIcon(QIcon::fromTheme("cellspace-polygons-hint"));
   m_ui->m_pointsToolButton->setIcon(QIcon::fromTheme("cellspace-points-hint"));
-  m_ui->m_rasterToolButton->setIcon(QIcon::fromTheme("cellspace-raster-hint"));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
   m_ui->m_srsToolButton->setIcon(QIcon::fromTheme("srs"));
 
@@ -101,9 +99,6 @@ te::qt::plugins::cellspace::CreateCellularSpaceDialog::CreateCellularSpaceDialog
   connect(m_ui->m_targetFileToolButton, SIGNAL(clicked()), this, SLOT(onTargetFileToolButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(clicked()), this, SLOT(onTargetDatasourceToolButtonClicked()));
   connect(m_ui->m_createPushButton, SIGNAL(clicked()), this, SLOT(onCreatePushButtonClicked()));
-  connect(m_ui->m_vectorToolButton, SIGNAL(toggled(bool)), this, SLOT(onVectorToolButtonToggled(bool)));
-  connect(m_ui->m_pointsToolButton, SIGNAL(toggled(bool)), this, SLOT(onPointsToolButtonToggled(bool)));
-  connect(m_ui->m_rasterToolButton, SIGNAL(toggled(bool)), this, SLOT(onRasterToolButtonToggled(bool)));
   connect(m_ui->m_referenceGroupBox, SIGNAL(toggled(bool)), this, SLOT(onReferenceGroupBoxToggled(bool)));
   connect(m_ui->m_srsToolButton, SIGNAL(clicked()), this, SLOT(onSrsToolButtonClicked()));
 }
@@ -330,17 +325,13 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
 
   te::cellspace::CellularSpacesOperations::CellSpaceType type;
 
-  if(m_ui->m_vectorToolButton->isChecked())
+  if(m_ui->m_polygonsToolButton->isChecked())
   {
     type = te::cellspace::CellularSpacesOperations::CELLSPACE_POLYGONS;
   }
   else if(m_ui->m_pointsToolButton->isChecked())
   {
     type = te::cellspace::CellularSpacesOperations::CELLSPACE_POINTS;
-  }
-  else if(m_ui->m_rasterToolButton->isChecked())
-  {
-    type = te::cellspace::CellularSpacesOperations::CELLSPACE_RASTER;
   }
 
   try
@@ -368,16 +359,8 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onTargetFileToolButt
 
   std::string accessDriver;
 
-  if(m_ui->m_rasterToolButton->isChecked())
-  {
-    extension = tr("TIF (*.tif *.Tif);;");
-    accessDriver = "GDAL";
-  }
-  else
-  {
-    extension = tr("Shapefile (*.shp *.SHP);;");
-    accessDriver = "OGR";
-  }
+  extension = tr("Shapefile (*.shp *.SHP);;");
+  accessDriver = "OGR";
 
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
                      QString(), extension, 0, QFileDialog::DontConfirmOverwrite);
@@ -627,27 +610,6 @@ te::map::AbstractLayerPtr te::qt::plugins::cellspace::CreateCellularSpaceDialog:
     layer->setSRID(m_currentSRID);
 
   return layer;
-}
-
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onVectorToolButtonToggled(bool isToggled)
-{
-  m_ui->m_targetDatasourceToolButton->setEnabled(isToggled);
-  m_ui->m_targetFileToolButton->setEnabled(isToggled);
-  m_ui->m_newLayerNameLineEdit->setEnabled(isToggled);
-}
-
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onPointsToolButtonToggled(bool isToggled)
-{
-  m_ui->m_targetDatasourceToolButton->setEnabled(isToggled);
-  m_ui->m_targetFileToolButton->setEnabled(isToggled);
-  m_ui->m_newLayerNameLineEdit->setEnabled(isToggled);
-}
-
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onRasterToolButtonToggled(bool isToggled)
-{
-  m_ui->m_targetDatasourceToolButton->setEnabled(!isToggled);
-  m_ui->m_targetFileToolButton->setEnabled(isToggled);
-  m_ui->m_newLayerNameLineEdit->setEnabled(!isToggled);
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onSrsToolButtonClicked()

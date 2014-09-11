@@ -29,9 +29,9 @@
 #include "../../../geometry/LinearRing.h"
 #include "../../../geometry/LineString.h"
 #include "../../../geometry/Point.h"
-#include "../../../qt/widgets/canvas/Canvas.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
+#include "../Renderer.h"
 #include "../Utils.h"
 #include "CreateLineTool.h"
 
@@ -98,7 +98,7 @@ bool te::edit::CreateLineTool::mouseMoveEvent(QMouseEvent* e)
   else if(keys == Qt::ShiftModifier)
     m_continuousMode = true;
 
-  drawLine();
+  draw();
 
   return false;
 }
@@ -118,7 +118,7 @@ bool te::edit::CreateLineTool::mouseDoubleClickEvent(QMouseEvent* e)
   return true;
 }
 
-void te::edit::CreateLineTool::drawLine()
+void te::edit::CreateLineTool::draw()
 {
   const te::gm::Envelope& env = m_display->getExtent();
   if(!env.isValid())
@@ -128,40 +128,24 @@ void te::edit::CreateLineTool::drawLine()
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
 
-  // Prepares the canvas
-  te::qt::widgets::Canvas canvas(m_display->width(), m_display->height());
-  canvas.setDevice(draft, false);
-  canvas.setWindow(env.m_llx, env.m_lly, env.m_urx, env.m_ury);
+  // Initialize the renderer
+  Renderer& renderer = Renderer::getInstance();
+  renderer.begin(draft, env, m_display->getSRID());
 
-  // Let's draw!
-  drawLine(canvas);
-
-  if(m_continuousMode == false)
-    m_coords.pop_back();
-
-  m_display->repaint();
-}
-
-void te::edit::CreateLineTool::drawLine(te::qt::widgets::Canvas& canvas)
-{
   // Build the geometry
   te::gm::LineString* line = new te::gm::LineString(m_coords.size(), te::gm::LineStringType);
   for(std::size_t i = 0; i < m_coords.size(); ++i)
     line->setPoint(i, m_coords[i].x, m_coords[i].y);
 
-  // Let's draw!
-  DrawGeometry(&canvas, line, m_display->getSRID());
+  // Draw the current geometry and the vertexes
+  renderer.draw(line, true);
 
-  drawVertexes(canvas);
+  if(m_continuousMode == false)
+    m_coords.pop_back();
 
-  delete line;
-}
+  renderer.end();
 
-void te::edit::CreateLineTool::drawVertexes(te::qt::widgets::Canvas& canvas)
-{
-  te::qt::widgets::Config2DrawPoints(&canvas, "circle", 8, Qt::red, Qt::red, 1);
-
-  DrawVertexes(&canvas, m_coords, m_display->getSRID(), m_display->getSRID());
+  m_display->repaint();
 }
 
 void te::edit::CreateLineTool::clear()
@@ -181,5 +165,5 @@ void te::edit::CreateLineTool::onExtentChanged()
 
   m_coords.push_back(m_lastPos);
 
-  drawLine();
+  draw();
 }

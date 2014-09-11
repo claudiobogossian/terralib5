@@ -24,10 +24,13 @@
 */
 
 // TerraLib
-#include "../../../qt/widgets/canvas/Canvas.h"
+#include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
+#include "../../IdGeometry.h"
+#include "../../RepositoryManager.h"
 #include "../../Utils.h"
+#include "../Renderer.h"
 #include "../Utils.h"
 #include "MoveGeometryTool.h"
 
@@ -86,7 +89,9 @@ bool te::edit::MoveGeometryTool::mouseMoveEvent(QMouseEvent* e)
   m_delta = currentPosition - m_origin;
 
   // Move geometry using the current delta
-  MoveGeometry(m_geom, m_delta.x(), m_delta.y());
+  MoveGeometry(m_geom->getGeometry(), m_delta.x(), m_delta.y());
+
+  storeEditedGeometry();
 
   drawGeometry();
 
@@ -169,21 +174,17 @@ void te::edit::MoveGeometryTool::drawGeometry()
     return;
   }
 
-  // Prepares the canvas
-  te::qt::widgets::Canvas canvas(m_display->width(), m_display->height());
-  canvas.setDevice(draft, false);
-  canvas.setWindow(env.m_llx, env.m_lly, env.m_urx, env.m_ury);
+  // Initialize the renderer
+  Renderer& renderer = Renderer::getInstance();
+  renderer.begin(draft, env, m_display->getSRID());
 
-  // Let's draw!
-  DrawGeometry(&canvas, m_geom, m_display->getSRID());
+  // Draw the current geometry and the vertexes
+  renderer.draw(m_geom->getGeometry(), true);
 
-  // Draw all vertexes
-  te::qt::widgets::Config2DrawPoints(&canvas, "circle", 8, Qt::red, Qt::red, 1);
-  DrawVertexes(&canvas, m_geom, m_display->getSRID());
+  renderer.end();
 
   m_display->repaint();
 }
-
 
 void te::edit::MoveGeometryTool::updateCursor()
 {
@@ -193,4 +194,9 @@ void te::edit::MoveGeometryTool::updateCursor()
 void te::edit::MoveGeometryTool::onExtentChanged()
 {
   drawGeometry();
+}
+
+void te::edit::MoveGeometryTool::storeEditedGeometry()
+{
+  RepositoryManager::getInstance().addEditedGeometry(m_layer->getId(), m_geom->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_geom->getGeometry()->clone()));
 }

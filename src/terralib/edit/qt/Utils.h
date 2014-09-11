@@ -58,18 +58,6 @@ namespace te
   {
     TEEDITQTEXPORT QPointF GetPosition(QMouseEvent* e);
 
-    TEEDITQTEXPORT void DrawGeometry(te::qt::widgets::Canvas* canvas, te::gm::Geometry* geom, int srid);
-
-    TEEDITQTEXPORT void DrawVertexes(te::qt::widgets::Canvas* canvas, const std::vector<te::gm::Geometry*>& geom, int srid);
-
-    TEEDITQTEXPORT void DrawVertexes(te::qt::widgets::Canvas* canvas, te::gm::Geometry* geom, int srid);
-
-    TEEDITQTEXPORT void DrawVertexes(te::qt::widgets::Canvas* canvas, const std::vector<te::gm::LineString*>& lines, int srid);
-
-    TEEDITQTEXPORT void DrawVertexes(te::qt::widgets::Canvas* canvas, te::gm::LineString* line, int srid);
-
-    TEEDITQTEXPORT void DrawVertexes(te::qt::widgets::Canvas* canvas, const std::vector<te::gm::Coord2D>& coords, int fromSRID, int toSRID);
-
   } // end namespace edit
 }   // end namespace te
 
