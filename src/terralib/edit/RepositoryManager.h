@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/edt/RepositoryManager.h
+  \file terralib/edit/RepositoryManager.h
 
   \brief This is a singleton for managing edit repositories.
 */

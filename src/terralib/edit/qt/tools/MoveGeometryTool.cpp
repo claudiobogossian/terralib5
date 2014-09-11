@@ -25,12 +25,12 @@
 
 // TerraLib
 #include "../../../dataaccess/dataset/ObjectId.h"
-#include "../../../qt/widgets/canvas/Canvas.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
 #include "../../IdGeometry.h"
 #include "../../RepositoryManager.h"
 #include "../../Utils.h"
+#include "../Renderer.h"
 #include "../Utils.h"
 #include "MoveGeometryTool.h"
 
@@ -174,17 +174,14 @@ void te::edit::MoveGeometryTool::drawGeometry()
     return;
   }
 
-  // Prepares the canvas
-  te::qt::widgets::Canvas canvas(m_display->width(), m_display->height());
-  canvas.setDevice(draft, false);
-  canvas.setWindow(env.m_llx, env.m_lly, env.m_urx, env.m_ury);
+  // Initialize the renderer
+  Renderer& renderer = Renderer::getInstance();
+  renderer.begin(draft, env, m_display->getSRID());
 
-  // Let's draw!
-  DrawGeometry(&canvas, m_geom->getGeometry(), m_display->getSRID());
+  // Draw the current geometry and the vertexes
+  renderer.draw(m_geom->getGeometry(), true);
 
-  // Draw all vertexes
-  te::qt::widgets::Config2DrawPoints(&canvas, "circle", 8, Qt::red, Qt::red, 1);
-  DrawVertexes(&canvas, m_geom->getGeometry(), m_display->getSRID());
+  renderer.end();
 
   m_display->repaint();
 }

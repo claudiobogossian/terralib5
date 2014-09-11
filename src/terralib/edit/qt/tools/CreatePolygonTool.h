@@ -46,7 +46,6 @@ namespace te
   {
     namespace widgets
     {
-      class Canvas;
       class MapDisplay;
     }
   }
@@ -101,13 +100,11 @@ namespace te
 
       private:
 
+        void draw();
+
         void drawPolygon();
 
-        void drawPolygon(te::qt::widgets::Canvas& canvas);
-
-        void drawLine(te::qt::widgets::Canvas& canvas);
-
-        void drawVertexes(te::qt::widgets::Canvas& canvas);
+        void drawLine();
 
         void clear();
 
