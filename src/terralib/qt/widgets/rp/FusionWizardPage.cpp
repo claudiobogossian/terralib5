@@ -391,8 +391,7 @@ void te::qt::widgets::FusionWizardPage::fillSensorTypes(QComboBox* combo)
   combo->addItem("CBERS 2B Band 2", QVariant(te::rp::srf::CBERS2BCCDB2Sensor));
   combo->addItem("CBERS 2B Band 3", QVariant(te::rp::srf::CBERS2BCCDB3Sensor));
   combo->addItem("CBERS 2B Band 4", QVariant(te::rp::srf::CBERS2BCCDB4Sensor));
-  combo->addItem("CBERS 2B Band 5", QVariant(te::rp::srf::CBERS2BCCDB5Sensor));
-  combo->addItem("CBERS 2B Pan", QVariant(te::rp::srf::CBERS2BCCDPANSensor));
+  combo->addItem("CBERS 2B Band 5", QVariant(te::rp::srf::CBERS2BCCDB5PANSensor));
   combo->addItem("LANDSAT 8 OLI Band 1", QVariant(te::rp::srf::LANDSAT8OLIB1Sensor));
   combo->addItem("LANDSAT 8 OLI Band 2", QVariant(te::rp::srf::LANDSAT8OLIB2Sensor));
   combo->addItem("LANDSAT 8 OLI Band 3", QVariant(te::rp::srf::LANDSAT8OLIB3Sensor));
