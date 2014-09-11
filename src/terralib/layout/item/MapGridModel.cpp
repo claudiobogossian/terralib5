@@ -37,6 +37,7 @@
 #include "../core/property/GeodesicGridSettingsConfigProperties.h"
 #include "../core/property/PlanarGridSettingsConfigProperties.h"
 #include "../core/enum/Enums.h"
+#include "../core/property/SharedProperties.h"
 
 // STL
 #include <vector>
@@ -47,7 +48,8 @@ te::layout::MapGridModel::MapGridModel() :
   m_gridPlanar(0),
   m_gridGeodesic(0),
   m_planarGridProperties(0),
-  m_geodesicGridProperties(0)
+  m_geodesicGridProperties(0),
+  m_mapBorder(true)
 {
   m_type = Enums::getInstance().getEnumObjectType()->getMapGridItem();
 
@@ -57,12 +59,17 @@ te::layout::MapGridModel::MapGridModel() :
   m_geodesicGridProperties = new GeodesicGridSettingsConfigProperties;
   m_planarGridProperties = new PlanarGridSettingsConfigProperties;
   
-  m_mapBoxMM = te::gm::Envelope(m_mapDisplacementX, m_mapDisplacementY, 
-    m_box.getUpperRightX() - m_mapDisplacementX, m_box.getUpperRightY() - m_mapDisplacementY);
+  m_mapDisplacementX = 30;
+  m_mapDisplacementY = 30;
+
+  m_box = te::gm::Envelope(0., 0., 180., 150.);
+  setBox(m_box); // Also update m_mapBox
 
   m_border = false;
 
-  m_mapbackgroundColor = te::color::RGBAColor(0, 0, 255, 255);
+  m_backgroundColor = te::color::RGBAColor(0, 0, 255, 0);
+
+  m_mapbackgroundColor = te::color::RGBAColor(50, 205, 50, 255);
 
   m_properties->setHasWindows(true);
 }
@@ -156,12 +163,19 @@ te::layout::Properties* te::layout::MapGridModel::getProperties() const
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
+  m_properties->removeProperty(m_sharedProps->getBackgroundcolor());
+
   Property pro_mapbackgroundcolor;
   pro_mapbackgroundcolor.setName("map_color");
   pro_mapbackgroundcolor.setId("unknown");
   pro_mapbackgroundcolor.setValue(m_mapbackgroundColor, dataType->getDataTypeColor());
   pro_mapbackgroundcolor.setMenu(true);
   m_properties->addProperty(pro_mapbackgroundcolor);
+
+  Property pro_mapBorder;
+  pro_mapBorder.setName("map_border");
+  pro_mapBorder.setValue(m_mapBorder, dataType->getDataTypeBool());  
+  m_properties->addProperty(pro_mapBorder);
 
   Property pro_grid;
   pro_grid.setName("grid");
@@ -200,6 +214,12 @@ void te::layout::MapGridModel::updateProperties( te::layout::Properties* propert
     m_mapbackgroundColor = pro_mapbackgroundcolor.getValue().toColor();
   }
 
+  Property pro_mapBorder = vectorProps->contains("map_border");
+  if(!pro_mapBorder.isNull())
+  {
+    m_mapBorder = pro_mapBorder.getValue().toBool();
+  }
+
   Property pro_grid = vectorProps->contains("grid");
 
   Property pro_grid_planar = pro_grid.containsSubProperty(m_planarGridProperties->getName());
@@ -232,22 +252,21 @@ te::layout::GridGeodesicModel* te::layout::MapGridModel::getGridGeodesic()
   return m_gridGeodesic;
 }
 
-void te::layout::MapGridModel::setBox( te::gm::Envelope box )
+void te::layout::MapGridModel::drawBackground( ContextItem context )
 {
-  ItemModelObservable::setBox(box);
+  MapModel::drawBackground(context);
 
-  m_mapBoxMM.m_llx = box.m_llx + m_mapDisplacementX;
-  m_mapBoxMM.m_lly = box.m_lly + m_mapDisplacementY;
-  m_mapBoxMM.m_urx = box.m_urx - m_mapDisplacementX;
-  m_mapBoxMM.m_ury = box.m_ury - m_mapDisplacementY;
-}
+  te::map::Canvas* canvas = context.getCanvas();
+  Utils* utils = context.getUtils();
 
-void te::layout::MapGridModel::setPosition( const double& x, const double& y )
-{
-  ItemModelObservable::setPosition(x, y);
+  if((!canvas) || (!utils))
+    return;
 
-  m_mapBoxMM.m_llx = m_box.m_llx + m_mapDisplacementX;
-  m_mapBoxMM.m_lly = m_box.m_lly + m_mapDisplacementY;
-  m_mapBoxMM.m_urx = m_box.m_urx - m_mapDisplacementX;
-  m_mapBoxMM.m_ury = m_box.m_ury - m_mapDisplacementY;
+  if(m_mapBorder)
+  {
+    canvas->setPolygonContourWidth(1);
+    canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
+    canvas->setPolygonFillColor(te::color::RGBAColor(255,255,255, 0));
+    utils->drawRectW(m_mapBoxMM);
+  }  
 }

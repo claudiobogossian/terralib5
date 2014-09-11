@@ -576,6 +576,11 @@ void te::layout::View::outsideAreaChangeContext( bool change )
     sc->removeSelectedItems();
     resetDefaultConfig();
   }
+  else if(mode == enumMode->getModeDrawSelectionMap()) 
+  {
+    sc->redrawSelectionMap();
+    resetDefaultConfig();
+  }
 }
 
 void te::layout::View::configTransform( Scene* sc )

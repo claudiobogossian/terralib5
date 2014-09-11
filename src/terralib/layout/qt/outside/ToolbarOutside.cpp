@@ -91,6 +91,7 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionRemoveObject("remove_item"),
   m_optionUndo("undo"),
   m_optionRedo("redo"),
+  m_optionDrawMap("draw_map"),
   m_btnMap(0)
 {
 	te::gm::Envelope box = m_model->getBox();	
@@ -138,6 +139,9 @@ te::gm::Coord2D te::layout::ToolbarOutside::getPosition()
 void te::layout::ToolbarOutside::createToolbar()
 {
   createArrowCursorButton();
+  createDrawMapToolButton();
+  this->addSeparator();
+
   createRecomposeToolButton();
   this->addSeparator();
 
@@ -482,6 +486,15 @@ void te::layout::ToolbarOutside::createUndoToolButton()
   this->addWidget(btn);
 }
 
+void te::layout::ToolbarOutside::createDrawMapToolButton()
+{
+  QToolButton *btn = createToolButton("Redraw Selection Map", "Redraw Selection Map", "layout-draw-map");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onDrawMapClicked(bool)));
+
+  this->addWidget(btn);
+}
+
 void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
 {
   EnumModeType* type = Enums::getInstance().getEnumModeType();
@@ -715,6 +728,12 @@ void te::layout::ToolbarOutside::onRemoveObjectClicked( bool checked )
 {
   EnumModeType* type = Enums::getInstance().getEnumModeType();
   changeAction(type->getModeRemoveObject());
+}
+
+void te::layout::ToolbarOutside::onDrawMapClicked( bool checked )
+{
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeDrawSelectionMap());
 }
 
 void te::layout::ToolbarOutside::changeAction( EnumType* mode )

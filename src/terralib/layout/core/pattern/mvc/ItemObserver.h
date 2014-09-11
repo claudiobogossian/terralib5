@@ -76,6 +76,8 @@ namespace te
 
         void setCanZoom(bool zoom);
 
+        virtual bool isInvertedMatrix();
+
       protected:
 
         virtual void setZValueItem(int z);
@@ -91,6 +93,7 @@ namespace te
         bool            m_canChangeGraphicOrder; //!< Define if item can send to back ou bring to front
         bool            m_canZoom;
         std::string     m_nameClass;
+        bool            m_invertedMatrix;
     };
   }
 }

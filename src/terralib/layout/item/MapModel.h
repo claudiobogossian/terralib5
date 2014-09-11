@@ -99,7 +99,7 @@ namespace te
         virtual te::color::RGBAColor getMapBackgroundColor();
         
       protected:
-        
+
         te::map::AbstractLayerPtr m_layer;
         te::gm::Envelope          m_mapBoxMM;
         double                    m_mapDisplacementX;

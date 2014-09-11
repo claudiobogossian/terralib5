@@ -82,7 +82,8 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeRemoveObject(0),
   m_modeNone(0),
   m_modeUndo(0),
-  m_modeRedo(0)
+  m_modeRedo(0),
+  m_modeDrawSelectionMap(0)
 {
   init();
 }
@@ -359,6 +360,11 @@ te::layout::EnumModeType::~EnumModeType()
     delete m_modeRedo;
     m_modeRedo = 0;
   }
+  if(m_modeDrawSelectionMap)
+  {
+    delete m_modeDrawSelectionMap;
+    m_modeDrawSelectionMap = 0;
+  }
 }
 
 void te::layout::EnumModeType::init()
@@ -528,6 +534,9 @@ void te::layout::EnumModeType::init()
 
   m_modeRedo = new EnumType(55, "Redo");
   m_enums.push_back(m_modeRedo);
+
+  m_modeDrawSelectionMap = new EnumType(56, "Draw Selection Map");
+  m_enums.push_back(m_modeDrawSelectionMap);
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeSelectByBox() const
@@ -803,4 +812,9 @@ te::layout::EnumType* te::layout::EnumModeType::getModeUndo() const
 te::layout::EnumType* te::layout::EnumModeType::getModeRedo() const
 {
   return m_modeRedo;
+}
+
+te::layout::EnumType* te::layout::EnumModeType::getModeDrawSelectionMap() const
+{
+  return m_modeDrawSelectionMap;
 }

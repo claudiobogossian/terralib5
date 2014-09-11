@@ -60,6 +60,8 @@ te::layout::DefaultTextItem::DefaultTextItem( ItemController* controller, Observ
     | QGraphicsItem::ItemIsFocusable
     | QGraphicsItem::ItemIgnoresTransformations);
 
+  m_invertedMatrix = true;
+
   setTextInteractionFlags(Qt::NoTextInteraction);
 
   QGraphicsItem* item = this;
@@ -131,7 +133,7 @@ void te::layout::DefaultTextItem::updateObserver( ContextItem context )
   For these reasons, it is necessary to scale and so accompany the zoom scene. */
   double zoomFactor = Context::getInstance().getZoomFactor();
   setScale(zoomFactor);
-
+    
   refreshTable();
 
   setPixmap(pixmap);

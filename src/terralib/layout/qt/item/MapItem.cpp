@@ -76,6 +76,7 @@
 #include <QPoint>
 #include <QMimeData>
 #include <QColor>
+#include "../core/Scene.h"
 
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   QGraphicsProxyWidget(0),
@@ -89,6 +90,8 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges
     | QGraphicsItem::ItemIgnoresTransformations);
+
+  m_invertedMatrix = true;
     
   setAcceptDrops(true);
 
@@ -115,7 +118,7 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
 
   connect(m_mapDisplay,SIGNAL(drawLayersFinished(const QMap<QString, QString>&)),
     this,SLOT(onDrawLayersFinished(const QMap<QString, QString>&)));
-    
+      
   te::qt::widgets::ZoomWheel* zoom = new te::qt::widgets::ZoomWheel(m_mapDisplay);
   m_mapDisplay->installEventFilter(zoom);
   
@@ -166,38 +169,22 @@ void te::layout::MapItem::updateObserver( ContextItem context )
   if(!box.isValid())
     return;
 
-  double w = box.getWidth();
-  double h = box.getHeight();
-
-  /* This item ignores the transformations of the scene, so comes with no zoom. 
-  His transformation matrix is the inverse scene, understanding the pixel 
-  coordinates, and its position can only be given in the scene coordinates(mm). 
-  For these reasons, it is necessary to resize it.*/
-  if(w != m_mapDisplay->getWidth() 
-    || h != m_mapDisplay->getHeight())
-  {
-    QRect rectGeom = m_mapDisplay->geometry();
-    m_mapDisplay->setGeometry(rectGeom.x(), rectGeom.y(), w, h);
-  }
-
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   if(model)
   {
-    te::gm::Envelope env;
-    if(model->isPlanar())
+    te::gm::Envelope mapBox = utils->viewportBox(model->getMapBox());
+    double w = mapBox.getWidth();
+    double h = mapBox.getHeight();
+
+    /* This item ignores the transformations of the scene, so comes with no zoom. 
+    His transformation matrix is the inverse scene, understanding the pixel 
+    coordinates, and its position can only be given in the scene coordinates(mm). 
+    For these reasons, it is necessary to resize it.*/
+    if(w != m_mapDisplay->getWidth() 
+      || h != m_mapDisplay->getHeight())
     {
-      env = model->getWorldInMeters();
-    }
-    else
-    {
-      env = model->getWorldInDegrees();
-    }
-    if(env.isValid())
-    {
-      if(!m_mapDisplay->getExtent().equals(env))
-      {
-        m_mapDisplay->setExtent(env, true);
-      }
+      QRect rectGeom = m_mapDisplay->geometry();
+      m_mapDisplay->setGeometry(rectGeom.x(), rectGeom.y(), w, h);
     }
 
     te::color::RGBAColor clr = model->getMapBackgroundColor();
@@ -209,6 +196,18 @@ void te::layout::MapItem::updateObserver( ContextItem context )
     m_mapDisplay->setBackgroundColor(qcolor);
     m_mapDisplay->refresh();
   }
+
+  /* This item ignores the transformations of the scene, so comes with no zoom. 
+  His transformation matrix is the inverse scene, understanding the pixel 
+  coordinates, and its position can only be given in the scene coordinates(mm). 
+  For these reasons, it is necessary to scale and so accompany the zoom scene. */
+  /*double zoomFactor = Context::getInstance().getZoomFactor();
+  setScale(zoomFactor);*/
+  
+  /*Scene* sc = dynamic_cast<Scene*>(Context::getInstance().getScene());
+  QTransform transf = sc->getMatrixViewScene().inverted();
+
+  setTransform(transf);*/
 
   te::color::RGBAColor** rgba = context.getPixmap();
 
@@ -223,17 +222,19 @@ void te::layout::MapItem::updateObserver( ContextItem context )
     img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
     pixmap = QPixmap::fromImage(*img);
   }
-
+    
   te::common::Free(rgba, box.getHeight());
   if(img)
     delete img;
-
+  
   setPixmap(pixmap);
   update();
 }
 
 void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
+  QGraphicsProxyWidget::paint(painter, option, widget);
+
   if(!m_pixmap.isNull())
   {
     QRectF boundRect;
@@ -243,8 +244,6 @@ void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsI
     painter->drawPixmap(boundRect, m_pixmap, QRectF( 0, 0, m_pixmap.width(), m_pixmap.height() ));
     painter->restore(); 
   }
-
-  QGraphicsProxyWidget::paint(painter, option, widget);
 
   //Draw Selection
   if (option->state & QStyle::State_Selected)

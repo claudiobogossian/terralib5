@@ -31,6 +31,8 @@
 // Qt
 #include <QGraphicsScene>
 #include <QTransform>
+#include <QGraphicsItem>
+#include <QMap>
 
 // TerraLib
 #include "../../core/AbstractScene.h"
@@ -179,6 +181,8 @@ namespace te
         virtual int getUndoStackLimit();
 
         virtual bool	eventFilter ( QObject * watched, QEvent * event );
+
+        virtual void redrawSelectionMap();
         
       protected slots:
 
@@ -207,6 +211,10 @@ namespace te
         virtual void refreshViews(QGraphicsView* view = 0);
 
         virtual void createDefaultTextItemFromObject(std::map<te::gm::Coord2D, std::string> map);
+
+        virtual void changeFlagsItemForPrint();
+
+        virtual void restoreFlagsItemForPrint();
         
       protected:
 
@@ -222,6 +230,7 @@ namespace te
         int                m_undoStackLimit;
         bool               m_moveWatched;
         std::map<QGraphicsItem*, QPointF> m_moveWatches;
+        QMap<QGraphicsItem*, QGraphicsItem::GraphicsItemFlags> m_itemFlags; //<! 
     };
   }
 }

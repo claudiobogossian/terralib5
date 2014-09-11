@@ -109,6 +109,8 @@ namespace te
       virtual void onAlignCenterVerticalClicked(bool checked);
 
       virtual void onRemoveObjectClicked(bool checked);
+
+      virtual void onDrawMapClicked(bool checked);
       
     signals:
 
@@ -157,6 +159,8 @@ namespace te
       virtual void createRemoveObjectToolButton();
 
       virtual void createUndoToolButton();
+
+      virtual void createDrawMapToolButton();
 
       virtual void changeAction(EnumType* mode);
 
@@ -225,6 +229,8 @@ namespace te
       /* Undo/Redo */
       std::string m_optionUndo;
       std::string m_optionRedo;
+
+      std::string m_optionDrawMap;
     };
   }
 }

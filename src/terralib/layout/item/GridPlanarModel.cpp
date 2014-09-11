@@ -79,6 +79,9 @@ void te::layout::GridPlanarModel::draw( te::map::Canvas* canvas, Utils* utils, t
   te::color::RGBAColor color = te::color::RGBAColor(0, 0, 0, 255);
   canvas->setLineColor(color);
   
+  canvas->setTextPointSize(m_pointTextSize);
+  canvas->setFontFamily(m_fontText);
+
   drawVerticalLines(canvas, utils, box);
   drawHorizontalLines(canvas, utils, box);
 }

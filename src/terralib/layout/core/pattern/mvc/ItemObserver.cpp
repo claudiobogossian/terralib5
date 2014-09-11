@@ -40,7 +40,8 @@ te::layout::ItemObserver::ItemObserver(ItemController* controller, Observable* o
   m_printable(true),
   m_canChangeGraphicOrder(true),
   m_canZoom(true),
-  m_nameClass("Unknown")
+  m_nameClass("Unknown"),
+  m_invertedMatrix(false)
 {
   m_model->addObserver(this);
 }
@@ -132,4 +133,9 @@ void te::layout::ItemObserver::setCanZoom( bool zoom )
 std::string te::layout::ItemObserver::getNameClass()
 {
   return m_nameClass;
+}
+
+bool te::layout::ItemObserver::isInvertedMatrix()
+{
+  return m_invertedMatrix;
 }

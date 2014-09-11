@@ -154,28 +154,17 @@ void te::layout::Scene::insertItem( ItemObserver* item )
     {
       total = this->items().count();
 
-      QTransform transf = m_matrix.inverted();
-      double scalex = m_matrix.inverted().m11();
-      double scaley = m_matrix.inverted().m22();
-
-      MapItem* map = dynamic_cast<MapItem*>(qitem);
-      if(map)
+      ItemObserver* obs = dynamic_cast<ItemObserver*>(qitem);
+      if(obs)
       {
-        /*
-        As the coordinate system of the scene is in millimeters, 
-        their children are too. But the map can not draw the mapDisplay in millimeters, 
-        since its size is given in pixels. So the object got the 
-        inverted matrix, to draw pixel by proper scaling between world and screen.
-        */
-
-        transf.scale(scalex, scaley);
-        map->setTransform(transf);
-      }
-      DefaultTextItem* txt = dynamic_cast<DefaultTextItem*>(qitem);
-      if(txt)
-      {
-        transf.scale(scalex, scaley);
-        txt->setTransform(transf);
+        if(obs->isInvertedMatrix())
+        {
+          QTransform transf = m_matrix.inverted();
+          double scalex = m_matrix.inverted().m11();
+          double scaley = m_matrix.inverted().m22();
+          transf.scale(scalex, scaley);
+          qitem->setTransform(transf);
+        }
       }
       this->addItem(qitem);
       qitem->setZValue(total);
@@ -479,12 +468,10 @@ void te::layout::Scene::renderScene( QPainter* newPainter )
   if(m_previewState == PreviewScene)
   {
     m_previewState = PrintScene;
-    //redrawItems(true);
   }
   else
   {
     m_previewState = PreviewScene;
-    //redrawItems(true);
   }
 
   changePrintVisibility(false);
@@ -507,11 +494,13 @@ void te::layout::Scene::renderScene( QPainter* newPainter )
   draw items with printer painter */
 
   Utils* utils = Context::getInstance().getUtils();
-  //Convert world to screen coordinate. Uses dpi printer.
-  te::gm::Envelope paperNewBox = utils->viewportBox(env);
     
+  changeFlagsItemForPrint();
+
   this->render(newPainter, pxTargetRect, mmSourceRect); 
   
+  restoreFlagsItemForPrint();
+
   changePrintVisibility(true);
 }
 
@@ -529,6 +518,7 @@ void te::layout::Scene::changePrintVisibility( bool change )
         {
           item->setVisible(change);
         }
+        item->setSelected(false);
       }
     }
   }
@@ -1395,4 +1385,61 @@ bool te::layout::Scene::eventFilter( QObject * watched, QEvent * event )
   }
 
   return QGraphicsScene::eventFilter(watched, event);
+}
+
+void te::layout::Scene::redrawSelectionMap()
+{
+  QList<QGraphicsItem*> selected = selectedItems();
+  foreach(QGraphicsItem *item, selected) 
+  {
+    if(item)
+    {
+      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+      if(it)
+      {
+        MapItem* mt = dynamic_cast<MapItem*>(it);
+        if(mt)
+        {
+          mt->redraw();
+        }
+      }
+    }
+  }
+}
+
+void te::layout::Scene::changeFlagsItemForPrint()
+{
+  m_itemFlags.clear();
+
+  QList<QGraphicsItem*> graphicsItems = items();
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if (item)
+    {		
+      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+      if(lItem)
+      {
+        if(lItem->isInvertedMatrix())
+        {
+          m_itemFlags[item] = item->flags();
+          item->setFlags(QGraphicsItem::ItemSendsGeometryChanges);          
+        }
+      }
+    }
+  }
+}
+
+void te::layout::Scene::restoreFlagsItemForPrint()
+{
+  QMapIterator<QGraphicsItem*, QGraphicsItem::GraphicsItemFlags> i(m_itemFlags);
+  while (i.hasNext()) 
+  {
+    i.next();
+    QGraphicsItem* item = i.key();
+    QGraphicsItem::GraphicsItemFlags flg = i.value();
+    if(item)
+    {
+      item->setFlags(flg);
+    }
+  }
 }

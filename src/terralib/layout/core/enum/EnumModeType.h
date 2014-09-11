@@ -101,6 +101,7 @@ namespace te
         virtual EnumType* getModeNone() const;
         virtual EnumType* getModeUndo() const;
         virtual EnumType* getModeRedo() const;
+        virtual EnumType* getModeDrawSelectionMap() const;
 
       protected:
 
@@ -108,6 +109,7 @@ namespace te
 
       protected:
         
+        EnumType* m_modeNone;
         EnumType* m_modeSelectByBox;
         EnumType* m_modeSelect;
         EnumType* m_modeArrowCursor;
@@ -162,7 +164,7 @@ namespace te
         EnumType* m_modeRemoveObject;
         EnumType* m_modeUndo;
         EnumType* m_modeRedo;
-        EnumType* m_modeNone;
+        EnumType* m_modeDrawSelectionMap;
     };
   }
 }

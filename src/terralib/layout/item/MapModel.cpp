@@ -48,8 +48,8 @@
 #include <sstream> 
 
 te::layout::MapModel::MapModel() :
-  m_mapDisplacementX(15),
-  m_mapDisplacementY(15),
+  m_mapDisplacementX(0),
+  m_mapDisplacementY(0),
   m_systematic(0),
   m_fixedScale(false)
 {
@@ -103,6 +103,16 @@ te::layout::Properties* te::layout::MapModel::getProperties() const
   pro_fixed.setValue(m_fixedScale, dataType->getDataTypeBool());
   m_properties->addProperty(pro_fixed);
 
+  Property pro_mapDisplacementX;
+  pro_mapDisplacementX.setName("map_displacementX");
+  pro_mapDisplacementX.setValue(m_mapDisplacementX, dataType->getDataTypeDouble());  
+  m_properties->addProperty(pro_mapDisplacementX);
+
+  Property pro_mapDisplacementY;
+  pro_mapDisplacementY.setName("map_displacementY");
+  pro_mapDisplacementY.setValue(m_mapDisplacementY, dataType->getDataTypeDouble());  
+  m_properties->addProperty(pro_mapDisplacementY);
+
   return m_properties;
 }
 
@@ -111,10 +121,49 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties 
   ItemModelObservable::updateProperties(properties);
 
   Properties* vectorProps = const_cast<Properties*>(properties);
+  
   Property pro_fixed = vectorProps->contains("fixedScale");
   if(!pro_fixed.isNull())
   {
     m_fixedScale = pro_fixed.getValue().toBool();
+  }
+
+  Property pro_mapDisplacementX = vectorProps->contains("map_displacementX");
+  if(!pro_mapDisplacementX.isNull())
+  {
+    double d_differenceX = 0;
+    if(m_mapDisplacementX < pro_mapDisplacementX.getValue().toDouble())
+    {
+      d_differenceX = pro_mapDisplacementX.getValue().toDouble() - m_mapDisplacementX;
+      m_box.m_urx = m_box.m_urx + d_differenceX;
+      m_mapBoxMM.m_urx = m_mapBoxMM.m_urx + d_differenceX;
+    }
+    else
+    {
+      d_differenceX = m_mapDisplacementX - pro_mapDisplacementX.getValue().toDouble();
+      m_box.m_urx = m_box.m_urx - d_differenceX;
+      m_mapBoxMM.m_urx = m_mapBoxMM.m_urx - d_differenceX;
+    }
+    m_mapDisplacementX = pro_mapDisplacementX.getValue().toDouble();
+  }
+
+  Property pro_mapDisplacementY = vectorProps->contains("map_displacementY");
+  if(!pro_mapDisplacementY.isNull())
+  {
+    double d_differenceY = 0;
+    if(m_mapDisplacementY < pro_mapDisplacementY.getValue().toDouble())
+    {
+      d_differenceY = pro_mapDisplacementY.getValue().toDouble() - m_mapDisplacementY; 
+      m_box.m_ury = m_box.m_ury + d_differenceY;
+      m_mapBoxMM.m_ury = m_mapBoxMM.m_ury + d_differenceY;
+    }
+    else
+    {
+      d_differenceY = m_mapDisplacementY - pro_mapDisplacementY.getValue().toDouble();
+      m_box.m_ury = m_box.m_ury - d_differenceY;
+      m_mapBoxMM.m_ury = m_mapBoxMM.m_ury - d_differenceY;
+    }
+    m_mapDisplacementY = pro_mapDisplacementY.getValue().toDouble();
   }
 
   if(m_box.equals(m_mapBoxMM))
@@ -302,7 +351,11 @@ te::gm::Envelope te::layout::MapModel::getWorldInDegrees()
 void te::layout::MapModel::setBox( te::gm::Envelope box )
 {
   ItemModelObservable::setBox(box);
-  m_mapBoxMM = m_box;
+
+  m_mapBoxMM.m_llx = box.m_llx + m_mapDisplacementX;
+  m_mapBoxMM.m_lly = box.m_lly + m_mapDisplacementY;
+  m_mapBoxMM.m_urx = box.m_urx - m_mapDisplacementX;
+  m_mapBoxMM.m_ury = box.m_ury - m_mapDisplacementY;
 }
 
 te::gm::Envelope te::layout::MapModel::getMapBox()
@@ -313,7 +366,11 @@ te::gm::Envelope te::layout::MapModel::getMapBox()
 void te::layout::MapModel::setPosition( const double& x, const double& y )
 {
   ItemModelObservable::setPosition(x, y);
-  m_mapBoxMM = m_box;
+
+  m_mapBoxMM.m_llx = m_box.m_llx + m_mapDisplacementX;
+  m_mapBoxMM.m_lly = m_box.m_lly + m_mapDisplacementY;
+  m_mapBoxMM.m_urx = m_box.m_urx - m_mapDisplacementX;
+  m_mapBoxMM.m_ury = m_box.m_ury - m_mapDisplacementY;
 }
 
 double te::layout::MapModel::getDisplacementX()
