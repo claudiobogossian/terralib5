@@ -31,12 +31,12 @@
 #include "../../../geometry/MultiPolygon.h"
 #include "../../../geometry/Polygon.h"
 #include "../../../geometry/Utils.h"
-#include "../../../qt/widgets/canvas/Canvas.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
 #include "../../IdGeometry.h"
 #include "../../RepositoryManager.h"
 #include "../../Utils.h"
+#include "../Renderer.h"
 #include "../Utils.h"
 #include "VertexTool.h"
 
@@ -295,33 +295,27 @@ void te::edit::VertexTool::drawVertexes(te::gm::Point* virtualVertex)
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
 
-  // Prepares the canvas
-  te::qt::widgets::Canvas canvas(m_display->width(), m_display->height());
-  canvas.setDevice(draft, false);
-  canvas.setWindow(env.m_llx, env.m_lly, env.m_urx, env.m_ury);
-
   if(m_lines.empty())
   {
     m_display->repaint();
     return;
   }
 
-  DrawGeometry(&canvas, m_geom->getGeometry(), m_display->getSRID());
+  // Initialize the renderer
+  Renderer& renderer = Renderer::getInstance();
+  renderer.begin(draft, env, m_display->getSRID());
 
-  // Draw all vertexes
-  te::qt::widgets::Config2DrawPoints(&canvas, "circle", 8, Qt::red, Qt::red, 1);
-  DrawVertexes(&canvas, m_lines, m_display->getSRID()); 
+  // Draw the current geometry and the vertexes
+  renderer.draw(m_geom->getGeometry(), true);
 
   // Draw the current vertex
   if(m_currentVertexIndex.isValid())
   {
-    te::qt::widgets::Config2DrawPoints(&canvas, "circle", 24, Qt::transparent, Qt::blue, 3);
-
     te::gm::LineString* line = m_lines[m_currentVertexIndex.m_line];
-
     std::auto_ptr<te::gm::Point> point(line->getPointN(m_currentVertexIndex.m_pos));
 
-    canvas.draw(point.get());
+    renderer.setPointStyle("circle", Qt::transparent, Qt::blue, 3, 24);
+    renderer.draw(point.get());
   }
 
   // Draw the virtual vertex
@@ -329,9 +323,11 @@ void te::edit::VertexTool::drawVertexes(te::gm::Point* virtualVertex)
   {
     assert(virtualVertex);
 
-    te::qt::widgets::Config2DrawPoints(&canvas, "circle", 24, Qt::transparent, Qt::darkGreen, 3);
-    canvas.draw(virtualVertex);
+    renderer.setPointStyle("circle", Qt::transparent, Qt::darkGreen, 3, 24);
+    renderer.draw(virtualVertex);
   }
+
+  renderer.end();
 
   m_display->repaint();
 }

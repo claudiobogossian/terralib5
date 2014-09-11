@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/edt/Repository.cpp
+  \file terralib/edit/Repository.cpp
 
   \brief This class represents a repository of geometries and features.
 */
