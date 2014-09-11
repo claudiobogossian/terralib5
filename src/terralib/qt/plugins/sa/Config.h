@@ -79,6 +79,13 @@
 #define TE_QT_PLUGIN_SA_HAVE_SAMPLEPOINTSGENERATOR
 
 /*!
+  \def TE_QT_PLUGIN_SA_HAVE_SKATER
+
+  \brief It defines if the SA Qt Plugin has the skater operation
+*/
+#define TE_QT_PLUGIN_SA_HAVE_SKATER
+
+/*!
   \def TE_QT_PLUGIN_SA_HAVE_SPATIALSTATISTICS
 
   \brief It defines if the SA Qt Plugin has the spatial statistics operation

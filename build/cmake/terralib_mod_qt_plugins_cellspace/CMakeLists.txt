@@ -50,7 +50,7 @@ if(Qt5_FOUND)
   target_link_libraries(terralib_mod_qt_plugins_cellspace terralib_mod_cellspace
                                                           terralib_mod_plugin
                                                           terralib_mod_qt_apf
-														  terralib_mod_srs)
+                                                          terralib_mod_srs)
 
   qt5_use_modules(terralib_mod_qt_plugins_cellspace Widgets)
 
@@ -66,7 +66,7 @@ else()
 # moc'ing
   set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/cellspace/AbstractAction.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/cellspace/CreateCellLayerAction.h
-								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/cellspace/CreateCellularSpaceDialog.h)
+                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/cellspace/CreateCellularSpaceDialog.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 

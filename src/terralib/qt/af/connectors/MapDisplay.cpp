@@ -331,6 +331,13 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
     }
     break;
 
+    case te::qt::af::evt::GET_MAPDISPLAY:
+    {
+      te::qt::af::evt::GetMapDisplay* getDisplay = static_cast<te::qt::af::evt::GetMapDisplay*>(e);
+      getDisplay->m_display = this;
+    }
+    break;
+
     default:
       return;
   }

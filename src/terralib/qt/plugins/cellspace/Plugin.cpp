@@ -56,9 +56,13 @@ void te::qt::plugins::cellspace::Plugin::startup()
   QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
   m_cellSpaceMenu = new QMenu(pluginMenu);
 
-  pluginMenu->addMenu(m_cellSpaceMenu);
+  // Insert action before plugin manager action
+  QAction* pluginsSeparator = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
+
+  pluginMenu->insertMenu(pluginsSeparator, m_cellSpaceMenu);
 
   m_cellSpaceMenu->setTitle(TE_TR("Cellular Spaces"));
+  m_cellSpaceMenu->setIcon(QIcon::fromTheme("cellspace"));
 
   // register actions
   registerActions();

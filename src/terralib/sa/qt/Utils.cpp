@@ -31,6 +31,7 @@
 #include "../../color/ColorSchemeGroup.h"
 #include "../../color/RGBAColor.h"
 #include "../../common/Globals.h"
+#include "../../common/StringUtils.h"
 #include "../../dataaccess/datasource/DataSource.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
@@ -395,25 +396,58 @@ void te::sa::CreateSampleGeneratorStratifiedGrouping(te::map::AbstractLayerPtr l
     legend[t]->setSymbolizers(symbVec);
   }
 
-  //create null grouping item
-  if(nullValues != 0)
+  //create grouping
+  te::map::Grouping* group = new te::map::Grouping(stratifiedAttr, te::map::UNIQUE_VALUE);
+  group->setPropertyType(attrType);
+  group->setPrecision(prec);
+  group->setStdDeviation(0.);
+  group->setGroupingItems(legend);
+
+  layer->setGrouping(group);
+}
+
+void te::sa::CreateSkaterGrouping(te::map::AbstractLayerPtr layer, int nClasses)
+{
+  std::string skaterAttr = TE_SA_SKATER_ATTR_CLASS_NAME;
+  int attrType = te::dt::INT32_TYPE;
+  int prec = 0;
+
+  //create grouping items
+  std::vector<te::map::GroupingItem*> legend;
+
+  std::vector<std::string> strVec;
+
+  for(int i = 0; i < nClasses; ++i)
   {
-    te::map::GroupingItem* legendItem = new te::map::GroupingItem;
-    legendItem->setLowerLimit(te::common::Globals::sm_nanStr);
-    legendItem->setUpperLimit(te::common::Globals::sm_nanStr);
-    legendItem->setTitle("No Value");
-    legendItem->setCount(nullValues);
+    strVec.push_back(te::common::Convert2String(i));
+  }
 
+  te::map::GroupingByUniqueValues(strVec, attrType, legend, prec);
+
+  std::auto_ptr<te::color::ColorBar> cb(GetColorBar("Default", "Classification", "Circular"));
+
+  int legendSize = legend.size();
+
+  std::vector<te::color::RGBAColor> colorVec;
+
+  colorVec = cb->getSlices(legendSize);
+
+  //create symbolizer
+  int geomType = te::map::GetGeomType(layer);
+
+  for(size_t t = 0; t < colorVec.size(); ++t)
+  {
     std::vector<te::se::Symbolizer*> symbVec;
-    te::se::Symbolizer* s = te::se::CreateSymbolizer((te::gm::GeomType)geomType, "#dddddd");
-    symbVec.push_back(s);
-    legendItem->setSymbolizers(symbVec);
 
-    legend.push_back(legendItem);
+    te::se::Symbolizer* s = te::se::CreateSymbolizer((te::gm::GeomType)geomType, colorVec[t].getColor());
+
+    symbVec.push_back(s);
+
+    legend[t]->setSymbolizers(symbVec);
   }
 
   //create grouping
-  te::map::Grouping* group = new te::map::Grouping(stratifiedAttr, te::map::UNIQUE_VALUE);
+  te::map::Grouping* group = new te::map::Grouping(skaterAttr, te::map::UNIQUE_VALUE);
   group->setPropertyType(attrType);
   group->setPrecision(prec);
   group->setStdDeviation(0.);

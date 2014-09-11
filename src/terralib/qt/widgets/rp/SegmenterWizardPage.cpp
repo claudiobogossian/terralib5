@@ -75,6 +75,8 @@ te::qt::widgets::SegmenterWizardPage::SegmenterWizardPage(QWidget* parent)
   QIntValidator* intValB = new QIntValidator(this);
   intValB->setBottom(0);
   m_ui->m_minimumSegmentSizeRGLineEdit_2->setValidator(intValB);
+
+  m_ui->m_noDataValueLineEdit->setValidator(new QDoubleValidator(this));
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters regGrowStrategyParameters;
   m_ui->m_minimumSegmentSizeRGLineEdit->setText( QString::number( regGrowStrategyParameters.m_minSegmentSize ) );
@@ -149,6 +151,11 @@ te::rp::Segmenter::InputParameters te::qt::widgets::SegmenterWizardPage::getInpu
     if(checkBox->isChecked())
     {
       algoInputParams.m_inputRasterBands.push_back(i);
+    }
+
+    if(m_ui->m_noDataValueCheckBox->isChecked() && !m_ui->m_noDataValueLineEdit->text().isEmpty())
+    {
+      algoInputParams.m_inputRasterNoDataValues.push_back(m_ui->m_noDataValueLineEdit->text().toDouble());
     }
   }
 

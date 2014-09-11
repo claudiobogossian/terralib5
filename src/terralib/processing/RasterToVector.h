@@ -58,8 +58,42 @@ namespace te
       
       RasterToVector();
       
-      virtual ~RasterToVector() {}
+      ~RasterToVector() {}
 
+      void setInput(te::da::DataSourcePtr inRasterDsrc,
+                    std::string inRasterName,
+                    std::auto_ptr<te::da::DataSetType> inRasterDsType,
+                    te::da::DataSourcePtr inVectorDsrc,
+                    std::string inVectorName,
+                    std::auto_ptr<te::da::DataSetType> inVectorDsType);
+
+      void setParams(std::vector<unsigned int> bands,
+                     std::vector<te::stat::StatisticalSummary> statSum);
+
+      void setOutput(te::da::DataSourcePtr outDsrc, std::string dsName);
+
+      bool paramsAreValid();
+
+      bool run();
+
+    protected:
+
+      std::auto_ptr<te::da::DataSetType> getDataSetType();
+
+      bool save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType);
+
+      te::da::DataSourcePtr m_inRasterDsrc;
+      std::string m_inRasterName;
+      std::auto_ptr<te::da::DataSetType> m_inRasterDsType;
+      te::da::DataSourcePtr m_inVectorDsrc;
+      std::string m_inVectorName;
+      std::auto_ptr<te::da::DataSetType> m_inVectorDsType;
+
+      std::vector<te::stat::StatisticalSummary> m_statSum;
+      std::vector<unsigned int> m_bands;
+
+      te::da::DataSourcePtr m_outDsrc;
+      std::string m_outDset;
     };
   }
 }

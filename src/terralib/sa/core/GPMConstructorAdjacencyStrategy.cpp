@@ -88,6 +88,11 @@ void te::sa::GPMConstructorAdjacencyStrategy::constructStrategy()
   {
     int vFromId = dataSet->getInt32(m_gpm->getAttributeName());
 
+    if(vFromId == 19 || vFromId == 20)
+    {
+      int a = 0;
+    }
+
     std::auto_ptr<te::gm::Geometry> g = dataSet->getGeometry(geomPos);
 
     std::vector<int> results;
@@ -100,7 +105,7 @@ void te::sa::GPMConstructorAdjacencyStrategy::constructStrategy()
 
       if(it != geomMap.end())
       {
-        if(g->touches(it->second))
+        if(g->touches(it->second) || g->intersects(it->second))
         {
           int edgeId = getEdgeId();
 
