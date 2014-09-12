@@ -408,7 +408,6 @@ void te::qt::widgets::FusionWizardPage::onLowCsvToolButtonClicked()
   int idx = combo->count();
   combo->addItem(fileName, QVariant(-1));
   combo->setCurrentIndex(idx);
-  combo->activated(idx);
 }
 
 void te::qt::widgets::FusionWizardPage::fillFusionTypes()
@@ -430,7 +429,6 @@ void te::qt::widgets::FusionWizardPage::fillSensorTypes(QComboBox* combo)
 {
   combo->clear();
 
-  combo->addItem(tr("Invalid sensor"), QVariant(te::rp::srf::InvalidSensor));
   combo->addItem("CBERS 2B Band 1", QVariant(te::rp::srf::CBERS2BCCDB1Sensor));
   combo->addItem("CBERS 2B Band 2", QVariant(te::rp::srf::CBERS2BCCDB2Sensor));
   combo->addItem("CBERS 2B Band 3", QVariant(te::rp::srf::CBERS2BCCDB3Sensor));
@@ -523,7 +521,7 @@ void te::qt::widgets::FusionWizardPage::listBandsLower()
         fillSensorTypes(cmbBox);
         m_ui->m_wisperTableWidget->setCellWidget(newrow, 2, cmbBox);
 
-        connect(cmbBox, SIGNAL(activated(int)), this, SLOT(onLowResSensorTypeActivated(int)));
+        connect(cmbBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLowResSensorTypeActivated(int)));
 
         m_comboMap.insert(std::map<QComboBox*, int>::value_type(cmbBox, (int)i));
       }
