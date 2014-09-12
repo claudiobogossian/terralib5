@@ -53,6 +53,11 @@ void te::edit::RepositoryManager::addEditedGeometry(const std::string& source, t
     repository->add(id, geom);
 }
 
+const std::map<std::string, te::edit::Repository*>& te::edit::RepositoryManager::getRepositories() const
+{
+  return m_repositories;
+}
+
 te::edit::Repository* te::edit::RepositoryManager::getRepository(const std::string& source) const
 {
   std::map<std::string, Repository*>::const_iterator it = m_repositories.find(source);

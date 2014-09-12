@@ -37,6 +37,7 @@
 #include <QString>
 
 // STL
+#include <string>
 #include <vector>
 
 namespace te
@@ -70,6 +71,10 @@ namespace te
       public:
 
         void begin(QPaintDevice* device, const te::gm::Envelope& e, int srid);
+
+        void drawRepositories(const te::gm::Envelope& e, int srid);
+
+        void drawRepository(const std::string& source, const te::gm::Envelope& e, int srid);
 
         void prepare(te::gm::GeomType type);
 
@@ -115,6 +120,9 @@ namespace te
         QColor m_pointContourColor;
         std::size_t m_pointContourWidth;
         std::size_t m_pointSize;
+
+        te::gm::GeomType m_currentGeomType;
+        bool m_styleChanged;
     };
 
   } // end namespace edit

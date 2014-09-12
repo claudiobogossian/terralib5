@@ -30,12 +30,19 @@
 #include "../../qt/widgets/canvas/Canvas.h"
 #include "../../qt/widgets/Utils.h"
 #include "../../srs/Config.h"
+#include "../IdGeometry.h"
+#include "../Repository.h"
+#include "../RepositoryManager.h"
 #include "../Utils.h"
 #include "Renderer.h"
 
+// STL
+#include <map>
+
 te::edit::Renderer::Renderer()
   : m_canvas(0),
-    m_srid(TE_UNKNOWN_SRS)
+    m_srid(TE_UNKNOWN_SRS),
+    m_currentGeomType(te::gm::UnknownGeometryType)
 {
   setupDefaultStyle();
 }
@@ -54,9 +61,36 @@ void te::edit::Renderer::begin(QPaintDevice* device, const te::gm::Envelope& e, 
   m_srid = srid;
 }
 
+void te::edit::Renderer::drawRepositories(const te::gm::Envelope& e, int srid)
+{
+  const std::map<std::string, Repository*>& repositories = RepositoryManager::getInstance().getRepositories();
+
+  std::map<std::string, Repository*>::const_iterator it;
+  for(it = repositories.begin(); it != repositories.end(); ++it)
+    drawRepository(it->first, e, srid);
+}
+
+void te::edit::Renderer::drawRepository(const std::string& source, const te::gm::Envelope& e, int srid)
+{
+  Repository* repository = RepositoryManager::getInstance().getRepository(source);
+
+  if(repository == 0)
+    return;
+
+  std::vector<IdGeometry*> geoms = repository->getGeometries(e, srid);
+
+  for(std::size_t i = 0; i < geoms.size(); ++i)
+    draw(geoms[i]->getGeometry(), true);
+}
+
 void te::edit::Renderer::prepare(te::gm::GeomType type)
 {
   assert(m_canvas);
+
+  if(m_currentGeomType == type && m_styleChanged == false)
+    return; // No need reconfigure the canvas
+
+  m_currentGeomType = type;
 
   switch(type)
   {
@@ -158,7 +192,10 @@ void te::edit::Renderer::end()
 {
   delete m_canvas;
   m_canvas = 0;
+
   m_srid = TE_UNKNOWN_SRS;
+
+  m_currentGeomType = te::gm::UnknownGeometryType;
 
   setupDefaultStyle();
 }
@@ -171,6 +208,8 @@ void te::edit::Renderer::setPointStyle(const QString& mark, const QColor& fillCo
   m_pointContourColor = contourColor;
   m_pointContourWidth = contourWidth;
   m_pointSize = size;
+
+  m_styleChanged = true;
 }
 
 void te::edit::Renderer::setupDefaultStyle()
@@ -187,4 +226,6 @@ void te::edit::Renderer::setupDefaultStyle()
   m_pointContourColor = Qt::black;
   m_pointContourWidth = 1;
   m_pointSize = 8;
+
+  m_styleChanged = false;
 }
