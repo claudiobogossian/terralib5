@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/query/TableLinkDialog.h
+  \file terralib/qt/widgets/externaltable/TableLinkDialog.h
 
   \brief A Qt dialog that allows users to create a new query layer based on the information of two distinct datasets
 */
@@ -33,14 +33,13 @@
 #include "../../../dataaccess/query/Join.h"
 #include "../../../dataaccess/query/JoinConditionOn.h"
 #include "../../../dataaccess/query/PropertyName.h"
-#include "../../../dataaccess/query/Where.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/QueryLayer.h"
 #include "../../../memory/DataSet.h"
 #include "../../../se/Utils.h"
 #include "../table/DataSetTableView.h"
-#include "../utils/DoubleListWidget.h"
+#include "FieldsDialog.h"
 #include "TableLinkDialog.h"
 #include "ui_TableLinkDialogForm.h"
 
@@ -74,21 +73,15 @@ te::qt::widgets::TableLinkDialog::TableLinkDialog(QWidget* parent, Qt::WindowFla
   m_tabularView->verticalHeader()->setVisible(false);
   m_tabularView->setSelectionMode(QAbstractItemView::NoSelection);
   m_tabularView->hide();
+  m_ui->m_dataPreviewGroupBox->hide();
 
   //Adjusting the doubleListWidget that will be used to configure the query's fields.
-  m_fieldsWidget.reset(new DoubleListWidget(m_ui->m_advancedOptionsFrame));
-  QGridLayout* fieldsLayout = new QGridLayout(m_ui->m_advancedOptionsFrame);
-  fieldsLayout->addWidget(m_fieldsWidget.get());
-  fieldsLayout->setContentsMargins(0, 0, 0, 0);
-  m_fieldsWidget->hide();
-
-  m_ui->m_advancedOptionsFrame->hide();
+  m_fieldsDialog.reset(new te::qt::widgets::FieldsDialog(this));
   m_ui->m_tabularFrame->hide();
-  m_ui->m_joinFrame->hide();
-  
+  m_ui->m_helpPushButton->setPageReference("widgets/external_table/table_link_dialog.html");
 
   //Connecting signals and slots
-  connect(m_ui->m_dataSetComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onDataCBIndexChanged(int)));
+  connect(m_ui->m_dataSet2ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onDataCBIndexChanged(int)));
   connect(m_ui->m_dataToolButton, SIGNAL(clicked()), this, SLOT(onDataToolButtonnClicked()));
   connect(m_ui->m_advancedToolButton, SIGNAL(clicked()), this, SLOT(onAdvancedToolButtonnClicked()));
   connect(m_ui->m_OkPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
@@ -101,28 +94,13 @@ te::qt::widgets::TableLinkDialog::~TableLinkDialog()
 void te::qt::widgets::TableLinkDialog::setInputLayer(te::map::AbstractLayerPtr inLayer)
 {
   m_inputLayer.reset((te::map::DataSetLayer*)inLayer.get());
+  m_ui->m_dataSet1LineEdit->setText(QString::fromStdString(m_inputLayer->getDataSetName()));
   m_ds = te::da::DataSourceManager::getInstance().find(m_inputLayer->getDataSourceId());
 
   if(!m_ds->isOpened())
     m_ds->open();
 
   getDataSets();
-}
-
-te::da::Fields* te::qt::widgets::TableLinkDialog::getFields()
-{
-  te::da::Fields* fields = new te::da::Fields;
-
-  std::vector<std::string> values = m_fieldsWidget->getOutputValues();
-
-  for(size_t t = 0; t < values.size();  ++t)
-  {
-    te::da::Field* f = new te::da::Field(new te::da::PropertyName(values[t]));
-
-    fields->push_back(f);
-  }
-
-  return fields;
 }
 
 te::da::Join* te::qt::widgets::TableLinkDialog::getJoin()
@@ -136,19 +114,13 @@ te::da::Join* te::qt::widgets::TableLinkDialog::getJoin()
     inputAlias = m_inputLayer->getDataSetName();
 
   te::da::DataSetName* inField  = new te::da::DataSetName(m_inputLayer->getDataSetName(), inputAlias);
-  te::da::DataSetName* tabField = new te::da::DataSetName(m_ui->m_dataSetComboBox->currentText().toStdString(), m_ui->m_dataSetAliasLineEdit->text().toStdString());
+  te::da::DataSetName* tabField = new te::da::DataSetName(m_ui->m_dataSet2ComboBox->currentText().toStdString(), m_ui->m_dataSetAliasLineEdit->text().toStdString());
 
-  te::da::Expression* exp1 = new te::da::PropertyName(m_ui->m_datasetColumnComboBox->currentText().toStdString());
-  te::da::Expression* exp2 = new te::da::PropertyName(m_ui->m_tabularColumnComboBox->currentText().toStdString());
+  te::da::Expression* exp1 = new te::da::PropertyName(m_ui->m_dataset1ColumnComboBox->currentText().toStdString());
+  te::da::Expression* exp2 = new te::da::PropertyName(m_ui->m_dataset2ColumnComboBox->currentText().toStdString());
   te::da::Expression* expression = new te::da::BinaryFunction("=", exp1, exp2);
 
-  te::da::JoinType type;
-  if(m_ui->m_rightRadioButton->isChecked())
-    type = te::da::RIGHT_JOIN;
-  else if(m_ui->m_joinRadioButton->isChecked())
-    type = te::da::JOIN;
-  else
-    type = te::da::LEFT_JOIN;
+  te::da::JoinType type = m_fieldsDialog->getJoinType();
 
   te::da::Join* join = new te::da::Join(inField, tabField, type, new te::da::JoinConditionOn(expression));
   return join;
@@ -157,7 +129,7 @@ te::da::Join* te::qt::widgets::TableLinkDialog::getJoin()
 te::da::Select te::qt::widgets::TableLinkDialog::getSelectQuery()
 {
   //fields
-  te::da::Fields* fields = getFields();
+  te::da::Fields* fields = m_fieldsDialog->getFields();
 
   //from
   te::da::From* from = new te::da::From;
@@ -207,10 +179,10 @@ void te::qt::widgets::TableLinkDialog::getDataSets()
   for (size_t i = 0; i < datasetNames.size(); i++)
   {
     if(datasetNames[i] != m_inputLayer->getDataSetName())
-      m_ui->m_dataSetComboBox->addItem(QString::fromStdString(datasetNames[i]));
+      m_ui->m_dataSet2ComboBox->addItem(QString::fromStdString(datasetNames[i]));
   }
 
-  std::string DsName = m_ui->m_dataSetComboBox->currentText().toStdString();
+  std::string DsName = m_ui->m_dataSet2ComboBox->currentText().toStdString();
   int pos = DsName.find(".");
   if(pos != std::string::npos)
     m_ui->m_dataSetAliasLineEdit->setText(QString::fromStdString(DsName.substr(pos + 1, DsName.size() - 1)));
@@ -221,10 +193,12 @@ void te::qt::widgets::TableLinkDialog::getDataSets()
 void te::qt::widgets::TableLinkDialog::getProperties()
 {
   //Clearing contents
-  m_ui->m_datasetColumnComboBox->clear();
-  m_ui->m_tabularColumnComboBox->clear();
-  m_fieldsWidget->clearInputValues();
-  m_fieldsWidget->clearOutputValues();
+  int index = m_ui->m_dataset1ColumnComboBox->currentIndex();
+  m_ui->m_dataset1ColumnComboBox->clear();
+  m_ui->m_dataset2ColumnComboBox->clear();
+
+  m_fieldsDialog->clearInputValues();
+  m_fieldsDialog->clearOutputValues();
 
   //get the dataset names
   std::vector<std::string> datasetNames = m_ds->getDataSetNames();
@@ -238,7 +212,7 @@ void te::qt::widgets::TableLinkDialog::getProperties()
    inputAlias = m_inputLayer->getDataSetName();
 
   dataSetSelecteds.push_back(std::make_pair(m_inputLayer->getDataSetName(), inputAlias));
-  dataSetSelecteds.push_back(std::make_pair(m_ui->m_dataSetComboBox->currentText().toStdString(), m_ui->m_dataSetAliasLineEdit->text().toStdString()));
+  dataSetSelecteds.push_back(std::make_pair(m_ui->m_dataSet2ComboBox->currentText().toStdString(), m_ui->m_dataSetAliasLineEdit->text().toStdString()));
 
   std::vector<std::string> propertyNames;
   std::vector<std::string> geomProperties;
@@ -282,16 +256,16 @@ void te::qt::widgets::TableLinkDialog::getProperties()
 
         dataSetProperties.push_back(i);
 
-        if(dsType->getProperty(i)->getType() == te::dt::GEOMETRY_TYPE)
-          geomProperties.push_back(fullName);
-        else
+        if(dsType->getProperty(i)->getType() != te::dt::GEOMETRY_TYPE)
           propertyNames.push_back(alias + "." + dataSet->getPropertyName(i));
+        else
+          geomProperties.push_back(fullName);
 
         if(t == 0)
-          m_ui->m_datasetColumnComboBox->addItem(QString::fromStdString(fullName));
+          m_ui->m_dataset1ColumnComboBox->addItem(QString::fromStdString(fullName), QVariant(dsType->getProperty(i)->getType()));
         else
         {
-          m_ui->m_tabularColumnComboBox->addItem(QString::fromStdString(fullName));
+          m_ui->m_dataset2ColumnComboBox->addItem(QString::fromStdString(fullName), QVariant(dsType->getProperty(i)->getType()));
 
           if(i == dsType->size() - 1)
           {
@@ -304,16 +278,42 @@ void te::qt::widgets::TableLinkDialog::getProperties()
     }
   }
 
+  if(index != -1)
+    m_ui->m_dataset1ColumnComboBox->setCurrentIndex(index);
+
   //Adjusting the widget that is used to configure the query's field
-  m_fieldsWidget->setLeftLabel("Non-selected fields");
-  m_fieldsWidget->setRightLabel("Selected fields");
-  m_fieldsWidget->setOutputValues(propertyNames);
-  m_fieldsWidget->setFixedOutputValues(geomProperties, "geometry");
+  m_fieldsDialog->setLeftLabel("Non-selected fields");
+  m_fieldsDialog->setRightLabel("Selected fields");
+  m_fieldsDialog->setOutputValues(propertyNames);
+  m_fieldsDialog->setFixedOutputValues(geomProperties, "geometry");
+}
+
+void te::qt::widgets::TableLinkDialog::done(int r)
+{
+  if(QDialog::Accepted == r)
+  {
+     if(m_ui->m_dataset1ColumnComboBox->itemData(m_ui->m_dataset1ColumnComboBox->currentIndex())
+       == m_ui->m_dataset2ColumnComboBox->itemData(m_ui->m_dataset2ColumnComboBox->currentIndex()))
+      {
+          QDialog::done(r);
+          return;
+      }
+      else
+      {
+        QMessageBox::warning(this, tr("Tabular File"), "The types of the selected columns do not match.");
+        return;
+      }
+  }
+  else
+  {
+      QDialog::done(r);
+      return;
+  }
 }
 
 void te::qt::widgets::TableLinkDialog::onDataCBIndexChanged(int index)
 {
-  std::string DsName = m_ui->m_dataSetComboBox->currentText().toStdString();
+  std::string DsName = m_ui->m_dataSet2ComboBox->currentText().toStdString();
   int pos = DsName.find(".");
   if(pos != std::string::npos)
     m_ui->m_dataSetAliasLineEdit->setText(QString::fromStdString(DsName.substr(pos + 1, DsName.size() - 1)));
@@ -329,43 +329,22 @@ void te::qt::widgets::TableLinkDialog::onDataToolButtonnClicked()
   {
     m_tabularView->show();
     m_ui->m_tabularFrame->show();
-    if(!m_fieldsWidget->isHidden())
-    {
-      m_fieldsWidget->hide();
-      m_ui->m_advancedOptionsFrame->hide();
-      m_ui->m_joinFrame->hide();
-
-      m_tabularView->show();
-      m_ui->m_tabularFrame->show();
-    }
+    m_ui->m_dataPreviewGroupBox->show();
   }
   else
   {
     m_ui->m_tabularFrame->hide();
     m_tabularView->hide();
+    m_ui->m_dataPreviewGroupBox->hide();
   }
 }
 
 void te::qt::widgets::TableLinkDialog::onAdvancedToolButtonnClicked()
 {
-  if(m_ui->m_advancedOptionsFrame->isHidden())
+  int res = m_fieldsDialog->exec();
+  if(res != QDialog::Accepted)
   {
-    m_ui->m_joinFrame->show();
-    m_fieldsWidget->show();
-    m_ui->m_advancedOptionsFrame->show();
-    if(!m_tabularView->isHidden())
-    {
-      m_tabularView->hide();
-      m_ui->m_tabularFrame->hide();
-
-      m_fieldsWidget->show();
-      m_ui->m_advancedOptionsFrame->show();
-    }
-  }
-  else
-  {
-    m_ui->m_joinFrame->hide();
-    m_ui->m_advancedOptionsFrame->hide();
+    getProperties();
   }
 }
 
