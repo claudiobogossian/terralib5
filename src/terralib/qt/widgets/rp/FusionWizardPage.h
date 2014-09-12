@@ -30,12 +30,17 @@
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../rp/IHSFusion.h"
 #include "../../../rp/PCAFusion.h"
+#include "../../../rp/WisperFusion.h"
+#include "../../../qt/widgets/charts/ChartDisplay.h"
+#include "../../../qt/widgets/charts/Scatter.h"
+#include "../../../qt/widgets/charts/ScatterChart.h"
 #include "../Config.h"
 
 // STL
 #include <memory>
 
 // Qt
+#include <QComboBox>
 #include <QWizardPage>
 
 
@@ -55,10 +60,12 @@ namespace te
       */
       class TEQTWIDGETSEXPORT FusionWizardPage : public QWizardPage
       {
+        Q_OBJECT
            enum FusionTypes
           {
             FUSION_IHS,
-            FUSION_PCA
+            FUSION_PCA,
+            FUSION_WISPER
           };
 
         public:
@@ -93,6 +100,8 @@ namespace te
 
           bool isPCAFusion();
 
+          bool isWisperFusion();
+
           bool cropRasters();
 
           te::rp::IHSFusion::InputParameters getInputIHSParams();
@@ -103,9 +112,23 @@ namespace te
 
           te::rp::PCAFusion::OutputParameters getOutputPCAParams();
 
+          te::rp::WisperFusion::InputParameters getInputWisperParams();
+
+          te::rp::WisperFusion::OutputParameters getOutputWisperParams();
+
+        protected slots:
+
+          void onHighResSensorTypeActivated(int idx);
+
+          void onLowResSensorTypeActivated(int idx);
+
         protected:
 
           void fillFusionTypes();
+
+          void fillSensorTypes(QComboBox* combo);
+
+          void fillWaveletTypes();
 
           void listBandsLower();
 
@@ -114,6 +137,18 @@ namespace te
         private:
 
           std::auto_ptr<Ui::FusionWizardPageForm> m_ui;
+
+          QDialog* m_chartDialog;
+
+          te::qt::widgets::ChartDisplay* m_chartDisplay;
+
+          te::qt::widgets::Scatter* m_scatterHighRes;
+          te::qt::widgets::ScatterChart* m_scatterChartHighRes;
+
+          std::vector<te::qt::widgets::Scatter*> m_scatterLowResVec;
+          std::vector<te::qt::widgets::ScatterChart*> m_scatterChartLowResVec;
+
+          std::map<QComboBox*, int> m_comboMap;
 
           te::map::AbstractLayerPtr m_layerLower;
           te::map::AbstractLayerPtr m_layerHigher;

@@ -130,7 +130,9 @@ void te::qt::widgets::RasterHistogramWidget::setOutputRaster(te::rst::Raster* ra
 
 void te::qt::widgets::RasterHistogramWidget::drawHistogram(int band)
 {
-  m_ui->m_bandComboBox->setCurrentText(QString::number(band));
+  QString toFind = QString::number(band);
+  int idx = m_ui->m_bandComboBox->findText(toFind);
+  m_ui->m_bandComboBox->setCurrentIndex(idx);
 
   if(m_inputRaster.get())
   {
