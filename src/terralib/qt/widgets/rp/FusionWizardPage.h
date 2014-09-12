@@ -54,6 +54,13 @@ namespace te
   {
     namespace widgets
     {
+      enum FusionTypes
+      {
+        FUSION_IHS,
+        FUSION_PCA,
+        FUSION_WISPER
+      };
+
       /*!
         \class FusionWizardPage
 
@@ -62,12 +69,6 @@ namespace te
       class TEQTWIDGETSEXPORT FusionWizardPage : public QWizardPage
       {
         Q_OBJECT
-           enum FusionTypes
-          {
-            FUSION_IHS,
-            FUSION_PCA,
-            FUSION_WISPER
-          };
 
         public:
 
