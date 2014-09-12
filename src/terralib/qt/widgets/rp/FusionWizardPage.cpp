@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../common/StringUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Interpolator.h"
@@ -36,11 +37,15 @@
 
 // Qt
 #include <QApplication>
+#include <QFileDialog>
 #include <QGridLayout>
 #include <QMessageBox>
 
 // stl
+#include <fstream>
+#include <iosfwd>
 #include <memory>
+#include <stdio.h>
 
 //QWT
 #include <qwt/qwt_legend.h>
@@ -77,6 +82,8 @@ te::qt::widgets::FusionWizardPage::FusionWizardPage(QWidget* parent)
   //connects
   connect(m_ui->m_scatterBoolButton, SIGNAL(toggled(bool)), m_chartDialog, SLOT(setVisible(bool)));
   connect(m_ui->m_sensorTypeComboBox, SIGNAL(activated(int)), this, SLOT(onHighResSensorTypeActivated(int)));
+  connect(m_ui->m_csvToolButton, SIGNAL(clicked()), this, SLOT(onHighCsvToolButtonClicked()));
+  
 
   //configure page
   this->setTitle(tr("Fusion"));
@@ -232,17 +239,25 @@ te::rp::WisperFusion::InputParameters te::qt::widgets::FusionWizardPage::getInpu
     {
       algoInputParams.m_lowResRasterBands.push_back(i);
 
-      QComboBox* cmbBox = (QComboBox*)m_ui->m_wisperTableWidget->cellWidget(i, 1);
+      QComboBox* cmbBox = (QComboBox*)m_ui->m_wisperTableWidget->cellWidget(i, 2);
 
       idx = cmbBox->currentIndex();
-      algoInputParams.m_lowResRasterBandSensors.push_back((te::rp::srf::SensorType)cmbBox->itemData(idx).toInt());
+      te::rp::srf::SensorType st = (te::rp::srf::SensorType)cmbBox->itemData(idx).toInt();
+      std::string stName = cmbBox->itemText(idx).toStdString();
+      algoInputParams.m_lowResRasterBandsSRFs.push_back(getSRFMap(st, stName));
+
+      //algoInputParams.m_lowResRasterBandSensors.push_back((te::rp::srf::SensorType)cmbBox->itemData(idx).toInt());
     }
   }
 
   algoInputParams.m_highResRasterBand = m_ui->m_bandComboBox_Wisper->currentText().toInt();
 
   idx = m_ui->m_sensorTypeComboBox->currentIndex();
-  algoInputParams.m_hiResRasterBandSensor = (te::rp::srf::SensorType)m_ui->m_sensorTypeComboBox->itemData(idx).toInt();
+  te::rp::srf::SensorType st = (te::rp::srf::SensorType)m_ui->m_sensorTypeComboBox->itemData(idx).toInt();
+  std::string stName = m_ui->m_sensorTypeComboBox->itemText(idx).toStdString();
+  algoInputParams.m_hiResRasterBandsSRFs = getSRFMap(st, stName);
+
+  //algoInputParams.m_hiResRasterBandSensor = (te::rp::srf::SensorType)m_ui->m_sensorTypeComboBox->itemData(idx).toInt();
 
   //wavelet
   idx = m_ui->m_waveletComboBox->currentIndex();
@@ -274,33 +289,29 @@ void te::qt::widgets::FusionWizardPage::onHighResSensorTypeActivated(int idx)
   }
 
   te::rp::srf::SensorType st = (te::rp::srf::SensorType)m_ui->m_sensorTypeComboBox->itemData(idx).toInt();
+  std::string stName = m_ui->m_sensorTypeComboBox->itemText(idx).toStdString();
 
-  if(st != te::rp::srf::InvalidSensor)
+  std::map<double, double> srf = getSRFMap(st, stName);
+  std::map<double, double>::iterator it;
+
+  //plot model curve
+  std::vector<double> wavelengthX;
+  std::vector<double> reflectanceY;
+
+  for(it = srf.begin(); it != srf.end(); ++it)
   {
-    std::map<double, double> srf;
-    std::map<double, double>::iterator it;
-
-    te::rp::srf::getSRF(st, srf);
-
-    //plot model curve
-    std::vector<double> wavelengthX;
-    std::vector<double> reflectanceY;
-
-    for(it = srf.begin(); it != srf.end(); ++it)
-    {
-      wavelengthX.push_back(it->first);
-      reflectanceY.push_back(it->second);
-    }
-
-    m_scatterHighRes->setXValues(wavelengthX);
-    m_scatterHighRes->setYValues(reflectanceY);
-    m_scatterHighRes->calculateMinMaxValues();
-    m_scatterChartHighRes->setData();
-
-    //replot the chart display
-    m_chartDisplay->replot();
-    m_chartDisplay->updateLayout();
+    wavelengthX.push_back(it->first);
+    reflectanceY.push_back(it->second);
   }
+
+  m_scatterHighRes->setXValues(wavelengthX);
+  m_scatterHighRes->setYValues(reflectanceY);
+  m_scatterHighRes->calculateMinMaxValues();
+  m_scatterChartHighRes->setData();
+
+  //replot the chart display
+  m_chartDisplay->replot();
+  m_chartDisplay->updateLayout();
 }
 
 void te::qt::widgets::FusionWizardPage::onLowResSensorTypeActivated(int idx)
@@ -338,33 +349,66 @@ void te::qt::widgets::FusionWizardPage::onLowResSensorTypeActivated(int idx)
   }
 
   te::rp::srf::SensorType st = (te::rp::srf::SensorType)cmbBox->itemData(idx).toInt();
+  std::string stName = cmbBox->itemText(idx).toStdString();
 
-  if(st != te::rp::srf::InvalidSensor)
+  std::map<double, double> srf = getSRFMap(st, stName);
+  std::map<double, double>::iterator it;
+
+  //plot model curve
+  std::vector<double> wavelengthX;
+  std::vector<double> reflectanceY;
+
+  for(it = srf.begin(); it != srf.end(); ++it)
   {
-    std::map<double, double> srf;
-    std::map<double, double>::iterator it;
-
-    te::rp::srf::getSRF(st, srf);
-
-    //plot model curve
-    std::vector<double> wavelengthX;
-    std::vector<double> reflectanceY;
-
-    for(it = srf.begin(); it != srf.end(); ++it)
-    {
-      wavelengthX.push_back(it->first);
-      reflectanceY.push_back(it->second);
-    }
-
-    scatter->setXValues(wavelengthX);
-    scatter->setYValues(reflectanceY);
-    scatter->calculateMinMaxValues();
-    scatterChart->setData();
-
-    //replot the chart display
-    m_chartDisplay->replot();
-    m_chartDisplay->updateLayout();
+    wavelengthX.push_back(it->first);
+    reflectanceY.push_back(it->second);
   }
+
+  scatter->setXValues(wavelengthX);
+  scatter->setYValues(reflectanceY);
+  scatter->calculateMinMaxValues();
+  scatterChart->setData();
+
+  //replot the chart display
+  m_chartDisplay->replot();
+  m_chartDisplay->updateLayout();
+}
+
+void te::qt::widgets::FusionWizardPage::onHighCsvToolButtonClicked()
+{
+  QString fileName = QFileDialog::getOpenFileName(this, tr("Open Spectral Response Function File"), "", tr("CSV Files (*.csv *.CSV)"));
+
+  if(fileName.isEmpty())
+    return;
+
+  int idx = m_ui->m_sensorTypeComboBox->count();
+  m_ui->m_sensorTypeComboBox->addItem(fileName, QVariant(-1));
+  m_ui->m_sensorTypeComboBox->setCurrentIndex(idx);
+  onHighResSensorTypeActivated(idx);
+}
+
+void te::qt::widgets::FusionWizardPage::onLowCsvToolButtonClicked()
+{
+  QToolButton* button = dynamic_cast<QToolButton*>(sender());
+  if(!button) 
+    return;
+
+  int row = m_buttonMap[button];
+
+  QComboBox* combo = (QComboBox*)m_ui->m_wisperTableWidget->cellWidget(row, 2);
+
+  if(!combo)
+    return;
+
+  QString fileName = QFileDialog::getOpenFileName(this, tr("Open Spectral Response Function File"), "", tr("CSV Files (*.csv *.CSV)"));
+
+  if(fileName.isEmpty())
+    return;
+
+  int idx = combo->count();
+  combo->addItem(fileName, QVariant(-1));
+  combo->setCurrentIndex(idx);
+  combo->activated(idx);
 }
 
 void te::qt::widgets::FusionWizardPage::fillFusionTypes()
@@ -463,9 +507,21 @@ void te::qt::widgets::FusionWizardPage::listBandsLower()
         itemBand->setCheckState(Qt::Checked);
         m_ui->m_wisperTableWidget->setItem(newrow, 0, itemBand);
 
+        //csv toolbutton
+        QToolButton* button = new QToolButton(this);
+        button->setText("...");
+        button->resize(16,16);
+        
+        m_ui->m_wisperTableWidget->setCellWidget(newrow, 1, button);
+
+        connect(button, SIGNAL(clicked()), this, SLOT(onLowCsvToolButtonClicked()));
+
+        m_buttonMap.insert(std::map<QToolButton*, int>::value_type(button, (int)i));
+
+        //combo
         QComboBox* cmbBox = new QComboBox(this);
         fillSensorTypes(cmbBox);
-        m_ui->m_wisperTableWidget->setCellWidget(newrow, 1, cmbBox);
+        m_ui->m_wisperTableWidget->setCellWidget(newrow, 2, cmbBox);
 
         connect(cmbBox, SIGNAL(activated(int)), this, SLOT(onLowResSensorTypeActivated(int)));
 
@@ -476,6 +532,8 @@ void te::qt::widgets::FusionWizardPage::listBandsLower()
       m_scatterChartLowResVec.resize(inputRst->getNumberOfBands(), 0);
     }
   }
+
+  m_ui->m_wisperTableWidget->resizeColumnsToContents();
 }
 
 void te::qt::widgets::FusionWizardPage::listBandsHigher()
@@ -505,4 +563,44 @@ void te::qt::widgets::FusionWizardPage::listBandsHigher()
       }
     }
   }
+}
+
+std::map<double, double> te::qt::widgets::FusionWizardPage::getSRFMap(te::rp::srf::SensorType st, std::string stName)
+{
+  std::map<double, double> srfMap;
+
+  if(st == -1) //from csv file
+  {
+    std::ifstream file(stName.c_str());
+
+    if(file.is_open())
+    {
+      //create boost tokenizer
+      std::string buffer;
+
+      //get header line (ignore)
+      std::getline(file, buffer);
+
+      while(std::getline(file, buffer))
+      {
+        std::vector<std::string> line;
+
+        te::common::Tokenize(buffer, line, ",");
+
+        if(line.size() >=2)
+        {
+          double wavelength = atof(line[0].c_str());
+          double response = atof(line[1].c_str());
+
+          srfMap.insert(std::map<double, double>::value_type(wavelength, response));
+        }
+      }
+    }
+  }
+  else if(st != te::rp::srf::InvalidSensor) //hardcode defined
+  {
+    te::rp::srf::getSRF(st, srfMap);
+  }
+
+  return srfMap;
 }

@@ -38,6 +38,53 @@
        </layout>
       </widget>
      </item>
+     <item row="2" column="0">
+      <widget class="QGroupBox" name="groupBox_6">
+       <property name="title">
+        <string>Common Parameters</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_23">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gridLayout_18">
+          <item row="0" column="0">
+           <layout class="QGridLayout" name="gridLayout_12">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Interpolator</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="m_interpolatorComboBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="m_cropCheckBox">
+            <property name="text">
+             <string>Crop rasters to overlap area.</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
      <item row="1" column="0">
       <widget class="QStackedWidget" name="m_stackedWidget">
        <property name="sizePolicy">
@@ -497,11 +544,11 @@
                  <attribute name="title">
                   <string>Higher Resolution</string>
                  </attribute>
-                 <layout class="QGridLayout" name="gridLayout_27">
+                 <layout class="QGridLayout" name="gridLayout_49">
                   <item row="0" column="0">
-                   <layout class="QGridLayout" name="gridLayout_26">
+                   <layout class="QGridLayout" name="gridLayout_27">
                     <item row="0" column="0">
-                     <layout class="QGridLayout" name="gridLayout_25">
+                     <layout class="QGridLayout" name="gridLayout_26">
                       <item row="0" column="0">
                        <layout class="QGridLayout" name="gridLayout_24">
                         <item row="0" column="0">
@@ -537,7 +584,7 @@
                        </layout>
                       </item>
                       <item row="0" column="1">
-                       <layout class="QGridLayout" name="gridLayout_22">
+                       <layout class="QGridLayout" name="gridLayout_25">
                         <item row="0" column="0">
                          <widget class="QLineEdit" name="m_higherLineEdit_Wisper">
                           <property name="enabled">
@@ -573,14 +620,25 @@
                          </layout>
                         </item>
                         <item row="2" column="0">
-                         <widget class="QComboBox" name="m_sensorTypeComboBox">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                         </widget>
+                         <layout class="QGridLayout" name="gridLayout_22">
+                          <item row="0" column="1">
+                           <widget class="QComboBox" name="m_sensorTypeComboBox">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="0">
+                           <widget class="QToolButton" name="m_csvToolButton">
+                            <property name="text">
+                             <string>...</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
                         </item>
                        </layout>
                       </item>
@@ -648,6 +706,11 @@
                       <column>
                        <property name="text">
                         <string>Band</string>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
+                        <string>CSV</string>
                        </property>
                       </column>
                       <column>
@@ -779,53 +842,6 @@
          </item>
         </layout>
        </widget>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QGroupBox" name="groupBox_6">
-       <property name="title">
-        <string>Common Parameters</string>
-       </property>
-       <property name="flat">
-        <bool>true</bool>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_23">
-        <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_18">
-          <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout_12">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string>Interpolator</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QComboBox" name="m_interpolatorComboBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="m_cropCheckBox">
-            <property name="text">
-             <string>Crop rasters to overlap area.</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
       </widget>
      </item>
     </layout>

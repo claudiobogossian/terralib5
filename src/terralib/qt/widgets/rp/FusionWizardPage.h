@@ -41,6 +41,7 @@
 
 // Qt
 #include <QComboBox>
+#include <QToolButton>
 #include <QWizardPage>
 
 
@@ -122,6 +123,10 @@ namespace te
 
           void onLowResSensorTypeActivated(int idx);
 
+          void onHighCsvToolButtonClicked();
+
+          void onLowCsvToolButtonClicked();
+
         protected:
 
           void fillFusionTypes();
@@ -133,6 +138,8 @@ namespace te
           void listBandsLower();
 
           void listBandsHigher();
+
+          std::map<double, double> getSRFMap(te::rp::srf::SensorType st, std::string stName);
 
         private:
 
@@ -149,6 +156,7 @@ namespace te
           std::vector<te::qt::widgets::ScatterChart*> m_scatterChartLowResVec;
 
           std::map<QComboBox*, int> m_comboMap;
+          std::map<QToolButton*, int> m_buttonMap;
 
           te::map::AbstractLayerPtr m_layerLower;
           te::map::AbstractLayerPtr m_layerHigher;
