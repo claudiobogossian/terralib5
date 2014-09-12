@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../sam/rtree/Index.h"
+#include "../srs/Config.h"
 #include "Config.h"
 
 // STL
@@ -62,7 +63,7 @@ namespace te
     {
       public:
 
-        Repository(const std::string& source);
+        Repository(const std::string& source, int srid = TE_UNKNOWN_SRS);
 
         ~Repository();
 
@@ -99,6 +100,7 @@ namespace te
       private:
 
         std::string m_source;                          //!< The source of the identified geometries.
+        int m_srid;                                    //!< The SRS of the identified geometries.
         std::vector<IdGeometry*> m_geoms;              //!< The identified geometries.
         te::sam::rtree::Index<std::size_t, 8> m_rtree; //!< Internal index used to retrieve geometries spatially.
     };
