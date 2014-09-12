@@ -508,6 +508,7 @@ void te::qt::widgets::FusionWizardPage::listBandsLower()
         //csv toolbutton
         QToolButton* button = new QToolButton(this);
         button->setText("...");
+        button->setToolTip(tr("Open Spectral Response Function File..."));
         button->resize(16,16);
         
         m_ui->m_wisperTableWidget->setCellWidget(newrow, 1, button);

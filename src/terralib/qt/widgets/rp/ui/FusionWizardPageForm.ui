@@ -633,6 +633,9 @@
                           </item>
                           <item row="0" column="0">
                            <widget class="QToolButton" name="m_csvToolButton">
+                            <property name="toolTip">
+                             <string>Open Spectral Response Function File...</string>
+                            </property>
                             <property name="text">
                              <string>...</string>
                             </property>
@@ -812,6 +815,9 @@
                <layout class="QGridLayout" name="gridLayout_36">
                 <item row="0" column="0">
                  <widget class="QToolButton" name="m_scatterBoolButton">
+                  <property name="toolTip">
+                   <string>Show Chart of Spectral Response Function...</string>
+                  </property>
                   <property name="text">
                    <string>...</string>
                   </property>
