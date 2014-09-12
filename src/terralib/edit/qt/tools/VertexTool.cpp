@@ -273,7 +273,8 @@ void te::edit::VertexTool::pickGeometry(const te::map::AbstractLayerPtr& layer, 
 
     m_lines.clear();
 
-    GetLines(m_geom->getGeometry(), m_lines);
+    if(m_geom != 0)
+      GetLines(m_geom->getGeometry(), m_lines);
 
     updateRTree();
 
