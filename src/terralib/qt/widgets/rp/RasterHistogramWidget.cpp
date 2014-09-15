@@ -28,6 +28,7 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Band.h"
 #include "../../../raster/Raster.h"
+#include "../../../raster/Utils.h"
 #include "../charts/ChartDisplay.h"
 #include "../charts/ChartStyle.h"
 #include "../charts/Histogram.h"
@@ -154,11 +155,16 @@ void te::qt::widgets::RasterHistogramWidget::drawHistogram(int band)
   {
     m_histogramOutput->setValues(std::map<te::dt::AbstractData*, unsigned int>());
 
+    double max = 0.;
+
     std::map<double, unsigned int> values =  m_outputRaster->getBand(band)->getHistogramR();
 
     for(std::map<double, unsigned int>::iterator it = values.begin(); it != values.end(); ++it)
     {
       m_histogramOutput->insert(std::make_pair(new te::dt::Double(it->first), it->second));
+
+      if(it->second > max)
+        max = it->second;
     }
 
     m_histogramOutput->setMinValue(m_outputRaster->getBand(band)->getMinValue().real());

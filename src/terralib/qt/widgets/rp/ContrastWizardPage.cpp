@@ -80,7 +80,7 @@ te::qt::widgets::ContrastWizardPage::ContrastWizardPage(QWidget* parent)
   this->setTitle(tr("Contrast"));
   this->setSubTitle(tr("Select the type of contrast and set their specific parameters."));
 
-  onContrastTypeComboBoxActivated(m_ui->m_contrastTypeComboBox->currentIndex());
+  //onContrastTypeComboBoxActivated(m_ui->m_contrastTypeComboBox->currentIndex());
 }
 
 te::qt::widgets::ContrastWizardPage::~ContrastWizardPage()
@@ -182,6 +182,64 @@ te::rp::Contrast::InputParameters te::qt::widgets::ContrastWizardPage::getInputP
       }
     }
   }
+  else if(contrastType == te::rp::Contrast::InputParameters::SquareContrastT)
+  {
+    algoInputParams.m_type = te::rp::Contrast::InputParameters::SquareContrastT;
+
+    for(int i = 0; i < nBands; ++i)
+    {
+      QTableWidgetItem* item =  m_ui->m_bandTableWidget->item(i, 0);
+    
+      if(item->checkState() == Qt::Checked)
+      {
+        QString valueMin = m_ui->m_bandTableWidget->item(i, 1)->text();
+        algoInputParams.m_squareCMinInput.push_back(valueMin.toDouble());
+
+        QString valueMax = m_ui->m_bandTableWidget->item(i, 2)->text();
+        algoInputParams.m_squareCMaxInput.push_back(valueMax.toDouble());
+      }
+    }
+  }
+  else if(contrastType == te::rp::Contrast::InputParameters::SquareRootContrastT)
+  {
+    algoInputParams.m_type = te::rp::Contrast::InputParameters::SquareRootContrastT;
+
+    for(int i = 0; i < nBands; ++i)
+    {
+      QTableWidgetItem* item =  m_ui->m_bandTableWidget->item(i, 0);
+    
+      if(item->checkState() == Qt::Checked)
+      {
+        QString valueMin = m_ui->m_bandTableWidget->item(i, 1)->text();
+        algoInputParams.m_squareRootCMinInput.push_back(valueMin.toDouble());
+
+        QString valueMax = m_ui->m_bandTableWidget->item(i, 2)->text();
+        algoInputParams.m_squareRootCMaxInput.push_back(valueMax.toDouble());
+      }
+    }
+  }
+  else if(contrastType == te::rp::Contrast::InputParameters::LogContrastT)
+  {
+    algoInputParams.m_type = te::rp::Contrast::InputParameters::LogContrastT;
+
+    for(int i = 0; i < nBands; ++i)
+    {
+      QTableWidgetItem* item =  m_ui->m_bandTableWidget->item(i, 0);
+    
+      if(item->checkState() == Qt::Checked)
+      {
+        QString valueMin = m_ui->m_bandTableWidget->item(i, 1)->text();
+        algoInputParams.m_logCMinInput.push_back(valueMin.toDouble());
+
+        QString valueMax = m_ui->m_bandTableWidget->item(i, 2)->text();
+        algoInputParams.m_logCMaxInput.push_back(valueMax.toDouble());
+      }
+    }
+  }
+  else if(contrastType == te::rp::Contrast::InputParameters::DecorrelationEnhancementT)
+  {
+    algoInputParams.m_type = te::rp::Contrast::InputParameters::DecorrelationEnhancementT;
+  }
 
   for(int i = 0; i < nBands; ++i)
   {
@@ -251,7 +309,11 @@ void te::qt::widgets::ContrastWizardPage::fillContrastTypes()
 
   m_ui->m_contrastTypeComboBox->addItem(tr("Linear"), te::rp::Contrast::InputParameters::LinearContrastT);
   m_ui->m_contrastTypeComboBox->addItem(tr("Histogram Equalization"), te::rp::Contrast::InputParameters::HistogramEqualizationContrastT);
+  m_ui->m_contrastTypeComboBox->addItem(tr("Square Constrast"), te::rp::Contrast::InputParameters::SquareContrastT);
+  m_ui->m_contrastTypeComboBox->addItem(tr("Square Root Constrast"), te::rp::Contrast::InputParameters::SquareRootContrastT);
+  m_ui->m_contrastTypeComboBox->addItem(tr("Log Constrast"), te::rp::Contrast::InputParameters::LogContrastT);
   m_ui->m_contrastTypeComboBox->addItem(tr("Mean and Standard Deviation"), te::rp::Contrast::InputParameters::MeanAndStdContrastT);
+  m_ui->m_contrastTypeComboBox->addItem(tr("Decorrelation Enhancement"), te::rp::Contrast::InputParameters::DecorrelationEnhancementT);
 }
 
 void te::qt::widgets::ContrastWizardPage::listBands()
@@ -306,27 +368,39 @@ void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int in
 {
   int contrastType = m_ui->m_contrastTypeComboBox->itemData(index).toInt();
 
-  if(contrastType == te::rp::Contrast::InputParameters::LinearContrastT)
+  if(contrastType == te::rp::Contrast::InputParameters::LinearContrastT ||
+     contrastType == te::rp::Contrast::InputParameters::SquareContrastT ||
+     contrastType == te::rp::Contrast::InputParameters::SquareRootContrastT ||
+     contrastType == te::rp::Contrast::InputParameters::LogContrastT)
   {
-    QStringList list;
-    list.append(tr("Band"));
-    list.append(tr("Minimum"));
-    list.append(tr("Maximum"));
+    bool reset = true;
 
-    m_ui->m_bandTableWidget->setColumnCount(3);
-    m_ui->m_bandTableWidget->setHorizontalHeaderLabels(list);
+    if(m_ui->m_bandTableWidget->horizontalHeaderItem(1) && m_ui->m_bandTableWidget->horizontalHeaderItem(1)->text() == tr("Minimum") &&
+       m_ui->m_bandTableWidget->horizontalHeaderItem(2) && m_ui->m_bandTableWidget->horizontalHeaderItem(2)->text() == tr("Maximum"))
+       reset = false;
 
-    int nBands = m_ui->m_bandTableWidget->rowCount();
-
-    for(int i = 0; i < nBands; ++i)
+    if(reset)
     {
-      QTableWidgetItem* itemMin = new QTableWidgetItem("0");
-      itemMin->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable);
-      m_ui->m_bandTableWidget->setItem(i, 1, itemMin);
+      QStringList list;
+      list.append(tr("Band"));
+      list.append(tr("Minimum"));
+      list.append(tr("Maximum"));
 
-      QTableWidgetItem* itemMax = new QTableWidgetItem("255");
-      itemMax->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable);
-      m_ui->m_bandTableWidget->setItem(i, 2, itemMax);
+      m_ui->m_bandTableWidget->setColumnCount(3);
+      m_ui->m_bandTableWidget->setHorizontalHeaderLabels(list);
+
+      int nBands = m_ui->m_bandTableWidget->rowCount();
+
+      for(int i = 0; i < nBands; ++i)
+      {
+        QTableWidgetItem* itemMin = new QTableWidgetItem("0");
+        itemMin->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable);
+        m_ui->m_bandTableWidget->setItem(i, 1, itemMin);
+
+        QTableWidgetItem* itemMax = new QTableWidgetItem("255");
+        itemMax->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable);
+        m_ui->m_bandTableWidget->setItem(i, 2, itemMax);
+      }
     }
   }
   else if(contrastType == te::rp::Contrast::InputParameters::HistogramEqualizationContrastT)
@@ -370,6 +444,14 @@ void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int in
       m_ui->m_bandTableWidget->setItem(i, 2, itemStdDev);
     }
   }
+  else if(contrastType == te::rp::Contrast::InputParameters::DecorrelationEnhancementT)
+  {
+    QStringList list;
+    list.append(tr("Band"));
+
+    m_ui->m_bandTableWidget->setColumnCount(1);
+    m_ui->m_bandTableWidget->setHorizontalHeaderLabels(list);
+  }
 
   m_ui->m_bandTableWidget->resizeColumnsToContents();
 #if (QT_VERSION >= 0x050000)
@@ -393,7 +475,10 @@ void te::qt::widgets::ContrastWizardPage::onMinValueSelected(int value, int band
 
   int contrastType = m_ui->m_contrastTypeComboBox->itemData(index).toInt();
 
-  if(contrastType == te::rp::Contrast::InputParameters::LinearContrastT)
+  if(contrastType == te::rp::Contrast::InputParameters::LinearContrastT ||
+     contrastType == te::rp::Contrast::InputParameters::SquareContrastT ||
+     contrastType == te::rp::Contrast::InputParameters::SquareRootContrastT ||
+     contrastType == te::rp::Contrast::InputParameters::LogContrastT)
   {
       m_ui->m_bandTableWidget->item(band, 1)->setText(QString::number(value));
       m_ui->m_bandTableWidget->setCurrentCell(band, 1);
@@ -420,7 +505,10 @@ void te::qt::widgets::ContrastWizardPage::onMaxValueSelected(int value, int band
 
   int contrastType = m_ui->m_contrastTypeComboBox->itemData(index).toInt();
 
-  if(contrastType == te::rp::Contrast::InputParameters::LinearContrastT)
+  if(contrastType == te::rp::Contrast::InputParameters::LinearContrastT ||
+     contrastType == te::rp::Contrast::InputParameters::SquareContrastT ||
+     contrastType == te::rp::Contrast::InputParameters::SquareRootContrastT ||
+     contrastType == te::rp::Contrast::InputParameters::LogContrastT)
   {
     m_ui->m_bandTableWidget->item(band, 2)->setText(QString::number(value));
     m_ui->m_bandTableWidget->setCurrentCell(band, 2);
