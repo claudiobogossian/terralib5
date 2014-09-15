@@ -51,8 +51,8 @@ namespace te
         virtual bool removeObserver(Observer* o);
         virtual Properties* getProperties() const;
 
-        virtual LayoutAbstractObjectType getType();
-        virtual void setType(LayoutAbstractObjectType type);
+        virtual EnumType* getType();
+        virtual void setType(EnumType* type);
 
         virtual te::gm::Envelope getBox();
         virtual void setBox(te::gm::Envelope box);
@@ -90,9 +90,16 @@ namespace te
 
         /* Systematic scale is for UTM projection */
         virtual bool isResizable();
+
+        virtual void setAngle(double angle);
+
+        virtual double getAngle();
                 
       protected:
+
         virtual void notifyAll(ContextItem context);
+
+        virtual void drawBackground(ContextItem context);
 
       protected:
         std::set<Observer*>	      m_observers;
@@ -102,12 +109,13 @@ namespace te
         te::color::RGBAColor			m_backgroundColor;
         te::color::RGBAColor			m_borderColor;
         Properties*               m_properties;
-        LayoutAbstractObjectType  m_type;
+        EnumType*  m_type;
         int                       m_zValue;
         SharedProperties*         m_sharedProps;
         bool                      m_border;
         std::string               m_name;
         bool                      m_resizable;
+        double                    m_angle;
     };
   }
 }

@@ -46,7 +46,7 @@ namespace te
 
       protected:
 
-        ItemGroupController( Observable* o, LayoutAbstractObjectType type );
+        ItemGroupController( Observable* o, EnumType* type );
 
         virtual void create();
     };

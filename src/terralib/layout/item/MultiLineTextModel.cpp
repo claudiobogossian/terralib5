@@ -31,10 +31,13 @@
 #include "../../geometry/Envelope.h"
 #include "../../color/RGBAColor.h"
 #include "../../maptools/Canvas.h"
+#include "../core/enum/Enums.h"
 
 te::layout::MultiLineTextModel::MultiLineTextModel() :
   DefaultTextModel()
 {
+  m_type = Enums::getInstance().getEnumObjectType()->getMultiLineTextItem();
+
   m_box = te::gm::Envelope(0., 0., 170., 30.);
 }
 

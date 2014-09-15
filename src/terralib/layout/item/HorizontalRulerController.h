@@ -46,7 +46,7 @@ namespace te
 
       protected:
 
-        HorizontalRulerController( Observable* o, LayoutAbstractObjectType type );
+        HorizontalRulerController( Observable* o, EnumType* type );
 
         virtual void create();
     };

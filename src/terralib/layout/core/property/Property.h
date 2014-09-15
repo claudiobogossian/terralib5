@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "Variant.h"
+#include "../enum/EnumType.h"
 
 namespace te
 {
@@ -45,7 +46,7 @@ namespace te
         std::string getName();
         void setName(std::string name); 
         
-        LayoutPropertyDataType getType();
+        EnumType* getType();
 
 	      std::vector<te::layout::Property> getSubProperty();
         
@@ -58,7 +59,7 @@ namespace te
         */
 
         template <typename ValueType>
-        void setValue(ValueType value, LayoutPropertyDataType type);
+        void setValue(ValueType value, EnumType* type);
 
         void setValue(Variant variant);
 
@@ -91,12 +92,20 @@ namespace te
 
         virtual Property containsSubProperty(std::string name);
         
+        virtual void setMenu(bool menu);
+
+        virtual bool isMenu();
+
+        virtual void setIcon(std::string icon);
+
+        virtual std::string getIcon();
+
         bool operator ==(const Property& other); 
 
     protected:
 
       std::string m_name;
-      LayoutPropertyDataType m_type;
+      EnumType* m_type;
       std::string m_id;
       Variant m_value;
       Variant m_currentChoice;
@@ -104,10 +113,12 @@ namespace te
       std::vector<Variant> m_options;
       std::vector<te::layout::Property> m_subProperty;
       std::string m_label;
+      bool m_menu; /* The property will be used in a menu.  */
+      std::string m_icon;
     };
 
     template <typename ValueType>
-    inline void te::layout::Property::setValue(ValueType value, LayoutPropertyDataType type)
+    inline void te::layout::Property::setValue(ValueType value, EnumType* type)
     {
       //Use the information type?
       Variant v;

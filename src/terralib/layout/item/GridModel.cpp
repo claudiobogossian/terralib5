@@ -32,6 +32,7 @@
 #include "../../geometry/Coord2D.h"
 #include "../core/property/Property.h"
 #include "../../srs/Config.h"
+#include "../core/enum/Enums.h"
 
 te::layout::GridModel::GridModel() :
   m_name("GRID_MODEL"),
@@ -40,8 +41,8 @@ te::layout::GridModel::GridModel() :
   m_lneVrtGap(0),
   m_initialGridPointX(0),
   m_initialGridPointY(0),
-  m_gridStyle(StyleContinuous),
-  m_lineStyle(te::map::SolidLine),
+  m_gridStyle(0),
+  m_lineStyle(0),
   m_lineWidth(1),
   m_pointTextSize(12),
   m_fontText("Arial"),
@@ -60,7 +61,8 @@ te::layout::GridModel::GridModel() :
   m_topRotateText(false),
   m_srid(TE_UNKNOWN_SRS)
 {
- 
+  m_gridStyle = Enums::getInstance().getEnumGridStyleType()->getStyleNone();
+  m_lineStyle = Enums::getInstance().getEnumLineStyleType()->getStyleNone();
 }
 
 te::layout::GridModel::~GridModel()

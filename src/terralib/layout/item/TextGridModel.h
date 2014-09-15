@@ -29,21 +29,18 @@
 #define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/ContextItem.h"
+#include "TitleModel.h"
 
 namespace te
 {
   namespace layout
   {
-    class TextGridModel : public ItemModelObservable
+    class TextGridModel : public TitleModel
     {
       public:
 
         TextGridModel();
         virtual ~TextGridModel();
-
-        virtual void draw( ContextItem context );
     };
   }
 }

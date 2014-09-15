@@ -46,7 +46,7 @@ namespace te
 
       protected:
 
-        EllipseController( Observable* o, LayoutAbstractObjectType type );
+        EllipseController( Observable* o, EnumType* type );
 
         virtual void create();
     };

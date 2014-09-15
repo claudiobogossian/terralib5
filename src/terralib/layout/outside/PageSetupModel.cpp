@@ -33,7 +33,6 @@
 te::layout::PageSetupModel::PageSetupModel() 
 {
   m_box = te::gm::Envelope(0., 0., 200., 200.);
-  m_type = TPPageSetup;
 }
 
 te::layout::PageSetupModel::~PageSetupModel()

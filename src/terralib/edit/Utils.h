@@ -49,6 +49,9 @@ namespace te
 
   namespace edit
   {
+// Forward declaration
+    class IdGeometry;
+
     struct VertexIndex
     {
       void setIndex(const std::size_t& line, const std::size_t& pos)
@@ -72,7 +75,7 @@ namespace te
       std::size_t m_pos;
     };
 
-    TEEDITEXPORT te::gm::Geometry* PickGeometry(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid);
+    TEEDITEXPORT IdGeometry* PickGeometry(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid);
 
     TEEDITEXPORT void GetLines(te::gm::Geometry* geom, std::vector<te::gm::LineString*>& lines);
 

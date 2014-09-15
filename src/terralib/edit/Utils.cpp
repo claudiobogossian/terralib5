@@ -35,13 +35,15 @@
 #include "../geometry/Polygon.h"
 #include "../geometry/Utils.h"
 #include "../srs/Config.h"
+#include "IdGeometry.h"
+#include "RepositoryManager.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
 #include <memory>
 
-te::gm::Geometry* te::edit::PickGeometry(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid)
+te::edit::IdGeometry* te::edit::PickGeometry(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid)
 {
   if(layer->getVisibility() != te::map::VISIBLE || !layer->isValid())
     return 0;
@@ -54,10 +56,20 @@ te::gm::Geometry* te::edit::PickGeometry(const te::map::AbstractLayerPtr& layer,
   if(!reprojectedEnvelope.intersects(layer->getExtent()))
     return 0;
 
+  // Try retrieves from RepositoryManager...
+  IdGeometry* geom = RepositoryManager::getInstance().getGeometry(layer->getId(), env, srid);
+  if(geom)
+    return geom->clone();
+
+  // ...else, retrieve from layer
+
   std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema());
 
   if(!schema->hasGeom())
     return 0;
+
+  std::vector<std::string> oidPropertyNames;
+  te::da::GetOIDPropertyNames(schema.get(), oidPropertyNames);
 
   te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(schema.get());
 
@@ -78,11 +90,8 @@ te::gm::Geometry* te::edit::PickGeometry(const te::map::AbstractLayerPtr& layer,
   {
     std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
 
-    if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()))
-    {
-      // Geometry found!
-      return g.release();
-    }
+    if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get())) // Geometry found!
+      return new IdGeometry(te::da::GenerateOID(dataset.get(), oidPropertyNames), g.release());
   }
 
   return 0;

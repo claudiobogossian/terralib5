@@ -698,6 +698,7 @@ else() # QT4_FOUND
   # externaltable
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/DataPropertiesDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/DataPropertiesWidget.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/FieldsDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/externalTable/TableLinkDialog.h)
 
   # help
@@ -788,6 +789,7 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ContrastDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ContrastWizardPage.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/FilterWizardPage.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/FusionWizardPage.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/MaskDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/MixtureModelDialog.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/MixtureModelDialog.h

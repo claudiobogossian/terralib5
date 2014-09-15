@@ -35,14 +35,15 @@
 #include "../core/pattern/factory/ItemParamsCreate.h"
 #include "../core/pattern/mvc/ItemObserver.h"
 #include "../core/pattern/mvc/Observer.h"
+#include "../core/enum/Enums.h"
 
 te::layout::ArrowController::ArrowController( Observable* o ) :
-  ItemController(o, TPArrowItem)
+  ItemController(o)
 {
   create();
 }
 
-te::layout::ArrowController::ArrowController( Observable* o, LayoutAbstractObjectType type ) :
+te::layout::ArrowController::ArrowController( Observable* o, EnumType* type ) :
   ItemController(o, type)
 {
 
@@ -67,5 +68,5 @@ void te::layout::ArrowController::create()
 {
   AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPArrowItem, params);
+  m_view = (Observer*)factory->make(m_model->getType(), params);
 }

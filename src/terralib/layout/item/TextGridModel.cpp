@@ -31,42 +31,27 @@
 #include "../../geometry/Envelope.h"
 #include "../../color/RGBAColor.h"
 #include "../../maptools/Canvas.h"
+#include "../core/enum/Enums.h"
 
 te::layout::TextGridModel::TextGridModel() 
 {
-  m_borderColor = te::color::RGBAColor(0, 0, 255, 255);
-  m_backgroundColor = te::color::RGBAColor(0, 255, 0, 100);
 
-  m_box = te::gm::Envelope(0., 0., 10., 10.);
+  m_type = Enums::getInstance().getEnumObjectType()->getTextGridItem();
+
+  m_spacing = 1;
+  m_padding = 1;
+  m_columnNumber = 5;
+  m_rowNumber = 4;
+
+  m_box = te::gm::Envelope(0., 0., 190., 170.);
+
+  m_tableColor.setColor(0,0,0,255);
+  m_borderGridColor.setColor(0,0,0,255);
+  m_headerHorizontalColor.setColor(192,192,192,255);
+  m_headerVerticalColor.setColor(192,192,192,255);
 }
 
 te::layout::TextGridModel::~TextGridModel()
 {
 
-}
-
-void te::layout::TextGridModel::draw( ContextItem context )
-{
-  te::color::RGBAColor** pixmap = 0;
-  
-  te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
-
-  if((!canvas) || (!utils))
-    return;
-
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-  
-  canvas->setPolygonContourWidth(2);
-  canvas->setPolygonContourColor(m_borderColor);
-  canvas->setPolygonFillColor(m_backgroundColor);
-  
-  utils->drawRectW(m_box);
-  
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
-  
-  context.setPixmap(pixmap);
-  notifyAll(context);
 }

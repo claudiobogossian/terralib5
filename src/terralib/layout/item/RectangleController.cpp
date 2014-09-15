@@ -35,14 +35,15 @@
 #include "../core/pattern/factory/ItemParamsCreate.h"
 #include "../core/pattern/mvc/ItemObserver.h"
 #include "../core/pattern/mvc/Observer.h"
+#include "../core/enum/Enums.h"
 
 te::layout::RectangleController::RectangleController( Observable* o ) :
-  ItemController(o, TPRetangleItem)
+  ItemController(o)
 {
   create();
 }
 
-te::layout::RectangleController::RectangleController( Observable* o, LayoutAbstractObjectType type ) :
+te::layout::RectangleController::RectangleController( Observable* o, EnumType* type ) :
   ItemController(o, type)
 {
 
@@ -67,5 +68,5 @@ void te::layout::RectangleController::create()
 {
   AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPRetangleItem, params);
+  m_view = (Observer*)factory->make(m_model->getType(), params);
 }

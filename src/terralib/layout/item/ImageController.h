@@ -46,7 +46,7 @@ namespace te
 
       protected:
 
-        ImageController( Observable* o, LayoutAbstractObjectType type );
+        ImageController( Observable* o, EnumType* type );
 
         virtual void create();
     };

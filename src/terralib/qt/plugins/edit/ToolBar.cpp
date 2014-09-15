@@ -35,6 +35,7 @@
 #include "ToolBar.h"
 
 // Qt
+#include <QActionGroup>
 #include <QMessageBox>
 
 // STL
@@ -45,7 +46,8 @@ te::qt::plugins::edit::ToolBar::ToolBar()
     m_vertexToolAction(0),
     m_createPolygonToolAction(0),
     m_createLineToolAction(0),
-    m_moveGeometryToolAction(0)
+    m_moveGeometryToolAction(0),
+    m_editToolsGroup(0)
 {
   initialize();
 }
@@ -75,17 +77,33 @@ void te::qt::plugins::edit::ToolBar::initialize()
   // Create the main toolbar
   m_toolBar = new QToolBar;
 
-  // VertexTool action
-  m_vertexToolAction = m_toolBar->addAction("Vertex Tool", this, SLOT(onVertexToolActivated(bool)));
+  initializeActions();
 
-  // CreatePolygonTool action
-  m_createPolygonToolAction = m_toolBar->addAction("Create Polygon", this, SLOT(onCreatePolygonToolActivated(bool)));
+  m_toolBar->addActions(m_editToolsGroup->actions());
+}
 
-  // CreateLineTool action
-  m_createLineToolAction = m_toolBar->addAction("Create Line", this, SLOT(onCreateLineToolActivated(bool)));
+void te::qt::plugins::edit::ToolBar::initializeActions()
+{
+  createAction(m_vertexToolAction, tr("Vertex Tool - Move, add and remove"), "edit-vertex-tool", true, true,  SLOT(onVertexToolActivated(bool)));
+  createAction(m_createPolygonToolAction, tr("Create Polygon"), "edit-create-polygon", true, true,  SLOT(onCreatePolygonToolActivated(bool)));
+  createAction(m_createLineToolAction, tr("Create Line"), "edit-create-line", true, true,  SLOT(onCreateLineToolActivated(bool)));
+  createAction(m_moveGeometryToolAction, tr("Move Geometry"), "edit-move-geometry", true, true,  SLOT(onMoveGeometryToolActivated(bool)));
 
-  // MoveGeometryTool action
-  m_moveGeometryToolAction = m_toolBar->addAction("Move Geometry", this, SLOT(onMoveGeometryToolActivated(bool)));
+  m_editToolsGroup = new QActionGroup(this);
+  m_editToolsGroup->addAction(m_vertexToolAction);
+  m_editToolsGroup->addAction(m_createPolygonToolAction);
+  m_editToolsGroup->addAction(m_createLineToolAction);
+  m_editToolsGroup->addAction(m_moveGeometryToolAction);
+}
+
+void te::qt::plugins::edit::ToolBar::createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const char* member)
+{
+  action = new QAction(this);
+  action->setIcon(QIcon::fromTheme(icon));
+  action->setToolTip(tooltip);
+  action->setCheckable(checkable);
+  action->setEnabled(enabled);
+  connect(action, SIGNAL(triggered(bool)), this, member);
 }
 
 void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool checked)

@@ -73,7 +73,7 @@ namespace te
       m_hiResRasterWaveletLevels = 0;
       m_enableProgress = false;
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;
-      m_waveletFilterType = te::rp::B3SplineWAFilter;
+      m_waveletFilterType = te::rp::TriangleWAFilter;
       m_userWaveletFilterPtr = 0;
       m_enableMultiThread = true;
     }
@@ -232,7 +232,7 @@ namespace te
       std::vector< double > lowResBandsSRFAreas;
       std::vector< double > lRBandXHRBandIntersectionAreas;
       double lRBandsXHRBandTotalExclusiveIntersectionSRFArea = 0.0; // The LRxLR bands overlap is taken into account.
-      const double hiResBandSRFArea = getSRFArea( highResSRFs );
+      const double hiResBandSRFArea = te::rp::srf::getSRFArea( highResSRFs );
       
       {
         unsigned int lowResBandIdx1 = 0;
@@ -254,11 +254,11 @@ namespace te
             if( lowResBandIdx1 != lowResBandIdx2 )
             {
               std::map< double, double > lRXLRIntersectionSRF;
-              getIntersectionSRF( lowResSRFs[ lowResBandIdx1 ], 
+              te::rp::srf::getIntersectionSRF( lowResSRFs[ lowResBandIdx1 ], 
                 lowResSRFs[ lowResBandIdx2 ], lRXLRIntersectionSRF );
               
               lRBandXlRBandSRFIntersectionAreas[ lowResBandIdx1 ][ lowResBandIdx2 ] = 
-                getSRFArea( lRXLRIntersectionSRF );
+                te::rp::srf::getSRFArea( lRXLRIntersectionSRF );
               lRBandXlRBandSRFIntersectionAreas[ lowResBandIdx2 ][ lowResBandIdx1 ] =
                 lRBandXlRBandSRFIntersectionAreas[ lowResBandIdx1 ][ lowResBandIdx2 ];
             }
@@ -268,23 +268,23 @@ namespace te
             }
           }
           
-          lowResBandsSRFAreas[ lowResBandIdx1 ] = getSRFArea( lowResSRFs[ lowResBandIdx1 ] );
+          lowResBandsSRFAreas[ lowResBandIdx1 ] = te::rp::srf::getSRFArea( lowResSRFs[ lowResBandIdx1 ] );
           TERP_TRUE_OR_RETURN_FALSE( lowResBandsSRFAreas[ lowResBandIdx1 ] > 0.0,
             "One low resolution band SRF is invalid" );          
           
           std::map< double, double > lRXHRIntersectionSRF;
-          getIntersectionSRF( lowResSRFs[ lowResBandIdx1 ], highResSRFs, lRXHRIntersectionSRF );
+          te::rp::srf::getIntersectionSRF( lowResSRFs[ lowResBandIdx1 ], highResSRFs, lRXHRIntersectionSRF );
           
-          lRBandXHRBandIntersectionAreas[ lowResBandIdx1 ] = getSRFArea( lRXHRIntersectionSRF );
+          lRBandXHRBandIntersectionAreas[ lowResBandIdx1 ] = te::rp::srf::getSRFArea( lRXHRIntersectionSRF );
           TERP_TRUE_OR_RETURN_FALSE( lRBandXHRBandIntersectionAreas[ lowResBandIdx1 ] > 0.0,
             "One low resolution band SRF does not intersects the high resolution band SRF" );
           
           std::map< double, double > auxUnionSRF;
-          getUnionSRF( lRXHRIntersectionSRF, lRBandsXHRBandTotalExclusiveIntersectionSRF, auxUnionSRF );
+          te::rp::srf::getUnionSRF( lRXHRIntersectionSRF, lRBandsXHRBandTotalExclusiveIntersectionSRF, auxUnionSRF );
           lRBandsXHRBandTotalExclusiveIntersectionSRF = auxUnionSRF;
         }        
         
-        lRBandsXHRBandTotalExclusiveIntersectionSRFArea = getSRFArea( 
+        lRBandsXHRBandTotalExclusiveIntersectionSRFArea = te::rp::srf::getSRFArea( 
           lRBandsXHRBandTotalExclusiveIntersectionSRF );
         
         std::multimap< double, unsigned int > centralFrequency2BandIdxMap;
@@ -361,7 +361,7 @@ namespace te
                   )
                 )
                 /
-                log( 2.0 )
+                std::log( 2.0 )
               )
               ,
               (
@@ -377,7 +377,7 @@ namespace te
                   )
                 )
                 /
-                log( 2.0 )
+                std::log( 2.0 )
               )
             )
           );  
@@ -727,11 +727,6 @@ namespace te
       {
         TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_hiResRasterBandSensor !=
           te::rp::srf::InvalidSensor, "Invalid high resolution sensor" );
-      }
-      else
-      {
-        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_hiResRasterBandSensor !=
-          te::rp::srf::InvalidSensor, "Invalid high resolution sensor" );
       }     
       
       // others
@@ -754,116 +749,6 @@ namespace te
     {
       return m_isInitialized;
     }
-    
-    double WisperFusion::interpolateSRF( const std::map< double, double >& sRFs, 
-      const double& frequency ) const
-    {
-      std::map< double, double >::const_iterator it2 = sRFs.find( frequency );
-      
-      if( it2 == sRFs.end() )
-      {
-        it2 = sRFs.upper_bound( frequency );
-        
-        if( ( it2 == sRFs.begin() ) || ( it2 == sRFs.end() ) )
-        {
-          return 0.0;
-        }
-        else
-        {
-          std::map< double, double >::const_iterator it1 = it2;
-          --it1;
-          
-          double dist1 = frequency - it1->first;
-          assert( dist1 > 0.0 );          
-          double dist2 = it2->first - frequency;
-          assert( dist2 > 0.0 );
-          
-          return ( 
-                    ( it1->second * dist2 ) 
-                    + 
-                    ( it2->second * dist1 )
-                 ) 
-                 / 
-                 ( dist1  + dist2 );
-        }
-      }
-      else
-      {
-        return it2->second;
-      }
-    }
-    
-    double WisperFusion::getSRFArea( const std::map< double, double >& sRFs ) const
-    {
-      double returnValue = 0.0;
-      
-      std::map< double, double >::const_iterator it = sRFs.begin();
-      std::map< double, double >::const_iterator itPrev;
-      const std::map< double, double >::const_iterator itEnd = sRFs.end();      
-      
-      while( it != itEnd )
-      {
-        if( it == sRFs.begin() )
-        {
-          itPrev = it;
-        }
-        else
-        {
-          returnValue += std::abs( it->second - itPrev->second ) * 
-            ( it->first - itPrev->first ) / 2.0;
-          returnValue += ( it->first - itPrev->first ) *
-            std::min( it->second, itPrev->second );
-          
-          ++itPrev;
-        }
-        
-        ++it;
-      }
-      
-      return returnValue;
-    }
-    
-    void WisperFusion::getIntersectionSRF( const std::map< double, double >& sRF1, 
-      const std::map< double, double >& sRF2,
-      std::map< double, double >& intersectionSRF ) const
-    {
-      getUnionSRF( sRF1, sRF2, intersectionSRF );
-      
-      std::map< double, double >::const_iterator it = intersectionSRF.begin();
-      const std::map< double, double >::const_iterator itEnd = intersectionSRF.end();
-      
-      while( it != itEnd )
-      {
-        intersectionSRF[ it->first ] =
-          std::min(
-            interpolateSRF( sRF1, it->first ),
-            interpolateSRF( sRF2, it->first )
-          );
-          
-        ++it;
-      }
-    }
-    
-    void WisperFusion::getUnionSRF( const std::map< double, double >& sRF1, 
-      const std::map< double, double >& sRF2,
-      std::map< double, double >& unionSRF ) const
-    {
-      unionSRF = sRF2;
-      
-      std::map< double, double >::const_iterator it1 = sRF1.begin();
-      const std::map< double, double >::const_iterator it1End = sRF1.end();
-      
-      while( it1 != it1End )
-      {
-        unionSRF[ it1->first ] = 
-          std::max( 
-            interpolateSRF( unionSRF, it1->first ),
-            it1->second
-          );
-          
-        ++it1;
-      }
-    }    
     
   }
 }   // end namespace te

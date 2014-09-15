@@ -30,7 +30,7 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
-#include "../../Config.h"
+#include "../Config.h"
 
 // Qt
 #include <QPointF>
@@ -48,12 +48,15 @@ namespace te
 
   namespace edit
   {
+// Forward declaration
+    class IdGeometry;
+
     /*!
       \class MoveGeometryTool
 
       \brief This class implements a concrete tool to move geometries.
     */
-    class TEEDITEXPORT MoveGeometryTool : public te::qt::widgets::AbstractTool
+    class TEEDITQTEXPORT MoveGeometryTool : public te::qt::widgets::AbstractTool
     {
       Q_OBJECT
 
@@ -106,6 +109,8 @@ namespace te
 
         void updateCursor();
 
+        void storeEditedGeometry();
+
       private slots:
 
         void onExtentChanged();
@@ -113,7 +118,7 @@ namespace te
       protected:
 
         te::map::AbstractLayerPtr m_layer;
-        te::gm::Geometry* m_geom;
+        IdGeometry* m_geom;
         bool m_moveStarted;                 //!< Flag that indicates if move operation was started.
         QPointF m_origin;                   //!< Origin point on mouse pressed.
         QPointF m_delta;                    //!< Difference between pressed point and destination point on mouse move.

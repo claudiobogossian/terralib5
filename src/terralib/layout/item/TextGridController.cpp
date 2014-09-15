@@ -35,15 +35,16 @@
 #include "../core/pattern/factory/ItemParamsCreate.h"
 #include "../core/pattern/mvc/ItemObserver.h"
 #include "../core/pattern/mvc/Observer.h"
+#include "../core/enum/Enums.h"
 
 te::layout::TextGridController::TextGridController( Observable* o ) :
-  ItemController(o, TPTextGridItem)
+  TitleController(o, 0)
 {
   create();
 }
 
-te::layout::TextGridController::TextGridController( Observable* o, LayoutAbstractObjectType type ) :
-  ItemController(o, type)
+te::layout::TextGridController::TextGridController( Observable* o, EnumType* type ) :
+  TitleController(o, type)
 {
 
 }
@@ -67,5 +68,5 @@ void te::layout::TextGridController::create()
 {
   AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPTextGridItem, params);
+  m_view = (Observer*)factory->make(m_model->getType(), params);
 }

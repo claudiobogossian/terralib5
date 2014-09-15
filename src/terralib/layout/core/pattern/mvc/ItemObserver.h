@@ -76,11 +76,15 @@ namespace te
 
         void setCanZoom(bool zoom);
 
+        virtual bool isInvertedMatrix();
+
       protected:
 
         virtual void setZValueItem(int z);
 
         virtual int getZValueItem() = 0;
+
+        virtual void applyRotation() = 0;
 
         te::layout::ItemController*	m_controller;
         te::layout::Observable*		m_model;
@@ -89,6 +93,7 @@ namespace te
         bool            m_canChangeGraphicOrder; //!< Define if item can send to back ou bring to front
         bool            m_canZoom;
         std::string     m_nameClass;
+        bool            m_invertedMatrix;
     };
   }
 }

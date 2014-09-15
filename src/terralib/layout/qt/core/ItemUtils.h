@@ -32,6 +32,7 @@
 #include "../../core/Config.h"
 #include "../item/MapItem.h"
 #include "../../core/enum/AbstractType.h"
+#include "../../core/enum/EnumType.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -50,9 +51,9 @@ namespace te
 
     TELAYOUTEXPORT std::vector<std::string> mapNameList(QList<QGraphicsItem*> graphicsItems);
 
-    TELAYOUTEXPORT int countType(QList<QGraphicsItem*> graphicsItems, te::layout::LayoutAbstractObjectType type);
+    TELAYOUTEXPORT int countType(QList<QGraphicsItem*> graphicsItems, te::layout::EnumType* type);
 
-    TELAYOUTEXPORT int maxTypeId(QList<QGraphicsItem*> graphicsItems, te::layout::LayoutAbstractObjectType type);
+    TELAYOUTEXPORT int maxTypeId(QList<QGraphicsItem*> graphicsItems, te::layout::EnumType* type);
 
     TELAYOUTEXPORT bool isCurrentMapTools();
   }

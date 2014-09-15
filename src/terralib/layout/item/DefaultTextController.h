@@ -46,7 +46,7 @@ namespace te
 
       protected:
 
-        DefaultTextController( Observable* o, LayoutAbstractObjectType type );
+        DefaultTextController( Observable* o, EnumType* type );
 
         virtual void create();
     };

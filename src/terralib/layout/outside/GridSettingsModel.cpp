@@ -35,7 +35,6 @@
 te::layout::GridSettingsModel::GridSettingsModel() 
 {
   m_box = te::gm::Envelope(0., 0., 200., 200.);
-  m_type = TPGridSettings;
 
   m_planarGridSettings = new PlanarGridSettingsConfigProperties;
   m_geodesicGridSettings = new GeodesicGridSettingsConfigProperties;

@@ -34,11 +34,14 @@
 #include "../core/property/Property.h"
 #include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/property/Properties.h"
+#include "../core/enum/Enums.h"
 
 te::layout::ImageModel::ImageModel() :
   m_fileName(""),
   m_imgType(te::map::JPEG)
 {
+  m_type = Enums::getInstance().getEnumObjectType()->getImageItem();
+
   m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
   m_backgroundColor = te::color::RGBAColor(0, 0, 255, 255);
 
@@ -65,11 +68,7 @@ void te::layout::ImageModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
   
-  canvas->setPolygonContourWidth(2);
-  canvas->setPolygonContourColor(m_borderColor);
-  canvas->setPolygonFillColor(m_backgroundColor);
-  
-  utils->drawRectW(m_box);
+  drawBackground(context);
 
   if(m_fileName.compare("") != 0)
   {
@@ -99,10 +98,12 @@ te::layout::Properties* te::layout::ImageModel::getProperties() const
 {
   ItemModelObservable::getProperties();
 
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
   Property pro_fileName;
   pro_fileName.setName("fileName");
   pro_fileName.setId("");
-  pro_fileName.setValue(m_fileName, DataTypeImage);
+  pro_fileName.setValue(m_fileName, dataType->getDataTypeImage());
   m_properties->addProperty(pro_fileName);
   
   return m_properties;

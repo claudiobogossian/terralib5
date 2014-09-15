@@ -71,8 +71,7 @@ namespace te
         enum CellSpaceType
         {
           CELLSPACE_POLYGONS, /*!< Polygons Type. */
-          CELLSPACE_POINTS,   /*!< Points Type. */
-          CELLSPACE_RASTER    /*!< Raster Type. */
+          CELLSPACE_POINTS    /*!< Points Type. */
         };
 
         CellularSpacesOperations();
@@ -146,28 +145,6 @@ namespace te
           \return The DataSetType created.
         */
         te::da::DataSetType* createCellularDataSetType(const std::string& name, int srid, CellSpaceType type);
-
-        void createRasteCellSpace(te::da::DataSourceInfoPtr outputSource,
-                                  const std::string& name,
-                                  const double resX,
-                                  const double resY,
-                                  const te::gm::Envelope& env,
-                                  const int srid);
-
-        void createRasteCellSpace(te::da::DataSourceInfoPtr outputSource,
-                                  const std::string& name,
-                                  te::map::AbstractLayerPtr layerBase,
-                                  double resX,
-                                  double resY,
-                                  bool useMask);
-
-        void save(te::da::DataSourceInfoPtr sourceInfo);
-
-      private:
-
-        te::da::DataSetType* m_outputDataSetType; /*!< Output DataSetType. */
-        te::da::DataSet*     m_outputDataSet;     /*!< Output DataSet. */
-        std::auto_ptr<te::rst::Raster>     m_outputRaster;      /*!< Output Raster. */
     };
   }
 }

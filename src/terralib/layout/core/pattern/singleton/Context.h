@@ -29,7 +29,6 @@
 #define __TERRALIB_LAYOUT_INTERNAL_CONTEXT_H
 
 // TerraLib
-#include "../../enum/EnumMode.h"
 #include "../../enum/AbstractType.h"
 #include "../../Utils.h"
 #include "../factory/AbstractOutsideFactory.h"
@@ -49,6 +48,7 @@ namespace te
     class AbstractOutsideFactory;
     class AbstractTemplateFactory;
     class BuildGraphicsItem;
+    class EnumType;
 
     class TELAYOUTEXPORT Context : public te::common::Singleton<Context>
     {
@@ -61,8 +61,8 @@ namespace te
       public:
         virtual ~Context();
 
-        LayoutMode	 getMode();
-        void setMode(LayoutMode mode);
+        EnumType*	 getMode();
+        void setMode(EnumType* mode);
 
         LayoutUnitsMetrics getUnitMetric();
         void setUnitMetric(LayoutUnitsMetrics unit);
@@ -114,8 +114,8 @@ namespace te
         BuildGraphicsItem* getBuildGraphicsItem();
         void setBuildGraphicsItem(BuildGraphicsItem* build);
 
-        LayoutMode getLineIntersectionMouseMode();
-        void setLineIntersectionMouseMode(LayoutMode mode);
+        EnumType* getLineIntersectionMouseMode();
+        void setLineIntersectionMouseMode(EnumType* mode);
 
         SystematicScaleConfig* getSystematicScaleConfig();
         void setSystematicScaleConfig(SystematicScaleConfig* scale);
@@ -140,8 +140,8 @@ namespace te
 
       protected:
         
-        LayoutMode						    m_mode;
-        LayoutMode						    m_lineIntersectionMouseMode;
+        EnumType*						    m_mode;
+        EnumType*						    m_lineIntersectionMouseMode;
         LayoutUnitsMetrics        m_unitMetric;
         AbstractScene*					  m_scene;
         double							      m_zoomFactor;

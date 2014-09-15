@@ -34,19 +34,26 @@
 #include "../../property/Properties.h"
 #include "../../property/SharedProperties.h"
 #include "../singleton/Context.h"
+#include "../../enum/Enums.h"
 
 te::layout::ItemModelObservable::ItemModelObservable() :
   m_id(0),
   m_name("unknown"),
-  m_type(TPObjectUnknown),
+  m_type(0),
   m_sharedProps(0),
   m_zValue(0),
   m_border(true),
-  m_resizable(true)
+  m_resizable(true),
+  m_angle(0)
 {
+  EnumObjectType* type = Enums::getInstance().getEnumObjectType();
+  m_type = type->getObjectUnknown();
+
   m_box = te::gm::Envelope(0,0,0,0);
 
-  m_backgroundColor = te::color::RGBAColor(255,255,255, 0);
+  m_backgroundColor = te::color::RGBAColor(255, 255, 255, 0);
+
+  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
 
   m_properties = new Properties(m_name);
 
@@ -101,28 +108,38 @@ te::layout::Properties* te::layout::ItemModelObservable::getProperties() const
 {  
   m_properties->clear();
 
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
   Property pro_name;
   pro_name.setName(m_sharedProps->getName());
   pro_name.setId("unknown");
-  pro_name.setValue(m_name, DataTypeString);
+  pro_name.setValue(m_name, dataType->getDataTypeString());
   m_properties->addProperty(pro_name);
 
   Property pro_id;
   pro_id.setName(m_sharedProps->getId());
   pro_id.setId("unknown");
-  pro_id.setValue(m_id, DataTypeInt);
+  pro_id.setValue(m_id, dataType->getDataTypeInt());
   m_properties->addProperty(pro_id);
+
+  Property pro_angle;
+  pro_angle.setName(m_sharedProps->getAngle());
+  pro_angle.setId("unknown");
+  pro_angle.setValue(m_angle, dataType->getDataTypeDouble());
+  m_properties->addProperty(pro_angle);
 
   Property pro_backgroundcolor;
   pro_backgroundcolor.setName(m_sharedProps->getBackgroundcolor());
   pro_backgroundcolor.setId("unknown");
-  pro_backgroundcolor.setValue(m_backgroundColor, DataTypeColor);
+  pro_backgroundcolor.setValue(m_backgroundColor, dataType->getDataTypeColor());
+  pro_backgroundcolor.setMenu(true);
   m_properties->addProperty(pro_backgroundcolor);
 
   Property pro_bordercolor;
   pro_bordercolor.setName(m_sharedProps->getBordercolor());
   pro_bordercolor.setId("unknown");
-  pro_bordercolor.setValue(m_borderColor, DataTypeColor);
+  pro_bordercolor.setValue(m_borderColor, dataType->getDataTypeColor());
+  pro_bordercolor.setMenu(true);
   m_properties->addProperty(pro_bordercolor);
   
   /* Box */
@@ -135,25 +152,29 @@ te::layout::Properties* te::layout::ItemModelObservable::getProperties() const
   Property pro_x1;
   pro_x1.setName(m_sharedProps->getX1());
   pro_x1.setId("unknown");
-  pro_x1.setValue(x1, DataTypeDouble);
+  pro_x1.setValue(x1, dataType->getDataTypeDouble());
+  pro_x1.setEditable(false);
   m_properties->addProperty(pro_x1);
 
   Property pro_x2;
   pro_x2.setName(m_sharedProps->getX2());
   pro_x2.setId("unknown");
-  pro_x2.setValue(x2, DataTypeDouble);
+  pro_x2.setValue(x2, dataType->getDataTypeDouble());
+  pro_x2.setEditable(false);
   m_properties->addProperty(pro_x2);
 
   Property pro_y1;
   pro_y1.setName(m_sharedProps->getY1());
   pro_y1.setId("unknown");
-  pro_y1.setValue(y1, DataTypeDouble);
+  pro_y1.setValue(y1, dataType->getDataTypeDouble());
+  pro_y1.setEditable(false);
   m_properties->addProperty(pro_y1);
 
   Property pro_y2;
   pro_y2.setName(m_sharedProps->getY2());
   pro_y2.setId("unknown");
-  pro_y2.setValue(y2, DataTypeDouble);
+  pro_y2.setValue(y2, dataType->getDataTypeDouble());
+  pro_y2.setEditable(false);
   m_properties->addProperty(pro_y2);
 
   /* ---------- */
@@ -161,13 +182,14 @@ te::layout::Properties* te::layout::ItemModelObservable::getProperties() const
   Property pro_zValue;
   pro_zValue.setName(m_sharedProps->getZValue());
   pro_zValue.setId("unknown");
-  pro_zValue.setValue(m_zValue, DataTypeInt);
+  pro_zValue.setValue(m_zValue, dataType->getDataTypeInt());
+  pro_zValue.setEditable(false);
   m_properties->addProperty(pro_zValue);
   
   Property pro_border;
   pro_border.setName(m_sharedProps->getBorder());
   pro_border.setId("unknown");
-  pro_border.setValue(m_border, DataTypeBool);
+  pro_border.setValue(m_border, dataType->getDataTypeBool());
   m_properties->addProperty(pro_border);
 
   m_properties->setTypeObj(m_type);
@@ -254,6 +276,12 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
     m_id = pro_id.getValue().toInt();
   }
 
+  Property pro_angle = vectorProps->contains(m_sharedProps->getAngle());
+  if(!pro_angle.isNull())
+  {
+    m_angle = pro_angle.getValue().toDouble();
+  }
+
   Property pro_backgroundcolor = vectorProps->contains(m_sharedProps->getBackgroundcolor());
   if(!pro_backgroundcolor.isNull())
   {
@@ -305,12 +333,12 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
   }
 }
 
-te::layout::LayoutAbstractObjectType te::layout::ItemModelObservable::getType()
+te::layout::EnumType* te::layout::ItemModelObservable::getType()
 {
   return m_type;
 }
 
-void te::layout::ItemModelObservable::setType( LayoutAbstractObjectType type )
+void te::layout::ItemModelObservable::setType( EnumType* type )
 {
   m_type = type;
 }
@@ -365,4 +393,35 @@ void te::layout::ItemModelObservable::setResizable( bool resize )
 bool te::layout::ItemModelObservable::isResizable()
 {
   return m_resizable;
+}
+
+void te::layout::ItemModelObservable::drawBackground( ContextItem context )
+{
+  te::map::Canvas* canvas = context.getCanvas();
+  Utils* utils = context.getUtils();
+
+  if((!canvas) || (!utils))
+    return;
+
+  if(m_border)
+  {
+    canvas->setPolygonContourWidth(2);
+    canvas->setPolygonContourColor(m_borderColor);
+  }
+  else
+  {
+    canvas->setPolygonContourColor(te::color::RGBAColor(255,255,255, 0));
+  }
+  canvas->setPolygonFillColor(m_backgroundColor);
+  utils->drawRectW(m_box);
+}
+
+void te::layout::ItemModelObservable::setAngle( double angle )
+{
+  m_angle = angle;
+}
+
+double te::layout::ItemModelObservable::getAngle()
+{
+  return m_angle;
 }

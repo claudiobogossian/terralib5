@@ -32,6 +32,7 @@
 #include "Property.h"
 #include "../enum/AbstractType.h"
 #include "../Config.h"
+#include "../enum/EnumType.h"
 
 //STL
 #include <vector>
@@ -44,7 +45,7 @@ namespace te
     class TELAYOUTEXPORT Properties
     {
       public:
-        Properties(std:: string objectName, LayoutAbstractObjectType type = TPObjectUnknown);
+        Properties(std:: string objectName, EnumType* type = 0);
         virtual ~Properties(void);
 
         virtual bool addProperty(Property property);
@@ -56,9 +57,9 @@ namespace te
 
         virtual void setObjectName(std::string name);
 
-        virtual LayoutAbstractObjectType getTypeObj();
+        virtual EnumType* getTypeObj();
 
-        virtual void setTypeObj(LayoutAbstractObjectType type);
+        virtual void setTypeObj(EnumType* type);
 
         virtual void setHasWindows(bool windows);
 
@@ -71,12 +72,12 @@ namespace te
       protected:
         std::vector<Property> m_properties;
         std::string m_objName;
-        LayoutAbstractObjectType m_typeObj;
+        EnumType* m_typeObj;
         bool m_hasWindows;
 
     };
 
-    inline Properties::Properties(std:: string objectName, LayoutAbstractObjectType type) :
+    inline Properties::Properties(std:: string objectName, te::layout::EnumType* type) :
       m_objName(objectName),
       m_typeObj(type),
       m_hasWindows(false)
@@ -135,12 +136,12 @@ namespace te
       m_objName = name;
     }
 
-    inline te::layout::LayoutAbstractObjectType Properties::getTypeObj()
+    inline te::layout::EnumType* Properties::getTypeObj()
     {
       return m_typeObj;
     }
 
-    inline void Properties::setTypeObj( LayoutAbstractObjectType type )
+    inline void Properties::setTypeObj( te::layout::EnumType* type )
     {
       m_typeObj = type;
     }

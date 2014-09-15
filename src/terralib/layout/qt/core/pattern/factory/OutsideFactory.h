@@ -41,7 +41,7 @@ namespace te
 	    OutsideFactory();
 	    virtual ~OutsideFactory();
 
-	    virtual Observer* make(LayoutAbstractObjectType type, OutsideParamsCreate params = OutsideParamsCreate());
+	    virtual Observer* make(EnumType* type, OutsideParamsCreate params = OutsideParamsCreate());
     };
   }
 }

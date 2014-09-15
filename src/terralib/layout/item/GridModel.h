@@ -45,6 +45,8 @@ namespace te
 {
   namespace layout
   {
+    class EnumType;
+
     class GridModel 
     {
       public:
@@ -91,49 +93,49 @@ namespace te
 
        protected:
 
-         te::layout::Property    m_property;
-         double                  m_mapScale;
-         std::string             m_name;
-         int                     m_srid;
-         Systematic*             m_systematic;
+          te::layout::Property    m_property;
+          double                  m_mapScale;
+          std::string             m_name;
+          int                     m_srid;
+          Systematic*             m_systematic;
 
-         te::gm::Envelope     m_boxMapMM;
-         te::gm::Envelope     m_boundingBoxItemMM;
-         te::gm::Envelope     m_worldBox;
+          te::gm::Envelope     m_boxMapMM;
+          te::gm::Envelope     m_boundingBoxItemMM;
+          te::gm::Envelope     m_worldBox;
          
-         /* Grid */
-         bool   m_visible;
-         double m_lneHrzGap;
-         double m_lneVrtGap;
-         double m_initialGridPointX; 
-         double m_initialGridPointY;
+          /* Grid */
+          bool   m_visible;
+          double m_lneHrzGap;
+          double m_lneVrtGap;
+          double m_initialGridPointX; 
+          double m_initialGridPointY;
 
-         /* Just one is visible */
-         LayoutGridStyle m_gridStyle;
+          /* Just one is visible */
+          EnumType* m_gridStyle;
 
-         /* Line */
-        te::map::LineDashStyle  m_lineStyle;
-        te::color::RGBAColor    m_lineColor;
-        int                     m_lineWidth;
+          /* Line */
+          EnumType*  m_lineStyle;
+          te::color::RGBAColor    m_lineColor;
+          int                     m_lineWidth;
 
-        /* Text: Basic Configuration */
-        int    m_pointTextSize;
-        std::string m_fontText;
-        te::color::RGBAColor  m_textColor;
+          /* Text: Basic Configuration */
+          int    m_pointTextSize;
+          std::string m_fontText;
+          te::color::RGBAColor  m_textColor;
 
-        /* Text: Advanced configuration */
-        bool   m_visibleAllTexts;
-        bool m_superscriptText;
-        double m_lneVrtDisplacement;
-        double m_lneHrzDisplacement;
-        bool   m_bottomText;
-        bool   m_leftText;
-        bool   m_rightText;
-        bool   m_topText;
-        bool   m_bottomRotateText;
-        bool   m_leftRotateText;
-        bool   m_rightRotateText;
-        bool   m_topRotateText;       
+          /* Text: Advanced configuration */
+          bool   m_visibleAllTexts;
+          bool m_superscriptText;
+          double m_lneVrtDisplacement;
+          double m_lneHrzDisplacement;
+          bool   m_bottomText;
+          bool   m_leftText;
+          bool   m_rightText;
+          bool   m_topText;
+          bool   m_bottomRotateText;
+          bool   m_leftRotateText;
+          bool   m_rightRotateText;
+          bool   m_topRotateText;       
     };
   }
 }

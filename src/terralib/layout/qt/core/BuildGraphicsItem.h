@@ -31,9 +31,9 @@
 //TerraLib
 #include "../../../geometry/Envelope.h"
 #include "../../../geometry/Coord2D.h"
-#include "../../core/enum/EnumMode.h"
 #include "../../core/property/Properties.h"
 #include "../../core/enum/AbstractType.h"
+#include "../../core/enum/EnumType.h"
 
 // STL
 #include <string>
@@ -54,7 +54,7 @@ namespace te
         virtual ~BuildGraphicsItem();
         
         QGraphicsItem* rebuildItem(te::layout::Properties* props, bool draw = true);
-        QGraphicsItem* createItem(te::layout::LayoutMode mode, const te::gm::Coord2D& coordinate, bool draw = true);
+        QGraphicsItem* createItem(te::layout::EnumType* mode, const te::gm::Coord2D& coordinate, bool draw = true);
 
       protected:
 
@@ -78,7 +78,7 @@ namespace te
 
         int findZValue(te::layout::Properties* props);
 
-        std::string nameItem(std::string name, te::layout::LayoutAbstractObjectType type);
+        std::string nameItem(std::string name, te::layout::EnumType* type);
 
         void clear();
 

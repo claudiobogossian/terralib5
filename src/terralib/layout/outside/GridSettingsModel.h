@@ -32,7 +32,6 @@
 #include "../core/pattern/mvc/OutsideModelObservable.h"
 #include "../core/ContextItem.h"
 #include "../core/property/Properties.h"
-#include "../core/enum/EnumMode.h"
 #include "../core/Config.h"
 
 namespace te

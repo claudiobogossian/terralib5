@@ -18,47 +18,50 @@
  */
 
 /*!
-  \file EnumUtils.h
+  \file TextGridSettingsController.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ENUM_UTILS_H 
-#define __TERRALIB_LAYOUT_INTERNAL_ENUM_UTILS_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_SETTINGS_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_SETTINGS_CONTROLLER_H
 
 // TerraLib
-#include "AbstractType.h"
-#include "../../../maptools/Enums.h"
-
-// STL
-#include <string>
+#include "../core/pattern/mvc/OutsideController.h"
+#include "../core/property/Property.h"
+#include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    std::string getLayoutGridStyle( int enumVal );
+    class TELAYOUTEXPORT TextGridSettingsController : public OutsideController
+    {
+      public:
 
-    te::layout::LayoutGridStyle getLayoutEnumGridStyle( std::string val );
+	      TextGridSettingsController( Observable* o );
+	      virtual ~TextGridSettingsController();
 
-    te::layout::LayoutGridStyle getLayoutEnumGridStyle( int enumVal );
+	      virtual void setPosition(const double& x, const double& y);
 
-    std::string getLayoutDashStyle( int enumVal );
+        virtual Property updateProperty();
 
-    te::map::LineDashStyle getLayoutEnumDashStyle( std::string val );
+        virtual void addUpdateProperty(std::string name, Variant variant);
 
-    te::map::LineDashStyle getLayoutEnumDashStyle( int enumVal );
-    
-    std::string getLayoutPropertyDataType(int enumVal);
+        virtual void addUpdateTextGridProperty(Property subProperty);
+        
+        virtual void clearUpdate();
 
-    te::layout::LayoutPropertyDataType getLayoutPropertyDataType(std::string val);
+        virtual Property getProperty(std::string name);
 
-    std::string getLayoutAbstractObjectType(int enumVal);
+      protected:
 
-    te::layout::LayoutAbstractObjectType getLayoutAbstractObjectType(std::string val);
+        Property m_update;
+        Property m_textGridSettings;
+    };
   }
 }
 
-#endif 
+#endif

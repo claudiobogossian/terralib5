@@ -46,7 +46,7 @@ namespace te
 
       protected:
 
-        MultiLineTextController( Observable* o, LayoutAbstractObjectType type );
+        MultiLineTextController( Observable* o, EnumType* type );
 
         virtual void create();
     };

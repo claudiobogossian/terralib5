@@ -88,7 +88,7 @@ namespace te
             
             te::rst::Interpolator::Method m_interpMethod; //!< The raster interpolator method (default:NearestNeighbor).
             
-            te::rp::WaveletAtrousFilterType m_waveletFilterType; //!< The wavelet filter type to use (default: B3SplineFilter);
+            te::rp::WaveletAtrousFilterType m_waveletFilterType; //!< The wavelet filter type to use (default: TriangleWAFilter);
             
             boost::numeric::ublas::matrix< double > const* m_userWaveletFilterPtr; //!< An optional pointer to an user filter.
             
@@ -161,44 +161,6 @@ namespace te
         InputParameters m_inputParameters; //!< Input execution parameters.
         
         bool m_isInitialized; //!< Tells if this instance is initialized.
-        
-        /*!
-          \brief Return a SRF interpolated from the given SRFs.
-          \param SRFs Input SRFs.
-          \param frequency The desired interpolated frequency.
-          \return Return a SRF interpolated from the given SRFs.
-         */         
-        double interpolateSRF( const std::map< double, double >& sRFs, const double& frequency ) const;
-        
-        /*!
-          \brief Return the SRF area.
-          \param SRFs Input SRFs.
-          \return Return the SRF area.
-         */         
-        double getSRFArea( const std::map< double, double >& sRFs ) const;        
-        
-        /*!
-          \brief Return the intersetction SRF.
-          \param sRF1 Input SRFs 1.
-          \param sRF2 Input SRFs 2.
-          \param intersectionSRF The resultant intersection SRF.
-          \return Return a SRF interpolated from the given SRFs.
-         */         
-        void getIntersectionSRF( const std::map< double, double >& sRF1, 
-          const std::map< double, double >& sRF2,
-          std::map< double, double >& intersectionSRF ) const;        
-          
-        /*!
-          \brief Return the union SRF.
-          \param sRF1 Input SRFs 1.
-          \param sRF2 Input SRFs 2.
-          \param unionSRF The resultant intersection SRF.
-          \return Return a SRF interpolated from the given SRFs.
-         */         
-        void getUnionSRF( const std::map< double, double >& sRF1, 
-          const std::map< double, double >& sRF2,
-          std::map< double, double >& unionSRF ) const;            
-    
     };
 
   } // end namespace rp

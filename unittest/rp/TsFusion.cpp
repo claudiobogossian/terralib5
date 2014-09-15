@@ -148,15 +148,16 @@ void TsFusion::wisper()
   algoInputParams.m_lowResRasterBands.push_back( 0 );
   algoInputParams.m_lowResRasterBands.push_back( 1 );
   algoInputParams.m_lowResRasterBands.push_back( 2 );
-  algoInputParams.m_lowResRasterBandSensors.push_back( te::rp::srf::CBERS2BB2Sensor );
-  algoInputParams.m_lowResRasterBandSensors.push_back( te::rp::srf::CBERS2BB3Sensor );
-  algoInputParams.m_lowResRasterBandSensors.push_back( te::rp::srf::CBERS2BB1Sensor );
+  algoInputParams.m_lowResRasterBandSensors.push_back( te::rp::srf::CBERS2BCCDB3Sensor );
+  algoInputParams.m_lowResRasterBandSensors.push_back( te::rp::srf::CBERS2BCCDB4Sensor );
+  algoInputParams.m_lowResRasterBandSensors.push_back( te::rp::srf::CBERS2BCCDB2Sensor );
   algoInputParams.m_highResRasterPtr = highResRasterPtr.get();
   algoInputParams.m_highResRasterBand = 0;
-  algoInputParams.m_hiResRasterBandSensor = te::rp::srf::CBERS2BPANSensor;
+  algoInputParams.m_hiResRasterBandSensor = te::rp::srf::CBERS2BCCDB5PANSensor;
+  algoInputParams.m_hiResRasterWaveletLevels = 0;
   algoInputParams.m_enableProgress = true;
   algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
-  algoInputParams.m_waveletFilterType = te::rp::B3SplineWAFilter;
+  algoInputParams.m_waveletFilterType = te::rp::TriangleWAFilter;
 
   te::rp::WisperFusion::OutputParameters algoOutputParams;
   

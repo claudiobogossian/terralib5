@@ -52,12 +52,11 @@ te::layout::ObjectItem::ObjectItem( ItemController* controller, Observable* o ) 
   m_enumSides(TPNoneSide)
 {
   QGraphicsItem* item = this;
+  m_nameClass = std::string(this->metaObject()->className());
   Context::getInstance().getScene()->insertItem((ItemObserver*)item);
 
   //If enabled is true, this item will accept hover events
   setAcceptHoverEvents(true);
-
-  m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::ObjectItem::~ObjectItem()
@@ -152,7 +151,7 @@ void te::layout::ObjectItem::drawSelection( QPainter* painter )
   qreal penWidth = painter->pen().widthF();
 
   const qreal adj = penWidth / 2;
-  const QColor fgcolor(255,255,255);
+  const QColor fgcolor(0,255,0);
   const QColor backgroundColor(0,0,0);
 
   painter->setPen(QPen(backgroundColor, 0, Qt::SolidLine));
@@ -418,7 +417,8 @@ te::gm::Envelope te::layout::ObjectItem::createNewBoxInCoordScene( const double&
 
 bool te::layout::ObjectItem::contains( const QPointF &point ) const
 {
-  return m_controller->contains(te::gm::Coord2D(point.x(), point.y()));
+  te::gm::Coord2D coord(point.x(), point.y());
+  return m_controller->contains(coord);
 }
 
 QPixmap te::layout::ObjectItem::getPixmap()
@@ -435,5 +435,24 @@ void te::layout::ObjectItem::setZValue( qreal z )
 int te::layout::ObjectItem::getZValueItem()
 {
   return QGraphicsItem::zValue();
+}
+
+void te::layout::ObjectItem::applyRotation()
+{
+  if(!m_model)
+    return;
+
+  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
+  if(!model)
+    return;
+
+  double angle = model->getAngle();
+
+  QPointF center = boundingRect().center();
+
+  double centerX = center.x();
+  double centerY = center.y();
+
+  setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
 }
 

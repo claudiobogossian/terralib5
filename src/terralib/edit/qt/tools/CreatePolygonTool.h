@@ -29,7 +29,7 @@
 // TerraLib
 #include "../../../geometry/Coord2D.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
-#include "../../Config.h"
+#include "../Config.h"
 
 // STL
 #include <vector>
@@ -46,7 +46,6 @@ namespace te
   {
     namespace widgets
     {
-      class Canvas;
       class MapDisplay;
     }
   }
@@ -58,7 +57,7 @@ namespace te
 
       \brief This class implements a concrete tool to create polygons.
     */
-    class TEEDITEXPORT CreatePolygonTool : public te::qt::widgets::AbstractTool
+    class TEEDITQTEXPORT CreatePolygonTool : public te::qt::widgets::AbstractTool
     {
       Q_OBJECT
 
@@ -101,13 +100,11 @@ namespace te
 
       private:
 
+        void draw();
+
         void drawPolygon();
 
-        void drawPolygon(te::qt::widgets::Canvas& canvas);
-
-        void drawLine(te::qt::widgets::Canvas& canvas);
-
-        void drawVertexes(te::qt::widgets::Canvas& canvas);
+        void drawLine();
 
         void clear();
 

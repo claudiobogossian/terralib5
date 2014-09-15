@@ -28,6 +28,7 @@
 // TerraLib
 #include "PropertyBrowser.h"
 #include "../../core/property/Properties.h"
+#include "../../core/enum/Enums.h"
 
 // Qt
 #include <QRegExpValidator>
@@ -191,33 +192,39 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
   QColor qcolor;
   QFont qfont;
   Font font;
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
   
-  switch(property.getType())
+  if(property.getType() == dataType->getDataTypeString())
   {
-  case DataTypeString:
     vproperty = m_variantPropertyEditorManager->addProperty(QVariant::String, tr(property.getName().c_str()));
     vproperty->setValue(property.getValue().toString().c_str());
-    break;
-  case DataTypeStringList:
+  }
+  else if(property.getType() == dataType->getDataTypeStringList())
+  {
     /* The type of property is enum, and so a combobox appears. 
     The type of the property value is int, as is the position in which the attribute is in the list of Enum. */
     vproperty = m_variantPropertyEditorManager->addProperty(QtVariantPropertyManager::enumTypeId(), tr(property.getName().c_str()));
     addAttribute(vproperty, property);
     vproperty->setValue(property.getValue().toString().c_str());
-    break;
-  case DataTypeDouble:
+  }
+  else if(property.getType() == dataType->getDataTypeDouble())
+  {
     vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Double, tr(property.getName().c_str()));
     vproperty->setValue(property.getValue().toDouble());
-    break;
-  case DataTypeInt:
+  }
+  else if(property.getType() == dataType->getDataTypeInt())
+  {
     vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Int, tr(property.getName().c_str()));
     vproperty->setValue(property.getValue().toInt());
-    break;
-  case DataTypeBool:
+  }
+  else if(property.getType() == dataType->getDataTypeBool())
+  {
     vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Bool, tr(property.getName().c_str()));
     vproperty->setValue(property.getValue().toBool());
-    break;
-  case DataTypeColor:
+  }
+  else if(property.getType() == dataType->getDataTypeColor())
+  {
     vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Color, tr(property.getName().c_str()));
     color = property.getValue().toColor();
     qcolor.setRed(color.getRed());
@@ -225,8 +232,9 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
     qcolor.setBlue(color.getBlue());
     qcolor.setAlpha(color.getAlpha());
     vproperty->setValue(qcolor);
-    break;
-  case DataTypeFont:
+  }
+  else if(property.getType() == dataType->getDataTypeFont())
+  {
     vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Font, tr(property.getName().c_str()));
     font = property.getValue().toFont();
     qfont.setFamily(font.getFamily().c_str());
@@ -236,17 +244,12 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
     qfont.setUnderline(font.isUnderline());
     qfont.setStrikeOut(font.isStrikeout());
     qfont.setKerning(font.isKerning());
-    vproperty->setValue(qfont);
-    break;
-  default:
-   vproperty = 0;    
+    vproperty->setValue(qfont);    
   }
 
   if(vproperty)
   {
-    if(!property.isEditable())
-      vproperty->setEnabled(false);
-
+    vproperty->setEnabled(property.isEditable());
     addPropertyItem(vproperty, QLatin1String(property.getName().c_str()));
     return true;
   }
@@ -279,13 +282,15 @@ te::layout::Property te::layout::PropertyBrowser::getProperty( std::string name 
   
   QVariant variant = findPropertyValue(name);
   QtProperty* property = findProperty(name);
-  LayoutPropertyDataType type = getLayoutType(variant.type(), name);
+  EnumType* type = getLayoutType(variant.type(), name);
   
   QtVariantProperty* vproperty = 0;
   if(property)
   {
     vproperty = dynamic_cast<QtVariantProperty*>(property);
   }
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
   
   QColor qcolor;
   te::color::RGBAColor color;
@@ -295,13 +300,12 @@ te::layout::Property te::layout::PropertyBrowser::getProperty( std::string name 
   Font font;
   QFont qfont;
 
-  switch(type)
+  if(type == dataType->getDataTypeString())
   {
-  case DataTypeString:
     prop.setValue(variant.toString().toStdString(), type);
-    break;
-  case DataTypeStringList:
-
+  }
+  else if(type == dataType->getDataTypeStringList())
+  {
     prop.setValue(variant.toString().toStdString(), type);
     if(vproperty)
     {
@@ -311,7 +315,7 @@ te::layout::Property te::layout::PropertyBrowser::getProperty( std::string name 
       foreach(QString s, list)
       {
         v.clear();
-        v.setValue(s.toStdString(), DataTypeString);
+        v.setValue(s.toStdString(), dataType->getDataTypeString());
         prop.addOption(v);
         if(value.compare(s.toStdString()) == 0)
         {
@@ -319,25 +323,30 @@ te::layout::Property te::layout::PropertyBrowser::getProperty( std::string name 
         }
       }
     }
-    break;
-  case DataTypeDouble:
+  }
+  else if(type == dataType->getDataTypeDouble())
+  {
     prop.setValue(variant.toDouble(), type);
-    break;
-  case DataTypeInt:
+  }
+  else if(type == dataType->getDataTypeInt())
+  {
     prop.setValue(variant.toInt(), type);
-    break;
-  case DataTypeBool:
+  }
+  else if(type == dataType->getDataTypeBool())
+  {
     prop.setValue(variant.toBool(), type);
-    break;
-  case DataTypeColor:
+  }
+  else if(type == dataType->getDataTypeColor())
+  {
     qcolor = variant.value<QColor>();
     if(qcolor.isValid()) 
     {
       color.setColor(qcolor.red(), qcolor.green(), qcolor.blue(), qcolor.alpha());
       prop.setValue(color, type);
     }
-    break;
-  case DataTypeFont:
+  }
+  else if(type == dataType->getDataTypeFont())
+  {
     qfont = variant.value<QFont>();    
     font.setFamily(qfont.family().toStdString());
     font.setPointSize(qfont.pointSize());
@@ -347,9 +356,6 @@ te::layout::Property te::layout::PropertyBrowser::getProperty( std::string name 
     font.setStrikeout(qfont.strikeOut());
     font.setKerning(qfont.kerning());
     prop.setValue(font, type);
-    break;    
-  default:
-    prop.setValue(0, DataTypeNone);
   }
 
   return prop;
@@ -417,9 +423,11 @@ te::layout::Properties* te::layout::PropertyBrowser::getProperties()
   return properties;
 }
 
-te::layout::LayoutPropertyDataType te::layout::PropertyBrowser::getLayoutType( QVariant::Type type, std::string name )
+te::layout::EnumType* te::layout::PropertyBrowser::getLayoutType( QVariant::Type type, std::string name )
 {
-  LayoutPropertyDataType dataType = DataTypeNone;
+  EnumDataType* dtType = Enums::getInstance().getEnumDataType();
+
+  EnumType* dataType = dtType->getDataTypeNone();
   QVariant variant;
   QtVariantProperty* vproperty = 0;
   int i = 0;
@@ -428,7 +436,7 @@ te::layout::LayoutPropertyDataType te::layout::PropertyBrowser::getLayoutType( Q
   {
     case QVariant::String:
       {
-        dataType = DataTypeString;
+        dataType = dtType->getDataTypeString();
       }
       break;
     case QVariant::StringList:
@@ -437,62 +445,67 @@ te::layout::LayoutPropertyDataType te::layout::PropertyBrowser::getLayoutType( Q
       {
         if(QtVariantPropertyManager::enumTypeId() == vproperty->propertyType())
         {
-          dataType = DataTypeStringList;
+          dataType = dtType->getDataTypeStringList();
         }
       }
       break;
     case QVariant::Double:
-      dataType = DataTypeDouble;
+      dataType = dtType->getDataTypeDouble();
       break;
     case QVariant::Int:
       {
-        dataType = DataTypeInt;
+        dataType = dtType->getDataTypeInt();
       }
       break;
     case QVariant::Bool:
-      dataType = DataTypeBool;
+      dataType = dtType->getDataTypeBool();
       break;
     case QVariant::Color:
-      dataType = DataTypeColor;
+      dataType = dtType->getDataTypeColor();
       break;
     case QVariant::Font:
-      dataType = DataTypeFont;
+      dataType = dtType->getDataTypeFont();
       break;
     default:
-      dataType = DataTypeNone;
+      dataType = dtType->getDataTypeNone();
   }
 
   return dataType;
 }
 
-QVariant::Type te::layout::PropertyBrowser::getVariantType( LayoutPropertyDataType dataType )
+QVariant::Type te::layout::PropertyBrowser::getVariantType( te::layout::EnumType* dataType )
 {
+  EnumDataType* dtType = Enums::getInstance().getEnumDataType();
+
   QVariant::Type type = QVariant::Invalid;
-  switch(dataType)
+  
+  if(dataType == dtType->getDataTypeString())
   {
-  case DataTypeString:
     type = QVariant::String;
-    break;
-  case DataTypeStringList:
+  }
+  else if(dataType == dtType->getDataTypeStringList())
+  {
     type = QVariant::Int;
-    break;
-  case DataTypeDouble:
+  }
+  else if(dataType == dtType->getDataTypeDouble())
+  {
     type = QVariant::Double;
-    break;
-  case DataTypeInt:
+  }
+  else if(dataType == dtType->getDataTypeInt())
+  {
     type = QVariant::Int;
-    break;
-  case DataTypeBool:
+  }
+  else if(dataType == dtType->getDataTypeBool())
+  {
     type = QVariant::Bool;
-    break;
-  case DataTypeColor:
+  }
+  else if(dataType == dtType->getDataTypeColor())
+  {
     type = QVariant::Color;
-    break;
-  case DataTypeFont:
+  }
+  else if(dataType == dtType->getDataTypeFont())
+  {
     type = QVariant::Font;
-    break;
-  default:
-    type = QVariant::Invalid;
   }
 
   return type;

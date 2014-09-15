@@ -44,7 +44,7 @@ namespace te
 
       protected:
 
-        MapGridController( Observable* o, LayoutAbstractObjectType type );
+        MapGridController( Observable* o, EnumType* type );
 
         virtual void create();
     };

@@ -35,7 +35,7 @@
 #include "../../core/pattern/mvc/OutsideObserver.h"
 #include "../../core/pattern/mvc/OutsideController.h"
 #include "../../../geometry/Envelope.h"
-#include "../core/ObjectInspectorPropertyBrowser.h"
+#include "../../core/enum/Enums.h"
 
 //Qt
 #include <QGraphicsWidget>
@@ -57,6 +57,9 @@ te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* c
   QVBoxLayout* layout = new QVBoxLayout(this);
   layout->setMargin(0);
   layout->addWidget(m_layoutPropertyBrowser->getPropertyEditor());
+
+  connect(m_layoutPropertyBrowser->getPropertyEditor(), SIGNAL(currentItemChanged (QtBrowserItem *)), 
+          this, SLOT(onCurrentItemChanged (QtBrowserItem *)));
 
   QGroupBox* groupBox = new QGroupBox;
   groupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -113,6 +116,9 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
     return;
     
   int zValue = 0;
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
   
   foreach( QGraphicsItem *item, graphicsItems) 
   {
@@ -127,9 +133,9 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
       if(lItem)
       {        
 
-        if(lItem->getModel()->getType() == TPPaperItem 
-          || lItem->getModel()->getType() == TPHorizontalRuler
-          || lItem->getModel()->getType() == TPVerticalRuler)
+        if(lItem->getModel()->getType() == enumObj->getPaperItem() 
+          || lItem->getModel()->getType() == enumObj->getHorizontalRuler()
+          || lItem->getModel()->getType() == enumObj->getVerticalRuler())
         {
           continue;
         }
@@ -140,17 +146,23 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
           break;
 
         Property pro_class;
-        pro_class.setName(lItem->getName());
+        pro_class.setName(lItem->getNameClass());
         pro_class.setId("");
-        pro_class.setValue(lItem->getNameClass(), DataTypeString);
+        pro_class.setValue(lItem->getName(), dataType->getDataTypeString());
         pro_class.setEditable(false);
         
         m_layoutPropertyBrowser->addProperty(pro_class);
-
+     
         zValue = itemObj->zValue();        
       }
     }
   }
 
   update();
+}
+
+void te::layout::ObjectInspectorOutside::onCurrentItemChanged(QtBrowserItem *current)
+{
+  QtProperty* proper = current->property();
+  Property prop = m_layoutPropertyBrowser->getProperty(proper->propertyName().toStdString());
 }

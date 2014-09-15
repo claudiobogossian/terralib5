@@ -29,13 +29,13 @@
 #define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemController.h"
+#include "TitleController.h"
 
 namespace te
 {
   namespace layout
   {
-    class TextGridController : public ItemController
+    class TextGridController : public TitleController
     {
       public:
 
@@ -46,7 +46,7 @@ namespace te
 
       protected:
 
-        TextGridController( Observable* o, LayoutAbstractObjectType type );
+        TextGridController( Observable* o, EnumType* type );
 
         virtual void create();
     };

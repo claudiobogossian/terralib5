@@ -31,6 +31,7 @@
 // TerraLib
 #include "OutsideParamsCreate.h"
 #include "../../enum/AbstractType.h"
+#include "../../enum/EnumType.h"
 
 namespace te
 {
@@ -44,7 +45,7 @@ namespace te
 
       virtual ~AbstractOutsideFactory(void) {}
 
-      virtual Observer* make(LayoutAbstractObjectType type, OutsideParamsCreate params = OutsideParamsCreate()) = 0;
+      virtual Observer* make(EnumType* type, OutsideParamsCreate params = OutsideParamsCreate()) = 0;
     };
   }
 }

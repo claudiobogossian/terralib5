@@ -29,7 +29,7 @@
 // TerraLib
 #include "../../../geometry/Coord2D.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
-#include "../../Config.h"
+#include "../Config.h"
 
 // STL
 #include <vector>
@@ -40,7 +40,6 @@ namespace te
   {
     namespace widgets
     {
-      class Canvas;
       class MapDisplay;
     }
   }
@@ -52,7 +51,7 @@ namespace te
 
       \brief This class implements a concrete tool to create lines.
     */
-    class TEEDITEXPORT CreateLineTool : public te::qt::widgets::AbstractTool
+    class TEEDITQTEXPORT CreateLineTool : public te::qt::widgets::AbstractTool
     {
       Q_OBJECT
 
@@ -95,11 +94,7 @@ namespace te
 
       private:
 
-        void drawLine();
-
-        void drawLine(te::qt::widgets::Canvas& canvas);
-
-        void drawVertexes(te::qt::widgets::Canvas& canvas);
+        void draw();
 
         void clear();
 

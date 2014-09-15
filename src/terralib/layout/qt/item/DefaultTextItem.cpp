@@ -41,22 +41,32 @@
 #include <string>
 
 // Qt
+#include <QTextDocument>
 #include <QStyleOptionGraphicsItem>
 #include <QTextCursor>
+#include <QAbstractTextDocumentLayout>
+#include <QGraphicsSceneMouseEvent>
 
 te::layout::DefaultTextItem::DefaultTextItem( ItemController* controller, Observable* o ) :
   QGraphicsTextItem(0),
-  ItemObserver(controller, o)
+  ItemObserver(controller, o),
+  m_table(0),
+  m_oldAdjustSizeW(-1.),
+  m_oldAdjustSizeH(-1.)
 {  
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges
-    | QGraphicsItem::ItemIsFocusable);
+    | QGraphicsItem::ItemIsFocusable
+    | QGraphicsItem::ItemIgnoresTransformations);
+
+  m_invertedMatrix = true;
+
+  setTextInteractionFlags(Qt::NoTextInteraction);
 
   QGraphicsItem* item = this;
-  Context::getInstance().getScene()->insertItem((ItemObserver*)item);
-  
   m_nameClass = std::string(this->metaObject()->className());
+  Context::getInstance().getScene()->insertItem((ItemObserver*)item);
 
   std::string name = m_model->getName();
   DefaultTextModel* model = dynamic_cast<DefaultTextModel*>(m_model);
@@ -64,12 +74,24 @@ te::layout::DefaultTextItem::DefaultTextItem( ItemController* controller, Observ
   {
     model->setText(name);
   }
-  setPlainText(name.c_str());
+
+  QTextCursor cursor(document());
+  cursor.movePosition(QTextCursor::Start);
+  cursor.insertText(name.c_str());
+  adjustSize();
 }
 
 te::layout::DefaultTextItem::~DefaultTextItem()
 {
 
+}
+
+void te::layout::DefaultTextItem::init()
+{
+  if(!document())
+    return;
+
+  connect(document(), SIGNAL(contentsChange(int,int,int)), this, SLOT(onContentsChange(int,int,int)));
 }
 
 void te::layout::DefaultTextItem::updateObserver( ContextItem context )
@@ -86,23 +108,6 @@ void te::layout::DefaultTextItem::updateObserver( ContextItem context )
 
   if(!utils)
     return;
-
-  DefaultTextModel* model = dynamic_cast<DefaultTextModel*>(m_model);
-  if(model)
-  {
-    Font font = model->getFont();
-    QFont qfont;
-    qfont.setFamily(font.getFamily().c_str());
-    qfont.setPointSize(font.getPointSize());
-    qfont.setBold(font.isBold());
-    qfont.setItalic(font.isItalic());
-    qfont.setUnderline(font.isUnderline());
-    qfont.setStrikeOut(font.isStrikeout());
-    qfont.setKerning(font.isKerning());
-    setFont(qfont);
-
-    setPlainText(model->getText().c_str());
-  }
 
   te::gm::Envelope box = utils->viewportBox(m_model->getBox());
 
@@ -121,6 +126,15 @@ void te::layout::DefaultTextItem::updateObserver( ContextItem context )
   te::common::Free(rgba, box.getHeight());
   if(img)
     delete img;
+
+  /* This item ignores the transformations of the scene, so comes with no zoom. 
+  His transformation matrix is the inverse scene, understanding the pixel 
+  coordinates, and its position can only be given in the scene coordinates(mm). 
+  For these reasons, it is necessary to scale and so accompany the zoom scene. */
+  double zoomFactor = Context::getInstance().getZoomFactor();
+  setScale(zoomFactor);
+    
+  refreshTable();
 
   setPixmap(pixmap);
   update();
@@ -210,17 +224,18 @@ void te::layout::DefaultTextItem::setRect( QRectF rect )
 
 bool te::layout::DefaultTextItem::contains( const QPointF &point ) const
 {
-  return m_controller->contains(te::gm::Coord2D(point.x(), point.y()));
+  te::gm::Coord2D coord(point.x(), point.y());
+  return m_controller->contains(coord);
 }
 
 void te::layout::DefaultTextItem::setPos( const QPointF &pos )
 {
-  /* The matrix transformation of MapItem object is the inverse of the scene, 
+  /* The matrix transformation of DefaultTextItem object is the inverse of the scene, 
   so you need to do translate when you change the position, since the coordinate 
   must be in the world coordinate. */
-  QPointF p1(pos.x() - transform().dx(), pos.y() - transform().dy());
+  QPointF pt(pos.x() - transform().dx(), pos.y() - transform().dy());
 
-  QGraphicsTextItem::setPos(p1);
+  QGraphicsTextItem::setPos(pt);
 
   refresh();
 }
@@ -252,7 +267,7 @@ void te::layout::DefaultTextItem::drawSelection( QPainter* painter )
   qreal penWidth = painter->pen().widthF();
 
   const qreal adj = penWidth / 2;
-  const QColor fgcolor(255,255,255);
+  const QColor fgcolor(0,255,0);
   const QColor backgroundColor(0,0,0);
 
   painter->setPen(QPen(backgroundColor, 0, Qt::SolidLine));
@@ -262,4 +277,166 @@ void te::layout::DefaultTextItem::drawSelection( QPainter* painter )
   painter->setPen(QPen(fgcolor, 0, Qt::DashLine));
   painter->setBrush(Qt::NoBrush);
   painter->drawRect(boundingRect().adjusted(adj, adj, -adj, -adj));
+}
+
+void te::layout::DefaultTextItem::onContentsChange( int position, int charsRemoved, int charsAdded )
+{
+  if(!document())
+    return;
+  
+  double vw = document()->documentLayout()->documentSize().width();
+  double vh = document()->documentLayout()->documentSize().height();
+
+  if(vw != m_oldAdjustSizeW || vh != m_oldAdjustSizeH)
+  {
+    adjustSizeMM();
+  }
+}
+
+void te::layout::DefaultTextItem::adjustSizeMM()
+{
+  if(!m_model)
+    return;
+  
+  if(!document())
+    return;
+
+  if(document()->isEmpty())
+    return;
+  
+  Utils* utils = Context::getInstance().getUtils();
+
+  if(!utils)
+    return;
+
+  te::gm::Envelope world = m_model->getBox();
+  te::gm::Envelope viewport = utils->viewportBox(world);
+
+  adjustSize();
+    
+  m_oldAdjustSizeW = document()->documentLayout()->documentSize().width();
+  m_oldAdjustSizeH = document()->documentLayout()->documentSize().height();
+  
+  DefaultTextModel* model = dynamic_cast<DefaultTextModel*>(m_model);
+
+  if(!model)
+    return;
+
+  te::gm::Envelope newBox(model->getBox().m_llx, model->getBox().m_lly, 
+              model->getBox().m_llx + m_oldAdjustSizeW, model->getBox().m_lly + m_oldAdjustSizeH);
+  
+  model->setBox(newBox);
+
+  setRect(QRectF(0, 0, newBox.getWidth(), newBox.getHeight()));
+}
+
+void te::layout::DefaultTextItem::refreshTable()
+{
+  refreshText();
+}
+
+void te::layout::DefaultTextItem::refreshText()
+{
+  DefaultTextModel* model = dynamic_cast<DefaultTextModel*>(m_model);
+  if(!model)
+    return;
+
+  document()->clear();
+
+  Font font = model->getFont();
+  QFont qfont;
+  qfont.setFamily(font.getFamily().c_str());
+  qfont.setPointSize(font.getPointSize());
+  qfont.setBold(font.isBold());
+  qfont.setItalic(font.isItalic());
+  qfont.setUnderline(font.isUnderline());
+  qfont.setStrikeOut(font.isStrikeout());
+  qfont.setKerning(font.isKerning());
+  setFont(qfont);
+
+  QTextCursor cursor(document());
+  cursor.movePosition(QTextCursor::Start);
+  cursor.insertText(model->getText().c_str());
+  adjustSize();
+}
+
+void te::layout::DefaultTextItem::setTextInteraction( bool on, bool selectAll /*= false*/ )
+{
+  if(on && textInteractionFlags() == Qt::NoTextInteraction)
+  {
+    // switch on editor mode:
+    setTextInteractionFlags(Qt::TextEditorInteraction);
+    // manually do what a mouse click would do else:
+    setFocus(Qt::MouseFocusReason); // this gives the item keyboard focus
+    setSelected(true); // this ensures that itemChange() gets called when we click out of the item
+    if(selectAll) // option to select the whole text (e.g. after creation of the TextItem)
+    {
+      QTextCursor c = textCursor();
+      c.select(QTextCursor::Document);
+      setTextCursor(c);
+    }
+  }
+  else if(!on && textInteractionFlags() == Qt::TextEditorInteraction)
+  {
+    // turn off editor mode:
+    setTextInteractionFlags(Qt::NoTextInteraction);
+    // deselect text (else it keeps gray shade):
+    QTextCursor c = this->textCursor();
+    c.clearSelection();
+    this->setTextCursor(c);
+    clearFocus();
+  }
+}
+
+void te::layout::DefaultTextItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent *evt )
+{
+  if(textInteractionFlags() == Qt::TextEditorInteraction)
+  {
+    // if editor mode is already on: pass double click events on to the editor:
+    QGraphicsTextItem::mouseDoubleClickEvent(evt);
+    return;
+  }
+
+  // if editor mode is off:
+  // 1. turn editor mode on and set selected and focused:
+  setTextInteraction(true);
+
+  // 2. send a single click to this QGraphicsTextItem (this will set the cursor to the mouse position):
+  // create a new mouse event with the same parameters as evt
+  QGraphicsSceneMouseEvent *click = new QGraphicsSceneMouseEvent(QEvent::GraphicsSceneMousePress);
+  click->setButton(evt->button());
+  click->setPos(evt->pos());
+  QGraphicsTextItem::mousePressEvent(click);
+  delete click; // don't forget to delete the event
+}
+
+QVariant te::layout::DefaultTextItem::itemChange( GraphicsItemChange change, const QVariant & value )
+{
+  if(change == QGraphicsItem::ItemSelectedChange 
+    && textInteractionFlags() != Qt::NoTextInteraction 
+    && !value.toBool())
+  {
+    // item received SelectedChange event AND is in editor mode AND is about to be deselected:
+    setTextInteraction(false); // leave editor mode
+  }
+  return QGraphicsTextItem::itemChange(change, value);
+}
+
+void te::layout::DefaultTextItem::applyRotation()
+{
+  if(!m_model)
+    return;
+
+  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
+  if(!model)
+    return;
+
+  double angle = model->getAngle();
+
+  QPointF center = boundingRect().center();
+
+  double centerX = center.x();
+  double centerY = center.y();
+
+  setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
 }

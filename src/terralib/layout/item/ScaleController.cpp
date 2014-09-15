@@ -33,14 +33,15 @@
 #include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/pattern/factory/ItemParamsCreate.h"
 #include "../core/pattern/mvc/ItemObserver.h"
+#include "../core/enum/Enums.h"
 
 te::layout::ScaleController::ScaleController( Observable* o ) :
-  ItemController(o, TPScaleItem)
+  ItemController(o)
 {
   create();
 }
 
-te::layout::ScaleController::ScaleController( Observable* o, LayoutAbstractObjectType type ) :
+te::layout::ScaleController::ScaleController( Observable* o, EnumType* type ) :
   ItemController(o, type)
 {
 
@@ -65,5 +66,5 @@ void te::layout::ScaleController::create()
 {
   AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPScaleItem, params);
+  m_view = (Observer*)factory->make(m_model->getType(), params);
 }

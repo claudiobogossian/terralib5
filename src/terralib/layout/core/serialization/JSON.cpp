@@ -33,7 +33,7 @@
 #include "../../../common/STLUtils.h"
 #include "../../../common/Translator.h"
 #include "../Config.h"
-#include "../enum/EnumUtils.h"
+#include "../enum/Enums.h"
 
 // Boost
 #include <boost/property_tree/json_parser.hpp>
@@ -116,6 +116,8 @@ std::vector<te::layout::Properties*> te::layout::JSON::retrieve()
 
   boost::property_tree::ptree subtree = (*it1).second;  
 
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
   int count = 0;
   while(true)
   {
@@ -140,6 +142,8 @@ std::vector<te::layout::Properties*> te::layout::JSON::retrieve()
 
     te::layout::Properties* props = new te::layout::Properties((*itName).second.data());
 
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+
     std::string valName;
     boost::property_tree::ptree tree;
     Property prop;
@@ -147,14 +151,16 @@ std::vector<te::layout::Properties*> te::layout::JSON::retrieve()
     {
       if(v.first.compare("object_type") == 0)
       {
-        props->setTypeObj(te::layout::getLayoutAbstractObjectType(v.second.data()));
+        EnumType* type = enumObj->getEnum(v.second.data());
+        props->setTypeObj(type);
         continue;
       }
 
       if(v.first.compare("type") == 0)
       {
         prop.setName(valName);
-        prop.setValue(tree.data(), te::layout::getLayoutPropertyDataType(v.second.data()));
+        EnumType* tp = dataType->getEnum(v.second.data());
+        prop.setValue(tree.data(), tp);
         props->addProperty(prop); 
         prop.clear();
       }
@@ -177,6 +183,8 @@ std::vector<te::layout::Properties*> te::layout::JSON::retrieve()
 
 void te::layout::JSON::retrieveSubPTree( boost::property_tree::ptree subTree, Property& prop )
 {
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
   std::string valName;
   boost::property_tree::ptree tree;
   BOOST_FOREACH( const boost::property_tree::ptree::value_type &v, subTree.get_child("") ) 
@@ -185,7 +193,8 @@ void te::layout::JSON::retrieveSubPTree( boost::property_tree::ptree subTree, Pr
     if(v.first.compare("type") == 0)
     {
       proper.setName(valName);
-      proper.setValue(tree.data(), te::layout::getLayoutPropertyDataType(v.second.data()));
+      EnumType* tp = dataType->getEnum(v.second.data());
+      proper.setValue(tree.data(), tp);
       prop.addSubProperty(proper);
     }
     else
@@ -253,7 +262,7 @@ void te::layout::JSON::loadFromProperties( std::vector<te::layout::Properties*> 
   boost::property_tree::ptree childArray;
 
   rootArray.push_back(std::make_pair("name", m_rootKey));
-
+  
   int count = 0;
   for(it = m_properties.begin(); it != m_properties.end(); ++it)
   {		
@@ -267,12 +276,12 @@ void te::layout::JSON::loadFromProperties( std::vector<te::layout::Properties*> 
       continue;
 
     childArray.clear();
-    childArray.push_back(std::make_pair("object_type", te::layout::getLayoutAbstractObjectType(props->getTypeObj())));
+    childArray.push_back(std::make_pair("object_type", props->getTypeObj()->getName()));
     for(ity = vec.begin(); ity != vec.end(); ++ity)
     {
       Property prop = (*ity);
       childArray.push_back(std::make_pair(prop.getName(), prop.getValue().convertToString())); 
-      childArray.push_back(std::make_pair("type", te::layout::getLayoutPropertyDataType(prop.getType()))); 
+      childArray.push_back(std::make_pair("type", prop.getType()->getName())); 
       searchProperty(prop, childArray);
     }
     if(!childArray.empty())
@@ -302,7 +311,7 @@ void te::layout::JSON::searchProperty( Property property, boost::property_tree::
 
       boost::property_tree::ptree childArray;
       childArray.push_back(std::make_pair(prop.getName(), prop.getValue().convertToString()));
-      childArray.push_back(std::make_pair("type", te::layout::getLayoutPropertyDataType(prop.getType()))); 
+      childArray.push_back(std::make_pair("type", prop.getType()->getName())); 
       array.push_back(std::make_pair("child",childArray));
       
       searchProperty(prop, childArray);

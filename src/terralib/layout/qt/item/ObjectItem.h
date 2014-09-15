@@ -96,6 +96,8 @@ namespace te
         
         virtual int getZValueItem();
 
+        virtual void applyRotation();
+
       protected:
 
         QPixmap m_pixmap;

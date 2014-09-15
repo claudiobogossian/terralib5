@@ -23,6 +23,7 @@
 
 //TerraLib
 #include "../Config.h"
+#include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../maptools/AbstractLayer.h"
 
 //Qt
@@ -33,6 +34,10 @@
 
 namespace te 
 {
+  //forward declarations
+  namespace da  { class DataSetType; }
+  namespace mem { class DataSet; }
+
   namespace qt 
   {
     namespace widgets 
@@ -60,6 +65,15 @@ namespace te
           void addPages();
 
           bool execute();
+
+          /*! Function used to create the output dataset type */
+          std::auto_ptr<te::da::DataSetType> createDataSetType(std::string dataSetName, int srid);
+
+          /*! Function used to create the output data */
+          std::auto_ptr<te::mem::DataSet> createDataSet(te::da::DataSetType* dsType, std::vector<te::gm::Geometry*>& geoms);
+
+          /*! Function used to save the output dataset */
+          void saveDataSet(te::mem::DataSet* dataSet, te::da::DataSetType* dsType, te::da::DataSourcePtr ds, std::string dataSetName);
 
         private:
 

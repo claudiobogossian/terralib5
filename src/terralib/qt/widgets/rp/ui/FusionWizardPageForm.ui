@@ -6,17 +6,86 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>336</width>
-    <height>487</height>
+    <width>694</width>
+    <height>423</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Fusion</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_17">
+  <layout class="QGridLayout" name="gridLayout_42">
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_15">
+    <layout class="QGridLayout" name="gridLayout_41">
+     <item row="0" column="0">
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string>Type</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_8">
+        <item row="0" column="0">
+         <widget class="QComboBox" name="m_fusionTypeComboBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
      <item row="2" column="0">
+      <widget class="QGroupBox" name="groupBox_6">
+       <property name="title">
+        <string>Common Parameters</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_23">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gridLayout_18">
+          <item row="0" column="0">
+           <layout class="QGridLayout" name="gridLayout_12">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Interpolator</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="m_interpolatorComboBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="m_cropCheckBox">
+            <property name="text">
+             <string>Crop rasters to overlap area.</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="1" column="0">
       <widget class="QStackedWidget" name="m_stackedWidget">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -28,97 +97,269 @@
         <number>0</number>
        </property>
        <widget class="QWidget" name="page_5">
-        <layout class="QGridLayout" name="gridLayout_29">
-         <item row="1" column="0">
+        <layout class="QGridLayout" name="gridLayout_39">
+         <item row="0" column="0">
           <widget class="QGroupBox" name="groupBox_2">
            <property name="title">
-            <string>IHS</string>
+            <string>IHS Parameters</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_7">
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_38">
             <item row="0" column="0">
-             <widget class="QGroupBox" name="groupBox_4">
-              <property name="title">
-               <string>Lower Resolution Raster</string>
+             <widget class="QTabWidget" name="tabWidget_2">
+              <property name="tabPosition">
+               <enum>QTabWidget::South</enum>
               </property>
-              <property name="flat">
-               <bool>true</bool>
+              <property name="tabShape">
+               <enum>QTabWidget::Rounded</enum>
               </property>
-              <layout class="QGridLayout" name="gridLayout_2">
-               <item row="0" column="0">
-                <layout class="QGridLayout" name="gridLayout">
-                 <item row="0" column="0">
-                  <widget class="QLineEdit" name="m_ihsLowerLineEdit">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <layout class="QGridLayout" name="gridLayout_4">
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="label_2">
-                     <property name="text">
-                      <string>R</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QComboBox" name="m_ihsRComboBox">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item row="2" column="0">
-                  <layout class="QGridLayout" name="gridLayout_5">
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="label_3">
-                     <property name="text">
-                      <string>G</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QComboBox" name="m_ihsGComboBox">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item row="3" column="0">
-                  <layout class="QGridLayout" name="gridLayout_6">
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="label_4">
-                     <property name="text">
-                      <string>B</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QComboBox" name="m_ihsBComboBox">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </item>
-              </layout>
+              <property name="currentIndex">
+               <number>0</number>
+              </property>
+              <widget class="QWidget" name="tab_4">
+               <attribute name="title">
+                <string>Higher Resolution</string>
+               </attribute>
+               <layout class="QGridLayout" name="gridLayout_44">
+                <item row="0" column="0">
+                 <layout class="QGridLayout" name="gridLayout_17">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="gridLayout_16">
+                    <item row="0" column="0">
+                     <layout class="QGridLayout" name="gridLayout_11">
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="label_10">
+                        <property name="text">
+                         <string>Layer Name</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QLabel" name="label_7">
+                        <property name="text">
+                         <string>Band</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item row="0" column="1">
+                     <layout class="QGridLayout" name="gridLayout_15">
+                      <item row="0" column="0">
+                       <widget class="QLineEdit" name="m_higherLineEdit_IHS">
+                        <property name="enabled">
+                         <bool>false</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <layout class="QGridLayout" name="gridLayout_10">
+                        <item row="0" column="0">
+                         <widget class="QComboBox" name="m_bandComboBox_IHS">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="1">
+                         <spacer name="horizontalSpacer_3">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>40</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="1" column="0">
+                   <spacer name="verticalSpacer_3">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="tab_5">
+               <attribute name="title">
+                <string>Lower Resolution</string>
+               </attribute>
+               <layout class="QGridLayout" name="gridLayout_6">
+                <item row="0" column="0">
+                 <layout class="QGridLayout" name="gridLayout_5">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="gridLayout_4">
+                    <item row="0" column="0">
+                     <layout class="QGridLayout" name="gridLayout_2">
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="label_12">
+                        <property name="text">
+                         <string>Layer Name</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QLabel" name="label_2">
+                        <property name="text">
+                         <string>R</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="2" column="0">
+                       <widget class="QLabel" name="label_3">
+                        <property name="text">
+                         <string>G</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="3" column="0">
+                       <widget class="QLabel" name="label_4">
+                        <property name="text">
+                         <string>B</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item row="0" column="1">
+                     <layout class="QGridLayout" name="gridLayout">
+                      <item row="0" column="0" colspan="2">
+                       <widget class="QLineEdit" name="m_ihsLowerLineEdit">
+                        <property name="enabled">
+                         <bool>false</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QComboBox" name="m_ihsRComboBox">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="1">
+                       <spacer name="horizontalSpacer_4">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item row="2" column="0">
+                       <widget class="QComboBox" name="m_ihsGComboBox">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="2" column="1">
+                       <spacer name="horizontalSpacer_5">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item row="3" column="0">
+                       <widget class="QComboBox" name="m_ihsBComboBox">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="3" column="1">
+                       <spacer name="horizontalSpacer_6">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="1" column="0">
+                   <spacer name="verticalSpacer_4">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
              </widget>
             </item>
            </layout>
@@ -127,48 +368,480 @@
         </layout>
        </widget>
        <widget class="QWidget" name="page">
-        <layout class="QGridLayout" name="gridLayout_3">
+        <layout class="QGridLayout" name="gridLayout_40">
          <item row="0" column="0">
           <widget class="QGroupBox" name="groupBox_3">
            <property name="title">
-            <string>PCA</string>
+            <string>PCA Parameters</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_19">
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_21">
             <item row="0" column="0">
-             <widget class="QGroupBox" name="groupBox_7">
-              <property name="title">
-               <string>Lower Resolution Raster</string>
+             <widget class="QTabWidget" name="tabWidget_3">
+              <property name="tabPosition">
+               <enum>QTabWidget::South</enum>
               </property>
-              <property name="flat">
-               <bool>true</bool>
+              <property name="currentIndex">
+               <number>0</number>
               </property>
-              <layout class="QGridLayout" name="gridLayout_14">
-               <item row="0" column="0">
-                <layout class="QGridLayout" name="gridLayout_13">
-                 <item row="0" column="0">
-                  <widget class="QLineEdit" name="m_pcaLowerLineEdit">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QListWidget" name="m_listWidget">
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>90</height>
-                    </size>
-                   </property>
-                   <property name="selectionMode">
-                    <enum>QAbstractItemView::MultiSelection</enum>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
+              <widget class="QWidget" name="tab_6">
+               <attribute name="title">
+                <string>Higher Resolution</string>
+               </attribute>
+               <layout class="QGridLayout" name="gridLayout_45">
+                <item row="0" column="0">
+                 <layout class="QGridLayout" name="gridLayout_43">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="gridLayout_20">
+                    <item row="0" column="0">
+                     <layout class="QGridLayout" name="gridLayout_19">
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="label_13">
+                        <property name="text">
+                         <string>Layer Name</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QLabel" name="label_8">
+                        <property name="text">
+                         <string>Band</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item row="0" column="1">
+                     <layout class="QGridLayout" name="gridLayout_14">
+                      <item row="0" column="0">
+                       <widget class="QLineEdit" name="m_higherLineEdit_PCA">
+                        <property name="enabled">
+                         <bool>false</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <layout class="QGridLayout" name="gridLayout_9">
+                        <item row="0" column="0">
+                         <widget class="QComboBox" name="m_bandComboBox_PCA">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="1">
+                         <spacer name="horizontalSpacer_7">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>40</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="1" column="0">
+                   <spacer name="verticalSpacer_5">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="tab_7">
+               <attribute name="title">
+                <string>Lower Resolution</string>
+               </attribute>
+               <layout class="QGridLayout" name="gridLayout_46">
+                <item row="0" column="0">
+                 <layout class="QGridLayout" name="gridLayout_13">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="gridLayout_7">
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="label_14">
+                      <property name="text">
+                       <string>Layer Name</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QLineEdit" name="m_pcaLowerLineEdit">
+                      <property name="enabled">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QListWidget" name="m_listWidget">
+                    <property name="selectionMode">
+                     <enum>QAbstractItemView::MultiSelection</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
              </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="page_2">
+        <layout class="QGridLayout" name="gridLayout_37">
+         <item row="0" column="0">
+          <widget class="QGroupBox" name="groupBox_5">
+           <property name="title">
+            <string>Wisper Parameters</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_48">
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="gridLayout_47">
+              <item row="0" column="0">
+               <widget class="QTabWidget" name="tabWidget">
+                <property name="tabPosition">
+                 <enum>QTabWidget::South</enum>
+                </property>
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <widget class="QWidget" name="tab">
+                 <attribute name="title">
+                  <string>Higher Resolution</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_49">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="gridLayout_27">
+                    <item row="0" column="0">
+                     <layout class="QGridLayout" name="gridLayout_26">
+                      <item row="0" column="0">
+                       <layout class="QGridLayout" name="gridLayout_24">
+                        <item row="0" column="0">
+                         <widget class="QLabel" name="label_15">
+                          <property name="text">
+                           <string>Layer Name</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="1" column="0">
+                         <widget class="QLabel" name="label_9">
+                          <property name="text">
+                           <string>Band</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="0">
+                         <widget class="QLabel" name="label_11">
+                          <property name="text">
+                           <string>Sensor Type</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item row="0" column="1">
+                       <layout class="QGridLayout" name="gridLayout_25">
+                        <item row="0" column="0">
+                         <widget class="QLineEdit" name="m_higherLineEdit_Wisper">
+                          <property name="enabled">
+                           <bool>false</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="1" column="0">
+                         <layout class="QGridLayout" name="gridLayout_3">
+                          <item row="0" column="0">
+                           <widget class="QComboBox" name="m_bandComboBox_Wisper">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="1">
+                           <spacer name="horizontalSpacer_2">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>40</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                         </layout>
+                        </item>
+                        <item row="2" column="0">
+                         <layout class="QGridLayout" name="gridLayout_22">
+                          <item row="0" column="1">
+                           <widget class="QComboBox" name="m_sensorTypeComboBox">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="0">
+                           <widget class="QToolButton" name="m_csvToolButton">
+                            <property name="toolTip">
+                             <string>Open Spectral Response Function File...</string>
+                            </property>
+                            <property name="text">
+                             <string>...</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                    <item row="1" column="0">
+                     <spacer name="verticalSpacer">
+                      <property name="orientation">
+                       <enum>Qt::Vertical</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>20</width>
+                        <height>40</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_2">
+                 <attribute name="title">
+                  <string>Lower Resolution</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_31">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="gridLayout_29">
+                    <item row="0" column="0">
+                     <layout class="QGridLayout" name="gridLayout_28">
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="label_16">
+                        <property name="text">
+                         <string>Layer Name</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="1">
+                       <widget class="QLineEdit" name="m_wisperLowerLineEdit">
+                        <property name="enabled">
+                         <bool>false</bool>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QTableWidget" name="m_wisperTableWidget">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>130</height>
+                       </size>
+                      </property>
+                      <property name="selectionMode">
+                       <enum>QAbstractItemView::NoSelection</enum>
+                      </property>
+                      <attribute name="horizontalHeaderStretchLastSection">
+                       <bool>true</bool>
+                      </attribute>
+                      <attribute name="verticalHeaderVisible">
+                       <bool>false</bool>
+                      </attribute>
+                      <column>
+                       <property name="text">
+                        <string>Band</string>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
+                        <string>CSV</string>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
+                        <string>Sensor Type</string>
+                       </property>
+                      </column>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_3">
+                 <attribute name="title">
+                  <string>Wavelet</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_32">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="gridLayout_30">
+                    <item row="0" column="0">
+                     <layout class="QGridLayout" name="gridLayout_35">
+                      <item row="0" column="0">
+                       <layout class="QGridLayout" name="gridLayout_33">
+                        <item row="0" column="0">
+                         <widget class="QLabel" name="label_5">
+                          <property name="text">
+                           <string>Filter Type</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="1" column="0">
+                         <widget class="QLabel" name="label_6">
+                          <property name="text">
+                           <string>Decomposition Levels</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item row="0" column="1">
+                       <layout class="QGridLayout" name="gridLayout_34">
+                        <item row="0" column="0" colspan="2">
+                         <widget class="QComboBox" name="m_waveletComboBox">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="1" column="0">
+                         <widget class="QSpinBox" name="m_waveletLevelsSpinBox"/>
+                        </item>
+                        <item row="1" column="1">
+                         <spacer name="horizontalSpacer">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>40</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                    <item row="1" column="0">
+                     <spacer name="verticalSpacer_2">
+                      <property name="orientation">
+                       <enum>Qt::Vertical</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>20</width>
+                        <height>40</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <layout class="QGridLayout" name="gridLayout_36">
+                <item row="0" column="0">
+                 <widget class="QToolButton" name="m_scatterBoolButton">
+                  <property name="toolTip">
+                   <string>Show Chart of Spectral Response Function...</string>
+                  </property>
+                  <property name="text">
+                   <string>...</string>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <spacer name="verticalSpacer_6">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
@@ -177,126 +850,34 @@
        </widget>
       </widget>
      </item>
-     <item row="0" column="0">
-      <layout class="QGridLayout" name="gridLayout_11">
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBox">
-         <property name="title">
-          <string>Type</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_8">
-          <item row="0" column="0">
-           <widget class="QComboBox" name="m_fusionTypeComboBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QGroupBox" name="groupBox_5">
-         <property name="title">
-          <string>Higher Resolution Raster</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_16">
-          <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout_9">
-            <item row="0" column="0">
-             <widget class="QLineEdit" name="m_higherLineEdit">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <layout class="QGridLayout" name="gridLayout_10">
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_6">
-                <property name="text">
-                 <string>Band</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QComboBox" name="m_bandComboBox">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QGroupBox" name="groupBox_6">
-         <property name="title">
-          <string>Interpolator</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_12">
-          <item row="0" column="0">
-           <widget class="QComboBox" name="m_interpolatorComboBox"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="1" column="0">
-      <widget class="QGroupBox" name="groupBox_8">
-       <property name="title">
-        <string>Options</string>
-       </property>
-       <property name="flat">
-        <bool>true</bool>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_18">
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="m_cropCheckBox">
-          <property name="text">
-           <string>Crop rasters to overlap area.</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
     </layout>
    </item>
   </layout>
  </widget>
  <tabstops>
   <tabstop>m_fusionTypeComboBox</tabstop>
+  <tabstop>tabWidget_2</tabstop>
+  <tabstop>m_higherLineEdit_IHS</tabstop>
+  <tabstop>m_bandComboBox_IHS</tabstop>
   <tabstop>m_ihsLowerLineEdit</tabstop>
   <tabstop>m_ihsRComboBox</tabstop>
   <tabstop>m_ihsGComboBox</tabstop>
   <tabstop>m_ihsBComboBox</tabstop>
-  <tabstop>m_higherLineEdit</tabstop>
-  <tabstop>m_bandComboBox</tabstop>
+  <tabstop>m_higherLineEdit_PCA</tabstop>
+  <tabstop>m_bandComboBox_PCA</tabstop>
+  <tabstop>m_pcaLowerLineEdit</tabstop>
+  <tabstop>m_listWidget</tabstop>
+  <tabstop>m_higherLineEdit_Wisper</tabstop>
+  <tabstop>m_bandComboBox_Wisper</tabstop>
+  <tabstop>m_sensorTypeComboBox</tabstop>
+  <tabstop>m_wisperLowerLineEdit</tabstop>
+  <tabstop>m_wisperTableWidget</tabstop>
+  <tabstop>m_waveletComboBox</tabstop>
+  <tabstop>m_waveletLevelsSpinBox</tabstop>
   <tabstop>m_interpolatorComboBox</tabstop>
+  <tabstop>m_cropCheckBox</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>tabWidget_3</tabstop>
  </tabstops>
  <resources/>
  <connections>
