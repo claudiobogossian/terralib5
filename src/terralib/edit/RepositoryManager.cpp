@@ -35,6 +35,24 @@
 // STL
 #include <cassert>
 
+void te::edit::RepositoryManager::addNewGeometry(const std::string& source, te::gm::Geometry* geom)
+{
+  Repository* repository = getRepository(source);
+  if(repository == 0)
+  {
+    // Not found! Create a new repository associated with the given source
+    repository = new Repository(source);
+
+    // Add the enw geometry
+    repository->add(geom);
+
+    // Store!
+    m_repositories[source] = repository;
+  }
+  else
+    repository->add(geom);
+}
+
 void te::edit::RepositoryManager::addEditedGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom)
 {
   Repository* repository = getRepository(source);

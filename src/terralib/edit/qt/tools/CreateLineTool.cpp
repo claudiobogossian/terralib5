@@ -31,6 +31,7 @@
 #include "../../../geometry/Point.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
+#include "../../RepositoryManager.h"
 #include "../Renderer.h"
 #include "../Utils.h"
 #include "CreateLineTool.h"
@@ -44,8 +45,9 @@
 #include <cassert>
 #include <memory>
 
-te::edit::CreateLineTool::CreateLineTool(te::qt::widgets::MapDisplay* display, const QCursor& cursor, QObject* parent) 
+te::edit::CreateLineTool::CreateLineTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent) 
   : AbstractTool(display, parent),
+    m_layer(layer),
     m_continuousMode(false),
     m_isFinished(false)
 {
@@ -115,6 +117,8 @@ bool te::edit::CreateLineTool::mouseDoubleClickEvent(QMouseEvent* e)
 
   m_isFinished = true;
 
+  storeNewGeometry();
+
   return true;
 }
 
@@ -133,9 +137,7 @@ void te::edit::CreateLineTool::draw()
   renderer.begin(draft, env, m_display->getSRID());
 
   // Build the geometry
-  te::gm::LineString* line = new te::gm::LineString(m_coords.size(), te::gm::LineStringType);
-  for(std::size_t i = 0; i < m_coords.size(); ++i)
-    line->setPoint(i, m_coords[i].x, m_coords[i].y);
+  te::gm::Geometry* line = buildLine();
 
   // Draw the current geometry and the vertexes
   renderer.draw(line, true);
@@ -156,6 +158,28 @@ void te::edit::CreateLineTool::clear()
   draft->fill(Qt::transparent);
     
   m_display->repaint();
+}
+
+te::gm::Geometry* te::edit::CreateLineTool::buildLine()
+{
+  te::gm::LineString* line = new te::gm::LineString(m_coords.size(), te::gm::LineStringType);
+  for(std::size_t i = 0; i < m_coords.size(); ++i)
+    line->setPoint(i, m_coords[i].x, m_coords[i].y);
+
+  line->setSRID(m_display->getSRID());
+
+  if(line->getSRID() == m_layer->getSRID())
+    return line;
+
+  // else, need conversion...
+  line->transform(m_layer->getSRID());
+
+  return line;
+}
+
+void te::edit::CreateLineTool::storeNewGeometry()
+{
+  RepositoryManager::getInstance().addNewGeometry(m_layer->getId(), buildLine());
 }
 
 void te::edit::CreateLineTool::onExtentChanged()

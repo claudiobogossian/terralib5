@@ -33,6 +33,7 @@
 // Qt
 #include <QAction>
 #include <QIcon>
+#include <QList>
 #include <QToolBar>
 
 namespace te
@@ -72,6 +73,8 @@ namespace te
 
           protected slots:
 
+            void onEditActivated(bool checked);
+
             void onVertexToolActivated(bool checked);
 
             void onCreatePolygonToolActivated(bool checked);
@@ -84,10 +87,13 @@ namespace te
 
             QToolBar* m_toolBar;
 
+            QAction* m_editAction;
             QAction* m_vertexToolAction;
             QAction* m_createPolygonToolAction;
             QAction* m_createLineToolAction;
             QAction* m_moveGeometryToolAction;
+
+            QList<QAction*> m_tools;
         };
 
       } // end namespace edit

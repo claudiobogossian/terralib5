@@ -43,6 +43,7 @@
 
 te::qt::plugins::edit::ToolBar::ToolBar()
   : m_toolBar(0),
+    m_editAction(0),
     m_vertexToolAction(0),
     m_createPolygonToolAction(0),
     m_createLineToolAction(0),
@@ -81,10 +82,15 @@ void te::qt::plugins::edit::ToolBar::initialize()
 
 void te::qt::plugins::edit::ToolBar::initializeActions()
 {
-  createAction(m_vertexToolAction, tr("Vertex Tool - Move, add and remove"), "edit-vertex-tool", true, true,  SLOT(onVertexToolActivated(bool)));
-  createAction(m_createPolygonToolAction, tr("Create Polygon"), "edit-create-polygon", true, true,  SLOT(onCreatePolygonToolActivated(bool)));
-  createAction(m_createLineToolAction, tr("Create Line"), "edit-create-line", true, true,  SLOT(onCreateLineToolActivated(bool)));
-  createAction(m_moveGeometryToolAction, tr("Move Geometry"), "edit-move-geometry", true, true,  SLOT(onMoveGeometryToolActivated(bool)));
+  createAction(m_editAction, tr("Turn on/off edition mode"), "edit-enable", true, true,  SLOT(onEditActivated(bool)));
+
+  m_toolBar->addAction(m_editAction);
+
+  // Tools
+  createAction(m_vertexToolAction, tr("Vertex Tool - Move, add and remove"), "edit-vertex-tool", true, false,  SLOT(onVertexToolActivated(bool)));
+  createAction(m_createPolygonToolAction, tr("Create Polygon"), "edit-create-polygon", true, false,  SLOT(onCreatePolygonToolActivated(bool)));
+  createAction(m_createLineToolAction, tr("Create Line"), "edit-create-line", true, false,  SLOT(onCreateLineToolActivated(bool)));
+  createAction(m_moveGeometryToolAction, tr("Move Geometry"), "edit-move-geometry", true, false,  SLOT(onMoveGeometryToolActivated(bool)));
 
   // Get the action group of map tools.
   QActionGroup* toolsGroup = te::qt::af::ApplicationController::getInstance().findActionGroup("Map.ToolsGroup");
@@ -96,11 +102,15 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   toolsGroup->addAction(m_createLineToolAction);
   toolsGroup->addAction(m_moveGeometryToolAction);
 
-  // Adding to toolbar
-  m_toolBar->addAction(m_vertexToolAction);
-  m_toolBar->addAction(m_createPolygonToolAction);
-  m_toolBar->addAction(m_createLineToolAction);
-  m_toolBar->addAction(m_moveGeometryToolAction);
+  // Grouping...
+  m_tools.push_back(m_vertexToolAction);
+  m_tools.push_back(m_createPolygonToolAction);
+  m_tools.push_back(m_createLineToolAction);
+  m_tools.push_back(m_moveGeometryToolAction);
+
+  // Adding tools to toolbar
+  for(int i = 0; i < m_tools.size(); ++i)
+    m_toolBar->addAction(m_tools[i]);
 }
 
 void te::qt::plugins::edit::ToolBar::createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const char* member)
@@ -111,6 +121,12 @@ void te::qt::plugins::edit::ToolBar::createAction(QAction*& action, const QStrin
   action->setCheckable(checkable);
   action->setEnabled(enabled);
   connect(action, SIGNAL(triggered(bool)), this, member);
+}
+
+void te::qt::plugins::edit::ToolBar::onEditActivated(bool checked)
+{
+  for(int i = 0; i < m_tools.size(); ++i)
+    m_tools[i]->setEnabled(checked);
 }
 
 void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool checked)
@@ -133,23 +149,37 @@ void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool checked)
 
 void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool checked)
 {
+  te::map::AbstractLayerPtr layer = getSelectedLayer();
+  if(layer.get() == 0)
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    return;
+  }
+
   te::qt::af::evt::GetMapDisplay e;
   te::qt::af::ApplicationController::getInstance().broadcast(&e);
 
   assert(e.m_display);
 
-  te::edit::CreatePolygonTool* tool = new te::edit::CreatePolygonTool(e.m_display->getDisplay(), Qt::ArrowCursor, 0);
+  te::edit::CreatePolygonTool* tool = new te::edit::CreatePolygonTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0);
   e.m_display->setCurrentTool(tool);
 }
 
 void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool checked)
 {
+  te::map::AbstractLayerPtr layer = getSelectedLayer();
+  if(layer.get() == 0)
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    return;
+  }
+
   te::qt::af::evt::GetMapDisplay e;
   te::qt::af::ApplicationController::getInstance().broadcast(&e);
 
   assert(e.m_display);
 
-  te::edit::CreateLineTool* tool = new te::edit::CreateLineTool(e.m_display->getDisplay(), Qt::ArrowCursor, 0);
+  te::edit::CreateLineTool* tool = new te::edit::CreateLineTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0);
   e.m_display->setCurrentTool(tool);
 }
 

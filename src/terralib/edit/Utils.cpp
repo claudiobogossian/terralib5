@@ -53,15 +53,15 @@ te::edit::IdGeometry* te::edit::PickGeometry(const te::map::AbstractLayerPtr& la
   if((layer->getSRID() != TE_UNKNOWN_SRS) && (srid != TE_UNKNOWN_SRS) && (layer->getSRID() != srid))
     reprojectedEnvelope.transform(srid, layer->getSRID());
 
-  if(!reprojectedEnvelope.intersects(layer->getExtent()))
-    return 0;
-
   // Try retrieves from RepositoryManager...
   IdGeometry* geom = RepositoryManager::getInstance().getGeometry(layer->getId(), env, srid);
   if(geom)
     return geom->clone();
 
   // ...else, retrieve from layer
+
+  if(!reprojectedEnvelope.intersects(layer->getExtent()))
+    return 0;
 
   std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema());
 
