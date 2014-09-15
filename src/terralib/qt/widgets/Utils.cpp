@@ -35,6 +35,7 @@
 
 // Qt
 #include <QApplication>
+#include <QActionGroup>
 #include <QImage>
 #include <QMenu>
 #include <QMenuBar>
@@ -136,6 +137,16 @@ QAction* te::qt::widgets::FindAction(const QString& actText, QMenu* mnu)
 QAction* te::qt::widgets::FindAction(const QString& actText, QMenuBar* mnuBar)
 {
   return mnuBar->findChild<QAction*>(actText);
+}
+
+QActionGroup* te::qt::widgets::FindActionGroup(const QString& actGroupText, QMenu* mnu)
+{
+  return mnu->findChild<QActionGroup*>(actGroupText);
+}
+
+QActionGroup* te::qt::widgets::FindActionGroup(const QString& actGroupText, QMenuBar* mnuBar)
+{
+  return mnuBar->findChild<QActionGroup*>(actGroupText);
 }
 
 QMenu* CreateMenu(const QString& mnuName, QMenu* p)

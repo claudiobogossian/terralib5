@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/query/TableLinkDialog.h
+  \file terralib/qt/widgets/externaltable/TableLinkDialog.h
 
   \brief A Qt dialog that allows users to create a new query layer based on the information of two distinct datasets
 */
@@ -47,7 +47,7 @@ namespace te
     namespace widgets
     {
       class DataSetTableView;
-      class DoubleListWidget;
+      class FieldsDialog;
 
       /*!
         \class TableLinkDialog
@@ -84,13 +84,6 @@ namespace te
           void setInputLayer(te::map::AbstractLayerPtr inLayer);
 
           /*!
-            \brief Returns the fields used to generate the new query layer
-            \note By default, all fields will be used
-            \note The caller will take ownership of the returned pointer
-          */
-          te::da::Fields* getFields();
-
-          /*!
             \brief Returns the generated Join.
             \note The caller will take ownership of the returned pointer
           */
@@ -116,6 +109,8 @@ namespace te
 
           slots:
 
+            void  done(int r);
+
             void onDataCBIndexChanged(int index);
 
             /*!
@@ -135,7 +130,7 @@ namespace te
           te::map::DataSetLayerPtr                m_inputLayer;    //!< The layer the will serve as the base for the link.
           te::da::DataSourcePtr                   m_ds;            //!< The dasource of the layers to be linked.
           std::auto_ptr<DataSetTableView>         m_tabularView;   //!< The widget used to preview the data of the tabular dataset.
-          std::auto_ptr<DoubleListWidget>         m_fieldsWidget;  //!< The widget used to select which fields will be added to the query.
+          std::auto_ptr<FieldsDialog>             m_fieldsDialog;  //!< The widget used to select which fields will be added to the query.
           std::auto_ptr<Ui::TableLinkDialogForm>  m_ui;            //!< The widget's form.
       };
     }   // end namespace widgets

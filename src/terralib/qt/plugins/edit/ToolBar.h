@@ -32,7 +32,6 @@
 
 // Qt
 #include <QAction>
-#include <QActionGroup>
 #include <QIcon>
 #include <QToolBar>
 
@@ -89,8 +88,6 @@ namespace te
             QAction* m_createPolygonToolAction;
             QAction* m_createLineToolAction;
             QAction* m_moveGeometryToolAction;
-
-            QActionGroup* m_editToolsGroup;
         };
 
       } // end namespace edit
