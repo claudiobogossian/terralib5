@@ -2528,18 +2528,6 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_mapMeasureArea, "area-measure", "Map.Measure Area", tr("Measure &Area"), tr(""), true, true, true, m_menubar);
   initAction(m_mapMeasureAngle, "angle-measure", "Map.Measure Angle", tr("Measure &Angle"), tr(""), true, true, true, m_menubar);
   initAction(m_mapStopDrawing, "map-draw-cancel", "Map.Stop Drawing", tr("&Stop Drawing"), tr("Stop all drawing tasks"), true, false, true, m_menubar);
-
-// Group the map tools
-  QActionGroup* mapToolsGroup = new QActionGroup(this);
-  mapToolsGroup->addAction(m_mapZoomIn);
-  mapToolsGroup->addAction(m_mapZoomOut);
-  mapToolsGroup->addAction(m_mapPan);
-  mapToolsGroup->addAction(m_mapMeasureDistance);
-  mapToolsGroup->addAction(m_mapMeasureArea);
-  mapToolsGroup->addAction(m_mapMeasureAngle);
-  mapToolsGroup->addAction(m_mapInfo);
-  mapToolsGroup->addAction(m_mapSelection);
-  mapToolsGroup->addAction(m_mapRemoveSelection);
 }
 
 void te::qt::af::BaseApplication::initMenus()
@@ -2687,6 +2675,19 @@ void te::qt::af::BaseApplication::initMenus()
   m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapSRID);
   m_mapMenu->addAction(m_mapUnknownSRID);
+
+  // Group the map tools
+  QActionGroup* mapToolsGroup = new QActionGroup(m_mapMenu);
+  mapToolsGroup->setObjectName("Map.ToolsGroup");
+  mapToolsGroup->addAction(m_mapZoomIn);
+  mapToolsGroup->addAction(m_mapZoomOut);
+  mapToolsGroup->addAction(m_mapPan);
+  mapToolsGroup->addAction(m_mapMeasureDistance);
+  mapToolsGroup->addAction(m_mapMeasureArea);
+  mapToolsGroup->addAction(m_mapMeasureAngle);
+  mapToolsGroup->addAction(m_mapInfo);
+  mapToolsGroup->addAction(m_mapSelection);
+  mapToolsGroup->addAction(m_mapRemoveSelection);
 
   ApplicationController::getInstance().registerMenu(m_mapMenu);
 

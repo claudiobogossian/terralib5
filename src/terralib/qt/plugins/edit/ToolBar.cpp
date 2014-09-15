@@ -46,8 +46,7 @@ te::qt::plugins::edit::ToolBar::ToolBar()
     m_vertexToolAction(0),
     m_createPolygonToolAction(0),
     m_createLineToolAction(0),
-    m_moveGeometryToolAction(0),
-    m_editToolsGroup(0)
+    m_moveGeometryToolAction(0)
 {
   initialize();
 }
@@ -78,8 +77,6 @@ void te::qt::plugins::edit::ToolBar::initialize()
   m_toolBar = new QToolBar;
 
   initializeActions();
-
-  m_toolBar->addActions(m_editToolsGroup->actions());
 }
 
 void te::qt::plugins::edit::ToolBar::initializeActions()
@@ -89,11 +86,21 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_createLineToolAction, tr("Create Line"), "edit-create-line", true, true,  SLOT(onCreateLineToolActivated(bool)));
   createAction(m_moveGeometryToolAction, tr("Move Geometry"), "edit-move-geometry", true, true,  SLOT(onMoveGeometryToolActivated(bool)));
 
-  m_editToolsGroup = new QActionGroup(this);
-  m_editToolsGroup->addAction(m_vertexToolAction);
-  m_editToolsGroup->addAction(m_createPolygonToolAction);
-  m_editToolsGroup->addAction(m_createLineToolAction);
-  m_editToolsGroup->addAction(m_moveGeometryToolAction);
+  // Get the action group of map tools.
+  QActionGroup* toolsGroup = te::qt::af::ApplicationController::getInstance().findActionGroup("Map.ToolsGroup");
+  assert(toolsGroup);
+
+  // Adding the new tools
+  toolsGroup->addAction(m_vertexToolAction);
+  toolsGroup->addAction(m_createPolygonToolAction);
+  toolsGroup->addAction(m_createLineToolAction);
+  toolsGroup->addAction(m_moveGeometryToolAction);
+
+  // Adding to toolbar
+  m_toolBar->addAction(m_vertexToolAction);
+  m_toolBar->addAction(m_createPolygonToolAction);
+  m_toolBar->addAction(m_createLineToolAction);
+  m_toolBar->addAction(m_moveGeometryToolAction);
 }
 
 void te::qt::plugins::edit::ToolBar::createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const char* member)

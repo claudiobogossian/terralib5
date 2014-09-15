@@ -45,6 +45,7 @@
 
 // Forward declarations
 class QAction;
+class QActionGroup;
 class QImage;
 class QMenu;
 class QMenuBar;
@@ -186,6 +187,26 @@ namespace te
         \return
       */
       TEQTWIDGETSEXPORT QAction* FindAction(const QString& actText, QMenuBar* mnuBar);
+
+      /*!
+        \brief
+
+        \param
+        \param
+
+        \return
+      */
+      TEQTWIDGETSEXPORT QActionGroup* FindActionGroup(const QString& actGroupText, QMenu* mnu);
+
+      /*!
+        \brief
+
+        \param
+        \param
+
+        \return
+      */
+      TEQTWIDGETSEXPORT QActionGroup* FindActionGroup(const QString& actText, QMenuBar* mnuBar);
 
        /*!
         \brief It converts a Qt Color to TerraLib Color.

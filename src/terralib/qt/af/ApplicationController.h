@@ -48,6 +48,7 @@
 
 // Forward declarations
 class QAction;
+class QActionGroup;
 class QMenu;
 class QMenuBar;
 class QToolBar;
@@ -243,6 +244,15 @@ namespace te
             \note There's a rule to determine \a id. The text of menus and submenus separated by '.' character.
           */
           QAction* findAction(const QString& id) const;
+
+          /*!
+            \brief Returns the action group identified by \a id or NULL if there's not an action group identified by \a id.
+
+            \param id Identifier of the action group.
+
+            \return QActionGroup identified or NULL if could not find one.
+          */
+          QActionGroup* findActionGroup(const QString& id) const;
 
           //@}
 
