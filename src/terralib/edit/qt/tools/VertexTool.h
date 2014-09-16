@@ -130,7 +130,7 @@ namespace te
 
         void pickGeometry(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env);
 
-        void drawVertexes(te::gm::Point* virtualVertex = 0);
+        void draw(te::gm::Point* virtualVertex = 0);
 
         te::gm::Envelope buildEnvelope(const QPointF& pos);
 

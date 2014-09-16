@@ -88,6 +88,8 @@ namespace te
 
         void end();
 
+        void setPolygonStyle(const QColor& fillColor, const QColor& contourColor, const std::size_t& contourWidth);
+
         void setPointStyle(const QString& mark, const QColor& fillColor, const QColor& contourColor,
                            const std::size_t& contourWidth, const std::size_t& size);
 

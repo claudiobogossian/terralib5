@@ -56,6 +56,8 @@ te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* disp
 
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
+
+  draw();
 }
 
 te::edit::CreatePolygonTool::~CreatePolygonTool()
@@ -144,13 +146,20 @@ void te::edit::CreatePolygonTool::draw()
   Renderer& renderer = Renderer::getInstance();
   renderer.begin(draft, env, m_display->getSRID());
 
-  if(m_coords.size() < 3)
-    drawLine();
-  else
-    drawPolygon();
+  // Draw the layer edited geometries
+  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
 
-  if(m_continuousMode == false)
-    m_coords.pop_back();
+  if(!m_coords.empty())
+  {
+    // Draw the geometry being created
+    if(m_coords.size() < 3)
+      drawLine();
+    else
+      drawPolygon();
+
+    if(m_continuousMode == false)
+      m_coords.pop_back();
+  }
 
   renderer.end();
 
@@ -184,11 +193,6 @@ void te::edit::CreatePolygonTool::drawLine()
 void te::edit::CreatePolygonTool::clear()
 {
   m_coords.clear();
-
-  QPixmap* draft = m_display->getDraftPixmap();
-  draft->fill(Qt::transparent);
-    
-  m_display->repaint();
 }
 
 te::gm::Geometry* te::edit::CreatePolygonTool::buildPolygon()

@@ -69,6 +69,8 @@ namespace te
 
         void addEditedGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom);
 
+        bool hasIdentify(const std::string& source, te::da::ObjectId* id);
+
         const std::map<std::string, Repository*>& getRepositories() const;
 
         Repository* getRepository(const std::string& source) const;

@@ -55,6 +55,8 @@ te::edit::CreateLineTool::CreateLineTool(te::qt::widgets::MapDisplay* display, c
 
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
+
+  draw();
 }
 
 te::edit::CreateLineTool::~CreateLineTool()
@@ -136,14 +138,18 @@ void te::edit::CreateLineTool::draw()
   Renderer& renderer = Renderer::getInstance();
   renderer.begin(draft, env, m_display->getSRID());
 
-  // Build the geometry
-  te::gm::Geometry* line = buildLine();
+  // Draw the layer edited geometries
+  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
 
-  // Draw the current geometry and the vertexes
-  renderer.draw(line, true);
+  if(!m_coords.empty())
+  {
+    // Draw the geometry being created
+    te::gm::Geometry* line = buildLine();
+    renderer.draw(line, true);
 
-  if(m_continuousMode == false)
-    m_coords.pop_back();
+    if(m_continuousMode == false)
+      m_coords.pop_back();
+  }
 
   renderer.end();
 
@@ -153,11 +159,6 @@ void te::edit::CreateLineTool::draw()
 void te::edit::CreateLineTool::clear()
 {
   m_coords.clear();
-
-  QPixmap* draft = m_display->getDraftPixmap();
-  draft->fill(Qt::transparent);
-    
-  m_display->repaint();
 }
 
 te::gm::Geometry* te::edit::CreateLineTool::buildLine()

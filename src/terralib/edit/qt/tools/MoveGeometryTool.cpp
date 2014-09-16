@@ -54,6 +54,8 @@ te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* displa
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
 
   updateCursor();
+
+  draw();
 }
 
 te::edit::MoveGeometryTool::~MoveGeometryTool()
@@ -93,7 +95,7 @@ bool te::edit::MoveGeometryTool::mouseMoveEvent(QMouseEvent* e)
 
   storeEditedGeometry();
 
-  drawGeometry();
+  draw();
 
   m_origin = currentPosition;
 
@@ -133,7 +135,7 @@ void te::edit::MoveGeometryTool::pickGeometry(const te::map::AbstractLayerPtr& l
   {
     m_geom = PickGeometry(m_layer, env, m_display->getSRID());
 
-    drawGeometry();
+    draw();
   }
   catch(std::exception& e)
   {
@@ -158,7 +160,7 @@ te::gm::Envelope te::edit::MoveGeometryTool::buildEnvelope(const QPointF& pos)
   return env;
 }
 
-void te::edit::MoveGeometryTool::drawGeometry()
+void te::edit::MoveGeometryTool::draw()
 {
   const te::gm::Envelope& env = m_display->getExtent();
   if(!env.isValid())
@@ -168,18 +170,25 @@ void te::edit::MoveGeometryTool::drawGeometry()
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
 
+   // Initialize the renderer
+  Renderer& renderer = Renderer::getInstance();
+  renderer.begin(draft, env, m_display->getSRID());
+
+  // Draw the layer edited geometries
+  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
+
   if(m_geom == 0)
   {
+    renderer.end();
     m_display->repaint();
     return;
   }
 
-  // Initialize the renderer
-  Renderer& renderer = Renderer::getInstance();
-  renderer.begin(draft, env, m_display->getSRID());
-
-  // Draw the current geometry and the vertexes
-  renderer.draw(m_geom->getGeometry(), true);
+  // Draw the vertexes
+  if(RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_geom->getId()) == false)
+    renderer.draw(m_geom->getGeometry(), true);
+  else
+    renderer.drawVertexes(m_geom->getGeometry());
 
   renderer.end();
 
@@ -193,7 +202,7 @@ void te::edit::MoveGeometryTool::updateCursor()
 
 void te::edit::MoveGeometryTool::onExtentChanged()
 {
-  drawGeometry();
+  draw();
 }
 
 void te::edit::MoveGeometryTool::storeEditedGeometry()
