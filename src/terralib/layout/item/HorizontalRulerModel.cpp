@@ -29,12 +29,13 @@
 #include "HorizontalRulerModel.h"
 #include "../core/ContextItem.h"
 #include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/enum/EnumMode.h"
 #include "../core/Utils.h"
 #include "../../maptools/Canvas.h"
 #include "../../geometry/Envelope.h"
 #include "../../geometry/Point.h"
 #include "../../color/RGBAColor.h"
+#include "../core/pattern/singleton/Context.h"
+#include "../core/enum/Enums.h"
 
 // STL
 #include <sstream>
@@ -43,7 +44,7 @@
 te::layout::HorizontalRulerModel::HorizontalRulerModel(PaperConfig* paperConfig) :
   AbstractRulerModel(paperConfig)
 {
-
+  m_type = Enums::getInstance().getEnumObjectType()->getHorizontalRuler();
 }
 
 te::layout::HorizontalRulerModel::~HorizontalRulerModel()
@@ -63,14 +64,12 @@ void te::layout::HorizontalRulerModel::draw( ContextItem context )
 
   if(context.isResizeCanvas())
     utils->configCanvas(m_box, true, false);  
-    
-  double zoomFactor = context.getZoomFactor();
-  int zoom = 1. / zoomFactor;
-  if(zoomFactor > 1.)
-    zoom = zoomFactor;
 
-  canvas->setLineWidth(1. * zoom);
-  canvas->setTextPointSize(5);
+  m_backEndBox = te::gm::Envelope(m_box.getLowerLeftX() + m_backEndSpacing, m_box.getLowerLeftY() + m_backEndMargin,
+    m_box.getUpperRightX(), m_box.getUpperRightY() - m_backEndMargin);
+
+  canvas->setLineWidth(1.);
+  canvas->setTextPointSize(6);
   canvas->setFontFamily("Verdana");
 
   drawRuler(canvas, utils, context.getZoomFactor());
@@ -100,11 +99,34 @@ void te::layout::HorizontalRulerModel::drawRuler( te::map::Canvas* canvas, Utils
                 
   if(m_paperConfig)
   {
-    te::gm::Envelope* paperBox = m_paperConfig->getPaperBoxW();
-    
-    envPaper = te::gm::Envelope(paperBox->getLowerLeftX(), m_backEndBox.getLowerLeftY(),
-      paperBox->getUpperRightX(), m_backEndBox.getUpperRightY());
+    double w = 0;
+    double h = 0;
+
+    m_paperConfig->getPaperSize(w, h);
+    te::gm::Envelope paperBox(0, 0, w, h);
             
+    /*envPaper = te::gm::Envelope(paperBox.getLowerLeftX(), m_backEndBox.getLowerLeftY(),
+      paperBox.getLowerLeftX() + (w * zoomFactor), m_backEndBox.getUpperRightY());*/
+
+    double x1 = 0;
+    double zoom = 1. / zoomFactor;
+    x1 = m_backEndBox.m_llx + paperBox.getWidth();
+    
+    double x2 = m_backEndBox.m_urx - paperBox.getWidth();
+    x2 = x2 * zoomFactor;
+
+    x1 = x1 * zoomFactor;
+
+    if(zoomFactor >= 1.)
+      x1 = 0;
+
+    envPaper = te::gm::Envelope(x1, m_backEndBox.getLowerLeftY(),
+      x1 + (w * zoomFactor), m_backEndBox.getUpperRightY());
+
+    /*te::gm::Envelope newBox1(m_backEndBox.m_llx, 0, m_backEndBox.m_llx + w, h);
+    WorldTransformer transf = utils->getTransformGeo(m_backEndBox, newBox1);
+    transf.setMirroring(false);*/
+    
     te::color::RGBAColor colorp5(255,255,255, TE_OPAQUE);
     drawRectW(envPaper, colorp5, canvas, utils);
   }
@@ -142,29 +164,31 @@ void te::layout::HorizontalRulerModel::drawHorizontalRuler(te::map::Canvas* canv
   double x = 0;
 
   te::gm::Envelope box;
-    
+   
+  double l = llx;
   for(int i = (int)llx ; i < (int) urx ; ++i)
   {
     if((i % (int)(m_blockSize)) == 0)
     {
-      box = te::gm::Envelope(i, m_backEndBox.getLowerLeftY(), i, m_backEndBox.getLowerLeftY() + m_longLine);  
+      box = te::gm::Envelope(l, m_backEndBox.getLowerLeftY(), l, m_backEndBox.getLowerLeftY() + m_longLine);  
 
       std::stringstream ss;//create a stringstream
       ss << i;//add number to the stream
 
       utils->textBoundingBox(wtxt, htxt, ss.str());
-      canvas->drawText((double)i - (wtxt/2.), m_backEndBox.getLowerLeftY() + (m_longLine), ss.str(), 0);
+      canvas->drawText((double)l - (wtxt/2.), m_backEndBox.getLowerLeftY() + (m_longLine), ss.str(), 0);
     }
     else if((i % (int)(m_middleBlockSize)) == 0)
     {
-      box = te::gm::Envelope(i, m_backEndBox.getLowerLeftY(), i, m_backEndBox.getLowerLeftY() + m_mediumLine); 
+      box = te::gm::Envelope(l, m_backEndBox.getLowerLeftY(), l, m_backEndBox.getLowerLeftY() + m_mediumLine); 
     }
     else if((i % (int)(m_smallBlockSize)) == 0)
     {
-      box = te::gm::Envelope(i, m_backEndBox.getLowerLeftY(), i, m_backEndBox.getLowerLeftY() + m_smallLine);  
+      box = te::gm::Envelope(l, m_backEndBox.getLowerLeftY(), l, m_backEndBox.getLowerLeftY() + m_smallLine);  
     }
-        
+
     drawLineW(box, utils);
+    l += zoomFactor;
   }
 }
 

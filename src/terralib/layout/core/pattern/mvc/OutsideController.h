@@ -38,13 +38,14 @@ namespace te
   {
     class Observable;
     class Observer;
+    class EnumType;
 
     class TELAYOUTEXPORT OutsideController 
     {
     public:
 
       OutsideController(Observable* o);
-      OutsideController(Observable* o, LayoutAbstractObjectType type);
+      OutsideController(Observable* o, EnumType* type);
       virtual ~OutsideController();
 
       virtual void setPosition(const double& x, const double& y) = 0;

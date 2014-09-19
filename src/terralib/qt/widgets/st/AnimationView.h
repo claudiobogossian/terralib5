@@ -30,7 +30,7 @@
 #include "../Config.h"
 
 // Qt
-#include <QtWidgets/QGraphicsView>
+#include <QGraphicsView>
 
 namespace te
 {

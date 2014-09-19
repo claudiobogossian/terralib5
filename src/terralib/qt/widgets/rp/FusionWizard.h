@@ -79,6 +79,8 @@ namespace te
 
           bool executePCA();
 
+          bool executeWisper();
+
           void adjustRasters(te::rst::Raster* rInLower, te::rst::Raster* rInHigher, te::rst::Raster*& rOutLower, te::rst::Raster*& rOutHigher);
 
         private:

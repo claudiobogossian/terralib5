@@ -52,19 +52,15 @@ namespace te
 
         virtual void setPaperOrientation(LayoutOrientationType orientation);
         virtual LayoutOrientationType getPaperOrientantion();
-
-        virtual te::gm::Envelope* getPaperBoxW();
-        virtual void setPaperBoxW(te::gm::Envelope* box);
-
+        
       protected:
 
         LayoutAbstractPaperType m_paperType;
         LayoutOrientationType   m_paperOrientationType;
         double                  m_customW;
         double                  m_customH;
-        te::gm::Envelope*       m_paperBoxW;
     };
   }
 }
 
-#endif // __TERRALIB_LAYOUT_INTERNAL_PAPERLAYOUT_CONFIG_H
+#endif

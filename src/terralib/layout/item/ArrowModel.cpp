@@ -28,12 +28,15 @@
 // TerraLib
 #include "ArrowModel.h"
 #include "../core/ContextItem.h"
+#include "../core/enum/Enums.h"
 
 // STL
 #include <cmath>
 
 te::layout::ArrowModel::ArrowModel() 
 {
+  m_type = Enums::getInstance().getEnumObjectType()->getArrowItem();
+
   m_box = te::gm::Envelope(0., 0., 20., 20.);
 }
 
@@ -55,17 +58,10 @@ void te::layout::ArrowModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
   
-  drawArrow(canvas, utils);
-  
-  canvas->setPolygonContourWidth(2);
-  canvas->setPolygonContourColor(m_borderColor);
-  canvas->setPolygonFillColor(m_backgroundColor);
+  drawBackground(context);
 
-  if(m_border)
-  {
-    utils->drawRectW(m_box);
-  }
-  
+  drawArrow(canvas, utils);
+    
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
   

@@ -34,12 +34,23 @@
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
+#include "../../item/MapGridModel.h"
 
 te::layout::MapGridItem::MapGridItem( ItemController* controller, Observable* o ) :
   MapItem(controller, o)
 {
-  m_mapDisplay->setBackgroundColor(Qt::blue);
-  m_mapDisplay->refresh();
+  MapGridModel* model = dynamic_cast<MapGridModel*>(m_model);
+  if(model)
+  {
+    te::color::RGBAColor clr = model->getMapBackgroundColor();
+    QColor qcolor;
+    qcolor.setRed(clr.getRed());
+    qcolor.setGreen(clr.getGreen());
+    qcolor.setBlue(clr.getBlue());
+    qcolor.setAlpha(clr.getAlpha());
+    m_mapDisplay->setBackgroundColor(qcolor);
+    m_mapDisplay->refresh();
+  }
 
   m_nameClass = std::string(this->metaObject()->className());
 }

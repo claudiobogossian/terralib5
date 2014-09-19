@@ -88,12 +88,8 @@ void te::layout::VerticalRulerItem::updateObserver( ContextItem context )
     delete img;
 
   /* The ruler should not change the appearance. */
-  /*double zoomFactor = getZoomRuler();
-  setScale(zoomFactor);*/
-
   double zoomFactor = getZoomRuler();
-  QTransform transf(zoomFactor, 0, 0, 1., 0,0);
-  setTransform(transf);
+  setScale(zoomFactor);
 
   setPixmap(pixmap);
   update();
@@ -105,4 +101,3 @@ double te::layout::VerticalRulerItem::getZoomRuler()
   zoomFactor = 1. / zoomFactor;
   return zoomFactor;
 }
-

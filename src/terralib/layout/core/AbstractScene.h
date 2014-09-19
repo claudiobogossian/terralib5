@@ -50,7 +50,7 @@ namespace te
           params widthMM width of physical screen in millimeters
           params heightMM height of physical screen in millimeters
         */
-        virtual void init(double screenWMM, double screenHMM, double paperMMW, double paperMMH, double zoomFactor = 1.0) = 0;
+        virtual void init(double screenWMM, double screenHMM, double zoomFactor = 1.0) = 0;
 
       protected:
         

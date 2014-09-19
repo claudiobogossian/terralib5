@@ -71,8 +71,7 @@ namespace te
         enum CellSpaceType
         {
           CELLSPACE_POLYGONS, /*!< Polygons Type. */
-          CELLSPACE_POINTS,   /*!< Points Type. */
-          CELLSPACE_RASTER    /*!< Raster Type. */
+          CELLSPACE_POINTS    /*!< Points Type. */
         };
 
         CellularSpacesOperations();
@@ -109,38 +108,11 @@ namespace te
         */
         void createCellSpace(te::da::DataSourceInfoPtr outputSource,
                              const std::string& name,
-                             double resX,
-                             double resY,
-                             te::gm::Envelope& env,
-                             int srid,
-                             CellSpaceType type = CELLSPACE_POLYGONS);
-
-        /*!
-          \brief It return the created DataSetType.
-
-          \return The created DataSetType.
-
-          \note The caller of this method will take the ownership of the returned pointer.
-        */
-        te::da::DataSetType* getDataSetType();
-
-        /*!
-          \brief It return the created DataSet.
-
-          \return The created DataSet.
-
-          \note The caller of this method will take the ownership of the returned pointer.
-        */
-        te::da::DataSet* getDataSet();
-
-        /*!
-          \brief It return the created Raster.
-
-          \return The created Raster.
-
-          \note The caller of this method will take the ownership of the returned pointer.
-        */
-        std::auto_ptr<te::rst::Raster> getRaster();
+                             const double resX,
+                             const double resY,
+                             const te::gm::Envelope& env,
+                             const int srid,
+                             const CellSpaceType type = CELLSPACE_POLYGONS);
 
       private:
 
@@ -173,28 +145,6 @@ namespace te
           \return The DataSetType created.
         */
         te::da::DataSetType* createCellularDataSetType(const std::string& name, int srid, CellSpaceType type);
-
-        void createRasteCellSpace(te::da::DataSourceInfoPtr outputSource,
-                                  const std::string& name,
-                                  double resX,
-                                  double resY,
-                                  te::gm::Envelope& env,
-                                  int srid);
-
-        void createRasteCellSpace(te::da::DataSourceInfoPtr outputSource,
-                                  const std::string& name,
-                                  te::map::AbstractLayerPtr layerBase,
-                                  double resX,
-                                  double resY,
-                                  bool useMask);
-
-        void save(te::da::DataSourceInfoPtr sourceInfo);
-
-      private:
-
-        te::da::DataSetType* m_outputDataSetType; /*!< Output DataSetType. */
-        te::da::DataSet*     m_outputDataSet;     /*!< Output DataSet. */
-        std::auto_ptr<te::rst::Raster>     m_outputRaster;      /*!< Output Raster. */
     };
   }
 }

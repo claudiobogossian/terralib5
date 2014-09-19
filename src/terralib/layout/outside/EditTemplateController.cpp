@@ -32,14 +32,18 @@
 #include "../core/pattern/factory/AbstractOutsideFactory.h"
 #include "../core/pattern/singleton/Context.h"
 #include "../core/pattern/mvc/Observable.h"
+#include "../core/enum/Enums.h"
 
 te::layout::EditTemplateController::EditTemplateController( Observable* o ) :
-	OutsideController(o, TPEditTemplate)
+	OutsideController(o)
 {
+  EnumType* type = Enums::getInstance().getEnumObjectType()->getEditTemplate();
+  o->setType(type);
+
 	AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
 	OutsideParamsCreate params(this, m_model);
   if(factory)
-	  m_view = (Observer*)factory->make(TPEditTemplate, params);
+	  m_view = (Observer*)factory->make(m_model->getType(), params);
 }
 
 te::layout::EditTemplateController::~EditTemplateController()

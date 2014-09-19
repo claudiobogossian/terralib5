@@ -58,15 +58,18 @@ namespace te
         virtual GridPlanarModel* getGridPlanar();
 
         virtual GridGeodesicModel* getGridGeodesic();
-
+        
       protected:
 
         virtual void drawGrid(te::map::Canvas* canvas, Utils* utils);
+
+        virtual void drawBackground(ContextItem context);
 
         GridPlanarModel*    m_gridPlanar;
         GridGeodesicModel*  m_gridGeodesic;
         GeodesicGridSettingsConfigProperties* m_geodesicGridProperties;
         PlanarGridSettingsConfigProperties*   m_planarGridProperties;
+        bool                                  m_mapBorder;
     };
   }
 }

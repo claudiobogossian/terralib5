@@ -77,8 +77,12 @@ void te::qt::plugins::vp::Plugin::startup()
 // add plugin menu
   QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
   m_vpMenu = new QMenu(pluginMenu);
+  m_vpMenu->setIcon(QIcon::fromTheme("vp-vectorprocessing-icon"));
 
-  pluginMenu->addMenu(m_vpMenu);
+  // Insert action before plugin manager action
+  QAction* pluginsSeparator = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
+
+  pluginMenu->insertMenu(pluginsSeparator, m_vpMenu);
 
   m_vpMenu->setTitle(TE_TR("Vector Processing"));
 

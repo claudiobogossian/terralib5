@@ -27,11 +27,15 @@
 #include "../common/StringUtils.h"
 #include "../geometry/Envelope.h"
 #include "../dataaccess/query/DataSetName.h"
+#include "../dataaccess/query/Function.h"
 #include "../dataaccess/query/Having.h"
+#include "../dataaccess/query/Join.h"
+#include "../dataaccess/query/JoinConditionOn.h"
 #include "../dataaccess/query/LiteralEnvelope.h"
 #include "../dataaccess/query/PropertyName.h"
 #include "../dataaccess/query/Select.h"
 #include "../dataaccess/query/Where.h"
+#include "../dataaccess/Enums.h"
 #include "SQLVisitor.h"
 
 // STL
@@ -112,6 +116,71 @@ void te::ogr::SQLVisitor::visit(const te::da::Select& visited)
 
   if(visited.getOrderBy())
     te::da::SQLVisitor::visit(*(visited.getOrderBy()));
+}
+
+void te::ogr::SQLVisitor::visit(const te::da::Join& visited)
+{
+  assert(visited.getFirst() && visited.getSecond());
+
+  visited.getFirst()->accept(*this);
+
+  if(visited.isNatural())
+    m_sql += " NATURAL ";
+
+  switch(visited.getType())
+  {
+    case te::da::JOIN :
+      m_sql += " JOIN ";
+    break;
+
+    case te::da::INNER_JOIN :
+      m_sql += " INNER JOIN ";
+    break;
+
+    case te::da::LEFT_JOIN :
+      m_sql += " LEFT JOIN ";
+    break;
+
+    case te::da::RIGHT_JOIN :
+      m_sql += " RIGHT JOIN ";
+    break;
+
+    case te::da::FULL_OUTER_JOIN :
+      m_sql += " FULL OUTER JOIN ";
+    break;
+
+    case te::da::CROSS_JOIN :
+      m_sql += " CROSS JOIN ";
+    break;
+
+    case te::da::NATURAL_JOIN :
+      m_sql += " NATURAL JOIN ";
+    break;
+  }
+
+  visited.getSecond()->accept(*this);
+
+  if(visited.getCondition())
+  {
+    m_sql += " ";
+    visited.getCondition()->accept(*this);
+  }
+}
+
+void te::ogr::SQLVisitor::visit(const te::da::JoinConditionOn& visited)
+{
+  assert(visited.getCondition());  
+  m_sql += "ON ";
+
+  te::da::Function func = dynamic_cast< te::da::Function&>(*visited.getCondition());
+  const std::string& fname = func.getName();
+
+  assert(func.getNumArgs() == 2);
+  func[0]->accept(*this);
+  m_sql += " ";
+  m_sql += fname;
+  m_sql += " ";
+  func[1]->accept(*this);
 }
 
 void te::ogr::SQLVisitor::visitDistinct(const te::da::Distinct& visited)

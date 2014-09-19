@@ -33,6 +33,7 @@
 #include "../../../../geometry/Coord2D.h"
 #include "../../../../color/RGBAColor.h"
 #include "../../enum/AbstractType.h"
+#include "../../enum/EnumType.h"
 
 namespace te
 {
@@ -48,7 +49,7 @@ namespace te
 
         ItemController(Observable* o);
 
-        ItemController(Observable* o, LayoutAbstractObjectType type);
+        ItemController(Observable* o, EnumType* type);
 
         virtual ~ItemController();
 

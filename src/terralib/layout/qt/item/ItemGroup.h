@@ -77,6 +77,8 @@ namespace te
         virtual void mouseReleaseEvent ( QGraphicsSceneMouseEvent* event );
 
         virtual int getZValueItem();
+
+        virtual void applyRotation();
         
       protected:
 

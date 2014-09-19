@@ -71,6 +71,8 @@ namespace te
 
           void setOutputRaster(te::rst::Raster* raster);
 
+          void drawHistogram(int band);
+
 
         protected slots:
 

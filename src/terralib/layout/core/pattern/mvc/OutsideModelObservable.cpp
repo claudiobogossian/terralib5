@@ -31,14 +31,18 @@
 #include "../../property/Property.h"
 #include "../../property/Properties.h"
 #include "../singleton/Context.h"
+#include "../../enum/Enums.h"
 
 te::layout::OutsideModelObservable::OutsideModelObservable() :
 	m_color(0),
-  m_type(TPObjectUnknown),
+  m_type(0),
   m_name("unknown"),
   m_id(0),
   m_resizable(true)
 {
+  EnumObjectType* type = Enums::getInstance().getEnumObjectType();
+  m_type = type->getObjectUnknown();
+
   m_properties = new Properties("Unknown");
 }
 
@@ -124,12 +128,12 @@ te::layout::Properties* te::layout::OutsideModelObservable::getProperties() cons
   return m_properties;
 }
 
-te::layout::LayoutAbstractObjectType te::layout::OutsideModelObservable::getType()
+te::layout::EnumType* te::layout::OutsideModelObservable::getType()
 {
   return m_type;
 }
 
-void te::layout::OutsideModelObservable::setType( LayoutAbstractObjectType type )
+void te::layout::OutsideModelObservable::setType( EnumType* type )
 {
   m_type = type;
 }

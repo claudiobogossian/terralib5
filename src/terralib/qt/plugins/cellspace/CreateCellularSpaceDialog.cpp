@@ -34,10 +34,8 @@
 #include "../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../dataaccess/utils/Utils.h"
-#include "../../../geometry/Utils.h"
 #include "../../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../../qt/widgets/srs/SRSManagerDialog.h"
-#include "../../../raster.h"
 #include "../../../srs/SpatialReferenceSystemManager.h"
 #include "../../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "ui_CreateCellularSpaceDialogForm.h"
@@ -58,10 +56,10 @@ Q_DECLARE_METATYPE(te::common::UnitOfMeasurePtr);
 
 te::qt::plugins::cellspace::CreateCellularSpaceDialog::CreateCellularSpaceDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::CreateCellularSpaceDialogForm),
+    m_currentSRID(4618),
     m_isFile(false),
     m_outputDataSetName(""),
-    m_currentSRID(4618)
+    m_ui(new Ui::CreateCellularSpaceDialogForm)
 {
 // add controls
   m_ui->setupUi(this);
@@ -69,9 +67,8 @@ te::qt::plugins::cellspace::CreateCellularSpaceDialog::CreateCellularSpaceDialog
 // Set icons
   m_ui->m_maskToolButton->setIcon(QIcon::fromTheme("cellspace-mask-hint"));
   m_ui->m_noMaskToolButton->setIcon(QIcon::fromTheme("cellspace-no-mask-hint"));
-  m_ui->m_vectorToolButton->setIcon(QIcon::fromTheme("cellspace-vector-hint"));
+  m_ui->m_polygonsToolButton->setIcon(QIcon::fromTheme("cellspace-polygons-hint"));
   m_ui->m_pointsToolButton->setIcon(QIcon::fromTheme("cellspace-points-hint"));
-  m_ui->m_rasterToolButton->setIcon(QIcon::fromTheme("cellspace-raster-hint"));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
   m_ui->m_srsToolButton->setIcon(QIcon::fromTheme("srs"));
 
@@ -82,23 +79,27 @@ te::qt::plugins::cellspace::CreateCellularSpaceDialog::CreateCellularSpaceDialog
   m_ui->m_uryLineEdit->setValidator(new QDoubleValidator(this));
   m_ui->m_resXLineEdit->setValidator(new QDoubleValidator(0, 99999999, 8, this));
   m_ui->m_resYLineEdit->setValidator(new QDoubleValidator(0, 99999999, 8, this));
+  m_ui->m_rowsLineEdit->setValidator(new QIntValidator(this));
+  m_ui->m_colsLineEdit->setValidator(new QIntValidator(this));
 
   initUnitsOfMeasure();
 
   connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLayersComboBoxChanged(int)));
   connect(m_ui->m_unitComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onUnitComboBoxChanged(int)));
-  connect(m_ui->m_resXLineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(onResXLineEditTextChanged(const QString &)));
-  connect(m_ui->m_resYLineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(onResYLineEditTextChanged(const QString &)));
+
+  connect(m_ui->m_resXLineEdit, SIGNAL(editingFinished()), this, SLOT(onResXLineEditEditingFinished()));
+  connect(m_ui->m_resYLineEdit, SIGNAL(editingFinished()), this, SLOT(onResYLineEditEditingFinished()));
+  connect(m_ui->m_colsLineEdit, SIGNAL(editingFinished()), this, SLOT(onColsLineEditEditingFinished()));
+  connect(m_ui->m_rowsLineEdit, SIGNAL(editingFinished()), this, SLOT(onRowsLineEditEditingFinished()));
   connect(m_ui->m_llxLineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(onEnvelopeChanged(const QString &)));
   connect(m_ui->m_llyLineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(onEnvelopeChanged(const QString &)));
   connect(m_ui->m_urxLineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(onEnvelopeChanged(const QString &)));
   connect(m_ui->m_uryLineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(onEnvelopeChanged(const QString &)));
+
   connect(m_ui->m_targetFileToolButton, SIGNAL(clicked()), this, SLOT(onTargetFileToolButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(clicked()), this, SLOT(onTargetDatasourceToolButtonClicked()));
   connect(m_ui->m_createPushButton, SIGNAL(clicked()), this, SLOT(onCreatePushButtonClicked()));
-  connect(m_ui->m_vectorToolButton, SIGNAL(toggled(bool)), this, SLOT(onVectorToolButtonToggled(bool)));
-  connect(m_ui->m_pointsToolButton, SIGNAL(toggled(bool)), this, SLOT(onPointsToolButtonToggled(bool)));
-  connect(m_ui->m_rasterToolButton, SIGNAL(toggled(bool)), this, SLOT(onRasterToolButtonToggled(bool)));
+  connect(m_ui->m_referenceGroupBox, SIGNAL(toggled(bool)), this, SLOT(onReferenceGroupBoxToggled(bool)));
   connect(m_ui->m_srsToolButton, SIGNAL(clicked()), this, SLOT(onSrsToolButtonClicked()));
 }
 
@@ -108,7 +109,14 @@ te::qt::plugins::cellspace::CreateCellularSpaceDialog::~CreateCellularSpaceDialo
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
-  m_ui->m_layersComboBox->addItem(tr("NONE"));
+  if(layers.empty())
+  {
+    m_ui->m_srsToolButton->setEnabled(true);
+    m_ui->m_referenceGroupBox->setChecked(false);
+    m_ui->m_referenceGroupBox->setEnabled(false);
+    showSRS();
+    return;
+  }
 
   std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
 
@@ -120,38 +128,13 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::setLayers(std::list<
     ++it;
   }
 
-  // If there is a layer, set as current
-  if(m_ui->m_layersComboBox->count() > 2)
-  {
-    m_ui->m_layersComboBox->setCurrentIndex(1);
-    m_ui->m_srsToolButton->setEnabled(false);
-    m_currentSRID = getReferenceLayer()->getSRID();
-    showSRS();
-  }
-  else
-  {
-    m_ui->m_srsToolButton->setEnabled(true);
-  }
+  te::map::AbstractLayerPtr layer = getReferenceLayer();
+  m_currentSRID = layer->getSRID();
+  showSRS();
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onLayersComboBoxChanged(int index)
 {
-  if(isNone())
-  {
-    m_ui->m_srsToolButton->setEnabled(true);
-    m_ui->m_maskToolButton->setEnabled(false);
-    m_ui->m_noMaskToolButton->setChecked(true);
-    clearEnvelope();
-    clearResolution();
-    return;
-  }
-
-  m_ui->m_srsToolButton->setEnabled(false);
-  m_ui->m_maskToolButton->setEnabled(true);
-  m_ui->m_maskToolButton->setChecked(true);
-
-  m_ui->m_srsToolButton->setEnabled(false);
-
   te::map::AbstractLayerPtr layer = getReferenceLayer();
 
   if(!layer)
@@ -179,88 +162,143 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onLayersComboBoxChan
   }
 }
 
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onResXLineEditTextChanged(const QString & text)
+void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onResXLineEditEditingFinished()
 {
-  if(m_ui->m_resXLineEdit->text().isEmpty())
-  {
-    m_ui->m_colsLineEdit->clear();
-    m_ui->m_rowsLineEdit->clear();
-    return;
-  }
-
-  updateValues();
-}
-
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onResYLineEditTextChanged(const QString & text)
-{
-  if(m_ui->m_resYLineEdit->text().isEmpty())
-  {
-    m_ui->m_colsLineEdit->clear();
-    m_ui->m_rowsLineEdit->clear();
-    return;
-  }
-
-  updateValues();
-}
-
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onEnvelopeChanged(const QString & text)
-{
-  updateValues();
-}
-
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::updateValues()
-{
-  if(!isBasicInfoSet())
-    return;
-
   double resX = getResX();
-  double resY = getResY();
-
-  /*
-  te::map::AbstractLayerPtr layer = getReferenceLayer();
-
-  te::common::UnitOfMeasurePtr layerUnit;
-  te::common::UnitOfMeasurePtr currentUnit = getCurrentUnit();
-
-  if(layer)
-    layerUnit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(layer->getSRID());
-  else
-    layerUnit = currentUnit;
-
-  if(layerUnit != currentUnit)
-  {
-    try
-    {
-      double factorX = te::common::UnitsOfMeasureManager::getInstance().getConversion(layerUnit->getName(), currentUnit->getName());
-      double factorY = te::common::UnitsOfMeasureManager::getInstance().getConversion(layerUnit->getName(), currentUnit->getName());
-      resX = resX/factorX;
-      resY = resY/factorY;
-    }
-    catch(te::common::Exception& e)
-    {
-      QMessageBox::warning(this, tr("Cellular Spaces"), e.what());
-      clearResolution();
-    }
-  }*/
 
   te::gm::Envelope env = getOutputEnvelope();
 
   if(!env.isValid())
   {
-    // MESSAGE ERROR!!!  TODO
+    QMessageBox::warning(this, tr("Cellular Spaces"), tr("Invalid envelope!"));
     return;
   }
 
   double lWidth = env.getWidth();
   double lHeight = env.getHeight();
 
-  te::gm::Envelope newEnv = te::gm::AdjustToCut(env, resX, resY);
-
-  int maxCols = (int)((newEnv.m_urx - newEnv.m_llx)/resX);
-  int maxRows = (int)((newEnv.m_ury - newEnv.m_lly)/resY);
+  int maxCols = (int)ceil((env.m_urx - env.m_llx)/resX);
 
   m_ui->m_colsLineEdit->setText(QString::number(maxCols));
+}
+
+void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onResYLineEditEditingFinished()
+{
+  double resY = getResY();
+
+  te::gm::Envelope env = getOutputEnvelope();
+
+  if(!env.isValid())
+  {
+    QMessageBox::warning(this, tr("Cellular Spaces"), tr("Invalid envelope!"));
+    return;
+  }
+
+  double lWidth = env.getWidth();
+  double lHeight = env.getHeight();
+
+  int maxRows = (int)ceil((env.m_ury - env.m_lly)/resY);
+
   m_ui->m_rowsLineEdit->setText(QString::number(maxRows));
+}
+
+void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onColsLineEditEditingFinished()
+{
+  int cols = m_ui->m_colsLineEdit->text().toInt();
+
+  te::gm::Envelope env = getOutputEnvelope();
+
+  if(!env.isValid())
+  {
+    QMessageBox::warning(this, tr("Cellular Spaces"), tr("Invalid envelope!"));
+    return;
+  }
+
+  double lWidth = env.getWidth();
+  double lHeight = env.getHeight();
+
+  double resX = (env.m_urx - env.m_llx)/cols;
+
+  te::map::AbstractLayerPtr layer = getReferenceLayer();
+
+  te::common::UnitOfMeasurePtr layerUnit;
+  te::common::UnitOfMeasurePtr currentUnit = getCurrentUnit();
+
+  if(layer)
+  {
+    layerUnit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(layer->getSRID());
+  }
+  else
+  {
+    layerUnit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_currentSRID);
+  }
+
+  if(layerUnit != currentUnit)
+  {
+    try
+    {
+      double factorX = te::common::UnitsOfMeasureManager::getInstance().getConversion(layerUnit->getName(), currentUnit->getName());
+      resX = resX/factorX;
+    }
+    catch(te::common::Exception& /*e*/)
+    {
+      clearResolution();
+    }
+  }
+
+  m_ui->m_resXLineEdit->setText(QString::number(resX));
+}
+
+void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onRowsLineEditEditingFinished()
+{
+  int rows = m_ui->m_rowsLineEdit->text().toInt();
+
+  te::gm::Envelope env = getOutputEnvelope();
+
+  if(!env.isValid())
+  {
+    QMessageBox::warning(this, tr("Cellular Spaces"), tr("Invalid envelope!"));
+    return;
+  }
+
+  double lWidth = env.getWidth();
+  double lHeight = env.getHeight();
+
+  double resY = (env.m_ury - env.m_lly)/rows;
+
+  te::map::AbstractLayerPtr layer = getReferenceLayer();
+
+  te::common::UnitOfMeasurePtr layerUnit;
+  te::common::UnitOfMeasurePtr currentUnit = getCurrentUnit();
+
+  if(layer)
+  {
+    layerUnit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(layer->getSRID());
+  }
+  else
+  {
+    layerUnit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_currentSRID);
+  }
+
+  if(layerUnit != currentUnit)
+  {
+    try
+    {
+      double factorY = te::common::UnitsOfMeasureManager::getInstance().getConversion(layerUnit->getName(), currentUnit->getName());
+      resY = resY/factorY;
+    }
+    catch(te::common::Exception& /*e*/)
+    {
+      clearResolution();
+    }
+  }
+
+  m_ui->m_resYLineEdit->setText(QString::number(resY));
+}
+
+void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onEnvelopeChanged(const QString & text)
+{
+  clearResolution();
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonClicked()
@@ -276,7 +314,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
 
   te::map::AbstractLayerPtr referenceLayer;
   
-  if(!isNone())
+  if(!isNoReference())
     referenceLayer = getReferenceLayer();
   
   double resX = getResX();
@@ -287,7 +325,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
 
   te::cellspace::CellularSpacesOperations::CellSpaceType type;
 
-  if(m_ui->m_vectorToolButton->isChecked())
+  if(m_ui->m_polygonsToolButton->isChecked())
   {
     type = te::cellspace::CellularSpacesOperations::CELLSPACE_POLYGONS;
   }
@@ -295,14 +333,10 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
   {
     type = te::cellspace::CellularSpacesOperations::CELLSPACE_POINTS;
   }
-  else if(m_ui->m_rasterToolButton->isChecked())
-  {
-    type = te::cellspace::CellularSpacesOperations::CELLSPACE_RASTER;
-  }
 
   try
   {
-    if(isNone())
+    if(isNoReference())
       cellSpaceOp->createCellSpace(m_outDataSourceInfo, m_outputDataSetName, resX, resY, getEnvelope(), m_currentSRID, type);
     else
       cellSpaceOp->createCellSpace(m_outDataSourceInfo, m_outputDataSetName, referenceLayer, resX, resY, isPolygonsAsMask, type);
@@ -325,16 +359,8 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onTargetFileToolButt
 
   std::string accessDriver;
 
-  if(m_ui->m_rasterToolButton->isChecked())
-  {
-    extension = tr("TIF (*.tif *.Tif);;");
-    accessDriver = "GDAL";
-  }
-  else
-  {
-    extension = tr("Shapefile (*.shp *.SHP);;");
-    accessDriver = "OGR";
-  }
+  extension = tr("Shapefile (*.shp *.SHP);;");
+  accessDriver = "OGR";
 
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
                      QString(), extension, 0, QFileDialog::DontConfirmOverwrite);
@@ -408,7 +434,6 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onUnitComboBoxChange
     try
     {
       double factorX = te::common::UnitsOfMeasureManager::getInstance().getConversion(layerUnit->getName(), currentUnit->getName());
-      resX = resX/factorX;
     }
     catch(te::common::Exception& /*e*/)
     {
@@ -417,22 +442,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onUnitComboBoxChange
     }
   }
 
-  updateValues();
-}
-
-bool te::qt::plugins::cellspace::CreateCellularSpaceDialog::isBasicInfoSet()
-{
-  if( m_ui->m_llxLineEdit->text().isEmpty() ||
-      m_ui->m_llyLineEdit->text().isEmpty() ||
-      m_ui->m_urxLineEdit->text().isEmpty() ||
-      m_ui->m_uryLineEdit->text().isEmpty() ||
-      m_ui->m_resXLineEdit->text().isEmpty() ||
-      m_ui->m_resYLineEdit->text().isEmpty())
-  {
-    return false;
-  }
-
-  return true;
+  clearResolution();
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::initUnitsOfMeasure()
@@ -446,7 +456,15 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::initUnitsOfMeasure()
     ++it;
   }
 
-  m_ui->m_unitComboBox->setCurrentIndex(1);
+  if(m_currentSRID > 0)
+  {
+    te::common::UnitOfMeasurePtr unit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_currentSRID);
+    setCurrentUnit(unit);
+  }
+  else
+  {
+    m_ui->m_unitComboBox->setCurrentIndex(1);
+  }
 }
 
 te::gm::Envelope te::qt::plugins::cellspace::CreateCellularSpaceDialog::getOutputEnvelope()
@@ -588,31 +606,10 @@ te::map::AbstractLayerPtr te::qt::plugins::cellspace::CreateCellularSpaceDialog:
 
   te::map::AbstractLayerPtr layer = converter(dt);
 
-  if(isNone() || layer->getSRID() <= 0)
+  if(isNoReference() || layer->getSRID() <= 0)
     layer->setSRID(m_currentSRID);
 
   return layer;
-}
-
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onVectorToolButtonToggled(bool isToggled)
-{
-  m_ui->m_targetDatasourceToolButton->setEnabled(isToggled);
-  m_ui->m_targetFileToolButton->setEnabled(isToggled);
-  m_ui->m_newLayerNameLineEdit->setEnabled(isToggled);
-}
-
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onPointsToolButtonToggled(bool isToggled)
-{
-  m_ui->m_targetDatasourceToolButton->setEnabled(isToggled);
-  m_ui->m_targetFileToolButton->setEnabled(isToggled);
-  m_ui->m_newLayerNameLineEdit->setEnabled(isToggled);
-}
-
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onRasterToolButtonToggled(bool isToggled)
-{
-  m_ui->m_targetDatasourceToolButton->setEnabled(!isToggled);
-  m_ui->m_targetFileToolButton->setEnabled(isToggled);
-  m_ui->m_newLayerNameLineEdit->setEnabled(!isToggled);
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onSrsToolButtonClicked()
@@ -656,14 +653,6 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::showSRS()
   std::string name = te::srs::SpatialReferenceSystemManager::getInstance().getName(m_currentSRID);
 
   m_ui->m_sridLabel->setText(name.c_str());
-}
-
-bool te::qt::plugins::cellspace::CreateCellularSpaceDialog::isNone()
-{
-  if(m_ui->m_layersComboBox->currentIndex() == 0)
-    return true;
-  else
-    return false;
 }
 
 double te::qt::plugins::cellspace::CreateCellularSpaceDialog::getResX()
@@ -732,4 +721,27 @@ double te::qt::plugins::cellspace::CreateCellularSpaceDialog::getResY()
   }
 
   return resY;
+}
+
+void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onReferenceGroupBoxToggled(bool isToggled)
+{
+  m_ui->m_srsToolButton->setEnabled(!isToggled);
+
+  if(!isToggled)
+  {
+    clearEnvelope();
+    clearResolution();
+  }
+  else
+  {
+    onLayersComboBoxChanged(0);
+  }
+}
+
+bool te::qt::plugins::cellspace::CreateCellularSpaceDialog::isNoReference()
+{
+  if(m_ui->m_referenceGroupBox->isChecked())
+    return false;
+  else
+    return true;
 }

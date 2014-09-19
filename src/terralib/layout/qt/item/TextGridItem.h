@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_TEXT_GRID_ITEM_H
 
 // TerraLib
-#include "ObjectItem.h"
+#include "TitleItem.h"
 
 namespace te
 {
@@ -37,14 +37,19 @@ namespace te
   {
     class Observable;
 
-    class TextGridItem : public ObjectItem
+    class TextGridItem : public TitleItem
     {
       public:
 
         TextGridItem( ItemController* controller, Observable* o );
+
         virtual ~TextGridItem();
         
-        virtual void updateObserver(ContextItem context);
+        virtual void init();
+
+      protected:
+        
+        virtual void refreshText();
     };
   }
 }

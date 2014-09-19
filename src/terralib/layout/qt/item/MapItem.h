@@ -37,7 +37,6 @@
 #include "../../../qt/widgets/canvas/MultiThreadMapDisplay.h"
 #include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
-#include "../../core/enum/EnumMode.h"
 
 class QGraphicsSceneMouseEvent;
 class QMimeData;
@@ -49,6 +48,7 @@ namespace te
   {
     class Observable;
     class ItemController;
+    class EnumType;
 
     class MapItem : public QGraphicsProxyWidget, public ItemObserver
     {
@@ -72,14 +72,14 @@ namespace te
 
         void	setZValue ( qreal z );
 
-        virtual void changeCurrentTool(LayoutMode mode);
+        virtual void changeCurrentTool(EnumType* mode);
 
         void clearCurrentTool();
                         
       protected slots:
 
           void onDrawLayersFinished(const QMap<QString, QString>& errors);
-
+          
     protected:
       
       virtual void	dropEvent ( QGraphicsSceneDragDropEvent * event );
@@ -87,11 +87,17 @@ namespace te
       //Override method for using moves, selected, etc., 
       //which are implemented by default in QGraphicsItem
       virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+
       virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );
+
       virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+
       virtual void	dragEnterEvent ( QGraphicsSceneDragDropEvent * event );
+
       virtual void	dragLeaveEvent ( QGraphicsSceneDragDropEvent * event );
+
       virtual void	dragMoveEvent ( QGraphicsSceneDragDropEvent * event );
+
       virtual void resizeEvent ( QGraphicsSceneResizeEvent * event );
 
       virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
@@ -109,6 +115,8 @@ namespace te
       virtual int getZValueItem();
 
       void setCurrentTool(te::qt::widgets::AbstractTool* tool);
+
+      virtual void applyRotation();
 
     protected:
 

@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_TITLE_ITEM_H
 
 // TerraLib
-#include "ObjectItem.h"
+#include "DefaultTextItem.h"
 
 namespace te
 {
@@ -37,14 +37,20 @@ namespace te
   {
     class Observable;
 
-    class TitleItem : public ObjectItem
+    class TitleItem : public DefaultTextItem
     {
       public:
 
         TitleItem( ItemController* controller, Observable* o );
         virtual ~TitleItem();
         
-        virtual void updateObserver(ContextItem context);
+        virtual void init();
+
+      protected:
+
+        virtual void refreshTable();
+
+        virtual void refreshText();
     };
   }
 }

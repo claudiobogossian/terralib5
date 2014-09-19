@@ -35,15 +35,16 @@
 #include "../core/pattern/factory/ItemParamsCreate.h"
 #include "../core/pattern/mvc/ItemObserver.h"
 #include "../core/pattern/mvc/Observer.h"
+#include "../core/enum/Enums.h"
 
 te::layout::TitleController::TitleController( Observable* o ) :
-  ItemController(o, TPTitleItem)
+  DefaultTextController(o, 0)
 {
   create();
 }
 
-te::layout::TitleController::TitleController( Observable* o, LayoutAbstractObjectType type ) :
-  ItemController(o, type)
+te::layout::TitleController::TitleController( Observable* o, EnumType* type ) :
+  DefaultTextController(o, type)
 {
 
 }
@@ -67,5 +68,5 @@ void te::layout::TitleController::create()
 {
   AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPTitleItem, params);
+  m_view = (Observer*)factory->make(m_model->getType(), params);
 }

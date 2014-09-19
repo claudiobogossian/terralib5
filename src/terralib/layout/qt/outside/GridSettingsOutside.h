@@ -37,7 +37,6 @@
 #include "../../core/Config.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../color/RGBAColor.h"
-#include "../../core/enum/EnumMode.h"
 
 namespace Ui { class GridSettings; }
 

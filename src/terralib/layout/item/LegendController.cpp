@@ -33,14 +33,15 @@
 #include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/pattern/factory/ItemParamsCreate.h"
 #include "../core/pattern/mvc/ItemObserver.h"
+#include "../core/enum/Enums.h"
 
 te::layout::LegendController::LegendController( Observable* o ) :
-  ItemController(o, TPLegendItem)
+  ItemController(o)
 {
   create();
 }
 
-te::layout::LegendController::LegendController( Observable* o, LayoutAbstractObjectType type ) :
+te::layout::LegendController::LegendController( Observable* o, EnumType* type ) :
   ItemController(o, type)
 {
 
@@ -65,5 +66,5 @@ void te::layout::LegendController::create()
 {
   AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPLegendItem, params);
+  m_view = (Observer*)factory->make(m_model->getType(), params);
 }

@@ -46,7 +46,7 @@ namespace te
 
       protected:
 
-        LegendController( Observable* o, LayoutAbstractObjectType type );
+        LegendController( Observable* o, EnumType* type );
 
         virtual void create();
     };

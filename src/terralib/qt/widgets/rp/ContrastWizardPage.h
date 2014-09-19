@@ -96,11 +96,15 @@ namespace te
 
           void onContrastTypeComboBoxActivated(int index);
 
+          void onCellClicked(int row, int column);
+
           void onMinValueSelected(int value, int band);
 
           void onMaxValueSelected(int value, int band);
 
           void onPreviewChanged();
+
+          void drawHistogram();
 
         private:
 

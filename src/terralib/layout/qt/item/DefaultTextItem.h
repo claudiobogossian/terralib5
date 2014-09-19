@@ -36,6 +36,8 @@
 #include <QPixmap>
 #include <QVariant>
 #include <QPainter>
+#include <QTextTable>
+#include <QVariant>
 
 namespace te
 {
@@ -45,6 +47,8 @@ namespace te
 
     class DefaultTextItem : public QGraphicsTextItem, public ItemObserver
     {
+      Q_OBJECT //for slots/signals
+
       public:
 
         DefaultTextItem( ItemController* controller, Observable* o );
@@ -72,13 +76,37 @@ namespace te
 
         void	setZValue ( qreal z );
 
+        virtual void init();
+
+        void setTextInteraction(bool on, bool selectAll = false);
+
+      protected slots:
+
+        virtual void onContentsChange ( int position, int charsRemoved, int charsAdded );
+
       protected:
 
+        virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *evt);
+
+        virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
+
         virtual void drawBackground( QPainter* painter );
+
         virtual void drawSelection(QPainter* painter);
+
+        virtual void adjustSizeMM();
+
+        virtual void refreshTable();
+
+        virtual void refreshText();
+
+        virtual void applyRotation();
 
         QPixmap m_pixmap;
         QRectF  m_rect;//In local coordinate
+        QTextTable*    m_table;
+        double         m_oldAdjustSizeW;
+        double         m_oldAdjustSizeH;
     };
   }
 }

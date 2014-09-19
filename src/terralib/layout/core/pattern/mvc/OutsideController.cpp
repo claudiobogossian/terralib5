@@ -29,6 +29,7 @@
 #include "OutsideController.h"
 #include "OutsideObserver.h"
 #include "OutsideModelObservable.h"
+#include "../../enum/EnumType.h"
 
 te::layout::OutsideController::OutsideController( Observable* o ) :
   m_model(o)
@@ -36,7 +37,7 @@ te::layout::OutsideController::OutsideController( Observable* o ) :
 	
 }
 
-te::layout::OutsideController::OutsideController( Observable* o, LayoutAbstractObjectType type ) :
+te::layout::OutsideController::OutsideController( Observable* o, EnumType* type ) :
   m_model(o)
 {
   if(m_model)

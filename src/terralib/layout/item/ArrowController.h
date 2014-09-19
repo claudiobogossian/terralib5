@@ -46,7 +46,7 @@ namespace te
 
       protected:
 
-        ArrowController( Observable* o, LayoutAbstractObjectType type );
+        ArrowController( Observable* o, EnumType* type );
 
         virtual void create();
     };

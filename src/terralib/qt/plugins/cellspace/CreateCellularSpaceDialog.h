@@ -64,79 +64,84 @@ namespace te
 
             ~CreateCellularSpaceDialog();
 
-            void setLayers(std::list<te::map::AbstractLayerPtr> layers);
-
             te::map::AbstractLayerPtr getLayer();
 
+            void setLayers(std::list<te::map::AbstractLayerPtr> layers);
+
           protected slots:
+
+            void onEnvelopeChanged(const QString & text);
 
             void onLayersComboBoxChanged(int index);
 
             void onUnitComboBoxChanged(int index);
 
-            void onResXLineEditTextChanged(const QString & text);
-
-            void onResYLineEditTextChanged(const QString & text);
-
-            void onEnvelopeChanged(const QString & text);
-
-            void onTargetFileToolButtonClicked();
-
-            void onTargetDatasourceToolButtonClicked();
 
             void onCreatePushButtonClicked();
 
-            void onVectorToolButtonToggled(bool isToggled);
-
-            void onPointsToolButtonToggled(bool isToggled);
-
-            void onRasterToolButtonToggled(bool isToggled);
-
             void onSrsToolButtonClicked();
 
+            void onTargetDatasourceToolButtonClicked();
+
+            void onTargetFileToolButtonClicked();
+
+
+            void onResXLineEditEditingFinished();
+
+            void onResYLineEditEditingFinished();
+
+            void onColsLineEditEditingFinished();
+
+            void onRowsLineEditEditingFinished();
+
+            void onReferenceGroupBoxToggled(bool isToggled);
+
           private:
-
-            te::common::UnitOfMeasurePtr getCurrentUnit();
-
-            void setCurrentUnit(te::common::UnitOfMeasurePtr unit);
-
-            void initUnitsOfMeasure();
-
-            void showEnvelope(const te::gm::Envelope env);
-
-            void showSRS();
-
-            bool isBasicInfoSet();
-
-            void updateValues();
-
-            bool checkList(std::string& errors);
-
-            te::gm::Envelope getOutputEnvelope();
-
-            te::da::DataSourceInfoPtr getDataSourceInfo();
-
-            te::map::AbstractLayerPtr getReferenceLayer();
-
-            te::gm::Envelope getEnvelope();
 
             void clearEnvelope();
 
             void clearResolution();
 
-            bool isNone();
+
+            te::common::UnitOfMeasurePtr getCurrentUnit();
+
+            te::da::DataSourceInfoPtr getDataSourceInfo();
+
+            te::gm::Envelope getEnvelope();
+
+            te::gm::Envelope getOutputEnvelope();
+
+            te::map::AbstractLayerPtr getReferenceLayer();
 
             double getResX();
 
             double getResY();
 
+
+            void initUnitsOfMeasure();
+
+
+            void setCurrentUnit(te::common::UnitOfMeasurePtr unit);
+
+
+            void showEnvelope(const te::gm::Envelope env);
+
+            void showSRS();
+
+
+            bool isNoReference();
+
+            bool checkList(std::string& errors);
+
           private:
 
+            int                        m_currentSRID;
+            bool                       m_isFile;
+            te::da::DataSourceInfoPtr  m_outDataSourceInfo;
+            std::string                m_outputDataSetName;
+
             std::auto_ptr<Ui::CreateCellularSpaceDialogForm> m_ui;
-            bool m_isFile;
-            te::da::DataSourceInfoPtr m_outDataSourceInfo;
-            std::string m_outputDataSetName;
-            int m_currentSRID;
+
         }; 
       }   // end namespace cellspace
     }     // end namespace plugins

@@ -32,9 +32,10 @@
 #include "../factory/AbstractOutsideFactory.h"
 #include "../../../../maptools/Canvas.h"
 #include "../../../../geometry/Envelope.h"
+#include "../../enum/Enums.h"
 
 te::layout::Context::Context() :
-  m_mode(TypeNone),
+  m_mode(0),
   m_scene(0),
   m_canvas(0),
   m_zoomFactor(1.),
@@ -49,9 +50,11 @@ te::layout::Context::Context() :
   m_version("TerraPrintQt4_1.0.0"),
   m_paperConfig(0),
   m_buildGraphicsItem(0),
-  m_lineIntersectionMouseMode(TypeOffLinesIntersectionMouse)
+  m_lineIntersectionMouseMode(0)
 {
-
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  m_mode = type->getModeNone();
+  m_lineIntersectionMouseMode = type->getModeOffLinesIntersectionMouse();
 }
 
 te::layout::Context::~Context()
@@ -59,7 +62,7 @@ te::layout::Context::~Context()
 
 }
 
-te::layout::LayoutMode te::layout::Context::getMode()
+te::layout::EnumType* te::layout::Context::getMode()
 {
   return m_mode;
 }
@@ -69,7 +72,7 @@ te::layout::AbstractScene* te::layout::Context::getScene()
   return m_scene;
 }
 
-void te::layout::Context::setMode( LayoutMode mode )
+void te::layout::Context::setMode( EnumType* mode )
 {
   m_mode = mode;
 }
@@ -194,12 +197,12 @@ void te::layout::Context::setBuildGraphicsItem( BuildGraphicsItem* build )
   m_buildGraphicsItem = build;
 }
 
-te::layout::LayoutMode te::layout::Context::getLineIntersectionMouseMode()
+te::layout::EnumType* te::layout::Context::getLineIntersectionMouseMode()
 {
   return m_lineIntersectionMouseMode;
 }
 
-void te::layout::Context::setLineIntersectionMouseMode( LayoutMode mode )
+void te::layout::Context::setLineIntersectionMouseMode( EnumType* mode )
 {
   m_lineIntersectionMouseMode = mode;
 }

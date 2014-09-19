@@ -32,8 +32,8 @@
 #include "../../geometry/Envelope.h"
 #include "../../geometry/Coord2D.h"
 #include "../core/property/Property.h"
-#include "../core/enum/EnumUtils.h"
 #include "../core/property/PlanarGridSettingsConfigProperties.h"
+#include "../core/enum/Enums.h"
 
 // STL
 #include <string>
@@ -79,6 +79,9 @@ void te::layout::GridPlanarModel::draw( te::map::Canvas* canvas, Utils* utils, t
   te::color::RGBAColor color = te::color::RGBAColor(0, 0, 0, 255);
   canvas->setLineColor(color);
   
+  canvas->setTextPointSize(m_pointTextSize);
+  canvas->setFontFamily(m_fontText);
+
   drawVerticalLines(canvas, utils, box);
   drawHorizontalLines(canvas, utils, box);
 }
@@ -235,140 +238,142 @@ te::layout::Property te::layout::GridPlanarModel::getProperty()
 {
   m_property.clear();
 
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
   m_property.setName(m_settingsConfig->getName());
   m_property.setId("unknown");
   std::string sValuePlanar = "Settings";
-  m_property.setValue(sValuePlanar, DataTypeGridSettings);
+  m_property.setValue(sValuePlanar, dataType->getDataTypeGridSettings());
 
   Property pro_name;
   pro_name.setName(m_settingsConfig->getName());
-  pro_name.setValue(m_name, DataTypeString);
+  pro_name.setValue(m_name, dataType->getDataTypeString());
   m_property.addSubProperty(pro_name);
   
   /* Grid */
 
   Property pro_visible;
   pro_visible.setName(m_settingsConfig->getVisible());
-  pro_visible.setValue(m_visible, DataTypeBool);  
+  pro_visible.setValue(m_visible, dataType->getDataTypeBool());  
   m_property.addSubProperty(pro_visible);
 
   Property pro_lneHrzGap;
   pro_lneHrzGap.setName(m_settingsConfig->getLneHrzGap());
-  pro_lneHrzGap.setValue(m_lneHrzGap, DataTypeDouble);  
+  pro_lneHrzGap.setValue(m_lneHrzGap, dataType->getDataTypeDouble());  
   m_property.addSubProperty(pro_lneHrzGap);
 
   Property pro_lneVrtGap;
   pro_lneVrtGap.setName(m_settingsConfig->getLneVrtGap());
-  pro_lneVrtGap.setValue(m_lneVrtGap, DataTypeDouble);  
+  pro_lneVrtGap.setValue(m_lneVrtGap, dataType->getDataTypeDouble());  
   m_property.addSubProperty(pro_lneVrtGap);
 
   Property pro_initialGridPointX;
   pro_initialGridPointX.setName(m_settingsConfig->getInitialGridPointX());
-  pro_initialGridPointX.setValue(m_initialGridPointX, DataTypeDouble);  
+  pro_initialGridPointX.setValue(m_initialGridPointX, dataType->getDataTypeDouble());  
   m_property.addSubProperty(pro_initialGridPointX);
 
   Property pro_initialGridPointY;
   pro_initialGridPointY.setName(m_settingsConfig->getInitialGridPointY());
-  pro_initialGridPointY.setValue(m_initialGridPointY, DataTypeDouble);  
+  pro_initialGridPointY.setValue(m_initialGridPointY, dataType->getDataTypeDouble());  
   m_property.addSubProperty(pro_initialGridPointY);
 
   /* Just one is visible */
   Property pro_gridStyle;
   pro_gridStyle.setName(m_settingsConfig->getStyle());
-  pro_gridStyle.setValue(te::layout::getLayoutGridStyle(m_gridStyle), DataTypeString);  
+  pro_gridStyle.setValue(m_gridStyle->getName(), dataType->getDataTypeString());  
   m_property.addSubProperty(pro_gridStyle);
 
   /* Line */
   Property pro_lineStyle;
   pro_lineStyle.setName(m_settingsConfig->getLineStyle());
-  pro_lineStyle.setValue(te::layout::getLayoutDashStyle(m_lineStyle), DataTypeString);  
+  pro_lineStyle.setValue(m_lineStyle->getName(), dataType->getDataTypeString());  
   m_property.addSubProperty(pro_lineStyle);
 
   Property pro_lineColor;
   pro_lineColor.setName(m_settingsConfig->getLineColor());
-  pro_lineColor.setValue(m_lineColor, DataTypeColor);  
+  pro_lineColor.setValue(m_lineColor, dataType->getDataTypeColor());  
   m_property.addSubProperty(pro_lineColor);
 
   Property pro_lineWidth;
   pro_lineWidth.setName(m_settingsConfig->getLineWidth());
-  pro_lineWidth.setValue(m_lineWidth, DataTypeInt);  
+  pro_lineWidth.setValue(m_lineWidth, dataType->getDataTypeInt());  
   m_property.addSubProperty(pro_lineWidth);
 
   /* Text: Basic Configuration */
   Property pro_pointTextSize;
   pro_pointTextSize.setName(m_settingsConfig->getPointTextSize());
-  pro_pointTextSize.setValue(m_pointTextSize, DataTypeInt);  
+  pro_pointTextSize.setValue(m_pointTextSize, dataType->getDataTypeInt());  
   m_property.addSubProperty(pro_pointTextSize);
 
   Property pro_fontText;
   pro_fontText.setName(m_settingsConfig->getFontText());
-  pro_fontText.setValue(m_fontText, DataTypeString);  
+  pro_fontText.setValue(m_fontText, dataType->getDataTypeString());  
   m_property.addSubProperty(pro_fontText);
 
   Property pro_textColor;
   pro_textColor.setName(m_settingsConfig->getTextColor());
-  pro_textColor.setValue(m_textColor, DataTypeColor);  
+  pro_textColor.setValue(m_textColor, dataType->getDataTypeColor());  
   m_property.addSubProperty(pro_textColor);
 
   /* Text: Advanced configuration */
   Property pro_visibleAllTexts;
   pro_visibleAllTexts.setName(m_settingsConfig->getVisibleAllTexts());
-  pro_visibleAllTexts.setValue(m_visibleAllTexts, DataTypeBool);  
+  pro_visibleAllTexts.setValue(m_visibleAllTexts, dataType->getDataTypeBool());  
   m_property.addSubProperty(pro_visibleAllTexts);
 
   Property pro_superscriptText;
   pro_superscriptText.setName(m_settingsConfig->getSuperscriptText());
-  pro_superscriptText.setValue(m_superscriptText, DataTypeBool);  
+  pro_superscriptText.setValue(m_superscriptText, dataType->getDataTypeBool());  
   m_property.addSubProperty(pro_superscriptText);
 
   Property pro_lneVrtDisplacement;
   pro_lneVrtDisplacement.setName(m_settingsConfig->getLneVrtDisplacement());
-  pro_lneVrtDisplacement.setValue(m_lneVrtDisplacement, DataTypeDouble);  
+  pro_lneVrtDisplacement.setValue(m_lneVrtDisplacement, dataType->getDataTypeDouble());  
   m_property.addSubProperty(pro_lneVrtDisplacement);
 
   Property pro_lneHrzDisplacement;
   pro_lneHrzDisplacement.setName(m_settingsConfig->getLneHrzDisplacement());
-  pro_lneHrzDisplacement.setValue(m_lneHrzDisplacement, DataTypeDouble);  
+  pro_lneHrzDisplacement.setValue(m_lneHrzDisplacement, dataType->getDataTypeDouble());  
   m_property.addSubProperty(pro_lneHrzDisplacement);
 
   Property pro_bottomText;
   pro_bottomText.setName(m_settingsConfig->getBottomText());
-  pro_bottomText.setValue(m_bottomText, DataTypeBool);  
+  pro_bottomText.setValue(m_bottomText, dataType->getDataTypeBool());  
   m_property.addSubProperty(pro_bottomText);
   
   Property pro_leftText;
   pro_leftText.setName(m_settingsConfig->getLeftText());
-  pro_leftText.setValue(m_leftText, DataTypeBool);  
+  pro_leftText.setValue(m_leftText, dataType->getDataTypeBool());  
   m_property.addSubProperty(pro_leftText);
 
   Property pro_rightText;
   pro_rightText.setName(m_settingsConfig->getRightText());
-  pro_rightText.setValue(m_rightText, DataTypeBool);  
+  pro_rightText.setValue(m_rightText, dataType->getDataTypeBool());  
   m_property.addSubProperty(pro_rightText);
 
   Property pro_topText;
   pro_topText.setName(m_settingsConfig->getTopText());
-  pro_topText.setValue(m_topText, DataTypeBool);  
+  pro_topText.setValue(m_topText, dataType->getDataTypeBool());  
   m_property.addSubProperty(pro_topText);
   
   Property pro_bottomRotateText;
   pro_bottomRotateText.setName(m_settingsConfig->getBottomRotateText());
-  pro_bottomRotateText.setValue(m_bottomRotateText, DataTypeBool);  
+  pro_bottomRotateText.setValue(m_bottomRotateText, dataType->getDataTypeBool());  
   m_property.addSubProperty(pro_bottomRotateText);
 
   Property pro_leftRotateText;
   pro_leftRotateText.setName(m_settingsConfig->getLeftRotateText());
-  pro_leftRotateText.setValue(m_leftRotateText, DataTypeBool);  
+  pro_leftRotateText.setValue(m_leftRotateText, dataType->getDataTypeBool());  
   m_property.addSubProperty(pro_leftRotateText);
 
   Property pro_rightRotateText;
   pro_rightRotateText.setName(m_settingsConfig->getRightRotateText());
-  pro_rightRotateText.setValue(m_rightRotateText, DataTypeBool);  
+  pro_rightRotateText.setValue(m_rightRotateText, dataType->getDataTypeBool());  
   m_property.addSubProperty(pro_rightRotateText);
  
   Property pro_topRotateText;
   pro_topRotateText.setName(m_settingsConfig->getTopRotateText());
-  pro_topRotateText.setValue(m_topRotateText, DataTypeBool);  
+  pro_topRotateText.setValue(m_topRotateText, dataType->getDataTypeBool());  
   m_property.addSubProperty(pro_topRotateText);
 
   //-----------------------------------------------------------
@@ -417,14 +422,16 @@ void te::layout::GridPlanarModel::updateProperty( Property property )
   if(!pro_gridStyle.isNull())
   {
     std::string style = pro_gridStyle.getValue().toString();
-    m_gridStyle = te::layout::getLayoutEnumGridStyle(style);
+    EnumType* styleType = Enums::getInstance().getEnumGridStyleType()->getEnum(style);
+    m_gridStyle = styleType;
   }
 
   Property pro_lineStyle = property.containsSubProperty(m_settingsConfig->getLineStyle());
   if(!pro_lineStyle.isNull())
   {
     std::string style = pro_lineStyle.getValue().toString();
-    m_lineStyle = te::layout::getLayoutEnumDashStyle(style);
+    EnumType* lineStyle = Enums::getInstance().getEnumLineStyleType()->getEnum(style);
+    m_lineStyle = lineStyle;
   }
 
   Property pro_lineColor = property.containsSubProperty(m_settingsConfig->getLineColor());
