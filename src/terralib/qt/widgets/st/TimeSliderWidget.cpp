@@ -599,17 +599,21 @@ void te::qt::widgets::TimeSliderWidget::dropAction()
   }
   else
   {
-    QString path = m_dropUrls.first().path();
-    QDir dir(path);
-    QString title = dir.dirName();
-    path.remove(0, 1);
+    QList<QUrl>::iterator it;
+    for(it = m_dropUrls.begin(); it != m_dropUrls.end(); ++it)
+    {
+      QString path = it->path();
+      QDir dir(path);
+      QString title = dir.dirName();
+      path.remove(0, 1);
 
-    QPair<QString, QString> p(title, path);
+      QPair<QString, QString> p(title, path);
 
-    if(coverageAlreadyExists(p))
-      QMessageBox::information(this, "animation already exists", "This item is already being animated!");
-    else
-      addTemporalImages(path);
+      if(coverageAlreadyExists(p))
+        QMessageBox::information(this, "animation already exists", "This item is already being animated!");
+      else
+        addTemporalImages(path);
+    }
   }
 
   if(state == QAbstractAnimation::Running || m_dropModifiers == Qt::NoModifier)
