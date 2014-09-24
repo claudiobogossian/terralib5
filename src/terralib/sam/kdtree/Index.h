@@ -559,13 +559,145 @@ namespace te
       template<class KdTreeNode>
       KdTreeNode* AdaptativeIndex<KdTreeNode>::build(std::vector<std::pair<kdKey, kdDataItem> >& dataSet, double averageValue, const te::gm::Envelope& mbr)
       {
-        // TODO!
+        ++m_size;
+
+        if(dataSet.size() <= m_bucketSize)
+        {
+          KdTreeNode* node = new KdTreeNode(averageValue);
+
+          node->setDiscriminator('l');
+
+          std::size_t size = dataSet.size();
+
+          for(std::size_t i = 0; i < size; ++i)
+            node->getData().push_back(dataSet[i].second);
+
+          return node;
+        }
+
+        te::gm::Envelope newMbr1(mbr);
+        te::gm::Envelope newMbr2(mbr);
+
+        char discriminator = 'x';
+
+        std::vector<pair<kdKey, kdDataItem> > leftDataSet;
+        std:vector<pair<kdKey, kdDataItem> > rightDataSet;
+
+        // Finds the largest dimension
+        if((mbr.m_urx - mbr.m_llx) > (mbr.m_ury - mbr.m_lly))
+        {
+          // Finds the median along "x" axis
+          averageValue = average(dataSet, 'x');
+
+          // Adjust box for left and right branchs
+          newMbr1.m_urx = averageValue;
+          newMbr2.m_llx = averageValue;
+
+          std::size_t size = dataSet.size();
+
+          for(std::size_t i = 0; i < size; ++ i)
+          {
+            if(dataSet[i].first.x() <= averageValue)
+              leftDataSet.push_back(dataSet[i]);
+            else
+              rightDataSet.push_back(dataSet[i]);
+          }
+        }
+        else
+        {
+          discriminator = 'y';
+
+          // Finds the median along "y" axis
+          averageValue = average(dataSet, 'y');
+          
+          // Adjust box for left and right branchs
+          newMbr1.m_ury = averageValue;
+          newMbr2.m_lly = averageValue;
+
+          std::size_t size = dataSet.size();
+
+          for(std::size_t i = 0; i < size; ++ i)
+          {
+            if(dataSet[i].first.y() <= averageValue)
+              leftDataSet.push_back(dataSet[i]);
+            else
+              rightDataSet.push_back(dataSet[i]);
+          }
+        }
+
+        dataSet.clear();
+
+        KdTreeNode* node = new KdTreeNode(averageValue);
+
+        if(rightDataSet.size() == 0) // If all coordinates have the same coordinate values, the right vector will be empty so we need stop division to
+        {
+          node->setDiscriminator('l');
+
+          std::size_t size = leftDataSet.size();
+
+          for(std::size_t size i = 0; i < size; ++i)
+            node->getData().push_back(leftDataSet[i].second);
+        }
+        else if(leftDataSet.size() == 0) // If all coordinates have the same coordinate values, the left vector is empty, so we need to stop
+        {
+          node->setDiscriminator('l');
+
+          std::size_t size size = rightDataSet.size();
+
+          for(std::size_t size i = 0; i < size; ++i)
+            node->getData().push_back(rightDataSet[i].second);
+        }
+        else
+        {
+          node->setDiscriminator(discriminator);
+          node->setLeft(build(leftDataSet, averageValue, newMbr1));
+          node->setRight(build(rightDataSet, averageValue, newMbr2));
+        }
+
+        return node;
       }
 
       template<class KdTreeNode>
       void AdaptativeIndex<KdTreeNode>::nearestNeighborSearch(KdTreeNode* node, const kdKey& key, std::vector<kdDataItem>& report, std::vector<double>& sqrDists, const te::gm::Envelope& e) const
       {
-        // TODO!
+        if(node->getDiscriminator() == 'l')
+        {
+          update(node, key, report, sqrDists, rect); // this is a leaf node -> update list of neighbours
+        }
+        else if(node->getDiscriminator() == 'x')
+        {
+          if(key.x() <= node->getKey())
+          {
+            nearestNeighborSearch(node->getLeft(), key, report, sqrDists, rect);
+
+            if((rect.m_llx < node->getKey()) && (node->getKey() < rect.m_urx))
+              nearestNeighborSearch(node->getRight(), key, report, sqrDists, rect);
+          }
+          else
+          {
+            nearestNeighborSearch(node->getRight(), key, report, sqrDists, rect);
+
+            if((rect.m_llx < node->getKey()) &&(node->getKey() < rect.m_urx))
+              nearestNeighborSearch(node->getLeft(), key, report, sqrDists, rect);
+          }
+        }
+        else if(node->getDiscriminator() == 'y')
+        {
+          if(key.y() <= node->getKey())
+          {
+            nearestNeighborSearch(node->getLeft(), key, report, sqrDists, rect);
+
+            if((rect.m_lly < node->getKey()) &&(node->getKey() < rect.m_ury))
+              nearestNeighborSearch(node->getRight(), key, report, sqrDists, rect);
+          }
+          else
+          {
+            nearestNeighborSearch(node->getRight(), key, report, sqrDists, rect);
+
+            if((rect.m_lly < node->getKey()) &&(node->getKey() < rect.m_ury))
+              nearestNeighborSearch(node->getLeft(), key, report, sqrDists, rect);
+          }
+        }
       }
 
       template<class KdTreeNode>
@@ -598,8 +730,55 @@ namespace te
       template<class KdTreeNode>
       void AdaptativeIndex<KdTreeNode>::update(KdTreeNode* node, const kdKey& key, std::vector<kdDataItem>& report, std::vector<double>& sqrDists, const te::gm::Envelope& e) const
       {
-        // TODO!
+        const std::size_t size = node->getData().size();
+
+        const std::size_t nNeighbors = report.size();
+
+// for each element in the node, we need to search for distances less than of some one of sqrDists
+        for(std::size_t i = 0; i < size; ++i)
+        {
+          double dx = (key.x() - node->getData()[i].location().x());
+          double dy = (key.y() - node->getData()[i].location().y());
+
+          double dkp = (dx * dx) + (dy * dy); // square distance from the key point to the node
+
+// if the distance of "i-th" element is less than the maximum distance in the sqrDists
+          if(dkp < sqrDists[nNeighbors - 1])
+          {
+// so the element must be reported
+// and the srqDists vector must be rearranged
+            for(std::size_t j = 0; j < nNeighbors; ++j)
+            {
+              if(dkp < sqrDists[j]) // if the position is found
+              {
+// move the elements to the right
+                for(std::size_t k = nNeighbors - 1; k > j; --k)
+                {
+                  report[k]   = report[k - 1];
+                  sqrDists[k] = sqrDists[k - 1];
+                }
+
+// inserts the element in the report and update its distance
+                report[j] = node->getData()[i];
+
+                sqrDists[j] = dkp;
+
+                break;
+              }
+          }
+        }
       }
+
+      double maxDist = sqrDists[nNeighbors - 1];
+
+      if(maxDist != std::numeric_limits<double>::max())
+        maxDist = sqrt(maxDist);
+
+      rect.m_llx = key.x() - maxDist;
+      rect.m_lly = key.y() - maxDist;
+      rect.m_urx = key.x() + maxDist;
+      rect.m_ury = key.y() + maxDist;
+    }
 
     } // end namespace kdtree
   }   // end namespace sam
