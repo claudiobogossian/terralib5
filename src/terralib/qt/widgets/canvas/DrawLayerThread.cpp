@@ -62,10 +62,10 @@ void te::qt::widgets::DrawLayerThread::draw(te::map::AbstractLayer* layer, const
 
   // Creates the result image
   if(m_image.size() != size)
-  {
     m_image = QImage(size, QImage::Format_ARGB32_Premultiplied);
-    m_image.fill(qRgba(0, 0, 0, 0));
-  }
+
+   m_image.fill(qRgba(0, 0, 0, 0));
+
 
   // Requests the thread execution!
   start();

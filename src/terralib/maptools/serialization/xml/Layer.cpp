@@ -783,9 +783,20 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   reader.next();
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
-  /* has a Style Element ? */
+  /* Composition Mode Element */
   reader.next();
+  int compositionMode = te::map::SourceOver;
+  if(reader.getNodeType() == te::xml::START_ELEMENT && reader.getElementLocalName() == "CompositionMode")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    compositionMode = reader.getElementValueAsInt32();
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
+  }
 
+  /* has a Style Element ? */
   std::auto_ptr<te::se::Style> style;
 
   if((reader.getNodeType() == te::xml::START_ELEMENT) &&
@@ -814,6 +825,7 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   layer->setDataSetName(dataset);
   layer->setDataSourceId(datasourceId);
   layer->setRendererType(rendererId);
+  layer->setCompositionMode((te::map::CompositionMode)compositionMode);
   layer->setStyle(style.release());
     
   if(grouping)
@@ -880,9 +892,20 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   reader.next();
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
-    /* has a Style Element ? */
+  /* Composition Mode Element */
   reader.next();
+  int compositionMode = te::map::SourceOver;
+  if(reader.getNodeType() == te::xml::START_ELEMENT && reader.getElementLocalName() == "CompositionMode")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    compositionMode = reader.getElementValueAsInt32();
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
+  }
 
+    /* has a Style Element ? */
   std::auto_ptr<te::se::Style> style;
 
   if((reader.getNodeType() == te::xml::START_ELEMENT) &&
@@ -911,6 +934,7 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   layer->setQuery(query);
   layer->setDataSourceId(datasourceId);
   layer->setRendererType(rendererId);
+  layer->setCompositionMode((te::map::CompositionMode)compositionMode);
   layer->setStyle(style.release());
 
   if(grouping)
@@ -1039,9 +1063,20 @@ te::map::AbstractLayer* RasterLayerReader(te::xml::Reader& reader)
   reader.next();
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
-  /* has a Style Element ? */
+  /* Composition Mode Element */
   reader.next();
+  int compositionMode = te::map::SourceOver;
+  if(reader.getNodeType() == te::xml::START_ELEMENT && reader.getElementLocalName() == "CompositionMode")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    compositionMode = reader.getElementValueAsInt32();
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
+  }
 
+  /* has a Style Element ? */
   std::auto_ptr<te::se::Style> style;
 
   if((reader.getNodeType() == te::xml::START_ELEMENT) &&
@@ -1069,6 +1104,7 @@ te::map::AbstractLayer* RasterLayerReader(te::xml::Reader& reader)
   layer->setRasterInfo(conninfo);
   layer->setVisibility(GetVisibility(visible));
   layer->setRendererType(rendererId);
+  layer->setCompositionMode((te::map::CompositionMode)compositionMode);
   layer->setStyle(dynamic_cast<te::se::CoverageStyle*>(style.release()));
 
   return layer.release();
@@ -1131,9 +1167,20 @@ te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader)
 
   assert(reader.getNodeType() == te::xml::END_ELEMENT); //RendererType
 
-  /* has a Style Element ? */
+  /* Composition Mode Element */
   reader.next();
+  int compositionMode = te::map::SourceOver;
+  if(reader.getNodeType() == te::xml::START_ELEMENT && reader.getElementLocalName() == "CompositionMode")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    compositionMode = reader.getElementValueAsInt32();
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
+  }
 
+  /* has a Style Element ? */
   std::auto_ptr<te::se::Style> style;
 
   if((reader.getNodeType() == te::xml::START_ELEMENT) &&
@@ -1324,6 +1371,7 @@ te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader)
   result->setDataSetName(dataSetName);
   result->setDataSourceId(dataSourceId);
   result->setRendererType(rendererType);
+  result->setCompositionMode((te::map::CompositionMode)compositionMode);
   result->setStyle(style.release());
   
   te::da::DataSourcePtr ds = te::da::GetDataSource(dataSourceId);
@@ -1394,6 +1442,7 @@ void DataSetLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& w
   writer.writeElement("te_map:SRID", layer->getSRID());
   te::serialize::xml::SaveExtent(layer->getExtent(), writer);
   writer.writeElement("te_map:RendererId", layer->getRendererType());
+  writer.writeElement("te_map:CompositionMode", (int)layer->getCompositionMode());
 
   if(layer->getStyle())
   {
@@ -1423,6 +1472,7 @@ void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wri
   writer.writeElement("te_map:SRID", layer->getSRID());
   te::serialize::xml::SaveExtent(layer->getExtent(), writer);
   writer.writeElement("te_map:RendererId", layer->getRendererType());
+  writer.writeElement("te_map:CompositionMode", (int)layer->getCompositionMode());
 
   if(layer->getStyle())
   {
@@ -1492,6 +1542,7 @@ void RasterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wr
   writer.writeElement("te_map:SRID", layer->getSRID());
   te::serialize::xml::SaveExtent(layer->getExtent(), writer);
   writer.writeElement("te_map:RendererId", layer->getRendererType());
+  writer.writeElement("te_map:CompositionMode", (int)layer->getCompositionMode());
 
   if(layer->getStyle())
   {
@@ -1519,6 +1570,7 @@ void DataSetAdapterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Wr
   writer.writeElement("te_map:DataSetName", layer->getDataSetName());
   writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
   writer.writeElement("te_map:RendererType", layer->getRendererType());
+  writer.writeElement("te_map:CompositionMode", (int)layer->getCompositionMode());
 
   if(layer->getStyle())
   {
