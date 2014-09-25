@@ -18,52 +18,47 @@
  */
 
 /*!
-  \file main.cpp
+  \file KdTreeExamples.cpp
 
-  \brief A list of examples for the TerraLib Spatial Access Methods Module.
+  \brief This file contains several examples on how to use the K-d tree spatial access method.
  */
 
 // TerraLib
 #include <terralib/common.h>
 #include <terralib/geometry.h>
-#include <terralib/dataaccess.h>
-#include <terralib/plugin.h>
-
-// Examples
+#include <terralib/sam.h>
 #include "SAMExamples.h"
 
 // STL
-#include <cassert>
-#include <cstdlib>
-#include <exception>
-#include <iostream>
+#include <vector>
+#include <utility>
 
-int main(int /*argc*/, char** /*argv*/)
+void IndexPointUsingKdTree()
 {
-  try
+  typedef te::sam::kdtree::AdaptativeNode<te::gm::Coord2D, std::vector<te::gm::Point>, te::gm::Point> KDNODE;
+  typedef te::sam::kdtree::AdaptativeIndex<KDNODE> KDTREE;
+
+  std::size_t n = 100;
+
+  std::vector<std::pair<te::gm::Coord2D, te::gm::Point> > dataset;
+
+  te::gm::Envelope e;
+
+  for(std::size_t i = 0; i < n; ++i)
   {
-    TerraLib::getInstance().initialize();
+    te::gm::Coord2D coord(static_cast<double>(i), static_cast<double>(i));
+    te::gm::Point point = te::gm::Point(coord.x, coord.y, 4326);
 
-// R-tree examples
-    IndexPointUsingRTree();
+    e.Union(*point.getMBR());
 
-// K-d tree examples
-    IndexPointUsingKdTree();
-    
-    TerraLib::getInstance().finalize();
-  }
-  catch(const std::exception& e)
-  {
-    std::cout << std::endl << "An exception has occurred: " << e.what() << std::endl;
-
-    return EXIT_FAILURE;
-  }
-  catch(...)
-  {
-    std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
-
-    return EXIT_FAILURE;
+    dataset.push_back(std::pair<te::gm::Coord2D, te::gm::Point>(coord, point));
   }
 
-  return EXIT_SUCCESS;
+  KDTREE tree(e);
+
+  tree.build(dataset);
+
+  std::vector<KDNODE*> reports;
+
+  tree.search(e, reports);
 }
