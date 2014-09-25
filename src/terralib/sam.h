@@ -26,12 +26,13 @@
 #define __TERRALIB_INTERNAL_SAM_H
 
 // TerraLib
+#include "sam/kdtree.h"
 #include "sam/rtree.h"
 
 namespace te
 {
   /*!
-	  \brief This is the namespace for the TerraLib Spatial Access Methods module.
+    \brief This is the namespace for the TerraLib Spatial Access Methods module.
   
     \note See namespace te comments for any detail on using namespaces.
    */
@@ -41,4 +42,3 @@ namespace te
 }   // end namespace te
 
 #endif  // __TERRALIB_INTERNAL_SAM_H
-

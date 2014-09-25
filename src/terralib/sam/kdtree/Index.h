@@ -242,17 +242,17 @@ namespace te
 
             if(level == 'x')
             {
-              if(key.x() > x->getKey().x()) // if the key is greater than, inserts in the right subtree
+              if(key.getX() > x->getKey().getX()) // if the key is greater than, inserts in the right subtree
               {
                 x = x->getRight();
                 left = false;
               }
-              else if(key.x() < x->getKey().x())  // if the key is smaller than, inserts in the left subtree
+              else if(key.getX() < x->getKey().getX())  // if the key is smaller than, inserts in the left subtree
               {
                 x = x->getLeft();
                 left = true;
               }
-              else if(key.y() == x->getKey().y()) // if the key already exist, in the case of single node the data will be overwrite and in the case of set node they will push_back the item
+              else if(key.getY() == x->getKey().getY()) // if the key already exist, in the case of single node the data will be overwrite and in the case of set node they will push_back the item
               {
                 insertData(x, item, kdDataTag());
                 return;
@@ -267,17 +267,17 @@ namespace te
             }
             else
             {
-              if(key.y() > x->getKey().y())
+              if(key.getY() > x->getKey().getY())
               {
                 x = x->getRight();
                 left = false;
               }
-              else if(key.y() < x->getKey().y())
+              else if(key.getY() < x->getKey().getY())
               {
                 x = x->getLeft();
                 left = true;
               }
-              else if(key.x() == x->getKey().x())
+              else if(key.getX() == x->getKey().getX())
               {
                 insertData(x, item, kdDataTag());
                 return;
@@ -308,8 +308,8 @@ namespace te
       template<class KdTreeNode>
       void Index<KdTreeNode>::search(const te::gm::Envelope& e, KdTreeNode* node, const char& level, std::vector<KdTreeNode*>& report) const
       {
-        if((node->getKey().x() >= e.m_llx) && (node->getKey().x() <= e.m_urx) &&
-           (node->getKey().y() >= e.m_lly) && (node->getKey().y() <= e.m_ury))
+        if((node->getKey().getX() >= e.m_llx) && (node->getKey().getX() <= e.m_urx) &&
+           (node->getKey().getY() >= e.m_lly) && (node->getKey().getY() <= e.m_ury))
         {
           report.push_back(node);
         }
@@ -317,21 +317,21 @@ namespace te
         if(level == 'x')
         {
           if(node->hasLeft())
-            if(node->getKey().x() >= e.m_llx)
+            if(node->getKey().getX() >= e.m_llx)
               search(e, node->getLeft(), 'y', report);
 
           if(node->hasRight())
-            if(node->getKey().x() <= e.m_urx)
+            if(node->getKey().getX() <= e.m_urx)
               search(e, node->getRight(), 'y', report);
         }
         else
         {
           if(node->hasLeft())
-            if(node->getKey().y() >= e.m_lly)
+            if(node->getKey().getY() >= e.m_lly)
               search(e, node->getLeft(), 'x', report);
 
           if(node->hasRight())
-            if(node->getKey().y() <= e.m_ury)
+            if(node->getKey().getY() <= e.m_ury)
               search(e, node->getRight(), 'x', report);
         }
       }
@@ -500,14 +500,14 @@ namespace te
             if(discriminator == 'x')
             {
               for(unsigned int i = 0; i < size; ++i)
-                medianValue += dataSet[i].first.x();
+                medianValue += dataSet[i].first.getX();
 
               return medianValue / size;
             }
             else
             {
               for(unsigned int i = 0; i < size; ++i)
-                medianValue += dataSet[i].first.y();
+                medianValue += dataSet[i].first.getY();
 
               return medianValue / size;
             }
@@ -580,8 +580,8 @@ namespace te
 
         char discriminator = 'x';
 
-        std::vector<pair<kdKey, kdDataItem> > leftDataSet;
-        std:vector<pair<kdKey, kdDataItem> > rightDataSet;
+        std::vector<std::pair<kdKey, kdDataItem> > leftDataSet;
+        std::vector<std::pair<kdKey, kdDataItem> > rightDataSet;
 
         // Finds the largest dimension
         if((mbr.m_urx - mbr.m_llx) > (mbr.m_ury - mbr.m_lly))
@@ -597,7 +597,7 @@ namespace te
 
           for(std::size_t i = 0; i < size; ++ i)
           {
-            if(dataSet[i].first.x() <= averageValue)
+            if(dataSet[i].first.getX() <= averageValue)
               leftDataSet.push_back(dataSet[i]);
             else
               rightDataSet.push_back(dataSet[i]);
@@ -618,7 +618,7 @@ namespace te
 
           for(std::size_t i = 0; i < size; ++ i)
           {
-            if(dataSet[i].first.y() <= averageValue)
+            if(dataSet[i].first.getY() <= averageValue)
               leftDataSet.push_back(dataSet[i]);
             else
               rightDataSet.push_back(dataSet[i]);
@@ -635,16 +635,16 @@ namespace te
 
           std::size_t size = leftDataSet.size();
 
-          for(std::size_t size i = 0; i < size; ++i)
+          for(std::size_t i = 0; i < size; ++i)
             node->getData().push_back(leftDataSet[i].second);
         }
         else if(leftDataSet.size() == 0) // If all coordinates have the same coordinate values, the left vector is empty, so we need to stop
         {
           node->setDiscriminator('l');
 
-          std::size_t size size = rightDataSet.size();
+          std::size_t size = rightDataSet.size();
 
-          for(std::size_t size i = 0; i < size; ++i)
+          for(std::size_t i = 0; i < size; ++i)
             node->getData().push_back(rightDataSet[i].second);
         }
         else
@@ -666,7 +666,7 @@ namespace te
         }
         else if(node->getDiscriminator() == 'x')
         {
-          if(key.x() <= node->getKey())
+          if(key.getX() <= node->getKey())
           {
             nearestNeighborSearch(node->getLeft(), key, report, sqrDists, rect);
 
@@ -683,7 +683,7 @@ namespace te
         }
         else if(node->getDiscriminator() == 'y')
         {
-          if(key.y() <= node->getKey())
+          if(key.getY() <= node->getKey())
           {
             nearestNeighborSearch(node->getLeft(), key, report, sqrDists, rect);
 
@@ -737,8 +737,8 @@ namespace te
 // for each element in the node, we need to search for distances less than of some one of sqrDists
         for(std::size_t i = 0; i < size; ++i)
         {
-          double dx = (key.x() - node->getData()[i].location().x());
-          double dy = (key.y() - node->getData()[i].location().y());
+          double dx = (key.getX() - node->getData()[i].location().getX());
+          double dy = (key.getY() - node->getData()[i].location().getY());
 
           double dkp = (dx * dx) + (dy * dy); // square distance from the key point to the node
 
@@ -774,10 +774,10 @@ namespace te
       if(maxDist != std::numeric_limits<double>::max())
         maxDist = sqrt(maxDist);
 
-      rect.m_llx = key.x() - maxDist;
-      rect.m_lly = key.y() - maxDist;
-      rect.m_urx = key.x() + maxDist;
-      rect.m_ury = key.y() + maxDist;
+      rect.m_llx = key.getX() - maxDist;
+      rect.m_lly = key.getY() - maxDist;
+      rect.m_urx = key.getX() + maxDist;
+      rect.m_ury = key.getY() + maxDist;
     }
 
     } // end namespace kdtree
