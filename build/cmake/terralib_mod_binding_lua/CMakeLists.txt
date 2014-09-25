@@ -24,17 +24,17 @@
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
-include ( ${SWIG_USE_FILE} )
+include(${SWIG_USE_FILE})
 
 if(WIN32)
   add_definitions(-DLUA_BUILD_AS_DLL)
 endif()
 
-file (GLOB TERRALIB_SWIG_SCRIPT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/../../../src/terralib/binding/swig/TerraLibLUA.i)
+file(GLOB TERRALIB_SWIG_SCRIPT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/../../../src/terralib/binding/swig/TerraLibLUA.i)
 
 set (CMAKE_SWIG_FLAGS "-c++")
 
-set_source_files_properties (${TERRALIB_SWIG_SCRIPT_FILE} PROPERTIES CPLUSPLUS ON CMAKE_SWIG_FLAGS "-includeall")
+set_source_files_properties(${TERRALIB_SWIG_SCRIPT_FILE} PROPERTIES CPLUSPLUS ON CMAKE_SWIG_FLAGS "-includeall")
 
 include_directories (
   "${TERRALIB_ABSOLUTE_ROOT_DIR}/src"
@@ -46,7 +46,7 @@ include_directories (
 set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}/src" CACHE PATH "Directory for swig output.")
 
 SWIG_ADD_MODULE(terralib_mod_binding_lua lua ${TERRALIB_SWIG_SCRIPT_FILE})
-  
+
 SWIG_LINK_LIBRARIES (terralib_mod_binding_lua terralib_mod_geometry
                                               terralib_mod_datatype
                                               terralib_mod_common
@@ -60,4 +60,3 @@ install(TARGETS terralib_mod_binding_lua
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
         LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
-        
