@@ -83,6 +83,18 @@ namespace te
           return true;
         }
 
+        /*! \brief It returns the x-coordinate. */
+        double getX() const
+        {
+          return x;
+        }
+
+        /*! \brief It returns the y-coordinate. */
+        double getY() const
+        {
+          return y;
+        }
+
         double x;  //!< x-coordinate.
         double y;  //!< y-coordinate.
     };
