@@ -32,6 +32,7 @@
 #include "../mvc/ItemObserver.h"
 #include "../../../item/MapModel.h"
 #include "../../../item/ScaleModel.h"
+#include "../../enum/Enums.h"
 
 // STL
 #include <stddef.h>  // defines NULL
@@ -49,6 +50,8 @@ TELAYOUTEXPORT bool te::layout::changeMapVisitable( QList<QGraphicsItem*> graphi
   te::layout::LegendModel* legModel = 0;
   te::layout::ScaleModel*  scaleModel = 0;
 
+  EnumObjectType* type = Enums::getInstance().getEnumObjectType();
+
   foreach( QGraphicsItem *it, graphicsItems) 
   {
     if(!it)
@@ -62,20 +65,17 @@ TELAYOUTEXPORT bool te::layout::changeMapVisitable( QList<QGraphicsItem*> graphi
     if(!model)
       continue;
 
-    switch(model->getType())
+    if(model->getType() == type->getLegendItem())
     {
-    case TPLegendItem:
       legModel = dynamic_cast<te::layout::LegendModel*>(model);
       if(legModel)
         mpModel->acceptVisitor(legModel);
-      break;
-    case TPScaleItem:
+    }
+    else if(model->getType() == type->getScaleItem())
+    {
       scaleModel = dynamic_cast<te::layout::ScaleModel*>(model);
       if(scaleModel)
         mpModel->acceptVisitor(scaleModel);
-      break;
-    default:
-      continue;
     }
   }
 

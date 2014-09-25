@@ -47,6 +47,10 @@
   #include "ColorTransformAction.h"
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_COMPOSEBANDS
+  #include "ComposeBandsAction.h"
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
   #include "ContrastAction.h"
 #endif
@@ -169,6 +173,10 @@ void te::qt::plugins::rp::Plugin::registerActions()
     m_colorTrans = new te::qt::plugins::rp::ColorTransformAction(m_rpMenu, m_rpPopupMenu);
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_COMPOSEBANDS
+   m_composeBands = new te::qt::plugins::rp::ComposeBandsAction(m_rpMenu, m_rpPopupMenu);
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
     m_contrast = new te::qt::plugins::rp::ContrastAction(m_rpMenu, m_rpPopupMenu);
 #endif
@@ -218,6 +226,10 @@ void  te::qt::plugins::rp::Plugin::unRegisterActions()
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_COLORTRANSFORM
     delete m_colorTrans;
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_COMPOSEBANDS
+    delete m_composeBands;
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST

@@ -46,7 +46,7 @@ namespace te
 
       protected:
 
-        RectangleController( Observable* o, LayoutAbstractObjectType type );
+        RectangleController( Observable* o, EnumType* type );
 
         virtual void create();
     };

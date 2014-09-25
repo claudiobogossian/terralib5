@@ -33,7 +33,6 @@
 te::layout::SystematicScaleModel::SystematicScaleModel() 
 {
   m_box = te::gm::Envelope(0., 0., 200., 200.);
-  m_type = TPSystematicScale;
 }
 
 te::layout::SystematicScaleModel::~SystematicScaleModel()

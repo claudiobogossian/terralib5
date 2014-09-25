@@ -727,11 +727,6 @@ namespace te
       {
         TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_hiResRasterBandSensor !=
           te::rp::srf::InvalidSensor, "Invalid high resolution sensor" );
-      }
-      else
-      {
-        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_hiResRasterBandSensor !=
-          te::rp::srf::InvalidSensor, "Invalid high resolution sensor" );
       }     
       
       // others

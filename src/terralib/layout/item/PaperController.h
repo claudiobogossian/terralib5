@@ -46,7 +46,7 @@ namespace te
 
       protected:
 
-        PaperController( Observable* o, LayoutAbstractObjectType type );
+        PaperController( Observable* o, EnumType* type );
 
         virtual void create();
     };

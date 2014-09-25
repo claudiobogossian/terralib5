@@ -29,9 +29,10 @@
 #include "../../../geometry/LinearRing.h"
 #include "../../../geometry/LineString.h"
 #include "../../../geometry/Point.h"
-#include "../../../qt/widgets/canvas/Canvas.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
+#include "../../RepositoryManager.h"
+#include "../Renderer.h"
 #include "../Utils.h"
 #include "CreateLineTool.h"
 
@@ -44,8 +45,9 @@
 #include <cassert>
 #include <memory>
 
-te::edit::CreateLineTool::CreateLineTool(te::qt::widgets::MapDisplay* display, const QCursor& cursor, QObject* parent) 
+te::edit::CreateLineTool::CreateLineTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent) 
   : AbstractTool(display, parent),
+    m_layer(layer),
     m_continuousMode(false),
     m_isFinished(false)
 {
@@ -53,6 +55,8 @@ te::edit::CreateLineTool::CreateLineTool(te::qt::widgets::MapDisplay* display, c
 
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
+
+  draw();
 }
 
 te::edit::CreateLineTool::~CreateLineTool()
@@ -98,7 +102,7 @@ bool te::edit::CreateLineTool::mouseMoveEvent(QMouseEvent* e)
   else if(keys == Qt::ShiftModifier)
     m_continuousMode = true;
 
-  drawLine();
+  draw();
 
   return false;
 }
@@ -115,10 +119,12 @@ bool te::edit::CreateLineTool::mouseDoubleClickEvent(QMouseEvent* e)
 
   m_isFinished = true;
 
+  storeNewGeometry();
+
   return true;
 }
 
-void te::edit::CreateLineTool::drawLine()
+void te::edit::CreateLineTool::draw()
 {
   const te::gm::Envelope& env = m_display->getExtent();
   if(!env.isValid())
@@ -128,50 +134,53 @@ void te::edit::CreateLineTool::drawLine()
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
 
-  // Prepares the canvas
-  te::qt::widgets::Canvas canvas(m_display->width(), m_display->height());
-  canvas.setDevice(draft, false);
-  canvas.setWindow(env.m_llx, env.m_lly, env.m_urx, env.m_ury);
+  // Initialize the renderer
+  Renderer& renderer = Renderer::getInstance();
+  renderer.begin(draft, env, m_display->getSRID());
 
-  // Let's draw!
-  drawLine(canvas);
+  // Draw the layer edited geometries
+  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
 
-  if(m_continuousMode == false)
-    m_coords.pop_back();
+  if(!m_coords.empty())
+  {
+    // Draw the geometry being created
+    te::gm::Geometry* line = buildLine();
+    renderer.draw(line, true);
+
+    if(m_continuousMode == false)
+      m_coords.pop_back();
+  }
+
+  renderer.end();
 
   m_display->repaint();
-}
-
-void te::edit::CreateLineTool::drawLine(te::qt::widgets::Canvas& canvas)
-{
-  // Build the geometry
-  te::gm::LineString* line = new te::gm::LineString(m_coords.size(), te::gm::LineStringType);
-  for(std::size_t i = 0; i < m_coords.size(); ++i)
-    line->setPoint(i, m_coords[i].x, m_coords[i].y);
-
-  // Let's draw!
-  DrawGeometry(&canvas, line, m_display->getSRID());
-
-  drawVertexes(canvas);
-
-  delete line;
-}
-
-void te::edit::CreateLineTool::drawVertexes(te::qt::widgets::Canvas& canvas)
-{
-  te::qt::widgets::Config2DrawPoints(&canvas, "circle", 8, Qt::red, Qt::red, 1);
-
-  DrawVertexes(&canvas, m_coords, m_display->getSRID(), m_display->getSRID());
 }
 
 void te::edit::CreateLineTool::clear()
 {
   m_coords.clear();
+}
 
-  QPixmap* draft = m_display->getDraftPixmap();
-  draft->fill(Qt::transparent);
-    
-  m_display->repaint();
+te::gm::Geometry* te::edit::CreateLineTool::buildLine()
+{
+  te::gm::LineString* line = new te::gm::LineString(m_coords.size(), te::gm::LineStringType);
+  for(std::size_t i = 0; i < m_coords.size(); ++i)
+    line->setPoint(i, m_coords[i].x, m_coords[i].y);
+
+  line->setSRID(m_display->getSRID());
+
+  if(line->getSRID() == m_layer->getSRID())
+    return line;
+
+  // else, need conversion...
+  line->transform(m_layer->getSRID());
+
+  return line;
+}
+
+void te::edit::CreateLineTool::storeNewGeometry()
+{
+  RepositoryManager::getInstance().addNewGeometry(m_layer->getId(), buildLine());
 }
 
 void te::edit::CreateLineTool::onExtentChanged()
@@ -181,5 +190,5 @@ void te::edit::CreateLineTool::onExtentChanged()
 
   m_coords.push_back(m_lastPos);
 
-  drawLine();
+  draw();
 }

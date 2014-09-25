@@ -94,13 +94,6 @@ namespace te
 
             void onRowsLineEditEditingFinished();
 
-
-            void onVectorToolButtonToggled(bool isToggled);
-
-            void onPointsToolButtonToggled(bool isToggled);
-
-            void onRasterToolButtonToggled(bool isToggled);
-
             void onReferenceGroupBoxToggled(bool isToggled);
 
           private:

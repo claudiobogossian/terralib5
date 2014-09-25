@@ -32,6 +32,7 @@
 #include "../core/property/Properties.h"
 #include "../core/property/SharedProperties.h"
 #include "../../geometry/Polygon.h"
+#include "../core/enum/Enums.h"
 
 // STL
 #include <string>
@@ -44,6 +45,9 @@ te::layout::ScaleModel::ScaleModel() :
   m_scaleGapX(20),
   m_scaleGapY(5)
 {
+
+  m_type = Enums::getInstance().getEnumObjectType()->getScaleItem();
+
   m_box = te::gm::Envelope(0., 0., 70., 30.);
 }
 
@@ -65,16 +69,9 @@ void te::layout::ScaleModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
 
+  drawBackground(context);
+
   drawScale(canvas, utils, m_box);
-
-  if(m_border)
-  {
-    canvas->setPolygonContourWidth(2);
-    canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
-    canvas->setPolygonFillColor(m_backgroundColor);
-
-    utils->drawRectW(m_box);
-  }
 
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
@@ -157,24 +154,26 @@ te::layout::Properties* te::layout::ScaleModel::getProperties() const
 {
   ItemModelObservable::getProperties();
 
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
   Property pro_widthRectGap;
   pro_widthRectGap.setName("scale_width_rect_gap");
   pro_widthRectGap.setId("");
-  pro_widthRectGap.setValue(m_scaleGapX, DataTypeDouble);
+  pro_widthRectGap.setValue(m_scaleGapX, dataType->getDataTypeDouble());
   m_properties->addProperty(pro_widthRectGap);
 
   Property pro_heightRectGap;
   pro_heightRectGap.setName("scale_height_rect_gap");
   pro_heightRectGap.setId("");
-  pro_heightRectGap.setValue(m_scaleGapY, DataTypeDouble);
+  pro_heightRectGap.setValue(m_scaleGapY, dataType->getDataTypeDouble());
   m_properties->addProperty(pro_heightRectGap);
 
   Property pro_mapName;
   pro_mapName.setName(m_sharedProps->getMapName());
   pro_mapName.setId("");
-  pro_mapName.setValue(m_mapName, DataTypeStringList);
+  pro_mapName.setValue(m_mapName, dataType->getDataTypeStringList());
   Variant v;
-  v.setValue(m_mapName, DataTypeString);
+  v.setValue(m_mapName, dataType->getDataTypeString());
   pro_mapName.addOption(v);
   m_properties->addProperty(pro_mapName);
 

@@ -32,6 +32,7 @@
 #include "../enum/AbstractType.h"
 #include "../../../color/RGBAColor.h"
 #include "../Font.h"
+#include "../enum/EnumType.h"
 
 // STL
 #include <string>
@@ -50,13 +51,13 @@ namespace te
       public:
 
         Variant();
-        Variant(LayoutPropertyDataType type, const void* valueCopy);
+        Variant(EnumType* type, const void* valueCopy);
         virtual ~Variant();
         
         template <typename ValueType>
-        void setValue(ValueType value, LayoutPropertyDataType type);
+        void setValue(ValueType value, EnumType* type);
 
-        LayoutPropertyDataType getType();
+        EnumType* getType();
         
         std::string toString();
         double toDouble();
@@ -67,11 +68,11 @@ namespace te
         te::color::RGBAColor toColor();     
         Font toFont();
 
-        std::string convertToString();
+        virtual std::string convertToString();
 
         bool isNull();
 
-        void clear();
+        virtual void clear();
                 
         bool operator ==(const Variant& other); 
         bool operator !=(const Variant& other); 
@@ -79,21 +80,21 @@ namespace te
     protected:
 
       template <typename ValueType>
-      void variantSetValue(Variant &v, const ValueType& value, LayoutPropertyDataType type);
+      void variantSetValue(Variant &v, const ValueType& value, EnumType* type);
       
-      void convertValue(const void* valueCopy);
+      virtual void convertValue(const void* valueCopy);
       
       /* Check if a value passed, of type DataTypeInt and etc, is a std::string. 
          Ex.: value returned by a json file (boost). */
-      bool checkNumberAsString(const void* valueCopy);
+      virtual bool checkNumberAsString(const void* valueCopy);
       
-      double string2Double(std::string str);
+      virtual double string2Double(std::string str);
 
-      int string2Int(std::string str);
+      virtual int string2Int(std::string str);
 
-      float string2Float(std::string str);
+      virtual float string2Float(std::string str);
 
-      long string2Long(std::string str);
+      virtual long string2Long(std::string str);
 
       std::string m_sValue;
       double m_dValue;
@@ -103,12 +104,12 @@ namespace te
       bool m_bValue;
       te::color::RGBAColor m_colorValue;
       Font m_fontValue;
-      LayoutPropertyDataType m_type;
+      EnumType* m_type;
       bool m_null;
     };
 
     template<typename ValueType>
-    inline void te::layout::Variant::setValue( ValueType value, LayoutPropertyDataType type )
+    inline void te::layout::Variant::setValue( ValueType value, EnumType* type )
     { 
       ValueType v = value;
       variantSetValue(*this, v, type);
@@ -117,7 +118,7 @@ namespace te
     /* Is still necessary to revise this method.*/
     template <typename ValueType>
     inline void te::layout::Variant::variantSetValue(Variant &v, 
-      const ValueType& value, LayoutPropertyDataType type )
+      const ValueType& value, EnumType* type )
     {
       v = Variant(type, &value);      
     }
@@ -130,10 +131,12 @@ namespace te
       {
         if(m_sValue == otherProp.toString() &&
           m_dValue == otherProp.toDouble() &&
-          m_iValue == toInt() &&
-          m_lValue == toLong() &&
-          m_fValue == toFloat() &&
-          m_bValue == toBool())
+          m_iValue == otherProp.toInt() &&
+          m_lValue == otherProp.toLong() &&
+          m_fValue == otherProp.toFloat() &&
+          m_bValue == otherProp.toBool() &&
+          m_colorValue == otherProp.toColor() /*&&
+          m_fontValue == otherProp.toFont()*/)
         {
           return true;
         }
@@ -154,9 +157,11 @@ namespace te
       {
         if(m_sValue != otherProp.toString() ||
           m_dValue != otherProp.toDouble() ||
-          m_iValue != toInt() ||
-          m_lValue != toLong() ||
-          m_fValue != toFloat())
+          m_iValue != otherProp.toInt() ||
+          m_lValue != otherProp.toLong() ||
+          m_fValue != otherProp.toFloat() ||
+          m_colorValue != otherProp.toColor() /*||
+          m_fontValue != otherProp.toFont()*/)
         {
           return true;
         }

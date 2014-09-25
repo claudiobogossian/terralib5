@@ -45,6 +45,7 @@
 #include "../../../item/TitleItem.h"
 #include "../../../item/MultiLineTextItem.h"
 #include "../../../item/TextGridItem.h"
+#include "../../../../core/enum/Enums.h"
 
 te::layout::ItemFactory::ItemFactory()
 {
@@ -56,117 +57,99 @@ te::layout::ItemFactory::~ItemFactory()
 
 }
 
-te::layout::Observer* te::layout::ItemFactory::make( LayoutAbstractObjectType type, ItemParamsCreate params /*= LayoutItemParamsCreate()*/ )
+te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsCreate params /*= LayoutItemParamsCreate()*/ )
 {
   Observer* item = 0;
 
-  switch (type)
-  {
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
 
-  case TPRetangleItem:
-    {
-      RectangleItem* rectangle = new RectangleItem(params.getController(), params.getModel());
-      item = (Observer*)rectangle;
-      break;
-    }
-  case TPLegendItem:
-    {
-      LegendItem* legend = new LegendItem(params.getController(), params.getModel());
-      item = (Observer*)legend;
-      break;
-    }
-  case TPHorizontalRuler:
-    {
-      HorizontalRulerItem* ruler = new HorizontalRulerItem(params.getController(), params.getModel());
-      item = (Observer*)ruler;
-      break;
-    }
-  case TPVerticalRuler:
-    {
-      VerticalRulerItem* ruler = new VerticalRulerItem(params.getController(), params.getModel());
-      item = (Observer*)ruler;
-      break;
-    }
-  case TPTextItem:
-    {
-      DefaultTextItem* txt = new DefaultTextItem(params.getController(), params.getModel());
-      item = (Observer*)txt;
-      break;
-    }
-  case TPItemGroup:
-    {
-      ItemGroup* group = new ItemGroup(params.getController(), params.getModel());
-      item = (Observer*)group;
-      break;
-    }
-  case TPPaperItem:
-    {
-      PaperItem* paper = new PaperItem(params.getController(), params.getModel());
-      item = (Observer*)paper;
-      break;
-    }
-  case TPMapItem:
-    {
-      MapItem* map = new MapItem(params.getController(), params.getModel());
-      item = (Observer*)map;
-      break;
-    }
-  case TPMapGridItem:
-    {
-      MapGridItem* mapGrid = new MapGridItem(params.getController(), params.getModel());
-      item = (Observer*)mapGrid;
-      break;
-    }
-  case TPScaleItem:
-    {
-      ScaleItem* scale = new ScaleItem(params.getController(), params.getModel());
-      item = (Observer*)scale;
-      break;
-    }
-  case TPImageItem:
-    {
-      ImageItem* scale = new ImageItem(params.getController(), params.getModel());
-      item = (Observer*)scale;
-      break;
-    }
-  case TPPointItem:
-    {
-      PointItem* point = new PointItem(params.getController(), params.getModel());
-      item = (Observer*)point;
-      break;
-    }
-  case TPArrowItem:
-    {
-      ArrowItem* arrow = new ArrowItem(params.getController(), params.getModel());
-      item = (Observer*)arrow;
-      break;
-    }
-  case TPEllipseItem:
-    {
-      EllipseItem* ellipse = new EllipseItem(params.getController(), params.getModel());
-      item = (Observer*)ellipse;
-      break;
-    }
-  case TPTitleItem:
-    {
-      TitleItem* title = new TitleItem(params.getController(), params.getModel());
-      item = (Observer*)title;
-      break;
-    }
-  case TPTextGridItem:
-    {
-      TextGridItem* txtGrid = new TextGridItem(params.getController(), params.getModel());
-      item = (Observer*)txtGrid;
-      break;
-    }
-  case TPMultiLineTextItem:
-    {
-      MultiLineTextItem* mText = new MultiLineTextItem(params.getController(), params.getModel());
-      item = (Observer*)mText;
-      break;
-    }
-  default:
-    item = 0;
+  if(type == enumObj->getRetangleItem())
+  {
+    RectangleItem* rectangle = new RectangleItem(params.getController(), params.getModel());
+    item = (Observer*)rectangle;
+  }
+  else if(type == enumObj->getLegendItem())
+  {
+    LegendItem* legend = new LegendItem(params.getController(), params.getModel());
+    item = (Observer*)legend;
+  }
+  else if(type == enumObj->getHorizontalRuler())
+  {
+    HorizontalRulerItem* ruler = new HorizontalRulerItem(params.getController(), params.getModel());
+    item = (Observer*)ruler;
+  }
+  else if(type == enumObj->getVerticalRuler())
+  {
+    VerticalRulerItem* ruler = new VerticalRulerItem(params.getController(), params.getModel());
+    item = (Observer*)ruler;
+  }
+  else if(type == enumObj->getDefaultTextItem())
+  {
+    DefaultTextItem* txt = new DefaultTextItem(params.getController(), params.getModel());
+    txt->init();
+    item = (Observer*)txt;
+  }
+  else if(type == enumObj->getItemGroup())
+  {
+    ItemGroup* group = new ItemGroup(params.getController(), params.getModel());
+    item = (Observer*)group;
+  }
+  else if(type == enumObj->getPaperItem())
+  {
+    PaperItem* paper = new PaperItem(params.getController(), params.getModel());
+    item = (Observer*)paper;
+  }
+  else if(type == enumObj->getMapItem())
+  {
+    MapItem* map = new MapItem(params.getController(), params.getModel());
+    item = (Observer*)map;
+  }
+  else if(type == enumObj->getMapGridItem())
+  {
+    MapGridItem* mapGrid = new MapGridItem(params.getController(), params.getModel());
+    item = (Observer*)mapGrid;
+  }
+  else if(type == enumObj->getScaleItem())
+  {
+    ScaleItem* scale = new ScaleItem(params.getController(), params.getModel());
+    item = (Observer*)scale;
+  }
+  else if(type == enumObj->getImageItem())
+  {
+    ImageItem* scale = new ImageItem(params.getController(), params.getModel());
+    item = (Observer*)scale;
+  }
+  else if(type == enumObj->getPointItem())
+  {
+    PointItem* point = new PointItem(params.getController(), params.getModel());
+    item = (Observer*)point;
+  }
+  else if(type == enumObj->getArrowItem())
+  {
+    ArrowItem* arrow = new ArrowItem(params.getController(), params.getModel());
+    item = (Observer*)arrow;
+  }
+  else if(type == enumObj->getEllipseItem())
+  {
+    EllipseItem* ellipse = new EllipseItem(params.getController(), params.getModel());
+    item = (Observer*)ellipse;
+  }
+  else if(type == enumObj->getTitleItem())
+  {
+    TitleItem* title = new TitleItem(params.getController(), params.getModel());
+    title->init();
+    item = (Observer*)title;
+  }
+  else if(type == enumObj->getTextGridItem())
+  {
+    TextGridItem* txtGrid = new TextGridItem(params.getController(), params.getModel());
+    txtGrid->init();
+    item = (Observer*)txtGrid;
+  }
+  else if(type == enumObj->getMultiLineTextItem())
+  {
+    MultiLineTextItem* mText = new MultiLineTextItem(params.getController(), params.getModel());
+    item = (Observer*)mText;
   }
 
   return item;

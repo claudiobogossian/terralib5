@@ -31,9 +31,12 @@
 #include "../../geometry/Envelope.h"
 #include "../../color/RGBAColor.h"
 #include "../../maptools/Canvas.h"
+#include "../core/enum/Enums.h"
 
 te::layout::ItemGroupModel::ItemGroupModel()
 {
+  m_type = Enums::getInstance().getEnumObjectType()->getItemGroup();
+
   m_box = te::gm::Envelope(0., 0., 10., 10.);
 }
 

@@ -28,20 +28,21 @@
 // TerraLib
 #include "MapController.h"
 #include "../core/ContextItem.h"
+#include "MapModel.h"
 #include "../core/pattern/factory/AbstractItemFactory.h"
 #include "../core/pattern/singleton/Context.h"
 #include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/pattern/factory/ItemParamsCreate.h"
 #include "../core/pattern/mvc/ItemObserver.h"
-#include "MapModel.h"
+#include "../core/enum/Enums.h"
 
 te::layout::MapController::MapController( Observable* o ) :
-  ItemController(o, TPMapItem)
+  ItemController(o)
 {
   create();
 }
 
-te::layout::MapController::MapController( Observable* o, LayoutAbstractObjectType type ) :
+te::layout::MapController::MapController( Observable* o, EnumType* type ) :
   ItemController(o, type)
 {
 
@@ -56,7 +57,7 @@ void te::layout::MapController::create()
 {
   AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPMapItem, params);
+  m_view = (Observer*)factory->make(m_model->getType(), params);
 }
 
 void te::layout::MapController::setPosition( const double& x, const double& y )

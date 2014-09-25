@@ -41,7 +41,7 @@ namespace te
         ItemFactory();
         virtual ~ItemFactory();
 
-        virtual Observer* make(LayoutAbstractObjectType type, ItemParamsCreate params = ItemParamsCreate());
+        virtual Observer* make(EnumType* type, ItemParamsCreate params = ItemParamsCreate());
     };
   }
 }

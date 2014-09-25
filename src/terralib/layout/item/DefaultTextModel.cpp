@@ -30,6 +30,7 @@
 #include "../core/property/Property.h"
 #include "../core/property/Properties.h"
 #include "../core/property/SharedProperties.h"
+#include "../core/enum/Enums.h"
 
 // STL
 #include <string>
@@ -39,7 +40,9 @@
 te::layout::DefaultTextModel::DefaultTextModel() :
   m_text("")
 {
-  m_box = te::gm::Envelope(0., 0., 70., 30.);
+  m_type = Enums::getInstance().getEnumObjectType()->getDefaultTextItem();
+
+  m_box = te::gm::Envelope(0., 0., 40., 20.);
 }
 
 te::layout::DefaultTextModel::~DefaultTextModel()
@@ -60,16 +63,9 @@ void te::layout::DefaultTextModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
 
+  drawBackground(context);
+
   drawText(canvas, utils, m_box);
-
-  if(m_border)
-  {
-    canvas->setPolygonContourWidth(2);
-    canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
-    canvas->setPolygonFillColor(m_backgroundColor);
-
-    utils->drawRectW(m_box);
-  }
 
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
@@ -87,16 +83,19 @@ te::layout::Properties* te::layout::DefaultTextModel::getProperties() const
 {
   ItemModelObservable::getProperties();
 
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
   Property pro_text;
   pro_text.setName("Text");
   pro_text.setId("");
-  pro_text.setValue(m_text, DataTypeString);
+  pro_text.setValue(m_text, dataType->getDataTypeString());
   m_properties->addProperty(pro_text);
 
   Property pro_font;
   pro_font.setName("Font");
   pro_font.setId("");
-  pro_font.setValue(m_font, DataTypeFont);
+  pro_font.setValue(m_font, dataType->getDataTypeFont());
+  pro_font.setMenu(true);
   m_properties->addProperty(pro_font);
 
   return m_properties;

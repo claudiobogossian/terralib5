@@ -26,6 +26,7 @@
 */
 
 // TerraLib
+#include "../enum/Enums.h"
 #include "Property.h"
 
 // STL
@@ -34,12 +35,14 @@
 
 te::layout::Property::Property() :
   m_name("unknown"),
+  m_type(0),
   m_id("unknown"),
-  m_label(""),
   m_editable(true),
-  m_type(DataTypeNone)
+  m_label(""),
+  m_menu(false),
+  m_icon("")
 {
-
+  m_type = Enums::getInstance().getEnumDataType()->getDataTypeNone();
 }
 
 te::layout::Property::~Property()
@@ -57,7 +60,7 @@ void te::layout::Property::setName( std::string name )
   m_name = name;
 }
 
-te::layout::LayoutPropertyDataType te::layout::Property::getType()
+te::layout::EnumType* te::layout::Property::getType()
 {
   return m_type;
 }
@@ -196,14 +199,18 @@ te::layout::Property te::layout::Property::containsSubProperty( std::string name
 
 void te::layout::Property::clear()
 {
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
   m_name = "unknown";
   m_id = "unknown";
   m_editable = true;
-  m_type = DataTypeNone;
+  m_type = dataType->getDataTypeNone();
   m_value.clear();
   m_currentChoice.clear();
   m_options.clear();
   m_subProperty.clear();
+  m_menu = false;
+  m_icon = "";
 }
 
 void te::layout::Property::setValue( Variant variant )
@@ -220,4 +227,24 @@ void te::layout::Property::setLabel( std::string label )
 std::string te::layout::Property::getLabel()
 {
   return m_label;
+}
+
+void te::layout::Property::setMenu( bool menu )
+{
+  m_menu = menu;
+}
+
+bool te::layout::Property::isMenu()
+{
+  return m_menu;
+}
+
+void te::layout::Property::setIcon( std::string icon )
+{
+  m_icon = icon;
+}
+
+std::string te::layout::Property::getIcon()
+{
+  return m_icon;
 }

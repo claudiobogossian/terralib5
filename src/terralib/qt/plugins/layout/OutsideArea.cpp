@@ -35,6 +35,7 @@
 #include "../../../layout/qt/outside/PropertiesOutside.h"
 #include "../../../layout/qt/outside/ObjectInspectorOutside.h"
 #include "../../../layout/qt/outside/ToolbarOutside.h"
+#include "../../../layout/core/enum/Enums.h"
 
 // Qt
 #include <QMainWindow>
@@ -113,7 +114,7 @@ void te::qt::plugins::layout::OutsideArea::init()
 {
   if(m_view)
   {
-    connect(m_view->scene(), SIGNAL(selectionChanged()), this, SLOT(onSelectionChanged()));
+    connect(m_view, SIGNAL(reloadProperties()), this, SLOT(onSelectionChanged()));
     connect(m_view->scene(), SIGNAL(addItemFinalized()), this, SLOT(onAddItemFinalized()));
     connect(m_view, SIGNAL(hideView()), this, SLOT(onHideView()));
     connect(m_view, SIGNAL(closeView()), this, SLOT(onCloseView()));
@@ -220,9 +221,11 @@ void te::qt::plugins::layout::OutsideArea::createMainMenu()
 
 void te::qt::plugins::layout::OutsideArea::onMainMenuTriggered( QAction* action )
 {
+  te::layout::EnumModeType* type = te::layout::Enums::getInstance().getEnumModeType();
+
   if(action->objectName().compare(m_optionNew.c_str()) == 0)
   {
-    changeAction(te::layout::TypeNewTemplate);
+    changeAction(type->getModeNewTemplate());
   }
   else if(action->objectName().compare(m_optionUpdate.c_str()) == 0)
   {
@@ -230,23 +233,23 @@ void te::qt::plugins::layout::OutsideArea::onMainMenuTriggered( QAction* action 
   }
   else if(action->objectName().compare(m_optionImport.c_str()) == 0)
   {
-    changeAction(te::layout::TypeImportJSONProps);
+    changeAction(type->getModeImportJSONProps());
   }
   else if(action->objectName().compare(m_optionExport.c_str()) == 0)
   {
-    changeAction(te::layout::TypeExportPropsJSON);
+    changeAction(type->getModeExportPropsJSON());
   }
   else if(action->objectName().compare(m_optionPageConfig.c_str()) == 0)
   {
-    changeAction(te::layout::TypePageConfig);
+    changeAction(type->getModePageConfig());
   }
   else if(action->objectName().compare(m_optionPrint.c_str()) == 0)
   {
-    changeAction(te::layout::TypePrinter);
+    changeAction(type->getModePrinter());
   }
   else if(action->objectName().compare(m_optionExit.c_str()) == 0)
   {
-    changeAction(te::layout::TypeExit);
+    changeAction(type->getModeExit());
   }
   else if(action->objectName().compare(m_optionDockInspector.c_str()) == 0)
   {
@@ -305,10 +308,10 @@ QAction* te::qt::plugins::layout::OutsideArea::createAction( std::string text, s
   return actionMenu;
 }
 
-void te::qt::plugins::layout::OutsideArea::changeAction( te::layout::LayoutMode mode )
+void te::qt::plugins::layout::OutsideArea::changeAction( te::layout::EnumType* mode )
 {
   bool result = true;
-  te::layout::LayoutMode layoutMode = te::layout::Context::getInstance().getMode();
+  te::layout::EnumType* layoutMode = te::layout::Context::getInstance().getMode();
 
   if(mode != layoutMode)
   {

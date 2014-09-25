@@ -586,7 +586,7 @@ void te::map::DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::
       int x = te::rst::Round(outputGrid.x);
       int y = te::rst::Round(outputGrid.y);
 
-      te::color::RGBAColor color(255, 255, 255, 0);
+      te::color::RGBAColor color(0, 0, 0, 0);
 
       if((x >= 0 && x < (int)(raster->getNumberOfColumns())) &&
          (y >= 0 && y < (int)(raster->getNumberOfRows())))

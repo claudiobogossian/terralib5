@@ -191,8 +191,6 @@ te::gm::Envelope te::layout::Utils::viewportBoxFromMM( te::gm::Envelope box )
   if(m_applyZoom)
   {
     zoomFactor = Context::getInstance().getZoomFactor();
-    if(zoomFactor < 1.)
-      zoomFactor = 1.;
   }
   
   int pxwidth = mm2pixel(box.getWidth() * zoomFactor);

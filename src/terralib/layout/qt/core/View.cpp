@@ -28,7 +28,6 @@
 // TerraLib
 #include "View.h"
 #include "../../core/pattern/singleton/Context.h"
-#include "../../core/enum/EnumMode.h"
 #include "../item/ItemGroup.h"
 #include "VisualizationArea.h"
 #include "../../../color/RGBAColor.h"
@@ -45,6 +44,7 @@
 #include "../../outside/SystematicScaleModel.h"
 #include "../../outside/SystematicScaleController.h"
 #include "../../core/SystematicScaleConfig.h"
+#include "../../core/enum/Enums.h"
 
 // STL
 #include <math.h>
@@ -65,6 +65,8 @@
 #include <QPixmap>
 #include <QLineF>
 #include <QMessageBox>
+#include <QContextMenuEvent>
+#include <QMenu>
 
 #define _psPointInMM 0.352777778 //<! 1 PostScript point in millimeters
 #define _inchInPSPoints 72 //<! 1 Inch in PostScript point
@@ -77,12 +79,12 @@ te::layout::View::View( QWidget* widget) :
   m_lineIntersectVrt(0),
   m_currentTool(0),
   m_pageSetupOutside(0),
-  m_systematicOutside(0)
+  m_systematicOutside(0),
+  m_selectionChange(false),
+  m_menuItem(0)
 {
-  //Use ScrollHand Drag Mode to enable Panning
-  //You do need the enable scroll bars for that to work.
   setDragMode(RubberBandDrag);
-
+  
   m_lineIntersectHrz = new QLineF(0,0,0,0);
   m_lineIntersectVrt = new QLineF(0,0,0,0);
 }
@@ -131,7 +133,12 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
   if(!sc)
     return;
 
-  if(Context::getInstance().getMode() == TypeSystematicScale)
+  EnumModeType* mode = Enums::getInstance().getEnumModeType();
+
+  if(Context::getInstance().getMode() == mode->getModeNone())
+    return;
+
+  if(Context::getInstance().getMode() == mode->getModeSystematicScale())
   {
     bool intersection = false;
     int number = sc->intersectionMap(coord, intersection);
@@ -158,7 +165,7 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
       msgBox.setText("Select a Map Object.");
       msgBox.exec();
     }
-    Context::getInstance().setMode(TypeNone);
+    Context::getInstance().setMode(mode->getModeNone());
   }
   else
   {
@@ -175,15 +182,27 @@ void te::layout::View::mouseMoveEvent( QMouseEvent * event )
   if(!sc)
     return;
 
-   QPointF scenePos = mapToScene(event->pos());
-
-   emit changeSceneCoordMouse(scenePos);
+   QPointF pt = mapToScene(event->pos());
    
-   m_lineIntersectHrz->setP1(QPointF(sc->sceneRect().topLeft().x(), scenePos.y()));
-   m_lineIntersectHrz->setP2(scenePos);
+   emit changeSceneCoordMouse(pt);
+   
+   m_lineIntersectHrz->setP1(QPointF(sc->sceneRect().topLeft().x(), pt.y()));
+   m_lineIntersectHrz->setP2(pt);
 
-   m_lineIntersectVrt->setP1(QPointF(scenePos.x(), sc->sceneRect().topLeft().y()));
-   m_lineIntersectVrt->setP2(scenePos);
+   m_lineIntersectVrt->setP1(QPointF(pt.x(), sc->sceneRect().topLeft().y()));
+   m_lineIntersectVrt->setP2(pt);
+}
+
+void te::layout::View::mouseReleaseEvent( QMouseEvent * event )
+{
+  QGraphicsView::mouseReleaseEvent(event);
+
+  /* The Properties only load when selection change and mouse release */
+  if(!m_selectionChange)
+    return;
+
+  emit reloadProperties();
+  m_selectionChange = false;
 }
 
 void te::layout::View::wheelEvent( QWheelEvent *event )
@@ -218,7 +237,7 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
   }
   else if(keyEvent->key() == Qt::Key_Delete)
   {
-    sc->deleteItems();
+    sc->removeSelectedItems();
   }
 
   QGraphicsView::keyPressEvent(keyEvent);
@@ -232,26 +251,19 @@ void te::layout::View::config()
     return;
 
   PaperConfig* pConfig =  Context::getInstance().getPaperConfig();
-
-  double w = 0;
-  double h = 0;
-
-  pConfig->getPaperSize(w, h);
-
+  
   double sw = widthMM();
   double sh = heightMM();
     
   double zoomFactor = Context::getInstance().getZoomFactor();
-  lScene->init(sw, sh, w, h, zoomFactor);
+  lScene->init(sw, sh, zoomFactor);
 
   configTransform(lScene);
 
   //----------------------------------------------------------------------------------------------
 
   te::gm::Envelope* boxW = lScene->getWorldBox();
-  te::gm::Envelope* box = lScene->getPaperBox();
-  pConfig->setPaperBoxW(box);
-  
+    
   if(!m_visualizationArea)
   {
     m_visualizationArea = new VisualizationArea(boxW);
@@ -263,6 +275,8 @@ void te::layout::View::config()
         
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+  connect(scene(), SIGNAL(selectionChanged()), this, SLOT(onSelectionChanged()));
 }
 
 void te::layout::View::resizeEvent(QResizeEvent * event)
@@ -360,7 +374,9 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   if(!sc)
     return;
 
-  LayoutMode mode = Context::getInstance().getMode();
+  EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
+
+  EnumType* mode = Context::getInstance().getMode();
   QList<QGraphicsItem*> graphicsItems;
   double zoomFactor = Context::getInstance().getZoomFactor();
   double oldZoomFactor = Context::getInstance().getOldZoomFactor();
@@ -376,176 +392,194 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   te::gm::Coord2D center = env->getCenter();
 
   te::gm::Envelope zoomBox;
-  
-  switch(mode)
+    
+  if(mode == enumMode->getModeUnitsMetricsChange())
   {
-  case TypeUnitsMetricsChange:
-    {
-      break;
-    }
-  case TypeNewTemplate:
-    {
-      sc->reset();
-      m_visualizationArea->build();
-      resetDefaultConfig();
-      break;
-    }
-  case TypeExportPropsJSON:
-    {
-      sc->exportPropsAsJSON();
-      resetDefaultConfig();
-      break;
-    }
-  case TypeImportJSONProps:
-    {
-      sc->buildTemplate(m_visualizationArea);
-      resetDefaultConfig();
-      break;
-    }
-  case TypeMapPan:
-    {
-      graphicsItems = sc->selectedItems();
-      if(te::layout::getMapItemList(graphicsItems).empty())
-      {
-        resetDefaultConfig();
-      }
-      else
-      {
-        sc->setCurrentToolInSelectedMapItems(TypeMapPan);
-      }
-      break;
-    }
-  case TypeMapZoomIn:
-    {
-      graphicsItems = sc->selectedItems();
-      if(te::layout::getMapItemList(graphicsItems).empty())
-      {
-        resetDefaultConfig();
-      }
-      else
-      {
-        sc->setCurrentToolInSelectedMapItems(TypeMapZoomIn);
-      }
-      break;
-    }
-  case TypeMapZoomOut:
-    {
-      graphicsItems = sc->selectedItems();
-      if(te::layout::getMapItemList(graphicsItems).empty())
-      {
-        resetDefaultConfig();
-      }
-      else
-      {
-        sc->setCurrentToolInSelectedMapItems(TypeMapZoomOut);
-      }
-      break;
-    }
-  case TypePan:
-    {
-      /*
-        The QGraphicsView inherits QAbstractScrollArea. 
-        The QAbstractScrollArea on your EventFilter event invokes the viewportEvent instead eventFilter of the son, 
-        so it is necessary to add QAbstractScrollArea for the filter installed can listen to events.       
-      */
-      setInteractive(false);
-      m_currentTool = new ViewPan(this, Qt::OpenHandCursor, Qt::ClosedHandCursor);
-      viewport()->installEventFilter(m_currentTool);
-      break;
-    }
-  case TypeGroup:
-    {
-      createItemGroup();
-      resetDefaultConfig();
-    }
-    break;
-  case TypeUngroup:
-    {
-      destroyItemGroup();
-      resetDefaultConfig();
-    }
-    break;
-  case TypePrinter:
-    {
-      sc->printPreview();
-    }
-    break;
-  case TypeExit:
-    {
-      //hide();
-    }
-    break;
-  case TypeSceneZoom:
-    {
-      env->m_llx = center.x - halfWidth;
-      env->m_lly = center.y - halfHeight;
-      env->m_urx = center.x + halfWidth;
-      env->m_ury = center.y + halfHeight;
-                 
-      sc->refresh(this, zoomFactor);            
-      sc->redrawItems(true);
-      resetDefaultConfig();
-    }
-    break;
-  case TypeBringToFront:
-    {
-      sc->bringToFront();
-      resetDefaultConfig();
-    }
-    break;
-  case TypeSendToBack:
-    {
-      sc->sendToBack();
-      resetDefaultConfig();
-    }
-    break;
-  case TypeZoomIn:
+    
+  }
+  else if(mode == enumMode->getModeNewTemplate())
+  {
+    sc->reset();
+    m_visualizationArea->build();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeExportPropsJSON())
+  {
+    sc->exportPropsAsJSON();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeImportJSONProps())
+  {
+    sc->buildTemplate(m_visualizationArea);
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeMapPan())
+  {
+    graphicsItems = sc->selectedItems();
+    if(te::layout::getMapItemList(graphicsItems).empty())
     {
       resetDefaultConfig();
-      /*
-        The QGraphicsView inherits QAbstractScrollArea. 
-        The QAbstractScrollArea on your EventFilter event invokes the viewportEvent instead eventFilter of the son, 
-        so it is necessary to add QAbstractScrollArea for the filter installed can listen to events.       
-      */
-      setInteractive(false);
-      m_currentTool = new ViewZoomArea(this, Qt::CrossCursor);
-      viewport()->installEventFilter(m_currentTool);
-      break;
     }
-    break;
-  case TypeZoomOut:
+    else
     {
+      sc->setCurrentToolInSelectedMapItems(enumMode->getModeMapPan());
+    }
+  }
+  else if(mode == enumMode->getModeMapZoomIn())
+  {
+    graphicsItems = sc->selectedItems();
+    if(te::layout::getMapItemList(graphicsItems).empty())
+    {
+      resetDefaultConfig();
+    }
+    else
+    {
+      sc->setCurrentToolInSelectedMapItems(enumMode->getModeMapZoomIn());
+    }
+  }
+  else if(mode == enumMode->getModeMapZoomOut()) 
+  {
+    graphicsItems = sc->selectedItems();
+    if(te::layout::getMapItemList(graphicsItems).empty())
+    {
+      resetDefaultConfig();
+    }
+    else
+    {
+      sc->setCurrentToolInSelectedMapItems(enumMode->getModeMapZoomOut());
+    }
+  }
+  else if(mode == enumMode->getModePan()) 
+  {
+    /*
+      The QGraphicsView inherits QAbstractScrollArea. 
+      The QAbstractScrollArea on your EventFilter event invokes the viewportEvent instead eventFilter of the son, 
+      so it is necessary to add QAbstractScrollArea for the filter installed can listen to events.       
+    */
+    setInteractive(false);
+    m_currentTool = new ViewPan(this, Qt::OpenHandCursor, Qt::ClosedHandCursor);
+    viewport()->installEventFilter(m_currentTool);
+  }
+  else if(mode == enumMode->getModeGroup())
+  {
+    createItemGroup();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeUngroup()) 
+  {
+    destroyItemGroup();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModePrinter()) 
+  {
+    sc->printPreview();
+  }
+  else if(mode == enumMode->getModeExit()) 
+  {
+    
+  }
+  else if(mode == enumMode->getModeSceneZoom())
+  {
+    env->m_llx = center.x - halfWidth;
+    env->m_lly = center.y - halfHeight;
+    env->m_urx = center.x + halfWidth;
+    env->m_ury = center.y + halfHeight;
+            
+    sc->refresh(this, zoomFactor);            
+    sc->redrawItems(true);
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeBringToFront()) 
+  {
+    sc->bringToFront();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeSendToBack()) 
+  {
+    sc->sendToBack();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeMapZoomIn()) 
+  {
+    resetDefaultConfig();
+    /*
+      The QGraphicsView inherits QAbstractScrollArea. 
+      The QAbstractScrollArea on your EventFilter event invokes the viewportEvent instead eventFilter of the son, 
+      so it is necessary to add QAbstractScrollArea for the filter installed can listen to events.       
+    */
+    setInteractive(false);
+    m_currentTool = new ViewZoomArea(this, Qt::CrossCursor);
+    viewport()->installEventFilter(m_currentTool);
+  }
+  else if(mode == enumMode->getModeZoomOut()) 
+  {
 
-    }
-    break;
-  case TypeRecompose:
+  }
+  else if(mode == enumMode->getModeRecompose()) 
+  {
+    double dZoom = Context::getInstance().getDefaultZoomFactor();
+    double zoom = Context::getInstance().getZoomFactor();
+    if(dZoom != zoom)
     {
-      double dZoom = Context::getInstance().getDefaultZoomFactor();
-      double zoom = Context::getInstance().getZoomFactor();
-      if(dZoom != zoom)
-      {
-        sc->refresh(this, dZoom);
-        sc->redrawItems(true);
-      }
-      resetDefaultConfig();
+      sc->refresh(this, dZoom);
+      sc->redrawItems(true);
     }
-    break;
-  case TypePageConfig:
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModePageConfig()) 
+  {
     showPageSetup();
     resetDefaultConfig();
-    break;
-  case TypeMapCreateTextGrid:
+  }
+  else if(mode == enumMode->getModeMapCreateTextGrid()) 
+  {
     sc->createTextGridAsObject();
     resetDefaultConfig();
-    break;
-  case TypeMapCreateTextMap:
+  }
+  else if(mode == enumMode->getModeMapCreateTextMap()) 
+  {
     sc->createTextMapAsObject();
     resetDefaultConfig();
-    break;
-  default:
-    {
-      resetDefaultConfig();
-    }
+  }
+  else if(mode == enumMode->getModeAlignLeft()) 
+  {
+    sc->alignLeft();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeAlignRight()) 
+  {
+    sc->alignRight();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeAlignTop()) 
+  {
+    sc->alignTop();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeAlignBottom()) 
+  {
+    sc->alignBottom();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeAlignCenterHorizontal()) 
+  {
+    sc->alignCenterHorizontal();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeAlignCenterVertical()) 
+  {
+    sc->alignCenterVertical();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeRemoveObject()) 
+  {
+    sc->removeSelectedItems();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeDrawSelectionMap()) 
+  {
+    sc->redrawSelectionMap();
+    resetDefaultConfig();
   }
 }
 
@@ -643,4 +677,47 @@ void te::layout::View::onSystematicApply(double scale, SystematicScaleType type)
   {
     sc->setCurrentMapSystematic(sys, m_coordSystematic);
   }
+}
+
+void te::layout::View::onSelectionChanged()
+{
+  m_selectionChange = true;
+}
+
+void te::layout::View::contextMenuEvent( QContextMenuEvent * event )
+{
+  if(event->reason() != QContextMenuEvent::Mouse)
+    return;
+
+  QPointF pt = mapToScene(event->pos());
+  if(!intersectionSelectionItem(pt.x(), pt.y()))
+    return;
+
+  if(!m_menuItem)
+  {
+    m_menuItem = new MenuItem(this);
+  }
+
+  QList<QGraphicsItem*> graphicsItems = this->scene()->selectedItems();
+
+  m_menuItem->createMenu(graphicsItems);
+  m_menuItem->menuExec(event->globalX(), event->globalY());
+}
+
+bool te::layout::View::intersectionSelectionItem(int x, int y)
+{
+  QList<QGraphicsItem *> items = this->scene()->selectedItems();
+  bool intersection = false;
+
+  QPointF pt(x, y);
+
+  foreach (QGraphicsItem *item, items) 
+  {
+    if(item)
+    {
+      intersection = item->contains(pt);
+    }
+  }
+
+  return intersection;
 }

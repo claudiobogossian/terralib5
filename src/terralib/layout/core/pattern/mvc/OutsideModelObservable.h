@@ -62,8 +62,8 @@ namespace te
       virtual void setColor(int color);
 
       virtual void setPosition(const double& x, const double& y);
-      virtual LayoutAbstractObjectType getType();
-      virtual void setType(LayoutAbstractObjectType type);
+      virtual EnumType* getType();
+      virtual void setType(EnumType* type);
 
       virtual std::string getName();
 
@@ -87,15 +87,16 @@ namespace te
       virtual void notifyAll(ContextItem context);
 
     protected:
+
       std::set<Observer*>	m_observers;
-      te::gm::Envelope					m_box;
-      te::gm::Coord2D 					m_centerCoordinate;
-      int							          m_color;
+      te::gm::Envelope		m_box;
+      te::gm::Coord2D 		m_centerCoordinate;
+      int							    m_color;
       Properties*         m_properties;
-      LayoutAbstractObjectType  m_type;
-      int                       m_zValue;
-      int                     m_id;
-      bool                    m_resizable;
+      EnumType*           m_type;
+      int                 m_zValue;
+      int                 m_id;
+      bool                m_resizable;
 
     private:
       std::string m_name;

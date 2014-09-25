@@ -32,7 +32,6 @@
 #include <QObject>
 
 // TerraLib
-#include "../../../layout/core/enum/EnumMode.h"
 #include "../../../layout/qt/core/View.h"
 
 class QWidget;
@@ -51,6 +50,7 @@ namespace te
         class ObjectInspectorDock;
         class ToolbarDock;
         class EditTemplateDock;
+        class EnumType;
 
         class OutsideArea : public QObject
         {
@@ -95,7 +95,7 @@ namespace te
 
           virtual QAction* createAction(std::string text, std::string objName, std::string icon, std::string tooltip = "");
 
-          virtual void changeAction(te::layout::LayoutMode mode);
+          virtual void changeAction(te::layout::EnumType* mode);
 
         protected:
 

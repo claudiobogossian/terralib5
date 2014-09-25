@@ -36,6 +36,8 @@
 #include "../../../outside/PageSetupOutside.h"
 #include "../../../outside/SystematicScaleOutside.h"
 #include "../../../outside/EditTemplateOutside.h"
+#include "../../../outside/TextGridSettingsOutside.h"
+#include "../../../../core/enum/Enums.h"
 
 te::layout::OutsideFactory::OutsideFactory()
 {
@@ -47,63 +49,52 @@ te::layout::OutsideFactory::~OutsideFactory()
 
 }
 
-te::layout::Observer* te::layout::OutsideFactory::make( LayoutAbstractObjectType type, OutsideParamsCreate params /*= LayoutItemParamsCreate()*/ )
+te::layout::Observer* te::layout::OutsideFactory::make( EnumType* type, OutsideParamsCreate params /*= LayoutItemParamsCreate()*/ )
 {
 	Observer* outside = 0;
 
-	switch (type)
-	{
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
 
-	case TPToolbar:
-		{
-			ToolbarOutside* toolbar = new ToolbarOutside(params.getController(), params.getModel());		
-			outside = (Observer*)toolbar;
-			return outside;
-			break;
-		}
-	case TPPropertiesWindow:
-		{
-			PropertiesOutside* window = new PropertiesOutside(params.getController(), params.getModel());		
-			outside = (Observer*)window;
-			return outside;
-			break;
-		}
-  case TPObjectInspectorWindow :
-    {
-      ObjectInspectorOutside* inspector = new ObjectInspectorOutside(params.getController(), params.getModel());		
-      outside = (Observer*)inspector;
-      return outside;
-      break;
-    }
-  case TPGridSettings:
-    {
-      GridSettingsOutside* gridSettings = new GridSettingsOutside(params.getController(), params.getModel());		
-      outside = (Observer*)gridSettings;
-      return outside;
-      break;
-    }
-  case TPPageSetup:
-    {
-      PageSetupOutside* pageSetup = new PageSetupOutside(params.getController(), params.getModel());		
-      outside = (Observer*)pageSetup;
-      return outside;
-      break;
-    }
-  case TPSystematicScale:
-    {
-      SystematicScaleOutside* systematic = new SystematicScaleOutside(params.getController(), params.getModel());		
-      outside = (Observer*)systematic;
-      return outside;
-      break;
-    }
-  case TPEditTemplate:
-    {
-      EditTemplateOutside* editTemplate = new EditTemplateOutside(params.getController(), params.getModel());		
-      outside = (Observer*)editTemplate;
-      return outside;
-      break;
-    }
-	}
+  if(type == enumObj->getToolbar())
+  {
+    ToolbarOutside* toolbar = new ToolbarOutside(params.getController(), params.getModel());		
+    outside = (Observer*)toolbar;
+  }
+  else if(type == enumObj->getPropertiesWindow())
+  {
+    PropertiesOutside* window = new PropertiesOutside(params.getController(), params.getModel());		
+    outside = (Observer*)window;
+  }
+  else if(type == enumObj->getObjectInspectorWindow())
+  {
+    ObjectInspectorOutside* inspector = new ObjectInspectorOutside(params.getController(), params.getModel());		
+    outside = (Observer*)inspector;
+  }
+  else if(type == enumObj->getGridSettings())
+  {
+    GridSettingsOutside* gridSettings = new GridSettingsOutside(params.getController(), params.getModel());		
+    outside = (Observer*)gridSettings;
+  }
+  else if(type == enumObj->getPageSetup())
+  {
+    PageSetupOutside* pageSetup = new PageSetupOutside(params.getController(), params.getModel());		
+    outside = (Observer*)pageSetup;
+  }
+  else if(type == enumObj->getSystematicScale())
+  {
+    SystematicScaleOutside* systematic = new SystematicScaleOutside(params.getController(), params.getModel());		
+    outside = (Observer*)systematic;
+  }
+  else if(type == enumObj->getEditTemplate())
+  {
+    EditTemplateOutside* editTemplate = new EditTemplateOutside(params.getController(), params.getModel());		
+    outside = (Observer*)editTemplate;
+  }
+  else if(type == enumObj->getTextGridSettings())
+  {
+    TextGridSettingsOutside* textGridSettings = new TextGridSettingsOutside(params.getController(), params.getModel());		
+    outside = (Observer*)textGridSettings;
+  }
 
-	return 0;
+	return outside;
 }

@@ -35,6 +35,7 @@
 #include "../../../../color/RGBAColor.h"
 #include "../../enum/AbstractType.h"
 #include "../../Utils.h"
+#include "../../enum/EnumType.h"
 
 namespace te
 {
@@ -57,8 +58,8 @@ namespace te
 
         virtual te::gm::Envelope getBox() = 0;
         
-        virtual LayoutAbstractObjectType getType() = 0;
-        virtual void setType(LayoutAbstractObjectType type) = 0;
+        virtual EnumType* getType() = 0;
+        virtual void setType(EnumType* type) = 0;
 
         virtual int getZValue() = 0;
         virtual void setZValue(int zValue) = 0;

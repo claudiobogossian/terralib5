@@ -31,9 +31,13 @@
 #include "../../geometry/Envelope.h"
 #include "../../color/RGBAColor.h"
 #include "../../maptools/Canvas.h"
+#include "../core/enum/Enums.h"
 
 te::layout::RectangleModel::RectangleModel() 
 {
+
+  m_type = Enums::getInstance().getEnumObjectType()->getRetangleItem();
+
   m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
   m_box = te::gm::Envelope(0., 0., 20., 20.);
 }
@@ -56,11 +60,7 @@ void te::layout::RectangleModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
   
-  canvas->setPolygonContourWidth(2);
-  canvas->setPolygonContourColor(m_borderColor);
-  canvas->setPolygonFillColor(m_backgroundColor);
-  
-  utils->drawRectW(m_box);
+  drawBackground(context);
   
   if(context.isResizeCanvas())
     pixmap = utils->getImageW(m_box);
@@ -68,4 +68,3 @@ void te::layout::RectangleModel::draw( ContextItem context )
   context.setPixmap(pixmap);
   notifyAll(context);
 }
-

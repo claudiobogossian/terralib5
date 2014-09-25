@@ -31,12 +31,12 @@
 #include "../../../geometry/MultiPolygon.h"
 #include "../../../geometry/Polygon.h"
 #include "../../../geometry/Utils.h"
-#include "../../../qt/widgets/canvas/Canvas.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
 #include "../../IdGeometry.h"
 #include "../../RepositoryManager.h"
 #include "../../Utils.h"
+#include "../Renderer.h"
 #include "../Utils.h"
 #include "VertexTool.h"
 
@@ -65,6 +65,8 @@ te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te:
   m_currentVertexIndex.makeInvalid();
 
   updateCursor();
+
+  draw();
 }
 
 te::edit::VertexTool::~VertexTool()
@@ -98,7 +100,7 @@ bool te::edit::VertexTool::mousePressEvent(QMouseEvent* e)
 
       updateRTree();
 
-      drawVertexes();
+      draw();
 
       return true;
     }
@@ -137,7 +139,7 @@ bool te::edit::VertexTool::mouseMoveEvent(QMouseEvent* e)
 
         m_currentVertexIndex = report[0];
 
-        drawVertexes();
+        draw();
 
         return false;
       }
@@ -157,7 +159,7 @@ bool te::edit::VertexTool::mouseMoveEvent(QMouseEvent* e)
 
       borderPoint.get() != 0 ? setStage(VERTEX_READY_TO_ADD) : setStage(VERTEX_SEARCH);
 
-      drawVertexes(borderPoint.get());
+      draw(borderPoint.get());
 
       return false;
     }
@@ -171,7 +173,7 @@ bool te::edit::VertexTool::mouseMoveEvent(QMouseEvent* e)
 
       storeEditedGeometry();
 
-      drawVertexes();
+      draw();
 
       return false;
     }
@@ -235,7 +237,7 @@ bool te::edit::VertexTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     updateRTree();
 
-    drawVertexes();
+    draw();
 
     return true;
   }
@@ -273,11 +275,12 @@ void te::edit::VertexTool::pickGeometry(const te::map::AbstractLayerPtr& layer, 
 
     m_lines.clear();
 
-    GetLines(m_geom->getGeometry(), m_lines);
+    if(m_geom != 0)
+      GetLines(m_geom->getGeometry(), m_lines);
 
     updateRTree();
 
-    drawVertexes();
+    draw();
   }
   catch(std::exception& e)
   {
@@ -285,7 +288,7 @@ void te::edit::VertexTool::pickGeometry(const te::map::AbstractLayerPtr& layer, 
   }
 }
 
-void te::edit::VertexTool::drawVertexes(te::gm::Point* virtualVertex)
+void te::edit::VertexTool::draw(te::gm::Point* virtualVertex)
 {
   const te::gm::Envelope& env = m_display->getExtent();
   if(!env.isValid())
@@ -295,33 +298,34 @@ void te::edit::VertexTool::drawVertexes(te::gm::Point* virtualVertex)
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
 
-  // Prepares the canvas
-  te::qt::widgets::Canvas canvas(m_display->width(), m_display->height());
-  canvas.setDevice(draft, false);
-  canvas.setWindow(env.m_llx, env.m_lly, env.m_urx, env.m_ury);
+  // Initialize the renderer
+  Renderer& renderer = Renderer::getInstance();
+  renderer.begin(draft, env, m_display->getSRID());
+
+  // Draw the layer edited geometries
+  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
 
   if(m_lines.empty())
   {
+    renderer.end();
     m_display->repaint();
     return;
   }
 
-  DrawGeometry(&canvas, m_geom->getGeometry(), m_display->getSRID());
-
-  // Draw all vertexes
-  te::qt::widgets::Config2DrawPoints(&canvas, "circle", 8, Qt::red, Qt::red, 1);
-  DrawVertexes(&canvas, m_lines, m_display->getSRID()); 
+  // Draw the vertexes
+  if(RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_geom->getId()) == false)
+    renderer.draw(m_geom->getGeometry(), true);
+  else
+    renderer.drawVertexes(m_geom->getGeometry());
 
   // Draw the current vertex
   if(m_currentVertexIndex.isValid())
   {
-    te::qt::widgets::Config2DrawPoints(&canvas, "circle", 24, Qt::transparent, Qt::blue, 3);
-
     te::gm::LineString* line = m_lines[m_currentVertexIndex.m_line];
-
     std::auto_ptr<te::gm::Point> point(line->getPointN(m_currentVertexIndex.m_pos));
 
-    canvas.draw(point.get());
+    renderer.setPointStyle("circle", Qt::transparent, Qt::blue, 3, 24);
+    renderer.draw(point.get());
   }
 
   // Draw the virtual vertex
@@ -329,16 +333,18 @@ void te::edit::VertexTool::drawVertexes(te::gm::Point* virtualVertex)
   {
     assert(virtualVertex);
 
-    te::qt::widgets::Config2DrawPoints(&canvas, "circle", 24, Qt::transparent, Qt::darkGreen, 3);
-    canvas.draw(virtualVertex);
+    renderer.setPointStyle("circle", Qt::transparent, Qt::darkGreen, 3, 24);
+    renderer.draw(virtualVertex);
   }
+
+  renderer.end();
 
   m_display->repaint();
 }
 
 void te::edit::VertexTool::onExtentChanged()
 {
-  drawVertexes();
+  draw();
 }
 
 te::gm::Envelope te::edit::VertexTool::buildEnvelope(const QPointF& pos)

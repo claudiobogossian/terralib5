@@ -33,14 +33,15 @@
 #include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/pattern/factory/ItemParamsCreate.h"
 #include "../core/pattern/mvc/ItemObserver.h"
+#include "../core/enum/Enums.h"
 
 te::layout::MapGridController::MapGridController( Observable* o ) :
-  MapController(o, TPMapGridItem)
+  MapController(o, 0)
 {
   create();
 }
 
-te::layout::MapGridController::MapGridController( Observable* o, LayoutAbstractObjectType type ) :
+te::layout::MapGridController::MapGridController( Observable* o, EnumType* type ) :
   MapController(o, type)
 {
 
@@ -55,5 +56,5 @@ void te::layout::MapGridController::create()
 {
   AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(TPMapGridItem, params);
+  m_view = (Observer*)factory->make(m_model->getType(), params);
 }

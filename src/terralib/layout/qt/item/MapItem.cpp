@@ -51,6 +51,7 @@
 #include "../core/ItemUtils.h"
 #include "../../item/MapModel.h"
 #include "../../../common/StringUtils.h"
+#include "../../core/enum/Enums.h"
 
 // STL
 #include <vector>
@@ -74,6 +75,8 @@
 #include <QEvent>
 #include <QPoint>
 #include <QMimeData>
+#include <QColor>
+#include "../core/Scene.h"
 
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   QGraphicsProxyWidget(0),
@@ -85,7 +88,10 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges);
+    | QGraphicsItem::ItemSendsGeometryChanges
+    | QGraphicsItem::ItemIgnoresTransformations);
+
+  m_invertedMatrix = true;
     
   setAcceptDrops(true);
 
@@ -112,7 +118,7 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
 
   connect(m_mapDisplay,SIGNAL(drawLayersFinished(const QMap<QString, QString>&)),
     this,SLOT(onDrawLayersFinished(const QMap<QString, QString>&)));
-    
+      
   te::qt::widgets::ZoomWheel* zoom = new te::qt::widgets::ZoomWheel(m_mapDisplay);
   m_mapDisplay->installEventFilter(zoom);
   
@@ -163,41 +169,45 @@ void te::layout::MapItem::updateObserver( ContextItem context )
   if(!box.isValid())
     return;
 
-  double w = box.getWidth();
-  double h = box.getHeight();
-
-  /* No zoom maior que 1. o tamanho ainda é errado. 
-  Verificar o tamanho do pixmap de impressão, ainda a qualidade está baixa!*/
-
-  if(w != m_mapDisplay->getWidth() 
-    || h != m_mapDisplay->getHeight())
-  {
-    QRect rectGeom = m_mapDisplay->geometry();
-    m_mapDisplay->setGeometry(rectGeom.x(), rectGeom.y(), w, h);
-  }
-
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   if(model)
   {
-    te::gm::Envelope env;
-    if(model->isPlanar())
-    {
-      env = model->getWorldInMeters();
-    }
-    else
-    {
-      env = model->getWorldInDegrees();
-    }
-    if(env.isValid())
-    {
-      if(!m_mapDisplay->getExtent().equals(env))
-      {
+    te::gm::Envelope mapBox = utils->viewportBox(model->getMapBox());
+    double w = mapBox.getWidth();
+    double h = mapBox.getHeight();
 
-        m_mapDisplay->setExtent(env, true);
-        m_mapDisplay->refresh();
-      }
+    /* This item ignores the transformations of the scene, so comes with no zoom. 
+    His transformation matrix is the inverse scene, understanding the pixel 
+    coordinates, and its position can only be given in the scene coordinates(mm). 
+    For these reasons, it is necessary to resize it.*/
+    if(w != m_mapDisplay->getWidth() 
+      || h != m_mapDisplay->getHeight())
+    {
+      QRect rectGeom = m_mapDisplay->geometry();
+      m_mapDisplay->setGeometry(rectGeom.x(), rectGeom.y(), w, h);
     }
+
+    te::color::RGBAColor clr = model->getMapBackgroundColor();
+    QColor qcolor;
+    qcolor.setRed(clr.getRed());
+    qcolor.setGreen(clr.getGreen());
+    qcolor.setBlue(clr.getBlue());
+    qcolor.setAlpha(clr.getAlpha());
+    m_mapDisplay->setBackgroundColor(qcolor);
+    m_mapDisplay->refresh();
   }
+
+  /* This item ignores the transformations of the scene, so comes with no zoom. 
+  His transformation matrix is the inverse scene, understanding the pixel 
+  coordinates, and its position can only be given in the scene coordinates(mm). 
+  For these reasons, it is necessary to scale and so accompany the zoom scene. */
+  /*double zoomFactor = Context::getInstance().getZoomFactor();
+  setScale(zoomFactor);*/
+  
+  /*Scene* sc = dynamic_cast<Scene*>(Context::getInstance().getScene());
+  QTransform transf = sc->getMatrixViewScene().inverted();
+
+  setTransform(transf);*/
 
   te::color::RGBAColor** rgba = context.getPixmap();
 
@@ -212,11 +222,11 @@ void te::layout::MapItem::updateObserver( ContextItem context )
     img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
     pixmap = QPixmap::fromImage(*img);
   }
-
+    
   te::common::Free(rgba, box.getHeight());
   if(img)
     delete img;
-
+  
   setPixmap(pixmap);
   update();
 }
@@ -224,7 +234,7 @@ void te::layout::MapItem::updateObserver( ContextItem context )
 void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
   QGraphicsProxyWidget::paint(painter, option, widget);
-  
+
   if(!m_pixmap.isNull())
   {
     QRectF boundRect;
@@ -252,7 +262,7 @@ void te::layout::MapItem::drawSelection( QPainter* painter)
   qreal penWidth = painter->pen().widthF();
 
   const qreal adj = penWidth / 2;
-  const QColor fgcolor(255,255,255);
+  const QColor fgcolor(0,255,0);
   const QColor backgroundColor(0,0,0);
 
   painter->setPen(QPen(backgroundColor, 0, Qt::SolidLine));
@@ -273,9 +283,8 @@ void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
 
   getMimeData(event->mimeData());
 
-  QDropEvent dropEvent(QPoint(event->pos().x(), event->pos().y()), event->possibleActions(), event->mimeData(), event->buttons(), event->modifiers());
-  QApplication::sendEvent(m_mapDisplay, &dropEvent);
-  event->setAccepted(dropEvent.isAccepted());
+  te::map::AbstractLayerPtr al = m_treeItem->getLayer();
+  m_mapDisplay->changeData(al);
 }
 
 void te::layout::MapItem::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
@@ -283,6 +292,11 @@ void te::layout::MapItem::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
   //Copy the map from layer tree
   Qt::DropActions actions = event->dropAction();
   if(actions != Qt::CopyAction)
+    return;
+
+  const QMimeData* mime = event->mimeData();
+  QString s = mime->data("application/x-terralib;value=\"DraggedItems\"").constData();
+  if(s.isEmpty())
     return;
 
   event->acceptProposedAction();
@@ -519,16 +533,18 @@ void te::layout::MapItem::clearCurrentTool()
   }
 }
 
-void te::layout::MapItem::changeCurrentTool( LayoutMode mode )
+void te::layout::MapItem::changeCurrentTool( EnumType* mode )
 {
   clearCurrentTool();
 
-  if(mode == TypeMapPan)
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+
+  if(mode == type->getModeMapPan())
   {
     te::qt::widgets::Pan* pan = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);
     setCurrentTool(pan);
   }
-  if(mode == TypeMapZoomIn)
+  if(mode == type->getModeMapZoomIn())
   {
     //Zoom In
     std::string icon_path_zoom_area = "layout-map-zoom-in";
@@ -536,7 +552,7 @@ void te::layout::MapItem::changeCurrentTool( LayoutMode mode )
     te::qt::widgets::ZoomArea* zoomArea = new te::qt::widgets::ZoomArea(m_mapDisplay, zoomAreaCursor);
     setCurrentTool(zoomArea);
   }
-  if(mode == TypeMapZoomOut)
+  if(mode == type->getModeMapZoomOut())
   {
     //Zoom Out
     std::string icon_path_zoom_out = "layout-map-zoom-out";
@@ -549,4 +565,23 @@ void te::layout::MapItem::changeCurrentTool( LayoutMode mode )
 QVariant te::layout::MapItem::itemChange( GraphicsItemChange change, const QVariant & value )
 {
   return QGraphicsProxyWidget::itemChange(change, value);
+}
+
+void te::layout::MapItem::applyRotation()
+{
+  if(!m_model)
+    return;
+
+  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
+  if(!model)
+    return;
+
+  double angle = model->getAngle();
+
+  QPointF center = boundingRect().center();
+
+  double centerX = center.x();
+  double centerY = center.y();
+
+  setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
 }

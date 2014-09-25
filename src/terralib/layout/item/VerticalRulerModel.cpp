@@ -29,11 +29,11 @@
 #include "VerticalRulerModel.h"
 #include "../core/ContextItem.h"
 #include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/enum/EnumMode.h"
 #include "../core/Utils.h"
 #include "../../maptools/Canvas.h"
 #include "../../geometry/Envelope.h"
 #include "../../geometry/Point.h"
+#include "../core/enum/Enums.h"
 
 // STL
 #include <sstream>
@@ -42,7 +42,7 @@
 te::layout::VerticalRulerModel::VerticalRulerModel(PaperConfig* paperConfig):
   AbstractRulerModel(paperConfig)
 {
-
+  m_type = Enums::getInstance().getEnumObjectType()->getVerticalRuler();
 }
 
 te::layout::VerticalRulerModel::~VerticalRulerModel()
@@ -63,13 +63,11 @@ void te::layout::VerticalRulerModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box, true, false);  
 
-  double zoomFactor = context.getZoomFactor();
-  int zoom = 1. / zoomFactor;
-  if(zoomFactor > 1.)
-    zoom = zoomFactor;
-
-  canvas->setLineWidth(1. * zoom);
-  canvas->setTextPointSize(5);
+  m_backEndBox = te::gm::Envelope(m_box.getLowerLeftX() + m_backEndMargin, m_box.getLowerLeftY(),
+    m_box.getUpperRightX() - m_backEndMargin , m_box.getUpperRightY() - m_backEndSpacing);
+  
+  canvas->setLineWidth(1.);
+  canvas->setTextPointSize(6);
   canvas->setFontFamily("Verdana");
     
   drawRuler(canvas, utils, context.getZoomFactor());
@@ -99,17 +97,21 @@ void te::layout::VerticalRulerModel::drawRuler( te::map::Canvas* canvas, Utils* 
 
   if(m_paperConfig)
   {
-    te::gm::Envelope* paperBox = m_paperConfig->getPaperBoxW();
+    double w = 0;
+    double h = 0;
+
+    m_paperConfig->getPaperSize(w, h);
+    te::gm::Envelope paperBox(0, 0, w, h);
    
-    if(paperBox)
+    if(paperBox.isValid())
     {
-      double ury = paperBox->getUpperRightY();
+      double ury = paperBox.getUpperRightY();
       if(zoomFactor >= 1.)
       {
         ury = m_backEndBox.getUpperRightY();
       }
 
-      envPaper = te::gm::Envelope(m_backEndBox.getLowerLeftX(), paperBox->getLowerLeftY(),
+      envPaper = te::gm::Envelope(m_backEndBox.getLowerLeftX(), paperBox.getLowerLeftY(),
         m_backEndBox.getUpperRightX(), ury);
       
       te::color::RGBAColor colorp2(255,255,255, TE_OPAQUE);

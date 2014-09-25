@@ -31,7 +31,6 @@
 // TerraLib
 #include "../core/pattern/mvc/OutsideController.h"
 #include "../core/property/Property.h"
-#include "../core/enum/EnumMode.h"
 #include "../core/Config.h"
 
 namespace te

@@ -36,7 +36,6 @@
 #include "../../core/Config.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../color/RGBAColor.h"
-#include "../../core/enum/EnumMode.h"
 #include "../../core/enum/AbstractType.h"
 
 namespace Ui { class SystematicScale; }

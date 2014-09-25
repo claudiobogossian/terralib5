@@ -5,6 +5,7 @@
 
 %module TerraLib
 
+/* Disable warning when compiling te::common::Singleton class */
 %warnfilter(401) Singleton;
 
 /*

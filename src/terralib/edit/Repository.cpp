@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/edt/Repository.cpp
+  \file terralib/edit/Repository.cpp
 
   \brief This class represents a repository of geometries and features.
 */
@@ -28,6 +28,7 @@
 #include "../common/STLUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/ObjectId.h"
+#include "../datatype/SimpleData.h"
 #include "../geometry/Coord2D.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
@@ -36,18 +37,49 @@
 #include "IdGeometry.h"
 #include "Repository.h"
 
+// Boost
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 // STL
 #include <cassert>
 #include <memory>
 
-te::edit::Repository::Repository(const std::string& source)
-  : m_source(source)
+te::edit::Repository::Repository(const std::string& source, int srid)
+  : m_source(source),
+    m_srid(srid)
 {
 }
 
 te::edit::Repository::~Repository()
 {
   clear();
+}
+
+te::da::ObjectId* te::edit::Repository::generateId() const
+{
+  static boost::uuids::basic_random_generator<boost::mt19937> gen;
+
+  boost::uuids::uuid u = gen();
+  std::string id = boost::uuids::to_string(u);
+
+  te::dt::String* data = new te::dt::String(id);
+
+  te::da::ObjectId* oid = new te::da::ObjectId;
+  oid->addValue(data);
+
+  return oid;
+}
+
+void te::edit::Repository::add(te::gm::Geometry* geom)
+{
+  assert(geom);
+
+  te::da::ObjectId* id = generateId();
+
+  assert(!hasIdentifier(id));
+
+  add(id, geom);
 }
 
 void te::edit::Repository::add(te::da::ObjectId* id, te::gm::Geometry* geom)
