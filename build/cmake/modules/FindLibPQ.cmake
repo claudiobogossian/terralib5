@@ -32,14 +32,16 @@ if(UNIX)
 
   find_path(PostgreSQL_INCLUDE_DIRS
             NAMES libpq-fe.h
-            PATHS /usr
+            PATHS /usr/local/pgsql
                   /usr/local
+                  /usr
             PATH_SUFFIXES include)
 
   find_library(PostgreSQL_LIBRARIES
                NAMES pq
-               PATHS /usr
-               /usr/lib
+               PATHS /usr/local/pgsql
+                     /usr/local
+                     /usr
                PATH_SUFFIXES lib)
 
 elseif(WIN32)

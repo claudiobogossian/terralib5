@@ -27,35 +27,24 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
-if(WIN32)
-  add_definitions(-DTESAMDLL)
-endif()
+file(GLOB TERRALIB_KDTREE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sam/kdtree/*.h)
+file(GLOB TERRALIB_RTREE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sam/rtree/*.h)
 
-#file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sam/rtree/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sam/rtree/*.h)
+source_group("Header Files\\kdtree"  FILES ${TERRALIB_KDTREE_HDR_FILES})
+source_group("Header Files\\rtree"  FILES ${TERRALIB_RTREE_HDR_FILES})
 
-#add_library(terralib_mod_sam SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
-add_library(terralib_mod_sam STATIC EXCLUDE_FROM_ALL ${TERRALIB_HDR_FILES})
-
-#target_link_libraries(terralib_mod_sam terralib_mod_geometry)
+add_library(terralib_mod_sam STATIC EXCLUDE_FROM_ALL ${TERRALIB_KDTREE_HDR_FILES} ${TERRALIB_RTREE_HDR_FILES})
 
 set_target_properties(terralib_mod_sam PROPERTIES LINKER_LANGUAGE CXX)
 
-#set_target_properties(terralib_mod_sam
-#                      PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
-#                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
-#                                 INSTALL_NAME_DIR "@executable_path/../lib")
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sam/kdtree.h
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/sam COMPONENT devel)
 
-#install(TARGETS terralib_mod_sam
-#        EXPORT terralib-targets
-#        RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
-#        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
-#        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
+install(FILES ${TERRALIB_KDTREE_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/sam/kdtree COMPONENT devel)
 
 install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/sam/rtree.h
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/sam COMPONENT devel)
 
-install(FILES ${TERRALIB_HDR_FILES}
+install(FILES ${TERRALIB_RTREE_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/sam/rtree COMPONENT devel)
-
-#export(TARGETS terralib_mod_sam APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
