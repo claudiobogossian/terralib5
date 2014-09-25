@@ -19,15 +19,12 @@
 /*
  * Te Type Maps
  */
-#ifdef SWIGJAVA
 %include java/TeTypeMaps.i
-#endif
 
 #define TEDATAACCESSEXPORT
 #define TECOMMONEXPORT
 #define TEPLUGINEXPORT
 
-#ifdef SWIGJAVA
 SWIG_JAVABODY_METHODS(protected, protected, SWIGTYPE)
 %pragma(java) jniclassclassmodifiers = "class"
 
@@ -36,17 +33,12 @@ namespace std {
  %template(StrVector) vector<string>;
 }
 
-#endif // SWIGJAVA
-
 %{
 // TerraLib includes
 #include "terralib/common/TerraLib.h"
 #include "terralib/plugin/PluginManager.h"
 
-#ifdef SWIGJAVA
-#include "terralib/binding/swig/QtInitializer.h"
-
-#endif // SWIGJAVA
+#include "terralib/binding/swig/java/QtInitializer.h"
 
 static void Initialize() throw (te::common::Exception)
 {
@@ -64,11 +56,6 @@ static void Finalize()
 } 
 %} 
 
-#ifdef SWIGLUA
-%include lua/Geometry.i
-#endif
-
-#ifdef SWIGJAVA
 // ---------------------------------
 // Java Documentation
 // ---------------------------------
@@ -96,21 +83,17 @@ static void Finalize()
  * The main class of TerraLib module. Remember to call <i>Initialize</i> and <i>Finalize</i> methods, on the initialization and finalization of the execution 
  * of your application respectively.
  */"
-#endif
 
 // Wrap functions
 void Initialize() throw (te::common::Exception);
 
 void Finalize();
 
-#ifdef SWIGJAVA
-%include ObjectId.i
-%include DataSet.i
-%include DataSource.i
-%include Imager.i
-%include Layer.i
-%include RTree.i
+%include java/ObjectId.i
+%include java/DataSet.i
+%include java/DataSource.i
+%include java/Imager.i
+%include java/Layer.i
+%include java/RTree.i
 
-%include "terralib/binding/swig/QtInitializer.h"
-
-#endif // SWIGJAVA
+%include "java/QtInitializer.h"
