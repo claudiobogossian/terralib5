@@ -166,6 +166,39 @@ namespace te
         Bar  /*!< A bar chart. */
       };
 
+      /*!
+        \enum CompositionMode
+
+        \brief The composition mode used to render the canvas
+      */
+      enum CompositionMode
+      {
+        SourceOver,         /*!< This is the default mode. The alpha of the source is used to blend the pixel on top of the destination.                                                                                  */
+        DestinationOver,    /*!< The alpha of the destination is used to blend it on top of the source pixels.                                                                                                            */
+        Clear,              /*!< The pixels in the destination are cleared (set to fully transparent) independent of the source.                                                                                          */
+        Source,             /*!< The output is the source pixel. (This means a basic copy operation and is identical to SourceOver when the source pixel is opaque).                                                      */
+        Destination,        /*!< The output is the destination pixel. This means that the blending has no effect.                                                                                                         */
+        SourceIn,           /*!< The output is the source, where the alpha is reduced by that of the destination.                                                                                                         */
+        DestinationIn,      /*!< The output is the destination, where the alpha is reduced by that of the source.                                                                                                         */
+        SourceOut,          /*!< The output is the source, where the alpha is reduced by the inverse of destination.                                                                                                      */
+        DestinationOut,     /*!< The output is the destination, where the alpha is reduced by the inverse of the source.                                                                                                  */
+        SourceAtop,         /*!< The source pixel is blended on top of the destination, with the alpha of the source pixel reduced by the alpha of the destination pixel.                                                 */
+        DestinationAtop,    /*!< The destination pixel is blended on top of the source, with the alpha of the destination pixel is reduced by the alpha of the destination pixel.                                         */
+        Xor,                /*!< The source, whose alpha is reduced with the inverse of the destination alpha, is merged with the destination, whose alpha is reduced by the inverse of the source alpha.                 */
+        Plus,               /*!< Both the alpha and color of the source and destination pixels are added together.                                                                                                        */
+        Multiply,           /*!< The output is the source color multiplied by the destination. Multiplying a color with white leaves the color unchanged, while multiplying a color with black produces black.            */
+        Screen,             /*!< The source and destination colors are inverted and then multiplied. Screening a color with white produces white, whereas screening a color with black leaves the color unchanged.        */
+        Overlay,            /*!< Multiplies or screens the colors depending on the destination color. The destination color is mixed with the source color to reflect the lightness or darkness of the destination.       */
+        Darken,             /*!< The darker of the source and destination colors is selected.                                                                                                                             */
+        Lighten,            /*!< The lighter of the source and destination colors is selected.                                                                                                                            */
+        ColorDodge,         /*!< The destination color is brightened to reflect the source color. A black source color leaves the destination color unchanged.                                                            */
+        ColorBurn,          /*!< The destination color is darkened to reflect the source color. A white source color leaves the destination color unchanged.                                                              */
+        HardLight,          /*!< Multiplies or screens the colors depending on the source color. A light source color will lighten the destination color, whereas a dark source color will darken the destination color.  */
+        SoftLight,          /*!< Darkens or lightens the colors depending on the source color. Similar to CompositionMode_HardLight.                                                                                      */
+        Difference,         /*!< Subtracts the darker of the colors from the lighter. Painting with white inverts the destination color, whereas painting with black leaves the destination color unchanged.              */
+        Exclusion           /*!< Similar to CompositionMode_Difference, but with a lower contrast. Painting with white inverts the destination color, whereas painting with black leaves the destination color unchanged. */
+      };
+
   }   // end namespace map
 }     // end namespace te
 

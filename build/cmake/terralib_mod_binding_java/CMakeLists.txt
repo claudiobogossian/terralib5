@@ -25,7 +25,7 @@
 
 include ( ${SWIG_USE_FILE} )
 
-file (GLOB TERRALIB_SWIG_SCRIPT_FILE "../../../src/terralib/binding/swig/TerraLib.i")
+file (GLOB TERRALIB_SWIG_SCRIPT_FILE "../../../src/terralib/binding/swig/TerraLibJAVA.i")
 
 set_source_files_properties (${TERRALIB_SWIG_SCRIPT_FILE} PROPERTIES CPLUSPLUS ON CMAKE_SWIG_FLAGS "-includeall")
 
@@ -38,20 +38,20 @@ include_directories (
 )
 
 set (TERRALIB_CHDR 
-	${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/MultiImager.h
-	${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/QtInitializer.h
-	${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/Styler.h
+	${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/java/MultiImager.h
+	${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/java/QtInitializer.h
+	${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/java/Styler.h
 )
 
 set (TERRALIB_CSRC 
-	${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/QtInitializer.cpp
-	${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/Styler.cpp
+	${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/java/QtInitializer.cpp
+	${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/java/Styler.cpp
 )
 
 set (
   TERRALIB_HDRS_TO_MOC_FILES
-  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/MultiImager.h
-  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/Styler.h
+  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/java/MultiImager.h
+  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/java/Styler.h
 )
 
 set(CMAKE_AUTOMOC ON)

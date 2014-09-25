@@ -228,7 +228,14 @@ void te::qt::widgets::MapDisplay::draw(te::map::AbstractLayer* layer, QPainter& 
   te::qt::widgets::Canvas* canvas = getCanvas(layer);
 
   // Draw the current layer
-  layer->draw(canvas, m_extent, m_srid);
+  try
+  {
+    layer->draw(canvas, m_extent, m_srid);
+  }
+  catch(...)
+  {
+    return;
+  }
 
   // Compose the result
   QPaintDevice* device = canvas->getDevice();

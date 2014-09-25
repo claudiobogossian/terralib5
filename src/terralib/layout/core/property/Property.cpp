@@ -26,19 +26,19 @@
 */
 
 // TerraLib
+#include "../enum/Enums.h"
 #include "Property.h"
 
 // STL
 #include <vector>
 #include <algorithm>
-#include "..\enum\Enums.h"
 
 te::layout::Property::Property() :
   m_name("unknown"),
-  m_id("unknown"),
-  m_label(""),
-  m_editable(true),
   m_type(0),
+  m_id("unknown"),
+  m_editable(true),
+  m_label(""),
   m_menu(false),
   m_icon("")
 {
