@@ -550,8 +550,10 @@ namespace te
           std::size_t nElements = reportNodes[i]->getData().size();
 
           for(std::size_t j = 0; j < nElements; ++j)
+          {
             //if(TeIntersects((reportNodes[i])->getData()[j], e))
               //report.push_back((reportNodes[i])->getData()[j]);
+          }
         }
       }
 
