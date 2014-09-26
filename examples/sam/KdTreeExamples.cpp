@@ -61,4 +61,11 @@ void IndexPointUsingKdTree()
   std::vector<KDNODE*> reports;
 
   tree.search(e, reports);
+
+  te::gm::Coord2D coord = te::gm::Coord2D(28.0, 28.0);
+
+  std::vector<te::gm::Point> points;
+  std::vector<double> sqrDists;
+
+  tree.nearestNeighborSearch(coord, points, sqrDists, 1);
 }

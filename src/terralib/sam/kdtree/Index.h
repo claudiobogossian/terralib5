@@ -450,7 +450,7 @@ namespace te
               te::gm::Envelope e(-std::numeric_limits<double>::max(), -std::numeric_limits<double>::max(),
                                  +std::numeric_limits<double>::max(), +std::numeric_limits<double>::max());
 
-              nearestNeighborSearch(root_, key, report, sqrDists, e);
+              nearestNeighborSearch(m_root, key, report, sqrDists, e);
             }
           }
 
@@ -482,13 +482,13 @@ namespace te
           inline KdTreeNode* build(std::vector<std::pair<kdKey, kdDataItem> >& dataSet, double averageValue, const te::gm::Envelope& mbr);
 
            /*! \brief Recursive nearest neighbor search. */
-          inline void nearestNeighborSearch(KdTreeNode* node, const kdKey& key, std::vector<kdDataItem>& report, std::vector<double>& sqrDists, const te::gm::Envelope& e) const;
+          inline void nearestNeighborSearch(KdTreeNode* node, const kdKey& key, std::vector<kdDataItem>& report, std::vector<double>& sqrDists, te::gm::Envelope& e) const;
 
           /*! \brief Recursive range query. */
           inline void search(const te::gm::Envelope& e, KdTreeNode* node, std::vector<KdTreeNode*>& report) const;
 
           /*! \brief It updates the neighbor list. */
-          inline void update(KdTreeNode* node, const kdKey& key, std::vector<kdDataItem>& report, std::vector<double>& sqrDists, const te::gm::Envelope& e) const;
+          inline void update(KdTreeNode* node, const kdKey& key, std::vector<kdDataItem>& report, std::vector<double>& sqrDists, te::gm::Envelope& e) const;
 
           /*! \brief It returns the average value along the axis. */
           double average(std::vector<std::pair<kdKey, kdDataItem> >& dataSet, const char& discriminator) const
@@ -658,44 +658,44 @@ namespace te
       }
 
       template<class KdTreeNode>
-      void AdaptativeIndex<KdTreeNode>::nearestNeighborSearch(KdTreeNode* node, const kdKey& key, std::vector<kdDataItem>& report, std::vector<double>& sqrDists, const te::gm::Envelope& e) const
+      void AdaptativeIndex<KdTreeNode>::nearestNeighborSearch(KdTreeNode* node, const kdKey& key, std::vector<kdDataItem>& report, std::vector<double>& sqrDists, te::gm::Envelope& e) const
       {
         if(node->getDiscriminator() == 'l')
         {
-          update(node, key, report, sqrDists, rect); // this is a leaf node -> update list of neighbours
+          update(node, key, report, sqrDists, e); // this is a leaf node -> update list of neighbours
         }
         else if(node->getDiscriminator() == 'x')
         {
           if(key.getX() <= node->getKey())
           {
-            nearestNeighborSearch(node->getLeft(), key, report, sqrDists, rect);
+            nearestNeighborSearch(node->getLeft(), key, report, sqrDists, e);
 
-            if((rect.m_llx < node->getKey()) && (node->getKey() < rect.m_urx))
-              nearestNeighborSearch(node->getRight(), key, report, sqrDists, rect);
+            if((e.m_llx < node->getKey()) && (node->getKey() < e.m_urx))
+              nearestNeighborSearch(node->getRight(), key, report, sqrDists, e);
           }
           else
           {
-            nearestNeighborSearch(node->getRight(), key, report, sqrDists, rect);
+            nearestNeighborSearch(node->getRight(), key, report, sqrDists, e);
 
-            if((rect.m_llx < node->getKey()) &&(node->getKey() < rect.m_urx))
-              nearestNeighborSearch(node->getLeft(), key, report, sqrDists, rect);
+            if((e.m_llx < node->getKey()) &&(node->getKey() < e.m_urx))
+              nearestNeighborSearch(node->getLeft(), key, report, sqrDists, e);
           }
         }
         else if(node->getDiscriminator() == 'y')
         {
           if(key.getY() <= node->getKey())
           {
-            nearestNeighborSearch(node->getLeft(), key, report, sqrDists, rect);
+            nearestNeighborSearch(node->getLeft(), key, report, sqrDists, e);
 
-            if((rect.m_lly < node->getKey()) &&(node->getKey() < rect.m_ury))
-              nearestNeighborSearch(node->getRight(), key, report, sqrDists, rect);
+            if((e.m_lly < node->getKey()) &&(node->getKey() < e.m_ury))
+              nearestNeighborSearch(node->getRight(), key, report, sqrDists, e);
           }
           else
           {
-            nearestNeighborSearch(node->getRight(), key, report, sqrDists, rect);
+            nearestNeighborSearch(node->getRight(), key, report, sqrDists, e);
 
-            if((rect.m_lly < node->getKey()) &&(node->getKey() < rect.m_ury))
-              nearestNeighborSearch(node->getLeft(), key, report, sqrDists, rect);
+            if((e.m_lly < node->getKey()) &&(node->getKey() < e.m_ury))
+              nearestNeighborSearch(node->getLeft(), key, report, sqrDists, e);
           }
         }
       }
@@ -728,7 +728,7 @@ namespace te
       }
 
       template<class KdTreeNode>
-      void AdaptativeIndex<KdTreeNode>::update(KdTreeNode* node, const kdKey& key, std::vector<kdDataItem>& report, std::vector<double>& sqrDists, const te::gm::Envelope& e) const
+      void AdaptativeIndex<KdTreeNode>::update(KdTreeNode* node, const kdKey& key, std::vector<kdDataItem>& report, std::vector<double>& sqrDists, te::gm::Envelope& e) const
       {
         const std::size_t size = node->getData().size();
 
@@ -737,8 +737,8 @@ namespace te
 // for each element in the node, we need to search for distances less than of some one of sqrDists
         for(std::size_t i = 0; i < size; ++i)
         {
-          double dx = (key.getX() - node->getData()[i].location().getX());
-          double dy = (key.getY() - node->getData()[i].location().getY());
+          double dx = (key.getX() - node->getData()[i].getX());
+          double dy = (key.getY() - node->getData()[i].getY());
 
           double dkp = (dx * dx) + (dy * dy); // square distance from the key point to the node
 
@@ -774,10 +774,10 @@ namespace te
       if(maxDist != std::numeric_limits<double>::max())
         maxDist = sqrt(maxDist);
 
-      rect.m_llx = key.getX() - maxDist;
-      rect.m_lly = key.getY() - maxDist;
-      rect.m_urx = key.getX() + maxDist;
-      rect.m_ury = key.getY() + maxDist;
+      e.m_llx = key.getX() - maxDist;
+      e.m_lly = key.getY() - maxDist;
+      e.m_urx = key.getX() + maxDist;
+      e.m_ury = key.getY() + maxDist;
     }
 
     } // end namespace kdtree
