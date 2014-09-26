@@ -159,14 +159,13 @@ namespace te
             delete node;
           }
 
-          // Not build!
-
           /*! \brief It inserts data for single nodes, i.e. nodes that stores only one element. */
-          /*void insertData(KdTreeNode*& node, const kdDataItem& data, const kd_node_m_datasingle_tag&)
+          void insertData(KdTreeNode*& node, const kdDataItem& data, const kd_node_m_datasingle_tag&)
           {
             node->setData(data);
-          }*/
+          }
 
+          // Not build!
           /*! \brief It inserts data for set nodes, i.e., nodes that may stores many element. */
           /*void insertData(KdTreeNode*& node, const kdDataItem& data, const kd_node_data_set_tag&)
           {

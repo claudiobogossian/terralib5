@@ -30,19 +30,48 @@
 #include "SAMExamples.h"
 
 // STL
+#include <limits>
 #include <vector>
 #include <utility>
 
-void IndexPointUsingKdTree()
+void KdTree()
 {
-  typedef te::sam::kdtree::AdaptativeNode<te::gm::Coord2D, std::vector<te::gm::Point>, te::gm::Point> KDNODE;
-  typedef te::sam::kdtree::AdaptativeIndex<KDNODE> KDTREE;
+  // K-d Tree
+  typedef te::sam::kdtree::Node<te::gm::Coord2D, std::size_t, std::size_t> KD_NODE;
+  typedef te::sam::kdtree::Index<KD_NODE> KD_TREE;
+
+  te::gm::Envelope e;
+
+  KD_TREE tree(e);
 
   std::size_t n = 100;
+
+  for(std::size_t i = 0; i < n; ++i)
+  {
+    te::gm::Coord2D coord(static_cast<double>(i), static_cast<double>(i));
+    tree.insert(coord, i);
+  }
+
+  for(std::size_t i = 0; i < n; ++i)
+  {
+    std::vector<KD_NODE*> reports;
+
+    te::gm::Envelope e(static_cast<double>(i), static_cast<double>(i), static_cast<double>(i), static_cast<double>(i));
+    tree.search(e, reports);
+  }
+}
+
+void AdaptativeKdTree()
+{
+  // Adaptative K-d Tree
+  typedef te::sam::kdtree::AdaptativeNode<te::gm::Coord2D, std::vector<te::gm::Point>, te::gm::Point> KD_ADAPTATIVE_NODE;
+  typedef te::sam::kdtree::AdaptativeIndex<KD_ADAPTATIVE_NODE> KD_ADAPTATIVE_TREE;
 
   std::vector<std::pair<te::gm::Coord2D, te::gm::Point> > dataset;
 
   te::gm::Envelope e;
+
+  std::size_t n = 100;
 
   for(std::size_t i = 0; i < n; ++i)
   {
@@ -54,18 +83,26 @@ void IndexPointUsingKdTree()
     dataset.push_back(std::pair<te::gm::Coord2D, te::gm::Point>(coord, point));
   }
 
-  KDTREE tree(e);
+  KD_ADAPTATIVE_TREE adaptativeTree(e);
 
-  tree.build(dataset);
+  adaptativeTree.build(dataset);
 
-  std::vector<KDNODE*> reports;
+  std::vector<KD_ADAPTATIVE_NODE*> reports;
 
-  tree.search(e, reports);
+  adaptativeTree.search(e, reports);
 
   te::gm::Coord2D coord = te::gm::Coord2D(28.0, 28.0);
 
   std::vector<te::gm::Point> points;
+  points.push_back(te::gm::Point(std::numeric_limits<double>::max(), std::numeric_limits<double>::max()));
   std::vector<double> sqrDists;
 
-  tree.nearestNeighborSearch(coord, points, sqrDists, 1);
+  adaptativeTree.nearestNeighborSearch(coord, points, sqrDists, 1);
+}
+
+void IndexPointUsingKdTree()
+{
+  KdTree();
+
+  AdaptativeKdTree();
 }
