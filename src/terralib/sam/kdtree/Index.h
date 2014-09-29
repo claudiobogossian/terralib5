@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../geometry/Envelope.h"
+#include "../../geometry/Utils.h"
 #include "Node.h"
 
 // STL
@@ -551,8 +552,8 @@ namespace te
 
           for(std::size_t j = 0; j < nElements; ++j)
           {
-            //if(TeIntersects((reportNodes[i])->getData()[j], e))
-              //report.push_back((reportNodes[i])->getData()[j]);
+            if(te::gm::Intersects((reportNodes[i])->getData()[j], e))
+              report.push_back((reportNodes[i])->getData()[j]);
           }
         }
       }

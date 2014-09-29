@@ -84,12 +84,15 @@ void AdaptativeKdTree()
   }
 
   KD_ADAPTATIVE_TREE adaptativeTree(e);
-
   adaptativeTree.build(dataset);
 
+  // Search 1
   std::vector<KD_ADAPTATIVE_NODE*> reports;
-
   adaptativeTree.search(e, reports);
+
+  // Search 2
+  std::vector<te::gm::Point> reports2;
+  adaptativeTree.search(e, reports2);
 
   te::gm::Coord2D coord = te::gm::Coord2D(28.0, 28.0);
 

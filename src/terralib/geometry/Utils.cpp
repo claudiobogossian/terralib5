@@ -29,6 +29,7 @@
 #include "Exception.h"
 #include "Geometry.h"
 #include "LinearRing.h"
+#include "Point.h"
 #include "Polygon.h"
 #include "Utils.h"
 
@@ -135,4 +136,30 @@ te::gm::Envelope te::gm::AdjustToCut(const Envelope & env, double bWidth, double
   double yf = (magicY2)*bHeight;
 
   return te::gm::Envelope(xi,yi,xf,yf);
+}
+
+template<class T1, class T2> bool te::gm::Intersects(const T1& o1, const T2& o2)
+{
+  return o1->intersects(o2);
+}
+
+template<> bool te::gm::Intersects(const te::gm::Point& point, const te::gm::Envelope& e)
+{
+  // point to the right of envelope
+  if(point.getX() > e.m_urx)
+    return false;
+
+  // point to the left of envelope
+  if(e.m_llx > point.getX())
+    return false;
+
+  // point is above envelope
+  if(point.getY() > e.m_ury)
+    return false;
+
+  // point is below envelope
+  if(e.m_lly > point.getY())
+    return false;
+
+  return true;
 }
