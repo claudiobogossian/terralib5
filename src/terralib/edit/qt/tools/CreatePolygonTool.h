@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../geometry/Coord2D.h"
+#include "../../../maptools/AbstractLayer.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
 #include "../Config.h"
 
@@ -38,8 +39,7 @@ namespace te
 {
   namespace gm
   {
-    class LineString;
-    class Point;
+    class Geometry;
   }
 
   namespace qt
@@ -76,7 +76,7 @@ namespace te
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        CreatePolygonTool(te::qt::widgets::MapDisplay* display, const QCursor& cursor, QObject* parent = 0);
+        CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent = 0);
 
         /*! \brief Destructor. */
         ~CreatePolygonTool();
@@ -108,12 +108,19 @@ namespace te
 
         void clear();
 
+        te::gm::Geometry* buildPolygon();
+
+        te::gm::Geometry* buildLine();
+
+        void storeNewGeometry();
+
       private slots:
 
         void onExtentChanged();
 
       protected:
 
+        te::map::AbstractLayerPtr m_layer;      //!< The layer used by this tool.
         std::vector<te::gm::Coord2D> m_coords;  //!< The coord list managed by this tool.
         te::gm::Coord2D m_lastPos;              //!< The last position captured on mouse move event.
         bool m_continuousMode;                  //!< A flag that indicates if the tool is working in 'continuous mode'. i.e. the coordinates will be acquired  from each mouseMove.

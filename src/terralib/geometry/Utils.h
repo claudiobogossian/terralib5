@@ -37,6 +37,7 @@ namespace te
 // Forward declarations
     class Envelope;
     class Geometry;
+    class Point;
     
     /*!
       \brief It returns the number of measurements or axes needed to describe a position in a coordinate system.
@@ -100,6 +101,12 @@ namespace te
       \return It returns a adjusted envelope
     */
     TEGEOMEXPORT Envelope AdjustToCut(const Envelope & env, double bWidth, double bHeight);
+
+    /* \brief It checks if one object intersects another object. */
+    template<class T1, class T2> bool Intersects(const T1& o1, const T2& o2);
+
+    /* \brief Specialized function that checks if point intersects envelope. */
+    template<> TEGEOMEXPORT bool Intersects(const te::gm::Point& point, const te::gm::Envelope& e);
 
   } // end namespace gm
 }   // end namespace te

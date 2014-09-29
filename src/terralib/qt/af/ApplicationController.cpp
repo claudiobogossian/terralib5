@@ -243,6 +243,27 @@ QAction* te::qt::af::ApplicationController::findAction(const QString& id) const
   return 0;
 }
 
+QActionGroup* te::qt::af::ApplicationController::findActionGroup(const QString& id) const
+{
+  for(size_t i=0; i<m_menus.size(); i++)
+  {
+    QActionGroup* actGroup = te::qt::widgets::FindActionGroup(id, m_menus[i]);
+    
+    if (actGroup != 0)
+      return actGroup;
+  }
+
+  for(size_t i=0; i<m_menuBars.size(); i++)
+  {
+    QActionGroup* actGroup = te::qt::widgets::FindActionGroup(id, m_menuBars[i]);
+
+    if (actGroup != 0)
+      return actGroup;
+  }
+
+  return 0;
+}
+
 void te::qt::af::ApplicationController::addListener(QObject* obj)
 {
   std::set<QObject*>::const_iterator it = m_applicationItems.find(obj);

@@ -67,6 +67,10 @@ namespace te
 
         ~Repository();
 
+        te::da::ObjectId* generateId() const;
+
+        void add(te::gm::Geometry* geom);
+
         void add(te::da::ObjectId* id, te::gm::Geometry* geom);
 
         void set(te::da::ObjectId* id, te::gm::Geometry* geom);

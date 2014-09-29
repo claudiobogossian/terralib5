@@ -105,7 +105,7 @@ namespace te
 
         te::gm::Envelope buildEnvelope(const QPointF& pos);
 
-        void drawGeometry();
+        void draw();
 
         void updateCursor();
 

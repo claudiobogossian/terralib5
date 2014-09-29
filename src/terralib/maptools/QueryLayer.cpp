@@ -177,6 +177,7 @@ std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const std::string& p
 
   // Original Where
   te::da::Where* wh = select->getWhere();
+
   if(wh != 0)
   {
     // Original restriction expression
@@ -202,6 +203,20 @@ std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const std::string& p
 
       wh->setExp(andop);
     }
+  }
+  else
+  {
+    if(spatialTopOp.find(te::da::FunctionNames::sm_ST_EnvelopeIntersects) != spatialTopOp.end())
+    {
+      te::da::ST_EnvelopeIntersects* intersects = new te::da::ST_EnvelopeIntersects(pname, lenv);
+      wh = new te::da::Where(intersects);
+    }
+    else if(spatialTopOp.find(te::da::FunctionNames::sm_ST_Intersects) != spatialTopOp.end())
+    {
+      te::da::ST_Intersects* intersects = new te::da::ST_Intersects(pname, lenv);
+      wh = new te::da::Where(intersects);
+    }
+    select->setWhere(wh);
   }
 
   return getData(select.get(), travType, accessPolicy);
@@ -235,6 +250,11 @@ std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(te::da::Expression* 
     te::da::And* andop = new te::da::And(exp, restriction);
     wh->setExp(andop);
   }
+  else
+  {
+    wh = new te::da::Where(restriction);
+    select->setWhere(wh);
+  }
 
   return getData(select.get(), travType, accessPolicy);
 }
@@ -257,6 +277,11 @@ std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const te::da::Object
     // The final restriction: original restriction expression + the oids restriction
     te::da::And* andop = new te::da::And(exp, oids->getExpression());
     wh->setExp(andop);
+  }
+  else
+  {
+    wh =  new te::da::Where(oids->getExpression());
+    select->setWhere(wh);
   }
 
   return getData(select.get(), travType, accessPolicy);

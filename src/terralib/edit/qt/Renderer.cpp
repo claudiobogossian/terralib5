@@ -80,7 +80,7 @@ void te::edit::Renderer::drawRepository(const std::string& source, const te::gm:
   std::vector<IdGeometry*> geoms = repository->getGeometries(e, srid);
 
   for(std::size_t i = 0; i < geoms.size(); ++i)
-    draw(geoms[i]->getGeometry(), true);
+    draw(geoms[i]->getGeometry());
 }
 
 void te::edit::Renderer::prepare(te::gm::GeomType type)
@@ -151,10 +151,7 @@ void te::edit::Renderer::draw(te::gm::Geometry* geom, bool showVertexes)
   m_canvas->draw(geom);
 
   if(showVertexes)
-  {
-    prepare(te::gm::PointType);
     drawVertexes(geom);
-  }
 }
 
 void te::edit::Renderer::drawVertexes(te::gm::Geometry* geom)
@@ -163,6 +160,8 @@ void te::edit::Renderer::drawVertexes(te::gm::Geometry* geom)
 
   std::vector<te::gm::LineString*> lines;
   GetLines(geom, lines);
+
+  prepare(te::gm::PointType);
 
   drawVertexes(lines);
 }
@@ -198,6 +197,15 @@ void te::edit::Renderer::end()
   m_currentGeomType = te::gm::UnknownGeometryType;
 
   setupDefaultStyle();
+}
+
+void te::edit::Renderer::setPolygonStyle(const QColor& fillColor, const QColor& contourColor, const std::size_t& contourWidth)
+{
+  m_polygonFillColor = fillColor;
+  m_polygonContourColor = contourColor;
+  m_polygonContourWidth = contourWidth;
+
+  m_styleChanged = true;
 }
 
 void te::edit::Renderer::setPointStyle(const QString& mark, const QColor& fillColor, const QColor& contourColor,
