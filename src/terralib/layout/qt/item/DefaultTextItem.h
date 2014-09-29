@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "../../core/pattern/mvc/ItemObserver.h"
+#include "../../core/enum/AbstractType.h"
 
 // Qt
 #include <QGraphicsTextItem>
@@ -88,6 +89,18 @@ namespace te
 
         virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *evt);
 
+        virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );
+
+        virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+
+        virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+
+        virtual void	hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
+
+        virtual void	hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
+
+        virtual void	hoverMoveEvent ( QGraphicsSceneHoverEvent * event );
+
         virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
 
         virtual void drawBackground( QPainter* painter );
@@ -102,11 +115,30 @@ namespace te
 
         virtual void applyRotation();
 
+        virtual bool checkTouchesCorner(const double& x, const double& y);
+
+        virtual QPixmap calculateNewPixmap(const double& x, const double& y);
+
+        virtual te::gm::Envelope createNewBoxInCoordScene(const double& x, const double& y);
+
+      protected:
+
         QPixmap m_pixmap;
         QRectF  m_rect;//In local coordinate
+
         QTextTable*    m_table;
         double         m_oldAdjustSizeW;
         double         m_oldAdjustSizeH;
+
+        //Resize
+        te::gm::Envelope m_boxCopy;
+        QPixmap m_clonePixmap;
+        bool    m_mousePressedCtrl;
+        QPointF m_initialCoord;
+        QPointF m_finalCoord;
+        bool    m_hoverAboveItem;
+        bool    m_toResizeItem;
+        LayoutAlign m_enumSides;
     };
   }
 }

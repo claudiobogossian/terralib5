@@ -90,6 +90,7 @@ namespace te
         virtual void	hoverMoveEvent ( QGraphicsSceneHoverEvent * event );
 
         virtual bool checkTouchesCorner(const double& x, const double& y);
+
         virtual QPixmap calculateNewPixmap(const double& x, const double& y);
 
         virtual te::gm::Envelope createNewBoxInCoordScene(const double& x, const double& y);
@@ -102,8 +103,9 @@ namespace te
 
         QPixmap m_pixmap;
         QRectF  m_rect;//In local coordinate
-
+        
         //Resize
+        te::gm::Envelope m_boxCopy;
         QPixmap m_clonePixmap;
         bool    m_mousePressedCtrl;
         QPointF m_initialCoord;

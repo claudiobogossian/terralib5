@@ -57,6 +57,8 @@ te::layout::ObjectItem::ObjectItem( ItemController* controller, Observable* o ) 
 
   //If enabled is true, this item will accept hover events
   setAcceptHoverEvents(true);
+
+  m_boxCopy = m_model->getBox();
 }
 
 te::layout::ObjectItem::~ObjectItem()
@@ -94,6 +96,9 @@ void te::layout::ObjectItem::setPixmap( const QPixmap& pixmap )
   QPointF point = pos();
 
   te::gm::Envelope box = m_model->getBox();
+
+  if(m_mousePressedCtrl)
+    box = m_boxCopy;
 
   //If you modify the boundingRect value, you need to inform Graphics View about it by calling QGraphicsItem::prepareGeometryChange();
   QGraphicsObject::prepareGeometryChange();
@@ -185,12 +190,15 @@ void te::layout::ObjectItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
   {
     m_clonePixmap = getPixmap();
     m_mousePressedCtrl = true;
+    m_initialCoord = event->scenePos();
   }
 }
 
 void te::layout::ObjectItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
 {  
   QGraphicsItem::mouseReleaseEvent(event);
+
+  m_finalCoord = event->scenePos();
 
   te::gm::Envelope boxScene = createNewBoxInCoordScene(event->scenePos().x(), event->scenePos().y());
   if(boxScene.isValid() && boxScene.getWidth() > 0 && boxScene.getHeight() > 0)
@@ -217,6 +225,8 @@ void te::layout::ObjectItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
   {
     m_mousePressedCtrl = true;
     setOpacity(0.5);
+
+    m_finalCoord = event->scenePos();
 
     QPixmap pix = calculateNewPixmap(event->scenePos().x(), event->scenePos().y());
     setPixmap(pix);
@@ -308,111 +318,78 @@ QPixmap te::layout::ObjectItem::calculateNewPixmap( const double& x, const doubl
 
 te::gm::Envelope te::layout::ObjectItem::createNewBoxInCoordScene( const double& x, const double& y )
 {
-  te::gm::Envelope boxScene = m_model->getBox();;
+  QPointF pointScene = this->scenePos();
 
-  QPointF posItem = this->scenePos();
-  QPointF posAtual(x, y);
+  QPointF pbxy1 = mapToScene(boundingRect().bottomLeft());
+  QPointF pbxy2 = mapToScene(boundingRect().topRight());
 
-  double xTranslation = 0;
-  double yTranslation = 0;
-
-  double x1 = posItem.x() < posAtual.x() ? posItem.x() : posAtual.x();
-  double y1 = posItem.y() < posAtual.y() ? posItem.y() : posAtual.y();
-  double x2 = posItem.x() > posAtual.x() ? posItem.x() : posAtual.x();
-  double y2 = posItem.y() > posAtual.y() ? posItem.y() : posAtual.y();
-
-  double dx = x2 - x1;
-  double dy = y2 - y1;
+  double dx = 0;
+  double dy = 0;
 
   if(m_mousePressedCtrl && m_toResizeItem)
   {
+    double dx = m_finalCoord.x() - m_initialCoord.x();
+    double dy = m_finalCoord.y() - m_initialCoord.y();
+
     switch(m_enumSides)
     {
     case TPLowerRight :
       {
-        boxScene = te::gm::Envelope(posItem.x(), posItem.y() - dy, posItem.x() + dx, posItem.y());
+        if(m_finalCoord.x() > pbxy1.x() && m_finalCoord.y() > pbxy2.y())
+        {
+          m_boxCopy = te::gm::Envelope(m_model->getBox().m_llx, 
+            m_model->getBox().m_lly, m_model->getBox().m_urx + dx, m_model->getBox().m_ury + dy);
+
+          //In Parent Coordinates
+          setPos(QPointF(m_model->getBox().m_llx, m_model->getBox().m_lly));
+        }
         break;
       }
     case TPLowerLeft:
       {
-        dx = posItem.x() - posAtual.x();
-        dy = posItem.y() - posAtual.y();
-
-        QPointF pbxy2 = mapToScene(boundingRect().topRight());
-        if(posAtual.x() < pbxy2.x() && posAtual.y() < posItem.y())
+        if(m_finalCoord.x() < pbxy2.x() && m_finalCoord.y() > pbxy2.y())
         {
-          boxScene = te::gm::Envelope(posItem.x() - dx, posItem.y() - dy, pbxy2.x(), posItem.y());
-
-          QPointF p_f = mapFromScene(QPointF(posItem.x() - dx, posItem.y()));
-          QPointF p_ff = mapToParent(p_f);                                  
-          xTranslation = p_ff.x();
-          yTranslation = p_ff.y();
+          m_boxCopy = te::gm::Envelope(m_model->getBox().m_llx + dx, 
+            m_model->getBox().m_lly - dy, m_model->getBox().m_urx, m_model->getBox().m_ury);
 
           //In Parent Coordinates
-          setPos( QPointF(xTranslation, yTranslation) );
+          setPos(QPointF(m_finalCoord.x(), m_model->getBox().m_lly));
         }
         break;
       }
     case TPTopRight:
       {
-
-        QRectF bond = boundingRect();
-
-        QPointF pbxy2 = mapToScene(boundingRect().topRight());
-        QPointF pbxy1 = mapToScene(boundingRect().bottomLeft());
-        
-        dx = posAtual.x() - pbxy2.x();
-        dy = posAtual.y() - pbxy2.y();
-
-        if(posAtual.x() > posItem.x() && posAtual.y() < pbxy1.y())
+        if(m_finalCoord.x() > pbxy1.x() && m_finalCoord.y() < pbxy1.y())
         {
-          boxScene = te::gm::Envelope(boxScene.getLowerLeftX(), 
-            boxScene.getLowerLeftY(), boxScene.getUpperRightX() + dx, boxScene.getUpperRightY() + dy);
+          m_boxCopy = te::gm::Envelope(m_model->getBox().m_llx, 
+            m_model->getBox().m_lly, m_model->getBox().m_urx + dx, m_model->getBox().m_ury - dy);
 
-          QPointF p_f = mapFromScene(QPointF(posItem.x(), posItem.y() + dy));
-          QPointF p_ff = mapToParent(p_f);
-          xTranslation = p_ff.x();
-          yTranslation = p_ff.y();
-
-          setRect(QRectF(0, 0, boxScene.getWidth(), boxScene.getHeight()));
-          
           //In Parent Coordinates
-          setPos( QPointF(xTranslation, yTranslation) );
+          setPos(QPointF(m_model->getBox().m_llx, m_finalCoord.y()));
         }
         break;
       }
     case TPTopLeft :
       {  
-        QPointF pbxy2 = mapToScene(boundingRect().topLeft());
-
-        dx = posAtual.x() - pbxy2.x();
-        dy = posAtual.y() - pbxy2.y();
-
-        QPointF pbxy1 = mapToScene(boundingRect().bottomRight());
-        if(posAtual.x() < pbxy1.x() && posAtual.y() > pbxy1.y())
+        if(m_finalCoord.x() < pbxy2.x() && m_finalCoord.y() < pbxy1.y())
         {
-          boxScene = te::gm::Envelope(posItem.x() + dx, pbxy1.y(), pbxy1.x(), posItem.y() + dy);
-
-          QPointF p_f = mapFromScene(QPointF(posItem.x() + dx, posItem.y() + dy));
-          QPointF p_ff = mapToParent(p_f);
-          xTranslation = p_ff.x();
-          yTranslation = p_ff.y();
+          m_boxCopy = te::gm::Envelope(m_model->getBox().m_llx + dx, 
+            m_model->getBox().m_lly + dy, m_model->getBox().m_urx, m_model->getBox().m_ury);
 
           //In Parent Coordinates
-          setPos( QPointF(xTranslation, yTranslation) );
+          setPos(QPointF(m_finalCoord.x(), m_finalCoord.y()));
         }
         break;
       }
     default :
       {
-        boxScene = te::gm::Envelope(posItem.x(), posItem.y() - boundingRect().height(), 
-          posItem.x() + boundingRect().width(), posItem.y());
+        m_boxCopy = m_model->getBox();
         break;
       }
     }
   }
 
-  return boxScene;
+  return m_boxCopy;
 }
 
 bool te::layout::ObjectItem::contains( const QPointF &point ) const
@@ -455,4 +432,3 @@ void te::layout::ObjectItem::applyRotation()
 
   setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
 }
-
