@@ -97,9 +97,14 @@ void te::sa::SkaterOperation::execute()
   te::graph::AbstractGraph* graph = mst.kruskal(edgeWeightIdx);
 
   //partition the graph
-  te::sa::SkaterPartition sp(graph, m_inputParams->m_attrs, m_inputParams->m_attrPop, m_inputParams->m_minPop);
+  te::sa::SkaterPartition sp(graph, m_inputParams->m_attrs);
 
-  std::vector<std::size_t> roots = sp.execute(m_inputParams->m_nClusters);
+  std::vector<std::size_t> roots;
+
+  if(m_inputParams->m_aggregType == te::sa::Both || m_inputParams->m_aggregType == te::sa::Clusters)
+    roots = sp.execute(m_inputParams->m_nClusters, m_inputParams->m_attrPop, m_inputParams->m_minPop);
+  else if(m_inputParams->m_aggregType == te::sa::Population)
+    roots = sp.execute(m_inputParams->m_attrPop, m_inputParams->m_minPop);
 
   m_nClassGroups = (int)roots.size();
 

@@ -92,7 +92,7 @@ std::list<te::map::AbstractLayerPtr> te::qt::plugins::sa::AbstractAction::getLay
   te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
 
   if(prj)
-    list = prj->getAllLayers();
+    list = prj->getSingleLayers(false);
 
   return list;
 }

@@ -36,13 +36,9 @@
 #include <cassert>
 #include <queue>
 
-te::sa::SkaterPartition::SkaterPartition(te::graph::AbstractGraph* graph, std::vector<std::string> attrs, std::string popAttr, std::size_t minPop)
+te::sa::SkaterPartition::SkaterPartition(te::graph::AbstractGraph* graph, std::vector<std::string> attrs)
 {
   m_graph = graph;
-
-  m_popAttr = popAttr;
-
-  m_popMin = minPop;
 
   m_attrs = attrs;
 }
@@ -52,9 +48,13 @@ te::sa::SkaterPartition::~SkaterPartition()
 
 }
 
-std::vector<std::size_t> te::sa::SkaterPartition::execute(std::size_t nGroups)
+std::vector<std::size_t> te::sa::SkaterPartition::execute(std::size_t nGroups, std::string popAttr, std::size_t minPop)
 {
   assert(m_graph);
+
+  m_popAttr = popAttr;
+
+  m_popMin = minPop;
 
   te::sa::RootSet rs;
 
@@ -65,8 +65,10 @@ std::vector<std::size_t> te::sa::SkaterPartition::execute(std::size_t nGroups)
   rs.insert(te::sa::Root(0., firstVertex));
   std::size_t groups = 1;
 
+  std::vector<std::size_t> rootsVertexId;
+
   //bfs over the graph
-  while(!rs.empty() && groups < nGroups)
+  while(!rs.empty() && (rs.size() + rootsVertexId.size() < nGroups))
   {
     te::sa::RootSet::reverse_iterator it = rs.rbegin();
 
@@ -103,12 +105,79 @@ std::vector<std::size_t> te::sa::SkaterPartition::execute(std::size_t nGroups)
       }
       else
       {
-        rs.insert(te::sa::Root(0., currentId));
+        rootsVertexId.push_back(currentId);
       }
     }
   }
 
+  te::sa::RootSet::iterator it;
+  
+  for(it = rs.begin(); it != rs.end(); ++it)
+  {
+    rootsVertexId.push_back(it->second);
+  }
+
+  return rootsVertexId;
+}
+
+std::vector<std::size_t> te::sa::SkaterPartition::execute(std::string popAttr, std::size_t minPop)
+{
+  assert(m_graph);
+
+  m_popAttr = popAttr;
+
+  m_popMin = minPop;
+
+  te::sa::RootSet rs;
+
+  //get first vertex id from graph
+  std::auto_ptr<te::graph::MemoryIterator> memIt(new te::graph::MemoryIterator(m_graph));
+  int firstVertex = memIt->getFirstVertex()->getId();
+  
+  rs.insert(te::sa::Root(0., firstVertex));
+
   std::vector<std::size_t> rootsVertexId;
+
+  //bfs over the graph
+  while(!rs.empty())
+  {
+    te::sa::RootSet::reverse_iterator it = rs.rbegin();
+
+    std::size_t currentId = it->second;
+
+    rs.erase(*it);
+
+    //get vertex from graph
+    te::graph::Vertex* vertex = m_graph->getVertex(currentId);
+
+    if(vertex)
+    {
+      double diffA = 0.;
+      double diffB = 0.;
+
+      std::size_t edgeId;
+
+      bool remove = edgeToRemove(currentId, diffA, diffB, edgeId);
+
+      if(remove)
+      {
+        te::graph::Edge* edge = m_graph->getEdge(edgeId);
+
+        int vertexFrom = edge->getIdFrom();
+        int vertexTo = edge->getIdTo();
+
+        //remove edge
+        m_graph->removeEdge(edgeId);
+
+        rs.insert(te::sa::Root(diffA, vertexFrom));
+        rs.insert(te::sa::Root(diffB, vertexTo));
+      }
+      else
+      {
+        rootsVertexId.push_back(currentId);
+      }
+    }
+  }
 
   te::sa::RootSet::iterator it;
   

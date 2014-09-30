@@ -1463,7 +1463,7 @@ void te::qt::af::BaseApplication::onLayerGroupingTriggered()
     te::map::AbstractLayerPtr selectedLayer = selectedLayerItem->getLayer();
 
     // Get all layer with grouping to dispose to import
-    std::list<te::map::AbstractLayerPtr> allLayersList = m_explorer->getExplorer()->getTopLayers();
+    std::list<te::map::AbstractLayerPtr> allLayersList = ApplicationController::getInstance().getProject()->getSingleLayers(false);
     std::vector<te::map::AbstractLayerPtr> allLayers(allLayersList.begin(), allLayersList.end());
 
     te::qt::widgets::GroupingDialog dlg(this);

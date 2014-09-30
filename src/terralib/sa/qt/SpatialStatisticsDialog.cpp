@@ -33,6 +33,7 @@
 #include "../../geometry/GeometryProperty.h"
 #include "../../maptools/DataSetLayer.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../core/GPMBuilder.h"
 #include "../core/GPMConstructorAdjacencyStrategy.h"
 #include "../core/GPMWeightsNoWeightsStrategy.h"
@@ -228,6 +229,12 @@ void te::sa::SpatialStatisticsDialog::onOkPushButtonClicked()
   //associate the selected attribute to the GPM
   int attrIdx = te::sa::AssociateGPMVertexAttribute(gpm.get(), ds.get(), dsLayer->getDataSetName(), attrLink, attrName, type);
 
+  //start calculate the operations
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   //G Statistics
   if(m_ui->m_localGStatisticsCheckBox->isChecked())
   {
@@ -235,9 +242,24 @@ void te::sa::SpatialStatisticsDialog::onOkPushButtonClicked()
     {
       te::sa::GStatistics(gpm.get(), attrIdx); //this function calculates the g and g* statistics and adds the values as attribute in each vertex from gpm graph.
     }
+    catch(const std::exception& e)
+    {
+      QMessageBox::warning(this, tr("Warning"), e.what());
+
+      QApplication::restoreOverrideCursor();
+
+      te::common::ProgressManager::getInstance().removeViewer(id);
+
+      return;
+    }
     catch(...)
     {
       QMessageBox::warning(this, tr("Warning"), tr("Internal error. G Statistics not calculated."));
+
+      QApplication::restoreOverrideCursor();
+
+      te::common::ProgressManager::getInstance().removeViewer(id);
+
       return;
     }
   }
@@ -249,9 +271,24 @@ void te::sa::SpatialStatisticsDialog::onOkPushButtonClicked()
     {
       te::sa::LocalMean(gpm.get(), attrIdx); //this function calculates the local mean statistics and adds the values as attribute in each vertex from gpm graph.
     }
+    catch(const std::exception& e)
+    {
+      QMessageBox::warning(this, tr("Warning"), e.what());
+
+      QApplication::restoreOverrideCursor();
+
+      te::common::ProgressManager::getInstance().removeViewer(id);
+
+      return;
+    }
     catch(...)
     {
       QMessageBox::warning(this, tr("Warning"), tr("Internal error. Local Mean not calculated."));
+      
+      QApplication::restoreOverrideCursor();
+
+      te::common::ProgressManager::getInstance().removeViewer(id);
+
       return;
     }
   }
@@ -307,9 +344,24 @@ void te::sa::SpatialStatisticsDialog::onOkPushButtonClicked()
         te::sa::MoranMap(gpm.get()); //this function calculates the moran map, needs LISAMap and BoxMAP attributes calculated.
       }
     }
+    catch(const std::exception& e)
+    {
+      QMessageBox::warning(this, tr("Warning"), e.what());
+
+      QApplication::restoreOverrideCursor();
+
+      te::common::ProgressManager::getInstance().removeViewer(id);
+
+      return;
+    }
     catch(...)
     {
       QMessageBox::warning(this, tr("Warning"), tr("Internal error. Moran not calculated."));
+      
+      QApplication::restoreOverrideCursor();
+
+      te::common::ProgressManager::getInstance().removeViewer(id);
+
       return;
     }
   }
@@ -340,15 +392,34 @@ void te::sa::SpatialStatisticsDialog::onOkPushButtonClicked()
   {
     gpm->toDataSource(outputDataSource, dataSetName);
   }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, tr("Warning"), e.what());
+
+    QApplication::restoreOverrideCursor();
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
+    return;
+  }
   catch(...)
   {
     QMessageBox::warning(this, tr("Warning"), tr("Error saving GPM into data source."));
+      
+    QApplication::restoreOverrideCursor();
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
     return;
   }
 
-  m_outputLayer = te::sa::CreateLayer(outputDataSource, dataSetName);
+  QApplication::restoreOverrideCursor();
 
-  accept();
+  te::common::ProgressManager::getInstance().removeViewer(id);
+
+  QMessageBox::information(this, tr("Information"), tr("Statistics Calculated. Press the 'Close' button to close the dialog."));
+
+  m_outputLayer = te::sa::CreateLayer(outputDataSource, dataSetName);
 }
 
 std::auto_ptr<te::sa::GeneralizedProximityMatrix> te::sa::SpatialStatisticsDialog::loadGPM()

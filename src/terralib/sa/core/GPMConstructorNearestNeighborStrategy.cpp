@@ -32,40 +32,48 @@
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/SimpleData.h"
 #include "../../datatype/SimpleProperty.h"
+#include "../../geometry/GeometryProperty.h"
 #include "../../geometry/Point.h"
 #include "../../graph/core/Edge.h"
 #include "../../graph/core/Vertex.h"
+#include "../../sam/kdtree.h"
 #include "GeneralizedProximityMatrix.h"
-#include "GPMConstructorDistanceStrategy.h"
+#include "GPMConstructorNearestNeighborStrategy.h"
+#include "Utils.h"
 
-te::sa::GPMConstructorDistanceStrategy::GPMConstructorDistanceStrategy() : te::sa::GPMConstructorAbstractStrategy()
+te::sa::GPMConstructorNearestNeighborStrategy::GPMConstructorNearestNeighborStrategy() : te::sa::GPMConstructorAbstractStrategy()
 {
-  m_type = te::sa::DistanceStrategy;
-  m_distance = 0.;
+  m_type = te::sa::NearestNeighbor;
+  m_nNeighbors = 0;
 }
 
-te::sa::GPMConstructorDistanceStrategy::GPMConstructorDistanceStrategy(double distance) : te::sa::GPMConstructorAbstractStrategy() ,
-  m_distance(distance)
+te::sa::GPMConstructorNearestNeighborStrategy::GPMConstructorNearestNeighborStrategy(std::size_t nNeighbors) : te::sa::GPMConstructorAbstractStrategy() ,
+  m_nNeighbors(nNeighbors)
 {
-  m_type = te::sa::DistanceStrategy;
+  m_type = te::sa::NearestNeighbor;
 }
 
-te::sa::GPMConstructorDistanceStrategy::~GPMConstructorDistanceStrategy()
+te::sa::GPMConstructorNearestNeighborStrategy::~GPMConstructorNearestNeighborStrategy()
 {
 }
 
-void te::sa::GPMConstructorDistanceStrategy::constructStrategy()
+void te::sa::GPMConstructorNearestNeighborStrategy::constructStrategy()
 {
   //get input information
   std::auto_ptr<te::da::DataSet> dataSet = m_ds->getDataSet(m_gpm->getDataSetName());
 
   std::size_t geomPos = te::da::GetFirstSpatialPropertyPos(dataSet.get());
 
+  std::auto_ptr<te::da::DataSetType> dsType = m_ds->getDataSetType(m_gpm->getDataSetName());
+
+  te::gm::GeometryProperty* gmProp = dynamic_cast<te::gm::GeometryProperty*>(dsType->getProperty(geomPos));
+
   //create distance attribute
   createDistanceAttribute(m_gpm);
 
-  //create tree
-  te::sam::rtree::Index<int> rtree;
+  //create dataset of points
+  te::gm::Envelope e;
+  std::vector<std::pair<te::gm::Coord2D, te::gm::Point> > dataset;
   std::map<int, te::gm::Geometry*> geomMap;
 
   dataSet->moveBeforeFirst();
@@ -74,12 +82,23 @@ void te::sa::GPMConstructorDistanceStrategy::constructStrategy()
   {
     int id = dataSet->getInt32(m_gpm->getAttributeName());
     te::gm::Geometry* g = dataSet->getGeometry(geomPos).release();
-    const te::gm::Envelope* box = g->getMBR();
 
-    rtree.insert(*box, id);
+    te::gm::Coord2D coord = te::sa::GetCentroidCoord(g);
+    te::gm::Point point = te::gm::Point(coord.x, coord.y, gmProp->getSRID());
+
+    e.Union(*point.getMBR());
+
+    dataset.push_back(std::pair<te::gm::Coord2D, te::gm::Point>(coord, point));
 
     geomMap.insert(std::map<int, te::gm::Geometry*>::value_type(id, g));
   }
+
+  // K-d Tree
+  typedef te::sam::kdtree::AdaptativeNode<te::gm::Coord2D, std::vector<te::gm::Point>, te::gm::Point> kdNode;
+  typedef te::sam::kdtree::AdaptativeIndex<kdNode> kdTree;
+
+  kdTree tree(e, m_nNeighbors);
+  tree.build(dataset);
 
   //create task
   te::common::TaskProgress task;
@@ -87,7 +106,7 @@ void te::sa::GPMConstructorDistanceStrategy::constructStrategy()
   task.setTotalSteps(dataSet->size());
   task.setMessage(TE_TR("Creating Edge Objects."));
 
-  //create edge objects
+  //create edges objects
   dataSet->moveBeforeFirst();
 
   while(dataSet->moveNext())
@@ -96,25 +115,33 @@ void te::sa::GPMConstructorDistanceStrategy::constructStrategy()
 
     std::auto_ptr<te::gm::Geometry> g = dataSet->getGeometry(geomPos);
 
-    std::vector<int> results;
+    te::gm::Coord2D coord = te::sa::GetCentroidCoord(g.get());
 
-    te::gm::Envelope ext(*g->getMBR());
+    std::vector<double> distances;
 
-    ext.m_llx -= m_distance;
-    ext.m_lly -= m_distance;
-    ext.m_urx += m_distance;
-    ext.m_ury += m_distance;
+    std::vector<te::gm::Point> points;
 
-    rtree.search(ext, results);
+    for(std::size_t t = 0; t < m_nNeighbors; ++t)
+      points.push_back(te::gm::Point(std::numeric_limits<double>::max(), std::numeric_limits<double>::max()));
 
-    for(size_t t = 0; t < results.size(); ++t)
+    tree.nearestNeighborSearch(coord, points, distances, m_nNeighbors);
+
+    for(size_t t = 0; t < points.size(); ++t)
     {
-      std::map<int, te::gm::Geometry*>::iterator it = geomMap.find(results[t]);
+      int id;
+
+      std::map<int, te::gm::Geometry*>::iterator it = geomMap.find(id);
 
       if(it != geomMap.end())
       {
-        int vToId = results[t];
 
+        int edgeId = getEdgeId();
+
+        int vToId = id;
+
+        te::graph::Edge* e = new te::graph::Edge(edgeId, vFromId, vToId);
+
+        //caculate distance
         te::graph::Vertex* vFrom = m_gpm->getGraph()->getVertex(vFromId);
         te::gm::Point* pFrom = dynamic_cast<te::gm::Point*>(vFrom->getAttributes()[0]);
 
@@ -123,19 +150,12 @@ void te::sa::GPMConstructorDistanceStrategy::constructStrategy()
 
         double dist = pFrom->distance(pTo);
 
-        if(dist <= m_distance)
-        {
-          int edgeId = getEdgeId();
-
-          te::graph::Edge* e = new te::graph::Edge(edgeId, vFromId, vToId);
-
-          te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>* sd = new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(dist);
+        te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>* sd = new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(dist);
             
-          e->setAttributeVecSize(1);
-          e->addAttribute(0, sd);
+        e->setAttributeVecSize(1);
+        e->addAttribute(0, sd);
 
-          m_gpm->getGraph()->add(e);
-        }
+        m_gpm->getGraph()->add(e);
       }
     }
 
@@ -146,6 +166,7 @@ void te::sa::GPMConstructorDistanceStrategy::constructStrategy()
 
       throw te::common::Exception(TE_TR("Operation canceled by the user."));
     }
+      
 
     task.pulse();
   }
