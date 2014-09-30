@@ -99,6 +99,12 @@ namespace te
           */
           te::map::AbstractLayerPtr getQueryLayer();
 
+          public 
+
+            slots:
+
+              int  exec();
+
         protected: 
 
           void getDataSets();
