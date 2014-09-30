@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../dataaccess/dataset/PrimaryKey.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../dataaccess/Enums.h"
 #include "../../../dataaccess/query/BinaryFunction.h"
@@ -215,7 +216,7 @@ void te::qt::widgets::TableLinkDialog::getProperties()
   dataSetSelecteds.push_back(std::make_pair(m_ui->m_dataSet2ComboBox->currentText().toStdString(), m_ui->m_dataSetAliasLineEdit->text().toStdString()));
 
   std::vector<std::string> propertyNames;
-  std::vector<std::string> geomProperties;
+  std::vector<std::string> fixedProperties;
 
   //get properties for each data set
   for(size_t t = 0; t < dataSetSelecteds.size(); ++t)
@@ -244,22 +245,22 @@ void te::qt::widgets::TableLinkDialog::getProperties()
 
     if(dsType.get())
     {
+      //Acquiring the primary key's properties
+      te::da::PrimaryKey* pk = dsType->getPrimaryKey();
+
       for(size_t i = 0; i < dsType->size(); ++i)
       {
         std::string propName = dsType->getProperty(i)->getName();
         std::string fullName = alias + "." + propName;
 
-        if(propName == "FID")
-          continue;
-
         std::auto_ptr<te::da::DataSet> dataSet = m_ds->getDataSet(alias);
 
         dataSetProperties.push_back(i);
 
-        if(dsType->getProperty(i)->getType() != te::dt::GEOMETRY_TYPE)
-          propertyNames.push_back(alias + "." + dataSet->getPropertyName(i));
+        if((dsType->getProperty(i)->getType() == te::dt::GEOMETRY_TYPE) || (pk->has(dsType->getProperty(i))))
+          fixedProperties.push_back(fullName);
         else
-          geomProperties.push_back(fullName);
+          propertyNames.push_back(fullName);
 
         if(t == 0)
           m_ui->m_dataset1ColumnComboBox->addItem(QString::fromStdString(fullName), QVariant(dsType->getProperty(i)->getType()));
@@ -285,7 +286,7 @@ void te::qt::widgets::TableLinkDialog::getProperties()
   m_fieldsDialog->setLeftLabel("Non-selected fields");
   m_fieldsDialog->setRightLabel("Selected fields");
   m_fieldsDialog->setOutputValues(propertyNames);
-  m_fieldsDialog->setFixedOutputValues(geomProperties, "geometry");
+  m_fieldsDialog->setFixedOutputValues(fixedProperties, "geometry");
 }
 
 void te::qt::widgets::TableLinkDialog::done(int r)
@@ -309,6 +310,18 @@ void te::qt::widgets::TableLinkDialog::done(int r)
       QDialog::done(r);
       return;
   }
+}
+
+int  te::qt::widgets::TableLinkDialog::exec()
+{
+  if(m_ds->getType() == "OGR")
+  {
+    QMessageBox::critical(this, tr("Table link error"),
+                      tr("This function is not available for the selected datasource"));
+    return QDialog::Rejected;
+  }
+  else
+    return QDialog::exec();
 }
 
 void te::qt::widgets::TableLinkDialog::onDataCBIndexChanged(int index)
