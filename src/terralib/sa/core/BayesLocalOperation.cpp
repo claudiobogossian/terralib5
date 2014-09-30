@@ -26,6 +26,9 @@
 */
 
 //TerraLib
+#include "../../common/Exception.h"
+#include "../../common/Translator.h"
+#include "../../common/progress/TaskProgress.h"
 #include "../../dataaccess/datasource/DataSource.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/utils/Utils.h"
@@ -179,82 +182,30 @@ void te::sa::BayesLocalOperation::runBayesLocal(te::mem::DataSet* ds, std::size_
 
   te::graph::AbstractGraph* graph = m_inputParams->m_gpm->getGraph();
 
-  //calculate neighbour events and population for each element
-  ds->moveBeforeFirst();
-
-  while(ds->moveNext())
   {
-    int id = ds->getInt32(idIdx);
+    //create task
+    te::common::TaskProgress task;
 
-    double totEvent = ds->getDouble(eventIdx);
-    double totPop = ds->getDouble(popIdx);
+    task.setTotalSteps(ds->size());
+    task.setMessage(TE_TR("Calculating events and population for each element."));
 
-    te::graph::Vertex* v = graph->getVertex(id);
+    //calculate neighbour events and population for each element
+    ds->moveBeforeFirst();
 
-    if(v)
+    while(ds->moveNext())
     {
-      std::set<int> neighbours = v->getSuccessors();
-      std::set<int>::iterator itNeighbours = neighbours.begin();
-      int nNeighbours = (int)neighbours.size();
+      int id = ds->getInt32(idIdx);
 
-      while(itNeighbours != neighbours.end())
+      double totEvent = ds->getDouble(eventIdx);
+      double totPop = ds->getDouble(popIdx);
+
+      te::graph::Vertex* v = graph->getVertex(id);
+
+      if(v)
       {
-        te::graph::Edge* e = graph->getEdge(*itNeighbours);
-        te::graph::Vertex* vTo = 0;
-
-        if(e)
-        {
-          if(e->getIdFrom() == id)
-            vTo = graph->getVertex(e->getIdTo());
-          else
-            vTo = graph->getVertex(e->getIdFrom());
-        }
-
-        if(vTo)
-        {
-          totEvent += te::sa::GetDataValue(vTo->getAttributes()[gpmEventIdx]);
-          totPop += te::sa::GetDataValue(vTo->getAttributes()[gpmPopIdx]);
-        }
-
-        ++itNeighbours;
-      }
-    }
-
-    ds->setDouble(neighEventIdx, totEvent);
-    ds->setDouble(neighPopIdx, totPop);
-  }
-
-  //calculate local bayes values
-  ds->moveBeforeFirst();
-
-  while(ds->moveNext())
-  {
-    int id = ds->getInt32(idIdx);
-
-    double myEvent = ds->getDouble(eventIdx);
-    double myPop = ds->getDouble(popIdx);
-
-    double totEvent = ds->getDouble(neighEventIdx);
-    double totPop = ds->getDouble(neighPopIdx);
-
-    if(totPop <= 0.)
-      throw;
-
-    double mean = totEvent / totPop;
-
-    double thetaI = (myPop > 0) ? myEvent / myPop : 0.0;
-
-    te::graph::Vertex* v = graph->getVertex(id);
-
-    if(v)
-    {
-      std::set<int> neighbours = v->getSuccessors();
-      std::set<int>::iterator itNeighbours = neighbours.begin();
-      int nNeighbours = (int)neighbours.size();
-
-      if(nNeighbours != 0)
-      {
-        double variance = myPop * pow((myEvent / myPop) - mean, 2);
+        std::set<int> neighbours = v->getSuccessors();
+        std::set<int>::iterator itNeighbours = neighbours.begin();
+        int nNeighbours = (int)neighbours.size();
 
         while(itNeighbours != neighbours.end())
         {
@@ -271,31 +222,114 @@ void te::sa::BayesLocalOperation::runBayesLocal(te::mem::DataSet* ds, std::size_
 
           if(vTo)
           {
-            double toEvent = te::sa::GetDataValue(vTo->getAttributes()[gpmEventIdx]);
-            double toPop = te::sa::GetDataValue(vTo->getAttributes()[gpmPopIdx]);
-
-            variance += toPop * pow((toEvent / toPop) - mean, 2);
+            totEvent += te::sa::GetDataValue(vTo->getAttributes()[gpmEventIdx]);
+            totPop += te::sa::GetDataValue(vTo->getAttributes()[gpmPopIdx]);
           }
 
           ++itNeighbours;
         }
-
-        variance /= totPop;
-
-        double aux = variance - (mean * ((double)nNeighbours + 1.) / totPop);
-
-        if(aux < 0.) 
-          aux = 0.;
-
-        double wI = 1.;
-
-        if(aux != 0. || mean != 0.)
-          wI = aux / (aux + (mean / myPop));
-
-        thetaI = wI * (myEvent / myPop) + (1 - wI) * mean;
       }
+
+      ds->setDouble(neighEventIdx, totEvent);
+      ds->setDouble(neighPopIdx, totPop);
     }
 
-    ds->setDouble(bayesIdx, thetaI * m_inputParams->m_rate);
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
+  }
+
+
+  {
+    //create task
+    te::common::TaskProgress task;
+
+    task.setTotalSteps(ds->size());
+    task.setMessage(TE_TR("Calculating Local Bayes."));
+
+    //calculate local bayes values
+    ds->moveBeforeFirst();
+
+    while(ds->moveNext())
+    {
+      int id = ds->getInt32(idIdx);
+
+      double myEvent = ds->getDouble(eventIdx);
+      double myPop = ds->getDouble(popIdx);
+
+      double totEvent = ds->getDouble(neighEventIdx);
+      double totPop = ds->getDouble(neighPopIdx);
+
+      if(totPop <= 0.)
+        throw;
+
+      double mean = totEvent / totPop;
+
+      double thetaI = (myPop > 0) ? myEvent / myPop : 0.0;
+
+      te::graph::Vertex* v = graph->getVertex(id);
+
+      if(v)
+      {
+        std::set<int> neighbours = v->getSuccessors();
+        std::set<int>::iterator itNeighbours = neighbours.begin();
+        int nNeighbours = (int)neighbours.size();
+
+        if(nNeighbours != 0)
+        {
+          double variance = myPop * pow((myEvent / myPop) - mean, 2);
+
+          while(itNeighbours != neighbours.end())
+          {
+            te::graph::Edge* e = graph->getEdge(*itNeighbours);
+            te::graph::Vertex* vTo = 0;
+
+            if(e)
+            {
+              if(e->getIdFrom() == id)
+                vTo = graph->getVertex(e->getIdTo());
+              else
+                vTo = graph->getVertex(e->getIdFrom());
+            }
+
+            if(vTo)
+            {
+              double toEvent = te::sa::GetDataValue(vTo->getAttributes()[gpmEventIdx]);
+              double toPop = te::sa::GetDataValue(vTo->getAttributes()[gpmPopIdx]);
+
+              variance += toPop * pow((toEvent / toPop) - mean, 2);
+            }
+
+            ++itNeighbours;
+          }
+
+          variance /= totPop;
+
+          double aux = variance - (mean * ((double)nNeighbours + 1.) / totPop);
+
+          if(aux < 0.) 
+            aux = 0.;
+
+          double wI = 1.;
+
+          if(aux != 0. || mean != 0.)
+            wI = aux / (aux + (mean / myPop));
+
+          thetaI = wI * (myEvent / myPop) + (1 - wI) * mean;
+        }
+      }
+
+      ds->setDouble(bayesIdx, thetaI * m_inputParams->m_rate);
+    }
+
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
   }
 }

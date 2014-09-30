@@ -60,6 +60,7 @@ if(Qt5_FOUND)
   add_library(terralib_mod_sa_qt SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_sa_qt terralib_mod_sa_core
+                                           terralib_mod_symbology
                                            terralib_mod_qt_widgets
 										   ${QWT_LIBRARY})
 
@@ -89,6 +90,7 @@ else()
 
   target_link_libraries(terralib_mod_sa_qt terralib_mod_sa_core
                                            terralib_mod_qt_widgets
+                                           terralib_mod_symbology
                                            ${QT_LIBRARIES}
 										   ${QWT_LIBRARY})
 

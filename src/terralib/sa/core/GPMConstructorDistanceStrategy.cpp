@@ -24,7 +24,10 @@
 */
 
 // TerraLib Includes
+#include "../../common/Exception.h"
+#include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
+#include "../../common/progress/TaskProgress.h"
 #include "../../dataaccess/datasource/DataSource.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/SimpleData.h"
@@ -78,6 +81,12 @@ void te::sa::GPMConstructorDistanceStrategy::constructStrategy()
     geomMap.insert(std::map<int, te::gm::Geometry*>::value_type(id, g));
   }
 
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(dataSet->size());
+  task.setMessage(TE_TR("Creating Edge Objects."));
+
   //create edge objects
   dataSet->moveBeforeFirst();
 
@@ -129,6 +138,16 @@ void te::sa::GPMConstructorDistanceStrategy::constructStrategy()
         }
       }
     }
+
+    if(!task.isActive())
+    {
+      te::common::FreeContents(geomMap);
+      geomMap.clear();
+
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
   }
 
   te::common::FreeContents(geomMap);

@@ -26,6 +26,9 @@
 */
 
 // TerraLib
+#include "../../common/Exception.h"
+#include "../../common/Translator.h"
+#include "../../common/progress/TaskProgress.h"
 #include "../../datatype/SimpleData.h"
 #include "../../graph/core/Edge.h"
 #include "../../graph/core/GraphMetadata.h"
@@ -60,6 +63,12 @@ void te::sa::GStatistics(te::sa::GeneralizedProximityMatrix* gpm, int attrIdx)
 
   //create graph vertex iterator
   std::auto_ptr<te::graph::MemoryIterator> it(new te::graph::MemoryIterator(graph));
+
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(it->getVertexInteratorCount());
+  task.setMessage(TE_TR("Calculating G Statistics."));
 
   te::graph::Vertex* v = it->getFirstVertex();
 
@@ -110,6 +119,13 @@ void te::sa::GStatistics(te::sa::GeneralizedProximityMatrix* gpm, int attrIdx)
     v->addAttribute(gAttrIdx, new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(G));
     v->addAttribute(gStarAttrIdx, new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(GStar));
 
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
+
     v = it->getNextVertex();
   }
 }
@@ -134,6 +150,12 @@ void te::sa::LocalMean(te::sa::GeneralizedProximityMatrix* gpm, int attrIdx)
 
   //create graph vertex iterator
   std::auto_ptr<te::graph::MemoryIterator> it(new te::graph::MemoryIterator(graph));
+
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(it->getVertexInteratorCount());
+  task.setMessage(TE_TR("Calculating Local Mean."));
 
   te::graph::Vertex* v = it->getFirstVertex();
 
@@ -182,6 +204,13 @@ void te::sa::LocalMean(te::sa::GeneralizedProximityMatrix* gpm, int attrIdx)
     v->addAttribute(localMeanAttrIdx, new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(sum));
     v->addAttribute(nNeighboursAttrIdx, new te::dt::SimpleData<int, te::dt::INT32_TYPE>(nNeighbours));
 
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
+
     v = it->getNextVertex();
   }
 }
@@ -207,18 +236,33 @@ void te::sa::ZAndWZ(te::sa::GeneralizedProximityMatrix* gpm, int attrIdx)
  //create graph vertex iterator
   std::auto_ptr<te::graph::MemoryIterator> it(new te::graph::MemoryIterator(graph));
 
-  te::graph::Vertex* v = it->getFirstVertex();
-
-  while(!it->isVertexIteratorAfterEnd())
+  //create task
   {
-    double attrValue = te::sa::GetDataValue(v->getAttributes()[attrIdx]);
+    te::common::TaskProgress task;
 
-    double stdDezZ = attrValue - mean;
+    task.setTotalSteps(it->getVertexInteratorCount());
+    task.setMessage(TE_TR("Calculating Moran - Z Value."));
 
-    v->setAttributeVecSize(nAttrs);
-    v->addAttribute(zAttrIdx, new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(stdDezZ));
+    te::graph::Vertex* v = it->getFirstVertex();
 
-    v = it->getNextVertex();
+    while(!it->isVertexIteratorAfterEnd())
+    {
+      double attrValue = te::sa::GetDataValue(v->getAttributes()[attrIdx]);
+
+      double stdDezZ = attrValue - mean;
+
+      v->setAttributeVecSize(nAttrs);
+      v->addAttribute(zAttrIdx, new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(stdDezZ));
+
+      if(!task.isActive())
+      {
+        throw te::common::Exception(TE_TR("Operation canceled by the user."));
+      }
+
+      task.pulse();
+
+      v = it->getNextVertex();
+    }
   }
 
   //calculate the local mean of Z(WZ)
@@ -227,54 +271,69 @@ void te::sa::ZAndWZ(te::sa::GeneralizedProximityMatrix* gpm, int attrIdx)
 
   bool normalized = true;
 
-  //vertex iterator
-  v = it->getFirstVertex();
-
-  while(!it->isVertexIteratorAfterEnd())
+  //create task
   {
-    double sum = 0.;
+    te::common::TaskProgress task;
 
-    //get neighbours information
-    int id = v->getId();
-    std::set<int> neighbours = v->getSuccessors();
-    std::set<int>::iterator itNeighbours = neighbours.begin();
-    int nNeighbours = (int)neighbours.size();
+    task.setTotalSteps(it->getVertexInteratorCount());
+    task.setMessage(TE_TR("Calculating Moran - WZ Value."));
 
-    while(itNeighbours != neighbours.end())
+    //vertex iterator
+    te::graph::Vertex* v = it->getFirstVertex();
+
+    while(!it->isVertexIteratorAfterEnd())
     {
-      te::graph::Edge* e = graph->getEdge(*itNeighbours);
-      te::graph::Vertex* vTo = 0;
+      double sum = 0.;
 
-      if(e)
+      //get neighbours information
+      int id = v->getId();
+      std::set<int> neighbours = v->getSuccessors();
+      std::set<int>::iterator itNeighbours = neighbours.begin();
+      int nNeighbours = (int)neighbours.size();
+
+      while(itNeighbours != neighbours.end())
       {
-        if(e->getIdFrom() == id)
-          vTo = graph->getVertex(e->getIdTo());
-        else
-          vTo = graph->getVertex(e->getIdFrom());
+        te::graph::Edge* e = graph->getEdge(*itNeighbours);
+        te::graph::Vertex* vTo = 0;
+
+        if(e)
+        {
+          if(e->getIdFrom() == id)
+            vTo = graph->getVertex(e->getIdTo());
+          else
+            vTo = graph->getVertex(e->getIdFrom());
+        }
+
+        if(vTo)
+        {
+          //retrieve the neighbor attribute value
+          double attrValue = te::sa::GetDataValue(vTo->getAttributes()[zAttrIdx]);
+
+          //retrieve the weight associated with the neighbor
+          double attrWeight = te::sa::GetDataValue(e->getAttributes()[weightAttrIdx]);
+
+          //verify if the weight is normalized by number of neighbours
+          if(!normalized)
+            attrWeight = attrWeight/nNeighbours;
+
+          sum +=  attrWeight * attrValue;
+        }
+
+        ++itNeighbours;
       }
 
-      if(vTo)
+      v->setAttributeVecSize(nAttrs);
+      v->addAttribute(wzAttrIdx, new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(sum));
+
+      if(!task.isActive())
       {
-        //retrieve the neighbor attribute value
-        double attrValue = te::sa::GetDataValue(vTo->getAttributes()[zAttrIdx]);
-
-        //retrieve the weight associated with the neighbor
-        double attrWeight = te::sa::GetDataValue(e->getAttributes()[weightAttrIdx]);
-
-        //verify if the weight is normalized by number of neighbours
-        if(!normalized)
-          attrWeight = attrWeight/nNeighbours;
-
-        sum +=  attrWeight * attrValue;
+        throw te::common::Exception(TE_TR("Operation canceled by the user."));
       }
 
-      ++itNeighbours;
+      task.pulse();
+
+      v = it->getNextVertex();
     }
-
-    v->setAttributeVecSize(nAttrs);
-    v->addAttribute(wzAttrIdx, new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(sum));
-
-    v = it->getNextVertex();
   }
 }
 
@@ -305,6 +364,11 @@ double te::sa::MoranIndex(te::sa::GeneralizedProximityMatrix* gpm)
   //create graph vertex iterator
   std::auto_ptr<te::graph::MemoryIterator> it(new te::graph::MemoryIterator(graph));
 
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(it->getVertexInteratorCount());
+  task.setMessage(TE_TR("Calculating Moran Index."));
+
   te::graph::Vertex* v = it->getFirstVertex();
 
   while(!it->isVertexIteratorAfterEnd())
@@ -321,6 +385,13 @@ double te::sa::MoranIndex(te::sa::GeneralizedProximityMatrix* gpm)
 
     sum += ZxWZ;
     ++count;
+
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
 
     v = it->getNextVertex();
   }
@@ -440,6 +511,12 @@ double te::sa::GlobalMoranSignificance(te::sa::GeneralizedProximityMatrix* gpm, 
   boost::random::mt19937 gen;
   boost::random::uniform_int_distribution<> dist(0, deviations.size() - 1);
 
+    //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(permutationsNumber);
+  task.setMessage(TE_TR("Calculating Global Moran Significance."));
+
   for(int i = 0; i < permutationsNumber; ++i)
   {
     //shuffle the attribute value
@@ -455,6 +532,13 @@ double te::sa::GlobalMoranSignificance(te::sa::GeneralizedProximityMatrix* gpm, 
     }
 
     permutationsResults[i] = MoranIndex(gpm, mean, variance, attrIdx);
+
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
   }
 
   //fix attribute values
@@ -540,6 +624,12 @@ void te::sa::LisaStatisticalSignificance(te::sa::GeneralizedProximityMatrix* gpm
 
   int index = 0;
 
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(it->getVertexInteratorCount());
+  task.setMessage(TE_TR("Calculating LISA Significance."));
+
   v = it->getFirstVertex();
 
   while(!it->isVertexIteratorAfterEnd())
@@ -602,6 +692,13 @@ void te::sa::LisaStatisticalSignificance(te::sa::GeneralizedProximityMatrix* gpm
     v->setAttributeVecSize(nAttrs);
     v->addAttribute(lisaSigAttrIdx, new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(significance));
 
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
+
     ++index;
 
     v = it->getNextVertex();
@@ -631,6 +728,12 @@ void te::sa::BoxMap(te::sa::GeneralizedProximityMatrix* gpm, double mean)
  //create graph vertex iterator
   std::auto_ptr<te::graph::MemoryIterator> it(new te::graph::MemoryIterator(graph));
 
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(it->getVertexInteratorCount());
+  task.setMessage(TE_TR("Calculating Box Map."));
+
   te::graph::Vertex* v = it->getFirstVertex();
 
   while(!it->isVertexIteratorAfterEnd())
@@ -651,6 +754,13 @@ void te::sa::BoxMap(te::sa::GeneralizedProximityMatrix* gpm, double mean)
 
     v->setAttributeVecSize(nAttrs);
     v->addAttribute(boxMapAttrIdx, new te::dt::SimpleData<int, te::dt::INT32_TYPE>(result));
+
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
 
     v = it->getNextVertex();
   }
@@ -674,6 +784,12 @@ void te::sa::LISAMap(te::sa::GeneralizedProximityMatrix* gpm, int permutationsNu
  //create graph vertex iterator
   std::auto_ptr<te::graph::MemoryIterator> it(new te::graph::MemoryIterator(graph));
 
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(it->getVertexInteratorCount());
+  task.setMessage(TE_TR("Calculating LISA Map."));
+
   te::graph::Vertex* v = it->getFirstVertex();
 
   while(!it->isVertexIteratorAfterEnd())
@@ -691,6 +807,13 @@ void te::sa::LISAMap(te::sa::GeneralizedProximityMatrix* gpm, int permutationsNu
 
     v->setAttributeVecSize(nAttrs);
     v->addAttribute(lisaMapAttrIdx, new te::dt::SimpleData<int, te::dt::INT32_TYPE>(significanceClass));
+
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
 
     v = it->getNextVertex();
   }
@@ -719,6 +842,12 @@ void te::sa::MoranMap(te::sa::GeneralizedProximityMatrix* gpm)
   //create graph vertex iterator
   std::auto_ptr<te::graph::MemoryIterator> it(new te::graph::MemoryIterator(graph));
 
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(it->getVertexInteratorCount());
+  task.setMessage(TE_TR("Calculating Moran Map."));
+
   te::graph::Vertex* v = it->getFirstVertex();
 
   while(!it->isVertexIteratorAfterEnd())
@@ -733,6 +862,13 @@ void te::sa::MoranMap(te::sa::GeneralizedProximityMatrix* gpm)
 
     v->setAttributeVecSize(nAttrs);
     v->addAttribute(moranMapAttrIdx, new te::dt::SimpleData<int, te::dt::INT32_TYPE>(result));
+
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
 
     v = it->getNextVertex();
   }
