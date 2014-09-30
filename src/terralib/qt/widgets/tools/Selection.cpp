@@ -217,7 +217,6 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
         {
           // Feature found!
           oids->add(te::da::GenerateOID(dataset.get(), pnames));
-          break;
         }
       }
     }
