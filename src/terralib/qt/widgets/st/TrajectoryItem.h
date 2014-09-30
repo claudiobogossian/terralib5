@@ -66,10 +66,11 @@ namespace te
           \brief Constructor
           It constructs a Trajectory Icon Item.
           \param title The icon item title.
-          \param file The icon file.
           \param display Where the icon item is displayed.
+          \param file The icon file.
+          \param size icon size.
         */
-        TrajectoryItem(const QString& title, const QString& file, te::qt::widgets::MapDisplay* display);
+        TrajectoryItem(const QString& title, te::qt::widgets::MapDisplay* display, const QString& file, const QSize& size);
 
         /*!
           \brief Destructor
@@ -110,6 +111,8 @@ namespace te
         void erase(const unsigned int& curTime);
 
       public:
+        QString m_iconFile;       //!< file that generated the pixmap
+        QSize m_iconSize;         //!< icon size
         bool m_drawTrail;         //!< flag to draw trail
         QColor m_forwardColor;    //!< The forward trail color.
         QColor m_backwardColor;   //!< The backward trail color.
