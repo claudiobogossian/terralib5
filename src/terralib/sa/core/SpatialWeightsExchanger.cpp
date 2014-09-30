@@ -43,6 +43,9 @@
 */
 
 //Terralib Includes
+#include "../../common/Exception.h"
+#include "../../common/Translator.h"
+#include "../../common/progress/TaskProgress.h"
 #include "../../dataaccess/datasource/DataSource.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/SimpleData.h"
@@ -113,6 +116,12 @@ void te::sa::SpatialWeightsExchanger::exportToGAL(te::sa::GeneralizedProximityMa
     fprintf(fp, "0 %d %s %s\n", (int)it->getVertexInteratorCount(), gpm->getDataSetName().c_str(), gpm->getAttributeName().c_str());
   }
 
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(it->getVertexInteratorCount());
+  task.setMessage(TE_TR("Export to GAL Format."));
+
   //write body info
   te::graph::Vertex* v = it->getFirstVertex();
 
@@ -144,6 +153,15 @@ void te::sa::SpatialWeightsExchanger::exportToGAL(te::sa::GeneralizedProximityMa
       fprintf (fp, "\n");
     }
 
+    if(!task.isActive())
+    {
+      fclose(fp);
+
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
+
     v = it->getNextVertex();
   }
 
@@ -157,6 +175,11 @@ te::sa::GeneralizedProximityMatrix* te::sa::SpatialWeightsExchanger::importFromG
 
   if(file.is_open() == false)
     return 0;
+
+  int count = (int)std::count(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>(), '\n');
+
+  file.clear();
+  file.seekg(0, std::ios::beg);
 
   //create output gpm
   te::sa::GeneralizedProximityMatrix* gpm = new te::sa::GeneralizedProximityMatrix();
@@ -205,6 +228,12 @@ te::sa::GeneralizedProximityMatrix* te::sa::SpatialWeightsExchanger::importFromG
     gpm->setDataSetName(dataSetName);
     gpm->setAttributeName(attributeName);
   }
+
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(count);
+  task.setMessage(TE_TR("Import from GAL Format."));
   
   //access each line of the gat file
   m_edgeId = 0;
@@ -277,6 +306,15 @@ te::sa::GeneralizedProximityMatrix* te::sa::SpatialWeightsExchanger::importFromG
 
       return 0;
     }
+
+    if(!task.isActive())
+    {
+      file.close();
+
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
   }
 
   file.close();
@@ -320,6 +358,12 @@ void te::sa::SpatialWeightsExchanger::exportToGWT(te::sa::GeneralizedProximityMa
     fprintf(fp, "0 %d %s %s\n", (int)it->getEdgeInteratorCount(), gpm->getDataSetName().c_str(), gpm->getAttributeName().c_str());
   }
 
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(it->getVertexInteratorCount());
+  task.setMessage(TE_TR("Export to GWT Format."));
+
   //write body info
   te::graph::Edge* e = it->getFirstEdge();
 
@@ -334,6 +378,15 @@ void te::sa::SpatialWeightsExchanger::exportToGWT(te::sa::GeneralizedProximityMa
 
     fprintf(fp, "%d %d %3.7f\n", idFrom, idTo, distance);
 
+    if(!task.isActive())
+    {
+      fclose(fp);
+
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
+
     e = it->getNextEdge();
   }
 
@@ -347,6 +400,11 @@ te::sa::GeneralizedProximityMatrix* te::sa::SpatialWeightsExchanger::importFromG
 
   if(file.is_open() == false)
     return 0;
+
+  int count = (int)std::count(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>(), '\n');
+
+  file.clear();
+  file.seekg(0, std::ios::beg);
 
    //create output gpm
   te::sa::GeneralizedProximityMatrix* gpm = new te::sa::GeneralizedProximityMatrix();
@@ -402,6 +460,12 @@ te::sa::GeneralizedProximityMatrix* te::sa::SpatialWeightsExchanger::importFromG
     gpm->setDataSetName(dataSetName);
     gpm->setAttributeName(attributeName);
   }
+
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(count);
+  task.setMessage(TE_TR("Import from GWT Format."));
   
   //access each line of the gwt file
   m_edgeId = 0;
@@ -460,6 +524,15 @@ te::sa::GeneralizedProximityMatrix* te::sa::SpatialWeightsExchanger::importFromG
     e->addAttribute(0, new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(distance));
 
     graph->add(e);
+
+    if(!task.isActive())
+    {
+      file.close();
+
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
   }
 
   file.close();
@@ -527,6 +600,12 @@ void te::sa::SpatialWeightsExchanger::associateGeometry(te::sa::GeneralizedProxi
 
   std::size_t geomPos = te::da::GetFirstSpatialPropertyPos(dataSet.get());
 
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(dataSet->size());
+  task.setMessage(TE_TR("Associating Geometry to graph."));
+
   dataSet->moveBeforeFirst();
 
   while(dataSet->moveNext())
@@ -570,5 +649,12 @@ void te::sa::SpatialWeightsExchanger::associateGeometry(te::sa::GeneralizedProxi
 
       v->setDirty(true);
     }
+
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
   }
 }

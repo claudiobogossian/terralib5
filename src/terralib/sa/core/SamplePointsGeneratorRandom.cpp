@@ -26,6 +26,9 @@
 */
 
 // Terralib Includes
+#include "../../common/Exception.h"
+#include "../../common/Translator.h"
+#include "../../common/progress/TaskProgress.h"
 #include "../../datatype/SimpleProperty.h"
 #include "../../geometry/Geometry.h"
 #include "../../geometry/GeometryProperty.h"
@@ -73,6 +76,12 @@ std::auto_ptr<te::mem::DataSet> te::sa::SamplePointsGeneratorRandom::generateSam
 {
   std::auto_ptr<te::mem::DataSet> ds(new te::mem::DataSet(dsType));
 
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(m_nPoints);
+  task.setMessage(TE_TR("Creating Points."));
+
   for(int i = 0; i < m_nPoints; ++i)
   {
     //create dataset item
@@ -85,6 +94,13 @@ std::auto_ptr<te::mem::DataSet> te::sa::SamplePointsGeneratorRandom::generateSam
     item->setGeometry(TE_SA_SPG_ATTR_GEOM_NAME, getPoint(&m_env));
 
     ds->add(item);
+
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
   }
 
   return ds;

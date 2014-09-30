@@ -33,6 +33,7 @@
 #include "../../geometry/GeometryProperty.h"
 #include "../../maptools/DataSetLayer.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../core/SamplePointsGeneratorRandom.h"
 #include "../core/SamplePointsGeneratorStratified.h"
 #include "../Enums.h"
@@ -213,6 +214,12 @@ void te::sa::SamplePointsGeneratorDialog::onOkPushButtonClicked()
 
   std::vector<std::string> classNames;
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   try
   {
     te::sa::SamplePointsGeneratorAbstract* spga;
@@ -255,12 +262,32 @@ void te::sa::SamplePointsGeneratorDialog::onOkPushButtonClicked()
 
     delete spga;
   }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, tr("Warning"), e.what());
+
+    QApplication::restoreOverrideCursor();
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
+    return;
+  }
   catch(...)
   {
-    QMessageBox::warning(this, tr("Warning"), tr("Internal error. Sample Points not generated."));
+    QMessageBox::warning(this, tr("Warning"), tr("Internal Error.Sample Points not generated."));
+
+    QApplication::restoreOverrideCursor();
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
     return;
   }
 
+  QApplication::restoreOverrideCursor();
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
+
+  //save generated information
   m_outputLayer = te::sa::CreateLayer(outputDataSource, dataSetName);
 
   if(spgt == te::sa::Stratified)

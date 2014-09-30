@@ -33,6 +33,7 @@
 #include "../../geometry/GeometryProperty.h"
 #include "../../maptools/DataSetLayer.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../core/BayesGlobalOperation.h"
 #include "../core/BayesParams.h"
 #include "../core/Utils.h"
@@ -197,6 +198,12 @@ void te::sa::BayesGlobalDialog::onOkPushButtonClicked()
   outParams->m_ds = outputDataSource;
   outParams->m_outputDataSetName = dataSetName;
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   try
   {
     te::sa::BayesGlobalOperation op;
@@ -205,11 +212,30 @@ void te::sa::BayesGlobalDialog::onOkPushButtonClicked()
 
     op.execute();
   }
-  catch(...)
+  catch(const std::exception& e)
   {
-    QMessageBox::warning(this, tr("Warning"), tr("Internal error. Global Bayes not calculated."));
+    QMessageBox::warning(this, tr("Warning"), e.what());
+
+    QApplication::restoreOverrideCursor();
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
     return;
   }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Internal Error.Global Bayes not calculated."));
+
+    QApplication::restoreOverrideCursor();
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
+    return;
+  }
+
+  QApplication::restoreOverrideCursor();
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
 
   //create layer
   m_outputLayer = te::sa::CreateLayer(outputDataSource, dataSetName);
