@@ -28,6 +28,9 @@
 #define M_PI       3.14159265358979323846
 
 //TerraLib
+#include "../../common/Exception.h"
+#include "../../common/Translator.h"
+#include "../../common/progress/TaskProgress.h"
 #include "../../memory/DataSet.h"
 #include "../../raster/Grid.h"
 #include "../../raster/Raster.h"
@@ -41,6 +44,12 @@ void te::sa::GridStatRadiusKernel(te::sa::KernelInputParams* params, te::sa::Ker
   assert(raster);
 
   double totKernel = 0.;
+
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(raster->getNumberOfRows());
+  task.setMessage(TE_TR("Calculating Kernel."));
 
   //fill raster
   for(unsigned int i = 0; i < raster->getNumberOfRows(); ++i)
@@ -75,6 +84,13 @@ void te::sa::GridStatRadiusKernel(te::sa::KernelInputParams* params, te::sa::Ker
       //set value
       raster->setValue(j, i, val, 0);
     }
+
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
   }
 
   //normalize output raster
@@ -97,6 +113,12 @@ void te::sa::GridAdaptRadiusKernel(te::sa::KernelInputParams* params, te::sa::Ke
 
   if(meanKernel <= 0.)
     throw;
+
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(raster->getNumberOfRows());
+  task.setMessage(TE_TR("Calculating Adaptative Kernel."));
 
   //Reassign radius, evaluating final value for kernel
   double totKernel = 0.;
@@ -148,6 +170,13 @@ void te::sa::GridAdaptRadiusKernel(te::sa::KernelInputParams* params, te::sa::Ke
       //set value
       raster->setValue(j, i, newKernel, 0);
     }
+
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
   }
 
   //normalize output raster
@@ -157,6 +186,12 @@ void te::sa::GridAdaptRadiusKernel(te::sa::KernelInputParams* params, te::sa::Ke
 void te::sa::GridRatioKernel(te::sa::KernelOutputParams* params,te::rst::Raster* rasterA, te::rst::Raster* rasterB, te::rst::Raster* rasterOut)
 {
   double area = rasterOut->getResolutionX() * rasterOut->getResolutionY();
+
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(rasterOut->getNumberOfRows());
+  task.setMessage(TE_TR("Calculating Kernel Ratio."));
 
   for(unsigned int i = 0; i < rasterOut->getNumberOfRows(); ++i)
   {
@@ -175,6 +210,13 @@ void te::sa::GridRatioKernel(te::sa::KernelOutputParams* params,te::rst::Raster*
 
       rasterOut->setValue(j, i, kernelValue);
     }
+
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
   }
 }
 
@@ -185,8 +227,15 @@ void te::sa::DataSetStatRadiusKernel(te::sa::KernelInputParams* params, te::sa::
 
   double totKernel = 0.;
 
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(ds->size());
+  task.setMessage(TE_TR("Calculating Kernel."));
+
   //calculate kernel attribute value
   ds->moveBeforeFirst();
+
   while(ds->moveNext())
   {
     std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomIdx);
@@ -218,6 +267,13 @@ void te::sa::DataSetStatRadiusKernel(te::sa::KernelInputParams* params, te::sa::
 
     //set value
     ds->setDouble(kernelIdx, val);
+
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
   }
 
   //normalize output raster
@@ -240,6 +296,12 @@ void te::sa::DataSetAdaptRadiusKernel(te::sa::KernelInputParams* params, te::sa:
 
   if(meanKernel <= 0.)
     throw;
+
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(ds->size());
+  task.setMessage(TE_TR("Calculating Adaptative Kernel."));
 
   //Reassign radius, evaluating final value for kernel
   double totKernel = 0.;
@@ -291,6 +353,13 @@ void te::sa::DataSetAdaptRadiusKernel(te::sa::KernelInputParams* params, te::sa:
 
     //set value
     ds->setDouble(kernelIdx, newKernel);
+
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
   }
 
   //normalize output raster
@@ -302,6 +371,12 @@ void te::sa::DataSetRatioKernel(te::sa::KernelOutputParams* params, te::mem::Dat
   dsA->moveBeforeFirst();
   dsB->moveBeforeFirst();
   dsOut->moveBeforeFirst();
+
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(dsA->size());
+  task.setMessage(TE_TR("Calculating Kernel Ratio."));
 
   while(dsA->moveNext() && dsB->moveNext() && dsOut->moveNext())
   {
@@ -317,6 +392,13 @@ void te::sa::DataSetRatioKernel(te::sa::KernelOutputParams* params, te::mem::Dat
     kernelValue = KernelRatioValue(params, area, kernelA, kernelB);
 
     dsOut->setDouble(kernelIdx, kernelValue);
+
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
   }
 }
 
@@ -330,6 +412,12 @@ void te::sa::GridKernelNormalize(te::sa::KernelInputParams* params, te::sa::Kern
   double normFactor = te::sa::Sum(kMap);
 
   double area = raster->getResolutionX() * raster->getResolutionY();
+
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(raster->getNumberOfRows());
+  task.setMessage(TE_TR("Calculating Kernel Normalization."));
 
   for(unsigned int i = 0; i < raster->getNumberOfRows(); ++i)
   {
@@ -358,6 +446,13 @@ void te::sa::GridKernelNormalize(te::sa::KernelInputParams* params, te::sa::Kern
 
       raster->setValue(j, i, normKernel);
     }
+
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
   }
 }
 
@@ -369,6 +464,12 @@ void te::sa::DataSetKernelNormalize(te::sa::KernelInputParams* params, te::sa::K
   te::sa::KernelEstimationType type = params->m_estimationType;
 
   double normFactor = te::sa::Sum(kMap);
+
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(ds->size());
+  task.setMessage(TE_TR("Calculating Kernel Normalization."));
 
   //normalize kernel attribute values
   ds->moveBeforeFirst();
@@ -399,6 +500,13 @@ void te::sa::DataSetKernelNormalize(te::sa::KernelInputParams* params, te::sa::K
     }
 
     ds->setDouble(kernelIdx, normKernel);
+
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
   }
 }
 

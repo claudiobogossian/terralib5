@@ -56,8 +56,9 @@ namespace te
   {
     namespace widgets
     {
-      class QueryDialog;
       class ChartDisplayWidget;
+      class CompositionModeMenuWidget;
+      class QueryDialog;
     }
 
     namespace af
@@ -175,6 +176,8 @@ namespace te
           void onLayerFitSelectedOnMapDisplayTriggered();
 
           void onLayerPanToSelectedOnMapDisplayTriggered();
+
+          void onLayerCompositionModeTriggered();
 
           void onQueryLayerTriggered();
 
@@ -317,6 +320,7 @@ namespace te
           QAction* m_layerRemoveObjectSelection;
           QAction* m_layerFitSelectedOnMapDisplay;
           QAction* m_layerPanToSelectedOnMapDisplay;
+          QAction* m_layerCompositionMode;
           QAction* m_queryLayer;
           QAction* m_toolsDataSourceManagement;
           QAction* m_helpAbout;
@@ -384,6 +388,9 @@ namespace te
 
           //non modal intefaces
           te::qt::widgets::QueryDialog* m_queryDlg;
+
+          //popup menus
+          te::qt::widgets::CompositionModeMenuWidget* m_compModeMenu;
 
           // Project
           Project* m_project;

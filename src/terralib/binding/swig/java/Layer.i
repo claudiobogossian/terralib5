@@ -7,7 +7,7 @@
 %{
 #include "terralib/maptools/FolderLayer.h"
 #include "terralib/qt/widgets/se/StyleDockWidget.h"
-#include "terralib/binding/swig/Styler.h"
+#include "terralib/binding/swig/java/Styler.h"
 #include "terralib/memory/DataSet.h"
 #include "terralib/memory/DataSetItem.h"
 %}

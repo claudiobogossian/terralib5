@@ -30,13 +30,13 @@
 
 if(UNIX)
 
-  find_path(GNUGETTEXT_INCLUDE_DIR libintl.h
+  find_path(GNUGETTEXT_INCLUDE_DIR gettext-po.h libintl.h
             PATHS /usr
                   /usr/local
             PATH_SUFFIXES include)
 
   find_library(GNUGETTEXT_LIBRARY
-               NAMES intl
+               NAMES gettextlib intl
                PATHS /usr
                      /usr/local
                PATH_SUFFIXES lib)

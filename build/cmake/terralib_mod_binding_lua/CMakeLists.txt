@@ -24,15 +24,17 @@
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
-include ( ${SWIG_USE_FILE} )
+include(${SWIG_USE_FILE})
 
 if(WIN32)
   add_definitions(-DLUA_BUILD_AS_DLL)
 endif()
 
-file (GLOB TERRALIB_SWIG_SCRIPT_FILE "../../../src/terralib/binding/swig/TerraLib.i")
+file(GLOB TERRALIB_SWIG_SCRIPT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/../../../src/terralib/binding/swig/TerraLibLUA.i)
 
-set_source_files_properties (${TERRALIB_SWIG_SCRIPT_FILE} PROPERTIES CPLUSPLUS ON CMAKE_SWIG_FLAGS "-includeall")
+set (CMAKE_SWIG_FLAGS "-c++")
+
+set_source_files_properties(${TERRALIB_SWIG_SCRIPT_FILE} PROPERTIES CPLUSPLUS ON CMAKE_SWIG_FLAGS "-includeall")
 
 include_directories (
   "${TERRALIB_ABSOLUTE_ROOT_DIR}/src"
@@ -41,57 +43,20 @@ include_directories (
   "${LUA_INCLUDE_DIR}"
 )
 
-#set (TERRALIB_CHDR 
-#  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/MultiImager.h
-#  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/QtInitializer.h
-#  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/Styler.h
-#)
-
-#set (TERRALIB_CSRC 
-#  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/QtInitializer.cpp
-#  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/Styler.cpp
-#)
-
-#set (
-#  TERRALIB_HDRS_TO_MOC_FILES
-#  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/MultiImager.h
-#  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/Styler.h
-#)
-
-#set(CMAKE_AUTOMOC ON)
-#set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}/src" CACHE PATH "Directory for swig output.")
 
-#set (CMAKE_SWIG_FLAGS -package "br.inpe.terralib5")
-
 SWIG_ADD_MODULE(terralib_mod_binding_lua lua ${TERRALIB_SWIG_SCRIPT_FILE})
-  
+
 SWIG_LINK_LIBRARIES (terralib_mod_binding_lua terralib_mod_geometry
                                               terralib_mod_datatype
                                               terralib_mod_common
                                               terralib_mod_srs
-                                              terralib_mod_plugin
                                               ${Boost_FILESYSTEM_LIBRARY}
                                               ${Boost_SYSTEM_LIBRARY}
                                               ${Boost_THREAD_LIBRARY}
                                               ${LUA_LIBRARIES})
 
-#qt5_use_modules(terralib_mod_binding_lua Widgets)
-
 install(TARGETS terralib_mod_binding_lua
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
         LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
-
-#add_custom_command(
-#  TARGET terralib_mod_binding_lua
-#  POST_BUILD
-#  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/bin
-#  COMMAND "${Java_JAVAC_EXECUTABLE}" -d ${CMAKE_CURRENT_BINARY_DIR}/bin ${CMAKE_SWIG_OUTDIR}/*.java 
-#  COMMAND "${Java_JAVADOC_EXECUTABLE}" -sourcepath ${CMAKE_CURRENT_BINARY_DIR} -d ${CMAKE_CURRENT_BINARY_DIR}/doc -use -splitindex -windowtitle "TerraLib 5 Java Binding API Specification" -J-Xmx180m br.inpe.terralib5
-#  COMMAND "${Java_JAR_EXECUTABLE}" cf ${CMAKE_CURRENT_BINARY_DIR}/terralib5.jar -C ${CMAKE_CURRENT_BINARY_DIR}/bin br
-#  COMMENT "Building java..." VERBATIM
-#)
-
-#install(FILES ${CMAKE_CURRENT_BINARY_DIR}/terralib5.jar
-#        DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib/java COMPONENT devel)

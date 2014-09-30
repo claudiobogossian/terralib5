@@ -57,7 +57,7 @@
 #include "terralib/se/Utils.h"
 #include "terralib/geometry/Coord2D.h"
 #include "terralib/geometry/GeometryProperty.h"
-#include "terralib/binding/swig/MultiImager.h"
+#include "terralib/binding/swig/java/MultiImager.h"
 #include "terralib/qt/widgets/datasource/core/DataSourceType.h"
 #include "terralib/qt/widgets/datasource/core/DataSourceTypeManager.h"
 #include "terralib/qt/widgets/datasource/selector/DataSourceSelectorDialog.h"

@@ -46,7 +46,7 @@ namespace te
         Each node contains a pointer to its left and right subtree (NULL if it is not set),
         one key used for insertion of the data into the tree.
 
-        \note The key must have methods called x() and y(). ==> Uba: Vamos colocar esses métodos no te::gm::Coord2D?
+        \note The key must have methods called getX() and getY().
 
         \note These kind of node stores the data in each node.
 
@@ -197,7 +197,7 @@ namespace te
         Each node contains a pointer to its left and right subtree (NULL if it is not set),
         a discriminator that indicates the axis of partition, the partition key and a set of data-items.
 
-        \note The key must have methods called x() and y(). ==> Uba: Vamos colocar esses métodos no te::gm::Coord2D?
+        \note The key must have methods called getX() and getY().
 
         \note These kind of node stores the data only in the leafs.
 

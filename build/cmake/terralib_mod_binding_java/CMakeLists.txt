@@ -25,7 +25,7 @@
 
 include ( ${SWIG_USE_FILE} )
 
-file (GLOB TERRALIB_SWIG_SCRIPT_FILE "../../../src/terralib/binding/swig/TerraLib.i")
+file (GLOB TERRALIB_SWIG_SCRIPT_FILE "../../../src/terralib/binding/swig/TerraLibJAVA.i")
 
 set_source_files_properties (${TERRALIB_SWIG_SCRIPT_FILE} PROPERTIES CPLUSPLUS ON CMAKE_SWIG_FLAGS "-includeall")
 
@@ -38,20 +38,20 @@ include_directories (
 )
 
 set (TERRALIB_CHDR 
-	${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/MultiImager.h
-	${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/QtInitializer.h
-	${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/Styler.h
+  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/java/MultiImager.h
+  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/java/QtInitializer.h
+  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/java/Styler.h
 )
 
 set (TERRALIB_CSRC 
-	${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/QtInitializer.cpp
-	${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/Styler.cpp
+  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/java/QtInitializer.cpp
+  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/java/Styler.cpp
 )
 
 set (
   TERRALIB_HDRS_TO_MOC_FILES
-  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/MultiImager.h
-  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/Styler.h
+  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/java/MultiImager.h
+  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/binding/swig/java/Styler.h
 )
 
 set(CMAKE_AUTOMOC ON)
@@ -63,21 +63,21 @@ set (CMAKE_SWIG_FLAGS -package "br.inpe.terralib5")
 
 SWIG_ADD_MODULE (terralib_mod_binding_java java ${TERRALIB_SWIG_SCRIPT_FILE} ${TERRALIB_CHDR} ${TERRALIB_CSRC})
   
-SWIG_LINK_LIBRARIES (terralib_mod_binding_java     
-	terralib_mod_annotationtext
-	terralib_mod_color
-	terralib_mod_common
-	terralib_mod_dataaccess
-	terralib_mod_datatype
-	terralib_mod_filter
-	terralib_mod_geometry
-	terralib_mod_maptools
-	terralib_mod_memory
-	terralib_mod_raster
-	terralib_mod_symbology
-	terralib_mod_srs
-	terralib_mod_plugin
-	terralib_mod_qt_widgets
+SWIG_LINK_LIBRARIES (terralib_mod_binding_java
+  terralib_mod_annotationtext
+  terralib_mod_color
+  terralib_mod_common
+  terralib_mod_dataaccess
+  terralib_mod_datatype
+  terralib_mod_filter
+  terralib_mod_geometry
+  terralib_mod_maptools
+  terralib_mod_memory
+  terralib_mod_raster
+  terralib_mod_symbology
+  terralib_mod_srs
+  terralib_mod_plugin
+  terralib_mod_qt_widgets
   ${Boost_FILESYSTEM_LIBRARY} 
   ${Boost_SYSTEM_LIBRARY}
   ${Boost_THREAD_LIBRARY}
@@ -86,12 +86,12 @@ SWIG_LINK_LIBRARIES (terralib_mod_binding_java
 qt5_use_modules(terralib_mod_binding_java Widgets)
 
 if(WIN32)  
-	install(
-		TARGETS terralib_mod_binding_java
-		RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
-		LIBRARY DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
-		ARCHIVE DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
-	)
+  install(
+    TARGETS terralib_mod_binding_java
+    RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+    LIBRARY DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+    ARCHIVE DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+  )
 endif()
 
 add_custom_command(

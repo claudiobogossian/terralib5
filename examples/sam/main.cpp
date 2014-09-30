@@ -40,14 +40,15 @@
 
 int main(int /*argc*/, char** /*argv*/)
 {
-
-// It initializes all the data source drivers (see LoadModule.cpp)
   try
   {
     TerraLib::getInstance().initialize();
 
 // R-tree examples
     IndexPointUsingRTree();
+
+// K-d tree examples
+    IndexPointUsingKdTree();
     
     TerraLib::getInstance().finalize();
   }

@@ -26,7 +26,9 @@
 #define __TERRALIB_SAM_INTERNAL_KDTREE_H
 
 // TerraLib
+#include "kdtree/Index.h"
 #include "kdtree/Node.h"
+#include "kdtree/Partition.h"
 
 namespace te
 {

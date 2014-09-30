@@ -30,10 +30,12 @@
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../maptools/DataSetLayer.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../core/GPMBuilder.h"
 #include "../core/GPMConstructorAbstractStrategy.h"
 #include "../core/GPMConstructorAdjacencyStrategy.h"
 #include "../core/GPMConstructorDistanceStrategy.h"
+#include "../core/GPMConstructorNearestNeighborStrategy.h"
 #include "../core/GPMWeightsAbstractStrategy.h"
 #include "../core/GPMWeightsInverseDistanceStrategy.h"
 #include "../core/GPMWeightsNoWeightsStrategy.h"
@@ -114,6 +116,8 @@ void te::sa::ProximityMatrixCreatorDialog::onInputLayerComboBoxActivated(int ind
 
   std::vector<te::dt::Property*> propVec = dsType->getProperties();
 
+  m_ui->m_attrIdComboBox->clear();
+
   for(std::size_t t = 0; t < propVec.size(); ++t)
   {
     m_ui->m_attrIdComboBox->addItem(propVec[t]->getName().c_str());
@@ -190,6 +194,16 @@ void te::sa::ProximityMatrixCreatorDialog::onOkPushButtonClicked()
 
     constructor = new te::sa::GPMConstructorDistanceStrategy(m_ui->m_distanceLineEdit->text().toDouble());
   }
+  else if(m_ui->m_buildStratNNRadioButton->isChecked())
+  {
+    if(m_ui->m_nearNeighborLineEdit->text().isEmpty())
+    {
+      QMessageBox::warning(this, tr("Warning"), tr("Number of Neighbors not Defined."));
+      return;
+    }
+
+    constructor = new te::sa::GPMConstructorNearestNeighborStrategy(m_ui->m_nearNeighborLineEdit->text().toInt());
+  }
 
   //get weights strategy
   te::sa::GPMWeightsAbstractStrategy* weights = 0;
@@ -212,17 +226,42 @@ void te::sa::ProximityMatrixCreatorDialog::onOkPushButtonClicked()
 
   std::auto_ptr<te::sa::GeneralizedProximityMatrix> gpm;
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   try
   {
     builder.setGPMInfo(ds, dsLayer->getDataSetName(), attrName);
 
     gpm = builder.build();
   }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, tr("Warning"), e.what());
+
+    QApplication::restoreOverrideCursor();
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
+    return;
+  }
   catch(...)
   {
     QMessageBox::warning(this, tr("Warning"), tr("Internal Error."));
+
+    QApplication::restoreOverrideCursor();
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
     return;
   }
+
+  QApplication::restoreOverrideCursor();
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
 
   //save gpm
   if(!m_ui->m_dsRadioButton->isChecked())

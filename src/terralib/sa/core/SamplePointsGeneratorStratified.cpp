@@ -26,7 +26,10 @@
 */
 
 // Terralib Includes
+#include "../../common/Exception.h"
+#include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
+#include "../../common/progress/TaskProgress.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/SimpleProperty.h"
 #include "../../geometry/Geometry.h"
@@ -187,6 +190,12 @@ std::auto_ptr<te::mem::DataSet> te::sa::SamplePointsGeneratorStratified::generat
     }
   }
 
+  //create task
+  te::common::TaskProgress task;
+
+  task.setTotalSteps(m_classMap.size());
+  task.setMessage(TE_TR("Creating Points by Class."));
+
   //generate samples
   int idCount = 0;
 
@@ -220,6 +229,13 @@ std::auto_ptr<te::mem::DataSet> te::sa::SamplePointsGeneratorStratified::generat
 
       ++idCount;
     }
+
+    if(!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    task.pulse();
 
     ++it;
   }

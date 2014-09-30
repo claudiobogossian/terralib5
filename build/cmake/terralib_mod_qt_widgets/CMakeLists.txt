@@ -107,6 +107,7 @@ file(GLOB TERRALIB_LAYER_SELECTOR_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/te
 
 file(GLOB TERRALIB_LAYER_UTILS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/utils/*.cpp)
 file(GLOB TERRALIB_LAYER_UTILS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/utils/*.h)
+file(GLOB TERRALIB_LAYER_UTILS_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/utils/ui/*.ui)
 
 # mapdisplay
 file(GLOB TERRALIB_MAPDISPLAY_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/mapdisplay/*.cpp)
@@ -252,6 +253,7 @@ source_group("Header Files\\layer\\selector"  FILES ${TERRALIB_LAYER_SELECTOR_HD
 
 source_group("Source Files\\layer\\utils"  FILES ${TERRALIB_LAYER_UTILS_SRC_FILES})
 source_group("Header Files\\layer\\utils"  FILES ${TERRALIB_LAYER_UTILS_HDR_FILES})
+source_group("UI Files\\layer\\utils"      FILES ${TERRALIB_LAYER_UTILS_UI_FILES})
 
 # mapdisplay
 source_group("Source Files\\mapdisplay"  FILES ${TERRALIB_MAPDISPLAY_SRC_FILES})
@@ -416,7 +418,8 @@ if(Qt5_FOUND)
   list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_SELECTOR_SRC_FILES} ${TERRALIB_LAYER_SELECTOR_HDR_FILES})
 
   # layer - utils
-  list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_UTILS_SRC_FILES} ${TERRALIB_LAYER_UTILS_HDR_FILES})
+  QT5_WRAP_UI(TERRALIB_LAYER_UTILS_GEN_HDR_FILES ${TERRALIB_LAYER_UTILS_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_UTILS_SRC_FILES} ${TERRALIB_LAYER_UTILS_HDR_FILES} ${TERRALIB_LAYER_UTILS_GEN_HDR_FILES})
 
   # mapdisplay
   list(APPEND TERRALIB_FILES ${TERRALIB_MAPDISPLAY_SRC_FILES} ${TERRALIB_MAPDISPLAY_HDR_FILES})
@@ -557,7 +560,8 @@ else() # QT4_FOUND
   list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_SELECTOR_SRC_FILES} ${TERRALIB_LAYER_SELECTOR_HDR_FILES})
 
   # layer - utils
-  list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_UTILS_SRC_FILES} ${TERRALIB_LAYER_UTILS_HDR_FILES})
+  QT4_WRAP_UI(TERRALIB_LAYER_UTILS_GEN_HDR_FILES ${TERRALIB_LAYER_UTILS_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_LAYER_UTILS_SRC_FILES} ${TERRALIB_LAYER_UTILS_HDR_FILES} ${TERRALIB_LAYER_UTILS_GEN_HDR_FILES})
 
   # mapdisplay
   list(APPEND TERRALIB_FILES ${TERRALIB_MAPDISPLAY_SRC_FILES} ${TERRALIB_MAPDISPLAY_HDR_FILES})
@@ -733,6 +737,9 @@ else() # QT4_FOUND
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/AbstractLayerSelector.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/DataSetLayerSelector.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/selector/HiddenDataSetLayerSelector.h)
+										 
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/utils/CompositionModeDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/layer/utils/CompositionModeMenuWidget.h)
 
   # mapdisplay
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/mapdisplay/DataSetDisplay.h)

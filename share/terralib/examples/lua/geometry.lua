@@ -1,12 +1,17 @@
 -------------------------------------------------------
 -- import TerraLib module and do some initialization --
 -------------------------------------------------------
-require "terralib_binding_lua_d"
+require ( "terralib_mod_binding_lua" )
 
 ---------------------------
 -- using Geometry module --
 ---------------------------
-pt = terralib.Point.new(74.2, 23.5, 4326)
+
+t = terralib_mod_binding_lua.TeSingleton.getInstance()
+
+t:initialize()
+
+pt = terralib_mod_binding_lua.te.gm.Point(74.2, 23.5, 4326)
 
 print("X = " .. pt:getX())
 print("Y = " .. pt:getY())
@@ -20,14 +25,16 @@ pt:setSRID(4326)
 --pt:transform(4128)
 mbrPoly = pt:getEnvelope()
 mbr = pt:getMBR()
-pt:computeMBR()
+--pt:computeMBR()
 pt:computeMBR(true)
 pt:computeMBR(false)
 print("wkt = " .. pt:asText())
-print("wkb = " .. pt:asBinary())
+k = 0
+print("wkb = " .. pt:asBinary(k))
 print("wkb size = " .. pt:getWkbSize())
-print("wkb NDR (little endian) = " .. pt:getWkb(1))
-print("wkb XDR (big endian) = " .. pt:getWkb(0))
+wkb = 0
+--print("wkb NDR (little endian) = " .. pt:getWkb(wkb, terralib_mod_binding_lua.te.common.NDR))
+--print("wkb XDR (big endian) = " .. pt:getWkb(wkb, terralib_mod_binding_lua.te.common.XDR))
 print("isEmpty? ")
 print(pt:isEmpty())
 print("isSimple? ")
@@ -59,8 +66,8 @@ print("overlaps? ")
 print(pt:overlaps(pt))
 print("relate? ")
 print(pt:relate(pt, "ttttttttt"))
-print("relation? ")
-print(pt:relation(pt))
+--print("relation? ")
+--print(pt:relation(pt))
 print("covers? ")
 print(pt:covers(pt))
 print("covered by? ")
@@ -71,3 +78,4 @@ print("X = " .. pt:getX())
 pt:setY(18.0)
 print("Y = " .. pt:getY())
 
+t:finalize()

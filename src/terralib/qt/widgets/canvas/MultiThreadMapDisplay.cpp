@@ -178,10 +178,17 @@ void te::qt::widgets::MultiThreadMapDisplay::onDrawLayerFinished(const int& inde
 
   QPainter painter(m_displayPixmap);
 
+  std::list<te::map::AbstractLayerPtr>::reverse_iterator itLayer = m_visibleLayers.rbegin();
   std::map<int, QImage>::iterator it;
   for(it = m_images.begin(); it != m_images.end(); ++it)
+  {
+    painter.setCompositionMode((QPainter::CompositionMode)itLayer->get()->getCompositionMode());
+
     painter.drawPixmap(0, 0, QPixmap::fromImage(it->second));
     //painter.drawImage(0, 0, it->second);
+
+    ++itLayer;
+  }
 
   painter.end();
 

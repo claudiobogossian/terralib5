@@ -60,6 +60,7 @@
 #include "../widgets/layer/explorer/FolderLayerItem.h"
 #include "../widgets/layer/info/LayerPropertiesInfoWidget.h"
 #include "../widgets/layer/selector/AbstractLayerSelector.h"
+#include "../widgets/layer/utils/CompositionModeMenuWidget.h"
 #include "../widgets/plugin/manager/PluginManagerDialog.h"
 #include "../widgets/progress/ProgressViewerBar.h"
 #include "../widgets/progress/ProgressViewerDialog.h"
@@ -1462,7 +1463,7 @@ void te::qt::af::BaseApplication::onLayerGroupingTriggered()
     te::map::AbstractLayerPtr selectedLayer = selectedLayerItem->getLayer();
 
     // Get all layer with grouping to dispose to import
-    std::list<te::map::AbstractLayerPtr> allLayersList = m_explorer->getExplorer()->getTopLayers();
+    std::list<te::map::AbstractLayerPtr> allLayersList = ApplicationController::getInstance().getProject()->getSingleLayers(false);
     std::vector<te::map::AbstractLayerPtr> allLayers(allLayersList.begin(), allLayersList.end());
 
     te::qt::widgets::GroupingDialog dlg(this);
@@ -1690,6 +1691,18 @@ void te::qt::af::BaseApplication::onLayerPanToSelectedOnMapDisplayTriggered()
   display->setExtent(newExtent);
 }
 
+void te::qt::af::BaseApplication::onLayerCompositionModeTriggered()
+{
+  std::list<te::map::AbstractLayerPtr> selectedLayers = m_explorer->getExplorer()->getSelectedSingleLayers();
+
+  if(!selectedLayers.empty())
+  {
+    std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
+
+    m_compModeMenu->setLayer(*it);
+  }
+}
+
 void te::qt::af::BaseApplication::onQueryLayerTriggered()
 {
   std::list<te::map::AbstractLayerPtr> selectedLayers = m_explorer->getExplorer()->getSelectedSingleLayers();
@@ -1803,7 +1816,7 @@ void te::qt::af::BaseApplication::onZoomExtentTriggered()
     return;
 
   //m_display->fit(m_explorer->getExplorer()->getAllLayers());
-  m_display->fit(te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false));
+  m_display->fit(te::qt::af::ApplicationController::getInstance().getProject()->getVisibleSingleLayers());
 
 }
 
@@ -2166,6 +2179,10 @@ void te::qt::af::BaseApplication::makeDialog()
 
   // Initializing well known widgets
 
+  // 0. Composition Mode
+  m_compModeMenu = new te::qt::widgets::CompositionModeMenuWidget(this);
+  m_layerCompositionMode->setMenu(m_compModeMenu->getMenu());
+
   // 1. Layer Explorer
   QAction* act = new QAction(this);
   act->setSeparator(true);
@@ -2249,6 +2266,7 @@ void te::qt::af::BaseApplication::makeDialog()
   actionSRSSep->setSeparator(true);
   treeView->add(actionSRSSep);
 
+  treeView->add(m_layerCompositionMode);
   treeView->add(m_layerProperties);
 
   // Actions for the items of a layer item such as the chart item and the grouping item
@@ -2288,6 +2306,7 @@ void te::qt::af::BaseApplication::makeDialog()
   rasterSep5->setSeparator(true);
   treeView->add(rasterSep5, "", "RASTER_LAYER_ITEM");
 
+  treeView->add(m_layerCompositionMode, "", "RASTER_LAYER_ITEM");
   treeView->add(m_layerProperties, "", "RASTER_LAYER_ITEM");
 
   // Actions for invalid layers
@@ -2320,7 +2339,8 @@ void te::qt::af::BaseApplication::makeDialog()
   m_explorer = new te::qt::af::LayerExplorer(lexplorer, this);
 
 // 2. Map Display
-  te::qt::widgets::MapDisplay* map = new te::qt::widgets::MultiThreadMapDisplay(QSize(512, 512), this);
+  te::qt::widgets::MapDisplay* map = new te::qt::widgets::MultiThreadMapDisplay(QSize(512, 512),true, this);
+  //te::qt::widgets::MapDisplay* map = new te::qt::widgets::MapDisplay(QSize(512, 512),this);
   map->setResizePolicy(te::qt::widgets::MapDisplay::Center);
   m_display = new te::qt::af::MapDisplay(map);
 
@@ -2500,6 +2520,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan to Selected Features on Map Display", tr("Pan to Selected Features"), tr("Pan to the selected features on the Map Display"), true, false, true, m_menubar);
   initAction(m_queryLayer, "view-filter", "Layer.Query", tr("Query..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerLinkTable, "layer-link", "Layer.Link", tr("&Link..."), tr(""), true, false, true, m_menubar);
+  initAction(m_layerCompositionMode, "layer-compose", "Layer.Composition Mode", tr("&Composition Mode..."), tr("Set the composition mode to renderer the selected layer"), true, false, true, m_menubar);
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project..."), tr(""), true, false, true, m_menubar);
@@ -2642,7 +2663,6 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addAction(m_layerSRS);
   m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerProperties);
-  m_layerMenu->addAction(m_layerLinkTable);
 
   // TODO
   //m_layerMenu->addAction(m_layerRaise);
@@ -2829,6 +2849,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_layerFitOnMapDisplay, SIGNAL(triggered()), SLOT(onLayerFitOnMapDisplayTriggered()));
   connect(m_layerFitSelectedOnMapDisplay, SIGNAL(triggered()), SLOT(onLayerFitSelectedOnMapDisplayTriggered()));
   connect(m_layerPanToSelectedOnMapDisplay, SIGNAL(triggered()), SLOT(onLayerPanToSelectedOnMapDisplayTriggered()));
+  connect(m_layerCompositionMode, SIGNAL(hovered()), SLOT(onLayerCompositionModeTriggered()));
   connect(m_queryLayer, SIGNAL(triggered()), SLOT(onQueryLayerTriggered()));
   connect(m_mapZoomIn, SIGNAL(toggled(bool)), SLOT(onZoomInToggled(bool)));
   connect(m_mapZoomOut, SIGNAL(toggled(bool)), SLOT(onZoomOutToggled(bool)));
