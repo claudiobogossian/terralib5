@@ -24,11 +24,7 @@
 */
 
 // TerraLib
-#include "../../dataaccess/datasource/DataSource.h"
-#include "../../dataaccess/datasource/DataSourceFactory.h"
-#include "../cache/AbstractCachePolicyFactory.h"
-#include "../drivers/database/DatabaseGraphMetadata.h"
-#include "../loader/AbstractGraphLoaderStrategyFactory.h"
+#include "../core/GraphMetadata.h"
 #include "../Exception.h"
 #include "../Globals.h"
 #include "DirectedGraph.h"
@@ -75,63 +71,32 @@ te::graph::DirectedGraphFactory::DirectedGraphFactory()
 
 te::graph::AbstractGraph* te::graph::DirectedGraphFactory::iOpen(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo)
 {
-  std::map<std::string, std::string>::const_iterator it;
-  std::map<std::string, std::string>::const_iterator itend = gInfo.end();
-
-  //create data source
-  it = gInfo.find("GRAPH_DATA_SOURCE_TYPE");
-
-  std::auto_ptr<te::da::DataSource> dsPtr;
-
-  if(it != itend)
-  {
-    dsPtr = te::da::DataSourceFactory::make(it->second); //example: dsType = POSTGIS
-    dsPtr->setConnectionInfo(dsInfo);
-    dsPtr->open();
-  }
-
-  te::da::DataSource* ds = dsPtr.release();
-
   //create graph metadata
-  te::graph::DatabaseGraphMetadata* gMetadata = new te::graph::DatabaseGraphMetadata(ds);
+  te::graph::GraphMetadata* gMetadata = getMetadata(dsInfo, gInfo);
 
-  it = gInfo.find("GRAPH_ID");
-  if(it != itend)
-  {
-    try
-    {
-      int id = atoi(it->second.c_str());
-
-      gMetadata->load(id);
-    }
-    catch(const std::exception& e)
-    {
-      std::string errorMessage = TR_GRAPH("Error saving graph metadata: ");
-      errorMessage += e.what();
-
-      throw Exception(errorMessage);
-    }
-  }
-  else
-  {
+  if(gMetadata->m_memoryGraph)
     return 0;
+
+  //get graph id
+  int id = getId(dsInfo, gInfo);
+
+  try
+  {
+    gMetadata->load(id);
+  }
+  catch(const std::exception& e)
+  {
+    std::string errorMessage = TE_TR("Error opening graph metadata: ");
+    errorMessage += e.what();
+
+    throw Exception(errorMessage);
   }
 
   //create cache policy strategy
-  te::graph::AbstractCachePolicy* cp = 0;
-  it = gInfo.find("GRAPH_CACHE_POLICY");
-  if(it != itend)
-  {
-    cp = te::graph::AbstractCachePolicyFactory::make(it->second);
-  }
+  te::graph::AbstractCachePolicy* cp = getCachePolicy(gInfo);
 
   //create graph strategy
-  te::graph::AbstractGraphLoaderStrategy* ls = 0;
-  it = gInfo.find("GRAPH_STRATEGY_LOADER");
-  if(it != itend)
-  {
-    ls = te::graph::AbstractGraphLoaderStrategyFactory::make(it->second, gMetadata);
-  }
+  te::graph::AbstractGraphLoaderStrategy* ls = getLoaderStrategy(gInfo, gMetadata);
 
   //create graph
   te::graph::AbstractGraph* g = new te::graph::DirectedGraph(cp, ls);
@@ -141,50 +106,10 @@ te::graph::AbstractGraph* te::graph::DirectedGraphFactory::iOpen(const std::map<
 
 te::graph::AbstractGraph* te::graph::DirectedGraphFactory::create(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo)
 {
-  std::map<std::string, std::string>::const_iterator it;
-  std::map<std::string, std::string>::const_iterator itend = gInfo.end();
+  //create graph metadata
+  te::graph::GraphMetadata* gMetadata = getMetadata(dsInfo, gInfo);
 
-  //create data source
-  it = gInfo.find("GRAPH_DATA_SOURCE_TYPE");
-
-  std::auto_ptr<te::da::DataSource> dsPtr;
-
-  if(it != itend)
-  {
-    dsPtr = te::da::DataSourceFactory::make(it->second); //example: dsType = POSTGIS
-    dsPtr->setConnectionInfo(dsInfo);
-    dsPtr->open();
-  }
-
-  te::da::DataSource* ds = dsPtr.release();
-  
-   //create graph metadata
-  te::graph::DatabaseGraphMetadata* gMetadata = new te::graph::DatabaseGraphMetadata(ds);
-
-  it = gInfo.find("GRAPH_NAME");
-  if(it != itend)
-  {
-    gMetadata->setName(it->second);
-  }
-
-  it = gInfo.find("GRAPH_DESCRIPTION");
-  if(it != itend)
-  {
-    gMetadata->setDescription(it->second);
-  }
-
-  it = gInfo.find("GRAPH_STORAGE_MODE");
-  if(it != itend)
-  {
-    if(it->second == TE_GRAPH_STORAGE_MODE_BY_VERTEX)
-    {
-      gMetadata->setStorageMode(te::graph::Vertex_List);
-    }
-    else if(it->second == TE_GRAPH_STORAGE_MODE_BY_EDGE)
-    {
-      gMetadata->setStorageMode(te::graph::Edge_List);
-    }
-  }
+  setMetadataInformation(gInfo, gMetadata);
 
   try
   {
@@ -192,30 +117,25 @@ te::graph::AbstractGraph* te::graph::DirectedGraphFactory::create(const std::map
   }
   catch(const std::exception& e)
   {
-    std::string errorMessage = TR_GRAPH("Error saving graph metadata: ");
+    std::string errorMessage = TE_TR("Error saving graph metadata: ");
     errorMessage += e.what();
 
     throw Exception(errorMessage);
   }
 
   //create cache policy strategy
-  te::graph::AbstractCachePolicy* cp = 0;
-  it = gInfo.find("GRAPH_CACHE_POLICY");
-  if(it != itend)
-  {
-    cp = te::graph::AbstractCachePolicyFactory::make(it->second);
-  }
+  te::graph::AbstractCachePolicy* cp = getCachePolicy(gInfo);
 
   //create graph strategy
-  te::graph::AbstractGraphLoaderStrategy* ls = 0;
-  it = gInfo.find("GRAPH_STRATEGY_LOADER");
-  if(it != itend)
-  {
-    ls = te::graph::AbstractGraphLoaderStrategyFactory::make(it->second, gMetadata);
-  }
+  te::graph::AbstractGraphLoaderStrategy* ls = getLoaderStrategy(gInfo, gMetadata);
 
   //create graph
-  te::graph::AbstractGraph* g = new te::graph::DirectedGraph(cp, ls);
+  te::graph::AbstractGraph* g = 0;
+
+  if(gMetadata->m_memoryGraph)
+    g = new te::graph::DirectedGraph(gMetadata);
+  else
+    g = new te::graph::DirectedGraph(cp, ls);
 
   return g;
 }

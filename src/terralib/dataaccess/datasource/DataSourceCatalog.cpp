@@ -79,16 +79,16 @@ bool te::da::DataSourceCatalog::datasetExists(const std::string& name) const
 void te::da::DataSourceCatalog::add(const DataSetTypePtr& dt)
 {
   if(dt.get() == 0)
-    throw Exception(TR_DATAACCESS("Can not add a NULL dataset schema to the catalog!"));
+    throw Exception(TE_TR("Can not add a NULL dataset schema to the catalog!"));
 
   if(dt->getName().empty())
-    throw Exception(TR_DATAACCESS("Can not add a dataset schema with an empty name to the catalog!"));
+    throw Exception(TE_TR("Can not add a dataset schema with an empty name to the catalog!"));
 
   if(datasetExists(dt->getName()))
-    throw Exception((boost::format(TR_DATAACCESS("Can not add dataset schema %1% to the catalog. There is already another one with this name!")) % dt->getName()).str());
+    throw Exception((boost::format(TE_TR("Can not add dataset schema %1% to the catalog. There is already another one with this name!")) % dt->getName()).str());
 
   if(dt->getCatalog() != 0)
-    throw Exception((boost::format(TR_DATAACCESS("Can not add dataset schema %1% to the catalog. It is already attached to one!")) % dt->getName()).str());
+    throw Exception((boost::format(TE_TR("Can not add dataset schema %1% to the catalog. It is already attached to one!")) % dt->getName()).str());
 
   checkFKsDependency(dt.get());
 
@@ -100,13 +100,13 @@ void te::da::DataSourceCatalog::add(const DataSetTypePtr& dt)
 void te::da::DataSourceCatalog::remove(DataSetType* dt, const bool cascade)
 {
   if(dt == 0)
-    throw Exception(TR_DATAACCESS("Can not remove a NULL dataset schema from the catalog!"));
+    throw Exception(TE_TR("Can not remove a NULL dataset schema from the catalog!"));
 
   if(dt->getName().empty())
-    throw Exception(TR_DATAACCESS("Can not remove a dataset schema with an empty name from the catalog!"));
+    throw Exception(TE_TR("Can not remove a dataset schema with an empty name from the catalog!"));
 
   if(dt->getCatalog() != this)
-    throw Exception(TR_DATAACCESS("Can not remove a dataset from another catalog!"));
+    throw Exception(TE_TR("Can not remove a dataset from another catalog!"));
 
   assert(datasetExists(dt->getName()));
   assert(m_datasets.find(dt->getName()) != m_datasets.end());
@@ -129,21 +129,21 @@ void te::da::DataSourceCatalog::remove(DataSetType* dt, const bool cascade)
 void te::da::DataSourceCatalog::rename(DataSetType* dt, const std::string& newName)
 {
   if(dt == 0)
-    throw Exception(TR_DATAACCESS("Can not rename a NULL dataset schema!"));
+    throw Exception(TE_TR("Can not rename a NULL dataset schema!"));
 
   if(datasetExists(newName))
-    throw Exception(TR_DATAACCESS("Could not rename DataSetType because the new name already exist in the catalog!"));
+    throw Exception(TE_TR("Could not rename DataSetType because the new name already exist in the catalog!"));
 
   if(dt->getCatalog() != this)
-    throw Exception(TR_DATAACCESS("Could not rename a dataset from another catalog!"));
+    throw Exception(TE_TR("Could not rename a dataset from another catalog!"));
 
   dataset_idx_type::iterator it = m_datasets.find(dt->getName());
 
   if(it == m_datasets.end())
-    throw Exception(TR_DATAACCESS("Could not find dataset schema in the catalog!"));
+    throw Exception(TE_TR("Could not find dataset schema in the catalog!"));
 
   if((*it).get() != dt)
-    throw Exception(TR_DATAACCESS("The dataset schema is not registered in this catalog!"));
+    throw Exception(TE_TR("The dataset schema is not registered in this catalog!"));
 
   DataSetTypePtr aux = *it;
 
@@ -178,7 +178,7 @@ const te::da::DataSetTypePtr& te::da::DataSourceCatalog::getDataSetType(const st
 void te::da::DataSourceCatalog::add(Sequence* s)
 {
   if(getSequence(s->getName()))
-    throw Exception(TR_DATAACCESS("Could not add Sequence because there is already another Sequence with the same name in the catalog!"));
+    throw Exception(TE_TR("Could not add Sequence because there is already another Sequence with the same name in the catalog!"));
 
   checkSequenceDependency(s);
   m_sequences.insert(s);
@@ -220,7 +220,7 @@ void te::da::DataSourceCatalog::addRef(ForeignKey* fk)
   te::da::DataSetType* refFT = fk->getReferencedDataSetType();
 
   if((refFT == 0) || (getDataSetType(refFT->getName()).get() != refFT))
-    throw Exception(TR_DATAACCESS("Could not find the DataSetType referenced in foreign key!"));
+    throw Exception(TE_TR("Could not find the DataSetType referenced in foreign key!"));
 
   m_dependentFkIdx.insert(std::pair<DataSetType*, ForeignKey*>(refFT, fk));
 }
@@ -230,7 +230,7 @@ void te::da::DataSourceCatalog::removeRef(ForeignKey* fk)
   te::da::DataSetType* refFT = fk->getReferencedDataSetType();
 
   if((refFT == 0) || (getDataSetType(refFT->getName()).get() != refFT))
-    throw Exception(TR_DATAACCESS("Could not find the DataSetType referenced in foreign key!"));
+    throw Exception(TE_TR("Could not find the DataSetType referenced in foreign key!"));
 
   std::pair<std::multimap<DataSetType*, ForeignKey*>::iterator,
             std::multimap<DataSetType*, ForeignKey*>::iterator> range = m_dependentFkIdx.equal_range(refFT);
@@ -249,7 +249,7 @@ void te::da::DataSourceCatalog::removeRef(ForeignKey* fk)
     }
   }
 
-  throw Exception(TR_DATAACCESS("Something went wrong when removing the association of a foreign key and a DataSetType in the DataSourceCatalog!"));
+  throw Exception(TE_TR("Something went wrong when removing the association of a foreign key and a DataSetType in the DataSourceCatalog!"));
 }
 
 void te::da::DataSourceCatalog::dropDependentSequences(te::dt::Property* p)
@@ -309,7 +309,7 @@ void te::da::DataSourceCatalog::checkSequenceDependency(Sequence* s) const
         return;
   }
 
-  throw Exception(TR_DATAACCESS("Could not find in the catalog the DataSetType that owns the given sequence!"));
+  throw Exception(TE_TR("Could not find in the catalog the DataSetType that owns the given sequence!"));
 }
 
 void te::da::DataSourceCatalog::indexSequenceDependency(Sequence* s)
@@ -336,7 +336,7 @@ void te::da::DataSourceCatalog::indexSequenceDependency(Sequence* s)
       }
   }
 
-  throw Exception(TR_DATAACCESS("Could not find in the catalog the DataSetType that owns the given sequence!"));
+  throw Exception(TE_TR("Could not find in the catalog the DataSetType that owns the given sequence!"));
 }
 
 void te::da::DataSourceCatalog::dropDependentSequences(DataSetType* dt)
@@ -395,7 +395,7 @@ void te::da::DataSourceCatalog::dropDependentSequenceEntry(Sequence* s)
       }
   }
 
-  throw Exception(TR_DATAACCESS("Could not find in the catalog the DataSetType that owns the given sequence in order to remove the sequence entry!"));
+  throw Exception(TE_TR("Could not find in the catalog the DataSetType that owns the given sequence in order to remove the sequence entry!"));
 }
 
 void te::da::DataSourceCatalog::checkFKsDependency(DataSetType* dt) const
@@ -408,7 +408,7 @@ void te::da::DataSourceCatalog::checkFKsDependency(DataSetType* dt) const
     te::da::DataSetType* refFT = fk->getReferencedDataSetType();
 
     if((refFT == 0) || (getDataSetType(refFT->getName()).get() != refFT))
-      throw Exception(TR_DATAACCESS("There is a foreign key in the DataSetType referencing another DataSetType that is not in the catalog!"));
+      throw Exception(TE_TR("There is a foreign key in the DataSetType referencing another DataSetType that is not in the catalog!"));
   }
 }
 

@@ -49,8 +49,8 @@
 #include "LayoutEditor.h"
 
 // Qt
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QMessageBox>
+#include <QContextMenuEvent>
+#include <QMessageBox>
 
 // STL
 #include <cassert>

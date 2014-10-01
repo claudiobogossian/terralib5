@@ -27,9 +27,14 @@
 
 #include "../../../color/ColorBar.h"
 #include "../../../common/STLUtils.h"
+#include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/dataset/DataSetType.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../datatype.h"
+#include "../../../maptools/DataSetLayer.h"
 #include "../../../maptools/GroupingAlgorithms.h"
-#include "../../../maptools/Utils.h"
+#include "../../../maptools/RasterLayer.h"
+#include "../../../fe/Literal.h"
 #include "../../../raster.h"
 #include "../../../raster/RasterSummary.h"
 #include "../../../raster/RasterSummaryManager.h"
@@ -39,30 +44,37 @@
 #include "../../../se/Interpolate.h"
 #include "../../../se/InterpolationPoint.h"
 #include "../../../se/ParameterValue.h"
+#include "../../../se/RasterSymbolizer.h"
+#include "../../../se/Utils.h"
 #include "../../widgets/colorbar/ColorBar.h"
+#include "../../widgets/colorbar/ColorCatalogWidget.h"
 #include "ColorMapWidget.h"
 #include "ui_ColorMapWidgetForm.h"
 
 // Qt
-#include <QtGui/QPainter>
-#include <QtGui/QValidator>
+#include <QColorDialog>
+#include <QMessageBox>
+#include <QPainter>
+#include <QValidator>
 
 // STL
 #include <cassert>
 
+Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
 te::qt::widgets::ColorMapWidget::ColorMapWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
     m_ui(new Ui::ColorMapWidgetForm),
     m_cm(0),
+    m_cb(0),
     m_raster(0)
 {
   m_ui->setupUi(this);
 
   QGridLayout* l = new QGridLayout(m_ui->m_colorBarWidget);
   l->setContentsMargins(0,0,0,0);
-  m_cbWidget = new  te::qt::widgets::colorbar::ColorBar(m_ui->m_colorBarWidget);
-  l->addWidget(m_cbWidget);
+  m_colorBar = new  te::qt::widgets::ColorCatalogWidget(m_ui->m_colorBarWidget);
+  l->addWidget(m_colorBar);
 
   m_ui->m_minValueLineEdit->setValidator(new QDoubleValidator(this));
   m_ui->m_maxValueLineEdit->setValidator(new QDoubleValidator(this));
@@ -70,9 +82,11 @@ te::qt::widgets::ColorMapWidget::ColorMapWidget(QWidget* parent, Qt::WindowFlags
   initialize();
 
   // Signals & slots
-  connect(m_cbWidget, SIGNAL(colorBarChanged()), this, SLOT(onApplyPushButtonClicked()));
+  connect(m_colorBar, SIGNAL(colorBarChanged()), this, SLOT(onApplyPushButtonClicked()));
   connect(m_ui->m_bandComboBox, SIGNAL(activated(QString)), this, SLOT(onBandSelected(QString)));
   connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyPushButtonClicked()));
+  connect(m_ui->m_tableWidget, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(onTableWidgetItemDoubleClicked(QTableWidgetItem*)));
+  connect(m_ui->m_importPushButton, SIGNAL(clicked()), this, SLOT(onImportPushButtonClicked()));
 }
 
 te::qt::widgets::ColorMapWidget::~ColorMapWidget()
@@ -110,7 +124,7 @@ void te::qt::widgets::ColorMapWidget::setColorMap(te::se::ColorMap* cm)
 
   m_cm = cm->clone();
 
-  updateUi();
+  updateUi(true);
 }
 
 te::se::ColorMap* te::qt::widgets::ColorMapWidget::getColorMap()
@@ -130,11 +144,8 @@ std::string te::qt::widgets::ColorMapWidget::getCurrentBand()
 
 void te::qt::widgets::ColorMapWidget::initialize()
 {
-  m_cb = new te::color::ColorBar(te::color::RGBAColor(255, 0, 0, TE_OPAQUE), te::color::RGBAColor(0, 0, 0, TE_OPAQUE), 256);
-
-  m_cbWidget->setHeight(20);
-  m_cbWidget->setColorBar(m_cb);
-  m_cbWidget->setScaleVisible(false);
+  m_colorBar->getColorBar()->setHeight(20);
+  m_colorBar->getColorBar()->setScaleVisible(false);
 
   m_ui->m_transformComboBox->clear();
 
@@ -143,7 +154,7 @@ void te::qt::widgets::ColorMapWidget::initialize()
   //m_ui->m_transformComboBox->addItem(tr("Recode"), te::se::RECODE_TRANSFORMATION);
 }
 
-void te::qt::widgets::ColorMapWidget::updateUi()
+void te::qt::widgets::ColorMapWidget::updateUi(bool loadColorBar)
 {
   m_ui->m_tableWidget->setRowCount(0);
 
@@ -151,6 +162,8 @@ void te::qt::widgets::ColorMapWidget::updateUi()
   {
     return;
   }
+
+  te::color::ColorBar* cb = 0;
 
   if(m_cm->getCategorize())
   {
@@ -167,6 +180,14 @@ void te::qt::widgets::ColorMapWidget::updateUi()
 
     m_ui->m_tableWidget->setRowCount(tV.size() - 2);
 
+    te::color::RGBAColor initColor(te::se::GetString(tV[1]).c_str());
+    te::color::RGBAColor endColor(te::se::GetString(tV[tV.size() - 2]).c_str());
+
+    if(loadColorBar)
+      cb = new te::color::ColorBar(initColor, endColor, 256);
+
+    int count = 0;
+
     for(size_t i = 1; i < tV.size() - 1; ++i)
     {
       QColor color;
@@ -176,26 +197,41 @@ void te::qt::widgets::ColorMapWidget::updateUi()
       if(i == 0)
       {
         lowerLimit = "...";
-        upperLimit = te::map::GetString(t[i]);
-        color.setNamedColor(te::map::GetString(tV[i]).c_str());
+        upperLimit = te::se::GetString(t[i]);
+        color.setNamedColor(te::se::GetString(tV[i]).c_str());
       }
       else if(i == tV.size() - 1)
       {
-        lowerLimit = te::map::GetString(t[i - 1]);
+        lowerLimit = te::se::GetString(t[i - 1]);
         upperLimit = "...";
-        color.setNamedColor(te::map::GetString(tV[i]).c_str());
+        color.setNamedColor(te::se::GetString(tV[i]).c_str());
       }
       else
       {
-        lowerLimit = te::map::GetString(t[i - 1]);
-        upperLimit = te::map::GetString(t[i]);
-        color.setNamedColor(te::map::GetString(tV[i]).c_str());
+        lowerLimit = te::se::GetString(t[i - 1]);
+        upperLimit = te::se::GetString(t[i]);
+        color.setNamedColor(te::se::GetString(tV[i]).c_str());
       }
+
+      if(loadColorBar)
+      {
+        if(count != 0 && count != tV.size() - 2)
+        {
+          double pos = (1. / (tV.size() - 2)) * count;
+
+          te::color::RGBAColor color(te::se::GetString(tV[i]).c_str());
+
+          cb->addColor(color, pos);
+        }
+      }
+              
+      ++count;
 
       //color
       QTableWidgetItem* item = new QTableWidgetItem();
       item->setBackgroundColor(color);
-      item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+      item->setFlags(Qt::ItemIsEnabled);
+      item->setData(Qt::UserRole, QVariant((int)i));
       m_ui->m_tableWidget->setItem(i - 1, 1, item);
 
       //value
@@ -227,6 +263,14 @@ void te::qt::widgets::ColorMapWidget::updateUi()
 
     m_ui->m_tableWidget->setRowCount(ip.size() - 1);
 
+    te::color::RGBAColor initColor(te::se::GetString(ip[0]->getValue()).c_str());
+    te::color::RGBAColor endColor(te::se::GetString(ip[ip.size() - 1]->getValue()).c_str());
+
+    if(loadColorBar)
+      cb = new te::color::ColorBar(initColor, endColor, 256);
+
+    int count = 0;
+
     for(size_t i = 0; i < ip.size() - 1; ++i)
     {
       QColor color;
@@ -235,7 +279,7 @@ void te::qt::widgets::ColorMapWidget::updateUi()
 
       te::se::InterpolationPoint* ipItem = ip[i];
             
-      color.setNamedColor(te::map::GetString(ipItem->getValue()).c_str());
+      color.setNamedColor(te::se::GetString(ipItem->getValue()).c_str());
 
       valStrBegin.setNum(ipItem->getData());
       valStrEnd.setNum(ip[i+1]->getData());
@@ -245,10 +289,25 @@ void te::qt::widgets::ColorMapWidget::updateUi()
       valStr.append(" - ");
       valStr.append(valStrEnd);
 
+      if(loadColorBar)
+      {
+        if(count != 0 && count != ip.size() - 1)
+        {
+          double pos = (1. / (ip.size() - 1)) * count;
+
+          te::color::RGBAColor color(te::se::GetString(ipItem->getValue()).c_str());
+
+          cb->addColor(color, pos);
+        }
+      }
+
+      ++count;
+
     //color
       QTableWidgetItem* item = new QTableWidgetItem();
       item->setBackgroundColor(color);
       item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+      item->setData(Qt::UserRole, QVariant((int)i));
       m_ui->m_tableWidget->setItem(i, 1, item);
 
       //value
@@ -265,12 +324,26 @@ void te::qt::widgets::ColorMapWidget::updateUi()
     }
   }
 
+  if(cb)
+  {
+    disconnect(m_colorBar, SIGNAL(colorBarChanged()), this, SLOT(onApplyPushButtonClicked()));
+
+    te::qt::widgets::colorbar::ColorBar* cbW = m_colorBar->getColorBar();
+    cbW->setColorBar(cb);
+
+    connect(m_colorBar, SIGNAL(colorBarChanged()), this, SLOT(onApplyPushButtonClicked()));
+  }
+
   m_ui->m_tableWidget->resizeColumnToContents(0);
   m_ui->m_tableWidget->resizeColumnToContents(1);
 }
 
 void te::qt::widgets::ColorMapWidget::buildCategorizationMap()
 {
+  delete m_cb;
+
+  m_cb = m_colorBar->getColorBar()->getColorBar();
+
   int sliceValue = m_ui->m_slicesSpinBox->value();
 
   std::vector<te::color::RGBAColor> colorVec = m_cb->getSlices(sliceValue);
@@ -325,6 +398,10 @@ void te::qt::widgets::ColorMapWidget::buildCategorizationMap()
 
 void te::qt::widgets::ColorMapWidget::buildInterpolationMap()
 {
+  delete m_cb;
+
+  m_cb = m_colorBar->getColorBar()->getColorBar();
+
   int sliceValue = m_ui->m_slicesSpinBox->value();
 
   std::vector<te::color::RGBAColor> colorVec = m_cb->getSlices(sliceValue + 1);
@@ -435,3 +512,154 @@ void te::qt::widgets::ColorMapWidget::onBandSelected(QString value)
   m_ui->m_maxValueLineEdit->setText(strMax);
 }
 
+void te::qt::widgets::ColorMapWidget::onTableWidgetItemDoubleClicked(QTableWidgetItem* item)
+{
+  int curCol = m_ui->m_tableWidget->currentColumn();
+  int curRow = m_ui->m_tableWidget->currentRow();
+
+  if(curCol == 1)
+  {
+    int index = item->data(Qt::UserRole).toInt();
+
+    QColor bgColor = item->backgroundColor();
+
+    QColor newBgColor = QColorDialog::getColor(bgColor, m_ui->m_tableWidget);
+
+    if(newBgColor.isValid())
+      bgColor = newBgColor;
+
+    te::se::ParameterValue* value = new te::se::ParameterValue(bgColor.name().toLatin1().data());
+
+    int type = m_ui->m_transformComboBox->itemData(m_ui->m_transformComboBox->currentIndex()).toInt();
+
+    if(type == te::se::CATEGORIZE_TRANSFORMATION)
+    {
+      te::se::Categorize* old = m_cm->getCategorize();
+
+      te::se::ParameterValue* param = old->getThresholdValues()[curRow+1];
+      te::fe::Literal* litExp = (te::fe::Literal*)param->getParameter(0)->m_expression;
+      litExp->setValue(bgColor.name().toStdString());
+    }
+    else if(type == te::se::INTERPOLATE_TRANSFORMATION)
+    {
+      std::vector<te::se::InterpolationPoint*> ip = m_cm->getInterpolate()->getInterpolationPoints();
+
+      te::se::InterpolationPoint* ipItem = ip[index];
+
+      ipItem->setValue(value);
+    }
+
+    item->setBackgroundColor(bgColor);
+
+    emit applyPushButtonClicked();
+  }
+}
+
+te::se::ColorMap* getLayerColorMap(te::map::AbstractLayerPtr layer)
+{
+  te::se::RasterSymbolizer* symb = 0;
+
+  if(layer->getType() == "DATASETLAYER")
+  {
+    te::map::DataSetLayer* l = dynamic_cast<te::map::DataSetLayer*>(layer.get());
+
+    if(l)
+    {
+      symb = te::se::GetRasterSymbolizer(l->getStyle());
+    }
+  }
+  else if(layer->getType() == "RASTERLAYER")
+  {
+    te::map::RasterLayer* l = dynamic_cast<te::map::RasterLayer*>(layer.get());
+
+    if(l)
+    {
+      symb = te::se::GetRasterSymbolizer(l->getStyle());
+    }
+  }
+
+  if(symb)
+  {
+    if(symb->getColorMap())
+    {
+      return symb->getColorMap();
+    }
+  }
+
+  return 0;
+}
+
+te::rst::Raster* getLayerRaster(te::map::AbstractLayerPtr layer)
+{
+  te::rst::Raster* raster = 0;
+
+  if(layer->getType() == "DATASETLAYER")
+  {
+    te::map::DataSetLayer* l = dynamic_cast<te::map::DataSetLayer*>(layer.get());
+
+    if(l)
+    {
+      std::auto_ptr<te::da::DataSet> ds = layer->getData();
+
+      if(ds.get())
+      {
+        std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+        return ds->getRaster(rpos).release();
+      }
+    }
+  }
+  else if(layer->getType() == "RASTERLAYER")
+  {
+    te::map::RasterLayer* l = dynamic_cast<te::map::RasterLayer*>(layer.get());
+
+    if(l)
+    {
+      return l->getRaster();
+    }
+  }
+
+  return 0;
+}
+
+void te::qt::widgets::ColorMapWidget::setLayers(te::map::AbstractLayerPtr selectedLayer, std::vector<te::map::AbstractLayerPtr> allLayers)
+{
+  for(std::size_t i = 0; i < allLayers.size(); ++i)
+  {
+    std::auto_ptr<te::da::DataSetType> dt(allLayers[i]->getSchema());
+
+    if(dt->hasRaster() && getLayerColorMap(allLayers[i]) && allLayers[i]->getId() != selectedLayer->getId())
+    {
+      m_ui->m_layersComboBox->addItem(allLayers[i]->getTitle().c_str(), QVariant::fromValue(allLayers[i]));
+    }
+  }
+}
+
+void te::qt::widgets::ColorMapWidget::onImportPushButtonClicked()
+{
+  if(m_ui->m_layersComboBox->currentText() == "")
+  {
+    QMessageBox::warning(this, tr("Grouping"), tr("There are no other layers with Grouping!"));
+    return;
+  }
+  
+  QVariant varLayer = m_ui->m_layersComboBox->itemData(m_ui->m_layersComboBox->currentIndex(), Qt::UserRole);
+  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+
+  te::se::ColorMap* cm = getLayerColorMap(layer);
+
+  setRaster(getLayerRaster(layer));
+  setColorMap(cm);
+
+  if(cm->getCategorize())
+  {
+    buildCategorizationMap();
+  }
+  else if(cm->getInterpolate())
+  {
+    buildInterpolationMap();
+  }
+
+  emit applyPushButtonClicked();
+
+  updateUi(true);
+}

@@ -31,16 +31,40 @@
 #include "../../af/events/LayerEvents.h"
 #include "Plugin.h"
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_ARITHMETICOP
+  #include "ArithmeticOpAction.h"
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_CLASSIFIER
   #include "ClassifierAction.h"
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_CLIPPING
+  #include "ClippingAction.h"
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_COLORTRANSFORM
+  #include "ColorTransformAction.h"
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
   #include "ContrastAction.h"
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_FILTER
+  #include "FilterAction.h"
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_FUSION
+  #include "FusionAction.h"
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
   #include "MixtureModelAction.h"
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_MOSAIC
+  #include "MosaicAction.h"
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER
@@ -51,9 +75,13 @@
   #include "RegisterAction.h"
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_VECTORIZATION
+  #include "VectorizationAction.h"
+#endif
+
 // QT
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
+#include <QMenu>
+#include <QMenuBar>
 
 te::qt::plugins::rp::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo), m_rpMenu(0)
@@ -70,18 +98,18 @@ void te::qt::plugins::rp::Plugin::startup()
     return;
 
 // it initializes the Translator support for the TerraLib RP Qt Plugin
-  TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_RP_TEXT_DOMAIN, TE_QT_PLUGIN_RP_TEXT_DOMAIN_DIR, "UTF-8");
+  //TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_RP_TEXT_DOMAIN, TE_QT_PLUGIN_RP_TEXT_DOMAIN_DIR, "UTF-8");
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_RP("TerraLib Qt RP Plugin startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt RP Plugin startup!"));
 
 // add plugin menu
   m_rpMenu = te::qt::af::ApplicationController::getInstance().getMenu("RP");
 
-  m_rpMenu->setTitle(TE_QT_PLUGIN_RP("Raster Processing"));
+  m_rpMenu->setTitle(TE_TR("Raster Processing"));
 
 // add pop up menu
   m_popupAction = new QAction(m_rpMenu);
-  m_popupAction->setText(TE_QT_PLUGIN_RP("Raster Processing"));
+  m_popupAction->setText(TE_TR("Raster Processing"));
 
   //add to application layer tree pop up menu
   //te::qt::af::evt::LayerPopUpAddAction evt(m_popupAction, "RASTER_LAYER_ITEM", 2 /*UNIQUE_ITEM_SELECTED*/);
@@ -111,54 +139,110 @@ void te::qt::plugins::rp::Plugin::shutdown()
 // unregister actions
   unRegisterActions();
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_RP("TerraLib Qt RP Plugin shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt RP Plugin shutdown!"));
 
   m_initialized = false;
 }
 
 void te::qt::plugins::rp::Plugin::registerActions()
 {
+#ifdef TE_QT_PLUGIN_RP_HAVE_ARITHMETICOP
+  m_arithmeticOp = new te::qt::plugins::rp::ArithmeticOpAction(m_rpMenu, m_rpPopupMenu);
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_CLASSIFIER
     m_classifier = new te::qt::plugins::rp::ClassifierAction(m_rpMenu, m_rpPopupMenu);
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_CLIPPING
+    m_clipping = new te::qt::plugins::rp::ClippingAction(m_rpMenu, m_rpPopupMenu);
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_COLORTRANSFORM
+    m_colorTrans = new te::qt::plugins::rp::ColorTransformAction(m_rpMenu, m_rpPopupMenu);
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
     m_contrast = new te::qt::plugins::rp::ContrastAction(m_rpMenu, m_rpPopupMenu);
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_FILTER
+    m_filter = new te::qt::plugins::rp::FilterAction(m_rpMenu, m_rpPopupMenu);
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_FUSION
+    m_fusion = new te::qt::plugins::rp::FusionAction(m_rpMenu, m_rpPopupMenu);
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
   m_mixtureModel = new te::qt::plugins::rp::MixtureModelAction(m_rpMenu, m_rpPopupMenu);
+#endif
+
+  #ifdef TE_QT_PLUGIN_RP_HAVE_MOSAIC
+  m_mosaic = new te::qt::plugins::rp::MosaicAction(m_rpMenu, m_rpPopupMenu);
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_REGISTER
+  m_register = new te::qt::plugins::rp::RegisterAction(m_rpMenu, m_rpPopupMenu);
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER
     m_segmenter = new te::qt::plugins::rp::SegmenterAction(m_rpMenu, m_rpPopupMenu);
 #endif
 
-#ifdef TE_QT_PLUGIN_RP_HAVE_REGISTER
-  m_register = new te::qt::plugins::rp::RegisterAction(m_rpMenu, m_rpPopupMenu);
+#ifdef TE_QT_PLUGIN_RP_HAVE_VECTORIZATION
+  m_vector = new te::qt::plugins::rp::VectorizationAction(m_rpMenu, m_rpPopupMenu);
 #endif
 }
 
 void  te::qt::plugins::rp::Plugin::unRegisterActions()
 {
+#ifdef TE_QT_PLUGIN_RP_HAVE_ARITHMETICOP
+    delete m_arithmeticOp;
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_CLASSIFIER
     delete m_classifier;
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_CLIPPING
+    delete m_clipping;
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_COLORTRANSFORM
+    delete m_colorTrans;
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
     delete m_contrast;
 #endif
 
-#ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
+#ifdef TE_QT_PLUGIN_RP_HAVE_FILTER
+    delete m_filter;
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_FUSION
+    delete m_fusion;
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
     delete m_mixtureModel;
+#endif
+
+    #ifdef TE_QT_PLUGIN_RP_HAVE_MOSAIC
+    delete m_mosaic;
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_REGISTER
+  delete m_register;
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER
     delete m_segmenter;
 #endif
 
-#ifdef TE_QT_PLUGIN_RP_HAVE_REGISTER
-  delete m_register;
+#ifdef TE_QT_PLUGIN_RP_HAVE_VECTORIZATION
+  delete m_vector;
 #endif
 }
 

@@ -46,7 +46,7 @@ void Raster1Bit()
 
 // 2. create tiff with 1bit using gdal, need to set NBIT=1
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/creating-1bit-raster.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/creating-1bit-raster.tif";
     rinfo["NBITS"] = "1";
 
     bprops.clear();
@@ -73,10 +73,10 @@ void Raster1Bit()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in Raster1Bit(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in Raster1Bit(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in Raster1Bit()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in Raster1Bit()!" << std::endl;
   }
 }

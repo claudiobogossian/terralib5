@@ -37,9 +37,12 @@
 #include <boost/noncopyable.hpp>
 
 // Qt
-#include <QtGui/QColor>
-#include <QtGui/QLineEdit>
-#include <QtGui/QMainWindow>
+#include <QColor>
+#include <QLineEdit>
+#include <QMainWindow>
+#include <QMessageBox>
+
+class QLabel;
 
 namespace te
 {
@@ -51,10 +54,16 @@ namespace te
 
   namespace qt
   {
+    namespace widgets
+    {
+      class QueryDialog;
+      class ChartDisplayWidget;
+    }
+
     namespace af
     {
 // Forward declarations
-      class ApplicationController;
+      class InterfaceController;
       class LayerExplorer;
       class MapDisplay;
       class Project;
@@ -87,7 +96,11 @@ namespace te
 
           virtual void init(const std::string& configFile);
 
+          MapDisplay* getDisplay();
+
           virtual void resetState();
+
+          void resetTerraLib(const bool& status);
 
         protected slots:
 
@@ -99,7 +112,11 @@ namespace te
 
           void onAddTabularLayerTriggered();
 
+          void onChartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartDisplay, te::map::AbstractLayer* layer);
+
           void onRemoveLayerTriggered();
+
+          void onChangeLayerDataSourceTriggered();
 
           void onLayerRemoveItemTriggered();
 
@@ -117,6 +134,8 @@ namespace te
 
           void onSaveProjectAsTriggered();
 
+          void onRestartSystemTriggered();
+
           void onToolsCustomizeTriggered();
 
           void onToolsDataExchangerTriggered();
@@ -124,6 +143,8 @@ namespace te
           void onToolsDataExchangerDirectTriggered();
 
           void onToolsDataExchangerDirectPopUpTriggered();
+
+          void onToolsQueryDataSourceTriggered();
 
           void onProjectPropertiesTriggered();
 
@@ -205,11 +226,13 @@ namespace te
 
           void onDataSourceExplorerTriggered();
 
+          //void onTrajectoryAnimationTriggered(); // Lauro
+
         protected:
 
           virtual void openProject(const QString& projectFileName);
 
-          virtual void checkProjectSave();
+          virtual QMessageBox::StandardButton checkProjectSave();
 
           virtual void newProject();
 
@@ -230,6 +253,9 @@ namespace te
           virtual void initStatusBar();
 
           virtual void initSlotsConnections();
+
+        signals:
+          void applicationClose();
 
         protected:
 
@@ -254,6 +280,7 @@ namespace te
           QAction* m_toolsDataExchangerDirect;
           QAction* m_toolsDataExchangerDirectPopUp;
           QAction* m_toolsDataSourceExplorer;
+          QAction* m_toolsQueryDataSource;
           QAction* m_pluginsManager;
           QAction* m_helpContents;
           QAction* m_helpUpdate;
@@ -263,6 +290,7 @@ namespace te
           QAction *m_projectAddLayerTabularDataSet;
           QAction* m_projectAddLayerGraph;
           QAction* m_projectAddFolderLayer;
+          QAction* m_projectChangeLayerDataSource;
           QAction* m_projectRemoveLayer;
           QAction* m_projectRenameLayer;
           QAction* m_projectProperties;
@@ -294,6 +322,7 @@ namespace te
           QAction* m_fileExit;
           QAction* m_filePrint;
           QAction* m_filePrintPreview;
+          QAction* m_fileRestartSystem;
           QAction* m_mapSRID;
           QAction* m_mapUnknownSRID;
           QAction* m_mapDraw;
@@ -333,17 +362,23 @@ namespace te
           QMenu* m_recentProjectsMenu;
           QMenu* m_mapMenu;
 
+          QLabel* m_selected;
+
           QStatusBar* m_statusbar;
           QToolBar* m_fileToolBar;
           //QToolBar* m_editToolBar;
           QToolBar* m_mapToolBar;
 
           // Well known Widgets
+          InterfaceController* m_iController;
           LayerExplorer* m_explorer;  //!< A dockable tree view for the layers in the application project.
           MapDisplay* m_display;
           StyleExplorer* m_styleExplorer;
 
           std::vector<DataSetTableDockWidget*> m_tableDocks;
+
+          //non modal intefaces
+          te::qt::widgets::QueryDialog* m_queryDlg;
 
           // Project
           Project* m_project;
@@ -352,7 +387,7 @@ namespace te
           QDockWidget* m_zoomInDisplaysDockWidget; //!< Dock widget used to show zoom in display
           QDockWidget* m_eyeBirdDisplaysDockWidget; //!< Dock widget used to show eye bird display
 
-          te::qt::af::ApplicationController* m_controller;
+          bool m_restartTerraLib;
       };
     } // end namespace af
   }   // end namespace qt

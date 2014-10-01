@@ -36,8 +36,8 @@
 #include "ui_PropertyConverterDialogForm.h"
 
 // Qt
-#include <QtGui/QMessageBox>
-#include <QtGui/QGridLayout>
+#include <QMessageBox>
+#include <QGridLayout>
 
 
 te::qt::widgets::PropertyConverterDialog::PropertyConverterDialog(QWidget* parent, Qt::WindowFlags f)

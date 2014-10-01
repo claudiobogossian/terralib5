@@ -117,7 +117,7 @@ namespace te
       /*!
         \brief Update plugins file.
       */
-      TEQTAFEXPORT void UpdateApplicationPlugins();
+      //TEQTAFEXPORT void UpdateApplicationPlugins();
 
       /*!
         \brief Update the existing tool bars
@@ -247,6 +247,87 @@ namespace te
       */
       TEQTAFEXPORT void AddActionToCustomToolbars(QAction* act);
 
+      /*!
+        \brief Returns the complete path of the configuration file or an empty value if it not exists.
+      */
+      //TEQTAFEXPORT QString GetConfigFileName();
+
+      /*!
+        \brief Setts the name of the application configuration file.
+
+        \param fileName Complete path to the application configuration file.
+      */
+      TEQTAFEXPORT void SetConfigFileName(const QString& fileName);
+
+      /*!
+        \brief 
+      */
+      TEQTAFEXPORT QString GetDateTime();
+
+      /*!
+        \brief 
+        \param 
+      */
+      TEQTAFEXPORT void SetDateTime(const QString& dateTime);
+
+
+      /*!
+        \brief Returns the default path for output of configuration file.
+      */
+      TEQTAFEXPORT QString GetDefaultConfigFileOutputDir();
+	  
+      TEQTAFEXPORT std::vector<std::string> GetPluginsFiles();
+      
+      TEQTAFEXPORT std::vector<std::string> GetPluginsNames(const std::vector<std::string>& plgFiles);
+
+      /*!
+        \brief Changes the user settings file location.
+
+        \param fileName The new file to be generated.
+
+        \param removeOlder Flag information the remove older settings file. If true remove the older file, otherwise maintain it.
+      */
+      TEQTAFEXPORT void UpdateUserSettingsFile(const QString& fileName, const bool& removeOlder = true);
+
+      /*!
+        \brief Changes the application plugins file location.
+
+        \param fileName The new file to be generated.
+
+        \param removeOlder Flag information the remove older application plugins file. If true remove the older file, otherwise maintain it.
+      */
+      TEQTAFEXPORT void UpdateAppPluginsFile(const QString& fileName, const bool& removeOlder = true);
+      
+      /*!
+        \brief Writes the configuration file. It updates the application settings.
+
+        \param fileName Complete path to the configuration file. 
+
+        \param appName Name of the application.
+
+        \param appTitle Title to be presented on the main window.
+      */
+      //TEQTAFEXPORT void WriteConfigFile(const QString& fileName, const QString& appName, const QString& appTitle, const bool& writeOnlyConfig = false);
+
+      /*!
+        \brief Writes the user settings file.
+      */
+      //TEQTAFEXPORT void WriteUserSettingsFile(const QString& fileName);
+
+      /*!
+        \brief Writes the application plugins file.
+      */
+      //TEQTAFEXPORT void WriteAppPluginsFile(const QString& fileName);
+
+      /*!
+        \brief Writes the default project file.
+      */
+      TEQTAFEXPORT void WriteDefaultProjectFile(const QString& fileName);
+
+      /*!
+        \brief Returns the date and time of generated binary.
+      */
+      TEQTAFEXPORT QString GetGenerationDate();
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

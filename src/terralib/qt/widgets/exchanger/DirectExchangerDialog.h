@@ -34,7 +34,7 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QDialog>
+#include <QDialog>
 
 namespace Ui { class DirectExchangerDialogForm; }
 
@@ -62,6 +62,13 @@ namespace te
             \param layers   List of AbstractLayerPtr
           */
           void setLayers(std::list<te::map::AbstractLayerPtr> layers);
+
+          /*!
+            \brief Function used to set the last data source used
+
+            \param dataSource   Last data source name used
+          */
+          void setLastDataSource(std::string dataSource);
 
         
         protected:
@@ -96,6 +103,8 @@ namespace te
           std::list<te::map::AbstractLayerPtr> m_layers;
 
           std::string m_outputDataSourceType;
+
+          std::string m_lastDsType;
 
           bool m_exchangeToFile;
       };

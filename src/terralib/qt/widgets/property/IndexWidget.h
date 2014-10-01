@@ -31,7 +31,7 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 namespace Ui { class IndexWidgetForm; }
 
@@ -71,6 +71,8 @@ namespace te
             \return The caller of this method will TAKE the ownership of the returned Index pointer.
           */
           te::da::Index* getIndex();
+
+          void setIndex(te::da::Index* idx);
 
           /*!
             \brief Check the interface parameters

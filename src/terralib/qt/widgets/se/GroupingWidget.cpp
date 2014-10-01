@@ -36,8 +36,13 @@
 #include "../../../maptools/GroupingAlgorithms.h"
 #include "../../../maptools/GroupingItem.h"
 #include "../../../maptools/Utils.h"
+#include "../../../se/SymbolizerColorFinder.h"
 #include "../../../se/Utils.h"
 #include "../colorbar/ColorBar.h"
+#include "../colorbar/ColorCatalogWidget.h"
+#include "../se/LineSymbolizerWidget.h"
+#include "../se/PointSymbolizerWidget.h"
+#include "../se/PolygonSymbolizerWidget.h"
 #include "../se/SymbologyPreview.h"
 #include "GroupingWidget.h"
 #include "ui_GroupingWidgetForm.h"
@@ -46,22 +51,25 @@
 #include <cassert>
 
 // QT
-#include <QtGui/QMessageBox>
+#include <QDialogButtonBox>
+#include <QMessageBox>
 
 #define MAX_SLICES 200
 #define PRECISION 15
 #define NO_TITLE "No Value"
 
+Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
 te::qt::widgets::GroupingWidget::GroupingWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
-    m_ui(new Ui::GroupingWidgetForm)
+    m_ui(new Ui::GroupingWidgetForm),
+    m_cb(0)
 {
   m_ui->setupUi(this);
 
   QGridLayout* l = new QGridLayout(m_ui->m_colorBarWidget);
   l->setContentsMargins(0,0,0,0);
-  m_colorBar = new  te::qt::widgets::colorbar::ColorBar(m_ui->m_colorBarWidget);
+  m_colorBar = new  te::qt::widgets::ColorCatalogWidget(m_ui->m_colorBarWidget);
   l->addWidget(m_colorBar);
 
 //connects
@@ -69,29 +77,35 @@ te::qt::widgets::GroupingWidget::GroupingWidget(QWidget* parent, Qt::WindowFlags
   connect(m_ui->m_typeComboBox, SIGNAL(activated(int)), this, SLOT(onTypeComboBoxActivated(int)));
   connect(m_ui->m_attrComboBox, SIGNAL(activated(int)), this, SLOT(onAttrComboBoxActivated(int)));
   connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyPushButtonClicked()));
+  connect(m_ui->m_tableWidget, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(onTableWidgetItemDoubleClicked(QTableWidgetItem*)));
+  connect(m_ui->m_importPushButton, SIGNAL(clicked()), this, SLOT(onImportPushButtonClicked()));
 
+  //m_importGroupingGroupBox
   initialize();
 }
 
 te::qt::widgets::GroupingWidget::~GroupingWidget()
 {
+  delete m_cb;
+
   te::common::FreeContents(m_legend);
   m_legend.clear();
 }
 
-void te::qt::widgets::GroupingWidget::setLayer(te::map::AbstractLayerPtr layer)
-{
-  m_layer = layer;
-
-  //set data type
-  setDataSetType();
-
-  //set grouping
-  setGrouping();
-}
-
 std::auto_ptr<te::map::Grouping> te::qt::widgets::GroupingWidget::getGrouping()
 {
+  if(m_ui->m_importGroupBox->isChecked())
+  {
+    QVariant varLayer = m_ui->m_layersComboBox->itemData(m_ui->m_layersComboBox->currentIndex(), Qt::UserRole);
+    te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+
+    te::map::Grouping* ref = layer->getGrouping();
+
+    std::auto_ptr<te::map::Grouping> group(new te::map::Grouping(*ref));
+
+    return group;
+  }
+
   std::string attr = m_ui->m_attrComboBox->currentText().toStdString();
   int attrIdx =  m_ui->m_attrComboBox->currentIndex();
   int attrType = m_ui->m_attrComboBox->itemData(attrIdx).toInt();
@@ -124,11 +138,8 @@ std::auto_ptr<te::map::Grouping> te::qt::widgets::GroupingWidget::getGrouping()
 void te::qt::widgets::GroupingWidget::initialize()
 {
   // create color bar
-  m_cb = new te::color::ColorBar(te::color::RGBAColor(255, 0, 0, TE_OPAQUE), te::color::RGBAColor(0, 0, 0, TE_OPAQUE), 256);
-
-  m_colorBar->setHeight(20);
-  m_colorBar->setColorBar(m_cb);
-  m_colorBar->setScaleVisible(false);
+  m_colorBar->getColorBar()->setHeight(20);
+  m_colorBar->getColorBar()->setScaleVisible(false);
 
   // fill grouping type combo box
   m_ui->m_typeComboBox->addItem(tr("Equal Steps"), te::map::EQUAL_STEPS);
@@ -158,12 +169,16 @@ void te::qt::widgets::GroupingWidget::initialize()
 
   //adjust table
   m_ui->m_tableWidget->resizeColumnsToContents();
+#if (QT_VERSION >= 0x050000)
+  m_ui->m_tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+#else
   m_ui->m_tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+#endif
 
   m_manual = false;
 }
 
-void te::qt::widgets::GroupingWidget::updateUi()
+void te::qt::widgets::GroupingWidget::updateUi(bool loadColorBar)
 {
   disconnect(m_ui->m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(onTableWidgetItemChanged(QTableWidgetItem*)));
 
@@ -196,6 +211,26 @@ void te::qt::widgets::GroupingWidget::updateUi()
     m_ui->m_tableWidget->setHorizontalHeaderLabels(list);
   }
 
+  te::color::ColorBar* cb = 0;
+
+  if(loadColorBar)
+  {
+    if(!m_legend.empty() && !m_legend[0]->getSymbolizers().empty() && !m_legend[m_legend.size() - 1]->getSymbolizers().empty())
+    {
+      te::se::SymbolizerColorFinder scf;
+
+      scf.find(m_legend[0]->getSymbolizers()[0]);
+      te::color::RGBAColor initColor = scf.getColor();
+
+      scf.find(m_legend[m_legend.size() - 1]->getSymbolizers()[0]);
+      te::color::RGBAColor endColor = scf.getColor();
+
+      cb = new te::color::ColorBar(initColor, endColor, 256);
+    }
+  }
+
+  int count = 0;
+
   for(std::size_t t = 0; t < m_legend.size(); ++t)
   {
     te::map::GroupingItem* gi = m_legend[t];
@@ -220,6 +255,27 @@ void te::qt::widgets::GroupingWidget::updateUi()
       m_ui->m_tableWidget->setItem(newrow, 1, item);
     }
 
+    if(loadColorBar)
+    {
+      if(count != 0 && count != m_legend.size() - 1)
+      {
+        double pos = (1. / (m_legend.size() - 1)) * count;
+
+        if(!gi->getSymbolizers().empty())
+        {
+          te::se::SymbolizerColorFinder scf;
+
+          scf.find(gi->getSymbolizers()[0]);
+
+          te::color::RGBAColor color = scf.getColor();
+
+          if(cb)
+            cb->addColor(color, pos);
+        }
+      }
+    }
+
+    ++count;
 
     if(type == te::map::EQUAL_STEPS || type == te::map::QUANTIL || type == te::map::STD_DEVIATION)
     {
@@ -264,8 +320,22 @@ void te::qt::widgets::GroupingWidget::updateUi()
     }
   }
 
+  if(cb)
+  {
+    disconnect(m_colorBar, SIGNAL(colorBarChanged()), this, SLOT(onColorBarChanged()));
+
+    te::qt::widgets::colorbar::ColorBar* cbW = m_colorBar->getColorBar();
+    cbW->setColorBar(cb);
+
+    connect(m_colorBar, SIGNAL(colorBarChanged()), this, SLOT(onColorBarChanged()));
+  }
+
   m_ui->m_tableWidget->resizeColumnsToContents();
+#if (QT_VERSION >= 0x050000)
+  m_ui->m_tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+#else
   m_ui->m_tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+#endif
 
   connect(m_ui->m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(onTableWidgetItemChanged(QTableWidgetItem*)));
 }
@@ -279,6 +349,13 @@ void te::qt::widgets::GroupingWidget::setGrouping()
 {
   te::map::Grouping* grouping = m_layer->getGrouping();
 
+  setGrouping(grouping);
+
+  emit applyPushButtonClicked();
+}
+
+void te::qt::widgets::GroupingWidget::setGrouping(te::map::Grouping* grouping)
+{
   if(!grouping)
     return;
 
@@ -290,6 +367,9 @@ void te::qt::widgets::GroupingWidget::setGrouping()
     if(type == m_ui->m_typeComboBox->itemData(i).toInt())
     {
       m_ui->m_typeComboBox->setCurrentIndex(i);
+
+      onTypeComboBoxActivated(i);
+
       break;
     }
   }
@@ -332,7 +412,9 @@ void te::qt::widgets::GroupingWidget::setGrouping()
     m_legend.push_back(gi);
   }
 
-  updateUi();
+  updateUi(true);
+
+  onApplyPushButtonClicked();
 }
 
 void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
@@ -362,6 +444,8 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
   std::string mean = "";
 
   int nullValues = 0;
+
+  bool update = false;
 
   if(type == te::map::EQUAL_STEPS)
   {
@@ -398,6 +482,8 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
     buildSymbolizer(mean);
 
     createDoubleNullGroupingItem(nullValues);
+
+    update = false;
   }
   else if(type == te::map::UNIQUE_VALUE) 
   {
@@ -412,7 +498,7 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
     createStringNullGroupingItem(nullValues);
   }
 
-  updateUi();
+  updateUi(update);
 
   m_manual = false;
 
@@ -508,6 +594,95 @@ void  te::qt::widgets::GroupingWidget::onTableWidgetItemChanged(QTableWidgetItem
         m_manual = true;
       }
     }
+  }
+}
+
+void te::qt::widgets::GroupingWidget::onTableWidgetItemDoubleClicked(QTableWidgetItem* item)
+{
+  int index = m_ui->m_typeComboBox->currentIndex();
+  int type = m_ui->m_typeComboBox->itemData(index).toInt();
+
+  int curRow = m_ui->m_tableWidget->currentRow();
+  int curCol = m_ui->m_tableWidget->currentColumn();
+
+  if(curCol == 0)
+  {
+    te::map::GroupingItem* gi = m_legend[curRow];
+
+    std::vector<te::se::Symbolizer*> symbVec = gi->getSymbolizers();
+
+    QDialog* dialog = new QDialog(this);
+    QBoxLayout* layout = new QBoxLayout(QBoxLayout::TopToBottom, dialog);
+
+    QDialogButtonBox* bbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dialog);
+
+    QWidget* symbWidget = 0;
+
+    if(symbVec[0]->getType() == "PolygonSymbolizer")
+    {
+      symbWidget = new te::qt::widgets::PolygonSymbolizerWidget(dialog);
+      te::qt::widgets::PolygonSymbolizerWidget* polygonSymbolizerWidget = (te::qt::widgets::PolygonSymbolizerWidget*)symbWidget;
+      polygonSymbolizerWidget->setSymbolizer((te::se::PolygonSymbolizer*)symbVec[0]);
+    }
+    else if(symbVec[0]->getType() == "LineSymbolizer")
+    {
+      symbWidget = new te::qt::widgets::LineSymbolizerWidget(dialog);
+      te::qt::widgets::LineSymbolizerWidget* lineSymbolizerWidget = (te::qt::widgets::LineSymbolizerWidget*)symbWidget;
+      lineSymbolizerWidget->setSymbolizer((te::se::LineSymbolizer*)symbVec[0]);
+    }
+    else if(symbVec[0]->getType() == "PointSymbolizer")
+    {
+      symbWidget = new te::qt::widgets::PointSymbolizerWidget(dialog);
+      te::qt::widgets::PointSymbolizerWidget* pointSymbolizerWidget = (te::qt::widgets::PointSymbolizerWidget*)symbWidget;
+      pointSymbolizerWidget->setSymbolizer((te::se::PointSymbolizer*)symbVec[0]);
+    }
+
+    layout->addWidget(symbWidget);
+    layout->addWidget(bbox);
+
+    connect(bbox, SIGNAL(accepted()), dialog, SLOT(accept()));
+    connect(bbox, SIGNAL(rejected()), dialog, SLOT(reject()));
+
+    if(dialog->exec() == QDialog::Rejected)
+    {
+      delete dialog;
+      return;
+    }
+
+    if(symbVec[0]->getType() == "PolygonSymbolizer")
+    {
+      symbVec.clear();
+      te::qt::widgets::PolygonSymbolizerWidget* polygonSymbolizerWidget = (te::qt::widgets::PolygonSymbolizerWidget*)symbWidget;
+      symbVec.push_back(polygonSymbolizerWidget->getSymbolizer());
+    }
+    else if(symbVec[0]->getType() == "LineSymbolizer")
+    {
+      symbVec.clear();
+      te::qt::widgets::LineSymbolizerWidget* lineSymbolizerWidget = (te::qt::widgets::LineSymbolizerWidget*)symbWidget;
+      symbVec.push_back(lineSymbolizerWidget->getSymbolizer());
+    }
+    else if(symbVec[0]->getType() == "PointSymbolizer")
+    {
+      symbVec.clear();
+      te::qt::widgets::PointSymbolizerWidget* pointSymbolizerWidget = (te::qt::widgets::PointSymbolizerWidget*)symbWidget;
+      symbVec.push_back(pointSymbolizerWidget->getSymbolizer());
+    }
+
+    gi->setSymbolizers(symbVec);
+
+    QPixmap pix = te::qt::widgets::SymbologyPreview::build(symbVec, QSize(24, 24));
+    QIcon icon(pix);
+
+    QTableWidgetItem* newItem = new QTableWidgetItem(icon, "");
+    newItem->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+
+    m_ui->m_tableWidget->setItem(curRow, 0, newItem);
+
+    delete dialog;
+
+    updateUi(true);
+
+    emit applyPushButtonClicked();
   }
 }
 
@@ -642,6 +817,10 @@ int te::qt::widgets::GroupingWidget::getGeometryType()
 
 void te::qt::widgets::GroupingWidget::buildSymbolizer(std::string meanTitle)
 {
+  delete m_cb;
+
+  m_cb = m_colorBar->getColorBar()->getColorBar();
+
   int legendSize = m_legend.size();
 
   std::vector<te::color::RGBAColor> colorVec;
@@ -767,4 +946,81 @@ void te::qt::widgets::GroupingWidget::listAttributes()
     if(idx != -1)
       m_ui->m_attrComboBox->setCurrentIndex(idx);
   }
+}
+
+void te::qt::widgets::GroupingWidget::setLayers(te::map::AbstractLayerPtr selectedLayer, std::vector<te::map::AbstractLayerPtr> allLayers)
+{
+  m_layer = selectedLayer;
+
+  //set data type
+  setDataSetType();
+
+  //set grouping
+  setGrouping();
+
+  for(std::size_t i = 0; i < allLayers.size(); ++i)
+  {
+    if(!allLayers[i]->isValid())
+      continue;
+
+    std::auto_ptr<te::da::DataSetType> dt(allLayers[i]->getSchema());
+
+    if(dt->hasGeom() && allLayers[i]->getGrouping() && allLayers[i]->getId() != selectedLayer->getId())
+    {
+      m_ui->m_layersComboBox->addItem(allLayers[i]->getTitle().c_str(), QVariant::fromValue(allLayers[i]));
+    }
+  }
+}
+
+void te::qt::widgets::GroupingWidget::onImportPushButtonClicked()
+{
+  if(m_ui->m_layersComboBox->currentText() == "")
+  {
+    QMessageBox::warning(this, tr("Grouping"), tr("There are no other layers with Grouping!"));
+    return;
+  }
+
+  if(m_manual)
+  {
+    int reply = QMessageBox::question(this, tr("Grouping"), tr("Manual changes will be lost. Continue?"), QMessageBox::Yes | QMessageBox::Cancel);
+
+    if(reply != QMessageBox::Yes)
+      return;
+  }
+
+  QVariant varLayer = m_ui->m_layersComboBox->itemData(m_ui->m_layersComboBox->currentIndex(), Qt::UserRole);
+  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+
+  te::map::Grouping* ref = layer->getGrouping();
+
+  std::auto_ptr<te::da::DataSetType> dt = m_layer->getSchema();
+
+  std::vector<te::dt::Property*> props = dt->getProperties();
+
+  bool isValid = false;
+  for(std::size_t i = 0; i < props.size(); ++i)
+  {
+    te::dt::Property* prop = props[i];
+    if((prop->getName() == ref->getPropertyName()) && (prop->getType() == ref->getPropertyType()))
+    {
+      isValid = true;
+      break;
+    }
+  }
+
+  if(!isValid)
+  {
+    QMessageBox::warning(this, tr("Grouping"), tr("In existing layers, there is no grouping that can be imported!"));
+    return;
+  }
+
+  te::map::Grouping* newGrouping = new te::map::Grouping(*ref);
+
+  setGrouping(newGrouping);
+
+  updateUi(true);
+
+  m_manual = false;
+
+  emit applyPushButtonClicked();
 }

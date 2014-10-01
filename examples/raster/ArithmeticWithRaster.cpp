@@ -26,23 +26,25 @@ void ArithmeticWithRaster()
 
 // set raster names
     std::map<std::string, std::string> sri, srndvi, srndvin, srden;
-    sri["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
-    srndvi["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_ndvi.tif";
-    srndvin["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_ndvi_normalized.tif";
-    std::string base_path = ""TE_DATA_EXAMPLE_DIR"/data/rasters/";
-    srden["URI"] = "ndvi_den.tif"; // temporary raster dataset
+    sri["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
+    srndvi["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_ndvi.tif";
+    srndvin["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_ndvi_normalized.tif";
+    std::string base_path = ""TERRALIB_DATA_DIR"/rasters/";
 
 // open input raster (band 0 = Red, band 1 = IRed, band 2 = Blue)
     te::rst::Raster* ri = te::rst::RasterFactory::open(sri);
 
-// create temporary raster
+// create temporary raster using in memory driver
     te::rst::Grid* gden = new te::rst::Grid(*ri->getGrid());
     std::vector<te::rst::BandProperty*> bdsden;
     bdsden.push_back(new te::rst::BandProperty(0, te::dt::FLOAT_TYPE, "ndvi den"));
-    te::rst::RasterProperty* rpden = new te::rst::RasterProperty(gden, bdsden, srden);
-
-    te::da::DataSetType* dstpden = new te::da::DataSetType(srden["URI"]);
-    dstpden->add(rpden);
+    bdsden[0]->m_blkh = gden->getNumberOfRows();
+    bdsden[0]->m_blkw = gden->getNumberOfColumns();
+    bdsden[0]->m_nblocksx = 1;
+    bdsden[0]->m_nblocksy = 1;
+    std::map<std::string, std::string> deninfo;
+    deninfo["FORCE_MEM_DRIVER"] = "TRUE";
+    te::rst::Raster* rden = te::rst::RasterFactory::make(gden, bdsden, deninfo);
 
 // access a raster datasource to create temporary raster
     std::map<std::string, std::string> connInfoRaster;
@@ -50,18 +52,7 @@ void ArithmeticWithRaster()
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
     ds->setConnectionInfo(connInfoRaster);
     ds->open();
-
     std::auto_ptr<te::da::DataSourceTransactor> tr = ds->getTransactor();
-
-// create temporary raster using data set type persistence
-    tr->createDataSet(dstpden, std::map<std::string, std::string> ());
-
-// access the temporary data set
-    std::auto_ptr<te::da::DataSet> dsden = tr->getDataSet(srden["URI"], te::common::FORWARDONLY, false, te::common::RWAccess);
-
-    std::size_t rpos = te::da::GetFirstPropertyPos(dsden.get(), te::dt::RASTER_TYPE);
-    te::gdal::Raster* rden = static_cast<te::gdal::Raster*> (dsden->getRaster(rpos).release());
-    //te::gdal::Raster* rden = static_cast<te::gdal::Raster*> (dsden->getRaster());
 
 // create ndvi raster
     te::rst::Grid* gndvi = new te::rst::Grid(*ri->getGrid());
@@ -94,32 +85,31 @@ void ArithmeticWithRaster()
       }
     *ndenBand += *redBand;
 
-// calculate ndvi = (IRed - Red) / (IRed + Red)
+// calculate ndvi [-1, +1] = (IRed - Red) / (IRed + Red)
     *rndvi /= *rden;
 
 // show ndvi status
+    std::cout << "NDVI created:" << std::endl;
     std::cout << rndvi->toString();
 
-// create normalized ndvi [-1,1] -> [0,255] for visualization
+// create normalized ndvi [-1, +1] -> [0,255] for visualization
     te::rst::Grid* gndvin = new te::rst::Grid(*ri->getGrid());
     std::vector<te::rst::BandProperty*> bdsndvin;
-    bdsndvin.push_back(new te::rst::BandProperty(0, te::dt::CHAR_TYPE));
+    bdsndvin.push_back(new te::rst::BandProperty(0, te::dt::DOUBLE_TYPE));
     te::rst::Raster* rndvin = te::rst::RasterFactory::make(gndvin, bdsndvin, srndvin);
+    te::rst::Copy(*rndvi, *rndvin);
+    std::complex<double> ndvimin = rndvi->getBand(0)->getMinValue();
+    std::complex<double> ndvimax = 255.0 / (rndvi->getBand(0)->getMaxValue() - ndvimin);
 
-    double ndvimin = rndvi->getBand(0)->getMinValue().real();
-    double ndvimax = 255 / (rndvi->getBand(0)->getMaxValue().real() - ndvimin);
-    for (unsigned r = 0; r < rndvi->getNumberOfRows(); r++)
-      for (unsigned c = 0; c < rndvi->getNumberOfColumns(); c++)
-      {
-        rndvi->getValue(c, r, value, 0);
-        value-=ndvimin;
-        value*=ndvimax;
-        rndvin->setValue(c, r, value, 0);
-      }
+    *rndvin -= ndvimin;
+    *rndvin *= ndvimax;
+
+// show normalized ndvi status
+    std::cout << "Normalized NDVI created:" << std::endl;
+    std::cout << rndvin->toString();
 
 // remove temporary raster using data set type persistence
     delete rden;
-    tr->dropDataSet(base_path + srden["URI"]);
 
 // clean up
     delete ri;
@@ -130,10 +120,10 @@ void ArithmeticWithRaster()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in ArithmetichWithRaster(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in ArithmetichWithRaster(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in ArithmetichWithRaster()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in ArithmetichWithRaster()!" << std::endl;
   }
 }

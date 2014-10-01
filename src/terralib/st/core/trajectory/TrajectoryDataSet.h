@@ -46,6 +46,7 @@ namespace te
   namespace st
   {
     // Forward declarations
+    class TrajectoryDataSetLayer;
     class ObservationDataSet;
     class Trajectory;
     class AbstractTrajectoryInterp; 
@@ -70,6 +71,8 @@ namespace te
     */
     class TESTEXPORT TrajectoryDataSet : public boost::noncopyable 
     {
+      friend class TrajectoryDataSetLayer;
+
       public:
 
         /*! \name Constructor */
@@ -290,7 +293,7 @@ namespace te
                 the internal cursor will point to the end of the DataSet. 
         */
         std::auto_ptr<Trajectory>  getTrajectory();
-        
+
         /*!
           \brief It returns the trajectory geometry property.
 
@@ -311,6 +314,17 @@ namespace te
                
         /*! \brief Virtual destructor. */
         virtual ~TrajectoryDataSet(); 
+
+      protected:
+
+        /*!
+          \brief It releases all internal pointers, returning its internal DataSet and invalidating itself
+          \return A pointer to the internal DataSet that contains the observations. 
+
+           \note This method is used when the user is interested only in its internal DataSet 
+           \note The caller will take the ownership of the returned pointer.
+        */
+        std::auto_ptr<te::da::DataSet> release();
 
       private:
         std::auto_ptr<ObservationDataSet>   m_obsDs;    //!< The data set that contains the trajectory observations 

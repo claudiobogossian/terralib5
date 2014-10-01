@@ -219,7 +219,7 @@
               <item>
                <widget class="QLabel" name="m_charsetLabel">
                 <property name="text">
-                 <string>Template</string>
+                 <string>PostGIS Template</string>
                 </property>
                </widget>
               </item>

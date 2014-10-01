@@ -59,26 +59,20 @@ int main(int /*argc*/, char** /*argv*/)
     Filter2Query();
 
     // Creates a set of Layers and Styles.
-    DrawStyledLayers();
+    //DrawStyledLayers();
 
     // Creates a set of raster Layers and Styles.
     DrawRasterStyledLayers();
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried: " << e.what() << std::endl;
-
-    std::cout << "Press Enter to exit..." << std::endl;
-    std::cin.get();
+    std::cout << std::endl << "An exception has occurred: " << e.what() << std::endl;
 
     return EXIT_FAILURE;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried!" << std::endl;
-
-    std::cout << "Press Enter to exit..." << std::endl;
-    std::cin.get();
+    std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
 
     return EXIT_FAILURE;
   }
@@ -86,9 +80,6 @@ int main(int /*argc*/, char** /*argv*/)
   te::plugin::PluginManager::getInstance().unloadAll();
   
   TerraLib::getInstance().finalize();
-
-  std::cout << "Press Enter to exit..." << std::endl;
-  std::cin.get();
 
   return EXIT_SUCCESS;
 }

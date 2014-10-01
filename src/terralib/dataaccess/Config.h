@@ -42,64 +42,29 @@
 #define TE_DATAACCESS_MODULE_NAME "te.dataaccess"
 
 /*!
-  \def TE_USE_CONNECTION_POOL_MANAGER
+  \def TERRALIB_USE_CONNECTION_POOL_MANAGER
   
   \brief Set this macro to 1 if you want to use the TerraLib connection pool manager.
 */
-#define TE_USE_CONNECTION_POOL_MANAGER 1
+#define TERRALIB_USE_CONNECTION_POOL_MANAGER 1
 
 /*!
-  \def TE_INITIALIZE_CONNECTION_POOL_MANAGER
+  \def TERRALIB_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER
   
   \brief Set this macro to 1 if you want TerraLib to automatically initialize a thread for managing all the connection pools registered in the system.
 */
-#if TE_USE_CONNECTION_POOL_MANAGER
-  #define TE_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER 1
+#if TERRALIB_USE_CONNECTION_POOL_MANAGER
+  #define TERRALIB_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER 1
 #else
-  #define TE_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER 0
+  #define TERRALIB_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER 0
 #endif
 
 /*!
-  \def TE_POOL_DEFAULT_MONITORING_TIME
+  \def TERRALIB_POOL_DEFAULT_MONITORING_TIME
   
   \brief This sets the default monitoring time in seconds for the connection pool manager.
 */
-#define TE_POOL_DEFAULT_MONITORING_TIME 60
-
-//@}
-
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
-  \def TE_DATAACCESS_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib DataAccess module.
-*/
-#define TE_DATAACCESS_TEXT_DOMAIN "tedataaccess"
-
-/*!
-  \def TE_DATAACCESS_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
-*/
-#define TE_DATAACCESS_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TR_DATAACCESS
-
-  \brief It marks a string in order to get translated. This is a special mark used in the DataAccess module of TerraLib.
-*/
-#define TR_DATAACCESS(message) TR(message, TE_DATAACCESS_TEXT_DOMAIN)
-
-/*!
-  \def TR_PLURAL_DATAACCESS
-
-  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the DataAccess module of TerraLib. 
-*/
-#define TR_PLURAL_DATAACCESS(message1, message2, n) TR_PLURAL(TE_DATAACCESS_TEXT_DOMAIN, message1, message2, n)
+#define TERRALIB_POOL_DEFAULT_MONITORING_TIME 60
 
 //@}
 

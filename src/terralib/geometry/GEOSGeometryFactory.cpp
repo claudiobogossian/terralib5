@@ -26,7 +26,7 @@
 // TerraLib
 #include "GEOSGeometryFactory.h"
 
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
 const geos::geom::GeometryFactory* te::gm::GEOSGeometryFactory::sm_gFactory(0);
 
 void te::gm::GEOSGeometryFactory::initialize()

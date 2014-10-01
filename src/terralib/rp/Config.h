@@ -26,43 +26,64 @@
 #ifndef __TERRALIB_RP_INTERNAL_CONFIG_H
 #define __TERRALIB_RP_INTERNAL_CONFIG_H
 
+/*!
+  \defgroup rp_class Classification
+  \brief Algorithms to detect patterns in raster regions using different methods.
+  \ingroup rp
+*/
+
+/*!
+  \defgroup rp_aux Auxiliary classes
+  \brief Raster processing auxiliary classes.
+  \ingroup rp
+*/
+
+/*!
+  \defgroup rp_func Auxiliary functions.
+  \brief Raster processing auxiliary functions.
+  \ingroup rp
+*/
+
+/*!
+  \defgroup rp_enh Enhancement
+  \brief Raster enhancement algorithms.
+  \ingroup rp
+*/
+
+/*!
+  \defgroup rp_mos Mosaic
+  \brief Algorithms to merge two or more rasters into a single one.
+  \ingroup rp
+*/
+
+/*!
+  \defgroup rp_fus Fusion
+  \brief Algorithms to combine pixel information from different sensors to obtain better spatial or radiometric resolutions.
+  \ingroup rp
+*/
+
+/*!
+  \defgroup rp_gen General purpose
+  \brief General pupose raster processing algorithms.
+  \ingroup rp
+*/
+
+/*!
+  \defgroup rp_seg Segmentation
+  \brief Techniques for splitting one rasters into its components as homogeneous regions.
+  \ingroup rp
+*/
+
+/*!
+  \defgroup rp_match Matching
+  \brief Techniques to create tie-points between rasters by matching and correlating homologous regions.
+  \ingroup rp
+*/
+
 // TerraLib
 #include "../Config.h"
 
 #define TE_RP_MODULE_NAME "te.rasterprocessing"
-
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
-  \def TE_RP_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib Raster Processing module.
- */
-#define TE_RP_TEXT_DOMAIN "terasterprocessing"
-
-/*!
-  \def TE_RP_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
- */
-#define TE_RP_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TR_RP
-
-  \brief It marks a string in order to get translated. This is a special mark used in the Raster Processing module of TerraLib.
- */
-#define TR_RP(message) TR(message, TE_RP_TEXT_DOMAIN)
-
-//@}
-
-/** @name DLL/LIB Module
- *  Flags for building TerraLib as a DLL or as a Static Library
- */
-//@{
 
 /*!
   \def TERPEXPORT
@@ -73,25 +94,22 @@
 
   \note If you want to compile TerraLib as an Static Library under Windows, remember to insert the TERPEXPORT flag into the project list of defines.
  */
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+#ifdef WIN32
 
-  #if TE_COMPILER == TE_COMPILERCODE_VCPLUSPLUS
-    #pragma warning( disable : 4251 )
-    #pragma warning( disable : 4275 )
-  #endif
-
-  #ifdef TERPSTATIC
-    #define TERPEXPORT                          // Don't need to export/import... it is a static library
-  #elif TERPDLL
-    #define TERPEXPORT  __declspec(dllexport)   // export DLL information
-  #else
-    #define TERPEXPORT  __declspec(dllimport)   // import DLL information
-  #endif 
-#else
-  #define TERPEXPORT
+#ifdef _MSC_VER
+#pragma warning( disable : 4251 )
 #endif
 
-//@}        
+#ifdef TERPSTATIC
+#define TERPEXPORT                          // Don't need to export/import... it is a static library
+#elif TERPDLL
+#define TERPEXPORT  __declspec(dllexport)   // export DLL information
+#else
+#define TERPEXPORT  __declspec(dllimport)   // import DLL information
+#endif
+#else
+#define TERPEXPORT
+#endif
 
 #endif  // __TERRALIB_RP_INTERNAL_CONFIG_H
 

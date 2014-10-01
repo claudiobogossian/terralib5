@@ -27,7 +27,7 @@
 #define __TERRALIB_VP_CORE_INTERNAL_MODULE_H
 
 // TerraLib
-#include "../../common/Singleton.h"
+#include "../common/Singleton.h"
 
 namespace te
 {

@@ -48,8 +48,11 @@
 #include <boost/format.hpp>
 #include <boost/filesystem.hpp>
 
-void te::plugin::PluginManager::getPlugins(std::vector<std::string>& plugins) const
+std::vector<std::string>
+te::plugin::PluginManager::getPlugins() const
 {
+  std::vector<std::string> plugins;
+  
 // retrieve the list of loaded plugins
   for(std::vector<AbstractPlugin*>::const_iterator it = m_plugins.begin(); it != m_plugins.end(); ++it)
     plugins.push_back((*it)->getInfo().m_name);
@@ -61,6 +64,8 @@ void te::plugin::PluginManager::getPlugins(std::vector<std::string>& plugins) co
 // retrieve the list of broken plugins
   for(boost::ptr_vector<PluginInfo>::const_iterator it = m_brokenPlugins.begin(); it != m_brokenPlugins.end(); ++it)
     plugins.push_back(it->m_name);
+  
+  return plugins;
 }
 
 const te::plugin::PluginInfo& te::plugin::PluginManager::getPlugin(const std::string& name) const
@@ -204,69 +209,19 @@ void te::plugin::PluginManager::load(boost::ptr_vector<PluginInfo>& plugins, con
   }
 
   if(hasException || !m_brokenPlugins.empty())
-    throw Exception(TR_PLUGIN("\n\nPlugins not loaded:" ) + exceptionPlugins);
+    throw Exception(TE_TR("\n\nPlugins not loaded:" ) + exceptionPlugins);
 }
 
 void te::plugin::PluginManager::load(const PluginInfo& pInfo, const bool start)
 {
-  PluginInfo internalPInfo = pInfo;
-  
-  // If no folder was supplied, try to find the plugin folder using the finders
-  
-  if( internalPInfo.m_folder.empty() ||
-    (!boost::filesystem::is_directory(internalPInfo.m_folder)) )
-  {
-    boost::ptr_vector<PluginInfo> pluginsInfos;
-    
-    if(m_finders.empty())
-    {
-      DefaultFinder f;
-      f.getPlugins(pluginsInfos);
-      
-      for( boost::ptr_vector<PluginInfo>::size_type pIdx = 0; pIdx <
-        pluginsInfos.size() ; ++pIdx )
-      {
-        if( pluginsInfos[ pIdx ].m_name == internalPInfo.m_name )
-        {
-          internalPInfo.m_folder = pluginsInfos[ pIdx ].m_folder;
-          break;
-        }
-      }      
-    }
-    else
-    {
-      const std::size_t nfinders = m_finders.size();
-
-      for(std::size_t i = 0; i < nfinders; ++i)
-      {
-        pluginsInfos.clear();
-        
-        m_finders[i]->getPlugins(pluginsInfos);
-        
-        for( boost::ptr_vector<PluginInfo>::size_type pIdx = 0; pIdx <
-          pluginsInfos.size() ; ++pIdx )
-        {
-          if( pluginsInfos[ pIdx ].m_name == internalPInfo.m_name )
-          {
-            internalPInfo.m_folder = pluginsInfos[ pIdx ].m_folder;
-            i = nfinders;
-            break;
-          }
-        }        
-      }
-    }
-  }
-  
-  // Checking if is already loaded
-  
-  if(isLoaded(internalPInfo.m_name))
-    throw Exception((boost::format("Plugin %1% is already loaded") % internalPInfo.m_name).str());
+  if(isLoaded(pInfo.m_name))
+    throw Exception((boost::format("Plugin %1% is already loaded") % pInfo.m_name).str());
 
 // check if required plugins is already loaded
-  if(!isLoaded(internalPInfo.m_requiredPlugins))
+  if(!isLoaded(pInfo.m_requiredPlugins))
   {
-    moveToBrokenList(internalPInfo);
-    throw Exception(TR_PLUGIN("A required plugin is not loaded!"));
+    moveToBrokenList(pInfo);
+    throw Exception(TE_TR("A required plugin is not loaded!"));
   }
 
   std::auto_ptr<AbstractPlugin> plugin;
@@ -279,25 +234,25 @@ void te::plugin::PluginManager::load(const PluginInfo& pInfo, const bool start)
   try
   {
 // if everything is ready for loading the plugin let's call its engine
-    std::auto_ptr<AbstractPluginEngine> engine(PluginEngineFactory::make(internalPInfo.m_engine));
+    std::auto_ptr<AbstractPluginEngine> engine(PluginEngineFactory::make(pInfo.m_engine));
 
     if(engine.get() == 0)
-      throw Exception((boost::format("Could not determine plugin's language type for %1%!") % internalPInfo.m_name).str());
+      throw Exception((boost::format("Could not determine plugin's language type for %1%!") % pInfo.m_name).str());
 
-    plugin.reset(engine->load(internalPInfo));
+    plugin.reset(engine->load(pInfo));
 
     if(plugin.get() == 0)
-      throw Exception((boost::format("Could not load plugin %1%!") % internalPInfo.m_name).str());
+      throw Exception((boost::format("Could not load plugin %1%!") % pInfo.m_name).str());
   }
   catch(const std::exception& e)
   {
-    moveToBrokenList(internalPInfo);
+    moveToBrokenList(pInfo);
     Exception ee(e.what());
     throw ee;
   }
   catch(...)
   {
-    moveToBrokenList(internalPInfo);
+    moveToBrokenList(pInfo);
     throw;
   }
 
@@ -319,25 +274,25 @@ void te::plugin::PluginManager::load(const PluginInfo& pInfo, const bool start)
 
     std::string plg_name = plugin->getInfo().m_name;
 // register plugin in the map and add it to its category
-    m_pluginCategoryMap[internalPInfo.m_category].push_back(plugin.get());
+    m_pluginCategoryMap[pInfo.m_category].push_back(plugin.get());
     m_plugins.push_back(plugin.get());
     m_pluginsMap[plg_name] = plugin.release();
 
 // remove plugin from broken or unloaded list
-    removeFromBrokenList(internalPInfo);
-    removeFromUnloadedList(internalPInfo);
+    removeFromBrokenList(pInfo);
+    removeFromUnloadedList(pInfo);
 
     updateDependents(plg_name);
   }
   catch(const std::exception& e)
   {
-    moveToBrokenList(internalPInfo);
+    moveToBrokenList(pInfo);
     Exception ee(e.what());
     throw ee;
   }
   catch(...)
   {
-    moveToBrokenList(internalPInfo);
+    moveToBrokenList(pInfo);
     throw;  // sorry, but maybe this will cause the code to crash due to the unload of plugin module!
   }
 }
@@ -518,17 +473,17 @@ te::plugin::AbstractPlugin* te::plugin::PluginManager::detach(const std::string&
   std::map<std::string, AbstractPlugin*>::iterator it = m_pluginsMap.find(name);
 
   if(it == m_pluginsMap.end())
-    throw Exception((boost::format(TR_PLUGIN("Could not find the given plugin (%1%) in order to detach it from PluginManager!")) % name).str());
+    throw Exception((boost::format(TE_TR("Could not find the given plugin (%1%) in order to detach it from PluginManager!")) % name).str());
 
   AbstractPlugin* p = it->second;
 
   if(p == 0)
-    throw Exception((boost::format(TR_PLUGIN("Could not detach a NULL plugin (%1%) from PluginManager!")) % name).str());
+    throw Exception((boost::format(TE_TR("Could not detach a NULL plugin (%1%) from PluginManager!")) % name).str());
 
 // check if it doesn't have dependents plugins
   if(hasDependents(name))
     moveDependentsToBrokenList(name);
-//    throw Exception((boost::format(TR_PLUGIN("There are some plugins that depends on %1%!")) % name).str());
+//    throw Exception((boost::format(TE_TR("There are some plugins that depends on %1%!")) % name).str());
 
 // see if we must destroy the plugin category index: in the case the detached plugin being the only plugin in its category
   removeFromCategory(p, p->getInfo().m_category);
@@ -537,7 +492,7 @@ te::plugin::AbstractPlugin* te::plugin::PluginManager::detach(const std::string&
   std::vector<AbstractPlugin*>::iterator itv = std::find(m_plugins.begin(), m_plugins.end(), p);
 
   if(itv == m_plugins.end())
-    throw Exception(TR_PLUGIN("PluginManager has lost the synchronization between its internal indexes!"));
+    throw Exception(TE_TR("PluginManager has lost the synchronization between its internal indexes!"));
 
   m_plugins.erase(itv);
 

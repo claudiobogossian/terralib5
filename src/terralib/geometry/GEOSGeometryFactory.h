@@ -30,7 +30,7 @@
 #include "Config.h"
 
 // GEOS
-#if TE_USE_GEOS
+#ifdef TERRALIB_GEOS_ENABLED
 #include <geos/geom/GeometryFactory.h>
 
 namespace te
@@ -93,6 +93,6 @@ namespace te
   } // end namespace gm
 }   // end namespace te
 
-#endif  // TE_USE_GEOS
+#endif  // TERRALIB_GEOS_ENABLED
 #endif  // __TERRALIB_GEOMETRY_INTERNAL_GEOSGEOMETRYFACTORY_H
 

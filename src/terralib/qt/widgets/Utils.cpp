@@ -34,16 +34,16 @@
 #include "Utils.h"
 
 // Qt
-#include <QtCore/QSettings>
-#include <QtGui/QApplication>
-#include <QtGui/QImage>
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
-#include <QtGui/QMessageBox>
-#include <QtGui/QPainter>
-#include <QtGui/QPen>
-#include <QtGui/QTreeWidgetItem>
-#include <QtGui/QTreeWidgetItemIterator>
+#include <QApplication>
+#include <QImage>
+#include <QMenu>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QPainter>
+#include <QPen>
+#include <QSettings>
+#include <QTreeWidgetItem>
+#include <QTreeWidgetItemIterator>
 
 void te::qt::widgets::SetChildrenCheckState(QTreeWidgetItem* item, int column, Qt::CheckState state)
 {
@@ -364,4 +364,38 @@ QString te::qt::widgets::GetFilePathFromSettings(const QString& typeFile)
   QString key = "Last used file path/" + typeFile;
 
   return sett.value(key).toString();
+}
+
+QString te::qt::widgets::Convert2Qt(const std::string& text, const te::common::CharEncoding& encoding)
+{
+  try
+  {
+    switch(encoding)
+    {
+      case te::common::UNKNOWN_CHAR_ENCODING:
+        return text.c_str();
+
+      case te::common::UTF8:
+        return QString::fromUtf8(text.c_str());
+
+      case te::common::LATIN1:
+        return QString::fromLatin1(text.c_str());
+
+      // continues...
+
+      default:
+      {
+#ifdef TERRALIB_CHARENCODING_ENABLED
+        std::string latin1 = te::common::CharEncodingConv::convert(text, encoding, te::common::LATIN1);
+        return QString::fromLatin1(latin1.c_str());
+#else
+        return text.c_str();
+#endif
+      }
+    }
+  }
+  catch(...)
+  {
+    return text.c_str();
+  }
 }

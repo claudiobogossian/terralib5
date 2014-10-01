@@ -30,16 +30,16 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QApplication>
-#include <QtGui/QColor>
-#include <QtGui/QColorDialog>
-#include <QtGui/QFrame>
-#include <QtGui/QGridLayout>
-#include <QtCore/QHash>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QPainter>
-#include <QtCore/QRectF>
-#include <QtGui/QToolButton>
+#include <QApplication>
+#include <QColor>
+#include <QColorDialog>
+#include <QFrame>
+#include <QGridLayout>
+#include <QHash>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QRectF>
+#include <QToolButton>
 
 #define COLORSIZE 20
 #define COLS 8
@@ -189,10 +189,14 @@ namespace te
               }
             }
 
+#if (QT_VERSION >= 0x050000)
+            if(m_buttonKeyRect.contains(e->localPos()))
+#else
             if(m_buttonKeyRect.contains(e->posF()))
+#endif
             {
               // Show original color dialog
-              QColor color = QColorDialog::getColor(Qt::white, this, "", QColorDialog::ShowAlphaChannel);
+              QColor color = QColorDialog::getColor(m_currentColor, this, "", QColorDialog::ShowAlphaChannel);
               if(!color.isValid())
                 return;
 
@@ -202,6 +206,11 @@ namespace te
             }
           }
 
+          void setSelected(QColor color)
+          {
+            m_currentColor = color;
+          }
+
         signals:
 
           void selected(const QColor& color);
@@ -209,6 +218,7 @@ namespace te
         public:
 
           QColor m_hoverColor;
+          QColor m_currentColor;
           QRgb m_stdrgb[48];
           QList<ColorKeyInfo> m_colorInfos;
           QRectF m_buttonKeyRect;

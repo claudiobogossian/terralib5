@@ -45,6 +45,7 @@ namespace te
       \class TiePointsMosaic
       \brief Create a mosaic from a set of rasters using tie-points.
       \note The first raster will always be taken as reference to define the mosaic resolution and SRS.
+      \ingroup rp_mos
      */
     class TERPEXPORT TiePointsMosaic : public Algorithm
     {
@@ -87,6 +88,10 @@ namespace te
             bool m_autoEqualize; //!< Auto equalization will be performed using the overlaped image areas (default:true).
             
             bool m_useRasterCache; //!< Enable(true) or disable the use of raster caching (default:true).
+            
+            bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
+            
+            bool m_enableMultiThread; //!< Enable/disable the use of threads (default:true).
             
             InputParameters();
             

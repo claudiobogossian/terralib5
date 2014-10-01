@@ -82,7 +82,7 @@
          <string>A positive minimum segment size (pixels number)</string>
         </property>
         <property name="text">
-         <string>30</string>
+         <string>100</string>
         </property>
        </widget>
       </item>
@@ -117,10 +117,10 @@
          </size>
         </property>
         <property name="toolTip">
-         <string>Segments with similarity values below this value will be merged</string>
+         <string>Use lower values to merge only those segments that are more similar. Higher values will allow more segments to be merged</string>
         </property>
         <property name="text">
-         <string>30</string>
+         <string>0.1</string>
         </property>
        </widget>
       </item>

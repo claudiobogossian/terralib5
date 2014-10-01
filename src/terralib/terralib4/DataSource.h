@@ -29,12 +29,16 @@
 // TerraLib
 #include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
+#include "Config.h"
 
 class TeDatabase;
+class TeTheme;
 
 namespace terralib4
 {
-  class DataSource : public te::da::DataSource
+  struct ThemeInfo;
+
+  class TETERRALIB4EXPORT DataSource : public te::da::DataSource
   {
     public:
 
@@ -64,6 +68,16 @@ namespace terralib4
 
       TeDatabase* getTerralib4Db();
 
+      std::vector<std::string> getTL4Layers();
+
+      std::vector<std::string> getTL4Tables();
+
+      std::vector<::terralib4::ThemeInfo> getTL4Themes();
+
+      TeTheme* getTL4Theme(const ::terralib4::ThemeInfo theme);
+
+      int getLayerSRID(const std::string & layerName);
+
     protected:
 
       void create(const std::map<std::string, std::string>& dsInfo);
@@ -74,7 +88,7 @@ namespace terralib4
 
       std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo);
 
-      std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo);
+      std::vector<te::common::CharEncoding> getEncodings(const std::map<std::string, std::string>& dsInfo);
 
     private:
 

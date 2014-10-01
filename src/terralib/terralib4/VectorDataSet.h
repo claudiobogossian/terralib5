@@ -31,7 +31,7 @@
 #include "Config.h"
 
 // Terralib 4.x
-#include <terralib/kernel/TeQuerier.h>
+#include <terralib4/kernel/TeQuerier.h>
 
 // STL
 #include <memory>
@@ -75,6 +75,8 @@ namespace terralib4
       int getPropertyDataType(std::size_t i) const;
 
       std::string getPropertyName(std::size_t i) const;
+
+      te::common::CharEncoding getPropertyCharEncoding(std::size_t i) const;
 
       std::string getDatasetNameOfProperty(std::size_t i) const;
 

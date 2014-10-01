@@ -26,14 +26,14 @@
 // TerraLib
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/UniqueKey.h"
-#include "DoubleListWidget.h"
+#include "../utils/DoubleListWidget.h"
 #include "UniquekeyConstraintWidget.h"
 #include "ui_ConstraintWidgetForm.h"
 #include "ui_DoubleListWidgetForm.h"
 
 
 //Qt 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 
 te::qt::widgets::UniqueKeyConstraintWidget::UniqueKeyConstraintWidget(te::da::DataSetType* dsType, QWidget* parent, Qt::WindowFlags f)
@@ -78,3 +78,38 @@ te::da::Constraint* te::qt::widgets::UniqueKeyConstraintWidget::getConstraint()
   return uk;
 }
 
+void te::qt::widgets::UniqueKeyConstraintWidget::setConstraint(te::da::Constraint* constraint)
+{
+  if(!constraint)
+    return;
+
+  te::da::UniqueKey* uk = dynamic_cast<te::da::UniqueKey*>(constraint);
+
+  if(!uk)
+    return;
+
+  m_ui->m_nameLineEdit->setText(uk->getName().c_str());
+
+  std::vector<te::dt::Property*> ukProps = uk->getProperties();
+  std::vector<std::string> ukPropsStr;
+  for(std::size_t i = 0; i < ukProps.size(); ++i)
+  {
+    ukPropsStr.push_back(ukProps[i]->getName());
+  }
+
+  std::vector<te::dt::Property*> dtProps = m_dsType->getProperties();
+  std::vector<std::string> dtPropsStr;
+  for(std::size_t i = 0; i < dtProps.size(); ++i)
+  {
+    std::string propStr = dtProps[i]->getName();
+
+    if(std::find(ukPropsStr.begin(), ukPropsStr.end(), propStr) != ukPropsStr.end())
+      continue;
+
+    dtPropsStr.push_back(propStr);
+  }
+
+  m_doubleListWidget->setInputValues(dtPropsStr);
+  m_doubleListWidget->setOutputValues(ukPropsStr);
+
+}

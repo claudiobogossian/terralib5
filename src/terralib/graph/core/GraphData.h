@@ -75,6 +75,14 @@ namespace te
         */
         //@{
 
+
+        void addVertex(Vertex* v);
+
+        bool removeVertex(int id);
+
+        Vertex* getVertex(int id);
+
+
         /*!
         \brief It returns the the vertex map
 
@@ -89,6 +97,13 @@ namespace te
 
         */
         void setVertexMap(const VertexMap& map);
+
+
+        void addEdge(Edge* e);
+
+        bool removeEdge(int id);
+
+        Edge* getEdge(int id);
 
 
         /*!

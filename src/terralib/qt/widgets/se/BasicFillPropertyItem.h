@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../Config.h"
-#include "AbstractPropertyItem.h"
+#include "../propertybrowser/AbstractPropertyItem.h"
 
 namespace te
 {

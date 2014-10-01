@@ -30,26 +30,6 @@
 #include "Config.h"
 #include "Module.h"
 
-/*!
-  \brief This is a helper function that will be automatically called when the TerraLib DataType module is loaded.
-
-  \note This method doesn't perform operations.
- */
-//static void TeRasterProcessingInitialize()
-//{
-//  TE_LOG_TRACE(TR_RP("TerraLib Raster Processing module initialized!"));
-//}
-
-/*!
-  \brief This is a helper function that will be automatically called when the TerraLib Raster Processing module is unloaded.
-
-  \note This method doesn't perform operations.
- */
-//static void TeRasterProcessingFinalize()
-//{
-//  TE_LOG_TRACE(TR_RP("TerraLib Raster Processing module finalized!"));
-//}
-
 const te::rp::Module& sm_module = te::rp::Module::getInstance();
 std::string te::rp::Module::m_lastLogString;
 
@@ -62,9 +42,6 @@ te::rp::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib Data Type support
-  TE_ADD_TEXT_DOMAIN(TE_RP_TEXT_DOMAIN, TE_RP_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::rp::Module::~Module()
@@ -74,16 +51,11 @@ te::rp::Module::~Module()
 
 void te::rp::Module::initialize()
 {
-  TE_LOG_TRACE(TR_RP("TerraLib Raster Processing module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Raster Processing module initialized!"));
 }
 
 void te::rp::Module::finalize()
 {
-  TE_LOG_TRACE(TR_RP("TerraLib Raster Processing module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Raster Processing module finalized!"));
 }
-
-// TerraLib
-//#include "../common/ModuleUtils.h"
-
-//TE_REGISTER_MODULE(TE_RP_MODULE_NAME, TeRasterProcessingInitialize, TeRasterProcessingFinalize)
 

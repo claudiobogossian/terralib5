@@ -17,47 +17,41 @@
 #include <string>
 
 // Qt
-#include <QtGui/QApplication>
-#include <QtGui/QDialog>
-#include <QtGui/QLabel>
+#include <QApplication>
+#include <QDialog>
+#include <QLabel>
 
 bool generatePNG = true;
 
 te::map::DataSetLayer* CreateRasterLayer(const std::string& path)
 {
-  // Connection string to a shape file
+  // Connection string to a raster file
   std::map<std::string, std::string> connInfo;
   connInfo["URI"] = path;
 
   // Creates and connects data source
-  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(G_ID++), "GDAL", connInfo);
+  te::da::DataSourcePtr datasource = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(G_ID++), "GDAL", connInfo);
 
-  // Transactor and catalog
-  std::auto_ptr<te::da::DataSourceTransactor> transactor(dataSource->getTransactor());
-  std::auto_ptr<te::da::DataSourceCatalogLoader> catalogLoader(transactor->getCatalogLoader());
-  catalogLoader->loadCatalog();
-
-  // Gets the number of data set types that belongs to the data source
-  boost::ptr_vector<std::string> datasets;
-  transactor->getCatalogLoader()->getDataSets(datasets);
+  // Get the number of data set types that belongs to the data source
+  std::vector<std::string> datasets = datasource->getDataSetNames();
   assert(!datasets.empty());
 
   // Gets the first dataset
   std::string dataSetName(datasets[0]);
-  std::auto_ptr<te::da::DataSet> ds(transactor->getDataSet(dataSetName));
+  std::auto_ptr<te::da::DataSet> ds(datasource->getDataSet(dataSetName));
 
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> raster(ds->getRaster(rpos));
 
-  // Box
   te::gm::Envelope extent(*raster->getExtent());
 
   // Creates a DataSetLayer
   te::map::DataSetLayer* layer = new te::map::DataSetLayer(te::common::Convert2String(G_ID++), dataSetName);
-  layer->setDataSourceId(dataSource->getId());
+  layer->setDataSourceId(datasource->getId());
   layer->setDataSetName(dataSetName);
   layer->setExtent(extent);
-  layer->setRendererType("DATASET_LAYER_RENDERER");
+  layer->setRendererType("ABSTRACT_LAYER_RENDERER");
+  layer->setSRID(raster->getSRID());
 
   return layer;
 }
@@ -442,7 +436,7 @@ void DrawRasterStyledLayers()
   try
   {
     // Creates a layer of raster
-    std::auto_ptr<te::map::DataSetLayer> rasterLayer(CreateRasterLayer(""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif"));
+    std::auto_ptr<te::map::DataSetLayer> rasterLayer(CreateRasterLayer(TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif"));
 
     // Get the box to be painted
     te::gm::Envelope* extent = new te::gm::Envelope(rasterLayer->getExtent());
@@ -456,7 +450,7 @@ void DrawRasterStyledLayers()
     te::qt::widgets::Canvas* canvas = CreateCanvas(rasterLayer.get(), extent, srid);
 
     // RGB 012 Style
-    RGB_012_Style(canvas, rasterLayer.get(), extent, srid);
+    //RGB_012_Style(canvas, rasterLayer.get(), extent, srid);
 
     // RGB 012 with transparency Style
     RGB_012_Transp_Style(canvas, rasterLayer.get(), extent, srid);
@@ -481,10 +475,10 @@ void DrawRasterStyledLayers()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in Styling example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in Styling example: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in Styling example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in Styling example!" << std::endl;
   }
 }

@@ -34,7 +34,7 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QWizard>
+#include <QWizard>
 
 namespace te
 {
@@ -45,7 +45,6 @@ namespace te
       class ClassifierWizardPage;
       class LayerSearchWizardPage;
       class RasterInfoWizardPage;
-      class RasterNavigatorWizardPage;
 
       /*!
         \class ClassifierWizard
@@ -67,6 +66,8 @@ namespace te
 
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
 
+          te::map::AbstractLayerPtr getOutputLayer();
+
         protected:
 
           void addPages();
@@ -78,7 +79,8 @@ namespace te
           std::auto_ptr<te::qt::widgets::ClassifierWizardPage> m_classifierPage;
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerSearchPage;
           std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
-          std::auto_ptr<te::qt::widgets::RasterNavigatorWizardPage> m_navigatorPage;
+
+          te::map::AbstractLayerPtr m_outputLayer;
       };
     }   // end namespace widgets
   }     // end namespace qt

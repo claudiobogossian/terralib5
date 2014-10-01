@@ -52,41 +52,6 @@
 
 //@}
 
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
-  \def TE_XML_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib XML module.
- */
-#define TE_XML_TEXT_DOMAIN "texml"
-
-/*!
-  \def TE_XML_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
- */
-#define TE_XML_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TR_XML
-
-  \brief It marks a string in order to get translated. This is a special mark used in the XML module of TerraLib. 
- */
-#define TR_XML(message) TR(message, TE_XML_TEXT_DOMAIN)
-
-/*!
-  \def TR_PLURAL_XML
-
-  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the XML module of TerraLib. 
- */
-#define TR_PLURAL_XML(message1, message2, n) TR_PLURAL(TE_XML_TEXT_DOMAIN, message1, message2, n)
-
-//@}
-
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library
  */

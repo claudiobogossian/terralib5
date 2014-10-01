@@ -40,8 +40,10 @@
 #include "../geometry/LinearRing.h"
 #include "../geometry/MultiPolygon.h"
 #include "../srs/Converter.h"
+#include "../common/progress/TaskProgress.h"
 
 #include <boost/shared_ptr.hpp>
+#include <boost/scoped_array.hpp>
 
 #include <climits>
 #include <cfloat>
@@ -81,6 +83,8 @@ namespace te
       m_blendMethod = te::rp::Blender::NoBlendMethod;
       m_autoEqualize = true;
       m_useRasterCache = true;
+      m_enableProgress = false;
+      m_enableMultiThread = true;
     }
 
     const TiePointsMosaic::InputParameters& TiePointsMosaic::InputParameters::operator=(
@@ -98,6 +102,8 @@ namespace te
       m_blendMethod = params.m_blendMethod;
       m_autoEqualize = params.m_autoEqualize;
       m_useRasterCache = params.m_useRasterCache;
+      m_enableProgress = params.m_enableProgress;
+      m_enableMultiThread = params.m_enableMultiThread;
 
       return *this;
     }
@@ -163,6 +169,18 @@ namespace te
       TiePointsMosaic::OutputParameters* outParamsPtr = dynamic_cast<
         TiePointsMosaic::OutputParameters* >( &outputParams );
       TERP_TRUE_OR_THROW( outParamsPtr, "Invalid paramters" );
+      
+      // progress
+      
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        
+        progressPtr->setTotalSteps( 4 + m_inputParameters.m_feederRasterPtr->getObjsCount() );
+        
+        progressPtr->setMessage( "Mosaic" );
+      }       
       
        // First pass: getting global mosaic info
        
@@ -345,6 +363,12 @@ namespace te
         
 
       }
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
 
       // creating the output raster
       
@@ -395,7 +419,13 @@ namespace te
           *(outParamsPtr->m_outputRasterPtr.get()), 25, 0 ) );   
           
         outputRasterPtr = cachedOutputRasterInstancePtr.get();
-      }      
+      }    
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }        
       
       // Finding the transformation mapping indexed points from each raster to the first raster indexed points.
       // te::gm::GTParameters::TiePoint::first are mosaic reaster indexed points (lines/cols),
@@ -449,6 +479,12 @@ namespace te
           eachRasterPixelToMosaicRasterPixelGeomTransfms.push_back( auxTransPtr );          
         }
       }
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
 
       // fill output with no data values
 
@@ -473,6 +509,12 @@ namespace te
           }
         }
       }
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
       
       // Copying the first image data to the output mosaic
       // and find the base mosaic mean and offset values
@@ -577,13 +619,20 @@ namespace te
           }
         }
       }
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
         
       // Initiating the mosaic bounding boxes union
 
-      std::auto_ptr< te::gm::MultiPolygon > mosaicBBoxesUnionPtr(
-        new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType,
-        outParamsPtr->m_outputRasterPtr->getSRID(), 0 ) );
-      mosaicBBoxesUnionPtr->add( (te::gm::Polygon*)rastersBBoxes[ 0 ].clone() );        
+      std::auto_ptr< te::gm::MultiPolygon > mosaicBBoxesUnionPtr( 
+        new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType, 
+        rastersBBoxes[ 0 ].getSRID(), 0 ) );
+      
+      mosaicBBoxesUnionPtr->add( (te::gm::Polygon*)( rastersBBoxes[ 0 ].clone() ) );        
       
       // globals
 
@@ -654,311 +703,74 @@ namespace te
           currentRasterBandsScales = dummyRasterScales;
         }
         
-        if( m_inputParameters.m_blendMethod == te::rp::Blender::NoBlendMethod )
-        {
-          // No blend required
-          
-          // Copying the current image data to the output mosaic
-          // obeying the dummy value constraints and
-          // applying gain and offset values          
-          
-          const double currentRasterColOffset = std::abs( rastersBBoxes[ inputRasterIdx ].getMBR()->m_llx -
-            outParamsPtr->m_outputRasterPtr->getGrid()->getExtent()->getLowerLeftX() ) /
-            outParamsPtr->m_outputRasterPtr->getGrid()->getResolutionX();
-          const double currentRasterRowOffset = std::abs( rastersBBoxes[ inputRasterIdx ].getMBR()->m_ury -
-            outParamsPtr->m_outputRasterPtr->getGrid()->getExtent()->getUpperRightY() ) /
-            outParamsPtr->m_outputRasterPtr->getGrid()->getResolutionY();              
-            
-          const unsigned int outRowStart = (unsigned int)std::max( 0.0, currentRasterRowOffset );
-          const unsigned int outColStart = (unsigned int)std::max( 0.0, currentRasterColOffset );
-          const unsigned int outRowsBound = std::min( outRowStart +
-            inputRasterPtr->getNumberOfRows(),
-            outputRasterPtr->getNumberOfRows() );
-          const unsigned int outColsBound = std::min( outColStart +
-            inputRasterPtr->getNumberOfColumns(),
-            outputRasterPtr->getNumberOfColumns() );            
-          const unsigned int nBands = outputRasterPtr->getNumberOfBands();            
-            
-          te::rst::Interpolator interpInstance( inputRasterPtr,
-            m_inputParameters.m_interpMethod );
-          const te::gm::GeometricTransformation& transformation = 
-            *(eachRasterPixelToMosaicRasterPixelGeomTransfms[ inputRasterIdx - 1 ]);
+        // blending with the mosaic boxes union
 
-          for( unsigned int inputRastersBandsIdx = 0 ; inputRastersBandsIdx <
-            nBands ; ++inputRastersBandsIdx )
-          {
-            const unsigned int inputBandIdx =  
-              m_inputParameters.m_inputRastersBands[ inputRasterIdx ][ inputRastersBandsIdx ];
-            const double inputNoDataValue = 
-              m_inputParameters.m_forceInputNoDataValue ?
-                m_inputParameters.m_noDataValue 
-              : 
-                inputRasterPtr->getBand( inputBandIdx )->getProperty()->m_noDataValue;
-            te::rst::Band& outBand =
-              (*outputRasterPtr->getBand( inputRastersBandsIdx ));
-              
-            double outputBandRangeMin = 0;
-            double outputBandRangeMax = 0;
-            te::rst::GetDataTypeRanges( outBand.getProperty()->m_type,
-              outputBandRangeMin, outputBandRangeMax );            
+        te::rp::Blender blenderInstance;
 
-            unsigned int outCol = 0;
-            unsigned int outRow = 0;
-            double inCol = 0;
-            double inRow = 0;
-            std::complex< double > pixelCValue = 0;
-            double pixelValue = 0;
-              
-            for( outRow = outRowStart ; outRow < outRowsBound ; ++outRow )
-            {
-              for( outCol = outColStart ; outCol < outColsBound ; ++outCol )
-              {
-                transformation.directMap( (double)outCol, (double)outRow, inCol, inRow );
-                
-                interpInstance.getValue( inCol, inRow, pixelCValue, inputBandIdx );
-                
-                if( pixelCValue.real() != inputNoDataValue )
-                {
-                  pixelValue = pixelCValue.real() * currentRasterBandsScales[
-                    inputRastersBandsIdx ] + currentRasterBandsOffsets[
-                    inputRastersBandsIdx ];
-                  pixelValue = std::max( pixelValue, outputBandRangeMin );
-                  pixelValue = std::min( pixelValue, outputBandRangeMax );
-
-                  outBand.setValue( outCol, outRow, pixelValue );
-                }                
-              }
-            }
-          } 
-        }
-        else
-        {
-          // Blend required          
+        TERP_TRUE_OR_RETURN_FALSE( blenderInstance.initialize(
+          *outputRasterPtr,
+          outputRasterBands,
+          *inputRasterPtr,
+          m_inputParameters.m_inputRastersBands[ inputRasterIdx ],
+          m_inputParameters.m_blendMethod,
+          te::rst::Interpolator::NearestNeighbor,
+          m_inputParameters.m_interpMethod,
+          m_inputParameters.m_noDataValue,
+          m_inputParameters.m_forceInputNoDataValue,
+          dummyRasterOffsets,
+          dummyRasterScales,
+          currentRasterBandsOffsets,
+          currentRasterBandsScales,
+          mosaicBBoxesUnionPtr.get(),
+          0,
+          *( eachRasterPixelToMosaicRasterPixelGeomTransfms[ inputRasterIdx - 1 ] ),
+          m_inputParameters.m_enableMultiThread ? 0 : 1,
+          false ), 
+          "Blender initiazing error" );
         
-          // Processing each one of the mosaic boxes union components
-          // blending each overlapped area
-
-          for( std::size_t mosaicBBoxesUnionIdx = 0 ; mosaicBBoxesUnionIdx <
-            mosaicBBoxesUnionPtr->getNumGeometries() ; ++mosaicBBoxesUnionIdx )
-          {
-            te::gm::Polygon const* mosaicBBoxesUnionElementPtr =
-              dynamic_cast< te::gm::Polygon const*>(
-              mosaicBBoxesUnionPtr->getGeometryN( mosaicBBoxesUnionIdx ) );
-            TERP_DEBUG_TRUE_OR_THROW( mosaicBBoxesUnionElementPtr,
-              "Invalid pointer" );
-
-            // calculating the overlapped image areas
-
-            std::auto_ptr< te::gm::MultiPolygon > overlappedResult; // under the mosaic SRID
-
-            {
-              std::auto_ptr< te::gm::Geometry > auxResultPtr(
-                rastersBBoxes[ inputRasterIdx ].intersection( mosaicBBoxesUnionElementPtr ) );
-
-              if( auxResultPtr.get() )
-              {
-                auxResultPtr->setSRID( mosaicBBoxesUnionElementPtr->getSRID() );
-
-                if( auxResultPtr->getGeomTypeId() == te::gm::MultiPolygonType )
-                {
-                  overlappedResult.reset( (te::gm::MultiPolygon*)auxResultPtr.release() );
-                }
-                else if( auxResultPtr->getGeomTypeId() == te::gm::PolygonType )
-                {
-                  // transforming it into a te::gm::MultiPolygon
-                  te::gm::MultiPolygon* auxMultiPol = new te::gm::MultiPolygon( 0,
-                    te::gm::MultiPolygonType, auxResultPtr->getSRID(), 0 );
-                  auxMultiPol->add( auxResultPtr.release() );
-                  overlappedResult.reset( auxMultiPol );
-                }
-              }
-            }
-
-            // blending
-
-            if( overlappedResult.get() )
-            {
-              te::rp::Blender blenderInstance;
-
-              TERP_TRUE_OR_RETURN_FALSE( blenderInstance.initialize(
-                *outputRasterPtr,
-                outputRasterBands,
-                *inputRasterPtr,
-                m_inputParameters.m_inputRastersBands[ inputRasterIdx ],
-                m_inputParameters.m_blendMethod,
-                te::rst::Interpolator::NearestNeighbor,
-                m_inputParameters.m_interpMethod,
-                m_inputParameters.m_noDataValue,
-                m_inputParameters.m_forceInputNoDataValue,
-                dummyRasterOffsets,
-                dummyRasterScales,
-                currentRasterBandsOffsets,
-                currentRasterBandsScales,
-                mosaicBBoxesUnionElementPtr,
-                0,
-                *( eachRasterPixelToMosaicRasterPixelGeomTransfms[ inputRasterIdx - 1 ] ) ), 
-                "Blender initiazing error" );
-                  
-              for( unsigned int overlappedResultIdx = 0 ; overlappedResultIdx <
-                overlappedResult->getNumGeometries() ; ++overlappedResultIdx )
-              {
-                te::rst::PolygonIterator< double > itB = te::rst::PolygonIterator< double >::begin(
-                  outputRasterPtr,
-                  (te::gm::Polygon const*)overlappedResult->getGeometryN( overlappedResultIdx ) );
-                const te::rst::PolygonIterator< double > itE = te::rst::PolygonIterator< double >::end( 
-                  outputRasterPtr,
-                  (te::gm::Polygon const*)overlappedResult->getGeometryN( overlappedResultIdx ) );                  
-
-                std::vector< double > blendedValues( outputRasterPtr->getNumberOfBands() );
-                unsigned int outputRow = 0;
-                unsigned int outputCol = 0;
-                const unsigned int nBands = outputRasterPtr->getNumberOfBands();
-                unsigned int outBandIdx = 0;
-                te::rst::Raster& outputRaster = *outputRasterPtr;
-
-                while( itB != itE )
-                {
-                  outputRow = itB.getRow();
-                  outputCol = itB.getColumn();
-
-                  blenderInstance.getBlendedValues( outputRow, outputCol, blendedValues );
-                  
-                  for( outBandIdx = 0 ; outBandIdx < nBands ; ++outBandIdx )
-                  {
-                    double& blendedValue = blendedValues[ outBandIdx ];
-                    
-                    if( blendedValue != m_inputParameters.m_noDataValue )
-                    {
-                      blendedValue = std::max( blendedValue , 
-                        mosaicBandsRangeMin[ outBandIdx ] );
-                      blendedValue = std::min( blendedValue , 
-                        mosaicBandsRangeMax[ outBandIdx ] );
-
-                      outputRaster.setValue( outputCol, outputRow, blendedValue, outBandIdx );
-                    }
-                  }
-
-                  ++itB;
-                }
-              }
-            }
-          }
+        TERP_TRUE_OR_RETURN_FALSE( blenderInstance.blendIntoRaster1(), 
+          "Error blending images" );
+ 
+        
+        // updating the mosaic related polygons
+        
+        {
+          // union of the current raster box with the current mosaic valid area under the mosaic SRID
           
-          // calculating the non-overlapped image area
-
-          std::auto_ptr< te::gm::MultiPolygon > nonOverlappedResult; // under the mosaic SRID
-
-          {
-            std::auto_ptr< te::gm::Geometry > auxResultPtr(
-              rastersBBoxes[ inputRasterIdx ].difference( mosaicBBoxesUnionPtr.get() ) );
-
-            if( auxResultPtr.get() )
-            {
-              auxResultPtr->setSRID( mosaicBBoxesUnionPtr->getSRID() );
-
-              if( auxResultPtr->getGeomTypeId() == te::gm::MultiPolygonType )
-              {
-                nonOverlappedResult.reset( (te::gm::MultiPolygon*)auxResultPtr.release() );
-              }
-              else if( auxResultPtr->getGeomTypeId() == te::gm::PolygonType )
-              {
-                // transforming it into a te::gm::MultiPolygon
-                te::gm::MultiPolygon* auxMultiPol = new te::gm::MultiPolygon( 0,
-                  te::gm::MultiPolygonType, auxResultPtr->getSRID(), 0 );
-                auxMultiPol->add( auxResultPtr.release() );
-                nonOverlappedResult.reset( auxMultiPol );
-              }
-            }
-            else
-            {
-              // Creating a multipolygon with the current raster bounding box
-
-              te::gm::MultiPolygon* auxMultiPol = new te::gm::MultiPolygon( 0,
-                te::gm::MultiPolygonType, rastersBBoxes[ inputRasterIdx ].getSRID(), 0 );
-              auxMultiPol->add( (te::gm::Polygon*) rastersBBoxes[ inputRasterIdx ].clone() );
-              nonOverlappedResult.reset( auxMultiPol );
-            }
-          }        
+          std::auto_ptr< te::gm::Geometry > unionMultiPolPtr; 
+          unionMultiPolPtr.reset( mosaicBBoxesUnionPtr->Union(
+            &( rastersBBoxes[ inputRasterIdx ] ) ) );
+          TERP_TRUE_OR_RETURN_FALSE( unionMultiPolPtr.get(), "Invalid pointer" );
+          unionMultiPolPtr->setSRID( mosaicBBoxesUnionPtr->getSRID() );
           
-          // copying each non overlaped image area
-
-          if( nonOverlappedResult.get() )
+          if( unionMultiPolPtr->getGeomTypeId() == te::gm::MultiPolygonType )
           {
-            te::rst::Interpolator interpInstance( inputRasterPtr,
-              m_inputParameters.m_interpMethod );
-            const te::gm::GeometricTransformation& transformation = 
-              *(eachRasterPixelToMosaicRasterPixelGeomTransfms[ inputRasterIdx - 1 ]);
-
-            for( unsigned int inputRastersBandsIdx = 0 ; inputRastersBandsIdx <
-              m_inputParameters.m_inputRastersBands[ inputRasterIdx ].size() ;
-              ++inputRastersBandsIdx )
-            {
-              const unsigned int inputBandIdx = m_inputParameters.m_inputRastersBands[ inputRasterIdx ][
-                inputRastersBandsIdx ];
-              te::rst::Band& outputBand = (*outputRasterPtr->getBand( inputRastersBandsIdx ));
-
-              double outputBandRangeMin = 0;
-              double outputBandRangeMax = 0;
-              te::rst::GetDataTypeRanges( outputBand.getProperty()->m_type,
-                outputBandRangeMin, outputBandRangeMax );
-
-              const std::size_t nonOverlappednResultSize =
-                nonOverlappedResult->getNumGeometries();
-              const double inputBandNoDataValue = m_inputParameters.m_forceInputNoDataValue ?
-                m_inputParameters.m_noDataValue : inputRasterPtr->getBand(
-                inputBandIdx )->getProperty()->m_noDataValue;
-
-              for( unsigned int nonOverlappednResultIdx = 0 ; nonOverlappednResultIdx < nonOverlappednResultSize ;
-                ++nonOverlappednResultIdx )
-              {
-                te::gm::Polygon const* const nonOverlappednResultElementPtr =
-                  dynamic_cast< te::gm::Polygon const* >(
-                  nonOverlappedResult->getGeometryN( nonOverlappednResultIdx ) );
-                TERP_DEBUG_TRUE_OR_THROW( nonOverlappednResultElementPtr,
-                  "Invalid pointer" );
-
-                unsigned int outputRow = 0;
-                unsigned int outputCol = 0;
-                double inputRow = 0;
-                double inputCol = 0;
-                std::complex< double > pixelCValue = 0;
-                double pixelValue = 0;
-
-                te::rst::PolygonIterator< double > itB = te::rst::PolygonIterator< double >::begin( outputRasterPtr,
-                  nonOverlappednResultElementPtr );
-                const te::rst::PolygonIterator< double > itE = te::rst::PolygonIterator< double >::end( outputRasterPtr,
-                  nonOverlappednResultElementPtr );
-
-                while( itB != itE )
-                {
-                  outputRow = itB.getRow();
-                  outputCol = itB.getColumn();
-                  
-                  transformation.directMap( (double)outputCol, (double)outputRow, inputCol, inputRow );
-
-                  interpInstance.getValue( inputCol, inputRow, pixelCValue, inputBandIdx );
-
-                  if( pixelCValue.real() != inputBandNoDataValue )
-                  {
-                    pixelValue = pixelCValue.real() * currentRasterBandsScales[
-                      inputRastersBandsIdx ] + currentRasterBandsOffsets[
-                      inputRastersBandsIdx ];
-                    pixelValue = std::max( pixelValue, outputBandRangeMin );
-                    pixelValue = std::min( pixelValue, outputBandRangeMax );
-
-                    outputBand.setValue( outputCol, outputRow, pixelValue );
-                  }
-
-                  ++itB;
-                }
-              }
-            }
+            mosaicBBoxesUnionPtr.reset( (te::gm::MultiPolygon*)unionMultiPolPtr.release() );
           }
-        }
+          else if( unionMultiPolPtr->getGeomTypeId() == te::gm::PolygonType )
+          {
+            te::gm::MultiPolygon* mPolPtr = new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType,
+              unionMultiPolPtr->getSRID(), 0 );
+            mPolPtr->add( (te::gm::Polygon*)unionMultiPolPtr.release() );
+            mosaicBBoxesUnionPtr.reset( mPolPtr );
+          }
+          else
+          {
+            TERP_LOG_AND_RETURN_FALSE( "Invalid union geometry type" );
+          }
+        }                
         
         // moving to the next raster
+        
+        cachedInputRasterPtr.reset();
 
         m_inputParameters.m_feederRasterPtr->moveNext();
+        
+        if( m_inputParameters.m_enableProgress )
+        {
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }          
       }
       
       return true;

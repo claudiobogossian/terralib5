@@ -29,8 +29,8 @@
 #include "GroupingSliceItem.h"
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QWidget>
 
 te::qt::widgets::GroupingSliceItem::GroupingSliceItem(te::map::GroupingItem* item, QObject* parent)
   : AbstractTreeItem(parent),

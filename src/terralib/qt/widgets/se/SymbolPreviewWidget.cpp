@@ -35,8 +35,8 @@
 #include "SymbolPreviewWidget.h"
 
 // Qt
-#include <QtGui/QGridLayout>
-#include <QtGui/QLabel>
+#include <QGridLayout>
+#include <QLabel>
 
 // STL
 #include <cassert>

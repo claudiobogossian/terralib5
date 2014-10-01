@@ -28,7 +28,9 @@
 #include "Algorithm.h"
 #include "../raster/Raster.h"
 #include "../raster/Interpolator.h"
+#include "../geometry/Envelope.h"
 #include "../geometry/GTParameters.h"
+#include "../geometry/GeometricTransformation.h"
 
 #include <vector>
 #include <string>
@@ -41,7 +43,7 @@ namespace te
     /*!
       \class Register
       \brief Performs raster data registering into a SRS using a set of tie points.
-      \ingroup rp
+      \ingroup rp_gen
     */
     class TERPEXPORT Register : public Algorithm
     {
@@ -72,6 +74,10 @@ namespace te
             double m_noDataValue; //!< The pixel value used where no raster data is avaliable (defaul:0).
             
             std::string m_geomTransfName; //!< The name of the geometric transformation used (see each te::gm::GTFactory inherited classes to find each factory key/name, default:Affine).
+            
+            te::gm::GeometricTransformation const* m_geomTransfPtr; //!< An optional pointer to a valid geometric transformation instance (direct mapping raster lines/columns to and their respective coordinates under the chosen SRS) that will be used by the register process (if this pionter is used, m_tiePoints and m_geomTransfName will be ignored).
+            
+            te::gm::Envelope m_outputBoundingBox; //!< An optional bounding box (under the chosen SRS) to use for the generated output raster (default: automatically calculated).
             
             InputParameters();
             

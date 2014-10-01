@@ -27,16 +27,19 @@
 #define __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4FINALPAGEWIZARDPAGE_H
 
 // TerraLib
+#include "../../../../terralib4/ThemeInfo.h"
 #include "Config.h"
 
 // STL
 #include <memory>
 
 // Qt
-#include <QtGui/QWizardPage>
+#include <QWizardPage>
 
 // Forward declaration
 namespace Ui { class TL4FinalPageWizardPageForm; }
+
+struct ThemeInfo;
 
 namespace te
 {

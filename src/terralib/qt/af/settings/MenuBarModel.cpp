@@ -1,8 +1,8 @@
 #include "MenuBarModel.h"
 
 //Qt
-#include <QtGui/QMenuBar>
-#include <QtGui/QToolBar>
+#include <QMenuBar>
+#include <QToolBar>
 
 std::vector<QAction*> GetActions(QList<QAction*> acts)
 {
@@ -112,7 +112,12 @@ void te::qt::af::MenuBarModel::updateActionsState(const QList<QAction*>& acts)
         m_actionsActivation[i] = true;
   }
 
+#if (QT_VERSION < 0x050000)
   reset();
+#else
+  beginResetModel();
+  endResetModel();
+#endif
 }
 
 void te::qt::af::MenuBarModel::setMenuBar(QMenuBar* mnuBar)
@@ -122,5 +127,10 @@ void te::qt::af::MenuBarModel::setMenuBar(QMenuBar* mnuBar)
 
   m_actionsActivation = std::vector<bool>(m_actions.size(), false);
 
+#if (QT_VERSION < 0x050000)
   reset();
+#else
+  beginResetModel();
+  endResetModel();
+#endif
 }

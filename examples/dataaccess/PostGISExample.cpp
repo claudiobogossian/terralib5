@@ -22,7 +22,7 @@ void PostGISExample()
     connInfo["PG_PASSWORD"] = "postgres";
     connInfo["PG_DB_NAME"] = "terralib4";
     connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-    connInfo["PG_CLIENT_ENCODING"] = "WIN1252";     // "LATIN1";
+    connInfo["PG_CLIENT_ENCODING"] = "CP1252";     // "LATIN1"; //"WIN1252" 
     
 // create a data source using the data source factory
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
@@ -113,11 +113,11 @@ void PostGISExample()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in PostGIS Example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in the PostGIS Example: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in PostGIS Example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in the PostGIS Example!" << std::endl;
   }
 }
 

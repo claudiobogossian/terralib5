@@ -111,7 +111,25 @@ te::st::STDataLoaderFromDS::getDataSet(const te::st::ObservationDataSetInfo& /*i
   //return buildDataSet(dset.release(), info);
   return std::auto_ptr<te::st::ObservationDataSet>();
 }
-                                               
+
+std::auto_ptr<te::st::ObservationDataSet>
+te::st::STDataLoaderFromDS::getDataSet(const te::st::ObservationDataSetInfo& /*info*/,
+                                       const te::dt::DateTime& /*dt*/, 
+                                       te::dt::TemporalRelation /*tr*/,
+                                       const te::gm::Envelope& /*e*/, 
+                                       te::gm::SpatialRelation /*sr*/,
+                                       te::common::TraverseType /*travType*/)
+{
+  //use the DataSourceManager to get the DataSource 
+  //te::da::DataSource* ds = te::da::GetDataSource(info.getDataSourceInfo().getId(), false);
+
+  //montar uma Query e passar para o data source!
+
+  //return buildDataSet(dset.release(), info);
+  return std::auto_ptr<te::st::ObservationDataSet>();
+}
+
+
 std::auto_ptr<te::st::ObservationDataSet> 
 te::st::STDataLoaderFromDS::getDataSet(const te::st::ObservationDataSetInfo& /*info*/, 
                           const te::gm::Geometry& /*geom*/, te::gm::SpatialRelation /*sr*/,
@@ -193,6 +211,23 @@ te::st::STDataLoaderFromDS::getDataSet(const TrajectoryDataSetInfo& /*info*/,
   //montar uma Query e passar para o data source!
 
   //return buildDataSet(dset.release(), info);
+  return std::auto_ptr<te::st::TrajectoryDataSet>();
+}
+
+std::auto_ptr<te::st::TrajectoryDataSet> 
+te::st::STDataLoaderFromDS::getDataSet(const TrajectoryDataSetInfo& /*info*/,
+                                       const te::dt::DateTime& /*dt*/, 
+                                       te::dt::TemporalRelation /*tr*/,
+                                       const te::gm::Envelope& /*e*/, 
+                                       te::gm::SpatialRelation /*sr*/,
+                                       te::common::TraverseType /*travType*/)
+{
+  //use the DataSourceManager to get the DataSource 
+  //te::da::DataSourcePtr ds = te::da::GetDataSource(info.getDataSourceInfo().getId(), false);
+
+  //montar uma Query e passar para o data source!
+
+  //return buildDataSet(dset.release(), info); 
   return std::auto_ptr<te::st::TrajectoryDataSet>();
 }
 

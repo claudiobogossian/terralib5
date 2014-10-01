@@ -31,8 +31,8 @@
 #include "FolderLayerItem.h"
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QWidget>
 
 te::qt::widgets::FolderLayerItem::FolderLayerItem(const te::map::AbstractLayerPtr& l, QObject* parent)
   : AbstractTreeItem(parent)
@@ -55,7 +55,7 @@ QVariant te::qt::widgets::FolderLayerItem::data(int /*column*/, int role) const
     return QVariant(QIcon::fromTheme("folder"));
 
   if(role == Qt::DisplayRole)
-    return QVariant(QString::fromUtf8(m_layer->getTitle().c_str()));
+    return QVariant(QString::fromStdString(m_layer->getTitle()));
 
   if(role == Qt::CheckStateRole)
   {

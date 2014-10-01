@@ -94,17 +94,16 @@ te::mem::ExpansibleRaster::ExpansibleRaster( const unsigned char maxMemPercentUs
   
   const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
   const double usedVMem = (double)te::common::GetUsedVirtualMemory();
-  const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() ) / 
-    2.0;
+  const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() );
   const double freeVMem = ( ((double)maxMemPercentUsed) / 100.0 ) *
-    std::min( totalPhysMem, ( ( totalVMem <= usedVMem ) ? 0.0 : ( totalVMem - usedVMem ) ) );  
+    std::min( totalPhysMem, ( totalVMem - usedVMem ) );  
   const unsigned int maxNumberOfBlocks = (unsigned int)
     std::max( 1.0, std::ceil( freeVMem / ((double)maxBlockSizeBytes) ) );    
   
   if( ! m_blocksManager.initialize( maxNumberOfBlocks, numbersOfBlocksX,
     numbersOfBlocksY, blocksSizesBytes, 
     TLINTERNAL_EXPANSIBLERASTER_MAXDISKFILESSIZE ) )
-    throw Exception(TR_MEMORY("Cannot initialize the blocks menager") );
+    throw Exception(TE_TR("Cannot initialize the blocks menager") );
   
   for( unsigned int bandsIdx = 0 ; bandsIdx < bandsProperties.size() ; 
     ++bandsIdx )
@@ -157,7 +156,7 @@ te::mem::ExpansibleRaster::ExpansibleRaster( te::rst::Grid* grid,
   if( ! m_blocksManager.initialize( maxNumberOfRAMBlocks, numbersOfBlocksX,
     numbersOfBlocksY, blocksSizesBytes, 
     TLINTERNAL_EXPANSIBLERASTER_MAXDISKFILESSIZE ) )
-    throw Exception(TR_MEMORY("Cannot initialize the blocks menager") );
+    throw Exception(TE_TR("Cannot initialize the blocks menager") );
   
   for( unsigned int bandsIdx = 0 ; bandsIdx < bandsProperties.size() ; 
     ++bandsIdx )
@@ -183,7 +182,7 @@ void te::mem::ExpansibleRaster::open(const std::map<std::string, std::string>& /
 std::map<std::string, std::string> te::mem::ExpansibleRaster::getInfo() const
 {
   return std::map<std::string, std::string>();
-};
+}
 
 te::dt::AbstractData* te::mem::ExpansibleRaster::clone() const
 {

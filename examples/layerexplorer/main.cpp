@@ -26,8 +26,8 @@
 #include <terralib/qt/widgets/layer/explorer/LayerTreeModel.h>
 
 //Qt
-#include <QtGui/QApplication>
-#include <QtGui/QTableView>
+#include <QApplication>
+#include <QTableView>
 
 // STL
 #include <ctime>
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
         std::string kid = jid + "." + te::common::Convert2String(k);
         title = "DataSet Layer "  + kid;
 
-        te::map::DataSetLayer* fk = new te::map::DataSetLayer(kid, title, fj);
+        /*te::map::DataSetLayer* fk = */new te::map::DataSetLayer(kid, title, fj);
       }
     }
 

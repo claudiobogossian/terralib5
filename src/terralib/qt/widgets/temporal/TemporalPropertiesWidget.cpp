@@ -30,7 +30,7 @@
 #include "ui_TemporalPropertiesWidgetForm.h"
 
 //QT
-#include <QtGui/QWidget>
+#include <QWidget>
 
 te::qt::widgets::TemporalPropertiesWidget::TemporalPropertiesWidget(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
 : QWidget(parent, f),

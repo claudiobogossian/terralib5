@@ -74,7 +74,7 @@ std::list<te::map::AbstractLayerPtr>& te::qt::af::Project::getTopLayers()
   return m_topLayers;
 }
 
-std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getAllLayers()
+std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getAllLayers(bool invalid)
 {
   std::list<te::map::AbstractLayerPtr> layers;
 
@@ -83,6 +83,12 @@ std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getAllLayers()
   for(it = m_topLayers.begin(); it != m_topLayers.end(); ++it)
   {
     te::map::AbstractLayerPtr topLevelLayer = *it;
+
+    if(!invalid && !topLevelLayer->isValid())
+    {
+      continue;
+    }
+
     layers.push_back(topLevelLayer);
 
     if(topLevelLayer->getType() == "FOLDERLAYER")
@@ -96,18 +102,17 @@ std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getAllLayers()
   return layers;
 }
 
-std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getSingleLayers()
+std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getSingleLayers(bool invalid)
 {
   std::list<te::map::AbstractLayerPtr> singleLayers;
 
-  std::list<te::map::AbstractLayerPtr> allLayers = getAllLayers();
+  std::list<te::map::AbstractLayerPtr> allLayers = getAllLayers(invalid);
 
   std::list<te::map::AbstractLayerPtr>::const_iterator it;
 
   for(it = allLayers.begin(); it != allLayers.end(); ++it)
   {
     te::map::AbstractLayerPtr layer = *it;
-
     if(layer->getType() == "FOLDERLAYER")
       continue;
 
@@ -117,11 +122,11 @@ std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getSingleLayers()
   return singleLayers;
 }
 
-std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getVisibleSingleLayers()
+std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getVisibleSingleLayers(bool invalid)
 {
   std::list<te::map::AbstractLayerPtr> visibleSingleLayers;
 
-  std::list<te::map::AbstractLayerPtr> singleLayers = getSingleLayers();
+  std::list<te::map::AbstractLayerPtr> singleLayers = getSingleLayers(invalid);
 
   std::list<te::map::AbstractLayerPtr>::const_iterator it;
   for(it = singleLayers.begin(); it != singleLayers.end(); ++it)
@@ -141,9 +146,28 @@ void te::qt::af::Project::setTopLayers(const std::list<te::map::AbstractLayerPtr
   m_topLayers = layers;
 }
 
-const std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getSelectedLayers() const
+const std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getSelectedLayers(bool invalid) const
 {
-  return m_selectedLayers;
+  if(!invalid)
+  {
+    std::list<te::map::AbstractLayerPtr>::const_iterator it = m_selectedLayers.begin();
+
+    std::list<te::map::AbstractLayerPtr> validLayers;
+
+    while(it != m_selectedLayers.end())
+    {
+      if(it->get()->isValid())
+        validLayers.push_back(it->get());
+
+      ++it;
+    }
+
+    return validLayers;
+  }
+  else
+  {
+    return m_selectedLayers;
+  }
 }
 
 void te::qt::af::Project::setSelectedLayers(const std::list<te::map::AbstractLayerPtr>& selectedLayers)
@@ -183,6 +207,7 @@ bool te::qt::af::Project::hasChanged()
 void te::qt::af::Project::setFileName(const std::string& fName)
 {
   m_fileName = fName;
+  m_changed = true;
 }
 
 const std::string& te::qt::af::Project::getFileName() const
@@ -198,5 +223,5 @@ void te::qt::af::Project::setProjectAsChanged(const bool& changed)
 void te::qt::af::Project::clear()
 {
   m_topLayers.clear();
-  setProjectAsChanged(true);
+  m_changed = true;
 }

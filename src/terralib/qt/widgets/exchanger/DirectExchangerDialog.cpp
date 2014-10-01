@@ -40,10 +40,11 @@
 #include "ui_DirectExchangerDialogForm.h"
 
 // Qt
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QMessageBox>
 
 // Boost
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/random_generator.hpp>
@@ -76,6 +77,7 @@ te::qt::widgets::DirectExchangerDialog::DirectExchangerDialog(QWidget* parent, Q
   //starup interface
   m_outputDataSourceType = "";
   m_exchangeToFile = false;
+  m_lastDsType = "";
 
   setOutputDataSources();
 }
@@ -98,7 +100,7 @@ void te::qt::widgets::DirectExchangerDialog::setLayers(std::list<te::map::Abstra
 
       std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
 
-      if(dsType.get() && dsType->hasGeom())
+      if(dsType.get() && !dsType->hasRaster())
         m_ui->m_inputLayerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
 
     ++it;
@@ -113,6 +115,11 @@ void te::qt::widgets::DirectExchangerDialog::setLayers(std::list<te::map::Abstra
   
   if(m_ui->m_inputLayerComboBox->count() > 1)
     m_ui->m_inputLayerComboBox->setEnabled(true);
+}
+
+void te::qt::widgets::DirectExchangerDialog::setLastDataSource(std::string dataSource)
+{
+  m_lastDsType = dataSource;
 }
 
 void te::qt::widgets::DirectExchangerDialog::setDataSources()
@@ -177,6 +184,14 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
     te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), dsOGR->getCapabilities());
 
     te::da::DataSetType* dsTypeResult = converter->getResult();
+
+    te::gm::GeometryProperty* p = te::da::GetFirstGeomProperty(dsTypeResult);
+
+    //check srid
+    if(p && (p->getSRID() != layer->getSRID()))
+    {
+        p->setSRID(layer->getSRID());
+    }
 
     boost::filesystem::path uri(m_ui->m_dataSetLineEdit->text().toStdString());
 
@@ -276,11 +291,20 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
     {
       te::gm::GeometryProperty* p = te::da::GetFirstGeomProperty(dsTypeResult);
 
+      //check srid
+      if(p && (p->getSRID() != layer->getSRID()))
+      {
+          p->setSRID(layer->getSRID());
+      }
+
       if(p)
       {
         te::da::Index* idx = new te::da::Index(dsTypeResult);
 
         std::string name = m_ui->m_dataSetLineEdit->text().toStdString() + "_" + p->getName() + "_idx";
+
+        boost::replace_all(name, ".", "_");
+
         idx->setName(name);
         idx->setIndexType(te::da::R_TREE_TYPE);
 
@@ -296,7 +320,9 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
       te::da::PrimaryKey* pk = new te::da::PrimaryKey(dsTypeResult);
       
       std::string name = m_ui->m_dataSetLineEdit->text().toStdString() + "_" + dsType->getPrimaryKey()->getName() + "_pk";
-      
+
+      boost::replace_all(name, ".", "_");
+
       pk->setName(name);
 
       std::vector<te::dt::Property*> props =  dsType->getPrimaryKey()->getProperties();
@@ -410,6 +436,9 @@ void te::qt::widgets::DirectExchangerDialog::onDirToolButtonClicked()
 void te::qt::widgets::DirectExchangerDialog::onDataSoruceToolButtonClicked()
 {
   std::auto_ptr<te::qt::widgets::DataSourceExplorerDialog> dExplorer(new te::qt::widgets::DataSourceExplorerDialog(this));
+
+  if(!m_lastDsType.empty())
+    dExplorer->setDataSourceToUse(m_lastDsType.c_str());
 
   dExplorer->exec();
 

@@ -126,14 +126,14 @@ void te::ogr::DataSource::open()
   close();
 
   if(m_connectionInfo.empty())
-    throw Exception(TR_OGR("There is no information about the data source")); 
+    throw Exception(TE_TR("There is no information about the data source")); 
 
   std::string path;
   std::map<std::string, std::string>::const_iterator it;
   
   it = m_connectionInfo.find("URI");
   if (it==m_connectionInfo.end())
-    throw(Exception(TR_OGR("Not enough information to open the data source.")));
+    throw(Exception(TE_TR("Not enough information to open the data source.")));
 
   path = it->second;
 
@@ -218,7 +218,7 @@ void  te::ogr::DataSource::createDataSet(te::da::DataSetType* dt, const std::map
     
     it = m_connectionInfo.find("URI");
     if (it==m_connectionInfo.end())
-      throw(Exception(TR_OGR("Not enough information to create data set.")));
+      throw(Exception(TE_TR("Not enough information to create data set.")));
     path = it->second;
     
     boost::filesystem::path bpath(path);
@@ -236,10 +236,10 @@ void  te::ogr::DataSource::createDataSet(te::da::DataSetType* dt, const std::map
       driver = driverManager->GetDriverByName(GetDriverName(path).c_str());
     
     if (driver == 0)
-      throw(Exception(TR_OGR("Driver not found.")));
+      throw(Exception(TE_TR("Driver not found.")));
     
     if(!driver->TestCapability(ODrCCreateDataSource))
-      throw(Exception(TR_OGR("The Driver does not have create capability.")));
+      throw(Exception(TE_TR("The Driver does not have create capability.")));
     
     char** papszOptions = 0;
     it = m_connectionInfo.begin();
@@ -261,7 +261,7 @@ void  te::ogr::DataSource::createDataSet(te::da::DataSetType* dt, const std::map
   }
   
   if (!m_ogrDS)
-    throw(Exception(TR_OGR("Error creating the dataset.")));
+    throw(Exception(TE_TR("Error creating the dataset.")));
   
   std::auto_ptr<te::da::DataSourceTransactor> t = getTransactor();
   return t->createDataSet(dt, options);
@@ -278,13 +278,13 @@ void te::ogr::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
   OGRSFDriver* driver = driverManager->GetDriverByName(GetDriverName(path).c_str());
 
   if (driver == 0)
-    throw(Exception(TR_OGR("Driver not found.")));
+    throw(Exception(TE_TR("Driver not found.")));
 
   if(!driver->TestCapability(ODrCDeleteDataSource))
-    throw(Exception(TR_OGR("The Driver does not have drop capability.")));
+    throw(Exception(TE_TR("The Driver does not have drop capability.")));
 
   if(driver->DeleteDataSource(path.c_str()) != OGRERR_NONE)
-    throw(Exception(TR_OGR("Error when dropping the data source.")));   
+    throw(Exception(TE_TR("Error when dropping the data source.")));   
 }
 
 bool te::ogr::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
@@ -301,11 +301,9 @@ std::vector<std::string> te::ogr::DataSource::getDataSourceNames(const std::map<
   return names;
 }
 
-std::vector<std::string> te::ogr::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
+std::vector<te::common::CharEncoding> te::ogr::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
 {
-  std::vector<std::string> encodings;
-
-  return encodings;
+  return std::vector<te::common::CharEncoding>();
 }
 
 te::ogr::DataSource* te::ogr::Build()

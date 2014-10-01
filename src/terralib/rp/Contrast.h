@@ -37,13 +37,13 @@ namespace te
   namespace da
   {
     class DataSource;
-  };
+  }
 
   namespace rst
   {
     class Raster;
     class Band;
-  };
+  }
 
   namespace rp
   {
@@ -51,7 +51,7 @@ namespace te
       \class Contrast
       \brief Contrast enhancement.
       \details Apply contrast enhencement on the selected bands.
-      \ingroup rp
+      \ingroup rp_enh
      */
     class TERPEXPORT Contrast : public Algorithm
     {
@@ -71,7 +71,7 @@ namespace te
               InvalidContrastT = 0, /*!< Invalid contrast. */
               LinearContrastT = 1, /*!< The histogram range will be changed to the supplied min/max range ( linear function ). */
               HistogramEqualizationContrastT = 2, /*!< The histogram of the image will be equalized automatically. */
-              SetMeanAndStdContrastT = 3, /*!< The contrasted image will have a predefined mean and standard deviation. */
+              SetMeanAndStdContrastT = 3 /*!< The contrasted image will have a predefined mean and standard deviation. */
             };
 
             ContrastType m_type; //!< The contrast type to be applied.

@@ -30,7 +30,7 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 // STL
 #include <memory>
@@ -109,6 +109,8 @@ namespace te
           void onUpSymbolizerClicked();
 
           void onDownSymbolizerClicked();
+
+          void onLibraryManagerClicked();
 
           void onMapRefreshClicked();
 

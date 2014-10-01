@@ -44,13 +44,13 @@ namespace te
   namespace da
   {
     class DataSource;    
-  };
+  }
   
   namespace rst
   {
     class Raster;
     class Band;
-  };
+  }
   
   namespace rp
   {
@@ -67,7 +67,7 @@ namespace te
       \sa te::rp::Segmenter::Parameters For detailed parameters description.
       \sa te::rp::SegmenterStrategy For detailed parameters description.
 
-      \ingroup rp
+      \ingroup rp_seg
     */
     class TERPEXPORT Segmenter : public Algorithm
     {
@@ -98,6 +98,8 @@ namespace te
             std::string m_strategyName; //!< The segmenter strategy name see each te::rp::SegmenterStrategyFactory inherited classes documentation for reference.
             
             bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
+            
+            bool m_enableRasterCache; //!< Enable/Disable the use of raster data cache (default:true).
             
             InputParameters();
             
@@ -255,25 +257,21 @@ namespace te
           \param totalImageCols The total original full image columns.
           \param minBlockPixels The minimun allowed pixels number for each block (expanded block).
           \param maxBlockPixels The maximum allowed pixels number for each block (expanded block).
-          \param blocksHOverlapSizePercent The blocks horizontal overlap size percentual related to the non-expanded block horizontal size - valid range[0,1].
-          \param blocksVOverlapSizePectent The blocks vertical overlap size percentual related to the non-expanded block vertial size - valid range[0,1].
+          \param blocksHOverlapSize The blocks horizontal overlap size (number of columns).
+          \param blocksVOverlapSize The blocks vertical overlap size (number of rows).
           \param blockWidth The calculated block width (non-expanded block).
           \param blockHeight The calculated block height (non-expanded block).
-          \param blocksHOverlapSize The calculated block horizontal overlap size.
-          \param blocksVOverlapSize The calculated block vertical overlap size.
           \return true if OK, false on errors.
         */                
         bool calcBestBlockSize( 
           const unsigned int totalImageLines, 
           const unsigned int totalImageCols, 
-          const unsigned int minBlockPixels,
-          const unsigned int maxBlockPixels, 
-          const double blocksHOverlapSizePercent,
-          const double blocksVOverlapSizePectent, 
-          unsigned int& blockWidth,
-          unsigned int& blockHeight,
-          unsigned int& blocksHOverlapSize,
-          unsigned int& blocksVOverlapSize ) const;        
+          const unsigned int minExapandedBlockPixels,
+          const unsigned int maxExapandedBlockPixels, 
+          const unsigned int blocksHOverlapSize,
+          const unsigned int blocksVOverlapSize, 
+          unsigned int& nonExpandedBlockWidth,
+          unsigned int& nonExpandedBlockHeight ) const;        
           
         /*! 
           \brief Segmenter thread entry.

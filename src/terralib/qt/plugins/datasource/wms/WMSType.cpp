@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../../common/Translator.h"
+#include "../../../../wms/qt/WMSLayerSelector.h"
 #include "WMSConnector.h"
 #include "WMSType.h"
 
@@ -39,6 +40,26 @@ te::qt::plugins::wms::WMSType::~WMSType()
 {
 }
 
+bool te::qt::plugins::wms::WMSType::hasDatabaseSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::wms::WMSType::hasFileSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::wms::WMSType::hasRasterSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::wms::WMSType::hasVectorialSupport() const
+{
+  return false;
+}
+
 std::string te::qt::plugins::wms::WMSType::getName() const
 {
   return "WMS";
@@ -46,12 +67,12 @@ std::string te::qt::plugins::wms::WMSType::getName() const
 
 std::string te::qt::plugins::wms::WMSType::getTitle() const
 {
-  return TE_QT_PLUGIN_DATASOURCE_WMS("Web Map Service");
+  return TE_TR("Web Map Service");
 }
 
 std::string te::qt::plugins::wms::WMSType::getDescription() const
 {
-  return TE_QT_PLUGIN_DATASOURCE_WMS("Access to geospatial through a Web Map Service (WMS)");
+  return TE_TR("Access to geospatial through a Web Map Service (WMS)");
 }
 
 QWidget* te::qt::plugins::wms::WMSType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
@@ -61,8 +82,8 @@ QWidget* te::qt::plugins::wms::WMSType::getWidget(int widgetType, QWidget* paren
     case te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new WMSConnector(parent, f);
 
-    //case DataSourceType::WIDGET_LAYER_SELECTOR:
-      //return new DataSetLayerSelector(parent, f);
+    case DataSourceType::WIDGET_LAYER_SELECTOR:
+      return new te::wms::WMSLayerSelector(parent, f);
 
     default:
       return 0;
@@ -83,5 +104,3 @@ QIcon te::qt::plugins::wms::WMSType::getIcon(int iconType) const
       return QIcon::fromTheme("unknown-icon");
   }
 }
-
-

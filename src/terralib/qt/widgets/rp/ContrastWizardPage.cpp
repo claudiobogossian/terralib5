@@ -35,8 +35,8 @@
 
 // Qt
 #include <QGridLayout>
-#include <QtGui/QMessageBox>
-#include <QtGui/QCheckBox>
+#include <QMessageBox>
+#include <QCheckBox>
 
 // Boost
 #include <boost/lexical_cast.hpp>
@@ -209,8 +209,8 @@ void te::qt::widgets::ContrastWizardPage::apply()
   te::rp::Contrast::OutputParameters algoOutputParams;
 
   std::map<std::string, std::string> rinfo;
-  rinfo["MEM_RASTER_NROWS"] = inputRst->getNumberOfRows();
-  rinfo["MEM_RASTER_NCOLS"] = inputRst->getNumberOfColumns();
+  rinfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(inputRst->getNumberOfRows());
+  rinfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(inputRst->getNumberOfColumns());
   rinfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(inputRst->getBandDataType(0));
   rinfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(inputRst->getNumberOfBands());
 
@@ -290,7 +290,11 @@ void te::qt::widgets::ContrastWizardPage::listBands()
   }
 
   m_ui->m_bandTableWidget->resizeColumnsToContents();
+#if (QT_VERSION >= 0x050000)
+  m_ui->m_bandTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+#else
   m_ui->m_bandTableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+#endif
 
   onContrastTypeComboBoxActivated(m_ui->m_contrastTypeComboBox->currentIndex());
 }
@@ -372,5 +376,9 @@ void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int in
   }
 
   m_ui->m_bandTableWidget->resizeColumnsToContents();
+#if (QT_VERSION >= 0x050000)
+  m_ui->m_bandTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+#else
   m_ui->m_bandTableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+#endif
 }

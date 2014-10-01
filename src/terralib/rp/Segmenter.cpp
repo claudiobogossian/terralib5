@@ -34,6 +34,8 @@
 #include "../raster/Raster.h"
 #include "../raster/Enums.h"
 #include "../raster/Grid.h"
+#include "../raster/Utils.h"
+#include "../memory/CachedRaster.h"
 #include "../dataaccess/datasource/DataSource.h"
 #include "../common/PlatformUtils.h"
 #include "../common/StringUtils.h"
@@ -79,6 +81,7 @@ namespace te
       m_maxBlockSize = 0;
       m_strategyName.clear();
       m_enableProgress = false;
+      m_enableRasterCache = true;
       
       if( m_segStratParamsPtr )
       {
@@ -101,6 +104,7 @@ namespace te
       m_maxBlockSize = params.m_maxBlockSize;
       m_strategyName = params.m_strategyName;
       m_enableProgress = params.m_enableProgress;
+      m_enableRasterCache = params.m_enableRasterCache;
       
       m_segStratParamsPtr = params.m_segStratParamsPtr ? 
         (SegmenterStrategyParameters*)params.m_segStratParamsPtr->clone()
@@ -235,6 +239,58 @@ namespace te
             "Output raster creation error" );
         }
         
+        // instantiating the segmentation strategy
+        
+        std::auto_ptr< SegmenterStrategy > strategyPtr(
+          SegmenterStrategyFactory::make( m_inputParameters.m_strategyName ) );
+        TERP_TRUE_OR_RETURN_FALSE( strategyPtr.get(), 
+          "Unable to create an segmentation strategy" ); 
+        TERP_TRUE_OR_RETURN_FALSE( strategyPtr->initialize( 
+          m_inputParameters.getSegStrategyParams() ), 
+          "Unable to initialize the segmentation strategy" );
+        
+        const double stratMemUsageEstimation = strategyPtr->getMemUsageEstimation(
+          m_inputParameters.m_inputRasterBands.size(),
+          m_inputParameters.m_inputRasterPtr->getNumberOfRows() *
+          m_inputParameters.m_inputRasterPtr->getNumberOfColumns() );  
+        TERP_DEBUG_TRUE_OR_THROW( stratMemUsageEstimation > 0.0,
+          "Invalid strategy memory usage factorMemUsageFactor" );       
+          
+        const unsigned stratBlocksOverlapSize = 
+          strategyPtr->getOptimalBlocksOverlapSize();        
+        
+        // Guessing memory limits
+        
+        const unsigned int totalRasterPixels = 
+          m_inputParameters.m_inputRasterPtr->getNumberOfRows() * 
+          m_inputParameters.m_inputRasterPtr->getNumberOfColumns();
+        const double originalRasterDataMemUsageEstimation = (double)(
+          totalRasterPixels *
+          ((unsigned int)m_inputParameters.m_inputRasterBands.size()) *
+          ( (unsigned int)te::rst::GetPixelSize( m_inputParameters.m_inputRasterPtr->getBandDataType( 0 ) ) ) );          
+        const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
+        const double usedVMem = (double)te::common::GetUsedVirtualMemory();
+        const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() );
+        const double freeVMem = MIN( totalPhysMem, ( totalVMem - usedVMem ) );
+        const double pixelRequiredRam = 
+          ( originalRasterDataMemUsageEstimation + stratMemUsageEstimation )
+          / ((double)totalRasterPixels);
+        const double maxSimultaneousMemoryPixels = 0.7 * MIN( 
+          ((double)totalRasterPixels), 
+          freeVMem / pixelRequiredRam );         
+        
+        // Cache issues
+        
+        std::auto_ptr< te::rst::Raster > cachedRasterHandler;
+        te::rst::Raster const * cachedRasterPtr = m_inputParameters.m_inputRasterPtr;
+        
+        if( m_inputParameters.m_enableRasterCache )
+        {
+          cachedRasterHandler.reset( new te::mem::CachedRaster( 
+            *m_inputParameters.m_inputRasterPtr, 40, 0 ) );
+          cachedRasterPtr = cachedRasterHandler.get();
+        }        
+        
         // Finding the input raster normalization parameters
         
         std::vector< double > inputRasterGains( 
@@ -244,9 +300,9 @@ namespace te
           
         {
           const unsigned int nRows = 
-            m_inputParameters.m_inputRasterPtr->getNumberOfRows();
+            cachedRasterPtr->getNumberOfRows();
           const unsigned int nCols = 
-            m_inputParameters.m_inputRasterPtr->getNumberOfColumns();
+            cachedRasterPtr->getNumberOfColumns();
           unsigned int row = 0;
           unsigned int col = 0;
           double bandMin = DBL_MAX;
@@ -257,7 +313,7 @@ namespace te
             m_inputParameters.m_inputRasterBands.size() ; ++inputRasterBandsIdx )
           {
             const te::rst::Band& band = 
-              *(m_inputParameters.m_inputRasterPtr->getBand( 
+              *(cachedRasterPtr->getBand( 
               m_inputParameters.m_inputRasterBands[ inputRasterBandsIdx ] ) );
             bandMin = DBL_MAX;
             bandMax = -1.0 * DBL_MAX;
@@ -279,26 +335,6 @@ namespace te
           }
         }
         
-        // instantiating the segmentation strategy
-        
-        std::auto_ptr< SegmenterStrategy > strategyPtr(
-          SegmenterStrategyFactory::make( m_inputParameters.m_strategyName ) );
-        TERP_TRUE_OR_RETURN_FALSE( strategyPtr.get(), 
-          "Unable to create an segmentation strategy" ); 
-        TERP_TRUE_OR_RETURN_FALSE( strategyPtr->initialize( 
-          m_inputParameters.getSegStrategyParams() ), 
-          "Unable to initialize the segmentation strategy" );   
-          
-        const double stratMemUsageEstimation = strategyPtr->getMemUsageEstimation(
-          m_inputParameters.m_inputRasterBands.size(),
-          m_inputParameters.m_inputRasterPtr->getNumberOfRows() *
-          m_inputParameters.m_inputRasterPtr->getNumberOfColumns() );  
-        TERP_DEBUG_TRUE_OR_THROW( stratMemUsageEstimation > 0.0,
-          "Invalid strategy memory usage factorMemUsageFactor" );       
-          
-        const unsigned stratBlocksOverlapSize = 
-          strategyPtr->getOptimalBlocksOverlapSize();
-        
         // defining the number of processing threads
         
         unsigned int maxSegThreads = 0;
@@ -308,23 +344,6 @@ namespace te
           maxSegThreads = ( m_inputParameters.m_maxSegThreads ? 
             m_inputParameters.m_maxSegThreads : te::common::GetPhysProcNumber() );
         }
-        
-        // Guessing memory limits
-        
-        const unsigned int totalRasterPixels = 
-          m_inputParameters.m_inputRasterPtr->getNumberOfRows() * 
-          m_inputParameters.m_inputRasterPtr->getNumberOfColumns();
-        const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
-        const double usedVMem = (double)te::common::GetUsedVirtualMemory();
-        const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() ) / 
-          2.0;
-        const double freeVMem = MIN( totalPhysMem, 
-          ( ( totalVMem <= usedVMem ) ? 0.0 : ( totalVMem - usedVMem ) ) );
-        const double pixelRequiredRam = stratMemUsageEstimation
-          / ((double)totalRasterPixels);
-        const double maxSimultaneousMemoryPixels = 0.7 * MIN( 
-          ((double)totalRasterPixels), 
-          freeVMem / pixelRequiredRam );         
         
         // Calc the maximum block width & height
         
@@ -378,42 +397,38 @@ namespace te
             // Adjusting the block sizes
             
             TERP_TRUE_OR_RETURN_FALSE( calcBestBlockSize( 
-              m_inputParameters.m_inputRasterPtr->getNumberOfRows(),
-              m_inputParameters.m_inputRasterPtr->getNumberOfColumns(), 
-              std::max( blocksHOverlapSize, blocksVOverlapSize ) *
-                std::max( blocksHOverlapSize, blocksVOverlapSize ),
+              cachedRasterPtr->getNumberOfRows(),
+              cachedRasterPtr->getNumberOfColumns(), 
+              ( 
+                ( stratBlocksOverlapSize + stratBlocksOverlapSize + 1 ) 
+                *
+                ( stratBlocksOverlapSize + stratBlocksOverlapSize + 1 )
+              ),
               maxBlockPixels, 
-              0.4, 
-              0.4,
+              stratBlocksOverlapSize,
+              stratBlocksOverlapSize,
               maxNonExpandedBlockWidth, 
-              maxNonExpandedBlockHeight,
-              blocksHOverlapSize,
-              blocksVOverlapSize ), 
+              maxNonExpandedBlockHeight ), 
               "Error calculating best block size" );   
             
             maxExpandedBlockWidth = maxNonExpandedBlockWidth + 
-              blocksHOverlapSize + blocksHOverlapSize;
+              stratBlocksOverlapSize + stratBlocksOverlapSize;
             maxExpandedBlockHeight = maxNonExpandedBlockHeight +
-              blocksVOverlapSize + blocksVOverlapSize;
+              stratBlocksOverlapSize + stratBlocksOverlapSize;
           }
           else
           {
             // Adjusting the block sizes
-            
-            unsigned int blocksHOverlapSize = 0;
-            unsigned int blocksVOverlapSize = 0;       
-            
+           
             TERP_TRUE_OR_RETURN_FALSE( calcBestBlockSize( 
-              m_inputParameters.m_inputRasterPtr->getNumberOfRows(),
-              m_inputParameters.m_inputRasterPtr->getNumberOfColumns(), 
+              cachedRasterPtr->getNumberOfRows(),
+              cachedRasterPtr->getNumberOfColumns(), 
               stratBlocksOverlapSize * stratBlocksOverlapSize,
               maxBlockPixels, 
-              0.0, 
-              0.0,
+              0,
+              0,
               maxNonExpandedBlockWidth, 
-              maxNonExpandedBlockHeight,
-              blocksHOverlapSize,
-              blocksVOverlapSize ), 
+              maxNonExpandedBlockHeight ), 
               "Error calculating best block size" );  
               
             maxExpandedBlockWidth = maxNonExpandedBlockWidth;
@@ -423,18 +438,18 @@ namespace te
         else
         {
           maxNonExpandedBlockWidth = maxExpandedBlockWidth =
-            m_inputParameters.m_inputRasterPtr->getNumberOfColumns();
+            cachedRasterPtr->getNumberOfColumns();
           maxNonExpandedBlockHeight = maxExpandedBlockHeight =
-            m_inputParameters.m_inputRasterPtr->getNumberOfRows();
+            cachedRasterPtr->getNumberOfRows();
         }
 
         // Defining number of blocks
           
         const unsigned int hBlocksNumber = (unsigned int)ceil( 
-          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfColumns()) / 
+          ((double)cachedRasterPtr->getNumberOfColumns()) / 
           ((double)maxNonExpandedBlockWidth) );
         const unsigned int vBlocksNumber = (unsigned int)ceil( 
-          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfRows()) / 
+          ((double)cachedRasterPtr->getNumberOfRows()) / 
           ((double)maxNonExpandedBlockHeight ) );        
 
         // Generating cut off profiles. When possible, an empty profile
@@ -468,7 +483,7 @@ namespace te
             imageHorizontalProfilesCenterLines.push_back( centerLine );
             
             if( genImageHCutOffProfile( centerLine,
-              *(m_inputParameters.m_inputRasterPtr), m_inputParameters.m_inputRasterBands, 
+              *(cachedRasterPtr), m_inputParameters.m_inputRasterBands, 
               pixelNeighborhoodSize, tileHNeighborhoodSize, 
               profileAntiSmoothingFactor, profile ) )
             {
@@ -490,7 +505,7 @@ namespace te
             imageVerticalProfilesCenterLines.push_back( centerLine );            
             
             if( genImageVCutOffProfile( centerLine,
-              *(m_inputParameters.m_inputRasterPtr), m_inputParameters.m_inputRasterBands, 
+              *(cachedRasterPtr), m_inputParameters.m_inputRasterBands, 
               pixelNeighborhoodSize, tileVNeighborhoodSize, 
               profileAntiSmoothingFactor, profile ) )
             {
@@ -521,9 +536,9 @@ namespace te
             hBlocksNumber ), "Blocks matrix reset error" );
             
           const int linesBound = (int)
-            m_inputParameters.m_inputRasterPtr->getNumberOfRows();
+            cachedRasterPtr->getNumberOfRows();
           const int colsBound = (int)
-            m_inputParameters.m_inputRasterPtr->getNumberOfColumns();
+            cachedRasterPtr->getNumberOfColumns();
           int blockXBound = 0;
           int blockYBound = 0;
           int blockXStart = 0;
@@ -570,6 +585,12 @@ namespace te
             }
           }
         }
+        
+        // Disabling de raster cache
+        // since it will be not used during segmentation
+        
+        cachedRasterHandler.reset();
+        cachedRasterPtr = m_inputParameters.m_inputRasterPtr;
         
         // Starting the segmentation 
         
@@ -744,41 +765,32 @@ namespace te
     bool Segmenter::calcBestBlockSize( 
       const unsigned int totalImageLines, 
       const unsigned int totalImageCols, 
-      const unsigned int minBlockPixels,
-      const unsigned int maxBlockPixels, 
-      const double blocksHOverlapSizePercent,
-      const double blocksVOverlapSizePectent, 
-      unsigned int& blockWidth,
-      unsigned int& blockHeight,
-      unsigned int& blocksHOverlapSize,
-      unsigned int& blocksVOverlapSize ) const
+      const unsigned int minExapandedBlockPixels,
+      const unsigned int maxExapandedBlockPixels, 
+      const unsigned int blocksHOverlapSize,
+      const unsigned int blocksVOverlapSize, 
+      unsigned int& nonExpandedBlockWidth,
+      unsigned int& nonExpandedBlockHeight ) const
     {
-      if( minBlockPixels > maxBlockPixels ) return false;
+      if( minExapandedBlockPixels > maxExapandedBlockPixels ) return false;
         
-      const double rasterRCFactor = ((double)totalImageLines) /
-        ((double)totalImageCols);
-        
-      const double minRasterLinesNmb = sqrt( ((double)minBlockPixels) * 
-        rasterRCFactor );
-        
-      const double maxScaleFactor = ((double)totalImageLines) / 
-        minRasterLinesNmb;
+      const double maxScaleFactor = 
+        ((double)(totalImageLines * totalImageCols)) 
+        / 
+        ((double)minExapandedBlockPixels);
         
       unsigned int rescaledAndExtendedBlockPixelsNmb = 0;
         
       for( double scaleFactor = 1.0 ; scaleFactor <= maxScaleFactor ;
         scaleFactor += 1.0 )
       {
-        blockHeight = (unsigned int)std::ceil( ((double)totalImageLines) / scaleFactor );
-        blockWidth = (unsigned int)std::ceil( ((double)totalImageCols) / scaleFactor );
+        nonExpandedBlockHeight = (unsigned int)std::ceil( ((double)totalImageLines) / scaleFactor );
+        nonExpandedBlockWidth = (unsigned int)std::ceil( ((double)totalImageCols) / scaleFactor );
         
-        blocksHOverlapSize = (unsigned int)( blocksHOverlapSizePercent * ((double)blockWidth) );
-        blocksVOverlapSize = (unsigned int)( blocksVOverlapSizePectent * ((double)blockHeight) );
-        
-        rescaledAndExtendedBlockPixelsNmb = ( blockHeight + blocksVOverlapSize +
-          blocksVOverlapSize ) * ( blockWidth + blocksHOverlapSize + blocksHOverlapSize );
+        rescaledAndExtendedBlockPixelsNmb = ( nonExpandedBlockHeight + blocksVOverlapSize +
+          blocksVOverlapSize ) * ( nonExpandedBlockWidth + blocksHOverlapSize + blocksHOverlapSize );
           
-        if( rescaledAndExtendedBlockPixelsNmb <= maxBlockPixels )
+        if( rescaledAndExtendedBlockPixelsNmb <= maxExapandedBlockPixels )
         {
           return true;
         }

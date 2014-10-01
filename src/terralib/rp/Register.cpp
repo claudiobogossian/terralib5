@@ -26,7 +26,6 @@
 #include "Macros.h"
 #include "../geometry/GeometricTransformation.h"
 #include "../geometry/GTFactory.h"
-#include "../geometry/Envelope.h"
 #include "../raster/RasterFactory.h"
 #include "../raster/Band.h"
 #include "../raster/BandProperty.h"
@@ -69,6 +68,9 @@ namespace te
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;
       m_noDataValue = 0;
       m_geomTransfName = "Affine";
+      m_geomTransfPtr = 0;
+      m_outputBoundingBox.m_llx = m_outputBoundingBox.m_lly =
+        m_outputBoundingBox.m_urx = m_outputBoundingBox.m_ury = 0.0;
     }
 
     const Register::InputParameters& Register::InputParameters::operator=(
@@ -85,6 +87,8 @@ namespace te
       m_interpMethod = params.m_interpMethod;
       m_noDataValue = params.m_noDataValue;
       m_geomTransfName = params.m_geomTransfName;
+      m_geomTransfPtr = params.m_geomTransfPtr;
+      m_outputBoundingBox = params.m_outputBoundingBox;
 
       return *this;
     }
@@ -155,6 +159,11 @@ namespace te
       
       std::auto_ptr< te::gm::GeometricTransformation > transformationPtr;
       
+      if( m_inputParameters.m_geomTransfPtr )
+      {
+        transformationPtr.reset( m_inputParameters.m_geomTransfPtr->clone() );
+      }
+      else
       {
         te::gm::GTParameters transfParams;
         transfParams.m_tiePoints = m_inputParameters.m_tiePoints;
@@ -173,6 +182,22 @@ namespace te
       double upperRightX = -1.0 * DBL_MAX;
       double upperRightY = -1.0 * DBL_MAX;     
       
+      if(
+          ( m_inputParameters.m_outputBoundingBox.m_llx != 0.0 )
+          ||
+          ( m_inputParameters.m_outputBoundingBox.m_lly != 0.0 )
+          ||
+          ( m_inputParameters.m_outputBoundingBox.m_urx != 0.0 )
+          ||
+          ( m_inputParameters.m_outputBoundingBox.m_ury != 0.0 )
+        )
+      {
+        lowerLeftX = m_inputParameters.m_outputBoundingBox.m_llx;
+        lowerLeftY = m_inputParameters.m_outputBoundingBox.m_lly;
+        upperRightX = m_inputParameters.m_outputBoundingBox.m_urx;
+        upperRightY = m_inputParameters.m_outputBoundingBox.m_ury;
+      }
+      else
       {
         double mappedX = 0;
         double mappedY = 0;        
@@ -339,14 +364,22 @@ namespace te
 
       // checking transformation related parameters
       
-      std::auto_ptr< te::gm::GeometricTransformation > transformationPtr( 
-      te::gm::GTFactory::make( m_inputParameters.m_geomTransfName ) );
-      TERP_TRUE_OR_RETURN_FALSE( transformationPtr.get() != 0,
-        "Geometric transformation instatiation error" );
-        
-      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_tiePoints.size() >=
-        transformationPtr->getMinRequiredTiePoints(),
-        "Invalid tie-points number" )
+      if( m_inputParameters.m_geomTransfPtr )
+      {
+        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_geomTransfPtr->isValid(),
+          "Invalid geometric transformation" );
+      }
+      else
+      {
+        std::auto_ptr< te::gm::GeometricTransformation > transformationPtr( 
+        te::gm::GTFactory::make( m_inputParameters.m_geomTransfName ) );
+        TERP_TRUE_OR_RETURN_FALSE( transformationPtr.get() != 0,
+          "Geometric transformation instatiation error" );
+          
+        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_tiePoints.size() >=
+          transformationPtr->getMinRequiredTiePoints(),
+          "Invalid tie-points number" )
+      }
 
       // checking other parameters
 
@@ -357,8 +390,7 @@ namespace te
         "Invalid m_outputResolutionX" )        
         
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_outputResolutionY > 0.0,
-        "Invalid m_outputResolutionY" )        
-       
+        "Invalid m_outputResolutionY" )  
 
       m_isInitialized = true;
 

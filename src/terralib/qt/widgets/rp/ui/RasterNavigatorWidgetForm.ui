@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>697</width>
-    <height>385</height>
+    <width>757</width>
+    <height>387</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,32 +36,29 @@
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0">
-           <widget class="QToolButton" name="m_recomposeActionToolButton">
-            <property name="toolTip">
-             <string>Recompose</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="autoRaise">
-             <bool>true</bool>
+          <property name="margin">
+           <number>2</number>
+          </property>
+          <item row="9" column="0">
+           <widget class="Line" name="m_extraLine">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QToolButton" name="m_zoomInActionToolButtontoolButton">
+          <item row="10" column="0">
+           <widget class="QToolButton" name="m_extraDisplaysToolButton">
             <property name="toolTip">
-             <string>Zoom In</string>
+             <string>Show Auxiliary Displays</string>
             </property>
             <property name="text">
-             <string/>
+             <string>...</string>
             </property>
             <property name="checkable">
              <bool>true</bool>
             </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
+            <property name="checked">
+             <bool>false</bool>
             </property>
             <property name="autoRaise">
              <bool>true</bool>
@@ -132,6 +129,25 @@
             </property>
            </widget>
           </item>
+          <item row="8" column="0">
+           <widget class="QToolButton" name="m_readPixelActionToolButton">
+            <property name="toolTip">
+             <string>Read Pixel</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
           <item row="6" column="0">
            <widget class="QToolButton" name="m_geomActionToolButtontoolButton">
             <property name="toolTip">
@@ -151,10 +167,23 @@
             </property>
            </widget>
           </item>
-          <item row="7" column="0">
-           <widget class="QToolButton" name="m_readPixelActionToolButton">
+          <item row="0" column="0">
+           <widget class="QToolButton" name="m_recomposeActionToolButton">
             <property name="toolTip">
-             <string>Read Pixel</string>
+             <string>Recompose</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QToolButton" name="m_zoomInActionToolButtontoolButton">
+            <property name="toolTip">
+             <string>Zoom In</string>
             </property>
             <property name="text">
              <string/>
@@ -170,26 +199,19 @@
             </property>
            </widget>
           </item>
-          <item row="8" column="0">
-           <widget class="Line" name="m_extraLine">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="9" column="0">
-           <widget class="QToolButton" name="m_extraDisplaysToolButton">
+          <item row="7" column="0">
+           <widget class="QToolButton" name="m_extentActionToolButtontoolButton">
             <property name="toolTip">
-             <string>Show Auxiliary Displays</string>
+             <string>Extent Selection</string>
             </property>
             <property name="text">
-             <string>...</string>
+             <string/>
             </property>
             <property name="checkable">
              <bool>true</bool>
             </property>
-            <property name="checked">
-             <bool>false</bool>
+            <property name="autoExclusive">
+             <bool>true</bool>
             </property>
             <property name="autoRaise">
              <bool>true</bool>
@@ -218,7 +240,7 @@
             <enum>QFrame::StyledPanel</enum>
            </property>
            <property name="frameShadow">
-            <enum>QFrame::Sunken</enum>
+            <enum>QFrame::Raised</enum>
            </property>
            <layout class="QGridLayout" name="gridLayout_13">
             <property name="margin">
@@ -308,12 +330,6 @@
                   </item>
                   <item row="0" column="1">
                    <widget class="QComboBox" name="m_monoComboBox">
-                    <property name="minimumSize">
-                     <size>
-                      <width>45</width>
-                      <height>0</height>
-                     </size>
-                    </property>
                     <property name="maximumSize">
                      <size>
                       <width>45</width>
@@ -442,6 +458,9 @@
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="m_label">
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -468,6 +487,12 @@
         </property>
         <item row="0" column="0">
          <layout class="QGridLayout" name="gridLayout_4">
+          <property name="leftMargin">
+           <number>4</number>
+          </property>
+          <property name="rightMargin">
+           <number>4</number>
+          </property>
           <item row="0" column="0">
            <spacer name="verticalSpacer_2">
             <property name="orientation">
@@ -508,7 +533,7 @@
              <enum>QFrame::StyledPanel</enum>
             </property>
             <property name="frameShadow">
-             <enum>QFrame::Plain</enum>
+             <enum>QFrame::Sunken</enum>
             </property>
            </widget>
           </item>
@@ -552,7 +577,7 @@
              <enum>QFrame::StyledPanel</enum>
             </property>
             <property name="frameShadow">
-             <enum>QFrame::Plain</enum>
+             <enum>QFrame::Sunken</enum>
             </property>
            </widget>
           </item>

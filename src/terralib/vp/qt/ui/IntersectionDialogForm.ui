@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>509</width>
+    <width>556</width>
     <height>502</height>
    </rect>
   </property>
@@ -94,9 +94,9 @@
            <widget class="QComboBox" name="m_firstLayerComboBox"/>
           </item>
           <item row="2" column="0">
-           <widget class="QCheckBox" name="m_firstCheckBox">
+           <widget class="QCheckBox" name="m_firstSelectedCheckBox">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>Only Selected</string>
@@ -127,9 +127,9 @@
           <item row="2" column="0">
            <layout class="QGridLayout" name="gridLayout_2">
             <item row="0" column="0">
-             <widget class="QCheckBox" name="m_secondCheckBox">
+             <widget class="QCheckBox" name="m_secondSelectedCheckBox">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="text">
                <string>Only Selected</string>
@@ -185,6 +185,13 @@
         <item row="1" column="0">
          <widget class="QLineEdit" name="m_repositoryLineEdit"/>
         </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Layer Name:</string>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="1">
          <widget class="QToolButton" name="m_targetFileToolButton">
           <property name="minimumSize">
@@ -198,6 +205,9 @@
           </property>
          </widget>
         </item>
+        <item row="3" column="0">
+         <widget class="QLineEdit" name="m_newLayerNameLineEdit"/>
+        </item>
         <item row="1" column="2">
          <widget class="QToolButton" name="m_targetDatasourceToolButton">
           <property name="minimumSize">
@@ -210,16 +220,6 @@
            <string>BD</string>
           </property>
          </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>Layer Name:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLineEdit" name="m_newLayerNameLineEdit"/>
         </item>
        </layout>
       </widget>

@@ -39,20 +39,16 @@ const std::string te::graph::Globals::sm_factoryCachePolicyTypeLFU(TE_GRAPH_FACT
 const std::string te::graph::Globals::sm_factoryLoaderStrategyTypeBox(TE_GRAPH_FACTORY_LOADERSTRATEGY_TYPE_BOX);
 const std::string te::graph::Globals::sm_factoryLoaderStrategyTypeSequence(TE_GRAPH_FACTORY_LOADERSTRATEGY_TYPE_SEQUENCE);
 
-
 const std::string te::graph::Globals::sm_graphFactoryDefaultObject(TE_DEFAULT_GRAPH_TYPE);
 const std::string te::graph::Globals::sm_cachePolicyFactoryDefaultObject(TE_DEFAULT_CACHE_POLICY_TYPE);
 const std::string te::graph::Globals::sm_loaderStrategyFactoryDefaultObject(TE_DEFAULT_GRAPH_LOADER_STRATEGY_TYPE);
-
 
 const int te::graph::Globals::sm_graphCacheDefaultMaxSize(TE_GRAPH_DEFAULT_MAX_CACHE_SIZE);
 const int te::graph::Globals::sm_graphVecCacheDefaultMaxSize(TE_GRAPH_DEFAULT_MAX_VEC_CACHE_SIZE);
 const int te::graph::Globals::sm_boxLoaderStrategyDefaultSize(TE_GRAPH_DEFAULT_BOX_STRATEGY_LOADER_SIZE);
 
-
 const std::string te::graph::Globals::sm_vertexStorageMode(TE_GRAPH_STORAGE_MODE_BY_VERTEX);
 const std::string te::graph::Globals::sm_edgeStorageMode(TE_GRAPH_STORAGE_MODE_BY_EDGE);
-
 
 const std::string te::graph::Globals::sm_tableGraphName(TE_GRAPH_GRAPH_TABLE_NAME);
 const std::string te::graph::Globals::sm_tableGraphAttrId(TE_GRAPH_GRAPH_TABLE_ATTR_ID);

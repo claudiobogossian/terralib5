@@ -107,7 +107,7 @@ void te::ado::Transactor::begin()
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 
@@ -120,7 +120,7 @@ void te::ado::Transactor::commit()
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 
@@ -133,7 +133,7 @@ void te::ado::Transactor::rollBack()
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 
@@ -162,7 +162,7 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
                                                                const te::common::AccessPolicy accessPolicy)
 {
   if(e == 0)
-    throw Exception(TR_ADO("The envelope is missing!"));
+    throw Exception(TE_TR("The envelope is missing!"));
 
   std::string lowerX = "lower_x";
   std::string upperX = "upper_x";
@@ -187,7 +187,7 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
                                                                bool /*connected*/,
                                                                const te::common::AccessPolicy /*accessPolicy*/)
 {
-  throw Exception(TR_ADO("Method getDataSet by geometry filter: not implemented yet!"));
+  throw Exception(TE_TR("Method getDataSet by geometry filter: not implemented yet!"));
 }
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& /*name*/,
@@ -196,7 +196,7 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
                                                                bool /*connected*/,
                                                                const te::common::AccessPolicy /*accessPolicy*/)
 {
-  throw Exception(TR_ADO("Method getDataSet by oids: not implemented yet!"));
+  throw Exception(TE_TR("Method getDataSet by oids: not implemented yet!"));
 }
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const te::da::Select& q,
@@ -254,12 +254,12 @@ void te::ado::Transactor::execute(const std::string& command)
 
 std::auto_ptr<te::da::PreparedQuery> te::ado::Transactor::getPrepared(const std::string& qName)
 {
-  throw Exception(TR_ADO("Method getPrepared: not implemented yet!"));
+  throw Exception(TE_TR("Method getPrepared: not implemented yet!"));
 }
 
 std::auto_ptr<te::da::BatchExecutor> te::ado::Transactor::getBatchExecutor()
 {
-  throw Exception(TR_ADO("Method getBatchExecutor: not implemented yet!"));
+  throw Exception(TE_TR("Method getBatchExecutor: not implemented yet!"));
 }
 
 void te::ado::Transactor::cancel()
@@ -268,22 +268,12 @@ void te::ado::Transactor::cancel()
 
 boost::int64_t te::ado::Transactor::getLastGeneratedId()
 {
-  throw Exception(TR_ADO("Method getLastGeneratedId: not implemented yet!"));
+  throw Exception(TE_TR("Method getLastGeneratedId: not implemented yet!"));
 }
 
 std::string te::ado::Transactor::escape(const std::string& value)
 {
   return value;
-}
-
-bool te::ado::Transactor::isDataSetNameValid(const std::string& /*datasetName*/)
-{
-  return true;
-}
-
-bool te::ado::Transactor::isPropertyNameValid(const std::string& /*propertyName*/)
-{
-  return true;
 }
 
 std::vector<std::string> te::ado::Transactor::getDataSetNames()
@@ -312,6 +302,7 @@ std::vector<std::string> te::ado::Transactor::getDataSetNames()
          table->GetType() == _bstr_t("PASS-THROUGH") ||
          table->GetType() == _bstr_t("SYSTEM TABLE") ||
          table->GetType() == _bstr_t("VIEW") ||
+         table->GetType() == _bstr_t("GLOBAL TEMPORARY") ||
          tableName == "geometry_columns")
          continue;
 
@@ -320,7 +311,7 @@ std::vector<std::string> te::ado::Transactor::getDataSetNames()
   }
   catch(_com_error &e)
   {
-    throw Exception(TR_ADO(e.ErrorMessage()));
+    throw Exception(TE_TR(e.ErrorMessage()));
   }
 
   return datasets;
@@ -367,7 +358,7 @@ boost::ptr_vector<te::dt::Property> te::ado::Transactor::getProperties(const std
 std::auto_ptr<te::dt::Property> te::ado::Transactor::getProperty(const std::string& datasetName, const std::string& name)
 {
   if(!propertyExists(datasetName, name))
-    throw Exception((boost::format(TR_ADO("The dataset \"%1%\" has no property with this name \"%2%\"!")) % datasetName % name).str());
+    throw Exception((boost::format(TE_TR("The dataset \"%1%\" has no property with this name \"%2%\"!")) % datasetName % name).str());
 
   std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
@@ -450,7 +441,7 @@ bool te::ado::Transactor::propertyExists(const std::string& datasetName, const s
   }
   catch(_com_error &e)
   {
-    throw Exception(TR_ADO(e.ErrorMessage()));
+    throw Exception(TE_TR(e.ErrorMessage()));
   }
 }
 
@@ -459,7 +450,7 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
   const std::string& propertyName = p->getName();
 
   if(propertyExists(datasetName, propertyName))
-    throw Exception((boost::format(TR_ADO("The dataset already \"%1%\" has a property with this name \"%2%\"!")) % datasetName % propertyName).str());
+    throw Exception((boost::format(TE_TR("The dataset already \"%1%\" has a property with this name \"%2%\"!")) % datasetName % propertyName).str());
 
   ADOX::_CatalogPtr pCatalog = 0;
 
@@ -553,20 +544,20 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
       }
 
       default:
-        throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
+        throw te::ado::Exception(TE_TR("The informed type could not be mapped to ADO type system!"));
       break;
     }
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 
 void te::ado::Transactor::dropProperty(const std::string& datasetName, const std::string& name)
 {
   if(!propertyExists(datasetName, name))
-    throw Exception((boost::format(TR_ADO("The dataset \"%1%\" has no property with this name \"%2%\"!")) % datasetName % name).str());
+    throw Exception((boost::format(TE_TR("The dataset \"%1%\" has no property with this name \"%2%\"!")) % datasetName % name).str());
 
   std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
@@ -599,7 +590,7 @@ void te::ado::Transactor::dropProperty(const std::string& datasetName, const std
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 
@@ -627,8 +618,19 @@ void te::ado::Transactor::renameProperty(const std::string& datasetName,
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
+}
+
+void te::ado::Transactor::changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp) 
+{
+  std::auto_ptr<te::dt::Property> prp(newProp);
+  std::string type = GetAdoStringType(prp->getType());
+
+  std::string sql("ALTER TABLE ");
+  sql += datasetName + " ALTER COLUMN " + propName + " " + type; 
+
+  execute(sql);
 }
 
 std::auto_ptr<te::da::PrimaryKey> te::ado::Transactor::getPrimaryKey(const std::string& datasetName)
@@ -682,7 +684,7 @@ void te::ado::Transactor::addPrimaryKey(const std::string& datasetName, te::da::
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 
@@ -706,14 +708,14 @@ void te::ado::Transactor::dropPrimaryKey(const std::string& datasetName)
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 
 std::auto_ptr<te::da::ForeignKey> te::ado::Transactor::getForeignKey(const std::string& datasetName, const std::string& name)
 {
   if(!foreignKeyExists(datasetName, name))
-    throw Exception((boost::format(TR_ADO("The dataset \"%1%\" has no foreign key with this name \"%2%\"!")) % datasetName % name).str());
+    throw Exception((boost::format(TE_TR("The dataset \"%1%\" has no foreign key with this name \"%2%\"!")) % datasetName % name).str());
 
   std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
@@ -784,7 +786,7 @@ void te::ado::Transactor::addForeignKey(const std::string& datasetName, te::da::
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 
@@ -807,14 +809,14 @@ void te::ado::Transactor::dropForeignKey(const std::string& datasetName, const s
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 
 std::auto_ptr<te::da::UniqueKey> te::ado::Transactor::getUniqueKey(const std::string& datasetName, const std::string& name)
 {
   if(!uniqueKeyExists(datasetName, name))
-    throw Exception((boost::format(TR_ADO("The dataset \"%1%\" has no unique key with this name \"%2%\"!")) % datasetName % name).str());
+    throw Exception((boost::format(TE_TR("The dataset \"%1%\" has no unique key with this name \"%2%\"!")) % datasetName % name).str());
 
   std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
@@ -882,7 +884,7 @@ void te::ado::Transactor::addUniqueKey(const std::string& datasetName, te::da::U
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 
@@ -904,14 +906,14 @@ void te::ado::Transactor::dropUniqueKey(const std::string& datasetName, const st
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 
 std::auto_ptr<te::da::CheckConstraint> te::ado::Transactor::getCheckConstraint(const std::string& datasetName, const std::string& name)
 {
   if(!checkConstraintExists(datasetName, name))
-    throw Exception((boost::format(TR_ADO("The dataset \"%1%\" has no check constraint with this name \"%2%\"!")) % datasetName % name).str());
+    throw Exception((boost::format(TE_TR("The dataset \"%1%\" has no check constraint with this name \"%2%\"!")) % datasetName % name).str());
 
   std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
@@ -944,18 +946,18 @@ bool te::ado::Transactor::checkConstraintExists(const std::string& datasetName, 
 
 void te::ado::Transactor::addCheckConstraint(const std::string& /*datasetName*/, te::da::CheckConstraint* /*cc*/)
 {
-  throw Exception(TR_ADO("Method addCheckConstraint: not implemented yet!"));
+  throw Exception(TE_TR("Method addCheckConstraint: not implemented yet!"));
 }
 
 void te::ado::Transactor::dropCheckConstraint(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  throw Exception(TR_ADO("Method dropCheckConstraint: not implemented yet!"));
+  throw Exception(TE_TR("Method dropCheckConstraint: not implemented yet!"));
 }
 
 std::auto_ptr<te::da::Index> te::ado::Transactor::getIndex(const std::string& datasetName, const std::string& name)
 {
   if(!indexExists(datasetName, name))
-    throw Exception((boost::format(TR_ADO("The dataset \"%1%\" has no index with this name \"%2%\"!")) % datasetName % name).str());
+    throw Exception((boost::format(TE_TR("The dataset \"%1%\" has no index with this name \"%2%\"!")) % datasetName % name).str());
 
   std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
@@ -1018,14 +1020,14 @@ void te::ado::Transactor::addIndex(const std::string& datasetName, te::da::Index
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 
 void te::ado::Transactor::dropIndex(const std::string& datasetName, const std::string& idxName)
 {
   if(!indexExists(datasetName, idxName))
-    throw Exception((boost::format(TR_ADO("The dataset \"%1%\" has no index with this name: \"%2%\"!")) % datasetName % idxName).str());
+    throw Exception((boost::format(TE_TR("The dataset \"%1%\" has no index with this name: \"%2%\"!")) % datasetName % idxName).str());
 
   std::string sql("DROP INDEX ");
   sql += idxName;
@@ -1041,34 +1043,34 @@ void te::ado::Transactor::dropIndex(const std::string& datasetName, const std::s
 
 std::auto_ptr<te::da::Sequence> te::ado::Transactor::getSequence(const std::string& name)
 {
-  throw Exception(TR_ADO("Method getSequence: not implemented yet!"));
+  throw Exception(TE_TR("Method getSequence: not implemented yet!"));
 }
 
 std::vector<std::string> te::ado::Transactor::getSequenceNames()
 {
-  throw Exception(TR_ADO("Method getSequenceNames: not implemented yet!"));
+  throw Exception(TE_TR("Method getSequenceNames: not implemented yet!"));
 }
 
 bool te::ado::Transactor::sequenceExists(const std::string& /*name*/)
 {
-  throw Exception(TR_ADO("Method sequenceExists: not implemented yet!"));
+  throw Exception(TE_TR("Method sequenceExists: not implemented yet!"));
 }
 
 void te::ado::Transactor::addSequence(te::da::Sequence* /*sequence*/)
 {
-  throw Exception(TR_ADO("Method addSequence: not implemented yet!"));
+  throw Exception(TE_TR("Method addSequence: not implemented yet!"));
 }
 
 void te::ado::Transactor::dropSequence(const std::string& /*name*/)
 {
-  throw Exception(TR_ADO("Method dropSequence: not implemented yet!"));
+  throw Exception(TE_TR("Method dropSequence: not implemented yet!"));
 }
 
 std::auto_ptr<te::gm::Envelope> te::ado::Transactor::getExtent(const std::string& datasetName,
                                                                const std::string& /*propertyName*/)
 {
   if(!dataSetExists(datasetName))
-    throw Exception(TR_ADO("The Data Set Type does not exist!"));
+    throw Exception(TE_TR("The Data Set Type does not exist!"));
 
   std::string sql = "SELECT MIN(lower_x), MIN(lower_y), MAX(upper_x), MAX(upper_y) from " + datasetName;
 
@@ -1086,7 +1088,7 @@ std::auto_ptr<te::gm::Envelope> te::ado::Transactor::getExtent(const std::string
   }
   else
   {
-    throw Exception(TR_ADO("Error when calculating the envelope!"));
+    throw Exception(TE_TR("Error when calculating the envelope!"));
   }
 
   return env;
@@ -1144,7 +1146,7 @@ void te::ado::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<
   }
   catch(_com_error &e)
   {
-    throw Exception(TR_ADO(e.ErrorMessage()));
+    throw Exception(TE_TR(e.ErrorMessage()));
   }
 
   std::size_t ncols = dt->size();
@@ -1160,7 +1162,7 @@ void te::ado::Transactor::cloneDataSet(const std::string& /*name*/,
                                        const std::string& /*cloneName*/,
                                        const std::map<std::string, std::string>& /*options*/)
 {
-  throw Exception(TR_ADO("Method cloneDataSet: not implemented yet!"));
+  throw Exception(TE_TR("Method cloneDataSet: not implemented yet!"));
 }
 
 void te::ado::Transactor::dropDataSet(const std::string& name)
@@ -1177,7 +1179,7 @@ void te::ado::Transactor::dropDataSet(const std::string& name)
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 
@@ -1193,7 +1195,7 @@ void te::ado::Transactor::renameDataSet(const std::string& name, const std::stri
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 
@@ -1321,7 +1323,7 @@ void te::ado::Transactor::add(const std::string& datasetName,
           }
 
           default:
-            throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
+            throw te::ado::Exception(TE_TR("The informed type could not be mapped to ADO type system!"));
             break;
           }
       }
@@ -1332,7 +1334,7 @@ void te::ado::Transactor::add(const std::string& datasetName,
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 
@@ -1350,7 +1352,7 @@ void te::ado::Transactor::remove(const std::string& datasetName, const te::da::O
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 }
 
@@ -1362,6 +1364,74 @@ void te::ado::Transactor::update(const std::string& datasetName,
                                  std::size_t limit)
 {
   //TODO
+}
+
+void te::ado::Transactor::update(const std::string& datasetName,
+            te::da::DataSet* dataset,
+            const std::vector< std::set<int> >& properties,
+            const std::vector<size_t>& ids)
+{
+  dataset->moveFirst();
+
+  int i=0;
+  std::set<int> plst; 
+  std::set<int>::iterator it;
+
+  try
+  {
+    begin();
+
+    do 
+    {
+      std::string sql = "UPDATE " + datasetName + " SET "; 
+      plst = properties[i];
+      std::string pName;
+      std::string id;
+      int k = 0;
+
+      for(it = plst.begin(); it != plst.end(); ++it)
+      {
+        if(k>0)
+          pName += ",";
+
+        pName += dataset->getPropertyName(*it);
+
+        if(dataset->getPropertyDataType(*it) == te::dt::STRING_TYPE)
+          pName += "=\"" + dataset->getAsString(*it) + "\"";
+        else 
+          pName += "=" + dataset->getAsString(*it);
+
+        k++;
+      }
+
+      for(size_t j=0; j<ids.size(); ++j)
+      {
+        if(j>0)
+          id += " AND ";
+
+        id += dataset->getPropertyName(j) += "=";
+
+        if(dataset->getPropertyDataType(j) == te::dt::STRING_TYPE)
+          id += "\"" + dataset->getAsString(j) + "\"";
+        else 
+          id += dataset->getAsString(j);
+      }
+
+      sql += pName + " WHERE " + id;
+
+      execute(sql);
+
+      i++;
+    } while (dataset->moveNext());
+
+    commit();
+  }
+  catch(te::ado::Exception& e)
+  {
+    rollBack();
+
+    throw e;
+  }
 }
 
 void te::ado::Transactor::optimize(const std::map<std::string, std::string>& opInfo)
@@ -1383,7 +1453,7 @@ void te::ado::Transactor::getPrimaryKey(te::da::DataSetType* dt)
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
   ADOX::TablesPtr tables = pCatalog->GetTables();
 
@@ -1615,7 +1685,7 @@ void te::ado::Transactor::getUniqueKeys(te::da::DataSetType* dt)
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 
   ADOX::TablesPtr tables = pCatalog->GetTables();
@@ -1654,7 +1724,7 @@ void te::ado::Transactor::getIndexes(te::da::DataSetType* dt)
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 
   ADOX::TablesPtr tables = pCatalog->GetTables();
@@ -1716,7 +1786,7 @@ void te::ado::Transactor::getCheckConstraints(te::da::DataSetType* dt)
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 
   // Clean up objects before exit.
@@ -1756,9 +1826,13 @@ void te::ado::Transactor::insertIntoGeometryColumns(const std::string& datasetNa
   }
   catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.Description()));
+    throw Exception(TE_TR(e.Description()));
   }
 
   m_ds->registerGeometryColumn(datasetName, geomProp->getName());
 }
 
+te::common::CharEncoding te::ado::Transactor::getEncoding()
+{
+  return te::common::UNKNOWN_CHAR_ENCODING;
+}

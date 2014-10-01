@@ -30,13 +30,14 @@
 #include "../../../dataaccess/query/Where.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../Config.h"
+#include "../InterfaceController.h"
 
 // STL
 #include <memory>
 
 // Qt
-#include <QtGui/QColor>
-#include <QtGui/QDialog>
+#include <QColor>
+#include <QDialog>
 
 namespace Ui { class QueryDialogForm; }
 
@@ -60,7 +61,7 @@ namespace te
 
         \brief This file defines a class for a Query Dialog Dialog.
       */
-      class TEQTWIDGETSEXPORT QueryDialog : public QDialog
+      class TEQTWIDGETSEXPORT QueryDialog : public QDialog, public InterfaceController
       {
         Q_OBJECT
 
@@ -78,11 +79,42 @@ namespace te
             \brief This method is used to set the list of layers
             
           */
-          void setList(std::list<te::map::AbstractLayerPtr>& layerList);
+          void setLayerList(std::list<te::map::AbstractLayerPtr>& layerList);
 
+          /*!
+            \brief This method is used to set current layer
+            
+          */
           void setCurrentLayer(te::map::AbstractLayerPtr layer);
 
+          /*!
+            \brief This method is used to set the alias name
+            
+          */
+          std::string setAliasName(std::string value);
+
           te::da::Where* getWhere();
+
+
+        public:
+
+          /*!
+            \brief This method is used to set current layer
+            
+          */
+          virtual void layerSelected(te::map::AbstractLayerPtr layer);
+
+          /*!
+            \brief This method is used to add a new layer
+            
+          */
+          virtual void layerAdded(te::map::AbstractLayerPtr layer);
+
+          /*!
+            \brief This method is used to remove a layer
+            
+          */
+          virtual void layerRemoved(te::map::AbstractLayerPtr layer);
 
 
         protected slots:

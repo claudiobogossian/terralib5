@@ -34,6 +34,9 @@
 #include "SymbologyPreview.h"
 #include "Symbol.h"
 
+// Qt
+#include <QIcon>
+
 // STL
 #include <cassert>
 
@@ -62,7 +65,14 @@ QPixmap te::qt::widgets::SymbologyPreview::build(const te::se::Symbolizer* symb,
     geom = line;
   }
   else if(symb->getType() == "PointSymbolizer")
+  {
     geom = new te::gm::Point(size.width() * 0.5, size.height() * 0.5);
+  }
+  else if(symb->getType() == "RasterSymbolizer")
+  {
+    QIcon raster = QIcon::fromTheme("raster-symbolizer");
+    return raster.pixmap(size);
+  }
 
   QPixmap result = build(symb, geom, size);
 

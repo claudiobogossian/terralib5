@@ -31,6 +31,7 @@
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../widgets/Exception.h"
+#include "../../../widgets/utils/ScopedCursor.h"
 #include "ui_PostGISCreatorDialogForm.h"
 
 // Boost
@@ -40,7 +41,7 @@
 #include <boost/uuid/uuid_io.hpp>
 
 // Qt
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 
 te::qt::plugins::pgis::PostGISCreatorDialog::PostGISCreatorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -72,11 +73,16 @@ te::qt::plugins::pgis::PostGISCreatorDialog::~PostGISCreatorDialog()
 
 void te::qt::plugins::pgis::PostGISCreatorDialog::applyPushButtonPressed()
 {
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   try
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("POSTGIS") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for PostgreSQL data sources!"));
+    {
+      QApplication::restoreOverrideCursor();
+      throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for PostgreSQL data sources!"));
+    }
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -106,7 +112,10 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::applyPushButtonPressed()
     m_driver.reset(ds.release());
 
     if(m_driver.get() == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open POSTGIS data source due to an unknown error!"));
+    {
+      QApplication::restoreOverrideCursor();
+      throw te::qt::widgets::Exception(TE_TR("Could not open POSTGIS data source due to an unknown error!"));
+    }
     
     QString title = m_ui->m_hostNameLineEdit->text().trimmed() + QString::fromStdString("@") + m_ui->m_newDatabaseNameLineEdit->text().trimmed() + QString::fromStdString("@") + m_ui->m_userNameLineEdit->text().trimmed();
 
@@ -139,6 +148,7 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::applyPushButtonPressed()
   }
   catch(const std::exception& e)
   {
+    QApplication::restoreOverrideCursor();
     QMessageBox::warning(this,
                          tr("TerraLib Qt Components"),
                          tr(e.what()));
@@ -146,12 +156,14 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::applyPushButtonPressed()
   }
   catch(...)
   {
+    QApplication::restoreOverrideCursor();
     QMessageBox::warning(this,
                          tr("TerraLib Qt Components"),
                          tr("Unknown error while opening PostgreSQL database!"));
     return;
   }
 
+  QApplication::restoreOverrideCursor();
   accept();
 }
 
@@ -267,11 +279,12 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::passwordLineEditEditingFinishe
       m_ui->m_templateComboBox->setCurrentIndex(m_ui->m_templateComboBox->findText("postgis"));
 
       // Get Encodings
+      m_ui->m_encodingComboBox->clear();
       m_ui->m_encodingComboBox->addItem("");
-      std::vector<std::string> encodings = te::da::DataSource::getEncodings("POSTGIS", dsInfo);
+      std::vector<te::common::CharEncoding> encodings = te::da::DataSource::getEncodings("POSTGIS", dsInfo);
       if(!encodings.empty())
         for(std::size_t i = 0; i < encodings.size(); i++)
-          m_ui->m_encodingComboBox->addItem(encodings[i].c_str());
+          m_ui->m_encodingComboBox->addItem(te::common::CharEncodingConv::getCharEncodingName(encodings[i]).c_str());
 
       // Try to go the owners
       m_ui->m_ownerComboBox->clear();

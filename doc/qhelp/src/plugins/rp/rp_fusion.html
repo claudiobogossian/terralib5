@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Fusion</title>
+</head>
+<body>
+<p></p>
+<div style="text-align: center;">
+<h3 style="text-align: center;"><span
+ style="font-family: Calibri Light;">Fusion</span></h3>
+</div>
+<font face="Calibri Light"><br>
+</font>
+<div style="text-align: justify;">
+<div style="text-align: left;">
+<div style="text-align: left; font-family: Calibri Light;">The <span
+ style="font-weight: bold;">Fusion</span><span
+ style="font-weight: bold;"> </span>operation&nbsp; allow combination
+of images with different spectral
+and spatial resolution keeping the radiometric information. Huge
+effort has been put in developing fusion methods that preserve the
+spectral information and
+increase detail information in the hybrid product produced by fusion
+process. The available methods in TerraLib are:<br>
+<ul>
+  <li><span style="font-weight: bold;">IHS:</span>&nbsp;IHS method
+consists on transforming the R,G and B bands of the multispectral image
+into
+IHS components, replacing the intensity component by the panchromatic
+image, and
+performing the inverse transformation to obtain a high spatial
+resolution multispectral
+image.</li>
+</ul>
+<ul>
+  <li><span style="font-weight: bold;">PCA:</span> &nbsp;<span
+ id="result_box" class="" lang="en"></span></li>
+</ul>
+</div>
+<font style="font-family: Calibri Light;" face="Calibri Light">
+It is
+accessible through:</font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><b><br>
+</b></font>
+<font style="font-family: Calibri Light;" face="Calibri Light"><br>
+</font>
+<font style="font-family: Calibri Light;" face="Calibri Light"><b>&nbsp;&nbsp;&nbsp;</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b>Raster
+Processing &gt; Fusion...</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b> </b>(list
+of all
+raster layers will be available)&nbsp;<br>
+<br>
+</font><font style="font-family: Calibri Light;" face="Calibri Light">This
+wizard consists of the
+following steps:</font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><br>
+</font>
+<h4 style="font-family: Calibri Light;"><font
+ style="font-family: Calibri Light;">&nbsp;&nbsp;
+Wizard Page 1 -&nbsp;</font>Selection
+of the raster layer with a LOWER resolution (<span
+ style="text-decoration: underline;"><a
+ href="../../widgets/layer/search.html">Layer Search</a></span>)</h4>
+<ol style="font-family: Calibri Light;">
+  <li>On the <i>List
+of Layers</i> select the raster layer with a lower resolution.
+Optionally use <i>Filter By Name</i> &nbsp;field
+giving part of the layer name to help find the layer in the list.</li>
+  <li>Press <b>Next&nbsp;</b>
+to go to next step or <b>Cancel </b>to close the
+dialog.&nbsp;<br>
+  </li>
+</ol>
+<h4 style="font-family: Calibri Light;"><font
+ style="font-family: Calibri Light;">&nbsp;&nbsp;
+Wizard Page 2 -&nbsp;</font>Selection
+of the raster layer with a HIGHER resolution (<span
+ style="text-decoration: underline;"><a
+ href="../../widgets/layer/search.html">Layer Search</a></span>)</h4>
+<ol style="font-family: Calibri Light;">
+  <li>On the <i>List
+of Layers</i> select the raster layer with a higher resolution.
+Optionally use <i>Filter By Name</i> &nbsp;field
+giving part of the layer name to help find the layer in the list.</li>
+  <li>Press <b>Next&nbsp;</b>
+to go to next step or <b>Cancel </b>to close the
+dialog.</li>
+</ol>
+<div style="text-align: center; font-family: Calibri Light;">
+<div style="text-align: left;">
+<h4><font style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp;
+Wizard Page 3 - Fusion </font>parameters</h4>
+</div>
+</div>
+<ol style="font-family: Calibri Light;">
+  <li>Select the <i>Type</i> of fusion to be used and set the their
+specific parameters.&nbsp;</li>
+  <ul>
+    <li>IHS<br>
+    </li>
+  </ul>
+  <ul>
+    <ul>
+      <li>Select the raster&nbsp;band index to process from the high
+resolution raster..</li>
+      <li>Select the interpolator method to be used.</li>
+      <li>Select the raster&nbsp;band index from the lower resolution
+raster&nbsp; for &nbsp;the red channel.</li>
+      <li>Select the raster&nbsp;band index from the lower resolution
+raster&nbsp; for &nbsp;the green channel.</li>
+      <li>Select the raster&nbsp;band index from the lower resolution
+raster&nbsp; for &nbsp;the blue channel.</li>
+    </ul>
+    <li>PCA<br>
+    </li>
+    <ul>
+      <li>Select the raster&nbsp;band index to process from the high
+resolution raster..</li>
+      <li>Select the interpolator method to be used.</li>
+      <li>Select each raster&nbsp;band index from the lower resolution
+raster&nbsp; will be part of the process.</li>
+    </ul>
+  </ul>
+  <li>A common option for both methods is to crop rasters to overlap
+area. This is necessary if the input rasters has different extents.<br>
+  </li>
+  <li>Press <b>Next</b> to apply the contrast or <b>Back</b> to go to
+the previous wizard page.</li>
+</ol>
+<h4 style="font-family: Calibri Light;"><font
+ style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; Wizard Page 4
+-&nbsp;</font>Output
+information</h4>
+<ol style="font-family: Calibri Light;">
+  <li><i>Raster Info</i>
+- First press <img alt="" src="../../gen_icones/ic_3points.PNG"
+ height="19" width="27"> and inform the folder where the resulting
+file&nbsp;will be saved.</li>
+  <li><i>Name - </i>inform
+the raster name.</li>
+  <li><i>Extra
+Parameters</i> - if there are some, see the details on how to inform
+then <a href="../../widgets/rp/output_raster_info.html">here</a>.</li>
+  <li>Press <b>Finish</b>
+to save the resulting contrasted raster or&nbsp;<b>Back</b>
+to go to the previous wizard page.</li>
+</ol>
+<font style="font-family: Calibri Light;" face="Calibri Light">
+Hint: The resulting image will be added as a new layer at the TerraView
+project.</font><font face="Calibri Light">
+</font></div>
+<br>
+</div>
+</body>
+</html>

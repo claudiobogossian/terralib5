@@ -31,8 +31,8 @@
 #include <ui_TiePointsLocatorAdvancedForm.h>
 
 #include <QtCore/QString>
-#include <QtGui/QCheckBox>
-#include <QtGui/QComboBox>
+#include <QCheckBox>
+#include <QComboBox>
 
 namespace te
 {

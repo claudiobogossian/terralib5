@@ -24,6 +24,7 @@
  */
 
 // TerraLib
+#include <terralib/common/PlatformUtils.h>
 #include <terralib/common.h>
 #include <terralib/plugin.h>
 
@@ -45,44 +46,80 @@ int main(int argc, char** argv)
     TerraLib::getInstance().initialize();
     
     te::plugin::PluginInfo* info;
-    
-    info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg"));
+  
+    std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
+
+#ifdef TERRALIB_MOD_GDAL_ENABLED
+    info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.gdal.teplg");
     te::plugin::PluginManager::getInstance().add(info);
-    
-    info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.ogr.teplg"));
+#endif
+
+#ifdef TERRALIB_MOD_OGR_ENABLED
+    info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.ogr.teplg");
     te::plugin::PluginManager::getInstance().add(info);
-    
-    info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.pgis.teplg"));
+#endif
+
+#ifdef TERRALIB_MOD_POSTGIS_ENABLED
+    info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.pgis.teplg");
     te::plugin::PluginManager::getInstance().add(info);
-    
+#endif
+
     te::plugin::PluginManager::getInstance().loadAll();
-    
-    std::cout << std::endl << "PostGIS to OGR: " << std::endl;
-    if (AggregPGISToOGR())
-      std::cout << "\tOK!" << std::endl;
-    
-    std::cout << std::endl << "OGR to PostGIS: " << std::endl;
-    if (AggregOGRToPGIS())
-      std::cout << "\tOK!" << std::endl;
-    
-    std::cout << std::endl << "OGR to OGR: " << std::endl;
-    if (AggregOGRToOGR())
-      std::cout << "\tOK!" << std::endl;
-    
-    std::cout << std::endl << "PostGIS to PostGIS: " << std::endl;
-    if (AggregPGISToPGIS())
-      std::cout << "\tOK!" << std::endl;
+
+    //Aggregation examples
+
+    //std::cout << std::endl << "OGR to OGR: " << std::endl;
+    //if (AggregOGRToOGR())
+    //  std::cout << "\tOK!" << std::endl;
+
+    //std::cout << std::endl << "OGR to PostGIS: " << std::endl;
+    //if (AggregOGRToPGIS())
+    //  std::cout << "\tOK!" << std::endl;
+
+    //std::cout << std::endl << "PostGIS to PostGIS: " << std::endl;
+    //if (AggregPGISToPGIS())
+    //  std::cout << "\tOK!" << std::endl;
+
+    //std::cout << std::endl << "PostGIS to OGR: " << std::endl;
+    //if (AggregPGISToOGR())
+    //  std::cout << "\tOK!" << std::endl;
+
+
+    //Intersection examples
+
+    //std::cout << std::endl << "Intersection OGR to OGR: " << std::endl;
+    //if (IntersectionOGRToOGR())
+    //  std::cout << "\tOK!" << std::endl;
+
+    //std::cout << std::endl << "Intersection OGR to PostGIS: " << std::endl;
+    //if (IntersectionOGRToPGIS())
+    //  std::cout << "\tOK!" << std::endl;
+
+    //std::cout << std::endl << "Intersection PostGIS to PostGIS: " << std::endl;
+    //if (IntersectionPGISToPGIS())
+    //  std::cout << "\tOK!" << std::endl;
 
     //std::cout << std::endl << "Intersection PostGIS to OGR: " << std::endl;
     //if (IntersectionPGISToOGR())
     //  std::cout << "\tOK!" << std::endl;
 
-    std::cout << std::endl << "Intersection OGR to PostGIS: " << std::endl;
-    if (IntersectionOGRToPGIS())
-      std::cout << "\tOK!" << std::endl;
 
-    std::cout << std::endl << "Intersection PostGIS to PostGIS: " << std::endl;
-    if (IntersectionPGISToPGIS())
+    //Buffer examples
+
+    /*std::cout << std::endl << "Buffer OGR to OGR: " << std::endl;
+    if (BufferOGRToOGR())
+      std::cout << "\tOK!" << std::endl;*/
+
+    //std::cout << std::endl << "Buffer OGR to PostGIS: " << std::endl;
+    //if (BufferOGRToPGIS())
+    //  std::cout << "\tOK!" << std::endl;
+
+    //std::cout << std::endl << "Buffer PostGIS to PostGIS: " << std::endl;
+    //if (BufferPGISToPGIS())
+    //  std::cout << "\tOK!" << std::endl;
+
+    std::cout << std::endl << "Buffer PostGIS to OGR: " << std::endl;
+    if (BufferPGISToOGR())
       std::cout << "\tOK!" << std::endl;
 
     te::plugin::PluginManager::getInstance().unloadAll();
@@ -91,26 +128,16 @@ int main(int argc, char** argv)
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried: " << e.what() << std::endl;
-
-    std::cout << "Press Enter to exit..." << std::endl;
-    std::cin.get();
+    std::cout << std::endl << "An exception has occurred: " << e.what() << std::endl;
 
     return EXIT_FAILURE;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried!" << std::endl;
-
-    std::cout << "Press Enter to exit..." << std::endl;
-    std::cin.get();
+    std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
 
     return EXIT_FAILURE;
   }
 
-  std::cout << "Press Enter to exit..." << std::endl;
-  std::cin.get();
-
   return EXIT_SUCCESS;
 }
-

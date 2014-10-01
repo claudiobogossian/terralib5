@@ -30,8 +30,8 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QDialog>
-#include <QtGui/QGridLayout>
+#include <QDialog>
+#include <QGridLayout>
 
 #include <memory>
 

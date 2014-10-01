@@ -25,17 +25,17 @@
 
 // TerraLib
 #include "../../../../common/Translator.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../Exception.h"
 #include "../connector/AbstractDataSourceConnector.h"
-#include "../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../core/DataSourceType.h"
 #include "../core/DataSourceTypeManager.h"
-#include "ui_DataSourceSelectorWidgetForm.h"
 #include "DataSourceSelectorWidget.h"
+#include "ui_DataSourceSelectorWidgetForm.h"
 
 // Qt
-#include <QtGui/QIcon>
-#include <QtGui/QMessageBox>
+#include <QIcon>
+#include <QMessageBox>
 
 te::qt::widgets::DataSourceSelectorWidget::DataSourceSelectorWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
@@ -64,7 +64,7 @@ te::qt::widgets::DataSourceSelectorWidget::DataSourceSelectorWidget(QWidget* par
 
   while(it != itend)
   {
-    QString dsName = QString::fromUtf8(it->second->getName().c_str());
+    QString dsName = QString::fromStdString(it->second->getName());
     QIcon icon = it->second->getIcon(DataSourceType::ICON_DATASOURCE_SMALL);
     QString title = QString::fromStdString(it->second->getTitle());
     QString description = QString::fromStdString(it->second->getDescription());
@@ -160,12 +160,12 @@ std::list<te::da::DataSourceInfoPtr> te::qt::widgets::DataSourceSelectorWidget::
     QString id = udata.toString();
 
     if(id.isEmpty())
-      throw Exception(TR_QT_WIDGETS("Selected data source has no identification!"));
+      throw Exception(TE_TR("Selected data source has no identification!"));
 
     te::da::DataSourceInfoPtr selected(te::da::DataSourceInfoManager::getInstance().get(id.toStdString()));
 
     if(selected.get() == 0)
-      throw Exception(TR_QT_WIDGETS("Could not find selected data source!"));
+      throw Exception(TE_TR("Could not find selected data source!"));
 
     selecteds.push_back(selected);
   }
@@ -285,17 +285,17 @@ void te::qt::widgets::DataSourceSelectorWidget::addDataSourcePushButtonPressed()
     const DataSourceType* dsType = DataSourceTypeManager::getInstance().get(dsTypeId.toStdString());
 
     if(dsType == 0)
-      throw Exception(TR_QT_WIDGETS("Unknown data source type!"));
+      throw Exception(TE_TR("Unknown data source type!"));
 
     std::auto_ptr<QWidget> connectorw(dsType->getWidget(DataSourceType::WIDGET_DATASOURCE_CONNECTOR, this));
 
     if(connectorw.get() == 0)
-      throw Exception(TR_QT_WIDGETS("This type of data source hasn't provide a dialog for adding a new data source"));
+      throw Exception(TE_TR("This type of data source hasn't provide a dialog for adding a new data source"));
 
     AbstractDataSourceConnector* connector = dynamic_cast<AbstractDataSourceConnector*>(connectorw.get());
 
     if(connector == 0)
-      throw Exception(TR_QT_WIDGETS("Wrong type of object for adding a new data source!"));
+      throw Exception(TE_TR("Wrong type of object for adding a new data source!"));
 
     std::list<te::da::DataSourceInfoPtr> datasources;
 
@@ -343,22 +343,22 @@ void te::qt::widgets::DataSourceSelectorWidget::removeDataSourcePushButtonPresse
     QString dsTypeName = udata.toString();
 
     if(dsTypeName.isEmpty())
-      throw Exception(TR_QT_WIDGETS("Unknown data source type!"));
+      throw Exception(TE_TR("Unknown data source type!"));
     
     const DataSourceType* dsType = DataSourceTypeManager::getInstance().get(dsTypeName.toStdString());
 
     if(dsType == 0)
-      throw Exception(TR_QT_WIDGETS("Could not find data source type!"));
+      throw Exception(TE_TR("Could not find data source type!"));
 
     std::auto_ptr<QWidget> connectorw(dsType->getWidget(DataSourceType::WIDGET_DATASOURCE_CONNECTOR, this));
 
     if(connectorw.get() == 0)
-      throw Exception(TR_QT_WIDGETS("This type of data source hasn't provide a dialog for removing data sources"));
+      throw Exception(TE_TR("This type of data source hasn't provide a dialog for removing data sources"));
 
     AbstractDataSourceConnector* connector = dynamic_cast<AbstractDataSourceConnector*>(connectorw.get());
 
     if(connector == 0)
-      throw Exception(TR_QT_WIDGETS("Wrong type of object for removing a data source!"));
+      throw Exception(TE_TR("Wrong type of object for removing a data source!"));
 
     connector->remove(selecteds);
 
@@ -387,7 +387,7 @@ void te::qt::widgets::DataSourceSelectorWidget::removeDataSourcePushButtonPresse
       //item = m_ui->m_datasourceListWidget->item(0);
 
       //if(item == 0)
-      //  throw Exception(TR_QT_WIDGETS("Could not automatically select the first data source item!"));
+      //  throw Exception(TE_TR("Could not automatically select the first data source item!"));
 
       //m_ui->m_datasourceListWidget->setCurrentItem(item, QItemSelectionModel::Select);
       //dataSourcePressed(item);
@@ -426,22 +426,22 @@ void te::qt::widgets::DataSourceSelectorWidget::editDataSourcePushButtonPressed(
     QString dsTypeName = udata.toString();
 
     if(dsTypeName.isEmpty())
-      throw Exception(TR_QT_WIDGETS("Unknown data source type!"));
+      throw Exception(TE_TR("Unknown data source type!"));
     
     const DataSourceType* dsType = DataSourceTypeManager::getInstance().get(dsTypeName.toStdString());
 
     if(dsType == 0)
-      throw Exception(TR_QT_WIDGETS("Could not find data source type!"));
+      throw Exception(TE_TR("Could not find data source type!"));
 
     std::auto_ptr<QWidget> connectorw(dsType->getWidget(DataSourceType::WIDGET_DATASOURCE_CONNECTOR, this));
 
     if(connectorw.get() == 0)
-      throw Exception(TR_QT_WIDGETS("This type of data source hasn't provide a dialog for removing data sources"));
+      throw Exception(TE_TR("This type of data source hasn't provide a dialog for removing data sources"));
 
     AbstractDataSourceConnector* connector = dynamic_cast<AbstractDataSourceConnector*>(connectorw.get());
 
     if(connector == 0)
-      throw Exception(TR_QT_WIDGETS("Wrong type of object for removing a data source!"));
+      throw Exception(TE_TR("Wrong type of object for removing a data source!"));
 
     connector->update(selecteds);
 
@@ -456,7 +456,7 @@ void te::qt::widgets::DataSourceSelectorWidget::editDataSourcePushButtonPressed(
       QString dsId = udata.toString();
 
       if(dsId.isEmpty())
-        throw Exception(TR_QT_WIDGETS("Invalid data source id!"));
+        throw Exception(TE_TR("Invalid data source id!"));
 
       te::da::DataSourceInfoPtr ds = te::da::DataSourceInfoManager::getInstance().get(dsId.toStdString());
 
@@ -464,7 +464,7 @@ void te::qt::widgets::DataSourceSelectorWidget::editDataSourcePushButtonPressed(
     }
 
     if(items.isEmpty())
-      throw Exception(TR_QT_WIDGETS("Update should not remove data source selection!"));
+      throw Exception(TE_TR("Update should not remove data source selection!"));
 
     dataSourcePressed(*(items.begin()));
     m_ui->m_datasourceListWidget->update();
@@ -502,17 +502,17 @@ void te::qt::widgets::DataSourceSelectorWidget::createDataSourcePushButtonPresse
     const DataSourceType* dsType = DataSourceTypeManager::getInstance().get(dsTypeId.toStdString());
 
     if(dsType == 0)
-      throw Exception(TR_QT_WIDGETS("Unknown data source type!"));
+      throw Exception(TE_TR("Unknown data source type!"));
 
     std::auto_ptr<QWidget> connectorw(dsType->getWidget(DataSourceType::WIDGET_DATASOURCE_CONNECTOR, this));
 
     if(connectorw.get() == 0)
-      throw Exception(TR_QT_WIDGETS("This type of data source hasn't provide a dialog for adding a new data source"));
+      throw Exception(TE_TR("This type of data source hasn't provide a dialog for adding a new data source"));
 
     AbstractDataSourceConnector* connector = dynamic_cast<AbstractDataSourceConnector*>(connectorw.get());
 
     if(connector == 0)
-      throw Exception(TR_QT_WIDGETS("Wrong type of object for adding a new data source!"));
+      throw Exception(TE_TR("Wrong type of object for adding a new data source!"));
 
     std::list<te::da::DataSourceInfoPtr> datasources;
 

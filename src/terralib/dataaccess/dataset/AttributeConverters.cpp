@@ -165,3 +165,37 @@ te::dt::AbstractData* te::da::TupleToStringConverter(DataSet* dataset, const std
 
   return new te::dt::String(result);
 }
+
+te::dt::AbstractData* te::da::CharEncodingConverter::operator()(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType)
+{
+  assert(dataset);
+  assert(indexes.size() == 1);
+
+  std::size_t pos = indexes[0];
+
+  assert(dataset->getPropertyDataType(pos) == te::dt::STRING_TYPE);
+  assert(dstType == te::dt::STRING_TYPE);
+
+  std::string value = dataset->getString(pos);
+  te::common::CharEncoding fromCode = dataset->getPropertyCharEncoding(pos);
+
+  if(fromCode == m_toCode)
+    return new te::dt::String(value);
+
+  if(fromCode == te::common::UNKNOWN_CHAR_ENCODING || m_toCode == te::common::UNKNOWN_CHAR_ENCODING)
+    return new te::dt::String(value);
+
+#ifdef TERRALIB_CHARENCODING_ENABLED
+  try
+  {
+    std::string result = te::common::CharEncodingConv::convert(value, fromCode, m_toCode);
+    return new te::dt::String(result);
+  }
+  catch(...)
+  {
+    return new te::dt::String(value);
+  }
+#else
+    return new te::dt::String(value);
+#endif
+}

@@ -127,7 +127,7 @@ size_t GetRowPosition(const size_t& pos, const std::vector<size_t>& posVec)
     if(posVec[i] == pos)
       return i;
 
-  throw te::qt::widgets::Exception(TR_QT_WIDGETS("Position not found."));
+  throw te::qt::widgets::Exception(TE_TR("Position not found."));
 }
 
 te::qt::widgets::Promoter::Promoter() 
@@ -190,7 +190,7 @@ void te::qt::widgets::Promoter::cleanPreproccessKeys()
 
 void te::qt::widgets::Promoter::promote(const te::da::ObjectIdSet* oids)
 {
-  if(m_logicalRows.empty() || m_PkeysRows.empty())
+  if(m_logicalRows.empty() || m_PkeysRows.empty() || oids == 0)
     return;
 
   std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
@@ -230,7 +230,7 @@ size_t te::qt::widgets::Promoter::map2Row(te::da::ObjectId* oid)
   std::map<std::string, size_t>::iterator it = m_PkeysRows.find(pkey);
 
   if(it == m_PkeysRows.end())
-    throw Exception(TR_QT_WIDGETS("Fail to get position of Object id"));
+    throw Exception(TE_TR("Fail to get position of Object id"));
 
   return GetRowPosition(it->second, m_logicalRows);
 }

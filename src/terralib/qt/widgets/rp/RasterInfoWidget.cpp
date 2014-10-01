@@ -24,7 +24,10 @@
 */
 
 // TerraLib
-#include "ParameterTableWidget.h"
+#include "../../../dataaccess/datasource/DataSource.h"
+#include "../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../utils/ParameterTableWidget.h"
+#include "../Utils.h"
 #include "RasterInfoWidget.h"
 #include "ui_RasterInfoWidgetForm.h"
 #include "ui_ParameterTableWidgetForm.h"
@@ -111,6 +114,18 @@ std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo() 
   return rinfo;
 }
 
+std::auto_ptr<te::da::DataSource> te::qt::widgets::RasterInfoWidget::getDataSource() const
+{
+  std::map<std::string, std::string> connInfoRaster;
+  connInfoRaster["SOURCE"] = m_dir + "/";
+
+  std::auto_ptr< te::da::DataSource > dsPtr( te::da::DataSourceFactory::make("GDAL") );
+  dsPtr->setConnectionInfo( connInfoRaster );
+  dsPtr->open();
+
+  return dsPtr;
+}
+
 std::string te::qt::widgets::RasterInfoWidget::getName() const
 {
   std::string name = getBaseName();
@@ -121,6 +136,26 @@ std::string te::qt::widgets::RasterInfoWidget::getName() const
   }
 
   return name;
+}
+
+std::string te::qt::widgets::RasterInfoWidget::getShortName() const
+{
+  std::string name = "";
+
+  if(m_ui->m_nameLineEdit->text().isEmpty() == false)
+    name = m_ui->m_nameLineEdit->text().toStdString();
+
+  return name;
+}
+
+std::string te::qt::widgets::RasterInfoWidget::getExtension() const
+{
+  return ".tif";
+}
+
+std::string te::qt::widgets::RasterInfoWidget::getPath() const
+{
+  return m_dir + "/";
 }
 
 bool te::qt::widgets::RasterInfoWidget::overight() const
@@ -162,12 +197,14 @@ std::string te::qt::widgets::RasterInfoWidget::getBaseName() const
 
 void te::qt::widgets::RasterInfoWidget::onOpenFileDlgToolButtonClicked()
 {
-  QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+  QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), te::qt::widgets::GetFilePathFromSettings("rp_raster_info"), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
   if(dir.isEmpty() == false)
   {
     m_dir = dir.replace(QRegExp("\\\\"), "/").toStdString();
 
     m_ui->m_fileNameLineEdit->setText(m_dir.c_str());
+
+    te::qt::widgets::AddFilePathToSettings(m_dir.c_str(), "rp_raster_info");
   }
 }

@@ -32,14 +32,14 @@
 #include <terralib/qt/plugins/datasource/pgis/PostGISConnectorDialog.h>
 #include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/postgis/Utils.h>
-#include <terralib/gdal/Utils.h>
-#include <terralib/ogr/Utils.h>
+//#include <terralib/gdal/Utils.h>
+//#include <terralib/ogr/Utils.h>
 // Qt
-#include <QtGui/QAction>
-#include <QtGui/QActionGroup>
-#include <QtGui/QStatusBar>
-#include <QtGui/QToolBar>
-#include <QtGui/qmessagebox.h>
+#include <QAction>
+#include <QActionGroup>
+#include <QMessageBox>
+#include <QStatusBar>
+#include <QToolBar>
 
 // STL
 #include <cassert>
@@ -97,12 +97,12 @@ void MainWindow::onOpenPostGISTriggered()
 
   if (pgisDialog->exec() == QDialog::Accepted)
   {
-    std::string connstr = te::pgis::MakeConnectionStr(pgisDialog->getDriver()->getConnectionInfo());
-    QMessageBox msgBox;
-    QString mess = QString("DS Connection string: %1").arg(connstr.c_str());
+  //  std::string connstr = te::pgis::MakeConnectionStr(pgisDialog->getDriver()->getConnectionInfo());
+  //  QMessageBox msgBox;
+  //  QString mess = QString("DS Connection string: %1").arg(connstr.c_str());
 
-    msgBox.setText(mess);
-    msgBox.exec();
+  //  msgBox.setText(mess);
+  //  msgBox.exec();
 
   }
 }
@@ -113,11 +113,11 @@ void MainWindow::onOpenOGRTriggered()
   
   if (ogrDialog->exec() == QDialog::Accepted)
   {
-    std::string conStr = te::ogr::GetOGRConnectionInfo(ogrDialog->getDriver()->getConnectionInfo());
-    QMessageBox msgBox;
-    QString mess = QString("DS Connection string: %1").arg(conStr.c_str()); 
-    msgBox.setText(mess);
-    msgBox.exec();
+    //std::string conStr = te::ogr::GetOGRConnectionInfo(ogrDialog->getDriver()->getConnectionInfo());
+    //QMessageBox msgBox;
+    //QString mess = QString("DS Connection string: %1").arg(conStr.c_str()); 
+    //msgBox.setText(mess);
+    //msgBox.exec();
   }
 }
 
@@ -127,10 +127,10 @@ void MainWindow::onOpenGDALTriggered()
   
   if (gdalDialog->exec() == QDialog::Accepted)
   {
-    std::string connstr = te::gdal::GetGDALConnectionInfo(gdalDialog->getDriver()->getConnectionInfo());
-    QMessageBox msgBox;
-    QString mess = QString("DS Connection string: %1").arg(connstr.c_str()); 
-    msgBox.setText(mess);
-    msgBox.exec();
+    //std::string connstr = te::gdal::GetGDALConnectionInfo(gdalDialog->getDriver()->getConnectionInfo());
+    //QMessageBox msgBox;
+    //QString mess = QString("DS Connection string: %1").arg(connstr.c_str()); 
+    //msgBox.setText(mess);
+    //msgBox.exec();
   }
 }

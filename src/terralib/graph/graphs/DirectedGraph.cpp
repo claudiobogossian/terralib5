@@ -31,12 +31,18 @@
 #include "../core/GraphCache.h"
 #include "../core/GraphData.h"
 #include "../core/GraphDataManager.h"
+#include "../core/GraphMetadata.h"
 #include "../core/Vertex.h"
 #include "../graphs/Graph.h"
 #include "DirectedGraph.h"
 
 
 te::graph::DirectedGraph::DirectedGraph() : Graph()
+{
+}
+
+te::graph::DirectedGraph::DirectedGraph(GraphMetadata* metadata) :
+  Graph(metadata)
 {
 }
 
@@ -103,7 +109,10 @@ bool te::graph::DirectedGraph::isSinkVertex(int id, bool& flag)
 
 void te::graph::DirectedGraph::add(Edge* e)
 {
-  m_graphData =  m_graphCache->checkCacheByVertexId(e->getIdFrom());
+  if(!m_metadata->m_memoryGraph)
+  {
+    m_graphData =  m_graphCache->checkCacheByVertexId(e->getIdFrom());
+  }
 
   if(m_graphData)
   {
@@ -112,7 +121,7 @@ void te::graph::DirectedGraph::add(Edge* e)
 
     if(vFrom)
     {
-      vFrom->getNeighborhood().insert(e->getId());
+      vFrom->getSuccessors().insert(e->getId());
 
       te::graph::Graph::add(e); 
     }

@@ -31,7 +31,7 @@
 #include "PropertyItem.h"
 
 // Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 te::vp::PropertyItem::PropertyItem(te::dt::Property* p, AbstractTreeItem* parent)
   : AbstractTreeItem(parent),

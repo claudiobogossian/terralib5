@@ -33,41 +33,6 @@
 
 #define TE_QTWIDGETS_DEFAULT_TREEVIEW_IDENTATION 10
 
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
-  \def TE_QT_WIDGETS_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib Qt Widgets module.
- */
-#define TE_QT_WIDGETS_TEXT_DOMAIN "teqtwidgets"
-
-/*!
-  \def TE_QT_WIDGETS_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
- */
-#define TE_QT_WIDGETS_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TR_QT_WIDGETS
-
-  \brief It marks a string in order to get translated. This is a special mark used in the TerraLib Qt Widgets module. 
- */
-#define TR_QT_WIDGETS(message) TR(message, TE_QT_WIDGETS_TEXT_DOMAIN)
-
-/*!
-  \def TR_PLURAL_QT_WIDGETS
-
-  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the Qt  module of TerraLib. 
- */
-#define TR_PLURAL_QT_WIDGETS(message1, message2, n) TR_PLURAL(TE_QT_WIDGETS_TEXT_DOMAIN, message1, message2, n)
-
-//@}
-
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library
  */

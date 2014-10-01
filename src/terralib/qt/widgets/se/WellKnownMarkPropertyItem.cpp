@@ -23,13 +23,13 @@
   \brief A widget used to define the mark se properties.
 */
 
-#include "WellKnownMarkPropertyItem.h"
-#include "AbstractPropertyManager.h"
+// TerraLib
 #include "../../../se/Mark.h"
 #include "../../../maptools/MarkRendererManager.h"
-
+#include "../propertybrowser/AbstractPropertyManager.h"
 #include "BasicFillPropertyItem.h"
 #include "BasicStrokePropertyItem.h"
+#include "WellKnownMarkPropertyItem.h"
 
 // STL
 #include <cassert>

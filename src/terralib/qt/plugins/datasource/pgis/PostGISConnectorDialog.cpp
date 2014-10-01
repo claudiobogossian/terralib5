@@ -40,7 +40,7 @@
 #include <boost/lexical_cast.hpp>
 
 // Qt
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 
 te::qt::plugins::pgis::PostGISConnectorDialog::PostGISConnectorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -99,7 +99,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::openPushButtonPressed()
   {
     // Check if driver is loaded
     if(te::da::DataSourceFactory::find("POSTGIS") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for PostgreSQL + PostGIS data sources!"));
+      throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for PostgreSQL + PostGIS data sources!"));
 
     // Get the data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -113,7 +113,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::openPushButtonPressed()
     m_driver.reset(ds.release());
 
     if(m_driver.get() == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open PostgreSQL + PostGIS data source due to an unknown error!"));
+      throw te::qt::widgets::Exception(TE_TR("Could not open PostgreSQL + PostGIS data source due to an unknown error!"));
 
     QString title = m_ui->m_datasourceTitleLineEdit->text().trimmed();
 
@@ -134,7 +134,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::openPushButtonPressed()
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
       m_datasource->setTitle(title.toStdString());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().toStdString());
       m_datasource->setAccessDriver("POSTGIS");
       m_datasource->setType("POSTGIS");
     }
@@ -143,7 +143,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::openPushButtonPressed()
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(dsInfo);
       m_datasource->setTitle(title.toStdString());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().toStdString());
     }
   }
   catch(const std::exception& e)
@@ -170,7 +170,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::testPushButtonPressed()
   {
     // Check if driver is loaded
     if(te::da::DataSourceFactory::find("POSTGIS") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for PostgreSQL + PostGIS data sources!"));
+      throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for PostgreSQL + PostGIS data sources!"));
 
     // Get the data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -181,7 +181,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::testPushButtonPressed()
     std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("POSTGIS"));
 
     if(ds.get() == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open PostgreSQL + PostGIS database!"));
+      throw te::qt::widgets::Exception(TE_TR("Could not open PostgreSQL + PostGIS database!"));
 
     ds->setConnectionInfo(dsInfo);
     ds->open();
@@ -397,18 +397,19 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::passwordLineEditEditingFinis
       }
 
       // Get Encodings
+      m_ui->m_clientEncodingComboBox->clear();
       m_ui->m_clientEncodingComboBox->addItem("");
-      std::vector<std::string> encodings = te::da::DataSource::getEncodings("POSTGIS", dsInfo);
+      std::vector<te::common::CharEncoding> encodings = te::da::DataSource::getEncodings("POSTGIS", dsInfo);
       if(!encodings.empty())
       {
         for(std::size_t i = 0; i < encodings.size(); i++)
-          m_ui->m_clientEncodingComboBox->addItem(encodings[i].c_str());
+          m_ui->m_clientEncodingComboBox->addItem(te::common::CharEncodingConv::getCharEncodingName(encodings[i]).c_str());
 
         int idx;
 #ifdef WIN32
-        idx = m_ui->m_clientEncodingComboBox->findText("WIN1252");
+        idx = m_ui->m_clientEncodingComboBox->findText("CP1252");
 #else
-        idx = m_ui->m_clientEncodingComboBox->findText("UTF8");
+        idx = m_ui->m_clientEncodingComboBox->findText("UTF-8");
 #endif
         m_ui->m_clientEncodingComboBox->setCurrentIndex(idx);
       }

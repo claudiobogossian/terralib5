@@ -32,8 +32,8 @@
 
 
 // Qt
-#include <QtGui/QDialog>
-#include <QtGui/QGridLayout>
+#include <QDialog>
+#include <QGridLayout>
 
 namespace Ui { class ConstraintsIndexesPropertyDialogForm; }
 
@@ -67,6 +67,10 @@ namespace te
           ConstraintsIndexesPropertyDialog(te::da::DataSetType* dsType, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           ~ConstraintsIndexesPropertyDialog();
+
+          void setConstraint(te::da::Constraint* constraint);
+
+          void setIndex(te::da::Index* index);
 
         public slots:
 

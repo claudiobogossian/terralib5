@@ -24,7 +24,10 @@
 */
 
 // TerraLib
+#include "../xlink/SimpleLink.h"
 #include "CoverageStyle.h"
+#include "Description.h"
+#include "Rule.h"
 
 const std::string te::se::CoverageStyle::sm_type("CoverageStyle");
 
@@ -52,4 +55,42 @@ const std::string* te::se::CoverageStyle::getCoverageName() const
 const std::string& te::se::CoverageStyle::getType() const
 {
   return sm_type;
+}
+
+te::se::Style* te::se::CoverageStyle::clone() const
+{
+  CoverageStyle* style = new CoverageStyle();
+
+  if(m_name)
+    style->setName(new std::string(*m_name));
+
+  if(m_description)
+    style->setDescription(m_description->clone());
+
+  if(m_semanticTypeIdentifiers)
+  {
+    for(std::size_t i = 0; i < m_semanticTypeIdentifiers->size(); ++i)
+    {
+      style->m_semanticTypeIdentifiers->push_back(m_semanticTypeIdentifiers->at(i));
+    }
+  }
+
+  for(std::size_t i = 0; i < m_rules.size(); ++i)
+  {
+    if(m_rules[i])
+      style->m_rules.push_back(m_rules[i]->clone());
+  }
+
+  for(std::size_t i = 0; i < m_onlineResources.size(); ++i)
+  {
+    if(m_onlineResources[i])
+      style->m_onlineResources.push_back(m_onlineResources[i]->clone());
+  }
+
+  style->m_version = m_version;
+
+  if(m_coverageName)
+    style->setCoverageName(new std::string(*m_coverageName));
+
+  return style;
 }

@@ -30,7 +30,7 @@
 #include "ChartSliceItem.h"
 
 // Qt
-#include <QtGui/QMenu>
+#include <QMenu>
 
 // STL
 #include <vector>

@@ -1,11 +1,12 @@
 #include "DummyWindow.h"
 
 // Terralib
+#include "../../src/terralib/Defines.h"
 #include "terralib/common/progress/TaskProgress.h"
 #include "terralib/common/progress/ProgressManager.h"
 
 // Qt
-#include <QtGui/QSpacerItem>
+#include <QSpacerItem>
 
 // System
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS

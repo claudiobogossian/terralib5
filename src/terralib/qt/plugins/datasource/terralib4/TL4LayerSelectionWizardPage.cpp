@@ -28,7 +28,26 @@
 #include "TL4LayerSelectionWizardPage.h"
 
 // Qt
-#include<QtGui/QListWidgetItem>
+#include<QIcon>
+#include<QListWidgetItem>
+
+QIcon getImage(int type)
+{
+  switch(type)
+  {
+    case 0:
+      return QIcon::fromTheme("tl4-layer").pixmap(16,16);
+
+    case 1:
+      return QIcon::fromTheme("tl4-theme").pixmap(16,16);
+
+    case 2:
+      return QIcon::fromTheme("tl4-table").pixmap(16,16);
+
+    default:
+      return QIcon::fromTheme("tl4-layer").pixmap(16,16);
+  }
+}
 
 te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::TL4LayerSelectionWizardPage(QWidget* parent)
   : QWizardPage(parent),
@@ -46,13 +65,30 @@ te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::~TL4LayerSelectionWizar
 {
 }
 
-void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setDatasets(std::vector<std::string> datasets)
+void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setDatasets(std::vector<std::string> layers,
+                                                                          std::vector<std::string> tables)
 {
   m_ui->m_layersListWidget->clear();
 
-  for(std::size_t i = 0; i < datasets.size(); ++i)
+  setTL4Layers(layers);
+  setTL4Tables(tables);
+}
+
+void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setTL4Layers(std::vector<std::string> layers)
+{
+  for(std::size_t i = 0; i < layers.size(); ++i)
   {
-    QListWidgetItem* item = new QListWidgetItem(datasets[i].c_str(), m_ui->m_layersListWidget);
+    QListWidgetItem* item = new QListWidgetItem(getImage(LAYER), layers[i].c_str(), m_ui->m_layersListWidget, LAYER);
+    item->setCheckState(Qt::Checked);
+    m_ui->m_layersListWidget->addItem(item);
+  }
+}
+
+void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setTL4Tables(std::vector<std::string> tables)
+{
+  for(std::size_t i = 0; i < tables.size(); ++i)
+  {
+    QListWidgetItem* item = new QListWidgetItem(getImage(TABLE), tables[i].c_str(), m_ui->m_layersListWidget, TABLE);
     item->setCheckState(Qt::Checked);
     m_ui->m_layersListWidget->addItem(item);
   }
@@ -99,4 +135,16 @@ void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::onDeselectAllPushB
     if(state == Qt::Checked)
       m_ui->m_layersListWidget->item(i)->setCheckState(Qt::Unchecked);
   }
+}
+
+std::vector<QListWidgetItem*> te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::getCheckedItems()
+{
+  std::vector<QListWidgetItem*> checked;
+  for(int i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  {
+    if(m_ui->m_layersListWidget->item(i)->checkState() == Qt::Checked)
+      checked.push_back(m_ui->m_layersListWidget->item(i));
+  }
+
+  return checked;
 }

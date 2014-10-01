@@ -137,7 +137,7 @@ te::mem::TiledBand& te::mem::TiledBand::operator=(const TiledBand& rhs)
     if((m_blksize != rhs.m_blksize) ||
        (m_nblksx != rhs.m_nblksx) ||
        (m_nblksy != rhs.m_nblksy))
-      throw Exception(TR_MEMORY("You can not assign a band to another one with different block size or tile dimesinsions"));
+      throw Exception(TE_TR("You can not assign a band to another one with different block size or tile dimesinsions"));
 
     te::rst::Band::operator=(rhs);
 

@@ -32,7 +32,7 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 // STL
 #include <map>
@@ -119,6 +119,8 @@ namespace te
           double getWidthMM() const;
 
           double getHeightMM() const;
+
+          virtual void setSRID(const int& srid, bool doRefresh = true);
 
           //@}
 
@@ -242,6 +244,12 @@ namespace te
 
           /*! This signal is emitted when the map display extent changed. */
           void extentChanged();
+
+          /*! this signal is issued to others draw on this display. */
+          void displayPaintEvent(QPainter*);
+
+          /*! This signal is sent to others know that the projection was changed. */
+          void displaySridChanged();
 
         private:
 

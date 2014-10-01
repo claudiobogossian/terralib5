@@ -31,8 +31,8 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QMessageBox>
-#include <QtGui/QWidget>
+#include <QMessageBox>
+#include <QWidget>
 
 te::qt::widgets::DataSetTreeModel::DataSetTreeModel(const te::da::DataSourceInfoPtr& datasource, QWidget* parent)
   : QAbstractItemModel(parent),

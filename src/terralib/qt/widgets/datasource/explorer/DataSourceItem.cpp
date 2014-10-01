@@ -32,8 +32,8 @@
 #include "DataSourceItem.h"
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QWidget>
 
 te::qt::widgets::DataSourceItem::DataSourceItem(const te::da::DataSourceInfoPtr& ds, AbstractDataSourceTreeItem* parent)
   : AbstractDataSourceTreeItem(parent),

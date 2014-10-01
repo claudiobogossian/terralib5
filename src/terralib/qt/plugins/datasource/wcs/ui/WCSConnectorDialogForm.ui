@@ -62,7 +62,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QLineEdit" name="m_dbPathLineEdit"/>
+    <widget class="QLineEdit" name="m_serverLineEdit"/>
    </item>
    <item>
     <widget class="QLabel" name="label_2">
@@ -159,7 +159,7 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>m_dbPathLineEdit</tabstop>
+  <tabstop>m_serverLineEdit</tabstop>
   <tabstop>m_datasourceTitleLineEdit</tabstop>
   <tabstop>m_datasourceDescriptionTextEdit</tabstop>
   <tabstop>m_openPushButton</tabstop>

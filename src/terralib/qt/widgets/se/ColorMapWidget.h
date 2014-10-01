@@ -27,10 +27,12 @@
 #define __TERRALIB_QT_WIDGETS_SE_INTERNAL_COLORMAPWIDGET_H
 
 // TerraLib
+#include "../../../maptools/AbstractLayer.h"
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QWidget>
+#include <QTableWidgetItem>
+#include <QWidget>
 
 // STL
 #include <memory>
@@ -62,10 +64,9 @@ namespace te
   {
     namespace widgets
     {
-      namespace colorbar
-      {
-        class ColorBar;
-      }
+      // Forward declarations
+      class ColorCatalogWidget;
+
       /*!
         \class ColorMapWidget
 
@@ -96,6 +97,8 @@ namespace te
 
           void setColorMap(te::se::ColorMap* cm);
 
+          void setLayers(te::map::AbstractLayerPtr selectedLayer, std::vector<te::map::AbstractLayerPtr> allLayers);
+
           te::se::ColorMap* getColorMap();
 
           std::string getCurrentBand();
@@ -106,7 +109,7 @@ namespace te
           void initialize();
 
           /*! \brief Updates the widget form based on internal fill element. */
-          void updateUi();
+          void updateUi(bool loadColorBar = false);
 
           void buildCategorizationMap();
 
@@ -120,6 +123,9 @@ namespace te
 
           void onBandSelected(QString value);
 
+          void onTableWidgetItemDoubleClicked(QTableWidgetItem* item);
+
+          void onImportPushButtonClicked();
 
         signals:
 
@@ -128,7 +134,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::ColorMapWidgetForm> m_ui;                 //!< Dialog form.
-          te::qt::widgets::colorbar::ColorBar* m_cbWidget;           //!< QWT widget for color bar.
+          te::qt::widgets::ColorCatalogWidget* m_colorBar;            //!< Widget used to pick a color.
           te::se::ColorMap* m_cm;                                     //!< SE Color Map element.
           te::color::ColorBar* m_cb;                                  //!< Terralib color bar objetc
 

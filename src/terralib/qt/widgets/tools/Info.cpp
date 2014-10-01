@@ -45,14 +45,15 @@
 #include "../../../srs/Config.h"
 #include "../canvas/Canvas.h"
 #include "../canvas/MapDisplay.h"
+#include "../Utils.h"
 #include "Info.h"
 
 // Qt
 #include <QtCore/QPointF>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <QtGui/QMessageBox>
-#include <QtGui/QMouseEvent>
+#include <QMessageBox>
+#include <QMouseEvent>
 
 // STL
 #include <cassert>
@@ -96,8 +97,12 @@ bool te::qt::widgets::Info::mouseReleaseEvent(QMouseEvent* e)
     return false;
 
   QPointF pixelOffset(4.0, 4.0);
+#if (QT_VERSION >= 0x050000)
+  QRectF rect = QRectF(e->localPos() - pixelOffset, e->localPos() + pixelOffset);
+#else
   QRectF rect = QRectF(e->posF() - pixelOffset, e->posF() + pixelOffset);
-
+#endif
+      
   // Converts rect boundary to world coordinates
   QPointF ll(rect.left(), rect.bottom());
   QPointF ur(rect.right(), rect.top());
@@ -168,29 +173,44 @@ void te::qt::widgets::Info::getInfo(const te::map::AbstractLayerPtr& layer, cons
     // Gets the Layer Schema
     std::auto_ptr<const te::map::LayerSchema> ls(layer->getSchema());
 
+    // Gets the name of the referenced spatial property
+    std::string spatialPropertyName = layer->getGeomPropertyName();
+
     if(ls->hasGeom())
     {
-      // Retrieves the data from layer
-      te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(ls.get());
+      te::gm::GeometryProperty* gp = 0;
 
+      if(spatialPropertyName.empty())
+        gp = te::da::GetFirstGeomProperty(ls.get());
+     else
+        gp = dynamic_cast<te::gm::GeometryProperty*>(ls->getProperty(spatialPropertyName));
+
+      assert(gp);
+
+      // Retrieves the data from layer
       std::auto_ptr<te::da::DataSet> dataset(layer->getData(gp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS).release());
-      getGeometryInfo(layerItem, dataset.get(), reprojectedEnvelope, layer->getSRID(), needRemap);
+
+      getGeometryInfo(layerItem, dataset.get(), layer->getGeomPropertyName(), reprojectedEnvelope, layer->getSRID(), needRemap);
     }
 
     if(ls->hasRaster())
     {
-      // Retrieves the data from layer
-      te::rst::RasterProperty* rp = te::da::GetFirstRasterProperty(ls.get());
+      te::rst::RasterProperty* rp = 0;
 
+      if(spatialPropertyName.empty())
+        rp = te::da::GetFirstRasterProperty(ls.get());
+      else
+        rp = dynamic_cast<te::rst::RasterProperty*>(ls->getProperty(spatialPropertyName));
+
+      assert(rp);
+
+      // Retrieves the data from layer
       std::auto_ptr<te::da::DataSet> dataset(layer->getData(rp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS).release());
 
       if(!dataset->moveNext())
         return;
 
-      std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
-      assert(rpos != std::string::npos);
-
-      std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));
+      std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rp->getName()));
       assert(raster.get());
 
       getRasterInfo(layerItem, raster.get(), reprojectedEnvelope, layer->getSRID(), needRemap);
@@ -205,7 +225,7 @@ void te::qt::widgets::Info::getInfo(const te::map::AbstractLayerPtr& layer, cons
   }
 }
 
-void te::qt::widgets::Info::getGeometryInfo(QTreeWidgetItem* layerItem, te::da::DataSet* dataset, const te::gm::Envelope& e, int srid, bool needRemap)
+void te::qt::widgets::Info::getGeometryInfo(QTreeWidgetItem* layerItem, te::da::DataSet* dataset, const std::string& geomPropertyName, const te::gm::Envelope& e, int srid, bool needRemap)
 {
   // Generates a geometry from the given extent. It will be used to refine the results
   std::auto_ptr<te::gm::Geometry> geometryFromEnvelope(te::gm::GetGeomFromEnvelope(&e, srid));
@@ -214,8 +234,8 @@ void te::qt::widgets::Info::getGeometryInfo(QTreeWidgetItem* layerItem, te::da::
   te::gm::Coord2D center = e.getCenter();
   te::gm::Point point(center.x, center.y, srid);
 
-  // For while, using the first geometry property
-  std::size_t gpos = te::da::GetFirstPropertyPos(dataset, te::dt::GEOMETRY_TYPE);
+  std::size_t gpos = std::string::npos;
+  geomPropertyName.empty() ? gpos = te::da::GetFirstPropertyPos(dataset, te::dt::GEOMETRY_TYPE): gpos = te::da::GetPropertyPos(dataset, geomPropertyName);
 
   while(dataset->moveNext())
   {
@@ -236,8 +256,21 @@ void te::qt::widgets::Info::getGeometryInfo(QTreeWidgetItem* layerItem, te::da::
           propertyItem->setIcon(0, QIcon::fromTheme("geometry"));
 
         if(!dataset->isNull(i))
-          propertyItem->setText(1, dataset->getAsString(i, 3).c_str());
-        else
+        {
+          QString qvalue;
+
+          if(dataset->getPropertyDataType(i) == te::dt::STRING_TYPE)
+          {
+            std::string value = dataset->getString(i);
+            te::common::CharEncoding encoding = dataset->getPropertyCharEncoding(i);
+            qvalue = Convert2Qt(value, encoding);
+          }
+          else
+            qvalue = dataset->getAsString(i, 3).c_str();
+
+          propertyItem->setText(1, qvalue);
+        }
+        else // property null value!
           propertyItem->setText(1, "");
       }
 

@@ -97,16 +97,6 @@ te::da::DataSource* te::gdal::Transactor::getDataSource() const
   return 0;
 }
 
-bool te::gdal::Transactor::isDataSetNameValid(const std::string& datasetName)
-{
-  return true;
-}
-
-bool te::gdal::Transactor::isPropertyNameValid(const std::string& propertyName)
-{
-  return true;
-}
-
 void te::gdal::Transactor::getDataSetNames(const boost::filesystem::path& path, std::vector<std::string>& dsnames)
 {  
   if (boost::filesystem::is_regular_file(path))
@@ -247,7 +237,10 @@ std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getDataSetType(const bo
       
       char** subdatasets = gds->GetMetadata("SUBDATASETS");
       if(subdatasets == 0)
+      {
+        GDALClose(gds);
         return std::auto_ptr<te::da::DataSetType>(); // it has no subdatasets
+      }
       
       for(char** i = subdatasets; *i != 0; i=i+2)
       {
@@ -433,19 +426,19 @@ std::auto_ptr<te::da::DataSet> te::gdal::Transactor::query(const te::da::Select&
   const te::da::From& from = q.from();
   
   if (from.empty())
-    throw Exception(TR_GDAL("Can not process the Select object."));
+    throw Exception(TE_TR("Can not process the Select object."));
   
   te::da::DataSetName* dsname = static_cast<te::da::DataSetName*>(from[0].clone());
   
   if (!dsname)
-    throw Exception(TR_GDAL("Can not process the Select object."));
+    throw Exception(TE_TR("Can not process the Select object."));
   
   std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(dsname->getName());
   
   delete dsname;
   
   if (!dsty.get())
-    throw Exception(TR_GDAL("Can not process the Select object: dataset not found."));
+    throw Exception(TE_TR("Can not process the Select object: dataset not found."));
 
   std::string uri = dsty->getTitle();
   return std::auto_ptr<te::da::DataSet>(new DataSet(dsty,accessPolicy,uri)); 
@@ -465,17 +458,17 @@ std::auto_ptr<te::da::DataSet> te::gdal::Transactor::query(const std::string& qu
     it =  std::find(words.begin(), words.end(), "from");
   
   if (it== words.end())
-    throw Exception(TR_GDAL("Can not process the query expression."));
+    throw Exception(TE_TR("Can not process the query expression."));
   
   ++it;
   if (it== words.end())
-    throw Exception(TR_GDAL("Can not process the query expression."));  
+    throw Exception(TE_TR("Can not process the query expression."));  
   
   std::string dsname = *it;
   
   std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(dsname);
   if (!dsty.get())
-    throw Exception(TR_GDAL("Can not process the Select object: dataset not found."));
+    throw Exception(TE_TR("Can not process the Select object: dataset not found."));
   
   std::string uri = dsty->getTitle();
   return std::auto_ptr<te::da::DataSet>(new DataSet(dsty,accessPolicy,uri));
@@ -520,7 +513,7 @@ void te::gdal::Transactor::createDataSet(te::da::DataSetType* dt,
                                          const std::map<std::string, std::string>& options) 
 { 
   if (!boost::filesystem::is_directory(m_path))
-    throw Exception(TR_GDAL("Create operation supported just on directory data sources."));
+    throw Exception(TE_TR("Create operation supported just on directory data sources."));
       
   te::rst::RasterProperty* rstp = static_cast<te::rst::RasterProperty*>(dt->getProperty(0));
   
@@ -528,14 +521,14 @@ void te::gdal::Transactor::createDataSet(te::da::DataSetType* dt,
   paux /= dt->getName();
   
   if (boost::filesystem::exists(paux))
-    throw Exception((boost::format(TR_GDAL("The datasource already has a dataset with this name (\"%1%\")!")) % dt->getName()).str());
+    throw Exception((boost::format(TE_TR("The datasource already has a dataset with this name (\"%1%\")!")) % dt->getName()).str());
   
   DataSetUseCounter dsUseCounter( paux.string(), DataSetsManager::SingleAccessType );
   
   GDALDataset* gds = te::gdal::CreateRaster(paux.string(), rstp->getGrid(), rstp->getBandProperties(),options);
   
   if (!gds)
-    throw Exception(TR_GDAL("GDAL driver couldn't persist the raster file."));
+    throw Exception(TE_TR("GDAL driver couldn't persist the raster file."));
   
   GDALClose(gds);
 }
@@ -547,12 +540,12 @@ void te::gdal::Transactor::cloneDataSet(const std::string& name,
   std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(name); 
   
   if (!dsty.get())
-    throw Exception(TR_GDAL("Dataset does not exist."));
+    throw Exception(TE_TR("Dataset does not exist."));
 
   boost::filesystem::path mpath(dsty->getTitle());
   
   if (!boost::filesystem::is_regular_file(mpath))
-    throw Exception(TR_GDAL("Can not clone a dataset that it is not a raster file."));
+    throw Exception(TE_TR("Can not clone a dataset that it is not a raster file."));
   
   boost::filesystem::path newpath(mpath.parent_path() /= cloneName);
   boost::filesystem::copy_file(mpath, newpath);
@@ -564,11 +557,11 @@ void te::gdal::Transactor::dropDataSet(const std::string& name)
   std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(name); 
   
   if (!dsty.get())
-    throw Exception(TR_GDAL("Dataset does not exist."));
+    throw Exception(TE_TR("Dataset does not exist."));
   
   boost::filesystem::path mpath(dsty->getTitle());
   if (!boost::filesystem::is_regular_file(mpath))
-    throw Exception(TR_GDAL("Can not drop a dataset that it is not a raster file."));
+    throw Exception(TE_TR("Can not drop a dataset that it is not a raster file."));
 
   boost::filesystem::remove(mpath.string());  
 }
@@ -578,13 +571,18 @@ void te::gdal::Transactor::renameDataSet(const std::string& name, const std::str
   std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(name); 
   
   if (!dsty.get())
-    throw Exception(TR_GDAL("Dataset does not exist."));
+    throw Exception(TE_TR("Dataset does not exist."));
   
   boost::filesystem::path mpath(dsty->getTitle());
   if (!boost::filesystem::is_regular_file(mpath))
-    throw Exception(TR_GDAL("Can not rename a dataset that it is not a raster file."));
+    throw Exception(TE_TR("Can not rename a dataset that it is not a raster file."));
   
   boost::filesystem::path newpath(mpath.parent_path() /= newName);
   boost::filesystem::rename(mpath, newpath);
+}
+
+te::common::CharEncoding te::gdal::Transactor::getEncoding()
+{
+  return te::common::LATIN1;
 }
 

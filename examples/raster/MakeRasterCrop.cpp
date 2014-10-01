@@ -18,7 +18,7 @@ void MakeRasterCrop()
 
     std::map<std::string, std::string> irinfo;
 
-    irinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+    irinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* inraster = te::rst::RasterFactory::open(irinfo);
 
@@ -29,7 +29,7 @@ void MakeRasterCrop()
 
     std::map<std::string, std::string> orinfo;
 
-    orinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/raster-crop.tif";
+    orinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/raster-crop.tif";
 
     te::rst::Raster* outraster = inraster->trim(blenv, orinfo);
 
@@ -40,11 +40,11 @@ void MakeRasterCrop()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in MakeRasterCrop(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in MakeRasterCrop(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in MakeRasterCrop()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in MakeRasterCrop()!" << std::endl;
   }
 
 }

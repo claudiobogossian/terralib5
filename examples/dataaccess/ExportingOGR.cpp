@@ -1,4 +1,5 @@
 // Examples
+#include "../Config.h"
 #include "DataAccessExamples.h"
 
 // Terralib
@@ -26,29 +27,31 @@ void openDirectory(const std::string& filename, const std::string dstype);
 void saveUsingOGR(const std::string& filename, const std::string drivername);
 void ExportingOGR()
 {
-    std::cout << std::endl << "1 - ";
-    openFile(""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers_b2_crop.tif","GDAL");
+  std::string data_dir = TERRALIB_DATA_DIR;
+  
+  std::cout << std::endl << "1 - ";
+  openFile(data_dir + "/rasters/cbers_b2_crop.tif", "GDAL");
 
-    std::cout << std::endl << "2 - ";
-    openDirectory(""TE_DATA_EXAMPLE_DIR"/data/rasters","GDAL");
+  std::cout << std::endl << "2 - ";
+  openDirectory(data_dir + "/rasters", "GDAL");
   
-    std::cout << std::endl << "3 - ";
-    openFile(""TE_DATA_EXAMPLE_DIR"/data/shp/munic_2001.shp","OGR");
+  std::cout << std::endl << "3 - ";
+  openFile(data_dir + "/shp/munic_2001.shp", "OGR");
   
-    std::cout << std::endl << "4 - ";
-    openFile(""TE_DATA_EXAMPLE_DIR"/data/shp","OGR");
+  std::cout << std::endl << "4 - ";
+  openFile(data_dir + "/shp", "OGR");
   
-    std::cout << std::endl << "5 - ";
-    openFile(""TE_DATA_EXAMPLE_DIR"/data/ogr","OGR");
+  std::cout << std::endl << "5 - ";
+  openFile(data_dir + "/ogr", "OGR");
   
-    saveUsingOGR(""TE_DATA_EXAMPLE_DIR"/data/ogr/testeOGR.shp", "ESRI Shapefile");
-    saveUsingOGR(""TE_DATA_EXAMPLE_DIR"/data/ogr/testeOGR.kml", "KML");
-    saveUsingOGR(""TE_DATA_EXAMPLE_DIR"/data/ogr/testeOGR.mif", "MapInfo File");
-    saveUsingOGR(""TE_DATA_EXAMPLE_DIR"/data/ogr/testeOGR.json", "GeoJSON");
-    saveUsingOGR(""TE_DATA_EXAMPLE_DIR"/data/ogr/testeOGR.gml", "GML");
+  saveUsingOGR(data_dir + "/ogr/testeOGR.shp", "ESRI Shapefile");
+  saveUsingOGR(data_dir + "/ogr/testeOGR.kml", "KML");
+  saveUsingOGR(data_dir + "/ogr/testeOGR.mif", "MapInfo File");
+  saveUsingOGR(data_dir + "/ogr/testeOGR.json", "GeoJSON");
+  saveUsingOGR(data_dir + "/ogr/testeOGR.gml", "GML");
   
   std::cout << std::endl << "6 - ";
-  openFile(""TE_DATA_EXAMPLE_DIR"/data/ogr","OGR");
+  openFile(data_dir + "/ogr", "OGR");
 }
 
 void openFile(const std::string& filename, const std::string dstype)

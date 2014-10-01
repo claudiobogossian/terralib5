@@ -32,7 +32,7 @@
 #include "../../Config.h"
 
 // Qt
-#include <QtGui/QDialog>
+#include <QDialog>
 
 namespace Ui { class DataSetSelectorDialogForm; }
 
@@ -73,7 +73,11 @@ namespace te
 
           std::list<te::da::DataSetTypePtr> getCheckedDataSets() const;
 
+          std::list<std::string> getCheckedGeomProperties() const;
+
           std::list<te::da::DataSetTypePtr> getSelectedDataSets() const;
+
+          std::list<std::string> getSelectedGeomProperties() const;
 
           void setSelectMode(SelectModeType m);
 

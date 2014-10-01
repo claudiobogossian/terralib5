@@ -175,7 +175,38 @@ namespace te
         static std::auto_ptr<ObservationDataSet> getDataSet(const ObservationDataSetInfo& info, 
                                  const te::dt::DateTime& dt, te::dt::TemporalRelation r = te::dt::DURING,
                                  te::common::TraverseType travType = te::common::FORWARDONLY);
-                                               
+
+         /*!
+          \brief It returns a data set with observations whose observed geometries 
+                 satisfy a given spatial relation and phenomenon times satisfy a given temporal relation. 
+
+          The possible temporal relations are: 1. AFTER; 
+          2. AFTER | EQUALS; 3. BEFORE;  4. BEFORE | EQUALS; 5. DURING; 6. EQUALS 
+
+          \param info Information about the DataSource which the observation of trajectpries 
+                      are from and the DataSet which contains the observations.
+          \param  dt  A given datetime.
+          \param  tr  A given temporal relation.
+          \param  e   A given envelope.
+          \param  sr  A given spatial relation.
+          \param travType The traverse type associated to the returned dataset. 
+          
+          \return A pointer to a new ObservationDataSet. 
+
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
+          \note The caller will take the ownership of the returned pointer.
+          \note When the temporal relation is DURING, dt must be a time period.
+          \note It can throw an Exception when internal errors occur.
+        */
+
+        static std::auto_ptr<ObservationDataSet> getDataSet(const ObservationDataSetInfo& info,
+                                                            const te::dt::DateTime& dt, 
+                                                            te::dt::TemporalRelation tr,
+                                                            const te::gm::Envelope& e, 
+                                                            te::gm::SpatialRelation sr = te::gm::INTERSECTS,
+                                                            te::common::TraverseType travType = te::common::FORWARDONLY);
+
         /*!
           \brief It returns a data set with observations whose observed geometries satisfy a
                  given spatial relation and phenomenon times satisfy a given temporal relation. 
@@ -331,6 +362,40 @@ namespace te
         static std::auto_ptr<TrajectoryDataSet> getDataSet(const TrajectoryDataSetInfo& info, 
                                  const te::dt::DateTime& dt, te::dt::TemporalRelation r = te::dt::DURING,
                                  te::common::TraverseType travType = te::common::FORWARDONLY);
+
+         /*!
+          \brief It returns patches of a trajectory whose envelope 
+                 satisfy a given spatial relation and times satisfy a given temporal relation. 
+
+          When the DataSet contains more than one trajectory, the info parameter
+          (TrajectoryDataSetInfo) must contain the id of the desire trajectory that
+          must be returned as a TrajectoryDataSet.
+
+          The possible temporal relations are: 1. AFTER; 
+          2. AFTER | EQUALS; 3. BEFORE;  4. BEFORE | EQUALS; 5. DURING; 6. EQUALS 
+
+          \param info Information about the DataSource which the observation of trajectpries 
+                      are from and the DataSet which contains the observations.
+          \param  dt  A given datetime.
+          \param  tr  A given temporal relation.
+          \param  e   A given envelope.
+          \param  sr  A given spatial relation.
+          \param travType The traverse type associated to the returned dataset. 
+          
+          \return A pointer to a new TrajectoryDataSet. 
+
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
+          \note The caller will take the ownership of the returned pointer.
+          \note When the temporal relation is DURING, dt must be a time period.
+          \note It can throw an Exception when internal errors occur.
+        */
+        static std::auto_ptr<TrajectoryDataSet> getDataSet(const TrajectoryDataSetInfo& info,
+                                                           const te::dt::DateTime& dt, 
+                                                           te::dt::TemporalRelation tr,
+                                                           const te::gm::Envelope& e, 
+                                                           te::gm::SpatialRelation sr = te::gm::INTERSECTS,
+                                                           te::common::TraverseType travType = te::common::FORWARDONLY);
 
         /*!
           \brief It returns patches of a trajectory whose geometries 
@@ -651,6 +716,9 @@ namespace te
                         
         /*! \brief Virtual destructor. */
         virtual ~STDataLoader();
+      
+      public:
+        static bool sm_STDataLoaderInitialized;     //!< Indictes if the st data loader support was initialized
 
       protected:
 

@@ -56,9 +56,9 @@
 //#include <boost/chrono.hpp>
 
 // Qt
-#include <QtGui/QAbstractButton>
-#include <QtGui/QMessageBox>
-#include <QtGui/QVBoxLayout>
+#include <QAbstractButton>
+#include <QMessageBox>
+#include <QVBoxLayout>
 
 te::qt::widgets::DataExchangerWizard::DataExchangerWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f),
@@ -224,6 +224,8 @@ void te::qt::widgets::DataExchangerWizard::commit()
     te::da::DataSetType* odset = it->second->getResult();
     te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(odset);
 
+    std::auto_ptr<te::da::DataSourceTransactor> t(0);
+
     try
     {
       std::map<std::string,std::string> nopt;
@@ -232,15 +234,19 @@ void te::qt::widgets::DataExchangerWizard::commit()
 
       std::auto_ptr<te::da::DataSet> dataset(idatasource->getDataSet(idset->getName()));
 
+      t = odatasource->getTransactor();
+
+      t->begin();
+
       // stay tunned: create can change idset!
-      odatasource->createDataSet(odset, nopt);
+      t->createDataSet(odset, nopt);
 
       std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), it->second));
       if(geomProp)
         dsAdapter->setSRID(geomProp->getSRID());
 
       if(dataset->moveBeforeFirst())
-        odatasource->add(odset->getName(), dsAdapter.get(), ods->getConnInfo());
+        t->add(odset->getName(), dsAdapter.get(), ods->getConnInfo());
 
       // boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
 
@@ -250,6 +256,8 @@ void te::qt::widgets::DataExchangerWizard::commit()
       //status.m_time = sec;
 
       result.push_back(status);
+
+      t->commit();
     }
     catch(const std::exception& e)
     {
@@ -259,6 +267,8 @@ void te::qt::widgets::DataExchangerWizard::commit()
       status.m_exceptionMsg = e.what();
 
       result.push_back(status);
+
+      t->rollBack();
     }
     catch(...)
     {
@@ -268,6 +278,8 @@ void te::qt::widgets::DataExchangerWizard::commit()
       status.m_exceptionMsg = tr("Unknown error!").toStdString();
 
       result.push_back(status);
+
+      t->rollBack();
     }
 
     ++it;

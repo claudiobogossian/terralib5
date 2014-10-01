@@ -181,8 +181,8 @@ void te::qt::widgets::TiePointLocatorWidget::getTiePoints( std::vector< te::gm::
 {
   tiePoints.clear();
 
-   std::auto_ptr<te::da::DataSet> ds(m_refLayer->getData());
-   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+  std::auto_ptr<te::da::DataSet> ds(m_refLayer->getData());
+  std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
   te::qt::widgets::TiePointData::TPContainerT::const_iterator itB = m_tiePoints.begin();
@@ -209,6 +209,30 @@ void te::qt::widgets::TiePointLocatorWidget::getTiePoints( std::vector< te::gm::
     tp.second = c;
 
     tiePoints.push_back(tp);
+    ++itB;
+  }
+}
+
+void te::qt::widgets::TiePointLocatorWidget::getTiePointsIdxCoords( std::vector< te::gm::GTParameters::TiePoint >& tiePoints ) const
+{
+  tiePoints.clear();
+
+  std::auto_ptr<te::da::DataSet> ds(m_refLayer->getData());
+  std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+  std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
+
+  te::qt::widgets::TiePointData::TPContainerT::const_iterator itB = m_tiePoints.begin();
+
+  const te::qt::widgets::TiePointData::TPContainerT::const_iterator itE = m_tiePoints.end();
+
+  tiePoints.reserve( m_tiePoints.size() );
+
+  while( itB != itE )
+  {
+    te::gm::GTParameters::TiePoint tp = itB->second.m_tiePoint;
+
+    tiePoints.push_back(tp);
+
     ++itB;
   }
 }
@@ -607,14 +631,14 @@ void te::qt::widgets::TiePointLocatorWidget::onAdjMapDisplayExtentChanged()
   drawTiePoints();
 }
 
-void te::qt::widgets::TiePointLocatorWidget::onRefPointPicked(double x, double y, te::qt::widgets::MapDisplay* map)
+void te::qt::widgets::TiePointLocatorWidget::onRefPointPicked(double x, double y)
 {
   refCoordPicked(x, y);
 
   drawTiePoints();
 }
 
-void te::qt::widgets::TiePointLocatorWidget::onAdjPointPicked(double x, double y, te::qt::widgets::MapDisplay* map)
+void te::qt::widgets::TiePointLocatorWidget::onAdjPointPicked(double x, double y)
 {
   adjCoordPicked(x, y);
 
@@ -952,13 +976,13 @@ void te::qt::widgets::TiePointLocatorWidget::startUpNavigators()
   m_refNavigator->setMinimumSize(550, 400);
   m_refNavigator->hideGeomTool(true);
   m_refNavigator->hideInfoTool(true);
+  m_refNavigator->hideBoxTool(true);
 
   layoutRef->addWidget(m_refNavigator);
   layoutRef->setContentsMargins(0,0,0,0);
 
   connect(m_refNavigator, SIGNAL(mapDisplayExtentChanged()), this, SLOT(onRefMapDisplayExtentChanged()));
-  connect(m_refNavigator, SIGNAL(pointPicked(double, double, te::qt::widgets::MapDisplay*)), 
-    this, SLOT(onRefPointPicked(double, double, te::qt::widgets::MapDisplay*)));
+  connect(m_refNavigator, SIGNAL(pointPicked(double, double)), this, SLOT(onRefPointPicked(double, double)));
 
   //adjust
   QGridLayout* layoutAdj = new QGridLayout(m_ui->m_adjWidget);
@@ -968,13 +992,13 @@ void te::qt::widgets::TiePointLocatorWidget::startUpNavigators()
   m_adjNavigator->setMinimumSize(550, 400);
   m_adjNavigator->hideGeomTool(true);
   m_adjNavigator->hideInfoTool(true);
+  m_adjNavigator->hideBoxTool(true);
 
   layoutAdj->addWidget(m_adjNavigator);
   layoutAdj->setContentsMargins(0,0,0,0);
 
   connect(m_adjNavigator, SIGNAL(mapDisplayExtentChanged()), this, SLOT(onAdjMapDisplayExtentChanged()));
-  connect(m_adjNavigator, SIGNAL(pointPicked(double, double, te::qt::widgets::MapDisplay*)), 
-    this, SLOT(onAdjPointPicked(double, double, te::qt::widgets::MapDisplay*)));
+  connect(m_adjNavigator, SIGNAL(pointPicked(double, double)), this, SLOT(onAdjPointPicked(double, double)));
 }
 
 void te::qt::widgets::TiePointLocatorWidget::drawTiePoints()

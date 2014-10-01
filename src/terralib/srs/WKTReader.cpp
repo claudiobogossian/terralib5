@@ -40,7 +40,7 @@ te::srs::SpatialReferenceSystem* te::srs::WKTReader::read(const char* wkt)
   bool isValid = phrase_parse(beginS, endS, parser, boost::spirit::ascii::space);
 
   if(!isValid)
-    throw Exception(TR_SRS("Invalid SRS WKT - parsing failed!"));
+    throw Exception(TE_TR("Invalid SRS WKT - parsing failed!"));
 
   te::srs::SpatialReferenceSystem* srs = parser.getSRS();
 

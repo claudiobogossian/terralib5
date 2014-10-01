@@ -1,0 +1,330 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+
+
+
+  
+  
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+
+
+  
+  
+  
+  <title>WHERE Clause</title>
+</head>
+
+
+<body>
+
+
+
+
+<h3 style="text-align: center; font-family: Calibri Light;">WHERE clause</h3>
+
+
+
+
+<span style="font-family: Calibri Light;">&nbsp;The WHERE clause
+Interface
+is used to define the restriction used to generate a new dataset. The
+restriction can involve&nbsp; one or more datasets, using standard and/or spatial attributes (vertical
+tabs). The
+list of operators supported is adjusted to the type of attributes involved.&nbsp;</span><br style="font-family: Calibri Light;">
+
+
+<span style="font-family: Calibri Light;"><br>
+
+
+The operators &nbsp;&lt;,&gt;,&lt;=,&gt;=,&lt;&gt;,=, LIKE, NOT are
+used with standard attributes comparison, and the spatial operators
+such as ST_UNION, ST_INTERSECTION, ST_AREA among others are used to
+operate over geometric attributes.<br>
+
+
+<br>
+
+
+
+</span>
+<p style="text-align: justify; font-family: Calibri Light;">To define a restriction based on Attributes follow the steps:</p>
+
+
+
+
+<ol style="font-family: Calibri Light;">
+
+
+
+
+  <li>Select restriction type on the vertical tab:</li>
+
+
+
+
+  
+  
+  
+  <ul>
+
+
+
+
+    <li><span style="font-style: italic;">Attribute</span>,</li>
+
+
+
+
+  
+  
+  
+  </ul>
+
+
+
+  <li>Define a restriction by selecting:</li>
+
+
+
+  
+  
+  
+  <ol>
+
+
+
+    <li style="font-style: italic;">&nbsp;Property</li>
+
+
+
+    <li style="font-style: italic;">&nbsp;Operator &nbsp;(&gt;, &gt;=, &lt;, &lt;=, = )</li>
+
+
+
+    <li><span style="font-style: italic;">&nbsp;Value</span> - it can be a property of other dataset or a value among all values of the property chosen.</li>
+
+
+    
+    
+    <ul>
+
+
+      <li><span style="font-style: italic;">Property</span>&nbsp;</li>
+
+
+      <li><span style="font-style: italic;">Value</span></li>
+
+
+    
+    
+    </ul>
+
+
+
+  
+  
+  
+  </ol>
+
+
+
+  <li>Click on <img style="width: 24px; height: 24px;" alt="add part of restriction" src="../../gen_icones/ic_add.PNG"> to add this combination (property x operator x value)&nbsp; to the Table/SQL tabs bellow.</li>
+
+
+
+  <li>On the frame <span style="font-style: italic;">Table</span><span style="font-style: italic;"></span>/<span style="font-style: italic;">SQL</span> &nbsp;it is possible to handle the restriction adding more clauses, removing one or all lines, or checking the SQL generated:</li>
+
+
+
+  
+  
+  
+  <ol>
+
+
+
+    <li>Check the list of restrictions.</li>
+
+
+
+    <li>Define the connector (<span style="font-style: italic;">and</span>, <span style="font-style: italic;">or</span>, nothing) &nbsp;and the next restriction.</li>
+
+
+
+    <li>Clear all restriction using <img style="width: 28px; height: 26px;" alt="clear all restricition" src="../../gen_icones/ic_clear.PNG"> or only one line using&nbsp; <img style="width: 24px; height: 23px;" alt="remove" src="../../gen_icones/ic_remove.PNG">.</li>
+
+
+
+    <li>Optionally,&nbsp;change to <span style="font-style: italic;">SQL</span> tab to see the restriction generated in&nbsp; SQL.</li>
+
+
+
+  
+  
+  
+  </ol>
+
+
+
+  <li>Go to the step 1 to define the next part of the restriction as necessary.</li>
+
+
+
+</ol>
+
+<span style="font-family: Calibri Light;">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span><img style="width: 484px; height: 408px;" alt="attribute restriction" src="q1.png"><br>
+
+
+
+
+<div style="text-align: center; font-family: Calibri Light;"><br>
+
+
+
+
+<br>
+
+
+
+
+</div>
+
+
+
+
+<div style="text-align: left; font-family: Calibri Light;">
+
+To define &nbsp;a restriction based on spatial attributes follow the steps:<br>
+
+
+<ol>
+
+
+  <li>Select restriction type on the vertical tab:</li>
+
+
+  
+  
+  <ul>
+
+
+    <li><span style="font-style: italic;">Spatial</span></li>
+
+
+  
+  
+  </ul>
+
+
+  <li>Define a restriction by selecting:</li>
+
+
+  
+  
+  <ol>
+
+
+    <li style="font-style: italic;">&nbsp;Property - geometry attribute of the selected dataset</li>
+
+
+    <li style="font-style: italic;">&nbsp;Operator (ST_Contains, ST_Union, ST_Crosses, ...)</li>
+
+
+    <li><span style="font-style: italic;">&nbsp;Layer - </span><span style="font-weight: normal;">select the layer to be confronted with the restriction defined.</span></li>
+
+    <li><span style="font-style: italic;">Use Selected Objects - </span>check this option if the goal is to apply the restriction only over the selected objects in the layer displayed.</li>
+
+  
+  </ol>
+
+
+  <li>Click on <img style="width: 24px; height: 24px;" alt="add part of restriction" src="../../gen_icones/ic_add.PNG"> to add this combination (property x operator x value)&nbsp; to the Table/SQL tabs bellow.</li>
+
+
+  <li>On the frame <span style="font-style: italic;">Table</span><span style="font-style: italic;"></span>/<span style="font-style: italic;">SQL</span> &nbsp;it is possible to handle the restriction adding more clauses, removing or checking the SQL generated:</li>
+
+
+  
+  
+  <ol>
+
+
+    <li>Check the list of restrictions.</li>
+
+
+    <li>Define the connector (<span style="font-style: italic;">and</span>, <span style="font-style: italic;">or</span>, nothing) &nbsp;and the next&nbsp;restriction.</li>
+
+
+    <li>Clear all restriction using <img style="width: 28px; height: 26px;" alt="clear all restricition" src="../../gen_icones/ic_clear.PNG"> or only one line using&nbsp;<img style="width: 24px; height: 23px;" alt="remove" src="../../gen_icones/ic_remove.PNG">.</li>
+
+
+    <li>Optionally,&nbsp;change to <span style="font-style: italic;">SQL</span> tab to see the restriction generated in&nbsp; SQL.</li>
+
+
+  
+  
+  </ol>
+
+
+  <li>Go to the step 1 to define the next part of the restriction as necessary.<br>
+
+  </li>
+
+
+</ol>
+
+<div style="text-align: center;">
+<div style="text-align: left;">
+<div style="text-align: center;">
+<div style="text-align: left;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <img style="width: 483px; height: 409px;" alt="spatial restriction example" src="q2.png"><br>
+
+
+
+
+<br>
+
+
+
+
+<div style="text-align: center;"><br>
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+</body>
+</html>

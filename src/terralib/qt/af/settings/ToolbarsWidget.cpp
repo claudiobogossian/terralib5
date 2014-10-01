@@ -8,9 +8,9 @@
 #include "../Utils.h"
 
 // Qt
-#include <QtGui/QInputDialog>
-#include <QtGui/QMessageBox>
-#include <QtGui/QToolBar>
+#include <QInputDialog>
+#include <QMessageBox>
+#include <QToolBar>
 
 void SetToolbars(QComboBox* cmb, std::vector< QList<QAction*> >& acts)
 {
@@ -140,7 +140,7 @@ void te::qt::af::ToolbarsWidget::resetState()
 void te::qt::af::ToolbarsWidget::getHelpInformations(QString& ns, QString& helpFile)
 {
   ns = "dpi.inpe.br.apf";
-  helpFile = "/apf/settings/toolbar/ToolbarConfig.html";
+  helpFile = "apf/settings/toolbar/ToolbarConfig.html";
 }
 
 void te::qt::af::ToolbarsWidget::currentToolbarChanged(int idx)

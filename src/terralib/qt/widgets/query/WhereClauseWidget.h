@@ -39,8 +39,8 @@
 #include <set>
 
 // Qt
-#include <QtGui/QComboBox>
-#include <QtGui/QWidget>
+#include <QComboBox>
+#include <QWidget>
 
 
 namespace Ui { class WhereClauseWidgetForm; }
@@ -130,6 +130,8 @@ namespace te
           void setConnectorsList(const std::vector<std::string>& vec);
 
           void clear();
+
+          void resetInterface();
 
 
         public slots:

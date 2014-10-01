@@ -34,7 +34,7 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QDialog>
+#include <QDialog>
 
 namespace Ui { class ADOConnectorDialogForm; }
 
@@ -57,7 +57,15 @@ namespace te
 
           public:
 
-            ADOConnectorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+            enum Operation
+            {
+              CONNECTION,
+              UPDATE
+            };
+
+          public:
+
+            ADOConnectorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0, Operation op = CONNECTION);
 
             ~ADOConnectorDialog();
 

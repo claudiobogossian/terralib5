@@ -15,7 +15,7 @@ void Filter()
     // Openning the the input image
     
     std::map<std::string, std::string> auxRasterInfo;    
-    auxRasterInfo["URI"] = TE_DATA_EXAMPLE_DIR "/data/rasters/cbers_rgb342_crop1.tif";
+    auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
     te::rst::Raster* inputRasterPointer = te::rst::RasterFactory::open(
       auxRasterInfo );
     if( inputRasterPointer == 0 )
@@ -40,7 +40,7 @@ void Filter()
     te::rp::Filter::OutputParameters algoOutputParams;
 
     algoOutputParams.m_rInfo["URI"] =
-      TE_DATA_EXAMPLE_DIR "/data/rasters/FilterExample.tif";
+      TERRALIB_DATA_DIR "/rasters/FilterExample.tif";
     algoOutputParams.m_rType = "GDAL";
 
     // Executing the algorithm
@@ -67,11 +67,11 @@ void Filter()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried:" << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred:" << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
   }
 }
 

@@ -97,9 +97,9 @@ bool te::rp::ClassifierKMeansStrategy::initialize(te::rp::StrategyParameters con
 
   m_parameters = *(paramsPtr);
 
-  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_K > 1, TR_RP("The value of K (number of clusters) must be at least 2."))
-  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_maxIterations > 0, TR_RP("The number of iterations must be at least 1."))
-  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_epsilon > 0, TR_RP("The stop criteria must be higher than 0."))
+  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_K > 1, TE_TR("The value of K (number of clusters) must be at least 2."))
+  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_maxIterations > 0, TE_TR("The number of iterations must be at least 1."))
+  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_epsilon > 0, TE_TR("The stop criteria must be higher than 0."))
 
   if (m_parameters.m_maxInputPoints < m_parameters.m_K)
     m_parameters.m_maxInputPoints = 1000;
@@ -113,7 +113,7 @@ bool te::rp::ClassifierKMeansStrategy::execute(const te::rst::Raster& inputRaste
                                               const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
                                               const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception)
 {
-  TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, TR_RP("Instance not initialized"))
+  TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, TE_TR("Instance not initialized"))
 
 // defining classification parameters
   te::cl::KMeans<te::rst::PointSetIterator<double>, te::rst::RasterIterator<double> >::Parameters classifierParameters;
@@ -144,7 +144,7 @@ bool te::rp::ClassifierKMeansStrategy::execute(const te::rst::Raster& inputRaste
 // classifying image
   te::common::TaskProgress task;
   task.setTotalSteps(inputRaster.getNumberOfColumns() * inputRaster.getNumberOfRows());
-  task.setMessage(TR_RP("KMeans algorithm - classifying image"));
+  task.setMessage(TE_TR("KMeans algorithm - classifying image"));
   task.setCurrentStep(0);
   unsigned int i = 0;
   while (rit != ritend)

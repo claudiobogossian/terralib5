@@ -35,7 +35,7 @@
 #include <memory>
 
 // QT
-#include <QtGui/QWidget>
+#include <QWidget>
 
 // Forward declaraion
 namespace Ui { class ChartLayerWidgetForm; }

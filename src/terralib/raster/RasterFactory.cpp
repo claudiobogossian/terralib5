@@ -64,7 +64,7 @@ te::rst::Raster* te::rst::RasterFactory::make(const std::string& rType, Grid* g,
   RasterFactory* f = static_cast<RasterFactory*>(d.find(ucase));
 
   if(f == 0)
-    throw Exception(TR_RASTER("Could not find concrete factory! Check if it was initialized!"));
+    throw Exception(TE_TR("Could not find concrete factory! Check if it was initialized!"));
 
   Raster* r = f->create(g, bands, rinfo, h, deleter);
 
@@ -95,7 +95,7 @@ te::rst::Raster* te::rst::RasterFactory::open(const std::string& rType, const st
   RasterFactory* f = static_cast<RasterFactory*>(d.find(ucase));
 
   if(f == 0)
-    throw Exception(TR_RASTER("Could not find concrete factory! Check if it was initialized!"));
+    throw Exception(TE_TR("Could not find concrete factory! Check if it was initialized!"));
 
   return f->iOpen(rinfo, p);
 }

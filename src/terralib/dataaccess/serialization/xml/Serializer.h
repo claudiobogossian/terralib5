@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/serialization/dataaccess/DataSetType.h
+  \file terralib/dataaccess/serialization/xml/DataSetType.h
  
   \brief Support for DataSetType serialization.
 */

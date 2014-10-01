@@ -40,7 +40,7 @@
 #include <set>
 
 // Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 namespace Ui { class TiePointLocatorWidgetForm; }
 
@@ -110,6 +110,13 @@ namespace te
             \param tiePoints The current acquired tie-points.
           */
           void getTiePoints( std::vector< te::gm::GTParameters::TiePoint >& tiePoints ) const;
+
+          /*! 
+            \brief Get the current acquired tie-points. 
+
+            \param tiePoints The current acquired tie-points.
+          */
+          void getTiePointsIdxCoords( std::vector< te::gm::GTParameters::TiePoint >& tiePoints ) const;
 
           /*! 
             \brief Get tie point data container.
@@ -185,9 +192,9 @@ namespace te
 
           void onAdjMapDisplayExtentChanged();
 
-          void onRefPointPicked(double x, double y, te::qt::widgets::MapDisplay* map);
+          void onRefPointPicked(double x, double y);
 
-          void onAdjPointPicked(double x, double y, te::qt::widgets::MapDisplay* map);
+          void onAdjPointPicked(double x, double y);
 
           void onTiePointsUpdated();
 

@@ -35,14 +35,14 @@
 #include <boost/tuple/tuple.hpp>
 
 // Qt
-#include <QtCore/QMimeData>
-#include <QtCore/QUrl>
-#include <QtGui/QDragEnterEvent>
-#include <QtGui/QDragLeaveEvent>
-#include <QtGui/QDragMoveEvent>
-#include <QtGui/QDropEvent>
-#include <QtGui/QMenu>
-#include <QtGui/QMessageBox>
+#include <QDragEnterEvent>
+#include <QDragLeaveEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
+#include <QMenu>
+#include <QMessageBox>
+#include <QMimeData>
+#include <QUrl>
 
 /*!
   \class te::qt::widgets::LayerTreeView::Impl
@@ -115,7 +115,9 @@ class te::qt::widgets::LayerTreeView::Impl
         // Get the type of the selected item
         std::string selectedItemType;
 
-        if(layer && layer->getSchema().get() && layer->getSchema()->hasRaster())
+        if(layer && !layer->isValid())
+          selectedItemType = "INVALID_LAYER_ITEM";
+        else if(layer && layer->getSchema().get() && layer->getSchema()->hasRaster())
           selectedItemType = "RASTER_LAYER_ITEM";
         else
           selectedItemType = selectedItem->getItemType();
@@ -141,7 +143,7 @@ class te::qt::widgets::LayerTreeView::Impl
             continue;
           }
 
-          if(selectedItemType == "RASTER_LAYER_ITEM" || selectedItemType == "FOLDER_LAYER_ITEM")
+          if(selectedItemType == "RASTER_LAYER_ITEM" || selectedItemType == "FOLDER_LAYER_ITEM" || selectedItemType == "INVALID_LAYER_ITEM")
           {
             if(aItemType == selectedItemType)
               menu.addAction(action);
@@ -168,7 +170,9 @@ class te::qt::widgets::LayerTreeView::Impl
           if(!layer)
             return;
 
-          if(layer->getSchema().get() && layer->getSchema()->hasRaster())
+          if(!layer->isValid())
+            layerType = "INVALID_LAYER_ITEM";
+          else if(layer->getSchema().get() && layer->getSchema()->hasRaster())
             layerType = "RASTER_LAYER_ITEM";
           else
             layerType = (*it)->getItemType();

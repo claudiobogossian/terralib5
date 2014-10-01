@@ -28,14 +28,13 @@
 
 // TerraLib
 #include "../Config.h"
-#include "MultiThreadMapDisplay.h"
 #include "Frame.h"
 
 // Qt
-#include <QtCore/QRect>
-#include <QtCore/QRectF>
-#include <QtGui/QPixmap>
-#include <QtGui/QWidget>
+#include <QRect>
+#include <QRectF>
+#include <QPixmap>
+#include <QWidget>
 
 class QMenu;
 class QAction;

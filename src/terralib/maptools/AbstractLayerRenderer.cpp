@@ -45,6 +45,8 @@
 #include "../geometry/Coord2D.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/GeometryProperty.h"
+#include "../geometry/MultiPolygon.h"
+#include "../geometry/Polygon.h"
 #include "../raster/Raster.h"
 #include "../raster/RasterProperty.h"
 #include "../se/FeatureTypeStyle.h"
@@ -91,7 +93,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
                                           int srid)
 {
   if(!bbox.isValid())
-    throw Exception(TR_MAP("The requested box is invalid!"));
+    throw Exception(TE_TR("The requested box is invalid!"));
 
   assert(layer);
   assert(canvas);
@@ -104,11 +106,11 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
     reprojectedBBOX.transform(srid, layer->getSRID());
 
     if(!reprojectedBBOX.isValid())
-      throw Exception(TR_MAP("The reprojected box is invalid!"));
+      throw Exception(TE_TR("The reprojected box is invalid!"));
   }
   else if(layer->getSRID() != srid)
   {
-    throw Exception(TR_MAP("The layer or map don't have a valid SRID!"));
+    throw Exception(TE_TR("The layer or map don't have a valid SRID!"));
   }
 
   if(!reprojectedBBOX.intersects(layer->getExtent()))
@@ -128,12 +130,21 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
   std::auto_ptr<LayerSchema> schema(layer->getSchema());
   assert(schema.get());
 
+  // Gets the name of the referenced spatial property
+  std::string spatialPropertyName = layer->getGeomPropertyName();
+
   if(schema->hasGeom())
   {
-    // For while, first geometry property. TODO: need a visitor to get which spatial properties the layer style references
-    te::gm::GeometryProperty* geometryProperty = te::da::GetFirstGeomProperty(schema.get());
+    te::gm::GeometryProperty* geometryProperty = 0;
 
-    /** For while if the AbstractLayer has a grouping, do not consider the style. Need review! **/
+    if(spatialPropertyName.empty())
+      geometryProperty = te::da::GetFirstGeomProperty(schema.get());
+    else
+      geometryProperty = dynamic_cast<te::gm::GeometryProperty*>(schema->getProperty(spatialPropertyName));
+
+    assert(geometryProperty);
+
+    // If the AbstractLayer has a grouping, do not consider the style.
     Grouping* grouping = layer->getGrouping();
     if(grouping && grouping->isVisible())
     {
@@ -149,7 +160,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
       style = te::se::CreateFeatureTypeStyle(geometryProperty->getGeometryType());
 
       if(style == 0)
-        throw Exception((boost::format(TR_MAP("Could not create a default feature type style to the layer %1%.")) % layer->getTitle()).str());
+        throw Exception((boost::format(TE_TR("Could not create a default feature type style to the layer %1%.")) % layer->getTitle()).str());
 
       layer->setStyle(style);
     }
@@ -157,14 +168,20 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
     // Should I render this style?
     te::se::FeatureTypeStyle* fts = dynamic_cast<te::se::FeatureTypeStyle*>(style);
     if(fts == 0)
-      throw Exception(TR_MAP("The layer style is not a Feature Type Style!"));
+      throw Exception(TE_TR("The layer style is not a Feature Type Style!"));
 
     drawLayerGeometries(layer, geometryProperty->getName(), fts, canvas, ibbox, srid);
   }
   else if(schema->hasRaster())
   {
-    // For while, first raster property. TODO: need a visitor to get which spatial properties the layer style references
-    te::rst::RasterProperty* rasterProperty = te::da::GetFirstRasterProperty(schema.get());
+    te::rst::RasterProperty* rasterProperty = 0;
+
+    if(spatialPropertyName.empty())
+      rasterProperty = te::da::GetFirstRasterProperty(schema.get());
+    else
+      rasterProperty = dynamic_cast<te::rst::RasterProperty*>(schema->getProperty(spatialPropertyName));
+
+    assert(rasterProperty);
 
     // Get the layer style
     te::se::Style* style = layer->getStyle();
@@ -174,7 +191,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
       style = te::se::CreateCoverageStyle(rasterProperty->getBandProperties());
 
       if(style == 0)
-        throw Exception((boost::format(TR_MAP("Could not create a default coverage style to the layer %1%.")) % layer->getTitle()).str());
+        throw Exception((boost::format(TE_TR("Could not create a default coverage style to the layer %1%.")) % layer->getTitle()).str());
 
       layer->setStyle(style);
     }
@@ -182,27 +199,25 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
     // Should I render this style?
     te::se::CoverageStyle* cs = dynamic_cast<te::se::CoverageStyle*>(style);
     if(cs == 0)
-      throw Exception(TR_MAP("The layer style is not a Coverage Style!"));
+      throw Exception(TE_TR("The layer style is not a Coverage Style!"));
 
     // Retrieves the data
     std::auto_ptr<te::da::DataSet> dataset = layer->getData(rasterProperty->getName(), &ibbox, te::gm::INTERSECTS);
 
     if(dataset.get() == 0)
-      throw Exception((boost::format(TR_MAP("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
-
-    std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
+      throw Exception((boost::format(TE_TR("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
 
     // Retrieves the raster
-    std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));
+    std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rasterProperty->getName()));
     if(dataset.get() == 0)
-      throw Exception((boost::format(TR_MAP("Could not retrieve the raster from the layer %1%.")) % layer->getTitle()).str());
+      throw Exception((boost::format(TE_TR("Could not retrieve the raster from the layer %1%.")) % layer->getTitle()).str());
 
     // Let's draw!
     DrawRaster(raster.get(), canvas, ibbox, layer->getSRID(), bbox, srid, cs);
   }
   else
   {
-    throw Exception(TR_MAP("The layer don't have a geometry or raster property!"));
+    throw Exception(TE_TR("The layer don't have a geometry or raster property!"));
   }
 }
 
@@ -257,7 +272,7 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
         // Converts the Filter expression to a TerraLib Expression!
         te::da::Expression* exp = filter2Query.getExpression(filter);
         if(exp == 0)
-          throw Exception(TR_MAP("Could not convert the OGC Filter expression to TerraLib expression!"));
+          throw Exception(TE_TR("Could not convert the OGC Filter expression to TerraLib expression!"));
 
         /* 1) Creating the final restriction. i.e. Filter expression + extent spatial restriction */
 
@@ -279,7 +294,7 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
     }
 
     if(dataset.get() == 0)
-      throw Exception((boost::format(TR_MAP("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
+      throw Exception((boost::format(TE_TR("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
 
     if(dataset->moveNext() == false)
       continue;
@@ -288,10 +303,10 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
     const std::vector<te::se::Symbolizer*>& symbolizers = rule->getSymbolizers();
 
     // Builds task message; e.g. ("Drawing the layer Countries. Rule 1 of 3.")
-    std::string message = TR_MAP("Drawing the layer");
+    std::string message = TE_TR("Drawing the layer");
     message += " " + layer->getTitle() + ". ";
-    message += TR_MAP("Rule");
-    message += " " + boost::lexical_cast<std::string>(i + 1) + " " + TR_MAP("of") + " ";
+    message += TE_TR("Rule");
+    message += " " + boost::lexical_cast<std::string>(i + 1) + " " + TE_TR("of") + " ";
     message += boost::lexical_cast<std::string>(nRules) + ".";
 
     // Creates a draw task
@@ -299,7 +314,7 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
     //task.setTotalSteps(symbolizers.size() * dataset->size()); // Removed! The te::da::DataSet size() method would be too costly to compute.
 
     // For while, first geometry property. TODO: get which geometry property the symbolizer references
-    std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
+    std::size_t gpos = te::da::GetPropertyPos(dataset.get(), geomPropertyName);
 
     if(symbolizers.empty())
     {
@@ -369,7 +384,7 @@ void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
   std::size_t nGroupItems = items.size();
 
   // Builds the task message; e.g. ("Drawing the grouping of layer Countries.")
-  std::string message = TR_MAP("Drawing the grouping of layer");
+  std::string message = TE_TR("Drawing the grouping of layer");
   message += " " + layer->getTitle() + ".";
 
   // Creates the draw task
@@ -437,7 +452,7 @@ void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
     }
 
     if(dataset.get() == 0)
-      throw Exception((boost::format(TR_MAP("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
+      throw Exception((boost::format(TE_TR("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
 
     if(dataset->moveNext() == false)
       continue;
@@ -447,7 +462,7 @@ void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
     std::size_t nSymbolizers = symbolizers.size();
 
     // For while, first geometry property. TODO: get which geometry property the symbolizer references
-    std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
+    std::size_t gpos = te::da::GetPropertyPos(dataset.get(), geomPropertyName);
 
     for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
     {
@@ -532,7 +547,7 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
   }
 
   // Builds the task message; e.g. ("Drawing the grouping of layer Countries.")
-  std::string message = TR_MAP("Drawing the grouping of layer");
+  std::string message = TE_TR("Drawing the grouping of layer");
   message += " " + layer->getTitle() + ".";
 
   // Creates the draw task
@@ -549,13 +564,13 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
   }
 
   if(dataset.get() == 0)
-    throw Exception((boost::format(TR_MAP("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
+    throw Exception((boost::format(TE_TR("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
 
   if(dataset->moveNext() == false)
     return;
 
   // Gets the first geometry property
-  std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
+  std::size_t gpos = te::da::GetPropertyPos(dataset.get(), geomPropertyName);
 
   // Gets the property position
   std::auto_ptr<te::map::LayerSchema> dt(layer->getSchema());
@@ -738,12 +753,35 @@ void te::map::AbstractLayerRenderer::buildChart(Chart* chart, te::da::DataSet* d
   if(!chart->isVisible())
     return;
 
-  // Builds the chart point (world coordinates)
-  const te::gm::Envelope* e = geom->getMBR();
+  // World coordinates
+  std::auto_ptr<te::gm::Coord2D> worldCoord;
+
+  // Try finds the geometry centroid
+  switch(geom->getGeomTypeId())
+  {
+    case te::gm::PolygonType:
+    {
+      te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom);
+      worldCoord.reset(p->getCentroidCoord());
+    }
+
+    case te::gm::MultiPolygonType:
+    {
+      te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom);
+      worldCoord.reset(mp->getCentroidCoord());
+    }
+  }
+
+  // Case not find, use the center of the MBR
+  if(worldCoord.get() == 0)
+  {
+    const te::gm::Envelope* e = geom->getMBR();
+    worldCoord.reset(new te::gm::Coord2D(e->getCenter().x, e->getCenter().y));
+  }
 
   // Device coordinates
   double dx = 0.0; double dy = 0.0;
-  m_transformer.world2Device(e->getCenter().x, e->getCenter().y, dx, dy);
+  m_transformer.world2Device(worldCoord->x, worldCoord->y, dx, dy);
 
   double dw = dx + chart->getWidth();
   double dh = dy + chart->getHeight();
@@ -751,15 +789,18 @@ void te::map::AbstractLayerRenderer::buildChart(Chart* chart, te::da::DataSet* d
   // Builds the chart envelope
   te::gm::Envelope chartEnvelope(dx, dy, dw, dh);
 
-  // Search on rtree
-  std::vector<std::size_t> report;
-  m_rtree.search(chartEnvelope, report);
+  if(chart->getAvoidConflicts())
+  {
+    // Search on rtree
+    std::vector<std::size_t> report;
+    m_rtree.search(chartEnvelope, report);
 
-  if(!report.empty())
-    return;
+    if(!report.empty())
+      return;
 
-  // Here, no intersections considering the current chart envelope
-  m_rtree.insert(chartEnvelope, ++m_index);
+    // Here, no intersections considering the current chart envelope
+    m_rtree.insert(chartEnvelope, ++m_index);
+  }
 
   // Stores the chart coordinate
   m_chartCoordinates.push_back(te::gm::Coord2D(dx, dy));

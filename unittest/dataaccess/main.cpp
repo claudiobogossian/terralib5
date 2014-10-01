@@ -51,6 +51,7 @@ int main(int /*argc*/, char** /*argv*/)
   TerraLib::getInstance().initialize();    
   LoadModules();
 
+  std::string report_dir = TERRALIB_REPORT_DIR;
   bool resultStatus;
  
   boost::property_tree::ptree drivers;
@@ -59,7 +60,8 @@ int main(int /*argc*/, char** /*argv*/)
 
   BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, drivers.get_child("drivers").get_child(""))
   {
-
+    try
+    {
     const std::string& driver_name = v.second.data();
 
     TsManagerDataSource::initialize(driver_name);
@@ -96,25 +98,24 @@ int main(int /*argc*/, char** /*argv*/)
     outputter.write();
 
 // Testing  different outputs
-  // The testResult_*.xml files will be saved at TE_OUTPUT_REPORT_DIR directory.
+  // The testResult_*.xml files will be saved at TERRALIB_REPORT_DIR directory.
   // The styleSheet 'report.xsl' should be at this directory (found originally at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl).
-  // One level up TE_OUTPUT_REPORT_DIR should have a 'data' directory with all files used by unit test.
-  // Cmake should unpack of data.zip and put it at the right path when it is configured/generated. 
+  // The "data.zip" (downloaded) containing the data used in unit tests should be at TERRALIB_DATA_DIR 
 
 // Note on how to run the unittests: 
-   // To run your tests under Visual Net debug should be straigth forward as the runme.bat file already set the environmental vars needed. 
-   // To run your tests from a command line, copy runme.bat to <building-dir>/unittest/bin32 and 
-   // change the last line with terralib_unittest_dataaccess.exe or terralib_unittest_dataaccess_d.exe
+  // Debug - terralib_unittest_dataaccess_d.exe- Start up terralib_unittest_dataaccess
+  // Release - terralib_unittest_dataaccess.exe
 
 // Print only fail results in a txt file (the same containt you see in DOS window)
-    std::string testResultDriver = "/testResult_" + m_dsType ;
-    std::ofstream file1( (TE_OUTPUT_REPORT_DIR+ testResultDriver + "_dos.txt" ).c_str() );
-    CPPUNIT_NS::CompilerOutputter outputter1( &result, file1);
+    std::string testResultDriver = TERRALIB_REPORT_DIR"/testResult_" + m_dsType ;
+    std::ofstream file1( (testResultDriver + "_dos.txt" ).c_str() );
+
+	CPPUNIT_NS::CompilerOutputter outputter1( &result, file1);
     outputter1.write();
     file1.close();
 
 // Printing testResults in XML file 
-    CPPUNIT_NS::OFileStream file2( ( TE_OUTPUT_REPORT_DIR + testResultDriver + ".xml").c_str() );
+    CPPUNIT_NS::OFileStream file2( (testResultDriver + ".xml").c_str() );
     CPPUNIT_NS::XmlOutputter xml( &result, file2 );
     xml.setStyleSheet( "report.xsl" );
 
@@ -122,21 +123,24 @@ int main(int /*argc*/, char** /*argv*/)
     file2.close();
 
 // Print formated testResult in a txt 
-    CPPUNIT_NS::OFileStream file3( ( TE_OUTPUT_REPORT_DIR + testResultDriver + ".txt" ).c_str() );
+    CPPUNIT_NS::OFileStream file3( (testResultDriver + ".txt" ).c_str() );
     CPPUNIT_NS::TextOutputter outputter3( &result, file3 );
     outputter3.write();
     file3.close();
 
     resultStatus = result.wasSuccessful();
+    }
+    catch (te::common::Exception  e)
+    { 
+      throw e;
+    }
 
     TsManagerDataSource::finalize();
   }
 
 // finalize TerraLib Plataform
-//  te::plugin::PluginManager::getInstance().shutdownAll();
   te::plugin::PluginManager::getInstance().unloadAll();
   TerraLib::getInstance().finalize();
 
   return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }
-

@@ -43,6 +43,10 @@
 
 std::map<std::string, te::qt::widgets::AbstractTreeItemFactory::FactoryFnctType> te::qt::widgets::AbstractTreeItemFactory::sm_factories;
 
+void te::qt::widgets::AbstractTreeItemFactory::reg(const std::string& key, const FactoryFnctType& f)
+{
+  sm_factories[key] = f;
+}
 
 void te::qt::widgets::AbstractTreeItemFactory::initialize()
 {

@@ -54,7 +54,7 @@ te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da
   static boost::uuids::basic_random_generator<boost::mt19937> gen;
 
   if(dataset.get() == 0)
-    throw Exception(TR_QT_WIDGETS("Can not convert a NULL dataset to a layer!"));
+    throw Exception(TE_TR("Can not convert a NULL dataset to a layer!"));
 
   boost::uuids::uuid u = gen();
   std::string id = boost::uuids::to_string(u);
@@ -75,7 +75,7 @@ te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da
 
   if(dataset->hasGeom())
   {
-   te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dataset.get());
+    te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dataset.get());
     std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(dataset->getName(), gp->getName(), m_datasourceId));
     layer->setSRID(gp->getSRID());
     layer->setExtent(*mbr);
@@ -88,6 +88,66 @@ te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da
     layer->setSRID(grid->getSRID());
     layer->setExtent(*(grid->getExtent()));
     layer->setStyle(te::se::CreateCoverageStyle(te::da::GetFirstRasterProperty(dataset.get())->getBandProperties()));
+  }
+  else
+  {
+    layer->setSRID(TE_UNKNOWN_SRS);
+    //layer->setExtent(te::gm::Envelope());
+  }
+
+  return layer;
+}
+
+te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da::DataSetTypePtr& dataset, const std::string& geomPropertyName) const
+{
+  static boost::uuids::basic_random_generator<boost::mt19937> gen;
+
+  if(dataset.get() == 0)
+    throw Exception(TE_TR("Can not convert a NULL dataset to a layer!"));
+
+  boost::uuids::uuid u = gen();
+  std::string id = boost::uuids::to_string(u);
+
+  std::string title = dataset->getTitle().empty() ? dataset->getName() : dataset->getTitle();
+  
+  te::map::DataSetLayerPtr layer(new te::map::DataSetLayer(id, title));
+  layer->setDataSetName(dataset->getName());
+  layer->setDataSourceId(m_datasourceId);
+  layer->setVisibility(te::map::NOT_VISIBLE);
+  layer->setRendererType("ABSTRACT_LAYER_RENDERER");
+
+  if(dataset->size() == 0)
+  {
+    te::da::DataSourcePtr ds(te::da::DataSourceManager::getInstance().find(m_datasourceId));
+    te::da::LoadProperties(dataset.get(), m_datasourceId);
+  }
+
+  if(dataset->hasGeom())
+  {
+    te::gm::GeometryProperty* gp = 0;
+    geomPropertyName.empty() ?  gp = te::da::GetFirstGeomProperty(dataset.get()) : gp = dynamic_cast<te::gm::GeometryProperty*>(dataset->getProperty(geomPropertyName));
+
+    assert(gp);
+
+    std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(dataset->getName(), gp->getName(), m_datasourceId));
+    layer->setSRID(gp->getSRID());
+    layer->setExtent(*mbr);
+    layer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));
+    layer->setGeomPropertytName(geomPropertyName);
+  }
+  else if(dataset->hasRaster())
+  {
+    te::rst::RasterProperty* rp = 0;
+    geomPropertyName.empty() ?  rp = te::da::GetFirstRasterProperty(dataset.get()) : rp = dynamic_cast<te::rst::RasterProperty*>(dataset->getProperty(geomPropertyName));
+
+    assert(rp);
+
+    te::rst::Grid* grid = rp->getGrid();
+
+    layer->setSRID(grid->getSRID());
+    layer->setExtent(*(grid->getExtent()));
+    layer->setStyle(te::se::CreateCoverageStyle(te::da::GetFirstRasterProperty(dataset.get())->getBandProperties()));
+    layer->setGeomPropertytName(geomPropertyName);
   }
   else
   {

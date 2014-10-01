@@ -24,6 +24,8 @@
  */
 
 // TerraLib
+#include "../../Config.h"
+#include <terralib/common/PlatformUtils.h>
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/plugin.h>
@@ -41,7 +43,7 @@
 #include <terralib/qt/widgets/charts/ChartStyle.h>
 
 // Qt
-#include <QtGui/QApplication>
+#include <QApplication>
 
 // STL
 #include <exception>
@@ -51,16 +53,20 @@ void LoadOGRModule()
 {
   try
   {
-    te::plugin::PluginInfo* info; 
+    te::plugin::PluginInfo* info;
+  
+    std::string plugin_path = te::common::FindInTerraLibPath("share/terralib/plugins");
 
-    info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.ogr.teplg"));
-    te::plugin::PluginManager::getInstance().add(info); 
+#ifdef TERRALIB_MOD_OGR_ENABLED
+    info = te::plugin::GetInstalledPlugin(plugin_path + "/te.da.ogr.teplg");
+    te::plugin::PluginManager::getInstance().add(info);
+#endif
 
     te::plugin::PluginManager::getInstance().loadAll();
   }
   catch(...)
   {
-    std::cout << std::endl << "Failed to load data source OGR driver: unknow exception!" << std::endl;
+    std::cout << std::endl << "Failed to load the data source OGR driver: unknown exception!" << std::endl;
   }
 }
 
@@ -137,11 +143,14 @@ int main(int /*argc*/, char** /*argv*/)
   {
     LoadOGRModule();
     
-    //pegar um data set
-    //std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_DIR"/data/shp");
+    // Get a dataset
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/shp";
+  
+    std::string data_dir = TERRALIB_DATA_DIR;
+    connInfo["URI"] = data_dir + "/shp";
+  
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
+  
     ds->setConnectionInfo(connInfo);
     ds->open();
     
@@ -160,23 +169,18 @@ int main(int /*argc*/, char** /*argv*/)
     generateHistogram(dataset.get(), transactor.get());
     generateScatter(dataset.get(), transactor.get());
 
-    int ret = app.exec();
+    int ret;
+    ret = app.exec();
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried: " << e.what() << std::endl;
-
-    std::cout << "Press Enter to exit..." << std::endl;
-    std::cin.get();
+    std::cout << std::endl << "An exception has occurred: " << e.what() << std::endl;
 
     return EXIT_FAILURE;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried!" << std::endl;
-
-    std::cout << "Press Enter to exit..." << std::endl;
-    std::cin.get();
+    std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
 
     return EXIT_FAILURE;
   }
@@ -184,9 +188,6 @@ int main(int /*argc*/, char** /*argv*/)
 // finalize Terralib support
   te::plugin::PluginManager::getInstance().unloadAll();
   TerraLib::getInstance().finalize();
-
-  std::cout << "Press Enter to exit..." << std::endl;
-  std::cin.get();
 
   return EXIT_SUCCESS;
 }

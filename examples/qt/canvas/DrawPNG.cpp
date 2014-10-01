@@ -1,6 +1,7 @@
 #include "CanvasExamples.h"
 
 // TerraLib
+#include "../../Config.h"
 #include <terralib/geometry.h>
 #include <terralib/dataaccess.h>
 #include <terralib/qt/widgets/canvas/Canvas.h>
@@ -10,7 +11,7 @@
 #include <exception>
 
 // Qt
-#include <QtGui/QApplication>
+#include <QApplication>
 
 void DrawPNG()
 {
@@ -21,9 +22,12 @@ void DrawPNG()
   try
   {
     std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
-
+    
+    std::string data_dir = TERRALIB_DATA_DIR;
+        
     std::map<std::string, std::string> connInfo;    
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/shp/munic_2001.shp";
+    
+    connInfo["URI"] = data_dir + "/shp/munic_2001.shp";
     dsOGR->setConnectionInfo(connInfo);
     dsOGR->open();
 
@@ -77,11 +81,11 @@ void DrawPNG()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in drawPNG example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in drawPNG example: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in drawPNG example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in drawPNG example!" << std::endl;
   }
 }
 

@@ -35,7 +35,7 @@ te::gdal::DataSetUseCounter::DataSetUseCounter( const std::string& uri,
 {
   if( !DataSetsManager::getInstance().incrementUseCounter( m_uri, aType ) )
   {
-    throw Exception(TR_GDAL("Maximum number of concurrent dataset instances reached"), te::common::NO_CONNECTION_AVAILABLE);
+    throw Exception(TE_TR("Maximum number of concurrent dataset instances reached"), te::common::NO_CONNECTION_AVAILABLE);
   }  
 }
 

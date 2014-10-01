@@ -32,7 +32,7 @@
 
 // Qt
 #include <QSignalMapper>
-#include <QtGui/QWidget>
+#include <QWidget>
 
 //STL
 #include <memory>
@@ -118,6 +118,7 @@ namespace te
 
           void onInputDataToolButtonTriggered();
           void onSridPushButtonCLicked();
+          void onGeomPropertyChecked(int checked);
           void onPropertyTypeChanged(int index);
 
         private:

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -28,12 +28,13 @@
 #include "../../../maptools/Enums.h"
 #include "../../../se/Stroke.h"
 #include "../../../se/SvgParameter.h"
+#include "../../../se/Utils.h"
 #include "../utils/ColorPickerToolButton.h"
 #include "BasicStrokeWidget.h"
 #include "ui_BasicStrokeWidgetForm.h"
 
 // Qt
-#include <QtGui/QPainter>
+#include <QPainter>
 
 // STL
 #include <cassert>
@@ -130,7 +131,7 @@ void te::qt::widgets::BasicStrokeWidget::updateUi()
 {
   // Color
   te::color::RGBAColor rgba(TE_SE_DEFAULT_STROKE_BASIC_COLOR, TE_OPAQUE);
-  te::map::GetColor(m_stroke, rgba);
+  te::se::GetColor(m_stroke, rgba);
   m_color = QColor(rgba.getRgba());
   m_color.setAlpha(rgba.getAlpha());
   updateUiStrokeColor();
@@ -141,22 +142,22 @@ void te::qt::widgets::BasicStrokeWidget::updateUi()
   // Width
   const te::se::SvgParameter* width = m_stroke->getWidth();
   if(width)
-    m_ui->m_strokeWidthDoubleSpinBox->setValue(te::map::GetDouble(width));
+    m_ui->m_strokeWidthDoubleSpinBox->setValue(te::se::GetDouble(width));
 
   // Dash style
   const te::se::SvgParameter* dasharray = m_stroke->getDashArray();
   if(dasharray)
-    updateUiDashStyle(te::map::GetString(dasharray));
+    updateUiDashStyle(te::se::GetString(dasharray));
 
   // Join Style
   const te::se::SvgParameter* join = m_stroke->getLineJoin();
   if(join)
-    updateUiJoinStyle(te::map::GetString(join));
+    updateUiJoinStyle(te::se::GetString(join));
 
   // Cap Style
   const te::se::SvgParameter* cap = m_stroke->getLineCap();
   if(cap)
-    updateUiCapStyle(te::map::GetString(cap));
+    updateUiCapStyle(te::se::GetString(cap));
 }
 
 void te::qt::widgets::BasicStrokeWidget::updateUiStrokeColor()

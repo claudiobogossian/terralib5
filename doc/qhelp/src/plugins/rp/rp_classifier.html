@@ -1,0 +1,260 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Raster Classifier</title>
+</head>
+<body>
+<h3 style="text-align: center;"><span
+ style="font-family: Calibri Light;">Classifier</span></h3>
+<font face="Calibri Light"><br>
+</font>
+<div style="text-align: justify;">
+<div style="text-align: left;"><font face="Calibri Light">This module
+implements
+methods to detect patterns in image regions. Commonly, classification
+algorithms are divided by the level of classification (pixel or
+region), and by the interaction of the user (supervised or
+unsupervised). </font><font face="Calibri Light"><em>Pixel-based</em>
+algorithms classify
+individual pixels
+according to their resemblance to a specific pattern. &nbsp;</font><font
+ face="Calibri Light"><em>Region-based</em>
+algorithms use regions from segmented images, and classify each region
+to a specific pattern. </font><font face="Calibri Light"><em>Supervised</em>
+methods uses a predefined typology,
+given by the user, who supplies samples of each pattern. </font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><em>Unsupervised</em></font><span
+ style="font-family: Calibri Light;">
+methods detect an unknown number of patterns, according to their own
+method. <br>
+<br>
+</span><font face="Calibri Light">The
+available methods in TerraLib
+are:<br style="font-family: Calibri Light;">
+</font>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">ISOSeg,</span></li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Expectation-Maximization - EM,</span></li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li style="font-family: Calibri Light;"><span
+ style="font-weight: bold;">K-Means,</span></li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><font face="Calibri Light"><span style="font-weight: bold;"><span
+ style="font-family: Calibri Light;">Spectral Angle Mapper - SAM,</span></span></font></li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><font face="Calibri Light"><span style="font-weight: bold;"><span
+ style="font-family: Calibri Light;">Maximum a Posteriori Probability -
+MAP.<br>
+    </span></span></font></li>
+</ul>
+<br>
+<h4><span style="font-family: Calibri Light;">ISOSeg</span></h4>
+<h4 style="font-weight: normal;"><span
+ style="font-family: Calibri Light;">This is an unsupervised and
+region-based classification algorithm.
+</span></h4>
+<span style="font-family: Calibri Light;">Input:
+</span>
+<ul style="font-family: Calibri Light;">
+  <li style="color: rgb(0, 0, 0);" class="level1">Raster</li>
+  <li class="level1">
+    <div class="li"> Vector of polygons</div>
+  </li>
+  <li class="level1">
+    <div class="li"> Acceptance threshold</div>
+  </li>
+</ul>
+<span style="font-family: Calibri Light;"></span>
+<h4><span style="font-family: Calibri Light;">Expectation-Maximization
+- EM</span></h4>
+<p style="font-family: Calibri Light;">This is an unsupervised and
+pixel-based classification algorithm. Expectation-Maximization (EM)
+works iteratively by applying two steps: the E-step (<em>Expectation</em>)
+and the M-step (<em>Maximization</em>).&nbsp;</p>
+<p style="font-family: Calibri Light;">Input:
+</p>
+<ul style="font-family: Calibri Light;">
+  <li class="level1">Raster</li>
+  <li class="level1">
+    <div class="li"> The value of &ldquo;K&rdquo;, which stands for the
+number of patterns (or clusters) to find in the image.</div>
+  </li>
+  <li class="level1">
+    <div class="li"> The maximum number of iterations (E/M steps) to
+perform if convergence is not achieved.</div>
+  </li>
+  <li class="level1">
+    <div class="li"> The maximum number of points used to estimate the
+clusters (default = 1000).</div>
+  </li>
+  <li class="level1">
+    <div class="li"> A convergence threshold. When the clusters change
+in a value smaller then epsilon, the convergence is achieved.</div>
+  </li>
+  <li class="level1">
+    <div class="li"> The previously estimated means of the clusters
+(optional).</div>
+  </li>
+</ul>
+<span style="font-family: Calibri Light;"></span>
+<h4><span style="font-family: Calibri Light;">K-Means</span></h4>
+<p style="font-family: Calibri Light;">This is an unsupervised and
+pixel-based classification algorithm. </p>
+<p style="font-family: Calibri Light;">
+Input:
+</p>
+<ul style="font-family: Calibri Light;">
+  <li class="level1">Raster</li>
+  <li class="level1">
+    <div class="li"> The value of &ldquo;K&rdquo;, which stands for the
+number of patterns to find in the image.</div>
+  </li>
+  <li class="level1">
+    <div class="li"> A convergence threshold. When the clusters move
+less than this threshold, the algorithm stops.</div>
+  </li>
+  <li class="level1">
+    <div class="li"> Maximum number of iterations.</div>
+  </li>
+</ul>
+<font face="Calibri Light"><span style="font-weight: bold;"><span
+ style="font-family: Calibri Light;"></span></span></font>
+<h4><font face="Calibri Light"><span style="font-family: Calibri Light;">Spectral
+Angle Mapper - SAM</span></font></h4>
+<h4 style="font-weight: normal;"><span
+ style="font-family: Calibri Light;">This is an&nbsp;supervised
+classification algorithm.</span></h4>
+<p style="font-family: Calibri Light;">Input:
+</p>
+<ul style="font-family: Calibri Light;">
+  <li class="level1">Raster</li>
+  <li class="level1">A set of ROI samples.</li>
+</ul>
+<h4><font face="Calibri Light"><span style="font-family: Calibri Light;">Maximum
+a Posteriori Probability - MAP</span><span style="font-weight: bold;"><span
+ style="font-family: Calibri Light;"></span></span></font></h4>
+<h4 style="font-weight: normal; font-family: Calibri Light;">This is
+an&nbsp;supervised classification algorithm.</h4>
+<h4 style="font-weight: normal; font-family: Calibri Light;">Input:
+</h4>
+<ul style="font-family: Calibri Light;">
+  <li class="level1">Raster</li>
+  <li class="level1">A set of ROI samples.</li>
+</ul>
+<font face="Calibri Light"><span style="font-weight: bold;"><span
+ style="font-family: Calibri Light;"><br>
+</span></span></font><font style="font-family: Calibri Light;"
+ face="Calibri Light">
+It is
+accessible through:</font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><b><br>
+</b></font>
+<font face="Calibri Light"><br>
+</font>
+<font style="font-family: Calibri Light;" face="Calibri Light"><b>&nbsp;&nbsp;&nbsp;</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b>Raster
+Processing &gt; Classification...</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b> </b>(list
+of all
+raster layers will be available)&nbsp;<br>
+<br>
+<span style="font-family: Calibri Light;"></span></font><font
+ style="font-family: Calibri Light;" face="Calibri Light">This
+wizard consists of the
+following steps:</font><font face="Calibri Light"><br>
+</font>
+<h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
+Wizard Page 1 -&nbsp;</font><font face="Calibri Light"><span
+ style="font-family: Calibri Light;">Selection
+of the layer to execute the operation (<span
+ style="text-decoration: underline;"><a
+ href="../../widgets/layer/search.html">Layer Search</a></span>)</span></font></h4>
+<ol>
+  <li><font face="Calibri Light">On the <i>List
+of Layers</i> select the raster layer to apply the operation.&nbsp;</font></li>
+  <li><font face="Calibri Light">Optionally use <i>Filter By Name</i>
+field
+giving part of the layer name to help find the layer in the list.</font></li>
+  <li><font face="Calibri Light">Press <b>Next&nbsp;</b>
+to go to next step or <b>Cancel </b>to close the
+dialog.&nbsp;</font></li>
+</ol>
+<div style="text-align: center;">
+<div style="text-align: left;"><font face="Calibri Light"><span
+ style="font-family: Calibri Light;"></span></font>
+<h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
+Wizard Page 2 - </font><font face="Calibri Light"><span
+ style="font-family: Calibri Light;">Classification parameters</span></font></h4>
+<ol>
+  <li style="font-family: Calibri Light;"><span id="result_box"
+ class="short_text" lang="en"><span class="hps">Select the type of</span>
+    <span class="hps">classifier</span> <span class="hps">to be used</span></span>.</li>
+  <li style="font-family: Calibri Light;"><span id="result_box"
+ class="short_text" lang="en"><span class="hps">Select</span> <span
+ class="hps">the bands</span> <span class="hps">to be</span> <span
+ class="hps">used in the process.</span></span></li>
+  <li style="font-family: Calibri Light;"><span id="result_box" class=""
+ lang="en"><span class="hps">As described above,</span> <span
+ class="hps">each</span> classifier <span class="hps">has a set of</span>
+    <span class="hps">specific attributes.&nbsp;</span></span><span
+ id="result_box" class="" lang="en"><span class="hps">For</span> <span
+ class="hps">supervised</span> <span class="hps">classifiers</span>
+(SAM and MAP)&nbsp; <span class="hps">is</span> <span class="hps">necessary</span>
+    <span class="hps">to</span> <span class="hps">use</span> <span
+ class="hps">a component</span> <span class="hps">for the acquisition</span>
+    <span class="hps">of samples</span><span class="">.</span></span></li>
+  <ul>
+    <li><span style="font-family: Calibri Light;">Use&nbsp; <img alt=""
+ src="../../gen_icones/ic_wand.PNG" height="24" width="25"> tool to
+enable the acquisition of components (samples) through the interface <a
+ href="../../widgets/rp/raster_navigator.html">Raster
+Navigator</a>. This interface offers several tools (such
+as zoom, color composition) to help on collecting good samples.&nbsp;</span></li>
+    <li><span style="font-family: Calibri Light;">Use&nbsp;&nbsp;<img
+ style="width: 21px; height: 19px;" alt="Draw Polygon"
+ src="../../gen_icones/ic_drawpoly.PNG"> &nbsp;tool to create a region
+of interest over the image that represents a homogeneous region of a
+desired sample.</span><span style="font-family: Calibri Light;"></span></li>
+  </ul>
+  <li style="font-family: Calibri Light;">Press <b>Next&nbsp;</b>
+to go to next step, <b>Back</b> to return to the previous wizard or <b>Cancel
+    </b>to close the
+dialog.</li>
+</ol>
+<span style="font-family: Calibri Light;"></span><font
+ face="Calibri Light"><span style="font-family: Calibri Light;"></span></font></div>
+</div>
+<font face="Calibri Light"><span style="font-family: Calibri Light;"></span></font>
+<h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
+Wizard Page 3 -&nbsp;</font><font face="Calibri Light"><span
+ style="font-family: Calibri Light;">Output
+information</span></font></h4>
+<ol>
+  <li><font face="Calibri Light"><i>Raster Info</i>
+- First press <img alt="" src="../../gen_icones/ic_3points.PNG"
+ height="19" width="27"> and inform the folder where the resulting
+file&nbsp;will be saved.</font></li>
+  <li><font face="Calibri Light"><i>Name - </i>inform
+the raster name.</font></li>
+  <li><font face="Calibri Light"><i>Extra
+Parameters</i> - if there are some, see the details on how to inform
+then <a href="../../widgets/rp/output_raster_info.html">here</a>.</font></li>
+  <li><font face="Calibri Light">Press <b>Finish</b>
+to save the resulting contrasted raster or&nbsp;<b>Back</b>
+to go to the previous wizard page.</font></li>
+</ol>
+<font face="Calibri Light">
+Hint: The resulting image will be added as a new layer at the TerraView
+project.</font>
+</div>
+<br>
+</div>
+</body>
+</html>

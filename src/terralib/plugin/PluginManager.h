@@ -71,7 +71,7 @@ namespace te
 
           \note The list will contain: loaded, not-loaded and broken plugins.
         */
-        void getPlugins(std::vector<std::string>& plugins) const;
+        std::vector<std::string> getPlugins() const;
 
         /*!
           \brief It returns the plugin identified by the given name.

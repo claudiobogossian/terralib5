@@ -24,6 +24,7 @@
  */
 
 // TerraLib
+#include <terralib/common/PlatformUtils.h>
 #include <terralib/common.h>
 #include <terralib/plugin.h>
 #include "SymbologyWidgets.h"
@@ -48,7 +49,14 @@ void LoadGDALModule()
     //info.m_resources.push_back(rsc);
     //
     //te::plugin::PluginManager::getInstance().load(info);
-    te::plugin::PluginInfo* info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg"));
+    //te::plugin::PluginInfo* info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg"));
+    
+    std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
+
+#ifdef TERRALIB_MOD_GDAL_ENABLED
+    te::plugin::PluginInfo* info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.gdal.teplg");
+#endif
+
     te::plugin::PluginManager::getInstance().add(info);
   }
   catch(...)
@@ -72,28 +80,19 @@ int main(int /*argc*/, char** /*argv*/)
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried: " << e.what() << std::endl;
-
-    std::cout << "Press Enter to exit..." << std::endl;
-    std::cin.get();
+    std::cout << std::endl << "An exception has occurred: " << e.what() << std::endl;
 
     return EXIT_FAILURE;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried!" << std::endl;
-
-    std::cout << "Press Enter to exit..." << std::endl;
-    std::cin.get();
+    std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
 
     return EXIT_FAILURE;
   }
 
 // finalize Terralib support
   TerraLib::getInstance().finalize();
-
-  std::cout << "Press Enter to exit..." << std::endl;
-  std::cin.get();
 
   return EXIT_SUCCESS;
 }

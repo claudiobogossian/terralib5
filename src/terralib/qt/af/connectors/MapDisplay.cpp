@@ -28,8 +28,9 @@
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
-#include "../../../geometry/Geometry.h"
+#include "../../../geometry/Coord2D.h"
 #include "../../../geometry/Envelope.h"
+#include "../../../geometry/Geometry.h"
 #include "../../../geometry/Utils.h"
 #include "../../../maptools/Utils.h"
 #include "../../../srs/Config.h"
@@ -51,8 +52,9 @@
 #include "MapDisplay.h"
 
 // Qt
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QMessageBox>
+#include <QAction>
+#include <QContextMenuEvent>
+#include <QMessageBox>
 
 // STL
 #include <cassert>
@@ -92,6 +94,18 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   
   // Getting default display color
   m_display->setBackgroundColor(te::qt::af::GetDefaultDisplayColorFromSettings());
+
+  m_pantoSelectedAction = new QAction(this);
+  m_pantoSelectedAction->setCheckable(true);
+  m_pantoSelectedAction->setChecked(false);
+  m_pantoSelectedAction->setText(tr("Enable pan to selected"));
+  m_pantoSelectedAction->setToolTip(tr("Enable / disable pan to selected operation"));
+
+  // Inserting action
+  QList<QAction*> acts = m_menu->findChildren<QAction*>();
+
+  if(!acts.isEmpty())
+    m_menu->insertAction(acts.at(3), m_pantoSelectedAction);
 }
 
 te::qt::af::MapDisplay::~MapDisplay()
@@ -243,7 +257,7 @@ void te::qt::af::MapDisplay::onDrawLayersFinished(const QMap<QString, QString>& 
   m_lastDisplayContent = QPixmap(*m_display->getDisplayPixmap());
 
   // Draw the layers selection
-  drawLayersSelection(ApplicationController::getInstance().getProject()->getSingleLayers());
+  drawLayersSelection(ApplicationController::getInstance().getProject()->getSingleLayers(false));
 }
 
 void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
@@ -256,6 +270,27 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
 
     case te::qt::af::evt::LAYER_SELECTED_OBJECTS_CHANGED:
     {
+      te::qt::af::evt::LayerSelectedObjectsChanged* evt = static_cast<te::qt::af::evt::LayerSelectedObjectsChanged*> (e);
+
+      if(m_pantoSelectedAction->isChecked() && evt->m_envelope != 0)
+      {
+        te::gm::Envelope* env = evt->m_envelope;
+        te::gm::Envelope map_env = m_display->getExtent();
+
+        if(evt->m_layer->getSRID() != m_display->getSRID())
+          env->transform(evt->m_layer->getSRID(), m_display->getSRID());
+
+        if(!env->intersects(map_env))
+        {
+          env->m_llx = env->getCenter().x - map_env.getWidth()/2;
+          env->m_urx = env->m_llx + map_env.getWidth();
+          env->m_lly = env->getCenter().y - map_env.getHeight()/2;
+          env->m_ury = env->m_lly + map_env.getHeight();
+
+          m_display->setExtent(*env);
+        }
+      }
+
       QPixmap* content = m_display->getDisplayPixmap();
       content->fill(Qt::transparent);
 
@@ -270,7 +305,7 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
     case te::qt::af::evt::HIGHLIGHT_LAYER_OBJECTS:
     {
       te::qt::af::evt::HighlightLayerObjects* highlightEvent = static_cast<te::qt::af::evt::HighlightLayerObjects*>(e);
-      drawDataSet(highlightEvent->m_dataset, highlightEvent->m_layer->getSRID(), highlightEvent->m_color);
+      drawDataSet(highlightEvent->m_dataset, highlightEvent->m_layer->getGeomPropertyName(), highlightEvent->m_layer->getSRID(), highlightEvent->m_color);
       m_display->repaint();
     }
     break;
@@ -299,6 +334,11 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
     default:
       return;
   }
+}
+
+bool te::qt::af::MapDisplay::isPanToSelectedEnabled()
+{
+  return m_pantoSelectedAction->isChecked();
 }
 
 void te::qt::af::MapDisplay::drawLayersSelection(const std::list<te::map::AbstractLayerPtr>& layers)
@@ -338,7 +378,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
       // Try to retrieve the layer selection
       std::auto_ptr<te::da::DataSet> selected(layer->getData(oids));
 
-      drawDataSet(selected.get(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
+      drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
 
       return;
     }
@@ -365,7 +405,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
         // Try to retrieve the layer selection batch
         std::auto_ptr<te::da::DataSet> selected(layer->getData(oidsBatch.get()));
 
-        drawDataSet(selected.get(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
+        drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
 
         // Prepares to next batch
         oidsBatch->clear();
@@ -380,7 +420,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
   }
 }
 
-void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, int srid, const QColor& color)
+void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, const std::string& geomPropertyName, int srid, const QColor& color)
 {
   assert(dataset);
   assert(color.isValid());
@@ -393,7 +433,10 @@ void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, int srid, con
   if((srid != TE_UNKNOWN_SRS) && (m_display->getSRID() != TE_UNKNOWN_SRS) && (srid != m_display->getSRID()))
     needRemap = true;
 
-  std::size_t gpos = te::da::GetFirstPropertyPos(dataset, te::dt::GEOMETRY_TYPE);
+  std::size_t gpos = std::string::npos;
+  geomPropertyName.empty() ? gpos = te::da::GetFirstPropertyPos(dataset, te::dt::GEOMETRY_TYPE): gpos = te::da::GetPropertyPos(dataset, geomPropertyName);
+
+  assert(gpos != std::string::npos);
 
   QPixmap* content = m_display->getDisplayPixmap();
 

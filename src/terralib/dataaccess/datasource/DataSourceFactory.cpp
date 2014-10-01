@@ -39,7 +39,7 @@ std::auto_ptr<te::da::DataSource> te::da::DataSourceFactory::make(const std::str
   std::map<std::string, FactoryFnctType>::const_iterator it = sm_factories.find(dsType);
 
   if(it == sm_factories.end())
-    throw Exception((boost::format(TR_DATAACCESS("Could not find a data source factory named: %1!")) % dsType).str());
+    throw Exception((boost::format(TE_TR("Could not find a data source factory named: %1!")) % dsType).str());
 
   std::auto_ptr<DataSource> ds(sm_factories[dsType]());
 
@@ -58,7 +58,7 @@ void te::da::DataSourceFactory::add(const std::string& dsType, FactoryFnctType f
   std::map<std::string, FactoryFnctType>::const_iterator it = sm_factories.find(dsType);
 
   if(it != sm_factories.end())
-    throw Exception((boost::format(TR_DATAACCESS("A data source factory with name '%1' is already registered.")) % dsType).str());
+    throw Exception((boost::format(TE_TR("A data source factory with name '%1' is already registered.")) % dsType).str());
 
   sm_factories[dsType] = f;
 }
@@ -68,7 +68,7 @@ void te::da::DataSourceFactory::remove(const std::string& dsType)
   std::map<std::string, FactoryFnctType>::iterator it = sm_factories.find(dsType);
 
   if(it == sm_factories.end())
-    throw Exception((boost::format(TR_DATAACCESS("There is no registered data source factory named '%1'.")) % dsType).str());
+    throw Exception((boost::format(TE_TR("There is no registered data source factory named '%1'.")) % dsType).str());
 
   sm_factories.erase(it);
 }

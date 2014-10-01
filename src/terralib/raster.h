@@ -28,13 +28,33 @@
 
 // TerraLib
 #include "raster/Band.h"
+#include "raster/BandIterator.h"
+#include "raster/BandIteratorWindow.h"
 #include "raster/BandProperty.h"
+#include "raster/BandSummary.h"
+#include "raster/BlockUtils.h"
+#include "raster/BandProperty.h"
+#include "raster/Config.h"
 #include "raster/Exception.h"
 #include "raster/Grid.h"
+#include "raster/Interpolator.h"
+#include "raster/PositionIterator.h"
+#include "raster/ProxyRaster.h"
 #include "raster/Raster.h"
 #include "raster/RasterFactory.h"
+#include "raster/RasterIterator.h"
 #include "raster/RasterProperty.h"
+#include "raster/RasterSummary.h"
+#include "raster/RasterSummaryManager.h"
+#include "raster/RasterSynchronizer.h"
+#include "raster/Reprojection.h"
+#include "raster/SynchronizedBand.h"
+#include "raster/SynchronizedBandBlocksManager.h"
+#include "raster/SynchronizedRaster.h"
+#include "raster/TileIndexer.h"
 #include "raster/Utils.h"
+#include "raster/Vectorizer.h"
+#include "raster/VectorizerPolygonStructure.h"
 
 /*!
   \defgroup rst Raster
@@ -44,7 +64,7 @@
     The TerraLib Raster module provides the base classes foundation for handling geographical data such as remote sensing imagery data.
     The raster data structure can be viewed as a matrix of cells or pixels associated with spatial locations forming a regular grid.
     By design each cell can be viewed, individually, as a multi-dimensional data.
-    
+
     This module defines only the abstract classes and therefore implementations must be provided.
     We call these implementations: raster drivers. TerraLib provides raster drivers on top of other libraries (e.g. GDAL), DBMS (e.g. PostGIS Raster)
     and an In-Memory implementation.

@@ -34,6 +34,10 @@
 // STL
 #include <algorithm>
 #include <cassert>
+#include <cstdio>
+
+// Boost
+#include <boost/filesystem.hpp>
 
 // ---------------------------------------------------------------------------
 
@@ -46,6 +50,7 @@ te::mem::ExpansibleBandBlocksManager::OpenDiskFileHandler::~OpenDiskFileHandler(
 {
   if( m_filePtr ) 
   {
+    remove( m_fullFileName.c_str() );
     fclose( m_filePtr );
   }
 }
@@ -263,14 +268,14 @@ void* te::mem::ExpansibleBandBlocksManager::getBlockPointer(unsigned int band,
     if( 0 != fseek( inDiskInfo.m_filePtr, 
       (long)( inDiskInfo.m_fileOff ), SEEK_SET ) )
     {
-      throw Exception(TR_MEMORY("File seek error") );
+      throw Exception(TE_TR("File seek error") );
     }
       
     assert( m_currSwapBlockPtr != 0  );
     if( 1 != fread( (void*)m_currSwapBlockPtr, (size_t)( m_maxBlockSizeBytes ), 
       1, inDiskInfo.m_filePtr ) )
     {
-      throw Exception(TR_MEMORY("File read error") );
+      throw Exception(TE_TR("File read error") );
     }
     
     // Flushing the choosed tile to disk
@@ -278,7 +283,7 @@ void* te::mem::ExpansibleBandBlocksManager::getBlockPointer(unsigned int band,
     if( 0 != fseek( inDiskInfo.m_filePtr, 
       (long)( inDiskInfo.m_fileOff ), SEEK_SET ) )
     {
-      throw Exception(TR_MEMORY("File seek error") );
+      throw Exception(TE_TR("File seek error") );
     }
       
     assert( swapIndex.m_dim0Index < m_ramBlocksPointers.size() );
@@ -289,7 +294,7 @@ void* te::mem::ExpansibleBandBlocksManager::getBlockPointer(unsigned int band,
       (size_t)( m_maxBlockSizeBytes ), 1, 
       inDiskInfo.m_filePtr ) )
     {
-      throw Exception(TR_MEMORY("File write error") );
+      throw Exception(TE_TR("File write error") );
     }
     
     // updating the indexing structures
@@ -693,7 +698,8 @@ bool te::mem::ExpansibleBandBlocksManager::allocateDiskBlocks(
     assert( fileSizeBytes <= m_maxDiskFilesSize );
       
     boost::shared_ptr< OpenDiskFileHandler > newFileHandlerPtr( new OpenDiskFileHandler );
-    if( ! createNewDiskFile( fileSizeBytes, &( newFileHandlerPtr->m_filePtr ) ) )
+    if( ! createNewDiskFile( fileSizeBytes, &( newFileHandlerPtr->m_filePtr ),
+      newFileHandlerPtr->m_fullFileName ) )
     {
       return false;
     }
@@ -755,25 +761,36 @@ bool te::mem::ExpansibleBandBlocksManager::allocateAndActivateDiskBlocks(
 }
 
 bool te::mem::ExpansibleBandBlocksManager::createNewDiskFile( unsigned long int size,
-  FILE** fileptr ) const
+  FILE** fileptr, std::string& fullFileName ) const
 {
-  //(*fileptr) = fopen( filename.c_str(), "wb+" );
-  (*fileptr) = tmpfile();
-  if( (*fileptr) == 0 )
+  fullFileName = boost::filesystem::unique_path( 
+    boost::filesystem::temp_directory_path() /= 
+    boost::filesystem::path( "TerralibExpansibleBandBlocksManager_%%%%-%%%%-%%%%-%%%%" ) ).string();
+  if( fullFileName.empty() )
+  {
     return false;
+  }
+  
+  (*fileptr) = fopen( fullFileName.c_str(),  "wb+"  );
+  if( (*fileptr) == 0 )
+  {
+    return false;
+  }
   
   long seekoff = (long)( size - 1 );
   
-  if( 0 != fseek( (*fileptr), seekoff, SEEK_SET ) )
+  if( 0 != std::fseek( (*fileptr), seekoff, SEEK_SET ) )
   {
     fclose( (*fileptr) );
+    remove( fullFileName.c_str() );
     return false;
   }
 
   unsigned char c = '\0';
-  if( 1 != fwrite( &c, 1, 1, (*fileptr) ) )
+  if( 1 != std::fwrite( &c, 1, 1, (*fileptr) ) )
   {
     fclose( (*fileptr) );
+    remove( fullFileName.c_str() );
     return false;
   }
     

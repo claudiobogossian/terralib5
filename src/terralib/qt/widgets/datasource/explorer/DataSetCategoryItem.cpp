@@ -44,9 +44,9 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QMessageBox>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QMessageBox>
+#include <QWidget>
 
 te::qt::widgets::DataSetCategoryItem::DataSetCategoryItem(const te::da::DataSourceInfoPtr& ds, int category, AbstractDataSourceTreeItem* parent)
   : AbstractDataSourceTreeItem(parent),
@@ -120,10 +120,18 @@ void te::qt::widgets::DataSetCategoryItem::fetchMore()
 
   for(std::size_t i = 0; i < ndatasets; ++i)
   {
-    te::da::DataSetTypePtr dt(new te::da::DataSetType(datasetNames[i]));
+    //te::da::DataSetTypePtr dt(new te::da::DataSetType(datasetNames[i]));
+    te::da::DataSetTypePtr dt(ds->getDataSetType(datasetNames[i].c_str()).release());
 
-    if(dt->getCategory() == m_category)
-      new DataSetItem(dt, ds.get(), this);
+    for(std::size_t i = 0; i < dt->size(); ++i)
+    {
+      if(dt->getCategory() == m_category)
+      {
+        te::dt::Property* p = dt->getProperty(i);
+        if(p->getType() == te::dt::GEOMETRY_TYPE || dt->getProperty(i)->getType() == te::dt::RASTER_TYPE)
+          new DataSetItem(dt, p->getName(), ds.get(), this);
+      }
+    }
   }
 }
 

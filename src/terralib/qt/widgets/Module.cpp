@@ -30,12 +30,12 @@
 #include "../../maptools/ChartRendererManager.h"
 #include "../../maptools/ExternalGraphicRendererManager.h"
 #include "../../maptools/MarkRendererManager.h"
+#include "charts/ChartRenderer.h"
 #include "layer/explorer/AbstractTreeItemFactory.h"
 #include "property/DateTimePropertyWidgetFactory.h"
 #include "property/GeometryPropertyWidgetFactory.h"
 #include "property/NumericPropertyWidgetFactory.h"
 #include "property/StringPropertyWidgetFactory.h"
-#include "charts/ChartRenderer.h"
 #include "se/BasicFillWidgetFactory.h"
 #include "se/ExternalGraphicRenderer.h"
 #include "se/GlyphGraphicWidgetFactory.h"
@@ -66,9 +66,6 @@ te::qt::widgets::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib Qt Widgets support
-  TE_ADD_TEXT_DOMAIN(TE_QT_WIDGETS_TEXT_DOMAIN, TE_QT_WIDGETS_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::qt::widgets::Module::~Module()
@@ -78,6 +75,7 @@ te::qt::widgets::Module::~Module()
 
 void te::qt::widgets::Module::initialize()
 {
+#ifdef TERRALIB_MOD_MAPTOOLS_ENABLED
 // Mark renderers
   te::map::MarkRendererManager::getInstance().add("", new WellKnownMarkRenderer);
   te::map::MarkRendererManager::getInstance().add("ttf", new GlyphMarkRenderer);
@@ -96,23 +94,27 @@ void te::qt::widgets::Module::initialize()
 // It initializes the fill widgets factories
   te::qt::widgets::BasicFillWidgetFactory::initialize();
   te::qt::widgets::GraphicFillWidgetFactory::initialize();
+  
+// It initializes the layer item factory
+  AbstractTreeItemFactory::initialize();
+#endif
 
+#ifdef TERRALIB_MOD_DATAACCESS_ENABLED
 // It initializes the property widgets factories
   te::qt::widgets::DateTimePropertyWidgetFactory::initialize();
   te::qt::widgets::GeometryPropertyWidgetFactory::initialize();
   te::qt::widgets::NumericPropertyWidgetFactory::initialize();
   te::qt::widgets::StringPropertyWidgetFactory::initialize();
+#endif
 
-// It initializes the layer item factory
-  AbstractTreeItemFactory::initialize();
-
-  TE_LOG_TRACE(TR_QT_WIDGETS("TerraLib Qt Widgets initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt Widgets initialized!"));
 }
 
 void te::qt::widgets::Module::finalize()
 {
+#ifdef TERRALIB_MOD_MAPTOOLS_ENABLED
 // It finalizes the layer item factory
-  AbstractTreeItemFactory::initialize();
+  AbstractTreeItemFactory::finalize();
 
 // It finalizes the graphic widgets factories
   te::qt::widgets::WellKnownGraphicWidgetFactory::finalize();
@@ -122,7 +124,8 @@ void te::qt::widgets::Module::finalize()
 // It finalizes the fill widgets factories
   te::qt::widgets::BasicFillWidgetFactory::finalize();
   te::qt::widgets::GraphicFillWidgetFactory::finalize();
+#endif
 
-  TE_LOG_TRACE(TR_QT_WIDGETS("TerraLib Qt Widgets finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt Widgets finalized!"));
 }
 

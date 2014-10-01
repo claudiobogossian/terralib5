@@ -34,7 +34,7 @@
 #include <map>
 
 //TerraLib
-#include "../widgets/Config.h"
+#include "../Config.h"
 
 class QMenu;
 class QAction;
@@ -126,6 +126,8 @@ namespace te
             \brief It sets the color bar.
 
             \param te::color::colorBar to paint in the colorbar.
+
+            \note This class takes the ownership of the colorbar pointer.
             */
             void setColorBar(te::color::ColorBar* cb);
 

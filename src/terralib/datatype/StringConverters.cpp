@@ -90,5 +90,5 @@ te::dt::AbstractData* te::dt::StringToNumericConverter(te::dt::AbstractData* d) 
 void te::dt::AssertString(AbstractData* d) throw(Exception)
 {
   if(d->getTypeCode() != STRING_TYPE)
-    throw Exception(TR_DATATYPE("The input data type is not a string!"));
+    throw Exception(TE_TR("The input data type is not a string!"));
 }

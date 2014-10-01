@@ -49,6 +49,8 @@ namespace te
     */
     te::gm::Geometry* GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx, te::gm::GeomType outGeoType);
 
+    te::gm::Geometry* GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx);
+
     void SplitGeometryCollection(te::gm::GeometryCollection* geomIn, te::gm::GeometryCollection* gcOut);
 
     std::string GetSimpleTableName(std::string fullName);

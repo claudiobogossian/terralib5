@@ -57,7 +57,9 @@ int main(int /*argc*/, char** /*argv*/)
     connInfo["HOST"] = "localhost";
     connInfo["USER_NAME"] = "";
     connInfo["PASSWORD"] = "";
-    connInfo["DB_NAME"] = ""TE_DATA_EXAMPLE_DIR"/data/mdb/ADODataSource.mdb";
+
+    std::string data_dir = TERRALIB_DATA_DIR;
+    connInfo["DB_NAME"] = data_dir + "/mdb/ADODataSource.mdb";
    
     // Create a data source using the data source factory
     std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("ADO"));
@@ -75,29 +77,20 @@ int main(int /*argc*/, char** /*argv*/)
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried: " << e.what() << std::endl;
-    
-    std::cout << "Press Enter to exit..." << std::endl;
-    std::cin.get();
-    
+    std::cout << std::endl << "An exception has occurred: " << e.what() << std::endl;
+
     return EXIT_FAILURE;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried!" << std::endl;
-    
-    std::cout << "Press Enter to exit..." << std::endl;
-    std::cin.get();
-    
+    std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
+
     return EXIT_FAILURE;
   }
   
   te::plugin::PluginManager::getInstance().unloadAll();
   
   TerraLib::getInstance().finalize();
-  
-  std::cout << "Press Enter to exit..." << std::endl;
-  std::cin.get();
-  
+
   return EXIT_SUCCESS;
 }

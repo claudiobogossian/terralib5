@@ -52,9 +52,9 @@
 #include "WhereClauseWidget.h"
 
 // Qt
-#include <QtGui/QIcon>
-#include <QtGui/QMessageBox>
-#include <QtGui/QToolButton>
+#include <QIcon>
+#include <QMessageBox>
+#include <QToolButton>
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
@@ -226,8 +226,13 @@ void te::qt::widgets::WhereClauseWidget::setLayerList(std::list<te::map::Abstrac
   {
     te::map::AbstractLayerPtr l = *it;
 
-    m_ui->m_layerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
+    std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
 
+    if(dsType.get())
+    {
+      if(dsType->hasGeom())
+        m_ui->m_layerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
+    }
     ++it;
   }
 }
@@ -306,6 +311,23 @@ void te::qt::widgets::WhereClauseWidget::clear()
   m_count = 0;
 }
 
+void te::qt::widgets::WhereClauseWidget::resetInterface()
+{
+  clear();
+
+  m_ds.reset();
+  m_srid = 0;
+
+  m_ui->m_restrictValueComboBox->clear();
+  m_ui->m_valuePropertyComboBox->clear();
+  m_ui->m_valueValueComboBox->clear();
+  m_ui->m_geomAttrComboBox->clear();
+  m_ui->m_OperatorComboBox->clear();
+  m_ui->m_SpatialOperatorComboBox->clear();
+  m_ui->m_sqlTextEdit->clear();
+  m_ui->m_tabWidget->setCurrentIndex(0);
+}
+
 void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
 {
   std::string restrictValue = "";
@@ -380,6 +402,8 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
       m_mapExp.insert(std::map<int, ExpressionProperty*>::value_type(expId, ep));
     }
 
+    std::string connector = tr("and").toStdString();
+
     //new entry
     int newrow = m_ui->m_whereClauseTableWidget->rowCount();
 
@@ -430,6 +454,15 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
     m_comboMap.insert(std::map< QComboBox*, std::pair<int, int> >::value_type(connectorCmbBox, pairConnector));
     connectorCmbBox->addItems(m_connectorsList);
     m_ui->m_whereClauseTableWidget->setCellWidget(newrow, 4, connectorCmbBox);
+
+    for(int i = 0; i < connectorCmbBox->count(); ++i)
+    {
+      if(connectorCmbBox->itemText(i).toStdString() == connector)
+      {
+        connectorCmbBox->setCurrentIndex(i);
+        break;
+      }
+    }
   }
   else // criteria by spatial restriction
   {
@@ -792,7 +825,7 @@ QStringList te::qt::widgets::WhereClauseWidget::getPropertyValues(std::string pr
 
   for(size_t t = 0; t < m_fromItems.size(); ++t)
   {
-    te::da::FromItem* fi = new te::da::DataSetName(m_fromItems[t].first/*, m_fromItems[t].second*/);
+    te::da::FromItem* fi = new te::da::DataSetName(m_fromItems[t].first, m_fromItems[t].second);
 
     from->push_back(fi);
   }
@@ -810,7 +843,7 @@ QStringList te::qt::widgets::WhereClauseWidget::getPropertyValues(std::string pr
   }
   catch(const std::exception& e)
   {
-    std::string msg =  "An exception has occuried: ";
+    std::string msg =  "An exception has occurred: ";
                 msg += e.what();
 
     QMessageBox::warning(0, "Query Error: ", msg.c_str());
@@ -819,7 +852,7 @@ QStringList te::qt::widgets::WhereClauseWidget::getPropertyValues(std::string pr
   }
   catch(...)
   {
-    std::string msg =  "An unexpected exception has occuried!";
+    std::string msg =  "An unexpected exception has occurred!";
 
     QMessageBox::warning(0, "Query Error: ", msg.c_str());
 
@@ -833,7 +866,21 @@ QStringList te::qt::widgets::WhereClauseWidget::getPropertyValues(std::string pr
     propertyName = propertyName.substr(pos + 1, propertyName.size() - 1);
   }
 
-  std::set<std::string> values;
+  std::set<std::string> valuesStr;
+  std::set<double> valuesDouble;
+  std::set<int> valuesInt;
+
+  std::size_t propertyPos;
+  for(std::size_t t = 0; t < dataset->getNumProperties(); ++t)
+  {
+    if(dataset->getPropertyName(t) == propertyName)
+    {
+      propertyPos = t;
+      break;
+    }
+  }
+
+  int propertyType = dataset->getPropertyDataType(propertyPos);
 
   if(dataset.get())
   {
@@ -841,23 +888,69 @@ QStringList te::qt::widgets::WhereClauseWidget::getPropertyValues(std::string pr
     {
       if(!dataset->isNull(propertyName))
       {
-        std::string value = dataset->getAsString(propertyName);
+        if(propertyType == te::dt::INT32_TYPE)
+        {
+          int value = dataset->getInt32(propertyName);
 
-        std::set<std::string>::iterator it = values.find(value);
+          std::set<int>::iterator it = valuesInt.find(value);
 
-        if(it == values.end())
-          values.insert(value);
+          if(it == valuesInt.end())
+            valuesInt.insert(value);
+        }
+        else if(propertyType == te::dt::DOUBLE_TYPE || propertyType == te::dt::FLOAT_TYPE)
+        {
+          double value = dataset->getDouble(propertyName);
+
+          std::set<double>::iterator it = valuesDouble.find(value);
+
+          if(it == valuesDouble.end())
+            valuesDouble.insert(value);
+        }
+        else 
+        {
+          std::string value = dataset->getAsString(propertyName);
+
+          std::set<std::string>::iterator it = valuesStr.find(value);
+
+          if(it == valuesStr.end())
+            valuesStr.insert(value);
+        }
       }
     }
   }
 
-  std::set<std::string>::iterator it = values.begin();
-
-  while(it != values.end())
+  if(propertyType == te::dt::INT32_TYPE)
   {
-    list.append((*it).c_str());
+    std::set<int>::iterator it = valuesInt.begin();
 
-    ++it;
+    while(it != valuesInt.end())
+    {
+      list.append(QString::number(*it));
+
+      ++it;
+    }
+  }
+  else if(propertyType == te::dt::DOUBLE_TYPE || propertyType == te::dt::FLOAT_TYPE)
+  {
+    std::set<double>::iterator it = valuesDouble.begin();
+
+    while(it != valuesDouble.end())
+    {
+      list.append(QString::number(*it, 'f', 5));
+
+      ++it;
+    }
+  }
+  else 
+  {
+    std::set<std::string>::iterator it = valuesStr.begin();
+
+    while(it != valuesStr.end())
+    {
+      list.append((*it).c_str());
+
+      ++it;
+    }
   }
 
   return list;

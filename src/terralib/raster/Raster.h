@@ -32,6 +32,7 @@
 #include "../datatype/Enums.h"
 #include "../geometry/Geometry.h"
 #include "Config.h"
+#include "Vectorizer.h"
 
 // STL
 #include <complex>
@@ -389,6 +390,18 @@ namespace te
         virtual Raster& operator+=(Raster& rhs);
 
         /*!
+          \brief It returns the sum of a constant value to all pixels in the raster.
+
+          \param cvalue The constant value to be added.
+
+          \note The caller is responsible to guarantee that resultant values
+                will not exceed the range of the data type.
+
+          \return The raster sum.
+        */
+        virtual Raster& operator+=(std::complex<double>& cvalue);
+
+        /*!
           \brief It returns the raster subtraction (pixel by pixel).
 
           \param rhs The raster to be subtracted, right-hand side.
@@ -402,6 +415,18 @@ namespace te
           \return The raster subtraction.
         */
         virtual Raster& operator-=(Raster& rhs);
+
+        /*!
+          \brief It returns the difference from all pixels in the raster to a constant value (pixels - constant).
+
+          \param cvalue The constant value to be subtracted.
+
+          \note The caller is responsible to guarantee that resultant values
+                will not exceed the range of the data type.
+
+          \return The raster difference.
+        */
+        virtual Raster& operator-=(std::complex<double>& cvalue);
 
         /*!
           \brief It returns the raster product (pixel by pixel).
@@ -419,6 +444,18 @@ namespace te
         virtual Raster& operator*=(Raster& rhs);
 
         /*!
+          \brief It returns the product of a constant value to all pixels in the raster.
+
+          \param cvalue The constant value to be multiplied.
+
+          \note The caller is responsible to guarantee that resultant values
+                will not exceed the range of the data type.
+
+          \return The raster product.
+        */
+        virtual Raster& operator*=(std::complex<double>& cvalue);
+
+        /*!
           \brief It returns the raster division (pixel by pixel).
 
           \param rhs The raster to be divided, right-hand side.
@@ -432,6 +469,18 @@ namespace te
           \return The raster division.
         */
         virtual Raster& operator/=(Raster& rhs);
+
+        /*!
+          \brief It returns the division of all pixels in the raster by a constant value (pixels / constant).
+
+          \param cvalue The constant value to be divided.
+
+          \note The caller is responsible to guarantee that resultant values
+                will not exceed the range of the data type.
+
+          \return The raster division.
+        */
+        virtual Raster& operator/=(std::complex<double>& cvalue);
 
         /*!
           \brief Assignment operator.
@@ -472,7 +521,7 @@ namespace te
 
           \warning A scale of 0 is not allowed. Use 1, 2, 3, or -1, -2, 3...
         */
-        virtual Raster* resample(int method, unsigned int drow, unsigned int dcolumn, unsigned int height, unsigned int width, unsigned int newheight, unsigned int newwidth, const std::map<std::string, std::string>& rinfo);
+        virtual Raster* resample(int method, unsigned int drow, unsigned int dcolumn, unsigned int height, unsigned int width, unsigned int newheight, unsigned int newwidth, const std::map<std::string, std::string>& rinfo) const;
 
         /*!
           \brief Resample raster.
@@ -487,7 +536,7 @@ namespace te
 
           \warning A scale of 0 is not allowed. Use 1, 2, 3, or -1, -2, 3...
         */
-        virtual Raster* resample(int method, int scale, const std::map<std::string, std::string>& rinfo);
+        virtual Raster* resample(int method, int scale, const std::map<std::string, std::string>& rinfo) const;
 
         /*!
           \brief Return the raster grid for a specific scale.
@@ -498,7 +547,7 @@ namespace te
 
           \note The caller will take the ownership of the returned pointer.
         */
-        Grid* getResampledGrid(int scale);
+        Grid* getResampledGrid(int scale) const;
 
         /*!
           \brief Reprojects this raster to a distinct SRS.
@@ -561,11 +610,11 @@ namespace te
         /*!
           \brief Vectorizes a given raster band, using GDALPolygonize function.
 
-          \param b           The band index to vectorize.
           \param g           A reference to a vector of geometries.
                              Will be filled with geometries found in band.
+          \param b           The band index to vectorize.
         */
-        virtual void vectorize(std::size_t /*b*/, std::vector<te::gm::Geometry*>& /*g*/) {};
+        virtual void vectorize(std::vector<te::gm::Geometry*>& g, std::size_t b, unsigned int mp = 0);
 
         /*!
           \brief Rasterizes a given vector of geometries.
@@ -587,7 +636,7 @@ namespace te
 
           \return The scaled value.
         */
-        double applyScale(int i, const double& v);
+        double applyScale(int i, const double& v) const;
 
       protected:
 

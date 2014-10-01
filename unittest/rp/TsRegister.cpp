@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -52,7 +52,7 @@ void TsRegister::Test001()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
   boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRasterPtrPointer.get() );    
@@ -130,9 +130,4 @@ void TsRegister::Test001()
   ASSERTMAXDIST( inputRasterPtrPointer->getGrid()->getExtent()->getUpperRight(),
     algoOutputParams.m_outputRasterPtr->getGrid()->getExtent()->getUpperRight(),
     0.000001 );
-  
 }
-
-
-
-

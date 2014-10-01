@@ -208,8 +208,8 @@ namespace te
       m_settings.clear();
       m_file = settingsFile;
 
-      if(boost::filesystem::is_regular_file(settingsFile))
-        boost::property_tree::read_xml(settingsFile, m_settings, boost::property_tree::xml_parser::trim_whitespace);
+      if(boost::filesystem::is_regular_file(m_file))
+        boost::property_tree::read_xml(m_file, m_settings, boost::property_tree::xml_parser::trim_whitespace);
     }
 
     inline void ApplicationSettings::update()
@@ -220,10 +220,7 @@ namespace te
         return;
 
       if(m_settings.empty())
-      {
-// clear underlying file!
         boost::filesystem::remove(m_file);
-      }
       else
       {
         boost::property_tree::xml_writer_settings<char> settings('\t', 1);

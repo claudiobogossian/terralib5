@@ -79,7 +79,7 @@ te::gdal::Raster::Raster(const std::string& rinfo, te::common::AccessPolicy p)
   m_gdataset = te::gdal::GetRasterHandle(rinfo, m_policy);
 
   if(m_gdataset == 0)
-    throw Exception(TR_GDAL("Data file can not be accessed."));
+    throw Exception(TE_TR("Data file can not be accessed."));
 
   m_grid = GetGrid(m_gdataset);
 
@@ -179,7 +179,7 @@ void te::gdal::Raster::open(const std::map<std::string, std::string>& rinfo, te:
     it = rinfo.find("SOURCE");
 
     if(it == rinfo.end())
-      throw Exception(TR_GDAL("At least the URI or SOURCE parameter must be informed!"));
+      throw Exception(TE_TR("At least the URI or SOURCE parameter must be informed!"));
   }
   
   m_myURI = it->second;
@@ -191,7 +191,7 @@ void te::gdal::Raster::open(const std::map<std::string, std::string>& rinfo, te:
   m_gdataset = GetRasterHandle(it->second, p);
 
   if(m_gdataset == 0)
-    throw Exception(TR_GDAL("Data file can not be accessed."));
+    throw Exception(TE_TR("Data file can not be accessed."));
 
   m_grid = GetGrid(m_gdataset);
 
@@ -267,7 +267,7 @@ te::gdal::Raster& te::gdal::Raster::operator=(const te::gdal::Raster& rhs)
   return *this;
 }
 
-te::rst::Raster* te::gdal::Raster::resample(int method, int scale, const std::map<std::string, std::string>& rinfo)
+te::rst::Raster* te::gdal::Raster::resample(int method, int scale, const std::map<std::string, std::string>& rinfo) const
 {
   assert(scale != 0);
 
@@ -286,7 +286,7 @@ te::rst::Raster* te::gdal::Raster::resample(int method, int scale, const std::ma
 
   int overviewScale[1] = { -scale };
 
-  GDALDataset* inds = static_cast<te::gdal::Raster*>(this)->getGDALDataset();
+  GDALDataset* inds = getGDALDataset();
 
   GDALDataset* outds = static_cast<te::gdal::Raster*>(rout)->getGDALDataset();
 
@@ -347,7 +347,7 @@ te::rst::Raster* te::gdal::Raster::transform(int srid, double llx, double lly, d
     return 0;
 
   if (!te::gdal::RecognizesSRID(srid))
-    throw Exception(TR_GDAL("Output SRID not recognized! Expecting a EPSG SRS id."));
+    throw Exception(TE_TR("Output SRID not recognized! Expecting a EPSG SRS id."));
 
   unsigned int ncols = getNumberOfColumns();
   unsigned int nrows = getNumberOfRows();
@@ -450,7 +450,7 @@ void te::gdal::Raster::create(te::rst::Grid* g,
       it = rinfo.find("SOURCE");
 
       if(it == rinfo.end())
-        throw Exception(TR_GDAL("At least the URI or SOURCE parameter must be informed!"));
+        throw Exception(TE_TR("At least the URI or SOURCE parameter must be informed!"));
     }    
     
     m_myURI = it->second;
@@ -466,7 +466,7 @@ void te::gdal::Raster::create(te::rst::Grid* g,
       delete g;
       g = 0;
 
-      std::string mess = TR_GDAL("Raster couldn't be created:");
+      std::string mess = TE_TR("Raster couldn't be created:");
       mess += m_name;
       throw Exception(mess);
     }

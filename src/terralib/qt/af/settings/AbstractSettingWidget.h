@@ -27,8 +27,8 @@
 #define __TERRALIB_QT_AF_ABSTRACTSETTINGWIDGET_H
 
 // Qt
-#include <QtGui/QWidget>
-#include <QtGui/QMessageBox>
+#include <QWidget>
+#include <QMessageBox>
 
 namespace te
 {
@@ -132,6 +132,8 @@ namespace te
       inline void AbstractSettingWidget::onApplyButtonClicked()
       {
         saveChanges();
+
+        changeApplyButtonState(false);
       }
 
       inline void AbstractSettingWidget::hideEvent(QHideEvent * event)
@@ -140,7 +142,7 @@ namespace te
         {
           QString msg = tr("There are unsaved changes. Do you want to save it?");
 
-          if(QMessageBox::question(this, tr("Tool bars customization"), msg, QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
+          if(QMessageBox::question(this, tr("Application settings customization"), msg, QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
             saveChanges();
           else
             resetState();

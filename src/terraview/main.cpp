@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of TerraView - A Free and Open Source GIS Application.
 
@@ -13,7 +13,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with TerraLib Code Editor. See COPYING. If not, write to
+    along with TerraView. See COPYING. If not, write to
     TerraLib Team at <terralib-team@dpi.inpe.br>.
  */
 
@@ -24,72 +24,120 @@
 */
 
 // TerraView
+#include "Config.h"
+#include "../terralib/Defines.h"
 #include "TerraView.h"
-#include "TerraViewConfig.h"
 
 // TerraLib
+#include <terralib/common/PlatformUtils.h>
+#include <terralib/qt/af/Utils.h>
 #include <terralib/qt/af/SplashScreenManager.h>
 
 // STL
 #include <cstdlib>
 #include <exception>
+#include <locale>
 
 // Qt
-#include <QtCore/QResource>
-#include <QtGui/QApplication>
-#include <QtGui/QSplashScreen>
-#include <QtGui/QMessageBox>
+#include <QApplication>
+#include <QDir>
+#include <QFileInfo>
+#include <QLibraryInfo>
+#include <QLocale>
+#include <QMessageBox>
+#include <QSplashScreen>
+#include <QTextCodec>
+#include <QTranslator>
 
-#include <locale>
+
+#if TE_PLATFORM == TE_PLATFORMCODE_APPLE
+#include <CoreFoundation/CoreFoundation.h>
+#endif
+
 
 int main(int argc, char** argv)
 {
   QApplication app(argc, argv);
 
-  setlocale(LC_ALL,"C");// This force to use "." as decimal separator.
+  QDir dir(QLibraryInfo::location(QLibraryInfo::TranslationsPath));
 
-  //QResource::registerResource(TERRAVIEW_RESOURCE_FILE);
+  QStringList filters;
+  filters <<"*" + QLocale::system().name().toLower() + ".qm";
+
+  QFileInfoList lst = dir.entryInfoList(filters, QDir::Files);
+
+  for(int i=0; i<lst.size(); ++i)
+  {
+    QTranslator* trans = new QTranslator;
+    bool ls = trans->load(lst.at(i).baseName(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    app.installTranslator(trans);
+  }
+
+  setlocale(LC_ALL,"C"); // This force to use "." as decimal separator.
+
+#if QT_VERSION >= 0x050000
+  QTextCodec::setCodecForLocale(QTextCodec::codecForLocale());
+#else
+  QTextCodec::setCodecForCStrings(QTextCodec::codecForLocale());
+#endif
 
   int waitVal = EXIT_FAILURE;
 
+  const int RESTART_CODE = 1000;
+
   try
   {
-    const char* te_env = getenv("TERRALIB_DIR");
-
-    if(te_env == 0)
+    do 
     {
-      QMessageBox::critical(0, QObject::tr("Execution Failure"), QObject::tr("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
-      throw std::exception();
-    }
+      std::string splash_pix = te::common::FindInTerraLibPath(TVIEW_SPLASH_SCREEN_PIXMAP);
 
-    std::string splash_pix(te_env);
-    splash_pix += "/resources/images/png/terraview-splashscreen.png";
+      QPixmap pixmap(splash_pix.c_str());
 
-    QPixmap pixmap(splash_pix.c_str());
+      QSplashScreen* splash(new QSplashScreen(pixmap/*, Qt::WindowStaysOnTopHint*/));
 
-    QSplashScreen* splash(new QSplashScreen(pixmap/*, Qt::WindowStaysOnTopHint*/));
+      splash->setAttribute(Qt::WA_DeleteOnClose, true);
 
-    splash->setAttribute(Qt::WA_DeleteOnClose, true);
+      splash->setStyleSheet("QWidget { font-size: 12px; font-weight: bold }");
 
-    splash->setStyleSheet("QWidget { font-size: 12px; font-weight: bold }");
+      te::qt::af::SplashScreenManager::getInstance().set(splash, Qt::AlignBottom | Qt::AlignHCenter, Qt::white);
 
-    te::qt::af::SplashScreenManager::getInstance().set(splash, Qt::AlignBottom | Qt::AlignHCenter, Qt::white);
+      splash->show();
 
-    splash->show();
+      TerraView tview;
 
-    TerraView tview;
+      tview.resetTerraLib(waitVal != RESTART_CODE);
+      
+#if TE_PLATFORM == TE_PLATFORMCODE_APPLE
+      CFBundleRef mainBundle = CFBundleGetMainBundle();
+      CFURLRef execPath = CFBundleCopyBundleURL(mainBundle);
+        
+      char path[PATH_MAX];
+      
+      if (!CFURLGetFileSystemRepresentation(execPath, TRUE, (UInt8 *)path, PATH_MAX))
+        throw; // error!
+        
+      CFRelease(execPath);
+        
+      QDir dPath(path);
+        
+      dPath.cd("Contents");
+        
+      chdir(dPath.path().toStdString().c_str());
+#endif
 
-    std::string appPath = qApp->applicationDirPath().toStdString();
+      tview.init();
 
-    tview.init(appPath+"/config.xml");
+      splash->finish(&tview);
 
-    splash->finish(&tview);
+      tview.showMaximized();
 
-    tview.showMaximized();
+      tview.resetState();
 
-    tview.resetState();
+      waitVal = app.exec();
 
-    waitVal = app.exec();
+      tview.resetTerraLib(waitVal != RESTART_CODE);
+
+    } while(waitVal == RESTART_CODE);
   }
   catch(const std::exception& /*e*/)
   {
@@ -102,4 +150,3 @@ int main(int argc, char** argv)
 
   return waitVal;
 }
-

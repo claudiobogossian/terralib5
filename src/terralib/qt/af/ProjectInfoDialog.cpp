@@ -2,15 +2,15 @@
 #include "ProjectInfoWidget.h"
 
 // Qt
-#include <QtGui/QPushButton>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QGridLayout>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QGridLayout>
 
 te::qt::af::ProjectInfoDialog::ProjectInfoDialog(QWidget* parent) :
 QDialog(parent)
 {
-  QDialog::setWindowTitle(tr("Project properties editor"));
+  QDialog::setWindowTitle(tr("Project Properties"));
   QDialog::setWindowModality(Qt::ApplicationModal);
 
   //Buttons

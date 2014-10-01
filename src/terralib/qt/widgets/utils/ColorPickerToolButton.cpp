@@ -47,6 +47,7 @@ te::qt::widgets::ColorPickerToolButton::~ColorPickerToolButton()
 
 void te::qt::widgets::ColorPickerToolButton::setColor(const QColor& color)
 {
+  m_popup->setSelected(color);
   m_selectedColor = color;
   updateIcon();
 }

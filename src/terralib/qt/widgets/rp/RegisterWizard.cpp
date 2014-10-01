@@ -30,9 +30,9 @@
 #include "../../../raster/Raster.h"
 #include "../../../rp/Register.h"
 #include "../../../rp/Module.h"
-#include "../../widgets/help/HelpPushButton.h"
-#include "LayerSearchWidget.h"
-#include "LayerSearchWizardPage.h"
+#include "../help/HelpPushButton.h"
+#include "../layer/search/LayerSearchWidget.h"
+#include "../layer/search/LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "RegisterWizard.h"
@@ -46,8 +46,8 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QApplication>
-#include <QtGui/QMessageBox>
+#include <QApplication>
+#include <QMessageBox>
 
 
 te::qt::widgets::RegisterWizard::RegisterWizard(QWidget* parent)
@@ -148,7 +148,7 @@ void te::qt::widgets::RegisterWizard::addPages()
   addPage(m_layerAdjPage.get());
   addPage(m_rasterInfoPage.get());
 
-  //for contrast only one layer can be selected
+  //for register only one layer can be selected
   m_layerRefPage->setSubTitle(tr("Allows selection of layers using filters for selection. Select the layer to be used as REFERENCE."));
   m_layerRefPage->getSearchWidget()->enableMultiSelection(false);
   m_layerAdjPage->setSubTitle(tr("Allows selection of layers using filters for selection. Select the layer to be used as ADJUST."));
@@ -243,7 +243,7 @@ bool te::qt::widgets::RegisterWizard::execute()
   }
   catch(...)
   {
-    QMessageBox::warning(this, tr("Register"), tr("An exception has occuried!"));
+    QMessageBox::warning(this, tr("Register"), tr("An exception has occurred!"));
 
     QApplication::restoreOverrideCursor();
 

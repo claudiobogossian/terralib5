@@ -64,6 +64,13 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QPushButton" name="m_cancelPushButton">
+          <property name="text">
+           <string>Cancel</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
      </layout>
@@ -83,5 +90,22 @@
   <tabstop>m_helpPushButton</tabstop>
  </tabstops>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>m_cancelPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>DataSourceExplorerDialogForm</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>23</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>319</x>
+     <y>239</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

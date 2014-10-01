@@ -31,8 +31,8 @@
 #include "ui_NewPropertyWidgetForm.h"
 
 // Qt
-#include <QtGui/QMessageBox>
-#include <QtGui/QGridLayout>
+#include <QMessageBox>
+#include <QGridLayout>
 
 
 te::qt::widgets::NewPropertyDialog::NewPropertyDialog(QWidget* parent, Qt::WindowFlags f)

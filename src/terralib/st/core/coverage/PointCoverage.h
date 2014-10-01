@@ -27,6 +27,7 @@
 #define __TERRALIB_ST_INTERNAL_POINTCOVERAGE_H
 
 //TerraLib
+#include "../../../datatype/DateTime.h"
 #include "../../../sam/rtree/Index.h"
 
 //ST

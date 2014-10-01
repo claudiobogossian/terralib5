@@ -72,6 +72,9 @@ namespace te
         /*! \brief Destructor. */
         ~Grouping();
 
+        /*! \brief Copy constructor. */
+        Grouping(const Grouping& rhs);
+
         /*!
           \brief It gets the property name whose values will be grouped.
 

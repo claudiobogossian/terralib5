@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,24 +18,16 @@
  */
 
 /*!
-  \file Config.h
+  \file examples/Config.h
 
-  \brief Global configuration flags for the TerraLib Examples module.
+  \brief Proxy file for the real global configuration of TerraLib examples.
  */
 
 #ifndef __TERRALIB_EXAMPLES_INTERNAL_CONFIG_H
 #define __TERRALIB_EXAMPLES_INTERNAL_CONFIG_H
 
 // TerraLib
-#include <terralib/Config.h>
-
-/*!
-  \def TE_DATA_EXAMPLE_LOCALE
-
-  \brief This flag tells where is the base folder for the data used in the examples.
- */
-#ifndef TE_DATA_EXAMPLE_LOCALE
-  #define TE_DATA_EXAMPLE_LOCALE "."
-#endif
+#include "terralib_examples_config.h"
+#include "terralib_config.h"
 
 #endif  // __TERRALIB_EXAMPLES_INTERNAL_CONFIG_H

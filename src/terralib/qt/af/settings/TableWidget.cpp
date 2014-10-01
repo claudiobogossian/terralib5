@@ -5,9 +5,9 @@
 #include "TableWidget.h"
 
 // Qt
-#include <QtCore/QSettings>
-#include <QtGui/QColor>
-#include <QtGui/QColorDialog>
+#include <QSettings>
+#include <QColor>
+#include <QColorDialog>
 
 QString GetRGBString(QColor color)
 {
@@ -72,7 +72,7 @@ te::qt::af::TableWidget::~TableWidget()
 void te::qt::af::TableWidget::getHelpInformations(QString& ns, QString& helpFile)
 {
   ns = "dpi.inpe.br.apf";
-  helpFile = "/apf/settings/table/TableConfig.html";
+  helpFile = "apf/settings/table/TableConfig.html";
 }
 
 void te::qt::af::TableWidget::onApplyButtonClicked()

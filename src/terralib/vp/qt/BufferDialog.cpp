@@ -24,10 +24,12 @@
 */
 
 // TerraLib
+#include "../../common/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
@@ -42,24 +44,24 @@
 #include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../srs/Config.h"
-#include "../Config.h"
 #include "../Exception.h"
-#include "../qt/widgets/layer/utils/DataSet2Layer.h"
-#include "Buffer.h"
+#include "../BufferMemory.h"
 #include "BufferDialog.h"
+#include "../BufferOp.h"
+#include "../BufferQuery.h"
 #include "ui_BufferDialogForm.h"
-#include "VectorProcessingConfig.h"
 #include "Utils.h"
 
 // Qt
-#include <QtCore/QList>
-#include <QtCore/QSize>
-#include <QtGui/QFileDialog>
-#include <QtGui/QListWidget>
-#include <QtGui/QListWidgetItem>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QList>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QMessageBox>
+#include <QSize>
 
 // STL
 #include <map>
@@ -81,7 +83,7 @@ te::vp::BufferDialog::BufferDialog(QWidget* parent, Qt::WindowFlags f)
   m_ui->setupUi(this);
 
 // add icons
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-buffer-hint").pixmap(112,48));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-buffer-hint").pixmap(112,48));
   
   QSize iconSize(96, 48);
 
@@ -102,7 +104,6 @@ te::vp::BufferDialog::BufferDialog(QWidget* parent, Qt::WindowFlags f)
 
 //signals
   connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLayerComboBoxChanged(int)));
-  connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onFilterLineEditTextChanged(const QString&)));
   connect(m_ui->m_fixedRadioButton, SIGNAL(toggled(bool)), this, SLOT(onFixedDistanceToggled()));
   connect(m_ui->m_fromAttRadioButton, SIGNAL(toggled(bool)), this, SLOT(onAttDistanceToggled()));
   connect(m_ui->m_ruleInOutRadioButton, SIGNAL(toggled(bool)), this, SLOT(onRuleInOutToggled()));
@@ -249,25 +250,6 @@ void te::vp::BufferDialog::onLayerComboBoxChanged(int index)
   }
 }
 
-void te::vp::BufferDialog::onFilterLineEditTextChanged(const QString& text)
-{
-  std::list<te::map::AbstractLayerPtr> filteredLayers = te::vp::GetFilteredLayers(text.toStdString(), m_layers);
-
-  m_ui->m_layersComboBox->clear();
-
-  if(text.isEmpty())
-    filteredLayers = m_layers;
-
-  std::list<te::map::AbstractLayerPtr>::iterator it = filteredLayers.begin();
-
-  while(it != filteredLayers.end())
-  {
-    if(it->get()->getSchema()->hasGeom())
-      m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-    ++it;
-  }
-}
-
 void te::vp::BufferDialog::onFixedDistanceToggled()
 {
   m_ui->m_fixedDistanceLineEdit->setEnabled(true);
@@ -369,6 +351,18 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
     return;
   }
   
+  const te::da::ObjectIdSet* oidSet = 0;
+
+  if(m_ui->m_onlySelectedCheckBox->isChecked())
+  {
+    oidSet = m_selectedLayer->getSelected();
+    if(!oidSet)
+    {
+      QMessageBox::information(this, "Buffer", "Select the layer objects to perform the buffer operation.");
+      return;
+    }
+  }
+
   te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
   if (!inDataSource.get())
   {
@@ -440,7 +434,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
       std::map<std::string, std::string> dsinfo;
       dsinfo["URI"] = uri.string();
 
-      std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
+      te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
       dsOGR->setConnectionInfo(dsinfo);
       dsOGR->open();
 
@@ -451,16 +445,29 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
       }
 
       this->setCursor(Qt::WaitCursor);
-      res = te::vp::Buffer( dsLayer->getDataSetName(),
-                            inDataSource.get(),
-                            bufferPolygonRule, 
-                            bufferBoundariesRule, 
-                            copyInputColumns, 
-                            levels,
-                            outputdataset,
-                            dsOGR.get(),
-                            fixedDistance,
-                            propDistance);
+
+      te::vp::BufferOp* bufferOp = 0;
+
+      // select a strategy based on the capabilities of the input datasource
+      const te::da::DataSourceCapabilities dsCapabilities = inDataSource->getCapabilities();
+
+      if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
+      {
+        bufferOp = new te::vp::BufferQuery();
+      }
+      else
+      {
+        bufferOp = new te::vp::BufferMemory();
+      }
+
+      bufferOp->setInput(inDataSource, dsLayer->getDataSetName(), dsLayer->getSchema(), oidSet);
+      bufferOp->setOutput(dsOGR, outputdataset);
+      bufferOp->setParams(fixedDistance, bufferPolygonRule, bufferBoundariesRule, copyInputColumns, levels);
+
+      if (!bufferOp->paramsAreValid())
+        res = false;
+      else
+        res = bufferOp->run();
 
       if(!res)
       {
@@ -468,6 +475,8 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
         QMessageBox::information(this, "Buffer", "Error: could not generate the buffer.");
       }
       dsOGR->close();
+
+      delete bufferOp;
 
       // let's include the new datasource in the managers
       boost::uuids::basic_random_generator<boost::mt19937> gen;
@@ -501,22 +510,37 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
         return;
       }
       this->setCursor(Qt::WaitCursor);
-      res = te::vp::Buffer( dsLayer->getDataSetName(),
-                            inDataSource.get(),
-                            bufferPolygonRule, 
-                            bufferBoundariesRule, 
-                            copyInputColumns, 
-                            levels,
-                            outputdataset,
-                            aux.get(),
-                            fixedDistance,
-                            propDistance);
+      te::vp::BufferOp* bufferOp = 0;
+
+      // select a strategy based on the capabilities of the input datasource
+      const te::da::DataSourceCapabilities dsCapabilities = inDataSource->getCapabilities();
+
+      if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
+      {
+        bufferOp = new te::vp::BufferQuery();
+      }
+      else
+      {
+        bufferOp = new te::vp::BufferMemory();
+      }
+
+      bufferOp->setInput(inDataSource, dsLayer->getDataSetName(), dsLayer->getSchema());
+      bufferOp->setOutput(aux, outputdataset);
+      bufferOp->setParams(fixedDistance, bufferPolygonRule, bufferBoundariesRule, copyInputColumns, levels);
+
+      if (!bufferOp->paramsAreValid())
+        res = false;
+      else
+        res = bufferOp->run();
+
       if(!res)
       {
         this->setCursor(Qt::ArrowCursor);
         QMessageBox::information(this, "Buffer", "Error: could not generate the buffer.");
         reject();
       }
+
+      delete bufferOp;
     }
 
     // creating a layer for the result
@@ -531,6 +555,8 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
   {
     this->setCursor(Qt::ArrowCursor);
     QMessageBox::information(this, "Buffer", e.what());
+
+    te::common::Logger::logDebug("vp", e.what());
     te::common::ProgressManager::getInstance().removeViewer(id);
     return;
   }

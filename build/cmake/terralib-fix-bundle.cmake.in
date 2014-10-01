@@ -1,0 +1,253 @@
+
+#
+#  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+#
+#  This file is part of the TerraLib - a Framework for building GIS enabled applications.
+#
+#  TerraLib is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation, either version 3 of the License,
+#  or (at your option) any later version.
+#
+#  TerraLib is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU Lesser General Public License for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with TerraLib. See COPYING. If not, write to
+#  TerraLib Team at <terralib-team@terralib.org>.
+#
+#
+#  Description: FixBundle script.
+#
+#  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
+#          Juan P. Garrido <juan@dpi.inpe.br>
+#          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
+#
+set(TERRALIB_LIBRARIES "")
+
+set(BU_CHMOD_BUNDLE_ITEMS @BU_CHMOD_BUNDLE_ITEMS@)
+
+# Enabled plugins
+set(TERRALIB_MOD_ADO_ENABLED @TERRALIB_MOD_ADO_ENABLED@)
+set(TERRALIB_MOD_TERRALIB4_ENABLED @TERRALIB_MOD_TERRALIB4_ENABLED@)
+set(TERRALIB_MOD_GDAL_ENABLED @TERRALIB_MOD_GDAL_ENABLED@)
+set(TERRALIB_MOD_OGR_ENABLED @TERRALIB_MOD_OGR_ENABLED@)
+set(TERRALIB_MOD_POSTGIS_ENABLED @TERRALIB_MOD_POSTGIS_ENABLED@)
+set(TERRALIB_MOD_XERCES_ENABLED @TERRALIB_MOD_XERCES_ENABLED@)
+set(TERRALIB_MOD_WCS_ENABLED @TERRALIB_MOD_WCS_ENABLED@)
+set(TERRALIB_MOD_WFS_ENABLED @TERRALIB_MOD_WFS_ENABLED@)
+set(TERRALIB_MOD_WMS_CORE_ENABLED @TERRALIB_MOD_WMS_CORE_ENABLED@)
+set(TERRALIB_MOD_WMS_QT_ENABLED @TERRALIB_MOD_WMS_QT_ENABLED@)
+set(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_ADO_ENABLED @TERRALIB_MOD_QT_PLUGINS_DATASOURCE_ADO_ENABLED@)
+set(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_GDAL_ENABLED @TERRALIB_MOD_QT_PLUGINS_DATASOURCE_GDAL_ENABLED@)
+set(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_TERRALIB4_ENABLED @TERRALIB_MOD_QT_PLUGINS_DATASOURCE_TERRALIB4_ENABLED@)
+set(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_OGR_ENABLED @TERRALIB_MOD_QT_PLUGINS_DATASOURCE_OGR_ENABLED@)
+set(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_POSTGIS_ENABLED @TERRALIB_MOD_QT_PLUGINS_DATASOURCE_POSTGIS_ENABLED@)
+set(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WCS_ENABLED @TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WCS_ENABLED@)
+set(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WFS_ENABLED @TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WFS_ENABLED@)
+set(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WMS_ENABLED @TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WMS_ENABLED@)
+set(TERRALIB_MOD_QT_PLUGINS_VP_ENABLED @TERRALIB_MOD_QT_PLUGINS_VP_ENABLED@)
+set(TERRALIB_MOD_QT_PLUGINS_RP_ENABLED @TERRALIB_MOD_QT_PLUGINS_RP_ENABLED@)
+set(TERRALIB_MOD_QT_PLUGINS_ST_ENABLED @TERRALIB_MOD_QT_PLUGINS_ST_ENABLED@)
+
+set(TERRALIB_TERRAVIEW_ENABLED @TERRALIB_TERRAVIEW_ENABLED@)
+set(TERRALIB_BUILD_AS_BUNDLE @TERRALIB_BUILD_AS_BUNDLE@)
+set(TERRALIB_DESTINATION_RUNTIME @TERRALIB_DESTINATION_RUNTIME@)
+set(TERRALIB_DESTINATION_LIBRARY @TERRALIB_DESTINATION_LIBRARY@)
+set(QT4_FOUND @QT4_FOUND@)
+set(Qt5_FOUND @Qt5_FOUND@)
+
+if(WIN32)
+  set(TERRALIB_LIBS_LOCATION ${CMAKE_INSTALL_PREFIX}/${TERRALIB_DESTINATION_RUNTIME})
+else()
+  set(TERRALIB_LIBS_LOCATION ${CMAKE_INSTALL_PREFIX}/${TERRALIB_DESTINATION_LIBRARY})
+endif()
+
+if (TERRALIB_MOD_ADO_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_ado@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if (TERRALIB_MOD_TERRALIB4_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_terralib4@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if (TERRALIB_MOD_GDAL_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_gdal@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if (TERRALIB_MOD_OGR_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_ogr@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if (TERRALIB_MOD_POSTGIS_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_postgis@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if (TERRALIB_MOD_XERCES_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_xerces@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if(TERRALIB_MOD_WCS_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_wcs@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if(TERRALIB_MOD_WFS_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_wfs@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if(TERRALIB_MOD_WMS_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_wms_core@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if(TERRALIB_MOD_WMS_QT_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_wms_qt@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_ADO_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_qt_plugins_datasource_ado@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_GDAL_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_qt_plugins_datasource_gdal@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_TERRALIB4_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_qt_plugins_datasource_terralib4@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_OGR_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_qt_plugins_datasource_ogr@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_POSTGIS_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_qt_plugins_datasource_pgis@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WCS_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_qt_plugins_datasource_wcs@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WFS_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_qt_plugins_datasource_wfs@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WMS_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_qt_plugins_datasource_wms@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if(TERRALIB_MOD_QT_PLUGINS_VP_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_qt_plugins_vp@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if(TERRALIB_MOD_QT_PLUGINS_RP_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_qt_plugins_rp@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if(TERRALIB_MOD_QT_PLUGINS_ST_ENABLED)
+  list(APPEND TERRALIB_LIBRARIES ${TERRALIB_LIBS_LOCATION}/@CMAKE_SHARED_LIBRARY_PREFIX@terralib_mod_qt_plugins_st@CMAKE_SHARED_LIBRARY_SUFFIX@)
+endif()
+
+if(QT4_FOUND)
+  get_filename_component(qt_bin_path @QT_QMAKE_EXECUTABLE@ PATH)
+  set(TERRALIB_DIRS ${qt_bin_path})
+elseif(Qt5_FOUND)
+  set(TERRALIB_DIRS "@Qt5_DIR@/../../../bin")
+endif()
+
+set(TERRALIB_APPLICATION "")
+set(QT_PLUGINS "")
+
+if(WIN32)
+
+  if(TERRALIB_TERRAVIEW_ENABLED)
+    set(TERRALIB_APPLICATION "${CMAKE_INSTALL_PREFIX}/bin/terraview@CMAKE_EXECUTABLE_SUFFIX@")
+    set(QT_PLUGINS "${CMAKE_INSTALL_PREFIX}/qtplugins")
+  endif()
+
+elseif(APPLE)
+  if(TERRALIB_BUILD_AS_BUNDLE)
+    if(TERRALIB_TERRAVIEW_ENABLED)
+      set(TERRALIB_APPLICATION "${CMAKE_INSTALL_PREFIX}/terraview.app")
+      set(QT_PLUGINS "${TERRALIB_APPLICATION}/Contents/qtplugins")
+    endif()
+  else()
+    if(TERRALIB_TERRAVIEW_ENABLED)
+      set(TERRALIB_APPLICATION "${CMAKE_INSTALL_PREFIX}/bin/terraview")
+      set(QT_PLUGINS "${CMAKE_INSTALL_PREFIX}/qtplugins")
+    endif()
+  endif()
+  
+    list(APPEND TERRALIB_DIRS "/usr/local/lib;/usr/lib")
+endif()
+
+if(QT_PLUGINS)
+  file(GLOB_RECURSE QT_PLUGINS "${QT_PLUGINS}/*@CMAKE_SHARED_LIBRARY_SUFFIX@")
+endif()
+
+set(TERRALIB_CMAKE_PREFIX_PATH_AUX "@CMAKE_PREFIX_PATH@")
+set(TERRALIB_DIRS_AUX "")
+
+foreach(LIBDIR ${TERRALIB_CMAKE_PREFIX_PATH_AUX})
+  list(APPEND TERRALIB_DIRS_AUX ${LIBDIR}/lib)
+endforeach()
+
+set(TERRALIB_DIRS "${TERRALIB_DIRS_AUX};${TERRALIB_DIRS}")
+
+list(APPEND TERRALIB_LIBRARIES ${QT_PLUGINS})
+
+include(BundleUtilities)
+
+if(APPLE AND TERRALIB_BUILD_AS_BUNDLE)
+
+  # Overload function
+  function(gp_item_default_embedded_path item default_embedded_path_var)
+    set (is_System FALSE)
+    set (is_QImageFormat FALSE)
+    set (is_QIconEngine FALSE)
+    set (is_QSQLDrivers FALSE)
+    set (is_QPlatforms FALSE)
+    set (is_Lib FALSE)
+
+    get_filename_component (resolved_file ${item} PATH)
+
+    if(resolved_file MATCHES "^(/System/Library/|/usr/lib/|/usr/local|@loader_path)" OR "${resolved_file}" STREQUAL "")
+      set(is_System TRUE)
+    elseif(resolved_file MATCHES "(imageformats)$")
+      set (is_QImageFormat TRUE)
+    elseif(resolved_file MATCHES "(iconengines)$")
+      set (is_QIconEngine TRUE)
+    elseif(resolved_file MATCHES "(sqldrivers)$")
+      set (is_QSQLDrivers TRUE)
+    elseif(resolved_file MATCHES "(platforms)$")
+      set (is_QPlatforms TRUE)
+    elseif(resolved_file MATCHES "(lib)$")
+      set (is_Lib TRUE)
+    endif()
+    
+    if(item MATCHES "\\.dylib$")
+      if(is_System)
+        set(${default_embedded_path_var} "@executable_path/../MacOS" PARENT_SCOPE)
+      elseif(is_QImageFormat)
+        set(${default_embedded_path_var} "@executable_path/../qtplugins/imageformats" PARENT_SCOPE)
+      elseif(is_QIconEngine)
+        set(${default_embedded_path_var} "@executable_path/../qtplugins/iconengines" PARENT_SCOPE)
+      elseif(is_QSQLDrivers)
+        set(${default_embedded_path_var} "@executable_path/../qtplugins/sqldrivers" PARENT_SCOPE)
+      elseif(is_QPlatforms)
+        set(${default_embedded_path_var} "@executable_path/../qtplugins/platforms" PARENT_SCOPE)
+      elseif(is_Lib)
+        set(${default_embedded_path_var} "@executable_path/../lib" PARENT_SCOPE)
+      else()
+        set(${default_embedded_path_var} "${resolved_file}" PARENT_SCOPE)
+      endif()
+    elseif(item MATCHES "[^/]+\\.framework/")
+      set(${default_embedded_path_var} "@executable_path/../Frameworks" PARENT_SCOPE)
+    endif()
+  endfunction()
+
+endif()
+
+# Call fixup_bundle
+fixup_bundle("${TERRALIB_APPLICATION}" "${TERRALIB_LIBRARIES}" "${TERRALIB_DIRS}")

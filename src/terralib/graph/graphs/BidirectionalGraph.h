@@ -60,12 +60,20 @@ namespace te
         /*! \brief constructor. */
         BidirectionalGraph();
 
-      /*!
-        \brief Constructor
+        /*!
+          \brief Constructor
 
-        \param cp   A pointer to a cache policy implementation
+          \param metadata   A pointer to a graph metadata implementation
 
-        \param ls   A pointer to a loader strategy implementation
+        */
+        BidirectionalGraph(GraphMetadata* metadata);
+
+        /*!
+          \brief Constructor
+
+          \param cp   A pointer to a cache policy implementation
+
+          \param ls   A pointer to a loader strategy implementation
 
         */
         BidirectionalGraph(AbstractCachePolicy* cp, AbstractGraphLoaderStrategy* ls);

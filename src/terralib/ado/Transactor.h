@@ -128,10 +128,6 @@ namespace te
 
         std::string escape(const std::string& value);
 
-        bool isDataSetNameValid(const std::string& datasetName);
-
-        bool isPropertyNameValid(const std::string& propertyName);
-
         std::vector<std::string> getDataSetNames();
 
         std::size_t getNumberOfDataSets();
@@ -160,6 +156,8 @@ namespace te
         void renameProperty(const std::string& datasetName,
                             const std::string& propertyName,
                             const std::string& newPropertyName);
+
+        void changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp);
 
         std::auto_ptr<te::da::PrimaryKey> getPrimaryKey(const std::string& datasetName);
 
@@ -256,7 +254,14 @@ namespace te
                     const std::map<std::string, std::string>& options,
                     std::size_t limit = 0);
 
+        void update(const std::string& datasetName,
+                    te::da::DataSet* dataset,
+                    const std::vector< std::set<int> >& properties,
+                    const std::vector<size_t>& ids);
+
         void optimize(const std::map<std::string, std::string>& opInfo);
+
+        te::common::CharEncoding getEncoding();
 
         DataSource* getAdoDataSource() const;
 

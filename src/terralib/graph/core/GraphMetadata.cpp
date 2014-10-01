@@ -43,11 +43,13 @@ te::graph::GraphMetadata::GraphMetadata(te::da::DataSource* ds) :
   m_maxCacheSize = te::graph::Globals::sm_graphCacheDefaultMaxSize;
   m_maxVecCacheSize = te::graph::Globals::sm_graphVecCacheDefaultMaxSize;
   m_boxPercentSize = te::graph::Globals::sm_boxLoaderStrategyDefaultSize;
+  m_memoryGraph = false;
 }
 
 te::graph::GraphMetadata::~GraphMetadata()
 {
-  m_ds->close();
+  if(m_ds)
+    m_ds->close();
 
   delete m_ds;
 

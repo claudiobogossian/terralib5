@@ -2,6 +2,7 @@
 #include "DataAccessExamples.h"
 
 // TerraLib
+#include "../Config.h"
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/datatype.h>
@@ -47,8 +48,13 @@ void DataSetAdapter()
 {
   /* Accessing a shapefile */
   std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
+  
   std::map<std::string, std::string> connInfo;
-  connInfo["SOURCE"] = ""TE_DATA_EXAMPLE_DIR"/data/shp/munic_2001.shp";
+  
+  std::string data_dir = TERRALIB_DATA_DIR;
+  
+  connInfo["SOURCE"] = data_dir + "/shp/munic_2001.shp";
+  
   dsOGR->setConnectionInfo(connInfo);
   dsOGR->open();
 

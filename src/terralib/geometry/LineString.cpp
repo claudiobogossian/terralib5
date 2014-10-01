@@ -24,10 +24,13 @@
 */
 
 // TerraLib
+#include "../common/Translator.h"
 #include "../srs/Converter.h"
+#include "Config.h"
 #include "Coord2D.h"
 #include "Envelope.h"
 #include "Exception.h"
+#include "GEOSWriter.h"
 #include "LineString.h"
 #include "Point.h"
 #include "PointM.h"
@@ -39,6 +42,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <memory>
+
+#ifdef TERRALIB_GEOS_ENABLED
+// GEOS
+#include <geos/geom/Geometry.h>
+#include <geos/util/GEOSException.h>
+#endif
 
 const std::string te::gm::LineString::sm_typeName("LineString");
 
@@ -117,11 +126,37 @@ te::gm::LineString& te::gm::LineString::operator=(const LineString& rhs)
 
     makeEmpty();
 
-    m_coords = rhs.m_coords ? static_cast<Coord2D*>(malloc(16 * rhs.m_nPts)) : 0;
+    if( rhs.m_coords )
+    {
+      m_coords = static_cast<Coord2D*>(malloc(sizeof( Coord2D ) * rhs.m_nPts));
+      memcpy( m_coords, rhs.m_coords, sizeof( Coord2D ) * rhs.m_nPts );
+    }
+    else
+    {
+      m_coords = 0;
+    }
 
-    m_zA = rhs.m_zA ? static_cast<double*>(malloc(8 * rhs.m_nPts)) : 0;
+    if( rhs.m_zA )
+    {
+      m_zA = static_cast<double*>(malloc(sizeof( double ) * rhs.m_nPts));
+      memcpy( m_zA, rhs.m_zA, sizeof( double ) * rhs.m_nPts );
+    }
+    else
+    {
+      m_zA = 0;
+    }
 
-    m_mA = rhs.m_mA ? static_cast<double*>(malloc(8 * rhs.m_nPts)) : 0;
+    if( rhs.m_mA )
+    {
+      m_mA = static_cast<double*>(malloc(sizeof( double ) * rhs.m_nPts));
+      memcpy( m_mA, rhs.m_mA, sizeof( double ) * rhs.m_nPts);
+    }
+    else
+    {
+      m_mA = 0;
+    }
+    
+    m_nPts = rhs.m_nPts;
   }
 
   return *this;
@@ -144,6 +179,7 @@ void te::gm::LineString::setSRID(int srid) throw()
 
 void te::gm::LineString::transform(int srid) throw(te::common::Exception)
 {
+#ifdef TERRALIB_MOD_SRS_ENABLED
   if(srid == m_srid)
     return;
 
@@ -161,6 +197,9 @@ void te::gm::LineString::transform(int srid) throw(te::common::Exception)
     computeMBR(false);
 
   m_srid = srid;
+#else
+  throw Exception(TE_TR("transform method is not supported!"));
+#endif // TERRALIB_MOD_SRS_ENABLED
 }
 
 void te::gm::LineString::computeMBR(bool /*cascade*/) const throw()
@@ -199,10 +238,10 @@ te::gm::Geometry* te::gm::LineString::locateBetween(const double& /*mStart*/, co
   return 0;
 }
 
-double te::gm::LineString::getLength() const
-{
-  return 0.0;
-}
+//double te::gm::LineString::getLength() const
+//{
+//  return 0.0;
+//}
 
 te::gm::Point* te::gm::LineString::getStartPoint() const
 {

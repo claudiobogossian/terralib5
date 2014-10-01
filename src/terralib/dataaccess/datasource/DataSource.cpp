@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../common/Translator.h"
 #include "../../geometry/Envelope.h"
+#include "../dataset/DataSetTypeCapabilities.h"
 #include "../dataset/ObjectIdSet.h"
 #include "../query/DataSetName.h"
 #include "../query/Field.h"
@@ -158,6 +159,12 @@ std::auto_ptr<te::da::DataSetType> te::da::DataSource::getDataSetType(const std:
   return t->getDataSetType(name);
 }
 
+std::auto_ptr<te::da::DataSetTypeCapabilities> te::da::DataSource::getCapabilities(const std::string &name)
+{
+  std::auto_ptr<DataSourceTransactor> t = getTransactor();
+  return t->getCapabilities(name);
+}
+
 boost::ptr_vector<te::dt::Property> te::da::DataSource::getProperties(const std::string& datasetName)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
@@ -212,6 +219,20 @@ void te::da::DataSource::renameProperty(const std::string& datasetName,
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
   return t->renameProperty(datasetName, propertyName, newPropertyName);  
+}
+
+void te::da::DataSource::changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp)
+{
+  std::auto_ptr<DataSourceTransactor> t = getTransactor();
+  return t->changePropertyDefinition(datasetName, propName, newProp);
+}
+
+void te::da::DataSource::changePropertiesDefinitions(const std::string& datasetName, const std::vector<std::string>& propsNames, const std::vector<te::dt::Property*> newProps)
+{
+  assert(propsNames.size() == newProps.size());
+
+  for(std::size_t i = 0; i < propsNames.size(); ++i)
+    changePropertyDefinition(datasetName, propsNames[i], newProps[i]);
 }
 
 std::auto_ptr<te::da::PrimaryKey> te::da::DataSource::getPrimaryKey(const std::string& datasetName)
@@ -456,6 +477,12 @@ void te::da::DataSource::add(const std::string& datasetName,
   return t->add(datasetName, d, options, limit);
 }
 
+te::common::CharEncoding te::da::DataSource::getEncoding()
+{
+  std::auto_ptr<DataSourceTransactor> t = getTransactor();
+  return t->getEncoding();
+}
+
 void te::da::DataSource::remove(const std::string& datasetName, const ObjectIdSet* oids)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
@@ -473,12 +500,19 @@ void te::da::DataSource::update(const std::string& datasetName,
   return t->update(datasetName, dataset, properties, oids, options, limit);
 }
 
+void te::da::DataSource::update(const std::string &datasetName, te::da::DataSet *dataset, const std::vector< std::set<int> >& properties,
+                                const std::vector<size_t>& ids)
+{
+  std::auto_ptr<DataSourceTransactor> t = getTransactor();
+  return t->update(datasetName, dataset, properties, ids);
+}
+
 std::auto_ptr<te::da::DataSource> te::da::DataSource::create(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)
 {
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not find the appropriate factory to create a data source instance!"));
+    throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
 
   ds->create(dsInfo);
 
@@ -490,7 +524,7 @@ void te::da::DataSource::drop(const std::string& dsType, const std::map<std::str
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not find the appropriate factory to create a data source instance!"));
+    throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
 
   ds->drop(dsInfo);
 }
@@ -500,7 +534,7 @@ bool te::da::DataSource::exists(const std::string& dsType, const std::map<std::s
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not find the appropriate factory in order to create a data source instance!"));
+    throw Exception(TE_TR("Could not find the appropriate factory in order to create a data source instance!"));
 
   return ds->exists(dsInfo);
 }
@@ -510,17 +544,17 @@ std::vector<std::string> te::da::DataSource::getDataSourceNames(const std::strin
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not find the appropriate factory to create a data source instance!"));
+    throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
 
   return ds->getDataSourceNames(dsInfo);
 }
 
-std::vector<std::string> te::da::DataSource::getEncodings(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)
+std::vector<te::common::CharEncoding> te::da::DataSource::getEncodings(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)
 {
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not find the appropriate factory to create a data source instance!"));
+    throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
 
   return ds->getEncodings(dsInfo);
 }

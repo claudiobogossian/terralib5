@@ -31,13 +31,15 @@
 #include "../Config.h"
 
 // Qt
-#include <QtCore/QObject>
-#include <QtCore/QPoint>
-#include <QtCore/QString>
-#include <QtCore/QMap>
-#include <QtGui/QColor>
-#include <QtGui/QMenu>
-#include <QtGui/QPixmap>
+#include <QObject>
+#include <QPoint>
+#include <QString>
+#include <QMap>
+#include <QColor>
+#include <QMenu>
+#include <QPixmap>
+
+class QAction;
 
 namespace te
 {
@@ -136,13 +138,20 @@ namespace te
           */
           void onApplicationTriggered(te::qt::af::evt::Event* e);
 
+          /*!
+           \brief Returns the pan selected flag;
+
+           \return Flag of the pan to selected operation.
+          */
+          bool isPanToSelectedEnabled();
+
         protected:
 
           void drawLayersSelection(const std::list<te::map::AbstractLayerPtr>& layers);
 
           void drawLayerSelection(te::map::AbstractLayerPtr layer);
 
-          void drawDataSet(te::da::DataSet* dataset, int srid, const QColor& color);
+          void drawDataSet(te::da::DataSet* dataset, const std::string& geomPropertyName, int srid, const QColor& color);
 
           void configSRS(const std::list<te::map::AbstractLayerPtr>& layers);
 
@@ -164,6 +173,8 @@ namespace te
 
           te::qt::widgets::ZoomInMapDisplayWidget* m_zoomInDisplay;   //!< Pointer to a component that represents a zoom in display.
           te::qt::widgets::EyeBirdMapDisplayWidget* m_eyeBirdDisplay; //!< Pointer to a component that represents a eye bird display.
+
+          QAction* m_pantoSelectedAction;                             //!< Action to enable / disable pan to selected operation.
       };
     }
   }

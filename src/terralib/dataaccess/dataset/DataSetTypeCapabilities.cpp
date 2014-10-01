@@ -36,7 +36,10 @@ te::da::DataSetTypeCapabilities::DataSetTypeCapabilities()
     m_supportRTreeIndex(false),
     m_supportBTreeIndex(false),
     m_supportHashIndex(false),
-    m_supportQuadTreeIndex(false)
+    m_supportQuadTreeIndex(false),
+    m_supportAddColumn(false),
+    m_supportRemoveColumn(false),
+    m_supportDataEdition(false)
 {
 }
 
@@ -156,4 +159,37 @@ void te::da::DataSetTypeCapabilities::setSupportAll()
   m_supportBTreeIndex = true;
   m_supportHashIndex = true;
   m_supportQuadTreeIndex = true;
+  m_supportAddColumn = true;
+  m_supportRemoveColumn = true;
+  m_supportDataEdition = true;
+}
+
+bool te::da::DataSetTypeCapabilities::supportsAddColumn() const
+{
+  return m_supportAddColumn;
+}
+
+void te::da::DataSetTypeCapabilities::setSupportAddColumn(const bool &support)
+{
+  m_supportAddColumn = support;
+}
+
+bool te::da::DataSetTypeCapabilities::supportsRemoveColumn() const
+{
+  return m_supportRemoveColumn;
+}
+
+void te::da::DataSetTypeCapabilities::setSupportRemoveColumn(const bool &support)
+{
+  m_supportRemoveColumn = support;
+}
+
+bool te::da::DataSetTypeCapabilities::supportsDataEdition() const
+{
+  return m_supportDataEdition;
+}
+
+void te::da::DataSetTypeCapabilities::setSupportDataEdition(const bool &support)
+{
+  m_supportDataEdition = support;
 }

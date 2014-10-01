@@ -26,9 +26,9 @@
 // TerraView
 #include "AboutDialog.h"
 #include "TerraView.h"
-#include "TerraViewConfig.h"
 
 // TerraLib
+#include <terralib/common/PlatformUtils.h>
 #include <terralib/qt/af/ApplicationController.h>
 #include <terralib/qt/widgets/help/HelpManager.h>
 
@@ -36,9 +36,9 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QAction>
-#include <QtGui/QApplication>
-#include <QtGui/QMenu>
+#include <QAction>
+#include <QApplication>
+#include <QMenu>
 
 TerraView::TerraView(QWidget* parent)
   : te::qt::af::BaseApplication(parent)
@@ -51,15 +51,15 @@ TerraView::~TerraView()
 
 void TerraView::init()
 {
-  te::qt::af::BaseApplication::init();
+  init(te::common::FindInTerraLibPath(TERRALIB_APPLICATION_CONFIG_FILE));
 }
 
 void TerraView::init(const std::string& configFile)
 {
   te::qt::af::BaseApplication::init(configFile);
 
-  //set application icon
-  std::string tvIcon = TVIEW_LOGO_ICON;
+//set application icon
+  std::string tvIcon = te::qt::af::ApplicationController::getInstance().getAppIconName().toStdString();
   QPixmap pix(tvIcon.c_str());
   pix = pix.scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation);
   QIcon icon(pix);

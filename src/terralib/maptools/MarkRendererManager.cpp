@@ -53,17 +53,17 @@ te::color::RGBAColor** te::map::MarkRendererManager::render(const te::se::Mark* 
   LockWrite l;
 
   if(size == 0)
-    throw Exception(TR_MAP("Requested size is invalid!"));
+    throw Exception(TE_TR("Requested size is invalid!"));
 
   if(mark == 0)
-    throw Exception(TR_MAP("The given mark is invalid!"));
+    throw Exception(TE_TR("The given mark is invalid!"));
 
   const std::string* name = mark->getWellKnownName();
   if(name == 0)
-    throw Exception(TR_MAP("The given mark not have a valid well known name!"));
+    throw Exception(TE_TR("The given mark not have a valid well known name!"));
 
   if(name->empty())
-    throw Exception(TR_MAP("The mark well known name is empty!"));
+    throw Exception(TE_TR("The mark well known name is empty!"));
 
   // Default renderer key
   std::string key("");
@@ -78,7 +78,7 @@ te::color::RGBAColor** te::map::MarkRendererManager::render(const te::se::Mark* 
   std::map<std::string, AbstractMarkRenderer*>::iterator it = m_renderers.find(key);
 
   if(it == m_renderers.end())
-    throw Exception((boost::format(TR_MAP("There is not a mark renderer registered for the given mark %1%.")) % *name).str());
+    throw Exception((boost::format(TE_TR("There is not a mark renderer registered for the given mark %1%.")) % *name).str());
 
   return it->second->render(mark, size);
 }
@@ -95,7 +95,7 @@ void te::map::MarkRendererManager::add(const std::string& key, AbstractMarkRende
   std::map<std::string, AbstractMarkRenderer*>::iterator it = m_renderers.find(key);
 
   if(it != m_renderers.end())
-    throw Exception((boost::format(TR_MAP("There is already a mark renderer registered with the given key %1%.")) % key).str());
+    throw Exception((boost::format(TE_TR("There is already a mark renderer registered with the given key %1%.")) % key).str());
 
   m_renderers[key] = renderer;
 }

@@ -28,7 +28,142 @@
 
 // TerraLib
 #include "Config.h"
-#if TE_LOGGER_ENABLED
+
+
+/*!
+  \def TE_LOG_FATAL
+  
+  \brief Use this tag in order to log a message to a specified logger with the FATAL level.
+
+  \param msg The message to be logged. Example: "Exception raised because of a missing parameter!".
+
+  \note The FATAL level designates very severe error events that will presumably lead the application to abort. 
+*/
+#if defined(TERRALIB_LOGGER_ENABLED) && defined(TERRALIB_LOGGER_FATAL_ENABLED)
+  #define TE_LOG_FATAL(msg) te::common::Logger::logFatal(TERRALIB_LOGGER_DEFAULT_NAME, msg)
+#else
+  #define TE_LOG_FATAL(msg) ((void)0)
+#endif
+
+/*!
+  \def TE_LOG_ASSERT
+  
+  \brief Use this tag in order to log a message to a specified logger with the ASSERT level.
+
+  \param condition An expression (condition). If it is not true, the message will be logged.
+  \param msg       The message to be logged. Example: "Exception raised because of a missing parameter!".
+
+  \note The ASSERT level can be used to check expressions that must be evaluated as true.
+*/
+#if defined(TERRALIB_LOGGER_ENABLED) && defined(TERRALIB_LOGGER_ASSERT_ENABLED)
+  #define TE_LOG_ASSERT(condition, msg) te::common::Logger::logAssert(TERRALIB_LOGGER_DEFAULT_NAME, condition, msg)
+#else
+  #define TE_LOG_ASSERT(condition, msg) ((void)0)
+#endif
+
+/*!
+  \def TE_LOG_ERROR
+  
+  \brief Use this tag in order to log a message to a specified logger with the ERROR level.
+
+  \param msg The message to be logged. Example: "Exception raised because of a missing parameter!".
+
+  \note The ERROR level designates error events that might still allow the application to continue running.
+*/
+#if defined(TERRALIB_LOGGER_ENABLED) && defined(TERRALIB_LOGGER_ERROR_ENABLED)
+  #define TE_LOG_ERROR(msg) te::common::Logger::logError(TERRALIB_LOGGER_DEFAULT_NAME, msg)
+#else
+  #define TE_LOG_ERROR(msg) ((void)0)
+#endif
+
+/*!
+  \def TE_LOG_WARN
+  
+  \brief Use this tag in order to log a message to a specified logger with the WARN level.
+
+  \param msg The message to be logged. Example: "Exception raised because of a missing parameter!".
+
+  \note The WARN level designates potentially harmful situations.
+*/
+#if defined(TERRALIB_LOGGER_ENABLED) && defined(TERRALIB_LOGGER_WARN_ENABLED)
+  #define TE_LOG_WARN(msg) te::common::Logger::logWarning(TERRALIB_LOGGER_DEFAULT_NAME, msg)
+#else
+  #define TE_LOG_WARN(msg) ((void)0)
+#endif
+
+/*!
+  \def TE_LOG_INFO
+  
+  \brief Use this tag in order to log a message to a specified logger with the INFO level.
+
+  \param msg The message to be logged. Example: "Exception raised because of a missing parameter!".
+
+  \note The INFO level designates informational messages that highlight the progress of the application at coarse-grained level.
+*/
+#if defined(TERRALIB_LOGGER_ENABLED) && defined(TERRALIB_LOGGER_INFO_ENABLED)
+  #define TE_LOG_INFO(msg) te::common::Logger::logInfo(TERRALIB_LOGGER_DEFAULT_NAME, msg)
+#else
+  #define TE_LOG_INFO(msg) ((void)0)
+#endif
+
+/*!
+  \def TE_LOG_DEBUG
+  
+  \brief Use this tag in order to log a message to a specified logger with the DEBUG level.
+
+  \param msg  The message to be logged. Example: "Exception raised because of a missing parameter!".
+
+  \note The DEBUG Level designates fine-grained informational events that are most useful to debug an application.
+*/
+#if defined(TERRALIB_LOGGER_ENABLED) && defined(TERRALIB_LOGGER_DEBUG_ENABLED)
+  #define TE_LOG_DEBUG(msg) te::common::Logger::logDebug(TERRALIB_LOGGER_DEFAULT_NAME, msg)
+#else
+  #define TE_LOG_DEBUG(msg) ((void)0)
+#endif
+
+/*!
+  \def TE_LOG_TRACE
+  
+  \brief Use this tag in order to log a message to a specified logger with the TRACE level.
+
+  \param msg The message to be logged. Example: "Exception raised because of a missing parameter!".
+
+  \note The TRACE Level designates finer-grained informational events than the DEBUG.
+*/
+#if defined(TERRALIB_LOGGER_ENABLED) && defined(TERRALIB_LOGGER_TRACE_ENABLED)
+  #define TE_LOG_TRACE(msg) te::common::Logger::logTrace(TERRALIB_LOGGER_DEFAULT_NAME, msg)
+#else
+  #define TE_LOG_TRACE(msg) ((void)0)
+#endif
+
+/*!
+  \def TERRALIB_LOGGER_DEFAULT_NAME
+  
+  \brief This is the fully qualified TerraLib root logger.
+  
+  \note If you are developing a new module and want to have your
+        own log configuration file, please give it a name starting with "terralib.your-module-name". So it will
+        belong to TerraLib loggers tree.
+*/
+#define TERRALIB_LOGGER_DEFAULT_NAME "terralib"
+
+/*!
+  \def TERRALIB_LOGGER_DEFAULT_CONFIG_FILE
+  
+  \brief If logger configuration is file based (text or XML), the file name (with its full path or relative path to TerraLib current directory).
+*/
+#define TERRALIB_LOGGER_DEFAULT_CONFIGURATION_FILE "share/terralib/config/te-log.conf"
+
+/*!
+  \def TERRALIB_LOGGER_DEFAULT_CONFIG_FILE_TYPE
+  
+  \brief It sets the default type of file used to configure the logger.
+  
+  \note See LoggerConfigurationType enum for more information about possible values for this macro.
+*/
+#define TERRALIB_LOGGER_DEFAULT_CONFIG_FILE_TYPE te::common::LOGGER_TXT_CONFIG
+
+#ifdef TERRALIB_LOGGER_ENABLED
 
 // TerraLib
 #include "Enums.h"
@@ -63,7 +198,7 @@ namespace te
       only in special places, in order to not slowdown its
       performance. So we don't have any performance problem/penality by using a log.
       And if you want, you can disable the logger so that no code is put into
-      the executable, see TE_LOGGER_ENABLED.
+      the executable, see TERRALIB_LOGGER_ENABLED.
 
       \note The methods provided by this class must be used only after all static data has been initialized.
 
@@ -79,30 +214,15 @@ namespace te
         //@{
 
         /*!
-          \brief It returns the default configuration file name with full path.
+          \brief It initializes a given logger based on its configuration properties.
 
-          If none is set this method will search for a file defined in the macro TE_LOGGER_DEFAULT_CONFIGURATION_FILE (conf/te-log.conf):
-          <ul>
-          <li>under application default dir</li>
-          <li>then in the dir specified by the TERRALIB_DIR_ENVIRONMENT_VARIABLE</li>
-          </ul>
-
-          If no file is found they return an empty string.
-
-          \return The default configuration file name with full path or an empty string if none is found.
-         */
-        static std::string getDefaultConfigFile();
-
-        /*!
-          \brief It initializes a given logger based on its configuration properties.          
-          
           By default, if you not specify a logger configuration file, your new logger
           will share the same configuration as the TerraLib tree of loggers.
-          
+
           \param loggerName The fully qualified logger name. Example: terralib.common.
           \param t          The type of configuration to be used by the logger.
           \param fileName   If logger configuration is file based (text or XML), the file name (with its full path or the relative path to the TerraLib current directory).
-          
+
           \exception Exception It raises an exception if the fileName is missing for a file based configuraton logger.
          */
         static void initialize(const std::string& loggerName,
@@ -110,7 +230,7 @@ namespace te
                                const std::string& fileName);
 
         /*!
-          \brief It initializes a given logger based on its parent configuration.          
+          \brief It initializes a given logger based on its parent configuration.
           
           \param loggerName The fully qualified logger name. Example: terralib.common.
           
@@ -171,7 +291,7 @@ namespace te
          */
         static void logAssert(const char* logger, bool condition, const char* msg);
 
-        /*!        
+        /*!
           \brief Use this class method in order to log a message to a specified logger with the ERROR level.
 
           \param logger The name of a logger. Example: "te.common".
@@ -183,7 +303,7 @@ namespace te
          */
         static void logError(const char* logger, const char* msg);
 
-        /*!          
+        /*!
           \brief Use this class method in order to log a message to a specified logger with the WARNING level.
 
           \param logger The name of a logger. Example: "te.common".
@@ -195,7 +315,7 @@ namespace te
          */
         static void logWarning(const char* logger, const char* msg);
 
-        /*!          
+        /*!
           \brief Use this class method in order to log a message to a specified logger with the INFO level.
 
           \param logger The name of a logger. Example: "te.common".
@@ -207,7 +327,7 @@ namespace te
          */
         static void logInfo(const char* logger, const char* msg);
 
-        /*!          
+        /*!
           \brief Use this class method in order to log a message to a specified logger with the INFO level.
 
           \param logger The name of a logger. Example: "te.common".
@@ -219,7 +339,7 @@ namespace te
          */
         static void logInfo(const std::string& logger, const std::string& msg);
 
-        /*!          
+        /*!
           \brief Use this clas smethod in order to log a message to a specified logger with the DEBUG level.
 
           \param logger The name of a logger. Example: "te.common".
@@ -273,7 +393,7 @@ namespace te
   } // end namespace common
 }   // end namespace te
 
-#endif  // TE_LOGGER_ENABLED
+#endif  // TERRALIB_LOGGER_ENABLED
 
 #endif  // __TERRALIB_COMMON_INTERNAL_LOGGER_H
 

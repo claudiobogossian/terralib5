@@ -74,23 +74,25 @@ namespace te
         //! The three channels of a display
         enum RGBChannels 
         { 
-          RED_CHANNEL=0, 
-          GREEN_CHANNEL=1, 
-          BLUE_CHANNEL=2 
+          RED_CHANNEL=0,
+          GREEN_CHANNEL=1,
+          BLUE_CHANNEL=2,
+          ALPHA_CHANNEL=3
         };
 
         // The raster transform functions type
         enum RasterTransfFunctions
         {
-          NO_TRANSF=0, 
-          MONO2THREE_TRANSF=1, 
+          NO_TRANSF=0,
+          MONO2THREE_TRANSF=1,
           EXTRACT2RGB_TRANSF=2,
-          RED2THREE_TRANSF=3, 
-          GREEN2THREE_TRANSF=4, 
+          RED2THREE_TRANSF=3,
+          GREEN2THREE_TRANSF=4,
           BLUE2THREE_TRANSF=5,
           CATEGORIZE_TRANSF=6,
           INTERPOLATE_TRANSF=7,
-          BAND2BAND_TRANSF
+          BAND2BAND_TRANSF=8,
+          EXTRACT2RGBA_TRANSF,
         };
 
       public:
@@ -233,6 +235,12 @@ namespace te
 
         /*! This transformation is used to define a particular mapping from input bands to RGB channels */
         te::color::RGBAColor getExtractRGB(double icol, double ilin);
+
+        /*! This transformation is used to define a particular mapping from input bands to RGBA channels */
+        void setExtractRGBA(double icol, double ilin, double ocol, double olin);
+
+        /*! This transformation is used to define a particular mapping from input bands to RGBA channels */
+        te::color::RGBAColor getExtractRGBA(double icol, double ilin);
 
         /*! This transformation repeats the value of the first band in input three bands of the output */
         void setRed2ThreeBand(double icol, double ilin, double ocol, double olin);

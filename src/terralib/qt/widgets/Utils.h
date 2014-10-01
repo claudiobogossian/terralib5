@@ -27,6 +27,7 @@
 #define __TERRALIB_QTWIDGETS_INTERNAL_UTILS_H
 
 // TerraLib
+#include "../../common/CharEncodingConv.h"
 #include "../../color/RGBAColor.h"
 #include "../../geometry/Enums.h"
 #include "../../maptools/Enums.h"
@@ -34,9 +35,13 @@
 #include "Globals.h"
 
 // Qt
-#include <QtCore/QObject>
-#include <QtGui/QColor>
-#include <QtGui/QPixmap>
+#include <QColor>
+#include <QObject>
+#include <QPixmap>
+#include <QString>
+
+// STL
+#include <string>
 
 // Forward declarations
 class QAction;
@@ -275,6 +280,16 @@ namespace te
         \return The path if encountered or a null QString.
       */
       TEQTWIDGETSEXPORT QString GetFilePathFromSettings(const QString& typeFile);
+
+      /*!
+        \brief It converts the given string to an appropriate character encoding.
+
+        \param text      The source string.
+        \param encoding  The type of the character encoding of the string to be converted to an appropriate charset.
+
+        \return The converted string.
+      */
+      TEQTWIDGETSEXPORT QString Convert2Qt(const std::string& text, const te::common::CharEncoding& encoding);
 
     } // end namespace widgets
   }   // end namespace qt

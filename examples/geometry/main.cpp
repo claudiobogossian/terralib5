@@ -249,14 +249,10 @@ int main(int /*argc*/, char** /*argv*/)
   spatialRelationsExamples();
   setOperationsExamples();
   wkbConversionExamples();
-  readWkts("./data/geometries.wkt");
-  //readWkts("./data/wkt_geom.txt");
+  readWkts("./geometries.wkt");
+  //readWkts("./wkt_geom.txt");
 
   deleteGeometries();
-
-
-  std::cout << "Press Enter to exit..." << std::endl;
-  std::cin.get();
 
   TerraLib::getInstance().finalize();
 

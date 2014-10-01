@@ -35,8 +35,8 @@
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../qt/widgets/utils/ScopedCursor.h"
 #include "../../../qt/widgets/srs/SRSManagerDialog.h"
-#include "ConstraintsIndexesListWidget.h"
-#include "DataSetAdapterWidget.h"
+#include "../property/ConstraintsIndexesListWidget.h"
+#include "../property/DataSetAdapterWidget.h"
 #include "DataSetOptionsWizardPage.h"
 #include "ui_DataSetOptionsWizardPageForm.h"
 
@@ -47,8 +47,8 @@
 #include <boost/lexical_cast.hpp>
 
 // Qt
-#include <QtGui/QIcon>
-#include <QtGui/QMessageBox>
+#include <QIcon>
+#include <QMessageBox>
 
 te::qt::widgets::DataSetOptionsWizardPage::DataSetOptionsWizardPage(QWidget* parent)
   : QWizardPage(parent),
@@ -109,6 +109,12 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
 
     //create dataset adapter
     te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter((*it).get(), targetDSPtr->getCapabilities());
+
+    if(converter->getResult() && converter->getResult()->getPrimaryKey())
+    {
+      te::da::PrimaryKey* pk = converter->getResult()->getPrimaryKey();
+      pk->setName(converter->getResult()->getName() + "_" + pk->getName() + "_pk");
+    }
 
     m_datasets.insert(std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>::value_type((*it), converter));
   }
@@ -172,6 +178,15 @@ void te::qt::widgets::DataSetOptionsWizardPage::applyChanges()
 
         if(geomProp)
           geomProp->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
+      }
+
+      if(it->second->getResult()->getPrimaryKey())
+      {
+        te::da::PrimaryKey* pk = it->second->getResult()->getPrimaryKey();
+        pk->setName(it->second->getResult()->getName() + "_" + pk->getName() + "_pk");
+
+        // fill constraints
+        m_constraintWidget->setDataSetType(it->second->getResult());
       }
 
       break;

@@ -86,15 +86,8 @@ namespace te
 
         std::string getPropertyName(std::size_t pos) const;
 
-        /*!
-          \brief It returns the underlying dataset name of the property at position pos.
+        te::common::CharEncoding getPropertyCharEncoding(std::size_t i) const;
 
-          \param pos The property position of interest.
-
-          \return The underlying dataset name of the property at position pos.
-
-          \note This method will always return an empty string for the adapter.
-        */
         std::string getDatasetNameOfProperty(std::size_t pos) const;
 
         bool isEmpty() const;

@@ -153,7 +153,7 @@ std::auto_ptr<te::da::DataSet> te::mem::DataSource::getDataSet(const std::string
                                                                const te::common::AccessPolicy /*accessPolicy*/ )
 {
   if(!dataSetExists(name))
-    throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % name).str());
+    throw Exception((boost::format(TE_TR("There is no dataset with this name: \"%1%\"!")) % name).str());
 
   boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 
@@ -183,7 +183,7 @@ std::size_t te::mem::DataSource::getNumberOfDataSets()
 std::auto_ptr<te::da::DataSetType> te::mem::DataSource::getDataSetType(const std::string& datasetName)
 {
   if(!dataSetExists(datasetName))
-    throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
+    throw Exception((boost::format(TE_TR("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
 
   boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 
@@ -218,7 +218,7 @@ boost::ptr_vector<te::dt::Property> te::mem::DataSource::getProperties(const std
 std::auto_ptr<te::dt::Property> te::mem::DataSource:: getProperty(const std::string& datasetName, const std::string& name)
 {
   if(!propertyExists(datasetName,name))
-    throw Exception((boost::format(TR_MEMORY("The dataset \"%1%\" has no property with this name: \"%2%\"!")) % datasetName % name).str());
+    throw Exception((boost::format(TE_TR("The dataset \"%1%\" has no property with this name: \"%2%\"!")) % datasetName % name).str());
 
   boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 
@@ -232,7 +232,7 @@ std::auto_ptr<te::dt::Property> te::mem::DataSource:: getProperty(const std::str
 std::auto_ptr<te::dt::Property> te::mem::DataSource::getProperty(const std::string& datasetName, std::size_t propertyPos)
 {
   if(!dataSetExists(datasetName))
-    throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
+    throw Exception((boost::format(TE_TR("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
 
   assert(propertyPos < getNumberOfProperties(datasetName));
 
@@ -248,7 +248,7 @@ std::auto_ptr<te::dt::Property> te::mem::DataSource::getProperty(const std::stri
 std::vector<std::string> te::mem::DataSource::getPropertyNames(const std::string& datasetName)
 {
   if(!dataSetExists(datasetName))
-    throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
+    throw Exception((boost::format(TE_TR("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
 
   std::vector<std::string> pNames;
 
@@ -287,7 +287,7 @@ void te::mem::DataSource::addProperty(const std::string& datasetName, te::dt::Pr
   std::string pName = p->getName();
 
   if(propertyExists(datasetName, p->getName()))
-    throw Exception((boost::format(TR_MEMORY("The dataset already \"%1%\" has a property with this name \"%2%\"!")) % datasetName % pName).str());
+    throw Exception((boost::format(TE_TR("The dataset already \"%1%\" has a property with this name \"%2%\"!")) % datasetName % pName).str());
 
   std::auto_ptr<te::da::DataSetType> dt = getDataSetType(datasetName);
 
@@ -305,7 +305,7 @@ void te::mem::DataSource::addProperty(const std::string& datasetName, te::dt::Pr
 void te::mem::DataSource::dropProperty(const std::string& datasetName, const std::string& propertyName)
 {
   if(!propertyExists(datasetName, propertyName))
-    throw Exception((boost::format(TR_MEMORY("The dataset \"%1%\" has no property with this name \"%2%\"!")) % datasetName % propertyName).str());
+    throw Exception((boost::format(TE_TR("The dataset \"%1%\" has no property with this name \"%2%\"!")) % datasetName % propertyName).str());
 
   std::auto_ptr<te::da::DataSet> dataset = getDataSet(datasetName);
 
@@ -328,10 +328,10 @@ void te::mem::DataSource::renameProperty(const std::string& datasetName,
                                          const std::string& newName)
 {
   if(!propertyExists(datasetName, name))
-    throw Exception((boost::format(TR_MEMORY("The dataset \"%1%\" has no property with this name \"%2%\"!")) % datasetName % name).str());
+    throw Exception((boost::format(TE_TR("The dataset \"%1%\" has no property with this name \"%2%\"!")) % datasetName % name).str());
 
   if(!isPropertyNameValid(newName))
-    throw Exception((boost::format(TR_MEMORY("The new property name \"%1%\" is not valid!")) % newName).str());
+    throw Exception((boost::format(TE_TR("The new property name \"%1%\" is not valid!")) % newName).str());
 
   std::auto_ptr<te::da::DataSetType> dt = getDataSetType(datasetName);
 
@@ -352,7 +352,7 @@ void te::mem::DataSource::renameProperty(const std::string& datasetName,
 std::size_t te::mem::DataSource::getNumberOfItems(const std::string& datasetName)
 {
   if(!dataSetExists(datasetName))
-    throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
+    throw Exception((boost::format(TE_TR("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
 
   boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 
@@ -384,10 +384,10 @@ void te::mem::DataSource::createDataSet(te::da::DataSetType* dt,
   std::string datasetName = dt->getName();
 
   if(m_schemas.find(datasetName) != m_schemas.end())
-    throw Exception((boost::format(TR_MEMORY("A dataset with the same name (%1%) already exists!")) % datasetName).str());
+    throw Exception((boost::format(TE_TR("A dataset with the same name (%1%) already exists!")) % datasetName).str());
 
   if((m_numDatasets + 1) > m_maxNumDatasets)
-    throw Exception((boost::format(TR_MEMORY("The maximum number of datasets was exceeded!"))).str());
+    throw Exception((boost::format(TE_TR("The maximum number of datasets was exceeded!"))).str());
 
   boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 
@@ -406,13 +406,13 @@ void te::mem::DataSource::cloneDataSet(const std::string& name,
                                        const std::map<std::string, std::string>& /*options*/)
 {
   if(!dataSetExists(name))
-    throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % name).str());
+    throw Exception((boost::format(TE_TR("There is no dataset with this name: \"%1%\"!")) % name).str());
 
   if(!isDataSetNameValid(cloneName))
-    throw Exception((boost::format(TR_MEMORY("The dataset clone name \"%1%\" is not valid!")) % cloneName).str());
+    throw Exception((boost::format(TE_TR("The dataset clone name \"%1%\" is not valid!")) % cloneName).str());
 
   if(!dataSetExists(cloneName))
-    throw Exception((boost::format(TR_MEMORY("There is already a dataset with this name: \"%1%\"!")) % cloneName).str());
+    throw Exception((boost::format(TE_TR("There is already a dataset with this name: \"%1%\"!")) % cloneName).str());
 
   // Clone the schema
   const te::da::DataSetTypePtr& dtp = m_schemas[name];
@@ -434,7 +434,7 @@ void te::mem::DataSource::cloneDataSet(const std::string& name,
 void te::mem::DataSource::dropDataSet(const std::string& name)
 {
   if(!dataSetExists(name))
-    throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % name).str());
+    throw Exception((boost::format(TE_TR("There is no dataset with this name: \"%1%\"!")) % name).str());
 
   boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 
@@ -447,10 +447,10 @@ void te::mem::DataSource::dropDataSet(const std::string& name)
 void te::mem::DataSource::renameDataSet(const std::string& name, const std::string& newName)
 {
   if(!dataSetExists(name))
-    throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % name).str());
+    throw Exception((boost::format(TE_TR("There is no dataset with this name: \"%1%\"!")) % name).str());
 
   if(!isDataSetNameValid(newName))
-    throw Exception((boost::format(TR_MEMORY("The new name \"%1%\" is not valid!")) % newName).str());
+    throw Exception((boost::format(TE_TR("The new name \"%1%\" is not valid!")) % newName).str());
 
   std::auto_ptr<te::da::DataSetType> dt = getDataSetType(name);
 
@@ -473,7 +473,7 @@ void te::mem::DataSource::add(const std::string& datasetName,
                               std::size_t limit)
 {
   if(!dataSetExists(datasetName))
-    throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
+    throw Exception((boost::format(TE_TR("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
 
   boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 
@@ -484,7 +484,7 @@ void te::mem::DataSource::add(const std::string& datasetName,
 void te::mem::DataSource::remove(const std::string& datasetName, const te::da::ObjectIdSet* oids)
 {
   if(!dataSetExists(datasetName))
-    throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
+    throw Exception((boost::format(TE_TR("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
 
   boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 
@@ -529,7 +529,7 @@ std::vector<std::string> te::mem::DataSource::getDataSourceNames(const std::map<
   return std::vector<std::string>();
 }
 
-std::vector<std::string> te::mem::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
+std::vector<te::common::CharEncoding> te::mem::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
 {
-  return std::vector<std::string>();
+  return std::vector<te::common::CharEncoding>();
 }

@@ -149,6 +149,12 @@ void te::se::Rule::setSymbolizer(std::size_t i, te::se::Symbolizer* s)
   m_symbolizers[i] = s;
 }
 
+void te::se::Rule::setSymbolizers(const std::vector<Symbolizer*>& symbs)
+{
+  clearSymbolizers();
+  m_symbolizers = symbs;
+}
+
 const std::vector<te::se::Symbolizer*>& te::se::Rule::getSymbolizers() const
 {
   return m_symbolizers;
@@ -167,4 +173,40 @@ void te::se::Rule::removeSymbolizer(std::size_t i)
   delete m_symbolizers[i];
 
   m_symbolizers.erase(m_symbolizers.begin() + i);
+}
+
+void te::se::Rule::clearSymbolizers()
+{
+  te::common::FreeContents(m_symbolizers);
+  m_symbolizers.clear();
+}
+
+te::se::Rule* te::se::Rule::clone() const
+{
+  Rule* rule = new Rule;
+
+  if(m_name)
+    rule->setName(new std::string(*m_name));
+
+  if(m_description)
+    rule->setDescription(m_description->clone());
+
+  if(m_legendGraphic)
+    rule->setLegendGraphic(m_legendGraphic->clone());
+
+  rule->setFilter(0); // TODO: Filter clone
+
+  m_elseFilter?rule->enableElseFilter():rule->disableElseFilter();
+
+  rule->setMinScaleDenominator(getMinScaleDenominator());
+
+  rule->setMaxScaleDenominator(getMaxScaleDenominator());
+
+  for(std::size_t i = 0; i < m_symbolizers.size(); ++i)
+  {
+    if(m_symbolizers[i])
+      rule->m_symbolizers.push_back(m_symbolizers[i]->clone());
+  }
+
+  return rule;
 }

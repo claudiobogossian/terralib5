@@ -44,6 +44,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <set>
 
 // Boost
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -66,6 +67,7 @@ namespace te
 
   namespace da
   {
+    class DataSetTypeCapabilities;
     class DataSourceCapabilities;
     class DataSourceTransactor;
     class ObjectIdSet;
@@ -543,6 +545,15 @@ namespace te
         virtual std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name);
 
         /*!
+         \brief It gets capabilities about a data set.
+
+         \param name Name of the dataset.
+
+         \return The capabilities of the data set.
+        */
+        std::auto_ptr<te::da::DataSetTypeCapabilities> getCapabilities(const std::string& name);
+
+        /*!
           \brief It retrieves the properties of the dataset.
 
           \param datasetName The dataset name.
@@ -665,6 +676,10 @@ namespace te
         virtual void renameProperty(const std::string& datasetName,
                                     const std::string& propertyName,
                                     const std::string& newPropertyName);
+
+        virtual void changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp);
+
+        virtual void changePropertiesDefinitions(const std::string& datasetName, const std::vector<std::string>& propsNames, const std::vector<te::dt::Property*> newProps);
 
         /*!
           \brief It retrieves the primary key of the dataset.
@@ -1205,6 +1220,13 @@ namespace te
                          std::size_t limit = 0);
 
         /*!
+          \brief It return the DataOurce current encoding.
+
+          \return The DataSource current encoding.
+        */
+        virtual te::common::CharEncoding getEncoding();
+
+        /*!
           \brief It removes all the informed items from the dataset.
 
           It removes all the data items from a dataset which are identified by 
@@ -1243,6 +1265,24 @@ namespace te
                             const te::da::ObjectIdSet* oids,
                             const std::map<std::string, std::string>& options,
                             std::size_t limit = 0);
+
+        /*!
+         \brief It updates the contents of a dataset.
+
+         All rows are edited. The third parameter tells wich columns are edited for each row.
+
+         \param datasetName Name pf the dataset.
+         \param dataset Dataset with editions.
+         \param properties Columns edited for each row. Note that the size of \a properties must be the same of the \a dataset.
+         \param ids List of positions of the columns that identifies rows.
+
+         \exception te::da::Exception An exception can be thrown, if the dataset could not be updated.
+         */
+        virtual void update(const std::string& datasetName,
+                            DataSet* dataset,
+                            const std::vector< std::set<int> >& properties,
+                            const std::vector<size_t>& ids);
+
     //@}
 
         /** @name Data Source static methods
@@ -1314,9 +1354,9 @@ namespace te
 
           \exception Exception An exception can be thrown, if the encoding names could not be retrieved.
 
-          \return The encoding names of the data source.
+          \return The encoding types of the data source.
         */
-        static std::vector<std::string> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
+        static std::vector<te::common::CharEncoding> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
         //@}
 
       protected:
@@ -1381,10 +1421,10 @@ namespace te
 
           \exception Exception An exception can be thrown, if the encoding names could not be retrieved.
 
-          \return The encoding names for the data source.
+          \return The encoding types for the data source.
 
         */
-        virtual std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo) = 0;
+        virtual std::vector<te::common::CharEncoding> getEncodings(const std::map<std::string, std::string>& dsInfo) = 0;
         //@}
 
       protected:

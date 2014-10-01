@@ -160,7 +160,7 @@ bool te::cl::Dummy<TTRAIN, TCLASSIFY>::initialize(typename const te::cl::Dummy<T
 
   if (m_parameters.m_dummyParameter < 2)
   {
-    TR_CL("The value of dummy must be at least 2.");
+    TE_TR("The value of dummy must be at least 2.");
     return false;
   }
 

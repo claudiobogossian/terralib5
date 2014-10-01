@@ -453,7 +453,6 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
   RansacItCounterT currentIteration = 0;
 
   RansacItCounterT dynamicMaxIterations = globalDynamicMaxIterations;
-  RansacItCounterT dynamicMaxIterationsEstimation = 0;
   RansacItCounterT dynamicMaxConsecutiveInvalidIterations =
     RANSACGETMAXINVALIDITERATIONS( assurance, dynamicMaxIterations );
   const RansacItCounterT threadSyncMaxIterations = procsNumber;
@@ -665,12 +664,15 @@ double te::gm::GTFilter::getPt1ConvexHullArea(const std::vector< GTParameters::T
         tiePoints[ tiePointsIdx ].first.y ) );
     }
     
-    std::auto_ptr< te::gm::Surface > convexHullPtr( 
-      (te::gm::Surface*)points.convexHull() );
+    std::auto_ptr< te::gm::Geometry > convexHullPtr( points.convexHull() );
     
-    if( convexHullPtr.get() )
-      return convexHullPtr->getArea();
+    if( dynamic_cast< te::gm::Surface* >( convexHullPtr.get() ) )
+    {
+      return dynamic_cast< te::gm::Surface* >( convexHullPtr.get() )->getArea();
+    }
     else
+    {
       return 0;
+    }
   }
 }

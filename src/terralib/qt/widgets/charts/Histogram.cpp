@@ -157,6 +157,38 @@ te::da::ObjectIdSet* te::qt::widgets::Histogram::find(te::dt::AbstractData* inte
   return oids;
 }
 
+
+te::da::ObjectIdSet* te::qt::widgets::Histogram::find(std::vector<te::dt::AbstractData*> intervals)
+{
+  typedef te::qt::widgets::IntervalToObjectIdSet::nth_index<0>::type::iterator itIntervalToObjectIdSet;
+  te::da::ObjectIdSet* oids = new te::da::ObjectIdSet;
+
+  for(size_t i = 0; i < intervals.size(); ++i)
+  {
+    IntervalToObjectId aux(intervals[i], 0);
+
+    std::pair<itIntervalToObjectIdSet, itIntervalToObjectIdSet> res = m_valuesOids.equal_range(aux);
+    itIntervalToObjectIdSet it0 = res.first;
+    itIntervalToObjectIdSet it1 = res.second; 
+
+    while(it0 != it1) 
+    {
+      te::da::ObjectId* oid = new te::da::ObjectId(); 
+
+      for(boost::ptr_vector<te::dt::AbstractData>::const_iterator it = it0->oid->getValue().begin(); it != it0->oid->getValue().end(); ++it)
+      {
+        oid->addValue((it)->clone());
+      }
+
+      oids->add(oid);
+      ++it0;
+    }
+    delete intervals[i];
+  }
+
+  return oids;
+}
+
 const te::dt::AbstractData* te::qt::widgets::Histogram::find(const te::da::ObjectId* oid)
 {
   te::qt::widgets::IntervalToObjectIdSet::nth_index<1>::type::iterator it= m_valuesOids.get<1>().find(oid->getValueAsString());

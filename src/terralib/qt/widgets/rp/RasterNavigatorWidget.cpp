@@ -42,6 +42,7 @@
 #include "../../../se/Utils.h"
 #include "../../widgets/tools/AbstractTool.h"
 #include "../../widgets/tools/CoordTracking.h"
+#include "../../widgets/tools/ExtentAcquire.h"
 #include "../../widgets/tools/Pan.h"
 #include "../../widgets/tools/PolygonAcquire.h"
 #include "../../widgets/tools/PointPicker.h"
@@ -84,6 +85,8 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   m_zoomInMapDisplay = new te::qt::widgets::ZoomInMapDisplayWidget(m_mapDisplay, m_ui->m_zoomInFrame);
   zoomInDisplayLayout->addWidget(m_zoomInMapDisplay);
   zoomInDisplayLayout->setContentsMargins(0,0,0,0);
+  
+  m_pointCursor = Qt::CrossCursor;
 
 // CoordTracking tool
   te::qt::widgets::CoordTracking* coordTracking = new te::qt::widgets::CoordTracking(m_mapDisplay, m_mapDisplay);
@@ -97,6 +100,7 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   connect(m_ui->m_panActionToolButtontoolButton, SIGNAL(toggled(bool)), this, SLOT(onPanToggled(bool)));
   connect(m_ui->m_pointActionToolButtontoolButton, SIGNAL(toggled(bool)), this, SLOT(onPointPickerToggled(bool)));
   connect(m_ui->m_geomActionToolButtontoolButton, SIGNAL(toggled(bool)), this, SLOT(onGeomToggled(bool)));
+  connect(m_ui->m_extentActionToolButtontoolButton, SIGNAL(toggled(bool)), this, SLOT(onBoxToggled(bool)));
   connect(m_ui->m_readPixelActionToolButton, SIGNAL(toggled(bool)), this, SLOT(onReadPixelToggled(bool)));
   connect(m_ui->m_extraDisplaysToolButton, SIGNAL(toggled(bool)), this, SLOT(onExtraDisplaysToggled(bool)));
   connect(m_ui->m_recomposeActionToolButton, SIGNAL(clicked()), this, SLOT(onRecomposeClicked()));
@@ -122,6 +126,7 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   m_ui->m_recomposeActionToolButton->setIcon(QIcon::fromTheme("zoom-extent"));
   m_ui->m_pointActionToolButtontoolButton->setIcon(QIcon::fromTheme("placemark"));
   m_ui->m_geomActionToolButtontoolButton->setIcon(QIcon::fromTheme("edit-polygon"));
+  m_ui->m_extentActionToolButtontoolButton->setIcon(QIcon::fromTheme("edit-box"));
   m_ui->m_readPixelActionToolButton->setIcon(QIcon::fromTheme("color-picker"));
   m_ui->m_extraDisplaysToolButton->setIcon(QIcon::fromTheme("view-map-display-extra"));
   m_ui->m_monoLabel->setPixmap(QIcon::fromTheme("bullet-black").pixmap(16,16));
@@ -199,6 +204,38 @@ void te::qt::widgets::RasterNavigatorWidget::set(te::map::AbstractLayerPtr layer
   getCompositionInfo();
 }
 
+void te::qt::widgets::RasterNavigatorWidget::setVectorial(te::map::AbstractLayerPtr layer)
+{
+  std::list<te::map::AbstractLayerPtr> list;
+  list.push_back(layer);
+  list.push_back(m_layer);
+
+  m_mapDisplay->setLayerList(list);
+  m_zoomInMapDisplay->setList(list, m_layer->getSRID());
+  m_eyeBirdMapDisplay->setList(list, m_layer->getSRID());
+
+  te::gm::Envelope e = m_mapDisplay->getExtent();
+  m_mapDisplay->setExtent(e, true);
+}
+
+void te::qt::widgets::RasterNavigatorWidget::setExtent(te::gm::Envelope env)
+{
+  //m_mapDisplay->setExtent(env, true);
+}
+
+void te::qt::widgets::RasterNavigatorWidget::removeVectorial()
+{
+  std::list<te::map::AbstractLayerPtr> list;
+  list.push_back(m_layer);
+
+  m_mapDisplay->setLayerList(list);
+  m_zoomInMapDisplay->setList(list, m_layer->getSRID());
+  m_eyeBirdMapDisplay->setList(list, m_layer->getSRID());
+
+  te::gm::Envelope e = m_mapDisplay->getExtent();
+  m_mapDisplay->setExtent(e, true);
+}
+
 te::gm::Envelope te::qt::widgets::RasterNavigatorWidget::getCurrentExtent()
 {
   return m_mapDisplay->getExtent();
@@ -274,10 +311,13 @@ void te::qt::widgets::RasterNavigatorWidget::drawRaster(te::rst::Raster* rst, te
   m_mapDisplay->repaint();
 }
 
-void te::qt::widgets::RasterNavigatorWidget::showAsPreview(bool asPreview)
+void te::qt::widgets::RasterNavigatorWidget::showAsPreview(bool asPreview, bool enableZoom)
 {
   delete m_panTool;
   delete m_zoomTool;
+
+  m_panTool = 0;
+  m_zoomTool = 0;
 
   m_ui->m_toolsFrame->setVisible(!asPreview);
   m_ui->m_label->setVisible(!asPreview);
@@ -288,10 +328,13 @@ void te::qt::widgets::RasterNavigatorWidget::showAsPreview(bool asPreview)
   if(asPreview)
   {
     m_panTool = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);
-    m_zoomTool = new te::qt::widgets::ZoomWheel(m_mapDisplay, 1.5);
-
     m_mapDisplay->installEventFilter(m_panTool);
-    m_mapDisplay->installEventFilter(m_zoomTool);
+
+    if(enableZoom)
+    {
+      m_zoomTool = new te::qt::widgets::ZoomWheel(m_mapDisplay, 1.5);
+      m_mapDisplay->installEventFilter(m_zoomTool);
+    }
   }
 }
 
@@ -305,6 +348,7 @@ void te::qt::widgets::RasterNavigatorWidget::hideEditionTools(bool hide)
   m_ui->m_toolLine->setVisible(!hide);
   hidePickerTool(hide);
   hideGeomTool(hide);
+  hideBoxTool(hide);
   hideInfoTool(hide);
 }
 
@@ -318,6 +362,11 @@ void te::qt::widgets::RasterNavigatorWidget::hideGeomTool(bool hide)
   m_ui->m_geomActionToolButtontoolButton->setVisible(!hide);
 }
 
+void te::qt::widgets::RasterNavigatorWidget::hideBoxTool(bool hide)
+{
+  m_ui->m_extentActionToolButtontoolButton->setVisible(!hide);
+}
+
 void te::qt::widgets::RasterNavigatorWidget::hideInfoTool(bool hide)
 {
   m_ui->m_readPixelActionToolButton->setVisible(!hide);
@@ -329,6 +378,20 @@ void te::qt::widgets::RasterNavigatorWidget::hideExtraDisplaysTool(bool hide)
 
   m_ui->m_extraLine->setVisible(!hide);
   m_ui->m_extraDisplaysToolButton->setVisible(!hide);
+}
+
+void te::qt::widgets::RasterNavigatorWidget::setSelectionMode(bool mode)
+{
+  if(mode)
+  {
+    m_ui->m_pointActionToolButtontoolButton->setIcon(QIcon::fromTheme("pointer-selection"));
+    m_pointCursor = Qt::ArrowCursor;
+  }
+  else
+  {
+    m_ui->m_pointActionToolButtontoolButton->setIcon(QIcon::fromTheme("placemark"));
+    m_pointCursor = Qt::CrossCursor;
+  }
 }
 
 void te::qt::widgets::RasterNavigatorWidget::onCoordTrackedChanged(QPointF& coordinate)
@@ -375,9 +438,9 @@ void te::qt::widgets::RasterNavigatorWidget::onCoordTrackedChanged(QPointF& coor
       m_currentRow = pixelLocation.y;
 
       QString xStr("X: ");
-      xStr.append(QString::number(coordinate.rx()));
+      xStr.append(QString::number(coordinate.rx(), 'f', 5));
       QString yStr("Y: ");
-      yStr.append(QString::number(coordinate.ry()));
+      yStr.append(QString::number(coordinate.ry(), 'f', 5));
       QString cStr(tr("Column: "));
       cStr.append(QString::number(m_currentColumn));
       QString lStr(tr("Line: "));
@@ -396,16 +459,22 @@ void te::qt::widgets::RasterNavigatorWidget::onCoordTrackedChanged(QPointF& coor
   }
 }
 
+void te::qt::widgets::RasterNavigatorWidget::onEnvelopeAcquired(te::gm::Envelope env)
+{
+  //emit signal
+  emit envelopeAcquired(env);
+}
+
 void te::qt::widgets::RasterNavigatorWidget::onGeomAquired(te::gm::Polygon* poly)
 {
   //emit signal
-  geomAquired(poly, m_mapDisplay);
+  emit geomAquired(poly);
 }
 
 void te::qt::widgets::RasterNavigatorWidget::onPointPicked(QPointF& point)
 {
   //emit signal
-  emit pointPicked(point.x(), point.y(), m_mapDisplay);
+  emit pointPicked(point.x(), point.y());
 }
 
 void te::qt::widgets::RasterNavigatorWidget::onMapDisplayExtentChanged()
@@ -449,7 +518,7 @@ void te::qt::widgets::RasterNavigatorWidget::onPointPickerToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::PointPicker* pp = new te::qt::widgets::PointPicker(m_mapDisplay, Qt::CrossCursor);
+  te::qt::widgets::PointPicker* pp = new te::qt::widgets::PointPicker(m_mapDisplay, m_pointCursor);
   setCurrentTool(pp);
 
   connect(pp, SIGNAL(pointPicked(QPointF&)), this, SLOT(onPointPicked(QPointF&)));
@@ -464,6 +533,17 @@ void te::qt::widgets::RasterNavigatorWidget::onGeomToggled(bool checked)
   setCurrentTool(pa);
 
   connect(pa, SIGNAL(polygonAquired(te::gm::Polygon*)), this, SLOT(onGeomAquired(te::gm::Polygon*)));
+}
+
+void te::qt::widgets::RasterNavigatorWidget::onBoxToggled(bool checked)
+{
+  if(!checked)
+    return;
+
+  te::qt::widgets::ExtentAcquire* ea = new te::qt::widgets::ExtentAcquire(m_mapDisplay, Qt::BlankCursor);
+  setCurrentTool(ea);
+
+  connect(ea, SIGNAL(extentAcquired(te::gm::Envelope)), this, SLOT(onEnvelopeAcquired(te::gm::Envelope)));
 }
 
 void te::qt::widgets::RasterNavigatorWidget::onReadPixelToggled(bool checked)

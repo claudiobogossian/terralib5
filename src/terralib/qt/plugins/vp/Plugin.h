@@ -31,7 +31,7 @@
 #include "Config.h"
 
 // Qt
-#include <QtGui/QMenu>
+#include <QMenu>
 
 namespace te
 {
@@ -42,8 +42,8 @@ namespace te
       namespace vp
       {
         class AggregationAction;
-        //class BasicGeographicOperationAction;
         class BufferAction;
+        class GeometricOpAction;
         class IntersectionAction;
         //class PolygonToLineAction;
         //class SummarizationAction;
@@ -80,8 +80,8 @@ namespace te
             QMenu* m_vpMenu;                                    //!< VP Main Menu registered.
 
             te::qt::plugins::vp::AggregationAction* m_aggregation;    //!< Aggregation Operation Action
-            //te::qt::plugins::vp::BasicGeographicOperationAction* m_basicGeographicOperation;    //!< Basic Geographic Operation
-            te::qt::plugins::vp::BufferAction* m_buffer;    //!< Buffer Operation Action
+			te::qt::plugins::vp::BufferAction* m_buffer;    //!< Buffer Operation Action
+            te::qt::plugins::vp::GeometricOpAction* m_geometricOp;    //!< Geometric Operation
             te::qt::plugins::vp::IntersectionAction* m_intersection;    //!< Intersection Operation Action
             //te::qt::plugins::vp::PolygonToLineAction* m_polygonToLine;    //!< Polygon to Line Operation Action
             //te::qt::plugins::vp::SummarizationAction* m_summarization;    //!< Summarization Operation Action

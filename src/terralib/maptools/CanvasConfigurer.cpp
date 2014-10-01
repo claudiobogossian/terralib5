@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -40,6 +40,7 @@
 #include "../se/SvgParameter.h"
 #include "../se/Symbolizer.h"
 #include "../se/TextSymbolizer.h"
+#include "../se/Utils.h"
 #include "../xlink/SimpleLink.h"
 #include "Canvas.h"
 #include "CanvasConfigurer.h"
@@ -152,7 +153,7 @@ void te::map::CanvasConfigurer::visit(const te::se::TextSymbolizer& visited)
   // Color
   const te::se::Fill* fill = visited.getFill();
   te::color::RGBAColor color(TE_SE_DEFAULT_TEXT_COLOR, TE_OPAQUE);
-  te::map::GetColor(fill, color);
+  te::se::GetColor(fill, color);
   m_canvas->setTextColor(color);
 
   const te::se::Font* font = visited.getFont();
@@ -161,18 +162,18 @@ void te::map::CanvasConfigurer::visit(const te::se::TextSymbolizer& visited)
     // Family
     const te::se::SvgParameter* family = font->getFamily();
     if(family)
-      m_canvas->setFontFamily(te::map::GetString(family));
+      m_canvas->setFontFamily(te::se::GetString(family));
 
     // Size
     const te::se::SvgParameter* size = font->getSize();
     if(size)
-      m_canvas->setTextPointSize(te::map::GetDouble(size));
+      m_canvas->setTextPointSize(te::se::GetDouble(size));
 
     // Style - {normal, italic, and oblique}
     const te::se::SvgParameter* style = font->getStyle();
     if(style)
     {
-      std::string value = te::map::GetString(style);
+      std::string value = te::se::GetString(style);
       //TODO: m_canvas->setTextStyle(need a map <std::string, te::FontStyle>);
     }
 
@@ -180,7 +181,7 @@ void te::map::CanvasConfigurer::visit(const te::se::TextSymbolizer& visited)
     const te::se::SvgParameter* weight = font->getWeight();
     if(weight)
     {
-      std::string value = te::map::GetString(weight);
+      std::string value = te::se::GetString(weight);
       //TODO: m_canvas->setTextWeight(need a map <std::string, te::WeightStyle>);
     }
   }
@@ -194,14 +195,14 @@ void te::map::CanvasConfigurer::visit(const te::se::TextSymbolizer& visited)
     // Halo Color
     const te::se::Fill* haloFill = halo->getFill();
     te::color::RGBAColor haloColor(TE_SE_DEFAULT_HALO_COLOR, TE_OPAQUE);
-    te::map::GetColor(haloFill, haloColor);
+    te::se::GetColor(haloFill, haloColor);
     m_canvas->setTextContourColor(haloColor);
 
     // Halo Radius
     int width = TE_SE_DEFAULT_HALO_RADIUS;
     const te::se::ParameterValue* radius = halo->getRadius();
     if(radius)
-      width = te::map::GetInt(radius);
+      width = te::se::GetInt(radius);
     m_canvas->setTextContourWidth(width);
   }
 
@@ -224,20 +225,20 @@ void te::map::CanvasConfigurer::config(const te::se::Stroke* stroke, const bool&
   {
     // Color
     te::color::RGBAColor color(TE_SE_DEFAULT_STROKE_BASIC_COLOR, TE_OPAQUE);
-    te::map::GetColor(stroke, color);
+    te::se::GetColor(stroke, color);
     fromLineSymbolizer ? m_canvas->setLineColor(color) : m_canvas->setPolygonContourColor(color);
   }
 
   // Width
   const te::se::SvgParameter* width = stroke->getWidth();
   if(width)
-    fromLineSymbolizer ? m_canvas->setLineWidth(te::map::GetInt(width)) : m_canvas->setPolygonContourWidth(te::map::GetInt(width));
+    fromLineSymbolizer ? m_canvas->setLineWidth(te::se::GetInt(width)) : m_canvas->setPolygonContourWidth(te::se::GetInt(width));
 
   // LineCap
   const te::se::SvgParameter* linecap = stroke->getLineCap();
   if(linecap)
   {
-    std::map<std::string, te::map::LineCapStyle>::iterator it = sm_lineCapMap.find(te::map::GetString(linecap));
+    std::map<std::string, te::map::LineCapStyle>::iterator it = sm_lineCapMap.find(te::se::GetString(linecap));
     if(it != sm_lineCapMap.end())
       fromLineSymbolizer ? m_canvas->setLineCapStyle(it->second) : m_canvas->setPolygonContourCapStyle(it->second);
   }
@@ -246,7 +247,7 @@ void te::map::CanvasConfigurer::config(const te::se::Stroke* stroke, const bool&
   const te::se::SvgParameter* linejoin = stroke->getLineJoin();
   if(linejoin)
   {
-    std::map<std::string, te::map::LineJoinStyle>::iterator it = sm_lineJoinMap.find(te::map::GetString(linejoin));
+    std::map<std::string, te::map::LineJoinStyle>::iterator it = sm_lineJoinMap.find(te::se::GetString(linejoin));
     if(it != sm_lineJoinMap.end())
       fromLineSymbolizer ? m_canvas->setLineJoinStyle(it->second) : m_canvas->setPolygonContourJoinStyle(it->second);
   }
@@ -255,7 +256,7 @@ void te::map::CanvasConfigurer::config(const te::se::Stroke* stroke, const bool&
   const te::se::SvgParameter* dasharray = stroke->getDashArray();
   if(dasharray)
   {
-    std::string value = te::map::GetString(dasharray);
+    std::string value = te::se::GetString(dasharray);
     std::vector<double> pattern;
     te::map::GetDashStyle(value, pattern);
     fromLineSymbolizer ? m_canvas->setLineDashStyle(pattern) : m_canvas->setPolygonContourDashStyle(pattern);
@@ -277,7 +278,7 @@ void te::map::CanvasConfigurer::config(const te::se::Fill* fill)
 
   // Color
   te::color::RGBAColor color(TE_SE_DEFAULT_FILL_BASIC_COLOR, TE_OPAQUE);
-  te::map::GetColor(fill, color);
+  te::se::GetColor(fill, color);
   m_canvas->setPolygonFillColor(color);
 }
 
@@ -287,19 +288,19 @@ void te::map::CanvasConfigurer::config(const te::se::Graphic* graphic, te::map::
   const te::se::ParameterValue* size = graphic->getSize();
   std::size_t height = TE_SE_DEFAULT_GRAPHIC_SIZE;
   if(size)
-    height = static_cast<std::size_t>(te::map::GetInt(size));
+    height = static_cast<std::size_t>(te::se::GetInt(size));
 
   // Gets the graphic rotation 
   const te::se::ParameterValue* rotation = graphic->getRotation();
   double angle = 0.0;
   if(rotation)
-    angle = te::map::GetDouble(rotation);
+    angle = te::se::GetDouble(rotation);
 
   // Gets the graphic opacity
   int alpha = TE_OPAQUE;
   const te::se::ParameterValue* opacity = graphic->getOpacity();
   if(opacity)
-    alpha = (int)(te::map::GetDouble(opacity) * TE_OPAQUE);
+    alpha = (int)(te::se::GetDouble(opacity) * TE_OPAQUE);
 
   std::size_t width = height;
 

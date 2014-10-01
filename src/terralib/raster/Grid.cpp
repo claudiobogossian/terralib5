@@ -27,6 +27,7 @@
 #include "../geometry/Coord2D.h"
 #include "../geometry/Envelope.h"
 #include "Grid.h"
+#include "Exception.h"
 
 // STL
 #include <algorithm>
@@ -44,17 +45,11 @@ te::rst::Grid::Grid(unsigned int nCols,
 {
   if(m_extent)
   {
-    // Resolution X and Y
-    m_geoT[1] = m_extent->getWidth() / static_cast<double>(nCols);
-    m_geoT[5] = -1.0 * m_extent->getHeight() / static_cast<double>(nRows);
-    
-    // Pixell 0,0 upper-left coods
-    m_geoT[0] = m_extent->m_llx + ( m_geoT[1] / 2.0 );
-    m_geoT[3] = m_extent->m_ury + ( m_geoT[5] / 2.0 );
-    
-    m_geoT[2] = 0.0;    
-    m_geoT[4] = 0.0;
-    
+    if( ! computeAffineParameters( m_extent->getWidth(), m_extent->getHeight(),
+      nCols, nRows, m_extent->m_llx, m_extent->m_ury, m_geoT, m_geoTInverse ) )
+    {
+      throw te::rst::Exception("Unable to compute affine parameters");
+    }
   }
   else
   {
@@ -88,16 +83,11 @@ te::rst::Grid::Grid(unsigned int nCols, unsigned int nRows,
 {
   if(m_extent)
   {
-    // Resolution X and Y
-    m_geoT[1] = m_extent->getWidth() / static_cast<double>(nCols);
-    m_geoT[5] = -1.0 * m_extent->getHeight() / static_cast<double>(nRows);
-    
-    // Pixell 0,0 upper-left coods
-    m_geoT[0] = m_extent->m_llx + ( m_geoT[1] / 2.0 );
-    m_geoT[3] = m_extent->m_ury + ( m_geoT[5] / 2.0 );
-    
-    m_geoT[2] = 0.0;    
-    m_geoT[4] = 0.0;    
+    if( ! computeAffineParameters( m_extent->getWidth(), m_extent->getHeight(),
+      nCols, nRows, m_extent->m_llx, m_extent->m_ury, m_geoT, m_geoTInverse ) )
+    {
+      throw te::rst::Exception("Unable to compute affine parameters");
+    }    
   }
   else
   {
@@ -115,19 +105,19 @@ te::rst::Grid::Grid(double resX,
     m_nRows(0),
     m_srid(srid)
 {
+  if( m_extent == 0 )
+  {
+    throw te::rst::Exception("Missing extent");
+  }
+  
   m_nCols = static_cast<unsigned int> (mbr->getWidth() / resX + 0.5);
   m_nRows = static_cast<unsigned int> (mbr->getHeight() / resY + 0.5);
 
-  // Resolution X and Y
-  m_geoT[1] = m_extent->getWidth() / static_cast<double>(m_nCols);
-  m_geoT[5] = -1.0 * m_extent->getHeight() / static_cast<double>(m_nRows);
-  
-  // Pixell 0,0 upper-left coods
-  m_geoT[0] = m_extent->m_llx + ( m_geoT[1] / 2.0 );
-  m_geoT[3] = m_extent->m_ury + ( m_geoT[5] / 2.0 );    
-  
-  m_geoT[2] = 0.0;    
-  m_geoT[4] = 0.0;
+  if( ! computeAffineParameters( m_extent->getWidth(), m_extent->getHeight(),
+    m_nCols, m_nRows, m_extent->m_llx, m_extent->m_ury, m_geoT, m_geoTInverse ) )
+  {
+    throw te::rst::Exception("Unable to compute affine parameters");
+  }    
 }
 
 te::rst::Grid::Grid( const double geoTrans[], unsigned int nCols, unsigned int nRows,
@@ -147,16 +137,7 @@ te::rst::Grid::Grid(const Grid& rhs)
     m_nRows(rhs.m_nRows),
     m_srid(rhs.m_srid)
 {
-  memcpy(m_geoT, rhs.m_geoT, sizeof(double) * 6);
-  
-  if( rhs.m_extent )
-  {
-    m_extent = new te::gm::Envelope(*rhs.m_extent);
-  }
-  else
-  {
-    computeExtent();
-  }
+  operator=( rhs );
 }
 
 te::rst::Grid::~Grid()
@@ -178,6 +159,7 @@ te::rst::Grid& te::rst::Grid::operator=(const Grid& rhs)
     m_srid = rhs.m_srid;
 
     memcpy(m_geoT, rhs.m_geoT, sizeof(double) * 6);
+    memcpy(m_geoTInverse, rhs.m_geoTInverse, sizeof(double) * 6);
     
     if (m_extent)
     {
@@ -200,6 +182,12 @@ te::rst::Grid& te::rst::Grid::operator=(const Grid& rhs)
 void te::rst::Grid::setNumberOfColumns(unsigned int nCols)
 {
   m_nCols = nCols;
+
+  if( ! computeAffineParameters( m_extent->getWidth(), m_extent->getHeight(),
+    m_nCols, m_nRows, m_extent->m_llx, m_extent->m_ury, m_geoT, m_geoTInverse ) )
+  {
+    throw te::rst::Exception("Unable to compute affine parameters");
+  }     
 }
 
 unsigned int te::rst::Grid::getNumberOfColumns() const
@@ -210,6 +198,12 @@ unsigned int te::rst::Grid::getNumberOfColumns() const
 void te::rst::Grid::setNumberOfRows(unsigned int nRows)
 {
   m_nRows = nRows;
+  
+  if( ! computeAffineParameters( m_extent->getWidth(), m_extent->getHeight(),
+    m_nCols, m_nRows, m_extent->m_llx, m_extent->m_ury, m_geoT, m_geoTInverse ) )
+  {
+    throw te::rst::Exception("Unable to compute affine parameters");
+  }    
 }
 
 unsigned int te::rst::Grid::getNumberOfRows() const
@@ -221,16 +215,14 @@ void te::rst::Grid::setGeoreference(const te::gm::Coord2D& ulLocation, int srid,
 {
   m_srid = srid;
   
-  // Resolution X and Y
-  m_geoT[1] = resX;
-  m_geoT[5] = -1.0 * resY;
+  const double extentWidth = ((double)m_nCols) * resX;
+  const double extentheight = ((double)m_nRows) * resY;
   
-  // Pixell 0,0 upper-left coods
-  m_geoT[0] = ulLocation.x + ( m_geoT[1] / 2.0 );
-  m_geoT[3] = ulLocation.y + ( m_geoT[5] / 2.0 );
-  
-  m_geoT[2] = 0.0;
-  m_geoT[4] = 0.0;
+  if( ! computeAffineParameters( extentWidth, extentheight,
+    m_nCols, m_nRows, ulLocation.x, ulLocation.y, m_geoT, m_geoTInverse ) )
+  {
+    throw te::rst::Exception("Unable to compute affine parameters");
+  }  
   
   computeExtent();
 }
@@ -245,6 +237,11 @@ void te::rst::Grid::setGeoreference(const double geoTrans[], int srid)
   m_geoT[4] = geoTrans[4];
   m_geoT[5] = geoTrans[5];
   
+  if( ! computeInverseParameters( m_geoT, m_geoTInverse ) )
+  {
+    throw te::rst::Exception("Unable to compute the inverse affine parameters");
+  }
+  
   computeExtent();
 }
 
@@ -255,12 +252,14 @@ const double* te::rst::Grid::getGeoreference() const
 
 double te::rst::Grid::getResolutionX() const
 {
-  return std::abs( m_geoT[1] );
+  assert( m_extent );
+  return m_extent->getWidth() / ((double)m_nCols );
 }
 
 double te::rst::Grid::getResolutionY() const
 {
-  return ( -1.0 * m_geoT[5] );
+  assert( m_extent );
+  return m_extent->getHeight() / ((double)m_nRows );
 }
 
 int te::rst::Grid::getSRID() const
@@ -290,25 +289,25 @@ void te::rst::Grid::computeExtent() const
   te::gm::Coord2D ur = gridToGeo( ((double)m_nCols) - 0.5, -0.5 );
   te::gm::Coord2D ul = gridToGeo( -0.5, -0.5 );
 
-  if(!m_extent)
-    m_extent = new te::gm::Envelope;
-
-  m_extent->init(std::min(ll.x, ul.x),
-                 std::min(ll.y, lr.y),
-                 std::max(ur.x, lr.x),
-                 std::max(ul.y, ur.y));
+  if(m_extent)
+  {
+    delete m_extent;
+  }
+    
+  m_extent = new te::gm::Envelope( std::min(ll.x, ul.x), std::min(ll.y, lr.y),
+    std::max(ur.x, lr.x), std::max(ul.y, ur.y) );
 }
 
 void te::rst::Grid::gridToGeo(const double& col, const double& row, double& x, double& y) const
 {
-  x = m_geoT[0] + col * m_geoT[1] + row * m_geoT[2];
-  y = m_geoT[3] + col * m_geoT[4] + row * m_geoT[5];
+  x = col * m_geoT[0] + row * m_geoT[1] + m_geoT[2];
+  y = col * m_geoT[3] + row * m_geoT[4] + m_geoT[5];
 }
 
 void te::rst::Grid::geoToGrid(const double& x, const double& y, double& col, double& row) const
 {
-  col = (m_geoT[5] * (x - m_geoT[0]) - m_geoT[2] * (y - m_geoT[3])) / (m_geoT[1] * m_geoT[5] - m_geoT[2] * m_geoT[4]);
-  row = (y - m_geoT[3] - col * m_geoT[4]) / m_geoT[5];
+  col = x * m_geoTInverse[0] + y * m_geoTInverse[1] + m_geoTInverse[2];
+  row = x * m_geoTInverse[3] + y * m_geoTInverse[4] + m_geoTInverse[5];
 }
 
 bool te::rst::Grid::operator==(const Grid& rhs) const
@@ -329,4 +328,54 @@ bool te::rst::Grid::operator==(const Grid& rhs) const
     return false;
   else
     return true;
+}
+
+bool te::rst::Grid::computeAffineParameters( const double extentWidth,
+  const double extentHeight, const unsigned int nColumns,
+  const unsigned int nRows, const double extentULX,
+  const double extentULY, double* affineParamsPtr,
+  double* inverseAffineParamsPtr ) const
+{
+  affineParamsPtr[0] = extentWidth / ((double)nColumns);
+  affineParamsPtr[1] = 0.0;
+  affineParamsPtr[2] = extentULX + ( extentWidth / static_cast<double>(nColumns) / 2.0 );
+  affineParamsPtr[3] = 0.0;
+  affineParamsPtr[4] = -1.0 * extentHeight / ((double)nRows);
+  affineParamsPtr[5] = extentULY - ( extentHeight / static_cast<double>(nRows) / 2.0 );
+
+  return computeInverseParameters( affineParamsPtr, inverseAffineParamsPtr );
+}
+
+bool te::rst::Grid::computeInverseParameters( double* const affineParamsPtr,
+  double* inverseAffineParamsPtr ) const
+{
+  const double determinant = ( affineParamsPtr[0] * affineParamsPtr[4] ) -
+    ( affineParamsPtr[1] * affineParamsPtr[3] );
+  if( determinant == 0.0 )
+  {
+    return false;
+  }
+  
+  inverseAffineParamsPtr[0] = affineParamsPtr[4] / determinant;
+  inverseAffineParamsPtr[1] = ( -1.0 * affineParamsPtr[1] ) / determinant;
+  inverseAffineParamsPtr[2] = 
+    ( 
+      ( affineParamsPtr[1] * affineParamsPtr[5] ) 
+      - 
+      ( affineParamsPtr[2] * affineParamsPtr[4] ) 
+    ) 
+    / 
+    determinant;
+  inverseAffineParamsPtr[3] = ( -1.0 * affineParamsPtr[3] ) / determinant;
+  inverseAffineParamsPtr[4] = ( affineParamsPtr[0] ) / determinant;
+  inverseAffineParamsPtr[5] = 
+    (
+      ( -1.0 * ( affineParamsPtr[0] * affineParamsPtr[5] ) )
+      + 
+      ( affineParamsPtr[3] * affineParamsPtr[2] )
+    )
+    /
+    determinant;   
+    
+  return true;
 }

@@ -216,7 +216,7 @@ namespace te
 
           \return The length of this Curve in its associated spatial reference.
         */
-        double getLength() const;
+        //double getLength() const;
 
         /*!
           \brief It returns the curve start point.

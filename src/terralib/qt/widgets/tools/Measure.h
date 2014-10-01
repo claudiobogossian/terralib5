@@ -32,9 +32,9 @@
 #include "AbstractTool.h"
 
 // Qt
-#include <QtGui/QFont>
-#include <QtGui/QPainterPath>
-#include <QtGui/QPen>
+#include <QFont>
+#include <QPainterPath>
+#include <QPen>
 
 // STL
 #include <vector>
@@ -94,7 +94,7 @@ namespace te
 
             \note The tool will NOT take the ownership of the given pointers.
           */
-          Measure(MapDisplay* display, const MeasureType& measureType, QObject* parent = 0);
+          Measure(MapDisplay* display, const MeasureType& measureType, const QCursor& cursor, QObject* parent = 0);
 
           /*! \brief Destructor. */
           ~Measure();

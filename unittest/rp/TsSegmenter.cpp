@@ -42,13 +42,12 @@ void TsSegmenter::BlockProcessingWithoutMerging()
 {
   // Progress interface
   te::common::ConsoleProgressViewer progressViewerInstance;
-  te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
+  int viewerId = te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
   
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR 
-    "/data/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -89,18 +88,20 @@ void TsSegmenter::BlockProcessingWithoutMerging()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  
+  te::common::ProgressManager::getInstance().removeViewer( viewerId ); 
 }
 
 void TsSegmenter::BlockProcessingWithMerging()
 {
   // Progress interface
   te::common::ConsoleProgressViewer progressViewerInstance;
-  te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
+  int viewerId = te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
   
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -141,18 +142,20 @@ void TsSegmenter::BlockProcessingWithMerging()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  
+  te::common::ProgressManager::getInstance().removeViewer( viewerId ); 
 }
 
 void TsSegmenter::ThreadedProcessing()
 {
   // Progress interface
   te::common::ConsoleProgressViewer progressViewerInstance;
-  te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
+  int viewerId = te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
   
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -193,18 +196,20 @@ void TsSegmenter::ThreadedProcessing()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  
+  te::common::ProgressManager::getInstance().removeViewer( viewerId ); 
 }
 
 void TsSegmenter::RegionGrowingMeanStrategy()
 {
   // Progress interface
   te::common::ConsoleProgressViewer progressViewerInstance;
-  te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
+  int viewerId = te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
   
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -219,7 +224,7 @@ void TsSegmenter::RegionGrowingMeanStrategy()
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
   strategyParameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::MeanFeaturesType;
-  strategyParameters.m_minSegmentSize = 50;
+  strategyParameters.m_minSegmentSize = 100;
   strategyParameters.m_segmentsSimilarityThreshold = 0.1;
   
   
@@ -247,18 +252,20 @@ void TsSegmenter::RegionGrowingMeanStrategy()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  
+  te::common::ProgressManager::getInstance().removeViewer( viewerId ); 
 }
 
 void TsSegmenter::RegionGrowingBaatzStrategy()
 {
   // Progress interface
   te::common::ConsoleProgressViewer progressViewerInstance;
-  te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
+  int viewerId = te::common::ProgressManager::getInstance().addViewer( &progressViewerInstance );  
   
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -272,13 +279,13 @@ void TsSegmenter::RegionGrowingBaatzStrategy()
   // Creating the algorithm parameters
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
-  strategyParameters.m_minSegmentSize = 25;
-  strategyParameters.m_segmentsSimilarityThreshold = 0.3;
+  strategyParameters.m_minSegmentSize = 100;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.1;
   strategyParameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::BaatzFeaturesType;
    strategyParameters.m_bandsWeights.resize( 
      (unsigned int)inputRasterPointer->getNumberOfBands(),
      1.0 / ((double)inputRasterPointer->getNumberOfBands()) );
-   strategyParameters.m_colorWeight = 0.5;
+   strategyParameters.m_colorWeight = 0.75;
    strategyParameters.m_compactnessWeight = 0.5;
    strategyParameters.m_segmentsSimIncreaseSteps = 10;
   
@@ -306,5 +313,6 @@ void TsSegmenter::RegionGrowingBaatzStrategy()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
-}
 
+  te::common::ProgressManager::getInstance().removeViewer( viewerId ); 
+}

@@ -23,24 +23,24 @@
   \brief A widget used to define a glyph object.
 */
 
-#include "GlyphMarkPropertyItem.h"
-#include "GlyphMarkRenderer.h"
-#include "BasicFillPropertyItem.h"
-#include "AbstractPropertyManager.h"
-
+// TerraLib
 #include "../../../se/Config.h"
 #include "../../../se/Mark.h"
-
-
+#include "../propertybrowser/AbstractPropertyManager.h"
+#include "BasicFillPropertyItem.h"
 #include "CharMapWidget.h"
+#include "GlyphMarkPropertyItem.h"
+#include "GlyphMarkRenderer.h"
 
 // Qt
-#include <QtGui/QDialog>
-#include <QtGui/QGridLayout>
-#include <QtGui/QScrollArea>
-#include <QtGui/QPushButton>
+#include <QDialog>
+#include <QGridLayout>
+#include <QScrollArea>
+#include <QPushButton>
 
-#include "../../../../../third-party/qt/propertybrowser/qtpropertybrowser.h"
+// QtPropertyBrowser
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
+#include <QtPropertyBrowser/QtVariantPropertyManager>
 
 // STL
 #include <cassert>

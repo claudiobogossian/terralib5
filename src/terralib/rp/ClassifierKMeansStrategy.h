@@ -46,6 +46,8 @@ namespace te
              5. Check if the new means are different from the previous iteration,
                 using the convergence threshold.
              6. Check if maximum number of iterations has achieved.
+             
+       \ingroup rp_class
     */
     class TERPEXPORT ClassifierKMeansStrategy : public ClassifierStrategy
     {

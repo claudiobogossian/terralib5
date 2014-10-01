@@ -141,7 +141,7 @@ bool te::gm::AffineGT::computeParameters( GTParameters& params ) const
   /* N_inv calcule */
   boost::numeric::ublas::matrix< double > N_inv;
   
-  if ( te::common::getInverseMatrix( N, N_inv ) ) 
+  if ( te::common::GetInverseMatrix( N, N_inv ) ) 
   {
     /* direct parameters calcule */
 
@@ -171,7 +171,7 @@ bool te::gm::AffineGT::computeParameters( GTParameters& params ) const
     
     boost::numeric::ublas::matrix< double > XExpandedInv;
 
-    if( te::common::getInverseMatrix( XExpanded, XExpandedInv ) ) 
+    if( te::common::GetInverseMatrix( XExpanded, XExpandedInv ) ) 
     {
       params.m_inverseParameters.resize( 6 );
       params.m_inverseParameters[0] = XExpandedInv(0,0);

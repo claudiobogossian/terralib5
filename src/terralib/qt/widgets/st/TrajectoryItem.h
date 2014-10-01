@@ -1,0 +1,123 @@
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file terralib/qt/widgets/canvas/TrajectoryItem.h
+
+  \brief This file defines a class for a Trajectory Item.
+*/
+
+#ifndef __TERRALIB_QT_WIDGETS_SLIDER_INTERNAL_TRAJECTORY_ITEM_H
+#define __TERRALIB_QT_WIDGETS_SLIDER_INTERNAL_TRAJECTORY_ITEM_H
+
+// TerraLib
+#include "AnimationItem.h"
+#include "../Config.h"
+#include "../../../geometry.h"
+#include "../../../datatype.h"
+
+// Qt
+#include <QtCore/QAbstractAnimation>
+
+namespace te
+{
+  namespace dt
+  {
+    class DateTimeInstant;
+    class TimePeriod;
+ }
+
+  namespace qt
+  {
+    namespace widgets
+    {
+      class MapDisplay;
+      class Animation;
+
+      /*!
+        \class TrajectoryItem
+
+        \brief This class is a dialog for the Trajectory Icon Item.
+      */
+      class TEQTWIDGETSEXPORT TrajectoryItem : public AnimationItem
+      {
+        //Q_OBJECT
+        //Q_PROPERTY(QPointF pos READ pos WRITE setPos)
+
+      public:
+
+        /*!
+          \brief Constructor
+          It constructs a Trajectory Icon Item.
+          \param title The icon item title.
+          \param file The icon file.
+          \param display Where the icon item is displayed.
+        */
+        TrajectoryItem(const QString& title, const QString& file, te::qt::widgets::MapDisplay* display);
+
+        /*!
+          \brief Destructor
+          It destructs a Trajectory Icon Item.
+        */
+        virtual ~TrajectoryItem();
+
+        /*!
+          \brief Paint a piece of trajectory trail.
+        */
+        void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
+
+        /*!
+          \brief Draw the trajectory long trail. 
+          It draws the beginning until the current time.
+          The beginning depends on the direction (forward or backward).
+        */
+        void draw();
+
+        /*!
+          \brief Create route points making reprojection if necessary.
+        */
+        void createAnimationDataInDisplayProjection();
+
+        /*!
+          \brief Draw a piece of tracktrajectory trail.
+          It draws from the previous time to the current time.
+
+          \paran curTime The trajectory current time.
+        */
+        void drawForward(const unsigned int& curTime);
+
+        /*!
+          \brief erase a piece of tracktrajectory trail.
+
+          \paran curTime The trajectory current time.
+        */
+        void erase(const unsigned int& curTime);
+
+      public:
+        QColor m_forwardColor;    //!< The forward trail color.
+        QColor m_backwardColor;   //!< The backward trail color.
+        int m_lineWidth;          //!< The route/trail line width in pixels.
+        bool m_erasePerfectly;    //!< flag to erase trajectory piece perfectly (default = false).
+        QPointF m_posOld;         //!< Auxiliar point
+      };
+    } // end namespace widgets
+  }   // end namespace qt
+}     // end namespace te
+
+#endif  // __TERRALIB_QT_WIDGETS_SLIDER_INTERNAL_TRAJECTORY_ITEM_H

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<Application xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="http://www.terralib.org/schemas/af"
+             xsd:schemaLocation="http://www.terralib.org/schemas/af ../../terralib/schemas/terralib/qt/af/config.xsd"
+             version="5.0.0"
+             release="2011-01-01">
+  <Organization>INPE</Organization>
+  <Name>TerraView</Name>
+  <Title>TerraView</Title>
+  <IconName>share/terraview/images/png/terralib-globe-small.png</IconName>
+  <HelpFile xlink:href="share/terraview/help/help.qhc"/>
+  <IconThemeInfo>
+    <BaseDirectory xlink:href="share/terralib/icons"/>
+    <DefaultTheme>terralib</DefaultTheme>
+  </IconThemeInfo>
+  <ToolBarDefaultIconSize>24</ToolBarDefaultIconSize>
+  <DefaultSRID>0</DefaultSRID>
+  <DefaultSelectionColor>#00FF00</DefaultSelectionColor>
+  <AboutDialogLogo xlink:href="share/terraview/images/png/terraview-textual.png"/>
+  <TerraLibLogo xlink:href="share/terralib/images/png/terralib-globe.png"/>
+</Application>

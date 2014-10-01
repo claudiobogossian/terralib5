@@ -27,6 +27,7 @@
 #include "../../common/Translator.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../datatype/Property.h"
+#include "../dataset/DataSetTypeCapabilities.h"
 #include "../dataset/ObjectIdSet.h"
 #include "../query/DataSetName.h"
 #include "../query/Field.h"
@@ -35,6 +36,7 @@
 #include "../query/Where.h"
 #include "../utils/Utils.h"
 #include "../Exception.h"
+#include "../utils/Utils.h"
 #include "DataSource.h"
 #include "DataSourceTransactor.h"
 
@@ -78,4 +80,35 @@ std::auto_ptr<te::da::DataSet> te::da::DataSourceTransactor::getDataSet(const st
   std::auto_ptr<te::da::DataSet> result = query(select.get(), travType, connected);
 
   return result;
+}
+
+std::auto_ptr<te::da::DataSetTypeCapabilities> te::da::DataSourceTransactor::getCapabilities(const std::string &name)
+{
+  std::auto_ptr<te::da::DataSetTypeCapabilities> cap(new te::da::DataSetTypeCapabilities);
+
+  cap->setSupportAll();
+
+  return cap;
+}
+
+void te::da::DataSourceTransactor::changePropertyDefinition(const std::string& datasetName, const std::string& propName, te::dt::Property* newProp)
+{
+}
+
+void te::da::DataSourceTransactor::update(const std::string &/*datasetName*/, te::da::DataSet* /*dataset*/, const std::vector< std::set<int> >& /*properties*/,
+                                          const std::vector<size_t>& /*ids*/)
+{
+  throw te::da::Exception("Operation not implemented for this data source");
+}
+
+bool te::da::DataSourceTransactor::isDataSetNameValid(const std::string& datasetName)
+{
+  std::string invalidChar;
+  return te::da::IsValidName(datasetName, invalidChar);
+}
+
+bool te::da::DataSourceTransactor::isPropertyNameValid(const std::string& propertyName)
+{
+  std::string invalidChar;
+  return te::da::IsValidName(propertyName, invalidChar);
 }

@@ -18,7 +18,7 @@ std::auto_ptr<te::st::CoverageSeries> LoadCoverageSeriesFromGeotif()
     te::da::DataSourceInfo dsinfo;
 
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/st/coverage/geotif";
+    connInfo["URI"] = ""TERRALIB_DATA_DIR"/st/coverage/geotif";
     dsinfo.setConnInfo(connInfo);
     dsinfo.setType("GDAL");
 
@@ -45,11 +45,13 @@ std::auto_ptr<te::st::CoverageSeries> LoadCoverageSeriesFromGeotif()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in TrajectoryExamplesFromKML: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in TrajectoryExamplesFromKML: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in TrajectoryExamplesFromKML!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in TrajectoryExamplesFromKML!" << std::endl;
   }
+
+  return std::auto_ptr<te::st::CoverageSeries>(0);
 }
 

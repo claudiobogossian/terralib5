@@ -32,6 +32,7 @@
 #include "../datatype/DataType.h"
 #include "../datatype/Property.h"
 #include "../datatype/SimpleData.h"
+#include "../datatype/StringProperty.h"
 #include "../datatype/Utils.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
@@ -48,6 +49,14 @@ te::mem::DataSet::DataSet(const te::da::DataSetType* const dt)
     m_i(-1)
 {
   te::da::GetPropertyInfo(dt, m_pnames, m_ptypes);
+
+  // Fill char-encodings
+  for(std::size_t i = 0; i < dt->size(); ++i)
+  {
+    te::dt::StringProperty* p = dynamic_cast<te::dt::StringProperty*>(dt->getProperty(i));
+    if(p != 0)
+      m_encodings[i] = p->getCharEncoding();
+  }
 }
 
 te::mem::DataSet::DataSet(te::da::DataSet& rhs)
@@ -55,6 +64,11 @@ te::mem::DataSet::DataSet(te::da::DataSet& rhs)
     m_i(-1)
 {
   te::da::GetPropertyInfo(&rhs, m_pnames, m_ptypes);
+
+  // Fill char-encodings
+  for(std::size_t i = 0; i < m_ptypes.size(); ++i)
+    if(m_ptypes[i] == te::dt::STRING_TYPE)
+      m_encodings[i] = rhs.getPropertyCharEncoding(i);
 
   copy(rhs, 0);
 }
@@ -64,6 +78,11 @@ te::mem::DataSet::DataSet(const DataSet& rhs, const bool deepCopy)
     m_i(-1)
 {
   te::da::GetPropertyInfo(&rhs, m_pnames, m_ptypes);
+
+  // Fill char-encodings
+  for(std::size_t i = 0; i < m_ptypes.size(); ++i)
+    if(m_ptypes[i] == te::dt::STRING_TYPE)
+      m_encodings[i] = rhs.getPropertyCharEncoding(i);
 
   if(deepCopy)
     m_items.reset(new boost::ptr_vector<DataSetItem>(*(rhs.m_items)));
@@ -143,7 +162,7 @@ void te::mem::DataSet::copy(te::da::DataSet& src, const std::vector<std::size_t>
   //src.moveBeforeFirst();
 
   if(!unlimited & (i < limit))
-    throw Exception(TR_MEMORY("The source dataset has few items than requested copy limit!"));
+    throw Exception(TE_TR("The source dataset has few items than requested copy limit!"));
 }
 
 void te::mem::DataSet::add(DataSetItem* item)
@@ -169,7 +188,7 @@ void te::mem::DataSet::remove(DataSetItem* item)
     }
   }
 
-  throw Exception(TR_DATAACCESS("Item not found in the dataset!"));
+  throw Exception(TE_TR("Item not found in the dataset!"));
 }
 
 void te::mem::DataSet::add(const std::string& propertyName, std::size_t propertyType, const te::dt::AbstractData* defaultValue)
@@ -254,6 +273,15 @@ std::string te::mem::DataSet::getPropertyName(std::size_t pos) const
 void te::mem::DataSet::setPropertyName(const std::string& name, std::size_t pos)
 {
   m_pnames[pos] = name;
+}
+
+te::common::CharEncoding te::mem::DataSet::getPropertyCharEncoding(std::size_t i) const
+{
+  if (m_encodings.size()== 0) return te::common::UNKNOWN_CHAR_ENCODING;
+  std::map<int, te::common::CharEncoding>::const_iterator it = m_encodings.find(i);
+  assert(it != m_encodings.end());
+
+  return it->second;
 }
 
 std::string te::mem::DataSet::getDatasetNameOfProperty(std::size_t /*pos*/) const

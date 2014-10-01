@@ -27,6 +27,8 @@
 #include "../../../../common/Exception.h"
 #include "../../../../common/Translator.h"
 #include "../../../../dataaccess.h"
+#include "../../../../geometry/GeometryProperty.h"
+#include "../../../../maptools/DataSetLayer.h"
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWidget.h"
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
 #include "../../../../qt/widgets/layer/utils/DataSet2Layer.h"
@@ -37,16 +39,33 @@
 #include "../../../../qt/af/Project.h"
 #include "../../../../qt/af/events/LayerEvents.h"
 #include "../../../../raster/Utils.h"
+#include "../../../../terralib4/DataSource.h"
+#include "../../../../terralib4/ThemeInfo.h"
+#include "../../../../se/ChannelSelection.h"
+#include "../../../../se/ColorMap.h"
+#include "../../../../se/FeatureTypeStyle.h"
+#include "../../../../se/Fill.h"
+#include "../../../../se/PolygonSymbolizer.h"
+#include "../../../../se/RasterSymbolizer.h"
+#include "../../../../se/Rule.h"
+#include "../../../../se/SelectedChannel.h"
+#include "../../../../se/Stroke.h"
+#include "../../../../se/Style.h"
+#include "../../../../se/Symbolizer.h"
+#include "../../../../se/Utils.h"
 #include "TL4ConverterWizard.h"
 #include "TL4ConnectorWizardPage.h"
 #include "TL4LayerSelectionWizardPage.h"
 #include "TL4RasterFolderSelectionWizardPage.h"
 #include "TL4FinalPageWizardPage.h"
+#include "TL4ThemeSelectionWizardPage.h"
+#include "Utils.h"
 #include "ui_TL4ConverterWizardForm.h"
 #include "ui_TL4ConnectorWizardPageForm.h"
 #include "ui_TL4LayerSelectionWizardPageForm.h"
 #include "ui_TL4RasterFolderSelectionWizardPageForm.h"
 #include "ui_TL4FinalPageWizardPageForm.h"
+#include "ui_TL4ThemeSelectionWizardPageForm.h"
 
 // STL
 #include <cassert>
@@ -56,10 +75,15 @@
 #include <boost/lexical_cast.hpp>
 
 // Qt
-#include <QtGui/QIcon>
-#include <QtGui/QMessageBox>
-#include <QtGui/QTableWidgetItem>
-#include <QtGui/QGridLayout>
+#include <QIcon>
+#include <QMessageBox>
+#include <QTableWidgetItem>
+#include <QGridLayout>
+
+// TerraLib 4
+#include <terralib4/kernel/TeLegendEntry.h>
+#include <terralib4/kernel/TeRasterTransform.h>
+#include <terralib4/kernel/TeTheme.h>
 
 te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f),
@@ -87,7 +111,7 @@ te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* pare
   m_datasourceSelectorPage->getSelectorWidget()->showDataSourceWithRasterSupport(false);
 
   m_rasterFolderSelectionPage.reset(new TL4RasterFolderSelectionWizardPage(this));
-  m_rasterFolderSelectionPage->setTitle(tr("Raster Folder"));
+  m_rasterFolderSelectionPage->setTitle(tr("Target Raster Folder"));
   m_rasterFolderSelectionPage->setSubTitle(tr("Select folder to store raster data"));
 
   m_resolveNamePage.reset(new QWizardPage(this));
@@ -106,8 +130,12 @@ te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* pare
 
   m_finalPage.reset(new TL4FinalPageWizardPage(this));
   m_finalPage->setTitle(tr("Layer Creation"));
-  m_finalPage->setSubTitle(tr("Select the layers that you want to create a Project Layer"));
-  m_finalPage->setFinalPage(true);
+  m_finalPage->setSubTitle(tr("Select the TerraLib 4.x Layer converted that you want to create a TerraLib 5 Project Layer."));
+
+  m_themeSelection.reset(new TL4ThemeSelectionWizardPage(this));
+  m_themeSelection->setTitle(tr("Theme Creation"));
+  m_themeSelection->setSubTitle(tr("Select the TerraLib 4.x Theme of converted Layers that you want to create a TerraLib 5 Project Layer, with informations like Visual and Grouping."));
+  m_themeSelection->setFinalPage(true);
 
   setPage(PAGE_TERRALIB4_CONNECTOR, m_connectorPage.get());
   setPage(PAGE_LAYER_SELECTION, m_layerSelectionPage.get());
@@ -115,6 +143,7 @@ te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* pare
   setPage(PAGE_RASTERFOLDER_SELECTOR, m_rasterFolderSelectionPage.get());
   setPage(PAGE_NAME_RESOLVE_SELECTOR, m_resolveNamePage.get());
   setPage(PAGE_FINALPAGE, m_finalPage.get());
+  setPage(PAGE_THEME_SELECTION, m_themeSelection.get());
 
   connect(this->button(QWizard::NextButton), SIGNAL(pressed()), this, SLOT(next()));
   connect(this->button(QWizard::BackButton), SIGNAL(pressed()), this, SLOT(back()));
@@ -162,6 +191,9 @@ int te::qt::plugins::terralib4::TL4ConverterWizard::nextId() const
   if(currentId() == PAGE_NAME_RESOLVE_SELECTOR)
     return PAGE_FINALPAGE;
 
+  if(currentId() == PAGE_FINALPAGE)
+    return PAGE_THEME_SELECTION;
+
   return -1;
 }
 
@@ -174,9 +206,13 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
     if(!validTerraLib4Connection())
       return false;
 
-    std::vector<std::string> datasets = m_tl4Database->getDataSetNames();
+    ::terralib4::DataSource* tl4Ds = dynamic_cast<::terralib4::DataSource*>(m_tl4Database.get());
 
-    m_layerSelectionPage->setDatasets(datasets);
+    std::vector<std::string> layers = tl4Ds->getTL4Layers();
+    std::vector<std::string> tables = tl4Ds->getTL4Tables();
+
+    m_layerSelectionPage->setDatasets(layers, tables);
+
   }
   else if(current_page_id == PAGE_LAYER_SELECTION)
   {
@@ -202,10 +238,10 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
     {
       te::qt::widgets::ScopedCursor sc(Qt::WaitCursor);
 
-      std::vector<std::string> selectedLayer = m_layerSelectionPage->getChecked();
+      std::vector<QListWidgetItem*> selectedLayerItems = m_layerSelectionPage->getCheckedItems();
 
       m_resolveNameTableWidget->clearContents();
-      m_resolveNameTableWidget->setRowCount(selectedLayer.size());
+      m_resolveNameTableWidget->setRowCount(selectedLayerItems.size());
 
       te::da::DataSourcePtr tl5ds;
 
@@ -214,12 +250,12 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
 
       bool hasConflicts = false;
 
-      for(std::size_t i = 0; i < selectedLayer.size(); ++i)
+      for(std::size_t i = 0; i < selectedLayerItems.size(); ++i)
       {
-        std::string targetDatasetName = selectedLayer[i];
+        std::string targetDatasetName = selectedLayerItems[i]->text().toStdString();
 
   // is it a raster?
-        std::auto_ptr<te::da::DataSetType> input_dataset_type(m_tl4Database->getDataSetType(selectedLayer[i]));
+        std::auto_ptr<te::da::DataSetType> input_dataset_type(m_tl4Database->getDataSetType(selectedLayerItems[i]->text().toStdString()));
 
         if(input_dataset_type->hasRaster())
         {
@@ -259,11 +295,11 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
           m_resolveNameTableWidget->setItem(i, 0, conflictItem);
         }
 
-        QTableWidgetItem *oldNameItem = new QTableWidgetItem(selectedLayer[i].c_str());
+        QTableWidgetItem *oldNameItem = new QTableWidgetItem(selectedLayerItems[i]->text(), selectedLayerItems[i]->type());
         oldNameItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
         m_resolveNameTableWidget->setItem(i, 1, oldNameItem);
 
-        QTableWidgetItem *newNameItem = new QTableWidgetItem(targetDatasetName.c_str());
+        QTableWidgetItem *newNameItem = new QTableWidgetItem(targetDatasetName.c_str(), selectedLayerItems[i]->type());
         m_resolveNameTableWidget->setItem(i, 2, newNameItem);
       }
 
@@ -397,7 +433,7 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
     QTableWidgetItem* item_source = m_resolveNameTableWidget->item(i, 1);
 
     if(item_source == 0)
-      throw te::common::Exception(TE_QT_PLUGIN_TERRALIB4("Invalid source table item!"));
+      throw te::common::Exception(TE_TR("Invalid source table item!"));
 
     std::string sourceName = item_source->text().toStdString();
 
@@ -405,7 +441,7 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
     QTableWidgetItem* item_target = m_resolveNameTableWidget->item(i, 2);
 
     if(item_target == 0)
-      throw te::common::Exception(TE_QT_PLUGIN_TERRALIB4("Invalid target table item!"));
+      throw te::common::Exception(TE_TR("Invalid target table item!"));
 
     std::string targetName = item_target->text().toStdString();
 
@@ -485,6 +521,21 @@ std::string te::qt::plugins::terralib4::TL4ConverterWizard::getOriginalName(cons
   return "";
 }
 
+std::string te::qt::plugins::terralib4::TL4ConverterWizard::getNewName(const std::string& originalName)
+{
+  int rowCount = m_resolveNameTableWidget->rowCount();
+
+  for(int i = 0; i < rowCount; ++i)
+  {
+    QString oName = m_resolveNameTableWidget->item(i, 1)->text();
+
+    if(originalName.c_str() == oName)
+      return m_resolveNameTableWidget->item(i, 2)->text().toStdString();
+  }
+
+  return "";
+}
+
 void te::qt::plugins::terralib4::TL4ConverterWizard::back()
 {
   QWizard::back();
@@ -535,7 +586,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
     QTableWidgetItem* item_source = m_resolveNameTableWidget->item(i, 1);
 
     if(item_source == 0)
-      throw te::common::Exception(TE_QT_PLUGIN_TERRALIB4("Invalid source table item!"));
+      throw te::common::Exception(TE_TR("Invalid source table item!"));
 
     std::string sourceName = item_source->text().toStdString();
 
@@ -543,7 +594,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
     QTableWidgetItem* item_target = m_resolveNameTableWidget->item(i, 2);
 
     if(item_target == 0)
-      throw te::common::Exception(TE_QT_PLUGIN_TERRALIB4("Invalid target table item!"));
+      throw te::common::Exception(TE_TR("Invalid target table item!"));
 
     std::string targetName = item_target->text().toStdString();
 
@@ -576,9 +627,42 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
 
         std::auto_ptr<te::da::DataSet> ds(m_tl4Database->getDataSet(sourceName));
 
-        std::auto_ptr<te::da::DataSetAdapter> ds_adapter(te::da::CreateAdapter(ds.get(), dt_adapter.get()));
+        std::auto_ptr<te::da::DataSetAdapter> ds_adapter(new te::da::DataSetAdapter(ds.get()));//te::da::CreateAdapter(ds.get(), dt_adapter.get()));
+
+        const std::vector<std::vector<std::size_t> >& indexes = dt_adapter->getConvertedPropertyIndexes();
+        const std::vector<te::da::AttributeConverter>& funcs = dt_adapter->getConverters();
+
+        te::da::DataSetType* type = dt_adapter->getResult();
+
+        te::common::CharEncoding encTo = tl5ds->getEncoding();
+
+        for(std::size_t i = 0; i < type->size(); ++i)
+        {
+          te::dt::Property* p = type->getProperty(i);
+
+          if(p->getType() == te::dt::STRING_TYPE)
+          {
+            te::da::CharEncodingConverter conversor(encTo);
+            ds_adapter->add(p->getName(), p->getType(), indexes[i], conversor);
+          }
+          else
+          {
+            ds_adapter->add(p->getName(), p->getType(), indexes[i], funcs[i]);
+          }
+        }
+
+        ::terralib4::DataSource* tl4Ds = dynamic_cast<::terralib4::DataSource*>(m_tl4Database.get());
+
+        int finalSrid = tl4Ds->getLayerSRID(targetName);
+
+        if(finalSrid == 4979)
+          finalSrid = 4326;
+
+        ds_adapter->setSRID(finalSrid);
 
         std::map<std::string, std::string> opt;
+
+        ds_adapter->moveBeforeFirst();
 
         te::da::Create(tl5ds.get(), dt_adapter->getResult(), ds_adapter.get(), opt);
 
@@ -597,7 +681,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
     {
       std::pair<std::string, std::string> dproblem;
       dproblem.first = sourceName;
-      dproblem.second = TE_QT_PLUGIN_TERRALIB4("unknown problem in conversion!");
+      dproblem.second = TE_TR("unknown problem in conversion!");
       
       problematicDatasets.push_back(dproblem);
     }
@@ -623,7 +707,25 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
   }
 
 // fill next page!
+  ::terralib4::DataSource* tl4Ds = dynamic_cast<::terralib4::DataSource*>(m_tl4Database.get());
+
   m_finalPage->setDataSets(successfulDatasets);
+
+  std::vector<::terralib4::ThemeInfo> themes = tl4Ds->getTL4Themes();
+
+  std::vector<::terralib4::ThemeInfo> convertedThemes;
+  for(std::size_t i = 0; i < themes.size(); ++i)
+  {
+    for(std::size_t j = 0; j < successfulDatasets.size(); ++j)
+    {
+      if(themes[i].m_layerName == getOriginalName(successfulDatasets[j]))
+      {
+        convertedThemes.push_back(themes[i]);
+      }
+    }
+  }
+
+  m_themeSelection->setThemes(convertedThemes);
 
   m_rollback = false;
 }
@@ -684,6 +786,92 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 
       te::qt::af::ApplicationController::getInstance().broadcast(&evt);
     }
+
+    std::vector<::terralib4::ThemeInfo> themes = m_themeSelection->getThemes();
+
+    for(std::size_t i = 0; i < themes.size(); ++i)
+    {
+      te::map::AbstractLayerPtr layer = 0;
+
+      std::string newName = getNewName(themes[i].m_layerName);
+
+      std::auto_ptr<te::da::DataSetType> sourceDt = m_tl4Database->getDataSetType(newName);
+
+      ::terralib4::DataSource* tl4Ds = dynamic_cast<::terralib4::DataSource*>(m_tl4Database.get());
+
+      TeTheme* theme = tl4Ds->getTL4Theme(themes[i]);
+
+      te::se::Style* style = 0;
+
+      if(sourceDt->hasRaster())
+      {
+        std::map<std::string, std::string> connInfo;
+        connInfo["URI"] = m_rasterFolderPath + "/" + themes[i].m_name + ".tif";
+
+        layer = te::qt::widgets::createLayer("GDAL", connInfo);
+
+        style = Convert2TerraLib5(0, theme, true);
+
+        te::se::RasterSymbolizer* symb = te::se::GetRasterSymbolizer(style);
+
+        if(theme->grouping().groupMode_ != TeNoGrouping)
+        {
+          te::se::ColorMap* cm = 0;
+
+          cm = GetRasterGrouping(theme);
+
+          symb->setColorMap(cm);
+
+          std::string band = "0";
+
+          te::se::ChannelSelection* cs = symb->getChannelSelection();
+
+          if(cs->getGrayChannel())
+          {
+            te::se::SelectedChannel* scGray = cs->getGrayChannel();
+
+            scGray->setSourceChannelName(band);
+          }
+          else
+          {
+            te::se::SelectedChannel* scGray = new te::se::SelectedChannel();
+
+            scGray->setSourceChannelName(band);
+
+            cs->setGrayChannel(scGray);
+          }
+
+          cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
+        }
+      }
+      else
+      {
+        std::auto_ptr<te::da::DataSetType> dst = outDataSource->getDataSetType(getNewName(themes[i].m_layerName));
+
+        te::qt::widgets::DataSet2Layer converter(m_targetDataSource->getId());
+
+        te::da::DataSetTypePtr dstPtr(dst.release());
+
+        layer = converter(dstPtr);
+        layer->setTitle(themes[i].m_name);
+
+        // Get Style
+        te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dstPtr.get());
+
+        style = Convert2TerraLib5(geomProp->getGeometryType(), theme);
+
+        if(theme->grouping().groupMode_ != TeNoGrouping)
+          layer->setGrouping(GetGrouping(theme));
+      }
+
+      layer->setStyle(style->clone());
+
+      delete style;
+
+      te::qt::af::evt::LayerAdded evt(layer);
+
+      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+    }
   }
   catch(const te::da::Exception& e)
   {
@@ -697,47 +885,6 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
     QMessageBox::warning(this, tr("Warning"), tr("Automatic layer creation failed!"));
     return;
   }
-
-
-  //  std::string originalName = "";
-  //  std::map<std::string, std::string>::iterator it = m_datasetFinalNames.begin();
-  //  while(it != m_datasetFinalNames.end())
-  //  {
-  //    if(it->second == selected[i])
-  //    {
-  //      originalName = it->first;
-  //      break;
-  //    }
-  //    
-  //    ++it;
-  //  }
-
-  //  std::auto_ptr<te::da::DataSetType> dt = m_tl4Database->getDataSetType(originalName);
-
-  //  if(dt->hasRaster())
-  //  {
-  //    std::map<std::string, std::string> connInfo;
-  //    connInfo["URI"] = m_rasterFolderPath + "/" + selected[i] + ".tif";
-
-  //    lay = te::qt::widgets::createLayer("GDAL", connInfo);
-  //  }
-  //  else
-  //  {
-  //    te::da::DataSourcePtr outDataSource = te::da::DataSourceManager::getInstance().find(m_targetDataSource->getId());
-
-  //    te::qt::widgets::DataSet2Layer converter(m_targetDataSource->getId());
-
-  //    std::auto_ptr<te::da::DataSetType> dsType = outDataSource->getDataSetType(selected[i]);
-
-  //    te::da::DataSetTypePtr dt(dsType.release());
-
-  //    lay = converter(dt);
-  //  }
-
-  //  te::qt::af::evt::LayerAdded evt(lay);
-
-  //  te::qt::af::ApplicationController::getInstance().broadcast(&evt);
-  //}
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::help()

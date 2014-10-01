@@ -31,8 +31,8 @@
 #include "Config.h"
 
 // Qt
-#include <QtGui/QAction>
-#include <QtGui/QMenu>
+#include <QAction>
+#include <QMenu>
 
 namespace te
 {
@@ -42,11 +42,18 @@ namespace te
     {
       namespace rp
       {
+        class ArithmeticOpAction;
         class ClassifierAction;
+        class ClippingAction;
+        class ColorTransformAction;
         class ContrastAction;
+        class FilterAction;
+        class FusionAction;
         class MixtureModelAction;
+        class MosaicAction;
         class SegmenterAction;
         class RegisterAction;
+        class VectorizationAction;
 
         class Plugin : public te::plugin::Plugin
         {
@@ -76,16 +83,22 @@ namespace te
 
           protected:
 
-            QMenu* m_rpMenu;                                        //!< RP Main Menu registered.
-            QMenu* m_rpPopupMenu;                                   //!< RP Main Menu registered.
-            QAction* m_popupAction;                                 //!< RP pop up action registered.
+            QMenu* m_rpMenu;                                         //!< RP Main Menu registered.
+            QMenu* m_rpPopupMenu;                                    //!< RP Main Menu registered.
+            QAction* m_popupAction;                                  //!< RP pop up action registered.
 
-            te::qt::plugins::rp::ClassifierAction* m_classifier;    //!< Classifier Process Action
-            te::qt::plugins::rp::ContrastAction* m_contrast;        //!< Contrast Process Action
-            te::qt::plugins::rp::MixtureModelAction* m_mixtureModel;//!< Contrast Process Action
-            te::qt::plugins::rp::SegmenterAction* m_segmenter;      //!< Segmenter Process Action
-            te::qt::plugins::rp::RegisterAction* m_register;        //!< Register Process Action
-
+            te::qt::plugins::rp::ArithmeticOpAction* m_arithmeticOp;  //!< Arithmetic Operation Process Action
+            te::qt::plugins::rp::ClassifierAction* m_classifier;      //!< Classifier Process Action
+            te::qt::plugins::rp::ClippingAction* m_clipping;          //!< Clipping Process Action
+            te::qt::plugins::rp::ColorTransformAction* m_colorTrans;  //!< Color Transform Process Action
+            te::qt::plugins::rp::ContrastAction* m_contrast;          //!< Contrast Process Action
+            te::qt::plugins::rp::FilterAction* m_filter;              //!< Filter Process Action
+            te::qt::plugins::rp::FusionAction* m_fusion;              //!< Fusion Process Action
+            te::qt::plugins::rp::MixtureModelAction* m_mixtureModel;  //!< Mixture Model Process Action
+            te::qt::plugins::rp::MosaicAction* m_mosaic;              //!< Mosaic Process Action
+            te::qt::plugins::rp::SegmenterAction* m_segmenter;        //!< Segmenter Process Action
+            te::qt::plugins::rp::RegisterAction* m_register;          //!< Register Process Action
+            te::qt::plugins::rp::VectorizationAction* m_vector;          //!< Vectorization Process Action
         };
 
       } // end namespace rp

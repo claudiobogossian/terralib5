@@ -66,9 +66,6 @@ class TsDataSourceTransactor : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( tcGetDataSetByEnvRec1 );
   CPPUNIT_TEST( tcGetDataSetByEnvRec2 );
   CPPUNIT_TEST( tcQueryByString );
-  CPPUNIT_TEST( tcGetCatalogLoader );
-  CPPUNIT_TEST( tcGetDataSetTypePersistence );
-  CPPUNIT_TEST( tcGetDataSetPersistence );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -94,6 +91,7 @@ class TsDataSourceTransactor : public CPPUNIT_NS::TestFixture
     void tcRollback();
     void tcExecuteQuery();
     void tcExecuteCommand();
+    void tcGetDataSource();
 
     /*!
       \brief Test Case: get the dataSet using the i-th position in the DataSourceCatalog.
@@ -128,11 +126,19 @@ class TsDataSourceTransactor : public CPPUNIT_NS::TestFixture
     void tcGetDataSetByGeometry();
 
     /*!
-    \brief Test Case: It get the DataSet identified by the given name using a spatial filter over the given geometric property.
+    \brief Test Case: It gets the DataSet identified by the given name using a spatial filter over the given geometric property.
 
-    This test case will get the DataSet identified by the given name using a spatial filter over the given geometric property.
+    This test case will gets the DataSet identified by the given name using a spatial filter over the given geometric property.
    */
     void tcGetDataSetByProperty();
+
+   /*!
+    \brief Test Case: It gets a dataset identified by the given name using the set of objects identification.
+
+    This test case will the gets the dataset identified by the given name using the set of objects identification.
+   */
+    void tcGetDataSetByOids();
+
     void tcQueryByString(); 
     void tcQueryBySelect();
 
@@ -141,11 +147,7 @@ class TsDataSourceTransactor : public CPPUNIT_NS::TestFixture
     void tcGetPreparedStmt();
     void tcGetBatchExecutor();
     void tcGetCatalogLoader();
-    void tcGetDataSetTypePersistence();
-    void tcGetDataSetPersistence();
     void tcCancel();
-    void tcGetDataSource();
-
 
     //It will come from the setUp of the derived database class (see:TsPostGIS or TsSQLite or ...)
     te::da::DataSource* m_ds;

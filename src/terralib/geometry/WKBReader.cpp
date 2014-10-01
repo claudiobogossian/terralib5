@@ -139,7 +139,7 @@ te::gm::Geometry* te::gm::WKBReader::getGeometry(const char* wkb, const char** e
       return getPolyhedralSurface(wkb, endptr);
 
     default:
-      throw Exception(TR_GEOM("Could not read WKB due to an invalid geometry type!"));
+      throw Exception(TE_TR("Could not read WKB due to an invalid geometry type!"));
   }
 }
 
@@ -329,7 +329,7 @@ te::gm::LineString* te::gm::WKBReader::getLineString(const char* wkb, const char
     break;
 
     default:
-      throw Exception(TR_GEOM("Could not read WKB due to an invalid line string type!"));
+      throw Exception(TE_TR("Could not read WKB due to an invalid line string type!"));
   }
   
   if(te::common::Globals::sm_machineByteOrder != static_cast<te::common::MachineByteOrder>(byteOrder))
@@ -410,7 +410,7 @@ te::gm::LinearRing* te::gm::WKBReader::getLinearRing(const char* wkb, const char
     break;
 
     default:
-      throw Exception(TR_GEOM("Could not read WKB due to an invalid linear ring type!"));
+      throw Exception(TE_TR("Could not read WKB due to an invalid linear ring type!"));
   }
   
   if(te::common::Globals::sm_machineByteOrder != byteOrder)
@@ -518,7 +518,7 @@ te::gm::Polygon* te::gm::WKBReader::getPolygon(const char* wkb, const char** end
     break;
 
     default:
-      throw Exception(TR_GEOM("Could not read WKB due to an invalid polygon type!"));
+      throw Exception(TE_TR("Could not read WKB due to an invalid polygon type!"));
   }
 
   *endptr = wkb;
@@ -589,13 +589,13 @@ te::gm::GeometryCollection* te::gm::WKBReader::getGeometryCollection(const char*
     break;
 
     default:
-      throw Exception(TR_GEOM("Could not read WKB due to an invalid geometry collection type!"));
+      throw Exception(TE_TR("Could not read WKB due to an invalid geometry collection type!"));
   }
 
   *endptr = wkb;
 
   if(gc == 0)
-    throw Exception(TR_GEOM("Could not create geometry collection from wkb!"));
+    throw Exception(TE_TR("Could not create geometry collection from wkb!"));
 
   for(unsigned int i = 0; i < nGeoms; ++i)
   {
@@ -646,13 +646,13 @@ te::gm::PolyhedralSurface* te::gm::WKBReader::getPolyhedralSurface(const char* w
     break;
 
     default:
-      throw Exception(TR_GEOM("Could not read WKB due to an invalid polyhedral surface type!"));
+      throw Exception(TE_TR("Could not read WKB due to an invalid polyhedral surface type!"));
   }
 
   *endptr = wkb;
 
   if(ph == 0)
-    throw Exception(TR_GEOM("Could not create polyhedral surface from wkb!"));
+    throw Exception(TE_TR("Could not create polyhedral surface from wkb!"));
 
   for(unsigned int i = 0; i < nPols; ++i)
   {

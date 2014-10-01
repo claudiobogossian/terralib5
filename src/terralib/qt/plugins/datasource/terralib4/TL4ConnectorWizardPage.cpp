@@ -28,7 +28,7 @@
 #include "TL4ConnectorWizardPage.h"
 
 // Qt
-#include <QtGui/QFileDialog>
+#include <QFileDialog>
 
 // Boost
 #include <boost/filesystem.hpp>

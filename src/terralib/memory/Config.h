@@ -55,41 +55,6 @@
 
 //@}
 
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
-  \def TE_MEMORY_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in the TerraLib Memory module.
-*/
-#define TE_MEMORY_TEXT_DOMAIN "tememory"
-
-/*!
-  \def TE_MEMORY_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
-*/
-#define TE_MEMORY_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TR_MAP
-
-  \brief It marks a string in order to get translated. This is a special mark used in the In-memory driver of TerraLib.
-*/
-#define TR_MEMORY(message) TR(message, TE_MEMORY_TEXT_DOMAIN)
-
-/*!
-  \def TR_PLURAL_MAP
-
-  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the In-memory driver of TerraLib. 
-*/
-#define TR_PLURAL_MEMORY(message1, message2, n) TR_PLURAL(TE_MEMORY_TEXT_DOMAIN, message1, message2, n)
-
-//@}
-
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library
  */

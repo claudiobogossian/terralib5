@@ -29,7 +29,7 @@
 #include "../../../common/Logger.h"
 #include "../../af/ApplicationController.h"
 #include "AggregationAction.h"
-//#include "BasicGeographicOperationAction.h"
+#include "GeometricOpAction.h"
 #include "BufferAction.h"
 #include "IntersectionAction.h"
 #include "Plugin.h"
@@ -37,9 +37,23 @@
 //#include "SummarizationAction.h"
 //#include "TransformationAction.h"
 
+#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
+//Log4cxx
+#include <log4cxx/basicconfigurator.h>
+#include <log4cxx/consoleappender.h>
+#include <log4cxx/fileappender.h>
+#include <log4cxx/helpers/pool.h>
+#include <log4cxx/helpers/transcoder.h>
+#include <log4cxx/logger.h>
+#include <log4cxx/logmanager.h>
+#include <log4cxx/logstring.h>
+#include <log4cxx/simplelayout.h>
+#endif
+
 // QT
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
+#include <QMenu>
+#include <QMenuBar>
+#include <QString>
 
 te::qt::plugins::vp::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo), m_vpMenu(0)
@@ -56,18 +70,33 @@ void te::qt::plugins::vp::Plugin::startup()
     return;
 
 // it initializes the Translator support for the TerraLib VP Qt Plugin
-  TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_VP_TEXT_DOMAIN, TE_QT_PLUGIN_VP_TEXT_DOMAIN_DIR, "UTF-8");
+  //TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_VP_TEXT_DOMAIN, TE_QT_PLUGIN_VP_TEXT_DOMAIN_DIR, "UTF-8");
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_VP("TerraLib Qt VP Plugin startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt VP Plugin startup!"));
 
 // add plugin menu
   m_vpMenu = te::qt::af::ApplicationController::getInstance().getMenu("VP");
 
-  m_vpMenu->setTitle(TE_QT_PLUGIN_VP("Vector Processing"));
+  m_vpMenu->setTitle(TE_TR("Vector Processing"));
 
 // register actions
   registerActions();
 
+// vp log startup
+  std::string path = te::qt::af::ApplicationController::getInstance().getUserDataDir().toStdString();
+  path += "/log/terralib_vp.log";
+
+#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
+  log4cxx::FileAppender* fileAppender = new log4cxx::FileAppender(log4cxx::LayoutPtr(new log4cxx::SimpleLayout()),
+    log4cxx::helpers::Transcoder::decode(path.c_str()), false);
+
+  log4cxx::helpers::Pool p;
+  fileAppender->activateOptions(p);
+
+  log4cxx::BasicConfigurator::configure(log4cxx::AppenderPtr(fileAppender));
+  log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());
+  log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("vp");
+#endif
   m_initialized = true;
 }
 
@@ -82,7 +111,11 @@ void te::qt::plugins::vp::Plugin::shutdown()
 // unregister actions
   unRegisterActions();
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_VP("TerraLib Qt VP Plugin shutdown!"));
+#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
+  log4cxx::LogManager::shutdown();
+#endif
+
+  TE_LOG_TRACE(TE_TR("TerraLib Qt VP Plugin shutdown!"));
 
   m_initialized = false;
 }
@@ -90,8 +123,8 @@ void te::qt::plugins::vp::Plugin::shutdown()
 void te::qt::plugins::vp::Plugin::registerActions()
 {
   m_aggregation = new te::qt::plugins::vp::AggregationAction(m_vpMenu);
-  //m_basicGeographicOperation = new te::qt::plugins::vp::BasicGeographicOperationAction(m_vpMenu);
   m_buffer = new te::qt::plugins::vp::BufferAction(m_vpMenu);
+  m_geometricOp = new te::qt::plugins::vp::GeometricOpAction(m_vpMenu);
   m_intersection = new te::qt::plugins::vp::IntersectionAction(m_vpMenu);
   //m_polygonToLine = new te::qt::plugins::vp::PolygonToLineAction(m_vpMenu);
   //m_summarization = new te::qt::plugins::vp::SummarizationAction(m_vpMenu);
@@ -101,8 +134,8 @@ void te::qt::plugins::vp::Plugin::registerActions()
 void  te::qt::plugins::vp::Plugin::unRegisterActions()
 {
   delete m_aggregation;
-  //delete m_basicGeographicOperation;
   delete m_buffer;
+  delete m_geometricOp;
   delete m_intersection;
   //delete m_polygonToLine;
   //delete m_summarization;

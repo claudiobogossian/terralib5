@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -32,38 +32,45 @@
 
 #define TE_CL_MODULE_NAME "te.classification"
 
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
+/** @name ROI Defines
+ *  Flags for ROI export and import funcions
  */
 //@{
 
 /*!
-  \def TE_CL_TEXT_DOMAIN
+  \def TE_CL_ROI_GEOM_ID_NAME
 
-  \brief It contains the name of the text domain used in the translation of messages in Terrralib Classification module.
+  \brief This mark defines the geom id attribute name
  */
-#define TE_CL_TEXT_DOMAIN "teclassification"
+#define TE_CL_ROI_GEOM_ID_NAME "geom_id"
 
 /*!
-  \def TE_CL_TEXT_DOMAIN_DIR
+  \def TE_CL_ROI_LABEL_NAME
 
-  \brief It contains the translation catalog directory.
+  \brief This mark defines the label attribute name
  */
-#define TE_CL_TEXT_DOMAIN_DIR "locale"
+#define TE_CL_ROI_LABEL_NAME "label"
 
 /*!
-  \def TR_CL
+  \def TE_CL_ROI_COLOR_NAME
 
-  \brief It marks a string in order to get translated. This is a special mark used in the Terrralib Classification module.
+  \brief This mark defines the color attribute name
  */
-#define TR_CL(message) TR(message, TE_CL_TEXT_DOMAIN)
+#define TE_CL_ROI_COLOR_NAME "color"
 
 /*!
-  \def TR_PLURAL_CLASSIFICATION
+  \def TE_CL_ROI_GEOM_NAME
 
-  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the Classification module of Terrralib.
+  \brief This mark defines the geom attribute name
  */
-#define TR_PLURAL_CLASSIFICATION(message1, message2, n) TR_PLURAL(TE_CLASSIFICATION_TEXT_DOMAIN, message1, message2, n)
+#define TE_CL_ROI_GEOM_NAME "geom"
+
+/*!
+  \def TE_CL_ROI_PK_NAME
+
+  \brief This mark defines the primary key attribute name
+ */
+#define TE_CL_ROI_PK_NAME "pk_roi"
 
 //@}
 

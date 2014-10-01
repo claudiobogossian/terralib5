@@ -3,10 +3,10 @@
 // TerraLib
 #include <terralib/fe.h>
 #include <terralib/se.h>
-#include <terralib/serialization/fe/Filter.h>
-#include <terralib/serialization/se/Style.h>
-#include <terralib/serialization/xlink/SimpleLink.h>
-#include <terralib/serialization/xsd/Schema.h>
+#include <terralib/fe/serialization/xml/Filter.h>
+#include <terralib/se/serialization/xml/Style.h>
+#include <terralib/xlink/serialization/xml/XLinkSerializer.h>
+#include <terralib/xsd/serialization/xml/XSDSerializer.h>
 #include <terralib/xml/Reader.h>
 #include <terralib/xml/ReaderFactory.h>
 #include <terralib/xml/Writer.h>
@@ -149,7 +149,7 @@ std::string EncodeStyle(te::se::Style* style)
 
   // Serializing...
   te::xml::Writer writer(oss);
-  te::serialize::Style::getInstance().write(style, writer);
+  te::se::serialize::Style::getInstance().write(style, writer);
 
   delete style;
 
@@ -162,14 +162,14 @@ te::se::Style* DecodeStyle(const std::string& path)
   reader->read(path);
   reader->next();
 
-  te::se::Style* style = te::serialize::Style::getInstance().read(*reader);
+  te::se::Style* style = te::se::serialize::Style::getInstance().read(*reader);
 
   return style;
 }
 
 void DecodeSchema(const std::string& path)
 {
-  te::xsd::Schema* schema = te::serialize::ReadSchema(path);
+  te::xsd::Schema* schema = te::xsd::serialize::ReadSchema(path);
   assert(schema);
   delete schema;
 }

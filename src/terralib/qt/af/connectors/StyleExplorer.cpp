@@ -57,7 +57,7 @@ void te::qt::af::StyleExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
       te::map::AbstractLayerPtr layer = e->m_layer;
       assert(layer);
 
-      if(layer->getStyle())
+      if(layer->isValid() && layer->getStyle())
         m_explorer->setStyle(layer->getStyle(), layer.get());
     }
     break;

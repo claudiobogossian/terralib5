@@ -33,8 +33,8 @@
 #include "Enums.h"
 
 // Qt
-#include <QtGui/QAction>
-#include <QtGui/QColor>
+#include <QAction>
+#include <QColor>
 
 // STL
 #include <memory>
@@ -45,6 +45,11 @@ namespace te
   namespace da
   {
     class DataSet;
+  }
+
+  namespace gm
+  {
+    class Envelope;
   }
 
   namespace qt
@@ -177,13 +182,15 @@ namespace te
 
             \param layer The layer whose selected objects were changed.
           */
-          LayerSelectedObjectsChanged(te::map::AbstractLayerPtr layer)
+          LayerSelectedObjectsChanged(te::map::AbstractLayerPtr layer, te::gm::Envelope* e = 0)
             : Event(LAYER_SELECTED_OBJECTS_CHANGED),
-              m_layer(layer)
+              m_layer(layer),
+              m_envelope(e)
           {
           }
 
           te::map::AbstractLayerPtr m_layer; //!< Layer whose selected objects were changed.
+          te::gm::Envelope* m_envelope;      //!< The box of the last selected object.
         };
 
         /*!

@@ -33,10 +33,12 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QWizardPage>
+#include <QWizardPage>
 
 // Forward declaration
 namespace Ui { class TL4LayerSelectionWizardPageForm; }
+
+class QListWidgetItem;
 
 namespace te
 {
@@ -50,15 +52,36 @@ namespace te
         {
           Q_OBJECT
 
+          private:
+
+            /*!
+              \enum NodeType
+
+              \brief Auxiliary internal enumeration to control the StyleExplorer tree nodes.
+            */
+            enum NodeType
+            {
+              LAYER      = 0, /*!< TerraLib4 Layer. */
+              THEME      = 1, /*!< TerraLib4 Theme. */
+              TABLE      = 2  /*!< TerraLib4 Table. */
+            };
+
           public:
 
             TL4LayerSelectionWizardPage(QWidget* parent = 0);
 
             ~TL4LayerSelectionWizardPage();
 
-            void setDatasets(std::vector<std::string> datasets);
+            void setDatasets(std::vector<std::string> layers,
+                             std::vector<std::string> tables);
+
+            void setTL4Layers(std::vector<std::string> layers);
+
+            void setTL4Tables(std::vector<std::string> tables);
 
             std::vector<std::string> getChecked();
+
+            std::vector<QListWidgetItem*> getCheckedItems();
 
             bool hasChecked() const;
 

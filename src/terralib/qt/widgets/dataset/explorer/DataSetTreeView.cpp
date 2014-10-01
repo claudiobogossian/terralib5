@@ -36,7 +36,7 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QMenu>
+#include <QMenu>
 
 te::qt::widgets::DataSetTreeView::DataSetTreeView(QWidget* parent)
   : QTreeView(parent),

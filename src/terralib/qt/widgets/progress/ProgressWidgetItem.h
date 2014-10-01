@@ -30,12 +30,12 @@
 #include "../../widgets/Config.h"
 
 //Qt
-#include <QtGui/QCommandLinkButton>
-#include <QtGui/QFrame>
-#include <QtGui/QGridLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QProgressBar>
-#include <QtGui/QWidget>
+#include <QCommandLinkButton>
+#include <QFrame>
+#include <QGridLayout>
+#include <QLabel>
+#include <QProgressBar>
+#include <QWidget>
 
 namespace te
 {

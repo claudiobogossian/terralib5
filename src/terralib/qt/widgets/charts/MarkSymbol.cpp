@@ -34,8 +34,8 @@
 #include "../Utils.h"
 
 // Qt
-#include <QtGui/QImage>
-#include <QtGui/QPainter>
+#include <QImage>
+#include <QPainter>
 
 
 te::qt::widgets::MarkSymbol::MarkSymbol(te::se::Mark* mark, std::size_t size) :

@@ -25,13 +25,13 @@
 
 // TerraView
 #include "AboutDialog.h"
-#include "TerraLibConfig.h"
-#include "TerraViewConfig.h"
+#include "Config.h"
 #include "ui_AboutDialogForm.h"
 
 // TerraLib
-#include <terralib/common/SystemApplicationSettings.h>
 #include <terralib/common/Version.h>
+#include <terralib/qt/af/ApplicationController.h>
+#include <terralib/Version.h>
 
 // Qt
 #include <QtGui/QPixmap>
@@ -42,11 +42,12 @@ AboutDialog::AboutDialog(QWidget* parent, Qt::WindowFlags f)
 {
   m_ui->setupUi(this);
 
-  std::string logoTVLargeFileName = TVIEW_LARGE_LOGO_PIXMAP;
+  std::string logoTVLargeFileName = te::qt::af::ApplicationController::getInstance().getAboutLogo().toStdString();
+
   QPixmap pixmapTVLarge(logoTVLargeFileName.c_str());
   m_ui->m_applicationLargeLogo->setPixmap(pixmapTVLarge);
 
-  std::string logoTEFileName = TVIEW_TE_LOGO_PIXMAP;
+  std::string logoTEFileName = te::qt::af::ApplicationController::getInstance().getTlibLogo().toStdString();
   QPixmap pixmapTE(logoTEFileName.c_str());
 
   pixmapTE = pixmapTE.scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation);
@@ -56,10 +57,10 @@ AboutDialog::AboutDialog(QWidget* parent, Qt::WindowFlags f)
   std::string copyrightStr = tr("<p>Copyright &copy; 2010-2013 INPE<BR>").toStdString();
   m_ui->m_copyrightLabel->setText(copyrightStr.c_str());
 
-  std::string terraviewVersionStr = tr("TerraView Version: ").toStdString() + TERRALIB_STRING_VERSION;
+  std::string terraviewVersionStr = tr("TerraView Version: ").toStdString() + TERRALIB_VERSION_STRING;
   m_ui->m_terraviewVersionLabel->setText(terraviewVersionStr.c_str());
 
-  std::string terralibVersionStr = tr("TerraLib Version: ").toStdString() + TERRALIB_STRING_VERSION;
+  std::string terralibVersionStr = tr("TerraLib Version: ").toStdString() + TERRALIB_VERSION_STRING;
   m_ui->m_terralibVersionLabel->setText(terralibVersionStr.c_str());
 
   std::string buildDateStr = tr("Build Date: ").toStdString() + te::common::Version::buildDate();

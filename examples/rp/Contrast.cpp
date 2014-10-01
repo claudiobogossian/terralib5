@@ -1,7 +1,7 @@
 #include "RPExamples.h"
 
 // TerraLib
-#include <terralib/gdal/Utils.h>
+
 #include <terralib/dataaccess.h>
 //#include <terralib/dataaccess/dataset/DataSetPersistence.h>
 #include <terralib/dataaccess/dataset/DataSetType.h>
@@ -26,7 +26,7 @@ void Contrast()
 
 // open input raster
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
@@ -37,7 +37,7 @@ void Contrast()
 
 // create output raster for linear contrast
       std::map<std::string, std::string> orinfo;
-      orinfo["URI"] = TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_linear_contrast.tif";
+      orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_linear_contrast.tif";
 
 // create contrast algorithm parameters
       te::rp::Contrast::InputParameters contInputParameters;
@@ -76,11 +76,11 @@ void Contrast()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in Contrast(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in Contrast(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in Contrast()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in Contrast()!" << std::endl;
   }
 }
 

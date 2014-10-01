@@ -33,34 +33,6 @@
 
 #define TE_DEFAULT_RASTER_TYPE "GDAL"
 
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
-  \def TE_RASTER_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib Raster module.
- */
-#define TE_RASTER_TEXT_DOMAIN "teraster"
-
-/*!
-  \def TE_RASTER_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
- */
-#define TE_RASTER_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TR_RASTER
-
-  \brief It marks a string in order to get translated. This is a special mark used in the TerraLib Raster module. 
- */
-#define TR_RASTER(message) TR(message, TE_RASTER_TEXT_DOMAIN)
-
-//@}
-
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library
  */

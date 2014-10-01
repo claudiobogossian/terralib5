@@ -26,13 +26,13 @@
 // TerraLib
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/PrimaryKey.h"
-#include "DoubleListWidget.h"
+#include "../utils/DoubleListWidget.h"
 #include "PrimaryKeyConstraintWidget.h"
 #include "ui_ConstraintWidgetForm.h"
 #include "ui_DoubleListWidgetForm.h"
 
 //Qt 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 
 te::qt::widgets::PrimaryKeyConstraintWidget::PrimaryKeyConstraintWidget(te::da::DataSetType* dsType, QWidget* parent, Qt::WindowFlags f)
@@ -75,5 +75,41 @@ te::da::Constraint* te::qt::widgets::PrimaryKeyConstraintWidget::getConstraint()
   }
 
   return pk;
+}
+
+void te::qt::widgets::PrimaryKeyConstraintWidget::setConstraint(te::da::Constraint* constraint)
+{
+  if(!constraint)
+    return;
+
+  te::da::PrimaryKey* pk = dynamic_cast<te::da::PrimaryKey*>(constraint);
+
+  if(!pk)
+    return;
+
+  m_ui->m_nameLineEdit->setText(pk->getName().c_str());
+
+  std::vector<te::dt::Property*> pkProps = pk->getProperties();
+  std::vector<std::string> pkPropsStr;
+  for(std::size_t i = 0; i < pkProps.size(); ++i)
+  {
+    pkPropsStr.push_back(pkProps[i]->getName());
+  }
+
+  std::vector<te::dt::Property*> dtProps = m_dsType->getProperties();
+  std::vector<std::string> dtPropsStr;
+  for(std::size_t i = 0; i < dtProps.size(); ++i)
+  {
+    std::string propStr = dtProps[i]->getName();
+
+    if(std::find(pkPropsStr.begin(), pkPropsStr.end(), propStr) != pkPropsStr.end())
+      continue;
+
+    dtPropsStr.push_back(propStr);
+  }
+
+  m_doubleListWidget->setInputValues(dtPropsStr);
+  m_doubleListWidget->setOutputValues(pkPropsStr);
+
 }
 

@@ -19,26 +19,29 @@
 
 /*!
   \file terralib/rp/Contrast.cpp
+ 
   \brief Contrast enhancement.
 */
 
-#include "Contrast.h"
-
-#include "Functions.h"
-
+// TerraLib
 #include "../raster/Raster.h"
 #include "../raster/Band.h"
 #include "../raster/BandIterator.h"
 #include "../raster/BandProperty.h"
+#include "../raster/Grid.h"
 #include "../raster/RasterProperty.h"
 #include "../raster/RasterSummaryManager.h"
 #include "../raster/RasterFactory.h"
 #include "../common/progress/TaskProgress.h"
+#include "Contrast.h"
+#include "Functions.h"
 #include "Macros.h"
 
-#include "float.h"
+// STL
+#include <cfloat>
+
+// Boost
 #include <boost/concept_check.hpp>
-#include <terralib/raster/Grid.h>
 
 namespace te
 {

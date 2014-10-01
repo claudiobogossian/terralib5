@@ -6,10 +6,10 @@
 #include "DisplayWidget.h"
 
 // Qt
-#include <QtGui/QColor>
-#include <QtGui/QColorDialog>
-#include <QtGui/QFrame>
-#include <QtGui/QPalette>
+#include <QColor>
+#include <QColorDialog>
+#include <QFrame>
+#include <QPalette>
 
 // Boost
 #include <boost/lexical_cast.hpp>
@@ -107,5 +107,5 @@ void te::qt::af::DisplayWidget::onApplyButtonClicked()
 void te::qt::af::DisplayWidget::getHelpInformations(QString& ns, QString& helpFile)
 {
   ns = "dpi.inpe.br.apf";
-  helpFile = "/apf/settings/display/DisplayConfig.html";
+  helpFile = "apf/settings/display/DisplayConfig.html";
 }

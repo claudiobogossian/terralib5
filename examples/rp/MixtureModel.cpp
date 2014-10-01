@@ -16,7 +16,7 @@ void MixtureModel()
 
 // open input raster
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
     bool executeok = false;
@@ -26,7 +26,7 @@ void MixtureModel()
 
 // create output raster for linear mixture model
       std::map<std::string, std::string> orinfo;
-      orinfo["URI"] = TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_linearMixtureModel.tif";
+      orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_linearMixtureModel.tif";
 
 // create algorithm parameters
       te::rp::MixtureModel::InputParameters mmInputParameters;
@@ -88,11 +88,11 @@ void MixtureModel()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in MixtureModel(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in MixtureModel(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in MixtureModel()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in MixtureModel()!" << std::endl;
   }
 }
 

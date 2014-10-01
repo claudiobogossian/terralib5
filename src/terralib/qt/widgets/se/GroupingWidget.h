@@ -34,8 +34,8 @@
 #include <memory>
 
 // QT
-#include <QtGui/QTableWidgetItem>
-#include <QtGui/QWidget>
+#include <QTableWidgetItem>
+#include <QWidget>
 
 // Forward declaraion
 namespace Ui { class GroupingWidgetForm; }
@@ -57,11 +57,8 @@ namespace te
   {
     namespace widgets
     {
-// Forward declarations
-      namespace colorbar
-      {
-        class ColorBar;
-      }
+      // Forward declarations
+      class ColorCatalogWidget;
 
       /*!
         \class GroupingWidget
@@ -91,10 +88,9 @@ namespace te
 
         public:
 
-          void setLayer(te::map::AbstractLayerPtr layer);
+          void setLayers(te::map::AbstractLayerPtr selectedLayer, std::vector<te::map::AbstractLayerPtr> allLayers);
 
           std::auto_ptr<te::map::Grouping> getGrouping();
-
 
         protected:
 
@@ -102,11 +98,13 @@ namespace te
           void initialize();
 
           /*! \brief Updates the widget form based on internal fill element. */
-          void updateUi();
+          void updateUi(bool loadColorBar = false);
 
           void setDataSetType();
 
           void setGrouping();
+
+          void setGrouping(te::map::Grouping* grouping);
 
           void getDataAsDouble(std::vector<double>& vec, const std::string& attrName, const int& dataType, int& nullValues);
 
@@ -122,7 +120,6 @@ namespace te
 
           void listAttributes();
 
-
         public slots:
 
           void onApplyPushButtonClicked();
@@ -135,6 +132,10 @@ namespace te
 
           void onTableWidgetItemChanged(QTableWidgetItem* item);
 
+          void onTableWidgetItemDoubleClicked(QTableWidgetItem* item);
+
+          void onImportPushButtonClicked();
+
         signals:
 
           void applyPushButtonClicked();
@@ -146,7 +147,7 @@ namespace te
 
           te::color::ColorBar* m_cb;                                //!< Terralib color bar objetc
           te::map::AbstractLayerPtr m_layer;                        //!< TerraLib layer auto ptr
-          te::qt::widgets::colorbar::ColorBar* m_colorBar;          //!< Widget used to pick a color.
+          te::qt::widgets::ColorCatalogWidget* m_colorBar;         //!< Widget used to pick a color.
           std::vector<te::map::GroupingItem*> m_legend;             //!< Grouping items
 
           bool m_manual;

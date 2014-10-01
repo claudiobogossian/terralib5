@@ -27,11 +27,11 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_OBSERVATIONDIALOG_H
 
 //TerraLib
-#include "../../maptools/AbstractLayer.h"
-#include "Config.h"
+#include "../../../maptools/AbstractLayer.h"
+#include "../Config.h"
 
 // Qt
-#include <QtGui/QDialog>
+#include <QDialog>
 
 #include <memory>
 
@@ -82,7 +82,7 @@ namespace te
 
           std::auto_ptr<Ui::ObservationDialogForm>  m_ui;                  //!< The dialog form.
           std::auto_ptr<TemporalPropertiesWidget>   m_propertiesWidget;    //!< The widget used to configure the ObservationLayer's properties.
-          std::auto_ptr<DoubleListWidget>           m_observedPropWidget;  // The widget used to configure the layer's observed properties.
+          std::auto_ptr<DoubleListWidget>           m_observedPropWidget;  //!< The widget used to configure the layer's observed properties.
       };
     } // end namespace widgets
   }   // end namespace qt

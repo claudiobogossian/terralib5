@@ -1,0 +1,152 @@
+  TerraLib - Dependencies
+  =======================
+
+If you want to build yourself TerraLib then you need to install some third-party libraries.
+
+For Microsoft Visual C++ users we have prepared a zip file containing all the third-party libraries in a binary format. You can download this package from:
+http://www.dpi.inpe.br/terralib5-devel
+
+In that folder you will find:
+  - terralib5-3rdparty-win32.zip: all the third-party libraries for building a 32-bit version of TerraLib.
+  - terralib5-3rdparty-win32-Qt4.zip: all the third-party libraries for building a 32-bit version of TerraLib with Qt 4 support.
+  - terralib5-3rdparty-win32-Qt5.zip: all the third-party libraries for building a 32-bit version of TerraLib with Qt 5 support.
+
+Below is a list of third-party libraries dependencies and its versions.
+
+
+1. Boost (Mandatory)
+--------------------
+
+TerraLib is built on top of Boost libraries. You will need to have them installed in order to build TerraLib.
+
+Make sure to have at least version 1.54.0 installed.
+
+If you prefer to install from source, download it from:
+http://www.boost.org
+
+
+2. Qt (Optional)
+----------------
+
+Make sure you have an installed version of Qt 4.x or Qt 5.x.
+
+Linux users may use any package manager to perform an easy installation.
+
+Mac OS X can use package managers such as Homebrew (http://brew.sh) or MacPorts (http://www.macports.org) in order to have an easy installation.
+
+If you prefer to install from source, download it from:
+http://qt-project.org/downloads.
+
+Make sure to have at least version 4.6.3 installed.
+
+Windows users that had downloaded the auxiliary package (in the TerraLib site) must install Qt 5.3.0 or Qt 4.8.6.
+
+
+3. QtPropertyBrowser (Optional)
+-------------------------------
+
+QtPropertyBrowser is a free and open source Qt component available from:
+https://qt.gitorious.org/qt-solutions/qt-solutions
+
+We have been using a special port of QtPropertyBrowser that you can get from here:
+http://www.dpi.inpe.br/terralib5-devel/qtpropertybrowser.tar.gz
+
+You can extract the qtpropertybrowser.tar.gz files using:
+
+$ tar xzvf qtpropertybrowser.tar.gz
+
+Run qmake specifying the installation directory:
+
+$ qmake "TERRALIB_DIR=install_dir"
+
+Run make and make install:
+
+$ make
+$ make install
+
+
+4. Qwt (Optional)
+-----------------
+
+Qwt is available from http://qwt.sourceforge.net.
+
+Make sure to have at least version 6.1.0 installed.
+
+
+5. GDAL (Optional)
+------------------
+
+GDAL is available from http://www.gdal.org.
+
+Make sure to have at least version 1.10.0 installed.
+
+
+6. PostgreSQL libpq (Optional)
+------------------------------
+
+libpq is available with PostgreSQL source from http://www.postgresql.org.
+
+Make sure to have at least version 9.1.0 installed.
+
+
+7. Microsoft ADO (Optional)
+---------------------------
+
+Microsof ADO is general installed under a folder such as:
+C:\Program Files (x86)\Common Files\System\ado
+C:\Program Files (x86)\Common Files\System\Ole DB
+
+
+8. Xerces-c (Optional)
+----------------------
+
+Apache Xerces-C++ is available from http://xerces.apache.org/xerces-c.
+
+Make sure to have at least version 3.1.0 installed.
+
+
+9. GEOS (Optional)
+------------------
+
+GEOS is available from http://trac.osgeo.org/geos.
+
+Make sure to have at least version 3.3.9 installed.
+
+
+10. Apache log4cxx (Optional)
+-----------------------------
+
+Apache log4cxx is available from http://logging.apache.org/log4cxx.
+
+Make sure to have at least version 0.10.0 installed.
+
+
+11. Proj4 (Optional)
+--------------------
+
+Proj4 is available from http://trac.osgeo.org/proj.
+
+Make sure to have at least version 4.8.0 installed.
+
+
+12. GNU Iconv (Optional)
+------------------------
+
+GNU Iconv is available from https://www.gnu.org/software/libiconv.
+
+Any recent version may be used.
+
+
+13. GNU gettext (Optional)
+--------------------------
+
+GNU gettext is available from https://www.gnu.org/software/gettext.
+
+Any recent version may be used.
+
+
+For more information on TerraLib, please, visit its main web page at:
+http://www.terralib.org
+
+
+  August 2014, TerraLib Team <terralib-team@dpi.inpe.br>

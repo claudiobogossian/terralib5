@@ -33,6 +33,7 @@
 #include "../datasource/DataSourceCapabilities.h"
 #include "../utils/Utils.h"
 #include "../Exception.h"
+#include "And.h"
 #include "AttributeRestrictionVisitor.h"
 #include "DataSetName.h"
 #include "Select.h"
@@ -42,6 +43,7 @@
 #include "FromItem.h"
 #include "LiteralEnvelope.h"
 #include "PropertyName.h"
+#include "Or.h"
 #include "QueryCapabilities.h"
 #include "SpatialRestrictionVisitor.h"
 #include "ST_EnvelopeIntersects.h"
@@ -95,7 +97,7 @@ std::auto_ptr<te::da::DataSet> te::da::SpatialQueryProcessor::getDataSet(DataSou
   assert(oids.get());
 
   if(oids->size() == 0)
-    throw(Exception(TR_DATAACCESS("The query result is empty.")));
+    throw(Exception(TE_TR("The query result is empty.")));
 
   // Gets the dataset name
   std::string datasetName = getDataSetName(q);
@@ -158,6 +160,9 @@ std::auto_ptr<te::da::ObjectIdSet> te::da::SpatialQueryProcessor::getOIDSet(Data
   baseSelect.setFields(fields->clone().release());
   baseSelect.setFrom(from->clone().release());
 
+   // Attribute Restrictions
+  te::da::Expression* attrRestrictions = getAttrRestrictions(q);
+
   // Gets the spatial restriction
   const std::vector<SpatialRestriction*>& restrictions = srv.getSpatialRestrictions();
 
@@ -171,7 +176,7 @@ std::auto_ptr<te::da::ObjectIdSet> te::da::SpatialQueryProcessor::getOIDSet(Data
     geomRestrictions.push_back(restrictions[i]->m_geometry);
 
   for(std::size_t i = 0; i < restrictions.size(); ++i)
-    oids->Union(getOIDSet(t, baseSelect, restrictions[i], type.get(), geomRestrictions));
+    oids->Union(getOIDSet(t, baseSelect, attrRestrictions, restrictions[i], type.get(), geomRestrictions));
 
   return std::auto_ptr<te::da::ObjectIdSet>(oids);
 }
@@ -209,6 +214,9 @@ std::auto_ptr<te::da::ObjectIdSet> te::da::SpatialQueryProcessor::getOIDSet(Data
   baseSelect.setFields(fields->clone().release());
   baseSelect.setFrom(from->clone().release());
 
+  // Attribute Restrictions
+  te::da::Expression* attrRestrictions = getAttrRestrictions(q);
+
   // Gets the spatial restriction
   const std::vector<SpatialRestriction*>& restrictions = srv.getSpatialRestrictions();
 
@@ -222,12 +230,12 @@ std::auto_ptr<te::da::ObjectIdSet> te::da::SpatialQueryProcessor::getOIDSet(Data
     geomRestrictions.push_back(restrictions[i]->m_geometry);
 
   for(std::size_t i = 0; i < restrictions.size(); ++i)
-    oids->Union(getOIDSet(t, baseSelect, restrictions[i], type.get(), geomRestrictions));
+    oids->Union(getOIDSet(t, baseSelect, attrRestrictions, restrictions[i], type.get(), geomRestrictions));
 
   return std::auto_ptr<te::da::ObjectIdSet>(oids);
 }
 
-te::da::ObjectIdSet* te::da::SpatialQueryProcessor::getOIDSet(DataSourceTransactor* t, Select& baseSelect,
+te::da::ObjectIdSet* te::da::SpatialQueryProcessor::getOIDSet(DataSourceTransactor* t, Select& baseSelect, te::da::Expression* attrRestrictions,
                                                               SpatialRestriction* restriction, const DataSetType* type,
                                                               const std::vector<te::gm::Geometry*>& geomRestrictions)
 {
@@ -249,7 +257,10 @@ te::da::ObjectIdSet* te::da::SpatialQueryProcessor::getOIDSet(DataSourceTransact
   ST_EnvelopeIntersects* eIntersects = new ST_EnvelopeIntersects(pname, lenv);
 
   // Adds the restriction to the base select
-  baseSelect.setWhere(new Where(eIntersects));
+  if(attrRestrictions == 0)
+    baseSelect.setWhere(new Where(eIntersects)); // only extent restriction
+  else
+    baseSelect.setWhere(new Where(new And(attrRestrictions, eIntersects))); // attribute restrictions AND extent restriction
 
   // Retrieves the dataset using the envelope restriction (the candidates)
   std::auto_ptr<DataSet> dataset(t->query(baseSelect, te::common::FORWARDONLY));
@@ -353,4 +364,31 @@ std::string te::da::SpatialQueryProcessor::getDataSetName(const Select& q) const
   const DataSetName* fromItem = dynamic_cast<const DataSetName*>(&from->at(0));
 
   return fromItem->getName();
+}
+
+te::da::Expression* te::da::SpatialQueryProcessor::getAttrRestrictions(const Select& q) const
+{
+  // Try find the attribute restrictions
+  AttributeRestrictionVisitor arv;
+  q.accept(arv);
+
+  if(!arv.hasAttributeRestrictions())
+    return 0;
+
+  const std::vector<AttributeRestriction*> attrRestrictions = arv.getAttributeRestrictions();
+  if(attrRestrictions.size() == 1)
+    return attrRestrictions[0]->m_function->clone();
+
+  assert(attrRestrictions.size() >= 2);
+
+  // For while, using the AND operator
+  And* andOp = new And(attrRestrictions[0]->m_function->clone(), attrRestrictions[1]->m_function->clone());
+  Expression* result = andOp;
+  for(std::size_t i = 2; i < attrRestrictions.size(); ++i)
+  {
+    And* nextAndOp = new And(result, attrRestrictions[i]->m_function->clone());
+    result = nextAndOp;
+  }
+
+  return result;
 }

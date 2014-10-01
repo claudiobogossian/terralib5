@@ -31,7 +31,6 @@
 // TerraLib
 #include "Config.h"
 #include "Enums.h"
-#include "Static.h"
 
 // STL
 #include <string>
@@ -48,13 +47,18 @@ namespace te
       You can access this class to get some specific values
       defined on TerraLib startup.
     */
-    class TECOMMONEXPORT Globals : public Static
+    class TECOMMONEXPORT Globals
     {
       public:
 
         static const MachineByteOrder sm_machineByteOrder;  //!< A flag that indicates the machine byte order (Big Endian or Little Endian).
         static const std::string sm_dummyStr;               //!< A dummy string value.
         static const std::string sm_nanStr;                 //!< Not a number string value.
+      
+      private:
+      
+        Globals();
+        ~Globals();
     };
 
   } // end namespace common

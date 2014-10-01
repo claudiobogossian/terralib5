@@ -24,8 +24,13 @@
 */
 
 // TerraLib
+#include "../../dataaccess/datasource/DataSource.h"
 #include "../../common/StringUtils.h"
 #include "../../common/Translator.h"
+#include "../../dataaccess/datasource/DataSourceFactory.h"
+#include "../cache/AbstractCachePolicyFactory.h"
+#include "../drivers/datasource/DataSourceGraphMetadata.h"
+#include "../loader/AbstractGraphLoaderStrategyFactory.h"
 #include "../Config.h"
 #include "../Exception.h"
 #include "AbstractGraphFactory.h"
@@ -60,7 +65,7 @@ te::graph::AbstractGraph* te::graph::AbstractGraphFactory::make(const std::strin
   AbstractGraphFactory* f = static_cast<AbstractGraphFactory*>(d.find(ucase));
 
   if(f == 0)
-    throw Exception(TR_GRAPH("Could not find concrete factory! Check if it was initialized!"));
+    throw Exception(TE_TR("Could not find concrete factory! Check if it was initialized!"));
 
   AbstractGraph* g = f->create(dsInfo, gInfo);
 
@@ -83,7 +88,7 @@ te::graph::AbstractGraph* te::graph::AbstractGraphFactory::open(const std::strin
   AbstractGraphFactory* f = static_cast<AbstractGraphFactory*>(d.find(ucase));
 
   if(f == 0)
-    throw Exception(TR_GRAPH("Could not find concrete factory! Check if it was initialized!"));
+    throw Exception(TE_TR("Could not find concrete factory! Check if it was initialized!"));
 
   AbstractGraph* g = f->iOpen(dsInfo, gInfo);
 
@@ -97,5 +102,115 @@ te::graph::AbstractGraphFactory::AbstractGraphFactory(const std::string& factory
 {
 }
 
+te::graph::GraphMetadata* te::graph::AbstractGraphFactory::getMetadata(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo)
+{
+  te::graph::GraphMetadata* metadata;
 
+  std::map<std::string, std::string>::const_iterator it;
+  std::map<std::string, std::string>::const_iterator itend = gInfo.end();
 
+  //create data source
+  it = gInfo.find("GRAPH_DATA_SOURCE_TYPE");
+
+  std::auto_ptr<te::da::DataSource> dsPtr;
+
+  if(it != itend)
+  {
+    if(it->second == "MEM")
+    {
+      metadata = new te::graph::GraphMetadata(0);
+
+      metadata->m_memoryGraph = true;
+    }
+    else
+    {
+      dsPtr = te::da::DataSourceFactory::make(it->second); //example: dsType = POSTGIS
+      dsPtr->setConnectionInfo(dsInfo);
+      dsPtr->open();
+
+      te::da::DataSource* ds = dsPtr.release();
+      
+      metadata = new te::graph::DataSourceGraphMetadata(ds);
+
+      metadata->m_memoryGraph = false;
+    }
+  }
+
+  return metadata;
+}
+
+int te::graph::AbstractGraphFactory::getId(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo)
+{
+  std::map<std::string, std::string>::const_iterator it;
+  std::map<std::string, std::string>::const_iterator itend = gInfo.end();
+
+  it = gInfo.find("GRAPH_ID");
+
+  if(it != itend)
+    return atoi(it->second.c_str());
+
+  return -1;
+}
+
+te::graph::AbstractCachePolicy* te::graph::AbstractGraphFactory::getCachePolicy(const std::map<std::string, std::string>& gInfo)
+{
+  std::map<std::string, std::string>::const_iterator it;
+  std::map<std::string, std::string>::const_iterator itend = gInfo.end();
+
+  te::graph::AbstractCachePolicy* cp = 0;
+
+  it = gInfo.find("GRAPH_CACHE_POLICY");
+  if(it != itend)
+  {
+    cp = te::graph::AbstractCachePolicyFactory::make(it->second);
+  }
+
+  return cp;
+}
+
+te::graph::AbstractGraphLoaderStrategy* te::graph::AbstractGraphFactory::getLoaderStrategy(const std::map<std::string, std::string>& gInfo, te::graph::GraphMetadata* metadata)
+{
+  std::map<std::string, std::string>::const_iterator it;
+  std::map<std::string, std::string>::const_iterator itend = gInfo.end();
+
+  te::graph::AbstractGraphLoaderStrategy* ls = 0;
+
+  it = gInfo.find("GRAPH_STRATEGY_LOADER");
+  if(it != itend)
+  {
+    ls = te::graph::AbstractGraphLoaderStrategyFactory::make(it->second, metadata);
+  }
+
+  return ls;
+}
+
+void te::graph::AbstractGraphFactory::setMetadataInformation(const std::map<std::string, std::string>& gInfo, te::graph::GraphMetadata* metadata)
+{
+  std::map<std::string, std::string>::const_iterator it;
+  std::map<std::string, std::string>::const_iterator itend = gInfo.end();
+
+  it = gInfo.find("GRAPH_NAME");
+  if(it != itend)
+  {
+    metadata->setName(it->second);
+  }
+
+  it = gInfo.find("GRAPH_DESCRIPTION");
+  if(it != itend)
+  {
+    metadata->setDescription(it->second);
+  }
+
+  it = gInfo.find("GRAPH_STORAGE_MODE");
+  if(it != itend)
+  {
+    if(it->second == TE_GRAPH_STORAGE_MODE_BY_VERTEX)
+    {
+      metadata->setStorageMode(te::graph::Vertex_List);
+    }
+    else if(it->second == TE_GRAPH_STORAGE_MODE_BY_EDGE)
+    {
+      metadata->setStorageMode(te::graph::Edge_List);
+    }
+  }
+}

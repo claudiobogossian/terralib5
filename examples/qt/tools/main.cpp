@@ -31,9 +31,9 @@
 #include <terralib/plugin.h>
 
 // Qt
-#include <QtCore/QMetaType>
-#include <QtGui/QApplication>
-#include <QtGui/QMessageBox>
+#include <QMetaType>
+#include <QApplication>
+#include <QMessageBox>
 
 // STL
 #include <exception>
@@ -41,15 +41,21 @@
 
 void LoadModules()
 {
-  te::plugin::PluginInfo* info;
-  
-  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.ogr.teplg"));
-  te::plugin::PluginManager::getInstance().add(info); 
-  
-  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg"));
-  te::plugin::PluginManager::getInstance().add(info);
+    te::plugin::PluginInfo* info;
 
-  te::plugin::PluginManager::getInstance().loadAll();
+    std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
+  
+#ifdef TERRALIB_MOD_OGR_ENABLED
+    info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.ogr.teplg");
+    te::plugin::PluginManager::getInstance().add(info); 
+#endif
+  
+#ifdef TERRALIB_MOD_GDAL_ENABLED
+    info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.gdal.teplg");
+    te::plugin::PluginManager::getInstance().add(info);
+#endif
+  
+    te::plugin::PluginManager::getInstance().loadAll();  
 }
 
 
@@ -65,10 +71,10 @@ int main(int argc, char** argv)
     qRegisterMetaType<QImage>("QImage");
 
     // Adjusting icons theme
-    QString spaths = std::string(ICON_THEME_PATH).c_str();
-    QStringList paths = spaths.split(";");
-    QIcon::setThemeName(ICON_THEME);
-    QIcon::setThemeSearchPaths(paths);
+    QStringList ithemes = QIcon::themeSearchPaths();
+    ithemes.push_back(te::common::FindInTerraLibPath("share/terralib/icons").c_str());
+    QIcon::setThemeName("terralib");
+    QIcon::setThemeSearchPaths(ithemes);
 
     LoadModules();
 
@@ -111,9 +117,7 @@ int main(int argc, char** argv)
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried!" << std::endl;
-    std::cout << "Press Enter to exit..." << std::endl;
-    std::cin.get();
+    std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
 
     return EXIT_FAILURE;
   }
@@ -122,9 +126,6 @@ int main(int argc, char** argv)
 
 // finalize Terralib support
   TerraLib::getInstance().finalize();
-
-  std::cout << "Press Enter to exit..." << std::endl;
-  std::cin.get();
 
   return EXIT_SUCCESS;
 }

@@ -36,6 +36,10 @@
 #include <map>
 #include <string>
 
+class TeView;
+class TeAbstractTheme;
+class TeLayer;
+
 namespace te
 {
   namespace dt { class Property; }
@@ -50,6 +54,7 @@ namespace terralib4
   class ObjectIdSet;
   class PreparedQuery;
   class Query;
+  struct ThemeInfo;
 
   class TETERRALIB4EXPORT Transactor : public te::da::DataSourceTransactor
   {
@@ -247,11 +252,27 @@ namespace terralib4
 
       void optimize(const std::map<std::string, std::string>& opInfo);
 
+      te::common::CharEncoding getEncoding();
+
+      std::vector<std::string> getTL4Layers();
+
+      std::vector<std::string> getTL4Tables();
+
+      std::vector<::terralib4::ThemeInfo> getTL4Themes();
+
+      TeTheme* getTL4Theme(const ::terralib4::ThemeInfo theme);
+
+      int getLayerSRID(const std::string & layerName);
+
     private:
 
       DataSource* m_ds;
       TeDatabase* m_db;
       bool m_isInTransaction;
+
+      std::map<int, TeLayer*>& m_layerMap;
+      std::map<int, TeView*>& m_viewMap;
+      std::map<int, TeAbstractTheme*>& m_themeMap;
 
   };
 

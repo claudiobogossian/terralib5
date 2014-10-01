@@ -39,7 +39,7 @@ namespace te
   {
     class Raster;
     class Band;
-  };
+  }
 
   namespace gm
   {
@@ -59,7 +59,7 @@ namespace te
       pointed by m_outRasterPtr (in this case the output band must also be
       passed by m_outRasterBand).
 
-      \ingroup rp
+      \ingroup rp_class
     */
     class TERPEXPORT Classifier : public Algorithm
     {

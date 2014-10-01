@@ -24,7 +24,15 @@
 */
 
 // TerraLib
+#include "../common/Translator.h"
 #include "Surface.h"
+#include "GEOSWriter.h"
+
+#ifdef TERRALIB_GEOS_ENABLED
+// GEOS
+#include <geos/geom/Geometry.h>
+#include <geos/util/GEOSException.h>
+#endif
 
 te::gm::Surface::Surface(GeomType t, int srid, Envelope* mbr)
   : Geometry(t, srid, mbr)
@@ -34,6 +42,18 @@ te::gm::Surface::Surface(GeomType t, int srid, Envelope* mbr)
 te::gm::Surface::Surface(const Surface& rhs)
   : Geometry(rhs)
 {
+}
+
+double te::gm::Surface::getPerimeter() const
+{
+#ifdef TERRALIB_GEOS_ENABLED
+  std::auto_ptr<geos::geom::Geometry> g(GEOSWriter::write(this));
+
+  return g->getLength();
+
+#else
+  throw Exception(TR_TR("getLength routine is supported by GEOS! Please, enable the GEOS support."));
+#endif  
 }
 
 te::gm::Surface& te::gm::Surface::operator=(const Surface& rhs)

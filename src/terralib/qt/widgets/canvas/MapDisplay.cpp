@@ -30,14 +30,15 @@
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../maptools/Utils.h"
 #include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
-#include "MapDisplay.h"
+#include "../utils/ScopedCursor.h"
 #include "Canvas.h"
-#include "ScopedCursor.h"
+#include "MapDisplay.h"
 
 // Qt
-#include <QtCore/QTimer>
-#include <QtGui/QResizeEvent>
-#include <QtGui/QPaintDevice>
+#include <QMimeData>
+#include <QPaintDevice>
+#include <QResizeEvent>
+#include <QTimer>
 
 te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
@@ -211,6 +212,12 @@ double te::qt::widgets::MapDisplay::getHeightMM() const
   return static_cast<double>(heightMM());
 }
 
+void te::qt::widgets::MapDisplay::setSRID(const int& srid, bool doRefresh)
+{
+  te::map::MapDisplay::setSRID(srid, doRefresh);
+  emit displaySridChanged();
+}
+
 QPixmap* te::qt::widgets::MapDisplay::getDisplayPixmap() const
 {
   return m_displayPixmap;
@@ -285,6 +292,9 @@ void te::qt::widgets::MapDisplay::paintEvent(QPaintEvent* e)
 {
   QPainter painter(this);
   painter.drawPixmap(0, 0, *m_displayPixmap);
+
+  emit displayPaintEvent(&painter);
+
   painter.drawPixmap(0, 0, *m_draftPixmap);
 }
 

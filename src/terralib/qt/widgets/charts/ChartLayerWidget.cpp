@@ -34,10 +34,10 @@
 #include "ui_ChartLayerWidgetForm.h"
 
 // Qt
-#include <QtCore/QString>
-#include <QtGui/QColor>
-#include <QtGui/QMessageBox>
-#include <QtGui/QPainterPath>
+#include <QString>
+#include <QColor>
+#include <QMessageBox>
+#include <QPainterPath>
 
 // STL
 #include <memory>
@@ -110,6 +110,7 @@ bool te::qt::widgets::ChartLayerWidget::buildChart()
   chart->setHeight((std::size_t)m_ui->m_sizeSpinBox->value());
   chart->setContourWidth((std::size_t)m_ui->m_contourWidthSpinBox->value());
   chart->setContourColor(te::qt::widgets::Convert2TerraLib(m_colorPicker->getColor()));
+  chart->setAvoidConflicts(m_ui->m_avoidConflictsCheckBox->isChecked());
 
    // Is necessary compute the max value?
   if(chart->getType() == te::map::Bar)
@@ -164,6 +165,7 @@ void te::qt::widgets::ChartLayerWidget::setChart(te::map::Chart* chart)
   m_ui->m_sizeSpinBox->setValue((int)chart->getHeight());
   m_ui->m_contourWidthSpinBox->setValue((int)chart->getContourWidth());
   m_colorPicker->setColor(te::qt::widgets::Convert2Qt(chart->getContourColor()));
+  m_ui->m_avoidConflictsCheckBox->setChecked(chart->getAvoidConflicts());
 
   for(std::size_t t = 0; t < chart->getProperties().size(); ++t)
   {

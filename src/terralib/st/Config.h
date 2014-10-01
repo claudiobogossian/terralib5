@@ -20,7 +20,7 @@
 /*!
   \file Config.h
 
-  \brief Configuration flags for the st (spatiotemporal) module of TerraLib.
+  \brief Teste git! Configuration flags for the st (spatiotemporal) module of TerraLib.
 */
 
 #ifndef __TERRALIB_ST_INTERNAL_CONFIG_H
@@ -56,55 +56,6 @@
 */
 #define TE_STMEMORY_DATASOURCE_ID "STMEMORYDS"
 
-/** @name Internationalization Defines
- *  Flags for TerraLib code internationalization.
- */
-//@{
-
-/*!
-  \def TE_ST_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib ST module.
- */
-#define TE_ST_TEXT_DOMAIN "test"
-
-/*!
-  \def TE_ST_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
- */
-#define TE_ST_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TR_ST
-
-  \brief It marks a string in order to get translated. This is a special mark used in the ST module of TerraLib.
- */
-#define TR_ST(message) TR(message, TE_ST_TEXT_DOMAIN)
-
-/*!
-  \def TR_PLURAL_ST
-
-  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the ST module of TerraLib. 
- */
-#define TR_PLURAL_ST(message1, message2, n) TR_PLURAL(TE_ST_TEXT_DOMAIN, message1, message2, n)
-
-//@}
-
-/** @name Logger Defines
- *  Flags for building TerraLib with Log support
- */
-//@{
-
-/*!
-  \def TE_ST_LOGGER_NAME
-  
-  \brief This is the fully qualified TerraLib ST API logger name.
- */
-#define TE_ST_LOGGER_NAME "te.st"
-
-//@}
-
 /** @name DLL/LIB Module
  *  Flags for building TerraLib ST module as a DLL or as a Static Library
  */
@@ -122,7 +73,10 @@
 #ifdef WIN32
 
   #ifdef _MSC_VER 
-    #pragma warning( disable : 4251  4127)
+    #pragma warning( disable : 4127 )
+    #pragma warning( disable : 4251 )
+    #pragma warning( disable : 4275 )
+
   #endif
 
   #ifdef TESTSTATIC

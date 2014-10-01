@@ -32,27 +32,6 @@
 #define TE_QT_PLUGIN_DATASOURCE_WCS_PLUGIN_NAME "te.qt.datasource.wcs"
 
 /*!
-  \def TE_QT_PLUGIN_DATASOURCE_WCS_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib WCS driver implementation.
-*/
-#define TE_QT_PLUGIN_DATASOURCE_WCS_TEXT_DOMAIN "teqtplugindatasourcewcs"
-
-/*!
-  \def TE_QT_PLUGIN_DATASOURCE_WCS_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
-*/
-#define TE_QT_PLUGIN_DATASOURCE_WCS_TEXT_DOMAIN_DIR "locale"
-
-/*!
-  \def TE_QT_PLUGIN_DATASOURCE_WCS
-
-  \brief It marks a string in order to get translated. This is a special mark used in the DataAccess module of TerraLib.
-*/
-#define TE_QT_PLUGIN_DATASOURCE_WCS(message) TR(message, TE_QT_PLUGIN_DATASOURCE_WCS_TEXT_DOMAIN)
-
-/*!
   \def TEQTPLUGINWCSEXPORT
 
   \brief You can use this macro in order to export/import classes and functions from all plug-ins files.

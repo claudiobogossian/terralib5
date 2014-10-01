@@ -31,7 +31,7 @@
 
 // Qt
 #include <QtCore/QString>
-#include <QtGui/QTreeWidget>
+#include <QTreeWidget>
 
 // STL
 #include <map>

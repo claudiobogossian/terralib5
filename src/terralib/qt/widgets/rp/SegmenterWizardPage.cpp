@@ -24,21 +24,23 @@
 */
 
 // TerraLib
+#include "../../../common/progress/ProgressManager.h"
 #include "../../../common/StringUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/Segmenter.h"
 #include "../../../rp/SegmenterRegionGrowingStrategy.h"
+#include "../progress/ProgressViewerDialog.h"
 #include "RasterNavigatorWidget.h"
 #include "SegmenterWizardPage.h"
 #include "ui_SegmenterWizardPageForm.h"
 
 // Qt
 #include <QGridLayout>
-#include <QtGui/QCheckBox>
-#include <QtGui/QIntValidator>
-#include <QtGui/QMessageBox>
+#include <QCheckBox>
+#include <QIntValidator>
+#include <QMessageBox>
 
 // STL
 #include <memory>
@@ -57,7 +59,7 @@ te::qt::widgets::SegmenterWizardPage::SegmenterWizardPage(QWidget* parent)
 //build form
   QGridLayout* displayLayout = new QGridLayout(m_ui->m_frame);
   m_navigator.reset( new te::qt::widgets::RasterNavigatorWidget(m_ui->m_frame));
-  m_navigator->showAsPreview(true);
+  m_navigator->showAsPreview(true, false);
   m_navigator->hideColorCompositionTool(true);
   displayLayout->addWidget(m_navigator.get());
   displayLayout->setContentsMargins(0,0,0,0);
@@ -75,7 +77,10 @@ te::qt::widgets::SegmenterWizardPage::SegmenterWizardPage(QWidget* parent)
   m_ui->m_minimumSegmentSizeRGLineEdit_2->setValidator(intValB);
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters regGrowStrategyParameters;
+  m_ui->m_minimumSegmentSizeRGLineEdit->setText( QString::number( regGrowStrategyParameters.m_minSegmentSize ) );
+  m_ui->m_minimumSegmentSizeRGLineEdit_2->setText( QString::number( regGrowStrategyParameters.m_minSegmentSize ) );
   m_ui->m_thresholdRGDoubleSpinBox->setValue( regGrowStrategyParameters.m_segmentsSimilarityThreshold );
+  m_ui->m_thresholdBaatzDoubleSpinBox->setValue( regGrowStrategyParameters.m_segmentsSimilarityThreshold );
   m_ui->m_colorWeightBaatzDoubleSpinBox->setValue( regGrowStrategyParameters.m_colorWeight );
   m_ui->m_compactnessWeightBaatzDoubleSpinBox->setValue( regGrowStrategyParameters.m_compactnessWeight );
 
@@ -227,7 +232,12 @@ void te::qt::widgets::SegmenterWizardPage::onStrategyTypeComboBoxActivated(int i
   }
 
   m_ui->m_bandTableWidget->resizeColumnsToContents();
+  
+#if (QT_VERSION >= 0x050000)
+  m_ui->m_bandTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+#else
   m_ui->m_bandTableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+#endif
 }
 
 void te::qt::widgets::SegmenterWizardPage::apply()
@@ -248,8 +258,8 @@ void te::qt::widgets::SegmenterWizardPage::apply()
   te::rp::Segmenter::OutputParameters algoOutputParams;
 
   std::map<std::string, std::string> rinfo;
-  rinfo["MEM_RASTER_NROWS"] = inputRst->getNumberOfRows();
-  rinfo["MEM_RASTER_NCOLS"] = inputRst->getNumberOfColumns();
+  rinfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(inputRst->getNumberOfRows());
+  rinfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(inputRst->getNumberOfColumns());
   rinfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(inputRst->getBandDataType(0));
   rinfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(inputRst->getNumberOfBands());
 
@@ -258,6 +268,10 @@ void te::qt::widgets::SegmenterWizardPage::apply()
 
   //run contrast
   te::rp::Segmenter algorithmInstance;
+
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
 
   try
   {
@@ -275,6 +289,8 @@ void te::qt::widgets::SegmenterWizardPage::apply()
   {
     QMessageBox::warning(this, tr("Warning"), tr("Constrast error."));
   }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
 
   QApplication::restoreOverrideCursor();
 

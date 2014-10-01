@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-20014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,14 +26,28 @@
 // TerraLib
 #include "../../../color/RGBAColor.h"
 #include "../../../maptools/Utils.h"
+#include "../../../se/serialization/xml/Symbolizer.h"
 #include "../../../se/Stroke.h"
 #include "../../../se/SvgParameter.h"
+#include "../../../se/Utils.h"
+#include "../../../xml/Reader.h"
+#include "../../../xml/ReaderFactory.h"
+#include "../Exception.h"
+#include "Symbol.h"
+#include "SymbolLibrary.h"
+#include "SymbolLibraryManager.h"
 #include "Utils.h"
+
+// Boost
+#include <boost/format.hpp>
 
 // Qt
 #include <QtCore/QVector>
-#include <QtGui/QBrush>
-#include <QtGui/QPen>
+#include <QBrush>
+#include <QPen>
+
+// STL
+#include <cassert>
 
 void te::qt::widgets::Config(QPen& pen, const te::se::Stroke* stroke)
 {
@@ -45,7 +59,7 @@ void te::qt::widgets::Config(QPen& pen, const te::se::Stroke* stroke)
 
   // Color
   te::color::RGBAColor rgba(TE_SE_DEFAULT_STROKE_BASIC_COLOR, TE_OPAQUE);
-  te::map::GetColor(stroke, rgba);
+  te::se::GetColor(stroke, rgba);
   QColor qrgba(rgba.getRgba());
   qrgba.setAlpha(rgba.getAlpha());
   pen.setColor(qrgba);
@@ -53,13 +67,13 @@ void te::qt::widgets::Config(QPen& pen, const te::se::Stroke* stroke)
   // Width
   const te::se::SvgParameter* width = stroke->getWidth();
   if(width)
-    pen.setWidth(te::map::GetInt(width));
+    pen.setWidth(te::se::GetInt(width));
 
   // Cap Style
   const te::se::SvgParameter* linecap = stroke->getLineCap();
   if(linecap)
   {
-    std::string capValue = te::map::GetString(linecap);
+    std::string capValue = te::se::GetString(linecap);
 
     Qt::PenCapStyle capStyle = Qt::FlatCap;
     capValue == TE_SE_ROUND_CAP ? capStyle = Qt::RoundCap : capStyle = Qt::SquareCap;
@@ -71,7 +85,7 @@ void te::qt::widgets::Config(QPen& pen, const te::se::Stroke* stroke)
   const te::se::SvgParameter* linejoin = stroke->getLineJoin();
   if(linejoin)
   {
-    std::string joinValue = te::map::GetString(linejoin);
+    std::string joinValue = te::se::GetString(linejoin);
 
     Qt::PenJoinStyle joinStyle = Qt::MiterJoin;
     joinValue == TE_SE_ROUND_JOIN ? joinStyle = Qt::RoundJoin : joinStyle = Qt::BevelJoin;
@@ -83,7 +97,7 @@ void te::qt::widgets::Config(QPen& pen, const te::se::Stroke* stroke)
   const te::se::SvgParameter* dasharray = stroke->getDashArray();
   if(dasharray)
   {
-    std::string value = te::map::GetString(dasharray);
+    std::string value = te::se::GetString(dasharray);
     
     std::vector<double> pattern;
     te::map::GetDashStyle(value, pattern);
@@ -103,10 +117,122 @@ void te::qt::widgets::Config(QBrush& brush, const te::se::Fill* fill)
   }
 
   te::color::RGBAColor rgba(TE_SE_DEFAULT_FILL_BASIC_COLOR, TE_OPAQUE);
-  te::map::GetColor(fill, rgba);
+  te::se::GetColor(fill, rgba);
   QColor qrgba(rgba.getRgba());
   qrgba.setAlpha(rgba.getAlpha());
   brush.setColor(qrgba);
 
   /* TODO: Is necessary verify <GraphicFill> element here ?! */
+}
+
+void te::qt::widgets::ReadSymbolLibrary(const std::string& path)
+{
+  std::auto_ptr<te::xml::Reader> reader(te::xml::ReaderFactory::make("XERCES"));
+  reader->read(path);
+
+  if(!reader->next())
+    throw Exception((boost::format(TE_TR("Could not read symbol library information in file: %1%.")) % path).str());
+
+  if(reader->getNodeType() != te::xml::START_ELEMENT)
+    throw Exception((boost::format(TE_TR("Error reading the document %1%, the start element wasn't found.")) % path).str());
+
+  if(reader->getElementLocalName() != "SymbolLibrary")
+    throw Exception((boost::format(TE_TR("The first tag in the document %1% is not 'SymbolLibrary'.")) % path).str());
+
+  std::string name = reader->getAttr("name");
+
+  std::auto_ptr<SymbolLibrary> library(new SymbolLibrary(name));
+
+  reader->next();
+
+  while((reader->getNodeType() == te::xml::START_ELEMENT) &&
+        (reader->getElementLocalName() == "Symbol"))
+  {
+    Symbol* symbol = ReadSymbol(*reader);
+    library->insert(symbol);
+  }
+
+  SymbolLibraryManager::getInstance().insert(library.release());
+
+  assert(reader->getNodeType() == te::xml::END_DOCUMENT);
+}
+
+te::qt::widgets::Symbol* te::qt::widgets::ReadSymbol(te::xml::Reader& reader)
+{
+  std::auto_ptr<te::qt::widgets::Symbol> symbol(new te::qt::widgets::Symbol);
+
+  te::qt::widgets::SymbolInfo info;
+
+  // Symbol Id
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Id");
+  reader.next();
+  info.m_id = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  // Symbol Name
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Name");
+  reader.next();
+  info.m_name = reader.getElementValue();
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
+  // Symbol Author
+  if(reader.getElementLocalName() == "Author")
+  {
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    reader.next();
+    info.m_author = reader.getElementValue();
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
+  }
+
+  // Symbol Tags
+  if(reader.getElementLocalName() == "Tags")
+  {
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    reader.next();
+    info.m_tags = reader.getElementValue();
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
+  }
+
+  // Symbol Description
+  if(reader.getElementLocalName() == "Description")
+  {
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    reader.next();
+    info.m_description = reader.getElementValue();
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
+  }
+
+  symbol->setInfo(info);
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName().find("Symbolizer") != std::string::npos);
+
+  /* TODO: *** Need move the OGC Symbology Enconding serialization methods 
+              from <te::serialization> module to <te::se> module to avoid dependency with serialization module! ***/
+
+  while((reader.getNodeType() == te::xml::START_ELEMENT) &&
+        (reader.getElementLocalName().find("Symbolizer") != std::string::npos))
+    symbol->addSymbolizer(te::se::serialize::Symbolizer::getInstance().read(reader));
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
+  return symbol.release();
 }

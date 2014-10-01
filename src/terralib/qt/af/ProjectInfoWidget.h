@@ -26,7 +26,7 @@
 #ifndef __TERRALIB_QT_AF_INTERNAL_PROJECTINFOWIDGET_H
 #define __TERRALIB_QT_AF_INTERNAL_PROJECTINFOWIDGET_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #include "Config.h"
 

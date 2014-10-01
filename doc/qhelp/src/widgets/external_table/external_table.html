@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+  
+  
+  
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+
+
+
+  
+  
+  
+  
+  <title>External Table</title>
+</head>
+
+
+<body>
+
+
+
+
+<h3 style="text-align: center; font-family: Calibri Light;">Tabular
+File</h3>
+
+
+
+
+<span style="font-weight: normal; font-family: Calibri Light;"></span><span style="font-family: Calibri Light;">This interface is
+used to add a new layer based on a tabular file such as *.csv or
+*.dbf&nbsp;. A tabular file does not have a geometry attribute
+explicitly, however attributes like latitude, longitude can be used to
+form a geometry. Once a input file is chosen it is possible to see a
+few data in the <i>Preview</i> section. <br>
+
+
+
+<br>
+
+
+
+<i>Properties</i> section shows all properties names and the default
+type suggested.&nbsp;&nbsp;It helps to configure (or change) the data
+to its appropriate type or even configuring a new geometry as attribute.<br>
+
+
+
+<br>
+
+
+
+Each combo box
+listed beside a property name holds a list of
+possible data types. &nbsp;A&nbsp; common use for this is to change the
+property type. For example, suppose LAT and LONG are properties of
+string type. If both are converted to double, it is possible to used
+them to create a point geometry. Thus the original data might not have
+spatial properties and be transformed into a spatial data.<br>
+
+
+<br>
+
+
+
+It is also possible to select weather or not to import any of the
+properties, except for primary key and&nbsp;geometry, if there is one.</span><br style="font-family: Calibri Light;">
+
+
+
+<br style="font-family: Calibri Light;">
+
+<span style="font-family: Calibri Light;">
+
+
+It is
+accessed through:</span><br style="font-family: Calibri Light;">
+
+
+
+
+<br style="font-family: Calibri Light;">
+
+
+
+
+<span style="font-weight: bold; font-family: Calibri Light;">Project
+&gt; Add Layer&nbsp;
+&gt; Tabular File...</span><span style="font-family: Calibri Light;">&nbsp;</span><br style="font-family: Calibri Light;">
+
+
+
+
+<ol style="font-family: Calibri Light;">
+
+
+
+
+  <li>Choose the <span style="font-style: italic;">Input data</span> &nbsp;by clicking over&nbsp;<img style="width: 27px; height: 19px;" alt="" src="../../gen_icones/ic_3points.PNG"> and find the tabular file *.csv or *.dbf in your file system.&nbsp; After that the input file
+is opened and a preview of its content is showed.</li>
+
+
+
+
+  <li><span style="font-style: italic;">Preview </span>table displays
+a few rows of data.</li>
+
+
+
+
+  <li>Select on <i>Properties</i> the desired attributes and choose its type if the default is not adequate.</li>
+
+
+
+
+  <li><i>Geometry</i> check
+box is used to
+decide weather or not to create a new geometry based on two properties.
+It is only available if this data does not have a geometry property already.&nbsp;</li>
+
+
+  <li>The<i> Geometry</i> check
+box is only available if the input data does not have a geometry property. It is used to
+decide weather or not to create a geometry based on existing properties to represent a point:</li>
+
+
+
+
+  
+  
+  
+  
+  
+  <ul>
+
+
+
+    <li><i>X</i> spin box - choose the property that will be used to generate the X axis of a new point.</li>
+
+
+
+    <li><i>Y</i>&nbsp;spin box - choose the&nbsp;property that will be used to generate the Y axis
+of a new point.</li>
+
+
+
+  
+  
+  
+  </ul>
+
+
+
+  <li><i>SRID</i> - Inform the SRID number or choose one by clicking on the globe icon.<br>
+
+
+
+    </li>
+
+
+
+
+  
+  <li><b>Ok</b>&nbsp; - It adds a new layer based on the input data and on the configurations defined here.</li>
+
+
+
+
+  <li><b>Cancel</b>&nbsp; - It closes
+the dialog without generating a new layer.<br>
+
+
+
+
+  </li>
+
+
+
+
+</ol>
+
+
+
+
+
+
+
+<div style="text-align: center; font-family: Calibri Light;">
+<div style="text-align: left; margin-left: 40px;">
+<div style="text-align: center;">
+<div style="text-align: left;"></div>
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+</body>
+</html>

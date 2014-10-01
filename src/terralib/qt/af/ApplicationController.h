@@ -34,8 +34,11 @@
 #include <set>
 #include <vector>
 
+// TerraLib
+#include <terralib/common/Singleton.h>
+
 // Boost
-#include <boost/noncopyable.hpp>
+//#include <boost/noncopyable.hpp>
 
 // Qt
 #include <QtCore/QObject>
@@ -73,7 +76,7 @@ namespace te
 
         \ingroup af
       */
-      class TEQTAFEXPORT ApplicationController : public QObject, public boost::noncopyable
+      class TEQTAFEXPORT ApplicationController : public QObject, public te::common::Singleton<ApplicationController>
       {
         Q_OBJECT
 
@@ -98,7 +101,7 @@ namespace te
 
             \pre The application must have been initialized before calling this method.
           */
-          static ApplicationController& getInstance();
+//          static ApplicationController& getInstance();
 
           /*!
             \brief Tells wich configuration file to be used by the controller during its initialization.
@@ -365,6 +368,10 @@ namespace te
           */
           const QString& getAppTitle() const;
 
+          const QString& getAboutLogo() const;
+
+          const QString& getTlibLogo() const;
+
           /*!
             \brief Returns the application icon.
 
@@ -393,6 +400,8 @@ namespace te
           */
           QColor getSelectionColor() const;
 
+          /*! \brief Sets the application selection color. */
+          void setSelectionColor(const QColor& c);
 
           /*!
             \brief Returns main window.
@@ -400,6 +409,10 @@ namespace te
             \return The main window pointer.
           */
           QWidget* getMainWindow() const;
+
+          void setResetTerraLibFlag(const bool& status);
+        
+          const QString& getUserDataDir() const;
 
         protected:
 
@@ -409,10 +422,13 @@ namespace te
           std::set<QObject*> m_applicationItems;      //!< The list of registered application items.
           QWidget* m_msgBoxParentWidget;              //!< Parent used to show message boxes.
           std::string m_appConfigFile;                //!< The application framework configuration file.
+          QString m_userDataDir;                      //!< The data dir used to store data files.
           QString m_appOrganization;                  //!< Organization name.
           QString m_appName;                          //!< Application name.
           QString m_appTitle;                         //!< Application title.
           QString m_appIconName;                      //!< Icon used in the application.
+          QString m_aboutLogo;
+          QString m_tLibLogo;
           QStringList m_recentProjs;                  //!< List of the recent projects.
           QStringList m_recentProjsTitles;            //!< List of the titles of the recent projects.
           std::string m_appUserSettingsFile;          //!< Name of the user settings file.
@@ -431,8 +447,10 @@ namespace te
 
           QSettings m_appSettings;
 
+          bool m_resetTerralib;
+
 // Singleton instance
-          static ApplicationController* sm_instance;  //!< There can be only one object of class Application.
+//          static ApplicationController* sm_instance;  //!< There can be only one object of class Application.
       };
 
     } // end namespace af

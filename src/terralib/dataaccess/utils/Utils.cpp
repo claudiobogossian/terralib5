@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../common/Translator.h"
+#include "../../common/StringUtils.h"
 #include "../../geometry/Envelope.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../raster/RasterProperty.h"
@@ -139,7 +140,7 @@ te::gm::Envelope* te::da::GetExtent(const std::string& datasetName,
   DataSourcePtr datasource(te::da::DataSourceManager::getInstance().find(datasourceId));
 
   if(datasource.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not retrieve data source in order to search for a property extent!"));
+    throw Exception(TE_TR("Could not retrieve data source in order to search for a property extent!"));
 
   std::auto_ptr<te::gm::Envelope> mbr(datasource->getExtent(datasetName, propertyName));
 
@@ -245,7 +246,7 @@ te::da::DataSetType* te::da::GetDataSetType(const std::string& name, const std::
 //    DataSourceInfoPtr dsinfo = te::da::DataSourceInfoManager::getInstance().get(datasourceId);
 //
 //    if(dsinfo.get() == 0)
-//      throw Exception(TR_DATAACCESS("Could not find data source!"));
+//      throw Exception(TE_TR("Could not find data source!"));
 //
 //    te::da::DataSourceManager::getInstance().open(datasourceId, dsinfo->getAccessDriver(), dsinfo->getConnInfo());
 //
@@ -266,7 +267,7 @@ te::da::DataSourcePtr te::da::GetDataSource(const std::string& datasourceId, con
     DataSourceInfoPtr dsinfo = te::da::DataSourceInfoManager::getInstance().get(datasourceId);
 
     if(dsinfo.get() == 0)
-      throw Exception(TR_DATAACCESS("Could not find data source!"));
+      throw Exception(TE_TR("Could not find data source!"));
 
     datasource = te::da::DataSourceManager::getInstance().make(datasourceId, dsinfo->getAccessDriver());
 
@@ -380,8 +381,11 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const std:
   for(std::size_t i = 0; i < names.size(); ++i)
   {
     std::size_t pos = GetPropertyPos(dataset, names[i]);
-    assert(pos != std::string::npos);
-    oids->addProperty(names[i], pos, dataset->getPropertyDataType(pos));
+    
+    if(pos == std::string::npos)
+      throw Exception(TE_TR("Primary Key ") + names[i] + TE_TR(" not found!"));
+    
+      oids->addProperty(names[i], pos, dataset->getPropertyDataType(pos));
   }
 
   while(dataset->moveNext())
@@ -876,4 +880,244 @@ int te::da::GetPropertyIndex(te::da::DataSet* dataSet, const std::string propNam
     }
   }
   return -1;
+}
+
+bool te::da::IsValidName(const std::string& name, std::string& invalidChar)
+{
+  if(name.empty())
+  {
+    return false;
+  }
+
+  if(name[0] >= 0x30 && name[0] <= 0x39)
+  {
+    invalidChar = "begin with a numeric character\n";
+    return false;
+  }
+  if(name[0] == '_')
+  {
+    invalidChar += "begin with a invalid character: underscore _\n";
+    return false;
+  }
+
+  int ff = name.find(" ");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid character: blank space\n";
+    return false;
+  }
+
+  ff = name.find(".");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid character: dot '.'\n";
+    return false;
+  }
+
+  ff = name.find("*");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid character: mathematical symbol '*'\n";
+    return false;
+  }
+
+  ff = name.find("/");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid character: mathematical symbol '/'\n";
+    return false;
+  }
+
+  ff = name.find("(");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid character: parentheses '('\n";
+    return false;
+  }
+
+  ff = name.find(")");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid character: parentheses ')'\n";
+    return false;
+  }
+
+  ff = name.find("-");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid character: mathematical symbol '-'\n";
+    return false;
+  }
+
+  ff = name.find("+");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid character: mathematical symbol '+'\n";
+    return false;
+  }
+
+  ff = name.find("%");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid character: mathematical symbol '%'\n";
+    return false;
+  }
+
+  ff = name.find(">");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid character: mathematical symbol '>'\n";
+    return false;
+  }
+
+  ff = name.find("<");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid character: mathematical symbol '<'\n";
+    return false;
+  }
+
+  ff = name.find("&");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid character: mathematical symbol '&'\n";
+    return false;
+  }
+
+  ff = name.find("$");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid symbol: '$'\n";
+    return false;
+  }
+
+  ff = name.find(";");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid symbol: ';'\n";
+    return false;
+  }
+
+  ff = name.find("=");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid symbol: '='\n";
+    return false;
+  }
+
+  ff = name.find("!");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid symbol: '!'\n";
+    return false;
+  }
+
+  ff = name.find("?");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid symbol: '?'\n";
+    return false;
+  }
+
+  ff = name.find("#");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid symbol: '#'\n";
+    return false;
+  }
+
+  ff = name.find("¨");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid symbol: '¨'\n";
+    return false;
+  }
+
+  ff = name.find(",");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid symbol: ','\n";
+    return false;
+  }
+
+  ff = name.find("/");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid symbol: '/'\n";
+    return false;
+  }
+
+  ff = name.find("@");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid symbol: '@'\n";
+    return false;
+  }
+
+  ff = name.find("{");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid symbol: '{'\n";
+    return false;
+  }
+
+  ff = name.find("}");
+  if(ff >= 0)
+  {
+    invalidChar += "invalid symbol: '}'\n";
+    return false;
+  }
+
+  std::vector<std::string> vecInvalidChars;
+  vecInvalidChars.push_back("ª");
+  vecInvalidChars.push_back("º");
+  vecInvalidChars.push_back("¹");
+  vecInvalidChars.push_back("²");
+  vecInvalidChars.push_back("³");
+
+  for(unsigned int i = 0; i < vecInvalidChars.size(); ++i)
+  {
+    std::string invalidItem = vecInvalidChars[i];
+
+    ff = name.find(invalidItem);
+    if(ff >= 0)
+    {
+      invalidChar += "invalid symbol: '" + invalidItem + "'\n";
+      return false;
+    }
+  }
+  
+  for(unsigned int i = 0; i < name.size(); ++i)
+  { 
+    char value = name[i];
+    if(value < 0)
+    {
+      invalidChar += "invalid symbol\n";
+      return false;
+    }
+  }
+
+  std::string u = te::common::Convert2UCase(name);
+  if(u=="OR" || u=="AND" || u=="NOT" || u=="LIKE" ||
+     u=="SELECT" || u=="FROM" || u=="UPDATE" || u=="DELETE" ||u=="BY" || u=="GROUP" || u=="ORDER" ||
+     u=="DROP" || u=="INTO" || u=="VALUE" || u=="IN" || u=="ASC" || u=="DESC"|| u=="COUNT" || u=="JOIN" ||
+     u=="LEFT" || u=="RIGHT" || u=="INNER" || u=="UNION" || u=="IS" || u=="NULL" || u=="WHERE" ||
+     u=="BETWEEN" || u=="DISTINCT" || u=="TRY" || u=="IT" || u=="INSERT" || u=="ALIASES" || u=="CREATE" ||
+     u=="ALTER" || u=="TABLE" || u=="INDEX" || u=="ALL" || u=="HAVING" || u=="EXEC" || u== "SET" ||
+     u == "AVG" || u == "MAX" || u == "MIN" || u == "SUM" || u == "FILTER" || u == "OFFSET"  || u == "LENGHT" )
+  {
+    invalidChar += "invalid name: using reserved word " + u + "\n";  
+    return false;
+  }
+
+  std::string n = te::common::Convert2LCase(name); 
+  // reserved words
+  if( (n=="zone") || (n=="comp") || (n=="no") || (n=="local") ||
+    (n=="level") || (n=="long"))
+  {
+    invalidChar += "invalid name: using reserved word " + n + "\n";  
+    return false;
+  }
+
+  return true;
 }

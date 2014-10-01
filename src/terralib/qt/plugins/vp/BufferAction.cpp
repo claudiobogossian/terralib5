@@ -31,8 +31,8 @@
 #include "BufferAction.h"
 
 // Qt
-#include <QtCore/QObject>
-#include <QtGui/QMessageBox>
+#include <QObject>
+#include <QMessageBox>
 
 // STL
 #include <memory>
@@ -57,7 +57,7 @@ void te::qt::plugins::vp::BufferAction::onActionActivated(bool checked)
 
   if(prj)
   {
-    dlg.setLayers(prj->getSingleLayers());
+    dlg.setLayers(prj->getSingleLayers(false));
   }
 
   if(dlg.exec() != QDialog::Accepted)

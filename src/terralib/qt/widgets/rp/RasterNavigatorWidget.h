@@ -27,6 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_RP_INTERNAL_RASTERNAVIGATORWIDGET_H
 
 // TerraLib
+#include "../../../geometry/Envelope.h"
 #include "../../../geometry/Polygon.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../maptools/Enums.h"
@@ -36,8 +37,8 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QWidget>
-#include <QtGui/QComboBox>
+#include <QComboBox>
+#include <QWidget>
 
 namespace Ui { class RasterNavigatorWidgetForm; }
 
@@ -82,13 +83,19 @@ namespace te
         public:
 
           /*!
-            \brief This method is used to set the selected layer for mixture model operation
+            \brief This method is used to set the selected layer
             
             \param layer The layer ptr 
 
             \note This layer MUST HAVE a valid raster object.
           */
           void set(te::map::AbstractLayerPtr layer, bool setFullScaleBox = false);
+
+          void setVectorial(te::map::AbstractLayerPtr layer);
+
+          void setExtent(te::gm::Envelope env);
+
+          void removeVectorial();
 
           te::gm::Envelope getCurrentExtent();
 
@@ -98,7 +105,7 @@ namespace te
 
           void drawRaster(te::rst::Raster* rst, te::se::Style* style = 0);
 
-          void showAsPreview(bool asPreview);
+          void showAsPreview(bool asPreview, bool enableZoom = true);
 
           void hideColorCompositionTool(bool hide);
 
@@ -108,11 +115,17 @@ namespace te
 
           void hideGeomTool(bool hide);
 
+          void hideBoxTool(bool hide);
+
           void hideInfoTool(bool hide);
 
           void hideExtraDisplaysTool(bool hide);
 
+          void setSelectionMode(bool mode);
+
         protected slots:
+
+          void onEnvelopeAcquired(te::gm::Envelope env);
 
           void onGeomAquired(te::gm::Polygon* poly);
 
@@ -131,6 +144,8 @@ namespace te
           void onPointPickerToggled(bool checked);
           
           void onGeomToggled(bool checked);
+
+          void onBoxToggled(bool checked);
 
           void onReadPixelToggled(bool checked);
 
@@ -164,9 +179,11 @@ namespace te
 
           void mapDisplayExtentChanged();
 
-          void pointPicked(double x, double y, te::qt::widgets::MapDisplay* map);
+          void pointPicked(double x, double y);
 
-          void geomAquired(te::gm::Polygon* poly, te::qt::widgets::MapDisplay* map);
+          void geomAquired(te::gm::Polygon* poly);
+
+          void envelopeAcquired(te::gm::Envelope env);
 
         protected:
 
@@ -195,7 +212,10 @@ namespace te
 
           int m_currentColumn;                                       //!< The column position of mouse in map display.
           int m_currentRow;                                          //!< The row position of mouse in map display.
+
           te::map::Visibility m_visibility;
+
+          QCursor m_pointCursor;
       };
 
     } // end namespace widgets

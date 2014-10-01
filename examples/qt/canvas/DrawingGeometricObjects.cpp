@@ -6,7 +6,7 @@
 #include <terralib/qt/widgets/canvas/Canvas.h>
 
 // Qt
-#include <QtGui/QApplication>
+#include <QApplication>
 
 void DrawingGeometricObjects()
 {

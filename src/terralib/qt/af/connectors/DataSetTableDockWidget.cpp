@@ -35,12 +35,15 @@ te::qt::af::DataSetTableDockWidget::DataSetTableDockWidget(QWidget* parent)
 {
   m_view = new te::qt::widgets::DataSetTableView(this);
 
+  m_view->setHighlightColor(ApplicationController::getInstance().getSelectionColor());
+
   setWidget(m_view);
 
   setAttribute(Qt::WA_DeleteOnClose, true);
 
-  connect (m_view, SIGNAL(selectOIds(te::da::ObjectIdSet*, const bool&)), SLOT(selectionChanged(te::da::ObjectIdSet*, const bool&)));
+  connect (m_view, SIGNAL(selectOIds(te::da::ObjectIdSet*, const bool&, te::gm::Envelope*)), SLOT(selectionChanged(te::da::ObjectIdSet*, const bool&, te::gm::Envelope*)));
   connect (m_view, SIGNAL(deselectOIds(te::da::ObjectIdSet*)), SLOT(removeSelectedOIds(te::da::ObjectIdSet*)));
+  connect (m_view, SIGNAL(createChartDisplay(te::qt::widgets::ChartDisplayWidget*)), SLOT(chartDisplayCreated(te::qt::widgets::ChartDisplayWidget*)));
 
   // Alternate Colors
   if(te::qt::af::GetAlternateRowColorsFromSettings())
@@ -79,6 +82,11 @@ void te::qt::af::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* layer)
 te::map::AbstractLayer* te::qt::af::DataSetTableDockWidget::getLayer() const
 {
   return m_layer;
+}
+
+void te::qt::af::DataSetTableDockWidget::chartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartWidget)
+{
+  emit createChartDisplay(chartWidget, getLayer());
 }
 
 void te::qt::af::DataSetTableDockWidget::onApplicationTriggered(te::qt::af::evt::Event* evt)
@@ -124,19 +132,24 @@ void te::qt::af::DataSetTableDockWidget::onApplicationTriggered(te::qt::af::evt:
   }
 }
 
-void te::qt::af::DataSetTableDockWidget::selectionChanged(te::da::ObjectIdSet* oids, const bool& add)
+void te::qt::af::DataSetTableDockWidget::selectionChanged(te::da::ObjectIdSet* oids, const bool& add, te::gm::Envelope* env)
 {
   if (!add)
     m_layer->clearSelected();
 
   m_layer->select(oids);
 
-  te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer);
+  te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer, env);
   ApplicationController::getInstance().broadcast(&e);
 }
 
 void te::qt::af::DataSetTableDockWidget::removeSelectedOIds(te::da::ObjectIdSet* oids)
 {
   if(m_layer->getSelected() != 0)
+  {
     m_layer->deselect(oids);
+
+    te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer, 0);
+    ApplicationController::getInstance().broadcast(&e);
+  }
 }

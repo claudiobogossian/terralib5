@@ -36,8 +36,8 @@
 #include <boost/filesystem.hpp>
 
 // Qt
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QMessageBox>
 
 te::qt::plugins::wfs::WFSConnector::WFSConnector(QWidget* parent, Qt::WindowFlags f)
   : te::qt::widgets::AbstractDataSourceConnector(parent, f)
@@ -60,6 +60,9 @@ void te::qt::plugins::wfs::WFSConnector::connect(std::list<te::da::DataSourceInf
   {
     te::da::DataSourceInfoManager::getInstance().add(ds);
     datasources.push_back(ds);
+
+    te::da::DataSourcePtr driver = cdialog->getDriver();
+    te::da::DataSourceManager::getInstance().insert(driver);
   }
 }
 

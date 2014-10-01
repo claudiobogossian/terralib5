@@ -31,7 +31,7 @@
 #include "Enums.h"
 
 // Qt
-#include <QtGui/QWidget>
+#include <QWidget>
 
 //STL
 #include <memory>

@@ -32,7 +32,7 @@
 // Qt
 #include <QtCore/QMap>
 #include <QtCore/QString>
-#include <QtGui/QImage>
+#include <QImage>
 
 // STL
 #include <vector>

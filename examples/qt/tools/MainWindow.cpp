@@ -28,6 +28,7 @@
 #include "SelectionTool.h"
 
 // TerraLib
+#include "../../Config.h"
 #include <terralib/common.h>
 #include <terralib/common/progress/ProgressManager.h>
 #include <terralib/common/progress/TaskProgress.h>
@@ -49,14 +50,14 @@
 #include <terralib/qt/widgets/tools/ZoomWheel.h>
 
 // Qt
-#include <QtGui/QAction>
-#include <QtGui/QActionGroup>
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QDockWidget>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMenu>
-#include <QtGui/QStatusBar>
-#include <QtGui/QToolBar>
+#include <QAction>
+#include <QActionGroup>
+#include <QContextMenuEvent>
+#include <QDockWidget>
+#include <QFileDialog>
+#include <QMenu>
+#include <QStatusBar>
+#include <QToolBar>
 
 // Boost
 #include <boost/lexical_cast.hpp>
@@ -281,14 +282,14 @@ void MainWindow::contextMenuEvent(QContextMenuEvent* e)
 
 void MainWindow::onAddVectorDataTriggered()
 {
-  QString path = QFileDialog::getOpenFileName(this, tr("Select a vector file..."), ""TE_DATA_EXAMPLE_DIR"/data/shp/", tr("ShapeFile *.shp"));
+  QString path = QFileDialog::getOpenFileName(this, tr("Select a vector file..."), ""TERRALIB_DATA_DIR"/shp/", tr("ShapeFile *.shp"));
   if(!path.isNull())
     addDataSetLayer(path, "OGR");
 }
 
 void MainWindow::onAddRasterDataTriggered()
 {
-  QString path = QFileDialog::getOpenFileName(this, tr("Select a raster file..."), ""TE_DATA_EXAMPLE_DIR"/data/rasters/", tr("TIFF *.tif"));
+  QString path = QFileDialog::getOpenFileName(this, tr("Select a raster file..."), ""TERRALIB_DATA_DIR"/rasters/", tr("TIFF *.tif"));
   if(!path.isNull())
     addDataSetLayer(path, "GDAL");
 }
@@ -324,21 +325,21 @@ void MainWindow::onZoomAreaTriggered()
 void MainWindow::onDistanceTriggered()
 {
   delete m_tool;
-  m_tool = new te::qt::widgets::Measure(m_display, te::qt::widgets::Measure::Distance);
+  m_tool = new te::qt::widgets::Measure(m_display, te::qt::widgets::Measure::Distance, Qt::BlankCursor);
   m_display->installEventFilter(m_tool);
 }
 
 void MainWindow::onAreaTriggered()
 {
   delete m_tool;
-  m_tool = new te::qt::widgets::Measure(m_display, te::qt::widgets::Measure::Area);
+  m_tool = new te::qt::widgets::Measure(m_display, te::qt::widgets::Measure::Area, Qt::BlankCursor);
   m_display->installEventFilter(m_tool);
 }
 
 void MainWindow::onAngleTriggered()
 {
   delete m_tool;
-  m_tool = new te::qt::widgets::Measure(m_display, te::qt::widgets::Measure::Angle);
+  m_tool = new te::qt::widgets::Measure(m_display, te::qt::widgets::Measure::Angle, Qt::BlankCursor);
   m_display->installEventFilter(m_tool);
 }
 

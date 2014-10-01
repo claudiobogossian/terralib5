@@ -14,7 +14,16 @@
    <string>Where Clause</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_24">
-   <property name="margin">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
     <number>0</number>
    </property>
    <item row="0" column="0">
@@ -50,14 +59,8 @@
                      <widget class="QLabel" name="label">
                       <property name="minimumSize">
                        <size>
-                        <width>100</width>
+                        <width>130</width>
                         <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>100</width>
-                        <height>16777215</height>
                        </size>
                       </property>
                       <property name="text">
@@ -86,14 +89,8 @@
                      <widget class="QLabel" name="label_2">
                       <property name="minimumSize">
                        <size>
-                        <width>100</width>
+                        <width>130</width>
                         <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>100</width>
-                        <height>16777215</height>
                        </size>
                       </property>
                       <property name="text">
@@ -105,7 +102,14 @@
                      </widget>
                     </item>
                     <item row="0" column="1">
-                     <widget class="QComboBox" name="m_OperatorComboBox"/>
+                     <widget class="QComboBox" name="m_OperatorComboBox">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                     </widget>
                     </item>
                    </layout>
                   </item>
@@ -115,14 +119,8 @@
                      <widget class="QLabel" name="label_3">
                       <property name="minimumSize">
                        <size>
-                        <width>100</width>
+                        <width>130</width>
                         <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>100</width>
-                        <height>16777215</height>
                        </size>
                       </property>
                       <property name="text">
@@ -216,14 +214,8 @@
                      <widget class="QLabel" name="label_6">
                       <property name="minimumSize">
                        <size>
-                        <width>100</width>
+                        <width>130</width>
                         <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>100</width>
-                        <height>16777215</height>
                        </size>
                       </property>
                       <property name="text">
@@ -252,14 +244,8 @@
                      <widget class="QLabel" name="label_4">
                       <property name="minimumSize">
                        <size>
-                        <width>100</width>
+                        <width>130</width>
                         <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>100</width>
-                        <height>16777215</height>
                        </size>
                       </property>
                       <property name="text">
@@ -271,7 +257,14 @@
                      </widget>
                     </item>
                     <item row="0" column="1">
-                     <widget class="QComboBox" name="m_SpatialOperatorComboBox"/>
+                     <widget class="QComboBox" name="m_SpatialOperatorComboBox">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                     </widget>
                     </item>
                    </layout>
                   </item>
@@ -281,14 +274,8 @@
                      <widget class="QLabel" name="label_5">
                       <property name="minimumSize">
                        <size>
-                        <width>100</width>
+                        <width>130</width>
                         <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>100</width>
-                        <height>16777215</height>
                        </size>
                       </property>
                       <property name="text">
@@ -300,7 +287,14 @@
                      </widget>
                     </item>
                     <item row="0" column="1">
-                     <widget class="QComboBox" name="m_layerComboBox"/>
+                     <widget class="QComboBox" name="m_layerComboBox">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                     </widget>
                     </item>
                    </layout>
                   </item>
@@ -363,7 +357,7 @@
         <item row="0" column="0">
          <layout class="QGridLayout" name="gridLayout_11">
           <item row="0" column="0">
-           <widget class="QTabWidget" name="tabWidget">
+           <widget class="QTabWidget" name="m_tabWidget">
             <property name="tabPosition">
              <enum>QTabWidget::West</enum>
             </property>

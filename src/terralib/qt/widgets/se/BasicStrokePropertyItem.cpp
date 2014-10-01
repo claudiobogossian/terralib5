@@ -23,19 +23,23 @@
   \brief A widget used to define the basic fill se object.
 */
 
-#include "BasicStrokePropertyItem.h"
-#include "AbstractPropertyManager.h"
-
+// TerraLib
 #include "../../../se/Config.h"
 #include "../../../se/Stroke.h"
 #include "../../../se/SvgParameter.h"
+#include "../../../se/Utils.h"
 #include "../../../maptools/Utils.h"
 #include "../../../maptools/Enums.h"
+#include "../propertybrowser/AbstractPropertyManager.h"
+#include "BasicStrokePropertyItem.h"
 
 // Qt
-#include <QtGui/QPainter>
-#include <QtGui/QIcon>
-#include "../../../../../third-party/qt/propertybrowser/qtpropertybrowser.h"
+#include <QPainter>
+#include <QIcon>
+
+// QtPropertyBrowser
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
+#include <QtPropertyBrowser/QtVariantPropertyManager>
 
 // STL
 #include <cassert>
@@ -115,7 +119,7 @@ void te::qt::widgets::BasicStrokePropertyItem::updateUi()
 {
   // Color
   te::color::RGBAColor rgba(TE_SE_DEFAULT_STROKE_BASIC_COLOR, TE_OPAQUE);
-  te::map::GetColor(m_stroke, rgba);
+  te::se::GetColor(m_stroke, rgba);
   m_color = QColor(rgba.getRgba());
   m_color.setAlpha(rgba.getAlpha());
   updateUiStrokeColor();
@@ -126,13 +130,13 @@ void te::qt::widgets::BasicStrokePropertyItem::updateUi()
   // Width
   const te::se::SvgParameter* width = m_stroke->getWidth();
   if(width)
-    te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(m_widthProperty, te::map::GetDouble(width));
+    te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(m_widthProperty, te::se::GetDouble(width));
 
   // Dash style
   const te::se::SvgParameter* dasharray = m_stroke->getDashArray();
   if(dasharray)
   {
-    std::string str = te::map::GetString(dasharray);
+    std::string str = te::se::GetString(dasharray);
     for(size_t t = 0; t < m_dashes.size(); ++t)
     {
       if(str == m_dashes[t])
@@ -151,7 +155,7 @@ void te::qt::widgets::BasicStrokePropertyItem::updateUi()
   const te::se::SvgParameter* join = m_stroke->getLineJoin();
   if(join)
   {
-    std::string joinStr = te::map::GetString(join);
+    std::string joinStr = te::se::GetString(join);
 
     std::map<int, std::string>::iterator it = m_joinMap.begin();
 
@@ -174,7 +178,7 @@ void te::qt::widgets::BasicStrokePropertyItem::updateUi()
   const te::se::SvgParameter* cap = m_stroke->getLineCap();
   if(cap)
   {
-    std::string capStr = te::map::GetString(cap);
+    std::string capStr = te::se::GetString(cap);
 
     std::map<int, std::string>::iterator it = m_capMap.begin();
 

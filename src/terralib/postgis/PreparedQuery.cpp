@@ -125,7 +125,7 @@ namespace te
         break;
 
         default :
-          throw Exception(TR_PGIS("The TerraLib data type is not supported by the PostgreSQL driver!"));
+          throw Exception(TE_TR("The TerraLib data type is not supported by the PostgreSQL driver!"));
       }
     }
 
@@ -177,7 +177,7 @@ void te::pgis::PreparedQuery::prepare(const te::da::Query& query, const std::vec
 
 void te::pgis::PreparedQuery::prepare(const std::string& query, const std::vector<te::dt::Property*>& queryParams)
 {
-  throw Exception(TR_PGIS("Not implemented yet!"));
+  throw Exception(TE_TR("Not implemented yet!"));
 }
 
 void te::pgis::PreparedQuery::execute()
@@ -198,7 +198,7 @@ void te::pgis::PreparedQuery::execute()
   if((PQresultStatus(m_result) != PGRES_COMMAND_OK) &&
      (PQresultStatus(m_result) != PGRES_TUPLES_OK))
   {
-    boost::format errmsg(TR_PGIS("Could not execute the prepared query due to the following error: %1%."));
+    boost::format errmsg(TE_TR("Could not execute the prepared query due to the following error: %1%."));
     
     errmsg = errmsg % PQerrorMessage(m_conn);
 
@@ -216,7 +216,7 @@ te::da::DataSet* te::pgis::PreparedQuery::query(te::common::TraverseType /*travT
   std::vector<int> ptypes;
   Convert2TerraLib(m_result, ds->getGeomTypeId(), ds->getRasterTypeId(), ptypes);
 
-  DataSet* dataset = new DataSet(m_result, std::vector<int>(), ds->isTimeAnInteger());
+  DataSet* dataset = new DataSet(m_result, std::vector<int>(), ds->isTimeAnInteger(), ds->getCharEncoding());
 
   m_result = 0;
 
@@ -236,7 +236,7 @@ void te::pgis::PreparedQuery::bind(int i, char value)
 
 void te::pgis::PreparedQuery::bind(int i, unsigned char value)
 {
-  throw Exception(TR_PGIS("The TerraLib unsigned char data type is not supported by PostgreSQL data access driver!"));
+  throw Exception(TE_TR("The TerraLib unsigned char data type is not supported by PostgreSQL data access driver!"));
 }
 
 void te::pgis::PreparedQuery::bind(int i, boost::int16_t value)
@@ -382,7 +382,7 @@ void te::pgis::PreparedQuery::bind(int i, const te::gm::Geometry& value)
 
 void te::pgis::PreparedQuery::bind(int /*i*/, const te::rst::Raster& /*value*/)
 {
-  throw Exception(TR_PGIS("Not implemented yet!"));
+  throw Exception(TE_TR("Not implemented yet!"));
 }
 
 void te::pgis::PreparedQuery::bind(int i, const te::dt::DateTime& value)
@@ -417,12 +417,12 @@ void te::pgis::PreparedQuery::bind(int i, const te::dt::DateTime& value)
 
 void te::pgis::PreparedQuery::bind(int /*i*/, const te::da::DataSet& /*value*/)
 {
-  throw Exception(TR_PGIS("Not implemented yet!"));
+  throw Exception(TE_TR("Not implemented yet!"));
 }
 
 void te::pgis::PreparedQuery::bind(int /*i*/, const te::dt::AbstractData& /*ad*/)
 {
-  throw Exception(TR_PGIS("Not implemented yet!"));
+  throw Exception(TE_TR("Not implemented yet!"));
 }
 
 te::da::DataSourceTransactor* te::pgis::PreparedQuery::getTransactor() const
@@ -457,7 +457,7 @@ void te::pgis::PreparedQuery::prepare(const std::string& query, const std::vecto
   if((PQresultStatus(m_result) != PGRES_COMMAND_OK) &&
      (PQresultStatus(m_result) != PGRES_TUPLES_OK))
   {
-    boost::format errmsg(TR_PGIS("Could not create the prepared query due to the following error: %1%."));
+    boost::format errmsg(TE_TR("Could not create the prepared query due to the following error: %1%."));
     
     errmsg = errmsg % PQerrorMessage(m_conn);
 

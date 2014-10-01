@@ -41,8 +41,8 @@
 #include <cassert>
 
 // Qt
-#include <QtGui/QMessageBox>
-#include <QtGui/QResizeEvent>
+#include <QMessageBox>
+#include <QResizeEvent>
 
 te::qt::widgets::DataSetDisplay::DataSetDisplay(QWidget * parent, Qt::WindowFlags f)
   : QFrame(parent, f)
@@ -78,7 +78,7 @@ void te::qt::widgets::DataSetDisplay::draw(const te::da::DataSetTypePtr& dataset
   }
 }
 
-void te::qt::widgets::DataSetDisplay::draw(const te::da::DataSetTypePtr& dataset, const te::da::DataSourcePtr& ds)
+void te::qt::widgets::DataSetDisplay::draw(const te::da::DataSetTypePtr& dataset, const te::da::DataSourcePtr& ds, te::da::DataSet* datasetData)
 {
   if((dataset.get() == 0) || (ds.get() == 0))
     return;
@@ -152,14 +152,27 @@ void te::qt::widgets::DataSetDisplay::draw(const te::da::DataSetTypePtr& dataset
       break;
   }
 
-  std::auto_ptr<te::da::DataSet> feature(ds->getDataSet(dataset->getName()));
-
-  std::size_t gpos = te::da::GetFirstPropertyPos(feature.get(), te::dt::GEOMETRY_TYPE);
-
-  while(feature->moveNext())
+  if(datasetData)
   {
-    std::auto_ptr<te::gm::Geometry> g(feature->getGeometry(gpos));
-    m_canvas->draw(g.get());
+    std::size_t gpos = te::da::GetFirstPropertyPos(datasetData, te::dt::GEOMETRY_TYPE);
+
+    while(datasetData->moveNext())
+    {
+      std::auto_ptr<te::gm::Geometry> g(datasetData->getGeometry(gpos));
+      m_canvas->draw(g.get());
+    }
+  }
+  else
+  {
+    std::auto_ptr<te::da::DataSet> feature(ds->getDataSet(dataset->getName()));
+
+    std::size_t gpos = te::da::GetFirstPropertyPos(feature.get(), te::dt::GEOMETRY_TYPE);
+
+    while(feature->moveNext())
+    {
+      std::auto_ptr<te::gm::Geometry> g(feature->getGeometry(gpos));
+      m_canvas->draw(g.get());
+    }
   }
 
   repaint();

@@ -23,6 +23,10 @@
   \brief This file defines the abstract class AbstractAction
 */
 
+// Terralib
+#include "../../af/events/LayerEvents.h"
+#include "../../af/ApplicationController.h"
+#include "../../af/Project.h"
 #include "AbstractAction.h"
 
 // STL
@@ -50,4 +54,42 @@ void te::qt::plugins::vp::AbstractAction::createAction(std::string name, std::st
   connect(m_action, SIGNAL(triggered(bool)), this, SLOT(onActionActivated(bool)));
 
   m_menu->addAction(m_action);
+}
+
+void te::qt::plugins::vp::AbstractAction::addNewLayer(te::map::AbstractLayerPtr layer)
+{
+  te::qt::af::evt::LayerAdded evt(layer.get());
+
+  te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+}
+
+te::map::AbstractLayerPtr te::qt::plugins::vp::AbstractAction::getCurrentLayer()
+{
+  te::map::AbstractLayerPtr layer;
+
+  te::qt::af::evt::GetLayerSelected evt;
+
+  te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+
+  if(evt.m_layer.get())
+  {
+    std::auto_ptr<te::da::DataSetType> dsType = evt.m_layer->getSchema();
+
+    if(dsType.get() && dsType->hasRaster())
+      layer = evt.m_layer;
+  }
+
+  return layer;
+}
+
+std::list<te::map::AbstractLayerPtr> te::qt::plugins::vp::AbstractAction::getLayers()
+{
+  std::list<te::map::AbstractLayerPtr> list;
+
+  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
+
+  if(prj)
+    list = prj->getAllLayers(false);
+
+  return list;
 }

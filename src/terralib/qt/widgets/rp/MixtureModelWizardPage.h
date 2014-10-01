@@ -38,8 +38,8 @@
 #include <memory>
 
 // Qt
-#include <QtGui/QWizardPage>
-#include <QtGui/QTableWidget>
+#include <QWizardPage>
+#include <QTableWidget>
 
 // Forward declaration
 namespace Ui { class MixtureModelWizardPageForm; }
@@ -52,7 +52,6 @@ namespace te
   {
     namespace widgets
     {
-      class MapDisplay;
       class RasterNavigatorDialog;
 
       /*!
@@ -108,7 +107,7 @@ namespace te
 
           void onMapDisplayExtentChanged();
 
-          void onPointPicked(double x, double y, te::qt::widgets::MapDisplay* map);
+          void onPointPicked(double x, double y);
 
           void onItemChanged(QTableWidgetItem* item);
 
@@ -137,7 +136,6 @@ namespace te
           unsigned int m_countComponents;                           //!< The maximum number of components inserted.
 
           te::map::AbstractLayerPtr m_layer;
-          te::qt::widgets::MapDisplay* m_display;
           te::color::RGBAColor** m_rgbaMark;
           te::se::Mark* m_mark;
       };

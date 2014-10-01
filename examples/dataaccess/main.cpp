@@ -78,7 +78,7 @@ int main(int /*argc*/, char** /*argv*/)
     connInfo["PG_USER"] = "postgres";
     connInfo["PG_DB_NAME"] = "terralib4";
     connInfo["PG_CONNECT_TIMEOUT"] = "4";
-    connInfo["PG_CLIENT_ENCODING"] = "WIN1252";
+    connInfo["PG_CLIENT_ENCODING"] = "UTF-8";   //"WIN1252";  //"UTF-8"; 
  
     std::string dsType = "POSTGIS";
 
@@ -162,25 +162,16 @@ int main(int /*argc*/, char** /*argv*/)
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried: " << e.what() << std::endl;
-
-    std::cout << "\nPress Enter to exit..." << std::endl;
-    std::cin.get();
+    std::cout << std::endl << "An exception has occurred: " << e.what() << std::endl;
 
     return EXIT_FAILURE;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried!" << std::endl;
-
-    std::cout << "\nPress Enter to exit..." << std::endl;
-    std::cin.get();
+    std::cout << std::endl << "An unexpected exception has occurred!" << std::endl;
 
     return EXIT_FAILURE;
   }
-
-  std::cout << "\nPress Enter to exit..." << std::endl;
-  std::cin.get();
 
   return EXIT_SUCCESS;
 }
@@ -215,7 +206,7 @@ void PrintDataSourceEncodings(const std::string& dsType, const std::map<std::str
 {
   std::cout << "\n===== Encodings for the data source \"" << "terralib4" << "\":\n";
 
-  std::vector<std::string> encs = te::da::DataSource::getEncodings(dsType, info);
+  std::vector<te::common::CharEncoding> encs = te::da::DataSource::getEncodings(dsType, info);
   for(std::size_t i = 0; i < encs.size(); ++i)
     std::cout << encs[i] << std::endl;
 }

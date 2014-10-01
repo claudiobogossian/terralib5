@@ -51,7 +51,7 @@ std::vector<te::gm::Polygon*> SegmentImage(te::rst::Raster* rin)
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TE_DATA_DIR"/data/rasters/cbers2b_rgb342_crop_segmented.tif";
+  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_segmented.tif";
 
 // input parameters
   te::rp::Segmenter::InputParameters algoInputParameters;
@@ -96,13 +96,13 @@ void TsClassifier::ISOSeg()
 {
 // first open the input image
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TE_DATA_DIR"/data/rasters/terralib_unittest_rp_Classifier_ISOSeg_Test.tif";
+  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/terralib_unittest_rp_Classifier_ISOSeg_Test.tif";
 
 // to apply ISOSeg the image must be segmented
   std::vector<te::gm::Polygon*> pin = SegmentImage(rin);
@@ -143,13 +143,13 @@ void TsClassifier::MAP()
 {
 // first open the input image
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TE_DATA_DIR"/data/rasters/terralib_unittest_rp_Classifier_MAP_Test.tif";
+  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/terralib_unittest_rp_Classifier_MAP_Test.tif";
 
 // Defining the classes samples
 
@@ -193,9 +193,9 @@ void TsClassifier::MAP()
   class2Samples.push_back( sampleC2_2 );
   class2Samples.push_back( sampleC2_3 );
 
-  te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCT allClassesSamples;
-  allClassesSamples[ 1 ] = class1Samples;
-  allClassesSamples[ 2 ] = class2Samples;
+  te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCTPtr allClassesSamples(new te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCT());
+  allClassesSamples->insert(te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCT::value_type(1, class1Samples));
+  allClassesSamples->insert(te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCT::value_type(2, class2Samples));
 
 // define classification parameters
 
@@ -208,7 +208,7 @@ void TsClassifier::MAP()
 
 // link specific parameters with chosen implementation
   te::rp::ClassifierMAPStrategy::Parameters classifierparameters;
-  classifierparameters.m_trainSamplesPtr = &allClassesSamples;
+  classifierparameters.m_trainSamplesPtr = allClassesSamples;
 
   algoInputParameters.m_strategyName = "map";
   algoInputParameters.setClassifierStrategyParams(classifierparameters);
@@ -232,13 +232,13 @@ void TsClassifier::EM()
 {
 // first open the input image
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TE_DATA_DIR"/data/rasters/terralib_unittest_rp_Classifier_EM_Test.tif";
+  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/terralib_unittest_rp_Classifier_EM_Test.tif";
 
 // define classification parameters
 
@@ -279,13 +279,13 @@ void TsClassifier::SAM()
 {
 // first open the input image
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TE_DATA_DIR"/data/rasters/terralib_unittest_rp_Classifier_SAM_Test.tif";
+  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/terralib_unittest_rp_Classifier_SAM_Test.tif";
 
 // Defining the classes samples
 
@@ -310,10 +310,10 @@ void TsClassifier::SAM()
   te::rp::ClassifierSAMStrategy::SamplesT class3Samples;
   class3Samples.push_back( sampleC3_1 );  
 
-  te::rp::ClassifierSAMStrategy::ClassesSamplesT allClassesSamples;
-  allClassesSamples[ 1 ] = class1Samples;
-  allClassesSamples[ 2 ] = class2Samples;
-  allClassesSamples[ 3 ] = class3Samples;
+  te::rp::ClassifierSAMStrategy::ClassesSamplesTPtr allClassesSamples(new te::rp::ClassifierSAMStrategy::ClassesSamplesT());
+  allClassesSamples->insert(te::rp::ClassifierSAMStrategy::ClassesSamplesT::value_type(1, class1Samples));
+  allClassesSamples->insert(te::rp::ClassifierSAMStrategy::ClassesSamplesT::value_type(2, class2Samples));
+  allClassesSamples->insert(te::rp::ClassifierSAMStrategy::ClassesSamplesT::value_type(3, class3Samples));
 
 // define classification parameters
 
@@ -326,7 +326,7 @@ void TsClassifier::SAM()
 
 // link specific parameters with chosen implementation
   te::rp::ClassifierSAMStrategy::Parameters classifierparameters;
-  classifierparameters.m_trainSamplesPtr = &allClassesSamples;
+  classifierparameters.m_trainSamplesPtr = allClassesSamples;
   classifierparameters.m_maxAngularDistances.push_back( 0.2 );
   classifierparameters.m_maxAngularDistances.push_back( 0.2 );
   classifierparameters.m_maxAngularDistances.push_back( 0.2 );
@@ -352,13 +352,13 @@ void TsClassifier::KMeans()
 {
 // first open the input image
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TE_DATA_DIR"/data/rasters/terralib_unittest_rp_Classifier_KMeans_Test.tif";
+  orinfo["URI"] = TERRALIB_DATA_DIR"/rasters/terralib_unittest_rp_Classifier_KMeans_Test.tif";
 
 // define classification parameters
 

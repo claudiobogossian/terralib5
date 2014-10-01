@@ -27,10 +27,11 @@
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_DATASETTABLEVIEW_H
 #define __TERRALIB_QT_WIDGETS_INTERNAL_DATASETTABLEVIEW_H
 
+// TerraLib
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QTableView>
+#include <QTableView>
 
 // Forward declaration
 class TablePopupFilter;
@@ -46,6 +47,11 @@ namespace te
     class DataSourceCapabilities;
   }
 
+  namespace gm
+  {
+    class Envelope;
+  }
+
   namespace map
   {
     class AbstractLayer;
@@ -58,6 +64,7 @@ namespace te
       // Forward declaration
       class DataSetTableModel;
       class HighlightDelegate;
+      class ChartDisplayWidget;
 
       /*!
         \class DataSetTableView
@@ -89,8 +96,10 @@ namespace te
             \brief Sets the layer to be presented.
           
             \param layer Pointer to the layer to be presented.
+
+            \param clearEditor True for reset editions, false to maintain it.
           */
-          void setLayer(const te::map::AbstractLayer* layer);
+          void setLayer(const te::map::AbstractLayer* layer, const bool& clearEditor = true);
 
           /*!
             \brief Updates the data set being visualized.
@@ -98,8 +107,10 @@ namespace te
             Note that this DataSet MUST HAVE random access. The view DOES TAKE the ownership of the pointer.
 
             \param dset The new data set to be visualized.
+
+            \param clearEditor True for reset editions, false to maintain it.
           */
-          void setDataSet(te::da::DataSet* dset);
+          void setDataSet(te::da::DataSet* dset, const bool& clearEditor = true);
 
           /*!
             \brief Sets the schema of the data set. It is used to define the primary keys and create the ObjectIdSet.
@@ -116,6 +127,18 @@ namespace te
           */
           void highlightOIds(const te::da::ObjectIdSet* oids);
 
+          /*!
+            \brief Update the color to be used.
+
+            \param color The new color;
+          */
+          void setHighlightColor(const QColor& color);
+
+          /*!
+            \brief Returns \a true if there are unsaved editions e \a false if there is not.
+          */
+          bool hasEditions() const;
+
         public slots:
           
           /*!
@@ -125,6 +148,14 @@ namespace te
           */
 
           //@{
+
+          /*!
+            \brief Creates a new histogram based on the data at position \a column
+
+            \param column Column that provides the data for the histogram.
+          */
+          void createHistogram(const int& column);
+
           /*!
             \brief Hides the column at position \a column
 
@@ -138,6 +169,24 @@ namespace te
             \param column Column to be presented.
           */
           void showColumn(const int& column);
+
+          /*!
+            \brief Rename a column of the table.
+            \param column Index of the column to be renamed.
+          */
+          void renameColumn(const int& column);
+
+          /*!
+            \brief Changes teh type of a column in the table.
+            \param column Index of the column to be changed.
+          */
+          void retypeColumn(const int& column);
+
+          /*!
+            \brief Shows the change column data dialog.
+            \param column Index of the column to be updated.
+          */
+          void changeColumnData(const int& column);
 
           /*!
             \brief Shows all hidden columns.
@@ -173,13 +222,10 @@ namespace te
             \brief Promotes the highlighted rows.
 
             The rows highlighted are presented in the begining of the table.
-          */
-          void promote();
 
-          /*!
-            \brief Sort by the selected columns.
+            \param If \a true, scrolls to the top of the table.
           */
-//          void sortByColumns();
+          void promote(const bool& scroll=false);
 
           /*!
             \brief Sort by the selected columns.
@@ -216,14 +262,30 @@ namespace te
           */
           void setAutoScrollEnabled(const bool& enable);
 
+          /*!
+            \brief Enable / disable promotion.
+
+            If enabled all selected rows will be moved to te top of the table.
+
+            \param enable \a True to enable promotion, \a false to disable it
+          */
+          void setPromotionEnabled(const bool& enable);
+
+          /*!
+           \brief Saves all editions to the dataset.
+           */
+          void saveEditions();
+
         signals:
 
           /*!
             \brief Emmite when objects was selected.
           */
-          void selectOIds(te::da::ObjectIdSet*, const bool&);
+          void selectOIds(te::da::ObjectIdSet*, const bool&, te::gm::Envelope*);
 
           void deselectOIds(te::da::ObjectIdSet*);
+
+          void createChartDisplay(te::qt::widgets::ChartDisplayWidget*);
 
         protected:
 
@@ -233,10 +295,13 @@ namespace te
           TablePopupFilter*  m_popupFilter; //!< The menus popup filter.
           HighlightDelegate* m_delegate;    //!< Delegate used for rendering selected rows.
           const te::map::AbstractLayer* m_layer;  //!< Pointer to the layer being presented.
-          bool m_autoScrollEnabled;         //! Auto scroll enabling.
-          bool m_isSorted;                  //! Previously sorted.
-          bool m_isPromoted;                //! Previously promoted.
-          te::da::DataSet* m_dset;          //! Data set being used.
+          bool m_autoScrollEnabled;         //!< Auto scroll enabling.
+          bool m_doScroll;                  //!< Flag to force or not scrolling.
+          bool m_promotionEnabled;          //!< Promotion enabled.
+          te::da::DataSet* m_dset;          //!< Data set being used.
+          std::vector<std::string> m_orderby;          //!< Order by columns.
+          bool m_orderAsc;                       //!< Flag that sinalizes if the it is sorted in ascending sorting.
+          bool m_resetOrder;                //!< Flag that sinalizes if there's is no sort.
       };
     }
   }

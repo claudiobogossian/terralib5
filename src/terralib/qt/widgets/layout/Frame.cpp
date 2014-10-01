@@ -26,8 +26,8 @@
 // TerraLib
 #include "Frame.h"
 #include "LayoutEditor.h"
-#include <QtGui/QWidget>
-#include <QtGui/QToolTip>
+#include <QWidget>
+#include <QToolTip>
 
 te::qt::widgets::Frame::Frame(te::qt::widgets::LayoutEditor* me, Qt::WindowFlags f) :
   LayoutObject(me, f),

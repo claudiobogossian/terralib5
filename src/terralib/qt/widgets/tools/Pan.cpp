@@ -29,9 +29,9 @@
 #include "Pan.h"
 
 // Qt
-#include <QtGui/QMouseEvent>
-#include <QtGui/QPainter>
-#include <QtGui/QPixmap>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QPixmap>
 
 te::qt::widgets::Pan::Pan(te::qt::widgets::MapDisplay* display, const QCursor& cursor, const QCursor& actionCursor, QObject* parent) 
   : AbstractTool(display, parent),

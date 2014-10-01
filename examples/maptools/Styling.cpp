@@ -15,9 +15,9 @@
 #include <vector>
 
 // Qt
-#include <QtGui/QApplication>
-#include <QtGui/QDialog>
-#include <QtGui/QLabel>
+#include <QApplication>
+#include <QDialog>
+#include <QLabel>
 
 /** @name Polygon Styles */
 //@{
@@ -268,30 +268,27 @@ te::map::DataSetLayer* CreateDataSetLayer(const std::string& path)
   connInfo["path"] = path;
 
   // Creates and connects data source
-  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(G_ID++), "OGR", connInfo);
+  te::da::DataSourcePtr datasource = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(G_ID++), "OGR", connInfo);
 
-  // Transactor and catalog
-  std::auto_ptr<te::da::DataSourceTransactor> transactor(dataSource->getTransactor());
-  std::auto_ptr<te::da::DataSourceCatalogLoader> catalogLoader(transactor->getCatalogLoader());
-  catalogLoader->loadCatalog();
-
-  // Gets the number of data set types that belongs to the data source
-  boost::ptr_vector<std::string> datasets;
-  transactor->getCatalogLoader()->getDataSets(datasets);
+  // Get the number of data set types that belongs to the data source
+  std::vector<std::string> datasets = datasource->getDataSetNames();
   assert(!datasets.empty());
 
   // Gets the first dataset
-  std::string dataSetName(datasets[0]);
-  std::auto_ptr<te::da::DataSetType> dt(catalogLoader->getDataSetType(dataSetName));
+  std::string datasetName(datasets[0]);
+  std::auto_ptr<te::da::DataSetType> dt(datasource->getDataSetType(datasetName));
   assert(dt->hasGeom());
 
+  te::gm::GeometryProperty* geomProperty = te::da::GetFirstGeomProperty(dt.get());
+  assert(geomProperty);
+
   // Box
-  std::auto_ptr<te::gm::Envelope> extent(catalogLoader->getExtent(te::da::GetFirstGeomProperty(dt.get())));
+  std::auto_ptr<te::gm::Envelope> extent(datasource->getExtent(datasetName, geomProperty->getName()));
 
   // Creates a DataSetLayer
-  te::map::DataSetLayer* layer = new te::map::DataSetLayer(te::common::Convert2String(0), dataSetName);
-  layer->setDataSourceId(dataSource->getId());
-  layer->setDataSetName(dataSetName);
+  te::map::DataSetLayer* layer = new te::map::DataSetLayer(te::common::Convert2String(0), datasetName);
+  layer->setDataSourceId(datasource->getId());
+  layer->setDataSetName(datasetName);
   layer->setExtent(*extent);
   layer->setRendererType("DATASET_LAYER_RENDERER");
 
@@ -337,7 +334,7 @@ void DrawStyledLayers()
     //te::map::MarkRendererManager::getAllSupportedMarks(marks); // AbstractMarkFactory::SupportedMarks(marks);
     te::map::MarkRendererManager::getInstance().getAllSupportedMarks(marks);
     // Creates a layer of polygons
-    te::map::DataSetLayer* polygons = CreateDataSetLayer("./data/shp/style/polygons.shp");
+    te::map::DataSetLayer* polygons = CreateDataSetLayer("./shp/style/polygons.shp");
 
     // Polygon Styles
     std::vector<te::se::Style*> polygonStyles;
@@ -357,7 +354,7 @@ void DrawStyledLayers()
     }
 
     // Creates a layer of lines
-    te::map::DataSetLayer* lines = CreateDataSetLayer("./data/shp/style/lines.shp");
+    te::map::DataSetLayer* lines = CreateDataSetLayer("./shp/style/lines.shp");
 
     // Line Styles
     std::vector<te::se::Style*> lineStyles;
@@ -375,7 +372,7 @@ void DrawStyledLayers()
     }
 
     // Creates a layer of points
-    te::map::DataSetLayer* points = CreateDataSetLayer("./data/shp/style/points.shp");
+    te::map::DataSetLayer* points = CreateDataSetLayer("./shp/style/points.shp");
 
     // Point Styles
     std::vector<te::se::Style*> pointStyles;
@@ -395,10 +392,10 @@ void DrawStyledLayers()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in Styling example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in Styling example: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in Styling example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in Styling example!" << std::endl;
   }
 }

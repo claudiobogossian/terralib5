@@ -305,6 +305,20 @@ namespace te
         virtual void setChart(te::map::Chart* chart);
 
         /*!
+          \brief
+
+          \return
+        */
+        virtual const std::string& getGeomPropertyName() const;
+
+        /*!
+          \brief
+
+          \param name
+        */
+        virtual void setGeomPropertytName(const std::string& name);
+
+        /*!
           \brief It returns the layer schema.
 
           \return The Layer schema.
@@ -478,6 +492,7 @@ namespace te
         te::se::Style* m_style;           //!< The style to be applied to the geographic objects in the layer.
         te::map::Grouping* m_grouping;    //!< The grouping information.
         te::map::Chart* m_chart;          //!< The chart information.
+        std::string m_geomPropertyName;   //!< The name of the referenced geometry property.
     };
 
     typedef boost::intrusive_ptr<AbstractLayer> AbstractLayerPtr;

@@ -28,7 +28,7 @@
 #include "ZoomKeyboard.h"
 
 // Qt
-#include <QtGui/QKeyEvent>
+#include <QKeyEvent>
 
 te::qt::widgets::ZoomKeyboard::ZoomKeyboard(te::qt::widgets::MapDisplay* display, const double& zoomFactor, QObject* parent) 
   : Zoom(display, zoomFactor, In, parent)

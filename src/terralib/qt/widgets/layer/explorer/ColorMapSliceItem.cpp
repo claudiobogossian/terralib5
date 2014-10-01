@@ -28,9 +28,9 @@
 #include "ColorMapSliceItem.h"
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QPainter>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QPainter>
+#include <QWidget>
 
 
 te::qt::widgets::ColorMapSliceItem::ColorMapSliceItem(double min, double max, te::color::RGBAColor c, QObject* parent)

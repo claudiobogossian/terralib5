@@ -15,11 +15,11 @@ void ReprojectRasterUsingDriver()
 
     // 0 - Set input data: a RS image
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
     te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
 
     // 1 - The entire image.
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_LL.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_LL.tif";
     te::rst::Raster* outraster = inraster->transform(4326, rinfo);
     if (outraster)
     {
@@ -33,7 +33,7 @@ void ReprojectRasterUsingDriver()
     }
 
     // 2- To a given region.
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_LL_P.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_LL_P.tif";
     te::rst::Raster* outraster2 = inraster->transform(4326, 773113, 7365893, 776145, 7368469, rinfo);
     if (outraster2)
     {
@@ -47,7 +47,7 @@ void ReprojectRasterUsingDriver()
     }
 
     // 3- To a given region and resolution.
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_LL_PR.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_LL_PR.tif";
     te::rst::Raster* outraster3 = inraster->transform(4326, 773113, 7365893, 776145, 7368469, 0.0003, 0.0003, rinfo);
     if (outraster3)
     {
@@ -63,11 +63,11 @@ void ReprojectRasterUsingDriver()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in ReprojectRasterUsingDriver(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in ReprojectRasterUsingDriver(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in ReprojectRasterUsingDriver()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in ReprojectRasterUsingDriver()!" << std::endl;
   }
 }
 
@@ -79,11 +79,11 @@ void ReprojectRasterUsingFunction()
 
     // 0 - Set input data: a RS image
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
     te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
 
     // 1 - The entire image.
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_LL_ALG.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_LL_ALG.tif";
     te::rst::Raster* outraster = te::rst::Reproject(inraster, 4326, rinfo);
     if (outraster)
     {
@@ -97,7 +97,7 @@ void ReprojectRasterUsingFunction()
     }
 
     // 2- To a given region.
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_LL_P_ALG.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_LL_P_ALG.tif";
     te::rst::Raster* outraster2 = te::rst::Reproject(inraster, 4326, 773113, 7365893, 776145, 7368469, rinfo);
     if (outraster2)
     {
@@ -111,7 +111,7 @@ void ReprojectRasterUsingFunction()
     }
 
     // 3- To a given region and resolution.
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_LL_PR_ALG.tif";
+    rinfo["URI"] = ""TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop_LL_PR_ALG.tif";
     te::rst::Raster* outraster3 = te::rst::Reproject(inraster, 4326, 773113, 7365893, 776145, 7368469, 0.0006, 0.0006, rinfo);
     if (outraster3)
     {
@@ -127,10 +127,10 @@ void ReprojectRasterUsingFunction()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in ReprojectRasterUsingFunction(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurred in ReprojectRasterUsingFunction(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in ReprojectRasterUsingFunction()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurred in ReprojectRasterUsingFunction()!" << std::endl;
   }
 }

@@ -45,11 +45,11 @@
 #include "Utils.h"
 
 // Terralib 4.x
-#include <terralib/kernel/TeAttribute.h>
-#include <terralib/kernel/TeDatabase.h>
-#include <terralib/kernel/TeLayer.h>
+#include <terralib4/kernel/TeAttribute.h>
+#include <terralib4/kernel/TeDatabase.h>
+#include <terralib4/kernel/TeLayer.h>
 
-#include <terralib/kernel/TeQuerierParams.h>
+#include <terralib4/kernel/TeQuerierParams.h>
 
 // STL
 #include <cassert>
@@ -77,6 +77,8 @@ terralib4::VectorDataSet::VectorDataSet(TeLayer* layer)
   m_querier->loadInstances();
 
   m_nCols = m_querier->getAttrList().size();
+
+  m_size = m_querier->numElemInstances();
 
   m_dt = new te::da::DataSetType(layer->name());
 
@@ -140,6 +142,11 @@ std::string terralib4::VectorDataSet::getPropertyName(std::size_t i) const
   /*TeAttributeList list = m_querier->getAttrList();
   return list[i].rep_.name_();*/
   throw;
+}
+
+te::common::CharEncoding terralib4::VectorDataSet::getPropertyCharEncoding(std::size_t i) const
+{
+  return te::common::UTF8;
 }
 
 std::string terralib4::VectorDataSet::getDatasetNameOfProperty(std::size_t i) const

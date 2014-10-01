@@ -32,7 +32,7 @@
 
 // Qt
 #include <QtCore/QCoreApplication>
-#include <QtGui/QApplication>
+#include <QApplication>
 
 te::qt::widgets::ProgressViewerDialog::ProgressViewerDialog(QWidget* parent)
   : AbstractProgressViewer(),
@@ -44,6 +44,7 @@ te::qt::widgets::ProgressViewerDialog::ProgressViewerDialog(QWidget* parent)
   m_dlgProgress = new QProgressDialog(parent);
   m_dlgProgress->setWindowModality(Qt::NonModal);
   m_dlgProgress->setRange(0, 100);
+  m_dlgProgress->setWindowTitle(parent->windowTitle());
 
   connect(m_dlgProgress, SIGNAL(canceled()), this, SLOT(cancel()));
 }
@@ -105,6 +106,8 @@ void te::qt::widgets::ProgressViewerDialog::setTotalValues(int taskId)
 
 void te::qt::widgets::ProgressViewerDialog::updateValue(int /*taskId*/)
 {
+  m_dlgProgress->show();
+
   m_currentStep++;
 
   double aux = static_cast<double>(m_currentStep) / static_cast<double>(m_totalSteps);
@@ -129,7 +132,7 @@ void te::qt::widgets::ProgressViewerDialog::updateMessage(int /*taskId*/)
   }
   else
   {
-    m_message = TR_QT_WIDGETS("Multi Tasks");
+    m_message = TE_TR("Multi Tasks");
   }
 
   QCoreApplication::postEvent(this, new ProgressSetMessageEvent(m_message));

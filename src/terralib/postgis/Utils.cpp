@@ -293,7 +293,7 @@ bool te::pgis::SetColumnDef(std::string& s, const te::dt::Property* p, bool just
     break;
 
     default:
-      throw Exception(TR_PGIS("The informed type could not be mapped to PostgreSQL type system!"));
+      throw Exception(TE_TR("The informed type could not be mapped to PostgreSQL type system!"));
     break;
   }  
 
@@ -549,7 +549,7 @@ std::string te::pgis::GetSQLValue(const te::dt::Property* p, std::size_t propert
         if(pgerror != 0)
         {
           delete [] valueto;
-          throw Exception(TR_PGIS("Could not escape string!"));
+          throw Exception(TE_TR("Could not escape string!"));
         }
 
         value += "'";
@@ -622,7 +622,7 @@ std::string te::pgis::GetSQLValue(const te::dt::Property* p, std::size_t propert
     break;
 
     default :
-      throw Exception(TR_PGIS("The TerraLib data type is not supported by the PostgreSQL driver!"));
+      throw Exception(TE_TR("The TerraLib data type is not supported by the PostgreSQL driver!"));
   }
 
   return value;
@@ -645,4 +645,21 @@ std::string te::pgis::GetLoadDataRow(const te::da::DataSetType* dt, te::da::Data
   values += "\n";
 
   return values;
+}
+
+static std::size_t sg_n_encoding = 8;
+static const char* sg_pg_encoding [] = {"UTF8", "WIN1250", "WIN1251", "WIN1252", "WIN1253", "WIN1254", "WIN1257", "LATIN1"};
+
+const char* te::pgis::GetPGEncoding(te::common::CharEncoding encoding)
+{
+  return sg_pg_encoding[encoding];
+}
+
+te::common::CharEncoding te::pgis::GetTeEncoding(const char* const encoding)
+{
+  for(std::size_t i = 0; i < sg_n_encoding; ++i)
+    if(sg_pg_encoding[i] == encoding)
+      return (te::common::CharEncoding)i;
+
+  return te::common::UNKNOWN_CHAR_ENCODING;
 }

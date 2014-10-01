@@ -30,7 +30,7 @@
 #include "ui_GraphicSelectorWidgetForm.h"
 
 // Qt
-#include <QtGui/QStackedWidget>
+#include <QStackedWidget>
 
 te::qt::widgets::GraphicSelectorWidget::GraphicSelectorWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),

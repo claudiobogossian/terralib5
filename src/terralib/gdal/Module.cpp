@@ -26,6 +26,7 @@
 // TerraLib
 #include "../common/Logger.h"
 #include "../plugin/PluginInfo.h"
+#include "../common/Translator.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
@@ -33,6 +34,7 @@
 #include "DataSourceFactory.h"
 #include "Module.h"
 #include "RasterFactory.h"
+#include "Utils.h"
 
 // GDAL
 #include <gdal_priv.h>
@@ -50,9 +52,6 @@ void te::gdal::Module::startup()
 {
   if(m_initialized)
     return;
-
-// it initializes the Translator support for the TerraLib GDAL driver support
-  TE_ADD_TEXT_DOMAIN(TE_GDAL_TEXT_DOMAIN, TE_GDAL_TEXT_DOMAIN_DIR, "UTF-8");
   
   te::da::DataSourceFactory::add(TE_GDAL_DRIVER_IDENTIFIER, te::gdal::Build);
 
@@ -86,7 +85,10 @@ void te::gdal::Module::startup()
 
   te::gdal::DataSource::setCapabilities(capabilities);
   
-  TE_LOG_TRACE(TR_GDAL("TerraLib GDAL driver startup!"));
+  // initializing the static mutex
+  boost::mutex& staticMutex = getStaticMutex();
+  
+  TE_LOG_TRACE(TE_TR("TerraLib GDAL driver startup!"));
 
   m_initialized = true;
 }
@@ -104,7 +106,7 @@ void te::gdal::Module::shutdown()
 //! free GDAL registered drivers
   te::da::DataSourceManager::getInstance().detachAll(TE_GDAL_DRIVER_IDENTIFIER);
  
-  TE_LOG_TRACE(TR_GDAL("TerraLib GDAL driver shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib GDAL driver shutdown!"));
 
   m_initialized = false;
 }

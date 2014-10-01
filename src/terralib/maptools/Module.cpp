@@ -42,9 +42,6 @@ te::map::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-// it initializes the Translator support for the TerraLib Map Tools module
-  TE_ADD_TEXT_DOMAIN(TE_MAPTOOLS_TEXT_DOMAIN, TE_MAPTOOLS_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::map::Module::~Module()
@@ -56,11 +53,11 @@ void te::map::Module::initialize()
 {
   QueryEncoder::initialize();
 
-  TE_LOG_TRACE(TR_MAP("TerraLib Map Tools module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Map Tools module initialized!"));
 }
 
 void te::map::Module::finalize()
 {
-  TE_LOG_TRACE(TR_MAP("TerraLib Map Tools module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Map Tools module finalized!"));
 }
 

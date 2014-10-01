@@ -39,7 +39,6 @@
 #include "RasterAttributes.h"
 
 // STL
-#include <complex>
 #include <iostream>
 #include <set>
 #include <stdlib.h>
@@ -94,7 +93,7 @@ te::rp::ClassifierISOSegStrategy::Pattern::Pattern()
   m_area = 0.0;
 }
 
-te::rp::ClassifierISOSegStrategy::Pattern::Pattern(int i, double a, std::vector<std::complex<double> > mv, boost::numeric::ublas::matrix<double> cm)
+te::rp::ClassifierISOSegStrategy::Pattern::Pattern(int i, double a, std::vector<double> mv, boost::numeric::ublas::matrix<double> cm)
   : m_id(i),
     m_myCluster(0),
     m_area(a),
@@ -103,7 +102,7 @@ te::rp::ClassifierISOSegStrategy::Pattern::Pattern(int i, double a, std::vector<
 {
   m_covarianceInversion = boost::numeric::ublas::matrix<double>(m_covarianceMatrix.size1(), m_covarianceMatrix.size2());
 
-  te::common::getInverseMatrix(m_covarianceMatrix, m_covarianceInversion);
+  te::common::GetInverseMatrix(m_covarianceMatrix, m_covarianceInversion);
 }
 
 te::rp::ClassifierISOSegStrategy::Pattern::Pattern(Pattern& rhs)
@@ -140,8 +139,9 @@ void te::rp::ClassifierISOSegStrategy::Pattern::add(Pattern* p)
   assert(m_myCluster == 0);
 
 // update mean vectors
+  double total_area = m_area + p->m_area;
   for (unsigned i = 0; i < m_meanVector.size(); i++)
-    m_meanVector[i] = (m_meanVector[i] * m_area + p->m_meanVector[i] * p->m_area) / (m_area + p->m_area);
+    m_meanVector[i] = (m_meanVector[i] * m_area + p->m_meanVector[i] * p->m_area) / total_area;
 
 // update covariance matrices (the matrix with the biggest area wins)
   if (p->m_area > m_area)
@@ -169,7 +169,7 @@ double te::rp::ClassifierISOSegStrategy::Pattern::getDistance(Pattern* p)
 
   for (unsigned int i = 0; i < nBands; i++)
   {
-    term1(0, i) = m_meanVector[i].real() - p->m_meanVector[i].real();
+    term1(0, i) = m_meanVector[i] - p->m_meanVector[i];
 
     term2(i, 0) = term1(0, i);
   }
@@ -263,24 +263,31 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
   TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, "Instance not initialized")
   TERP_TRUE_OR_RETURN_FALSE(inputPolygons.size() > 0, "ISOSeg algorithm needs polygons")
 
-  std::complex<double> mean;
-
   te::rp::RasterAttributes rattributes;
 
 // fill m_regions, in the beginning, each region is a cluster
+  te::common::TaskProgress task_fx(TE_TR("ISOSeg algorithm - feature extraction"), te::common::TaskProgress::UNDEFINED, inputPolygons.size());
   for (unsigned i = 0; i < inputPolygons.size(); i++)
   {
     te::gm::Polygon* polygon = inputPolygons[i];
 
-    std::vector<std::complex<double> > means = rattributes.getMeans(inputRaster, *polygon, inputRasterBands);
+    std::vector<std::vector<double> > values_in_polygon = rattributes.getValuesFromRaster(inputRaster, *polygon, inputRasterBands);
+    std::vector<double> means;
+    for (unsigned int b = 0; b < values_in_polygon.size(); b++)
+    {
+      te::stat::NumericStatisticalSummary summary = rattributes.getStatistics(values_in_polygon[b]);
+      means.push_back(summary.m_mean);
+    }
 
-    Pattern* region = new Pattern(i, polygon->getArea(), means, rattributes.getCovarianceMatrix(inputRaster, *polygon, inputRasterBands));
+    Pattern* region = new Pattern(i, polygon->getArea(), means, rattributes.getCovarianceMatrix(values_in_polygon, means));
 
     Pattern* cluster = new Pattern(*region);
 
     region->m_myCluster = cluster;
 
     m_regions.insert(std::pair<double, Pattern*> (region->m_area, region));
+
+    task_fx.pulse();
   }
 
   double distance;
@@ -296,6 +303,7 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
   int oldid;
   std::set<std::pair<unsigned int, unsigned int> > compared;
 
+  te::common::TaskProgress task_clustering(TE_TR("ISOSeg algorithm - detecting clusters"));
   double maxDistance = getThreshold(m_parameters.m_acceptanceThreshold, inputRasterBands.size());
   while (!stable)
   {
@@ -345,6 +353,7 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
         }
       }
     }
+    task_clustering.pulse();
   }
 
 // remap cluster values to 1 -> N
@@ -363,24 +372,10 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
   unsigned int pattern;
 
 // classify output image
-  te::common::TaskProgress task(TR_RP("ISOSeg algorithm - classifying image"), te::common::TaskProgress::UNDEFINED, m_regions.size());
+  te::common::TaskProgress task(TE_TR("ISOSeg algorithm - classifying image"), te::common::TaskProgress::UNDEFINED, m_regions.size());
   for (rit = m_regions.begin(); rit != m_regions.end(); ++rit)
   {
     te::gm::Polygon* polygon = inputPolygons[rit->second->m_id];
-
-    te::gm::Coord2D ll = polygon->getMBR()->getLowerLeft();
-    te::gm::Coord2D ur = polygon->getMBR()->getUpperRight();
-
-    te::gm::Coord2D startGridCoord = outputRaster.getGrid()->geoToGrid(ll.x, ur.y);
-    te::gm::Coord2D endGridCoord = outputRaster.getGrid()->geoToGrid(ur.x, ll.y);
-
-    double tmpCoord;
-    if (startGridCoord.y > endGridCoord.y)
-    {
-      tmpCoord = startGridCoord.y;
-      startGridCoord.y = endGridCoord.y;
-      endGridCoord.y = tmpCoord;
-    }
 
     pattern = rit->second->m_myCluster->m_id;
 

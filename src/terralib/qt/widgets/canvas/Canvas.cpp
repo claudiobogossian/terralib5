@@ -36,13 +36,13 @@
 #include "Canvas.h"
 
 // Qt
-#include <QtCore/QBuffer>
-#include <QtGui/QBitmap>
-#include <QtGui/QImage>
-#include <QtGui/QPaintEngine>
-#include <QtGui/QPixmap>
-#include <QtGui/QPrinter>
-#include <QtGui/QResizeEvent>
+#include <QBitmap>
+#include <QBuffer>
+#include <QImage>
+#include <QPaintEngine>
+#include <QPixmap>
+#include <QPrinter>
+#include <QResizeEvent>
 
 // STL
 #include <cassert>
@@ -1037,7 +1037,7 @@ te::color::RGBAColor** te::qt::widgets::Canvas::getImage(const int x, const int 
     colors = new te::color::RGBAColor*[h];
     for(int i = 0; i < h; ++i)
     {
-      colors[i] = new te::color::RGBAColor[h];
+      colors[i] = new te::color::RGBAColor[w];
 
       unsigned char* u = img.scanLine(i);
 
@@ -2071,7 +2071,7 @@ te::gm::Polygon* te::qt::widgets::Canvas::getTextBoundary(const QPoint& p, const
 
 //converter QPolygon para te::gm::Polygon. Como fazer isso?
   te::gm::LinearRing* lr = new te::gm::LinearRing(4, te::gm::LineStringType);
-  te::gm::Polygon* poly = new te::gm::Polygon(0, te::gm::PolygonType);
+  te::gm::Polygon* poly = new te::gm::Polygon(1, te::gm::PolygonType);
   poly->setRingN(0, lr);
   lr->setPoint(0, polf.at(0).x(), polf.at(0).y());
   lr->setPoint(1, polf.at(1).x(), polf.at(1).y());

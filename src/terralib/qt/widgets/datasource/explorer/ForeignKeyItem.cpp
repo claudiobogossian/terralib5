@@ -30,8 +30,8 @@
 #include "ForeignKeyItem.h"
 
 // Qt
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <QMenu>
+#include <QWidget>
 
 te::qt::widgets::ForeignKeyItem::ForeignKeyItem(te::da::ForeignKey* fk, AbstractDataSourceTreeItem* parent)
   : AbstractDataSourceTreeItem(parent),

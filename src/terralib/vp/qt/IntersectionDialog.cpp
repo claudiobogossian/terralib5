@@ -24,9 +24,12 @@
 */
 
 // TerraLib
+#include "../../common/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/Translator.h"
 #include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
@@ -34,21 +37,22 @@
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/Property.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../srs/Config.h"
 #include "../Exception.h"
-#include "../Intersection.h"
-#include "../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../IntersectionMemory.h"
+#include "../IntersectionOp.h"
+#include "../IntersectionQuery.h"
 #include "IntersectionDialog.h"
 #include "LayerTreeModel.h"
 #include "ui_IntersectionDialogForm.h"
-#include "VectorProcessingConfig.h"
 #include "Utils.h"
 
 // Qt
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
-#include <QtGui/QTreeWidget>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QTreeWidget>
 
 // BOOST
 #include <boost/filesystem.hpp>
@@ -63,7 +67,7 @@ te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags 
 // add controls
   m_ui->setupUi(this);
 
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-intersection-hint").pixmap(48,48));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-intersection-hint").pixmap(48,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
   connect(m_ui->m_firstLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onFirstLayerComboBoxChanged(int)));
@@ -151,7 +155,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 {
   if(m_ui->m_firstLayerComboBox->currentText().isEmpty())
   {
-    QMessageBox::warning(this, TR_VP("Intersection"), TR_VP("Select a first input layer."));
+    QMessageBox::warning(this, TE_TR("Intersection"), TE_TR("Select a first input layer."));
     return;
   }
   
@@ -161,7 +165,18 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     QMessageBox::information(this, "Intersection", "Can not execute this operation on this type of first layer.");
     return;
   }
-  
+
+  const te::da::ObjectIdSet* firstOidSet = 0;
+  if(m_ui->m_firstSelectedCheckBox->isChecked())
+  {
+    firstOidSet = firstDataSetLayer->getSelected();
+    if(!firstOidSet)
+    {
+      QMessageBox::information(this, "Intersection", "Select the layer objects to perform the intersection operation.");
+      return;
+    }
+  }
+
   te::da::DataSourcePtr firstDataSource = te::da::GetDataSource(firstDataSetLayer->getDataSourceId(), true);
   if (!firstDataSource.get())
   {
@@ -171,7 +186,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
   if(m_ui->m_secondLayerComboBox->currentText().isEmpty())
   {
-    QMessageBox::warning(this, TR_VP("Intersection"), TR_VP("Select a second input layer."));
+    QMessageBox::warning(this, TE_TR("Intersection"), TE_TR("Select a second input layer."));
     return;
   }
   
@@ -181,23 +196,34 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     QMessageBox::information(this, "Intersection", "Can not execute this operation on this type of second layer.");
     return;
   }
-  
+
+  const te::da::ObjectIdSet* secondOidSet = 0;
+  if(m_ui->m_secondSelectedCheckBox->isChecked())
+  {
+    secondOidSet = m_secondSelectedLayer->getSelected();
+    if(!secondOidSet)
+    {
+      QMessageBox::information(this, "Intersection", "Select the layer objects to perform the intersection operation.");
+      return;
+    }
+  }
+
   te::da::DataSourcePtr secondDataSource = te::da::GetDataSource(secondDataSetLayer->getDataSourceId(), true);
   if (!secondDataSource.get())
   {
     QMessageBox::information(this, "Intersection", "The selected second input data source can not be accessed.");
     return;
   }
-  
+
   if(m_ui->m_repositoryLineEdit->text().isEmpty())
   {
-    QMessageBox::warning(this, TR_VP("Intersection"), TR_VP("Select a repository for the resulting layer."));
+    QMessageBox::warning(this, TE_TR("Intersection"), TE_TR("Select a repository for the resulting layer."));
     return;
   }
   
   if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
   {
-    QMessageBox::warning(this, TR_VP("Intersection"), TR_VP("Define a name for the resulting layer."));
+    QMessageBox::warning(this, TE_TR("Intersection"), TE_TR("Define a name for the resulting layer."));
     return;
   }
   
@@ -218,7 +244,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     bool copyInputColumns = m_ui->m_copyColumnsCheckBox->isChecked();
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
-    bool res;    
+    bool res;
     if (m_toFile)
     {
       boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
@@ -236,7 +262,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
       std::map<std::string, std::string> dsinfo;
       dsinfo["URI"] = uri.string();
 
-      std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
+      te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
       dsOGR->setConnectionInfo(dsinfo);
       dsOGR->open();
       if(dsOGR->dataSetExists(outputdataset))
@@ -246,13 +272,34 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
       }
       
       this->setCursor(Qt::WaitCursor);
-      res = te::vp::Intersection( firstDataSetLayer->getDataSetName(),
-                                  firstDataSource.get(),
-                                  secondDataSetLayer->getDataSetName(),
-                                  secondDataSource.get(),
-                                  copyInputColumns,
-                                  outputdataset, 
-                                  dsOGR.get());
+
+      te::vp::IntersectionOp* intersectionOp = 0;
+
+      // select a strategy based on the capabilities of the input datasource
+      const te::da::DataSourceCapabilities firstDSCapabilities = firstDataSource->getCapabilities();
+      const te::da::DataSourceCapabilities secondDSCapabilities = secondDataSource->getCapabilities();
+
+      if( firstDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
+          secondDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
+          (firstDataSource->getId() == secondDataSource->getId()))
+      {
+        intersectionOp = new te::vp::IntersectionQuery();
+      }
+      else
+      {
+        intersectionOp = new te::vp::IntersectionMemory();
+      }
+
+      intersectionOp->setInput( firstDataSource, firstDataSetLayer->getDataSetName(), firstDataSetLayer->getSchema(),
+                                secondDataSource, secondDataSetLayer->getDataSetName(), secondDataSetLayer->getSchema(),
+                                firstOidSet, secondOidSet);
+      intersectionOp->setOutput(dsOGR, outputdataset);
+      intersectionOp->setParams(copyInputColumns, firstDataSetLayer->getSRID());
+
+      if (!intersectionOp->paramsAreValid())
+        res = false;
+      else
+        res = intersectionOp->run();
 
       if(!res)
       {
@@ -261,6 +308,8 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
         reject();
       }
       dsOGR->close();
+
+      delete intersectionOp;
 
       // let's include the new datasource in the managers
       boost::uuids::basic_random_generator<boost::mt19937> gen;
@@ -294,13 +343,38 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
         return;
       }
       this->setCursor(Qt::WaitCursor);
-      res = te::vp::Intersection(firstDataSetLayer->getDataSetName(),
-                                firstDataSource.get(),
-                                secondDataSetLayer->getDataSetName(),
-                                secondDataSource.get(),
-                                copyInputColumns,
-                                outputdataset, 
-                                aux.get());
+
+      te::vp::IntersectionOp* intersectionOp = 0;
+
+      // select a strategy based on the capabilities of the input datasource
+      const te::da::DataSourceCapabilities firstDSCapabilities = firstDataSource->getCapabilities();
+      const te::da::DataSourceCapabilities secondDSCapabilities = secondDataSource->getCapabilities();
+
+      if( firstDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
+          secondDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
+          (firstDataSource->getId() == secondDataSource->getId()) &&
+          (firstDataSetLayer->getSRID() == secondDataSetLayer->getSRID()))
+      {
+        intersectionOp = new te::vp::IntersectionQuery();
+      }
+      else
+      {
+        intersectionOp = new te::vp::IntersectionMemory();
+      }
+
+      intersectionOp->setInput( firstDataSource, firstDataSetLayer->getDataSetName(), firstDataSetLayer->getSchema(),
+                                secondDataSource, secondDataSetLayer->getDataSetName(), secondDataSetLayer->getSchema(),
+                                firstOidSet, secondOidSet);
+      intersectionOp->setOutput(aux, outputdataset);
+      intersectionOp->setParams(copyInputColumns, firstDataSetLayer->getSRID());
+
+      if (!intersectionOp->paramsAreValid())
+        res = false;
+      else
+        res = intersectionOp->run();
+
+      delete intersectionOp;
+
       if(!res)
       {
         this->setCursor(Qt::ArrowCursor);
@@ -320,7 +394,9 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
   catch(const std::exception& e)
   {
     this->setCursor(Qt::ArrowCursor);
-    QMessageBox::warning(this, TR_VP("Intersection"), e.what());
+    QMessageBox::warning(this, TE_TR("Intersection"), e.what());
+
+    te::common::Logger::logDebug("vp", e.what());
     te::common::ProgressManager::getInstance().removeViewer(id);
     return;
   }

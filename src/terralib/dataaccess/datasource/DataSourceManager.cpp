@@ -40,11 +40,14 @@
 
 te::da::DataSourcePtr te::da::DataSourceManager::make(const std::string& id, const std::string& dsType)
 {
+  if(find(id))
+    return find(id);
+
 // we are optimistic: do the hard job and then see if another thread or the data source already had been inserted in the manager
   DataSourcePtr ds(DataSourceFactory::make(dsType));
 
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not create the required data source instance!"));
+    throw Exception(TE_TR("Could not create the required data source instance!"));
 
   ds->setId(id);
 
@@ -59,7 +62,7 @@ te::da::DataSourcePtr te::da::DataSourceManager::open(const std::string& id, con
   DataSourcePtr ds(DataSourceFactory::make(dsType));
 
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not create the required data source instance!"));
+    throw Exception(TE_TR("Could not create the required data source instance!"));
 
   ds->setConnectionInfo(connInfo);
   ds->open();
@@ -117,12 +120,12 @@ te::da::DataSourcePtr te::da::DataSourceManager::find(const std::string& id) con
 void te::da::DataSourceManager::insert(const DataSourcePtr& ds)
 {
   if(ds.get() == 0)
-    throw Exception(TR_DATAACCESS("Please, specifify a non-null data source to be managed!"));
+    throw Exception(TE_TR("Please, specifify a non-null data source to be managed!"));
 
   LockWrite l(this);
 
   if(m_dss.find(ds->getId()) != m_dss.end())
-    throw Exception(TR_DATAACCESS("There is already a data source with the given identification!"));
+    throw Exception(TE_TR("There is already a data source with the given identification!"));
 
   m_dss[ds->getId()] = ds;
 }
@@ -142,7 +145,7 @@ te::da::DataSourcePtr te::da::DataSourceManager::detach(const std::string& id)
   std::map<std::string, DataSourcePtr>::iterator it = m_dss.find(id);
 
   if(it == m_dss.end())
-    throw Exception(TR_DATAACCESS("Invalid data source to detach!"));
+    throw Exception(TE_TR("Invalid data source to detach!"));
 
   DataSourcePtr ds = it->second;
 
