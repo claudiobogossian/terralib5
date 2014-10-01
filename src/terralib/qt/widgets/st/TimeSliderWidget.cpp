@@ -1109,8 +1109,7 @@ int te::qt::widgets::TimeSliderWidget::getAnimationTime(const te::dt::TimeInstan
   double seconds = diff.total_seconds();
   // normalizing the time
   double t = seconds / totalSeconds;
-  t *= 1000;
-  int ret = (int)t;
+  int ret = qRound(t * (double)m_duration);
   return ret;
 }
 
@@ -1179,8 +1178,8 @@ void te::qt::widgets::TimeSliderWidget::onDisplayPaintEvent(QPainter* painter)
   if(m_animationScene->m_numberOfTrajectories) // has trajectories
   {
     // draw trail trajectories
-    QPixmap* pixt = ((AnimationScene*)(m_animationScene))->m_trajectoryPixmap;
     m_animationScene->m_mutex.lock();
+    QPixmap* pixt = ((AnimationScene*)(m_animationScene))->m_trajectoryPixmap;
     painter->drawPixmap(0, 0, *pixt);
     m_animationScene->m_mutex.unlock();
 
@@ -1664,10 +1663,13 @@ void te::qt::widgets::TimeSliderWidget::onPlayToolButtonnClicked()
   else
   {
     m_ui->m_playToolButton->setIcon(QIcon::fromTheme("media-playback-pause"));
-    if(m_spd->m_ui->m_forwardRadioButton->isChecked())
-      onForwardRadioButtonClicked(true);
-    if(m_spd->m_ui->m_backwardRadioButton->isChecked())
-      onBackwardRadioButtonClicked(true);
+    if(m_comingBack == false)
+    {
+      if(m_spd->m_ui->m_forwardRadioButton->isChecked())
+        onForwardRadioButtonClicked(true);
+      if(m_spd->m_ui->m_backwardRadioButton->isChecked())
+        onBackwardRadioButtonClicked(true);
+    }
     if(m_spd->m_ui->m_loopCheckBox->isChecked())
       onLoopCheckBoxClicked(true);
     if(m_spd->m_ui->m_goAndBackCheckBox->isChecked())
@@ -2661,21 +2663,47 @@ void te::qt::widgets::TimeSliderWidget::onApplyTimeIntervalPushButtonClicked(boo
     return;
   }
 
+  te::dt::TimeInstant tinst = getTimeInstant();
+  boost::posix_time::ptime btinst = tinst.getTimeInstant();
+
   te::dt::TimeInstant t = m_temporalAnimationExtent.getInitialTimeInstant();
   QDate qdatei(t.getDate().getYear(), t.getDate().getMonth(), t.getDate().getDay());
   QTime qtimei(t.getTime().getHours(), t.getTime().getMinutes(), t.getTime().getSeconds());
   QDateTime qdatetimei(qdatei, qtimei);
   QDateTime qdi = m_spd->m_ui->m_initialAnimationDateTimeEdit->dateTime();
+  boost::posix_time::ptime iTime = t.getTimeInstant();
 
   t = m_temporalAnimationExtent.getFinalTimeInstant();
   QDate qdatef(t.getDate().getYear(), t.getDate().getMonth(), t.getDate().getDay());
   QTime qtimef(t.getTime().getHours(), t.getTime().getMinutes(), t.getTime().getSeconds());
   QDateTime qdatetimef(qdatef, qtimef);
   QDateTime qdf = m_spd->m_ui->m_finalAnimationDateTimeEdit->dateTime();
+  boost::posix_time::ptime fTime = t.getTimeInstant();
   if(qdatetimei == qdi && qdatetimef == qdf)
     return;
 
-  m_currentTime = m_parallelAnimation->currentTime();
+  boost::posix_time::ptime niTime = ti.getTimeInstant();
+  boost::posix_time::ptime nfTime = tf.getTimeInstant();
+  boost::posix_time::time_duration ndiff = nfTime - niTime;
+  double ntotalSeconds = ndiff.total_seconds();
+
+  boost::posix_time::time_duration diff = fTime - iTime;
+  double totalSeconds = diff.total_seconds();
+  double rel = m_duration / totalSeconds;
+
+  int nduration = qRound(rel * ntotalSeconds);
+
+  //m_currentTime = m_parallelAnimation->currentTime();
+  m_currentTime = 0;
+  if(btinst >= niTime && btinst <= nfTime)
+  {
+    boost::posix_time::time_duration d = btinst - niTime;
+    double tot = d.total_seconds();
+    m_currentTime = qRound(nduration * tot / ntotalSeconds);
+  }
+  else
+    m_currentTime = nduration;
+
   int state = m_parallelAnimation->state();
   if(state == QAbstractAnimation::Running)
     onPlayToolButtonnClicked();
@@ -2688,6 +2716,8 @@ void te::qt::widgets::TimeSliderWidget::onApplyTimeIntervalPushButtonClicked(boo
   createNewPixmap();
   calculateSpatialExtent();
   createAnimations();
+  m_duration = nduration;
+  m_ui->m_durationSpinBox->setValue(m_duration);
   setDuration(m_duration);
   setDirection(m_direction);
 

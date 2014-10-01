@@ -167,11 +167,11 @@ void te::qt::widgets::TrajectoryItem::drawForward(const unsigned int& curTime)
       trailColor = m_forwardColor;
     else
       trailColor = m_backwardColor;
-
     pen.setColor(trailColor);
+
     AnimationScene* as = (AnimationScene*)scene();
-    QPixmap* scenePixmap = as->m_trajectoryPixmap;
     as->m_mutex.lock();
+    QPixmap* scenePixmap = as->m_trajectoryPixmap;
     QPainter painter(scenePixmap);
     painter.setPen(pen);
     painter.setBrush(Qt::NoBrush);
@@ -223,8 +223,8 @@ void te::qt::widgets::TrajectoryItem::erase(const unsigned int& curTime)
     pen.setColor(trailColor);
 
     AnimationScene* as = (AnimationScene*)scene();
-    QPixmap* scenePixmap = as->m_trajectoryPixmap;
     as->m_mutex.lock();
+    QPixmap* scenePixmap = as->m_trajectoryPixmap;
     QPainter painter(scenePixmap);
     painter.setPen(pen);
     painter.setCompositionMode(QPainter::CompositionMode_DestinationOut);
@@ -284,8 +284,8 @@ void te::qt::widgets::TrajectoryItem::draw()
     pen.setColor(trailColor);
 
     AnimationScene* as = (AnimationScene*)scene();
-    QPixmap* scenePixmap = as->m_trajectoryPixmap;
     as->m_mutex.lock();
+    QPixmap* scenePixmap = as->m_trajectoryPixmap;
     QPainter painter(scenePixmap);
     painter.setPen(pen);
     painter.setBrush(Qt::NoBrush);
