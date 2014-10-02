@@ -990,32 +990,32 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getGoesMetadata(
 
 void te::qt::widgets::TimeSliderWidget::calculateSpatialExtent()
 {
-  //int srid = -1;
-  //m_spatialExtent = te::gm::Envelope();
+  int srid = -1;
+  m_spatialExtent = te::gm::Envelope();
 
-  //QList<QGraphicsItem*> list = m_animationScene->items();
-  //QList<QGraphicsItem*>::iterator it;
+  QList<QGraphicsItem*> list = m_animationScene->items();
+  QList<QGraphicsItem*>::iterator it;
 
-  //for(it = list.begin(); it != list.end(); ++it)
-  //{
-  //  AnimationItem* ai = (AnimationItem*)(*it);
-  //  srid = ai->m_SRID;
-  //  if(m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != ai->m_SRID)
-  //  {
-  //    te::gm::Envelope e = ai->m_animation->m_spatialExtent;
-  //    e.transform(ai->m_SRID, m_display->getSRID());
-  //    m_spatialExtent.Union(e);
-  //  }
-  //  else
-  //    m_spatialExtent.Union(ai->m_animation->m_spatialExtent);
-  //}
-  //QRectF rect(m_spatialExtent.m_llx, m_spatialExtent.m_lly, m_spatialExtent.getWidth(), m_spatialExtent.getHeight());
-  //m_animationScene->setSceneRect(rect);
-  //m_animationView->setSceneRect(rect);
+  for(it = list.begin(); it != list.end(); ++it)
+  {
+    AnimationItem* ai = (AnimationItem*)(*it);
+    srid = ai->m_SRID;
+    if(m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != ai->m_SRID)
+    {
+      te::gm::Envelope e = ai->m_animation->m_spatialExtent;
+      e.transform(ai->m_SRID, m_display->getSRID());
+      m_spatialExtent.Union(e);
+    }
+    else
+      m_spatialExtent.Union(ai->m_animation->m_spatialExtent);
+  }
+  QRectF rect(m_spatialExtent.m_llx, m_spatialExtent.m_lly, m_spatialExtent.getWidth(), m_spatialExtent.getHeight());
+  m_animationScene->setSceneRect(rect);
+  m_animationView->setSceneRect(rect);
 
-  QRectF nullRect;
-  m_animationScene->setSceneRect(nullRect);
-  m_animationView->setSceneRect(nullRect);
+  //QRectF nullRect;
+  //m_animationScene->setSceneRect(nullRect);
+  //m_animationView->setSceneRect(nullRect);
 }
 
 void te::qt::widgets::TimeSliderWidget::calculateTemporalExtent()
