@@ -161,6 +161,8 @@ void te::sa::SkaterDialog::onInputLayerComboBoxActivated(int index)
     m_ui->m_attrLinkComboBox->addItem(propVec[t]->getName().c_str(), dataType);
   }
 
+  std::sort(vec.begin(), vec.end());
+
   m_doubleListWidget->setInputValues(vec);
 }
 

@@ -1012,6 +1012,7 @@ void te::qt::widgets::TimeSliderWidget::calculateSpatialExtent()
   QRectF rect(m_spatialExtent.m_llx, m_spatialExtent.m_lly, m_spatialExtent.getWidth(), m_spatialExtent.getHeight());
   m_animationScene->setSceneRect(rect);
   m_animationView->setSceneRect(rect);
+  m_animationView->fitInView(rect);
 
   //QRectF nullRect;
   //m_animationScene->setSceneRect(nullRect);
