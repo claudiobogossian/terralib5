@@ -355,11 +355,16 @@ namespace te
 
             \param ai The item to be removed.
           */
-          void removeComboItem(te::qt::widgets::AnimationItem* ai);
+          //void removeComboItem(te::qt::widgets::AnimationItem* ai);
 
-          void getAuxInfo(te::qt::widgets::AnimationItem* ai, int index = -1);
+          //void getAuxInfo(te::qt::widgets::AnimationItem* ai, int index = -1);
 
-          void setAuxInfo(te::qt::widgets::AnimationItem* ai, int index = -1);
+          //void setAuxInfo(te::qt::widgets::AnimationItem* ai, int index = -1);
+          
+          void adjustTrajectoryGroupBox(te::qt::widgets::AnimationItem*);
+
+          QString getDateString(const te::dt::TimeInstant& t);
+
 
         protected slots:
 
@@ -451,7 +456,7 @@ namespace te
 
             \param b True if the button is checked, or false if the button is unchecked
           */
-          void onApplyAnimationItemPushButtonClicked(bool);
+          //void onApplyAnimationItemPushButtonClicked(bool);
           
           /*!
             \brief Forward radio button clicked.
@@ -493,14 +498,24 @@ namespace te
 
             \param i The index of combo box.
           */
-          void onTrajectoryColorComboBoxActivated(int i);
+          //void onTrajectoryColorComboBoxActivated(int i);
 
           /*!
             \brief Opacity combo box activated.
 
             \param i The index of combo box.
           */
-          void onOpacityComboBoxActivated(int i);
+          void onAnimationComboBoxActivated(int i);
+
+          /*!
+            \brief Remove item animation.
+          */
+          void onRemovePushButtonClicked(bool);
+
+          /*!
+            \brief Remove all animations.
+          */
+          void onRemoveAllPushButtonClicked(bool);
 
           /*!
             \brief Reset initial time button clicked.
@@ -511,6 +526,10 @@ namespace te
             \brief Reset final time button clicked.
           */
           void onResetFinalTimePushButtonClicked();
+
+          void onWidthValueChanged(int);
+
+          void onHeightValueChanged(int);
 
           void dropAction();
 
@@ -523,16 +542,16 @@ namespace te
 
         private:
 
-          struct AnimationAuxInfo
-          {
-            QString       type;
-            QString       title;
-            unsigned char opacity;
-            bool          drawTrail;
-            bool          autoPan;
-            QColor        forwardColor;
-            QColor        backwardColor;
-          };
+          //struct AnimationAuxInfo
+          //{
+          //  QString       type;
+          //  QString       title;
+          //  unsigned char opacity;
+          //  bool          drawTrail;
+          //  bool          autoPan;
+          //  QColor        forwardColor;
+          //  QColor        backwardColor;
+          //};
 
           bool                                                    m_loop;                     //!< This property holds whether the slider's animation is on loop.
           int                                                     m_duration;                 //!< The animation's duration time in miliseconds
@@ -562,7 +581,7 @@ namespace te
           QList<QUrl>                                             m_dropUrls;                 //!< Urls to animation with drag and drop.
           QByteArray                                              m_dropBA;                   //!< Layer animation with drag and drop.
           SliderPropertiesDialog*                                 m_spd;                      //!< Slider Properties Dialog.
-          QMap<int, AnimationAuxInfo>                             m_auxInfo;                  //!< animation auxiliar information                                        
+          //QMap<int, AnimationAuxInfo>                             m_auxInfo;                  //!< animation auxiliar information                                        
       };
     } // end namespace widgets
   }   // end namespace qt

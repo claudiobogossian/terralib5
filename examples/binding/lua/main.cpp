@@ -26,30 +26,15 @@
 // TerraLib
 #include <terralib/common/PlatformUtils.h>
 
-// Lua
-#include <lua.hpp>
-
 // STL
 #include <iostream>
 
-extern "C"{
-  #include <lua.h>
-  #include <lualib.h>
-  #include <lauxlib.h>
-}
-
-extern int luaopen_terralib_mod_binding_lua(lua_State* L); // declaring the wrapped module
+// Lua
+#include <lua.hpp>
 
 int main(int /*argc*/, char** /*argv*/)
 {
-  int status, result;
-  lua_State *L;
-
-  /*
-   * All Lua contexts are held in this structure. We work with it almost
-   * all the time.
-  */
-  L = luaL_newstate();
+  lua_State *L = luaL_newstate();
 
   luaopen_base(L);
 
@@ -58,17 +43,16 @@ int main(int /*argc*/, char** /*argv*/)
   /* Load the file containing the script we are going to run */
   std::string f = te::common::FindInTerraLibPath("share/terralib/examples/lua/geometry.lua");
 
-  status = luaL_loadfile(L, f.c_str());
+  int status = luaL_loadfile(L, f.c_str());
   if (status)
   {
-    /* If something went wrong, error message is at the top of */
-    /* the stack */
+
     std::cout <<std::endl <<"Couldn't load file: " <<lua_tostring(L, -1);
     return EXIT_FAILURE;
   }
 
   /* Ask Lua to run our little script */
-  result = lua_pcall(L, 0, 0, 0);
+  int result = lua_pcall(L, 0, 0, 0);
 
   if (result)
   {
@@ -76,7 +60,7 @@ int main(int /*argc*/, char** /*argv*/)
     return EXIT_FAILURE;
   }
 
-  lua_close(L);   /* Cya, Lua */
+  lua_close(L);
 
   return EXIT_SUCCESS;
 }

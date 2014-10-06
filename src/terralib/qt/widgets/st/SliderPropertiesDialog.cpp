@@ -70,10 +70,17 @@ te::qt::widgets::SliderPropertiesDialog::SliderPropertiesDialog(QWidget* parent,
   m_ui->m_initialAnimationDateTimeEdit->setDisplayFormat("dd/MMM/yyyy hh:mm:ss");
   m_ui->m_finalAnimationDateTimeEdit->setDisplayFormat("dd/MMM/yyyy hh:mm:ss");
 
+  m_ui->m_widthSpinBox->setMinimum(1);
+  m_ui->m_widthSpinBox->setMaximum(1000);
+  m_ui->m_heightSpinBox->setMinimum(1);
+  m_ui->m_heightSpinBox->setMaximum(1000);
+
   connect(m_ui->m_drawTrailCheckBox, SIGNAL(clicked(bool) ), m_tsw, SLOT(onDrawTrailCheckBoxClicked(bool)));
-  connect(m_ui->m_applyAnimationItemPushButton, SIGNAL(clicked(bool) ), m_tsw, SLOT(onApplyAnimationItemPushButtonClicked(bool)));
+  //connect(m_ui->m_applyAnimationItemPushButton, SIGNAL(clicked(bool) ), m_tsw, SLOT(onApplyAnimationItemPushButtonClicked(bool)));
   connect(m_ui->m_autoPanCheckBox, SIGNAL(clicked(bool) ), m_tsw, SLOT(onAutoPanCheckBoxClicked(bool)));
   connect(m_ui->m_opacitySpinBox, SIGNAL(valueChanged(int)), m_tsw, SLOT(onOpacityValueChanged(int)));
+  connect(m_ui->m_widthSpinBox, SIGNAL(valueChanged(int)), m_tsw, SLOT(onWidthValueChanged(int)));
+  connect(m_ui->m_heightSpinBox, SIGNAL(valueChanged(int)), m_tsw, SLOT(onHeightValueChanged(int)));
   connect(m_ui->m_forwardRadioButton, SIGNAL(clicked(bool) ), m_tsw, SLOT(onForwardRadioButtonClicked(bool)));
   connect(m_ui->m_backwardRadioButton, SIGNAL(clicked(bool) ), m_tsw, SLOT(onBackwardRadioButtonClicked(bool)));
   connect(m_ui->m_loopCheckBox, SIGNAL(clicked(bool) ), m_tsw, SLOT(onLoopCheckBoxClicked(bool)));
@@ -81,8 +88,9 @@ te::qt::widgets::SliderPropertiesDialog::SliderPropertiesDialog(QWidget* parent,
   connect(m_ui->m_applyTimeIntervalPushButton, SIGNAL(clicked(bool) ), m_tsw, SLOT(onApplyTimeIntervalPushButtonClicked(bool)));
   connect(m_ui->m_frontPushButton, SIGNAL(clicked(bool)), m_tsw, SLOT(onFrontPushButtonClicked(bool)));
   connect(m_ui->m_backPushButton, SIGNAL(clicked(bool)), m_tsw, SLOT(onBackPushButtonClicked(bool)));
-  connect(m_ui->m_opacityComboBox, SIGNAL(activated(int) ), m_tsw, SLOT(onOpacityComboBoxActivated(int)));
-  connect(m_ui->m_trajectoryColorComboBox, SIGNAL(activated(int) ), m_tsw, SLOT(onTrajectoryColorComboBoxActivated(int)));
+  connect(m_ui->m_animationComboBox, SIGNAL(activated(int) ), m_tsw, SLOT(onAnimationComboBoxActivated(int)));
+  connect(m_ui->m_removePushButton, SIGNAL(clicked(bool) ), m_tsw, SLOT(onRemovePushButtonClicked(bool)));
+  connect(m_ui->m_removeAllPushButton, SIGNAL(clicked(bool) ), m_tsw, SLOT(onRemoveAllPushButtonClicked(bool)));
   connect(m_ui->m_resetInitialTimePushButton, SIGNAL(clicked()), m_tsw, SLOT(onResetInitialTimePushButtonClicked()));
   connect(m_ui->m_resetFinalTimePushButton, SIGNAL(clicked()), m_tsw, SLOT(onResetFinalTimePushButtonClicked()));
 

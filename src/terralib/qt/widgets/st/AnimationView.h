@@ -68,6 +68,7 @@ namespace te
         void keyPressEvent(QKeyEvent*);
         void keyReleaseEvent(QKeyEvent*);
         void leaveEvent(QEvent*);
+        void resizeEvent(QResizeEvent*);
 
         void dragEnterEvent(QDragEnterEvent*);
         void dragLeaveEvent(QDragLeaveEvent*);

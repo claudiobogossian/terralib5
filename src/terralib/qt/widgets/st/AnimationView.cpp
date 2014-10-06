@@ -5,6 +5,7 @@
 #include <QtCore/QEvent>
 #include <QtCore/QCoreApplication>
 #include <QtGui/QMouseEvent>
+//#include <QtWidgets/QGridLayout>
 
 te::qt::widgets::AnimationView::AnimationView(te::qt::widgets::MapDisplay* parent)
   : QGraphicsView(parent),
@@ -13,7 +14,10 @@ te::qt::widgets::AnimationView::AnimationView(te::qt::widgets::MapDisplay* paren
 {
   setMouseTracking(true);
   setAcceptDrops(true);
-
+  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+  setResizeAnchor(QGraphicsView::NoAnchor);
   //installEventFilter(this);
 }
 
@@ -59,6 +63,16 @@ void te::qt::widgets::AnimationView::keyReleaseEvent(QKeyEvent* e)
 void te::qt::widgets::AnimationView::leaveEvent(QEvent* e)
 {
   QCoreApplication::sendEvent(m_display, (QEvent*)e);
+}
+
+void te::qt::widgets::AnimationView::resizeEvent(QResizeEvent *e)
+{
+  QGraphicsScene* scene = this->scene();
+  if(scene)
+  {
+    QRectF r = scene->sceneRect();
+    ensureVisible(r, 0, 0);
+  }
 }
 
 void te::qt::widgets::AnimationView::dragEnterEvent(QDragEnterEvent* e)

@@ -62,6 +62,7 @@
 #include <QListWidget>
 #include <QMap>
 #include <QUrl>
+#include <QFileDialog>
 
 te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay* md, QWidget* parent,  Qt::WindowFlags f)
   : QWidget((QWidget*)md->parent(), f),
@@ -94,6 +95,9 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
   m_ui->m_durationSpinBox->setMaximum(100000000);
   m_ui->m_durationSpinBox->setValue(10000);
   m_ui->m_durationSpinBox->setSingleStep(10000);
+
+  m_spd->m_ui->m_initialTimeLineEdit->setEnabled(false);
+  m_spd->m_ui->m_finalTimeLineEdit->setEnabled(false);
 
   m_spd->m_ui->m_opacitySpinBox->setMinimum(0);
   m_spd->m_ui->m_opacitySpinBox->setMaximum(255);
@@ -158,6 +162,7 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
 
   m_spd->m_ui->m_forwardColorPushButton->installEventFilter(this);
   m_spd->m_ui->m_backwardColorPushButton->installEventFilter(this);
+  m_spd->m_ui->m_iconPushButton->installEventFilter(this);
   m_ui->m_dateTimeEdit->installEventFilter(this);
 
   m_ui->m_dateTimeEdit->setDisplayFormat("dd/MMM/yyyy hh:mm:ss");
@@ -243,23 +248,23 @@ void te::qt::widgets::TimeSliderWidget::layerRemoved(te::map::AbstractLayerPtr l
     QString title = layer->getTitle().c_str();
     removeAnimation(title);
 
-    size_t size = m_spd->m_ui->m_animationItemListWidget->count();
-    for(size_t i = 0; i < size; ++i)
-    {
-      QString t = m_spd->m_ui->m_animationItemListWidget->item(i)->text();
-      if(t == title)
-      {
-        QListWidgetItem* li = m_spd->m_ui->m_animationItemListWidget->takeItem(i);
-        delete li;
-        break;
-      }
-    }
+    //size_t size = m_spd->m_ui->m_animationItemListWidget->count();
+    //for(size_t i = 0; i < size; ++i)
+    //{
+    //  QString t = m_spd->m_ui->m_animationItemListWidget->item(i)->text();
+    //  if(t == title)
+    //  {
+    //    QListWidgetItem* li = m_spd->m_ui->m_animationItemListWidget->takeItem(i);
+    //    delete li;
+    //    break;
+    //  }
+    //}
   }
 }
 
 void te::qt::widgets::TimeSliderWidget::onDrawTrailCheckBoxClicked(bool b)
 {
-  QString titlecb = m_spd->m_ui->m_trajectoryColorComboBox->currentText();
+  QString titlecb = m_spd->m_ui->m_animationComboBox->currentText();
 
   QList<QGraphicsItem*> list = m_animationScene->items();
   QList<QGraphicsItem*>::iterator it;
@@ -272,86 +277,108 @@ void te::qt::widgets::TimeSliderWidget::onDrawTrailCheckBoxClicked(bool b)
     if(title == titlecb)
     {
       ti->m_drawTrail = b;
-      setAuxInfo(ti);
+      //setAuxInfo(ti);
       break;
     }
   }
 }
 
-void te::qt::widgets::TimeSliderWidget::onApplyAnimationItemPushButtonClicked(bool)
+//void te::qt::widgets::TimeSliderWidget::onApplyAnimationItemPushButtonClicked(bool)
+//{
+//  int animationState = m_parallelAnimation->state();
+//
+//  QList<QGraphicsItem*>::iterator it;
+//
+//  int size = m_spd->m_ui->m_animationItemListWidget->count();
+//  for(int i = 0; i < size; ++i)
+//  {
+//    QListWidgetItem* item = m_spd->m_ui->m_animationItemListWidget->item(i);
+//    QString iTitle = item->text();
+//    Qt::CheckState state = item->checkState();
+//    QList<QGraphicsItem*> list = m_animationScene->items();
+//    if(state == Qt::Checked)
+//    {
+//      for(it = list.begin(); it != list.end(); ++it)
+//      {
+//        te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
+//        QString title = ai->m_title;
+//        if(title == iTitle)
+//          break;
+//      }
+//      if(it == list.end()) // load animation
+//        loadAnimation(iTitle);
+//    }
+//    else if(state == Qt::Unchecked)
+//    {
+//      for(it = list.begin(); it != list.end(); ++it)
+//      {
+//        te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
+//        QString title = ai->m_title;
+//        if(title == iTitle)
+//          removeAnimation(iTitle);
+//      }
+//    }
+//  }
+//
+//  if(animationState == QAbstractAnimation::Stopped)
+//  {
+//    QList<QGraphicsItem*> list = m_animationScene->items();
+//    if(list.count())
+//    {
+//      m_ui->m_settingsToolButton->setEnabled(true);
+//      m_ui->m_playToolButton->setEnabled(true);
+//      m_ui->m_stopToolButton->setEnabled(true);
+//      m_ui->m_durationSpinBox->setEnabled(true);
+//      m_ui->m_dateTimeEdit->setEnabled(true);
+//
+//      onPlayToolButtonnClicked();
+//    }
+//  }
+//}
+
+//void te::qt::widgets::TimeSliderWidget::loadAnimation(const QString& title)
+//{
+//  QList<QPair<QString, te::st::TrajectoryDataSetLayer*> >::iterator it;
+//  QList<QPair<QString, QString> >::iterator cit;
+//  
+//  for(it = m_trajectoryItemList.begin(); it != m_trajectoryItemList.end(); ++it)
+//  {
+//    if(it->first == title)
+//    {
+//      addTrajectory(it->second, "");
+//      return;
+//    }
+//  }
+//
+//  for(cit = m_coverageItemList.begin(); cit != m_coverageItemList.end(); ++cit)
+//  {
+//    if(cit->first == title)
+//    {
+//      addTemporalImages(cit->second);
+//      return;
+//    }
+//  }
+//}
+
+void te::qt::widgets::TimeSliderWidget::onRemovePushButtonClicked(bool)
 {
-  int animationState = m_parallelAnimation->state();
-
-  QList<QGraphicsItem*>::iterator it;
-
-  int size = m_spd->m_ui->m_animationItemListWidget->count();
-  for(int i = 0; i < size; ++i)
+  int ind = m_spd->m_ui->m_animationComboBox->currentIndex();
+  if(ind != -1)
   {
-    QListWidgetItem* item = m_spd->m_ui->m_animationItemListWidget->item(i);
-    QString iTitle = item->text();
-    Qt::CheckState state = item->checkState();
-    QList<QGraphicsItem*> list = m_animationScene->items();
-    if(state == Qt::Checked)
-    {
-      for(it = list.begin(); it != list.end(); ++it)
-      {
-        te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
-        QString title = ai->m_title;
-        if(title == iTitle)
-          break;
-      }
-      if(it == list.end()) // load animation
-        loadAnimation(iTitle);
-    }
-    else if(state == Qt::Unchecked)
-    {
-      for(it = list.begin(); it != list.end(); ++it)
-      {
-        te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
-        QString title = ai->m_title;
-        if(title == iTitle)
-          removeAnimation(iTitle);
-      }
-    }
-  }
-
-  if(animationState == QAbstractAnimation::Stopped)
-  {
-    QList<QGraphicsItem*> list = m_animationScene->items();
-    if(list.count())
-    {
-      m_ui->m_settingsToolButton->setEnabled(true);
-      m_ui->m_playToolButton->setEnabled(true);
-      m_ui->m_stopToolButton->setEnabled(true);
-      m_ui->m_durationSpinBox->setEnabled(true);
-      m_ui->m_dateTimeEdit->setEnabled(true);
-
-      onPlayToolButtonnClicked();
-    }
+    QString title = m_spd->m_ui->m_animationComboBox->currentText();
+    removeAnimation(title);
   }
 }
 
-void te::qt::widgets::TimeSliderWidget::loadAnimation(const QString& title)
+void te::qt::widgets::TimeSliderWidget::onRemoveAllPushButtonClicked(bool)
 {
-  QList<QPair<QString, te::st::TrajectoryDataSetLayer*> >::iterator it;
-  QList<QPair<QString, QString> >::iterator cit;
-  
-  for(it = m_trajectoryItemList.begin(); it != m_trajectoryItemList.end(); ++it)
+  while(true)
   {
-    if(it->first == title)
-    {
-      addTrajectory(it->second, "");
-      return;
-    }
-  }
-
-  for(cit = m_coverageItemList.begin(); cit != m_coverageItemList.end(); ++cit)
-  {
-    if(cit->first == title)
-    {
-      addTemporalImages(cit->second);
-      return;
-    }
+    int ind = m_spd->m_ui->m_animationComboBox->currentIndex();
+    if(ind == -1)
+      break;
+    QString title = m_spd->m_ui->m_animationComboBox->currentText();
+    removeAnimation(title);
   }
 }
 
@@ -401,7 +428,9 @@ void te::qt::widgets::TimeSliderWidget::removeAnimation(const QString& title)
       {
         if(m_animationScene->m_numberOfTrajectories)
         {
+          m_animationScene->m_mutex.lock();
           m_animationScene->m_trajectoryPixmap->fill(Qt::transparent);
+          m_animationScene->m_mutex.unlock();
           draw();
         }
       }
@@ -430,28 +459,17 @@ void te::qt::widgets::TimeSliderWidget::removeAnimation(const QString& title)
 void te::qt::widgets::TimeSliderWidget::removeOnPropertieCombo(const QString& title)
 {
   size_t i;
-  size_t size = m_spd->m_ui->m_opacityComboBox->count();
+  size_t size = m_spd->m_ui->m_animationComboBox->count();
   for(i = 0; i < size; ++i)
   {
-    QString ititle = m_spd->m_ui->m_opacityComboBox->itemText(i);
+    QString ititle = m_spd->m_ui->m_animationComboBox->itemText(i);
     if(ititle == title)
     {
-      m_spd->m_ui->m_opacityComboBox->removeItem(i);
+      m_spd->m_ui->m_animationComboBox->removeItem(i);
       if(i > 0)
-        onOpacityComboBoxActivated(i-1);
-      break;
-    }
-  }
-
-  size = m_spd->m_ui->m_trajectoryColorComboBox->count();
-  for(i = 0; i < size; ++i)
-  {
-    QString ititle = m_spd->m_ui->m_trajectoryColorComboBox->itemText(i);
-    if(ititle == title)
-    {
-      m_spd->m_ui->m_trajectoryColorComboBox->removeItem(i);
-      if(i > 0)
-        onTrajectoryColorComboBoxActivated(i-1);
+        onAnimationComboBoxActivated(i-1);
+      else if(m_spd->m_ui->m_animationComboBox->count() > 0)
+        onAnimationComboBoxActivated(0);
       break;
     }
   }
@@ -545,8 +563,8 @@ void te::qt::widgets::TimeSliderWidget::dropAction()
   if(m_dropModifiers == Qt::NoModifier)
   {
     onStopToolButtonnClicked();
-    m_spd->m_ui->m_opacityComboBox->clear();
-    m_spd->m_ui->m_trajectoryColorComboBox->clear();
+    m_spd->m_ui->m_animationComboBox->clear();
+    m_spd->m_ui->m_animationComboBox->clear();
     m_ui->m_TemporalHorizontalSlider->setValue(0);
     m_parallelAnimation->setCurrentTime(0);
     m_ui->m_settingsToolButton->setEnabled(false);
@@ -566,10 +584,12 @@ void te::qt::widgets::TimeSliderWidget::dropAction()
       delete ai;
     }
     
-    size_t size = m_spd->m_ui->m_animationItemListWidget->count();
-    for(size_t i = 0; i < size; ++i)
-      m_spd->m_ui->m_animationItemListWidget->item(i)->setCheckState(Qt::Unchecked);
-
+    //size_t size = m_spd->m_ui->m_animationItemListWidget->count();
+    //for(size_t i = 0; i < size; ++i)
+    //  m_spd->m_ui->m_animationItemListWidget->item(i)->setCheckState(Qt::Unchecked);
+    m_spd->m_ui->m_animationComboBox->clear();
+    //m_coverageItemList.clear();
+    //m_trajectoryItemList.clear();
     m_display->update();
   }
 
@@ -626,26 +646,50 @@ void te::qt::widgets::TimeSliderWidget::dropAction()
 
 bool te::qt::widgets::TimeSliderWidget::trajectoryAlreadyExists(QPair<QString, te::st::TrajectoryDataSetLayer*>& item)
 {
-  QList<QPair<QString, te::st::TrajectoryDataSetLayer*> >::iterator it;
-  for(it = m_trajectoryItemList.begin(); it != m_trajectoryItemList.end(); ++it)
+  for(int i = 0; i < m_spd->m_ui->m_animationComboBox->count(); ++i)
   {
-    if(*it == item)
+    if(item.first == m_spd->m_ui->m_animationComboBox->itemText(i))
       return true;
   }
-  m_trajectoryItemList.append(item);
   return false;
+  //QString title = item.first;
+  //int ind = m_spd->m_ui->m_animationComboBox->findText(title);
+  //if(ind != -1)
+  //  return false;
+  //return true;
+
+  //QList<QPair<QString, te::st::TrajectoryDataSetLayer*> >::iterator it;
+  //for(it = m_trajectoryItemList.begin(); it != m_trajectoryItemList.end(); ++it)
+  //{
+  //  if(*it == item)
+  //    return true;
+  //}
+  //m_trajectoryItemList.append(item);
+  //return false;
 }
 
 bool te::qt::widgets::TimeSliderWidget::coverageAlreadyExists(QPair<QString, QString>& item)
 {
-  QList<QPair<QString, QString> >::iterator it;
-  for(it = m_coverageItemList.begin(); it != m_coverageItemList.end(); ++it)
+  for(int i = 0; i < m_spd->m_ui->m_animationComboBox->count(); ++i)
   {
-    if(*it == item)
+    if(item.first == m_spd->m_ui->m_animationComboBox->itemText(i))
       return true;
   }
-  m_coverageItemList.append(item);
   return false;
+  //QString title = item.first;
+  //int ind = m_spd->m_ui->m_animationComboBox->findText(title);
+  //if(ind != -1)
+  //  return false;
+  //return true;
+
+  //QList<QPair<QString, QString> >::iterator it;
+  //for(it = m_coverageItemList.begin(); it != m_coverageItemList.end(); ++it)
+  //{
+  //  if(*it == item)
+  //    return true;
+  //}
+  //m_coverageItemList.append(item);
+  //return false;
 }
 
 void te::qt::widgets::TimeSliderWidget::addTrajectory(te::st::TrajectoryDataSetLayer* tl, const QString& pixmapFile)
@@ -653,7 +697,7 @@ void te::qt::widgets::TimeSliderWidget::addTrajectory(te::st::TrajectoryDataSetL
   int state = m_parallelAnimation->state();
 
   QString title = tl->getTitle().c_str();
-  TrajectoryItem* ti = new TrajectoryItem(title, pixmapFile, m_display);
+  TrajectoryItem* ti = new TrajectoryItem(title, m_display, QString(), QSize());
   m_animationScene->addItem(ti);
   Animation* animation = new Animation(ti, "pos");
   animation->setEasingCurve(QEasingCurve::Linear);
@@ -714,41 +758,41 @@ void te::qt::widgets::TimeSliderWidget::addTrajectory(te::st::TrajectoryDataSetL
       m_ui->m_dateTimeEdit->setEnabled(false);
   }
 
-  size = m_spd->m_ui->m_animationItemListWidget->count();
-  size_t i;
-  for(i = 0; i < size; ++i)
-  {
-    QListWidgetItem* item = m_spd->m_ui->m_animationItemListWidget->item(i);
-    QString iTitle = item->text();
-    if(iTitle == title)
-    {
-      getAuxInfo(ti, i);
-      break;
-    }
-  }
-  if(i == size)
-  {
-    QListWidgetItem* item = new QListWidgetItem(title);
-    item->setCheckState(Qt::Checked);
-    m_spd->m_ui->m_animationItemListWidget->addItem(item);
-    AnimationAuxInfo info;
-    info.type = "Trajectory";
-    info.title = title;
-    m_auxInfo[i] = info;
-    setAuxInfo(ti, i);
-  }
+  //size = m_spd->m_ui->m_animationItemListWidget->count();
+  //size_t i;
+  //for(i = 0; i < size; ++i)
+  //{
+  //  QListWidgetItem* item = m_spd->m_ui->m_animationItemListWidget->item(i);
+  //  QString iTitle = item->text();
+  //  if(iTitle == title)
+  //  {
+  //    getAuxInfo(ti, i);
+  //    break;
+  //  }
+  //}
+  //if(i == size)
+  //{
+  //  QListWidgetItem* item = new QListWidgetItem(title);
+  //  item->setCheckState(Qt::Checked);
+  //  m_spd->m_ui->m_animationItemListWidget->addItem(item);
+  //  AnimationAuxInfo info;
+  //  info.type = "Trajectory";
+  //  info.title = title;
+  //  m_auxInfo[i] = info;
+  //  setAuxInfo(ti, i);
+  //}
 
   initProperty();
 
-  m_spd->m_ui->m_trajectoryColorComboBox->addItem(title);
-  int count = m_spd->m_ui->m_trajectoryColorComboBox->count();
-  m_spd->m_ui->m_trajectoryColorComboBox->setCurrentIndex(count-1);
-  onTrajectoryColorComboBoxActivated(count-1);
+  m_spd->m_ui->m_animationComboBox->addItem(title);
+  int count = m_spd->m_ui->m_animationComboBox->count();
+  m_spd->m_ui->m_animationComboBox->setCurrentIndex(count-1);
+  //onTrajectoryColorComboBoxActivated(count-1);
 
-  m_spd->m_ui->m_opacityComboBox->addItem(title);
-  count = m_spd->m_ui->m_opacityComboBox->count();
-  m_spd->m_ui->m_opacityComboBox->setCurrentIndex(count-1);
-  onOpacityComboBoxActivated(count-1);
+  //m_spd->m_ui->m_animationComboBox->addItem(title);
+  //count = m_spd->m_ui->m_animationComboBox->count();
+  //m_spd->m_ui->m_animationComboBox->setCurrentIndex(count-1);
+  onAnimationComboBoxActivated(count-1);
 }
 
 void te::qt::widgets::TimeSliderWidget::addTemporalImages(const QString& filePath)
@@ -765,7 +809,7 @@ void te::qt::widgets::TimeSliderWidget::addTemporalImages(const QString& filePat
   if(pi == 0)
   {
     QMessageBox::information(this, "Error", "Load error: " + filePath);
-    m_coverageItemList.pop_back();
+    //m_coverageItemList.pop_back();
     return;
   }
 
@@ -792,104 +836,104 @@ void te::qt::widgets::TimeSliderWidget::addTemporalImages(const QString& filePat
   }
 
   QDir dir(filePath);
-  size_t size = m_spd->m_ui->m_animationItemListWidget->count();
-  size_t i;
-  for(i = 0; i < size; ++i)
-  {
-    QListWidgetItem* item = m_spd->m_ui->m_animationItemListWidget->item(i);
-    QString iTitle = item->text();
-    if(iTitle == dir.dirName())
-    {
-      getAuxInfo(pi, i);
-      break;
-    }
-  }
-  if(i == size)
-  {
-    QListWidgetItem* item = new QListWidgetItem(dir.dirName());
-    item->setCheckState(Qt::Checked);
-    m_spd->m_ui->m_animationItemListWidget->addItem(item);
-    AnimationAuxInfo info;
-    info.type = "Coverage";
-    info.title = dir.dirName();
-    m_auxInfo[i] = info;
-    setAuxInfo(pi, i);
-  }
+  //size_t size = m_spd->m_ui->m_animationItemListWidget->count();
+  //size_t i;
+  //for(i = 0; i < size; ++i)
+  //{
+  //  QListWidgetItem* item = m_spd->m_ui->m_animationItemListWidget->item(i);
+  //  QString iTitle = item->text();
+  //  if(iTitle == dir.dirName())
+  //  {
+  //    getAuxInfo(pi, i);
+  //    break;
+  //  }
+  //}
+  //if(i == size)
+  //{
+  //  QListWidgetItem* item = new QListWidgetItem(dir.dirName());
+  //  item->setCheckState(Qt::Checked);
+  //  m_spd->m_ui->m_animationItemListWidget->addItem(item);
+  //  AnimationAuxInfo info;
+  //  info.type = "Coverage";
+  //  info.title = dir.dirName();
+  //  m_auxInfo[i] = info;
+  //  setAuxInfo(pi, i);
+  //}
 
   initProperty();
 
-  m_spd->m_ui->m_opacityComboBox->addItem(dir.dirName());
-  int count = m_spd->m_ui->m_opacityComboBox->count();
-  m_spd->m_ui->m_opacityComboBox->setCurrentIndex(count-1);
-  onOpacityComboBoxActivated(count-1);
+  m_spd->m_ui->m_animationComboBox->addItem(dir.dirName());
+  int count = m_spd->m_ui->m_animationComboBox->count();
+  m_spd->m_ui->m_animationComboBox->setCurrentIndex(count-1);
+  onAnimationComboBoxActivated(count-1);
 }
 
-void te::qt::widgets::TimeSliderWidget::getAuxInfo(te::qt::widgets::AnimationItem* ai, int index)
-{
-  if(index == -1)
-  {
-    QMap<int, AnimationAuxInfo>::iterator it;
-    int i = 0;
-    for(it = m_auxInfo.begin(); it != m_auxInfo.end(); ++it)
-    {
-      AnimationAuxInfo info = *it;
-      QString t = info.title;
-      if(t == ai->m_title)
-      {
-        index = i;
-        break;
-      }
-      ++i;
-    }
-  }
-  if(index == -1)
-    return;
+//void te::qt::widgets::TimeSliderWidget::getAuxInfo(te::qt::widgets::AnimationItem* ai, int index)
+//{
+//  if(index == -1)
+//  {
+//    QMap<int, AnimationAuxInfo>::iterator it;
+//    int i = 0;
+//    for(it = m_auxInfo.begin(); it != m_auxInfo.end(); ++it)
+//    {
+//      AnimationAuxInfo info = *it;
+//      QString t = info.title;
+//      if(t == ai->m_title)
+//      {
+//        index = i;
+//        break;
+//      }
+//      ++i;
+//    }
+//  }
+//  if(index == -1)
+//    return;
+//
+//  AnimationAuxInfo info = m_auxInfo[index];
+//  ai->m_opacity = info.opacity;
+//  if(info.type == "Trajectory")
+//  {
+//    te::qt::widgets::TrajectoryItem* ti = (te::qt::widgets::TrajectoryItem*)ai;
+//    ti->m_forwardColor = info.forwardColor;
+//    ti->m_backwardColor = info.backwardColor;
+//    ti->m_drawTrail = info.drawTrail;
+//    if(info.autoPan)
+//      setAutomaticPan(ai->m_title);
+//  }
+//}
 
-  AnimationAuxInfo info = m_auxInfo[index];
-  ai->m_opacity = info.opacity;
-  if(info.type == "Trajectory")
-  {
-    te::qt::widgets::TrajectoryItem* ti = (te::qt::widgets::TrajectoryItem*)ai;
-    ti->m_forwardColor = info.forwardColor;
-    ti->m_backwardColor = info.backwardColor;
-    ti->m_drawTrail = info.drawTrail;
-    if(info.autoPan)
-      setAutomaticPan(ai->m_title);
-  }
-}
+//void te::qt::widgets::TimeSliderWidget::setAuxInfo(te::qt::widgets::AnimationItem* ai, int index)
+//{
+  //if(index == -1)
+  //{
+  //  QMap<int, AnimationAuxInfo>::iterator it;
+  //  int i = 0;
+  //  for(it = m_auxInfo.begin(); it != m_auxInfo.end(); ++it)
+  //  {
+  //    AnimationAuxInfo info = *it;
+  //    QString t = info.title;
+  //    if(t == ai->m_title)
+  //    {
+  //      index = i;
+  //      break;
+  //    }
+  //    ++i;
+  //  }
+  //}
+  //if(index == -1)
+  //  return;
 
-void te::qt::widgets::TimeSliderWidget::setAuxInfo(te::qt::widgets::AnimationItem* ai, int index)
-{
-  if(index == -1)
-  {
-    QMap<int, AnimationAuxInfo>::iterator it;
-    int i = 0;
-    for(it = m_auxInfo.begin(); it != m_auxInfo.end(); ++it)
-    {
-      AnimationAuxInfo info = *it;
-      QString t = info.title;
-      if(t == ai->m_title)
-      {
-        index = i;
-        break;
-      }
-      ++i;
-    }
-  }
-  if(index == -1)
-    return;
-
-  AnimationAuxInfo& info = m_auxInfo[index];
-  info.opacity = ai->m_opacity;
-  if(info.type == "Trajectory")
-  {
-    te::qt::widgets::TrajectoryItem* ti = (te::qt::widgets::TrajectoryItem*)ai;
-    info.forwardColor = ti->m_forwardColor;
-    info.backwardColor = ti->m_backwardColor;
-    info.drawTrail = ti->m_drawTrail;
-    info.autoPan = ti->m_automaticPan;
-  }
-}
+  //AnimationAuxInfo& info = m_auxInfo[index];
+  //info.opacity = ai->m_opacity;
+  //if(info.type == "Trajectory")
+  //{
+  //  te::qt::widgets::TrajectoryItem* ti = (te::qt::widgets::TrajectoryItem*)ai;
+  //  info.forwardColor = ti->m_forwardColor;
+  //  info.backwardColor = ti->m_backwardColor;
+  //  info.drawTrail = ti->m_drawTrail;
+  //  info.autoPan = ti->m_automaticPan;
+  //}
+//}
 
 te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getGoesMetadata(const QString& path)
 {
@@ -946,32 +990,32 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getGoesMetadata(
 
 void te::qt::widgets::TimeSliderWidget::calculateSpatialExtent()
 {
-  //int srid = -1;
-  //m_spatialExtent = te::gm::Envelope();
+  int srid = -1;
+  m_spatialExtent = te::gm::Envelope();
 
-  //QList<QGraphicsItem*> list = m_animationScene->items();
-  //QList<QGraphicsItem*>::iterator it;
+  QList<QGraphicsItem*> list = m_animationScene->items();
+  QList<QGraphicsItem*>::iterator it;
 
-  //for(it = list.begin(); it != list.end(); ++it)
-  //{
-  //  AnimationItem* ai = (AnimationItem*)(*it);
-  //  srid = ai->m_SRID;
-  //  if(m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != ai->m_SRID)
-  //  {
-  //    te::gm::Envelope e = ai->m_animation->m_spatialExtent;
-  //    e.transform(ai->m_SRID, m_display->getSRID());
-  //    m_spatialExtent.Union(e);
-  //  }
-  //  else
-  //    m_spatialExtent.Union(ai->m_animation->m_spatialExtent);
-  //}
-  //QRectF rect(m_spatialExtent.m_llx, m_spatialExtent.m_lly, m_spatialExtent.getWidth(), m_spatialExtent.getHeight());
-  //m_animationScene->setSceneRect(rect);
-  //m_animationView->setSceneRect(rect);
+  for(it = list.begin(); it != list.end(); ++it)
+  {
+    AnimationItem* ai = (AnimationItem*)(*it);
+    srid = ai->m_SRID;
+    if(m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != ai->m_SRID)
+    {
+      te::gm::Envelope e = ai->m_animation->m_spatialExtent;
+      e.transform(ai->m_SRID, m_display->getSRID());
+      m_spatialExtent.Union(e);
+    }
+    else
+      m_spatialExtent.Union(ai->m_animation->m_spatialExtent);
+  }
+  QRectF rect(m_spatialExtent.m_llx, m_spatialExtent.m_lly, m_spatialExtent.getWidth(), m_spatialExtent.getHeight());
+  m_animationScene->setSceneRect(rect);
+  m_animationView->setSceneRect(rect);
 
-  QRectF nullRect;
-  m_animationScene->setSceneRect(nullRect);
-  m_animationView->setSceneRect(nullRect);
+  //QRectF nullRect;
+  //m_animationScene->setSceneRect(nullRect);
+  //m_animationView->setSceneRect(nullRect);
 }
 
 void te::qt::widgets::TimeSliderWidget::calculateTemporalExtent()
@@ -1065,8 +1109,7 @@ int te::qt::widgets::TimeSliderWidget::getAnimationTime(const te::dt::TimeInstan
   double seconds = diff.total_seconds();
   // normalizing the time
   double t = seconds / totalSeconds;
-  t *= 1000;
-  int ret = (int)t;
+  int ret = qRound(t * (double)m_duration);
   return ret;
 }
 
@@ -1111,7 +1154,7 @@ void te::qt::widgets::TimeSliderWidget::onDisplayPaintEvent(QPainter* painter)
   QList<QGraphicsItem*> list = m_animationScene->items();
   QList<QGraphicsItem*>::iterator it;
 
-  if(m_animationScene->m_numberOfPixmaps) // has images
+  if(m_animationScene->m_numberOfCoverages) // has images
   {
     // draw pixmap items
     for(it = list.begin(); it != list.end(); ++it)
@@ -1135,8 +1178,10 @@ void te::qt::widgets::TimeSliderWidget::onDisplayPaintEvent(QPainter* painter)
   if(m_animationScene->m_numberOfTrajectories) // has trajectories
   {
     // draw trail trajectories
+    m_animationScene->m_mutex.lock();
     QPixmap* pixt = ((AnimationScene*)(m_animationScene))->m_trajectoryPixmap;
     painter->drawPixmap(0, 0, *pixt);
+    m_animationScene->m_mutex.unlock();
 
     // draw icon trajectories
     for(it = list.begin(); it != list.end(); ++it)
@@ -1206,17 +1251,17 @@ void te::qt::widgets::TimeSliderWidget::setAutomaticPan(const QString& title)
 {
   m_animationScene->setAutomaticPan(title);
 
-  QList<QGraphicsItem*> list = m_animationScene->items();
-  QList<QGraphicsItem*>::iterator it;
-  for(it = list.begin(); it != list.end(); ++it)
-  {
-    AnimationItem* ai = (AnimationItem*)(*it);
-    if(title == ai->m_title)
-    {
-      setAuxInfo(ai);
-      break;
-    }
-  }
+  //QList<QGraphicsItem*> list = m_animationScene->items();
+  //QList<QGraphicsItem*>::iterator it;
+  //for(it = list.begin(); it != list.end(); ++it)
+  //{
+  //  AnimationItem* ai = (AnimationItem*)(*it);
+  //  if(title == ai->m_title)
+  //  {
+  //    setAuxInfo(ai);
+  //    break;
+  //  }
+  //}
 }
 
 bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
@@ -1266,7 +1311,7 @@ bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
 
       m_spd->m_ui->m_forwardColorPushButton->setPalette(QPalette(cor));
 
-      QString titlecb = m_spd->m_ui->m_trajectoryColorComboBox->currentText();
+      QString titlecb = m_spd->m_ui->m_animationComboBox->currentText();
 
       QList<QGraphicsItem*> list = m_animationScene->items();
       QList<QGraphicsItem*>::iterator it;
@@ -1282,7 +1327,7 @@ bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
       if(ti != 0)
       {
         ti->m_forwardColor = cor;
-        setAuxInfo(ti);
+        //setAuxInfo(ti);
       }
       return true;
     }
@@ -1306,7 +1351,7 @@ bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
 
       m_spd->m_ui->m_backwardColorPushButton->setPalette(QPalette(cor));
 
-      QString titlecb = m_spd->m_ui->m_trajectoryColorComboBox->currentText();
+      QString titlecb = m_spd->m_ui->m_animationComboBox->currentText();
 
       QList<QGraphicsItem*> list = m_animationScene->items();
       QList<QGraphicsItem*>::iterator it;
@@ -1322,7 +1367,82 @@ bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
       if(ti != 0)
       {
         ti->m_backwardColor = cor;
-        setAuxInfo(ti);
+        //setAuxInfo(ti);
+      }
+      return true;
+    }
+  }
+  else if(obj == m_spd->m_ui->m_iconPushButton)
+  {
+    if(e->type() == QEvent::Paint)
+    {
+      QString titlecb = m_spd->m_ui->m_animationComboBox->currentText();
+
+      QList<QGraphicsItem*> list = m_animationScene->items();
+      QList<QGraphicsItem*>::iterator it;
+      te::qt::widgets::TrajectoryItem* ti = 0;
+
+      for(it = list.begin(); it != list.end(); ++it)
+      {
+        te::qt::widgets::AnimationItem* ai = (te::qt::widgets::AnimationItem*)(*it);
+        QPixmap pix = ai->pixmap();
+        if(pix.isNull() == false)
+        {
+          ti = (te::qt::widgets::TrajectoryItem*)ai;
+          QString title = ti->m_title;
+          if(title == titlecb)
+            break;
+        }
+      }
+      if(ti != 0)
+      {
+        QPainter painter(m_spd->m_ui->m_iconPushButton);
+        QPixmap pix = ti->pixmap();
+        QRect r = pix.rect();
+        r.moveCenter(m_spd->m_ui->m_iconPushButton->rect().center());
+        painter.drawPixmap(r, pix, pix.rect());
+      }
+      return true;
+    }
+    else if(e->type() == QEvent::MouseButtonPress)
+    {
+      QString fileName = QFileDialog::getOpenFileName(this, tr("Select File"), "C:/", tr("Images (*.png *.xpm *.jpg *.gif)"));
+      if(fileName.isNull())
+        return true;
+
+      QPixmap pix(fileName);
+      if(pix.isNull())
+      {
+        QMessageBox::information(this, "Pixmap Error", "Invalid File");
+        return true;
+      }
+
+      QString titlecb = m_spd->m_ui->m_animationComboBox->currentText();
+
+      QList<QGraphicsItem*> list = m_animationScene->items();
+      QList<QGraphicsItem*>::iterator it;
+      te::qt::widgets::TrajectoryItem* ti = 0;
+
+      for(it = list.begin(); it != list.end(); ++it)
+      {
+        te::qt::widgets::AnimationItem* ai = (te::qt::widgets::AnimationItem*)(*it);
+        if(ai->pixmap().isNull() == false)
+        {
+          ti = (te::qt::widgets::TrajectoryItem*)ai;
+          QString title = ti->m_title;
+          if(title == titlecb)
+            break;
+        }
+      }
+      if(ti != 0)
+      {
+        QPixmap pp(ti->m_iconSize);
+        QPainter painter(&pp);
+        painter.drawPixmap(pp.rect(), pix, pix.rect());
+        ti->m_iconFile = fileName;
+        ti->setPixmap(pp);
+        ti->m_iconSize = pp.size();
+        m_spd->m_ui->m_iconPushButton->update();
       }
       return true;
     }
@@ -1543,10 +1663,13 @@ void te::qt::widgets::TimeSliderWidget::onPlayToolButtonnClicked()
   else
   {
     m_ui->m_playToolButton->setIcon(QIcon::fromTheme("media-playback-pause"));
-    if(m_spd->m_ui->m_forwardRadioButton->isChecked())
-      onForwardRadioButtonClicked(true);
-    if(m_spd->m_ui->m_backwardRadioButton->isChecked())
-      onBackwardRadioButtonClicked(true);
+    if(m_comingBack == false)
+    {
+      if(m_spd->m_ui->m_forwardRadioButton->isChecked())
+        onForwardRadioButtonClicked(true);
+      if(m_spd->m_ui->m_backwardRadioButton->isChecked())
+        onBackwardRadioButtonClicked(true);
+    }
     if(m_spd->m_ui->m_loopCheckBox->isChecked())
       onLoopCheckBoxClicked(true);
     if(m_spd->m_ui->m_goAndBackCheckBox->isChecked())
@@ -1774,6 +1897,8 @@ void te::qt::widgets::TimeSliderWidget::onFinishAnimation()
 
     if(m_loop)
     {
+      m_currentTime = 0;
+      m_parallelAnimation->setCurrentTime(m_currentTime);
       play();
     }
     else
@@ -1876,7 +2001,7 @@ void te::qt::widgets::TimeSliderWidget::putToBack(te::qt::widgets::AnimationItem
 
 void te::qt::widgets::TimeSliderWidget::onFrontPushButtonClicked(bool b)
 {
-  QString title = m_spd->m_ui->m_opacityComboBox->currentText();
+  QString title = m_spd->m_ui->m_animationComboBox->currentText();
 
   QList<QGraphicsItem*> list = m_animationScene->items();
   QList<QGraphicsItem*>::iterator it;
@@ -1895,7 +2020,7 @@ void te::qt::widgets::TimeSliderWidget::onFrontPushButtonClicked(bool b)
 
 void te::qt::widgets::TimeSliderWidget::onBackPushButtonClicked(bool b)
 {
-  QString title = m_spd->m_ui->m_opacityComboBox->currentText();
+  QString title = m_spd->m_ui->m_animationComboBox->currentText();
 
   QList<QGraphicsItem*> list = m_animationScene->items();
   QList<QGraphicsItem*>::iterator it;
@@ -2027,7 +2152,9 @@ void te::qt::widgets::TimeSliderWidget::onDurationValueChanged(int val)
   }
 
   m_currentTime = qRound(f * (double)m_duration);
+  m_animationScene->m_mutex.lock();
   m_animationScene->m_trajectoryPixmap->fill(Qt::transparent);
+  m_animationScene->m_mutex.unlock();
   setDuration(m_duration);
   m_parallelAnimation->setCurrentTime(m_currentTime);
   draw();
@@ -2244,7 +2371,7 @@ void te::qt::widgets::TimeSliderWidget::drawTrajectoryIcon(const te::qt::widgets
 
 void te::qt::widgets::TimeSliderWidget::onOpacityValueChanged(int v)
 {
-  QString titlecb = m_spd->m_ui->m_opacityComboBox->currentText();
+  QString titlecb = m_spd->m_ui->m_animationComboBox->currentText();
 
   QList<QGraphicsItem*> list = m_animationScene->items();
   QList<QGraphicsItem*>::iterator it;
@@ -2256,7 +2383,116 @@ void te::qt::widgets::TimeSliderWidget::onOpacityValueChanged(int v)
     if(title.contains(titlecb))
     {
       ai->m_opacity = v;
-      setAuxInfo(ai);
+      //setAuxInfo(ai);
+      m_display->update();
+      break;
+    }
+  }
+}
+
+void te::qt::widgets::TimeSliderWidget::onWidthValueChanged(int)
+{
+  QString titlecb = m_spd->m_ui->m_animationComboBox->currentText();
+
+  QList<QGraphicsItem*> list = m_animationScene->items();
+  QList<QGraphicsItem*>::iterator it;
+
+  for(it = list.begin(); it != list.end(); ++it)
+  {
+    te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
+    QString title = ai->m_title;
+    if(title.contains(titlecb))
+    {
+      QPixmap pix = ai->pixmap();
+
+      QPixmap pn(m_spd->m_ui->m_widthSpinBox->value(), m_spd->m_ui->m_heightSpinBox->value());
+      if(pix.isNull() == false)
+      {
+        te::qt::widgets::TrajectoryItem* ti = (te::qt::widgets::TrajectoryItem*)ai;
+        QString file = ti->m_iconFile;
+        if(file.isEmpty() == false)
+        {
+          QFile f(file);
+          if(f.exists())
+          {
+            QPixmap pf(file);
+            QPainter painter(&pn);
+            painter.drawPixmap(pn.rect(), pf, pf.rect());
+            painter.end();
+            ti->setPixmap(pn);
+            ti->m_iconSize = pn.size();
+            m_spd->m_ui->m_iconPushButton->update();
+            m_display->update();
+            break;
+          }
+        }
+
+        pn.fill(Qt::transparent);
+        QPainter painter(&pn);
+        QBrush b(Qt::red);
+        painter.setBrush(b);
+        QPen p(Qt::red);
+        painter.setPen(p);
+        painter.drawEllipse(QRect(1, 1, 18, 18));
+        painter.end();
+        ti->setPixmap(pn);
+        ti->m_iconSize = pn.size();
+        m_spd->m_ui->m_iconPushButton->update();
+      }
+      m_display->update();
+      break;
+    }
+  }
+}
+
+void te::qt::widgets::TimeSliderWidget::onHeightValueChanged(int)
+{
+  QString titlecb = m_spd->m_ui->m_animationComboBox->currentText();
+
+  QList<QGraphicsItem*> list = m_animationScene->items();
+  QList<QGraphicsItem*>::iterator it;
+
+  for(it = list.begin(); it != list.end(); ++it)
+  {
+    te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
+    QString title = ai->m_title;
+    if(title.contains(titlecb))
+    {
+      QPixmap pix = ai->pixmap();
+      QPixmap pn(m_spd->m_ui->m_widthSpinBox->value(), m_spd->m_ui->m_heightSpinBox->value());
+      if(pix.isNull() == false)
+      {
+        te::qt::widgets::TrajectoryItem* ti = (te::qt::widgets::TrajectoryItem*)ai;
+        QString file = ti->m_iconFile;
+        if(file.isEmpty() == false)
+        {
+          QFile f(file);
+          if(f.exists())
+          {
+            QPixmap pf(file);
+            QPainter painter(&pn);
+            painter.drawPixmap(pn.rect(), pf, pf.rect());
+            painter.end();
+            ti->setPixmap(pn);
+            ti->m_iconSize = pn.size();
+            m_spd->m_ui->m_iconPushButton->update();
+            m_display->update();
+            break;
+          }
+        }
+
+        pn.fill(Qt::transparent);
+        QPainter painter(&pn);
+        QBrush b(Qt::red);
+        painter.setBrush(b);
+        QPen p(Qt::red);
+        painter.setPen(p);
+        painter.drawEllipse(QRect(1, 1, 18, 18));
+        painter.end();
+        m_spd->m_ui->m_iconPushButton->update();
+        ti->setPixmap(pn);
+        ti->m_iconSize = pn.size();
+      }
       m_display->update();
       break;
     }
@@ -2427,21 +2663,47 @@ void te::qt::widgets::TimeSliderWidget::onApplyTimeIntervalPushButtonClicked(boo
     return;
   }
 
+  te::dt::TimeInstant tinst = getTimeInstant();
+  boost::posix_time::ptime btinst = tinst.getTimeInstant();
+
   te::dt::TimeInstant t = m_temporalAnimationExtent.getInitialTimeInstant();
   QDate qdatei(t.getDate().getYear(), t.getDate().getMonth(), t.getDate().getDay());
   QTime qtimei(t.getTime().getHours(), t.getTime().getMinutes(), t.getTime().getSeconds());
   QDateTime qdatetimei(qdatei, qtimei);
   QDateTime qdi = m_spd->m_ui->m_initialAnimationDateTimeEdit->dateTime();
+  boost::posix_time::ptime iTime = t.getTimeInstant();
 
   t = m_temporalAnimationExtent.getFinalTimeInstant();
   QDate qdatef(t.getDate().getYear(), t.getDate().getMonth(), t.getDate().getDay());
   QTime qtimef(t.getTime().getHours(), t.getTime().getMinutes(), t.getTime().getSeconds());
   QDateTime qdatetimef(qdatef, qtimef);
   QDateTime qdf = m_spd->m_ui->m_finalAnimationDateTimeEdit->dateTime();
+  boost::posix_time::ptime fTime = t.getTimeInstant();
   if(qdatetimei == qdi && qdatetimef == qdf)
     return;
 
-  m_currentTime = m_parallelAnimation->currentTime();
+  boost::posix_time::ptime niTime = ti.getTimeInstant();
+  boost::posix_time::ptime nfTime = tf.getTimeInstant();
+  boost::posix_time::time_duration ndiff = nfTime - niTime;
+  double ntotalSeconds = ndiff.total_seconds();
+
+  boost::posix_time::time_duration diff = fTime - iTime;
+  double totalSeconds = diff.total_seconds();
+  double rel = m_duration / totalSeconds;
+
+  int nduration = qRound(rel * ntotalSeconds);
+
+  //m_currentTime = m_parallelAnimation->currentTime();
+  m_currentTime = 0;
+  if(btinst >= niTime && btinst <= nfTime)
+  {
+    boost::posix_time::time_duration d = btinst - niTime;
+    double tot = d.total_seconds();
+    m_currentTime = qRound(nduration * tot / ntotalSeconds);
+  }
+  else
+    m_currentTime = nduration;
+
   int state = m_parallelAnimation->state();
   if(state == QAbstractAnimation::Running)
     onPlayToolButtonnClicked();
@@ -2454,6 +2716,8 @@ void te::qt::widgets::TimeSliderWidget::onApplyTimeIntervalPushButtonClicked(boo
   createNewPixmap();
   calculateSpatialExtent();
   createAnimations();
+  m_duration = nduration;
+  m_ui->m_durationSpinBox->setValue(m_duration);
   setDuration(m_duration);
   setDirection(m_direction);
 
@@ -2475,63 +2739,110 @@ void te::qt::widgets::TimeSliderWidget::onApplyTimeIntervalPushButtonClicked(boo
     onDateTimeEditChanged(dt);
 }
 
-void te::qt::widgets::TimeSliderWidget::onTrajectoryColorComboBoxActivated(int i)
+//void te::qt::widgets::TimeSliderWidget::onTrajectoryColorComboBoxActivated(int i)
+//{
+//  QString titlecb = m_spd->m_ui->m_animationComboBox->currentText();
+//
+//  QList<QGraphicsItem*> list = m_animationScene->items();
+//  QList<QGraphicsItem*>::iterator it;
+//  te::qt::widgets::TrajectoryItem* ti = 0;
+//
+//  for(it = list.begin(); it != list.end(); ++it)
+//  {
+//    ti = (te::qt::widgets::TrajectoryItem*)(*it);
+//    QString title = ti->m_title;
+//    if(title == titlecb)
+//      break;
+//  }
+//  if(ti == 0)
+//    return;
+//
+//  m_spd->m_ui->m_forwardColorPushButton->setPalette(QPalette(ti->m_forwardColor));
+//  m_spd->m_ui->m_forwardColorPushButton->update();
+//  m_spd->m_ui->m_backwardColorPushButton->setPalette(QPalette(ti->m_backwardColor));
+//  m_spd->m_ui->m_backwardColorPushButton->update();
+//  m_spd->m_ui->m_autoPanCheckBox->setChecked(ti->m_automaticPan);
+//  m_spd->m_ui->m_drawTrailCheckBox->setChecked(ti->m_drawTrail);
+//}
+
+void te::qt::widgets::TimeSliderWidget::onAnimationComboBoxActivated(int i)
 {
-  QString titlecb = m_spd->m_ui->m_trajectoryColorComboBox->currentText();
+  QString titlecb = m_spd->m_ui->m_animationComboBox->currentText();
 
   QList<QGraphicsItem*> list = m_animationScene->items();
   QList<QGraphicsItem*>::iterator it;
-  te::qt::widgets::TrajectoryItem* ti = 0;
 
   for(it = list.begin(); it != list.end(); ++it)
   {
-    ti = (te::qt::widgets::TrajectoryItem*)(*it);
-    QString title = ti->m_title;
-    if(title == titlecb)
-      break;
-  }
-  if(ti == 0)
-    return;
-
-  m_spd->m_ui->m_forwardColorPushButton->setPalette(QPalette(ti->m_forwardColor));
-  m_spd->m_ui->m_forwardColorPushButton->update();
-  m_spd->m_ui->m_backwardColorPushButton->setPalette(QPalette(ti->m_backwardColor));
-  m_spd->m_ui->m_backwardColorPushButton->update();
-  m_spd->m_ui->m_autoPanCheckBox->setChecked(ti->m_automaticPan);
-  m_spd->m_ui->m_drawTrailCheckBox->setChecked(ti->m_drawTrail);
-}
-
-void te::qt::widgets::TimeSliderWidget::onOpacityComboBoxActivated(int i)
-{
-  QString titlecb = m_spd->m_ui->m_opacityComboBox->currentText();
-
-  QList<QGraphicsItem*> list = m_animationScene->items();
-  QList<QGraphicsItem*>::iterator it;
-
-  for(it = list.begin(); it != list.end(); ++it)
-  {
-    te::qt::widgets::AnimationItem* ai = (AnimationItem*)(*it);
+    te::qt::widgets::AnimationItem* ai = (te::qt::widgets::AnimationItem*)(*it);
     QString title = ai->m_title;
     if(title.contains(titlecb))
     {
       int op = ai->m_opacity;
       m_spd->m_ui->m_opacitySpinBox->setValue(op);
+      te::dt::TimeInstant tini = ai->m_time.first();
+      QString sini = getDateString(tini);
+      te::dt::TimeInstant tfim = ai->m_time.last();
+      QString sfim = getDateString(tfim);
+      m_spd->m_ui->m_initialTimeLineEdit->setText(sini);
+      m_spd->m_ui->m_finalTimeLineEdit->setText(sfim);
+
+      adjustTrajectoryGroupBox(ai);
       break;
     }
   }
 }
 
-void te::qt::widgets::TimeSliderWidget::removeComboItem(te::qt::widgets::AnimationItem* ai)
+QString te::qt::widgets::TimeSliderWidget::getDateString(const te::dt::TimeInstant& t)
 {
-  QString title = ai->m_title;
-  int index = m_spd->m_ui->m_opacityComboBox->findText(title);
-  m_spd->m_ui->m_opacityComboBox->removeItem(index);
-  onOpacityComboBoxActivated(m_spd->m_ui->m_opacityComboBox->currentIndex());
-
-  index = m_spd->m_ui->m_trajectoryColorComboBox->findText(title);
-  m_spd->m_ui->m_trajectoryColorComboBox->removeItem(index);
-  onTrajectoryColorComboBoxActivated(m_spd->m_ui->m_trajectoryColorComboBox->currentIndex());
+  QDate qdate(t.getDate().getYear(), t.getDate().getMonth(), t.getDate().getDay());
+  QTime qtime(t.getTime().getHours(), t.getTime().getMinutes(), t.getTime().getSeconds());
+  QDateTime qdatetime(qdate, qtime);
+  return qdatetime.toString("dd/MMM/yyyy hh:mm:ss");
 }
+
+void te::qt::widgets::TimeSliderWidget::adjustTrajectoryGroupBox(te::qt::widgets::AnimationItem* ai)
+{
+  QPixmap pix = ai->pixmap();
+  if(pix.isNull()) // is temporal image
+  {
+    m_spd->m_ui->m_trajectoryGroupBox->setEnabled(false);
+    m_spd->m_ui->m_forwardColorPushButton->setPalette(QPalette(Qt::gray));
+    m_spd->m_ui->m_forwardColorPushButton->update();
+    m_spd->m_ui->m_backwardColorPushButton->setPalette(QPalette(Qt::gray));
+    m_spd->m_ui->m_backwardColorPushButton->update();
+    m_spd->m_ui->m_autoPanCheckBox->setChecked(false);
+    m_spd->m_ui->m_drawTrailCheckBox->setChecked(false);
+  }
+  else // is trajectory
+  {
+    m_spd->m_ui->m_trajectoryGroupBox->setEnabled(true);
+    te::qt::widgets::TrajectoryItem* ti = (te::qt::widgets::TrajectoryItem*)(ai);
+    m_spd->m_ui->m_forwardColorPushButton->setPalette(QPalette(ti->m_forwardColor));
+    m_spd->m_ui->m_forwardColorPushButton->update();
+    m_spd->m_ui->m_backwardColorPushButton->setPalette(QPalette(ti->m_backwardColor));
+    m_spd->m_ui->m_backwardColorPushButton->update();
+    m_spd->m_ui->m_autoPanCheckBox->setChecked(ti->m_automaticPan);
+    m_spd->m_ui->m_drawTrailCheckBox->setChecked(ti->m_drawTrail);
+
+    QPixmap pix = ti->pixmap();
+    m_spd->m_ui->m_widthSpinBox->setValue(pix.width());
+    m_spd->m_ui->m_heightSpinBox->setValue(pix.height());
+    m_spd->m_ui->m_iconPushButton->update();
+  }
+}
+
+//void te::qt::widgets::TimeSliderWidget::removeComboItem(te::qt::widgets::AnimationItem* ai)
+//{
+//  QString title = ai->m_title;
+//  int index = m_spd->m_ui->m_animationComboBox->findText(title);
+//  m_spd->m_ui->m_animationComboBox->removeItem(index);
+//  onAnimationComboBoxActivated(m_spd->m_ui->m_animationComboBox->currentIndex());
+//
+//  //index = m_spd->m_ui->m_animationComboBox->findText(title);
+//  //m_spd->m_ui->m_animationComboBox->removeItem(index);
+//  //onTrajectoryColorComboBoxActivated(m_spd->m_ui->m_animationComboBox->currentIndex());
+//}
 
 te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getGoesTime(const QString& fileName)
 {
@@ -2558,7 +2869,7 @@ te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getGoesTime(const QString
 
 void te::qt::widgets::TimeSliderWidget::onAutoPanCheckBoxClicked(bool)
 {
-  QString title = m_spd->m_ui->m_trajectoryColorComboBox->currentText();
+  QString title = m_spd->m_ui->m_animationComboBox->currentText();
   setAutomaticPan(title);
 }
 

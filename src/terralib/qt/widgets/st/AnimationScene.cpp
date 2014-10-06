@@ -14,7 +14,7 @@ te::qt::widgets::AnimationScene::AnimationScene(te::qt::widgets::MapDisplay* dis
   m_display(display),
   m_trajectoryPixmap(0),
   m_numberOfTrajectories(0),
-  m_numberOfPixmaps(0)
+  m_numberOfCoverages(0)
 {
   createNewPixmap();
 }
@@ -26,15 +26,38 @@ te::qt::widgets::AnimationScene::~AnimationScene()
 
 void te::qt::widgets::AnimationScene::createNewPixmap()
 {
-  delete m_trajectoryPixmap;
-  m_trajectoryPixmap = new QPixmap(m_display->width(), m_display->height());
-  m_trajectoryPixmap->fill(Qt::transparent);
+  bool createNew = false;
 
-  setSceneRect(0, 0, m_display->width(), m_display->height());  
-  if(views().isEmpty() == false)
+  if(m_trajectoryPixmap == 0)
+      createNew = true;
+
+  if(createNew == false && m_trajectoryPixmap)
   {
-    QGraphicsView* view = *(views().begin());
-    view->resize(m_display->width()*2, m_display->height()*2);
+    if(m_trajectoryPixmap->rect().width() != m_display->width() || m_trajectoryPixmap->rect().height() != m_display->height())
+      createNew = true;
+  }
+
+  if(createNew)
+  {
+    m_mutex.lock();
+    delete m_trajectoryPixmap;
+    m_trajectoryPixmap = new QPixmap(m_display->width(), m_display->height());
+    m_trajectoryPixmap->fill(Qt::transparent);
+    m_mutex.unlock();
+
+    setSceneRect(0, 0, m_display->width(), m_display->height());  
+    if(views().isEmpty() == false)
+    {
+      QGraphicsView* view = *(views().begin());
+      view->resize(m_display->width(), m_display->height());
+      //view->resize(m_display->width()*2, m_display->height()*2);
+    }
+  }
+  else
+  {
+    m_mutex.lock();
+    m_trajectoryPixmap->fill(Qt::transparent);
+    m_mutex.unlock();
   }
 }
 
@@ -42,7 +65,7 @@ void te::qt::widgets::AnimationScene::addItem(te::qt::widgets::AnimationItem* it
 {
   QGraphicsScene::addItem(item);
   if(item->pixmap().isNull())
-    m_numberOfPixmaps++;
+    m_numberOfCoverages++;
   else
     m_numberOfTrajectories++;
 }
@@ -51,7 +74,7 @@ void te::qt::widgets::AnimationScene::removeItem(te::qt::widgets::AnimationItem*
 {
   QGraphicsScene::removeItem(item);
   if(item->pixmap().isNull())
-    m_numberOfPixmaps--;
+    m_numberOfCoverages--;
   else
     m_numberOfTrajectories--;
 }
@@ -59,7 +82,7 @@ void te::qt::widgets::AnimationScene::removeItem(te::qt::widgets::AnimationItem*
 void te::qt::widgets::AnimationScene::clear()
 {
   QGraphicsScene::clear();
-  m_numberOfPixmaps = 0;
+  m_numberOfCoverages = 0;
   m_numberOfTrajectories = 0;
 }
 

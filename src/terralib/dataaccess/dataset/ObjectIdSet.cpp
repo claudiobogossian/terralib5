@@ -96,21 +96,27 @@ te::da::Expression* te::da::ObjectIdSet::getExpression(const std::string source)
     {
       const boost::ptr_vector<te::dt::AbstractData>& data = (*it)->getValue();
 
+      if(i >= data.size())
+        continue;
+
       if(m_ptypes[i] == te::dt::STRING_TYPE)
         in->add(new LiteralString(data[i].toString()));
       else
         in->add(new Literal(data[i]));
     }
 
-    if(i > 0)
+    if(in->getNumArgs() > 0)
     {
-      tmp = *ins && *in;
-      delete ins;
-      delete in;
-      ins = tmp;
+      if(i > 0)
+      {
+        tmp = *ins && *in;
+        delete ins;
+        delete in;
+        ins = tmp;
+      }
+      else
+        ins = in;
     }
-    else
-      ins = in;
   }
 
   return ins;

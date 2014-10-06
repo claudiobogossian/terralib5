@@ -37,6 +37,7 @@
 #include "../core/enum/Enums.h"
 
 // STL
+#include <map>
 #include <string>
 #include <sstream> 
 #include <cmath>
@@ -605,9 +606,10 @@ bool te::layout::GridGeodesicModel::isVisibleCornerTextsText()
   return m_visibleCornerTextsText;
 }
 
-std::map<te::gm::Coord2D, std::string> te::layout::GridGeodesicModel::getGridInfo()
+std::map<te::gm::Coord2D, std::string>
+te::layout::GridGeodesicModel::getGridInfo()
 {
-  std::map<te::gm::Coord2D, std::string>  map;
-
-  return map;
+  return std::map<te::gm::Coord2D, ::std::string>();
 }
+
+

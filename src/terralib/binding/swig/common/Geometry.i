@@ -73,7 +73,7 @@ using namespace te::gm;
 %include "terralib/geometry/MultiCurve.h"
 %include "terralib/geometry/MultiLineString.h"
 %include "terralib/geometry/MultiPoint.h"
-#%include "terralib/geometry/MultiPolygon.h"
+%include "terralib/geometry/MultiPolygon.h"
 %include "terralib/geometry/MultiSurface.h"
 %include "terralib/geometry/PointKd.h"
 %include "terralib/geometry/PointM.h"

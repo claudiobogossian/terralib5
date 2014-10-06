@@ -31,6 +31,7 @@
 
 // Qt
 #include <QGraphicsScene>
+#include <QtCore/QMutex>
 
 namespace te
 {
@@ -110,8 +111,9 @@ namespace te
       public:
         te::qt::widgets::MapDisplay* m_display; //!< Indicates where the scene is displayed.
         QPixmap* m_trajectoryPixmap;            //!< QPixmap where all the trajectory item are drawn.
+        QMutex m_mutex;                         //!< To not use the scene pixmap simultaneously
         int m_numberOfTrajectories;             //!< Number of trajectory items.
-        int m_numberOfPixmaps;                  //!< Number of pixmap items.
+        int m_numberOfCoverages;                  //!< Number of coverage items.
       };
     } // end namespace widgets
   }   // end namespace qt
