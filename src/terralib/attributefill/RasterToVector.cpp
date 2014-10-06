@@ -331,7 +331,7 @@ std::auto_ptr<te::da::DataSetType> te::attributefill::RasterToVector::getDataSet
           outdsType->add(prop);
           break;
         case 13:
-          prop = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Mode", te::dt::STRING_TYPE);
+          prop = new te::dt::StringProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Mode");
           outdsType->add(prop);
           break;
         default:
