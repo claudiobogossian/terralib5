@@ -51,9 +51,15 @@
 
 namespace te
 {
+  namespace dt
+  {
+    class AbstractData;
+  }
+
   namespace stat
   {
     struct NumericStatisticalSummary;
+    struct StringStatisticalSummary;
   }
 
   namespace attributefill
@@ -69,8 +75,7 @@ namespace te
         void setInput(te::map::AbstractLayerPtr fromLayer,
                       te::map::AbstractLayerPtr toLayer);
 
-        void setParams(std::map<te::dt::Property*, std::vector<std::string> >& options,
-                       std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >&statSum);
+        void setParams(std::map<te::dt::Property*, std::vector<std::string> >& options);
 
         void setOutput(te::da::DataSourcePtr outDsrc, std::string dsName);
 
@@ -94,9 +99,17 @@ namespace te
                                                   te::da::DataSet* fromDs,
                                                   te::sam::rtree::Index<size_t, 8>* rtree);
 
-        std::vector<double> getValues(te::da::DataSet* fromDs, std::vector<std::size_t> dsPos, const std::string& function);
+        std::vector<te::dt::AbstractData*> getDataValues(te::da::DataSet* fromDs, std::vector<std::size_t> dsPos, const std::string& propertyName);
+
+        std::vector<double> getNumValues(te::da::DataSet* fromDs, std::vector<std::size_t> dsPos, const std::string& propertyName);
+
+        std::vector<std::string> getStrValues(te::da::DataSet* fromDs, std::vector<std::size_t> dsPos, const std::string& propertyName);
 
         double getValue(te::stat::NumericStatisticalSummary ss, const std::string& function);
+
+        std::string getValue(te::stat::StringStatisticalSummary ss, const std::string& function);
+
+        std::string getModeValue(te::stat::NumericStatisticalSummary ss);
 
         std::vector<std::string> getSelectedFunctions();
 
@@ -105,7 +118,6 @@ namespace te
         te::map::AbstractLayerPtr m_fromLayer;
         te::map::AbstractLayerPtr m_toLayer;
 
-        std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > m_statSum;
         std::map<te::dt::Property*, std::vector<std::string> > m_options;
 
         te::da::DataSourcePtr m_outDsrc;
