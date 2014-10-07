@@ -21,6 +21,7 @@
  \file VectorToVector.cpp
  */
 
+#include "../common/StringUtils.h"
 #include "../common/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
@@ -121,10 +122,8 @@ void te::attributefill::VectorToVector::setInput(te::map::AbstractLayerPtr fromL
   m_toLayer = toLayer;
 }
 
-void te::attributefill::VectorToVector::setParams(std::map<te::dt::Property*, std::vector<std::string> >& options,
-                                                  std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >&statSum)
+void te::attributefill::VectorToVector::setParams(std::map<te::dt::Property*, std::vector<std::string> >& options)
 {
-  m_statSum = statSum;
   m_options = options;
 }
 
@@ -170,11 +169,17 @@ bool te::attributefill::VectorToVector::run()
   {
     te::mem::DataSetItem* item = new te::mem::DataSetItem(outDs.get());
 
-    std::vector<std::size_t> intersections = getIntersections(toDs.get(), fromDs.get(), rtree);
-
     for(std::size_t i = 0; i < toSchema->size(); ++i)
     {
       item->setValue(i, toDs->getValue(i).release());
+    }
+
+    std::vector<std::size_t> intersections = getIntersections(toDs.get(), fromDs.get(), rtree);
+
+    if(intersections.empty())
+    {
+      outDs->add(item);
+      continue;
     }
 
     std::map<te::dt::Property*, std::vector<std::string> >::iterator it = m_options.begin();
@@ -183,19 +188,31 @@ bool te::attributefill::VectorToVector::run()
     {
       std::vector<std::string> funcs = it->second;
 
+      te::stat::NumericStatisticalSummary ssNum;
+      te::stat::StringStatisticalSummary ssStr;
+
+      std::vector<double> numValues = getNumValues(fromDs.get(), intersections, it->first->getName());
+      std::vector<std::string> strValues = getStrValues(fromDs.get(), intersections, it->first->getName());
+
+      if(it->first->getType() == te::dt::STRING_TYPE)
+        te::stat::GetStringStatisticalSummary(strValues, ssStr, "");
+      else
+        te::stat::GetNumericStatisticalSummary(numValues, ssNum);
+
       for(std::size_t i = 0; i < funcs.size(); ++i)
       {
         std::string outPropName = getPropertyName(it->first, funcs[i]);
 
-        std::vector<double> values = getValues(fromDs.get(), intersections, funcs[i]);
-
-        te::stat::NumericStatisticalSummary ss;
-
-        te::stat::GetNumericStatisticalSummary(values, ss);
-
-        double value = getValue(ss, funcs[i]);
-
-        item->setDouble(outPropName, value);
+        if(it->first->getType() == te::dt::STRING_TYPE)
+        {
+          std::string value = getValue(ssStr, funcs[i]);
+          item->setString(outPropName, value);
+        }
+        else
+        {
+          double value = getValue(ssNum, funcs[i]);
+          item->setDouble(outPropName, value);
+        }
       }
 
       ++it;
@@ -205,6 +222,8 @@ bool te::attributefill::VectorToVector::run()
   }
 
   save(outDs, outDst);
+
+  return true;
 }
 
 bool te::attributefill::VectorToVector::save(std::auto_ptr<te::mem::DataSet> result,
@@ -214,7 +233,16 @@ bool te::attributefill::VectorToVector::save(std::auto_ptr<te::mem::DataSet> res
   te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType.get(), m_outDsrc->getCapabilities());
   te::da::DataSetType* dsTypeResult = converter->getResult();
   std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(result.get(), converter));
-  
+
+  // create the primary key if it is possible
+  if (m_outDsrc->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
+  {
+    std::string pk_name = dsTypeResult->getName() + "_pkey";
+    te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
+    pk->add(dsTypeResult->getProperty(0));
+    outDsType->setPrimaryKey(pk);
+  }
+
   std::map<std::string, std::string> options;
   // create the dataset
   m_outDsrc->createDataSet(dsTypeResult, options);
@@ -222,16 +250,7 @@ bool te::attributefill::VectorToVector::save(std::auto_ptr<te::mem::DataSet> res
   // copy from memory to output datasource
   result->moveBeforeFirst();
   m_outDsrc->add(dsTypeResult->getName(),result.get(), options);
-  
-  // create the primary key if it is possible
-  if (m_outDsrc->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
-  {
-    std::string pk_name = dsTypeResult->getName() + "_pkey";
-    te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
-    pk->add(dsTypeResult->getProperty(0));
-    m_outDsrc->addPrimaryKey(m_outDset,pk);
-  }
-  
+
   return true;
 }
 
@@ -257,14 +276,17 @@ te::da::DataSetType* te::attributefill::VectorToVector::getOutputDataSetType()
     {
       te::dt::Property* newProp = 0;
 
-      std::string baseName = it->first->getName() + "_";
+      std::string newName = getPropertyName(it->first, funcs[i]);
 
       if(funcs[i] == "Value" || funcs[i] == "Major Class")
       {
-        std::string newName = getPropertyName(it->first, funcs[i]);
-
         newProp = currentProperty->clone();
         newProp->setName(newName);
+      }
+      else if(it->first->getType() == te::dt::STRING_TYPE || funcs[i] == "Mode")
+      {
+        newProp = new te::dt::StringProperty(newName);
+        //newProp->add(funcProp);
       }
       else
       {
@@ -305,50 +327,48 @@ te::sam::rtree::Index<size_t, 8>* te::attributefill::VectorToVector::getRtree(te
 
 std::string te::attributefill::VectorToVector::getPropertyName(te::dt::Property* prop, const std::string& func)
 {
-  std::string name = "";
+  std::string name = te::common::Convert2LCase(prop->getName());
 
-  std::string baseName = prop->getName() + "_";
+  std::string newName = name + "_";
 
-  if(func == "Value" || func == "Major Class")
-  {
-    name = baseName;
-    if(func == "Value")
-      name += "value";
-    else
-      name += "major_class";
-  }
-  else if(func == "Total number of values" ||
-          func == "Total not null values")
-  {
-    name = func;
-    std::replace(name.begin(), name.end(), ' ', '_');
-    name = baseName + name;
-  }
+  if(func == "Value")
+    newName += "value";
+  else if(func == "Minimum value")
+    newName += "min_val";
+  else if(func == "Maximum value")
+    newName += "max_val";
+  else if(func == "Mean")
+    newName += "mean";
+  else if(func == "Sum of values")
+    newName += "sum_values";
+  else if(func == "Total number of values")
+    newName += "total_values";
+  else if(func == "Total not null values")
+    newName += "total_notnull_values";
+  else if(func == "Standard deviation")
+    newName += "stand_dev";
+  else if(func == "Variance")
+    newName += "variance";
+  else if(func == "Skewness")
+    newName += "skewness";
+  else if(func == "Kurtosis")
+    newName += "kurtosis";
+  else if(func == "Amplitude")
+    newName += "amplitude";
+  else if(func == "Median")
+    newName += "median";
+  else if(func == "Coefficient variation")
+    newName += "coeff_variation";
   else if(func == "Mode")
-  {
-    name = baseName;
-    name += "mode";
-  }
-  else if(func == "Percentage per Class" || func == "Minimum Distance")
-  {
-    name = baseName;
-    if(func == "Percentage per Class")
-      name += "percent_class";
-    else
-      name += "min_distance";
-  }
-  else if(func == "Presence")
-  {
-    name = baseName + "presence";
-  }
-  else
-  {
-    name = func;
-    std::replace(name.begin(), name.end(), ' ', '_');
-    name = baseName + name;
-  }
+    newName += "mdoe";
+  else if(func == "Major Class")
+    newName += "maj_class";
+  else if(func == "Percentage per Class")
+    newName += "percent_class";
+  else if(func == "Minimum Distance")
+    newName += "min_distance";
 
-  return name;
+  return newName;
 }
 
 std::vector<std::size_t> te::attributefill::VectorToVector::getIntersections(te::da::DataSet* toDs,
@@ -382,38 +402,36 @@ std::vector<std::size_t> te::attributefill::VectorToVector::getIntersections(te:
   return interVec;
 }
 
-std::vector<double> te::attributefill::VectorToVector::getValues(te::da::DataSet* fromDs, 
+std::vector<double> te::attributefill::VectorToVector::getNumValues(te::da::DataSet* fromDs,
                                                                  std::vector<std::size_t> dsPos,
-                                                                 const std::string& function)
+                                                                 const std::string& propertyName)
 {
-  std::map<te::dt::Property*, std::vector<std::string> >::iterator it = m_options.begin();
-
-  std::vector<double> values;
-
-  std::vector<std::string> propsNames;
-  while(it != m_options.end())
-  {
-    std::vector<std::string> funcVec = it->second;
-
-    if(std::find(funcVec.begin(), funcVec.end(), function) != funcVec.end())
-    {
-      propsNames.push_back(it->first->getName());
-    }
-
-    ++it;
-  }
+  std::vector<double> result;
 
   for(std::size_t i = 0; i < dsPos.size(); ++i)
   {
     fromDs->move(dsPos[i]);
 
-    for(std::size_t j = 0; j < propsNames.size(); ++j)
-    {
-      values.push_back(fromDs->getDouble(propsNames[j]));
-    }
+    result.push_back(fromDs->getDouble(propertyName));
   }
 
-  return values;
+  return result;
+}
+
+std::vector<std::string> te::attributefill::VectorToVector::getStrValues(te::da::DataSet* fromDs,
+                                                                            std::vector<std::size_t> dsPos,
+                                                                            const std::string& propertyName)
+{
+  std::vector<std::string> result;
+
+  for(std::size_t i = 0; i < dsPos.size(); ++i)
+  {
+    fromDs->move(dsPos[i]);
+
+    result.push_back(fromDs->getString(propertyName));
+  }
+
+  return result;
 }
 
 bool te::attributefill::VectorToVector::isStatistical(const std::string& funcName)
@@ -421,6 +439,7 @@ bool te::attributefill::VectorToVector::isStatistical(const std::string& funcNam
   if(funcName == "Minimum value" ||
      funcName == "Maximum value" ||
      funcName == "Mean" ||
+     funcName == "Sum of values" ||
      funcName == "Total number of values" ||
      funcName == "Total not null values" ||
      funcName == "Standard deviation" ||
@@ -431,9 +450,11 @@ bool te::attributefill::VectorToVector::isStatistical(const std::string& funcNam
      funcName == "Median" ||
      funcName == "Coefficient variation" ||
      funcName == "Mode")
-     return true;
-  else
-    return false;
+  {
+    return true;
+  }
+
+  return false;
 }
 
 std::vector<std::string> te::attributefill::VectorToVector::getSelectedFunctions()
@@ -460,28 +481,32 @@ std::vector<std::string> te::attributefill::VectorToVector::getSelectedFunctions
 
 double te::attributefill::VectorToVector::getValue(te::stat::NumericStatisticalSummary ss, const std::string& function)
 {
-  if(function == "Minimum value")
-    return ss.m_minVal;
+  if(function == "Amplitude")
+    return ss.m_amplitude;
+  else if(function == "Total number of values")
+    return ss.m_count;
+  else if(function == "Kurtosis")
+    return ss.m_kurtosis;
   else if(function == "Maximum value")
     return ss.m_maxVal;
   else if(function == "Mean")
     return ss.m_mean;
-  else if(function == "Total number of values")
-    return ss.m_count;
-  else if(function == "Total not null values")
-    return ss.m_validCount;
-  else if(function == "Standard deviation")
-    return ss.m_stdDeviation;
-  else if(function == "Variance")
-    return ss.m_variance;
-  else if(function == "Skewness")
-    return ss.m_skewness;
-  else if(function == "Amplitude")
-    return ss.m_amplitude;
   else if(function == "Median")
     return ss.m_median;
+  else if(function == "Minimum value")
+    return ss.m_minVal;  
+  else if(function == "Skewness")
+    return ss.m_skewness;
+  else if(function == "Standard deviation")
+    return ss.m_stdDeviation;
+  else if(function == "Sum of values")
+    return ss.m_sum;
+  else if(function == "Total not null values")
+    return ss.m_validCount;
   else if(function == "Coefficient variation")
     return ss.m_varCoeff;
+  else if(function == "Variance")
+    return ss.m_variance;
   else
     return -1;
 
@@ -490,4 +515,20 @@ double te::attributefill::VectorToVector::getValue(te::stat::NumericStatisticalS
     return ss.m_mode;
     */
   
+}
+
+std::string te::attributefill::VectorToVector::getValue(te::stat::StringStatisticalSummary ss, const std::string& function)
+{
+  if(function == "Maximum value")
+    return ss.m_maxVal;
+  else if(function == "Minimum value")
+    return ss.m_minVal; 
+  else if(function == "Mode")
+    return ss.m_mode;
+  else if(function == "Total number of values")
+    return boost::lexical_cast<std::string>(ss.m_count);
+  else if(function == "Total not null values")
+    return boost::lexical_cast<std::string>(ss.m_validCount);
+  else
+    return "null";
 }

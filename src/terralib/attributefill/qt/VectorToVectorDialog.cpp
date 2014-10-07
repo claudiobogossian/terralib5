@@ -352,7 +352,7 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
 
   std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > summary = getStatisticalSummary();
 
-  v2v->setParams(getSelections(), getStatisticalSummary());
+  v2v->setParams(getSelections());
 
   v2v->run();
 
