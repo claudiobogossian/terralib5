@@ -75,10 +75,25 @@ void te::qt::widgets::TrajectoryItem::paint(QPainter*, const QStyleOptionGraphic
   if(m_automaticPan)
   {
     te::gm::Envelope e = m_display->getExtent();
-    QRectF r(QPointF(e.getLowerLeftX(), e.getLowerLeftY()), QPointF(e.getUpperRightX(), e.getUpperRightY()));
+    QRectF r(e.getLowerLeftX(), e.getLowerLeftY(), e.getWidth(), e.getHeight());
     if(r.contains(m_pos) == false)
     {
-      r.moveCenter(m_pos);
+      QPointF cc;
+      QPointF c = r.center();
+      QPointF dif = m_pos - c;
+      double dw = fabs(dif.x());
+      double dh = fabs(dif.y());
+      double mw = .375 * e.getWidth();
+      double mh = .375 * e.getHeight();
+      if(dif.x() >= 0 && dif.y() >= 0)
+        cc = c + QPointF(dw, dh) + QPointF(-mw, -mh);
+      else if(dif.x() >= 0 && dif.y() < 0)
+        cc = c + QPointF(dw, -dh) + QPointF(-mw, mh);
+      else if(dif.x() < 0 && dif.y() >= 0)
+        cc = c + QPointF(-dw, dh) + QPointF(mw, -mh);
+      else if(dif.x() < 0 && dif.y() < 0)
+        cc = c + QPointF(-dw, -dh) + QPointF(mw, mh);
+      r.moveCenter(cc);
       e.m_llx = r.left();
       e.m_lly = r.top();
       e.m_urx = r.right();
