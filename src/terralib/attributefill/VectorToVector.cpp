@@ -34,6 +34,7 @@
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/utils/Utils.h"
 
+#include "../datatype/AbstractData.h"
 #include "../datatype/Property.h"
 #include "../datatype/StringProperty.h"
 
@@ -191,27 +192,48 @@ bool te::attributefill::VectorToVector::run()
       te::stat::NumericStatisticalSummary ssNum;
       te::stat::StringStatisticalSummary ssStr;
 
-      std::vector<double> numValues = getNumValues(fromDs.get(), intersections, it->first->getName());
-      std::vector<std::string> strValues = getStrValues(fromDs.get(), intersections, it->first->getName());
+      std::vector<double> numValues;
+      std::vector<std::string> strValues;
+      std::vector<te::dt::AbstractData*> dataValues;
 
       if(it->first->getType() == te::dt::STRING_TYPE)
+      {
+        strValues = getStrValues(fromDs.get(), intersections, it->first->getName());
         te::stat::GetStringStatisticalSummary(strValues, ssStr, "");
+      }
       else
+      {
+        numValues = getNumValues(fromDs.get(), intersections, it->first->getName());
         te::stat::GetNumericStatisticalSummary(numValues, ssNum);
+      }
+
+      dataValues = getDataValues(fromDs.get(), intersections, it->first->getName());
 
       for(std::size_t i = 0; i < funcs.size(); ++i)
       {
         std::string outPropName = getPropertyName(it->first, funcs[i]);
 
-        if(it->first->getType() == te::dt::STRING_TYPE)
+        if(funcs[i] == "Value")
+        {
+          item->setValue(outPropName, dataValues[i]);
+        }
+        else if(it->first->getType() == te::dt::STRING_TYPE)
         {
           std::string value = getValue(ssStr, funcs[i]);
           item->setString(outPropName, value);
         }
         else
         {
-          double value = getValue(ssNum, funcs[i]);
-          item->setDouble(outPropName, value);
+          if(funcs[i] == "Mode")
+          {
+            std::string value = getModeValue(ssNum);
+            item->setString(outPropName, value);
+          }
+          else
+          {
+            double value = getValue(ssNum, funcs[i]);
+            item->setDouble(outPropName, value);
+          }
         }
       }
 
@@ -261,11 +283,8 @@ te::da::DataSetType* te::attributefill::VectorToVector::getOutputDataSetType()
   te::da::DataSetType* dst = new te::da::DataSetType(*toScheme.get());
   dst->setName(m_outDset);
 
-  std::vector<te::dt::Property*> toProps = toScheme->getProperties();
-
   std::map<te::dt::Property*, std::vector<std::string> >::iterator it = m_options.begin();
 
-  std::vector<std::string> alreadyAdded;
   while(it != m_options.end())
   {
     std::vector<std::string> funcs = it->second;
@@ -286,7 +305,6 @@ te::da::DataSetType* te::attributefill::VectorToVector::getOutputDataSetType()
       else if(it->first->getType() == te::dt::STRING_TYPE || funcs[i] == "Mode")
       {
         newProp = new te::dt::StringProperty(newName);
-        //newProp->add(funcProp);
       }
       else
       {
@@ -509,11 +527,6 @@ double te::attributefill::VectorToVector::getValue(te::stat::NumericStatisticalS
     return ss.m_variance;
   else
     return -1;
-
-  /*
-  else if(function == "Mode")
-    return ss.m_mode;
-    */
   
 }
 
@@ -531,4 +544,35 @@ std::string te::attributefill::VectorToVector::getValue(te::stat::StringStatisti
     return boost::lexical_cast<std::string>(ss.m_validCount);
   else
     return "null";
+}
+
+std::string te::attributefill::VectorToVector::getModeValue(te::stat::NumericStatisticalSummary ss)
+{
+  std::string result = "";
+  std::vector<double> values = ss.m_mode;
+  for(std::size_t i = 0; i < values.size(); ++i)
+  {
+    if(i == 0)
+      result += boost::lexical_cast<std::string>(values[i]);
+    else
+      result += ", " + boost::lexical_cast<std::string>(values[i]);
+  }
+
+  return result;
+}
+
+std::vector<te::dt::AbstractData*> te::attributefill::VectorToVector::getDataValues(te::da::DataSet* fromDs,
+                                                                                    std::vector<std::size_t> dsPos,
+                                                                                    const std::string& propertyName)
+{
+  std::vector<te::dt::AbstractData*> result;
+
+  for(std::size_t i = 0; i < dsPos.size(); ++i)
+  {
+    fromDs->move(dsPos[i]);
+
+    result.push_back(fromDs->getValue(propertyName).release());
+  }
+
+  return result;
 }
