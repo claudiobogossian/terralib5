@@ -31,6 +31,7 @@
 #include "../../af/events/LayerEvents.h"
 #include "RasterToVectorAction.h"
 #include "VectorToRasterAction.h"
+#include "VectorToVectorAction.h"
 #include "Plugin.h"
 
 // QT
@@ -95,6 +96,7 @@ void te::qt::plugins::attributefill::Plugin::registerActions()
 {
   m_rasterToVector = new te::qt::plugins::attributefill::RasterToVectorAction(m_attributefillMenu);
   m_vectorToRaster = new te::qt::plugins::attributefill::VectorToRasterAction(m_attributefillMenu);
+  m_vectorToVector = new te::qt::plugins::attributefill::VectorToVectorAction(m_attributefillMenu);
 }
 
 void te::qt::plugins::attributefill::Plugin::unRegisterActions()

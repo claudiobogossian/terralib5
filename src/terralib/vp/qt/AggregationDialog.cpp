@@ -140,7 +140,7 @@ std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > te::vp::
     std::vector<std::string> tokens;
     std::string pname;
     std::string auxItem = itemList[i]->text().toStdString();
-    
+
     boost::split(tokens, auxItem, boost::is_any_of(":"));
     if(tokens[0] != "")
     {
