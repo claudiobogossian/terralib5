@@ -36,6 +36,22 @@
 // STL
 #include <cassert>
 
+bool te::edit::SnapManager::hasSnap(const std::string& source) const
+{
+  return m_snaps.find(source) != m_snaps.end();
+}
+
+void te::edit::SnapManager::createSnap(const std::string& source, int srid)
+{
+  if(hasSnap(source))
+    return;
+
+  Snap* snap = new Snap(source, srid);
+
+  // Store!
+  m_snaps[source] = snap;
+}
+
 void te::edit::SnapManager::buildSnap(const std::string& source, int srid, te::da::DataSet* dataset)
 {
   Snap* snap = getSnap(source);
@@ -70,10 +86,39 @@ te::edit::Snap* te::edit::SnapManager::getSnap(const std::string& source) const
   return it->second;
 }
 
+void te::edit::SnapManager::clear(const std::string& source)
+{
+  Snap* snap = getSnap(source);
+
+  if(snap)
+    snap->clear();
+}
+
 void te::edit::SnapManager::clearAll()
 {
   te::common::FreeContents(m_snaps);
   m_snaps.clear();
+}
+
+bool te::edit::SnapManager::search(const te::gm::Coord2D& coord, te::gm::Coord2D& result)
+{
+  std::map<std::string, Snap*>::const_iterator it;
+  for(it = m_snaps.begin(); it != m_snaps.end(); ++it)
+  {
+    if(it->second->search(coord, result))
+      return true;
+  }
+
+  return false;
+}
+
+void te::edit::SnapManager::setWorld(const double& llx, const double& lly,
+                                     const double& urx, const double& ury,
+                                     const std::size_t& width, const std::size_t& height)
+{
+  std::map<std::string, Snap*>::const_iterator it;
+  for(it = m_snaps.begin(); it != m_snaps.end(); ++it)
+    it->second->setWorld(llx, lly, urx, ury, width, height);
 }
 
 te::edit::SnapManager::SnapManager()
