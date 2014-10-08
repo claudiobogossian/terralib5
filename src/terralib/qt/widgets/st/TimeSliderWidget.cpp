@@ -1258,11 +1258,24 @@ void te::qt::widgets::TimeSliderWidget::setAutomaticPan(const QString& title)
   //{
   //  AnimationItem* ai = (AnimationItem*)(*it);
   //  if(title == ai->m_title)
-  //  {
-  //    setAuxInfo(ai);
   //    break;
-  //  }
   //}
+
+  //if(it != list.end())
+  //  m_spd->m_ui->m_panFactorDoubleSpinBox->setEnabled(true);
+  //else
+  //  m_spd->m_ui->m_panFactorDoubleSpinBox->setEnabled(false);
+}
+
+void te::qt::widgets::TimeSliderWidget::onPanFactorValueChanged(double v)
+{
+  QList<QGraphicsItem*> list = m_animationScene->items();
+  QList<QGraphicsItem*>::iterator it;
+  for(it = list.begin(); it != list.end(); ++it)
+  {
+    AnimationItem* ai = (AnimationItem*)(*it);
+    ai->m_panFactor = v;
+  }
 }
 
 bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
@@ -2824,6 +2837,7 @@ void te::qt::widgets::TimeSliderWidget::adjustTrajectoryGroupBox(te::qt::widgets
     m_spd->m_ui->m_backwardColorPushButton->setPalette(QPalette(ti->m_backwardColor));
     m_spd->m_ui->m_backwardColorPushButton->update();
     m_spd->m_ui->m_autoPanCheckBox->setChecked(ti->m_automaticPan);
+    m_spd->m_ui->m_panFactorDoubleSpinBox->setValue(ti->m_panFactor);
     m_spd->m_ui->m_drawTrailCheckBox->setChecked(ti->m_drawTrail);
 
     QPixmap pix = ti->pixmap();
