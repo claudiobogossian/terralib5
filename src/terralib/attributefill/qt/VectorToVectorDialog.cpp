@@ -126,6 +126,7 @@ void te::attributefill::VectorToVectorDialog::setLayers(std::list<te::map::Abstr
   if(m_ui->m_fromLayerComboBox->count() > 1)
   {
     m_ui->m_fromLayerComboBox->setCurrentIndex(0);
+    onFromLayerComboBoxCurrentIndexChanged(0);
     m_ui->m_toLayerComboBox->setCurrentIndex(1);
   }
 }
@@ -133,11 +134,6 @@ void te::attributefill::VectorToVectorDialog::setLayers(std::list<te::map::Abstr
 te::map::AbstractLayerPtr te::attributefill::VectorToVectorDialog::getLayer()
 {
   return 0;
-}
-
-std::vector<te::stat::StatisticalSummary> te::attributefill::VectorToVectorDialog::getSelectedStatistics()
-{
-  return std::vector<te::stat::StatisticalSummary>();
 }
 
 std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > te::attributefill::VectorToVectorDialog::getStatisticalSummary()
@@ -275,15 +271,6 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
 
   v2v->setInput(fromLayer, toLayer);
 
-  //Testes
-
-  //v2v->setParams(getSelections(), getStatisticalSummary());
-  //v2v->run();
-
-  //return;
-
-  //FIM testes
-
   std::string outDataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
   te::da::DataSourcePtr outSource;
 
@@ -354,7 +341,15 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
 
   v2v->setParams(getSelections());
 
-  v2v->run();
+  try
+  {
+    v2v->run();
+  }
+  catch(te::common::Exception& e)
+  {
+    QMessageBox::warning(this, tr("Vector To Vector"), e.what());
+    reject();
+  }
 
   accept();
 }

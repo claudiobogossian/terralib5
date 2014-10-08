@@ -77,13 +77,6 @@ namespace te
         */
         te::map::AbstractLayerPtr getLayer();
 
-        /*!
-          \brief Get the selected statistics based on selected QListWidgetItem.
-
-          \return a Vector with selected statistics.
-        */
-        std::vector<te::stat::StatisticalSummary> getSelectedStatistics();
-
       private:
 
         void setOptions();
