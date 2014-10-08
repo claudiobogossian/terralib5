@@ -3811,8 +3811,8 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="78"/>
         <location filename="../../../src/terralib/qt/widgets/table/AddColumnDialog.cpp" line="29"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="78"/>
         <source>Integer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3832,21 +3832,21 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="96"/>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="71"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="96"/>
         <source>Double</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="100"/>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="74"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="100"/>
         <source>Numeric</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="104"/>
-        <location filename="../../../src/terralib/qt/widgets/table/AddColumnDialog.cpp" line="33"/>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="75"/>
+        <location filename="../../../src/terralib/qt/widgets/table/AddColumnDialog.cpp" line="33"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="104"/>
         <source>String</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3856,8 +3856,8 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="112"/>
         <location filename="../../../src/terralib/qt/widgets/externalTable/DataPropertiesWidget.cpp" line="72"/>
+        <location filename="../../../src/terralib/qt/widgets/table/DataSetTableModel.cpp" line="112"/>
         <source>Geometry</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4466,20 +4466,20 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>RasterHistogramWidgetForm</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterHistogramWidgetForm.ui" line="14"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/HistogramWidgetForm.ui" line="14"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterHistogramWidgetForm.ui" line="14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterHistogramWidgetForm.ui" line="41"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterHistogramWidgetForm.ui" line="68"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterHistogramWidgetForm.ui" line="95"/>
-        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterHistogramWidgetForm.ui" line="122"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/HistogramWidgetForm.ui" line="41"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/HistogramWidgetForm.ui" line="68"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/HistogramWidgetForm.ui" line="95"/>
         <location filename="../../../src/terralib/qt/widgets/rp/ui/HistogramWidgetForm.ui" line="122"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterHistogramWidgetForm.ui" line="41"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterHistogramWidgetForm.ui" line="68"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterHistogramWidgetForm.ui" line="95"/>
+        <location filename="../../../src/terralib/qt/widgets/rp/ui/RasterHistogramWidgetForm.ui" line="122"/>
         <source>...</source>
         <translation type="unfinished"></translation>
     </message>
