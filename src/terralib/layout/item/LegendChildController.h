@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,38 +18,36 @@
  */
 
 /*!
-  \file TemplateEditor.h
+  \file LegendChildController.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_TEMPLATE_EDITOR_H 
-#define __TERRALIB_LAYOUT_INTERNAL_TEMPLATE_EDITOR_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_LEGEND_CHILD_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_LEGEND_CHILD_CONTROLLER_H
 
-// STL
-#include <string>
+// TerraLib
+#include "LegendController.h"
 
 namespace te
 {
   namespace layout
   {
-    class AbstractTemplate;
-    class EnumType;
-
-    class TemplateEditor
+    class LegendChildController : public LegendController
     {
       public:
 
-        TemplateEditor(EnumType* type, std::string path);
-        virtual ~TemplateEditor();
+        LegendChildController( Observable* o );
 
-        virtual te::layout::AbstractTemplate* getTemplate();
-
+        virtual ~LegendChildController();
+        
       protected:
 
-        te::layout::AbstractTemplate* m_template;
+        LegendChildController( Observable* o, EnumType* type );
+
+        virtual void create();
     };
   }
 }

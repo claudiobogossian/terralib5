@@ -104,6 +104,8 @@ namespace te
         virtual EnumType* getMenuItem() const;
         
         virtual EnumType* getTextGridSettings() const;
+
+        virtual EnumType* getLegendChildItem() const;
         
         virtual EnumType* getObjectUnknown() const;
 
@@ -142,6 +144,7 @@ namespace te
         EnumType* m_editTemplate;
         EnumType* m_menuItem;
         EnumType* m_textGridSettings;
+        EnumType* m_legendChildItem;
         EnumType* m_objectUnknown;
     };
   }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,40 +18,52 @@
  */
 
 /*!
-  \file TemplateEditor.h
+  \file EnumTemplateType.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_TEMPLATE_EDITOR_H 
-#define __TERRALIB_LAYOUT_INTERNAL_TEMPLATE_EDITOR_H
+// TerraLib
+#include "EnumTemplateType.h"
 
-// STL
-#include <string>
-
-namespace te
+te::layout::EnumTemplateType::EnumTemplateType() :
+  m_noneType(0),
+  m_jsonType(0)
 {
-  namespace layout
+  init();
+}
+
+te::layout::EnumTemplateType::~EnumTemplateType()
+{
+  if(m_noneType)
   {
-    class AbstractTemplate;
-    class EnumType;
-
-    class TemplateEditor
-    {
-      public:
-
-        TemplateEditor(EnumType* type, std::string path);
-        virtual ~TemplateEditor();
-
-        virtual te::layout::AbstractTemplate* getTemplate();
-
-      protected:
-
-        te::layout::AbstractTemplate* m_template;
-    };
+    delete m_noneType;
+    m_noneType = 0;
+  }
+  if(m_jsonType)
+  {
+    delete m_jsonType;
+    m_jsonType = 0;
   }
 }
 
-#endif
+void te::layout::EnumTemplateType::init()
+{
+  m_noneType = new EnumType(1, "NoneTemplate");
+  m_enums.push_back(m_noneType);
+
+  m_jsonType = new EnumType(0, "JsonTemplate");
+  m_enums.push_back(m_jsonType);
+}
+
+te::layout::EnumType* te::layout::EnumTemplateType::getNoneType() const
+{
+  return m_noneType;
+}
+
+te::layout::EnumType* te::layout::EnumTemplateType::getJsonType() const
+{
+  return m_jsonType;
+}

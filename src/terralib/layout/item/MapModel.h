@@ -34,6 +34,7 @@
 #include "../core/pattern/derivativevisitor/Visitable.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../common/UnitOfMeasure.h"
+#include "../../geometry/Point.h"
 
 // STL
 #include <map>
@@ -92,7 +93,7 @@ namespace te
 
         virtual te::gm::Envelope getWorldBox();
 
-        virtual std::map<te::gm::Coord2D, std::string> getTextMapAsObjectInfo();
+        virtual std::map<te::gm::Point*, std::string> getTextMapAsObjectInfo();
 
         virtual void setMapBackgroundColor(te::color::RGBAColor color);
 

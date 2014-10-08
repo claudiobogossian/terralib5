@@ -58,7 +58,8 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_multiLineTextItem(0),
   m_editTemplate(0),
   m_menuItem(0),
-  m_textGridSettings(0)
+  m_textGridSettings(0),
+  m_legendChildItem(0)
 {
   init();
 }
@@ -244,6 +245,12 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_defaultTextItem;
     m_defaultTextItem = 0;
   }
+
+  if(m_legendChildItem)
+  {
+    delete m_legendChildItem;
+    m_legendChildItem = 0;
+  }
 }
 
 void te::layout::EnumObjectType::init()
@@ -337,6 +344,9 @@ void te::layout::EnumObjectType::init()
 
   m_textGridSettings = new EnumType(29, "Text_Grid_Settings");
   m_enums.push_back(m_textGridSettings);
+
+  m_legendChildItem = new EnumType(30, "Legend_Child_Item");
+  m_enums.push_back(m_legendChildItem);
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getRetangleItem() const
@@ -482,6 +492,11 @@ te::layout::EnumType* te::layout::EnumObjectType::getMenuItem() const
 te::layout::EnumType* te::layout::EnumObjectType::getTextGridSettings() const
 {
   return m_textGridSettings;
+}
+
+te::layout::EnumType* te::layout::EnumObjectType::getLegendChildItem() const
+{
+  return m_legendChildItem;
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getObjectUnknown() const

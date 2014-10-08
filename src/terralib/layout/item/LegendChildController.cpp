@@ -18,47 +18,43 @@
  */
 
 /*!
-  \file AbstractVisitor.h
+  \file LegendChildController.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_CONTEXT_ABSTRACT_VISITOR_H
-#define __TERRALIB_LAYOUT_INTERNAL_CONTEXT_ABSTRACT_VISITOR_H
-
 // TerraLib
-#include "../../ContextItem.h"
+#include "LegendChildController.h"
+#include "../core/ContextItem.h"
+#include "../core/pattern/factory/AbstractItemFactory.h"
+#include "../core/pattern/singleton/Context.h"
+#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/pattern/factory/ItemParamsCreate.h"
+#include "../core/pattern/mvc/ItemObserver.h"
+#include "../core/enum/Enums.h"
 
-namespace te
+te::layout::LegendChildController::LegendChildController( Observable* o ) :
+  LegendController(o, 0)
 {
-  namespace layout
-  {
-    class Visitable;
-
-    class AbstractVisitor
-    {
-      public:
-
-        AbstractVisitor();
-        ~AbstractVisitor(void);
-
-        virtual void visit(Visitable* visitable);
-
-        virtual void disassociate();
-
-        virtual void visitDependent(ContextItem context) = 0;
-
-        virtual Visitable* getVisitable();
-
-      protected:
-
-        ContextItem getContextItem();
-
-        Visitable* m_visitable;
-    };
-  }
+  create();
 }
 
-#endif
+te::layout::LegendChildController::LegendChildController( Observable* o, EnumType* type ) :
+  LegendController(o, type)
+{
+
+}
+
+te::layout::LegendChildController::~LegendChildController()
+{
+	
+}
+
+void te::layout::LegendChildController::create()
+{
+  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
+  ItemParamsCreate params(this, m_model);
+  m_view = (Observer*)factory->make(m_model->getType(), params);
+}

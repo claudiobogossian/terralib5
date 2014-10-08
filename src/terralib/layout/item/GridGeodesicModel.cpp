@@ -108,15 +108,14 @@ void te::layout::GridGeodesicModel::draw( te::map::Canvas* canvas, Utils* utils,
   canvas->setTextPointSize(m_pointTextSize);
   canvas->setFontFamily(m_fontText);
 
+  gridTextFreeMemory();
+
   drawVerticalLines(canvas, utils, box);
   drawHorizontalLines(canvas, utils, box);
 }
 
 void te::layout::GridGeodesicModel::drawVerticalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box)
 {
-  if(!m_visibleAllTexts)
-    return;
-
   // Draw a horizontal line and the y coordinate change(vertical)
   
   double			y1;
@@ -167,8 +166,22 @@ void te::layout::GridGeodesicModel::drawVerticalLines(te::map::Canvas* canvas, U
     
     te::gm::Envelope* ev = const_cast<te::gm::Envelope*>(line->getMBR());
     
-    canvas->drawText(ev->getLowerLeftX() - m_lneHrzDisplacement, ev->getLowerLeftY(), text, 0);
-    canvas->drawText(ev->getUpperRightX() + m_lneHrzDisplacement, ev->getUpperRightY(), text, 0);
+    if(m_visibleAllTexts)
+    {
+      if(m_leftText)
+      {
+        canvas->drawText(ev->getLowerLeftX() - m_lneHrzDisplacement, ev->getLowerLeftY(), text, 0);
+        te::gm::Point* coordLeft = new te::gm::Point(ev->getLowerLeftX() - m_lneHrzDisplacement, ev->getLowerLeftY());
+        m_gridTexts[coordLeft] = text;
+      }
+
+      if(m_rightText)
+      {
+        canvas->drawText(ev->getUpperRightX() + m_lneHrzDisplacement, ev->getUpperRightY(), text, 0);
+        te::gm::Point* coordRight = new te::gm::Point(ev->getUpperRightX() + m_lneHrzDisplacement, ev->getUpperRightY());
+        m_gridTexts[coordRight] = text;
+      }
+    }
     
     if(line)
     {
@@ -180,9 +193,6 @@ void te::layout::GridGeodesicModel::drawVerticalLines(te::map::Canvas* canvas, U
 
 void te::layout::GridGeodesicModel::drawHorizontalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box)
 {
-  if(!m_visibleAllTexts)
-    return;
-
   // Draw a vertical line and the x coordinate change(horizontal)
   
   double			x1;
@@ -234,8 +244,22 @@ void te::layout::GridGeodesicModel::drawHorizontalLines(te::map::Canvas* canvas,
 
     te::gm::Envelope* ev = const_cast<te::gm::Envelope*>(line->getMBR());
 
-    canvas->drawText(ev->getLowerLeftX(), ev->getLowerLeftX() - m_lneVrtDisplacement, text, 0);
-    canvas->drawText(ev->getUpperRightX(), ev->getUpperRightY() + m_lneVrtDisplacement, text, 0);
+    if(m_visibleAllTexts)
+    {
+      if(m_bottomText)
+      {
+        canvas->drawText(ev->getLowerLeftX(), ev->getLowerLeftX() - m_lneVrtDisplacement, text, 0);
+        te::gm::Point* coordRight = new te::gm::Point(ev->getLowerLeftX(), ev->getLowerLeftX() - m_lneVrtDisplacement);
+        m_gridTexts[coordRight] = text;
+      }
+
+      if(m_topText)
+      {
+        canvas->drawText(ev->getUpperRightX(), ev->getUpperRightY() + m_lneVrtDisplacement, text, 0);
+        te::gm::Point* coordRight = new te::gm::Point(ev->getUpperRightX(), ev->getUpperRightY() + m_lneVrtDisplacement);
+        m_gridTexts[coordRight] = text;
+      }
+    }
 
     if(line)
     {
@@ -605,9 +629,3 @@ bool te::layout::GridGeodesicModel::isVisibleCornerTextsText()
   return m_visibleCornerTextsText;
 }
 
-std::map<te::gm::Coord2D, std::string> te::layout::GridGeodesicModel::getGridInfo()
-{
-  std::map<te::gm::Coord2D, std::string>  map;
-
-  return map;
-}

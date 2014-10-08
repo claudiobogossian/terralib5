@@ -64,10 +64,7 @@ namespace te
         void setPixmap( const QPixmap& pixmap );
 
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem* option, QWidget * widget = 0 );
-
-        //Mandatory implementation methods
-        virtual void setRect(QRectF rect);
-
+        
         virtual void setPos(const QPointF &pos);
 
         void	setZValue ( qreal z );

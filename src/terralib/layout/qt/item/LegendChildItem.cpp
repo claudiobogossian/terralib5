@@ -18,47 +18,40 @@
  */
 
 /*!
-  \file AbstractVisitor.h
+  \file LegendChildItem.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_CONTEXT_ABSTRACT_VISITOR_H
-#define __TERRALIB_LAYOUT_INTERNAL_CONTEXT_ABSTRACT_VISITOR_H
-
 // TerraLib
-#include "../../ContextItem.h"
+#include "LegendChildItem.h"
+#include "../../core/pattern/mvc/ItemController.h"
+#include "../core/Scene.h"
+#include "../../core/pattern/mvc/Observable.h"
+#include "../../../color/RGBAColor.h"
+#include "../../../qt/widgets/Utils.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../common/STLUtils.h"
 
-namespace te
-{
-  namespace layout
-  {
-    class Visitable;
+// Qt
+#include <QPixmap>
 
-    class AbstractVisitor
-    {
-      public:
+te::layout::LegendChildItem::LegendChildItem( ItemController* controller, Observable* o ) :
+  LegendItem(controller, o)
+{  
+  this->setFlags(QGraphicsItem::ItemIsMovable
+    | QGraphicsItem::ItemIsSelectable
+    | QGraphicsItem::ItemSendsGeometryChanges
+    | QGraphicsItem::ItemIsFocusable);
 
-        AbstractVisitor();
-        ~AbstractVisitor(void);
-
-        virtual void visit(Visitable* visitable);
-
-        virtual void disassociate();
-
-        virtual void visitDependent(ContextItem context) = 0;
-
-        virtual Visitable* getVisitable();
-
-      protected:
-
-        ContextItem getContextItem();
-
-        Visitable* m_visitable;
-    };
-  }
+  m_nameClass = std::string(this->metaObject()->className());
 }
 
-#endif
+te::layout::LegendChildItem::~LegendChildItem()
+{
+
+}
+
+

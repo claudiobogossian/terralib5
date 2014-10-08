@@ -73,6 +73,7 @@ namespace te
         QGraphicsItem* createPoint();
         QGraphicsItem* createTextGrid();
         QGraphicsItem* createTitle();
+        QGraphicsItem* createLegendChild();
 
         te::gm::Coord2D findCoordinate(te::layout::Properties* props);
 
@@ -108,6 +109,7 @@ namespace te
         std::string             m_pointItem;
         std::string             m_textGridItem;
         std::string             m_titleItem;
+        std::string             m_legendChildItem;
     };
   }
 }

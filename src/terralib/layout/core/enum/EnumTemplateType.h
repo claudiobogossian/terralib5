@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,38 +18,46 @@
  */
 
 /*!
-  \file TemplateEditor.h
+  \file EnumTemplateType.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_TEMPLATE_EDITOR_H 
-#define __TERRALIB_LAYOUT_INTERNAL_TEMPLATE_EDITOR_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ENUM_TEMPLATE_TYPE_H 
+#define __TERRALIB_LAYOUT_INTERNAL_ENUM_TEMPLATE_TYPE_H
 
-// STL
-#include <string>
+// TerraLib
+#include "AbstractEnum.h"
+#include "../Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class AbstractTemplate;
     class EnumType;
 
-    class TemplateEditor
+    class TELAYOUTEXPORT EnumTemplateType : public AbstractEnum
     {
       public:
 
-        TemplateEditor(EnumType* type, std::string path);
-        virtual ~TemplateEditor();
+        EnumTemplateType(); 
 
-        virtual te::layout::AbstractTemplate* getTemplate();
+        virtual ~EnumTemplateType();
+        
+        virtual EnumType* getJsonType() const;
+
+        virtual EnumType* getNoneType() const;
 
       protected:
 
-        te::layout::AbstractTemplate* m_template;
+        virtual void init();
+
+      protected:
+
+        EnumType* m_noneType;
+        EnumType* m_jsonType;
     };
   }
 }

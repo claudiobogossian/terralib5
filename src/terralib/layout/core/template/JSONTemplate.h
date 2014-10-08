@@ -49,12 +49,6 @@ namespace te
         virtual std::vector<te::layout::Properties*> importTemplate();
 
         virtual bool deleteTemplate();
-
-        virtual LayoutTemplateType getType();
-    
-        protected:
-
-         LayoutTemplateType m_type;
     };
   }
 }

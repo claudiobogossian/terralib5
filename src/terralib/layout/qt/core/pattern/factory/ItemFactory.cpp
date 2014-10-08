@@ -46,6 +46,7 @@
 #include "../../../item/MultiLineTextItem.h"
 #include "../../../item/TextGridItem.h"
 #include "../../../../core/enum/Enums.h"
+#include "../../../item/LegendChildItem.h"
 
 te::layout::ItemFactory::ItemFactory()
 {
@@ -149,6 +150,11 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
   else if(type == enumObj->getMultiLineTextItem())
   {
     MultiLineTextItem* mText = new MultiLineTextItem(params.getController(), params.getModel());
+    item = (Observer*)mText;
+  }
+  else if(type == enumObj->getLegendChildItem())
+  {
+    LegendChildItem* mText = new LegendChildItem(params.getController(), params.getModel());
     item = (Observer*)mText;
   }
 

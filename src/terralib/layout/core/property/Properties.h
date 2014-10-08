@@ -45,7 +45,7 @@ namespace te
     class TELAYOUTEXPORT Properties
     {
       public:
-        Properties(std:: string objectName, EnumType* type = 0);
+        Properties(std::string objectName, EnumType* type = 0);
         virtual ~Properties(void);
 
         virtual bool addProperty(Property property);
