@@ -1699,6 +1699,11 @@
         <source>&amp;Ok</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/datasource/selector/ui/DataSourceExplorerDialogForm.ui" line="70"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DataSourceSelectorDialogForm</name>
@@ -4214,8 +4219,8 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="164"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="171"/>
         <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="178"/>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="478"/>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="535"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="444"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="501"/>
         <source>...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4225,78 +4230,78 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="217"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="211"/>
         <source>Table</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="227"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="221"/>
         <source>LOG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="241"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="235"/>
         <source>DataSet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="257"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="249"/>
         <source>DataSets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="296"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="276"/>
         <source>Attributes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="330"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="296"/>
         <source>Layer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="347"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="313"/>
         <source>Layer Selection (Relative to Base Dataset)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="380"/>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="554"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="346"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="520"/>
         <source>Layer Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="402"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="368"/>
         <source>Selection:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="432"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="398"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="448"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="414"/>
         <source>New</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="499"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="465"/>
         <source>Query Layer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="586"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="552"/>
         <source>Preview (Relative to Base Dataset)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="630"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="596"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="650"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/QueryDataSourceDialogForm.ui" line="616"/>
         <source>Help</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7000,78 +7005,78 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="25"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="34"/>
         <source>Criteria</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="42"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="51"/>
         <source>Attribute</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="64"/>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="143"/>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="393"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="67"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="141"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="387"/>
         <source>Property</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="100"/>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="266"/>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="398"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="97"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="252"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="392"/>
         <source>Operator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="129"/>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="150"/>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="403"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="127"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="148"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="397"/>
         <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="208"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="206"/>
         <source>Spatial</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="230"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="222"/>
         <source>Geometry Property</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="295"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="282"/>
         <source>Layer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="310"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="304"/>
         <source>Use Selected Objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="343"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="337"/>
         <source>Add the defined restriction expression</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="375"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="369"/>
         <source>Table</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="408"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="402"/>
         <source>Connector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="417"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="411"/>
         <source>SQL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="426"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="420"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -7080,7 +7085,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="443"/>
+        <location filename="../../../src/terralib/qt/widgets/query/ui/WhereClauseWidgetForm.ui" line="437"/>
         <source>Clear all restriction expressions</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7614,6 +7619,15 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>te::qt::widgets::ConstraintsIndexesPropertyDialog</name>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/property/ConstraintsIndexesPropertyDialog.cpp" line="103"/>
+        <location filename="../../../src/terralib/qt/widgets/property/ConstraintsIndexesPropertyDialog.cpp" line="124"/>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>te::qt::widgets::ConstraintsItem</name>
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/ConstraintsItem.cpp" line="77"/>
@@ -7842,7 +7856,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DataExchangerWizard.cpp" line="268"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DataExchangerWizard.cpp" line="278"/>
         <source>Unknown error!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8069,7 +8083,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>te::qt::widgets::DataSetOptionsWizardPage</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/exchanger/DataSetOptionsWizardPage.cpp" line="186"/>
+        <location filename="../../../src/terralib/qt/widgets/exchanger/DataSetOptionsWizardPage.cpp" line="201"/>
         <source>Choose the SRS</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9461,21 +9475,6 @@ This may be an error on the connector implementation!</source>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="1013"/>
         <source>In existing layers, there is no grouping that can be imported!</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>te::qt::widgets::HLDelegateDecorator</name>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/table/old/HLDelegateDecorator.cpp" line="62"/>
-        <location filename="../../../src/terralib/qt/widgets/table/old/HLDelegateDecorator.cpp" line="72"/>
-        <source>Class position out of boundaries.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/table/old/HLDelegateDecorator.cpp" line="85"/>
-        <location filename="../../../src/terralib/qt/widgets/table/old/HLDelegateDecorator.cpp" line="92"/>
-        <source>Delegate position out of boundaries.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

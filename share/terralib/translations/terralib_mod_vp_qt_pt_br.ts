@@ -817,30 +817,25 @@
 <context>
     <name>te::vp::GeometricOpOutputWizardPage</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/GeometricOpOutputWizardPage.cpp" line="58"/>
+        <location filename="../../../src/terralib/vp/qt/GeometricOpOutputWizardPage.cpp" line="59"/>
         <source>Output Layer Attributes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/GeometricOpOutputWizardPage.cpp" line="59"/>
+        <location filename="../../../src/terralib/vp/qt/GeometricOpOutputWizardPage.cpp" line="60"/>
         <source>Choose the output parameters that compose the output layer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/vp/qt/GeometricOpOutputWizardPage.cpp" line="234"/>
-        <source>Save as...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/vp/qt/GeometricOpOutputWizardPage.cpp" line="235"/>
-        <source>Shapefile (*.shp *.SHP);;</source>
+        <source>Open Directory</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>te::vp::GeometricOpWizard</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/GeometricOpWizard.cpp" line="73"/>
+        <location filename="../../../src/terralib/vp/qt/GeometricOpWizard.cpp" line="74"/>
         <source>Geometric Operation</source>
         <translation type="unfinished"></translation>
     </message>
