@@ -7,6 +7,8 @@
 
 #define TECOMMONEXPORT
 
+%import "terralib/common/Singleton.h"
+
 %include "terralib/common/Singleton.h"
 
 namespace te {
@@ -32,5 +34,14 @@ typedef te::common::Singleton< TerraLib > TeSingleton;
 #include <terralib/common/TerraLib.h>
 %}
 
-/* Include Geometry module in bind. */   
+/* Include SRS module to the bind. */
+%include common/SRS.i
+
+/* Include Data Type module to the bind. */
+%include common/DataType.i
+
+/* Include Geometry module to the bind. */   
 %include common/Geometry.i
+
+/* Include Data Access module to the bind. */
+%include common/DataAccess.i 
