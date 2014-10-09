@@ -28,6 +28,7 @@
 #include "../../../edit/qt/tools/CreatePolygonTool.h"
 #include "../../../edit/qt/tools/MoveGeometryTool.h"
 #include "../../../edit/qt/tools/VertexTool.h"
+#include "../../../edit/qt/SnapOptionsDialog.h"
 #include "../../af/events/LayerEvents.h"
 #include "../../af/events/MapEvents.h"
 #include "../../af/ApplicationController.h"
@@ -47,7 +48,8 @@ te::qt::plugins::edit::ToolBar::ToolBar()
     m_vertexToolAction(0),
     m_createPolygonToolAction(0),
     m_createLineToolAction(0),
-    m_moveGeometryToolAction(0)
+    m_moveGeometryToolAction(0),
+    m_snapOptionsAction(0)
 {
   initialize();
 }
@@ -83,7 +85,6 @@ void te::qt::plugins::edit::ToolBar::initialize()
 void te::qt::plugins::edit::ToolBar::initializeActions()
 {
   createAction(m_editAction, tr("Turn on/off edition mode"), "edit-enable", true, true,  SLOT(onEditActivated(bool)));
-
   m_toolBar->addAction(m_editAction);
 
   // Tools
@@ -111,6 +112,11 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   // Adding tools to toolbar
   for(int i = 0; i < m_tools.size(); ++i)
     m_toolBar->addAction(m_tools[i]);
+
+  // Snap
+  createAction(m_snapOptionsAction, tr("Snap Options"), "edit-snap", false, false,  SLOT(onSnapOptionsActivated()));
+  m_toolBar->addSeparator();
+  m_toolBar->addAction(m_snapOptionsAction);
 }
 
 void te::qt::plugins::edit::ToolBar::createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const char* member)
@@ -127,6 +133,8 @@ void te::qt::plugins::edit::ToolBar::onEditActivated(bool checked)
 {
   for(int i = 0; i < m_tools.size(); ++i)
     m_tools[i]->setEnabled(checked);
+
+  m_snapOptionsAction->setEnabled(checked);
 }
 
 void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool checked)
@@ -199,4 +207,10 @@ void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool checked)
 
   te::edit::MoveGeometryTool* tool = new te::edit::MoveGeometryTool(e.m_display->getDisplay(), layer, 0);
   e.m_display->setCurrentTool(tool);
+}
+
+void te::qt::plugins::edit::ToolBar::onSnapOptionsActivated()
+{
+  te::edit::SnapOptionsWidget options(m_toolBar);
+  options.exec();
 }

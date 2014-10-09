@@ -60,7 +60,7 @@ te::qt::plugins::pgis::PostGISCreatorDialog::PostGISCreatorDialog(QWidget* paren
   connect(m_ui->m_userNameLineEdit, SIGNAL(editingFinished()), this, SLOT(passwordLineEditEditingFinished()));
   connect(m_ui->m_passwordLineEdit, SIGNAL(editingFinished()), this, SLOT(passwordLineEditEditingFinished()));
 
-  m_ui->m_portLineEdit->setValidator(new QIntValidator(0, 9999, this));
+  m_ui->m_portLineEdit->setValidator(new QIntValidator(0, 99999, this));
 
   m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins");
   m_ui->m_helpPushButton->setPageReference("plugins/pgis/pgis_creator.html");

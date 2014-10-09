@@ -436,6 +436,7 @@ namespace te
           void onDateTimeEditChanged(const QDateTime& t);
 
           void onAutoPanCheckBoxClicked(bool);
+          void onPanFactorValueChanged(double);
           void onFrontPushButtonClicked(bool b);
           void onBackPushButtonClicked(bool b);
 

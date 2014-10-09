@@ -71,23 +71,6 @@ namespace te
     };
 
     /*!
-      \struct RootComparer
-      
-      \brief A struct to order the roots.
-    */
-    typedef std::pair<double, std::size_t> Root;
-
-    struct RootComparer
-    {
-      bool operator()(Root a, Root b) const
-      {
-        return a.first < b.first;
-      }
-    };
-
-    typedef std::set<Root, RootComparer> RootSet;
-    
-    /*!
       \class SkaterPartition
 
       \brief Class that represents the skater partition operation.

@@ -990,32 +990,33 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getGoesMetadata(
 
 void te::qt::widgets::TimeSliderWidget::calculateSpatialExtent()
 {
-  //int srid = -1;
-  //m_spatialExtent = te::gm::Envelope();
+  int srid = -1;
+  m_spatialExtent = te::gm::Envelope();
 
-  //QList<QGraphicsItem*> list = m_animationScene->items();
-  //QList<QGraphicsItem*>::iterator it;
+  QList<QGraphicsItem*> list = m_animationScene->items();
+  QList<QGraphicsItem*>::iterator it;
 
-  //for(it = list.begin(); it != list.end(); ++it)
-  //{
-  //  AnimationItem* ai = (AnimationItem*)(*it);
-  //  srid = ai->m_SRID;
-  //  if(m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != ai->m_SRID)
-  //  {
-  //    te::gm::Envelope e = ai->m_animation->m_spatialExtent;
-  //    e.transform(ai->m_SRID, m_display->getSRID());
-  //    m_spatialExtent.Union(e);
-  //  }
-  //  else
-  //    m_spatialExtent.Union(ai->m_animation->m_spatialExtent);
-  //}
-  //QRectF rect(m_spatialExtent.m_llx, m_spatialExtent.m_lly, m_spatialExtent.getWidth(), m_spatialExtent.getHeight());
-  //m_animationScene->setSceneRect(rect);
-  //m_animationView->setSceneRect(rect);
+  for(it = list.begin(); it != list.end(); ++it)
+  {
+    AnimationItem* ai = (AnimationItem*)(*it);
+    srid = ai->m_SRID;
+    if(m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != ai->m_SRID)
+    {
+      te::gm::Envelope e = ai->m_animation->m_spatialExtent;
+      e.transform(ai->m_SRID, m_display->getSRID());
+      m_spatialExtent.Union(e);
+    }
+    else
+      m_spatialExtent.Union(ai->m_animation->m_spatialExtent);
+  }
+  QRectF rect(m_spatialExtent.m_llx, m_spatialExtent.m_lly, m_spatialExtent.getWidth(), m_spatialExtent.getHeight());
+  m_animationScene->setSceneRect(rect);
+  m_animationView->setSceneRect(rect);
+  m_animationView->fitInView(rect);
 
-  QRectF nullRect;
-  m_animationScene->setSceneRect(nullRect);
-  m_animationView->setSceneRect(nullRect);
+  //QRectF nullRect;
+  //m_animationScene->setSceneRect(nullRect);
+  //m_animationView->setSceneRect(nullRect);
 }
 
 void te::qt::widgets::TimeSliderWidget::calculateTemporalExtent()
@@ -1109,8 +1110,7 @@ int te::qt::widgets::TimeSliderWidget::getAnimationTime(const te::dt::TimeInstan
   double seconds = diff.total_seconds();
   // normalizing the time
   double t = seconds / totalSeconds;
-  t *= 1000;
-  int ret = (int)t;
+  int ret = qRound(t * (double)m_duration);
   return ret;
 }
 
@@ -1179,8 +1179,8 @@ void te::qt::widgets::TimeSliderWidget::onDisplayPaintEvent(QPainter* painter)
   if(m_animationScene->m_numberOfTrajectories) // has trajectories
   {
     // draw trail trajectories
-    QPixmap* pixt = ((AnimationScene*)(m_animationScene))->m_trajectoryPixmap;
     m_animationScene->m_mutex.lock();
+    QPixmap* pixt = ((AnimationScene*)(m_animationScene))->m_trajectoryPixmap;
     painter->drawPixmap(0, 0, *pixt);
     m_animationScene->m_mutex.unlock();
 
@@ -1258,11 +1258,24 @@ void te::qt::widgets::TimeSliderWidget::setAutomaticPan(const QString& title)
   //{
   //  AnimationItem* ai = (AnimationItem*)(*it);
   //  if(title == ai->m_title)
-  //  {
-  //    setAuxInfo(ai);
   //    break;
-  //  }
   //}
+
+  //if(it != list.end())
+  //  m_spd->m_ui->m_panFactorDoubleSpinBox->setEnabled(true);
+  //else
+  //  m_spd->m_ui->m_panFactorDoubleSpinBox->setEnabled(false);
+}
+
+void te::qt::widgets::TimeSliderWidget::onPanFactorValueChanged(double v)
+{
+  QList<QGraphicsItem*> list = m_animationScene->items();
+  QList<QGraphicsItem*>::iterator it;
+  for(it = list.begin(); it != list.end(); ++it)
+  {
+    AnimationItem* ai = (AnimationItem*)(*it);
+    ai->m_panFactor = v;
+  }
 }
 
 bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
@@ -1407,7 +1420,7 @@ bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
     }
     else if(e->type() == QEvent::MouseButtonPress)
     {
-      QString fileName = QFileDialog::getOpenFileName(this, tr("Select File"), "C:/", tr("Images (*.png *.xpm *.jpg)"));
+      QString fileName = QFileDialog::getOpenFileName(this, tr("Select File"), "C:/", tr("Images (*.png *.xpm *.jpg *.gif)"));
       if(fileName.isNull())
         return true;
 
@@ -1664,10 +1677,13 @@ void te::qt::widgets::TimeSliderWidget::onPlayToolButtonnClicked()
   else
   {
     m_ui->m_playToolButton->setIcon(QIcon::fromTheme("media-playback-pause"));
-    if(m_spd->m_ui->m_forwardRadioButton->isChecked())
-      onForwardRadioButtonClicked(true);
-    if(m_spd->m_ui->m_backwardRadioButton->isChecked())
-      onBackwardRadioButtonClicked(true);
+    if(m_comingBack == false)
+    {
+      if(m_spd->m_ui->m_forwardRadioButton->isChecked())
+        onForwardRadioButtonClicked(true);
+      if(m_spd->m_ui->m_backwardRadioButton->isChecked())
+        onBackwardRadioButtonClicked(true);
+    }
     if(m_spd->m_ui->m_loopCheckBox->isChecked())
       onLoopCheckBoxClicked(true);
     if(m_spd->m_ui->m_goAndBackCheckBox->isChecked())
@@ -2661,21 +2677,47 @@ void te::qt::widgets::TimeSliderWidget::onApplyTimeIntervalPushButtonClicked(boo
     return;
   }
 
+  te::dt::TimeInstant tinst = getTimeInstant();
+  boost::posix_time::ptime btinst = tinst.getTimeInstant();
+
   te::dt::TimeInstant t = m_temporalAnimationExtent.getInitialTimeInstant();
   QDate qdatei(t.getDate().getYear(), t.getDate().getMonth(), t.getDate().getDay());
   QTime qtimei(t.getTime().getHours(), t.getTime().getMinutes(), t.getTime().getSeconds());
   QDateTime qdatetimei(qdatei, qtimei);
   QDateTime qdi = m_spd->m_ui->m_initialAnimationDateTimeEdit->dateTime();
+  boost::posix_time::ptime iTime = t.getTimeInstant();
 
   t = m_temporalAnimationExtent.getFinalTimeInstant();
   QDate qdatef(t.getDate().getYear(), t.getDate().getMonth(), t.getDate().getDay());
   QTime qtimef(t.getTime().getHours(), t.getTime().getMinutes(), t.getTime().getSeconds());
   QDateTime qdatetimef(qdatef, qtimef);
   QDateTime qdf = m_spd->m_ui->m_finalAnimationDateTimeEdit->dateTime();
+  boost::posix_time::ptime fTime = t.getTimeInstant();
   if(qdatetimei == qdi && qdatetimef == qdf)
     return;
 
-  m_currentTime = m_parallelAnimation->currentTime();
+  boost::posix_time::ptime niTime = ti.getTimeInstant();
+  boost::posix_time::ptime nfTime = tf.getTimeInstant();
+  boost::posix_time::time_duration ndiff = nfTime - niTime;
+  double ntotalSeconds = ndiff.total_seconds();
+
+  boost::posix_time::time_duration diff = fTime - iTime;
+  double totalSeconds = diff.total_seconds();
+  double rel = m_duration / totalSeconds;
+
+  int nduration = qRound(rel * ntotalSeconds);
+
+  //m_currentTime = m_parallelAnimation->currentTime();
+  m_currentTime = 0;
+  if(btinst >= niTime && btinst <= nfTime)
+  {
+    boost::posix_time::time_duration d = btinst - niTime;
+    double tot = d.total_seconds();
+    m_currentTime = qRound(nduration * tot / ntotalSeconds);
+  }
+  else
+    m_currentTime = nduration;
+
   int state = m_parallelAnimation->state();
   if(state == QAbstractAnimation::Running)
     onPlayToolButtonnClicked();
@@ -2688,6 +2730,8 @@ void te::qt::widgets::TimeSliderWidget::onApplyTimeIntervalPushButtonClicked(boo
   createNewPixmap();
   calculateSpatialExtent();
   createAnimations();
+  m_duration = nduration;
+  m_ui->m_durationSpinBox->setValue(m_duration);
   setDuration(m_duration);
   setDirection(m_direction);
 
@@ -2793,6 +2837,7 @@ void te::qt::widgets::TimeSliderWidget::adjustTrajectoryGroupBox(te::qt::widgets
     m_spd->m_ui->m_backwardColorPushButton->setPalette(QPalette(ti->m_backwardColor));
     m_spd->m_ui->m_backwardColorPushButton->update();
     m_spd->m_ui->m_autoPanCheckBox->setChecked(ti->m_automaticPan);
+    m_spd->m_ui->m_panFactorDoubleSpinBox->setValue(ti->m_panFactor);
     m_spd->m_ui->m_drawTrailCheckBox->setChecked(ti->m_drawTrail);
 
     QPixmap pix = ti->pixmap();
