@@ -64,7 +64,7 @@ namespace te
 
         public:
 
-          void setMaskSize(int size, int defaultValue);
+          void setMaskSize(int height, int width, double defaultValue);
 
           void setMaskSize(boost::numeric::ublas::matrix<double> matrix);
 

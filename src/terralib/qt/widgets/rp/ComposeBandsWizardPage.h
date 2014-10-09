@@ -35,6 +35,7 @@
 #include <memory>
 
 // Qt
+#include <QComboBox>
 #include <QWizardPage>
 
 
@@ -78,6 +79,14 @@ namespace te
 
           void getDecomposeParameters(te::rst::Raster*& raster, std::vector<unsigned int>& bands);
 
+        public slots:
+
+          void onAddToolButtonClicked();
+
+          void onRemoveToolButtonClicked();
+
+          void onLayerCmbActivated(int index);
+
         protected:
 
           void fillInterpolatorTypes();
@@ -87,6 +96,8 @@ namespace te
           std::auto_ptr<Ui::ComposeBandsWizardPageForm> m_ui;
 
           std::list<te::map::AbstractLayerPtr> m_layerList;
+
+          std::map<QComboBox*, int> m_cmbMap;
       };
 
     } // end namespace widgets
