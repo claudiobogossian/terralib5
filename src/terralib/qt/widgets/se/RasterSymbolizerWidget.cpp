@@ -289,6 +289,9 @@ void te::qt::widgets::RasterSymbolizerWidget::initialize()
   m_offsetValue = 0.0;
   m_gainOriginalValue = m_gainValue;
   m_offsetOriginalValue = m_offsetValue;
+
+  m_ui->m_gainValueLabel->setText(QString::number(m_gainValue + 1.));
+  m_ui->m_offSetValueLabel->setText(QString::number(m_offsetValue));
 }
 
 void te::qt::widgets::RasterSymbolizerWidget::updateUi()
@@ -317,6 +320,8 @@ void te::qt::widgets::RasterSymbolizerWidget::updateUi()
       m_symbolizer->setGain(new te::se::ParameterValue(s.toStdString()));
     }
 
+    m_ui->m_gainValueLabel->setText(QString::number(m_gainValue + 1.));
+
     if(m_symbolizer->getOffset())
     {
       m_offsetValue = te::se::GetDouble(m_symbolizer->getOffset());
@@ -328,6 +333,8 @@ void te::qt::widgets::RasterSymbolizerWidget::updateUi()
       s.setNum(m_offsetValue);
       m_symbolizer->setOffset(new te::se::ParameterValue(s.toStdString()));
     }
+
+    m_ui->m_offSetValueLabel->setText(QString::number(m_offsetValue));
 
     //update channel selection
     if(m_cs->getRedChannel())
@@ -712,6 +719,8 @@ void te::qt::widgets::RasterSymbolizerWidget::onIncreaseGain()
 
     onSymbolizerChanged();
   }
+
+  m_ui->m_gainValueLabel->setText(QString::number(m_gainValue + 1.));
 }
 
 void te::qt::widgets::RasterSymbolizerWidget::onDecreaseGain()
@@ -727,6 +736,8 @@ void te::qt::widgets::RasterSymbolizerWidget::onDecreaseGain()
 
     onSymbolizerChanged();
   }
+
+  m_ui->m_gainValueLabel->setText(QString::number(m_gainValue + 1.));
 }
 
 void te::qt::widgets::RasterSymbolizerWidget::onDefaultGain()
@@ -742,6 +753,8 @@ void te::qt::widgets::RasterSymbolizerWidget::onDefaultGain()
 
     onSymbolizerChanged();
   }
+
+  m_ui->m_gainValueLabel->setText(QString::number(m_gainValue + 1.));
 }
 
 void te::qt::widgets::RasterSymbolizerWidget::onIncreaseOffset()
@@ -757,6 +770,8 @@ void te::qt::widgets::RasterSymbolizerWidget::onIncreaseOffset()
 
     onSymbolizerChanged();
   }
+
+  m_ui->m_offSetValueLabel->setText(QString::number(m_offsetValue));
 }
 
 void te::qt::widgets::RasterSymbolizerWidget::onDecreaseOffset()
@@ -772,6 +787,8 @@ void te::qt::widgets::RasterSymbolizerWidget::onDecreaseOffset()
 
     onSymbolizerChanged();
   }
+
+  m_ui->m_offSetValueLabel->setText(QString::number(m_offsetValue));
 }
 
 void te::qt::widgets::RasterSymbolizerWidget::onDefaultOffset()
@@ -787,6 +804,8 @@ void te::qt::widgets::RasterSymbolizerWidget::onDefaultOffset()
 
     onSymbolizerChanged();
   }
+
+  m_ui->m_offSetValueLabel->setText(QString::number(m_offsetValue));
 }
 
 void te::qt::widgets::RasterSymbolizerWidget::onSymbolizerChanged()
