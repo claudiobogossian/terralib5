@@ -499,10 +499,6 @@
 #include "terralib/dataaccess/utils/Utils.h"
 %}
 
-namespace std {
- %template(CharEncodingVector) vector<te::common::CharEncoding>;
-}
-
 %nodefaultctor te::da::DataSet;
 
 %ignore te::da::DataSet::getExtent;
@@ -530,8 +526,6 @@ namespace std {
 %ignore te::dt::BasicRelation;
 %ignore te::dt::StringType;
 
-%include "terralib/common/CharEncodingConv.h"
-%include "terralib/common/Enums.h"
 %include "terralib/dataaccess/dataset/DataSet.h"
 %include "terralib/datatype/Enums.h"
 

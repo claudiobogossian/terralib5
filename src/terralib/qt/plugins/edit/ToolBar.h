@@ -83,6 +83,8 @@ namespace te
 
             void onMoveGeometryToolActivated(bool checked);
 
+            void onSnapOptionsActivated();
+
           protected:
 
             QToolBar* m_toolBar;
@@ -92,6 +94,7 @@ namespace te
             QAction* m_createPolygonToolAction;
             QAction* m_createLineToolAction;
             QAction* m_moveGeometryToolAction;
+            QAction* m_snapOptionsAction;
 
             QList<QAction*> m_tools;
         };

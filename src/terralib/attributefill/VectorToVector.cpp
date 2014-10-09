@@ -215,7 +215,7 @@ bool te::attributefill::VectorToVector::run()
 
         if(funcs[i] == "Value")
         {
-          item->setValue(outPropName, dataValues[i]);
+          item->setValue(outPropName, dataValues[0]);
         }
         else if(it->first->getType() == te::dt::STRING_TYPE)
         {
@@ -268,7 +268,7 @@ bool te::attributefill::VectorToVector::save(std::auto_ptr<te::mem::DataSet> res
   std::map<std::string, std::string> options;
   // create the dataset
   m_outDsrc->createDataSet(dsTypeResult, options);
-  
+
   // copy from memory to output datasource
   result->moveBeforeFirst();
   m_outDsrc->add(dsTypeResult->getName(),result.get(), options);
@@ -293,13 +293,14 @@ te::da::DataSetType* te::attributefill::VectorToVector::getOutputDataSetType()
 
     for(std::size_t i = 0; i < funcs.size(); ++i)
     {
-      te::dt::Property* newProp = 0;
+      te::dt::SimpleProperty* newProp = 0;
 
       std::string newName = getPropertyName(it->first, funcs[i]);
 
       if(funcs[i] == "Value" || funcs[i] == "Major Class")
       {
-        newProp = currentProperty->clone();
+        newProp = dynamic_cast<te::dt::SimpleProperty*>(currentProperty->clone());
+        newProp->setRequired(false);
         newProp->setName(newName);
       }
       else if(it->first->getType() == te::dt::STRING_TYPE || funcs[i] == "Mode")
@@ -378,7 +379,7 @@ std::string te::attributefill::VectorToVector::getPropertyName(te::dt::Property*
   else if(func == "Coefficient variation")
     newName += "coeff_variation";
   else if(func == "Mode")
-    newName += "mdoe";
+    newName += "mode";
   else if(func == "Major Class")
     newName += "maj_class";
   else if(func == "Percentage per Class")

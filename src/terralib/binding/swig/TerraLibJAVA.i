@@ -11,10 +11,7 @@
 /*
  * STL
  */
-%include std_map.i
-%include std_pair.i
-%include std_string.i
-%include std_vector.i
+%include stl.i
 %include typemaps.i
 
 /*
@@ -36,6 +33,7 @@ namespace std {
 
 %{
 // TerraLib includes
+#include "terralib/common/CharEncodingConv.h"
 #include "terralib/common/TerraLib.h"
 #include "terralib/plugin/PluginManager.h"
 
@@ -90,6 +88,14 @@ void Initialize() throw (te::common::Exception);
 
 void Finalize();
 
+%include "terralib/common/CharEncodingConv.h"
+%include "terralib/common/Enums.h"
+%include "java/QtInitializer.h"
+
+namespace std {
+ %template(CharEncodingVector) vector<te::common::CharEncoding>;
+}
+
 %include java/ObjectId.i
 %include java/DataSet.i
 %include java/DataSource.i
@@ -97,4 +103,4 @@ void Finalize();
 %include java/Layer.i
 %include java/RTree.i
 
-%include "java/QtInitializer.h"
+
