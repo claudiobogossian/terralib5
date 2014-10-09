@@ -2,6 +2,7 @@
 
 %{
 // TerraLib includes
+#include "terralib/common/CharEncodingConv.h"
 #include "terralib/dataaccess/datasource/DataSource.h"
 #include "terralib/dataaccess/datasource/DataSourceManager.h"
 #include "terralib/maptools/DataSetLayer.h"
