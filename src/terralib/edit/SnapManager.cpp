@@ -71,6 +71,17 @@ void te::edit::SnapManager::buildSnap(const std::string& source, int srid, te::d
     snap->build(dataset);
 }
 
+void te::edit::SnapManager::removeSnap(const std::string& source)
+{
+  std::map<std::string, Snap*>::iterator it = m_snaps.find(source);
+
+  if(it == m_snaps.end())
+    return;
+
+  delete it->second;
+  m_snaps.erase(it);
+}
+
 const std::map<std::string, te::edit::Snap*>& te::edit::SnapManager::getSnaps() const
 {
   return m_snaps;

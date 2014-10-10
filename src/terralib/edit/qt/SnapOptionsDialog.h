@@ -75,6 +75,10 @@ namespace te
 
         void buildOptions(const te::map::AbstractLayerPtr& layer);
 
+      private slots:
+
+        void onOkPushButtonPressed();
+
       private:
 
         std::auto_ptr<Ui::SnapOptionsDialogForm> m_ui;   //!< Widget form.

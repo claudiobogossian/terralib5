@@ -70,6 +70,8 @@ namespace te
 
         void buildSnap(const std::string& source, int srid, te::da::DataSet* dataset);
 
+        void removeSnap(const std::string& source);
+
         const std::map<std::string, Snap*>& getSnaps() const;
 
         Snap* getSnap(const std::string& source) const;
