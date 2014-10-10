@@ -62,6 +62,8 @@
 #include "../item/LegendChildItem.h"
 #include "../../item/LegendChildModel.h"
 #include "../../core/pattern/derivativevisitor/VisitorUtils.h"
+#include "HorizontalRuler.h"
+#include "VerticalRuler.h"
 
 // STL
 #include <iostream>
@@ -93,7 +95,9 @@ te::layout::Scene::Scene( QWidget* widget):
   m_previewState(NoPrinter),
   m_undoStack(0),
   m_undoStackLimit(6),
-  m_moveWatched(false)
+  m_moveWatched(false),
+  m_horizontalRuler(0),
+  m_verticalRuler(0)
 {
   setBackgroundBrush(QBrush(QColor(109,109,109)));
 
@@ -102,6 +106,18 @@ te::layout::Scene::Scene( QWidget* widget):
 
 te::layout::Scene::~Scene()
 {
+  if(m_verticalRuler)
+  {
+    delete m_verticalRuler;
+    m_verticalRuler = 0;
+  }
+
+  if(m_horizontalRuler)
+  {
+    delete m_horizontalRuler;
+    m_horizontalRuler = 0;
+  }
+
   if(m_boxW)
   {
     delete m_boxW;
@@ -651,61 +667,6 @@ void te::layout::Scene::refresh(QGraphicsView* view, double zoomFactor)
   
   calculateMatrixViewScene(zoomFactor);
   refreshViews(view);
-
-  te::gm::Envelope newBox = *m_boxW;
-  if(view)
-  {
-    /* New box because the zoom factor change the transform(matrix) */
-    QPointF ll = view->mapToScene(0, 0);
-    QPointF ur = view->mapToScene(view->width(), view->height());
-    newBox = te::gm::Envelope(ll.x(), ll.y(), ur.x(), ur.y());
-  } 
-
-  refreshRulers(newBox);
-}
-
-void te::layout::Scene::refreshRulers(te::gm::Envelope newBox)
-{
-  if(!m_fixedRuler)
-    return;
-
-  double llx = newBox.getLowerLeftX();
-  double lly = newBox.getLowerLeftY();
-  double urx = newBox.getUpperRightX();
-  double ury = newBox.getUpperRightY();
-
-  QPointF pt(llx, lly);
-
-  EnumObjectType* type = Enums::getInstance().getEnumObjectType();
-
-  QList<QGraphicsItem*> graphicsItems = items();
-  foreach( QGraphicsItem *item, graphicsItems) 
-  {
-    if (item)
-    {			
-      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
-      if(lItem)
-      {       
-        ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(lItem->getModel());
-
-        if(!model)
-          continue;
-
-        if(model->getType() == type->getHorizontalRuler())
-        {
-          te::gm::Envelope boxH(llx, lly, urx, lly + 10);
-          model->setBox(boxH);
-          item->setPos(pt);
-        }
-        if(model->getType() == type->getVerticalRuler())
-        {
-          te::gm::Envelope boxV(llx, lly, llx + 10, ury);
-          model->setBox(boxV);
-          item->setPos(pt);
-        }
-      }
-    }
-  }
 }
 
 void te::layout::Scene::refreshViews( QGraphicsView* view /*= 0*/ )
@@ -715,6 +676,16 @@ void te::layout::Scene::refreshViews( QGraphicsView* view /*= 0*/ )
 
   double llx = m_boxW->getLowerLeftX();
   double ury = m_boxW->getUpperRightY();
+
+  if(view)
+  {
+    //Transform calcula automaticamente a matriz inversa
+    view->setTransform(getMatrixViewScene());
+    view->setTransformationAnchor(QGraphicsView::NoAnchor);	
+    view->centerOn(QPointF(llx, ury));
+    view->scale(1, -1);
+    return;
+  }
 
   QList<QGraphicsView*> vws = views();
   foreach(QGraphicsView* v, vws)
@@ -736,31 +707,26 @@ void te::layout::Scene::drawForeground( QPainter *painter, const QRectF &rect )
 {
   QGraphicsScene::drawForeground(painter, rect);
 
-  EnumModeType* mode = Enums::getInstance().getEnumModeType();
-  
-  if(Context::getInstance().getLineIntersectionMouseMode() != mode->getModeActiveLinesIntersectionMouse())
-    return;
+  PaperConfig* cfg = Context::getInstance().getPaperConfig();
 
-  QBrush brush = painter->brush();
+  if(!m_horizontalRuler)
+  {
+    m_horizontalRuler = new HorizontalRuler(cfg);
+  }
 
-  QBrush brushCopy = brush;
-  brush.setColor(QColor(0,0,0,255));
+  if(!m_verticalRuler)
+  {
+    m_verticalRuler = new VerticalRuler(cfg);
+  }
 
-  QPen pen = painter->pen();
+  QList<QGraphicsView*> vws = views();
+  foreach(QGraphicsView* v, vws)
+  {
+    m_horizontalRuler->drawRuler(v, painter);
+    m_verticalRuler->drawRuler(v, painter);
+  }
 
-  QPen penCopy = pen;
-  penCopy.setStyle(Qt::DashDotLine);
-
-  painter->save();
-  painter->setPen(penCopy);
-  painter->setBrush(brushCopy);
-  painter->drawLines(m_lineIntersectHrz, 1);
-  painter->drawLines(m_lineIntersectVrt, 1);
-  painter->restore();  
-
-  painter->setBrush(brush);
-
-  update();
+  //update();
 }
 
 void te::layout::Scene::buildTemplate(VisualizationArea* vzArea)
@@ -781,7 +747,6 @@ void te::layout::Scene::buildTemplate(VisualizationArea* vzArea)
 
   te::gm::Envelope* boxW = getWorldBox();
   vzArea->changeBoxArea(boxW);
-  vzArea->rebuildWithoutPaper();
 
   for(it = props.begin() ; it != props.end() ; ++it)
   {
@@ -970,28 +935,6 @@ void te::layout::Scene::sendToBack()
   if(itemMinimumZValue)
   {
     itemMinimumZValue->setZValue(zValue);
-  }
-}
-
-void te::layout::Scene::redrawRulers()
-{
-  EnumObjectType* type = Enums::getInstance().getEnumObjectType();
-
-  QList<QGraphicsItem*> graphicsItems = items();
-  foreach( QGraphicsItem *item, graphicsItems) 
-  {
-    if (item)
-    {			
-      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
-      if(lItem)
-      {       
-        if(lItem->getModel()->getType() == type->getHorizontalRuler() ||
-          lItem->getModel()->getType() == type->getVerticalRuler())
-        {
-          lItem->redraw();
-        }
-      }
-    }
   }
 }
 

@@ -18,38 +18,35 @@
  */
 
 /*!
-  \file VerticalRulerController.h
+  \file HorizontalRuler.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_CONTROLLER_H
-#define __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_CONTROLLER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_HORIZONTAL_RULER_H
+#define __TERRALIB_LAYOUT_INTERNAL_HORIZONTAL_RULER_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemController.h"
+#include "AbstractRuler.h"
 
 namespace te
 {
   namespace layout
   {
-    class VerticalRulerController : public ItemController
+    class HorizontalRuler : public AbstractRuler
     {
       public:
 
-        VerticalRulerController( Observable* o );
-        virtual ~VerticalRulerController();
+        HorizontalRuler(PaperConfig* paperConfig);
 
-        virtual void setPosition(const double& x, const double& y);
+        virtual ~HorizontalRuler();
 
-      protected:
+        virtual void drawRuler( QGraphicsView* view, QPainter* painter );
 
-        VerticalRulerController( Observable* o, EnumType* type );
-
-        virtual void create();
     };
   }
 }
-#endif
+
+#endif //__TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_LAYOUTMODEL_H

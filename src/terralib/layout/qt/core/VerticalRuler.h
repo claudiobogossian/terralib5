@@ -18,44 +18,33 @@
  */
 
 /*!
-  \file VerticalRulerModel.h
+  \file VerticalRuler.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_VERTICAL_RULER_H
+#define __TERRALIB_LAYOUT_INTERNAL_VERTICAL_RULER_H
 
 // TerraLib
-#include "../core/ContextItem.h"
-#include "AbstractRulerModel.h"
-
-// STL
-#include <vector>
-#include <string>
+#include "AbstractRuler.h"
 
 namespace te
 {
   namespace layout
   {
-    class VerticalRulerModel : public AbstractRulerModel
+    class VerticalRuler : public AbstractRuler
     {
       public:
 
-        VerticalRulerModel(PaperConfig* paperConfig);
-        virtual ~VerticalRulerModel();
+        VerticalRuler(PaperConfig* paperConfig);
 
-        virtual void setBox(te::gm::Envelope box);
+        virtual ~VerticalRuler();    
 
-        virtual void draw( ContextItem context );
-        
-      protected:
+        virtual void drawRuler( QGraphicsView* view, QPainter* painter );
 
-        virtual void drawVerticalRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
- 
-        virtual void drawRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);        
     };
   }
 }

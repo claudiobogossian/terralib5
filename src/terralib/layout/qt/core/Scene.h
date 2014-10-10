@@ -70,6 +70,8 @@ namespace te
     class ChangePropertyCommand;
     class MoveCommand;
     class DeleteCommand;
+    class VerticalRuler;
+    class HorizontalRuler;
 
     class TELAYOUTEXPORT Scene : public QGraphicsScene, public AbstractScene
     {
@@ -147,11 +149,7 @@ namespace te
         virtual void bringToFront();
 
         virtual void sendToBack();
-
-        virtual void redrawRulers();
-
-        virtual void refreshRulers(te::gm::Envelope newBox);
-
+        
         /*! \brief Get the number of map items that intersection the coordinate */
         virtual int intersectionMap(te::gm::Coord2D coord, bool &intersection);
 
@@ -227,6 +225,8 @@ namespace te
         
       protected:
 
+        VerticalRuler*     m_verticalRuler;
+        HorizontalRuler*   m_horizontalRuler;
         te::gm::Envelope*  m_boxW;
         QTransform         m_matrix;
         double             m_screenWidthMM;

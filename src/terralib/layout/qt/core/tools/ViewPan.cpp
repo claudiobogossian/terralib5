@@ -106,7 +106,6 @@ bool te::layout::ViewPan::mouseReleaseEvent(QMouseEvent* e)
   double zoomFactor = Context::getInstance().getZoomFactor();
 
   scene->refresh(m_view, zoomFactor);
-  scene->redrawRulers();
   scene->update();
   
   return true;

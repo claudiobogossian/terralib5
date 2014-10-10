@@ -29,8 +29,6 @@
 #include "ItemFactory.h"
 #include "../../../../core/pattern/mvc/Observer.h"
 #include "../../../item/RectangleItem.h"
-#include "../../../item/HorizontalRulerItem.h"
-#include "../../../item/VerticalRulerItem.h"
 #include "../../../item/ItemGroup.h"
 #include "../../../item/PaperItem.h"
 #include "../../../item/MapItem.h"
@@ -73,16 +71,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
   {
     LegendItem* legend = new LegendItem(params.getController(), params.getModel());
     item = (Observer*)legend;
-  }
-  else if(type == enumObj->getHorizontalRuler())
-  {
-    HorizontalRulerItem* ruler = new HorizontalRulerItem(params.getController(), params.getModel());
-    item = (Observer*)ruler;
-  }
-  else if(type == enumObj->getVerticalRuler())
-  {
-    VerticalRulerItem* ruler = new VerticalRulerItem(params.getController(), params.getModel());
-    item = (Observer*)ruler;
   }
   else if(type == enumObj->getDefaultTextItem())
   {
