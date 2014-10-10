@@ -79,27 +79,19 @@ namespace te
 
       private:
 
-        void setOptions();
-
-        void setFunctionsByLayer(std::vector<te::dt::Property*> properties);
-
-        void setFunctionsByProperty(te::dt::Property* prop);
-
-        void setFillCellOperations();
+        void setFunctionsByLayer(te::map::AbstractLayerPtr layer);
 
         void setStatisticalSummary();
 
         void setStatisticalSummaryMap();
-
-        te::dt::Property* getSelectedPropertyByName(std::string propertyName);
-
-        std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > getStatisticalSummary();
 
         te::map::AbstractLayerPtr getCurrentFromLayer();
 
         te::map::AbstractLayerPtr getCurrentToLayer();
 
         std::map<te::dt::Property*, std::vector<std::string> > getSelections();
+
+        bool isPolygon(te::gm::GeomType type);
 
       protected slots:
 

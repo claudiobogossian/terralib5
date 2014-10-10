@@ -196,18 +196,18 @@ bool te::attributefill::VectorToVector::run()
       std::vector<std::string> strValues;
       std::vector<te::dt::AbstractData*> dataValues;
 
+      dataValues = getDataValues(fromDs.get(), intersections, it->first->getName());
+
       if(it->first->getType() == te::dt::STRING_TYPE)
       {
-        strValues = getStrValues(fromDs.get(), intersections, it->first->getName());
+        strValues = getStrValues(dataValues);
         te::stat::GetStringStatisticalSummary(strValues, ssStr, "");
       }
       else
       {
-        numValues = getNumValues(fromDs.get(), intersections, it->first->getName());
+        numValues = getNumValues(dataValues);
         te::stat::GetNumericStatisticalSummary(numValues, ssNum);
       }
-
-      dataValues = getDataValues(fromDs.get(), intersections, it->first->getName());
 
       for(std::size_t i = 0; i < funcs.size(); ++i)
       {
@@ -215,7 +215,10 @@ bool te::attributefill::VectorToVector::run()
 
         if(funcs[i] == "Value")
         {
-          item->setValue(outPropName, dataValues[0]);
+          if(it->first->getType() == te::dt::STRING_TYPE)
+            item->setString(outPropName, ssStr.m_minVal);
+          else
+            item->setDouble(outPropName, ssNum.m_minVal);
         }
         else if(it->first->getType() == te::dt::STRING_TYPE)
         {
@@ -297,7 +300,14 @@ te::da::DataSetType* te::attributefill::VectorToVector::getOutputDataSetType()
 
       std::string newName = getPropertyName(it->first, funcs[i]);
 
-      if(funcs[i] == "Value" || funcs[i] == "Major Class")
+      if(funcs[i] == "Value")
+      {
+        if(it->first->getType() == te::dt::STRING_TYPE)
+          newProp = new te::dt::StringProperty(newName);
+        else
+          newProp = new te::dt::SimpleProperty(newName, te::dt::DOUBLE_TYPE);
+      }
+      else if(funcs[i] == "Major Class")
       {
         newProp = dynamic_cast<te::dt::SimpleProperty*>(currentProperty->clone());
         newProp->setRequired(false);
@@ -309,7 +319,6 @@ te::da::DataSetType* te::attributefill::VectorToVector::getOutputDataSetType()
       }
       else
       {
-        std::string newName = getPropertyName(it->first, funcs[i]);
         newProp = new te::dt::SimpleProperty(newName, te::dt::DOUBLE_TYPE);
       }
 
@@ -421,33 +430,42 @@ std::vector<std::size_t> te::attributefill::VectorToVector::getIntersections(te:
   return interVec;
 }
 
-std::vector<double> te::attributefill::VectorToVector::getNumValues(te::da::DataSet* fromDs,
-                                                                 std::vector<std::size_t> dsPos,
-                                                                 const std::string& propertyName)
+std::vector<double> te::attributefill::VectorToVector::getNumValues(std::vector<te::dt::AbstractData*> data)
 {
   std::vector<double> result;
 
-  for(std::size_t i = 0; i < dsPos.size(); ++i)
+  for(std::size_t i = 0; i < data.size(); ++i)
   {
-    fromDs->move(dsPos[i]);
+    if(data[i]->getTypeCode() == te::dt::INT16_TYPE || 
+       data[i]->getTypeCode() == te::dt::UINT16_TYPE || 
+       data[i]->getTypeCode() == te::dt::INT32_TYPE || 
+       data[i]->getTypeCode() == te::dt::UINT32_TYPE || 
+       data[i]->getTypeCode() == te::dt::INT64_TYPE || 
+       data[i]->getTypeCode() == te::dt::UINT64_TYPE || 
+       data[i]->getTypeCode() == te::dt::FLOAT_TYPE || 
+       data[i]->getTypeCode() == te::dt::DOUBLE_TYPE || 
+       data[i]->getTypeCode() == te::dt::CINT16_TYPE || 
+       data[i]->getTypeCode() == te::dt::CINT32_TYPE || 
+       data[i]->getTypeCode() == te::dt::CFLOAT_TYPE || 
+       data[i]->getTypeCode() == te::dt::CDOUBLE_TYPE)
+    {
+      std::string strValue = data[i]->toString();
 
-    result.push_back(fromDs->getDouble(propertyName));
+      result.push_back(boost::lexical_cast<double>(strValue));
+    }
   }
 
   return result;
 }
 
-std::vector<std::string> te::attributefill::VectorToVector::getStrValues(te::da::DataSet* fromDs,
-                                                                            std::vector<std::size_t> dsPos,
-                                                                            const std::string& propertyName)
+std::vector<std::string> te::attributefill::VectorToVector::getStrValues(std::vector<te::dt::AbstractData*> data)
 {
   std::vector<std::string> result;
 
-  for(std::size_t i = 0; i < dsPos.size(); ++i)
+  for(std::size_t i = 0; i < data.size(); ++i)
   {
-    fromDs->move(dsPos[i]);
-
-    result.push_back(fromDs->getString(propertyName));
+    if(data[i]->getTypeCode() == te::dt::STRING_TYPE)
+      result.push_back(data[i]->toString());
   }
 
   return result;

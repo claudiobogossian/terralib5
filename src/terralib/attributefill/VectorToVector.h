@@ -101,9 +101,9 @@ namespace te
 
         std::vector<te::dt::AbstractData*> getDataValues(te::da::DataSet* fromDs, std::vector<std::size_t> dsPos, const std::string& propertyName);
 
-        std::vector<double> getNumValues(te::da::DataSet* fromDs, std::vector<std::size_t> dsPos, const std::string& propertyName);
+        std::vector<double> getNumValues(std::vector<te::dt::AbstractData*> data);
 
-        std::vector<std::string> getStrValues(te::da::DataSet* fromDs, std::vector<std::size_t> dsPos, const std::string& propertyName);
+        std::vector<std::string> getStrValues(std::vector<te::dt::AbstractData*> data);
 
         double getValue(te::stat::NumericStatisticalSummary ss, const std::string& function);
 
