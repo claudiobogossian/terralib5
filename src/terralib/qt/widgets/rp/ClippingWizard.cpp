@@ -247,6 +247,13 @@ bool te::qt::widgets::ClippingWizard::executeDimensionClipping()
   m_clippingPage->getDimensionClipping(x, y, width, height);
 
   std::map<std::string, std::string> info = m_rasterInfoPage->getWidget()->getInfo();
+
+  if(y + height > (int)inputRst->getNumberOfRows() ||
+     x + width  > (int)inputRst->getNumberOfColumns())
+  {
+    QMessageBox::warning(this, tr("Clipping"), tr("Selected area beyond the raster boundaries."));
+    return false;
+  }
   
   //execute clipping
   te::rst::Raster* outputRst = inputRst->resample(te::rst::Interpolator::NearestNeighbor, y, x, height, width, height, width, info);
