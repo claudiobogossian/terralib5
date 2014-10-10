@@ -81,12 +81,12 @@ void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* pain
 
   //Horizontal Ruler
   QRectF rfH(QPointF(ll.x(), ll.y()), QPointF(ur.x(), ll.y() + m_height * zoomFactor));
-  QRectF rfBackH(QPointF(ll.x() + (m_cornerSize * zoomFactor), ll.y() + 1.), QPointF(ur.x(), ll.y() + (m_height - 1.5) * zoomFactor));
-  QRectF rfPaperH(0, ll.y() + 1., w, (m_height - 1.5) * zoomFactor);
+  QRectF rfBackH(QPointF(ll.x() + (m_cornerSize * zoomFactor), ll.y()), QPointF(ur.x(), ll.y() + (m_height - 1.5) * zoomFactor));
+  QRectF rfPaperH(QPointF(0, ll.y()), QPointF(w, ll.y() + (m_height - 1.5) * zoomFactor));
   QLineF rfLineH(QPointF(ll.x() + (m_cornerSize * zoomFactor), ll.y() + m_height * zoomFactor), QPointF(ur.x(), ll.y() + m_height * zoomFactor));
   
   //Rect corner
-  QRectF rfRectCorner(ll.x(), ll.y(), m_cornerSize * zoomFactor, m_height * zoomFactor);
+  QRectF rfRectCorner(ll.x(), ll.y(), ll.x() + m_cornerSize * zoomFactor, ll.y() + m_height * zoomFactor);
 
   painter->save();
   painter->setPen(Qt::NoPen);
@@ -112,7 +112,7 @@ void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* pain
   double htxt = 0;
 
   QFont ft("Arial");
-  ft.setPointSizeF(3);
+  ft.setPointSizeF(8 * zoom);
   painter->setFont(ft);
 
   std::stringstream ss;
@@ -121,35 +121,39 @@ void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* pain
   double lly = rfBackH.bottomLeft().y();
   double urx = rfBackH.topRight().x();
 
-  double y = lly - 1;
+  double y = lly;
 
   //Horizontal Ruler Marks
-
-  te::gm::Envelope box;
+  QLineF box;
 
   for(int i = (int)llx ; i < (int) urx ; ++i)
   {
     if((i % (int)(m_blockSize)) == 0)
     {
-      box = te::gm::Envelope(i, y, i, y - m_longLine);  
+      box = QLineF(QPointF(i, y), QPointF(i, y - m_longLine * zoomFactor));  
 
       std::stringstream ss;//create a stringstream
       ss << i;//add number to the stream
 
       utils->textBoundingBox(wtxt, htxt, ss.str());
       painter->drawText(QPointF((double)i - (wtxt/2.), y - m_spacingLineText), ss.str().c_str());
+
     }
     else if((i % (int)(m_middleBlockSize)) == 0)
     {
-      box = te::gm::Envelope(i, y, i, y - m_mediumLine); 
+      box = QLineF(QPointF(i, y), QPointF(i, y - m_mediumLine * zoomFactor)); 
     }
     else if((i % (int)(m_smallBlockSize)) == 0)
     {
-      box = te::gm::Envelope(i, y, i, y - m_smallLine);  
+      box = QLineF(QPointF(i, y), QPointF(i, y - m_smallLine * zoomFactor));  
     }
 
-    painter->drawLine(box.m_llx, box.m_lly, box.m_urx, box.m_ury);
+    painter->drawLine(box);
   }
+
+  painter->setBrush(bhGreyBox);
+  painter->setPen(Qt::NoPen);
+  painter->drawRect(rfRectCorner);
 
   painter->restore();
 }

@@ -81,8 +81,8 @@ void te::layout::VerticalRuler::drawRuler( QGraphicsView* view, QPainter* painte
   
   //Vertical Ruler
   QRectF rfV(QPointF(ll.x(), ll.y()), QPointF(ll.x() + m_height * zoomFactor, ur.y()));
-  QRectF rfBackV(QPointF(ll.x() + 1., ll.y() + ((m_height) * zoomFactor)), QPointF(ll.x() + (m_cornerSize - 1.5) * zoomFactor, ur.y()));
-  QRectF rfPaperV(ll.x() + 1., 0, (m_height - 1.5) * zoomFactor, h);
+  QRectF rfBackV(QPointF(ll.x(), ll.y() + ((m_height) * zoomFactor)), QPointF(ll.x() + (m_cornerSize - 1.5) * zoomFactor, ur.y()));
+  QRectF rfPaperV(QPointF(ll.x(), 0), QPointF(ll.x() + (m_cornerSize - 1.5) * zoomFactor, h));
   QLineF rfLineV(QPointF(ll.x() + m_cornerSize * zoomFactor, ll.y() + (m_height * zoomFactor)), QPointF(ll.x() + m_height * zoomFactor, ur.y()));
 
   //Rect corner
@@ -100,9 +100,6 @@ void te::layout::VerticalRuler::drawRuler( QGraphicsView* view, QPainter* painte
 
   painter->setBrush(bhWhite);
   painter->drawRect(rfPaperV);
-
-  painter->setBrush(bhGreyBox);
-  painter->drawRect(rfRectCorner);
 
   painter->setBrush(brush);
   painter->setPen(pen);
@@ -122,17 +119,16 @@ void te::layout::VerticalRuler::drawRuler( QGraphicsView* view, QPainter* painte
   double ury = rfBackV.bottomLeft().y();
   double lly = rfBackV.topRight().y();
   
-  double x = urx - 1;
+  double x = urx;
 
   //Horizontal Ruler Marks
+  QLineF box;
 
-  te::gm::Envelope box;
-  
   for(int i = (int)lly ; i < (int) ury ; ++i)
   {
     if((i % (int)m_blockSize) == 0)
     {
-      box = te::gm::Envelope(x, i, x - m_longLine, i);
+      box = QLineF(QPointF(x, i), QPointF(x - m_longLine * zoomFactor, i));
 
       std::stringstream ss;//create a stringstream
       ss << i;//add number to the stream
@@ -150,15 +146,19 @@ void te::layout::VerticalRuler::drawRuler( QGraphicsView* view, QPainter* painte
     }
     else if((i % (int)m_middleBlockSize) == 0)
     {
-      box = te::gm::Envelope(x, i, x - m_mediumLine, i);
+      box = QLineF(QPointF(x, i), QPointF(x - m_mediumLine * zoomFactor, i));
     }
     else if((i % (int)m_smallBlockSize) == 0)
     {
-      box = te::gm::Envelope(x, i, x - m_smallLine, i);
+      box = QLineF(QPointF(x, i), QPointF(x - m_smallLine * zoomFactor, i));
     }
 
-    painter->drawLine(box.m_llx, box.m_lly, box.m_urx, box.m_ury);
+    painter->drawLine(box);
   }
+
+  painter->setBrush(bhGreyBox);
+  painter->setPen(Qt::NoPen);
+  painter->drawRect(rfRectCorner);
 
   painter->restore();
 }

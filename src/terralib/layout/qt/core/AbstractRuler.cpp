@@ -34,7 +34,7 @@ te::layout::AbstractRuler::AbstractRuler(PaperConfig* paperConfig) :
   m_blockSize(10),
   m_middleBlockSize(5),
   m_smallBlockSize(1),
-  m_longLine(3.5),
+  m_longLine(3.),
   m_mediumLine(2.5),
   m_smallLine(1.5),
   m_paperConfig(paperConfig),

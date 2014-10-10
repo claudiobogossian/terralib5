@@ -161,7 +161,7 @@ void te::layout::Scene::init(double screenWMM, double screenHMM, double zoomFact
   m_boxW->m_lly = env->m_lly;
   m_boxW->m_urx = env->m_urx;
   m_boxW->m_ury = env->m_ury;
-  
+
   calculateMatrixViewScene(zoomFactor);
 }
 
