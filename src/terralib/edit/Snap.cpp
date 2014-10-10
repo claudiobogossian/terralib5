@@ -44,7 +44,7 @@ te::edit::Snap::Snap(const std::string& source, int srid)
     m_srid(srid),
     m_nGeometries(0),
     m_maxGeometries(0),
-    m_tolerance(32),
+    m_tolerance(16),
     m_transformer(0)
 {
 }
@@ -151,11 +151,13 @@ te::gm::Envelope te::edit::Snap::getSearchEnvelope(const te::gm::Coord2D& coord)
   m_transformer->world2Device(coord.x, coord.y, dx, dy);
 
   // Build the search envelope (device coordinates) using the snap tolerance
-  te::gm::Envelope e(dx - m_tolerance, dy - m_tolerance, dx + m_tolerance, dy + m_tolerance);
+  te::gm::Envelope e(dx - m_tolerance, dy + m_tolerance, dx + m_tolerance, dy - m_tolerance);
 
   // Convert the search envelope to world coordinates
   m_transformer->device2World(e.m_llx, e.m_lly);
   m_transformer->device2World(e.m_urx, e.m_ury);
+
+  assert(e.isValid());
 
   return e;
 }
@@ -173,14 +175,14 @@ bool te::edit::Snap::search(const te::gm::Envelope& e, te::gm::Coord2D& result)
   if(report.empty())
     return false;
 
-  std::size_t snappedPos = 0;
+  std::size_t snappedPos = report[0];
 
   if(report.size() > 1)
   {
     // Finds the nearest coordinate
     te::gm::Coord2D center = e.getCenter();
     double minDistance = std::numeric_limits<double>::max();
-    for(std::size_t i = 0; i < report.size(); ++i)
+    for(std::size_t i = 1; i < report.size(); ++i)
     {
       const te::gm::Coord2D& foundCoord = m_coords[report[i]];
       double distance = GetDistance(center, foundCoord);
