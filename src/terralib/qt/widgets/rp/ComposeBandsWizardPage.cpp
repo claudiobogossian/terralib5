@@ -279,8 +279,27 @@ void te::qt::widgets::ComposeBandsWizardPage::onAddToolButtonClicked()
 
   m_ui->m_composeTableWidget->setCellWidget(newrow, 0, cmbBox);
 
-  //fill bands
-  layerCmbBox->activated(0);
+  te::map::AbstractLayerPtr lFirst = *m_layerList.begin();
+
+  if(lFirst.get())
+  {
+     std::auto_ptr<te::da::DataSet> ds = lFirst->getData();
+
+    if(ds.get())
+    {
+      std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+
+      std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
+
+      if(inputRst.get())
+      {
+        for(unsigned int i = 0; i < inputRst->getNumberOfBands(); ++i)
+        {
+          cmbBox->addItem(QString::number(i));
+        }
+      }
+    }
+  }
 }
 
 void te::qt::widgets::ComposeBandsWizardPage::onRemoveToolButtonClicked()
