@@ -50,6 +50,7 @@
 #include <cassert>
 
 // Qt
+#include <QApplication>
 #include <QMessageBox>
 
 
@@ -150,14 +151,49 @@ bool te::qt::widgets::ClippingWizard::execute()
     return false;
   }
 
-  if(m_clippingPage->isExtentClipping())
-    return executeExtentClipping();
-  else if(m_clippingPage->isDimensionClipping())
-    return executeDimensionClipping();
-  else if(m_clippingPage->isLayerClipping())
-    return executeLayerClipping();
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
 
-  return false;
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
+  bool res = false;
+
+  try
+  {
+    if(m_clippingPage->isExtentClipping())
+      res = executeExtentClipping();
+    else if(m_clippingPage->isDimensionClipping())
+      res = executeDimensionClipping();
+    else if(m_clippingPage->isLayerClipping())
+      res = executeLayerClipping();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, tr("Clipping"), e.what());
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
+    QApplication::restoreOverrideCursor();
+
+    return false;
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Clipping"), tr("An exception has occurred!"));
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
+    QApplication::restoreOverrideCursor();
+
+    return false;
+  }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
+
+  QApplication::restoreOverrideCursor();
+
+  return res;
 }
 
 bool te::qt::widgets::ClippingWizard::executeExtentClipping()

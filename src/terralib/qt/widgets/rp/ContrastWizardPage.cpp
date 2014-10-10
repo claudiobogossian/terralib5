@@ -62,8 +62,8 @@ te::qt::widgets::ContrastWizardPage::ContrastWizardPage(QWidget* parent)
   displayLayout->setContentsMargins(0,0,0,0);
 
   //build histogram
-  QGridLayout* histogramLayout = new QGridLayout(m_ui->m_tabWidget->widget(1));
-  m_histogramWidget.reset(new te::qt::widgets::RasterHistogramWidget(m_ui->m_tabWidget->widget(1)));
+  QGridLayout* histogramLayout = new QGridLayout(m_ui->m_histWidget);
+  m_histogramWidget.reset(new te::qt::widgets::RasterHistogramWidget(m_ui->m_histWidget));
   histogramLayout->addWidget(m_histogramWidget.get());
   histogramLayout->setContentsMargins(0,0,0,0);
 
@@ -333,7 +333,7 @@ void te::qt::widgets::ContrastWizardPage::listBands()
     {
       for(unsigned int i = 0; i < inputRst->getNumberOfBands(); ++i)
       {
-         m_ui->m_bandTableWidget->setRowCount(0);
+        m_ui->m_bandTableWidget->setRowCount(0);
 
         // initializing the list of bands
         for(unsigned b = 0 ; b < inputRst->getNumberOfBands(); b++)
@@ -402,6 +402,8 @@ void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int in
         m_ui->m_bandTableWidget->setItem(i, 2, itemMax);
       }
     }
+
+    m_ui->m_tipLabel->setText(tr("Use left button to set minimum value and right button to define maximum value over the histogram."));
   }
   else if(contrastType == te::rp::Contrast::InputParameters::HistogramEqualizationContrastT)
   {
@@ -420,6 +422,8 @@ void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int in
       itemMax->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable);
       m_ui->m_bandTableWidget->setItem(i, 1, itemMax);
     }
+
+    m_ui->m_tipLabel->setText(tr("Use left button to set maximum value over the histogram."));
   }
   else if(contrastType == te::rp::Contrast::InputParameters::MeanAndStdContrastT)
   {
@@ -443,6 +447,8 @@ void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int in
       itemStdDev->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable);
       m_ui->m_bandTableWidget->setItem(i, 2, itemStdDev);
     }
+
+    m_ui->m_tipLabel->setText(tr("Use left button to set Mean value and right button to define Std Dev value over the histogram."));
   }
   else if(contrastType == te::rp::Contrast::InputParameters::DecorrelationEnhancementT)
   {

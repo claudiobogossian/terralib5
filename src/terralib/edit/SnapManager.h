@@ -44,7 +44,7 @@ namespace te
 
   namespace gm
   {
-    class Envelope;
+    struct Coord2D;
     class Geometry;
   }
 
@@ -64,13 +64,25 @@ namespace te
 
       public:
 
+        bool hasSnap(const std::string& source) const;
+
+        void createSnap(const std::string& source, int srid);
+
         void buildSnap(const std::string& source, int srid, te::da::DataSet* dataset);
 
         const std::map<std::string, Snap*>& getSnaps() const;
 
         Snap* getSnap(const std::string& source) const;
 
+        void clear(const std::string& source);
+
         void clearAll();
+
+        bool search(const te::gm::Coord2D& coord, te::gm::Coord2D& result);
+
+        void setWorld(const double& llx, const double& lly,
+                      const double& urx, const double& ury,
+                      const std::size_t& width, const std::size_t& height);
 
       protected:
 
