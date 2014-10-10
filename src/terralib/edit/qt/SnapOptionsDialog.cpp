@@ -24,8 +24,14 @@
 */
 
 // TerraLib
+#include "../SnapManager.h"
 #include "SnapOptionsDialog.h"
 #include "ui_SnapOptionsDialogForm.h"
+
+// Qt
+#include <QCheckBox>
+#include <QComboBox>
+#include <QTableWidgetItem>
 
 // STL
 #include <cassert>
@@ -39,4 +45,63 @@ te::edit::SnapOptionsWidget::SnapOptionsWidget(QWidget* parent, Qt::WindowFlags 
 
 te::edit::SnapOptionsWidget::~SnapOptionsWidget()
 {
+}
+
+void te::edit::SnapOptionsWidget::setLayers(const std::list<te::map::AbstractLayerPtr>& layers)
+{
+  m_layers = layers;
+
+  buildOptions();
+}
+
+void te::edit::SnapOptionsWidget::buildOptions()
+{
+  for(std::list<te::map::AbstractLayerPtr>::const_iterator it = m_layers.begin(); it != m_layers.end(); ++it)
+    buildOptions(*it);
+}
+
+void te::edit::SnapOptionsWidget::buildOptions(const te::map::AbstractLayerPtr& layer)
+{
+  for(std::size_t i = 0; i < layer->getChildrenCount(); ++i)
+  {
+    te::map::AbstractLayerPtr child(boost::dynamic_pointer_cast<te::map::AbstractLayer>(layer->getChild(i)));
+    buildOptions(child);
+  }
+
+  if(layer->getType() == "FOLDER_LAYER")
+    return;
+
+  int row = m_ui->m_tableOptionsWidget->rowCount() + 1;
+  m_ui->m_tableOptionsWidget->setRowCount(row);
+
+  int currentRow = row - 1;
+  int currentCollumn = 0;
+
+  // Enable
+  QCheckBox* enableCheckBox = new QCheckBox(m_ui->m_tableOptionsWidget);
+
+  if(SnapManager::getInstance().hasSnap(layer->getId()))
+    enableCheckBox->setChecked(true);
+
+  m_ui->m_tableOptionsWidget->setCellWidget(currentRow, currentCollumn++, enableCheckBox);
+
+  // Layer
+  QTableWidgetItem* layerItem = new QTableWidgetItem(layer->getTitle().c_str());
+  layerItem->setTextAlignment( Qt::AlignCenter);
+  m_ui->m_tableOptionsWidget->setItem(currentRow, currentCollumn++, layerItem);
+
+  // Snap Mode
+  QComboBox* modeComboBox = new QComboBox(m_ui->m_tableOptionsWidget);
+  modeComboBox->addItem(tr("vertex"));
+  m_ui->m_tableOptionsWidget->setCellWidget(currentRow, currentCollumn++, modeComboBox);
+
+  // Tolerance
+  QTableWidgetItem* toleranceItem = new QTableWidgetItem("30");
+  toleranceItem->setTextAlignment( Qt::AlignCenter);
+  m_ui->m_tableOptionsWidget->setItem(currentRow, currentCollumn++, toleranceItem);
+
+  // Units
+  QComboBox* unitsComboBox = new QComboBox(m_ui->m_tableOptionsWidget);
+  unitsComboBox->addItem(tr("pixels"));
+  m_ui->m_tableOptionsWidget->setCellWidget(currentRow, currentCollumn++, unitsComboBox);
 }

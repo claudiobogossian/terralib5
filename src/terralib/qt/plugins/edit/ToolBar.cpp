@@ -212,5 +212,6 @@ void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool checked)
 void te::qt::plugins::edit::ToolBar::onSnapOptionsActivated()
 {
   te::edit::SnapOptionsWidget options(m_toolBar);
+  options.setLayers(te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false));
   options.exec();
 }
