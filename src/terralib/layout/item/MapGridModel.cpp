@@ -47,8 +47,8 @@ te::layout::MapGridModel::MapGridModel() :
   MapModel(),
   m_gridPlanar(0),
   m_gridGeodesic(0),
-  m_planarGridProperties(0),
   m_geodesicGridProperties(0),
+  m_planarGridProperties(0),
   m_mapBorder(true)
 {
   m_type = Enums::getInstance().getEnumObjectType()->getMapGridItem();

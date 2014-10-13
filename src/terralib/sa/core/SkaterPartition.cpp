@@ -36,13 +36,9 @@
 #include <cassert>
 #include <queue>
 
-te::sa::SkaterPartition::SkaterPartition(te::graph::AbstractGraph* graph, std::vector<std::string> attrs, std::string popAttr, std::size_t minPop)
+te::sa::SkaterPartition::SkaterPartition(te::graph::AbstractGraph* graph, std::vector<std::string> attrs)
 {
   m_graph = graph;
-
-  m_popAttr = popAttr;
-
-  m_popMin = minPop;
 
   m_attrs = attrs;
 }
@@ -52,27 +48,44 @@ te::sa::SkaterPartition::~SkaterPartition()
 
 }
 
-std::vector<std::size_t> te::sa::SkaterPartition::execute(std::size_t nGroups)
+std::vector<std::size_t> te::sa::SkaterPartition::execute(std::size_t nGroups, std::string popAttr, std::size_t minPop)
 {
   assert(m_graph);
 
-  te::sa::RootSet rs;
+  m_popAttr = popAttr;
+
+  m_popMin = minPop;
 
   //get first vertex id from graph
   std::auto_ptr<te::graph::MemoryIterator> memIt(new te::graph::MemoryIterator(m_graph));
   int firstVertex = memIt->getFirstVertex()->getId();
   
-  rs.insert(te::sa::Root(0., firstVertex));
-  std::size_t groups = 1;
+  //create vector with root information
+  std::vector< std::pair<int, double> > rootSet;
+  rootSet.push_back(std::vector< std::pair<int, double> >::value_type(firstVertex, 0.));
+
+  std::vector<std::size_t> rootsVertexId;
 
   //bfs over the graph
-  while(!rs.empty() && groups < nGroups)
+  while(!rootSet.empty() && (rootSet.size() + rootsVertexId.size() < nGroups))
   {
-    te::sa::RootSet::reverse_iterator it = rs.rbegin();
+    //get max diff value index
+    std::vector< std::pair<int, double> >::iterator rootIt;
+    std::vector< std::pair<int, double> >::iterator rootItMax;
+    double maxDiff = -std::numeric_limits<double>::max();
 
-    std::size_t currentId = it->second;
+    for(rootIt = rootSet.begin(); rootIt != rootSet.end(); ++rootIt)
+    {
+      if(rootIt->second > maxDiff)
+      {
+        maxDiff = rootIt->second;
+        rootItMax = rootIt;
+      }
+    }
 
-    rs.erase(*it);
+    std::size_t currentId = rootItMax->first;
+
+    rootSet.erase(rootItMax);
 
     //get vertex from graph
     te::graph::Vertex* vertex = m_graph->getVertex(currentId);
@@ -96,25 +109,98 @@ std::vector<std::size_t> te::sa::SkaterPartition::execute(std::size_t nGroups)
         //remove edge
         m_graph->removeEdge(edgeId);
 
-        ++groups;
-
-        rs.insert(te::sa::Root(diffA, vertexFrom));
-        rs.insert(te::sa::Root(diffB, vertexTo));
+        rootSet.push_back(std::vector< std::pair<int, double> >::value_type(vertexFrom, diffA));
+        rootSet.push_back(std::vector< std::pair<int, double> >::value_type(vertexTo, diffB));
       }
       else
       {
-        rs.insert(te::sa::Root(0., currentId));
+        rootsVertexId.push_back(currentId);
       }
     }
   }
 
+  for(std::size_t t = 0; t < rootSet.size(); ++t)
+  {
+    rootsVertexId.push_back(rootSet[t].first);
+  }
+
+  return rootsVertexId;
+}
+
+std::vector<std::size_t> te::sa::SkaterPartition::execute(std::string popAttr, std::size_t minPop)
+{
+  assert(m_graph);
+
+  m_popAttr = popAttr;
+
+  m_popMin = minPop;
+
+  //get first vertex id from graph
+  std::auto_ptr<te::graph::MemoryIterator> memIt(new te::graph::MemoryIterator(m_graph));
+  int firstVertex = memIt->getFirstVertex()->getId();
+  
+  //create vector with root information
+  std::vector< std::pair<int, double> > rootSet;
+  rootSet.push_back(std::vector< std::pair<int, double> >::value_type(firstVertex, 0.));
+
   std::vector<std::size_t> rootsVertexId;
 
-  te::sa::RootSet::iterator it;
-  
-  for(it = rs.begin(); it != rs.end(); ++it)
+  //bfs over the graph
+  while(!rootSet.empty())
   {
-    rootsVertexId.push_back(it->second);
+    //get max diff value index
+    std::vector< std::pair<int, double> >::iterator rootIt;
+    std::vector< std::pair<int, double> >::iterator rootItMax;
+    double maxDiff = -std::numeric_limits<double>::max();
+
+    for(rootIt = rootSet.begin(); rootIt != rootSet.end(); ++rootIt)
+    {
+      if(rootIt->second > maxDiff)
+      {
+        maxDiff = rootIt->second;
+        rootItMax = rootIt;
+      }
+    }
+
+    std::size_t currentId = rootItMax->first;
+
+    rootSet.erase(rootItMax);
+
+    //get vertex from graph
+    te::graph::Vertex* vertex = m_graph->getVertex(currentId);
+
+    if(vertex)
+    {
+      double diffA = 0.;
+      double diffB = 0.;
+
+      std::size_t edgeId;
+
+      bool remove = edgeToRemove(currentId, diffA, diffB, edgeId);
+
+      if(remove)
+      {
+        te::graph::Edge* edge = m_graph->getEdge(edgeId);
+
+        int vertexFrom = edge->getIdFrom();
+        int vertexTo = edge->getIdTo();
+
+        //remove edge
+        m_graph->removeEdge(edgeId);
+
+        rootSet.push_back(std::vector< std::pair<int, double> >::value_type(vertexFrom, diffA));
+        rootSet.push_back(std::vector< std::pair<int, double> >::value_type(vertexTo, diffB));
+      }
+      else
+      {
+        rootsVertexId.push_back(currentId);
+      }
+    }
+  }
+
+  for(std::size_t t = 0; t < rootSet.size(); ++t)
+  {
+    rootsVertexId.push_back(rootSet[t].first);
   }
 
   return rootsVertexId;
@@ -205,13 +291,13 @@ bool te::sa::SkaterPartition::edgeToRemove(int startVertex, double& diffA, doubl
   //get the edge with maximum SSDi
   bool found = false;
 
-  double maxDiff = -std::numeric_limits<double>::max();
+  double minDiff = std::numeric_limits<double>::max();
 
   for(std::size_t t = 0; t < edgeRemovalVec.size(); ++t)
   {
-    if(edgeRemovalVec[t].m_SSDi > maxDiff && edgeRemovalVec[t].m_popa >= m_popMin && edgeRemovalVec[t].m_popb >= m_popMin)
+    if(edgeRemovalVec[t].m_SSDi < minDiff && edgeRemovalVec[t].m_popa >= m_popMin && edgeRemovalVec[t].m_popb >= m_popMin)
     {
-      maxDiff = edgeRemovalVec[t].m_SSDi;
+      minDiff = edgeRemovalVec[t].m_SSDi;
 
       edgeToRemoveId = edgeRemovalVec[t].m_edgeId;
 
@@ -223,7 +309,7 @@ bool te::sa::SkaterPartition::edgeToRemove(int startVertex, double& diffA, doubl
   }
 
   if(found)
-    m_SSDiValues.push_back(maxDiff);
+    m_SSDiValues.push_back(minDiff);
 
   edgeRemovalVec.clear();
 
@@ -384,9 +470,16 @@ double te::sa::SkaterPartition::calculateDistance(te::graph::Vertex* vertex, std
 {
   double distance = 0.;
 
-  for(std::size_t t = 0; t < meanVec.size(); ++t)
+  for(std::size_t t = 0; t < m_attrs.size(); ++t)
   {
-    distance += (te::sa::GetDataValue(vertex->getAttributes()[t]) - meanVec[t]) * (te::sa::GetDataValue(vertex->getAttributes()[t]) - meanVec[t]);
+    std::string attrName = m_attrs[t];
+
+    int attrIdx;
+
+    if(te::sa::GetGraphVertexAttrIndex(m_graph, attrName, attrIdx))
+    {
+      distance += (te::sa::GetDataValue(vertex->getAttributes()[attrIdx]) - meanVec[t]) * (te::sa::GetDataValue(vertex->getAttributes()[attrIdx]) - meanVec[t]);
+    }
   }
 
   return distance;

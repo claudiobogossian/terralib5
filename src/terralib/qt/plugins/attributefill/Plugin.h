@@ -78,6 +78,7 @@ namespace te
 
             RasterToVectorAction* m_rasterToVector;                   //!< RasterToVector Attribute Fill Action
             VectorToRasterAction* m_vectorToRaster;                   //!< VectorToRaster Attribute Fill Action
+            VectorToVectorAction* m_vectorToVector;                   //!< VectorToVector Attribute Fill Action
         };
 
       } // end namespace attributefill

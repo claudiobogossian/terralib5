@@ -59,7 +59,7 @@ te::qt::widgets::FilterWizardPage::FilterWizardPage(QWidget* parent)
 
   m_ui->m_maskToolButton->setIcon(QIcon::fromTheme("mask"));
   m_ui->m_loadMaskToolButton->setIcon(QIcon::fromTheme("mask-fill"));
-  m_ui->m_maskDefaultValueLineEdit->setValidator(new QIntValidator(this));
+  m_ui->m_maskDefaultValueLineEdit->setValidator(new QDoubleValidator(this));
 
   //preview
   QGridLayout* displayLayout = new QGridLayout(m_ui->m_previewWidget);
@@ -70,6 +70,7 @@ te::qt::widgets::FilterWizardPage::FilterWizardPage(QWidget* parent)
   displayLayout->setContentsMargins(0,0,0,0);
 
   //connects
+  connect(m_ui->m_listWidget, SIGNAL(itemSelectionChanged()), this, SIGNAL(completeChanged()));
   connect(m_ui->m_typeComboBox, SIGNAL(activated(int)), SLOT(onFilterTypeComboBoxActivated(int)));
   connect(m_ui->m_maskToolButton, SIGNAL(clicked()), SLOT(onMaskToolButtonClicked()));
   connect(m_ui->m_loadMaskToolButton, SIGNAL(clicked()), SLOT(onLoadMaskToolButtonClicked()));
@@ -84,6 +85,9 @@ te::qt::widgets::FilterWizardPage::~FilterWizardPage()
 
 bool te::qt::widgets::FilterWizardPage::isComplete() const
 {
+  if(m_ui->m_listWidget->selectedItems().isEmpty())
+    return false;
+
   return true;
 }
 
@@ -146,8 +150,8 @@ void te::qt::widgets::FilterWizardPage::onMaskToolButtonClicked()
 {
   te::qt::widgets::MaskDialog dlg(this);
 
-  dlg.setMaskSize(m_ui->m_maskSizeSpinBox->value(), 
-    m_ui->m_maskDefaultValueLineEdit->text().isEmpty() ? 0 : m_ui->m_maskDefaultValueLineEdit->text().toInt());
+  dlg.setMaskSize(m_ui->m_maskSizeSpinBox->value(), m_ui->m_maskSizeSpinBox->value(),
+    m_ui->m_maskDefaultValueLineEdit->text().isEmpty() ? 0 : m_ui->m_maskDefaultValueLineEdit->text().toDouble());
 
   if(dlg.exec() == QDialog::Accepted)
   {
@@ -173,6 +177,12 @@ void te::qt::widgets::FilterWizardPage::onLoadMaskToolButtonClicked()
 
 void te::qt::widgets::FilterWizardPage::apply()
 {
+  if(m_ui->m_listWidget->selectedItems().isEmpty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("No band was selected."));
+    return;
+  }
+
   QApplication::setOverrideCursor(Qt::WaitCursor);
 
   //get preview raster

@@ -29,6 +29,9 @@
 */
 
 //TerraLib
+#include "../../common/Exception.h"
+#include "../../common/Translator.h"
+#include "../../common/progress/TaskProgress.h"
 #include "../../dataaccess/datasource/DataSource.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/utils/Utils.h"
@@ -156,23 +159,38 @@ void te::sa::BayesGlobalOperation::runBayesGlobal(te::mem::DataSet* ds, std::siz
 
   ds->moveBeforeFirst();
 
-  while(ds->moveNext())
   {
-    ++ count;
+    //create task
+    te::common::TaskProgress task;
 
-    double eventAttr = ds->getDouble(eventIdx);
-    eventVecY.push_back(eventAttr);
+    task.setTotalSteps(ds->size());
+    task.setMessage(TE_TR("Getting Event/Population information."));
 
-    double popAttr = ds->getDouble(popIdx);
-    popVecN.push_back(popAttr);
+    while(ds->moveNext())
+    {
+      ++ count;
 
-    if(popAttr <= 0.)
-      throw;
+      double eventAttr = ds->getDouble(eventIdx);
+      eventVecY.push_back(eventAttr);
 
-    rateVec.push_back(eventVecY[count-1] / popVecN[count-1]);
+      double popAttr = ds->getDouble(popIdx);
+      popVecN.push_back(popAttr);
 
-    sumEventY += eventVecY[count-1];
-    sumPopN += popVecN[count-1];
+      if(popAttr <= 0.)
+        throw te::common::Exception(TE_TR("Invalid value (0) for Population Attribute."));
+
+      rateVec.push_back(eventVecY[count-1] / popVecN[count-1]);
+
+      sumEventY += eventVecY[count-1];
+      sumPopN += popVecN[count-1];
+
+      if(!task.isActive())
+      {
+        throw te::common::Exception(TE_TR("Operation canceled by the user."));
+      }
+
+      task.pulse();
+    }
   }
 
   double mean = sumEventY / sumPopN;
@@ -196,18 +214,33 @@ void te::sa::BayesGlobalOperation::runBayesGlobal(te::mem::DataSet* ds, std::siz
   //calculate bayes value
   ds->moveBeforeFirst();
 
-  while(ds->moveNext())
   {
-    double eventAttr = ds->getDouble(eventIdx);
-    double popAttr = ds->getDouble(popIdx);
+    //create task
+    te::common::TaskProgress task;
 
-    double wI = 1.;
+    task.setTotalSteps(ds->size());
+    task.setMessage(TE_TR("Calculating Bayes Value."));
 
-    if(aux != 0. || mean != 0.)
-      wI = aux / (aux + (mean / popAttr));
+    while(ds->moveNext())
+    {
+      double eventAttr = ds->getDouble(eventIdx);
+      double popAttr = ds->getDouble(popIdx);
 
-    double thetaI = wI * (eventAttr / popAttr) + ( 1 - wI) * mean;
+      double wI = 1.;
 
-    ds->setDouble(bayesIdx, thetaI * m_inputParams->m_rate);
+      if(aux != 0. || mean != 0.)
+        wI = aux / (aux + (mean / popAttr));
+
+      double thetaI = wI * (eventAttr / popAttr) + ( 1 - wI) * mean;
+
+      ds->setDouble(bayesIdx, thetaI * m_inputParams->m_rate);
+
+      if(!task.isActive())
+      {
+        throw te::common::Exception(TE_TR("Operation canceled by the user."));
+      }
+
+      task.pulse();
+    }
   }
 }

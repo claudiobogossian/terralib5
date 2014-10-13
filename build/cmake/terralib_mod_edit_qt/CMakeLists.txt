@@ -41,14 +41,20 @@ file(GLOB TERRALIB_TOOLS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ed
 source_group("Source Files\\tools"  FILES ${TERRALIB_TOOLS_SRC_FILES})
 source_group("Header Files\\tools"  FILES ${TERRALIB_TOOLS_HDR_FILES})
 
+file(GLOB TERRALIB_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/ui/*.ui)
+
 if(Qt5_FOUND)
+
+# uic'ing
+  QT5_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
 
   set(CMAKE_AUTOMOC ON)
 
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
-                     ${TERRALIB_TOOLS_SRC_FILES} ${TERRALIB_TOOLS_HDR_FILES})
+                     ${TERRALIB_TOOLS_SRC_FILES} ${TERRALIB_TOOLS_HDR_FILES}
+                     ${TERRALIB_GEN_HDR_FILES})
 
   add_library(terralib_mod_edit_qt SHARED ${TERRALIB_FILES})
 
@@ -59,6 +65,9 @@ if(Qt5_FOUND)
 
 else() # QT4_FOUND
 
+# uic'ing
+  QT4_WRAP_UI(TERRALIB_GEN_HDR_FILES ${TERRALIB_UI_FILES})
+
   include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
   include(${QT_USE_FILE})
@@ -68,15 +77,17 @@ else() # QT4_FOUND
   add_definitions(${QT_DEFINITIONS})
 
   # moc'ing
-    set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/VertexTool.h
-                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/CreatePolygonTool.h
-                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/CreateLineTool.h
-                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/MoveGeometryTool.h)
+    set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/VertexTool.h
+                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/CreatePolygonTool.h
+                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/CreateLineTool.h
+                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/MoveGeometryTool.h
+                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/SnapOptionsDialog.h)
 
     QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 
      set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
-                        ${TERRALIB_TOOLS_SRC_FILES} ${TERRALIB_TOOLS_HDR_FILES})
+                        ${TERRALIB_TOOLS_SRC_FILES} ${TERRALIB_TOOLS_HDR_FILES}
+                        ${TERRALIB_GEN_HDR_FILES})
 
     add_library(terralib_mod_edit_qt SHARED ${TERRALIB_FILES})
 
@@ -97,7 +108,10 @@ install(TARGETS terralib_mod_edit_qt
         LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
-install(FILES ${TERRALIB_HDR_FILES}
+install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/edit/qt COMPONENT devel)
+
+install(FILES ${TERRALIB_TOOLS_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/edit/qt/tools COMPONENT devel)
 
 export(TARGETS terralib_mod_edit_qt APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

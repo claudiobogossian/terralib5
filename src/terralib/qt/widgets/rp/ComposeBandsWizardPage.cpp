@@ -44,8 +44,15 @@ te::qt::widgets::ComposeBandsWizardPage::ComposeBandsWizardPage(QWidget* parent)
   //setup controls
   m_ui->setupUi(this);
 
+  m_ui->m_addToolButton->setIcon(QIcon::fromTheme("list-add"));
+  m_ui->m_removeToolButton->setIcon(QIcon::fromTheme("list-remove"));
+
   //set interpolator types
   fillInterpolatorTypes();
+
+  //connects
+  connect(m_ui->m_addToolButton, SIGNAL(clicked()), this, SLOT(onAddToolButtonClicked()));
+  connect(m_ui->m_removeToolButton, SIGNAL(clicked()), this, SLOT(onRemoveToolButtonClicked()));
 
   //configure page
   this->setTitle(tr("Compose / Decompose Bands"));
@@ -90,9 +97,35 @@ void te::qt::widgets::ComposeBandsWizardPage::setList(std::list<te::map::Abstrac
         int newrow = m_ui->m_composeTableWidget->rowCount();
         m_ui->m_composeTableWidget->insertRow(newrow);
 
-        //layer name
-        QTableWidgetItem* itemLayer = new QTableWidgetItem(l->getTitle().c_str());
-        m_ui->m_composeTableWidget->setItem(newrow, 1, itemLayer);
+        //layer combo
+        QComboBox* layerCmbBox = new QComboBox(this);
+
+        connect(layerCmbBox, SIGNAL(activated(int)), this, SLOT(onLayerCmbActivated(int)));
+
+        std::list<te::map::AbstractLayerPtr>::iterator itLayer;
+
+        int curItem;
+        int item = 0;
+
+        for(itLayer = m_layerList.begin(); itLayer!= m_layerList.end(); ++itLayer)
+        {
+          te::map::AbstractLayerPtr lItem = *itLayer;
+
+          layerCmbBox->addItem(lItem->getTitle().c_str(), QVariant::fromValue(lItem));
+
+          if(lItem == l)
+          {
+            curItem = item;
+          }
+
+          ++item;
+        }
+
+        layerCmbBox->setCurrentIndex(curItem);
+
+        m_ui->m_composeTableWidget->setCellWidget(newrow, 1, layerCmbBox);
+
+        m_cmbMap.insert(std::map<QComboBox*, int>::value_type(layerCmbBox, newrow));
 
         //band
         QComboBox* cmbBox = new QComboBox(this);
@@ -162,16 +195,18 @@ bool te::qt::widgets::ComposeBandsWizardPage::isDecompose()
 
 void te::qt::widgets::ComposeBandsWizardPage::getComposeParameters(std::vector<const te::rst::Raster*>& rasters, std::vector<unsigned int>& bands, te::rst::Interpolator::Method& interpMethod)
 {
-  int count = 0;
+  int rowCount = m_ui->m_composeTableWidget->rowCount();
 
-  std::list<te::map::AbstractLayerPtr>::iterator it;
-
-  for(it = m_layerList.begin(); it!= m_layerList.end(); ++it)
+  for(int i = 0; i < rowCount; ++i)
   {
-    te::map::AbstractLayerPtr l = *it;
+    QComboBox* layerCmb = (QComboBox*)m_ui->m_composeTableWidget->cellWidget(i, 1);
+
+    int curIdx = layerCmb->currentIndex();
+    QVariant varLayer = layerCmb->itemData(curIdx, Qt::UserRole);
+    te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
 
     //get input raster
-    std::auto_ptr<te::da::DataSet> ds = l->getData();
+    std::auto_ptr<te::da::DataSet> ds = layer->getData();
 
     if(!ds.get())
       throw;
@@ -180,20 +215,15 @@ void te::qt::widgets::ComposeBandsWizardPage::getComposeParameters(std::vector<c
 
     rasters.push_back(ds->getRaster(rpos).release());
 
-    //get band
-    QComboBox* cmb = ( QComboBox*)m_ui->m_composeTableWidget->cellWidget(count, 0);
 
-    if(!cmb)
-      throw;
+    QComboBox* bandCmb = (QComboBox*)m_ui->m_composeTableWidget->cellWidget(i, 0);
 
-    bands.push_back((unsigned int)cmb->currentText().toInt());
-
-    //interpolator method
-    int idx = m_ui->m_interpolatorComboBox->currentIndex();
-    interpMethod = (te::rst::Interpolator::Method)m_ui->m_interpolatorComboBox->itemData(idx).toInt();
-
-    ++count;
+    bands.push_back((unsigned int)bandCmb->currentText().toInt());
   }
+
+  //interpolator method
+  int idx = m_ui->m_interpolatorComboBox->currentIndex();
+  interpMethod = (te::rst::Interpolator::Method)m_ui->m_interpolatorComboBox->itemData(idx).toInt();
 }
 
 void te::qt::widgets::ComposeBandsWizardPage::getDecomposeParameters(te::rst::Raster*& raster, std::vector<unsigned int>& bands)
@@ -216,6 +246,96 @@ void te::qt::widgets::ComposeBandsWizardPage::getDecomposeParameters(te::rst::Ra
     if(m_ui->m_decomposeTableWidget->item(r, 0)->checkState() == Qt::Checked)
     {
       bands.push_back((unsigned int)r);
+    }
+  }
+}
+
+void te::qt::widgets::ComposeBandsWizardPage::onAddToolButtonClicked()
+{
+  int newrow = m_ui->m_composeTableWidget->rowCount();
+  m_ui->m_composeTableWidget->insertRow(newrow);
+
+  //layer combo
+  QComboBox* layerCmbBox = new QComboBox(this);
+
+  connect(layerCmbBox, SIGNAL(activated(int)), this, SLOT(onLayerCmbActivated(int)));
+
+  std::list<te::map::AbstractLayerPtr>::iterator itLayer;
+
+  for(itLayer = m_layerList.begin(); itLayer!= m_layerList.end(); ++itLayer)
+  {
+    te::map::AbstractLayerPtr lItem = *itLayer;
+
+    layerCmbBox->addItem(lItem->getTitle().c_str(), QVariant::fromValue(lItem));
+  }
+
+  m_ui->m_composeTableWidget->setCellWidget(newrow, 1, layerCmbBox);
+
+  m_cmbMap.insert(std::map<QComboBox*, int>::value_type(layerCmbBox, newrow));
+
+
+  //band
+  QComboBox* cmbBox = new QComboBox(this);
+
+  m_ui->m_composeTableWidget->setCellWidget(newrow, 0, cmbBox);
+
+  te::map::AbstractLayerPtr lFirst = *m_layerList.begin();
+
+  if(lFirst.get())
+  {
+     std::auto_ptr<te::da::DataSet> ds = lFirst->getData();
+
+    if(ds.get())
+    {
+      std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+
+      std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
+
+      if(inputRst.get())
+      {
+        for(unsigned int i = 0; i < inputRst->getNumberOfBands(); ++i)
+        {
+          cmbBox->addItem(QString::number(i));
+        }
+      }
+    }
+  }
+}
+
+void te::qt::widgets::ComposeBandsWizardPage::onRemoveToolButtonClicked()
+{
+  int currow = m_ui->m_composeTableWidget->currentRow();
+  m_ui->m_composeTableWidget->removeRow(currow);
+}
+
+void te::qt::widgets::ComposeBandsWizardPage::onLayerCmbActivated(int index)
+{
+  QComboBox* cmb = dynamic_cast<QComboBox*>(sender());
+
+  QVariant varLayer = cmb->itemData(index, Qt::UserRole);
+  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+
+  int row = m_cmbMap[cmb];
+
+  QComboBox* bandCmb = (QComboBox*)m_ui->m_composeTableWidget->cellWidget(row, 0);
+
+  bandCmb->clear();
+
+  //get input raster
+  std::auto_ptr<te::da::DataSet> ds = layer->getData();
+
+  if(ds.get())
+  {
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+
+    std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
+
+    if(inputRst.get())
+    {
+      for(unsigned int i = 0; i < inputRst->getNumberOfBands(); ++i)
+      {
+        bandCmb->addItem(QString::number(i));
+      }
     }
   }
 }

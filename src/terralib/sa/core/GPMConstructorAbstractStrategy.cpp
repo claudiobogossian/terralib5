@@ -24,6 +24,9 @@
 */
 
 // Terralib Includes
+#include "../../common/Exception.h"
+#include "../../common/Translator.h"
+#include "../../common/progress/TaskProgress.h"
 #include "../../dataaccess/dataset/DataSet.h"
 #include "../../dataaccess/datasource/DataSource.h"
 #include "../../dataaccess/utils/Utils.h"
@@ -91,6 +94,12 @@ void te::sa::GPMConstructorAbstractStrategy::createVertexObjects()
 
   m_gpm->getGraph()->addVertexProperty(gProp);
 
+  //create task
+  te::common::TaskProgress t;
+
+  t.setTotalSteps(dataSet->size());
+  t.setMessage(TE_TR("Creating Vertex Objects."));
+
   //create graph vertex
   dataSet->moveBeforeFirst();
 
@@ -111,6 +120,13 @@ void te::sa::GPMConstructorAbstractStrategy::createVertexObjects()
     v->addAttribute(0, p);
 
     m_gpm->getGraph()->add(v);
+
+    if(!t.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled by the user."));
+    }
+
+    t.pulse();
   }
 }
 

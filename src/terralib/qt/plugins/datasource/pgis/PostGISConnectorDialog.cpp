@@ -59,7 +59,7 @@ te::qt::plugins::pgis::PostGISConnectorDialog::PostGISConnectorDialog(QWidget* p
   connect(m_ui->m_passwordLineEdit, SIGNAL(editingFinished()), this, SLOT(passwordLineEditEditingFinished()));
   connect(m_ui->m_advancedConnectionOptionsCheckBox, SIGNAL(toggled(bool)), this, SLOT(advancedConnectionOptionsCheckBoxToggled(bool)));
 
-  m_ui->m_portLineEdit->setValidator(new QIntValidator(0, 9999, this));
+  m_ui->m_portLineEdit->setValidator(new QIntValidator(0, 99999, this));
 
   m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins");
   m_ui->m_helpPushButton->setPageReference("plugins/pgis/pgis.html");

@@ -196,6 +196,9 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
       {
         std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
 
+        if(g->getSRID() == TE_UNKNOWN_SRS)
+          g->setSRID(layer->getSRID());
+
         if(!g->intersects(geometryFromEnvelope.get()))
           continue;
 
@@ -213,11 +216,13 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
       {
         std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
 
+        if(g->getSRID() == TE_UNKNOWN_SRS)
+          g->setSRID(layer->getSRID());
+
         if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()))
         {
           // Feature found!
           oids->add(te::da::GenerateOID(dataset.get(), pnames));
-          break;
         }
       }
     }

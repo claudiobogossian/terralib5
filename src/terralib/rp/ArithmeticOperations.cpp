@@ -1064,6 +1064,9 @@ namespace te
       rinfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(nCols);
       rinfo["MEM_RASTER_DATATYPE"] = te::common::Convert2String(te::dt::DOUBLE_TYPE);
       rinfo["MEM_RASTER_NBANDS"] = "1";
+      rinfo["MEM_TILED_RASTER"] = "TRUE";
+      rinfo["MEM_TILE_WIDTH"] = "512";
+      rinfo["MEM_TILE_HEIGHT"] = "512";
  
       rasterPtr.reset(te::rst::RasterFactory::make("MEM", 0, std::vector<te::rst::BandProperty*>(), rinfo));
 

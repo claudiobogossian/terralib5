@@ -39,7 +39,8 @@ namespace te
     enum GPMConstructorStrategyType
     {
       AdjacencyStrategy,
-      DistanceStrategy
+      DistanceStrategy,
+      NearestNeighbor
     };
 
     /*!

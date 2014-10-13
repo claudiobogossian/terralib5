@@ -33,6 +33,7 @@
 #include "../../geometry/GeometryProperty.h"
 #include "../../maptools/DataSetLayer.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../core/GPMBuilder.h"
 #include "../core/GPMConstructorAdjacencyStrategy.h"
 #include "../core/GPMWeightsNoWeightsStrategy.h"
@@ -136,6 +137,7 @@ void te::sa::SkaterDialog::onInputLayerComboBoxActivated(int index)
   std::vector<te::dt::Property*> propVec = dsType->getProperties();
 
   m_ui->m_popComboBox->clear();
+  m_ui->m_attrLinkComboBox->clear();
 
   m_doubleListWidget->clearInputValues();
   m_doubleListWidget->clearOutputValues();
@@ -158,6 +160,8 @@ void te::sa::SkaterDialog::onInputLayerComboBoxActivated(int index)
 
     m_ui->m_attrLinkComboBox->addItem(propVec[t]->getName().c_str(), dataType);
   }
+
+  std::sort(vec.begin(), vec.end());
 
   m_doubleListWidget->setInputValues(vec);
 }
@@ -286,6 +290,12 @@ void te::sa::SkaterDialog::onOkPushButtonClicked()
 
   int nClasses;
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   try
   {
     te::sa::SkaterOperation op;
@@ -296,11 +306,30 @@ void te::sa::SkaterDialog::onOkPushButtonClicked()
 
     nClasses = op.getNumberOfClasses();
   }
-  catch(...)
+  catch(const std::exception& e)
   {
-    QMessageBox::warning(this, tr("Warning"), tr("Internal error. Skater not calculated."));
+    QMessageBox::warning(this, tr("Warning"), e.what());
+
+    QApplication::restoreOverrideCursor();
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
     return;
   }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Internal Error. Skater not calculated."));
+
+    QApplication::restoreOverrideCursor();
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
+    return;
+  }
+
+  QApplication::restoreOverrideCursor();
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
 
   //create layer
   m_outputLayer = te::sa::CreateLayer(outputDataSource, dataSetName);

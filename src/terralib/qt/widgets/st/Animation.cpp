@@ -95,7 +95,7 @@ void te::qt::widgets::Animation::setDataKeyValues()
 int te::qt::widgets::Animation::getAnimationDataIndex(const double& trel)
 {
   AnimationItem* ai = (AnimationItem*)targetObject();
-  size_t size = ai->m_animationTime.size();
+  size_t count = ai->m_animationTime.count();
 
   // animation time duration 
   boost::posix_time::ptime aiTime = m_temporalExtent.getInitialTimeInstant().getTimeInstant();
@@ -117,10 +117,10 @@ int te::qt::widgets::Animation::getAnimationDataIndex(const double& trel)
   double afSeconds = diff.total_seconds();
   double ftrel = afSeconds / totalSeconds;
   if(trel > ftrel)
-    return size-1;
+    return count-1;
 
   size_t i;
-  for(i = 0; i < size; ++i)
+  for(i = 0; i < count; ++i)
   {
     te::dt::TimeInstant tinstant = ai->m_animationTime[i]; // animation time instant
     boost::posix_time::ptime time = tinstant.getTimeInstant();
@@ -138,7 +138,7 @@ int te::qt::widgets::Animation::getAnimationDataIndex(const double& trel)
         return i;
     }
   }
-  if(i == size)
-    return size - 2;
+  if(i == count)
+    return count - 1;
   return 0;
 }

@@ -46,7 +46,9 @@ void te::qt::plugins::sa::SpatialStatisticsAction::onActionActivated(bool checke
 
   dlg.setLayers(layersList);
 
-  if(dlg.exec() == QDialog::Accepted)
+  dlg.exec();
+  
+  if(dlg.getOutputLayer().get())
   {
     //add new layer
     addNewLayer(dlg.getOutputLayer());

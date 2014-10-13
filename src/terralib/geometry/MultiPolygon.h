@@ -53,7 +53,7 @@ namespace te
 
         TE_DEFINE_VISITABLE
 
-        using Geometry::asText;
+        //using Geometry::asText;
 
         /** @name Initializer methods on geometric objects
          *  Methods for initializing a geometric object.

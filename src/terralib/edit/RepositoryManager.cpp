@@ -44,7 +44,7 @@ void te::edit::RepositoryManager::addNewGeometry(const std::string& source, te::
     // Not found! Create a new repository associated with the given source
     repository = new Repository(source);
 
-    // Add the enw geometry
+    // Add the new geometry
     repository->add(geom);
 
     // Store!

@@ -97,6 +97,10 @@ namespace te
 
     TEEDITEXPORT bool IsSpecialRingVertex(te::gm::LineString* l, const VertexIndex& index);
 
+    TEEDITEXPORT double GetDistance(const te::gm::Coord2D& c1, const te::gm::Coord2D& c2);
+
+    TEEDITEXPORT void GetCoordinates(te::gm::Geometry* geom, std::vector<te::gm::Coord2D>& coords);
+
   } // end namespace edit
 }   // end namespace te
 

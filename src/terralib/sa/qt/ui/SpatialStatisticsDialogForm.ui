@@ -521,7 +521,7 @@
        <item row="1" column="3">
         <widget class="QPushButton" name="m_cancelPushButton">
          <property name="text">
-          <string>Cancel</string>
+          <string>Close</string>
          </property>
         </widget>
        </item>

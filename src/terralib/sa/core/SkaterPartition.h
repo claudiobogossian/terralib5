@@ -71,23 +71,6 @@ namespace te
     };
 
     /*!
-      \struct RootComparer
-      
-      \brief A struct to order the roots.
-    */
-    typedef std::pair<double, std::size_t> Root;
-
-    struct RootComparer
-    {
-      bool operator()(Root a, Root b) const
-      {
-        return a.first < b.first;
-      }
-    };
-
-    typedef std::set<Root, RootComparer> RootSet;
-    
-    /*!
       \class SkaterPartition
 
       \brief Class that represents the skater partition operation.
@@ -103,7 +86,7 @@ namespace te
           \param graph Pointer to a graph that represents a minimum spanning tree.
           \param attrs Vector with attributes names used to calculate the skater operation
         */
-        SkaterPartition(te::graph::AbstractGraph* graph, std::vector<std::string> attrs, std::string popAttr = "", std::size_t minPop = 0);
+        SkaterPartition(te::graph::AbstractGraph* graph, std::vector<std::string> attrs);
 
         /*! \brief Virtual destructor. */
         ~SkaterPartition();
@@ -117,7 +100,9 @@ namespace te
 
           \return Return a vector with the root vertex id for each cluster created.
         */
-        std::vector<std::size_t> execute(std::size_t nGroups);
+        std::vector<std::size_t> execute(std::size_t nGroups, std::string popAttr = "", std::size_t minPop = 0);
+
+        std::vector<std::size_t> execute(std::string popAttr, std::size_t minPop);
 
       protected:
 

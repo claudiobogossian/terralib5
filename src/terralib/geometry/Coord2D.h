@@ -82,6 +82,21 @@ namespace te
 
           return true;
         }
+      
+        /*! \brief Lexicographic compare (x-y). */
+        bool operator<(const Coord2D& rhs) const
+        {
+          if(x < rhs.x)
+            return true;
+          
+          if(x > rhs.x)
+            return false;
+          
+          if(y < rhs.y)
+            return true;
+          
+          return false;
+        }
 
         /*! \brief It returns the x-coordinate. */
         double getX() const

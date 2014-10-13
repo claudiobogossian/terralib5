@@ -24,8 +24,10 @@
 */
 
 // TerraLib
-#include "ui_LayerSearchWidgetForm.h"
+#include "../../../../dataaccess/utils/Utils.h"
 #include "LayerSearchWidget.h"
+#include "ui_LayerSearchWidgetForm.h"
+
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
@@ -35,6 +37,9 @@ te::qt::widgets::LayerSearchWidget::LayerSearchWidget(QWidget* parent, Qt::Windo
 {
 // add controls
   m_ui->setupUi(this);
+
+  m_minRasterBandsDefined = false;
+  m_maxRasterBandsDefined = false;
 
 //connect
   connect(m_ui->m_nameLineEdit, SIGNAL(textChanged(const QString&)), SLOT(onFilter()));
@@ -122,6 +127,24 @@ void te::qt::widgets::LayerSearchWidget::filterAll()
   onFilter();
 }
 
+void te::qt::widgets::LayerSearchWidget::setMinRasterBands(std::size_t value)
+{
+  m_minRasterBandsValue = value;
+
+  m_minRasterBandsDefined = true;
+
+  onFilter();
+}
+
+void te::qt::widgets::LayerSearchWidget::setMaxRasterBands(std::size_t value)
+{
+  m_maxRasterBandsValue = value;
+
+  m_maxRasterBandsDefined = true;
+
+  onFilter();
+}
+
 void te::qt::widgets::LayerSearchWidget::fillTreeView(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   std::list<te::map::AbstractLayerPtr>::iterator it = layerList.begin();
@@ -131,10 +154,20 @@ void te::qt::widgets::LayerSearchWidget::fillTreeView(std::list<te::map::Abstrac
     te::map::AbstractLayerPtr l = *it;
 
     QTreeWidgetItem* item = new QTreeWidgetItem(m_ui->m_treeWidget);
+    //layer name
     item->setText(0, l->getTitle().c_str());
     item->setIcon(0, QIcon::fromTheme("layer"));
     item->setData(0, Qt::UserRole, QVariant::fromValue(l));
-    item->setText(1, l->getId().c_str());
+
+    //layer parent
+    te::map::AbstractLayer* lParent = dynamic_cast<te::map::AbstractLayer*>(l->getParent());
+
+    if(lParent)
+      item->setText(1, lParent->getTitle().c_str());
+    else
+      item->setText(1, "");
+
+    //layer type
     item->setText(2, l->getType().c_str());
 
     ++it;
@@ -193,7 +226,43 @@ void te::qt::widgets::LayerSearchWidget::onFilter()
     else if(m_ui->m_repRstRadioButton->isChecked())
     {
       if(dsType.get() && dsType->hasRaster())
-        result.push_back(item);
+      {
+        //check if has band restriction
+        if(m_minRasterBandsDefined || m_maxRasterBandsDefined)
+        {
+          std::auto_ptr<te::da::DataSet> ds = l->getData();
+
+          std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+
+          std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
+
+          if(m_minRasterBandsDefined && m_maxRasterBandsDefined)
+          {
+            if(inputRst->getNumberOfBands() >= m_minRasterBandsValue && inputRst->getNumberOfBands() <= m_maxRasterBandsValue)
+            {
+              result.push_back(item);
+            }
+          }
+          else if(m_minRasterBandsDefined)
+          {
+            if(inputRst->getNumberOfBands() >= m_minRasterBandsValue)
+            {
+              result.push_back(item);
+            }
+          }
+          else if(m_minRasterBandsDefined)
+          {
+            if(inputRst->getNumberOfBands() <= m_maxRasterBandsValue)
+            {
+              result.push_back(item);
+            }
+          }
+        }
+        else
+        {
+          result.push_back(item);
+        }
+      }
     }
   }
 

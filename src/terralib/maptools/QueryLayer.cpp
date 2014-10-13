@@ -26,6 +26,7 @@
 // TerraLib
 #include "../common/StringUtils.h"
 #include "../dataaccess/dataset/ObjectIdSet.h"
+#include "../dataaccess/dataset/PrimaryKey.h"
 #include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/query/And.h"
@@ -86,6 +87,8 @@ std::auto_ptr<te::map::LayerSchema> te::map::QueryLayer::getSchema() const
 {
   std::auto_ptr<te::map::LayerSchema> output(new te::map::LayerSchema(getTitle()));
 
+  te::da::PrimaryKey* outKey =  new te::da::PrimaryKey();
+
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
   const te::da::Fields* fields = m_query->getFields();
@@ -134,16 +137,20 @@ std::auto_ptr<te::map::LayerSchema> te::map::QueryLayer::getSchema() const
 
     assert(!name.empty());
 
-    std::auto_ptr<te::da::DataSetType> dt = ds->getDataSetType(name);
+    std::auto_ptr<te::da::DataSetType> input = ds->getDataSetType(name);
 
-    te::dt::Property* pRef = dt->getProperty(tokens[1]);
+    te::dt::Property* pRef = input->getProperty(tokens[1]);
     assert(pRef);
 
     std::auto_ptr<te::dt::Property> p(pRef->clone());
-    //p->setName(pName->getName());
-
     output->add(p.release());
+
+    if(input->getPrimaryKey()->has(pRef))
+      outKey->add(output->getProperty(pRef->getName()));
   }
+
+  if(!outKey->getProperties().empty())
+    output->setPrimaryKey(outKey);
 
   return output;
 }

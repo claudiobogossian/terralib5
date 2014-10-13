@@ -31,6 +31,7 @@
 #include "../../dataaccess/datasource/DataSource.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../maptools/DataSetLayer.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../core/KernelRatioOperation.h"
 #include "../Exception.h"
 #include "KernelRatioDialog.h"
@@ -276,6 +277,12 @@ void te::sa::KernelRatioDialog::onOkPushButtonClicked()
     kOutParams->m_outputAttrName = m_ui->m_attrNameLineEdit->text().toStdString();
   }
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   //execute kernel
   try
   {
@@ -286,12 +293,32 @@ void te::sa::KernelRatioDialog::onOkPushButtonClicked()
 
     op.execute();
   }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, tr("Warning"), e.what());
+
+    QApplication::restoreOverrideCursor();
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
+    return;
+  }
   catch(...)
   {
-    QMessageBox::information(this, tr("Warning"), tr("Kernel Map internal error."));
+    QMessageBox::warning(this, tr("Warning"), tr("Kernel Map internal error."));
+
+    QApplication::restoreOverrideCursor();
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
     return;
   }
 
+  QApplication::restoreOverrideCursor();
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
+
+  //save generated information
   te::da::DataSourcePtr outputDataSource;
 
   std::string dataSetName = "";

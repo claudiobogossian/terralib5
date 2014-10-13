@@ -18,6 +18,7 @@
  */
 
 //Terralib
+#include "../../../common/progress/ProgressManager.h"
 #include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../dataaccess/datasource/DataSourceInfoManager.h"
@@ -31,6 +32,7 @@
 #include "../help/HelpPushButton.h"
 #include "../layer/search/LayerSearchWidget.h"
 #include "../layer/search/LayerSearchWizardPage.h"
+#include "../progress/ProgressViewerDialog.h"
 #include "VectorizationWizard.h"
 #include "VectorizationWizardPage.h"
 
@@ -40,6 +42,10 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
+
+// Qt
+#include <QApplication>
+#include <QMessageBox>
 
 te::qt::widgets::VectorizationWizard::VectorizationWizard(QWidget* parent) :
 QWizard(parent)
@@ -156,8 +162,41 @@ bool te::qt::widgets::VectorizationWizard::execute()
   //output parameters
   std::vector<te::gm::Geometry*> geomVec;
 
-  //run operation
-  raster->vectorize(geomVec, band, maxGeom);
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
+  try
+  {
+    //run operation
+    raster->vectorize(geomVec, band, maxGeom);
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, tr("Vectorizer"), e.what());
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
+    QApplication::restoreOverrideCursor();
+
+    return false;
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Vectorizer"), tr("An exception has occurred!"));
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
+    QApplication::restoreOverrideCursor();
+
+    return false;
+  }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
+
+  QApplication::restoreOverrideCursor();
 
   //save data
   std::auto_ptr<te::da::DataSetType> dsType = createDataSetType(outputdataset, raster->getSRID());
