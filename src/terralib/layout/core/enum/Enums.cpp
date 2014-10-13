@@ -33,7 +33,8 @@ te::layout::Enums::Enums() :
   m_objType(0),
   m_gridStyleType(0),
   m_lineStyleType(0),
-  m_modeType(0)
+  m_modeType(0),
+  m_templateType(0)
 {
   init();
 }
@@ -69,6 +70,12 @@ te::layout::Enums::~Enums()
     delete m_modeType;
     m_modeType = 0;
   }
+
+  if(m_templateType)
+  {
+    delete m_templateType;
+    m_templateType = 0;
+  }
 }
 
 void te::layout::Enums::init()
@@ -78,6 +85,7 @@ void te::layout::Enums::init()
   m_gridStyleType = new EnumGridStyleType;
   m_lineStyleType = new EnumLineStyleType;
   m_modeType = new EnumModeType;
+  m_templateType = new EnumTemplateType;
 }
 
 te::layout::EnumDataType* te::layout::Enums::getEnumDataType()
@@ -103,4 +111,9 @@ te::layout::EnumLineStyleType* te::layout::Enums::getEnumLineStyleType()
 te::layout::EnumModeType* te::layout::Enums::getEnumModeType()
 {
   return m_modeType;
+}
+
+te::layout::EnumTemplateType* te::layout::Enums::getEnumTemplateType()
+{
+  return m_templateType;
 }

@@ -77,6 +77,9 @@
 #include "../../item/TextGridController.h"
 #include "../item/TextGridItem.h"
 #include "../../core/enum/Enums.h"
+#include "../../item/LegendChildModel.h"
+#include "../../item/LegendChildController.h"
+#include "../item/LegendChildItem.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -108,7 +111,8 @@ te::layout::BuildGraphicsItem::BuildGraphicsItem() :
   m_multiLineTextItem("MULTILINE_TEXT_"),
   m_pointItem("POINT_"),
   m_textGridItem("TEXT_GRID_"),
-  m_titleItem("TITLE_")
+  m_titleItem("TITLE_"),
+  m_legendChildItem("LEGEND_CHILD_")
 {
   m_sharedProps = new SharedProperties;
 }
@@ -200,6 +204,10 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   {
     item = createTitle();
   }
+  else if(type == enumObj->getLegendChildItem())
+  {
+    item = createLegendChild();
+  }
   
   return item;
 }
@@ -284,6 +292,11 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
   {
     m_name = nameItem(m_multiLineTextItem, enumObj->getMultiLineTextItem());
     item = createMultiLineText();
+  }
+  else if(mode == enumMode->getModeCreateLegendChild())
+  {
+    m_name = nameItem(m_legendChildItem, enumObj->getLegendChildItem());
+    item = createLegendChild();
   }
 
   return item;
@@ -888,6 +901,43 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createTitle()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   TitleItem* view = dynamic_cast<TitleItem*>(itemObs); 
+
+  if(view)
+  {
+    view->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_props)
+    {
+      view->setZValue(m_zValue);
+    }
+    if(m_redraw)
+    {
+      itemObs->redraw();
+    }
+    return view;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createLegendChild()
+{
+  QGraphicsItem* item = 0;
+
+  LegendChildModel* model = new LegendChildModel();	
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  LegendChildController* controller = new LegendChildController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  LegendChildItem* view = dynamic_cast<LegendChildItem*>(itemObs); 
 
   if(view)
   {

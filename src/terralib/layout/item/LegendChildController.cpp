@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file HorizontalRulerController.cpp
+  \file LegendChildController.cpp
    
   \brief 
 
@@ -26,42 +26,33 @@
 */
 
 // TerraLib
-#include "HorizontalRulerController.h"
-#include "../core/pattern/mvc/ItemController.h"
+#include "LegendChildController.h"
 #include "../core/ContextItem.h"
-#include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/pattern/factory/AbstractItemFactory.h"
 #include "../core/pattern/singleton/Context.h"
+#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/pattern/factory/ItemParamsCreate.h"
+#include "../core/pattern/mvc/ItemObserver.h"
 #include "../core/enum/Enums.h"
 
-te::layout::HorizontalRulerController::HorizontalRulerController( Observable* o ) :
-  ItemController(o)
+te::layout::LegendChildController::LegendChildController( Observable* o ) :
+  LegendController(o, 0)
 {
   create();
 }
 
-te::layout::HorizontalRulerController::HorizontalRulerController( Observable* o, EnumType* type ) :
-  ItemController(o, type)
+te::layout::LegendChildController::LegendChildController( Observable* o, EnumType* type ) :
+  LegendController(o, type)
 {
 
 }
 
-te::layout::HorizontalRulerController::~HorizontalRulerController()
+te::layout::LegendChildController::~LegendChildController()
 {
-
+	
 }
 
-void te::layout::HorizontalRulerController::setPosition( const double& x, const double& y )
-{
-  if(m_model)
-  {
-    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
-    if(model)
-      return model->setPosition(x, y);
-  }
-}
-
-void te::layout::HorizontalRulerController::create()
+void te::layout::LegendChildController::create()
 {
   AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);

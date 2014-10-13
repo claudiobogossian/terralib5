@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,40 +18,35 @@
  */
 
 /*!
-  \file TemplateEditor.h
+  \file VerticalRuler.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_TEMPLATE_EDITOR_H 
-#define __TERRALIB_LAYOUT_INTERNAL_TEMPLATE_EDITOR_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_VERTICAL_RULER_H
+#define __TERRALIB_LAYOUT_INTERNAL_VERTICAL_RULER_H
 
-// STL
-#include <string>
+// TerraLib
+#include "AbstractRuler.h"
 
 namespace te
 {
   namespace layout
   {
-    class AbstractTemplate;
-    class EnumType;
-
-    class TemplateEditor
+    class VerticalRuler : public AbstractRuler
     {
       public:
 
-        TemplateEditor(EnumType* type, std::string path);
-        virtual ~TemplateEditor();
+        VerticalRuler(PaperConfig* paperConfig);
 
-        virtual te::layout::AbstractTemplate* getTemplate();
+        virtual ~VerticalRuler();    
 
-      protected:
+        virtual void drawRuler( QGraphicsView* view, QPainter* painter );
 
-        te::layout::AbstractTemplate* m_template;
     };
   }
 }
 
-#endif
+#endif 

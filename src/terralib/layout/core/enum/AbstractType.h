@@ -117,15 +117,7 @@ namespace te
       TPMillimeter = 0,
       TPInch = 1
     } LayoutUnitsMetrics;
-
-    /*!
-    \brief Enum LayoutTemplateType.
-    */
-    typedef TELAYOUTEXPORT enum
-    {
-      TPJSONTemplate = 1
-    } LayoutTemplateType;
-
+    
     //typedef enum
     //{
     //  StyleNone = 1,

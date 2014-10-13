@@ -78,7 +78,7 @@ void te::layout::MapModel::draw( ContextItem context )
 
   te::map::Canvas* canvas = context.getCanvas();
   Utils* utils = context.getUtils();
-
+  
   if((!canvas) || (!utils))
     return;
 
@@ -527,9 +527,9 @@ te::gm::Envelope te::layout::MapModel::getWorldBox()
   return worldBox;
 }
 
-std::map<te::gm::Coord2D, std::string> te::layout::MapModel::getTextMapAsObjectInfo()
+std::map<te::gm::Point*, std::string> te::layout::MapModel::getTextMapAsObjectInfo()
 {
-  std::map<te::gm::Coord2D, std::string>  map;
+  std::map<te::gm::Point*, std::string>  map;
 
   return map;
 }

@@ -188,6 +188,7 @@ namespace te
       std::string m_optionMapSystematicScale;
       std::string m_optionMapCreateTextGrid;
       std::string m_optionMapCreateMapText;
+      std::string m_optionMapCreateLegendChildAsObject;
 
       /* Geometry Menu */
       std::string m_optionRectangle;

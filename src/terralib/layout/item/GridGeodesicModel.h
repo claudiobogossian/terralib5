@@ -51,9 +51,7 @@ namespace te
         virtual void updateProperty(te::layout::Property property);
 
         virtual void setPlanarBox(te::gm::Envelope box);
-
-        virtual std::map<te::gm::Coord2D, std::string> getGridInfo();
-
+        
         virtual void setVisibleAllTexts(bool visible);
 
         virtual void setVisibleCornerTextsText(bool visible);

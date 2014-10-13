@@ -168,7 +168,7 @@ void te::layout::MapItem::updateObserver( ContextItem context )
   
   if(!box.isValid())
     return;
-
+  
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   if(model)
   {
@@ -207,7 +207,11 @@ void te::layout::MapItem::updateObserver( ContextItem context )
   /*Scene* sc = dynamic_cast<Scene*>(Context::getInstance().getScene());
   QTransform transf = sc->getMatrixViewScene().inverted();
 
-  setTransform(transf);*/
+  double scalex = sc->getMatrixViewScene().inverted().m11();
+  double scaley = sc->getMatrixViewScene().inverted().m22();
+
+  transf.setMatrix(scalex, 0, 0, 0, -scaley, 0, transf.dx(), transf.dy(), 1);
+  QGraphicsItem::setTransform(transf);*/
 
   te::color::RGBAColor** rgba = context.getPixmap();
 
@@ -234,7 +238,7 @@ void te::layout::MapItem::updateObserver( ContextItem context )
 void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
   QGraphicsProxyWidget::paint(painter, option, widget);
-
+  
   if(!m_pixmap.isNull())
   {
     QRectF boundRect;
@@ -314,37 +318,13 @@ void te::layout::MapItem::dragMoveEvent( QGraphicsSceneDragDropEvent * event )
 void te::layout::MapItem::setPixmap( const QPixmap& pixmap )
 {
   m_pixmap = pixmap;
-
-  if(m_pixmap.isNull())
-    return;
-
-  ItemModelObservable* model = (ItemModelObservable*)m_controller->getModel();
-  if(!model)
-    return;
-  
-  te::gm::Envelope box = model->getBox();
-
-  //If you modify the boundingRect value, you need to inform Graphics View about it by calling QGraphicsItem::prepareGeometryChange();
-  QGraphicsObject::prepareGeometryChange();
-  setRect(QRectF(0, 0, box.getWidth(), box.getHeight()));
-  update();
-}
-
-void te::layout::MapItem::setRect( QRectF rect )
-{
-  if (rect.isEmpty() && !rect.isNull())
-    return;
-
-  m_rect = rect;
-
-  update(rect);
 }
 
 te::gm::Coord2D te::layout::MapItem::getPosition()
 {
   double x = 0;
   double y = 0;
-
+  
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   if(model)
   {
@@ -355,7 +335,7 @@ te::gm::Coord2D te::layout::MapItem::getPosition()
   QPointF posF = scenePos();
   qreal valuex = posF.x() - x;
   qreal valuey = posF.y() - y;
-  
+      
   te::gm::Coord2D coordinate;
   coordinate.x = valuex;
   coordinate.y = valuey;
@@ -369,7 +349,7 @@ void te::layout::MapItem::setPos( const QPointF &pos )
   so you need to do translate when you change the position, since the coordinate 
   must be in the world coordinate. */
   QPointF p1(pos.x() - transform().dx(), pos.y() - transform().dy());
-
+  
   QGraphicsItem::setPos(p1);
   refresh();
 }
@@ -420,7 +400,7 @@ void te::layout::MapItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
     QApplication::sendEvent(m_mapDisplay, &mouseEvent);
     event->setAccepted(mouseEvent.isAccepted());
   }
-
+  
   refresh();
 }
 
@@ -582,6 +562,6 @@ void te::layout::MapItem::applyRotation()
 
   double centerX = center.x();
   double centerY = center.y();
-
+  
   setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
 }

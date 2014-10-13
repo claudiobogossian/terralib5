@@ -18,47 +18,53 @@
  */
 
 /*!
-  \file AbstractVisitor.h
+  \file LegendChildModel.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_CONTEXT_ABSTRACT_VISITOR_H
-#define __TERRALIB_LAYOUT_INTERNAL_CONTEXT_ABSTRACT_VISITOR_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_LEGEND_MODEL_MODEL_H
+#define __TERRALIB_LAYOUT_INTERNAL_LEGEND_MODEL_MODEL_H
 
 // TerraLib
-#include "../../ContextItem.h"
+#include "LegendModel.h"
+#include "../../se/Rule.h"
 
 namespace te
 {
   namespace layout
   {
-    class Visitable;
-
-    class AbstractVisitor
+    class LegendChildModel : public LegendModel
     {
       public:
 
-        AbstractVisitor();
-        ~AbstractVisitor(void);
+        LegendChildModel();
 
-        virtual void visit(Visitable* visitable);
+        virtual ~LegendChildModel();
 
-        virtual void disassociate();
+        virtual void draw( ContextItem context );
 
-        virtual void visitDependent(ContextItem context) = 0;
+        virtual Properties* getProperties() const;
+        
+        virtual void updateProperties(te::layout::Properties* properties);
 
-        virtual Visitable* getVisitable();
+        virtual void visitDependent(ContextItem context);
 
-      protected:
+        virtual te::se::Rule* getRule();
 
-        ContextItem getContextItem();
+        virtual void setRule(te::se::Rule* rule);
+        
+       protected:
 
-        Visitable* m_visitable;
+        virtual void drawLegend(te::map::Canvas* canvas, Utils* utils);
+
+        virtual void refreshRule();
+
+        te::se::Rule* m_rule;
     };
   }
 }
 
-#endif
+#endif //__TERRALIB_LAYOUT_INTERNAL_MAPLAYOUT_MODEL_H

@@ -29,16 +29,16 @@
 #include "JSONTemplate.h"
 #include "../property/Properties.h"
 #include "../serialization/JSON.h"
+#include "../enum/Enums.h"
 
 // STL
 #include <iostream>
 #include <fstream>
 
 te::layout::JSONTemplate::JSONTemplate(std::string path) :
-  AbstractTemplate(path),
-  m_type(TPJSONTemplate)
+  AbstractTemplate(path)
 {
-
+  m_type = Enums::getInstance().getEnumTemplateType()->getJsonType();
 }
 
 te::layout::JSONTemplate::~JSONTemplate()
@@ -92,8 +92,4 @@ bool te::layout::JSONTemplate::deleteTemplate()
   return true;
 }
 
-te::layout::LayoutTemplateType te::layout::JSONTemplate::getType()
-{
-  return m_type;
-}
 

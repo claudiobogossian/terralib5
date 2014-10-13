@@ -31,8 +31,9 @@
 #include "../pattern/singleton/Context.h"
 #include "../pattern/factory/AbstractTemplateFactory.h"
 #include "JSONTemplate.h"
+#include "../enum/Enums.h"
 
-te::layout::TemplateEditor::TemplateEditor( te::layout::LayoutTemplateType type, std::string path ) 
+te::layout::TemplateEditor::TemplateEditor( EnumType* type, std::string path ) 
 {
   AbstractTemplateFactory* factory = Context::getInstance().getTemplateFactory(); 
   TemplateParamsCreate params(path);
@@ -43,7 +44,9 @@ te::layout::TemplateEditor::~TemplateEditor()
 {
   if(m_template)
   {
-    if(m_template->getType() == TPJSONTemplate)
+    EnumTemplateType* type = Enums::getInstance().getEnumTemplateType();
+
+    if(m_template->getType() == type->getJsonType())
     {
       JSONTemplate* jt = dynamic_cast<JSONTemplate*>(m_template);
 
