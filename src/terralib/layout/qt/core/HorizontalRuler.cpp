@@ -86,7 +86,7 @@ void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* pain
   QLineF rfLineH(QPointF(ll.x() + (m_cornerSize * zoomFactor), ll.y() + m_height * zoomFactor), QPointF(ur.x(), ll.y() + m_height * zoomFactor));
   
   //Rect corner
-  QRectF rfRectCorner(ll.x(), ll.y(), ll.x() + m_cornerSize * zoomFactor, ll.y() + m_height * zoomFactor);
+  QRectF rfRectCorner(QPointF(ll.x(), ll.y()), QPointF(ll.x() + m_cornerSize * zoomFactor, ll.y() + m_height * zoomFactor));
 
   painter->save();
   painter->setPen(Qt::NoPen);
@@ -112,7 +112,7 @@ void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* pain
   double htxt = 0;
 
   QFont ft("Arial");
-  ft.setPointSizeF(8 * zoom);
+  ft.setPointSizeF(6);
   painter->setFont(ft);
 
   std::stringstream ss;
@@ -136,8 +136,13 @@ void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* pain
       ss << i;//add number to the stream
 
       utils->textBoundingBox(wtxt, htxt, ss.str());
-      painter->drawText(QPointF((double)i - (wtxt/2.), y - m_spacingLineText), ss.str().c_str());
 
+      QPoint p = view->mapFromScene(QPointF((double)i - (wtxt/2.), y - m_spacingLineText * zoomFactor));
+
+      //Keeps the size of the text.(Aspect)
+      painter->setMatrixEnabled(false);
+      painter->drawText(p, ss.str().c_str());
+      painter->setMatrixEnabled(true);
     }
     else if((i % (int)(m_middleBlockSize)) == 0)
     {

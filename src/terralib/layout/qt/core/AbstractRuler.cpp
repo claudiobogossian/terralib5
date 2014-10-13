@@ -40,7 +40,7 @@ te::layout::AbstractRuler::AbstractRuler(PaperConfig* paperConfig) :
   m_paperConfig(paperConfig),
   m_height(7),
   m_cornerSize(7),
-  m_spacingLineText(5.)
+  m_spacingLineText(3.5)
 {
   
 }

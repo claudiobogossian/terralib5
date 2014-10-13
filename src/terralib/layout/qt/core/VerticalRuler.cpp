@@ -86,7 +86,7 @@ void te::layout::VerticalRuler::drawRuler( QGraphicsView* view, QPainter* painte
   QLineF rfLineV(QPointF(ll.x() + m_cornerSize * zoomFactor, ll.y() + (m_height * zoomFactor)), QPointF(ll.x() + m_height * zoomFactor, ur.y()));
 
   //Rect corner
-  QRectF rfRectCorner(ll.x(), ll.y(), m_cornerSize * zoomFactor, m_height * zoomFactor);
+  QRectF rfRectCorner(QPointF(ll.x(), ll.y()), QPointF(ll.x() + m_cornerSize * zoomFactor, ll.y() + m_height * zoomFactor));
 
   painter->save();
   painter->setPen(Qt::NoPen);
@@ -112,7 +112,7 @@ void te::layout::VerticalRuler::drawRuler( QGraphicsView* view, QPainter* painte
   double htxt = 0;
 
   QFont ft("Arial");
-  ft.setPointSizeF(3);
+  ft.setPointSizeF(6);
   painter->setFont(ft);
 
   double urx = rfBackV.topRight().x();
@@ -134,11 +134,16 @@ void te::layout::VerticalRuler::drawRuler( QGraphicsView* view, QPainter* painte
       ss << i;//add number to the stream
 
       utils->textBoundingBox(wtxt, htxt, ss.str());
-      QPointF p1(x - m_spacingLineText, (double)i - (wtxt/2.));
+      QPointF pTranslate(x - m_spacingLineText * zoomFactor, (double)i - (wtxt/2.));
+      QPointF pText(- wtxt, 0);
+      
+      QPoint p1 = view->mapFromScene(pTranslate);
+      QPoint p2 = view->mapFromScene(pText);
+
       painter->save();
-      painter->translate(p1);
-      painter->rotate(-90);
-      painter->drawText(QPointF(- wtxt, 0), ss.str().c_str());
+      painter->setMatrixEnabled(false);
+      painter->drawText(p1, ss.str().c_str());
+      painter->setMatrixEnabled(true);
       painter->restore();
       painter->setBrush(brush);
       painter->setPen(pen);
