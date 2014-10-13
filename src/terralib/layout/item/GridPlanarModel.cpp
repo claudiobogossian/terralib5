@@ -82,8 +82,6 @@ void te::layout::GridPlanarModel::draw( te::map::Canvas* canvas, Utils* utils, t
   canvas->setTextPointSize(m_pointTextSize);
   canvas->setFontFamily(m_fontText);
 
-  gridTextFreeMemory();
-
   drawVerticalLines(canvas, utils, box);
   drawHorizontalLines(canvas, utils, box);
 }
@@ -136,22 +134,8 @@ void te::layout::GridPlanarModel::drawVerticalLines(te::map::Canvas* canvas, Uti
     double number = y1 / (double)m_unit;
     convert << number;
 
-    if(m_visibleAllTexts)
-    {
-      if(m_leftText)
-      {
-        canvas->drawText(llx - m_lneHrzDisplacement, y, convert.str(), 0);
-        te::gm::Point* coordLeft = new te::gm::Point(llx - m_lneHrzDisplacement, y);
-        m_gridTexts[coordLeft] = convert.str();
-      }
-
-      if(m_rightText)
-      {
-        canvas->drawText(urx + m_lneHrzDisplacement, y, convert.str(), 0);
-        te::gm::Point* coordRight = new te::gm::Point(urx + m_lneHrzDisplacement, y);
-        m_gridTexts[coordRight] = convert.str();
-      }
-    }
+    canvas->drawText(llx - m_lneHrzDisplacement, y, convert.str(), 0);
+    canvas->drawText(urx + m_lneHrzDisplacement, y, convert.str(), 0);
 
     if(line)
     {
@@ -217,22 +201,8 @@ void te::layout::GridPlanarModel::drawHorizontalLines(te::map::Canvas* canvas, U
     double number = x1 / (double)m_unit;
     convert << number;
 
-    if(m_visibleAllTexts)
-    {
-      if(m_bottomText)
-      {
-        canvas->drawText(x, lly - m_lneVrtDisplacement, convert.str(), 0);
-        te::gm::Point* coordBottom = new te::gm::Point(x, lly - m_lneVrtDisplacement);
-        m_gridTexts[coordBottom] = convert.str();
-      }
-
-      if(m_topText)
-      {
-        canvas->drawText(x, ury + m_lneVrtDisplacement, convert.str(), 0);
-        te::gm::Point* coordTop = new te::gm::Point(x, ury + m_lneVrtDisplacement);
-        m_gridTexts[coordTop] = convert.str();
-      }
-    }
+    canvas->drawText(x, lly - m_lneVrtDisplacement, convert.str(), 0);
+    canvas->drawText(x, ury + m_lneVrtDisplacement, convert.str(), 0);
 
     if(line)
     {
@@ -565,4 +535,9 @@ void te::layout::GridPlanarModel::updateProperty( Property property )
   {
     m_topRotateText = pro_topRotateText.getValue().toBool();
   }
+}
+
+std::map<te::gm::Coord2D, std::string> te::layout::GridPlanarModel::getGridInfo()
+{
+  return std::map<te::gm::Coord2D, std::string>();
 }
