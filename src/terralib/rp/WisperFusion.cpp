@@ -479,7 +479,8 @@ namespace te
       // Creating the output raster
       
       {
-        te::rst::Grid* gridPtr = new te::rst::Grid( *resampledLlowResRasterPtr->getGrid() );
+        te::rst::Grid* gridPtr = new te::rst::Grid( *m_inputParameters.m_highResRasterPtr->getGrid() );
+        
         std::vector< te::rst::BandProperty * > bandProperties;
         std::vector< unsigned int > outputRasterBands;
           

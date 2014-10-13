@@ -620,16 +620,26 @@ namespace te
       outRasterBandsProperties.push_back( new te::rst::BandProperty(
         *( m_inputParameters.m_lowResRasterPtr->getBand( 
         m_inputParameters.m_lowResRasterRedBandIndex )->getProperty() ) ) );    
+      outRasterBandsProperties[ 0 ]->m_blkw = nCols;
+      outRasterBandsProperties[ 0 ]->m_blkh = 1;
+      outRasterBandsProperties[ 0 ]->m_nblocksx = 1;
+      outRasterBandsProperties[ 0 ]->m_nblocksy = nRows;
       outRasterBandsProperties.push_back( new te::rst::BandProperty(
         *( m_inputParameters.m_lowResRasterPtr->getBand( 
         m_inputParameters.m_lowResRasterGreenBandIndex )->getProperty() ) ) ); 
+      outRasterBandsProperties[ 1 ]->m_blkw = nCols;
+      outRasterBandsProperties[ 1 ]->m_blkh = 1;
+      outRasterBandsProperties[ 1 ]->m_nblocksx = 1;
+      outRasterBandsProperties[ 1 ]->m_nblocksy = nRows;      
       outRasterBandsProperties.push_back( new te::rst::BandProperty(
         *( m_inputParameters.m_lowResRasterPtr->getBand( 
         m_inputParameters.m_lowResRasterBlueBandIndex )->getProperty() ) ) );         
+      outRasterBandsProperties[ 2 ]->m_blkw = nCols;
+      outRasterBandsProperties[ 2 ]->m_blkh = 1;
+      outRasterBandsProperties[ 2 ]->m_nblocksx = 1;
+      outRasterBandsProperties[ 2 ]->m_nblocksy = nRows;      
       
-      te::rst::Grid* gridPtr = new te::rst::Grid( nCols, nRows,
-        new te::gm::Envelope( *( m_inputParameters.m_lowResRasterPtr->getGrid()->getExtent() ) ),
-        m_inputParameters.m_lowResRasterPtr->getGrid()->getSRID() );
+      te::rst::Grid* gridPtr = new te::rst::Grid( *m_inputParameters.m_highResRasterPtr->getGrid() );
 
       outputRasterPtr.reset(
         te::rst::RasterFactory::make(
