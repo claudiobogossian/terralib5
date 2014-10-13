@@ -123,7 +123,7 @@ void te::attributefill::VectorToVector::setInput(te::map::AbstractLayerPtr fromL
   m_toLayer = toLayer;
 }
 
-void te::attributefill::VectorToVector::setParams(std::map<te::dt::Property*, std::vector<std::string> >& options)
+void te::attributefill::VectorToVector::setParams(const std::map<te::dt::Property*, std::vector<std::string> >& options)
 {
   m_options = options;
 }

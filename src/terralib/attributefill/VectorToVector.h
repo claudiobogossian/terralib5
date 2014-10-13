@@ -75,7 +75,7 @@ namespace te
         void setInput(te::map::AbstractLayerPtr fromLayer,
                       te::map::AbstractLayerPtr toLayer);
 
-        void setParams(std::map<te::dt::Property*, std::vector<std::string> >& options);
+        void setParams(const std::map<te::dt::Property*, std::vector<std::string> >& options);
 
         void setOutput(te::da::DataSourcePtr outDsrc, std::string dsName);
 
