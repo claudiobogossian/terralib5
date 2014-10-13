@@ -141,7 +141,7 @@ void te::layout::Scene::init(double screenWMM, double screenHMM, double zoomFact
   double newZoomFactor = 1. / zoomFactor;
   if(zoomFactor < 1.)
     newZoomFactor = zoomFactor;
-
+  
   double w = m_boxW->getWidth() * newZoomFactor;
   double h = m_boxW->getHeight() * newZoomFactor;
 
@@ -183,9 +183,6 @@ void te::layout::Scene::insertItem( ItemObserver* item )
         if(obs->isInvertedMatrix())
         {
           QTransform transf = m_matrix.inverted();
-          /*double scalex = m_matrix.inverted().m11();
-          double scaley = m_matrix.inverted().m22();
-          transf.setMatrix(scalex, 0, 0, 0, -scaley, 0, transf.dx(), transf.dy(), 1);*/
           qitem->setTransform(transf);
         }
       }
@@ -372,7 +369,7 @@ void te::layout::Scene::calculateMatrixViewScene(double zoomFactor)
     and informed. All objects are redrawn in millimeters 
     without any change.
   */
-
+  
   double newZoomFactor = (dpiX / 25.4) * zoomFactor;
 
   //mm (inversão do y)
@@ -513,12 +510,6 @@ void te::layout::Scene::renderScene( QPainter* newPainter )
 
   double w = 0;
   double h = 0;
-
-  // O PROBLEMA COM O RENDER É QUE DENTRO DELE É CALCULADO AUTOMATICAMENTE O RATIO.
-  // COMO FAZER?
-  /*{
-         
-  }*/
 
   PaperConfig* conf = Context::getInstance().getPaperConfig();
   conf->getPaperSize(w, h);
@@ -719,14 +710,15 @@ void te::layout::Scene::drawForeground( QPainter *painter, const QRectF &rect )
     m_verticalRuler = new VerticalRuler(cfg);
   }
 
-  QList<QGraphicsView*> vws = views();
-  foreach(QGraphicsView* v, vws)
+  if(m_previewState == NoPrinter)
   {
-    m_horizontalRuler->drawRuler(v, painter);
-    m_verticalRuler->drawRuler(v, painter);
+    QList<QGraphicsView*> vws = views();
+    foreach(QGraphicsView* v, vws)
+    {
+      m_horizontalRuler->drawRuler(v, painter);
+      m_verticalRuler->drawRuler(v, painter);
+    }
   }
-
-  //update();
 }
 
 void te::layout::Scene::buildTemplate(VisualizationArea* vzArea)

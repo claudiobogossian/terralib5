@@ -649,6 +649,9 @@ void te::layout::View::onChangeConfig()
 
   Scene* sc = dynamic_cast<Scene*>(scene());
 
+  if(!sc)
+    return;
+
   sc->refresh(this, zoomFactor);            
   sc->redrawItems(true);
 }
