@@ -91,3 +91,8 @@ te::layout::ContextItem te::layout::AbstractVisitor::getContextItem()
 
   return context;
 }
+
+te::layout::Visitable* te::layout::AbstractVisitor::getVisitable()
+{
+  return m_visitable;
+}

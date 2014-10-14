@@ -27,15 +27,20 @@
 
 // TerraLib
 #include "AbstractTemplate.h"
+#include "../enum/EnumType.h"
+#include "../enum/Enums.h"
 
 // STL
 #include <vector>
 
 te::layout::AbstractTemplate::AbstractTemplate(std::string path) :
-  m_path(path)
+  m_path(path),
+  m_type(0)
 {
   unsigned found = path.find_last_of("/\\");
   m_fileName = path.substr(found + 1);
+
+  m_type = Enums::getInstance().getEnumTemplateType()->getNoneType();
 }
 
 te::layout::AbstractTemplate::~AbstractTemplate()
@@ -46,4 +51,9 @@ te::layout::AbstractTemplate::~AbstractTemplate()
 std::string te::layout::AbstractTemplate::getFileName()
 {
   return m_fileName;
+}
+
+te::layout::EnumType* te::layout::AbstractTemplate::getType()
+{
+  return m_type;
 }

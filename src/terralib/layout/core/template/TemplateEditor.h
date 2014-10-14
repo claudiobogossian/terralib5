@@ -28,8 +28,7 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_TEMPLATE_EDITOR_H 
 #define __TERRALIB_LAYOUT_INTERNAL_TEMPLATE_EDITOR_H
 
-// TerraLib
-#include "../enum/AbstractType.h"
+// STL
 #include <string>
 
 namespace te
@@ -37,12 +36,13 @@ namespace te
   namespace layout
   {
     class AbstractTemplate;
+    class EnumType;
 
     class TemplateEditor
     {
       public:
 
-        TemplateEditor(te::layout::LayoutTemplateType type, std::string path);
+        TemplateEditor(EnumType* type, std::string path);
         virtual ~TemplateEditor();
 
         virtual te::layout::AbstractTemplate* getTemplate();

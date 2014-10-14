@@ -133,9 +133,7 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
       if(lItem)
       {        
 
-        if(lItem->getModel()->getType() == enumObj->getPaperItem() 
-          || lItem->getModel()->getType() == enumObj->getHorizontalRuler()
-          || lItem->getModel()->getType() == enumObj->getVerticalRuler())
+        if(lItem->getModel()->getType() == enumObj->getPaperItem())
         {
           continue;
         }

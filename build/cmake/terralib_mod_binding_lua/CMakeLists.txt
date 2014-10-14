@@ -47,10 +47,11 @@ set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}/src" CACHE PATH "Directory f
 
 SWIG_ADD_MODULE(terralib_mod_binding_lua lua ${TERRALIB_SWIG_SCRIPT_FILE})
 
-SWIG_LINK_LIBRARIES (terralib_mod_binding_lua terralib_mod_geometry
+SWIG_LINK_LIBRARIES (terralib_mod_binding_lua terralib_mod_common
                                               terralib_mod_datatype
-                                              terralib_mod_common
                                               terralib_mod_srs
+                                              terralib_mod_geometry
+                                              terralib_mod_dataaccess
                                               ${Boost_FILESYSTEM_LIBRARY}
                                               ${Boost_SYSTEM_LIBRARY}
                                               ${Boost_THREAD_LIBRARY}

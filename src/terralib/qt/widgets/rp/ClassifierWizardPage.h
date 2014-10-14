@@ -79,6 +79,8 @@ namespace te
 
           ~ClassifierWizardPage();
 
+          bool isComplete() const;
+
         public:
 
           /*!

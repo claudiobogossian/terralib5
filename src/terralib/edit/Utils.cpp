@@ -28,9 +28,10 @@
 #include "../dataaccess/utils/Utils.h"
 #include "../geometry/Coord2D.h"
 #include "../geometry/Envelope.h"
+#include "../geometry/GeometryCollection.h"
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/LineString.h"
-#include "../geometry/MultiPolygon.h"
+#include "../geometry/MultiPoint.h"
 #include "../geometry/Point.h"
 #include "../geometry/Polygon.h"
 #include "../geometry/Utils.h"
@@ -41,6 +42,7 @@
 
 // STL
 #include <cassert>
+#include <cmath>
 #include <memory>
 
 te::edit::IdGeometry* te::edit::PickGeometry(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid)
@@ -106,7 +108,6 @@ void te::edit::GetLines(te::gm::Geometry* geom, std::vector<te::gm::LineString*>
   {
     case te::gm::MultiPolygonType:
     case te::gm::MultiLineStringType:
-    case te::gm::MultiPointType:
       GetLines(dynamic_cast<te::gm::GeometryCollection*>(geom), lines);
     break;
 
@@ -282,4 +283,52 @@ void te::edit::MoveGeometry(te::gm::Geometry* geom, const double& deltax, const 
 bool te::edit::IsSpecialRingVertex(te::gm::LineString* l, const VertexIndex& index)
 {
   return l->isClosed() && ((index.m_pos == 0) || (index.m_pos == l->getNPoints() - 1));
+}
+
+double te::edit::GetDistance(const te::gm::Coord2D& c1, const te::gm::Coord2D& c2)
+{
+  return sqrt(((c1.x - c2.x) * (c1.x - c2.x)) + ((c1.y - c2.y) * (c1.y - c2.y)));
+}
+
+void te::edit::GetCoordinates(te::gm::Geometry* geom, std::vector<te::gm::Coord2D>& coords)
+{
+  assert(geom);
+
+  // Try extract lines
+  std::vector<te::gm::LineString*> lines;
+  GetLines(geom, lines);
+
+  if(!lines.empty())
+  {
+    for(std::size_t i = 0; i < lines.size(); ++i) // for each line
+    {
+      te::gm::LineString* line = lines[i];
+      for(std::size_t j = 0; j < line->getNPoints(); ++j) // for each line point
+        coords.push_back(te::gm::Coord2D(line->getX(j), line->getY(j)));
+    }
+
+    return;
+  }
+
+  // Is it a point?
+  te::gm::AbstractPoint* point = dynamic_cast<te::gm::AbstractPoint*>(geom);
+  if(point)
+  {
+    coords.push_back(te::gm::Coord2D(point->getX(), point->getY()));
+    return;
+  }
+
+  // Is it a multi point collection?
+  if(geom->getGeomTypeId() == te::gm::MultiPointType)
+  {
+    te::gm::MultiPoint* mp = dynamic_cast<te::gm::MultiPoint*>(geom);
+    assert(mp);
+
+    for(std::size_t i = 0; i < mp->getNumGeometries(); ++i)
+    {
+      te::gm::AbstractPoint* point = dynamic_cast<te::gm::AbstractPoint*>(mp->getGeometryN(i));
+      assert(point);
+      coords.push_back(te::gm::Coord2D(point->getX(), point->getY()));
+    }
+  }
 }

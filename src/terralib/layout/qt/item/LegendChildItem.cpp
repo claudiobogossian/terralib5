@@ -18,46 +18,40 @@
  */
 
 /*!
-  \file VerticalRulerModel.h
+  \file LegendChildItem.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_MODEL_H
-
 // TerraLib
-#include "../core/ContextItem.h"
-#include "AbstractRulerModel.h"
+#include "LegendChildItem.h"
+#include "../../core/pattern/mvc/ItemController.h"
+#include "../core/Scene.h"
+#include "../../core/pattern/mvc/Observable.h"
+#include "../../../color/RGBAColor.h"
+#include "../../../qt/widgets/Utils.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../common/STLUtils.h"
 
-// STL
-#include <vector>
-#include <string>
+// Qt
+#include <QPixmap>
 
-namespace te
-{
-  namespace layout
-  {
-    class VerticalRulerModel : public AbstractRulerModel
-    {
-      public:
+te::layout::LegendChildItem::LegendChildItem( ItemController* controller, Observable* o ) :
+  LegendItem(controller, o)
+{  
+  this->setFlags(QGraphicsItem::ItemIsMovable
+    | QGraphicsItem::ItemIsSelectable
+    | QGraphicsItem::ItemSendsGeometryChanges
+    | QGraphicsItem::ItemIsFocusable);
 
-        VerticalRulerModel(PaperConfig* paperConfig);
-        virtual ~VerticalRulerModel();
-
-        virtual void setBox(te::gm::Envelope box);
-
-        virtual void draw( ContextItem context );
-        
-      protected:
-
-        virtual void drawVerticalRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
- 
-        virtual void drawRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);        
-    };
-  }
+  m_nameClass = std::string(this->metaObject()->className());
 }
 
-#endif 
+te::layout::LegendChildItem::~LegendChildItem()
+{
+
+}
+
+

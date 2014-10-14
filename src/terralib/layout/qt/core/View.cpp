@@ -216,8 +216,11 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
   
   if(keyEvent->key() == Qt::Key_P)
   {
+    EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
+    Context::getInstance().setMode(enumMode->getModePrinter());
     //Apenas redesenhar itens que estão dentro do box do papel.
     sc->printPreview();
+    Context::getInstance().setMode(enumMode->getModeNone());
   }
   else if(keyEvent->key() == Qt::Key_E)
   {
@@ -579,6 +582,11 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   else if(mode == enumMode->getModeDrawSelectionMap()) 
   {
     sc->redrawSelectionMap();
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeLegendChildAsObject()) 
+  {
+    sc->createLegendChildAsObject();
     resetDefaultConfig();
   }
 }

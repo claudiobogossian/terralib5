@@ -11,7 +11,6 @@
 
 
 %{
-#include "terralib/common/Exception.h"
 #include "terralib/geometry/Config.h"
 #include "terralib/geometry/Envelope.h"
 #include "terralib/geometry/Enums.h"
@@ -41,7 +40,6 @@
 #include "terralib/geometry/PolyhedralSurface.h"
 #include "terralib/geometry/Surface.h"
 
-using namespace te::gm;
 %}
 
 %nspace te::gm::Geometry;
@@ -73,8 +71,8 @@ using namespace te::gm;
 %include "terralib/geometry/MultiCurve.h"
 %include "terralib/geometry/MultiLineString.h"
 %include "terralib/geometry/MultiPoint.h"
-%include "terralib/geometry/MultiPolygon.h"
 %include "terralib/geometry/MultiSurface.h"
+%include "terralib/geometry/MultiPolygon.h"
 %include "terralib/geometry/PointKd.h"
 %include "terralib/geometry/PointM.h"
 %include "terralib/geometry/PointZ.h"

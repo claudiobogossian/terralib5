@@ -73,6 +73,7 @@ te::qt::widgets::ROIManagerWidget::ROIManagerWidget(QWidget* parent, Qt::WindowF
   m_ui->setupUi(this);
 
   m_ui->m_openLayerROIToolButton->setIcon(QIcon::fromTheme("folder-open"));
+  m_ui->m_fileDialogToolButton->setIcon(QIcon::fromTheme("folder-open"));
   m_ui->m_removeROIToolButton->setIcon(QIcon::fromTheme("list-remove"));
   m_ui->m_exportROISetToolButton->setIcon(QIcon::fromTheme("document-export"));
   m_ui->m_addROIToolButton->setIcon(QIcon::fromTheme("list-add"));
@@ -554,6 +555,8 @@ void te::qt::widgets::ROIManagerWidget::onGeomAquired(te::gm::Polygon* poly)
   std::string label = item->text(0).toStdString();
   te::cl::ROI* roi = m_rs->getROI(label);
 
+  bool repaint = false;
+
   if(roi)
   {
     //create a polygon id
@@ -579,9 +582,17 @@ void te::qt::widgets::ROIManagerWidget::onGeomAquired(te::gm::Polygon* poly)
     subItem->setText(0, fullName);
     subItem->setData(0, Qt::UserRole, QVariant(id.c_str()));
     subItem->setIcon(0, QIcon::fromTheme("file-vector"));
-    item->addChild(subItem);
     item->setExpanded(true);
+
+    int value = item->childCount();
+    if(value == 1)
+      repaint = true;
+
+    item->addChild(subItem);
   }
+
+  if(repaint)
+    m_ui->m_roiSetTreeWidget->repaint();
 
   emit roiSetChanged(m_rs);
   

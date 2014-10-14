@@ -98,6 +98,7 @@ void te::qt::widgets::ColorTransformWizard::setList(std::list<te::map::AbstractL
 {
   m_layerSearchPage->getSearchWidget()->setList(layerList);
   m_layerSearchPage->getSearchWidget()->filterOnlyByRaster();
+  m_layerSearchPage->getSearchWidget()->setMinRasterBands(3);
   m_layerSearchPage->getSearchWidget()->enableMultiSelection(false);
 }
 

@@ -37,12 +37,13 @@ namespace te
   namespace layout
   {
     class AbstractTemplate;
+    class EnumType;
 
     class AbstractTemplateFactory 
     {
       public:
         virtual ~AbstractTemplateFactory(void) {}
-        virtual AbstractTemplate* make(LayoutTemplateType type, TemplateParamsCreate params = TemplateParamsCreate()) = 0;
+        virtual AbstractTemplate* make(EnumType* type, TemplateParamsCreate params = TemplateParamsCreate()) = 0;
       };
   }
 }

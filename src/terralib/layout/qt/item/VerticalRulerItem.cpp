@@ -45,6 +45,7 @@ te::layout::VerticalRulerItem::VerticalRulerItem( ItemController* controller, Ob
 {
   m_printable = false;
   m_canChangeGraphicOrder = false;
+  setVisible(false);
   
   m_nameClass = std::string(this->metaObject()->className());
 }

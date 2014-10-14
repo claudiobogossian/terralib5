@@ -129,3 +129,23 @@ bool te::layout::GridModel::isVisibleAllTexts()
 {
   return m_visibleAllTexts;
 }
+
+void te::layout::GridModel::gridTextFreeMemory()
+{
+  std::map<te::gm::Point*, std::string>::iterator it;
+  for(it = m_gridTexts.begin() ; it != m_gridTexts.end() ; ++it)
+  {
+    te::gm::Point* p = it->first;
+    if(p)
+    {
+      delete p;
+      p = 0;
+    }
+  }
+  m_gridTexts.clear();
+}
+
+std::map<te::gm::Point*, std::string> te::layout::GridModel::getGridInfo()
+{
+  return m_gridTexts;
+}

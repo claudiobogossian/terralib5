@@ -27,12 +27,6 @@
 
 // TerraLib
 #include "VisualizationArea.h"
-#include "../../item/HorizontalRulerModel.h"
-#include "../../item/HorizontalRulerController.h"
-#include "../item/HorizontalRulerItem.h"
-#include "../../item/VerticalRulerModel.h"
-#include "../../item/VerticalRulerController.h"
-#include "../item/VerticalRulerItem.h"
 #include "../../item/PaperModel.h"
 #include "../../item/PaperController.h"
 #include "../item/PaperItem.h"
@@ -57,60 +51,6 @@ void te::layout::VisualizationArea::build()
 void te::layout::VisualizationArea::init()
 {
   createPaper();
-  createHorizontalRuler();
-  createVerticalRuler();
-}
-
-void te::layout::VisualizationArea::rebuildWithoutPaper()
-{
-  createHorizontalRuler();
-  createVerticalRuler();
-}
-
-void te::layout::VisualizationArea::createVerticalRuler()
-{
-  if(!m_boxArea)
-    return;
-
-  double dpiX = te::layout::Context::getInstance().getDpiX();
-
-  double llx = m_boxArea->getLowerLeftX();
-  double lly = m_boxArea->getLowerLeftY();
-  double urx = m_boxArea->getUpperRightX();
-  double ury = m_boxArea->getUpperRightY();
-
-  //Régua Vertical
-  VerticalRulerModel* modelRulerV = new VerticalRulerModel(te::layout::Context::getInstance().getPaperConfig());		
-  modelRulerV->setBox(te::gm::Envelope(llx, lly, llx + 5, ury));
-  VerticalRulerController* controllerRulerV = new VerticalRulerController(modelRulerV);
-  ItemObserver* itemRulerV = (ItemObserver*)controllerRulerV->getView();
-  VerticalRulerItem* rectRulerV = dynamic_cast<VerticalRulerItem*>(itemRulerV);
-  rectRulerV->setPos(QPointF(llx, lly));
-  rectRulerV->redraw();
-  rectRulerV->setZValue(10001);
-}
-
-void te::layout::VisualizationArea::createHorizontalRuler()
-{
-  if(!m_boxArea)
-    return;
-
-  double dpiX = te::layout::Context::getInstance().getDpiX();
-
-  double llx = m_boxArea->getLowerLeftX();
-  double lly = m_boxArea->getLowerLeftY();
-  double urx = m_boxArea->getUpperRightX();
-  double ury = m_boxArea->getUpperRightY();
-
-  //Régua Horizontal
-  HorizontalRulerModel* modelRuler = new HorizontalRulerModel(te::layout::Context::getInstance().getPaperConfig());		
-  modelRuler->setBox(te::gm::Envelope(llx, lly, urx, lly + 5));
-  HorizontalRulerController* controllerRuler = new HorizontalRulerController(modelRuler);
-  ItemObserver* itemRuler = (ItemObserver*)controllerRuler->getView();
-  HorizontalRulerItem* rectRuler = dynamic_cast<HorizontalRulerItem*>(itemRuler);
-  rectRuler->setPos(QPointF(llx, lly));
-  rectRuler->redraw();
-  rectRuler->setZValue(10000);
 }
 
 void te::layout::VisualizationArea::createPaper()

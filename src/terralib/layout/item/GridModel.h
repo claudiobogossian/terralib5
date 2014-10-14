@@ -37,9 +37,11 @@
 #include "../core/Utils.h"
 #include "../core/Systematic.h"
 #include "../../geometry/Coord2D.h"
+#include "../../geometry/Point.h"
 
 // STL
 #include <map>
+#include <string>
 
 namespace te
 {
@@ -61,6 +63,7 @@ namespace te
         virtual void updateProperty(Property property) = 0;
 
         virtual std::string getName();
+
         virtual void setName(std::string name);
 
         virtual bool isVisible();
@@ -77,7 +80,7 @@ namespace te
 
         virtual void setSystematic(Systematic* sys);
 
-        virtual std::map<te::gm::Coord2D, std::string> getGridInfo() = 0;
+        virtual std::map<te::gm::Point*, std::string> getGridInfo();
 
         virtual void setVisibleAllTexts(bool visible);
 
@@ -91,13 +94,16 @@ namespace te
          
          virtual void calculateGaps(te::gm::Envelope box) = 0;
 
+         virtual void gridTextFreeMemory();
+
        protected:
 
-          te::layout::Property    m_property;
-          double                  m_mapScale;
-          std::string             m_name;
-          int                     m_srid;
-          Systematic*             m_systematic;
+          te::layout::Property                    m_property;
+          double                                  m_mapScale;
+          std::string                             m_name;
+          int                                     m_srid;
+          Systematic*                             m_systematic;
+          std::map<te::gm::Point*, std::string>    m_gridTexts;
 
           te::gm::Envelope     m_boxMapMM;
           te::gm::Envelope     m_boundingBoxItemMM;

@@ -18,38 +18,52 @@
  */
 
 /*!
-  \file VerticalRulerController.h
+  \file EnumTemplateType.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_CONTROLLER_H
-#define __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_CONTROLLER_H
-
 // TerraLib
-#include "../core/pattern/mvc/ItemController.h"
+#include "EnumTemplateType.h"
 
-namespace te
+te::layout::EnumTemplateType::EnumTemplateType() :
+  m_noneType(0),
+  m_jsonType(0)
 {
-  namespace layout
+  init();
+}
+
+te::layout::EnumTemplateType::~EnumTemplateType()
+{
+  if(m_noneType)
   {
-    class VerticalRulerController : public ItemController
-    {
-      public:
-
-        VerticalRulerController( Observable* o );
-        virtual ~VerticalRulerController();
-
-        virtual void setPosition(const double& x, const double& y);
-
-      protected:
-
-        VerticalRulerController( Observable* o, EnumType* type );
-
-        virtual void create();
-    };
+    delete m_noneType;
+    m_noneType = 0;
+  }
+  if(m_jsonType)
+  {
+    delete m_jsonType;
+    m_jsonType = 0;
   }
 }
-#endif
+
+void te::layout::EnumTemplateType::init()
+{
+  m_noneType = new EnumType(1, "NoneTemplate");
+  m_enums.push_back(m_noneType);
+
+  m_jsonType = new EnumType(0, "JsonTemplate");
+  m_enums.push_back(m_jsonType);
+}
+
+te::layout::EnumType* te::layout::EnumTemplateType::getNoneType() const
+{
+  return m_noneType;
+}
+
+te::layout::EnumType* te::layout::EnumTemplateType::getJsonType() const
+{
+  return m_jsonType;
+}

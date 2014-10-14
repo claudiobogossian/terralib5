@@ -1258,11 +1258,24 @@ void te::qt::widgets::TimeSliderWidget::setAutomaticPan(const QString& title)
   //{
   //  AnimationItem* ai = (AnimationItem*)(*it);
   //  if(title == ai->m_title)
-  //  {
-  //    setAuxInfo(ai);
   //    break;
-  //  }
   //}
+
+  //if(it != list.end())
+  //  m_spd->m_ui->m_panFactorDoubleSpinBox->setEnabled(true);
+  //else
+  //  m_spd->m_ui->m_panFactorDoubleSpinBox->setEnabled(false);
+}
+
+void te::qt::widgets::TimeSliderWidget::onPanFactorValueChanged(double v)
+{
+  QList<QGraphicsItem*> list = m_animationScene->items();
+  QList<QGraphicsItem*>::iterator it;
+  for(it = list.begin(); it != list.end(); ++it)
+  {
+    AnimationItem* ai = (AnimationItem*)(*it);
+    ai->m_panFactor = v;
+  }
 }
 
 bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
@@ -1398,10 +1411,12 @@ bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
       if(ti != 0)
       {
         QPainter painter(m_spd->m_ui->m_iconPushButton);
+        painter.fillRect(m_spd->m_ui->m_iconPushButton->rect(), QBrush(Qt::white));
         QPixmap pix = ti->pixmap();
         QRect r = pix.rect();
         r.moveCenter(m_spd->m_ui->m_iconPushButton->rect().center());
         painter.drawPixmap(r, pix, pix.rect());
+        painter.end();
       }
       return true;
     }
@@ -1438,8 +1453,10 @@ bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
       if(ti != 0)
       {
         QPixmap pp(ti->m_iconSize);
+        pp.fill(Qt::transparent);
         QPainter painter(&pp);
         painter.drawPixmap(pp.rect(), pix, pix.rect());
+        painter.end();
         ti->m_iconFile = fileName;
         ti->setPixmap(pp);
         ti->m_iconSize = pp.size();
@@ -2407,6 +2424,7 @@ void te::qt::widgets::TimeSliderWidget::onWidthValueChanged(int)
       QPixmap pix = ai->pixmap();
 
       QPixmap pn(m_spd->m_ui->m_widthSpinBox->value(), m_spd->m_ui->m_heightSpinBox->value());
+      pn.fill(Qt::transparent);
       if(pix.isNull() == false)
       {
         te::qt::widgets::TrajectoryItem* ti = (te::qt::widgets::TrajectoryItem*)ai;
@@ -2461,6 +2479,7 @@ void te::qt::widgets::TimeSliderWidget::onHeightValueChanged(int)
     {
       QPixmap pix = ai->pixmap();
       QPixmap pn(m_spd->m_ui->m_widthSpinBox->value(), m_spd->m_ui->m_heightSpinBox->value());
+      pn.fill(Qt::transparent);
       if(pix.isNull() == false)
       {
         te::qt::widgets::TrajectoryItem* ti = (te::qt::widgets::TrajectoryItem*)ai;
@@ -2482,7 +2501,6 @@ void te::qt::widgets::TimeSliderWidget::onHeightValueChanged(int)
           }
         }
 
-        pn.fill(Qt::transparent);
         QPainter painter(&pn);
         QBrush b(Qt::red);
         painter.setBrush(b);
@@ -2824,6 +2842,7 @@ void te::qt::widgets::TimeSliderWidget::adjustTrajectoryGroupBox(te::qt::widgets
     m_spd->m_ui->m_backwardColorPushButton->setPalette(QPalette(ti->m_backwardColor));
     m_spd->m_ui->m_backwardColorPushButton->update();
     m_spd->m_ui->m_autoPanCheckBox->setChecked(ti->m_automaticPan);
+    m_spd->m_ui->m_panFactorDoubleSpinBox->setValue(ti->m_panFactor);
     m_spd->m_ui->m_drawTrailCheckBox->setChecked(ti->m_drawTrail);
 
     QPixmap pix = ti->pixmap();

@@ -18,38 +18,38 @@
  */
 
 /*!
-  \file HorizontalRulerController.h
+  \file LegendChildController.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_CONTROLLER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_LEGEND_CHILD_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_LEGEND_CHILD_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemController.h"
+#include "LegendController.h"
 
 namespace te
 {
   namespace layout
   {
-    class HorizontalRulerController : public ItemController
+    class LegendChildController : public LegendController
     {
       public:
 
-        HorizontalRulerController( Observable* o );
-        virtual ~HorizontalRulerController();
+        LegendChildController( Observable* o );
 
-        virtual void setPosition(const double& x, const double& y);
-
+        virtual ~LegendChildController();
+        
       protected:
 
-        HorizontalRulerController( Observable* o, EnumType* type );
+        LegendChildController( Observable* o, EnumType* type );
 
         virtual void create();
     };
   }
 }
+
 #endif

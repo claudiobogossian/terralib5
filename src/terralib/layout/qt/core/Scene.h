@@ -33,16 +33,20 @@
 #include <QTransform>
 #include <QGraphicsItem>
 #include <QMap>
+#include <QGraphicsView>
 
 // TerraLib
 #include "../../core/AbstractScene.h"
 #include "../../core/enum/AbstractType.h"
 #include "../../core/Config.h"
 #include "../../../geometry/Coord2D.h"
+#include "../../../geometry/Point.h"
+#include "../../item/MapModel.h"
 
 // STL
 #include <map>
 #include <string>
+#include <vector>
 
 class QGraphicsSceneMouseEvent;
 class QGraphicsItemGroup;
@@ -66,6 +70,8 @@ namespace te
     class ChangePropertyCommand;
     class MoveCommand;
     class DeleteCommand;
+    class VerticalRuler;
+    class HorizontalRuler;
 
     class TELAYOUTEXPORT Scene : public QGraphicsScene, public AbstractScene
     {
@@ -76,7 +82,8 @@ namespace te
         enum PrinterScene
         {
           PreviewScene,
-          PrintScene
+          PrintScene,
+          NoPrinter
         };
         
         Scene(QWidget* widget = (QWidget*)0);
@@ -142,11 +149,7 @@ namespace te
         virtual void bringToFront();
 
         virtual void sendToBack();
-
-        virtual void redrawRulers();
-
-        virtual void refreshRulers(te::gm::Envelope newBox);
-
+        
         /*! \brief Get the number of map items that intersection the coordinate */
         virtual int intersectionMap(te::gm::Coord2D coord, bool &intersection);
 
@@ -155,6 +158,8 @@ namespace te
         virtual void createTextGridAsObject();
 
         virtual void createTextMapAsObject();
+
+        virtual void createLegendChildAsObject();
 
         virtual void alignLeft();
 
@@ -210,14 +215,18 @@ namespace te
 
         virtual void refreshViews(QGraphicsView* view = 0);
 
-        virtual void createDefaultTextItemFromObject(std::map<te::gm::Coord2D, std::string> map);
+        virtual void createDefaultTextItemFromObject(std::map<te::gm::Point*, std::string> map);
 
-        virtual void changeFlagsItemForPrint();
+        virtual void createLegendChildItemFromLegend(std::map<te::gm::Point*, std::string> map, te::layout::MapModel* visitable);
 
-        virtual void restoreFlagsItemForPrint();
+        virtual void enableUpdateViews();
+
+        virtual void disableUpdateViews();
         
       protected:
 
+        VerticalRuler*     m_verticalRuler;
+        HorizontalRuler*   m_horizontalRuler;
         te::gm::Envelope*  m_boxW;
         QTransform         m_matrix;
         double             m_screenWidthMM;
@@ -230,7 +239,8 @@ namespace te
         int                m_undoStackLimit;
         bool               m_moveWatched;
         std::map<QGraphicsItem*, QPointF> m_moveWatches;
-        QMap<QGraphicsItem*, QGraphicsItem::GraphicsItemFlags> m_itemFlags; //<! 
+        std::vector<QGraphicsView::ViewportUpdateMode> m_viewUpdateMode;
+
     };
   }
 }

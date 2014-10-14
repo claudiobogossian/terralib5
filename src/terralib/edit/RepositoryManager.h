@@ -85,7 +85,7 @@ namespace te
 
       protected:
 
-        /*! \brief It initializes the singleton instance of the geometry manager. */
+        /*! \brief It initializes the singleton instance of the repository manager. */
         RepositoryManager();
 
         /*! \brief Singleton destructor. */

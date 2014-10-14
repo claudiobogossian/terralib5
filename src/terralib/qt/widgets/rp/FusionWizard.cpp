@@ -573,20 +573,20 @@ void te::qt::widgets::FusionWizard::adjustRasters(te::rst::Raster* rInLower, te:
   //generate lower raster
   std::map<std::string, std::string> rLowerInfo;
   rLowerInfo["FORCE_MEM_DRIVER"] = "TRUE";
-  rLowerInfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(interBox.getHeight() / rInLower->getResolutionX());
-  rLowerInfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(interBox.getWidth() / rInLower->getResolutionY());
-  rLowerInfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(rInLower->getBandDataType(0));
-  rLowerInfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(rInLower->getNumberOfBands());
+//   rLowerInfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(interBox.getHeight() / rInLower->getResolutionX());
+//   rLowerInfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(interBox.getWidth() / rInLower->getResolutionY());
+//   rLowerInfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(rInLower->getBandDataType(0));
+//   rLowerInfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(rInLower->getNumberOfBands());
 
   rOutLower = rInLower->trim(&interBox, rLowerInfo);
 
   //generate higher raster
   std::map<std::string, std::string> rHigherInfo;
   rHigherInfo["FORCE_MEM_DRIVER"] = "TRUE";
-  rHigherInfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(interBox.getHeight() / rInHigher->getResolutionX());
-  rHigherInfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(interBox.getWidth() / rInHigher->getResolutionY());
-  rHigherInfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(rInHigher->getBandDataType(0));
-  rHigherInfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(rInHigher->getNumberOfBands());
+//   rHigherInfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(interBox.getHeight() / rInHigher->getResolutionX());
+//   rHigherInfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(interBox.getWidth() / rInHigher->getResolutionY());
+//   rHigherInfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(rInHigher->getBandDataType(0));
+//   rHigherInfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(rInHigher->getNumberOfBands());
 
   if(reproject)
   {
