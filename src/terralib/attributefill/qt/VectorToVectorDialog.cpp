@@ -24,7 +24,8 @@
 */
 
 // TerraLib
-#include "../../attributefill/VectorToVector.h"
+#include "../../attributefill/VectorToVectorOp.h"
+#include "../../attributefill/VectorToVectorMemory.h"
 #include "../../common/Exception.h"
 #include "../../common/Logger.h"
 #include "../../common/progress/ProgressManager.h"
@@ -170,10 +171,6 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
   std::size_t toSpatialPropPos = te::da::GetFirstSpatialPropertyPos(toData.get());
   te::da::DataSourcePtr toSource = te::da::GetDataSource(toLayer->getDataSourceId(), true);
 
-  std::auto_ptr<te::attributefill::VectorToVector> v2v(new te::attributefill::VectorToVector());
-
-  v2v->setInput(fromLayer, toLayer);
-
   std::string outDataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
   te::da::DataSourcePtr outSource;
 
@@ -188,6 +185,19 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
     QMessageBox::information(this, tr("VectorToVector"), tr("Define a name for the resulting layer."));
     return;
   }
+
+  std::auto_ptr<te::attributefill::VectorToVectorOp> v2v;
+
+//  if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
+//  {
+//    v2v.reset(new te::attributefill::VectorToVectorQuery());
+//  }
+//  else
+//  {
+    v2v.reset(new te::attributefill::VectorToVectorMemory());
+//  }
+
+  v2v->setInput(fromLayer, toLayer);
 
   if(m_toFile)
   {
@@ -247,6 +257,11 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
     v2v->run();
   }
   catch(te::common::Exception& e)
+  {
+    QMessageBox::warning(this, tr("Vector To Vector"), e.what());
+    reject();
+  }
+  catch(std::exception& e)
   {
     QMessageBox::warning(this, tr("Vector To Vector"), e.what());
     reject();
@@ -585,8 +600,8 @@ void te::attributefill::VectorToVectorDialog::setFunctionsByLayer(te::map::Abstr
   for(std::size_t i = 0; i < props.size(); ++i)
   {
     te::dt::Property* prop = props[i];
-
-    if(prop->getType() != te::dt::GEOMETRY_TYPE)
+    
+    if(isValidPropertyType(prop->getType()))
     {
       int propertyType = prop->getType();
 
@@ -700,6 +715,29 @@ bool te::attributefill::VectorToVectorDialog::isPolygon(te::gm::GeomType type)
      type == te::gm::MultiPolygonZType ||
      type == te::gm::MultiPolygonMType ||
      type == te::gm::MultiPolygonZMType)
+     return true;
+
+  return false;
+}
+
+bool te::attributefill::VectorToVectorDialog::isValidPropertyType(const int type)
+{
+  if(type == te::dt::CHAR_TYPE ||
+     type == te::dt::UCHAR_TYPE ||
+     type == te::dt::INT16_TYPE ||
+     type == te::dt::UINT16_TYPE ||
+     type == te::dt::INT32_TYPE ||
+     type == te::dt::UINT32_TYPE ||
+     type == te::dt::INT64_TYPE ||
+     type == te::dt::UINT64_TYPE ||
+     type == te::dt::FLOAT_TYPE ||
+     type == te::dt::DOUBLE_TYPE ||
+     type == te::dt::NUMERIC_TYPE ||
+     type == te::dt::STRING_TYPE ||
+     type == te::dt::CINT16_TYPE ||
+     type == te::dt::CINT32_TYPE ||
+     type == te::dt::CFLOAT_TYPE ||
+     type == te::dt::CDOUBLE_TYPE)
      return true;
 
   return false;

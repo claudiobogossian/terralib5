@@ -93,6 +93,8 @@ namespace te
 
         bool isPolygon(te::gm::GeomType type);
 
+        bool isValidPropertyType(const int type);
+
       protected slots:
 
         void onTargetDatasourceToolButtonPressed();

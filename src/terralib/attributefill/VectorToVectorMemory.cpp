@@ -1,64 +1,3 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
- 
- This file is part of the TerraLib - a Framework for building GIS enabled applications.
- 
- TerraLib is free software: you can redistribute it and/or modify
- it under the terms of the GNU Lesser General Public License as published by
- the Free Software Foundation, either version 3 of the License,
- or (at your option) any later version.
- 
- TerraLib is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- GNU Lesser General Public License for more details.
- 
- You should have received a copy of the GNU Lesser General Public License
- along with TerraLib. See COPYING. If not, write to
- TerraLib Team at <terralib-team@terralib.org>.
- */
-
-/*!
- \file VectorToVector.cpp
- */
-
-#include "../common/StringUtils.h"
-#include "../common/Translator.h"
-
-#include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetAdapter.h"
-
-#include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/dataset/DataSetTypeConverter.h"
-#include "../dataaccess/dataset/ObjectIdSet.h"
-#include "../dataaccess/datasource/DataSource.h"
-#include "../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../dataaccess/utils/Utils.h"
-
-#include "../datatype/AbstractData.h"
-#include "../datatype/Property.h"
-#include "../datatype/StringProperty.h"
-
-#include "../geometry.h"
-
-#include "../memory/DataSetItem.h"
-
-#include "../raster/RasterProperty.h"
-#include "../raster/Utils.h"
-
-#include "../rp/RasterAttributes.h"
-
-#include "../statistics/core/SummaryFunctions.h"
-#include "../statistics/core/StringStatisticalSummary.h"
-#include "../statistics/core/NumericStatisticalSummary.h"
-#include "../statistics/core/Utils.h"
-
-#include "../sam.h"
-
-#include "VectorToVector.h"
-
-// Boost
-#include <boost/lexical_cast.hpp>
-
 /*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
  
  This file is part of the TerraLib - a Framework for building GIS enabled applications.
@@ -79,7 +18,7 @@
  */
 
 /*!
- \file VectorToVector.h
+ \file VectorToVectorMemory.h
  
  \brief Vector to Vector processing.
  
@@ -87,59 +26,38 @@
  */
 
 //Terralib
-#include "../attributefill/VectorToVector.h"
-#include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/datasource/DataSource.h"
-
-#include "../datatype/Property.h"
-
+#include "../common/Translator.h"
+#include "../common/StringUtils.h"
+#include "../dataaccess/utils/Utils.h"
+#include "../datatype/StringProperty.h"
+#include "../geometry.h"
 #include "../memory/DataSet.h"
+#include "../memory/DataSetItem.h"
+#include "../statistics/core/NumericStatisticalSummary.h"
+#include "../statistics/core/StringStatisticalSummary.h"
+#include "../statistics/core/SummaryFunctions.h"
 #include "../statistics/core/Enums.h"
 
 #include "Config.h"
+#include "VectorToVectorMemory.h"
 
 // STL
-#include <map>
 #include <memory>
-#include <string>
-#include <vector>
 
-te::attributefill::VectorToVector::VectorToVector()
-  : m_outDset("")
+// Boost
+#include <boost/lexical_cast.hpp>
+
+te::attributefill::VectorToVectorMemory::VectorToVectorMemory()
 {
 
 }
 
-te::attributefill::VectorToVector::~VectorToVector()
+te::attributefill::VectorToVectorMemory::~VectorToVectorMemory()
 {
 
 }
 
-void te::attributefill::VectorToVector::setInput(te::map::AbstractLayerPtr fromLayer,
-                                                 te::map::AbstractLayerPtr toLayer)
-{
-  m_fromLayer = fromLayer;
-  m_toLayer = toLayer;
-}
-
-void te::attributefill::VectorToVector::setParams(const std::map<te::dt::Property*, std::vector<std::string> >& options)
-{
-  m_options = options;
-}
-
-void te::attributefill::VectorToVector::setOutput(te::da::DataSourcePtr outDsrc, std::string dsName)
-{
-  m_outDsrc = outDsrc;
-  m_outDset = dsName;
-}
-
-bool te::attributefill::VectorToVector::paramsAreValid()
-{
-  return true;
-}
-
-bool te::attributefill::VectorToVector::run()
+bool te::attributefill::VectorToVectorMemory::run()
 {
   te::gm::Envelope fromEnv = m_fromLayer->getExtent();
   std::auto_ptr<te::da::DataSet> fromDs = m_fromLayer->getData();
@@ -187,8 +105,6 @@ bool te::attributefill::VectorToVector::run()
 
     while(it != m_options.end())
     {
-      std::vector<std::string> funcs = it->second;
-
       te::stat::NumericStatisticalSummary ssNum;
       te::stat::StringStatisticalSummary ssStr;
 
@@ -209,6 +125,8 @@ bool te::attributefill::VectorToVector::run()
         te::stat::GetNumericStatisticalSummary(numValues, ssNum);
       }
 
+      std::vector<std::string> funcs = it->second;
+
       for(std::size_t i = 0; i < funcs.size(); ++i)
       {
         std::string outPropName = getPropertyName(it->first, funcs[i]);
@@ -219,6 +137,11 @@ bool te::attributefill::VectorToVector::run()
             item->setString(outPropName, ssStr.m_minVal);
           else
             item->setDouble(outPropName, ssNum.m_minVal);
+        }
+        else if(funcs[i] == "Major Class")
+        {
+          te::dt::AbstractData* value = getMajorClass(toDs.get(), toSrid, fromDs.get(), fromSrid, intersections, it->first->getName());
+          item->setValue(outPropName, value);
         }
         else if(it->first->getType() == te::dt::STRING_TYPE)
         {
@@ -251,35 +174,7 @@ bool te::attributefill::VectorToVector::run()
   return true;
 }
 
-bool te::attributefill::VectorToVector::save(std::auto_ptr<te::mem::DataSet> result,
-                                             std::auto_ptr<te::da::DataSetType> outDsType)
-{
-  // do any adaptation necessary to persist the output dataset
-  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType.get(), m_outDsrc->getCapabilities());
-  te::da::DataSetType* dsTypeResult = converter->getResult();
-  std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(result.get(), converter));
-
-  // create the primary key if it is possible
-  if (m_outDsrc->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
-  {
-    std::string pk_name = dsTypeResult->getName() + "_pkey";
-    te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
-    pk->add(dsTypeResult->getProperty(0));
-    outDsType->setPrimaryKey(pk);
-  }
-
-  std::map<std::string, std::string> options;
-  // create the dataset
-  m_outDsrc->createDataSet(dsTypeResult, options);
-
-  // copy from memory to output datasource
-  result->moveBeforeFirst();
-  m_outDsrc->add(dsTypeResult->getName(),result.get(), options);
-
-  return true;
-}
-
-te::da::DataSetType* te::attributefill::VectorToVector::getOutputDataSetType()
+te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetType()
 {
   std::auto_ptr<te::da::DataSetType> toScheme = m_toLayer->getSchema();
 
@@ -313,6 +208,10 @@ te::da::DataSetType* te::attributefill::VectorToVector::getOutputDataSetType()
         newProp->setRequired(false);
         newProp->setName(newName);
       }
+      else if(funcs[i] == "Percentage per Class")
+      {
+        
+      }
       else if(it->first->getType() == te::dt::STRING_TYPE || funcs[i] == "Mode")
       {
         newProp = new te::dt::StringProperty(newName);
@@ -331,7 +230,7 @@ te::da::DataSetType* te::attributefill::VectorToVector::getOutputDataSetType()
   return dst;
 }
 
-te::sam::rtree::Index<size_t, 8>* te::attributefill::VectorToVector::getRtree(te::da::DataSet* data)
+te::sam::rtree::Index<size_t, 8>* te::attributefill::VectorToVectorMemory::getRtree(te::da::DataSet* data)
 {
   te::sam::rtree::Index<size_t, 8>* rtree = new te::sam::rtree::Index<size_t, 8>;
 
@@ -353,7 +252,7 @@ te::sam::rtree::Index<size_t, 8>* te::attributefill::VectorToVector::getRtree(te
   return rtree;
 }
 
-std::string te::attributefill::VectorToVector::getPropertyName(te::dt::Property* prop, const std::string& func)
+std::string te::attributefill::VectorToVectorMemory::getPropertyName(te::dt::Property* prop, const std::string& func)
 {
   std::string name = te::common::Convert2LCase(prop->getName());
 
@@ -399,7 +298,7 @@ std::string te::attributefill::VectorToVector::getPropertyName(te::dt::Property*
   return newName;
 }
 
-std::vector<std::size_t> te::attributefill::VectorToVector::getIntersections(te::da::DataSet* toDs,
+std::vector<std::size_t> te::attributefill::VectorToVectorMemory::getIntersections(te::da::DataSet* toDs,
                                                                              te::da::DataSet* fromDs,
                                                                              te::sam::rtree::Index<size_t, 8>* rtree)
 {
@@ -430,7 +329,7 @@ std::vector<std::size_t> te::attributefill::VectorToVector::getIntersections(te:
   return interVec;
 }
 
-std::vector<double> te::attributefill::VectorToVector::getNumValues(std::vector<te::dt::AbstractData*> data)
+std::vector<double> te::attributefill::VectorToVectorMemory::getNumValues(std::vector<te::dt::AbstractData*> data)
 {
   std::vector<double> result;
 
@@ -458,7 +357,7 @@ std::vector<double> te::attributefill::VectorToVector::getNumValues(std::vector<
   return result;
 }
 
-std::vector<std::string> te::attributefill::VectorToVector::getStrValues(std::vector<te::dt::AbstractData*> data)
+std::vector<std::string> te::attributefill::VectorToVectorMemory::getStrValues(std::vector<te::dt::AbstractData*> data)
 {
   std::vector<std::string> result;
 
@@ -471,7 +370,7 @@ std::vector<std::string> te::attributefill::VectorToVector::getStrValues(std::ve
   return result;
 }
 
-bool te::attributefill::VectorToVector::isStatistical(const std::string& funcName)
+bool te::attributefill::VectorToVectorMemory::isStatistical(const std::string& funcName)
 {
   if(funcName == "Minimum value" ||
      funcName == "Maximum value" ||
@@ -494,7 +393,7 @@ bool te::attributefill::VectorToVector::isStatistical(const std::string& funcNam
   return false;
 }
 
-std::vector<std::string> te::attributefill::VectorToVector::getSelectedFunctions()
+std::vector<std::string> te::attributefill::VectorToVectorMemory::getSelectedFunctions()
 {
   std::vector<std::string> allSelFuncs;
 
@@ -516,7 +415,7 @@ std::vector<std::string> te::attributefill::VectorToVector::getSelectedFunctions
   return allSelFuncs;
 }
 
-double te::attributefill::VectorToVector::getValue(te::stat::NumericStatisticalSummary ss, const std::string& function)
+double te::attributefill::VectorToVectorMemory::getValue(te::stat::NumericStatisticalSummary ss, const std::string& function)
 {
   if(function == "Amplitude")
     return ss.m_amplitude;
@@ -549,7 +448,7 @@ double te::attributefill::VectorToVector::getValue(te::stat::NumericStatisticalS
   
 }
 
-std::string te::attributefill::VectorToVector::getValue(te::stat::StringStatisticalSummary ss, const std::string& function)
+std::string te::attributefill::VectorToVectorMemory::getValue(te::stat::StringStatisticalSummary ss, const std::string& function)
 {
   if(function == "Maximum value")
     return ss.m_maxVal;
@@ -565,7 +464,7 @@ std::string te::attributefill::VectorToVector::getValue(te::stat::StringStatisti
     return "null";
 }
 
-std::string te::attributefill::VectorToVector::getModeValue(te::stat::NumericStatisticalSummary ss)
+std::string te::attributefill::VectorToVectorMemory::getModeValue(te::stat::NumericStatisticalSummary ss)
 {
   std::string result = "";
   std::vector<double> values = ss.m_mode;
@@ -580,11 +479,13 @@ std::string te::attributefill::VectorToVector::getModeValue(te::stat::NumericSta
   return result;
 }
 
-std::vector<te::dt::AbstractData*> te::attributefill::VectorToVector::getDataValues(te::da::DataSet* fromDs,
+std::vector<te::dt::AbstractData*> te::attributefill::VectorToVectorMemory::getDataValues(te::da::DataSet* fromDs,
                                                                                     std::vector<std::size_t> dsPos,
                                                                                     const std::string& propertyName)
 {
   std::vector<te::dt::AbstractData*> result;
+
+  std::size_t spatialPos = te::da::GetFirstSpatialPropertyPos(fromDs);
 
   for(std::size_t i = 0; i < dsPos.size(); ++i)
   {
@@ -594,4 +495,214 @@ std::vector<te::dt::AbstractData*> te::attributefill::VectorToVector::getDataVal
   }
 
   return result;
+}
+
+te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getMajorClass(te::da::DataSet* toDs,
+                                                                       std::size_t toSrid,
+                                                                       te::da::DataSet* fromDs,
+                                                                       std::size_t fromSrid,
+                                                                       std::vector<std::size_t> dsPos,
+                                                                       const std::string& propertyName)
+{
+  std::size_t toSpatialPos = te::da::GetFirstSpatialPropertyPos(toDs);
+  std::size_t fromSpatialPos = te::da::GetFirstSpatialPropertyPos(fromDs);
+
+  std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toSpatialPos);
+  if(toGeom->getSRID() <= 0)
+    toGeom->setSRID(toSrid);
+
+  std::map<std::size_t, double> areaMap;
+  std::map<std::string, std::size_t> pointMap;
+  for(std::size_t i = 0; i < dsPos.size(); ++i)
+  {
+    fromDs->move(dsPos[i]);
+
+    std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromSpatialPos);
+    if(fromGeom->getSRID() <= 0)
+      fromGeom->setSRID(fromSrid);
+
+    te::gm::Geometry* intersection = toGeom->intersection(fromGeom.get());
+
+    if(isPolygon(toGeom->getGeomTypeId()) || isMultiPolygon(toGeom->getGeomTypeId()))
+    {
+      if(isPolygon(fromGeom->getGeomTypeId()) || isMultiPolygon(fromGeom->getGeomTypeId()))
+      {
+        te::gm::Polygon* pol = dynamic_cast<te::gm::Polygon*>(intersection);
+        te::gm::MultiPolygon* multiPol = dynamic_cast<te::gm::MultiPolygon*>(intersection);
+
+        if(pol)
+          areaMap[dsPos[i]] = pol->getArea();
+        else if(multiPol)
+          areaMap[dsPos[i]] = multiPol->getArea();
+      }
+      else if(isLine(fromGeom->getGeomTypeId()) || isMultiLine(fromGeom->getGeomTypeId()))
+      {
+        te::gm::LineString* line = dynamic_cast<te::gm::LineString*>(intersection);
+        te::gm::MultiLineString* multiLine = dynamic_cast<te::gm::MultiLineString*>(intersection);
+
+        if(line)
+          areaMap[dsPos[i]] = line->getLength();
+        else if(multiLine)
+          areaMap[dsPos[i]] = multiLine->getLength();
+      }
+      else if(isPoint(fromGeom->getGeomTypeId()) || isMultiPoint(fromGeom->getGeomTypeId()))
+      {
+        te::gm::Point* point = dynamic_cast<te::gm::Point*>(intersection);
+        te::gm::MultiPoint* multiPoint = dynamic_cast<te::gm::MultiPoint*>(intersection);
+
+        std::string v = fromDs->getAsString(propertyName, 9);
+
+        if(point)
+          areaMap[dsPos[i]] = point->getNPoints();
+        else if(multiPoint)
+          areaMap[dsPos[i]] = multiPoint->getNPoints();
+      }
+    }
+  }
+
+  std::map<std::size_t, double>::iterator it = areaMap.begin();
+
+  double areaAux;
+  std::size_t posAux;
+  while(it != areaMap.end())
+  {
+    if(it == areaMap.begin())
+    {
+      posAux = it->first;
+      areaAux = it->second;
+    }
+    else
+    {
+      if(areaAux < it->second)
+      {
+        areaAux = it->second;
+        posAux = it->first;
+      }
+    }
+
+    ++it;
+  }
+
+  fromDs->move(posAux);
+
+  return fromDs->getValue(propertyName).release();
+}
+
+bool te::attributefill::VectorToVectorMemory::isPolygon(te::gm::GeomType type)
+{
+  if(type == te::gm::PolygonType ||
+     type == te::gm::PolygonZType ||
+     type == te::gm::PolygonMType ||
+     type == te::gm::PolygonZMType)
+     return true;
+
+  return false;
+}
+
+bool te::attributefill::VectorToVectorMemory::isLine(te::gm::GeomType type)
+{
+  if(type == te::gm::LineStringType ||
+     type == te::gm::LineStringMType ||
+     type == te::gm::LineStringZMType ||
+     type == te::gm::LineStringZType)
+     return true;
+
+  return false;
+}
+
+bool te::attributefill::VectorToVectorMemory::isPoint(te::gm::GeomType type)
+{
+  if(type == te::gm::PointType ||
+     type == te::gm::PointZType ||
+     type == te::gm::PointMType ||
+     type == te::gm::PointZMType)
+     return true;
+
+  return false;
+}
+
+bool te::attributefill::VectorToVectorMemory::isMultiPolygon(te::gm::GeomType type)
+{
+  if(type == te::gm::MultiPolygonType ||
+     type == te::gm::MultiPolygonZType ||
+     type == te::gm::MultiPolygonMType ||
+     type == te::gm::MultiPolygonZMType)
+     return true;
+
+  return false;
+}
+
+bool te::attributefill::VectorToVectorMemory::isMultiLine(te::gm::GeomType type)
+{
+  if(type == te::gm::MultiLineStringMType ||
+     type == te::gm::MultiLineStringType ||
+     type == te::gm::MultiLineStringZMType ||
+     type == te::gm::MultiLineStringZType)
+     return true;
+
+  return false;
+}
+
+bool te::attributefill::VectorToVectorMemory::isMultiPoint(te::gm::GeomType type)
+{
+  if(type == te::gm::MultiPointType ||
+     type == te::gm::MultiPointZType ||
+     type == te::gm::MultiPointMType ||
+     type == te::gm::MultiPointZMType)
+     return true;
+
+  return false;
+}
+
+double te::attributefill::VectorToVectorMemory::getArea(te::gm::Geometry* geom)
+{
+  te::gm::GeomType geomType = geom->getGeomTypeId();
+
+  switch(geomType)
+  {
+    case te::gm::PolygonType:
+    {
+      te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
+      return g->getArea();
+    }
+    case te::gm::PolygonZType:
+    {
+      te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
+      return g->getArea();
+    }
+    case te::gm::PolygonMType:
+    {
+      te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
+      return g->getArea();
+    }
+    case te::gm::PolygonZMType:
+    {
+      te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
+      return g->getArea();
+    }
+    case te::gm::MultiPolygonType:
+    {
+      te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
+      return g->getArea();
+    }
+    case te::gm::MultiPolygonZType:
+    {
+      te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
+      return g->getArea();
+    }
+    case te::gm::MultiPolygonMType:
+    {
+      te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
+      return g->getArea();
+    }
+    case te::gm::MultiPolygonZMType:
+    {
+      te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
+      return g->getArea();
+    }
+    default:
+    {
+      return 0;
+    }
+  }
 }
