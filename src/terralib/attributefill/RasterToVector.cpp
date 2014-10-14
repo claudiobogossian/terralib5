@@ -137,13 +137,11 @@ bool te::attributefill::RasterToVector::run()
 
     if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
     {
-      ///////////verificar se o MultiPolygon da para ser auto_ptr/////////////////////////
       te::gm::MultiPolygon* mPolygon = dynamic_cast< te::gm::MultiPolygon* >(geom.get());
       std::size_t n_geom = mPolygon->getNumGeometries();
 
       for(std::size_t n = 0; n < n_geom; ++n)
       {
-        ///////////verificar se o Polygon da para ser auto_ptr/////////////////////////
         te::gm::Polygon* polygon = dynamic_cast< te::gm::Polygon* >(mPolygon->getGeometryN(n));
         std::vector<std::vector<double> > tempValues = rasterAtt->getValuesFromRaster(*raster, *polygon, m_bands);
 
@@ -160,7 +158,6 @@ bool te::attributefill::RasterToVector::run()
     }
     else if(geom->getGeomTypeId() == te::gm::PolygonType)
     {
-      ///////////verificar se o Polygon da para ser auto_ptr/////////////////////////
       te::gm::Polygon* polygon = dynamic_cast< te::gm::Polygon* >(geom.get());
       valuesFromRaster = rasterAtt->getValuesFromRaster(*raster, *polygon, m_bands);
     }

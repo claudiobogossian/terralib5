@@ -44,7 +44,9 @@
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/Utils.h"
+#include "../../qt/widgets/utils/DoubleListWidget.h"
 #include "../../statistics/core/Utils.h"
+#include "../../srs/SpatialReferenceSystemManager.h"
 #include "../Config.h"
 #include "../Exception.h"
 #include "VectorToRasterDialog.h"
@@ -52,16 +54,19 @@
 #include "ui_VectorToRasterDialogForm.h"
 
 // Qt
+#include <QDoubleValidator>
 #include <QFileDialog>
+#include <QIntValidator>
+#include <QLineEdit>
 #include <QList>
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QMessageBox>
-#include <QLineEdit>
 
 // Boost
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
@@ -73,16 +78,29 @@ te::attributefill::VectorToRasterDialog::VectorToRasterDialog(QWidget* parent, Q
 // add controls
   m_ui->setupUi(this);
 
-// add icons
+  // add icons
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vector-raster-hint").pixmap(112,48));
-  m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
-  m_ui->m_xLineEdit->setValidator(new QDoubleValidator(0, 100, 2, this));
-  m_ui->m_yLineEdit->setValidator(new QDoubleValidator(0, 100, 2, this));
+  m_widget.reset(new te::qt::widgets::DoubleListWidget(m_ui->m_widget));
+  m_widget->setLeftLabel("Available Properties");
+  m_widget->setRightLabel("Used Properties");
+
+  QGridLayout* displayLayout = new QGridLayout(m_ui->m_widget);
+  displayLayout->addWidget(m_widget.get());
+
+  m_ui->m_colsLineEdit->setValidator( new QIntValidator(this) );
+  m_ui->m_rowsLineEdit->setValidator( new QIntValidator(this) );
+  m_ui->m_resXLineEdit->setValidator( new QDoubleValidator(0, 100, 4, this) );
+  m_ui->m_resYLineEdit->setValidator( new QDoubleValidator(0, 100, 4, this) );
+  m_ui->m_dummyLineEdit->setValidator( new QIntValidator(this) );
+
+  connect(m_ui->m_resXLineEdit, SIGNAL(editingFinished()), this, SLOT(onResXLineEditEditingFinished()));
+  connect(m_ui->m_resYLineEdit, SIGNAL(editingFinished()), this, SLOT(onResYLineEditEditingFinished()));
+  connect(m_ui->m_colsLineEdit, SIGNAL(editingFinished()), this, SLOT(onColsLineEditEditingFinished()));
+  connect(m_ui->m_rowsLineEdit, SIGNAL(editingFinished()), this, SLOT(onRowsLineEditEditingFinished()));
 
   connect(m_ui->m_inVectorComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onVectorComboBoxChanged(int)));
 
-  connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
 
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
@@ -96,7 +114,7 @@ te::attributefill::VectorToRasterDialog::~VectorToRasterDialog()
 void te::attributefill::VectorToRasterDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   m_layers = layers;
-  
+
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
 
   while(it != m_layers.end())
@@ -113,19 +131,12 @@ te::map::AbstractLayerPtr te::attributefill::VectorToRasterDialog::getLayer()
   return m_outLayer;
 }
 
-std::vector<te::dt::Property*> te::attributefill::VectorToRasterDialog::getSelectedProperties()
+void te::attributefill::VectorToRasterDialog::showSRS()
 {
-  std::vector<te::dt::Property*> selProperties;
+  std::string name = te::srs::SpatialReferenceSystemManager::getInstance().getName(m_srid);
+  name += " - " + boost::lexical_cast<std::string>(m_srid);
 
-  for(std::size_t i = 0; i != m_ui->m_attributesListWidget->count(); ++i)
-  {
-    if(m_ui->m_attributesListWidget->isItemSelected(m_ui->m_attributesListWidget->item(i)))
-    {
-      selProperties.push_back(m_properties[i]);
-    }
-  }
-
-  return selProperties;
+  m_ui->m_sridLabel->setText(name.c_str());
 }
 
 void te::attributefill::VectorToRasterDialog::onVectorComboBoxChanged(int index)
@@ -134,7 +145,8 @@ void te::attributefill::VectorToRasterDialog::onVectorComboBoxChanged(int index)
   
   std::string layerID = m_ui->m_inVectorComboBox->itemData(index, Qt::UserRole).toString().toStdString();
 
-  m_ui->m_attributesListWidget->clear();
+  m_widget->clearInputValues();
+  m_widget->clearOutputValues();
 
   while(it != m_layers.end())
   {
@@ -144,41 +156,116 @@ void te::attributefill::VectorToRasterDialog::onVectorComboBoxChanged(int index)
       std::auto_ptr<const te::map::LayerSchema> schema(m_selectedLayer->getSchema());
 
       const std::vector<te::dt::Property*> vecProperties = schema->getProperties();
+      std::vector<std::string> propNameVec;
+
       for(std::size_t i = 0; i < vecProperties.size(); ++i)
       {
         int type = vecProperties[i]->getType();
-        if(type != te::dt::GEOMETRY_TYPE)
+        if( type == te::dt::CDOUBLE_TYPE ||
+            type == te::dt::CFLOAT_TYPE ||
+            type == te::dt::CINT16_TYPE ||
+            type == te::dt::CINT32_TYPE ||
+            type == te::dt::DOUBLE_TYPE ||
+            type == te::dt::FLOAT_TYPE || 
+            type == te::dt::INT16_TYPE ||
+            type == te::dt::INT32_TYPE ||
+            type == te::dt::INT64_TYPE ||
+            type == te::dt::UINT16_TYPE ||
+            type == te::dt::UINT32_TYPE ||
+            type == te::dt::UINT64_TYPE)
         {
-          m_ui->m_attributesListWidget->addItem(vecProperties[i]->getName().c_str());
+          propNameVec.push_back(vecProperties[i]->getName().c_str());
           m_properties.push_back(vecProperties[i]);
         }
       }
+      m_widget->setInputValues(propNameVec);
+
+      m_srid = m_selectedLayer->getSRID();
+      showSRS();
     }
     ++it;
   }
-
-
 }
 
-void te::attributefill::VectorToRasterDialog::onTargetDatasourceToolButtonPressed()
+
+void te::attributefill::VectorToRasterDialog::onResXLineEditEditingFinished()
 {
-  m_ui->m_newLayerNameLineEdit->clear();
-  m_ui->m_newLayerNameLineEdit->setEnabled(true);
-  te::qt::widgets::DataSourceSelectorDialog dlg(this);
-  dlg.exec();
+  double resX = m_ui->m_resXLineEdit->text().toDouble();
 
-  std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
+  te::gm::Envelope env = m_selectedLayer->getExtent();
 
-  if(dsPtrList.size() <= 0)
+  if(!env.isValid())
+  {
+    QMessageBox::warning(this, tr("Attribute Fill"), tr("Invalid envelope!"));
     return;
+  }
 
-  std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
+  double lWidth = env.getWidth();
+  double lHeight = env.getHeight();
 
-  m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
+  int maxCols = (int)ceil((env.m_urx - env.m_llx)/resX);
 
-  m_outputDatasource = *it;
-  
-  m_toFile = false;
+  m_ui->m_colsLineEdit->setText(QString::number(maxCols));
+}
+
+void te::attributefill::VectorToRasterDialog::onResYLineEditEditingFinished()
+{
+  double resY = m_ui->m_resYLineEdit->text().toDouble();
+
+  te::gm::Envelope env = m_selectedLayer->getExtent();
+
+  if(!env.isValid())
+  {
+    QMessageBox::warning(this, tr("Attribute Fill"), tr("Invalid envelope!"));
+    return;
+  }
+
+  double lWidth = env.getWidth();
+  double lHeight = env.getHeight();
+
+  int maxRows = (int)ceil((env.m_ury - env.m_lly)/resY);
+
+  m_ui->m_rowsLineEdit->setText(QString::number(maxRows));
+}
+
+void te::attributefill::VectorToRasterDialog::onColsLineEditEditingFinished()
+{
+  int cols = m_ui->m_colsLineEdit->text().toInt();
+
+  te::gm::Envelope env = m_selectedLayer->getExtent();
+
+  if(!env.isValid())
+  {
+    QMessageBox::warning(this, tr("Attribute Fill"), tr("Invalid envelope!"));
+    return;
+  }
+
+  double lWidth = env.getWidth();
+  double lHeight = env.getHeight();
+
+  double resX = (env.m_urx - env.m_llx)/cols;
+
+  m_ui->m_resXLineEdit->setText(QString::number(resX));
+}
+
+void te::attributefill::VectorToRasterDialog::onRowsLineEditEditingFinished()
+{
+  int rows = m_ui->m_rowsLineEdit->text().toInt();
+
+  te::gm::Envelope env = m_selectedLayer->getExtent();
+
+  if(!env.isValid())
+  {
+    QMessageBox::warning(this, tr("Attribute Fill"), tr("Invalid envelope!"));
+    return;
+  }
+
+  double lWidth = env.getWidth();
+  double lHeight = env.getHeight();
+
+  double resY = (env.m_ury - env.m_lly)/rows;
+
+  m_ui->m_resYLineEdit->setText(QString::number(resY));
 }
 
 void te::attributefill::VectorToRasterDialog::onTargetFileToolButtonPressed()
@@ -186,18 +273,20 @@ void te::attributefill::VectorToRasterDialog::onTargetFileToolButtonPressed()
   m_ui->m_newLayerNameLineEdit->clear();
   m_ui->m_repositoryLineEdit->clear();
   
-  QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), te::qt::widgets::GetFilePathFromSettings("attributefill_vec2raster"), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
+                                                        QString(), tr("TIFF (*.tif *.TIF);;"),0, QFileDialog::DontConfirmOverwrite);
+
+  if (fileName.isEmpty())
+    return;
   
-  if(dir.isEmpty() == false)
-  {
-    m_path = dir.replace(QRegExp("\\\\"), "/").toStdString();
-
-    m_ui->m_repositoryLineEdit->setText(m_path.c_str());
-
-    te::qt::widgets::AddFilePathToSettings(m_path.c_str(), "attributefill_vec2raster");
-
-    m_toFile = true;
-  }
+  boost::filesystem::path outfile(fileName.toStdString());
+  std::string aux = outfile.leaf().string();
+  m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
+  aux = outfile.string();
+  m_ui->m_repositoryLineEdit->setText(aux.c_str());
+  
+  m_toFile = true;
+  m_ui->m_newLayerNameLineEdit->setEnabled(false);
 }
 
 void te::attributefill::VectorToRasterDialog::onHelpPushButtonClicked()
@@ -225,31 +314,65 @@ void te::attributefill::VectorToRasterDialog::onOkPushButtonClicked()
   if (!inDataSource.get())
   {
     QMessageBox::information(this, "Fill", "The selected input data source can not be accessed.");
+    m_ui->m_targetFileToolButton->setFocus();
     return;
   }
 
-  std::vector<te::dt::Property*> selProperties = getSelectedProperties();
-  if(selProperties.empty())
+  if(m_widget->getOutputValues().size() == 0)
   {
-    QMessageBox::information(this, "Fill", "Select at least one attribute.");
+    QMessageBox::information(this, "Fill", "Select at least one output attribute to represent the band of the raster.");
     return;
   }
-  
-  if(m_ui->m_xLineEdit->text().isEmpty() || m_ui->m_yLineEdit->text().isEmpty())
+
+  if(m_ui->m_resXLineEdit->text().isEmpty())
   {
-    QMessageBox::information(this, "Fill", "Define a resolution.");
+    QMessageBox::information(this, "Fill", "Define a resolution for the output raster.");
+    m_ui->m_resXLineEdit->setFocus();
     return;
+  }
+
+  if(m_ui->m_resYLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, "Fill", "Define a resolution for the output raster.");
+    m_ui->m_resYLineEdit->setFocus();
+    return;
+  }
+
+  if(m_ui->m_colsLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, "Fill", "Define a resolution for the output raster.");
+    m_ui->m_colsLineEdit->setFocus();
+    return;
+  }
+
+  if(m_ui->m_rowsLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, "Fill", "Define a resolution for the output raster.");
+    m_ui->m_rowsLineEdit->setFocus();
+    return;
+  }
+
+  if(m_ui->m_dummyCheckBox->isChecked())
+  {
+    if(m_ui->m_dummyLineEdit->text().isEmpty())
+    {
+      QMessageBox::information(this, "Fill", "Define a dummy value for the output raster.");
+      m_ui->m_dummyLineEdit->setFocus();
+      return;
+    }
   }
 
   if(m_ui->m_repositoryLineEdit->text().isEmpty())
   {
     QMessageBox::information(this, "Fill", "Define a repository for the result.");
+    m_ui->m_targetFileToolButton->setFocus();
     return;
   }
        
   if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
   {
     QMessageBox::information(this, "Fill", "Define a name for the resulting layer.");
+    m_ui->m_newLayerNameLineEdit->setFocus();
     return;
   }
   
@@ -258,16 +381,79 @@ void te::attributefill::VectorToRasterDialog::onOkPushButtonClicked()
 
   try
   {
-    if (m_toFile)
+    bool res;
+
+    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+
+    if (boost::filesystem::exists(uri))
     {
-      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
-
-
+      QMessageBox::information(this, "Fill", "Output file already exists. Remove it or select a new name and try again.");
+      return;
     }
+
+    std::size_t idx = outputdataset.find(".");
+    if (idx != std::string::npos)
+      outputdataset=outputdataset.substr(0,idx);
+
+    std::map<std::string, std::string> dsinfo;
+    dsinfo["URI"] = uri.string();
+      
+    te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
+    dsOGR->setConnectionInfo(dsinfo);
+    dsOGR->open();
+    if (dsOGR->dataSetExists(outputdataset))
+    {
+      QMessageBox::information(this, "Fill", "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.");
+      return;
+    }
+
+    this->setCursor(Qt::WaitCursor);
+
+    te::attributefill::VectorToRaster* vec2rst = new te::attributefill::VectorToRaster();
+    vec2rst->setInput(inDataSource, dsLayer->getTitle(), dsLayer->getSchema());
+    vec2rst->setParams( m_widget->getOutputValues(), 
+                        m_ui->m_resXLineEdit->text().toDouble(),
+                        m_ui->m_resYLineEdit->text().toDouble(),
+                        m_ui->m_colsLineEdit->text().toInt(),
+                        m_ui->m_rowsLineEdit->text().toInt(),
+                        m_ui->m_dummyCheckBox->isChecked(),
+                        m_ui->m_dummyLineEdit->text().toInt());
+    vec2rst->setOutput(dsOGR, outputdataset);
+
+    if (!vec2rst->paramsAreValid())
+      res = false;
     else
-    {
+      res = vec2rst->run();
 
+    if(!res)
+    {
+      this->setCursor(Qt::ArrowCursor);
+      dsOGR->close();
+      QMessageBox::information(this, "Fill", "Error: could not generate the operation.");
+      reject();
     }
+    dsOGR->close();
+
+    delete vec2rst;
+
+    // let's include the new datasource in the managers
+    boost::uuids::basic_random_generator<boost::mt19937> gen;
+    boost::uuids::uuid u = gen();
+    std::string id_ds = boost::uuids::to_string(u);
+      
+    te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
+    ds->setConnInfo(dsinfo);
+    ds->setTitle(uri.stem().string());
+    ds->setAccessDriver("GDAL");
+    ds->setType("GDAL");
+    ds->setDescription(uri.string());
+    ds->setId(id_ds);
+      
+    te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id_ds, "GDAL", ds->getConnInfo());
+    newds->open();
+    te::da::DataSourceInfoManager::getInstance().add(ds);
+    m_outputDatasource = ds;
+
   }
   catch(const std::exception& e)
   {
@@ -278,7 +464,6 @@ void te::attributefill::VectorToRasterDialog::onOkPushButtonClicked()
 
     return;
   }
-
 }
 
 void te::attributefill::VectorToRasterDialog::onCancelPushButtonClicked()
