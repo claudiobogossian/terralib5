@@ -93,7 +93,11 @@ namespace te
 
         bool isPolygon(te::gm::GeomType type);
 
+        bool isPoint(te::gm::GeomType type);
+
         bool isValidPropertyType(const int type);
+
+        bool isClassType(const int type);
 
       protected slots:
 
