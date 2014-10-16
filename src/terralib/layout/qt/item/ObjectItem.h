@@ -38,6 +38,7 @@
 #include "../../core/pattern/mvc/ItemObserver.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/enum/AbstractType.h"
+#include "../../../color/RGBAColor.h"
 
 class QGraphicsSceneMouseEvent;
 class QGraphicsSceneHoverEvent;
@@ -55,17 +56,22 @@ namespace te
       public:
 
         ObjectItem(ItemController* controller = 0, Observable* o = 0);
+
         virtual ~ObjectItem();
 
         virtual void updateObserver(ContextItem context) = 0;
+
         virtual te::gm::Coord2D getPosition();
 
         virtual void setPixmap( const QPixmap& pixmap );
+
         virtual QPixmap getPixmap();
 
         //Mandatory implementation methods
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+
         virtual QRectF boundingRect() const;
+
         virtual void setRect(QRectF rect);
 
         //Override 
@@ -76,17 +82,25 @@ namespace te
 
         void	setZValue ( qreal z );
 
+        virtual te::color::RGBAColor** getImage();
+
       protected:
 
         virtual void drawBackground( QPainter* painter );
+
         virtual void drawSelection(QPainter* painter);
 
         //Resize
         virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );
+
         virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+
         virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+
         virtual void	hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
+
         virtual void	hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
+
         virtual void	hoverMoveEvent ( QGraphicsSceneHoverEvent * event );
 
         virtual bool checkTouchesCorner(const double& x, const double& y);

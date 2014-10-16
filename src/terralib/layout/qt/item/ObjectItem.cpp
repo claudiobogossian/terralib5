@@ -432,3 +432,10 @@ void te::layout::ObjectItem::applyRotation()
 
   setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
 }
+
+te::color::RGBAColor** te::layout::ObjectItem::getImage()
+{
+  QImage img = m_pixmap.toImage();
+  te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
+  return teImg;
+}

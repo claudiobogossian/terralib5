@@ -34,6 +34,7 @@
 #include <QGraphicsItem>
 #include <QMap>
 #include <QGraphicsView>
+#include <QColor>
 
 // TerraLib
 #include "../../core/AbstractScene.h"
@@ -84,6 +85,12 @@ namespace te
           PreviewScene,
           PrintScene,
           NoPrinter
+        };
+
+        enum ViewportEnum
+        {
+          None,
+          NoUpdateView
         };
         
         Scene(QWidget* widget = (QWidget*)0);
@@ -188,6 +195,16 @@ namespace te
         virtual bool	eventFilter ( QObject * watched, QEvent * event );
 
         virtual void redrawSelectionMap();
+
+        virtual PrinterScene getPreviewState();
+
+        virtual void exportItemsToImage();
+
+        virtual ViewportEnum getStateViewport();
+
+        virtual void invisibleExcept(QGraphicsItem* item);
+
+        virtual void visibleAllItems();
         
       protected slots:
 
@@ -213,6 +230,8 @@ namespace te
 
         virtual void drawForeground(QPainter *painter, const QRectF &rect);
 
+        virtual void	drawBackground ( QPainter * painter, const QRectF & rect );
+
         virtual void refreshViews(QGraphicsView* view = 0);
 
         virtual void createDefaultTextItemFromObject(std::map<te::gm::Point*, std::string> map);
@@ -222,6 +241,8 @@ namespace te
         virtual void enableUpdateViews();
 
         virtual void disableUpdateViews();
+
+        virtual void setDrawRulers(bool draw);
         
       protected:
 
@@ -240,7 +261,9 @@ namespace te
         bool               m_moveWatched;
         std::map<QGraphicsItem*, QPointF> m_moveWatches;
         std::vector<QGraphicsView::ViewportUpdateMode> m_viewUpdateMode;
-
+        bool               m_drawRulers;
+        ViewportEnum       m_stateViewport;
+        QColor             m_backgroundColor;
     };
   }
 }

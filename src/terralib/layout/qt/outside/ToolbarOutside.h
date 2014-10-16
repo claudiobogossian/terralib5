@@ -111,6 +111,8 @@ namespace te
       virtual void onRemoveObjectClicked(bool checked);
 
       virtual void onDrawMapClicked(bool checked);
+
+      virtual void onObjectToImageClicked(bool checked);
       
     signals:
 
@@ -161,6 +163,8 @@ namespace te
       virtual void createUndoToolButton();
 
       virtual void createDrawMapToolButton();
+
+      virtual void createObjectToImageButton();
 
       virtual void changeAction(EnumType* mode);
 
@@ -232,6 +236,8 @@ namespace te
       std::string m_optionRedo;
 
       std::string m_optionDrawMap;
+
+      std::string m_optionObjectToImage;
     };
   }
 }

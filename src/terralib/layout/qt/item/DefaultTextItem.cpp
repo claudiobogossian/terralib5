@@ -138,7 +138,7 @@ void te::layout::DefaultTextItem::updateObserver( ContextItem context )
   For these reasons, it is necessary to scale and so accompany the zoom scene. */
   double zoomFactor = Context::getInstance().getZoomFactor();
   setScale(zoomFactor);
-    
+  
   refreshTable();
 
   setPixmap(pixmap);
@@ -654,4 +654,11 @@ void te::layout::DefaultTextItem::hoverMoveEvent( QGraphicsSceneHoverEvent * eve
   m_hoverAboveItem = true;
   m_toResizeItem = checkTouchesCorner(event->pos().x(), event->pos().y());
   QGraphicsItem::hoverMoveEvent(event);
+}
+
+te::color::RGBAColor** te::layout::DefaultTextItem::getImage()
+{
+  QImage img = m_pixmap.toImage();
+  te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
+  return teImg;
 }

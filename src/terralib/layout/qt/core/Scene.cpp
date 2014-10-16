@@ -64,6 +64,8 @@
 #include "../../core/pattern/derivativevisitor/VisitorUtils.h"
 #include "HorizontalRuler.h"
 #include "VerticalRuler.h"
+#include "../../../qt/widgets/Utils.h"
+#include "./../../../common/STLUtils.h"
 
 // STL
 #include <iostream>
@@ -85,6 +87,7 @@
 #include <QPrinter>
 #include <QUndoStack>
 #include <QUndoCommand>
+#include <QImage>
 
 te::layout::Scene::Scene( QWidget* widget): 
   QGraphicsScene(widget),
@@ -97,9 +100,11 @@ te::layout::Scene::Scene( QWidget* widget):
   m_undoStackLimit(6),
   m_moveWatched(false),
   m_horizontalRuler(0),
-  m_verticalRuler(0)
+  m_verticalRuler(0),
+  m_stateViewport(None)
 {
-  setBackgroundBrush(QBrush(QColor(109,109,109)));
+  m_backgroundColor = QColor(109,109,109);
+  setBackgroundBrush(QBrush(m_backgroundColor));
 
   m_undoStack = new QUndoStack(this);
 }
@@ -415,6 +420,11 @@ void te::layout::Scene::printPreview(bool isPdf)
     redrawItems(false);
     enableUpdateViews();
     m_previewState = NoPrinter;
+    if(printer)
+    {
+      delete printer;
+      printer = 0;
+    }
   }
 
   Context::getInstance().setMode(mode->getModeNone());
@@ -524,9 +534,13 @@ void te::layout::Scene::renderScene( QPainter* newPainter )
 
   /* Print Paper (Scene to Printer)
   draw items with printer painter */
-          
+
+  m_drawRulers = false;
+
   this->render(newPainter, pxTargetRect, mmSourceRect); 
   
+  m_drawRulers = true;
+
   changePrintVisibility(true);
 }
 
@@ -696,7 +710,10 @@ void te::layout::Scene::reset()
 
 void te::layout::Scene::drawForeground( QPainter *painter, const QRectF &rect )
 {
-  QGraphicsScene::drawForeground(painter, rect);
+  if(m_stateViewport != NoUpdateView)
+  {
+    QGraphicsScene::drawForeground(painter, rect);
+  }
 
   PaperConfig* cfg = Context::getInstance().getPaperConfig();
 
@@ -710,7 +727,7 @@ void te::layout::Scene::drawForeground( QPainter *painter, const QRectF &rect )
     m_verticalRuler = new VerticalRuler(cfg);
   }
 
-  if(m_previewState == NoPrinter)
+  if(m_drawRulers && m_stateViewport != NoUpdateView)
   {
     QList<QGraphicsView*> vws = views();
     foreach(QGraphicsView* v, vws)
@@ -718,6 +735,14 @@ void te::layout::Scene::drawForeground( QPainter *painter, const QRectF &rect )
       m_horizontalRuler->drawRuler(v, painter);
       m_verticalRuler->drawRuler(v, painter);
     }
+  }
+}
+
+void te::layout::Scene::drawBackground( QPainter * painter, const QRectF & rect )
+{
+  if(m_stateViewport != NoUpdateView)
+  {
+    QGraphicsScene::drawBackground(painter, rect);
   }
 }
 
@@ -990,7 +1015,7 @@ void te::layout::Scene::createTextGridAsObject()
       if(mt)
       {
         MapGridModel* model = dynamic_cast<MapGridModel*>(mt->getModel());
-
+        
         GridGeodesicModel* gridGeo = dynamic_cast<GridGeodesicModel*>(model->getGridGeodesic());
         if(model->getGridGeodesic()->isVisible())
         {
@@ -1027,25 +1052,26 @@ void te::layout::Scene::createTextMapAsObject()
       {
         MapModel* model = dynamic_cast<MapModel*>(mt->getModel());
         std::map<te::gm::Point*, std::string> map = model->getTextMapAsObjectInfo();
+        double h = model->getBox().getHeight();
         createDefaultTextItemFromObject(map);
       }
     }
   }
 }
 
-void te::layout::Scene::createDefaultTextItemFromObject( std::map<te::gm::Point*, std::string> map )
+void te::layout::Scene::createDefaultTextItemFromObject( std::map<te::gm::Point*, std::string> map)
 {
   EnumModeType* mode = Enums::getInstance().getEnumModeType();
 
   std::map<te::gm::Point*, std::string>::iterator it;
-
+  
   for (it = map.begin(); it != map.end(); ++it) 
   {
     te::gm::Point* pt = it->first;
     std::string text = it->second;
 
     Context::getInstance().setMode(mode->getModeCreateText());
-   
+
     QGraphicsItem* item = 0;
     te::gm::Coord2D coord(pt->getX(), pt->getY());
     item = createItem(coord);
@@ -1447,4 +1473,96 @@ void te::layout::Scene::createLegendChildItemFromLegend( std::map<te::gm::Point*
   }
 
   Context::getInstance().setMode(mode->getModeNone());
+}
+
+void te::layout::Scene::setDrawRulers( bool draw )
+{
+  m_drawRulers = draw;
+}
+
+te::layout::Scene::PrinterScene te::layout::Scene::getPreviewState()
+{
+  return m_previewState;
+}
+
+void te::layout::Scene::exportItemsToImage()
+{
+  QWidget* wg = (QWidget*)QApplication::desktop();
+  QFileDialog dialog(wg);
+  dialog.setGeometry(QRect(wg->width()/4, wg->height()/4, wg->width()/2, wg->height()/2));
+  QString dir = dialog.getExistingDirectory(wg, tr("Open Directory"), 
+    QDir::currentPath(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+  
+  if(dir.isEmpty())
+    return;
+
+  Utils* utils = Context::getInstance().getUtils();
+  double zoomFactor = Context::getInstance().getZoomFactor();
+  Context::getInstance().setZoomFactor(1.);
+      
+  QList<QGraphicsItem*> selected = selectedItems();
+  foreach(QGraphicsItem *item, selected) 
+  {
+    if(item)
+    {
+      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+      if(it)
+      {
+        QImage* img = 0;
+        te::color::RGBAColor** rgba = it->getImage();
+
+        if(!rgba)
+          continue;
+
+        te::gm::Envelope box = utils->viewportBox(it->getModel()->getBox());
+        img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
+        std::string dirName = dir.toStdString() + "/" + it->getName() +".png";
+
+        if(!img)
+          continue;
+
+        img->save(dirName.c_str());
+
+        te::common::Free(rgba, box.getHeight());
+
+        if(img)
+          delete img;        
+      }
+    }
+  }
+  
+  Context::getInstance().setZoomFactor(zoomFactor);
+}
+
+te::layout::Scene::ViewportEnum te::layout::Scene::getStateViewport()
+{
+  return m_stateViewport;
+}
+
+void te::layout::Scene::invisibleExcept( QGraphicsItem* item )
+{
+  item->setVisible(true);
+  QList<QGraphicsItem*> vItems = items();
+  foreach(QGraphicsItem *it, vItems) 
+  {
+    if(it)
+    {
+      if(it != item)
+      {
+        it->setVisible(false);
+      }
+    }
+  }
+}
+
+void te::layout::Scene::visibleAllItems()
+{
+  QList<QGraphicsItem*> vItems = items();
+  foreach(QGraphicsItem *it, vItems) 
+  {
+    if(it)
+    {
+      it->setVisible(true);
+    }
+  }
 }
