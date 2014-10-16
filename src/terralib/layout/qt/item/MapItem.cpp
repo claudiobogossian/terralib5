@@ -84,7 +84,9 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   m_mapDisplay(0),
   m_grabbedByWidget(false),
   m_treeItem(0),
-  m_tool(0)
+  m_tool(0),
+  m_hMargin(0),
+  m_wMargin(0)
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
@@ -129,11 +131,11 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   
   te::gm::Envelope boxProxy = utils->viewportBox(m_model->getBox());
 
-  double wMargin = (boxProxy.getWidth() - box.getWidth()) / 2.;
-  double hMargin = (boxProxy.getHeight() - box.getHeight()) / 2.;
+  m_wMargin = (boxProxy.getWidth() - box.getWidth()) / 2.;
+  m_hMargin = (boxProxy.getHeight() - box.getHeight()) / 2.;
   
   //this also changes the bounding rectangle size.
-  setWindowFrameMargins(wMargin, hMargin, wMargin, hMargin);
+  setWindowFrameMargins(m_wMargin, m_hMargin, m_wMargin, m_hMargin);
       
   m_mapDisplay->show();
 }
@@ -196,23 +198,7 @@ void te::layout::MapItem::updateObserver( ContextItem context )
     m_mapDisplay->setBackgroundColor(qcolor);
     m_mapDisplay->refresh();
   }
-
-  /* This item ignores the transformations of the scene, so comes with no zoom. 
-  His transformation matrix is the inverse scene, understanding the pixel 
-  coordinates, and its position can only be given in the scene coordinates(mm). 
-  For these reasons, it is necessary to scale and so accompany the zoom scene. */
-  /*double zoomFactor = Context::getInstance().getZoomFactor();
-  setScale(zoomFactor);*/
   
-  /*Scene* sc = dynamic_cast<Scene*>(Context::getInstance().getScene());
-  QTransform transf = sc->getMatrixViewScene().inverted();
-
-  double scalex = sc->getMatrixViewScene().inverted().m11();
-  double scaley = sc->getMatrixViewScene().inverted().m22();
-
-  transf.setMatrix(scalex, 0, 0, 0, -scaley, 0, transf.dx(), transf.dy(), 1);
-  QGraphicsItem::setTransform(transf);*/
-
   te::color::RGBAColor** rgba = context.getPixmap();
 
   if(!rgba)
@@ -564,4 +550,36 @@ void te::layout::MapItem::applyRotation()
   double centerY = center.y();
   
   setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
+}
+
+te::color::RGBAColor** te::layout::MapItem::getImage()
+{
+  QImage img = generateImage();
+  te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
+  return teImg;
+}
+
+QImage te::layout::MapItem::generateImage()
+{
+  QColor color(0, 0, 255, 0);
+
+  QImage generator(m_pixmap.width(), m_pixmap.height(), QImage::Format_ARGB32);
+  generator.fill(color);
+
+  QPainter painter;
+  painter.begin(&generator);
+  
+  QPoint pt(m_wMargin, m_hMargin);
+  widget()->render(&painter, pt);
+
+  if(!m_pixmap.isNull())
+  {
+    QRectF rectF(0, 0, m_pixmap.width(), m_pixmap.height());
+    painter.save();
+    painter.drawPixmap(rectF, m_pixmap, rectF);
+    painter.restore(); 
+  }
+  
+  painter.end();
+  return generator;
 }

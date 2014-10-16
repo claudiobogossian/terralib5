@@ -71,7 +71,7 @@ void te::layout::VisualizationArea::createPaper()
   ItemObserver* itemPaper = (ItemObserver*)controllerPaper->getView();
   PaperItem* qPaper = dynamic_cast<PaperItem*>(itemPaper);
   qPaper->setPos(QPointF(0, 0));
-  qPaper->setZValue(1);
+  qPaper->setZValue(0);
   qPaper->redraw();
 }
 
