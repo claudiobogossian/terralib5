@@ -129,13 +129,7 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   QGraphicsItem* item = this;
   Context::getInstance().getScene()->insertItem((ItemObserver*)item);
   
-  te::gm::Envelope boxProxy = utils->viewportBox(m_model->getBox());
-
-  m_wMargin = (boxProxy.getWidth() - box.getWidth()) / 2.;
-  m_hMargin = (boxProxy.getHeight() - box.getHeight()) / 2.;
-  
-  //this also changes the bounding rectangle size.
-  setWindowFrameMargins(m_wMargin, m_hMargin, m_wMargin, m_hMargin);
+  calculateFrameMargin();
       
   m_mapDisplay->show();
 }
@@ -197,6 +191,8 @@ void te::layout::MapItem::updateObserver( ContextItem context )
     qcolor.setAlpha(clr.getAlpha());
     m_mapDisplay->setBackgroundColor(qcolor);
     m_mapDisplay->refresh();
+
+    calculateFrameMargin();
   }
   
   te::color::RGBAColor** rgba = context.getPixmap();
@@ -582,4 +578,25 @@ QImage te::layout::MapItem::generateImage()
   
   painter.end();
   return generator;
+}
+
+void te::layout::MapItem::calculateFrameMargin()
+{
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
+    return;
+
+  Utils* utils = Context::getInstance().getUtils();
+
+  if(!utils)
+    return;
+
+  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
+  te::gm::Envelope mapBox = utils->viewportBox(model->getMapBox());
+
+  m_wMargin = (box.getWidth() - mapBox.getWidth()) / 2.;
+  m_hMargin = (box.getHeight() - mapBox.getHeight()) / 2.;
+
+  //this also changes the bounding rectangle size.
+  setWindowFrameMargins(m_wMargin, m_hMargin, m_wMargin, m_hMargin);
 }
